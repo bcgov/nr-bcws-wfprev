@@ -139,7 +139,7 @@ export declare const enum ParseErrorCode {
     InvalidCharacter = 16
 }
 export declare function printParseErrorCode(code: ParseErrorCode): "InvalidSymbol" | "InvalidNumberFormat" | "PropertyNameExpected" | "ValueExpected" | "ColonExpected" | "CommaExpected" | "CloseBraceExpected" | "CloseBracketExpected" | "EndOfFileExpected" | "InvalidCommentToken" | "UnexpectedEndOfComment" | "UnexpectedEndOfString" | "UnexpectedEndOfNumber" | "InvalidUnicode" | "InvalidEscapeCharacter" | "InvalidCharacter" | "<unknown ParseErrorCode>";
-export declare type NodeType = 'object' | 'array' | 'property' | 'string' | 'number' | 'boolean' | 'null';
+export type NodeType = 'object' | 'array' | 'property' | 'string' | 'number' | 'boolean' | 'null';
 export interface Node {
     readonly type: NodeType;
     readonly value?: any;
@@ -153,8 +153,8 @@ export interface Node {
  * A {@linkcode JSONPath} segment. Either a string representing an object property name
  * or a number (starting at 0) for array indices.
  */
-export declare type Segment = string | number;
-export declare type JSONPath = Segment[];
+export type Segment = string | number;
+export type JSONPath = Segment[];
 export interface Location {
     /**
      * The previous property key or literal value (string, number, boolean or null) or undefined.
@@ -195,8 +195,9 @@ export interface ParseOptions {
 export interface JSONVisitor {
     /**
      * Invoked when an open brace is encountered and an object is started. The offset and length represent the location of the open brace.
+     * When `false` is returned, the object properties will not be visited.
      */
-    onObjectBegin?: (offset: number, length: number, startLine: number, startCharacter: number, pathSupplier: () => JSONPath) => void;
+    onObjectBegin?: (offset: number, length: number, startLine: number, startCharacter: number, pathSupplier: () => JSONPath) => boolean | void;
     /**
      * Invoked when a property is encountered. The offset and length represent the location of the property name.
      * The `JSONPath` created by the `pathSupplier` refers to the enclosing JSON object, it does not include the
@@ -209,8 +210,9 @@ export interface JSONVisitor {
     onObjectEnd?: (offset: number, length: number, startLine: number, startCharacter: number) => void;
     /**
      * Invoked when an open bracket is encountered. The offset and length represent the location of the open bracket.
+     * When `false` is returned, the array items will not be visited.
      */
-    onArrayBegin?: (offset: number, length: number, startLine: number, startCharacter: number, pathSupplier: () => JSONPath) => void;
+    onArrayBegin?: (offset: number, length: number, startLine: number, startCharacter: number, pathSupplier: () => JSONPath) => boolean | void;
     /**
      * Invoked when a closing bracket is encountered. The offset and length represent the location of the closing bracket.
      */
@@ -242,7 +244,7 @@ export interface JSONVisitor {
  * To apply an edit result use {@linkcode applyEdits}.
  * In general multiple EditResults must not be concatenated because they might impact each other, producing incorrect or malformed JSON data.
  */
-export declare type EditResult = Edit[];
+export type EditResult = Edit[];
 /**
  * Represents a text modification
  */

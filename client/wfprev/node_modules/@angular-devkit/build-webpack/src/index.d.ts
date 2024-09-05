@@ -3,8 +3,8 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
-export * from './webpack';
-export * from './webpack-dev-server';
-export { EmittedFiles } from './utils';
+export * from './builders/webpack';
+export * from './builders/webpack-dev-server';
+export type { EmittedFiles } from './utils';

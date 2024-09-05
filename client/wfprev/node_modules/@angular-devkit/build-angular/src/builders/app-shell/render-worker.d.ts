@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 /**
  * A request to render a Server bundle generate by the universal server builder.
@@ -20,7 +20,7 @@ interface RenderRequest {
     /**
      * An optional URL path that represents the Angular route that should be rendered.
      */
-    url: string | undefined;
+    url: string;
 }
 /**
  * Renders an application based on a provided server bundle path, initial document, and optional URL route.

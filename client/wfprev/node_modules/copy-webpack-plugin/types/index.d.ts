@@ -192,12 +192,8 @@ declare namespace CopyPlugin {
     PluginOptions,
   };
 }
-type Compiler = import("webpack").Compiler;
-type PluginOptions = {
-  patterns: Pattern[];
-  options?: AdditionalOptions | undefined;
-};
 type Schema = import("schema-utils/declarations/validate").Schema;
+type Compiler = import("webpack").Compiler;
 type Compilation = import("webpack").Compilation;
 type WebpackError = import("webpack").WebpackError;
 type Asset = import("webpack").Asset;
@@ -230,7 +226,7 @@ type To = string | ToFunction;
 type ToType = "dir" | "file" | "template";
 type TransformerFunction = (
   input: Buffer,
-  absoluteFilename: string
+  absoluteFilename: string,
 ) => string | Buffer | Promise<string> | Promise<Buffer>;
 type TransformerCacheObject =
   | {
@@ -243,7 +239,7 @@ type TransformerCacheObject =
         defaultCacheKeys: {
           [key: string]: any;
         },
-        absoluteFilename: string
+        absoluteFilename: string,
       ) => Promise<{
         [key: string]: any;
       }>;
@@ -259,7 +255,7 @@ type TransformAllFunction = (
     data: Buffer;
     sourceFilename: string;
     absoluteFilename: string;
-  }[]
+  }[],
 ) => string | Buffer | Promise<string> | Promise<Buffer>;
 type Info =
   | Record<string, any>
@@ -286,4 +282,8 @@ type ObjectPattern = {
 type Pattern = StringPattern | ObjectPattern;
 type AdditionalOptions = {
   concurrency?: number | undefined;
+};
+type PluginOptions = {
+  patterns: Pattern[];
+  options?: AdditionalOptions | undefined;
 };

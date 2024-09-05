@@ -211,5 +211,4 @@ const labelToNames = {
   "utf-16": "UTF-16LE",
   "utf-16le": "UTF-16LE"
 };
-var _default = labelToNames;
-exports.default = _default;
+var _default = exports.default = labelToNames;

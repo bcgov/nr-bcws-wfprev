@@ -25,6 +25,14 @@ test('Piscina.isWorkerThread has the correct value (worker)', async ({ equal }) 
   equal(result, 'done');
 });
 
+test('Piscina.isWorkerThread has the correct value (worker) with named import', async ({ equal }) => {
+  const worker = new Piscina({
+    filename: resolve(__dirname, 'fixtures/simple-isworkerthread-named-import.ts')
+  });
+  const result = await worker.runTask(null);
+  equal(result, 'done');
+});
+
 test('Piscina instance is an EventEmitter', async ({ ok }) => {
   const piscina = new Piscina();
   ok(piscina instanceof EventEmitter);
@@ -120,11 +128,23 @@ test('passing valid workerData works', async ({ equal }) => {
   await pool.runTask(null);
 });
 
+test('passing valid workerData works with named import', async ({ equal }) => {
+  const pool = new Piscina({
+    filename: resolve(__dirname, 'fixtures/simple-workerdata-named-import.ts'),
+    workerData: 'ABC'
+  });
+  equal(Piscina.workerData, undefined);
+
+  await pool.runTask(null);
+});
+
 test('passing invalid workerData does not work', async ({ throws }) => {
   throws(() => new Piscina(({
     filename: resolve(__dirname, 'fixtures/simple-workerdata.ts'),
-    workerData: process.env
-  }) as any), /Cannot transfer object of unsupported type./);
+    workerData: {
+      hello () {}
+    }
+  }) as any), /could not be cloned./);
 });
 
 test('filename can be a file:// URL', async ({ equal }) => {

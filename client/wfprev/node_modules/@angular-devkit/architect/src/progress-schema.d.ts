@@ -11,6 +11,7 @@ export interface Schema {
         [key: string]: any;
     };
     total?: number;
+    [property: string]: any;
 }
 export declare enum State {
     Error = "error",

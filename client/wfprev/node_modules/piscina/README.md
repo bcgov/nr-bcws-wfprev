@@ -17,7 +17,7 @@
 
 Written in TypeScript.
 
-For Node.js 12.x and higher.
+For Node.js 16.x and higher.
 
 [MIT Licensed][].
 
@@ -52,10 +52,6 @@ module.exports = ({ a, b }) => {
 The worker may also be an async function or may return a Promise:
 
 ```js
-const { promisify } = require('util');
-
-// Awaitable timers are available in Node.js 15.x+
-// For Node.js 12 and 14, use promisify(setTimeout)
 const { setTimeout } = require('timers/promises');
 
 module.exports = async ({ a, b }) => {
@@ -133,7 +129,6 @@ an `EventEmitter`:
 'use strict';
 
 const Piscina = require('piscina');
-const { AbortController } = require('abort-controller');
 const { resolve } = require('path');
 
 const piscina = new Piscina({
@@ -152,12 +147,6 @@ const piscina = new Piscina({
   }
 })();
 ```
-
-To use `AbortController`, you will need to `npm i abort-controller`
-(or `yarn add abort-controller`).
-
-(In Node.js 15.0.0 or higher, there is a new built-in `AbortController`
-implementation that can be used here as well.)
 
 Alternatively, any `EventEmitter` that emits an `'abort'` event
 may be used as an abort controller:
@@ -252,10 +241,29 @@ stream
   });
 ```
 
+### Out of scope asynchronous code
+
+A worker thread is **only** active until the moment it returns a result, it can be a result of a synchronous call or a Promise that will be fulfilled/rejected in the future. Once this is done, Piscina will wait for stdout and stderr to be flushed, and then pause the worker's event-loop until the next call. If async code is scheduled without being awaited before returning since Piscina has no way of detecting this, that code execution will be resumed on the next call. Thus, it is highly recommended to properly handle all async tasks before returning a result as it could make your code unpredictable.
+
+For example:
+
+```js
+const { setTimeout } = require('timers/promises');
+
+module.exports = ({ a, b }) => {
+  // This promise should be awaited
+  setTimeout(1000).then(() => {
+    console.log('Working'); // This will **not** run during the same worker call
+  });
+  
+  return a + b;
+};
+```
+
 ### Additional Examples
 
 Additional examples can be found in the GitHub repo at
-https://github.com/jasnell/piscina/tree/master/examples
+https://github.com/piscinajs/piscina/tree/master/examples
 
 ## Class: `Piscina`
 
@@ -280,11 +288,9 @@ This class extends [`EventEmitter`][] from Node.js.
     function. The default is `'default'`, indicating the default export of the
     worker module.
   * `minThreads`: (`number`) Sets the minimum number of threads that are always
-    running for this thread pool. The default is based on the number of
-    available CPUs.
+    running for this thread pool. The default is the number provided by [`os.availableParallelism`](https://nodejs.org/api/os.html#osavailableparallelism).
   * `maxThreads`: (`number`) Sets the maximum number of threads that are
-    running for this thread pool. The default is based on the number of
-    available CPUs.
+    running for this thread pool. The default is the number provided by [`os.availableParallelism`](https://nodejs.org/api/os.html#osavailableparallelism) * 1.5.
   * `idleTimeout`: (`number`) A timeout in milliseconds that specifies how long
     a `Worker` is allowed to be idle, i.e. not handling any tasks, before it is
     shut down. By default, this is immediate. **Tip**: *The default `idleTimeout`
@@ -304,7 +310,10 @@ This class extends [`EventEmitter`][] from Node.js.
     handling I/O in parallel.
   * `useAtomics`: (`boolean`) Use the [`Atomics`][] API for faster communication
     between threads. This is on by default. You can disable `Atomics` globally by
-    setting the environment variable `PISCINA_DISABLE_ATOMICS` to `1`.
+    setting the environment variable `PISCINA_DISABLE_ATOMICS` to `1`. 
+    If `useAtomics` is `true`, it will cause to pause threads (stoping all execution)
+    between tasks. Ideally, threads should wait for all operations to finish before 
+    returning control to the main thread (avoid having open handles within a thread).
   * `resourceLimits`: (`object`) See [Node.js new Worker options][]
     * `maxOldGenerationSizeMb`: (`number`) The maximum size of each worker threads
       main heap in MB.
@@ -338,6 +347,10 @@ This class extends [`EventEmitter`][] from Node.js.
     `fs.close()`, and will close them automatically when the Worker exits.
     Defaults to `true`. (This option is only supported on Node.js 12.19+ and
     all Node.js versions higher than 14.6.0).
+  * `closeTimeout`: (`number`) An optional time (in milliseconds) to wait for the pool to 
+  complete all in-flight tasks when `close()` is called. The default is `30000`
+  * `recordTiming`: (`boolean`) By default, run and wait time will be recorded
+    for the pool. To disable, set to `false`.
 
 Use caution when setting resource limits. Setting limits that are too low may
 result in the `Piscina` worker threads being unusable.
@@ -402,6 +415,21 @@ Stops all Workers and rejects all `Promise`s for pending tasks.
 
 This returns a `Promise` that is fulfilled once all threads have stopped.
 
+### Method: `close([options])`
+
+* `options`:
+  * `force`: A `boolean` value that indicates whether to abort all tasks that 
+  are enqueued but not started yet. The default is `false`.
+
+Stops all Workers gracefully.
+
+This returns a `Promise` that is fulfilled once all tasks that were started 
+have completed and all threads have stopped.
+
+This method is similar to `destroy()`, but with the difference that `close()` 
+will wait for the worker tasks to finish, while `destroy()` 
+will abort them immediately.
+
 ### Event: `'error'`
 
 An `'error'` event is emitted by instances of this class when:
@@ -417,6 +445,16 @@ itself.
 ### Event: `'drain'`
 
 A `'drain'` event is emitted whenever the `queueSize` reaches `0`.
+
+### Event: `'needsDrain'`
+
+Similar to [`Piscina#needsDrain`](#property-needsdrain-readonly);
+this event is triggered once the total capacity of the pool is exceeded
+by number of tasks enqueued that are pending of execution.
+
+### Event: `'message'`
+
+A `'message'` event is emitted whenever a message is received from a worker thread.
 
 ### Property: `completed` (readonly)
 
@@ -480,6 +518,14 @@ An Array of the `Worker` instances used by this pool.
 ### Property: `queueSize` (readonly)
 
 The current number of tasks waiting to be assigned to a Worker thread.
+
+### Property: `needsDrain` (readonly)
+
+Boolean value that specifies whether the capacity of the pool has
+been exceeded by the number of tasks submitted.
+
+This property is helpful to make decisions towards creating backpressure
+over the number of tasks submitted to the pool.
 
 ### Property: `utilization` (readonly)
 
@@ -656,6 +702,57 @@ options on to the custom `TaskQueue` implementation. (Note that because the
 queue options are set as a property on the task, tasks with queue
 options cannot be submitted as JavaScript primitives).
 
+### Built-In Queues
+Piscina also provides the `FixedQueue`, a more performant task queue implementation based on [`FixedQueue`](https://github.com/nodejs/node/blob/de7b37880f5a541d5f874c1c2362a65a4be76cd0/lib/internal/fixed_queue.js) from Node.js project.  
+
+Here are some benchmarks to compare new `FixedQueue` with `ArrayTaskQueue` (current default). The benchmarks demonstrate substantial improvements in push and shift operations, especially with larger queue sizes.
+```
+Queue size = 1000
+┌─────────┬─────────────────────────────────────────┬───────────┬────────────────────┬──────────┬─────────┐
+│ (index) │ Task Name                               │ ops/sec   │ Average Time (ns)  │ Margin   │ Samples │
+├─────────┼─────────────────────────────────────────┼───────────┼────────────────────┼──────────┼─────────┤
+│ 0       │ 'ArrayTaskQueue full push + full shift' │ '9 692'   │ 103175.15463917515 │ '±0.80%' │ 970     │
+│ 1       │ 'FixedQueue  full push + full shift'    │ '131 879' │ 7582.696390658352  │ '±1.81%' │ 13188   │
+└─────────┴─────────────────────────────────────────┴───────────┴────────────────────┴──────────┴─────────┘
+
+Queue size = 100_000
+┌─────────┬─────────────────────────────────────────┬─────────┬────────────────────┬──────────┬─────────┐
+│ (index) │ Task Name                               │ ops/sec │ Average Time (ns)  │ Margin   │ Samples │
+├─────────┼─────────────────────────────────────────┼─────────┼────────────────────┼──────────┼─────────┤
+│ 0       │ 'ArrayTaskQueue full push + full shift' │ '0'     │ 1162376920.0000002 │ '±1.77%' │ 10      │
+│ 1       │ 'FixedQueue full push + full shift'     │ '1 026' │ 974328.1553396407  │ '±2.51%' │ 103     │
+└─────────┴─────────────────────────────────────────┴─────────┴────────────────────┴──────────┴─────────┘
+```
+In terms of Piscina performance itself, using `FixedQueue` with a queue size of 100,000 queued tasks can result in up to 6 times faster execution times.
+
+Users can import `FixedQueue` from the `Piscina` package and pass it as the `taskQueue` option to leverage its benefits.
+
+
+#### Using FixedQueue Example
+
+Here's an example of how to use the `FixedQueue`:
+
+```js
+const { Piscina, FixedQueue } = require('piscina');
+const { resolve } = require('path');
+
+// Create a Piscina pool with FixedQueue
+const piscina = new Piscina({
+  filename: resolve(__dirname, 'worker.js'),
+  taskQueue: new FixedQueue()
+});
+
+// Submit tasks to the pool
+for (let i = 0; i < 10; i++) {
+  piscina.runTask({ data: i }).then((result) => {
+    console.log(result);
+  }).catch((error) => {
+    console.error(error);
+  });
+}
+```
+**Note** The `FixedQueue` will become the default task queue implementation in a next major version.
+
 ## Current Limitations (Things we're working on / would love help with)
 
 * Improved Documentation
@@ -782,6 +879,24 @@ as a configuration option in lieu of always creating their own.
 
 
 ## Release Notes
+
+### 4.1.0
+
+#### Features
+
+* add `needsDrain` property ([#368](https://github.com/piscinajs/piscina/issues/368)) ([2d49b63](https://github.com/piscinajs/piscina/commit/2d49b63368116c172a52e2019648049b4d280162))
+* correctly handle process.exit calls outside of a task ([#361](https://github.com/piscinajs/piscina/issues/361)) ([8e6d16e](https://github.com/piscinajs/piscina/commit/8e6d16e1dc23f8bb39772ed954f6689852ad435f))
+
+
+#### Bug Fixes
+
+* Fix types for TypeScript 4.7 ([#239](https://github.com/piscinajs/piscina/issues/239)) ([a38fb29](https://github.com/piscinajs/piscina/commit/a38fb292e8fcc45cc20abab8668f82d908a24dc0))
+* use CJS imports ([#374](https://github.com/piscinajs/piscina/issues/374)) ([edf8dc4](https://github.com/piscinajs/piscina/commit/edf8dc4f1a19e9b49e266109cdb70d9acc86f3ca))
+
+### 4.0.0
+
+* Drop Node.js 14.x support
+* Add Node.js 20.x to CI
 
 ### 3.2.0
 

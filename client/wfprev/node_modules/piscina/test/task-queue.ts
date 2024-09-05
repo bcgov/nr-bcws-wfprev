@@ -1,7 +1,6 @@
-import Piscina from '..';
+import Piscina, { PiscinaTask, TaskQueue } from '..';
 import { test } from 'tap';
 import { resolve } from 'path';
-import { Task, TaskQueue } from '../dist/src/common';
 
 test('will put items into a task queue until they can run', async ({ equal }) => {
   const pool = new Piscina({
@@ -51,7 +50,7 @@ test('will put items into a task queue until they can run', async ({ equal }) =>
 
 test('will reject items over task queue limit', async ({ equal, rejects }) => {
   const pool = new Piscina({
-    filename: resolve(__dirname, 'fixtures/eval.ts'),
+    filename: resolve(__dirname, 'fixtures/eval.js'),
     minThreads: 0,
     maxThreads: 1,
     maxQueue: 2
@@ -78,7 +77,7 @@ test('will reject items over task queue limit', async ({ equal, rejects }) => {
 
 test('will reject items when task queue is unavailable', async ({ equal, rejects }) => {
   const pool = new Piscina({
-    filename: resolve(__dirname, 'fixtures/eval.ts'),
+    filename: resolve(__dirname, 'fixtures/eval.js'),
     minThreads: 0,
     maxThreads: 1,
     maxQueue: 0
@@ -97,7 +96,7 @@ test('will reject items when task queue is unavailable', async ({ equal, rejects
 
 test('will reject items when task queue is unavailable (fixed thread count)', async ({ equal, rejects }) => {
   const pool = new Piscina({
-    filename: resolve(__dirname, 'fixtures/eval.ts'),
+    filename: resolve(__dirname, 'fixtures/eval.js'),
     minThreads: 1,
     maxThreads: 1,
     maxQueue: 0
@@ -221,19 +220,19 @@ test('custom task queue works', async ({ equal, ok }) => {
   let pushCalled : boolean = false;
 
   class CustomTaskPool implements TaskQueue {
-    tasks: Task[] = [];
+    tasks: PiscinaTask[] = [];
 
     get size () : number {
       sizeCalled = true;
       return this.tasks.length;
     }
 
-    shift () : Task | null {
+    shift () : PiscinaTask | null {
       shiftCalled = true;
-      return this.tasks.length > 0 ? this.tasks.shift() as Task : null;
+      return this.tasks.length > 0 ? this.tasks.shift() as PiscinaTask : null;
     }
 
-    push (task : Task) : void {
+    push (task : PiscinaTask) : void {
       pushCalled = true;
       this.tasks.push(task);
 
@@ -246,7 +245,7 @@ test('custom task queue works', async ({ equal, ok }) => {
       }
     }
 
-    remove (task : Task) : void {
+    remove (task : PiscinaTask) : void {
       const index = this.tasks.indexOf(task);
       this.tasks.splice(index, 1);
     }

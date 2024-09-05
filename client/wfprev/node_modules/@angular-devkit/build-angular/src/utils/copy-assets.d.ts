@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 export declare function copyAssets(entries: {
     glob: string;
@@ -12,4 +12,7 @@ export declare function copyAssets(entries: {
     output: string;
     flatten?: boolean;
     followSymlinks?: boolean;
-}[], basePaths: Iterable<string>, root: string, changed?: Set<string>): Promise<void>;
+}[], basePaths: Iterable<string>, root: string, changed?: Set<string>): Promise<{
+    source: string;
+    destination: string;
+}[]>;

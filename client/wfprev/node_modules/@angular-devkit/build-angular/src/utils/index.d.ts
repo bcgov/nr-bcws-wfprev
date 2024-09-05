@@ -3,10 +3,10 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 export * from './default-progress';
-export * from './delete-output-dir';
+export { deleteOutputDir, loadProxyConfiguration } from '@angular/build/private';
 export * from './run-module-as-observable-fork';
 export * from './normalize-file-replacements';
 export * from './normalize-asset-patterns';

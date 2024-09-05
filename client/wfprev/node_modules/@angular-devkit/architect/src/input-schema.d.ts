@@ -9,9 +9,11 @@ export interface Schema {
     };
     target?: Target;
     workspaceRoot: string;
+    [property: string]: any;
 }
 export interface Target {
     configuration?: string;
     project: string;
     target: string;
+    [property: string]: any;
 }

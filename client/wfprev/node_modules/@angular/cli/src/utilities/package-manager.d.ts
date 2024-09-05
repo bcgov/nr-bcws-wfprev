@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 import { PackageManager } from '../../lib/config/workspace-schema';
 import { AngularWorkspace } from './config';
@@ -19,10 +19,6 @@ export declare class PackageManagerUtils {
     get name(): PackageManager;
     /** Get the package manager version. */
     get version(): string | undefined;
-    /**
-     * Checks if the package manager is supported. If not, display a warning.
-     */
-    ensureCompatibility(): void;
     /** Install a single package. */
     install(packageName: string, save?: 'dependencies' | 'devDependencies' | true, extraArgs?: string[], cwd?: string): Promise<boolean>;
     /** Install all packages. */

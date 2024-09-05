@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 import { Argv } from 'yargs';
 import { CommandModule, CommandScope, Options } from '../../command-builder/command-module';
@@ -19,9 +19,10 @@ interface UpdateCommandArgs {
     verbose: boolean;
     'create-commits': boolean;
 }
-export declare class UpdateCommandModule extends CommandModule<UpdateCommandArgs> {
+export default class UpdateCommandModule extends CommandModule<UpdateCommandArgs> {
     scope: CommandScope;
     protected shouldReportAnalytics: boolean;
+    private readonly resolvePaths;
     command: string;
     describe: string;
     longDescriptionPath: string;
@@ -52,5 +53,6 @@ export declare class UpdateCommandModule extends CommandModule<UpdateCommandArgs
     private getCLIUpdateRunnerVersion;
     private runTempBinary;
     private packageManagerForce;
+    private getOptionalMigrationsToRun;
 }
 export {};

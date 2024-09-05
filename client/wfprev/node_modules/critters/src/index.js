@@ -14,19 +14,19 @@
  * the License.
  */
 
-import path from 'path';
 import { readFile } from 'fs';
-import prettyBytes from 'pretty-bytes';
 import { createDocument, serializeDocument } from './dom';
+import path from 'path';
 import {
+  applyMarkedSelectors,
+  markOnly,
   parseStylesheet,
   serializeStylesheet,
+  validateMediaQuery,
   walkStyleRules,
-  walkStyleRulesWithReverseMirror,
-  markOnly,
-  applyMarkedSelectors
+  walkStyleRulesWithReverseMirror
 } from './css';
-import { createLogger } from './util';
+import { createLogger, isSubpath } from './util';
 
 /**
  * The mechanism to use for lazy-loading stylesheets.
@@ -122,7 +122,8 @@ export default class Critters {
         publicPath: '',
         reduceInlineStyles: true,
         pruneSource: false,
-        additionalStylesheets: []
+        additionalStylesheets: [],
+        allowRules: []
       },
       options || {}
     );
@@ -239,7 +240,7 @@ export default class Critters {
     // path on disk (with output.publicPath removed)
     let normalizedPath = href.replace(/^\//, '');
     const pathPrefix = (publicPath || '').replace(/(^\/|\/$)/g, '') + '/';
-    if (normalizedPath.indexOf(pathPrefix) === 0) {
+    if (normalizedPath.startsWith(pathPrefix)) {
       normalizedPath = normalizedPath
         .substring(pathPrefix.length)
         .replace(/^\//, '');
@@ -251,6 +252,10 @@ export default class Critters {
     }
 
     const filename = path.resolve(outputPath, normalizedPath);
+    // Check if the resolved path is valid
+    if (!isSubpath(outputPath, filename)) {
+      return undefined;
+    }
 
     let sheet;
 
@@ -310,13 +315,17 @@ export default class Critters {
    */
   async embedLinkedStylesheet(link, document) {
     const href = link.getAttribute('href');
-    const media = link.getAttribute('media');
+    let media = link.getAttribute('media');
+
+    if (media && !validateMediaQuery(media)) {
+      media = undefined;
+    }
 
     const preloadMode = this.options.preload;
 
     // skip filtered resources, or network resources if no filter is provided
-    if (this.urlFilter ? this.urlFilter(href) : !(href || '').match(/\.css$/)) {
-      return Promise.resolve();
+    if (this.urlFilter ? this.urlFilter(href) : !href?.endsWith('.css')) {
+      return undefined;
     }
 
     // the reduced critical CSS gets injected into a new <style> tag
@@ -352,27 +361,26 @@ export default class Critters {
     if (preloadMode === false) return;
 
     let noscriptFallback = false;
+    let updateLinkToPreload = false;
+    const noscriptLink = link.cloneNode(false);
 
     if (preloadMode === 'body') {
       document.body.appendChild(link);
     } else {
-      link.setAttribute('rel', 'preload');
-      link.setAttribute('as', 'style');
       if (preloadMode === 'js' || preloadMode === 'js-lazy') {
         const script = document.createElement('script');
-        const js = `${cssLoaderPreamble}$loadcss(${JSON.stringify(href)}${
-          lazy ? ',' + JSON.stringify(media || 'all') : ''
-        })`;
+        script.setAttribute('data-href', href);
+        script.setAttribute('data-media', media || 'all');
+        const js = `${cssLoaderPreamble}$loadcss(document.currentScript.dataset.href,document.currentScript.dataset.media)`;
         // script.appendChild(document.createTextNode(js));
         script.textContent = js;
         link.parentNode.insertBefore(script, link.nextSibling);
         style.$$links.push(script);
         cssLoaderPreamble = '';
         noscriptFallback = true;
+        updateLinkToPreload = true;
       } else if (preloadMode === 'media') {
         // @see https://github.com/filamentgroup/loadCSS/blob/af1106cfe0bf70147e22185afa7ead96c01dec48/src/loadCSS.js#L26
-        link.setAttribute('rel', 'stylesheet');
-        link.removeAttribute('as');
         link.setAttribute('media', 'print');
         link.setAttribute('onload', `this.media='${media || 'all'}'`);
         noscriptFallback = true;
@@ -386,24 +394,34 @@ export default class Critters {
         link.setAttribute('onload', "this.rel='stylesheet'");
         noscriptFallback = true;
       } else {
-        const bodyLink = document.createElement('link');
-        bodyLink.setAttribute('rel', 'stylesheet');
-        if (media) bodyLink.setAttribute('media', media);
-        bodyLink.setAttribute('href', href);
+        const bodyLink = link.cloneNode(false);
+
+        // If an ID is present, remove it to avoid collisions.
+        bodyLink.removeAttribute('id');
+
         document.body.appendChild(bodyLink);
-        style.$$links.push(bodyLink);
+        updateLinkToPreload = true;
       }
     }
 
-    if (this.options.noscriptFallback !== false && noscriptFallback) {
+    if (
+      this.options.noscriptFallback !== false &&
+      noscriptFallback &&
+      // Don't parse the URL if it contains </noscript> as it might cause unexpected behavior
+      !href.includes('</noscript>')
+    ) {
       const noscript = document.createElement('noscript');
-      const noscriptLink = document.createElement('link');
-      noscriptLink.setAttribute('rel', 'stylesheet');
-      noscriptLink.setAttribute('href', href);
-      if (media) noscriptLink.setAttribute('media', media);
+      // If an ID is present, remove it to avoid collisions.
+      noscriptLink.removeAttribute('id');
       noscript.appendChild(noscriptLink);
       link.parentNode.insertBefore(noscript, link.nextSibling);
       style.$$links.push(noscript);
+    }
+
+    if (updateLinkToPreload) {
+      // Switch the current link tag to preload
+      link.setAttribute('rel', 'preload');
+      link.setAttribute('as', 'style');
     }
   }
 
@@ -441,7 +459,7 @@ export default class Critters {
 
     const name = style.$$name ? style.$$name.replace(/^\//, '') : 'inline CSS';
     const options = this.options;
-    // const document = style.ownerDocument;
+    const crittersContainer = document.crittersContainer;
     let keyframesMode = options.keyframes || 'critical';
     // we also accept a boolean value for options.keyframes
     if (keyframesMode === true) keyframesMode = 'all';
@@ -463,29 +481,105 @@ export default class Critters {
 
     const failedSelectors = [];
 
-    const criticalKeyframeNames = [];
+    const criticalKeyframeNames = new Set();
+
+    let includeNext = false;
+    let includeAll = false;
+    let excludeNext = false;
+    let excludeAll = false;
+
+    const shouldPreloadFonts =
+      options.fonts === true || options.preloadFonts === true;
+    const shouldInlineFonts =
+      options.fonts !== false && options.inlineFonts === true;
 
     // Walk all CSS rules, marking unused rules with `.$$remove=true` for removal in the second pass.
     // This first pass is also used to collect font and keyframe usage used in the second pass.
     walkStyleRules(
       ast,
       markOnly((rule) => {
+        if (rule.type === 'comment') {
+          // we might want to remove a leading ! on comment blocks
+          // critters can be part of "legal comments" which aren't striped on build
+          const crittersComment = rule.text.match(/^(?<!\! )critters:(.*)/);
+          const command = crittersComment && crittersComment[1];
+
+          if (command) {
+            switch (command) {
+              case 'include':
+                includeNext = true;
+                break;
+              case 'exclude':
+                excludeNext = true;
+                break;
+              case 'include start':
+                includeAll = true;
+                break;
+              case 'include end':
+                includeAll = false;
+                break;
+              case 'exclude start':
+                excludeAll = true;
+                break;
+              case 'exclude end':
+                excludeAll = false;
+                break;
+            }
+          }
+        }
+
         if (rule.type === 'rule') {
+          // Handle comment based markers
+          if (includeNext) {
+            includeNext = false;
+            return true;
+          }
+
+          if (excludeNext) {
+            excludeNext = false;
+            return false;
+          }
+
+          if (includeAll) {
+            return true;
+          }
+
+          if (excludeAll) {
+            return false;
+          }
+
           // Filter the selector list down to only those match
           rule.filterSelectors((sel) => {
+            // Validate rule with 'allowRules' option
+            const isAllowedRule = options.allowRules.some((exp) => {
+              if (exp instanceof RegExp) {
+                return exp.test(sel);
+              }
+              return exp === sel;
+            });
+            if (isAllowedRule) return true;
+
             // Strip pseudo-elements and pseudo-classes, since we only care that their associated elements exist.
             // This means any selector for a pseudo-element or having a pseudo-class will be inlined if the rest of the selector matches.
-            if (sel === ':root' || sel.match(/^::?(before|after)$/)) {
+            if (
+              sel === ':root' ||
+              sel === 'html' ||
+              sel === 'body' ||
+              /^::?(before|after)$/.test(sel)
+            ) {
               return true;
             }
             sel = sel
               .replace(/(?<!\\)::?[a-z-]+(?![a-z-(])/gi, '')
               .replace(/::?not\(\s*\)/g, '')
+              // Remove tailing or leading commas from cleaned sub selector `is(.active, :hover)` -> `is(.active)`.
+              .replace(/\(\s*,/g, '(')
+              .replace(/,\s*\)/g, ')')
               .trim();
             if (!sel) return false;
 
             try {
-              return document.querySelector(sel) != null;
+              return crittersContainer.exists(sel);
             } catch (e) {
               failedSelectors.push(sel + ' -> ' + e.message);
               return false;
@@ -498,21 +592,22 @@ export default class Critters {
           }
 
           if (rule.nodes) {
-            for (let i = 0; i < rule.nodes.length; i++) {
-              const decl = rule.nodes[i];
-
+            for (const decl of rule.nodes) {
               // detect used fonts
-              if (decl.prop && decl.prop.match(/\bfont(-family)?\b/i)) {
+              if (
+                shouldInlineFonts &&
+                decl.prop &&
+                /\bfont(-family)?\b/i.test(decl.prop)
+              ) {
                 criticalFonts += ' ' + decl.value;
               }
 
               // detect used keyframes
               if (decl.prop === 'animation' || decl.prop === 'animation-name') {
-                // @todo: parse animation declarations and extract only the name. for now we'll do a lazy match.
-                const names = decl.value.split(/\s+/);
-                for (let j = 0; j < names.length; j++) {
-                  const name = names[j].trim();
-                  if (name) criticalKeyframeNames.push(name);
+                for (const name of decl.value.split(/\s+/)) {
+                  // @todo: parse animation declarations and extract only the name. for now we'll do a lazy match.
+                  const nameTrimmed = name.trim();
+                  if (nameTrimmed) criticalKeyframeNames.add(nameTrimmed);
                 }
               }
             }
@@ -523,7 +618,7 @@ export default class Critters {
         if (rule.type === 'atrule' && rule.name === 'font-face') return;
 
         // If there are no remaining rules, remove the whole rule:
-        const rules = rule.nodes && rule.nodes.filter((rule) => !rule.$$remove);
+        const rules = rule.nodes?.filter((rule) => !rule.$$remove);
         return !rules || rules.length !== 0;
       })
     );
@@ -538,12 +633,7 @@ export default class Critters {
       );
     }
 
-    const shouldPreloadFonts =
-      options.fonts === true || options.preloadFonts === true;
-    const shouldInlineFonts =
-      options.fonts !== false && options.inlineFonts === true;
-
-    const preloadedFonts = [];
+    const preloadedFonts = new Set();
     // Second pass, using data picked up from the first
     walkStyleRulesWithReverseMirror(ast, astInverse, (rule) => {
       // remove any rules marked in the first pass
@@ -555,14 +645,13 @@ export default class Critters {
       if (rule.type === 'atrule' && rule.name === 'keyframes') {
         if (keyframesMode === 'none') return false;
         if (keyframesMode === 'all') return true;
-        return criticalKeyframeNames.indexOf(rule.params) !== -1;
+        return criticalKeyframeNames.has(rule.params);
       }
 
       // prune @font-face rules
       if (rule.type === 'atrule' && rule.name === 'font-face') {
         let family, src;
-        for (let i = 0; i < rule.nodes.length; i++) {
-          const decl = rule.nodes[i];
+        for (const decl of rule.nodes) {
           if (decl.prop === 'src') {
             // @todo parse this properly and generate multiple preloads with type="font/woff2" etc
             src = (decl.value.match(/url\s*\(\s*(['"]?)(.+?)\1\s*\)/) || [])[2];
@@ -571,8 +660,8 @@ export default class Critters {
           }
         }
 
-        if (src && shouldPreloadFonts && preloadedFonts.indexOf(src) === -1) {
-          preloadedFonts.push(src);
+        if (src && shouldPreloadFonts && !preloadedFonts.has(src)) {
+          preloadedFonts.add(src);
           const preload = document.createElement('link');
           preload.setAttribute('rel', 'preload');
           preload.setAttribute('as', 'font');
@@ -583,10 +672,10 @@ export default class Critters {
 
         // if we're missing info, if the font is unused, or if critical font inlining is disabled, remove the rule:
         if (
+          !shouldInlineFonts ||
           !family ||
           !src ||
-          criticalFonts.indexOf(family) === -1 ||
-          !shouldInlineFonts
+          !criticalFonts.includes(family)
         ) {
           return false;
         }
@@ -618,7 +707,7 @@ export default class Critters {
         const percent = (sheetInverse.length / before.length) * 100;
         afterText = `, reducing non-inlined size ${
           percent | 0
-        }% to ${prettyBytes(sheetInverse.length)}`;
+        }% to ${formatSize(sheetInverse.length)}`;
       }
     }
 
@@ -631,15 +720,29 @@ export default class Critters {
     const percent = ((sheet.length / before.length) * 100) | 0;
     this.logger.info(
       '\u001b[32mInlined ' +
-        prettyBytes(sheet.length) +
+        formatSize(sheet.length) +
         ' (' +
         percent +
         '% of original ' +
-        prettyBytes(before.length) +
+        formatSize(before.length) +
         ') of ' +
         name +
         afterText +
         '.\u001b[39m'
     );
   }
+}
+
+function formatSize(size) {
+  if (size <= 0) {
+    return '0 bytes';
+  }
+
+  const abbreviations = ['bytes', 'kB', 'MB', 'GB'];
+  const index = Math.floor(Math.log(size) / Math.log(1024));
+  const roundedSize = size / Math.pow(1024, index);
+  // bytes don't have a fraction
+  const fractionDigits = index === 0 ? 0 : 2;
+
+  return `${roundedSize.toFixed(fractionDigits)} ${abbreviations[index]}`;
 }

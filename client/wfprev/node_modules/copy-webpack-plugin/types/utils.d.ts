@@ -10,7 +10,7 @@ export type Task<T> = () => Promise<T>;
  */
 export function stat(
   inputFileSystem: InputFileSystem,
-  path: string
+  path: string,
 ): Promise<undefined | Stats>;
 /**
  * @param {InputFileSystem} inputFileSystem
@@ -19,17 +19,23 @@ export function stat(
  */
 export function readFile(
   inputFileSystem: InputFileSystem,
-  path: string
+  path: string,
 ): Promise<string | Buffer>;
 /**
  * @template T
  * @typedef {() => Promise<T>} Task
  */
 /**
- * Run tasks with limited concurency.
+ * Run tasks with limited concurrency.
  * @template T
  * @param {number} limit - Limit of tasks that run at once.
  * @param {Task<T>[]} tasks - List of tasks to run.
  * @returns {Promise<T[]>} A promise that fulfills to an array of the results
  */
 export function throttleAll<T>(limit: number, tasks: Task<T>[]): Promise<T[]>;
+/**
+ * @template T
+ * @param fn {(function(): any) | undefined}
+ * @returns {function(): T}
+ */
+export function memoize<T>(fn: (() => any) | undefined): () => T;

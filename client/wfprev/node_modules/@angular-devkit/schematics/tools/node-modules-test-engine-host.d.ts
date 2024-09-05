@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 import { TaskConfiguration } from '../src/engine';
 import { FileSystemSchematicContext } from './description';
@@ -13,8 +13,7 @@ import { NodeModulesEngineHost } from './node-module-engine-host';
  * revert back to using node modules resolution. This is done for testing.
  */
 export declare class NodeModulesTestEngineHost extends NodeModulesEngineHost {
-    private _collections;
-    private _tasks;
+    #private;
     get tasks(): TaskConfiguration<{}>[];
     clearTasks(): void;
     registerCollection(name: string, path: string): void;

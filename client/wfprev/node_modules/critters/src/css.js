@@ -15,6 +15,7 @@
  */
 
 import { parse, stringify } from 'postcss';
+import mediaParser from 'postcss-media-query-parser';
 
 /**
  * Parse a textual CSS Stylesheet into a Stylesheet instance.
@@ -39,6 +40,10 @@ export function serializeStylesheet(ast, options) {
   let cssStr = '';
 
   stringify(ast, (result, node, type) => {
+    if (node?.type === 'decl' && node.value.includes('</style>')) {
+      return;
+    }
+
     if (!options.compress) {
       cssStr += result;
       return;
@@ -154,11 +159,10 @@ export function walkStyleRulesWithReverseMirror(node, node2, iterator) {
 // @keyframes are an exception since they are evaluated as a whole
 function hasNestedRules(rule) {
   return (
-    rule.nodes &&
-    rule.nodes.length &&
-    rule.nodes.some((n) => n.type === 'rule' || n.type === 'atrule') &&
+    rule.nodes?.length &&
     rule.name !== 'keyframes' &&
-    rule.name !== '-webkit-keyframes'
+    rule.name !== '-webkit-keyframes' &&
+    rule.nodes.some((n) => n.type === 'rule' || n.type === 'atrule')
   );
 }
 
@@ -190,4 +194,64 @@ function filterSelectors(predicate) {
   } else {
     this.selectors = this.selectors.filter(predicate);
   }
+}
+
+const MEDIA_TYPES = new Set(['all', 'print', 'screen', 'speech']);
+const MEDIA_KEYWORDS = new Set(['and', 'not', ',']);
+const MEDIA_FEATURES = new Set(
+  [
+    'width',
+    'aspect-ratio',
+    'color',
+    'color-index',
+    'grid',
+    'height',
+    'monochrome',
+    'orientation',
+    'resolution',
+    'scan'
+  ].flatMap((feature) => [feature, `min-${feature}`, `max-${feature}`])
+);
+
+function validateMediaType(node) {
+  const { type: nodeType, value: nodeValue } = node;
+  if (nodeType === 'media-type') {
+    return MEDIA_TYPES.has(nodeValue);
+  } else if (nodeType === 'keyword') {
+    return MEDIA_KEYWORDS.has(nodeValue);
+  } else if (nodeType === 'media-feature') {
+    return MEDIA_FEATURES.has(nodeValue);
+  }
+}
+
+/**
+ *
+ * @param {string} Media query to validate
+ * @returns {boolean}
+ *
+ * This function performs a basic media query validation
+ * to ensure the values passed as part of the 'media' config
+ * is HTML safe and does not cause any injection issue
+ */
+export function validateMediaQuery(query) {
+  // The below is needed for consumption with webpack.
+  const mediaParserFn = 'default' in mediaParser ? mediaParser.default : mediaParser;
+  const mediaTree = mediaParserFn(query);
+  const nodeTypes = new Set(['media-type', 'keyword', 'media-feature']);
+
+  const stack = [mediaTree];
+
+  while (stack.length > 0) {
+    const node = stack.pop();
+
+    if (nodeTypes.has(node.type) && !validateMediaType(node)) {
+      return false;
+    }
+
+    if (node.nodes) {
+      stack.push(...node.nodes);
+    }
+  }
+
+  return true;
 }

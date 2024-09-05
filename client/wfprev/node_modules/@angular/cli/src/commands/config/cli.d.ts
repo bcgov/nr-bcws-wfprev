@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 import { Argv } from 'yargs';
 import { CommandModule, CommandModuleImplementation, Options } from '../../command-builder/command-module';
@@ -12,7 +12,7 @@ interface ConfigCommandArgs {
     value?: string;
     global?: boolean;
 }
-export declare class ConfigCommandModule extends CommandModule<ConfigCommandArgs> implements CommandModuleImplementation<ConfigCommandArgs> {
+export default class ConfigCommandModule extends CommandModule<ConfigCommandArgs> implements CommandModuleImplementation<ConfigCommandArgs> {
     command: string;
     describe: string;
     longDescriptionPath: string;

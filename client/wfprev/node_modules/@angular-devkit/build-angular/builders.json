@@ -1,6 +1,7 @@
 {
   "$schema": "../architect/src/builders-schema.json",
   "builders": {
+    "application": "@angular/build:application",
     "app-shell": {
       "implementation": "./src/builders/app-shell",
       "schema": "./src/builders/app-shell/schema.json",
@@ -26,10 +27,20 @@
       "schema": "./src/builders/extract-i18n/schema.json",
       "description": "Extract i18n strings from a browser application."
     },
+    "jest": {
+      "implementation": "./src/builders/jest",
+      "schema": "./src/builders/jest/schema.json",
+      "description": "Run unit tests using Jest."
+    },
     "karma": {
       "implementation": "./src/builders/karma",
       "schema": "./src/builders/karma/schema.json",
       "description": "Run Karma unit tests."
+    },
+    "web-test-runner": {
+      "implementation": "./src/builders/web-test-runner",
+      "schema": "./src/builders/web-test-runner/schema.json",
+      "description": "Run unit tests with Web Test Runner."
     },
     "protractor": {
       "implementation": "./src/builders/protractor",
@@ -45,6 +56,16 @@
       "implementation": "./src/builders/ng-packagr",
       "schema": "./src/builders/ng-packagr/schema.json",
       "description": "Build a library with ng-packagr."
+    },
+    "ssr-dev-server": {
+      "implementation": "./src/builders/ssr-dev-server",
+      "schema": "./src/builders/ssr-dev-server/schema.json",
+      "description": "Serve a universal application."
+    },
+    "prerender": {
+      "implementation": "./src/builders/prerender",
+      "schema": "./src/builders/prerender/schema.json",
+      "description": "Perform build-time prerendering of chosen routes."
     }
   }
 }

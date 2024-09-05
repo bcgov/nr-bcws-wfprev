@@ -15,6 +15,7 @@ import sys
 import traceback
 from gyp.common import GypError
 
+
 # Default debug modes for GYP
 debug = {}
 
@@ -102,6 +103,20 @@ def Load(
     generator = __import__(generator_name, globals(), locals(), generator_name)
     for (key, val) in generator.generator_default_variables.items():
         default_variables.setdefault(key, val)
+
+    output_dir = params["options"].generator_output or params["options"].toplevel_dir
+    if default_variables["GENERATOR"] == "ninja":
+        default_variables.setdefault(
+            "PRODUCT_DIR_ABS",
+            os.path.join(
+                output_dir, "out", default_variables.get("build_type", "default")
+            ),
+        )
+    else:
+        default_variables.setdefault(
+            "PRODUCT_DIR_ABS",
+            os.path.join(output_dir, default_variables["CONFIGURATION_NAME"]),
+        )
 
     # Give the generator the opportunity to set additional variables based on
     # the params it will receive in the output phase.
@@ -451,8 +466,19 @@ def gyp_main(args):
         metavar="TARGET",
         help="include only TARGET and its deep dependencies",
     )
+    parser.add_argument(
+        "-V",
+        "--version",
+        dest="version",
+        action="store_true",
+        help="Show the version and exit.",
+    )
 
     options, build_files_arg = parser.parse_args(args)
+    if options.version:
+        import pkg_resources
+        print(f"v{pkg_resources.get_distribution('gyp-next').version}")
+        return 0
     build_files = build_files_arg
 
     # Set up the configuration directory (defaults to ~/.gyp)
@@ -598,7 +624,7 @@ def gyp_main(args):
     if options.generator_flags:
         gen_flags += options.generator_flags
     generator_flags = NameValueListToDict(gen_flags)
-    if DEBUG_GENERAL in gyp.debug.keys():
+    if DEBUG_GENERAL in gyp.debug:
         DebugOutput(DEBUG_GENERAL, "generator_flags: %s", generator_flags)
 
     # Generate all requested formats (use a set in case we got one format request

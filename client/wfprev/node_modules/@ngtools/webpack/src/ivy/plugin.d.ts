@@ -3,10 +3,11 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 import type { CompilerOptions } from '@angular/compiler-cli';
 import type { Compiler } from 'webpack';
+export declare const imageDomains: Set<string>;
 export interface AngularWebpackPluginOptions {
     tsconfig: string;
     compilerOptions?: CompilerOptions;
@@ -15,13 +16,13 @@ export interface AngularWebpackPluginOptions {
     directTemplateLoading: boolean;
     emitClassMetadata: boolean;
     emitNgModuleScope: boolean;
+    emitSetClassDebugInfo?: boolean;
     jitMode: boolean;
     inlineStyleFileExtension?: string;
 }
 export declare class AngularWebpackPlugin {
     private readonly pluginOptions;
     private compilerCliModule?;
-    private compilerNgccModule?;
     private watchMode?;
     private ngtscNextProgram?;
     private builder?;

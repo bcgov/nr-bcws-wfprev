@@ -1,16 +1,22 @@
-import { parentPort, MessagePort, receiveMessageOnPort, workerData } from 'worker_threads';
-import { pathToFileURL } from 'url';
-import {
-  commonState,
+import { parentPort, MessagePort, receiveMessageOnPort, workerData } from 'node:worker_threads';
+import { pathToFileURL } from 'node:url';
+
+import type {
   ReadyMessage,
   RequestMessage,
   ResponseMessage,
-  StartupMessage,
+  StartupMessage
+} from './types';
+import {
   kResponseCountField,
   kRequestCountField,
-  isMovable,
   kTransferable,
   kValue
+} from './symbols';
+import {
+  READY,
+  commonState,
+  isMovable
 } from './common';
 
 commonState.isWorkerThread = true;
@@ -73,7 +79,7 @@ async function getHandler (filename : string, name : string) : Promise<Function 
 // us the MessagePort used for receiving tasks, a SharedArrayBuffer for fast
 // communication using Atomics, and the name of the default filename for tasks
 // (so we can pre-load and cache the handler).
-parentPort!.on('message', (message : StartupMessage) => {
+parentPort!.on('message', (message: StartupMessage) => {
   useAtomics = process.env.PISCINA_DISABLE_ATOMICS === '1' ? false : message.useAtomics;
   const { port, sharedBuffer, filename, name, niceIncrement } = message;
   (async function () {
@@ -89,7 +95,7 @@ parentPort!.on('message', (message : StartupMessage) => {
       await getHandler(filename, name);
     }
 
-    const readyMessage : ReadyMessage = { ready: true };
+    const readyMessage : ReadyMessage = { [READY]: true };
     parentPort!.postMessage(readyMessage);
 
     port.on('message', onMessage.bind(null, port, sharedBuffer));
@@ -171,7 +177,7 @@ function onMessage (
         result: null,
         // It may be worth taking a look at the error cloning algorithm we
         // use in Node.js core here, it's quite a bit more flexible
-        error
+        error: <Error>error
       };
     }
     currentTasks--;

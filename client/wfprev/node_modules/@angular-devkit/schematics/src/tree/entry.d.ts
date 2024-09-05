@@ -3,9 +3,8 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
-/// <reference types="node" />
 import { Path } from '@angular-devkit/core';
 import { FileEntry } from './interface';
 export declare class SimpleFileEntry implements FileEntry {

@@ -7,10 +7,9 @@
 
 [![npm][npm]][npm-url]
 [![node][node]][node-url]
-[![deps][deps]][deps-url]
 [![tests][tests]][tests-url]
 [![cover][cover]][cover-url]
-[![chat][chat]][chat-url]
+[![discussion][discussion]][discussion-url]
 [![size][size]][size-url]
 
 # copy-webpack-plugin
@@ -56,11 +55,17 @@ module.exports = {
 };
 ```
 
-> ℹ️ `copy-webpack-plugin` is not designed to copy files generated from the build process; rather, it is to copy files that already exist in the source tree, as part of the build process.
+> **Note**
+>
+> `copy-webpack-plugin` is not designed to copy files generated from the build process; rather, it is to copy files that already exist in the source tree, as part of the build process.
 
-> ℹ️ If you want `webpack-dev-server` to write files to the output directory during development, you can force it with the [`writeToDisk`](https://github.com/webpack/webpack-dev-middleware#writetodisk) option or the [`write-file-webpack-plugin`](https://github.com/gajus/write-file-webpack-plugin).
+> **Note**
+>
+> If you want `webpack-dev-server` to write files to the output directory during development, you can force it with the [`writeToDisk`](https://github.com/webpack/webpack-dev-middleware#writetodisk) option or the [`write-file-webpack-plugin`](https://github.com/gajus/write-file-webpack-plugin).
 
-> ℹ️ You can get the original source filename from [Asset Objects](https://webpack.js.org/api/stats/#asset-objects).
+> **Note**
+>
+> You can get the original source filename from [Asset Objects](https://webpack.js.org/api/stats/#asset-objects).
 
 ## Options
 
@@ -118,7 +123,9 @@ Glob or path from where we copy files.
 Globs accept [fast-glob pattern-syntax](https://github.com/mrmlnc/fast-glob#pattern-syntax).
 Glob can only be a `string`.
 
-> ⚠️ Don't use directly `\\` in `from` option if it is a `glob` (i.e `path\to\file.ext`) option because on UNIX the backslash is a valid character inside a path component, i.e., it's not a separator.
+> **Warning**
+>
+> Don't use directly `\\` in `from` option if it is a `glob` (i.e `path\to\file.ext`) option because on UNIX the backslash is a valid character inside a path component, i.e., it's not a separator.
 > On Windows, the forward slash and the backward slash are both separators.
 > Instead please use `/`.
 
@@ -140,7 +147,7 @@ module.exports = {
         // If absolute path is a `glob` we replace backslashes with forward slashes, because only forward slashes can be used in the `glob`
         path.posix.join(
           path.resolve(__dirname, "src").replace(/\\/g, "/"),
-          "*.txt"
+          "*.txt",
         ),
       ],
     }),
@@ -178,7 +185,7 @@ module.exports = {
           // If absolute path is a `glob` we replace backslashes with forward slashes, because only forward slashes can be used in the `glob`
           from: path.posix.join(
             path.resolve(__dirname, "fixtures").replace(/\\/g, "/"),
-            "*.txt"
+            "*.txt",
           ),
         },
       ],
@@ -206,7 +213,9 @@ Default: `compiler.options.output`
 
 Output path.
 
-> ⚠️ Don't use directly `\\` in `to` (i.e `path\to\dest`) option because on UNIX the backslash is a valid character inside a path component, i.e., it's not a separator.
+> **Warning**
+>
+> Don't use directly `\\` in `to` (i.e `path\to\dest`) option because on UNIX the backslash is a valid character inside a path component, i.e., it's not a separator.
 > On Windows, the forward slash and the backward slash are both separators.
 > Instead please use `/` or `path` methods.
 
@@ -239,7 +248,9 @@ module.exports = {
 
 Allows to modify the writing path.
 
-> ⚠️ Don't return directly `\\` in `to` (i.e `path\to\newFile`) option because on UNIX the backslash is a valid character inside a path component, i.e., it's not a separator.
+> **Warning**
+>
+> Don't return directly `\\` in `to` (i.e `path\to\newFile`) option because on UNIX the backslash is a valid character inside a path component, i.e., it's not a separator.
 > On Windows, the forward slash and the backward slash are both separators.
 > Instead please use `/` or `path` methods.
 
@@ -291,9 +302,11 @@ type context = string;
 
 Default: `options.context|compiler.options.context`
 
-A path that determines how to interpret the `from` path.
+A path to be (1) prepended to `from` and (2) removed from the start of the result path(s).
 
-> ⚠️ Don't use directly `\\` in `context` (i.e `path\to\context`) option because on UNIX the backslash is a valid character inside a path component, i.e., it's not a separator.
+> **Warning**
+>
+> Don't use directly `\\` in `context` (i.e `path\to\context`) option because on UNIX the backslash is a valid character inside a path component, i.e., it's not a separator.
 > On Windows, the forward slash and the backward slash are both separators.
 > Instead please use `/` or `path` methods.
 
@@ -315,17 +328,15 @@ module.exports = {
 };
 ```
 
-The `context` option can be an absolute or relative path. If `context` is a relative, then it is converted to absolute based to `compiler.options.context`
+`context` can be an absolute path or a relative path. If it is a relative path, then it will be converted to an absolute path based on `compiler.options.context`.
 
-To determine the structure from which the found resources will be copied to the destination folder, the `context` option is used.
+`context` should be explicitly set only when `from` contains a glob. Otherwise, `context` is automatically set, based on whether `from` is a file or a directory:
 
-If `from` is a file, then `context` is equal to the directory in which this file is located. Accordingly, the result will be only the file name.
+If `from` is a file, then `context` is its directory. The result path will be the filename alone.
 
-If `from` is a directory, then `context` is the same as `from` and is equal to the directory itself. In this case, the result will be a hierarchical structure of the found folders and files relative to the specified directory.
+If `from` is a directory, then `context` equals `from`. The result paths will be the paths of the directory's contents (including nested contents), relative to the directory.
 
-If `from` is a glob, then regardless of the `context` option, the result will be the structure specified in the `from` option
-
-More [`examples`](#examples)
+The use of `context` is illustrated by these [`examples`](#examples).
 
 #### `globOptions`
 
@@ -371,7 +382,9 @@ type filter = (filepath: string) => boolean;
 
 Default: `undefined`
 
-> ℹ️ To ignore files by path please use the [`globOptions.ignore`](#globoptions) option.
+> **Note**
+>
+> To ignore files by path please use the [`globOptions.ignore`](#globoptions) option.
 
 **webpack.config.js**
 
@@ -673,7 +686,7 @@ type cache =
         defaultCacheKeys: {
           [key: string]: any;
         },
-        absoluteFilename: string
+        absoluteFilename: string,
       ) => Promise<{
         [key: string]: any;
       }>;
@@ -717,7 +730,7 @@ module.exports = {
 
 ##### `object`
 
-Enables `transform` caching and setup cache directory and invalidation keys.
+Enables `transform` caching and setup invalidation keys.
 
 **webpack.config.js**
 
@@ -734,7 +747,6 @@ module.exports = {
               return optimize(content);
             },
             cache: {
-              directory: path.resolve(__dirname, "cache-directory"),
               keys: {
                 // May be useful for invalidating cache based on external values
                 // For example, you can invalid cache based on `process.version` - { node: process.version }
@@ -768,7 +780,6 @@ module.exports = {
               return optimize(content);
             },
             cache: {
-              directory: path.resolve(__dirname, "cache-directory"),
               keys: (defaultCacheKeys, absoluteFrom) => {
                 const keys = getCustomCacheInvalidationKeysSync();
 
@@ -803,7 +814,6 @@ module.exports = {
               return optimize(content);
             },
             cache: {
-              directory: path.resolve(__dirname, "cache-directory"),
               keys: async (defaultCacheKeys, absoluteFrom) => {
                 const keys = await getCustomCacheInvalidationKeysAsync();
 
@@ -831,7 +841,7 @@ type transformAll = (
     data: Buffer;
     sourceFilename: string;
     absoluteFilename: string;
-  }[]
+  }[],
 ) => any;
 ```
 
@@ -839,7 +849,9 @@ Default: `undefined`
 
 Allows you to modify the contents of multiple files and save the result to one file.
 
-> ℹ️ The `to` option must be specified and point to a file. It is allowed to use only `[contenthash]` and `[fullhash]` template strings.
+> **Note**
+>
+> The `to` option must be specified and point to a file. It is allowed to use only `[contenthash]` and `[fullhash]` template strings.
 
 **webpack.config.js**
 
@@ -986,7 +998,7 @@ module.exports = {
 
 ### Examples
 
-#### Different variants `from` (`glob`, `file` or `dir`).
+#### Different variants of `from` (`glob`, `file` or `dir`).
 
 Take for example the following file structure:
 
@@ -1022,7 +1034,7 @@ src/directory-nested/deep-nested/deepnested-file.txt,
 src/directory-nested/nested-file.txt
 ```
 
-If you want only content `src/directory-nested/`, you should only indicate `glob` in `from`. The path to the folder in which the search should take place, should be moved to `context`.
+If you don't want the result paths to start with `src/directory-nested/`, then you should move `src/directory-nested/` to `context`, such that only the glob pattern `**/*` remains in `from`:
 
 **webpack.config.js**
 
@@ -1111,7 +1123,7 @@ module.exports = {
             __dirname,
             "src",
             "directory-nested",
-            "nested-file.txt"
+            "nested-file.txt",
           ),
         },
       ],
@@ -1163,7 +1175,7 @@ module.exports = {
         {
           from: path.posix.join(
             path.resolve(__dirname, "src").replace(/\\/g, "/"),
-            "**/*"
+            "**/*",
           ),
           globOptions: {
             ignore: [
@@ -1184,7 +1196,9 @@ module.exports = {
 
 Removes all directory references and only copies file names.
 
-> ⚠️ If files have the same name, the result is non-deterministic.
+> **Warning**
+>
+> If files have the same name, the result is non-deterministic.
 
 **webpack.config.js**
 
@@ -1280,7 +1294,7 @@ module.exports = {
       patterns: [
         {
           from: `${path.dirname(
-            require.resolve(`${moduleName}/package.json`)
+            require.resolve(`${moduleName}/package.json`),
           )}/target`,
           to: "target",
         },
@@ -1304,14 +1318,12 @@ Please take a moment to read our contributing guidelines if you haven't yet done
 [npm-url]: https://npmjs.com/package/copy-webpack-plugin
 [node]: https://img.shields.io/node/v/copy-webpack-plugin.svg
 [node-url]: https://nodejs.org
-[deps]: https://david-dm.org/webpack-contrib/copy-webpack-plugin.svg
-[deps-url]: https://david-dm.org/webpack-contrib/copy-webpack-plugin
 [tests]: https://github.com/webpack-contrib/copy-webpack-plugin/workflows/copy-webpack-plugin/badge.svg
 [tests-url]: https://github.com/webpack-contrib/copy-webpack-plugin/actions
 [cover]: https://codecov.io/gh/webpack-contrib/copy-webpack-plugin/branch/master/graph/badge.svg
 [cover-url]: https://codecov.io/gh/webpack-contrib/copy-webpack-plugin
-[chat]: https://img.shields.io/badge/gitter-webpack%2Fwebpack-brightgreen.svg
-[chat-url]: https://gitter.im/webpack/webpack
+[discussion]: https://img.shields.io/github/discussions/webpack/webpack
+[discussion-url]: https://github.com/webpack/webpack/discussions
 [size]: https://packagephobia.now.sh/badge?p=copy-webpack-plugin
 [size-url]: https://packagephobia.now.sh/result?p=copy-webpack-plugin
 [glob-options]: https://github.com/sindresorhus/globby#options

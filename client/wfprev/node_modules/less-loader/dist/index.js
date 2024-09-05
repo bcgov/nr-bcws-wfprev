@@ -4,64 +4,63 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-
 var _path = _interopRequireDefault(require("path"));
-
 var _options = _interopRequireDefault(require("./options.json"));
-
 var _utils = require("./utils");
-
-var _LessError = _interopRequireDefault(require("./LessError"));
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
 async function lessLoader(source) {
   const options = this.getOptions(_options.default);
   const callback = this.async();
-  const implementation = (0, _utils.getLessImplementation)(this, options.implementation);
-
+  let implementation;
+  try {
+    implementation = (0, _utils.getLessImplementation)(this, options.implementation);
+  } catch (error) {
+    callback(error);
+    return;
+  }
   if (!implementation) {
     callback(new Error(`The Less implementation "${options.implementation}" not found`));
     return;
   }
-
   const lessOptions = (0, _utils.getLessOptions)(this, options, implementation);
   const useSourceMap = typeof options.sourceMap === "boolean" ? options.sourceMap : this.sourceMap;
-
   if (useSourceMap) {
     lessOptions.sourceMap = {
       outputSourceFiles: true
     };
   }
-
   let data = source;
-
   if (typeof options.additionalData !== "undefined") {
     data = typeof options.additionalData === "function" ? `${await options.additionalData(data, this)}` : `${options.additionalData}\n${data}`;
   }
-
   const logger = this.getLogger("less-loader");
+  const loaderContext = this;
   const loggerListener = {
     error(message) {
-      logger.error(message);
+      // TODO enable by default in the next major release
+      if (options.lessLogAsWarnOrErr) {
+        loaderContext.emitError(new Error(message));
+      } else {
+        logger.error(message);
+      }
     },
-
     warn(message) {
-      logger.warn(message);
+      // TODO enable by default in the next major release
+      if (options.lessLogAsWarnOrErr) {
+        loaderContext.emitWarning(new Error(message));
+      } else {
+        logger.warn(message);
+      }
     },
-
     info(message) {
       logger.log(message);
     },
-
     debug(message) {
       logger.debug(message);
     }
-
   };
   implementation.logger.addListener(loggerListener);
   let result;
-
   try {
     result = await implementation.render(data, lessOptions);
   } catch (error) {
@@ -70,8 +69,7 @@ async function lessLoader(source) {
       // Ref: https://github.com/webpack-contrib/less-loader/issues/357
       this.addDependency(_path.default.normalize(error.filename));
     }
-
-    callback(new _LessError.default(error));
+    callback((0, _utils.errorFactory)(error));
     return;
   } finally {
     // Fix memory leaks in `less`
@@ -79,7 +77,6 @@ async function lessLoader(source) {
     delete lessOptions.pluginManager.webpackLoaderContext;
     delete lessOptions.pluginManager;
   }
-
   const {
     css,
     imports
@@ -87,25 +84,21 @@ async function lessLoader(source) {
   imports.forEach(item => {
     if ((0, _utils.isUnsupportedUrl)(item)) {
       return;
-    } // `less` return forward slashes on windows when `webpack` resolver return an absolute windows path in `WebpackFileManager`
+    }
+
+    // `less` return forward slashes on windows when `webpack` resolver return an absolute windows path in `WebpackFileManager`
     // Ref: https://github.com/webpack-contrib/less-loader/issues/357
+    const normalizedItem = _path.default.normalize(item);
 
-
-    const normalizedItem = _path.default.normalize(item); // Custom `importer` can return only `contents` so item will be relative
-
-
+    // Custom `importer` can return only `contents` so item will be relative
     if (_path.default.isAbsolute(normalizedItem)) {
       this.addDependency(normalizedItem);
     }
   });
   let map = typeof result.map === "string" ? JSON.parse(result.map) : result.map;
-
   if (map && useSourceMap) {
     map = (0, _utils.normalizeSourceMap)(map, this.rootContext);
   }
-
   callback(null, css, map);
 }
-
-var _default = lessLoader;
-exports.default = _default;
+var _default = exports.default = lessLoader;
