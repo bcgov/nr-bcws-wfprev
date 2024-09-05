@@ -1,5 +1,6 @@
 package ca.bc.gov.nrs.wfprev;
 
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -57,6 +58,39 @@ class ExampleControllerTest {
         mockMvc.perform(get("/wfprev/examples")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    void testGetExampleById() throws Exception {
+        String exampleId = UUID.randomUUID().toString();
+        ExampleModel exampleModel = new ExampleModel();
+        exampleModel.setExampleGuid(exampleId);
+
+        when(exampleService.getExampleById(exampleId)).thenReturn(exampleModel);
+
+        mockMvc.perform(get("/wfprev/examples/{id}", exampleId)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void testGetExampleByIdNotFound() throws Exception {
+        String exampleId = UUID.randomUUID().toString();
+
+        when(exampleService.getExampleById(exampleId)).thenReturn(null);
+
+        mockMvc.perform(get("/wfprev/examples/{id}", exampleId)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void getExampleCodeById_ShouldReturnNotFound_WhenExampleCodeDoesNotExist() throws Exception {
+        String exampleCodeId = "INVALID_CODE";
+        when(exampleService.getExampleCodeById(eq(exampleCodeId))).thenReturn(null);
+
+        mockMvc.perform(get("/wfprev/exampleCodes/{id}", exampleCodeId))
+                .andExpect(status().isNotFound());
     }
 
 }
