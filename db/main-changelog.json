@@ -42,59 +42,6 @@
           }
         ]
       }
-    },
-    {
-      "changeSet": {
-        "id": "01_00_00_01",
-        "author": "dhemsworth",
-        "changes": [
-          {
-            "tagDatabase": {
-              "tag": "version_1.0.0_01_ddl"
-            },
-            "sqlFile": {
-              "dbms": "postgresql",
-              "endDelimiter": ";",
-              "path": "scripts/01_00_00/01/ddl/tables/APP_WFPREV.EXAMPLE_CODE.sql",
-              "relativeToChangelogFile": "true",
-              "splitStatements": "true",
-              "stripComments": "true"
-            },
-            "rollback": "drop table if exists wfprev.EXAMPLE_CODE cascade"
-          },
-          {
-            "sqlFile": {
-              "dbms": "postgresql",
-              "endDelimiter": ";",
-              "path": "scripts/01_00_00/01/ddl/tables/APP_WFPREV.EXAMPLE_TABLE.sql",
-              "relativeToChangelogFile": "true",
-              "splitStatements": "true",
-              "stripComments": "true"
-            },
-            "rollback": "drop table if exists wfprev.EXAMPLE_TABLE cascade"
-          },
-          {
-            "sqlFile": {
-              "dbms": "postgresql",
-              "endDelimiter": ";",
-              "path": "scripts/01_00_00/01/ddl/grants/wfprev.ddl.apply_grants.sql",
-              "relativeToChangelogFile": "true",
-              "splitStatements": "true",
-              "stripComments": "true"
-            }
-          },
-          {
-            "sqlFile": {
-              "dbms": "postgresql",
-              "endDelimiter": ";",
-              "path": "scripts/01_00_00/01/dml/app_wf1_prev.dml.prev_example_code.sql",
-              "relativeToChangelogFile": "true",
-              "splitStatements": "true",
-              "stripComments": "true"
-            }
-          }
-        ]
-      }
     }
   ]
 }
