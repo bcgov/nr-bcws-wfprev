@@ -54,7 +54,7 @@ class ExampleControllerTest {
 
         when(exampleService.getAllExamples()).thenReturn(collectionModel);
 
-        mockMvc.perform(get("/examples")
+        mockMvc.perform(get("/wfprev/examples")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }

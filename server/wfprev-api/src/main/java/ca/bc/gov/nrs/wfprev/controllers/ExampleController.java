@@ -75,8 +75,7 @@ public class ExampleController extends CommonController {
     ResponseEntity<CollectionModel<ExampleModel>> response;
 
     try {
-      // response = ok(exampleService.getAllExamples());
-      response = new ResponseEntity<>(org.springframework.http.HttpStatus.OK);
+      response = ok(exampleService.getAllExamples());
     } catch (ServiceException e) {
       response = internalServerError();
       log.error(" ### Error while fetching examples", e);
