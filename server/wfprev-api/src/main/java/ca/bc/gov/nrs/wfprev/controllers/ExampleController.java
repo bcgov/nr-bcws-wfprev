@@ -3,6 +3,7 @@ package ca.bc.gov.nrs.wfprev.controllers;
 import java.util.Date;
 import java.util.UUID;
 
+import org.apache.http.HttpStatus;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -74,7 +75,8 @@ public class ExampleController extends CommonController {
     ResponseEntity<CollectionModel<ExampleModel>> response;
 
     try {
-      response = ok(exampleService.getAllExamples());
+      // response = ok(exampleService.getAllExamples());
+      response = new ResponseEntity<>(org.springframework.http.HttpStatus.OK);
     } catch (ServiceException e) {
       response = internalServerError();
       log.error(" ### Error while fetching examples", e);
