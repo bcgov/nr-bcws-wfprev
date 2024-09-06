@@ -1,0 +1,4 @@
+FROM liquibase/liquibase
+ADD . /liquibase
+EXPOSE 8080
+USER root
