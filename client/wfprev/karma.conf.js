@@ -16,8 +16,9 @@ module.exports = function (config) {
       dir: require('path').join(__dirname, './coverage/wfprev'),
       subdir: '.',
       reporters: [
-        { type: 'html' },
-        { type: 'text-summary' }
+        { type: 'html' },                    // HTML report
+        { type: 'text-summary' },            // Text summary report
+        { type: 'json-summary', file: 'coverage-summary.json' } // Generate summary with percentages
       ],
       check: {
         global: {
@@ -29,7 +30,7 @@ module.exports = function (config) {
       }
     },
     preprocessors: {
-      'src/**/*.ts': ['coverage'] // This ensures your TypeScript files are instrumented
+      'src/**/*.ts': ['coverage'] // Instrument your TypeScript files for coverage
     },
     reporters: ['progress', 'kjhtml', 'coverage'],
     port: 9876,
