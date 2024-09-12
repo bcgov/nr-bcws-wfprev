@@ -16,7 +16,8 @@ class TestcontainersConfiguration {
 	@Bean
 	@ServiceConnection
 	PostgreSQLContainer<?> postgresContainer() {
-		PostgreSQLContainer<?> container = new PostgreSQLContainer<>(DockerImageName.parse("postgis:16-3.4"))
+		DockerImageName image = DockerImageName.parse("postgis/postgis:16-3.4").asCompatibleSubstituteFor("postgres");
+		PostgreSQLContainer<?> container = new PostgreSQLContainer<>(image)
 		.withUsername("wfprev")
 		.withPassword("password")
 		.withExposedPorts(5432);
