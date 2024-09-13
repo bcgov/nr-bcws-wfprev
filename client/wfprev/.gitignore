@@ -38,3 +38,7 @@ Thumbs.db
 
 # Angular cache
 .angular/cache/
+*storybook.log
+
+# Documentation.json
+.documentation.json
