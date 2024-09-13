@@ -1,0 +1,36 @@
+name: Run Tests
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [20.x]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - run: npm install
+      
+      - run: npm run test -- --watch=false --code-coverage
+
+      # Ensure coverage meets the required threshold
+      - name: Check code coverage
+        run: |
+          if grep -q '"statements": 8[0-9]' ../coverage/wfprev/coverage-summary.json; then
+            echo "Test passed";
+          else
+            echo "Code coverage is less than 80%!";
+            exit 1;
+          fi
