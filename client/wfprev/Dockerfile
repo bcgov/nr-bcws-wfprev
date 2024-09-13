@@ -1,12 +1,13 @@
-FROM tomcat:9.0.91-jdk17-openjdk
+# Use Tomcat 10 instead of Tomcat 9
+FROM tomcat:10.1.12-jdk17-openjdk
 
 COPY /wfnews-war/target/wfnews-war-1.0.0.war .
 
 ENV TOMCAT_HOME=/usr/local/tomcat \
   CATALINA_HOME=/usr/local/tomcat \
   CATALINA_OUT=/usr/local/tomcat/logs \
-  TOMCAT_MAJOR=9 \
-  JAVA_OPTS="$JAVA_OPTS" 
+  TOMCAT_MAJOR=10 \
+  JAVA_OPTS="$JAVA_OPTS"
 
 # Install gzip along with sed
 RUN apt-get update &&\
@@ -21,6 +22,7 @@ RUN apt-get update &&\
 
 VOLUME /usr/local/tomcat/logs /usr/local/tomcat/work
 
+# Set permissions for logs and work
 RUN chmod 766 /usr/local/tomcat/logs && chmod 766 /usr/local/tomcat/work
 # run as tomcat user
 USER tomcat
