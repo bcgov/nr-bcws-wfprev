@@ -1,5 +1,7 @@
 name: SonarCloud
 
+env:
+  NPMRC: ${{ secrets.NPMRC }}
 on:
   pull_request_target:
     types: [opened, synchronize, reopened]
@@ -19,6 +21,8 @@ jobs:
         with:
           java-version: '17'
           distribution: 'adopt'
+      - name: Add .npmrc file
+        run: echo -e $NPMRC > ~/.npmrc
       - name: Cache SonarCloud packages
         uses: actions/cache@v4
         with:
