@@ -8,7 +8,8 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "storybook": "ng run wfprev:storybook",
-    "build-storybook": "ng run wfprev:build-storybook"
+    "build-storybook": "ng run wfprev:build-storybook",
+    "mavenbuild": "node --max_old_space_size=4096"
   },
   "private": true,
   "dependencies": {
