@@ -17,5 +17,6 @@
  
     <modules>
         <module>server/wfprev-api</module>
+        <module>client</module>
     </modules>
 </project>
