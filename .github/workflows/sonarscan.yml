@@ -1,5 +1,7 @@
 name: SonarCloud
 
+env:
+  NPMRC: ${{ secrets.NPMRC }}
 on:
   pull_request_target:
     types: [opened, synchronize, reopened]
@@ -19,6 +21,8 @@ jobs:
         with:
           java-version: '17'
           distribution: 'adopt'
+      - name: Add .npmrc file
+        run: echo -e $NPMRC > ~/.npmrc
       - name: Cache SonarCloud packages
         uses: actions/cache@v4
         with:
@@ -36,6 +40,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
-          export MAVEN_OPTS="-Xmx3072m"
+          export MAVEN_OPTS="-Xmx4096m"
           export NODE_OPTIONS="--max-old-space-size=4096"
           mvn --settings /home/runner/work/nr-bcws-wfprev/nr-bcws-wfprev/server/wfprev-api/mvn_settings/settings.xml -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=bcgov_nr-bcws-wfprev -Drepo.login=${{ secrets.IDIR_AS_EMAIL }} -Drepo.password=${{ secrets.IDIR_PASSWORD }} -DskipTests
