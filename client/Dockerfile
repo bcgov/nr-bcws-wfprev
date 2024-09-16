@@ -1,7 +1,7 @@
 # Use Tomcat 10 instead of Tomcat 9
-FROM tomcat:10.1.12-jdk17-openjdk
+FROM tomcat:10.1-jdk17-corretto
 
-COPY /wfnews-war/target/wfnews-war-1.0.0.war .
+COPY /wfprev/target/wfprev-1.0.0-SNAPSHOT.war .
 
 ENV TOMCAT_HOME=/usr/local/tomcat \
   CATALINA_HOME=/usr/local/tomcat \
