@@ -40,6 +40,7 @@
     "@storybook/blocks": "^8.2.9",
     "@storybook/test": "^8.2.9",
     "@types/jasmine": "~4.0.0",
+    "globby": "^14.0.2",
     "jasmine-core": "~4.1.0",
     "karma": "~6.3.0",
     "karma-chrome-launcher": "~3.1.0",
