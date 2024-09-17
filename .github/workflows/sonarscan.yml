@@ -1,5 +1,5 @@
 name: SonarCloud
-   
+    
 env:
   NPMRC: ${{ secrets.NPMRC }}
 on:
