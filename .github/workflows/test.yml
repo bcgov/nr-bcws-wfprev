@@ -22,8 +22,8 @@ jobs:
           node-version: ${{ matrix.node-version }}
 
       # Use the NPMRC secret to set up npm authentication
-      - name: Set up .npmrc from NPMRC secret
-        run: echo "${{ secrets.NPMRC }}" > ~/.npmrc
+      - name: Add .npmrc file
+        run: echo -e $NPMRC > ~/.npmrc
 
       - name: Change directory to Angular app
         run: cd client/wfprev-war/src/main/angular
