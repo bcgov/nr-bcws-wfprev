@@ -1,5 +1,8 @@
 name: Run Tests
 
+env:
+  NPMRC: ${{ secrets.NPMRC }}
+
 on:
   pull_request:
     branches:
