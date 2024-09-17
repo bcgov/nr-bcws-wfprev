@@ -6,9 +6,6 @@ env:
 on:
   pull_request_target:
     types: [opened, synchronize, reopened]
-concurrency:
-  group: test-${{ github.workflow }}-${{ github.event.pull_request.number }}
-  cancel-in-progress: true
 
 jobs:
   test:
