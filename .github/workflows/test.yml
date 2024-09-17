@@ -24,9 +24,9 @@ jobs:
       - name: Change directory to Angular app
         run: cd client/wfprev-war/src/main/angular
 
-      # Install dependencies
-      - run: npm install
-        working-directory: client/wfprev-war/src/main/angular
+      # # Install dependencies
+      # - run: npm install
+      #   working-directory: client/wfprev-war/src/main/angular
 
       # Run unit tests and generate code coverage      
       - run: npm run test -- --watch=false --code-coverage
