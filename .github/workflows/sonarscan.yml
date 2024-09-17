@@ -38,7 +38,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
-          mvn sonar:sonar -Pcoverage -Dsonar.java.binaries=.  
+          mvn sonar:sonar -Pcoverage -Dsonar.java.binaries=. -Dsonar.organization=bcgov-sonarcloud -Dsonar.projectKey=nr-bcws-wfprev
           export MAVEN_OPTS="-Xmx4096m"
           export NODE_OPTIONS="--max-old-space-size=4096"
           mvn --settings /home/runner/work/nr-bcws-wfprev/nr-bcws-wfprev/server/wfprev-api/mvn_settings/settings.xml -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=bcgov_nr-bcws-wfprev -Drepo.login=${{ secrets.IDIR_AS_EMAIL }} -Drepo.password=${{ secrets.IDIR_PASSWORD }} -DskipTests 
