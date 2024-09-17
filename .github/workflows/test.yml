@@ -4,9 +4,8 @@ env:
   NPMRC: ${{ secrets.NPMRC }}
 
 on:
-  push:
-    branches:
-      - storybook-fix
+  pull_request_target:
+    types: [opened, synchronize, reopened]
 
 jobs:
   test:
