@@ -54,3 +54,4 @@ jobs:
           else
             echo "Code coverage is less than 80%! Exiting...";
             exit 1;
+          fi
