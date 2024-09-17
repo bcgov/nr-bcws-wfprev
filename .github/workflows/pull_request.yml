@@ -1,0 +1,86 @@
+name: Pull Request Workflow
+
+env:
+  NPMRC: ${{ secrets.NPMRC }}
+
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  # First job: Running the tests
+  run_tests:
+    name: Run Tests
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [20.x]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Change directory to Angular app
+        run: cd client/wfprev-war/src/main/angular
+
+      # Use the NPMRC secret to set up npm authentication
+      - name: Add .npmrc file
+        run: echo -e $NPMRC > ~/.npmrc
+
+      # Install dependencies
+      - run: npm install
+        working-directory: client/wfprev-war/src/main/angular
+
+      # Run unit tests and generate code coverage      
+      - run: npm run test -- --watch=false --code-coverage
+
+      # Ensure coverage meets the required threshold
+      - name: Check code coverage
+        run: |
+          if grep -q '"statements": 8[0-9]' ../../client/wfprev-war/src/main/angular/coverage/wfprev/coverage-summary.json; then
+            echo "Test passed";
+          else
+            echo "Code coverage is less than 80%! Exiting...";
+            exit 1;
+
+  # Second job: SonarCloud scan
+  sonar_scan:
+    name: SonarCloud Scan
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'adopt'
+      - name: Add .npmrc file
+        run: echo -e $NPMRC > ~/.npmrc
+      - name: Cache SonarCloud packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
+      - name: Cache Maven packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+      - name: Build and analyze
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          export MAVEN_OPTS="-Xmx4096m"
+          export NODE_OPTIONS="--max-old-space-size=4096"
+          mvn --settings /home/runner/work/nr-bcws-wfprev/nr-bcws-wfprev/server/wfprev-api/mvn_settings/settings.xml -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=bcgov_nr-bcws-wfprev -Drepo.login=${{ secrets.IDIR_AS_EMAIL }} -Drepo.password=${{ secrets.IDIR_PASSWORD }} -DskipTests
