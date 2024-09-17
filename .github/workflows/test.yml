@@ -1,4 +1,4 @@
-name: Run Tests 
+name: Run Tests
 
 env:
   NPMRC: ${{ secrets.NPMRC }}
@@ -13,9 +13,16 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [20.x]
+        node-version: [18.x]  # Use LTS Node.js version
+
     steps:
       - uses: actions/checkout@v4
+
+      # Install Python and build tools
+      - name: Install Python and build tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3 python3-pip build-essential
 
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
@@ -29,12 +36,15 @@ jobs:
       - name: Add .npmrc file
         run: echo -e $NPMRC > ~/.npmrc
 
-      # Install dependencies
+      # Clean npm cache and install dependencies
+      - run: npm cache clean --force
+      - run: rm -rf node_modules
       - run: npm install
         working-directory: client/wfprev-war/src/main/angular
 
       # Run unit tests and generate code coverage      
       - run: npm run test -- --watch=false --code-coverage
+        working-directory: client/wfprev-war/src/main/angular
 
       # Ensure coverage meets the required threshold
       - name: Check code coverage
