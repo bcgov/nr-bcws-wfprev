@@ -1,4 +1,4 @@
-name: Run Tests  
+name: Run Tests
 
 env:
   NPMRC: ${{ secrets.NPMRC }}
@@ -54,3 +54,4 @@ jobs:
           else
             echo "Code coverage is less than 80%! Exiting...";
             exit 1;
+          fi
