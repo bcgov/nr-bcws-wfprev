@@ -24,7 +24,7 @@ jobs:
       #- name: Maven Package
        # run: mvn -B clean package -DskipTests
       #- name: Maven Verify
-        #run: mvn -B clean verify
+        #run: mvn -B clean verify 
 
   sonar:
     name: Test - SonarCloud Scan
@@ -38,7 +38,9 @@ jobs:
           java-version: 17
           distribution: 'adopt' 
       - name: SonarCloud Scan
-        run: 
-             mvn clean --settings server/wfprev-api/mvn_settings/settings.xml -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Pcoverage,sonar -Dsonar.projectKey=bcgov_nr-bcws-wfprev -Dsonar.login=${{ secrets.SONAR_TOKEN }} -Drepo.login=${{ secrets.IDIR_AS_EMAIL }} -Drepo.password=${{ secrets.IDIR_PASSWORD }} -X -DskipTests 
+        run:           
+            export MAVEN_OPTS="-Xmx4096m"
+            export NODE_OPTIONS="--max-old-space-size=4096"
+            mvn clean --settings server/wfprev-api/mvn_settings/settings.xml -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Pcoverage,sonar -Dsonar.projectKey=bcgov_nr-bcws-wfprev -Dsonar.login=${{ secrets.SONAR_TOKEN }} -Drepo.login=${{ secrets.IDIR_AS_EMAIL }} -Drepo.password=${{ secrets.IDIR_PASSWORD }} -X -DskipTests 
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
