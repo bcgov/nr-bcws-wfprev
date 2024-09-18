@@ -52,12 +52,16 @@ jobs:
         working-directory: client/wfprev-war/src/main/angular
 
       # Ensure coverage meets the required threshold
-      - name: Check code coverage
-        run: |
-          if grep -q '"statements":{.*"pct": \([8-9][0-9]\|100\)' coverage/wfprev/coverage-summary.json; then
-            echo "Test passed";
-          else
-            echo "Code coverage is less than 80%! Exiting...";
-            exit 1;
-          fi
-        working-directory: client/wfprev-war/src/main/angular
+    - name: Check code coverage
+      run: |
+        # Extract the "pct" value for "statements" using jq
+        statements_pct=$(jq '.total.statements.pct' coverage/wfprev/coverage-summary.json)
+
+        # Check if the percentage is greater than or equal to 80
+        if (( $(echo "$statements_pct >= 80" | bc -l) )); then
+          echo "Test passed. Code coverage for statements is $statements_pct%";
+        else
+          echo "Code coverage for statements is less than 80%! Exiting... ($statements_pct%)";
+          exit 1;
+        fi
+      working-directory: client/wfprev-war/src/main/angular
