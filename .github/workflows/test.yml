@@ -54,7 +54,7 @@ jobs:
       # Ensure coverage meets the required threshold
       - name: Check code coverage
         run: |
-          if grep -q '"statements":.*"pct": \([8-9][0-9]\|100\)' coverage/wfprev/coverage-summary.json; then
+          if grep -q '"statements":{.*"pct": \([8-9][0-9]\|100\)' coverage/wfprev/coverage-summary.json; then
             echo "Test passed";
           else
             echo "Code coverage is less than 80%! Exiting...";
