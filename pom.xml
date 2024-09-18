@@ -12,10 +12,31 @@
     <properties>
         <sonar.organization>bcgov-sonarcloud</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
-        <sonar.sources>db</sonar.sources>
         <sonar.projectKey>bcgov_nr-bcws-wfprev</sonar.projectKey>
+        <!-- <sonar.sources>server/wfprev-api/src/main/java</sonar.sources> -->
+        <sonar.tests>server/wfprev-api/src/test</sonar.tests>
+        <sonar.coverage.jacoco.xmlReportPaths>${project.basedir}/target/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
     </properties>
- 
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>report</id>
+                        <goals>
+                            <goal>report-aggregate</goal>
+                        </goals>
+                        <phase>verify</phase>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+
     <modules>
         <module>server/wfprev-api</module>
         <module>client</module>
