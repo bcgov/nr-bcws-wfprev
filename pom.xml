@@ -13,6 +13,9 @@
         <sonar.organization>bcgov-sonarcloud</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
         <sonar.projectKey>bcgov_nr-bcws-wfprev</sonar.projectKey>
+        <sonar.sources>server/wfprev-api/src/main/java</sonar.sources>
+        <sonar.tests>server/wfprev-api/src/test</sonar.tests>
+        <sonar.coverage.jacoco.xmlReportPaths>${project.basedir}/target/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
     </properties>
 
     <build>
