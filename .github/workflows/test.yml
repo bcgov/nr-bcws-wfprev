@@ -46,6 +46,11 @@ jobs:
       - run: npm run test -- --watch=false --code-coverage
         working-directory: client/wfprev-war/src/main/angular
 
+      # Print coverage summary for debugging
+      - name: Print coverage-summary.json
+        run: cat coverage/wfprev/coverage-summary.json
+        working-directory: client/wfprev-war/src/main/angular
+
       # Ensure coverage meets the required threshold
       - name: Check code coverage
         run: |
