@@ -20,6 +20,7 @@
 		<node.path>${user.home}/.node</node.path>
 		<typescript.path>src/main/angular</typescript.path>
 		<npm.url>https://bwa.nrs.gov.bc.ca/int/artifactory/api/npm/nrs-virtual-npm/</npm.url>
+		<sonar.skip>true</sonar.skip>
 	</properties>
 	<dependencies>
 
