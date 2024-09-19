@@ -9,7 +9,7 @@
     <name>wfprev-parent</name>
     <url>http://maven.apache.org</url>
 
-     <modules>
+    <modules>
         <module>server/wfprev-api</module>
         <!-- <module>client</module> -->
     </modules>
@@ -20,7 +20,7 @@
         <aggregate.report.dir>target/site/jacoco-aggregate/jacoco.xml</aggregate.report.dir>
     </properties>
 
-     <build>
+    <build>
         <pluginManagement>
             <plugins>
                 <plugin>
@@ -74,6 +74,12 @@
             </activation>
             <build>
                 <plugins>
+                    <plugin>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <argLine>${argLine}</argLine>
+                        </configuration>
+                    </plugin>
                     <plugin>
                         <groupId>org.sonarsource.scanner.maven</groupId>
                         <artifactId>sonar-maven-plugin</artifactId>
