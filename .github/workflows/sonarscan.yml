@@ -36,12 +36,18 @@ jobs:
         uses: actions/setup-java@v4   
         with:
           java-version: 17
-          distribution: 'adopt' 
-      - name: SonarCloud Scan
+          distribution: 'adopt'
+      - name: Jacoco Scan 
+        run: |          
+              export MAVEN_OPTS="-Xmx10000m"
+              export NODE_OPTIONS="--max-old-space-size=4096"
+              mvn clean --settings server/wfprev-api/mvn_settings/settings.xml org.jacoco:jacoco-maven-plugin:0.8.12:prepare-agent -B verify org.jacoco:jacoco-maven-plugin:0.8.12:report -Drepo.login=${{ secrets.IDIR_AS_EMAIL }} -Drepo.password=${{ secrets.IDIR_PASSWORD }} 
+        env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: SonarCloud Scan 
         run: |          
             export MAVEN_OPTS="-Xmx10000m"
             export NODE_OPTIONS="--max-old-space-size=4096"
-            mvn clean org.jacoco:jacoco-maven-plugin:0.8.8:prepare-agent  verify org.jacoco:jacoco-maven-plugin:0.8.8:report
-            mvn clean --settings server/wfprev-api/mvn_settings/settings.xml -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Pcoverage,sonar -Dsonar.projectKey=bcgov_nr-bcws-wfprev -Dsonar.login=${{ secrets.SONAR_TOKEN }} -Drepo.login=${{ secrets.IDIR_AS_EMAIL }} -Drepo.password=${{ secrets.IDIR_PASSWORD }} -X -DskipTests 
+            mvn clean --settings server/wfprev-api/mvn_settings/settings.xml -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Pcoverage,sonar -Dsonar.projectKey=bcgov_nr-bcws-wfprev -Dsonar.login=${{ secrets.SONAR_TOKEN }} -Drepo.login=${{ secrets.IDIR_AS_EMAIL }} -Drepo.password=${{ secrets.IDIR_PASSWORD }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
