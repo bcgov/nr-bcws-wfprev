@@ -1,0 +1,53 @@
+name: SonarScan
+
+env: 
+  NPMRC: ${{ secrets.NPMRC }}
+
+on:
+  push:
+    branches: [ main, feature/* ]
+  pull_request_target:
+    branches: [ main, feature/* ]
+
+jobs:
+  #test:
+    #name: Test - Unit and Integration
+    #runs-on: ubuntu-latest
+
+    #steps:
+      #- uses: actions/checkout@v4
+      #- name: Set up JDK 17
+       # uses: actions/setup-java@v4
+       # with:
+          #java-version: 17
+          #distribution: 'adopt'
+      #- name: Maven Package
+       # run: mvn -B clean package -DskipTests
+      #- name: Maven Verify
+        #run: mvn -B clean verify 
+
+  sonar:
+    name: Test - SonarCloud Scan
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4   
+        with:
+          java-version: 17
+          distribution: 'adopt' 
+      - name: Jacoco Scan 
+        run: |          
+              export MAVEN_OPTS="-Xmx10000m"
+              export NODE_OPTIONS="--max-old-space-size=4096"
+              mvn clean --settings server/wfprev-api/mvn_settings/settings.xml org.jacoco:jacoco-maven-plugin:0.8.12:prepare-agent -B verify org.jacoco:jacoco-maven-plugin:0.8.12:report -Drepo.login=${{ secrets.IDIR_AS_EMAIL }} -Drepo.password=${{ secrets.IDIR_PASSWORD }} 
+        env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: SonarCloud Scan 
+        run: |          
+            export MAVEN_OPTS="-Xmx10000m"
+            export NODE_OPTIONS="--max-old-space-size=4096"
+            mvn clean --settings server/wfprev-api/mvn_settings/settings.xml -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Pcoverage,sonar -Dsonar.projectKey=bcgov_nr-bcws-wfprev -Dsonar.login=${{ secrets.SONAR_TOKEN }} -Drepo.login=${{ secrets.IDIR_AS_EMAIL }} -Drepo.password=${{ secrets.IDIR_PASSWORD }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
