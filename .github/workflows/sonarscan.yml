@@ -36,7 +36,7 @@ jobs:
         uses: actions/setup-java@v4   
         with:
           java-version: 17
-          distribution: 'adopt'
+          distribution: 'adopt' 
       - name: Jacoco Scan 
         run: |          
               export MAVEN_OPTS="-Xmx10000m"
