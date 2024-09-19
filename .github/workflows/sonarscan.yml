@@ -41,6 +41,7 @@ jobs:
         run: |          
             export MAVEN_OPTS="-Xmx10000m"
             export NODE_OPTIONS="--max-old-space-size=4096"
+            mvn clean org.jacoco:jacoco-maven-plugin:0.8.8:prepare-agent  verify org.jacoco:jacoco-maven-plugin:0.8.8:report
             mvn clean --settings server/wfprev-api/mvn_settings/settings.xml -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Pcoverage,sonar -Dsonar.projectKey=bcgov_nr-bcws-wfprev -Dsonar.login=${{ secrets.SONAR_TOKEN }} -Drepo.login=${{ secrets.IDIR_AS_EMAIL }} -Drepo.password=${{ secrets.IDIR_PASSWORD }} -X -DskipTests 
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
