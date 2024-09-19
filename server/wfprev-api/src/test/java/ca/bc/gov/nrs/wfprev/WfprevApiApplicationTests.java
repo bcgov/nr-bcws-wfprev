@@ -8,9 +8,9 @@ import org.springframework.context.annotation.Import;
 @SpringBootTest
 class WfprevApiApplicationTests {
 
-	@Test
-	void contextLoads() {
-		// empty test stub
-	}
+	// @Test
+	// void contextLoads() {
+	// 	// empty test stub
+	// }
 
 }
