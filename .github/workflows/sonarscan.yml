@@ -7,7 +7,7 @@ on:
   push:
     branches: [ main, feature/* ]
   pull_request_target:
-    branches: [ main, feature/* ]
+    branches: [ main, feature/* ] 
 
 jobs:
   #test:
