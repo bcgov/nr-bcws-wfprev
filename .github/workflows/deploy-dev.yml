@@ -26,4 +26,12 @@ on:
         default: 'false'
 
 jobs: 
-# coming...
+  call-mvn-client:
+    uses: ./.github/workflows/mvn-client.yml
+    secrets: inherit
+    with:
+      ENVIRONMENT: DEV
+      IS_HOTFIX: ${{ inputs.IS_HOTFIX }}
+      BRANCH: ${{ vars.PATCH_BRANCH }}
+      TAG: ${{ vars.HOTFIX_TAG }}
+
