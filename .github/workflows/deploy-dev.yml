@@ -1,0 +1,29 @@
+name: Deploy Dev
+
+on:
+  pull_request_target:
+    types:
+      - closed
+    branches:
+      - 'main'
+      - 'dev-deploy'
+      - '1.0.0'
+    paths:
+      - ".github/workflows/**"
+      - "client/**"
+      - "server/**"
+      - "database/**"
+      - "docker/**"
+      - "terraform/**"
+      - "Dockerfile"
+      - "Dockerfile_client"
+      - "!**/README.md"
+  workflow_dispatch:
+    inputs:
+      IS_HOTFIX:
+        description: 'Is this a hotfix?'
+        required: false
+        default: 'false'
+
+jobs: 
+# coming...
