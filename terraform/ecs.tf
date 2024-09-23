@@ -3,7 +3,7 @@
 resource "aws_ecs_cluster" "wfprev_main" {
   name = "wfprev-cluster"
 
-  tags = local.common_tags
+  # tags = local.common_tags
 }
 
 resource "aws_ecs_cluster_capacity_providers" "wfprev_main_providers" {
@@ -170,9 +170,9 @@ resource "aws_ecs_service" "wfprev_server" {
     container_port   = var.server_port
   }
 
-  depends_on = [aws_iam_role_policy_attachment.wfprev_ecs_task_execution_role]
+  # depends_on = [aws_iam_role_policy_attachment.wfprev_ecs_task_execution_role]
 
-  tags = local.common_tags
+  # tags = local.common_tags
 }
 
 # Placeholder for other ECS Services like Nginx, Liquibase, etc.
