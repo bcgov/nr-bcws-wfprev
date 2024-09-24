@@ -1,5 +1,5 @@
 resource "aws_secretsmanager_secret" "githubCredentials" {
-  name = "bcws_wfhr_creds_${var.TARGET_ENV}"
+  name = "bcws_wfprev_creds_${var.TARGET_ENV}"
 }
 
 
