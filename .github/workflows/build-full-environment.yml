@@ -20,4 +20,4 @@ jobs:
     with:
       PROJECT_NAME: wfprev-ui
       TAG: ${{inputs.TAG}}
-      PROJECT_TYPE: frontend
+      PROJECT_TYPE: client

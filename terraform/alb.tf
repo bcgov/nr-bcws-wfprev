@@ -15,10 +15,11 @@
 # }
 
 #Only use "example cert for proof-of-concept - will need real cert for proper implementation"
-data "aws_acm_certificate" "example" {
-  domain = "*.example.ca"
-  statuses = ["ISSUED"]
-}
+// do we need this?????
+# data "aws_acm_certificate" "example" {
+#   domain = "*.example.ca"
+#   statuses = ["ISSUED"]
+# }
 
 resource "aws_lb" "wfprev_main" {
   name               = var.ALB_NAME
@@ -57,7 +58,7 @@ resource "aws_lb_listener" "wfprev_main" {
 /// TARGET GROUP RESOURCES ///
 //////////////////////////////
 resource "aws_alb_target_group" "wfprev_api" {
-  name                 = "wfprev-payroll-api-${var.TARGET_ENV}"
+  name                 = "wfprev-api-${var.TARGET_ENV}"
   port                 = var.WFPREV_API_PORT
   protocol             = "HTTP"
   vpc_id               = module.network.aws_vpc.id

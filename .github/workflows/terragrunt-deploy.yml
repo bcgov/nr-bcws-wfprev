@@ -114,12 +114,12 @@ jobs:
 
           # Necessary for WFPREV API
           WFPREV_API_NAME: wfprev-api
-          WFPREV_API_IMAGE: ${{ vars.REPOSITORY }}/${{ github.repository	}}-wfprev-api:${{ inputs.IMAGE_TAG }}
+          WFPREV_API_IMAGE: ${{ vars.REPOSITORY }}/${{ github.repository }}-wfprev-api:${{ inputs.IMAGE_TAG }}
           WFPREV_API_CPU_UNITS: ${{vars.WFPREV_API_CPU_UNITS}}
           WFPREV_API_MEMORY: ${{vars.WFPREV_API_MEMORY}}
           WFPREV_API_PORT: ${{vars.WFPREV_API_PORT}}
 
           # WFPREV UI
-          client_image: ${{ vars.REPOSITORY }}/${{ github.repository	}}-wfprev-ui:${{ inputs.IMAGE_TAG }}
+          client_image: ${{ vars.REPOSITORY }}/${{ github.repository }}-wfprev-ui:${{ inputs.IMAGE_TAG }}
           WEBADE_OAUTH2_WFPREV_UI_CLIENT_SECRET: ${{ secrets.WEBADE_OAUTH2_WFPREV_UI_CLIENT_SECRET }}
         run: terragrunt apply --terragrunt-non-interactive -auto-approve
