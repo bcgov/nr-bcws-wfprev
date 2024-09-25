@@ -39,59 +39,62 @@ public class SecurityConfig {
 	@Value("${security.oauth.authTokenUrl}")
 	private String authTokenUrl;
 	
-	@Bean
-	AuthenticationEntryPoint authenticationEntryPoint() {
-		BasicAuthenticationEntryPoint result;
+  	@Bean
+  	AuthenticationEntryPoint authenticationEntryPoint() {
+  		BasicAuthenticationEntryPoint result;
 		
-		result = new BasicAuthenticationEntryPoint();
-		result.setRealmName("wfim-incidents-api");
+  		result = new BasicAuthenticationEntryPoint();
+  		result.setRealmName("wfim-incidents-api");
 		
-		return result;
-	}
+  		return result;
+  	}
 
-	@Bean
-	public TokenService tokenServiceImpl() {		
-		return new TokenServiceImpl(
-				oauthClientId, 
-				oauthClientSecret, 
-				oauthCheckTokenUrl, 
-				authTokenUrl);
-	}
+  	@Bean
+  	public TokenService tokenServiceImpl() {		
+  		return new TokenServiceImpl(
+  				oauthClientId, 
+  				oauthClientSecret, 
+  				oauthCheckTokenUrl, 
+  				authTokenUrl);
+  	}
 	
-	@Bean
-	public AuthenticationProvider authenticationProvider() {
-		return new WebadeOauth2AuthenticationProvider(tokenServiceImpl(), "WFIM.*");
-	}
+  	@Bean
+  	public AuthenticationProvider authenticationProvider() {
+  		return new WebadeOauth2AuthenticationProvider(tokenServiceImpl(), "WFIM.*");
+  	}
 
-	@Bean
-	public AuthenticationManagerResolver<HttpServletRequest> authenticationManagerResolver() {
-		return new AuthenticationManagerResolver<HttpServletRequest>() {
-			@Override
-			public AuthenticationManager resolve(HttpServletRequest httpServletRequest) {
-				return new AuthenticationManager() {
-					@Override
-					public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-						return authenticationProvider().authenticate(authentication);
-					}};
-			}};
-	}
+  	@Bean
+  	public AuthenticationManagerResolver<HttpServletRequest> authenticationManagerResolver() {
+  		return new AuthenticationManagerResolver<HttpServletRequest>() {
+  			@Override
+  			public AuthenticationManager resolve(HttpServletRequest httpServletRequest) {
+  				return new AuthenticationManager() {
+  					@Override
+  					public Authentication authenticate(Authentication authentication) throws AuthenticationException {
+  						return authenticationProvider().authenticate(authentication);
+  					}};
+  			}};
+  	}
 
-  @Bean
-	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    @Bean
+  	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
-		http.csrf().disable();
+  		http.csrf().disable();
+
+		http.authorizeHttpRequests().anyRequest().permitAll();
 		
-		http
-		.oauth2ResourceServer(oauth2 -> oauth2
-			.authenticationManagerResolver(authenticationManagerResolver())
-		)
-		.httpBasic().and()
-		.authorizeHttpRequests((authorize) -> authorize
-				.anyRequest().authenticated()
-			)
-		.exceptionHandling()
-		.authenticationEntryPoint(authenticationEntryPoint());
+  		// http
+  		// .oauth2ResourceServer(oauth2 -> oauth2
+  		// 	.authenticationManagerResolver(authenticationManagerResolver())
+  		// )
+  		// .httpBasic().and()
+  		// .authorizeHttpRequests((authorize) -> authorize
+  		// 		.anyRequest().authenticated()
+  		// 	)
+  		// .exceptionHandling()
+  		// .authenticationEntryPoint(authenticationEntryPoint());
 
-		return http.build();
-	}
+  		return http.build();
+  	}
+
 }
