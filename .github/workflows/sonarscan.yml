@@ -13,31 +13,7 @@ jobs:
   sonar:
     name: Test - SonarCloud Scan
     runs-on: ubuntu-latest
-    services:
-      postgres:
-        image: postgis/postgis:16-3.4
-        ports:
-          - 5432:5432
-        env:
-          POSTGRES_USER: wfprev
-          POSTGRES_PASSWORD: password
-          POSTGRES_DB: wfprevdb
-        options: --health-cmd="pg_isready -U wfprev -d wfprevdb" --health-interval=10s --health-timeout=5s --health-retries=5
-
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Wait for Postgres to be ready
-        run: |
-          for i in {1..30}; do
-            if pg_isready -h postgres -p 5432 -U wfprev -d wfprevdb; then
-              echo "Postgres is ready!"
-              break
-            fi
-            echo "Waiting for Postgres..."
-            sleep 2
-          done
-
       - name: Set up JDK 17
         uses: actions/setup-java@v4 
         with:
