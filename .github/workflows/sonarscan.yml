@@ -13,18 +13,46 @@ jobs:
   sonar:
     name: Test - SonarCloud Scan
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgis/postgis:16-13.4
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_USER: wfprev
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: wfprevdb
+        options: > 
+          --health-cmd="pg_isready -U wfprev -d wfprevdb" 
+          --health-interval=10s 
+          --health-timeout=5s 
+          --health-retries=5
+
     steps:
-      - uses: actions/checkout@v4  
+      - uses: actions/checkout@v4
+
+      - name: Wait for Postgres to be ready
+        run: |
+          for i in {1..30}; do
+            if pg_isready -h postgres -p 5432 -U wfprev -d wfprevdb; then
+              echo "Postgres is ready!"
+              break
+            fi
+            echo "Waiting for Postgres..."
+            sleep 2
+          done
+
       - name: Set up JDK 17
-        uses: actions/setup-java@v4     
+        uses: actions/setup-java@v4
         with:
           java-version: 17
-          distribution: 'adopt' 
-      - name: SonarCloud Scan 
+          distribution: 'adopt'
+
+      - name: SonarCloud Scan
         run: |          
             export MAVEN_OPTS="-Xmx10000m"
             export NODE_OPTIONS="--max-old-space-size=4096"
-            mvn clean --settings server/wfprev-api/mvn_settings/settings.xml -B org.jacoco:jacoco-maven-plugin:prepare-agent verify org.jacoco:jacoco-maven-plugin:report org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=bcgov_nr-bcws-wfprev -Drepo.login=${{ secrets.IDIR_AS_EMAIL }} -Drepo.password=${{ secrets.IDIR_PASSWORD }} -DWFPREV_CLIENT_ID=${{ secrets.WFPREV_CLIENT_ID }} -DWFPREV_CLIENT_SECRET=${{ secrets.WFPREV_CLIENT_SECRET }} -DWEBADE_OAUTH2_CHECK_TOKEN_URL=${{ secrets.WEBADE_OAUTH2_CHECK_TOKEN_URL }} -DWEBADE_OAUTH2_CHECK_AUTHORIZE_URL=${{ secrets.WEBADE_OAUTH2_CHECK_AUTHORIZE_URL }} -DWFPREV_DATASOURCE_URL=${{ secrets.WFPREV_DATASOURCE_URL }} -DWFPREV_DATASOURCE_USERNAME=${{ secrets.WFPREV_DATASOURCE_USERNAME }} -DWFPREV_DATASOURCE_PASSWORD=${{ secrets.WFPREV_DATASOURCE_PASSWORD }}
+            mvn clean --settings server/wfprev-api/mvn_settings/settings.xml -B org.jacoco:jacoco-maven-plugin:prepare-agent verify org.jacoco:jacoco-maven-plugin:report org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=bcgov_nr-bcws-wfprev -Drepo.login=${{ secrets.IDIR_AS_EMAIL }} -Drepo.password=${{ secrets.IDIR_PASSWORD }} -DWFPREV_CLIENT_ID=${{ vars.WFPREV_CLIENT_ID }} -DWFPREV_CLIENT_SECRET=${{ secrets.WFPREV_CLIENT_SECRET }} -DWEBADE_OAUTH2_CHECK_TOKEN_URL=${{ vars.WEBADE_OAUTH2_CHECK_TOKEN_URL }} -DWEBADE_OAUTH2_CHECK_AUTHORIZE_URL=${{ vars.WEBADE_OAUTH2_CHECK_AUTHORIZE_URL }} -DWFPREV_DATASOURCE_URL=${{ vars.WFPREV_DATASOURCE_URL }} -DWFPREV_DATASOURCE_USERNAME=${{ vars.WFPREV_DATASOURCE_USERNAME }} -DWFPREV_DATASOURCE_PASSWORD=${{ secrets.WFPREV_DATASOURCE_PASSWORD }}
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
