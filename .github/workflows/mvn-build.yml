@@ -12,7 +12,7 @@ on:
     inputs:
       PROJECT_NAME:
         type: string
-        description: 'Name of project, as given to the subfolder of /server or /cliner to build'
+        description: 'Name of project, as given to the subfolder of /server or /client to build'
         required: true
       TAG:
         required: false
