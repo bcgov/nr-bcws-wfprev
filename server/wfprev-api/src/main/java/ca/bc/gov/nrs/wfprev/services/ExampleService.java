@@ -1,5 +1,6 @@
 package ca.bc.gov.nrs.wfprev.services;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -48,7 +49,8 @@ public class ExampleService implements CommonService {
 
   public CollectionModel<ExampleModel> getAllExamples() throws ServiceException {
     try {
-      List<ExampleEntity> entities = exampleRepository.findAll();
+      // List<ExampleEntity> entities = exampleRepository.findAll();
+      List<ExampleEntity> entities = new ArrayList<>();
       return exampleResourceAssembler.toCollectionModel(entities);
     } catch(Exception e) {
       throw new ServiceException(e.getLocalizedMessage(), e);

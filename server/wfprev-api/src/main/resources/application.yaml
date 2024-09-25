@@ -2,9 +2,9 @@ spring:
   application:
     name: wfprev
   datasource:
-    url: ${WFPREV_DATASOURCE_URL}
-    username: ${WFPREV_DATASOURCE_USERNAME}
-    password: ${WFPREV_DATASOURCE_PASSWORD}
+    url: jdbc:postgresql://172.17.0.2:5432/wfprev
+    username: wfprev
+    password: password
     tomcat:
       initial-size: 15
       max-wait: 20000
@@ -52,10 +52,10 @@ springdoc:
 
 security:
   oauth:
-    clientId: ${WFPREV_CLIENT_ID}
-    clientSecret: ${WFPREV_CLIENT_SECRET}
-    checkTokenUrl: ${WEBADE_OAUTH2_CHECK_TOKEN_URL}
-    authTokenUrl: ${WEBADE_OAUTH2_CHECK_AUTHORIZE_URL}
+    clientId: WFNEWS-REST
+    clientSecret: 200e68112cc360193b572b9110a9b8d2
+    checkTokenUrl: https://wfappsi.nrs.gov.bc.ca/pub/oauth2/v1/check_token?disableDeveloperFilter=true
+    authTokenUrl: https://wfappsi.nrs.gov.bc.ca/ext/oauth2/v1/oauth/authorize
 
 server:
   forward-headers-strategy: framework
