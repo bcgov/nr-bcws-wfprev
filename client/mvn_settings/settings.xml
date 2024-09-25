@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<settings xsi:schemaLocation="https://maven.apache.org/SETTINGS/1.1.0 https://maven.apache.org/xsd/settings-1.1.0.xsd" xmlns="https://maven.apache.org/SETTINGS/1.1.0"
+ xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance">
+<servers>
+<server>
+  <username>${repo.login}</username>
+  <password>${repo.password}</password>
+  <id>central</id>
+</server>
+<server>
+  <username>${repo.login}</username>
+  <password>${repo.password}</password>
+<id>snapshots</id>
+</server>
+</servers>
+<profiles>
+<profile>
+<repositories>
+ <repository>
+   <snapshots>
+     <enabled>false</enabled>
+   </snapshots>
+   <id>central</id>
+   <name>libs-release</name>
+   <url>https://bwa.nrs.gov.bc.ca/int/artifactory/libs-release</url>
+ </repository>
+ <repository>
+   <snapshots />
+   <id>snapshots</id>
+   <name>libs-snapshot</name>
+   <url>https://bwa.nrs.gov.bc.ca/int/artifactory/libs-snapshot</url>
+ </repository>
+</repositories>
+<pluginRepositories>
+ <pluginRepository>
+   <snapshots>
+     <enabled>false</enabled>
+   </snapshots>
+   <id>central</id>
+   <name>plugins-release</name>
+   <url>https://bwa.nrs.gov.bc.ca/int/artifactory/plugins-release</url>
+ </pluginRepository>
+ <pluginRepository>
+   <snapshots />
+   <id>snapshots</id>
+   <name>plugins-snapshot</name>
+   <url>https://bwa.nrs.gov.bc.ca/int/artifactory/plugins-snapshot</url>
+ </pluginRepository>
+</pluginRepositories>
+<id>artifactory</id>
+</profile>
+</profiles>
+<activeProfiles>
+ <activeProfile>artifactory</activeProfile>
+</activeProfiles>
+</settings>
