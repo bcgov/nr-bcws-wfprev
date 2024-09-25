@@ -132,7 +132,7 @@ jobs:
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v2
         with:
-          registry: ${{ vars.REPOSITORY }}
+          registry: ${{ vars.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
@@ -141,7 +141,7 @@ jobs:
         id: meta_pr
         uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
         with:
-          images: ${{ vars.REPOSITORY}}/${{ env.IMAGE_NAME }}
+          images: ${{ vars.REGISTRY}}/${{ env.IMAGE_NAME }}
           tags: |
             type=schedule
             type=raw,value=${{ steps.trimBranchName.outputs.BRANCH_TAG }}
