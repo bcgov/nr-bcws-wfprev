@@ -1,4 +1,5 @@
 env:
+
   IMAGE_NAME: "${{ github.repository }}-${{inputs.PROJECT_NAME}}"
   NPMRC: ${{ secrets.NPMRC }}
 
