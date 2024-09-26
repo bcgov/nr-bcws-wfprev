@@ -20,6 +20,7 @@
         <dependency>
             <groupId>ca.bc.gov.nrs.wfprev</groupId>
             <artifactId>wfprev-api</artifactId>
+            <scope>provided</scope>
             <version>${project.version}</version>
         </dependency>
     </dependencies>
