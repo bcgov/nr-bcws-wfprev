@@ -18,6 +18,6 @@ jobs:
     uses: ./.github/workflows/mvn-build.yml
     secrets: inherit
     with:
-      PROJECT_NAME: wfprev-ui
+      PROJECT_NAME: wfprev-war
       TAG: ${{inputs.TAG}}
       PROJECT_TYPE: client
