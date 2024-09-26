@@ -118,7 +118,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: ${{ inputs.PROJECT_NAME }}-package
-          path: ${{inputs.PROJECT_TYPE}}/wfprev-war
+          path: ${{inputs.PROJECT_TYPE}}/${{inputs.PROJECT_NAME}}
 
       # - name: Update image name if PR number present
       #   if: ${{ github.event.pull_request.number > 0 || inputs.IS_HOTFIX == 'true' }}
