@@ -4,10 +4,10 @@ FROM node:18 AS build
 WORKDIR /src/main/angular
 
 # Add NPM Token from build arguments for private registry authentication
-ARG NPM_TOKEN
-ARG PRIVATE_REGISTRY_AUTH
-RUN echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > .npmrc
-RUN echo "//bwa.nrs.gov.bc.ca/int/artifactory/api/npm/nrs-virtual-npm/:_auth=${PRIVATE_REGISTRY_AUTH}" >> .npmrc
+# ARG NPM_TOKEN
+# ARG PRIVATE_REGISTRY_AUTH
+# RUN echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > .npmrc
+# RUN echo "//bwa.nrs.gov.bc.ca/int/artifactory/api/npm/nrs-virtual-npm/:_auth=${PRIVATE_REGISTRY_AUTH}" >> .npmrc
 
 # Copy the package.json and package-lock.json files
 COPY src/main/angular/package*.json ./

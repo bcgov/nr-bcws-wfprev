@@ -72,7 +72,7 @@ jobs:
       
       - uses: actions/upload-artifact@v3
         with:
-          name: Package-client
+          name: ${{ inputs.PROJECT_NAME }}-package
           path: staging
 
       - name: Cache local Maven repository
