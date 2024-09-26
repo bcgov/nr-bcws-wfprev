@@ -1,0 +1,125 @@
+name: Deploy using terragrunt
+
+permissions:
+  contents: read
+  packages: write
+
+on:
+  workflow_dispatch:
+    inputs:
+      DEFAULT_APPLICATION_ENVIRONMENT:
+        required: true
+        type: choice
+        options:
+        - dev
+        - test
+        - prod
+      IMAGE_TAG:
+        required: true
+        type: string
+      SCHEMA_NAME:
+        required: true
+        type: string
+        default: app_wf1_prev
+      CHANGELOG_NAME:
+        type: choice
+        options:
+          - none
+          - changelog_app_wf1_prev
+          - changelog_app_wf1_prev_proxy
+      TARGET_LIQUIBASE_TAG: 
+        required: false
+        type: string
+      IS_HOTFIX:
+        required: true
+        type: string
+        default: 'false'
+
+env:
+  TF_VERSION: 1.8.5
+  TG_VERSION: 0.48.4
+  TG_SRC_PATH: terraform
+  REPOSITORY: ghcr.io
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-22.04
+    environment: ${{ inputs.DEFAULT_APPLICATION_ENVIRONMENT }}
+    permissions:
+      id-token: write # This is required for requesting the JWT
+      contents: read  # This is required for actions/checkout
+
+    steps:
+      - uses: actions/checkout@v3
+
+      # - name: retrieve lambda artifacts
+      #   uses: actions/download-artifact@v3
+      #   with:
+      #     name: lambda-functions
+      #     path: ${{env.TG_SRC_PATH}}/lambda-functions
+
+      - id: changeLogCount
+        name: Determine changelog to execute
+        run: |
+          if [ "${{ inputs.CHANGELOG_NAME }}" == "changelog_app_wf1_prev" ]; then
+            echo "NONPROXY_COUNT=1" >> $GITHUB_OUTPUT
+            echo "PROXY_COUNT=0" >> $GITHUB_OUTPUT
+          elif [ "${{ inputs.CHANGELOG_NAME }}" == "changelog_app_wf1_prev_proxy" ] ; then
+            echo "NONPROXY_COUNT=0" >> $GITHUB_OUTPUT
+            echo "PROXY_COUNT=1" >> $GITHUB_OUTPUT
+          else
+            echo "NONPROXY_COUNT=0" >> $GITHUB_OUTPUT
+            echo "PROXY_COUNT=0" >> $GITHUB_OUTPUT
+          fi
+
+      - id: liquibaseCommand
+        name: Determine liquibase command
+        run: |
+          if [ "${{ inputs.TARGET_LIQUIBASE_TAG }}" == "" ]; then
+            echo "LIQUIBASE_COMMAND=update" >> $GITHUB_OUTPUT
+            echo "TARGET_LIQUIBASE_TAG=""" >> $GITHUB_OUTPUT
+          else
+            echo "LIQUIBASE_COMMAND=update-to-tag" >> $GITHUB_OUTPUT
+            echo "TARGET_LIQUIBASE_TAG=--tag=${{inputs.TARGET_LIQUIBASE_TAG}}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: ${{ secrets.AWS_TERRAFORM_ROLE_TO_ASSUME }}
+          role-session-name: wfprev-terraform-s3
+          aws-region: ca-central-1
+
+      - uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+          cli_config_credentials_token: ${{ secrets.TFC_TEAM_TOKEN }}
+
+      - uses: peter-murray/terragrunt-github-action@v1.0.0
+        with:
+          terragrunt_version: ${{ env.TG_VERSION }}
+
+      - name: Terragrunt Apply
+        working-directory: ${{env.TG_SRC_PATH}}
+
+        env:
+          # Necessary for all components
+          GITHUB_USERNAME: ${{ secrets.FETCH_IMAGE_USER }}
+          GITHUB_TOKEN: ${{ secrets.FETCH_IMAGE_TOKEN }}
+          TFC_PROJECT: ${{ secrets.TFC_PROJECT }}
+          TARGET_ENV: ${{ inputs.DEFAULT_APPLICATION_ENVIRONMENT }}
+          APP_COUNT: ${{vars.APP_COUNT}}
+          LOGGING_LEVEL: ${{vars.LOGGING_LEVEL}}
+
+          # Necessary for WFPREV API
+          WFPREV_API_NAME: wfprev-api
+          WFPREV_API_IMAGE: ${{ vars.REPOSITORY }}/${{ github.repository }}-wfprev-api:${{ inputs.IMAGE_TAG }}
+          WFPREV_API_CPU_UNITS: ${{vars.WFPREV_API_CPU_UNITS}}
+          WFPREV_API_MEMORY: ${{vars.WFPREV_API_MEMORY}}
+          WFPREV_API_PORT: ${{vars.WFPREV_API_PORT}}
+
+          # WFPREV UI
+          client_image: ${{ vars.REPOSITORY }}/${{ github.repository }}-wfprev-ui:${{ inputs.IMAGE_TAG }}
+          WEBADE_OAUTH2_WFPREV_UI_CLIENT_SECRET: ${{ secrets.WEBADE_OAUTH2_WFPREV_UI_CLIENT_SECRET }}
+        run: terragrunt apply --terragrunt-non-interactive -auto-approve
