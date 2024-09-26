@@ -1,0 +1,33 @@
+env:
+  IMAGE_NAME: "${{ github.repository }}-${{inputs.PROJECT_NAME}}"
+  NPMRC: ${{ secrets.NPMRC }}
+
+permissions:
+  contents: read
+  packages: write
+
+on:
+  pull_request_target:
+    types:
+      - closed
+    branches:
+      - 'main'
+    paths:
+      - ".github/workflows/**"
+      - "client/**"
+      - "server/**"
+      - "!**/README.md"
+  workflow_dispatch:
+    inputs:
+      TAG:
+        type: string
+        description: Additional tag to add to built images
+
+jobs: 
+  wfprev-ui:
+    uses: ./.github/workflows/mvn-build.yml
+    secrets: inherit
+    with:
+      PROJECT_NAME: wfprev-war
+      TAG: ${{inputs.TAG}}
+      PROJECT_TYPE: client
