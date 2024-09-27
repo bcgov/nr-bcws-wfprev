@@ -20,7 +20,7 @@
         <sonar.version>4.0.0.4121</sonar.version>
         <jacoco.version>0.8.11</jacoco.version>
         <surefire.version>3.5.0</surefire.version>
-        <aggregate.report.dir>librairy-test/target/site/jacoco-aggregate/jacoco.xml</aggregate.report.dir>
+        <aggregate.report.dir>wfprev-generate-aggregate-report/target/site/jacoco-aggregate/jacoco.xml</aggregate.report.dir>
     </properties>
 
     <build>
@@ -66,6 +66,35 @@
                                 <id>prepare-agent</id>
                                 <goals>
                                     <goal>prepare-agent</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>sonar</id>
+            <properties>
+                <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+                <sonar.organization>bcgov-sonarcloud</sonar.organization>
+                <sonar.projectKey>bcgov_nr-bcws-wfprev</sonar.projectKey>
+                <sonar.report>${aggregate.report.dir}</sonar.report>
+            </properties>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.sonarsource.scanner.maven</groupId>
+                        <artifactId>sonar-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>sonar</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sonar</goal>
                                 </goals>
                             </execution>
                         </executions>
