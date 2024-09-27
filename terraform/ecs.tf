@@ -147,7 +147,7 @@ resource "aws_ecs_task_definition" "wfprev_client" {
       essential   = true
       readonlyRootFilesystem = true
       name        = var.client_container_name
-      image       = var.client_image
+      image       = var.CLIENT_IMAGE
       cpu         = var.client_cpu_units
       memory      = var.client_memory
       networkMode = "awsvpc"
@@ -183,7 +183,15 @@ resource "aws_ecs_task_definition" "wfprev_client" {
         {
           name  = "WEBADE-OAUTH2_CHECK_TOKEN_V2_URL"
           value = var.WEBADE-OAUTH2_CHECK_TOKEN_URL
-        }
+        },
+        { //Will be phased out from prod eventually, but not yet
+          name  = "WFPREV_API_URL",
+          value = var.target_env == "prod" ? "https://${var.gov_api_url}/" : "https://${aws_route53_record.wfprev_nginx.name}/"
+        },
+        {
+          name  = "APPLICATION_ENVIRONMENT",
+          value = var.target_env != "prod" ? var.target_env : " "
+        },
       ]
       logConfiguration = {
         logDriver = "awslogs"
@@ -282,7 +290,7 @@ resource "aws_ecs_service" "client" {
 
 
   network_configuration {
-    security_groups  = [aws_security_group.wfnews_ecs_tasks.id, data.aws_security_group.app.id]
+    security_groups  = [aws_security_group.wfprev_ecs_tasks.id, data.aws_security_group.app.id]
     subnets          = module.network.aws_subnet_ids.app.ids
     assign_public_ip = true
   }
