@@ -184,10 +184,10 @@ resource "aws_ecs_task_definition" "wfprev_client" {
           name  = "WEBADE-OAUTH2_CHECK_TOKEN_V2_URL"
           value = var.WEBADE-OAUTH2_CHECK_TOKEN_URL
         },
-        { //Will be phased out from prod eventually, but not yet
-          name  = "WFPREV_API_URL",
-          value = var.target_env == "prod" ? "https://${var.gov_api_url}/" : "https://${aws_route53_record.wfprev_nginx.name}/"
-        },
+        # { //Will be phased out from prod eventually, but not yet
+        #   name  = "WFPREV_API_URL",
+        #   value = var.target_env == "prod" ? "https://${var.gov_api_url}/" : "https://${aws_route53_record.wfprev_nginx.name}/"
+        # },
         {
           name  = "APPLICATION_ENVIRONMENT",
           value = var.target_env != "prod" ? var.target_env : " "
