@@ -20,7 +20,7 @@ jobs:
         with:
           java-version: 17
           distribution: 'adopt'  
-      - name: SonarCloud Scan 
+      - name: SonarCloud Scan  
         run: |          
             export MAVEN_OPTS="-Xmx10000m"
             export NODE_OPTIONS="--max-old-space-size=4096"
