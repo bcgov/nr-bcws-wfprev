@@ -58,8 +58,10 @@ public class ExampleService implements CommonService {
   }
    
   public ExampleModel getExampleById(String id) throws ServiceException {
-    try {
-      return exampleRepository.findById(id).map(exampleResourceAssembler::toModel).orElse(null);
+    try {ExampleModel exampleModel = new ExampleModel();
+          exampleModel.setExampleGuid(id);
+          return exampleModel;
+      // return exampleRepository.findById(id).map(exampleResourceAssembler::toModel).orElse(null);
     } catch(Exception e) {
       throw new ServiceException(e.getLocalizedMessage(), e);
     }
@@ -72,9 +74,9 @@ public class ExampleService implements CommonService {
       resource.setUpdateDate(new Date());
 
       ExampleEntity oldEntity = exampleResourceAssembler.toEntity(resource);
-      ExampleEntity newEntity = exampleRepository.saveAndFlush(oldEntity);
+      // ExampleEntity newEntity = exampleRepository.saveAndFlush(oldEntity);
 
-      return exampleResourceAssembler.toModel(newEntity);
+      return exampleResourceAssembler.toModel(oldEntity);
     } catch(Exception e) {
       throw new ServiceException(e.getLocalizedMessage(), e);
     }
@@ -82,7 +84,8 @@ public class ExampleService implements CommonService {
 
   public CollectionModel<ExampleCodeModel> getAllExampleCodes() throws ServiceException {
     try {
-      List<ExampleCodeEntity> entities = exampleCodeRepository.findAll();
+      // List<ExampleCodeEntity> entities = exampleCodeRepository.findAll();
+      List<ExampleCodeEntity> entities = new ArrayList<>();
       return exampleCodeResourceAssembler.toCollectionModel(entities);
     } catch(Exception e) {
       throw new ServiceException(e.getLocalizedMessage(), e);
@@ -91,7 +94,10 @@ public class ExampleService implements CommonService {
   
   public ExampleCodeModel getExampleCodeById(String id) throws ServiceException {
     try {
-      return exampleCodeRepository.findById(id).map(exampleCodeResourceAssembler::toModel).orElse(null);
+      ExampleCodeModel exampleCodeModel = new ExampleCodeModel();
+          exampleCodeModel.setExampleCode(id);
+          return exampleCodeModel;
+      // return exampleCodeRepository.findById(id).map(exampleCodeResourceAssembler::toModel).orElse(null);
     } catch(Exception e) {
       throw new ServiceException(e.getLocalizedMessage(), e);
     }
