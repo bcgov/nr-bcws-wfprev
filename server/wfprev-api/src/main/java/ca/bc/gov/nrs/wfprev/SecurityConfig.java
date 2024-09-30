@@ -83,16 +83,18 @@ public class SecurityConfig {
 
         http.csrf().disable();
 
-        http
-                .oauth2ResourceServer(oauth2 -> oauth2
-                .authenticationManagerResolver(authenticationManagerResolver())
-                )
-                .httpBasic().and()
-                .authorizeHttpRequests((authorize) -> authorize
-                .anyRequest().authenticated()
-                )
-                .exceptionHandling()
-                .authenticationEntryPoint(authenticationEntryPoint());
+        http.authorizeHttpRequests().anyRequest().permitAll();
+
+        // http
+        //         .oauth2ResourceServer(oauth2 -> oauth2
+        //         .authenticationManagerResolver(authenticationManagerResolver())
+        //         )
+        //         .httpBasic().and()
+        //         .authorizeHttpRequests((authorize) -> authorize
+        //         .anyRequest().authenticated()
+        //         )
+        //         .exceptionHandling()
+        //         .authenticationEntryPoint(authenticationEntryPoint());
 
         return http.build();
     }
