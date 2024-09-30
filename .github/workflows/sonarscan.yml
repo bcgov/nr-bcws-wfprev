@@ -7,11 +7,12 @@ on:
   push:
     branches: [ main, feature/* ]
   pull_request_target:
+    branches: [ main, feature/* ]
     types: [opened, synchronize, reopened]
 
 jobs:
   sonar:
-    name: Test - SonarCloud Scan
+    name: Server - SonarCloud Scan
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4 
@@ -29,10 +30,10 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   sonarcloud:
-    name: SonarCloud
+    name: Client - SonarCloud Scan
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4 
         with:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
       - name: SonarCloud Scan
