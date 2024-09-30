@@ -52,7 +52,7 @@ variable "server_container_name" {
   default     = "wfprev-server-app"
 }
 
-variable "client_image" {
+variable "CLIENT_IMAGE" {
   description = "Docker image to run in the ECS cluster. _Note_: there is a blank default value, which will cause service and task resource creation to be supressed unless an image is specified."
   type        = string
   default     = ""
@@ -183,4 +183,10 @@ variable "app_count" {
 variable "ecs_task_execution_role_name" {
   description = "ECS task execution role name"
   default     = "wfprevEcsTaskExecutionRole"
+}
+
+variable "gov_api_url" {
+  description = "domain name if using *-api.nrs.gov.bc.ca url"
+  default     = ""
+  type        = string
 }
