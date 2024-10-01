@@ -36,7 +36,7 @@ jobs:
     uses: ./.github/workflows/terragrunt-deploy.yml
     needs: [wfprev-ui]
     with:
-      DEFAULT_APPLICATION_ENVIRONMENT: DEV
+      DEFAULT_APPLICATION_ENVIRONMENT: dev
       IMAGE_TAG: latest
 
     secrets: inherit
