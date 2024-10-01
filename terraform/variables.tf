@@ -42,7 +42,13 @@ variable "CLIENT_IMAGE" {
   type        = string
   default     = ""
 }
-variable "server_image" {
+variable "SERVER_IMAGE" {
+  description = "Docker image to run in the ECS cluster. _Note_: there is a blank default value, which will cause service and task resource creation to be supressed unless an image is specified."
+  type        = string
+  default     = ""
+}
+
+variable "WFPREV_API_IMAGE" {
   description = "Docker image to run in the ECS cluster. _Note_: there is a blank default value, which will cause service and task resource creation to be supressed unless an image is specified."
   type        = string
   default     = ""
@@ -200,4 +206,17 @@ variable "DB_SIZE" {
   description = "size of db, in GB"
   type        = number
   default     = 10
+}
+
+
+variable "PREVENTION_WAR_NAMES" {
+  type = list(string)
+  description = "List of paths to point at payroll API"
+  default = ["wfprev-ui", "wfprev-ui/*"]
+}
+
+variable "PREVENTION_API_NAMES" {
+  type = list(string)
+  description = "List of paths to point at payroll API"
+  default = ["wfprev-api", "wfprev-api/*"]
 }
