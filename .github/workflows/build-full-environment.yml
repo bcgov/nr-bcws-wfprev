@@ -29,5 +29,13 @@ jobs:
     secrets: inherit
     with:
       PROJECT_NAME: wfprev-war
-      TAG: ${{inputs.TAG}}
+      TAG: latest
       PROJECT_TYPE: client
+  terragrunt-deploy-dev:
+    uses: ./.github/workflows/terragrunt-deploy.yml
+    needs: [wfprev-ui]
+    with:
+      DEFAULT_APPLICATION_ENVIRONMENT: DEV
+      IMAGE_TAG: latest
+
+    secrets: inherit
