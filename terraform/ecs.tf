@@ -71,13 +71,9 @@ resource "aws_ecs_task_definition" "wfprev_server" {
         name  = "WEBADE_OAUTH2_CLIENT_ID"
         value = var.WEBADE_OAUTH2_REST_CLIENT_ID
       },
-        {
-          name  = "WEBADE-OAUTH2_TOKEN_URL",
-          value = var.WEBADE-OAUTH2_TOKEN_URL
-        },
       {
-        name = "DEFAULT_APPLICATION_ENVIRONMENT"
-        value = var.DEFAULT_APPLICATION_ENVIRONMENT
+        name  = "WEBADE-OAUTH2_TOKEN_URL",
+        value = var.WEBADE-OAUTH2_TOKEN_URL
       },
       {
         name = "WFPREV_DB_URL"
