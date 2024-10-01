@@ -148,13 +148,8 @@ resource "aws_ecs_task_definition" "wfprev_client" {
       readonlyRootFilesystem = true
       name        = var.client_container_name
       image       = var.CLIENT_IMAGE
-<<<<<<< HEAD
       cpu         = var.WFPREV_CLIENT_CPU_UNITS
       memory      = var.WFPREV_CLIENT_MEMORY
-=======
-      cpu         = var.client_cpu_units
-      memory      = var.client_memory
->>>>>>> b30015d11d0ef6c9476538ab8aae37b6f205be06
       networkMode = "awsvpc"
       portMappings = [
         {
@@ -191,19 +186,11 @@ resource "aws_ecs_task_definition" "wfprev_client" {
         },
         { //Will be phased out from prod eventually, but not yet  "https://${aws_route53_record.wfprev_nginx.name}/"
           name  = "WFPREV_API_URL",
-<<<<<<< HEAD
           value = var.TARGET_ENV == "prod" ? "https://${var.gov_api_url}/" : "https://example.com/"
         },
         {
           name  = "APPLICATION_ENVIRONMENT",
           value = var.TARGET_ENV != "prod" ? var.TARGET_ENV : " "
-=======
-          value = var.target_env == "prod" ? "https://${var.gov_api_url}/" : "https://example.com/"
-        },
-        {
-          name  = "APPLICATION_ENVIRONMENT",
-          value = var.target_env != "prod" ? var.target_env : " "
->>>>>>> b30015d11d0ef6c9476538ab8aae37b6f205be06
         },
       ]
       logConfiguration = {
