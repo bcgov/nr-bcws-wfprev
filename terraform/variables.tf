@@ -96,6 +96,7 @@ variable "db_pass" {
 variable "api_key" {
   description = "value for api key"
   type        = string
+  default = ""
 }
 
 variable "server_name" {
