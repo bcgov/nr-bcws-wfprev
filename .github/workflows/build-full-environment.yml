@@ -5,6 +5,7 @@ env:
 permissions:
   contents: read
   packages: write
+  id-token: write
 
 on:
   pull_request_target:
