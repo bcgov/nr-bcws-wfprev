@@ -88,11 +88,6 @@ variable "WEBADE-OAUTH2_TOKEN_URL" {
   default = ""
 }
 
-variable "DEFAULT_APPLICATION_ENVIRONMENT" {
-  type    = string
-  default = ""
-}
-
 variable "WFPREV_USERNAME" {
   type    = string
   default = ""
