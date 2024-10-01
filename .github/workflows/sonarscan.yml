@@ -42,7 +42,7 @@ jobs:
           cache-dependency-path: './client/wfprev-war/src/main/angular/yarn.lock'
      
       - name: Install dependencies and Angular CLI
-        working-directory: ./client/wfprev-war/src/main/angular
+        working-directory: ./client/wfprev-war/src/main/angulara
         run: |
           yarn install
           yarn global add @angular/cli
