@@ -13,6 +13,19 @@ on:
       IMAGE_TAG:
         required: true
         type: string
+  workflow_dispatch:
+    inputs:
+      DEFAULT_APPLICATION_ENVIRONMENT:
+        required: true
+        type: choice
+        options:
+        - dev
+        - test
+        - prod
+      IMAGE_TAG:
+        required: true
+        type: string
+        default: main
       # SCHEMA_NAME:
       #   required: true
       #   type: string
