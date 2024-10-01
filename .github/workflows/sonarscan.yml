@@ -81,7 +81,7 @@ jobs:
             echo "quality_gate_failed=false" >> $GITHUB_OUTPUT
           fi
 
-      - name: Notify Slack on Failure
+      - name: Notify Slack on Failure 
         if: failure() || steps.sonarcloud_quality_gate.outputs.quality_gate_failed == 'true'
         uses: ravsamhq/notify-slack-action@2.5.0
         with:
