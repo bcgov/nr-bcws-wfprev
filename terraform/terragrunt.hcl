@@ -40,8 +40,11 @@ TARGET_AWS_ACCOUNT_ID = "${get_env("TARGET_AWS_ACCOUNT_ID")}"
 # client
 WEBADE_OAUTH2_WFPREV_UI_CLIENT_SECRET = "${get_env("WEBADE_OAUTH2_WFPREV_UI_CLIENT_SECRET")}"
 CLIENT_IMAGE = "${get_env("CLIENT_IMAGE")}"
-WFPREV_CLIENT_PORT = "${get_env("WFPREV_CLIENT_PORT")}"
 
+# db
+WFPREV_USERNAME = "${get_env("WFPREV_USERNAME")}"
+DB_PASS = "${get_env("DB_PASS")}"
+DB_INSTANCE_TYPE = "${get_env("DB_INSTANCE_TYPE")}"
 EOF
 }
 
@@ -52,7 +55,7 @@ generate "provider" {
 provider "aws" {
   region  = "ca-central-1"
   assume_role {
-    role_arn = "arn:aws:iam::$${var.TARGET_AWS_ACCOUNT_ID}:role/Terraform_Deploy_Role"
+    role_arn = "arn:aws:iam::$${var.TARGET_AWS_ACCOUNT_ID}:role/Terraform-deploy"
   }
 }
 EOF

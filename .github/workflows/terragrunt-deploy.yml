@@ -13,6 +13,19 @@ on:
       IMAGE_TAG:
         required: true
         type: string
+  workflow_dispatch:
+    inputs:
+      DEFAULT_APPLICATION_ENVIRONMENT:
+        required: true
+        type: choice
+        options:
+        - dev
+        - test
+        - prod
+      IMAGE_TAG:
+        required: true
+        type: string
+        default: main
       # SCHEMA_NAME:
       #   required: true
       #   type: string
@@ -118,5 +131,10 @@ jobs:
           WEBADE_OAUTH2_WFPREV_UI_CLIENT_SECRET: ${{ secrets.WEBADE_OAUTH2_WFPREV_UI_CLIENT_SECRET }}
           WFPREV_CLIENT_MEMORY: ${{vars.WFPREV_CLIENT_MEMORY}}
           WFPREV_CLIENT_CPU_UNITS : ${{vars.WFPREV_CLIENT_CPU_UNITS}}
+
+          # DB
+          WFPREV_USERNAME: ${{secrets.WFPREV_USERNAME}}
+          DB_PASS: ${{secrets.DB_PASS}}
+          DB_INSTANCE_TYPE: ${{vars.DB_INSTANCE_TYPE}}
 
         run: terragrunt apply --terragrunt-non-interactive -auto-approve
