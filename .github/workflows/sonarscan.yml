@@ -48,16 +48,13 @@ jobs:
         working-directory: ./client/wfprev-war/src/main/angular
         run: |
           yarn install
-          yarn global add @angular/cli
+          yarn global add @angular/cli 
       
       - name: Run client tests with coverage
         working-directory: ./client/wfprev-war/src/main/angular
         run: $(yarn global bin)/ng test --no-watch --code-coverage
       
       - name: Build, Test, and Analyze
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
           mvn clean --settings server/wfprev-api/mvn_settings/settings.xml -B \
           org.jacoco:jacoco-maven-plugin:prepare-agent verify \
@@ -66,12 +63,12 @@ jobs:
           -Drepo.login=${{ secrets.IDIR_AS_EMAIL }} \
           -Drepo.password=${{ secrets.IDIR_PASSWORD }} \
           -DWFPREV_CLIENT_ID=${{ vars.WFPREV_CLIENT_ID }} \
+          -DWFPREV_CLIENT_SECRET=${{ secrets.WFPREV_CLIENT_SECRET }} \
+          -DWEBADE_OAUTH2_CHECK_TOKEN_URL=${{ vars.WEBADE_OAUTH2_CHECK_TOKEN_URL }} \
+          -DWEBADE_OAUTH2_CHECK_AUTHORIZE_URL=${{ vars.WEBADE_OAUTH2_CHECK_TOKEN_URL }} \
           -DWFPREV_DATASOURCE_URL=${{ vars.WFPREV_DATASOURCE_URL }} \
           -DWFPREV_DATASOURCE_USERNAME=${{ vars.WFPREV_DATASOURCE_USERNAME }} \
-          -DWFPREV_DATASOURCE_PASSWORD=${{ secrets.WFPREV_DATASOURCE_PASSWORD }}
+          -DWFPREV_DATASOURCE_PASSWORD=${{ secrets.WFPREV_DATASOURCE_PASSWORD }} 
       
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
