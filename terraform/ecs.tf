@@ -85,7 +85,7 @@ resource "aws_ecs_task_definition" "wfprev_server" {
       },
       {
         name  = "DB_PASS"
-        value = var.db_pass
+        value = var.DB_PASS
       },
       {
         name  = "API_KEY"
