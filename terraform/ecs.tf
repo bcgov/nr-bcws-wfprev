@@ -126,8 +126,8 @@ resource "aws_ecs_task_definition" "wfprev_server" {
 
 resource "aws_ecs_task_definition" "wfprev_client" {
   family                   = "wfprev-client-task-${var.TARGET_ENV}"
-  # execution_role_arn       = aws_iam_role.wfprev_ecs_task_execution_role.arn
-  # task_role_arn            = aws_iam_role.wfprev_app_container_role.arn
+  execution_role_arn       = aws_iam_role.wfprev_ecs_task_execution_role.arn
+  task_role_arn            = aws_iam_role.wfprev_app_container_role.arn
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
   cpu                      = var.WFPREV_CLIENT_CPU_UNITS
