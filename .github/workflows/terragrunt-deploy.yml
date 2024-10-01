@@ -127,7 +127,7 @@ jobs:
           WFPREV_API_PORT: ${{vars.WFPREV_API_PORT}}
           TARGET_AWS_ACCOUNT_ID: ${{secrets.TARGET_AWS_ACCOUNT_ID}}
           # WFPREV UI
-          CLIENT_IMAGE: ${{ vars.REPOSITORY }}/${{ github.repository }}-wfprev-ui:${{ inputs.IMAGE_TAG }}
+          CLIENT_IMAGE: ${{ vars.REPOSITORY }}/${{ github.repository }}-wfprev-war:${{ inputs.IMAGE_TAG }}
           WEBADE_OAUTH2_WFPREV_UI_CLIENT_SECRET: ${{ secrets.WEBADE_OAUTH2_WFPREV_UI_CLIENT_SECRET }}
           WFPREV_CLIENT_MEMORY: ${{vars.WFPREV_CLIENT_MEMORY}}
           WFPREV_CLIENT_CPU_UNITS : ${{vars.WFPREV_CLIENT_CPU_UNITS}}
