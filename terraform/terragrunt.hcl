@@ -25,8 +25,6 @@ generate "tfvars" {
   disable_signature = true
   contents          = <<-EOF
 TARGET_ENV = "${get_env("TARGET_ENV")}"
-GITHUB_USERNAME = "${get_env("GITHUB_USERNAME")}"
-GITHUB_TOKEN = "${get_env("GITHUB_TOKEN")}"
 APP_COUNT = "${get_env("APP_COUNT")}"
 LOGGING_LEVEL = "${get_env("LOGGING_LEVEL")}"
 
@@ -43,7 +41,7 @@ TARGET_AWS_ACCOUNT_ID = "${get_env("TARGET_AWS_ACCOUNT_ID")}"
 # client
 WEBADE_OAUTH2_WFPREV_UI_CLIENT_SECRET = "${get_env("WEBADE_OAUTH2_WFPREV_UI_CLIENT_SECRET")}"
 CLIENT_IMAGE = "${get_env("CLIENT_IMAGE")}"
-WFPREV_UI_PORT = "${get_env("WFPREV_UI_PORT")}"
+WFPREV_CLIENT_PORT = "${get_env("WFPREV_CLIENT_PORT")}"
 
 EOF
 }
