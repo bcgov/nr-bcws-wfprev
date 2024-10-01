@@ -1,15 +1,3 @@
-variable "GITHUB_USERNAME" {
-  description = "Username to retrieve images"
-  type        = string
-  default = ""
-}
-
-variable "GITHUB_TOKEN" {
-  description = "Token to retrieve images"
-  type        = string
-  default = ""
-}
-
 variable "common_tags" {
   description = "Common tags for created resources"
   default = {
@@ -17,27 +5,29 @@ variable "common_tags" {
   }
 }
 
-variable "target_env" {
+variable "TARGET_ENV" {
   description = "AWS workload account env (e.g. dev, test, prod, sandbox, unclass)"
   type        = string
 }
 
-variable "client_cpu_units" {
+variable "WFPREV_CLIENT_CPU_UNITS" {
   description = "client instance CPU units to provision (1 vCPU = 1024 CPU units)"
   type        = number
+  default = 512
 }
 
-variable "client_memory" {
+variable "WFPREV_CLIENT_MEMORY" {
   description = "client instance memory to provision (in MiB)"
   type        = number
+  default = 1024
 }
 
-variable "server_cpu_units" {
+variable "WFPREV_API_CPU_UNITS" {
   description = "server CPU units to provision (1 vCPU = 1024 CPU units)"
   type        = number
 }
 
-variable "server_memory" {
+variable "WFPREV_API_MEMORY" {
   description = "server memory to provision (in MiB)"
   type        = number
 }
@@ -148,7 +138,7 @@ variable "WFPREV_API_PORT" {
   default     = 443
 }
 
-variable "WFPREV_UI_PORT" {
+variable "WFPREV_CLIENT_PORT" {
   type = number
   default = 8080
 }
