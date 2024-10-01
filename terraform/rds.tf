@@ -18,6 +18,7 @@ resource "aws_db_instance" "wfprev_pgsqlDB" {
   allocated_storage               = var.DB_SIZE
   username                        = var.WFPREV_USERNAME
   password                        = var.DB_PASS
+  db_subnet_group_name = aws_db_subnet_group.wfprev_db_subnet.name
   publicly_accessible             = false
   skip_final_snapshot             = true
   storage_encrypted               = true
@@ -27,6 +28,11 @@ resource "aws_db_instance" "wfprev_pgsqlDB" {
   lifecycle {
     prevent_destroy = true
   }
+}
+
+resource "aws_db_subnet_group" "wfprev_db_subnet" {
+  name       = "main"
+  subnet_ids = module.network.aws_subnet_ids.data.ids
 }
 
 /*
