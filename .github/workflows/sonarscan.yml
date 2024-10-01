@@ -71,7 +71,7 @@ jobs:
         uses: SonarSource/sonarcloud-github-action@master
 
   on-failure:
-    name: Post to Slack channel on failure
+    name: Post to Slack channel on failure 
     needs: sonarcloud
     if: failure()
     runs-on: ubuntu-latest
