@@ -48,7 +48,7 @@ jobs:
         working-directory: ./client/wfprev-war/src/main/angular
         run: |
           yarn install
-          yarn global add @angular/cli
+          yarn global add @angular/cli 
       
       - name: Run client tests with coverage
         working-directory: ./client/wfprev-war/src/main/angular
