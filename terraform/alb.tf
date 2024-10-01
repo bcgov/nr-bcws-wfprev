@@ -75,12 +75,12 @@ resource "aws_alb_target_group" "wfprev_api" {
     unhealthy_threshold = "2"
   }
 
-#  tags = local.common_tags
+#  tags = local.
 }
 
 resource "aws_alb_target_group" "wfprev_ui" {
   name = "wfprev-ui-${var.TARGET_ENV}"
-  port = var.WFPREV_UI_PORT
+  port = var.WFPREV_CLIENT_PORT
   protocol = "HTTP"
   vpc_id = module.network.aws_vpc.id
   target_type = "ip"
