@@ -177,3 +177,26 @@ variable "TARGET_AWS_ACCOUNT_ID" {
   type = string
   description = "Numerical AWS account ID"
 }
+
+variable "DB_POSTGRES_VERSION" {
+  description = "Which version of Postgres to use"
+  default     = "15.4"
+  type        = string
+}
+
+variable "DB_INSTANCE_TYPE" {
+  description = "Instance type to use for database vm"
+  type        = string
+}
+
+variable "DB_MULTI_AZ" {
+  description = "Whether to make db deployment a multi-AZ deployment"
+  default     = false
+  type        = bool
+}
+
+variable "DB_SIZE" {
+  description = "size of db, in GB"
+  type        = number
+  default     = 10
+}
