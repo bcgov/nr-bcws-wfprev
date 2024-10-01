@@ -91,11 +91,13 @@ variable "WFPREV_USERNAME" {
 variable "db_pass" {
   description = "db password, passed in as env variable at runtime"
   type        = string
+  default = ""
 }
 
 variable "api_key" {
   description = "value for api key"
   type        = string
+  default = ""
 }
 
 variable "server_name" {
