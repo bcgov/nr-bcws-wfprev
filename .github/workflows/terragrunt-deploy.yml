@@ -132,4 +132,8 @@ jobs:
           WFPREV_CLIENT_MEMORY: ${{vars.WFPREV_CLIENT_MEMORY}}
           WFPREV_CLIENT_CPU_UNITS : ${{vars.WFPREV_CLIENT_CPU_UNITS}}
 
+          # DB
+          WFPREV_USERNAME: ${{secrets.WFPREV_USERNAME}}
+          DB_PASS: ${{secrets.DB_PASS}}
+          
         run: terragrunt apply --terragrunt-non-interactive -auto-approve

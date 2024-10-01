@@ -17,16 +17,13 @@ resource "aws_db_instance" "wfprev_pgsqlDB" {
   backup_retention_period         = 7
   allocated_storage               = var.DB_SIZE
   username                        = var.WFPREV_USERNAME
-  password                        = var.db_pass
+  password                        = var.DB_PASS
   publicly_accessible             = false
   skip_final_snapshot             = true
   storage_encrypted               = true
-  vpc_security_group_ids          = [data.aws_security_group.app.id, aws_security_group.wfprev_ecs_tasks.id]
+  vpc_security_group_ids          = [data.aws_security_group.data.id]
   # tags                            = local.common_tags
-  db_subnet_group_name            = aws_db_subnet_group.wfprev_db_subnet_group.name
   enabled_cloudwatch_logs_exports = ["postgresql"]
-  parameter_group_name            = "wfprev-manual-postgres15"
-
   lifecycle {
     prevent_destroy = true
   }

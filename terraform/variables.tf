@@ -88,7 +88,7 @@ variable "WFPREV_USERNAME" {
   default = ""
 }
 
-variable "db_pass" {
+variable "DB_PASS" {
   description = "db password, passed in as env variable at runtime"
   type        = string
   default = ""
