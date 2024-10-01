@@ -46,5 +46,5 @@ jobs:
       - name: Run tests with coverage
         working-directory: ./client/wfprev-war/src/main/angular
         run: yarn jest --coverage
-      - name: SonarCloud Scan
+      - name: SonarCloud Scan 
         uses: SonarSource/sonarcloud-github-action@master 
