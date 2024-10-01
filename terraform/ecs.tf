@@ -24,13 +24,13 @@ resource "aws_ecs_cluster_capacity_providers" "wfprev_main_providers" {
 
 # WFPrev Server Task Definition
 resource "aws_ecs_task_definition" "wfprev_server" {
-  family                   = "wfprev-server-task-${var.target_env}"
+  family                   = "wfprev-server-task-${var.TARGET_ENV}"
   execution_role_arn       = aws_iam_role.wfprev_ecs_task_execution_role.arn
   task_role_arn            = aws_iam_role.wfprev_app_container_role.arn
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
-  cpu                      = var.server_cpu_units
-  memory                   = var.server_memory
+  cpu                      = var.WFPREV_API_CPU_UNITS
+  memory                   = var.WFPREV_API_MEMORY
   volume {
     name = "work"
   }
@@ -48,8 +48,8 @@ resource "aws_ecs_task_definition" "wfprev_server" {
     repositoryCredentials = {
       credentialsParameter = aws_secretsmanager_secret.githubCredentials.arn
     }
-    cpu                    = var.server_cpu_units
-    memory                 = var.server_memory
+    cpu                    = var.WFPREV_API_CPU_UNITS
+    memory                 = var.WFPREV_API_MEMORY
     networkMode            = "awsvpc"
     portMappings           = [
       {
@@ -129,13 +129,13 @@ resource "aws_ecs_task_definition" "wfprev_server" {
 # WFPrev Client Task Definition
 
 resource "aws_ecs_task_definition" "wfprev_client" {
-  family                   = "wfprev-client-task-${var.target_env}"
+  family                   = "wfprev-client-task-${var.TARGET_ENV}"
   # execution_role_arn       = aws_iam_role.wfprev_ecs_task_execution_role.arn
   # task_role_arn            = aws_iam_role.wfprev_app_container_role.arn
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
-  cpu                      = var.client_cpu_units
-  memory                   = var.client_memory
+  cpu                      = var.WFPREV_CLIENT_CPU_UNITS
+  memory                   = var.WFPREV_CLIENT_MEMORY
   volume {
     name = "work"
   }
@@ -148,8 +148,8 @@ resource "aws_ecs_task_definition" "wfprev_client" {
       readonlyRootFilesystem = true
       name        = var.client_container_name
       image       = var.CLIENT_IMAGE
-      cpu         = var.client_cpu_units
-      memory      = var.client_memory
+      cpu         = var.WFPREV_CLIENT_CPU_UNITS
+      memory      = var.WFPREV_CLIENT_MEMORY
       networkMode = "awsvpc"
       portMappings = [
         {
@@ -170,7 +170,7 @@ resource "aws_ecs_task_definition" "wfprev_client" {
         {
           #Base URL will use the 
           name  = "BASE_URL",
-          value = var.target_env == "prod" ? "https://${var.gov_client_url}/" : "https://${aws_route53_record.wfprev_client.name}/"
+          value = var.TARGET_ENV == "prod" ? "https://${var.gov_client_url}/" : "https://${aws_route53_record.wfprev_client.name}/"
         },
         {
           name  = "WEBADE_OAUTH2_WFPREV_REST_CLIENT_SECRET",
@@ -186,11 +186,11 @@ resource "aws_ecs_task_definition" "wfprev_client" {
         },
         { //Will be phased out from prod eventually, but not yet  "https://${aws_route53_record.wfprev_nginx.name}/"
           name  = "WFPREV_API_URL",
-          value = var.target_env == "prod" ? "https://${var.gov_api_url}/" : "https://example.com/"
+          value = var.TARGET_ENV == "prod" ? "https://${var.gov_api_url}/" : "https://example.com/"
         },
         {
           name  = "APPLICATION_ENVIRONMENT",
-          value = var.target_env != "prod" ? var.target_env : " "
+          value = var.TARGET_ENV != "prod" ? var.TARGET_ENV : " "
         },
       ]
       logConfiguration = {
@@ -229,7 +229,7 @@ resource "aws_ecs_task_definition" "wfprev_client" {
 
 # ECS Service for WFPrev Server
 resource "aws_ecs_service" "wfprev_server" {
-  name                              = "wfprev-server-service-${var.target_env}"
+  name                              = "wfprev-server-service-${var.TARGET_ENV}"
   cluster                           = aws_ecs_cluster.wfprev_main.id
   task_definition                   = aws_ecs_task_definition.wfprev_server.arn
   desired_count                     = var.server_count
@@ -268,7 +268,7 @@ resource "aws_ecs_service" "wfprev_server" {
 # ECS Service for WFPrev Client
 
 resource "aws_ecs_service" "client" {
-  name                              = "wfprev-client-service-${var.target_env}"
+  name                              = "wfprev-client-service-${var.TARGET_ENV}"
   cluster                           = aws_ecs_cluster.wfprev_main.id
   task_definition                   = aws_ecs_task_definition.wfprev_client.arn
   desired_count                     = var.app_count
