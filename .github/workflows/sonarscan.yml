@@ -2,6 +2,8 @@ name: SonarScan
 
 env: 
   NPMRC: ${{ secrets.NPMRC }}
+  SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 on:
   push:
@@ -26,22 +28,23 @@ jobs:
             export MAVEN_OPTS="-Xmx10000m"
             export NODE_OPTIONS="--max-old-space-size=4096"
             mvn clean --settings server/wfprev-api/mvn_settings/settings.xml -B org.jacoco:jacoco-maven-plugin:prepare-agent verify org.jacoco:jacoco-maven-plugin:report org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Pcoverage -Psonar -Dsonar.projectKey=bcgov_nr-bcws-wfprev -Drepo.login=${{ secrets.IDIR_AS_EMAIL }} -Drepo.password=${{ secrets.IDIR_PASSWORD }} -DWFPREV_CLIENT_ID=${{ vars.WFPREV_CLIENT_ID }} -DWFPREV_CLIENT_SECRET=${{ secrets.WFPREV_CLIENT_SECRET }} -DWEBADE_OAUTH2_CHECK_TOKEN_URL=${{ vars.WEBADE_OAUTH2_CHECK_TOKEN_URL }} -DWEBADE_OAUTH2_CHECK_AUTHORIZE_URL=${{ vars.WEBADE_OAUTH2_CHECK_AUTHORIZE_URL }} -DWFPREV_DATASOURCE_URL=${{ vars.WFPREV_DATASOURCE_URL }} -DWFPREV_DATASOURCE_USERNAME=${{ vars.WFPREV_DATASOURCE_USERNAME }} -DWFPREV_DATASOURCE_PASSWORD=${{ secrets.WFPREV_DATASOURCE_PASSWORD }}
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   sonarcloud:
     name: Client - SonarCloud Scan
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4 
+      - uses: actions/checkout@v4  
         with:
-          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+          fetch-depth: 0 
+          submodules: 'recursive'
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+            node-version: '18'
       - name: Install dependencies
-        run: yarn
-      - name: Test and coverage
+        working-directory: ./client/wfprev-war/src/main/angular
+        run: yarn install
+      - name: Run tests with coverage
+        working-directory: ./client/wfprev-war/src/main/angular
         run: yarn jest --coverage
       - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        uses: SonarSource/sonarcloud-github-action@master 
