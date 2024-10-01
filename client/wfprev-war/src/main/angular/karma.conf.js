@@ -18,7 +18,8 @@ module.exports = function (config) {
       reporters: [
         { type: 'html' },                    // HTML report
         { type: 'text-summary' },            // Text summary report
-        { type: 'json-summary', file: 'coverage-summary.json' } // Generate summary with percentages
+        { type: 'json-summary', file: 'coverage-summary.json' },
+        { type: 'lcov', file: 'lcov.info' }, // Generate summary with percentages
       ],
       check: {
         global: {
