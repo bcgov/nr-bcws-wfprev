@@ -150,8 +150,8 @@ resource "aws_ecs_task_definition" "wfprev_client" {
       portMappings = [
         {
           protocol      = "tcp"
-          containerPort = var.client_port
-          hostPort      = var.client_port
+          containerPort = var.WFPREV_CLIENT_PORT
+          hostPort      = var.WFPREV_CLIENT_PORT
         }
       ]
       environment = [
@@ -294,7 +294,7 @@ resource "aws_ecs_service" "client" {
   load_balancer {
     target_group_arn = aws_alb_target_group.wfprev_ui.id
     container_name   = var.client_container_name
-    container_port   = var.client_port
+    container_port   = var.WFPREV_CLIENT_PORT
   }
 
   # depends_on = [aws_iam_role_policy_attachment.wfprev_ecs_task_execution_role]
