@@ -44,7 +44,7 @@ resource "aws_ecs_task_definition" "wfprev_server" {
     essential              = true
     readonlyRootFilesystem = true
     name                   = var.server_container_name
-    image                  = var.server_image
+    image                  = var.WFPREV_API_IMAGE
     repositoryCredentials = {
       credentialsParameter = aws_secretsmanager_secret.githubCredentials.arn
     }
