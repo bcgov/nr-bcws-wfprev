@@ -172,3 +172,8 @@ variable "gov_api_url" {
   default     = ""
   type        = string
 }
+
+variable "TARGET_AWS_ACCOUNT_ID" {
+  type = string
+  description = "Numerical AWS account ID"
+}
