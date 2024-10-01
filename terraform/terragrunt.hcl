@@ -44,7 +44,7 @@ CLIENT_IMAGE = "${get_env("CLIENT_IMAGE")}"
 # db
 WFPREV_USERNAME = "${get_env("WFPREV_USERNAME")}"
 DB_PASS = "${get_env("DB_PASS")}"
-
+DB_INSTANCE_TYPE = "${get_env("DB_INSTANCE_TYPE")}"
 EOF
 }
 

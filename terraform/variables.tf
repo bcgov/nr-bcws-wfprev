@@ -187,6 +187,7 @@ variable "DB_POSTGRES_VERSION" {
 variable "DB_INSTANCE_TYPE" {
   description = "Instance type to use for database vm"
   type        = string
+  default = ""
 }
 
 variable "DB_MULTI_AZ" {
