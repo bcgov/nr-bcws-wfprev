@@ -54,7 +54,7 @@ variable "WFPREV_API_IMAGE" {
   default     = ""
 }
 
-variable "client_port" {
+variable "WFPREV_CLIENT_PORT" {
   description = "Port exposed by the docker image to redirect traffic to"
   default     = 8081
 }
@@ -133,7 +133,7 @@ variable "TARGET_ENV" {
 variable "WFPREV_API_PORT" {
   description = "Port exposed by the docker image to redirect traffic to"
   type = number
-  default     = 443
+  default  = 8080
 }
 
 variable "WFPREV_CLIENT_PORT" {
