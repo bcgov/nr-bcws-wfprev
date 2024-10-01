@@ -40,11 +40,14 @@ jobs:
         uses: actions/setup-node@v4
         with:
             node-version: '18'
-      - name: Install dependencies
+      - name: Install dependencies and Angular CLI
         working-directory: ./client/wfprev-war/src/main/angular
-        run: yarn install
+        run: |
+              yarn install
+              yarn global add @angular/cli
+      
       - name: Run tests with coverage
         working-directory: ./client/wfprev-war/src/main/angular
-        run: yarn jest --coverage
+        run: $(yarn global bin)/ng test --no-watch --code-coverage
       - name: SonarCloud Scan 
         uses: SonarSource/sonarcloud-github-action@master 
