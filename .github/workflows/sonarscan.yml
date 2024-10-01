@@ -1,19 +1,16 @@
 name: SonarScan
-
 env:
   NPMRC: ${{ secrets.NPMRC }}
   SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   MAVEN_OPTS: "-Xmx10000m"
   NODE_OPTIONS: "--max-old-space-size=4096"
-
 on:
   push:
     branches: [ main, feature/* ]
   pull_request_target:
     branches: [ main, feature/* ]
     types: [opened, synchronize, reopened]
-
 jobs:
   sonarcloud:
     name: SonarCloud Scan
@@ -23,37 +20,37 @@ jobs:
         with:
           fetch-depth: 0
           submodules: 'recursive'
-      
+     
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
           java-version: 17
           distribution: 'temurin'
-      
+     
       - name: Cache Maven packages
         uses: actions/cache@v3
         with:
           path: ~/.m2
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
-      
+     
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'         
+          node-version: '18'        
           cache: 'yarn'
           cache-dependency-path: './client/wfprev-war/src/main/angular/yarn.lock'
-      
+     
       - name: Install dependencies and Angular CLI
-        working-directory: ./client/wfprev-war/src/main/angular
+        working-directory: ./client/wfprev-war/src/main/angulara
         run: |
           yarn install
-          yarn global add @angular/cli 
-      
+          yarn global add @angular/cli
+     
       - name: Run client tests with coverage
         working-directory: ./client/wfprev-war/src/main/angular
         run: $(yarn global bin)/ng test --no-watch --code-coverage
-      
+     
       - name: Build, Test, and Analyze
         run: |
           mvn clean --settings server/wfprev-api/mvn_settings/settings.xml -B \
@@ -68,22 +65,23 @@ jobs:
           -DWEBADE_OAUTH2_CHECK_AUTHORIZE_URL=${{ vars.WEBADE_OAUTH2_CHECK_TOKEN_URL }} \
           -DWFPREV_DATASOURCE_URL=${{ vars.WFPREV_DATASOURCE_URL }} \
           -DWFPREV_DATASOURCE_USERNAME=${{ vars.WFPREV_DATASOURCE_USERNAME }} \
-          -DWFPREV_DATASOURCE_PASSWORD=${{ secrets.WFPREV_DATASOURCE_PASSWORD }} 
-      
-      - name: SonarCloud Scan
+          -DWFPREV_DATASOURCE_PASSWORD=${{ secrets.WFPREV_DATASOURCE_PASSWORD }}
+     
+      - name: SonarCloud Scan Action
         uses: SonarSource/sonarcloud-github-action@master
 
   on-failure:
-    name: Post to Slack channel on failure
+    name: Post to Slack channel on failure 
+    needs: sonarcloud
+    if: failure()
     runs-on: ubuntu-latest
-    if: github.event.workflow_run.conclusion == 'failure' || github.event.workflow_run.conclusion == 'timed_out'
     steps:
       - uses: ravsamhq/notify-slack-action@2.5.0
         with:
-          status: ${{ github.event.workflow_run.conclusion }}
-          notification_title: " ${{github.event.workflow_run.name}} - ${{github.event.workflow_run.conclusion}} on ${{github.event.workflow_run.head_branch}} - <${{github.server_url}}/${{github.repository}}/actions/runs/${{github.event.workflow_run.id}}|View Failure>"
-          message_format: ":fire: *${{github.event.workflow_run.name}}* ${{github.event.workflow_run.conclusion}} in <${{github.server_url}}/${{github.repository}}/${{github.event.workflow_run.head_branch}}|${{github.repository}}>"
-          footer: "Linked Repo <${{github.server_url}}/${{github.repository}}|${{github.repository}}> | <${{github.server_url}}/${{github.repository}}/actions/runs/${{github.event.workflow_run.id}}|View Failure>"
+          status: 'failure'
+          notification_title: "SonarScan - Failed on ${{github.ref_name}} - <${{github.server_url}}/${{github.repository}}/actions/runs/${{github.run_id}}|View Failure>"
+          message_format: ":fire: *SonarScan* failed in <${{github.server_url}}/${{github.repository}}/${{github.ref_name}}|${{github.repository}}>"
+          footer: "Linked Repo <${{github.server_url}}/${{github.repository}}|${{github.repository}}> | <${{github.server_url}}/${{github.repository}}/actions/runs/${{github.run_id}}|View Failure>"
           mention_groups: "C06LDNP3Q7M,!channel"
           mention_groups_when: "failure"
         env:
