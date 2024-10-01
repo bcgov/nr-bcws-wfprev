@@ -55,7 +55,7 @@ generate "provider" {
 provider "aws" {
   region  = "ca-central-1"
   assume_role {
-    role_arn = "arn:aws:iam::$${var.TARGET_AWS_ACCOUNT_ID}:role/Terraform_Deploy_Role"
+    role_arn = "arn:aws:iam::$${var.TARGET_AWS_ACCOUNT_ID}:role/Terraform-deploy"
   }
 }
 EOF
