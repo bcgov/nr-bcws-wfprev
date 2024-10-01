@@ -166,7 +166,7 @@ resource "aws_ecs_task_definition" "wfprev_client" {
         {
           #Base URL will use the 
           name  = "BASE_URL",
-          value = var.TARGET_ENV == "prod" ? "https://${var.gov_client_url}/" : "https://${aws_route53_record.wfprev_client.name}/"
+          value = var.TARGET_ENV == "prod" ? "https://${var.gov_client_url}/" : "${aws_apigatewayv2_stage.wfprev_stage.invoke_url}/wfprev-ui"
         },
         {
           name  = "WEBADE_OAUTH2_WFPREV_REST_CLIENT_SECRET",
@@ -245,7 +245,7 @@ resource "aws_ecs_service" "wfprev_server" {
   }
 
   network_configuration {
-    security_groups  = [aws_security_group.wfprev_ecs_tasks.id, data.aws_security_group.app.id]
+    security_groups  = [data.aws_security_group.app.id]
     subnets          = module.network.aws_subnet_ids.app.ids
     assign_public_ip = true
   }
