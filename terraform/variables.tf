@@ -58,7 +58,7 @@ variable "server_port" {
   default     = 443
 }
 
-variable "logging_level" {
+variable "LOGGING_LEVEL" {
   type        = string
   description = "Logging level for components"
 }
@@ -157,7 +157,7 @@ variable "gov_client_url" {
   type        = string
 }
 
-variable "app_count" {
+variable "APP_COUNT" {
   description = "Number of docker containers to run"
   default     = 2
 }
