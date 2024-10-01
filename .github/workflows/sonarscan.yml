@@ -42,7 +42,7 @@ jobs:
           cache-dependency-path: './client/wfprev-war/src/main/angular/yarn.lock'
      
       - name: Install dependencies and Angular CLI
-        working-directory: ./client/wfprev-war/src/main/angulara 
+        working-directory: ./client/wfprev-war/src/main/angular
         run: |
           yarn install
           yarn global add @angular/cli
@@ -70,13 +70,20 @@ jobs:
       - name: SonarCloud Scan Action
         uses: SonarSource/sonarcloud-github-action@master
 
-  on-failure:
-    name: Post to Slack channel on failure 
-    needs: sonarcloud
-    if: failure()
-    runs-on: ubuntu-latest
-    steps:
-      - uses: ravsamhq/notify-slack-action@2.5.0
+      - name: Check SonarCloud Quality Gate
+        id: sonarcloud_quality_gate
+        run: |
+          status=$(curl -s -u ${{ secrets.SONAR_TOKEN }}: "https://sonarcloud.io/api/qualitygates/project_status?projectKey=bcgov_nr-bcws-wfprev" | jq -r '.projectStatus.status')
+          echo "SonarCloud Quality Gate status: $status"
+          if [ "$status" != "OK" ]; then
+            echo "quality_gate_failed=true" >> $GITHUB_OUTPUT
+          else
+            echo "quality_gate_failed=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Notify Slack on Failure
+        if: failure() || steps.sonarcloud_quality_gate.outputs.quality_gate_failed == 'true'
+        uses: ravsamhq/notify-slack-action@2.5.0
         with:
           status: 'failure'
           notification_title: "SonarScan - Failed on ${{github.ref_name}} - <${{github.server_url}}/${{github.repository}}/actions/runs/${{github.run_id}}|View Failure>"
