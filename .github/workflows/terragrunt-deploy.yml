@@ -10,10 +10,6 @@ on:
       DEFAULT_APPLICATION_ENVIRONMENT:
         required: true
         type: string
-        options:
-        - dev
-        - test
-        - prod
       IMAGE_TAG:
         required: true
         type: string
