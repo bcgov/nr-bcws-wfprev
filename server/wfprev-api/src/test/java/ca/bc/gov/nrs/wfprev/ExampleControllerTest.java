@@ -1,17 +1,14 @@
 package ca.bc.gov.nrs.wfprev;
 
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
+import static org.mockito.ArgumentMatchers.eq;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import static org.mockito.Mockito.when;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -19,6 +16,8 @@ import org.springframework.context.annotation.Import;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import ca.bc.gov.nrs.wfprev.controllers.ExampleController;
 import ca.bc.gov.nrs.wfprev.data.resources.ExampleModel;
@@ -59,7 +58,7 @@ class ExampleControllerTest {
                 .andExpect(status().isOk());
     }
 
-    // @Test
+    @Test
     void testGetExampleById() throws Exception {
         String exampleId = UUID.randomUUID().toString();
         ExampleModel exampleModel = new ExampleModel();
@@ -72,28 +71,25 @@ class ExampleControllerTest {
                 .andExpect(status().isOk());
     }
 
-    // @Test
+    @Test
     void testGetExampleByIdNotFound() throws Exception {
-        String exampleId = UUID.randomUUID().toString();
+        String exampleId = null;
+        ExampleModel exampleModel = new ExampleModel();
 
-        when(exampleService.getExampleById(exampleId)).thenReturn(null);
+        when(exampleService.getExampleById(null)).thenReturn(exampleModel);
 
         mockMvc.perform(get("/wfprev/examples/{id}", exampleId)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
     }
 
-    // @Test
-    void getExampleCodeById_ShouldReturnNotFound_WhenExampleCodeDoesNotExist() throws Exception {
+    @Test
+    void getExampleCodeById() throws Exception {
         String exampleCodeId = "INVALID_CODE";
         when(exampleService.getExampleCodeById(eq(exampleCodeId))).thenReturn(null);
 
         mockMvc.perform(get("/wfprev/exampleCodes/{id}", exampleCodeId))
-                .andExpect(status().isNotFound());
-    }
-
-     private ExampleModel getExampleModel(String uuid) {
-        return ExampleModel.builder().exampleGuid(uuid).build();
+                .andExpect(status().isOk());
     }
 
 }
