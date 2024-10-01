@@ -5,11 +5,6 @@ variable "common_tags" {
   }
 }
 
-variable "TARGET_ENV" {
-  description = "AWS workload account env (e.g. dev, test, prod, sandbox, unclass)"
-  type        = string
-}
-
 variable "WFPREV_CLIENT_CPU_UNITS" {
   description = "client instance CPU units to provision (1 vCPU = 1024 CPU units)"
   type        = number
