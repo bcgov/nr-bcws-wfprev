@@ -53,6 +53,40 @@ resource "aws_lb_listener" "wfprev_main" {
   }
 }
 
+/// LISTENER RULES////
+
+resource "aws_lb_listener_rule" "wfprev-api" {
+  listener_arn = aws_lb_listener.wfprev_main.arn
+
+  action {
+    type = "forward"
+    target_group_arn = aws_alb_target_group.wfprev_api.arn
+  }
+
+  condition {
+    path_pattern  {
+      values = [for sn in var.PREVENTION_API_NAMES : "/${aws_apigatewayv2_stage.wfprev_stage.name}/${sn}"]
+    }
+  }
+}
+
+resource "aws_lb_listener_rule" "wfprev-ui" {
+  listener_arn = aws_lb_listener.wfprev_main.arn
+
+  action {
+    type = "forward"
+    target_group_arn = aws_alb_target_group.wfprev_ui.arn
+  }
+
+  condition {
+    path_pattern  {
+      values = [for sn in var.PREVENTION_WAR_NAMES : "/${aws_apigatewayv2_stage.wfprev_stage.name}/${sn}"]
+    }
+  }
+}
+
+
+
 
 //////////////////////////////
 /// TARGET GROUP RESOURCES ///
