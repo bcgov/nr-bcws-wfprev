@@ -105,8 +105,6 @@ jobs:
 
         env:
           # Necessary for all components
-          GITHUB_USERNAME: ${{ secrets.FETCH_IMAGE_USER }}
-          GITHUB_TOKEN: ${{ secrets.FETCH_IMAGE_TOKEN }}
           TFC_PROJECT: ${{ secrets.TFC_PROJECT }}
           TARGET_ENV: ${{ inputs.DEFAULT_APPLICATION_ENVIRONMENT }}
           APP_COUNT: ${{vars.APP_COUNT}}
@@ -122,6 +120,7 @@ jobs:
           # WFPREV UI
           CLIENT_IMAGE: ${{ vars.REPOSITORY }}/${{ github.repository }}-wfprev-ui:${{ inputs.IMAGE_TAG }}
           WEBADE_OAUTH2_WFPREV_UI_CLIENT_SECRET: ${{ secrets.WEBADE_OAUTH2_WFPREV_UI_CLIENT_SECRET }}
-          WFPREV_UI_PORT: ${{vars.WFPREV_UI_PORT}}
+          WFPREV_CLIENT_MEMORY: ${{vars.WFPREV_CLIENT_MEMORY}}
+          WFPREV_CLIENT_CPU_UNITS : ${{vars.WFPREV_CLIENT_CPU_UNITS}}
 
         run: terragrunt apply --terragrunt-non-interactive -auto-approve
