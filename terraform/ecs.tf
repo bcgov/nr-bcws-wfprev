@@ -61,7 +61,7 @@ resource "aws_ecs_task_definition" "wfprev_server" {
     environment = [
       {
         name  = "LOGGING_LEVEL"
-        value = var.logging_level
+        value = var.LOGGING_LEVEL
       },
       {
         name  = "AWS_REGION"
@@ -157,7 +157,7 @@ resource "aws_ecs_task_definition" "wfprev_client" {
       environment = [
         {
           name  = "LOGGING_LEVEL"
-          value = "${var.logging_level}"
+          value = "${var.LOGGING_LEVEL}"
         },
         {
           name  = "AWS_REGION",
@@ -267,7 +267,7 @@ resource "aws_ecs_service" "client" {
   name                              = "wfprev-client-service-${var.TARGET_ENV}"
   cluster                           = aws_ecs_cluster.wfprev_main.id
   task_definition                   = aws_ecs_task_definition.wfprev_client.arn
-  desired_count                     = var.app_count
+  desired_count                     = var.APP_COUNT
   enable_ecs_managed_tags           = true
   propagate_tags                    = "TASK_DEFINITION"
   health_check_grace_period_seconds = 60
