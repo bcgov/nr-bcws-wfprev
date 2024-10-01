@@ -5,11 +5,6 @@ variable "common_tags" {
   }
 }
 
-variable "TARGET_ENV" {
-  description = "AWS workload account env (e.g. dev, test, prod, sandbox, unclass)"
-  type        = string
-}
-
 variable "WFPREV_CLIENT_CPU_UNITS" {
   description = "client instance CPU units to provision (1 vCPU = 1024 CPU units)"
   type        = number
@@ -63,7 +58,7 @@ variable "server_port" {
   default     = 443
 }
 
-variable "logging_level" {
+variable "LOGGING_LEVEL" {
   type        = string
   description = "Logging level for components"
 }
@@ -93,14 +88,16 @@ variable "WFPREV_USERNAME" {
   default = ""
 }
 
-variable "db_pass" {
+variable "DB_PASS" {
   description = "db password, passed in as env variable at runtime"
   type        = string
+  default = ""
 }
 
 variable "api_key" {
   description = "value for api key"
   type        = string
+  default = ""
 }
 
 variable "server_name" {
@@ -160,7 +157,7 @@ variable "gov_client_url" {
   type        = string
 }
 
-variable "app_count" {
+variable "APP_COUNT" {
   description = "Number of docker containers to run"
   default     = 2
 }
@@ -174,4 +171,33 @@ variable "gov_api_url" {
   description = "domain name if using *-api.nrs.gov.bc.ca url"
   default     = ""
   type        = string
+}
+
+variable "TARGET_AWS_ACCOUNT_ID" {
+  type = string
+  description = "Numerical AWS account ID"
+}
+
+variable "DB_POSTGRES_VERSION" {
+  description = "Which version of Postgres to use"
+  default     = "15.4"
+  type        = string
+}
+
+variable "DB_INSTANCE_TYPE" {
+  description = "Instance type to use for database vm"
+  type        = string
+  default = ""
+}
+
+variable "DB_MULTI_AZ" {
+  description = "Whether to make db deployment a multi-AZ deployment"
+  default     = false
+  type        = bool
+}
+
+variable "DB_SIZE" {
+  description = "size of db, in GB"
+  type        = number
+  default     = 10
 }
