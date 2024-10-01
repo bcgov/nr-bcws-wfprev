@@ -5,35 +5,31 @@ permissions:
   packages: write
 
 on:
-  workflow_dispatch:
+  workflow_call:
     inputs:
       DEFAULT_APPLICATION_ENVIRONMENT:
         required: true
-        type: choice
-        options:
-        - dev
-        - test
-        - prod
+        type: string
       IMAGE_TAG:
         required: true
         type: string
-      SCHEMA_NAME:
-        required: true
-        type: string
-        default: app_wf1_prev
-      CHANGELOG_NAME:
-        type: choice
-        options:
-          - none
-          - changelog_app_wf1_prev
-          - changelog_app_wf1_prev_proxy
-      TARGET_LIQUIBASE_TAG: 
-        required: false
-        type: string
-      IS_HOTFIX:
-        required: true
-        type: string
-        default: 'false'
+      # SCHEMA_NAME:
+      #   required: true
+      #   type: string
+      #   default: app_wf1_prev
+      # CHANGELOG_NAME:
+      #   type: string
+      #   options:
+      #     - none
+      #     - changelog_app_wf1_prev
+      #     - changelog_app_wf1_prev_proxy
+      # TARGET_LIQUIBASE_TAG: 
+      #   required: false
+      #   type: string
+      # IS_HOTFIX:
+      #   required: true
+      #   type: string
+      #   default: 'false'
 
 env:
   TF_VERSION: 1.8.5
