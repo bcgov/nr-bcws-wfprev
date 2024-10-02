@@ -20,9 +20,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": {
-              "base": "dist/wfprev"
-            },
+            "outputPath": "dist/wfprev",
             "index": "src/index.html",
             "polyfills": [
               "src/polyfills.ts"
