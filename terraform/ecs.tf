@@ -141,7 +141,7 @@ resource "aws_ecs_task_definition" "wfprev_client" {
   container_definitions = jsonencode([
     {
       essential   = true
-      readonlyRootFilesystem = true
+      readonlyRootFilesystem = false
       name        = var.client_container_name
       image       = var.CLIENT_IMAGE
       cpu         = var.WFPREV_CLIENT_CPU_UNITS
