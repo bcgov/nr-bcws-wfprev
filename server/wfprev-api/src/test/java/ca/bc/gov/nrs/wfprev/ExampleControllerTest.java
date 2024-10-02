@@ -6,38 +6,35 @@ import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 import static org.mockito.ArgumentMatchers.eq;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import static org.mockito.Mockito.when;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import ca.bc.gov.nrs.wfprev.controllers.ExampleController;
+import ca.bc.gov.nrs.wfprev.data.resources.ExampleCodeModel;
 import ca.bc.gov.nrs.wfprev.data.resources.ExampleModel;
 import ca.bc.gov.nrs.wfprev.services.ExampleService;
 
-@Import(TestcontainersConfiguration.class)
-@SpringBootTest
-@AutoConfigureMockMvc
+@WebMvcTest(ExampleController.class)
+@Import({SecurityConfig.class, TestcontainersConfiguration.class})
 class ExampleControllerTest {
 
-    @Mock
+    @MockBean
     private ExampleService exampleService;
-
-    @InjectMocks
-    private ExampleController exampleController;
 
     @Autowired
     private MockMvc mockMvc;
 
     @Test
+    @WithMockUser
     void testGetAllExamples() throws Exception {
         String exampleId1 = UUID.randomUUID().toString();
         String exampleId2 = UUID.randomUUID().toString();
@@ -59,6 +56,7 @@ class ExampleControllerTest {
     }
 
     @Test
+    @WithMockUser
     void testGetExampleById() throws Exception {
         String exampleId = UUID.randomUUID().toString();
         ExampleModel exampleModel = new ExampleModel();
@@ -72,6 +70,7 @@ class ExampleControllerTest {
     }
 
     @Test
+    @WithMockUser
     void testGetExampleByIdNotFound() throws Exception {
         String exampleId = null;
         ExampleModel exampleModel = new ExampleModel();
@@ -84,12 +83,27 @@ class ExampleControllerTest {
     }
 
     @Test
-    void getExampleCodeById() throws Exception {
+    @WithMockUser
+    void getUserNotFoundCodeById() throws Exception {
         String exampleCodeId = "INVALID_CODE";
+
         when(exampleService.getExampleCodeById(eq(exampleCodeId))).thenReturn(null);
 
         mockMvc.perform(get("/wfprev/exampleCodes/{id}", exampleCodeId))
-                .andExpect(status().isOk());
+                .andExpect(status().isNotFound());
     }
 
+    @Test
+    @WithMockUser
+    void getExampleCodeById() throws Exception {
+        String exampleCodeId = "VALID_CODE";
+        ExampleCodeModel exampleCodeModel = new ExampleCodeModel();
+        exampleCodeModel.setExampleCode(exampleCodeId);
+
+        when(exampleService.getExampleCodeById(eq(exampleCodeId))).thenReturn(exampleCodeModel);
+
+        mockMvc.perform(get("/wfprev/exampleCodes/{id}", exampleCodeId))
+                .andExpect(status().isOk());
+
+    }
 }
