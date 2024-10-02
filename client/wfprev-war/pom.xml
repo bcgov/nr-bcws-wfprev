@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>ca.bc.gov.nrs.wfprev</groupId>
 		<artifactId>wfprev-parent</artifactId>
-		<version>1.3.0</version>
+		<version>1.0.0-SNAPSHOT</version>
 	</parent>
 	<artifactId>wfprev-war</artifactId>
 	<packaging>war</packaging>
