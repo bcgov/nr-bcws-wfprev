@@ -1,0 +1,9 @@
+<urlrewrite>
+	<rule match-type="regex" enabled="true">
+		<condition type="request-filename" operator="notfile" />
+		<condition type="request-filename" operator="notdir" />
+		<condition type="request-uri" operator="notequal">(\.html|\.js|\.png|\.gif|\.jpg|\.css|\.svg|\.ico|\.pdf)</condition>
+		<from>^/(.*)$</from>
+		<to last="true">/index.html</to>
+	</rule>
+</urlrewrite>
