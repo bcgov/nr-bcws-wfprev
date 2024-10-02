@@ -86,10 +86,8 @@ jobs:
         uses: ravsamhq/notify-slack-action@2.5.0
         with:
           status: 'failure'
-          notification_title: "SonarScan - Failed on ${{github.ref_name}} - <${{github.server_url}}/${{github.repository}}/actions/runs/${{github.run_id}}|View Failure>"
+          notification_title: "SonarScan - Failed on ${{github.ref_name}} - <${{ vars.SONARCLOUD_NEW_CODE_URL }}|View SonarCloud Failure>"
           message_format: ":fire: *SonarScan* failed in <${{github.server_url}}/${{github.repository}}/${{github.ref_name}}|${{github.repository}}>"
           footer: "Linked Repo <${{github.server_url}}/${{github.repository}}|${{github.repository}}> | <${{github.server_url}}/${{github.repository}}/actions/runs/${{github.run_id}}|View Failure>"
-          mention_groups: "C06LDNP3Q7M,!channel"
-          mention_groups_when: "failure"
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
