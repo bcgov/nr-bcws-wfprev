@@ -24,29 +24,6 @@
 
 	<dependencies>
 
-		<dependency>
-			<groupId>javax.ws.rs</groupId>
-			<artifactId>javax.ws.rs-api</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>org.glassfish.jersey.core</groupId>
-			<artifactId>jersey-common</artifactId>
-		</dependency>
-		
-		<!-- API, java.xml.bind module -->
-		<dependency>
-			<groupId>jakarta.xml.bind</groupId>
-			<artifactId>jakarta.xml.bind-api</artifactId>
-			<version>2.3.2</version>
-		</dependency>
-		<!-- Runtime, com.sun.xml.bind module -->
-		<dependency>
-			<groupId>org.glassfish.jaxb</groupId>
-			<artifactId>jaxb-runtime</artifactId>
-			<version>2.3.2</version>
-		</dependency>
-
 		<!-- Webade OAUTH2 -->
 		<dependency>
 			<groupId>ca.bc.gov.nrs.wfone.common</groupId>
@@ -60,10 +37,30 @@
 		<!-- Spring -->
 		<dependency>
 			<groupId>org.springframework</groupId>
-			<artifactId>spring-webmvc</artifactId>
+			<artifactId>spring-core</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-beans</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-aop</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-web</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-webmvc</artifactId>
+		</dependency> 
 
-    <dependency>
+		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>javax.servlet-api</artifactId>
 			<scope>provided</scope>
@@ -74,33 +71,24 @@
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-core</artifactId>
 		</dependency>
-
 		<dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-web</artifactId>
-			<exclusions>
-				<exclusion>
-					<groupId>org.springframework</groupId>
-					<artifactId>spring-web</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency>
-
 		<dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-config</artifactId>
 		</dependency>
 
-    <!-- Spring Security OAuth -->
+		<!-- Spring Security OAuth -->
 		<dependency>
-			<groupId>org.tuckey</groupId>
-			<artifactId>urlrewritefilter</artifactId>
+			<groupId>org.springframework.security.oauth</groupId>
+			<artifactId>spring-security-oauth2</artifactId>
 		</dependency>
 
 		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>javax.servlet-api</artifactId>
-			<scope>provided</scope>
+			<groupId>org.tuckey</groupId>
+			<artifactId>urlrewritefilter</artifactId>
 		</dependency>
 
 		<!-- Logging -->
@@ -113,21 +101,21 @@
 			<artifactId>jcl-over-slf4j</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-log4j12</artifactId>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-slf4j-impl</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>log4j</groupId>
-			<artifactId>log4j</artifactId>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-api</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>log4j</groupId>
-			<artifactId>apache-log4j-extras</artifactId>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-core</artifactId>
 		</dependency>
 
 	</dependencies>
 	<build>
-		<!-- Configure the resources to be filtered for componentId replacement -->
+		<!-- Configure the resources to be filtered for property replacement -->
 		<resources>
 			<resource>
 				<directory>src/main/resources</directory>
