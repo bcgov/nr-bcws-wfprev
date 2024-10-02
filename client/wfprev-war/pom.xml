@@ -15,7 +15,7 @@
 		<build.number>#{env.BUILD_NUMBER}#</build.number>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<dollar>$</dollar>
-    <node.version>v18.10.0</node.version>
+    <node.version>v18.19.0</node.version>
     <npm.version>8.19.4</npm.version>
 		<node.path>${user.home}/.node</node.path>
 		<typescript.path>src/main/angular</typescript.path>
