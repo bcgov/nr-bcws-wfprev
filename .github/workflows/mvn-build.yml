@@ -66,7 +66,7 @@ jobs:
           export MAVEN_OPTS="-Xmx3072m -XX:MaxMetaspaceSize=512m"
           export NODE_OPTIONS="--max-old-space-size=4096"
           mvn --settings client/mvn_settings/settings.xml --batch-mode --update-snapshots -f client/pom.xml -Drepo.login=${{ secrets.IDIR_AS_EMAIL }} -Drepo.password=${{ secrets.IDIR_PASSWORD }} -DskipTests package
-          mvn --settings server/mvn_settings/settings.xml --batch-mode --update-snapshots -f server/wfprev-api/pom.xml -Drepo.login=${{ secrets.IDIR_AS_EMAIL }} -Drepo.password=${{ secrets.IDIR_PASSWORD }} -DskipTests package
+          mvn --settings server/wfprev-api/mvn_settings/settings.xml --batch-mode --update-snapshots -f server/wfprev-api/pom.xml -Drepo.login=${{ secrets.IDIR_AS_EMAIL }} -Drepo.password=${{ secrets.IDIR_PASSWORD }} -DskipTests package
         
       - name: Copy files to neccessary folders (frontend)
         run: mkdir staging && cp client/wfprev-war/target/*.war staging
