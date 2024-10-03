@@ -93,6 +93,21 @@ jobs:
             echo "TARGET_LIQUIBASE_TAG=--tag=${{inputs.TARGET_LIQUIBASE_TAG}}" >> $GITHUB_OUTPUT
           fi
 
+      - name: Get digest of docker image
+        id: getDigest
+        run: |
+          export IMAGE='ghcr.io/${{github.repository_owner}}/${{ steps.updateImageName.outputs.IMAGE_NAME}}:${{ inputs.TAG }}'
+          docker pull $IMAGE
+          echo "IMAGE_BY_DIGEST=$(docker inspect --format='{{index .RepoDigests 0}}' $IMAGE)" >> $GITHUB_OUTPUT
+
+      # digest for api image, change the value of WFPREV_API_IMAGE
+      # - name: Get digest of WFPREV API image
+      #   id: getApiDigest
+      #   run: |
+      #     export API_IMAGE='ghcr.io/${{github.repository_owner}}/${{ steps.updateImageName.outputs.IMAGE_NAME}}-wfprev-api:${{ inputs.TAG }}'
+      #     docker pull $API_IMAGE
+      #     echo "API_IMAGE_BY_DIGEST=$(docker inspect --format='{{index .RepoDigests 0}}' $API_IMAGE)" >> $GITHUB_OUTPUT
+
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
@@ -112,6 +127,7 @@ jobs:
       - name: Terragrunt Apply
         working-directory: ${{env.TG_SRC_PATH}}
 
+        
         env:
           # Necessary for all components
           TFC_PROJECT: ${{ secrets.TFC_PROJECT }}
@@ -127,7 +143,7 @@ jobs:
           WFPREV_API_PORT: ${{vars.WFPREV_API_PORT}}
           TARGET_AWS_ACCOUNT_ID: ${{secrets.TARGET_AWS_ACCOUNT_ID}}
           # WFPREV UI
-          CLIENT_IMAGE: ${{ vars.REPOSITORY }}/${{ github.repository }}-wfprev-war:${{ inputs.IMAGE_TAG }}
+          CLIENT_IMAGE: ${{ steps.getDigest.outputs.IMAGE_BY_DIGEST }}
           WEBADE_OAUTH2_WFPREV_UI_CLIENT_SECRET: ${{ secrets.WEBADE_OAUTH2_WFPREV_UI_CLIENT_SECRET }}
           WFPREV_CLIENT_MEMORY: ${{vars.WFPREV_CLIENT_MEMORY}}
           WFPREV_CLIENT_CPU_UNITS : ${{vars.WFPREV_CLIENT_CPU_UNITS}}
