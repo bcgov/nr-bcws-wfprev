@@ -130,7 +130,7 @@
 					<packagingExcludes>WEB-INF/web.xml</packagingExcludes>
 					<webResources>
 					  <resource>
-						<directory>${basedir}/src/main/angular/dist/wfprev</directory>
+						<directory>${basedir}/target/angular</directory>
 						<includes>
 						  <include>assets/**/*.*</include>
 						  <include>*.*</include>
