@@ -245,7 +245,7 @@ resource "aws_ecs_service" "wfprev_server" {
   }
 
   network_configuration {
-    security_groups  = [data.aws_security_group.app.id]
+    security_groups  = [data.aws_security_group.app.id, aws_security_group.wfprev_tomcat_access.id]
     subnets          = module.network.aws_subnet_ids.app.ids
     assign_public_ip = true
   }
@@ -286,7 +286,7 @@ resource "aws_ecs_service" "client" {
 
 
   network_configuration {
-    security_groups  = [data.aws_security_group.app.id]
+    security_groups  = [data.aws_security_group.app.id, aws_security_group.wfprev_tomcat_access.id]
     subnets          = module.network.aws_subnet_ids.app.ids
     assign_public_ip = true
   }
