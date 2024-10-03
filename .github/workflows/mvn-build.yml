@@ -66,9 +66,13 @@ jobs:
           export MAVEN_OPTS="-Xmx3072m -XX:MaxMetaspaceSize=512m"
           export NODE_OPTIONS="--max-old-space-size=4096"
           mvn --settings client/mvn_settings/settings.xml --batch-mode --update-snapshots -f client/pom.xml -Drepo.login=${{ secrets.IDIR_AS_EMAIL }} -Drepo.password=${{ secrets.IDIR_PASSWORD }} -DskipTests package
+          mvn --settings server/mvn_settings/settings.xml --batch-mode --update-snapshots -f server/wfprev-api/pom.xml -Drepo.login=${{ secrets.IDIR_AS_EMAIL }} -Drepo.password=${{ secrets.IDIR_PASSWORD }} -DskipTests package
         
       - name: Copy files to neccessary folders (frontend)
         run: mkdir staging && cp client/wfprev-war/target/*.war staging
+
+      - name: Copy files to neccessary folders (backend)
+        run: mkdir staging && cp server/wfprev-api/target/*.war staging
       
       - uses: actions/upload-artifact@v3
         with:
@@ -149,16 +153,16 @@ jobs:
             type=ref,event=tag
             type=raw,value=${{ inputs.TAG }}
 
-      # - name: Build and push Docker image (backend)
-      #   if: ${{ inputs.PROJECT_TYPE == 'backend' }}
-      #   uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
-      #   with:
-      #     context: ${{inputs.PROJECT_TYPE}}/${{inputs.PROJECT_NAME}}
-      #     build-args: |
-      #       CONTAINER_NAME=${{inputs.PROJECT_NAME}}
-      #     push: true
-      #     tags: ${{ steps.meta_pr.outputs.tags }}
-      #     labels: ${{ steps.meta_pr.outputs.labels }}
+      - name: Build and push Docker image (backend)
+        if: ${{ inputs.PROJECT_TYPE == 'backend' }}
+        uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
+        with:
+           context: ${{inputs.PROJECT_TYPE}}/${{inputs.PROJECT_NAME}}
+           build-args: |
+             CONTAINER_NAME=${{inputs.PROJECT_NAME}}
+           push: true
+           tags: ${{ steps.meta_pr.outputs.tags }}
+           labels: ${{ steps.meta_pr.outputs.labels }}
 
       - name: Build and push Docker image (frontend)
         if: ${{ inputs.PROJECT_TYPE == 'client' }}
