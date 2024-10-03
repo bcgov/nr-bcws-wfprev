@@ -154,7 +154,7 @@ jobs:
             type=raw,value=${{ inputs.TAG }}
 
       - name: Build and push Docker image (backend)
-        if: ${{ inputs.PROJECT_TYPE == 'backend' }}
+        if: ${{ inputs.PROJECT_TYPE == 'server' }}
         uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
         with:
            context: ${{inputs.PROJECT_TYPE}}/${{inputs.PROJECT_NAME}}
