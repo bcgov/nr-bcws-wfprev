@@ -96,17 +96,9 @@ jobs:
       - name: Get digest of docker image
         id: getDigest
         run: |
-          export IMAGE='ghcr.io/${{github.repository_owner}}/${{ steps.updateImageName.outputs.IMAGE_NAME}}:${{ inputs.TAG }}'
+          export IMAGE='ghcr.io/${{ vars.REPOSITORY }}/${{ github.repository }}-wfprev-war:${{ inputs.IMAGE_TAG }}'
           docker pull $IMAGE
           echo "IMAGE_BY_DIGEST=$(docker inspect --format='{{index .RepoDigests 0}}' $IMAGE)" >> $GITHUB_OUTPUT
-
-      # digest for api image, change the value of WFPREV_API_IMAGE
-      # - name: Get digest of WFPREV API image
-      #   id: getApiDigest
-      #   run: |
-      #     export API_IMAGE='ghcr.io/${{github.repository_owner}}/${{ steps.updateImageName.outputs.IMAGE_NAME}}-wfprev-api:${{ inputs.TAG }}'
-      #     docker pull $API_IMAGE
-      #     echo "API_IMAGE_BY_DIGEST=$(docker inspect --format='{{index .RepoDigests 0}}' $API_IMAGE)" >> $GITHUB_OUTPUT
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
