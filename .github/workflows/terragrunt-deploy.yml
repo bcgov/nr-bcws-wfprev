@@ -96,7 +96,7 @@ jobs:
       - name: Get digest of docker image
         id: getDigest
         run: |
-          export IMAGE='ghcr.io/${{ vars.REPOSITORY }}/${{ github.repository }}-wfprev-war:${{ inputs.IMAGE_TAG }}'
+          export IMAGE='${{vars.REPOSITORY}}/${{ github.repository }}-wfprev-war:${{ inputs.IMAGE_TAG }}'
           docker pull $IMAGE
           echo "IMAGE_BY_DIGEST=$(docker inspect --format='{{index .RepoDigests 0}}' $IMAGE)" >> $GITHUB_OUTPUT
 
