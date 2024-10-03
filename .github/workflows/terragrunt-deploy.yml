@@ -48,7 +48,7 @@ env:
   TF_VERSION: 1.8.5
   TG_VERSION: 0.48.4
   TG_SRC_PATH: terraform
-  REPOSITORY: ghcr.io
+  REPOSITORY_HOST: ghcr.io
 
 jobs:
   deploy:
@@ -96,7 +96,7 @@ jobs:
       - name: Get digest of docker image
         id: getDigest
         run: |
-          export IMAGE='${{vars.REPOSITORY}}/${{ github.repository }}-wfprev-war:${{ inputs.IMAGE_TAG }}'
+          export IMAGE='${{vars.REPOSITORY_HOST}}/${{ github.repository }}-wfprev-war:${{ inputs.IMAGE_TAG }}'
           docker pull $IMAGE
           echo "IMAGE_BY_DIGEST=$(docker inspect --format='{{index .RepoDigests 0}}' $IMAGE)" >> $GITHUB_OUTPUT
 
@@ -129,7 +129,7 @@ jobs:
 
           # Necessary for WFPREV API
           WFPREV_API_NAME: wfprev-api
-          WFPREV_API_IMAGE: ${{ vars.REPOSITORY }}/${{ github.repository }}-wfprev-api:${{ inputs.IMAGE_TAG }}
+          WFPREV_API_IMAGE: ${{vars.REPOSITORY_HOST}}/${{ github.repository }}-wfprev-api:${{ inputs.IMAGE_TAG }}
           WFPREV_API_CPU_UNITS: ${{vars.WFPREV_API_CPU_UNITS}}
           WFPREV_API_MEMORY: ${{vars.WFPREV_API_MEMORY}}
           WFPREV_API_PORT: ${{vars.WFPREV_API_PORT}}
