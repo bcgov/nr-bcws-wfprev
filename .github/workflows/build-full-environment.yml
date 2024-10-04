@@ -29,21 +29,22 @@ jobs:
     uses: ./.github/workflows/mvn-build.yml
     secrets: inherit
     with:
-      PROJECT_NAME: wfprev-war
+      COMPONENT_NAME: wfprev-war
       TAG: latest
-      PROJECT_TYPE: client
+      COMPONENT_TYPE: client
+      
   wfprev-api:
     uses: ./.github/workflows/mvn-build.yml
     secrets: inherit
     with:
-      PROJECT_NAME: wfprev-api
+      COMPONENT_NAME: wfprev-api
       TAG: latest
-      PROJECT_TYPE: server
+      COMPONENT_TYPE: server
+      
   terragrunt-deploy-dev:
     uses: ./.github/workflows/terragrunt-deploy.yml
-    needs: [wfprev-ui]
+    needs: [wfprev-ui, wfprev-api]
     with:
       DEFAULT_APPLICATION_ENVIRONMENT: dev
       IMAGE_TAG: latest
-
     secrets: inherit
