@@ -151,8 +151,7 @@ jobs:
             type=raw,value=${{ inputs.TAG }}
 
       - name: Build and push Docker image
-        if: ${{ inputs.PROJECT_TYPE == 'server' }}
-        uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
+        uses: docker/build-push-action@v6
         with:
            context: ${{inputs.COMPONENT_TYPE}}/${{inputs.COMPONENT_NAME}}
            build-args: |
