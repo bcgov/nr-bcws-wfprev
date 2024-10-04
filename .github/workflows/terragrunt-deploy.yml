@@ -100,7 +100,7 @@ jobs:
           docker pull $IMAGE
           echo "IMAGE_API_BY_DIGEST=$(docker inspect --format='{{index .RepoDigests 0}}' $IMAGE)" >> $GITHUB_OUTPUT
 
-      - name: Get digest of docker image
+      - name: Get digest of UI docker image
         id: getDigestUI
         run: |
           export IMAGE='${{vars.REPOSITORY_HOST}}/${{ github.repository }}-wfprev-war:${{ inputs.IMAGE_TAG }}'
