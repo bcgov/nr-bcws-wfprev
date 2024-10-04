@@ -126,7 +126,7 @@ resource "aws_alb_target_group" "wfprev_ui" {
     protocol            = "HTTP"
     matcher             = "200"
     timeout             = "3"
-    path                = "/${aws_apigatewayv2_stage.wfprev_stage.name}/wfprev-ui/"
+    path                = "/${aws_apigatewayv2_stage.wfprev_stage.name}/${var.PREVENTION_WAR_NAMES[0]}/"
     unhealthy_threshold = "2"
   }
 }
