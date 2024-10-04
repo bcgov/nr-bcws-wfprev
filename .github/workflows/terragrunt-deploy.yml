@@ -93,12 +93,19 @@ jobs:
             echo "TARGET_LIQUIBASE_TAG=--tag=${{inputs.TARGET_LIQUIBASE_TAG}}" >> $GITHUB_OUTPUT
           fi
 
+      - name: Get digest of API docker image
+        id: getDigestAPI
+        run: |
+          export IMAGE='${{vars.REPOSITORY_HOST}}/${{ github.repository }}-wfprev-api:${{ inputs.IMAGE_TAG }}'
+          docker pull $IMAGE
+          echo "IMAGE_API_BY_DIGEST=$(docker inspect --format='{{index .RepoDigests 0}}' $IMAGE)" >> $GITHUB_OUTPUT
+
       - name: Get digest of docker image
-        id: getDigest
+        id: getDigestUI
         run: |
           export IMAGE='${{vars.REPOSITORY_HOST}}/${{ github.repository }}-wfprev-war:${{ inputs.IMAGE_TAG }}'
           docker pull $IMAGE
-          echo "IMAGE_BY_DIGEST=$(docker inspect --format='{{index .RepoDigests 0}}' $IMAGE)" >> $GITHUB_OUTPUT
+          echo "IMAGE_UI_BY_DIGEST=$(docker inspect --format='{{index .RepoDigests 0}}' $IMAGE)" >> $GITHUB_OUTPUT
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
@@ -129,13 +136,13 @@ jobs:
 
           # Necessary for WFPREV API
           WFPREV_API_NAME: wfprev-api
-          WFPREV_API_IMAGE: ${{vars.REPOSITORY_HOST}}/${{ github.repository }}-wfprev-api:${{ inputs.IMAGE_TAG }}
+          WFPREV_API_IMAGE: ${{ steps.getDigestAPI.outputs.IMAGE_API_BY_DIGEST }}
           WFPREV_API_CPU_UNITS: ${{vars.WFPREV_API_CPU_UNITS}}
           WFPREV_API_MEMORY: ${{vars.WFPREV_API_MEMORY}}
           WFPREV_API_PORT: ${{vars.WFPREV_API_PORT}}
           TARGET_AWS_ACCOUNT_ID: ${{secrets.TARGET_AWS_ACCOUNT_ID}}
           # WFPREV UI
-          CLIENT_IMAGE: ${{ steps.getDigest.outputs.IMAGE_BY_DIGEST }}
+          CLIENT_IMAGE: ${{ steps.getDigestUI.outputs.IMAGE_UI_BY_DIGEST }}
           WEBADE_OAUTH2_WFPREV_UI_CLIENT_SECRET: ${{ secrets.WEBADE_OAUTH2_WFPREV_UI_CLIENT_SECRET }}
           WFPREV_CLIENT_MEMORY: ${{vars.WFPREV_CLIENT_MEMORY}}
           WFPREV_CLIENT_CPU_UNITS : ${{vars.WFPREV_CLIENT_CPU_UNITS}}
