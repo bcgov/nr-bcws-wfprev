@@ -207,7 +207,7 @@ variable "DB_SIZE" {
 variable "PREVENTION_WAR_NAMES" {
   type = list(string)
   description = "List of paths to point at payroll API"
-  default = ["wfprev-ui", "wfprev-ui/*"]
+  default = ["wfprev", "wfprev/*"]
 }
 
 variable "PREVENTION_API_NAMES" {
