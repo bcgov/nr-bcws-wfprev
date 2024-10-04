@@ -1,6 +1,6 @@
 env:
 
-  IMAGE_NAME: "${{ github.repository }}-${{inputs.PROJECT_NAME}}"
+  IMAGE_NAME: "${{ github.repository }}-${{inputs.COMPONENT_NAME}}"
   NPMRC: ${{ secrets.NPMRC }}
 
 permissions:
@@ -62,14 +62,14 @@ jobs:
         run: echo -e $NPMRC > ~/.npmrc
           
       - name: Build API with Maven
-        if: ${{ inputs.PROJECT_TYPE == 'server' }}
+        if: ${{ inputs.COMPONENT_TYPE == 'server' }}
         run: |
           export MAVEN_OPTS="-Xmx3072m -XX:MaxMetaspaceSize=512m"
           export NODE_OPTIONS="--max-old-space-size=4096"
           mvn --settings ${{ inputs.COMPONENT_TYPE }}/${{ inputs.COMPONENT_NAME }}/mvn_settings/settings.xml --batch-mode --update-snapshots -f ${{ inputs.COMPONENT_TYPE }}/${{ inputs.COMPONENT_NAME }}/pom.xml -Drepo.login=${{ secrets.IDIR_AS_EMAIL }} -Drepo.password=${{ secrets.IDIR_PASSWORD }} -DskipTests package
 
       - name: Build UI with Maven
-        if: ${{ inputs.PROJECT_TYPE == 'client' }}
+        if: ${{ inputs.COMPONENT_TYPE == 'client' }}
         run: |
           export MAVEN_OPTS="-Xmx3072m -XX:MaxMetaspaceSize=512m"
           export NODE_OPTIONS="--max-old-space-size=4096"
@@ -90,7 +90,7 @@ jobs:
           path: staging
           key: ${{ inputs.COMPONENT_NAME }}-maven-${{ hashFiles('**war.xml') }}
           restore-keys: |
-            ${{ inputs.PROJECT_NAME }}-maven-
+            ${{ inputs.COMPONENT_NAME }}-maven-
 
   docker:
     needs: build
