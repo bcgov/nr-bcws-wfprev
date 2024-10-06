@@ -3,7 +3,7 @@ FROM tomcat:9.0.91-jdk17
 # Remove the default webapps to avoid conflicts
 RUN rm -rf /usr/local/tomcat/webapps/*
 # Copy the WAR file to the Tomcat webapps directory
-COPY target/wfprev-api-1.0.0-SNAPSHOT.war /usr/local/tomcat/webapps/ROOT.war
+COPY *.war /usr/local/tomcat/webapps/ROOT.war
 ENV TOMCAT_HOME=/usr/local/tomcat \
     CATALINA_HOME=/usr/local/tomcat \
     CATALINA_OUT=/usr/local/tomcat/logs \
