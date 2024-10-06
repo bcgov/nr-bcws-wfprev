@@ -1,5 +1,5 @@
 # Use an official Tomcat image as a base image
-FROM tomcat:9.0.91-jdk17
+FROM tomcat:10.1-jdk17-corretto
 # Remove the default webapps to avoid conflicts
 RUN rm -rf /usr/local/tomcat/webapps/*
 # Copy the WAR file to the Tomcat webapps directory
