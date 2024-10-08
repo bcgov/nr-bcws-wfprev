@@ -29,7 +29,6 @@
 	</scm>
 	<properties>
 		<java.version>17</java.version>
-		<jersey.version>3.1.3</jersey.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -116,11 +115,6 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-test</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
 			<groupId>org.testcontainers</groupId>
 			<artifactId>junit-jupiter</artifactId>
 			<scope>test</scope>
@@ -129,18 +123,6 @@
 			<groupId>org.testcontainers</groupId>
 			<artifactId>postgresql</artifactId>
 			<scope>test</scope>
-		</dependency>
-
-		<!-- Jersey -->
-		<dependency>
-			<groupId>org.glassfish.jersey.ext</groupId>
-			<artifactId>jersey-spring6</artifactId>
-			<version>${jersey.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.glassfish.jersey.inject</groupId>
-			<artifactId>jersey-hk2</artifactId>
-			<version>${jersey.version}</version>
 		</dependency>
 
 		<!-- Common Software Framework -->
@@ -193,6 +175,16 @@
 			<groupId>ca.bc.gov.nrs.wfone.common</groupId>
 			<artifactId>wfone-common-rest-endpoints</artifactId>
 			<version>1.4.1-SNAPSHOT</version>
+			<exclusions>
+				<exclusion>
+					<groupId>io.swagger.core.v3</groupId>
+					<artifactId>swagger-jaxrs2</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>io.swagger.core.v3</groupId>
+					<artifactId>swagger-jaxrs2-servlet-initializer-v2</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>ca.bc.gov.nrs.wfone.common</groupId>
@@ -204,15 +196,9 @@
 			<artifactId>wfone-common-checkhealth</artifactId>
 			<version>1.4.1-SNAPSHOT</version>
 		</dependency>
-
 		<dependency>
 			<groupId>io.swagger.core.v3</groupId>
 			<artifactId>swagger-annotations-jakarta</artifactId>
-			<version>2.2.22</version>
-		</dependency>
-		<dependency>
-			<groupId>io.swagger.core.v3</groupId>
-			<artifactId>swagger-core-jakarta</artifactId>
 			<version>2.2.22</version>
 		</dependency>
 		<dependency>
@@ -224,6 +210,24 @@
 			<groupId>org.sonarsource.scanner.maven</groupId>
 			<artifactId>sonar-maven-plugin</artifactId>
 			<version>4.0.0.4121</version>
+		</dependency>
+		<dependency>
+			<groupId>javax.xml.bind</groupId>
+			<artifactId>jaxb-api</artifactId>
+			<version>2.3.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.glassfish.jaxb</groupId>
+			<artifactId>jaxb-runtime</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>javax.ws.rs</groupId>
+			<artifactId>javax.ws.rs-api</artifactId>
+			<version>2.1.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.glassfish.jersey.ext</groupId>
+			<artifactId>jersey-spring6</artifactId>	
 		</dependency>
 	</dependencies>
 
@@ -330,4 +334,4 @@
 			</plugin>
 		</plugins>
 	</build>
-</project>  
+</project>
