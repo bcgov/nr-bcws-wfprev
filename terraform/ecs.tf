@@ -113,6 +113,11 @@ resource "aws_ecs_task_definition" "wfprev_server" {
         sourceVolume = "temp"
         containerPath = "/usr/local/tomcat/temp"
         readOnly = false
+      },
+      {
+        sourceVolume = "webapps"
+        containerPath = "/usr/local/tomcat/webapps"
+        readOnly = false
       }
     ]
     volumesFrom = []
@@ -135,6 +140,7 @@ resource "aws_ecs_task_definition" "wfprev_client" {
   volume {
     name = "logging"
   }
+  
   container_definitions = jsonencode([
     {
       essential   = true
