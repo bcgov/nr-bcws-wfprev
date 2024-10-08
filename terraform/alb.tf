@@ -85,6 +85,28 @@ resource "aws_lb_listener_rule" "wfprev-ui" {
   }
 }
 
+resource "aws_lb_listener_rule" "wfprev-liquibase" {
+
+  listener_arn = data.aws_alb_listener.wfprev_main.arn
+
+  action {
+    type             = "forward"
+    target_group_arn = aws_alb_target_group.wfprev_liquibase.arn
+  }
+
+  condition {
+    host_header {
+      values = [for sn in var.LIQUIBASE_NAME : "${sn}.*"]
+    }
+  }
+
+  condition {
+    http_header {
+      http_header_name = "X-Cloudfront-Header"
+      values           = ["${var.CLOUDFRONT_HEADER}"]
+    }
+  }
+}
 
 
 
@@ -127,6 +149,25 @@ resource "aws_alb_target_group" "wfprev_ui" {
     matcher             = "200"
     timeout             = "3"
     path                = "/${aws_apigatewayv2_stage.wfprev_stage.name}/${var.PREVENTION_WAR_NAMES[0]}/"
+    unhealthy_threshold = "2"
+  }
+}
+
+resource "aws_alb_target_group" "wfprev_liquibase" {
+  name                 = "wfprev-liquibase-${var.TARGET_ENV}"
+  port                 = var.WFPREV_CLIENT_PORT
+  protocol             = "HTTP"
+  vpc_id               = module.network.aws_vpc.id
+  target_type          = "ip"
+  deregistration_delay = 30
+
+  health_check {
+    healthy_threshold   = "2"
+    interval            = "300"
+    protocol            = "HTTP"
+    matcher             = "200"
+    timeout             = "3"
+    path                = var.HEALTH_CHECK_PATH
     unhealthy_threshold = "2"
   }
 }

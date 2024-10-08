@@ -40,10 +40,16 @@ jobs:
       COMPONENT_NAME: wfprev-api
       TAG: latest
       COMPONENT_TYPE: server
+  
+  liquibase-build:
+    uses: ./.github/workflows/liquibase-build.yml
+    secrets: inherit
+    with:
+      ENVIRONMENT: DEV
       
   terragrunt-deploy-dev:
     uses: ./.github/workflows/terragrunt-deploy.yml
-    needs: [wfprev-ui, wfprev-api]
+    needs: [wfprev-ui, wfprev-api, liquibase-build]
     with:
       DEFAULT_APPLICATION_ENVIRONMENT: dev
       IMAGE_TAG: latest

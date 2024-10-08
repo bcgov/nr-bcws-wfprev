@@ -64,7 +64,7 @@ variable "LOGGING_LEVEL" {
   description = "Logging level for components"
 }
 
-variable "aws_region" {
+variable "AWS_REGION" {
   description = "The AWS region things are created in"
   default     = "ca-central-1"
 }
@@ -214,4 +214,64 @@ variable "PREVENTION_API_NAMES" {
   type = list(string)
   description = "List of paths to point at payroll API"
   default = ["wfprev-api", "wfprev-api/*"]
+}
+
+//liquibase
+
+variable "LIQUIBASE_CPU" {
+  description = "number of milliCPUs to allocate to liquibase instances"
+  type = number
+  default = 256
+}
+
+variable "LIQUIBASE_MEMORY" {
+  description = "Amount of memory to allocate to liquibase instances, in MB"
+  type = number
+  default = 512
+}
+
+variable "LIQUIBASE_CONTAINER_NAME" {
+  description = "Name of DB container"
+  default     = "wfprev-liquibase-app"
+  type        = string
+}
+
+variable "LIQUIBASE_IMAGE" {
+  description = "Full name of liquibase image"
+  type        = string
+  default     = ""
+}
+
+variable "LIQUIBASE_CPU" {
+  description = "number of milliCPUs to allocate to liquibase instances"
+  type = number
+  default = 256
+}
+
+variable "LIQUIBASE_MEMORY" {
+  description = "Amount of memory to allocate to liquibase instances, in MB"
+  type = number
+  default = 512
+}
+
+variable "DB_PORT" {
+  description = "Port used to communicate with database"
+  type        = number
+  default     = 8080
+}
+
+variable "HEALTH_CHECK_PATH" {
+  default = "/"
+}
+
+variable "LIQUIBASE_NAME" {
+  description = "List of service names to use as subdomains"
+  default     = ["wfnews-liquibase"]
+  type        = list(string)
+}
+
+variable "CLOUDFRONT_HEADER" {
+  description = "Header added when passing through cloudfront"
+  default     = ""
+  type        = string
 }

@@ -151,5 +151,6 @@ jobs:
           WFPREV_USERNAME: ${{secrets.WFPREV_USERNAME}}
           DB_PASS: ${{secrets.DB_PASS}}
           DB_INSTANCE_TYPE: ${{vars.DB_INSTANCE_TYPE}}
+          LIQUIBASE_IMAGE: ${{vars.REPOSITORY_HOS}}/${{ github.repository_owner }}/${{ vars.LIQUIBASE_IMAGE }}:${{ inputs.IMAGE_TAG }}
 
         run: terragrunt apply --terragrunt-non-interactive -auto-approve

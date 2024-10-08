@@ -62,7 +62,7 @@ resource "aws_ecs_task_definition" "wfprev_server" {
       },
       {
         name  = "AWS_REGION"
-        value = var.aws_region
+        value = var.AWS_REGION
       },
       {
         name  = "WEBADE_OAUTH2_CLIENT_ID"
@@ -94,7 +94,7 @@ resource "aws_ecs_task_definition" "wfprev_server" {
       options = {
         awslogs-create-group  = "true"
         awslogs-group         = "/ecs/${var.server_name}"
-        awslogs-region        = var.aws_region
+        awslogs-region        = var.AWS_REGION
         awslogs-stream-prefix = "ecs"
       }
     }
@@ -158,7 +158,7 @@ resource "aws_ecs_task_definition" "wfprev_client" {
         },
         {
           name  = "AWS_REGION",
-          value = var.aws_region
+          value = var.AWS_REGION
         },
         {
           #Base URL will use the 
@@ -191,7 +191,7 @@ resource "aws_ecs_task_definition" "wfprev_client" {
         options = {
           awslogs-create-group  = "true"
           awslogs-group         = "/ecs/${var.client_name}"
-          awslogs-region        = var.aws_region
+          awslogs-region        = var.AWS_REGION
           awslogs-stream-prefix = "ecs"
         }
       }
@@ -207,6 +207,112 @@ resource "aws_ecs_task_definition" "wfprev_client" {
           readOnly = false
         }
         ]
+      volumesFrom = []
+    }
+  ])
+}
+
+resource "aws_ecs_task_definition" "wfprev_liquibase" {
+  family                   = "wfprev-liquibase-task-${var.TARGET_ENV}"
+  execution_role_arn       = aws_iam_role.wfprev_ecs_task_execution_role.arn
+  task_role_arn            = aws_iam_role.wfprev_app_container_role.arn
+  network_mode             = "awsvpc"
+  requires_compatibilities = ["FARGATE"]
+  cpu                      = var.LIQUIBASE_CPU
+  volume {
+    name = "cache"
+  }
+  volume {
+    name = "run"
+  }
+  volume {
+    name = "logging"
+  }
+  volume {
+    name = "nginx"
+  }
+  volume {
+    name = "nginx-lib"
+  }
+  volume {
+    name = "local"
+  }
+  memory                   = var.LIQUIBASE_MEMORY
+  container_definitions = jsonencode([
+    {
+      essential   = true
+      readonlyRootFilesystem = true
+      name        = var.LIQUIBASE_CONTAINER_NAME
+      image       = var.LIQUIBASE_IMAGE
+      cpu         = var.LIQUIBASE_CPU
+      memory      = var.LIQUIBASE_MEMORY
+      networkMode = "awsvpc"
+      portMappings = [
+        {
+          protocol      = "tcp"
+          containerPort = var.DB_PORT
+          hostPort      = var.DB_PORT
+        }
+      ]
+      environment = [
+        {
+          name = "CHANGELOG_FOLDER",
+          value = "."
+        },   
+        {
+          name  = "DB_URL",
+          value = "jdbc:postgresql://${aws_db_instance.wfprev_pgsqlDB.endpoint}/${aws_db_instance.wfprev_pgsqlDB.name}"
+        },
+        {
+          name  = "DB_USER",
+          value = "${aws_db_instance.wfprev_pgsqlDB.username}"
+        },
+        {
+          name  = "DB_PASS"
+          value = "${var.DB_PASS}"
+        }
+      ]
+      logConfiguration = {
+        logDriver = "awslogs"
+        options = {
+          awslogs-create-group  = "true"
+          awslogs-group         = "/ecs/${var.LIQUIBASE_CONTAINER_NAME}"
+          awslogs-region        = var.AWS_REGION
+          awslogs-stream-prefix = "ecs"
+        }
+      }
+      mountPoints = [
+        {
+          sourceVolume = "logging"
+          containerPath = "/var/log"
+          readOnly = false
+        },
+        {
+          sourceVolume = "cache"
+          containerPath = "/var/cache/nginx"
+          readOnly = false
+        },
+        {
+          sourceVolume = "run"
+          containerPath = "/var/run"
+          readOnly = false
+        },
+        {
+          sourceVolume = "nginx"
+          containerPath = "/etc/nginx"
+          readOnly = false
+        },
+        {
+          sourceVolume = "nginx-lib"
+          containerPath = "/var/lib/nginx"
+          readOnly = false
+        },
+        {
+          sourceVolume = "local"
+          containerPath = "/liquibase"
+          readOnly = false
+        }
+      ]
       volumesFrom = []
     }
   ])
@@ -296,6 +402,40 @@ resource "aws_ecs_service" "client" {
 
   # depends_on = [aws_iam_role_policy_attachment.wfprev_ecs_task_execution_role]
 }
+
+resource "aws_ecs_service" "wfprev_liquibase" {
+  count                             = 1
+  name                              = "wfprev-liquibase-service-${var.TARGET_ENV}"
+  cluster                           = aws_ecs_cluster.wfprev_main.id
+  task_definition                   = aws_ecs_task_definition.wfprev_liquibase.arn
+  desired_count                     = 1
+  enable_ecs_managed_tags           = true
+  propagate_tags                    = "TASK_DEFINITION"
+  health_check_grace_period_seconds = 60
+  wait_for_steady_state             = false
+
+
+  capacity_provider_strategy {
+    capacity_provider = "FARGATE"
+    weight            = 100
+    base              = 1
+  }
+
+  network_configuration {
+    security_groups  = [aws_security_group.wfprev_ecs_tasks.id, data.aws_security_group.app.id]
+    subnets          = module.network.aws_subnet_ids.app.ids
+    assign_public_ip = true
+  }
+
+  load_balancer {
+    target_group_arn = aws_alb_target_group.wfprev_liquibase.id
+    container_name   = var.LIQUIBASE_CONTAINER_NAME
+    container_port   = var.DB_PORT
+  }
+
+  depends_on = [aws_iam_role_policy_attachment.wfprev_ecs_task_execution_role]
+}
+
 
 
 # Placeholder for other ECS Services like Nginx, Liquibase, etc.
