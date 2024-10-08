@@ -4,12 +4,8 @@ FROM tomcat:10.1-jdk17-corretto
 # Remove the default webapps to avoid conflicts
 RUN rm -rf /usr/local/tomcat/webapps/*
 
-# Define build arguments
-ARG CONTAINER_NAME=wfprev-war
-ENV CATALINA_HOME /usr/local/tomcat
-
 # Copy the WAR file to the Tomcat webapps directory with the new name
-COPY target/wfprev-api-1.0.0-SNAPSHOT.war /usr/local/tomcat/webapps/pub#wfprev-api.war
+COPY server/wfprev-api/target/wfprev-api-1.0.0-SNAPSHOT.war /usr/local/tomcat/webapps/pub#wfprev-api.war
 
 ENV TOMCAT_HOME=/usr/local/tomcat \
     CATALINA_HOME=/usr/local/tomcat \
