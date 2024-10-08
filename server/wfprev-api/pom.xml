@@ -14,7 +14,6 @@
 	<version>1.0.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<name>wfprev-api</name>
-	<description>Demo project for Spring Boot</description>
 	<url/>
 	<licenses>
 		<license/>
@@ -30,6 +29,7 @@
 	</scm>
 	<properties>
 		<java.version>17</java.version>
+		<jersey.version>3.1.3</jersey.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -66,7 +66,6 @@
 		<dependency>			<!-- not in our artifactory. Needs to be added -->
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
-			<version>3.3.3</version>
 		</dependency>
 		<dependency>
 			<groupId>org.postgresql</groupId>
@@ -117,6 +116,11 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
 			<groupId>org.testcontainers</groupId>
 			<artifactId>junit-jupiter</artifactId>
 			<scope>test</scope>
@@ -127,66 +131,78 @@
 			<scope>test</scope>
 		</dependency>
 
+		<!-- Jersey -->
+		<dependency>
+			<groupId>org.glassfish.jersey.ext</groupId>
+			<artifactId>jersey-spring6</artifactId>
+			<version>${jersey.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.glassfish.jersey.inject</groupId>
+			<artifactId>jersey-hk2</artifactId>
+			<version>${jersey.version}</version>
+		</dependency>
+
 		<!-- Common Software Framework -->
 		<dependency>
 			<groupId>ca.bc.gov.nrs.wfone.common</groupId>
 			<artifactId>wfone-common-model</artifactId>
-			<version>1.4.1-SNAPSHOT</version>
+			<version>1.5.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>ca.bc.gov.nrs.wfone.common</groupId>
 			<artifactId>wfone-common-rest-common</artifactId>
-			<version>1.4.1-SNAPSHOT</version>
+			<version>1.5.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>ca.bc.gov.nrs.wfone.common</groupId>
 			<artifactId>wfone-common-rest-client</artifactId>
-			<version>1.4.1-SNAPSHOT</version>
+			<version>1.5.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>ca.bc.gov.nrs.wfone.common</groupId>
 			<artifactId>wfone-common-persistence</artifactId>
-			<version>1.4.1-SNAPSHOT</version>
+			<version>1.5.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>ca.bc.gov.nrs.wfone.common</groupId>
 			<artifactId>wfone-common-utils</artifactId>
-			<version>1.4.1-SNAPSHOT</version>
+			<version>1.5.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>ca.bc.gov.nrs.wfone.common</groupId>
 			<artifactId>wfone-common-service-api</artifactId>
-			<version>1.4.1-SNAPSHOT</version>
+			<version>1.5.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>ca.bc.gov.nrs.wfone.common</groupId>
 			<artifactId>wfone-common-code-persistence</artifactId>
-			<version>1.4.1-SNAPSHOT</version>
+			<version>1.5.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>ca.bc.gov.nrs.wfone.common</groupId>
 			<artifactId>wfone-common-webade</artifactId>
-			<version>1.4.1-SNAPSHOT</version>
+			<version>1.5.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>ca.bc.gov.nrs.wfone.common</groupId>
 			<artifactId>wfone-common-webade-oauth2-test</artifactId>
-			<version>1.4.1-SNAPSHOT</version>
+			<version>1.5.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>ca.bc.gov.nrs.wfone.common</groupId>
 			<artifactId>wfone-common-rest-endpoints</artifactId>
-			<version>1.4.1-SNAPSHOT</version>
+			<version>1.5.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>ca.bc.gov.nrs.wfone.common</groupId>
 			<artifactId>wfone-common-code-endpoints</artifactId>
-			<version>1.4.1-SNAPSHOT</version>
+			<version>1.5.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>ca.bc.gov.nrs.wfone.common</groupId>
 			<artifactId>wfone-common-checkhealth</artifactId>
-			<version>1.4.1-SNAPSHOT</version>
+			<version>1.5.0-SNAPSHOT</version>
 		</dependency>
 
 		<dependency>
@@ -203,21 +219,6 @@
 			<groupId>org.sonarsource.scanner.maven</groupId>
 			<artifactId>sonar-maven-plugin</artifactId>
 			<version>4.0.0.4121</version>
-		</dependency>
-		<dependency>
-			<groupId>javax.xml.bind</groupId>
-			<artifactId>jaxb-api</artifactId>
-			<version>2.3.1</version>
-		</dependency>
-		<dependency>
-			<groupId>org.glassfish.jaxb</groupId>
-			<artifactId>jaxb-runtime</artifactId>
-			<version>2.3.1</version>
-		</dependency>
-		<dependency>
-			<groupId>javax.ws.rs</groupId>
-			<artifactId>javax.ws.rs-api</artifactId>
-			<version>2.1.1</version>
 		</dependency>
 	</dependencies>
 
@@ -324,4 +325,4 @@
 			</plugin>
 		</plugins>
 	</build>
-</project>
+</project>  
