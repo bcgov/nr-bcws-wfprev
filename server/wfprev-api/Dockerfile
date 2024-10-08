@@ -7,7 +7,7 @@ RUN yum update -y && \
     yum clean all
 
 # Define build arguments
-ARG WAR_FILE=target/wfprev-api-1.0.0-SNAPSHOT.war
+ARG WAR_FILE=*.war
 ARG CONTAINER_NAME=wfprev-api
 
 # Set environment variables
