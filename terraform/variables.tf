@@ -116,7 +116,6 @@ variable "WFPREV_DATASOURCE_PASSWORD" {
 }
 
 variable "WFPREV_USERNAME" {
-  description = "db password, passed in as env variable at runtime"
   type        = string
   default = ""
 }
