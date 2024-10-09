@@ -26,7 +26,7 @@ resource "aws_db_instance" "wfprev_pgsqlDB" {
   # tags                            = local.common_tags
   enabled_cloudwatch_logs_exports = ["postgresql"]
   lifecycle {
-    prevent_destroy = true
+    prevent_destroy = false
   }
 }
 
