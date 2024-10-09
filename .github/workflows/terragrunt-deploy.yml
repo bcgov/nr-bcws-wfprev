@@ -35,7 +35,7 @@ on:
         type: choice
         options:
           - none
-          - changelog_app_wf1_prev
+          - main-changelog
   
       TARGET_LIQUIBASE_TAG: 
         required: false
@@ -62,7 +62,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-
       # - name: retrieve lambda artifacts
       #   uses: actions/download-artifact@v3
       #   with:
@@ -72,12 +71,9 @@ jobs:
       - id: changeLogCount
         name: Determine changelog to execute
         run: |
-          if [ "${{ inputs.CHANGELOG_NAME }}" == "changelog_app_wf1_prev" ]; then
+          if [ "${{ inputs.CHANGELOG_NAME }}" == "main-changelog" ]; then
             echo "NONPROXY_COUNT=1" >> $GITHUB_OUTPUT
             echo "PROXY_COUNT=0" >> $GITHUB_OUTPUT
-          elif [ "${{ inputs.CHANGELOG_NAME }}" == "changelog_app_wf1_prev_proxy" ] ; then
-            echo "NONPROXY_COUNT=0" >> $GITHUB_OUTPUT
-            echo "PROXY_COUNT=1" >> $GITHUB_OUTPUT
           else
             echo "NONPROXY_COUNT=0" >> $GITHUB_OUTPUT
             echo "PROXY_COUNT=0" >> $GITHUB_OUTPUT
