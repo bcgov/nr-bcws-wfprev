@@ -40,6 +40,10 @@ on:
       TARGET_LIQUIBASE_TAG: 
         required: false
         type: string
+<<<<<<< HEAD
+=======
+        default: main
+>>>>>>> 279ad6498e0f6c121c8fca68dd6d1bb18c6413e5
       # IS_HOTFIX:
       #   required: true
       #   type: string
