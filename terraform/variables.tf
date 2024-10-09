@@ -141,7 +141,7 @@ variable "WEBADE_OAUTH2_WFPREV_UI_CLIENT_SECRET" {
   default = ""
 }
 
-variable "WEBADE-OAUTH2_CHECK_TOKEN_URL" {
+variable "WEBADE_OAUTH2_CHECK_TOKEN_URL" {
   type    = string
   default = ""
 }

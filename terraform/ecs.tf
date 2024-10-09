@@ -175,7 +175,7 @@ resource "aws_ecs_task_definition" "wfprev_client" {
         },
         {
           name  = "WEBADE-OAUTH2_CHECK_TOKEN_V2_URL"
-          value = var.WEBADE-OAUTH2_CHECK_TOKEN_URL
+          value = var.WEBADE_OAUTH2_CHECK_TOKEN_URL
         },
         { //Will be phased out from prod eventually, but not yet  "https://${aws_route53_record.wfprev_nginx.name}/"
           name  = "WFPREV_API_URL",
@@ -211,6 +211,8 @@ resource "aws_ecs_task_definition" "wfprev_client" {
     }
   ])
 }
+
+# WFPrev Liquibase Task Definition
 
 resource "aws_ecs_task_definition" "wfprev-liquibase" {
   count = var.NONPROXY_COUNT
