@@ -40,6 +40,9 @@ resource "aws_ecs_task_definition" "wfprev_server" {
   volume {
     name = "temp"
   }
+  volume {
+    name = "webapps"
+  }
   container_definitions = jsonencode([{
     essential              = true
     readonlyRootFilesystem = true
