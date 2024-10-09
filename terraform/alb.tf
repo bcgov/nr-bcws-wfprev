@@ -85,9 +85,6 @@ resource "aws_lb_listener_rule" "wfprev-ui" {
   }
 }
 
-
-
-
 //////////////////////////////
 /// TARGET GROUP RESOURCES ///
 //////////////////////////////
