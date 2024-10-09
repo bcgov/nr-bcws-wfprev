@@ -115,6 +115,17 @@ variable "WFPREV_DATASOURCE_PASSWORD" {
   default = ""
 }
 
+variable "WFPREV_USERNAME" {
+  type        = string
+  default = ""
+}
+
+variable "DB_PASS" {
+  description = "db password, passed in as env variable at runtime"
+  type        = string
+  default = ""
+}
+
 variable "api_key" {
   description = "value for api key"
   type        = string
