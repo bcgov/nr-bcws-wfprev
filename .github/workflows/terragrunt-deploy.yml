@@ -158,7 +158,7 @@ jobs:
           PROXY_COUNT: ${{ steps.changeLogCount.outputs.PROXY_COUNT }}
           NONPROXY_COUNT: ${{ steps.changeLogCount.outputs.NONPROXY_COUNT }}
           CHANGELOG_NAME: ${{ inputs.CHANGELOG_NAME }}
-          LIQUIBASE_IMAGE: ${{vars.REPOSITORY_HOS}}/${{ github.repository_owner }}/${{ vars.LIQUIBASE_IMAGE }}:${{ inputs.IMAGE_TAG }}
+          LIQUIBASE_IMAGE: ${{vars.REPOSITORY_HOST}}/${{ github.repository_owner }}/${{ vars.LIQUIBASE_IMAGE }}:${{ inputs.IMAGE_TAG }}
           LIQUIBASE_COMMAND_USERNAME: ${{ vars.LIQUIBASE_COMMAND_USERNAME }}
           LIQUIBASE_COMMAND_PASSWORD: ${{ secrets.LIQUIBASE_COMMAND_PASSWORD }}
           SCHEMA_NAME: ${{ inputs.SCHEMA_NAME }}
