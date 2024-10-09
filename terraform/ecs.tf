@@ -214,6 +214,12 @@ resource "aws_ecs_task_definition" "wfprev_client" {
 
 # WFPrev Liquibase Task Definition
 
+resource "null_resource" "always_run" {
+  triggers = {
+    timestamp = "${timestamp()}"
+  }
+}
+
 resource "aws_ecs_task_definition" "wfprev-liquibase" {
   count = var.NONPROXY_COUNT
   family = "wfprev-liquibase-${var.TARGET_ENV}"
