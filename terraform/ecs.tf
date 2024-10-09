@@ -96,6 +96,14 @@ resource "aws_ecs_task_definition" "wfprev_server" {
         value = var.WFPREV_DATASOURCE_PASSWORD
       },
       {
+        name  = "WFPREV_USERNAME"
+        value = var.WFPREV_USERNAME
+      },
+      {
+        name  = "DB_PASS"
+        value = var.DB_PASS
+      },
+      {
         name  = "API_KEY"
         value = var.api_key
       }
