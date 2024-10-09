@@ -232,9 +232,6 @@ resource "aws_ecs_task_definition" "wfprev-liquibase" {
       essential   = true
       name        = "wfprev-liquibase"
       image       = var.LIQUIBASE_IMAGE
-      repositoryCredentials = {
-        credentialsParameter = aws_secretsmanager_secret.githubCredentials.arn
-      }
       cpu         = 256
       memory      = 512
       portMappings = [
