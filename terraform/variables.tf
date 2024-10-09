@@ -161,11 +161,6 @@ variable "WEBADE_OAUTH2_WFPREV_UI_CLIENT_SECRET" {
   default = ""
 }
 
-variable "WEBADE_OAUTH2_CHECK_TOKEN_URL" {
-  type    = string
-  default = ""
-}
-
 variable "client_name" {
   description = "Name of the client"
   type        = string
