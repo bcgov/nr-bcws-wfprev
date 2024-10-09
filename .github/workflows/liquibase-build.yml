@@ -23,6 +23,12 @@ on:
         required: false
         type: string
         description: 'Additional tag to add to docker image'
+  workflow_call:
+    inputs:
+      TAG:
+        required: false
+        type: string
+        description: 'workflow'
 
 jobs:
   docker:
