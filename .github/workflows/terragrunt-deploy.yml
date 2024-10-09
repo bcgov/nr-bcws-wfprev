@@ -40,7 +40,6 @@ on:
       TARGET_LIQUIBASE_TAG: 
         required: false
         type: string
-        default: main
       # IS_HOTFIX:
       #   required: true
       #   type: string
