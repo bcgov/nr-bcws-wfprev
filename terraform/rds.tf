@@ -16,8 +16,8 @@ resource "aws_db_instance" "wfprev_pgsqlDB" {
   multi_az                        = var.DB_MULTI_AZ
   backup_retention_period         = 7
   allocated_storage               = var.DB_SIZE
-  username                        = var.WFPREV_DATASOURCE_USERNAME
-  password                        = var.WFPREV_DATASOURCE_PASSWORD
+  username                        = var.WFPREV_USERNAME
+  password                        = var.DB_PASS
   db_subnet_group_name = aws_db_subnet_group.wfprev_db_subnet.name
   publicly_accessible             = false
   skip_final_snapshot             = true
