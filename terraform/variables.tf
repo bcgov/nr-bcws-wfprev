@@ -218,12 +218,6 @@ variable "PREVENTION_API_NAMES" {
 
 //liquibase
 
-variable "LIQUIBASE_CPU" {
-  description = "number of milliCPUs to allocate to liquibase instances"
-  type = number
-  default = 256
-}
-
 variable "LIQUIBASE_MEMORY" {
   description = "Amount of memory to allocate to liquibase instances, in MB"
   type = number
@@ -246,12 +240,6 @@ variable "LIQUIBASE_CPU" {
   description = "number of milliCPUs to allocate to liquibase instances"
   type = number
   default = 256
-}
-
-variable "LIQUIBASE_MEMORY" {
-  description = "Amount of memory to allocate to liquibase instances, in MB"
-  type = number
-  default = 512
 }
 
 variable "DB_PORT" {
