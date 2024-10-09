@@ -26,16 +26,17 @@ on:
         required: true
         type: string
         default: main
-      # SCHEMA_NAME:
-      #   required: true
-      #   type: string
-      #   default: app_wf1_prev
-      # CHANGELOG_NAME:
-      #   type: string
-      #   options:
-      #     - none
-      #     - changelog_app_wf1_prev
-      #     - changelog_app_wf1_prev_proxy
+      SCHEMA_NAME:
+        required: true
+        type: string
+        default: app_wf1_prev
+
+      CHANGELOG_NAME:
+        type: choice
+        options:
+          - none
+          - changelog_app_wf1_prev
+  
       TARGET_LIQUIBASE_TAG: 
         required: false
         type: string
