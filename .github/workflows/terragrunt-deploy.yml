@@ -36,9 +36,10 @@ on:
       #     - none
       #     - changelog_app_wf1_prev
       #     - changelog_app_wf1_prev_proxy
-      # TARGET_LIQUIBASE_TAG: 
-      #   required: false
-      #   type: string
+      TARGET_LIQUIBASE_TAG: 
+        required: false
+        type: string
+        default: main
       # IS_HOTFIX:
       #   required: true
       #   type: string
@@ -151,6 +152,16 @@ jobs:
           WFPREV_USERNAME: ${{secrets.WFPREV_USERNAME}}
           DB_PASS: ${{secrets.DB_PASS}}
           DB_INSTANCE_TYPE: ${{vars.DB_INSTANCE_TYPE}}
+
+          #liquibase
+          COMMAND: ${{ steps.liquibaseCommand.outputs.LIQUIBASE_COMMAND }}
+          PROXY_COUNT: ${{ steps.changeLogCount.outputs.PROXY_COUNT }}
+          NONPROXY_COUNT: ${{ steps.changeLogCount.outputs.NONPROXY_COUNT }}
+          CHANGELOG_NAME: ${{ inputs.CHANGELOG_NAME }}
           LIQUIBASE_IMAGE: ${{vars.REPOSITORY_HOS}}/${{ github.repository_owner }}/${{ vars.LIQUIBASE_IMAGE }}:${{ inputs.IMAGE_TAG }}
+          LIQUIBASE_COMMAND_USERNAME: ${{ vars.LIQUIBASE_COMMAND_USERNAME }}
+          LIQUIBASE_COMMAND_PASSWORD: ${{ secrets.LIQUIBASE_COMMAND_PASSWORD }}
+          SCHEMA_NAME: ${{ inputs.SCHEMA_NAME }}
+          TARGET_LIQUIBASE_TAG: ${{ steps.liquibaseCommand.outputs.TARGET_LIQUIBASE_TAG }}
 
         run: terragrunt apply --terragrunt-non-interactive -auto-approve

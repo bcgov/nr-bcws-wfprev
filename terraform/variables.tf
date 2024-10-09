@@ -275,3 +275,34 @@ variable "CLOUDFRONT_HEADER" {
   default     = ""
   type        = string
 }
+
+variable "NONPROXY_COUNT" {
+  type = number
+  default = 1
+}
+
+variable "CHANGELOG_NAME" {
+  type = string
+  default = "changelog_app_wfprev"
+}
+
+variable "LIQUIBASE_COMMAND_USERNAME" {
+  type = string
+}
+
+variable "LIQUIBASE_COMMAND_PASSWORD" {
+  type = string
+}
+
+variable "SCHEMA_NAME" {
+  type = string
+}
+
+variable "TARGET_LIQUIBASE_TAG" {
+  type = string
+}
+
+variable "COMMAND" {
+  type = string
+  default = "update"
+}
