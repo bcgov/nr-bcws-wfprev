@@ -271,7 +271,7 @@ variable "NONPROXY_COUNT" {
 
 variable "CHANGELOG_NAME" {
   type = string
-  default = "changelog_app_wfprev"
+  default = "main-changelog"
 }
 
 variable "LIQUIBASE_COMMAND_USERNAME" {
