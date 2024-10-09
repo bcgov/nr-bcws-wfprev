@@ -65,7 +65,7 @@ resource "aws_ecs_task_definition" "wfprev_server" {
       },
       {
         name  = "AWS_REGION"
-        value = var.aws_region
+        value = var.AWS_REGION
       },
       {
         name  = "WFPREV_CLIENT_ID"
@@ -105,7 +105,7 @@ resource "aws_ecs_task_definition" "wfprev_server" {
       options = {
         awslogs-create-group  = "true"
         awslogs-group         = "/ecs/${var.server_name}"
-        awslogs-region        = var.aws_region
+        awslogs-region        = var.AWS_REGION
         awslogs-stream-prefix = "ecs"
       }
     }
@@ -175,7 +175,7 @@ resource "aws_ecs_task_definition" "wfprev_client" {
         },
         {
           name  = "AWS_REGION",
-          value = var.aws_region
+          value = var.AWS_REGION
         },
         {
           #Base URL will use the 
@@ -192,7 +192,7 @@ resource "aws_ecs_task_definition" "wfprev_client" {
         },
         {
           name  = "WEBADE-OAUTH2_CHECK_TOKEN_V2_URL"
-          value = var.WEBADE-OAUTH2_CHECK_TOKEN_URL
+          value = var.WEBADE_OAUTH2_CHECK_TOKEN_URL
         },
         { //Will be phased out from prod eventually, but not yet  "https://${aws_route53_record.wfprev_nginx.name}/"
           name  = "WFPREV_API_URL",
@@ -208,7 +208,7 @@ resource "aws_ecs_task_definition" "wfprev_client" {
         options = {
           awslogs-create-group  = "true"
           awslogs-group         = "/ecs/${var.client_name}"
-          awslogs-region        = var.aws_region
+          awslogs-region        = var.AWS_REGION
           awslogs-stream-prefix = "ecs"
         }
       }
@@ -229,6 +229,87 @@ resource "aws_ecs_task_definition" "wfprev_client" {
   ])
 }
 
+# WFPrev Liquibase Task Definition
+
+resource "null_resource" "always_run" {
+  triggers = {
+    timestamp = "${timestamp()}"
+  }
+}
+
+resource "aws_ecs_task_definition" "wfprev-liquibase" {
+  count = var.NONPROXY_COUNT
+  family = "wfprev-liquibase-${var.TARGET_ENV}"
+  network_mode             = "awsvpc"
+  requires_compatibilities = ["FARGATE"]
+  cpu = 256
+  memory = 512
+  execution_role_arn = aws_iam_role.wfprev_ecs_task_execution_role.arn
+  container_definitions = jsonencode([{
+      essential   = true
+      name        = "wfprev-liquibase"
+      image       = var.LIQUIBASE_IMAGE
+      cpu         = 256
+      memory      = 512
+      portMappings = [
+      ]
+      logConfiguration = {
+        logDriver = "awslogs"
+        options = {
+          awslogs-create-group  = "true"
+          awslogs-group         = "/ecs/wfprev-liquibase-nonproxy-${var.TARGET_ENV}"
+          awslogs-region        = var.AWS_REGION
+          awslogs-stream-prefix = "ecs"
+        }
+      }
+      environment = [
+        {
+          name = "LIQUIBASE_COMMAND_URL"
+          value = "jdbc:postgresql://${aws_db_instance.wfprev_pgsqlDB.endpoint}/${aws_db_instance.wfprev_pgsqlDB.name}"
+        },
+        {
+          name = "CHANGELOG_FILE"
+          value = "${var.CHANGELOG_NAME}.json"
+        },
+        {
+          name = "LIQUIBASE_COMMAND_USERNAME"
+          value = var.LIQUIBASE_COMMAND_USERNAME
+        },
+        {
+          name = "LIQUIBASE_COMMAND_PASSWORD"
+          value = var.LIQUIBASE_COMMAND_PASSWORD
+        },
+        {
+          name = "SCHEMA_NAME"
+          value = var.SCHEMA_NAME
+        },
+        {
+          name = "TARGET_LIQUIBASE_TAG"
+          value = var.TARGET_LIQUIBASE_TAG
+        },
+        {
+          name = "COMMAND"
+          value = var.COMMAND
+        }
+
+      ]
+  }])
+
+  lifecycle {
+    replace_triggered_by = [
+      null_resource.always_run
+    ]
+  }
+  provisioner "local-exec" {
+    command = <<-EOF
+    aws ecs run-task \
+      --task-definition wfprev-liquibase-${var.TARGET_ENV} \
+      --cluster ${aws_ecs_cluster.wfprev_main.id} \
+      --count 1 \
+      --network-configuration awsvpcConfiguration={securityGroups=[${data.aws_security_group.app.id}],subnets=${module.network.aws_subnet_ids.app.ids[0]},assignPublicIp=DISABLED}
+EOF
+  }
+}
 
 # Placeholder for Other Task Definitions like Nginx, Liquibase, etc.
 # For each additional component, create similar task definitions based on wfprev structure
@@ -313,7 +394,6 @@ resource "aws_ecs_service" "client" {
 
   # depends_on = [aws_iam_role_policy_attachment.wfprev_ecs_task_execution_role]
 }
-
 
 # Placeholder for other ECS Services like Nginx, Liquibase, etc.
 # Define similar ECS services for additional task definitions.
