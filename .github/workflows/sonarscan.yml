@@ -64,8 +64,8 @@ jobs:
           -DWEBADE_OAUTH2_CHECK_TOKEN_URL=${{ vars.WEBADE_OAUTH2_CHECK_TOKEN_URL }} \
           -DWEBADE_OAUTH2_CHECK_AUTHORIZE_URL=${{ vars.WEBADE_OAUTH2_CHECK_TOKEN_URL }} \
           -DWFPREV_DATASOURCE_URL=${{ vars.WFPREV_DATASOURCE_URL }} \
-          -DWFPREV_DATASOURCE_USERNAME=${{ vars.WFPREV_DATASOURCE_USERNAME }} \
-          -DWFPREV_DATASOURCE_PASSWORD=${{ secrets.WFPREV_DATASOURCE_PASSWORD }}
+          -DWFPREV_DATASOURCE_USERNAME=${{ vars.WFPREV_USERNAME }} \
+          -DWFPREV_DATASOURCE_PASSWORD=${{ secrets.DB_PASS }}
      
       - name: SonarCloud Scan Action
         uses: SonarSource/sonarcloud-github-action@master

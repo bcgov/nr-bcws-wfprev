@@ -84,8 +84,39 @@ variable "WEBADE-OAUTH2_TOKEN_URL" {
   default = ""
 }
 
-variable "WFPREV_USERNAME" {
+variable "WEBADE_OAUTH2_CHECK_TOKEN_URL" {
   type    = string
+  default = ""
+}
+
+variable "WEBADE_OAUTH2_CHECK_AUTHORIZE_URL" {
+  type    = string
+  default = ""
+}
+
+variable "WFPREV_CLIENT_ID" {
+  type    = string
+  default = ""
+}
+
+variable "WFPREV_CLIENT_SECRET" {
+  type    = string
+  default = ""
+}
+
+variable "WFPREV_DATASOURCE_USERNAME" {
+  type    = string
+  default = ""
+}
+
+variable "WFPREV_DATASOURCE_PASSWORD" {
+  description = "db password, passed in as env variable at runtime"
+  type        = string
+  default = ""
+}
+
+variable "WFPREV_USERNAME" {
+  type        = string
   default = ""
 }
 
@@ -137,11 +168,6 @@ variable "WFPREV_CLIENT_PORT" {
 }
 
 variable "WEBADE_OAUTH2_WFPREV_UI_CLIENT_SECRET" {
-  type    = string
-  default = ""
-}
-
-variable "WEBADE_OAUTH2_CHECK_TOKEN_URL" {
   type    = string
   default = ""
 }

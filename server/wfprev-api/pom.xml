@@ -14,7 +14,6 @@
 	<version>1.0.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<name>wfprev-api</name>
-	<description>Demo project for Spring Boot</description>
 	<url/>
 	<licenses>
 		<license/>
@@ -42,6 +41,10 @@
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-autoconfigure</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-rest</artifactId>
 		</dependency>
 		<dependency>
@@ -51,6 +54,10 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-security</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-autoconfigure</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.springdoc</groupId>
@@ -66,7 +73,6 @@
 		<dependency>			<!-- not in our artifactory. Needs to be added -->
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
-			<version>3.3.3</version>
 		</dependency>
 		<dependency>
 			<groupId>org.postgresql</groupId>
@@ -131,64 +137,73 @@
 		<dependency>
 			<groupId>ca.bc.gov.nrs.wfone.common</groupId>
 			<artifactId>wfone-common-model</artifactId>
-			<version>1.4.1-SNAPSHOT</version>
+			<version>1.5.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>ca.bc.gov.nrs.wfone.common</groupId>
 			<artifactId>wfone-common-rest-common</artifactId>
-			<version>1.4.1-SNAPSHOT</version>
+			<version>1.5.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>ca.bc.gov.nrs.wfone.common</groupId>
 			<artifactId>wfone-common-rest-client</artifactId>
-			<version>1.4.1-SNAPSHOT</version>
+			<version>1.5.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>ca.bc.gov.nrs.wfone.common</groupId>
 			<artifactId>wfone-common-persistence</artifactId>
-			<version>1.4.1-SNAPSHOT</version>
+			<version>1.5.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>ca.bc.gov.nrs.wfone.common</groupId>
 			<artifactId>wfone-common-utils</artifactId>
-			<version>1.4.1-SNAPSHOT</version>
+			<version>1.5.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>ca.bc.gov.nrs.wfone.common</groupId>
 			<artifactId>wfone-common-service-api</artifactId>
-			<version>1.4.1-SNAPSHOT</version>
+			<version>1.5.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>ca.bc.gov.nrs.wfone.common</groupId>
 			<artifactId>wfone-common-code-persistence</artifactId>
-			<version>1.4.1-SNAPSHOT</version>
+			<version>1.5.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>ca.bc.gov.nrs.wfone.common</groupId>
 			<artifactId>wfone-common-webade</artifactId>
-			<version>1.4.1-SNAPSHOT</version>
+			<version>1.5.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>ca.bc.gov.nrs.wfone.common</groupId>
 			<artifactId>wfone-common-webade-oauth2-test</artifactId>
-			<version>1.4.1-SNAPSHOT</version>
+			<version>1.5.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>ca.bc.gov.nrs.wfone.common</groupId>
 			<artifactId>wfone-common-rest-endpoints</artifactId>
-			<version>1.4.1-SNAPSHOT</version>
+			<version>1.5.0-SNAPSHOT</version>
+			<exclusions>
+				<exclusion>
+					<groupId>io.swagger.core.v3</groupId>
+					<artifactId>swagger-jaxrs2</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>io.swagger.core.v3</groupId>
+					<artifactId>swagger-jaxrs2-servlet-initializer-v2</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>ca.bc.gov.nrs.wfone.common</groupId>
 			<artifactId>wfone-common-code-endpoints</artifactId>
-			<version>1.4.1-SNAPSHOT</version>
+			<version>1.5.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>ca.bc.gov.nrs.wfone.common</groupId>
 			<artifactId>wfone-common-checkhealth</artifactId>
-			<version>1.4.1-SNAPSHOT</version>
+			<version>1.5.0-SNAPSHOT</version>
 		</dependency>
-
 		<dependency>
 			<groupId>io.swagger.core.v3</groupId>
 			<artifactId>swagger-annotations-jakarta</artifactId>
@@ -205,19 +220,12 @@
 			<version>4.0.0.4121</version>
 		</dependency>
 		<dependency>
-			<groupId>javax.xml.bind</groupId>
-			<artifactId>jaxb-api</artifactId>
-			<version>2.3.1</version>
-		</dependency>
-		<dependency>
 			<groupId>org.glassfish.jaxb</groupId>
 			<artifactId>jaxb-runtime</artifactId>
-			<version>2.3.1</version>
 		</dependency>
 		<dependency>
-			<groupId>javax.ws.rs</groupId>
-			<artifactId>javax.ws.rs-api</artifactId>
-			<version>2.1.1</version>
+			<groupId>org.glassfish.jersey.ext</groupId>
+			<artifactId>jersey-spring6</artifactId>	
 		</dependency>
 	</dependencies>
 
