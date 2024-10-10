@@ -81,20 +81,21 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
-        http.csrf().disable();
-
         http
-                .oauth2ResourceServer(oauth2 -> oauth2
-                .authenticationManagerResolver(authenticationManagerResolver())
-                )
-                .httpBasic().and()
-                .authorizeHttpRequests((authorize) -> authorize
-                .anyRequest().authenticated()
-                )
-                .exceptionHandling()
-                .authenticationEntryPoint(authenticationEntryPoint());
+        .csrf(csrf -> csrf.disable())
+        .authorizeHttpRequests(auth -> auth
+            .requestMatchers("/actuator/health").permitAll()
+            .anyRequest().authenticated()
+        )
+        .oauth2ResourceServer(oauth2 -> oauth2
+            .authenticationManagerResolver(authenticationManagerResolver())
+        )
+        .httpBasic()
+        .and()
+        .exceptionHandling(exceptionHandling -> exceptionHandling
+            .authenticationEntryPoint(authenticationEntryPoint()));
 
-        return http.build();
+    return http.build();
     }
 
 }

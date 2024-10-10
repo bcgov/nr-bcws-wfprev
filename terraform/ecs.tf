@@ -40,6 +40,9 @@ resource "aws_ecs_task_definition" "wfprev_server" {
   volume {
     name = "temp"
   }
+  volume {
+    name = "webapps"
+  }
   container_definitions = jsonencode([{
     essential              = true
     readonlyRootFilesystem = true
@@ -65,16 +68,32 @@ resource "aws_ecs_task_definition" "wfprev_server" {
         value = var.AWS_REGION
       },
       {
-        name  = "WEBADE_OAUTH2_CLIENT_ID"
-        value = var.WEBADE_OAUTH2_REST_CLIENT_ID
+        name  = "WFPREV_CLIENT_ID"
+        value = var.WFPREV_CLIENT_ID
       },
       {
-        name  = "WEBADE-OAUTH2_TOKEN_URL",
-        value = var.WEBADE-OAUTH2_TOKEN_URL
+        name  = "WFPREV_CLIENT_SECRET",
+        value = var.WFPREV_CLIENT_SECRET
       },
       {
-        name = "WFPREV_DB_URL"
+        name  = "WEBADE_OAUTH2_CHECK_TOKEN_URL"
+        value = var.WEBADE_OAUTH2_CHECK_TOKEN_URL
+      },
+      {
+        name  = "WEBADE_OAUTH2_CHECK_AUTHORIZE_URL",
+        value = var.WEBADE_OAUTH2_CHECK_AUTHORIZE_URL
+      },
+      {
+        name = "WFPREV_DATASOURCE_URL"
         value = "jdbc:postgresql://${aws_db_instance.wfprev_pgsqlDB.endpoint}/${aws_db_instance.wfprev_pgsqlDB.name}"
+      },
+      {
+        name  = "WFPREV_DATASOURCE_USERNAME"
+        value = var.WFPREV_DATASOURCE_USERNAME
+      },
+      {
+        name  = "WFPREV_DATASOURCE_PASSWORD"
+        value = var.WFPREV_DATASOURCE_PASSWORD
       },
       {
         name  = "WFPREV_USERNAME"
@@ -113,6 +132,11 @@ resource "aws_ecs_task_definition" "wfprev_server" {
         sourceVolume = "temp"
         containerPath = "/usr/local/tomcat/temp"
         readOnly = false
+      },
+      {
+        sourceVolume = "webapps"
+        containerPath = "/usr/local/tomcat/webapps"
+        readOnly = false
       }
     ]
     volumesFrom = []
@@ -135,6 +159,7 @@ resource "aws_ecs_task_definition" "wfprev_client" {
   volume {
     name = "logging"
   }
+  
   container_definitions = jsonencode([
     {
       essential   = true
