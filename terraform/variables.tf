@@ -54,11 +54,6 @@ variable "WFPREV_API_IMAGE" {
   default     = ""
 }
 
-variable "server_port" {
-  description = "Port exposed by the docker image to redirect traffic to"
-  default     = 443
-}
-
 variable "LOGGING_LEVEL" {
   type        = string
   description = "Logging level for components"
