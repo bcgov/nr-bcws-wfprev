@@ -77,6 +77,8 @@ jobs:
           cd ${{ inputs.COMPONENT_TYPE }}/wfprev-war/src/main/angular
           npm install
           npm run build -- --base-href="/pub/wfprev/"
+      - name: Verify baseHref in built index.html
+        run: cat ${{ inputs.COMPONENT_TYPE }}/wfprev-war/src/main/angular/dist/pub/wfprev/index.html | grep '<base'
             
       - name: Copy files to neccessary folders
         run: mkdir staging && cp ${{ inputs.COMPONENT_TYPE }}/${{ inputs.COMPONENT_NAME }}/target/*.war staging
