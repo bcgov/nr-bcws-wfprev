@@ -77,6 +77,7 @@ jobs:
           cd ${{ inputs.COMPONENT_TYPE }}/wfprev-war/src/main/angular
           npm install
           npm run build -- --base-href="/pub/wfprev/"
+          
       - name: Verify baseHref in built index.html
         run: cat ${{ inputs.COMPONENT_TYPE }}/wfprev-war/src/main/angular/dist/pub/wfprev/index.html | grep '<base'
             
