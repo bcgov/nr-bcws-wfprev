@@ -77,7 +77,17 @@ jobs:
           cd ${{ inputs.COMPONENT_TYPE }}/wfprev-war/src/main/angular
           npm install
           npm run build -- --base-href="/pub/wfprev/"
+
+      # Move Angular build output to target/angular for packaging
+      - name: Move Angular build output to target/angular
+        if: ${{ inputs.COMPONENT_TYPE == 'client' }}
+        run: |
+          mkdir -p ${{ inputs.COMPONENT_TYPE }}/wfprev-war/target/angular
+          cp -R ${{ inputs.COMPONENT_TYPE }}/wfprev-war/src/main/angular/dist/pub/wfprev/* ${{ inputs.COMPONENT_TYPE }}/wfprev-war/target/angular/
+          ls -l ${{ inputs.COMPONENT_TYPE }}/wfprev-war/target/angular
+
       - name: Verify baseHref in built index.html
+        if: ${{ inputs.COMPONENT_TYPE == 'client' }}
         run: cat ${{ inputs.COMPONENT_TYPE }}/wfprev-war/src/main/angular/dist/pub/wfprev/index.html | grep '<base'
             
       - name: Copy files to neccessary folders
