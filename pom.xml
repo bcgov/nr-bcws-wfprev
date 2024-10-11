@@ -15,7 +15,6 @@
     </modules>
 
     <properties>
-        <java.version>17</java.version>
         <!-- plugins -->
         <sonar.version>4.0.0.4121</sonar.version>
         <jacoco.version>0.8.11</jacoco.version>
