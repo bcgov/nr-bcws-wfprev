@@ -1,5 +1,5 @@
 # Use an official Tomcat image with JDK 8
-FROM tomcat:9.0.91-jdk17
+FROM tomcat:9.0.91-jdk21
 #Install at very top layer to ease caching issues for devs
 RUN apt-get -y update &&\
     apt-get install -y unzip

@@ -13,8 +13,8 @@
 	</modules>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<java-source-version>17</java-source-version>
-		<java-target-version>17</java-target-version>
+		<java-source-version>21</java-source-version>
+		<java-target-version>21</java-target-version>
 	</properties>
 
 	<dependencyManagement>
