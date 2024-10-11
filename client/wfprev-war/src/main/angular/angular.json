@@ -21,7 +21,7 @@
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
             "baseHref": "/pub/wfprev/",
-            "outputPath": "dist/wfprev",
+            "outputPath": "dist/pub/wfprev",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": [
