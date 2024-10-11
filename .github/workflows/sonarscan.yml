@@ -21,10 +21,10 @@ jobs:
           fetch-depth: 0
           submodules: 'recursive'
      
-      - name: Set up JDK 17
+      - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
-          java-version: 17
+          java-version: 21
           distribution: 'temurin'
      
       - name: Cache Maven packages
@@ -64,7 +64,7 @@ jobs:
           -DWEBADE_OAUTH2_CHECK_TOKEN_URL=${{ vars.WEBADE_OAUTH2_CHECK_TOKEN_URL }} \
           -DWEBADE_OAUTH2_CHECK_AUTHORIZE_URL=${{ vars.WEBADE_OAUTH2_CHECK_TOKEN_URL }} \
           -DWFPREV_DATASOURCE_URL=${{ vars.WFPREV_DATASOURCE_URL }} \
-          -DWFPREV_DATASOURCE_USERNAME=${{ vars.WFPREV_USERNAME }} \
+          -DWFPREV_DATASOURCE_USERNAME=${{ secrets.WFPREV_USERNAME }} \
           -DWFPREV_DATASOURCE_PASSWORD=${{ secrets.DB_PASS }}
      
       - name: SonarCloud Scan Action

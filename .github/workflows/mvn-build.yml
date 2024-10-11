@@ -52,10 +52,10 @@ jobs:
         with:
           ref: ${{ inputs.BRANCH }}
 
-      - name: Set up JDK 17
+      - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
-          java-version: '17'
+          java-version: '21'
           distribution: 'temurin'
       
       - name: Add .npmrc file
@@ -74,8 +74,14 @@ jobs:
           export MAVEN_OPTS="-Xmx3072m -XX:MaxMetaspaceSize=512m"
           export NODE_OPTIONS="--max-old-space-size=4096"
           mvn --settings ${{ inputs.COMPONENT_TYPE }}/mvn_settings/settings.xml --batch-mode --update-snapshots -f ${{ inputs.COMPONENT_TYPE }}/pom.xml -Drepo.login=${{ secrets.IDIR_AS_EMAIL }} -Drepo.password=${{ secrets.IDIR_PASSWORD }} -DskipTests package
-       
-      
+          cd ${{ inputs.COMPONENT_TYPE }}/wfprev-war/src/main/angular
+          npm install
+          npm run build -- --base-href="/pub/wfprev/"
+
+      - name: Verify baseHref in built index.html
+        if: ${{ inputs.COMPONENT_TYPE == 'client' }}
+        run: cat ${{ inputs.COMPONENT_TYPE }}/wfprev-war/src/main/angular/dist/pub/wfprev/index.html | grep '<base'
+            
       - name: Copy files to neccessary folders
         run: mkdir staging && cp ${{ inputs.COMPONENT_TYPE }}/${{ inputs.COMPONENT_NAME }}/target/*.war staging
       
