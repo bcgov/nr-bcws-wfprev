@@ -74,7 +74,7 @@ jobs:
           export MAVEN_OPTS="-Xmx3072m -XX:MaxMetaspaceSize=512m"
           export NODE_OPTIONS="--max-old-space-size=4096"
           mvn --settings ${{ inputs.COMPONENT_TYPE }}/mvn_settings/settings.xml --batch-mode --update-snapshots -f ${{ inputs.COMPONENT_TYPE }}/pom.xml -Drepo.login=${{ secrets.IDIR_AS_EMAIL }} -Drepo.password=${{ secrets.IDIR_PASSWORD }} -DskipTests package
-          cd ${{ inputs.COMPONENT_TYPE }}/wfprev
+          cd ${{ inputs.COMPONENT_TYPE }}/wfprev-war/src/main/angular
           npm install
           npm run build -- --base-href="/pub/wfprev/"
             
