@@ -9,7 +9,7 @@
     "test": "ng test",
     "storybook": "ng run wfprev:storybook",
     "build-storybook": "ng run wfprev:build-storybook",
-    "mavenbuild": "node --max_old_space_size=4096 node_modules/@angular/cli/bin/ng build --configuration production --output-path ../../../target/angular --base-href / && replace-in-file /ngsw:/g ngsw:wfprevi: dist/ngsw-worker.js --verbose --isRegex"
+    "mavenbuild": "node --max_old_space_size=4096 node_modules/@angular/cli/bin/ng build --configuration production --output-path ../../../target/angular --base-href /pub/wfprev/ && replace-in-file /ngsw:/g ngsw:wfprevi: dist/ngsw-worker.js --verbose --isRegex"
   },
   "private": true,
   "dependencies": {
