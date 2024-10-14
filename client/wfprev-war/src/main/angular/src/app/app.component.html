@@ -1,8 +1,14 @@
-<div class="content">
-  {{ title }}
+<div>
+  <div class="title" (click)="goHome()">
+    {{ title }}
+  </div>
   <nav>
-    <a routerLink="/list">Go to List</a>
-    <a routerLink="/map">Go to Map</a>
+    <div>
+      <span [class.active]="activeRoute === 'list'" (click)="setActive('list')"> List </span>
+    </div>
+    <div>
+      <span [class.active]="activeRoute === 'map'" (click)="setActive('map')"> Map </span>
+    </div>
   </nav>
 </div>
 <router-outlet></router-outlet>

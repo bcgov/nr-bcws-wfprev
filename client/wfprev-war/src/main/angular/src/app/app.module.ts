@@ -1,9 +1,6 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-
 import { AppComponent } from './app.component';
-import { ListComponent } from 'src/app/components/list/list.component';
-import { MapComponent } from 'src/app/components/map/map.component';
 import { ROUTING } from 'src/app/app.routing';
 
 @NgModule({
@@ -12,9 +9,7 @@ import { ROUTING } from 'src/app/app.routing';
   ],
   imports: [
     BrowserModule,
-    ListComponent,
-    MapComponent,
-    ROUTING
+    ROUTING,
   ],
   providers: [],
   bootstrap: [AppComponent]
