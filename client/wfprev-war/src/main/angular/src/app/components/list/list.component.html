@@ -1,2 +1,10 @@
 <h2>This is the List Component</h2>
 <p>List content goes here.</p>
+<div class="list-example">
+    <div *ngFor="let item of filteredProjects" class="project-item">
+      <h3>{{ item.name }}</h3>
+      <p><strong>Budget:</strong> {{ item.budget | currency: 'USD':'symbol' }}</p>
+      <p>{{ item.description }}</p>
+      <button (click)="viewProjectDetails(item)">View Details</button>
+    </div>
+  </div>
