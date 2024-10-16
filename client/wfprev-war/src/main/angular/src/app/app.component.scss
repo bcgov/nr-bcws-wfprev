@@ -1,0 +1,33 @@
+.title {
+  text-align: center;
+  font-size: 22px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.nav-class {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin: 10px 0;
+  background-color: #f0f0f0;
+  padding: 10px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+
+  .span-class {
+      cursor: pointer;
+      font-size: 18px;
+      padding: 5px 10px;
+  }
+
+  .span-class:hover {
+      background-color: #007bff;
+      color: white;
+  }
+
+  .active {
+      background-color: #0056b3;
+      color: white;
+  }
+}
