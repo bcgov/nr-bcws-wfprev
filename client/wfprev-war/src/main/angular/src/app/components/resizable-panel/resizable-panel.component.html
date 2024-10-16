@@ -1,0 +1,15 @@
+<div class="resizable-panel" [style.width]="panelWidth">
+    <div class="panel-header">
+      <h3>Resizable Panel</h3>
+    </div>
+    <div class="panel-content">
+      The goal of the BC Wildfire Service (BCWS) Prevention Program is to reduce the negative impacts of wildfire on public safety, property, the environment and the economy using the seven disciplines of the FireSmart program.
+
+British Columbia is experiencing a serious and sustained increase in extreme wildfire behaviour and fire events particularly in the wildland-urban interface.  More human activity and development is taking place in or near forests, creating greater consequences for the socioeconomic health and safety of citizens and visitors. At the same time, the impacts of climate change are increasing, fire size and severity are increasing, and fire seasons are becoming longer.  Prevention is more than stopping new, human-caused fires. FireSmart is based on the premise of shared responsibility and on promoting the integration and collaboration of wildfire prevention and mitigation efforts. All partners and stakeholders have a role to play.
+    </div>
+    <div class="panel-controls">
+      <button (click)="resizePanel(5)">5%</button>
+      <button (click)="resizePanel(50)">50%</button>
+      <button (click)="resizePanel(90)">90%</button>
+    </div>
+  </div>

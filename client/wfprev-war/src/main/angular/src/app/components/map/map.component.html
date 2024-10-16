@@ -1,2 +1,8 @@
-<h2>This is the Map Component</h2>
-<p>Map content goes here.</p>
+<div class="map-container">
+    <app-resizable-panel (panelResized)="onPanelResized()"></app-resizable-panel>  <!-- Left side panel -->
+    <div class="map-content">
+      <h2>This is the Map Component</h2>
+      <p>Map content goes here.</p>
+      <div id="map"></div>
+    </div>
+  </div>
