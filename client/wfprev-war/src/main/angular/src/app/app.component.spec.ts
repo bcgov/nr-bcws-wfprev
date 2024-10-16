@@ -1,4 +1,4 @@
-import { TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AppComponent } from './app.component';
 import { Router } from '@angular/router';
@@ -8,7 +8,7 @@ import { Location } from '@angular/common';
 describe('AppComponent', () => {
   let router: Router;
   let location: Location;
-  let fixture: any;
+  let fixture: ComponentFixture<AppComponent>;  
   let app: AppComponent;
 
   beforeEach(async () => {
