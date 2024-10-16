@@ -9,7 +9,7 @@
     "components": [
         {
             "name": "AppComponent",
-            "id": "component-AppComponent-f39f18bdf569555229931353be3738b8c467676fb3cf533a9f37a2716c7bca3fcffe630069c915e714d58c22c8764b4aabbe08714c573b2509b8bdef25a2c9a0",
+            "id": "component-AppComponent-7f20388b30109215a3a5ba3927beed3cfd10d396aff57b6c7620dc8bad8f513f6c4907f6252c1ef99448e8c626ee7a869b693f93e2cef6e242df6e992480eda6",
             "file": "src/app/app.component.ts",
             "encapsulation": [],
             "entryComponents": [],
@@ -30,17 +30,68 @@
             "outputsClass": [],
             "propertiesClass": [
                 {
-                    "name": "title",
-                    "defaultValue": "'wfprev app is running!'",
+                    "name": "activeRoute",
+                    "defaultValue": "''",
                     "deprecated": false,
                     "deprecationMessage": "",
                     "type": "string",
+                    "indexKey": "",
                     "optional": false,
                     "description": "",
-                    "line": 9
+                    "line": 12
+                },
+                {
+                    "name": "title",
+                    "defaultValue": "'Wildfire Prevention'",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "string",
+                    "indexKey": "",
+                    "optional": false,
+                    "description": "",
+                    "line": 11
                 }
             ],
-            "methodsClass": [],
+            "methodsClass": [
+                {
+                    "name": "goHome",
+                    "args": [],
+                    "optional": false,
+                    "returnType": "void",
+                    "typeParameters": [],
+                    "line": 32,
+                    "deprecated": false,
+                    "deprecationMessage": ""
+                },
+                {
+                    "name": "setActive",
+                    "args": [
+                        {
+                            "name": "menuItem",
+                            "type": "string",
+                            "deprecated": false,
+                            "deprecationMessage": ""
+                        }
+                    ],
+                    "optional": false,
+                    "returnType": "void",
+                    "typeParameters": [],
+                    "line": 20,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "jsdoctags": [
+                        {
+                            "name": "menuItem",
+                            "type": "string",
+                            "deprecated": false,
+                            "deprecationMessage": "",
+                            "tagName": {
+                                "text": "param"
+                            }
+                        }
+                    ]
+                }
+            ],
             "deprecated": false,
             "deprecationMessage": "",
             "hostBindings": [],
@@ -50,29 +101,522 @@
             "description": "",
             "rawdescription": "\n",
             "type": "component",
-            "sourceCode": "import { Component } from '@angular/core';\r\n\r\n@Component({\r\n  selector: 'app-root',\r\n  templateUrl: './app.component.html',\r\n  styleUrls: ['./app.component.scss']\r\n})\r\nexport class AppComponent {\r\n  title = 'wfprev app is running!';\r\n}\r\n",
+            "sourceCode": "import { Component } from '@angular/core';\r\nimport { Router } from '@angular/router';\r\nimport { ResourcesRoutes } from 'src/app/utils';\r\n\r\n@Component({\r\n  selector: 'app-root',\r\n  templateUrl: './app.component.html',\r\n  styleUrls: ['./app.component.scss']\r\n})\r\nexport class AppComponent {\r\n  title = 'Wildfire Prevention';\r\n  activeRoute = '';\r\n  \r\n  constructor(\r\n    protected router: Router,\r\n  ) {\r\n  }\r\n\r\n\r\n  setActive(menuItem: string): void {\r\n    this.activeRoute = menuItem;\r\n    switch (menuItem) {\r\n      case 'list':\r\n        this.router.navigate([ResourcesRoutes.LIST]);\r\n        break;\r\n      case 'map':\r\n        this.router.navigate([ResourcesRoutes.MAP]);\r\n        break;\r\n    }\r\n  }\r\n\r\n  goHome(): void {\r\n    this.router.navigate([ResourcesRoutes.LANDING]); // Navigate back to the home page\r\n  }\r\n}\r\n",
             "assetsDirs": [],
             "styleUrlsData": [
                 {
-                    "data": "",
+                    "data": ".title {\r\n  text-align: center;\r\n  font-size: 22px;\r\n  font-weight: 800;\r\n  cursor: pointer;\r\n}\r\n\r\n.nav-class {\r\n  display: flex;\r\n  justify-content: center;\r\n  gap: 20px;\r\n  margin: 10px 0;\r\n  background-color: #f0f0f0;\r\n  padding: 10px;\r\n  border-radius: 8px;\r\n  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);\r\n\r\n  .span-class {\r\n      cursor: pointer;\r\n      font-size: 18px;\r\n      padding: 5px 10px;\r\n  }\r\n\r\n  .span-class:hover {\r\n      background-color: #007bff;\r\n      color: white;\r\n  }\r\n\r\n  .active {\r\n      background-color: #0056b3;\r\n      color: white;\r\n  }\r\n}\r\n",
                     "styleUrl": "./app.component.scss"
                 }
             ],
             "stylesData": "",
+            "constructorObj": {
+                "name": "constructor",
+                "description": "",
+                "deprecated": false,
+                "deprecationMessage": "",
+                "args": [
+                    {
+                        "name": "router",
+                        "type": "Router",
+                        "deprecated": false,
+                        "deprecationMessage": ""
+                    }
+                ],
+                "line": 12,
+                "jsdoctags": [
+                    {
+                        "name": "router",
+                        "type": "Router",
+                        "deprecated": false,
+                        "deprecationMessage": "",
+                        "tagName": {
+                            "text": "param"
+                        }
+                    }
+                ]
+            },
             "extends": [],
-            "templateData": "<div class=\"content\">\r\n  {{ title }}\r\n</div>"
+            "templateData": "<div>\r\n  <div class=\"title\" (click)=\"goHome()\">\r\n    {{ title }}\r\n  </div>\r\n  <nav class=\"nav-class\">\r\n    <div>\r\n      <span class=\"span-class\" [class.active]=\"activeRoute === 'list'\" (click)=\"setActive('list')\">\r\n        List\r\n      </span>\r\n    </div>\r\n    <div>\r\n      <span class=\"span-class\" [class.active]=\"activeRoute === 'map'\" (click)=\"setActive('map')\">\r\n        Map\r\n      </span>\r\n    </div>\r\n  </nav>\r\n</div>\r\n<router-outlet></router-outlet>\r\n"
+        },
+        {
+            "name": "ListComponent",
+            "id": "component-ListComponent-db8da0f5c57db42a660c7bef3a6e76184dd710f847697a14e68f9105195018d9c62b5d0d067e73699a969449cb618e652c3e01a0af224ed16938dfd8d3933a19",
+            "file": "src/app/components/list/list.component.ts",
+            "encapsulation": [],
+            "entryComponents": [],
+            "inputs": [],
+            "outputs": [],
+            "providers": [],
+            "selector": "app-list",
+            "styleUrls": [],
+            "styles": [],
+            "templateUrl": [
+                "./list.component.html"
+            ],
+            "viewProviders": [],
+            "hostDirectives": [],
+            "inputsClass": [],
+            "outputsClass": [],
+            "propertiesClass": [
+                {
+                    "name": "filteredProjects",
+                    "defaultValue": "this.projects",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "",
+                    "indexKey": "",
+                    "optional": false,
+                    "description": "",
+                    "line": 42
+                },
+                {
+                    "name": "projects",
+                    "defaultValue": "[\r\n    { \r\n      projectNumber: 1,\r\n      name: 'Forest Fuel Reduction Program', \r\n      budget: 500000, \r\n      description: 'Removing dead vegetation and trees to reduce fuel loads in forests.' \r\n    },\r\n    { \r\n      projectNumber: 2,\r\n      name: 'Community Fire Awareness Campaign', \r\n      budget: 120000, \r\n      description: 'Educating communities on fire safety and prevention techniques.' \r\n    },\r\n    { \r\n      projectNumber: 3,\r\n      name: 'Smart Sensor Network Installation', \r\n      budget: 750000, \r\n      description: 'Deploying IoT sensors to monitor temperature and humidity in fire-prone areas.' \r\n    },\r\n    { \r\n      projectNumber: 4,\r\n      name: 'Aerial Fire Patrols', \r\n      budget: 3000000, \r\n      description: 'Using drones and aircraft to monitor and respond to wildfire threats in real-time.' \r\n    }\r\n  ]",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "[]",
+                    "indexKey": "",
+                    "optional": false,
+                    "description": "",
+                    "line": 15
+                }
+            ],
+            "methodsClass": [
+                {
+                    "name": "filterProjects",
+                    "args": [
+                        {
+                            "name": "projectNumber",
+                            "type": "number",
+                            "deprecated": false,
+                            "deprecationMessage": ""
+                        }
+                    ],
+                    "optional": false,
+                    "returnType": "void",
+                    "typeParameters": [],
+                    "line": 62,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "jsdoctags": [
+                        {
+                            "name": "projectNumber",
+                            "type": "number",
+                            "deprecated": false,
+                            "deprecationMessage": "",
+                            "tagName": {
+                                "text": "param"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "ngOnInit",
+                    "args": [],
+                    "optional": false,
+                    "returnType": "void",
+                    "typeParameters": [],
+                    "line": 50,
+                    "deprecated": false,
+                    "deprecationMessage": ""
+                },
+                {
+                    "name": "viewProjectDetails",
+                    "args": [
+                        {
+                            "name": "project",
+                            "type": "any",
+                            "deprecated": false,
+                            "deprecationMessage": ""
+                        }
+                    ],
+                    "optional": false,
+                    "returnType": "void",
+                    "typeParameters": [],
+                    "line": 69,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "jsdoctags": [
+                        {
+                            "name": "project",
+                            "type": "any",
+                            "deprecated": false,
+                            "deprecationMessage": "",
+                            "tagName": {
+                                "text": "param"
+                            }
+                        }
+                    ]
+                }
+            ],
+            "deprecated": false,
+            "deprecationMessage": "",
+            "hostBindings": [],
+            "hostListeners": [],
+            "standalone": true,
+            "imports": [
+                {
+                    "name": "CommonModule",
+                    "type": "module"
+                }
+            ],
+            "description": "",
+            "rawdescription": "\n",
+            "type": "component",
+            "sourceCode": "import { Component, OnInit } from '@angular/core';\r\nimport { CommonModule } from '@angular/common';\r\nimport { ActivatedRoute, Router } from '@angular/router';\r\nimport { ResourcesRoutes } from 'src/app/utils';\r\n\r\n@Component({\r\n  selector: 'app-list',\r\n  standalone: true,\r\n  imports: [CommonModule],\r\n  templateUrl: './list.component.html',\r\n  styleUrl: './list.component.scss'\r\n})\r\nexport class ListComponent implements OnInit {\r\n\r\n  projects = [\r\n    { \r\n      projectNumber: 1,\r\n      name: 'Forest Fuel Reduction Program', \r\n      budget: 500000, \r\n      description: 'Removing dead vegetation and trees to reduce fuel loads in forests.' \r\n    },\r\n    { \r\n      projectNumber: 2,\r\n      name: 'Community Fire Awareness Campaign', \r\n      budget: 120000, \r\n      description: 'Educating communities on fire safety and prevention techniques.' \r\n    },\r\n    { \r\n      projectNumber: 3,\r\n      name: 'Smart Sensor Network Installation', \r\n      budget: 750000, \r\n      description: 'Deploying IoT sensors to monitor temperature and humidity in fire-prone areas.' \r\n    },\r\n    { \r\n      projectNumber: 4,\r\n      name: 'Aerial Fire Patrols', \r\n      budget: 3000000, \r\n      description: 'Using drones and aircraft to monitor and respond to wildfire threats in real-time.' \r\n    }\r\n  ];\r\n\r\n  filteredProjects = this.projects; // Holds the projects to display\r\n\r\n  constructor(\r\n    private router: Router,\r\n    private route: ActivatedRoute\r\n  ) {\r\n  }\r\n\r\n  ngOnInit(): void {\r\n    // Check if there's a projectNumber in the query parameters\r\n    this.route.queryParams.subscribe(params => {\r\n      const projectNumber = params['projectNumber'];\r\n      if (projectNumber) {\r\n        this.filterProjects(parseInt(projectNumber, 10));\r\n      } else {\r\n        this.filteredProjects = this.projects; // Show all projects if no query param\r\n      }\r\n    });\r\n  }\r\n\r\n  filterProjects(projectNumber: number) {\r\n    // Filter the projects to show only the one with the matching projectNumber\r\n    this.filteredProjects = this.projects.filter(\r\n      project => project.projectNumber === projectNumber\r\n    );\r\n  }\r\n  \r\n  viewProjectDetails(project: any) {\r\n    console.log(`Viewing details for: ${project.name}`);\r\n    this.router.navigate([ResourcesRoutes.LIST], {\r\n      queryParams: { projectNumber: project.projectNumber }\r\n    });\r\n  }\r\n}\r\n",
+            "styleUrl": "./list.component.scss",
+            "assetsDirs": [],
+            "styleUrlsData": "",
+            "stylesData": "",
+            "constructorObj": {
+                "name": "constructor",
+                "description": "",
+                "deprecated": false,
+                "deprecationMessage": "",
+                "args": [
+                    {
+                        "name": "router",
+                        "type": "Router",
+                        "deprecated": false,
+                        "deprecationMessage": ""
+                    },
+                    {
+                        "name": "route",
+                        "type": "ActivatedRoute",
+                        "deprecated": false,
+                        "deprecationMessage": ""
+                    }
+                ],
+                "line": 42,
+                "jsdoctags": [
+                    {
+                        "name": "router",
+                        "type": "Router",
+                        "deprecated": false,
+                        "deprecationMessage": "",
+                        "tagName": {
+                            "text": "param"
+                        }
+                    },
+                    {
+                        "name": "route",
+                        "type": "ActivatedRoute",
+                        "deprecated": false,
+                        "deprecationMessage": "",
+                        "tagName": {
+                            "text": "param"
+                        }
+                    }
+                ]
+            },
+            "extends": [],
+            "implements": [
+                "OnInit"
+            ],
+            "templateData": "<h2>This is the List Component</h2>\r\n<p>List content goes here.</p>\r\n<div class=\"list-example\">\r\n    <div *ngFor=\"let item of filteredProjects\" class=\"project-item\">\r\n      <h3>{{ item.name }}</h3>\r\n      <p><strong>Budget:</strong> {{ item.budget | currency: 'USD':'symbol' }}</p>\r\n      <p>{{ item.description }}</p>\r\n      <button (click)=\"viewProjectDetails(item)\">View Details</button>\r\n    </div>\r\n  </div>"
+        },
+        {
+            "name": "MapComponent",
+            "id": "component-MapComponent-3e56eadf5c4cc49baa1fe01735c603f78984af127f1ff0e5e3eae789ab218f5ed988ebb749f0bc03e1f0f15836f6cb391e93a9ccee92869fc854f8e270965b72",
+            "file": "src/app/components/map/map.component.ts",
+            "encapsulation": [],
+            "entryComponents": [],
+            "inputs": [],
+            "outputs": [],
+            "providers": [],
+            "selector": "app-map",
+            "styleUrls": [],
+            "styles": [],
+            "templateUrl": [
+                "./map.component.html"
+            ],
+            "viewProviders": [],
+            "hostDirectives": [],
+            "inputsClass": [],
+            "outputsClass": [],
+            "propertiesClass": [
+                {
+                    "name": "map",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "L.Map | undefined",
+                    "indexKey": "",
+                    "optional": false,
+                    "description": "",
+                    "line": 13,
+                    "modifierKind": [
+                        123
+                    ]
+                },
+                {
+                    "name": "panelContent",
+                    "defaultValue": "`\r\n    The goal of the BC Wildfire Service (BCWS) Prevention Program is to reduce the negative impacts of wildfire on public safety, property, the environment and the economy using the seven disciplines of the FireSmart program.\r\n    <br>\r\n    British Columbia is experiencing a serious and sustained increase in extreme wildfire behaviour and fire events particularly in the wildland-urban interface. More human activity and development is taking place in or near forests, creating greater consequences for the socioeconomic health and safety of citizens and visitors. At the same time, the impacts of climate change are increasing, fire size and severity are increasing, and fire seasons are becoming longer. Prevention is more than stopping new, human-caused fires. FireSmart is based on the premise of shared responsibility and on promoting the integration and collaboration of wildfire prevention and mitigation efforts. All partners and stakeholders have a role to play.\r\n  `",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "string",
+                    "indexKey": "",
+                    "optional": false,
+                    "description": "",
+                    "line": 15
+                }
+            ],
+            "methodsClass": [
+                {
+                    "name": "initMap",
+                    "args": [],
+                    "optional": false,
+                    "returnType": "void",
+                    "typeParameters": [],
+                    "line": 29,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "modifierKind": [
+                        123
+                    ]
+                },
+                {
+                    "name": "ngAfterViewInit",
+                    "args": [],
+                    "optional": false,
+                    "returnType": "void",
+                    "typeParameters": [],
+                    "line": 25,
+                    "deprecated": false,
+                    "deprecationMessage": ""
+                },
+                {
+                    "name": "onPanelResized",
+                    "args": [],
+                    "optional": false,
+                    "returnType": "void",
+                    "typeParameters": [],
+                    "line": 43,
+                    "deprecated": false,
+                    "deprecationMessage": ""
+                }
+            ],
+            "deprecated": false,
+            "deprecationMessage": "",
+            "hostBindings": [],
+            "hostListeners": [],
+            "standalone": true,
+            "imports": [
+                {
+                    "name": "ResizablePanelComponent",
+                    "type": "component"
+                }
+            ],
+            "description": "",
+            "rawdescription": "\n",
+            "type": "component",
+            "sourceCode": "import { AfterViewInit, ChangeDetectorRef, Component } from '@angular/core';\r\nimport { ResizablePanelComponent } from 'src/app/components/resizable-panel/resizable-panel.component';\r\nimport * as L from 'leaflet';\r\n\r\n@Component({\r\n  selector: 'app-map',\r\n  standalone: true,\r\n  imports: [ResizablePanelComponent],\r\n  templateUrl: './map.component.html',\r\n  styleUrl: './map.component.scss'\r\n})\r\nexport class MapComponent implements AfterViewInit{\r\n  private map: L.Map | undefined;\r\n  \r\n  panelContent: string = `\r\n    The goal of the BC Wildfire Service (BCWS) Prevention Program is to reduce the negative impacts of wildfire on public safety, property, the environment and the economy using the seven disciplines of the FireSmart program.\r\n    <br>\r\n    British Columbia is experiencing a serious and sustained increase in extreme wildfire behaviour and fire events particularly in the wildland-urban interface. More human activity and development is taking place in or near forests, creating greater consequences for the socioeconomic health and safety of citizens and visitors. At the same time, the impacts of climate change are increasing, fire size and severity are increasing, and fire seasons are becoming longer. Prevention is more than stopping new, human-caused fires. FireSmart is based on the premise of shared responsibility and on promoting the integration and collaboration of wildfire prevention and mitigation efforts. All partners and stakeholders have a role to play.\r\n  `;\r\n\r\n  constructor(    \r\n    protected cdr: ChangeDetectorRef,\r\n  ) {}\r\n\r\n  ngAfterViewInit(): void {\r\n    this.initMap();\r\n  }\r\n\r\n  private initMap(): void {\r\n    // Initialize the map and set its view\r\n    this.map = L.map('map');\r\n    const bcBounds: L.LatLngBoundsExpression = [\r\n      [48.3, -139.1],\r\n      [60.0, -114.0]\r\n    ];\r\n    this.map.fitBounds(bcBounds);\r\n\r\n    // Add a tile layer to the map (this is the OpenStreetMap layer)\r\n    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {\r\n    }).addTo(this.map);\r\n  }\r\n\r\n  onPanelResized(): void {\r\n    if (this.map) {\r\n      this.map.invalidateSize();  // Inform Leaflet to recalculate map size\r\n      this.cdr.markForCheck();\r\n    }\r\n  }\r\n}\r\n",
+            "styleUrl": "./map.component.scss",
+            "assetsDirs": [],
+            "styleUrlsData": "",
+            "stylesData": "",
+            "constructorObj": {
+                "name": "constructor",
+                "description": "",
+                "deprecated": false,
+                "deprecationMessage": "",
+                "args": [
+                    {
+                        "name": "cdr",
+                        "type": "ChangeDetectorRef",
+                        "deprecated": false,
+                        "deprecationMessage": ""
+                    }
+                ],
+                "line": 19,
+                "jsdoctags": [
+                    {
+                        "name": "cdr",
+                        "type": "ChangeDetectorRef",
+                        "deprecated": false,
+                        "deprecationMessage": "",
+                        "tagName": {
+                            "text": "param"
+                        }
+                    }
+                ]
+            },
+            "extends": [],
+            "implements": [
+                "AfterViewInit"
+            ],
+            "templateData": "<div class=\"map-container\">\r\n    <!-- Left side panel with dynamic content -->\r\n  <app-resizable-panel (panelResized)=\"onPanelResized()\"> \r\n    <div [innerHTML]=\"panelContent\"></div>\r\n  </app-resizable-panel>\r\n\r\n   <!-- Map content -->\r\n  <div class=\"map-content\">\r\n    <h2>This is the Map Component</h2>\r\n    <p>Map content goes here.</p>\r\n    <div id=\"map\"></div>\r\n  </div>\r\n</div>"
+        },
+        {
+            "name": "ResizablePanelComponent",
+            "id": "component-ResizablePanelComponent-9d4c9086a5364fe391df9db5c03806d27546a282d3c08df726b4faa1c65e34f185e5a8906994617bd9a2513557a778218c38e34a1765509a6d02d08370693c8a",
+            "file": "src/app/components/resizable-panel/resizable-panel.component.ts",
+            "encapsulation": [],
+            "entryComponents": [],
+            "inputs": [],
+            "outputs": [],
+            "providers": [],
+            "selector": "app-resizable-panel",
+            "styleUrls": [],
+            "styles": [],
+            "templateUrl": [
+                "./resizable-panel.component.html"
+            ],
+            "viewProviders": [],
+            "hostDirectives": [],
+            "inputsClass": [],
+            "outputsClass": [
+                {
+                    "name": "panelResized",
+                    "defaultValue": "new EventEmitter<void>()",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "line": 14,
+                    "type": "EventEmitter"
+                }
+            ],
+            "propertiesClass": [
+                {
+                    "name": "breakpoints",
+                    "defaultValue": "[5, 50, 90]",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "[]",
+                    "indexKey": "",
+                    "optional": false,
+                    "description": "",
+                    "line": 13
+                },
+                {
+                    "name": "panelWidth",
+                    "defaultValue": "'50vw'",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "string",
+                    "indexKey": "",
+                    "optional": false,
+                    "description": "",
+                    "line": 12
+                }
+            ],
+            "methodsClass": [
+                {
+                    "name": "onResize",
+                    "args": [
+                        {
+                            "name": "event",
+                            "type": "Event",
+                            "deprecated": false,
+                            "deprecationMessage": ""
+                        }
+                    ],
+                    "optional": false,
+                    "returnType": "void",
+                    "typeParameters": [],
+                    "line": 24,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "decorators": [
+                        {
+                            "name": "HostListener",
+                            "stringifiedArguments": "'window:resize', ['$event']"
+                        }
+                    ],
+                    "modifierKind": [
+                        170
+                    ],
+                    "jsdoctags": [
+                        {
+                            "name": "event",
+                            "type": "Event",
+                            "deprecated": false,
+                            "deprecationMessage": "",
+                            "tagName": {
+                                "text": "param"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "resizePanel",
+                    "args": [
+                        {
+                            "name": "percentage",
+                            "type": "number",
+                            "deprecated": false,
+                            "deprecationMessage": ""
+                        }
+                    ],
+                    "optional": false,
+                    "returnType": "void",
+                    "typeParameters": [],
+                    "line": 17,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "jsdoctags": [
+                        {
+                            "name": "percentage",
+                            "type": "number",
+                            "deprecated": false,
+                            "deprecationMessage": "",
+                            "tagName": {
+                                "text": "param"
+                            }
+                        }
+                    ]
+                }
+            ],
+            "deprecated": false,
+            "deprecationMessage": "",
+            "hostBindings": [],
+            "hostListeners": [
+                {
+                    "name": "window:resize",
+                    "args": [
+                        {
+                            "name": "event",
+                            "type": "Event",
+                            "deprecated": false,
+                            "deprecationMessage": ""
+                        }
+                    ],
+                    "argsDecorator": [
+                        "$event"
+                    ],
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "line": 24
+                }
+            ],
+            "standalone": true,
+            "imports": [
+                {
+                    "name": "CommonModule",
+                    "type": "module"
+                }
+            ],
+            "description": "",
+            "rawdescription": "\n",
+            "type": "component",
+            "sourceCode": "import { Component, EventEmitter, HostListener, Output } from '@angular/core';\r\nimport { CommonModule } from '@angular/common';\r\n\r\n@Component({\r\n  selector: 'app-resizable-panel',\r\n  standalone: true,\r\n  imports: [CommonModule],\r\n  templateUrl: './resizable-panel.component.html',\r\n  styleUrl: './resizable-panel.component.scss'\r\n})\r\nexport class ResizablePanelComponent {\r\n  panelWidth: string = '50vw';  // Default panel width at 50%\r\n  breakpoints = [5, 50, 90];\r\n  @Output() panelResized = new EventEmitter<void>();\r\n  \r\n  // Method to resize the panel based on given percentage\r\n  resizePanel(percentage: number): void {\r\n    this.panelWidth = `${percentage}vw`;  // Resize based on viewport width\r\n    this.panelResized.emit();\r\n  }\r\n\r\n  // Listen to window resize to handle responsive behavior\r\n  @HostListener('window:resize', ['$event'])\r\n  onResize(event: Event): void {\r\n    // Implement any additional logic if needed when window resizes\r\n  }\r\n\r\n}",
+            "styleUrl": "./resizable-panel.component.scss",
+            "assetsDirs": [],
+            "styleUrlsData": "",
+            "stylesData": "",
+            "extends": [],
+            "templateData": "<div class=\"resizable-panel\" [style.width]=\"panelWidth\">\r\n    <div class=\"panel-header\">\r\n      <h3>Resizable Panel</h3>\r\n    </div>\r\n    <div class=\"panel-content\">\r\n      <ng-content></ng-content>\r\n      The goal of the BC Wildfire Service (BCWS) Prevention Program is to reduce the negative impacts of wildfire on public safety, property, the environment and the economy using the seven disciplines of the FireSmart program.\r\n\r\nBritish Columbia is experiencing a serious and sustained increase in extreme wildfire behaviour and fire events particularly in the wildland-urban interface.  More human activity and development is taking place in or near forests, creating greater consequences for the socioeconomic health and safety of citizens and visitors. At the same time, the impacts of climate change are increasing, fire size and severity are increasing, and fire seasons are becoming longer.  Prevention is more than stopping new, human-caused fires. FireSmart is based on the premise of shared responsibility and on promoting the integration and collaboration of wildfire prevention and mitigation efforts. All partners and stakeholders have a role to play.\r\n    </div>\r\n    <div class=\"panel-controls\">\r\n      <button *ngFor=\"let breakpoint of breakpoints\" (click)=\"resizePanel(breakpoint)\">\r\n        {{ breakpoint }}%\r\n      </button>\r\n    </div>\r\n  </div>"
         }
     ],
     "modules": [
         {
             "name": "AppModule",
-            "id": "module-AppModule-b0bb343999c0401a2e3ecbec65490c5a76866396b25cae82ed79702c1d4e115033ea8c8ade9395518e8eba42217f2ec5d6c7a62f3d969b3ab2838fe206d56a66",
+            "id": "module-AppModule-ba4b76b8e83711fb7ce1670a8acb6c79e64d3e9869799fc2c2b3b6fbda04a4ddb6abb30fe12793101ce8ce3281f4174b267c0a1e74673b10631688543d1600d3",
             "description": "",
             "deprecationMessage": "",
             "deprecated": false,
             "file": "src/app/app.module.ts",
             "methods": [],
-            "sourceCode": "import { NgModule } from '@angular/core';\nimport { BrowserModule } from '@angular/platform-browser';\n\nimport { AppRoutingModule } from './app-routing.module';\nimport { AppComponent } from './app.component';\n\n@NgModule({\n  declarations: [\n    AppComponent\n  ],\n  imports: [\n    BrowserModule,\n    AppRoutingModule\n  ],\n  providers: [],\n  bootstrap: [AppComponent]\n})\nexport class AppModule { }\n",
+            "sourceCode": "import { NgModule } from '@angular/core';\r\nimport { BrowserModule } from '@angular/platform-browser';\r\nimport { AppComponent } from './app.component';\r\nimport { ROUTING } from 'src/app/app.routing';\r\n\r\n@NgModule({\r\n  declarations: [\r\n    AppComponent\r\n  ],\r\n  imports: [\r\n    BrowserModule,\r\n    ROUTING,\r\n  ],\r\n  providers: [],\r\n  bootstrap: [AppComponent]\r\n})\r\nexport class AppModule { }\r\n",
             "children": [
                 {
                     "type": "providers",
@@ -88,11 +632,7 @@
                 },
                 {
                     "type": "imports",
-                    "elements": [
-                        {
-                            "name": "AppRoutingModule"
-                        }
-                    ]
+                    "elements": []
                 },
                 {
                     "type": "exports",
@@ -113,14 +653,14 @@
             ]
         },
         {
-            "name": "AppModule",
-            "id": "module-AppModule-993ff7b88e5552d7528e8619f73da3067b0d4f059f9c9ad12e15411927c5c321303f9e38a3ff8b3b8a18f859702c7b0da521e9f4d91d5926b942e6f603e75819-1",
+            "name": "ListModule",
+            "id": "module-ListModule-589f5bd98fa0c364488f1701bd6cf6a4da97d89b6ffa21d1a73f88dfb8574cccdc215c7165401fa913cf09c4cef8c75515737b4f8c554af8504d9476c009f525",
             "description": "",
             "deprecationMessage": "",
             "deprecated": false,
-            "file": "src/app/components/app.module.ts",
+            "file": "src/app/components/list.module.ts",
             "methods": [],
-            "sourceCode": "import { NgModule } from '@angular/core';\r\nimport { BrowserModule } from '@angular/platform-browser';\r\n\r\nimport { AppRoutingModule } from '../app-routing.module';\r\nimport { AppComponent } from './app.component';\r\n\r\n@NgModule({\r\n  declarations: [\r\n    AppComponent\r\n  ],\r\n  imports: [\r\n    BrowserModule,\r\n    AppRoutingModule\r\n  ],\r\n  providers: [],\r\n  bootstrap: [AppComponent]\r\n})\r\nexport class AppModule { }\r\n",
+            "sourceCode": "import { NgModule } from '@angular/core';\r\nimport { RouterModule, Routes } from '@angular/router';\r\nimport { ListComponent } from 'src/app/components/list/list.component';\r\n\r\nconst routes: Routes = [\r\n  { path: '', component: ListComponent }\r\n];\r\n\r\n@NgModule({\r\n  imports: [RouterModule.forChild(routes), ListComponent]\r\n})\r\nexport class ListModule {}",
             "children": [
                 {
                     "type": "providers",
@@ -128,17 +668,13 @@
                 },
                 {
                     "type": "declarations",
-                    "elements": [
-                        {
-                            "name": "AppComponent"
-                        }
-                    ]
+                    "elements": []
                 },
                 {
                     "type": "imports",
                     "elements": [
                         {
-                            "name": "AppRoutingModule"
+                            "name": "ListComponent"
                         }
                     ]
                 },
@@ -148,11 +684,7 @@
                 },
                 {
                     "type": "bootstrap",
-                    "elements": [
-                        {
-                            "name": "AppComponent"
-                        }
-                    ]
+                    "elements": []
                 },
                 {
                     "type": "classes",
@@ -161,14 +693,14 @@
             ]
         },
         {
-            "name": "AppRoutingModule",
-            "id": "module-AppRoutingModule-78922b3ae99d2c5249b333980bd5afde1b120b2cc6fedfd41b8b2cc90f279797cb4b22e183bf7e1d1dfab8c6100e77e7812c110234d81f866f544f28a3e18b15",
+            "name": "MapModule",
+            "id": "module-MapModule-379049137ef3d4335bb1e15ad3797f02975379fa6c8a67a5840ab464247e2387779175c96dd7af3e853ee93db4052c10abb249ec8dd4871b928d5320172bd319",
             "description": "",
             "deprecationMessage": "",
             "deprecated": false,
-            "file": "src/app/app-routing.module.ts",
+            "file": "src/app/components/map.module.ts",
             "methods": [],
-            "sourceCode": "import { NgModule } from '@angular/core';\nimport { RouterModule, Routes } from '@angular/router';\n\nconst routes: Routes = [];\n\n@NgModule({\n  imports: [RouterModule.forRoot(routes)],\n  exports: [RouterModule]\n})\nexport class AppRoutingModule { }\n",
+            "sourceCode": "import { NgModule } from '@angular/core';\r\nimport { RouterModule, Routes } from '@angular/router';\r\nimport { MapComponent } from 'src/app/components/map/map.component';\r\n\r\n\r\nconst routes: Routes = [\r\n  { path: '', component: MapComponent }\r\n];\r\n\r\n@NgModule({\r\n  imports: [RouterModule.forChild(routes), MapComponent]\r\n})\r\nexport class MapModule {}",
             "children": [
                 {
                     "type": "providers",
@@ -180,7 +712,11 @@
                 },
                 {
                     "type": "imports",
-                    "elements": []
+                    "elements": [
+                        {
+                            "name": "MapComponent"
+                        }
+                    ]
                 },
                 {
                     "type": "exports",
@@ -218,11 +754,51 @@
                 "deprecationMessage": "",
                 "type": "object",
                 "defaultValue": "{\n  production: false\n}"
+            },
+            {
+                "name": "ROUTING",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "src/app/app.routing.ts",
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "",
+                "defaultValue": "RouterModule.forRoot(PANEL_ROUTES, {})"
             }
         ],
         "functions": [],
         "typealiases": [],
-        "enumerations": [],
+        "enumerations": [
+            {
+                "name": "ResourcesRoutes",
+                "childs": [
+                    {
+                        "name": "LANDING",
+                        "deprecated": false,
+                        "deprecationMessage": "",
+                        "value": ""
+                    },
+                    {
+                        "name": "MAP",
+                        "deprecated": false,
+                        "deprecationMessage": "",
+                        "value": "map"
+                    },
+                    {
+                        "name": "LIST",
+                        "deprecated": false,
+                        "deprecationMessage": "",
+                        "value": "list"
+                    }
+                ],
+                "ctype": "miscellaneous",
+                "subtype": "enum",
+                "deprecated": false,
+                "deprecationMessage": "",
+                "description": "",
+                "file": "src/app/utils/index.ts"
+            }
+        ],
         "groupedVariables": {
             "src/environments/environment.prod.ts": [
                 {
@@ -247,26 +823,57 @@
                     "type": "object",
                     "defaultValue": "{\n  production: false\n}"
                 }
+            ],
+            "src/app/app.routing.ts": [
+                {
+                    "name": "ROUTING",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "src/app/app.routing.ts",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "",
+                    "defaultValue": "RouterModule.forRoot(PANEL_ROUTES, {})"
+                }
             ]
         },
         "groupedFunctions": {},
-        "groupedEnumerations": {},
+        "groupedEnumerations": {
+            "src/app/utils/index.ts": [
+                {
+                    "name": "ResourcesRoutes",
+                    "childs": [
+                        {
+                            "name": "LANDING",
+                            "deprecated": false,
+                            "deprecationMessage": "",
+                            "value": ""
+                        },
+                        {
+                            "name": "MAP",
+                            "deprecated": false,
+                            "deprecationMessage": "",
+                            "value": "map"
+                        },
+                        {
+                            "name": "LIST",
+                            "deprecated": false,
+                            "deprecationMessage": "",
+                            "value": "list"
+                        }
+                    ],
+                    "ctype": "miscellaneous",
+                    "subtype": "enum",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "description": "",
+                    "file": "src/app/utils/index.ts"
+                }
+            ]
+        },
         "groupedTypeAliases": {}
     },
-    "routes": {
-        "name": "<root>",
-        "kind": "module",
-        "className": "AppModule",
-        "children": [
-            {
-                "name": "routes",
-                "filename": "src/app/app-routing.module.ts",
-                "module": "AppRoutingModule",
-                "children": [],
-                "kind": "module"
-            }
-        ]
-    },
+    "routes": [],
     "coverage": {
         "count": 0,
         "status": "low",
@@ -277,7 +884,44 @@
                 "linktype": "component",
                 "name": "AppComponent",
                 "coveragePercent": 0,
-                "coverageCount": "0/2",
+                "coverageCount": "0/6",
+                "status": "low"
+            },
+            {
+                "filePath": "src/app/app.routing.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "ROUTING",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "src/app/components/list/list.component.ts",
+                "type": "component",
+                "linktype": "component",
+                "name": "ListComponent",
+                "coveragePercent": 0,
+                "coverageCount": "0/7",
+                "status": "low"
+            },
+            {
+                "filePath": "src/app/components/map/map.component.ts",
+                "type": "component",
+                "linktype": "component",
+                "name": "MapComponent",
+                "coveragePercent": 0,
+                "coverageCount": "0/7",
+                "status": "low"
+            },
+            {
+                "filePath": "src/app/components/resizable-panel/resizable-panel.component.ts",
+                "type": "component",
+                "linktype": "component",
+                "name": "ResizablePanelComponent",
+                "coveragePercent": 0,
+                "coverageCount": "0/7",
                 "status": "low"
             },
             {
