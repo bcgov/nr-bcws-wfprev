@@ -1,2 +1,13 @@
-<h2>This is the Map Component</h2>
-<p>Map content goes here.</p>
+<div class="map-container">
+    <!-- Left side panel with dynamic content -->
+  <app-resizable-panel (panelResized)="onPanelResized()"> 
+    <div [innerHTML]="panelContent"></div>
+  </app-resizable-panel>
+
+   <!-- Map content -->
+  <div class="map-content">
+    <h2>This is the Map Component</h2>
+    <p>Map content goes here.</p>
+    <div id="map"></div>
+  </div>
+</div>
