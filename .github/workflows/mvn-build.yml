@@ -52,6 +52,11 @@ jobs:
         with:
           ref: ${{ inputs.BRANCH }}
 
+      - name: Set up Node.js 20.x
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20.x'
+
       - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
@@ -60,6 +65,22 @@ jobs:
       
       - name: Add .npmrc file
         run: echo -e $NPMRC > ~/.npmrc
+
+
+      - name: Install dependencies for Angular project
+        if: ${{ inputs.COMPONENT_TYPE == 'client' }}
+        run: |
+          cd ${{ inputs.COMPONENT_TYPE }}/wfprev-war/src/main/angular
+          npm install
+      - name: Build Angular app
+        if: ${{ inputs.COMPONENT_TYPE == 'client' }}
+        run: |
+          cd ${{ inputs.COMPONENT_TYPE }}/wfprev-war/src/main/angular
+          npm run build -- --base-href="/pub/wfprev/"
+  
+      - name: Copy built files to necessary folders
+        if: ${{ inputs.COMPONENT_TYPE == 'client' }}
+        run: mkdir -p staging && cp -r ${{ inputs.COMPONENT_TYPE }}/wfprev-war/src/main/angular/dist/wfprev/* staging/
           
       - name: Build API with Maven
         if: ${{ inputs.COMPONENT_TYPE == 'server' }}
@@ -67,18 +88,9 @@ jobs:
           export MAVEN_OPTS="-Xmx3072m -XX:MaxMetaspaceSize=512m"
           export NODE_OPTIONS="--max-old-space-size=4096"
           mvn --settings ${{ inputs.COMPONENT_TYPE }}/${{ inputs.COMPONENT_NAME }}/mvn_settings/settings.xml --batch-mode --update-snapshots -f ${{ inputs.COMPONENT_TYPE }}/${{ inputs.COMPONENT_NAME }}/pom.xml -Drepo.login=${{ secrets.IDIR_AS_EMAIL }} -Drepo.password=${{ secrets.IDIR_PASSWORD }} -DskipTests package
-
-      - name: Build UI with Maven
-        if: ${{ inputs.COMPONENT_TYPE == 'client' }}
-        run: |
-          export MAVEN_OPTS="-Xmx3072m -XX:MaxMetaspaceSize=512m"
-          export NODE_OPTIONS="--max-old-space-size=4096"
-          mvn --settings ${{ inputs.COMPONENT_TYPE }}/mvn_settings/settings.xml --batch-mode --update-snapshots -f ${{ inputs.COMPONENT_TYPE }}/pom.xml -Drepo.login=${{ secrets.IDIR_AS_EMAIL }} -Drepo.password=${{ secrets.IDIR_PASSWORD }} -DskipTests package
-          cd ${{ inputs.COMPONENT_TYPE }}/wfprev-war/src/main/angular
-          npm install
-          npm run build -- --base-href="/pub/wfprev/"
             
       - name: Copy files to neccessary folders
+        if: ${{ inputs.COMPONENT_TYPE == 'server' }}
         run: mkdir staging && cp ${{ inputs.COMPONENT_TYPE }}/${{ inputs.COMPONENT_NAME }}/target/*.war staging
       
       - uses: actions/upload-artifact@v3

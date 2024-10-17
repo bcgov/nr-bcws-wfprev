@@ -8,11 +8,13 @@ WORKDIR /app
 COPY src/main/angular/dist/wfprev ./dist/wfprev
 
 # Copy backend files (for serving the Angular app using Express)
-COPY backend /app/backend
-RUN cd /app/backend && npm install --only=production
+COPY backend /app
+RUN npm install --only=production
 
 # Expose port 80 for the application
-EXPOSE 80
+EXPOSE 8080
 
 # Start the Node.js server to serve the Angular app
-ENTRYPOINT ["node", "/app/backend/server.js"]
+ENTRYPOINT ["node", "/app/server.js"]
+
+

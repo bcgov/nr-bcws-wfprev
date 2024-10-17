@@ -7,7 +7,7 @@ const bodyParser = require('body-parser');
 const app = express();
 
 // Host setup
-const port = process.env.PORT || 80;
+const port = process.env.PORT || 8080;
 const hostname = "0.0.0.0";
 
 // Middleware
@@ -15,11 +15,11 @@ app.use(cors());
 app.use(bodyParser.json());
 
 // Serve static files from the Angular app
-app.use(express.static(path.join(__dirname, '../dist/wfprev')));
+app.use(express.static(path.join(__dirname, 'dist/wfprev')));
 
 // Send all requests to Angular app
 app.get('/*', (req, res) => {
-    res.sendFile(path.join(__dirname, '../dist/wfprev/index.html'));
+    res.sendFile(path.join(__dirname, 'dist/wfprev/index.html'));
 });
 
 const server = http.createServer(app);
