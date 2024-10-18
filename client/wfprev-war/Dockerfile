@@ -7,9 +7,6 @@ WORKDIR /app
 # Log the contents of the root directory before doing any copies
 RUN echo "Root directory contents before copy:" && ls -la /
 
-# Log the contents of the build context (staging folder) to verify its existence
-RUN echo "Staging folder contents before copy:" && ls -la ./staging || echo "Staging folder does not exist"
-
 # Copy the pre-built Angular app from the local machine into the container
 COPY ./dist/wfprev ./dist/wfprev
 
