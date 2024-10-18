@@ -15,10 +15,10 @@ app.use(cors());
 app.use(bodyParser.json());
 
 // Serve static files from the Angular app
-app.use(express.static(path.join(__dirname, 'dist/wfprev')));
+app.use('/pub/wfprev', express.static(path.join(__dirname, 'dist/wfprev')));
 
 // Send all requests to Angular app
-app.get('/*', (req, res) => {
+app.get('/pub/wfprev/*', (req, res) => {
     res.sendFile(path.join(__dirname, 'dist/wfprev/index.html'));
 });
 
