@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { ResourcesRoutes } from 'src/app/utils';
+import { AppConfigService } from 'src/app/services/app-config.service';
+import { TokenService } from 'src/app/services/token.service';
 
 @Component({
   selector: 'app-root',
@@ -13,6 +15,8 @@ export class AppComponent {
   
   constructor(
     protected router: Router,
+    protected appConfigService: AppConfigService,
+    protected tokenService: TokenService,
   ) {
   }
 

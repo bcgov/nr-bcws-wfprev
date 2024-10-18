@@ -1,0 +1,13 @@
+{
+  "application": {
+    "baseUrl": "http://localhost:4200/"
+  },
+
+  "webade": {
+      "oauth2Url": "https://wfappsi.nrs.gov.bc.ca/ext/oauth2/v1/oauth/authorize",
+      "clientId": "WFPREV-UI",
+      "authScopes": "WFDM.* WFPREV.*",
+      "enableCheckToken": true,
+      "checkTokenUrl": "assets/data/checktoken-SSYLVER.json"
+    }
+}
