@@ -9,6 +9,7 @@ RUN echo "Root directory contents before copy:" && ls -la /
 
 # Copy the pre-built Angular app from the local machine into the container
 COPY ./dist/wfprev ./dist/wfprev
+# COPY src/main/angular/dist/wfprev ./dist/wfprev
 
 # Log the contents of the /app directory after copying
 RUN echo "App directory contents after copy:" && ls -la /app
