@@ -72,6 +72,7 @@ jobs:
         run: |
           cd ${{ inputs.COMPONENT_TYPE }}/wfprev-war/src/main/angular
           npm install
+
       - name: Build Angular app
         if: ${{ inputs.COMPONENT_TYPE == 'client' }}
         run: |
@@ -81,6 +82,13 @@ jobs:
       - name: Copy built files to necessary folders
         if: ${{ inputs.COMPONENT_TYPE == 'client' }}
         run: mkdir -p staging && cp -r ${{ inputs.COMPONENT_TYPE }}/wfprev-war/src/main/angular/dist/wfprev/* staging/
+
+      - name: Upload Angular build artifact
+        if: ${{ inputs.COMPONENT_TYPE == 'client' }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: angular-build
+          path: staging
           
       - name: Build API with Maven
         if: ${{ inputs.COMPONENT_TYPE == 'server' }}
@@ -129,6 +137,15 @@ jobs:
       #   with:
       #     ref: ${{ inputs.BRANCH }}
 
+      # Download Angular build artifact
+      - name: Download Angular build artifact
+        if: ${{ inputs.COMPONENT_TYPE == 'client' }}
+        uses: actions/download-artifact@v3
+        with:
+          name: angular-build
+          path: staging
+      
+
       - name: download artifact
         uses: actions/download-artifact@v3
         with:
@@ -164,12 +181,24 @@ jobs:
             type=ref,event=tag
             type=raw,value=${{ inputs.TAG }}
 
-      - name: Build and push Docker image
+      - name: Build and push Docker image for Client (UI)
+        if: ${{ inputs.COMPONENT_TYPE == 'client' }}
         uses: docker/build-push-action@v6
         with:
-           context: ${{inputs.COMPONENT_TYPE}}/${{inputs.COMPONENT_NAME}}
-           build-args: |
-             CONTAINER_NAME=${{inputs.COMPONENT_NAME}}
-           push: true
-           tags: ${{ steps.meta_pr.outputs.tags }}
-           labels: ${{ steps.meta_pr.outputs.labels }}
+          context: .  # Root context to include the staging folder for client builds
+          build-args: |
+            CONTAINER_NAME=${{inputs.COMPONENT_NAME}}
+          push: true
+          tags: ${{ steps.meta_pr.outputs.tags }}
+          labels: ${{ steps.meta_pr.outputs.labels }}
+
+      - name: Build and push Docker image for Server (API)
+        if: ${{ inputs.COMPONENT_TYPE == 'server' }}
+        uses: docker/build-push-action@v6
+        with:
+          context: ${{ inputs.COMPONENT_TYPE }}/wfprev-api
+          build-args: |
+            CONTAINER_NAME=${{inputs.COMPONENT_NAME}}
+          push: true
+          tags: ${{ steps.meta_pr.outputs.tags }}
+          labels: ${{ steps.meta_pr.outputs.labels }}

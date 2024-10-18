@@ -5,7 +5,7 @@ FROM node:20-alpine
 WORKDIR /app
 
 # Copy the pre-built Angular app from the local machine into the container
-COPY staging/* ./dist/wfprev
+COPY ./staging/* ./dist/wfprev
 
 # Copy backend files (for serving the Angular app using Express)
 COPY backend /app
