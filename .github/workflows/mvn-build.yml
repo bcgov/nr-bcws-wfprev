@@ -143,10 +143,7 @@ jobs:
         if: ${{ inputs.COMPONENT_TYPE == 'client' }}
         with:
           name: wfprev-war-package
-          path: client/wfprev-war
-  
-      - name: Prepare Angular files for Docker build
-        run: mkdir -p client/wfprev-war/dist/wfprev && cp -r client/wfprev-war/* client/wfprev-war/dist/wfprev/
+          path: client/wfprev-war/dist/wfprev
 
       - name: download server artifact
         uses: actions/download-artifact@v3
