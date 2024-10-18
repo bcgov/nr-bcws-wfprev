@@ -11,7 +11,7 @@ RUN echo "Root directory contents before copy:" && ls -la /
 RUN echo "Staging folder contents before copy:" && ls -la ./staging || echo "Staging folder does not exist"
 
 # Copy the pre-built Angular app from the local machine into the container
-COPY ./staging/* ./dist/wfprev
+COPY ./dist/wfprev ./dist/wfprev
 
 # Log the contents of the /app directory after copying
 RUN echo "App directory contents after copy:" && ls -la /app

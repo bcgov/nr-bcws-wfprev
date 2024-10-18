@@ -72,23 +72,23 @@ jobs:
         run: |
           cd ${{ inputs.COMPONENT_TYPE }}/wfprev-war/src/main/angular
           npm install
-          
       - name: Build Angular app
         if: ${{ inputs.COMPONENT_TYPE == 'client' }}
         run: |
           cd ${{ inputs.COMPONENT_TYPE }}/wfprev-war/src/main/angular
-          npm run build -- --configuration=production
+          npm run build -- --configuration=production"
   
-      - name: Copy built files to necessary folders
+      - name: Copy client built files to necessary folder
         if: ${{ inputs.COMPONENT_TYPE == 'client' }}
-        run: mkdir -p staging && cp -r ${{ inputs.COMPONENT_TYPE }}/wfprev-war/src/main/angular/dist/wfprev/* staging/
-
-       # Log to check the contents of the staging folder after copying
-      - name: Log staging folder contents after copy
+        run: mkdir -p staging-client && cp -r ${{ inputs.COMPONENT_TYPE }}/wfprev-war/src/main/angular/dist/wfprev/* staging-client/
+      
+      - name: Upload client artifact
         if: ${{ inputs.COMPONENT_TYPE == 'client' }}
-        run: |
-          echo "Contents of staging folder:" && ls -la staging
-            
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ inputs.COMPONENT_NAME }}-package
+          path: staging-client
+          
       - name: Build API with Maven
         if: ${{ inputs.COMPONENT_TYPE == 'server' }}
         run: |
@@ -136,17 +136,23 @@ jobs:
       #   with:
       #     ref: ${{ inputs.BRANCH }}
 
-      - name: download artifact
+
+          # Download client artifact
+      - name: download client artifact
+        uses: actions/download-artifact@v3
+        if: ${{ inputs.COMPONENT_TYPE == 'client' }}
+        with:
+          name: wfprev-war-package
+          path: client/wfprev-war
+  
+      - name: Prepare Angular files for Docker build
+        run: mkdir -p client/wfprev-war/dist/wfprev && cp -r client/wfprev-war/* client/wfprev-war/dist/wfprev/
+
+      - name: download server artifact
         uses: actions/download-artifact@v3
         with:
           name: ${{ inputs.COMPONENT_NAME }}-package
           path: ${{inputs.COMPONENT_TYPE}}/${{inputs.COMPONENT_NAME}}
-
-      - name: Log downloaded artifact folder contents
-        if: ${{ inputs.COMPONENT_TYPE == 'client' }}
-        run: |
-          echo "Contents of downloaded artifact folder:" && ls -la ${{inputs.COMPONENT_TYPE}}/${{inputs.COMPONENT_NAME}}
-
 
       # - name: Update image name if PR number present
       #   if: ${{ github.event.pull_request.number > 0 || inputs.IS_HOTFIX == 'true' }}
@@ -176,6 +182,17 @@ jobs:
             type=raw,value=${{ steps.trimBranchName.outputs.BRANCH_TAG }}
             type=ref,event=tag
             type=raw,value=${{ inputs.TAG }}
+
+      - name: Build and push Client Docker image
+        if: ${{ inputs.COMPONENT_TYPE == 'client' }}
+        uses: docker/build-push-action@v6
+        with:
+          context: client/wfprev-war
+          build-args: |
+            CONTAINER_NAME=wfprev-war
+          push: true
+          tags: ${{ steps.meta_pr.outputs.tags }}
+          labels: ${{ steps.meta_pr.outputs.labels }}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
