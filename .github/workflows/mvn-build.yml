@@ -76,7 +76,7 @@ jobs:
         if: ${{ inputs.COMPONENT_TYPE == 'client' }}
         run: |
           cd ${{ inputs.COMPONENT_TYPE }}/wfprev-war/src/main/angular
-          npm run build -- --configuration=production"
+          npm run build -- --configuration=production
   
       - name: Copy client built files to necessary folder
         if: ${{ inputs.COMPONENT_TYPE == 'client' }}
