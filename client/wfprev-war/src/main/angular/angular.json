@@ -20,7 +20,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "baseHref": "/",
+            "baseHref": "/pub/wfprev",
             "outputPath": "dist/wfprev",
             "index": "src/index.html",
             "main": "src/main.ts",
