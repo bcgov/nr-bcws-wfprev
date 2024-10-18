@@ -11,12 +11,16 @@ Make sure you have the following installed before proceeding:
 
 ## Steps to Run the UI with Docker
 
-### Build the Docker Image, run following command under wfprev-war folder where dockerfile locates. npm-token and registry-token can be retrieve from your npmrc 
-docker build -t wfprev-ui --build-arg NPM_TOKEN=<your-npm-token> --build-arg PRIVATE_REGISTRY_AUTH=<your-private-registry-token> .
+### Run ng build
+navigate to Angular folder and run "ng build --configuration production"
+### Script change in dockerfile
+comment out "COPY ./dist/wfprev ./dist/wfprev" part in Dockerfile, use "# COPY src/main/angular/dist/wfprev ./dist/wfprev" instead
+### Build the Docker Image, run following command under wfprev-war folder where dockerfile locates. 
+docker build -t wfprev-ui
 
 Then you should see a wfprev-ui appears in your images list.
 
 ### Run the image using following command. 
-docker run -d -p 8080:80 --name wfprev-ui-container wfprev-ui
+docker run -d -p 8080:8080 --name wfprev-ui-container wfprev-ui
 
 ### Verify the UI is running by opening the browser and navigate to localhost:8080
