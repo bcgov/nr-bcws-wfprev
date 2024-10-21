@@ -1,0 +1,24 @@
+.header-container{
+    height: var(--header-height);
+    background-color: var(--wf-header-background-color);
+    display: flex;
+    .bc-logo {
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+
+        width: 50%;
+        padding-left: var(--wf-gutter);
+        overflow-x: visible;
+
+        .bcwfservice-logo{
+            display: inline-block;
+            background-image: url( './../../../../assets/bcwfservice-logo.png' );
+            background-size: auto var( --wf-header-wildfire1-logo-height );
+            background-position: center;
+            background-repeat: no-repeat;
+            height: var( --wf-header-wildfire1-logo-height );
+            width: calc( var( --wf-header-wildfire1-logo-height ) * 4 );
+        }
+    }
+}

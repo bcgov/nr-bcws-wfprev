@@ -1,0 +1,12 @@
+<div class="header-container">
+    <div class="bc-logo" (click)="onBCLogoClick()">
+        <span class="bcwfservice-logo" alt="BC Gov"></span>
+    </div>
+    
+    <div class="app-logo-and-title" *ngIf="useAppLogo">
+        <span class="wildfire1-logo" alt="Wildfire ONE"></span>
+        <span class="separator"></span>
+        <span class="title">{{ title }}</span>
+        <span class="environment">{{ environment }}</span>
+    </div>
+</div>
