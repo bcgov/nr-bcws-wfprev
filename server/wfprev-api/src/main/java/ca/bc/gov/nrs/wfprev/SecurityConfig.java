@@ -8,6 +8,7 @@ import org.springframework.security.authentication.AuthenticationManagerResolver
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
@@ -60,7 +61,7 @@ public class SecurityConfig {
 
     @Bean
     public AuthenticationProvider authenticationProvider() {
-        return new WebadeOauth2AuthenticationProvider(tokenServiceImpl(), "WFIM.*");
+        return new WebadeOauth2AuthenticationProvider(tokenServiceImpl(), "WFPREV.*");
     }
 
     @Bean
@@ -85,6 +86,7 @@ public class SecurityConfig {
         .csrf(csrf -> csrf.disable())
         .authorizeHttpRequests(auth -> auth
             .requestMatchers("/actuator/health").permitAll()
+            .requestMatchers("/check/checkToken").permitAll()
             .anyRequest().authenticated()
         )
         .oauth2ResourceServer(oauth2 -> oauth2
@@ -96,6 +98,11 @@ public class SecurityConfig {
             .authenticationEntryPoint(authenticationEntryPoint()));
 
     return http.build();
+    }
+
+    @Bean
+    public WebSecurityCustomizer webSecurityCustomizer() {
+        return (web) -> web.ignoring().requestMatchers("/check/checkToken");
     }
 
 }
