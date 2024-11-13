@@ -15,7 +15,7 @@ resource "aws_security_group" "wfprev_tomcat_access" {
   vpc_id = module.network.aws_vpc.id
   ingress {
     protocol = "tcp"
-    from_port = var.WFPREV_CLIENT_PORT
+    from_port = var.WFPREV_SERVER_PORT
     to_port = var.WFPREV_API_PORT
     cidr_blocks = ["0.0.0.0/0"]
   }

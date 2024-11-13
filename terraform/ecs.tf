@@ -68,14 +68,6 @@ resource "aws_ecs_task_definition" "wfprev_server" {
         value = var.AWS_REGION
       },
       {
-        name  = "WFPREV_CLIENT_ID"
-        value = var.WFPREV_CLIENT_ID
-      },
-      {
-        name  = "WFPREV_CLIENT_SECRET",
-        value = var.WFPREV_CLIENT_SECRET
-      },
-      {
         name  = "WEBADE_OAUTH2_CHECK_TOKEN_URL"
         value = var.WEBADE_OAUTH2_CHECK_TOKEN_URL
       },
@@ -141,100 +133,6 @@ resource "aws_ecs_task_definition" "wfprev_server" {
     ]
     volumesFrom = []
   }])
-}
-
-# WFPrev Client Task Definition
-
-resource "aws_ecs_task_definition" "wfprev_client" {
-  family                   = "wfprev-client-task-${var.TARGET_ENV}"
-  execution_role_arn       = aws_iam_role.wfprev_ecs_task_execution_role.arn
-  task_role_arn            = aws_iam_role.wfprev_app_container_role.arn
-  network_mode             = "awsvpc"
-  requires_compatibilities = ["FARGATE"]
-  cpu                      = var.WFPREV_CLIENT_CPU_UNITS
-  memory                   = var.WFPREV_CLIENT_MEMORY
-  volume {
-    name = "work"
-  }
-  volume {
-    name = "logging"
-  }
-  
-  container_definitions = jsonencode([
-    {
-      essential   = true
-      readonlyRootFilesystem = false
-      name        = var.client_container_name
-      image       = var.CLIENT_IMAGE
-      cpu         = var.WFPREV_CLIENT_CPU_UNITS
-      memory      = var.WFPREV_CLIENT_MEMORY
-      networkMode = "awsvpc"
-      portMappings = [
-        {
-          protocol      = "tcp"
-          containerPort = var.WFPREV_CLIENT_PORT
-          hostPort      = var.WFPREV_CLIENT_PORT
-        }
-      ]
-      environment = [
-        {
-          name  = "LOGGING_LEVEL"
-          value = "${var.LOGGING_LEVEL}"
-        },
-        {
-          name  = "AWS_REGION",
-          value = var.AWS_REGION
-        },
-        {
-          #Base URL will use the 
-          name  = "BASE_URL",
-          value = var.TARGET_ENV == "prod" ? "https://${var.gov_client_url}/" : "${aws_apigatewayv2_stage.wfprev_stage.invoke_url}/wfprev-ui"
-        },
-        {
-          name  = "WEBADE_OAUTH2_WFPREV_REST_CLIENT_SECRET",
-          value = var.WEBADE_OAUTH2_WFPREV_UI_CLIENT_SECRET
-        },
-        {
-          name  = "WEBADE-OAUTH2_TOKEN_URL",
-          value = var.WEBADE-OAUTH2_TOKEN_URL
-        },
-        {
-          name  = "WEBADE-OAUTH2_CHECK_TOKEN_V2_URL"
-          value = var.WEBADE_OAUTH2_CHECK_TOKEN_URL
-        },
-        { //Will be phased out from prod eventually, but not yet  "https://${aws_route53_record.wfprev_nginx.name}/"
-          name  = "WFPREV_API_URL",
-          value = var.TARGET_ENV == "prod" ? "https://${var.gov_api_url}/" : "https://example.com/"
-        },
-        {
-          name  = "APPLICATION_ENVIRONMENT",
-          value = var.TARGET_ENV != "prod" ? var.TARGET_ENV : " "
-        },
-      ]
-      logConfiguration = {
-        logDriver = "awslogs"
-        options = {
-          awslogs-create-group  = "true"
-          awslogs-group         = "/ecs/${var.client_name}"
-          awslogs-region        = var.AWS_REGION
-          awslogs-stream-prefix = "ecs"
-        }
-      }
-      mountPoints = [
-        {
-          sourceVolume = "logging"
-          containerPath = "/usr/local/tomcat/logs"
-          readOnly = false
-        },
-        {
-          sourceVolume = "work"
-          containerPath = "/usr/local/tomcat/work"
-          readOnly = false
-        }
-        ]
-      volumesFrom = []
-    }
-  ])
 }
 
 # WFPrev Liquibase Task Definition
@@ -362,45 +260,6 @@ resource "aws_ecs_service" "wfprev_server" {
   # depends_on = [aws_iam_role_policy_attachment.wfprev_ecs_task_execution_role]
 
   # tags = local.common_tags
-}
-
-# ECS Service for WFPrev Client
-
-resource "aws_ecs_service" "client" {
-  name                              = "wfprev-client-service-${var.TARGET_ENV}"
-  cluster                           = aws_ecs_cluster.wfprev_main.id
-  task_definition                   = aws_ecs_task_definition.wfprev_client.arn
-  desired_count                     = var.APP_COUNT
-  enable_ecs_managed_tags           = true
-  propagate_tags                    = "TASK_DEFINITION"
-  health_check_grace_period_seconds = 60
-  wait_for_steady_state             = false
-
-
-  capacity_provider_strategy {
-    capacity_provider = "FARGATE_SPOT"
-    weight            = 80
-  }
-  capacity_provider_strategy {
-    capacity_provider = "FARGATE"
-    weight            = 20
-    base              = 1
-  }
-
-
-  network_configuration {
-    security_groups  = [data.aws_security_group.app.id, aws_security_group.wfprev_tomcat_access.id]
-    subnets          = module.network.aws_subnet_ids.app.ids
-    assign_public_ip = true
-  }
-
-  load_balancer {
-    target_group_arn = aws_alb_target_group.wfprev_ui.id
-    container_name   = var.client_container_name
-    container_port   = var.WFPREV_CLIENT_PORT
-  }
-
-  # depends_on = [aws_iam_role_policy_attachment.wfprev_ecs_task_execution_role]
 }
 
 # Placeholder for other ECS Services like Nginx, Liquibase, etc.
