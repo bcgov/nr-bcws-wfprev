@@ -21,7 +21,11 @@ You can create a database instance via
 
 ```
 docker pull postgis/postgis:16-3.4
-docker run --name wfprev-postgres -e POSTGRES_USER=wfprev -e POSTGRES_PASSWORD=password -p 5432:5432 -d postgis/postgis:16-3.4
+docker run --name wfprev-postgres \
+    --env-file .env.local \
+    -e POSTGRES_USER=wfprev \
+    -p 5432:5432 \
+    -d postgis/postgis:16-3.4
 
 ```
 
@@ -33,11 +37,21 @@ And build the database model with Liquibase:
 ```
 cd db
 docker build -t liquibase -f Dockerfile.liquibase.local .   
-docker run --rm liquibase \
+docker run --rm \
+    -e WFPREV_DB_PASSWORD=password \
+    liquibase \
     --url=jdbc:postgresql://host.docker.internal:5432/wfprev \
     --changelog-file=main-changelog.json \
     --username=wfprev \
     --password=password \
     update
 ```
+
+The db/.env.local file should have the following content:
+
+```
+WFPREV_DB_PASSWORD=***
+POSTGRES_PASSWORD=***
+```
+
 [![Lifecycle:Experimental](https://img.shields.io/badge/Lifecycle-Experimental-339999)](<Redirect-URL>)
