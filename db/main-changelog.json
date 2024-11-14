@@ -4,6 +4,7 @@
       "changeSet": {
         "id": "01_00_00_00",
         "author": "dhemsworth",
+        "tagDatabase": { "tag" : "version_01_00_00_00" },
         "changes": [
           {
             "sqlFile": {
@@ -41,20 +42,94 @@
             }
           }
         ]
-      }
-    },
-    {
-      "changeSet": {
-        "id": "01_00_00_01",
-        "author": "cpreston",
-        "changes": [
-          {
-            "sqlFile": {
+      },
+      {
+       "changeSet": {
+         "id": "01_00_00_01",
+         "author": "cpreston",
+         "tagDatabase": { "tag" : "version_01_00_00_01" },
+         "changes": [
+           {
+             "sqlFile": {
               "dbms": "postgresql",
               "endDelimiter": ";",
               "path": "scripts/01_00_00/01/ddl/extension/wfprev.ddl.add_trigram.sql"
             }
           }
+        ]
+       }
+     },
+      "changeSet": {
+        "id": "01_00_01_00",
+        "author": "hsaldyga",
+        "tagDatabase": { "tag" : "version_01_00_01_00" },
+        "changes": [
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_00_01/00/ddl/tables/WFPREV.project_type_code.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_00_01/00/ddl/tables/WFPREV.forest_area_code.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_00_01/00/ddl/tables/WFPREV.general_scope_code.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_00_01/00/ddl/tables/WFPREV.program_area.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_00_01/00/ddl/tables/WFPREV.project.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_00_01/00/ddl/tables/WFPREV.project_audit.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_00_01/00/ddl/tables/WFPREV.project_boundary.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_00_01/00/ddl/tables/WFPREV.project_boundary_audit.sql"
+            }
+          }
+        ],
+        "rollback": [
+            { "sql": "DROP TABLE wfprev.project_boundary_audit" },
+            { "sql": "DROP TABLE wfprev.project_boundary" },
+            { "sql": "DROP TABLE wfprev.project_audit" },
+            { "sql": "DROP TABLE wfprev.project" },
+            { "sql": "DROP TABLE wfprev.program_area" },
+            { "sql": "DROP TABLE wfprev.general_scope_code" },
+            { "sql": "DROP TABLE wfprev.forest_area_code" },
+            { "sql": "DROP TABLE wfprev.project_type_code" },
         ]
       }
     }
