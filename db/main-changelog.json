@@ -121,9 +121,17 @@
               "endDelimiter": ";",
               "path": "scripts/01_00_01/00/ddl/tables/WFPREV.project_boundary_audit.sql"
             }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_00_01/00/ddl/sequences/PREV.prev_audit_table_seq.sql"
+            }
           }
         ],
         "rollback": [
+            { "sql": "DROP SEQUENCE wfprev.prev_audit_table_seq" },
             { "sql": "DROP TABLE wfprev.project_boundary_audit" },
             { "sql": "DROP TABLE wfprev.project_boundary" },
             { "sql": "DROP TABLE wfprev.project_audit" },
