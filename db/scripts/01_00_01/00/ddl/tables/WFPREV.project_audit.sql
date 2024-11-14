@@ -187,5 +187,5 @@ COMMENT ON COLUMN "wfprev"."project_audit"."update_date"
 /* Create Primary Keys, Indexes, Uniques, Checks */
 
 ALTER TABLE "wfprev"."project_audit" ADD CONSTRAINT "prjct_aud_pk"
-	PRIMARY KEY ()
+	PRIMARY KEY ("audit_table_sequence")
 ;
