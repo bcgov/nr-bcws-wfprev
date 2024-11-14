@@ -38,13 +38,14 @@ And build the database model with Liquibase:
 cd db
 docker build -t liquibase -f Dockerfile.liquibase.local .   
 docker run --rm \
-    -e WFPREV_DB_PASSWORD=password \
+    --env-file .env.local \
     liquibase \
+    /bin/bash -c 'liquibase \
     --url=jdbc:postgresql://host.docker.internal:5432/wfprev \
     --changelog-file=main-changelog.json \
     --username=wfprev \
-    --password=password \
-    update
+    --password=$WFPREV_DB_PASSWORD \
+    update'
 ```
 
 The db/.env.local file should have the following content:
