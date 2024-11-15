@@ -43,16 +43,16 @@ jobs:
     environment:
       name: ${{ inputs.ENVIRONMENT }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         if: ${{ inputs.IS_HOTFIX != 'true' }}
       
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         if: ${{ inputs.IS_HOTFIX == 'true' }}
         with:
           ref: ${{ inputs.BRANCH }}
 
       - name: Set up Node.js 20.x
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: '20.x'
 
@@ -97,7 +97,7 @@ jobs:
       packages: write
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         if: ${{ github.event.inputs.IS_HOTFIX != 'true' }}
 
       - id: trimBranchName
@@ -107,7 +107,7 @@ jobs:
           trimTag="${branchTag##*/}"
           echo "BRANCH_TAG=$trimTag" >> $GITHUB_OUTPUT
 
-      # - uses: actions/checkout@v3
+      # - uses: actions/checkout@v4
       #   if: ${{ github.event.inputs.IS_HOTFIX == 'true' }}
       #   with:
       #     ref: ${{ inputs.BRANCH }}

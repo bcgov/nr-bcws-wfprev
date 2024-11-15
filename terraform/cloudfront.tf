@@ -1,5 +1,5 @@
 # CloudFront Origin Access Identity (OAI) for secure access to S3
-resource "aws_cloudfront_origin_access_identity"."oai" {
+resource "aws_cloudfront_origin_access_identity" "oai" {
   comment = "OAI for wfprev UI"
 }
 
@@ -20,9 +20,9 @@ resource "aws_cloudfront_distribution" "wfprev_app_distribution" {
 
   # Configure cache behaviors
   default_cache_behavior {
-    allowed_methods  = ["GET", "HEAD", "OPTIONS"]
-    cached_methods   = ["GET", "HEAD"]
-    target_origin_id = "S3-${aws_s3_bucket.wfprev_site_bucket.id}"
+    allowed_methods        = ["GET", "HEAD", "OPTIONS"]
+    cached_methods         = ["GET", "HEAD"]
+    target_origin_id       = "S3-${aws_s3_bucket.wfprev_site_bucket.id}"
     viewer_protocol_policy = "redirect-to-https"
 
     forwarded_values {
@@ -53,3 +53,4 @@ resource "aws_cloudfront_distribution" "wfprev_app_distribution" {
 output "cloudfront_distribution_id" {
   value = aws_cloudfront_distribution.wfprev_app_distribution.id
 }
+
