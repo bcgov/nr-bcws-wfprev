@@ -40,6 +40,7 @@ jobs:
     - name: Initialize Terraform
       run: terraform init
 
+    # Fetch CloudFront Distribution ID in order to invalidate cache
     - name: Fetch CloudFront Distribution ID
       id: get_cf_id
       run: |
