@@ -70,21 +70,6 @@ resource "aws_lb_listener_rule" "wfprev-api" {
   }
 }
 
-resource "aws_lb_listener_rule" "wfprev-ui" {
-  listener_arn = aws_lb_listener.wfprev_main.arn
-
-  action {
-    type = "forward"
-    target_group_arn = aws_alb_target_group.wfprev_ui.arn
-  }
-
-  condition {
-    path_pattern  {
-      values = [for sn in var.PREVENTION_WAR_NAMES : "/${aws_apigatewayv2_stage.wfprev_stage.name}/${sn}"]
-    }
-  }
-}
-
 //////////////////////////////
 /// TARGET GROUP RESOURCES ///
 //////////////////////////////
@@ -107,23 +92,4 @@ resource "aws_alb_target_group" "wfprev_api" {
   }
 
 #  tags = local.
-}
-
-resource "aws_alb_target_group" "wfprev_ui" {
-  name = "wfprev-ui-${var.TARGET_ENV}"
-  port = var.WFPREV_CLIENT_PORT
-  protocol = "HTTP"
-  vpc_id = module.network.aws_vpc.id
-  target_type = "ip"
-  deregistration_delay = 30
-
-  health_check {
-    healthy_threshold   = "2"
-    interval            = "300"
-    protocol            = "HTTP"
-    matcher             = "200"
-    timeout             = "3"
-    path                = "/${aws_apigatewayv2_stage.wfprev_stage.name}/${var.PREVENTION_WAR_NAMES[0]}/"
-    unhealthy_threshold = "2"
-  }
 }

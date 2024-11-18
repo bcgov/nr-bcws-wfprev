@@ -1,0 +1,85 @@
+name: Deploy Angular App to S3 and CloudFront
+
+on:
+  push:
+    branches:
+      - main  # Adjust to your deployment branch
+  workflow_call:
+    inputs:
+      DEFAULT_APPLICATION_ENVIRONMENT:
+        required: true
+        type: string
+      IMAGE_TAG:
+        required: true
+        type: string
+
+env:
+  TF_VERSION: 1.8.5
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        role-to-assume: ${{ secrets.AWS_TERRAFORM_ROLE_TO_ASSUME }}
+        role-session-name: wfprev-terraform-s3
+        aws-region: ca-central-1
+
+    - name: Set up Terraform
+      uses: hashicorp/setup-terraform@v2
+      with:
+        terraform_version: ${{ env.TF_VERSION }}
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Build Angular App
+      run: npm run build --prod
+
+    - name: Initialize Terraform
+      run: terraform init
+
+    # Fetch CloudFront Distribution ID in order to invalidate cache
+    - name: Fetch CloudFront Distribution ID
+      id: get_cf_id
+      run: |
+        export CLOUDFRONT_ID=$(terraform output -raw cloudfront_distribution_id)
+        echo "CLOUDFRONT_DISTRIBUTION_ID=$CLOUDFRONT_ID" >> $GITHUB_ENV
+
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        role-to-assume: ${{ secrets.AWS_S3_PUSH_ROLE }}
+        role-session-name: wfprev-push-s3
+        aws-region: ca-central-1
+
+    # this will require the bucket to exist
+    # so terraform step will need to run first
+    - name: Sync files to S3
+      run: |
+        aws s3 sync ./dist/wfprev s3://wfprev_site_bucket \
+          --delete \
+          --cache-control max-age=31536000,public \
+          --exclude index.html
+        aws s3 cp ./dist/wfprev/index.html s3://wfprev_site_bucket/index.html \
+          --cache-control max-age=0,no-cache,no-store,must-revalidate
+
+    - name: Invalidate CloudFront Cache
+      run: |
+        aws cloudfront create-invalidation \
+          --distribution-id ${{ env.CLOUDFRONT_DISTRIBUTION_ID }} \
+          --paths "/*"
+      # see distribution ID section in terraform scripts
+      # Like the sync, this means we need to run terraform first, then
+      # trigger this action with the returned distribution ID
