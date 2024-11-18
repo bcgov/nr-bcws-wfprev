@@ -1,7 +1,7 @@
 # Bucket create. Public-read or private?
 resource "aws_s3_bucket" "wfprev_site_bucket" {
   bucket        = "wfnews-${var.TARGET_ENV}-site"
-  acl           = "public-read"
+  acl           = "private"
   force_destroy = true
 
   website {
