@@ -24,7 +24,6 @@ on:
         type: choice
         options: 
           - server
-          - client
           - libs
   workflow_call:
     inputs:
@@ -44,16 +43,16 @@ jobs:
     environment:
       name: ${{ inputs.ENVIRONMENT }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         if: ${{ inputs.IS_HOTFIX != 'true' }}
       
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         if: ${{ inputs.IS_HOTFIX == 'true' }}
         with:
           ref: ${{ inputs.BRANCH }}
 
       - name: Set up Node.js 20.x
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: '20.x'
 
@@ -65,29 +64,6 @@ jobs:
       
       - name: Add .npmrc file
         run: echo -e $NPMRC > ~/.npmrc
-
-
-      - name: Install dependencies for Angular project
-        if: ${{ inputs.COMPONENT_TYPE == 'client' }}
-        run: |
-          cd ${{ inputs.COMPONENT_TYPE }}/wfprev-war/src/main/angular
-          npm install
-      - name: Build Angular app
-        if: ${{ inputs.COMPONENT_TYPE == 'client' }}
-        run: |
-          cd ${{ inputs.COMPONENT_TYPE }}/wfprev-war/src/main/angular
-          npm run build -- --configuration=production --base-href=/pub/wfprev/
-  
-      - name: Copy client built files to necessary folder
-        if: ${{ inputs.COMPONENT_TYPE == 'client' }}
-        run: mkdir -p staging-client && cp -r ${{ inputs.COMPONENT_TYPE }}/wfprev-war/src/main/angular/dist/wfprev/* staging-client/
-      
-      - name: Upload client artifact
-        if: ${{ inputs.COMPONENT_TYPE == 'client' }}
-        uses: actions/upload-artifact@v3
-        with:
-          name: ${{ inputs.COMPONENT_NAME }}-package
-          path: staging-client
           
       - name: Build API with Maven
         if: ${{ inputs.COMPONENT_TYPE == 'server' }}
@@ -121,7 +97,7 @@ jobs:
       packages: write
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         if: ${{ github.event.inputs.IS_HOTFIX != 'true' }}
 
       - id: trimBranchName
@@ -131,19 +107,10 @@ jobs:
           trimTag="${branchTag##*/}"
           echo "BRANCH_TAG=$trimTag" >> $GITHUB_OUTPUT
 
-      # - uses: actions/checkout@v3
+      # - uses: actions/checkout@v4
       #   if: ${{ github.event.inputs.IS_HOTFIX == 'true' }}
       #   with:
       #     ref: ${{ inputs.BRANCH }}
-
-
-          # Download client artifact
-      - name: download client artifact
-        uses: actions/download-artifact@v3
-        if: ${{ inputs.COMPONENT_TYPE == 'client' }}
-        with:
-          name: wfprev-war-package
-          path: client/wfprev-war/dist/wfprev
 
       - name: download server artifact
         uses: actions/download-artifact@v3
@@ -179,17 +146,6 @@ jobs:
             type=raw,value=${{ steps.trimBranchName.outputs.BRANCH_TAG }}
             type=ref,event=tag
             type=raw,value=${{ inputs.TAG }}
-
-      - name: Build and push Client Docker image
-        if: ${{ inputs.COMPONENT_TYPE == 'client' }}
-        uses: docker/build-push-action@v6
-        with:
-          context: client/wfprev-war
-          build-args: |
-            CONTAINER_NAME=wfprev-war
-          push: true
-          tags: ${{ steps.meta_pr.outputs.tags }}
-          labels: ${{ steps.meta_pr.outputs.labels }}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
