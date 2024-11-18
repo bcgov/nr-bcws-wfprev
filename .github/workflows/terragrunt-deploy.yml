@@ -114,7 +114,6 @@ jobs:
       - uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: ${{ env.TF_VERSION }}
-          cli_config_credentials_token: ${{ secrets.TFC_TEAM_TOKEN }}
 
       - uses: peter-murray/terragrunt-github-action@v1.0.0
         with:
