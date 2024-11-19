@@ -68,14 +68,14 @@ EOF
 # Retrieve the parameter value from AWS Systems Manager (SSM) Parameter Store
 # This fetches the SecureString parameter containing the GitHub Actions user's keys.
 # The parameter's value will be used later for accessing AWS resources securely.
-data "aws_ssm_parameter" "github_actions_user_keys" {
-  name = "/iam_users/wfprev_github_actions_user_keys"
-}
+# data "aws_ssm_parameter" "github_actions_user_keys" {
+#   name = "/iam_users/wfprev_github_actions_user_keys"
+# }
 
 # Create an IAM user specifically for GitHub Actions
 # This user will be granted limited permissions for performing specific tasks (e.g., S3 operations and CloudFront invalidations).
 resource "aws_iam_user" "github_actions_user" {
-  name = "github_actions_user"
+  name = "wfprev_github_actions_user"
 }
 
 
@@ -104,7 +104,7 @@ resource "aws_iam_policy" "ssm_parameter_access" {
 # Attach the SSM parameter access policy to the GitHub Actions IAM user
 # This links the user with the necessary permissions to read the SSM parameter securely.
 resource "aws_iam_user_policy_attachment" "ssm_parameter_access_attachment" {
-  user       = aws_iam_user.github_actions_user.name
+  user       = data.aws_iam_user.wfprev_github_actions_user.name
   policy_arn = aws_iam_policy.ssm_parameter_access.arn
 }
 
@@ -114,7 +114,7 @@ resource "aws_iam_user_policy_attachment" "ssm_parameter_access_attachment" {
 # - Invalidate cached content in CloudFront
 resource "aws_iam_user_policy" "github_actions_policy" {
   name = "github-actions-policy"
-  user = data.aws_ssm_parameter.github_actions_user_keys.name
+  user = data.aws_iam_user.github_actions_user.name
 
   policy = jsonencode({
     Version = "2012-10-17",
