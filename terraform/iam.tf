@@ -65,20 +65,6 @@ resource "aws_iam_role_policy" "wfprev_ecs_task_execution_cwlogs" {
 EOF
 }
 
-# Retrieve the parameter value from AWS Systems Manager (SSM) Parameter Store
-# This fetches the SecureString parameter containing the GitHub Actions user's keys.
-# The parameter's value will be used later for accessing AWS resources securely.
-# data "aws_ssm_parameter" "github_actions_user_keys" {
-#   name = "/iam_users/wfprev_github_actions_user_keys"
-# }
-
-# Create an IAM user specifically for GitHub Actions
-# This user will be granted limited permissions for performing specific tasks (e.g., S3 operations and CloudFront invalidations).
-resource "aws_iam_user" "github_actions_user" {
-  name = "wfprev_github_actions_user"
-}
-
-
 # Define an IAM policy to allow access to the SSM parameter
 # This policy grants permissions to retrieve the specified SecureString parameter.
 resource "aws_iam_policy" "ssm_parameter_access" {
