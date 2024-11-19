@@ -41,11 +41,15 @@ jobs:
       with:
         node-version: '20'
 
-    - name: Install dependencies
-      run: npm install
+    - name: Install dependencies for Angular project
+      run: |
+          cd client/wfprev-war/src/main/angular
+          npm install
 
-    - name: Build Angular App
-      run: npm run build --prod
+    - name: Build Angular app
+      run: |
+          cd client/wfprev-war/src/main/angular
+          npm run build -- --configuration=production --base-href=/pub/wfprev/
 
     - name: Initialize Terraform
       run: terraform init
