@@ -65,14 +65,44 @@ resource "aws_iam_role_policy" "wfprev_ecs_task_execution_cwlogs" {
 EOF
 }
 
+# Retrieve the parameter value from AWS Parameter Store
+data "aws_ssm_parameter" "github_actions_user_keys" {
+  name = "/iam_users/wfprev_github_actions_user_keys"
+}
+
 # IAM User for GitHub Actions (with limited permissions - Cloudfront invalidate, bucket cleanup)
 resource "aws_iam_user" "github_actions_user" {
-  name = "github-actions-user"
+  name = "github_actions_user"
+}
+
+resource "aws_iam_policy" "ssm_parameter_access" {
+  name        = "SSMParameterAccess"
+  description = "Allows access to SecureString parameters in SSM Parameter Store"
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Action = [
+          "ssm:GetParameter",
+          "ssm:GetParameters",
+          "ssm:DescribeParameters"
+        ],
+        Resource = "arn:aws:ssm:ca-central-1:183631341627:parameter/iam_users/wfprev_github_actions_user_keys"
+      }
+    ]
+  })
+}
+
+resource "aws_iam_user_policy_attachment" "ssm_parameter_access_attachment" {
+  user       = aws_iam_user.github_actions_user.name
+  policy_arn = aws_iam_policy.ssm_parameter_access.arn
 }
 
 resource "aws_iam_user_policy" "github_actions_policy" {
   name = "github-actions-policy"
-  user = aws_iam_user.github_actions_user.name
+  user = data.aws_ssm_parameter.github_actions_user_keys.name
 
   policy = jsonencode({
     Version = "2012-10-17",
@@ -92,39 +122,7 @@ resource "aws_iam_user_policy" "github_actions_policy" {
 }
 
 resource "aws_iam_role" "github_actions_role" {
-  name = "github-actions-role"
-
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17",
-    Statement = [
-      {
-        Effect = "Allow",
-        Principal = {
-          AWS = aws_iam_user.github_actions_user.arn
-        },
-        Action = "sts:AssumeRole"
-      }
-    ]
-  })
+  name               = "github-actions-role"
+  assume_role_policy = data.aws_iam_user_policy.github_actions_policy.json
 }
 
-resource "aws_iam_role_policy" "github_actions_role_policy" {
-  name = "github-actions-role-policy"
-  role = aws_iam_role.github_actions_role.name
-
-  policy = jsonencode({
-    Version = "2012-10-17",
-    Statement = [
-      {
-        Effect   = "Allow",
-        Action   = ["s3:PutObject", "s3:DeleteObject"],
-        Resource = "${aws_s3_bucket.wfprev_site_bucket.arn}/*"
-      },
-      {
-        Effect   = "Allow",
-        Action   = "cloudfront:CreateInvalidation",
-        Resource = "*"
-      }
-    ]
-  })
-}
