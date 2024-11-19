@@ -41,3 +41,4 @@ resource "aws_s3_bucket_policy" "wfprev_site_bucket_policy" {
 output "s3_bucket_name" {
   value = aws_s3_bucket.wfprev_site_bucket.bucket
 }
+
