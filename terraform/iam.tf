@@ -104,7 +104,7 @@ resource "aws_iam_policy" "ssm_parameter_access" {
 # Attach the SSM parameter access policy to the GitHub Actions IAM user
 # This links the user with the necessary permissions to read the SSM parameter securely.
 resource "aws_iam_user_policy_attachment" "ssm_parameter_access_attachment" {
-  user       = data.aws_iam_user.wfprev_github_actions_user.name
+  user       = data.aws_iam_user.github_actions_user.name
   policy_arn = aws_iam_policy.ssm_parameter_access.arn
 }
 
