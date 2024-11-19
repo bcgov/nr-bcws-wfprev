@@ -66,66 +66,65 @@ EOF
 }
 
 # IAM User for GitHub Actions (with limited permissions - Cloudfront invalidate, bucket cleanup)
-# resource "aws_iam_user" "github_actions_user" {
-#   name = "github-actions-user"
-# }
+resource "aws_iam_user" "github_actions_user" {
+  name = "github-actions-user"
+}
 
-# resource "aws_iam_user_policy" "github_actions_policy" {
-#   name = "github-actions-policy"
-#   user = aws_iam_user.github_actions_user.name
+resource "aws_iam_user_policy" "github_actions_policy" {
+  name = "github-actions-policy"
+  user = aws_iam_user.github_actions_user.name
 
-#   policy = jsonencode({
-#     Version = "2012-10-17",
-#     Statement = [
-#       {
-#         Effect   = "Allow",
-#         Action   = ["s3:PutObject", "s3:DeleteObject"],
-#         Resource = "${aws_s3_bucket.wfprev_site_bucket.arn}/*"
-#       },
-#       {
-#         Effect   = "Allow",
-#         Action   = "cloudfront:CreateInvalidation",
-#         Resource = "*"
-#       }
-#     ]
-#   })
-# }
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect   = "Allow",
+        Action   = ["s3:PutObject", "s3:DeleteObject"],
+        Resource = "${aws_s3_bucket.wfprev_site_bucket.arn}/*"
+      },
+      {
+        Effect   = "Allow",
+        Action   = "cloudfront:CreateInvalidation",
+        Resource = "*"
+      }
+    ]
+  })
+}
 
-# resource "aws_iam_role" "github_actions_role" {
-#   name = "github-actions-role"
+resource "aws_iam_role" "github_actions_role" {
+  name = "github-actions-role"
 
-#   assume_role_policy = jsonencode({
-#     Version = "2012-10-17",
-#     Statement = [
-#       {
-#         Effect = "Allow",
-#         Principal = {
-#           AWS = aws_iam_user.github_actions_user.arn
-#         },
-#         Action = "sts:AssumeRole"
-#       }
-#     ]
-#   })
-# }
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Principal = {
+          AWS = aws_iam_user.github_actions_user.arn
+        },
+        Action = "sts:AssumeRole"
+      }
+    ]
+  })
+}
 
-# resource "aws_iam_role_policy" "github_actions_role_policy" {
-#   name = "github-actions-role-policy"
-#   role = aws_iam_role.github_actions_role.name
+resource "aws_iam_role_policy" "github_actions_role_policy" {
+  name = "github-actions-role-policy"
+  role = aws_iam_role.github_actions_role.name
 
-#   policy = jsonencode({
-#     Version = "2012-10-17",
-#     Statement = [
-#       {
-#         Effect   = "Allow",
-#         Action   = ["s3:PutObject", "s3:DeleteObject"],
-#         Resource = "${aws_s3_bucket.wfprev_site_bucket.arn}/*"
-#       },
-#       {
-#         Effect   = "Allow",
-#         Action   = "cloudfront:CreateInvalidation",
-#         Resource = "*"
-#       }
-#     ]
-#   })
-# }
-
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect   = "Allow",
+        Action   = ["s3:PutObject", "s3:DeleteObject"],
+        Resource = "${aws_s3_bucket.wfprev_site_bucket.arn}/*"
+      },
+      {
+        Effect   = "Allow",
+        Action   = "cloudfront:CreateInvalidation",
+        Resource = "*"
+      }
+    ]
+  })
+}
