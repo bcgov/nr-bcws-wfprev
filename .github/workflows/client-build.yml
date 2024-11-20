@@ -59,7 +59,7 @@ jobs:
           cd client/wfprev-war/src/main/angular
           npm run build -- --configuration=production --base-href=/pub/wfprev/
 
-    - name: Initialize and Apply Terraform
+    - name: Initialize Terraform
       working-directory: ${{ env.TG_SRC_PATH }}
       env:
         TFC_PROJECT: ${{ env.TFC_PROJECT }}
