@@ -20,6 +20,7 @@ on:
 
 env:
   TF_VERSION: 1.8.5
+  TG_VERSION: 0.48.4
   TG_SRC_PATH: terraform
   TFC_PROJECT: ${{ secrets.TFC_PROJECT }} 
   TARGET_ENV: ${{ inputs.DEFAULT_APPLICATION_ENVIRONMENT }}
@@ -44,6 +45,11 @@ jobs:
       with:
         terraform_version: ${{ env.TF_VERSION }}
 
+    - name: Set up Terragrunt
+      uses: peter-murray/terragrunt-github-action@v1.0.0
+      with:
+          terragrunt_version: ${{ env.TG_VERSION }}
+
     - name: Set up Node.js
       uses: actions/setup-node@v4
       with:
@@ -59,19 +65,14 @@ jobs:
           cd client/wfprev-war/src/main/angular
           npm run build -- --configuration=production --base-href=/pub/wfprev/
 
-    - name: Initialize Terraform
+    - name: Initialize Terragrunt
       working-directory: ${{ env.TG_SRC_PATH }}
       env:
         TFC_PROJECT: ${{ env.TFC_PROJECT }}
-        TARGET_ENV: "dev"
+        TARGET_ENV: ${{ env.TARGET_ENV }}
       run: |
-        # Initialize with backend config
-        terraform init \
-          -backend-config="bucket=terraform-remote-state-${TFC_PROJECT}-${TARGET_ENV}" \
-          -backend-config="key=terraform.${TFC_PROJECT}-${TARGET_ENV}-state" \
-          -backend-config="region=ca-central-1" \
-          -backend-config="dynamodb_table=terraform-remote-state-lock-${TFC_PROJECT}"
-  
+        terragrunt init
+
     # Fetch CloudFront Distribution ID in order to invalidate cache
     - name: Get Terraform Outputs
       working-directory: ${{ env.TG_SRC_PATH }}
@@ -88,19 +89,19 @@ jobs:
         echo "TARGET_ENV: $TARGET_ENV"
         echo "Expected bucket: terraform-remote-state-${TFC_PROJECT}-${TARGET_ENV}"
         
-        # Show Terraform state
-        echo "Terraform State List:"
-        terraform state list
+        # Show Terragrunt State List
+        echo "Terragrunt State List:"
+        terragrunt state list
         
         # Try to refresh state
-        terraform refresh
+        terragrunt refresh
         
         # Show all outputs again
-        echo "Terraform Outputs after refresh:"
-        terraform output
+        echo "Terragrunt Outputs after refresh:"
+        terragrunt output
         
         # Get CloudFront ID with error checking
-        if ! CLOUDFRONT_ID=$(terraform output -raw cloudfront_distribution_id); then
+        if ! CLOUDFRONT_ID=$(terragrunt output -raw cloudfront_distribution_id); then
           echo "Error: Failed to get CloudFront Distribution ID"
           exit 1
         fi
