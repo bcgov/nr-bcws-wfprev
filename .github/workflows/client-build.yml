@@ -126,6 +126,8 @@ jobs:
         # Try to refresh state
         terragrunt refresh
         
+        terragrunt output -raw cloudfront_distribution_id
+
         # Get CloudFront ID with error checking
         CLOUDFRONT_ID=$(terragrunt output -raw cloudfront_distribution_id)
         if [ -z "$CLOUDFRONT_ID" ]; then
