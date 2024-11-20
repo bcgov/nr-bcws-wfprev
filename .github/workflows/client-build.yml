@@ -15,6 +15,7 @@ on:
 
 env:
   TF_VERSION: 1.8.5
+  TG_SRC_PATH: terraform
 
 jobs:
   build-and-deploy:
@@ -52,9 +53,25 @@ jobs:
           npm run build -- --configuration=production --base-href=/pub/wfprev/
 
     - name: Initialize Terraform
+      working-directory: ${{ env.TG_SRC_PATH }}
       run: terraform init
-
+  
     # Fetch CloudFront Distribution ID in order to invalidate cache
+    - name: Get Terraform Outputs
+      working-directory: ${{ env.TG_SRC_PATH }}
+      run: |
+        # Add debug output
+        echo "All Terraform outputs:"
+        terraform output
+        
+        # Get CloudFront Distribution ID with error checking
+        if ! CLOUDFRONT_ID=$(terraform output -raw cloudfront_distribution_id); then
+          echo "Error: Failed to get CloudFront Distribution ID"
+          exit 1
+        fi
+        echo "Fetched CloudFront Distribution ID: $CLOUDFRONT_ID"
+        echo "CLOUDFRONT_DISTRIBUTION_ID=$CLOUDFRONT_ID" >> $GITHUB_ENV
+    
     - name: Fetch CloudFront Distribution ID
       id: get_cf_id
       run: |
