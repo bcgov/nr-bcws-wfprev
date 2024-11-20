@@ -39,7 +39,7 @@ resource "aws_iam_role" "wfprev_ecs_task_execution_role" {
 }
 
 resource "aws_iam_role_policy_attachment" "wfprev_ecs_task_execution_changelogs" {
-  role = aws_iam_role.wfprev_ecs_task_execution_role.name
+  role       = aws_iam_role.wfprev_ecs_task_execution_role.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }
 
@@ -64,3 +64,35 @@ resource "aws_iam_role_policy" "wfprev_ecs_task_execution_cwlogs" {
   }
 EOF
 }
+
+# IAM User for GitHub Actions (with limited permissions - Cloudfront invalidate, bucket cleanup)
+resource "aws_iam_user" "github_actions_user" {
+  name = "github-actions-user"
+}
+
+resource "aws_iam_user_policy" "github_actions_policy" {
+  name = "github-actions-policy"
+  user = aws_iam_user.github_actions_user.name
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect   = "Allow",
+        Action   = ["s3:PutObject", "s3:DeleteObject"],
+        Resource = "${aws_s3_bucket.wfprev_site_bucket.arn}/*"
+      },
+      {
+        Effect   = "Allow",
+        Action   = "cloudfront:CreateInvalidation",
+        Resource = "*"
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role" "github_actions_role" {
+  name               = "github-actions-role"
+  assume_role_policy = data.aws_iam_user_policy.github_actions_policy.json
+}
+

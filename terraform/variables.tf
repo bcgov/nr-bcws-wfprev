@@ -5,18 +5,6 @@ variable "common_tags" {
   }
 }
 
-variable "WFPREV_CLIENT_CPU_UNITS" {
-  description = "client instance CPU units to provision (1 vCPU = 1024 CPU units)"
-  type        = number
-  default = 512
-}
-
-variable "WFPREV_CLIENT_MEMORY" {
-  description = "client instance memory to provision (in MiB)"
-  type        = number
-  default = 1024
-}
-
 variable "WFPREV_API_CPU_UNITS" {
   description = "server CPU units to provision (1 vCPU = 1024 CPU units)"
   type        = number
@@ -89,16 +77,6 @@ variable "WEBADE_OAUTH2_CHECK_AUTHORIZE_URL" {
   default = ""
 }
 
-variable "WFPREV_CLIENT_ID" {
-  type    = string
-  default = ""
-}
-
-variable "WFPREV_CLIENT_SECRET" {
-  type    = string
-  default = ""
-}
-
 variable "WFPREV_DATASOURCE_USERNAME" {
   type    = string
   default = ""
@@ -107,24 +85,24 @@ variable "WFPREV_DATASOURCE_USERNAME" {
 variable "WFPREV_DATASOURCE_PASSWORD" {
   description = "db password, passed in as env variable at runtime"
   type        = string
-  default = ""
+  default     = ""
 }
 
 variable "WFPREV_USERNAME" {
-  type        = string
+  type    = string
   default = ""
 }
 
 variable "DB_PASS" {
   description = "db password, passed in as env variable at runtime"
   type        = string
-  default = ""
+  default     = ""
 }
 
 variable "api_key" {
   description = "value for api key"
   type        = string
-  default = ""
+  default     = ""
 }
 
 variable "server_name" {
@@ -148,18 +126,13 @@ variable "ALB_NAME" {
 variable "TARGET_ENV" {
   description = "AWS workload account env (e.g. dev, test, prod, sandbox, unclass)"
   type        = string
-  default = ""
+  default     = ""
 }
 
 variable "WFPREV_API_PORT" {
   description = "Port exposed by the docker image to redirect traffic to"
-  type = number
-  default  = 8080
-}
-
-variable "WFPREV_CLIENT_PORT" {
-  type = number
-  default = 8080
+  type        = number
+  default     = 8080
 }
 
 variable "WEBADE_OAUTH2_WFPREV_UI_CLIENT_SECRET" {
@@ -196,7 +169,7 @@ variable "gov_api_url" {
 }
 
 variable "TARGET_AWS_ACCOUNT_ID" {
-  type = string
+  type        = string
   description = "Numerical AWS account ID"
 }
 
@@ -209,7 +182,7 @@ variable "DB_POSTGRES_VERSION" {
 variable "DB_INSTANCE_TYPE" {
   description = "Instance type to use for database vm"
   type        = string
-  default = ""
+  default     = ""
 }
 
 variable "DB_MULTI_AZ" {
@@ -226,23 +199,23 @@ variable "DB_SIZE" {
 
 
 variable "PREVENTION_WAR_NAMES" {
-  type = list(string)
+  type        = list(string)
   description = "List of paths to point at payroll API"
-  default = ["wfprev", "wfprev/*"]
+  default     = ["wfprev", "wfprev/*"]
 }
 
 variable "PREVENTION_API_NAMES" {
-  type = list(string)
+  type        = list(string)
   description = "List of paths to point at payroll API"
-  default = ["wfprev-api", "wfprev-api/*"]
+  default     = ["wfprev-api", "wfprev-api/*"]
 }
 
 //liquibase
 
 variable "LIQUIBASE_MEMORY" {
   description = "Amount of memory to allocate to liquibase instances, in MB"
-  type = number
-  default = 512
+  type        = number
+  default     = 512
 }
 
 variable "LIQUIBASE_CONTAINER_NAME" {
@@ -259,8 +232,8 @@ variable "LIQUIBASE_IMAGE" {
 
 variable "LIQUIBASE_CPU" {
   description = "number of milliCPUs to allocate to liquibase instances"
-  type = number
-  default = 256
+  type        = number
+  default     = 256
 }
 
 variable "DB_PORT" {
@@ -286,12 +259,12 @@ variable "CLOUDFRONT_HEADER" {
 }
 
 variable "NONPROXY_COUNT" {
-  type = number
+  type    = number
   default = 1
 }
 
 variable "CHANGELOG_NAME" {
-  type = string
+  type    = string
   default = "main-changelog"
 }
 
@@ -312,6 +285,40 @@ variable "TARGET_LIQUIBASE_TAG" {
 }
 
 variable "COMMAND" {
-  type = string
+  type    = string
   default = "update"
+}
+
+# Used if Terraform is uploading data externally into the Site s3 bucket
+variable "MIME_TYPES" {
+  description = "Map of file extensions to MIME types"
+  type        = map(string)
+  default = {
+    ".html" = "text/html"
+    ".css"  = "text/css"
+    ".png"  = "image/png"
+    ".jpg"  = "image/jpeg"
+    ".jpeg" = "image/jpeg"
+    ".pdf"  = "application/pdf"
+    ".json" = "application/json"
+    ".js"   = "application/javascript"
+    ".gif"  = "image/gif"
+    ".svg"  = "image/svg+xml"
+    ".ico"  = "image/x-icon"
+    ".txt"  = "text/plain"
+    ".xml"  = "application/xml"
+    ".mp4"  = "video/mp4"
+    ".webm" = "video/webm"
+    ".webp" = "image/webp"
+    ".zip"  = "application/zip"
+    ".doc"  = "application/msword"
+    ".docx" = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    ".xls"  = "application/vnd.ms-excel"
+    ".xlsx" = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    ".csv"  = "text/csv"
+    ".ttf"  = "font/ttf"
+    ".md"   = "text/markdown"
+    ".yaml" = "application/yaml"
+    ".yml"  = "application/yaml"
+  }
 }
