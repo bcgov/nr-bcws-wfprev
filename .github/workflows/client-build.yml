@@ -126,10 +126,6 @@ jobs:
         # Try to refresh state
         terragrunt refresh
         
-        # Show all outputs again
-        echo "Terragrunt Outputs after refresh:"
-        terragrunt output
-        
         # Get CloudFront ID with error checking
         if ! CLOUDFRONT_ID=$(terragrunt output -raw cloudfront_distribution_id); then
           echo "Error: Failed to get CloudFront Distribution ID"
