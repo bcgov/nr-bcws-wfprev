@@ -59,10 +59,10 @@ jobs:
           cd client/wfprev-war/src/main/angular
           npm run build -- --configuration=production --base-href=/pub/wfprev/
 
-    - name: Initialize and Apply Terraform
+    - name: Initialize Terraform
       working-directory: ${{ env.TG_SRC_PATH }}
       env:
-        TFC_PROJECT: ${{ secrets.TFC_PROJECT }}
+        TFC_PROJECT: ${{ env.TFC_PROJECT }}
         TARGET_ENV: "dev"
       run: |
         # Initialize with backend config
@@ -71,12 +71,6 @@ jobs:
           -backend-config="key=terraform.${TFC_PROJECT}-${TARGET_ENV}-state" \
           -backend-config="region=ca-central-1" \
           -backend-config="dynamodb_table=terraform-remote-state-lock-${TFC_PROJECT}"
-        
-        # Plan and show what will change
-        terraform plan -out=tfplan
-        
-        # Apply the changes
-        terraform apply -auto-approve tfplan
   
     # Fetch CloudFront Distribution ID in order to invalidate cache
     - name: Get Terraform Outputs
