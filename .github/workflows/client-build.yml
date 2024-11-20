@@ -21,6 +21,8 @@ on:
 env:
   TF_VERSION: 1.8.5
   TG_SRC_PATH: terraform
+  TFC_PROJECT: ${{ secrets.TFC_PROJECT }} 
+  TARGET_ENV: ${{ inputs.DEFAULT_APPLICATION_ENVIRONMENT }}
 
 jobs:
   build-and-deploy:
@@ -59,15 +61,26 @@ jobs:
 
     - name: Initialize Terraform
       working-directory: ${{ env.TG_SRC_PATH }}
+      env:
+        TFC_PROJECT:  ${{ env.TFC_PROJECT }}
+        TARGET_ENV: ${{ env.TARGET_ENV }}
       run: terraform init
   
     # Fetch CloudFront Distribution ID in order to invalidate cache
     - name: Get Terraform Outputs
       working-directory: ${{ env.TG_SRC_PATH }}
+      env:
+        TFC_PROJECT:  ${{ env.TFC_PROJECT }}
+        TARGET_ENV: ${{ env.TARGET_ENV }}
       run: |
         # Debug current directory and files
         pwd
         ls -la
+
+        # Debug environment variables
+        echo "TFC_PROJECT: $TFC_PROJECT"
+        echo "TARGET_ENV: $TARGET_ENV"
+        echo "Expected bucket: terraform-remote-state-${TFC_PROJECT}-${TARGET_ENV}"
         
         # Show Terraform state
         echo "Terraform State List:"
