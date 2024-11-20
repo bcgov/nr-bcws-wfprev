@@ -65,14 +65,6 @@ jobs:
           cd client/wfprev-war/src/main/angular
           npm run build -- --configuration=production --base-href=/pub/wfprev/
 
-    - name: Initialize Terragrunt
-      working-directory: ${{ env.TG_SRC_PATH }}
-      env:
-        TFC_PROJECT: ${{ env.TFC_PROJECT }}
-        TARGET_ENV: ${{ env.TARGET_ENV }}
-      run: |
-        terragrunt init
-
     # Fetch CloudFront Distribution ID in order to invalidate cache
     - name: Get Terraform Outputs
       working-directory: ${{ env.TG_SRC_PATH }}
