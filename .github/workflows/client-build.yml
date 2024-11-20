@@ -78,8 +78,8 @@ jobs:
         WFPREV_API_NAME: wfprev-api
         WFPREV_API_IMAGE: ${{ steps.getDigestAPI.outputs.IMAGE_API_BY_DIGEST }}
         WFPREV_API_CPU_UNITS: ${{vars.WFPREV_API_CPU_UNITS}}
-        WFPREV_API_MEMORY: ${{vars.WFPREV_API_MEMORY}}
-        WFPREV_API_PORT: ${{vars.WFPREV_API_PORT}}
+        WFPREV_API_MEMORY: 1024
+        WFPREV_API_PORT: 8080
         TARGET_AWS_ACCOUNT_ID: ${{secrets.TARGET_AWS_ACCOUNT_ID}}
         WFPREV_CLIENT_ID: ${{vars.WFPREV_CLIENT_ID}}
         WFPREV_CLIENT_SECRET: ${{secrets.WFPREV_CLIENT_SECRET}}
@@ -100,15 +100,15 @@ jobs:
 
         #liquibase
         COMMAND: ${{ steps.liquibaseCommand.outputs.LIQUIBASE_COMMAND }}
-        PROXY_COUNT: ${{ steps.changeLogCount.outputs.PROXY_COUNT }}
-        NONPROXY_COUNT: ${{ steps.changeLogCount.outputs.NONPROXY_COUNT }}
+        PROXY_COUNT: 1
+        NONPROXY_COUNT: 1
         CHANGELOG_NAME: ${{ inputs.CHANGELOG_NAME }}
         LIQUIBASE_IMAGE: ${{vars.REPOSITORY_HOST}}/${{ github.repository_owner }}/${{ vars.LIQUIBASE_IMAGE }}:${{ inputs.IMAGE_TAG }}
         LIQUIBASE_COMMAND_USERNAME: ${{ vars.LIQUIBASE_COMMAND_USERNAME }}
         LIQUIBASE_COMMAND_PASSWORD: ${{ secrets.LIQUIBASE_COMMAND_PASSWORD }}
         SCHEMA_NAME: ${{ inputs.SCHEMA_NAME }}
         TARGET_LIQUIBASE_TAG: ${{ steps.liquibaseCommand.outputs.TARGET_LIQUIBASE_TAG }}
-        
+
       run: |
         # Debug current directory and files
         pwd
