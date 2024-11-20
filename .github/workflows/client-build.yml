@@ -125,11 +125,9 @@ jobs:
         
         # Try to refresh state
         terragrunt refresh
-        
-        terragrunt output -raw cloudfront_distribution_id
 
         # Get CloudFront ID with error checking
-        CLOUDFRONT_ID=$(terragrunt output -raw cloudfront_distribution_id)
+        CLOUDFRONT_ID=$(cloudfront_distribution_id=$(terraform output -raw cloudfront_distribution_id 2>/dev/null | tr -d '[:space:]')
         if [ -z "$CLOUDFRONT_ID" ]; then
           echo "Error: Failed to get CloudFront Distribution ID"
           exit 1
