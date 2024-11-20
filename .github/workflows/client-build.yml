@@ -12,6 +12,11 @@ on:
       IMAGE_TAG:
         required: true
         type: string
+  workflow_dispatch:
+    inputs:
+      TAG:
+        type: string
+        description: Additional tag to add to built images
 
 env:
   TF_VERSION: 1.8.5
@@ -60,22 +65,27 @@ jobs:
     - name: Get Terraform Outputs
       working-directory: ${{ env.TG_SRC_PATH }}
       run: |
-        # Add debug output
-        echo "All Terraform outputs:"
+        # Debug current directory and files
+        pwd
+        ls -la
+        
+        # Show Terraform state
+        echo "Terraform State List:"
+        terraform state list
+        
+        # Try to refresh state
+        terraform refresh
+        
+        # Show all outputs again
+        echo "Terraform Outputs after refresh:"
         terraform output
         
-        # Get CloudFront Distribution ID with error checking
+        # Get CloudFront ID with error checking
         if ! CLOUDFRONT_ID=$(terraform output -raw cloudfront_distribution_id); then
           echo "Error: Failed to get CloudFront Distribution ID"
           exit 1
         fi
         echo "Fetched CloudFront Distribution ID: $CLOUDFRONT_ID"
-        echo "CLOUDFRONT_DISTRIBUTION_ID=$CLOUDFRONT_ID" >> $GITHUB_ENV
-    
-    - name: Fetch CloudFront Distribution ID
-      id: get_cf_id
-      run: |
-        export CLOUDFRONT_ID=$(terraform output -raw cloudfront_distribution_id)
         echo "CLOUDFRONT_DISTRIBUTION_ID=$CLOUDFRONT_ID" >> $GITHUB_ENV
 
     - name: Configure AWS Credentials
