@@ -2,19 +2,24 @@ spring:
   application:
     name: wfprev
   datasource:
-    url: jdbc:postgresql://localhost:5432/wfprev
-    username: wfprev
-    password: password
-    # Hikari is the default connection pool in Spring Boot, better than Tomcat pool
-    hikari:
-      minimum-idle: 8
-      maximum-pool-size: 50
-      idle-timeout: 30000
+    url: ${WFPREV_DATASOURCE_URL}
+    username: ${WFPREV_DATASOURCE_USERNAME}
+    password: ${WFPREV_DATASOURCE_PASSWORD}
+    tomcat:
+      initial-size: 15
+      max-wait: 20000
+      max-active: 50
+      max-idle: 15
+      min-idle: 8
+      testWhileIdle: true
+      testOnBorrow: true
+      validationQuery: SELECT 1
   jpa:
     show-sql: true
     properties:
       hibernate:
         format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
 
 logging:
   level:
@@ -42,10 +47,10 @@ management:
 
 security:
   oauth:
-    clientId: WFNEWS-REST
-    clientSecret: 200e68112cc360193b572b9110a9b8d2
-    checkTokenUrl: https://wfappsi.nrs.gov.bc.ca/pub/oauth2/v1/check_token
-    authTokenUrl: https://wfappsi.nrs.gov.bc.ca/ext/oauth2/v1/oauth/authorize
+    clientId: ${WFPREV_CLIENT_ID}
+    clientSecret: ${WFPREV_CLIENT_SECRET}
+    checkTokenUrl: ${WEBADE_OAUTH2_CHECK_TOKEN_URL}
+    authTokenUrl: ${WEBADE_OAUTH2_CHECK_AUTHORIZE_URL}
 
 server:
   forward-headers-strategy: framework
