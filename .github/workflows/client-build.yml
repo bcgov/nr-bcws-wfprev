@@ -127,12 +127,12 @@ jobs:
         terragrunt refresh
         
         # Get CloudFront ID with error checking
-        if ! CLOUDFRONT_ID=$(terragrunt output -raw cloudfront_distribution_id); then
+        CLOUDFRONT_ID=$(terragrunt output -raw cloudfront_distribution_id)
+        if [ -z "$CLOUDFRONT_ID" ]; then
           echo "Error: Failed to get CloudFront Distribution ID"
           exit 1
         fi
-        echo "Fetched CloudFront Distribution ID: $CLOUDFRONT_ID"
-        echo "CLOUDFRONT_DISTRIBUTION_ID=$CLOUDFRONT_ID" >> $GITHUB_ENV
+        echo "CLOUDFRONT_DISTRIBUTION_ID=$CLOUDFRONT_ID" >> "$GITHUB_ENV"
 
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v4
