@@ -90,12 +90,14 @@ jobs:
         echo "Expected bucket: terraform-remote-state-${TFC_PROJECT}-${TARGET_ENV}"
         
         # Show Terragrunt State List
+        echo "Terragrunt State List:"
         terragrunt state list
         
         # Try to refresh state
         terragrunt refresh
         
         # Show all outputs again
+        echo "Terragrunt Outputs after refresh:"
         terragrunt output
         
         # Get CloudFront ID with error checking
