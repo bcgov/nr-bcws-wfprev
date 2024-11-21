@@ -21,14 +21,38 @@ You can create a database instance via
 
 ```
 docker pull postgis/postgis:16-3.4
-docker run --name wfprev-postgres -e POSTGRES_USER=wfprev -e POSTGRES_PASSWORD=password -p 5432:5432 -d postgis/postgis:16-3.4
+docker run --name wfprev-postgres \
+    --env-file .env.local \
+    -e POSTGRES_USER=wfprev \
+    -p 5432:5432 \
+    -d postgis/postgis:16-3.4
 
 ```
+
+Note: Mac users will get the following error, jsut ignore for now ```WARNING: The requested image's platform (linux/amd64) does not match the detected host platform (linux/arm64/v8) and no specific platform was requested
+f0de92debad131b48e2d72a9d211bafaa2b8bcb800e5077bb59f3225e5729086```
 
 And build the database model with Liquibase:
 
 ```
-docker build -t liquibase -f Dockerfile.liquibase.local .
-docker run --rm liquibase --url=jdbc:postgresql://172.17.0.2:5432/wfprev --changelog-file=main-changelog.json --username=wfprev --password=password update
+cd db
+docker build -t liquibase -f Dockerfile.liquibase.local .   
+docker run --rm \
+    --env-file .env.local \
+    liquibase \
+    /bin/bash -c 'liquibase \
+    --url=jdbc:postgresql://host.docker.internal:5432/wfprev \
+    --changelog-file=main-changelog.json \
+    --username=wfprev \
+    --password=$WFPREV_DB_PASSWORD \
+    update'
 ```
+
+The db/.env.local file should have the following content:
+
+```
+WFPREV_DB_PASSWORD=***
+POSTGRES_PASSWORD=***
+```
+
 [![Lifecycle:Experimental](https://img.shields.io/badge/Lifecycle-Experimental-339999)](<Redirect-URL>)
