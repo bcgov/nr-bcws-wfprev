@@ -26,7 +26,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProjectBoundaryModel extends CommonModel<ProjectModel> {
+public class ProjectBoundaryModel extends CommonModel<ProjectBoundaryModel> {
   private String projectBoundaryGuid;
 	private String projectGuid;
 	private Date systemStartTimestamp;
