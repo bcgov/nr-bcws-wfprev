@@ -15,12 +15,16 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import ca.bc.gov.nrs.wfprev.common.converters.BooleanConverter;
 import ca.bc.gov.nrs.wfprev.common.validators.Latitude;
 import ca.bc.gov.nrs.wfprev.common.validators.Longitude;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
 import jakarta.validation.constraints.NotNull;
@@ -45,12 +49,9 @@ public class ProjectEntity implements Serializable {
   @Column(name = "project_guid")
   private String projectGuid;
 
-  //@NotFound(action = NotFoundAction.IGNORE)
-	//@RestResource(exported = false)
-  //@ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REFRESH)
-	//@JoinColumn(name="project_type_code")
-  @Column(name="project_type_code")
-  private String projectTypeCode;
+  @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REFRESH)
+	@JoinColumn(name="project_type_code")
+  private ProjectTypeCodeEntity projectTypeCode;
 
   @Column(name = "project_number", columnDefinition="Decimal(10)")
   @NotNull
@@ -60,19 +61,13 @@ public class ProjectEntity implements Serializable {
 	@Column(name="site_unit_name", length = 250)
 	private String siteUnitName;
 
-  //@NotFound(action = NotFoundAction.IGNORE)
-	//@RestResource(exported = false)
-  //@ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REFRESH)
-	//@JoinColumn(name="forest_area_code")
-  @Column(name="forest_area_code")
-  private String forestAreaCode;
+  @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REFRESH)
+	@JoinColumn(name="forest_area_code")
+  private ForestAreaCodeEntity forestAreaCode;
 
-  //@NotFound(action = NotFoundAction.IGNORE)
-	//@RestResource(exported = false)
-  //@ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REFRESH)
-	//@JoinColumn(name="general_scope_code")
-  @Column(name="general_scope_code")
-  private String generalScopeCode;
+  @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REFRESH)
+	@JoinColumn(name="general_scope_code")
+  private GeneralScopeCodeEntity generalScopeCode;
 
   @Column(name = "program_area_guid")
   @NotNull
