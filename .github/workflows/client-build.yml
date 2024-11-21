@@ -128,7 +128,7 @@ jobs:
 
         # Get CloudFront ID with error checking
         CLOUDFRONT_ID=$(terragrunt output -raw cloudfront_distribution_id | grep -o '^[a-zA-Z0-9-]\+')
-        echo CLOUDFRONT_ID
+        echo $CLOUDFRONT_ID
         if [ -z "$CLOUDFRONT_ID" ]; then
           echo "Error: Failed to get CloudFront Distribution ID"
           exit 1
@@ -136,8 +136,8 @@ jobs:
         echo "CLOUDFRONT_DISTRIBUTION_ID=$CLOUDFRONT_ID" >> "$GITHUB_ENV"
 
         # Get CloudFront ID with error checking
-        GITHUB_ROLE_ARN=$(terragrunt output -raw github_actions_role_arn | grep -o '^[a-zA-Z0-9-]\+')
-        echo GITHUB_ROLE_ARN
+        GITHUB_ROLE_ARN=$(terragrunt output -raw github_actions_role_arn)
+        echo $GITHUB_ROLE_ARN
         if [ -z "$GITHUB_ROLE_ARN" ]; then
           echo "Error: Failed to get CloudFront Distribution ID"
           exit 1
