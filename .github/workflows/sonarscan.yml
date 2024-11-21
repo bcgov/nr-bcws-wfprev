@@ -6,8 +6,8 @@ env:
   MAVEN_OPTS: "-Xmx10000m"
   NODE_OPTIONS: "--max-old-space-size=4096"
 on:
-  push:
-    branches: [ main, feature/* ]
+  # push:
+  #   branches: [ main, feature/* ]
   pull_request_target:
     branches: [ main, feature/* ]
     types: [opened, synchronize, reopened]
@@ -20,6 +20,7 @@ jobs:
         with:
           fetch-depth: 0
           submodules: 'recursive'
+          ref: ${{ github.head_ref }}
      
       - name: Set up JDK 21
         uses: actions/setup-java@v4
