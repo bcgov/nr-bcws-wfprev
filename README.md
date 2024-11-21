@@ -21,6 +21,7 @@ You can create a database instance via
 
 ```
 docker pull postgis/postgis:16-3.4
+cd db
 docker run --name wfprev-postgres \
     --env-file .env.local \
     -e POSTGRES_USER=wfprev \
