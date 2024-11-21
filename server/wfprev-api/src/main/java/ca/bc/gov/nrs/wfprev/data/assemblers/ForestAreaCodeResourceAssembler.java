@@ -3,10 +3,6 @@ package ca.bc.gov.nrs.wfprev.data.assemblers;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
 import org.springframework.stereotype.Component;
@@ -46,7 +42,7 @@ public class ForestAreaCodeResourceAssembler extends RepresentationModelAssemble
      
     resource.add(linkTo(
         methodOn(CodesController.class)
-        .getCodeById(CodeTables.FOREST_AREA.toString(), entity.getForestAreaCode()))
+        .getCodeById(CodeTables.FOREST_AREA_CODE, entity.getForestAreaCode()))
         .withSelfRel());
      
       resource.setForestAreaCode(entity.getForestAreaCode());
@@ -68,7 +64,7 @@ public class ForestAreaCodeResourceAssembler extends RepresentationModelAssemble
   {
     CollectionModel<ForestAreaCodeModel> resources = super.toCollectionModel(entities);
      
-    resources.add(linkTo(methodOn(CodesController.class).getCodes(CodeTables.FOREST_AREA.toString())).withSelfRel());
+    resources.add(linkTo(methodOn(CodesController.class).getCodes(CodeTables.FOREST_AREA_CODE)).withSelfRel());
      
     return resources;
   }

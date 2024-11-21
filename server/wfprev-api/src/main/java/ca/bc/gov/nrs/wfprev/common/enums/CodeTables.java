@@ -1,16 +1,7 @@
 package ca.bc.gov.nrs.wfprev.common.enums;
 
-public enum CodeTables {
-  FOREST_AREA("forestAreaCodes"), 
-  GENERAL_SCOPE("generalScopeCodes"),
-  PROJECT_TYPE("projectTypeCodes");
-
-  private final String text;
-  private CodeTables(final String text) {
-      this.text = text;
-  }
-  @Override
-  public String toString() {
-      return text;
-  }
+public class CodeTables {
+  public static final String FOREST_AREA_CODE = "forestAreaCodes";
+  public static final String GENERAL_SCOPE_CODE = "generalScopeCodes";
+  public static final String PROJECT_TYPE_CODE = "projectTypeCodes";
 }

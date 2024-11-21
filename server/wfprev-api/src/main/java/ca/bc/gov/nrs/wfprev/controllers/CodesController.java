@@ -52,18 +52,20 @@ public class CodesController extends CommonController {
 
     try {
       switch(codeTable) {
-        case "forestAreaCodes":
+        case CodeTables.FOREST_AREA_CODE -> {
           response = ok(codesService.getAllForestAreaCodes());
-        break;
-        case "generalScopeCodes":
+        }
+        case CodeTables.GENERAL_SCOPE_CODE -> {
           response =  ok(codesService.getAllGeneralScopeCodes());
-        break;
-        case "projectTypeCodes":
+        }
+        case CodeTables.PROJECT_TYPE_CODE -> {
           response =  ok(codesService.getAllProjectTypeCodes());
-        break;
-        default:
+        }
+        default -> {
           response = internalServerError();
+        }
       }
+
     } catch (ServiceException e) {
       response = internalServerError();
       log.error(" ### Error while fetching codes", e);
@@ -88,17 +90,18 @@ public class CodesController extends CommonController {
 
     try {
       switch(codeTable) {
-        case "forestAreaCodes":
+        case CodeTables.FOREST_AREA_CODE -> {
           resource = codesService.getForestAreaCodeById(id);
-        break;
-        case "generalScopeCodes":
+        }
+        case CodeTables.GENERAL_SCOPE_CODE -> {
           resource =  codesService.getGeneralScopeCodeById(id);
-        break;
-        case "projectTypeCodes":
+        }
+        case CodeTables.PROJECT_TYPE_CODE -> {
           resource =  codesService.getProjectTypeCodeById(id);
-        break;
-        default:
-        resource = null;
+        }
+        default -> {
+          resource = null;
+        }
       }
 
       response = resource == null ? notFound() : ok(resource);

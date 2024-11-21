@@ -46,7 +46,7 @@ public class GeneralScopeCodeResourceAssembler extends RepresentationModelAssemb
      
     resource.add(linkTo(
         methodOn(CodesController.class)
-        .getCodeById(CodeTables.GENERAL_SCOPE.toString(), entity.getGeneralScopeCode()))
+        .getCodeById(CodeTables.GENERAL_SCOPE_CODE, entity.getGeneralScopeCode()))
         .withSelfRel());
      
       resource.setGeneralScopeCode(entity.getGeneralScopeCode());
@@ -68,7 +68,7 @@ public class GeneralScopeCodeResourceAssembler extends RepresentationModelAssemb
   {
     CollectionModel<GeneralScopeCodeModel> resources = super.toCollectionModel(entities);
      
-    resources.add(linkTo(methodOn(CodesController.class).getCodes(CodeTables.GENERAL_SCOPE.toString())).withSelfRel());
+    resources.add(linkTo(methodOn(CodesController.class).getCodes(CodeTables.GENERAL_SCOPE_CODE)).withSelfRel());
      
     return resources;
   }
