@@ -26,12 +26,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ProjectModel extends CommonModel<ProjectModel> {
   private String projectGuid;
-	private String projectTypeCode; // CODE
+	private ProjectTypeCodeModel projectTypeCode; // CODE
 	private Integer projectNumber;
 	private String siteUnitName;
-	private String forestAreaCode; // CODE
-	private String generalScopeCode; // CODE
-	private String programAreaGuid; // FK
+	private ForestAreaCodeModel forestAreaCode; // CODE
+	private GeneralScopeCodeModel generalScopeCode; // CODE
+	private String programAreaGuid; // FK, not Modeled
 	private Integer forestRegionOrgUnitId;
 	private Integer forestDistrictOrgUnitId;
 	private Integer fireCentreOrgUnitId;

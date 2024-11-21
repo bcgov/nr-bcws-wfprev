@@ -7,9 +7,15 @@ import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
 import org.springframework.stereotype.Component;
 
+import ca.bc.gov.nrs.wfprev.data.model.ForestAreaCodeEntity;
+import ca.bc.gov.nrs.wfprev.data.model.GeneralScopeCodeEntity;
 import ca.bc.gov.nrs.wfprev.data.model.ProjectEntity;
+import ca.bc.gov.nrs.wfprev.data.model.ProjectTypeCodeEntity;
 import ca.bc.gov.nrs.wfprev.controllers.ProjectController;
+import ca.bc.gov.nrs.wfprev.data.resources.ForestAreaCodeModel;
+import ca.bc.gov.nrs.wfprev.data.resources.GeneralScopeCodeModel;
 import ca.bc.gov.nrs.wfprev.data.resources.ProjectModel;
+import ca.bc.gov.nrs.wfprev.data.resources.ProjectTypeCodeModel;
 
 @Component
 public class ProjectResourceAssembler extends RepresentationModelAssemblerSupport<ProjectEntity, ProjectModel> {
@@ -22,11 +28,11 @@ public class ProjectResourceAssembler extends RepresentationModelAssemblerSuppor
     ProjectEntity entity = new ProjectEntity();
 
     entity.setProjectGuid(resource.getProjectGuid());
-    entity.setProjectTypeCode(resource.getProjectTypeCode());
+    entity.setProjectTypeCode(toProjectTypeCodeEntity(resource.getProjectTypeCode()));
     entity.setProjectNumber(resource.getProjectNumber());
     entity.setSiteUnitName(resource.getSiteUnitName());
-    entity.setForestAreaCode(resource.getForestAreaCode());
-    entity.setGeneralScopeCode(resource.getGeneralScopeCode());
+    entity.setForestAreaCode(toForestAreaCodeEntity(resource.getForestAreaCode()));
+    entity.setGeneralScopeCode(toGeneralScopeCodeEntity(resource.getGeneralScopeCode()));
     entity.setProgramAreaGuid(resource.getProgramAreaGuid());
     entity.setForestRegionOrgUnitId(resource.getForestRegionOrgUnitId());
     entity.setForestDistrictOrgUnitId(resource.getForestDistrictOrgUnitId());
@@ -68,11 +74,11 @@ public class ProjectResourceAssembler extends RepresentationModelAssemblerSuppor
         .withSelfRel());
      
         resource.setProjectGuid(entity.getProjectGuid());
-        resource.setProjectTypeCode(entity.getProjectTypeCode());
+        resource.setProjectTypeCode(toProjectTypeCodeModel(entity.getProjectTypeCode()));
         resource.setProjectNumber(entity.getProjectNumber());
         resource.setSiteUnitName(entity.getSiteUnitName());
-        resource.setForestAreaCode(entity.getForestAreaCode());
-        resource.setGeneralScopeCode(entity.getGeneralScopeCode());
+        resource.setForestAreaCode(toForestAreaCodeModel(entity.getForestAreaCode()));
+        resource.setGeneralScopeCode(toGeneralScopeCodeModel(entity.getGeneralScopeCode()));
         resource.setProgramAreaGuid(entity.getProgramAreaGuid());
         resource.setForestRegionOrgUnitId(entity.getForestRegionOrgUnitId());
         resource.setForestDistrictOrgUnitId(entity.getForestDistrictOrgUnitId());
@@ -112,5 +118,41 @@ public class ProjectResourceAssembler extends RepresentationModelAssemblerSuppor
     resources.add(linkTo(methodOn(ProjectController.class).getAllProjects()).withSelfRel());
      
     return resources;
+  }
+
+  private ProjectTypeCodeModel toProjectTypeCodeModel(ProjectTypeCodeEntity code) {
+ 
+    ProjectTypeCodeResourceAssembler ra = new ProjectTypeCodeResourceAssembler();
+    return ra.toModel(code);
+  }
+
+  private ProjectTypeCodeEntity toProjectTypeCodeEntity(ProjectTypeCodeModel code) {
+ 
+    ProjectTypeCodeResourceAssembler ra = new ProjectTypeCodeResourceAssembler();
+    return ra.toEntity(code);
+  }
+  
+  private ForestAreaCodeModel toForestAreaCodeModel(ForestAreaCodeEntity code) {
+ 
+    ForestAreaCodeResourceAssembler ra = new ForestAreaCodeResourceAssembler();
+    return ra.toModel(code);
+  }
+
+  private ForestAreaCodeEntity toForestAreaCodeEntity(ForestAreaCodeModel code) {
+ 
+    ForestAreaCodeResourceAssembler ra = new ForestAreaCodeResourceAssembler();
+    return ra.toEntity(code);
+  }
+
+  private GeneralScopeCodeModel toGeneralScopeCodeModel(GeneralScopeCodeEntity code) {
+ 
+    GeneralScopeCodeResourceAssembler ra = new GeneralScopeCodeResourceAssembler();
+    return ra.toModel(code);
+  }
+
+  private GeneralScopeCodeEntity toGeneralScopeCodeEntity(GeneralScopeCodeModel code) {
+ 
+    GeneralScopeCodeResourceAssembler ra = new GeneralScopeCodeResourceAssembler();
+    return ra.toEntity(code);
   }
 }
