@@ -3,18 +3,14 @@ package ca.bc.gov.nrs.wfprev.data.assemblers;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
 import org.springframework.stereotype.Component;
 
-import ca.bc.gov.nrs.wfprev.data.model.GeneralScopeCodeEntity;
 import ca.bc.gov.nrs.wfprev.common.enums.CodeTables;
 import ca.bc.gov.nrs.wfprev.controllers.CodesController;
-import ca.bc.gov.nrs.wfprev.data.resources.GeneralScopeCodeModel;
+import ca.bc.gov.nrs.wfprev.data.entities.GeneralScopeCodeEntity;
+import ca.bc.gov.nrs.wfprev.data.models.GeneralScopeCodeModel;
 
 @Component
 public class GeneralScopeCodeResourceAssembler extends RepresentationModelAssemblerSupport<GeneralScopeCodeEntity, GeneralScopeCodeModel> {

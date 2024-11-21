@@ -1,4 +1,4 @@
-package ca.bc.gov.nrs.wfprev.data.model;
+package ca.bc.gov.nrs.wfprev.data.entities;
 
 import java.io.Serializable;
 import java.math.BigDecimal;

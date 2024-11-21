@@ -7,15 +7,15 @@ import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
 import org.springframework.stereotype.Component;
 
-import ca.bc.gov.nrs.wfprev.data.model.ForestAreaCodeEntity;
-import ca.bc.gov.nrs.wfprev.data.model.GeneralScopeCodeEntity;
-import ca.bc.gov.nrs.wfprev.data.model.ProjectEntity;
-import ca.bc.gov.nrs.wfprev.data.model.ProjectTypeCodeEntity;
 import ca.bc.gov.nrs.wfprev.controllers.ProjectController;
-import ca.bc.gov.nrs.wfprev.data.resources.ForestAreaCodeModel;
-import ca.bc.gov.nrs.wfprev.data.resources.GeneralScopeCodeModel;
-import ca.bc.gov.nrs.wfprev.data.resources.ProjectModel;
-import ca.bc.gov.nrs.wfprev.data.resources.ProjectTypeCodeModel;
+import ca.bc.gov.nrs.wfprev.data.entities.ForestAreaCodeEntity;
+import ca.bc.gov.nrs.wfprev.data.entities.GeneralScopeCodeEntity;
+import ca.bc.gov.nrs.wfprev.data.entities.ProjectEntity;
+import ca.bc.gov.nrs.wfprev.data.entities.ProjectTypeCodeEntity;
+import ca.bc.gov.nrs.wfprev.data.models.ForestAreaCodeModel;
+import ca.bc.gov.nrs.wfprev.data.models.GeneralScopeCodeModel;
+import ca.bc.gov.nrs.wfprev.data.models.ProjectModel;
+import ca.bc.gov.nrs.wfprev.data.models.ProjectTypeCodeModel;
 
 @Component
 public class ProjectResourceAssembler extends RepresentationModelAssemblerSupport<ProjectEntity, ProjectModel> {

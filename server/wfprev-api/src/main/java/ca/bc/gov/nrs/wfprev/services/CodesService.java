@@ -11,15 +11,15 @@ import ca.bc.gov.nrs.wfprev.common.services.CommonService;
 import ca.bc.gov.nrs.wfprev.data.assemblers.ForestAreaCodeResourceAssembler;
 import ca.bc.gov.nrs.wfprev.data.assemblers.GeneralScopeCodeResourceAssembler;
 import ca.bc.gov.nrs.wfprev.data.assemblers.ProjectTypeCodeResourceAssembler;
-import ca.bc.gov.nrs.wfprev.data.model.ForestAreaCodeEntity;
-import ca.bc.gov.nrs.wfprev.data.model.GeneralScopeCodeEntity;
-import ca.bc.gov.nrs.wfprev.data.model.ProjectTypeCodeEntity;
+import ca.bc.gov.nrs.wfprev.data.entities.ForestAreaCodeEntity;
+import ca.bc.gov.nrs.wfprev.data.entities.GeneralScopeCodeEntity;
+import ca.bc.gov.nrs.wfprev.data.entities.ProjectTypeCodeEntity;
+import ca.bc.gov.nrs.wfprev.data.models.ForestAreaCodeModel;
+import ca.bc.gov.nrs.wfprev.data.models.GeneralScopeCodeModel;
+import ca.bc.gov.nrs.wfprev.data.models.ProjectTypeCodeModel;
 import ca.bc.gov.nrs.wfprev.data.repositories.ForestAreaCodeRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.GeneralScopeCodeRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.ProjectTypeCodeRepository;
-import ca.bc.gov.nrs.wfprev.data.resources.ForestAreaCodeModel;
-import ca.bc.gov.nrs.wfprev.data.resources.GeneralScopeCodeModel;
-import ca.bc.gov.nrs.wfprev.data.resources.ProjectTypeCodeModel;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
