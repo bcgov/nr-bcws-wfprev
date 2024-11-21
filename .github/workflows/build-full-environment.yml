@@ -25,14 +25,7 @@ on:
         description: Additional tag to add to built images
 
 jobs: 
-  wfprev-ui:
-    uses: ./.github/workflows/mvn-build.yml
-    secrets: inherit
-    with:
-      COMPONENT_NAME: wfprev-war
-      TAG: latest
-      COMPONENT_TYPE: client
-      
+    
   wfprev-api:
     uses: ./.github/workflows/mvn-build.yml
     secrets: inherit
@@ -49,8 +42,17 @@ jobs:
       
   terragrunt-deploy-dev:
     uses: ./.github/workflows/terragrunt-deploy.yml
-    needs: [wfprev-ui, wfprev-api, liquibase-build]
+    needs: [wfprev-api, liquibase-build]
     with:
       DEFAULT_APPLICATION_ENVIRONMENT: dev
       IMAGE_TAG: latest
     secrets: inherit
+
+  wfprev-ui:
+    uses: ./.github/workflows/client-build.yml
+    needs: [terragrunt-deploy-dev]
+    with:
+      DEFAULT_APPLICATION_ENVIRONMENT: dev
+      IMAGE_TAG: latest
+    secrets: inherit
+    

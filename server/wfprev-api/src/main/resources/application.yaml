@@ -27,7 +27,7 @@ logging:
       hibernate:
         SQL: DEBUG
       type:
-        description:
+        descriptor:
           sql:
             BasicBinder: TRACE
 
@@ -40,15 +40,10 @@ management:
     health:
       show-details: always
       group:
-        custom: 
+        custom:
           include: diskSpace,ping
           show-components: WHEN_AUTHORIZED
           show-details: WHEN_AUTHORIZED
-
-springdoc:
-  show-actuator: true
-  api-docs:
-    path: /openapi
 
 security:
   oauth:
