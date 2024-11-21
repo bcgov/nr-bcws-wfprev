@@ -7,10 +7,10 @@ import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
 import org.springframework.stereotype.Component;
 
-import ca.bc.gov.nrs.wfprev.data.model.ProjectTypeCodeEntity;
 import ca.bc.gov.nrs.wfprev.common.enums.CodeTables;
 import ca.bc.gov.nrs.wfprev.controllers.CodesController;
-import ca.bc.gov.nrs.wfprev.data.resources.ProjectTypeCodeModel;
+import ca.bc.gov.nrs.wfprev.data.entities.ProjectTypeCodeEntity;
+import ca.bc.gov.nrs.wfprev.data.models.ProjectTypeCodeModel;
 
 @Component
 public class ProjectTypeCodeResourceAssembler extends RepresentationModelAssemblerSupport<ProjectTypeCodeEntity, ProjectTypeCodeModel> {

@@ -1,4 +1,5 @@
-package ca.bc.gov.nrs.wfprev.data.model;
+package ca.bc.gov.nrs.wfprev.data.entities;
+
 import java.io.Serializable;
 
 import java.util.Date;
@@ -22,20 +23,20 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "project_type_code")
+@Table(name = "forest_area_code")
 @JsonIgnoreProperties(ignoreUnknown = false)
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProjectTypeCodeEntity implements Serializable {
+public class ForestAreaCodeEntity implements Serializable {
   private static final long serialVersionUID = 1L;
   
   @Id
-  @Column(name = "project_type_code")
+  @Column(name = "forest_area_code")
   @NotNull
-  private String projectTypeCode;
+  private String forestAreaCode;
 
   @NotNull
   @Column(name = "description", length = 200)

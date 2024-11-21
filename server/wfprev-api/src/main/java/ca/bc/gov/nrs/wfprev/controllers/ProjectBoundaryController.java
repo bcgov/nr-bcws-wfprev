@@ -18,7 +18,7 @@ import ca.bc.gov.nrs.common.wfone.rest.resource.HeaderConstants;
 import ca.bc.gov.nrs.common.wfone.rest.resource.MessageListRsrc;
 import ca.bc.gov.nrs.wfone.common.service.api.ServiceException;
 import ca.bc.gov.nrs.wfprev.common.controllers.CommonController;
-import ca.bc.gov.nrs.wfprev.data.resources.ProjectBoundaryModel;
+import ca.bc.gov.nrs.wfprev.data.models.ProjectBoundaryModel;
 import ca.bc.gov.nrs.wfprev.services.ProjectBoundaryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

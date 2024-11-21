@@ -6,11 +6,9 @@ import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
 import org.springframework.stereotype.Component;
 
-import ca.bc.gov.nrs.wfprev.data.model.ProgramAreaEntity;
-import ca.bc.gov.nrs.wfprev.common.enums.CodeTables;
-import ca.bc.gov.nrs.wfprev.controllers.CodesController;
 import ca.bc.gov.nrs.wfprev.controllers.ProgramAreaController;
-import ca.bc.gov.nrs.wfprev.data.resources.ProgramAreaModel;
+import ca.bc.gov.nrs.wfprev.data.entities.ProgramAreaEntity;
+import ca.bc.gov.nrs.wfprev.data.models.ProgramAreaModel;
 
 @Component
 public class ProgramAreaResourceAssembler extends RepresentationModelAssemblerSupport<ProgramAreaEntity, ProgramAreaModel> {
@@ -58,7 +56,7 @@ public class ProgramAreaResourceAssembler extends RepresentationModelAssemblerSu
   {
     CollectionModel<ProgramAreaModel> resources = super.toCollectionModel(entities);
      
-    resources.add(linkTo(methodOn(CodesController.class).getCodes(CodeTables.GENERAL_SCOPE.toString())).withSelfRel());
+    resources.add(linkTo(methodOn(ProgramAreaController.class).getAllProgramAreas()).withSelfRel());
      
     return resources;
   }

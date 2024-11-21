@@ -1,4 +1,4 @@
-package ca.bc.gov.nrs.wfprev.data.resources;
+package ca.bc.gov.nrs.wfprev.data.models;
 
 import java.math.BigDecimal;
 import java.util.Date;

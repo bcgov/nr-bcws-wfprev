@@ -10,9 +10,9 @@ import org.springframework.stereotype.Component;
 import ca.bc.gov.nrs.wfone.common.service.api.ServiceException;
 import ca.bc.gov.nrs.wfprev.common.services.CommonService;
 import ca.bc.gov.nrs.wfprev.data.assemblers.ProjectBoundaryResourceAssembler;
-import ca.bc.gov.nrs.wfprev.data.model.ProjectBoundaryEntity;
+import ca.bc.gov.nrs.wfprev.data.entities.ProjectBoundaryEntity;
+import ca.bc.gov.nrs.wfprev.data.models.ProjectBoundaryModel;
 import ca.bc.gov.nrs.wfprev.data.repositories.ProjectBoundaryRepository;
-import ca.bc.gov.nrs.wfprev.data.resources.ProjectBoundaryModel;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 

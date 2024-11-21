@@ -7,9 +7,9 @@ import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
 import org.springframework.stereotype.Component;
 
-import ca.bc.gov.nrs.wfprev.data.model.ProjectBoundaryEntity;
 import ca.bc.gov.nrs.wfprev.controllers.ProjectBoundaryController;
-import ca.bc.gov.nrs.wfprev.data.resources.ProjectBoundaryModel;
+import ca.bc.gov.nrs.wfprev.data.entities.ProjectBoundaryEntity;
+import ca.bc.gov.nrs.wfprev.data.models.ProjectBoundaryModel;
 
 @Component
 public class ProjectBoundaryResourceAssembler extends RepresentationModelAssemblerSupport<ProjectBoundaryEntity, ProjectBoundaryModel> {
