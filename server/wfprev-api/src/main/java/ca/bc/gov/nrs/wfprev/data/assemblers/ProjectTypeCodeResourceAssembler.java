@@ -42,7 +42,7 @@ public class ProjectTypeCodeResourceAssembler extends RepresentationModelAssembl
      
     resource.add(linkTo(
         methodOn(CodesController.class)
-        .getCodeById(CodeTables.PROJECT_TYPE.toString(), entity.getProjectTypeCode()))
+        .getCodeById(CodeTables.PROJECT_TYPE_CODE, entity.getProjectTypeCode()))
         .withSelfRel());
      
       resource.setProjectTypeCode(entity.getProjectTypeCode());
@@ -64,7 +64,7 @@ public class ProjectTypeCodeResourceAssembler extends RepresentationModelAssembl
   {
     CollectionModel<ProjectTypeCodeModel> resources = super.toCollectionModel(entities);
      
-    resources.add(linkTo(methodOn(CodesController.class).getCodes(CodeTables.PROJECT_TYPE.toString())).withSelfRel());
+    resources.add(linkTo(methodOn(CodesController.class).getCodes(CodeTables.PROJECT_TYPE_CODE)).withSelfRel());
      
     return resources;
   }
