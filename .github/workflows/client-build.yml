@@ -136,7 +136,7 @@ jobs:
         echo "CLOUDFRONT_DISTRIBUTION_ID=$CLOUDFRONT_ID" >> "$GITHUB_ENV"
 
         # Get Github Actions Account ID with error checking
-        GITHUB_ACTIONS_ACCOUNT_ID=$(terragrunt output -raw github_actions_account_id)
+        GITHUB_ACTIONS_ACCOUNT_ID=$(terragrunt output -raw github_actions_account_id | grep -o '^[a-zA-Z0-9-]\+')
         echo "GitHub Actions Account ID: $GITHUB_ACTIONS_ACCOUNT_ID"
         if [ -z "$GITHUB_ACTIONS_ACCOUNT_ID" ]; then
           echo "Error: Failed to get Github Actions Account ID"
@@ -145,7 +145,7 @@ jobs:
         echo "GITHUB_ACTIONS_ACCOUNT_ID=$GITHUB_ACTIONS_ACCOUNT_ID" >> "$GITHUB_ENV"
 
         # Get Github Actions Role Name with error checking
-        GITHUB_ACTIONS_ROLE_NAME=$(terragrunt output -raw github_actions_role_name)
+        GITHUB_ACTIONS_ROLE_NAME=$(terragrunt output -raw github_actions_role_name | grep -o '^[a-zA-Z0-9-]\+')
         echo "GitHub Actions Role Name: $GITHUB_ACTIONS_ROLE_NAME"
         if [ -z "$GITHUB_ACTIONS_ROLE_NAME" ]; then
           echo "Error: Failed to get Github Actions Role Name"
