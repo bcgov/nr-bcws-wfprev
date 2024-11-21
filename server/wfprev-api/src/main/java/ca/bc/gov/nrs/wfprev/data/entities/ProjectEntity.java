@@ -53,7 +53,6 @@ public class ProjectEntity implements Serializable {
   @ManyToOne(fetch = FetchType.EAGER, optional = true)
 	@JoinColumn(name="project_type_code")
   private ProjectTypeCodeEntity projectTypeCode;
-
   @Column(name = "project_number", columnDefinition="Decimal(10)")
   @NotNull
   private Integer projectNumber;
