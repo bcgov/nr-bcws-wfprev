@@ -128,7 +128,7 @@ jobs:
 
         # Get CloudFront ID with error checking
         CLOUDFRONT_ID=$(terragrunt output -raw cloudfront_distribution_id | grep -o '^[a-zA-Z0-9-]\+')
-        echo $CLOUDFRONT_ID
+        echo "CloudFront ID: $CLOUDFRONT_ID"
         if [ -z "$CLOUDFRONT_ID" ]; then
           echo "Error: Failed to get CloudFront Distribution ID"
           exit 1
@@ -137,8 +137,8 @@ jobs:
 
         # Get Github Actions Account ID with error checking
         GITHUB_ACTIONS_ACCOUNT_ID=$(terragrunt output -raw github_actions_account_id)
-        echo $GITHUB_ACTIONS_ACCOUNT_ID
-        if [ -z "$GITHUB_ACTIONS_ACCOUNT_ID ]; then
+        echo "GitHub Actions Account ID: $GITHUB_ACTIONS_ACCOUNT_ID"
+        if [ -z "$GITHUB_ACTIONS_ACCOUNT_ID" ]; then
           echo "Error: Failed to get Github Actions Account ID"
           exit 1
         fi
@@ -146,8 +146,8 @@ jobs:
 
         # Get Github Actions Role Name with error checking
         GITHUB_ACTIONS_ROLE_NAME=$(terragrunt output -raw github_actions_role_name)
-        echo $GITHUB_ACTIONS_ROLE_NAME
-        if [ -z "$GITHUB_ACTIONS_ROLE_NAME ]; then
+        echo "GitHub Actions Role Name: $GITHUB_ACTIONS_ROLE_NAME"
+        if [ -z "$GITHUB_ACTIONS_ROLE_NAME" ]; then
           echo "Error: Failed to get Github Actions Role Name"
           exit 1
         fi
@@ -156,7 +156,7 @@ jobs:
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v4
       with:
-        role-to-assume:  arn:aws:iam::${{ env.GITHUB_ACTIONS_ACCOUNT_ID}}:role/${{ env.GITHUB_ACTIONS_ROLE_NAME }}
+        role-to-assume:  arn:aws:iam::${{ env.GITHUB_ACTIONS_ACCOUNT_ID }}:role/${{ env.GITHUB_ACTIONS_ROLE_NAME }}
         role-session-name: wfprev-push-s3
         aws-region: ca-central-1
 
