@@ -29,7 +29,7 @@ docker run --name wfprev-postgres \
 
 ```
 
-Note: Mac users will get the following error, jsut ignore for now ```WARNING: The requested image's platform (linux/amd64) does not match the detected host platform (linux/arm64/v8) and no specific platform was requested
+Note: Mac users will get the following error, ignore for now ```WARNING: The requested image's platform (linux/amd64) does not match the detected host platform (linux/arm64/v8) and no specific platform was requested
 f0de92debad131b48e2d72a9d211bafaa2b8bcb800e5077bb59f3225e5729086```
 
 And build the database model with Liquibase:
