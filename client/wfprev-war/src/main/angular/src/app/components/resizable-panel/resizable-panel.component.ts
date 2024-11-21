@@ -12,7 +12,7 @@ export class ResizablePanelComponent {
   panelWidth: string = '50vw';  // Default panel width at 50%
   breakpoints = [5, 50, 90];
   @Output() panelResized = new EventEmitter<void>();
-  
+
   // Method to resize the panel based on given percentage
   resizePanel(percentage: number): void {
     this.panelWidth = `${percentage}vw`;  // Resize based on viewport width
