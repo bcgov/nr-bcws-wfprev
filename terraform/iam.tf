@@ -142,8 +142,14 @@ resource "aws_iam_role" "github_actions_role" {
   })
 }
 
-output "github_actions_role_arn" {
-  value       = aws_iam_role.github_actions_role.arn
-  description = "ARN of the GitHub Actions role to assume."
+# Output for the AWS Account ID
+output "github_actions_account_id" {
+  value       = regex("^arn:aws:iam::([0-9]+):", aws_iam_role.github_actions_role.arn)[0]
+  description = "AWS Account ID associated with the GitHub Actions role."
 }
 
+# Output for the Role Name
+output "github_actions_role_name" {
+  value       = regex(":role/([^:]+)$", aws_iam_role.github_actions_role.arn)[0]
+  description = "Name of the GitHub Actions role."
+}
