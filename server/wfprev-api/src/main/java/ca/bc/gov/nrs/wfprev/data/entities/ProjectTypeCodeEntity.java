@@ -1,9 +1,7 @@
-package ca.bc.gov.nrs.wfprev.data.model;
-
+package ca.bc.gov.nrs.wfprev.data.entities;
 import java.io.Serializable;
-import java.util.Date;
 
-import org.hibernate.annotations.UuidGenerator;
+import java.util.Date;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
@@ -11,11 +9,9 @@ import org.springframework.data.annotation.LastModifiedDate;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import jakarta.persistence.Id;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
 import jakarta.validation.constraints.NotNull;
@@ -26,23 +22,35 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "program_area")
+@Table(name = "project_type_code")
 @JsonIgnoreProperties(ignoreUnknown = false)
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProgramAreaEntity implements Serializable {
+public class ProjectTypeCodeEntity implements Serializable {
+  private static final long serialVersionUID = 1L;
+  
   @Id
-  @UuidGenerator
-  @GeneratedValue(strategy = GenerationType.UUID)
-  @Column(name = "program_area_guid")
-  private String programAreaGuid;
+  @Column(name = "project_type_code")
+  @NotNull
+  private String projectTypeCode;
 
   @NotNull
-	@Column(name="program_area_name", length = 100)
-	private String programAreaName;
+  @Column(name = "description", length = 200)
+  private String description;
+
+  @Column(name = "display_order", length = 3)
+  private Integer displayOrder;
+
+  @NotNull
+  @Column(name = "effective_date", length = 200)
+  private Date effectiveDate;
+
+  @NotNull
+  @Column(name = "expiry_date", length = 200)
+  private Date expiryDate;
 
   @Column(name = "revision_count", columnDefinition="Decimal(10) default '0'")
   @NotNull

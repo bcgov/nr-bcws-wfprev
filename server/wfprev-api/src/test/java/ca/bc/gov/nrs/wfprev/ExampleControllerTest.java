@@ -19,8 +19,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import ca.bc.gov.nrs.wfprev.controllers.ExampleController;
-import ca.bc.gov.nrs.wfprev.data.resources.ExampleCodeModel;
-import ca.bc.gov.nrs.wfprev.data.resources.ExampleModel;
+import ca.bc.gov.nrs.wfprev.data.models.ExampleCodeModel;
+import ca.bc.gov.nrs.wfprev.data.models.ExampleModel;
 import ca.bc.gov.nrs.wfprev.services.ExampleService;
 
 @WebMvcTest(ExampleController.class)
