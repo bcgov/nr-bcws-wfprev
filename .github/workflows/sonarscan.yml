@@ -21,6 +21,17 @@ jobs:
           fetch-depth: 0
           submodules: 'recursive'
           ref: ${{ github.head_ref }}
+          
+      - name: Debug checkout info
+        run: |
+            echo "Current branch: ${{ github.ref_name }}"
+            echo "Commit SHA: ${{ github.sha }}"
+            echo "Current directory contents:"
+            cd ./client/wfprev-war/src/main/angular
+            echo "Angular directory contents:"
+            ls -la
+            echo "Test file contents:"
+            cat src/app/components/list/list.component.spec.ts
      
       - name: Set up JDK 21
         uses: actions/setup-java@v4
@@ -42,12 +53,18 @@ jobs:
           cache: 'yarn'
           cache-dependency-path: './client/wfprev-war/src/main/angular/yarn.lock'
      
+      - name: Clear cache
+        working-directory: ./client/wfprev-war/src/main/angular
+        run: |
+          rm -rf node_modules
+          yarn cache clean
+
       - name: Install dependencies and Angular CLI
         working-directory: ./client/wfprev-war/src/main/angular
         run: |
           yarn install
           yarn global add @angular/cli
-     
+
       - name: Run client tests with coverage
         working-directory: ./client/wfprev-war/src/main/angular
         run: $(yarn global bin)/ng test --no-watch --code-coverage

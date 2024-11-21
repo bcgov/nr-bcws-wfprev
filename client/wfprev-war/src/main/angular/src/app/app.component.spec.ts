@@ -8,7 +8,7 @@ import { Location } from '@angular/common';
 describe('AppComponent', () => {
   let router: Router;
   let location: Location;
-  let fixture: ComponentFixture<AppComponent>;  
+  let fixture: ComponentFixture<AppComponent>;
   let app: AppComponent;
 
   beforeEach(async () => {
@@ -62,13 +62,13 @@ describe('AppComponent', () => {
 
   it('should add "active" class to the map menu item when activeRoute is "map"', () => {
     app.activeRoute = 'map';
-    fixture.detectChanges(); // Ensure the DOM updates
-  
+    fixture.detectChanges();
+
     const mapMenuItem = fixture.debugElement.query(
-      By.css('span:nth-child(2)') // Use text content to identify the span
+      By.css('.span-class[class="span-class active"]')  // Or more simply: '.span-class.active'
     );
-  
-    expect(mapMenuItem).not.toBeNull(); // Ensure the element exists
+
+    expect(mapMenuItem).not.toBeNull();
     expect(mapMenuItem.nativeElement.classList).toContain('active');
   });
 });
