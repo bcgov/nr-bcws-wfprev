@@ -18,8 +18,8 @@ import lombok.NoArgsConstructor;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
-@JsonRootName(value = "programArea")
-@Relation(collectionRelation = "programArea")
+@JsonRootName(value = "project")
+@Relation(collectionRelation = "project")
 @JsonInclude(Include.NON_NULL)
 @Builder
 @AllArgsConstructor
