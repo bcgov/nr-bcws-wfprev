@@ -12,6 +12,7 @@ import ca.bc.gov.nrs.common.wfone.rest.resource.MessageListRsrc;
 import ca.bc.gov.nrs.wfone.common.service.api.ServiceException;
 import ca.bc.gov.nrs.wfprev.common.controllers.CommonController;
 import ca.bc.gov.nrs.wfprev.common.entities.CommonModel;
+import ca.bc.gov.nrs.wfprev.common.enums.CodeTables;
 import ca.bc.gov.nrs.wfprev.services.CodesService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -57,6 +58,9 @@ public class CodesController extends CommonController {
         case "generalScopeCodes":
           response =  ok(codesService.getAllGeneralScopeCodes());
         break;
+        case "projectTypeCodes":
+          response =  ok(codesService.getAllProjectTypeCodes());
+        break;
         default:
           response = internalServerError();
       }
@@ -89,6 +93,9 @@ public class CodesController extends CommonController {
         break;
         case "generalScopeCodes":
           resource =  codesService.getGeneralScopeCodeById(id);
+        break;
+        case "projectTypeCodes":
+          resource =  codesService.getProjectTypeCodeById(id);
         break;
         default:
         resource = null;
