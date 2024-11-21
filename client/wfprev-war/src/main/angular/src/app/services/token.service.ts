@@ -175,6 +175,10 @@ export class TokenService {
     }
   }
 
+  public validateToken() {
+    
+  }
+
   private async initAndEmit(): Promise<void> {
     const config = this.appConfigService.getConfig();
     

@@ -32,12 +32,16 @@ export class PrevAuthGuard extends AuthGuard {
         route: ActivatedRouteSnapshot,
         state: RouterStateSnapshot,
     ): Observable<boolean> {
+        console.log('activate')
         if (!window.navigator.onLine) {
+            console.log('offline')
             return of(false);
         }
         if (route?.data?.['scopes']?.length > 0) {
+            console.log('scopes')
             return this.getTokenInfo(route);
         } else {
+            console.log('returning true')
             return of(true);
         }
     }
@@ -79,6 +83,7 @@ export class PrevAuthGuard extends AuthGuard {
                 }),
             );
         } else if (this.canAccessRoute(route.data.scopes, this.tokenService)) {
+            // I think it's in here where I need to do the call to the API.
             return of(true);
         } else {
             this.redirectToErrorPage();
