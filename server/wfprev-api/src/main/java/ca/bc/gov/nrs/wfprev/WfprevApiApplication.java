@@ -17,6 +17,7 @@ public class WfprevApiApplication {
 	 * Run the application as a JAR
 	 */
 	public static void main(String[] args) {
+		System.out.println("simple test to validate scanning is running");
 		SpringApplication.run(WfprevApiApplication.class, args);
 	}
 
