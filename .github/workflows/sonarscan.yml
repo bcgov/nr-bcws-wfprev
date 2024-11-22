@@ -8,7 +8,7 @@ env:
 on:
   # push:
   #   branches: [ main, feature/* ]
-  pull_request_target:
+  pull_request:
     branches: [ main, feature/* ]
     types: [opened, synchronize, reopened]
 jobs:
