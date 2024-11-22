@@ -2,5 +2,11 @@
 :root {
     --header-height: 72px;
     --wf-header-background-color: #003366;
-    --wf-header-wildfire1-logo-height: 40px
+    --wf-header-wildfire1-logo-height: 40px;
+    --wf-header-border-color:#FCBA19;
+    --wf-font-family-main: "BCSans", "Noto Sans", Verdana, Arial, sans-serif
+}
+
+body {
+    margin: 0;
 }
