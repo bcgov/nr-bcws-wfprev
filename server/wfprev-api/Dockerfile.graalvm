@@ -29,15 +29,6 @@ RUN apt-get update && apt-get install -y \
 # Copy the native executable from builder stage
 COPY --from=builder /app/target/wfprev-api /app/
 
-# Environment variables for database and security
-ENV WFPREV_DATASOURCE_URL=jdbc:postgresql://host.docker.internal:5432/wfprev \
-    WFPREV_DATASOURCE_USERNAME=wfprev \
-    WFPREV_DATASOURCE_PASSWORD=password \
-    WFPREV_CLIENT_ID=WFNEWS-REST \
-    WFPREV_CLIENT_SECRET=200e68112cc360193b572b9110a9b8d2 \
-    WEBADE_OAUTH2_CHECK_TOKEN_URL=https://wfappsi.nrs.gov.bc.ca/pub/oauth2/v1/check_token \
-    WEBADE_OAUTH2_CHECK_AUTHORIZE_URL=https://wfappsi.nrs.gov.bc.ca/ext/oauth2/v1/oauth/authorize
-
 # Expose the port your application uses
 EXPOSE 8080
 
