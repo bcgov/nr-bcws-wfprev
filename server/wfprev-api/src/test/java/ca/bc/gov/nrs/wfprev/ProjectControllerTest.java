@@ -312,6 +312,4 @@ class ProjectControllerTest {
         verify(projectService, times(1)).deleteProject(projectGuid);
         Assertions.assertEquals(404, result.andReturn().getResponse().getStatus());
     }
-
-
 }
