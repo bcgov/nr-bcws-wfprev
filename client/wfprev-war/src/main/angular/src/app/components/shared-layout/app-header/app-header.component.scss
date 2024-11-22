@@ -9,7 +9,8 @@
     border-bottom-style: solid;
     border-bottom-width: 2px;
     padding: 0px 8px;
-  
+    font-family: var(--wf-font-family-main);
+
     /* BC Logo Section */
     .bc-logo {
       display: flex;
@@ -31,8 +32,36 @@
       .app-environment {
         color: rgb(252, 186, 25);
         margin-left: 20px;
-        font-family: var(--wf-font-family-main);
       }
+    }
+    /* Logo and Title */
+
+    .app-logo-and-title{
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        .wildfire1-logo{
+            display: inline-block;
+            background-image: url('./../../../../assets/wildfire-one-logo-text-horizontal-light.png');
+            background-size: auto var(--wf-header-wildfire1-logo-height);
+            background-position: center;
+            background-repeat: no-repeat;
+            height: var(--wf-header-wildfire1-logo-height);
+            width: calc(var(--wf-header-wildfire1-logo-height) * 4);
+        }
+        .title {
+            color:  white;
+            font-size: 18px;
+            white-space: nowrap;
+        }
+        .environment {
+            font-size: 15px;
+            color: var( --wf-header-environment-color );
+            margin-bottom: 10px;
+            margin-left: 5px;
+        }
     }
   
     /* User Menu Section */
@@ -55,7 +84,6 @@
         display: flex;
         align-items: center;
         color: white;
-        font-family: var(--wf-font-family-main);
   
         mat-icon {
           margin-right: 5px;
@@ -63,7 +91,6 @@
       }
 
       .training {
-        font-family: var(--wf-font-family-main);
         white-space: nowrap;
         color: white;
         &.can-click:hover {

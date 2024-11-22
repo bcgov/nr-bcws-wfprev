@@ -21,10 +21,12 @@ export class AppHeaderComponent {
   }
 
 
-  environment:string = 'dev'
-  title:string = 'WFPREV'
+  environment:string = 'DEV'
+  title:string = 'PREVENTION'
+  currentUser: string = 'User_1'
 
   onLogoutClick(){
+    //clear token will be implemented after authorization piece done
     // this.tokenService.clearLocalStorageToken();
   }
 
