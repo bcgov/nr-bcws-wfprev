@@ -16,6 +16,8 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import ca.bc.gov.nrs.wfprev.controllers.ProjectController;
@@ -57,12 +59,37 @@ class ProjectControllerTest {
 
   @Test
   @WithMockUser
-  void testCreateProject() throws Exception {
+  void testCreateUpdateProject() throws Exception {
     ProjectModel project = new ProjectModel();
     when(projectService.createOrUpdateProject(project)).thenReturn(project);
 
     mockMvc.perform(post("/projects", project)
            .contentType(MediaType.APPLICATION_JSON))
            .andExpect(status().isCreated());
+
+
+    project.setClosestCommunityName("Test");
+    when(projectService.createOrUpdateProject(project)).thenReturn(project);
+
+    mockMvc.perform(put("/projects", project)
+           .contentType(MediaType.APPLICATION_JSON))
+           .andExpect(status().isCreated());
+  }
+
+  @Test
+  @WithMockUser
+  void testDeleteProject() throws Exception {
+    ProjectModel project = new ProjectModel();
+    when(projectService.createOrUpdateProject(project)).thenReturn(project);
+
+    mockMvc.perform(post("/projects", project)
+           .contentType(MediaType.APPLICATION_JSON))
+           .andExpect(status().isCreated());
+
+    when(projectService.deleteProject(project.getProjectGuid())).thenReturn(null);
+
+    mockMvc.perform(delete("/projects/{id}", project.getProjectGuid())
+           .contentType(MediaType.APPLICATION_JSON))
+           .andExpect(status().isOk());
   }
 }
