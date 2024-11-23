@@ -48,3 +48,6 @@ Thumbs.db
 
 # Express node_modules
 backend/node_modules/
+
+#yarnlock
+wfprev-war/src/main/angular/yarn.lock

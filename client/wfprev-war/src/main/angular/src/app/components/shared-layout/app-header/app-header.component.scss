@@ -1,0 +1,109 @@
+.header-container {
+    cursor: pointer;
+    height: var(--header-height);
+    background-color: var(--wf-header-background-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: var(--wf-header-border-color);
+    border-bottom-style: solid;
+    border-bottom-width: 2px;
+    padding: 0px 8px;
+    font-family: var(--wf-font-family-main);
+
+    /* BC Logo Section */
+    .bc-logo {
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+      padding-left: var(--wf-gutter);
+      overflow-x: visible;
+  
+      .bcwfservice-logo {
+        display: inline-block;
+        background-image: url('./../../../../assets/bcwfservice-logo.png');
+        background-size: auto var(--wf-header-wildfire1-logo-height);
+        background-position: center;
+        background-repeat: no-repeat;
+        height: var(--wf-header-wildfire1-logo-height);
+        width: calc(var(--wf-header-wildfire1-logo-height) * 4);
+      }
+  
+      .app-environment {
+        color: rgb(252, 186, 25);
+        margin-left: 20px;
+      }
+    }
+    /* Logo and Title */
+
+    .app-logo-and-title{
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        .wildfire1-logo{
+            display: inline-block;
+            background-image: url('./../../../../assets/wildfire-one-logo-text-horizontal-light.png');
+            background-size: auto var(--wf-header-wildfire1-logo-height);
+            background-position: center;
+            background-repeat: no-repeat;
+            height: var(--wf-header-wildfire1-logo-height);
+            width: calc(var(--wf-header-wildfire1-logo-height) * 4);
+        }
+        .title {
+            color:  white;
+            font-size: 18px;
+            white-space: nowrap;
+        }
+        .environment {
+            font-size: 15px;
+            color: var( --wf-header-environment-color );
+            margin-bottom: 10px;
+            margin-left: 5px;
+        }
+    }
+  
+    /* User Menu Section */
+    .user-menu {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      height: 40px;
+      width: auto;
+      padding-right: var(--wf-gutter);
+
+      mat-icon{
+        font-size: 24px; /* Set the desired size */
+        height: 24px;
+        width: 24px;
+        line-height: 24px;
+      }
+  
+      button {
+        display: flex;
+        align-items: center;
+        color: white;
+  
+        mat-icon {
+          margin-right: 5px;
+        }
+      }
+
+      .training {
+        white-space: nowrap;
+        color: white;
+        &.can-click:hover {
+            text-decoration: underline;
+        }
+    }
+    }
+  }
+
+  .separator {
+    border-left: 1px solid white;
+    width: 0;
+    height: 20px;
+    margin: 0 15px;
+}
+  
