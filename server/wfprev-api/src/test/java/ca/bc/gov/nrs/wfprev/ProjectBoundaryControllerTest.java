@@ -71,7 +71,7 @@ class ProjectBoundaryControllerTest {
 
     when(projectBoundaryService.getAllProjectBoundaries()).thenReturn(projectModel);
 
-    mockMvc.perform(get("/projectBoundaries/")
+    mockMvc.perform(get("/projectBoundaries")
            .contentType(MediaType.APPLICATION_JSON))
            .andExpect(status().isOk());
 
@@ -138,7 +138,7 @@ class ProjectBoundaryControllerTest {
 
     String json = gson.toJson(project);
     
-    mockMvc.perform(post("/projectBoundaries/")
+    mockMvc.perform(post("/projectBoundaries")
            .content(json)
            .contentType(MediaType.APPLICATION_JSON)
            .header("Authorization", "Bearer admin-token"))

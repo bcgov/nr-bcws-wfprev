@@ -60,7 +60,7 @@ class ProgramAreaControllerTest {
 
     when(programAreaService.getAllProgramAreas()).thenReturn(programAreaModel);
 
-    mockMvc.perform(get("/programAreas/")
+    mockMvc.perform(get("/programAreas")
            .contentType(MediaType.APPLICATION_JSON))
            .andExpect(status().isOk());
 
@@ -93,7 +93,7 @@ class ProgramAreaControllerTest {
 
     json = gson.toJson(programArea);
 
-    mockMvc.perform(put("/programAreas/")
+    mockMvc.perform(put("/programAreas/{id}")
            .content(json)
            .contentType(MediaType.APPLICATION_JSON)
            .header("Authorization", "Bearer admin-token"))
@@ -108,7 +108,7 @@ class ProgramAreaControllerTest {
 
     String json = gson.toJson(programArea);
 
-    mockMvc.perform(post("/programAreas/")
+    mockMvc.perform(post("/programAreas")
            .content(json)
            .contentType(MediaType.APPLICATION_JSON)
            .header("Authorization", "Bearer admin-token"))
