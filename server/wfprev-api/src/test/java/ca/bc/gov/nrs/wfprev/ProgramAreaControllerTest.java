@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.mockito.Mockito.when;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,10 @@ import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
+
+import com.nimbusds.jose.shaded.gson.Gson;
+import com.nimbusds.jose.shaded.gson.GsonBuilder;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -25,17 +30,26 @@ import ca.bc.gov.nrs.wfprev.data.models.ProgramAreaModel;
 import ca.bc.gov.nrs.wfprev.services.ProgramAreaService;
 
 @WebMvcTest(ProgramAreaController.class)
-@Import({SecurityConfig.class, TestcontainersConfiguration.class})
+@Import({TestSpringSecurity.class, TestcontainersConfiguration.class})
 class ProgramAreaControllerTest {
   @MockBean
   private ProgramAreaService programAreaService;
 
   @Autowired
   private MockMvc mockMvc;
+
+  private Gson gson;
+  
+  @BeforeEach
+  void setup() {
+    GsonBuilder builder = new GsonBuilder();
+    builder.serializeNulls().setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSX").serializeSpecialFloatingPointValues();
+    gson = builder.create();
+  }
   
   @Test
   @WithMockUser
-  void testGetProject() throws Exception {
+  void testGetProgramArea() throws Exception {
     String guid = UUID.randomUUID().toString();
 
     ProgramAreaModel programArea = new ProgramAreaModel();
@@ -46,7 +60,7 @@ class ProgramAreaControllerTest {
 
     when(programAreaService.getAllProgramAreas()).thenReturn(programAreaModel);
 
-    mockMvc.perform(get("/programAreas")
+    mockMvc.perform(get("/programAreas/")
            .contentType(MediaType.APPLICATION_JSON))
            .andExpect(status().isOk());
 
@@ -59,37 +73,52 @@ class ProgramAreaControllerTest {
 
   @Test
   @WithMockUser
-  void testCreateUpdateProject() throws Exception {
+  void testCreateUpdateProgramArea() throws Exception {
     ProgramAreaModel programArea = new ProgramAreaModel();
-    when(programAreaService.createOrUpdateProgramArea(programArea)).thenReturn(programArea);
-
-    mockMvc.perform(post("/programAreas", programArea)
-           .contentType(MediaType.APPLICATION_JSON))
-           .andExpect(status().isCreated());
-
-
     programArea.setProgramAreaName("Test");
     when(programAreaService.createOrUpdateProgramArea(programArea)).thenReturn(programArea);
 
-    mockMvc.perform(put("/programAreas", programArea)
-           .contentType(MediaType.APPLICATION_JSON))
+    String json = gson.toJson(programArea);
+
+    mockMvc.perform(post("/programAreas")
+    .content(json)
+    .contentType(MediaType.APPLICATION_JSON)
+    .accept("application/json")
+    .header("Authorization", "Bearer admin-token"))
+    .andExpect(status().isCreated());
+
+
+    programArea.setProgramAreaName("Test Change");
+    when(programAreaService.createOrUpdateProgramArea(programArea)).thenReturn(programArea);
+
+    json = gson.toJson(programArea);
+
+    mockMvc.perform(put("/programAreas/")
+           .content(json)
+           .contentType(MediaType.APPLICATION_JSON)
+           .header("Authorization", "Bearer admin-token"))
            .andExpect(status().isCreated());
   }
 
   @Test
   @WithMockUser
-  void testDeleteProject() throws Exception {
+  void testDeleteProgramArea() throws Exception {
     ProgramAreaModel programArea = new ProgramAreaModel();
     when(programAreaService.createOrUpdateProgramArea(programArea)).thenReturn(programArea);
 
-    mockMvc.perform(post("/programArea", programArea)
-           .contentType(MediaType.APPLICATION_JSON))
+    String json = gson.toJson(programArea);
+
+    mockMvc.perform(post("/programAreas/")
+           .content(json)
+           .contentType(MediaType.APPLICATION_JSON)
+           .header("Authorization", "Bearer admin-token"))
            .andExpect(status().isCreated());
 
     when(programAreaService.deleteProgramArea(programArea.getProgramAreaGuid())).thenReturn(null);
 
-    mockMvc.perform(delete("/programArea/{id}", programArea.getProgramAreaGuid())
-           .contentType(MediaType.APPLICATION_JSON))
+    mockMvc.perform(delete("/programAreas/{id}", programArea.getProgramAreaGuid())
+           .contentType(MediaType.APPLICATION_JSON)
+           .header("Authorization", "Bearer admin-token"))
            .andExpect(status().isOk());
   }
 }

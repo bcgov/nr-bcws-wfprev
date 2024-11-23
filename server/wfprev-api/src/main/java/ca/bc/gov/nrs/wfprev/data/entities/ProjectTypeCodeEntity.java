@@ -45,11 +45,11 @@ public class ProjectTypeCodeEntity implements Serializable {
   private Integer displayOrder;
 
   @NotNull
-  @Column(name = "effective_date", length = 200)
+  @Column(name = "effective_date")
   private Date effectiveDate;
 
   @NotNull
-  @Column(name = "expiry_date", length = 200)
+  @Column(name = "expiry_date")
   private Date expiryDate;
 
   @Column(name = "revision_count", columnDefinition="Decimal(10) default '0'")

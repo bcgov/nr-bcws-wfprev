@@ -45,7 +45,7 @@ public class ProjectController extends CommonController {
     this.projectService = projectService;
   }
 
-  @GetMapping("/")
+  @GetMapping
   @Operation(summary = "Fetch all Project Resources",
              description = "Fetch all Project Resources",
              security = @SecurityRequirement(name = "Webade-OAUTH2",
@@ -92,7 +92,7 @@ public class ProjectController extends CommonController {
     return response;
   }
 
-  @PostMapping("/")
+  @PostMapping
   @Operation(summary = "Create a Project Resource",
              description = "Create a Project Resource",
              security = @SecurityRequirement(name = "Webade-OAUTH2",
