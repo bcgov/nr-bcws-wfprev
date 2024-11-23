@@ -46,7 +46,7 @@ public class ProgramAreaController extends CommonController {
     this.programAreaService = programAreaService;
   }
 
-  @GetMapping("/")
+  @GetMapping
   @Operation(summary = "Fetch all Program Area Resources",
              description = "Fetch all Program Area Resources",
              security = @SecurityRequirement(name = "Webade-OAUTH2",
@@ -93,7 +93,7 @@ public class ProgramAreaController extends CommonController {
     return response;
   }
 
-  @PostMapping("/")
+  @PostMapping
   @Operation(summary = "Create a Program Area Resource",
              description = "Create a Program Area Resource",
              security = @SecurityRequirement(name = "Webade-OAUTH2",

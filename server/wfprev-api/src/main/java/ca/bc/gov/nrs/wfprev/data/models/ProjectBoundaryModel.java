@@ -37,6 +37,6 @@ public class ProjectBoundaryModel extends CommonModel<ProjectBoundaryModel> {
 	private String collectorName;
 	private BigDecimal boundarySizeHa;
 	private String boundaryComment;
-	private Point locationGeometry;
+	private Geometry locationGeometry;
 	private Geometry boundaryGeometry;
 }

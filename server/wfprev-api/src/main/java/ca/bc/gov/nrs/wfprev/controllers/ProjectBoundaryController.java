@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.UUID;
 
 import org.springframework.hateoas.CollectionModel;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -45,7 +46,7 @@ public class ProjectBoundaryController extends CommonController {
     this.projectBoundaryService = projectBoundaryService;
   }
 
-  @GetMapping("/")
+  @GetMapping
   @Operation(summary = "Fetch all Project Boundary Resources",
              description = "Fetch all Project Boundary Resources",
              security = @SecurityRequirement(name = "Webade-OAUTH2",
@@ -92,7 +93,7 @@ public class ProjectBoundaryController extends CommonController {
     return response;
   }
 
-  @PostMapping("/")
+  @PostMapping(consumes = "application/json")
   @Operation(summary = "Create a project boundary Resource",
              description = "Create a project boundary Resource",
              security = @SecurityRequirement(name = "Webade-OAUTH2",
