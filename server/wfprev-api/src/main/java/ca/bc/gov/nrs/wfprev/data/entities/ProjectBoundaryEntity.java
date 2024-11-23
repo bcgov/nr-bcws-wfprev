@@ -14,10 +14,9 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.Point;
 
-import ca.bc.gov.nrs.common.wfone.rest.resource.transformers.GeoJsonJacksonDeserializer;
-import ca.bc.gov.nrs.common.wfone.rest.resource.transformers.GeoJsonJacksonSerializer;
+import ca.bc.gov.nrs.wfprev.common.serializers.GeoJsonJacksonDeserializer;
+import ca.bc.gov.nrs.wfprev.common.serializers.GeoJsonJacksonSerializer;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -83,7 +82,7 @@ public class ProjectBoundaryEntity implements Serializable {
 	@JsonSerialize(using=GeoJsonJacksonSerializer.class)
 	@JsonDeserialize(using=GeoJsonJacksonDeserializer.class)
   @Column(name="location_geometry", columnDefinition = "geometry(Point,4326)")
-	public Point locationGeometry;
+	public Geometry locationGeometry;
 
 	@NotNull
 	@JsonSerialize(using=GeoJsonJacksonSerializer.class)
