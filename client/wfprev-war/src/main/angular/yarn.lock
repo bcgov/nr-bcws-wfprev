@@ -172,7 +172,7 @@
     ora "5.4.1"
     rxjs "7.8.1"
 
-"@angular/animations@^18.2.3", "@angular/animations@18.2.12":
+"@angular/animations@^18.0.0 || ^19.0.0", "@angular/animations@^18.2.12", "@angular/animations@18.2.12":
   version "18.2.12"
   resolved "https://registry.npmjs.org/@angular/animations/-/animations-18.2.12.tgz"
   integrity sha512-XcWH/VFQ1Rddhdqi/iU8lW3Qg96yVx1NPfrO5lhcSSvVUzYWTZ5r+jh3GqYqUgPWyEp1Kpw3FLsOgVcGcBWQkQ==
@@ -210,6 +210,15 @@
     vite "5.4.6"
     watchpack "2.4.1"
 
+"@angular/cdk@^18.2.14", "@angular/cdk@18.2.14":
+  version "18.2.14"
+  resolved "https://registry.npmjs.org/@angular/cdk/-/cdk-18.2.14.tgz"
+  integrity sha512-vDyOh1lwjfVk9OqoroZAP8pf3xxKUvyl+TVR8nJxL4c5fOfUFkD7l94HaanqKSRwJcI2xiztuu92IVoHn8T33Q==
+  dependencies:
+    tslib "^2.3.0"
+  optionalDependencies:
+    parse5 "^7.1.2"
+
 "@angular/cli@>=15.0.0 < 20.0.0", "@angular/cli@~18.2.3":
   version "18.2.12"
   resolved "https://registry.npmjs.org/@angular/cli/-/cli-18.2.12.tgz"
@@ -233,7 +242,7 @@
     symbol-observable "4.0.0"
     yargs "17.7.2"
 
-"@angular/common@^18.2.3", "@angular/common@>=15.0.0 < 20.0.0", "@angular/common@18.2.12":
+"@angular/common@^18.0.0 || ^19.0.0", "@angular/common@^18.2.3", "@angular/common@>=15.0.0 < 20.0.0", "@angular/common@18.2.12":
   version "18.2.12"
   resolved "https://registry.npmjs.org/@angular/common/-/common-18.2.12.tgz"
   integrity sha512-gI5o8Bccsi8ow8Wk2vG4Tw/Rw9LoHEA9j8+qHKNR/55SCBsz68Syg310dSyxy+sApJO2WiqIadr5VP36dlSUFw==
@@ -261,17 +270,24 @@
   dependencies:
     tslib "^2.3.0"
 
-"@angular/core@^18.2.3", "@angular/core@>=15.0.0 < 20.0.0", "@angular/core@18.2.12":
+"@angular/core@^18.0.0 || ^19.0.0", "@angular/core@^18.2.3", "@angular/core@>=15.0.0 < 20.0.0", "@angular/core@18.2.12":
   version "18.2.12"
   resolved "https://registry.npmjs.org/@angular/core/-/core-18.2.12.tgz"
   integrity sha512-wCf/OObwS6bpM60rk6bpMpCRGp0DlMLB1WNAMtfcaPNyqimVV5Bm98mWRhkOuRyvU3fU7iHhM/10ePVaoyu9+A==
   dependencies:
     tslib "^2.3.0"
 
-"@angular/forms@^18.2.3", "@angular/forms@>=15.0.0 < 20.0.0":
+"@angular/forms@^18.0.0 || ^19.0.0", "@angular/forms@^18.2.3", "@angular/forms@>=15.0.0 < 20.0.0":
   version "18.2.12"
   resolved "https://registry.npmjs.org/@angular/forms/-/forms-18.2.12.tgz"
   integrity sha512-FsukBJEU6jfAmht7TrODTkct/o4iwCZvGozuThOp0tYUPD/E1rZZzuKjEyTnT5Azpfkf0Wqx1nmpz80cczELOQ==
+  dependencies:
+    tslib "^2.3.0"
+
+"@angular/material@^18.2.14":
+  version "18.2.14"
+  resolved "https://registry.npmjs.org/@angular/material/-/material-18.2.14.tgz"
+  integrity sha512-28pxzJP49Mymt664WnCtPkKeg7kXUsQKTKGf/Kl95rNTEdTJLbnlcc8wV0rT0yQNR7kXgpfBnG7h0ETLv/iu5Q==
   dependencies:
     tslib "^2.3.0"
 
@@ -282,7 +298,7 @@
   dependencies:
     tslib "^2.3.0"
 
-"@angular/platform-browser@^18.2.3", "@angular/platform-browser@>=15.0.0 < 20.0.0", "@angular/platform-browser@18.2.12":
+"@angular/platform-browser@^18.0.0 || ^19.0.0", "@angular/platform-browser@^18.2.3", "@angular/platform-browser@>=15.0.0 < 20.0.0", "@angular/platform-browser@18.2.12":
   version "18.2.12"
   resolved "https://registry.npmjs.org/@angular/platform-browser/-/platform-browser-18.2.12.tgz"
   integrity sha512-DRSMznuxuecrs+v5BRyd60/R4vjkQtuYUEPfzdo+rqxM83Dmr3PGtnqPRgd5oAFUbATxf02hQXijRD27K7rZRg==
@@ -7133,7 +7149,7 @@ parse5-sax-parser@^7.0.0:
   dependencies:
     parse5 "^7.0.0"
 
-parse5@^7.0.0:
+parse5@^7.0.0, parse5@^7.1.2:
   version "7.2.1"
   resolved "https://registry.npmjs.org/parse5/-/parse5-7.2.1.tgz"
   integrity sha512-BuBYQYlv1ckiPdQi/ohiivi9Sagc9JG+Ozs0r7b/0iK3sKmrb0b9FdWdBbOdx6hBCM/F9Ir82ofnBhtZOjCRPQ==
@@ -8639,7 +8655,7 @@ tsconfig-paths@^4.1.2:
     minimist "^1.2.6"
     strip-bom "^3.0.0"
 
-tslib@^2, tslib@^2.0.0, tslib@^2.0.1, tslib@^2.0.3, tslib@^2.1.0, tslib@^2.3.0, tslib@^2.8.0, tslib@2:
+tslib@^2, tslib@^2.0.0, tslib@^2.0.1, tslib@^2.0.3, tslib@^2.1.0, tslib@^2.3.0, tslib@^2.8.1, tslib@2:
   version "2.8.1"
   resolved "https://registry.npmjs.org/tslib/-/tslib-2.8.1.tgz"
   integrity sha512-oJFu94HQb+KVduSUQL7wnpmqnfmLsOA/nAh6b6EH0wCEoK0/mPeXU6c3wKDV83MkOuHPRHtSXKKU99IBazS/2w==
@@ -9058,18 +9074,20 @@ websocket-extensions@>=0.1.1:
   version "0.0.0"
   resolved "file:"
   dependencies:
-    "@angular/animations" "^18.2.3"
+    "@angular/animations" "^18.2.12"
+    "@angular/cdk" "^18.2.14"
     "@angular/common" "^18.2.3"
     "@angular/compiler" "^18.2.3"
     "@angular/core" "^18.2.3"
     "@angular/forms" "^18.2.3"
+    "@angular/material" "^18.2.14"
     "@angular/platform-browser" "^18.2.3"
     "@angular/platform-browser-dynamic" "^18.2.3"
     "@angular/router" "^18.2.3"
     "@types/leaflet" "^1.9.12"
     leaflet "^1.9.4"
     rxjs "~7.5.0"
-    tslib "^2.8.0"
+    tslib "^2.8.1"
     wfprev "file:"
     zone.js "~0.14.10"
 
