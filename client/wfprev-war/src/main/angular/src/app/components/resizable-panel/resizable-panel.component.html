@@ -1,0 +1,13 @@
+<div class="resizable-panel" [style.width]="panelWidth">
+    <div class="panel-header">
+      <h3>Resizable Panel</h3>
+    </div>
+    <div class="panel-content">
+      <ng-content></ng-content>
+    </div>
+    <div class="panel-controls">
+      <button *ngFor="let breakpoint of breakpoints" (click)="resizePanel(breakpoint)">
+        {{ breakpoint }}%
+      </button>
+    </div>
+  </div>

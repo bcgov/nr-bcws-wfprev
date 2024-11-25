@@ -1,0 +1,67 @@
+name: Run Tests
+
+env:
+  NPMRC: ${{ secrets.NPMRC }}
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18.x]  # Use LTS Node.js version
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+
+      # Install Python and build tools
+      - name: Install Python and build tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3 python3-pip build-essential
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Change directory to Angular app
+        run: cd client/wfprev-war/src/main/angular
+
+      # Use the NPMRC secret to set up npm authentication
+      - name: Add .npmrc file
+        run: echo -e $NPMRC > ~/.npmrc
+
+      # Clean npm cache and install dependencies
+      - run: npm cache clean --force
+      - run: rm -rf node_modules
+      - run: npm install
+        working-directory: client/wfprev-war/src/main/angular
+
+      # Run unit tests and generate code coverage      
+      - run: npm run test -- --watch=false --code-coverage
+        working-directory: client/wfprev-war/src/main/angular
+
+      # Print coverage summary for debugging
+      - name: Print coverage-summary.json
+        run: cat coverage/wfprev/coverage-summary.json
+        working-directory: client/wfprev-war/src/main/angular
+
+      # Ensure coverage meets the required threshold
+      - name: Check code coverage
+        run: |
+          statements_pct=$(jq '.total.statements.pct' coverage/wfprev/coverage-summary.json)
+
+          if (( $(echo "$statements_pct >= 80" | bc -l) )); then
+            echo "Test passed. Code coverage for statements is $statements_pct%";
+          else
+            echo "Code coverage for statements is less than 80%! Exiting... ($statements_pct%)";
+            exit 1;
+          fi
+        working-directory: client/wfprev-war/src/main/angular

@@ -1,0 +1,7 @@
+/target
+/.vscode
+/.idea
+/.mvn
+/.sonarlint
+**/.env
+**/.env.*

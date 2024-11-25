@@ -1,0 +1,2462 @@
+{
+  "layers": [
+    {
+      "id": "incident",
+      "title": "Incidents",
+      "visible": false,
+      "service": "wfim",
+      "handler": "wfim",
+      "useBounds": false
+    },
+    {
+      "id": "incident-item",
+      "title": "Incidents",
+      "visible": false,
+      "service": "wfim",
+      "handler": "wfim",
+      "useBounds": false,
+      "list": false
+    },
+    {
+      "id": "rof",
+      "title": "Report of Fire",
+      "visible": false,
+      "service": "wfim",
+      "handler": "wfim",
+      "useBounds": false
+    },
+    {
+      "id": "rof-item",
+      "title": "Report of Fire",
+      "visible": false,
+      "service": "wfim",
+      "handler": "wfim",
+      "useBounds": false,
+      "list": false
+    },
+    {
+      "id": "nrof",
+      "title": "No More Reports of Fire",
+      "visible": false,
+      "service": "wfim",
+      "handler": "provisionalZones",
+      "useBounds": false
+    },
+    {
+      "id": "mobile-resources",
+      "type": "folder",
+      "title": "Mobile Resources",
+      "base": {
+        "temporal": "cql",
+        "temporalAttribute": {
+          "name": "position_timestamp",
+          "unit": "iso-8601"
+        }
+      },
+      "items": [
+        {
+          "id": "resources-track",
+          "service": "wf-wfs",
+          "visible": false,
+          "title": "Track",
+          "layers": "wf:Position_svw",
+          "geometryAttribute": "Geom",
+          "cqlFilter": "registration = '${ parameter.registration }'",
+          "handler": "resource-track",
+          "useBounds": false,
+          "temporalAttribute": {
+            "name": "time_stamp",
+            "unit": "iso-8601"
+          },
+          "titleFormat": "${ parameter.Call_Sign } ${time_stamp|IsoTime}",
+          "attributes": [
+            {
+              "title": "Agency",
+              "format": "${ parameter.Agency }"
+            },
+            {
+              "title": "Call Sign",
+              "format": "${ parameter.Call_Sign }"
+            },
+            {
+              "title": "Function",
+              "format": "${ parameter.OperationalFunction }"
+            },
+            {
+              "title": "Registration",
+              "format": "${ registration }"
+            },
+            {
+              "title": "Location",
+              "format": "${latitude;longitude|LatLon}"
+            },
+            {
+              "title": "Speed",
+              "format": "${speed} kn"
+            },
+            {
+              "title": "Heading",
+              "format": "${heading}°"
+            },
+            {
+              "title": "Altitude",
+              "format": "${altitude} ft"
+            },
+            {
+              "title": "Position Timestamp",
+              "format": "${time_stamp|IsoTime}"
+            },
+            {
+              "title": "Position Source",
+              "name": "source"
+            }
+          ]
+        },
+        {
+          "id": "mobile-resources---british-columbia",
+          "type": "folder",
+          "title": "British Columbia",
+          "base": {
+            "service": "wf-wfs",
+            "visible": false,
+            "layers": "wf:ResourceStatus_svw",
+            "titleAttribute": "Call_Sign",
+            "geometryAttribute": "Geom",
+            "handler": "resource",
+            "attributes": [
+              {
+                "title": "See track",
+                "action": "resource-track"
+              },
+              {
+                "name": "Agency",
+                "title": "Agency"
+              },
+              {
+                "name": "Call_Sign",
+                "title": "Call Sign"
+              },
+              {
+                "name": "OperationalFunction",
+                "title": "Function"
+              },
+              {
+                "name": "registration",
+                "title": "Registration"
+              },
+              {
+                "title": "Location",
+                "format": "${latitude;longitude|LatLon}"
+              },
+              {
+                "title": "Speed",
+                "format": "${speed} kn"
+              },
+              {
+                "title": "Heading",
+                "format": "${heading}°"
+              },
+              {
+                "title": "Altitude",
+                "format": "${altitude} ft"
+              },
+              {
+                "name": "alert_status",
+                "title": "Alert Status"
+              },
+              {
+                "format": "${position_timestamp|IsoTime}",
+                "title": "position_timestamp"
+              },
+              {
+                "format": "${server_timestamp|IsoTime}",
+                "title": "server_timestamp"
+              },
+              {
+                "name": "Make",
+                "title": "Make"
+              },
+              {
+                "name": "Model",
+                "title": "Model"
+              },
+              {
+                "name": "Owner",
+                "title": "Owner"
+              },
+              {
+                "name": "ResourceClass",
+                "title": "Class"
+              },
+              {
+                "name": "ResourceSubClass",
+                "title": "SubClass"
+              },
+              {
+                "name": "Phone_Number",
+                "title": "Phone Number"
+              },
+              {
+                "name": "Country",
+                "title": "Country"
+              },
+              {
+                "name": "registration_comments",
+                "title": "Comments"
+              },
+              {
+                "name": "esn",
+                "title": "esn"
+              },
+              {
+                "name": "source",
+                "title": "Source"
+              },
+              {
+                "name": "messagable",
+                "title": "messagable"
+              },
+              {
+                "name": "emergency_on",
+                "title": "emergency_on"
+              },
+              {
+                "name": "emergency_off",
+                "title": "emergency_off"
+              },
+              {
+                "name": "emergency_pos",
+                "title": "emergency_pos"
+              },
+              {
+                "name": "at_base",
+                "title": "at_base"
+              },
+              {
+                "name": "designator",
+                "title": "designator"
+              },
+              {
+                "name": "oncontract",
+                "title": "oncontract"
+              }
+            ]
+          },
+          "items": [
+            {
+              "id": "mobile-resources---british-columbia---vehicle",
+              "type": "folder",
+              "title": "Vehicle",
+              "items": [
+                {
+                  "id": "mobile-resources---british-columbia---vehicle---hq",
+                  "type": "folder",
+                  "title": "HQ",
+                  "items": [
+                    {
+                      "id": "bc-vehicle-hq-systems",
+                      "title": "Systems",
+                      "cqlFilter": "Agency = 'British Columbia' and ResourceClass = 'Vehicle' and ResourceSubClass = 'HQ' and OperationalFunction = 'Systems'"
+                    },
+                    {
+                      "id": "bc-vehicle-hq-wx-techs",
+                      "title": "Wx Techs",
+                      "cqlFilter": "Agency = 'British Columbia' and ResourceClass = 'Vehicle' and ResourceSubClass = 'HQ' and OperationalFunction = 'Wx Techs'"
+                    },
+                    {
+                      "id": "bc-vehicle-hq-camp-co-ord",
+                      "title": "Camp Co-Ord",
+                      "cqlFilter": "Agency = 'British Columbia' and ResourceClass = 'Vehicle' and ResourceSubClass = 'HQ' and OperationalFunction = 'Camp Co-ord'"
+                    }
+                  ]
+                },
+                {
+                  "id": "mobile-resources---british-columbia---vehicle---kamloops",
+                  "type": "folder",
+                  "title": "Kamloops",
+                  "items": [
+                    {
+                      "id": "bc-vehicle-kamloops-lillooet",
+                      "title": "Lillooet",
+                      "cqlFilter": "Agency = 'British Columbia' and ResourceClass = 'Vehicle' and ResourceSubClass = 'Kamloops' and OperationalFunction = 'Lillooet Zone'"
+                    },
+                    {
+                      "id": "bc-vehicle-kamloops-merritt",
+                      "title": "Merritt",
+                      "cqlFilter": "Agency = 'British Columbia' and ResourceClass = 'Vehicle' and ResourceSubClass = 'Kamloops' and OperationalFunction = 'Merritt'"
+                    },
+                    {
+                      "id": "bc-vehicle-kamloops-penticton",
+                      "title": "Penticton",
+                      "cqlFilter": "Agency = 'British Columbia' and ResourceClass = 'Vehicle' and ResourceSubClass = 'Kamloops' and OperationalFunction = 'Penticton Zone'"
+                    },
+                    {
+                      "id": "bc-vehicle-kamloops-clearwater",
+                      "title": "Clearwater",
+                      "cqlFilter": "Agency = 'British Columbia' and ResourceClass = 'Vehicle' and ResourceSubClass = 'Kamloops' and OperationalFunction = 'Clearwater'"
+                    },
+                    {
+                      "id": "bc-vehicle-kamloops-kamloops",
+                      "title": "Kamloops",
+                      "cqlFilter": "Agency = 'British Columbia' and ResourceClass = 'Vehicle' and ResourceSubClass = 'Kamloops' and OperationalFunction = 'Kamloops Zone'"
+                    },
+                    {
+                      "id": "bc-vehicle-kamloops-vernon",
+                      "title": "Vernon",
+                      "cqlFilter": "Agency = 'British Columbia' and ResourceClass = 'Vehicle' and ResourceSubClass = 'Kamloops' and OperationalFunction = 'Vernon Zone'"
+                    },
+                    {
+                      "id": "bc-vehicle-kamloops-salmon-arm",
+                      "title": "Salmon Arm",
+                      "cqlFilter": "Agency = 'British Columbia' and ResourceClass = 'Vehicle' and ResourceSubClass = 'Kamloops' and OperationalFunction = 'Salmon Arm'"
+                    }
+                  ]
+                },
+                {
+                  "id": "mobile-resources---british-columbia---vehicle---coastal",
+                  "type": "folder",
+                  "title": "Coastal",
+                  "items": [
+                    {
+                      "id": "bc-vehicle-coastal-south-island",
+                      "title": "South Island",
+                      "cqlFilter": "Agency = 'British Columbia' and ResourceClass = 'Vehicle' and ResourceSubClass = 'Coastal' and OperationalFunction = 'South Island'"
+                    },
+                    {
+                      "id": "bc-vehicle-coastal-north-island",
+                      "title": "North Island",
+                      "cqlFilter": "Agency = 'British Columbia' and ResourceClass = 'Vehicle' and ResourceSubClass = 'Coastal' and OperationalFunction = 'North Island'"
+                    },
+                    {
+                      "id": "bc-vehicle-coastal-fraser",
+                      "title": "Fraser",
+                      "cqlFilter": "Agency = 'British Columbia' and ResourceClass = 'Vehicle' and ResourceSubClass = 'Coastal' and OperationalFunction = 'Fraser'"
+                    },
+                    {
+                      "id": "bc-vehicle-coastal-mid-island",
+                      "title": "Mid Island",
+                      "cqlFilter": "Agency = 'British Columbia' and ResourceClass = 'Vehicle' and ResourceSubClass = 'Coastal' and OperationalFunction = 'Mid Island'"
+                    },
+                    {
+                      "id": "bc-vehicle-coastal-sunshine-coast",
+                      "title": "Sunshine Coast",
+                      "cqlFilter": "Agency = 'British Columbia' and ResourceClass = 'Vehicle' and ResourceSubClass = 'Coastal' and OperationalFunction = 'Sunshine Coast'"
+                    },
+                    {
+                      "id": "bc-vehicle-coastal-pemberton",
+                      "title": "Pemberton",
+                      "cqlFilter": "Agency = 'British Columbia' and ResourceClass = 'Vehicle' and ResourceSubClass = 'Coastal' and OperationalFunction = 'Pemberton'"
+                    }
+                  ]
+                },
+                {
+                  "id": "mobile-resources---british-columbia---vehicle---south-east",
+                  "type": "folder",
+                  "title": "South East",
+                  "items": [
+                    {
+                      "id": "bc-vehicle-south-east-arrow",
+                      "title": "Arrow",
+                      "cqlFilter": "Agency = 'British Columbia' and ResourceClass = 'Vehicle' and ResourceSubClass = 'SouthEast' and OperationalFunction = 'Arrow'"
+                    },
+                    {
+                      "id": "bc-vehicle-south-east-invermere",
+                      "title": "Invermere",
+                      "cqlFilter": "Agency = 'British Columbia' and ResourceClass = 'Vehicle' and ResourceSubClass = 'SouthEast' and OperationalFunction = 'Invermere'"
+                    },
+                    {
+                      "id": "bc-vehicle-south-east-cranbrook",
+                      "title": "Cranbrook",
+                      "cqlFilter": "Agency = 'British Columbia' and ResourceClass = 'Vehicle' and ResourceSubClass = 'SouthEast' and OperationalFunction = 'Cranbrook'"
+                    },
+                    {
+                      "id": "bc-vehicle-south-east-kootenay-lake",
+                      "title": "Kootenay Lake",
+                      "cqlFilter": "Agency = 'British Columbia' and ResourceClass = 'Vehicle' and ResourceSubClass = 'SouthEast' and OperationalFunction = 'Kootenay Lake'"
+                    },
+                    {
+                      "id": "bc-vehicle-south-east-boundary",
+                      "title": "Boundary",
+                      "cqlFilter": "Agency = 'British Columbia' and ResourceClass = 'Vehicle' and ResourceSubClass = 'SouthEast' and OperationalFunction = 'Boundary'"
+                    },
+                    {
+                      "id": "bc-vehicle-south-east-columbia",
+                      "title": "Columbia",
+                      "cqlFilter": "Agency = 'British Columbia' and ResourceClass = 'Vehicle' and ResourceSubClass = 'SouthEast' and OperationalFunction = 'Columbia'"
+                    }
+                  ]
+                },
+                {
+                  "id": "mobile-resources---british-columbia---vehicle---prince-george",
+                  "type": "folder",
+                  "title": "Prince George",
+                  "items": [
+                    {
+                      "id": "bc-vehicle-prince-george-robson-valley",
+                      "title": "Robson Valley",
+                      "cqlFilter": "Agency = 'British Columbia' and ResourceClass = 'Vehicle' and ResourceSubClass = 'Prince George' and OperationalFunction = 'Robson Valley'"
+                    },
+                    {
+                      "id": "bc-vehicle-prince-george-dawson-creek",
+                      "title": "Dawson Creek",
+                      "cqlFilter": "Agency = 'British Columbia' and ResourceClass = 'Vehicle' and ResourceSubClass = 'Prince George' and OperationalFunction = 'Dawson Creek Zone'"
+                    },
+                    {
+                      "id": "bc-vehicle-prince-george-fort-st-john",
+                      "title": "Fort St John",
+                      "cqlFilter": "Agency = 'British Columbia' and ResourceClass = 'Vehicle' and ResourceSubClass = 'Prince George' and OperationalFunction = 'Fort St John'"
+                    },
+                    {
+                      "id": "bc-vehicle-prince-george-prince-george",
+                      "title": "Prince George",
+                      "cqlFilter": "Agency = 'British Columbia' and ResourceClass = 'Vehicle' and ResourceSubClass = 'Prince George' and OperationalFunction = 'Prince George Zone'"
+                    },
+                    {
+                      "id": "bc-vehicle-prince-george-mackenzie",
+                      "title": "Mackenzie",
+                      "cqlFilter": "Agency = 'British Columbia' and ResourceClass = 'Vehicle' and ResourceSubClass = 'Prince George' and OperationalFunction = 'Mackenzie Zone'"
+                    }
+                  ]
+                },
+                {
+                  "id": "mobile-resources---british-columbia---vehicle---cariboo",
+                  "type": "folder",
+                  "title": "Cariboo",
+                  "items": [
+                    {
+                      "id": "bc-vehicle-cariboo-cifac",
+                      "title": "CIFAC",
+                      "cqlFilter": "Agency = 'British Columbia' and ResourceClass = 'Vehicle' and ResourceSubClass = 'Cariboo' and OperationalFunction = 'CIFAC'"
+                    }
+                  ]
+                },
+                {
+                  "id": "mobile-resources---british-columbia---vehicle---north-west",
+                  "type": "folder",
+                  "title": "North West",
+                  "items": [
+                    {
+                      "id": "bc-vehicle-north-west-bulkley",
+                      "title": "Bulkley",
+                      "cqlFilter": "Agency = 'British Columbia' and ResourceClass = 'Vehicle' and ResourceSubClass = 'NorthWest' and OperationalFunction = 'Bulkley Zone'"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "mobile-resources---british-columbia---other",
+              "type": "folder",
+              "title": "Other",
+              "items": [
+                {
+                  "id": "mobile-resources---british-columbia---other---resources",
+                  "type": "folder",
+                  "title": "Resources",
+                  "items": [
+                    {
+                      "id": "bc-other-resources-mrb",
+                      "title": "MRB",
+                      "cqlFilter": "Agency = 'British Columbia' and ResourceClass = 'Other' and ResourceSubClass = 'Resources' and OperationalFunction = 'MRB'"
+                    },
+                    {
+                      "id": "bc-other-resources-tanker-truck",
+                      "title": "Tanker Truck",
+                      "cqlFilter": "Agency = 'British Columbia' and ResourceClass = 'Other' and ResourceSubClass = 'Resources' and OperationalFunction = 'Tanker Truck'"
+                    },
+                    {
+                      "id": "bc-other-resources-fire-camp",
+                      "title": "Fire Camp",
+                      "cqlFilter": "Agency = 'British Columbia' and ResourceClass = 'Other' and ResourceSubClass = 'Resources' and OperationalFunction = 'FireCamp'"
+                    },
+                    {
+                      "id": "bc-other-resources-guam",
+                      "title": "Guam",
+                      "cqlFilter": "Agency = 'British Columbia' and ResourceClass = 'Other' and ResourceSubClass = 'Resources' and OperationalFunction = 'Guam'"
+                    },
+                    {
+                      "id": "bc-other-resources-heart-beat",
+                      "title": "Heart Beat",
+                      "cqlFilter": "Agency = 'British Columbia' and ResourceClass = 'Other' and ResourceSubClass = 'Resources' and OperationalFunction = 'HeartBeat'"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "mobile-resources---british-columbia---aircraft",
+              "type": "folder",
+              "title": "Aircraft",
+              "items": [
+                {
+                  "id": "mobile-resources---british-columbia---aircraft---rotary-wing",
+                  "type": "folder",
+                  "title": "Rotary Wing",
+                  "items": [
+                    {
+                      "id": "bc-aircraft-rotary-wing-other",
+                      "title": "(Other)",
+                      "cqlFilter": "Agency = 'British Columbia' and ResourceClass = 'Aircraft' and ResourceSubClass = 'Rotary Wing' and OperationalFunction = ''"
+                    },
+                    {
+                      "id": "bc-aircraft-rotary-wing-intermediate",
+                      "title": "Intermediate",
+                      "cqlFilter": "Agency = 'British Columbia' and ResourceClass = 'Aircraft' and ResourceSubClass = 'Rotary Wing' and OperationalFunction = 'Intermediate'"
+                    },
+                    {
+                      "id": "bc-aircraft-rotary-wing-medium",
+                      "title": "Medium",
+                      "cqlFilter": "Agency = 'British Columbia' and ResourceClass = 'Aircraft' and ResourceSubClass = 'Rotary Wing' and OperationalFunction = 'Medium'"
+                    },
+                    {
+                      "id": "bc-aircraft-rotary-wing-medium-prov",
+                      "title": "Medium (Prov)",
+                      "cqlFilter": "Agency = 'British Columbia' and ResourceClass = 'Aircraft' and ResourceSubClass = 'Rotary Wing' and OperationalFunction = 'Medium (Prov)'"
+                    },
+                    {
+                      "id": "bc-aircraft-rotary-wing-light",
+                      "title": "Light",
+                      "cqlFilter": "Agency = 'British Columbia' and ResourceClass = 'Aircraft' and ResourceSubClass = 'Rotary Wing' and OperationalFunction = 'Light'"
+                    },
+                    {
+                      "id": "bc-aircraft-rotary-wing-heavy",
+                      "title": "Heavy",
+                      "cqlFilter": "Agency = 'British Columbia' and ResourceClass = 'Aircraft' and ResourceSubClass = 'Rotary Wing' and OperationalFunction = 'Heavy'"
+                    },
+                    {
+                      "id": "bc-aircraft-rotary-wing-rap-attack",
+                      "title": "Rap Attack",
+                      "cqlFilter": "Agency = 'British Columbia' and ResourceClass = 'Aircraft' and ResourceSubClass = 'Rotary Wing' and OperationalFunction = 'RapAttack'"
+                    }
+                  ]
+                },
+                {
+                  "id": "mobile-resources---british-columbia---aircraft---fwt",
+                  "type": "folder",
+                  "title": "FWT",
+                  "items": [
+                    {
+                      "id": "bc-aircraft-fwt-patrol",
+                      "title": "Patrol",
+                      "cqlFilter": "Agency = 'British Columbia' and ResourceClass = 'Aircraft' and ResourceSubClass = 'FWT' and OperationalFunction = 'Patrol'"
+                    },
+                    {
+                      "id": "bc-aircraft-fwt-transport",
+                      "title": "Transport",
+                      "cqlFilter": "Agency = 'British Columbia' and ResourceClass = 'Aircraft' and ResourceSubClass = 'FWT' and OperationalFunction = 'Transport'"
+                    },
+                    {
+                      "id": "bc-aircraft-fwt-crew-transport",
+                      "title": "Crew Transport",
+                      "cqlFilter": "Agency = 'British Columbia' and ResourceClass = 'Aircraft' and ResourceSubClass = 'FWT' and OperationalFunction = 'Crew Transport'"
+                    }
+                  ]
+                },
+                {
+                  "id": "mobile-resources---british-columbia---aircraft---fwb",
+                  "type": "folder",
+                  "title": "FWB",
+                  "items": [
+                    {
+                      "id": "bc-aircraft-fwb-tanker",
+                      "title": "Tanker",
+                      "cqlFilter": "Agency = 'British Columbia' and ResourceClass = 'Aircraft' and ResourceSubClass = 'FWB' and OperationalFunction = 'Tanker'"
+                    },
+                    {
+                      "id": "bc-aircraft-fwb-bird-dog",
+                      "title": "Bird Dog",
+                      "cqlFilter": "Agency = 'British Columbia' and ResourceClass = 'Aircraft' and ResourceSubClass = 'FWB' and OperationalFunction = 'Birddog'"
+                    }
+                  ]
+                },
+                {
+                  "id": "mobile-resources---british-columbia---aircraft---fixed-wing",
+                  "type": "folder",
+                  "title": "Fixed Wing",
+                  "items": [
+                    {
+                      "id": "bc-aircraft-fixed-wing-patrol",
+                      "title": "Patrol",
+                      "cqlFilter": "Agency = 'British Columbia' and ResourceClass = 'Aircraft' and ResourceSubClass = 'Fixed Wing' and OperationalFunction = 'Patrol'"
+                    },
+                    {
+                      "id": "bc-aircraft-fixed-wing-transport",
+                      "title": "Transport",
+                      "cqlFilter": "Agency = 'British Columbia' and ResourceClass = 'Aircraft' and ResourceSubClass = 'Fixed Wing' and OperationalFunction = 'Transport'"
+                    },
+                    {
+                      "id": "bc-aircraft-fixed-wing-tanker",
+                      "title": "Tanker",
+                      "cqlFilter": "Agency = 'British Columbia' and ResourceClass = 'Aircraft' and ResourceSubClass = 'Fixed Wing' and OperationalFunction = 'Tanker'"
+                    },
+                    {
+                      "id": "bc-aircraft-fixed-wing-bird-dog",
+                      "title": "Bird Dog",
+                      "cqlFilter": "Agency = 'British Columbia' and ResourceClass = 'Aircraft' and ResourceSubClass = 'Fixed Wing' and OperationalFunction = 'Birddog'"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "operational-planning",
+      "type": "folder",
+      "title": "Operational Planning",
+      "items": [
+        {
+          "id": "in-current-fire-polygons",
+          "title": "Fire Perimeter",
+          "service": "wf",
+          "visible": false,
+          "scaleMax": 4500000,
+          "layers": "IN_CURRENT_FIRE_POLYGONS_SVW"
+        },
+        {
+          "id": "operational-planning---air-tanker-request",
+          "type": "folder",
+          "title": "Air Tanker Request",
+          "base": {
+            "service": "wf",
+            "titleFormat": "ATR:${incidentNumber;atrid|FirstPresent}",
+            "attributes": [
+              {
+                "name": "atrid",
+                "title": "ATRid"
+              },
+              {
+                "name": "incidentNumber",
+                "title": "Incident Number"
+              },
+              {
+                "name": "FCCategory",
+                "title": "Category"
+              },
+              {
+                "title": "Status",
+                "format": "${status}:${statusQualifier}"
+              },
+              {
+                "title": "Location",
+                "format": "${Latitude;Longitude|LatLon}"
+              },
+              {
+                "title": "Acknowledgement",
+                "format": "${AcknowledgedBy||Unacknowledged}: ${acknowledgementDate|TimeStampMilli}"
+              },
+              {
+                "title": "Size",
+                "name": "size"
+              },
+              {
+                "title": "Fuel",
+                "name": "Fuel"
+              },
+              {
+                "title": "Values at Risk",
+                "name": "ValuesAtRisk"
+              },
+              {
+                "title": "Bird Dog",
+                "name": "BirdDogNumber"
+              },
+              {
+                "title": "AAO",
+                "name": "aao"
+              }
+            ]
+          },
+          "items": [
+            {
+              "id": "atr-active",
+              "title": "Active ATR",
+              "visible": false,
+              "layers": "ATR_ACTIVE"
+            },
+            {
+              "id": "atr-complete",
+              "title": "Completed ATR",
+              "visible": false,
+              "layers": "ATR_COMPLETE"
+            }
+          ]
+        },
+        {
+          "id": "operational-planning---heli-tanker-request",
+          "type": "folder",
+          "title": "Heli Tanker Request",
+          "base": {
+            "titleFormat": "HTR:${incidentNumber;ATRid|FirstPresent}",
+            "service": "wf",
+            "attributes": [
+              {
+                "name": "ATRid",
+                "title": "ATRid"
+              },
+              {
+                "name": "incidentNumber",
+                "title": "Incident Number"
+              },
+              {
+                "name": "FCCategory",
+                "title": "Category"
+              },
+              {
+                "title": "Status",
+                "format": "${status}"
+              },
+              {
+                "title": "Location",
+                "format": "${Latitude;Longitude|LatLon}"
+              },
+              {
+                "title": "Acknowledgement",
+                "format": "${AcknowledgedBy||Unacknowledged}: ${acknowledgementDate|TimeStampMilli}"
+              },
+              {
+                "title": "Size",
+                "name": "size"
+              },
+              {
+                "title": "Fuel",
+                "name": "Fuel"
+              },
+              {
+                "title": "Heli Callsign",
+                "name": "rapAttackCallsign"
+              },
+              {
+                "title": "Ops Tech",
+                "name": "opsTech"
+              },
+              {
+                "title": "Rap Crew",
+                "name": "rapCrew"
+              }
+            ]
+          },
+          "items": [
+            {
+              "id": "htr-active",
+              "title": "Active HTR",
+              "visible": false,
+              "layers": "HTR_ACTIVE"
+            },
+            {
+              "id": "htr-complete",
+              "title": "Completed HTR",
+              "visible": false,
+              "layers": "HTR_COMPLETE"
+            }
+          ]
+        },
+        {
+          "id": "operational-planning---open-burning-registration-ofts",
+          "type": "folder",
+          "title": "Open Burning Registration  (OFTS)",
+          "items": [
+            {
+              "id": "ofts-active",
+              "title": "Active OFTS",
+              "service": "wf",
+              "visible": false,
+              "layers": "OFTS_ACTIVE",
+              "attributes": [
+                {
+                  "name": "id",
+                  "title": "Ref #"
+                },
+                {
+                  "name": "FireCentre",
+                  "title": "Fire Centre"
+                },
+                {
+                  "name": "ExpiryTimeStamp",
+                  "title": "Expiry Date"
+                },
+                {
+                  "title": "Location",
+                  "format": "${Latitude;Longitude|LatLon}"
+                },
+                {
+                  "name": "GeographicDescription",
+                  "title": "Geographic"
+                },
+                {
+                  "name": "ClFirstName",
+                  "title": "Client First Name"
+                },
+                {
+                  "name": "ClLastName",
+                  "title": "Client Last Name"
+                },
+                {
+                  "name": "ClAreaCode",
+                  "title": "Phone Area Code"
+                },
+                {
+                  "name": "ClPhone",
+                  "title": "Phone Number"
+                },
+                {
+                  "name": "ClPhoneExt",
+                  "title": "Phone Extension"
+                },
+                {
+                  "name": "BurnCategoryCode",
+                  "title": "Burn Category"
+                },
+                {
+                  "name": "BurnArea",
+                  "title": "Burn Area"
+                },
+                {
+                  "name": "PilesWindrows",
+                  "title": "Number of Fires"
+                }
+              ]
+            },
+            {
+              "id": "ofts-expired",
+              "title": "Expired OFTS",
+              "service": "wf",
+              "visible": false,
+              "layers": "OFTS_EXPIRED",
+              "attributes": [
+                {
+                  "name": "id",
+                  "title": "Ref #"
+                },
+                {
+                  "name": "FireCentre",
+                  "title": "Fire Centre"
+                },
+                {
+                  "name": "ExpiryTimeStamp",
+                  "title": "Expiry Date"
+                },
+                {
+                  "title": "Location",
+                  "format": "${Latitude;Longitude|LatLon}"
+                },
+                {
+                  "name": "GeographicDescription",
+                  "title": "Geographic"
+                },
+                {
+                  "name": "ClFirstName",
+                  "title": "Client First Name"
+                },
+                {
+                  "name": "ClLastName",
+                  "title": "Client Last Name"
+                },
+                {
+                  "name": "ClAreaCode",
+                  "title": "Phone Area Code"
+                },
+                {
+                  "name": "ClPhone",
+                  "title": "Phone Number"
+                },
+                {
+                  "name": "ClPhoneExt",
+                  "title": "Phone Extension"
+                },
+                {
+                  "name": "BurnCategoryCode",
+                  "title": "Burn Category"
+                },
+                {
+                  "name": "BurnArea",
+                  "title": "Burn Area"
+                },
+                {
+                  "name": "PilesWindrows",
+                  "title": "Number of Fires"
+                }
+              ]
+            },
+            {
+              "id": "ofts-invalid",
+              "title": "Invalid OFTS",
+              "service": "wf",
+              "visible": false,
+              "layers": "OFTS_INVALID",
+              "attributes": [
+                {
+                  "name": "id",
+                  "title": "Ref #"
+                },
+                {
+                  "name": "FireCentre",
+                  "title": "Fire Centre"
+                },
+                {
+                  "name": "ExpiryTimeStamp",
+                  "title": "Expiry Date"
+                },
+                {
+                  "title": "Location",
+                  "format": "${Latitude;Longitude|LatLon}"
+                },
+                {
+                  "name": "GeographicDescription",
+                  "title": "Geographic"
+                },
+                {
+                  "name": "ClFirstName",
+                  "title": "Client First Name"
+                },
+                {
+                  "name": "ClLastName",
+                  "title": "Client Last Name"
+                },
+                {
+                  "name": "ClAreaCode",
+                  "title": "Phone Area Code"
+                },
+                {
+                  "name": "ClPhone",
+                  "title": "Phone Number"
+                },
+                {
+                  "name": "ClPhoneExt",
+                  "title": "Phone Extension"
+                },
+                {
+                  "name": "BurnCategoryCode",
+                  "title": "Burn Category"
+                },
+                {
+                  "name": "BurnArea",
+                  "title": "Burn Area"
+                },
+                {
+                  "name": "PilesWindrows",
+                  "title": "Number of Fires"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "operational-planning---camps-and-staging-areas",
+          "type": "folder",
+          "title": "Camps and Staging Areas",
+          "base": {
+            "titleAttribute": "LABEL"
+          },
+          "items": [
+            {
+              "id": "ued-camp-complex",
+              "title": "Camp / Complex - UED",
+              "service": "xwf",
+              "visible": false,
+              "layers": "CAMP_COMPLEX_POINT_SVW",
+              "attributes": [
+                {
+                  "replaceWith": "ued-start"
+                },
+                {
+                  "replaceWith": "ued-end"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "operational-planning---landmark",
+          "type": "folder",
+          "title": "Landmark",
+          "items": [
+            {
+              "id": "ued-landmark",
+              "title": "Landmark - UED",
+              "service": "xwf",
+              "visible": false,
+              "layers": "LANDMARK_POINT_SVW",
+              "titleAttribute": "LABEL",
+              "attributes": [
+                {
+                  "replaceWith": "ued-start"
+                },
+                {
+                  "title": "Type",
+                  "format": "${LANDMARK_CATEGORY_DESC} - ${LANDMARK_TYPE_DESC}"
+                },
+                {
+                  "replaceWith": "ued-end"
+                }
+              ]
+            },
+            {
+              "id": "whse-imagery-and-base-maps-mot-rest-areas-sp",
+              "title": "Highway Rest Stop",
+              "service": "bcgw",
+              "visible": false,
+              "scaleMax": 550000,
+              "layers": "MOT_REST_AREAS_SP"
+            }
+          ]
+        },
+        {
+          "id": "operational-planning---caches",
+          "type": "folder",
+          "title": "Caches",
+          "base": {
+            "titleAttribute": "LABEL"
+          },
+          "items": [
+            {
+              "id": "ued-fuel-cache",
+              "title": "Fuel Cache - UED",
+              "service": "xwf",
+              "visible": false,
+              "layers": "FUEL_CACHE_POINT_SVW",
+              "attributes": [
+                {
+                  "replaceWith": "ued-start"
+                },
+                {
+                  "title": "Type",
+                  "format": "${FUEL_CACHE_TYPE_DESC} - ${FUEL_TYPE_DESC}"
+                },
+                {
+                  "title": "Owner",
+                  "format": "${FUEL_CACHE_OWNER_DESC}"
+                },
+                {
+                  "title": "Full",
+                  "format": "${FULL_BARRELS_COUNT||N/A} barrels"
+                },
+                {
+                  "title": "Partial",
+                  "format": "${PARTIAL_BARRELS_COUNT||N/A} barrels"
+                },
+                {
+                  "title": "Empty",
+                  "format": "${EMPTY_BARRELS_COUNT||N/A} barrels"
+                },
+                {
+                  "replaceWith": "ued-end"
+                }
+              ]
+            },
+            {
+              "id": "ued-tool-cache",
+              "title": "Tool Cache - UED",
+              "service": "xwf",
+              "visible": false,
+              "layers": "TOOL_EQUIP_CACHE_POINT_SVW",
+              "attributes": [
+                {
+                  "replaceWith": "ued-start"
+                },
+                {
+                  "title": "People Supplied",
+                  "name": "TOOL_EQUIP_CACHE_PPL_SUP"
+                },
+                {
+                  "replaceWith": "ued-end"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "operational-planning---detection",
+          "type": "folder",
+          "title": "Detection",
+          "base": {
+            "titleAttribute": "LABEL"
+          },
+          "items": [
+            {
+              "id": "ued-air-patrol-checkpoint",
+              "title": "Air Patrol Checkpoint - UED",
+              "service": "xwf",
+              "visible": false,
+              "layers": "AIR_PAT_CHECKPT_PT_SVW",
+              "attributes": [
+                {
+                  "replaceWith": "ued-start"
+                },
+                {
+                  "replaceWith": "ued-end"
+                }
+              ]
+            },
+            {
+              "id": "ued-surface-patrol-checkpoint",
+              "title": "Surface Patrol Checkpoint - UED",
+              "service": "xwf",
+              "visible": false,
+              "layers": "SURF_PAT_CHKPT_POINT_SVW",
+              "attributes": [
+                {
+                  "replaceWith": "ued-start"
+                },
+                {
+                  "replaceWith": "ued-end"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fire-weather",
+      "type": "folder",
+      "title": "Fire Weather",
+      "items": [
+        {
+          "id": "lightning",
+          "title": "Lightning",
+          "service": "wf",
+          "layers": "LIGHTNING",
+          "temporal": "cql",
+          "temporalAttribute": {
+            "name": "Stroke_Timestamp_Sec",
+            "unit": "seconds"
+          },
+          "titleFormat": "${polarity|LightningPolaritySymbol} ${Stroke_Timestamp_Sec|TimeStampSec}",
+          "attributes": [
+            {
+              "title": "Time",
+              "format": "${Stroke_Timestamp_Sec|TimeStampSec}"
+            },
+            {
+              "title": "Location",
+              "format": "${latitude;longitude|LatLon}"
+            },
+            {
+              "format": "${polarity|LightningPolarityName}",
+              "title": "Polarity"
+            },
+            {
+              "title": "Current",
+              "format": "${kiloamperes} kA"
+            }
+          ]
+        },
+        {
+          "id": "fire-weather---weather",
+          "type": "folder",
+          "title": "Weather",
+          "items": [
+            {
+              "id": "sfms-temperature",
+              "title": "Temperature - Daily",
+              "service": "wf",
+              "visible": false,
+              "layers": "SFMS_TEMPERATURE"
+            },
+            {
+              "id": "sfms-relative-humidity",
+              "title": "Relative Humidity - Daily",
+              "service": "wf",
+              "visible": false,
+              "layers": "SFMS_RELATIVE_HUMIDITY"
+            },
+            {
+              "id": "sfms-wind-speed",
+              "title": "Wind Speed - Daily",
+              "service": "wf",
+              "visible": false,
+              "layers": "SFMS_WIND_SPEED"
+            },
+            {
+              "id": "sfms-wind-direction",
+              "title": "Wind Direction - Daily",
+              "service": "wf",
+              "visible": false,
+              "layers": "SFMS_WIND_DIRECTION"
+            },
+            {
+              "id": "sfms-precipitation",
+              "title": "Precipitation - Daily",
+              "service": "wf",
+              "visible": false,
+              "layers": "SFMS_PRECIPITATION"
+            }
+          ]
+        },
+        {
+          "id": "fire-weather---fire-weather-indices",
+          "type": "folder",
+          "title": "Fire Weather Indices",
+          "items": [
+            {
+              "id": "sfms-danger-rating",
+              "title": "Danger Rating",
+              "service": "wf",
+              "visible": false,
+              "layers": "SFMS_DANGER_RATING"
+            },
+            {
+              "id": "sfms-fine-fuel-moisture-code",
+              "title": "Fine Fuel Moisture Code",
+              "service": "wf",
+              "visible": false,
+              "layers": "SFMS_FINE_FUEL_MOISTURE_CODE"
+            },
+            {
+              "id": "sfms-duff-moisture-code",
+              "title": "Duff Moisture Code",
+              "service": "wf",
+              "visible": false,
+              "layers": "SFMS_DUFF_MOISTURE_CODE"
+            },
+            {
+              "id": "sfms-drought-code",
+              "title": "Drought Code",
+              "service": "wf",
+              "visible": false,
+              "layers": "SFMS_DROUGHT_CODE"
+            },
+            {
+              "id": "sfms-initial-spread-index",
+              "title": "Initial Spread Index",
+              "service": "wf",
+              "visible": false,
+              "layers": "SFMS_INITIAL_SPREAD_INDEX"
+            },
+            {
+              "id": "sfms-buildup-index",
+              "title": "Buildup Index",
+              "service": "wf",
+              "visible": false,
+              "layers": "SFMS_BUILDUP_INDEX"
+            },
+            {
+              "id": "sfms-fire-weather-index",
+              "title": "Fire Weather Index",
+              "service": "wf",
+              "visible": false,
+              "layers": "SFMS_FIRE_WEATHER_INDEX"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "responder-safety",
+      "type": "folder",
+      "title": "Responder Safety",
+      "items": [
+        {
+          "id": "responder-safety---hazard",
+          "type": "folder",
+          "title": "Hazard",
+          "items": [
+            {
+              "id": "ued-hazard",
+              "title": "Hazards - UED",
+              "service": "xwf",
+              "visible": false,
+              "layers": "HAZARD_POINT_SVW",
+              "titleAttribute": "LABEL",
+              "attributes": [
+                {
+                  "replaceWith": "ued-start"
+                },
+                {
+                  "title": "Type",
+                  "name": "HAZARD_TYPE_DESC"
+                },
+                {
+                  "title": "Timeframe",
+                  "name": "HAZARD_TIMEFRAME_DESC"
+                },
+                {
+                  "replaceWith": "ued-end"
+                }
+              ]
+            },
+            {
+              "id": "wf1-refuse-site",
+              "title": "Refuse Site",
+              "service": "wf",
+              "visible": false,
+              "scaleMax": 1500000,
+              "layers": "WF1_REFUSE_SITE"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "human-life-and-safety",
+      "type": "folder",
+      "title": "Human Life and Safety",
+      "items": [
+        {
+          "id": "human-life-and-safety---evacuations-and-emergency-services",
+          "type": "folder",
+          "title": "Evacuations and Emergency Services",
+          "items": [
+            {
+              "id": "whse-human-cultural-economic-emrg-order-and-alert-areas-sp",
+              "title": "Evacuation Order and Alert Areas",
+              "service": "bcgw",
+              "visible": false,
+              "layers": "EMRG_ORDER_AND_ALERT_AREAS_SP"
+            },
+            {
+              "id": "ued-remote-structures",
+              "title": "Remote Structures - UED",
+              "service": "xwf",
+              "visible": false,
+              "layers": "REMOTE_STRUCTURE_POINT_SVW",
+              "titleAttribute": "LABEL",
+              "attributes": [
+                {
+                  "replaceWith": "ued-start"
+                },
+                {
+                  "title": "Type",
+                  "name": "REMOTE_STRUCTURE_TYPE_DESC"
+                },
+                {
+                  "title": "Property Value",
+                  "format": "${PROPERTY_VALUE|DollarValue}"
+                },
+                {
+                  "replaceWith": "ued-end"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "critical-infrastructure",
+      "type": "folder",
+      "title": "Critical Infrastructure",
+      "items": [
+        {
+          "id": "critical-infrastructure---energy-utilities-and-facilities",
+          "type": "folder",
+          "title": "Energy, Utilities and Facilities",
+          "items": [
+            {
+              "id": "wf1-pipelines",
+              "title": "Oil and Gas - Pipeline",
+              "service": "wf",
+              "visible": false,
+              "scaleMax": 550000,
+              "layers": "WF1_PIPELINES"
+            },
+            {
+              "id": "wf1-transmissionlines",
+              "title": "Transmission Line",
+              "service": "wf",
+              "visible": true,
+              "scaleMax": 550000,
+              "layers": "WF1_TRANSMISSIONLINES"
+            }
+          ]
+        },
+        {
+          "id": "critical-infrastructure---communication-and-information-tech",
+          "type": "folder",
+          "title": "Communication and Information Tech",
+          "items": [
+            {
+              "id": "wf1-ci-flnro-radio-tower",
+              "title": "Radio Tower - FLNRO",
+              "service": "xwf",
+              "visible": false,
+              "layers": "WF1_CI_FLNRO_RADIO_TOWER",
+              "titleAttribute": "SiteName",
+              "attributes": [
+                {
+                  "title": "Site Name",
+                  "format": "${SiteName}"
+                },
+                {
+                  "title": "Location ID",
+                  "format": "${LocationID}"
+                },
+                {
+                  "title": "Colour",
+                  "format": "${COLOUR}"
+                },
+                {
+                  "title": "TX",
+                  "format": "${TX_FREQ} MHz"
+                },
+                {
+                  "title": "RX",
+                  "format": "${RX_FREQ} MHz"
+                },
+                {
+                  "title": "District",
+                  "format": "${District}"
+                },
+                {
+                  "title": "Height (Above sea level)",
+                  "format": "${Height_above_sea_level_meters|DistM}"
+                },
+                {
+                  "title": "Location",
+                  "format": "${DDMLat;DDMLon|LatLon}"
+                },
+                {
+                  "title": "Description",
+                  "format": "${Description}"
+                },
+                {
+                  "title": "Building Type",
+                  "format": "${BuildingType}"
+                },
+                {
+                  "title": "Primary Power",
+                  "format": "${PrimaryPower}"
+                },
+                {
+                  "title": "CTCSS",
+                  "format": "${CTCSS} Hz"
+                },
+                {
+                  "title": "BLT",
+                  "format": "${BLT}"
+                },
+                {
+                  "title": "Split DTMF",
+                  "format": "${SplitDTMF}"
+                },
+                {
+                  "title": "Access",
+                  "format": "${Access}"
+                },
+                {
+                  "title": "Established",
+                  "format": "${DateEstablished|EUDate}"
+                },
+                {
+                  "title": "Last Updated",
+                  "format": "${LastUpdateBy}: ${lastupdateon|EUDate}"
+                }
+              ]
+            },
+            {
+              "id": "wf1-ci-other-radio-tower",
+              "title": "Radio Tower - Other",
+              "service": "xwf",
+              "visible": false,
+              "layers": "WF1_CI_OTHER_RADIO_TOWER",
+              "titleAttribute": "TOWER_NAME",
+              "attributes": [
+                {
+                  "title": "Agency",
+                  "format": "${AGENCY_NAME}"
+                },
+                {
+                  "title": "Name",
+                  "format": "${TOWER_NAME}"
+                },
+                {
+                  "title": "Loction Name",
+                  "format": "${TOWER_LOCATION}"
+                },
+                {
+                  "title": "Location",
+                  "format": "${LATITUDE;LONGITUDE|LatLon}"
+                },
+                {
+                  "title": "Elevation",
+                  "format": "${ELEVATION}"
+                },
+                {
+                  "title": "Service Type",
+                  "format": "${SERVICE_TYPE}"
+                },
+                {
+                  "title": "Description",
+                  "format": "${DESCRIPTION}"
+                },
+                {
+                  "title": "Last Updated",
+                  "format": "${UPDATE_DATE|IsoDate}"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "critical-infrastructure---health-care",
+          "type": "folder",
+          "title": "Health Care",
+          "items": [
+            {
+              "id": "whse-imagery-and-base-maps-gsr-hospitals-svw",
+              "title": "Hospital",
+              "service": "bcgw",
+              "visible": false,
+              "scaleMax": 1500000,
+              "layers": "GSR_HOSPITALS_SVW"
+            }
+          ]
+        },
+        {
+          "id": "critical-infrastructure---transportation---aviation",
+          "type": "folder",
+          "title": "Transportation - Aviation",
+          "base": {
+            "titleAttribute": "AIRPORT_NAME",
+            "attributes": [
+              {
+                "title": "Name",
+                "name": "AIRPORT_NAME"
+              },
+              {
+                "title": "Location",
+                "format": "${LATITUDE;LONGITUDE|LatLon}"
+              },
+              {
+                "title": "ICAO",
+                "name": "ICAO_CODE"
+              },
+              {
+                "title": "Geographic",
+                "name": "LOCALITY"
+              },
+              {
+                "title": "Elevation",
+                "name": "ELEVATION"
+              },
+              {
+                "title": "Contact Phone",
+                "name": "CONTACT_PHONE"
+              }
+            ]
+          },
+          "items": [
+            {
+              "id": "wf1-aviation-airport",
+              "title": "Airport",
+              "service": "wf",
+              "visible": false,
+              "layers": "WF1_AVIATION_AIRPORT"
+            },
+            {
+              "id": "wf1-aviation-airstrip",
+              "title": "Airstrip or Other Facility",
+              "service": "wf",
+              "visible": false,
+              "layers": "WF1_AVIATION_AIRSTRIP"
+            },
+            {
+              "id": "wf1-aviation-hospital-heliport",
+              "title": "Hospital Heliport",
+              "service": "wf",
+              "visible": false,
+              "layers": "WF1_AVIATION_HOSPITAL_HELIPORT"
+            },
+            {
+              "id": "wf1-aviation-helipad-heliport",
+              "title": "Heliport & Helipad",
+              "service": "wf",
+              "visible": false,
+              "layers": "WF1_AVIATION_HELIPAD_HELIPORT"
+            },
+            {
+              "id": "wf1-aviation-seaplane",
+              "title": "Seaplane Facility",
+              "service": "wf",
+              "visible": false,
+              "layers": "WF1_AVIATION_SEAPLANE"
+            },
+            {
+              "id": "ued-airstrip",
+              "title": "Airstrip - UED",
+              "service": "xwf",
+              "visible": false,
+              "layers": "AIRSTRIP_POINT_SVW",
+              "titleAttribute": "LABEL",
+              "attributes": [
+                {
+                  "replaceWith": "ued-start"
+                },
+                {
+                  "title": "Fuel On Site",
+                  "format": "${FUEL_ONSITE_IND|Indicator}"
+                },
+                {
+                  "title": "Elevation",
+                  "format": "${AIRSTRIP_ELEVATION|DistM}"
+                },
+                {
+                  "title": "Length",
+                  "format": "${AIRSTRIP_LENGTH|DistM}"
+                },
+                {
+                  "title": "Surface",
+                  "name": "AIRSTRIP_SURFACE_DESC"
+                },
+                {
+                  "replaceWith": "ued-end"
+                }
+              ]
+            },
+            {
+              "id": "ued-forward-tanker-base",
+              "title": "Forward Tanker Base - UED",
+              "service": "xwf",
+              "visible": false,
+              "layers": "FORWARD_TANKER_BASE_POINT_SVW",
+              "titleAttribute": "LABEL",
+              "attributes": [
+                {
+                  "replaceWith": "ued-start"
+                },
+                {
+                  "title": "Elevation",
+                  "format": "${FRWRD_TANKERBASE_ELEV|DistM}"
+                },
+                {
+                  "title": "Variation",
+                  "format": "${FRWRD_TANKERBASE_VARIAT||N/A}"
+                },
+                {
+                  "replaceWith": "ued-end"
+                }
+              ]
+            },
+            {
+              "id": "ued-helipad",
+              "title": "Helipad - UED",
+              "service": "xwf",
+              "visible": false,
+              "layers": "HELIPAD_POINT_SVW",
+              "titleAttribute": "LABEL",
+              "attributes": [
+                {
+                  "replaceWith": "ued-start"
+                },
+                {
+                  "title": "Fuel On Site",
+                  "name": "FUEL_ONSITE_IND"
+                },
+                {
+                  "replaceWith": "ued-end"
+                }
+              ]
+            },
+            {
+              "id": "ued-medevac",
+              "title": "Medevac - UED",
+              "service": "xwf",
+              "visible": false,
+              "layers": "MEDEVAC_POINT_SVW",
+              "titleAttribute": "LABEL",
+              "attributes": [
+                {
+                  "replaceWith": "ued-start"
+                },
+                {
+                  "title": "Associated Facility",
+                  "name": "ASSOC_MEDICAL_FACILITY"
+                },
+                {
+                  "title": "Helipad On-site",
+                  "name": "HELIPAD_ONSITE_IND"
+                },
+                {
+                  "replaceWith": "ued-end"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "critical-infrastructure---weather-infrastructure",
+          "type": "folder",
+          "title": "Weather Infrastructure",
+          "items": [
+            {
+              "id": "fw-activereporting-wstn",
+              "title": "Weather Station - Active",
+              "service": "wf",
+              "visible": false,
+              "layers": "FW_ACTIVEREPORTING_WSTN_SVW",
+              "titleAttribute": "STATION_NAME",
+              "attributes": [
+                {
+                  "title": "Morecast",
+                  "action": "morecast-open"
+                },
+                {
+                  "title": "Name",
+                  "name": "STATION_NAME"
+                },
+                {
+                  "title": "Location",
+                  "format": "${LATITUDE;LONGITUDE|LatLon}"
+                },
+                {
+                  "title": "Station Acronym",
+                  "name": "STATION_ACRONYM"
+                },
+                {
+                  "title": "Station Code",
+                  "name": "STATION_CODE"
+                },
+                {
+                  "title": "Elevation",
+                  "name": "ELEVATION"
+                },
+                {
+                  "title": "Install Date",
+                  "format": "${INSTALL_DATE|IsoDate}"
+                }
+              ]
+            },
+            {
+              "id": "whse-imagery-and-base-maps-gsr-meteorological-stations-svw",
+              "title": "Meteorological Station",
+              "service": "bcgw",
+              "visible": false,
+              "scaleMax": 9000000,
+              "layers": "GBA_METEOROLOGICAL_LOCS_SP",
+              "titleAttribute": "STATION_NAME",
+              "attributes": [
+                {
+                  "title": "Name",
+                  "name": "STATION_NAME"
+                },
+                {
+                  "title": "Location",
+                  "format": "${LATITUDE;LONGITUDE|LatLon}"
+                },
+                {
+                  "title": "Elevation",
+                  "format": "${ELEVATION|DistM}"
+                },
+                {
+                  "title": "Description",
+                  "name": "STATION_DESC"
+                },
+                {
+                  "title": "Agency",
+                  "name": "AGENCY"
+                },
+                {
+                  "title": "Network",
+                  "name": "NETWORK"
+                },
+                {
+                  "title": "Active",
+                  "name": "ACTIVE_IND"
+                },
+                {
+                  "title": "Active Dates",
+                  "format": "${DATE_ACTIVE|IsoDateCompact|Unknown} - ${DATE_INACTIVE|IsoDateCompact|Present}"
+                },
+                {
+                  "title": "Source",
+                  "name": "SOURCE_CODE"
+                },
+                {
+                  "title": "Climate",
+                  "name": "CLIMATE_IND"
+                },
+                {
+                  "title": "Parameters",
+                  "name": "PARAMETERS_MEASURED"
+                },
+                {
+                  "title": "Website 1",
+                  "name": "WEBSITE_URL_SECONDARY"
+                },
+                {
+                  "title": "Website 2",
+                  "name": "WEBSITE_URL_SECONDARY"
+                },
+                {
+                  "title": "WMO ID",
+                  "name": "WMO_ID"
+                },
+                {
+                  "title": "Location ID",
+                  "name": "METEOROLOGICAL_LOCATION_ID"
+                },
+                {
+                  "title": "Native ID",
+                  "name": "NATIVE_ID"
+                },
+                {
+                  "title": "Object ID",
+                  "name": "OBJECTID"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "high-environment-cultural-values",
+      "type": "folder",
+      "title": "High Environment Cultural Values",
+      "items": [
+        {
+          "id": "high-environment-cultural-values---water",
+          "type": "folder",
+          "title": "Water",
+          "items": [
+            {
+              "id": "whse-water-management-wls-community-ws-pub-svw",
+              "title": "Community Watershed",
+              "service": "bcgw",
+              "visible": false,
+              "scaleMax": 2500000,
+              "layers": "WLS_COMMUNITY_WS_PUB_SVW"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "place-and-terrain-names",
+      "type": "folder",
+      "title": "Place and Terrain Names",
+      "items": [
+        {
+          "id": "place-and-terrain-names---annotation-labels",
+          "type": "folder",
+          "title": "Annotation / Labels",
+          "items": [
+            {
+              "id": "wf1-place-names",
+              "title": "Place Name",
+              "service": "wf",
+              "visible": false,
+              "scaleMax": 9000000,
+              "layers": "WF1_PLACE_NAMES"
+            },
+            {
+              "id": "wf1-terrain-names",
+              "title": "Terrain Name",
+              "service": "wf",
+              "visible": false,
+              "scaleMax": 550000,
+              "layers": "WF1_TERRAIN_NAMES"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "boundaries",
+      "type": "folder",
+      "title": "Boundaries",
+      "items": [
+        {
+          "id": "boundaries---bc-wildfire",
+          "type": "folder",
+          "title": "BC Wildfire",
+          "items": [
+            {
+              "id": "wf1-fire-centre-spg",
+              "title": "Fire Centre",
+              "service": "xwf",
+              "visible": true,
+              "layers": "WF1_FIRE_CENTRE_SPG"
+            },
+            {
+              "id": "wf1-fire-zone-spg",
+              "title": "Fire Zone",
+              "service": "xwf",
+              "visible": true,
+              "scaleMax": 2000000,
+              "layers": "WF1_FIRE_ZONE_SPG"
+            },
+            {
+              "id": "response-areas",
+              "title": "Priority Response Areas",
+              "service": "wf",
+              "visible": false,
+              "scaleMax": 4500000,
+              "layers": "FO_RESPONSE_AREAS",
+              "attributes": [
+                {
+                  "title": "Response Area",
+                  "format": "${Response_Area} (${Response_Area_Code})"
+                },
+                {
+                  "title": "RSWAP",
+                  "format": "${RSWAP}"
+                },
+                {
+                  "title": "Fire Zone",
+                  "format": "${Fire_Zone}"
+                },
+                {
+                  "title": "Fire Centre",
+                  "format": "${Fire_Centre}"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "boundaries---client-assets",
+          "type": "folder",
+          "title": "Client Assets",
+          "items": [
+            {
+              "id": "client-asset-points",
+              "title": "Client Asset Points",
+              "service": "wf",
+              "visible": false,
+              "layers": "CLT_CLIENT_ASSETS_POINTS",
+              "attributes": [
+                {
+                  "replaceWith": "client-assets"
+                }
+              ]
+            },
+            {
+              "id": "client-asset-lines",
+              "title": "Client Asset Lines",
+              "service": "wf",
+              "visible": false,
+              "layers": "CLT_CLIENT_ASSETS_LINES",
+              "attributes": [
+                {
+                  "replaceWith": "client-assets"
+                }
+              ]
+            },
+            {
+              "id": "client-asset-polygons",
+              "title": "Client Asset Polygons",
+              "service": "wf",
+              "visible": false,
+              "layers": "CLT_CLIENT_ASSETS_POLYGONS",
+              "attributes": [
+                {
+                  "replaceWith": "client-assets"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "boundaries---local-government",
+          "type": "folder",
+          "title": "Local Government",
+          "items": [
+            {
+              "id": "bndy-fire-departments",
+              "title": "Fire Department",
+              "service": "wf",
+              "visible": true,
+              "scaleMax": 2500000,
+              "layers": "BNDY_FIRE_DEPARTMENTS"
+            },
+            {
+              "id": "whse-legal-admin-boundaries-abms-regional-districts-sp",
+              "title": "Regional District",
+              "service": "bcgw",
+              "visible": false,
+              "scaleMax": 4500000,
+              "layers": "ABMS_REGIONAL_DISTRICTS_SP"
+            },
+            {
+              "id": "whse-legal-admin-boundaries-abms-municipalities-sp",
+              "title": "Municipality",
+              "service": "bcgw",
+              "visible": false,
+              "scaleMax": 9000000,
+              "layers": "ABMS_MUNICIPALITIES_SP"
+            }
+          ]
+        },
+        {
+          "id": "boundaries---flnro",
+          "type": "folder",
+          "title": "FLNRO",
+          "items": [
+            {
+              "id": "whse-admin-boundaries-adm-nr-areas-spg",
+              "title": "Natural Resource Area",
+              "service": "bcgw",
+              "visible": false,
+              "layers": "ADM_NR_AREAS_SPG"
+            },
+            {
+              "id": "whse-admin-boundaries-adm-nr-districts-spg",
+              "title": "Natural Resource District",
+              "service": "bcgw",
+              "visible": false,
+              "layers": "ADM_NR_DISTRICTS_SPG"
+            },
+            {
+              "id": "whse-admin-boundaries-adm-nr-regions-spg",
+              "title": "Natural Resource Region",
+              "service": "bcgw",
+              "visible": false,
+              "layers": "ADM_NR_REGIONS_SPG"
+            }
+          ]
+        },
+        {
+          "id": "boundaries---tenures",
+          "type": "folder",
+          "title": "Tenures",
+          "items": [
+            {
+              "id": "wf1-bndy-tfl",
+              "title": "Tree Farm Licence (TFL)",
+              "service": "wf",
+              "visible": false,
+              "scaleMax": 9000000,
+              "layers": "WF1_BNDY_TFL"
+            },
+            {
+              "id": "reg-legal-and-admin-boundaries-rec-tenure-alpine-ski-areas-sp",
+              "title": "Alpine Ski Area ",
+              "service": "xwf",
+              "visible": false,
+              "scaleMax": 550000,
+              "layers": "REC_TENURE_ALPINE_SKI_AREAS_SP"
+            },
+            {
+              "id": "whse-forest-tenure-ften-recreation-poly-svw",
+              "title": "Recreation Area  (RSTBC)",
+              "service": "bcgw",
+              "visible": false,
+              "scaleMax": 550000,
+              "layers": "FTEN_RECREATION_POLY_SVW"
+            },
+            {
+              "id": "whse-forest-tenure-ften-managed-licence-poly-svw",
+              "title": "Woodlot (Active or Pending)",
+              "service": "bcgw",
+              "visible": false,
+              "scaleMax": 150000,
+              "layers": "FTEN_MANAGED_LICENCE_POLY_SVW"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "land-ownership-status",
+      "type": "folder",
+      "title": "Land Ownership Status",
+      "items": [
+        {
+          "id": "land-ownership-status---first-nations",
+          "type": "folder",
+          "title": "First Nations",
+          "items": [
+            {
+              "id": "whse-legal-admin-boundaries-fnt-treaty-land-sp",
+              "title": "First Nation Treaty Land",
+              "service": "bcgw",
+              "visible": false,
+              "scaleMax": 4500000,
+              "layers": "FNT_TREATY_LAND_SP"
+            },
+            {
+              "id": "wf1-fn-title-area",
+              "title": "First Nation Title Area",
+              "service": "wf",
+              "visible": true,
+              "layers": "WF1_FN_TITLE_AREA"
+            },
+            {
+              "id": "whse-admin-boundaries-clab-indian-reserves",
+              "title": "Indian Reserve",
+              "service": "bcgw",
+              "visible": true,
+              "merge": false,
+              "scaleMax": 1500000,
+              "layers": "CLAB_INDIAN_RESERVES"
+            }
+          ]
+        },
+        {
+          "id": "land-ownership-status---parks-and-protected-lands",
+          "type": "folder",
+          "title": "Parks and Protected Lands",
+          "base": {
+            "scaleMax": 9000000
+          },
+          "items": [
+            {
+              "id": "whse-admin-boundaries-clab-national-parks",
+              "title": "National Park (BC)",
+              "service": "bcgw",
+              "visible": true,
+              "layers": "CLAB_NATIONAL_PARKS"
+            },
+            {
+              "id": "whse-tantalis-ta-park-ecores-pa-svw",
+              "title": "BC Parks and Protected Areas",
+              "service": "bcgw",
+              "visible": true,
+              "scaleMax": 1000000,
+              "layers": "TA_PARK_ECORES_PA_SVW"
+            },
+            {
+              "id": "whse-tantalis-ta-wildlife-mgmt-areas-svw",
+              "title": "Wildlife Management Area",
+              "service": "bcgw",
+              "visible": false,
+              "layers": "TA_WILDLIFE_MGMT_AREAS_SVW"
+            },
+            {
+              "id": "whse-tantalis-ta-conservancy-areas-svw",
+              "title": "Conservancy Area",
+              "service": "bcgw",
+              "visible": false,
+              "layers": "TA_CONSERVANCY_AREAS_SVW"
+            },
+            {
+              "id": "whse-legal-admin-boundaries-wcl-conservation-lands-sp",
+              "title": "Conservation Land",
+              "service": "bcgw",
+              "visible": false,
+              "layers": "WCL_CONSERVATION_LANDS_SP"
+            },
+            {
+              "id": "whse-legal-admin-boundaries-wcl-conservation-areas-ngo-sp",
+              "title": "Conservation Land (NGO)",
+              "service": "bcgw",
+              "visible": false,
+              "scaleMax": 550000,
+              "layers": "WCL_CONSERVATION_AREAS_NGO_SP"
+            }
+          ]
+        },
+        {
+          "id": "land-ownership-status---ownership",
+          "type": "folder",
+          "title": "Ownership",
+          "items": [
+            {
+              "id": "wf1-cadastre",
+              "title": "Cadastre",
+              "service": "wf",
+              "visible": false,
+              "scaleMax": 550000,
+              "layers": "WF1_CADASTRE"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "transportation-and-trails",
+      "type": "folder",
+      "title": "Transportation and Trails",
+      "items": [
+        {
+          "id": "transportation-and-trails---roads",
+          "type": "folder",
+          "title": "Roads",
+          "items": [
+            {
+              "id": "wf1-forest-service-road",
+              "title": "Forest Service Road",
+              "service": "xwf",
+              "visible": false,
+              "scaleMax": 125000,
+              "layers": "FTEN_ROAD_SECTION_LINES_SVW",
+              "merge": false
+            },
+            {
+              "id": "wf1-roads",
+              "title": "Road",
+              "service": "wf",
+              "visible": true,
+              "layers": "WF1_ROADS"
+            }
+          ]
+        },
+        {
+          "id": "transportation-and-trails---railway",
+          "type": "folder",
+          "title": "Railway",
+          "items": [
+            {
+              "id": "whse-basemapping-gba-railway-tracks-sp",
+              "title": "Railway",
+              "service": "bcgw",
+              "scaleMax": 1000000,
+              "visible": true,
+              "layers": "GBA_RAILWAY_TRACKS_SP",
+              "merge": false
+            }
+          ]
+        },
+        {
+          "id": "transportation-and-trails---trails-and-trailheads",
+          "type": "folder",
+          "title": "Trails and Trailheads",
+          "items": [
+            {
+              "id": "wf1-trails",
+              "title": "Trail",
+              "service": "wf",
+              "visible": false,
+              "scaleMax": 150000,
+              "layers": "WF1_TRAILS"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "natural-features",
+      "type": "folder",
+      "title": "Natural Features",
+      "items": [
+        {
+          "id": "whse-basemapping-fwa-stream-networks-sp",
+          "title": "Rivers & Streams",
+          "service": "bcgw",
+          "visible": true,
+          "scaleMax": 70000,
+          "layers": "FWA_STREAM_NETWORKS_SP",
+          "cqlFilter": "EDGE_TYPE NOT IN (1200,1300,1400,1450,1475)",
+          "merge": false
+        },
+        {
+          "id": "whse-basemapping-fwa-lakes-poly",
+          "title": "Lakes",
+          "service": "bcgw",
+          "visible": false,
+          "scaleMax": 140000,
+          "layers": "FWA_LAKES_POLY"
+        },
+        {
+          "id": "natural-features---contours",
+          "type": "folder",
+          "title": "Contours",
+          "items": [
+            {
+              "id": "whse-basemapping-nts-bc-contour-lines-125m",
+              "title": "Contours NTS (80,000 to 500,000)",
+              "service": "bcgw",
+              "visible": false,
+              "scaleMax": 600000,
+              "scaleMin": 80000,
+              "layers": "NTS_BC_CONTOUR_LINES_125M"
+            },
+            {
+              "id": "whse-basemapping-trim-contour-lines",
+              "title": "Contours TRIM (1 to 80,000)",
+              "service": "bcgw",
+              "visible": false,
+              "scaleMax": 80000,
+              "layers": "TRIM_CONTOUR_LINES"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "hoverIdentify": [
+    "ofts-active",
+    "ofts-expired",
+    "ofts-invalid",
+    "whse-imagery-and-base-maps-gsr-meteorological-stations-svw",
+    "lightning",
+    "lightning-offset",
+    "lightning-dummy",
+    "bc-vehicle-hq-systems",
+    "bc-vehicle-hq-wx-techs",
+    "bc-vehicle-hq-camp-co-ord",
+    "bc-vehicle-kamloops-lillooet",
+    "bc-vehicle-kamloops-merritt",
+    "bc-vehicle-kamloops-penticton",
+    "bc-vehicle-kamloops-clearwater",
+    "bc-vehicle-kamloops-kamloops",
+    "bc-vehicle-kamloops-vernon",
+    "bc-vehicle-kamloops-salmon-arm",
+    "bc-vehicle-coastal-south-island",
+    "bc-vehicle-coastal-north-island",
+    "bc-vehicle-coastal-fraser",
+    "bc-vehicle-coastal-mid-island",
+    "bc-vehicle-coastal-sunshine-coast",
+    "bc-vehicle-coastal-pemberton",
+    "bc-vehicle-south-east-arrow",
+    "bc-vehicle-south-east-invermere",
+    "bc-vehicle-south-east-cranbrook",
+    "bc-vehicle-south-east-kootenay-lake",
+    "bc-vehicle-south-east-boundary",
+    "bc-vehicle-south-east-columbia",
+    "bc-vehicle-prince-george-robson-valley",
+    "bc-vehicle-prince-george-dawson-creek",
+    "bc-vehicle-prince-george-fort-st-john",
+    "bc-vehicle-prince-george-prince-george",
+    "bc-vehicle-prince-george-mackenzie",
+    "bc-vehicle-cariboo-cifac",
+    "bc-vehicle-north-west-bulkley",
+    "bc-other-resources-mrb",
+    "bc-other-resources-tanker-truck",
+    "bc-other-resources-fire-camp",
+    "bc-other-resources-guam",
+    "bc-other-resources-heart-beat",
+    "bc-aircraft-rotary-wing-other",
+    "bc-aircraft-rotary-wing-intermediate",
+    "bc-aircraft-rotary-wing-medium",
+    "bc-aircraft-rotary-wing-medium-prov",
+    "bc-aircraft-rotary-wing-light",
+    "bc-aircraft-rotary-wing-heavy",
+    "bc-aircraft-rotary-wing-rap-attack",
+    "bc-aircraft-fwt-patrol",
+    "bc-aircraft-fwt-transport",
+    "bc-aircraft-fwt-crew-transport",
+    "bc-aircraft-fwb-tanker",
+    "bc-aircraft-fwb-bird-dog",
+    "bc-aircraft-fixed-wing-patrol",
+    "bc-aircraft-fixed-wing-transport",
+    "bc-aircraft-fixed-wing-tanker",
+    "bc-aircraft-fixed-wing-bird-dog",
+    "resources-track",
+    "ued-air-patrol-checkpoint",
+    "wf1-aviation-airport",
+    "wf1-aviation-airstrip",
+    "atr-active",
+    "atr-complete",
+    "ued-camp-complex",
+    "ued-fuel-cache",
+    "ued-hazard",
+    "wf1-aviation-helipad-heliport",
+    "htr-active",
+    "htr-complete",
+    "ued-landmark",
+    "wf1-ci-flnro-radio-tower",
+    "wf1-ci-other-radio-tower",
+    "wf1-refuse-site",
+    "ued-surface-patrol-checkpoint",
+    "ued-tool-cache",
+    "ued-airstrip",
+    "ued-forward-tanker-base",
+    "ued-helipad",
+    "ued-medevac",
+    "ued-remote-structures",
+    "fw-activereporting-wstn",
+    "response-areas",
+    "client-asset-points",
+    "client-asset-lines",
+    "client-asset-polygons"
+  ],
+  "quickFilters": [
+    {
+      "title": "All",
+      "filter": "."
+    },
+    {
+      "title": "OFTS",
+      "layers": [
+        "ofts-active",
+        "ofts-expired",
+        "whse-human-cultural-economic-emrg-order-and-alert-areas-sp"
+      ]
+    },
+    {
+      "title": "ROF",
+      "layers": [
+        "rof",
+        "wf1-transmissionlines",
+        "wf1-fire-centre-spg",
+        "wf1-fire-zone-spg",
+        "bndy-fire-departments",
+        "whse-admin-boundaries-clab-indian-reserves",
+        "whse-admin-boundaries-clab-national-parks",
+        "whse-tantalis-ta-park-ecores-pa-svw",
+        "wf1-roads",
+        "whse-basemapping-gba-railway-tracks-sp",
+        "whse-basemapping-fwa-stream-networks-sp"
+      ]
+    },
+    {
+      "title": "IM",
+      "layers": [
+        "incident",
+        "in-current-fire-polygons",
+        "wf1-fire-centre-spg",
+        "wf1-fire-zone-spg",
+        "whse-legal-admin-boundaries-fnt-treaty-land-sp",
+        "whse-admin-boundaries-clab-indian-reserves",
+        "whse-admin-boundaries-clab-national-parks",
+        "whse-tantalis-ta-park-ecores-pa-svw",
+        "whse-tantalis-ta-wildlife-mgmt-areas-svw",
+        "whse-tantalis-ta-conservancy-areas-svw",
+        "whse-legal-admin-boundaries-wcl-conservation-lands-sp",
+        "whse-legal-admin-boundaries-wcl-conservation-areas-ngo-sp",
+        "wf1-cadastre"
+      ]
+    }
+  ],
+  "attributeSets": {
+    "ued-start": [
+      {
+        "title": "📝 Edit",
+        "action": "ued-edit"
+      },
+      {
+        "title": "Name",
+        "name": "NAME"
+      },
+      {
+        "title": "Location",
+        "format": "${wf_computed_latitude;wf_computed_longitude|LatLon}"
+      },
+      {
+        "title": "Geographic",
+        "name": "DESCRIPTION"
+      },
+      {
+        "title": "Comments",
+        "name": "INSTRUCTIONS"
+      }
+    ],
+    "ued-end": [
+      {
+        "title": "Fire Centre",
+        "format": "${FIRE_CTR_NAME|ShortenFireCentre}"
+      },
+      {
+        "title": "Fire Zone",
+        "format": "${FIRE_ZONE_NAME|ShortenFireZone}"
+      }
+    ],
+    "client-assets": [
+      {
+        "title": "Client Name",
+        "format": "${CLIENT_NAME}"
+      },
+      {
+        "title": "Asset Type",
+        "format": "${ASSET_TYPE}"
+      },
+      {
+        "title": "Contact Information",
+        "format": "${CONTACT_INFORMATION}"
+      },
+      {
+        "title": "FP Priority",
+        "format": "${FP_PRIORITY}"
+      },
+      {
+        "title": "Update Date",
+        "format": "${UPDATE_DATE|IsoDate}"
+      }
+    ]
+  }
+}

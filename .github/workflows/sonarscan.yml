@@ -1,0 +1,111 @@
+name: SonarScan
+env:
+  NPMRC: ${{ secrets.NPMRC }}
+  SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  MAVEN_OPTS: "-Xmx10000m"
+  NODE_OPTIONS: "--max-old-space-size=4096"
+on:
+  # push:
+  #   branches: [ main, feature/* ]
+  pull_request:
+    branches: [ main, feature/* ]
+    types: [opened, synchronize, reopened]
+jobs:
+  sonarcloud:
+    name: SonarCloud Scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          submodules: 'recursive'
+          ref: ${{ github.head_ref }}
+          
+      - name: Debug checkout info
+        run: |
+            echo "Current branch: ${{ github.ref_name }}"
+            echo "Commit SHA: ${{ github.sha }}"
+            echo "Current directory contents:"
+            cd ./client/wfprev-war/src/main/angular
+            echo "Angular directory contents:"
+            ls -la
+            echo "Test file contents:"
+            cat src/app/components/list/list.component.spec.ts
+     
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: 21
+          distribution: 'temurin'
+     
+      - name: Cache Maven packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+     
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'         
+          cache: 'yarn'
+          cache-dependency-path: './client/wfprev-war/src/main/angular/yarn.lock'
+     
+      - name: Clear cache
+        working-directory: ./client/wfprev-war/src/main/angular
+        run: |
+          rm -rf node_modules
+          yarn cache clean
+
+      - name: Install dependencies and Angular CLI
+        working-directory: ./client/wfprev-war/src/main/angular
+        run: |
+          yarn install
+          yarn global add @angular/cli
+
+      - name: Run client tests with coverage
+        working-directory: ./client/wfprev-war/src/main/angular
+        run: $(yarn global bin)/ng test --no-watch --code-coverage
+     
+      - name: Build, Test, and Analyze
+        run: |
+          mvn clean --settings server/wfprev-api/mvn_settings/settings.xml -B \
+          org.jacoco:jacoco-maven-plugin:prepare-agent verify \
+          org.jacoco:jacoco-maven-plugin:report \
+          -Pcoverage \
+          -Drepo.login=${{ secrets.IDIR_AS_EMAIL }} \
+          -Drepo.password=${{ secrets.IDIR_PASSWORD }} \
+          -DWFPREV_CLIENT_ID=${{ vars.WFPREV_CLIENT_ID }} \
+          -DWFPREV_CLIENT_SECRET=${{ secrets.WFPREV_CLIENT_SECRET }} \
+          -DWEBADE_OAUTH2_CHECK_TOKEN_URL=${{ vars.WEBADE_OAUTH2_CHECK_TOKEN_URL }} \
+          -DWEBADE_OAUTH2_CHECK_AUTHORIZE_URL=${{ vars.WEBADE_OAUTH2_CHECK_TOKEN_URL }} \
+          -DWFPREV_DATASOURCE_URL=${{ vars.WFPREV_DATASOURCE_URL }} \
+          -DWFPREV_DATASOURCE_USERNAME=${{ secrets.WFPREV_USERNAME }} \
+          -DWFPREV_DATASOURCE_PASSWORD=${{ secrets.DB_PASS }}
+     
+      - name: SonarCloud Scan Action
+        uses: SonarSource/sonarcloud-github-action@master
+
+      - name: Check SonarCloud Quality Gate
+        id: sonarcloud_quality_gate
+        run: |
+          status=$(curl -s -u ${{ secrets.SONAR_TOKEN }}: "https://sonarcloud.io/api/qualitygates/project_status?projectKey=bcgov_nr-bcws-wfprev" | jq -r '.projectStatus.status')
+          echo "SonarCloud Quality Gate status: $status"
+          if [ "$status" != "OK" ]; then
+            echo "quality_gate_failed=true" >> $GITHUB_OUTPUT
+          else
+            echo "quality_gate_failed=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Notify Slack on Failure 
+        if: failure() || steps.sonarcloud_quality_gate.outputs.quality_gate_failed == 'true'
+        uses: ravsamhq/notify-slack-action@2.5.0
+        with:
+          status: 'failure'
+          notification_title: "SonarScan - Failed on ${{github.ref_name}} - <${{ vars.SONARCLOUD_NEW_CODE_URL }}|View SonarCloud Failure>"
+          message_format: ":fire: *SonarScan* failed in <${{github.server_url}}/${{github.repository}}/${{github.ref_name}}|${{github.repository}}>"
+          footer: "Linked Repo <${{github.server_url}}/${{github.repository}}|${{github.repository}}> | <${{github.server_url}}/${{github.repository}}/actions/runs/${{github.run_id}}|View Failure>"
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}

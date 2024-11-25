@@ -1,0 +1,168 @@
+name: Deploy using terragrunt
+
+permissions:
+  contents: read
+  packages: write
+
+on:
+  workflow_call:
+    inputs:
+      DEFAULT_APPLICATION_ENVIRONMENT:
+        required: true
+        type: string
+      IMAGE_TAG:
+        required: true
+        type: string
+  workflow_dispatch:
+    inputs:
+      DEFAULT_APPLICATION_ENVIRONMENT:
+        required: true
+        type: choice
+        options:
+        - dev
+        - test
+        - prod
+      IMAGE_TAG:
+        required: true
+        type: string
+        default: main
+      SCHEMA_NAME:
+        required: true
+        type: string
+        default: app_wf1_prev
+
+      CHANGELOG_NAME:
+        type: choice
+        options:
+          - none
+          - main-changelog
+  
+      TARGET_LIQUIBASE_TAG: 
+        required: false
+        type: string
+      # IS_HOTFIX:
+      #   required: true
+      #   type: string
+      #   default: 'false'
+
+env:
+  TF_VERSION: 1.8.5
+  TG_VERSION: 0.48.4
+  TG_SRC_PATH: terraform
+  REPOSITORY_HOST: ghcr.io
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-22.04
+    environment: ${{ inputs.DEFAULT_APPLICATION_ENVIRONMENT }}
+    permissions:
+      id-token: write # This is required for requesting the JWT
+      contents: read  # This is required for actions/checkout
+
+    steps:
+      - uses: actions/checkout@v4
+      # - name: retrieve lambda artifacts
+      #   uses: actions/download-artifact@v3
+      #   with:
+      #     name: lambda-functions
+      #     path: ${{env.TG_SRC_PATH}}/lambda-functions
+
+      - id: changeLogCount
+        name: Determine changelog to execute
+        run: |
+          if [ "${{ inputs.CHANGELOG_NAME }}" == "main-changelog" ]; then
+            echo "NONPROXY_COUNT=1" >> $GITHUB_OUTPUT
+            echo "PROXY_COUNT=0" >> $GITHUB_OUTPUT
+          else
+            echo "NONPROXY_COUNT=0" >> $GITHUB_OUTPUT
+            echo "PROXY_COUNT=0" >> $GITHUB_OUTPUT
+          fi
+
+      - id: liquibaseCommand
+        name: Determine liquibase command
+        run: |
+          if [ "${{ inputs.TARGET_LIQUIBASE_TAG }}" == "" ]; then
+            echo "LIQUIBASE_COMMAND=update" >> $GITHUB_OUTPUT
+            echo "TARGET_LIQUIBASE_TAG=""" >> $GITHUB_OUTPUT
+          else
+            echo "LIQUIBASE_COMMAND=update-to-tag" >> $GITHUB_OUTPUT
+            echo "TARGET_LIQUIBASE_TAG=--tag=${{inputs.TARGET_LIQUIBASE_TAG}}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Get digest of API docker image
+        id: getDigestAPI
+        run: |
+          export IMAGE='${{vars.REPOSITORY_HOST}}/${{ github.repository }}-wfprev-api:${{ inputs.IMAGE_TAG }}'
+          docker pull $IMAGE
+          echo "IMAGE_API_BY_DIGEST=$(docker inspect --format='{{index .RepoDigests 0}}' $IMAGE)" >> $GITHUB_OUTPUT
+
+      - name: Get digest of UI docker image
+        id: getDigestUI
+        run: |
+          export IMAGE='${{vars.REPOSITORY_HOST}}/${{ github.repository }}-wfprev-war:${{ inputs.IMAGE_TAG }}'
+          docker pull $IMAGE
+          echo "IMAGE_UI_BY_DIGEST=$(docker inspect --format='{{index .RepoDigests 0}}' $IMAGE)" >> $GITHUB_OUTPUT
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_TERRAFORM_ROLE_TO_ASSUME }}
+          role-session-name: wfprev-terraform-s3
+          aws-region: ca-central-1
+
+      - uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+
+      - uses: peter-murray/terragrunt-github-action@v1.0.0
+        with:
+          terragrunt_version: ${{ env.TG_VERSION }}
+
+      - name: Terragrunt Apply
+        working-directory: ${{env.TG_SRC_PATH}}
+
+        
+        env:
+          # Necessary for all components
+          TFC_PROJECT: ${{ secrets.TFC_PROJECT }}
+          TARGET_ENV: ${{ inputs.DEFAULT_APPLICATION_ENVIRONMENT }}
+          APP_COUNT: ${{vars.APP_COUNT}}
+          LOGGING_LEVEL: ${{vars.LOGGING_LEVEL}}
+
+          # Necessary for WFPREV API
+          WFPREV_API_NAME: wfprev-api
+          WFPREV_API_IMAGE: ${{ steps.getDigestAPI.outputs.IMAGE_API_BY_DIGEST }}
+          WFPREV_API_CPU_UNITS: ${{vars.WFPREV_API_CPU_UNITS}}
+          WFPREV_API_MEMORY: ${{vars.WFPREV_API_MEMORY}}
+          WFPREV_API_PORT: ${{vars.WFPREV_API_PORT}}
+          TARGET_AWS_ACCOUNT_ID: ${{secrets.TARGET_AWS_ACCOUNT_ID}}
+          WFPREV_CLIENT_ID: ${{vars.WFPREV_CLIENT_ID}}
+          WFPREV_CLIENT_SECRET: ${{secrets.WFPREV_CLIENT_SECRET}}
+          WEBADE_OAUTH2_CHECK_TOKEN_URL: ${{vars.WEBADE_OAUTH2_CHECK_TOKEN_URL}}
+          WEBADE_OAUTH2_CHECK_AUTHORIZE_URL: ${{vars.WEBADE_OAUTH2_CHECK_AUTHORIZE_URL}}
+          WFPREV_DATASOURCE_URL: ${{vars.WFPREV_DATASOURCE_URL}}
+          WFPREV_DATASOURCE_USERNAME: ${{secrets.WFPREV_USERNAME}}
+          WFPREV_DATASOURCE_PASSWORD: ${{secrets.DB_PASS}}
+          server_count: ${{vars.WFPREV_SERVER_INSTANCE_COUNT}}
+          # WFPREV UI
+          CLIENT_IMAGE: ${{ steps.getDigestUI.outputs.IMAGE_UI_BY_DIGEST }}
+          WEBADE_OAUTH2_WFPREV_UI_CLIENT_SECRET: ${{ secrets.WEBADE_OAUTH2_WFPREV_UI_CLIENT_SECRET }}
+
+          # DB
+          WFPREV_USERNAME: ${{secrets.WFPREV_USERNAME}}
+          DB_PASS: ${{secrets.DB_PASS}}
+          DB_INSTANCE_TYPE: ${{vars.DB_INSTANCE_TYPE}}
+
+          #liquibase
+          COMMAND: ${{ steps.liquibaseCommand.outputs.LIQUIBASE_COMMAND }}
+          PROXY_COUNT: ${{ steps.changeLogCount.outputs.PROXY_COUNT }}
+          NONPROXY_COUNT: ${{ steps.changeLogCount.outputs.NONPROXY_COUNT }}
+          CHANGELOG_NAME: ${{ inputs.CHANGELOG_NAME }}
+          LIQUIBASE_IMAGE: ${{vars.REPOSITORY_HOST}}/${{ github.repository_owner }}/${{ vars.LIQUIBASE_IMAGE }}:${{ inputs.IMAGE_TAG }}
+          LIQUIBASE_COMMAND_USERNAME: ${{ vars.LIQUIBASE_COMMAND_USERNAME }}
+          LIQUIBASE_COMMAND_PASSWORD: ${{ secrets.LIQUIBASE_COMMAND_PASSWORD }}
+          SCHEMA_NAME: ${{ inputs.SCHEMA_NAME }}
+          TARGET_LIQUIBASE_TAG: ${{ steps.liquibaseCommand.outputs.TARGET_LIQUIBASE_TAG }}
+
+        run: terragrunt apply --terragrunt-non-interactive -auto-approve

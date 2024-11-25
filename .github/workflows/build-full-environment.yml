@@ -1,0 +1,58 @@
+env:
+  IMAGE_NAME: "${{ github.repository }}-${{inputs.PROJECT_NAME}}"
+  NPMRC: ${{ secrets.NPMRC }}
+
+permissions:
+  contents: read
+  packages: write
+  id-token: write
+
+on:
+  pull_request_target:
+    types:
+      - closed
+    branches:
+      - 'main'
+    paths:
+      - ".github/workflows/**"
+      - "client/**"
+      - "server/**"
+      - "!**/README.md"
+  workflow_dispatch:
+    inputs:
+      TAG:
+        type: string
+        description: Additional tag to add to built images
+
+jobs: 
+    
+  wfprev-api:
+    uses: ./.github/workflows/mvn-build.yml
+    secrets: inherit
+    with:
+      COMPONENT_NAME: wfprev-api
+      TAG: latest
+      COMPONENT_TYPE: server
+  
+  liquibase-build:
+    uses: ./.github/workflows/liquibase-build.yml
+    secrets: inherit
+    with:
+      TAG: latest
+      
+  terragrunt-deploy-dev:
+    uses: ./.github/workflows/terragrunt-deploy.yml
+    needs: [wfprev-api, liquibase-build]
+    with:
+      DEFAULT_APPLICATION_ENVIRONMENT: dev
+      IMAGE_TAG: latest
+    secrets: inherit
+
+  wfprev-ui:
+    uses: ./.github/workflows/client-build.yml
+    needs: [terragrunt-deploy-dev]
+    with:
+      DEFAULT_APPLICATION_ENVIRONMENT: dev
+      IMAGE_TAG: latest
+    secrets: inherit
+    

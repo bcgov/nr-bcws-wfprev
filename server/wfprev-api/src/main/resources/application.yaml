@@ -1,0 +1,56 @@
+spring:
+  application:
+    name: wfprev
+  datasource:
+    url: ${WFPREV_DATASOURCE_URL}
+    username: ${WFPREV_DATASOURCE_USERNAME}
+    password: ${WFPREV_DATASOURCE_PASSWORD}
+    tomcat:
+      initial-size: 15
+      max-wait: 20000
+      max-active: 50
+      max-idle: 15
+      min-idle: 8
+      testWhileIdle: true
+      testOnBorrow: true
+      validationQuery: SELECT 1
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+logging:
+  level:
+    org:
+      hibernate:
+        SQL: DEBUG
+      type:
+        descriptor:
+          sql:
+            BasicBinder: TRACE
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,auditevents,beans,heapdump,logfile,metrics,scheduledtasks,threaddump
+  endpoint:
+    health:
+      show-details: always
+      group:
+        custom:
+          include: diskSpace,ping
+          show-components: WHEN_AUTHORIZED
+          show-details: WHEN_AUTHORIZED
+
+security:
+  oauth:
+    clientId: ${WFPREV_CLIENT_ID}
+    clientSecret: ${WFPREV_CLIENT_SECRET}
+    checkTokenUrl: ${WEBADE_OAUTH2_CHECK_TOKEN_URL}
+    authTokenUrl: ${WEBADE_OAUTH2_CHECK_AUTHORIZE_URL}
+
+server:
+  forward-headers-strategy: framework

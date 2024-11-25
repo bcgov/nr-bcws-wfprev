@@ -1,0 +1,18 @@
+<div>
+  <div class="title" (click)="goHome()">
+    {{ title }}
+  </div>
+  <nav class="nav-class">
+    <div>
+      <span class="span-class" [class.active]="activeRoute === 'list'" (click)="setActive('list')">
+        List
+      </span>
+    </div>
+    <div>
+      <span class="span-class" [class.active]="activeRoute === 'map'" (click)="setActive('map')">
+        Map
+      </span>
+    </div>
+  </nav>
+</div>
+<router-outlet></router-outlet>
