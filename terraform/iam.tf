@@ -143,6 +143,26 @@ resource "aws_iam_role" "github_actions_role" {
   })
 }
 
+resource "aws_iam_policy" "github_actions_policy" {
+  name        = "github-actions-policy"
+  description = "Policy for GitHub Actions"
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect   = "Allow",
+        Action   = "s3:*",
+        Resource = "arn:aws:s3:::wfprev_site_bucket/*"
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "github_actions_policy_attach" {
+  role       = aws_iam_role.github_actions_role.name
+  policy_arn = aws_iam_policy.github_actions_policy.arn
+}
+
 # Output for the AWS Account ID
 output "github_actions_account_id" {
   value       = regex("^arn:aws:iam::([0-9]+):", aws_iam_role.github_actions_role.arn)[0]
