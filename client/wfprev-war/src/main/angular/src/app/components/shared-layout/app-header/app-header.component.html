@@ -1,0 +1,30 @@
+<div class="header-container">
+    <div class="bc-logo" (click)="onBCLogoClick()">
+        <span class="bcwfservice-logo" alt="BC Gov"></span>
+    </div>
+    <div class="app-logo-and-title">
+        <span class="wildfire1-logo" alt="Wildfire ONE"></span>
+        <span class="separator"></span>
+        <span class="title">{{ title }}</span>
+        <span class="environment">{{ environment }}</span>
+    </div>
+    
+    <div class="user-menu">
+        <ng-container>
+            <span (click)="onSupportLinkClick()" class="training can-click">Training and Support</span>
+            <span class="separator"></span>
+        </ng-container>
+        <ng-container>
+            <button mat-button [matMenuTriggerFor]="menu" (click)="onLogoutClick()">
+                <mat-icon >account_circle</mat-icon> 
+                <span class="user-name">{{currentUser}}</span>
+                <!-- Replace this with signed in user once authentication piece is ready -->
+                <mat-icon>keyboard_arrow_down</mat-icon> <!-- Down Arrow -->
+            </button>
+            <mat-menu #menu="matMenu">
+                <button mat-menu-item>Logout</button>
+            </mat-menu>
+        </ng-container>
+    </div>
+    
+</div>
