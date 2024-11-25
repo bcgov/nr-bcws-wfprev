@@ -61,7 +61,7 @@ jobs:
       contents: read  # This is required for actions/checkout
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v3
       # - name: retrieve lambda artifacts
       #   uses: actions/download-artifact@v3
       #   with:
@@ -105,7 +105,7 @@ jobs:
           echo "IMAGE_UI_BY_DIGEST=$(docker inspect --format='{{index .RepoDigests 0}}' $IMAGE)" >> $GITHUB_OUTPUT
 
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v4
+        uses: aws-actions/configure-aws-credentials@v2
         with:
           role-to-assume: ${{ secrets.AWS_TERRAFORM_ROLE_TO_ASSUME }}
           role-session-name: wfprev-terraform-s3
@@ -114,6 +114,7 @@ jobs:
       - uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: ${{ env.TF_VERSION }}
+          cli_config_credentials_token: ${{ secrets.TFC_TEAM_TOKEN }}
 
       - uses: peter-murray/terragrunt-github-action@v1.0.0
         with:
@@ -148,6 +149,8 @@ jobs:
           # WFPREV UI
           CLIENT_IMAGE: ${{ steps.getDigestUI.outputs.IMAGE_UI_BY_DIGEST }}
           WEBADE_OAUTH2_WFPREV_UI_CLIENT_SECRET: ${{ secrets.WEBADE_OAUTH2_WFPREV_UI_CLIENT_SECRET }}
+          WFPREV_CLIENT_MEMORY: ${{vars.WFPREV_CLIENT_MEMORY}}
+          WFPREV_CLIENT_CPU_UNITS : ${{vars.WFPREV_CLIENT_CPU_UNITS}}
 
           # DB
           WFPREV_USERNAME: ${{secrets.WFPREV_USERNAME}}

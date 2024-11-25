@@ -4,7 +4,6 @@ import { ResourcesRoutes } from 'src/app/utils';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -17,7 +16,7 @@ import { CommonModule } from '@angular/common';
     MatIconModule,
   ],
   templateUrl: './app-header.component.html',
-  styleUrl: './app-header.component.scss'
+  styleUrls: ['./app-header.component.scss']
 })
 export class AppHeaderComponent {
 
