@@ -1,5 +1,4 @@
 env:
-
   IMAGE_NAME: "${{ github.repository }}-${{inputs.COMPONENT_NAME}}"
   NPMRC: ${{ secrets.NPMRC }}
 
@@ -7,7 +6,6 @@ permissions:
   contents: read
   packages: write
 
-# Controls when the workflow will run
 on:
   workflow_dispatch:
     inputs:
@@ -22,9 +20,8 @@ on:
       COMPONENT_TYPE:
         required: true
         type: choice
-        options: 
+        options:
           - server
-          - client
           - libs
   workflow_call:
     inputs:
@@ -44,74 +41,72 @@ jobs:
     environment:
       name: ${{ inputs.ENVIRONMENT }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         if: ${{ inputs.IS_HOTFIX != 'true' }}
-      
-      - uses: actions/checkout@v3
+
+      - uses: actions/checkout@v4
         if: ${{ inputs.IS_HOTFIX == 'true' }}
         with:
           ref: ${{ inputs.BRANCH }}
 
-      - name: Set up Node.js 20.x
-        uses: actions/setup-node@v3
-        with:
-          node-version: '20.x'
-
-      - name: Set up JDK 21
+      - name: Setup Maven
         uses: actions/setup-java@v4
         with:
-          java-version: '21'
           distribution: 'temurin'
-      
+          java-version: '21'
+          cache: 'maven'
+
+      - name: Setup GraalVM
+        uses: graalvm/setup-graalvm@v1
+        with:
+          java-version: '21'
+          distribution: 'graalvm-community'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          native-image-job-reports: 'true'
+          components: 'native-image'
+
       - name: Add .npmrc file
         run: echo -e $NPMRC > ~/.npmrc
 
+      - name: Build Native Image with Maven
+        if: ${{ inputs.COMPONENT_TYPE == 'server' }}
+        run: |
+          set -x
+          export MAVEN_OPTS="-Xmx6g -XX:MaxMetaspaceSize=1g"
+          export NATIVE_IMAGE_OPTS="-Xmx8g"
+          cd ${{ inputs.COMPONENT_TYPE }}/${{ inputs.COMPONENT_NAME }}
 
-      - name: Install dependencies for Angular project
-        if: ${{ inputs.COMPONENT_TYPE == 'client' }}
-        run: |
-          cd ${{ inputs.COMPONENT_TYPE }}/wfprev-war/src/main/angular
-          npm install
-      - name: Build Angular app
-        if: ${{ inputs.COMPONENT_TYPE == 'client' }}
-        run: |
-          cd ${{ inputs.COMPONENT_TYPE }}/wfprev-war/src/main/angular
-          npm run build -- --configuration=production --base-href=/pub/wfprev/
-  
-      - name: Copy client built files to necessary folder
-        if: ${{ inputs.COMPONENT_TYPE == 'client' }}
-        run: mkdir -p staging-client && cp -r ${{ inputs.COMPONENT_TYPE }}/wfprev-war/src/main/angular/dist/wfprev/* staging-client/
-      
-      - name: Upload client artifact
-        if: ${{ inputs.COMPONENT_TYPE == 'client' }}
-        uses: actions/upload-artifact@v3
-        with:
-          name: ${{ inputs.COMPONENT_NAME }}-package
-          path: staging-client
+          # Use absolute path to settings.xml
+          settings_file="$(pwd)/mvn_settings/settings.xml"
+          echo "Looking for settings file at: $settings_file"
+
+          # Check if file exists and is readable
+          if [ ! -f "$settings_file" ]; then
+            echo "ERROR: $settings_file not found!"
+            ls -la mvn_settings/
+            exit 1
+          fi
+
+          if [ ! -r "$settings_file" ]; then
+            echo "ERROR: $settings_file not readable!"
+            ls -la "$settings_file"
+            exit 1
+          fi
+
+          echo "Using settings file: $settings_file"
+          mvn -s "$settings_file" --batch-mode -Pnative native:compile -DskipTests -Drepo.login=${{ secrets.IDIR_AS_EMAIL }} -Drepo.password=${{ secrets.IDIR_PASSWORD }}
           
-      - name: Build API with Maven
+
+      - name: Copy native binary to staging
         if: ${{ inputs.COMPONENT_TYPE == 'server' }}
         run: |
-          export MAVEN_OPTS="-Xmx3072m -XX:MaxMetaspaceSize=512m"
-          export NODE_OPTIONS="--max-old-space-size=4096"
-          mvn --settings ${{ inputs.COMPONENT_TYPE }}/${{ inputs.COMPONENT_NAME }}/mvn_settings/settings.xml --batch-mode --update-snapshots -f ${{ inputs.COMPONENT_TYPE }}/${{ inputs.COMPONENT_NAME }}/pom.xml -Drepo.login=${{ secrets.IDIR_AS_EMAIL }} -Drepo.password=${{ secrets.IDIR_PASSWORD }} -DskipTests package
-            
-      - name: Copy files to neccessary folders
-        if: ${{ inputs.COMPONENT_TYPE == 'server' }}
-        run: mkdir staging && cp ${{ inputs.COMPONENT_TYPE }}/${{ inputs.COMPONENT_NAME }}/target/*.war staging
-      
+          mkdir -p staging
+          cp ${{ inputs.COMPONENT_TYPE }}/${{ inputs.COMPONENT_NAME }}/target/wfprev-api staging/
+
       - uses: actions/upload-artifact@v3
         with:
           name: ${{ inputs.COMPONENT_NAME }}-package
           path: staging
-
-      - name: Cache local Maven repository
-        uses: actions/cache@v2
-        with:
-          path: staging
-          key: ${{ inputs.COMPONENT_NAME }}-maven-${{ hashFiles('**war.xml') }}
-          restore-keys: |
-            ${{ inputs.COMPONENT_NAME }}-maven-
 
   docker:
     needs: build
@@ -121,7 +116,7 @@ jobs:
       packages: write
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         if: ${{ github.event.inputs.IS_HOTFIX != 'true' }}
 
       - id: trimBranchName
@@ -131,29 +126,11 @@ jobs:
           trimTag="${branchTag##*/}"
           echo "BRANCH_TAG=$trimTag" >> $GITHUB_OUTPUT
 
-      # - uses: actions/checkout@v3
-      #   if: ${{ github.event.inputs.IS_HOTFIX == 'true' }}
-      #   with:
-      #     ref: ${{ inputs.BRANCH }}
-
-
-          # Download client artifact
-      - name: download client artifact
-        uses: actions/download-artifact@v3
-        if: ${{ inputs.COMPONENT_TYPE == 'client' }}
-        with:
-          name: wfprev-war-package
-          path: client/wfprev-war/dist/wfprev
-
-      - name: download server artifact
+      - name: download native binary
         uses: actions/download-artifact@v3
         with:
           name: ${{ inputs.COMPONENT_NAME }}-package
           path: ${{inputs.COMPONENT_TYPE}}/${{inputs.COMPONENT_NAME}}
-
-      # - name: Update image name if PR number present
-      #   if: ${{ github.event.pull_request.number > 0 || inputs.IS_HOTFIX == 'true' }}
-      #   run: echo "IMAGE_NAME = ${{env.IMAGE_NAME}}-${{ inputs.IS_HOTFIX == 'true' && 'hotfix' || github.event.pull_request.number }}" >> $GITHUB_ENV
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
@@ -168,8 +145,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN}}
 
-      - name: Extract metadata (tags, labels) for Docker (with PR)
-#       if: ${{ github.event.pull_request.number > 0 || inputs.IS_HOTFIX == 'true' }}
+      - name: Extract metadata for Docker
         id: meta_pr
         uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
         with:
@@ -180,23 +156,13 @@ jobs:
             type=ref,event=tag
             type=raw,value=${{ inputs.TAG }}
 
-      - name: Build and push Client Docker image
-        if: ${{ inputs.COMPONENT_TYPE == 'client' }}
-        uses: docker/build-push-action@v6
-        with:
-          context: client/wfprev-war
-          build-args: |
-            CONTAINER_NAME=wfprev-war
-          push: true
-          tags: ${{ steps.meta_pr.outputs.tags }}
-          labels: ${{ steps.meta_pr.outputs.labels }}
-
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
         with:
-           context: ${{inputs.COMPONENT_TYPE}}/${{inputs.COMPONENT_NAME}}
-           build-args: |
-             CONTAINER_NAME=${{inputs.COMPONENT_NAME}}
-           push: true
-           tags: ${{ steps.meta_pr.outputs.tags }}
-           labels: ${{ steps.meta_pr.outputs.labels }}
+          context: ${{inputs.COMPONENT_TYPE}}/${{inputs.COMPONENT_NAME}}
+          build-args: |
+            CONTAINER_NAME=${{inputs.COMPONENT_NAME}}
+            MAVEN_SETTINGS_FILE=settings.xml
+          push: true
+          tags: ${{ steps.meta_pr.outputs.tags }}
+          labels: ${{ steps.meta_pr.outputs.labels }}
