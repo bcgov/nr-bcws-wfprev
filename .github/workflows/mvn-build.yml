@@ -79,21 +79,37 @@ jobs:
           echo "Full directory listing:"
           find . -type f -name "*.xml"
 
-          echo "Maven settings directory contents:"
-          ls -la mvn_settings/
+          echo "Maven settings directory structure:"
+          tree mvn_settings
 
-          echo "Available settings files:"
-          find . -name "*.settings.xml"
+          echo "All settings files contents:"
+          for f in mvn_settings/*.xml; do
+            echo "=== Contents of $f ==="
+            cat "$f"
+            echo "======================="
+          done
 
-          # Use find to locate and use the correct settings file
-          settings_file=$(find . -name "settings.xml" | head -n 1)
-          if [ -z "$settings_file" ]; then
-            echo "ERROR: settings.xml not found!"
+          # Use absolute path to settings.xml
+          settings_file="$(pwd)/mvn_settings/settings.xml"
+          echo "Looking for settings file at: $settings_file"
+
+          # Check if file exists and is readable
+          if [ ! -f "$settings_file" ]; then
+            echo "ERROR: $settings_file not found!"
+            ls -la mvn_settings/
+            exit 1
+          fi
+
+          if [ ! -r "$settings_file" ]; then
+            echo "ERROR: $settings_file not readable!"
+            ls -la "$settings_file"
             exit 1
           fi
 
           echo "Using settings file: $settings_file"
           mvn -s "$settings_file" --batch-mode -Pnative native:compile -DskipTests -Drepo.login=${{ secrets.IDIR_AS_EMAIL }} -Drepo.password=${{ secrets.IDIR_PASSWORD }}
+          
+
       - name: Copy native binary to staging
         if: ${{ inputs.COMPONENT_TYPE == 'server' }}
         run: |
