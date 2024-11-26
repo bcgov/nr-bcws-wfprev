@@ -1,12 +1,16 @@
-import {Injectable, Injector} from "@angular/core";
-import {HttpClient, HttpHandler, HttpHeaders} from "@angular/common/http";
-import {OAuthService} from "angular-oauth2-oidc";
+import { Injectable, Injector } from "@angular/core";
+import { HttpClient, HttpHandler, HttpHeaders, HttpResponse } from "@angular/common/http";
+import { OAuthService } from "angular-oauth2-oidc";
 import momentInstance from "moment";
-import {AsyncSubject, Observable, catchError, firstValueFrom} from "rxjs";
-import {AppConfigService} from "./app-config.service";
+import { AsyncSubject, Observable, catchError, firstValueFrom, map, of } from "rxjs";
+import { AppConfigService } from "./app-config.service";
 
 const moment = momentInstance;
 const OAUTH_LOCAL_STORAGE_KEY = 'oauth';
+
+interface ValidationResponse {
+  status: string
+}
 
 @Injectable({
   providedIn: 'root',
@@ -24,31 +28,31 @@ export class TokenService {
 
   constructor(private injector: Injector, protected appConfigService: AppConfigService) {
     const config = this.appConfigService.getConfig().application;
-    
+
     const lazyAuthenticate: boolean = config.lazyAuthenticate ?? false;
     const enableLocalStorageToken: boolean = config.enableLocalStorageToken ?? false;
     const localStorageTokenKey: string = config.localStorageTokenKey ?? OAUTH_LOCAL_STORAGE_KEY;
     const allowLocalExpiredToken: boolean = config.allowLocalExpiredToken ?? false;
-    
-    if(localStorageTokenKey) {
+
+    if (localStorageTokenKey) {
       this.LOCAL_STORAGE_KEY = localStorageTokenKey;
     }
-    
-    if(enableLocalStorageToken) {
+
+    if (enableLocalStorageToken) {
       this.useLocalStore = true;
     }
-    
+
     this.checkForToken(undefined, lazyAuthenticate, allowLocalExpiredToken);
   }
 
   public checkForToken(redirectUri?: string, lazyAuth = false, allowLocalExpiredToken = false): void {
     const hash = window.location.hash;
-    
+
     if (hash && hash.includes('access_token')) {
       this.parseToken(hash);
     } else if (this.useLocalStore && !navigator.onLine) {
       let tokenStore = localStorage.getItem(this.LOCAL_STORAGE_KEY);
-      
+
       if (tokenStore) {
         try {
           tokenStore = JSON.parse(tokenStore);
@@ -62,7 +66,7 @@ export class TokenService {
       } else {
         this.initImplicitFlow(redirectUri);
       }
-      
+
       if (!allowLocalExpiredToken && this.isTokenExpired(this.tokenDetails)) {
         localStorage.removeItem(this.LOCAL_STORAGE_KEY);
         this.initImplicitFlow(redirectUri);
@@ -86,8 +90,8 @@ export class TokenService {
   private parseToken(hash: string): void {
     hash = hash.startsWith('#') ? hash.substr(1) : hash;
     const params = new URLSearchParams(hash);
-    const paramMap: {[key: string]: string} = {};
-    
+    const paramMap: { [key: string]: string } = {};
+
     params.forEach((value, key) => {
       paramMap[key] = value;
     });
@@ -175,13 +179,29 @@ export class TokenService {
     }
   }
 
-  public validateToken() {
-    
+  public validateToken(token: string): Observable<boolean> {
+    const http = new HttpClient(this.injector.get(HttpHandler));
+    const headers = new HttpHeaders({
+      'Authorization': 'Bearer ' + `${token}`,
+      'Access-Control-Allow-Origin': '*'
+    });
+    return http.get(
+      "http://localhost:8086/pub/wfprev-api/check/checkToken",
+      {
+        headers,
+        observe: 'response'
+      }
+    ).pipe(
+      map(response => response.status === 200),
+      catchError(() => of(false))
+    );
+
   }
+
 
   private async initAndEmit(): Promise<void> {
     const config = this.appConfigService.getConfig();
-    
+
     if (config.webade.enableCheckToken) {
       let baseUrl = config.application.baseUrl;
       baseUrl = baseUrl.endsWith('/') ? baseUrl : baseUrl.concat('/');
@@ -193,7 +213,7 @@ export class TokenService {
 
       try {
         const http = new HttpClient(this.injector.get(HttpHandler));
-        this.tokenDetails = await firstValueFrom(http.get(checkTokenUrl, {headers}));
+        this.tokenDetails = await firstValueFrom(http.get(checkTokenUrl, { headers }));
         this.emitTokens();
       } catch (error: any) {
         console.log(error);
@@ -202,11 +222,11 @@ export class TokenService {
       }
     } else {
       const oauthInfo = this.oauth.access_token.split('.');
-      
-      if(oauthInfo.length > 1) {
+
+      if (oauthInfo.length > 1) {
         this.tokenDetails = JSON.parse(atob(oauthInfo[1]));
       }
-      
+
       this.emitTokens();
     }
   }
@@ -237,7 +257,7 @@ export class TokenService {
     }
     return false;
   }
-  
+
   public clearLocalStorageToken(): void {
     localStorage.removeItem(this.LOCAL_STORAGE_KEY);
   }
@@ -248,3 +268,4 @@ export class TokenService {
     throw err;
   }
 }
+

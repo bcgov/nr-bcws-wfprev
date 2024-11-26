@@ -7,8 +7,8 @@ import {
     RouterStateSnapshot,
 } from '@angular/router';
 import { Injectable } from '@angular/core';
-import { AsyncSubject, Observable, of } from 'rxjs';
-import { mergeMap } from 'rxjs/operators';
+import { AsyncSubject, Observable, of, firstValueFrom, from } from 'rxjs';
+import { catchError, map, mergeMap } from 'rxjs/operators';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ResourcesRoutes } from '../../utils';
 
@@ -32,21 +32,23 @@ export class PrevAuthGuard extends AuthGuard {
         route: ActivatedRouteSnapshot,
         state: RouterStateSnapshot,
     ): Observable<boolean> {
-        console.log('activate')
+
         if (!window.navigator.onLine) {
-            console.log('offline')
             return of(false);
         }
+
         if (route?.data?.['scopes']?.length > 0) {
-            console.log('scopes')
-            return this.getTokenInfo(route);
+            // Wrap the Promise returned by getTokenInfo with from()
+            return from(this.getTokenInfo(route)).pipe(
+                map(result => result),
+                catchError(() => of(false))
+            );
         } else {
-            console.log('returning true')
+            console.log('returning true');
             return of(true);
         }
     }
-
-    getTokenInfo(route: any) {
+    async getTokenInfo(route: any) {
         if (!this.tokenService.getOauthToken()) {
             if (this.asyncCheckingToken) {
                 return this.asyncCheckingToken;
@@ -82,19 +84,26 @@ export class PrevAuthGuard extends AuthGuard {
                     }
                 }),
             );
-        } else if (this.canAccessRoute(route.data.scopes, this.tokenService)) {
-            // I think it's in here where I need to do the call to the API.
+            // call to spring boot backend to authenticate token/scopes
+        } else if (await this.canAccessRoute(route.data.scopes, this.tokenService)) {
             return of(true);
         } else {
             this.redirectToErrorPage();
         }
     }
 
-    canAccessRoute(scopes: string[][], tokenService: TokenService): boolean {
-        if (this.tokenService.getOauthToken()) {
-            return true;
+    async canAccessRoute(scopes: string[][], tokenService: TokenService) {
+        const token = this.tokenService.getOauthToken();
+        if (!token) {
+            return false;
         }
-        return false;
+        try {
+            const response = await firstValueFrom(this.tokenService.validateToken(token));
+            return response || false; // Ensure `response` is boolean
+        } catch (error) {
+            console.error("Error validating token:", error);
+            return false; // Handle error gracefully
+        }
     }
 
     override redirectToErrorPage() {
@@ -128,3 +137,4 @@ export class PrevAuthGuard extends AuthGuard {
         return this.asyncCheckingToken;
     }
 }
+
