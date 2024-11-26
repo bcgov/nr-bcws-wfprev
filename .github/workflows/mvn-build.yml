@@ -78,10 +78,18 @@ jobs:
           echo "Current directory: $(pwd)"
           echo "Directory contents:"
           ls -la
+          echo "Maven settings directory contents:"
+          ls -la mvn_settings/
+          echo "Contents of settings.xml:"
+          cat mvn_settings/settings.xml
           echo "Maven version:"
           mvn --version
-          # Change this line to use settings.xml instead of vivid.settings.xml
-          mvn -s mvn_settings/settings.xml --batch-mode -Pnative native:compile -DskipTests -Drepo.login=${{ secrets.IDIR_AS_EMAIL }} -Drepo.password=${{ secrets.IDIR_PASSWORD }}
+          # Use absolute path and check if file exists first
+          if [ ! -f "mvn_settings/settings.xml" ]; then
+            echo "ERROR: settings.xml not found!"
+            exit 1
+          fi
+          mvn -s "$(pwd)/mvn_settings/settings.xml" --batch-mode -Pnative native:compile -DskipTests -Drepo.login=${{ secrets.IDIR_AS_EMAIL }} -Drepo.password=${{ secrets.IDIR_PASSWORD }}
 
       - name: Copy native binary to staging
         if: ${{ inputs.COMPONENT_TYPE == 'server' }}
