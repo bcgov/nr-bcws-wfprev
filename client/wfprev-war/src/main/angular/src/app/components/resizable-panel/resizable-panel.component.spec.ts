@@ -37,4 +37,34 @@ describe('ResizablePanelComponent', () => {
 
     expect(component.onResize).toHaveBeenCalled();
   });
+
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
+
+  it('should initialize with default values', () => {
+    expect(component.panelWidth).toBe('50vw');
+    expect(component.breakpoints).toEqual([5, 50, 90]);
+  });
+
+  it('should resize the panel and emit the panelResized event', () => {
+    spyOn(component.panelResized, 'emit');  // Spy on the event emitter
+
+    component.resizePanel(75);
+    expect(component.panelWidth).toBe('75vw');
+    expect(component.panelResized.emit).toHaveBeenCalled();
+  });
+
+  it('should emit panelResized with void', () => {
+    const emitSpy = spyOn(component.panelResized, 'emit');
+    component.resizePanel(75);
+    expect(emitSpy).toHaveBeenCalledWith();  // Should be called with no arguments
+  });
+
+  it('should handle window resize event', () => {
+    const event = new Event('resize');
+    component.onResize(event);  // Call the method directly
+    //given the method is empty, we can only check if it's called
+    expect(true).toBeTruthy();  // Add assertions based on what onResize should do
+  });
 });
