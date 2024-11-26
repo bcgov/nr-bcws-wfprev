@@ -75,22 +75,25 @@ jobs:
           export MAVEN_OPTS="-Xmx6g -XX:MaxMetaspaceSize=1g"
           export NATIVE_IMAGE_OPTS="-Xmx8g"
           cd ${{ inputs.COMPONENT_TYPE }}/${{ inputs.COMPONENT_NAME }}
-          echo "Current directory: $(pwd)"
-          echo "Directory contents:"
-          ls -la
+
+          echo "Full directory listing:"
+          find . -type f -name "*.xml"
+
           echo "Maven settings directory contents:"
           ls -la mvn_settings/
-          echo "Contents of settings.xml:"
-          cat mvn_settings/settings.xml
-          echo "Maven version:"
-          mvn --version
-          # Use absolute path and check if file exists first
-          if [ ! -f "mvn_settings/settings.xml" ]; then
+
+          echo "Available settings files:"
+          find . -name "*.settings.xml"
+
+          # Use find to locate and use the correct settings file
+          settings_file=$(find . -name "settings.xml" | head -n 1)
+          if [ -z "$settings_file" ]; then
             echo "ERROR: settings.xml not found!"
             exit 1
           fi
-          mvn -s "$(pwd)/mvn_settings/settings.xml" --batch-mode -Pnative native:compile -DskipTests -Drepo.login=${{ secrets.IDIR_AS_EMAIL }} -Drepo.password=${{ secrets.IDIR_PASSWORD }}
 
+          echo "Using settings file: $settings_file"
+          mvn -s "$settings_file" --batch-mode -Pnative native:compile -DskipTests -Drepo.login=${{ secrets.IDIR_AS_EMAIL }} -Drepo.password=${{ secrets.IDIR_PASSWORD }}
       - name: Copy native binary to staging
         if: ${{ inputs.COMPONENT_TYPE == 'server' }}
         run: |
