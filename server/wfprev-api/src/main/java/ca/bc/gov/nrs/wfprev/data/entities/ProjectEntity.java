@@ -134,11 +134,11 @@ public class ProjectEntity implements Serializable {
 
   @Column(name = "latitude", precision = 9, scale = 6)
   @Latitude
-  private Double latitude;
+  private BigDecimal latitude;
   
   @Column(name = "longitude", precision = 9, scale = 6)
   @Longitude
-  private Double longitude;
+  private BigDecimal longitude;
 
 	@Column(name="last_progress_update_timestamp")
 	private Date lastProgressUpdateTimestamp;
