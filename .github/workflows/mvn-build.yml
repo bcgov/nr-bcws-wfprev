@@ -76,19 +76,6 @@ jobs:
           export NATIVE_IMAGE_OPTS="-Xmx8g"
           cd ${{ inputs.COMPONENT_TYPE }}/${{ inputs.COMPONENT_NAME }}
 
-          echo "Full directory listing:"
-          find . -type f -name "*.xml"
-
-          echo "Maven settings directory structure:"
-          tree mvn_settings
-
-          echo "All settings files contents:"
-          for f in mvn_settings/*.xml; do
-            echo "=== Contents of $f ==="
-            cat "$f"
-            echo "======================="
-          done
-
           # Use absolute path to settings.xml
           settings_file="$(pwd)/mvn_settings/settings.xml"
           echo "Looking for settings file at: $settings_file"
