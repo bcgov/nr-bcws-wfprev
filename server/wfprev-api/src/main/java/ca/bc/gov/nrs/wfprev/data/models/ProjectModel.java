@@ -50,7 +50,7 @@ public class ProjectModel extends CommonModel<ProjectModel> {
 	private BigDecimal totalProjectSizeHa;
 	private BigDecimal totalCostPerHectareAmount;
 	private Boolean isMultiFiscalYearProj;
-	private Double latitude;
-	private Double longitude;
+	private BigDecimal latitude;
+	private BigDecimal longitude;
 	private Date lastProgressUpdateTimestamp;
 }

@@ -1,5 +1,6 @@
 package ca.bc.gov.nrs.wfprev;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -82,8 +83,8 @@ class ProjectControllerTest {
     project.setProgramAreaGuid(UUID.randomUUID().toString());
     project.setProjectName("Test");
     project.setIsMultiFiscalYearProj(false);
-    project.setLatitude(40.99);
-    project.setLongitude(-115.23);
+    project.setLatitude(new BigDecimal(40.99));
+    project.setLongitude(new BigDecimal(-115.23));
     project.setLastProgressUpdateTimestamp(new Date());
     
     when(projectService.createOrUpdateProject(project)).thenReturn(project);
