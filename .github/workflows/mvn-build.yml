@@ -80,7 +80,8 @@ jobs:
           ls -la
           echo "Maven version:"
           mvn --version
-          mvn -s mvn_settings/vivid.settings.xml --batch-mode -Pnative native:compile -DskipTests -Drepo.login=${{ secrets.IDIR_AS_EMAIL }} -Drepo.password=${{ secrets.IDIR_PASSWORD }}
+          # Change this line to use settings.xml instead of vivid.settings.xml
+          mvn -s mvn_settings/settings.xml --batch-mode -Pnative native:compile -DskipTests -Drepo.login=${{ secrets.IDIR_AS_EMAIL }} -Drepo.password=${{ secrets.IDIR_PASSWORD }}
 
       - name: Copy native binary to staging
         if: ${{ inputs.COMPONENT_TYPE == 'server' }}
@@ -147,6 +148,7 @@ jobs:
           context: ${{inputs.COMPONENT_TYPE}}/${{inputs.COMPONENT_NAME}}
           build-args: |
             CONTAINER_NAME=${{inputs.COMPONENT_NAME}}
+            MAVEN_SETTINGS_FILE=settings.xml
           push: true
           tags: ${{ steps.meta_pr.outputs.tags }}
           labels: ${{ steps.meta_pr.outputs.labels }}
