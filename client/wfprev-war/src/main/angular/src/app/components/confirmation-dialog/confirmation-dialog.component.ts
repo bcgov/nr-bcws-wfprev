@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
-import { MatDialogRef } from '@angular/material/dialog';
+import { Component, Inject } from '@angular/core';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 
 @Component({
@@ -14,7 +14,14 @@ import { MatIconModule } from '@angular/material/icon';
   ],
 })
 export class ConfirmationDialogComponent {
-  constructor(private dialogRef: MatDialogRef<ConfirmationDialogComponent>) {}
+  dialogUsage: string;
+
+  constructor(
+    private dialogRef: MatDialogRef<ConfirmationDialogComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: { indicator: string }
+  ) {
+    this.dialogUsage = this.data?.indicator
+  }
 
   onGoBack(): void {
     this.dialogRef.close(false); // Close without confirmation
@@ -24,3 +31,4 @@ export class ConfirmationDialogComponent {
     this.dialogRef.close(true); // Close with confirmation
   }
 }
+

@@ -68,12 +68,27 @@ export class CreateNewProjectDialogComponent {
   onCreate(): void {
     if (this.projectForm.valid) {
       console.log(this.projectForm.value);
+      //call POST endpoint, 
+      // if return 500 error with duplicate project name error message, 
+
+      // this.dialog.open(ConfirmationDialogComponent, {
+      //   data: {
+      //     indicator: 'duplicate-project',
+      //     projectName: '',
+      //   },
+      //   width: '500px',
+      // });
+
+      //OK will return the user to the Modal and allow further editing. just close the Modal for now
       this.dialogRef.close(this.projectForm.value);
     }
   }
 
   onCancel(): void {
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      data: {
+        indicator: 'confirm-cancel',
+      },
       width: '500px',
     });
 

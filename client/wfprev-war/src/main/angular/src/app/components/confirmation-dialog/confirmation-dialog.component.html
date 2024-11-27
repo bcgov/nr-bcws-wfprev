@@ -1,14 +1,17 @@
 <div class="dialog-container">
     <div class="title-bar">
-      Confirm Cancel
+        {{ dialogUsage === 'confirm-cancel' ? 'Confirm Cancel' : 'Duplicate Found' }}
     </div>
     <div class="dialog-content">
       <div class="icon-and-text">
         <img alt="warning-icon" class="icon" src="../../../assets/warning.svg" />
-        <p>
-          Are you sure you want to cancel?<br />
-          This information will not be saved.
-        </p>
+        <p *ngIf="dialogUsage === 'confirm-cancel'">
+            Are you sure you want to cancel?<br />
+            This information will not be saved.
+          </p>
+          <p *ngIf="dialogUsage === 'duplicate-project'">
+            This Project already exists:<br />
+          </p>
       </div>
     </div>
     <div class="footer">
