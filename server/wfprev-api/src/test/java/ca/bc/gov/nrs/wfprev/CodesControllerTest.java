@@ -147,13 +147,13 @@ class CodesControllerTest {
         when(codesService.getGeneralScopeCodeById(null)).thenReturn(generalScopeCode);
         when(codesService.getProjectTypeCodeById(null)).thenReturn(projectTypeCode);
 
-        mockMvc.perform(get("/codes/{codeTable}/{id}", CodeTables.FOREST_AREA_CODE, null)
+        mockMvc.perform(get("/codes/{codeTable}/{id}", CodeTables.FOREST_AREA_CODE, "null")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
-        mockMvc.perform(get("/codes/{codeTable}/{id}", CodeTables.GENERAL_SCOPE_CODE, null)
+        mockMvc.perform(get("/codes/{codeTable}/{id}", CodeTables.GENERAL_SCOPE_CODE, "null")
           .contentType(MediaType.APPLICATION_JSON))
           .andExpect(status().isNotFound());
-        mockMvc.perform(get("/codes/{codeTable}/{id}", CodeTables.PROJECT_TYPE_CODE, null)
+        mockMvc.perform(get("/codes/{codeTable}/{id}", CodeTables.PROJECT_TYPE_CODE, "null")
           .contentType(MediaType.APPLICATION_JSON))
           .andExpect(status().isNotFound());
     }
