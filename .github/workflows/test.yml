@@ -34,14 +34,14 @@ jobs:
       - name: Change directory to Angular app
         run: cd client/wfprev-war/src/main/angular
 
-      # Use the NPMRC secret to set up npm authentication
+      # Use the NPMRC secret to set up npm authenticationq
       - name: Add .npmrc file
         run: echo -e $NPMRC > ~/.npmrc
 
       # Clean npm cache and install dependencies
       - run: npm cache clean --force
       - run: rm -rf node_modules
-      - run: npm install
+      - run: npm install --legacy-peer-deps
         working-directory: client/wfprev-war/src/main/angular
 
       # Run unit tests and generate code coverage      
