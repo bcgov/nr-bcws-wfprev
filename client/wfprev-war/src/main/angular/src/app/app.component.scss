@@ -31,3 +31,30 @@
       color: white;
   }
 }
+
+.create-project-button-row{
+  text-align: right;
+  padding-right: 27px;
+  .create-project-button{
+    cursor: pointer;
+    display: inline-flex;
+    padding: 10px 16px;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    border-radius: 8px;
+    background: #013366;
+    .button-text{
+      color: #FFF;
+      font-family: "BCSans", "Noto Sans", Verdana, Arial, sans-serif;
+      font-size: 12px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: normal;
+      .icon{
+        vertical-align: text-bottom;
+        padding-right: 5px;
+      }
+    }
+  }
+}

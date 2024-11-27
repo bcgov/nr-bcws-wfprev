@@ -1,0 +1,95 @@
+<div class="dialog-container">
+    <div class="title-bar">
+      <span>Create New Project</span>
+    </div>
+    <form [formGroup]="projectForm" (ngSubmit)="onCreate()">
+      <div class="dialog-content">
+        <div class="form-row">
+          <div class="form-field">
+            <label for="projectName">Project Name<span class="required">*</span></label>
+            <input
+              type="text"
+              id="projectName"
+              formControlName="projectName"
+              placeholder="Input...."
+              class="project-input"
+            />
+          </div>
+          <div class="form-field">
+            <label>Lat/Long</label>
+            <input type="text" formControlName="latLong" placeholder="Input..." />
+          </div>
+          <div class="form-field">
+            <label>Business Area<span class="required">*</span></label>
+            <select formControlName="businessArea">
+              <option value="">select...</option>
+              <option *ngFor="let area of businessAreas" [value]="area">{{ area }}</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-field">
+            <label>Forest Region<span class="required">*</span></label>
+            <select formControlName="forestRegion">
+              <option value="">select...</option>
+              <option *ngFor="let region of forestRegions" [value]="region">{{ region }}</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <label>Forest District<span class="required">*</span></label>
+            <select formControlName="forestDistrict">
+              <option value="">select...</option>
+              <option *ngFor="let district of forestDistricts" [value]="district">{{ district }}</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <label>BC Parks Region<span class="required">*</span></label>
+            <select formControlName="bcParksRegion">
+              <option value="">select...</option>
+              <option *ngFor="let region of bcParksRegions" [value]="region">{{ region }}</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <label>BC Parks Section<span class="required">*</span></label>
+            <select formControlName="bcParksSection">
+              <option value="">select...</option>
+              <option *ngFor="let section of bcParksSections" [value]="section">{{ section }}</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-field">
+            <label>Project Lead</label>
+            <input type="text" formControlName="projectLead" placeholder="Last Name, First Name" />
+          </div>
+          <div class="form-field">
+            <label>Project Lead E-mail</label>
+            <input type="email" formControlName="projectLeadEmail" placeholder="example@gov.bc.ca" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-field">
+            <label>Site Unit Name</label>
+            <input type="text" formControlName="siteUnitName" placeholder="Input..." />
+          </div>
+          <div class="form-field">
+            <label>Closest Community<span class="required">*</span></label>
+            <input type="text" formControlName="closestCommunity" placeholder="Input..." />
+          </div>
+        </div>
+      </div>
+
+    <div class="footer">
+      <div class="button-row">
+        <button class="secondary" (click)="onCancel()">Cancel</button>
+        <button
+          class="primary"
+          [disabled]="!projectForm.valid"
+          (click)="onCreate()">
+          Create
+        </button>
+      </div>
+    </div>
+    </form>
+  </div>
+  
