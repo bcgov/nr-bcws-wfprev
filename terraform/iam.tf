@@ -134,8 +134,8 @@ resource "aws_iam_role" "github_actions_role" {
         Action = "sts:AssumeRoleWithWebIdentity"
         Condition = {
           StringEquals = {
-            "${aws_iam_openid_connect_provider.github_actions.url}:aud" : "sts.amazonaws.com"
-            "${aws_iam_openid_connect_provider.github_actions.url}:sub" : "repo:bcgov/nr-bcws-wfprev:*"
+            "${data.aws_iam_openid_connect_provider.github_openid_connect_provider.url}:aud" : "sts.amazonaws.com"
+            "${data.aws_iam_openid_connect_provider.github_openid_connect_provider.url}:sub" : "repo:bcgov/nr-bcws-wfprev:*"
           }
         }
       }
@@ -158,10 +158,8 @@ resource "aws_iam_policy" "github_actions_policy" {
   })
 }
 
-resource "aws_iam_openid_connect_provider" "github_actions" {
-  url             = "https://token.actions.githubusercontent.com"
-  client_id_list  = ["sts.amazonaws.com"]
-  thumbprint_list = ["6938fd4d98bab03faadb97b34396831e3780aea1"]
+data "aws_iam_openid_connect_provider" "github_openid_connect_provider" {
+  url = "https://token.actions.githubusercontent.com"
 }
 
 resource "aws_iam_role_policy_attachment" "github_actions_policy_attach" {
