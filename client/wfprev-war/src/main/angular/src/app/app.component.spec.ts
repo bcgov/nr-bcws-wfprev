@@ -28,10 +28,6 @@ describe('AppComponent', () => {
     expect(app).toBeTruthy();
   });
 
-  it(`should have as title 'Wildfire Prevention'`, () => {
-    expect(app.title).toEqual('Wildfire Prevention');
-  });
-
   it('should navigate to "list" route and set active route', async () => {
     spyOn(router, 'navigate');
     app.setActive('list');

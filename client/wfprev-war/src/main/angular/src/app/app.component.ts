@@ -10,7 +10,6 @@ import { ResourcesRoutes } from 'src/app/utils';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-  title = 'Wildfire Prevention';
   activeRoute = '';
   
   constructor(
@@ -38,7 +37,9 @@ export class AppComponent {
 
   createNewProject(): void {
     this.dialog.open(CreateNewProjectDialogComponent, {
-      width: '880px', // Dialog width
+      width: '880px',
+      disableClose: true,
+      hasBackdrop: true,
     });
   }
 }

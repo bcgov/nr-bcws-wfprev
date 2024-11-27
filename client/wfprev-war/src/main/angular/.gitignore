@@ -45,3 +45,6 @@ documentation.json
 
 # Package Lock
 package-lock.json
+
+# Yarn Lock
+yarn.lock
