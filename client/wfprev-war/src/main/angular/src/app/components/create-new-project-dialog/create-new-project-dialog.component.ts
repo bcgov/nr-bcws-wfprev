@@ -48,7 +48,7 @@ export class CreateNewProjectDialogComponent {
       forestRegion: ['', [Validators.required]],
       forestDistrict: ['', [Validators.required]],
       bcParksRegion: ['', [Validators.required]],
-      bcParksSection: ['', [Validators.required]],
+      bcParksSection: [{ value: '', disabled: true }, Validators.required],
       projectLead: ['', [Validators.maxLength(50)]],
       projectLeadEmail: ['', [Validators.email, Validators.maxLength(50)]],
       siteUnitName: ['', [Validators.maxLength(50)]],
