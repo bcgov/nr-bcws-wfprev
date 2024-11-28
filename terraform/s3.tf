@@ -32,12 +32,12 @@ resource "aws_s3_bucket_policy" "wfprev_site_bucket_policy" {
           "AWS" : "${aws_cloudfront_origin_access_identity.oai.iam_arn}"
         },
         Action   = "s3:GetObject",
-        Resource = "arn:aws:s3:::wfprev-dev-site/*"
+        Resource = "arn:aws:s3:::wfprev-${var.TARGET_ENV}-site/*"
       },
       {
         Effect = "Allow",
         Principal = {
-          "AWS" : "arn:aws:iam::183631341627:role/github-actions-role"
+          "AWS" : "arn:aws:iam::${secrets.TARGET_AWS_ACCOUNT_ID}:role/github-actions-role"
         },
         Action = [
           "s3:ListBucket",
@@ -46,8 +46,8 @@ resource "aws_s3_bucket_policy" "wfprev_site_bucket_policy" {
           "s3:DeleteObject"
         ],
         Resource = [
-          "arn:aws:s3:::wfprev-dev-site",
-          "arn:aws:s3:::wfprev-dev-site/*"
+          "arn:aws:s3:::wfprev-${var.TARGET_ENV}-site",
+          "arn:aws:s3:::wfprev-${var.TARGET_ENV}-site/*"
         ]
       }
     ]
