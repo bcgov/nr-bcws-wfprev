@@ -186,7 +186,7 @@ export class TokenService {
       'Access-Control-Allow-Origin': '*'
     });
     return http.get(
-      "http://localhost:8086/pub/wfprev-api/check/checkToken",
+      "http://localhost:8080/pub/wfprev-api/check/checkToken",
       {
         headers,
         observe: 'response'
