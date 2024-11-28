@@ -139,7 +139,7 @@ public class ProjectController extends CommonController {
       // Update the UpdatedBy
       resource.setUpdateUser(getWebAdeAuthentication().getUserId());
       // ensure that the user hasn't changed the primary key
-      if (id.equalsIgnoreCase(resource.getProgramAreaGuid())) {
+      if (id.equalsIgnoreCase(resource.getProjectGuid())) {
         ProjectModel updatedResource = projectService.createOrUpdateProject(resource);
         response = updatedResource == null ? badRequest() : ok(updatedResource);
       } else {

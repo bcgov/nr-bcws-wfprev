@@ -8,6 +8,8 @@ import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -86,8 +88,10 @@ class ProjectControllerTest {
     project.setLatitude(new BigDecimal(40.99));
     project.setLongitude(new BigDecimal(-115.23));
     project.setLastProgressUpdateTimestamp(new Date());
+    String projectGuid = UUID.randomUUID().toString();
+    project.setProjectGuid(projectGuid);
     
-    when(projectService.createOrUpdateProject(project)).thenReturn(project);
+    when(projectService.createOrUpdateProject(any(ProjectModel.class))).thenReturn(project);
 
     String json = gson.toJson(project);
 
@@ -99,22 +103,22 @@ class ProjectControllerTest {
               .andExpect(status().isCreated());
 
     project.setClosestCommunityName("Test");
-    when(projectService.createOrUpdateProject(project)).thenReturn(project);
+    when(projectService.createOrUpdateProject(any(ProjectModel.class))).thenReturn(project);
 
     json = gson.toJson(project);
 
-    mockMvc.perform(put("/projects/{id}")
+    mockMvc.perform(put("/projects/{id}", projectGuid)
            .content(json)
            .contentType(MediaType.APPLICATION_JSON)
            .header("Authorization", "Bearer admin-token"))
-           .andExpect(status().isCreated());
+           .andExpect(status().isOk());
   }
 
   @Test
   @WithMockUser
   void testDeleteProject() throws Exception {
     ProjectModel project = new ProjectModel();
-    when(projectService.createOrUpdateProject(project)).thenReturn(project);
+    when(projectService.createOrUpdateProject(any(ProjectModel.class))).thenReturn(project);
 
     String json = gson.toJson(project);
 

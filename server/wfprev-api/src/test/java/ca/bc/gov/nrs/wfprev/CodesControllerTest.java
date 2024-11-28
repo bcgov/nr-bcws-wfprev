@@ -139,22 +139,33 @@ class CodesControllerTest {
     @Test
     @WithMockUser
     void testCodesNotFound() throws Exception {
-        ForestAreaCodeModel forestAreaCode = new ForestAreaCodeModel();
-        GeneralScopeCodeModel generalScopeCode = new GeneralScopeCodeModel();
-        ProjectTypeCodeModel projectTypeCode = new ProjectTypeCodeModel();
+        String nonExistentId = "non-existent-id";
 
-        when(codesService.getForestAreaCodeById(null)).thenReturn(forestAreaCode);
-        when(codesService.getGeneralScopeCodeById(null)).thenReturn(generalScopeCode);
-        when(codesService.getProjectTypeCodeById(null)).thenReturn(projectTypeCode);
+        // Mock service to return null for non-existent IDs
+        when(codesService.getForestAreaCodeById(nonExistentId)).thenReturn(null);
+        when(codesService.getGeneralScopeCodeById(nonExistentId)).thenReturn(null);
+        when(codesService.getProjectTypeCodeById(nonExistentId)).thenReturn(null);
 
-        mockMvc.perform(get("/codes/{codeTable}/{id}", CodeTables.FOREST_AREA_CODE, "null")
-                .contentType(MediaType.APPLICATION_JSON))
+        // Test valid code tables with non-existent ID
+        mockMvc.perform(get("/codes/{codeTable}/{id}", "forestAreaCodes", nonExistentId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("If-Match", "\"1\""))
                 .andExpect(status().isNotFound());
-        mockMvc.perform(get("/codes/{codeTable}/{id}", CodeTables.GENERAL_SCOPE_CODE, "null")
-          .contentType(MediaType.APPLICATION_JSON))
-          .andExpect(status().isNotFound());
-        mockMvc.perform(get("/codes/{codeTable}/{id}", CodeTables.PROJECT_TYPE_CODE, "null")
-          .contentType(MediaType.APPLICATION_JSON))
-          .andExpect(status().isNotFound());
+
+        mockMvc.perform(get("/codes/{codeTable}/{id}", "generalScopeCodes", nonExistentId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("If-Match", "\"1\""))
+                .andExpect(status().isNotFound());
+
+        mockMvc.perform(get("/codes/{codeTable}/{id}", "projectTypeCodes", nonExistentId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("If-Match", "\"1\""))
+                .andExpect(status().isNotFound());
+
+        // Test invalid code table - should also return 404 since it hits the default case
+        mockMvc.perform(get("/codes/{codeTable}/{id}", "invalidCodeTable", nonExistentId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("If-Match", "\"1\""))
+                .andExpect(status().isNotFound());
     }
 }
