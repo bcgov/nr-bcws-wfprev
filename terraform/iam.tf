@@ -39,7 +39,7 @@ resource "aws_iam_role" "wfprev_ecs_task_execution_role" {
 }
 
 resource "aws_iam_role_policy_attachment" "wfprev_ecs_task_execution_changelogs" {
-  role = aws_iam_role.wfprev_ecs_task_execution_role.name
+  role       = aws_iam_role.wfprev_ecs_task_execution_role.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }
 
@@ -135,9 +135,22 @@ resource "aws_iam_role" "github_actions_role" {
         Condition = {
           StringEquals = {
             "${data.aws_iam_openid_connect_provider.github_openid_connect_provider.url}:aud" : "sts.amazonaws.com"
+          },
+          StringLike = {
             "${data.aws_iam_openid_connect_provider.github_openid_connect_provider.url}:sub" : "repo:bcgov/nr-bcws-wfprev:*"
           }
         }
+      },
+      {
+        Sid = "Statement1",
+        Effect = "Allow",
+        Principal = {
+          AWS = [
+            "arn:aws:sts::183631341627:assumed-role/client-s3-push/wfnews-terraform-s3",
+            "arn:aws:iam::183631341627:role/client-s3-push"
+          ]
+        },
+        Action = "sts:AssumeRole"
       }
     ]
   })
