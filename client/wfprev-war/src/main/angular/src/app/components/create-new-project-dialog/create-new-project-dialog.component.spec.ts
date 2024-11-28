@@ -4,6 +4,8 @@ import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { of } from 'rxjs';
 import { CreateNewProjectDialogComponent } from './create-new-project-dialog.component';
 import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+
 
 describe('CreateNewProjectDialogComponent', () => {
   let component: CreateNewProjectDialogComponent;
@@ -16,7 +18,7 @@ describe('CreateNewProjectDialogComponent', () => {
     mockDialogRef = jasmine.createSpyObj('MatDialogRef', ['close']);
 
     await TestBed.configureTestingModule({
-      imports: [ReactiveFormsModule, CreateNewProjectDialogComponent],
+      imports: [ReactiveFormsModule, CreateNewProjectDialogComponent, BrowserAnimationsModule ],
       providers: [
         { provide: MatDialog, useValue: mockDialog },
         { provide: MatDialogRef, useValue: mockDialogRef },
@@ -33,7 +35,7 @@ describe('CreateNewProjectDialogComponent', () => {
   });
 
   it('should initialize the form with default values', () => {
-    const formValues = component.projectForm.value;
+    const formValues = component.projectForm.getRawValue();
     expect(formValues).toEqual({
       projectName: '',
       latLong: '',
