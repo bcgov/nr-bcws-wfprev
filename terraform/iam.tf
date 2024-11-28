@@ -133,7 +133,7 @@ resource "aws_iam_role" "github_actions_role" {
         }
         Action = "sts:AssumeRoleWithWebIdentity"
         Condition = {
-          StringEquals = {pull
+          StringEquals = {
             "${data.aws_iam_openid_connect_provider.github_openid_connect_provider.url}:aud" : "sts.amazonaws.com"
           },
           StringLike = {
