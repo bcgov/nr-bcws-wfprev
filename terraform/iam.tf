@@ -81,7 +81,7 @@ resource "aws_iam_policy" "ssm_parameter_access" {
           "ssm:GetParameters",
           "ssm:DescribeParameters"
         ],
-        Resource = "arn:aws:ssm:ca-central-1:${secrets.TARGET_AWS_ACCOUNT_ID}:parameter/iam_users/wfprev_github_actions_user_keys"
+        Resource = "arn:aws:ssm:ca-central-1:${var.TARGET_AWS_ACCOUNT_ID}:parameter/iam_users/wfprev_github_actions_user_keys"
       }
     ]
   })
@@ -129,7 +129,7 @@ resource "aws_iam_role" "github_actions_role" {
       {
         Effect = "Allow"
         Principal = {
-          Federated = "arn:aws:iam::${secrets.TARGET_AWS_ACCOUNT_ID}:oidc-provider/token.actions.githubusercontent.com"
+          Federated = "arn:aws:iam::${var.TARGET_AWS_ACCOUNT_ID}:oidc-provider/token.actions.githubusercontent.com"
         }
         Action = "sts:AssumeRoleWithWebIdentity"
         Condition = {
@@ -146,7 +146,7 @@ resource "aws_iam_role" "github_actions_role" {
         Effect = "Allow",
         Principal = {
           AWS = [
-            "arn:aws:iam::${secrets.TARGET_AWS_ACCOUNT_ID}:role/client_s3_push"
+            "arn:aws:iam::${var.TARGET_AWS_ACCOUNT_ID}:role/client_s3_push"
           ]
         },
         Action = "sts:AssumeRole"
@@ -173,7 +173,7 @@ resource "aws_iam_policy" "github_actions_policy" {
         Resource = [
           "arn:aws:s3:::wfprev-${var.TARGET_ENV}-site",        # Bucket-level actions like s3:ListBucket
           "arn:aws:s3:::wfprev-${var.TARGET_ENV}-site/*",      # Object-level actions
-          "arn:aws:cloudfront::${secrets.TARGET_AWS_ACCOUNT_ID}:distribution/*" # CloudFront distrbution
+          "arn:aws:cloudfront::${var.TARGET_AWS_ACCOUNT_ID}:distribution/*" # CloudFront distrbution
         ]
       }
     ]
