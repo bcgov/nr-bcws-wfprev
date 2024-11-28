@@ -4,6 +4,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { MatDialog } from '@angular/material/dialog';
 import { MatDialogRef } from '@angular/material/dialog';
 import { ConfirmationDialogComponent } from 'src/app/components/confirmation-dialog/confirmation-dialog.component';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-create-new-project-dialog',
@@ -36,7 +37,9 @@ export class CreateNewProjectDialogComponent {
   constructor(
     private fb: FormBuilder,
     private dialog: MatDialog,
-    private dialogRef: MatDialogRef<CreateNewProjectDialogComponent>
+    private dialogRef: MatDialogRef<CreateNewProjectDialogComponent>,
+    private snackbarService: MatSnackBar,
+
   ) {
     this.projectForm = this.fb.group({
       projectName: ['', [Validators.required, Validators.maxLength(50)]],
@@ -80,6 +83,11 @@ export class CreateNewProjectDialogComponent {
       // });
 
       //OK will return the user to the Modal and allow further editing. just close the Modal for now
+      this.snackbarService.open(
+        'Project Created Successfully',
+        'OK',
+        { duration: 100000, panelClass: 'snackbar-success' },
+      )
       this.dialogRef.close(this.projectForm.value);
     }
   }
