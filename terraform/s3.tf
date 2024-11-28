@@ -33,7 +33,40 @@ resource "aws_s3_bucket_policy" "wfprev_site_bucket_policy" {
         },
         Action   = "s3:GetObject",
         Resource = "${aws_s3_bucket.wfprev_site_bucket.arn}/*"
+      },
+      resource "aws_s3_bucket_policy" "wfprev_site_bucket_policy" {
+  bucket = aws_s3_bucket.wfprev_site_bucket.id
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Principal = {
+          "AWS" : "${aws_cloudfront_origin_access_identity.oai.iam_arn}"
+        },
+        Action   = "s3:GetObject",
+        Resource = "arn:aws:s3:::wfprev-dev-site/*"
+      },
+      {
+        Effect = "Allow",
+        Principal = {
+          "AWS" : "arn:aws:iam::183631341627:role/github-actions-role"
+        },
+        Action = [
+          "s3:ListBucket",
+          "s3:GetObject",
+          "s3:PutObject",
+          "s3:DeleteObject"
+        ],
+        Resource = [
+          "arn:aws:s3:::wfprev-dev-site",
+          "arn:aws:s3:::wfprev-dev-site/*"
+        ]
       }
+    ]
+  })
+}
     ]
   })
 }

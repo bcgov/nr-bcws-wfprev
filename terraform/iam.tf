@@ -163,8 +163,16 @@ resource "aws_iam_policy" "github_actions_policy" {
     Statement = [
       {
         Effect   = "Allow",
-        Action   = "s3:*",
-        Resource = "arn:aws:s3:::wfprev_site_bucket/*"
+        Action   = [
+          "s3:ListBucket",   # Bucket-level operations
+          "s3:GetObject",    # Object read
+          "s3:PutObject",    # Object write
+          "s3:DeleteObject"  # Object deletion
+        ],
+        Resource = [
+          "arn:aws:s3:::wfprev-dev-site",        # Bucket-level actions like s3:ListBucket
+          "arn:aws:s3:::wfprev-dev-site/*"      # Object-level actions
+        ]
       }
     ]
   })
