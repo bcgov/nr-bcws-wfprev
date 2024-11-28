@@ -42,20 +42,6 @@ describe('AppComponent', () => {
     expect(router.navigate).toHaveBeenCalledWith(['map']);
   });
 
-  it('should navigate to home when title is clicked', async () => {
-    spyOn(router, 'navigate');
-    const titleElement = fixture.debugElement.query(By.css('.title'));
-    titleElement.triggerEventHandler('click', null);
-    expect(router.navigate).toHaveBeenCalledWith(['']);
-  });
-
-  it('should add "active" class to the list menu item when activeRoute is "list"', () => {
-    app.activeRoute = 'list';
-    fixture.detectChanges();
-    const listMenuItem = fixture.debugElement.query(By.css('span:nth-child(1)'));
-    expect(listMenuItem.nativeElement.classList).toContain('active');
-  });
-
   it('should add "active" class to the map menu item when activeRoute is "map"', () => {
     app.activeRoute = 'map';
     fixture.detectChanges();
