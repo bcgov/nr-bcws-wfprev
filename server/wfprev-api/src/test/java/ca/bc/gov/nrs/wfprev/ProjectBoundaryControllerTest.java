@@ -238,6 +238,10 @@ class ProjectBoundaryControllerTest {
         project.setProjectGuid(id);
         project.setProjectBoundaryGuid(id);
 
+        // Test update
+        project.setBoundaryComment("Test");
+        when(projectBoundaryService.createOrUpdateProjectBoundary(any(ProjectBoundaryModel.class)))
+                .thenReturn(project);  // Return updated project with comment
 
         ObjectMapper mapper = new ObjectMapper();
         SimpleModule simpleModule = new SimpleModule();
