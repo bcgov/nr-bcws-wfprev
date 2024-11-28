@@ -146,7 +146,7 @@ resource "aws_iam_role" "github_actions_role" {
         Effect = "Allow",
         Principal = {
           AWS = [
-            "arn:aws:iam::183631341627:role/client-s3-push"
+            "arn:aws:iam::183631341627:role/client_s3_push"
           ]
         },
         Action = "sts:AssumeRole"
