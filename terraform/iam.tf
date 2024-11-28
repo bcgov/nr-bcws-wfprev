@@ -142,11 +142,10 @@ resource "aws_iam_role" "github_actions_role" {
         }
       },
       {
-        Sid = "Statement1",
+        Sid = "AllowIAMRoleAssume",
         Effect = "Allow",
         Principal = {
           AWS = [
-            "arn:aws:sts::183631341627:assumed-role/client-s3-push/wfnews-terraform-s3",
             "arn:aws:iam::183631341627:role/client-s3-push"
           ]
         },
