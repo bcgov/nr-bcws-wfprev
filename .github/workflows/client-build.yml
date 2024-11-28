@@ -58,7 +58,7 @@ jobs:
     - name: Install dependencies for Angular project
       run: |
           cd client/wfprev-war/src/main/angular
-          npm install
+          npm install --legacy-peer-deps
 
     - name: Build Angular app
       run: |
