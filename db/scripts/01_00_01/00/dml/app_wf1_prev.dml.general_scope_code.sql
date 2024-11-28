@@ -1,0 +1,6 @@
+﻿insert into "wfprev"."general_scope_code" (general_scope_code, description, display_order, effective_date, expiry_date, revision_count, create_user, create_date, update_user, update_date)
+values ('LL_ACT', 'Landscape Level Activities', 1, to_date('01-01-2020', 'dd-mm-yyyy'), to_date('31-12-9999', 'dd-mm-yyyy'), 0, 'DATA_LOAD', to_date('20-11-2024', 'dd-mm-yyyy'), 'DATA_LOAD', to_date('20-11-2024', 'dd-mm-yyyy'));
+insert into "wfprev"."general_scope_code" (general_scope_code, description, display_order, effective_date, expiry_date, revision_count, create_user, create_date, update_user, update_date)
+values ('SL_ACT', 'Site Level Activities', 2, to_date('01-01-2020', 'dd-mm-yyyy'), to_date('31-12-9999', 'dd-mm-yyyy'), 0, 'DATA_LOAD', to_date('20-11-2024', 'dd-mm-yyyy'), 'DATA_LOAD', to_date('20-11-2024', 'dd-mm-yyyy'));
+insert into "wfprev"."general_scope_code" (general_scope_code, description, display_order, effective_date, expiry_date, revision_count, create_user, create_date, update_user, update_date)
+values ('NS_ACT', 'Non-Spatial Activities', 3, to_date('01-01-2020', 'dd-mm-yyyy'), to_date('31-12-9999', 'dd-mm-yyyy'), 0, 'DATA_LOAD', to_date('20-11-2024', 'dd-mm-yyyy'), 'DATA_LOAD', to_date('20-11-2024', 'dd-mm-yyyy'));

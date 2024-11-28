@@ -7,6 +7,9 @@ import { environment } from '../environments/environment';
 import { AppComponent } from './app.component';
 import { CoreUIModule } from './lib/core-ui.module';
 import { CustomDateTimeProvider, CustomOAuthLogger } from './utils';
+import { AppHeaderComponent } from 'src/app/components/shared-layout/app-header/app-header.component';
+import { MatMenuModule } from '@angular/material/menu';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 @NgModule({
   declarations: [AppComponent],
@@ -16,6 +19,9 @@ import { CustomDateTimeProvider, CustomOAuthLogger } from './utils';
     CoreUIModule.forRoot({
       configurationPath: environment.app_config_location,
     }),
+    AppHeaderComponent,
+    MatMenuModule,
+    BrowserAnimationsModule
   ],
   providers: [
     provideHttpClient(withInterceptorsFromDi()),

@@ -4,7 +4,7 @@ env:
   NPMRC: ${{ secrets.NPMRC }}
 
 on:
-  pull_request_target:
+  pull_request:
     types: [opened, synchronize, reopened]
 
 jobs:
@@ -17,6 +17,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
 
       # Install Python and build tools
       - name: Install Python and build tools
