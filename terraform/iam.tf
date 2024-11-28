@@ -133,7 +133,7 @@ resource "aws_iam_role" "github_actions_role" {
         }
         Action = "sts:AssumeRoleWithWebIdentity"
         Condition = {
-          StringEquals = {pull
+          StringEquals = {
             "${data.aws_iam_openid_connect_provider.github_openid_connect_provider.url}:aud" : "sts.amazonaws.com"
           },
           StringLike = {
@@ -167,12 +167,12 @@ resource "aws_iam_policy" "github_actions_policy" {
           "s3:ListBucket",   # Bucket-level operations
           "s3:GetObject",    # Object read
           "s3:PutObject",    # Object write
-          "s3:DeleteObject"  # Object deletion
+          "s3:DeleteObject",  # Object deletion
           "cloudfront:CreateInvalidation" # Invalidate cache
         ],
         Resource = [
           "arn:aws:s3:::wfprev-dev-site",        # Bucket-level actions like s3:ListBucket
-          "arn:aws:s3:::wfprev-dev-site/*"      # Object-level actions
+          "arn:aws:s3:::wfprev-dev-site/*",      # Object-level actions
           "arn:aws:cloudfront::183631341627:distribution/*"
         ]
       }
