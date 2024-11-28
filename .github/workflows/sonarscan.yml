@@ -59,6 +59,16 @@ jobs:
           rm -rf node_modules
           yarn cache clean
 
+      - name: Delete existing coverage folder
+        working-directory: ./client/wfprev-war/src/main/angular
+        run: |
+          if [ -d "coverage" ]; then
+            echo "Deleting existing coverage directory..."
+            rm -rf coverage
+          else
+            echo "No coverage directory found. Skipping deletion."
+          fi
+
       - name: Install dependencies and Angular CLI
         working-directory: ./client/wfprev-war/src/main/angular
         run: |
