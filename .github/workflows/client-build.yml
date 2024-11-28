@@ -71,7 +71,7 @@ jobs:
       env:
         TFC_PROJECT:  ${{ env.TFC_PROJECT }}
         TARGET_ENV: ${{ env.TARGET_ENV }}
-        APP_COUNT: ${{vars.APP_COUNT}}
+        APP_COUNT: 1
         LOGGING_LEVEL: ${{vars.LOGGING_LEVEL}}
 
         # Necessary for WFPREV API
