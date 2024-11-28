@@ -58,7 +58,7 @@ jobs:
     - name: Install dependencies for Angular project
       run: |
           cd client/wfprev-war/src/main/angular
-          npm install --legacy-peer-deps
+          npm install
 
     - name: Build Angular app
       run: |
@@ -71,7 +71,7 @@ jobs:
       env:
         TFC_PROJECT:  ${{ env.TFC_PROJECT }}
         TARGET_ENV: ${{ env.TARGET_ENV }}
-        APP_COUNT: ${{vars.APP_COUNT}}
+        APP_COUNT: 1
         LOGGING_LEVEL: ${{vars.LOGGING_LEVEL}}
 
         # Necessary for WFPREV API
