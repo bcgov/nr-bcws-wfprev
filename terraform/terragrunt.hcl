@@ -78,5 +78,12 @@ provider "aws" {
     role_arn = "arn:aws:iam::$${var.TARGET_AWS_ACCOUNT_ID}:role/Terraform-deploy"
   }
 }
+
+provider "aws" {
+  alias = "aws-us"
+  region  = "us-east-1"
+  assume_role {
+    role_arn = "arn:aws:iam::$${var.TARGET_AWS_ACCOUNT_ID}:role/Terraform-deploy"
+}
 EOF
 }

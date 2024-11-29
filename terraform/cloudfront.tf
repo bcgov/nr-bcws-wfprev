@@ -14,9 +14,26 @@ resource "aws_cloudfront_distribution" "wfprev_app_distribution" {
     }
   }
 
+  origin {
+    domain_name = trimprefix(aws_apigatewayv2_api.wfprev_api_gateway.api_endpoint, "https://")
+    origin_id = "wfprev-api-origin"
+
+    custom_origin_config {
+      http_port              = 80
+      https_port             = 443
+      origin_protocol_policy = "https-only"
+      origin_ssl_protocols = [
+      "TLSv1.2"]
+    }
+
+    origin_path = "/${aws_apigatewayv2_stage.wfprev_stage.name}"
+  }
+
   enabled             = true
   is_ipv6_enabled     = true
   default_root_object = "index.html"
+
+  aliases = [ "wfprev-${var.TARGET_ENV}.${var.gov_domain}" ]
 
   # Configure cache behaviors
   default_cache_behavior {
@@ -38,10 +55,45 @@ resource "aws_cloudfront_distribution" "wfprev_app_distribution" {
     max_ttl     = 31536000
   }
 
-  # Viewer Certificate
-  viewer_certificate {
-    cloudfront_default_certificate = true
+
+
+    ordered_cache_behavior {
+    path_pattern     = "/wfprev-api/*"
+    allowed_methods = [
+      "DELETE",
+      "GET",
+      "HEAD",
+      "OPTIONS",
+      "PATCH",
+      "POST",
+      "PUT"
+    ]
+    cached_methods   = ["GET", "HEAD", "OPTIONS"]
+    target_origin_id = "wfprev-api-origin"
+
+    forwarded_values {
+      query_string = true
+      headers      = ["Origin", "Authorization"]
+
+      cookies {
+        forward = "none"
+      }
+    }
+
+    min_ttl                = 0
+    default_ttl            = 0 //Not caching yet, just confirming cloudfront works
+    max_ttl                = 0
+    compress               = true
+    viewer_protocol_policy = "redirect-to-https"
   }
+
+
+  viewer_certificate {
+    acm_certificate_arn = data.aws_acm_certificate.wfprev_domain_certificate.arn
+    ssl_support_method  = "sni-only"
+  }
+
+  price_class = "PriceClass_100"
 
   restrictions {
     geo_restriction {
