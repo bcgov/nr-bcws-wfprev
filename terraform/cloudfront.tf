@@ -89,7 +89,7 @@ resource "aws_cloudfront_distribution" "wfprev_app_distribution" {
 
 
   viewer_certificate {
-    acm_certificate_arn = data.aws_acm_certificate.wfprev_domain_certificate.arn
+    acm_certificate_arn = aws_acm_certificate.wfprev_domain_certificate.arn
     ssl_support_method  = "sni-only"
   }
 
