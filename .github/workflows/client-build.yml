@@ -1,9 +1,6 @@
 name: Deploy Angular App to S3 and CloudFront
 
 on:
-  push:
-    branches:
-      - main  # Adjust to your deployment branch
   workflow_call:
     inputs:
       DEFAULT_APPLICATION_ENVIRONMENT:
