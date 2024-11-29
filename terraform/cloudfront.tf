@@ -25,8 +25,6 @@ resource "aws_cloudfront_distribution" "wfprev_app_distribution" {
       origin_ssl_protocols = [
       "TLSv1.2"]
     }
-
-    origin_path = "/${aws_apigatewayv2_stage.wfprev_stage.name}"
   }
 
   enabled             = true
@@ -58,7 +56,7 @@ resource "aws_cloudfront_distribution" "wfprev_app_distribution" {
 
 
     ordered_cache_behavior {
-    path_pattern     = "/wfprev-api/*"
+    path_pattern     = "/${aws_apigatewayv2_stage.wfprev_stage.name}/wfprev-api/*"
     allowed_methods = [
       "DELETE",
       "GET",
