@@ -13,7 +13,7 @@ resource "aws_acm_certificate" "wfprev_domain_certificate" {
 
 resource "aws_acm_certificate_validation" "domain_certificate_validation" {
   certificate_arn         = aws_acm_certificate.wfprev_domain_certificate.arn
-  validation_record_fqdns = aws_route53_record.cert_validation_record.fqdn
+  validation_record_fqdns = [for record in aws_route53_record.cert_validation_record : record.fqdn]
 
   provider = aws.aws-us
 }
