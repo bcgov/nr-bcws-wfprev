@@ -1,0 +1,46 @@
+version: '3.8'
+services:
+#  api:
+#    build:
+#      context: .
+#      dockerfile: Dockerfile.graalvm
+#      args:
+#        MAVEN_SETTINGS_FILE: vivid.settings.xml
+#    ports:
+#      - "8080:8080"
+#      - "1336:1336"
+#    env_file:
+#      - .env
+#    depends_on:
+#      db:
+#        condition: service_healthy
+#    networks:
+#      - wfprev-network
+
+  db:
+    image: postgis/postgis:16-3.4
+    container_name: wfprev-postgres
+    environment:
+      POSTGRES_USER: wfprev
+      POSTGRES_PASSWORD: ${WFPREV_DATASOURCE_PASSWORD}
+      POSTGRES_DB: wfprev
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - wfprev-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U wfprev -d wfprev"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+networks:
+  wfprev-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+    driver: local

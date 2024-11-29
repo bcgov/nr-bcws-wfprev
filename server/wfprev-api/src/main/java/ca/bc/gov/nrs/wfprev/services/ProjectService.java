@@ -3,7 +3,16 @@ package ca.bc.gov.nrs.wfprev.services;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
+import ca.bc.gov.nrs.wfprev.data.entities.ForestAreaCodeEntity;
+import ca.bc.gov.nrs.wfprev.data.entities.GeneralScopeCodeEntity;
+import ca.bc.gov.nrs.wfprev.data.entities.ProjectTypeCodeEntity;
+import ca.bc.gov.nrs.wfprev.data.repositories.ForestAreaCodeRepository;
+import ca.bc.gov.nrs.wfprev.data.repositories.GeneralScopeCodeRepository;
+import ca.bc.gov.nrs.wfprev.data.repositories.ProjectTypeCodeRepository;
+import jakarta.persistence.EntityNotFoundException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.stereotype.Component;
 
@@ -21,6 +30,15 @@ import lombok.extern.slf4j.Slf4j;
 public class ProjectService implements CommonService {
   private ProjectRepository projectRepository;
   private ProjectResourceAssembler projectResourceAssembler;
+
+  @Autowired
+  private ForestAreaCodeRepository forestAreaCodeRepository;
+
+  @Autowired
+  private ProjectTypeCodeRepository projectTypeCodeRepository;
+
+  @Autowired
+  private GeneralScopeCodeRepository generalScopeCodeRepository;
 
   public ProjectService(ProjectRepository projectRepository, ProjectResourceAssembler projectResourceAssembler) {
     this.projectRepository = projectRepository;
@@ -47,13 +65,68 @@ public class ProjectService implements CommonService {
   @Transactional
   public ProjectModel createOrUpdateProject(ProjectModel resource) throws ServiceException {
     try {
+      // For new projects (no GUID), generate a UUID
+      if (resource.getProjectGuid() == null) {
+        resource.setProjectGuid(UUID.randomUUID().toString());
+        resource.setCreateDate(new Date());
+        resource.setCreateUser("SYSTEM");
+        resource.setRevisionCount(0); // Initialize revision count for new records
+      }
+      // Set audit fields
+      if (resource.getProjectGuid() == null) {
+        resource.setCreateDate(new Date());
+        //TODO - Fix to use proper user
+        resource.setCreateUser("SYSTEM");
+      }
       resource.setUpdateDate(new Date());
+      //TODO - Fix to use proper user
+      resource.setUpdateUser("SYSTEM");
 
-      ProjectEntity oldEntity = projectResourceAssembler.toEntity(resource);
-      ProjectEntity newEntity = projectRepository.saveAndFlush(oldEntity);
+      ProjectEntity entity = projectResourceAssembler.toEntity(resource);
 
-      return projectResourceAssembler.toModel(newEntity);
-    } catch(Exception e) {
+      // Load ForestAreaCode with null checks
+      if (resource.getForestAreaCode() != null) {
+        String forestAreaCode = resource.getForestAreaCode().getForestAreaCode();
+        if (forestAreaCode != null) {
+          ForestAreaCodeEntity forestAreaCodeEntity = forestAreaCodeRepository
+                  .findById(forestAreaCode)
+                  .orElseThrow(() -> new EntityNotFoundException(
+                          "Forest Area Code not found: " + forestAreaCode));
+          entity.setForestAreaCode(forestAreaCodeEntity);
+        }
+      }
+
+      // Load ProjectTypeCode with null checks
+      if (resource.getProjectTypeCode() != null) {
+        String projectTypeCode = resource.getProjectTypeCode().getProjectTypeCode();
+        if (projectTypeCode != null) {
+          ProjectTypeCodeEntity projectTypeCodeEntity = projectTypeCodeRepository
+                  .findById(projectTypeCode)
+                  .orElseThrow(() -> new EntityNotFoundException(
+                          "Project Type Code not found: " + projectTypeCode));
+          entity.setProjectTypeCode(projectTypeCodeEntity);
+        }
+      }
+
+      // Load GeneralScopeCode with null checks
+      if (resource.getGeneralScopeCode() != null) {
+        String generalScopeCode = resource.getGeneralScopeCode().getGeneralScopeCode();
+        if (generalScopeCode != null) {
+          GeneralScopeCodeEntity generalScopeCodeEntity = generalScopeCodeRepository
+                  .findById(generalScopeCode)
+                  .orElseThrow(() -> new EntityNotFoundException(
+                          "General Scope Code not found: " + generalScopeCode));
+          entity.setGeneralScopeCode(generalScopeCodeEntity);
+        }
+      }
+
+      ProjectEntity savedEntity = projectRepository.saveAndFlush(entity);
+      return projectResourceAssembler.toModel(savedEntity);
+
+    } catch (EntityNotFoundException e) {
+      throw new ServiceException("Invalid reference data: " + e.getMessage(), e);
+    } catch (Exception e) {
+      log.error("Error creating/updating project", e);  // Add logging
       throw new ServiceException(e.getLocalizedMessage(), e);
     }
   }
