@@ -17,7 +17,7 @@ export class ConfirmationDialogComponent {
   dialogUsage: string;
 
   constructor(
-    private dialogRef: MatDialogRef<ConfirmationDialogComponent>,
+    private readonly dialogRef: MatDialogRef<ConfirmationDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: { indicator: string }
   ) {
     this.dialogUsage = this.data?.indicator
