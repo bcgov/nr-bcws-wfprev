@@ -160,6 +160,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: ${{inputs.COMPONENT_TYPE}}/${{inputs.COMPONENT_NAME}}
+          file: ${{inputs.COMPONENT_TYPE}}/${{inputs.COMPONENT_NAME}}/Dockerfile.graalvm
           build-args: |
             CONTAINER_NAME=${{inputs.COMPONENT_NAME}}
             MAVEN_SETTINGS_FILE=settings.xml
