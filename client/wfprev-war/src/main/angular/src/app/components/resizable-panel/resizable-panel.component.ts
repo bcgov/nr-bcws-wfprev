@@ -24,5 +24,4 @@ export class ResizablePanelComponent {
   onResize(event: Event): void {
     // Implement any additional logic if needed when window resizes
   }
-
 }

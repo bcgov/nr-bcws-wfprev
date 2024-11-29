@@ -5,17 +5,19 @@ import { ROUTING } from 'src/app/app.routing';
 import { AppHeaderComponent } from 'src/app/components/shared-layout/app-header/app-header.component';
 import { MatMenuModule } from '@angular/material/menu';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MatDialogModule } from '@angular/material/dialog';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
   ],
   imports: [
     BrowserModule,
     ROUTING,
     AppHeaderComponent,
     MatMenuModule,
-    BrowserAnimationsModule
+    BrowserAnimationsModule,
+    MatDialogModule,
   ],
   providers: [],
   bootstrap: [AppComponent]

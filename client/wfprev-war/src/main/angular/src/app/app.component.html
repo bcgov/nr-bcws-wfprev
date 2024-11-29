@@ -1,7 +1,12 @@
 <div>
   <app-app-header></app-app-header>
-  <div class="title" (click)="goHome()">
-    {{ title }}
+  <div class="create-project-button-row">
+    <button class="create-project-button" (click)="createNewProject()">
+      <span class="button-text">
+        <img alt="create-project" class="icon" src="/assets/add-button.svg">
+        Create New Project
+      </span>
+    </button>
   </div>
   <nav class="nav-class">
     <div>

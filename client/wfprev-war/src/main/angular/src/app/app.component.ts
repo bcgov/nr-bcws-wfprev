@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
+import { CreateNewProjectDialogComponent } from 'src/app/components/create-new-project-dialog/create-new-project-dialog.component';
 import { ResourcesRoutes } from 'src/app/utils';
 
 @Component({
@@ -8,11 +10,11 @@ import { ResourcesRoutes } from 'src/app/utils';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-  title = 'Wildfire Prevention';
   activeRoute = '';
   
   constructor(
     protected router: Router,
+    protected dialog: MatDialog
   ) {
   }
 
@@ -31,5 +33,13 @@ export class AppComponent {
 
   goHome(): void {
     this.router.navigate([ResourcesRoutes.LANDING]); // Navigate back to the home page
+  }
+
+  createNewProject(): void {
+    this.dialog.open(CreateNewProjectDialogComponent, {
+      width: '880px',
+      disableClose: true,
+      hasBackdrop: true,
+    });
   }
 }
