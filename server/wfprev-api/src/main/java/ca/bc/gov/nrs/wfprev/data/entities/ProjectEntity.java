@@ -3,6 +3,7 @@ package ca.bc.gov.nrs.wfprev.data.entities;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.UUID;
 
 import org.hibernate.annotations.UuidGenerator;
 import org.springframework.data.annotation.CreatedBy;
@@ -47,9 +48,9 @@ public class ProjectEntity implements Serializable {
   @UuidGenerator
   @GeneratedValue(strategy = GenerationType.UUID)
   @Column(name = "project_guid")
-  private String projectGuid;
+  private UUID projectGuid;
 
-  @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REFRESH)
+  @ManyToOne(fetch = FetchType.LAZY, optional = true)
 	@JoinColumn(name="project_type_code")
   private ProjectTypeCodeEntity projectTypeCode;
 
@@ -61,17 +62,17 @@ public class ProjectEntity implements Serializable {
 	@Column(name="site_unit_name", length = 250)
 	private String siteUnitName;
 
-  @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REFRESH)
+  @ManyToOne(fetch = FetchType.LAZY, optional = true)
 	@JoinColumn(name="forest_area_code")
   private ForestAreaCodeEntity forestAreaCode;
 
-  @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REFRESH)
+  @ManyToOne(fetch = FetchType.LAZY, optional = true)
 	@JoinColumn(name="general_scope_code")
   private GeneralScopeCodeEntity generalScopeCode;
 
-  @Column(name = "program_area_guid")
+  @Column(name = "program_area_guid", columnDefinition = "uuid")
   @NotNull
-  private String programAreaGuid;
+  private UUID programAreaGuid;
 
   @Column(name = "forest_region_org_unit_id", columnDefinition="Decimal(10)")
   private Integer forestRegionOrgUnitId;
@@ -128,7 +129,6 @@ public class ProjectEntity implements Serializable {
 
   @NotNull
   @Column(name = "is_multi_fiscal_year_proj_ind")
-  @Convert(converter = BooleanConverter.class)
   @Builder.Default
   private Boolean isMultiFiscalYearProj = false;
 
