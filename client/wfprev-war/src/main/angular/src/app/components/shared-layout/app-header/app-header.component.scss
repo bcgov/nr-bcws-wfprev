@@ -1,5 +1,4 @@
 .header-container {
-    cursor: pointer;
     height: var(--header-height);
     background-color: var(--wf-header-background-color);
     display: flex;
@@ -13,6 +12,8 @@
 
     /* BC Logo Section */
     .bc-logo {
+      cursor: pointer;
+
       display: flex;
       justify-content: flex-start;
       align-items: center;
@@ -84,13 +85,14 @@
         display: flex;
         align-items: center;
         color: white;
-  
+        padding-right: 25px;
         mat-icon {
           margin-right: 5px;
         }
       }
 
       .training {
+        cursor: pointer;
         white-space: nowrap;
         color: white;
         &.can-click:hover {
@@ -107,3 +109,7 @@
     margin: 0 15px;
 }
   
+.keyboard-arrow-down{
+  position: fixed !important;
+  right: 5px;
+}
