@@ -1,8 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MatDialog } from '@angular/material/dialog';
-import { MatDialogRef } from '@angular/material/dialog';
+import { MatDialog , MatDialogRef } from '@angular/material/dialog';
 import { ConfirmationDialogComponent } from 'src/app/components/confirmation-dialog/confirmation-dialog.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
@@ -35,10 +34,10 @@ export class CreateNewProjectDialogComponent {
   bcParksSections: string[] = []; // Dynamically updated based on the selected region
 
   constructor(
-    private fb: FormBuilder,
-    private dialog: MatDialog,
-    private dialogRef: MatDialogRef<CreateNewProjectDialogComponent>,
-    private snackbarService: MatSnackBar,
+    private readonly fb: FormBuilder,
+    private readonly dialog: MatDialog,
+    private readonly dialogRef: MatDialogRef<CreateNewProjectDialogComponent>,
+    private readonly snackbarService: MatSnackBar,
 
   ) {
     this.projectForm = this.fb.group({
