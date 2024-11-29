@@ -110,7 +110,7 @@ public class ProjectController extends CommonController {
       resource.setCreateUser(getWebAdeAuthentication().getUserId());
       resource.setUpdateUser(getWebAdeAuthentication().getUserId());
       resource.setRevisionCount(0);
-      resource.setProgramAreaGuid(UUID.randomUUID().toString());
+//      resource.setProgramAreaGuid(UUID.randomUUID().toString());
 
       ProjectModel newResource = projectService.createOrUpdateProject(resource);
       response = newResource == null ? badRequest() : created(newResource);

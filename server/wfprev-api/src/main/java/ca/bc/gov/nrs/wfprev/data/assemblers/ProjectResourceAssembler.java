@@ -17,6 +17,8 @@ import ca.bc.gov.nrs.wfprev.data.models.GeneralScopeCodeModel;
 import ca.bc.gov.nrs.wfprev.data.models.ProjectModel;
 import ca.bc.gov.nrs.wfprev.data.models.ProjectTypeCodeModel;
 
+import java.util.UUID;
+
 @Component
 public class ProjectResourceAssembler extends RepresentationModelAssemblerSupport<ProjectEntity, ProjectModel> {
 
@@ -27,13 +29,13 @@ public class ProjectResourceAssembler extends RepresentationModelAssemblerSuppor
   public ProjectEntity toEntity(ProjectModel resource) {
     ProjectEntity entity = new ProjectEntity();
 
-    entity.setProjectGuid(resource.getProjectGuid());
+    entity.setProjectGuid(UUID.fromString(resource.getProjectGuid()));
     entity.setProjectTypeCode(toProjectTypeCodeEntity(resource.getProjectTypeCode()));
     entity.setProjectNumber(resource.getProjectNumber());
     entity.setSiteUnitName(resource.getSiteUnitName());
     entity.setForestAreaCode(toForestAreaCodeEntity(resource.getForestAreaCode()));
     entity.setGeneralScopeCode(toGeneralScopeCodeEntity(resource.getGeneralScopeCode()));
-    entity.setProgramAreaGuid(resource.getProgramAreaGuid());
+    entity.setProgramAreaGuid(UUID.fromString(resource.getProgramAreaGuid()));
     entity.setForestRegionOrgUnitId(resource.getForestRegionOrgUnitId());
     entity.setForestDistrictOrgUnitId(resource.getForestDistrictOrgUnitId());
     entity.setFireCentreOrgUnitId(resource.getFireCentreOrgUnitId());
@@ -70,16 +72,16 @@ public class ProjectResourceAssembler extends RepresentationModelAssemblerSuppor
      
     resource.add(linkTo(
         methodOn(ProjectController.class)
-        .getById(entity.getProgramAreaGuid()))
+        .getById(entity.getProgramAreaGuid().toString()))
         .withSelfRel());
      
-        resource.setProjectGuid(entity.getProjectGuid());
+        resource.setProjectGuid(entity.getProjectGuid().toString());
         resource.setProjectTypeCode(toProjectTypeCodeModel(entity.getProjectTypeCode()));
         resource.setProjectNumber(entity.getProjectNumber());
         resource.setSiteUnitName(entity.getSiteUnitName());
         resource.setForestAreaCode(toForestAreaCodeModel(entity.getForestAreaCode()));
         resource.setGeneralScopeCode(toGeneralScopeCodeModel(entity.getGeneralScopeCode()));
-        resource.setProgramAreaGuid(entity.getProgramAreaGuid());
+        resource.setProgramAreaGuid(entity.getProgramAreaGuid().toString());
         resource.setForestRegionOrgUnitId(entity.getForestRegionOrgUnitId());
         resource.setForestDistrictOrgUnitId(entity.getForestDistrictOrgUnitId());
         resource.setFireCentreOrgUnitId(entity.getFireCentreOrgUnitId());

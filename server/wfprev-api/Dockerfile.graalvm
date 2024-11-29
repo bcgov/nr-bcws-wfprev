@@ -1,12 +1,11 @@
 FROM ubuntu:latest
 
-WORKDIR /app
-
-# Install curl for healthcheck and debugging
 RUN apt-get update && apt-get install -y \
     libc6 \
     libstdc++6 \
     curl \
+    postgresql-client \
+    gdb \
     && rm -rf /var/lib/apt/lists/*
 
 
@@ -16,7 +15,6 @@ COPY ./wfprev-api /app/
 
 RUN chmod -x /app/wfprev-api
 
-# Expose the port your application uses
 EXPOSE 8080
 
 RUN chmod +x /app/wfprev-api
