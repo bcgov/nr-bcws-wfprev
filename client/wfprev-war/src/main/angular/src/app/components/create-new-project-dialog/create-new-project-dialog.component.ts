@@ -4,7 +4,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { MatDialog , MatDialogRef } from '@angular/material/dialog';
 import { ConfirmationDialogComponent } from 'src/app/components/confirmation-dialog/confirmation-dialog.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
-
+import { Messages } from 'src/app/utils/messages';
 @Component({
   selector: 'app-create-new-project-dialog',
   standalone: true,
@@ -17,7 +17,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 })
 export class CreateNewProjectDialogComponent {
   projectForm: FormGroup;
-
+  messages = Messages;
   // Regions and sections mapping
   regionToSections: { [key: string]: string[] } = {
     'Northern': ['Omineca', 'Peace', 'Skeena'],
@@ -67,6 +67,23 @@ export class CreateNewProjectDialogComponent {
   });
   }
 
+  getErrorMessage(controlName: string): string | null {
+    const control = this.projectForm.get(controlName);
+    if (!control || !control.errors) return null;
+
+    if (control.hasError('required')) {
+      return this.messages.requiredField;
+    }
+    if (control.hasError('maxlength')) {
+      return this.messages.maxLengthExceeded;
+    }
+    if (control.hasError('email')) {
+      return this.messages.invalidEmail;
+    }
+
+    return null; // No errors
+  }
+
   onCreate(): void {
     if (this.projectForm.valid) {
       console.log(this.projectForm.value);
@@ -83,7 +100,7 @@ export class CreateNewProjectDialogComponent {
 
       //OK will return the user to the Modal and allow further editing. just close the Modal for now
       this.snackbarService.open(
-        'Project Created Successfully',
+        this.messages.projectCreatedSuccess,
         'OK',
         { duration: 100000, panelClass: 'snackbar-success' },
       )
