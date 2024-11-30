@@ -245,7 +245,6 @@ public class ProjectServiceTest {
         assertNotNull(result);
     }
 
-
     @Test
     public void test_create_project_with_valid_reference_codes() throws ServiceException {
         // Given
