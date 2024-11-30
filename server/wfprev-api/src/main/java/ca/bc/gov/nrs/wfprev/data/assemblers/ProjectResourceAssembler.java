@@ -22,59 +22,59 @@ import java.util.UUID;
 @Component
 public class ProjectResourceAssembler extends RepresentationModelAssemblerSupport<ProjectEntity, ProjectModel> {
 
-  public ProjectResourceAssembler() {
-    super(ProjectController.class, ProjectModel.class);
-  }
+    public ProjectResourceAssembler() {
+        super(ProjectController.class, ProjectModel.class);
+    }
 
-  public ProjectEntity toEntity(ProjectModel resource) {
-    ProjectEntity entity = new ProjectEntity();
+    public ProjectEntity toEntity(ProjectModel resource) {
+        ProjectEntity entity = new ProjectEntity();
 
-    entity.setProjectGuid(UUID.fromString(resource.getProjectGuid()));
-    entity.setProjectTypeCode(toProjectTypeCodeEntity(resource.getProjectTypeCode()));
-    entity.setProjectNumber(resource.getProjectNumber());
-    entity.setSiteUnitName(resource.getSiteUnitName());
-    entity.setForestAreaCode(toForestAreaCodeEntity(resource.getForestAreaCode()));
-    entity.setGeneralScopeCode(toGeneralScopeCodeEntity(resource.getGeneralScopeCode()));
-    entity.setProgramAreaGuid(UUID.fromString(resource.getProgramAreaGuid()));
-    entity.setForestRegionOrgUnitId(resource.getForestRegionOrgUnitId());
-    entity.setForestDistrictOrgUnitId(resource.getForestDistrictOrgUnitId());
-    entity.setFireCentreOrgUnitId(resource.getFireCentreOrgUnitId());
-    entity.setBcParksRegionOrgUnitId(resource.getBcParksRegionOrgUnitId());
-    entity.setBcParksSectionOrgUnitId(resource.getBcParksSectionOrgUnitId());
-    entity.setProjectName(resource.getProjectName());
-    entity.setProjectLead(resource.getProjectLead());
-    entity.setProjectLeadEmailAddress(resource.getProjectLeadEmailAddress());
-    entity.setProjectDescription(resource.getProjectDescription());
-    entity.setClosestCommunityName(resource.getClosestCommunityName());
-    entity.setTotalFundingRequestAmount(resource.getTotalFundingRequestAmount());
-    entity.setTotalAllocatedAmount(resource.getTotalAllocatedAmount());
-    entity.setTotalPlannedProjectSizeHa(resource.getTotalPlannedProjectSizeHa());
-    entity.setTotalPlannedCostPerHectare(resource.getTotalPlannedCostPerHectare());
-    entity.setTotalActualAmount(resource.getTotalActualAmount());
-    entity.setTotalProjectSizeHa(resource.getTotalProjectSizeHa());
-    entity.setTotalCostPerHectareAmount(resource.getTotalCostPerHectareAmount());
-    entity.setIsMultiFiscalYearProj(resource.getIsMultiFiscalYearProj());
-    entity.setLatitude(resource.getLatitude());
-    entity.setLongitude(resource.getLongitude());
-    entity.setLastProgressUpdateTimestamp(resource.getLastProgressUpdateTimestamp());
-    entity.setRevisionCount(resource.getRevisionCount());
-    entity.setCreateUser(resource.getCreateUser());
-    entity.setCreateDate(resource.getCreateDate());
-    entity.setUpdateUser(resource.getUpdateUser());
-    entity.setUpdateDate(resource.getUpdateDate());
-    
-    return entity;
-  }  
+        entity.setProjectGuid(UUID.fromString(resource.getProjectGuid()));
+        entity.setProjectTypeCode(toProjectTypeCodeEntity(resource.getProjectTypeCode()));
+        entity.setProjectNumber(resource.getProjectNumber());
+        entity.setSiteUnitName(resource.getSiteUnitName());
+        entity.setForestAreaCode(toForestAreaCodeEntity(resource.getForestAreaCode()));
+        entity.setGeneralScopeCode(toGeneralScopeCodeEntity(resource.getGeneralScopeCode()));
+        entity.setProgramAreaGuid(UUID.fromString(resource.getProgramAreaGuid()));
+        entity.setForestRegionOrgUnitId(resource.getForestRegionOrgUnitId());
+        entity.setForestDistrictOrgUnitId(resource.getForestDistrictOrgUnitId());
+        entity.setFireCentreOrgUnitId(resource.getFireCentreOrgUnitId());
+        entity.setBcParksRegionOrgUnitId(resource.getBcParksRegionOrgUnitId());
+        entity.setBcParksSectionOrgUnitId(resource.getBcParksSectionOrgUnitId());
+        entity.setProjectName(resource.getProjectName());
+        entity.setProjectLead(resource.getProjectLead());
+        entity.setProjectLeadEmailAddress(resource.getProjectLeadEmailAddress());
+        entity.setProjectDescription(resource.getProjectDescription());
+        entity.setClosestCommunityName(resource.getClosestCommunityName());
+        entity.setTotalFundingRequestAmount(resource.getTotalFundingRequestAmount());
+        entity.setTotalAllocatedAmount(resource.getTotalAllocatedAmount());
+        entity.setTotalPlannedProjectSizeHa(resource.getTotalPlannedProjectSizeHa());
+        entity.setTotalPlannedCostPerHectare(resource.getTotalPlannedCostPerHectare());
+        entity.setTotalActualAmount(resource.getTotalActualAmount());
+        entity.setTotalProjectSizeHa(resource.getTotalProjectSizeHa());
+        entity.setTotalCostPerHectareAmount(resource.getTotalCostPerHectareAmount());
+        entity.setIsMultiFiscalYearProj(resource.getIsMultiFiscalYearProj());
+        entity.setLatitude(resource.getLatitude());
+        entity.setLongitude(resource.getLongitude());
+        entity.setLastProgressUpdateTimestamp(resource.getLastProgressUpdateTimestamp());
+        entity.setRevisionCount(resource.getRevisionCount());
+        entity.setCreateUser(resource.getCreateUser());
+        entity.setCreateDate(resource.getCreateDate());
+        entity.setUpdateUser(resource.getUpdateUser());
+        entity.setUpdateDate(resource.getUpdateDate());
 
-  @Override
-  public ProjectModel toModel(ProjectEntity entity) {
-    ProjectModel resource = instantiateModel(entity);
-     
-    resource.add(linkTo(
-        methodOn(ProjectController.class)
-        .getById(entity.getProgramAreaGuid().toString()))
-        .withSelfRel());
-     
+        return entity;
+    }
+
+    @Override
+    public ProjectModel toModel(ProjectEntity entity) {
+        ProjectModel resource = instantiateModel(entity);
+
+        resource.add(linkTo(
+                methodOn(ProjectController.class)
+                        .getById(entity.getProgramAreaGuid().toString()))
+                .withSelfRel());
+
         resource.setProjectGuid(entity.getProjectGuid().toString());
         resource.setProjectTypeCode(toProjectTypeCodeModel(entity.getProjectTypeCode()));
         resource.setProjectNumber(entity.getProjectNumber());
@@ -109,52 +109,52 @@ public class ProjectResourceAssembler extends RepresentationModelAssemblerSuppor
         resource.setUpdateUser(entity.getUpdateUser());
         resource.setUpdateDate(entity.getUpdateDate());
 
-    return resource;
-  }
-  
-  @Override
-  public CollectionModel<ProjectModel> toCollectionModel(Iterable<? extends ProjectEntity> entities) 
-  {
-    CollectionModel<ProjectModel> resources = super.toCollectionModel(entities);
-     
-    resources.add(linkTo(methodOn(ProjectController.class).getAllProjects()).withSelfRel());
-     
-    return resources;
-  }
+        return resource;
+    }
 
-  private ProjectTypeCodeModel toProjectTypeCodeModel(ProjectTypeCodeEntity code) {
- 
-    ProjectTypeCodeResourceAssembler ra = new ProjectTypeCodeResourceAssembler();
-    return ra.toModel(code);
-  }
+    @Override
+    public CollectionModel<ProjectModel> toCollectionModel(Iterable<? extends ProjectEntity> entities) {
+        System.out.println("entities: " + entities);
+        CollectionModel<ProjectModel> resources = super.toCollectionModel(entities);
 
-  private ProjectTypeCodeEntity toProjectTypeCodeEntity(ProjectTypeCodeModel code) {
- 
-    ProjectTypeCodeResourceAssembler ra = new ProjectTypeCodeResourceAssembler();
-    return ra.toEntity(code);
-  }
-  
-  private ForestAreaCodeModel toForestAreaCodeModel(ForestAreaCodeEntity code) {
- 
-    ForestAreaCodeResourceAssembler ra = new ForestAreaCodeResourceAssembler();
-    return ra.toModel(code);
-  }
+        resources.add(linkTo(methodOn(ProjectController.class).getAllProjects()).withSelfRel());
 
-  private ForestAreaCodeEntity toForestAreaCodeEntity(ForestAreaCodeModel code) {
- 
-    ForestAreaCodeResourceAssembler ra = new ForestAreaCodeResourceAssembler();
-    return ra.toEntity(code);
-  }
+        return resources;
+    }
 
-  private GeneralScopeCodeModel toGeneralScopeCodeModel(GeneralScopeCodeEntity code) {
- 
-    GeneralScopeCodeResourceAssembler ra = new GeneralScopeCodeResourceAssembler();
-    return ra.toModel(code);
-  }
+    private ProjectTypeCodeModel toProjectTypeCodeModel(ProjectTypeCodeEntity code) {
 
-  private GeneralScopeCodeEntity toGeneralScopeCodeEntity(GeneralScopeCodeModel code) {
- 
-    GeneralScopeCodeResourceAssembler ra = new GeneralScopeCodeResourceAssembler();
-    return ra.toEntity(code);
-  }
+        ProjectTypeCodeResourceAssembler ra = new ProjectTypeCodeResourceAssembler();
+        return ra.toModel(code);
+    }
+
+    private ProjectTypeCodeEntity toProjectTypeCodeEntity(ProjectTypeCodeModel code) {
+
+        ProjectTypeCodeResourceAssembler ra = new ProjectTypeCodeResourceAssembler();
+        return ra.toEntity(code);
+    }
+
+    private ForestAreaCodeModel toForestAreaCodeModel(ForestAreaCodeEntity code) {
+
+        ForestAreaCodeResourceAssembler ra = new ForestAreaCodeResourceAssembler();
+        return ra.toModel(code);
+    }
+
+    private ForestAreaCodeEntity toForestAreaCodeEntity(ForestAreaCodeModel code) {
+
+        ForestAreaCodeResourceAssembler ra = new ForestAreaCodeResourceAssembler();
+        return ra.toEntity(code);
+    }
+
+    private GeneralScopeCodeModel toGeneralScopeCodeModel(GeneralScopeCodeEntity code) {
+
+        GeneralScopeCodeResourceAssembler ra = new GeneralScopeCodeResourceAssembler();
+        return ra.toModel(code);
+    }
+
+    private GeneralScopeCodeEntity toGeneralScopeCodeEntity(GeneralScopeCodeModel code) {
+
+        GeneralScopeCodeResourceAssembler ra = new GeneralScopeCodeResourceAssembler();
+        return ra.toEntity(code);
+    }
 }
