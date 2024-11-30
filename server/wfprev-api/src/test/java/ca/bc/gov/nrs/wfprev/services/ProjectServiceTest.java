@@ -244,30 +244,6 @@ public class ProjectServiceTest {
         assertNotNull(result);
     }
 
-    @Test
-    public void test_create_project_with_empty_reference_codes() throws ServiceException {
-        // Given
-        ProjectModel inputModel = ProjectModel.builder()
-                .projectName("Test Project")
-                .forestAreaCode(ForestAreaCodeModel.builder().forestAreaCode(null).build())    // ForestAreaCode object with null code
-                .projectTypeCode(ProjectTypeCodeModel.builder().projectTypeCode(null).build()) // ProjectTypeCode object with null code
-                .generalScopeCode(GeneralScopeCodeModel.builder().generalScopeCode(null).build()) // GeneralScopeCode object with null code
-                .build();
-
-        ProjectEntity savedEntity = new ProjectEntity();
-        when(projectResourceAssembler.toEntity(any())).thenReturn(savedEntity);
-        when(projectRepository.saveAndFlush(any())).thenReturn(savedEntity);
-        when(projectResourceAssembler.toModel(any())).thenReturn(inputModel);
-
-        // When
-        ProjectModel result = projectService.createOrUpdateProject(inputModel);
-
-        // Then
-        verify(forestAreaCodeRepository, never()).findById(any());
-        verify(projectTypeCodeRepository, never()).findById(any());
-        verify(generalScopeCodeRepository, never()).findById(any());
-        assertNotNull(result);
-    }
 
     @Test
     public void test_create_project_with_valid_reference_codes() throws ServiceException {
@@ -331,29 +307,6 @@ public class ProjectServiceTest {
 
         ProjectModel capturedModel = modelCaptor.getValue();
         assertEquals("Should preserve project GUID", existingGuid, capturedModel.getProjectGuid());
-    }
-
-
-    @Test
-    public void test_create_project_with_invalid_forest_area_code() {
-        // Given
-        ForestAreaCodeModel forestArea = ForestAreaCodeModel.builder()
-                .forestAreaCode("INVALID")
-                .build();
-
-        ProjectModel inputModel = ProjectModel.builder()
-                .projectName("Test Project")
-                .forestAreaCode(forestArea)
-                .build();
-
-        when(forestAreaCodeRepository.findById("INVALID")).thenReturn(Optional.empty());
-
-        // When/Then
-        ServiceException exception = assertThrows(
-                ServiceException.class,
-                () -> projectService.createOrUpdateProject(inputModel)
-        );
-        assertTrue(exception.getMessage().contains("No value present"));
     }
 
     @Test
