@@ -43,8 +43,3 @@ Thumbs.db
 # Documentation.json
 documentation.json
 
-# Package Lock
-package-lock.json
-
-# Yarn Lock
-yarn.lock

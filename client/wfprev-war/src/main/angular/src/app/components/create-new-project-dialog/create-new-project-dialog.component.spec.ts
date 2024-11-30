@@ -5,6 +5,7 @@ import { of } from 'rxjs';
 import { CreateNewProjectDialogComponent } from './create-new-project-dialog.component';
 import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { Messages } from 'src/app/utils/messages';
 
 
 describe('CreateNewProjectDialogComponent', () => {
@@ -139,5 +140,57 @@ describe('CreateNewProjectDialogComponent', () => {
 
     component.onCreate();
     expect(mockDialogRef.close).not.toHaveBeenCalled();
+  });
+  it('should return the correct error message for required fields', () => {
+    component.projectForm.get('projectName')?.setErrors({ required: true });
+    const errorMessage = component.getErrorMessage('projectName');
+    expect(errorMessage).toBe(Messages.requiredField);
+  });
+  
+  it('should return the correct error message for maxlength errors', () => {
+    component.projectForm.get('projectName')?.setErrors({ maxlength: true });
+    const errorMessage = component.getErrorMessage('projectName');
+    expect(errorMessage).toBe(Messages.maxLengthExceeded);
+  });
+  
+  it('should return the correct error message for email format errors', () => {
+    component.projectForm.get('projectLeadEmail')?.setErrors({ email: true });
+    const errorMessage = component.getErrorMessage('projectLeadEmail');
+    expect(errorMessage).toBe(Messages.invalidEmail);
+  });
+  
+  it('should dynamically display error messages in the template', () => {
+    const projectNameControl = component.projectForm.get('projectName');
+    projectNameControl?.setErrors({ maxlength: true });
+    projectNameControl?.markAsTouched();
+    fixture.detectChanges();
+  
+    const errorElement = fixture.nativeElement.querySelector('.form-field .error');
+    expect(errorElement.textContent.trim()).toBe(Messages.maxLengthExceeded);
+  });
+  
+  it('should show a snackbar message on successful form submission', () => {
+    const mockSnackbar = spyOn(component['snackbarService'], 'open');
+    component.projectForm.patchValue({
+      projectName: 'Test Project',
+      latLong: '123.456',
+      businessArea: 'Area 1',
+      forestRegion: 'Region 1',
+      forestDistrict: 'District 1',
+      bcParksRegion: 'Northern',
+      bcParksSection: 'Omineca',
+      projectLead: 'John Doe',
+      projectLeadEmail: 'john.doe@example.com',
+      siteUnitName: 'Unit 1',
+      closestCommunity: 'Community 1',
+    });
+  
+    component.onCreate();
+  
+    expect(mockSnackbar).toHaveBeenCalledWith(
+      Messages.projectCreatedSuccess,
+      'OK',
+      { duration: 100000, panelClass: 'snackbar-success' }
+    );
   });
 });
