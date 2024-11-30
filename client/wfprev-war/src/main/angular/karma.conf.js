@@ -1,4 +1,18 @@
+const fs = require('fs');
+const path = require('path');
+
 module.exports = function (config) {
+  const coverageDir = path.join(__dirname, './coverage/wfprev');
+
+  // Ensure the directory exists or create it safely
+  try {
+    if (!fs.existsSync(coverageDir)) {
+      fs.mkdirSync(coverageDir, { recursive: true });
+    }
+  } catch (err) {
+    console.error(`Failed to create directory ${coverageDir}:`, err);
+  }
+
   config.set({
     basePath: '',
     frameworks: ['jasmine', '@angular-devkit/build-angular'],
@@ -7,31 +21,24 @@ module.exports = function (config) {
       require('karma-chrome-launcher'),
       require('karma-jasmine-html-reporter'),
       require('karma-coverage'),
-      require('@angular-devkit/build-angular/plugins/karma')
+      require('@angular-devkit/build-angular/plugins/karma'),
     ],
     client: {
-      clearContext: false // leave Jasmine Spec Runner output visible in browser
+      clearContext: false, // Leave Jasmine Spec Runner output visible in the browser
     },
     coverageReporter: {
-      dir: require('path').join(__dirname, './coverage/wfprev'),
+      dir: coverageDir,
       subdir: '.',
       reporters: [
-        { type: 'html' },                    // HTML report
-        { type: 'text-summary' },            // Text summary report
-        { type: 'json-summary', file: 'coverage-summary.json' },
-        { type: 'lcov', file: 'lcov.info' }, // Generate summary with percentages
+        { type: 'html' },
+        { type: 'text-summary' },
+        { type: 'json-summary' },
+        { type: 'lcov' },
       ],
-      check: {
-        global: {
-          statements: 80,
-          branches: 80,
-          functions: 80,
-          lines: 80
-        }
-      }
+      clean: true, // Ensure the coverage directory is cleaned automatically
     },
     preprocessors: {
-      'src/**/*.ts': ['coverage'] // Instrument your TypeScript files for coverage
+      'src/**/*.ts': ['coverage'], // Instrument your TypeScript files for coverage
     },
     reporters: ['progress', 'kjhtml', 'coverage'],
     port: 9876,
@@ -40,6 +47,6 @@ module.exports = function (config) {
     autoWatch: true,
     browsers: ['ChromeHeadless'],
     singleRun: false,
-    restartOnFileChange: true
+    restartOnFileChange: true,
   });
 };

@@ -10,6 +10,7 @@ import { CustomDateTimeProvider, CustomOAuthLogger } from './utils';
 import { AppHeaderComponent } from 'src/app/components/shared-layout/app-header/app-header.component';
 import { MatMenuModule } from '@angular/material/menu';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MatDialogModule } from '@angular/material/dialog';
 
 @NgModule({
   declarations: [AppComponent],
@@ -21,7 +22,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     }),
     AppHeaderComponent,
     MatMenuModule,
-    BrowserAnimationsModule
+    BrowserAnimationsModule,
+    MatDialogModule,
   ],
   providers: [
     provideHttpClient(withInterceptorsFromDi()),

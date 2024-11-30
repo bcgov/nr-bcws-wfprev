@@ -6,6 +6,8 @@
     --wf-header-border-color:#FCBA19;
     --wf-font-family-main: "BCSans", "Noto Sans", Verdana, Arial, sans-serif;
     --wf-header-environment-color: #FCBA19;
+    --wf-primary-color: #013366;
+    --colour-white:#ffffff;
 }
 
 body {
@@ -36,3 +38,19 @@ body {
         }
     }
 }
+
+.snackbar-success {
+    background-color: #2e703e;
+    color: var(--colour-white);
+    position: inherit;
+    width: fit-content;
+    text-align: center;
+    .mat-mdc-simple-snack-bar {
+      font-family: var(--wf-font-family-main);
+      font-size: 13px;
+    }
+    .mat-button-wrapper {
+      color: white;
+    }
+  }
+
