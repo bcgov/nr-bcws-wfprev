@@ -1,8 +1,8 @@
 package ca.bc.gov.nrs.wfprev.services;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import ca.bc.gov.nrs.wfprev.data.entities.ForestAreaCodeEntity;
@@ -47,8 +47,8 @@ public class ProjectService implements CommonService {
   
   public CollectionModel<ProjectModel> getAllProjects() throws ServiceException {
     try {
-      List<ProjectEntity> entities = new ArrayList<>();
-      return projectResourceAssembler.toCollectionModel(entities);
+      List<ProjectEntity> all = projectRepository.findAll();
+      return projectResourceAssembler.toCollectionModel(all);
     } catch(Exception e) {
       throw new ServiceException(e.getLocalizedMessage(), e);
     }
@@ -65,19 +65,16 @@ public class ProjectService implements CommonService {
   @Transactional
   public ProjectModel createOrUpdateProject(ProjectModel resource) throws ServiceException {
     try {
-      // For new projects (no GUID), generate a UUID
       if (resource.getProjectGuid() == null) {
+        resource.setCreateDate(new Date());
+        //TODO - Fix to use proper user
+        resource.setCreateUser("SYSTEM");
         resource.setProjectGuid(UUID.randomUUID().toString());
         resource.setCreateDate(new Date());
         resource.setCreateUser("SYSTEM");
         resource.setRevisionCount(0); // Initialize revision count for new records
       }
       // Set audit fields
-      if (resource.getProjectGuid() == null) {
-        resource.setCreateDate(new Date());
-        //TODO - Fix to use proper user
-        resource.setCreateUser("SYSTEM");
-      }
       resource.setUpdateDate(new Date());
       //TODO - Fix to use proper user
       resource.setUpdateUser("SYSTEM");
@@ -87,12 +84,11 @@ public class ProjectService implements CommonService {
       // Load ForestAreaCode with null checks
       if (resource.getForestAreaCode() != null) {
         String forestAreaCode = resource.getForestAreaCode().getForestAreaCode();
-        if (forestAreaCode != null) {
-          ForestAreaCodeEntity forestAreaCodeEntity = forestAreaCodeRepository
-                  .findById(forestAreaCode)
-                  .orElseThrow(() -> new EntityNotFoundException(
-                          "Forest Area Code not found: " + forestAreaCode));
-          entity.setForestAreaCode(forestAreaCodeEntity);
+        Optional<ForestAreaCodeEntity> forestAreaCodeEntityOpt = forestAreaCodeRepository.findById(forestAreaCode);
+        if (forestAreaCodeEntityOpt.isPresent()) {
+          entity.setForestAreaCode(forestAreaCodeEntityOpt.get());
+        } else {
+          throw new IllegalArgumentException("ForestAreaCode not found: " + forestAreaCode);
         }
       }
 
