@@ -15,14 +15,14 @@
               class="project-input"
             />
             <div class="error" *ngIf="projectForm.get('projectName')?.hasError('maxlength') && projectForm.get('projectName')?.touched">
-              Exceeds number of allowed characters
+              {{messages.maxLengthExceeded}}
             </div>
           </div>
           <div class="form-field">
             <label>Lat/Long</label>
             <input type="text" formControlName="latLong" placeholder="Manually entered or pasted from clipboard" class="project-input"/>
             <div class="error" *ngIf="projectForm.get('latLong')?.hasError('maxlength') && projectForm.get('latLong')?.touched">
-              Exceeds number of allowed characters
+              {{messages.maxLengthExceeded}}
             </div>
           </div>
           <div class="form-field">
@@ -68,17 +68,17 @@
             <label>Project Lead</label>
             <input type="text" formControlName="projectLead" placeholder="Last Name, First Name" class="project-input"/>
             <div class="error" *ngIf="projectForm.get('projectLead')?.hasError('maxlength') && projectForm.get('projectLead')?.touched">
-              Exceeds number of allowed characters
+              {{messages.maxLengthExceeded}}
             </div>
           </div>
           <div class="form-field">
             <label>Project Lead E-mail</label>
             <input type="email" formControlName="projectLeadEmail" placeholder="n@n.n" class="project-input" />
             <div class="error" *ngIf="projectForm.get('projectLeadEmail')?.hasError('email') && projectForm.get('projectLeadEmail')?.touched">
-              Incorrect Format
+              {{messages.invalidEmail}}
             </div>
             <div class="error" *ngIf="projectForm.get('projectLeadEmail')?.hasError('maxlength') && projectForm.get('projectLeadEmail')?.touched">
-              Exceeds number of allowed characters
+              {{messages.maxLengthExceeded}}
             </div>
           </div>
         </div>
@@ -91,7 +91,7 @@
             <label>Closest Community<span class="required">*</span></label>
             <input type="text" formControlName="closestCommunity" placeholder="Begin Typing" class="project-input"/>
             <div class="error" *ngIf="projectForm.get('closestCommunity')?.hasError('maxlength') && projectForm.get('closestCommunity')?.touched">
-              Exceeds number of allowed characters
+              {{messages.maxLengthExceeded}}
             </div>
           </div>
         </div>
