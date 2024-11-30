@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
+import ca.bc.gov.nrs.wfprev.services.ProjectService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -31,7 +32,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import ca.bc.gov.nrs.wfprev.controllers.ProjectController;
 import ca.bc.gov.nrs.wfprev.data.models.ProjectModel;
 import ca.bc.gov.nrs.wfprev.data.models.ProjectTypeCodeModel;
-import ca.bc.gov.nrs.wfprev.services.ProjectService;
 
 @WebMvcTest(ProjectController.class)
 @Import({TestSpringSecurity.class, TestcontainersConfiguration.class})
