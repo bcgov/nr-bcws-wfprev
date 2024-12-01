@@ -3,6 +3,7 @@ package ca.bc.gov.nrs.wfprev.services;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.stereotype.Component;
@@ -38,7 +39,8 @@ public class ProgramAreaService implements CommonService {
 
   public ProgramAreaModel getProgramAreaById(String id) throws ServiceException {
     try {
-      return programAreaRepository.findById(id).map(programAreaResourceAssembler::toModel).orElse(null);
+      Optional<ProgramAreaEntity> byId = programAreaRepository.findById(id);
+      return byId.map(programAreaResourceAssembler::toModel).orElse(null);
     } catch(Exception e) {
       throw new ServiceException(e.getLocalizedMessage(), e);
     }
@@ -61,7 +63,7 @@ public class ProgramAreaService implements CommonService {
   @Transactional
   public ProgramAreaModel deleteProgramArea(String id) throws ServiceException {
     try {
-      ProgramAreaModel model = new ProgramAreaModel();
+      ProgramAreaModel model = getProgramAreaById(id);
 
       ProgramAreaEntity entity = programAreaResourceAssembler.toEntity(model);
       programAreaRepository.delete(entity);

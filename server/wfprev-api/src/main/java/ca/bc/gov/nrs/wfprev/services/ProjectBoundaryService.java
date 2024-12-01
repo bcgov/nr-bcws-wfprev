@@ -29,7 +29,7 @@ public class ProjectBoundaryService implements CommonService {
   
   public CollectionModel<ProjectBoundaryModel> getAllProjectBoundaries() throws ServiceException {
     try {
-      List<ProjectBoundaryEntity> entities = new ArrayList<>();
+        List<ProjectBoundaryEntity> entities = projectBoundaryRepository.findAll();
       return projectBoundaryResourceAssembler.toCollectionModel(entities);
     } catch(Exception e) {
       throw new ServiceException(e.getLocalizedMessage(), e);
