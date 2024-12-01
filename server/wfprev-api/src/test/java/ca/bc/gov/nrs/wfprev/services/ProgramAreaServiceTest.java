@@ -165,9 +165,10 @@ class ProgramAreaServiceTest {
                 .thenReturn(Optional.of(entity))
                 .thenReturn(Optional.empty());
         when(programAreaResourceAssembler.toModel(entity))
-                .thenReturn(model);
+                .thenReturn(model)
+                .thenReturn(null);
         when(programAreaResourceAssembler.toEntity(any(ProgramAreaModel.class)))
-                .thenReturn(entity);
+                .thenReturn(entity).thenReturn(null);
 
         // When
         ProgramAreaModel result = programAreaService.deleteProgramArea(exampleId);

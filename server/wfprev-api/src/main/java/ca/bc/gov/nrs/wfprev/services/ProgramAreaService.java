@@ -63,7 +63,7 @@ public class ProgramAreaService implements CommonService {
   @Transactional
   public ProgramAreaModel deleteProgramArea(String id) throws ServiceException {
     try {
-      ProgramAreaModel model = getProgramAreaById(id);
+      ProgramAreaModel model = new ProgramAreaModel();
 
       ProgramAreaEntity entity = programAreaResourceAssembler.toEntity(model);
       programAreaRepository.delete(entity);
