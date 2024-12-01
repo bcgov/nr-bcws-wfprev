@@ -29,7 +29,7 @@ public class ProgramAreaService implements CommonService {
   
   public CollectionModel<ProgramAreaModel> getAllProgramAreas() throws ServiceException {
     try {
-      List<ProgramAreaEntity> entities = new ArrayList<>();
+      List<ProgramAreaEntity> entities = programAreaRepository.findAll();
       return programAreaResourceAssembler.toCollectionModel(entities);
     } catch(Exception e) {
       throw new ServiceException(e.getLocalizedMessage(), e);
@@ -61,7 +61,7 @@ public class ProgramAreaService implements CommonService {
   @Transactional
   public ProgramAreaModel deleteProgramArea(String id) throws ServiceException {
     try {
-      ProgramAreaModel model = getProgramAreaById(id);
+      ProgramAreaModel model = new ProgramAreaModel();
 
       ProgramAreaEntity entity = programAreaResourceAssembler.toEntity(model);
       programAreaRepository.delete(entity);
