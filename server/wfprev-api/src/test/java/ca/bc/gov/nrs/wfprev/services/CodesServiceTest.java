@@ -68,6 +68,19 @@ class CodesServiceTest {
     }
 
     @Test
+    void testGetAllForestAreaCodes_Exception() {
+        // Arrange
+        when(forestAreaCodeRepository.findAll()).thenThrow(new RuntimeException("Error fetching forest area codes"));
+
+        // Act & Assert
+        ServiceException exception = assertThrows(
+                ServiceException.class,
+                () -> codesService.getAllForestAreaCodes()
+        );
+        assertEquals("Error fetching forest area codes",exception.getMessage());
+    }
+
+    @Test
     void testGetForestAreaCodeById_Success() throws ServiceException {
         // Arrange
         String exampleId = UUID.randomUUID().toString();
