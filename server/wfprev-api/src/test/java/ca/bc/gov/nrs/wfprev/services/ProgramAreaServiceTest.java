@@ -156,6 +156,12 @@ class ProgramAreaServiceTest {
         ProgramAreaModel model = new ProgramAreaModel();
         model.setProgramAreaGuid(exampleId);
         ProgramAreaEntity entity = new ProgramAreaEntity();
+        entity.setProgramAreaGuid(exampleId);
+        when(programAreaRepository.findById(exampleId))
+                .thenReturn(Optional.of(entity))
+                .thenReturn(Optional.empty());
+        when(programAreaResourceAssembler.toModel(entity))
+                .thenReturn(model);
         when(programAreaResourceAssembler.toEntity(any(ProgramAreaModel.class)))
                 .thenReturn(entity);
 
@@ -175,6 +181,12 @@ class ProgramAreaServiceTest {
         ProgramAreaModel model = new ProgramAreaModel();
         model.setProgramAreaGuid(exampleId);
         ProgramAreaEntity entity = new ProgramAreaEntity();
+        //Mock for getById
+        when(programAreaRepository.findById(exampleId))
+                .thenReturn(Optional.of(entity));
+        when(programAreaResourceAssembler.toModel(entity))
+                .thenReturn(model);
+        //Mock for delete
         when(programAreaResourceAssembler.toEntity(any(ProgramAreaModel.class)))
                 .thenReturn(entity);
         doThrow(new RuntimeException("Error deleting program area"))
