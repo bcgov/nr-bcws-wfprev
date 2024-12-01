@@ -5,6 +5,7 @@ import ca.bc.gov.nrs.wfprev.data.assemblers.ProjectResourceAssembler;
 import ca.bc.gov.nrs.wfprev.data.entities.*;
 import ca.bc.gov.nrs.wfprev.data.models.*;
 import ca.bc.gov.nrs.wfprev.data.repositories.*;
+import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -341,6 +342,25 @@ public class ProjectServiceTest {
                 .build();
 
         when(projectResourceAssembler.toEntity(any())).thenThrow(new RuntimeException("Error saving project"));
+
+        // When/Then
+        ServiceException exception = assertThrows(
+                ServiceException.class,
+                () -> projectService.createOrUpdateProject(inputModel)
+        );
+        assertTrue(exception.getMessage().contains("Error saving project"));
+    }
+
+    @Test
+    public void test_create_project_with_service_exception () {
+        // Given
+        ProjectModel inputModel = ProjectModel.builder()
+                .projectName("Test Project")
+                .siteUnitName("Test Site")
+                .totalPlannedProjectSizeHa(BigDecimal.valueOf(100))
+                .build();
+
+        when(projectResourceAssembler.toEntity(any())).thenThrow(new EntityNotFoundException("Error saving project"));
 
         // When/Then
         ServiceException exception = assertThrows(
