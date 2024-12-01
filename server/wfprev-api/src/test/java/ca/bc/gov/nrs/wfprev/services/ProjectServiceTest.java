@@ -5,8 +5,8 @@ import ca.bc.gov.nrs.wfprev.data.assemblers.ProjectResourceAssembler;
 import ca.bc.gov.nrs.wfprev.data.entities.*;
 import ca.bc.gov.nrs.wfprev.data.models.*;
 import ca.bc.gov.nrs.wfprev.data.repositories.*;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.hateoas.CollectionModel;
 
@@ -25,7 +25,7 @@ public class ProjectServiceTest {
     private ProjectTypeCodeRepository projectTypeCodeRepository;
     private GeneralScopeCodeRepository generalScopeCodeRepository;
 
-    @Before
+    @BeforeEach
     public void setup() {
         projectRepository = mock(ProjectRepository.class);
         projectResourceAssembler = mock(ProjectResourceAssembler.class);
