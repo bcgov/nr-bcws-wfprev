@@ -1,21 +1,21 @@
 version: '3.8'
 services:
-#  api:
-#    build:
-#      context: .
-#      dockerfile: Dockerfile.graalvm
-#      args:
-#        MAVEN_SETTINGS_FILE: vivid.settings.xml
-#    ports:
-#      - "8080:8080"
-#      - "1336:1336"
-#    env_file:
-#      - .env
-#    depends_on:
-#      db:
-#        condition: service_healthy
-#    networks:
-#      - wfprev-network
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.graalvm
+      args:
+        MAVEN_SETTINGS_FILE: vivid.settings.xml
+    ports:
+      - "8080:8080"
+      - "1336:1336"
+    env_file:
+      - .env
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - wfprev-network
 
   db:
     image: postgis/postgis:16-3.4

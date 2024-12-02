@@ -50,7 +50,7 @@ public class ProjectEntity implements Serializable {
   @Column(name = "project_guid")
   private UUID projectGuid;
 
-  @ManyToOne(fetch = FetchType.LAZY, optional = true)
+  @ManyToOne(fetch = FetchType.EAGER, optional = true)
 	@JoinColumn(name="project_type_code")
   private ProjectTypeCodeEntity projectTypeCode;
 
@@ -62,11 +62,11 @@ public class ProjectEntity implements Serializable {
 	@Column(name="site_unit_name", length = 250)
 	private String siteUnitName;
 
-  @ManyToOne(fetch = FetchType.LAZY, optional = true)
+  @ManyToOne(fetch = FetchType.EAGER, optional = true)
 	@JoinColumn(name="forest_area_code")
   private ForestAreaCodeEntity forestAreaCode;
 
-  @ManyToOne(fetch = FetchType.LAZY, optional = true)
+  @ManyToOne(fetch = FetchType.EAGER, optional = true)
 	@JoinColumn(name="general_scope_code")
   private GeneralScopeCodeEntity generalScopeCode;
 
