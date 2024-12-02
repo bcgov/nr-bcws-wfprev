@@ -29,7 +29,6 @@ resource "aws_cloudfront_distribution" "wfprev_app_distribution" {
 
   enabled             = true
   is_ipv6_enabled     = true
-  default_root_object = "index.html"
 
   aliases = [ "wfprev-${var.TARGET_ENV}.${var.gov_domain}" ]
 
@@ -39,6 +38,12 @@ resource "aws_cloudfront_distribution" "wfprev_app_distribution" {
     cached_methods         = ["GET", "HEAD"]
     target_origin_id       = "S3-${aws_s3_bucket.wfprev_site_bucket.id}"
     viewer_protocol_policy = "redirect-to-https"
+
+    //Rewrite requests to always hit /index.html
+    function_association {
+			event_type   = "viewer-request"
+			function_arn = aws_cloudfront_function.rewrite_uri.arn
+		}
 
     forwarded_values {
       query_string = false
@@ -98,6 +103,18 @@ resource "aws_cloudfront_distribution" "wfprev_app_distribution" {
       restriction_type = "none"
     }
   }
+}
+
+resource "aws_cloudfront_function" "rewrite_uri" {
+	name    = "rewrite-request-wfprev-${var.TARGET_ENV}"
+	runtime = "cloudfront-js-1.0"
+	code    = <<EOF
+  function handler(event) {
+    var request = event.request;
+    request.uri = request.uri.replace(/.*/, "/index.html");
+    return request;
+  }
+EOF
 }
 
 output "cloudfront_distribution_id" {
