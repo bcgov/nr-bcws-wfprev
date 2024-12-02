@@ -142,7 +142,7 @@ public class ProgramAreaController extends CommonController {
       // ensure that the user hasn't changed the primary key
       if (id.equalsIgnoreCase(resource.getProgramAreaGuid())) {
         ProgramAreaModel updatedResource = programAreaService.createOrUpdateProgramArea(resource);
-        response = updatedResource == null ? badRequest() : ok(updatedResource);
+        response = updatedResource == null ? notFound() : ok(updatedResource);
       } else {
         response = badRequest();
       }
@@ -172,7 +172,7 @@ public class ProgramAreaController extends CommonController {
 
     try {
       ProgramAreaModel resource = programAreaService.deleteProgramArea(id);
-      response = resource == null ? badRequest() : created(resource);
+      response = resource == null ? notFound() : ok(resource);
     } catch(ServiceException e) {
       // most responses here will actually be Bad Requests, not Internal Server Errors
       // This would be an ideal place to expand the "Catch" and return sensible
