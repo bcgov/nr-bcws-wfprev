@@ -111,8 +111,9 @@ resource "aws_cloudfront_function" "rewrite_uri" {
 	code    = <<EOF
   function handler(event) {
     var request = event.request;
-    request.uri = request.uri.replace(/.*/, "/index.html");
-    return request;
+    if (!request.match(/\.[a-z]+/)) {
+      request.uri = request.uri.replace(/.*/, "/index.html");
+    }
   }
 EOF
 }
