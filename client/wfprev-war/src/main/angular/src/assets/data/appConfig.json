@@ -5,9 +5,9 @@
 
   "webade": {
       "oauth2Url": "https://wfappsi.nrs.gov.bc.ca/ext/oauth2/v1/oauth/authorize",
-      "clientId": "WFPREV-UI",
-      "authScopes": "WFDM.* WFPREV.*",
+      "clientId": "WFNEWS-UI",
+      "authScopes": "WFNEWS.*",
       "enableCheckToken": true,
-      "checkTokenUrl": "assets/data/checktoken-SSYLVER.json"
+      "checkTokenUrl": "http://localhost:8080/pub/wfprev-api/check/checkToken"
     }
 }

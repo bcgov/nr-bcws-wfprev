@@ -8,9 +8,8 @@ import {Observable, of} from "rxjs";
 })
 export class AuthGuard implements CanActivate {
   protected credentials: any;
-  protected baseScopes = []; //["WFRM.GET_CODE_TABLES","WFRM.GET_TOPLEVEL"];
+  protected baseScopes = []; 
   constructor(protected tokenService: TokenService, protected router: Router) {
-   // console.log("using auth guard");
     this.tokenService.credentialsEmitter.subscribe(credentials => {
       this.credentials = credentials;
     });
@@ -25,13 +24,21 @@ export class AuthGuard implements CanActivate {
   }
 
   checkLogin(url: string, scopes: string[]): boolean {
-    let isAuthorized = (this.credentials) ? this.tokenService.doesUserHaveApplicationPermissions(scopes) : false;
-
-    if (!isAuthorized) {
-      this.redirectToErrorPage();
-    }
-    return isAuthorized;
+  // Always call doesUserHaveApplicationPermissions, even when no credentials
+  let isAuthorized = this.tokenService.doesUserHaveApplicationPermissions(scopes);
+  
+  // If credentials are present, && with the credentials check
+  if (this.credentials) {
+    isAuthorized = isAuthorized && !!this.credentials;
+  } else {
+    isAuthorized = false;
   }
+
+  if (!isAuthorized) {
+    this.redirectToErrorPage();
+  }
+  return isAuthorized;
+}
 
   redirectToErrorPage() {
     // Navigate to the unauthorized page

@@ -58,7 +58,7 @@ public class CheckTokenController {
     @Parameters({
         @Parameter(name = HeaderConstants.VERSION_HEADER, description = HeaderConstants.VERSION_HEADER_DESCRIPTION, required = false, schema = @Schema(implementation = Integer.class), in = ParameterIn.HEADER),
         @Parameter(name = HeaderConstants.IF_MATCH_HEADER, description = HeaderConstants.IF_MATCH_DESCRIPTION, required = true, schema = @Schema(implementation = String.class), in = ParameterIn.HEADER)})
-    protected CheckedToken token(HttpServletRequest request, HttpServletResponse response) throws Oauth2ClientException, IOException {
+    public CheckedToken token(HttpServletRequest request, HttpServletResponse response) throws Oauth2ClientException, IOException {
         logger.debug("<checkToken");
 
         TokenServiceImpl tokenService;

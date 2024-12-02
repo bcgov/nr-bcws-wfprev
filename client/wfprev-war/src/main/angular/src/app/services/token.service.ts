@@ -1,5 +1,5 @@
 import { Injectable, Injector } from "@angular/core";
-import { HttpClient, HttpHandler, HttpHeaders, HttpResponse } from "@angular/common/http";
+import { HttpClient, HttpHandler, HttpHeaders } from "@angular/common/http";
 import { OAuthService } from "angular-oauth2-oidc";
 import momentInstance from "moment";
 import { AsyncSubject, Observable, catchError, firstValueFrom, map, of } from "rxjs";
@@ -7,10 +7,6 @@ import { AppConfigService } from "./app-config.service";
 
 const moment = momentInstance;
 const OAUTH_LOCAL_STORAGE_KEY = 'oauth';
-
-interface ValidationResponse {
-  status: string
-}
 
 @Injectable({
   providedIn: 'root',
@@ -21,12 +17,12 @@ export class TokenService {
   private oauth: any;
   private tokenDetails: any;
 
-  private credentials = new AsyncSubject<any>();
-  private authToken = new AsyncSubject<string>();
+  private readonly credentials = new AsyncSubject<any>();
+  private readonly authToken = new AsyncSubject<string>();
   public credentialsEmitter: Observable<any> = this.credentials.asObservable();
   public authTokenEmitter: Observable<string> = this.authToken.asObservable();
 
-  constructor(private injector: Injector, protected appConfigService: AppConfigService) {
+  constructor(private readonly injector: Injector, protected appConfigService: AppConfigService) {
     const config = this.appConfigService.getConfig().application;
 
     const lazyAuthenticate: boolean = config.lazyAuthenticate ?? false;
@@ -45,17 +41,16 @@ export class TokenService {
     this.checkForToken(undefined, lazyAuthenticate, allowLocalExpiredToken);
   }
 
-  public checkForToken(redirectUri?: string, lazyAuth = false, allowLocalExpiredToken = false): void {
+  public async checkForToken(redirectUri?: string, lazyAuth = false, allowLocalExpiredToken = false): Promise<void> {
     const hash = window.location.hash;
 
-    if (hash && hash.includes('access_token')) {
+    if (hash?.includes('access_token')) {
       this.parseToken(hash);
     } else if (this.useLocalStore && !navigator.onLine) {
       let tokenStore = localStorage.getItem(this.LOCAL_STORAGE_KEY);
 
       if (tokenStore) {
         try {
-          tokenStore = JSON.parse(tokenStore);
           this.initAuthFromSession();
         } catch (err) {
           console.log('Failed to read session token - reinitializing');
@@ -71,7 +66,7 @@ export class TokenService {
         localStorage.removeItem(this.LOCAL_STORAGE_KEY);
         this.initImplicitFlow(redirectUri);
       }
-    } else if (hash && hash.includes('error')) {
+    } else if (hash?.includes('error')) {
       alert('Error occurred during authentication.');
       return;
     } else if (!lazyAuth) {
@@ -88,7 +83,7 @@ export class TokenService {
   }
 
   private parseToken(hash: string): void {
-    hash = hash.startsWith('#') ? hash.substr(1) : hash;
+    hash = hash.startsWith('#') ? hash?.substr(1) : hash;
     const params = new URLSearchParams(hash);
     const paramMap: { [key: string]: string } = {};
 
@@ -116,33 +111,6 @@ export class TokenService {
     const oauthService = this.injector.get(OAuthService);
     oauthService.configure(authConfig);
     oauthService.initImplicitFlow();
-  }
-
-  public initRefreshTokenImplicitFlow(authorizeURL: string, storageKey: string, errorCallback: (message: string) => void): Observable<any> {
-    const options = 'resizable=yes,scrollbars=yes,statusbar=yes,status=yes';
-    let refreshWindow = window.open(authorizeURL, "", options);
-    const refreshAsync = new AsyncSubject<any>();
-
-    const refreshInterval = setInterval(() => {
-      if (!refreshWindow) {
-        errorCallback('Session Expired. Unable to open refresh window. Please allow pop-ups.');
-        refreshWindow = window.open(authorizeURL, "", options);
-      }
-
-      if (refreshWindow?.closed) {
-        clearInterval(refreshInterval);
-        let newToken = localStorage.getItem(`${storageKey}`);
-        newToken = newToken ? JSON.parse(newToken) : null;
-        localStorage.removeItem(`${storageKey}`);
-        if (newToken) {
-          this.updateToken(newToken);
-          refreshAsync.next(newToken);
-          refreshAsync.complete();
-        }
-      }
-    }, 500);
-
-    return refreshAsync.asObservable();
   }
 
   private async initAuthFromSession(): Promise<void> {
@@ -181,12 +149,16 @@ export class TokenService {
 
   public validateToken(token: string): Observable<boolean> {
     const http = new HttpClient(this.injector.get(HttpHandler));
+    const config = this.appConfigService.getConfig();
+    const checkTokenUrl = config.webade.checkTokenUrl ? config.webade.checkTokenUrl : "null";
+
     const headers = new HttpHeaders({
       'Authorization': 'Bearer ' + `${token}`,
       'Access-Control-Allow-Origin': '*'
     });
+    
     return http.get(
-      "http://localhost:8080/pub/wfprev-api/check/checkToken",
+      checkTokenUrl,
       {
         headers,
         observe: 'response'
@@ -203,17 +175,8 @@ export class TokenService {
     const config = this.appConfigService.getConfig();
 
     if (config.webade.enableCheckToken) {
-      let baseUrl = config.application.baseUrl;
-      baseUrl = baseUrl.endsWith('/') ? baseUrl : baseUrl.concat('/');
-      const checkTokenUrl = `${baseUrl}${config.webade.checkTokenUrl}`;
-
-      const headers = new HttpHeaders({
-        'Authorization': `Bearer ${this.oauth.access_token}`,
-      });
-
       try {
-        const http = new HttpClient(this.injector.get(HttpHandler));
-        this.tokenDetails = await firstValueFrom(http.get(checkTokenUrl, { headers }));
+        this.tokenDetails = await firstValueFrom(this.validateToken(this.oauth.access_token));
         this.emitTokens();
       } catch (error: any) {
         console.log(error);
@@ -245,10 +208,6 @@ export class TokenService {
 
   public getOauthToken(): string | null {
     return this.oauth?.access_token ?? null;
-  }
-
-  public getTokenDetails(): any | null {
-    return this.tokenDetails ?? null;
   }
 
   public doesUserHaveApplicationPermissions(scopes?: string[]): boolean {

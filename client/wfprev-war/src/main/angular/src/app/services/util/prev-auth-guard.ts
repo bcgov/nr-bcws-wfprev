@@ -21,7 +21,7 @@ export class PrevAuthGuard extends AuthGuard {
     constructor(
         tokenService: TokenService,
         router: Router,
-        private appConfigService: AppConfigService,
+        private readonly appConfigService: AppConfigService,
         protected snackbarService: MatSnackBar,
     ) {
         super(tokenService, router);
