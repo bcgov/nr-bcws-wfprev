@@ -58,7 +58,8 @@ public class ProjectController extends CommonController {
     ResponseEntity<CollectionModel<ProjectModel>> response;
 
     try {
-      response = ok(projectService.getAllProjects());
+      CollectionModel<ProjectModel> allProjects = projectService.getAllProjects();
+      response = ok(allProjects);
     } catch (ServiceException e) {
       response = internalServerError();
       log.error(" ### Error while fetching Projects", e);
