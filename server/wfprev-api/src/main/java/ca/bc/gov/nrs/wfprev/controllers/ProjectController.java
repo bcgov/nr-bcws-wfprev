@@ -58,7 +58,8 @@ public class ProjectController extends CommonController {
     ResponseEntity<CollectionModel<ProjectModel>> response;
 
     try {
-      response = ok(projectService.getAllProjects());
+      CollectionModel<ProjectModel> allProjects = projectService.getAllProjects();
+      response = ok(allProjects);
     } catch (ServiceException e) {
       response = internalServerError();
       log.error(" ### Error while fetching Projects", e);
@@ -110,7 +111,6 @@ public class ProjectController extends CommonController {
       resource.setCreateUser(getWebAdeAuthentication().getUserId());
       resource.setUpdateUser(getWebAdeAuthentication().getUserId());
       resource.setRevisionCount(0);
-//      resource.setProgramAreaGuid(UUID.randomUUID().toString());
 
       ProjectModel newResource = projectService.createOrUpdateProject(resource);
       response = newResource == null ? badRequest() : created(newResource);
@@ -141,7 +141,7 @@ public class ProjectController extends CommonController {
       // ensure that the user hasn't changed the primary key
       if (id.equalsIgnoreCase(resource.getProjectGuid())) {
         ProjectModel updatedResource = projectService.createOrUpdateProject(resource);
-        response = updatedResource == null ? badRequest() : ok(updatedResource);
+        response = updatedResource == null ? notFound(): ok(updatedResource);
       } else {
         response = badRequest();
       }
@@ -171,7 +171,7 @@ public class ProjectController extends CommonController {
 
     try {
       ProjectModel resource = projectService.deleteProject(id);
-      response = resource == null ? badRequest() : ok(resource);
+      response = resource == null ? notFound(): ok(resource);
     } catch(ServiceException e) {
       // most responses here will actually be Bad Requests, not Internal Server Errors
       // This would be an ideal place to expand the "Catch" and return sensible
