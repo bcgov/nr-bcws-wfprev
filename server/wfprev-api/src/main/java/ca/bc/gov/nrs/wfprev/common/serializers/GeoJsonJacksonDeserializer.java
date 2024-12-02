@@ -19,17 +19,23 @@ import java.io.StringReader;
 @Slf4j
 public class GeoJsonJacksonDeserializer extends StdDeserializer<Geometry> {
 
+   private  GeoJsonReader geoJsonReader;
+
    public GeoJsonJacksonDeserializer() {
-    super(Geometry.class);
+      super(Geometry.class);
+       geoJsonReader = new GeoJsonReader();
    }
 
+   public GeoJsonJacksonDeserializer(GeoJsonReader geoJsonReader) {
+      this();
+      this.geoJsonReader = geoJsonReader;
+   }
    public Geometry deserialize(JsonParser jsonParser, DeserializationContext context) throws IOException, JsonProcessingException {
       log.trace("<deserialize");
       Geometry result = null;
       ObjectCodec oc = jsonParser.getCodec();
       JsonNode node = (JsonNode)oc.readTree(jsonParser);
       String geoJson = node.toString();
-      GeoJsonReader geoJsonReader = new GeoJsonReader();
 
       try {
          Reader reader = new StringReader(geoJson);
