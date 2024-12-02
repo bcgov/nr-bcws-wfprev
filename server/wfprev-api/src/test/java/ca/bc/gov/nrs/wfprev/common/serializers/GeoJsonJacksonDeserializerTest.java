@@ -48,6 +48,7 @@ class GeoJsonJacksonDeserializerTest {
         when(jsonParser.getCodec()).thenReturn(objectCodec);
         when(objectCodec.readTree(jsonParser)).thenReturn(jsonNode);
         when(jsonNode.toString()).thenReturn(geoJsonString);
+        when(geoJsonReader.read(any(Reader.class))).thenReturn(expectedGeometry);
 
         // When
         Geometry result = geoJsonJacksonDeserializer.deserialize(jsonParser, null);
@@ -65,6 +66,7 @@ class GeoJsonJacksonDeserializerTest {
         when(jsonParser.getCodec()).thenReturn(objectCodec);
         when(objectCodec.readTree(jsonParser)).thenReturn(jsonNode);
         when(jsonNode.toString()).thenReturn(invalidGeoJsonString);
+        when(geoJsonReader.read(any(Reader.class))).thenThrow(new ParseException("Invalid GeoJson", new Throwable()));
 
         // When
         Assertions.assertThrows(IOException.class, () -> geoJsonJacksonDeserializer.deserialize(jsonParser, null));

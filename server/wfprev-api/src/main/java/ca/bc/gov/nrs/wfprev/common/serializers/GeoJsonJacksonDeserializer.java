@@ -36,7 +36,6 @@ public class GeoJsonJacksonDeserializer extends StdDeserializer<Geometry> {
       ObjectCodec oc = jsonParser.getCodec();
       JsonNode node = (JsonNode)oc.readTree(jsonParser);
       String geoJson = node.toString();
-      GeoJsonReader geoJsonReader = new GeoJsonReader();
 
       try {
          Reader reader = new StringReader(geoJson);
