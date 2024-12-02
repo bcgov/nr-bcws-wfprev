@@ -179,6 +179,12 @@ variable "gov_client_url" {
   type        = string
 }
 
+variable "gov_domain" {
+  description = "higher level domain(s) used in url"
+  default = "nrs.gov.bc.ca"
+  type = string
+}
+
 variable "APP_COUNT" {
   description = "Number of docker containers to run"
   default     = 2

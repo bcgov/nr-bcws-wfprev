@@ -1,7 +1,12 @@
 /target
 /.vscode
 /.idea
-/.mvn
+/.mvn/*
+!/.mvn/wrapper/
+!/.mvn/wrapper/maven-wrapper.jar
+!/.mvn/wrapper/maven-wrapper.properties
 /.sonarlint
 **/.env
 **/.env.*
+.DS_Store
+**/.DS_Store
