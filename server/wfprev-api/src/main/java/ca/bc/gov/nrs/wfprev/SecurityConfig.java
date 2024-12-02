@@ -3,16 +3,21 @@ package ca.bc.gov.nrs.wfprev;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationManagerResolver;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 
 import ca.bc.gov.nrs.wfone.common.webade.oauth2.token.client.TokenService;
 import ca.bc.gov.nrs.wfone.common.webade.oauth2.token.client.impl.TokenServiceImpl;
@@ -44,7 +49,7 @@ public class SecurityConfig {
         BasicAuthenticationEntryPoint result;
 
         result = new BasicAuthenticationEntryPoint();
-        result.setRealmName("wfim-incidents-api");
+        result.setRealmName("wfprev-api");
 
         return result;
     }
@@ -60,7 +65,7 @@ public class SecurityConfig {
 
     @Bean
     public AuthenticationProvider authenticationProvider() {
-        return new WebadeOauth2AuthenticationProvider(tokenServiceImpl(), "WFIM.*");
+        return new WebadeOauth2AuthenticationProvider(tokenServiceImpl(), "WFPREV.*");
     }
 
     @Bean
@@ -82,20 +87,35 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         http
-        .csrf(csrf -> csrf.disable())
-        .authorizeHttpRequests(auth -> auth
-            .requestMatchers("/actuator/health").permitAll()
-            .anyRequest().authenticated()
-        )
-        .oauth2ResourceServer(oauth2 -> oauth2
-            .authenticationManagerResolver(authenticationManagerResolver())
-        )
-        .httpBasic()
-        .and()
-        .exceptionHandling(exceptionHandling -> exceptionHandling
-            .authenticationEntryPoint(authenticationEntryPoint()));
+                .csrf(csrf -> csrf.disable())
+                .authorizeHttpRequests(auth -> auth
+                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                .requestMatchers("/actuator/health").permitAll()
+                .requestMatchers("/check/checkToken").permitAll()
+                .anyRequest().authenticated()
+                )
+                .oauth2ResourceServer(oauth2 -> oauth2
+                .authenticationManagerResolver(authenticationManagerResolver())
+                )
+                .httpBasic()
+                .and()
+                .exceptionHandling(exceptionHandling -> exceptionHandling
+                .authenticationEntryPoint(authenticationEntryPoint()));
 
-    return http.build();
+        return http.build();
     }
 
+    @Bean
+    public CorsFilter corsFilter() {
+        CorsConfiguration config = new CorsConfiguration();
+        config.addAllowedOrigin("*"); 
+        config.addAllowedMethod("*");
+        config.addAllowedHeader("*");
+        config.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+
+        return new CorsFilter(source);
+    }
 }

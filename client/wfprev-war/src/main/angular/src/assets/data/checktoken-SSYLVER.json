@@ -1,0 +1,35 @@
+{
+    "authorities": null,
+    "resourceIds": null,
+    "jti": "be458066-6df4-400e-851f-3a5355828b88",
+    "sub": "IDIR\\SSYLVER",
+    "scope": [
+      "WFPREV.GET_TOPLEVEL",
+      "WFPREV.GET_PREVENTION_PROJECT",
+      "WFPREV.CREATE_PREVENTION_PROJECT",
+      "WFPREV.UPDATE_PREVENTION_PROJECT",
+      "WFPREV.DELETE_PREVENTION_PROJECT"
+    ],
+    "clientId": "WFPREV-UI",
+    "cid": "WFPREV-UI",
+    "clientAppCode": "WFPREV",
+    "grantType": "implicit",
+    "userId": "IDIR\\SSYLVER",
+    "userName": "Internal/4056257CDE4F4C2AA0460F24C30AD910/UNK",
+    "givenName": "Sean",
+    "familyName": "Sylver",
+    "email": "DISPATCH@fakeuser.com",
+    "userType": "GOV",
+    "userGuid": "4056257CDE4F4C2AA0460F24C30AD910",
+    "onBehalfOfOrganizationId": null,
+    "onBehalfOfOrganizationCode": null,
+    "onBehalfOfOrganizationName": null,
+    "onBehalfOfOrganizationAdditionalInfo": null,
+    "businessNumber": null,
+    "businessGuid": null,
+    "iat": 1661803493,
+    "exp": 1661846693,
+    "iss": "http://localhost:8080/webade-oauth2/oauth/token",
+    "aud": ["WFDM", "WEBADE-REST", "WFIM", "WEBADE-OAUTH2", "WFPREV"]
+  }
+  
