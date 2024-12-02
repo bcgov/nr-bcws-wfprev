@@ -42,206 +42,276 @@ import org.springframework.test.web.servlet.ResultActions;
 @WebMvcTest(ProjectController.class)
 @Import({TestSpringSecurity.class, TestcontainersConfiguration.class})
 class ProjectControllerTest {
-  @MockBean
-  private ProjectService projectService;
+    @MockBean
+    private ProjectService projectService;
 
-  @Autowired
-  private MockMvc mockMvc;
-  
-  private Gson gson;
-  
-  @BeforeEach
-  void setup() {
-    GsonBuilder builder = new GsonBuilder();
-    builder.serializeNulls().setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSX").serializeSpecialFloatingPointValues();
-    gson = builder.create();
-  }
+    @Autowired
+    private MockMvc mockMvc;
 
-  @Test
-  @WithMockUser
-  void testGetAllProjects_Empty() throws Exception {
+    private Gson gson;
 
-    List<ProjectModel> projectList = Collections.emptyList();
-    CollectionModel<ProjectModel> projectModel = CollectionModel.of(projectList);
+    @BeforeEach
+    void setup() {
+        GsonBuilder builder = new GsonBuilder();
+        builder.serializeNulls().setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSX").serializeSpecialFloatingPointValues();
+        gson = builder.create();
+    }
 
-    when(projectService.getAllProjects()).thenReturn(projectModel);
+    @Test
+    @WithMockUser
+    void testGetAllProjects_Empty() throws Exception {
 
-    ResultActions result = mockMvc.perform(get("/projects")
-                    .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk());
+        List<ProjectModel> projectList = Collections.emptyList();
+        CollectionModel<ProjectModel> projectModel = CollectionModel.of(projectList);
 
-    assertEquals("{}", result.andReturn().getResponse().getContentAsString());
-  }
+        when(projectService.getAllProjects()).thenReturn(projectModel);
 
-  @Test
-  @WithMockUser
-  void testGetAllProjects_ServiceException() throws Exception {
-    when(projectService.getAllProjects()).thenThrow(new ServiceException("Error getting projects"));
+        ResultActions result = mockMvc.perform(get("/projects")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
 
-    ResultActions result = mockMvc.perform(get("/projects")
-                    .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().is5xxServerError());
+        assertEquals("{}", result.andReturn().getResponse().getContentAsString());
+    }
 
-    assertEquals(500, result.andReturn().getResponse().getStatus());
-  }
+    @Test
+    @WithMockUser
+    void testGetAllProjects_ServiceException() throws Exception {
+        when(projectService.getAllProjects()).thenThrow(new ServiceException("Error getting projects"));
 
-  @Test
-  @WithMockUser
-  void testGetProject() throws Exception {
-    String guid = UUID.randomUUID().toString();
+        ResultActions result = mockMvc.perform(get("/projects")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is5xxServerError());
 
-    ProjectModel project = new ProjectModel();
-    project.setProjectGuid(guid);
+        assertEquals(500, result.andReturn().getResponse().getStatus());
+    }
 
-    List<ProjectModel> projectList = Arrays.asList(project);
-    CollectionModel<ProjectModel> projectModel = CollectionModel.of(projectList);
+    @Test
+    @WithMockUser
+    void testGetProject() throws Exception {
+        String guid = UUID.randomUUID().toString();
 
-    when(projectService.getAllProjects()).thenReturn(projectModel);
+        ProjectModel project = new ProjectModel();
+        project.setProjectGuid(guid);
 
-    mockMvc.perform(get("/projects")
-           .contentType(MediaType.APPLICATION_JSON))
-           .andExpect(status().isOk());
+        List<ProjectModel> projectList = Arrays.asList(project);
+        CollectionModel<ProjectModel> projectModel = CollectionModel.of(projectList);
 
-    when(projectService.getProjectById(guid)).thenReturn(project);
+        when(projectService.getAllProjects()).thenReturn(projectModel);
 
-    mockMvc.perform(get("/projects/{id}", guid)
-            .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk());
-  }
+        mockMvc.perform(get("/projects")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
 
-  @Test
-  @WithMockUser
-  void testGetProject_NotFound() throws Exception {
-    // Given
-    String projectGuid = UUID.randomUUID().toString();
-    when(projectService.getProjectById(projectGuid)).thenReturn(null);
+        when(projectService.getProjectById(guid)).thenReturn(project);
 
-    // When
-    ResultActions result = mockMvc.perform(get("/projects/{id}", projectGuid)
-                    .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isNotFound());
+        mockMvc.perform(get("/projects/{id}", guid)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
 
-    // Then
-    verify(projectService, times(1)).getProjectById(projectGuid);
-  }
+    @Test
+    @WithMockUser
+    void testGetProject_NotFound() throws Exception {
+        // Given
+        String projectGuid = UUID.randomUUID().toString();
+        when(projectService.getProjectById(projectGuid)).thenReturn(null);
 
-  @Test
-  @WithMockUser
-  void testUpdateProject_NotFound() throws Exception {
-    // Given
-    String projectGuid = UUID.randomUUID().toString();
-    ProjectModel project = new ProjectModel();
-    project.setProjectGuid(projectGuid);
+        // When
+        ResultActions result = mockMvc.perform(get("/projects/{id}", projectGuid)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
 
-    when(projectService.createOrUpdateProject(any(ProjectModel.class))).thenReturn(null);
+        // Then
+        verify(projectService, times(1)).getProjectById(projectGuid);
+    }
 
-    String json = gson.toJson(project);
+    @Test
+    @WithMockUser
+    void testGetProject_ServiceException() throws Exception {
+        // Given
+        String projectGuid = UUID.randomUUID().toString();
+        when(projectService.getProjectById(projectGuid)).thenThrow(new ServiceException("Error getting project"));
 
-    // When
-    ResultActions result = mockMvc.perform(put("/projects/{id}", projectGuid)
-                    .content(json)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .header("Authorization", "Bearer admin-token"))
-            .andExpect(status().isNotFound());
+        // When
+        ResultActions result = mockMvc.perform(get("/projects/{id}", projectGuid)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is5xxServerError());
 
-    // Then
-    verify(projectService, times(1)).createOrUpdateProject(any(ProjectModel.class));
-    assertEquals(404, result.andReturn().getResponse().getStatus());
-  }
+        // Then
+        verify(projectService, times(1)).getProjectById(projectGuid);
+        assertEquals(500, result.andReturn().getResponse().getStatus());
+    }
 
-  @Test
-  @WithMockUser
-  void testCreateUpdateProject() throws Exception {
-    ProjectModel project = new ProjectModel();
-    project.setProjectTypeCode(new ProjectTypeCodeModel());
-    project.setProjectNumber(1);
-    project.setSiteUnitName("Test");
-    project.setProgramAreaGuid(UUID.randomUUID().toString());
-    project.setProjectName("Test");
-    project.setIsMultiFiscalYearProj(false);
-    project.setLatitude(new BigDecimal(40.99));
-    project.setLongitude(new BigDecimal(-115.23));
-    project.setLastProgressUpdateTimestamp(new Date());
-    String projectGuid = UUID.randomUUID().toString();
-    project.setProjectGuid(projectGuid);
-    
-    when(projectService.createOrUpdateProject(any(ProjectModel.class))).thenReturn(project);
+    @Test
+    @WithMockUser
+    void testUpdateProject_NotFound() throws Exception {
+        // Given
+        String projectGuid = UUID.randomUUID().toString();
+        ProjectModel project = new ProjectModel();
+        project.setProjectGuid(projectGuid);
 
-    String json = gson.toJson(project);
+        when(projectService.createOrUpdateProject(any(ProjectModel.class))).thenReturn(null);
 
-    mockMvc.perform(post("/projects")
-              .contentType(MediaType.APPLICATION_JSON)
-              .content(json)
-              .accept("application/json")
-              .header("Authorization", "Bearer admin-token"))
-              .andExpect(status().isCreated());
+        String json = gson.toJson(project);
 
-    project.setClosestCommunityName("Test");
-    when(projectService.createOrUpdateProject(any(ProjectModel.class))).thenReturn(project);
+        // When
+        ResultActions result = mockMvc.perform(put("/projects/{id}", projectGuid)
+                        .content(json)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", "Bearer admin-token"))
+                .andExpect(status().isNotFound());
 
-    json = gson.toJson(project);
+        // Then
+        verify(projectService, times(1)).createOrUpdateProject(any(ProjectModel.class));
+        assertEquals(404, result.andReturn().getResponse().getStatus());
+    }
 
-    mockMvc.perform(put("/projects/{id}", projectGuid)
-           .content(json)
-           .contentType(MediaType.APPLICATION_JSON)
-           .header("Authorization", "Bearer admin-token"))
-           .andExpect(status().isOk());
-  }
+    @Test
+    @WithMockUser
+    void testCreateUpdateProject() throws Exception {
+        ProjectModel project = new ProjectModel();
+        project.setProjectTypeCode(new ProjectTypeCodeModel());
+        project.setProjectNumber(1);
+        project.setSiteUnitName("Test");
+        project.setProgramAreaGuid(UUID.randomUUID().toString());
+        project.setProjectName("Test");
+        project.setIsMultiFiscalYearProj(false);
+        project.setLatitude(new BigDecimal(40.99));
+        project.setLongitude(new BigDecimal(-115.23));
+        project.setLastProgressUpdateTimestamp(new Date());
+        String projectGuid = UUID.randomUUID().toString();
+        project.setProjectGuid(projectGuid);
 
-  @Test
-  @WithMockUser
-  void testDeleteProject() throws Exception {
-    // Given
-    String projectGuid = UUID.randomUUID().toString();
-    ProjectModel project = new ProjectModel();
-    project.setProjectGuid(projectGuid);
+        when(projectService.createOrUpdateProject(any(ProjectModel.class))).thenReturn(project);
 
-    when(projectService.deleteProject(projectGuid)).thenReturn(project);
+        String json = gson.toJson(project);
 
-    // When
-    mockMvc.perform(delete("/projects/{id}", projectGuid)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .header("Authorization", "Bearer admin-token"))
-            .andExpect(status().isOk());
+        mockMvc.perform(post("/projects")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json)
+                        .accept("application/json")
+                        .header("Authorization", "Bearer admin-token"))
+                .andExpect(status().isCreated());
 
-    // Then
-    verify(projectService, times(1)).deleteProject(projectGuid);
-  }
+        project.setClosestCommunityName("Test");
+        when(projectService.createOrUpdateProject(any(ProjectModel.class))).thenReturn(project);
 
-  @Test
-  @WithMockUser
-  void testDeleteProject_Exception() throws Exception {
-    // Given
-    String projectGuid = UUID.randomUUID().toString();
-    when(projectService.deleteProject(projectGuid)).thenThrow(new ServiceException("Error deleting project"));
+        json = gson.toJson(project);
 
-    // When
-    ResultActions result = mockMvc.perform(delete("/projects/{id}", projectGuid)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .header("Authorization", "Bearer admin-token"))
-            .andExpect(status().is5xxServerError());
+        mockMvc.perform(put("/projects/{id}", projectGuid)
+                        .content(json)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", "Bearer admin-token"))
+                .andExpect(status().isOk());
+    }
 
-    // Then
-    verify(projectService, times(1)).deleteProject(projectGuid);
-    assertEquals(result.andReturn().getResponse().getStatus(), 500);
-  }
+    @Test
+    @WithMockUser
+    void testCreateProject_ServiceException() throws Exception {
+        // Given
+        ProjectModel project = new ProjectModel();
+        project.setProjectTypeCode(new ProjectTypeCodeModel());
+        project.setProjectNumber(1);
+        project.setSiteUnitName("Test");
+        project.setProgramAreaGuid(UUID.randomUUID().toString());
+        project.setProjectName("Test");
+        project.setIsMultiFiscalYearProj(false);
+        project.setLatitude(new BigDecimal(40.99));
+        project.setLongitude(new BigDecimal(-115.23));
+        project.setLastProgressUpdateTimestamp(new Date());
+        String projectGuid = UUID.randomUUID().toString();
+        project.setProjectGuid(projectGuid);
 
-  @Test
-  @WithMockUser
-  void testDeleteProject_notFound() throws Exception {
-    // Given
-    String projectGuid = UUID.randomUUID().toString();
-    when(projectService.deleteProject(projectGuid)).thenReturn(null);
-    // When
-    ResultActions result = mockMvc.perform(delete("/projects/{id}", projectGuid)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .header("Authorization", "Bearer admin-token"))
-            .andExpect(status().is4xxClientError());
+        when(projectService.createOrUpdateProject(any(ProjectModel.class))).thenThrow(new ServiceException("Error creating project"));
 
-    // Then
-    verify(projectService, times(1)).deleteProject(projectGuid);
-    Assertions.assertEquals(404, result.andReturn().getResponse().getStatus());
-  }
+        String json = gson.toJson(project);
+
+        // When
+        ResultActions result = mockMvc.perform(post("/projects")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json)
+                        .accept("application/json")
+                        .header("Authorization", "Bearer admin-token"))
+                .andExpect(status().is5xxServerError());
+
+        // Then
+        verify(projectService, times(1)).createOrUpdateProject(any(ProjectModel.class));
+        assertEquals(500, result.andReturn().getResponse().getStatus());
+    }
+
+    @Test
+    @WithMockUser
+    void testUpdateProject_BadRequest() throws Exception {
+        // Given
+        ProjectModel project = new ProjectModel();
+        project.setProjectGuid(UUID.randomUUID().toString());
+
+        when(projectService.createOrUpdateProject(any(ProjectModel.class))).thenReturn(project);
+
+        String json = gson.toJson(project);
+
+        // When
+        ResultActions result = mockMvc.perform(put("/projects/{id}", "invalid")
+                .content(json)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer admin-token"));
+        Assertions.assertEquals(400, result.andReturn().getResponse().getStatus());
+    }
+
+    @Test
+    @WithMockUser
+    void testDeleteProject() throws Exception {
+        // Given
+        String projectGuid = UUID.randomUUID().toString();
+        ProjectModel project = new ProjectModel();
+        project.setProjectGuid(projectGuid);
+
+        when(projectService.deleteProject(projectGuid)).thenReturn(project);
+
+        // When
+        mockMvc.perform(delete("/projects/{id}", projectGuid)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", "Bearer admin-token"))
+                .andExpect(status().isOk());
+
+        // Then
+        verify(projectService, times(1)).deleteProject(projectGuid);
+    }
+
+    @Test
+    @WithMockUser
+    void testDeleteProject_Exception() throws Exception {
+        // Given
+        String projectGuid = UUID.randomUUID().toString();
+        when(projectService.deleteProject(projectGuid)).thenThrow(new ServiceException("Error deleting project"));
+
+        // When
+        ResultActions result = mockMvc.perform(delete("/projects/{id}", projectGuid)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", "Bearer admin-token"))
+                .andExpect(status().is5xxServerError());
+
+        // Then
+        verify(projectService, times(1)).deleteProject(projectGuid);
+        assertEquals(result.andReturn().getResponse().getStatus(), 500);
+    }
+
+    @Test
+    @WithMockUser
+    void testDeleteProject_notFound() throws Exception {
+        // Given
+        String projectGuid = UUID.randomUUID().toString();
+        when(projectService.deleteProject(projectGuid)).thenReturn(null);
+        // When
+        ResultActions result = mockMvc.perform(delete("/projects/{id}", projectGuid)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", "Bearer admin-token"))
+                .andExpect(status().is4xxClientError());
+
+        // Then
+        verify(projectService, times(1)).deleteProject(projectGuid);
+        Assertions.assertEquals(404, result.andReturn().getResponse().getStatus());
+    }
 
 
 }
