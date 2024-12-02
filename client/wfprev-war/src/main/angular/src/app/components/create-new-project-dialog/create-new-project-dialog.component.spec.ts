@@ -141,7 +141,6 @@ describe('CreateNewProjectDialogComponent', () => {
     component.onCreate();
     expect(mockDialogRef.close).not.toHaveBeenCalled();
   });
-
   it('should return the correct error message for required fields', () => {
     component.projectForm.get('projectName')?.setErrors({ required: true });
     const errorMessage = component.getErrorMessage('projectName');
