@@ -53,4 +53,3 @@ resource "aws_cloudfront_distribution" "wfprev_app_distribution" {
 output "cloudfront_distribution_id" {
   value = aws_cloudfront_distribution.wfprev_app_distribution.id
 }
-

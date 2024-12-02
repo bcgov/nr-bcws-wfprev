@@ -1,1 +1,56 @@
 /* You can add global styles to this file, and also import other style files */
+:root {
+    --header-height: 72px;
+    --wf-header-background-color: #003366;
+    --wf-header-wildfire1-logo-height: 40px;
+    --wf-header-border-color:#FCBA19;
+    --wf-font-family-main: "BCSans", "Noto Sans", Verdana, Arial, sans-serif;
+    --wf-header-environment-color: #FCBA19;
+    --wf-primary-color: #013366;
+    --colour-white:#ffffff;
+}
+
+body {
+    margin: 0;
+}
+
+.cdk-overlay-container {
+    z-index: 1000;
+    .cdk-overlay-connected-position-bounding-box{
+        position: absolute;
+        z-index: 1000;
+        display: flex;
+        flex-direction: column;
+        min-width: 1px;
+        min-height: 1px;
+        top: 46px;
+        left: 1374.73px;
+        height: 1267px;
+        width: 146.266px;
+        align-items: flex-start;
+        justify-content: flex-start;
+        .cdk-overlay-pane{
+            background-color: white;
+            border-radius: 4px;
+        }
+        .mat-mdc-menu-item-text{
+            text-align: center;
+        }
+    }
+}
+
+.snackbar-success {
+    background-color: #2e703e;
+    color: var(--colour-white);
+    position: inherit;
+    width: fit-content;
+    text-align: center;
+    .mat-mdc-simple-snack-bar {
+      font-family: var(--wf-font-family-main);
+      font-size: 13px;
+    }
+    .mat-button-wrapper {
+      color: white;
+    }
+  }
+

@@ -1,7 +1,6 @@
 # Bucket create. Public-read or private?
 resource "aws_s3_bucket" "wfprev_site_bucket" {
-  bucket        = "wfnews-${var.TARGET_ENV}-site"
-  acl           = "public-read"
+  bucket        = "wfprev-${var.TARGET_ENV}-site"
   force_destroy = true
 
   website {
@@ -28,10 +27,28 @@ resource "aws_s3_bucket_policy" "wfprev_site_bucket_policy" {
     Version = "2012-10-17",
     Statement = [
       {
-        Effect    = "Allow",
-        Principal = "*",
-        Action    = "s3:GetObject",
-        Resource  = "${aws_s3_bucket.wfprev_site_bucket.arn}/*"
+        Effect = "Allow",
+        Principal = {
+          "AWS" : "${aws_cloudfront_origin_access_identity.oai.iam_arn}"
+        },
+        Action   = "s3:GetObject",
+        Resource = "arn:aws:s3:::wfprev-${var.TARGET_ENV}-site/*"
+      },
+      {
+        Effect = "Allow",
+        Principal = {
+          "AWS" : "arn:aws:iam::${var.TARGET_AWS_ACCOUNT_ID}:role/github-actions-role"
+        },
+        Action = [
+          "s3:ListBucket",
+          "s3:GetObject",
+          "s3:PutObject",
+          "s3:DeleteObject"
+        ],
+        Resource = [
+          "arn:aws:s3:::wfprev-${var.TARGET_ENV}-site",
+          "arn:aws:s3:::wfprev-${var.TARGET_ENV}-site/*"
+        ]
       }
     ]
   })
