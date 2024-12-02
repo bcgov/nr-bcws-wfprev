@@ -1,0 +1,180 @@
+name: Deploy Angular App to S3 and CloudFront
+
+on:
+  workflow_call:
+    inputs:
+      DEFAULT_APPLICATION_ENVIRONMENT:
+        required: true
+        type: string
+      IMAGE_TAG:
+        required: true
+        type: string
+  workflow_dispatch:
+    inputs:
+      TAG:
+        type: string
+        description: Additional tag to add to built images
+
+env:
+  TF_VERSION: 1.8.5
+  TG_VERSION: 0.48.4
+  TG_SRC_PATH: terraform
+  TFC_PROJECT: ${{ secrets.TFC_PROJECT }} 
+  TARGET_ENV: ${{ inputs.DEFAULT_APPLICATION_ENVIRONMENT }}
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        role-to-assume: ${{ secrets.AWS_TERRAFORM_ROLE_TO_ASSUME }}
+        role-session-name: wfprev-terraform-s3
+        aws-region: ca-central-1
+
+    - name: Set up Terraform
+      uses: hashicorp/setup-terraform@v2
+      with:
+        terraform_version: ${{ env.TF_VERSION }}
+
+    - name: Set up Terragrunt
+      uses: peter-murray/terragrunt-github-action@v1.0.0
+      with:
+          terragrunt_version: ${{ env.TG_VERSION }}
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+
+    - name: Install dependencies for Angular project
+      run: |
+          cd client/wfprev-war/src/main/angular
+          npm install --legacy-peer-deps
+
+    - name: Build Angular app
+      run: |
+          cd client/wfprev-war/src/main/angular
+          npm run build -- --configuration=production --base-href=/pub/wfprev/
+
+    # Fetch CloudFront Distribution ID in order to invalidate cache
+    - name: Get Terraform Outputs
+      working-directory: ${{ env.TG_SRC_PATH }}
+      env:
+        TFC_PROJECT:  ${{ env.TFC_PROJECT }}
+        TARGET_ENV: ${{ env.TARGET_ENV }}
+        APP_COUNT: 1
+        LOGGING_LEVEL: ${{vars.LOGGING_LEVEL}}
+
+        # Necessary for WFPREV API
+        WFPREV_API_NAME: wfprev-api
+        WFPREV_API_IMAGE: ${{ steps.getDigestAPI.outputs.IMAGE_API_BY_DIGEST }}
+        WFPREV_API_CPU_UNITS: ${{vars.WFPREV_API_CPU_UNITS}}
+        WFPREV_API_MEMORY: 1024
+        WFPREV_API_PORT: 8080
+        TARGET_AWS_ACCOUNT_ID: ${{secrets.TARGET_AWS_ACCOUNT_ID}}
+        WFPREV_CLIENT_ID: ${{vars.WFPREV_CLIENT_ID}}
+        WFPREV_CLIENT_SECRET: ${{secrets.WFPREV_CLIENT_SECRET}}
+        WEBADE_OAUTH2_CHECK_TOKEN_URL: ${{vars.WEBADE_OAUTH2_CHECK_TOKEN_URL}}
+        WEBADE_OAUTH2_CHECK_AUTHORIZE_URL: ${{vars.WEBADE_OAUTH2_CHECK_AUTHORIZE_URL}}
+        WFPREV_DATASOURCE_URL: ${{vars.WFPREV_DATASOURCE_URL}}
+        WFPREV_DATASOURCE_USERNAME: ${{secrets.WFPREV_USERNAME}}
+        WFPREV_DATASOURCE_PASSWORD: ${{secrets.DB_PASS}}
+        server_count: ${{vars.WFPREV_SERVER_INSTANCE_COUNT}}
+        # WFPREV UI
+        CLIENT_IMAGE: ${{ steps.getDigestUI.outputs.IMAGE_UI_BY_DIGEST }}
+        WEBADE_OAUTH2_WFPREV_UI_CLIENT_SECRET: ${{ secrets.WEBADE_OAUTH2_WFPREV_UI_CLIENT_SECRET }}
+
+        # DB
+        WFPREV_USERNAME: ${{secrets.WFPREV_USERNAME}}
+        DB_PASS: ${{secrets.DB_PASS}}
+        DB_INSTANCE_TYPE: ${{vars.DB_INSTANCE_TYPE}}
+
+        #liquibase
+        COMMAND: ${{ steps.liquibaseCommand.outputs.LIQUIBASE_COMMAND }}
+        PROXY_COUNT: 1
+        NONPROXY_COUNT: 1
+        CHANGELOG_NAME: ${{ inputs.CHANGELOG_NAME }}
+        LIQUIBASE_IMAGE: ${{vars.REPOSITORY_HOST}}/${{ github.repository_owner }}/${{ vars.LIQUIBASE_IMAGE }}:${{ inputs.IMAGE_TAG }}
+        LIQUIBASE_COMMAND_USERNAME: ${{ vars.LIQUIBASE_COMMAND_USERNAME }}
+        LIQUIBASE_COMMAND_PASSWORD: ${{ secrets.LIQUIBASE_COMMAND_PASSWORD }}
+        SCHEMA_NAME: ${{ inputs.SCHEMA_NAME }}
+        TARGET_LIQUIBASE_TAG: ${{ steps.liquibaseCommand.outputs.TARGET_LIQUIBASE_TAG }}
+
+      run: |
+        # Debug current directory and files
+        pwd
+        ls -la
+
+        # Debug environment variables
+        echo "TFC_PROJECT: $TFC_PROJECT"
+        echo "TARGET_ENV: $TARGET_ENV"
+        echo "Expected bucket: terraform-remote-state-${TFC_PROJECT}-${TARGET_ENV}"
+        
+        # Show Terragrunt State List
+        echo "Terragrunt State List:"
+        terragrunt state list
+        
+        # Try to refresh state
+        terragrunt refresh
+
+        # Get CloudFront ID with error checking
+        CLOUDFRONT_ID=$(terragrunt output -raw cloudfront_distribution_id | grep -o '^[a-zA-Z0-9-]\+')
+        echo "CloudFront ID: $CLOUDFRONT_ID"
+        if [ -z "$CLOUDFRONT_ID" ]; then
+          echo "Error: Failed to get CloudFront Distribution ID"
+          exit 1
+        fi
+        echo "CLOUDFRONT_DISTRIBUTION_ID=$CLOUDFRONT_ID" >> "$GITHUB_ENV"
+
+        # Get Github Actions Account ID with error checking
+        GITHUB_ACTIONS_ACCOUNT_ID=$(terragrunt output -raw github_actions_account_id | grep -o '^[a-zA-Z0-9-]\+')
+        echo "GitHub Actions Account ID: $GITHUB_ACTIONS_ACCOUNT_ID"
+        if [ -z "$GITHUB_ACTIONS_ACCOUNT_ID" ]; then
+          echo "Error: Failed to get Github Actions Account ID"
+          exit 1
+        fi
+        echo "GITHUB_ACTIONS_ACCOUNT_ID=$GITHUB_ACTIONS_ACCOUNT_ID" >> "$GITHUB_ENV"
+
+        # Get Github Actions Role Name with error checking
+        GITHUB_ACTIONS_ROLE_NAME=$(terragrunt output -raw github_actions_role_name | grep -o '^[a-zA-Z0-9-]\+')
+        echo "GitHub Actions Role Name: $GITHUB_ACTIONS_ROLE_NAME"
+        if [ -z "$GITHUB_ACTIONS_ROLE_NAME" ]; then
+          echo "Error: Failed to get Github Actions Role Name"
+          exit 1
+        fi
+        echo "GITHUB_ACTIONS_ROLE_NAME=$GITHUB_ACTIONS_ROLE_NAME" >> "$GITHUB_ENV"
+
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        role-to-assume:  arn:aws:iam::${{ env.GITHUB_ACTIONS_ACCOUNT_ID }}:role/${{ env.GITHUB_ACTIONS_ROLE_NAME }}
+        role-session-name: wfprev-push-s3
+        aws-region: ca-central-1
+
+    # this will require the bucket to exist
+    # so terraform step will need to run first
+    - name: Sync files to S3
+      env:
+          TARGET_ENV: ${{ env.TARGET_ENV }}
+      run: |
+        aws s3 sync client/wfprev-war/src/main/angular/dist/wfprev s3://wfprev-$TARGET_ENV-site \
+          --delete \
+          --cache-control max-age=31536000,public \
+          --exclude index.html
+        aws s3 cp client/wfprev-war/src/main/angular/dist/wfprev/index.html s3://wfprev-$TARGET_ENV-site/index.html \
+          --cache-control max-age=0,no-cache,no-store,must-revalidate
+
+    - name: Invalidate CloudFront Cache
+      run: |
+        aws cloudfront create-invalidation \
+          --distribution-id ${{ env.CLOUDFRONT_DISTRIBUTION_ID }} \
+          --paths "/*"
+      # see distribution ID section in terraform scripts
+      # Like the sync, this means we need to run terraform first, then
+      # trigger this action with the returned distribution ID
