@@ -217,6 +217,11 @@
 			<groupId>org.glassfish.jersey.ext</groupId>
 			<artifactId>jersey-spring6</artifactId>	
 		</dependency>
+		<dependency>
+			<groupId>net.bytebuddy</groupId>
+			<artifactId>byte-buddy</artifactId>
+			<version>1.14.5</version> <!-- Match your Hibernate version -->
+		</dependency>
 	</dependencies>
 
 	<build>
