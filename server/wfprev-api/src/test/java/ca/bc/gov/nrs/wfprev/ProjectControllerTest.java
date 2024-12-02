@@ -293,7 +293,7 @@ class ProjectControllerTest {
 
         // Then
         verify(projectService, times(1)).deleteProject(projectGuid);
-        assertEquals(result.andReturn().getResponse().getStatus(), 500);
+        Assertions.assertEquals(500, result.andReturn().getResponse().getStatus());
     }
 
     @Test
