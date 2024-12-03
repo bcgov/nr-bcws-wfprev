@@ -17,6 +17,8 @@ RUN chmod -x /app/wfprev-api
 
 EXPOSE 8080
 
+VOLUME /tmp
+
 RUN chmod +x /app/wfprev-api
 
 ENTRYPOINT ["/app/wfprev-api"]
