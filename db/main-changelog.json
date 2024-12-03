@@ -126,6 +126,48 @@
             "sqlFile": {
               "dbms": "postgresql",
               "endDelimiter": ";",
+              "path": "scripts/01_00_01/00/ddl/tables/WFPREV.bc_parks_org_unit_type_code.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_00_01/00/ddl/tables/WFPREV.forest_org_unit_type_code.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_00_01/00/ddl/tables/WFPREV.wildfire_org_unit_type_code.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_00_01/00/ddl/tables/WFPREV.bc_parks_org_unit.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_00_01/00/ddl/tables/WFPREV.forest_org_unit.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_00_01/00/ddl/tables/WFPREV.wildfire_org_unit.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
               "path": "scripts/01_00_01/00/ddl/sequences/PREV.prev_audit_table_seq.sql"
             }
           },
@@ -156,10 +198,58 @@
               "endDelimiter": ";",
               "path": "scripts/01_00_01/00/dml/app_wf1_prev.dml.project_type_code.sql"
             }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_00_01/00/dml/app_wf1_prev.dml.bc_parks_org_unit_type_code.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_00_01/00/dml/app_wf1_prev.dml.bc_parks_org_unit.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_00_01/00/dml/app_wf1_prev.dml.forest_org_unit_type_code.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_00_01/00/dml/app_wf1_prev.dml.forest_org_unit.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_00_01/00/dml/app_wf1_prev.dml.wildfire_org_unit_type_code.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_00_01/00/dml/app_wf1_prev.dml.wildfire_org_unit.sql"
+            }
           }
         ],
         "rollback": [
             { "sql": "DROP SEQUENCE wfprev.prev_audit_table_seq" },
+            { "sql": "DROP TABLE wfprev.wildfire_org_unit" },
+            { "sql": "DROP TABLE wfprev.forest_org_unit" },
+            { "sql": "DROP TABLE wfprev.bc_parks_org_unit" },
+            { "sql": "DROP TABLE wfprev.wildfire_org_unit_type_code" },
+            { "sql": "DROP TABLE wfprev.forest_org_unit_type_code" },
+            { "sql": "DROP TABLE wfprev.bc_parks_org_unit_type_code" },
             { "sql": "DROP TABLE wfprev.project_boundary_audit" },
             { "sql": "DROP TABLE wfprev.project_boundary" },
             { "sql": "DROP TABLE wfprev.project_audit" },
