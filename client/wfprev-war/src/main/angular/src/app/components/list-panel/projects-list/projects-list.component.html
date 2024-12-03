@@ -1,0 +1,29 @@
+<div>
+    <div class="list-header">
+      <!-- Sort Dropdown -->
+      <div class="sort-dropdown">
+        <label for="sort">Sort:</label>
+        <select id="sort" (change)="onSortChange($event)">
+          <option *ngFor="let option of sortOptions" [value]="option.value">{{ option.label }}</option>
+        </select>
+      </div>
+  
+      <!-- Sync Toggle -->
+      <div class="sync-toggle">
+        <div class="label-container">
+          <label>Sync with Map</label>
+        </div>
+        <div class="toggle-container">
+          <mat-slide-toggle color="primary">
+            <span>Off/On</span>
+          </mat-slide-toggle>
+        </div>
+      </div>
+  
+      <!-- Result Count -->
+      <div class="result-count">
+        <span>{{ resultCount }} Results</span>
+      </div>
+    </div>
+  </div>
+  
