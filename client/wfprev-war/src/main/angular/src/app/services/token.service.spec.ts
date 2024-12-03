@@ -25,7 +25,7 @@ describe('TokenService', () => {
     webade: {
       oauth2Url: 'http://oauth.test',
       clientId: 'test-client',
-      authScopes: ['read', 'write'],
+      authScopes: ['GET_PROJECT', 'CREATE_PROJECT'],
       enableCheckToken: false, // Disable token checking for basic tests
       checkTokenUrl: 'http://check-token.test'
     }
@@ -146,12 +146,12 @@ describe('TokenService', () => {
   describe('Permission Checking', () => {
     it('should check user permissions correctly', () => {
       service['tokenDetails'] = { 
-        scope: ['read', 'write', 'execute'] 
+        scope: ['GET_PROJECT', 'CREATE_PROJECT', 'execute'] 
       };
 
-      expect(service.doesUserHaveApplicationPermissions(['read', 'write']))
+      expect(service.doesUserHaveApplicationPermissions(['GET_PROJECT', 'CREATE_PROJECT']))
         .toBe(true);
-      expect(service.doesUserHaveApplicationPermissions(['read', 'delete']))
+      expect(service.doesUserHaveApplicationPermissions(['GET_PROJECT', 'DELETE_PROJECT']))
         .toBe(false);
     });
   });

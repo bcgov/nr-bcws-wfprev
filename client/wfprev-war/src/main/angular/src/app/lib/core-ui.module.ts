@@ -7,9 +7,9 @@ import { DATE_FORMATS } from "@wf1/core-ui";
 import { appInitializerFactory } from "../utils";
 
 @NgModule({
-  declarations: [], // Add any components, directives, or pipes that belong to this module
-  imports: [],      // Add any modules that this module depends on
-  exports: []       // Add any components, directives, or pipes that should be available to modules importing this one
+  declarations: [], 
+  imports: [],    
+  exports: []     
 })
 export class CoreUIModule {
     static forRoot(config: LibraryConfig): ModuleWithProviders<CoreUIModule> {

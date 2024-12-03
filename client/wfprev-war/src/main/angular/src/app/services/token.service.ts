@@ -154,7 +154,6 @@ export class TokenService {
 
     const headers = new HttpHeaders({
       'Authorization': 'Bearer ' + `${token}`,
-      'Access-Control-Allow-Origin': '*'
     });
     
     return http.get(
@@ -227,4 +226,3 @@ export class TokenService {
     throw err;
   }
 }
-

@@ -32,8 +32,8 @@ CREATE TABLE "wfprev"."project_audit"
 	"total_planned_project_size_ha" decimal(15,4) NULL DEFAULT 0,    -- Total Planned Project Size Ha is the total land size in hectares that are planned to be treated by the project. This will include land that is planned to be treated in the future.
 	"total_planned_cost_per_hectare" decimal(15,2) NULL DEFAULT 0,    -- Total Planned Cost Per Hectare Amount is the planned cost per hectare for the project for all fiscal years. It is calculated as NVL(Total Allocated Amount, Total Funding Request Amount) divided by Total Planned Project Size HA.
 	"total_actual_amount" decimal(15,2) NOT NULL DEFAULT 0,    -- Total Actual Amount is the total amount actually spent on the project
-	"total_project_size_ha" decimal(15,4) NULL DEFAULT 0,    -- Total Project Size Ha is the total land size in hectares that have been treated by the project. This will be a sum of all the land treated to date.
-	"total_cost_per_hectare_amount" decimal(15,2) NULL DEFAULT 0,    -- Total Cost Per Hectare Amount is the cost per hectare for the project for all fiscal years. It is calculated as Total Actual Amount divided by Total Project Size Ha.
+	"total_actual_project_size_ha" decimal(15,4) NULL DEFAULT 0,    -- Total Project Size Ha is the total land size in hectares that have been treated by the project. This will be a sum of all the land treated to date.
+	"total_actual_cost_per_hectare_amount" decimal(15,2) NULL DEFAULT 0,    -- Total Cost Per Hectare Amount is the cost per hectare for the project for all fiscal years. It is calculated as Total Actual Amount divided by Total Project Size Ha.
 	"is_multi_fiscal_year_proj_ind" boolean NOT NULL DEFAULT 'N',    -- Is Multi Fiscal Year Project Ind indicates whether the project spans multiple fiscal years (Y) or not (N).
 	"latitude" decimal(9,6) NULL,    -- Latitude is used as part of a latitude/longitude coordinate to locate a project on a map.
 	"longitude" decimal(9,6) NULL,    -- Longitude is used as part of a latitude/longitude coordinate to locate a project on a map.
@@ -145,11 +145,11 @@ COMMENT ON COLUMN "wfprev"."project_audit"."total_actual_amount"
 	IS 'Total Actual Amount is the total amount actually spent on the project'
 ;
 
-COMMENT ON COLUMN "wfprev"."project_audit"."total_project_size_ha"
+COMMENT ON COLUMN "wfprev"."project_audit"."total_actual_project_size_ha"
 	IS 'Total Project Size Ha is the total land size in hectares that have been treated by the project. This will be a sum of all the land treated to date.'
 ;
 
-COMMENT ON COLUMN "wfprev"."project_audit"."total_cost_per_hectare_amount"
+COMMENT ON COLUMN "wfprev"."project_audit"."total_actual_cost_per_hectare_amount"
 	IS 'Total Cost Per Hectare Amount is the cost per hectare for the project for all fiscal years. It is calculated as Total Actual Amount divided by Total Project Size Ha.'
 ;
 

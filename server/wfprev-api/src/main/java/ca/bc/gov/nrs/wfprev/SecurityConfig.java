@@ -9,7 +9,6 @@ import org.springframework.security.authentication.AuthenticationManagerResolver
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
@@ -43,6 +42,9 @@ public class SecurityConfig {
 
     @Value("${security.oauth.authTokenUrl}")
     private String authTokenUrl;
+
+    @Value("${spring.application.baseUrl}")
+    private String baseUrl;
 
     @Bean
     AuthenticationEntryPoint authenticationEntryPoint() {
@@ -108,7 +110,7 @@ public class SecurityConfig {
     @Bean
     public CorsFilter corsFilter() {
         CorsConfiguration config = new CorsConfiguration();
-        config.addAllowedOrigin("*"); 
+        config.addAllowedOrigin(baseUrl); 
         config.addAllowedMethod("*");
         config.addAllowedHeader("*");
         config.setAllowCredentials(true);

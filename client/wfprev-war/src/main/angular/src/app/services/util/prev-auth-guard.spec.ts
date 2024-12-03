@@ -5,7 +5,6 @@ import { AppConfigService } from 'src/app/services/app-config.service';
 import { Router, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { of, Subject, BehaviorSubject } from 'rxjs';
-import { ResourcesRoutes } from '../../utils';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 
 class MockActivatedRouteSnapshot extends ActivatedRouteSnapshot {
@@ -103,51 +102,6 @@ describe('PrevAuthGuard', () => {
     guard.canActivate(route, state).subscribe(result => {
       expect(result).toBeFalse();
       done();
-    });
-  });
-
-//   it('should handle authentication when credentials exist', (done) => {
-//     const testCredentials = { 
-//         username: 'testuser',
-//         permissions: ['read', 'write'] // Mock user permissions
-//     };
-    
-//     credentialsSubject.next(testCredentials); // Push mock credentials
-    
-//     const route = new ActivatedRouteSnapshot();
-//     route.data = { scopes: [['read']] }; // Required scopes for the test route
-//     const state = jasmine.createSpyObj<RouterStateSnapshot>('RouterStateSnapshot', [], {
-//         url: '/test'
-//     });
-
-//     guard.canActivate(route, state).subscribe(result => {
-//         expect(result).toBeTrue(); // Expect guard to return true
-//         done();
-//     });
-// });
-
-  it('should handle token validation when scopes are required', (done) => {
-    const route = new MockActivatedRouteSnapshot({ path: 'test-path' });
-    route.data = { scopes: [['read', 'write']] };
-    route.params = { id: '123' };
-    route.queryParams = { filter: 'active' };
-    route.params = { id: '123' };
-    route.queryParams = { filter: 'active' };
-
-    tokenService.getOauthToken.and.returnValue(null);
-
-    guard.getTokenInfo(route).then(observable => {
-      if (observable) {
-        observable.subscribe(() => {
-        //   expect(tokenService.checkForToken).toHaveBeenCalledWith(
-        //     'http://test.com/test?filter=active'
-        //   );
-          done();
-        });
-        authTokenSubject.next();
-      } else {
-        done();
-      }
     });
   });
 

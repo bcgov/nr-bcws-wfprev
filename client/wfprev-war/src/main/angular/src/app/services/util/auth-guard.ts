@@ -24,21 +24,23 @@ export class AuthGuard implements CanActivate {
   }
 
   checkLogin(url: string, scopes: string[]): boolean {
-  // Always call doesUserHaveApplicationPermissions, even when no credentials
-  let isAuthorized = this.tokenService.doesUserHaveApplicationPermissions(scopes);
   
-  // If credentials are present, && with the credentials check
-  if (this.credentials) {
-    isAuthorized = isAuthorized && !!this.credentials;
-  } else {
-    isAuthorized = false;
-  }
+    // Always call doesUserHaveApplicationPermissions, even when no credentials
+    let isAuthorized = this.tokenService.doesUserHaveApplicationPermissions(scopes);
+   
+    // If credentials are present, && with the credentials check
+    if (this.credentials) {
+      isAuthorized = isAuthorized && !!this.credentials;
+    } else {
+      isAuthorized = false;
+    }
+  
+    if (!isAuthorized) {
+      this.redirectToErrorPage();
+    }
+    return isAuthorized;
 
-  if (!isAuthorized) {
-    this.redirectToErrorPage();
   }
-  return isAuthorized;
-}
 
   redirectToErrorPage() {
     // Navigate to the unauthorized page

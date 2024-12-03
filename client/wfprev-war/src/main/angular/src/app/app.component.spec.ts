@@ -12,10 +12,6 @@ import { LibraryConfig } from './config/library-config';
 
 // Create a mock configuration
 const mockApplicationConfig: ApplicationConfig = {
-  // Add mock properties matching your ApplicationConfig interface
-  // For example:
-  // baseUrl: 'http://test-url',
-  // ... other properties
   application: { acronym: "WFPREV", version: "0.0.0", baseUrl: "", environment: "DEV" },
   rest: {},
   webade: { oauth2Url: "", clientId: "", authScopes: ""}
