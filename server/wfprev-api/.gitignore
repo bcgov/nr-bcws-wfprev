@@ -1,10 +1,14 @@
 HELP.md
 target/
+.mvn/*
+!.mvn/wrapper/
 !.mvn/wrapper/maven-wrapper.jar
+!.mvn/wrapper/maven-wrapper.properties
 !**/src/main/**/target/
 !**/src/test/**/target/
-.mvn/
 .metadata/
+.DS_Store
+**/.DS_Store
 
 ### STS ###
 .apt_generated

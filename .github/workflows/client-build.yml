@@ -60,7 +60,7 @@ jobs:
     - name: Build Angular app
       run: |
           cd client/wfprev-war/src/main/angular
-          npm run build -- --configuration=production --base-href=/pub/wfprev/
+          npm run build -- --configuration=production
 
     # Fetch CloudFront Distribution ID in order to invalidate cache
     - name: Get Terraform Outputs
