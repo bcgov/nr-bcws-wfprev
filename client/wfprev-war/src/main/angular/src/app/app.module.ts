@@ -11,6 +11,7 @@ import { AppHeaderComponent } from 'src/app/components/shared-layout/app-header/
 import { MatMenuModule } from '@angular/material/menu';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatDialogModule } from '@angular/material/dialog';
+import { ErrorPageComponent } from './components/error-page/error-page/error-page.component';
 
 @NgModule({
   declarations: [AppComponent],
@@ -24,6 +25,7 @@ import { MatDialogModule } from '@angular/material/dialog';
     MatMenuModule,
     BrowserAnimationsModule,
     MatDialogModule,
+    ErrorPageComponent
   ],
   providers: [
     provideHttpClient(withInterceptorsFromDi()),
