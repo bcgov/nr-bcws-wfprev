@@ -5,7 +5,7 @@ import { AppConfigService } from './app-config.service';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { Injector } from '@angular/core';
 import { HttpHandler } from '@angular/common/http';
-import { of } from 'rxjs';
+import { UUID } from 'angular2-uuid';
 
 describe('TokenService', () => {
   let service: TokenService;
@@ -13,7 +13,7 @@ describe('TokenService', () => {
   let mockAppConfigService: any;
   let mockOAuthService: any;
   let mockInjector: any;
-  const MOCK_INVALID_TOKEN = 'invalid-token';
+  const MOCK_INVALID_TOKEN = UUID.UUID();
 
   // Mock configuration
   const mockConfig = {
