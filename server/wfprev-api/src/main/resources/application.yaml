@@ -57,3 +57,5 @@ security:
 
 server:
   forward-headers-strategy: framework
+  servlet:
+    context-path: /wfprev-api
