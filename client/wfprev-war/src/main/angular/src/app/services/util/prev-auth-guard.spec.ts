@@ -5,7 +5,6 @@ import { AppConfigService } from 'src/app/services/app-config.service';
 import { Router, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { of, Subject, BehaviorSubject } from 'rxjs';
-import { ResourcesRoutes } from '../../utils';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 
 class MockActivatedRouteSnapshot extends ActivatedRouteSnapshot {
