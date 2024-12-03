@@ -102,7 +102,7 @@ resource "aws_alb_target_group" "wfprev_api" {
     protocol            = "HTTP"
     matcher             = "200"
     timeout             = "3"
-    path                = "/${aws_apigatewayv2_stage.wfprev_stage.name}/wfprev-api/actuator/health"
+    path                = "/${aws_apigatewayv2_stage.wfprev_stage.name}/actuator/health"
     unhealthy_threshold = "2"
   }
 
