@@ -65,7 +65,7 @@ resource "aws_lb_listener_rule" "wfprev-api" {
 
   condition {
     path_pattern  {
-      values = ["/${aws_apigatewayv2_stage.wfprev_stage.name}"]
+      values = ["/${aws_apigatewayv2_stage.wfprev_stage.name}", "/${aws_apigatewayv2_stage.wfprev_stage.name}/*"]
     }
   }
 }
