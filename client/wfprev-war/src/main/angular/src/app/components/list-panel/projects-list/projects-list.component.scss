@@ -3,7 +3,6 @@
     align-items: center;
     justify-content: space-between;
     padding: 14px;
-    background-color: #f5f5f5;
     border-bottom: 1px solid #ccc;
     font-family: var(--wf-font-family-main);
     font-size: 14px;
@@ -12,6 +11,38 @@
   .sort-dropdown {
     display: flex;
     align-items: center;
+    gap:5px;
+    .default-option{
+      color: #6A6A6A;
+      font-size: 15px;
+      font-style: normal;
+      font-weight: 400;
+    }
+    select {
+      margin-top: 4px;
+      width: 113px;
+      padding: 8px 9px; /* Same padding as text inputs */
+      font-size: 16px; /* Font size similar to inputs */
+      color: #333; /* Text color */
+      outline: none;;
+      border-radius: 4px;
+      border: 1px solid #DFE0E2;
+      background: #FFF;
+      background-color: transparent; /* Transparent background to match input style */
+    
+      &::placeholder {
+        color: #aaa; /* Placeholder color */
+      }
+    
+      /* Style the dropdown arrow */
+      -webkit-appearance: none; /* Remove default dropdown arrow for WebKit browsers */
+      -moz-appearance: none; /* Remove default dropdown arrow for Mozilla browsers */
+      appearance: none; /* Remove default dropdown arrow for all browsers */
+      background-image: url('./../../../../assets/dropdown-icon.svg');
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      background-size: 12px;
+    }
   }
   
   .sync-toggle {
@@ -80,3 +111,52 @@
     font-size: 14px;
   }
   
+  .list-contents {
+    mat-expansion-panel {
+      min-height: 152px;
+      border-bottom: 1px solid #C6C8CB;
+      ::ng-deep .mat-expansion-indicator {
+        order: -1 !important; /* Move the indicator to the left */
+        padding-right: 12px !important;
+      }
+
+      &:nth-child(odd) {
+        background-color: #FFF;
+      }
+  
+      &:nth-child(even) {
+        background: #F2F2F2;
+      }
+      .project-title {
+        background-color: inherit;
+        font-weight: bold;
+        display: flex;
+        mat-panel-title {
+          color: #282828;
+          font-size: 14px;
+          font-style: normal;
+          font-weight: 700;
+        }
+      }
+      .action-items{
+        justify-content: flex-end;
+        gap: 10px;
+        .action-item{
+          display: flex;
+          flex-direction: column;
+        }
+      }
+  
+      .project-details {
+        padding: 10px;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+  
+        div {
+          font-size: 14px;
+          font-family: var(--wf-font-family-main);
+        }
+      }
+    }
+  }

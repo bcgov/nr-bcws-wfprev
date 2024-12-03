@@ -2,8 +2,9 @@
     <div class="list-header">
       <!-- Sort Dropdown -->
       <div class="sort-dropdown">
-        <label for="sort">Sort:</label>
+        <label >Sort:</label>
         <select id="sort" (change)="onSortChange($event)">
+          <option class="default-option" value="">select...</option>
           <option *ngFor="let option of sortOptions" [value]="option.value">{{ option.label }}</option>
         </select>
       </div>
@@ -24,6 +25,35 @@
       <div class="result-count">
         <span>{{ resultCount }} Results</span>
       </div>
+    </div>
+    <div class="list-contents">
+      <mat-accordion>
+        <mat-expansion-panel *ngFor="let item of projectList">
+          <mat-expansion-panel-header>
+            <mat-panel-title class="project-title">
+              <span> {{ item.projectName }} </span>
+            </mat-panel-title>
+            <mat-panel-description class="action-items">
+              <div class="action-item">
+                <img alt="warning-icon" class="icon" height=24px; width=24px; src="../../../../assets/detail-icon.svg" />
+                <span>Details</span>              
+              </div>
+              <div class="action-item">
+                <img alt="warning-icon" class="icon" height=24px; width=24px; src="../../../../assets/edit-icon.svg" />
+                <span>Edit</span>              
+              </div>
+            </mat-panel-description>
+          </mat-expansion-panel-header>
+          
+          <div class="project-details">
+            <div><strong>Region:</strong> {{ item.region }}</div>
+            <div><strong>Total Project Hectares:</strong> {{ item.totalHectares }} Ha</div>
+            <div><strong>Business Area:</strong> {{ item.businessArea }}</div>
+            <div><strong>Business Area Lead:</strong> {{ item.businessAreaLead }}</div>
+            <div><strong>Site Unit:</strong> {{ item.siteUnit }}</div>
+          </div>
+        </mat-expansion-panel>
+      </mat-accordion>
     </div>
   </div>
   
