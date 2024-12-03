@@ -5,7 +5,6 @@ import { AppConfigService } from './app-config.service';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { Injector } from '@angular/core';
 import { HttpHandler } from '@angular/common/http';
-import { of } from 'rxjs';
 
 describe('TokenService', () => {
   let service: TokenService;
@@ -13,7 +12,6 @@ describe('TokenService', () => {
   let mockAppConfigService: any;
   let mockOAuthService: any;
   let mockInjector: any;
-  const MOCK_INVALID_TOKEN = 'invalid-token';
 
   // Mock configuration
   const mockConfig = {
@@ -123,7 +121,7 @@ describe('TokenService', () => {
     });
 
     it('should handle validation failure', (done) => {
-      service.validateToken(MOCK_INVALID_TOKEN).subscribe(result => {
+      service.validateToken('inavlid-token').subscribe(result => {
         expect(result).toBe(false);
         done();
       });
