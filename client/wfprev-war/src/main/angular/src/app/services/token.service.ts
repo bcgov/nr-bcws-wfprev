@@ -118,13 +118,12 @@ export class TokenService {
       const localOauth = localStorage.getItem(this.LOCAL_STORAGE_KEY);
       this.oauth = localOauth ? JSON.parse(localOauth) : null;
       await this.initAndEmit();
-    } catch (err) {
-      localStorage.removeItem(this.LOCAL_STORAGE_KEY);
-      console.log('Failed to handle token payload', this.oauth);
-      this.handleError(err, 'Failed to handle token');
+    } catch (error) {
+      console.warn('Invalid token in localStorage:', error);
+      localStorage.removeItem(this.LOCAL_STORAGE_KEY); // Clear the invalid token
+      this.initImplicitFlow(); // Reinitialize the auth flow
     }
   }
-
   public initAuth(response: any): void {
     if (response) {
       try {
@@ -169,29 +168,43 @@ export class TokenService {
 
   }
 
-
   private async initAndEmit(): Promise<void> {
-    const config = this.appConfigService.getConfig();
-
-    if (config.webade.enableCheckToken) {
-      try {
-        this.tokenDetails = await firstValueFrom(this.validateToken(this.oauth.access_token));
-        this.emitTokens();
-      } catch (error: any) {
-        console.log(error);
-        alert(`App initialization Failed ${error.status}. Status(Check token failed)`);
-        throw error;
-      }
-    } else {
-      const oauthInfo = this.oauth.access_token.split('.');
-
-      if (oauthInfo.length > 1) {
-        this.tokenDetails = JSON.parse(atob(oauthInfo[1]));
-      }
-
-      this.emitTokens();
+    if (!this.oauth) {
+      console.warn('OAuth object is undefined or null');
+      return;
     }
+  
+    const tokenDetails = this.parseTokenDetails(this.oauth.access_token);
+    if (!tokenDetails.exp || Date.now() / 1000 >= tokenDetails.exp) {
+      console.warn('Token is expired or missing exp');
+      return;
+    }
+  
+    // Ensure validateToken is called
+    if (this.validateToken) {
+      this.validateToken(this.oauth.access_token);
+    }
+  
+    this.emitTokens(); // Emit validated credentials
   }
+  
+ private parseTokenDetails(token: string): any {
+  try {
+    const parts = token.split('.');
+    if (parts.length < 2) throw new Error('Invalid JWT structure');
+    const payload = parts[1];
+
+    // Ensure proper base64 padding
+    const base64 = payload.replace(/-/g, '+').replace(/_/g, '/');
+    const paddedBase64 = base64.padEnd(base64.length + (4 - (base64.length % 4)) % 4, '=');
+
+    // Decode and parse JSON payload
+    return JSON.parse(atob(paddedBase64));
+  } catch (error) {
+    console.error('Failed to parse token details', error);
+    return {}; // Return an empty object or handle the error as needed
+  }
+}
 
   private emitTokens(): void {
     this.authToken.next(this.oauth.access_token);

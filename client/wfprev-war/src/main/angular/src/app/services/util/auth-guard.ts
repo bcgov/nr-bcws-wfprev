@@ -24,11 +24,6 @@ export class AuthGuard implements CanActivate {
   }
 
   checkLogin(url: string, scopes: string[]): boolean {
-    console.log('Checking login with:');
-    console.log('URL:', url);
-    console.log('Scopes:', scopes);
-    console.log('This credentials:', this.credentials);
-    console.log('Credentials subject:', this.tokenService.credentialsEmitter);
   
     // Always call doesUserHaveApplicationPermissions, even when no credentials
     let isAuthorized = this.tokenService.doesUserHaveApplicationPermissions(scopes);
