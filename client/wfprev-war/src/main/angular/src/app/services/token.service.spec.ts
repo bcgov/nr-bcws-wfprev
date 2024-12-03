@@ -5,6 +5,7 @@ import { AppConfigService } from './app-config.service';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { Injector } from '@angular/core';
 import { HttpHandler } from '@angular/common/http';
+import { of } from 'rxjs';
 
 describe('TokenService', () => {
   let service: TokenService;
@@ -170,4 +171,90 @@ describe('TokenService', () => {
       expect(mockOAuthService.initImplicitFlow).toHaveBeenCalled();
     });
   });
+
+
+describe('parseToken', () => {
+  it('should parse and initialize token from hash', () => {
+    const hash = '#access_token=test-token&expires_in=3600';
+    spyOn(service, 'initAuth');
+
+    (service as any).parseToken(hash);
+
+    expect(service.initAuth).toHaveBeenCalledWith({
+      access_token: 'test-token',
+      expires_in: '3600',
+    });
+  });
+
+  it('should handle invalid hash gracefully', () => {
+    const invalidHash = '#invalid_token';
+    spyOn(service, 'initAuth');
+
+    (service as any).parseToken(invalidHash);
+
+    expect(service.initAuth).not.toHaveBeenCalled();
+  });
 });
+
+describe('initAuthFromSession', () => {
+  it('should initialize authentication from localStorage', async () => {
+    const mockToken = { access_token: 'test-token', exp: Math.floor(Date.now() / 1000) + 3600 };
+    localStorage.setItem('test-oauth', JSON.stringify(mockToken));
+    spyOn(service as any, 'initAndEmit').and.callThrough();
+
+    await (service as any).initAuthFromSession();
+
+    expect(service['initAndEmit']).toHaveBeenCalled();
+  });
+
+  it('should handle completely invalid JSON and reinitialize flow', async () => {
+    // Store completely invalid JSON in localStorage
+    localStorage.setItem('test-oauth', 'invalid-token');
+    spyOn(service as any, 'initImplicitFlow').and.callThrough();
+
+    await (service as any).initAuthFromSession();
+
+    expect(service['initImplicitFlow']).toHaveBeenCalled();
+    expect(localStorage.getItem('test-oauth')).toBeNull();
+  });
+
+});
+
+describe('updateToken', () => {
+  it('should update token and reinitialize flow', () => {
+    const newToken = { access_token: 'new-test-token' };
+    spyOn(service as any, 'initAndEmit').and.callThrough();
+
+    service.updateToken(newToken);
+
+    expect(service['oauth']).toBe(newToken);
+    expect(service['initAndEmit']).toHaveBeenCalled();
+  });
+});
+
+describe('getOauthToken', () => {
+  it('should return the current OAuth token', () => {
+    service['oauth'] = { access_token: 'test-token' };
+
+    expect(service.getOauthToken()).toBe('test-token');
+  });
+
+  it('should return null if no token is present', () => {
+    service['oauth'] = null;
+
+    expect(service.getOauthToken()).toBeNull();
+  });
+});
+
+describe('handleError', () => {
+  it('should log and throw an error', () => {
+    spyOn(console, 'error');
+    spyOn(window, 'alert');
+
+    expect(() => (service as any).handleError(new Error('Test error'), 'Custom message')).toThrowError('Test error');
+    expect(console.error).toHaveBeenCalledWith('Unexpected error', jasmine.any(Error));
+    expect(window.alert).toHaveBeenCalledWith('Custom message Error: Test error');
+  });
+});
+});
+
