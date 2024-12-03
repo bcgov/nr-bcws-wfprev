@@ -9,7 +9,6 @@ import { CoreUIModule } from './lib/core-ui.module';
 import { CustomOAuthLogger } from './utils';
 import { LibraryConfig } from './config/library-config';
 import { AppConfigService } from './services/app-config.service';
-import { OWL_DATE_TIME_FORMATS } from '@busacca/ng-pick-datetime';
 import { APP_INITIALIZER } from '@angular/core';
 import { TokenService } from './services/token.service';
 
@@ -37,7 +36,6 @@ describe('AppModule', () => {
         { provide: LibraryConfig, useValue: {} },
         { provide: AppConfigService, useValue: mockAppConfigService },
         { provide: TokenService, useValue: mockTokenService },
-        { provide: OWL_DATE_TIME_FORMATS, useValue: {} },
         {
           provide: APP_INITIALIZER,
           useValue: () => Promise.resolve(),

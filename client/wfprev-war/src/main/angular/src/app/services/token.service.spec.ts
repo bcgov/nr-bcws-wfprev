@@ -13,6 +13,7 @@ describe('TokenService', () => {
   let mockAppConfigService: any;
   let mockOAuthService: any;
   let mockInjector: any;
+  const MOCK_INVALID_TOKEN = 'invalid-token';
 
   // Mock configuration
   const mockConfig = {
@@ -122,9 +123,7 @@ describe('TokenService', () => {
     });
 
     it('should handle validation failure', (done) => {
-      const testToken = 'invalid-token';
-      
-      service.validateToken(testToken).subscribe(result => {
+      service.validateToken(MOCK_INVALID_TOKEN).subscribe(result => {
         expect(result).toBe(false);
         done();
       });
@@ -257,4 +256,3 @@ describe('handleError', () => {
   });
 });
 });
-

@@ -2,8 +2,6 @@ import { APP_INITIALIZER, Injector, ModuleWithProviders, NgModule } from "@angul
 import { LibraryConfig } from "../config/library-config";
 import { AppConfigService } from "../services/app-config.service";
 import { HttpHandler } from "@angular/common/http";
-import { OWL_DATE_TIME_FORMATS } from "@busacca/ng-pick-datetime";
-import { DATE_FORMATS } from "@wf1/core-ui";
 import { appInitializerFactory } from "../utils";
 
 @NgModule({
@@ -30,10 +28,6 @@ export class CoreUIModule {
             provide: AppConfigService,
             useClass: AppConfigService,
             deps: [HttpHandler, LibraryConfig]
-          },
-          {
-            provide: OWL_DATE_TIME_FORMATS,
-            useValue: DATE_FORMATS
           },
         ]
       };

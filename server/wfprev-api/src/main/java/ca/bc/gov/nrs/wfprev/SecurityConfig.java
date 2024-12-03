@@ -51,7 +51,7 @@ public class SecurityConfig {
         BasicAuthenticationEntryPoint result;
 
         result = new BasicAuthenticationEntryPoint();
-        result.setRealmName("wfprev-api");
+        result.setRealmName("wfim-incidents-api");
 
         return result;
     }
@@ -89,7 +89,6 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         http
-                .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .requestMatchers("/actuator/health").permitAll()
