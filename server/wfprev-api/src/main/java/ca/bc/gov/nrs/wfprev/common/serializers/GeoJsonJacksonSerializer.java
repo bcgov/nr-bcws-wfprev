@@ -28,8 +28,8 @@ public class GeoJsonJacksonSerializer extends StdSerializer<Geometry> {
          geoJsonWriter.write(geometry, writer);
          String json = writer.toString();
          generator.writeRawValue(json);
-      } catch (RuntimeException var7) {
-         log.error("Failed to serialize Geometry: " + geometry, var7);
+      } catch (RuntimeException e) {
+         log.error("Failed to serialize Geometry: " + geometry, e);
       }
 
       log.trace(">serialize");

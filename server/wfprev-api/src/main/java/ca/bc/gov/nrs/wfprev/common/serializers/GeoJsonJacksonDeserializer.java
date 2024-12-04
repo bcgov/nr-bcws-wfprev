@@ -40,11 +40,11 @@ public class GeoJsonJacksonDeserializer extends StdDeserializer<Geometry> {
       try {
          Reader reader = new StringReader(geoJson);
          result = geoJsonReader.read(reader);
-      } catch (ParseException var9) {
-         log.error("Failed to deserialize geojson: " + geoJson, var9);
-         throw new IOException("Failed to deserialize geojson: " + geoJson, var9);
-      } catch (RuntimeException var10) {
-         log.error("Failed to deserialize geojson: " + geoJson, var10);
+      } catch (ParseException e) {
+         log.error("Failed to deserialize geojson: " + geoJson, e);
+         throw new IOException("Failed to deserialize geojson: " + geoJson, e);
+      } catch (RuntimeException e) {
+         log.error("Failed to deserialize geojson: " + geoJson, e);
       }
 
       log.trace(">deserialize " + result);
