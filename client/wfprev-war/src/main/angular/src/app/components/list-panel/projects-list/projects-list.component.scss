@@ -49,7 +49,7 @@
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    gap: 5px; /* Adjust spacing between the label and toggle */
+    gap: 15px;
   
     .label-container {
       text-align: center;
@@ -113,24 +113,39 @@
   
   .list-contents {
     mat-expansion-panel {
-      min-height: 152px;
       border-bottom: 1px solid #C6C8CB;
+      margin: 0px !important;
+
       ::ng-deep .mat-expansion-indicator {
-        order: -1 !important; /* Move the indicator to the left */
-        padding-right: 12px !important;
+        display: none !important; 
+      }
+
+      ::ng-deep .mat-content{
+        flex-direction: column !important;
       }
 
       &:nth-child(odd) {
-        background-color: #FFF;
+        background: #F2F2F2;
       }
   
       &:nth-child(even) {
-        background: #F2F2F2;
+        background-color: #FFF;
       }
+
+      .expansion-panel-header{
+        min-height: 152px;
+        padding:0 35px;
+      }
+
       .project-title {
         background-color: inherit;
         font-weight: bold;
         display: flex;
+
+        .project-name {
+          flex:1;
+        }
+
         mat-panel-title {
           color: #282828;
           font-size: 14px;
@@ -138,13 +153,73 @@
           font-weight: 700;
         }
       }
-      .action-items{
+
+      .project-header-details {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr); /* Adjust the number of columns as needed */
+        gap: 10px;
+        font-size: 14px;
+        font-family: var(--wf-font-family-main);
+        color: #282828;;
+        font-weight: 400;
+      }
+
+      .detail {
+        display: flex;
+        flex-direction: column; /* Stack the label and value vertically */
+        gap: 2px; /* Spacing between label and value */
+        .heavy-font{
+          font-weight: 700;
+        }
+      }
+      
+      
+      .expanded-project-details {
+        padding: 10px;
+        display: grid;
+        grid-template-columns: 70% 30%;
+        gap: 10px;
+        border-radius: 6px;
+        border: 1px solid #949494;
+        .fiscal-expanded{
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+
+      .activity-types {
+        display: grid;
+        width: 70%;
+        gap: 5px; /* Space between activity tags */
+        align-items: start; /* Align tags to the top */
+      }
+      
+      .activity-type {
+        display: inline-block;
+        padding: 5px 10px;
+        border-radius: 4px;
+        border: 1px solid #949494;
+        background: inherit;
+        font-size: 14px;
+        font-style: normal;
+        font-weight: 700;
+        text-align: center;
+      }
+
+      .action-items {
+        display: flex;
         justify-content: flex-end;
         gap: 10px;
-        .action-item{
-          display: flex;
-          flex-direction: column;
-        }
+        align-items: center;
+        position: relative;
+        top: 50%;
+      }
+
+      .action-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
       }
   
       .project-details {
@@ -160,3 +235,8 @@
       }
     }
   }
+  
+.custom-indicator{
+  position: absolute;
+  left: 10px;
+}
