@@ -92,18 +92,29 @@ describe('PrevAuthGuard', () => {
   });
 
   it('should return false when offline', (done) => {
-    spyOnProperty(window.navigator, 'onLine').and.returnValue(false);
-    
+    // Mock `navigator.onLine` to return `false`
+    Object.defineProperty(window.navigator, 'onLine', {
+      value: false,
+      configurable: true,
+    });
+  
     const route = new ActivatedRouteSnapshot();
     const state = jasmine.createSpyObj<RouterStateSnapshot>('RouterStateSnapshot', [], {
-      url: '/test'
+      url: '/test',
     });
-
+  
     guard.canActivate(route, state).subscribe(result => {
       expect(result).toBeFalse();
       done();
     });
+  
+    // Cleanup after the test
+    Object.defineProperty(window.navigator, 'onLine', {
+      value: true,
+      configurable: true,
+    });
   });
+  
 
   it('should redirect to error page when unauthorized', (done) => {
     const route = new ActivatedRouteSnapshot();
