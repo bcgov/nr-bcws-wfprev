@@ -5,6 +5,7 @@ import { AppConfigService } from './app-config.service';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { Injector } from '@angular/core';
 import { HttpHandler } from '@angular/common/http';
+import { UUID } from 'angular2-uuid';
 
 describe('TokenService', () => {
   let service: TokenService;
@@ -121,7 +122,7 @@ describe('TokenService', () => {
     });
 
     it('should handle validation failure', (done) => {
-      service.validateToken('inavlid-token').subscribe(result => {
+      service.validateToken(UUID.UUID()).subscribe(result => {
         expect(result).toBe(false);
         done();
       });
