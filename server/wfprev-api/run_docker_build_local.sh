@@ -17,5 +17,6 @@ echo "BUILD_ARGS: $BUILD_ARGS"
 # Run docker build with all the arguments
 docker build $BUILD_ARGS \
     -f Dockerfile.graalvm \
+    --platform linux/arm64 \
     --build-arg MAVEN_SETTINGS_FILE=vivid.settings.xml \
     -t wfprev-api .
