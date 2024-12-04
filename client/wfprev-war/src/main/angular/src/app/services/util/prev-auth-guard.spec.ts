@@ -161,4 +161,59 @@ describe('PrevAuthGuard', () => {
 
     authTokenSubject.next();
   });
+  
+  describe('canActivate', () => {
+    const route = new ActivatedRouteSnapshot();
+    route.data = { 
+      scopes: [['read']]
+    };
+    const state = jasmine.createSpyObj<RouterStateSnapshot>('RouterStateSnapshot', [], {
+      url: '/test'
+    });
+
+    it('should return true when no scopes are defined', (done) => {
+      route.data = {};
+
+      guard.canActivate(route, state).subscribe(result => {
+        expect(result).toBeTrue();
+        done();
+      });
+    });
+
+    it('should handle route with scopes when token exists', (done) => {
+      // Setup route with scopes
+      route.data = { scopes: [['test-scope']] };
+      
+      // Mock token exists
+      tokenService.getOauthToken.and.returnValue('test-token');
+      
+      // Mock token validation
+      tokenService.validateToken.and.returnValue(of(true));
+
+      guard.canActivate(route, state).subscribe(result => {
+        expect(result).toBeDefined();
+        done();
+      });
+    });
+
+    it('should handle route with scopes when token validation fails', (done) => {
+      // Setup route with scopes
+      route.data = { scopes: [['test-scope']] };
+      
+      // Mock token exists
+      tokenService.getOauthToken.and.returnValue('test-token');
+      
+      // Mock token validation fails
+      tokenService.validateToken.and.returnValue(of(false));
+
+      // Spy on redirectToErrorPage
+      spyOn(guard, 'redirectToErrorPage');
+
+      guard.canActivate(route, state).subscribe(result => {
+        expect(result).not.toBeDefined();
+        expect(guard.redirectToErrorPage).toHaveBeenCalled();
+        done();
+      });
+    });
+  });
 });
