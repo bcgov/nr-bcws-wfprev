@@ -104,4 +104,16 @@ describe('AppConfigService', () => {
     expect(configSpy).not.toHaveBeenCalled();
     expect(errorSpy).toHaveBeenCalled();
   });
+
+  it('should throw an error when no data is returned from configuration', async () => {
+    const loadConfigPromise = service.loadAppConfig();
+    const req = httpMock.expectOne(mockLibraryConfig.configurationPath);
+    
+    // Flush with null to simulate no data
+    req.flush(null);
+  
+    await expectAsync(loadConfigPromise).toBeRejectedWithError(
+      'Failed to load application configuration: No data returned from application config'
+    );
+  });
 });
