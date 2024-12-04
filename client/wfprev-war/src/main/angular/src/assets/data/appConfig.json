@@ -1,13 +1,13 @@
 {
-  "application": {
-    "baseUrl": "http://localhost:4200/"
-  },
-
-  "webade": {
-      "oauth2Url": "https://wfappsi.nrs.gov.bc.ca/ext/oauth2/v1/oauth/authorize",
-      "clientId": "WFNEWS-UI",
-      "authScopes": "WFNEWS.*",
-      "enableCheckToken": true,
-      "checkTokenUrl": "http://localhost:8080/pub/wfprev-api/check/checkToken"
-    }
-}
+    "application": {
+      "baseUrl": "#{WFPREV_BASE_URL}#"
+    },
+  
+    "webade": {
+        "oauth2Url": "#{WEBADE_OAUTH2_CHECK_AUTHORIZE_URL}#",
+        "clientId": "WFNEWS-UI",
+        "authScopes": "WFNEWS.*",
+        "enableCheckToken": true,
+        "checkTokenUrl": "#{WFPREV_CHECK_TOKEN_URL}#"
+      }
+  }
