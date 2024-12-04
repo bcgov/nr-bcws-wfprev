@@ -70,6 +70,59 @@ describe('TokenService', () => {
     httpMock.verify();
   });
 
+  describe('Constructor and Initial Config', () => {
+    it('should initialize with default config values', () => {
+      const minimalConfig = {
+        application: {},
+        webade: {
+          oauth2Url: 'http://oauth.test',
+          clientId: 'test-client',
+          authScopes: ['GET_PROJECT']
+        }
+      };
+      
+      mockAppConfigService.getConfig.and.returnValue(minimalConfig);
+      const newService = new TokenService(mockInjector, mockAppConfigService);
+      
+      expect(newService['LOCAL_STORAGE_KEY']).toBe('oauth');
+      expect(newService['useLocalStore']).toBe(false);
+    });
+    it('should handle offline mode with expired token', () => {
+      const expiredToken = {
+        access_token: 'expired.token',
+        exp: Math.floor(Date.now() / 1000) - 3600
+      };
+      localStorage.setItem('test-oauth', JSON.stringify(expiredToken));
+      spyOnProperty(navigator, 'onLine').and.returnValue(false);
+      
+      service.checkForToken(undefined, false, false);
+      
+      expect(localStorage.getItem('test-oauth')).toBeNull();
+    });
+  });
+  
+  describe('initAndEmit', () => {
+    it('should handle undefined oauth object', async () => {
+      service['oauth'] = undefined;
+      spyOn(console, 'warn');
+      
+      await service['initAndEmit']();
+      
+      expect(console.warn).toHaveBeenCalledWith('OAuth object is undefined or null');
+    });
+
+    it('should handle expired token during initialization', async () => {
+      service['oauth'] = {
+        access_token: 'header.eyJleHAiOjB9.signature'
+      };
+      spyOn(console, 'warn');
+      
+      await service['initAndEmit']();
+      
+      expect(console.warn).toHaveBeenCalledWith('Token is expired or missing exp');
+    });
+  });
+
   describe('Local Storage Handling', () => {
     beforeEach(() => {
       // Override config to disable token checking for these tests
@@ -254,4 +307,24 @@ describe('handleError', () => {
     expect(window.alert).toHaveBeenCalledWith('Custom message Error: Test error');
   });
 });
+
+describe('emitTokens', () => {
+  it('should emit tokens and complete subjects', () => {
+    service['oauth'] = { access_token: 'test-token' };
+    service['tokenDetails'] = { scope: ['test-scope'] };
+    
+    spyOn(service['authToken'], 'next');
+    spyOn(service['authToken'], 'complete');
+    spyOn(service['credentials'], 'next');
+    spyOn(service['credentials'], 'complete');
+    
+    service['emitTokens']();
+    
+    expect(service['authToken'].next).toHaveBeenCalledWith('test-token');
+    expect(service['authToken'].complete).toHaveBeenCalled();
+    expect(service['credentials'].next).toHaveBeenCalledWith({ scope: ['test-scope'] });
+    expect(service['credentials'].complete).toHaveBeenCalled();
+  });
+});
+
 });
