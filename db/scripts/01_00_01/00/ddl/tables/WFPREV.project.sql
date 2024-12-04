@@ -14,6 +14,7 @@ CREATE TABLE "wfprev"."project"
 	"site_unit_name" varchar(250)	 NOT NULL,    -- Site Unit Name is the name of the site or unit where the project is located. It is used to build the project identifier.
 	"forest_area_code" varchar(10)	 NULL,    -- forest_area_code: Is a foreign key to forest_area_code: Forest Area Code is a list of Ministry Forest Areas Values are:   	- Coast 	- North 	- West
 	"general_scope_code" varchar(10)	 NULL,    -- general_scope_code: Is a foreign key to general_scope_code: General Scope Code is the set of high level scopes a project may have. Values are:  	- Landscape Level Activities   	- Site Level Activities 	- Non-Spatial Activities
+	"project_status_code" varchar(10)	 NOT NULL,    -- project_status_code: Is a foreign key to project_status_code: Project Status Code is the status of a prevention project. Values are:  	- Active 	- Deleted 	- Archived
 	"program_area_guid" UUID NOT NULL,    -- program_area_guid: Is a foreign key to program_area: Program Area identifies the agencies that collaborate with MOF on wildfire risk reduction projects funded through CLWRR   Values are:  	- Ministry of Forests 	- Regional Operations 	- BC Wildfire Service 	- BC Parks 	- Ministry of Water, Land and Resource Stewardship WLRS 	- Mountain Resorts Branch (MRB)   Need to verify if Regional Operations is the same as Natural Resource Regions and Districts.
 	"forest_region_org_unit_id" decimal(10) NOT NULL,    -- Forest Region Org Unit Identifier is the org unit identifier for the a forest region.
 	"forest_district_org_unit_id" decimal(10) NULL,    -- Forest District Org Unit Identifier is the org unit identifier for the a forest district.
@@ -57,6 +58,10 @@ COMMENT ON COLUMN "wfprev"."project"."project_guid"
 
 COMMENT ON COLUMN "wfprev"."project"."project_type_code"
 	IS 'project_type_code: Is a foreign key to project_type_code: Project Type Code defines the type of the project.  Values are:   	- Fuel Management  	- Cultural & Prescribed Fire'
+;
+
+COMMENT ON COLUMN "wfprev"."project"."project_status_code"
+	IS 'project_status_code: Is a foreign key to project_status_code: Project Status Code is the status of a prevention project. Values are:  	- Active 	- Deleted 	- Archived'
 ;
 
 COMMENT ON COLUMN "wfprev"."project"."project_number"
@@ -195,6 +200,9 @@ ALTER TABLE "wfprev"."project" ADD CONSTRAINT "prjct_uk" UNIQUE ("project_type_c
 CREATE INDEX "prjct_prjtcd_idx" ON "wfprev"."project" ("project_type_code" ASC)
 ;
 
+CREATE INDEX "prjct_prjscd_idx" ON "wfprev"."project" ("project_status_code" ASC)
+;
+
 CREATE INDEX "prjct_facd_idx" ON "wfprev"."project" ("forest_area_code" ASC)
 ;
 
@@ -208,6 +216,10 @@ CREATE INDEX "prjct_prgar_idx" ON "wfprev"."project" ("program_area_guid" ASC)
 
 ALTER TABLE "wfprev"."project" ADD CONSTRAINT "prjct_prjtcd_fk"
 	FOREIGN KEY ("project_type_code") REFERENCES "wfprev"."project_type_code" ("project_type_code") ON DELETE No Action ON UPDATE No Action
+;
+
+ALTER TABLE "wfprev"."project" ADD CONSTRAINT "prjct_prjscd_fk"
+	FOREIGN KEY ("project_status_code") REFERENCES "wfprev"."project_status_code" ("project_status_code") ON DELETE No Action ON UPDATE No Action
 ;
 
 ALTER TABLE "wfprev"."project" ADD CONSTRAINT "prjct_facd_fk"
