@@ -104,6 +104,11 @@ variable "WFPREV_BASE_URL" {
   default = ""
 }
 
+variable "WFPREV_CHECK_TOKEN_URL" {
+  type    = string
+  default = ""
+}
+
 variable "WFPREV_DATASOURCE_USERNAME" {
   type    = string
   default = ""

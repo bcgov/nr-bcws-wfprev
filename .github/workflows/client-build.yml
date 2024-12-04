@@ -90,6 +90,7 @@ jobs:
         # WFPREV UI
         CLIENT_IMAGE: ${{ steps.getDigestUI.outputs.IMAGE_UI_BY_DIGEST }}
         WEBADE_OAUTH2_WFPREV_UI_CLIENT_SECRET: ${{ secrets.WEBADE_OAUTH2_WFPREV_UI_CLIENT_SECRET }}
+        WFPREV_CHECK_TOKEN_URL: ${{vars.WFPREV_CHECK_TOKEN_URL}}
 
         # DB
         WFPREV_USERNAME: ${{secrets.WFPREV_USERNAME}}

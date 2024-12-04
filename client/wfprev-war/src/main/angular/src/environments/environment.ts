@@ -4,6 +4,8 @@
 
 export const environment = {
   production: false,
+  // contains intterpolation for Github secrets/variables
+  // replace with '/assets/data/appConfig.local.json' for local devlopment
   app_config_location: '/assets/data/appConfig.json',
 };
 
