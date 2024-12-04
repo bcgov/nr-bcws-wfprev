@@ -44,7 +44,7 @@ describe('AppHeaderComponent', () => {
   it('should navigate to the home page(map page by default) when onBCLogoClick() is called', () => {
     const router = TestBed.inject(Router);
     component.onBCLogoClick();
-    expect(router.navigate).toHaveBeenCalledWith([ResourcesRoutes.MAP]);
+    expect(router.navigate).toHaveBeenCalledWith([ResourcesRoutes.LANDING]);
   });
 
   it('should call onSupportLinkClick() when Training and Support is clicked', () => {
