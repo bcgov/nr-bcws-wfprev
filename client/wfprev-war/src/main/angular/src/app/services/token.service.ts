@@ -113,7 +113,7 @@ export class TokenService {
     oauthService.initImplicitFlow();
   }
 
-  private async initAuthFromSession(): Promise<void> {
+  async initAuthFromSession(): Promise<void> {
     try {
       const localOauth = localStorage.getItem(this.LOCAL_STORAGE_KEY);
       this.oauth = localOauth ? JSON.parse(localOauth) : null;
