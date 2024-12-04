@@ -12,6 +12,7 @@ CREATE TABLE "wfprev"."project_audit"
 	"audit_action_code" varchar(10)	 NOT NULL,    -- Contains the reason the audit record is written - Insert/Update/Delete/Conversion
 	"project_guid" UUID NULL,    -- project_guid is a unique identifier for the record.
 	"project_type_code" varchar(10)	 NOT NULL,    -- project_type_code: Is a foreign key to project_type_code: Project Type Code defines the type of the project.  Values are:   	- Fuel Management  	- Cultural & Prescribed Fire
+	"project_status_code" varchar(10)	 NOT NULL,    -- project_status_code: Is a foreign key to project_status_code: Project Status Code is the status of a prevention project. Values are:  	- Active 	- Deleted 	- Archived
 	"project_number" decimal(10) NOT NULL,    -- Project Number is a unique number used to identify a project which can be referenced as a display value in business documents. 
 	"site_unit_name" varchar(250)	 NOT NULL,    -- Site Unit Name is the name of the site or unit where the project is located. It is used to build the project identifier.
 	"forest_area_code" varchar(10)	 NULL,    -- forest_area_code: Is a foreign key to forest_area_code: Forest Area Code is a list of Ministry Forest Areas Values are:   	- Coast 	- North 	- West
@@ -79,6 +80,10 @@ COMMENT ON COLUMN "wfprev"."project_audit"."forest_area_code"
 
 COMMENT ON COLUMN "wfprev"."project_audit"."general_scope_code"
 	IS 'general_scope_code: Is a foreign key to general_scope_code: General Scope Code is the set of high level scopes a project may have. Values are:  	- Landscape Level Activities   	- Site Level Activities 	- Non-Spatial Activities'
+;
+
+COMMENT ON COLUMN "wfprev"."project_audit"."project_status_code"
+	IS 'project_status_code: Is a foreign key to project_status_code: Project Status Code is the status of a prevention project. Values are:  	- Active 	- Deleted 	- Archived'
 ;
 
 COMMENT ON COLUMN "wfprev"."project_audit"."program_area_guid"

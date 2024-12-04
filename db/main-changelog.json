@@ -77,6 +77,13 @@
             "sqlFile": {
               "dbms": "postgresql",
               "endDelimiter": ";",
+              "path": "scripts/01_00_01/00/ddl/tables/WFPREV.project_status_code.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
               "path": "scripts/01_00_01/00/ddl/tables/WFPREV.forest_area_code.sql"
             }
           },
@@ -203,6 +210,13 @@
             "sqlFile": {
               "dbms": "postgresql",
               "endDelimiter": ";",
+              "path": "scripts/01_00_01/00/dml/app_wf1_prev.dml.project_status_code.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
               "path": "scripts/01_00_01/00/dml/app_wf1_prev.dml.bc_parks_org_unit_type_code.sql"
             }
           },
@@ -257,7 +271,8 @@
             { "sql": "DROP TABLE wfprev.program_area" },
             { "sql": "DROP TABLE wfprev.general_scope_code" },
             { "sql": "DROP TABLE wfprev.forest_area_code" },
-            { "sql": "DROP TABLE wfprev.project_type_code" },
+            { "sql": "DROP TABLE wfprev.project_status_code" },
+            { "sql": "DROP TABLE wfprev.project_type_code" }
         ]
       }
     }
