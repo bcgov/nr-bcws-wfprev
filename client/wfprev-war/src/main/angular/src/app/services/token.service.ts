@@ -51,7 +51,7 @@ export class TokenService {
 
       if (tokenStore) {
         try {
-          this.initAuthFromSession();
+          await this.initAuthFromSession();
         } catch (err) {
           console.log('Failed to read session token - reinitializing');
           this.tokenDetails = undefined;

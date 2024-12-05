@@ -116,24 +116,27 @@ export class PrevAuthGuard extends AuthGuard {
 
     checkForToken(
         redirectUri: string,
-        route: ActivatedRouteSnapshot,
+        route: ActivatedRouteSnapshot
     ): Observable<boolean> {
         if (this.asyncCheckingToken) {
             return this.asyncCheckingToken;
         }
-
-        this.asyncCheckingToken = new AsyncSubject();
+    
+        this.asyncCheckingToken = new AsyncSubject<boolean>();
         this.tokenService.checkForToken(redirectUri);
-
+    
         this.tokenService.authTokenEmitter.subscribe(() => {
-            if (!this.canAccessRoute(route.data['scopes'], this.tokenService)) {
-                this.asyncCheckingToken.next(false);
-                this.asyncCheckingToken.complete();
-            } else {
-                this.asyncCheckingToken.next(true);
-                this.asyncCheckingToken.complete();
-            }
+            this.canAccessRoute(route.data['scopes'], this.tokenService)
+                .then((canAccess) => {
+                    this.asyncCheckingToken.next(canAccess);
+                    this.asyncCheckingToken.complete();
+                })
+                .catch(() => {
+                    this.asyncCheckingToken.next(false);
+                    this.asyncCheckingToken.complete();
+                });
         });
+    
         return this.asyncCheckingToken;
     }
 }
