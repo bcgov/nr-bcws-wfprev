@@ -119,6 +119,7 @@ export class ProjectsListComponent {
   
 
   onSortChange(event:any): void {
+    this.selectedSort = event.target.value;
     console.log('Sort changed to:', this.selectedSort);
   }
 
@@ -126,4 +127,5 @@ export class ProjectsListComponent {
     this.syncWithMap = event.checked;
     console.log('Sync with map:', this.syncWithMap ? 'On' : 'Off');
   }
+  
 }

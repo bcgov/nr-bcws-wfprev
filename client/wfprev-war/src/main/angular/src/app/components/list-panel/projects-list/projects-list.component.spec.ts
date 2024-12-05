@@ -96,4 +96,75 @@ describe('ProjectsListComponent', () => {
     expect(options[1].nativeElement.textContent).toContain('Name (A-Z)');
     expect(options[2].nativeElement.textContent).toContain('Name (Z-A)');
   });
+
+  it('should initialize with default values', () => {
+    expect(component.selectedSort).toBe('');
+    expect(component.syncWithMap).toBeFalse();
+    expect(component.resultCount).toBe(3);
+    expect(component.projectList.length).toBe(3);
+    expect(component.fiscalYearActivityTypes.length).toBe(3);
+  });
+
+  it('should update selectedSort when onSortChange is called', () => {
+    const mockEvent = { target: { value: 'ascending' } };
+    component.onSortChange(mockEvent);
+    expect(component.selectedSort).toBe('ascending');
+  });
+
+  it('should update syncWithMap when onSyncMapToggleChange is called', () => {
+    component.onSyncMapToggleChange({ checked: true });
+    expect(component.syncWithMap).toBeTrue();
+  
+    component.onSyncMapToggleChange({ checked: false });
+    expect(component.syncWithMap).toBeFalse();
+  });
+
+  it('should display the correct number of results', () => {
+    const resultCountElement = debugElement.query(By.css('.result-count span')).nativeElement;
+    expect(resultCountElement.textContent).toContain(`${component.resultCount} Results`);
+  });
+  
+  it('should display project names correctly', () => {
+    const projectNames = debugElement.queryAll(By.css('.project-name')).map(el => el.nativeElement.textContent.trim());
+    const expectedNames = component.projectList.map(project => project.projectName);
+    expect(projectNames).toEqual(expectedNames);
+  });
+
+  it('should display the correct project details when expanded', () => {
+    const panelDebugElement = debugElement.query(By.css('mat-expansion-panel'));
+    const panelInstance = panelDebugElement.componentInstance;
+  
+    panelInstance.open(); // Expand the panel
+    fixture.detectChanges();
+  
+    const detailElements = debugElement.queryAll(By.css('.project-header-details .detail span'));
+    const firstProject = component.projectList[0];
+  
+    expect(detailElements[0].nativeElement.textContent).toContain('Region');
+    expect(detailElements[1].nativeElement.textContent).toContain(firstProject.forestRegionOrgUnitId.toString());
+    expect(detailElements[3].nativeElement.textContent).toContain(firstProject.totalPlannedProjectSizeHa.toString());
+  });
+
+  it('should handle empty projectList gracefully', () => {
+    component.projectList = [];
+    fixture.detectChanges();
+  
+    const projectItems = debugElement.queryAll(By.css('.project-name'));
+    expect(projectItems.length).toBe(0);
+  });
+  
+  it('should handle empty fiscalYearActivityTypes gracefully', () => {
+    component.fiscalYearActivityTypes = [];
+    fixture.detectChanges();
+  
+    const activityTypes = debugElement.queryAll(By.css('.activity-type'));
+    expect(activityTypes.length).toBe(0);
+  });
+
+  it('should display all sort options dynamically', () => {
+    const sortOptions = debugElement.queryAll(By.css('select option'));
+    expect(sortOptions.length).toBe(component.sortOptions.length + 1); // +1 for default option
+    expect(sortOptions[1].nativeElement.textContent).toContain('Name (A-Z)');
+    expect(sortOptions[2].nativeElement.textContent).toContain('Name (Z-A)');
+  });
 });
