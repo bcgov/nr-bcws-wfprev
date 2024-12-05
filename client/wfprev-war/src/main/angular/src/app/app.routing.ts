@@ -12,6 +12,11 @@ const PANEL_ROUTES: Routes = [
     loadChildren: () =>
       import('src/app/components/map.module').then(m => m.MapModule),
   },
+  {
+    path: ResourcesRoutes.EDIT_PROJECT,
+    loadChildren: () =>
+      import('src/app/components/edit-project.module').then(m => m.EditProjectModule),
+  },
   { path: '', redirectTo: ResourcesRoutes.MAP, pathMatch: 'full' }, // Default route to map
 ];
 

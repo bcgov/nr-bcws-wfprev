@@ -1,5 +1,6 @@
 export enum ResourcesRoutes {
     LANDING = '',
     MAP = 'map',
-    LIST = 'list'
+    LIST = 'list',
+    EDIT_PROJECT = 'edit-project'
 }

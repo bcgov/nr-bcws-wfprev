@@ -53,7 +53,7 @@
                 <img alt="warning-icon" class="icon" height="24px" width="24px" src="../../../../assets/detail-icon.svg" />
                 <span>Details</span>
               </div>
-              <div class="action-item">
+              <div class="action-item" (click)="editProject(item); $event.stopPropagation()">
                 <img alt="warning-icon" class="icon" height="24px" width="24px" src="../../../../assets/edit-icon.svg" />
                 <span>Edit</span>
               </div>
