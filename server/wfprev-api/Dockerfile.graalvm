@@ -16,10 +16,10 @@ ENV REPO_PASSWORD=${REPO_PASSWORD}
 
 
 # Copy maven settings first
-COPY mvn_settings/${MAVEN_SETTINGS_FILE} /root/.m2/settings.xml
+COPY server/wfprev-api/mvn_settings/${MAVEN_SETTINGS_FILE} /root/.m2/settings.xml
 
 # Copy rest of the application
-COPY ../.. /app
+COPY . /app
 
 RUN ls -la /app
 
@@ -29,7 +29,7 @@ WORKDIR /app/server/wfprev-api
 RUN chmod +x mvnw
 
 # Build the native image using settings.xml
-RUN ./mvnw -s mvn_settings/${MAVEN_SETTINGS_FILE} -Pnative native:compile -DskipTests  -Drepo.login=${REPO_LOGIN} -Drepo.password=${REPO_PASSWORD}
+RUN ./mvnw -Pnative native:compile -DskipTests  -Drepo.login=${REPO_LOGIN} -Drepo.password=${REPO_PASSWORD}
 
 # Runtime stage
 FROM ubuntu:22.04
