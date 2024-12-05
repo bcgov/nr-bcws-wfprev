@@ -49,64 +49,61 @@ jobs:
         with:
           ref: ${{ inputs.BRANCH }}
 
-      - name: Setup Maven
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: '21'
-          cache: 'maven'
-
-      - name: Setup GraalVM
-        uses: graalvm/setup-graalvm@v1
-        with:
-          java-version: '21'
-          distribution: 'graalvm-community'
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          native-image-job-reports: 'true'
-          components: 'native-image'
-
-      - name: Add .npmrc file
-        run: echo -e $NPMRC > ~/.npmrc
-
-      - name: Build Native Image with Maven
-        if: ${{ inputs.COMPONENT_TYPE == 'server' }}
-        run: |
-          set -x
-          export MAVEN_OPTS="-Xmx6g -XX:MaxMetaspaceSize=1g"
-          export NATIVE_IMAGE_OPTS="-Xmx8g"
-          cd ${{ inputs.COMPONENT_TYPE }}/${{ inputs.COMPONENT_NAME }}
-
-          # Use absolute path to settings.xml
-          settings_file="$(pwd)/mvn_settings/settings.xml"
-          echo "Looking for settings file at: $settings_file"
-
-          # Check if file exists and is readable
-          if [ ! -f "$settings_file" ]; then
-            echo "ERROR: $settings_file not found!"
-            ls -la mvn_settings/
-            exit 1
-          fi
-
-          if [ ! -r "$settings_file" ]; then
-            echo "ERROR: $settings_file not readable!"
-            ls -la "$settings_file"
-            exit 1
-          fi
-
-          echo "Using settings file: $settings_file"
-          mvn -s "$settings_file" --batch-mode -Pnative native:compile -DskipTests -Drepo.login=${{ secrets.IDIR_AS_EMAIL }} -Drepo.password=${{ secrets.IDIR_PASSWORD }}
-          
-
-      - name: Copy native binary to staging
-        if: ${{ inputs.COMPONENT_TYPE == 'server' }}
-        run: |
-          mkdir -p staging
-          cp ${{ inputs.COMPONENT_TYPE }}/${{ inputs.COMPONENT_NAME }}/target/wfprev-api staging/
-
-      - uses: actions/upload-artifact@v3
-        with:
-          name: ${{ inputs.COMPONENT_NAME }}-package
-          path: staging
+#      - name: Setup Maven
+#        uses: actions/setup-java@v4
+#        with:
+#          distribution: 'temurin'
+#          java-version: '21'
+#          cache: 'maven'
+#
+#      - name: Setup GraalVM
+#        uses: graalvm/setup-graalvm@v1
+#        with:
+#          java-version: '21'
+#          distribution: 'graalvm-community'
+#          github-token: ${{ secrets.GITHUB_TOKEN }}
+#          native-image-job-reports: 'true'
+#          components: 'native-image'
+#
+#      - name: Build Native Image with Maven
+#        if: ${{ inputs.COMPONENT_TYPE == 'server' }}
+#        run: |
+#          set -x
+#          export MAVEN_OPTS="-Xmx6g -XX:MaxMetaspaceSize=1g"
+#          export NATIVE_IMAGE_OPTS="-Xmx8g"
+#          cd ${{ inputs.COMPONENT_TYPE }}/${{ inputs.COMPONENT_NAME }}
+#
+#          # Use absolute path to settings.xml
+#          settings_file="$(pwd)/mvn_settings/settings.xml"
+#          echo "Looking for settings file at: $settings_file"
+#
+#          # Check if file exists and is readable
+#          if [ ! -f "$settings_file" ]; then
+#            echo "ERROR: $settings_file not found!"
+#            ls -la mvn_settings/
+#            exit 1
+#          fi
+#
+#          if [ ! -r "$settings_file" ]; then
+#            echo "ERROR: $settings_file not readable!"
+#            ls -la "$settings_file"
+#            exit 1
+#          fi
+#
+#          echo "Using settings file: $settings_file"
+#          mvn -s "$settings_file" --batch-mode -Pnative native:compile -DskipTests -Drepo.login=${{ secrets.IDIR_AS_EMAIL }} -Drepo.password=${{ secrets.IDIR_PASSWORD }}
+#
+#
+#      - name: Copy native binary to staging
+#        if: ${{ inputs.COMPONENT_TYPE == 'server' }}
+#        run: |
+#          mkdir -p staging
+#          cp ${{ inputs.COMPONENT_TYPE }}/${{ inputs.COMPONENT_NAME }}/target/wfprev-api staging/
+#
+#      - uses: actions/upload-artifact@v3
+#        with:
+#          name: ${{ inputs.COMPONENT_NAME }}-package
+#          path: staging
 
   docker:
     needs: build
@@ -126,11 +123,11 @@ jobs:
           trimTag="${branchTag##*/}"
           echo "BRANCH_TAG=$trimTag" >> $GITHUB_OUTPUT
 
-      - name: download native binary
-        uses: actions/download-artifact@v3
-        with:
-          name: ${{ inputs.COMPONENT_NAME }}-package
-          path: ${{inputs.COMPONENT_TYPE}}/${{inputs.COMPONENT_NAME}}
+#      - name: download native binary
+#        uses: actions/download-artifact@v4
+#        with:
+#          name: ${{ inputs.COMPONENT_NAME }}-package
+#          path: ${{inputs.COMPONENT_TYPE}}/${{inputs.COMPONENT_NAME}}
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
@@ -163,7 +160,9 @@ jobs:
           file: ${{inputs.COMPONENT_TYPE}}/${{inputs.COMPONENT_NAME}}/Dockerfile.graalvm
           build-args: |
             CONTAINER_NAME=${{inputs.COMPONENT_NAME}}
-            MAVEN_SETTINGS_FILE=settings.xml
+            MAVEN_SETTINGS_FILE=mvn_settings/settings.xml
+            REPO_LOGIN=${{secrets.IDIR_AS_EMAIL}}
+            REPO_PASSWORD=${{secrets.IDIR_PASSWORD}}
           push: true
           tags: ${{ steps.meta_pr.outputs.tags }}
           labels: ${{ steps.meta_pr.outputs.labels }}

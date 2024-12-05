@@ -6,6 +6,9 @@ ARG MAVEN_SETTINGS_FILE=settings.xml
 
 ENV MAVEN_SETTINGS_FILE=${MAVEN_SETTINGS_FILE}
 
+ENV REPO_LOGIN=${REPO_LOGIN}
+ENV REPO_PASSWORD=${REPO_PASSWORD}
+
 # The environment variables from .env are automatically available here
 # We don't need the ARG declarations anymore since we're using the env file
 
@@ -21,7 +24,7 @@ COPY . /app
 RUN chmod +x mvnw
 
 # Build the native image using settings.xml
-RUN ./mvnw -s mvn_settings/${MAVEN_SETTINGS_FILE} -Pnative native:compile -DskipTests
+RUN ./mvnw -s mvn_settings/${MAVEN_SETTINGS_FILE} -Pnative native:compile -DskipTests  -Drepo.login=${REPO_LOGIN} -Drepo.password=${REPO_PASSWORD}
 
 # Runtime stage
 FROM ubuntu:22.04
