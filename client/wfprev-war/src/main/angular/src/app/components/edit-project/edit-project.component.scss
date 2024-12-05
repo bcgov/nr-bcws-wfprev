@@ -1,0 +1,17 @@
+.project-title{
+    color: #000;
+    font-size: 34px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    padding: 12px 24px;
+}
+
+.custom-tab-group {
+    display: flex;
+    justify-content: flex-start;
+    ::ng-deep .mat-mdc-tab-header{
+        width: 50%;
+    }
+}
+  
