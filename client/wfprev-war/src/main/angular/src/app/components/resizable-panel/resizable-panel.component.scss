@@ -1,28 +1,51 @@
 .resizable-panel {
   display: flex;
-  flex-direction: column;  // Ensure panel contents stack vertically
+  flex-direction: column;
   height: 100vh;
   background-color: #fff;
-  border-right: 1px solid #ccc;
   transition: width 0.3s ease;
   width: 50vw;
-  .panel-header {
-    background-color: #003366;
-    color: white;
-    padding: 10px;
-    text-align: center;
-  }
+  padding: 5px;
+  ::ng-deep .tab-group {
+    flex-grow: 1;
+    .mat-mdc-tab.mdc-tab--active .mdc-tab__text-label{
+      color: #000;
+      text-align: center;
+      font-size: 18px;
+      font-style: normal;
+      font-weight: 700;
+      line-height: normal;
+    }
+    .mat-mdc-tab-header{
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 90%;
 
-  .panel-content {
-    padding: 15px;
-    flex-grow: 1;  // Make the content area grow to take up available space
-    overflow: auto;
-    text-align: center;
+      .mdc-tab__text-label{
+        color: #000;
+        text-align: center;
+        font-family: var(--wf-font-family-main);
+        font-size: 18px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: normal;
+      }
+
+      .mat-mdc-tab{
+        border-radius: 6px 6px 0px 0px;
+        border: 1px solid #C6C8CB;
+        background: #F2F2F2;
+        outline: none !important; // Removes the focus outline
+        box-shadow: none !important; 
+      }
+      
+    }
   }
 
   .panel-controls {
     display: flex;
-    justify-content: space-around;  // Spread buttons evenly
+    justify-content: space-around;
     padding: 10px;
     background-color: #f5f5f5;
 
@@ -40,3 +63,12 @@
     }
   }
 }
+
+
+.mat-mdc-tab-group {
+  background-color: white !important;
+  .mat-mdc-tab-list{
+    background-color: red !important;
+  }
+}
+

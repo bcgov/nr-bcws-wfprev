@@ -12,7 +12,7 @@ const PANEL_ROUTES: Routes = [
     loadChildren: () =>
       import('src/app/components/map.module').then(m => m.MapModule),
   },
-  { path: '', redirectTo: ResourcesRoutes.LANDING, pathMatch: 'full' }, // Default route
+  { path: '', redirectTo: ResourcesRoutes.MAP, pathMatch: 'full' }, // Default route to map
 ];
 
 export const ROUTING = RouterModule.forRoot(PANEL_ROUTES, {});
