@@ -51,8 +51,8 @@ public class ProjectResourceAssembler extends RepresentationModelAssemblerSuppor
         entity.setTotalPlannedProjectSizeHa(resource.getTotalPlannedProjectSizeHa());
         entity.setTotalPlannedCostPerHectare(resource.getTotalPlannedCostPerHectare());
         entity.setTotalActualAmount(resource.getTotalActualAmount());
-        entity.setTotalProjectSizeHa(resource.getTotalProjectSizeHa());
-        entity.setTotalCostPerHectareAmount(resource.getTotalCostPerHectareAmount());
+        entity.setTotalActualProjectSizeHa(resource.getTotalActualProjectSizeHa());
+        entity.setTotalActualCostPerHectareAmount(resource.getTotalActualCostPerHectareAmount());
         entity.setIsMultiFiscalYearProj(resource.getIsMultiFiscalYearProj());
         entity.setLatitude(resource.getLatitude());
         entity.setLongitude(resource.getLongitude());
@@ -97,8 +97,8 @@ public class ProjectResourceAssembler extends RepresentationModelAssemblerSuppor
         resource.setTotalPlannedProjectSizeHa(entity.getTotalPlannedProjectSizeHa());
         resource.setTotalPlannedCostPerHectare(entity.getTotalPlannedCostPerHectare());
         resource.setTotalActualAmount(entity.getTotalActualAmount());
-        resource.setTotalProjectSizeHa(entity.getTotalProjectSizeHa());
-        resource.setTotalCostPerHectareAmount(entity.getTotalCostPerHectareAmount());
+        resource.setTotalActualProjectSizeHa(entity.getTotalActualProjectSizeHa());
+        resource.setTotalActualCostPerHectareAmount(entity.getTotalActualCostPerHectareAmount());
         resource.setIsMultiFiscalYearProj(entity.getIsMultiFiscalYearProj());
         resource.setLatitude(entity.getLatitude());
         resource.setLongitude(entity.getLongitude());
@@ -114,46 +114,37 @@ public class ProjectResourceAssembler extends RepresentationModelAssemblerSuppor
 
     @Override
     public CollectionModel<ProjectModel> toCollectionModel(Iterable<? extends ProjectEntity> entities) {
-        System.out.println("entities: " + entities);
         CollectionModel<ProjectModel> resources = super.toCollectionModel(entities);
-
         resources.add(linkTo(methodOn(ProjectController.class).getAllProjects()).withSelfRel());
-
         return resources;
     }
 
     private ProjectTypeCodeModel toProjectTypeCodeModel(ProjectTypeCodeEntity code) {
-
         ProjectTypeCodeResourceAssembler ra = new ProjectTypeCodeResourceAssembler();
         return ra.toModel(code);
     }
 
     private ProjectTypeCodeEntity toProjectTypeCodeEntity(ProjectTypeCodeModel code) {
-
         ProjectTypeCodeResourceAssembler ra = new ProjectTypeCodeResourceAssembler();
         return ra.toEntity(code);
     }
 
     private ForestAreaCodeModel toForestAreaCodeModel(ForestAreaCodeEntity code) {
-
         ForestAreaCodeResourceAssembler ra = new ForestAreaCodeResourceAssembler();
         return ra.toModel(code);
     }
 
     private ForestAreaCodeEntity toForestAreaCodeEntity(ForestAreaCodeModel code) {
-
         ForestAreaCodeResourceAssembler ra = new ForestAreaCodeResourceAssembler();
         return ra.toEntity(code);
     }
 
     private GeneralScopeCodeModel toGeneralScopeCodeModel(GeneralScopeCodeEntity code) {
-
         GeneralScopeCodeResourceAssembler ra = new GeneralScopeCodeResourceAssembler();
         return ra.toModel(code);
     }
 
     private GeneralScopeCodeEntity toGeneralScopeCodeEntity(GeneralScopeCodeModel code) {
-
         GeneralScopeCodeResourceAssembler ra = new GeneralScopeCodeResourceAssembler();
         return ra.toEntity(code);
     }

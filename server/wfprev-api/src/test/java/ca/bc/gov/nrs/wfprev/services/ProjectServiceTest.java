@@ -201,7 +201,7 @@ public class ProjectServiceTest {
                 .projectLead("Test Lead")
                 .projectLeadEmailAddress("test@example.com")
                 .isMultiFiscalYearProj(false)
-                .totalPlannedProjectSizeHa(BigDecimal.valueOf(100))
+                .totalActualProjectSizeHa(BigDecimal.valueOf(100))
                 .build();
 
         ProjectEntity savedEntity = new ProjectEntity();
@@ -290,7 +290,7 @@ public class ProjectServiceTest {
                 .projectGuid(existingGuid)
                 .projectName("Updated Project")
                 .siteUnitName("Updated Site")
-                .totalPlannedProjectSizeHa(BigDecimal.valueOf(200))
+                .totalActualProjectSizeHa(BigDecimal.valueOf(200))
                 .build();
 
         ProjectEntity savedEntity = new ProjectEntity();
@@ -337,7 +337,7 @@ public class ProjectServiceTest {
         ProjectModel inputModel = ProjectModel.builder()
                 .projectName("Test Project")
                 .siteUnitName("Test Site")
-                .totalPlannedProjectSizeHa(BigDecimal.valueOf(100))
+                .totalActualProjectSizeHa(BigDecimal.valueOf(100))
                 .build();
 
         when(projectResourceAssembler.toEntity(any())).thenThrow(new RuntimeException("Error saving project"));
@@ -356,7 +356,7 @@ public class ProjectServiceTest {
         ProjectModel inputModel = ProjectModel.builder()
                 .projectName("Test Project")
                 .siteUnitName("Test Site")
-                .totalPlannedProjectSizeHa(BigDecimal.valueOf(100))
+                .totalActualProjectSizeHa(BigDecimal.valueOf(100))
                 .build();
 
         when(projectResourceAssembler.toEntity(any())).thenThrow(new EntityNotFoundException("Error saving project"));

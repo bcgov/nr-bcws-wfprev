@@ -121,10 +121,10 @@ public class ProjectEntity implements Serializable {
   private BigDecimal totalActualAmount;
 
   @Column(name = "total_actual_project_size_ha", columnDefinition="Decimal(15, 4) default '0'")
-  private BigDecimal totalProjectSizeHa;
+  private BigDecimal totalActualProjectSizeHa;
 	
   @Column(name = "total_actual_cost_per_hectare_amount", columnDefinition="Decimal(15, 2) default '0'")
-  private BigDecimal totalCostPerHectareAmount;
+  private BigDecimal totalActualCostPerHectareAmount;
 
   @NotNull
   @Column(name = "is_multi_fiscal_year_proj_ind")

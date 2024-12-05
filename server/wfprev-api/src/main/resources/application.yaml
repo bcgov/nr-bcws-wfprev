@@ -15,16 +15,15 @@ spring:
       testOnBorrow: true
       validationQuery: SELECT 1
   jpa:
-    hibernate:
-      ddl-auto: validate
     show-sql: true
     properties:
       hibernate:
         enable_lazy_load_no_trans: true
-        format_sql: true
         dialect: org.hibernate.dialect.PostgreSQLDialect
         bytecode:
           provider: bytebuddy
+        show_sql: true
+        format_sql: true
 
 logging:
   level:

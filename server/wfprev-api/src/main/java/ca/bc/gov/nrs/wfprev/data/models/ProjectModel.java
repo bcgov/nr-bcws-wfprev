@@ -25,13 +25,13 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ProjectModel extends CommonModel<ProjectModel> {
-  private String projectGuid;
-	private ProjectTypeCodeModel projectTypeCode; // CODE
+	private String projectGuid;
+	private ProjectTypeCodeModel projectTypeCode;
 	private Integer projectNumber;
 	private String siteUnitName;
-	private ForestAreaCodeModel forestAreaCode; // CODE
-	private GeneralScopeCodeModel generalScopeCode; // CODE
-	private String programAreaGuid; // FK, not Modeled
+	private ForestAreaCodeModel forestAreaCode;
+	private GeneralScopeCodeModel generalScopeCode;
+	private String programAreaGuid;
 	private Integer forestRegionOrgUnitId;
 	private Integer forestDistrictOrgUnitId;
 	private Integer fireCentreOrgUnitId;
@@ -47,8 +47,8 @@ public class ProjectModel extends CommonModel<ProjectModel> {
 	private BigDecimal totalPlannedProjectSizeHa;
 	private BigDecimal totalPlannedCostPerHectare;
 	private BigDecimal totalActualAmount;
-	private BigDecimal totalProjectSizeHa;
-	private BigDecimal totalCostPerHectareAmount;
+	private BigDecimal totalActualProjectSizeHa;
+	private BigDecimal totalActualCostPerHectareAmount;
 	private Boolean isMultiFiscalYearProj;
 	private BigDecimal latitude;
 	private BigDecimal longitude;

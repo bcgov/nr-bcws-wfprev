@@ -20,8 +20,18 @@ COPY . /app
 # Make mvnw executable
 RUN chmod +x mvnw
 
+# Create the directory for GraalVM agent metadata and set permissions
+RUN mkdir -p /app/META-INF/native-image
+RUN chmod -R 777 /app/META-INF/native-image
+
+# Run the GraalVM agent during the build stage
+RUN java -agentlib:native-image-agent=config-output-dir=META-INF/native-image \
+    -Dspring.profiles.active=graalvm-agent \
+    -jar target/wfprev-api-1.0.0-SNAPSHOT.jar || true
+
+
 # Build the native image using settings.xml
-RUN ./mvnw -s mvn_settings/${MAVEN_SETTINGS_FILE} -Pnative native:compile -DskipTests
+RUN ./mvnw -s mvn_settings/${MAVEN_SETTINGS_FILE} -Pnative native:compile
 
 # Runtime stage
 FROM ubuntu:22.04
