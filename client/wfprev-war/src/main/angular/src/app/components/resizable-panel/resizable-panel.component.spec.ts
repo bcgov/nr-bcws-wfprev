@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ResizablePanelComponent } from './resizable-panel.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 describe('ResizablePanelComponent', () => {
   let component: ResizablePanelComponent;
@@ -7,35 +8,12 @@ describe('ResizablePanelComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ResizablePanelComponent]
-    })
-    .compileComponents();
+      imports: [ResizablePanelComponent, BrowserAnimationsModule], // Standalone component
+    }).compileComponents();
 
     fixture = TestBed.createComponent(ResizablePanelComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  });
-
-  // Test 1: Check if the component is created
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-
-  // Test 2: Check if panelWidth is updated and event is emitted on resizePanel call
-  it('should resize the panel and emit the panelResized event', () => {
-    spyOn(component.panelResized, 'emit');  // Spy on the event emitter
-
-    component.resizePanel(75);
-    expect(component.panelWidth).toBe('75vw');
-    expect(component.panelResized.emit).toHaveBeenCalled();
-  });
-
-  // Test 3: Check if the window resize event is being handled
-  it('should handle window resize event', () => {
-    spyOn(component, 'onResize');
-    window.dispatchEvent(new Event('resize'));
-
-    expect(component.onResize).toHaveBeenCalled();
   });
 
   it('should create', () => {
@@ -45,11 +23,11 @@ describe('ResizablePanelComponent', () => {
   it('should initialize with default values', () => {
     expect(component.panelWidth).toBe('50vw');
     expect(component.breakpoints).toEqual([5, 50, 90]);
+    expect(component.selectedTabIndex).toBe(0); // Default tab index
   });
 
   it('should resize the panel and emit the panelResized event', () => {
-    spyOn(component.panelResized, 'emit');  // Spy on the event emitter
-
+    spyOn(component.panelResized, 'emit'); // Spy on the event emitter
     component.resizePanel(75);
     expect(component.panelWidth).toBe('75vw');
     expect(component.panelResized.emit).toHaveBeenCalled();
@@ -58,13 +36,23 @@ describe('ResizablePanelComponent', () => {
   it('should emit panelResized with void', () => {
     const emitSpy = spyOn(component.panelResized, 'emit');
     component.resizePanel(75);
-    expect(emitSpy).toHaveBeenCalledWith();  // Should be called with no arguments
+    expect(emitSpy).toHaveBeenCalledWith(); // Should be called with no arguments
   });
 
-  it('should handle window resize event', () => {
-    const event = new Event('resize');
-    component.onResize(event);  // Call the method directly
-    //given the method is empty, we can only check if it's called
-    expect(true).toBeTruthy();  // Add assertions based on what onResize should do
+  it('should update selectedTabIndex when selectTab is called', () => {
+    component.selectTab(2); // Switch to the third tab
+    expect(component.selectedTabIndex).toBe(2);
+  });
+
+  it('should render the correct number of tabs', () => {
+    const tabs = component.tabs;
+    expect(tabs.length).toBe(3);
+    expect(tabs[0].name).toBe('Projects');
+    expect(tabs[1].name).toBe('Dashboard');
+    expect(tabs[2].name).toBe('Planning');
+  });
+
+  it('should render default panel width', () => {
+    expect(component.panelWidth).toBe('50vw');
   });
 });
