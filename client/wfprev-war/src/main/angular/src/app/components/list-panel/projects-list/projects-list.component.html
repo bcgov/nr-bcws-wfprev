@@ -15,7 +15,7 @@
         <label>Sync with Map</label>
       </div>
       <div class="toggle-container">
-        <mat-slide-toggle color="primary">
+        <mat-slide-toggle color="primary" (change)="onSyncMapToggleChange($event)">
           <span>Off/On</span>
         </mat-slide-toggle>
       </div>
