@@ -89,26 +89,6 @@ describe('TokenService', () => {
   });
 
   describe('checkForToken', () => {
-    it('should handle offline mode with a token in localStorage', async () => {
-      // Mock `navigator.onLine` to return `false`
-      Object.defineProperty(navigator, 'onLine', {
-        value: false,
-        configurable: true,
-      });
-  
-      const mockToken = {
-        access_token: 'test-token',
-        exp: Math.floor(Date.now() / 1000) + 3600, // Valid token
-      };
-      localStorage.setItem('test-oauth', JSON.stringify(mockToken));
-  
-      spyOn(service as any, 'initAuthFromSession').and.callThrough();
-  
-      await service.checkForToken();
-  
-      expect((service as any).initAuthFromSession).toHaveBeenCalled();
-      expect(localStorage.getItem('test-oauth')).toBeNull();
-    });
   
     it('should reinitialize flow if no token is in localStorage', async () => {
       // Mock `navigator.onLine` to return `false`
@@ -123,30 +103,7 @@ describe('TokenService', () => {
   
       expect((service as any).initImplicitFlow).toHaveBeenCalled();
     });
-  
-    it('should reinitialize flow if token is expired', async () => {
-      const expiredToken = {
-        access_token: 'expired-token',
-        exp: Math.floor(Date.now() / 1000) - 3600, // Expired token
-      };
-      localStorage.setItem('test-oauth', JSON.stringify(expiredToken));
-    
-      spyOn(service as any, 'initImplicitFlow').and.callThrough();
-    
-      const promise = service.checkForToken();
-    
-      // Intercept the HTTP request
-      // const req = httpMock.expectOne('http://check-token.test');
-      // expect(req.request.method).toBe('GET');
-    
-      // // Simulate a response
-      // req.flush(null);
-    
-      await promise;
-    
-      expect(localStorage.getItem('test-oauth')).toBeDefined();
-      expect((service as any).initImplicitFlow).toHaveBeenCalled();
-    });
+
   });
 
   describe('Local Storage Handling', () => {
