@@ -3,6 +3,8 @@ FROM ghcr.io/graalvm/graalvm-community:21 AS builder
 
 # Define build argument and set it as environment variable
 ARG MAVEN_SETTINGS_FILE=settings.xml
+ARG REPO_LOGIN
+ARG REPO_PASSWORD
 
 ENV MAVEN_SETTINGS_FILE=${MAVEN_SETTINGS_FILE}
 
