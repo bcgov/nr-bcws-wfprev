@@ -160,7 +160,7 @@ jobs:
           file: ${{inputs.COMPONENT_TYPE}}/${{inputs.COMPONENT_NAME}}/Dockerfile.graalvm
           build-args: |
             CONTAINER_NAME=${{inputs.COMPONENT_NAME}}
-            MAVEN_SETTINGS_FILE=mvn_settings/settings.xml
+            MAVEN_SETTINGS_FILE=settings.xml
             REPO_LOGIN=${{secrets.IDIR_AS_EMAIL}}
             REPO_PASSWORD=${{secrets.IDIR_PASSWORD}}
           push: true
