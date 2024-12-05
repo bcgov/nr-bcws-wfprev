@@ -1,0 +1,248 @@
+.list-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px;
+    border-bottom: 1px solid #ccc;
+    font-family: var(--wf-font-family-main);
+    font-size: 14px;
+  }
+  
+  .sort-dropdown {
+    display: flex;
+    align-items: center;
+    gap:5px;
+    .default-option{
+      color: #6A6A6A;
+      font-size: 15px;
+      font-style: normal;
+      font-weight: 400;
+    }
+    select {
+      margin-top: 4px;
+      width: 113px;
+      padding: 8px 9px; /* Same padding as text inputs */
+      font-size: 16px; /* Font size similar to inputs */
+      color: #333; /* Text color */
+      outline: none;;
+      border-radius: 4px;
+      border: 1px solid #DFE0E2;
+      background: #FFF;
+      background-color: transparent; /* Transparent background to match input style */
+    
+      &::placeholder {
+        color: #aaa; /* Placeholder color */
+      }
+    
+      /* Style the dropdown arrow */
+      -webkit-appearance: none; /* Remove default dropdown arrow for WebKit browsers */
+      -moz-appearance: none; /* Remove default dropdown arrow for Mozilla browsers */
+      appearance: none; /* Remove default dropdown arrow for all browsers */
+      background-image: url('/assets/dropdown-icon.svg');
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      background-size: 12px;
+    }
+  }
+  
+  .sync-toggle {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  
+    .label-container {
+      text-align: center;
+  
+      label {
+        color: #212121;
+        font-family: var(--wf-font-family-main);
+        font-size: 14px;
+        font-weight: 400;
+      }
+    }
+  
+    .toggle-container {
+      display: flex;
+      align-items: center;
+  
+      span{
+        color: #212121;
+        font-family: var(--wf-font-family-main);
+        font-size: 14px;
+        font-weight: 400;
+      }
+
+      mat-slide-toggle {
+        font-family: var(--wf-font-family-main);
+        font-size: 14px;
+        font-weight: 400;
+  
+        .mat-slide-toggle-thumb {
+          background-color: #003366 !important; /* Customize thumb color */
+        }
+  
+        .mat-slide-toggle-bar {
+          background-color: #e0e0e0 !important; /* Customize bar color */
+        }
+  
+        &.mat-checked {
+          .mat-slide-toggle-bar {
+            background-color: #003366 !important; /* Bar color when active */
+          }
+        }
+      }
+    }
+  }
+
+  .toggle-container {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  
+  .toggle-container input[type="checkbox"] {
+    accent-color: #003366;
+    cursor: pointer;
+  }
+  
+  .result-count {
+    font-weight: bold;
+    font-size: 14px;
+  }
+  
+  .list-contents {
+    mat-expansion-panel {
+      border-bottom: 1px solid #C6C8CB;
+      margin: 0px !important;
+
+      ::ng-deep .mat-expansion-indicator {
+        display: none !important; 
+      }
+
+      ::ng-deep .mat-content{
+        flex-direction: column !important;
+      }
+
+      &:nth-child(odd) {
+        background: #F2F2F2;
+      }
+  
+      &:nth-child(even) {
+        background-color: #FFF;
+      }
+
+      .expansion-panel-header{
+        min-height: 152px;
+        padding:0 35px;
+      }
+
+      .project-title {
+        background-color: inherit;
+        font-weight: bold;
+        display: flex;
+
+        .project-name {
+          flex:1;
+        }
+
+        mat-panel-title {
+          color: #282828;
+          font-size: 14px;
+          font-style: normal;
+          font-weight: 700;
+        }
+      }
+
+      .project-header-details {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr); /* Adjust the number of columns as needed */
+        gap: 10px;
+        font-size: 14px;
+        font-family: var(--wf-font-family-main);
+        color: #282828;;
+        font-weight: 400;
+      }
+
+      .detail {
+        display: flex;
+        flex-direction: column; /* Stack the label and value vertically */
+        gap: 2px; /* Spacing between label and value */
+        .heavy-font{
+          font-weight: 700;
+        }
+      }
+      
+      
+      .expanded-project-details {
+        padding: 10px;
+        display: grid;
+        grid-template-columns: 70% 30%;
+        gap: 10px;
+        border-radius: 6px;
+        border: 1px solid #949494;
+        .fiscal-expanded{
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+
+      .activity-types {
+        display: grid;
+        width: 70%;
+        gap: 5px; /* Space between activity tags */
+        align-items: start; /* Align tags to the top */
+      }
+      
+      .activity-type {
+        display: inline-block;
+        padding: 5px 10px;
+        border-radius: 4px;
+        border: 1px solid #949494;
+        background: inherit;
+        font-size: 14px;
+        font-style: normal;
+        font-weight: 700;
+        text-align: center;
+      }
+
+      .action-items {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        align-items: center;
+        position: relative;
+        top: 50%;
+      }
+
+      .action-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+
+        .icon {
+          width: 24px;
+          height: 24px;
+        }
+      
+      }
+  
+      .project-details {
+        padding: 10px;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+  
+        div {
+          font-size: 14px;
+          font-family: var(--wf-font-family-main);
+        }
+      }
+    }
+  }
+  
+.custom-indicator{
+  position: absolute;
+  left: 10px;
+}
