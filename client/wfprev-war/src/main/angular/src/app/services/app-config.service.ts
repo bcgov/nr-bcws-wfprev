@@ -16,6 +16,8 @@ export class AppConfigService {
 
   async loadAppConfig(): Promise<void> {
     const http = new HttpClient(this.httpHandler);
+    
+    console.log(this.libConfig.configurationPath)
 
     try {
       const data = await firstValueFrom(

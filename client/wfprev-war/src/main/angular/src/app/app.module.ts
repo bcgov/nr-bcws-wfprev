@@ -1,7 +1,7 @@
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { OAuthService, UrlHelperService } from 'angular-oauth2-oidc';
+import { OAuthService, OAuthLogger, UrlHelperService, DateTimeProvider } from 'angular-oauth2-oidc';
 import { ROUTING } from 'src/app/app.routing';
 import { environment } from '../environments/environment';
 import { AppComponent } from './app.component';
@@ -11,6 +11,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatDialogModule } from '@angular/material/dialog';
 import { ErrorPageComponent } from './components/error-page/error-page/error-page.component';
+import { CustomDateTimeProvider, CustomOAuthLogger } from './utils';
 
 @NgModule({
   declarations: [AppComponent],
@@ -30,6 +31,8 @@ import { ErrorPageComponent } from './components/error-page/error-page/error-pag
     provideHttpClient(withInterceptorsFromDi()),
     OAuthService,
     UrlHelperService,
+    { provide: OAuthLogger, useClass: CustomOAuthLogger},
+    { provide: DateTimeProvider, useClass: CustomDateTimeProvider },
   ],
   bootstrap: [AppComponent],
 })
