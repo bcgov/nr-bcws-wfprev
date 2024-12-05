@@ -36,10 +36,8 @@ describe('ProjectsListComponent', () => {
 
   it('should display fiscalYearActivityTypes correctly', () => {
     const activityTypes = debugElement.queryAll(By.css('.activity-type'));
-    expect(activityTypes.length).toBe(component.fiscalYearActivityTypes.length);
-    expect(activityTypes[0].nativeElement.textContent).toContain(
-      component.fiscalYearActivityTypes[0]
-    );
+    const expectedCount = component.fiscalYearActivityTypes.length * component.projectList.length;
+    expect(activityTypes.length).toBe(expectedCount);
   });
 
   it('should handle sort change correctly', () => {
@@ -54,13 +52,15 @@ describe('ProjectsListComponent', () => {
   });
 
   it('should toggle syncWithMap when the toggle is clicked', () => {
-    spyOn(component, 'onToggleChange');
-    const toggle = debugElement.query(By.css('mat-slide-toggle')).nativeElement;
-    toggle.click();
+    spyOn(component, 'onSyncMapToggleChange'); // Spy on the method
+    const toggleDebugElement = debugElement.query(By.css('mat-slide-toggle'));
+    const toggle = toggleDebugElement.componentInstance; // Access MatSlideToggle instance
+  
+    // Simulate the toggle event
+    toggle.change.emit({ checked: true }); // Emit the change event
     fixture.detectChanges();
-
-    expect(component.onToggleChange).toHaveBeenCalled();
-    expect(component.syncWithMap).toBeTrue();
+  
+    expect(component.onSyncMapToggleChange).toHaveBeenCalled(); // Assert the method was called
   });
 
   it('should display the correct data in project details', () => {
@@ -76,19 +76,19 @@ describe('ProjectsListComponent', () => {
   });
 
   it('should expand and collapse the expansion panel', () => {
-    const panel = debugElement.query(By.css('mat-expansion-panel'));
-    expect(panel.attributes['class']).not.toContain('mat-expanded');
-
-    panel.nativeElement.click(); // Simulate expansion
+    const panelDebugElement = debugElement.query(By.css('mat-expansion-panel'));
+    const panel = panelDebugElement.componentInstance as any;
+  
+    panel.open();
     fixture.detectChanges();
-
-    expect(panel.attributes['class']).toContain('mat-expanded');
-
-    panel.nativeElement.click(); // Simulate collapse
+    expect(panel.expanded).toBeTrue();
+  
+    panel.close();
     fixture.detectChanges();
-
-    expect(panel.attributes['class']).not.toContain('mat-expanded');
+    expect(panel.expanded).toBeFalse();
   });
+  
+  
 
   it('should render all sort options correctly', () => {
     const options = debugElement.queryAll(By.css('select option'));

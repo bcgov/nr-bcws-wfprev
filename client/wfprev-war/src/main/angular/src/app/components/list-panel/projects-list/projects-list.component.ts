@@ -122,7 +122,8 @@ export class ProjectsListComponent {
     console.log('Sort changed to:', this.selectedSort);
   }
 
-  onToggleChange(): void {
+  onSyncMapToggleChange(event: any): void {
+    this.syncWithMap = event.checked;
     console.log('Sync with map:', this.syncWithMap ? 'On' : 'Off');
   }
 }
