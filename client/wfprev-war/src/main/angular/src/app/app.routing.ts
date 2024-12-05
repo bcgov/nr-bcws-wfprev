@@ -26,11 +26,12 @@ const PANEL_ROUTES: Routes = [
     component: ErrorPageComponent,
     pathMatch: 'full',
   },
+
   { path: '', 
-    redirectTo: ResourcesRoutes.LANDING, 
+    redirectTo: ResourcesRoutes.MAP, 
     canActivate: [PrevAuthGuard], 
     data: { scopes: PROFILE_SCOPES },
-    pathMatch: 'full' } // Default route
+    pathMatch: 'full' } // Default route to map
 ];
 
 export const ROUTING = RouterModule.forRoot(PANEL_ROUTES, {});

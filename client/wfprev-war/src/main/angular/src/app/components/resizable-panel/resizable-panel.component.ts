@@ -1,27 +1,34 @@
-import { Component, EventEmitter, HostListener, Output } from '@angular/core';
+import { Component, EventEmitter, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { MatTabsModule } from '@angular/material/tabs';
+import { ProjectsListComponent } from 'src/app/components/list-panel/projects-list/projects-list.component';
 
 @Component({
   selector: 'app-resizable-panel',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, MatTabsModule,ProjectsListComponent],
   templateUrl: './resizable-panel.component.html',
-  styleUrl: './resizable-panel.component.scss'
+  styleUrls: ['./resizable-panel.component.scss'],
+  
 })
 export class ResizablePanelComponent {
-  panelWidth: string = '50vw';  // Default panel width at 50%
+  panelWidth: string = '50vw';
   breakpoints = [5, 50, 90];
+  selectedTabIndex = 0; // Default selected tab
   @Output() panelResized = new EventEmitter<void>();
 
-  // Method to resize the panel based on given percentage
+  tabs = [
+    { name: 'Projects', component: 'app-tab1' },
+    { name: 'Dashboard', component: 'app-tab2' },
+    { name: 'Planning', component: 'app-tab3' }
+  ];
+
   resizePanel(percentage: number): void {
-    this.panelWidth = `${percentage}vw`;  // Resize based on viewport width
+    this.panelWidth = `${percentage}vw`;
     this.panelResized.emit();
   }
 
-  // Listen to window resize to handle responsive behavior
-  @HostListener('window:resize', ['$event'])
-  onResize(event: Event): void {
-    // Implement any additional logic if needed when window resizes
+  selectTab(index: number): void {
+    this.selectedTabIndex = index;
   }
 }
