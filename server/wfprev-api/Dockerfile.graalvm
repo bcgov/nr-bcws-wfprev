@@ -21,6 +21,8 @@ COPY mvn_settings/${MAVEN_SETTINGS_FILE} /root/.m2/settings.xml
 # Copy rest of the application
 COPY ../.. /app
 
+RUN ls -la /app
+
 WORKDIR /app/server/wfprev-api
 
 # Make mvnw executable
