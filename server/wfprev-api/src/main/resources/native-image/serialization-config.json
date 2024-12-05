@@ -1,5 +1,29 @@
 [
-  {
-    "name": "ca.bc.gov.nrs.wfprev.common.entities.CommonModel"
-  }
+  {"name": "ca.bc.gov.nrs.wfprev.common.entities.CommonModel"},
+
+  { "name": "ca.bc.gov.nrs.wfprev.models.ForestAreaCodeModel" },
+  { "name": "ca.bc.gov.nrs.wfprev.models.GeneralScopeCodeModel" },
+  { "name": "ca.bc.gov.nrs.wfprev.models.ProgramAreaModel" },
+  { "name": "ca.bc.gov.nrs.wfprev.models.ProjectBoundaryModel" },
+  { "name": "ca.bc.gov.nrs.wfprev.models.ProjectModel" },
+  { "name": "ca.bc.gov.nrs.wfprev.models.ProjectTypeCodeModel" },
+
+  { "name": "ca.bc.gov.nrs.wfprev.entities.ForestAreaCodeEntity" },
+  { "name": "ca.bc.gov.nrs.wfprev.entities.GeneralScopeCodeEntity" },
+  { "name": "ca.bc.gov.nrs.wfprev.entities.ProgramAreaEntity" },
+  { "name": "ca.bc.gov.nrs.wfprev.entities.ProjectBoundaryEntity" },
+  { "name": "ca.bc.gov.nrs.wfprev.entities.ProjectEntity" },
+  { "name": "ca.bc.gov.nrs.wfprev.entities.ProjectTypeCodeEntity" },
+  {"name": "ca.bc.gov.nrs.wfprev.common.entities.CommonModel"},
+  {"name": "org.springframework.hateoas.RepresentationModel"},
+  {"name": "org.springframework.hateoas.Link"},
+  {"name": "org.springframework.hateoas.Links"},
+  {"name": "java.util.Date"},
+
+  {"name": "ca.bc.gov.nrs.wfprev.data.models.ProjectModel"},
+  {"name": "ca.bc.gov.nrs.wfprev.data.entities.ForestAreaCodeEntity"},
+  {"name": "ca.bc.gov.nrs.wfprev.data.entities.GeneralScopeCodeEntity"},
+  {"name": "ca.bc.gov.nrs.wfprev.data.entities.ProgramAreaEntity"},
+  {"name": "ca.bc.gov.nrs.wfprev.data.entities.ProjectBoundaryEntity"},
+  {"name": "ca.bc.gov.nrs.wfprev.data.entities.ProjectTypeCodeEntity"}
 ]
