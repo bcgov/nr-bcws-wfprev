@@ -1,0 +1,127 @@
+<div>
+  <div class="list-header">
+    <!-- Sort Dropdown -->
+    <div class="sort-dropdown">
+      <label>Sort:</label>
+      <select id="sort" (change)="onSortChange($event)">
+        <option class="default-option" value="">select...</option>
+        <option *ngFor="let option of sortOptions" [value]="option.value">{{ option.label }}</option>
+      </select>
+    </div>
+
+    <!-- Sync Toggle -->
+    <div class="sync-toggle">
+      <div class="label-container">
+        <label>Sync with Map</label>
+      </div>
+      <div class="toggle-container">
+        <mat-slide-toggle color="primary">
+          <span>Off/On</span>
+        </mat-slide-toggle>
+      </div>
+    </div>
+
+    <!-- Result Count -->
+    <div class="result-count">
+      <span>{{ resultCount }} Results</span>
+    </div>
+  </div>
+
+  <div class="list-contents">
+    <mat-accordion>
+      
+      <mat-expansion-panel *ngFor="let item of projectList" #panel="matExpansionPanel">
+        <mat-expansion-panel-header class="expansion-panel-header">
+          <mat-panel-title class="project-title">
+            <div class="custom-indicator">
+              <img
+                *ngIf="!panel.expanded"
+                src="../../../../assets/collapsed-indicator.svg"
+                alt="Collapsed Icon"
+                class="indicator-icon"
+              />
+              <img
+                *ngIf="panel.expanded"
+                src="../../../../assets/expanded-indicator.svg"
+                alt="Expanded Icon"
+                class="indicator-icon"
+              />
+            </div>
+            <span class="project-name"> {{ item.projectName }} </span>
+            <div class="action-items">
+              <div class="action-item">
+                <img alt="warning-icon" class="icon" height="24px" width="24px" src="../../../../assets/detail-icon.svg" />
+                <span>Details</span>
+              </div>
+              <div class="action-item">
+                <img alt="warning-icon" class="icon" height="24px" width="24px" src="../../../../assets/edit-icon.svg" />
+                <span>Edit</span>
+              </div>
+            </div>
+          </mat-panel-title>
+          <div>
+            <div class="project-header-details">
+              <div class="detail">
+                <span>Region</span>
+                <span>{{ item.forestRegionOrgUnitId }}</span>
+              </div>
+              <div class="detail">
+                <span>Total Project Hectares</span>
+                <span>{{ item.totalPlannedProjectSizeHa }} Ha</span>
+              </div>
+              <div class="detail">
+                <span>Business Area</span>
+                <span>{{ item.bcParksRegionOrgUnitId }}</span>
+              </div>
+              <div class="detail">
+                <span>Business Area Lead</span>
+                <span>{{ item.projectLead }}</span>
+              </div>
+              <div class="detail">
+                <span>Site Unit</span>
+                <span>{{ item.siteUnitName }}</span>
+              </div>
+            </div>
+            
+          </div>
+          
+        </mat-expansion-panel-header>
+
+        <div class="expanded-project-details">
+          <div class="fiscal-expanded">
+            <div class="detail">
+              <span class="heavy-font">Fiscal Year</span>
+            </div>
+            <div class="detail">
+              <span class="heavy-font">Project ID 0023</span>
+            </div>
+            <div class="detail">
+              <span>Status</span>
+              <span class="heavy-font">value01</span>
+            </div>
+            <div class="detail">
+              <span>Phase</span>
+              <span class="heavy-font">value02</span>
+            </div>
+            <div class="detail">
+              <span>Risk</span>
+              <span class="heavy-font">value03</span>
+            </div>
+            <div class="detail">
+              <span>Activity Category</span>
+              <span class="heavy-font">value04</span>
+            </div>
+          </div>
+          <div>
+            <div class="activity-types">
+              <span *ngFor="let activity of fiscalYearActivityTypes" class="activity-type">
+                {{ activity }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </mat-expansion-panel>
+    </mat-accordion>
+  </div>
+</div>
+

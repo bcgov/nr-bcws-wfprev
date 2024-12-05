@@ -41,7 +41,7 @@ describe('AppHeaderComponent', () => {
     expect(component.onBCLogoClick).toHaveBeenCalled();
   });
 
-  it('should navigate to the home page when onBCLogoClick() is called', () => {
+  it('should navigate to the home page(map page by default) when onBCLogoClick() is called', () => {
     const router = TestBed.inject(Router);
     component.onBCLogoClick();
     expect(router.navigate).toHaveBeenCalledWith([ResourcesRoutes.LANDING]);
