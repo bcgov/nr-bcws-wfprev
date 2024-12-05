@@ -41,7 +41,7 @@ jobs:
       # Clean npm cache and install dependencies
       - run: npm cache clean --force
       - run: rm -rf node_modules
-      - run: npm install --legacy-peer-deps
+      - run: npm install
         working-directory: client/wfprev-war/src/main/angular
 
       # Run unit tests and generate code coverage      
