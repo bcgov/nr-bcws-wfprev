@@ -29,8 +29,6 @@ const PANEL_ROUTES: Routes = [
 
   { path: '', 
     redirectTo: ResourcesRoutes.MAP, 
-    canActivate: [PrevAuthGuard], 
-    data: { scopes: PROFILE_SCOPES },
     pathMatch: 'full' } // Default route to map
 ];
 

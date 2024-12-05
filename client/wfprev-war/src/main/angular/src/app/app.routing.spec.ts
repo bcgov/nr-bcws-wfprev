@@ -56,11 +56,10 @@ describe('App Routing Module', () => {
     expect(errorPageRoute?.pathMatch).toBe('full');
   });
 
-  it('should define default redirect route to LANDING', () => {
+  it('should define default redirect route to MAP', () => {
     const defaultRoute = router.config.find(r => r.path === '');
     expect(defaultRoute).toBeTruthy();
-    expect(defaultRoute?.redirectTo).toBe(ResourcesRoutes.LANDING);
-    expect(defaultRoute?.data).toEqual({ scopes: [['WFPREV.WFPREV_ADMIN']] });
+    expect(defaultRoute?.redirectTo).toBe(ResourcesRoutes.MAP);
   });
 
 });
