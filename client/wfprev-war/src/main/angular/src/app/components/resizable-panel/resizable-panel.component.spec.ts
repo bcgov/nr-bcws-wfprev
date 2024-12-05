@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ResizablePanelComponent } from './resizable-panel.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 describe('ResizablePanelComponent', () => {
   let component: ResizablePanelComponent;
@@ -7,7 +8,7 @@ describe('ResizablePanelComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ResizablePanelComponent], // Standalone component
+      imports: [ResizablePanelComponent, BrowserAnimationsModule], // Standalone component
     }).compileComponents();
 
     fixture = TestBed.createComponent(ResizablePanelComponent);
