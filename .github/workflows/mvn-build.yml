@@ -36,18 +36,18 @@ on:
         type: string
 
 jobs:
-#  build:
-#    runs-on: ubuntu-latest
-#    environment:
-#      name: ${{ inputs.ENVIRONMENT }}
-#    steps:
-#      - uses: actions/checkout@v4
-#        if: ${{ inputs.IS_HOTFIX != 'true' }}
-#
-#      - uses: actions/checkout@v4
-#        if: ${{ inputs.IS_HOTFIX == 'true' }}
-#        with:
-#          ref: ${{ inputs.BRANCH }}
+  build:
+    runs-on: ubuntu-latest
+    environment:
+      name: ${{ inputs.ENVIRONMENT }}
+    steps:
+      - uses: actions/checkout@v4
+        if: ${{ inputs.IS_HOTFIX != 'true' }}
+
+      - uses: actions/checkout@v4
+        if: ${{ inputs.IS_HOTFIX == 'true' }}
+        with:
+          ref: ${{ inputs.BRANCH }}
 
 #      - name: Setup Maven
 #        uses: actions/setup-java@v4
@@ -156,7 +156,6 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
         with:
-          context: ${{inputs.COMPONENT_TYPE}}/${{inputs.COMPONENT_NAME}}
           file: ${{inputs.COMPONENT_TYPE}}/${{inputs.COMPONENT_NAME}}/Dockerfile.graalvm
           build-args: |
             CONTAINER_NAME=${{inputs.COMPONENT_NAME}}
