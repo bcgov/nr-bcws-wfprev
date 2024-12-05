@@ -36,18 +36,18 @@ on:
         type: string
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    environment:
-      name: ${{ inputs.ENVIRONMENT }}
-    steps:
-      - uses: actions/checkout@v4
-        if: ${{ inputs.IS_HOTFIX != 'true' }}
-
-      - uses: actions/checkout@v4
-        if: ${{ inputs.IS_HOTFIX == 'true' }}
-        with:
-          ref: ${{ inputs.BRANCH }}
+#  build:
+#    runs-on: ubuntu-latest
+#    environment:
+#      name: ${{ inputs.ENVIRONMENT }}
+#    steps:
+#      - uses: actions/checkout@v4
+#        if: ${{ inputs.IS_HOTFIX != 'true' }}
+#
+#      - uses: actions/checkout@v4
+#        if: ${{ inputs.IS_HOTFIX == 'true' }}
+#        with:
+#          ref: ${{ inputs.BRANCH }}
 
 #      - name: Setup Maven
 #        uses: actions/setup-java@v4
