@@ -30,31 +30,31 @@
   <div class="list-contents">
     <mat-accordion>
       
-      <mat-expansion-panel *ngFor="let item of projectList" #panel="matExpansionPanel">
+      <mat-expansion-panel *ngFor="let project of projectList" #panel="matExpansionPanel">
         <mat-expansion-panel-header class="expansion-panel-header">
           <mat-panel-title class="project-title">
             <div class="custom-indicator">
               <img
                 *ngIf="!panel.expanded"
-                src="../../../../assets/collapsed-indicator.svg"
+                src="/assets/collapsed-indicator.svg"
                 alt="Collapsed Icon"
                 class="indicator-icon"
               />
               <img
                 *ngIf="panel.expanded"
-                src="../../../../assets/expanded-indicator.svg"
+                src="/assets/expanded-indicator.svg"
                 alt="Expanded Icon"
                 class="indicator-icon"
               />
             </div>
-            <span class="project-name"> {{ item.projectName }} </span>
+            <span class="project-name"> {{ project.projectName }} </span>
             <div class="action-items">
               <div class="action-item">
-                <img alt="warning-icon" class="icon" height="24px" width="24px" src="../../../../assets/detail-icon.svg" />
+                <img alt="detail-icon" class="icon" src="/assets/detail-icon.svg" />
                 <span>Details</span>
               </div>
               <div class="action-item">
-                <img alt="warning-icon" class="icon" height="24px" width="24px" src="../../../../assets/edit-icon.svg" />
+                <img alt="edit-icon" class="icon" src="/assets/edit-icon.svg" />
                 <span>Edit</span>
               </div>
             </div>
@@ -63,23 +63,23 @@
             <div class="project-header-details">
               <div class="detail">
                 <span>Region</span>
-                <span>{{ item.forestRegionOrgUnitId }}</span>
+                <span>{{ project.forestRegionOrgUnitId }}</span>
               </div>
               <div class="detail">
                 <span>Total Project Hectares</span>
-                <span>{{ item.totalPlannedProjectSizeHa }} Ha</span>
+                <span>{{ project.totalPlannedProjectSizeHa }} Ha</span>
               </div>
               <div class="detail">
                 <span>Business Area</span>
-                <span>{{ item.bcParksRegionOrgUnitId }}</span>
+                <span>{{ project.bcParksRegionOrgUnitId }}</span>
               </div>
               <div class="detail">
                 <span>Business Area Lead</span>
-                <span>{{ item.projectLead }}</span>
+                <span>{{ project.projectLead }}</span>
               </div>
               <div class="detail">
                 <span>Site Unit</span>
-                <span>{{ item.siteUnitName }}</span>
+                <span>{{ project.siteUnitName }}</span>
               </div>
             </div>
             
