@@ -252,13 +252,13 @@ class ProjectBoundaryControllerTest {
         String json = mapper.writeValueAsString(project);
 
         // Test update
-        ResultActions resuult = mockMvc.perform(put("/projectBoundaries/{id}", "unmatched-id")
+        ResultActions result = mockMvc.perform(put("/projectBoundaries/{id}", "unmatched-id")
                         .content(json)
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", "Bearer admin-token")
                         .header("If-Match", "\"1\""))
                 .andExpect(status().isBadRequest());
-        assertEquals(400, resuult.andReturn().getResponse().getStatus());
+        assertEquals(400, result.andReturn().getResponse().getStatus());
     }
 
     @Test
