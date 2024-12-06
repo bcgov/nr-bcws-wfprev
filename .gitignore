@@ -11,3 +11,4 @@ htmlReport/
 **/.env.*
 .DS_Store
 **/.DS_Store
+yarn.lock
