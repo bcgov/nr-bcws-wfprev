@@ -79,7 +79,8 @@ public class CheckTokenController {
                 result = tokenService.checkToken(authorizationHeader.replace("Bearer ", ""));
             }
         } catch (Oauth2ClientException | IOException t) {
-            response.sendError(500, t.getMessage());
+            response.sendError(500, "Authentication request was unable to be processed, please try again later.");
+            log.error(" ### Error while checking for valid authorization token", t);
         }
 
         logger.debug(">checkToken");

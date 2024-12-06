@@ -6,6 +6,7 @@ import { OAuthService } from 'angular-oauth2-oidc';
 import { Injector } from '@angular/core';
 import { HttpHandler } from '@angular/common/http';
 import { UUID } from 'angular2-uuid';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 describe('TokenService', () => {
   let service: TokenService;
@@ -13,6 +14,7 @@ describe('TokenService', () => {
   let mockAppConfigService: any;
   let mockOAuthService: any;
   let mockInjector: any;
+  let mockSnackbarService: any;
 
   // Mock configuration
   const mockConfig = {
@@ -52,12 +54,17 @@ describe('TokenService', () => {
       })
     };
 
+    mockSnackbarService = {
+      open: jasmine.createSpy('open'),
+    };  
+
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
       providers: [
         TokenService,
         { provide: AppConfigService, useValue: mockAppConfigService },
-        { provide: Injector, useValue: mockInjector }
+        { provide: Injector, useValue: mockInjector },
+        { provide: MatSnackBar, useValue: mockSnackbarService },
       ]
     });
 
@@ -81,7 +88,7 @@ describe('TokenService', () => {
       };
       
       mockAppConfigService.getConfig.and.returnValue(minimalConfig);
-      const newService = new TokenService(mockInjector, mockAppConfigService);
+      const newService = new TokenService(mockInjector, mockAppConfigService, mockSnackbarService);
       
       expect(newService['LOCAL_STORAGE_KEY']).toBe('oauth');
       expect(newService['useLocalStore']).toBe(false);
@@ -97,11 +104,11 @@ describe('TokenService', () => {
         configurable: true,
       });
   
-      spyOn(service as any, 'initImplicitFlow').and.callThrough();
+      spyOn(service as any, 'initIDIRLogin').and.callThrough();
   
       await service.checkForToken();
   
-      expect((service as any).initImplicitFlow).toHaveBeenCalled();
+      expect((service as any).initIDIRLogin).toHaveBeenCalled();
     });
 
   });
@@ -193,7 +200,7 @@ describe('TokenService', () => {
 
   describe('OAuth Flow', () => {
     it('should initiate implicit flow', () => {
-      service['initImplicitFlow']();
+      service['initIDIRLogin']();
 
       expect(mockOAuthService.configure).toHaveBeenCalledWith(jasmine.objectContaining({
         oidc: false,
@@ -246,15 +253,43 @@ describe('getOauthToken', () => {
 });
 
 describe('handleError', () => {
-  it('should log and throw an error', () => {
-    spyOn(console, 'error');
-    spyOn(window, 'alert');
+  it('should log the error, show a snackbar, and rethrow the error', () => {
+    const testError = new Error('Test error');
+    const testMessage = 'Custom error message';
 
-    expect(() => (service as any).handleError(new Error('Test error'), 'Custom message')).toThrowError('Test error');
-    expect(console.error).toHaveBeenCalledWith('Unexpected error', jasmine.any(Error));
-    expect(window.alert).toHaveBeenCalledWith('Custom message Error: Test error');
+    spyOn(console, 'error');
+
+    expect(() => (service as any).handleError(testError, testMessage)).toThrow(testError);
+
+    // Verify console.error was called
+    expect(console.error).toHaveBeenCalledWith('Unexpected error', testError);
+
+    // Verify snackbarService.open was called
+    expect(mockSnackbarService.open).toHaveBeenCalledWith(
+      'Unexpected error occurred: Custom error message',
+      'OK',
+      { duration: 10000, panelClass: 'snackbar-error' },
+    );
   });
-});
+
+  it('should handle errors without a custom message', () => {
+    const testError = new Error('Test error');
+
+    spyOn(console, 'error');
+
+    expect(() => (service as any).handleError(testError)).toThrow(testError);
+
+    // Verify console.error was called
+    expect(console.error).toHaveBeenCalledWith('Unexpected error', testError);
+
+    // Verify snackbarService.open was called with the error's message
+    expect(mockSnackbarService.open).toHaveBeenCalledWith(
+      `Unexpected error occurred: ${testError}`,
+      'OK',
+      { duration: 10000, panelClass: 'snackbar-error' },
+    );
+  });
+});;
 
 describe('emitTokens', () => {
   it('should emit tokens and complete subjects', () => {

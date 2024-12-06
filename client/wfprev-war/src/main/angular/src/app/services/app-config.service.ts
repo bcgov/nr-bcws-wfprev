@@ -31,7 +31,6 @@ export class AppConfigService {
       this.configSubject.next(this.appConfig);
       this.configSubject.complete();
     } catch (error) {
-      console.error('Failed to load application config:', error);
       this.configSubject.error(error); // Notify subscribers of the error
       throw new Error(`Failed to load application configuration: ${(error as Error).message}`);
     }
