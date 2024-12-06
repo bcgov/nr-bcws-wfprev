@@ -1,9 +1,10 @@
 import { Injectable, Injector } from "@angular/core";
-import { HttpClient, HttpHandler, HttpHeaders } from "@angular/common/http";
+import { HttpClient, HttpErrorResponse, HttpHandler, HttpHeaders } from "@angular/common/http";
 import { OAuthService } from "angular-oauth2-oidc";
 import momentInstance from "moment";
 import { AsyncSubject, Observable, catchError, firstValueFrom, map, of } from "rxjs";
 import { AppConfigService } from "./app-config.service";
+import { MatSnackBar } from "@angular/material/snack-bar";
 
 const moment = momentInstance;
 const OAUTH_LOCAL_STORAGE_KEY = 'oauth';
@@ -22,7 +23,7 @@ export class TokenService {
   public credentialsEmitter: Observable<any> = this.credentials.asObservable();
   public authTokenEmitter: Observable<string> = this.authToken.asObservable();
 
-  constructor(private readonly injector: Injector, protected appConfigService: AppConfigService) {
+  constructor(private readonly injector: Injector, protected appConfigService: AppConfigService, protected snackbarService: MatSnackBar) {
     const config = this.appConfigService.getConfig().application;
 
     const lazyAuthenticate: boolean = config.lazyAuthenticate ?? false;
@@ -53,24 +54,27 @@ export class TokenService {
         try {
           await this.initAuthFromSession();
         } catch (err) {
-          console.log('Failed to read session token - reinitializing');
           this.tokenDetails = undefined;
           localStorage.removeItem(this.LOCAL_STORAGE_KEY);
-          this.initImplicitFlow(redirectUri);
+          this.initIDIRLogin(redirectUri);
         }
       } else {
-        this.initImplicitFlow(redirectUri);
+        this.initIDIRLogin(redirectUri);
       }
 
       if (!allowLocalExpiredToken && this.isTokenExpired(this.tokenDetails)) {
         localStorage.removeItem(this.LOCAL_STORAGE_KEY);
-        this.initImplicitFlow(redirectUri);
+        this.initIDIRLogin(redirectUri);
       }
     } else if (hash?.includes('error')) {
-      alert('Error occurred during authentication.');
+      this.snackbarService.open(
+        'Error occurred during authentication',
+        'OK',
+        { duration: 10000, panelClass: 'snackbar-error' },
+      );
       return;
     } else if (!lazyAuth) {
-      this.initImplicitFlow(redirectUri);
+      this.initIDIRLogin(redirectUri);
     }
   }
 
@@ -97,7 +101,7 @@ export class TokenService {
     }
   }
 
-  private initImplicitFlow(redirectUri?: string): void {
+  private initIDIRLogin(redirectUri?: string): void {
     const configuration = this.appConfigService.getConfig();
     const authConfig = {
       oidc: false,
@@ -120,7 +124,6 @@ export class TokenService {
       await this.initAndEmit();
     } catch (err) {
       localStorage.removeItem(this.LOCAL_STORAGE_KEY);
-      console.log('Failed to handle token payload', this.oauth);
       this.handleError(err, 'Failed to handle token');
     }
   }
@@ -141,7 +144,7 @@ export class TokenService {
         if (this.useLocalStore) {
           localStorage.removeItem(this.LOCAL_STORAGE_KEY);
         }
-        console.log('Failed to handle token payload', this.oauth);
+        console.error('Failed to handle token payload', this.oauth);
         this.handleError(err, 'Failed to handle token');
       }
     }
@@ -177,8 +180,12 @@ export class TokenService {
         this.tokenDetails = await firstValueFrom(this.validateToken(this.oauth.access_token));
         this.emitTokens();
       } catch (error: any) {
-        console.log(error);
-        alert(`App initialization Failed ${error.status}. Status(Check token failed)`);
+        console.error('Error occurred while checking token: ', error);
+        this.snackbarService.open(
+          `App initialization failed with HttpStatus ${error.status} for authorization token check`,
+          'OK',
+          { duration: 10000, panelClass: 'snackbar-error' },
+        );
         throw error;
       }
     } else {
@@ -221,7 +228,12 @@ export class TokenService {
 
   private handleError(err: any, message?: string): never {
     console.error('Unexpected error', err);
-    alert(message ? `${message} ${err}` : `${err}`);
+    const errorMessage = message ? `${message}` : `${err}`;
+    this.snackbarService.open(
+      'Unexpected error occurred: ' + errorMessage,
+      'OK',
+      { duration: 10000, panelClass: 'snackbar-error' },
+    );
     throw err;
   }
 }
