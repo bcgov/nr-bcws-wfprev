@@ -1,6 +1,7 @@
 spring:
   application:
     name: wfprev
+    baseUrl: ${WFPREV_BASE_URL}
   datasource:
     url: ${WFPREV_DATASOURCE_URL}
     username: ${WFPREV_DATASOURCE_USERNAME}

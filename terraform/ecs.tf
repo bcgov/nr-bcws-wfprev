@@ -75,6 +75,14 @@ resource "aws_ecs_task_definition" "wfprev_server" {
         value = var.WEBADE_OAUTH2_CHECK_AUTHORIZE_URL
       },
       {
+        name  = "WFPREV_BASE_URL",
+        value = var.WFPREV_BASE_URL
+      },
+      {
+        name  = "WFPREV_CHECK_TOKEN_URL",
+        value = var.WFPREV_CHECK_TOKEN_URL
+      },
+      {
         name = "WFPREV_DATASOURCE_URL"
         value = "jdbc:postgresql://${aws_db_instance.wfprev_pgsqlDB.endpoint}/${aws_db_instance.wfprev_pgsqlDB.name}"
       },
