@@ -44,7 +44,7 @@ public class SecurityConfig {
         BasicAuthenticationEntryPoint result;
 
         result = new BasicAuthenticationEntryPoint();
-        result.setRealmName("wfim-incidents-api");
+        result.setRealmName("wfprev-api");
 
         return result;
     }
@@ -60,7 +60,7 @@ public class SecurityConfig {
 
     @Bean
     public AuthenticationProvider authenticationProvider() {
-        return new WebadeOauth2AuthenticationProvider(tokenServiceImpl(), "WFIM.*");
+        return new WebadeOauth2AuthenticationProvider(tokenServiceImpl(), "WFPREV.*");
     }
 
     @Bean
