@@ -1,0 +1,13 @@
+{
+  "application": {
+    "baseUrl": "http://localhost:4200/"
+  },
+
+  "webade": {
+      "oauth2Url": "https://wfappsi.nrs.gov.bc.ca/ext/oauth2/v1/oauth/authorize",
+      "clientId": "WFNEWS-UI",
+      "authScopes": "WFNEWS.*",
+      "enableCheckToken": true,
+      "checkTokenUrl": "http://localhost:8080/pub/wfprev-api/check/checkToken"
+    }
+}

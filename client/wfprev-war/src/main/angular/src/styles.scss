@@ -54,3 +54,18 @@ body {
     }
   }
 
+.snackbar-error {
+    background-color: #FF0000;
+    color: var(--colour-white);
+    position: inherit;
+    width: fit-content;
+    text-align: center;
+    .mat-mdc-simple-snack-bar {
+      font-family: var(--wf-font-family-main);
+      font-size: 13px;
+    }
+    .mat-button-wrapper {
+      color: white;
+    }
+  }
+

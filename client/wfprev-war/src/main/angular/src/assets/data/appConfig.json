@@ -1,0 +1,13 @@
+{
+    "application": {
+      "baseUrl": "#{WFPREV_BASE_URL}#"
+    },
+  
+    "webade": {
+        "oauth2Url": "#{WEBADE_OAUTH2_CHECK_AUTHORIZE_URL}#",
+        "clientId": "WFNEWS-UI",
+        "authScopes": "WFNEWS.*",
+        "enableCheckToken": true,
+        "checkTokenUrl": "#{WFPREV_CHECK_TOKEN_URL}#"
+      }
+  }

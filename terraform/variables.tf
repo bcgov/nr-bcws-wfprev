@@ -99,6 +99,16 @@ variable "WFPREV_CLIENT_SECRET" {
   default = ""
 }
 
+variable "WFPREV_BASE_URL" {
+  type    = string
+  default = ""
+}
+
+variable "WFPREV_CHECK_TOKEN_URL" {
+  type    = string
+  default = ""
+}
+
 variable "WFPREV_DATASOURCE_USERNAME" {
   type    = string
   default = ""
