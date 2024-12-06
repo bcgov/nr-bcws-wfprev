@@ -1,6 +1,42 @@
-FROM ubuntu:latest
+# Build stage
+FROM ghcr.io/graalvm/graalvm-community:21 AS builder
 
-WORKDIR /app
+# Define build argument and set it as environment variable
+ARG MAVEN_SETTINGS_FILE=settings.xml
+ARG REPO_LOGIN
+ARG REPO_PASSWORD
+
+ENV MAVEN_SETTINGS_FILE=${MAVEN_SETTINGS_FILE}
+
+ENV REPO_LOGIN=${REPO_LOGIN}
+ENV REPO_PASSWORD=${REPO_PASSWORD}
+
+# The environment variables from .env are automatically available here
+# We don't need the ARG declarations anymore since we're using the env file
+
+
+# Copy maven settings first
+COPY server/wfprev-api/mvn_settings/${MAVEN_SETTINGS_FILE} /root/.m2/settings.xml
+
+# Copy rest of the application
+COPY . /app
+
+RUN ls -la /app
+
+WORKDIR /app/server/wfprev-api
+
+# Make mvnw executable
+RUN chmod +x mvnw
+
+RUN pwd
+
+RUN ls -la
+
+# Build the native image using settings.xml
+RUN ./mvnw -Pnative native:compile -DskipTests  -Drepo.login=${REPO_LOGIN} -Drepo.password=${REPO_PASSWORD}
+
+# Runtime stage
+FROM ubuntu:22.04
 
 # Install curl for healthcheck and debugging
 RUN apt-get update && apt-get install -y \
@@ -9,16 +45,10 @@ RUN apt-get update && apt-get install -y \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
-
-
 # Copy the native executable from builder stage
-COPY ./wfprev-api /app/
-
-RUN chmod -x /app/wfprev-api
+COPY --from=builder /app/server/wfprev-api/target/wfprev-api /
 
 # Expose the port your application uses
 EXPOSE 8080
 
-RUN chmod +x /app/wfprev-api
-
-ENTRYPOINT ["/app/wfprev-api"]
+ENTRYPOINT ["/wfprev-api"]

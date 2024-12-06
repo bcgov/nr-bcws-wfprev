@@ -1,0 +1,52 @@
+# Use Eclipse Temurin's Java 21 image as the base
+FROM eclipse-temurin:21-jdk-jammy
+
+# Set working directory
+WORKDIR /app
+
+# Install required utilities
+RUN apt-get update && apt-get install -y \
+    curl \
+    postgresql-client \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy Maven settings
+ARG MAVEN_SETTINGS_FILE=settings.xml
+COPY mvn_settings/${MAVEN_SETTINGS_FILE} /root/.m2/settings.xml
+
+# Copy source code and Maven wrapper
+COPY .mvn/ .mvn/
+COPY mvnw pom.xml ./
+RUN chmod +x mvnw
+
+# Download dependencies separately to leverage Docker cache
+RUN ./mvnw dependency:go-offline -s /root/.m2/settings.xml
+
+# Copy the rest of the application
+COPY src ./src/
+
+# Expose ports for the application and debugging
+EXPOSE 8080
+EXPOSE 5005
+
+# Create start script with debug options
+COPY <<EOF /app/start.sh
+#!/bin/sh
+echo "==== Environment Variables ===="
+echo "WFPREV_DATASOURCE_URL: \${WFPREV_DATASOURCE_URL}"
+echo "WFPREV_DATASOURCE_USERNAME: \${WFPREV_DATASOURCE_USERNAME}"
+echo "Database connection test:"
+
+until pg_isready -h db -U \${WFPREV_DATASOURCE_USERNAME}; do
+    echo "Waiting for database connection..."
+    sleep 2
+done
+
+echo "Starting application in debug mode..."
+exec ./mvnw spring-boot:run \
+    -Dspring-boot.run.jvmArguments="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"
+EOF
+
+RUN chmod +x /app/start.sh
+
+ENTRYPOINT ["/app/start.sh"]
