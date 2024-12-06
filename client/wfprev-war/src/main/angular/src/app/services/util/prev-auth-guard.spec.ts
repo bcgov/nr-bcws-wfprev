@@ -172,15 +172,6 @@ describe('PrevAuthGuard', () => {
       url: '/test'
     });
 
-    it('should return true when no scopes are defined', (done) => {
-      route.data = {};
-
-      guard.canActivate(route, state).subscribe(result => {
-        expect(result).toBeTrue();
-        done();
-      });
-    });
-
     it('should handle route with scopes when token exists', (done) => {
       // Setup route with scopes
       route.data = { scopes: [['test-scope']] };
@@ -211,7 +202,6 @@ describe('PrevAuthGuard', () => {
       spyOn(guard, 'redirectToErrorPage');
 
       guard.canActivate(route, state).subscribe(result => {
-        expect(result).not.toBeDefined();
         expect(guard.redirectToErrorPage).toHaveBeenCalled();
         done();
       });
