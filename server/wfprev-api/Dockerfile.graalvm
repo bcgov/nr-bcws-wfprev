@@ -28,6 +28,10 @@ WORKDIR /app/server/wfprev-api
 # Make mvnw executable
 RUN chmod +x mvnw
 
+RUN pwd
+
+RUN ls -la
+
 # Build the native image using settings.xml
 RUN ./mvnw -Pnative native:compile -DskipTests  -Drepo.login=${REPO_LOGIN} -Drepo.password=${REPO_PASSWORD}
 
