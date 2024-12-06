@@ -61,7 +61,7 @@ resource "aws_cloudfront_distribution" "wfprev_app_distribution" {
 
 
     ordered_cache_behavior {
-    path_pattern     = "/${aws_apigatewayv2_stage.wfprev_stage.name}/wfprev-api/*"
+    path_pattern     = "/${aws_apigatewayv2_stage.wfprev_stage.name}*"
     allowed_methods = [
       "DELETE",
       "GET",

@@ -9,6 +9,13 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.core.Ordered;
 import org.springframework.web.filter.ForwardedHeaderFilter;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.vividsolutions.jts.geom.Geometry;
+
+import ca.bc.gov.nrs.wfprev.common.serializers.GeoJsonJacksonDeserializer;
+import ca.bc.gov.nrs.wfprev.common.serializers.GeoJsonJacksonSerializer;
 import jakarta.servlet.DispatcherType;
 
 @SpringBootApplication
@@ -44,5 +51,15 @@ public class WfprevApiApplication {
 			registration.setDispatcherTypes(DispatcherType.REQUEST, DispatcherType.ASYNC, DispatcherType.ERROR);
 			registration.setOrder(Ordered.HIGHEST_PRECEDENCE);
 			return registration;
+	}
+
+	@Bean
+	public ObjectMapper registerObjectMapper(){
+		ObjectMapper mapper = new ObjectMapper();
+    SimpleModule simpleModule = new SimpleModule();
+    simpleModule.addSerializer(new GeoJsonJacksonSerializer());
+    simpleModule.addDeserializer(Geometry.class, new GeoJsonJacksonDeserializer());
+    mapper.registerModule(simpleModule);
+		return mapper;
 	}
 }
