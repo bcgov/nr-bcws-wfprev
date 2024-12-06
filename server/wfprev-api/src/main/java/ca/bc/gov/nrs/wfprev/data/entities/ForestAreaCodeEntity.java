@@ -1,4 +1,4 @@
-package ca.bc.gov.nrs.wfprev.data.model;
+package ca.bc.gov.nrs.wfprev.data.entities;
 
 import java.io.Serializable;
 
@@ -23,20 +23,20 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "EXAMPLE_CODE")
+@Table(name = "forest_area_code")
 @JsonIgnoreProperties(ignoreUnknown = false)
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ExampleCodeEntity implements Serializable {
+public class ForestAreaCodeEntity implements Serializable {
   private static final long serialVersionUID = 1L;
   
   @Id
-  @Column(name = "example_code")
+  @Column(name = "forest_area_code")
   @NotNull
-  private String exampleCode;
+  private String forestAreaCode;
 
   @NotNull
   @Column(name = "description", length = 200)
@@ -46,11 +46,11 @@ public class ExampleCodeEntity implements Serializable {
   private Integer displayOrder;
 
   @NotNull
-  @Column(name = "effective_date", length = 200)
+  @Column(name = "effective_date")
   private Date effectiveDate;
 
   @NotNull
-  @Column(name = "expiry_date", length = 200)
+  @Column(name = "expiry_date")
   private Date expiryDate;
 
   @Column(name = "revision_count", columnDefinition="Decimal(10) default '0'")
@@ -61,7 +61,7 @@ public class ExampleCodeEntity implements Serializable {
   @CreatedBy
   @NotNull
 	@Column(name="create_user", length = 64)
-	private String createdBy;
+	private String createUser;
 
   @CreatedDate
   @NotNull
@@ -71,7 +71,7 @@ public class ExampleCodeEntity implements Serializable {
   @LastModifiedBy
   @NotNull
 	@Column(name="update_user", length = 64)
-	private String updatedBy;
+	private String updateUser;
 
   @LastModifiedDate
   @NotNull

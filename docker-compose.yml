@@ -1,0 +1,72 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: server/wfprev-api/Dockerfile.graalvm
+      # Pass the maven settings file and repo credentials as build args
+      args:
+        - MAVEN_SETTINGS_FILE=vivid.settings.xml
+        - REPO_LOGIN=${REPO_LOGIN}
+        - REPO_PASSWORD=${REPO_PASSWORD}
+    environment:
+      # Environment variables for the application
+      WFPREV_DATASOURCE_URL: ${WFPREV_DATASOURCE_URL}
+      WFPREV_DATASOURCE_USERNAME: ${WFPREV_DATASOURCE_USERNAME}
+      WFPREV_DATASOURCE_PASSWORD: ${WFPREV_DATASOURCE_PASSWORD}
+    ports:
+      - "8080:8080" # Map the API's port to the host
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - wfprev-network
+    env_file:
+      - .env
+
+  liquibase:
+    build:
+      context: db
+      dockerfile: Dockerfile.liquibase.local
+    command: [
+      "liquibase",
+      "--url=jdbc:postgresql://wfprev-postgres:5432/wfprev",
+      "--changelog-file=db/main-changelog.json",
+      "--username=wfprev",
+      "--password=${POSTGRES_PASSWORD}",
+      "update"
+    ]
+    volumes:
+      - ./db:/liquibase/db
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - wfprev-network
+
+  db:
+    image: postgis/postgis:16-3.4
+    container_name: wfprev-postgres
+    environment:
+      POSTGRES_USER: wfprev
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: wfprev
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - wfprev-network
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U wfprev -d wfprev" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+networks:
+  wfprev-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+    driver: local

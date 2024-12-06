@@ -44,14 +44,16 @@ resource "aws_apigatewayv2_integration" "wfprev_vpc_integration" {
 
 resource "aws_apigatewayv2_stage" "wfprev_stage" {
   api_id = aws_apigatewayv2_api.wfprev_api_gateway.id
-  name   = "pub"
+  name   = "wfprev-api"
 }
 
 resource "aws_apigatewayv2_deployment" "wfprev_deployment" {
+  
   api_id = aws_apigatewayv2_api.wfprev_api_gateway.id
 
   triggers = {
     redeployment = sha1(join(",",tolist([
+      jsonencode(aws_apigatewayv2_stage.wfprev_stage),
       jsonencode(aws_apigatewayv2_integration.wfprev_vpc_integration),
       jsonencode(aws_apigatewayv2_route.base_route),
       jsonencode(aws_apigatewayv2_integration.wfprev_vpc_integration),

@@ -51,7 +51,7 @@ public class SecurityConfig {
         BasicAuthenticationEntryPoint result;
 
         result = new BasicAuthenticationEntryPoint();
-        result.setRealmName("wfim-incidents-api");
+        result.setRealmName("wfprev-api");
 
         return result;
     }

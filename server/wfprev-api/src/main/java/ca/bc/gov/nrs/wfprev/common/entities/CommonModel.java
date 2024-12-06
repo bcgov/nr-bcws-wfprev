@@ -15,6 +15,11 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = false)
 public abstract class CommonModel<T extends RepresentationModel<? extends T>> extends RepresentationModel<T> implements Serializable {
+  private Integer revisionCount;
+	private String createUser;
+	private Date createDate;
+	private String updateUser;
+	private Date updateDate;
   public String eTag() {
     return ETag.generate(this);
   }
