@@ -36,7 +36,9 @@ public class ProjectResourceAssembler extends RepresentationModelAssemblerSuppor
             entity.setProjectNumber(resource.getProjectNumber());
         }
         entity.setSiteUnitName(resource.getSiteUnitName());
-        entity.setForestAreaCode(toForestAreaCodeEntity(resource.getForestAreaCode()));
+        if (resource.getForestAreaCode() != null) {
+            entity.setForestAreaCode(toForestAreaCodeEntity(resource.getForestAreaCode()));
+        }
         entity.setGeneralScopeCode(toGeneralScopeCodeEntity(resource.getGeneralScopeCode()));
         entity.setProgramAreaGuid(UUID.fromString(resource.getProgramAreaGuid()));
         entity.setForestRegionOrgUnitId(resource.getForestRegionOrgUnitId());
@@ -82,7 +84,9 @@ public class ProjectResourceAssembler extends RepresentationModelAssemblerSuppor
         resource.setProjectTypeCode(toProjectTypeCodeModel(entity.getProjectTypeCode()));
         resource.setProjectNumber(entity.getProjectNumber());
         resource.setSiteUnitName(entity.getSiteUnitName());
-        resource.setForestAreaCode(toForestAreaCodeModel(entity.getForestAreaCode()));
+        if (entity.getForestAreaCode() != null) {
+            resource.setForestAreaCode(toForestAreaCodeModel(entity.getForestAreaCode()));
+        }
         resource.setGeneralScopeCode(toGeneralScopeCodeModel(entity.getGeneralScopeCode()));
         resource.setProgramAreaGuid(entity.getProgramAreaGuid().toString());
         resource.setForestRegionOrgUnitId(entity.getForestRegionOrgUnitId());

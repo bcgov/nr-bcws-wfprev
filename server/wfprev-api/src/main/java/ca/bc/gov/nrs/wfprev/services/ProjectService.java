@@ -16,6 +16,7 @@ import ca.bc.gov.nrs.wfprev.data.repositories.GeneralScopeCodeRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.ProjectStatusCodeRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.ProjectTypeCodeRepository;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.hateoas.CollectionModel;
@@ -148,6 +149,8 @@ public class ProjectService implements CommonService {
       throw new ServiceException("Invalid reference data: " + e.getMessage(), e);
     } catch (DataIntegrityViolationException e) {
       throw new DataIntegrityViolationException(e.getMessage(), e);
+    } catch (ConstraintViolationException e) {
+      throw e;
     } catch (Exception e) {
       log.error("Error creating/updating project", e);  // Add logging
       throw new ServiceException(e.getLocalizedMessage(), e);
