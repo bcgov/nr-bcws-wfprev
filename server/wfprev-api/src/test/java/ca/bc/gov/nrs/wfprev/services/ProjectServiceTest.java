@@ -7,6 +7,10 @@ import ca.bc.gov.nrs.wfprev.data.entities.*;
 import ca.bc.gov.nrs.wfprev.data.models.*;
 import ca.bc.gov.nrs.wfprev.data.repositories.*;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.Validation;
+import org.hibernate.validator.internal.engine.path.PathImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -200,6 +204,42 @@ public class ProjectServiceTest {
     }
 
     @Test
+    public void testCreate_violatesConstraint() {
+        // Given I am creating a new project with a missing required field
+        ProjectModel inputModel = ProjectModel.builder()
+                .projectGuid(UUID.randomUUID().toString())
+                // Missing required siteUnitName
+                .projectLead("Test Lead")
+                .build();
+
+        ProjectEntity entity = new ProjectEntity();
+        when(projectResourceAssembler.toEntity(any(ProjectModel.class))).thenReturn(entity);
+
+        Set<ConstraintViolation<?>> violations = new HashSet<>();
+        ConstraintViolation<?> violation = mock(ConstraintViolation.class);
+        when(violation.getMessage()).thenReturn("Site unit name cannot be null");
+        when(violation.getPropertyPath()).thenReturn(PathImpl.createPathFromString("siteUnitName"));
+        violations.add(violation);
+
+        // Mock successful lookup of ACTIVE status
+        ProjectStatusCodeEntity activeStatus = ProjectStatusCodeEntity.builder()
+                .projectStatusCode("ACTIVE")
+                .build();
+        when(projectStatusCodeRepository.findById("ACTIVE")).thenReturn(Optional.of(activeStatus));
+
+        when(projectRepository.saveAndFlush(any(ProjectEntity.class)))
+                .thenThrow(new ConstraintViolationException("Site unit name cannot be null", violations));
+
+        // When/Then
+        assertThrows(ConstraintViolationException.class, () -> {
+            projectService.createOrUpdateProject(inputModel);
+        });
+
+        verify(projectRepository, times(1)).saveAndFlush(any(ProjectEntity.class));
+        verify(projectResourceAssembler, times(1)).toEntity(any(ProjectModel.class));
+    }
+
+    @Test
     public void testUpdate_preserveExistingStatus() {
         // Given I am updating a project that has a status
         ProjectStatusCodeModel existingStatus = ProjectStatusCodeModel.builder()
@@ -257,6 +297,12 @@ public class ProjectServiceTest {
         when(projectRepository.saveAndFlush(any(ProjectEntity.class))).thenReturn(savedEntity);
         when(projectResourceAssembler.toModel(any(ProjectEntity.class))).thenReturn(inputModel);
 
+        ProjectStatusCodeEntity activeStatus = ProjectStatusCodeEntity.builder()
+                .projectStatusCode("ACTIVE")
+                .build();
+        when(projectStatusCodeRepository.findById("ACTIVE"))
+                .thenReturn(Optional.of(activeStatus));
+
         // When
         ProjectModel result = projectService.createOrUpdateProject(inputModel);
 
@@ -300,6 +346,12 @@ public class ProjectServiceTest {
         when(projectRepository.saveAndFlush(any())).thenReturn(savedEntity);
         when(projectResourceAssembler.toModel(any())).thenReturn(inputModel);
 
+        ProjectStatusCodeEntity activeStatus = ProjectStatusCodeEntity.builder()
+                .projectStatusCode("ACTIVE")
+                .build();
+        when(projectStatusCodeRepository.findById("ACTIVE"))
+                .thenReturn(Optional.of(activeStatus));
+
         // When
         ProjectModel result = projectService.createOrUpdateProject(inputModel);
 
@@ -325,6 +377,12 @@ public class ProjectServiceTest {
         when(projectResourceAssembler.toEntity(any())).thenReturn(savedEntity);
         when(projectRepository.saveAndFlush(any())).thenReturn(savedEntity);
         when(projectResourceAssembler.toModel(any())).thenReturn(inputModel);
+
+        ProjectStatusCodeEntity activeStatus = ProjectStatusCodeEntity.builder()
+                .projectStatusCode("ACTIVE")
+                .build();
+        when(projectStatusCodeRepository.findById("ACTIVE"))
+                .thenReturn(Optional.of(activeStatus));
 
         // When
         ProjectModel result = projectService.createOrUpdateProject(inputModel);
@@ -363,6 +421,12 @@ public class ProjectServiceTest {
         when(projectRepository.saveAndFlush(any())).thenReturn(savedEntity);
         when(projectResourceAssembler.toModel(any())).thenReturn(inputModel);
 
+        ProjectStatusCodeEntity activeStatus = ProjectStatusCodeEntity.builder()
+                .projectStatusCode("ACTIVE")
+                .build();
+        when(projectStatusCodeRepository.findById("ACTIVE"))
+                .thenReturn(Optional.of(activeStatus));
+
         // When
         ProjectModel result = projectService.createOrUpdateProject(inputModel);
 
@@ -389,6 +453,11 @@ public class ProjectServiceTest {
         when(projectRepository.saveAndFlush(any())).thenReturn(savedEntity);
         when(projectResourceAssembler.toModel(any())).thenReturn(inputModel);
 
+        ProjectStatusCodeEntity activeStatus = ProjectStatusCodeEntity.builder()
+                .projectStatusCode("ACTIVE")
+                .build();
+        when(projectStatusCodeRepository.findById("ACTIVE"))
+                .thenReturn(Optional.of(activeStatus));
         // When
         ProjectModel result = projectService.createOrUpdateProject(inputModel);
 
@@ -442,7 +511,7 @@ public class ProjectServiceTest {
     }
 
     @Test
-    public void test_create_project_with_service_exception () {
+    public void test_create_project_with_service_exception() {
         // Given
         ProjectModel inputModel = ProjectModel.builder()
                 .projectName("Test Project")
@@ -475,7 +544,13 @@ public class ProjectServiceTest {
         when(projectResourceAssembler.toEntity(any())).thenReturn(savedEntity);
         when(projectRepository.saveAndFlush(any())).thenReturn(savedEntity);
         when(projectResourceAssembler.toModel(any())).thenReturn(inputModel);
+        ProjectStatusCodeEntity activeStatus = ProjectStatusCodeEntity.builder()
+                .projectStatusCode("ACTIVE")
+                .build();
+        when(projectStatusCodeRepository.findById("ACTIVE"))
+                .thenReturn(Optional.of(activeStatus));
         ProjectModel result = projectService.createOrUpdateProject(inputModel);
+
 
         // When
         ProjectModel projectModel = projectService.deleteProject(existingGuid);
@@ -516,7 +591,13 @@ public class ProjectServiceTest {
         when(projectResourceAssembler.toEntity(any())).thenReturn(savedEntity);
         when(projectRepository.saveAndFlush(any())).thenReturn(savedEntity);
         when(projectResourceAssembler.toModel(any())).thenReturn(inputModel);
+        ProjectStatusCodeEntity activeStatus = ProjectStatusCodeEntity.builder()
+                .projectStatusCode("ACTIVE")
+                .build();
+        when(projectStatusCodeRepository.findById("ACTIVE"))
+                .thenReturn(Optional.of(activeStatus));
         ProjectModel result = projectService.createOrUpdateProject(inputModel);
+
 
         // When
         doThrow(new RuntimeException("Error deleting project")).when(projectRepository).delete(savedEntity);
@@ -550,7 +631,11 @@ public class ProjectServiceTest {
         ProjectEntity entityToSave = new ProjectEntity();
         when(projectResourceAssembler.toEntity(any())).thenReturn(entityToSave);
         when(projectRepository.saveAndFlush(any())).thenAnswer(i -> i.getArgument(0)); // Return what was passed in
-
+        ProjectStatusCodeEntity activeStatus = ProjectStatusCodeEntity.builder()
+                .projectStatusCode("ACTIVE")
+                .build();
+        when(projectStatusCodeRepository.findById("ACTIVE"))
+                .thenReturn(Optional.of(activeStatus));
         // When
         projectService.createOrUpdateProject(inputModel);
 
@@ -590,6 +675,12 @@ public class ProjectServiceTest {
         when(forestAreaCodeRepository.findById("FAC1")).thenReturn(Optional.of(forestAreaEntity));
         when(projectTypeCodeRepository.findById("PTC1")).thenReturn(Optional.of(projectTypeEntity));
         when(generalScopeCodeRepository.findById("GSC1")).thenReturn(Optional.of(generalScopeEntity));
+
+        ProjectStatusCodeEntity activeStatus = ProjectStatusCodeEntity.builder()
+                .projectStatusCode("ACTIVE")
+                .build();
+        when(projectStatusCodeRepository.findById("ACTIVE"))
+                .thenReturn(Optional.of(activeStatus));
 
         // Return a real entity that can have values set
         when(projectResourceAssembler.toEntity(any())).thenReturn(testEntity);
@@ -633,6 +724,12 @@ public class ProjectServiceTest {
 
         when(projectRepository.saveAndFlush(any(ProjectEntity.class)))
                 .thenAnswer(invocation -> invocation.getArgument(0));
+
+        ProjectStatusCodeEntity activeStatus = ProjectStatusCodeEntity.builder()
+                .projectStatusCode("ACTIVE")
+                .build();
+        when(projectStatusCodeRepository.findById("ACTIVE"))
+                .thenReturn(Optional.of(activeStatus));
 
         // When
         ProjectModel result = projectService.createOrUpdateProject(inputModel);
