@@ -5,14 +5,19 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import ca.bc.gov.nrs.wfprev.data.assemblers.ProjectStatusCodeResourceAssembler;
 import ca.bc.gov.nrs.wfprev.data.entities.ForestAreaCodeEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.GeneralScopeCodeEntity;
+import ca.bc.gov.nrs.wfprev.data.entities.ProjectStatusCodeEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ProjectTypeCodeEntity;
+import ca.bc.gov.nrs.wfprev.data.models.ProjectStatusCodeModel;
 import ca.bc.gov.nrs.wfprev.data.repositories.ForestAreaCodeRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.GeneralScopeCodeRepository;
+import ca.bc.gov.nrs.wfprev.data.repositories.ProjectStatusCodeRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.ProjectTypeCodeRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.stereotype.Component;
 
@@ -28,6 +33,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Component
 public class ProjectService implements CommonService {
+  private final ProjectStatusCodeResourceAssembler projectStatusCodeAssembler;
   private ProjectRepository projectRepository;
   private ProjectResourceAssembler projectResourceAssembler;
 
@@ -40,9 +46,13 @@ public class ProjectService implements CommonService {
   @Autowired
   private GeneralScopeCodeRepository generalScopeCodeRepository;
 
-  public ProjectService(ProjectRepository projectRepository, ProjectResourceAssembler projectResourceAssembler) {
+  @Autowired
+  private ProjectStatusCodeRepository projectStatusCodeRepository;
+
+  public ProjectService(ProjectRepository projectRepository, ProjectResourceAssembler projectResourceAssembler, ProjectStatusCodeResourceAssembler projectStatusCodeAssembler) {
     this.projectRepository = projectRepository;
     this.projectResourceAssembler = projectResourceAssembler;
+    this.projectStatusCodeAssembler = projectStatusCodeAssembler;
   }
   
   public CollectionModel<ProjectModel> getAllProjects() throws ServiceException {
@@ -116,11 +126,28 @@ public class ProjectService implements CommonService {
         }
       }
 
+      if (resource.getProjectStatusCode() == null) {
+        ProjectStatusCodeEntity activeStatus = projectStatusCodeRepository.findById("ACTIVE")
+                .orElseThrow(() -> new EntityNotFoundException("Project Status Code 'ACTIVE' not found"));
+        entity.setProjectStatusCode(activeStatus);
+      } else {
+        String projectStatusCode = resource.getProjectStatusCode().getProjectStatusCode();
+        if (projectStatusCode != null) {
+          ProjectStatusCodeEntity projectStatusCodeEntity = projectStatusCodeRepository
+                  .findById(projectStatusCode)
+                  .orElseThrow(() -> new EntityNotFoundException(
+                          "Project Status Code not found: " + projectStatusCode));
+          entity.setProjectStatusCode(projectStatusCodeEntity);
+        }
+      }
+
       ProjectEntity savedEntity = projectRepository.saveAndFlush(entity);
       return projectResourceAssembler.toModel(savedEntity);
 
     } catch (EntityNotFoundException e) {
       throw new ServiceException("Invalid reference data: " + e.getMessage(), e);
+    } catch (DataIntegrityViolationException e) {
+      throw new DataIntegrityViolationException(e.getMessage(), e);
     } catch (Exception e) {
       log.error("Error creating/updating project", e);  // Add logging
       throw new ServiceException(e.getLocalizedMessage(), e);
