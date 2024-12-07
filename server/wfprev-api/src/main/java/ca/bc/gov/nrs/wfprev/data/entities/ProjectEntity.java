@@ -75,6 +75,7 @@ public class ProjectEntity implements Serializable {
     private UUID programAreaGuid;
 
     @Column(name = "forest_region_org_unit_id", columnDefinition = "Decimal(10)")
+    @NotNull
     private Integer forestRegionOrgUnitId;
 
     @Column(name = "forest_district_org_unit_id", columnDefinition = "Decimal(10)")

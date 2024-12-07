@@ -1,6 +1,7 @@
 package ca.bc.gov.nrs.wfprev.handlers;
 
 import jakarta.validation.ConstraintViolationException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -11,19 +12,28 @@ import java.util.Map;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
-
-    @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<Object> handleConstraintViolation(ConstraintViolationException ex) {
+    @ExceptionHandler({ConstraintViolationException.class, DataIntegrityViolationException.class})
+    public ResponseEntity<Object> handleValidationExceptions(Exception ex) {
         Map<String, String> errors = new HashMap<>();
 
-        ex.getConstraintViolations().forEach(violation -> {
-            String fieldName = violation.getPropertyPath().toString();
-            String errorMessage = violation.getMessage();
-            errors.put(fieldName, errorMessage);
-        });
+        if (ex instanceof ConstraintViolationException) {
+            ConstraintViolationException cve = (ConstraintViolationException) ex;
+            cve.getConstraintViolations().forEach(violation -> {
+                String fieldName = violation.getPropertyPath() != null ?
+                        violation.getPropertyPath().toString() :
+                        "unknown_field";
+                String errorMessage = violation.getMessage() != null ?
+                        violation.getMessage() :
+                        "unknown error";
+                errors.put(fieldName, errorMessage);
+            });
+        } else {
+            // DataIntegrityViolationException
+            errors.put("error", "Data integrity violation: " + ex.getMessage());
+        }
 
         return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)  // Returns 400 instead of 500
+                .status(HttpStatus.UNPROCESSABLE_ENTITY)
                 .body(errors);
     }
 }
