@@ -31,7 +31,10 @@ public class ProjectResourceAssembler extends RepresentationModelAssemblerSuppor
 
         entity.setProjectGuid(UUID.fromString(resource.getProjectGuid()));
         entity.setProjectTypeCode(toProjectTypeCodeEntity(resource.getProjectTypeCode()));
-        entity.setProjectNumber(resource.getProjectNumber());
+        // Only set project number if it exists (for updates)
+        if (resource.getProjectNumber() != null) {
+            entity.setProjectNumber(resource.getProjectNumber());
+        }
         entity.setSiteUnitName(resource.getSiteUnitName());
         entity.setForestAreaCode(toForestAreaCodeEntity(resource.getForestAreaCode()));
         entity.setGeneralScopeCode(toGeneralScopeCodeEntity(resource.getGeneralScopeCode()));

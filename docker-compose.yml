@@ -1,5 +1,7 @@
 services:
   api:
+    profiles:
+    - api
     build:
       context: .
       dockerfile: server/wfprev-api/Dockerfile.graalvm

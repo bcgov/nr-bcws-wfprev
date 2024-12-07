@@ -31,6 +31,7 @@ public class ProjectModel extends CommonModel<ProjectModel> {
 	private String siteUnitName;
 	private ForestAreaCodeModel forestAreaCode;
 	private GeneralScopeCodeModel generalScopeCode;
+	private ProjectStatusCodeModel projectStatusCode;
 	private String programAreaGuid;
 	private Integer forestRegionOrgUnitId;
 	private Integer forestDistrictOrgUnitId;
