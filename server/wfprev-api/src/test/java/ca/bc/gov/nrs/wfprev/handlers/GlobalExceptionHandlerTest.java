@@ -1,15 +1,17 @@
 package ca.bc.gov.nrs.wfprev.handlers;
 
+import com.fasterxml.jackson.core.JsonParseException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
+import org.hibernate.validator.internal.engine.path.PathImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.hibernate.validator.internal.engine.path.PathImpl;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 
 import java.util.HashSet;
 import java.util.Map;
@@ -19,7 +21,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-
 @ExtendWith(MockitoExtension.class)
 public class GlobalExceptionHandlerTest {
 
@@ -182,5 +183,59 @@ public class GlobalExceptionHandlerTest {
         Map<String, String> errors = (Map<String, String>) response.getBody();
         assertEquals(1, errors.size());
         assertEquals("unknown error", errors.get("siteUnitName"));  // Changed from "null" to "unknown error"
+    }
+    @Test
+    public void testHandleHttpMessageNotReadable() {
+        // Given
+        HttpMessageNotReadableException ex = new HttpMessageNotReadableException("Test message");
+
+        // When
+        ResponseEntity<Object> response = handler.handleHttpMessageNotReadable(ex);
+
+        // Then
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertTrue(response.getBody() instanceof Map);
+
+        @SuppressWarnings("unchecked")
+        Map<String, String> errors = (Map<String, String>) response.getBody();
+        assertEquals(1, errors.size());
+        assertEquals("Invalid JSON format", errors.get("error"));
+    }
+
+    @Test
+    public void testHandleHttpMessageNotReadable_NullMessage() {
+        // Given
+        HttpMessageNotReadableException ex = new HttpMessageNotReadableException(null);
+
+        // When
+        ResponseEntity<Object> response = handler.handleHttpMessageNotReadable(ex);
+
+        // Then
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertTrue(response.getBody() instanceof Map);
+
+        @SuppressWarnings("unchecked")
+        Map<String, String> errors = (Map<String, String>) response.getBody();
+        assertEquals(1, errors.size());
+        assertEquals("Invalid JSON format", errors.get("error"));
+    }
+
+    @Test
+    public void testHandleHttpMessageNotReadable_JsonParseError() {
+        // Given
+        JsonParseException jsonEx = new JsonParseException(null, "Invalid JSON");
+        HttpMessageNotReadableException ex = new HttpMessageNotReadableException("Test message", jsonEx);
+
+        // When
+        ResponseEntity<Object> response = handler.handleHttpMessageNotReadable(ex);
+
+        // Then
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertTrue(response.getBody() instanceof Map);
+
+        @SuppressWarnings("unchecked")
+        Map<String, String> errors = (Map<String, String>) response.getBody();
+        assertEquals(1, errors.size());
+        assertEquals("Invalid JSON format", errors.get("error"));
     }
 }
