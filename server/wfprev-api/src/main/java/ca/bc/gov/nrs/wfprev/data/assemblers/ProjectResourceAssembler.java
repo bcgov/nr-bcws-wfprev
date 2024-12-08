@@ -30,7 +30,9 @@ public class ProjectResourceAssembler extends RepresentationModelAssemblerSuppor
         ProjectEntity entity = new ProjectEntity();
 
         entity.setProjectGuid(UUID.fromString(resource.getProjectGuid()));
-        entity.setProjectTypeCode(toProjectTypeCodeEntity(resource.getProjectTypeCode()));
+        if (resource.getProjectTypeCode() != null) {
+            entity.setProjectTypeCode(toProjectTypeCodeEntity(resource.getProjectTypeCode()));
+        }
         // Only set project number if it exists (for updates)
         if (resource.getProjectNumber() != null) {
             entity.setProjectNumber(resource.getProjectNumber());
@@ -39,8 +41,12 @@ public class ProjectResourceAssembler extends RepresentationModelAssemblerSuppor
         if (resource.getForestAreaCode() != null) {
             entity.setForestAreaCode(toForestAreaCodeEntity(resource.getForestAreaCode()));
         }
-        entity.setGeneralScopeCode(toGeneralScopeCodeEntity(resource.getGeneralScopeCode()));
-        entity.setProgramAreaGuid(UUID.fromString(resource.getProgramAreaGuid()));
+        if (resource.getGeneralScopeCode() != null) {
+            entity.setGeneralScopeCode(toGeneralScopeCodeEntity(resource.getGeneralScopeCode()));
+        }
+        if (resource.getProgramAreaGuid() != null) {
+            entity.setProgramAreaGuid(UUID.fromString(resource.getProgramAreaGuid()));
+        }
         entity.setForestRegionOrgUnitId(resource.getForestRegionOrgUnitId());
         entity.setForestDistrictOrgUnitId(resource.getForestDistrictOrgUnitId());
         entity.setFireCentreOrgUnitId(resource.getFireCentreOrgUnitId());
@@ -132,6 +138,7 @@ public class ProjectResourceAssembler extends RepresentationModelAssemblerSuppor
     }
 
     private ProjectTypeCodeEntity toProjectTypeCodeEntity(ProjectTypeCodeModel code) {
+        if (code == null) return null;
         ProjectTypeCodeResourceAssembler ra = new ProjectTypeCodeResourceAssembler();
         return ra.toEntity(code);
     }
