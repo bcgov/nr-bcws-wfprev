@@ -6,7 +6,7 @@
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>3.2.0</version>
-		<relativePath/>
+		<relativePath>../../pom.xml</relativePath>
 		<!-- lookup parent from repository -->
 	</parent>
 	<groupId>ca.bc.gov.nrs.wfprev</groupId>
