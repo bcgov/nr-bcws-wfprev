@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -237,6 +238,49 @@ class ProjectControllerTest {
         // Then
         verify(projectService, times(1)).createOrUpdateProject(any(ProjectModel.class));
         assertEquals(500, result.andReturn().getResponse().getStatus());
+    }
+
+    @Test
+    @WithMockUser
+    void testCreateProject_Conflict() throws Exception {
+        // Given
+        ProjectModel project = new ProjectModel();
+        project.setProjectTypeCode(new ProjectTypeCodeModel());
+        project.setProjectNumber(1);
+        project.setSiteUnitName("Test");
+        project.setProgramAreaGuid(UUID.randomUUID().toString());
+        project.setProjectName("Test");
+        project.setIsMultiFiscalYearProj(false);
+        project.setLatitude(new BigDecimal(40.99));
+        project.setLongitude(new BigDecimal(-115.23));
+        project.setLastProgressUpdateTimestamp(new Date());
+        String projectGuid = UUID.randomUUID().toString();
+        project.setProjectGuid(projectGuid);
+
+        when(projectService.createOrUpdateProject(any(ProjectModel.class))).thenReturn(project);
+
+        String json = gson.toJson(project);
+
+        mockMvc.perform(post("/projects")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json)
+                        .accept("application/json")
+                        .header("Authorization", "Bearer admin-token"))
+                .andExpect(status().isCreated());
+
+        when(projectService.createOrUpdateProject(any(ProjectModel.class))).thenThrow(new DataIntegrityViolationException("Error creating project"));
+
+        // When
+        ResultActions result = mockMvc.perform(post("/projects")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json)
+                        .accept("application/json")
+                        .header("Authorization", "Bearer admin-token"))
+                .andExpect(status().isConflict());
+
+        // Then
+        verify(projectService, times(2)).createOrUpdateProject(any(ProjectModel.class));
+        assertEquals(409, result.andReturn().getResponse().getStatus());
     }
 
     @Test
