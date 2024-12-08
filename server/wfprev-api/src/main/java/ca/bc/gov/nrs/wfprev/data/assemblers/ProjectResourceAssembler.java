@@ -93,7 +93,9 @@ public class ProjectResourceAssembler extends RepresentationModelAssemblerSuppor
         if (entity.getForestAreaCode() != null) {
             resource.setForestAreaCode(toForestAreaCodeModel(entity.getForestAreaCode()));
         }
-        resource.setGeneralScopeCode(toGeneralScopeCodeModel(entity.getGeneralScopeCode()));
+        if (entity.getGeneralScopeCode() != null) {
+            resource.setGeneralScopeCode(toGeneralScopeCodeModel(entity.getGeneralScopeCode()));
+        }
         resource.setProgramAreaGuid(entity.getProgramAreaGuid().toString());
         resource.setForestRegionOrgUnitId(entity.getForestRegionOrgUnitId());
         resource.setForestDistrictOrgUnitId(entity.getForestDistrictOrgUnitId());
