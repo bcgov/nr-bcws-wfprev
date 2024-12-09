@@ -1,32 +1,29 @@
 package ca.bc.gov.nrs.wfprev.services;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-
-import ca.bc.gov.nrs.wfprev.common.entities.CommonModel;
-import ca.bc.gov.nrs.wfprev.data.assemblers.ProgramAreaResourceAssembler;
-import ca.bc.gov.nrs.wfprev.data.entities.ProgramAreaEntity;
-import ca.bc.gov.nrs.wfprev.data.models.ProgramAreaModel;
-import ca.bc.gov.nrs.wfprev.data.repositories.ProgramAreaRepository;
-import org.springframework.hateoas.CollectionModel;
-import org.springframework.stereotype.Component;
-
 import ca.bc.gov.nrs.wfone.common.service.api.ServiceException;
 import ca.bc.gov.nrs.wfprev.common.services.CommonService;
 import ca.bc.gov.nrs.wfprev.data.assemblers.ForestAreaCodeResourceAssembler;
 import ca.bc.gov.nrs.wfprev.data.assemblers.GeneralScopeCodeResourceAssembler;
+import ca.bc.gov.nrs.wfprev.data.assemblers.ProgramAreaResourceAssembler;
 import ca.bc.gov.nrs.wfprev.data.assemblers.ProjectTypeCodeResourceAssembler;
 import ca.bc.gov.nrs.wfprev.data.entities.ForestAreaCodeEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.GeneralScopeCodeEntity;
+import ca.bc.gov.nrs.wfprev.data.entities.ProgramAreaEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ProjectTypeCodeEntity;
 import ca.bc.gov.nrs.wfprev.data.models.ForestAreaCodeModel;
 import ca.bc.gov.nrs.wfprev.data.models.GeneralScopeCodeModel;
+import ca.bc.gov.nrs.wfprev.data.models.ProgramAreaModel;
 import ca.bc.gov.nrs.wfprev.data.models.ProjectTypeCodeModel;
 import ca.bc.gov.nrs.wfprev.data.repositories.ForestAreaCodeRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.GeneralScopeCodeRepository;
+import ca.bc.gov.nrs.wfprev.data.repositories.ProgramAreaRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.ProjectTypeCodeRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.stereotype.Component;
+
+import java.util.List;
+import java.util.UUID;
 
 @Slf4j
 @Component
