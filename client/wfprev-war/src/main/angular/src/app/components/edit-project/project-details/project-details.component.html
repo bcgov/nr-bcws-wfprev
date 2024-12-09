@@ -1,0 +1,161 @@
+<div class="details-container">
+    <form [formGroup]="detailsForm" (ngSubmit)="onSave()" class="form-grid">
+      <div class="form-item">
+        <label for="projectLead">Project Lead</label>
+        <input
+          type="text"
+          id="projectLead"
+          formControlName="projectLead"
+          placeholder="Enter Project Lead"
+        />
+      </div>
+  
+      <div class="form-item">
+        <label for="projectLeadEmailAddress">Contact Email</label>
+        <input
+          type="email"
+          id="projectLeadEmailAddress"
+          formControlName="projectLeadEmailAddress"
+          placeholder="Enter Email"
+        />
+      </div>
+
+      <div class="form-item">
+        <label for="siteUnitName">Site Unit(Planning Unit)</label>
+        <input
+          type="text"
+          id="siteUnitName"
+          formControlName="siteUnitName"
+          placeholder="Enter Site Unit"
+        />
+      </div>
+  
+      <div class="form-item">
+        <label for="projectTypeCode">Project Type</label>
+        <select id="projectTypeCode" formControlName="projectTypeCode">
+          <option value="FUEL_MGMT">Fuels Management</option>
+          <option value="FIRE_RESP">Fire Response</option>
+          <option value="ECOSYS_RES">Ecosystem Restoration</option>
+        </select>
+      </div>
+
+      <div class="form-item">
+        <label for="projectTypeCode">Business/Program Area</label>
+        <select id="projectTypeCode" formControlName="businessArea">
+          <option value="area1">area1</option>
+          <option value="area2">area2</option>
+          <option value="area3">area3</option>
+        </select>
+      </div>
+
+      <div class="form-item">
+        <label for="projectTypeCode">Forest Region</label>
+        <select id="projectTypeCode" formControlName="forestRegion">
+          <option value="area1">area1</option>
+          <option value="area2">area2</option>
+          <option value="area3">area3</option>
+        </select>
+      </div>
+
+      <div class="form-item">
+        <label> Forest District </label>
+        <input
+          type="text"
+          id="forestDistrict"
+          formControlName="forestDistrict"
+          placeholder="Enter Forest District Name"
+        />
+      </div>
+
+      <div class="form-item">
+        <label> BC Parks Region </label>
+        <input
+          type="text"
+          id="bcParksRegion"
+          formControlName="bcParksRegion"
+          placeholder="Enter BC PARKS REGION"
+        />
+      </div>
+
+      <div class="form-item">
+        <label>BC Parks District</label>
+        <select id="bcParksDistrict" formControlName="bcParksDistrict">
+          <option value="bcParksDistrict1">bcParksDistrict1</option>
+          <option value="bcParksDistrict2">bcParksDistrict2</option>
+          <option value="bcParksDistrict3">bcParksDistrict3</option>
+        </select>
+      </div>
+  
+      <div class="form-item">
+        <label>Funding Stream</label>
+        <select id="fundingStream" formControlName="fundingStream">
+          <option value="fundingStream1">fundingStream1</option>
+          <option value="fundingStream2">fundingStream2</option>
+          <option value="fundingStream3">fundingStream3</option>
+        </select>
+      </div>
+
+      <div class="form-item">
+        <label for="closestCommunityName">Nearest Community</label>
+        <input
+          type="text"
+          id="closestCommunityName"
+          formControlName="closestCommunityName"
+          placeholder="Enter Community Name"
+        />
+      </div>
+  
+      <div class="form-item">
+        <label>Primary Objective</label>
+        <select id="fundingStream" formControlName="fundingStream">
+          <option value="fundingStream1">fundingStream1</option>
+          <option value="fundingStream2">fundingStream2</option>
+          <option value="fundingStream3">fundingStream3</option>
+        </select>
+      </div>
+
+      <div class="form-item">
+        <label for="totalFundingRequestAmount">Total Funding Request</label>
+        <input
+          type="number"
+          id="totalFundingRequestAmount"
+          formControlName="totalFundingRequestAmount"
+          placeholder="Enter Funding Request"
+        />
+      </div>
+  
+      <div class="form-item">
+        <label for="totalAllocatedAmount">Total Allocated Amount</label>
+        <input
+          type="number"
+          id="totalAllocatedAmount"
+          formControlName="totalAllocatedAmount"
+          placeholder="Enter Allocated Amount"
+        />
+      </div>
+  
+      <div class="form-item full-width">
+        <label for="projectDescription">Project Description</label>
+        <textarea
+          id="projectDescription"
+          formControlName="projectDescription"
+          placeholder="Enter Description"
+        ></textarea>
+      </div>
+  
+        <!-- <button mat-button type="submit" [disabled]="detailsForm.invalid">
+          Save
+        </button>
+        <button mat-button type="button" (click)="onCancel()">Cancel</button> -->
+        <div class="footer">
+            <div class="button-row">
+              <button class="secondary" (click)="onCancel()">Cancel</button>
+              <button
+                class="primary">Save
+              </button>
+            </div>
+          </div>
+
+    </form>
+  </div>
+  

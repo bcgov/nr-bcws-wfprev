@@ -137,9 +137,9 @@ export class ProjectsListComponent {
     console.log('Sync with map:', this.syncWithMap ? 'On' : 'Off');
   }
 
-  editProject(item: any) {
+  editProject(project: any) {
     this.router.navigate([ResourcesRoutes.EDIT_PROJECT], {
-      queryParams: { projectNumber: item.projectNumber, name: item.projectName}
+      queryParams: { projectNumber: project.projectNumber, name: project.projectName}
     });
   }
   
