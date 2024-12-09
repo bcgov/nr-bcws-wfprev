@@ -1,25 +1,9 @@
 package ca.bc.gov.nrs.wfprev.data.entities;
 
-import java.io.Serializable;
-import java.math.BigDecimal;
-import java.util.Date;
-import java.util.UUID;
-
-import jakarta.persistence.SequenceGenerator;
-import org.hibernate.annotations.UuidGenerator;
-import org.springframework.data.annotation.CreatedBy;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedBy;
-import org.springframework.data.annotation.LastModifiedDate;
-
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
-import ca.bc.gov.nrs.wfprev.common.converters.BooleanConverter;
 import ca.bc.gov.nrs.wfprev.common.validators.Latitude;
 import ca.bc.gov.nrs.wfprev.common.validators.Longitude;
-import jakarta.persistence.CascadeType;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.Column;
-import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -35,6 +19,16 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.UuidGenerator;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
+
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.UUID;
 
 @Entity
 @Table(name = "project")

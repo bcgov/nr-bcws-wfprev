@@ -21,6 +21,12 @@ public class ProjectStatusCodeResourceAssembler extends RepresentationModelAssem
         model.setDisplayOrder(entity.getDisplayOrder());
         model.setEffectiveDate(entity.getEffectiveDate());
         model.setExpiryDate(entity.getExpiryDate());
+        model.setDisplayOrder(entity.getDisplayOrder());
+        model.setCreateDate(entity.getCreateDate());
+        model.setCreateUser(entity.getCreateUser());
+        model.setUpdateDate(entity.getUpdateDate());
+        model.setUpdateUser(entity.getUpdateUser());
+        model.setRevisionCount(entity.getRevisionCount());
 
         return model;
     }
@@ -37,6 +43,11 @@ public class ProjectStatusCodeResourceAssembler extends RepresentationModelAssem
         entity.setDisplayOrder(model.getDisplayOrder());
         entity.setEffectiveDate(model.getEffectiveDate());
         entity.setExpiryDate(model.getExpiryDate());
+        entity.setCreateDate(model.getCreateDate());
+        entity.setCreateUser(model.getCreateUser());
+        entity.setUpdateDate(model.getUpdateDate());
+        entity.setUpdateUser(model.getUpdateUser());
+        entity.setRevisionCount(model.getRevisionCount());
 
         return entity;
     }
