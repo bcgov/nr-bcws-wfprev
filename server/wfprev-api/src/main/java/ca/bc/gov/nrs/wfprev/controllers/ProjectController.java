@@ -3,6 +3,7 @@ package ca.bc.gov.nrs.wfprev.controllers;
 import java.util.Date;
 import java.util.UUID;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -113,6 +114,9 @@ public class ProjectController extends CommonController {
 
       ProjectModel newResource = projectService.createOrUpdateProject(resource);
       response = newResource == null ? badRequest() : created(newResource);
+    } catch (DataIntegrityViolationException e) {
+      response = conflict();
+      log.error(" ### Error while creating resource", e);
     } catch(ServiceException e) {
       response = internalServerError();
       log.error(" ### Error while creating resource", e);
