@@ -32,16 +32,31 @@ export class PrevAuthGuard extends AuthGuard {
         route: ActivatedRouteSnapshot,
         state: RouterStateSnapshot,
     ): Observable<boolean> {
-
+        console.log('in here')
         if (!window.navigator.onLine) {
+            console.log('in here')
             return of(false);
         }
 
         if (route?.data?.['scopes']?.length > 0) {
+            console.log('in here1')
             // Wrap the Promise returned by getTokenInfo with from()
             return from(this.getTokenInfo(route)).pipe(
-                map(result => result),
-                catchError(() => of(false))
+                map(result => {
+                    console.log('result: ', result)
+                    console.log('in here2')
+                    if (result === false || result === undefined) {
+                        console.log('in here3')
+                        this.redirectToErrorPage();
+                        return of(false);
+                    }
+                    return result;
+                }),
+                catchError(() => {
+                    console.log('in here4')
+                    this.redirectToErrorPage();
+                    return of(false);
+                })
             );
         } else {
             console.log('returning true');
