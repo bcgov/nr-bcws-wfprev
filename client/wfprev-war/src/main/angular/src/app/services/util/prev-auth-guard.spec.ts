@@ -202,11 +202,7 @@ describe('PrevAuthGuard', () => {
       // Spy on redirectToErrorPage
       spyOn(guard, 'redirectToErrorPage');
     
-      // Trigger canActivate
-      let result: boolean | undefined;
-      guard.canActivate(route, state).subscribe(res => {
-        result = res;
-      });
+      guard.canActivate(route, state);
     
       tick(); // Simulate passage of time for observable
       flush(); // Flush any remaining async operations
