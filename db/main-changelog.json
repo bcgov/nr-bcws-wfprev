@@ -275,6 +275,33 @@
             { "sql": "DROP TABLE wfprev.project_type_code" }
         ]
       }
+    },
+    {
+      "changeSet": {
+        "id": "01_00_02_00",
+        "author": "agordon",
+        "tagDatabase": { "tag" : "version_01_00_02_00" },
+        "changes": [
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_00_02/00/ddl/sequences/WFPREV.project_number_seq.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_00_02/00/ddl/tables/WFPREV.project_update.sql"
+            }
+          }
+        ],
+        "rollback": [
+          { "sql": "ALTER TABLE wfprev.project ALTER COLUMN project_number DROP DEFAULT" },
+          { "sql": "DROP SEQUENCE wfprev.project_number_seq" }
+        ]
+      }
     }
   ] 
 }

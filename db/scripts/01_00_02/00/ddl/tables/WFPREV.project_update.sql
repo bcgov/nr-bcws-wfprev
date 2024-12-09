@@ -1,0 +1,1 @@
+ALTER TABLE "wfprev"."project" ALTER COLUMN "project_number" SET DEFAULT nextval('wfprev.project_number_seq');
