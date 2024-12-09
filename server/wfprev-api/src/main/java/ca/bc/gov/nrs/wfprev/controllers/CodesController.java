@@ -64,6 +64,7 @@ public class CodesController extends CommonController {
         case CodeTables.PROGRAM_AREA_CODE -> {
           response =  ok(codesService.getAllProgramAreaCodes());
         }
+
         default -> {
           response = internalServerError();
         }
@@ -101,6 +102,9 @@ public class CodesController extends CommonController {
         }
         case CodeTables.PROJECT_TYPE_CODE -> {
           resource =  codesService.getProjectTypeCodeById(id);
+        }
+        case CodeTables.PROGRAM_AREA_CODE -> {
+          resource =  codesService.getProgramAreaCodeById(id);
         }
         default -> {
           resource = null;

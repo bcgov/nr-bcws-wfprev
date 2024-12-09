@@ -2,7 +2,9 @@ package ca.bc.gov.nrs.wfprev.services;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
+import ca.bc.gov.nrs.wfprev.common.entities.CommonModel;
 import ca.bc.gov.nrs.wfprev.data.assemblers.ProgramAreaResourceAssembler;
 import ca.bc.gov.nrs.wfprev.data.entities.ProgramAreaEntity;
 import ca.bc.gov.nrs.wfprev.data.models.ProgramAreaModel;
@@ -115,6 +117,15 @@ public class CodesService implements CommonService {
         try {
             List<ProgramAreaEntity> entities = programAreaRepository.findAll();
             return programAreaResourceAssembler.toCollectionModel(entities);
+        } catch (Exception e) {
+            throw new ServiceException(e.getLocalizedMessage(), e);
+        }
+    }
+
+    public ProgramAreaModel getProgramAreaCodeById(String id) {
+        try {
+            UUID guid = UUID.fromString(id);
+            return programAreaRepository.findById(guid).map(programAreaResourceAssembler::toModel).orElse(null);
         } catch (Exception e) {
             throw new ServiceException(e.getLocalizedMessage(), e);
         }
