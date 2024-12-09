@@ -252,9 +252,34 @@ class CodesControllerTest {
 
     @Test
     @WithMockUser
+    void testGetGeneralAreaCodeById_VerifyServiceCall() throws Exception {
+        String id = UUID.randomUUID().toString();
+
+        mockMvc.perform(get("/codes/{codeTable}/{id}", CodeTables.GENERAL_SCOPE_CODE, id)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+
+        verify(codesService, times(1)).getGeneralScopeCodeById(id);
+        verifyNoMoreInteractions(codesService);
+    }
+
+    @Test
+    @WithMockUser
+    void testGetProjectTypeAreaCodeById_VerifyServiceCall() throws Exception {
+        String id = UUID.randomUUID().toString();
+
+        mockMvc.perform(get("/codes/{codeTable}/{id}", CodeTables.PROJECT_TYPE_CODE, id)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+
+        verify(codesService, times(1)).getProjectTypeCodeById(id);
+        verifyNoMoreInteractions(codesService);
+    }
+
+    @Test
+    @WithMockUser
     void testGetProgramAreaCodeById_VerifyServiceCall() throws Exception {
         String id = UUID.randomUUID().toString();
-        when(codesService.getProgramAreaCodeById(id)).thenReturn(null);
 
         mockMvc.perform(get("/codes/{codeTable}/{id}", CodeTables.PROGRAM_AREA_CODE, id)
                         .contentType(MediaType.APPLICATION_JSON))
