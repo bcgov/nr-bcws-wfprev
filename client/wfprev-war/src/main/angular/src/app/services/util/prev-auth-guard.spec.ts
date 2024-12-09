@@ -211,6 +211,46 @@ describe('PrevAuthGuard', () => {
     }));
   })
 
+  it('should redirect to error page when getTokenInfo returns false', fakeAsync(() => {
+    const route = new MockActivatedRouteSnapshot();
+    route.data = { scopes: [['test-scope']] };
+    const state = jasmine.createSpyObj<RouterStateSnapshot>('RouterStateSnapshot', [], { 
+      url: '/test' 
+    });
+  
+    // Spy on getTokenInfo to return false
+    spyOn(guard, 'getTokenInfo' as any).and.returnValue(Promise.resolve(false));
+    
+    // Spy on redirectToErrorPage
+    spyOn(guard, 'redirectToErrorPage');
+  
+    guard.canActivate(route, state).subscribe();
+    
+    tick(); // Advance async operations
+    
+    expect(guard.redirectToErrorPage).toHaveBeenCalled();
+  }));
+  
+  it('should redirect to error page when getTokenInfo returns undefined', fakeAsync(() => {
+    const route = new MockActivatedRouteSnapshot();
+    route.data = { scopes: [['test-scope']] };
+    const state = jasmine.createSpyObj<RouterStateSnapshot>('RouterStateSnapshot', [], { 
+      url: '/test' 
+    });
+  
+    // Spy on getTokenInfo to return undefined
+    spyOn(guard, 'getTokenInfo' as any).and.returnValue(Promise.resolve(undefined));
+    
+    // Spy on redirectToErrorPage
+    spyOn(guard, 'redirectToErrorPage');
+  
+    guard.canActivate(route, state).subscribe();
+    
+    tick();
+    
+    expect(guard.redirectToErrorPage).toHaveBeenCalled();
+  }));
+
   describe('getTokenInfo', () => {
     let mockRoute: any;
 
