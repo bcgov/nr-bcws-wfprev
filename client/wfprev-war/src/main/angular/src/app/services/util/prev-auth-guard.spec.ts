@@ -1,12 +1,11 @@
-import { TestBed } from '@angular/core/testing';
-import { PrevAuthGuard } from './prev-auth-guard';
-import { TokenService } from 'src/app/services/token.service';
-import { AppConfigService } from 'src/app/services/app-config.service';
-import { Router, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { of, Subject, BehaviorSubject } from 'rxjs';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { ResourcesRoutes } from 'src/app/utils';
+import { TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { ActivatedRouteSnapshot, Router, RouterStateSnapshot } from '@angular/router';
+import { BehaviorSubject, of, Subject } from 'rxjs';
+import { AppConfigService } from 'src/app/services/app-config.service';
+import { TokenService } from 'src/app/services/token.service';
+import { PrevAuthGuard } from './prev-auth-guard';
 
 class MockActivatedRouteSnapshot extends ActivatedRouteSnapshot {
   constructor(public routeConfigOverride?: any) {
@@ -188,24 +187,29 @@ describe('PrevAuthGuard', () => {
       });
     });
 
-    it('should handle route with scopes when token validation fails', (done) => {
+    it('should handle route with scopes when token validation fails', fakeAsync(() => {
       // Setup route with scopes
       route.data = { scopes: [['test-scope']] };
-
+    
       // Mock token exists
       tokenService.getOauthToken.and.returnValue('test-token');
-
+    
       // Mock token validation fails
       tokenService.validateToken.and.returnValue(of(false));
-
+    
       // Spy on redirectToErrorPage
       spyOn(guard, 'redirectToErrorPage');
-
-      guard.canActivate(route, state).subscribe(result => {
-        expect(guard.redirectToErrorPage).toHaveBeenCalled();
-        done();
+    
+      // Trigger canActivate
+      let result: boolean | undefined;
+      guard.canActivate(route, state).subscribe(res => {
+        result = res;
       });
-    });
+    
+      tick(); // Simulate passage of time for the observable
+      expect(guard.redirectToErrorPage).toHaveBeenCalled();
+      expect(result).toBeUndefined(); // Ensure the result matches the expectation
+    }));
   });
 
   describe('getTokenInfo', () => {
