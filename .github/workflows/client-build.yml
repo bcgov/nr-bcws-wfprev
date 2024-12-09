@@ -1,5 +1,9 @@
 name: Deploy Angular App to S3 and CloudFront
 
+permissions:
+  contents: read
+  id-token: write
+
 on:
   workflow_call:
     inputs:
