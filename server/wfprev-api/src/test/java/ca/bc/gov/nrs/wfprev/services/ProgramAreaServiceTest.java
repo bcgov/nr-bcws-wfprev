@@ -206,4 +206,19 @@ class ProgramAreaServiceTest {
         // Then
         assertTrue(exception.getMessage().contains("Error deleting program area"));
     }
+
+    @Test
+    void testGetProgramAreaById_InvalidUUID() {
+        // Given
+        String invalidId = "not-a-uuid";
+
+        // When
+        ServiceException exception = assertThrows(
+                ServiceException.class,
+                () -> programAreaService.getProgramAreaById(invalidId)
+        );
+
+        // Then
+        assertTrue(exception.getMessage().contains("Invalid UUID"));
+    }
 }
