@@ -3,6 +3,7 @@ package ca.bc.gov.nrs.wfprev.services;
 import ca.bc.gov.nrs.wfone.common.service.api.ServiceException;
 import ca.bc.gov.nrs.wfprev.data.assemblers.ForestAreaCodeResourceAssembler;
 import ca.bc.gov.nrs.wfprev.data.assemblers.GeneralScopeCodeResourceAssembler;
+import ca.bc.gov.nrs.wfprev.data.assemblers.ProgramAreaResourceAssembler;
 import ca.bc.gov.nrs.wfprev.data.assemblers.ProjectTypeCodeResourceAssembler;
 import ca.bc.gov.nrs.wfprev.data.entities.ForestAreaCodeEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.GeneralScopeCodeEntity;
@@ -12,6 +13,7 @@ import ca.bc.gov.nrs.wfprev.data.models.GeneralScopeCodeModel;
 import ca.bc.gov.nrs.wfprev.data.models.ProjectTypeCodeModel;
 import ca.bc.gov.nrs.wfprev.data.repositories.ForestAreaCodeRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.GeneralScopeCodeRepository;
+import ca.bc.gov.nrs.wfprev.data.repositories.ProgramAreaRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.ProjectTypeCodeRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -35,6 +37,9 @@ class CodesServiceTest {
     private ProjectTypeCodeRepository projectTypeCodeRepository;
     private ProjectTypeCodeResourceAssembler projectTypeCodeResourceAssembler;
 
+    private ProgramAreaRepository programAreaRepository;
+    private ProgramAreaResourceAssembler programAreaResourceAssembler;
+
     @BeforeEach
     void setup() {
         forestAreaCodeRepository = mock(ForestAreaCodeRepository.class);
@@ -46,7 +51,7 @@ class CodesServiceTest {
 
         codesService = new CodesService(forestAreaCodeRepository, forestAreaCodeResourceAssembler,
                 generalScopeCodeRepository, generalScopeCodeResourceAssembler,
-                projectTypeCodeRepository, projectTypeCodeResourceAssembler);
+                projectTypeCodeRepository, projectTypeCodeResourceAssembler, programAreaRepository, programAreaResourceAssembler);
     }
 
     @Test

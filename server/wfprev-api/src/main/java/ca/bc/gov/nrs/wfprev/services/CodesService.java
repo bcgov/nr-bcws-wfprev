@@ -3,6 +3,10 @@ package ca.bc.gov.nrs.wfprev.services;
 import java.util.ArrayList;
 import java.util.List;
 
+import ca.bc.gov.nrs.wfprev.data.assemblers.ProgramAreaResourceAssembler;
+import ca.bc.gov.nrs.wfprev.data.entities.ProgramAreaEntity;
+import ca.bc.gov.nrs.wfprev.data.models.ProgramAreaModel;
+import ca.bc.gov.nrs.wfprev.data.repositories.ProgramAreaRepository;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.stereotype.Component;
 
@@ -31,16 +35,20 @@ public class CodesService implements CommonService {
     private GeneralScopeCodeResourceAssembler generalScopeCodeResourceAssembler;
     private ProjectTypeCodeRepository projectTypeCodeRepository;
     private ProjectTypeCodeResourceAssembler projectTypeCodeResourceAssembler;
+    private final ProgramAreaRepository programAreaRepository;
+    private ProgramAreaResourceAssembler programAreaResourceAssembler;
 
     public CodesService(ForestAreaCodeRepository forestAreaCodeRepository, ForestAreaCodeResourceAssembler forestAreaCodeResourceAssembler,
                         GeneralScopeCodeRepository generalScopeCodeRepository, GeneralScopeCodeResourceAssembler generalScopeCodeResourceAssembler,
-                        ProjectTypeCodeRepository projectTypeCodeRepository, ProjectTypeCodeResourceAssembler projectTypeCodeResourceAssembler) {
+                        ProjectTypeCodeRepository projectTypeCodeRepository, ProjectTypeCodeResourceAssembler projectTypeCodeResourceAssembler, ProgramAreaRepository programAreaRepository, ProgramAreaResourceAssembler programAreaResourceAssembler) {
         this.forestAreaCodeRepository = forestAreaCodeRepository;
         this.forestAreaCodeResourceAssembler = forestAreaCodeResourceAssembler;
         this.generalScopeCodeRepository = generalScopeCodeRepository;
         this.generalScopeCodeResourceAssembler = generalScopeCodeResourceAssembler;
         this.projectTypeCodeRepository = projectTypeCodeRepository;
         this.projectTypeCodeResourceAssembler = projectTypeCodeResourceAssembler;
+        this.programAreaRepository = programAreaRepository;
+        this.programAreaResourceAssembler = programAreaResourceAssembler;
     }
 
     /**
@@ -98,6 +106,15 @@ public class CodesService implements CommonService {
     public ProjectTypeCodeModel getProjectTypeCodeById(String id) throws ServiceException {
         try {
             return projectTypeCodeRepository.findById(id).map(projectTypeCodeResourceAssembler::toModel).orElse(null);
+        } catch (Exception e) {
+            throw new ServiceException(e.getLocalizedMessage(), e);
+        }
+    }
+
+    public CollectionModel<ProgramAreaModel> getAllProgramAreaCodes() {
+        try {
+            List<ProgramAreaEntity> entities = programAreaRepository.findAll();
+            return programAreaResourceAssembler.toCollectionModel(entities);
         } catch (Exception e) {
             throw new ServiceException(e.getLocalizedMessage(), e);
         }
