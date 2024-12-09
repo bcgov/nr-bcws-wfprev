@@ -1,9 +1,5 @@
 name: Deploy Angular App to S3 and CloudFront
 
-permissions:
-  contents: read
-  id-token: write
-
 on:
   workflow_call:
     inputs:
@@ -15,13 +11,9 @@ on:
         type: string
   workflow_dispatch:
     inputs:
-      IMAGE_TAG:
+      TAG:
         type: string
         description: Additional tag to add to built images
-      DEFAULT_APPLICATION_ENVIRONMENT:
-        required: true
-        type: string
-        default: dev
 
 env:
   TF_VERSION: 1.8.5
@@ -29,7 +21,6 @@ env:
   TG_SRC_PATH: terraform
   TFC_PROJECT: ${{ secrets.TFC_PROJECT }} 
   TARGET_ENV: ${{ inputs.DEFAULT_APPLICATION_ENVIRONMENT }}
-  NPMRC: ${{ secrets.NPMRC }}
 
 jobs:
   build-and-deploy:
@@ -62,15 +53,12 @@ jobs:
         node-version: '20'
   
     - name: Add .npmrc file
-      run: echo -e ${{ env.NPMRC}} > ~/.npmrc
+      run: echo -e ${{ secrets.NPMRC}} > ~/.npmrc
 
     - name: Install dependencies for Angular project
       run: |
           cd client/wfprev-war/src/main/angular
           npm install
-
-    - name: Add .npmrc file
-      run: echo -e ${{ secrets.NPMRC}} > ~/.npmrc
 
     - name: Build Angular app
       run: |
