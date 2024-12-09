@@ -227,6 +227,7 @@ describe('PrevAuthGuard', () => {
     guard.canActivate(route, state).subscribe();
     
     tick(); // Advance async operations
+    flush(); // Flush any remaining async operations
     
     expect(guard.redirectToErrorPage).toHaveBeenCalled();
   }));
@@ -247,6 +248,7 @@ describe('PrevAuthGuard', () => {
     guard.canActivate(route, state).subscribe();
     
     tick();
+    flush(); // Flush any remaining async operations
     
     expect(guard.redirectToErrorPage).toHaveBeenCalled();
   }));
