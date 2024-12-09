@@ -189,28 +189,31 @@ describe('PrevAuthGuard', () => {
 
     it('should redirect user to error page when token validation fails', fakeAsync(() => {
       // Setup route with scopes
+      const route = new ActivatedRouteSnapshot();
       route.data = { scopes: [['test-scope']] };
-    
+
+      const state = jasmine.createSpyObj<RouterStateSnapshot>('RouterStateSnapshot', [], { url: '/test' });
+
       // Mock token exists
       tokenService.getOauthToken.and.returnValue('test-token');
-    
+
       // Mock token validation fails
       tokenService.validateToken.and.returnValue(of(false));
-    
+
       // Spy on redirectToErrorPage
       spyOn(guard, 'redirectToErrorPage');
-    
+
       // Trigger canActivate
       let result: boolean | undefined;
       guard.canActivate(route, state).subscribe(res => {
         result = res;
       });
-    
+
       tick(); // Simulate passage of time for the observable
       expect(guard.redirectToErrorPage).toHaveBeenCalled();
       expect(result).toBeUndefined(); // Ensure the result matches the expectation
     }));
-  });
+  })
 
   describe('getTokenInfo', () => {
     let mockRoute: any;
@@ -288,31 +291,31 @@ describe('PrevAuthGuard', () => {
       tokenService.getOauthToken.and.returnValue(null);
 
       const result = await guard.canAccessRoute([['test-scope']], tokenService);
-      
+
       expect(result).toBeFalse();
     });
 
     it('should return true when token is validated successfully', async () => {
       // Mock token exists
       tokenService.getOauthToken.and.returnValue('test-token');
-      
+
       // Mock token validation
       tokenService.validateToken.and.returnValue(of(true));
 
       const result = await guard.canAccessRoute([['test-scope']], tokenService);
-      
+
       expect(result).toBeTrue();
     });
 
     it('should return false when token validation fails', async () => {
       // Mock token exists
       tokenService.getOauthToken.and.returnValue('test-token');
-      
+
       // Mock token validation fails
       tokenService.validateToken.and.returnValue(of(false));
 
       const result = await guard.canAccessRoute([['test-scope']], tokenService);
-      
+
       expect(result).toBeFalse();
     });
   });
