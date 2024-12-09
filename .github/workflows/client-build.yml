@@ -29,6 +29,7 @@ env:
   TG_SRC_PATH: terraform
   TFC_PROJECT: ${{ secrets.TFC_PROJECT }} 
   TARGET_ENV: ${{ inputs.DEFAULT_APPLICATION_ENVIRONMENT }}
+  NPMRC: ${{ secrets.NPMRC }}
 
 jobs:
   build-and-deploy:
@@ -61,7 +62,7 @@ jobs:
         node-version: '20'
   
     - name: Add .npmrc file
-      run: echo -e ${{ secrets.NPMRC}} > ~/.npmrc
+      run: echo -e ${{ env.NPMRC}} > ~/.npmrc
 
     - name: Install dependencies for Angular project
       run: |
