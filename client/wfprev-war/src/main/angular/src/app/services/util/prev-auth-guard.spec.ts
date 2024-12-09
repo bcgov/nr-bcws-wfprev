@@ -187,7 +187,7 @@ describe('PrevAuthGuard', () => {
       });
     });
 
-    it('should handle route with scopes when token validation fails', fakeAsync(() => {
+    it('should redirect user to error page when token validation fails', fakeAsync(() => {
       // Setup route with scopes
       route.data = { scopes: [['test-scope']] };
     
