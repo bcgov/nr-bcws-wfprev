@@ -32,7 +32,6 @@ export class PrevAuthGuard extends AuthGuard {
         route: ActivatedRouteSnapshot,
         state: RouterStateSnapshot,
     ): Observable<boolean> {
-
         if (!window.navigator.onLine) {
             return of(false);
         }
@@ -40,11 +39,19 @@ export class PrevAuthGuard extends AuthGuard {
         if (route?.data?.['scopes']?.length > 0) {
             // Wrap the Promise returned by getTokenInfo with from()
             return from(this.getTokenInfo(route)).pipe(
-                map(result => result),
-                catchError(() => of(false))
+                map(result => {
+                    if (result === false || result === undefined) {
+                        this.redirectToErrorPage();
+                        return of(false);
+                    }
+                    return result;
+                }),
+                catchError(() => {
+                    this.redirectToErrorPage();
+                    return of(false);
+                })
             );
         } else {
-            console.log('returning true');
             return of(true);
         }
     }
