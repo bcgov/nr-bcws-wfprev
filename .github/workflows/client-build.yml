@@ -51,14 +51,14 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: '20'
+  
+    - name: Add .npmrc file
+      run: echo -e ${{ secrets.NPMRC}} > ~/.npmrc
 
     - name: Install dependencies for Angular project
       run: |
           cd client/wfprev-war/src/main/angular
           npm install
-
-    - name: Add .npmrc file
-      run: echo -e ${{ secrets.NPMRC}} > ~/.npmrc
 
     - name: Build Angular app
       run: |
