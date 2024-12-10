@@ -215,9 +215,6 @@ describe('PrevAuthGuard', () => {
       // Wait for canActivate to complete
       await activatePromise;
 
-      // Add a small delay to ensure all microtasks are processed
-      await new Promise(resolve => setTimeout(resolve, 0));
-
       // Now check the expectation
       expect(guard.redirectToErrorPage).toHaveBeenCalled();
     });
@@ -244,9 +241,6 @@ describe('PrevAuthGuard', () => {
 
       // Wait for canActivate to complete
       await activatePromise;
-
-      // Add a small delay to ensure all microtasks are processed
-      await new Promise(resolve => setTimeout(resolve, 0));
 
       // Now check the expectation
       expect(guard.redirectToErrorPage).toHaveBeenCalled();
@@ -277,9 +271,6 @@ describe('PrevAuthGuard', () => {
 
      // Wait for canActivate to complete
      await activatePromise;
-
-     // Add a small delay to ensure all microtasks are processed
-     await new Promise(resolve => setTimeout(resolve, 0));
 
      // Now check the expectation
      expect(guard.redirectToErrorPage).toHaveBeenCalled();
