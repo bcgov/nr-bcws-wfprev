@@ -122,7 +122,6 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit{
 
   onSave(): void {
     if (this.detailsForm.valid) {
-      console.log('Form Data:', this.detailsForm.value);
       // Submit the form data or perform actions here
     } else {
       console.error('Form is invalid!');

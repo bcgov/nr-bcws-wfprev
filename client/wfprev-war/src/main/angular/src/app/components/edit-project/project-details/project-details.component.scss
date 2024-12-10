@@ -75,8 +75,16 @@
         }
       }
 
+      .site-unit {
+        flex:1 1 20%
+      }
+      
+      .closet-community {
+        flex:1 1 20%
+      }
+
       .secondary-rational{
-        flex: 1 1 40%; // Set the width to 50% of the row
+        flex: 1 1 20%; // Set the width to 50% of the row
       }
     }
   }
@@ -255,4 +263,8 @@
         }
       }
     }
+  }
+
+  .required {
+    color: #EF1616;
   }
