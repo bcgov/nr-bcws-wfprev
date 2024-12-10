@@ -4,8 +4,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
+import ca.bc.gov.nrs.wfone.common.service.api.ServiceException;
+import ca.bc.gov.nrs.wfprev.data.models.ProgramAreaModel;
 import org.junit.jupiter.api.Test;
-import static org.mockito.Mockito.when;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -14,6 +16,8 @@ import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
+
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -167,5 +171,121 @@ class CodesControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("If-Match", "\"1\""))
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @WithMockUser
+    void testGetCodes_ServiceException() throws Exception {
+        when(codesService.getAllForestAreaCodes()).thenThrow(new ServiceException("Service error"));
+
+        mockMvc.perform(get("/codes/{codeTable}", CodeTables.FOREST_AREA_CODE)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isInternalServerError());
+    }
+
+    @Test
+    @WithMockUser
+    void testGetCodeById_ServiceException() throws Exception {
+        String id = UUID.randomUUID().toString();
+        when(codesService.getProjectTypeCodeById(id)).thenThrow(new ServiceException("Service error"));
+
+        mockMvc.perform(get("/codes/{codeTable}/{id}", CodeTables.PROJECT_TYPE_CODE, id)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isInternalServerError());
+    }
+
+    @Test
+    @WithMockUser
+    void testGetForestAreaCodes_VerifyServiceCall() throws Exception {
+        // Mock the service return value
+        when(codesService.getAllForestAreaCodes()).thenReturn(CollectionModel.empty());
+
+        // Perform the request
+        mockMvc.perform(get("/codes/{codeTable}", CodeTables.FOREST_AREA_CODE)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        // Verify that the correct service method is called
+        verify(codesService, times(1)).getAllForestAreaCodes();
+        verifyNoMoreInteractions(codesService); // Ensure no other service methods were called
+    }
+
+    @Test
+    @WithMockUser
+    void testGetGeneralScopeCodes_VerifyServiceCall() throws Exception {
+        when(codesService.getAllGeneralScopeCodes()).thenReturn(CollectionModel.empty());
+
+        mockMvc.perform(get("/codes/{codeTable}", CodeTables.GENERAL_SCOPE_CODE)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        verify(codesService, times(1)).getAllGeneralScopeCodes();
+        verifyNoMoreInteractions(codesService);
+    }
+
+    @Test
+    @WithMockUser
+    void testGetProgramAreaCodes_VerifyServiceCall() throws Exception {
+        when(codesService.getAllProgramAreaCodes()).thenReturn(CollectionModel.empty());
+
+        mockMvc.perform(get("/codes/{codeTable}", CodeTables.PROGRAM_AREA_CODE)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        verify(codesService, times(1)).getAllProgramAreaCodes();
+        verifyNoMoreInteractions(codesService);
+    }
+
+    @Test
+    @WithMockUser
+    void testGetForestAreaCodeById_VerifyServiceCall() throws Exception {
+        String id = UUID.randomUUID().toString();
+        when(codesService.getForestAreaCodeById(id)).thenReturn(null);
+
+        mockMvc.perform(get("/codes/{codeTable}/{id}", CodeTables.FOREST_AREA_CODE, id)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+
+        verify(codesService, times(1)).getForestAreaCodeById(id);
+        verifyNoMoreInteractions(codesService);
+    }
+
+    @Test
+    @WithMockUser
+    void testGetGeneralAreaCodeById_VerifyServiceCall() throws Exception {
+        String id = UUID.randomUUID().toString();
+
+        mockMvc.perform(get("/codes/{codeTable}/{id}", CodeTables.GENERAL_SCOPE_CODE, id)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+
+        verify(codesService, times(1)).getGeneralScopeCodeById(id);
+        verifyNoMoreInteractions(codesService);
+    }
+
+    @Test
+    @WithMockUser
+    void testGetProjectTypeAreaCodeById_VerifyServiceCall() throws Exception {
+        String id = UUID.randomUUID().toString();
+
+        mockMvc.perform(get("/codes/{codeTable}/{id}", CodeTables.PROJECT_TYPE_CODE, id)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+
+        verify(codesService, times(1)).getProjectTypeCodeById(id);
+        verifyNoMoreInteractions(codesService);
+    }
+
+    @Test
+    @WithMockUser
+    void testGetProgramAreaCodeById_VerifyServiceCall() throws Exception {
+        String id = UUID.randomUUID().toString();
+
+        mockMvc.perform(get("/codes/{codeTable}/{id}", CodeTables.PROGRAM_AREA_CODE, id)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+
+        verify(codesService, times(1)).getProgramAreaCodeById(id);
+        verifyNoMoreInteractions(codesService);
     }
 }

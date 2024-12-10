@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.stereotype.Component;
@@ -39,7 +40,8 @@ public class ProgramAreaService implements CommonService {
 
   public ProgramAreaModel getProgramAreaById(String id) throws ServiceException {
     try {
-      Optional<ProgramAreaEntity> byId = programAreaRepository.findById(id);
+      UUID guid = UUID.fromString(id);
+      Optional<ProgramAreaEntity> byId = programAreaRepository.findById(guid);
       return byId.map(programAreaResourceAssembler::toModel).orElse(null);
     } catch(Exception e) {
       throw new ServiceException(e.getLocalizedMessage(), e);
