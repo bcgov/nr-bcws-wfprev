@@ -47,17 +47,18 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit{
     fireCentreOrgUnitId: 3001,
     bcParksRegionOrgUnitId: 4001,
     bcParksSectionOrgUnitId: 5001,
-    coordinats:[48.407326,-123.329773]
+    coordinats:[48.407326,-123.329773],
+    primaryObjective: 'Objective1'
   };
 
   constructor(private fb: FormBuilder) {}
 
   ngOnInit(): void {
     this.detailsForm = this.fb.group({
-      projectLead: [this.sampleData.projectLead, [Validators.required]],
+      projectLead: [this.sampleData.projectLead],
       projectLeadEmailAddress: [
         this.sampleData.projectLeadEmailAddress,
-        [Validators.required, Validators.email],
+        [Validators.email],
       ],
       projectTypeCode: [
         this.sampleData.projectTypeCode.projectTypeCode,
@@ -69,24 +70,22 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit{
       ],
       forestRegion: [
         this.sampleData.forestRegionOrgUnitId,
-        [Validators.required]
       ],
       forestDistrict: [this.sampleData.forestDistrictOrgUnitId],
       bcParksRegion: [this.sampleData.bcParksRegionOrgUnitId],
       bcParksDistrict: [this.sampleData.bcParksSectionOrgUnitId],
-      siteUnitName: [this.sampleData.siteUnitName, [Validators.required]],
-      closestCommunityName: [this.sampleData.closestCommunityName],
+      siteUnitName: [this.sampleData.siteUnitName],
+      closestCommunityName: [this.sampleData.closestCommunityName, [Validators.required]],
       fundingStream: [Validators.required],
       totalFundingRequestAmount: [
         this.sampleData.totalFundingRequestAmount,
-        [Validators.required, Validators.min(0)],
       ],
       totalAllocatedAmount: [
         this.sampleData.totalAllocatedAmount,
-        [Validators.required, Validators.min(0)],
       ],
       projectDescription: [this.sampleData.projectDescription],
-      coordinats :[this.sampleData.coordinats]
+      coordinats :[this.sampleData.coordinats],
+      primaryObjective: [this.sampleData.primaryObjective, [Validators.required]]
     });
 
 

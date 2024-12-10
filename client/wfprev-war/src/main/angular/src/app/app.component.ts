@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { CreateNewProjectDialogComponent } from 'src/app/components/create-new-project-dialog/create-new-project-dialog.component';
@@ -11,7 +11,7 @@ import { TokenService } from 'src/app/services/token.service';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   activeRoute = '';
   
   constructor(
@@ -20,6 +20,9 @@ export class AppComponent {
     protected tokenService: TokenService,
     protected dialog: MatDialog
   ) {
+  }
+
+  ngOnInit(): void {
   }
 
 
