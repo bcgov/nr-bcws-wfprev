@@ -2,7 +2,6 @@ package ca.bc.gov.nrs.wfprev.data.assemblers;
 
 import ca.bc.gov.nrs.wfprev.data.entities.ForestRegionCodeEntity;
 import ca.bc.gov.nrs.wfprev.data.models.ForestRegionCodeModel;
-import ca.bc.gov.nrs.wfprev.data.models.ProjectStatusCodeModel;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -44,7 +43,7 @@ public class ForestRegionCodeResourceAssemblerTest {
 
         ForestRegionCodeModel model = assembler.toModel(entity);
         // Then
-        assertEquals(ORG_UNIT_IDENTIFIER, model.getOrgunitId());
+        assertEquals(ORG_UNIT_IDENTIFIER, model.getOrgUnitId());
         assertEquals(EFFECTIVE_DATE, model.getEffectiveDate());
         assertEquals(EXPIRY_DATE, model.getExpiryDate());
         assertEquals(FOREST_ORG_UNIT_TYPE_CODE, model.getForestOrgUnitTypeCode());
