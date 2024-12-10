@@ -77,7 +77,7 @@ export class PrevAuthGuard extends AuthGuard {
                 Object.keys(route.queryParams).forEach((paramKey) => {
                     queryParamStr += paramKey + '=' + route.queryParams[paramKey] + '&';
                 });
-                queryParamStr = queryParamStr.substr(0, queryParamStr.length - 1);
+                queryParamStr = queryParamStr.slice(0, -1)
                 redirectUri = redirectUri.concat(queryParamStr);
             }
             return this.checkForToken(redirectUri, route).pipe(
