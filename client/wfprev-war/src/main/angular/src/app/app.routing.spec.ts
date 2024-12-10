@@ -31,7 +31,7 @@ describe('App Routing Module', () => {
 
   it('should have correct routes defined', () => {
     const routes = router.config;
-    expect(routes.length).toBe(4);
+    expect(routes.length).toBe(6);
   });
 
   it('should define route for LIST path', () => {

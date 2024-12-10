@@ -41,7 +41,7 @@ export class AppHeaderComponent {
 
   onSupportLinkClick() {
     //navigate to a support link page, upon decide which url would that be.
-    const url = 'https://intranet.gov.bc.ca/bcws/provincial-programs/strategic-initiatives-and-innovation/wildfire-one/wildfire-one-training'
+    const url = 'https://intranet.gov.bc.ca/bcws/corporate-governance/strategic-initiatives-and-innovation/wildfire-one/wildfire-one-training'
     window.open(url, '_blank', 'noopener');
   }
 }

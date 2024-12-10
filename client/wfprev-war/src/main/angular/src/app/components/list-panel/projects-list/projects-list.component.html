@@ -53,7 +53,7 @@
                 <img alt="detail-icon" class="icon" src="/assets/detail-icon.svg" />
                 <span>Details</span>
               </div>
-              <div class="action-item">
+              <div class="action-item" (click)="editProject(project)" #stopPropagation>
                 <img alt="edit-icon" class="icon" src="/assets/edit-icon.svg" />
                 <span>Edit</span>
               </div>

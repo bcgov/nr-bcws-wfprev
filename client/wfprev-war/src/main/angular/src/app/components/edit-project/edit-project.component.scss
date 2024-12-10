@@ -1,0 +1,32 @@
+.project-title {
+    color: #000;
+    font-size: 34px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    padding: 12px 24px;
+  }
+  
+  .custom-tab-group {
+    display: flex;
+    justify-content: flex-start;
+  
+    // Angular Material tab header overrides
+    ::ng-deep {
+      .mat-mdc-tab-header {
+        width: 50%;
+        padding-left: 30px;
+      }
+  
+      .mat-mdc-tab {
+        font-size: 22px;
+        color: #000;
+        font-style: normal;
+        font-weight: 400;
+      }
+  
+      .mat-mdc-tab-indicator {
+        background-color: black !important; /* Change the underline color to black */
+      }
+    }
+  }
