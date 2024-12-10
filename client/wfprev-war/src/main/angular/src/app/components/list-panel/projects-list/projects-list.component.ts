@@ -124,7 +124,7 @@ export class ProjectsListComponent {
     },
   ];
   
-  fiscalYearActivityTypes = ['Clearning','Burning','Pruning']
+  fiscalYearActivityTypes = ['Clearing','Burning','Pruning']
   
 
   onSortChange(event:any): void {

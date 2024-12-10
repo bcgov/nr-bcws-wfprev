@@ -55,6 +55,8 @@ body {
 }
 
 
-html, body {
+html, body{
     font-family: var(--wf-font-family-main);
+    height: 100%;
+    overflow: hidden; /* Prevent scrolling if not needed */
 }

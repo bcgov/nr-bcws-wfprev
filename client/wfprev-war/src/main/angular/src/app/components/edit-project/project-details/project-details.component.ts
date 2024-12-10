@@ -1,14 +1,20 @@
-import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { AfterViewInit, Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { MatExpansionModule } from '@angular/material/expansion';
+import L from 'leaflet';
 
 @Component({
   selector: 'app-project-details',
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule,MatExpansionModule,CommonModule],
   templateUrl: './project-details.component.html',
   styleUrl: './project-details.component.scss'
 })
-export class ProjectDetailsComponent implements OnInit{
+export class ProjectDetailsComponent implements OnInit, AfterViewInit{
+
+  private map: L.Map | undefined;
+
   detailsForm!: FormGroup;
 
   sampleData = {
@@ -41,6 +47,7 @@ export class ProjectDetailsComponent implements OnInit{
     fireCentreOrgUnitId: 3001,
     bcParksRegionOrgUnitId: 4001,
     bcParksSectionOrgUnitId: 5001,
+    coordinats:[48.407326,-123.329773]
   };
 
   constructor(private fb: FormBuilder) {}
@@ -79,7 +86,38 @@ export class ProjectDetailsComponent implements OnInit{
         [Validators.required, Validators.min(0)],
       ],
       projectDescription: [this.sampleData.projectDescription],
+      coordinats :[this.sampleData.coordinats]
     });
+
+
+  }
+  
+  ngAfterViewInit(): void {
+    setTimeout(() => {
+      this.initMap();
+    });
+  }
+
+  initMap(): void {
+    if (this.map) {
+      return;
+    }
+    this.map = L.map('map', {
+      center: [this.sampleData.coordinats[0], this.sampleData.coordinats[1]],
+      zoom: 13,
+      zoomControl: false, 
+    });
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap contributors',
+    }).addTo(this.map);
+    
+
+    // Add a marker at the project's coordinates
+    L.marker([this.sampleData.coordinats[0], this.sampleData.coordinats[1]]).addTo(this.map);
+
+    // Bind a popup to the marker
+    // marker.bindPopup('Project Location: ' + this.sampleData.projectName).openPopup();
   }
 
   onSave(): void {
@@ -89,6 +127,10 @@ export class ProjectDetailsComponent implements OnInit{
     } else {
       console.error('Form is invalid!');
     }
+  }
+
+  onSaveLatLong() : void{
+
   }
 
   onCancel(): void {
