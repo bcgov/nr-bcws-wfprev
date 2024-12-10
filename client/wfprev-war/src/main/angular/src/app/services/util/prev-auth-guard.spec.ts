@@ -2,7 +2,7 @@ import { HttpClientTestingModule, HttpTestingController } from '@angular/common/
 import { TestBed, fakeAsync, tick, flush } from '@angular/core/testing';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRouteSnapshot, Router, RouterStateSnapshot } from '@angular/router';
-import { BehaviorSubject, of, Subject } from 'rxjs';
+import { BehaviorSubject, firstValueFrom, of, Subject } from 'rxjs';
 import { AppConfigService } from 'src/app/services/app-config.service';
 import { TokenService } from 'src/app/services/token.service';
 import { PrevAuthGuard } from './prev-auth-guard';
@@ -187,175 +187,209 @@ describe('PrevAuthGuard', () => {
       });
     });
 
-    it('should redirect user to error page when token validation fails', fakeAsync(() => {
+    it('should redirect user to error page when token validation fails', async () => {
       const route = new ActivatedRouteSnapshot();
       route.data = { scopes: [['test-scope']] };
-    
+
       const state = jasmine.createSpyObj<RouterStateSnapshot>('RouterStateSnapshot', [], { url: '/test' });
-    
+
+      // Create deferred token validation response
+      const validationResponse = new Subject<boolean>();
+
       // Mock token exists
       tokenService.getOauthToken.and.returnValue('test-token');
-    
+
       // Mock token validation fails
       tokenService.validateToken.and.returnValue(of(false));
-    
+
       // Spy on redirectToErrorPage
       spyOn(guard, 'redirectToErrorPage');
-    
-      guard.canActivate(route, state);
-    
-      tick();
-      flush(); // Flush any remaining async operations
-    
+
+      // Start the canActivate observable
+      const activatePromise = firstValueFrom(guard.canActivate(route, state));
+
+      // Emit the validation result after setup is complete
+      validationResponse.next(false);
+      validationResponse.complete();
+
+      // Wait for canActivate to complete
+      await activatePromise;
+
+      // Add a small delay to ensure all microtasks are processed
+      await new Promise(resolve => setTimeout(resolve, 0));
+
+      // Now check the expectation
       expect(guard.redirectToErrorPage).toHaveBeenCalled();
-    }));
-  })
-
-  it('should redirect to error page when getTokenInfo returns false', fakeAsync(() => {
-    const route = new MockActivatedRouteSnapshot();
-    route.data = { scopes: [['test-scope']] };
-    const state = jasmine.createSpyObj<RouterStateSnapshot>('RouterStateSnapshot', [], { 
-      url: '/test' 
-    });
-  
-    // Spy on getTokenInfo to return false
-    spyOn(guard, 'getTokenInfo' as any).and.returnValue(Promise.resolve(false));
-    
-    // Spy on redirectToErrorPage
-    spyOn(guard, 'redirectToErrorPage');
-  
-    guard.canActivate(route, state).subscribe();
-  
-    tick();
-    flush(); // Flush any remaining async operations
-    
-    expect(guard.redirectToErrorPage).toHaveBeenCalled();
-  }));
-  
-  it('should redirect to error page when getTokenInfo returns undefined', fakeAsync(() => {
-    const route = new MockActivatedRouteSnapshot();
-    route.data = { scopes: [['test-scope']] };
-    const state = jasmine.createSpyObj<RouterStateSnapshot>('RouterStateSnapshot', [], { 
-      url: '/test' 
-    });
-  
-    // Spy on getTokenInfo to return undefined
-    spyOn(guard, 'getTokenInfo' as any).and.returnValue(Promise.resolve(undefined));
-    
-    // Spy on redirectToErrorPage
-    spyOn(guard, 'redirectToErrorPage');
-  
-    guard.canActivate(route, state).subscribe();
-    
-    tick();
-    flush(); // Flush any remaining async operations
-    
-    expect(guard.redirectToErrorPage).toHaveBeenCalled();
-  }));
-
-  describe('getTokenInfo', () => {
-    let mockRoute: any;
-
-    beforeEach(() => {
-      mockRoute = {
-        routeConfig: { path: 'test-path' },
-        params: {},
-        queryParams: {},
-        data: { scopes: [['test-scope']] }
-      };
     });
 
-    it('should initiate token check when no token exists', async () => {
-      // Mock no existing token
-      tokenService.getOauthToken.and.returnValue(null);
-
-      // Mock config service
-      appConfigService.getConfig.and.returnValue({
-        application: {
-          baseUrl: 'http://test.com',
-          lazyAuthenticate: false,
-          enableLocalStorageToken: true,
-          acronym: 'WFPREV',
-          environment: 'DEV',
-          version: '0.0.0'
-        },
-        webade: {
-          oauth2Url: 'http://oauth.test',
-          clientId: 'test-client',
-          authScopes: 'WFPREV.*'
-        },
-        rest: {}
+    it('should redirect to error page when getTokenInfo returns false', async () => {
+      const route = new MockActivatedRouteSnapshot();
+      route.data = { scopes: [['test-scope']] };
+      const state = jasmine.createSpyObj<RouterStateSnapshot>('RouterStateSnapshot', [], {
+        url: '/test'
       });
 
-      // Mock checkForToken
-      spyOn(guard, 'checkForToken').and.returnValue(of(true));
+      // Create deferred token validation response
+      const validationResponse = new Subject<boolean>();
 
-      const result = await guard['getTokenInfo'](mockRoute);
+      spyOn(guard, 'getTokenInfo' as any).and.returnValue(Promise.resolve(false));
+      spyOn(guard, 'redirectToErrorPage');
 
-      expect(guard.checkForToken).toHaveBeenCalled();
+      // Start the canActivate observable
+      const activatePromise = firstValueFrom(guard.canActivate(route, state));
+
+      // Emit the validation result after setup is complete
+      validationResponse.next(false);
+      validationResponse.complete();
+
+      // Wait for canActivate to complete
+      await activatePromise;
+
+      // Add a small delay to ensure all microtasks are processed
+      await new Promise(resolve => setTimeout(resolve, 0));
+
+      // Now check the expectation
+      expect(guard.redirectToErrorPage).toHaveBeenCalled();
     });
 
-    it('should return true when token exists and passes route access', async () => {
-      // Mock token exists
-      tokenService.getOauthToken.and.returnValue('test-token');
+    it('should redirect to error page when getTokenInfo returns undefined', async () => {
+      const route = new MockActivatedRouteSnapshot();
+      route.data = { scopes: [['test-scope']] };
+      const state = jasmine.createSpyObj<RouterStateSnapshot>('RouterStateSnapshot', [], {
+        url: '/test'
+      });
 
-      // Mock token validation
-      tokenService.validateToken.and.returnValue(of(true));
+      // Create deferred token validation response
+      const validationResponse = new Subject<boolean>();
 
-      const result = await guard['getTokenInfo'](mockRoute);
-
-      expect(result).toBeTruthy();
-    });
-
-    it('should redirect to error page when token validation fails', async () => {
-      // Mock token exists
-      tokenService.getOauthToken.and.returnValue('test-token');
-
-      // Mock token validation fails
-      tokenService.validateToken.and.returnValue(of(false));
+      // Spy on getTokenInfo to return undefined
+      spyOn(guard, 'getTokenInfo' as any).and.returnValue(Promise.resolve(undefined));
 
       // Spy on redirectToErrorPage
       spyOn(guard, 'redirectToErrorPage');
 
-      const result = await guard['getTokenInfo'](mockRoute);
+     // Start the canActivate observable
+     const activatePromise = firstValueFrom(guard.canActivate(route, state));
 
-      expect(guard.redirectToErrorPage).toHaveBeenCalled();
+     // Emit the validation result after setup is complete
+     validationResponse.next(false);
+     validationResponse.complete();
+
+     // Wait for canActivate to complete
+     await activatePromise;
+
+     // Add a small delay to ensure all microtasks are processed
+     await new Promise(resolve => setTimeout(resolve, 0));
+
+     // Now check the expectation
+     expect(guard.redirectToErrorPage).toHaveBeenCalled();
     });
+
   });
 
-  describe('canAccessRoute', () => {
-    it('should return false when no token exists', async () => {
-      // Mock no token
-      tokenService.getOauthToken.and.returnValue(null);
+    describe('getTokenInfo', () => {
+      let mockRoute: any;
 
-      const result = await guard.canAccessRoute([['test-scope']], tokenService);
+      beforeEach(() => {
+        mockRoute = {
+          routeConfig: { path: 'test-path' },
+          params: {},
+          queryParams: {},
+          data: { scopes: [['test-scope']] }
+        };
+      });
 
-      expect(result).toBeFalse();
+      it('should initiate token check when no token exists', async () => {
+        // Mock no existing token
+        tokenService.getOauthToken.and.returnValue(null);
+
+        // Mock config service
+        appConfigService.getConfig.and.returnValue({
+          application: {
+            baseUrl: 'http://test.com',
+            lazyAuthenticate: false,
+            enableLocalStorageToken: true,
+            acronym: 'WFPREV',
+            environment: 'DEV',
+            version: '0.0.0'
+          },
+          webade: {
+            oauth2Url: 'http://oauth.test',
+            clientId: 'test-client',
+            authScopes: 'WFPREV.*'
+          },
+          rest: {}
+        });
+
+        // Mock checkForToken
+        spyOn(guard, 'checkForToken').and.returnValue(of(true));
+
+        const result = await guard['getTokenInfo'](mockRoute);
+
+        expect(guard.checkForToken).toHaveBeenCalled();
+      });
+
+      it('should return true when token exists and passes route access', async () => {
+        // Mock token exists
+        tokenService.getOauthToken.and.returnValue('test-token');
+
+        // Mock token validation
+        tokenService.validateToken.and.returnValue(of(true));
+
+        const result = await guard['getTokenInfo'](mockRoute);
+
+        expect(result).toBeTruthy();
+      });
+
+      it('should redirect to error page when token validation fails', async () => {
+        // Mock token exists
+        tokenService.getOauthToken.and.returnValue('test-token');
+
+        // Mock token validation fails
+        tokenService.validateToken.and.returnValue(of(false));
+
+        // Spy on redirectToErrorPage
+        spyOn(guard, 'redirectToErrorPage');
+
+        const result = await guard['getTokenInfo'](mockRoute);
+
+        expect(guard.redirectToErrorPage).toHaveBeenCalled();
+      });
     });
 
-    it('should return true when token is validated successfully', async () => {
-      // Mock token exists
-      tokenService.getOauthToken.and.returnValue('test-token');
+    describe('canAccessRoute', () => {
+      it('should return false when no token exists', async () => {
+        // Mock no token
+        tokenService.getOauthToken.and.returnValue(null);
 
-      // Mock token validation
-      tokenService.validateToken.and.returnValue(of(true));
+        const result = await guard.canAccessRoute([['test-scope']], tokenService);
 
-      const result = await guard.canAccessRoute([['test-scope']], tokenService);
+        expect(result).toBeFalse();
+      });
 
-      expect(result).toBeTrue();
+      it('should return true when token is validated successfully', async () => {
+        // Mock token exists
+        tokenService.getOauthToken.and.returnValue('test-token');
+
+        // Mock token validation
+        tokenService.validateToken.and.returnValue(of(true));
+
+        const result = await guard.canAccessRoute([['test-scope']], tokenService);
+
+        expect(result).toBeTrue();
+      });
+
+      it('should return false when token validation fails', async () => {
+        // Mock token exists
+        tokenService.getOauthToken.and.returnValue('test-token');
+
+        // Mock token validation fails
+        tokenService.validateToken.and.returnValue(of(false));
+
+        const result = await guard.canAccessRoute([['test-scope']], tokenService);
+
+        expect(result).toBeFalse();
+      });
     });
 
-    it('should return false when token validation fails', async () => {
-      // Mock token exists
-      tokenService.getOauthToken.and.returnValue('test-token');
-
-      // Mock token validation fails
-      tokenService.validateToken.and.returnValue(of(false));
-
-      const result = await guard.canAccessRoute([['test-scope']], tokenService);
-
-      expect(result).toBeFalse();
-    });
   });
-
-});
