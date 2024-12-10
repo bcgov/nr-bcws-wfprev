@@ -88,7 +88,7 @@
       </div>
 
       <div class="form-item">
-        <label>Primary Objective</label>
+        <label>Primary Objective<span class="required">*</span></label>
         <select id="fundingStream" formControlName="fundingStream">
           <option value="fundingStream1">Primary Objective1</option>
           <option value="fundingStream2">Primary Objective2</option>
@@ -151,6 +151,7 @@
             <div class="button-row">
               <button class="secondary" (click)="onCancel()">Cancel</button>
               <button
+                [disabled]="!detailsForm.valid || !detailsForm.dirty"
                 class="primary">Save
               </button>
             </div>
@@ -190,8 +191,8 @@
                 <div class="project-description-footer">
                     <div class="button-row">
                         <button class="secondary" (click)="onCancel()">Cancel</button>
-                        <button
-                        class="primary">Save
+                        <button class="primary" [disabled]="!detailsForm.get('projectDescription')?.dirty">
+                          Save
                         </button>
                     </div>
                     </div>

@@ -261,6 +261,16 @@
           font-size: 15px;
           font-weight: 700;
         }
+
+        .save-button :disabled {
+          background-color: #c0c0c0;
+          cursor: not-allowed;
+        }
+
+        .save-button :disabled {
+          background-color: #c0c0c0;
+          cursor: not-allowed;
+        }
       }
     }
   }
