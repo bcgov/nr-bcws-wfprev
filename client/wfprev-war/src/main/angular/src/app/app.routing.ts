@@ -31,11 +31,18 @@ const PANEL_ROUTES: Routes = [
     loadChildren: () =>
       import('src/app/components/edit-project.module').then(m => m.EditProjectModule),
   },
-  { path: '', redirectTo: ResourcesRoutes.MAP, pathMatch: 'full' }, // Default route to map
-
-  { path: '', 
-    redirectTo: ResourcesRoutes.MAP, 
-    pathMatch: 'full' } // Default route to map
+  { 
+    path: '', 
+    canActivate: [PrevAuthGuard], // Guard the empty path
+    data: { scopes: PROFILE_SCOPES },
+    children: [
+      {
+        path: '',
+        redirectTo: ResourcesRoutes.MAP,
+        pathMatch: 'full',
+      }
+    ]
+  }
 ];
 
 export const ROUTING = RouterModule.forRoot(PANEL_ROUTES, {});

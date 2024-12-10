@@ -47,7 +47,7 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit{
     fireCentreOrgUnitId: 3001,
     bcParksRegionOrgUnitId: 4001,
     bcParksSectionOrgUnitId: 5001,
-    coordinats:[48.407326,-123.329773],
+    coordinates:[48.407326,-123.329773],
     primaryObjective: 'Objective1'
   };
 
@@ -84,7 +84,7 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit{
         this.sampleData.totalAllocatedAmount,
       ],
       projectDescription: [this.sampleData.projectDescription],
-      coordinats :[this.sampleData.coordinats],
+      coordinates :[this.sampleData.coordinates],
       primaryObjective: [this.sampleData.primaryObjective, [Validators.required]]
     });
 
@@ -102,7 +102,7 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit{
       return;
     }
     this.map = L.map('map', {
-      center: [this.sampleData.coordinats[0], this.sampleData.coordinats[1]],
+      center: [this.sampleData.coordinates[0], this.sampleData.coordinates[1]],
       zoom: 13,
       zoomControl: false, 
     });
@@ -113,7 +113,7 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit{
     
 
     // Add a marker at the project's coordinates
-    L.marker([this.sampleData.coordinats[0], this.sampleData.coordinats[1]]).addTo(this.map);
+    L.marker([this.sampleData.coordinates[0], this.sampleData.coordinates[1]]).addTo(this.map);
 
     // Bind a popup to the marker
     // marker.bindPopup('Project Location: ' + this.sampleData.projectName).openPopup();
