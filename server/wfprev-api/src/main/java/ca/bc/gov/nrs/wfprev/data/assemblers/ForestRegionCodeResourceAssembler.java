@@ -2,8 +2,6 @@ package ca.bc.gov.nrs.wfprev.data.assemblers;
 
 import ca.bc.gov.nrs.wfprev.common.enums.CodeTables;
 import ca.bc.gov.nrs.wfprev.controllers.CodesController;
-import ca.bc.gov.nrs.wfprev.data.entities.ForestAreaCodeEntity;
-import ca.bc.gov.nrs.wfprev.data.models.ForestAreaCodeModel;
 import ca.bc.gov.nrs.wfprev.data.models.ForestRegionCodeModel;
 import ca.bc.gov.nrs.wfprev.data.entities.ForestRegionCodeEntity;
 import org.springframework.hateoas.CollectionModel;
@@ -27,7 +25,7 @@ public class ForestRegionCodeResourceAssembler extends RepresentationModelAssemb
                 methodOn(CodesController.class)
                         .getCodeById(CodeTables.FOREST_REGION_CODE, entity.getOrgUnitIdentifier()))
                 .withSelfRel());
-        resource.setOrgunitId(entity.getOrgUnitIdentifier());
+        resource.setOrgUnitId(entity.getOrgUnitIdentifier());
         resource.setEffectiveDate(entity.getEffectiveDate());
         resource.setExpiryDate(entity.getExpiryDate());
         resource.setForestOrgUnitTypeCode(entity.getForestOrgUnitTypeCode());

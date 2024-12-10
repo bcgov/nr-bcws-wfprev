@@ -296,7 +296,7 @@ class CodesControllerTest {
                 mockMvc.perform(get("/codes/{codeTable}", CodeTables.FOREST_REGION_CODE)
                                 .contentType(MediaType.APPLICATION_JSON))
                         .andExpect(status().isOk());
-        verify(codesService, times(1)).getAllForestRegionCodes();
+        verify(codesService, times(1)).getForestRegionCodesByType("REGION");
         verifyNoMoreInteractions(codesService);
     }
 }
