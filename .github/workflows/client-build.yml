@@ -23,7 +23,6 @@ env:
   TG_SRC_PATH: terraform
   TFC_PROJECT: ${{ secrets.TFC_PROJECT }} 
   TARGET_ENV: ${{ inputs.DEFAULT_APPLICATION_ENVIRONMENT }}
-  NPMRC: ${{ secrets.NPMRC }}
 
 jobs:
   build-and-deploy:
@@ -54,6 +53,9 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: '20'
+
+    - name: Clear npm credentials
+      run: rm -fv ~/.npmrc
 
     - name: Install dependencies for Angular project
       run: |
