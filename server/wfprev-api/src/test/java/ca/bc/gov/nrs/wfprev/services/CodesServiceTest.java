@@ -2,6 +2,7 @@ package ca.bc.gov.nrs.wfprev.services;
 
 import ca.bc.gov.nrs.wfone.common.service.api.ServiceException;
 import ca.bc.gov.nrs.wfprev.data.assemblers.ForestAreaCodeResourceAssembler;
+import ca.bc.gov.nrs.wfprev.data.assemblers.ForestRegionCodeResourceAssembler;
 import ca.bc.gov.nrs.wfprev.data.assemblers.GeneralScopeCodeResourceAssembler;
 import ca.bc.gov.nrs.wfprev.data.assemblers.ProgramAreaResourceAssembler;
 import ca.bc.gov.nrs.wfprev.data.assemblers.ProjectTypeCodeResourceAssembler;
@@ -10,13 +11,16 @@ import ca.bc.gov.nrs.wfprev.data.entities.GeneralScopeCodeEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ProgramAreaEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ProjectTypeCodeEntity;
 import ca.bc.gov.nrs.wfprev.data.models.ForestAreaCodeModel;
+import ca.bc.gov.nrs.wfprev.data.models.ForestRegionCodeModel;
 import ca.bc.gov.nrs.wfprev.data.models.GeneralScopeCodeModel;
 import ca.bc.gov.nrs.wfprev.data.models.ProgramAreaModel;
 import ca.bc.gov.nrs.wfprev.data.models.ProjectTypeCodeModel;
 import ca.bc.gov.nrs.wfprev.data.repositories.ForestAreaCodeRepository;
+import ca.bc.gov.nrs.wfprev.data.repositories.ForestRegionCodeRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.GeneralScopeCodeRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.ProgramAreaRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.ProjectTypeCodeRepository;
+import ca.bc.gov.nrs.wfprev.data.entities.ForestRegionCodeEntity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.hateoas.CollectionModel;
@@ -40,6 +44,8 @@ class CodesServiceTest {
 
     private ProgramAreaRepository programAreaRepository;
     private ProgramAreaResourceAssembler programAreaResourceAssembler;
+    private ForestRegionCodeRepository forestRegionCodeRepository;
+    private ForestRegionCodeResourceAssembler forestRegionCodeResourceAssembler;
 
     @BeforeEach
     void setup() {
@@ -51,10 +57,13 @@ class CodesServiceTest {
         projectTypeCodeResourceAssembler = mock(ProjectTypeCodeResourceAssembler.class);
         programAreaRepository = mock(ProgramAreaRepository.class);
         programAreaResourceAssembler = mock(ProgramAreaResourceAssembler.class);
+        forestRegionCodeRepository = mock(ForestRegionCodeRepository.class);
+        forestRegionCodeResourceAssembler = mock(ForestRegionCodeResourceAssembler.class);
 
         codesService = new CodesService(forestAreaCodeRepository, forestAreaCodeResourceAssembler,
                 generalScopeCodeRepository, generalScopeCodeResourceAssembler,
-                projectTypeCodeRepository, projectTypeCodeResourceAssembler, programAreaRepository, programAreaResourceAssembler);
+                projectTypeCodeRepository, projectTypeCodeResourceAssembler, programAreaRepository, programAreaResourceAssembler,
+                forestRegionCodeRepository, forestRegionCodeResourceAssembler);
     }
 
     @Test
@@ -307,6 +316,25 @@ class CodesServiceTest {
         verify(programAreaRepository, times(1)).findAll();
         verify(programAreaResourceAssembler, times(1)).toCollectionModel(entities);
         verifyNoMoreInteractions(programAreaRepository, programAreaResourceAssembler);
+    }
+
+    @Test
+    void testGetAllForestRegionCodes_Success() {
+        // Given
+        List<ForestRegionCodeEntity> entities = List.of(new ForestRegionCodeEntity(), new ForestRegionCodeEntity());
+        CollectionModel<ForestRegionCodeModel> expectedModel = CollectionModel.empty();
+
+        when(forestRegionCodeRepository.findAll()).thenReturn(entities);
+        when(forestRegionCodeResourceAssembler.toCollectionModel(entities)).thenReturn(expectedModel);
+
+        // When
+        CollectionModel<ForestRegionCodeModel> result = codesService.getAllForestRegionCodes();
+
+        // Then
+        assertEquals(expectedModel, result);
+        verify(forestRegionCodeRepository, times(1)).findAll();
+        verify(forestRegionCodeResourceAssembler, times(1)).toCollectionModel(entities);
+        verifyNoMoreInteractions(forestRegionCodeRepository, forestRegionCodeResourceAssembler);
     }
 
     @Test

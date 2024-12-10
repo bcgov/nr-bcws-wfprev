@@ -288,4 +288,15 @@ class CodesControllerTest {
         verify(codesService, times(1)).getProgramAreaCodeById(id);
         verifyNoMoreInteractions(codesService);
     }
+
+    @Test
+    @WithMockUser
+    void testGetForestRegionCodes() throws Exception {
+        when(codesService.getAllForestRegionCodes()).thenReturn(CollectionModel.empty());
+                mockMvc.perform(get("/codes/{codeTable}", CodeTables.FOREST_REGION_CODE)
+                                .contentType(MediaType.APPLICATION_JSON))
+                        .andExpect(status().isOk());
+        verify(codesService, times(1)).getAllForestRegionCodes();
+        verifyNoMoreInteractions(codesService);
+    }
 }
