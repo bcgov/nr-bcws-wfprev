@@ -1,6 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ResizablePanelComponent } from './resizable-panel.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { ActivatedRoute } from '@angular/router';
+import { of } from 'rxjs';
 
 describe('ResizablePanelComponent', () => {
   let component: ResizablePanelComponent;
@@ -9,6 +11,14 @@ describe('ResizablePanelComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [ResizablePanelComponent, BrowserAnimationsModule], // Standalone component
+      providers: [
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            queryParamMap: of({ get: () => null }), // Mock ActivatedRoute
+          },
+        },
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(ResizablePanelComponent);
