@@ -134,28 +134,15 @@
         </select>
       </div>
   
-      <!-- <div class="form-item full-width">
-        <label for="projectDescription">Project Description</label>
-        <textarea
-          id="projectDescription"
-          formControlName="projectDescription"
-          placeholder="Enter Description"
-        ></textarea>
-      </div> -->
-  
-        <!-- <button mat-button type="submit" [disabled]="detailsForm.invalid">
-          Save
-        </button>
-        <button mat-button type="button" (click)="onCancel()">Cancel</button> -->
-        <div class="footer">
-            <div class="button-row">
-              <button class="secondary" (click)="onCancel()">Cancel</button>
-              <button
-                [disabled]="!detailsForm.valid || !detailsForm.dirty"
-                class="primary">Save
-              </button>
-            </div>
+      <div class="footer">
+          <div class="button-row">
+            <button class="secondary" (click)="onCancel()">Cancel</button>
+            <button
+              [disabled]="!detailsForm.valid || !detailsForm.dirty"
+              class="primary">Save
+            </button>
           </div>
+        </div>
     </form>
   </div>
   <div class="description-map-section">
@@ -206,12 +193,12 @@
         <div id="map"></div>
         <div class="latlong-section">
           <form [formGroup]="detailsForm">
-            <label for="coordinats">Latitude/Longitude:</label>
+            <label for="coordinates">Latitude/Longitude:</label>
             <div class="input-group">
               <input
                 type="text"
-                id="coordinats"
-                formControlName="coordinats"
+                id="coordinates"
+                formControlName="coordinates"
                 placeholder="Enter Latitude/Longitude"
               />
               <!-- <button type="button" (click)="onSaveLatLong()">Save</button> -->

@@ -32,7 +32,7 @@ describe('ProjectDetailsComponent', () => {
       expect(formValues.projectTypeCode).toEqual(
         component.sampleData.projectTypeCode.projectTypeCode
       );
-      expect(formValues.coordinats).toEqual(component.sampleData.coordinats);
+      expect(formValues.coordinates).toEqual(component.sampleData.coordinates);
     });
 
     it('should mark the form as invalid if required fields are missing', () => {

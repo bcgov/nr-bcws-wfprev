@@ -37,7 +37,7 @@ export const Default: Story = {
       totalFundingRequestAmount: [0, [Validators.required, Validators.min(0)]],
       totalAllocatedAmount: [0, [Validators.required, Validators.min(0)]],
       projectDescription: ['', []],
-      coordinats: ['', []],
+      coordinates: ['', []],
     }),
   },
 };
@@ -59,7 +59,7 @@ export const WithPrepopulatedForm: Story = {
       totalFundingRequestAmount: [100000, [Validators.required, Validators.min(0)]],
       totalAllocatedAmount: [95000, [Validators.required, Validators.min(0)]],
       projectDescription: ['This is a sample project.', []],
-      coordinats: ['48.407326,-123.329773', []],
+      coordinates: ['48.407326,-123.329773', []],
     }),
   },
 };
@@ -81,7 +81,7 @@ export const FormWithErrors: Story = {
       totalFundingRequestAmount: [-100, [Validators.required, Validators.min(0)]], // Invalid value
       totalAllocatedAmount: [-50, [Validators.required, Validators.min(0)]], // Invalid value
       projectDescription: ['', []],
-      coordinats: ['', []],
+      coordinates: ['', []],
     }),
   },
 };
