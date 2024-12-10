@@ -7,7 +7,8 @@ export enum ResourcesRoutes {
   LANDING = '',
   MAP = 'map',
   LIST = 'list',
-  ERROR_PAGE = 'error-page'
+  ERROR_PAGE = 'error-page',
+  EDIT_PROJECT = 'edit-project'
 }
 
 export function appInitializerFactory(injector: Injector) {

@@ -26,6 +26,12 @@ const PANEL_ROUTES: Routes = [
     component: ErrorPageComponent,
     pathMatch: 'full',
   },
+  {
+    path: ResourcesRoutes.EDIT_PROJECT,
+    loadChildren: () =>
+      import('src/app/components/edit-project.module').then(m => m.EditProjectModule),
+  },
+  { path: '', redirectTo: ResourcesRoutes.MAP, pathMatch: 'full' }, // Default route to map
 
   { path: '', 
     redirectTo: ResourcesRoutes.MAP, 

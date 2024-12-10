@@ -3,12 +3,20 @@ import { MapComponent } from './map.component';
 import { By } from '@angular/platform-browser';
 import * as L from 'leaflet';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { of } from 'rxjs';
+import { ActivatedRoute } from '@angular/router';
 
 describe('MapComponent', () => {
   let component: MapComponent;
   let fixture: ComponentFixture<MapComponent>;
   let mapMock: Partial<L.Map>;
 
+  const mockActivatedRoute = {
+    queryParamMap: of({
+      get: (key: string) => null, // Mock behavior for query parameters
+    }),
+  };
+  
   beforeEach(async () => {
     mapMock = {
       fitBounds: jasmine.createSpy('fitBounds'),
@@ -19,7 +27,8 @@ describe('MapComponent', () => {
     spyOn(L, 'map').and.returnValue(mapMock as L.Map);
 
     await TestBed.configureTestingModule({
-      imports: [MapComponent, BrowserAnimationsModule]
+      imports: [MapComponent, BrowserAnimationsModule],
+      providers: [{ provide: ActivatedRoute, useValue: mockActivatedRoute }]
     }).compileComponents();
 
     fixture = TestBed.createComponent(MapComponent);
