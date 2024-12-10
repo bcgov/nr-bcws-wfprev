@@ -7,9 +7,11 @@ import ca.bc.gov.nrs.wfprev.data.assemblers.ProgramAreaResourceAssembler;
 import ca.bc.gov.nrs.wfprev.data.assemblers.ProjectTypeCodeResourceAssembler;
 import ca.bc.gov.nrs.wfprev.data.entities.ForestAreaCodeEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.GeneralScopeCodeEntity;
+import ca.bc.gov.nrs.wfprev.data.entities.ProgramAreaEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ProjectTypeCodeEntity;
 import ca.bc.gov.nrs.wfprev.data.models.ForestAreaCodeModel;
 import ca.bc.gov.nrs.wfprev.data.models.GeneralScopeCodeModel;
+import ca.bc.gov.nrs.wfprev.data.models.ProgramAreaModel;
 import ca.bc.gov.nrs.wfprev.data.models.ProjectTypeCodeModel;
 import ca.bc.gov.nrs.wfprev.data.repositories.ForestAreaCodeRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.GeneralScopeCodeRepository;
@@ -25,8 +27,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 class CodesServiceTest {
     private CodesService codesService;
@@ -48,6 +49,8 @@ class CodesServiceTest {
         generalScopeCodeResourceAssembler = mock(GeneralScopeCodeResourceAssembler.class);
         projectTypeCodeRepository = mock(ProjectTypeCodeRepository.class);
         projectTypeCodeResourceAssembler = mock(ProjectTypeCodeResourceAssembler.class);
+        programAreaRepository = mock(ProgramAreaRepository.class);
+        programAreaResourceAssembler = mock(ProgramAreaResourceAssembler.class);
 
         codesService = new CodesService(forestAreaCodeRepository, forestAreaCodeResourceAssembler,
                 generalScopeCodeRepository, generalScopeCodeResourceAssembler,
@@ -287,5 +290,98 @@ class CodesServiceTest {
         assertTrue(exception.getMessage().contains("Error fetching general scope code"));
     }
 
+    @Test
+    void testGetAllProgramAreaCodes_Success() {
+        // Arrange
+        List<ProgramAreaEntity> entities = List.of(new ProgramAreaEntity(), new ProgramAreaEntity());
+        CollectionModel<ProgramAreaModel> expectedModel = CollectionModel.empty();
 
+        when(programAreaRepository.findAll()).thenReturn(entities);
+        when(programAreaResourceAssembler.toCollectionModel(entities)).thenReturn(expectedModel);
+
+        // Act
+        CollectionModel<ProgramAreaModel> result = codesService.getAllProgramAreaCodes();
+
+        // Assert
+        assertEquals(expectedModel, result);
+        verify(programAreaRepository, times(1)).findAll();
+        verify(programAreaResourceAssembler, times(1)).toCollectionModel(entities);
+        verifyNoMoreInteractions(programAreaRepository, programAreaResourceAssembler);
+    }
+
+    @Test
+    void testGetAllProgramAreaCodes_Exception() {
+        // Arrange
+        when(programAreaRepository.findAll()).thenThrow(new RuntimeException("Database error"));
+
+        // Act & Assert
+        ServiceException exception = assertThrows(ServiceException.class, codesService::getAllProgramAreaCodes);
+        assertEquals("Database error", exception.getLocalizedMessage());
+        verify(programAreaRepository, times(1)).findAll();
+        verifyNoInteractions(programAreaResourceAssembler);
+    }
+
+    @Test
+    void testGetProgramAreaCodeById_Success() {
+        // Arrange
+        String id = UUID.randomUUID().toString();
+        UUID guid = UUID.fromString(id);
+        ProgramAreaEntity entity = new ProgramAreaEntity();
+        ProgramAreaModel expectedModel = new ProgramAreaModel();
+
+        when(programAreaRepository.findById(guid)).thenReturn(Optional.of(entity));
+        when(programAreaResourceAssembler.toModel(entity)).thenReturn(expectedModel);
+
+        // Act
+        ProgramAreaModel result = codesService.getProgramAreaCodeById(id);
+
+        // Assert
+        assertEquals(expectedModel, result);
+        verify(programAreaRepository, times(1)).findById(guid);
+        verify(programAreaResourceAssembler, times(1)).toModel(entity);
+        verifyNoMoreInteractions(programAreaRepository, programAreaResourceAssembler);
+    }
+
+    @Test
+    void testGetProgramAreaCodeById_NotFound() {
+        // Arrange
+        String id = UUID.randomUUID().toString();
+        UUID guid = UUID.fromString(id);
+
+        when(programAreaRepository.findById(guid)).thenReturn(Optional.empty());
+
+        // Act
+        ProgramAreaModel result = codesService.getProgramAreaCodeById(id);
+
+        // Assert
+        assertNull(result);
+        verify(programAreaRepository, times(1)).findById(guid);
+        verifyNoInteractions(programAreaResourceAssembler);
+    }
+
+    @Test
+    void testGetProgramAreaCodeById_InvalidUUID() {
+        // Arrange
+        String invalidId = "not-a-uuid";
+
+        // Act & Assert
+        ServiceException exception = assertThrows(ServiceException.class, () -> codesService.getProgramAreaCodeById(invalidId));
+        assertTrue(exception.getLocalizedMessage().contains("Invalid UUID string"));
+        verifyNoInteractions(programAreaRepository, programAreaResourceAssembler);
+    }
+
+    @Test
+    void testGetProgramAreaCodeById_Exception() {
+        // Arrange
+        String id = UUID.randomUUID().toString();
+        UUID guid = UUID.fromString(id);
+
+        when(programAreaRepository.findById(guid)).thenThrow(new RuntimeException("Database error"));
+
+        // Act & Assert
+        ServiceException exception = assertThrows(ServiceException.class, () -> codesService.getProgramAreaCodeById(id));
+        assertEquals("Database error", exception.getLocalizedMessage());
+        verify(programAreaRepository, times(1)).findById(guid);
+        verifyNoInteractions(programAreaResourceAssembler);
+    }
 }
