@@ -203,6 +203,7 @@ describe('PrevAuthGuard', () => {
       // Use `firstValueFrom` to handle asynchronous observable completion
       await firstValueFrom(guard.canActivate(route, state));
 
+      // TO-DO: fix without setTimeout()
       // Assert that redirectToErrorPage was called
       setTimeout(() => { expect(guard.redirectToErrorPage).toHaveBeenCalled(); }, 2000);
     });
@@ -223,6 +224,7 @@ describe('PrevAuthGuard', () => {
       // Start the canActivate observable and wait for its completion
       await firstValueFrom(guard.canActivate(route, state));
 
+      // TO-DO: fix without setTimeout()
       // Assert that redirectToErrorPage was called
       setTimeout(() => { expect(guard.redirectToErrorPage).toHaveBeenCalled(); }, 2000);
 
@@ -244,6 +246,7 @@ describe('PrevAuthGuard', () => {
       // Start the canActivate observable and wait for its completion
       await firstValueFrom(guard.canActivate(route, state));
 
+      // TO-DO: fix without setTimeout()
       // Assert that redirectToErrorPage was called
       setTimeout(() => { expect(guard.redirectToErrorPage).toHaveBeenCalled(); }, 2000);
     });
