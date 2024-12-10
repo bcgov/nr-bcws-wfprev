@@ -64,6 +64,9 @@ public class CodesController extends CommonController {
         case CodeTables.PROGRAM_AREA_CODE -> {
           response =  ok(codesService.getAllProgramAreaCodes());
         }
+        case CodeTables.FOREST_REGION_CODE -> {
+          response =  ok(codesService.getForestRegionCodesByType("REGION"));
+        }
 
         default -> {
           response = internalServerError();

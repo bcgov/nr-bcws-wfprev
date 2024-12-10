@@ -24,9 +24,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class GeneralScopeCodeModel extends CommonModel<GeneralScopeCodeModel> {
-  private String generalScopeCode;
-  private String description;
-	private Integer displayOrder;
-	private Date effectiveDate;
-	private Date expiryDate;
+    private String generalScopeCode;
+    private String description;
+    private Integer displayOrder;
+    private Date effectiveDate;
+    private Date expiryDate;
 }
