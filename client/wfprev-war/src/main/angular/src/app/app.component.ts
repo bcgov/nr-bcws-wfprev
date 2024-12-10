@@ -3,6 +3,8 @@ import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { CreateNewProjectDialogComponent } from 'src/app/components/create-new-project-dialog/create-new-project-dialog.component';
 import { ResourcesRoutes } from 'src/app/utils';
+import { AppConfigService } from 'src/app/services/app-config.service';
+import { TokenService } from 'src/app/services/token.service';
 
 @Component({
   selector: 'app-root',
@@ -14,6 +16,8 @@ export class AppComponent {
   
   constructor(
     protected router: Router,
+    protected appConfigService: AppConfigService,
+    protected tokenService: TokenService,
     protected dialog: MatDialog
   ) {
   }

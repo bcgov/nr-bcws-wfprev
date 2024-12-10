@@ -4,6 +4,38 @@ import { AppComponent } from './app.component';
 import { Router } from '@angular/router';
 import { By } from '@angular/platform-browser';
 import { Location } from '@angular/common';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { AppConfigService } from './services/app-config.service';
+import { ApplicationConfig } from './interfaces/application-config';
+import { LibraryConfig } from './config/library-config';
+
+// Create a mock configuration
+const mockApplicationConfig: ApplicationConfig = {
+  application: { acronym: "WFPREV", version: "0.0.0", baseUrl: "", environment: "DEV" },
+  rest: {},
+  webade: { oauth2Url: "", clientId: "", authScopes: ""}
+
+};
+
+// Mock AppConfigService
+class MockAppConfigService {
+  private appConfig: ApplicationConfig = mockApplicationConfig;
+
+  async loadAppConfig(): Promise<void> {
+    // Simulate config loading
+    return Promise.resolve();
+  }
+
+  getConfig(): ApplicationConfig {
+    return this.appConfig;
+  }
+}
+
+const mockLibraryConfig = {
+  configurationPath: '/mock/config/path'
+};
+
 
 describe('AppComponent', () => {
   let router: Router;
@@ -15,6 +47,16 @@ describe('AppComponent', () => {
     await TestBed.configureTestingModule({
       imports: [RouterTestingModule.withRoutes([])], // Setup RouterTestingModule properly
       declarations: [AppComponent],
+      providers: [provideHttpClient(), // Add HTTP client provider
+      provideHttpClientTesting(),
+      { 
+        provide: AppConfigService, 
+        useClass: MockAppConfigService 
+      },
+      { 
+        provide: LibraryConfig, 
+        useValue: mockLibraryConfig 
+      }]
     }).compileComponents();
 
     router = TestBed.inject(Router);

@@ -1,0 +1,52 @@
+# Build stage
+FROM ghcr.io/graalvm/graalvm-community:21 AS builder
+
+# Define build argument and set it as environment variable
+ARG MAVEN_SETTINGS_FILE=settings.xml
+
+ENV MAVEN_SETTINGS_FILE=${MAVEN_SETTINGS_FILE}
+
+# The environment variables from .env are automatically available here
+# We don't need the ARG declarations anymore since we're using the env file
+
+WORKDIR /app
+
+# Copy maven settings first
+COPY mvn_settings/${MAVEN_SETTINGS_FILE} /root/.m2/settings.xml
+
+# Copy rest of the application
+COPY . /app
+
+# Make mvnw executable
+RUN chmod +x mvnw
+
+# Create the directory for GraalVM agent metadata and set permissions
+RUN mkdir -p /app/META-INF/native-image
+RUN chmod -R 777 /app/META-INF/native-image
+
+# Run the GraalVM agent during the build stage
+RUN java -agentlib:native-image-agent=config-output-dir=META-INF/native-image \
+    -Dspring.profiles.active=graalvm-agent \
+    -jar target/wfprev-api-1.0.0-SNAPSHOT.jar || true
+
+
+# Build the native image using settings.xml
+RUN ./mvnw -s mvn_settings/${MAVEN_SETTINGS_FILE} -Pnative native:compile
+
+# Runtime stage
+FROM ubuntu:22.04
+
+# Install curl for healthcheck and debugging
+RUN apt-get update && apt-get install -y \
+    libc6 \
+    libstdc++6 \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy the native executable from builder stage
+COPY --from=builder /app/target/wfprev-api /
+
+# Expose the port your application uses
+EXPOSE 8080
+
+ENTRYPOINT ["/wfprev-api"]
