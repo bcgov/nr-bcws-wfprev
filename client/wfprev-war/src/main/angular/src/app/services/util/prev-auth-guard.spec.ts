@@ -190,59 +190,40 @@ describe('PrevAuthGuard', () => {
     it('should redirect user to error page when token validation fails', async () => {
       const route = new ActivatedRouteSnapshot();
       route.data = { scopes: [['test-scope']] };
-
+    
       const state = jasmine.createSpyObj<RouterStateSnapshot>('RouterStateSnapshot', [], { url: '/test' });
-
-      // Create deferred token validation response
-      const validationResponse = new Subject<boolean>();
-
-      // Mock token exists
-      tokenService.getOauthToken.and.returnValue('test-token');
-
-      // Mock token validation fails
-      tokenService.validateToken.and.returnValue(of(false));
-
-      // Spy on redirectToErrorPage
-      spyOn(guard, 'redirectToErrorPage');
-
-      // Start the canActivate observable
-      const activatePromise = firstValueFrom(guard.canActivate(route, state));
-
-      // Emit the validation result after setup is complete
-      validationResponse.next(false);
-      validationResponse.complete();
-
-      // Wait for canActivate to complete
-      await activatePromise;
-
-      // Now check the expectation
-      expect(guard.redirectToErrorPage).toHaveBeenCalled();
+    
+      // Mock the token service to simulate validation failure
+      tokenService.getOauthToken.and.returnValue('test-token'); // Mock token exists
+      tokenService.validateToken.and.returnValue(of(false)); // Mock validation failure
+    
+      // Spy on the redirectToErrorPage method
+      const redirectToErrorPageSpy = spyOn(guard, 'redirectToErrorPage');
+    
+      // Use `firstValueFrom` to handle asynchronous observable completion
+      await firstValueFrom(guard.canActivate(route, state));
+    
+      // Assert that redirectToErrorPage was called
+      expect(redirectToErrorPageSpy).toHaveBeenCalled();
     });
 
     it('should redirect to error page when getTokenInfo returns false', async () => {
       const route = new MockActivatedRouteSnapshot();
       route.data = { scopes: [['test-scope']] };
       const state = jasmine.createSpyObj<RouterStateSnapshot>('RouterStateSnapshot', [], {
-        url: '/test'
+        url: '/test',
       });
-
-      // Create deferred token validation response
-      const validationResponse = new Subject<boolean>();
-
-      spyOn(guard, 'getTokenInfo' as any).and.returnValue(Promise.resolve(false));
+    
+      // Mock getTokenInfo to return a resolved Promise with false
+      spyOn<any>(guard, 'getTokenInfo').and.returnValue(Promise.resolve(false));
+    
+      // Spy on redirectToErrorPage
       spyOn(guard, 'redirectToErrorPage');
-
-      // Start the canActivate observable
-      const activatePromise = firstValueFrom(guard.canActivate(route, state));
-
-      // Emit the validation result after setup is complete
-      validationResponse.next(false);
-      validationResponse.complete();
-
-      // Wait for canActivate to complete
-      await activatePromise;
-
-      // Now check the expectation
+    
+      // Start the canActivate observable and wait for its completion
+      await firstValueFrom(guard.canActivate(route, state));
+    
+      // Assert that redirectToErrorPage was called
       expect(guard.redirectToErrorPage).toHaveBeenCalled();
     });
 
@@ -250,32 +231,21 @@ describe('PrevAuthGuard', () => {
       const route = new MockActivatedRouteSnapshot();
       route.data = { scopes: [['test-scope']] };
       const state = jasmine.createSpyObj<RouterStateSnapshot>('RouterStateSnapshot', [], {
-        url: '/test'
+        url: '/test',
       });
-
-      // Create deferred token validation response
-      const validationResponse = new Subject<boolean>();
-
-      // Spy on getTokenInfo to return undefined
-      spyOn(guard, 'getTokenInfo' as any).and.returnValue(Promise.resolve(undefined));
-
+    
+      // Mock getTokenInfo to return a resolved Promise with undefined
+      spyOn<any>(guard, 'getTokenInfo').and.returnValue(Promise.resolve(undefined));
+    
       // Spy on redirectToErrorPage
       spyOn(guard, 'redirectToErrorPage');
-
-     // Start the canActivate observable
-     const activatePromise = firstValueFrom(guard.canActivate(route, state));
-
-     // Emit the validation result after setup is complete
-     validationResponse.next(false);
-     validationResponse.complete();
-
-     // Wait for canActivate to complete
-     await activatePromise;
-
-     // Now check the expectation
-     expect(guard.redirectToErrorPage).toHaveBeenCalled();
+    
+      // Start the canActivate observable and wait for its completion
+      await firstValueFrom(guard.canActivate(route, state));
+    
+      // Assert that redirectToErrorPage was called
+      expect(guard.redirectToErrorPage).toHaveBeenCalled();
     });
-
   });
 
     describe('getTokenInfo', () => {
