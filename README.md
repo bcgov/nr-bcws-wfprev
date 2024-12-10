@@ -13,6 +13,14 @@ The goal of the BC Wildfire Service (BCWS) Prevention Program is to reduce the n
 
 ## Getting Started
 
+## FOR CONVENIENCE
+
+You can bring up the full system including the database, liquibase and the backend service with the following command:
+
+```docker compose up```
+
+That's it!
+
 ### Local Deployment
 
 For local development, we recommend starting individual services with Docker
@@ -56,3 +64,4 @@ POSTGRES_PASSWORD=***
 ```
 
 [![Lifecycle:Experimental](https://img.shields.io/badge/Lifecycle-Experimental-339999)](<Redirect-URL>)
+

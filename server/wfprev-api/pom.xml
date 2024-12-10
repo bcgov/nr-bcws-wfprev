@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.2.1</version>
+		<version>3.2.0</version>
 		<relativePath/>
 		<!-- lookup parent from repository -->
 	</parent>
@@ -62,7 +62,7 @@
 		<dependency>			<!-- not in our artifactory. Needs to be added -->
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
-			<version>3.2.1</version>
+			<version>3.2.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -93,11 +93,6 @@
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-tomcat</artifactId>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
@@ -119,6 +114,11 @@
 		<dependency>
 			<groupId>org.testcontainers</groupId>
 			<artifactId>postgresql</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.liquibase</groupId>
+			<artifactId>liquibase-core</artifactId>
 			<scope>test</scope>
 		</dependency>
 
@@ -212,6 +212,11 @@
 			<groupId>org.glassfish.jersey.ext</groupId>
 			<artifactId>jersey-spring6</artifactId>	
 		</dependency>
+		<dependency>
+			<groupId>net.bytebuddy</groupId>
+			<artifactId>byte-buddy</artifactId>
+			<version>1.14.5</version> <!-- Match your Hibernate version -->
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -242,7 +247,7 @@
 						<mainClass>ca.bc.gov.nrs.wfprev.WfprevApiApplication</mainClass>
 						<buildArgs>
 							<buildArg>-H:ReflectionConfigurationFiles=${project.basedir}/src/main/resources/native-image/reflection-config.json</buildArg>
-
+							<buildArg>-H:SerializationConfigurationFiles=${project.basedir}/src/main/resources/native-image/serialization-config.json</buildArg>
 						</buildArgs>
 					</configuration>
 				</plugin>
@@ -265,6 +270,7 @@
 								<artifactId>lombok</artifactId>
 							</exclude>
 						</excludes>
+						<executable>true</executable>
 					</configuration>
 				</plugin>
 				<plugin>
