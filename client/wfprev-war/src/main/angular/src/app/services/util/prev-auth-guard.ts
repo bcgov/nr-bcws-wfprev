@@ -42,7 +42,7 @@ export class PrevAuthGuard extends AuthGuard {
                 map(result => {
                     if (result === false || result === undefined) {
                         this.redirectToErrorPage();
-                        return of(false);
+                        return false;
                     }
                     return result;
                 }),
