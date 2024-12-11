@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.UUID;
 
 import ca.bc.gov.nrs.wfone.common.service.api.ServiceException;
-import ca.bc.gov.nrs.wfprev.data.models.ProgramAreaModel;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -286,6 +285,56 @@ class CodesControllerTest {
                 .andExpect(status().isNotFound());
 
         verify(codesService, times(1)).getProgramAreaCodeById(id);
+        verifyNoMoreInteractions(codesService);
+    }
+
+    @Test
+    @WithMockUser
+    void testGetForestRegionCodes() throws Exception {
+        when(codesService.getAllForestRegionCodes()).thenReturn(CollectionModel.empty());
+                mockMvc.perform(get("/codes/{codeTable}", CodeTables.FOREST_REGION_CODE)
+                                .contentType(MediaType.APPLICATION_JSON))
+                        .andExpect(status().isOk());
+        verify(codesService, times(1)).getAllForestRegionCodes();
+        verifyNoMoreInteractions(codesService);
+    }
+
+    @Test
+    @WithMockUser
+    void testGetForestRegionCodeById_VerifyServiceCall() throws Exception {
+        Integer id = 1;
+        when(codesService.getForestRegionCodeById(id)).thenReturn(null);
+
+        mockMvc.perform(get("/codes/{codeTable}/{id}", CodeTables.FOREST_REGION_CODE, id)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+
+        verify(codesService, times(1)).getForestRegionCodeById(anyInt());
+        verifyNoMoreInteractions(codesService);
+    }
+
+    @Test
+    @WithMockUser
+    void testGetForestDistrictCodeById_VerifyServiceCall() throws Exception {
+        Integer id = 1;
+        when(codesService.getForestDistrictCodeById(id)).thenReturn(null);
+
+        mockMvc.perform(get("/codes/{codeTable}/{id}", CodeTables.FOREST_DISTRICT_CODE, id)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+
+        verify(codesService, times(1)).getForestDistrictCodeById(anyInt());
+        verifyNoMoreInteractions(codesService);
+    }
+
+    @Test
+    @WithMockUser
+    void testGetForestDistrictCodes() throws Exception {
+        when(codesService.getAllForestDistrictCodes()).thenReturn(CollectionModel.empty());
+        mockMvc.perform(get("/codes/{codeTable}", CodeTables.FOREST_DISTRICT_CODE)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+        verify(codesService, times(1)).getAllForestDistrictCodes();
         verifyNoMoreInteractions(codesService);
     }
 }
