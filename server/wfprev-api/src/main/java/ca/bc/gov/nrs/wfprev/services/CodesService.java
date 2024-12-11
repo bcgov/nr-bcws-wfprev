@@ -1,34 +1,26 @@
 package ca.bc.gov.nrs.wfprev.services;
 
-import java.util.List;
-import java.util.UUID;
-
-import ca.bc.gov.nrs.wfprev.data.assemblers.ForestRegionCodeResourceAssembler;
-import ca.bc.gov.nrs.wfprev.data.assemblers.ProgramAreaResourceAssembler;
-import ca.bc.gov.nrs.wfprev.data.entities.ProgramAreaEntity;
-import ca.bc.gov.nrs.wfprev.data.models.ForestRegionCodeModel;
-import ca.bc.gov.nrs.wfprev.data.models.ProgramAreaModel;
-import ca.bc.gov.nrs.wfprev.data.repositories.ForestRegionCodeRepository;
-import ca.bc.gov.nrs.wfprev.data.repositories.ProgramAreaRepository;
-import ca.bc.gov.nrs.wfprev.data.entities.ForestRegionCodeEntity;
-import org.springframework.hateoas.CollectionModel;
-import org.springframework.stereotype.Component;
-
 import ca.bc.gov.nrs.wfone.common.service.api.ServiceException;
 import ca.bc.gov.nrs.wfprev.common.services.CommonService;
 import ca.bc.gov.nrs.wfprev.data.assemblers.ForestAreaCodeResourceAssembler;
+import ca.bc.gov.nrs.wfprev.data.assemblers.ForestDistrictUnitCodeResourceAssembler;
+import ca.bc.gov.nrs.wfprev.data.assemblers.ForestRegionUnitCodeResourceAssembler;
 import ca.bc.gov.nrs.wfprev.data.assemblers.GeneralScopeCodeResourceAssembler;
 import ca.bc.gov.nrs.wfprev.data.assemblers.ProgramAreaResourceAssembler;
 import ca.bc.gov.nrs.wfprev.data.assemblers.ProjectTypeCodeResourceAssembler;
 import ca.bc.gov.nrs.wfprev.data.entities.ForestAreaCodeEntity;
+import ca.bc.gov.nrs.wfprev.data.entities.ForestOrgUnitCodeEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.GeneralScopeCodeEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ProgramAreaEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ProjectTypeCodeEntity;
 import ca.bc.gov.nrs.wfprev.data.models.ForestAreaCodeModel;
+import ca.bc.gov.nrs.wfprev.data.models.ForestDistrictUnitCodeModel;
+import ca.bc.gov.nrs.wfprev.data.models.ForestRegionUnitCodeModel;
 import ca.bc.gov.nrs.wfprev.data.models.GeneralScopeCodeModel;
 import ca.bc.gov.nrs.wfprev.data.models.ProgramAreaModel;
 import ca.bc.gov.nrs.wfprev.data.models.ProjectTypeCodeModel;
 import ca.bc.gov.nrs.wfprev.data.repositories.ForestAreaCodeRepository;
+import ca.bc.gov.nrs.wfprev.data.repositories.ForestOrgUnitCodeRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.GeneralScopeCodeRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.ProgramAreaRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.ProjectTypeCodeRepository;
@@ -50,13 +42,14 @@ public class CodesService implements CommonService {
     private ProjectTypeCodeResourceAssembler projectTypeCodeResourceAssembler;
     private final ProgramAreaRepository programAreaRepository;
     private ProgramAreaResourceAssembler programAreaResourceAssembler;
-    private ForestRegionCodeRepository forestRegionCodeRepository;
-    private ForestRegionCodeResourceAssembler forestRegionCodeResourceAssembler;
+    private ForestOrgUnitCodeRepository forestOrgUnitCodeRepository;
+    private ForestRegionUnitCodeResourceAssembler forestRegionCodeResourceAssembler;
+    private final ForestDistrictUnitCodeResourceAssembler forestDistrictCodeResourceAssembler;
 
     public CodesService(ForestAreaCodeRepository forestAreaCodeRepository, ForestAreaCodeResourceAssembler forestAreaCodeResourceAssembler,
                         GeneralScopeCodeRepository generalScopeCodeRepository, GeneralScopeCodeResourceAssembler generalScopeCodeResourceAssembler,
                         ProjectTypeCodeRepository projectTypeCodeRepository, ProjectTypeCodeResourceAssembler projectTypeCodeResourceAssembler, ProgramAreaRepository programAreaRepository, ProgramAreaResourceAssembler programAreaResourceAssembler,
-                        ForestRegionCodeRepository forestRegionCodeRepository, ForestRegionCodeResourceAssembler forestRegionCodeResourceAssembler) {
+                        ForestOrgUnitCodeRepository forestRegionCodeRepository, ForestRegionUnitCodeResourceAssembler forestRegionCodeResourceAssembler, ForestDistrictUnitCodeResourceAssembler forestDistrictUnitCodeResourceAssembler) {
         this.forestAreaCodeRepository = forestAreaCodeRepository;
         this.forestAreaCodeResourceAssembler = forestAreaCodeResourceAssembler;
         this.generalScopeCodeRepository = generalScopeCodeRepository;
@@ -65,8 +58,9 @@ public class CodesService implements CommonService {
         this.projectTypeCodeResourceAssembler = projectTypeCodeResourceAssembler;
         this.programAreaRepository = programAreaRepository;
         this.programAreaResourceAssembler = programAreaResourceAssembler;
-        this.forestRegionCodeRepository = forestRegionCodeRepository;
+        this.forestOrgUnitCodeRepository = forestRegionCodeRepository;
         this.forestRegionCodeResourceAssembler = forestRegionCodeResourceAssembler;
+        this.forestDistrictCodeResourceAssembler = forestDistrictUnitCodeResourceAssembler;
     }
 
     /**
@@ -147,19 +141,20 @@ public class CodesService implements CommonService {
         }
     }
 
-    public CollectionModel<ForestRegionCodeModel> getAllForestRegionCodes() {
+    public CollectionModel<ForestRegionUnitCodeModel> getAllForestRegionCodes() {
         try {
-            List<ForestRegionCodeEntity> entities = forestRegionCodeRepository.findAll();
+            List<ForestOrgUnitCodeEntity> entities = forestOrgUnitCodeRepository.findByForestOrgUnitTypeCode("REGION");
             return forestRegionCodeResourceAssembler.toCollectionModel(entities);
         } catch (Exception e) {
             throw new ServiceException(e.getLocalizedMessage(), e);
         }
     }
 
-    public CollectionModel<ForestRegionCodeModel> getForestRegionCodesByType(String typeCode) {
+
+    public CollectionModel<ForestDistrictUnitCodeModel> getAllForestDistrictCodes() {
         try {
-            List<ForestRegionCodeEntity> entities = forestRegionCodeRepository.findByForestOrgUnitTypeCode(typeCode);
-            return forestRegionCodeResourceAssembler.toCollectionModel(entities);
+            List<ForestOrgUnitCodeEntity> entities = forestOrgUnitCodeRepository.findByForestOrgUnitTypeCode("DISTRICT");
+            return forestDistrictCodeResourceAssembler.toCollectionModel(entities);
         } catch (Exception e) {
             throw new ServiceException(e.getLocalizedMessage(), e);
         }
