@@ -70,6 +70,9 @@ public class CodesController extends CommonController {
         case CodeTables.FOREST_DISTRICT_CODE -> {
           response =  ok(codesService.getAllForestDistrictCodes());
         }
+        case CodeTables.BC_PARKS_REGION_CODE -> {
+          response =  ok(codesService.getAllBCParksRegionCodes());
+        }
 
         default -> {
           response = internalServerError();

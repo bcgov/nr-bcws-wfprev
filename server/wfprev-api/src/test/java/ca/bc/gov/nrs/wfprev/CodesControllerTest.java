@@ -1,10 +1,12 @@
 package ca.bc.gov.nrs.wfprev;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
 import ca.bc.gov.nrs.wfone.common.service.api.ServiceException;
+import ca.bc.gov.nrs.wfprev.data.models.BCParksRegionCodeModel;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,8 +18,10 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import ca.bc.gov.nrs.wfprev.common.enums.CodeTables;
@@ -26,6 +30,7 @@ import ca.bc.gov.nrs.wfprev.data.models.ForestAreaCodeModel;
 import ca.bc.gov.nrs.wfprev.data.models.GeneralScopeCodeModel;
 import ca.bc.gov.nrs.wfprev.data.models.ProjectTypeCodeModel;
 import ca.bc.gov.nrs.wfprev.services.CodesService;
+import org.springframework.test.web.servlet.ResultActions;
 
 @WebMvcTest(CodesController.class)
 @Import({SecurityConfig.class, TestcontainersConfiguration.class})
@@ -335,6 +340,37 @@ class CodesControllerTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
         verify(codesService, times(1)).getAllForestDistrictCodes();
+        verifyNoMoreInteractions(codesService);
+    }
+
+    @Test
+    @WithMockUser
+    void testGetBCParksRegionCodes() throws Exception {
+        // GIVEN
+        BCParksRegionCodeModel bcparksRegionCodeModel = new BCParksRegionCodeModel();
+        bcparksRegionCodeModel.setBcParksOrgUnitTypeCode("REGION");
+        bcparksRegionCodeModel.setOrgUnitName("Region 1");
+        bcparksRegionCodeModel.setOrgUnitId(1);
+        bcparksRegionCodeModel.setEffectiveDate(new Date());
+        bcparksRegionCodeModel.setExpiryDate(new Date());
+        bcparksRegionCodeModel.setCharacterAlias("R1");
+        bcparksRegionCodeModel.setIntegerAlias(1);
+
+        CollectionModel<BCParksRegionCodeModel> bcparksRegionCodeModelCollection = CollectionModel.of(Arrays.asList(bcparksRegionCodeModel));
+        when(codesService.getAllBCParksRegionCodes()).thenReturn(bcparksRegionCodeModelCollection);
+
+        // WHEN
+        mockMvc.perform(get("/codes/{codeTable}", CodeTables.BC_PARKS_REGION_CODE)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                // THEN
+                .andExpect(jsonPath("$._embedded.bcParksRegionCode[0].bcParksOrgUnitTypeCode").value("REGION"))
+                .andExpect(jsonPath("$._embedded.bcParksRegionCode[0].orgUnitName").value("Region 1"))
+                .andExpect(jsonPath("$._embedded.bcParksRegionCode[0].orgUnitId").value(1))
+                .andExpect(jsonPath("$._embedded.bcParksRegionCode[0].characterAlias").value("R1"))
+                .andExpect(jsonPath("$._embedded.bcParksRegionCode[0].integerAlias").value(1));
+
+        verify(codesService, times(1)).getAllBCParksRegionCodes();
         verifyNoMoreInteractions(codesService);
     }
 }

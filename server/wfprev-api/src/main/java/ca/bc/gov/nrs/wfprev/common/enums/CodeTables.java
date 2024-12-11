@@ -7,4 +7,5 @@ public class CodeTables {
   public static final String PROGRAM_AREA_CODE = "programAreaCodes";
   public static final String FOREST_REGION_CODE = "forestRegionCodes";
   public static final String FOREST_DISTRICT_CODE = "forestDistrictCodes";
+  public static final String BC_PARKS_REGION_CODE = "bcParksRegionCodes";
 }

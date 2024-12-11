@@ -2,23 +2,27 @@ package ca.bc.gov.nrs.wfprev.services;
 
 import ca.bc.gov.nrs.wfone.common.service.api.ServiceException;
 import ca.bc.gov.nrs.wfprev.common.services.CommonService;
+import ca.bc.gov.nrs.wfprev.data.assemblers.BCParksRegionCodeResourceAssembler;
 import ca.bc.gov.nrs.wfprev.data.assemblers.ForestAreaCodeResourceAssembler;
 import ca.bc.gov.nrs.wfprev.data.assemblers.ForestDistrictUnitCodeResourceAssembler;
 import ca.bc.gov.nrs.wfprev.data.assemblers.ForestRegionUnitCodeResourceAssembler;
 import ca.bc.gov.nrs.wfprev.data.assemblers.GeneralScopeCodeResourceAssembler;
 import ca.bc.gov.nrs.wfprev.data.assemblers.ProgramAreaResourceAssembler;
 import ca.bc.gov.nrs.wfprev.data.assemblers.ProjectTypeCodeResourceAssembler;
+import ca.bc.gov.nrs.wfprev.data.entities.BCParksOrgUnitEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ForestAreaCodeEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ForestOrgUnitCodeEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.GeneralScopeCodeEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ProgramAreaEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ProjectTypeCodeEntity;
+import ca.bc.gov.nrs.wfprev.data.models.BCParksRegionCodeModel;
 import ca.bc.gov.nrs.wfprev.data.models.ForestAreaCodeModel;
 import ca.bc.gov.nrs.wfprev.data.models.ForestDistrictUnitCodeModel;
 import ca.bc.gov.nrs.wfprev.data.models.ForestRegionUnitCodeModel;
 import ca.bc.gov.nrs.wfprev.data.models.GeneralScopeCodeModel;
 import ca.bc.gov.nrs.wfprev.data.models.ProgramAreaModel;
 import ca.bc.gov.nrs.wfprev.data.models.ProjectTypeCodeModel;
+import ca.bc.gov.nrs.wfprev.data.repositories.BCParksOrgUnitCodeRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.ForestAreaCodeRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.ForestOrgUnitCodeRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.GeneralScopeCodeRepository;
@@ -34,6 +38,7 @@ import java.util.UUID;
 @Slf4j
 @Component
 public class CodesService implements CommonService {
+    public static final String BC_PARKS_REGION_ORG_UNIT_TYPE_CODE = "REGION";
     private ForestAreaCodeRepository forestAreaCodeRepository;
     private ForestAreaCodeResourceAssembler forestAreaCodeResourceAssembler;
     private GeneralScopeCodeRepository generalScopeCodeRepository;
@@ -45,11 +50,14 @@ public class CodesService implements CommonService {
     private ForestOrgUnitCodeRepository forestOrgUnitCodeRepository;
     private ForestRegionUnitCodeResourceAssembler forestRegionCodeResourceAssembler;
     private final ForestDistrictUnitCodeResourceAssembler forestDistrictCodeResourceAssembler;
+    private final BCParksRegionCodeResourceAssembler bcParksRegionCodeResourceAssembler;
+    private final BCParksOrgUnitCodeRepository bcParksOrgUnitCodeRepository;
 
     public CodesService(ForestAreaCodeRepository forestAreaCodeRepository, ForestAreaCodeResourceAssembler forestAreaCodeResourceAssembler,
                         GeneralScopeCodeRepository generalScopeCodeRepository, GeneralScopeCodeResourceAssembler generalScopeCodeResourceAssembler,
                         ProjectTypeCodeRepository projectTypeCodeRepository, ProjectTypeCodeResourceAssembler projectTypeCodeResourceAssembler, ProgramAreaRepository programAreaRepository, ProgramAreaResourceAssembler programAreaResourceAssembler,
-                        ForestOrgUnitCodeRepository forestRegionCodeRepository, ForestRegionUnitCodeResourceAssembler forestRegionCodeResourceAssembler, ForestDistrictUnitCodeResourceAssembler forestDistrictUnitCodeResourceAssembler) {
+                        ForestOrgUnitCodeRepository forestRegionCodeRepository, ForestRegionUnitCodeResourceAssembler forestRegionCodeResourceAssembler, ForestDistrictUnitCodeResourceAssembler forestDistrictUnitCodeResourceAssembler,
+                        BCParksOrgUnitCodeRepository bcParksOrgUnitCodeRepository, BCParksRegionCodeResourceAssembler bcParksRegionCodeResourceAssembler) {
         this.forestAreaCodeRepository = forestAreaCodeRepository;
         this.forestAreaCodeResourceAssembler = forestAreaCodeResourceAssembler;
         this.generalScopeCodeRepository = generalScopeCodeRepository;
@@ -61,6 +69,8 @@ public class CodesService implements CommonService {
         this.forestOrgUnitCodeRepository = forestRegionCodeRepository;
         this.forestRegionCodeResourceAssembler = forestRegionCodeResourceAssembler;
         this.forestDistrictCodeResourceAssembler = forestDistrictUnitCodeResourceAssembler;
+        this.bcParksOrgUnitCodeRepository = bcParksOrgUnitCodeRepository;
+        this.bcParksRegionCodeResourceAssembler = bcParksRegionCodeResourceAssembler;
     }
 
     /**
@@ -143,7 +153,7 @@ public class CodesService implements CommonService {
 
     public CollectionModel<ForestRegionUnitCodeModel> getAllForestRegionCodes() {
         try {
-            List<ForestOrgUnitCodeEntity> entities = forestOrgUnitCodeRepository.findByForestOrgUnitTypeCode("REGION");
+            List<ForestOrgUnitCodeEntity> entities = forestOrgUnitCodeRepository.findByForestOrgUnitTypeCode(BC_PARKS_REGION_ORG_UNIT_TYPE_CODE);
             return forestRegionCodeResourceAssembler.toCollectionModel(entities);
         } catch (Exception e) {
             throw new ServiceException(e.getLocalizedMessage(), e);
@@ -171,6 +181,15 @@ public class CodesService implements CommonService {
     public ForestDistrictUnitCodeModel getForestDistrictCodeById(Integer forestDistrictId) {
         try {
             return forestOrgUnitCodeRepository.findById(forestDistrictId).map(forestDistrictCodeResourceAssembler::toModel).orElse(null);
+        } catch (Exception e) {
+            throw new ServiceException(e.getLocalizedMessage(), e);
+        }
+    }
+
+    public CollectionModel<BCParksRegionCodeModel> getAllBCParksRegionCodes() {
+        try {
+            List<BCParksOrgUnitEntity> entities = bcParksOrgUnitCodeRepository.findByBcParksOrgUnitTypeCode(BC_PARKS_REGION_ORG_UNIT_TYPE_CODE);
+            return bcParksRegionCodeResourceAssembler.toCollectionModel(entities);
         } catch (Exception e) {
             throw new ServiceException(e.getLocalizedMessage(), e);
         }

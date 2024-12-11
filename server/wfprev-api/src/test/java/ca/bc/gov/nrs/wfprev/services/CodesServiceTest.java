@@ -1,22 +1,26 @@
 package ca.bc.gov.nrs.wfprev.services;
 
 import ca.bc.gov.nrs.wfone.common.service.api.ServiceException;
+import ca.bc.gov.nrs.wfprev.data.assemblers.BCParksRegionCodeResourceAssembler;
 import ca.bc.gov.nrs.wfprev.data.assemblers.ForestAreaCodeResourceAssembler;
 import ca.bc.gov.nrs.wfprev.data.assemblers.ForestDistrictUnitCodeResourceAssembler;
 import ca.bc.gov.nrs.wfprev.data.assemblers.ForestRegionUnitCodeResourceAssembler;
 import ca.bc.gov.nrs.wfprev.data.assemblers.GeneralScopeCodeResourceAssembler;
 import ca.bc.gov.nrs.wfprev.data.assemblers.ProgramAreaResourceAssembler;
 import ca.bc.gov.nrs.wfprev.data.assemblers.ProjectTypeCodeResourceAssembler;
+import ca.bc.gov.nrs.wfprev.data.entities.BCParksOrgUnitEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ForestAreaCodeEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.GeneralScopeCodeEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ProgramAreaEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ProjectTypeCodeEntity;
+import ca.bc.gov.nrs.wfprev.data.models.BCParksRegionCodeModel;
 import ca.bc.gov.nrs.wfprev.data.models.ForestAreaCodeModel;
 import ca.bc.gov.nrs.wfprev.data.models.ForestDistrictUnitCodeModel;
 import ca.bc.gov.nrs.wfprev.data.models.ForestRegionUnitCodeModel;
 import ca.bc.gov.nrs.wfprev.data.models.GeneralScopeCodeModel;
 import ca.bc.gov.nrs.wfprev.data.models.ProgramAreaModel;
 import ca.bc.gov.nrs.wfprev.data.models.ProjectTypeCodeModel;
+import ca.bc.gov.nrs.wfprev.data.repositories.BCParksOrgUnitCodeRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.ForestAreaCodeRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.ForestOrgUnitCodeRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.GeneralScopeCodeRepository;
@@ -50,6 +54,8 @@ class CodesServiceTest {
     private ForestOrgUnitCodeRepository forestOrgUnitCodeRepository;
     private ForestRegionUnitCodeResourceAssembler forestRegionUnitCodeResourceAssembler;
     private ForestDistrictUnitCodeResourceAssembler forestDistrictUnitCodeResourceAssembler;
+    private BCParksOrgUnitCodeRepository bcParksOrgUnitCodeRepository;
+    private BCParksRegionCodeResourceAssembler bcParksRegionCodeResourceAssembler;
 
     @BeforeEach
     void setup() {
@@ -64,11 +70,13 @@ class CodesServiceTest {
         forestOrgUnitCodeRepository = mock(ForestOrgUnitCodeRepository.class);
         forestRegionUnitCodeResourceAssembler = mock(ForestRegionUnitCodeResourceAssembler.class);
         forestDistrictUnitCodeResourceAssembler = mock(ForestDistrictUnitCodeResourceAssembler.class);
+        bcParksOrgUnitCodeRepository = mock(BCParksOrgUnitCodeRepository.class);
+        bcParksRegionCodeResourceAssembler = mock(BCParksRegionCodeResourceAssembler.class);
 
         codesService = new CodesService(forestAreaCodeRepository, forestAreaCodeResourceAssembler,
                 generalScopeCodeRepository, generalScopeCodeResourceAssembler,
                 projectTypeCodeRepository, projectTypeCodeResourceAssembler, programAreaRepository, programAreaResourceAssembler,
-                forestOrgUnitCodeRepository, forestRegionUnitCodeResourceAssembler, forestDistrictUnitCodeResourceAssembler);
+                forestOrgUnitCodeRepository, forestRegionUnitCodeResourceAssembler, forestDistrictUnitCodeResourceAssembler, bcParksOrgUnitCodeRepository, bcParksRegionCodeResourceAssembler);
     }
 
     @Test
@@ -99,7 +107,7 @@ class CodesServiceTest {
                 ServiceException.class,
                 () -> codesService.getAllForestAreaCodes()
         );
-        assertEquals("Error fetching forest area codes",exception.getMessage());
+        assertEquals("Error fetching forest area codes", exception.getMessage());
     }
 
     @Test
@@ -254,7 +262,7 @@ class CodesServiceTest {
                 ServiceException.class,
                 () -> codesService.getAllGeneralScopeCodes()
         );
-        assertEquals("Error fetching general scope codes",exception.getMessage());
+        assertEquals("Error fetching general scope codes", exception.getMessage());
     }
 
     @Test
@@ -566,5 +574,34 @@ class CodesServiceTest {
         verify(forestRegionUnitCodeResourceAssembler, times(1)).toModel(entity);
         verifyNoMoreInteractions(forestOrgUnitCodeRepository, forestRegionUnitCodeResourceAssembler);
 
+    }
+
+    @Test
+    void testGetAllBCParksRegionCodes_Success() {
+        // Given
+        List<BCParksOrgUnitEntity> entities = List.of(new BCParksOrgUnitEntity(), new BCParksOrgUnitEntity());
+        BCParksRegionCodeModel expectedModel = new BCParksRegionCodeModel();
+        expectedModel.setBcParksOrgUnitTypeCode("1");
+        expectedModel.setEffectiveDate(new Date());
+        expectedModel.setExpiryDate(new Date());
+        expectedModel.setOrgUnitId(1);
+        expectedModel.setOrgUnitName("orgUnitName");
+        expectedModel.setParentOrgUnitId("1");
+        expectedModel.setIntegerAlias(1);
+        expectedModel.setCharacterAlias("characterAlias");
+
+        CollectionModel<BCParksRegionCodeModel> expectedModelCollection = CollectionModel.of(List.of(expectedModel));
+
+        when(bcParksOrgUnitCodeRepository.findByBcParksOrgUnitTypeCode(anyString())).thenReturn(entities);
+        when(bcParksRegionCodeResourceAssembler.toCollectionModel(entities)).thenReturn(expectedModelCollection);
+
+        // When
+        CollectionModel<BCParksRegionCodeModel> result = codesService.getAllBCParksRegionCodes();
+
+        // Then
+        assertEquals(expectedModelCollection, result);
+        verify(bcParksOrgUnitCodeRepository, times(1)).findByBcParksOrgUnitTypeCode("REGION");
+        verify(bcParksRegionCodeResourceAssembler, times(1)).toCollectionModel(entities);
+        verifyNoMoreInteractions(bcParksOrgUnitCodeRepository, bcParksRegionCodeResourceAssembler);
     }
 }
