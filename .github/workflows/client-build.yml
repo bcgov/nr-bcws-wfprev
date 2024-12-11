@@ -1,19 +1,21 @@
 name: Deploy Angular App to S3 and CloudFront
 
+permissions:
+  contents: read
+  id-token: write
+
 on:
   workflow_call:
     inputs:
       DEFAULT_APPLICATION_ENVIRONMENT:
         required: true
         type: string
-      IMAGE_TAG:
-        required: true
-        type: string
   workflow_dispatch:
     inputs:
-      TAG:
+      DEFAULT_APPLICATION_ENVIRONMENT:
+        required: true
         type: string
-        description: Additional tag to add to built images
+        default: dev
 
 env:
   TF_VERSION: 1.8.5
@@ -52,6 +54,9 @@ jobs:
       with:
         node-version: '20'
 
+    - name: Clear npm credentials
+      run: rm -fv ~/.npmrc
+
     - name: Install dependencies for Angular project
       run: |
           cd client/wfprev-war/src/main/angular
@@ -68,46 +73,6 @@ jobs:
       env:
         TFC_PROJECT:  ${{ env.TFC_PROJECT }}
         TARGET_ENV: ${{ env.TARGET_ENV }}
-        APP_COUNT: 1
-        LOGGING_LEVEL: ${{vars.LOGGING_LEVEL}}
-
-        # Necessary for WFPREV API
-        WFPREV_API_NAME: wfprev-api
-        WFPREV_API_IMAGE: ${{ steps.getDigestAPI.outputs.IMAGE_API_BY_DIGEST }}
-        WFPREV_API_CPU_UNITS: ${{vars.WFPREV_API_CPU_UNITS}}
-        WFPREV_API_MEMORY: 1024
-        WFPREV_API_PORT: 8080
-        TARGET_AWS_ACCOUNT_ID: ${{secrets.TARGET_AWS_ACCOUNT_ID}}
-        WFPREV_CLIENT_ID: ${{vars.WFPREV_CLIENT_ID}}
-        WFPREV_CLIENT_SECRET: ${{secrets.WFPREV_CLIENT_SECRET}}
-        WEBADE_OAUTH2_CHECK_TOKEN_URL: ${{vars.WEBADE_OAUTH2_CHECK_TOKEN_URL}}
-        WEBADE_OAUTH2_CHECK_AUTHORIZE_URL: ${{vars.WEBADE_OAUTH2_CHECK_AUTHORIZE_URL}}
-        WFPREV_BASE_URL: ${{vars.WFPREV_BASE_URL}}
-        WFPREV_DATASOURCE_URL: ${{vars.WFPREV_DATASOURCE_URL}}
-        WFPREV_DATASOURCE_USERNAME: ${{secrets.WFPREV_USERNAME}}
-        WFPREV_DATASOURCE_PASSWORD: ${{secrets.DB_PASS}}
-        server_count: ${{vars.WFPREV_SERVER_INSTANCE_COUNT}}
-        # WFPREV UI
-        CLIENT_IMAGE: ${{ steps.getDigestUI.outputs.IMAGE_UI_BY_DIGEST }}
-        WEBADE_OAUTH2_WFPREV_UI_CLIENT_SECRET: ${{ secrets.WEBADE_OAUTH2_WFPREV_UI_CLIENT_SECRET }}
-        WFPREV_CHECK_TOKEN_URL: ${{vars.WFPREV_CHECK_TOKEN_URL}}
-
-        # DB
-        WFPREV_USERNAME: ${{secrets.WFPREV_USERNAME}}
-        DB_PASS: ${{secrets.DB_PASS}}
-        DB_INSTANCE_TYPE: ${{vars.DB_INSTANCE_TYPE}}
-
-        #liquibase
-        COMMAND: ${{ steps.liquibaseCommand.outputs.LIQUIBASE_COMMAND }}
-        PROXY_COUNT: 1
-        NONPROXY_COUNT: 1
-        CHANGELOG_NAME: ${{ inputs.CHANGELOG_NAME }}
-        LIQUIBASE_IMAGE: ${{vars.REPOSITORY_HOST}}/${{ github.repository_owner }}/${{ vars.LIQUIBASE_IMAGE }}:${{ inputs.IMAGE_TAG }}
-        LIQUIBASE_COMMAND_USERNAME: ${{ vars.LIQUIBASE_COMMAND_USERNAME }}
-        LIQUIBASE_COMMAND_PASSWORD: ${{ secrets.LIQUIBASE_COMMAND_PASSWORD }}
-        SCHEMA_NAME: ${{ inputs.SCHEMA_NAME }}
-        TARGET_LIQUIBASE_TAG: ${{ steps.liquibaseCommand.outputs.TARGET_LIQUIBASE_TAG }}
-
       run: |
         # Debug current directory and files
         pwd
