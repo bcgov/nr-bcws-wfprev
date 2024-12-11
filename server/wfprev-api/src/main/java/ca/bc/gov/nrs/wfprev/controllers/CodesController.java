@@ -64,6 +64,12 @@ public class CodesController extends CommonController {
         case CodeTables.PROGRAM_AREA_CODE -> {
           response =  ok(codesService.getAllProgramAreaCodes());
         }
+        case CodeTables.FOREST_REGION_CODE -> {
+          response =  ok(codesService.getAllForestRegionCodes());
+        }
+        case CodeTables.FOREST_DISTRICT_CODE -> {
+          response =  ok(codesService.getAllForestDistrictCodes());
+        }
 
         default -> {
           response = internalServerError();
@@ -105,6 +111,12 @@ public class CodesController extends CommonController {
         }
         case CodeTables.PROGRAM_AREA_CODE -> {
           resource =  codesService.getProgramAreaCodeById(id);
+        }
+        case CodeTables.FOREST_REGION_CODE -> {
+          resource =  codesService.getForestRegionCodeById(Integer.parseInt(id));
+        }
+        case CodeTables.FOREST_DISTRICT_CODE -> {
+          resource =  codesService.getForestDistrictCodeById(Integer.parseInt(id));
         }
         default -> {
           resource = null;
