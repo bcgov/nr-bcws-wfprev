@@ -26,10 +26,23 @@ const PANEL_ROUTES: Routes = [
     component: ErrorPageComponent,
     pathMatch: 'full',
   },
-
-  { path: '', 
-    redirectTo: ResourcesRoutes.MAP, 
-    pathMatch: 'full' } // Default route to map
+  {
+    path: ResourcesRoutes.EDIT_PROJECT,
+    loadChildren: () =>
+      import('src/app/components/edit-project.module').then(m => m.EditProjectModule),
+  },
+  { 
+    path: '', 
+    canActivate: [PrevAuthGuard], // Guard the empty path
+    data: { scopes: PROFILE_SCOPES },
+    children: [
+      {
+        path: '',
+        redirectTo: ResourcesRoutes.MAP,
+        pathMatch: 'full',
+      }
+    ]
+  }
 ];
 
 export const ROUTING = RouterModule.forRoot(PANEL_ROUTES, {});

@@ -5,6 +5,7 @@ import { DebugElement } from '@angular/core';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { ActivatedRoute } from '@angular/router';
 
 describe('ProjectsListComponent', () => {
   let component: ProjectsListComponent;
@@ -14,6 +15,9 @@ describe('ProjectsListComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [ProjectsListComponent, BrowserAnimationsModule, MatExpansionModule, MatSlideToggleModule], // Using standalone component
+      providers: [
+        { provide: ActivatedRoute, useValue: ActivatedRoute }, // Provide mock for ActivatedRoute
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(ProjectsListComponent);
