@@ -7,7 +7,8 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import java.util.List;
 
 @RepositoryRestResource(exported = false)
-public interface ForestOrgUnitCodeRepository extends CommonRepository<ForestOrgUnitCodeEntity, String> {
+public interface ForestOrgUnitCodeRepository extends CommonRepository<ForestOrgUnitCodeEntity, Integer> {
 
     List<ForestOrgUnitCodeEntity> findByForestOrgUnitTypeCode(String forestOrgUnitTypeCode);
+
 }

@@ -21,7 +21,7 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ForestRegionUnitCodeModel extends CommonModel<ForestRegionUnitCodeModel> {
-    private String orgUnitId;
+    private Integer orgUnitId;
     private Date effectiveDate;
     private Date expiryDate;
     private String forestOrgUnitTypeCode;

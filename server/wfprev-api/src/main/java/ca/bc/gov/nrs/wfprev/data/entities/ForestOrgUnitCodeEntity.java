@@ -35,7 +35,7 @@ public class ForestOrgUnitCodeEntity implements Serializable {
     @Id
     @Column(name = "org_unit_identifier")
     @NotNull
-    private String orgUnitIdentifier;
+    private Integer orgUnitIdentifier;
 
     @NotNull
     @Column(name = "effective_date")

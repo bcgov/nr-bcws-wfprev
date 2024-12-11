@@ -12,7 +12,7 @@ import static org.junit.Assert.assertEquals;
 
 public class ForestDistrictUnitCodeResourceAssemblerTest {
 
-    public static final String ORG_UNIT_IDENTIFIER = "orgUnitIdentifier";
+    public static final Integer ORG_UNIT_IDENTIFIER = 1;
     public static final Date EFFECTIVE_DATE = new Date();
     public static final Date EXPIRY_DATE = new Date();
     public static final String FOREST_ORG_UNIT_TYPE_CODE = "forestOrgUnitTypeCode";
@@ -59,12 +59,12 @@ public class ForestDistrictUnitCodeResourceAssemblerTest {
     void toCollectionModel_ShouldAddSelfLink() {
         // Given
         ForestOrgUnitCodeEntity entity1 = new ForestOrgUnitCodeEntity();
-        entity1.setOrgUnitIdentifier("id1");
+        entity1.setOrgUnitIdentifier(1);
         entity1.setEffectiveDate(EFFECTIVE_DATE);
         entity1.setExpiryDate(EXPIRY_DATE);
 
         ForestOrgUnitCodeEntity entity2 = new ForestOrgUnitCodeEntity();
-        entity2.setOrgUnitIdentifier("id2");
+        entity2.setOrgUnitIdentifier(2);
         entity2.setEffectiveDate(EFFECTIVE_DATE);
         entity2.setExpiryDate(EXPIRY_DATE);
 

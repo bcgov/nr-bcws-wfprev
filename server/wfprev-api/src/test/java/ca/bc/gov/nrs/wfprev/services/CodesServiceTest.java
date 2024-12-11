@@ -447,4 +447,28 @@ class CodesServiceTest {
         verify(forestOrgUnitCodeRepository, times(1)).findByForestOrgUnitTypeCode("DISTRICT");
         verifyNoInteractions(forestDistrictUnitCodeResourceAssembler);
     }
+
+    @Test
+    void testGetForestRegionCodeById_Exception() {
+        // Arrange
+        Integer forestRegionId = 1;
+        when(forestOrgUnitCodeRepository.findById(forestRegionId)).thenThrow(new RuntimeException("Database error"));
+
+        // Act & Assert
+        ServiceException exception = assertThrows(ServiceException.class, () -> codesService.getForestRegionCodeById(forestRegionId));
+        assertEquals("Database error", exception.getLocalizedMessage());
+        verify(forestOrgUnitCodeRepository, times(1)).findById(forestRegionId);
+    }
+
+    @Test
+    void testGetForestDistrictCodeById_Exception() {
+        // Arrange
+        Integer forestDistrictId = 1;
+        when(forestOrgUnitCodeRepository.findById(forestDistrictId)).thenThrow(new RuntimeException("Database error"));
+
+        // Act & Assert
+        ServiceException exception = assertThrows(ServiceException.class, () -> codesService.getForestDistrictCodeById(forestDistrictId));
+        assertEquals("Database error", exception.getLocalizedMessage());
+        verify(forestOrgUnitCodeRepository, times(1)).findById(forestDistrictId);
+    }
 }

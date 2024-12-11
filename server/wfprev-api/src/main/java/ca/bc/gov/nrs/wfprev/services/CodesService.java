@@ -159,4 +159,20 @@ public class CodesService implements CommonService {
             throw new ServiceException(e.getLocalizedMessage(), e);
         }
     }
+
+    public ForestRegionUnitCodeModel getForestRegionCodeById(Integer forestRegionId) {
+        try {
+            return forestOrgUnitCodeRepository.findById(forestRegionId).map(forestRegionCodeResourceAssembler::toModel).orElse(null);
+        } catch (Exception e) {
+            throw new ServiceException(e.getLocalizedMessage(), e);
+        }
+    }
+
+    public ForestDistrictUnitCodeModel getForestDistrictCodeById(Integer forestDistrictId) {
+        try {
+            return forestOrgUnitCodeRepository.findById(forestDistrictId).map(forestDistrictCodeResourceAssembler::toModel).orElse(null);
+        } catch (Exception e) {
+            throw new ServiceException(e.getLocalizedMessage(), e);
+        }
+    }
 }

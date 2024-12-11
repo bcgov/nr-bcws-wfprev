@@ -24,7 +24,7 @@ public class ForestDistrictUnitCodeResourceAssembler extends RepresentationModel
         ForestDistrictUnitCodeModel resource = instantiateModel(entity);
         resource.add(linkTo(
                 methodOn(CodesController.class)
-                        .getCodeById(CodeTables.FOREST_DISTRICT_CODE, entity.getOrgUnitIdentifier()))
+                        .getCodeById(CodeTables.FOREST_DISTRICT_CODE, entity.getOrgUnitIdentifier().toString()))
                 .withSelfRel());
         resource.setOrgUnitId(entity.getOrgUnitIdentifier());
         resource.setEffectiveDate(entity.getEffectiveDate());

@@ -301,6 +301,34 @@ class CodesControllerTest {
 
     @Test
     @WithMockUser
+    void testGetForestRegionCodeById_VerifyServiceCall() throws Exception {
+        Integer id = 1;
+        when(codesService.getForestRegionCodeById(id)).thenReturn(null);
+
+        mockMvc.perform(get("/codes/{codeTable}/{id}", CodeTables.FOREST_REGION_CODE, id)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+
+        verify(codesService, times(1)).getForestRegionCodeById(anyInt());
+        verifyNoMoreInteractions(codesService);
+    }
+
+    @Test
+    @WithMockUser
+    void testGetForestDistrictCodeById_VerifyServiceCall() throws Exception {
+        Integer id = 1;
+        when(codesService.getForestDistrictCodeById(id)).thenReturn(null);
+
+        mockMvc.perform(get("/codes/{codeTable}/{id}", CodeTables.FOREST_DISTRICT_CODE, id)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+
+        verify(codesService, times(1)).getForestDistrictCodeById(anyInt());
+        verifyNoMoreInteractions(codesService);
+    }
+
+    @Test
+    @WithMockUser
     void testGetForestDistrictCodes() throws Exception {
         when(codesService.getAllForestDistrictCodes()).thenReturn(CollectionModel.empty());
         mockMvc.perform(get("/codes/{codeTable}", CodeTables.FOREST_DISTRICT_CODE)

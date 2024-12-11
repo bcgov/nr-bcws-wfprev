@@ -23,7 +23,7 @@ public class ForestRegionUnitCodeResourceAssembler extends RepresentationModelAs
         ForestRegionUnitCodeModel resource = instantiateModel(entity);
         resource.add(linkTo(
                 methodOn(CodesController.class)
-                        .getCodeById(CodeTables.FOREST_REGION_CODE, entity.getOrgUnitIdentifier()))
+                        .getCodeById(CodeTables.FOREST_REGION_CODE, entity.getOrgUnitIdentifier().toString()))
                 .withSelfRel());
         resource.setOrgUnitId(entity.getOrgUnitIdentifier());
         resource.setEffectiveDate(entity.getEffectiveDate());

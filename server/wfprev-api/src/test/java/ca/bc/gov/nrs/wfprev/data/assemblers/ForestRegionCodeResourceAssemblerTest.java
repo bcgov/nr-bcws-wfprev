@@ -11,7 +11,7 @@ import static org.junit.Assert.assertEquals;
 
 public class ForestRegionCodeResourceAssemblerTest {
 
-    public static final String ORG_UNIT_IDENTIFIER = "orgUnitIdentifier";
+    public static final Integer ORG_UNIT_IDENTIFIER = 1;
     public static final Date EFFECTIVE_DATE = new Date();
     public static final Date EXPIRY_DATE = new Date();
     public static final String FOREST_ORG_UNIT_TYPE_CODE = "forestOrgUnitTypeCode";
