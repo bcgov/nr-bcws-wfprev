@@ -72,7 +72,7 @@ class ProgramAreaServiceTest {
         // Given
         String exampleId = UUID.randomUUID().toString();
         ProgramAreaEntity entity = new ProgramAreaEntity();
-        when(programAreaRepository.findById(exampleId))
+        when(programAreaRepository.findById(UUID.fromString(exampleId)))
                 .thenReturn(Optional.of(entity));
         when(programAreaResourceAssembler.toModel(entity))
                 .thenReturn(new ProgramAreaModel());
@@ -88,7 +88,7 @@ class ProgramAreaServiceTest {
     void testGetProgramAreaById_NotFound() throws ServiceException {
         // Given
         String nonExistentId = UUID.randomUUID().toString();
-        when(programAreaRepository.findById(nonExistentId))
+        when(programAreaRepository.findById(UUID.fromString(nonExistentId)))
                 .thenReturn(Optional.empty());
 
         // When
@@ -102,7 +102,7 @@ class ProgramAreaServiceTest {
     void testGetProgramAreaById_Exception() {
         // Given
         String exampleId = UUID.randomUUID().toString();
-        when(programAreaRepository.findById(exampleId))
+        when(programAreaRepository.findById(UUID.fromString(exampleId)))
                 .thenThrow(new RuntimeException("Error fetching program area"));
 
         // When
@@ -160,8 +160,8 @@ class ProgramAreaServiceTest {
         ProgramAreaModel model = new ProgramAreaModel();
         model.setProgramAreaGuid(exampleId);
         ProgramAreaEntity entity = new ProgramAreaEntity();
-        entity.setProgramAreaGuid(exampleId);
-        when(programAreaRepository.findById(exampleId))
+        entity.setProgramAreaGuid(UUID.fromString(exampleId));
+        when(programAreaRepository.findById(UUID.fromString(exampleId)))
                 .thenReturn(Optional.of(entity))
                 .thenReturn(Optional.empty());
         when(programAreaResourceAssembler.toModel(entity))
@@ -187,7 +187,7 @@ class ProgramAreaServiceTest {
         model.setProgramAreaGuid(exampleId);
         ProgramAreaEntity entity = new ProgramAreaEntity();
         //Mock for getById
-        when(programAreaRepository.findById(exampleId))
+        when(programAreaRepository.findById(UUID.fromString(exampleId)))
                 .thenReturn(Optional.of(entity));
         when(programAreaResourceAssembler.toModel(entity))
                 .thenReturn(model);
@@ -205,5 +205,20 @@ class ProgramAreaServiceTest {
 
         // Then
         assertTrue(exception.getMessage().contains("Error deleting program area"));
+    }
+
+    @Test
+    void testGetProgramAreaById_InvalidUUID() {
+        // Given
+        String invalidId = "not-a-uuid";
+
+        // When
+        ServiceException exception = assertThrows(
+                ServiceException.class,
+                () -> programAreaService.getProgramAreaById(invalidId)
+        );
+
+        // Then
+        assertTrue(exception.getMessage().contains("Invalid UUID"));
     }
 }
