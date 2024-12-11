@@ -2,8 +2,9 @@ package ca.bc.gov.nrs.wfprev.data.assemblers;
 
 import ca.bc.gov.nrs.wfprev.common.enums.CodeTables;
 import ca.bc.gov.nrs.wfprev.controllers.CodesController;
-import ca.bc.gov.nrs.wfprev.data.models.ForestRegionCodeModel;
-import ca.bc.gov.nrs.wfprev.data.entities.ForestRegionCodeEntity;
+import ca.bc.gov.nrs.wfprev.data.entities.ForestOrgUnitCodeEntity;
+import ca.bc.gov.nrs.wfprev.data.models.ForestDistrictUnitCodeModel;
+import ca.bc.gov.nrs.wfprev.data.models.ForestRegionUnitCodeModel;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
 import org.springframework.stereotype.Component;
@@ -12,18 +13,18 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @Component
-public class ForestRegionCodeResourceAssembler extends RepresentationModelAssemblerSupport<ForestRegionCodeEntity, ForestRegionCodeModel> {
-    public ForestRegionCodeResourceAssembler() {
-        super(CodesController.class, ForestRegionCodeModel.class);
+public class ForestDistrictUnitCodeResourceAssembler extends RepresentationModelAssemblerSupport<ForestOrgUnitCodeEntity, ForestDistrictUnitCodeModel> {
+    public ForestDistrictUnitCodeResourceAssembler() {
+        super(CodesController.class, ForestDistrictUnitCodeModel.class);
     }
 
     @Override
-    public ForestRegionCodeModel toModel(ForestRegionCodeEntity entity) {
+    public ForestDistrictUnitCodeModel toModel(ForestOrgUnitCodeEntity entity) {
 
-        ForestRegionCodeModel resource = instantiateModel(entity);
+        ForestDistrictUnitCodeModel resource = instantiateModel(entity);
         resource.add(linkTo(
                 methodOn(CodesController.class)
-                        .getCodeById(CodeTables.FOREST_REGION_CODE, entity.getOrgUnitIdentifier()))
+                        .getCodeById(CodeTables.FOREST_DISTRICT_CODE, entity.getOrgUnitIdentifier()))
                 .withSelfRel());
         resource.setOrgUnitId(entity.getOrgUnitIdentifier());
         resource.setEffectiveDate(entity.getEffectiveDate());
@@ -38,11 +39,10 @@ public class ForestRegionCodeResourceAssembler extends RepresentationModelAssemb
     }
 
     @Override
-    public CollectionModel<ForestRegionCodeModel> toCollectionModel(Iterable<? extends ForestRegionCodeEntity> entities)
-    {
-        CollectionModel<ForestRegionCodeModel> resources = super.toCollectionModel(entities);
+    public CollectionModel<ForestDistrictUnitCodeModel> toCollectionModel(Iterable<? extends ForestOrgUnitCodeEntity> entities) {
+        CollectionModel<ForestDistrictUnitCodeModel> resources = super.toCollectionModel(entities);
 
-        resources.add(linkTo(methodOn(CodesController.class).getCodes(CodeTables.FOREST_REGION_CODE)).withSelfRel());
+        resources.add(linkTo(methodOn(CodesController.class).getCodes(CodeTables.FOREST_DISTRICT_CODE)).withSelfRel());
 
         return resources;
     }

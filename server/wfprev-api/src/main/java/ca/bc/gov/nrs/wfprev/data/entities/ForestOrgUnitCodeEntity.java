@@ -28,7 +28,7 @@ import java.util.Date;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ForestRegionCodeEntity implements Serializable {
+public class ForestOrgUnitCodeEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
 

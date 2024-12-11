@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.UUID;
 
 import ca.bc.gov.nrs.wfone.common.service.api.ServiceException;
-import ca.bc.gov.nrs.wfprev.data.models.ProgramAreaModel;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -296,7 +295,18 @@ class CodesControllerTest {
                 mockMvc.perform(get("/codes/{codeTable}", CodeTables.FOREST_REGION_CODE)
                                 .contentType(MediaType.APPLICATION_JSON))
                         .andExpect(status().isOk());
-        verify(codesService, times(1)).getForestRegionCodesByType("REGION");
+        verify(codesService, times(1)).getAllForestRegionCodes();
+        verifyNoMoreInteractions(codesService);
+    }
+
+    @Test
+    @WithMockUser
+    void testGetForestDistrictCodes() throws Exception {
+        when(codesService.getAllForestDistrictCodes()).thenReturn(CollectionModel.empty());
+        mockMvc.perform(get("/codes/{codeTable}", CodeTables.FOREST_DISTRICT_CODE)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+        verify(codesService, times(1)).getAllForestDistrictCodes();
         verifyNoMoreInteractions(codesService);
     }
 }

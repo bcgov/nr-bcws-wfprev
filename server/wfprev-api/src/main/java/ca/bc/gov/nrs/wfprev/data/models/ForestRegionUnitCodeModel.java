@@ -14,13 +14,13 @@ import java.util.Date;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
-@JsonRootName(value = "forestAreaCode")
-@Relation(collectionRelation = "forestAreaCode")
+@JsonRootName(value = "forestRegionCode")
+@Relation(collectionRelation = "forestRegionCode")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ForestRegionCodeModel extends CommonModel<ForestRegionCodeModel> {
+public class ForestRegionUnitCodeModel extends CommonModel<ForestRegionUnitCodeModel> {
     private String orgUnitId;
     private Date effectiveDate;
     private Date expiryDate;
