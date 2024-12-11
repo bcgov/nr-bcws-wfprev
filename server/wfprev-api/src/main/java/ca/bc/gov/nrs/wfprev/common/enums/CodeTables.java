@@ -4,4 +4,5 @@ public class CodeTables {
   public static final String FOREST_AREA_CODE = "forestAreaCodes";
   public static final String GENERAL_SCOPE_CODE = "generalScopeCodes";
   public static final String PROJECT_TYPE_CODE = "projectTypeCodes";
+  public static final String PROGRAM_AREA_CODE = "programAreaCodes";
 }
