@@ -25,9 +25,9 @@ import ca.bc.gov.nrs.wfprev.common.entities.CommonModel;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ForestAreaCodeModel extends CommonModel<ForestAreaCodeModel> {
-  private String forestAreaCode;
-	private String description;
-	private Integer displayOrder;
-	private Date effectiveDate;
-	private Date expiryDate;
+    private String forestAreaCode;
+    private String description;
+    private Integer displayOrder;
+    private Date effectiveDate;
+    private Date expiryDate;
 }
