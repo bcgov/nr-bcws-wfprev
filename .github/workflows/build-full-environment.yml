@@ -53,6 +53,5 @@ jobs:
     needs: [terragrunt-deploy-dev]
     with:
       DEFAULT_APPLICATION_ENVIRONMENT: dev
-      IMAGE_TAG: latest
     secrets: inherit
     
