@@ -50,7 +50,7 @@ public class ForestOrgUnitCodeEntity implements Serializable {
     private String forestOrgUnitTypeCode;
 
     @Column(name = "parent_org_unit_identifier")
-    private String parentOrgUnitIdentifier;
+    private Integer parentOrgUnitIdentifier;
 
     @NotNull
     @Column(name = "org_unit_name")

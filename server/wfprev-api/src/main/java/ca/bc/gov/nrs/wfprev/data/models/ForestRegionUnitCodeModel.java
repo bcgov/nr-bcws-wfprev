@@ -25,7 +25,7 @@ public class ForestRegionUnitCodeModel extends CommonModel<ForestRegionUnitCodeM
     private Date effectiveDate;
     private Date expiryDate;
     private String forestOrgUnitTypeCode;
-    private String parentOrgUnitId;
+    private Integer parentOrgUnitId;
     private String orgUnitName;
     private Integer integerAlias;
     private String characterAlias;

@@ -28,6 +28,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.hateoas.CollectionModel;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -325,18 +326,55 @@ class CodesServiceTest {
     @Test
     void testGetAllForestRegionCodes_Success() {
         // Given
-        List<ForestOrgUnitCodeEntity> entities = List.of(new ForestOrgUnitCodeEntity(), new ForestOrgUnitCodeEntity());
-        CollectionModel<ForestRegionUnitCodeModel> expectedModel = CollectionModel.empty();
+        ForestOrgUnitCodeEntity entity1 = new ForestOrgUnitCodeEntity();
+        entity1.setEffectiveDate(new Date());
+        entity1.setExpiryDate(new Date());
+        entity1.setForestOrgUnitTypeCode("REGION");
+        entity1.setOrgUnitName("orgUnitName");
+        entity1.setOrgUnitIdentifier(1);
+        entity1.setParentOrgUnitIdentifier(1);
+        entity1.setIntegerAlias(1);
+        entity1.setCharacterAlias("characterAlias");
+
+        ForestOrgUnitCodeEntity entity2 = new ForestOrgUnitCodeEntity();
+        entity2.setEffectiveDate(new Date());
+        entity2.setExpiryDate(new Date());
+        entity2.setForestOrgUnitTypeCode("REGION");
+        entity2.setOrgUnitName("orgUnitName2");
+        entity2.setOrgUnitIdentifier(2);
+        entity2.setParentOrgUnitIdentifier(2);
+        entity2.setIntegerAlias(2);
+        entity2.setCharacterAlias("characterAlias2");
+
+
+        List<ForestOrgUnitCodeEntity> entities = List.of(entity1, entity2);
+
+        ForestRegionUnitCodeModel expectedModel = new ForestRegionUnitCodeModel();
+        expectedModel.setOrgUnitId(1);
+        expectedModel.setEffectiveDate(new Date());
+        expectedModel.setExpiryDate(new Date());
+        expectedModel.setForestOrgUnitTypeCode("REGION");
+        expectedModel.setOrgUnitName("orgUnitName");
+        expectedModel.setParentOrgUnitId(1);
+        expectedModel.setIntegerAlias(1);
+        expectedModel.setCharacterAlias("characterAlias");
+
+        CollectionModel<ForestRegionUnitCodeModel> expectedModelCollection = CollectionModel.of(List.of(expectedModel));
+
+        when(forestOrgUnitCodeRepository.findByForestOrgUnitTypeCode("REGION")).thenReturn(entities);
+        when(forestRegionUnitCodeResourceAssembler.toCollectionModel(entities)).thenReturn(expectedModelCollection);
+
+//        CollectionModel<ForestRegionUnitCodeModel> expectedModel = CollectionModel.empty();
 
         when(forestOrgUnitCodeRepository.findAll()).thenReturn(entities);
-        when(forestRegionUnitCodeResourceAssembler.toCollectionModel(entities)).thenReturn(expectedModel);
+        when(forestRegionUnitCodeResourceAssembler.toCollectionModel(entities)).thenReturn(expectedModelCollection);
 
         // When
         CollectionModel<ForestRegionUnitCodeModel> result = codesService.getAllForestRegionCodes();
 
         // Then
-        assertEquals(expectedModel, result);
-        verify(forestOrgUnitCodeRepository, times(1)).findAll();
+        assertEquals(expectedModelCollection, result);
+        verify(forestOrgUnitCodeRepository, times(1)).findByForestOrgUnitTypeCode("REGION");
         verify(forestRegionUnitCodeResourceAssembler, times(1)).toCollectionModel(entities);
         verifyNoMoreInteractions(forestOrgUnitCodeRepository, forestRegionUnitCodeResourceAssembler);
     }
@@ -360,6 +398,8 @@ class CodesServiceTest {
         UUID guid = UUID.fromString(id);
         ProgramAreaEntity entity = new ProgramAreaEntity();
         ProgramAreaModel expectedModel = new ProgramAreaModel();
+        expectedModel.setProgramAreaGuid(id);
+        expectedModel.setProgramAreaGuid("name");
 
         when(programAreaRepository.findById(guid)).thenReturn(Optional.of(entity));
         when(programAreaResourceAssembler.toModel(entity)).thenReturn(expectedModel);

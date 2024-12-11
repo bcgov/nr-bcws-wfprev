@@ -16,7 +16,7 @@ public class ForestDistrictUnitCodeResourceAssemblerTest {
     public static final Date EFFECTIVE_DATE = new Date();
     public static final Date EXPIRY_DATE = new Date();
     public static final String FOREST_ORG_UNIT_TYPE_CODE = "forestOrgUnitTypeCode";
-    public static final String PARENT_ORG_UNIT_IDENTIFIER = "parentOrgUnitIdentifier";
+    public static final Integer PARENT_ORG_UNIT_IDENTIFIER = 1;
     public static final String ORG_UNIT_NAME = "orgUnitName";
     public static final Integer INTEGER_ALIAS = 1;
     public static final String CHARACTER_ALIAS = "characterAlias";
@@ -49,7 +49,7 @@ public class ForestDistrictUnitCodeResourceAssemblerTest {
         assertEquals(EFFECTIVE_DATE, model.getEffectiveDate());
         assertEquals(EXPIRY_DATE, model.getExpiryDate());
         assertEquals(FOREST_ORG_UNIT_TYPE_CODE, model.getForestOrgUnitTypeCode());
-        assertEquals(PARENT_ORG_UNIT_IDENTIFIER, model.getParentOrgUnitId());
+        assertEquals(PARENT_ORG_UNIT_IDENTIFIER.intValue(), Integer.parseInt(model.getParentOrgUnitId()));
         assertEquals(ORG_UNIT_NAME, model.getOrgUnitName());
         assertEquals(INTEGER_ALIAS, model.getIntegerAlias());
         assertEquals(CHARACTER_ALIAS, model.getCharacterAlias());

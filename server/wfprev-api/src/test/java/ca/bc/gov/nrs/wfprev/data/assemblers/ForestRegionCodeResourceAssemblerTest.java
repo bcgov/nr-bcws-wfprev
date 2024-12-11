@@ -15,7 +15,7 @@ public class ForestRegionCodeResourceAssemblerTest {
     public static final Date EFFECTIVE_DATE = new Date();
     public static final Date EXPIRY_DATE = new Date();
     public static final String FOREST_ORG_UNIT_TYPE_CODE = "forestOrgUnitTypeCode";
-    public static final String PARENT_ORG_UNIT_IDENTIFIER = "parentOrgUnitIdentifier";
+    public static final Integer PARENT_ORG_UNIT_IDENTIFIER = 1;
     public static final String ORG_UNIT_NAME = "orgUnitName";
     public static final Integer INTEGER_ALIAS = 1;
     public static final String CHARACTER_ALIAS = "characterAlias";

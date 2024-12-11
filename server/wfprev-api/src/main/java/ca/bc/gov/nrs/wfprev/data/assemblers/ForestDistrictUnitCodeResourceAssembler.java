@@ -30,7 +30,9 @@ public class ForestDistrictUnitCodeResourceAssembler extends RepresentationModel
         resource.setEffectiveDate(entity.getEffectiveDate());
         resource.setExpiryDate(entity.getExpiryDate());
         resource.setForestOrgUnitTypeCode(entity.getForestOrgUnitTypeCode());
-        resource.setParentOrgUnitId(entity.getParentOrgUnitIdentifier());
+        if (entity.getParentOrgUnitIdentifier() != null) {
+            resource.setParentOrgUnitId(entity.getParentOrgUnitIdentifier().toString());
+        }
         resource.setOrgUnitName(entity.getOrgUnitName());
         resource.setIntegerAlias(entity.getIntegerAlias());
         resource.setCharacterAlias(entity.getCharacterAlias());
