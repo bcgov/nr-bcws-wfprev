@@ -7,6 +7,7 @@ import java.util.UUID;
 
 import ca.bc.gov.nrs.wfone.common.service.api.ServiceException;
 import ca.bc.gov.nrs.wfprev.data.models.BCParksRegionCodeModel;
+import ca.bc.gov.nrs.wfprev.data.models.BCParksSectionCodeModel;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -426,4 +427,90 @@ class CodesControllerTest {
                 // Then
                 .andExpect(status().isInternalServerError());
     }
+
+    @Test
+    @WithMockUser
+    void getBCParksSectionCodes() throws Exception {
+        // GIVEN
+        BCParksSectionCodeModel bcparksSectionCodeModel = new BCParksSectionCodeModel();
+        bcparksSectionCodeModel.setBcParksOrgUnitTypeCode("SECTION");
+        bcparksSectionCodeModel.setOrgUnitName("Section 1");
+        bcparksSectionCodeModel.setOrgUnitId(1);
+        bcparksSectionCodeModel.setEffectiveDate(new Date());
+        bcparksSectionCodeModel.setExpiryDate(new Date());
+        bcparksSectionCodeModel.setCharacterAlias("S1");
+        bcparksSectionCodeModel.setIntegerAlias(1);
+
+        CollectionModel<BCParksSectionCodeModel> bcparksSectionCodeCollectionModel = CollectionModel.of(Arrays.asList(bcparksSectionCodeModel));
+
+
+        when(codesService.getAllBCParksSectionCodes()).thenReturn(bcparksSectionCodeCollectionModel);
+
+        // WHEN
+        mockMvc.perform(get("/codes/{codeTable}", CodeTables.BC_PARKS_SECTION_CODE)
+                        .contentType(MediaType.APPLICATION_JSON))
+                // THEN
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.bcParksOrgUnitTypeCode").value("SECTION"))
+                .andExpect(jsonPath("$.orgUnitName").value("Section 1"))
+                .andExpect(jsonPath("$.orgUnitId").value(1))
+                .andExpect(jsonPath("$.characterAlias").value("S1"))
+                .andExpect(jsonPath("$.integerAlias").value(1));
+        verify(codesService, times(1)).getAllBCParksSectionCodes();
+        verifyNoMoreInteractions(codesService);
+    }
+
+    @Test
+    @WithMockUser
+    void testGetBCParksSectionCodesById_Success() throws Exception {
+        // Given
+        BCParksSectionCodeModel bcparksSectionCodeModel = new BCParksSectionCodeModel();
+        bcparksSectionCodeModel.setBcParksOrgUnitTypeCode("SECTION");
+        bcparksSectionCodeModel.setOrgUnitName("Section 1");
+        bcparksSectionCodeModel.setOrgUnitId(1);
+        bcparksSectionCodeModel.setEffectiveDate(new Date());
+        bcparksSectionCodeModel.setExpiryDate(new Date());
+        bcparksSectionCodeModel.setCharacterAlias("S1");
+        bcparksSectionCodeModel.setIntegerAlias(1);
+
+        when(codesService.getBCParksSectionCodeById(anyInt())).thenReturn(bcparksSectionCodeModel);
+
+        // When
+        mockMvc.perform(get("/codes/{codeTable}/{id}", CodeTables.BC_PARKS_SECTION_CODE, "1")
+                        .contentType(MediaType.APPLICATION_JSON))
+                // Then
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.bcParksOrgUnitTypeCode").value("SECTION"))
+                .andExpect(jsonPath("$.orgUnitName").value("Section 1"))
+                .andExpect(jsonPath("$.orgUnitId").value(1))
+                .andExpect(jsonPath("$.characterAlias").value("S1"))
+                .andExpect(jsonPath("$.integerAlias").value(1));
+    }
+
+    @Test
+    @WithMockUser
+    void testGetBCParksSectionCodesById_NotFound() throws Exception {
+        // Given
+        when(codesService.getBCParksSectionCodeById(anyInt())).thenReturn(null);
+
+        // When
+        mockMvc.perform(get("/codes/{codeTable}/{id}", CodeTables.BC_PARKS_SECTION_CODE, "1")
+                        .contentType(MediaType.APPLICATION_JSON))
+                // Then
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @WithMockUser
+    void testGetBCParksSectionCodesById_ServiceException() throws Exception {
+        // Given
+        when(codesService.getBCParksSectionCodeById(anyInt())).thenThrow(new ServiceException("Service error"));
+
+        // When
+        mockMvc.perform(get("/codes/{codeTable}/{id}", CodeTables.BC_PARKS_SECTION_CODE, "1")
+                        .contentType(MediaType.APPLICATION_JSON))
+                // Then
+                .andExpect(status().isInternalServerError());
+    }
+
 }

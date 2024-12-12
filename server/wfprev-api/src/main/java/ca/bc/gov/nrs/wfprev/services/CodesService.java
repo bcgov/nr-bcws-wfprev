@@ -3,6 +3,7 @@ package ca.bc.gov.nrs.wfprev.services;
 import ca.bc.gov.nrs.wfone.common.service.api.ServiceException;
 import ca.bc.gov.nrs.wfprev.common.services.CommonService;
 import ca.bc.gov.nrs.wfprev.data.assemblers.BCParksRegionCodeResourceAssembler;
+import ca.bc.gov.nrs.wfprev.data.assemblers.BCParksSectionCodeResourceAssembler;
 import ca.bc.gov.nrs.wfprev.data.assemblers.ForestAreaCodeResourceAssembler;
 import ca.bc.gov.nrs.wfprev.data.assemblers.ForestDistrictUnitCodeResourceAssembler;
 import ca.bc.gov.nrs.wfprev.data.assemblers.ForestRegionUnitCodeResourceAssembler;
@@ -16,6 +17,7 @@ import ca.bc.gov.nrs.wfprev.data.entities.GeneralScopeCodeEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ProgramAreaEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ProjectTypeCodeEntity;
 import ca.bc.gov.nrs.wfprev.data.models.BCParksRegionCodeModel;
+import ca.bc.gov.nrs.wfprev.data.models.BCParksSectionCodeModel;
 import ca.bc.gov.nrs.wfprev.data.models.ForestAreaCodeModel;
 import ca.bc.gov.nrs.wfprev.data.models.ForestDistrictUnitCodeModel;
 import ca.bc.gov.nrs.wfprev.data.models.ForestRegionUnitCodeModel;
@@ -52,13 +54,15 @@ public class CodesService implements CommonService {
     private ForestRegionUnitCodeResourceAssembler forestRegionCodeResourceAssembler;
     private final ForestDistrictUnitCodeResourceAssembler forestDistrictCodeResourceAssembler;
     private final BCParksRegionCodeResourceAssembler bcParksRegionCodeResourceAssembler;
+    private final BCParksSectionCodeResourceAssembler bcParksSectionCodeResourceAssembler;
     private final BCParksOrgUnitCodeRepository bcParksOrgUnitCodeRepository;
+
 
     public CodesService(ForestAreaCodeRepository forestAreaCodeRepository, ForestAreaCodeResourceAssembler forestAreaCodeResourceAssembler,
                         GeneralScopeCodeRepository generalScopeCodeRepository, GeneralScopeCodeResourceAssembler generalScopeCodeResourceAssembler,
                         ProjectTypeCodeRepository projectTypeCodeRepository, ProjectTypeCodeResourceAssembler projectTypeCodeResourceAssembler, ProgramAreaRepository programAreaRepository, ProgramAreaResourceAssembler programAreaResourceAssembler,
                         ForestOrgUnitCodeRepository forestRegionCodeRepository, ForestRegionUnitCodeResourceAssembler forestRegionCodeResourceAssembler, ForestDistrictUnitCodeResourceAssembler forestDistrictUnitCodeResourceAssembler,
-                        BCParksOrgUnitCodeRepository bcParksOrgUnitCodeRepository, BCParksRegionCodeResourceAssembler bcParksRegionCodeResourceAssembler) {
+                        BCParksOrgUnitCodeRepository bcParksOrgUnitCodeRepository, BCParksRegionCodeResourceAssembler bcParksRegionCodeResourceAssembler, BCParksSectionCodeResourceAssembler bcParksSectionCodeResourceAssembler) {
         this.forestAreaCodeRepository = forestAreaCodeRepository;
         this.forestAreaCodeResourceAssembler = forestAreaCodeResourceAssembler;
         this.generalScopeCodeRepository = generalScopeCodeRepository;
@@ -72,6 +76,7 @@ public class CodesService implements CommonService {
         this.forestDistrictCodeResourceAssembler = forestDistrictUnitCodeResourceAssembler;
         this.bcParksOrgUnitCodeRepository = bcParksOrgUnitCodeRepository;
         this.bcParksRegionCodeResourceAssembler = bcParksRegionCodeResourceAssembler;
+        this.bcParksSectionCodeResourceAssembler = bcParksSectionCodeResourceAssembler;
     }
 
     /**
@@ -200,6 +205,23 @@ public class CodesService implements CommonService {
         try {
             Optional<BCParksOrgUnitEntity> byId = bcParksOrgUnitCodeRepository.findById(number);
             return byId.map(bcParksRegionCodeResourceAssembler::toModel).orElse(null);
+        } catch (Exception e) {
+            throw new ServiceException(e.getLocalizedMessage(), e);
+        }
+    }
+
+    public CollectionModel<BCParksSectionCodeModel> getAllBCParksSectionCodes() {
+        try {
+            List<BCParksOrgUnitEntity> entities = bcParksOrgUnitCodeRepository.findByBcParksOrgUnitTypeCode("SECTION");
+            return bcParksSectionCodeResourceAssembler.toCollectionModel(entities);
+        } catch (Exception e) {
+            throw new ServiceException(e.getLocalizedMessage(), e);
+        }
+    }
+
+    public BCParksSectionCodeModel getBCParksSectionCodeById(Integer bcParksSectionId) {
+        try {
+            return bcParksOrgUnitCodeRepository.findById(bcParksSectionId).map(bcParksSectionCodeResourceAssembler::toModel).orElse(null);
         } catch (Exception e) {
             throw new ServiceException(e.getLocalizedMessage(), e);
         }
