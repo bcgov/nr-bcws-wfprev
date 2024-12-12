@@ -20,6 +20,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.AuditorAware;
+import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -51,12 +53,16 @@ import org.springframework.test.web.servlet.ResultActions;
 
 @WebMvcTest(ProjectBoundaryController.class)
 @Import({TestSpringSecurity.class, TestcontainersConfiguration.class, MockMvcRestExceptionConfiguration.class})
+@MockBean(JpaMetamodelMappingContext.class)
 class ProjectBoundaryControllerTest {
     @MockBean
     private ProjectBoundaryService projectBoundaryService;
 
     @Autowired
     private MockMvc mockMvc;
+
+    @MockBean(name = "springSecurityAuditorAware")  // Changed to match the expected bean name
+    private AuditorAware<String> auditorAware;
 
     private Gson gson;
 
