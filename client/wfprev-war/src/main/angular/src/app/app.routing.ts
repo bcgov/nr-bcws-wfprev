@@ -11,25 +11,33 @@ const PANEL_ROUTES: Routes = [
     path: ResourcesRoutes.LIST,
     loadChildren: () =>
       import('src/app/components/list.module').then(m => m.ListModule),
-      canActivate: [PrevAuthGuard],
-      data: { scopes: PROFILE_SCOPES },
+    canActivate: [PrevAuthGuard],
+    data: { scopes: PROFILE_SCOPES },
   },
   {
     path: ResourcesRoutes.MAP,
     loadChildren: () =>
       import('src/app/components/map.module').then(m => m.MapModule),
-      canActivate: [PrevAuthGuard],
-      data: { scopes: PROFILE_SCOPES }
+    canActivate: [PrevAuthGuard],
+    data: { scopes: PROFILE_SCOPES }
   },
   {
     path: ResourcesRoutes.ERROR_PAGE,
     component: ErrorPageComponent,
     pathMatch: 'full',
   },
-
-  { path: '', 
-    redirectTo: ResourcesRoutes.MAP, 
-    pathMatch: 'full' } // Default route to map
+  {
+    path: ResourcesRoutes.EDIT_PROJECT,
+    loadChildren: () =>
+      import('src/app/components/edit-project.module').then(m => m.EditProjectModule),
+    canActivate: [PrevAuthGuard],
+    data: { scopes: PROFILE_SCOPES }
+  },
+  { 
+    path: '', 
+    redirectTo: ResourcesRoutes.MAP,
+    pathMatch: 'full'
+  }
 ];
 
 export const ROUTING = RouterModule.forRoot(PANEL_ROUTES, {});
