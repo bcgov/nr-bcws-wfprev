@@ -154,3 +154,7 @@ select {
   background-position: right 10px center;
   background-size: 12px;
 }
+
+::ng-deep .mdc-snackbar__surface{
+  background-color: transparent !important;
+}

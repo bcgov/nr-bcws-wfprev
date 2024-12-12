@@ -58,7 +58,7 @@ describe('AppHeaderComponent', () => {
     spyOn(window, 'open');
     component.onSupportLinkClick();
     expect(window.open).toHaveBeenCalledWith(
-      'https://intranet.gov.bc.ca/bcws/provincial-programs/strategic-initiatives-and-innovation/wildfire-one/wildfire-one-training',
+      'https://intranet.gov.bc.ca/bcws/corporate-governance/strategic-initiatives-and-innovation/wildfire-one/wildfire-one-training',
       '_blank',
       'noopener'
     );

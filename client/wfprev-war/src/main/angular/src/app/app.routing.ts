@@ -11,15 +11,15 @@ const PANEL_ROUTES: Routes = [
     path: ResourcesRoutes.LIST,
     loadChildren: () =>
       import('src/app/components/list.module').then(m => m.ListModule),
-      canActivate: [PrevAuthGuard],
-      data: { scopes: PROFILE_SCOPES },
+    canActivate: [PrevAuthGuard],
+    data: { scopes: PROFILE_SCOPES },
   },
   {
     path: ResourcesRoutes.MAP,
     loadChildren: () =>
       import('src/app/components/map.module').then(m => m.MapModule),
-      canActivate: [PrevAuthGuard],
-      data: { scopes: PROFILE_SCOPES }
+    canActivate: [PrevAuthGuard],
+    data: { scopes: PROFILE_SCOPES }
   },
   {
     path: ResourcesRoutes.ERROR_PAGE,
@@ -33,15 +33,8 @@ const PANEL_ROUTES: Routes = [
   },
   { 
     path: '', 
-    canActivate: [PrevAuthGuard], // Guard the empty path
-    data: { scopes: PROFILE_SCOPES },
-    children: [
-      {
-        path: '',
-        redirectTo: ResourcesRoutes.MAP,
-        pathMatch: 'full',
-      }
-    ]
+    redirectTo: ResourcesRoutes.MAP,
+    pathMatch: 'full'
   }
 ];
 
