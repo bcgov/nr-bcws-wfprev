@@ -451,11 +451,12 @@ class CodesControllerTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 // THEN
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.bcParksOrgUnitTypeCode").value("SECTION"))
-                .andExpect(jsonPath("$.orgUnitName").value("Section 1"))
-                .andExpect(jsonPath("$.orgUnitId").value(1))
-                .andExpect(jsonPath("$.characterAlias").value("S1"))
-                .andExpect(jsonPath("$.integerAlias").value(1));
+                .andExpect(jsonPath("$._embedded.bcParksSectionCode[0].bcParksOrgUnitTypeCode").value("SECTION"))
+                .andExpect(jsonPath("$._embedded.bcParksSectionCode[0].orgUnitName").value("Section 1"))
+                .andExpect(jsonPath("$._embedded.bcParksSectionCode[0].orgUnitId").value(1))
+                .andExpect(jsonPath("$._embedded.bcParksSectionCode[0].characterAlias").value("S1"))
+                .andExpect(jsonPath("$._embedded.bcParksSectionCode[0].integerAlias").value(1));
+
         verify(codesService, times(1)).getAllBCParksSectionCodes();
         verifyNoMoreInteractions(codesService);
     }
