@@ -10,6 +10,8 @@ import ca.bc.gov.nrs.wfprev.controllers.ProgramAreaController;
 import ca.bc.gov.nrs.wfprev.data.entities.ProgramAreaEntity;
 import ca.bc.gov.nrs.wfprev.data.models.ProgramAreaModel;
 
+import java.util.UUID;
+
 @Component
 public class ProgramAreaResourceAssembler extends RepresentationModelAssemblerSupport<ProgramAreaEntity, ProgramAreaModel> {
 
@@ -20,7 +22,7 @@ public class ProgramAreaResourceAssembler extends RepresentationModelAssemblerSu
   public ProgramAreaEntity toEntity(ProgramAreaModel resource) {
     ProgramAreaEntity entity = new ProgramAreaEntity();
 
-    entity.setProgramAreaGuid(resource.getProgramAreaGuid());
+    entity.setProgramAreaGuid(UUID.fromString(resource.getProgramAreaGuid()));
     entity.setProgramAreaName(resource.getProgramAreaName());
     entity.setRevisionCount(resource.getRevisionCount());
     entity.setCreateUser(resource.getCreateUser());
@@ -37,10 +39,10 @@ public class ProgramAreaResourceAssembler extends RepresentationModelAssemblerSu
      
     resource.add(linkTo(
         methodOn(ProgramAreaController.class)
-        .getById(entity.getProgramAreaGuid()))
+        .getById(entity.getProgramAreaGuid().toString()))
         .withSelfRel());
      
-      resource.setProgramAreaGuid(entity.getProgramAreaGuid());
+      resource.setProgramAreaGuid(entity.getProgramAreaGuid().toString());
       resource.setProgramAreaName(entity.getProgramAreaName());
       resource.setRevisionCount(entity.getRevisionCount());
       resource.setCreateUser(entity.getCreateUser());

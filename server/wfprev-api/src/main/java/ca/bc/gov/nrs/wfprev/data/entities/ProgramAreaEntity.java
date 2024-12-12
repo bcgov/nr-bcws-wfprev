@@ -2,6 +2,7 @@ package ca.bc.gov.nrs.wfprev.data.entities;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.UUID;
 
 import org.hibernate.annotations.UuidGenerator;
 import org.springframework.data.annotation.CreatedBy;
@@ -37,8 +38,8 @@ public class ProgramAreaEntity implements Serializable {
   @Id
   @UuidGenerator
   @GeneratedValue(strategy = GenerationType.UUID)
-  @Column(name = "program_area_guid")
-  private String programAreaGuid;
+  @Column(name = "program_area_guid", columnDefinition = "uuid")
+  private UUID programAreaGuid;
 
   @NotNull
 	@Column(name="program_area_name", length = 100)
