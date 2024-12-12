@@ -2,29 +2,39 @@ package ca.bc.gov.nrs.wfprev.services;
 
 import ca.bc.gov.nrs.wfone.common.service.api.ServiceException;
 import ca.bc.gov.nrs.wfprev.data.assemblers.ForestAreaCodeResourceAssembler;
+import ca.bc.gov.nrs.wfprev.data.assemblers.ForestDistrictUnitCodeResourceAssembler;
+import ca.bc.gov.nrs.wfprev.data.assemblers.ForestRegionUnitCodeResourceAssembler;
 import ca.bc.gov.nrs.wfprev.data.assemblers.GeneralScopeCodeResourceAssembler;
+import ca.bc.gov.nrs.wfprev.data.assemblers.ProgramAreaResourceAssembler;
 import ca.bc.gov.nrs.wfprev.data.assemblers.ProjectTypeCodeResourceAssembler;
 import ca.bc.gov.nrs.wfprev.data.entities.ForestAreaCodeEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.GeneralScopeCodeEntity;
+import ca.bc.gov.nrs.wfprev.data.entities.ProgramAreaEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ProjectTypeCodeEntity;
 import ca.bc.gov.nrs.wfprev.data.models.ForestAreaCodeModel;
+import ca.bc.gov.nrs.wfprev.data.models.ForestDistrictUnitCodeModel;
+import ca.bc.gov.nrs.wfprev.data.models.ForestRegionUnitCodeModel;
 import ca.bc.gov.nrs.wfprev.data.models.GeneralScopeCodeModel;
+import ca.bc.gov.nrs.wfprev.data.models.ProgramAreaModel;
 import ca.bc.gov.nrs.wfprev.data.models.ProjectTypeCodeModel;
 import ca.bc.gov.nrs.wfprev.data.repositories.ForestAreaCodeRepository;
+import ca.bc.gov.nrs.wfprev.data.repositories.ForestOrgUnitCodeRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.GeneralScopeCodeRepository;
+import ca.bc.gov.nrs.wfprev.data.repositories.ProgramAreaRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.ProjectTypeCodeRepository;
+import ca.bc.gov.nrs.wfprev.data.entities.ForestOrgUnitCodeEntity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.hateoas.CollectionModel;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 class CodesServiceTest {
     private CodesService codesService;
@@ -35,6 +45,12 @@ class CodesServiceTest {
     private ProjectTypeCodeRepository projectTypeCodeRepository;
     private ProjectTypeCodeResourceAssembler projectTypeCodeResourceAssembler;
 
+    private ProgramAreaRepository programAreaRepository;
+    private ProgramAreaResourceAssembler programAreaResourceAssembler;
+    private ForestOrgUnitCodeRepository forestOrgUnitCodeRepository;
+    private ForestRegionUnitCodeResourceAssembler forestRegionUnitCodeResourceAssembler;
+    private ForestDistrictUnitCodeResourceAssembler forestDistrictUnitCodeResourceAssembler;
+
     @BeforeEach
     void setup() {
         forestAreaCodeRepository = mock(ForestAreaCodeRepository.class);
@@ -43,10 +59,16 @@ class CodesServiceTest {
         generalScopeCodeResourceAssembler = mock(GeneralScopeCodeResourceAssembler.class);
         projectTypeCodeRepository = mock(ProjectTypeCodeRepository.class);
         projectTypeCodeResourceAssembler = mock(ProjectTypeCodeResourceAssembler.class);
+        programAreaRepository = mock(ProgramAreaRepository.class);
+        programAreaResourceAssembler = mock(ProgramAreaResourceAssembler.class);
+        forestOrgUnitCodeRepository = mock(ForestOrgUnitCodeRepository.class);
+        forestRegionUnitCodeResourceAssembler = mock(ForestRegionUnitCodeResourceAssembler.class);
+        forestDistrictUnitCodeResourceAssembler = mock(ForestDistrictUnitCodeResourceAssembler.class);
 
         codesService = new CodesService(forestAreaCodeRepository, forestAreaCodeResourceAssembler,
                 generalScopeCodeRepository, generalScopeCodeResourceAssembler,
-                projectTypeCodeRepository, projectTypeCodeResourceAssembler);
+                projectTypeCodeRepository, projectTypeCodeResourceAssembler, programAreaRepository, programAreaResourceAssembler,
+                forestOrgUnitCodeRepository, forestRegionUnitCodeResourceAssembler, forestDistrictUnitCodeResourceAssembler);
     }
 
     @Test
@@ -127,7 +149,7 @@ class CodesServiceTest {
     }
 
     @Test
-    public void getAllProjectTypeCodes_Success() throws ServiceException {
+    void getAllProjectTypeCodes_Success() throws ServiceException {
         // Arrange
         List<ProjectTypeCodeEntity> entities = new ArrayList<>();
         entities.add(new ProjectTypeCodeEntity());
@@ -282,5 +304,267 @@ class CodesServiceTest {
         assertTrue(exception.getMessage().contains("Error fetching general scope code"));
     }
 
+    @Test
+    void testGetAllProgramAreaCodes_Success() {
+        // Arrange
+        List<ProgramAreaEntity> entities = List.of(new ProgramAreaEntity(), new ProgramAreaEntity());
+        CollectionModel<ProgramAreaModel> expectedModel = CollectionModel.empty();
 
+        when(programAreaRepository.findAll()).thenReturn(entities);
+        when(programAreaResourceAssembler.toCollectionModel(entities)).thenReturn(expectedModel);
+
+        // Act
+        CollectionModel<ProgramAreaModel> result = codesService.getAllProgramAreaCodes();
+
+        // Assert
+        assertEquals(expectedModel, result);
+        verify(programAreaRepository, times(1)).findAll();
+        verify(programAreaResourceAssembler, times(1)).toCollectionModel(entities);
+        verifyNoMoreInteractions(programAreaRepository, programAreaResourceAssembler);
+    }
+
+    @Test
+    void testGetAllForestRegionCodes_Success() {
+        // Given
+        ForestOrgUnitCodeEntity entity1 = new ForestOrgUnitCodeEntity();
+        entity1.setEffectiveDate(new Date());
+        entity1.setExpiryDate(new Date());
+        entity1.setForestOrgUnitTypeCode("REGION");
+        entity1.setOrgUnitName("orgUnitName");
+        entity1.setOrgUnitIdentifier(1);
+        entity1.setParentOrgUnitIdentifier(1);
+        entity1.setIntegerAlias(1);
+        entity1.setCharacterAlias("characterAlias");
+
+        ForestOrgUnitCodeEntity entity2 = new ForestOrgUnitCodeEntity();
+        entity2.setEffectiveDate(new Date());
+        entity2.setExpiryDate(new Date());
+        entity2.setForestOrgUnitTypeCode("REGION");
+        entity2.setOrgUnitName("orgUnitName2");
+        entity2.setOrgUnitIdentifier(2);
+        entity2.setParentOrgUnitIdentifier(2);
+        entity2.setIntegerAlias(2);
+        entity2.setCharacterAlias("characterAlias2");
+
+
+        List<ForestOrgUnitCodeEntity> entities = List.of(entity1, entity2);
+
+        ForestRegionUnitCodeModel expectedModel = new ForestRegionUnitCodeModel();
+        expectedModel.setOrgUnitId(1);
+        expectedModel.setEffectiveDate(new Date());
+        expectedModel.setExpiryDate(new Date());
+        expectedModel.setForestOrgUnitTypeCode("REGION");
+        expectedModel.setOrgUnitName("orgUnitName");
+        expectedModel.setParentOrgUnitId(1);
+        expectedModel.setIntegerAlias(1);
+        expectedModel.setCharacterAlias("characterAlias");
+
+        CollectionModel<ForestRegionUnitCodeModel> expectedModelCollection = CollectionModel.of(List.of(expectedModel));
+
+        when(forestOrgUnitCodeRepository.findByForestOrgUnitTypeCode("REGION")).thenReturn(entities);
+        when(forestRegionUnitCodeResourceAssembler.toCollectionModel(entities)).thenReturn(expectedModelCollection);
+
+        when(forestOrgUnitCodeRepository.findAll()).thenReturn(entities);
+        when(forestRegionUnitCodeResourceAssembler.toCollectionModel(entities)).thenReturn(expectedModelCollection);
+
+        // When
+        CollectionModel<ForestRegionUnitCodeModel> result = codesService.getAllForestRegionCodes();
+
+        // Then
+        assertEquals(expectedModelCollection, result);
+        verify(forestOrgUnitCodeRepository, times(1)).findByForestOrgUnitTypeCode("REGION");
+        verify(forestRegionUnitCodeResourceAssembler, times(1)).toCollectionModel(entities);
+        verifyNoMoreInteractions(forestOrgUnitCodeRepository, forestRegionUnitCodeResourceAssembler);
+    }
+
+    @Test
+    void testGetAllProgramAreaCodes_Exception() {
+        // Arrange
+        when(programAreaRepository.findAll()).thenThrow(new RuntimeException("Database error"));
+
+        // Act & Assert
+        ServiceException exception = assertThrows(ServiceException.class, codesService::getAllProgramAreaCodes);
+        assertEquals("Database error", exception.getLocalizedMessage());
+        verify(programAreaRepository, times(1)).findAll();
+        verifyNoInteractions(programAreaResourceAssembler);
+    }
+
+    @Test
+    void testGetProgramAreaCodeById_Success() {
+        // Arrange
+        String id = UUID.randomUUID().toString();
+        UUID guid = UUID.fromString(id);
+        ProgramAreaEntity entity = new ProgramAreaEntity();
+        ProgramAreaModel expectedModel = new ProgramAreaModel();
+        expectedModel.setProgramAreaGuid(id);
+        expectedModel.setProgramAreaGuid("name");
+
+        when(programAreaRepository.findById(guid)).thenReturn(Optional.of(entity));
+        when(programAreaResourceAssembler.toModel(entity)).thenReturn(expectedModel);
+
+        // Act
+        ProgramAreaModel result = codesService.getProgramAreaCodeById(id);
+
+        // Assert
+        assertEquals(expectedModel, result);
+        verify(programAreaRepository, times(1)).findById(guid);
+        verify(programAreaResourceAssembler, times(1)).toModel(entity);
+        verifyNoMoreInteractions(programAreaRepository, programAreaResourceAssembler);
+    }
+
+    @Test
+    void testGetProgramAreaCodeById_NotFound() {
+        // Arrange
+        String id = UUID.randomUUID().toString();
+        UUID guid = UUID.fromString(id);
+
+        when(programAreaRepository.findById(guid)).thenReturn(Optional.empty());
+
+        // Act
+        ProgramAreaModel result = codesService.getProgramAreaCodeById(id);
+
+        // Assert
+        assertNull(result);
+        verify(programAreaRepository, times(1)).findById(guid);
+        verifyNoInteractions(programAreaResourceAssembler);
+    }
+
+    @Test
+    void testGetProgramAreaCodeById_InvalidUUID() {
+        // Arrange
+        String invalidId = "not-a-uuid";
+
+        // Act & Assert
+        ServiceException exception = assertThrows(ServiceException.class, () -> codesService.getProgramAreaCodeById(invalidId));
+        assertTrue(exception.getLocalizedMessage().contains("Invalid UUID string"));
+        verifyNoInteractions(programAreaRepository, programAreaResourceAssembler);
+    }
+
+    @Test
+    void testGetProgramAreaCodeById_Exception() {
+        // Arrange
+        String id = UUID.randomUUID().toString();
+        UUID guid = UUID.fromString(id);
+
+        when(programAreaRepository.findById(guid)).thenThrow(new RuntimeException("Database error"));
+
+        // Act & Assert
+        ServiceException exception = assertThrows(ServiceException.class, () -> codesService.getProgramAreaCodeById(id));
+        assertEquals("Database error", exception.getLocalizedMessage());
+        verify(programAreaRepository, times(1)).findById(guid);
+        verifyNoInteractions(programAreaResourceAssembler);
+    }
+
+    @Test
+    void testGetAllForestDistrictCodes_Success() {
+        // Given
+        List<ForestOrgUnitCodeEntity> entities = List.of(new ForestOrgUnitCodeEntity(), new ForestOrgUnitCodeEntity());
+        CollectionModel<ForestDistrictUnitCodeModel> expectedModel = CollectionModel.empty();
+
+        when(forestOrgUnitCodeRepository.findByForestOrgUnitTypeCode(anyString())).thenReturn(entities);
+        when(forestDistrictUnitCodeResourceAssembler.toCollectionModel(entities)).thenReturn(expectedModel);
+
+        // When
+        CollectionModel<ForestDistrictUnitCodeModel> result = codesService.getAllForestDistrictCodes();
+
+        // Then
+        assertEquals(expectedModel, result);
+        verify(forestOrgUnitCodeRepository, times(1)).findByForestOrgUnitTypeCode("DISTRICT");
+        verify(forestDistrictUnitCodeResourceAssembler, times(1)).toCollectionModel(entities);
+        verifyNoMoreInteractions(forestOrgUnitCodeRepository, forestDistrictUnitCodeResourceAssembler);
+    }
+
+    @Test
+    void testGetAllForestDistrictCodes_Exception() {
+        // Arrange
+        when(forestOrgUnitCodeRepository.findByForestOrgUnitTypeCode("DISTRICT")).thenThrow(new RuntimeException("Database error"));
+
+        // Act & Assert
+        ServiceException exception = assertThrows(ServiceException.class, codesService::getAllForestDistrictCodes);
+        assertEquals("Database error", exception.getLocalizedMessage());
+        verify(forestOrgUnitCodeRepository, times(1)).findByForestOrgUnitTypeCode("DISTRICT");
+        verifyNoInteractions(forestDistrictUnitCodeResourceAssembler);
+    }
+
+    @Test
+    void testGetForestRegionCodeById_Exception() {
+        // Arrange
+        Integer forestRegionId = 1;
+        when(forestOrgUnitCodeRepository.findById(forestRegionId)).thenThrow(new RuntimeException("Database error"));
+
+        // Act & Assert
+        ServiceException exception = assertThrows(ServiceException.class, () -> codesService.getForestRegionCodeById(forestRegionId));
+        assertEquals("Database error", exception.getLocalizedMessage());
+        verify(forestOrgUnitCodeRepository, times(1)).findById(forestRegionId);
+    }
+
+    @Test
+    void testGetForestDistrictCodeById_Exception() {
+        // Arrange
+        Integer forestDistrictId = 1;
+        when(forestOrgUnitCodeRepository.findById(forestDistrictId)).thenThrow(new RuntimeException("Database error"));
+
+        // Act & Assert
+        ServiceException exception = assertThrows(ServiceException.class, () -> codesService.getForestDistrictCodeById(forestDistrictId));
+        assertEquals("Database error", exception.getLocalizedMessage());
+        verify(forestOrgUnitCodeRepository, times(1)).findById(forestDistrictId);
+    }
+
+    @Test
+    void testGetForestDistrictCodeById_Success() {
+        // Given
+        Integer forestDistrictId = 1;
+        ForestOrgUnitCodeEntity entity = new ForestOrgUnitCodeEntity();
+        ForestDistrictUnitCodeModel expectedModel = new ForestDistrictUnitCodeModel();
+        expectedModel.setOrgUnitId(forestDistrictId);
+        expectedModel.setEffectiveDate(new Date());
+        expectedModel.setExpiryDate(new Date());
+        expectedModel.setForestOrgUnitTypeCode("DISTRICT");
+        expectedModel.setOrgUnitName("orgUnitName");
+        expectedModel.setParentOrgUnitId("1");
+        expectedModel.setIntegerAlias(1);
+        expectedModel.setCharacterAlias("characterAlias");
+
+        when(forestOrgUnitCodeRepository.findById(forestDistrictId)).thenReturn(Optional.of(entity));
+        when(forestDistrictUnitCodeResourceAssembler.toModel(entity)).thenReturn(expectedModel);
+
+        // When
+        ForestDistrictUnitCodeModel result = codesService.getForestDistrictCodeById(forestDistrictId);
+
+        // Then
+        assertEquals(expectedModel, result);
+        verify(forestOrgUnitCodeRepository, times(1)).findById(forestDistrictId);
+        verify(forestDistrictUnitCodeResourceAssembler, times(1)).toModel(entity);
+        verifyNoMoreInteractions(forestOrgUnitCodeRepository, forestDistrictUnitCodeResourceAssembler);
+
+    }
+
+    @Test
+    void testGetForestRegionCodeById_Success() {
+        // Given
+        Integer forestRegionId = 1;
+        ForestOrgUnitCodeEntity entity = new ForestOrgUnitCodeEntity();
+        ForestRegionUnitCodeModel expectedModel = new ForestRegionUnitCodeModel();
+        expectedModel.setOrgUnitId(forestRegionId);
+        expectedModel.setEffectiveDate(new Date());
+        expectedModel.setExpiryDate(new Date());
+        expectedModel.setForestOrgUnitTypeCode("REGION");
+        expectedModel.setOrgUnitName("orgUnitName");
+        expectedModel.setParentOrgUnitId(1);
+        expectedModel.setIntegerAlias(1);
+        expectedModel.setCharacterAlias("characterAlias");
+
+        when(forestOrgUnitCodeRepository.findById(forestRegionId)).thenReturn(Optional.of(entity));
+        when(forestRegionUnitCodeResourceAssembler.toModel(entity)).thenReturn(expectedModel);
+
+        // When
+        ForestRegionUnitCodeModel result = codesService.getForestRegionCodeById(forestRegionId);
+
+        // Then
+        assertEquals(expectedModel, result);
+        verify(forestOrgUnitCodeRepository, times(1)).findById(forestRegionId);
+        verify(forestRegionUnitCodeResourceAssembler, times(1)).toModel(entity);
+        verifyNoMoreInteractions(forestOrgUnitCodeRepository, forestRegionUnitCodeResourceAssembler);
+
+    }
 }

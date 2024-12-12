@@ -11,22 +11,44 @@ The goal of the BC Wildfire Service (BCWS) Prevention Program is to reduce the n
 * [AWS](https://aws.amazon.com/)
 * [Docker](https://www.docker.com/)
 
-## Getting Started
+# Getting Started
 
-## FOR CONVENIENCE
+## Local Deployment
 
-You can bring up the full system including the database, liquibase and the backend service with the following command:
+### The Easy Way
 
-```docker compose up```
+You can start the full system with the following command:
 
-That's it!
+* Create a .env file in the root of the project with the following content:
+```WFPREV_DATASOURCE_URL=jdbc:postgresql://localhost:5432/wfprev
+WFPREV_DATASOURCE_USERNAME=wfprev
+WFPREV_DATASOURCE_PASSWORD=***
+WFPREV_CLIENT_ID=WFNEWS-REST
+WFPREV_CLIENT_SECRET=***
+WEBADE_OAUTH2_CHECK_TOKEN_URL=https://wfappsi.nrs.gov.bc.ca/pub/oauth2/v1/check_token
+WEBADE_OAUTH2_CHECK_AUTHORIZE_URL=https://wfappsi.nrs.gov.bc.ca/ext/oauth2/v1/oauth/authorize
+SPRING_MAIN_ALLOW_BEAN_DEFINITION_OVERRIDING=true
+WFPREV_DB_PASSWORD=***
+POSTGRES_PASSWORD=**
+WFPREV_BASE_URL=http://localhost:8080
+```
 
-### Local Deployment
-
-For local development, we recommend starting individual services with Docker
+* Then run this command```docker compose up```
+    * This will start the database, liquibase and the backend service
+    * If you want to also run the API (With GraalVM), run the following command:
+    ```docker compose --profile api up```
+* NOTE - Windows users may have to fix the line endings in the server/wfprev-api/mvnw file.  The simplest way to do this is to run the following command:
+```
+Open the mvnw file in a text editor (like VS Code or Notepad++).
+Convert the line endings:
+  •	VS Code: Look for the line ending selector in the bottom-right corner and change it to LF.
+  •	Notepad++: Use the menu Edit > EOL Conversion > Unix (LF).
+```
+### The Hard Way
 
 You can create a database instance via
 
+#### Postgres
 ```
 docker pull postgis/postgis:16-3.4
 docker run --name wfprev-postgres \
@@ -42,6 +64,7 @@ f0de92debad131b48e2d72a9d211bafaa2b8bcb800e5077bb59f3225e5729086```
 
 And build the database model with Liquibase:
 
+#### Liquibase
 ```
 cd db
 docker build -t liquibase -f Dockerfile.liquibase.local .   
@@ -62,6 +85,11 @@ The db/.env.local file should have the following content:
 WFPREV_DB_PASSWORD=***
 POSTGRES_PASSWORD=***
 ```
+
+#### Backend
+We typically run the API from our IDE but you can find more detailed information in the README at server/wfprev-api
+
+
 
 [![Lifecycle:Experimental](https://img.shields.io/badge/Lifecycle-Experimental-339999)](<Redirect-URL>)
 
