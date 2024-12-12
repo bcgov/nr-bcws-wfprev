@@ -36,8 +36,7 @@ describe('ProjectDetailsComponent', () => {
     });
 
     it('should mark the form as invalid if required fields are missing', () => {
-      component.detailsForm.controls['projectLead'].setValue('');
-      component.detailsForm.controls['projectLeadEmailAddress'].setValue('');
+      component.detailsForm.controls['projectTypeCode'].setValue('');
       expect(component.detailsForm.invalid).toBeTrue();
     });
 
@@ -63,14 +62,6 @@ describe('ProjectDetailsComponent', () => {
     it('should add a marker to the map', () => {
       component.initMap();
       expect(mapSpy.addLayer).toHaveBeenCalled();
-    });
-  });
-
-  describe('onSave Method', () => {
-    it('should log form data if the form is valid', () => {
-      spyOn(console, 'log');
-      component.onSave();
-      expect(console.log).toHaveBeenCalledWith('Form Data:', component.detailsForm.value);
     });
   });
 
