@@ -30,6 +30,8 @@ const PANEL_ROUTES: Routes = [
     path: ResourcesRoutes.EDIT_PROJECT,
     loadChildren: () =>
       import('src/app/components/edit-project.module').then(m => m.EditProjectModule),
+    canActivate: [PrevAuthGuard],
+    data: { scopes: PROFILE_SCOPES }
   },
   { 
     path: '', 

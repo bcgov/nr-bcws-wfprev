@@ -16,7 +16,6 @@ export class ProjectsListComponent {
 
   constructor(
     private router: Router,
-    private route: ActivatedRoute
   ) {
   }
   
