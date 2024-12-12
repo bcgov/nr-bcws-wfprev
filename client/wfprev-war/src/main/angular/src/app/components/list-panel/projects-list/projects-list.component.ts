@@ -2,6 +2,8 @@ import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatExpansionModule } from '@angular/material/expansion';
+import { ActivatedRoute, Router } from '@angular/router';
+import { ResourcesRoutes } from 'src/app/utils';
 
 @Component({
   selector: 'app-projects-list',
@@ -11,6 +13,12 @@ import { MatExpansionModule } from '@angular/material/expansion';
   styleUrls: ['./projects-list.component.scss'], // Corrected to 'styleUrls'
 })
 export class ProjectsListComponent {
+
+  constructor(
+    private router: Router,
+  ) {
+  }
+  
   sortOptions = [
     { label: 'Name (A-Z)', value: 'ascending' },
     { label: 'Name (Z-A)', value: 'descending' },
@@ -115,7 +123,7 @@ export class ProjectsListComponent {
     },
   ];
   
-  fiscalYearActivityTypes = ['Clearning','Burning','Pruning']
+  fiscalYearActivityTypes = ['Clearing','Burning','Pruning']
   
 
   onSortChange(event:any): void {
@@ -126,6 +134,13 @@ export class ProjectsListComponent {
   onSyncMapToggleChange(event: any): void {
     this.syncWithMap = event.checked;
     console.log('Sync with map:', this.syncWithMap ? 'On' : 'Off');
+  }
+
+  editProject(project: any, event:Event) {
+    event.stopPropagation();
+    this.router.navigate([ResourcesRoutes.EDIT_PROJECT], {
+      queryParams: { projectNumber: project.projectNumber, name: project.projectName}
+    });
   }
   
 }

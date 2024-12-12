@@ -46,14 +46,25 @@ body {
     width: fit-content;
     text-align: center;
     .mat-mdc-simple-snack-bar {
-      font-family: var(--wf-font-family-main);
+      font-family: var(--wf-font-family-main) !important;
       font-size: 13px;
     }
     .mat-button-wrapper {
       color: white;
     }
-  }
+    .mat-mdc-snack-bar-action {
+      color: white !important;
+      border: 1px solid white;
+      border-radius: 5px;
+    }
+}
 
+
+html, body{
+    font-family: var(--wf-font-family-main);
+    height: 100%;
+    overflow: hidden; /* Prevent scrolling if not needed */
+}
 .snackbar-error {
     background-color: #FF0000;
     color: var(--colour-white);

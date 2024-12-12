@@ -22,7 +22,6 @@ export class AppComponent {
   ) {
   }
 
-
   setActive(menuItem: string): void {
     this.activeRoute = menuItem;
     switch (menuItem) {
