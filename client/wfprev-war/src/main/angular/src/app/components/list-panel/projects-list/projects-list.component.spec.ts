@@ -5,7 +5,8 @@ import { DebugElement } from '@angular/core';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
+import { ResourcesRoutes } from 'src/app/utils';
 
 describe('ProjectsListComponent', () => {
   let component: ProjectsListComponent;
@@ -171,4 +172,25 @@ describe('ProjectsListComponent', () => {
     expect(sortOptions[1].nativeElement.textContent).toContain('Name (A-Z)');
     expect(sortOptions[2].nativeElement.textContent).toContain('Name (Z-A)');
   });
+  it('should navigate to the edit project route with the correct query parameters and stop event propagation', () => {
+    // Arrange
+    const mockRouter = TestBed.inject(Router);
+    spyOn(mockRouter, 'navigate'); // Spy on the navigate method
+    const mockEvent = jasmine.createSpyObj('Event', ['stopPropagation']); // Mock event with stopPropagation method
+    
+    const project = {
+      projectNumber: 12345,
+      projectName: 'Sample Project'
+    };
+  
+    // Act
+    component.editProject(project, mockEvent);
+  
+    // Assert
+    expect(mockRouter.navigate).toHaveBeenCalledWith([ResourcesRoutes.EDIT_PROJECT], {
+      queryParams: { projectNumber: project.projectNumber, name: project.projectName }
+    });
+    expect(mockEvent.stopPropagation).toHaveBeenCalled();
+  });
+  
 });
