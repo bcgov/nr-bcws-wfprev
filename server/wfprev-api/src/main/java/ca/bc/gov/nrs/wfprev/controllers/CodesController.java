@@ -121,6 +121,9 @@ public class CodesController extends CommonController {
         case CodeTables.FOREST_DISTRICT_CODE -> {
           resource =  codesService.getForestDistrictCodeById(Integer.parseInt(id));
         }
+        case CodeTables.BC_PARKS_REGION_CODE -> {
+          resource =  codesService.getBCParksRegionCodeById(Integer.parseInt(id));
+        }
         default -> {
           resource = null;
         }

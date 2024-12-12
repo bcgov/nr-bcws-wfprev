@@ -604,4 +604,60 @@ class CodesServiceTest {
         verify(bcParksRegionCodeResourceAssembler, times(1)).toCollectionModel(entities);
         verifyNoMoreInteractions(bcParksOrgUnitCodeRepository, bcParksRegionCodeResourceAssembler);
     }
+
+    @Test
+    void testGetAllBCParksRegionCodeById_Success() {
+        // Given
+        Integer bcParksRegionId = 1;
+        BCParksOrgUnitEntity entity = new BCParksOrgUnitEntity();
+        BCParksRegionCodeModel expectedModel = new BCParksRegionCodeModel();
+        expectedModel.setOrgUnitId(bcParksRegionId);
+        expectedModel.setEffectiveDate(new Date());
+        expectedModel.setExpiryDate(new Date());
+        expectedModel.setBcParksOrgUnitTypeCode("REGION");
+        expectedModel.setOrgUnitName("orgUnitName");
+        expectedModel.setParentOrgUnitId("1");
+        expectedModel.setIntegerAlias(1);
+        expectedModel.setCharacterAlias("characterAlias");
+
+        when(bcParksOrgUnitCodeRepository.findById(bcParksRegionId)).thenReturn(Optional.of(entity));
+        when(bcParksRegionCodeResourceAssembler.toModel(entity)).thenReturn(expectedModel);
+
+        // When
+        BCParksRegionCodeModel result = codesService.getBCParksRegionCodeById(bcParksRegionId);
+
+        // Then
+        assertEquals(expectedModel, result);
+        verify(bcParksOrgUnitCodeRepository, times(1)).findById(bcParksRegionId);
+        verify(bcParksRegionCodeResourceAssembler, times(1)).toModel(entity);
+        verifyNoMoreInteractions(bcParksOrgUnitCodeRepository, bcParksRegionCodeResourceAssembler);
+    }
+
+    @Test
+    void testGetBCParksRegionCodeById_NotFound() {
+        // Arrange
+        Integer bcParksRegionId = 1;
+        when(bcParksOrgUnitCodeRepository.findById(bcParksRegionId)).thenReturn(Optional.empty());
+
+        // Act
+        BCParksRegionCodeModel result = codesService.getBCParksRegionCodeById(bcParksRegionId);
+
+        // Assert
+        assertNull(result);
+        verify(bcParksOrgUnitCodeRepository, times(1)).findById(bcParksRegionId);
+        verifyNoInteractions(bcParksRegionCodeResourceAssembler);
+    }
+
+    @Test
+    void testGetBCParksRegionCodeById_Exception() {
+        // Arrange
+        Integer bcParksRegionId = 1;
+        when(bcParksOrgUnitCodeRepository.findById(bcParksRegionId)).thenThrow(new RuntimeException("Database error"));
+
+        // Act & Assert
+        ServiceException exception = assertThrows(ServiceException.class, () -> codesService.getBCParksRegionCodeById(bcParksRegionId));
+        assertEquals("Database error", exception.getLocalizedMessage());
+        verify(bcParksOrgUnitCodeRepository, times(1)).findById(bcParksRegionId);
+        verifyNoInteractions(bcParksRegionCodeResourceAssembler);
+    }
 }

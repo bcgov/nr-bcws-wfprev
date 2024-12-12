@@ -33,6 +33,7 @@ import org.springframework.hateoas.CollectionModel;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Slf4j
@@ -190,6 +191,15 @@ public class CodesService implements CommonService {
         try {
             List<BCParksOrgUnitEntity> entities = bcParksOrgUnitCodeRepository.findByBcParksOrgUnitTypeCode(BC_PARKS_REGION_ORG_UNIT_TYPE_CODE);
             return bcParksRegionCodeResourceAssembler.toCollectionModel(entities);
+        } catch (Exception e) {
+            throw new ServiceException(e.getLocalizedMessage(), e);
+        }
+    }
+
+    public BCParksRegionCodeModel getBCParksRegionCodeById(Integer number) {
+        try {
+            Optional<BCParksOrgUnitEntity> byId = bcParksOrgUnitCodeRepository.findById(number);
+            return byId.map(bcParksRegionCodeResourceAssembler::toModel).orElse(null);
         } catch (Exception e) {
             throw new ServiceException(e.getLocalizedMessage(), e);
         }

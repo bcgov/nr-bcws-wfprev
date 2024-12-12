@@ -45,69 +45,69 @@ class CodesControllerTest {
     @Test
     @WithMockUser
     void testGetAllCodes() throws Exception {
-      testGetForestAreaCodes();
-      testGetGeneralScopeCodes();
-      testGetProjectTypeCodes();
+        testGetForestAreaCodes();
+        testGetGeneralScopeCodes();
+        testGetProjectTypeCodes();
     }
 
     void testGetForestAreaCodes() throws Exception {
-      String exampleId1 = UUID.randomUUID().toString();
-      String exampleId2 = UUID.randomUUID().toString();
+        String exampleId1 = UUID.randomUUID().toString();
+        String exampleId2 = UUID.randomUUID().toString();
 
-      ForestAreaCodeModel fac1 = new ForestAreaCodeModel();
-      fac1.setForestAreaCode(exampleId1);
+        ForestAreaCodeModel fac1 = new ForestAreaCodeModel();
+        fac1.setForestAreaCode(exampleId1);
 
-      ForestAreaCodeModel fac2 = new ForestAreaCodeModel();
-      fac2.setForestAreaCode(exampleId2);
+        ForestAreaCodeModel fac2 = new ForestAreaCodeModel();
+        fac2.setForestAreaCode(exampleId2);
 
-      List<ForestAreaCodeModel> facList = Arrays.asList(fac1, fac2);
-      CollectionModel<ForestAreaCodeModel> facModel = CollectionModel.of(facList);
+        List<ForestAreaCodeModel> facList = Arrays.asList(fac1, fac2);
+        CollectionModel<ForestAreaCodeModel> facModel = CollectionModel.of(facList);
 
-      when(codesService.getAllForestAreaCodes()).thenReturn(facModel);
+        when(codesService.getAllForestAreaCodes()).thenReturn(facModel);
 
-      mockMvc.perform(get("/codes/" + CodeTables.FOREST_AREA_CODE)
-              .contentType(MediaType.APPLICATION_JSON))
-              .andExpect(status().isOk());
+        mockMvc.perform(get("/codes/" + CodeTables.FOREST_AREA_CODE)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
     }
 
     void testGetGeneralScopeCodes() throws Exception {
-      String exampleId1 = UUID.randomUUID().toString();
-      String exampleId2 = UUID.randomUUID().toString();
+        String exampleId1 = UUID.randomUUID().toString();
+        String exampleId2 = UUID.randomUUID().toString();
 
-      GeneralScopeCodeModel fac1 = new GeneralScopeCodeModel();
-      fac1.setGeneralScopeCode(exampleId1);
+        GeneralScopeCodeModel fac1 = new GeneralScopeCodeModel();
+        fac1.setGeneralScopeCode(exampleId1);
 
-      GeneralScopeCodeModel fac2 = new GeneralScopeCodeModel();
-      fac2.setGeneralScopeCode(exampleId2);
+        GeneralScopeCodeModel fac2 = new GeneralScopeCodeModel();
+        fac2.setGeneralScopeCode(exampleId2);
 
-      List<GeneralScopeCodeModel> facList = Arrays.asList(fac1, fac2);
-      CollectionModel<GeneralScopeCodeModel> facModel = CollectionModel.of(facList);
+        List<GeneralScopeCodeModel> facList = Arrays.asList(fac1, fac2);
+        CollectionModel<GeneralScopeCodeModel> facModel = CollectionModel.of(facList);
 
-      when(codesService.getAllGeneralScopeCodes()).thenReturn(facModel);
+        when(codesService.getAllGeneralScopeCodes()).thenReturn(facModel);
 
-      mockMvc.perform(get("/codes/" + CodeTables.GENERAL_SCOPE_CODE)
-              .contentType(MediaType.APPLICATION_JSON))
-              .andExpect(status().isOk());
+        mockMvc.perform(get("/codes/" + CodeTables.GENERAL_SCOPE_CODE)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
     }
 
     void testGetProjectTypeCodes() throws Exception {
-      String exampleId1 = UUID.randomUUID().toString();
-      String exampleId2 = UUID.randomUUID().toString();
+        String exampleId1 = UUID.randomUUID().toString();
+        String exampleId2 = UUID.randomUUID().toString();
 
-      ProjectTypeCodeModel fac1 = new ProjectTypeCodeModel();
-      fac1.setProjectTypeCode(exampleId1);
+        ProjectTypeCodeModel fac1 = new ProjectTypeCodeModel();
+        fac1.setProjectTypeCode(exampleId1);
 
-      ProjectTypeCodeModel fac2 = new ProjectTypeCodeModel();
-      fac2.setProjectTypeCode(exampleId2);
+        ProjectTypeCodeModel fac2 = new ProjectTypeCodeModel();
+        fac2.setProjectTypeCode(exampleId2);
 
-      List<ProjectTypeCodeModel> facList = Arrays.asList(fac1, fac2);
-      CollectionModel<ProjectTypeCodeModel> facModel = CollectionModel.of(facList);
+        List<ProjectTypeCodeModel> facList = Arrays.asList(fac1, fac2);
+        CollectionModel<ProjectTypeCodeModel> facModel = CollectionModel.of(facList);
 
-      when(codesService.getAllProjectTypeCodes()).thenReturn(facModel);
+        when(codesService.getAllProjectTypeCodes()).thenReturn(facModel);
 
-      mockMvc.perform(get("/codes/" + CodeTables.PROJECT_TYPE_CODE)
-              .contentType(MediaType.APPLICATION_JSON))
-              .andExpect(status().isOk());
+        mockMvc.perform(get("/codes/" + CodeTables.PROJECT_TYPE_CODE)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
     }
 
     @Test
@@ -120,7 +120,7 @@ class CodesControllerTest {
         when(codesService.getProjectTypeCodeById(ptID)).thenReturn(projectTypeCode);
 
         mockMvc.perform(get("/codes/{codeTable}/{id}", CodeTables.PROJECT_TYPE_CODE, ptID)
-                .contentType(MediaType.APPLICATION_JSON))
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
 
         String gsID = UUID.randomUUID().toString();
@@ -130,7 +130,7 @@ class CodesControllerTest {
         when(codesService.getGeneralScopeCodeById(gsID)).thenReturn(generalScopeCode);
 
         mockMvc.perform(get("/codes/{codeTable}/{id}", CodeTables.GENERAL_SCOPE_CODE, gsID)
-                .contentType(MediaType.APPLICATION_JSON))
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
 
         String faID = UUID.randomUUID().toString();
@@ -140,7 +140,7 @@ class CodesControllerTest {
         when(codesService.getForestAreaCodeById(faID)).thenReturn(forestAreaCode);
 
         mockMvc.perform(get("/codes/{codeTable}/{id}", CodeTables.FOREST_AREA_CODE, faID)
-                .contentType(MediaType.APPLICATION_JSON))
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
 
@@ -297,9 +297,9 @@ class CodesControllerTest {
     @WithMockUser
     void testGetForestRegionCodes() throws Exception {
         when(codesService.getAllForestRegionCodes()).thenReturn(CollectionModel.empty());
-                mockMvc.perform(get("/codes/{codeTable}", CodeTables.FOREST_REGION_CODE)
-                                .contentType(MediaType.APPLICATION_JSON))
-                        .andExpect(status().isOk());
+        mockMvc.perform(get("/codes/{codeTable}", CodeTables.FOREST_REGION_CODE)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
         verify(codesService, times(1)).getAllForestRegionCodes();
         verifyNoMoreInteractions(codesService);
     }
@@ -372,5 +372,58 @@ class CodesControllerTest {
 
         verify(codesService, times(1)).getAllBCParksRegionCodes();
         verifyNoMoreInteractions(codesService);
+    }
+
+    @Test
+    @WithMockUser
+    void testGetBCParksRegionCodesById_Success() throws Exception {
+        // Given
+        BCParksRegionCodeModel bcparksRegionCodeModel = new BCParksRegionCodeModel();
+        bcparksRegionCodeModel.setBcParksOrgUnitTypeCode("REGION");
+        bcparksRegionCodeModel.setOrgUnitName("Region 1");
+        bcparksRegionCodeModel.setOrgUnitId(1);
+        bcparksRegionCodeModel.setEffectiveDate(new Date());
+        bcparksRegionCodeModel.setExpiryDate(new Date());
+        bcparksRegionCodeModel.setCharacterAlias("R1");
+        bcparksRegionCodeModel.setIntegerAlias(1);
+
+        when(codesService.getBCParksRegionCodeById(anyInt())).thenReturn(bcparksRegionCodeModel);
+
+        // When
+        mockMvc.perform(get("/codes/{codeTable}/{id}", CodeTables.BC_PARKS_REGION_CODE, "1")
+                        .contentType(MediaType.APPLICATION_JSON))
+                // Then
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.bcParksOrgUnitTypeCode").value("REGION"))
+                .andExpect(jsonPath("$.orgUnitName").value("Region 1"))
+                .andExpect(jsonPath("$.orgUnitId").value(1))
+                .andExpect(jsonPath("$.characterAlias").value("R1"))
+                .andExpect(jsonPath("$.integerAlias").value(1));
+    }
+
+    @Test
+    @WithMockUser
+    void testGetBCParksRegionCodesById_NotFound() throws Exception {
+        // Given
+        when(codesService.getBCParksRegionCodeById(anyInt())).thenReturn(null);
+
+        // When
+        mockMvc.perform(get("/codes/{codeTable}/{id}", CodeTables.BC_PARKS_REGION_CODE, "1")
+                        .contentType(MediaType.APPLICATION_JSON))
+                // Then
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @WithMockUser
+    void testGetBCParksRegionCodesById_ServiceException() throws Exception {
+        // Given
+        when(codesService.getBCParksRegionCodeById(anyInt())).thenThrow(new ServiceException("Service error"));
+
+        // When
+        mockMvc.perform(get("/codes/{codeTable}/{id}", CodeTables.BC_PARKS_REGION_CODE, "1")
+                        .contentType(MediaType.APPLICATION_JSON))
+                // Then
+                .andExpect(status().isInternalServerError());
     }
 }
