@@ -101,10 +101,10 @@ class CodesControllerTest {
         ProjectTypeCodeModel projectTypeCodeModel2 = new ProjectTypeCodeModel();
         projectTypeCodeModel2.setProjectTypeCode(exampleId2);
 
-        List<ProjectTypeCodeModel> projectTypeCodeModels = Arrays.asList(projectTypeCodeModel1, projectTypeCodeModel2);
-        CollectionModel<ProjectTypeCodeModel> facModel = CollectionModel.of(projectTypeCodeModels);
+        List<ProjectTypeCodeModel> projectTypeCodeModelList = Arrays.asList(projectTypeCodeModel1, projectTypeCodeModel2);
+        CollectionModel<ProjectTypeCodeModel> projectTypeCodeModels = CollectionModel.of(projectTypeCodeModelList);
 
-        when(codesService.getAllProjectTypeCodes()).thenReturn(facModel);
+        when(codesService.getAllProjectTypeCodes()).thenReturn(projectTypeCodeModels);
 
         mockMvc.perform(get("/codes/" + CodeTables.PROJECT_TYPE_CODE)
                         .contentType(MediaType.APPLICATION_JSON))
