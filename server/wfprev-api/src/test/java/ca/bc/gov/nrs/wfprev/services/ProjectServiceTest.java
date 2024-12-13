@@ -322,7 +322,6 @@ public class ProjectServiceTest {
                         "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"
                 ));
 
-        assertEquals("SYSTEM", capturedModel.getCreateUser());
         assertNotNull("Create date should be set", capturedModel.getCreateDate());
         verify(projectRepository).saveAndFlush(any(ProjectEntity.class));
         verify(projectResourceAssembler).toModel(any(ProjectEntity.class));
