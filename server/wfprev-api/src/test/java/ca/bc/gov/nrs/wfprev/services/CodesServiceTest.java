@@ -1,22 +1,28 @@
 package ca.bc.gov.nrs.wfprev.services;
 
 import ca.bc.gov.nrs.wfone.common.service.api.ServiceException;
+import ca.bc.gov.nrs.wfprev.data.assemblers.BCParksRegionCodeResourceAssembler;
+import ca.bc.gov.nrs.wfprev.data.assemblers.BCParksSectionCodeResourceAssembler;
 import ca.bc.gov.nrs.wfprev.data.assemblers.ForestAreaCodeResourceAssembler;
 import ca.bc.gov.nrs.wfprev.data.assemblers.ForestDistrictUnitCodeResourceAssembler;
 import ca.bc.gov.nrs.wfprev.data.assemblers.ForestRegionUnitCodeResourceAssembler;
 import ca.bc.gov.nrs.wfprev.data.assemblers.GeneralScopeCodeResourceAssembler;
 import ca.bc.gov.nrs.wfprev.data.assemblers.ProgramAreaResourceAssembler;
 import ca.bc.gov.nrs.wfprev.data.assemblers.ProjectTypeCodeResourceAssembler;
+import ca.bc.gov.nrs.wfprev.data.entities.BCParksOrgUnitEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ForestAreaCodeEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.GeneralScopeCodeEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ProgramAreaEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ProjectTypeCodeEntity;
+import ca.bc.gov.nrs.wfprev.data.models.BCParksRegionCodeModel;
+import ca.bc.gov.nrs.wfprev.data.models.BCParksSectionCodeModel;
 import ca.bc.gov.nrs.wfprev.data.models.ForestAreaCodeModel;
 import ca.bc.gov.nrs.wfprev.data.models.ForestDistrictUnitCodeModel;
 import ca.bc.gov.nrs.wfprev.data.models.ForestRegionUnitCodeModel;
 import ca.bc.gov.nrs.wfprev.data.models.GeneralScopeCodeModel;
 import ca.bc.gov.nrs.wfprev.data.models.ProgramAreaModel;
 import ca.bc.gov.nrs.wfprev.data.models.ProjectTypeCodeModel;
+import ca.bc.gov.nrs.wfprev.data.repositories.BCParksOrgUnitCodeRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.ForestAreaCodeRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.ForestOrgUnitCodeRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.GeneralScopeCodeRepository;
@@ -50,6 +56,9 @@ class CodesServiceTest {
     private ForestOrgUnitCodeRepository forestOrgUnitCodeRepository;
     private ForestRegionUnitCodeResourceAssembler forestRegionUnitCodeResourceAssembler;
     private ForestDistrictUnitCodeResourceAssembler forestDistrictUnitCodeResourceAssembler;
+    private BCParksOrgUnitCodeRepository bcParksOrgUnitCodeRepository;
+    private BCParksRegionCodeResourceAssembler bcParksRegionCodeResourceAssembler;
+    private BCParksSectionCodeResourceAssembler bcParksSectionCodeResourceAssembler;
 
     @BeforeEach
     void setup() {
@@ -64,11 +73,15 @@ class CodesServiceTest {
         forestOrgUnitCodeRepository = mock(ForestOrgUnitCodeRepository.class);
         forestRegionUnitCodeResourceAssembler = mock(ForestRegionUnitCodeResourceAssembler.class);
         forestDistrictUnitCodeResourceAssembler = mock(ForestDistrictUnitCodeResourceAssembler.class);
+        bcParksOrgUnitCodeRepository = mock(BCParksOrgUnitCodeRepository.class);
+        bcParksRegionCodeResourceAssembler = mock(BCParksRegionCodeResourceAssembler.class);
+        bcParksSectionCodeResourceAssembler = mock(BCParksSectionCodeResourceAssembler.class);
 
         codesService = new CodesService(forestAreaCodeRepository, forestAreaCodeResourceAssembler,
                 generalScopeCodeRepository, generalScopeCodeResourceAssembler,
                 projectTypeCodeRepository, projectTypeCodeResourceAssembler, programAreaRepository, programAreaResourceAssembler,
-                forestOrgUnitCodeRepository, forestRegionUnitCodeResourceAssembler, forestDistrictUnitCodeResourceAssembler);
+                forestOrgUnitCodeRepository, forestRegionUnitCodeResourceAssembler, forestDistrictUnitCodeResourceAssembler, bcParksOrgUnitCodeRepository, bcParksRegionCodeResourceAssembler,
+                bcParksSectionCodeResourceAssembler);
     }
 
     @Test
@@ -99,7 +112,7 @@ class CodesServiceTest {
                 ServiceException.class,
                 () -> codesService.getAllForestAreaCodes()
         );
-        assertEquals("Error fetching forest area codes",exception.getMessage());
+        assertEquals("Error fetching forest area codes", exception.getMessage());
     }
 
     @Test
@@ -254,7 +267,7 @@ class CodesServiceTest {
                 ServiceException.class,
                 () -> codesService.getAllGeneralScopeCodes()
         );
-        assertEquals("Error fetching general scope codes",exception.getMessage());
+        assertEquals("Error fetching general scope codes", exception.getMessage());
     }
 
     @Test
@@ -566,5 +579,175 @@ class CodesServiceTest {
         verify(forestRegionUnitCodeResourceAssembler, times(1)).toModel(entity);
         verifyNoMoreInteractions(forestOrgUnitCodeRepository, forestRegionUnitCodeResourceAssembler);
 
+    }
+
+    @Test
+    void testGetAllBCParksRegionCodes_Success() {
+        // Given
+        List<BCParksOrgUnitEntity> entities = List.of(new BCParksOrgUnitEntity(), new BCParksOrgUnitEntity());
+        BCParksRegionCodeModel expectedModel = new BCParksRegionCodeModel();
+        expectedModel.setBcParksOrgUnitTypeCode("1");
+        expectedModel.setEffectiveDate(new Date());
+        expectedModel.setExpiryDate(new Date());
+        expectedModel.setOrgUnitId(1);
+        expectedModel.setOrgUnitName("orgUnitName");
+        expectedModel.setParentOrgUnitId("1");
+        expectedModel.setIntegerAlias(1);
+        expectedModel.setCharacterAlias("characterAlias");
+
+        CollectionModel<BCParksRegionCodeModel> expectedModelCollection = CollectionModel.of(List.of(expectedModel));
+
+        when(bcParksOrgUnitCodeRepository.findByBcParksOrgUnitTypeCode(anyString())).thenReturn(entities);
+        when(bcParksRegionCodeResourceAssembler.toCollectionModel(entities)).thenReturn(expectedModelCollection);
+
+        // When
+        CollectionModel<BCParksRegionCodeModel> result = codesService.getAllBCParksRegionCodes();
+
+        // Then
+        assertEquals(expectedModelCollection, result);
+        verify(bcParksOrgUnitCodeRepository, times(1)).findByBcParksOrgUnitTypeCode("REGION");
+        verify(bcParksRegionCodeResourceAssembler, times(1)).toCollectionModel(entities);
+        verifyNoMoreInteractions(bcParksOrgUnitCodeRepository, bcParksRegionCodeResourceAssembler);
+    }
+
+    @Test
+    void testGetAllBCParksRegionCodeById_Success() {
+        // Given
+        Integer bcParksRegionId = 1;
+        BCParksOrgUnitEntity entity = new BCParksOrgUnitEntity();
+        BCParksRegionCodeModel expectedModel = new BCParksRegionCodeModel();
+        expectedModel.setOrgUnitId(bcParksRegionId);
+        expectedModel.setEffectiveDate(new Date());
+        expectedModel.setExpiryDate(new Date());
+        expectedModel.setBcParksOrgUnitTypeCode("REGION");
+        expectedModel.setOrgUnitName("orgUnitName");
+        expectedModel.setParentOrgUnitId("1");
+        expectedModel.setIntegerAlias(1);
+        expectedModel.setCharacterAlias("characterAlias");
+
+        when(bcParksOrgUnitCodeRepository.findById(bcParksRegionId)).thenReturn(Optional.of(entity));
+        when(bcParksRegionCodeResourceAssembler.toModel(entity)).thenReturn(expectedModel);
+
+        // When
+        BCParksRegionCodeModel result = codesService.getBCParksRegionCodeById(bcParksRegionId);
+
+        // Then
+        assertEquals(expectedModel, result);
+        verify(bcParksOrgUnitCodeRepository, times(1)).findById(bcParksRegionId);
+        verify(bcParksRegionCodeResourceAssembler, times(1)).toModel(entity);
+        verifyNoMoreInteractions(bcParksOrgUnitCodeRepository, bcParksRegionCodeResourceAssembler);
+    }
+
+    @Test
+    void testGetBCParksRegionCodeById_NotFound() {
+        // Arrange
+        Integer bcParksRegionId = 1;
+        when(bcParksOrgUnitCodeRepository.findById(bcParksRegionId)).thenReturn(Optional.empty());
+
+        // Act
+        BCParksRegionCodeModel result = codesService.getBCParksRegionCodeById(bcParksRegionId);
+
+        // Assert
+        assertNull(result);
+        verify(bcParksOrgUnitCodeRepository, times(1)).findById(bcParksRegionId);
+        verifyNoInteractions(bcParksRegionCodeResourceAssembler);
+    }
+
+    @Test
+    void testGetBCParksRegionCodeById_Exception() {
+        // Arrange
+        Integer bcParksRegionId = 1;
+        when(bcParksOrgUnitCodeRepository.findById(bcParksRegionId)).thenThrow(new RuntimeException("Database error"));
+
+        // Act & Assert
+        ServiceException exception = assertThrows(ServiceException.class, () -> codesService.getBCParksRegionCodeById(bcParksRegionId));
+        assertEquals("Database error", exception.getLocalizedMessage());
+        verify(bcParksOrgUnitCodeRepository, times(1)).findById(bcParksRegionId);
+        verifyNoInteractions(bcParksRegionCodeResourceAssembler);
+    }
+
+    @Test
+    void testGetAllBCParksSectionCodes_Success() {
+        // Given
+        List<BCParksOrgUnitEntity> entities = List.of(new BCParksOrgUnitEntity(), new BCParksOrgUnitEntity());
+        BCParksSectionCodeModel expectedModel = new BCParksSectionCodeModel();
+        expectedModel.setBcParksOrgUnitTypeCode("1");
+        expectedModel.setEffectiveDate(new Date());
+        expectedModel.setExpiryDate(new Date());
+        expectedModel.setOrgUnitId(1);
+        expectedModel.setOrgUnitName("orgUnitName");
+        expectedModel.setParentOrgUnitId("1");
+        expectedModel.setIntegerAlias(1);
+        expectedModel.setCharacterAlias("characterAlias");
+
+        CollectionModel<BCParksSectionCodeModel> expectedModelCollection = CollectionModel.of(List.of(expectedModel));
+
+        when(bcParksOrgUnitCodeRepository.findByBcParksOrgUnitTypeCode(anyString())).thenReturn(entities);
+        when(bcParksSectionCodeResourceAssembler.toCollectionModel(entities)).thenReturn(expectedModelCollection);
+
+        // When
+        CollectionModel<BCParksSectionCodeModel> result = codesService.getAllBCParksSectionCodes();
+
+        // Then
+        assertEquals(expectedModelCollection, result);
+        verify(bcParksOrgUnitCodeRepository, times(1)).findByBcParksOrgUnitTypeCode("SECTION");
+        verify(bcParksSectionCodeResourceAssembler, times(1)).toCollectionModel(entities);
+        verifyNoMoreInteractions(bcParksOrgUnitCodeRepository, bcParksRegionCodeResourceAssembler);
+    }
+
+    @Test
+    void testGetAllBCParksSectionCodeById_Success() {
+        // Given
+        Integer bcParksSectionId = 1;
+        BCParksOrgUnitEntity entity = new BCParksOrgUnitEntity();
+        BCParksSectionCodeModel expectedModel = new BCParksSectionCodeModel();
+        expectedModel.setOrgUnitId(bcParksSectionId);
+        expectedModel.setEffectiveDate(new Date());
+        expectedModel.setExpiryDate(new Date());
+        expectedModel.setBcParksOrgUnitTypeCode("SECTION");
+        expectedModel.setOrgUnitName("orgUnitName");
+        expectedModel.setParentOrgUnitId("1");
+        expectedModel.setIntegerAlias(1);
+        expectedModel.setCharacterAlias("characterAlias");
+
+        when(bcParksOrgUnitCodeRepository.findById(bcParksSectionId)).thenReturn(Optional.of(entity));
+        when(bcParksSectionCodeResourceAssembler.toModel(entity)).thenReturn(expectedModel);
+
+        // When
+        BCParksSectionCodeModel result = codesService.getBCParksSectionCodeById(bcParksSectionId);
+
+        // Then
+        assertEquals(expectedModel, result);
+        verify(bcParksOrgUnitCodeRepository, times(1)).findById(bcParksSectionId);
+        verify(bcParksSectionCodeResourceAssembler, times(1)).toModel(entity);
+        verifyNoMoreInteractions(bcParksOrgUnitCodeRepository, bcParksSectionCodeResourceAssembler);
+    }
+
+    @Test
+    void testGetBCParksSectionCodeById_NotFound() {
+        // Arrange
+        Integer bcParksSectionId = 1;
+        when(bcParksOrgUnitCodeRepository.findById(bcParksSectionId)).thenReturn(Optional.empty());
+
+        // Act
+        BCParksSectionCodeModel result = codesService.getBCParksSectionCodeById(bcParksSectionId);
+
+        // Assert
+        assertNull(result);
+        verify(bcParksOrgUnitCodeRepository, times(1)).findById(bcParksSectionId);
+        verifyNoInteractions(bcParksSectionCodeResourceAssembler);
+    }
+
+    @Test
+    void testGetBCParksSectionCodeById_Exception() {
+        // Arrange
+        Integer bcParksSectionId = 1;
+        when(bcParksOrgUnitCodeRepository.findById(bcParksSectionId)).thenThrow(new RuntimeException("Database error"));
+
+        // Act & Assert
+        ServiceException exception = assertThrows(ServiceException.class, () -> codesService.getBCParksSectionCodeById(bcParksSectionId));
+        assertEquals("Database error", exception.getLocalizedMessage());
+        verify(bcParksOrgUnitCodeRepository, times(1)).findById(bcParksSectionId);
+        verifyNoInteractions(bcParksSectionCodeResourceAssembler);
     }
 }
