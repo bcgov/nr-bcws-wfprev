@@ -95,13 +95,13 @@ class CodesControllerTest {
         String exampleId1 = UUID.randomUUID().toString();
         String exampleId2 = UUID.randomUUID().toString();
 
-        ProjectTypeCodeModel fac1 = new ProjectTypeCodeModel();
-        fac1.setProjectTypeCode(exampleId1);
+        ProjectTypeCodeModel projectTypeCodeModel1 = new ProjectTypeCodeModel();
+        projectTypeCodeModel1.setProjectTypeCode(exampleId1);
 
-        ProjectTypeCodeModel fac2 = new ProjectTypeCodeModel();
-        fac2.setProjectTypeCode(exampleId2);
+        ProjectTypeCodeModel projectTypeCodeModel2 = new ProjectTypeCodeModel();
+        projectTypeCodeModel2.setProjectTypeCode(exampleId2);
 
-        List<ProjectTypeCodeModel> facList = Arrays.asList(fac1, fac2);
+        List<ProjectTypeCodeModel> facList = Arrays.asList(projectTypeCodeModel1, projectTypeCodeModel2);
         CollectionModel<ProjectTypeCodeModel> facModel = CollectionModel.of(facList);
 
         when(codesService.getAllProjectTypeCodes()).thenReturn(facModel);
