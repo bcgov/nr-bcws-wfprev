@@ -78,18 +78,9 @@ public class ProjectService implements CommonService {
     try {
       if (resource.getProjectGuid() == null) {
         resource.setCreateDate(new Date());
-        //TODO - Fix to use proper user
-        resource.setCreateUser("SYSTEM");
         resource.setProjectGuid(UUID.randomUUID().toString());
-        resource.setCreateDate(new Date());
-        resource.setCreateUser("SYSTEM");
         resource.setRevisionCount(0); // Initialize revision count for new records
       }
-      // Set audit fields
-      resource.setUpdateDate(new Date());
-      //TODO - Fix to use proper user
-      resource.setUpdateUser("SYSTEM");
-
       ProjectEntity entity = projectResourceAssembler.toEntity(resource);
 
       // Load ForestAreaCode with null checks

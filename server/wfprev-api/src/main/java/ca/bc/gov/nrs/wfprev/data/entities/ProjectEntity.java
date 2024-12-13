@@ -5,6 +5,7 @@ import ca.bc.gov.nrs.wfprev.common.validators.Longitude;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -24,13 +25,14 @@ import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.UUID;
-
 @Entity
+@EntityListeners(AuditingEntityListener.class)
 @Table(name = "project")
 @JsonIgnoreProperties(ignoreUnknown = false)
 @Data
@@ -39,6 +41,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ProjectEntity implements Serializable {
+
     @Id
     @UuidGenerator
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -49,7 +52,7 @@ public class ProjectEntity implements Serializable {
     @JoinColumn(name = "project_type_code")
     private ProjectTypeCodeEntity projectTypeCode;
 
-    @Column(name = "project_number", columnDefinition="Decimal(10)", insertable = false, updatable = true)
+    @Column(name = "project_number", columnDefinition = "Decimal(10)", insertable = false, updatable = true)
     private Integer projectNumber;
 
     @NotNull
@@ -81,7 +84,7 @@ public class ProjectEntity implements Serializable {
     @Column(name = "bc_parks_region_org_unit_id", columnDefinition = "Decimal(10)")
     private Integer bcParksRegionOrgUnitId;
 
-    @Column(name = "bcParksSectionOrgUnitId", columnDefinition = "Decimal(10)")
+    @Column(name = "bc_parks_section_org_unit_id", columnDefinition = "Decimal(10)")
     private Integer bcParksSectionOrgUnitId;
 
     @NotNull
@@ -144,7 +147,7 @@ public class ProjectEntity implements Serializable {
     private Integer revisionCount;
 
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
-    @JoinColumn(name="project_status_code")
+    @JoinColumn(name = "project_status_code")
     private ProjectStatusCodeEntity projectStatusCode;
 
     @CreatedBy

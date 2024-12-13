@@ -7,6 +7,7 @@ import org.springframework.boot.autoconfigure.web.servlet.ConditionalOnMissingFi
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.Ordered;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.web.filter.ForwardedHeaderFilter;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -19,6 +20,7 @@ import ca.bc.gov.nrs.wfprev.common.serializers.GeoJsonJacksonSerializer;
 import jakarta.servlet.DispatcherType;
 
 @SpringBootApplication
+@EnableJpaAuditing(auditorAwareRef = "springSecurityAuditorAware")
 public class WfprevApiApplication {
 	/*
 	 * Run the application as a JAR
