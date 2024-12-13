@@ -67,7 +67,7 @@ public class ProjectService implements CommonService {
 
   public ProjectModel getProjectById(String id) throws ServiceException {
     try {
-      return projectRepository.findById(id).map(projectResourceAssembler::toModel).orElse(null);
+      return projectRepository.findById(UUID.fromString(id)).map(projectResourceAssembler::toModel).orElse(null);
     } catch(Exception e) {
       throw new ServiceException(e.getLocalizedMessage(), e);
     }
