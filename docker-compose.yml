@@ -1,7 +1,7 @@
 services:
   api:
     profiles:
-    - api
+      - api
     build:
       context: .
       dockerfile: server/wfprev-api/Dockerfile.graalvm
@@ -64,6 +64,33 @@ services:
       timeout: 5s
       retries: 5
       start_period: 10s
+
+  schemaspy:
+    profiles:
+      - schemaspy
+    build:
+      context: .
+      dockerfile: schemaspy/Dockerfile
+    container_name: schemaspy
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    command:
+      [
+        "-t", "pgsql",
+        "-host", "wfprev-postgres",
+        "-port", "5432",
+        "-db", "wfprev",
+        "-u", "wfprev",
+        "-p", "${POSTGRES_PASSWORD}",
+        "-debug"
+      ]
+    volumes:
+      - ./schemaspy/schemaspy-output:/output
+    networks:
+      - wfprev-network
 
 networks:
   wfprev-network:
