@@ -101,8 +101,8 @@ class CodesControllerTest {
         ProjectTypeCodeModel projectTypeCodeModel2 = new ProjectTypeCodeModel();
         projectTypeCodeModel2.setProjectTypeCode(exampleId2);
 
-        List<ProjectTypeCodeModel> facList = Arrays.asList(projectTypeCodeModel1, projectTypeCodeModel2);
-        CollectionModel<ProjectTypeCodeModel> facModel = CollectionModel.of(facList);
+        List<ProjectTypeCodeModel> projectTypeCodeModels = Arrays.asList(projectTypeCodeModel1, projectTypeCodeModel2);
+        CollectionModel<ProjectTypeCodeModel> facModel = CollectionModel.of(projectTypeCodeModels);
 
         when(codesService.getAllProjectTypeCodes()).thenReturn(facModel);
 
