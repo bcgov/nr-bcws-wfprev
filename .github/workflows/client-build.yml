@@ -85,10 +85,10 @@ jobs:
         
         # Show Terragrunt State List
         echo "Terragrunt State List:"
-        terragrunt state list
+        terraform state list
         
         # Try to refresh state
-        terragrunt refresh
+        terraform refresh
 
         # Get CloudFront ID with error checking
         CLOUDFRONT_ID=$(terragrunt output -raw cloudfront_distribution_id | grep -o '^[a-zA-Z0-9-]\+')
