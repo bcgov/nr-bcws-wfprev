@@ -724,6 +724,20 @@ public class ProjectServiceTest {
         assertSame(forestAreaEntity, savedEntity.getForestAreaCode());
     }
 
+    @Test
+    void testGetProject_invalidUUID() {
+        // Given
+        String invalidGuid = "invalid-uuid";
+        when(projectRepository.findById(any())).thenThrow(new IllegalArgumentException("Invalid UUID string: " + invalidGuid));
+
+        // When/Then
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> projectService.getProjectById(invalidGuid)
+        );
+        assertEquals("Invalid UUID: invalid-uuid", exception.getMessage());
+    }
+
     private void setField(Object target, String fieldName, Object value) {
         try {
             java.lang.reflect.Field field = target.getClass().getDeclaredField(fieldName);

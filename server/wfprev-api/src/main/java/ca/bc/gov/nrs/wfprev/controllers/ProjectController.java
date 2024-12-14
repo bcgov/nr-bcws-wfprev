@@ -84,6 +84,9 @@ public class ProjectController extends CommonController {
     try {
       ProjectModel resource = projectService.getProjectById(id);
       response = resource == null ? notFound() : ok(resource);
+    } catch(IllegalArgumentException e) {
+      response = notFound();
+      log.error(" ### Error while fetching project {}", id, e);
     } catch(ServiceException e) {
       response = internalServerError();
       log.error(" ### Error while fetching project {}", id, e);
