@@ -2,10 +2,21 @@ package ca.bc.gov.nrs.wfprev.services;
 
 import ca.bc.gov.nrs.wfone.common.service.api.ServiceException;
 import ca.bc.gov.nrs.wfprev.data.assemblers.ProjectResourceAssembler;
-import ca.bc.gov.nrs.wfprev.data.assemblers.ProjectStatusCodeResourceAssembler;
-import ca.bc.gov.nrs.wfprev.data.entities.*;
-import ca.bc.gov.nrs.wfprev.data.models.*;
-import ca.bc.gov.nrs.wfprev.data.repositories.*;
+import ca.bc.gov.nrs.wfprev.data.entities.ForestAreaCodeEntity;
+import ca.bc.gov.nrs.wfprev.data.entities.GeneralScopeCodeEntity;
+import ca.bc.gov.nrs.wfprev.data.entities.ProjectEntity;
+import ca.bc.gov.nrs.wfprev.data.entities.ProjectStatusCodeEntity;
+import ca.bc.gov.nrs.wfprev.data.entities.ProjectTypeCodeEntity;
+import ca.bc.gov.nrs.wfprev.data.models.ForestAreaCodeModel;
+import ca.bc.gov.nrs.wfprev.data.models.GeneralScopeCodeModel;
+import ca.bc.gov.nrs.wfprev.data.models.ProjectModel;
+import ca.bc.gov.nrs.wfprev.data.models.ProjectStatusCodeModel;
+import ca.bc.gov.nrs.wfprev.data.models.ProjectTypeCodeModel;
+import ca.bc.gov.nrs.wfprev.data.repositories.ForestAreaCodeRepository;
+import ca.bc.gov.nrs.wfprev.data.repositories.GeneralScopeCodeRepository;
+import ca.bc.gov.nrs.wfprev.data.repositories.ProjectRepository;
+import ca.bc.gov.nrs.wfprev.data.repositories.ProjectStatusCodeRepository;
+import ca.bc.gov.nrs.wfprev.data.repositories.ProjectTypeCodeRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
@@ -17,33 +28,39 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.hateoas.CollectionModel;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-public class ProjectServiceTest {
+class ProjectServiceTest {
     private ProjectService projectService;
     private ProjectRepository projectRepository;
     private ProjectResourceAssembler projectResourceAssembler;
     private ForestAreaCodeRepository forestAreaCodeRepository;
     private ProjectTypeCodeRepository projectTypeCodeRepository;
     private GeneralScopeCodeRepository generalScopeCodeRepository;
-    private ProjectStatusCodeResourceAssembler projectStatusCodeAssembler;
     private ProjectStatusCodeRepository projectStatusCodeRepository;
 
     @BeforeEach
     public void setup() {
         projectRepository = mock(ProjectRepository.class);
         projectResourceAssembler = mock(ProjectResourceAssembler.class);
-        projectStatusCodeAssembler = mock(ProjectStatusCodeResourceAssembler.class);
         forestAreaCodeRepository = mock(ForestAreaCodeRepository.class);
         projectTypeCodeRepository = mock(ProjectTypeCodeRepository.class);
         generalScopeCodeRepository = mock(GeneralScopeCodeRepository.class);
         projectStatusCodeRepository = mock(ProjectStatusCodeRepository.class);
 
-        projectService = new ProjectService(projectRepository, projectResourceAssembler, projectStatusCodeAssembler);
+        projectService = new ProjectService(projectRepository, projectResourceAssembler, forestAreaCodeRepository,
+                projectTypeCodeRepository, generalScopeCodeRepository, projectStatusCodeRepository);
         setField(projectService, "forestAreaCodeRepository", forestAreaCodeRepository);
         setField(projectService, "projectTypeCodeRepository", projectTypeCodeRepository);
         setField(projectService, "generalScopeCodeRepository", generalScopeCodeRepository);
@@ -153,9 +170,10 @@ public class ProjectServiceTest {
         when(projectRepository.findById(guid)).thenThrow(new RuntimeException("Error fetching project"));
 
         // When/Then
+        String id = guid.toString();
         ServiceException exception = assertThrows(
                 ServiceException.class,
-                () -> projectService.getProjectById(guid.toString())
+                () -> projectService.getProjectById(id)
         );
         assertTrue(exception.getMessage().contains("Error fetching project"));
     }
@@ -308,7 +326,7 @@ public class ProjectServiceTest {
                 .thenReturn(Optional.of(activeStatus));
 
         // When
-        ProjectModel result = projectService.createOrUpdateProject(inputModel);
+        projectService.createOrUpdateProject(inputModel);
 
         // Then
         ArgumentCaptor<ProjectModel> modelCaptor = ArgumentCaptor.forClass(ProjectModel.class);
@@ -433,7 +451,7 @@ public class ProjectServiceTest {
         when(projectRepository.findById(UUID.fromString(existingGuid)))
                 .thenReturn(Optional.of(savedEntity));
         // When
-        ProjectModel result = projectService.createOrUpdateProject(inputModel);
+        projectService.createOrUpdateProject(inputModel);
 
         // Then
         ArgumentCaptor<ProjectModel> modelCaptor = ArgumentCaptor.forClass(ProjectModel.class);
@@ -530,8 +548,7 @@ public class ProjectServiceTest {
                 .thenReturn(Optional.empty());
 
         // When
-        ProjectModel projectModel = projectService.deleteProject(existingGuid);
-
+        projectService.deleteProject(existingGuid);
         // Then
         verify(projectRepository).delete(savedEntity);
         ProjectModel projectById = projectService.getProjectById(existingGuid);
@@ -576,9 +593,7 @@ public class ProjectServiceTest {
                 .build();
         when(projectStatusCodeRepository.findById("ACTIVE"))
                 .thenReturn(Optional.of(activeStatus));
-        when(projectRepository.findById(UUID.fromString(existingGuid)))
-                .thenReturn(Optional.of(savedEntity));
-        ProjectModel result = projectService.createOrUpdateProject(inputModel);
+        when(projectRepository.findById(any())).thenReturn(Optional.of(savedEntity));
 
 
         // When
@@ -589,11 +604,11 @@ public class ProjectServiceTest {
                 ServiceException.class,
                 () -> projectService.deleteProject(existingGuid)
         );
-        assertTrue(exception.getMessage().contains("Error deleting project"));
+        assertEquals("Error deleting project", exception.getMessage());
     }
 
     @Test
-    public void test_set_reference_entities() throws ServiceException {
+    void test_set_reference_entities() throws ServiceException {
         // Given
         String testForestAreaCode = "TEST-FAC";
         ForestAreaCodeEntity forestAreaEntity = ForestAreaCodeEntity.builder()
@@ -631,7 +646,7 @@ public class ProjectServiceTest {
     }
 
     @Test
-    public void test_reference_code_setters() throws ServiceException {
+    void test_reference_code_setters() throws ServiceException {
         // Given
         ProjectEntity testEntity = new ProjectEntity(); // Real entity that can have values set
 
@@ -687,7 +702,7 @@ public class ProjectServiceTest {
     }
 
     @Test
-    public void test_set_reference_entities_direct() throws ServiceException {
+    void test_set_reference_entities_direct() throws ServiceException {
         // Given
         ProjectEntity projectEntity = new ProjectEntity();  // Create a real entity
 
@@ -714,7 +729,7 @@ public class ProjectServiceTest {
                 .thenReturn(Optional.of(activeStatus));
 
         // When
-        ProjectModel result = projectService.createOrUpdateProject(inputModel);
+        projectService.createOrUpdateProject(inputModel);
 
         // Then
         ArgumentCaptor<ProjectEntity> captor = ArgumentCaptor.forClass(ProjectEntity.class);
