@@ -117,7 +117,7 @@ class ProjectControllerTest {
         when(projectService.getProjectById(projectGuid)).thenReturn(null);
 
         // When
-        ResultActions result = mockMvc.perform(get("/projects/{id}", projectGuid)
+        mockMvc.perform(get("/projects/{id}", projectGuid)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
 
@@ -427,7 +427,7 @@ class ProjectControllerTest {
         when(projectService.getProjectById(projectGuid)).thenThrow(new IllegalArgumentException("Invalid UUID: " + projectGuid));
 
         // When
-        ResultActions result = mockMvc.perform(get("/projects/{id}", projectGuid)
+        mockMvc.perform(get("/projects/{id}", projectGuid)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
 

@@ -30,21 +30,22 @@ public class GeoJsonJacksonDeserializer extends StdDeserializer<Geometry> {
       this();
       this.geoJsonReader = geoJsonReader;
    }
-   public Geometry deserialize(JsonParser jsonParser, DeserializationContext context) throws IOException, JsonProcessingException {
+   public Geometry deserialize(JsonParser jsonParser, DeserializationContext context) throws IOException {
       log.trace("<deserialize");
       Geometry result = null;
       ObjectCodec oc = jsonParser.getCodec();
       JsonNode node = (JsonNode)oc.readTree(jsonParser);
       String geoJson = node.toString();
 
+      String failedMessage = "Failed to deserialize geojson: ";
       try {
          Reader reader = new StringReader(geoJson);
          result = geoJsonReader.read(reader);
       } catch (ParseException e) {
-         log.error("Failed to deserialize geojson: " + geoJson, e);
-         throw new IOException("Failed to deserialize geojson: " + geoJson, e);
+         log.error(failedMessage + geoJson, e);
+         throw new IOException(failedMessage + geoJson, e);
       } catch (RuntimeException e) {
-         log.error("Failed to deserialize geojson: " + geoJson, e);
+         log.error(failedMessage + geoJson, e);
       }
 
       log.trace(">deserialize " + result);

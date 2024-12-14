@@ -51,7 +51,7 @@ class ProjectServiceTest {
     private ProjectStatusCodeRepository projectStatusCodeRepository;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         projectRepository = mock(ProjectRepository.class);
         projectResourceAssembler = mock(ProjectResourceAssembler.class);
         forestAreaCodeRepository = mock(ForestAreaCodeRepository.class);
@@ -68,7 +68,7 @@ class ProjectServiceTest {
     }
 
     @Test
-    public void test_get_all_projects() throws ServiceException {
+    void test_get_all_projects() throws ServiceException {
         // Given
         UUID guid1 = UUID.randomUUID();
         UUID guid2 = UUID.randomUUID();
@@ -118,7 +118,7 @@ class ProjectServiceTest {
     }
 
     @Test
-    public void test_get_all_projects_with_exception() {
+    void test_get_all_projects_with_exception() {
         // Given
         when(projectRepository.findAll()).thenThrow(new RuntimeException("Error fetching projects"));
 
@@ -131,7 +131,7 @@ class ProjectServiceTest {
     }
 
     @Test
-    public void test_get_project_by_id() {
+    void test_get_project_by_id() {
         // Given
         UUID guid = UUID.randomUUID();
         UUID programArea = UUID.randomUUID();
@@ -164,7 +164,7 @@ class ProjectServiceTest {
     }
 
     @Test
-    public void test_get_project_by_id_with_exception() {
+    void test_get_project_by_id_with_exception() {
         // Given
         UUID guid = UUID.randomUUID();
         when(projectRepository.findById(guid)).thenThrow(new RuntimeException("Error fetching project"));
@@ -179,7 +179,7 @@ class ProjectServiceTest {
     }
 
     @Test
-    public void testCreate_DataIntegrityViolationException() {
+    void testCreate_DataIntegrityViolationException() {
         // Given I am creating a new project
         ProjectModel inputModel = ProjectModel.builder()
                 .projectName("Test Project")
@@ -201,7 +201,7 @@ class ProjectServiceTest {
     }
 
     @Test
-    public void testCreate_activeStatusNotFound() {
+    void testCreate_activeStatusNotFound() {
         // Given I am creating a new project
         ProjectModel inputModel = ProjectModel.builder()
                 .projectName("Test Project")
@@ -221,7 +221,7 @@ class ProjectServiceTest {
     }
 
     @Test
-    public void testCreate_violatesConstraint() {
+    void testCreate_violatesConstraint() {
         // Given I am creating a new project with a missing required field
         ProjectModel inputModel = ProjectModel.builder()
                 // Missing required siteUnitName
@@ -256,7 +256,50 @@ class ProjectServiceTest {
     }
 
     @Test
-    public void test_create_new_project_with_null_guid() throws ServiceException {
+    void testUpdate_preserveExistingStatus() {
+        // Given I am updating a project that has a status
+        ProjectStatusCodeModel existingStatus = ProjectStatusCodeModel.builder()
+                .projectStatusCode("DELETED")
+                .build();
+
+        ProjectModel inputModel = ProjectModel.builder()
+                .projectGuid(UUID.randomUUID().toString())
+                .projectName("Test Project")
+                .siteUnitName("Test Site")
+                .projectLead("Test Lead")
+                .projectStatusCode(existingStatus)
+                .build();
+
+        ProjectStatusCodeEntity statusEntity = ProjectStatusCodeEntity.builder()
+                .projectStatusCode("DELETED")
+                .build();
+
+        ProjectModel returnedModel = ProjectModel.builder()
+                .projectGuid(inputModel.getProjectGuid())
+                .projectName("Test Project")
+                .siteUnitName("Test Site")
+                .projectLead("Test Lead")
+                .projectStatusCode(existingStatus)
+                .build();
+
+        ProjectEntity savedEntity = new ProjectEntity();
+        when(projectResourceAssembler.toEntity(any(ProjectModel.class))).thenReturn(savedEntity);
+        when(projectRepository.saveAndFlush(any(ProjectEntity.class))).thenReturn(savedEntity);
+        when(projectResourceAssembler.toModel(any(ProjectEntity.class))).thenReturn(returnedModel);
+        when(projectStatusCodeRepository.findById("DELETED")).thenReturn(Optional.of(statusEntity));
+        when(projectRepository.findById(UUID.fromString(inputModel.getProjectGuid()))).thenReturn(Optional.of(savedEntity));
+
+        // When I update the project
+        ProjectModel result = projectService.createOrUpdateProject(inputModel);
+
+        // Then the existing status should be preserved
+        assertEquals("DELETED", result.getProjectStatusCode().getProjectStatusCode());
+        verify(projectStatusCodeRepository, never()).findById("ACTIVE");
+        verify(projectStatusCodeRepository, times(1)).findById("DELETED");
+    }
+
+    @Test
+    void test_create_new_project_with_null_guid() throws ServiceException {
         // Given
         ProjectModel inputModel = ProjectModel.builder()
                 .projectName("New Test Project")
@@ -303,7 +346,7 @@ class ProjectServiceTest {
 
 
     @Test
-    public void test_create_new_project() throws ServiceException {
+    void test_create_new_project() throws ServiceException {
         // Given
         ProjectModel inputModel = ProjectModel.builder()
                 .projectName("Test Project")
@@ -337,7 +380,7 @@ class ProjectServiceTest {
     }
 
     @Test
-    public void test_create_project_with_null_reference_codes() throws ServiceException {
+    void test_create_project_with_null_reference_codes() throws ServiceException {
         // Given
         ProjectModel inputModel = ProjectModel.builder()
                 .projectName("Test Project")
@@ -368,7 +411,7 @@ class ProjectServiceTest {
     }
 
     @Test
-    public void test_create_project_with_valid_reference_codes() throws ServiceException {
+    void test_create_project_with_valid_reference_codes() throws ServiceException {
         // Given
         String forestAreaCode = "FAC1";
         String projectTypeCode = "PTC1";
@@ -411,7 +454,7 @@ class ProjectServiceTest {
     }
 
     @Test
-    public void test_update_existing_project() throws ServiceException {
+    void test_update_existing_project() throws ServiceException {
         // Given
         String existingGuid = UUID.randomUUID().toString();
         ProjectModel inputModel = ProjectModel.builder()
@@ -462,7 +505,7 @@ class ProjectServiceTest {
     }
 
     @Test
-    public void test_create_project_forest_area_code_entity_not_found() {
+    void test_create_project_forest_area_code_entity_not_found() {
         // Given
         ForestAreaCodeModel forestArea = ForestAreaCodeModel.builder()
                 .forestAreaCode("INVALID")
@@ -484,7 +527,7 @@ class ProjectServiceTest {
     }
 
     @Test
-    public void test_create_project_with_exception() {
+    void test_create_project_with_exception() {
         // Given
         ProjectModel inputModel = ProjectModel.builder()
                 .projectName("Test Project")
@@ -503,7 +546,7 @@ class ProjectServiceTest {
     }
 
     @Test
-    public void test_create_project_with_service_exception() {
+    void test_create_project_with_service_exception() {
         // Given
         ProjectModel inputModel = ProjectModel.builder()
                 .projectName("Test Project")
@@ -558,7 +601,7 @@ class ProjectServiceTest {
     }
 
     @Test
-    public void test_delete_project_exception() throws ServiceException {
+    void test_delete_project_exception() throws ServiceException {
         // Given
         String id = UUID.randomUUID().toString();
         when(projectRepository.findById(UUID.fromString(id)))
@@ -574,7 +617,7 @@ class ProjectServiceTest {
     }
 
     @Test
-    public void test_delete_project_with_exception() {
+    void test_delete_project_with_exception() {
         // Given
         String existingGuid = UUID.randomUUID().toString();
         ProjectModel inputModel = ProjectModel.builder()
