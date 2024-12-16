@@ -83,7 +83,8 @@ public class ProjectService implements CommonService {
 
       if (resource.getProjectGuid() != null) {
         // Fetch the existing entity
-        entity = projectRepository.findById(UUID.fromString(resource.getProjectGuid()))
+        Optional<ProjectEntity> byId = projectRepository.findById(UUID.fromString(resource.getProjectGuid()));
+        entity = byId
                 .orElseThrow(() -> new EntityNotFoundException("Project not found: " + resource.getProjectGuid()));
 
         // Update fields on the existing entity
