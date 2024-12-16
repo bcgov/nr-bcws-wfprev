@@ -34,9 +34,10 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Component
 public class ProjectService implements CommonService {
+
   private final ProjectStatusCodeResourceAssembler projectStatusCodeAssembler;
-  private ProjectRepository projectRepository;
-  private ProjectResourceAssembler projectResourceAssembler;
+  private final ProjectRepository projectRepository;
+  private final ProjectResourceAssembler projectResourceAssembler;
 
   @Autowired
   private ForestAreaCodeRepository forestAreaCodeRepository;
@@ -55,7 +56,7 @@ public class ProjectService implements CommonService {
     this.projectResourceAssembler = projectResourceAssembler;
     this.projectStatusCodeAssembler = projectStatusCodeAssembler;
   }
-  
+
   public CollectionModel<ProjectModel> getAllProjects() throws ServiceException {
     try {
       List<ProjectEntity> all = projectRepository.findAll();
@@ -67,7 +68,9 @@ public class ProjectService implements CommonService {
 
   public ProjectModel getProjectById(String id) throws ServiceException {
     try {
-      return projectRepository.findById(id).map(projectResourceAssembler::toModel).orElse(null);
+      return projectRepository.findById(UUID.fromString(id))
+              .map(projectResourceAssembler::toModel)
+              .orElse(null);
     } catch(Exception e) {
       throw new ServiceException(e.getLocalizedMessage(), e);
     }
@@ -76,63 +79,65 @@ public class ProjectService implements CommonService {
   @Transactional
   public ProjectModel createOrUpdateProject(ProjectModel resource) throws ServiceException {
     try {
-      if (resource.getProjectGuid() == null) {
+      ProjectEntity entity;
+
+      if (resource.getProjectGuid() != null) {
+        // Fetch the existing entity
+        Optional<ProjectEntity> byId = projectRepository.findById(UUID.fromString(resource.getProjectGuid()));
+        entity = byId
+                .orElseThrow(() -> new EntityNotFoundException("Project not found: " + resource.getProjectGuid()));
+
+        // Update fields on the existing entity
+        projectResourceAssembler.updateEntity(resource, entity);
+      } else {
+        // Create a new entity
         resource.setCreateDate(new Date());
         resource.setProjectGuid(UUID.randomUUID().toString());
         resource.setRevisionCount(0); // Initialize revision count for new records
+        entity = projectResourceAssembler.toEntity(resource);
       }
-      ProjectEntity entity = projectResourceAssembler.toEntity(resource);
 
-      // Load ForestAreaCode with null checks
+      // Handle ForestAreaCode
       if (resource.getForestAreaCode() != null) {
         String forestAreaCode = resource.getForestAreaCode().getForestAreaCode();
-        Optional<ForestAreaCodeEntity> forestAreaCodeEntityOpt = forestAreaCodeRepository.findById(forestAreaCode);
-        if (forestAreaCodeEntityOpt.isPresent()) {
-          entity.setForestAreaCode(forestAreaCodeEntityOpt.get());
-        } else {
-          throw new IllegalArgumentException("ForestAreaCode not found: " + forestAreaCode);
-        }
+        ForestAreaCodeEntity forestAreaCodeEntity = forestAreaCodeRepository
+                .findById(forestAreaCode)
+                .orElseThrow(() -> new EntityNotFoundException("ForestAreaCode not found: " + forestAreaCode));
+        entity.setForestAreaCode(forestAreaCodeEntity);
       }
 
-      // Load ProjectTypeCode with null checks
+      // Handle ProjectTypeCode
       if (resource.getProjectTypeCode() != null) {
         String projectTypeCode = resource.getProjectTypeCode().getProjectTypeCode();
-        if (projectTypeCode != null) {
-          ProjectTypeCodeEntity projectTypeCodeEntity = projectTypeCodeRepository
-                  .findById(projectTypeCode)
-                  .orElseThrow(() -> new EntityNotFoundException(
-                          "Project Type Code not found: " + projectTypeCode));
-          entity.setProjectTypeCode(projectTypeCodeEntity);
-        }
+        ProjectTypeCodeEntity projectTypeCodeEntity = projectTypeCodeRepository
+                .findById(projectTypeCode)
+                .orElseThrow(() -> new EntityNotFoundException("ProjectTypeCode not found: " + projectTypeCode));
+        entity.setProjectTypeCode(projectTypeCodeEntity);
       }
 
-      // Load GeneralScopeCode with null checks
+      // Handle GeneralScopeCode
       if (resource.getGeneralScopeCode() != null) {
         String generalScopeCode = resource.getGeneralScopeCode().getGeneralScopeCode();
-        if (generalScopeCode != null) {
-          GeneralScopeCodeEntity generalScopeCodeEntity = generalScopeCodeRepository
-                  .findById(generalScopeCode)
-                  .orElseThrow(() -> new EntityNotFoundException(
-                          "General Scope Code not found: " + generalScopeCode));
-          entity.setGeneralScopeCode(generalScopeCodeEntity);
-        }
+        GeneralScopeCodeEntity generalScopeCodeEntity = generalScopeCodeRepository
+                .findById(generalScopeCode)
+                .orElseThrow(() -> new EntityNotFoundException("GeneralScopeCode not found: " + generalScopeCode));
+        entity.setGeneralScopeCode(generalScopeCodeEntity);
       }
 
+      // Handle ProjectStatusCode
       if (resource.getProjectStatusCode() == null) {
         ProjectStatusCodeEntity activeStatus = projectStatusCodeRepository.findById("ACTIVE")
-                .orElseThrow(() -> new EntityNotFoundException("Project Status Code 'ACTIVE' not found"));
+                .orElseThrow(() -> new EntityNotFoundException("ProjectStatusCode 'ACTIVE' not found"));
         entity.setProjectStatusCode(activeStatus);
       } else {
         String projectStatusCode = resource.getProjectStatusCode().getProjectStatusCode();
-        if (projectStatusCode != null) {
-          ProjectStatusCodeEntity projectStatusCodeEntity = projectStatusCodeRepository
-                  .findById(projectStatusCode)
-                  .orElseThrow(() -> new EntityNotFoundException(
-                          "Project Status Code not found: " + projectStatusCode));
-          entity.setProjectStatusCode(projectStatusCodeEntity);
-        }
+        ProjectStatusCodeEntity projectStatusCodeEntity = projectStatusCodeRepository
+                .findById(projectStatusCode)
+                .orElseThrow(() -> new EntityNotFoundException("ProjectStatusCode not found: " + projectStatusCode));
+        entity.setProjectStatusCode(projectStatusCodeEntity);
       }
 
+      // Save the entity
       ProjectEntity savedEntity = projectRepository.saveAndFlush(entity);
       return projectResourceAssembler.toModel(savedEntity);
 
@@ -143,7 +148,7 @@ public class ProjectService implements CommonService {
     } catch (ConstraintViolationException e) {
       throw e;
     } catch (Exception e) {
-      log.error("Error creating/updating project", e);  // Add logging
+      log.error("Error creating/updating project", e);
       throw new ServiceException(e.getLocalizedMessage(), e);
     }
   }
@@ -152,6 +157,10 @@ public class ProjectService implements CommonService {
   public ProjectModel deleteProject(String id) throws ServiceException {
     try {
       ProjectModel model = getProjectById(id);
+
+      if (model == null) {
+        throw new EntityNotFoundException("Project not found: " + id);
+      }
 
       ProjectEntity entity = projectResourceAssembler.toEntity(model);
       projectRepository.delete(entity);
@@ -162,4 +171,3 @@ public class ProjectService implements CommonService {
     }
   }
 }
-

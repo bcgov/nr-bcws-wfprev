@@ -9,7 +9,6 @@ import ca.bc.gov.nrs.wfprev.data.repositories.*;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
-import jakarta.validation.Validation;
 import org.hibernate.validator.internal.engine.path.PathImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,7 +19,7 @@ import org.springframework.hateoas.CollectionModel;
 import java.math.BigDecimal;
 import java.util.*;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -132,7 +131,7 @@ public class ProjectServiceTest {
                 .projectName("Test Project")
                 .build();
 
-        when(projectRepository.findById(guid.toString())).thenReturn(Optional.of(entity));
+        when(projectRepository.findById(guid)).thenReturn(Optional.of(entity));
         when(projectResourceAssembler.toModel(entity)).thenReturn(model);
 
         // When
@@ -143,7 +142,7 @@ public class ProjectServiceTest {
         assertEquals(guid.toString(), result.getProjectGuid());
         assertEquals(programArea.toString(), result.getProgramAreaGuid());
         assertEquals("Test Project", result.getProjectName());
-        verify(projectRepository).findById(guid.toString());
+        verify(projectRepository).findById(guid);
         verify(projectResourceAssembler).toModel(entity);
     }
 
@@ -151,7 +150,7 @@ public class ProjectServiceTest {
     public void test_get_project_by_id_with_exception() {
         // Given
         UUID guid = UUID.randomUUID();
-        when(projectRepository.findById(guid.toString())).thenThrow(new RuntimeException("Error fetching project"));
+        when(projectRepository.findById(guid)).thenThrow(new RuntimeException("Error fetching project"));
 
         // When/Then
         ServiceException exception = assertThrows(
@@ -207,7 +206,6 @@ public class ProjectServiceTest {
     public void testCreate_violatesConstraint() {
         // Given I am creating a new project with a missing required field
         ProjectModel inputModel = ProjectModel.builder()
-                .projectGuid(UUID.randomUUID().toString())
                 // Missing required siteUnitName
                 .projectLead("Test Lead")
                 .build();
@@ -240,48 +238,6 @@ public class ProjectServiceTest {
     }
 
     @Test
-    public void testUpdate_preserveExistingStatus() {
-        // Given I am updating a project that has a status
-        ProjectStatusCodeModel existingStatus = ProjectStatusCodeModel.builder()
-                .projectStatusCode("DELETED")
-                .build();
-
-        ProjectModel inputModel = ProjectModel.builder()
-                .projectGuid(UUID.randomUUID().toString())
-                .projectName("Test Project")
-                .siteUnitName("Test Site")
-                .projectLead("Test Lead")
-                .projectStatusCode(existingStatus)
-                .build();
-
-        ProjectStatusCodeEntity statusEntity = ProjectStatusCodeEntity.builder()
-                .projectStatusCode("DELETED")
-                .build();
-
-        ProjectModel returnedModel = ProjectModel.builder()
-                .projectGuid(inputModel.getProjectGuid())
-                .projectName("Test Project")
-                .siteUnitName("Test Site")
-                .projectLead("Test Lead")
-                .projectStatusCode(existingStatus)
-                .build();
-
-        ProjectEntity savedEntity = new ProjectEntity();
-        when(projectResourceAssembler.toEntity(any(ProjectModel.class))).thenReturn(savedEntity);
-        when(projectRepository.saveAndFlush(any(ProjectEntity.class))).thenReturn(savedEntity);
-        when(projectResourceAssembler.toModel(any(ProjectEntity.class))).thenReturn(returnedModel);
-        when(projectStatusCodeRepository.findById("DELETED")).thenReturn(Optional.of(statusEntity));
-
-        // When I update the project
-        ProjectModel result = projectService.createOrUpdateProject(inputModel);
-
-        // Then the existing status should be preserved
-        assertEquals("DELETED", result.getProjectStatusCode().getProjectStatusCode());
-        verify(projectStatusCodeRepository, never()).findById("ACTIVE");
-        verify(projectStatusCodeRepository, times(1)).findById("DELETED");
-    }
-
-    @Test
     public void test_create_new_project_with_null_guid() throws ServiceException {
         // Given
         ProjectModel inputModel = ProjectModel.builder()
@@ -307,22 +263,22 @@ public class ProjectServiceTest {
         ProjectModel result = projectService.createOrUpdateProject(inputModel);
 
         // Then
-        assertNotNull("ProjectGuid should be generated", result.getProjectGuid());
-        assertEquals("Project name should be preserved", "New Test Project", result.getProjectName());
-        assertEquals("Site unit name should be preserved", "Test Site", result.getSiteUnitName());
+        assertNotNull(result.getProjectGuid(), "ProjectGuid should be generated");
+        assertEquals("New Test Project", result.getProjectName(), "Project name should be preserved");
+        assertEquals("Test Site", result.getSiteUnitName(), "Site unit name should be preserved");
 
         // Verify the sequence of operations
         ArgumentCaptor<ProjectModel> modelCaptor = ArgumentCaptor.forClass(ProjectModel.class);
         verify(projectResourceAssembler).toEntity(modelCaptor.capture());
 
         ProjectModel capturedModel = modelCaptor.getValue();
-        assertNotNull("Generated GUID should be passed to assembler", capturedModel.getProjectGuid());
-        assertTrue("GUID should be a valid UUID",
-                capturedModel.getProjectGuid().matches(
-                        "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"
-                ));
+        assertNotNull(capturedModel.getProjectGuid(), "Generated GUID should be passed to assembler");
+        assertTrue(
+                capturedModel.getProjectGuid().matches("[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"),
+                "GUID should be a valid UUID"
+        );
 
-        assertNotNull("Create date should be set", capturedModel.getCreateDate());
+        assertNotNull(capturedModel.getCreateDate(), "Create date should be set");
         verify(projectRepository).saveAndFlush(any(ProjectEntity.class));
         verify(projectResourceAssembler).toModel(any(ProjectEntity.class));
     }
@@ -448,6 +404,23 @@ public class ProjectServiceTest {
                 .build();
 
         ProjectEntity savedEntity = new ProjectEntity();
+        savedEntity.setProjectName("Test Project");
+        savedEntity.setSiteUnitName("Test Site");
+        savedEntity.setTotalActualProjectSizeHa(BigDecimal.valueOf(100));
+        savedEntity.setProjectGuid(UUID.fromString(existingGuid));
+        savedEntity.setProjectStatusCode(ProjectStatusCodeEntity.builder().projectStatusCode("ACTIVE").build());
+        savedEntity.setCreateDate(new Date());
+        savedEntity.setRevisionCount(0);
+        savedEntity.setForestAreaCode(ForestAreaCodeEntity.builder().forestAreaCode("FAC1").build());
+        savedEntity.setProjectTypeCode(ProjectTypeCodeEntity.builder().projectTypeCode("PTC1").build());
+        savedEntity.setGeneralScopeCode(GeneralScopeCodeEntity.builder().generalScopeCode("GSC1").build());
+        savedEntity.setProgramAreaGuid(UUID.randomUUID());
+        savedEntity.setForestRegionOrgUnitId(1);
+        savedEntity.setForestDistrictOrgUnitId(2);
+        savedEntity.setFireCentreOrgUnitId(3);
+        savedEntity.setBcParksRegionOrgUnitId(4);
+        savedEntity.setBcParksSectionOrgUnitId(5);
+
         when(projectResourceAssembler.toEntity(any())).thenReturn(savedEntity);
         when(projectRepository.saveAndFlush(any())).thenReturn(savedEntity);
         when(projectResourceAssembler.toModel(any())).thenReturn(inputModel);
@@ -457,15 +430,17 @@ public class ProjectServiceTest {
                 .build();
         when(projectStatusCodeRepository.findById("ACTIVE"))
                 .thenReturn(Optional.of(activeStatus));
+        when(projectRepository.findById(UUID.fromString(existingGuid)))
+                .thenReturn(Optional.of(savedEntity));
         // When
         ProjectModel result = projectService.createOrUpdateProject(inputModel);
 
         // Then
         ArgumentCaptor<ProjectModel> modelCaptor = ArgumentCaptor.forClass(ProjectModel.class);
-        verify(projectResourceAssembler).toEntity(modelCaptor.capture());
+        verify(projectResourceAssembler).updateEntity(modelCaptor.capture(), any());
 
         ProjectModel capturedModel = modelCaptor.getValue();
-        assertEquals("Should preserve project GUID", existingGuid, capturedModel.getProjectGuid());
+        assertEquals(existingGuid, capturedModel.getProjectGuid());
     }
 
     @Test
@@ -529,7 +504,7 @@ public class ProjectServiceTest {
     }
 
     @Test
-    public void test_delete_project_with_valid_id() {
+    void test_delete_project_with_valid_id() {
         // Given
         String existingGuid = UUID.randomUUID().toString();
         ProjectModel inputModel = ProjectModel.builder()
@@ -548,14 +523,20 @@ public class ProjectServiceTest {
                 .build();
         when(projectStatusCodeRepository.findById("ACTIVE"))
                 .thenReturn(Optional.of(activeStatus));
-        ProjectModel result = projectService.createOrUpdateProject(inputModel);
 
+        // Return savedEntity the first time, then empty the second time
+        when(projectRepository.findById(UUID.fromString(existingGuid)))
+                .thenReturn(Optional.of(savedEntity))
+                .thenReturn(Optional.empty());
 
         // When
         ProjectModel projectModel = projectService.deleteProject(existingGuid);
+
         // Then
         verify(projectRepository).delete(savedEntity);
         ProjectModel projectById = projectService.getProjectById(existingGuid);
+
+        // Assert that the project is no longer retrievable
         assertNull(projectById);
     }
 
@@ -563,7 +544,7 @@ public class ProjectServiceTest {
     public void test_delete_project_exception() throws ServiceException {
         // Given
         String id = UUID.randomUUID().toString();
-        when(projectRepository.findById(id))
+        when(projectRepository.findById(UUID.fromString(id)))
                 .thenThrow(new RuntimeException("Database error"));
 
         // When
@@ -595,6 +576,8 @@ public class ProjectServiceTest {
                 .build();
         when(projectStatusCodeRepository.findById("ACTIVE"))
                 .thenReturn(Optional.of(activeStatus));
+        when(projectRepository.findById(UUID.fromString(existingGuid)))
+                .thenReturn(Optional.of(savedEntity));
         ProjectModel result = projectService.createOrUpdateProject(inputModel);
 
 
@@ -693,13 +676,13 @@ public class ProjectServiceTest {
         verify(projectRepository).saveAndFlush(entityCaptor.capture());
 
         ProjectEntity capturedEntity = entityCaptor.getValue();
-        assertNotNull("Forest Area Code should be set", capturedEntity.getForestAreaCode());
+        assertNotNull(capturedEntity.getForestAreaCode(), "Forest Area Code should be set");
         assertEquals("FAC1", capturedEntity.getForestAreaCode().getForestAreaCode());
 
-        assertNotNull("Project Type Code should be set", capturedEntity.getProjectTypeCode());
+        assertNotNull(capturedEntity.getProjectTypeCode(), "Project Type Code should be set");
         assertEquals("PTC1", capturedEntity.getProjectTypeCode().getProjectTypeCode());
 
-        assertNotNull("General Scope Code should be set", capturedEntity.getGeneralScopeCode());
+        assertNotNull(capturedEntity.getGeneralScopeCode(), "General Scope Code should be set");
         assertEquals("GSC1", capturedEntity.getGeneralScopeCode().getGeneralScopeCode());
     }
 

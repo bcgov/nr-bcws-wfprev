@@ -164,4 +164,28 @@ public class ProjectResourceAssembler extends RepresentationModelAssemblerSuppor
         GeneralScopeCodeResourceAssembler ra = new GeneralScopeCodeResourceAssembler();
         return ra.toEntity(code);
     }
+
+    public void updateEntity(ProjectModel model, ProjectEntity entity) {
+        entity.setProjectName(model.getProjectName());
+        entity.setProjectDescription(model.getProjectDescription());
+        entity.setTotalActualProjectSizeHa(model.getTotalActualProjectSizeHa());
+        entity.setTotalActualCostPerHectareAmount(model.getTotalActualCostPerHectareAmount());
+        entity.setTotalActualAmount(model.getTotalActualAmount());
+        entity.setTotalAllocatedAmount(model.getTotalAllocatedAmount());
+        entity.setTotalFundingRequestAmount(model.getTotalFundingRequestAmount());
+        entity.setTotalPlannedCostPerHectare(model.getTotalPlannedCostPerHectare());
+        entity.setTotalPlannedProjectSizeHa(model.getTotalPlannedProjectSizeHa());
+        entity.setIsMultiFiscalYearProj(model.getIsMultiFiscalYearProj());
+        entity.setLatitude(model.getLatitude());
+        entity.setLongitude(model.getLongitude());
+        entity.setIsMultiFiscalYearProj(model.getIsMultiFiscalYearProj());
+        entity.setTotalActualAmount(model.getTotalActualAmount());
+        entity.setForestAreaCode(toForestAreaCodeEntity(model.getForestAreaCode()));
+
+
+        // Optionally handle `revision_count` if required
+        if (model.getRevisionCount() != null) {
+            entity.setRevisionCount(model.getRevisionCount());
+        }
+    }
 }
