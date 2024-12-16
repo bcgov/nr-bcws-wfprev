@@ -132,7 +132,7 @@ public class ProjectServiceTest {
                 .projectName("Test Project")
                 .build();
 
-        when(projectRepository.findById(guid.toString())).thenReturn(Optional.of(entity));
+        when(projectRepository.findById(guid)).thenReturn(Optional.of(entity));
         when(projectResourceAssembler.toModel(entity)).thenReturn(model);
 
         // When
@@ -143,7 +143,7 @@ public class ProjectServiceTest {
         assertEquals(guid.toString(), result.getProjectGuid());
         assertEquals(programArea.toString(), result.getProgramAreaGuid());
         assertEquals("Test Project", result.getProjectName());
-        verify(projectRepository).findById(guid.toString());
+        verify(projectRepository).findById(guid);
         verify(projectResourceAssembler).toModel(entity);
     }
 
@@ -151,7 +151,7 @@ public class ProjectServiceTest {
     public void test_get_project_by_id_with_exception() {
         // Given
         UUID guid = UUID.randomUUID();
-        when(projectRepository.findById(guid.toString())).thenThrow(new RuntimeException("Error fetching project"));
+        when(projectRepository.findById(guid)).thenThrow(new RuntimeException("Error fetching project"));
 
         // When/Then
         ServiceException exception = assertThrows(
@@ -563,7 +563,7 @@ public class ProjectServiceTest {
     public void test_delete_project_exception() throws ServiceException {
         // Given
         String id = UUID.randomUUID().toString();
-        when(projectRepository.findById(id))
+        when(projectRepository.findById(UUID.fromString(id)))
                 .thenThrow(new RuntimeException("Database error"));
 
         // When
