@@ -165,7 +165,7 @@ class ProjectBoundaryServiceTest {
                 .thenReturn(entity);
 
         // When
-        ProjectBoundaryModel result = projectBoundaryService.deleteProjectBoundary(exampleId);
+        projectBoundaryService.deleteProjectBoundary(exampleId);
 
         // Then
         verify(projectBoundaryRepository).delete(entity);

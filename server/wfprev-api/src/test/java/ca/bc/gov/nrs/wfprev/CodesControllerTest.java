@@ -1,40 +1,35 @@
 package ca.bc.gov.nrs.wfprev;
 
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
-
 import ca.bc.gov.nrs.wfone.common.service.api.ServiceException;
+import ca.bc.gov.nrs.wfprev.common.enums.CodeTables;
+import ca.bc.gov.nrs.wfprev.controllers.CodesController;
 import ca.bc.gov.nrs.wfprev.data.models.BCParksRegionCodeModel;
 import ca.bc.gov.nrs.wfprev.data.models.BCParksSectionCodeModel;
+import ca.bc.gov.nrs.wfprev.data.models.ForestAreaCodeModel;
+import ca.bc.gov.nrs.wfprev.data.models.GeneralScopeCodeModel;
+import ca.bc.gov.nrs.wfprev.data.models.ProjectTypeCodeModel;
+import ca.bc.gov.nrs.wfprev.services.CodesService;
 import org.junit.jupiter.api.Test;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
-import org.springframework.data.jpa.util.JpaMetamodel;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.junit.Assert.assertEquals;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.UUID;
+
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import ca.bc.gov.nrs.wfprev.common.enums.CodeTables;
-import ca.bc.gov.nrs.wfprev.controllers.CodesController;
-import ca.bc.gov.nrs.wfprev.data.models.ForestAreaCodeModel;
-import ca.bc.gov.nrs.wfprev.data.models.GeneralScopeCodeModel;
-import ca.bc.gov.nrs.wfprev.data.models.ProjectTypeCodeModel;
-import ca.bc.gov.nrs.wfprev.services.CodesService;
-import org.springframework.test.web.servlet.ResultActions;
 
 @WebMvcTest(CodesController.class)
 @Import({SecurityConfig.class, TestcontainersConfiguration.class})

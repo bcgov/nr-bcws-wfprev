@@ -1,12 +1,5 @@
 package ca.bc.gov.nrs.wfprev.services;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
-import org.springframework.hateoas.CollectionModel;
-import org.springframework.stereotype.Component;
-
 import ca.bc.gov.nrs.wfone.common.service.api.ServiceException;
 import ca.bc.gov.nrs.wfprev.common.services.CommonService;
 import ca.bc.gov.nrs.wfprev.data.assemblers.ProjectBoundaryResourceAssembler;
@@ -15,6 +8,11 @@ import ca.bc.gov.nrs.wfprev.data.models.ProjectBoundaryModel;
 import ca.bc.gov.nrs.wfprev.data.repositories.ProjectBoundaryRepository;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.stereotype.Component;
+
+import java.util.Date;
+import java.util.List;
 
 @Slf4j
 @Component

@@ -4,7 +4,6 @@ import ca.bc.gov.nrs.wfprev.common.enums.CodeTables;
 import ca.bc.gov.nrs.wfprev.controllers.CodesController;
 import ca.bc.gov.nrs.wfprev.data.entities.ForestOrgUnitCodeEntity;
 import ca.bc.gov.nrs.wfprev.data.models.ForestDistrictUnitCodeModel;
-import ca.bc.gov.nrs.wfprev.data.models.ForestRegionUnitCodeModel;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
 import org.springframework.stereotype.Component;

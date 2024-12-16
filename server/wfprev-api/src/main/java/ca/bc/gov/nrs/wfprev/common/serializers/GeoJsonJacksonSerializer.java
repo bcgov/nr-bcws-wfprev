@@ -19,7 +19,7 @@ public class GeoJsonJacksonSerializer extends StdSerializer<Geometry> {
     super(Geometry.class);
    }
 
-   public void serialize(Geometry geometry, JsonGenerator generator, SerializerProvider provider) throws IOException, JsonProcessingException {
+   public void serialize(Geometry geometry, JsonGenerator generator, SerializerProvider provider) throws IOException {
       log.trace("<serialize");
 
       try {
