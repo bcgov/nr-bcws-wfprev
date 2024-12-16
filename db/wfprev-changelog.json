@@ -1,0 +1,80 @@
+{
+  "databaseChangeLog": [
+    {
+      "changeSet": {
+        "id": "01_00_00_00",
+        "author": "dhemsworth",
+        "tagDatabase": { "tag" : "version_01_00_00_00" },
+        "changes": [
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_00_00/00/ddl/logins/wfprev.ddl.create_login_APP_WF1_PREV.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_00_00/00/ddl/logins/wfprev.ddl.create_login_PROXY_WF1_PREV_REST.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_00_00/00/ddl/roles/wfprev.ddl.create_roles.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_00_00/00/ddl/schema/wfprev.ddl.create_wfprev_schema.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_00_00/00/ddl/extension/wfprev.ddl.add_extensions.sql"
+            }
+          }
+        ]
+      }
+    },
+    {
+       "changeSet": {
+         "id": "01_00_00_01",
+         "author": "cpreston",
+         "tagDatabase": { "tag" : "version_01_00_00_01" },
+         "changes": [
+           {
+             "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_00_00/01/ddl/extension/wfprev.ddl.add_trigram.sql"
+            }
+          }
+        ]
+       }
+     },
+     {
+      "changeSet": {
+        "id": "01_00_00_02",
+        "author": "hsaldyga",
+        "tagDatabase": { "tag" : "version_01_00_00_02" },
+        "changes": [
+          {
+            "sqlFile": {
+             "dbms": "postgresql",
+             "endDelimiter": ";",
+             "path": "scripts/01_00_00/02/ddl/grants/wfprev.ddl.grants.sql"
+           }
+         }
+       ]
+      }
+    },
+ ] 
+}

@@ -178,6 +178,14 @@ resource "aws_ecs_task_definition" "wfprev-liquibase" {
           value = var.LIQUIBASE_COMMAND_PASSWORD
         },
         {
+          name = "APP_WF1_PREV_LIQUIBASE_COMMAND_PASSWORD"
+          value = var.APP_WF1_PREV_LIQUIBASE_COMMAND_PASSWORD
+        },
+        {
+          name = "WFPREV_LIQUIBASE_COMMAND_PASSWORD"
+          value = var.WFPREV_LIQUIBASE_COMMAND_PASSWORD
+        },
+        {
           name = "SCHEMA_NAME"
           value = var.SCHEMA_NAME
         },
