@@ -2,10 +2,21 @@ package ca.bc.gov.nrs.wfprev.services;
 
 import ca.bc.gov.nrs.wfone.common.service.api.ServiceException;
 import ca.bc.gov.nrs.wfprev.data.assemblers.ProjectResourceAssembler;
-import ca.bc.gov.nrs.wfprev.data.assemblers.ProjectStatusCodeResourceAssembler;
-import ca.bc.gov.nrs.wfprev.data.entities.*;
-import ca.bc.gov.nrs.wfprev.data.models.*;
-import ca.bc.gov.nrs.wfprev.data.repositories.*;
+import ca.bc.gov.nrs.wfprev.data.entities.ForestAreaCodeEntity;
+import ca.bc.gov.nrs.wfprev.data.entities.GeneralScopeCodeEntity;
+import ca.bc.gov.nrs.wfprev.data.entities.ProjectEntity;
+import ca.bc.gov.nrs.wfprev.data.entities.ProjectStatusCodeEntity;
+import ca.bc.gov.nrs.wfprev.data.entities.ProjectTypeCodeEntity;
+import ca.bc.gov.nrs.wfprev.data.models.ForestAreaCodeModel;
+import ca.bc.gov.nrs.wfprev.data.models.GeneralScopeCodeModel;
+import ca.bc.gov.nrs.wfprev.data.models.ProjectModel;
+import ca.bc.gov.nrs.wfprev.data.models.ProjectStatusCodeModel;
+import ca.bc.gov.nrs.wfprev.data.models.ProjectTypeCodeModel;
+import ca.bc.gov.nrs.wfprev.data.repositories.ForestAreaCodeRepository;
+import ca.bc.gov.nrs.wfprev.data.repositories.GeneralScopeCodeRepository;
+import ca.bc.gov.nrs.wfprev.data.repositories.ProjectRepository;
+import ca.bc.gov.nrs.wfprev.data.repositories.ProjectStatusCodeRepository;
+import ca.bc.gov.nrs.wfprev.data.repositories.ProjectTypeCodeRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
@@ -17,33 +28,39 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.hateoas.CollectionModel;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-public class ProjectServiceTest {
+class ProjectServiceTest {
     private ProjectService projectService;
     private ProjectRepository projectRepository;
     private ProjectResourceAssembler projectResourceAssembler;
     private ForestAreaCodeRepository forestAreaCodeRepository;
     private ProjectTypeCodeRepository projectTypeCodeRepository;
     private GeneralScopeCodeRepository generalScopeCodeRepository;
-    private ProjectStatusCodeResourceAssembler projectStatusCodeAssembler;
     private ProjectStatusCodeRepository projectStatusCodeRepository;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         projectRepository = mock(ProjectRepository.class);
         projectResourceAssembler = mock(ProjectResourceAssembler.class);
-        projectStatusCodeAssembler = mock(ProjectStatusCodeResourceAssembler.class);
         forestAreaCodeRepository = mock(ForestAreaCodeRepository.class);
         projectTypeCodeRepository = mock(ProjectTypeCodeRepository.class);
         generalScopeCodeRepository = mock(GeneralScopeCodeRepository.class);
         projectStatusCodeRepository = mock(ProjectStatusCodeRepository.class);
 
-        projectService = new ProjectService(projectRepository, projectResourceAssembler, projectStatusCodeAssembler);
+        projectService = new ProjectService(projectRepository, projectResourceAssembler, forestAreaCodeRepository,
+                projectTypeCodeRepository, generalScopeCodeRepository, projectStatusCodeRepository);
         setField(projectService, "forestAreaCodeRepository", forestAreaCodeRepository);
         setField(projectService, "projectTypeCodeRepository", projectTypeCodeRepository);
         setField(projectService, "generalScopeCodeRepository", generalScopeCodeRepository);
@@ -51,7 +68,7 @@ public class ProjectServiceTest {
     }
 
     @Test
-    public void test_get_all_projects() throws ServiceException {
+    void test_get_all_projects() throws ServiceException {
         // Given
         UUID guid1 = UUID.randomUUID();
         UUID guid2 = UUID.randomUUID();
@@ -101,7 +118,7 @@ public class ProjectServiceTest {
     }
 
     @Test
-    public void test_get_all_projects_with_exception() {
+    void test_get_all_projects_with_exception() {
         // Given
         when(projectRepository.findAll()).thenThrow(new RuntimeException("Error fetching projects"));
 
@@ -114,7 +131,7 @@ public class ProjectServiceTest {
     }
 
     @Test
-    public void test_get_project_by_id() {
+    void test_get_project_by_id() {
         // Given
         UUID guid = UUID.randomUUID();
         UUID programArea = UUID.randomUUID();
@@ -147,21 +164,22 @@ public class ProjectServiceTest {
     }
 
     @Test
-    public void test_get_project_by_id_with_exception() {
+    void test_get_project_by_id_with_exception() {
         // Given
         UUID guid = UUID.randomUUID();
         when(projectRepository.findById(guid)).thenThrow(new RuntimeException("Error fetching project"));
 
         // When/Then
+        String id = guid.toString();
         ServiceException exception = assertThrows(
                 ServiceException.class,
-                () -> projectService.getProjectById(guid.toString())
+                () -> projectService.getProjectById(id)
         );
         assertTrue(exception.getMessage().contains("Error fetching project"));
     }
 
     @Test
-    public void testCreate_DataIntegrityViolationException() {
+    void testCreate_DataIntegrityViolationException() {
         // Given I am creating a new project
         ProjectModel inputModel = ProjectModel.builder()
                 .projectName("Test Project")
@@ -183,7 +201,7 @@ public class ProjectServiceTest {
     }
 
     @Test
-    public void testCreate_activeStatusNotFound() {
+    void testCreate_activeStatusNotFound() {
         // Given I am creating a new project
         ProjectModel inputModel = ProjectModel.builder()
                 .projectName("Test Project")
@@ -203,7 +221,7 @@ public class ProjectServiceTest {
     }
 
     @Test
-    public void testCreate_violatesConstraint() {
+    void testCreate_violatesConstraint() {
         // Given I am creating a new project with a missing required field
         ProjectModel inputModel = ProjectModel.builder()
                 // Missing required siteUnitName
@@ -238,7 +256,50 @@ public class ProjectServiceTest {
     }
 
     @Test
-    public void test_create_new_project_with_null_guid() throws ServiceException {
+    void testUpdate_preserveExistingStatus() {
+        // Given I am updating a project that has a status
+        ProjectStatusCodeModel existingStatus = ProjectStatusCodeModel.builder()
+                .projectStatusCode("DELETED")
+                .build();
+
+        ProjectModel inputModel = ProjectModel.builder()
+                .projectGuid(UUID.randomUUID().toString())
+                .projectName("Test Project")
+                .siteUnitName("Test Site")
+                .projectLead("Test Lead")
+                .projectStatusCode(existingStatus)
+                .build();
+
+        ProjectStatusCodeEntity statusEntity = ProjectStatusCodeEntity.builder()
+                .projectStatusCode("DELETED")
+                .build();
+
+        ProjectModel returnedModel = ProjectModel.builder()
+                .projectGuid(inputModel.getProjectGuid())
+                .projectName("Test Project")
+                .siteUnitName("Test Site")
+                .projectLead("Test Lead")
+                .projectStatusCode(existingStatus)
+                .build();
+
+        ProjectEntity savedEntity = new ProjectEntity();
+        when(projectResourceAssembler.toEntity(any(ProjectModel.class))).thenReturn(savedEntity);
+        when(projectRepository.saveAndFlush(any(ProjectEntity.class))).thenReturn(savedEntity);
+        when(projectResourceAssembler.toModel(any(ProjectEntity.class))).thenReturn(returnedModel);
+        when(projectStatusCodeRepository.findById("DELETED")).thenReturn(Optional.of(statusEntity));
+        when(projectRepository.findById(UUID.fromString(inputModel.getProjectGuid()))).thenReturn(Optional.of(savedEntity));
+
+        // When I update the project
+        ProjectModel result = projectService.createOrUpdateProject(inputModel);
+
+        // Then the existing status should be preserved
+        assertEquals("DELETED", result.getProjectStatusCode().getProjectStatusCode());
+        verify(projectStatusCodeRepository, never()).findById("ACTIVE");
+        verify(projectStatusCodeRepository, times(1)).findById("DELETED");
+    }
+
+    @Test
+    void test_create_new_project_with_null_guid() throws ServiceException {
         // Given
         ProjectModel inputModel = ProjectModel.builder()
                 .projectName("New Test Project")
@@ -285,7 +346,7 @@ public class ProjectServiceTest {
 
 
     @Test
-    public void test_create_new_project() throws ServiceException {
+    void test_create_new_project() throws ServiceException {
         // Given
         ProjectModel inputModel = ProjectModel.builder()
                 .projectName("Test Project")
@@ -308,7 +369,7 @@ public class ProjectServiceTest {
                 .thenReturn(Optional.of(activeStatus));
 
         // When
-        ProjectModel result = projectService.createOrUpdateProject(inputModel);
+        projectService.createOrUpdateProject(inputModel);
 
         // Then
         ArgumentCaptor<ProjectModel> modelCaptor = ArgumentCaptor.forClass(ProjectModel.class);
@@ -319,7 +380,7 @@ public class ProjectServiceTest {
     }
 
     @Test
-    public void test_create_project_with_null_reference_codes() throws ServiceException {
+    void test_create_project_with_null_reference_codes() throws ServiceException {
         // Given
         ProjectModel inputModel = ProjectModel.builder()
                 .projectName("Test Project")
@@ -350,7 +411,7 @@ public class ProjectServiceTest {
     }
 
     @Test
-    public void test_create_project_with_valid_reference_codes() throws ServiceException {
+    void test_create_project_with_valid_reference_codes() throws ServiceException {
         // Given
         String forestAreaCode = "FAC1";
         String projectTypeCode = "PTC1";
@@ -393,7 +454,7 @@ public class ProjectServiceTest {
     }
 
     @Test
-    public void test_update_existing_project() throws ServiceException {
+    void test_update_existing_project() throws ServiceException {
         // Given
         String existingGuid = UUID.randomUUID().toString();
         ProjectModel inputModel = ProjectModel.builder()
@@ -433,7 +494,7 @@ public class ProjectServiceTest {
         when(projectRepository.findById(UUID.fromString(existingGuid)))
                 .thenReturn(Optional.of(savedEntity));
         // When
-        ProjectModel result = projectService.createOrUpdateProject(inputModel);
+        projectService.createOrUpdateProject(inputModel);
 
         // Then
         ArgumentCaptor<ProjectModel> modelCaptor = ArgumentCaptor.forClass(ProjectModel.class);
@@ -444,7 +505,7 @@ public class ProjectServiceTest {
     }
 
     @Test
-    public void test_create_project_forest_area_code_entity_not_found() {
+    void test_create_project_forest_area_code_entity_not_found() {
         // Given
         ForestAreaCodeModel forestArea = ForestAreaCodeModel.builder()
                 .forestAreaCode("INVALID")
@@ -466,7 +527,7 @@ public class ProjectServiceTest {
     }
 
     @Test
-    public void test_create_project_with_exception() {
+    void test_create_project_with_exception() {
         // Given
         ProjectModel inputModel = ProjectModel.builder()
                 .projectName("Test Project")
@@ -485,7 +546,7 @@ public class ProjectServiceTest {
     }
 
     @Test
-    public void test_create_project_with_service_exception() {
+    void test_create_project_with_service_exception() {
         // Given
         ProjectModel inputModel = ProjectModel.builder()
                 .projectName("Test Project")
@@ -530,8 +591,7 @@ public class ProjectServiceTest {
                 .thenReturn(Optional.empty());
 
         // When
-        ProjectModel projectModel = projectService.deleteProject(existingGuid);
-
+        projectService.deleteProject(existingGuid);
         // Then
         verify(projectRepository).delete(savedEntity);
         ProjectModel projectById = projectService.getProjectById(existingGuid);
@@ -541,7 +601,7 @@ public class ProjectServiceTest {
     }
 
     @Test
-    public void test_delete_project_exception() throws ServiceException {
+    void test_delete_project_exception() throws ServiceException {
         // Given
         String id = UUID.randomUUID().toString();
         when(projectRepository.findById(UUID.fromString(id)))
@@ -557,7 +617,7 @@ public class ProjectServiceTest {
     }
 
     @Test
-    public void test_delete_project_with_exception() {
+    void test_delete_project_with_exception() {
         // Given
         String existingGuid = UUID.randomUUID().toString();
         ProjectModel inputModel = ProjectModel.builder()
@@ -576,9 +636,7 @@ public class ProjectServiceTest {
                 .build();
         when(projectStatusCodeRepository.findById("ACTIVE"))
                 .thenReturn(Optional.of(activeStatus));
-        when(projectRepository.findById(UUID.fromString(existingGuid)))
-                .thenReturn(Optional.of(savedEntity));
-        ProjectModel result = projectService.createOrUpdateProject(inputModel);
+        when(projectRepository.findById(any())).thenReturn(Optional.of(savedEntity));
 
 
         // When
@@ -589,11 +647,11 @@ public class ProjectServiceTest {
                 ServiceException.class,
                 () -> projectService.deleteProject(existingGuid)
         );
-        assertTrue(exception.getMessage().contains("Error deleting project"));
+        assertEquals("Error deleting project", exception.getMessage());
     }
 
     @Test
-    public void test_set_reference_entities() throws ServiceException {
+    void test_set_reference_entities() throws ServiceException {
         // Given
         String testForestAreaCode = "TEST-FAC";
         ForestAreaCodeEntity forestAreaEntity = ForestAreaCodeEntity.builder()
@@ -631,7 +689,7 @@ public class ProjectServiceTest {
     }
 
     @Test
-    public void test_reference_code_setters() throws ServiceException {
+    void test_reference_code_setters() throws ServiceException {
         // Given
         ProjectEntity testEntity = new ProjectEntity(); // Real entity that can have values set
 
@@ -687,7 +745,7 @@ public class ProjectServiceTest {
     }
 
     @Test
-    public void test_set_reference_entities_direct() throws ServiceException {
+    void test_set_reference_entities_direct() throws ServiceException {
         // Given
         ProjectEntity projectEntity = new ProjectEntity();  // Create a real entity
 
@@ -714,7 +772,7 @@ public class ProjectServiceTest {
                 .thenReturn(Optional.of(activeStatus));
 
         // When
-        ProjectModel result = projectService.createOrUpdateProject(inputModel);
+        projectService.createOrUpdateProject(inputModel);
 
         // Then
         ArgumentCaptor<ProjectEntity> captor = ArgumentCaptor.forClass(ProjectEntity.class);
@@ -722,6 +780,20 @@ public class ProjectServiceTest {
 
         ProjectEntity savedEntity = captor.getValue();
         assertSame(forestAreaEntity, savedEntity.getForestAreaCode());
+    }
+
+    @Test
+    void testGetProject_invalidUUID() {
+        // Given
+        String invalidGuid = "invalid-uuid";
+        when(projectRepository.findById(any())).thenThrow(new IllegalArgumentException("Invalid UUID string: " + invalidGuid));
+
+        // When/Then
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> projectService.getProjectById(invalidGuid)
+        );
+        assertEquals("Invalid UUID: invalid-uuid", exception.getMessage());
     }
 
     private void setField(Object target, String fieldName, Object value) {

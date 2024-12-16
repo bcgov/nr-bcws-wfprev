@@ -1,10 +1,8 @@
 package ca.bc.gov.nrs.wfprev.common.services.health;
 
-import org.hibernate.mapping.Map;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.ReactiveHealthIndicator;
 import org.springframework.stereotype.Component;
-
 import reactor.core.publisher.Mono;
 
 @Component

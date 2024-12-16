@@ -1,18 +1,13 @@
 package ca.bc.gov.nrs.wfprev;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-
 import ca.bc.gov.nrs.wfone.common.service.api.ServiceException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import ca.bc.gov.nrs.wfprev.controllers.ProgramAreaController;
+import ca.bc.gov.nrs.wfprev.data.models.ProgramAreaModel;
+import ca.bc.gov.nrs.wfprev.services.ProgramAreaService;
+import com.nimbusds.jose.shaded.gson.Gson;
+import com.nimbusds.jose.shaded.gson.GsonBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -23,22 +18,18 @@ import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 
-import com.nimbusds.jose.shaded.gson.Gson;
-import com.nimbusds.jose.shaded.gson.GsonBuilder;
+import java.util.Arrays;
+import java.util.List;
+import java.util.UUID;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import ca.bc.gov.nrs.wfprev.controllers.ProgramAreaController;
-import ca.bc.gov.nrs.wfprev.data.models.ProgramAreaModel;
-import ca.bc.gov.nrs.wfprev.services.ProgramAreaService;
-import org.springframework.test.web.servlet.ResultActions;
 
 @WebMvcTest(ProgramAreaController.class)
 @Import({TestSpringSecurity.class, TestcontainersConfiguration.class})

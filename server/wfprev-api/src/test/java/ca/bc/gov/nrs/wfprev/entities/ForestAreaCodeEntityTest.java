@@ -1,17 +1,12 @@
 package ca.bc.gov.nrs.wfprev.entities;
 
 import ca.bc.gov.nrs.wfprev.data.entities.ForestAreaCodeEntity;
-import jakarta.validation.ConstraintViolation;
-import jakarta.validation.ConstraintViolationException;
-import jakarta.validation.Validation;
-import jakarta.validation.Validator;
-import jakarta.validation.ValidatorFactory;
 import org.junit.Test;
 
 import java.util.Date;
-import java.util.Set;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 public class ForestAreaCodeEntityTest {
     @Test
