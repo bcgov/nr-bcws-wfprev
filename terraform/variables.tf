@@ -319,6 +319,14 @@ variable "LIQUIBASE_COMMAND_PASSWORD" {
   type = string
 }
 
+variable "WFPREV_LIQUIBASE_COMMAND_PASSWORD" {
+  type = string
+}
+
+variable "APP_WF1_PREV_LIQUIBASE_COMMAND_PASSWORD" {
+  type = string
+}
+
 variable "SCHEMA_NAME" {
   type = string
 }
