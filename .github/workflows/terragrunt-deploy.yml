@@ -26,17 +26,11 @@ on:
         required: true
         type: string
         default: main
-      SCHEMA_NAME:
-        required: true
-        type: string
-        default: app_wf1_prev
-
-      CHANGELOG_NAME:
+      RUN_LIQUIBASE:
         type: choice
         options:
-          - none
-          - main-changelog
-  
+          - false
+          - true
       TARGET_LIQUIBASE_TAG: 
         required: false
         type: string
@@ -71,7 +65,7 @@ jobs:
       - id: changeLogCount
         name: Determine changelog to execute
         run: |
-          if [ "${{ inputs.CHANGELOG_NAME }}" == "main-changelog" ]; then
+          if [ "${{ inputs.RUN_LIQUIBASE }}" == "true" ]; then
             echo "NONPROXY_COUNT=1" >> $GITHUB_OUTPUT
             echo "PROXY_COUNT=0" >> $GITHUB_OUTPUT
           else
@@ -163,13 +157,11 @@ jobs:
           COMMAND: ${{ steps.liquibaseCommand.outputs.LIQUIBASE_COMMAND }}
           PROXY_COUNT: ${{ steps.changeLogCount.outputs.PROXY_COUNT }}
           NONPROXY_COUNT: ${{ steps.changeLogCount.outputs.NONPROXY_COUNT }}
-          CHANGELOG_NAME: ${{ inputs.CHANGELOG_NAME }}
           LIQUIBASE_IMAGE: ${{vars.REPOSITORY_HOST}}/${{ github.repository_owner }}/${{ vars.LIQUIBASE_IMAGE }}:${{ inputs.IMAGE_TAG }}
           LIQUIBASE_COMMAND_USERNAME: ${{ vars.LIQUIBASE_COMMAND_USERNAME }}
           LIQUIBASE_COMMAND_PASSWORD: ${{ secrets.LIQUIBASE_COMMAND_PASSWORD }}
           APP_WF1_PREV_LIQUIBASE_COMMAND_PASSWORD: ${{ secrets.APP_WF1_PREV_LIQUIBASE_COMMAND_PASSWORD }}
           WFPREV_LIQUIBASE_COMMAND_PASSWORD: ${{ secrets.WFPREV_LIQUIBASE_COMMAND_PASSWORD }}
-          SCHEMA_NAME: ${{ inputs.SCHEMA_NAME }}
           TARGET_LIQUIBASE_TAG: ${{ steps.liquibaseCommand.outputs.TARGET_LIQUIBASE_TAG }}
 
         run: terragrunt apply --terragrunt-non-interactive -auto-approve

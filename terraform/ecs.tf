@@ -166,10 +166,6 @@ resource "aws_ecs_task_definition" "wfprev-liquibase" {
           value = "jdbc:postgresql://${aws_db_instance.wfprev_pgsqlDB.endpoint}/${aws_db_instance.wfprev_pgsqlDB.name}"
         },
         {
-          name = "CHANGELOG_FILE"
-          value = "${var.CHANGELOG_NAME}.json"
-        },
-        {
           name = "LIQUIBASE_COMMAND_USERNAME"
           value = var.LIQUIBASE_COMMAND_USERNAME
         },
@@ -184,10 +180,6 @@ resource "aws_ecs_task_definition" "wfprev-liquibase" {
         {
           name = "WFPREV_LIQUIBASE_COMMAND_PASSWORD"
           value = var.WFPREV_LIQUIBASE_COMMAND_PASSWORD
-        },
-        {
-          name = "SCHEMA_NAME"
-          value = var.SCHEMA_NAME
         },
         {
           name = "TARGET_LIQUIBASE_TAG"

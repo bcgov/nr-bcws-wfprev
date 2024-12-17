@@ -306,11 +306,6 @@ variable "NONPROXY_COUNT" {
   default = 1
 }
 
-variable "CHANGELOG_NAME" {
-  type = string
-  default = "main-changelog"
-}
-
 variable "LIQUIBASE_COMMAND_USERNAME" {
   type = string
 }
@@ -324,10 +319,6 @@ variable "WFPREV_LIQUIBASE_COMMAND_PASSWORD" {
 }
 
 variable "APP_WF1_PREV_LIQUIBASE_COMMAND_PASSWORD" {
-  type = string
-}
-
-variable "SCHEMA_NAME" {
   type = string
 }
 
