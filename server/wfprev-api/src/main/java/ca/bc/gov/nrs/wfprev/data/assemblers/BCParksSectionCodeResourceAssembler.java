@@ -3,7 +3,6 @@ package ca.bc.gov.nrs.wfprev.data.assemblers;
 import ca.bc.gov.nrs.wfprev.common.enums.CodeTables;
 import ca.bc.gov.nrs.wfprev.controllers.CodesController;
 import ca.bc.gov.nrs.wfprev.data.entities.BCParksOrgUnitEntity;
-import ca.bc.gov.nrs.wfprev.data.models.BCParksRegionCodeModel;
 import ca.bc.gov.nrs.wfprev.data.models.BCParksSectionCodeModel;
 import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
 import org.springframework.stereotype.Component;

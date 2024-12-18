@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static org.junit.Assert.assertNull;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -171,7 +170,7 @@ class ProgramAreaServiceTest {
                 .thenReturn(entity).thenReturn(null);
 
         // When
-        ProgramAreaModel result = programAreaService.deleteProgramArea(exampleId);
+        programAreaService.deleteProgramArea(exampleId);
 
         // Then
         verify(programAreaRepository).delete(entity);
