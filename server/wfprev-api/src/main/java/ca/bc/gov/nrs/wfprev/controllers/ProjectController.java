@@ -1,8 +1,23 @@
 package ca.bc.gov.nrs.wfprev.controllers;
 
-import java.util.Date;
-import java.util.UUID;
-
+import ca.bc.gov.nrs.common.wfone.rest.resource.HeaderConstants;
+import ca.bc.gov.nrs.common.wfone.rest.resource.MessageListRsrc;
+import ca.bc.gov.nrs.wfone.common.service.api.ServiceException;
+import ca.bc.gov.nrs.wfprev.common.controllers.CommonController;
+import ca.bc.gov.nrs.wfprev.data.models.ProjectModel;
+import ca.bc.gov.nrs.wfprev.services.ProjectService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.extensions.Extension;
+import io.swagger.v3.oas.annotations.extensions.ExtensionProperty;
+import io.swagger.v3.oas.annotations.headers.Header;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.ResponseEntity;
@@ -15,25 +30,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import ca.bc.gov.nrs.common.wfone.rest.resource.HeaderConstants;
-import ca.bc.gov.nrs.common.wfone.rest.resource.MessageListRsrc;
-import ca.bc.gov.nrs.wfone.common.service.api.ServiceException;
-import ca.bc.gov.nrs.wfprev.common.controllers.CommonController;
-import ca.bc.gov.nrs.wfprev.data.models.ProjectModel;
-import ca.bc.gov.nrs.wfprev.services.ProjectService;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.Parameters;
-import io.swagger.v3.oas.annotations.enums.ParameterIn;
-import io.swagger.v3.oas.annotations.extensions.Extension;
-import io.swagger.v3.oas.annotations.extensions.ExtensionProperty;
-import io.swagger.v3.oas.annotations.headers.Header;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import lombok.extern.slf4j.Slf4j;
+import java.util.Date;
 
 @RestController
 @Slf4j
@@ -118,7 +115,7 @@ public class ProjectController extends CommonController {
       resource.setUpdateUser(getWebAdeAuthentication().getUserId());
       resource.setRevisionCount(0);
 
-      ProjectModel newResource = projectService.createOrUpdateProject(resource);
+      ProjectModel newResource = projectService.createProject(resource);
       response = newResource == null ? badRequest() : created(newResource);
     } catch (DataIntegrityViolationException e) {
       response = conflict();
@@ -150,12 +147,12 @@ public class ProjectController extends CommonController {
       resource.setUpdateUser(getWebAdeAuthentication().getUserId());
       // ensure that the user hasn't changed the primary key
       if (id.equalsIgnoreCase(resource.getProjectGuid())) {
-        ProjectModel updatedResource = projectService.createOrUpdateProject(resource);
+        ProjectModel updatedResource = projectService.updateProject(resource);
         response = updatedResource == null ? notFound(): ok(updatedResource);
       } else {
         response = badRequest();
       }
-    } catch(ServiceException e) {
+    } catch(Exception e) {
       // most responses here will actually be Bad Requests, not Internal Server Errors
       // This would be an ideal place to expand the "Catch" and return sensible
       // HTTP status codes

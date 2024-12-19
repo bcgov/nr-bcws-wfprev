@@ -1,12 +1,5 @@
 package ca.bc.gov.nrs.wfprev.data.assemblers;
 
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
-
-import org.springframework.hateoas.CollectionModel;
-import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
-import org.springframework.stereotype.Component;
-
 import ca.bc.gov.nrs.wfprev.controllers.ProjectController;
 import ca.bc.gov.nrs.wfprev.data.entities.ForestAreaCodeEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.GeneralScopeCodeEntity;
@@ -16,9 +9,17 @@ import ca.bc.gov.nrs.wfprev.data.models.ForestAreaCodeModel;
 import ca.bc.gov.nrs.wfprev.data.models.GeneralScopeCodeModel;
 import ca.bc.gov.nrs.wfprev.data.models.ProjectModel;
 import ca.bc.gov.nrs.wfprev.data.models.ProjectTypeCodeModel;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
+import org.springframework.stereotype.Component;
 
 import java.util.UUID;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
+@Slf4j
 @Component
 public class ProjectResourceAssembler extends RepresentationModelAssemblerSupport<ProjectEntity, ProjectModel> {
 
@@ -165,27 +166,50 @@ public class ProjectResourceAssembler extends RepresentationModelAssemblerSuppor
         return ra.toEntity(code);
     }
 
-    public void updateEntity(ProjectModel model, ProjectEntity entity) {
-        entity.setProjectName(model.getProjectName());
-        entity.setProjectDescription(model.getProjectDescription());
-        entity.setTotalActualProjectSizeHa(model.getTotalActualProjectSizeHa());
-        entity.setTotalActualCostPerHectareAmount(model.getTotalActualCostPerHectareAmount());
-        entity.setTotalActualAmount(model.getTotalActualAmount());
-        entity.setTotalAllocatedAmount(model.getTotalAllocatedAmount());
-        entity.setTotalFundingRequestAmount(model.getTotalFundingRequestAmount());
-        entity.setTotalPlannedCostPerHectare(model.getTotalPlannedCostPerHectare());
-        entity.setTotalPlannedProjectSizeHa(model.getTotalPlannedProjectSizeHa());
-        entity.setIsMultiFiscalYearProj(model.getIsMultiFiscalYearProj());
-        entity.setLatitude(model.getLatitude());
-        entity.setLongitude(model.getLongitude());
-        entity.setIsMultiFiscalYearProj(model.getIsMultiFiscalYearProj());
-        entity.setTotalActualAmount(model.getTotalActualAmount());
-        entity.setForestAreaCode(toForestAreaCodeEntity(model.getForestAreaCode()));
+    public ProjectEntity updateEntity(ProjectModel model, ProjectEntity existingEntity) {
+        log.debug(">> updateEntity");
+        System.out.println("In updateEntity");
+        ProjectEntity entity = new ProjectEntity();
+        entity.setProjectGuid(existingEntity.getProjectGuid());
+        entity.setProjectName(nonNullOrDefault(model.getProjectName(), existingEntity.getProjectName()));
+        entity.setProjectDescription(nonNullOrDefault(model.getProjectDescription(), existingEntity.getProjectDescription()));
+        entity.setTotalActualProjectSizeHa(nonNullOrDefault(model.getTotalActualProjectSizeHa(), existingEntity.getTotalActualProjectSizeHa()));
+        entity.setTotalActualCostPerHectareAmount(nonNullOrDefault(model.getTotalActualCostPerHectareAmount(), existingEntity.getTotalActualCostPerHectareAmount()));
+        entity.setTotalActualAmount(nonNullOrDefault(model.getTotalActualAmount(), existingEntity.getTotalActualAmount()));
+        entity.setTotalAllocatedAmount(nonNullOrDefault(model.getTotalAllocatedAmount(), existingEntity.getTotalAllocatedAmount()));
+        entity.setTotalFundingRequestAmount(nonNullOrDefault(model.getTotalFundingRequestAmount(), existingEntity.getTotalFundingRequestAmount()));
+        entity.setTotalPlannedCostPerHectare(nonNullOrDefault(model.getTotalPlannedCostPerHectare(), existingEntity.getTotalPlannedCostPerHectare()));
+        entity.setTotalPlannedProjectSizeHa(nonNullOrDefault(model.getTotalPlannedProjectSizeHa(), existingEntity.getTotalPlannedProjectSizeHa()));
+        entity.setIsMultiFiscalYearProj(nonNullOrDefault(model.getIsMultiFiscalYearProj(), existingEntity.getIsMultiFiscalYearProj()));
+        entity.setLatitude(nonNullOrDefault(model.getLatitude(), existingEntity.getLatitude()));
+        entity.setLongitude(nonNullOrDefault(model.getLongitude(), existingEntity.getLongitude()));
+        entity.setForestAreaCode(nonNullOrDefault(toForestAreaCodeEntity(model.getForestAreaCode()), existingEntity.getForestAreaCode()));
+        entity.setRevisionCount(nonNullOrDefault(model.getRevisionCount(), existingEntity.getRevisionCount()));
+        entity.setProjectStatusCode(existingEntity.getProjectStatusCode());
+        entity.setSiteUnitName(nonNullOrDefault(model.getSiteUnitName(), existingEntity.getSiteUnitName()));
+        entity.setProgramAreaGuid(existingEntity.getProgramAreaGuid());
+        entity.setForestRegionOrgUnitId(nonNullOrDefault(model.getForestRegionOrgUnitId(), existingEntity.getForestRegionOrgUnitId()));
+        entity.setForestDistrictOrgUnitId(nonNullOrDefault(model.getForestDistrictOrgUnitId(), existingEntity.getForestDistrictOrgUnitId()));
+        entity.setFireCentreOrgUnitId(nonNullOrDefault(model.getFireCentreOrgUnitId(), existingEntity.getFireCentreOrgUnitId()));
+        entity.setBcParksRegionOrgUnitId(nonNullOrDefault(model.getBcParksRegionOrgUnitId(), existingEntity.getBcParksRegionOrgUnitId()));
+        entity.setBcParksSectionOrgUnitId(nonNullOrDefault(model.getBcParksSectionOrgUnitId(), existingEntity.getBcParksSectionOrgUnitId()));
+        entity.setProjectLead(nonNullOrDefault(model.getProjectLead(), existingEntity.getProjectLead()));
+        entity.setProjectLeadEmailAddress(nonNullOrDefault(model.getProjectLeadEmailAddress(), existingEntity.getProjectLeadEmailAddress()));
+        entity.setClosestCommunityName(nonNullOrDefault(model.getClosestCommunityName(), existingEntity.getClosestCommunityName()));
+        entity.setLastProgressUpdateTimestamp(nonNullOrDefault(model.getLastProgressUpdateTimestamp(), existingEntity.getLastProgressUpdateTimestamp()));
+        entity.setCreateUser(existingEntity.getCreateUser());
+        entity.setCreateDate(existingEntity.getCreateDate());
+        entity.setUpdateUser(existingEntity.getUpdateUser());
+        entity.setUpdateDate(existingEntity.getUpdateDate());
+        entity.setProjectTypeCode(existingEntity.getProjectTypeCode());
+        entity.setGeneralScopeCode(existingEntity.getGeneralScopeCode());
+        entity.setProjectNumber(existingEntity.getProjectNumber());
 
+        log.error("Updated entity: " + entity);
+        return entity;
+    }
 
-        // Optionally handle `revision_count` if required
-        if (model.getRevisionCount() != null) {
-            entity.setRevisionCount(model.getRevisionCount());
-        }
+    private <T> T nonNullOrDefault(T newValue, T existingValue) {
+        return newValue != null ? newValue : existingValue;
     }
 }
