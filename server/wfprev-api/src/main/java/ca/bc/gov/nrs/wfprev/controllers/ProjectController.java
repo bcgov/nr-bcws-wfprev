@@ -152,7 +152,7 @@ public class ProjectController extends CommonController {
       } else {
         response = badRequest();
       }
-    } catch(ServiceException e) {
+    } catch(Exception e) {
       // most responses here will actually be Bad Requests, not Internal Server Errors
       // This would be an ideal place to expand the "Catch" and return sensible
       // HTTP status codes

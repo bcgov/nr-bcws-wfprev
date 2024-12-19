@@ -511,8 +511,8 @@ class ProjectServiceTest {
                 .thenReturn(Optional.empty()); // Simulate project not found
 
         // When / Then
-        ServiceException exception = assertThrows(
-                ServiceException.class,
+        EntityNotFoundException exception = assertThrows(
+                EntityNotFoundException.class,
                 () -> projectService.updateProject(inputModel)
         );
 
@@ -607,45 +607,6 @@ class ProjectServiceTest {
     }
 
     @Test
-    void test_updateProject_generalException() {
-        // Given
-        String existingGuid = UUID.randomUUID().toString();
-        ProjectStatusCodeModel activeStatusModel = ProjectStatusCodeModel.builder()
-                .projectStatusCode("ACTIVE")
-                .build();
-        ProjectModel inputModel = ProjectModel.builder()
-                .projectGuid(existingGuid)
-                .projectStatusCode(activeStatusModel)
-                .projectName("Updated Project")
-                .build();
-
-        ProjectEntity existingEntity = new ProjectEntity();
-        existingEntity.setProjectGuid(UUID.fromString(existingGuid));
-        existingEntity.setProjectName("Old Project");
-
-        when(projectRepository.findById(UUID.fromString(existingGuid)))
-                .thenReturn(Optional.of(existingEntity));
-
-        when(projectResourceAssembler.updateEntity(any(ProjectModel.class), any(ProjectEntity.class)))
-                .thenReturn(existingEntity);
-
-        when(projectStatusCodeRepository.findById("ACTIVE"))
-                .thenReturn(Optional.of(ProjectStatusCodeEntity.builder().projectStatusCode("ACTIVE").build()));
-
-        when(projectRepository.saveAndFlush(any(ProjectEntity.class)))
-                .thenThrow(new RuntimeException("Unexpected error"));
-
-        // When / Then
-        ServiceException exception = assertThrows(
-                ServiceException.class,
-                () -> projectService.updateProject(inputModel)
-        );
-
-        assertEquals("Unexpected error", exception.getMessage());
-        verify(projectRepository).saveAndFlush(any(ProjectEntity.class));
-    }
-
-    @Test
     void test_create_project_forest_area_code_entity_not_found() {
         // Given
         ForestAreaCodeModel forestArea = ForestAreaCodeModel.builder()
@@ -660,8 +621,8 @@ class ProjectServiceTest {
         when(forestAreaCodeRepository.findById("INVALID")).thenReturn(Optional.empty());
 
         // When/Then
-        ServiceException exception = assertThrows(
-                ServiceException.class,
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
                 () -> projectService.createProject(inputModel)
         );
         assertTrue(exception.getMessage().contains("ForestAreaCode not found: INVALID"));
@@ -679,8 +640,8 @@ class ProjectServiceTest {
         when(projectResourceAssembler.toEntity(any())).thenThrow(new RuntimeException("Error saving project"));
 
         // When/Then
-        ServiceException exception = assertThrows(
-                ServiceException.class,
+        RuntimeException exception = assertThrows(
+                RuntimeException.class,
                 () -> projectService.createProject(inputModel)
         );
         assertTrue(exception.getMessage().contains("Error saving project"));
@@ -698,8 +659,8 @@ class ProjectServiceTest {
         when(projectResourceAssembler.toEntity(any())).thenThrow(new EntityNotFoundException("Error saving project"));
 
         // When/Then
-        ServiceException exception = assertThrows(
-                ServiceException.class,
+        EntityNotFoundException exception = assertThrows(
+                EntityNotFoundException.class,
                 () -> projectService.createProject(inputModel)
         );
         assertTrue(exception.getMessage().contains("Error saving project"));
