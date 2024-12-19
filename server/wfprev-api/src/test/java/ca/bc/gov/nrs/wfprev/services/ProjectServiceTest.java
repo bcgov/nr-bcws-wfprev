@@ -196,7 +196,7 @@ class ProjectServiceTest {
         //Then I should throw a DataIntegrityViolationException
         assertThrows(
                 DataIntegrityViolationException.class,
-                () -> projectService.createOrUpdateProject(inputModel)
+                () -> projectService.createProject(inputModel)
         );
     }
 
@@ -215,7 +215,7 @@ class ProjectServiceTest {
 
         // When I submit a project and the ACTIVE status doesn't exist
         // Then an EntityNotFoundException should be thrown
-        assertThrows(ServiceException.class, () -> projectService.createOrUpdateProject(inputModel));
+        assertThrows(ServiceException.class, () -> projectService.createProject(inputModel));
         verify(projectStatusCodeRepository, times(1)).findById("ACTIVE");
         verify(projectRepository, never()).saveAndFlush(any(ProjectEntity.class));
     }
@@ -248,54 +248,11 @@ class ProjectServiceTest {
 
         // When/Then
         assertThrows(ConstraintViolationException.class, () -> {
-            projectService.createOrUpdateProject(inputModel);
+            projectService.createProject(inputModel);
         });
 
         verify(projectRepository, times(1)).saveAndFlush(any(ProjectEntity.class));
         verify(projectResourceAssembler, times(1)).toEntity(any(ProjectModel.class));
-    }
-
-    @Test
-    void testUpdate_preserveExistingStatus() {
-        // Given I am updating a project that has a status
-        ProjectStatusCodeModel existingStatus = ProjectStatusCodeModel.builder()
-                .projectStatusCode("DELETED")
-                .build();
-
-        ProjectModel inputModel = ProjectModel.builder()
-                .projectGuid(UUID.randomUUID().toString())
-                .projectName("Test Project")
-                .siteUnitName("Test Site")
-                .projectLead("Test Lead")
-                .projectStatusCode(existingStatus)
-                .build();
-
-        ProjectStatusCodeEntity statusEntity = ProjectStatusCodeEntity.builder()
-                .projectStatusCode("DELETED")
-                .build();
-
-        ProjectModel returnedModel = ProjectModel.builder()
-                .projectGuid(inputModel.getProjectGuid())
-                .projectName("Test Project")
-                .siteUnitName("Test Site")
-                .projectLead("Test Lead")
-                .projectStatusCode(existingStatus)
-                .build();
-
-        ProjectEntity savedEntity = new ProjectEntity();
-        when(projectResourceAssembler.toEntity(any(ProjectModel.class))).thenReturn(savedEntity);
-        when(projectRepository.saveAndFlush(any(ProjectEntity.class))).thenReturn(savedEntity);
-        when(projectResourceAssembler.toModel(any(ProjectEntity.class))).thenReturn(returnedModel);
-        when(projectStatusCodeRepository.findById("DELETED")).thenReturn(Optional.of(statusEntity));
-        when(projectRepository.findById(UUID.fromString(inputModel.getProjectGuid()))).thenReturn(Optional.of(savedEntity));
-
-        // When I update the project
-        ProjectModel result = projectService.createOrUpdateProject(inputModel);
-
-        // Then the existing status should be preserved
-        assertEquals("DELETED", result.getProjectStatusCode().getProjectStatusCode());
-        verify(projectStatusCodeRepository, never()).findById("ACTIVE");
-        verify(projectStatusCodeRepository, times(1)).findById("DELETED");
     }
 
     @Test
@@ -321,7 +278,7 @@ class ProjectServiceTest {
                 .thenReturn(Optional.of(activeStatus));
 
         // When
-        ProjectModel result = projectService.createOrUpdateProject(inputModel);
+        ProjectModel result = projectService.createProject(inputModel);
 
         // Then
         assertNotNull(result.getProjectGuid(), "ProjectGuid should be generated");
@@ -369,7 +326,7 @@ class ProjectServiceTest {
                 .thenReturn(Optional.of(activeStatus));
 
         // When
-        projectService.createOrUpdateProject(inputModel);
+        projectService.createProject(inputModel);
 
         // Then
         ArgumentCaptor<ProjectModel> modelCaptor = ArgumentCaptor.forClass(ProjectModel.class);
@@ -401,7 +358,7 @@ class ProjectServiceTest {
                 .thenReturn(Optional.of(activeStatus));
 
         // When
-        ProjectModel result = projectService.createOrUpdateProject(inputModel);
+        ProjectModel result = projectService.createProject(inputModel);
 
         // Then
         verify(forestAreaCodeRepository, never()).findById(any());
@@ -444,7 +401,7 @@ class ProjectServiceTest {
                 .thenReturn(Optional.of(activeStatus));
 
         // When
-        ProjectModel result = projectService.createOrUpdateProject(inputModel);
+        ProjectModel result = projectService.createProject(inputModel);
 
         // Then
         verify(forestAreaCodeRepository).findById(forestAreaCode);
@@ -462,6 +419,17 @@ class ProjectServiceTest {
                 .projectName("Updated Project")
                 .siteUnitName("Updated Site")
                 .totalActualProjectSizeHa(BigDecimal.valueOf(200))
+                .projectStatusCode(ProjectStatusCodeModel.builder().projectStatusCode("ACTIVE").build())
+                .totalActualAmount(BigDecimal.valueOf(1000))
+                .forestAreaCode(ForestAreaCodeModel.builder().forestAreaCode("FAC1").build())
+                .projectTypeCode(ProjectTypeCodeModel.builder().projectTypeCode("PTC1").build())
+                .generalScopeCode(GeneralScopeCodeModel.builder().generalScopeCode("GSC1").build())
+                .programAreaGuid(UUID.randomUUID().toString())
+                .forestRegionOrgUnitId(1)
+                .forestDistrictOrgUnitId(2)
+                .fireCentreOrgUnitId(3)
+                .bcParksRegionOrgUnitId(4)
+                .bcParksSectionOrgUnitId(5)
                 .build();
 
         ProjectEntity savedEntity = new ProjectEntity();
@@ -493,8 +461,35 @@ class ProjectServiceTest {
                 .thenReturn(Optional.of(activeStatus));
         when(projectRepository.findById(UUID.fromString(existingGuid)))
                 .thenReturn(Optional.of(savedEntity));
+        when(forestAreaCodeRepository.findById("FAC1"))
+                .thenReturn(Optional.of(ForestAreaCodeEntity.builder().forestAreaCode("FAC1").build()));
+        when(projectTypeCodeRepository.findById("PTC1"))
+                .thenReturn(Optional.of(ProjectTypeCodeEntity.builder().projectTypeCode("PTC1").build()));
+        when(generalScopeCodeRepository.findById("GSC1"))
+                .thenReturn(Optional.of(GeneralScopeCodeEntity.builder().generalScopeCode("GSC1").build()));
+        ProjectEntity updatedEntity = new ProjectEntity();
+        updatedEntity.setProjectGuid(UUID.fromString(inputModel.getProjectGuid()));
+        updatedEntity.setProjectName("Updated Project");
+        updatedEntity.setSiteUnitName("Updated Site");
+        updatedEntity.setTotalActualProjectSizeHa(BigDecimal.valueOf(200));
+        updatedEntity.setProjectStatusCode(ProjectStatusCodeEntity.builder().projectStatusCode("ACTIVE").build());
+        updatedEntity.setTotalActualAmount(BigDecimal.valueOf(1000));
+        updatedEntity.setForestAreaCode(ForestAreaCodeEntity.builder().forestAreaCode("FAC1").build());
+        updatedEntity.setProjectTypeCode(ProjectTypeCodeEntity.builder().projectTypeCode("PTC1").build());
+        updatedEntity.setGeneralScopeCode(GeneralScopeCodeEntity.builder().generalScopeCode("GSC1").build());
+        updatedEntity.setProgramAreaGuid(UUID.fromString(inputModel.getProgramAreaGuid()));
+        updatedEntity.setForestRegionOrgUnitId(1);
+        updatedEntity.setForestDistrictOrgUnitId(2);
+        updatedEntity.setFireCentreOrgUnitId(3);
+        updatedEntity.setBcParksRegionOrgUnitId(4);
+        updatedEntity.setBcParksSectionOrgUnitId(5);
+
+
+        when(projectResourceAssembler.updateEntity(any(ProjectModel.class), any(ProjectEntity.class)))
+                .thenReturn(updatedEntity);
+
         // When
-        projectService.createOrUpdateProject(inputModel);
+        projectService.updateProject(inputModel);
 
         // Then
         ArgumentCaptor<ProjectModel> modelCaptor = ArgumentCaptor.forClass(ProjectModel.class);
@@ -521,7 +516,7 @@ class ProjectServiceTest {
         // When/Then
         ServiceException exception = assertThrows(
                 ServiceException.class,
-                () -> projectService.createOrUpdateProject(inputModel)
+                () -> projectService.createProject(inputModel)
         );
         assertTrue(exception.getMessage().contains("ForestAreaCode not found: INVALID"));
     }
@@ -540,7 +535,7 @@ class ProjectServiceTest {
         // When/Then
         ServiceException exception = assertThrows(
                 ServiceException.class,
-                () -> projectService.createOrUpdateProject(inputModel)
+                () -> projectService.createProject(inputModel)
         );
         assertTrue(exception.getMessage().contains("Error saving project"));
     }
@@ -559,7 +554,7 @@ class ProjectServiceTest {
         // When/Then
         ServiceException exception = assertThrows(
                 ServiceException.class,
-                () -> projectService.createOrUpdateProject(inputModel)
+                () -> projectService.createProject(inputModel)
         );
         assertTrue(exception.getMessage().contains("Error saving project"));
     }
@@ -677,7 +672,7 @@ class ProjectServiceTest {
         when(projectStatusCodeRepository.findById("ACTIVE"))
                 .thenReturn(Optional.of(activeStatus));
         // When
-        projectService.createOrUpdateProject(inputModel);
+        projectService.createProject(inputModel);
 
         // Then
         ArgumentCaptor<ProjectEntity> captor = ArgumentCaptor.forClass(ProjectEntity.class);
@@ -727,7 +722,7 @@ class ProjectServiceTest {
         when(projectRepository.saveAndFlush(any())).thenAnswer(i -> i.getArgument(0));
 
         // When
-        projectService.createOrUpdateProject(inputModel);
+        projectService.createProject(inputModel);
 
         // Then
         ArgumentCaptor<ProjectEntity> entityCaptor = ArgumentCaptor.forClass(ProjectEntity.class);
@@ -772,7 +767,7 @@ class ProjectServiceTest {
                 .thenReturn(Optional.of(activeStatus));
 
         // When
-        projectService.createOrUpdateProject(inputModel);
+        projectService.createProject(inputModel);
 
         // Then
         ArgumentCaptor<ProjectEntity> captor = ArgumentCaptor.forClass(ProjectEntity.class);

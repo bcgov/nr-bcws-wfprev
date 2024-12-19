@@ -74,37 +74,54 @@ public class ProjectService implements CommonService {
     }
   }
 
-  @Transactional
-  public ProjectModel createOrUpdateProject(ProjectModel resource) throws ServiceException {
-    ProjectEntity entity;
-    try {
-      if (isNewProject(resource)) {
-        initializeNewProject(resource);
-        entity = projectResourceAssembler.toEntity(resource);
-      }
-      else {
-        Optional<ProjectEntity> byId = projectRepository.findById(UUID.fromString(resource.getProjectGuid()));
-        entity = byId
-                .orElseThrow(() -> new EntityNotFoundException("Project not found: " + resource.getProjectGuid()));
 
-        // Update fields on the existing entity
-        projectResourceAssembler.updateEntity(resource, entity);
-      }
+  @Transactional
+  public ProjectModel createProject(ProjectModel resource) throws ServiceException {
+    try {
+      initializeNewProject(resource); // sets GUID, createDate, revisionCount = 0
+      ProjectEntity entity = projectResourceAssembler.toEntity(resource);
 
       assignAssociatedEntities(resource, entity);
 
-      // Save the entity
       ProjectEntity savedEntity = projectRepository.saveAndFlush(entity);
       return projectResourceAssembler.toModel(savedEntity);
-
     } catch (EntityNotFoundException e) {
       throw new ServiceException("Invalid reference data: " + e.getMessage(), e);
     } catch (DataIntegrityViolationException | ConstraintViolationException e) {
       throw e;
     } catch (Exception e) {
-      log.error("Error creating/updating project", e); // Add logging
+      log.error("Error creating project", e);
       throw new ServiceException(e.getLocalizedMessage(), e);
     }
+  }
+
+  @Transactional
+  public ProjectModel updateProject(ProjectModel resource) throws ServiceException {
+    try {
+      UUID guid = UUID.fromString(resource.getProjectGuid());
+      ProjectEntity existingEntity = projectRepository.findById(guid)
+              .orElseThrow(() -> new EntityNotFoundException("Project not found: " + resource.getProjectGuid()));
+
+      existingEntity = projectResourceAssembler.updateEntity(resource, existingEntity);
+      assignAssociatedEntities(resource, existingEntity);
+
+      ProjectEntity savedEntity = projectRepository.saveAndFlush(existingEntity);
+      return projectResourceAssembler.toModel(savedEntity);
+    } catch (EntityNotFoundException e) {
+      throw new ServiceException("Invalid reference data: " + e.getMessage(), e);
+    } catch (DataIntegrityViolationException | ConstraintViolationException e) {
+      throw e;
+    } catch (Exception e) {
+      log.error("Error updating project", e);
+      throw new ServiceException(e.getLocalizedMessage(), e);
+    }
+  }
+
+  private ProjectEntity getEntityForNewProject(ProjectModel resource) {
+    ProjectEntity entity;
+    initializeNewProject(resource);
+    entity = projectResourceAssembler.toEntity(resource);
+    return entity;
   }
 
   private boolean isNewProject(ProjectModel resource) {
@@ -119,7 +136,9 @@ public class ProjectService implements CommonService {
 
   private void assignAssociatedEntities(ProjectModel resource, ProjectEntity entity) {
     if (resource.getForestAreaCode() != null) {
-      entity.setForestAreaCode(loadForestAreaCode(resource.getForestAreaCode().getForestAreaCode()));
+      String forestAreaCode1 = resource.getForestAreaCode().getForestAreaCode();
+      ForestAreaCodeEntity forestAreaCode = loadForestAreaCode(forestAreaCode1);
+      entity.setForestAreaCode(forestAreaCode);
     }
 
     if (resource.getProjectTypeCode() != null && resource.getProjectTypeCode().getProjectTypeCode() != null) {
