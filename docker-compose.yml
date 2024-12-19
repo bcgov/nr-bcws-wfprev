@@ -32,7 +32,7 @@ services:
     command: [
       "liquibase",
       "--url=jdbc:postgresql://wfprev-postgres:5432/wfprev",
-      "--changelog-file=db/main-changelog.json",
+      "--changelog-file=db/wfprev-changelog.json",
       "--username=wfprev",
       "--password=${POSTGRES_PASSWORD}",
       "update"
