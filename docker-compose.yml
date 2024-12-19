@@ -29,14 +29,11 @@ services:
     build:
       context: db
       dockerfile: Dockerfile.liquibase.local
-    command: [
-      "liquibase",
-      "--url=jdbc:postgresql://wfprev-postgres:5432/wfprev",
-      "--changelog-file=db/wfprev-changelog.json",
-      "--username=wfprev",
-      "--password=${POSTGRES_PASSWORD}",
-      "update"
-    ]
+    command: > 
+      /bin/sh -c "
+      liquibase --url=jdbc:postgresql://wfprev-postgres:5432/wfprev --changelog-file=db/wfprev-changelog.json --username=wfprev --password=${WFPREV_DB_PASSWORD} update &&
+      liquibase --url=jdbc:postgresql://wfprev-postgres:5432/wfprev --changelog-file=db/app_wf1_prev-changelog.json --username=app_wf1_prev --password=${APP_WF1_PREV_PASSWORD} update
+      "
     volumes:
       - ./db:/liquibase/db
     depends_on:
@@ -50,7 +47,7 @@ services:
     container_name: wfprev-postgres
     environment:
       POSTGRES_USER: wfprev
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_PASSWORD: ${WFPREV_DATASOURCE_PASSWORD}
       POSTGRES_DB: wfprev
     ports:
       - "5432:5432"
@@ -76,7 +73,7 @@ services:
       db:
         condition: service_healthy
     environment:
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_PASSWORD: ${WFPREV_DATASOURCE_PASSWORD}
     command:
       [
         "-t", "pgsql",
@@ -84,7 +81,7 @@ services:
         "-port", "5432",
         "-db", "wfprev",
         "-u", "wfprev",
-        "-p", "${POSTGRES_PASSWORD}",
+        "-p", "${WFPREV_DATASOURCE_PASSWORD}",
         "-debug"
       ]
     volumes:
