@@ -500,6 +500,152 @@ class ProjectServiceTest {
     }
 
     @Test
+    void test_updateProject_entityNotFoundException() {
+        // Given
+        String nonExistentGuid = UUID.randomUUID().toString();
+        ProjectModel inputModel = ProjectModel.builder()
+                .projectGuid(nonExistentGuid)
+                .build();
+
+        when(projectRepository.findById(UUID.fromString(nonExistentGuid)))
+                .thenReturn(Optional.empty()); // Simulate project not found
+
+        // When / Then
+        ServiceException exception = assertThrows(
+                ServiceException.class,
+                () -> projectService.updateProject(inputModel)
+        );
+
+        assertTrue(exception.getMessage().contains("Project not found"));
+        verify(projectRepository).findById(UUID.fromString(nonExistentGuid));
+        verify(projectRepository, never()).saveAndFlush(any());
+    }
+
+    @Test
+    void test_updateProject_dataIntegrityViolationException() {
+        // Given
+        String existingGuid = UUID.randomUUID().toString();
+        ProjectModel inputModel = ProjectModel.builder()
+                .projectGuid(existingGuid)
+                .projectName("Updated Project")
+                .build();
+
+        ProjectEntity existingEntity = new ProjectEntity();
+        existingEntity.setProjectGuid(UUID.fromString(existingGuid));
+        existingEntity.setProjectName("Old Project");
+
+        when(projectRepository.findById(UUID.fromString(existingGuid)))
+                .thenReturn(Optional.of(existingEntity));
+
+        when(projectRepository.saveAndFlush(any(ProjectEntity.class)))
+                .thenThrow(new DataIntegrityViolationException("Data integrity violation"));
+
+        when(projectStatusCodeRepository.findById("ACTIVE"))
+                .thenReturn(Optional.of(ProjectStatusCodeEntity.builder().projectStatusCode("ACTIVE").build()));
+
+        when(projectResourceAssembler.updateEntity(any(ProjectModel.class), any(ProjectEntity.class)))
+                .thenReturn(existingEntity);
+
+        // When / Then
+        DataIntegrityViolationException exception = assertThrows(
+                DataIntegrityViolationException.class,
+                () -> projectService.updateProject(inputModel)
+        );
+
+        assertTrue(exception.getMessage().contains("Data integrity violation"));
+        verify(projectRepository).saveAndFlush(any(ProjectEntity.class));
+    }
+
+    @Test
+    void test_updateProject_constraintViolationException() {
+        // Given
+        String existingGuid = UUID.randomUUID().toString();
+        ProjectStatusCodeModel activeStatusModel = ProjectStatusCodeModel.builder()
+                .projectStatusCode("ACTIVE")
+                .build();
+
+        ProjectStatusCodeEntity activeStatusEntity = ProjectStatusCodeEntity.builder()
+                .projectStatusCode("ACTIVE")
+                .build();
+        ProjectModel inputModel = ProjectModel.builder()
+                .projectGuid(existingGuid)
+                .projectName("Updated Project")
+                .projectStatusCode(activeStatusModel)
+                .build();
+
+        ProjectEntity existingEntity = new ProjectEntity();
+        existingEntity.setProjectGuid(UUID.fromString(existingGuid));
+        existingEntity.setProjectName("Old Project");
+
+        when(projectStatusCodeRepository.findById("ACTIVE"))
+                .thenReturn(Optional.of(activeStatusEntity));
+
+        when(projectRepository.findById(UUID.fromString(existingGuid)))
+                .thenReturn(Optional.of(existingEntity));
+
+        when(projectResourceAssembler.updateEntity(any(ProjectModel.class), any(ProjectEntity.class)))
+                .thenReturn(existingEntity);
+
+        Set<ConstraintViolation<?>> violations = new HashSet<>();
+        ConstraintViolation<?> violation = mock(ConstraintViolation.class);
+        when(violation.getMessage()).thenReturn("Constraint violation occurred");
+        violations.add(violation);
+
+
+
+        when(projectRepository.saveAndFlush(any(ProjectEntity.class)))
+                .thenThrow(new ConstraintViolationException("Constraint violation occurred", violations));
+
+        // When / Then
+        ConstraintViolationException exception = assertThrows(
+                ConstraintViolationException.class,
+                () -> projectService.updateProject(inputModel)
+        );
+
+        assertTrue(exception.getMessage().contains("Constraint violation occurred"));
+        verify(projectRepository).saveAndFlush(any(ProjectEntity.class));
+    }
+
+    @Test
+    void test_updateProject_generalException() {
+        // Given
+        String existingGuid = UUID.randomUUID().toString();
+        ProjectStatusCodeModel activeStatusModel = ProjectStatusCodeModel.builder()
+                .projectStatusCode("ACTIVE")
+                .build();
+        ProjectModel inputModel = ProjectModel.builder()
+                .projectGuid(existingGuid)
+                .projectStatusCode(activeStatusModel)
+                .projectName("Updated Project")
+                .build();
+
+        ProjectEntity existingEntity = new ProjectEntity();
+        existingEntity.setProjectGuid(UUID.fromString(existingGuid));
+        existingEntity.setProjectName("Old Project");
+
+        when(projectRepository.findById(UUID.fromString(existingGuid)))
+                .thenReturn(Optional.of(existingEntity));
+
+        when(projectResourceAssembler.updateEntity(any(ProjectModel.class), any(ProjectEntity.class)))
+                .thenReturn(existingEntity);
+
+        when(projectStatusCodeRepository.findById("ACTIVE"))
+                .thenReturn(Optional.of(ProjectStatusCodeEntity.builder().projectStatusCode("ACTIVE").build()));
+
+        when(projectRepository.saveAndFlush(any(ProjectEntity.class)))
+                .thenThrow(new RuntimeException("Unexpected error"));
+
+        // When / Then
+        ServiceException exception = assertThrows(
+                ServiceException.class,
+                () -> projectService.updateProject(inputModel)
+        );
+
+        assertEquals("Unexpected error", exception.getMessage());
+        verify(projectRepository).saveAndFlush(any(ProjectEntity.class));
+    }
+
+    @Test
     void test_create_project_forest_area_code_entity_not_found() {
         // Given
         ForestAreaCodeModel forestArea = ForestAreaCodeModel.builder()

@@ -102,10 +102,10 @@ public class ProjectService implements CommonService {
       ProjectEntity existingEntity = projectRepository.findById(guid)
               .orElseThrow(() -> new EntityNotFoundException("Project not found: " + resource.getProjectGuid()));
 
-      existingEntity = projectResourceAssembler.updateEntity(resource, existingEntity);
-      assignAssociatedEntities(resource, existingEntity);
+      ProjectEntity entity = projectResourceAssembler.updateEntity(resource, existingEntity);
+      assignAssociatedEntities(resource, entity);
 
-      ProjectEntity savedEntity = projectRepository.saveAndFlush(existingEntity);
+      ProjectEntity savedEntity = projectRepository.saveAndFlush(entity);
       return projectResourceAssembler.toModel(savedEntity);
     } catch (EntityNotFoundException e) {
       throw new ServiceException("Invalid reference data: " + e.getMessage(), e);
@@ -149,11 +149,13 @@ public class ProjectService implements CommonService {
       entity.setGeneralScopeCode(loadGeneralScopeCode(resource.getGeneralScopeCode().getGeneralScopeCode()));
     }
 
+    String projectStatusCode1 = resource.getProjectStatusCode() != null
+            ? resource.getProjectStatusCode().getProjectStatusCode()
+            : null;
+    ProjectStatusCodeEntity projectStatusCode = loadOrSetDefaultProjectStatusCode(
+            projectStatusCode1);
     entity.setProjectStatusCode(
-            loadOrSetDefaultProjectStatusCode(
-                    resource.getProjectStatusCode() != null
-                            ? resource.getProjectStatusCode().getProjectStatusCode()
-                            : null));
+            projectStatusCode);
   }
 
   private ForestAreaCodeEntity loadForestAreaCode(String forestAreaCode) {
