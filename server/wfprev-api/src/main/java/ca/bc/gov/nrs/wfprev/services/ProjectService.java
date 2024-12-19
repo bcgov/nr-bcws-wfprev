@@ -117,17 +117,6 @@ public class ProjectService implements CommonService {
     }
   }
 
-  private ProjectEntity getEntityForNewProject(ProjectModel resource) {
-    ProjectEntity entity;
-    initializeNewProject(resource);
-    entity = projectResourceAssembler.toEntity(resource);
-    return entity;
-  }
-
-  private boolean isNewProject(ProjectModel resource) {
-    return resource.getProjectGuid() == null;
-  }
-
   private void initializeNewProject(ProjectModel resource) {
     resource.setCreateDate(new Date());
     resource.setProjectGuid(UUID.randomUUID().toString());
