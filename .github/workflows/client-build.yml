@@ -108,6 +108,7 @@ jobs:
         LIQUIBASE_IMAGE: ${{vars.REPOSITORY_HOST}}/${{ github.repository_owner }}/${{ vars.LIQUIBASE_IMAGE }}:${{ inputs.IMAGE_TAG }}
         LIQUIBASE_COMMAND_USERNAME: ${{ vars.LIQUIBASE_COMMAND_USERNAME }}
         LIQUIBASE_COMMAND_PASSWORD: ${{ secrets.LIQUIBASE_COMMAND_PASSWORD }}
+        WFPREV_LIQUIBASE_COMMAND_PASSWORD: ${{ secrets.WFPREV_LIQUIBASE_COMMAND_PASSWORD }}
         SCHEMA_NAME: ${{ inputs.SCHEMA_NAME }}
         TARGET_LIQUIBASE_TAG: ${{ steps.liquibaseCommand.outputs.TARGET_LIQUIBASE_TAG }}
       run: |
