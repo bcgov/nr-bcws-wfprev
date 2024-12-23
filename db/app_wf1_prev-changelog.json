@@ -242,6 +242,40 @@
           { "sql": "DROP SEQUENCE wfprev.project_number_seq" }
         ]
       }
+    },
+    {
+      "changeSet": {
+        "id": "01_00_03_00",
+        "author": "hsaldyga",
+        "tagDatabase": { "tag" : "version_01_00_03_00" },
+        "changes": [
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_00_03/00/ddl/WFPREV.create_objective_type_code.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_00_03/00/ddl/WFPREV.alter_project.sql"
+            }
+          }
+        ],
+        "rollback": [
+          { "sql": "ALTER TABLE wfprev.project DROP COLUMN primary_objective_type_code" },
+          { "sql": "ALTER TABLE wfprev.project DROP COLUMN secondary_objective_type_code" },
+          { "sql": "ALTER TABLE wfprev.project DROP COLUMN secondary_objective_rationale" },
+          { "sql": "ALTER TABLE wfprev.project DROP COLUMN tertiary_objective_type_code" },
+          { "sql": "ALTER TABLE wfprev.project DROP COLUMN tertiary_objective_rationale" },
+          { "sql": "DROP TABLE wfprev.objective_type_code.sql" }
+        ]
+      }
     }
   ] 
 }
+
+
+WFPREV.create_objective_type_code.sql
