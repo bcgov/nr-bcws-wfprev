@@ -270,7 +270,7 @@
           { "sql": "ALTER TABLE wfprev.project DROP COLUMN secondary_objective_rationale" },
           { "sql": "ALTER TABLE wfprev.project DROP COLUMN tertiary_objective_type_code" },
           { "sql": "ALTER TABLE wfprev.project DROP COLUMN tertiary_objective_rationale" },
-          { "sql": "DROP TABLE wfprev.objective_type_code.sql" }
+          { "sql": "DROP TABLE wfprev.objective_type_code" }
         ]
       }
     }
