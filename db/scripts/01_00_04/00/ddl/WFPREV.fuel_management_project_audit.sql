@@ -10,7 +10,7 @@ CREATE TABLE "wfprev"."fuel_management_project_audit"
 (
 	"audit_table_sequence" decimal(15) NOT NULL,    -- Added by transform - intent is make this sequence noncached so order is maintained
 	"audit_action_code" varchar(10)	 NOT NULL,    -- Contains the reason the audit record is written - Insert/Update/Delete/Conversion
-	"fuel_management_project_guid" NULL,    -- fuel_management_project_guid is a unique identifier for the record.
+	"fuel_management_project_guid" UUID NULL,    -- fuel_management_project_guid is a unique identifier for the record.
 	"project_guid" UUID NOT NULL,    -- project_guid: Is a foreign key to project: Project is used to track Prevention Projects which are created to reduce risks due to forest fires. 
 	"wui_risk_class_code" varchar(10)	 NULL,    -- wui_risk_class_code: Is a foreign key to wui_risk_class_code: Wildland Urban Interface Risk Class Code are the set of code used to assess the risk of wildfires interfacing with urban environments.  Values are:   	- WUI RC 1 	- WUI RC 2 	- WUI RC 3 	- WUI RC 4 	- WUI RC 5
 	"local_wui_risk_class_code" varchar(10)	 NULL,    -- local_wui_risk_class_code: Is a foreign key to wui_risk_class_code: Wildland Urban Interface Risk Class Code are the set of code used to assess the risk of wildfires interfacing with urban environments.  Values are:   	- WUI RC 1 	- WUI RC 2 	- WUI RC 3 	- WUI RC 4 	- WUI RC 5
