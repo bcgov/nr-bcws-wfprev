@@ -8,4 +8,4 @@ COMMENT ON COLUMN "wfprev"."project"."primary_funding_source_guid"
 CREATE INDEX "prjct_fndsrc_primary_idx" ON "wfprev"."project" ("primary_funding_source_guid" ASC);
 
 ALTER TABLE "wfprev"."project" ADD CONSTRAINT "prjct_fndsrc_primary_fk"
-	FOREIGN KEY ("funding_source_guid") REFERENCES "wfprev"."funding_source" ("primary_funding_source_guid") ON DELETE No Action ON UPDATE No Action;
+	FOREIGN KEY ("primary_funding_source_guid") REFERENCES "wfprev"."funding_source" ("funding_source_guid") ON DELETE No Action ON UPDATE No Action;
