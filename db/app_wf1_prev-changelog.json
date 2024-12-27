@@ -397,10 +397,10 @@
           { "sql": "DROP TABLE wfprev.funding_source" },
           { "sql": "DROP TABLE wfprev.cultural_rx_fire_plan_audit" },
           { "sql": "DROP TABLE wfprev.cultural_rx_fire_plan" },
+          { "sql": "DROP TABLE wfprev.fuel_mgmt_plan_obj_xref" },
           { "sql": "DROP TABLE wfprev.fuel_management_project_audit" },
           { "sql": "DROP TABLE wfprev.fuel_management_project" },
           { "sql": "DROP TABLE wfprev.fuel_management_objective" },
-          { "sql": "DROP TABLE wfprev.fuel_mgmt_plan_obj_xref" },
           { "sql": "DROP TABLE wfprev.fuel_mgmt_obj_type_code" },
           { "sql": "DROP TABLE wfprev.wui_risk_class_code" }
         ]
