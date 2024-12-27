@@ -347,13 +347,6 @@
             "sqlFile": {
               "dbms": "postgresql",
               "endDelimiter": ";",
-              "path": "scripts/01_00_04/00/ddl/WFPREV.funding_source.sql"
-            }
-          },
-          {
-            "sqlFile": {
-              "dbms": "postgresql",
-              "endDelimiter": ";",
               "path": "scripts/01_00_04/00/ddl/WFPREV.alter_project.sql"
             }
           },
