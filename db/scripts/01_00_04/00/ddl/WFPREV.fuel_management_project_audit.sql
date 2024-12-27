@@ -111,6 +111,5 @@ COMMENT ON COLUMN "wfprev"."fuel_management_project_audit"."update_date"
 
 /* Create Primary Keys, Indexes, Uniques, Checks */
 
-ALTER TABLE "wfprev"."fuel_management_project_audit" ADD CONSTRAINT "fmprj_aud_pk"
-	PRIMARY KEY ()
+ALTER TABLE "wfprev"."fuel_management_project_audit" ADD CONSTRAINT "fmprj_aud_pk" PRIMARY KEY ("audit_table_sequence")
 ;
