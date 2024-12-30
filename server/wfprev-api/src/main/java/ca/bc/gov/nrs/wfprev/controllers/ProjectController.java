@@ -143,8 +143,6 @@ public class ProjectController extends CommonController {
     ResponseEntity<ProjectModel> response;
 
     try {
-      // Update the UpdatedBy
-      resource.setUpdateUser(getWebAdeAuthentication().getUserId());
       // ensure that the user hasn't changed the primary key
       if (id.equalsIgnoreCase(resource.getProjectGuid())) {
         ProjectModel updatedResource = projectService.updateProject(resource);
