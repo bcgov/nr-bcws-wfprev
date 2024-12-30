@@ -1,0 +1,129 @@
+package ca.bc.gov.nrs.wfprev.controllers;
+
+import ca.bc.gov.nrs.common.wfone.rest.resource.HeaderConstants;
+import ca.bc.gov.nrs.common.wfone.rest.resource.MessageListRsrc;
+import ca.bc.gov.nrs.wfone.common.service.api.ServiceException;
+import ca.bc.gov.nrs.wfprev.common.controllers.CommonController;
+import ca.bc.gov.nrs.wfprev.data.models.ProjectFiscalModel;
+import ca.bc.gov.nrs.wfprev.services.ProjectFiscalService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.extensions.Extension;
+import io.swagger.v3.oas.annotations.extensions.ExtensionProperty;
+import io.swagger.v3.oas.annotations.headers.Header;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Collections;
+import java.util.List;
+
+@RestController
+@Slf4j
+@RequestMapping(value="/projectFiscals")
+public class ProjectFiscalController extends CommonController {
+    private final ProjectFiscalService projectFiscalService;
+
+    public ProjectFiscalController(ProjectFiscalService projectFiscalService) {
+        super(ProjectFiscalController.class.getName());
+        this.projectFiscalService = projectFiscalService;
+    }
+
+    @GetMapping
+    @Operation(summary = "Fetch all Project Fiscal Resources",
+            description = "Fetch all Project Fiscal Resources",
+            security = @SecurityRequirement(name = "Webade-OAUTH2",
+                    scopes = { "WFPREV" }),
+            extensions = { @Extension(properties = { @ExtensionProperty(name = "auth-type", value = "#{wso2.x-auth-type.app_and_app_user}"), @ExtensionProperty(name = "throttling-tier", value = "Unlimited") }) })
+    @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = CollectionModel.class))), @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(implementation = MessageListRsrc.class))), @ApiResponse(responseCode = "403", description = "Forbidden"), @ApiResponse(responseCode = "404", description = "Not Found"), @ApiResponse(responseCode = "409", description = "Conflict"), @ApiResponse(responseCode = "412", description = "Precondition Failed"), @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = MessageListRsrc.class))) })
+    @Parameter(name = HeaderConstants.VERSION_HEADER, description = HeaderConstants.VERSION_HEADER_DESCRIPTION, required = false, schema = @Schema(implementation = Integer.class), in = ParameterIn.HEADER)
+    @Parameter(name = HeaderConstants.IF_MATCH_HEADER, description = HeaderConstants.IF_MATCH_DESCRIPTION, required = true, schema = @Schema(implementation = String.class), in = ParameterIn.HEADER)
+    public ResponseEntity<CollectionModel<ProjectFiscalModel>> getAllProjectFiscals() {
+        log.debug(" >> getAllProjectFiscals");
+        ResponseEntity<CollectionModel<ProjectFiscalModel>> response;
+
+        try {
+            response = ok(projectFiscalService.getAllProjectFiscals());
+        } catch (ServiceException e) {
+            response = internalServerError();
+            log.error(" ### Error while fetching Project Fiscals", e);
+        }
+
+        log.debug(" << getAllProjectFiscals");
+        return response;
+    }
+
+    @PostMapping
+    @Operation(summary = "Create a Project Fiscal Resource",
+            description = "Create a new Project Fiscal Resource",
+            security = @SecurityRequirement(name = "Webade-OAUTH2",
+                    scopes = {"WFPREV"}))
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Created", content = @Content(schema = @Schema(implementation = ProjectFiscalModel.class))),
+            @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(implementation = MessageListRsrc.class))),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = MessageListRsrc.class)))
+    })
+    public ResponseEntity<ProjectFiscalModel> createProjectFiscal(
+            @Valid @RequestBody ProjectFiscalModel projectFiscalModel) {
+        log.debug(" >> createProjectFiscal");
+        ResponseEntity<ProjectFiscalModel> response;
+
+        try {
+            ProjectFiscalModel createdModel = projectFiscalService.createProjectFiscal(projectFiscalModel);
+            response = ResponseEntity.status(201).body(createdModel);
+        } catch (ServiceException e) {
+            response = internalServerError();
+            log.error(" ### Error while creating Project Fiscal", e);
+        }
+
+        log.debug(" << createProjectFiscal");
+        return response;
+    }
+
+    @PutMapping("/{id}")
+    @Operation(summary = "Update Project Fiscal Resource",
+            description = "Update Project Fiscal Resource",
+            security = @SecurityRequirement(name = "Webade-OAUTH2",
+                    scopes = { "WFPREV" }),
+            extensions = { @Extension(properties = { @ExtensionProperty(name = "auth-type", value = "#{wso2.x-auth-type.app_and_app_user}"), @ExtensionProperty(name = "throttling-tier", value = "Unlimited") }) })
+    @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = ProjectFiscalModel.class)), headers = { @Header(name = "ETag", description = "The ETag response-header field provides the current value of the entity tag for the requested variant.", schema = @Schema(implementation = String.class)) }), @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(implementation = MessageListRsrc.class))), @ApiResponse(responseCode = "403", description = "Forbidden"), @ApiResponse(responseCode = "404", description = "Not Found"), @ApiResponse(responseCode = "409", description = "Conflict"), @ApiResponse(responseCode = "412", description = "Precondition Failed"), @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = MessageListRsrc.class))) })
+    @Parameter(name = HeaderConstants.VERSION_HEADER, description = HeaderConstants.VERSION_HEADER_DESCRIPTION, required = false, schema = @Schema(implementation = Integer.class), in = ParameterIn.HEADER)
+    @Parameter(name = HeaderConstants.IF_MATCH_HEADER, description = HeaderConstants.IF_MATCH_DESCRIPTION, required = true, schema = @Schema(implementation = String.class), in = ParameterIn.HEADER)
+    public ResponseEntity<ProjectFiscalModel> updateProjectFiscal(@RequestBody ProjectFiscalModel resource, @PathVariable("id") String id) {
+        log.debug(" >> updateProject");
+        ResponseEntity<ProjectFiscalModel> response;
+
+        try {
+            // ensure that the user hasn't changed the primary key
+            if (id.equalsIgnoreCase(resource.getProjectPlanFiscalGuid())) {
+                ProjectFiscalModel updatedResource = projectFiscalService.updateProjectFiscal(resource);
+                response = updatedResource == null ? notFound(): ok(updatedResource);
+            } else {
+                response = badRequest();
+            }
+        } catch(Exception e) {
+            // most responses here will actually be Bad Requests, not Internal Server Errors
+            // This would be an ideal place to expand the "Catch" and return sensible
+            // HTTP status codes
+            response = internalServerError();
+            log.error(" ### Error while updating Project", e);
+        }
+
+        log.debug(" << updateProject");
+        return response;
+    }
+}
