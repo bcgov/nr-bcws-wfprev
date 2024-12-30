@@ -11,6 +11,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
 import java.util.Date;
 
 @Entity
@@ -20,7 +21,7 @@ import java.util.Date;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProjectStatusCodeEntity {
+public class ProjectStatusCodeEntity implements Serializable {
     @Id
     @Column(name = "project_status_code")
     private String projectStatusCode;

@@ -40,7 +40,7 @@ class GeoJsonJacksonDeserializerTest {
     private GeoJsonJacksonDeserializer geoJsonJacksonDeserializer;
 
     @Test
-    void testDeserialize_Success() throws IOException, JsonProcessingException, ParseException {
+    void testDeserialize_Success() throws IOException, ParseException {
         // Given
         String geoJsonString = "{\"type\":\"Point\",\"coordinates\":[10.0,20.0]}";
         Geometry expectedGeometry = new GeoJsonReader().read(new StringReader(geoJsonString));
@@ -73,7 +73,7 @@ class GeoJsonJacksonDeserializerTest {
     }
 
     @Test
-    void testDeserialize_RuntimeException() throws IOException, ParseException {
+    void testDeserialize_RuntimeException() throws IOException {
         // Given
         String geoJsonString = "{\"type\":\"Point\",\"coordinates\":[10.0,20.0]}";
 

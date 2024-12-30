@@ -1,174 +1,184 @@
 package ca.bc.gov.nrs.wfprev.services;
 
+import ca.bc.gov.nrs.wfone.common.service.api.ServiceException;
+import ca.bc.gov.nrs.wfprev.common.services.CommonService;
+import ca.bc.gov.nrs.wfprev.data.assemblers.ProjectResourceAssembler;
+import ca.bc.gov.nrs.wfprev.data.entities.ForestAreaCodeEntity;
+import ca.bc.gov.nrs.wfprev.data.entities.GeneralScopeCodeEntity;
+import ca.bc.gov.nrs.wfprev.data.entities.ProjectEntity;
+import ca.bc.gov.nrs.wfprev.data.entities.ProjectStatusCodeEntity;
+import ca.bc.gov.nrs.wfprev.data.entities.ProjectTypeCodeEntity;
+import ca.bc.gov.nrs.wfprev.data.models.ProjectModel;
+import ca.bc.gov.nrs.wfprev.data.repositories.ForestAreaCodeRepository;
+import ca.bc.gov.nrs.wfprev.data.repositories.GeneralScopeCodeRepository;
+import ca.bc.gov.nrs.wfprev.data.repositories.ProjectRepository;
+import ca.bc.gov.nrs.wfprev.data.repositories.ProjectStatusCodeRepository;
+import ca.bc.gov.nrs.wfprev.data.repositories.ProjectTypeCodeRepository;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
+import jakarta.validation.ConstraintViolationException;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.stereotype.Component;
+
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import ca.bc.gov.nrs.wfprev.data.assemblers.ProjectStatusCodeResourceAssembler;
-import ca.bc.gov.nrs.wfprev.data.entities.ForestAreaCodeEntity;
-import ca.bc.gov.nrs.wfprev.data.entities.GeneralScopeCodeEntity;
-import ca.bc.gov.nrs.wfprev.data.entities.ProjectStatusCodeEntity;
-import ca.bc.gov.nrs.wfprev.data.entities.ProjectTypeCodeEntity;
-import ca.bc.gov.nrs.wfprev.data.models.ProjectStatusCodeModel;
-import ca.bc.gov.nrs.wfprev.data.repositories.ForestAreaCodeRepository;
-import ca.bc.gov.nrs.wfprev.data.repositories.GeneralScopeCodeRepository;
-import ca.bc.gov.nrs.wfprev.data.repositories.ProjectStatusCodeRepository;
-import ca.bc.gov.nrs.wfprev.data.repositories.ProjectTypeCodeRepository;
-import jakarta.persistence.EntityNotFoundException;
-import jakarta.validation.ConstraintViolationException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.hateoas.CollectionModel;
-import org.springframework.stereotype.Component;
-
-import ca.bc.gov.nrs.wfone.common.service.api.ServiceException;
-import ca.bc.gov.nrs.wfprev.common.services.CommonService;
-import ca.bc.gov.nrs.wfprev.data.assemblers.ProjectResourceAssembler;
-import ca.bc.gov.nrs.wfprev.data.entities.ProjectEntity;
-import ca.bc.gov.nrs.wfprev.data.models.ProjectModel;
-import ca.bc.gov.nrs.wfprev.data.repositories.ProjectRepository;
-import jakarta.transaction.Transactional;
-import lombok.extern.slf4j.Slf4j;
-
 @Slf4j
 @Component
 public class ProjectService implements CommonService {
-  private final ProjectStatusCodeResourceAssembler projectStatusCodeAssembler;
-  private ProjectRepository projectRepository;
-  private ProjectResourceAssembler projectResourceAssembler;
 
-  @Autowired
-  private ForestAreaCodeRepository forestAreaCodeRepository;
+    private final ProjectRepository projectRepository;
+    private final ProjectResourceAssembler projectResourceAssembler;
+    private final ForestAreaCodeRepository forestAreaCodeRepository;
+    private final ProjectTypeCodeRepository projectTypeCodeRepository;
+    private final GeneralScopeCodeRepository generalScopeCodeRepository;
+    private final ProjectStatusCodeRepository projectStatusCodeRepository;
 
-  @Autowired
-  private ProjectTypeCodeRepository projectTypeCodeRepository;
-
-  @Autowired
-  private GeneralScopeCodeRepository generalScopeCodeRepository;
-
-  @Autowired
-  private ProjectStatusCodeRepository projectStatusCodeRepository;
-
-  public ProjectService(ProjectRepository projectRepository, ProjectResourceAssembler projectResourceAssembler, ProjectStatusCodeResourceAssembler projectStatusCodeAssembler) {
-    this.projectRepository = projectRepository;
-    this.projectResourceAssembler = projectResourceAssembler;
-    this.projectStatusCodeAssembler = projectStatusCodeAssembler;
-  }
-  
-  public CollectionModel<ProjectModel> getAllProjects() throws ServiceException {
-    try {
-      List<ProjectEntity> all = projectRepository.findAll();
-      return projectResourceAssembler.toCollectionModel(all);
-    } catch(Exception e) {
-      throw new ServiceException(e.getLocalizedMessage(), e);
+    public ProjectService(
+            ProjectRepository projectRepository,
+            ProjectResourceAssembler projectResourceAssembler,
+            ForestAreaCodeRepository forestAreaCodeRepository,
+            ProjectTypeCodeRepository projectTypeCodeRepository,
+            GeneralScopeCodeRepository generalScopeCodeRepository,
+            ProjectStatusCodeRepository projectStatusCodeRepository) {
+        this.projectRepository = projectRepository;
+        this.projectResourceAssembler = projectResourceAssembler;
+        this.forestAreaCodeRepository = forestAreaCodeRepository;
+        this.projectTypeCodeRepository = projectTypeCodeRepository;
+        this.generalScopeCodeRepository = generalScopeCodeRepository;
+        this.projectStatusCodeRepository = projectStatusCodeRepository;
     }
-  }
 
-  public ProjectModel getProjectById(String id) throws ServiceException {
-    try {
-      return projectRepository.findById(id).map(projectResourceAssembler::toModel).orElse(null);
-    } catch(Exception e) {
-      throw new ServiceException(e.getLocalizedMessage(), e);
+    public CollectionModel<ProjectModel> getAllProjects() throws ServiceException {
+        try {
+            List<ProjectEntity> all = projectRepository.findAll();
+            return projectResourceAssembler.toCollectionModel(all);
+        } catch (Exception e) {
+            throw new ServiceException(e.getLocalizedMessage(), e);
+        }
     }
-  }
 
-  @Transactional
-  public ProjectModel createOrUpdateProject(ProjectModel resource) throws ServiceException {
-    try {
-      if (resource.getProjectGuid() == null) {
+    public ProjectModel getProjectById(String id) throws ServiceException {
+        try {
+            return projectRepository.findById(UUID.fromString(id))
+                    .map(projectResourceAssembler::toModel)
+                    .orElse(null);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Invalid UUID: " + id, e);
+        } catch (Exception e) {
+            throw new ServiceException(e.getLocalizedMessage(), e);
+        }
+    }
+
+
+    @Transactional
+    public ProjectModel createProject(ProjectModel resource) throws ServiceException {
+            initializeNewProject(resource); // sets GUID, createDate, revisionCount = 0
+            ProjectEntity entity = projectResourceAssembler.toEntity(resource);
+        return saveProject(resource, entity);
+    }
+    @Transactional
+    public ProjectModel updateProject(ProjectModel resource) {
+        UUID guid = UUID.fromString(resource.getProjectGuid());
+        ProjectEntity existingEntity = projectRepository.findById(guid)
+                .orElseThrow(() -> new EntityNotFoundException("Project not found: " + resource.getProjectGuid()));
+
+        ProjectEntity entity = projectResourceAssembler.updateEntity(resource, existingEntity);
+        return saveProject(resource, entity);
+    }
+
+    private ProjectModel saveProject(ProjectModel resource, ProjectEntity entity) {
+        try {
+            assignAssociatedEntities(resource, entity);
+
+            ProjectEntity savedEntity = projectRepository.saveAndFlush(entity);
+            return projectResourceAssembler.toModel(savedEntity);
+        } catch (EntityNotFoundException e) {
+            throw new ServiceException("Invalid reference data: " + e.getMessage(), e);
+        } catch (DataIntegrityViolationException | ConstraintViolationException e) {
+            throw e;
+        }
+    }
+
+
+    private void initializeNewProject(ProjectModel resource) {
         resource.setCreateDate(new Date());
-        //TODO - Fix to use proper user
-        resource.setCreateUser("SYSTEM");
         resource.setProjectGuid(UUID.randomUUID().toString());
-        resource.setCreateDate(new Date());
-        resource.setCreateUser("SYSTEM");
-        resource.setRevisionCount(0); // Initialize revision count for new records
-      }
-      // Set audit fields
-      resource.setUpdateDate(new Date());
-      //TODO - Fix to use proper user
-      resource.setUpdateUser("SYSTEM");
-
-      ProjectEntity entity = projectResourceAssembler.toEntity(resource);
-
-      // Load ForestAreaCode with null checks
-      if (resource.getForestAreaCode() != null) {
-        String forestAreaCode = resource.getForestAreaCode().getForestAreaCode();
-        Optional<ForestAreaCodeEntity> forestAreaCodeEntityOpt = forestAreaCodeRepository.findById(forestAreaCode);
-        if (forestAreaCodeEntityOpt.isPresent()) {
-          entity.setForestAreaCode(forestAreaCodeEntityOpt.get());
-        } else {
-          throw new IllegalArgumentException("ForestAreaCode not found: " + forestAreaCode);
-        }
-      }
-
-      // Load ProjectTypeCode with null checks
-      if (resource.getProjectTypeCode() != null) {
-        String projectTypeCode = resource.getProjectTypeCode().getProjectTypeCode();
-        if (projectTypeCode != null) {
-          ProjectTypeCodeEntity projectTypeCodeEntity = projectTypeCodeRepository
-                  .findById(projectTypeCode)
-                  .orElseThrow(() -> new EntityNotFoundException(
-                          "Project Type Code not found: " + projectTypeCode));
-          entity.setProjectTypeCode(projectTypeCodeEntity);
-        }
-      }
-
-      // Load GeneralScopeCode with null checks
-      if (resource.getGeneralScopeCode() != null) {
-        String generalScopeCode = resource.getGeneralScopeCode().getGeneralScopeCode();
-        if (generalScopeCode != null) {
-          GeneralScopeCodeEntity generalScopeCodeEntity = generalScopeCodeRepository
-                  .findById(generalScopeCode)
-                  .orElseThrow(() -> new EntityNotFoundException(
-                          "General Scope Code not found: " + generalScopeCode));
-          entity.setGeneralScopeCode(generalScopeCodeEntity);
-        }
-      }
-
-      if (resource.getProjectStatusCode() == null) {
-        ProjectStatusCodeEntity activeStatus = projectStatusCodeRepository.findById("ACTIVE")
-                .orElseThrow(() -> new EntityNotFoundException("Project Status Code 'ACTIVE' not found"));
-        entity.setProjectStatusCode(activeStatus);
-      } else {
-        String projectStatusCode = resource.getProjectStatusCode().getProjectStatusCode();
-        if (projectStatusCode != null) {
-          ProjectStatusCodeEntity projectStatusCodeEntity = projectStatusCodeRepository
-                  .findById(projectStatusCode)
-                  .orElseThrow(() -> new EntityNotFoundException(
-                          "Project Status Code not found: " + projectStatusCode));
-          entity.setProjectStatusCode(projectStatusCodeEntity);
-        }
-      }
-
-      ProjectEntity savedEntity = projectRepository.saveAndFlush(entity);
-      return projectResourceAssembler.toModel(savedEntity);
-
-    } catch (EntityNotFoundException e) {
-      throw new ServiceException("Invalid reference data: " + e.getMessage(), e);
-    } catch (DataIntegrityViolationException e) {
-      throw new DataIntegrityViolationException(e.getMessage(), e);
-    } catch (ConstraintViolationException e) {
-      throw e;
-    } catch (Exception e) {
-      log.error("Error creating/updating project", e);  // Add logging
-      throw new ServiceException(e.getLocalizedMessage(), e);
+        resource.setRevisionCount(0);
     }
-  }
 
-  @Transactional
-  public ProjectModel deleteProject(String id) throws ServiceException {
-    try {
-      ProjectModel model = getProjectById(id);
+    private void assignAssociatedEntities(ProjectModel resource, ProjectEntity entity) {
+        if (resource.getForestAreaCode() != null) {
+            String forestAreaCode1 = resource.getForestAreaCode().getForestAreaCode();
+            ForestAreaCodeEntity forestAreaCode = loadForestAreaCode(forestAreaCode1);
+            entity.setForestAreaCode(forestAreaCode);
+        }
 
-      ProjectEntity entity = projectResourceAssembler.toEntity(model);
-      projectRepository.delete(entity);
+        if (resource.getProjectTypeCode() != null && resource.getProjectTypeCode().getProjectTypeCode() != null) {
+            entity.setProjectTypeCode(loadProjectTypeCode(resource.getProjectTypeCode().getProjectTypeCode()));
+        }
 
-      return projectResourceAssembler.toModel(entity);
-    } catch(Exception e) {
-      throw new ServiceException(e.getLocalizedMessage(), e);
+        if (resource.getGeneralScopeCode() != null && resource.getGeneralScopeCode().getGeneralScopeCode() != null) {
+            entity.setGeneralScopeCode(loadGeneralScopeCode(resource.getGeneralScopeCode().getGeneralScopeCode()));
+        }
+
+        String projectStatusCode1 = resource.getProjectStatusCode() != null
+                ? resource.getProjectStatusCode().getProjectStatusCode()
+                : null;
+        ProjectStatusCodeEntity projectStatusCode = loadOrSetDefaultProjectStatusCode(
+                projectStatusCode1);
+        entity.setProjectStatusCode(
+                projectStatusCode);
     }
-  }
+
+    private ForestAreaCodeEntity loadForestAreaCode(String forestAreaCode) {
+        return forestAreaCodeRepository
+                .findById(forestAreaCode)
+                .orElseThrow(() -> new IllegalArgumentException("ForestAreaCode not found: " + forestAreaCode));
+    }
+
+    private ProjectTypeCodeEntity loadProjectTypeCode(String projectTypeCode) {
+        return projectTypeCodeRepository
+                .findById(projectTypeCode)
+                .orElseThrow(() -> new EntityNotFoundException("Project Type Code not found: " + projectTypeCode));
+    }
+
+    private GeneralScopeCodeEntity loadGeneralScopeCode(String generalScopeCode) {
+        return generalScopeCodeRepository
+                .findById(generalScopeCode)
+                .orElseThrow(() -> new EntityNotFoundException("General Scope Code not found: " + generalScopeCode));
+    }
+
+    private ProjectStatusCodeEntity loadOrSetDefaultProjectStatusCode(String projectStatusCode) {
+        if (projectStatusCode == null) {
+            return projectStatusCodeRepository
+                    .findById("ACTIVE")
+                    .orElseThrow(() -> new EntityNotFoundException("Project Status Code 'ACTIVE' not found"));
+        }
+        return projectStatusCodeRepository
+                .findById(projectStatusCode)
+                .orElseThrow(() -> new EntityNotFoundException("Project Status Code not found: " + projectStatusCode));
+    }
+
+    @Transactional
+    public ProjectModel deleteProject(String id) throws ServiceException {
+        try {
+            ProjectModel model = getProjectById(id);
+
+            if (model == null) {
+                throw new EntityNotFoundException("Project not found: " + id);
+            }
+
+            ProjectEntity entity = projectResourceAssembler.toEntity(model);
+            projectRepository.delete(entity);
+
+            return projectResourceAssembler.toModel(entity);
+        } catch (Exception e) {
+            throw new ServiceException(e.getLocalizedMessage(), e);
+        }
+    }
 }
-

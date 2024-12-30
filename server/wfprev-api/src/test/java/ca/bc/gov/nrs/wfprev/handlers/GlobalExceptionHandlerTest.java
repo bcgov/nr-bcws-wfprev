@@ -22,13 +22,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
-public class GlobalExceptionHandlerTest {
+class GlobalExceptionHandlerTest {
 
     @InjectMocks
     private GlobalExceptionHandler handler;
 
     @Test
-    public void testHandleConstraintViolation_SingleError() {
+    void testHandleConstraintViolation_SingleError() {
         // Given
         Set<ConstraintViolation<?>> violations = new HashSet<>();
         ConstraintViolation<?> violation = mock(ConstraintViolation.class);
@@ -52,7 +52,7 @@ public class GlobalExceptionHandlerTest {
     }
 
     @Test
-    public void testHandleConstraintViolation_MultipleErrors() {
+    void testHandleConstraintViolation_MultipleErrors() {
         // Given
         Set<ConstraintViolation<?>> violations = new HashSet<>();
 
@@ -83,7 +83,7 @@ public class GlobalExceptionHandlerTest {
     }
 
     @Test
-    public void testHandleConstraintViolation_NoViolations() {
+    void testHandleConstraintViolation_NoViolations() {
         // Given
         Set<ConstraintViolation<?>> violations = new HashSet<>();
         ConstraintViolationException ex = new ConstraintViolationException("Test with no violations", violations);
@@ -101,7 +101,7 @@ public class GlobalExceptionHandlerTest {
     }
 
     @Test
-    public void testHandleDataIntegrityViolation() {
+    void testHandleDataIntegrityViolation() {
         // Given
         String errorMessage = "null value in column \"forest_region_org_unit_id\" of relation \"project\" violates not-null constraint";
         DataIntegrityViolationException ex = new DataIntegrityViolationException(errorMessage);
@@ -120,7 +120,7 @@ public class GlobalExceptionHandlerTest {
     }
 
     @Test
-    public void testHandleDataIntegrityViolation_NullMessage() {
+    void testHandleDataIntegrityViolation_NullMessage() {
         // Given
         DataIntegrityViolationException ex = new DataIntegrityViolationException(null);
 
@@ -138,7 +138,7 @@ public class GlobalExceptionHandlerTest {
     }
 
     @Test
-    public void testHandleConstraintViolation_NullPath() {
+    void testHandleConstraintViolation_NullPath() {
         // Given
         Set<ConstraintViolation<?>> violations = new HashSet<>();
         ConstraintViolation<?> violation = mock(ConstraintViolation.class);
@@ -162,7 +162,7 @@ public class GlobalExceptionHandlerTest {
     }
 
     @Test
-    public void testHandleConstraintViolation_NullMessage() {
+    void testHandleConstraintViolation_NullMessage() {
         // Given
         Set<ConstraintViolation<?>> violations = new HashSet<>();
         ConstraintViolation<?> violation = mock(ConstraintViolation.class);
@@ -185,7 +185,7 @@ public class GlobalExceptionHandlerTest {
         assertEquals("unknown error", errors.get("siteUnitName"));  // Changed from "null" to "unknown error"
     }
     @Test
-    public void testHandleHttpMessageNotReadable() {
+    void testHandleHttpMessageNotReadable() {
         // Given
         HttpMessageNotReadableException ex = new HttpMessageNotReadableException("Test message");
 
@@ -203,7 +203,7 @@ public class GlobalExceptionHandlerTest {
     }
 
     @Test
-    public void testHandleHttpMessageNotReadable_NullMessage() {
+    void testHandleHttpMessageNotReadable_NullMessage() {
         // Given
         HttpMessageNotReadableException ex = new HttpMessageNotReadableException(null);
 
@@ -221,7 +221,7 @@ public class GlobalExceptionHandlerTest {
     }
 
     @Test
-    public void testHandleHttpMessageNotReadable_JsonParseError() {
+    void testHandleHttpMessageNotReadable_JsonParseError() {
         // Given
         JsonParseException jsonEx = new JsonParseException(null, "Invalid JSON");
         HttpMessageNotReadableException ex = new HttpMessageNotReadableException("Test message", jsonEx);

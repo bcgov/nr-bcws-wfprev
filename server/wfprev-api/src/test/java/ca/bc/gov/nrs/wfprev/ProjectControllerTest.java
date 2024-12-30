@@ -1,5 +1,27 @@
 package ca.bc.gov.nrs.wfprev;
 
+import ca.bc.gov.nrs.wfone.common.service.api.ServiceException;
+import ca.bc.gov.nrs.wfprev.controllers.ProjectController;
+import ca.bc.gov.nrs.wfprev.data.models.ProjectModel;
+import ca.bc.gov.nrs.wfprev.data.models.ProjectTypeCodeModel;
+import ca.bc.gov.nrs.wfprev.services.ProjectService;
+import com.nimbusds.jose.shaded.gson.Gson;
+import com.nimbusds.jose.shaded.gson.GsonBuilder;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.AuditorAware;
+import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
+
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Collections;
@@ -7,47 +29,24 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-import ca.bc.gov.nrs.wfprev.services.ProjectService;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.hateoas.CollectionModel;
-import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.web.servlet.MockMvc;
-import com.nimbusds.jose.shaded.gson.Gson;
-import com.nimbusds.jose.shaded.gson.GsonBuilder;
-
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import ca.bc.gov.nrs.wfprev.controllers.ProjectController;
-import ca.bc.gov.nrs.wfprev.data.models.ProjectModel;
-import ca.bc.gov.nrs.wfprev.data.models.ProjectTypeCodeModel;
-import ca.bc.gov.nrs.wfone.common.service.api.ServiceException;
-import org.springframework.test.web.servlet.ResultActions;
 
 @WebMvcTest(ProjectController.class)
 @Import({TestSpringSecurity.class, TestcontainersConfiguration.class})
+@MockBean(JpaMetamodelMappingContext.class)
 class ProjectControllerTest {
     @MockBean
     private ProjectService projectService;
 
     @Autowired
     private MockMvc mockMvc;
+
+    @MockBean(name = "springSecurityAuditorAware")  // Changed to match the expected bean name
+    private AuditorAware<String> auditorAware;
 
     private Gson gson;
 
@@ -118,7 +117,7 @@ class ProjectControllerTest {
         when(projectService.getProjectById(projectGuid)).thenReturn(null);
 
         // When
-        ResultActions result = mockMvc.perform(get("/projects/{id}", projectGuid)
+        mockMvc.perform(get("/projects/{id}", projectGuid)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
 
@@ -151,7 +150,7 @@ class ProjectControllerTest {
         ProjectModel project = new ProjectModel();
         project.setProjectGuid(projectGuid);
 
-        when(projectService.createOrUpdateProject(any(ProjectModel.class))).thenReturn(null);
+        when(projectService.updateProject(any(ProjectModel.class))).thenReturn(null);
 
         String json = gson.toJson(project);
 
@@ -163,7 +162,7 @@ class ProjectControllerTest {
                 .andExpect(status().isNotFound());
 
         // Then
-        verify(projectService, times(1)).createOrUpdateProject(any(ProjectModel.class));
+        verify(projectService, times(1)).updateProject(any(ProjectModel.class));
         assertEquals(404, result.andReturn().getResponse().getStatus());
     }
 
@@ -183,7 +182,7 @@ class ProjectControllerTest {
         String projectGuid = UUID.randomUUID().toString();
         project.setProjectGuid(projectGuid);
 
-        when(projectService.createOrUpdateProject(any(ProjectModel.class))).thenReturn(project);
+        when(projectService.createProject(any(ProjectModel.class))).thenReturn(project);
 
         String json = gson.toJson(project);
 
@@ -195,7 +194,7 @@ class ProjectControllerTest {
                 .andExpect(status().isCreated());
 
         project.setClosestCommunityName("Test");
-        when(projectService.createOrUpdateProject(any(ProjectModel.class))).thenReturn(project);
+        when(projectService.updateProject(any(ProjectModel.class))).thenReturn(project);
 
         json = gson.toJson(project);
 
@@ -223,7 +222,7 @@ class ProjectControllerTest {
         String projectGuid = UUID.randomUUID().toString();
         project.setProjectGuid(projectGuid);
 
-        when(projectService.createOrUpdateProject(any(ProjectModel.class))).thenThrow(new ServiceException("Error creating project"));
+        when(projectService.createProject(any(ProjectModel.class))).thenThrow(new ServiceException("Error creating project"));
 
         String json = gson.toJson(project);
 
@@ -236,7 +235,7 @@ class ProjectControllerTest {
                 .andExpect(status().is5xxServerError());
 
         // Then
-        verify(projectService, times(1)).createOrUpdateProject(any(ProjectModel.class));
+        verify(projectService, times(1)).createProject(any(ProjectModel.class));
         assertEquals(500, result.andReturn().getResponse().getStatus());
     }
 
@@ -257,7 +256,7 @@ class ProjectControllerTest {
         String projectGuid = UUID.randomUUID().toString();
         project.setProjectGuid(projectGuid);
 
-        when(projectService.createOrUpdateProject(any(ProjectModel.class))).thenReturn(project);
+        when(projectService.createProject(any(ProjectModel.class))).thenReturn(project);
 
         String json = gson.toJson(project);
 
@@ -268,7 +267,7 @@ class ProjectControllerTest {
                         .header("Authorization", "Bearer admin-token"))
                 .andExpect(status().isCreated());
 
-        when(projectService.createOrUpdateProject(any(ProjectModel.class))).thenThrow(new DataIntegrityViolationException("Error creating project"));
+        when(projectService.createProject(any(ProjectModel.class))).thenThrow(new DataIntegrityViolationException("Error creating project"));
 
         // When
         ResultActions result = mockMvc.perform(post("/projects")
@@ -279,7 +278,7 @@ class ProjectControllerTest {
                 .andExpect(status().isConflict());
 
         // Then
-        verify(projectService, times(2)).createOrUpdateProject(any(ProjectModel.class));
+        verify(projectService, times(2)).createProject(any(ProjectModel.class));
         assertEquals(409, result.andReturn().getResponse().getStatus());
     }
 
@@ -290,7 +289,7 @@ class ProjectControllerTest {
         ProjectModel project = new ProjectModel();
         project.setProjectGuid(UUID.randomUUID().toString());
 
-        when(projectService.createOrUpdateProject(any(ProjectModel.class))).thenReturn(project);
+        when(projectService.updateProject(any(ProjectModel.class))).thenReturn(project);
 
         String json = gson.toJson(project);
 
@@ -299,7 +298,7 @@ class ProjectControllerTest {
                 .content(json)
                 .contentType(MediaType.APPLICATION_JSON)
                 .header("Authorization", "Bearer admin-token"));
-        Assertions.assertEquals(400, result.andReturn().getResponse().getStatus());
+        assertEquals(400, result.andReturn().getResponse().getStatus());
     }
 
     @Test
@@ -337,7 +336,7 @@ class ProjectControllerTest {
 
         // Then
         verify(projectService, times(1)).deleteProject(projectGuid);
-        Assertions.assertEquals(500, result.andReturn().getResponse().getStatus());
+        assertEquals(500, result.andReturn().getResponse().getStatus());
     }
 
     @Test
@@ -354,6 +353,85 @@ class ProjectControllerTest {
 
         // Then
         verify(projectService, times(1)).deleteProject(projectGuid);
-        Assertions.assertEquals(404, result.andReturn().getResponse().getStatus());
+        assertEquals(404, result.andReturn().getResponse().getStatus());
+    }
+
+    @Test
+    @WithMockUser
+    void testUpdateProject_Success() throws Exception {
+        // Given
+        ProjectModel project = new ProjectModel();
+        String guid = UUID.randomUUID().toString();
+        String programAreaGuid = UUID.randomUUID().toString();
+        project.setProjectGuid(guid);
+        project.setProjectName("Test");
+        project.setProjectNumber(1);
+        project.setSiteUnitName("Test");
+        project.setProgramAreaGuid(programAreaGuid);
+        project.setIsMultiFiscalYearProj(false);
+        project.setLatitude(new BigDecimal("40.99"));
+        project.setLongitude(new BigDecimal("-115.23"));
+
+        when(projectService.updateProject(any(ProjectModel.class))).thenReturn(project);
+
+        // When
+        String json = gson.toJson(project);
+        ResultActions result = mockMvc.perform(put("/projects/{id}", project.getProjectGuid())
+                        .content(json)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", "Bearer admin-token"))
+
+                // Then
+                .andExpect(status().isOk());
+
+        assertEquals("" +
+                        "{\"projectGuid\":\"" + guid + "\",\"projectNumber\":1,\"siteUnitName\":\"Test\",\"programAreaGuid\":\"" + programAreaGuid + "\",\"projectName\":\"Test\",\"isMultiFiscalYearProj\":false,\"latitude\":40.99,\"longitude\":-115.23}",
+                result.andReturn().getResponse().getContentAsString());
+    }
+
+    @Test
+    @WithMockUser
+    void testUpdateProject_ServiceException() throws Exception{
+        // Given
+        ProjectModel project = new ProjectModel();
+        String guid = UUID.randomUUID().toString();
+        String programAreaGuid = UUID.randomUUID().toString();
+        project.setProjectGuid(guid);
+        project.setProjectName("Test");
+        project.setProjectNumber(1);
+        project.setSiteUnitName("Test");
+        project.setProgramAreaGuid(programAreaGuid);
+        project.setIsMultiFiscalYearProj(false);
+        project.setLatitude(new BigDecimal("40.99"));
+        project.setLongitude(new BigDecimal("-115.23"));
+
+        when(projectService.updateProject(any(ProjectModel.class))).thenThrow(new ServiceException("Error updating project"));
+
+        // When
+        String json = gson.toJson(project);
+        mockMvc.perform(put("/projects/{id}", project.getProjectGuid())
+                        .content(json)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", "Bearer admin-token"))
+                .andExpect(status().is5xxServerError());
+
+        // Then
+        verify(projectService, times(1)).updateProject(any(ProjectModel.class));
+    }
+
+    @Test
+    @WithMockUser
+    void testGetProject_NotFound_NonGuid() throws Exception {
+        // Given
+        String projectGuid = "invalid";
+        when(projectService.getProjectById(projectGuid)).thenThrow(new IllegalArgumentException("Invalid UUID: " + projectGuid));
+
+        // When
+        mockMvc.perform(get("/projects/{id}", projectGuid)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+
+        // Then
+        verify(projectService, times(1)).getProjectById(projectGuid);
     }
 }
