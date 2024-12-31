@@ -444,13 +444,6 @@
             "sqlFile": {
               "dbms": "postgresql",
               "endDelimiter": ";",
-              "path": "scripts/01_00_05/00/ddl/WFPREV.project_plan_status_code.sql"
-            }
-          },
-          {
-            "sqlFile": {
-              "dbms": "postgresql",
-              "endDelimiter": ";",
               "path": "scripts/01_00_05/00/ddl/WFPREV.project_type_act_cat_xref.sql"
             }
           },
