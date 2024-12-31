@@ -405,6 +405,123 @@
           { "sql": "DROP TABLE wfprev.wui_risk_class_code" }
         ]
       }
-    }
+    },
+    {
+      "changeSet": {
+        "id": "01_00_05_00",
+        "author": "hsaldyga",
+        "tagDatabase": { "tag" : "version_01_00_05_00" },
+        "changes": [
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_00_05/00/ddl/WFPREV.activity_category_code.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_00_05/00/ddl/WFPREV.endorsement_code.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_00_05/00/ddl/WFPREV.plan_fiscal_status_code.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_00_05/00/ddl/WFPREV.project_plan_status_code.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_00_05/00/ddl/WFPREV.project_plan_status_code.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_00_05/00/ddl/WFPREV.project_type_act_cat_xref.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_00_05/00/ddl/WFPREV.ancillary_funding_source.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_00_05/00/ddl/WFPREV.project_plan_fiscal.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_00_05/00/ddl/WFPREV.project_plan_fiscal_audit.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_00_05/00/dml/app_wf1_prev.dml.activity_category_code.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_00_05/00/dml/app_wf1_prev.dml.ancillary_funding_source.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_00_05/00/dml/app_wf1_prev.dml.endorsement_code.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_00_05/00/dml/app_wf1_prev.dml.plan_fiscal_status_code.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_00_05/00/dml/app_wf1_prev.dml.project_plan_status_code.sql"
+            }
+          }
+        ],
+        "rollback": [
+          { "sql": "DROP TABLE wfprev.project_plan_fiscal_audit" },
+          { "sql": "DROP TABLE wfprev.project_plan_fiscal" },
+          { "sql": "DROP TABLE wfprev.ancillary_funding_source" },                    
+          { "sql": "DROP TABLE wfprev.project_type_act_cat_xref" },          
+          { "sql": "DROP TABLE wfprev.project_plan_status_code" },          
+          { "sql": "DROP TABLE wfprev.plan_fiscal_status_code" },          
+          { "sql": "DROP TABLE wfprev.endorsement_code" },          
+          { "sql": "DROP TABLE wfprev.activity_category_code" }
+        ]
+      }
+    }    
   ] 
 }
