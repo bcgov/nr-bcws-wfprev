@@ -5,6 +5,7 @@ import ca.bc.gov.nrs.wfprev.data.entities.ProjectEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ProjectFiscalEntity;
 import ca.bc.gov.nrs.wfprev.data.models.ProjectFiscalModel;
 import ca.bc.gov.nrs.wfprev.data.repositories.ProjectFiscalRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -274,7 +275,7 @@ class ProjectFiscalServiceTest {
     }
 
     @Test
-    void testUpdateProject_Success() {
+    void testUpdateProjectFiscal_Success() {
         //GIVEN I have a project fiscal model
         ProjectFiscalModel projectFiscalModel = new ProjectFiscalModel();
         projectFiscalModel.setProjectPlanFiscalGuid("456e7890-e89b-12d3-a456-426614174001");
@@ -352,5 +353,112 @@ class ProjectFiscalServiceTest {
 
         //THEN I should get the updated project fiscal
         assertEquals(projectFiscalModel, updatedProjectFiscal);
+    }
+
+    @Test
+    void testUpdateProjectFiscal_NotFoundOnGet() {
+        // GIVEN I have a project fiscal model
+        ProjectFiscalModel projectFiscalModel = new ProjectFiscalModel();
+        projectFiscalModel.setProjectPlanFiscalGuid("456e7890-e89b-12d3-a456-426614174001");
+        projectFiscalModel.setProjectGuid("123e4567-e89b-12d3-a456-426614174000");
+        projectFiscalModel.setActivityCategoryCode("ACTIVITY_CODE_1");
+        projectFiscalModel.setFiscalYear(2021L);
+        projectFiscalModel.setAncillaryFundingSourceGuid("789e1234-e89b-12d3-a456-426614174002");
+        projectFiscalModel.setProjectPlanStatusCode("PLAN_STATUS_1");
+        projectFiscalModel.setPlanFiscalStatusCode("FISCAL_STATUS_1");
+        projectFiscalModel.setEndorsementCode("ENDORSEMENT_CODE_1");
+        projectFiscalModel.setProjectFiscalName("Test Project Fiscal 1");
+        projectFiscalModel.setProjectFiscalDescription("Description of Test Project Fiscal 1");
+        projectFiscalModel.setBusinessAreaComment("Business area comment example 1");
+        projectFiscalModel.setEstimatedClwrrAllocAmount(BigDecimal.valueOf(10000));
+        projectFiscalModel.setTotalCostEstimateAmount(BigDecimal.valueOf(50000));
+        projectFiscalModel.setCfsProjectCode("CFS-123");
+        projectFiscalModel.setFiscalFundingRequestAmount(BigDecimal.valueOf(20000));
+        projectFiscalModel.setFiscalFundingAllocRationale("Rationale for funding allocation 1");
+        projectFiscalModel.setFiscalAllocatedAmount(BigDecimal.valueOf(15000));
+        projectFiscalModel.setFiscalAncillaryFundAmount(BigDecimal.valueOf(5000));
+        projectFiscalModel.setFiscalPlannedProjectSizeHa(BigDecimal.valueOf(50));
+        projectFiscalModel.setFiscalPlannedCostPerHaAmt(BigDecimal.valueOf(300));
+        projectFiscalModel.setFiscalReportedSpendAmount(BigDecimal.valueOf(12000));
+        projectFiscalModel.setFiscalActualAmount(BigDecimal.valueOf(10000));
+        projectFiscalModel.setFiscalCompletedSizeHa(BigDecimal.valueOf(45));
+        projectFiscalModel.setFiscalActualCostPerHaAmt(BigDecimal.valueOf(220));
+        projectFiscalModel.setFirstNationsDelivPartInd(true);
+        projectFiscalModel.setFirstNationsEngagementInd(true);
+        projectFiscalModel.setFirstNationsPartner("First Nations Partner Name 1");
+        projectFiscalModel.setOtherPartner("Other Partner Name 1");
+        projectFiscalModel.setResultsNumber("RESULT12345_1");
+        projectFiscalModel.setResultsOpeningId("RESULT_OPEN_ID_1");
+
+
+        // WHEN I update a project fiscal
+        // Mock assembler behavior
+        when(projectFiscalResourceAssembler.toEntity(projectFiscalModel)).thenReturn(null);
+        when(projectFiscalResourceAssembler.toModel(null)).thenReturn(null);
+
+        when(projectFiscalRepository.findById(UUID.fromString("456e7890-e89b-12d3-a456-426614174001"))).thenReturn(java.util.Optional.empty());
+
+        // THEN I should get an EntityNotFoundException
+        Assertions.assertThrows(EntityNotFoundException.class, () -> projectFiscalService.updateProjectFiscal(projectFiscalModel));
+
+    }
+
+    @Test
+    void testUpdateProjectFiscal_NotFoundOnSave() {
+        // GIVEN I have a project fiscal model
+        ProjectFiscalModel projectFiscalModel = new ProjectFiscalModel();
+        projectFiscalModel.setProjectPlanFiscalGuid("456e7890-e89b-12d3-a456-426614174001");
+        projectFiscalModel.setProjectGuid("123e4567-e89b-12d3-a456-426614174000");
+        projectFiscalModel.setActivityCategoryCode("ACTIVITY_CODE_1");
+        projectFiscalModel.setFiscalYear(2021L);
+        projectFiscalModel.setAncillaryFundingSourceGuid("789e1234-e89b-12d3-a456-426614174002");
+        projectFiscalModel.setProjectPlanStatusCode("PLAN_STATUS_1");
+        projectFiscalModel.setPlanFiscalStatusCode("FISCAL_STATUS_1");
+        projectFiscalModel.setEndorsementCode("ENDORSEMENT_CODE_1");
+        projectFiscalModel.setProjectFiscalName("Test Project Fiscal 1");
+        projectFiscalModel.setProjectFiscalDescription("Description of Test Project Fiscal 1");
+        projectFiscalModel.setBusinessAreaComment("Business area comment example 1");
+        projectFiscalModel.setEstimatedClwrrAllocAmount(BigDecimal.valueOf(10000));
+        projectFiscalModel.setTotalCostEstimateAmount(BigDecimal.valueOf(50000));
+        projectFiscalModel.setCfsProjectCode("CFS-123");
+        projectFiscalModel.setFiscalFundingRequestAmount(BigDecimal.valueOf(20000));
+        projectFiscalModel.setFiscalFundingAllocRationale("Rationale for funding allocation 1");
+        projectFiscalModel.setFiscalAllocatedAmount(BigDecimal.valueOf(15000));
+        projectFiscalModel.setFiscalAncillaryFundAmount(BigDecimal.valueOf(5000));
+        projectFiscalModel.setFiscalPlannedProjectSizeHa(BigDecimal.valueOf(50));
+        projectFiscalModel.setFiscalPlannedCostPerHaAmt(BigDecimal.valueOf(300));
+        projectFiscalModel.setFiscalReportedSpendAmount(BigDecimal.valueOf(12000));
+        projectFiscalModel.setFiscalActualAmount(BigDecimal.valueOf(10000));
+        projectFiscalModel.setFiscalCompletedSizeHa(BigDecimal.valueOf(45));
+        projectFiscalModel.setFiscalActualCostPerHaAmt(BigDecimal.valueOf(220));
+        projectFiscalModel.setFirstNationsDelivPartInd(true);
+        projectFiscalModel.setFirstNationsEngagementInd(true);
+        projectFiscalModel.setFirstNationsPartner("First Nations Partner Name 1");
+        projectFiscalModel.setOtherPartner("Other Partner Name 1");
+        projectFiscalModel.setResultsNumber("RESULT12345_1");
+        projectFiscalModel.setResultsOpeningId("RESULT_OPEN_ID_1");
+
+        ProjectFiscalEntity mockedEntity = ProjectFiscalEntity.builder()
+                .projectPlanFiscalGuid(UUID.fromString("456e7890-e89b-12d3-a456-426614174001"))
+                .activityCategoryCode("ACTIVITY_CODE_1")
+                .fiscalYear(BigDecimal.valueOf(2021))
+                .projectPlanStatusCode("PLAN_STATUS_1")
+                .planFiscalStatusCode("FISCAL_STATUS_1")
+                .projectFiscalName("Test Project Fiscal 1")
+                .build();
+
+
+        // WHEN I update a project fiscal
+        when(projectFiscalResourceAssembler.toEntity(projectFiscalModel)).thenReturn(mockedEntity);
+        when(projectFiscalResourceAssembler.toModel(mockedEntity)).thenReturn(projectFiscalModel);
+
+        when(projectFiscalRepository.findById(UUID.fromString("456e7890-e89b-12d3-a456-426614174001"))).thenReturn(java.util.Optional.of(mockedEntity));
+        when(projectFiscalResourceAssembler.updateEntity(projectFiscalModel, mockedEntity)).thenReturn(mockedEntity);
+        when(projectFiscalRepository.saveAndFlush(any(ProjectFiscalEntity.class))).thenThrow(new EntityNotFoundException("Project not found: 456e7890-e89b-12d3-a456-426614174001"));
+
+        // THEN I should get an EntityNotFoundException
+        EntityNotFoundException exception = Assertions.assertThrows(EntityNotFoundException.class,
+                () -> projectFiscalService.updateProjectFiscal(projectFiscalModel));
+        Assertions.assertEquals("Project not found: 456e7890-e89b-12d3-a456-426614174001", exception.getMessage());
     }
 }
