@@ -34,7 +34,7 @@ import java.util.List;
 
 @RestController
 @Slf4j
-@RequestMapping(value="/projectFiscals")
+@RequestMapping(value = "/projectFiscals")
 public class ProjectFiscalController extends CommonController {
     private final ProjectFiscalService projectFiscalService;
 
@@ -47,9 +47,9 @@ public class ProjectFiscalController extends CommonController {
     @Operation(summary = "Fetch all Project Fiscal Resources",
             description = "Fetch all Project Fiscal Resources",
             security = @SecurityRequirement(name = "Webade-OAUTH2",
-                    scopes = { "WFPREV" }),
-            extensions = { @Extension(properties = { @ExtensionProperty(name = "auth-type", value = "#{wso2.x-auth-type.app_and_app_user}"), @ExtensionProperty(name = "throttling-tier", value = "Unlimited") }) })
-    @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = CollectionModel.class))), @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(implementation = MessageListRsrc.class))), @ApiResponse(responseCode = "403", description = "Forbidden"), @ApiResponse(responseCode = "404", description = "Not Found"), @ApiResponse(responseCode = "409", description = "Conflict"), @ApiResponse(responseCode = "412", description = "Precondition Failed"), @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = MessageListRsrc.class))) })
+                    scopes = {"WFPREV"}),
+            extensions = {@Extension(properties = {@ExtensionProperty(name = "auth-type", value = "#{wso2.x-auth-type.app_and_app_user}"), @ExtensionProperty(name = "throttling-tier", value = "Unlimited")})})
+    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = CollectionModel.class))), @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(implementation = MessageListRsrc.class))), @ApiResponse(responseCode = "403", description = "Forbidden"), @ApiResponse(responseCode = "404", description = "Not Found"), @ApiResponse(responseCode = "409", description = "Conflict"), @ApiResponse(responseCode = "412", description = "Precondition Failed"), @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = MessageListRsrc.class)))})
     @Parameter(name = HeaderConstants.VERSION_HEADER, description = HeaderConstants.VERSION_HEADER_DESCRIPTION, required = false, schema = @Schema(implementation = Integer.class), in = ParameterIn.HEADER)
     @Parameter(name = HeaderConstants.IF_MATCH_HEADER, description = HeaderConstants.IF_MATCH_DESCRIPTION, required = true, schema = @Schema(implementation = String.class), in = ParameterIn.HEADER)
     public ResponseEntity<CollectionModel<ProjectFiscalModel>> getAllProjectFiscals() {
@@ -58,7 +58,7 @@ public class ProjectFiscalController extends CommonController {
 
         try {
             response = ok(projectFiscalService.getAllProjectFiscals());
-        } catch (ServiceException e) {
+        } catch (RuntimeException e) {
             response = internalServerError();
             log.error(" ### Error while fetching Project Fiscals", e);
         }
@@ -98,9 +98,9 @@ public class ProjectFiscalController extends CommonController {
     @Operation(summary = "Update Project Fiscal Resource",
             description = "Update Project Fiscal Resource",
             security = @SecurityRequirement(name = "Webade-OAUTH2",
-                    scopes = { "WFPREV" }),
-            extensions = { @Extension(properties = { @ExtensionProperty(name = "auth-type", value = "#{wso2.x-auth-type.app_and_app_user}"), @ExtensionProperty(name = "throttling-tier", value = "Unlimited") }) })
-    @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = ProjectFiscalModel.class)), headers = { @Header(name = "ETag", description = "The ETag response-header field provides the current value of the entity tag for the requested variant.", schema = @Schema(implementation = String.class)) }), @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(implementation = MessageListRsrc.class))), @ApiResponse(responseCode = "403", description = "Forbidden"), @ApiResponse(responseCode = "404", description = "Not Found"), @ApiResponse(responseCode = "409", description = "Conflict"), @ApiResponse(responseCode = "412", description = "Precondition Failed"), @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = MessageListRsrc.class))) })
+                    scopes = {"WFPREV"}),
+            extensions = {@Extension(properties = {@ExtensionProperty(name = "auth-type", value = "#{wso2.x-auth-type.app_and_app_user}"), @ExtensionProperty(name = "throttling-tier", value = "Unlimited")})})
+    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = ProjectFiscalModel.class)), headers = {@Header(name = "ETag", description = "The ETag response-header field provides the current value of the entity tag for the requested variant.", schema = @Schema(implementation = String.class))}), @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(implementation = MessageListRsrc.class))), @ApiResponse(responseCode = "403", description = "Forbidden"), @ApiResponse(responseCode = "404", description = "Not Found"), @ApiResponse(responseCode = "409", description = "Conflict"), @ApiResponse(responseCode = "412", description = "Precondition Failed"), @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = MessageListRsrc.class)))})
     @Parameter(name = HeaderConstants.VERSION_HEADER, description = HeaderConstants.VERSION_HEADER_DESCRIPTION, required = false, schema = @Schema(implementation = Integer.class), in = ParameterIn.HEADER)
     @Parameter(name = HeaderConstants.IF_MATCH_HEADER, description = HeaderConstants.IF_MATCH_DESCRIPTION, required = true, schema = @Schema(implementation = String.class), in = ParameterIn.HEADER)
     public ResponseEntity<ProjectFiscalModel> updateProjectFiscal(@RequestBody ProjectFiscalModel resource, @PathVariable("id") String id) {
@@ -111,11 +111,11 @@ public class ProjectFiscalController extends CommonController {
             // ensure that the user hasn't changed the primary key
             if (id.equalsIgnoreCase(resource.getProjectPlanFiscalGuid())) {
                 ProjectFiscalModel updatedResource = projectFiscalService.updateProjectFiscal(resource);
-                response = updatedResource == null ? notFound(): ok(updatedResource);
+                response = updatedResource == null ? notFound() : ok(updatedResource);
             } else {
                 response = badRequest();
             }
-        } catch(Exception e) {
+        } catch (Exception e) {
             // most responses here will actually be Bad Requests, not Internal Server Errors
             // This would be an ideal place to expand the "Catch" and return sensible
             // HTTP status codes

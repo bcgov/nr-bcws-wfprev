@@ -1,5 +1,6 @@
 package ca.bc.gov.nrs.wfprev.services;
 
+import ca.bc.gov.nrs.wfone.common.service.api.ServiceException;
 import ca.bc.gov.nrs.wfprev.common.services.CommonService;
 import ca.bc.gov.nrs.wfprev.data.assemblers.ProjectFiscalResourceAssembler;
 import ca.bc.gov.nrs.wfprev.data.entities.ProjectEntity;
@@ -29,7 +30,7 @@ public class ProjectFiscalService implements CommonService {
         this.projectFiscalResourceAssembler = projectFiscalResourceAssembler;
     }
 
-    public CollectionModel<ProjectFiscalModel> getAllProjectFiscals() {
+    public CollectionModel<ProjectFiscalModel> getAllProjectFiscals() throws ServiceException {
         List<ProjectFiscalEntity> all = projectFiscalRepository.findAll();
 
         CollectionModel<ProjectFiscalModel> collectionModel = projectFiscalResourceAssembler.toCollectionModel(all);
