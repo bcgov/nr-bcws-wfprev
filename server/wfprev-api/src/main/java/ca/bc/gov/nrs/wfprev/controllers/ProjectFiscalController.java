@@ -126,4 +126,29 @@ public class ProjectFiscalController extends CommonController {
         log.debug(" << updateProject");
         return response;
     }
+
+    @GetMapping("/{id}")
+    @Operation(summary = "Fetch a Project Fiscal Resource",
+            description = "Fetch a Project Fiscal Resource",
+            security = @SecurityRequirement(name = "Webade-OAUTH2",
+                    scopes = {"WFPREV"}),
+            extensions = {@Extension(properties = {@ExtensionProperty(name = "auth-type", value = "#{wso2.x-auth-type.app_and_app_user}"), @ExtensionProperty(name = "throttling-tier", value = "Unlimited")})})
+    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = ProjectFiscalModel.class))), @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(implementation = MessageListRsrc.class))), @ApiResponse(responseCode = "403", description = "Forbidden"), @ApiResponse(responseCode = "404", description = "Not Found"), @ApiResponse(responseCode = "409", description = "Conflict"), @ApiResponse(responseCode = "412", description = "Precondition Failed"), @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = MessageListRsrc.class)))})
+    @Parameter(name = HeaderConstants.VERSION_HEADER, description = HeaderConstants.VERSION_HEADER_DESCRIPTION, required = false, schema = @Schema(implementation = Integer.class), in = ParameterIn.HEADER)
+    @Parameter(name = HeaderConstants.IF_MATCH_HEADER, description = HeaderConstants.IF_MATCH_DESCRIPTION, required = true, schema = @Schema(implementation = String.class), in = ParameterIn.HEADER)
+    public ResponseEntity<ProjectFiscalModel> getProjectFiscal(@PathVariable("id") String id) {
+        log.debug(" >> getProjectFiscal");
+        ResponseEntity<ProjectFiscalModel> response;
+
+        try {
+            ProjectFiscalModel projectFiscalModel = projectFiscalService.getProjectFiscal(id);
+            response = projectFiscalModel == null ? notFound() : ok(projectFiscalModel);
+        } catch (Exception e) {
+            response = internalServerError();
+            log.error(" ### Error while fetching Project Fiscal", e);
+        }
+
+        log.debug(" << getProjectFiscal");
+        return response;
+    }
 }

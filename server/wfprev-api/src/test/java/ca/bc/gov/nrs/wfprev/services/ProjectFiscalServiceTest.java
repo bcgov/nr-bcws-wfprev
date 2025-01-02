@@ -17,6 +17,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -531,7 +532,34 @@ class ProjectFiscalServiceTest {
         // THEN I should get a DataIntegrityViolationException
         Assertions.assertThrows(DataIntegrityViolationException.class,
                 () -> projectFiscalService.updateProjectFiscal(projectFiscalModel));
+    }
 
+    @Test
+    void testGetAProjectFiscal_Success() {
+        //GIVEN I have a project fiscal model
+        ProjectFiscalModel projectFiscalModel = new ProjectFiscalModel();
+        projectFiscalModel.setProjectPlanFiscalGuid("456e7890-e89b-12d3-a456-426614174001");
 
+        //WHEN I get a project fiscal
+        when(projectFiscalRepository.findById(UUID.fromString("456e7890-e89b-12d3-a456-426614174001"))).thenReturn(Optional.of(new ProjectFiscalEntity()));
+        when(projectFiscalResourceAssembler.toModel(any(ProjectFiscalEntity.class))).thenReturn(projectFiscalModel);
+
+        ProjectFiscalModel projectFiscal = projectFiscalService.getProjectFiscal("456e7890-e89b-12d3-a456-426614174001");
+
+        //THEN I should get the project fiscal
+        assertEquals(projectFiscalModel, projectFiscal);
+    }
+
+    @Test
+    void testGetAProjectFiscal_EntityNotFound() {
+        // GIVEN I have a project fiscal model
+        ProjectFiscalModel projectFiscalModel = new ProjectFiscalModel();
+        projectFiscalModel.setProjectPlanFiscalGuid("456e7890-e89b-12d3-a456-426614174001");
+
+        // WHEN I get a project fiscal
+        when(projectFiscalRepository.findById(UUID.fromString("456e7890-e89b-12d3-a456-426614174001"))).thenReturn(Optional.empty());
+
+        // THEN I should get an EntityNotFoundException
+        Assertions.assertThrows(EntityNotFoundException.class, () -> projectFiscalService.getProjectFiscal("456e7890-e89b-12d3-a456-426614174001"));
     }
 }

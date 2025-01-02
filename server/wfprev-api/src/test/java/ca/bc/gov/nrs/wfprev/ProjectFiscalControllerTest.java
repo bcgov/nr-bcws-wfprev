@@ -272,4 +272,94 @@ class ProjectFiscalControllerTest {
                 .andExpect(status().isInternalServerError())
                 .andExpect(jsonPath("$").doesNotExist());
     }
+
+    @Test
+    @WithMockUser
+    void testGetAProjectFiscal_Success() throws Exception {
+        // GIVEN a ProjectFiscalModel
+        ProjectFiscalModel inputModel = ProjectFiscalModel.builder()
+                .projectPlanFiscalGuid("123e4567-e89b-12d3-a456-426614174000")
+                .projectGuid("123e4567-e89b-12d3-a456-426614174001")
+                .activityCategoryCode("Tactical Planning")
+                .fiscalYear(2024L)
+                .submissionTimestamp(new Date(1672531200000L))
+                .build();
+
+        // WHEN we call the getProjectFiscal method
+        when(projectFiscalService.getProjectFiscal(inputModel.getProjectPlanFiscalGuid())).thenReturn(inputModel);
+
+        // THEN we expect a 200 OK response
+        // AND the response body should match the input model
+        mockMvc.perform(get("/projectFiscals/{id}", inputModel.getProjectPlanFiscalGuid())
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.projectPlanFiscalGuid").value(inputModel.getProjectPlanFiscalGuid()));
+    }
+
+    @Test
+    @WithMockUser
+    void testGetAProjectFiscal_NotFound() throws Exception {
+        // GIVEN a ProjectFiscalModel
+        ProjectFiscalModel inputModel = ProjectFiscalModel.builder()
+                .projectPlanFiscalGuid("123e4567-e89b-12d3-a456-426614174000")
+                .projectGuid("123e4567-e89b-12d3-a456-426614174001")
+                .activityCategoryCode("Tactical Planning")
+                .fiscalYear(2024L)
+                .submissionTimestamp(new Date(1672531200000L))
+                .build();
+
+        // WHEN we call the getProjectFiscal method
+        when(projectFiscalService.getProjectFiscal(inputModel.getProjectPlanFiscalGuid())).thenReturn(null);
+
+        // THEN we expect a 404 Not Found response
+        mockMvc.perform(get("/projectFiscals/{id}", inputModel.getProjectPlanFiscalGuid())
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @WithMockUser
+    void testGetAProjectFiscal_ServiceException() throws Exception {
+        // GIVEN a ProjectFiscalModel
+        ProjectFiscalModel inputModel = ProjectFiscalModel.builder()
+                .projectPlanFiscalGuid("123e4567-e89b-12d3-a456-426614174000")
+                .projectGuid("123e4567-e89b-12d3-a456-426614174001")
+                .activityCategoryCode("Tactical Planning")
+                .fiscalYear(2024L)
+                .submissionTimestamp(new Date(1672531200000L))
+                .build();
+
+        // WHEN the service throws a ServiceException
+        when(projectFiscalService.getProjectFiscal(inputModel.getProjectPlanFiscalGuid()))
+                .thenThrow(new ServiceException("Test ServiceException"));
+
+        // THEN we expect a 500 Internal Server Error
+        mockMvc.perform(get("/projectFiscals/{id}", inputModel.getProjectPlanFiscalGuid())
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isInternalServerError())
+                .andExpect(jsonPath("$").doesNotExist());
+    }
+
+    @Test
+    @WithMockUser
+    void testGetAProjectFiscal_UnexpectedException() throws Exception {
+        // GIVEN a ProjectFiscalModel
+        ProjectFiscalModel inputModel = ProjectFiscalModel.builder()
+                .projectPlanFiscalGuid("123e4567-e89b-12d3-a456-426614174000")
+                .projectGuid("123e4567-e89b-12d3-a456-426614174001")
+                .activityCategoryCode("Tactical Planning")
+                .fiscalYear(2024L)
+                .submissionTimestamp(new Date(1672531200000L))
+                .build();
+
+        // WHEN the service throws a RuntimeException
+        when(projectFiscalService.getProjectFiscal(inputModel.getProjectPlanFiscalGuid()))
+                .thenThrow(new RuntimeException("Unexpected error"));
+
+        // THEN we expect a 500 Internal Server Error
+        mockMvc.perform(get("/projectFiscals/{id}", inputModel.getProjectPlanFiscalGuid())
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isInternalServerError())
+                .andExpect(jsonPath("$").doesNotExist());
+    }
 }
