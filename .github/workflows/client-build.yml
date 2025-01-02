@@ -18,6 +18,7 @@ on:
         default: dev
 
 env:
+  APP_CONFIG_FILE: ./client/wfprev-war/src/main/angular/src/assets/data/appConfig.json
   TF_VERSION: 1.8.5
   TG_VERSION: 0.48.4
   TG_SRC_PATH: terraform
@@ -27,6 +28,7 @@ env:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    environment:  ${{ inputs.DEFAULT_APPLICATION_ENVIRONMENT }}
 
     steps:
     - name: Checkout code
@@ -48,6 +50,15 @@ jobs:
       uses: peter-murray/terragrunt-github-action@v1.0.0
       with:
           terragrunt_version: ${{ env.TG_VERSION }}
+
+    - name: Replace tokens
+      uses: cschleiden/replace-tokens@v1.3
+      with:
+          files: ${{ env.APP_CONFIG_FILE }}
+      env:
+        WFPREV_BASE_URL: ${{ vars.WFPREV_BASE_URL }}
+        WEBADE_OAUTH2_CHECK_AUTHORIZE_URL: ${{ vars.WEBADE_OAUTH2_CHECK_AUTHORIZE_URL }}
+        WFPREV_CHECK_TOKEN_URL: ${{ vars.WFPREV_CHECK_TOKEN_URL }}
 
     - name: Set up Node.js
       uses: actions/setup-node@v4
@@ -107,6 +118,8 @@ jobs:
         LIQUIBASE_IMAGE: ${{vars.REPOSITORY_HOST}}/${{ github.repository_owner }}/${{ vars.LIQUIBASE_IMAGE }}:${{ inputs.IMAGE_TAG }}
         LIQUIBASE_COMMAND_USERNAME: ${{ vars.LIQUIBASE_COMMAND_USERNAME }}
         LIQUIBASE_COMMAND_PASSWORD: ${{ secrets.LIQUIBASE_COMMAND_PASSWORD }}
+        WFPREV_LIQUIBASE_COMMAND_PASSWORD: ${{ secrets.WFPREV_LIQUIBASE_COMMAND_PASSWORD }}
+        APP_WF1_PREV_LIQUIBASE_COMMAND_PASSWORD: ${{ secrets.APP_WF1_PREV_LIQUIBASE_COMMAND_PASSWORD }}
         SCHEMA_NAME: ${{ inputs.SCHEMA_NAME }}
         TARGET_LIQUIBASE_TAG: ${{ steps.liquibaseCommand.outputs.TARGET_LIQUIBASE_TAG }}
       run: |
