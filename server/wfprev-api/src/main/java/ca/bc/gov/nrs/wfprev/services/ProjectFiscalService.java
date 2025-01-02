@@ -32,10 +32,7 @@ public class ProjectFiscalService implements CommonService {
 
     public CollectionModel<ProjectFiscalModel> getAllProjectFiscals() throws ServiceException {
         List<ProjectFiscalEntity> all = projectFiscalRepository.findAll();
-
-        CollectionModel<ProjectFiscalModel> collectionModel = projectFiscalResourceAssembler.toCollectionModel(all);
-        CollectionModel<ProjectFiscalModel> projectFiscalModel = collectionModel;
-        return projectFiscalModel;
+        return projectFiscalResourceAssembler.toCollectionModel(all);
     }
 
     public ProjectFiscalModel createProjectFiscal(ProjectFiscalModel projectFiscalModel) {
