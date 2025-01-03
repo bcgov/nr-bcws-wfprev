@@ -197,8 +197,8 @@ public class ProjectFiscalEntity implements Serializable {
 
     @NotNull
     @Version
-    @Column(name = "revision_count", precision = 10, nullable = false)
-    private Integer revisionCount;
+    @Column(name = "revision_count", columnDefinition="Decimal(10) default '0'")
+    private Integer revisionCount = 0;
 
     @CreatedBy
     @NotNull

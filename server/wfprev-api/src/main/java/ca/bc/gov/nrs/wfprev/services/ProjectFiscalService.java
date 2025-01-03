@@ -5,6 +5,7 @@ import ca.bc.gov.nrs.wfprev.common.services.CommonService;
 import ca.bc.gov.nrs.wfprev.data.assemblers.ProjectFiscalResourceAssembler;
 import ca.bc.gov.nrs.wfprev.data.entities.ProjectFiscalEntity;
 import ca.bc.gov.nrs.wfprev.data.models.ProjectFiscalModel;
+import ca.bc.gov.nrs.wfprev.data.models.ProjectModel;
 import ca.bc.gov.nrs.wfprev.data.repositories.ProjectFiscalRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolationException;
@@ -13,6 +14,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.stereotype.Component;
 
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -34,9 +36,16 @@ public class ProjectFiscalService implements CommonService {
     }
 
     public ProjectFiscalModel createProjectFiscal(ProjectFiscalModel projectFiscalModel) {
+        initializeNewProjectFiscal(projectFiscalModel);
         ProjectFiscalEntity entity = projectFiscalResourceAssembler.toEntity(projectFiscalModel);
+        log.error("Entity before save: {}", entity);
         ProjectFiscalEntity savedEntity = projectFiscalRepository.save(entity);
         return projectFiscalResourceAssembler.toModel(savedEntity);
+    }
+
+    private void initializeNewProjectFiscal(ProjectFiscalModel resource) {
+        resource.setCreateDate(new Date());
+        resource.setRevisionCount(0);
     }
 
     public ProjectFiscalModel updateProjectFiscal(ProjectFiscalModel projectFiscalModel) {

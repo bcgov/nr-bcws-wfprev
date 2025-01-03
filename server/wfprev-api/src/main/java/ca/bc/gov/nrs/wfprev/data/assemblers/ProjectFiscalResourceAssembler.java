@@ -156,7 +156,11 @@ public class ProjectFiscalResourceAssembler extends RepresentationModelAssembler
         entity.setDelayRationale(model.getDelayRationale());
         entity.setAbandonedRationale(model.getAbandonedRationale());
         entity.setLastProgressUpdateTimestamp(model.getLastProgressUpdateTimestamp());
-
+        entity.setRevisionCount(model.getRevisionCount());
+        entity.setCreateUser(model.getCreateUser());
+        entity.setCreateDate(model.getCreateDate());
+        entity.setUpdateUser(model.getUpdateUser());
+        entity.setUpdateDate(model.getUpdateDate());
         return entity;
     }
 
