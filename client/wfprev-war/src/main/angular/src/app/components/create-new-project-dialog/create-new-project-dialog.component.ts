@@ -30,11 +30,12 @@ export class CreateNewProjectDialogComponent implements OnInit {
     'West Coast': ['Central Coast/North Island', 'Haida Gwaii/South Island']
   };
 
-  businessAreas = [4, 5, 7]; // Example data
-  forestRegions = [1, 3, 5]; // Example data
-  forestDistricts = [4, 66, 4442]; // Example data
-  bcParksRegions = Object.keys(this.regionToSections);
-  bcParksSections: string[] = []; // Dynamically updated based on the selected region
+  businessAreas : any[] = [];
+  forestRegions : any[] = [];
+  forestDistricts : any[] = [];
+  bcParksRegions : any[] = [];
+  bcParksSections: any[] = [];
+  allBcParksSections: any[] = []; // To hold all sections initially
 
   constructor(
     private readonly fb: FormBuilder,
@@ -60,73 +61,63 @@ export class CreateNewProjectDialogComponent implements OnInit {
   });
 
   // Dynamically enable/disable bcParksSection based on bcParksRegion selection
-  this.projectForm.get('bcParksRegion')?.valueChanges.subscribe((region: string | number) => {
-    if (region) {
-      this.projectForm.get('bcParksSection')?.enable();
-      this.bcParksSections = this.regionToSections[region] || [];
-    } else {
-      this.projectForm.get('bcParksSection')?.reset();
-      this.projectForm.get('bcParksSection')?.disable();
-      this.bcParksSections = [];
-    }
-  });
+    this.projectForm.get('bcParksRegion')?.valueChanges.subscribe((regionId: number) => {
+      if (regionId) {
+        this.projectForm.get('bcParksSection')?.enable();
+        this.bcParksSections = this.allBcParksSections.filter(
+          (section) => section.parentOrgUnitId === regionId.toString()
+        );
+      } else {
+        this.projectForm.get('bcParksSection')?.reset();
+        this.projectForm.get('bcParksSection')?.disable();
+        this.bcParksSections = [];
+      }
+    });
   }
   ngOnInit(): void {
     // Fetch code tables
-    
     this.codeTableService.fetchCodeTable('programAreaCodes').subscribe({
       next: (data) => {
-        this.forestDistricts = data;
+        this.businessAreas = data._embedded.programArea;
       },
       error: (err) => {
         console.error(err);
-        this.snackbarService.open(
-          'Failed to load business area codes. Please try again later.',
-          'OK',
-          { duration: 5000, panelClass: 'snackbar-error' }
-        );
       },
     });
 
     this.codeTableService.fetchCodeTable('forestRegionCodes').subscribe({
       next: (data) => {
-        this.forestRegions = data; // Assign data to the component property
+        this.forestRegions = data._embedded.forestRegionCode; // Assign data to the component property
       },
       error: (err) => {
         console.error(err);
-        this.snackbarService.open(
-          'Failed to load forest region codes. Please try again later.',
-          'OK',
-          { duration: 5000, panelClass: 'snackbar-error' }
-        );
       },
     });
 
     this.codeTableService.fetchCodeTable('forestDistrictCodes').subscribe({
       next: (data) => {
-        this.forestDistricts = data;
+        this.forestDistricts = data._embedded.forestDistrictCode;
       },
       error: (err) => {
         console.error(err);
-        this.snackbarService.open(
-          'Failed to load forest districts codes. Please try again later.',
-          'OK',
-          { duration: 5000, panelClass: 'snackbar-error' }
-        );
       },
     });
 
     this.codeTableService.fetchCodeTable('bcParksRegionCodes').subscribe({
       next: (data) => {
-        this.forestDistricts = data;
+        this.bcParksRegions = data._embedded.bcParksRegionCode;
       },
       error: (err) => {
         console.error(err);
-        this.snackbarService.open(
-          'Failed to load bc parks region codes. Please try again later.',
-          'OK',
-          { duration: 5000, panelClass: 'snackbar-error' }
-        );
+      },
+    });
+
+    this.codeTableService.fetchCodeTable('bcParksSectionCodes').subscribe({
+      next: (data) => {
+        this.allBcParksSections = data._embedded.bcParksSectionCode; // Store all sections initially
+      },
+      error: (err) => {
+        console.error(err);
       },
     });
   }
@@ -149,37 +140,33 @@ export class CreateNewProjectDialogComponent implements OnInit {
 
   onCreate(): void {
     if (this.projectForm.valid) {
-      console.log(this.projectForm.value);
       const newProject: Project = {
         projectName: this.projectForm.get('projectName')?.value ?? '',
-        programAreaGuid: '27602cd9-4b6e-9be0-e063-690a0a0afb50', // change this to form value once codeTable returns value;
-        forestRegionOrgUnitId: 11, // change this to form value once codeTable returns value;
-        forestDistrictOrgUnitId: 4442, // change this to form value once codeTable returns value;
-        bcParksRegionOrgUnitId:  0, // change this to form value once codeTable returns value;
-        bcParksSectionOrgUnitId: 10, // change this to form value once codeTable returns value;
+        programAreaGuid: this.projectForm.get('businessArea')?.value ?? '',
+        forestRegionOrgUnitId: Number(this.projectForm.get('forestRegion')?.value) || 0,
+        forestDistrictOrgUnitId: Number(this.projectForm.get('forestDistrict')?.value) || 0,
+        bcParksRegionOrgUnitId: Number(this.projectForm.get('bcParksRegion')?.value) || 0,
+        bcParksSectionOrgUnitId: Number(this.projectForm.get('bcParksSection')?.value) || 0,
         projectLead: this.projectForm.get('projectLead')?.value ?? '',
         projectLeadEmailAddress: this.projectForm.get('projectLeadEmail')?.value ?? '',
-        siteUnitName: "Vancouver Forest Unit", // change this to form value once codeTable returns value;
+        siteUnitName: this.projectForm.get('siteUnitName')?.value ?? '',
         closestCommunityName: this.projectForm.get('closestCommunity')?.value ?? '',
         fireCentreOrgUnitId: this.projectForm.get('fireCentre')?.value ?? 0,
-        forestAreaCode: {
-          forestAreaCode: "WEST" // change this to form value once codeTable returns value;
-        },
         generalScopeCode: {
-          generalScopeCode: "SL_ACT" // change this to form value once codeTable returns value;
+          generalScopeCode: "SL_ACT"
         },
         projectTypeCode: {
-          projectTypeCode: "FUEL_MGMT" // change this to form value once codeTable returns value;
+          projectTypeCode: "FUEL_MGMT"
         },
         projectDescription: this.projectForm.get('projectDescription')?.value ?? '',
-        projectNumber: this.projectForm.get('projectNumber')?.value ?? 0,
+        projectNumber: this.projectForm.get('projectNumber')?.value ?? '',
         totalFundingRequestAmount:
-          this.projectForm.get('totalFundingRequestAmount')?.value ?? 0,
-        totalAllocatedAmount: this.projectForm.get('totalAllocatedAmount')?.value ?? 0,
+          this.projectForm.get('totalFundingRequestAmount')?.value ?? '',
+        totalAllocatedAmount: this.projectForm.get('totalAllocatedAmount')?.value ?? '',
         totalPlannedProjectSizeHa:
-          this.projectForm.get('totalPlannedProjectSizeHa')?.value ?? 0,
+          this.projectForm.get('totalPlannedProjectSizeHa')?.value ?? '',
         totalPlannedCostPerHectare:
-          this.projectForm.get('totalPlannedCostPerHectare')?.value ?? 0,
+          this.projectForm.get('totalPlannedCostPerHectare')?.value ?? '',
         totalActualAmount: this.projectForm.get('totalActualAmount')?.value ?? 0,
         isMultiFiscalYearProj: false,
       };

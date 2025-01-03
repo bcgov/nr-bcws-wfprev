@@ -5,12 +5,12 @@ export interface Project {
   createDate?: string;
   createUser?: string;
   fireCentreOrgUnitId: number;
-  forestAreaCode: {
+  forestAreaCode?: {
     forestAreaCode: string;
   };
   forestDistrictOrgUnitId: number;
   forestRegionOrgUnitId: number;
-  generalScopeCode: {
+  generalScopeCode?: {
     generalScopeCode: string;
   };
   isMultiFiscalYearProj: boolean;
@@ -21,7 +21,7 @@ export interface Project {
   projectLeadEmailAddress: string;
   projectName: string;
   projectNumber: number;
-  projectTypeCode: {
+  projectTypeCode?: {
     projectTypeCode: string;
   };
   revisionCount?: number;

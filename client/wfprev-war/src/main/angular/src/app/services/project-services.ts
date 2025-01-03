@@ -17,7 +17,6 @@ export class ProjectService {
     }
 
     fetchProjects(): Observable<any> {
-        console.log("Fetching projects...");
         const url = `${this.appConfigService.getConfig().rest['wfprev']
         }/wfprev-api/projects`;
     

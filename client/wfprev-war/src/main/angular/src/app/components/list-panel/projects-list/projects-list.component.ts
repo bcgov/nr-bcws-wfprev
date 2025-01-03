@@ -23,7 +23,6 @@ export class ProjectsListComponent implements OnInit {
   ngOnInit(): void {
     this.projectService.fetchProjects().subscribe({
       next: (data) => {
-        console.log('Projects fetched successfully:', data);
         this.projectList = data._embedded?.project;
       },
       error: (err) => {
@@ -46,12 +45,10 @@ export class ProjectsListComponent implements OnInit {
 
   onSortChange(event:any): void {
     this.selectedSort = event.target.value;
-    console.log('Sort changed to:', this.selectedSort);
   }
 
   onSyncMapToggleChange(event: any): void {
     this.syncWithMap = event.checked;
-    console.log('Sync with map:', this.syncWithMap ? 'On' : 'Off');
   }
 
   editProject(project: any, event:Event) {
