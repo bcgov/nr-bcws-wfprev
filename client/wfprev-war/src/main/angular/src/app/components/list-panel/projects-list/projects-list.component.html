@@ -7,11 +7,18 @@
         <option class="default-option" value="">select...</option>
         <option *ngFor="let option of sortOptions" [value]="option.value">{{ option.label }}</option>
       </select>
+      <div class="result-count">
+            <!-- Result Count -->
+        <span>{{ projectList?.length }} Results</span>
+      </div>
     </div>
-
-    <!-- Result Count -->
-    <div class="result-count">
-      <span>{{ projectList?.length }} Results</span>
+    <div class="create-project-button-container">
+      <button class="create-project-button" (click)="createNewProject()">
+        <span class="button-text">
+          <img alt="create-project" class="icon" src="/assets/add-button.svg">
+          Create New Project
+        </span>
+      </button>
     </div>
   </div>
 

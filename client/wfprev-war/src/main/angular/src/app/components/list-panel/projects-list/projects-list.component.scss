@@ -1,12 +1,13 @@
 .list-header {
     display: flex;
     align-items: center;
-    justify-content: flex-start;
+    justify-content: space-between;
     padding: 14px;
     border-bottom: 1px solid #ccc;
     font-family: var(--wf-font-family-main);
     font-size: 14px;
     gap: 12px;
+    position: relative;
   }
   
   .sort-dropdown {
@@ -247,4 +248,29 @@
 .custom-indicator{
   position: absolute;
   left: 10px;
+}
+
+.create-project-button-container{
+  .create-project-button{
+    cursor: pointer;
+    display: inline-flex;
+    padding: 10px 16px;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    border-radius: 8px;
+    background: #013366;
+    .button-text{
+      color: #FFF;
+      font-family: "BCSans", "Noto Sans", Verdana, Arial, sans-serif;
+      font-size: 12px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: normal;
+      .icon{
+        vertical-align: text-bottom;
+        padding-right: 5px;
+      }
+    }
+  }
 }

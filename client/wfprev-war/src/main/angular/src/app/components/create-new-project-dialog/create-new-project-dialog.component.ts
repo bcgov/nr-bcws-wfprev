@@ -156,7 +156,7 @@ export class CreateNewProjectDialogComponent implements OnInit {
             'OK',
             { duration: 100000, panelClass: 'snackbar-success' },
           );
-          this.dialogRef.close(this.projectForm.value);
+          this.dialogRef.close({ success: true });
         },
         error: (err) =>{
           if (err.status === 500 && err.error.message.includes('duplicate')) {

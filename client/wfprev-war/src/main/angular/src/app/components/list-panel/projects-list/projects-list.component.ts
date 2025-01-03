@@ -2,10 +2,12 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatExpansionModule } from '@angular/material/expansion';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { ResourcesRoutes } from 'src/app/utils';
 import { ProjectService } from 'src/app/services/project-services';
 import { CodeTableServices } from 'src/app/services/code-table-services';
+import { CreateNewProjectDialogComponent } from 'src/app/components/create-new-project-dialog/create-new-project-dialog.component';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-projects-list',
@@ -22,19 +24,14 @@ export class ProjectsListComponent implements OnInit {
   constructor(
     private router: Router,
     private projectService: ProjectService,
-    private codeTableService: CodeTableServices
+    private codeTableService: CodeTableServices,
+    private dialog: MatDialog
+    
   ) {
   }
   ngOnInit(): void {
     this.loadCodeTables();
-    this.projectService.fetchProjects().subscribe({
-      next: (data) => {
-        this.projectList = data._embedded?.project;
-      },
-      error: (err) => {
-        console.error('Error fetching projects:', err);
-      }
-    });
+    this.loadProjects();
   }
 
   loadCodeTables(): void {
@@ -56,6 +53,17 @@ export class ProjectsListComponent implements OnInit {
           console.error(`Error fetching ${table.name}`, err);
         },
       });
+    });
+  }
+
+  loadProjects() {
+    this.projectService.fetchProjects().subscribe({
+      next: (data) => {
+        this.projectList = data._embedded?.project;
+      },
+      error: (err) => {
+        console.error('Error fetching projects:', err);
+      }
     });
   }
   sortOptions = [
@@ -101,5 +109,19 @@ export class ProjectsListComponent implements OnInit {
     }
   
     return entry ? entry.orgUnitName : 'Unknown';
+  }
+
+  createNewProject(): void {
+    const dialogRef = this.dialog.open(CreateNewProjectDialogComponent, {
+      width: '880px',
+      disableClose: true,
+      hasBackdrop: true,
+    });
+      // Subscribe to the afterClosed method to handle the result
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result && result.success === true) {
+        this.loadProjects();
+      }
+    });
   }
 }
