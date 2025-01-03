@@ -9,21 +9,9 @@
       </select>
     </div>
 
-    <!-- Sync Toggle -->
-    <div class="sync-toggle">
-      <div class="label-container">
-        <label>Sync with Map</label>
-      </div>
-      <div class="toggle-container">
-        <mat-slide-toggle color="primary" (change)="onSyncMapToggleChange($event)">
-          <span>Off/On</span>
-        </mat-slide-toggle>
-      </div>
-    </div>
-
     <!-- Result Count -->
     <div class="result-count">
-      <span>{{ resultCount }} Results</span>
+      <span>{{ projectList.length }} Results</span>
     </div>
   </div>
 
@@ -66,7 +54,7 @@
                 <span>{{ project.forestRegionOrgUnitId }}</span>
               </div>
               <div class="detail">
-                <span>Total Project Hectares</span>
+                <span>Total Hectares</span>
                 <span>{{ project.totalPlannedProjectSizeHa }} Ha</span>
               </div>
               <div class="detail">
