@@ -3,7 +3,8 @@
 		"_postman_id": "e461f033-920d-44ed-b5e4-6fdc5ed82b82",
 		"name": "Prevention",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "2065617"
+		"_exporter_id": "2065617",
+		"_collection_link": "https://wf-prevention.postman.co/workspace/WF-Prevention-Workspace~28fb468d-4c8b-4713-8fa7-21d4ad9f4bd4/collection/2065617-e461f033-920d-44ed-b5e4-6fdc5ed82b82?action=share&source=collection_link&creator=2065617"
 	},
 	"item": [
 		{
@@ -272,7 +273,7 @@
 			"response": []
 		},
 		{
-			"name": "GET Parks Section Code",
+			"name": "GET program Area Codes",
 			"request": {
 				"auth": {
 					"type": "bearer",
@@ -287,21 +288,238 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{LOCAL_API_URL}}/codes/bcParksSectionCodes/10",
+					"raw": "{{LOCAL_API_URL}}/codes/bcParksSectionCodes",
 					"host": [
 						"{{LOCAL_API_URL}}"
 					],
 					"path": [
 						"codes",
-						"bcParksSectionCodes",
-						"10"
+						"bcParksSectionCodes"
 					]
 				}
 			},
 			"response": []
 		},
 		{
-			"name": "Get Project Copy",
+			"name": "GET Forest District Codes",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{LOCAL_API_URL}}/codes/forestDistrictCodes",
+					"host": [
+						"{{LOCAL_API_URL}}"
+					],
+					"path": [
+						"codes",
+						"forestDistrictCodes"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET General Scope Codes",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"projectPlanFiscalGuid\": \"123e4567-e89b-12d3-a456-426614174000\",\n  \"projectGuid\": \"123e4567-e89b-12d3-a456-426614174001\",\n  \"activityCategoryCode\": \"Tactical Planning\",\n  \"fiscalYear\": 2024,\n  \"projectPlanStatusCode\": \"ACTIVE\",\n  \"planFiscalStatusCode\": \"APPROVED\",\n  \"projectFiscalName\": \"Forest Restoration\",\n  \"projectFiscalDescription\": \"Restoration project for forest lands\",\n  \"estimatedClwrrAllocAmount\": 50000.00,\n  \"totalCostEstimateAmount\": 120000.00,\n  \"fiscalFundingRequestAmount\": 70000.00,\n  \"fiscalAllocatedAmount\": 65000.00,\n  \"firstNationsDelivPartInd\": true,\n  \"firstNationsEngagementInd\": false,\n  \"isApprovedInd\": true,\n  \"isDelayedInd\": false,\n  \"submissionTimestamp\": \"2025-01-01T00:00:00Z\",\n  \"approverName\": \"John Doe\",\n  \"approverUserGuid\": \"abcd1234-5678-9101-1121-314151617181\",\n  \"approverUserUserid\": \"jdoe\",\n  \"approvedTimestamp\": \"2025-01-01T10:00:00Z\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{LOCAL_API_URL}}/codes/forestDistrictCodes",
+					"host": [
+						"{{LOCAL_API_URL}}"
+					],
+					"path": [
+						"codes",
+						"forestDistrictCodes"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GETProject Type Codes",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"projectPlanFiscalGuid\": \"123e4567-e89b-12d3-a456-426614174000\",\n  \"projectGuid\": \"123e4567-e89b-12d3-a456-426614174001\",\n  \"activityCategoryCode\": \"Tactical Planning\",\n  \"fiscalYear\": 2024,\n  \"projectPlanStatusCode\": \"ACTIVE\",\n  \"planFiscalStatusCode\": \"APPROVED\",\n  \"projectFiscalName\": \"Forest Restoration\",\n  \"projectFiscalDescription\": \"Restoration project for forest lands\",\n  \"estimatedClwrrAllocAmount\": 50000.00,\n  \"totalCostEstimateAmount\": 120000.00,\n  \"fiscalFundingRequestAmount\": 70000.00,\n  \"fiscalAllocatedAmount\": 65000.00,\n  \"firstNationsDelivPartInd\": true,\n  \"firstNationsEngagementInd\": false,\n  \"isApprovedInd\": true,\n  \"isDelayedInd\": false,\n  \"submissionTimestamp\": \"2025-01-01T00:00:00Z\",\n  \"approverName\": \"John Doe\",\n  \"approverUserGuid\": \"abcd1234-5678-9101-1121-314151617181\",\n  \"approverUserUserid\": \"jdoe\",\n  \"approvedTimestamp\": \"2025-01-01T10:00:00Z\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{LOCAL_API_URL}}/codes/projectTypeCodes",
+					"host": [
+						"{{LOCAL_API_URL}}"
+					],
+					"path": [
+						"codes",
+						"projectTypeCodes"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET Forest Region Codes",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"projectPlanFiscalGuid\": \"123e4567-e89b-12d3-a456-426614174000\",\n  \"projectGuid\": \"123e4567-e89b-12d3-a456-426614174001\",\n  \"activityCategoryCode\": \"Tactical Planning\",\n  \"fiscalYear\": 2024,\n  \"projectPlanStatusCode\": \"ACTIVE\",\n  \"planFiscalStatusCode\": \"APPROVED\",\n  \"projectFiscalName\": \"Forest Restoration\",\n  \"projectFiscalDescription\": \"Restoration project for forest lands\",\n  \"estimatedClwrrAllocAmount\": 50000.00,\n  \"totalCostEstimateAmount\": 120000.00,\n  \"fiscalFundingRequestAmount\": 70000.00,\n  \"fiscalAllocatedAmount\": 65000.00,\n  \"firstNationsDelivPartInd\": true,\n  \"firstNationsEngagementInd\": false,\n  \"isApprovedInd\": true,\n  \"isDelayedInd\": false,\n  \"submissionTimestamp\": \"2025-01-01T00:00:00Z\",\n  \"approverName\": \"John Doe\",\n  \"approverUserGuid\": \"abcd1234-5678-9101-1121-314151617181\",\n  \"approverUserUserid\": \"jdoe\",\n  \"approvedTimestamp\": \"2025-01-01T10:00:00Z\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{LOCAL_API_URL}}/codes/forestRegionCodes",
+					"host": [
+						"{{LOCAL_API_URL}}"
+					],
+					"path": [
+						"codes",
+						"forestRegionCodes"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET BC Parks Region Codes",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"projectPlanFiscalGuid\": \"123e4567-e89b-12d3-a456-426614174000\",\n  \"projectGuid\": \"123e4567-e89b-12d3-a456-426614174001\",\n  \"activityCategoryCode\": \"Tactical Planning\",\n  \"fiscalYear\": 2024,\n  \"projectPlanStatusCode\": \"ACTIVE\",\n  \"planFiscalStatusCode\": \"APPROVED\",\n  \"projectFiscalName\": \"Forest Restoration\",\n  \"projectFiscalDescription\": \"Restoration project for forest lands\",\n  \"estimatedClwrrAllocAmount\": 50000.00,\n  \"totalCostEstimateAmount\": 120000.00,\n  \"fiscalFundingRequestAmount\": 70000.00,\n  \"fiscalAllocatedAmount\": 65000.00,\n  \"firstNationsDelivPartInd\": true,\n  \"firstNationsEngagementInd\": false,\n  \"isApprovedInd\": true,\n  \"isDelayedInd\": false,\n  \"submissionTimestamp\": \"2025-01-01T00:00:00Z\",\n  \"approverName\": \"John Doe\",\n  \"approverUserGuid\": \"abcd1234-5678-9101-1121-314151617181\",\n  \"approverUserUserid\": \"jdoe\",\n  \"approvedTimestamp\": \"2025-01-01T10:00:00Z\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{LOCAL_API_URL}}/codes/bcParksRegionCodes",
+					"host": [
+						"{{LOCAL_API_URL}}"
+					],
+					"path": [
+						"codes",
+						"bcParksRegionCodes"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Project",
 			"request": {
 				"auth": {
 					"type": "bearer",
