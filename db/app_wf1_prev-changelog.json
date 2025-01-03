@@ -273,6 +273,248 @@
           { "sql": "DROP TABLE wfprev.objective_type_code" }
         ]
       }
-    }
+    },
+    {
+      "changeSet": {
+        "id": "01_00_04_00",
+        "author": "hsaldyga",
+        "tagDatabase": { "tag" : "version_01_00_04_00" },
+        "changes": [
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_00_04/00/ddl/WFPREV.fuel_mgmt_obj_type_code.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_00_04/00/ddl/WFPREV.wui_risk_class_code.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_00_04/00/ddl/WFPREV.fuel_management_objective.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_00_04/00/ddl/WFPREV.fuel_management_project.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_00_04/00/ddl/WFPREV.fuel_management_project_audit.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_00_04/00/ddl/WFPREV.fuel_mgmt_plan_obj_xref.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_00_04/00/ddl/WFPREV.cultural_rx_fire_plan.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_00_04/00/ddl/WFPREV.cultural_rx_fire_plan_audit.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_00_04/00/ddl/WFPREV.funding_source.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_00_04/00/ddl/WFPREV.alter_project.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_00_04/00/ddl/WFPREV.alter_project_audit.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_00_04/00/dml/app_wf1_prev.dml.fuel_mgmt_obj_type_code.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_00_04/00/dml/app_wf1_prev.dml.wui_risk_class_code.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_00_04/00/dml/app_wf1_prev.dml.fuel_management_objective.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_00_04/00/dml/app_wf1_prev.dml.funding_source.sql"
+            }
+          }
+        ],
+        "rollback": [
+          { "sql": "ALTER TABLE wfprev.project_audit DROP COLUMN primary_objective_type_code" },
+          { "sql": "ALTER TABLE wfprev.project_audit DROP COLUMN primary_funding_source_guid" },
+          { "sql": "ALTER TABLE wfprev.project_audit DROP COLUMN secondary_objective_type_code" },
+          { "sql": "ALTER TABLE wfprev.project_audit DROP COLUMN secondary_objective_rationale" },
+          { "sql": "ALTER TABLE wfprev.project_audit DROP COLUMN tertiary_objective_type_code" },
+          { "sql": "ALTER TABLE wfprev.project_audit DROP COLUMN tertiary_objective_rationale" },
+          { "sql": "ALTER TABLE wfprev.project DROP COLUMN primary_funding_source_guid" },
+          { "sql": "DROP TABLE wfprev.funding_source" },
+          { "sql": "DROP TABLE wfprev.cultural_rx_fire_plan_audit" },
+          { "sql": "DROP TABLE wfprev.cultural_rx_fire_plan" },
+          { "sql": "DROP TABLE wfprev.fuel_mgmt_plan_obj_xref" },
+          { "sql": "DROP TABLE wfprev.fuel_management_project_audit" },
+          { "sql": "DROP TABLE wfprev.fuel_management_project" },
+          { "sql": "DROP TABLE wfprev.fuel_management_objective" },
+          { "sql": "DROP TABLE wfprev.fuel_mgmt_obj_type_code" },
+          { "sql": "DROP TABLE wfprev.wui_risk_class_code" }
+        ]
+      }
+    },
+    {
+      "changeSet": {
+        "id": "01_00_05_00",
+        "author": "hsaldyga",
+        "tagDatabase": { "tag" : "version_01_00_05_00" },
+        "changes": [
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_00_05/00/ddl/WFPREV.activity_category_code.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_00_05/00/ddl/WFPREV.endorsement_code.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_00_05/00/ddl/WFPREV.plan_fiscal_status_code.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_00_05/00/ddl/WFPREV.project_plan_status_code.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_00_05/00/ddl/WFPREV.project_type_act_cat_xref.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_00_05/00/ddl/WFPREV.ancillary_funding_source.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_00_05/00/ddl/WFPREV.project_plan_fiscal.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_00_05/00/ddl/WFPREV.project_plan_fiscal_audit.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_00_05/00/dml/app_wf1_prev.dml.activity_category_code.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_00_05/00/dml/app_wf1_prev.dml.ancillary_funding_source.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_00_05/00/dml/app_wf1_prev.dml.endorsement_code.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_00_05/00/dml/app_wf1_prev.dml.plan_fiscal_status_code.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_00_05/00/dml/app_wf1_prev.dml.project_plan_status_code.sql"
+            }
+          }
+        ],
+        "rollback": [
+          { "sql": "DROP TABLE wfprev.project_plan_fiscal_audit" },
+          { "sql": "DROP TABLE wfprev.project_plan_fiscal" },
+          { "sql": "DROP TABLE wfprev.ancillary_funding_source" },                    
+          { "sql": "DROP TABLE wfprev.project_type_act_cat_xref" },          
+          { "sql": "DROP TABLE wfprev.project_plan_status_code" },          
+          { "sql": "DROP TABLE wfprev.plan_fiscal_status_code" },          
+          { "sql": "DROP TABLE wfprev.endorsement_code" },          
+          { "sql": "DROP TABLE wfprev.activity_category_code" }
+        ]
+      }
+    }    
   ] 
 }
