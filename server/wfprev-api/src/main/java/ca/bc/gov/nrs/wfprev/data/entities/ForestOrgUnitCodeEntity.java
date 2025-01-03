@@ -27,8 +27,11 @@ import java.util.Date;
 @EqualsAndHashCode(callSuper = false)
 @Builder
 @AllArgsConstructor
-@NoArgsConstructor
 public class ForestOrgUnitCodeEntity implements Serializable {
+
+    public ForestOrgUnitCodeEntity() {
+        // Default constructor for GraalVM compatibility
+    }
 
     private static final long serialVersionUID = 1L;
 
@@ -66,7 +69,7 @@ public class ForestOrgUnitCodeEntity implements Serializable {
     @NotNull
     @Version
     private Integer revisionCount;
-    
+
     @CreatedBy
     @NotNull
     @Column(name = "create_user", length = 64)

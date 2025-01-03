@@ -19,8 +19,12 @@ import java.util.Date;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Builder
 @AllArgsConstructor
-@NoArgsConstructor
-public class ForestDistrictUnitCodeModel  extends CommonModel<ForestDistrictUnitCodeModel> {
+public class ForestDistrictUnitCodeModel  extends CommonModel<ca.bc.gov.nrs.wfprev.data.models.ForestDistrictUnitCodeModel> {
+
+    public ForestDistrictUnitCodeModel() {
+        // Default constructor for GraalVM compatibility
+    }
+
     private Integer orgUnitId;
     private Date effectiveDate;
     private Date expiryDate;

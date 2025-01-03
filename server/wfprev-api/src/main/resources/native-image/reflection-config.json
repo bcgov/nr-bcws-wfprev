@@ -799,5 +799,57 @@
     "allPublicMethods": true,
     "allDeclaredFields": true,
     "allPublicFields": true
+  },
+  {
+    "name": "org.apache.logging.log4j.util.ProviderUtil",
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "java.util.ServiceLoader",
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true,
+    "allPublicMethods": true,
+    "allPublicFields": true,
+    "allDeclaredClasses": true,
+    "allPublicClasses": true,
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true
+  },
+  {
+    "name": "ca.bc.gov.nrs.wfprev.data.entities.ForestOrgUnitCodeEntity",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "ca.bc.gov.nrs.wfprev.data.models.ForestRegionUnitCodeModel",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "ca.bc.gov.nrs.wfprev.data.models.BCParksSectionCodeModel",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "ca.bc.gov.nrs.wfprev.data.models.BCParksRegionCodeModel",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "ca.bc.gov.nrs.wfprev.data.models.ForestDistrictUnitCodeModel",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "ca.bc.gov.nrs.wfprev.data.entities.ForestOrgUnitCodeEntity",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
   }
 ]

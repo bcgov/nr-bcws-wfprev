@@ -19,8 +19,11 @@ import java.util.Date;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Builder
 @AllArgsConstructor
-@NoArgsConstructor
-public class BCParksRegionCodeModel extends CommonModel<BCParksRegionCodeModel> {
+public class BCParksRegionCodeModel extends CommonModel<ca.bc.gov.nrs.wfprev.data.models.BCParksRegionCodeModel> {
+
+    public BCParksRegionCodeModel() {
+        // Default constructor for GraalVM compatibility
+    }
     private Integer orgUnitId;
     private Date effectiveDate;
     private Date expiryDate;
