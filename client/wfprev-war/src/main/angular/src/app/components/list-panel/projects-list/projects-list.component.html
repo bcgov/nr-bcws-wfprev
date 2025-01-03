@@ -51,7 +51,7 @@
             <div class="project-header-details">
               <div class="detail">
                 <span>Region</span>
-                <span>{{ project.forestRegionOrgUnitId }}</span>
+                <span>{{ getDescription('forestRegionCode',project.forestRegionOrgUnitId) }}</span>
               </div>
               <div class="detail">
                 <span>Total Hectares</span>
@@ -59,7 +59,7 @@
               </div>
               <div class="detail">
                 <span>Business Area</span>
-                <span>{{ project.bcParksRegionOrgUnitId }}</span>
+                <span>{{ getDescription('programAreaCode',project.programAreaGuid) }}</span>
               </div>
               <div class="detail">
                 <span>Business Area Lead</span>

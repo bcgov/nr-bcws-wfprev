@@ -19,6 +19,7 @@ import { Project } from 'src/app/components/models';
   styleUrls: ['./create-new-project-dialog.component.scss']
 })
 export class CreateNewProjectDialogComponent implements OnInit {
+  [key: string]: any; // Add this line to allow dynamic properties
   projectForm: FormGroup;
   messages = Messages;
   // Regions and sections mapping
@@ -75,50 +76,27 @@ export class CreateNewProjectDialogComponent implements OnInit {
     });
   }
   ngOnInit(): void {
-    // Fetch code tables
-    this.codeTableService.fetchCodeTable('programAreaCodes').subscribe({
-      next: (data) => {
-        this.businessAreas = data._embedded.programArea;
-      },
-      error: (err) => {
-        console.error(err);
-      },
-    });
+    this.loadCodeTables(); // Call the helper method to load code tables
+  }
 
-    this.codeTableService.fetchCodeTable('forestRegionCodes').subscribe({
-      next: (data) => {
-        this.forestRegions = data._embedded.forestRegionCode; // Assign data to the component property
-      },
-      error: (err) => {
-        console.error(err);
-      },
-    });
-
-    this.codeTableService.fetchCodeTable('forestDistrictCodes').subscribe({
-      next: (data) => {
-        this.forestDistricts = data._embedded.forestDistrictCode;
-      },
-      error: (err) => {
-        console.error(err);
-      },
-    });
-
-    this.codeTableService.fetchCodeTable('bcParksRegionCodes').subscribe({
-      next: (data) => {
-        this.bcParksRegions = data._embedded.bcParksRegionCode;
-      },
-      error: (err) => {
-        console.error(err);
-      },
-    });
-
-    this.codeTableService.fetchCodeTable('bcParksSectionCodes').subscribe({
-      next: (data) => {
-        this.allBcParksSections = data._embedded.bcParksSectionCode; // Store all sections initially
-      },
-      error: (err) => {
-        console.error(err);
-      },
+  loadCodeTables(): void {
+    const codeTables = [
+      { name: 'programAreaCodes', property: 'businessAreas', embeddedKey: 'programArea' },
+      { name: 'forestRegionCodes', property: 'forestRegions', embeddedKey: 'forestRegionCode' },
+      { name: 'forestDistrictCodes', property: 'forestDistricts', embeddedKey: 'forestDistrictCode' },
+      { name: 'bcParksRegionCodes', property: 'bcParksRegions', embeddedKey: 'bcParksRegionCode' },
+      { name: 'bcParksSectionCodes', property: 'allBcParksSections', embeddedKey: 'bcParksSectionCode' },
+    ];
+  
+    codeTables.forEach((table) => {
+      this.codeTableService.fetchCodeTable(table.name).subscribe({
+        next: (data) => {
+          this[table.property] = data?._embedded?.[table.embeddedKey] || [];
+        },
+        error: (err) => {
+          console.error(`Error fetching ${table.name}`, err);
+        },
+      });
     });
   }
   getErrorMessage(controlName: string): string | null {

@@ -38,14 +38,14 @@
             <label>Forest Region<span class="required">*</span></label>
             <select formControlName="forestRegion">
               <option value="">select...</option>
-              <option *ngFor="let region of forestRegions" [value]="region.forestOrgUnitTypeCode">{{ region.orgUnitName }}</option>
+              <option *ngFor="let region of forestRegions" [value]="region.orgUnitId">{{ region.orgUnitName }}</option>
             </select>
           </div>
           <div class="form-field">
             <label>Forest District<span class="required">*</span></label>
             <select formControlName="forestDistrict">
               <option value="">select...</option>
-              <option *ngFor="let district of forestDistricts" [value]="district.forestOrgUnitTypeCode">{{ district.orgUnitName }}</option>
+              <option *ngFor="let district of forestDistricts" [value]="district.orgUnitId">{{ district.orgUnitName }}</option>
             </select>
           </div>
           <div class="form-field">
