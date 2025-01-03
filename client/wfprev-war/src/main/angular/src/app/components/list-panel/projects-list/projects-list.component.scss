@@ -1,11 +1,12 @@
 .list-header {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: flex-start;
     padding: 14px;
     border-bottom: 1px solid #ccc;
     font-family: var(--wf-font-family-main);
     font-size: 14px;
+    gap: 12px;
   }
   
   .sort-dropdown {
@@ -112,6 +113,7 @@
   }
   
   .list-contents {
+    height: calc(100vh - 330px);
     mat-expansion-panel {
       border-bottom: 1px solid #C6C8CB;
       margin: 0px !important;

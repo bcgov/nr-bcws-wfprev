@@ -8,6 +8,10 @@
       "clientId": "WFNEWS-UI",
       "authScopes": "WFNEWS.*",
       "enableCheckToken": true,
-      "checkTokenUrl": "http://localhost:8080/pub/wfprev-api/check/checkToken"
-    }
+      "checkTokenUrl": "./assets/data/checktoken-user.json"
+    },
+
+  "rest": {
+    "wfprev":"http://localhost:8080"
+  }
 }
