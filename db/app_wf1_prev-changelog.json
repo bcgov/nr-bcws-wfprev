@@ -515,6 +515,70 @@
           { "sql": "DROP TABLE wfprev.activity_category_code" }
         ]
       }
-    }    
+    },
+    {
+      "changeSet": {
+        "id": "01_00_06_00",
+        "author": "hsaldyga",
+        "tagDatabase": { "tag" : "version_01_00_06_00" },
+        "changes": [
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_06/00/ddl/WFPREV.attachment_content_type_code.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql",  "endDelimiter": ";",
+              "path": "scripts/01_00_06/00/ddl/WFPREV.event_history_type_code.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_06/00/ddl/WFPREV.source_object_name_code.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_06/00/ddl/WFPREV.event_history.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_06/00/ddl/WFPREV.file_attachment.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_06/00/dml/app_wf1_prev.dml.attachment_content_type_code.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_06/00/dml/app_wf1_prev.dml.event_history_type_code.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_06/00/dml/app_wf1_prev.dml.source_object_name_code.sql"
+            }
+          }
+        ],
+        "rollback": [
+          { "sql": "DROP TABLE wfprev.file_attachment" },          
+          { "sql": "DROP TABLE wfprev.event_history" },          
+          { "sql": "DROP TABLE wfprev.source_object_name_code" },          
+          { "sql": "DROP TABLE wfprev.event_history_type_code" },                    
+          { "sql": "DROP TABLE wfprev.attachment_content_type_code" }
+        ]
+      }
+    }           
   ] 
 }
