@@ -67,7 +67,6 @@ export class ListComponent implements OnInit {
   }
   
   viewProjectDetails(project: any) {
-    console.log(`Viewing details for: ${project.name}`);
     this.router.navigate([ResourcesRoutes.LIST], {
       queryParams: { projectNumber: project.projectNumber }
     });

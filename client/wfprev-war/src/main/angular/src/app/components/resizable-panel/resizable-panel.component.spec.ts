@@ -3,6 +3,14 @@ import { ResizablePanelComponent } from './resizable-panel.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ActivatedRoute } from '@angular/router';
 import { of } from 'rxjs';
+import { Component } from '@angular/core';
+
+// Mock ProjectsListComponent
+@Component({
+  selector: 'app-projects-list',
+  template: '<div>Mock Projects List</div>',
+})
+class MockProjectsListComponent {}
 
 describe('ResizablePanelComponent', () => {
   let component: ResizablePanelComponent;
@@ -10,7 +18,8 @@ describe('ResizablePanelComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ResizablePanelComponent, BrowserAnimationsModule], // Standalone component
+      imports: [BrowserAnimationsModule], // Standalone component dependencies
+      declarations: [ResizablePanelComponent, MockProjectsListComponent], // Include mock component
       providers: [
         {
           provide: ActivatedRoute,
