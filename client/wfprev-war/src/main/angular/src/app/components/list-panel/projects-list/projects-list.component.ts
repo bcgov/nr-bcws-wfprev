@@ -44,17 +44,25 @@ export class ProjectsListComponent implements OnInit {
       this.codeTableService.fetchCodeTable(table.name).subscribe({
         next: (data) => {
           if (table.name === 'programAreaCodes') {
-            this.programAreaCode = data._embedded.programArea
+            this.programAreaCode = data._embedded.programArea;
           } else if (table.name === 'forestRegionCodes') {
-            this.forestRegionCode = data._embedded.forestRegionCode
+            this.forestRegionCode = data._embedded.forestRegionCode;
           }
         },
         error: (err) => {
           console.error(`Error fetching ${table.name}`, err);
+  
+          // Explicitly set the property to an empty array on error
+          if (table.name === 'programAreaCodes') {
+            this.programAreaCode = [];
+          } else if (table.name === 'forestRegionCodes') {
+            this.forestRegionCode = [];
+          }
         },
       });
     });
   }
+  
 
   loadProjects() {
     this.projectService.fetchProjects().subscribe({
@@ -63,6 +71,7 @@ export class ProjectsListComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error fetching projects:', err);
+        this.projectList = [];
       }
     });
   }
