@@ -87,7 +87,6 @@ describe('ProjectsListComponent', () => {
   it('should load code tables on init', () => {
     expect(mockCodeTableService.fetchCodeTable).toHaveBeenCalledWith('programAreaCodes');
     expect(mockCodeTableService.fetchCodeTable).toHaveBeenCalledWith('forestRegionCodes');
-
   });
   
   it('should handle errors when loading code tables', () => {

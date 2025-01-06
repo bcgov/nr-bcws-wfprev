@@ -5,6 +5,7 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import * as L from 'leaflet';
 import { AppConfigService } from 'src/app/services/app-config.service';
 import { of } from 'rxjs';
+import { ChangeDetectorRef } from '@angular/core';
 
 // Mock ApplicationConfig
 const mockApplicationConfig = {
@@ -41,6 +42,8 @@ describe('MapComponent', () => {
   let component: MapComponent;
   let fixture: ComponentFixture<MapComponent>;
   let mapMock: Partial<L.Map>;
+  let cdrMock: jasmine.SpyObj<ChangeDetectorRef>;
+  let mockAppConfigService: jasmine.SpyObj<AppConfigService>;
 
   beforeEach(async () => {
     mapMock = {
@@ -48,9 +51,34 @@ describe('MapComponent', () => {
       invalidateSize: jasmine.createSpy('invalidateSize'),
       addLayer: jasmine.createSpy('addLayer'),
     };
-
+  
+    cdrMock = jasmine.createSpyObj('ChangeDetectorRef', ['markForCheck']);
+    mockAppConfigService = jasmine.createSpyObj('AppConfigService', ['getConfig']);
+    mockAppConfigService.getConfig.and.returnValue({
+      application: {
+        acronym: 'TEST',
+        version: '1.0',
+        baseUrl: 'https://test.example.com',
+        environment: 'test',
+        lazyAuthenticate: false,
+        enableLocalStorageToken: true,
+        allowLocalExpiredToken: false,
+        localStorageTokenKey: 'test-token-key'
+      },
+      rest: {
+        someServiceUrl: 'https://rest.example.com'
+      },
+      webade: {
+        oauth2Url: 'https://auth.example.com',
+        clientId: 'test-client-id',
+        authScopes: 'read write',
+        enableCheckToken: true,
+        checkTokenUrl: 'https://auth.example.com/check-token'
+      }
+    });
+  
     spyOn(L, 'map').and.returnValue(mapMock as L.Map);
-
+  
     await TestBed.configureTestingModule({
       imports: [
         MapComponent,
