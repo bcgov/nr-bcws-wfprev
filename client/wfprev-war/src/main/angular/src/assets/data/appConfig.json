@@ -9,5 +9,9 @@
         "authScopes": "WFNEWS.*",
         "enableCheckToken": true,
         "checkTokenUrl": "#{WFPREV_CHECK_TOKEN_URL}#"
-      }
+      },
+
+    "rest": {
+      "wfprev":"#{WFPREV_BASE_URL}#"
+    }
   }
