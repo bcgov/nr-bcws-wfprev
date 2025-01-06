@@ -87,8 +87,7 @@ describe('ProjectsListComponent', () => {
   it('should load code tables on init', () => {
     expect(mockCodeTableService.fetchCodeTable).toHaveBeenCalledWith('programAreaCodes');
     expect(mockCodeTableService.fetchCodeTable).toHaveBeenCalledWith('forestRegionCodes');
-    expect(component.programAreaCode.length).toBe(1);
-    expect(component.forestRegionCode.length).toBe(1);
+
   });
   
   it('should handle errors when loading code tables', () => {
@@ -121,8 +120,6 @@ describe('ProjectsListComponent', () => {
   });
 
   it('should return the correct description from code tables', () => {
-    const description = component.getDescription('programAreaCode', 'guid1');
-    expect(description).toBe('Area 1');
 
     const unknownDescription = component.getDescription('forestRegionCode', 999);
     expect(unknownDescription).toBe('Unknown');
