@@ -7,23 +7,18 @@
         <option class="default-option" value="">select...</option>
         <option *ngFor="let option of sortOptions" [value]="option.value">{{ option.label }}</option>
       </select>
-    </div>
-
-    <!-- Sync Toggle -->
-    <div class="sync-toggle">
-      <div class="label-container">
-        <label>Sync with Map</label>
-      </div>
-      <div class="toggle-container">
-        <mat-slide-toggle color="primary" (change)="onSyncMapToggleChange($event)">
-          <span>Off/On</span>
-        </mat-slide-toggle>
+      <div class="result-count">
+            <!-- Result Count -->
+        <span>{{ projectList?.length }} Results</span>
       </div>
     </div>
-
-    <!-- Result Count -->
-    <div class="result-count">
-      <span>{{ resultCount }} Results</span>
+    <div class="create-project-button-container">
+      <button class="create-project-button" (click)="createNewProject()">
+        <span class="button-text">
+          <img alt="create-project" class="icon" src="/assets/add-button.svg">
+          Create New Project
+        </span>
+      </button>
     </div>
   </div>
 
@@ -63,15 +58,15 @@
             <div class="project-header-details">
               <div class="detail">
                 <span>Region</span>
-                <span>{{ project.forestRegionOrgUnitId }}</span>
+                <span>{{ getDescription('forestRegionCode',project.forestRegionOrgUnitId) }}</span>
               </div>
               <div class="detail">
-                <span>Total Project Hectares</span>
+                <span>Total Hectares</span>
                 <span>{{ project.totalPlannedProjectSizeHa }} Ha</span>
               </div>
               <div class="detail">
                 <span>Business Area</span>
-                <span>{{ project.bcParksRegionOrgUnitId }}</span>
+                <span>{{ getDescription('programAreaCode',project.programAreaGuid) }}</span>
               </div>
               <div class="detail">
                 <span>Business Area Lead</span>

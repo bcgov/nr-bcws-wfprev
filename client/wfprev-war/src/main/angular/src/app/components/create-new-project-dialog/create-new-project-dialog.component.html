@@ -29,7 +29,7 @@
             <label>Business Area<span class="required">*</span></label>
             <select formControlName="businessArea">
               <option value="">select...</option>
-              <option *ngFor="let area of businessAreas" [value]="area">{{ area }}</option>
+              <option *ngFor="let area of businessAreas" [value]="area.programAreaGuid">{{ area.programAreaName }}</option>
             </select>
           </div>
         </div>
@@ -38,28 +38,28 @@
             <label>Forest Region<span class="required">*</span></label>
             <select formControlName="forestRegion">
               <option value="">select...</option>
-              <option *ngFor="let region of forestRegions" [value]="region">{{ region }}</option>
+              <option *ngFor="let region of forestRegions" [value]="region.orgUnitId">{{ region.orgUnitName }}</option>
             </select>
           </div>
           <div class="form-field">
             <label>Forest District<span class="required">*</span></label>
             <select formControlName="forestDistrict">
               <option value="">select...</option>
-              <option *ngFor="let district of forestDistricts" [value]="district">{{ district }}</option>
+              <option *ngFor="let district of forestDistricts" [value]="district.orgUnitId">{{ district.orgUnitName }}</option>
             </select>
           </div>
           <div class="form-field">
             <label>BC Parks Region<span class="required">*</span></label>
             <select formControlName="bcParksRegion">
               <option value="">select...</option>
-              <option *ngFor="let region of bcParksRegions" [value]="region">{{ region }}</option>
+              <option *ngFor="let region of bcParksRegions" [value]="region.orgUnitId">{{ region.orgUnitName }}</option>
             </select>
           </div>
           <div class="form-field">
             <label>BC Parks Section<span class="required">*</span></label>
             <select formControlName="bcParksSection">
               <option value="">select...</option>
-              <option *ngFor="let section of bcParksSections" [value]="section">{{ section }}</option>
+              <option *ngFor="let section of bcParksSections" [value]="section.orgUnitId">{{ section.orgUnitName }}</option>
             </select>
           </div>
         </div>
