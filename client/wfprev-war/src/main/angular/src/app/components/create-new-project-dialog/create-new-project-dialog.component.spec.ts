@@ -205,4 +205,37 @@ describe('CreateNewProjectDialogComponent', () => {
       expect(mockDialogRef.close).not.toHaveBeenCalled();
     });
   });
+
+  it('should not create a new project if the form is invalid', () => {
+    component.projectForm.get('projectName')?.setValue(''); // Invalid since it's required
+  
+    component.onCreate();
+  
+    expect(mockProjectService.createProject).not.toHaveBeenCalled();
+    expect(mockSnackbarService.open).not.toHaveBeenCalled();
+    expect(mockDialogRef.close).not.toHaveBeenCalled();
+  });
+
+  it('should update bcParksSections when a bcParksRegion is selected', () => {
+    // Mock data for allBcParksSections
+    component.allBcParksSections = [
+      { parentOrgUnitId: '1', name: 'Section 1' },
+      { parentOrgUnitId: '2', name: 'Section 2' },
+    ];
+  
+    // Set bcParksRegion value to 1
+    component.projectForm.get('bcParksRegion')?.setValue('1');
+    fixture.detectChanges();
+  
+    // Check if bcParksSections is updated correctly
+    expect(component.bcParksSections).toEqual([{ parentOrgUnitId: '1', name: 'Section 1' }]);
+  
+    // Set bcParksRegion value to 2
+    component.projectForm.get('bcParksRegion')?.setValue('2');
+    fixture.detectChanges();
+  
+    // Check if bcParksSections is updated correctly
+    expect(component.bcParksSections).toEqual([{ parentOrgUnitId: '2', name: 'Section 2' }]);
+  });
+    
 });

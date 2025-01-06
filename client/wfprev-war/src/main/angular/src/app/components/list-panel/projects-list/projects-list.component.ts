@@ -91,10 +91,6 @@ export class ProjectsListComponent implements OnInit {
     this.selectedSort = event.target.value;
   }
 
-  onSyncMapToggleChange(event: any): void {
-    this.syncWithMap = event.checked;
-  }
-
   editProject(project: any, event:Event) {
     event.stopPropagation();
     this.router.navigate([ResourcesRoutes.EDIT_PROJECT], {
@@ -133,4 +129,5 @@ export class ProjectsListComponent implements OnInit {
       }
     });
   }
+  
 }

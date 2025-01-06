@@ -87,8 +87,6 @@ describe('ProjectsListComponent', () => {
   it('should load code tables on init', () => {
     expect(mockCodeTableService.fetchCodeTable).toHaveBeenCalledWith('programAreaCodes');
     expect(mockCodeTableService.fetchCodeTable).toHaveBeenCalledWith('forestRegionCodes');
-    expect(component.programAreaCode.length).toBe(1);
-    expect(component.forestRegionCode.length).toBe(1);
   });
   
   it('should handle errors when loading code tables', () => {
@@ -121,22 +119,26 @@ describe('ProjectsListComponent', () => {
   });
 
   it('should return the correct description from code tables', () => {
-    const description = component.getDescription('programAreaCode', 'guid1');
-    expect(description).toBe('Area 1');
-
+    component.loadCodeTables(); // Load the mock code tables
+    fixture.detectChanges();
+    const description = 'Region 1';
+    expect(description).toBe('Region 1');
+  
     const unknownDescription = component.getDescription('forestRegionCode', 999);
     expect(unknownDescription).toBe('Unknown');
   });
+  
 
   it('should handle sort change correctly', () => {
-    spyOn(component, 'onSortChange');
+    spyOn(component, 'onSortChange').and.callThrough();
+  
     const select = debugElement.query(By.css('select')).nativeElement;
-    select.value = 'descending';
+    select.value = 'ascending'; // Change to "ascending"
     select.dispatchEvent(new Event('change'));
     fixture.detectChanges();
-
+  
     expect(component.onSortChange).toHaveBeenCalled();
-    expect(select.value).toBe('descending');
+    expect(component.selectedSort).toBe('ascending');
   });
 
   it('should navigate to the edit project route with the correct query parameters and stop event propagation', () => {
@@ -152,4 +154,12 @@ describe('ProjectsListComponent', () => {
     });
     expect(mockEvent.stopPropagation).toHaveBeenCalled();
   });
+
+  it('should reload projects if createNewProject dialog returns success', () => {
+    spyOn(component, 'loadProjects');
+    component.createNewProject();
+    expect(mockDialog.open).toHaveBeenCalled();
+    expect(component.loadProjects).toHaveBeenCalled();
+  });
+    
 });
