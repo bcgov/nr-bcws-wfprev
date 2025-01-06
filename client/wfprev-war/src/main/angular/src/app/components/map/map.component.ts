@@ -1,6 +1,7 @@
-import { AfterViewInit, ChangeDetectorRef, Component } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, Input, ViewChild } from '@angular/core';
 import { ResizablePanelComponent } from 'src/app/components/resizable-panel/resizable-panel.component';
-import * as L from 'leaflet';
+import { MapConfigService } from 'src/app/services/map-config.service';
+import { MapService } from 'src/app/services/map.service';
 
 @Component({
   selector: 'app-map',
@@ -10,7 +11,8 @@ import * as L from 'leaflet';
   styleUrl: './map.component.scss'
 })
 export class MapComponent implements AfterViewInit{
-  private map: L.Map | undefined;
+  @ViewChild('mapContainer', { static: false }) mapContainer!: ElementRef;
+  mapConfig: any[] = [];
   
   panelContent: string = `
     The goal of the BC Wildfire Service (BCWS) Prevention Program is to reduce the negative impacts of wildfire on public safety, property, the environment and the economy using the seven disciplines of the FireSmart program.
@@ -20,6 +22,8 @@ export class MapComponent implements AfterViewInit{
 
   constructor(    
     protected cdr: ChangeDetectorRef,
+    private readonly mapService: MapService,
+    private readonly mapConfigService: MapConfigService
   ) {}
 
   ngAfterViewInit(): void {
@@ -27,23 +31,35 @@ export class MapComponent implements AfterViewInit{
   }
 
   private initMap(): void {
-    // Initialize the map and set its view
-    this.map = L.map('map');
-    const bcBounds: L.LatLngBoundsExpression = [
-      [48.3, -139.1],
-      [60.0, -114.0]
-    ];
-    this.map.fitBounds(bcBounds);
+    const self = this;
+    const mapConfig = this.clone(this.mapConfig);
 
-    // Add a tile layer to the map (this is the OpenStreetMap layer)
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    }).addTo(this.map);
+    this.mapConfigService
+    .getMapConfig()
+    .then((mapState) => {
+      mapConfig.push(mapState);
+    })
+    .then(() => {
+      const deviceConfig = { viewer: { device: 'desktop' } };
+      this.mapConfig = [...mapConfig, deviceConfig, 'theme=wf', '?'];
+      console.log('mapConfig: ', JSON.stringify(this.mapConfig));
+    })
+    .catch((error) => {
+      console.error('Error loading map:', error);
+    });
+
+    this.mapService.createSMK({
+      id: 'map',
+      containerSel: self.mapContainer.nativeElement,
+      config: mapConfig,
+    })
+
+    const SMK = (window as any)['SMK'];
+    
   }
 
-  onPanelResized(): void {
-    if (this.map) {
-      this.map.invalidateSize();  // Inform Leaflet to recalculate map size
-      this.cdr.markForCheck();
-    }
+  clone(o: any) {
+    return JSON.parse(JSON.stringify(o));
   }
 }
+
