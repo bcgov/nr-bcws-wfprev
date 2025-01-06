@@ -1,10 +1,13 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatDialog , MatDialogRef } from '@angular/material/dialog';
 import { ConfirmationDialogComponent } from 'src/app/components/confirmation-dialog/confirmation-dialog.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Messages } from 'src/app/utils/messages';
+import { ProjectService } from 'src/app/services/project-services';
+import { CodeTableServices } from 'src/app/services/code-table-services';
+import { Project } from 'src/app/components/models';
 @Component({
   selector: 'app-create-new-project-dialog',
   standalone: true,
@@ -15,7 +18,8 @@ import { Messages } from 'src/app/utils/messages';
   templateUrl: './create-new-project-dialog.component.html',
   styleUrls: ['./create-new-project-dialog.component.scss']
 })
-export class CreateNewProjectDialogComponent {
+export class CreateNewProjectDialogComponent implements OnInit {
+  [key: string]: any; // Add this line to allow dynamic properties
   projectForm: FormGroup;
   messages = Messages;
   // Regions and sections mapping
@@ -27,17 +31,20 @@ export class CreateNewProjectDialogComponent {
     'West Coast': ['Central Coast/North Island', 'Haida Gwaii/South Island']
   };
 
-  businessAreas = ['Area 1', 'Area 2', 'Area 3']; // Example data
-  forestRegions = ['Region 1', 'Region 2', 'Region 3']; // Example data
-  forestDistricts = ['District 1', 'District 2', 'District 3']; // Example data
-  bcParksRegions = Object.keys(this.regionToSections);
-  bcParksSections: string[] = []; // Dynamically updated based on the selected region
+  businessAreas : any[] = [];
+  forestRegions : any[] = [];
+  forestDistricts : any[] = [];
+  bcParksRegions : any[] = [];
+  bcParksSections: any[] = [];
+  allBcParksSections: any[] = []; // To hold all sections initially
 
   constructor(
     private readonly fb: FormBuilder,
     private readonly dialog: MatDialog,
     private readonly dialogRef: MatDialogRef<CreateNewProjectDialogComponent>,
     private readonly snackbarService: MatSnackBar,
+    private readonly projectService: ProjectService,
+    private readonly codeTableService: CodeTableServices
 
   ) {
     this.projectForm = this.fb.group({
@@ -55,21 +62,46 @@ export class CreateNewProjectDialogComponent {
   });
 
   // Dynamically enable/disable bcParksSection based on bcParksRegion selection
-  this.projectForm.get('bcParksRegion')?.valueChanges.subscribe((region: string | number) => {
-    if (region) {
-      this.projectForm.get('bcParksSection')?.enable();
-      this.bcParksSections = this.regionToSections[region] || [];
-    } else {
-      this.projectForm.get('bcParksSection')?.reset();
-      this.projectForm.get('bcParksSection')?.disable();
-      this.bcParksSections = [];
-    }
-  });
+    this.projectForm.get('bcParksRegion')?.valueChanges.subscribe((regionId: number) => {
+      if (regionId) {
+        this.projectForm.get('bcParksSection')?.enable();
+        this.bcParksSections = this.allBcParksSections.filter(
+          (section) => section.parentOrgUnitId === regionId.toString()
+        );
+      } else {
+        this.projectForm.get('bcParksSection')?.reset();
+        this.projectForm.get('bcParksSection')?.disable();
+        this.bcParksSections = [];
+      }
+    });
+  }
+  ngOnInit(): void {
+    this.loadCodeTables(); // Call the helper method to load code tables
   }
 
+  loadCodeTables(): void {
+    const codeTables = [
+      { name: 'programAreaCodes', property: 'businessAreas', embeddedKey: 'programArea' },
+      { name: 'forestRegionCodes', property: 'forestRegions', embeddedKey: 'forestRegionCode' },
+      { name: 'forestDistrictCodes', property: 'forestDistricts', embeddedKey: 'forestDistrictCode' },
+      { name: 'bcParksRegionCodes', property: 'bcParksRegions', embeddedKey: 'bcParksRegionCode' },
+      { name: 'bcParksSectionCodes', property: 'allBcParksSections', embeddedKey: 'bcParksSectionCode' },
+    ];
+  
+    codeTables.forEach((table) => {
+      this.codeTableService.fetchCodeTable(table.name).subscribe({
+        next: (data) => {
+          this[table.property] = data?._embedded?.[table.embeddedKey] || [];
+        },
+        error: (err) => {
+          console.error(`Error fetching ${table.name}`, err);
+        },
+      });
+    });
+  }
   getErrorMessage(controlName: string): string | null {
     const control = this.projectForm.get(controlName);
-    if (!control || !control.errors) return null;
+    if (!control?.errors) return null;
 
     if (control.hasError('required')) {
       return this.messages.requiredField;
@@ -86,25 +118,65 @@ export class CreateNewProjectDialogComponent {
 
   onCreate(): void {
     if (this.projectForm.valid) {
-      console.log(this.projectForm.value);
-      //call POST endpoint, 
-      // if return 500 error with duplicate project name error message, 
-
-      // this.dialog.open(ConfirmationDialogComponent, {
-      //   data: {
-      //     indicator: 'duplicate-project',
-      //     projectName: '',
-      //   },
-      //   width: '500px',
-      // });
-
-      //OK will return the user to the Modal and allow further editing. just close the Modal for now
-      this.snackbarService.open(
-        this.messages.projectCreatedSuccess,
-        'OK',
-        { duration: 100000, panelClass: 'snackbar-success' },
-      )
-      this.dialogRef.close(this.projectForm.value);
+      const newProject: Project = {
+        projectName: this.projectForm.get('projectName')?.value ?? '',
+        programAreaGuid: this.projectForm.get('businessArea')?.value ?? '',
+        forestRegionOrgUnitId: Number(this.projectForm.get('forestRegion')?.value) || 0,
+        forestDistrictOrgUnitId: Number(this.projectForm.get('forestDistrict')?.value) || 0,
+        bcParksRegionOrgUnitId: Number(this.projectForm.get('bcParksRegion')?.value) || 0,
+        bcParksSectionOrgUnitId: Number(this.projectForm.get('bcParksSection')?.value) || 0,
+        projectLead: this.projectForm.get('projectLead')?.value ?? '',
+        projectLeadEmailAddress: this.projectForm.get('projectLeadEmail')?.value ?? '',
+        siteUnitName: this.projectForm.get('siteUnitName')?.value ?? '',
+        closestCommunityName: this.projectForm.get('closestCommunity')?.value ?? '',
+        fireCentreOrgUnitId: this.projectForm.get('fireCentre')?.value ?? 0,
+        generalScopeCode: {
+          generalScopeCode: "SL_ACT"
+        },
+        projectTypeCode: {
+          projectTypeCode: "FUEL_MGMT"
+        },
+        projectDescription: this.projectForm.get('projectDescription')?.value ?? '',
+        projectNumber: this.projectForm.get('projectNumber')?.value ?? '',
+        totalFundingRequestAmount:
+          this.projectForm.get('totalFundingRequestAmount')?.value ?? '',
+        totalAllocatedAmount: this.projectForm.get('totalAllocatedAmount')?.value ?? '',
+        totalPlannedProjectSizeHa:
+          this.projectForm.get('totalPlannedProjectSizeHa')?.value ?? '',
+        totalPlannedCostPerHectare:
+          this.projectForm.get('totalPlannedCostPerHectare')?.value ?? '',
+        totalActualAmount: this.projectForm.get('totalActualAmount')?.value ?? 0,
+        isMultiFiscalYearProj: false,
+      };
+      
+      this.projectService.createProject(newProject).subscribe({
+        next: (response) => {
+          this.snackbarService.open(
+            this.messages.projectCreatedSuccess,
+            'OK',
+            { duration: 100000, panelClass: 'snackbar-success' },
+          );
+          this.dialogRef.close({ success: true });
+        },
+        error: (err) =>{
+          if (err.status === 500 && err.error.message.includes('duplicate')) {
+            this.dialog.open(ConfirmationDialogComponent, {
+              data: {
+                indicator: 'duplicate-project',
+                projectName: '',
+              },
+              width: '500px',
+            });
+          }
+          else{
+            this.snackbarService.open(
+              "Create project failed",
+              'OK',
+              { duration: 5000, panelClass: 'snackbar-error' }
+            );
+          }
+        }
+      })
     }
   }
 
