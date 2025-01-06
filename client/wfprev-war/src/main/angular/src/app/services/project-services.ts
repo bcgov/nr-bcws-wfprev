@@ -10,9 +10,9 @@ import { TokenService } from "src/app/services/token.service";
 
 export class ProjectService {
     constructor(
-        private appConfigService: AppConfigService,
-        private httpClient: HttpClient,
-        private tokenService: TokenService,
+        private readonly appConfigService: AppConfigService,
+        private readonly httpClient: HttpClient,
+        private readonly tokenService: TokenService,
     ){
     }
 

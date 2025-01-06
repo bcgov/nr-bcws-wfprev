@@ -11,9 +11,9 @@ export class CodeTableServices {
   private codeTableCache: { [key: string]: any } = {}; // Cache for code tables
 
   constructor(
-    private appConfigService: AppConfigService,
-    private httpClient: HttpClient,
-    private tokenService: TokenService,
+    private readonly appConfigService: AppConfigService,
+    private readonly httpClient: HttpClient,
+    private readonly tokenService: TokenService,
   ) {}
 
   fetchCodeTable(codeTableName: string): Observable<any> {

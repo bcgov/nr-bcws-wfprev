@@ -43,8 +43,8 @@ export class CreateNewProjectDialogComponent implements OnInit {
     private readonly dialog: MatDialog,
     private readonly dialogRef: MatDialogRef<CreateNewProjectDialogComponent>,
     private readonly snackbarService: MatSnackBar,
-    private projectService: ProjectService,
-    private codeTableService: CodeTableServices
+    private readonly projectService: ProjectService,
+    private readonly codeTableService: CodeTableServices
 
   ) {
     this.projectForm = this.fb.group({
@@ -101,7 +101,7 @@ export class CreateNewProjectDialogComponent implements OnInit {
   }
   getErrorMessage(controlName: string): string | null {
     const control = this.projectForm.get(controlName);
-    if (!control || !control.errors) return null;
+    if (!control?.errors) return null;
 
     if (control.hasError('required')) {
       return this.messages.requiredField;

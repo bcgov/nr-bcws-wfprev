@@ -22,10 +22,10 @@ export class ProjectsListComponent implements OnInit {
   programAreaCode: any[] = [];
   forestRegionCode: any[] = [];
   constructor(
-    private router: Router,
-    private projectService: ProjectService,
-    private codeTableService: CodeTableServices,
-    private dialog: MatDialog
+    private readonly router: Router,
+    private readonly projectService: ProjectService,
+    private readonly codeTableService: CodeTableServices,
+    private readonly dialog: MatDialog
     
   ) {
   }
