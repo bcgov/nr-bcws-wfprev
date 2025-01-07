@@ -118,6 +118,47 @@ export class CreateNewProjectDialogComponent implements OnInit {
 
   onCreate(): void {
     if (this.projectForm.valid) {
+      const latLong = this.projectForm.get('latLong')?.value ?? '';
+      let latitude = null;
+      let longitude = null;
+
+      if (latLong) {
+        const parts = latLong.split(',').map((part: string) => part.trim());
+        if (parts.length === 2) {
+          const lat = parseFloat(parts[0]);
+          const long = parseFloat(parts[1]);
+      
+          // Validate latitude and longitude range for BC
+          if (
+            !isNaN(lat) &&
+            !isNaN(long) &&
+            lat >= 48.3 &&
+            lat <= 60 &&
+            long >= -139 &&
+            long <= -114
+          ) {
+            latitude = lat;
+            longitude = long;
+          } else {
+            // Show an error message if latLong is outside BC's boundaries
+            this.snackbarService.open(
+              'Latitude and longitude must fall within British Columbia (Lat: 48.3–60, Long: -139 to -114).',
+              'OK',
+              { duration: 5000, panelClass: 'snackbar-error' }
+            );
+            return;
+          }
+        } else {
+          // Show an error message if latLong is in an invalid format
+          this.snackbarService.open(
+            'Invalid latitude and longitude format.',
+            'OK',
+            { duration: 5000, panelClass: 'snackbar-error' }
+          );
+          return; // Exit the method if latLong is invalid
+        }
+      }
+      
       const newProject: Project = {
         projectName: this.projectForm.get('projectName')?.value ?? '',
         programAreaGuid: this.projectForm.get('businessArea')?.value ?? '',
@@ -147,6 +188,8 @@ export class CreateNewProjectDialogComponent implements OnInit {
           this.projectForm.get('totalPlannedCostPerHectare')?.value ?? '',
         totalActualAmount: this.projectForm.get('totalActualAmount')?.value ?? 0,
         isMultiFiscalYearProj: false,
+        latitude: Number(latitude), // Include parsed latitude
+        longitude: Number(longitude), // Include parsed longitude
       };
       
       this.projectService.createProject(newProject).subscribe({

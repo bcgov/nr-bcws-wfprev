@@ -237,5 +237,90 @@ describe('CreateNewProjectDialogComponent', () => {
     // Check if bcParksSections is updated correctly
     expect(component.bcParksSections).toEqual([{ parentOrgUnitId: '2', name: 'Section 2' }]);
   });
+
+  it('should validate latLong and set latitude and longitude correctly', () => {
+    component.projectForm.patchValue({
+      projectName: 'New Project',
+      latLong: '48.484245, -123.332177',
+      businessArea: 'Area 1',
+      forestRegion: 1,
+      forestDistrict: 2,
+      bcParksRegion: 3,
+      bcParksSection: 4,
+      projectLead: 'John Doe',
+      projectLeadEmail: 'john.doe@example.com',
+      siteUnitName: 'Unit 1',
+      closestCommunity: 'Community 1',
+    });
+  
+    mockProjectService.createProject.and.returnValue(of({}));
+  
+    component.onCreate();
+  
+    expect(mockProjectService.createProject).toHaveBeenCalledWith(
+      jasmine.objectContaining({
+        latitude: 48.484245,
+        longitude: -123.332177,
+      })
+    );
+  });
+  
+  it('should show an error when latLong is outside BC boundaries', () => {
+    component.projectForm.patchValue({
+      projectName: 'New Project',
+      businessArea: 'Area 1',
+      forestRegion: 1,
+      forestDistrict: 2,
+      bcParksRegion: 3,
+      bcParksSection: 4,
+      projectLead: 'John Doe',
+      projectLeadEmail: 'john.doe@example.com',
+      siteUnitName: 'Unit 1',
+      closestCommunity: 'Community 1',
+      latLong: '70.123456, -123.332177', // Invalid latitude
+    });
+  
+    component.onCreate();
+  
+    expect(mockSnackbarService.open).toHaveBeenCalledWith(
+      'Latitude and longitude must fall within British Columbia (Lat: 48.3–60, Long: -139 to -114).',
+      'OK',
+      { duration: 5000, panelClass: 'snackbar-error' }
+    );
+  
+    expect(mockProjectService.createProject).not.toHaveBeenCalled();
+  });
+  
+
+  it('should handle latLong with boundary values correctly', () => {
+    component.projectForm.patchValue({
+      projectName: 'New Project',
+      businessArea: 'Area 1',
+      forestRegion: 1,
+      forestDistrict: 2,
+      bcParksRegion: 3,
+      bcParksSection: 4,
+      projectLead: 'John Doe',
+      projectLeadEmail: 'john.doe@example.com',
+      siteUnitName: 'Unit 1',
+      closestCommunity: 'Community 1',
+      latLong: '48.3, -139', // Boundary value for BC
+    });
+  
+    mockProjectService.createProject.and.returnValue(of({}));
+  
+    component.onCreate();
+  
+    const expectedLatitude = 48.3;
+    const expectedLongitude = -139;
+  
+    expect(mockProjectService.createProject).toHaveBeenCalledWith(
+      jasmine.objectContaining({
+        latitude: expectedLatitude,
+        longitude: expectedLongitude,
+      })
+    );
+  });
+  
     
 });
