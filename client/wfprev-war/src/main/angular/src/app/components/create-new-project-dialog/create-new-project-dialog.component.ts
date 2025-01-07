@@ -158,7 +158,7 @@ export class CreateNewProjectDialogComponent implements OnInit {
           return; // Exit the method if latLong is invalid
         }
       }
-      
+
       const newProject: Project = {
         projectName: this.projectForm.get('projectName')?.value ?? '',
         programAreaGuid: this.projectForm.get('businessArea')?.value ?? '',
@@ -188,8 +188,8 @@ export class CreateNewProjectDialogComponent implements OnInit {
           this.projectForm.get('totalPlannedCostPerHectare')?.value ?? '',
         totalActualAmount: this.projectForm.get('totalActualAmount')?.value ?? 0,
         isMultiFiscalYearProj: false,
-        latitude: Number(latitude), // Include parsed latitude
-        longitude: Number(longitude), // Include parsed longitude
+        latitude: Number(latitude),
+        longitude: Number(longitude),
       };
       
       this.projectService.createProject(newProject).subscribe({
