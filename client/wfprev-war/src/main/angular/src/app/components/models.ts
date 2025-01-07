@@ -33,4 +33,6 @@ export interface Project {
   totalPlannedProjectSizeHa: number;
   updateDate?: string;
   updateUser?: string;
+  latitude?: number;
+  longitude?: number;
 }
