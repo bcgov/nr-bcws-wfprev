@@ -1,5 +1,6 @@
 package ca.bc.gov.nrs.wfprev.data.assemblers;
 
+import ca.bc.gov.nrs.wfprev.data.entities.ProjectEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ProjectFiscalEntity;
 import ca.bc.gov.nrs.wfprev.data.models.ProjectFiscalModel;
 import org.junit.jupiter.api.Test;
@@ -10,10 +11,13 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.mock;
 
 class ProjectFiscalResourceAssemberTest {
 
     ProjectFiscalResourceAssembler assembler = new ProjectFiscalResourceAssembler();
+
+    ProjectEntity projectEntity = mock(ProjectEntity.class);
 
     @Test
     void testToModel_MapsEntityToModel() {
@@ -68,7 +72,7 @@ class ProjectFiscalResourceAssemberTest {
         model.setUpdateDate(new Date());
 
         // WHEN the model is converted to an entity using the assembler
-        ProjectFiscalEntity entity = assembler.toEntity(model);
+        ProjectFiscalEntity entity = assembler.toEntity(model, projectEntity);
 
         // THEN the resulting entity fields should match the corresponding model fields
         assertNotNull(entity, "The resulting entity should not be null");

@@ -136,7 +136,7 @@ public class ProjectFiscalEntity implements Serializable {
     @Column(name = "submitted_by_name", length = 100)
     private String submittedByName;
 
-    @Column(name = "submitted_by_user_guid", length = 32)
+    @Column(name = "submitted_by_user_guid", length = 36)
     private String submittedByUserGuid;
 
     @Column(name = "submitted_by_user_userid", length = 100)

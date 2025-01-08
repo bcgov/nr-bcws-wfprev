@@ -3,6 +3,8 @@ package ca.bc.gov.nrs.wfprev.services;
 import ca.bc.gov.nrs.wfone.common.service.api.ServiceException;
 import ca.bc.gov.nrs.wfprev.common.services.CommonService;
 import ca.bc.gov.nrs.wfprev.data.assemblers.ProjectFiscalResourceAssembler;
+import ca.bc.gov.nrs.wfprev.data.assemblers.ProjectResourceAssembler;
+import ca.bc.gov.nrs.wfprev.data.entities.ProjectEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ProjectFiscalEntity;
 import ca.bc.gov.nrs.wfprev.data.models.ProjectFiscalModel;
 import ca.bc.gov.nrs.wfprev.data.models.ProjectModel;
@@ -25,9 +27,15 @@ public class ProjectFiscalService implements CommonService {
     private final ProjectFiscalRepository projectFiscalRepository;
     private final ProjectFiscalResourceAssembler projectFiscalResourceAssembler;
 
-    public ProjectFiscalService(ProjectFiscalRepository projectFiscalRepository, ProjectFiscalResourceAssembler projectFiscalResourceAssembler) {
+    private final ProjectService projectService;
+
+    private final ProjectResourceAssembler projectResourceAssembler;
+
+    public ProjectFiscalService(ProjectFiscalRepository projectFiscalRepository, ProjectFiscalResourceAssembler projectFiscalResourceAssembler, ProjectService projectService, ProjectResourceAssembler projectResourceAssembler) {
         this.projectFiscalRepository = projectFiscalRepository;
         this.projectFiscalResourceAssembler = projectFiscalResourceAssembler;
+        this.projectService = projectService;
+        this.projectResourceAssembler = projectResourceAssembler;
     }
 
     public CollectionModel<ProjectFiscalModel> getAllProjectFiscals() throws ServiceException {
@@ -37,13 +45,16 @@ public class ProjectFiscalService implements CommonService {
 
     public ProjectFiscalModel createProjectFiscal(ProjectFiscalModel projectFiscalModel) {
         initializeNewProjectFiscal(projectFiscalModel);
-        ProjectFiscalEntity entity = projectFiscalResourceAssembler.toEntity(projectFiscalModel);
+        ProjectModel projectById = projectService.getProjectById(projectFiscalModel.getProjectGuid());
+        ProjectEntity projectEntity = projectResourceAssembler.toEntity(projectById);
+        ProjectFiscalEntity entity = projectFiscalResourceAssembler.toEntity(projectFiscalModel, projectEntity);
         log.error("Entity before save: {}", entity);
         ProjectFiscalEntity savedEntity = projectFiscalRepository.save(entity);
         return projectFiscalResourceAssembler.toModel(savedEntity);
     }
 
     private void initializeNewProjectFiscal(ProjectFiscalModel resource) {
+        resource.setProjectPlanFiscalGuid(UUID.randomUUID().toString());
         resource.setCreateDate(new Date());
         resource.setRevisionCount(0);
     }
@@ -78,5 +89,16 @@ public class ProjectFiscalService implements CommonService {
         ProjectFiscalEntity entity = projectFiscalRepository.findById(guid)
                 .orElseThrow(() -> new EntityNotFoundException("Project not found: " + uuid));
         return projectFiscalResourceAssembler.toModel(entity);
+    }
+
+    public void deleteProjectFiscal(String uuid) {
+        UUID guid = UUID.fromString(uuid);
+
+        // Check if the entity exists, throw EntityNotFoundException if not
+        projectFiscalRepository.findById(guid)
+                .orElseThrow(() -> new EntityNotFoundException("Project Fiscal not found with ID: " + uuid));
+
+        // Proceed with deletion
+        projectFiscalRepository.deleteById(guid);
     }
 }

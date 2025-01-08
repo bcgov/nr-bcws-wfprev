@@ -2,6 +2,7 @@ package ca.bc.gov.nrs.wfprev.controllers;
 
 import ca.bc.gov.nrs.common.wfone.rest.resource.HeaderConstants;
 import ca.bc.gov.nrs.common.wfone.rest.resource.MessageListRsrc;
+import ca.bc.gov.nrs.wfone.common.service.api.NotFoundException;
 import ca.bc.gov.nrs.wfone.common.service.api.ServiceException;
 import ca.bc.gov.nrs.wfprev.common.controllers.CommonController;
 import ca.bc.gov.nrs.wfprev.data.models.ProjectFiscalModel;
@@ -17,10 +18,14 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -85,7 +90,13 @@ public class ProjectFiscalController extends CommonController {
         try {
             ProjectFiscalModel createdModel = projectFiscalService.createProjectFiscal(projectFiscalModel);
             response = ResponseEntity.status(201).body(createdModel);
+        } catch (DataIntegrityViolationException e) {
+            response = badRequest();
+            log.error(" ### DataIntegrityViolationException while creating Project Fiscal", e);
         } catch (ServiceException e) {
+            response = internalServerError();
+            log.error(" ### Service Exception while creating Project Fiscal", e);
+        } catch (Exception e) {
             response = internalServerError();
             log.error(" ### Error while creating Project Fiscal", e);
         }
@@ -115,6 +126,9 @@ public class ProjectFiscalController extends CommonController {
             } else {
                 response = badRequest();
             }
+        } catch (EntityNotFoundException e) {
+            response = notFound();
+            log.warn(" ### Project Fiscal not found with id: {}", id, e);
         } catch (Exception e) {
             // most responses here will actually be Bad Requests, not Internal Server Errors
             // This would be an ideal place to expand the "Catch" and return sensible
@@ -150,5 +164,35 @@ public class ProjectFiscalController extends CommonController {
 
         log.debug(" << getProjectFiscal");
         return response;
+    }
+
+    @DeleteMapping("/{id}")
+    @Operation(summary = "Delete a Project Fiscal Resource",
+            description = "Delete a specific Project Fiscal Resource by its ID",
+            security = @SecurityRequirement(name = "Webade-OAUTH2",
+                    scopes = {"WFPREV"}))
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "No Content"),
+            @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(implementation = MessageListRsrc.class))),
+            @ApiResponse(responseCode = "404", description = "Not Found"),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = MessageListRsrc.class)))
+    })
+    public ResponseEntity<Void> deleteProjectFiscal(@PathVariable("id") String id) {
+        log.debug(" >> deleteProjectFiscal with id: {}", id);
+
+        try {
+            projectFiscalService.deleteProjectFiscal(id);
+            log.debug(" << deleteProjectFiscal success");
+            return ResponseEntity.noContent().build();
+        } catch (EntityNotFoundException e) {
+            log.warn(" ### Project Fiscal not found with id: {}", id, e);
+            return ResponseEntity.notFound().build();
+        } catch (IllegalArgumentException e) {
+            log.warn(" ### Invalid ID provided: {}", id, e);
+            return ResponseEntity.badRequest().build();
+        } catch (Exception e) {
+            log.error(" ### Error while deleting Project Fiscal with id: {}", id, e);
+            return internalServerError();
+        }
     }
 }

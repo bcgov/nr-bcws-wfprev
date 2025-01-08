@@ -1,6 +1,7 @@
 package ca.bc.gov.nrs.wfprev.services;
 
 import ca.bc.gov.nrs.wfprev.data.assemblers.ProjectFiscalResourceAssembler;
+import ca.bc.gov.nrs.wfprev.data.assemblers.ProjectResourceAssembler;
 import ca.bc.gov.nrs.wfprev.data.entities.ProjectEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ProjectFiscalEntity;
 import ca.bc.gov.nrs.wfprev.data.models.ProjectFiscalModel;
@@ -21,21 +22,27 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 class ProjectFiscalServiceTest {
 
     private ProjectFiscalRepository projectFiscalRepository;
     private ProjectFiscalService projectFiscalService;
     private ProjectFiscalResourceAssembler projectFiscalResourceAssembler;
+    private ProjectService projectService;
+    private ProjectResourceAssembler projectResourceAssembler;
+    private ProjectEntity projectEntity;
 
     @BeforeEach
     void setup() {
         projectFiscalRepository = mock(ProjectFiscalRepository.class);
         projectFiscalResourceAssembler = mock(ProjectFiscalResourceAssembler.class);
-        projectFiscalService = new ProjectFiscalService(projectFiscalRepository, projectFiscalResourceAssembler);
+        projectService = mock(ProjectService.class);
+        projectResourceAssembler = mock(ProjectResourceAssembler.class);
+        projectEntity = mock(ProjectEntity.class);
+        projectFiscalService = new ProjectFiscalService(projectFiscalRepository, projectFiscalResourceAssembler, projectService, projectResourceAssembler);
     }
     @Test
     void testGetAllProjectFiscals_Empty() {
@@ -199,81 +206,53 @@ class ProjectFiscalServiceTest {
 
     @Test
     void testCreateProjectFiscal_Success() {
-        // GIVEN I have a project fiscal model
+        // GIVEN a valid ProjectFiscalModel
         ProjectFiscalModel projectFiscalModel = new ProjectFiscalModel();
-        projectFiscalModel.setProjectPlanFiscalGuid("456e7890-e89b-12d3-a456-426614174001");
+        projectFiscalModel.setProjectPlanFiscalGuid("742ae759-e984-4092-8d85-0c65102c7562");
         projectFiscalModel.setProjectGuid("123e4567-e89b-12d3-a456-426614174000");
         projectFiscalModel.setActivityCategoryCode("ACTIVITY_CODE_1");
         projectFiscalModel.setFiscalYear(2021L);
         projectFiscalModel.setAncillaryFundingSourceGuid("789e1234-e89b-12d3-a456-426614174002");
-        projectFiscalModel.setProjectPlanStatusCode("PLAN_STATUS_1");
-        projectFiscalModel.setPlanFiscalStatusCode("FISCAL_STATUS_1");
-        projectFiscalModel.setEndorsementCode("ENDORSEMENT_CODE_1");
-        projectFiscalModel.setProjectFiscalName("Test Project Fiscal 1");
-        projectFiscalModel.setProjectFiscalDescription("Description of Test Project Fiscal 1");
-        projectFiscalModel.setBusinessAreaComment("Business area comment example 1");
-        projectFiscalModel.setEstimatedClwrrAllocAmount(BigDecimal.valueOf(10000));
-        projectFiscalModel.setTotalCostEstimateAmount(BigDecimal.valueOf(50000));
-        projectFiscalModel.setCfsProjectCode("CFS-123");
-        projectFiscalModel.setFiscalFundingRequestAmount(BigDecimal.valueOf(20000));
-        projectFiscalModel.setFiscalFundingAllocRationale("Rationale for funding allocation 1");
-        projectFiscalModel.setFiscalAllocatedAmount(BigDecimal.valueOf(15000));
-        projectFiscalModel.setFiscalAncillaryFundAmount(BigDecimal.valueOf(5000));
-        projectFiscalModel.setFiscalPlannedProjectSizeHa(BigDecimal.valueOf(50));
-        projectFiscalModel.setFiscalPlannedCostPerHaAmt(BigDecimal.valueOf(300));
-        projectFiscalModel.setFiscalReportedSpendAmount(BigDecimal.valueOf(12000));
-        projectFiscalModel.setFiscalActualAmount(BigDecimal.valueOf(10000));
-        projectFiscalModel.setFiscalCompletedSizeHa(BigDecimal.valueOf(45));
-        projectFiscalModel.setFiscalActualCostPerHaAmt(BigDecimal.valueOf(220));
-        projectFiscalModel.setFirstNationsDelivPartInd(true);
-        projectFiscalModel.setFirstNationsEngagementInd(true);
-        projectFiscalModel.setFirstNationsPartner("First Nations Partner Name 1");
-        projectFiscalModel.setOtherPartner("Other Partner Name 1");
-        projectFiscalModel.setResultsNumber("RESULT12345_1");
-        projectFiscalModel.setResultsOpeningId("RESULT_OPEN_ID_1");
-        projectFiscalModel.setResultsContactEmail("test@test.com");
-        projectFiscalModel.setSubmittedByName("Submitter Name 1");
-        projectFiscalModel.setSubmittedByUserGuid("user-guid-12345-1");
-        projectFiscalModel.setSubmittedByUserUserid("user123-1");
-        projectFiscalModel.setSubmissionTimestamp(new Date());
-        projectFiscalModel.setEndorsementEvalTimestamp(new Date());
-        projectFiscalModel.setEndorserName("Endorser Name 1");
-        projectFiscalModel.setEndorserUserGuid("endorser-guid-12345-1");
-        projectFiscalModel.setEndorserUserUserid("endorser123-1");
-        projectFiscalModel.setEndorsementTimestamp(new Date());
-        projectFiscalModel.setEndorsementComment("Endorsement Comment 1");
-        projectFiscalModel.setIsApprovedInd(true);
-        projectFiscalModel.setApproverName("Approver Name 1");
-        projectFiscalModel.setApproverUserGuid("approver-guid-12345-1");
-        projectFiscalModel.setApproverUserUserid("approver123-1");
-        projectFiscalModel.setApprovedTimestamp(new Date());
-        projectFiscalModel.setAccomplishmentsComment("Accomplishments Comment 1");
-        projectFiscalModel.setIsDelayedInd(false);
-        projectFiscalModel.setDelayRationale(null);
-        projectFiscalModel.setAbandonedRationale("Abandoned due to lack of resources");
-        projectFiscalModel.setLastProgressUpdateTimestamp(new Date());
 
-        ProjectFiscalEntity mockedEntity = ProjectFiscalEntity.builder()
-                .projectPlanFiscalGuid(UUID.fromString("456e7890-e89b-12d3-a456-426614174001"))
-                .activityCategoryCode("ACTIVITY_CODE_1")
-                .fiscalYear(BigDecimal.valueOf(2021))
-                .projectPlanStatusCode("PLAN_STATUS_1")
-                .planFiscalStatusCode("FISCAL_STATUS_1")
-                .projectFiscalName("Test Project Fiscal 1")
-                .build();
+        ProjectFiscalEntity projectFiscalEntity = new ProjectFiscalEntity();
+        projectFiscalEntity.setProjectPlanFiscalGuid(UUID.fromString("742ae759-e984-4092-8d85-0c65102c7562"));
+        ProjectEntity projectEntity = new ProjectEntity();
+        projectEntity.setProjectGuid(UUID.fromString("123e4567-e89b-12d3-a456-426614174000"));
+        projectFiscalEntity.setProject(projectEntity);
+        projectFiscalEntity.setActivityCategoryCode("ACTIVITY_CODE_1");
+        projectFiscalEntity.setFiscalYear(new BigDecimal(2021));
 
 
-        // WHEN I create a project fiscal
-        // Mock assembler behavior
-        when(projectFiscalResourceAssembler.toEntity(projectFiscalModel)).thenReturn(mockedEntity);
-        when(projectFiscalResourceAssembler.toModel(mockedEntity)).thenReturn(projectFiscalModel);
+        ProjectFiscalEntity savedEntity = new ProjectFiscalEntity();
+        savedEntity.setProjectPlanFiscalGuid(UUID.fromString("742ae759-e984-4092-8d85-0c65102c7562"));
+        savedEntity.setProject(projectEntity);
+        savedEntity.setActivityCategoryCode("ACTIVITY_CODE_1");
+        savedEntity.setFiscalYear(new BigDecimal(2021));
 
-        // Mock repository behavior
-        when(projectFiscalRepository.save(any(ProjectFiscalEntity.class))).thenReturn(mockedEntity);
-        ProjectFiscalModel createdProjectFiscal = projectFiscalService.createProjectFiscal(projectFiscalModel);
+        ProjectFiscalModel savedModel = new ProjectFiscalModel();
+        savedModel.setProjectPlanFiscalGuid("742ae759-e984-4092-8d85-0c65102c7562");
+        savedModel.setProjectGuid("123e4567-e89b-12d3-a456-426614174000");
+        savedModel.setActivityCategoryCode("ACTIVITY_CODE_1");
+        savedModel.setFiscalYear(2021L);
 
-        // THEN I should get the created project fiscal
-        assertEquals(projectFiscalModel, createdProjectFiscal);
+        // Mock the dependencies
+        when(projectFiscalResourceAssembler.toEntity(eq(projectFiscalModel), any()))
+                .thenReturn(projectFiscalEntity);
+        when(projectFiscalRepository.save(eq(projectFiscalEntity)))
+                .thenReturn(savedEntity);
+        when(projectFiscalResourceAssembler.toModel(eq(savedEntity)))
+                .thenReturn(savedModel);
+
+        // WHEN the createProjectFiscal method is called
+        ProjectFiscalModel result = projectFiscalService.createProjectFiscal(projectFiscalModel);
+
+        // THEN the result should match the expected ProjectFiscalModel
+        assertEquals(savedModel, result);
+
+        // Verify the interactions
+        verify(projectFiscalResourceAssembler).toEntity(eq(projectFiscalModel), any());
+        verify(projectFiscalRepository).save(eq(projectFiscalEntity));
+        verify(projectFiscalResourceAssembler).toModel(eq(savedEntity));
     }
 
     @Test
@@ -343,7 +322,7 @@ class ProjectFiscalServiceTest {
 
         //WHEN I update a project fiscal
         //Mock assembler behavior
-        when(projectFiscalResourceAssembler.toEntity(projectFiscalModel)).thenReturn(mockedEntity);
+        when(projectFiscalResourceAssembler.toEntity(projectFiscalModel, projectEntity)).thenReturn(mockedEntity);
         when(projectFiscalResourceAssembler.toModel(mockedEntity)).thenReturn(projectFiscalModel);
 
         when(projectFiscalRepository.findById(UUID.fromString("456e7890-e89b-12d3-a456-426614174001"))).thenReturn(java.util.Optional.of(mockedEntity));
@@ -395,13 +374,13 @@ class ProjectFiscalServiceTest {
 
         // WHEN I update a project fiscal
         // Mock assembler behavior
-        when(projectFiscalResourceAssembler.toEntity(projectFiscalModel)).thenReturn(null);
+        when(projectFiscalResourceAssembler.toEntity(projectFiscalModel, projectEntity)).thenReturn(null);
         when(projectFiscalResourceAssembler.toModel(null)).thenReturn(null);
 
         when(projectFiscalRepository.findById(UUID.fromString("456e7890-e89b-12d3-a456-426614174001"))).thenReturn(java.util.Optional.empty());
 
         // THEN I should get an EntityNotFoundException
-        Assertions.assertThrows(EntityNotFoundException.class, () -> projectFiscalService.updateProjectFiscal(projectFiscalModel));
+        assertThrows(EntityNotFoundException.class, () -> projectFiscalService.updateProjectFiscal(projectFiscalModel));
 
     }
 
@@ -451,7 +430,7 @@ class ProjectFiscalServiceTest {
 
 
         // WHEN I update a project fiscal
-        when(projectFiscalResourceAssembler.toEntity(projectFiscalModel)).thenReturn(mockedEntity);
+        when(projectFiscalResourceAssembler.toEntity(projectFiscalModel, projectEntity)).thenReturn(mockedEntity);
         when(projectFiscalResourceAssembler.toModel(mockedEntity)).thenReturn(projectFiscalModel);
 
         when(projectFiscalRepository.findById(UUID.fromString("456e7890-e89b-12d3-a456-426614174001"))).thenReturn(java.util.Optional.of(mockedEntity));
@@ -459,7 +438,7 @@ class ProjectFiscalServiceTest {
         when(projectFiscalRepository.saveAndFlush(any(ProjectFiscalEntity.class))).thenThrow(new EntityNotFoundException("Project not found: 456e7890-e89b-12d3-a456-426614174001"));
 
         // THEN I should get an EntityNotFoundException
-        EntityNotFoundException exception = Assertions.assertThrows(EntityNotFoundException.class,
+        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class,
                 () -> projectFiscalService.updateProjectFiscal(projectFiscalModel));
         Assertions.assertEquals("Project not found: 456e7890-e89b-12d3-a456-426614174001", exception.getMessage());
     }
@@ -522,7 +501,7 @@ class ProjectFiscalServiceTest {
 
         // WHEN I update a project fiscal
         // AND the repository throws a DataIntegrityViolationException
-        when(projectFiscalResourceAssembler.toEntity(projectFiscalModel)).thenReturn(null);
+        when(projectFiscalResourceAssembler.toEntity(projectFiscalModel, projectEntity)).thenReturn(null);
         when(projectFiscalResourceAssembler.toModel(null)).thenReturn(null);
 
         when(projectFiscalRepository.findById(any(UUID.class))).thenReturn(java.util.Optional.of(new ProjectFiscalEntity()));
@@ -530,7 +509,7 @@ class ProjectFiscalServiceTest {
         when(projectFiscalRepository.saveAndFlush(any(ProjectFiscalEntity.class))).thenThrow(new DataIntegrityViolationException("Data integrity violation"));
 
         // THEN I should get a DataIntegrityViolationException
-        Assertions.assertThrows(DataIntegrityViolationException.class,
+        assertThrows(DataIntegrityViolationException.class,
                 () -> projectFiscalService.updateProjectFiscal(projectFiscalModel));
     }
 
@@ -560,6 +539,71 @@ class ProjectFiscalServiceTest {
         when(projectFiscalRepository.findById(UUID.fromString("456e7890-e89b-12d3-a456-426614174001"))).thenReturn(Optional.empty());
 
         // THEN I should get an EntityNotFoundException
-        Assertions.assertThrows(EntityNotFoundException.class, () -> projectFiscalService.getProjectFiscal("456e7890-e89b-12d3-a456-426614174001"));
+        assertThrows(EntityNotFoundException.class, () -> projectFiscalService.getProjectFiscal("456e7890-e89b-12d3-a456-426614174001"));
+    }
+
+    @Test
+    void testDeleteAProjectFiscal_Success() {
+        // GIVEN a valid project fiscal ID
+        UUID projectFiscalGuid = UUID.fromString("456e7890-e89b-12d3-a456-426614174001");
+        when(projectFiscalRepository.findById(projectFiscalGuid)).thenReturn(Optional.of(new ProjectFiscalEntity()));
+
+        // WHEN the deleteProjectFiscal method is called
+        projectFiscalService.deleteProjectFiscal("456e7890-e89b-12d3-a456-426614174001");
+
+        // THEN verify the repository interactions
+        verify(projectFiscalRepository).findById(projectFiscalGuid);
+        verify(projectFiscalRepository).deleteById(projectFiscalGuid);
+        verifyNoMoreInteractions(projectFiscalRepository); // Ensure no other interactions occur
+    }
+
+    @Test
+    void testDeleteAProjectFiscal_ResourceNotFound() {
+        // GIVEN a project fiscal ID that does not exist
+        UUID projectFiscalGuid = UUID.fromString("456e7890-e89b-12d3-a456-426614174001");
+        when(projectFiscalRepository.findById(projectFiscalGuid)).thenReturn(Optional.empty());
+
+        // WHEN the deleteProjectFiscal method is called
+        // THEN an EntityNotFoundException should be thrown
+        assertThrows(EntityNotFoundException.class, () ->
+                projectFiscalService.deleteProjectFiscal("456e7890-e89b-12d3-a456-426614174001"));
+
+        // Verify the repository's deleteById is never called
+        verify(projectFiscalRepository, never()).deleteById(any());
+    }
+
+    @Test
+    void testDeleteAProjectFiscal_InvalidUUID() {
+        // GIVEN an invalid UUID
+        String invalidUuid = "invalid-uuid";
+
+        // WHEN the deleteProjectFiscal method is called
+        // THEN an IllegalArgumentException should be thrown
+        assertThrows(IllegalArgumentException.class, () ->
+                projectFiscalService.deleteProjectFiscal(invalidUuid));
+
+        // Verify the repository is never interacted with
+        verifyNoInteractions(projectFiscalRepository);
+    }
+
+    @Test
+    void testDeleteAProjectFiscal_DatabaseError() {
+        // GIVEN a valid project fiscal ID and a database error during deletion
+        UUID projectFiscalGuid = UUID.fromString("456e7890-e89b-12d3-a456-426614174001");
+
+        // Mock findById to return an entity, ensuring deleteById is called
+        when(projectFiscalRepository.findById(projectFiscalGuid)).thenReturn(Optional.of(new ProjectFiscalEntity()));
+
+        // Mock deleteById to throw a DataIntegrityViolationException
+        doThrow(new DataIntegrityViolationException("Database error")).when(projectFiscalRepository).deleteById(projectFiscalGuid);
+
+        // WHEN the deleteProjectFiscal method is called
+        // THEN a DataIntegrityViolationException should be thrown
+        assertThrows(DataIntegrityViolationException.class, () ->
+                projectFiscalService.deleteProjectFiscal("456e7890-e89b-12d3-a456-426614174001"));
+
+        // Verify the repository's findById and deleteById methods are called
+        verify(projectFiscalRepository).findById(projectFiscalGuid);
+        verify(projectFiscalRepository).deleteById(projectFiscalGuid);
     }
 }

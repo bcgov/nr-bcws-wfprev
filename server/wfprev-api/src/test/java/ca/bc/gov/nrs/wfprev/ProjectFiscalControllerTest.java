@@ -9,15 +9,20 @@ import com.nimbusds.jose.shaded.gson.GsonBuilder;
 import com.nimbusds.jose.shaded.gson.JsonDeserializer;
 import com.nimbusds.jose.shaded.gson.JsonPrimitive;
 import com.nimbusds.jose.shaded.gson.JsonSerializer;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.hateoas.CollectionModel;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
@@ -26,8 +31,10 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -82,26 +89,6 @@ class ProjectFiscalControllerTest {
 
     @Test
     @WithMockUser
-    void testUpdateProjectFiscal_NotFound() throws Exception {
-        ProjectFiscalModel inputModel = ProjectFiscalModel.builder()
-                .projectPlanFiscalGuid("123e4567-e89b-12d3-a456-426614174000")
-                .projectGuid("123e4567-e89b-12d3-a456-426614174001")
-                .activityCategoryCode("Tactical Planning")
-                .fiscalYear(2024L)
-                .build();
-
-        String inputJson = gson.toJson(inputModel);
-
-        when(projectFiscalService.updateProjectFiscal(inputModel)).thenReturn(null);
-
-        mockMvc.perform(MockMvcRequestBuilders.put("/projectFiscals/{id}", inputModel.getProjectPlanFiscalGuid())
-                        .content(inputJson)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNotFound());
-    }
-
-    @Test
-    @WithMockUser
     void testUpdateProjectFiscal_BadRequestUpdatedProjectFiscalGuid() throws Exception {
         ProjectFiscalModel inputModel = ProjectFiscalModel.builder()
                 .projectPlanFiscalGuid("123e4567-e89b-12d3-a456-426614174000")
@@ -137,6 +124,26 @@ class ProjectFiscalControllerTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.projectPlanFiscalGuid").value(inputModel.getProjectPlanFiscalGuid()));
+    }
+
+    @Test
+    @WithMockUser
+    void testUpdateProjectFiscal_NotFound() throws Exception {
+        ProjectFiscalModel inputModel = ProjectFiscalModel.builder()
+                .projectPlanFiscalGuid("123e4567-e89b-12d3-a456-426614174000")
+                .projectGuid("123e4567-e89b-12d3-a456-426614174001")
+                .activityCategoryCode("Tactical Planning")
+                .fiscalYear(2024L)
+                .build();
+
+        String inputJson = gson.toJson(inputModel);
+
+        when(projectFiscalService.updateProjectFiscal(inputModel)).thenThrow(new EntityNotFoundException("Not found"));
+
+        mockMvc.perform(MockMvcRequestBuilders.put("/projectFiscals/{id}", inputModel.getProjectPlanFiscalGuid())
+                        .content(inputJson)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
     }
 
     @Test
@@ -259,6 +266,31 @@ class ProjectFiscalControllerTest {
 
     @Test
     @WithMockUser
+    void testCreateProjectFiscal_Duplicate() throws Exception {
+        // GIVEN a ProjectFiscalModel
+        ProjectFiscalModel inputModel = ProjectFiscalModel.builder()
+                .projectPlanFiscalGuid("123e4567-e89b-12d3-a456-426614174000")
+                .projectGuid("123e4567-e89b-12d3-a456-426614174001")
+                .activityCategoryCode("Tactical Planning")
+                .fiscalYear(2024L)
+                .submissionTimestamp(new Date(1672531200000L))
+                .build();
+
+        // WHEN the service throws an EntityExistsException
+
+        when(projectFiscalService.createProjectFiscal(inputModel))
+                .thenThrow(new DataIntegrityViolationException("Duplicate entry detected"));
+
+        // THEN we expect a 400 Bad Request response
+        mockMvc.perform(MockMvcRequestBuilders.post("/projectFiscals")
+                        .content(gson.toJson(inputModel))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+
+    }
+
+    @Test
+    @WithMockUser
     void testCreateProjectFiscal_ServiceException() throws Exception {
         // GIVEN I am creating a new ProjectFiscalModel
         // WHEN the service throws a ServiceException
@@ -361,5 +393,77 @@ class ProjectFiscalControllerTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isInternalServerError())
                 .andExpect(jsonPath("$").doesNotExist());
+    }
+
+    @Test
+    @WithMockUser
+    void testDeleteAProjectFiscal_Success() throws Exception {
+        // GIVEN a valid project fiscal ID
+        String projectFiscalId = "456e7890-e89b-12d3-a456-426614174001";
+        doNothing().when(projectFiscalService).deleteProjectFiscal(projectFiscalId);
+
+        // WHEN the delete endpoint is called
+        mockMvc.perform(delete("/projectFiscals/{id}", projectFiscalId)
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
+                        .accept(MediaType.APPLICATION_JSON))
+                // THEN the response status should be 204 No Content
+                .andExpect(status().isNoContent());
+
+        // THEN the service's delete method should be called once with the correct ID
+        verify(projectFiscalService).deleteProjectFiscal(projectFiscalId);
+    }
+
+    @Test
+    @WithMockUser
+    void testDeleteAProjectFiscal_NotFound() throws Exception {
+        // GIVEN a project fiscal ID that does not exist
+        String projectFiscalId = "456e7890-e89b-12d3-a456-426614174001";
+        doThrow(new EntityNotFoundException("Not found")).when(projectFiscalService).deleteProjectFiscal(projectFiscalId);
+
+        // WHEN the delete endpoint is called
+        mockMvc.perform(delete("/projectFiscals/{id}", projectFiscalId)
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
+                        .accept(MediaType.APPLICATION_JSON))
+                // THEN the response status should be 404 Not Found
+                .andExpect(status().isNotFound());
+
+        // THEN the service's delete method should be called once with the correct ID
+        verify(projectFiscalService).deleteProjectFiscal(projectFiscalId);
+    }
+
+    @Test
+    @WithMockUser
+    void testDeleteAProjectFiscal_InvalidId() throws Exception {
+        // GIVEN an invalid project fiscal ID
+        String invalidId = "invalid-uuid";
+        doThrow(new IllegalArgumentException("Invalid UUID")).when(projectFiscalService).deleteProjectFiscal(invalidId);
+
+        // WHEN the delete endpoint is called
+        mockMvc.perform(delete("/projectFiscals/{id}", invalidId)
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
+                        .accept(MediaType.APPLICATION_JSON))
+                // THEN the response status should be 400 Bad Request
+                .andExpect(status().isBadRequest());
+
+        // THEN the service's delete method should be called once with the invalid ID
+        verify(projectFiscalService).deleteProjectFiscal(invalidId);
+    }
+
+    @Test
+    @WithMockUser
+    void testDeleteAProjectFiscal_InternalServerError() throws Exception {
+        // GIVEN a valid project fiscal ID but an unexpected error occurs
+        String projectFiscalId = "456e7890-e89b-12d3-a456-426614174001";
+        doThrow(new RuntimeException("Unexpected error")).when(projectFiscalService).deleteProjectFiscal(projectFiscalId);
+
+        // WHEN the delete endpoint is called
+        mockMvc.perform(delete("/projectFiscals/{id}", projectFiscalId)
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
+                        .accept(MediaType.APPLICATION_JSON))
+                // THEN the response status should be 500 Internal Server Error
+                .andExpect(status().isInternalServerError());
+
+        // THEN the service's delete method should be called once with the correct ID
+        verify(projectFiscalService).deleteProjectFiscal(projectFiscalId);
     }
 }
