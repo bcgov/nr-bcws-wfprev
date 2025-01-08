@@ -1,16 +1,16 @@
 <div class="details-container">
-    <form [formGroup]="detailsForm" (ngSubmit)="onSave()" class="form-grid">
+    <form [formGroup]="detailsForm" class="form-grid" *ngIf="projectDetail">
       <div class="form-item">
-        <label for="projectTypeCode">Project Type<span class="required">*</span></label>
+        <label>Project Type<span class="required">*</span></label>
         <select id="projectTypeCode" formControlName="projectTypeCode">
-          <option value="FUEL_MGMT">Fuels Management</option>
-          <option value="FIRE_RESP">Fire Response</option>
-          <option value="ECOSYS_RES">Ecosystem Restoration</option>
+          <option *ngFor="let item of projectTypeCode" [value]="item.projectTypeCode">
+            {{ item.description }}
+          </option>
         </select>
       </div>
         
       <div class="form-item">
-        <label>Funding Stream<span class="required">*</span></label>
+        <label>Funding Stream</label>
         <select id="fundingStream" formControlName="fundingStream">
           <option value="fundingStream1">fundingStream1</option>
           <option value="fundingStream2">fundingStream2</option>
@@ -20,11 +20,11 @@
 
       
       <div class="form-item">
-        <label for="projectTypeCode">Business/Program Area<span class="required">*</span></label>
-        <select id="projectTypeCode" formControlName="businessArea">
-          <option value="area1">area1</option>
-          <option value="area2">area2</option>
-          <option value="area3">area3</option>
+        <label>Business/Program Area<span class="required">*</span></label>
+        <select id="programAreaGuid" formControlName="programAreaGuid">
+          <option *ngFor="let item of programAreaCode" [value]="item.programAreaGuid">
+            {{ item.programAreaName }}
+          </option>
         </select>
       </div>
 
@@ -69,27 +69,26 @@
       </div>
 
       <div class="form-item">
-        <label for="projectTypeCode">Forest Region</label>
-        <select id="projectTypeCode" formControlName="forestRegion">
-          <option value="area1">area1</option>
-          <option value="area2">area2</option>
-          <option value="area3">area3</option>
+        <label>Forest Region</label>
+        <select id="forestRegionOrgUnitId" formControlName="forestRegionOrgUnitId">
+          <option *ngFor="let item of forestRegionCode" [value]="item.orgUnitId">
+            {{ item.orgUnitName }}
+          </option>
         </select>
       </div>
 
       <div class="form-item">
         <label> Forest District </label>
-        <input
-          type="text"
-          id="forestDistrict"
-          formControlName="forestDistrict"
-          placeholder="Enter Forest District Name"
-        />
+        <select id="forestDistrictOrgUnitId" formControlName="forestDistrictOrgUnitId">
+          <option *ngFor="let item of forestDistrictCode" [value]="item.orgUnitId">
+            {{ item.orgUnitName }}
+          </option>
+        </select>
       </div>
 
       <div class="form-item">
         <label>Primary Objective<span class="required">*</span></label>
-        <select id="fundingStream" formControlName="fundingStream">
+        <select id="fundingStream" formControlName="primaryObjective">
           <option value="fundingStream1">Primary Objective1</option>
           <option value="fundingStream2">Primary Objective2</option>
           <option value="fundingStream3">Primary Objective3</option>
@@ -98,7 +97,7 @@
 
       <div class="form-item">
         <label>Secondary Objective</label>
-        <select id="fundingStream" formControlName="fundingStream">
+        <select id="fundingStream" formControlName="secondaryObjective">
           <option value="fundingStream1">Secondary Objective1</option>
           <option value="fundingStream2">Secondary Objective2</option>
           <option value="fundingStream3">Secondary Objective3</option>
@@ -110,34 +109,33 @@
         <input
           type="number"
           id="totalFundingRequestAmount"
-          formControlName="totalFundingRequestAmount"
+          formControlName="secondaryObjectiveRationale"
           placeholder="Enter Secondary Objective Rationale"
         />
       </div>
 
       <div class="form-item">
         <label> BC Parks Region </label>
-        <input
-          type="text"
-          id="bcParksRegion"
-          formControlName="bcParksRegion"
-          placeholder="Enter BC PARKS REGION"
-        />
+        <select id="bcParksRegionOrgUnitId" formControlName="bcParksRegionOrgUnitId">
+          <option *ngFor="let item of bcParksRegionCode" [value]="item.orgUnitId">
+            {{ item.orgUnitName }}
+          </option>
+        </select>
       </div>
 
       <div class="form-item">
-        <label>BC Parks District</label>
-        <select id="bcParksDistrict" formControlName="bcParksDistrict">
-          <option value="bcParksDistrict1">bcParksDistrict1</option>
-          <option value="bcParksDistrict2">bcParksDistrict2</option>
-          <option value="bcParksDistrict3">bcParksDistrict3</option>
+        <label>BC Parks Section</label>
+        <select id="bcParksSectionOrgUnitId" formControlName="bcParksSectionOrgUnitId">
+          <option *ngFor="let item of bcParksSectionCode" [value]="item.orgUnitId">
+            {{ item.orgUnitName }}
+          </option>
         </select>
       </div>
   
       <div class="footer">
           <div class="button-row">
             <button class="secondary" (click)="onCancel()">Cancel</button>
-            <button
+            <button type="button" (click)="onSave()"
               [disabled]="!detailsForm.valid || !detailsForm.dirty"
               class="primary">Save
             </button>
@@ -178,7 +176,7 @@
                 <div class="project-description-footer">
                     <div class="button-row">
                         <button class="secondary" (click)="onCancel()">Cancel</button>
-                        <button class="primary" [disabled]="!detailsForm.get('projectDescription')?.dirty">
+                        <button class="primary" [disabled]="!detailsForm.get('projectDescription')?.dirty" (click)="onSave()">
                           Save
                         </button>
                     </div>
@@ -198,10 +196,9 @@
               <input
                 type="text"
                 id="coordinates"
-                formControlName="coordinates"
+                formControlName="latitude"
                 placeholder="Enter Latitude/Longitude"
               />
-              <!-- <button type="button" (click)="onSaveLatLong()">Save</button> -->
                 <button
                 class="save-button" 
                 (click)="onSaveLatLong()">
