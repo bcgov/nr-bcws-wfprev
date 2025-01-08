@@ -25,14 +25,14 @@ describe('ProjectDetailsComponent', () => {
   describe('Form Initialization', () => {
     it('should initialize the form with sample data', () => {
       const formValues = component.detailsForm.value;
-      expect(formValues.projectLead).toEqual(component.sampleData.projectLead);
+      expect(formValues.projectLead).toEqual(component.projectDetail.projectLead);
       expect(formValues.projectLeadEmailAddress).toEqual(
-        component.sampleData.projectLeadEmailAddress
+        component.projectDetail.projectLeadEmailAddress
       );
       expect(formValues.projectTypeCode).toEqual(
-        component.sampleData.projectTypeCode.projectTypeCode
+        component.projectDetail.projectTypeCode.projectTypeCode
       );
-      expect(formValues.coordinates).toEqual(component.sampleData.coordinates);
+      expect(formValues.coordinates).toEqual(component.projectDetail.coordinates);
     });
 
     it('should mark the form as invalid if required fields are missing', () => {
@@ -76,7 +76,7 @@ describe('ProjectDetailsComponent', () => {
   describe('Integration Tests', () => {
     it('should display form inputs with correct initial values', () => {
       const projectLeadInput = fixture.nativeElement.querySelector('#projectLead');
-      expect(projectLeadInput.value).toBe(component.sampleData.projectLead);
+      expect(projectLeadInput.value).toBe(component.projectDetail.projectLead);
     });
 
     it('should update form values when inputs are changed', () => {

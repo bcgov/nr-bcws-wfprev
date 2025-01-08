@@ -213,7 +213,7 @@ export class CreateNewProjectDialogComponent implements OnInit {
           }
           else{
             this.snackbarService.open(
-              "Create project failed",
+              this.messages.projectCreatedFailure,
               'OK',
               { duration: 5000, panelClass: 'snackbar-error' }
             );
