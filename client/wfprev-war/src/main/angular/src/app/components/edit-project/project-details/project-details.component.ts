@@ -78,7 +78,7 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit{
     });
   }
 
-  private loadProjectDetails(): void {
+  loadProjectDetails(): void {
     this.projectGuid = this.route.snapshot?.queryParamMap?.get('projectGuid') || '';
     if (!this.projectGuid) return;
   
@@ -103,7 +103,7 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit{
     });
   }
 
-  private populateFormWithProjectDetails(data: any): void {
+  populateFormWithProjectDetails(data: any): void {
     this.detailsForm.patchValue({
       projectTypeCode: data.projectTypeCode?.projectTypeCode || '',
       fundingStream: data.fundingStream,
@@ -125,7 +125,7 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit{
     });
   }
 
-  private loadCodeTables(): void {
+  loadCodeTables(): void {
     const codeTables = [
       { name: 'projectTypeCodes', embeddedKey: 'projectTypeCode' },
       { name: 'programAreaCodes', embeddedKey: 'programAreaCode' },
@@ -147,7 +147,7 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit{
       });
     });
   }
-  private assignCodeTableData(key: string, data: any): void {
+  assignCodeTableData(key: string, data: any): void {
     switch (key) {
       case 'projectTypeCode':
         this.projectTypeCode = data._embedded.projectTypeCode || [];
