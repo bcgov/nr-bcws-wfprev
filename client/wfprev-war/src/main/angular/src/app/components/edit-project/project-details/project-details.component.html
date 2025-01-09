@@ -166,17 +166,19 @@
               </mat-panel-title>
             </mat-expansion-panel-header>
             <div class="project-form">
-                <form [formGroup]="detailsForm" class="project-description">
+                <form class="project-description">
                     <textarea
-                      formControlName="projectDescription"
+                      [(ngModel)]="projectDescription"
+                      name="projectDescription"
                       rows="10"
                       class="editable-description"
                       placeholder="Enter project description"
+                      (ngModelChange)="onProjectDescriptionChange($event)"
                     ></textarea>
                 <div class="project-description-footer">
                     <div class="button-row">
-                        <button class="secondary" (click)="onCancel()">Cancel</button>
-                        <button class="primary" [disabled]="!detailsForm.get('projectDescription')?.dirty" (click)="onSave()">
+                        <button class="secondary" (click)="onCancelProjectDescription()">Cancel</button>
+                        <button class="primary" [disabled]="!isProjectDescriptionDirty" (click)="onSaveProjectDescription()">
                           Save
                         </button>
                     </div>
