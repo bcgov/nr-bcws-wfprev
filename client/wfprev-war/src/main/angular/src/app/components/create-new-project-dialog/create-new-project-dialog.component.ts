@@ -8,6 +8,9 @@ import { Messages } from 'src/app/utils/messages';
 import { ProjectService } from 'src/app/services/project-services';
 import { CodeTableServices } from 'src/app/services/code-table-services';
 import { Project } from 'src/app/components/models';
+import {
+  validateLatLong,
+} from 'src/app/utils/tools';
 @Component({
   selector: 'app-create-new-project-dialog',
   standalone: true,
@@ -119,45 +122,20 @@ export class CreateNewProjectDialogComponent implements OnInit {
   onCreate(): void {
     if (this.projectForm.valid) {
       const latLong = this.projectForm.get('latLong')?.value ?? '';
-      let latitude = null;
-      let longitude = null;
+      const validatedLatLong = validateLatLong(latLong);
 
-      if (latLong) {
-        const parts = latLong.split(',').map((part: string) => part.trim());
-        if (parts.length === 2) {
-          const lat = parseFloat(parts[0]);
-          const long = parseFloat(parts[1]);
-      
-          // Validate latitude and longitude range for BC
-          if (
-            !isNaN(lat) &&
-            !isNaN(long) &&
-            lat >= 48.3 &&
-            lat <= 60 &&
-            long >= -139 &&
-            long <= -114
-          ) {
-            latitude = lat;
-            longitude = long;
-          } else {
-            // Show an error message if latLong is outside BC's boundaries
-            this.snackbarService.open(
-              'Latitude and longitude must fall within British Columbia (Lat: 48.3–60, Long: -139 to -114).',
-              'OK',
-              { duration: 5000, panelClass: 'snackbar-error' }
-            );
-            return;
-          }
-        } else {
-          // Show an error message if latLong is in an invalid format
-          this.snackbarService.open(
-            'Invalid latitude and longitude format.',
-            'OK',
-            { duration: 5000, panelClass: 'snackbar-error' }
-          );
-          return; // Exit the method if latLong is invalid
-        }
+      if (!validatedLatLong) {
+        // Show an error message if latLong is invalid
+        this.snackbarService.open(
+          'Invalid latitude and longitude. Please ensure it is in the correct format and within BC boundaries.',
+          'OK',
+          { duration: 5000, panelClass: 'snackbar-error' }
+        );
+        return; // Exit the method if latLong is invalid
       }
+  
+      const { latitude, longitude } = validatedLatLong;
+  
 
       const newProject: Project = {
         projectName: this.projectForm.get('projectName')?.value ?? '',

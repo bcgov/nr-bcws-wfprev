@@ -192,22 +192,26 @@
     <div class="map-section">
         <div id="map"></div>
         <div class="latlong-section">
-          <form [formGroup]="detailsForm">
+          <form>
             <label for="coordinates">Latitude/Longitude:</label>
             <div class="input-group">
               <input
                 type="text"
                 id="coordinates"
-                formControlName="latitude"
-                placeholder="Enter Latitude/Longitude"
+                [(ngModel)]="latLong"
+                name="latLong"
+                placeholder="Enter Latitude/Longitude (e.g., 56.9835° N, 127.3656° W)"
+                (ngModelChange)="onLatLongChange($event)"
               />
-                <button
-                class="save-button" 
-                (click)="onSaveLatLong()">
+              <button
+                class="save-button"
+                [disabled]="!isLatLongDirty"
+                (click)="onSaveLatLong()"
+              >
                 Save
-                </button>
+              </button>
             </div>
           </form>
         </div>
-      </div>
+    </div>
   </div>

@@ -1,5 +1,4 @@
 import { CommonModule } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
 import { AfterViewInit, Component, EventEmitter, OnInit, Output  } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatExpansionModule } from '@angular/material/expansion';
@@ -10,6 +9,10 @@ import { CodeTableServices } from 'src/app/services/code-table-services';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Messages } from 'src/app/utils/messages';
 import { FormsModule } from '@angular/forms';
+import {
+  validateLatLong,
+  formatLatLong,
+} from 'src/app/utils/tools';
 @Component({
   selector: 'app-project-details',
   standalone: true,
@@ -21,6 +24,7 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit{
   @Output() projectNameChange = new EventEmitter<string>();
 
   private map: L.Map | undefined;
+  private marker: L.Marker | undefined;
   private projectGuid = '';
   messages = Messages;
   detailsForm: FormGroup = this.fb.group({});
@@ -33,6 +37,8 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit{
   projectDetail: any;
   projectDescription: string = '';
   isProjectDescriptionDirty: boolean = false;
+  latLong: string = ''; 
+  isLatLongDirty: boolean = false;
 
   projectTypeCode: any[] = [];
   programAreaCode: any[] = [];
@@ -89,6 +95,11 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit{
       next: (data) => {
         this.projectDetail = data;
         this.projectNameChange.emit(data.projectName);
+        this.latLong = formatLatLong(data.latitude, data.longitude);
+        if (data.latitude && data.longitude) {
+          this.updateMap(data.latitude, data.longitude);
+        }
+        this.isLatLongDirty = false;
         this.populateFormWithProjectDetails(data);
         this.originalFormValues = this.detailsForm.getRawValue();
         this.projectDescription = data.projectDescription;
@@ -107,6 +118,12 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit{
       },
     });
   }
+  
+  onLatLongChange(newLatLong: string): void {
+    const parsed = validateLatLong(newLatLong);
+    this.isLatLongDirty = !!parsed; // Set dirty flag if valid
+  }
+  
 
   populateFormWithProjectDetails(data: any): void {
     this.patchFormValues(data);
@@ -158,23 +175,30 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit{
   }
 
   updateMap(latitude: number, longitude: number): void {
-    if (this.map) {
-      this.map.setView([latitude, longitude], 13);
-      L.marker([latitude, longitude]).addTo(this.map);
-      return;
+    if (this.marker) {
+      // Remove the previous marker if it exists
+      this.map?.removeLayer(this.marker);
     }
-  
-    this.map = L.map('map', {
+
+    this.marker = L.marker([latitude, longitude]).addTo(this.map || L.map('map', {
       center: [latitude, longitude],
       zoom: 13,
       zoomControl: false,
-    });
+    }));
   
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '© OpenStreetMap contributors',
-    }).addTo(this.map);
+    if (!this.map) {
+      this.map = L.map('map', {
+        center: [latitude, longitude],
+        zoom: 13,
+        zoomControl: false,
+      });
   
-    L.marker([latitude, longitude]).addTo(this.map);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors',
+      }).addTo(this.map);
+    } else {
+      this.map.setView([latitude, longitude], 13);
+    }
   }
   
   ngAfterViewInit(): void {
@@ -308,11 +332,6 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit{
             },
             error: (err) => {
               console.error('Error fetching updated project details:', err);
-              this.snackbarService.open(
-                'Failed to fetch updated project details.',
-                'OK',
-                { duration: 5000, panelClass: 'snackbar-error' }
-              );
             },
           });
         },
@@ -329,16 +348,56 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit{
   
 
   onSaveLatLong(): void {
-    if (this.latLongForm.valid) {
-      const { latitude, longitude } = this.latLongForm.value;
-
-      // Update the map and backend
-      this.updateMap(latitude, longitude);
-      console.log('Latitude/Longitude saved:', latitude, longitude);
+    const parsed = validateLatLong(this.latLong);
+  
+    if (parsed && this.isLatLongDirty) {
+      const { latitude, longitude } = parsed;
+  
+      const updatedProject = {
+        ...this.projectDetail,
+        latitude,
+        longitude,
+      };
+  
+      this.projectService.updateProject(this.projectGuid, updatedProject).subscribe({
+        next: () => {
+          this.snackbarService.open(
+            this.messages.projectUpdatedSuccess,
+            'OK',
+            { duration: 3000, panelClass: 'snackbar-success' }
+          );
+          this.projectService.getProjectByProjectGuid(this.projectGuid).subscribe({
+            next: (data) => {
+              this.projectDetail = data;
+              this.latLong = formatLatLong(data.latitude, data.longitude);
+              this.isLatLongDirty = false;
+              this.updateMap(data.latitude, data.longitude);
+            },
+            error: (err) => {
+              console.error('Error fetching updated project details:', err);
+            },
+          });
+        },
+        error: (err) => {
+          console.error('Error saving latitude/longitude:', err);
+          this.snackbarService.open(
+            this.messages.projectUpdatedFailure,
+            'OK',
+            { duration: 3000, panelClass: 'snackbar-error' }
+          );
+        },
+      });
     } else {
-      console.error('Latitude/Longitude form is invalid!');
+      // Show appropriate error messages based on validation failure
+      this.snackbarService.open(
+        'Invalid latitude/longitude. Please ensure it is in the correct format and within BC boundaries.',
+        'OK',
+        { duration: 5000, panelClass: 'snackbar-error' }
+      );
     }
   }
+  
+  
 
   onCancel(): void {
     // Reset form to original values
