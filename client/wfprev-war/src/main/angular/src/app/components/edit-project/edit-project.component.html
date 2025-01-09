@@ -6,7 +6,7 @@
         <!-- Details Tab -->
         <mat-tab label="Details">
             <div class="details-tab">
-                <app-project-details></app-project-details>
+                <app-project-details (projectNameChange)="projectName = $event"></app-project-details>
             </div>
         </mat-tab>
     

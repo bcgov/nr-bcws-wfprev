@@ -1,94 +1,204 @@
 import { CommonModule } from '@angular/common';
-import { AfterViewInit, Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, OnInit, Output  } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatExpansionModule } from '@angular/material/expansion';
+import { ActivatedRoute } from '@angular/router';
 import L from 'leaflet';
-
+import { ProjectService } from 'src/app/services/project-services';
+import { CodeTableServices } from 'src/app/services/code-table-services';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { Messages } from 'src/app/utils/messages';
+import { FormsModule } from '@angular/forms';
+import {
+  validateLatLong,
+  formatLatLong,
+} from 'src/app/utils/tools';
 @Component({
   selector: 'app-project-details',
   standalone: true,
-  imports: [ReactiveFormsModule,MatExpansionModule,CommonModule],
+  imports: [ReactiveFormsModule,MatExpansionModule,CommonModule,FormsModule],
   templateUrl: './project-details.component.html',
   styleUrl: './project-details.component.scss'
 })
 export class ProjectDetailsComponent implements OnInit, AfterViewInit{
+  @Output() projectNameChange = new EventEmitter<string>();
 
   private map: L.Map | undefined;
+  private marker: L.Marker | undefined;
+  private projectGuid = '';
+  messages = Messages;
+  detailsForm: FormGroup = this.fb.group({});
+  originalFormValues: any = {};
+  latLongForm: FormGroup = this.fb.group({
+    latitude: [''],
+    longitude: [''],
+  });
 
-  detailsForm!: FormGroup;
+  projectDetail: any;
+  projectDescription: string = '';
+  isProjectDescriptionDirty: boolean = false;
+  latLong: string = ''; 
+  isLatLongDirty: boolean = false;
 
-  sampleData = {
-    projectTypeCode: {
-      projectTypeCode: "FUEL_MGMT",
-    },
-    projectNumber: 12345,
-    siteUnitName: "Vancouver Forest Unit",
-    forestAreaCode: {
-      forestAreaCode: "WEST",
-    },
-    generalScopeCode: {
-      generalScopeCode: "SL_ACT",
-    },
-    programAreaGuid: "27602cd9-4b6e-9be0-e063-690a0a0afb50",
-    projectName: "Sample Forest Management Project",
-    projectLead: "Jane Smith",
-    projectLeadEmailAddress: "jane.smith@example.com",
-    projectDescription:
-      "This is a comprehensive forest management project focusing on sustainable practices",
-    closestCommunityName: "Vancouver",
-    totalFundingRequestAmount: 100000.0,
-    totalAllocatedAmount: 95000.0,
-    totalPlannedProjectSizeHa: 500.0,
-    totalPlannedCostPerHectare: 200.0,
-    totalActualAmount: 0.0,
-    isMultiFiscalYearProj: false,
-    forestRegionOrgUnitId: 1001,
-    forestDistrictOrgUnitId: 2001,
-    fireCentreOrgUnitId: 3001,
-    bcParksRegionOrgUnitId: 4001,
-    bcParksSectionOrgUnitId: 5001,
-    coordinates:[48.407326,-123.329773],
-    primaryObjective: 'Objective1'
-  };
+  projectTypeCode: any[] = [];
+  programAreaCode: any[] = [];
+  forestRegionCode: any[] = [];
+  forestDistrictCode: any[] = [];
+  bcParksRegionCode: any[] = [];
+  bcParksSectionCode: any[] = [];
 
-  constructor(private fb: FormBuilder) {}
+  constructor(
+    private readonly fb: FormBuilder,
+    private readonly route: ActivatedRoute,
+    private readonly projectService: ProjectService,
+    private readonly codeTableService: CodeTableServices,
+    private readonly snackbarService: MatSnackBar,
+  ) {}
 
   ngOnInit(): void {
+    this.initializeForm();
+    this.loadCodeTables();
+    this.loadProjectDetails();
+  }
+
+  private initializeForm(): void {
     this.detailsForm = this.fb.group({
-      projectLead: [this.sampleData.projectLead],
-      projectLeadEmailAddress: [
-        this.sampleData.projectLeadEmailAddress,
-        [Validators.email],
-      ],
-      projectTypeCode: [
-        this.sampleData.projectTypeCode.projectTypeCode,
-        [Validators.required],
-      ],
-      businessArea: [
-        this.sampleData.projectTypeCode.projectTypeCode,
-        [Validators.required],
-      ],
-      forestRegion: [
-        this.sampleData.forestRegionOrgUnitId,
-      ],
-      forestDistrict: [this.sampleData.forestDistrictOrgUnitId],
-      bcParksRegion: [this.sampleData.bcParksRegionOrgUnitId],
-      bcParksDistrict: [this.sampleData.bcParksSectionOrgUnitId],
-      siteUnitName: [this.sampleData.siteUnitName],
-      closestCommunityName: [this.sampleData.closestCommunityName, [Validators.required]],
-      fundingStream: [Validators.required],
-      totalFundingRequestAmount: [
-        this.sampleData.totalFundingRequestAmount,
-      ],
-      totalAllocatedAmount: [
-        this.sampleData.totalAllocatedAmount,
-      ],
-      projectDescription: [this.sampleData.projectDescription],
-      coordinates :[this.sampleData.coordinates],
-      primaryObjective: [this.sampleData.primaryObjective, [Validators.required]]
+      projectTypeCode: ['', [Validators.required]],
+      fundingStream: [''],
+      programAreaGuid: ['', [Validators.required]],
+      projectLead: [''],
+      projectLeadEmailAddress: ['', [Validators.email]],
+      siteUnitName: [''],
+      closestCommunityName: ['', [Validators.required]],
+      forestRegionOrgUnitId: [''],
+      forestDistrictOrgUnitId: [''],
+      primaryObjective: [''],
+      secondaryObjective: [''],
+      secondaryObjectiveRationale: [''],
+      bcParksRegionOrgUnitId: [''],
+      bcParksSectionOrgUnitId: [''],
+      projectDescription: [''],
+      latitude: [''],
+      longitude: [''],
     });
+    this.latLongForm = this.fb.group({
+      latitude: ['', Validators.required],
+      longitude: ['', Validators.required],
+    });
+  }
 
+  loadProjectDetails(): void {
+    this.projectGuid = this.route.snapshot?.queryParamMap?.get('projectGuid') || '';
+    if (!this.projectGuid) return;
+  
+    this.projectService.getProjectByProjectGuid(this.projectGuid).subscribe({
+      next: (data) => {
+        this.projectDetail = data;
+        this.projectNameChange.emit(data.projectName);
+        this.latLong = formatLatLong(data.latitude, data.longitude);
+        if (data.latitude && data.longitude) {
+          this.updateMap(data.latitude, data.longitude);
+        }
+        this.isLatLongDirty = false;
+        this.populateFormWithProjectDetails(data);
+        this.originalFormValues = this.detailsForm.getRawValue();
+        this.projectDescription = data.projectDescription;
+        this.isProjectDescriptionDirty = false; 
+        this.latLongForm.patchValue({
+          latitude: data.latitude,
+          longitude: data.longitude,
+        });
+        if (data.latitude && data.longitude) {
+          this.updateMap(data.latitude, data.longitude);
+        }
+      },
+      error: (err) => {
+        console.error('Error fetching project details:', err);
+        this.projectDetail = null;
+      },
+    });
+  }
+  
+  onLatLongChange(newLatLong: string): void {
+    const parsed = validateLatLong(newLatLong);
+    this.isLatLongDirty = !!parsed; // Set dirty flag if valid
+  }
+  
 
+  populateFormWithProjectDetails(data: any): void {
+    this.patchFormValues(data);
+  }
+
+  loadCodeTables(): void {
+    const codeTables = [
+      { name: 'projectTypeCodes', embeddedKey: 'projectTypeCode' },
+      { name: 'programAreaCodes', embeddedKey: 'programAreaCode' },
+      { name: 'forestRegionCodes', embeddedKey: 'forestRegionCode' },
+      { name: 'forestDistrictCodes', embeddedKey: 'forestDistrictCode' },
+      { name: 'bcParksRegionCodes', embeddedKey: 'bcParksRegionCode' },
+      { name: 'bcParksSectionCodes', embeddedKey: 'bcParksSectionCode' },
+    ];
+  
+    codeTables.forEach((table) => {
+      this.codeTableService.fetchCodeTable(table.name).subscribe({
+        next: (data) => {
+          this.assignCodeTableData(table.embeddedKey, data);
+        },
+        error: (err) => {
+          console.error(`Error fetching ${table.name}`, err);
+          this.assignCodeTableData(table.embeddedKey, []); // Assign empty array on error
+        },
+      });
+    });
+  }
+  assignCodeTableData(key: string, data: any): void {
+    switch (key) {
+      case 'projectTypeCode':
+        this.projectTypeCode = data._embedded.projectTypeCode || [];
+        break;
+      case 'programAreaCode':
+        this.programAreaCode = data._embedded.programArea || [];
+        break;
+      case 'forestRegionCode':
+        this.forestRegionCode = data._embedded.forestRegionCode || [];
+        break;
+      case 'forestDistrictCode':
+        this.forestDistrictCode = data._embedded.forestDistrictCode || [];
+        break;
+      case 'bcParksRegionCode':
+        this.bcParksRegionCode = data._embedded.bcParksRegionCode || [];
+        break;
+      case 'bcParksSectionCode':
+        this.bcParksSectionCode = data._embedded.bcParksSectionCode || [];
+        break;
+    }
+  }
+
+  updateMap(latitude: number, longitude: number): void {
+    if (this.marker) {
+      // Remove the previous marker if it exists
+      this.map?.removeLayer(this.marker);
+    }
+
+    this.marker = L.marker([latitude, longitude]).addTo(this.map || L.map('map', {
+      center: [latitude, longitude],
+      zoom: 13,
+      zoomControl: false,
+    }));
+  
+    if (!this.map) {
+      this.map = L.map('map', {
+        center: [latitude, longitude],
+        zoom: 13,
+        zoomControl: false,
+      });
+  
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors',
+      }).addTo(this.map);
+    } else {
+      this.map.setView([latitude, longitude], 13);
+    }
   }
   
   ngAfterViewInit(): void {
@@ -97,12 +207,18 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit{
     });
   }
 
+  combineCoordinates(latitude: number | string, longitude: number | string): string {
+    if (!latitude || !longitude) {
+      return '';
+    }
+    return `${latitude}, ${longitude}`;
+  }
+
   initMap(): void {
     if (this.map) {
       return;
     }
     this.map = L.map('map', {
-      center: [this.sampleData.coordinates[0], this.sampleData.coordinates[1]],
       zoom: 13,
       zoomControl: false, 
     });
@@ -113,25 +229,178 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit{
     
 
     // Add a marker at the project's coordinates
-    L.marker([this.sampleData.coordinates[0], this.sampleData.coordinates[1]]).addTo(this.map);
-
     // Bind a popup to the marker
     // marker.bindPopup('Project Location: ' + this.sampleData.projectName).openPopup();
   }
 
+  patchFormValues(data: any): void {
+    this.detailsForm.patchValue({
+      projectTypeCode: data.projectTypeCode?.projectTypeCode || '',
+      fundingStream: data.fundingStream,
+      programAreaGuid: data.programAreaGuid || '',
+      projectLead: data.projectLead,
+      projectLeadEmailAddress: data.projectLeadEmailAddress,
+      siteUnitName: data.siteUnitName,
+      closestCommunityName: data.closestCommunityName,
+      forestRegionOrgUnitId: data.forestRegionOrgUnitId,
+      forestDistrictOrgUnitId: data.forestDistrictOrgUnitId,
+      primaryObjective: data.primaryObjective,
+      secondaryObjective: data.secondaryObjective,
+      secondaryObjectiveRationale: data.secondaryObjectiveRationale,
+      bcParksRegionOrgUnitId: data.bcParksRegionOrgUnitId,
+      bcParksSectionOrgUnitId: data.bcParksSectionOrgUnitId,
+      latitude: data.latitude,
+      longitude: data.longitude,
+    });
+  }
+
   onSave(): void {
     if (this.detailsForm.valid) {
-      // Submit the form data or perform actions here
+        const updatedProject = {
+          ...this.projectDetail,
+          ...this.detailsForm.value,
+          forestRegionOrgUnitId: Number(this.detailsForm.get('forestRegionOrgUnitId')?.value),
+          forestDistrictOrgUnitId: Number(this.detailsForm.get('forestDistrictOrgUnitId')?.value),
+          bcParksRegionOrgUnitId: Number(this.detailsForm.get('bcParksRegionOrgUnitId')?.value),
+          bcParksSectionOrgUnitId: Number(this.detailsForm.get('bcParksSectionOrgUnitId')?.value),
+          projectTypeCode: this.detailsForm.get('projectTypeCode')?.value
+          ? { projectTypeCode: this.detailsForm.get('projectTypeCode')?.value} : this.projectDetail.projectTypeCode,
+          forestAreaCode: {
+            forestAreaCode: "COAST",
+          },
+        };
+        this.projectService.updateProject(this.projectGuid, updatedProject).subscribe({
+          next: () => {
+            this.snackbarService.open(
+              this.messages.projectUpdatedSuccess,
+              'OK',
+              { duration: 10000, panelClass: 'snackbar-success' }
+            );
+            this.projectService.getProjectByProjectGuid(this.projectGuid).subscribe({
+              next :(data) =>{
+                this.projectDetail = data; // Update the local projectDetail
+                this.patchFormValues(data); // Update the form with the latest data
+                this.originalFormValues = this.detailsForm.getRawValue(); // Update original form values
+                this.detailsForm.markAsPristine(); // Mark the form as pristine
+              }
+            })
+          },
+          error: (error) => {
+            this.snackbarService.open(
+              this.messages.projectUpdatedFailure,
+              'OK',
+              { duration: 5000, panelClass: 'snackbar-error' }
+            );
+          },
+        });
     } else {
       console.error('Form is invalid!');
     }
   }
 
-  onSaveLatLong() : void{
-
+  onProjectDescriptionChange(newDescription: string): void {
+    this.isProjectDescriptionDirty = this.projectDescription !== this.projectDetail?.projectDescription;
   }
 
+  onCancelProjectDescription(): void {
+    if (this.projectDetail) {
+      this.projectDescription = this.projectDetail.projectDescription;
+      this.isProjectDescriptionDirty = false; 
+    }
+  }
+
+  onSaveProjectDescription(): void {
+    if (this.isProjectDescriptionDirty) {
+      const updatedProject = {
+        ...this.projectDetail,
+        projectDescription: this.projectDescription,
+      };
+
+      this.projectService.updateProject(this.projectGuid, updatedProject).subscribe({
+        next: () => {
+          this.snackbarService.open(
+            this.messages.projectUpdatedSuccess,
+            'OK',
+            { duration: 10000, panelClass: 'snackbar-success' }
+          );
+          // Re-fetch the project details
+          this.projectService.getProjectByProjectGuid(this.projectGuid).subscribe({
+            next: (data) => {
+              this.projectDetail = data;
+              this.projectDescription = data.projectDescription; // Update local description
+              this.isProjectDescriptionDirty = false; // Reset dirty flag
+            },
+            error: (err) => {
+              console.error('Error fetching updated project details:', err);
+            },
+          });
+        },
+        error: (error) => {
+          this.snackbarService.open(
+            this.messages.projectUpdatedFailure,
+            'OK',
+            { duration: 5000, panelClass: 'snackbar-error' }
+          );
+        },
+      });
+    }
+  }
+  
+
+  onSaveLatLong(): void {
+    const parsed = validateLatLong(this.latLong);
+  
+    if (parsed && this.isLatLongDirty) {
+      const { latitude, longitude } = parsed;
+  
+      const updatedProject = {
+        ...this.projectDetail,
+        latitude,
+        longitude,
+      };
+  
+      this.projectService.updateProject(this.projectGuid, updatedProject).subscribe({
+        next: () => {
+          this.snackbarService.open(
+            this.messages.projectUpdatedSuccess,
+            'OK',
+            { duration: 3000, panelClass: 'snackbar-success' }
+          );
+          this.projectService.getProjectByProjectGuid(this.projectGuid).subscribe({
+            next: (data) => {
+              this.projectDetail = data;
+              this.latLong = formatLatLong(data.latitude, data.longitude);
+              this.isLatLongDirty = false;
+              this.updateMap(data.latitude, data.longitude);
+            },
+            error: (err) => {
+              console.error('Error fetching updated project details:', err);
+            },
+          });
+        },
+        error: (err) => {
+          console.error('Error saving latitude/longitude:', err);
+          this.snackbarService.open(
+            this.messages.projectUpdatedFailure,
+            'OK',
+            { duration: 3000, panelClass: 'snackbar-error' }
+          );
+        },
+      });
+    } else {
+      // Show appropriate error messages based on validation failure
+      this.snackbarService.open(
+        'Invalid latitude/longitude. Please ensure it is in the correct format and within BC boundaries.',
+        'OK',
+        { duration: 5000, panelClass: 'snackbar-error' }
+      );
+    }
+  }
+  
+  
+
   onCancel(): void {
-    this.detailsForm.reset();
+    // Reset form to original values
+    this.detailsForm.reset(this.originalFormValues);
   }
 }

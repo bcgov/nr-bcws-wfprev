@@ -10,14 +10,8 @@ import { ProjectDetailsComponent } from 'src/app/components/edit-project/project
   templateUrl: './edit-project.component.html',
   styleUrl: './edit-project.component.scss'
 })
-export class EditProjectComponent implements OnInit {
+export class EditProjectComponent {
   projectName: string | null = null;
 
-  constructor(private route: ActivatedRoute) {}
-  ngOnInit(): void {
-    this.route.queryParamMap.subscribe((params) => {
-      this.projectName = params.get('name');
-    });
-  }
-
+  constructor() {}
 }
