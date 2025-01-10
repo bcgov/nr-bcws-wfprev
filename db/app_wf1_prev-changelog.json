@@ -702,7 +702,7 @@
           }
         ],
         "rollback": [
-          { "sql": "DELETE FROM wfprev.load_objective_type_code" },
+          { "sql": "DELETE FROM wfprev.objective_type_code" },
           { "sql": "DROP TABLE wfprev.activity_funding_source" },
           { "sql": "DROP TABLE wfprev.activity_boundary" },
           { "sql": "DROP TABLE wfprev.activity_audit" },
