@@ -1,24 +1,22 @@
 package ca.bc.gov.nrs.wfprev.data.assemblers;
 
+import ca.bc.gov.nrs.wfprev.data.entities.ForestAreaCodeEntity;
+import ca.bc.gov.nrs.wfprev.data.entities.GeneralScopeCodeEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ProjectEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ProjectTypeCodeEntity;
 import ca.bc.gov.nrs.wfprev.data.models.ForestAreaCodeModel;
+import ca.bc.gov.nrs.wfprev.data.models.GeneralScopeCodeModel;
 import ca.bc.gov.nrs.wfprev.data.models.ProjectTypeCodeModel;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import ca.bc.gov.nrs.wfprev.data.assemblers.ProjectResourceAssembler;
 import ca.bc.gov.nrs.wfprev.data.models.ProjectModel;
-import org.springframework.hateoas.CollectionModel;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ProjectResourceAssemblerTest {
     private ProjectResourceAssembler assembler;
@@ -33,20 +31,33 @@ public class ProjectResourceAssemblerTest {
         // given there is a project model
         ProjectModel projectModel = new ProjectModel();
         String projectGuid = UUID.randomUUID().toString();
+        String programAreaGuid = UUID.randomUUID().toString();
         projectModel.setProjectGuid(projectGuid);
         projectModel.setPrimaryObjectiveTypeCode("random_test_string_1");
         projectModel.setSecondaryObjectiveTypeCode("random_test_string_2");
         projectModel.setTertiaryObjectiveTypeCode("random_test_string_3");
         projectModel.setIsMultiFiscalYearProj(false);
+        projectModel.setProjectNumber(1000);
+        projectModel.setProgramAreaGuid(programAreaGuid);
+        projectModel.setForestAreaCode(new ForestAreaCodeModel());
+        projectModel.setGeneralScopeCode(new GeneralScopeCodeModel());
+        projectModel.setProjectTypeCode(new ProjectTypeCodeModel());
 
         // when it is submitted to the toEntity method
         ProjectEntity projectEntity = assembler.toEntity(projectModel);
 
         // then it should have all the same values in the entity object
+        GeneralScopeCodeEntity generalScopeCodeEntity = new GeneralScopeCodeEntity(); // Mock or create an instance
+        ForestAreaCodeEntity forestAreaCodeEntity = new ForestAreaCodeEntity();
+        ProjectTypeCodeEntity projectTypeCodeEntity = new ProjectTypeCodeEntity();
+
         ProjectEntity expectedProjectEntity = ProjectEntity.builder().projectGuid(UUID.fromString(projectGuid))
                 .primaryObjectiveTypeCode("random_test_string_1")
                 .secondaryObjectiveTypeCode("random_test_string_2")
-                .tertiaryObjectiveTypeCode("random_test_string_3").build();
+                .tertiaryObjectiveTypeCode("random_test_string_3").projectNumber(1000).programAreaGuid(UUID.fromString(programAreaGuid))
+                .forestAreaCode(forestAreaCodeEntity)
+                .generalScopeCode(generalScopeCodeEntity)
+                .projectTypeCode(projectTypeCodeEntity).build();
         assertEquals(expectedProjectEntity, projectEntity);
     }
 
@@ -68,6 +79,8 @@ public class ProjectResourceAssemblerTest {
         projectEntity.setSecondaryObjectiveTypeCode("random_test_string_2");
         projectEntity.setTertiaryObjectiveTypeCode("random_test_string_3");
         projectEntity.setIsMultiFiscalYearProj(false);
+        projectEntity.setForestAreaCode(new ForestAreaCodeEntity());
+        projectEntity.setGeneralScopeCode(new GeneralScopeCodeEntity());
 
         // Perform the conversion
         ProjectModel projectModel = assembler.toModel(projectEntity);
@@ -84,6 +97,8 @@ public class ProjectResourceAssemblerTest {
                 .secondaryObjectiveTypeCode("random_test_string_2")
                 .tertiaryObjectiveTypeCode("random_test_string_3")
                 .isMultiFiscalYearProj(false)
+                .forestAreaCode(new ForestAreaCodeModel())
+                .generalScopeCode(new GeneralScopeCodeModel())
                 .build();
 
         // Assert that the actual and expected models match
