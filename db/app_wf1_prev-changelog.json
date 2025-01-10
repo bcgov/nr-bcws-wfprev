@@ -631,6 +631,12 @@
           {
             "sqlFile": {
               "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_07/00/ddl/WFPREV.activity_funding_source.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
               "path": "scripts/01_00_07/00/ddl/WFPREV.activity.sql"
             }
           },
@@ -644,12 +650,6 @@
             "sqlFile": {
               "dbms": "postgresql", "endDelimiter": ";",
               "path": "scripts/01_00_07/00/ddl/WFPREV.activity_boundary.sql"
-            }
-          },
-          {
-            "sqlFile": {
-              "dbms": "postgresql", "endDelimiter": ";",
-              "path": "scripts/01_00_07/00/ddl/WFPREV.activity_funding_source.sql"
             }
           },
           {
