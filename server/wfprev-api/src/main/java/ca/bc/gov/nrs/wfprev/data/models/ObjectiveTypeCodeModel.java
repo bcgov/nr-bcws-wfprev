@@ -24,7 +24,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class qObjectiveTypeCodeModel extends CommonModel<ObjectiveTypeCodeModel> {
+public class ObjectiveTypeCodeModel extends CommonModel<ObjectiveTypeCodeModel> {
     private String objectiveTypeCode;
     private String description;
     private Integer displayOrder;
