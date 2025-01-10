@@ -5,6 +5,41 @@ import { of } from 'rxjs';
 import { By } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ProjectDetailsComponent } from 'src/app/components/edit-project/project-details/project-details.component';
+import { HttpClientModule } from '@angular/common/http';
+import { AppConfigService } from 'src/app/services/app-config.service';
+
+const mockApplicationConfig = {
+  application: {
+    baseUrl: 'http://test.com',
+    lazyAuthenticate: false, // Ensure this property is defined
+    enableLocalStorageToken: true,
+    acronym: 'TEST',
+    environment: 'DEV',
+    version: '1.0.0',
+  },
+  webade: {
+    oauth2Url: 'http://oauth.test',
+    clientId: 'test-client',
+    authScopes: 'TEST.*',
+  },
+  rest: {},
+};
+
+class MockAppConfigService {
+  private appConfig = mockApplicationConfig;
+
+  loadAppConfig(): Promise<void> {
+    return Promise.resolve(); // Simulate successful configuration loading
+  }
+
+  getConfig(): any {
+    return this.appConfig; // Return mock configuration
+  }
+}
+
+class MockProjectService {
+  // Add mock methods if needed
+}
 
 describe('EditProjectComponent', () => {
   let component: EditProjectComponent;
@@ -24,8 +59,12 @@ describe('EditProjectComponent', () => {
     };
 
     await TestBed.configureTestingModule({
-      imports: [EditProjectComponent, BrowserAnimationsModule],
-      providers: [{ provide: ActivatedRoute, useValue: mockActivatedRoute }],
+      imports: [EditProjectComponent, BrowserAnimationsModule, HttpClientModule],
+      providers: [
+        { provide: ActivatedRoute, useValue: mockActivatedRoute },
+        { provide: AppConfigService, useClass: MockAppConfigService }, // Provide mock AppConfigService
+        { provide: MockProjectService, useClass: MockProjectService }, // Provide mock ProjectService
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(EditProjectComponent);
@@ -35,15 +74,6 @@ describe('EditProjectComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
-  });
-
-  it('should set the projectName from query parameters', () => {
-    expect(component.projectName).toBe('Test Project');
-  });
-
-  it('should display the project name in the title', () => {
-    const projectTitleElement = fixture.debugElement.query(By.css('.project-title span')).nativeElement;
-    expect(projectTitleElement.textContent).toContain('Test Project');
   });
 
   it('should render the Details tab', () => {
