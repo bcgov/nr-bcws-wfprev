@@ -750,19 +750,6 @@ class CodesServiceTest {
     }
 
     @Test
-    void testGetAllObjectiveTypeCodes_Exception() {
-        // Arrange
-        when(generalScopeCodeRepository.findAll()).thenThrow(new RuntimeException("Error fetching general scope codes"));
-
-        // Act & Assert
-        ServiceException exception = assertThrows(
-                ServiceException.class,
-                () -> codesService.getAllGeneralScopeCodes()
-        );
-        assertEquals("Error fetching general scope codes", exception.getMessage());
-    }
-
-    @Test
     void testGetObjectiveTypeCodeById_Success() throws ServiceException {
         // Arrange
         String exampleId = UUID.randomUUID().toString();
@@ -807,6 +794,37 @@ class CodesServiceTest {
                 () -> codesService.getObjectiveTypeCodeById(exampleId)
         );
         assertTrue(exception.getMessage().contains("Error fetching general scope code"));
+    }
+
+    @Test
+    void getAllObjectiveTypeCodes_Success() throws ServiceException {
+        // Arrange
+        List<ObjectiveTypeCodeEntity> entities = new ArrayList<>();
+        entities.add(new ObjectiveTypeCodeEntity());
+        entities.add(new ObjectiveTypeCodeEntity());
+
+        when(objectiveTypeCodeRepository.findAll()).thenReturn(entities);
+        when(objectiveTypeCodeResourceAssembler.toCollectionModel(entities))
+                .thenReturn(CollectionModel.of(new ArrayList<>()));
+
+        // Act
+        CollectionModel<ObjectiveTypeCodeModel> result = codesService.getAllObjectiveTypeCodes();
+
+        // Assert
+        assertNotNull(result);
+    }
+
+    @Test
+    void testGetAllObjectiveTypeCodes_Exception() {
+        // Arrange
+        when(objectiveTypeCodeRepository.findAll()).thenThrow(new RuntimeException("Error fetching objective type codes"));
+
+        // Act & Assert
+        ServiceException exception = assertThrows(
+                ServiceException.class,
+                () -> codesService.getAllObjectiveTypeCodes()
+        );
+        assertEquals("Error fetching objective type codes", exception.getMessage());
     }
 
 }
