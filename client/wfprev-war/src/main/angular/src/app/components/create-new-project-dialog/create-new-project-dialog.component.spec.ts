@@ -283,7 +283,7 @@ describe('CreateNewProjectDialogComponent', () => {
     component.onCreate();
   
     expect(mockSnackbarService.open).toHaveBeenCalledWith(
-      'Latitude and longitude must fall within British Columbia (Lat: 48.3–60, Long: -139 to -114).',
+      'Invalid latitude and longitude. Please ensure it is in the correct format and within BC boundaries.',
       'OK',
       { duration: 5000, panelClass: 'snackbar-error' }
     );

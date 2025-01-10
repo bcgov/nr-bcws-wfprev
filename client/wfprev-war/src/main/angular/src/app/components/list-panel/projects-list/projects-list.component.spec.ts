@@ -145,12 +145,12 @@ describe('ProjectsListComponent', () => {
     const mockRouter = TestBed.inject(Router);
     spyOn(mockRouter, 'navigate');
     const mockEvent = jasmine.createSpyObj('Event', ['stopPropagation']);
-    const project = { projectNumber: 12345, projectName: 'Sample Project' };
-
+    const project = { projectGuid: 'test-guid'};
+  
     component.editProject(project, mockEvent);
-
+  
     expect(mockRouter.navigate).toHaveBeenCalledWith([ResourcesRoutes.EDIT_PROJECT], {
-      queryParams: { projectNumber: project.projectNumber, name: project.projectName },
+      queryParams: { projectGuid: project.projectGuid },
     });
     expect(mockEvent.stopPropagation).toHaveBeenCalled();
   });
