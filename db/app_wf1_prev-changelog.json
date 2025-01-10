@@ -703,10 +703,10 @@
         ],
         "rollback": [
           { "sql": "DELETE FROM wfprev.objective_type_code" },
-          { "sql": "DROP TABLE wfprev.activity_funding_source" },
           { "sql": "DROP TABLE wfprev.activity_boundary" },
           { "sql": "DROP TABLE wfprev.activity_audit" },
           { "sql": "DROP TABLE wfprev.activity" },
+          { "sql": "DROP TABLE wfprev.activity_funding_source" },
           { "sql": "DROP TABLE wfprev.silviculture_technique_code" },
           { "sql": "DROP TABLE wfprev.silviculture_method_code" },
           { "sql": "DROP TABLE wfprev.silviculture_base_code" },                    
