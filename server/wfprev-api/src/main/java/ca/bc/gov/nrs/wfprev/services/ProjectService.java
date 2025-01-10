@@ -23,7 +23,6 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.stereotype.Component;
 
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -38,7 +37,6 @@ public class ProjectService implements CommonService {
     private final GeneralScopeCodeRepository generalScopeCodeRepository;
     private final ProjectStatusCodeRepository projectStatusCodeRepository;
 
-    private final SpringSecurityAuditorAware springSecurityAuditorAware;
 
     public ProjectService(
             ProjectRepository projectRepository,
@@ -46,15 +44,13 @@ public class ProjectService implements CommonService {
             ForestAreaCodeRepository forestAreaCodeRepository,
             ProjectTypeCodeRepository projectTypeCodeRepository,
             GeneralScopeCodeRepository generalScopeCodeRepository,
-            ProjectStatusCodeRepository projectStatusCodeRepository,
-            SpringSecurityAuditorAware springSecurityAuditorAware) {
+            ProjectStatusCodeRepository projectStatusCodeRepository) {
         this.projectRepository = projectRepository;
         this.projectResourceAssembler = projectResourceAssembler;
         this.forestAreaCodeRepository = forestAreaCodeRepository;
         this.projectTypeCodeRepository = projectTypeCodeRepository;
         this.generalScopeCodeRepository = generalScopeCodeRepository;
         this.projectStatusCodeRepository = projectStatusCodeRepository;
-        this.springSecurityAuditorAware = springSecurityAuditorAware;
     }
 
     public CollectionModel<ProjectModel> getAllProjects() throws ServiceException {

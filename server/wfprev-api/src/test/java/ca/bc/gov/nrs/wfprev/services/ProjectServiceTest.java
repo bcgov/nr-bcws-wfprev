@@ -64,7 +64,7 @@ class ProjectServiceTest {
 
 
         projectService = new ProjectService(projectRepository, projectResourceAssembler, forestAreaCodeRepository,
-                projectTypeCodeRepository, generalScopeCodeRepository, projectStatusCodeRepository, springSecurityAuditorAware);
+                projectTypeCodeRepository, generalScopeCodeRepository, projectStatusCodeRepository);
         setField(projectService, "forestAreaCodeRepository", forestAreaCodeRepository);
         setField(projectService, "projectTypeCodeRepository", projectTypeCodeRepository);
         setField(projectService, "generalScopeCodeRepository", generalScopeCodeRepository);
