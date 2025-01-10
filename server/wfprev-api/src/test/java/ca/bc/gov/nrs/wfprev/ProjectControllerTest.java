@@ -45,7 +45,7 @@ class ProjectControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @MockBean(name = "springSecurityAuditorAware")  // Changed to match the expected bean name
+    @MockBean(name = "springSecurityAuditorAware")
     private AuditorAware<String> auditorAware;
 
     private Gson gson;

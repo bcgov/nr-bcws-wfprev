@@ -21,7 +21,7 @@ public class SpringSecurityAuditorAware implements AuditorAware<String> {
                     if (principal instanceof DefaultOAuth2AuthenticatedPrincipal) {
                         // Extract username or preferred identifier
                         DefaultOAuth2AuthenticatedPrincipal oauthPrincipal = (DefaultOAuth2AuthenticatedPrincipal) principal;
-                        return (String) oauthPrincipal.getAttribute("preferred_username"); // Adjust key to match your provider
+                        return (String) oauthPrincipal.getAttribute("client_id"); // Adjust key to match your provider
                     }
                     throw new IllegalStateException("Principal is not of type DefaultOAuth2AuthenticatedPrincipal");
                 });

@@ -1,6 +1,7 @@
 package ca.bc.gov.nrs.wfprev.services;
 
 import ca.bc.gov.nrs.wfone.common.service.api.ServiceException;
+import ca.bc.gov.nrs.wfprev.SpringSecurityAuditorAware;
 import ca.bc.gov.nrs.wfprev.common.services.CommonService;
 import ca.bc.gov.nrs.wfprev.data.assemblers.ProjectResourceAssembler;
 import ca.bc.gov.nrs.wfprev.data.entities.ForestAreaCodeEntity;
@@ -22,9 +23,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.stereotype.Component;
 
-import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Slf4j
@@ -37,6 +36,7 @@ public class ProjectService implements CommonService {
     private final ProjectTypeCodeRepository projectTypeCodeRepository;
     private final GeneralScopeCodeRepository generalScopeCodeRepository;
     private final ProjectStatusCodeRepository projectStatusCodeRepository;
+
 
     public ProjectService(
             ProjectRepository projectRepository,
@@ -106,7 +106,6 @@ public class ProjectService implements CommonService {
 
 
     private void initializeNewProject(ProjectModel resource) {
-        resource.setCreateDate(new Date());
         resource.setProjectGuid(UUID.randomUUID().toString());
         resource.setRevisionCount(0);
     }

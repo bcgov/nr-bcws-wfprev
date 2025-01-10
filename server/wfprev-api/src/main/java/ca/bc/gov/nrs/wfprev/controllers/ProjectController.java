@@ -109,11 +109,7 @@ public class ProjectController extends CommonController {
     ResponseEntity<ProjectModel> response;
 
     try {
-      // set the default values for a newly created resource
-      resource.setCreateDate(new Date());
-      resource.setCreateUser(getWebAdeAuthentication().getUserId());
-      resource.setUpdateUser(getWebAdeAuthentication().getUserId());
-      resource.setRevisionCount(0);
+
 
       ProjectModel newResource = projectService.createProject(resource);
       response = newResource == null ? badRequest() : created(newResource);
@@ -143,8 +139,6 @@ public class ProjectController extends CommonController {
     ResponseEntity<ProjectModel> response;
 
     try {
-      // Update the UpdatedBy
-      resource.setUpdateUser(getWebAdeAuthentication().getUserId());
       // ensure that the user hasn't changed the primary key
       if (id.equalsIgnoreCase(resource.getProjectGuid())) {
         ProjectModel updatedResource = projectService.updateProject(resource);
