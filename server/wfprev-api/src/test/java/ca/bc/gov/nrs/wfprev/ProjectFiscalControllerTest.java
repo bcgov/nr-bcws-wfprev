@@ -81,7 +81,7 @@ class ProjectFiscalControllerTest {
         when(projectFiscalService.updateProjectFiscal(inputModel))
                 .thenThrow(new RuntimeException("Test exception"));
 
-        mockMvc.perform(MockMvcRequestBuilders.put("/projectFiscals/{id}", inputModel.getProjectPlanFiscalGuid())
+        mockMvc.perform(MockMvcRequestBuilders.put("/projects/123e4567-e89b-12d3-a456-426614174001/projectFiscals/{id}", inputModel.getProjectPlanFiscalGuid())
                         .content(inputJson)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isInternalServerError());
@@ -99,7 +99,7 @@ class ProjectFiscalControllerTest {
 
         String inputJson = gson.toJson(inputModel);
 
-        mockMvc.perform(MockMvcRequestBuilders.put("/projectFiscals/{id}", "123e4567-e89b-12d3-a456-426614174002")
+        mockMvc.perform(MockMvcRequestBuilders.put("/projects/1234/projectFiscals/{id}", "123e4567-e89b-12d3-a456-426614174002")
                         .content(inputJson)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
@@ -119,7 +119,7 @@ class ProjectFiscalControllerTest {
 
         when(projectFiscalService.updateProjectFiscal(inputModel)).thenReturn(inputModel);
 
-        mockMvc.perform(MockMvcRequestBuilders.put("/projectFiscals/{id}", inputModel.getProjectPlanFiscalGuid())
+        mockMvc.perform(MockMvcRequestBuilders.put("/projects/1234/projectFiscals/{id}", inputModel.getProjectPlanFiscalGuid())
                         .content(inputJson)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -140,7 +140,7 @@ class ProjectFiscalControllerTest {
 
         when(projectFiscalService.updateProjectFiscal(inputModel)).thenThrow(new EntityNotFoundException("Not found"));
 
-        mockMvc.perform(MockMvcRequestBuilders.put("/projectFiscals/{id}", inputModel.getProjectPlanFiscalGuid())
+        mockMvc.perform(MockMvcRequestBuilders.put("/projects/1234/projectFiscals/{id}", inputModel.getProjectPlanFiscalGuid())
                         .content(inputJson)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
@@ -170,7 +170,7 @@ class ProjectFiscalControllerTest {
         when(projectFiscalService.getAllProjectFiscals()).thenReturn(CollectionModel.of(projectFiscalModels));
 
         // WHEN we call the getAllProjectFiscals method
-        mockMvc.perform(get("/projectFiscals")
+        mockMvc.perform(get("/projects/123e4567-e89b-12d3-a456-426614174001/projectFiscals")
                         .contentType(MediaType.APPLICATION_JSON))
                 // THEN we expect a 200 OK response
                 .andExpect(status().isOk())
@@ -204,7 +204,7 @@ class ProjectFiscalControllerTest {
         // GIVEN the service throws a ServiceException
         when(projectFiscalService.getAllProjectFiscals()).thenThrow(new ServiceException("Test ServiceException"));
         // WHEN we call the getAllProjectFiscals method
-        mockMvc.perform(get("/projectFiscals")
+        mockMvc.perform(get("/projects/1234/projectFiscals")
                         .contentType(MediaType.APPLICATION_JSON))
                 // THEN we expect a 500 Internal Server Error
                 .andExpect(status().isInternalServerError())
@@ -218,7 +218,7 @@ class ProjectFiscalControllerTest {
         when(projectFiscalService.getAllProjectFiscals()).thenReturn(CollectionModel.of(Collections.emptyList()));
 
         // WHEN we call the getAllProjectFiscals method
-        mockMvc.perform(get("/projectFiscals")
+        mockMvc.perform(get("/projects/1234/projectFiscals")
                         .contentType(MediaType.APPLICATION_JSON))
                 // THEN we expect a 200 OK response
                 .andExpect(status().isOk())
@@ -233,7 +233,7 @@ class ProjectFiscalControllerTest {
         when(projectFiscalService.getAllProjectFiscals()).thenThrow(new RuntimeException("Unexpected error"));
 
         // WHEN we call the getAllProjectFiscals method
-        mockMvc.perform(get("/projectFiscals")
+        mockMvc.perform(get("/projects/1234/projectFiscals")
                         .contentType(MediaType.APPLICATION_JSON))
                 // THEN we expect a 500 Internal Server Error
                 .andExpect(status().isInternalServerError())
@@ -257,7 +257,7 @@ class ProjectFiscalControllerTest {
 
         // THEN we expect a 201 Created response
         // AND the response body should match the input model
-        mockMvc.perform(MockMvcRequestBuilders.post("/projectFiscals")
+        mockMvc.perform(MockMvcRequestBuilders.post("/projects/1234/projectFiscals")
                         .content(gson.toJson(inputModel))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
@@ -282,7 +282,7 @@ class ProjectFiscalControllerTest {
                 .thenThrow(new DataIntegrityViolationException("Duplicate entry detected"));
 
         // THEN we expect a 400 Bad Request response
-        mockMvc.perform(MockMvcRequestBuilders.post("/projectFiscals")
+        mockMvc.perform(MockMvcRequestBuilders.post("/projects/1234/projectFiscals")
                         .content(gson.toJson(inputModel))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
@@ -298,7 +298,7 @@ class ProjectFiscalControllerTest {
                 .thenThrow(new ServiceException("Test ServiceException"));
         // THEN I expect a 500 Internal Server Error
         // AND the response body should be empty
-        mockMvc.perform(MockMvcRequestBuilders.post("/projectFiscals")
+        mockMvc.perform(MockMvcRequestBuilders.post("/projects/1234/projectFiscals")
                         .content(gson.toJson(new ProjectFiscalModel()))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isInternalServerError())
@@ -322,7 +322,7 @@ class ProjectFiscalControllerTest {
 
         // THEN we expect a 200 OK response
         // AND the response body should match the input model
-        mockMvc.perform(get("/projectFiscals/{id}", inputModel.getProjectPlanFiscalGuid())
+        mockMvc.perform(get("/projects/1234/projectFiscals/{id}", inputModel.getProjectPlanFiscalGuid())
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.projectPlanFiscalGuid").value(inputModel.getProjectPlanFiscalGuid()));
@@ -344,7 +344,7 @@ class ProjectFiscalControllerTest {
         when(projectFiscalService.getProjectFiscal(inputModel.getProjectPlanFiscalGuid())).thenReturn(null);
 
         // THEN we expect a 404 Not Found response
-        mockMvc.perform(get("/projectFiscals/{id}", inputModel.getProjectPlanFiscalGuid())
+        mockMvc.perform(get("/projects/1234/projectFiscals/{id}", inputModel.getProjectPlanFiscalGuid())
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
     }
@@ -366,7 +366,7 @@ class ProjectFiscalControllerTest {
                 .thenThrow(new ServiceException("Test ServiceException"));
 
         // THEN we expect a 500 Internal Server Error
-        mockMvc.perform(get("/projectFiscals/{id}", inputModel.getProjectPlanFiscalGuid())
+        mockMvc.perform(get("/projects/1234/projectFiscals/{id}", inputModel.getProjectPlanFiscalGuid())
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isInternalServerError())
                 .andExpect(jsonPath("$").doesNotExist());
@@ -389,7 +389,7 @@ class ProjectFiscalControllerTest {
                 .thenThrow(new RuntimeException("Unexpected error"));
 
         // THEN we expect a 500 Internal Server Error
-        mockMvc.perform(get("/projectFiscals/{id}", inputModel.getProjectPlanFiscalGuid())
+        mockMvc.perform(get("/projects/1234/projectFiscals/{id}", inputModel.getProjectPlanFiscalGuid())
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isInternalServerError())
                 .andExpect(jsonPath("$").doesNotExist());
@@ -403,7 +403,7 @@ class ProjectFiscalControllerTest {
         doNothing().when(projectFiscalService).deleteProjectFiscal(projectFiscalId);
 
         // WHEN the delete endpoint is called
-        mockMvc.perform(delete("/projectFiscals/{id}", projectFiscalId)
+        mockMvc.perform(delete("/projects/1234/projectFiscals/{id}", projectFiscalId)
                         .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
                         .accept(MediaType.APPLICATION_JSON))
                 // THEN the response status should be 204 No Content
@@ -421,7 +421,7 @@ class ProjectFiscalControllerTest {
         doThrow(new EntityNotFoundException("Not found")).when(projectFiscalService).deleteProjectFiscal(projectFiscalId);
 
         // WHEN the delete endpoint is called
-        mockMvc.perform(delete("/projectFiscals/{id}", projectFiscalId)
+        mockMvc.perform(delete("/projects/1234/projectFiscals/{id}", projectFiscalId)
                         .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
                         .accept(MediaType.APPLICATION_JSON))
                 // THEN the response status should be 404 Not Found
@@ -439,7 +439,7 @@ class ProjectFiscalControllerTest {
         doThrow(new IllegalArgumentException("Invalid UUID")).when(projectFiscalService).deleteProjectFiscal(invalidId);
 
         // WHEN the delete endpoint is called
-        mockMvc.perform(delete("/projectFiscals/{id}", invalidId)
+        mockMvc.perform(delete("/projects/1234/projectFiscals/{id}", invalidId)
                         .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
                         .accept(MediaType.APPLICATION_JSON))
                 // THEN the response status should be 400 Bad Request
@@ -457,7 +457,7 @@ class ProjectFiscalControllerTest {
         doThrow(new RuntimeException("Unexpected error")).when(projectFiscalService).deleteProjectFiscal(projectFiscalId);
 
         // WHEN the delete endpoint is called
-        mockMvc.perform(delete("/projectFiscals/{id}", projectFiscalId)
+        mockMvc.perform(delete("/projects/1234/projectFiscals/{id}", projectFiscalId)
                         .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
                         .accept(MediaType.APPLICATION_JSON))
                 // THEN the response status should be 500 Internal Server Error
