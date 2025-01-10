@@ -2,16 +2,23 @@ package ca.bc.gov.nrs.wfprev.data.assemblers;
 
 import ca.bc.gov.nrs.wfprev.data.entities.ProjectEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ProjectTypeCodeEntity;
+import ca.bc.gov.nrs.wfprev.data.models.ForestAreaCodeModel;
 import ca.bc.gov.nrs.wfprev.data.models.ProjectTypeCodeModel;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import ca.bc.gov.nrs.wfprev.data.assemblers.ProjectResourceAssembler;
 import ca.bc.gov.nrs.wfprev.data.models.ProjectModel;
+import org.springframework.hateoas.CollectionModel;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ProjectResourceAssemblerTest {
     private ProjectResourceAssembler assembler;
@@ -81,6 +88,25 @@ public class ProjectResourceAssemblerTest {
 
         // Assert that the actual and expected models match
         assertEquals(expectedProjectModel, projectModel);
+    }
+
+    @Test
+    void testUpdateEntity_Success() {
+        ProjectModel model = new ProjectModel();
+        model.setProjectName("Updated Project");
+        model.setLatitude(BigDecimal.valueOf(50.123));
+        model.setForestAreaCode(new ForestAreaCodeModel());
+
+        ProjectEntity existingEntity = new ProjectEntity();
+        existingEntity.setProjectGuid(UUID.randomUUID());
+        existingEntity.setProjectName("Old Project");
+
+        ProjectEntity updatedEntity = assembler.updateEntity(model, existingEntity);
+
+        assertNotNull(updatedEntity);
+        assertEquals("Updated Project", updatedEntity.getProjectName());
+        assertEquals(existingEntity.getProjectGuid(), updatedEntity.getProjectGuid());
+        assertEquals(BigDecimal.valueOf(50.123), updatedEntity.getLatitude());
     }
 
 }
