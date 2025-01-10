@@ -111,7 +111,11 @@
 							"    console.log(\"Project Guid saved successfully!\");",
 							"} else {",
 							"    console.error(\"Failed to set project guid:\", response);",
-							"}"
+							"}",
+							"",
+							"pm.test(\"Status code is 201\", function() {",
+							"    pm.response.to.have.status(201);",
+							"})"
 						],
 						"type": "text/javascript",
 						"packages": {}
@@ -153,7 +157,168 @@
 			"response": []
 		},
 		{
+			"name": "Create Project Fiscal",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Parse the response JSON",
+							"const response = pm.response.json();",
+							"",
+							"// Check if the access token exists in the response",
+							"if (response.projectPlanFiscalGuid) {",
+							"    // Save the token to an environment variable",
+							"    pm.environment.set(\"projectPlanFiscalGuid\", response.projectPlanFiscalGuid);",
+							"    console.log(\"Project Fiscl Guid saved successfully!\");",
+							"} else {",
+							"    console.error(\"Failed to set project Fiscal guid:\", response);",
+							"}",
+							"",
+							"pm.test(\"Status code is 201\", function() {",
+							"    pm.response.to.have.status(201);",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"projectGuid\": \"{{projectGuid}}\",\n  \"activityCategoryCode\": \"TACT_PLAN\",\n  \"fiscalYear\": 2023,\n  \"projectPlanStatusCode\": \"ACTIVE\",\n  \"planFiscalStatusCode\": \"PLANNED\",\n  \"projectFiscalName\": \"Fiscal Project 1\",\n  \"projectFiscalDescription\": \"This is a test project fiscal description.\",\n  \"businessAreaComment\": \"Test comment\",\n  \"estimatedClwrrAllocAmount\": 1000.00,\n  \"totalCostEstimateAmount\": 2000.00,\n  \"fiscalFundingRequestAmount\": 1500.00,\n  \"fiscalAllocatedAmount\": 1200.00,\n  \"fiscalAncillaryFundAmount\": 300.00,\n  \"fiscalPlannedProjectSizeHa\": 10.5,\n  \"fiscalPlannedCostPerHaAmt\": 500.00,\n  \"fiscalReportedSpendAmount\": 0.00,\n  \"fiscalActualAmount\": 0.00,\n  \"fiscalCompletedSizeHa\": 0.0,\n  \"fiscalActualCostPerHaAmt\": 0.0,\n  \"firstNationsDelivPartInd\": true,\n  \"firstNationsEngagementInd\": false,\n  \"firstNationsPartner\": \"Test Partner\",\n  \"resultsNumber\": \"RN123456\",\n  \"resultsOpeningId\": \"RO12345\",\n  \"resultsContactEmail\": \"contact@example.com\",\n  \"submittedByName\": \"Test User\",\n  \"submittedByUserGuid\": \"123e4567-e89\",\n  \"submittedByUserUserid\": \"testuser\",\n  \"submissionTimestamp\": \"2024-01-01T12:00:00Z\",\n  \"isApprovedInd\": true,\n  \"isDelayedInd\": false\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{LOCAL_API_URL}}/projects/{{projectGuid}}/projectFiscals",
+					"host": [
+						"{{LOCAL_API_URL}}"
+					],
+					"path": [
+						"projects",
+						"{{projectGuid}}",
+						"projectFiscals"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Project Fiscal",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function() {",
+							"    pm.response.to.have.status(200);",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"projectPlanFiscalGuid\": \"{{projectPlanFiscalGuid}}\",\n  \"projectGuid\": \"{{projectGuid}}\",\n  \"activityCategoryCode\": \"RX_DEV\",\n  \"fiscalYear\": 2024,\n  \"projectPlanStatusCode\": \"ACTIVE\",\n  \"planFiscalStatusCode\": \"PLANNED\",\n  \"projectFiscalName\": \"Fiscal Project 1\",\n  \"projectFiscalDescription\": \"This is a test project fiscal description.\",\n  \"businessAreaComment\": \"Test comment\",\n  \"estimatedClwrrAllocAmount\": 1000.00,\n  \"totalCostEstimateAmount\": 2000.00,\n  \"fiscalFundingRequestAmount\": 1500.00,\n  \"fiscalAllocatedAmount\": 1200.00,\n  \"fiscalAncillaryFundAmount\": 300.00,\n  \"fiscalPlannedProjectSizeHa\": 10.5,\n  \"fiscalPlannedCostPerHaAmt\": 500.00,\n  \"fiscalReportedSpendAmount\": 0.00,\n  \"fiscalActualAmount\": 0.00,\n  \"fiscalCompletedSizeHa\": 0.0,\n  \"fiscalActualCostPerHaAmt\": 0.0,\n  \"firstNationsDelivPartInd\": true,\n  \"firstNationsEngagementInd\": false,\n  \"firstNationsPartner\": \"Test Partner\",\n  \"resultsNumber\": \"RN123456\",\n  \"resultsOpeningId\": \"RO12345\",\n  \"resultsContactEmail\": \"contact@example.com\",\n  \"submittedByName\": \"Test User\",\n  \"submittedByUserGuid\": \"123e4567-e89\",\n  \"submittedByUserUserid\": \"testuser\",\n  \"submissionTimestamp\": \"2024-01-01T12:00:00Z\",\n  \"isApprovedInd\": true,\n  \"isDelayedInd\": false\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{LOCAL_API_URL}}/projects/{{projectGuid}}}/projectFiscals/{{projectPlanFiscalGuid}}",
+					"host": [
+						"{{LOCAL_API_URL}}"
+					],
+					"path": [
+						"projects",
+						"{{projectGuid}}}",
+						"projectFiscals",
+						"{{projectPlanFiscalGuid}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "GET Projects",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function() {",
+							"    pm.response.to.have.status(200);",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
 			"request": {
 				"auth": {
 					"type": "bearer",
@@ -181,6 +346,20 @@
 		},
 		{
 			"name": "Get Project",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function() {",
+							"    pm.response.to.have.status(200);",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
 			"request": {
 				"auth": {
 					"type": "bearer",
@@ -209,6 +388,20 @@
 		},
 		{
 			"name": "Update Project Copy",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function() {",
+							"    pm.response.to.have.status(200);",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
 			"request": {
 				"auth": {
 					"type": "bearer",
@@ -246,6 +439,20 @@
 		},
 		{
 			"name": "GET Parks Section Codes",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function() {",
+							"    pm.response.to.have.status(200);",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
 			"request": {
 				"auth": {
 					"type": "bearer",
@@ -274,6 +481,20 @@
 		},
 		{
 			"name": "GET program Area Codes",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function() {",
+							"    pm.response.to.have.status(200);",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
 			"request": {
 				"auth": {
 					"type": "bearer",
@@ -288,13 +509,13 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{LOCAL_API_URL}}/codes/bcParksSectionCodes",
+					"raw": "{{LOCAL_API_URL}}/codes/programAreaCodes",
 					"host": [
 						"{{LOCAL_API_URL}}"
 					],
 					"path": [
 						"codes",
-						"bcParksSectionCodes"
+						"programAreaCodes"
 					]
 				}
 			},
@@ -302,6 +523,20 @@
 		},
 		{
 			"name": "GET Forest District Codes",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function() {",
+							"    pm.response.to.have.status(200);",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
 			"request": {
 				"auth": {
 					"type": "bearer",
@@ -336,9 +571,20 @@
 		},
 		{
 			"name": "GET General Scope Codes",
-			"protocolProfileBehavior": {
-				"disableBodyPruning": true
-			},
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function() {",
+							"    pm.response.to.have.status(200);",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
 			"request": {
 				"auth": {
 					"type": "bearer",
@@ -358,23 +604,14 @@
 						"type": "text"
 					}
 				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n  \"projectPlanFiscalGuid\": \"123e4567-e89b-12d3-a456-426614174000\",\n  \"projectGuid\": \"123e4567-e89b-12d3-a456-426614174001\",\n  \"activityCategoryCode\": \"Tactical Planning\",\n  \"fiscalYear\": 2024,\n  \"projectPlanStatusCode\": \"ACTIVE\",\n  \"planFiscalStatusCode\": \"APPROVED\",\n  \"projectFiscalName\": \"Forest Restoration\",\n  \"projectFiscalDescription\": \"Restoration project for forest lands\",\n  \"estimatedClwrrAllocAmount\": 50000.00,\n  \"totalCostEstimateAmount\": 120000.00,\n  \"fiscalFundingRequestAmount\": 70000.00,\n  \"fiscalAllocatedAmount\": 65000.00,\n  \"firstNationsDelivPartInd\": true,\n  \"firstNationsEngagementInd\": false,\n  \"isApprovedInd\": true,\n  \"isDelayedInd\": false,\n  \"submissionTimestamp\": \"2025-01-01T00:00:00Z\",\n  \"approverName\": \"John Doe\",\n  \"approverUserGuid\": \"abcd1234-5678-9101-1121-314151617181\",\n  \"approverUserUserid\": \"jdoe\",\n  \"approvedTimestamp\": \"2025-01-01T10:00:00Z\"\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
 				"url": {
-					"raw": "{{LOCAL_API_URL}}/codes/forestDistrictCodes",
+					"raw": "{{LOCAL_API_URL}}/codes/generalScopeCodes",
 					"host": [
 						"{{LOCAL_API_URL}}"
 					],
 					"path": [
 						"codes",
-						"forestDistrictCodes"
+						"generalScopeCodes"
 					]
 				}
 			},
@@ -382,9 +619,20 @@
 		},
 		{
 			"name": "GETProject Type Codes",
-			"protocolProfileBehavior": {
-				"disableBodyPruning": true
-			},
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function() {",
+							"    pm.response.to.have.status(200);",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
 			"request": {
 				"auth": {
 					"type": "bearer",
@@ -404,15 +652,6 @@
 						"type": "text"
 					}
 				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n  \"projectPlanFiscalGuid\": \"123e4567-e89b-12d3-a456-426614174000\",\n  \"projectGuid\": \"123e4567-e89b-12d3-a456-426614174001\",\n  \"activityCategoryCode\": \"Tactical Planning\",\n  \"fiscalYear\": 2024,\n  \"projectPlanStatusCode\": \"ACTIVE\",\n  \"planFiscalStatusCode\": \"APPROVED\",\n  \"projectFiscalName\": \"Forest Restoration\",\n  \"projectFiscalDescription\": \"Restoration project for forest lands\",\n  \"estimatedClwrrAllocAmount\": 50000.00,\n  \"totalCostEstimateAmount\": 120000.00,\n  \"fiscalFundingRequestAmount\": 70000.00,\n  \"fiscalAllocatedAmount\": 65000.00,\n  \"firstNationsDelivPartInd\": true,\n  \"firstNationsEngagementInd\": false,\n  \"isApprovedInd\": true,\n  \"isDelayedInd\": false,\n  \"submissionTimestamp\": \"2025-01-01T00:00:00Z\",\n  \"approverName\": \"John Doe\",\n  \"approverUserGuid\": \"abcd1234-5678-9101-1121-314151617181\",\n  \"approverUserUserid\": \"jdoe\",\n  \"approvedTimestamp\": \"2025-01-01T10:00:00Z\"\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
 				"url": {
 					"raw": "{{LOCAL_API_URL}}/codes/projectTypeCodes",
 					"host": [
@@ -428,6 +667,20 @@
 		},
 		{
 			"name": "GET Forest Region Codes",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function() {",
+							"    pm.response.to.have.status(200);",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
 			"protocolProfileBehavior": {
 				"disableBodyPruning": true
 			},
@@ -474,6 +727,20 @@
 		},
 		{
 			"name": "GET BC Parks Region Codes",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function() {",
+							"    pm.response.to.have.status(200);",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
 			"protocolProfileBehavior": {
 				"disableBodyPruning": true
 			},
@@ -519,7 +786,152 @@
 			"response": []
 		},
 		{
+			"name": "Get ProjectFiscal",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function() {",
+							"    pm.response.to.have.status(200);",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{LOCAL_API_URL}}/projects/{{projectGuid}}/projectFiscals/{{projectPlanFiscalGuid}}",
+					"host": [
+						"{{LOCAL_API_URL}}"
+					],
+					"path": [
+						"projects",
+						"{{projectGuid}}",
+						"projectFiscals",
+						"{{projectPlanFiscalGuid}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get ProjectFiscals",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function() {",
+							"    pm.response.to.have.status(200);",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{LOCAL_API_URL}}/projects/{{projectGuid}}/projectFiscals",
+					"host": [
+						"{{LOCAL_API_URL}}"
+					],
+					"path": [
+						"projects",
+						"{{projectGuid}}",
+						"projectFiscals"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Project Fiscal",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 204\", function() {",
+							"    pm.response.to.have.status(204);",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{LOCAL_API_URL}}/projects/{{projectGuid}}/projectFiscals/{{projectPlanFiscalGuid}}",
+					"host": [
+						"{{LOCAL_API_URL}}"
+					],
+					"path": [
+						"projects",
+						"{{projectGuid}}",
+						"projectFiscals",
+						"{{projectPlanFiscalGuid}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "Delete Project",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function() {",
+							"    pm.response.to.have.status(200);",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
 			"request": {
 				"auth": {
 					"type": "bearer",

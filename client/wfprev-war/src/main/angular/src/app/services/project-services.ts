@@ -1,6 +1,7 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { catchError, map, Observable,throwError } from "rxjs";
+import { Project } from "src/app/components/models";
 import { AppConfigService } from "src/app/services/app-config.service";
 import { TokenService } from "src/app/services/token.service";
 
@@ -47,4 +48,38 @@ export class ProjectService {
             }
         );
     }
-}
+
+    getProjectByProjectGuid(projectGuid: string): Observable<any> {
+        const baseUrl = `${this.appConfigService.getConfig().rest['wfprev']}/wfprev-api/projects`;
+        const url = `${baseUrl}/${projectGuid}`;
+    
+        return this.httpClient.get(url, {
+            headers: {
+                Authorization: `Bearer ${this.tokenService.getOauthToken()}`,
+            }
+        }).pipe(
+            map((response: any) => response),
+            catchError((error) => {
+                console.error("Error fetching project details", error);
+                return throwError(() => new Error("Failed to fetch project details"));
+            })
+        );
+    }
+
+    updateProject(projectGuid: string, projectData:Project): Observable<any> {
+        const baseUrl = `${this.appConfigService.getConfig().rest['wfprev']}/wfprev-api/projects`;
+        const url = `${baseUrl}/${projectGuid}`;
+        return this.httpClient.put(url, projectData,{
+            headers: {
+                Authorization: `Bearer ${this.tokenService.getOauthToken()}`,
+            }
+        }).pipe(
+            map((response: any) => response),
+            catchError((error) => {
+                console.error("Error update project", error);
+                return throwError(() => new Error("Failed to update project"));
+            })
+        );
+    }
+    
+ }
