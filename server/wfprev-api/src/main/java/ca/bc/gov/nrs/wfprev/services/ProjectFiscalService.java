@@ -48,7 +48,6 @@ public class ProjectFiscalService implements CommonService {
         ProjectModel projectById = projectService.getProjectById(projectFiscalModel.getProjectGuid());
         ProjectEntity projectEntity = projectResourceAssembler.toEntity(projectById);
         ProjectFiscalEntity entity = projectFiscalResourceAssembler.toEntity(projectFiscalModel, projectEntity);
-        log.error("Entity before save: {}", entity);
         ProjectFiscalEntity savedEntity = projectFiscalRepository.save(entity);
         return projectFiscalResourceAssembler.toModel(savedEntity);
     }

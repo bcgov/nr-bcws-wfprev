@@ -1,6 +1,7 @@
 package ca.bc.gov.nrs.wfprev.services;
 
 import ca.bc.gov.nrs.wfone.common.service.api.ServiceException;
+import ca.bc.gov.nrs.wfprev.SpringSecurityAuditorAware;
 import ca.bc.gov.nrs.wfprev.common.services.CommonService;
 import ca.bc.gov.nrs.wfprev.data.assemblers.ProjectResourceAssembler;
 import ca.bc.gov.nrs.wfprev.data.entities.ForestAreaCodeEntity;
@@ -37,19 +38,23 @@ public class ProjectService implements CommonService {
     private final GeneralScopeCodeRepository generalScopeCodeRepository;
     private final ProjectStatusCodeRepository projectStatusCodeRepository;
 
+    private final SpringSecurityAuditorAware springSecurityAuditorAware;
+
     public ProjectService(
             ProjectRepository projectRepository,
             ProjectResourceAssembler projectResourceAssembler,
             ForestAreaCodeRepository forestAreaCodeRepository,
             ProjectTypeCodeRepository projectTypeCodeRepository,
             GeneralScopeCodeRepository generalScopeCodeRepository,
-            ProjectStatusCodeRepository projectStatusCodeRepository) {
+            ProjectStatusCodeRepository projectStatusCodeRepository,
+            SpringSecurityAuditorAware springSecurityAuditorAware) {
         this.projectRepository = projectRepository;
         this.projectResourceAssembler = projectResourceAssembler;
         this.forestAreaCodeRepository = forestAreaCodeRepository;
         this.projectTypeCodeRepository = projectTypeCodeRepository;
         this.generalScopeCodeRepository = generalScopeCodeRepository;
         this.projectStatusCodeRepository = projectStatusCodeRepository;
+        this.springSecurityAuditorAware = springSecurityAuditorAware;
     }
 
     public CollectionModel<ProjectModel> getAllProjects() throws ServiceException {
@@ -105,7 +110,12 @@ public class ProjectService implements CommonService {
 
 
     private void initializeNewProject(ProjectModel resource) {
-        resource.setCreateDate(new Date());
+
+        // set the default values for a newly created resource
+//        resource.setCreateUser(springSecurityAuditorAware.getCurrentAuditor().get());
+//        resource.setUpdateUser(springSecurityAuditorAware.getCurrentAuditor().get());
+//        resource.setRevisionCount(0);
+//        resource.setCreateDate(new Date());
         resource.setProjectGuid(UUID.randomUUID().toString());
         resource.setRevisionCount(0);
     }

@@ -111,7 +111,11 @@
 							"    console.log(\"Project Guid saved successfully!\");",
 							"} else {",
 							"    console.error(\"Failed to set project guid:\", response);",
-							"}"
+							"}",
+							"",
+							"pm.test(\"Status code is 201\", function() {",
+							"    pm.response.to.have.status(201);",
+							"})"
 						],
 						"type": "text/javascript",
 						"packages": {}
@@ -169,7 +173,11 @@
 							"    console.log(\"Project Fiscl Guid saved successfully!\");",
 							"} else {",
 							"    console.error(\"Failed to set project Fiscal guid:\", response);",
-							"}"
+							"}",
+							"",
+							"pm.test(\"Status code is 201\", function() {",
+							"    pm.response.to.have.status(201);",
+							"})"
 						],
 						"type": "text/javascript",
 						"packages": {}
@@ -209,11 +217,13 @@
 					}
 				},
 				"url": {
-					"raw": "{{LOCAL_API_URL}}/projectFiscals",
+					"raw": "{{LOCAL_API_URL}}/projects/{{projectGuid}}/projectFiscals",
 					"host": [
 						"{{LOCAL_API_URL}}"
 					],
 					"path": [
+						"projects",
+						"{{projectGuid}}",
 						"projectFiscals"
 					]
 				}
@@ -227,7 +237,9 @@
 					"listen": "test",
 					"script": {
 						"exec": [
-							""
+							"pm.test(\"Status code is 200\", function() {",
+							"    pm.response.to.have.status(200);",
+							"})"
 						],
 						"type": "text/javascript",
 						"packages": {}
@@ -267,11 +279,13 @@
 					}
 				},
 				"url": {
-					"raw": "{{LOCAL_API_URL}}/projectFiscals/{{projectPlanFiscalGuid}}",
+					"raw": "{{LOCAL_API_URL}}/projects/{{projectGuid}}}/projectFiscals/{{projectPlanFiscalGuid}}",
 					"host": [
 						"{{LOCAL_API_URL}}"
 					],
 					"path": [
+						"projects",
+						"{{projectGuid}}}",
 						"projectFiscals",
 						"{{projectPlanFiscalGuid}}"
 					]
@@ -281,6 +295,30 @@
 		},
 		{
 			"name": "GET Projects",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function() {",
+							"    pm.response.to.have.status(200);",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
 			"request": {
 				"auth": {
 					"type": "bearer",
@@ -308,6 +346,20 @@
 		},
 		{
 			"name": "Get Project",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function() {",
+							"    pm.response.to.have.status(200);",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
 			"request": {
 				"auth": {
 					"type": "bearer",
@@ -336,6 +388,20 @@
 		},
 		{
 			"name": "Update Project Copy",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function() {",
+							"    pm.response.to.have.status(200);",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
 			"request": {
 				"auth": {
 					"type": "bearer",
@@ -373,6 +439,20 @@
 		},
 		{
 			"name": "GET Parks Section Codes",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function() {",
+							"    pm.response.to.have.status(200);",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
 			"request": {
 				"auth": {
 					"type": "bearer",
@@ -401,6 +481,20 @@
 		},
 		{
 			"name": "GET program Area Codes",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function() {",
+							"    pm.response.to.have.status(200);",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
 			"request": {
 				"auth": {
 					"type": "bearer",
@@ -415,13 +509,13 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{LOCAL_API_URL}}/codes/bcParksSectionCodes",
+					"raw": "{{LOCAL_API_URL}}/codes/programAreaCodes",
 					"host": [
 						"{{LOCAL_API_URL}}"
 					],
 					"path": [
 						"codes",
-						"bcParksSectionCodes"
+						"programAreaCodes"
 					]
 				}
 			},
@@ -429,6 +523,20 @@
 		},
 		{
 			"name": "GET Forest District Codes",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function() {",
+							"    pm.response.to.have.status(200);",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
 			"request": {
 				"auth": {
 					"type": "bearer",
@@ -463,9 +571,20 @@
 		},
 		{
 			"name": "GET General Scope Codes",
-			"protocolProfileBehavior": {
-				"disableBodyPruning": true
-			},
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function() {",
+							"    pm.response.to.have.status(200);",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
 			"request": {
 				"auth": {
 					"type": "bearer",
@@ -485,23 +604,14 @@
 						"type": "text"
 					}
 				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n  \"projectPlanFiscalGuid\": \"123e4567-e89b-12d3-a456-426614174000\",\n  \"projectGuid\": \"123e4567-e89b-12d3-a456-426614174001\",\n  \"activityCategoryCode\": \"Tactical Planning\",\n  \"fiscalYear\": 2024,\n  \"projectPlanStatusCode\": \"ACTIVE\",\n  \"planFiscalStatusCode\": \"APPROVED\",\n  \"projectFiscalName\": \"Forest Restoration\",\n  \"projectFiscalDescription\": \"Restoration project for forest lands\",\n  \"estimatedClwrrAllocAmount\": 50000.00,\n  \"totalCostEstimateAmount\": 120000.00,\n  \"fiscalFundingRequestAmount\": 70000.00,\n  \"fiscalAllocatedAmount\": 65000.00,\n  \"firstNationsDelivPartInd\": true,\n  \"firstNationsEngagementInd\": false,\n  \"isApprovedInd\": true,\n  \"isDelayedInd\": false,\n  \"submissionTimestamp\": \"2025-01-01T00:00:00Z\",\n  \"approverName\": \"John Doe\",\n  \"approverUserGuid\": \"abcd1234-5678-9101-1121-314151617181\",\n  \"approverUserUserid\": \"jdoe\",\n  \"approvedTimestamp\": \"2025-01-01T10:00:00Z\"\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
 				"url": {
-					"raw": "{{LOCAL_API_URL}}/codes/forestDistrictCodes",
+					"raw": "{{LOCAL_API_URL}}/codes/generalScopeCodes",
 					"host": [
 						"{{LOCAL_API_URL}}"
 					],
 					"path": [
 						"codes",
-						"forestDistrictCodes"
+						"generalScopeCodes"
 					]
 				}
 			},
@@ -509,9 +619,20 @@
 		},
 		{
 			"name": "GETProject Type Codes",
-			"protocolProfileBehavior": {
-				"disableBodyPruning": true
-			},
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function() {",
+							"    pm.response.to.have.status(200);",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
 			"request": {
 				"auth": {
 					"type": "bearer",
@@ -531,15 +652,6 @@
 						"type": "text"
 					}
 				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n  \"projectPlanFiscalGuid\": \"123e4567-e89b-12d3-a456-426614174000\",\n  \"projectGuid\": \"123e4567-e89b-12d3-a456-426614174001\",\n  \"activityCategoryCode\": \"Tactical Planning\",\n  \"fiscalYear\": 2024,\n  \"projectPlanStatusCode\": \"ACTIVE\",\n  \"planFiscalStatusCode\": \"APPROVED\",\n  \"projectFiscalName\": \"Forest Restoration\",\n  \"projectFiscalDescription\": \"Restoration project for forest lands\",\n  \"estimatedClwrrAllocAmount\": 50000.00,\n  \"totalCostEstimateAmount\": 120000.00,\n  \"fiscalFundingRequestAmount\": 70000.00,\n  \"fiscalAllocatedAmount\": 65000.00,\n  \"firstNationsDelivPartInd\": true,\n  \"firstNationsEngagementInd\": false,\n  \"isApprovedInd\": true,\n  \"isDelayedInd\": false,\n  \"submissionTimestamp\": \"2025-01-01T00:00:00Z\",\n  \"approverName\": \"John Doe\",\n  \"approverUserGuid\": \"abcd1234-5678-9101-1121-314151617181\",\n  \"approverUserUserid\": \"jdoe\",\n  \"approvedTimestamp\": \"2025-01-01T10:00:00Z\"\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
 				"url": {
 					"raw": "{{LOCAL_API_URL}}/codes/projectTypeCodes",
 					"host": [
@@ -555,6 +667,20 @@
 		},
 		{
 			"name": "GET Forest Region Codes",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function() {",
+							"    pm.response.to.have.status(200);",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
 			"protocolProfileBehavior": {
 				"disableBodyPruning": true
 			},
@@ -601,6 +727,20 @@
 		},
 		{
 			"name": "GET BC Parks Region Codes",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function() {",
+							"    pm.response.to.have.status(200);",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
 			"protocolProfileBehavior": {
 				"disableBodyPruning": true
 			},
@@ -647,6 +787,20 @@
 		},
 		{
 			"name": "Get ProjectFiscal",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function() {",
+							"    pm.response.to.have.status(200);",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
 			"request": {
 				"auth": {
 					"type": "bearer",
@@ -661,11 +815,13 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{LOCAL_API_URL}}/projectFiscals/{{projectPlanFiscalGuid}}",
+					"raw": "{{LOCAL_API_URL}}/projects/{{projectGuid}}/projectFiscals/{{projectPlanFiscalGuid}}",
 					"host": [
 						"{{LOCAL_API_URL}}"
 					],
 					"path": [
+						"projects",
+						"{{projectGuid}}",
 						"projectFiscals",
 						"{{projectPlanFiscalGuid}}"
 					]
@@ -675,6 +831,20 @@
 		},
 		{
 			"name": "Get ProjectFiscals",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function() {",
+							"    pm.response.to.have.status(200);",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
 			"request": {
 				"auth": {
 					"type": "bearer",
@@ -689,11 +859,13 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{LOCAL_API_URL}}/projectFiscals",
+					"raw": "{{LOCAL_API_URL}}/projects/{{projectGuid}}/projectFiscals",
 					"host": [
 						"{{LOCAL_API_URL}}"
 					],
 					"path": [
+						"projects",
+						"{{projectGuid}}",
 						"projectFiscals"
 					]
 				}
@@ -702,6 +874,20 @@
 		},
 		{
 			"name": "Delete Project Fiscal",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 204\", function() {",
+							"    pm.response.to.have.status(204);",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
 			"request": {
 				"auth": {
 					"type": "bearer",
@@ -716,11 +902,13 @@
 				"method": "DELETE",
 				"header": [],
 				"url": {
-					"raw": "{{LOCAL_API_URL}}/projectFiscals/{{projectPlanFiscalGuid}}",
+					"raw": "{{LOCAL_API_URL}}/projects/{{projectGuid}}/projectFiscals/{{projectPlanFiscalGuid}}",
 					"host": [
 						"{{LOCAL_API_URL}}"
 					],
 					"path": [
+						"projects",
+						"{{projectGuid}}",
 						"projectFiscals",
 						"{{projectPlanFiscalGuid}}"
 					]
@@ -730,6 +918,20 @@
 		},
 		{
 			"name": "Delete Project",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function() {",
+							"    pm.response.to.have.status(200);",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
 			"request": {
 				"auth": {
 					"type": "bearer",

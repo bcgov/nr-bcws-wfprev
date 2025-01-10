@@ -1,6 +1,7 @@
 package ca.bc.gov.nrs.wfprev.services;
 
 import ca.bc.gov.nrs.wfone.common.service.api.ServiceException;
+import ca.bc.gov.nrs.wfprev.SpringSecurityAuditorAware;
 import ca.bc.gov.nrs.wfprev.data.assemblers.ProjectResourceAssembler;
 import ca.bc.gov.nrs.wfprev.data.entities.ForestAreaCodeEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.GeneralScopeCodeEntity;
@@ -49,6 +50,7 @@ class ProjectServiceTest {
     private ProjectTypeCodeRepository projectTypeCodeRepository;
     private GeneralScopeCodeRepository generalScopeCodeRepository;
     private ProjectStatusCodeRepository projectStatusCodeRepository;
+    private SpringSecurityAuditorAware springSecurityAuditorAware;
 
     @BeforeEach
     void setup() {
@@ -58,9 +60,11 @@ class ProjectServiceTest {
         projectTypeCodeRepository = mock(ProjectTypeCodeRepository.class);
         generalScopeCodeRepository = mock(GeneralScopeCodeRepository.class);
         projectStatusCodeRepository = mock(ProjectStatusCodeRepository.class);
+        springSecurityAuditorAware = mock(SpringSecurityAuditorAware.class);
+
 
         projectService = new ProjectService(projectRepository, projectResourceAssembler, forestAreaCodeRepository,
-                projectTypeCodeRepository, generalScopeCodeRepository, projectStatusCodeRepository);
+                projectTypeCodeRepository, generalScopeCodeRepository, projectStatusCodeRepository, springSecurityAuditorAware);
         setField(projectService, "forestAreaCodeRepository", forestAreaCodeRepository);
         setField(projectService, "projectTypeCodeRepository", projectTypeCodeRepository);
         setField(projectService, "generalScopeCodeRepository", generalScopeCodeRepository);
@@ -193,6 +197,8 @@ class ProjectServiceTest {
         // When I call the createOrUpdateProject method ith a duplicate project number combo causing a DataIntegrityViolationException
         when(projectResourceAssembler.toEntity(any())).thenThrow(new DataIntegrityViolationException("Error saving project"));
 
+        when(springSecurityAuditorAware.getCurrentAuditor()).thenReturn(Optional.of("test-user"));
+
         //Then I should throw a DataIntegrityViolationException
         assertThrows(
                 DataIntegrityViolationException.class,
@@ -212,6 +218,8 @@ class ProjectServiceTest {
         ProjectEntity savedEntity = new ProjectEntity();
         when(projectResourceAssembler.toEntity(any(ProjectModel.class))).thenReturn(savedEntity);
         when(projectStatusCodeRepository.findById("ACTIVE")).thenReturn(Optional.empty());
+
+        when(springSecurityAuditorAware.getCurrentAuditor()).thenReturn(Optional.of("test-user"));
 
         // When I submit a project and the ACTIVE status doesn't exist
         // Then an EntityNotFoundException should be thrown
@@ -237,6 +245,7 @@ class ProjectServiceTest {
         when(violation.getPropertyPath()).thenReturn(PathImpl.createPathFromString("siteUnitName"));
         violations.add(violation);
 
+        when(springSecurityAuditorAware.getCurrentAuditor()).thenReturn(Optional.of("test-user"));
         // Mock successful lookup of ACTIVE status
         ProjectStatusCodeEntity activeStatus = ProjectStatusCodeEntity.builder()
                 .projectStatusCode("ACTIVE")
@@ -270,6 +279,7 @@ class ProjectServiceTest {
         when(projectResourceAssembler.toEntity(any(ProjectModel.class))).thenReturn(savedEntity);
         when(projectRepository.saveAndFlush(any(ProjectEntity.class))).thenReturn(savedEntity);
         when(projectResourceAssembler.toModel(any(ProjectEntity.class))).thenReturn(inputModel);
+        when(springSecurityAuditorAware.getCurrentAuditor()).thenReturn(Optional.of("test-user"));
 
         ProjectStatusCodeEntity activeStatus = ProjectStatusCodeEntity.builder()
                 .projectStatusCode("ACTIVE")
@@ -296,7 +306,6 @@ class ProjectServiceTest {
                 "GUID should be a valid UUID"
         );
 
-        assertNotNull(capturedModel.getCreateDate(), "Create date should be set");
         verify(projectRepository).saveAndFlush(any(ProjectEntity.class));
         verify(projectResourceAssembler).toModel(any(ProjectEntity.class));
     }
@@ -318,6 +327,7 @@ class ProjectServiceTest {
         when(projectResourceAssembler.toEntity(any())).thenReturn(savedEntity);
         when(projectRepository.saveAndFlush(any())).thenReturn(savedEntity);
         when(projectResourceAssembler.toModel(any())).thenReturn(inputModel);
+        when(springSecurityAuditorAware.getCurrentAuditor()).thenReturn(Optional.of("test-user"));
 
         ProjectStatusCodeEntity activeStatus = ProjectStatusCodeEntity.builder()
                 .projectStatusCode("ACTIVE")
@@ -350,6 +360,7 @@ class ProjectServiceTest {
         when(projectResourceAssembler.toEntity(any())).thenReturn(savedEntity);
         when(projectRepository.saveAndFlush(any())).thenReturn(savedEntity);
         when(projectResourceAssembler.toModel(any())).thenReturn(inputModel);
+        when(springSecurityAuditorAware.getCurrentAuditor()).thenReturn(Optional.of("test-user"));
 
         ProjectStatusCodeEntity activeStatus = ProjectStatusCodeEntity.builder()
                 .projectStatusCode("ACTIVE")
@@ -393,6 +404,8 @@ class ProjectServiceTest {
         when(projectResourceAssembler.toEntity(any())).thenReturn(savedEntity);
         when(projectRepository.saveAndFlush(any())).thenReturn(savedEntity);
         when(projectResourceAssembler.toModel(any())).thenReturn(inputModel);
+
+        when(springSecurityAuditorAware.getCurrentAuditor()).thenReturn(Optional.of("test-user"));
 
         ProjectStatusCodeEntity activeStatus = ProjectStatusCodeEntity.builder()
                 .projectStatusCode("ACTIVE")
@@ -619,7 +632,7 @@ class ProjectServiceTest {
                 .build();
 
         when(forestAreaCodeRepository.findById("INVALID")).thenReturn(Optional.empty());
-
+        when(springSecurityAuditorAware.getCurrentAuditor()).thenReturn(Optional.of("test-user"));
         // When/Then
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
@@ -639,6 +652,8 @@ class ProjectServiceTest {
 
         when(projectResourceAssembler.toEntity(any())).thenThrow(new RuntimeException("Error saving project"));
 
+        when(springSecurityAuditorAware.getCurrentAuditor()).thenReturn(Optional.of("test-user"));
+
         // When/Then
         RuntimeException exception = assertThrows(
                 RuntimeException.class,
@@ -657,6 +672,8 @@ class ProjectServiceTest {
                 .build();
 
         when(projectResourceAssembler.toEntity(any())).thenThrow(new EntityNotFoundException("Error saving project"));
+
+        when(springSecurityAuditorAware.getCurrentAuditor()).thenReturn(Optional.of("test-user"));
 
         // When/Then
         EntityNotFoundException exception = assertThrows(
@@ -773,6 +790,7 @@ class ProjectServiceTest {
         ProjectEntity entityToSave = new ProjectEntity();
         when(projectResourceAssembler.toEntity(any())).thenReturn(entityToSave);
         when(projectRepository.saveAndFlush(any())).thenAnswer(i -> i.getArgument(0)); // Return what was passed in
+        when(springSecurityAuditorAware.getCurrentAuditor()).thenReturn(Optional.of("test-user"));
         ProjectStatusCodeEntity activeStatus = ProjectStatusCodeEntity.builder()
                 .projectStatusCode("ACTIVE")
                 .build();
@@ -828,6 +846,8 @@ class ProjectServiceTest {
         when(projectResourceAssembler.toEntity(any())).thenReturn(testEntity);
         when(projectRepository.saveAndFlush(any())).thenAnswer(i -> i.getArgument(0));
 
+        when(springSecurityAuditorAware.getCurrentAuditor()).thenReturn(Optional.of("test-user"));
+
         // When
         projectService.createProject(inputModel);
 
@@ -872,6 +892,7 @@ class ProjectServiceTest {
                 .build();
         when(projectStatusCodeRepository.findById("ACTIVE"))
                 .thenReturn(Optional.of(activeStatus));
+        when(springSecurityAuditorAware.getCurrentAuditor()).thenReturn(Optional.of("test-user"));
 
         // When
         projectService.createProject(inputModel);

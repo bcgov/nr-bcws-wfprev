@@ -39,7 +39,7 @@ import java.util.List;
 
 @RestController
 @Slf4j
-@RequestMapping(value = "/projectFiscals")
+@RequestMapping(value = "/projects/{projectId}/projectFiscals")
 public class ProjectFiscalController extends CommonController {
     private final ProjectFiscalService projectFiscalService;
 
