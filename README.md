@@ -37,6 +37,8 @@ WFPREV_BASE_URL=http://localhost:8080
     * This will start the database, liquibase and the backend service
     * If you want to also run the API (With GraalVM), run the following command:
     ```docker compose --profile api up```
+    * to get GraalVM re-register, run :
+    ```docker compose --profile api up --build```
 * NOTE - Windows users may have to fix the line endings in the server/wfprev-api/mvnw file.  The simplest way to do this is to run the following command:
 ```
 Open the mvnw file in a text editor (like VS Code or Notepad++).
