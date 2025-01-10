@@ -216,16 +216,16 @@ class ProjectFiscalServiceTest {
 
         ProjectFiscalEntity projectFiscalEntity = new ProjectFiscalEntity();
         projectFiscalEntity.setProjectPlanFiscalGuid(UUID.fromString("742ae759-e984-4092-8d85-0c65102c7562"));
-        ProjectEntity projectEntity = new ProjectEntity();
-        projectEntity.setProjectGuid(UUID.fromString("123e4567-e89b-12d3-a456-426614174000"));
-        projectFiscalEntity.setProject(projectEntity);
+        ProjectEntity entity = new ProjectEntity();
+        entity.setProjectGuid(UUID.fromString("123e4567-e89b-12d3-a456-426614174000"));
+        projectFiscalEntity.setProject(entity);
         projectFiscalEntity.setActivityCategoryCode("ACTIVITY_CODE_1");
         projectFiscalEntity.setFiscalYear(new BigDecimal(2021));
 
 
         ProjectFiscalEntity savedEntity = new ProjectFiscalEntity();
         savedEntity.setProjectPlanFiscalGuid(UUID.fromString("742ae759-e984-4092-8d85-0c65102c7562"));
-        savedEntity.setProject(projectEntity);
+        savedEntity.setProject(entity);
         savedEntity.setActivityCategoryCode("ACTIVITY_CODE_1");
         savedEntity.setFiscalYear(new BigDecimal(2021));
 

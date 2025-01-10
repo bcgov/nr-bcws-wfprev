@@ -106,12 +106,6 @@ public class ProjectService implements CommonService {
 
 
     private void initializeNewProject(ProjectModel resource) {
-
-        // set the default values for a newly created resource
-//        resource.setCreateUser(springSecurityAuditorAware.getCurrentAuditor().get());
-//        resource.setUpdateUser(springSecurityAuditorAware.getCurrentAuditor().get());
-//        resource.setRevisionCount(0);
-//        resource.setCreateDate(new Date());
         resource.setProjectGuid(UUID.randomUUID().toString());
         resource.setRevisionCount(0);
     }
