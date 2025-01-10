@@ -54,4 +54,8 @@ public class ProjectModel extends CommonModel<ProjectModel> {
 	private BigDecimal latitude;
 	private BigDecimal longitude;
 	private Date lastProgressUpdateTimestamp;
+	private String primaryObjectiveTypeCode;
+	private String secondaryObjectiveTypeCode;
+	private String tertiaryObjectiveTypeCode;
+
 }
