@@ -122,20 +122,20 @@ export class CreateNewProjectDialogComponent implements OnInit {
   onCreate(): void {
     if (this.projectForm.valid) {
       const latLong = this.projectForm.get('latLong')?.value ?? '';
-      const validatedLatLong = validateLatLong(latLong);
-
-      if (!validatedLatLong) {
-        // Show an error message if latLong is invalid
-        this.snackbarService.open(
-          'Invalid latitude and longitude. Please ensure it is in the correct format and within BC boundaries.',
-          'OK',
-          { duration: 5000, panelClass: 'snackbar-error' }
-        );
-        return; // Exit the method if latLong is invalid
-      }
-  
-      const { latitude, longitude } = validatedLatLong;
-  
+      let validatedLatLong;
+    
+      if (latLong) {
+        validatedLatLong = validateLatLong(latLong);
+        if (!validatedLatLong) {
+          // Show an error message if latLong is invalid
+          this.snackbarService.open(
+            'Invalid latitude and longitude. Please ensure it is in the correct format and within BC boundaries.',
+            'OK',
+            { duration: 5000, panelClass: 'snackbar-error' }
+          );
+          return; // Exit the method if latLong is invalid
+        }
+      }    
 
       const newProject: Project = {
         projectName: this.projectForm.get('projectName')?.value ?? '',
@@ -155,6 +155,9 @@ export class CreateNewProjectDialogComponent implements OnInit {
         projectTypeCode: {
           projectTypeCode: "FUEL_MGMT"
         },
+        forestAreaCode: {
+          forestAreaCode: "COAST",
+        },
         projectDescription: this.projectForm.get('projectDescription')?.value ?? '',
         projectNumber: this.projectForm.get('projectNumber')?.value ?? '',
         totalFundingRequestAmount:
@@ -166,8 +169,10 @@ export class CreateNewProjectDialogComponent implements OnInit {
           this.projectForm.get('totalPlannedCostPerHectare')?.value ?? '',
         totalActualAmount: this.projectForm.get('totalActualAmount')?.value ?? 0,
         isMultiFiscalYearProj: false,
-        latitude: Number(latitude),
-        longitude: Number(longitude),
+        ...(validatedLatLong && {
+          latitude: Number(validatedLatLong.latitude),
+          longitude: Number(validatedLatLong.longitude),
+        }), // Conditionally include latitude and longitude
       };
       
       this.projectService.createProject(newProject).subscribe({
