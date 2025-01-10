@@ -95,8 +95,8 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit{
       next: (data) => {
         this.projectDetail = data;
         this.projectNameChange.emit(data.projectName);
-        this.latLong = formatLatLong(data.latitude, data.longitude);
         if (data.latitude && data.longitude) {
+          this.latLong = formatLatLong(data.latitude, data.longitude);
           this.updateMap(data.latitude, data.longitude);
         }
         this.isLatLongDirty = false;
@@ -108,9 +108,6 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit{
           latitude: data.latitude,
           longitude: data.longitude,
         });
-        if (data.latitude && data.longitude) {
-          this.updateMap(data.latitude, data.longitude);
-        }
       },
       error: (err) => {
         console.error('Error fetching project details:', err);
@@ -175,31 +172,28 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit{
   }
 
   updateMap(latitude: number, longitude: number): void {
-    if (this.marker) {
-      // Remove the previous marker if it exists
-      this.map?.removeLayer(this.marker);
-    }
-
-    this.marker = L.marker([latitude, longitude]).addTo(this.map || L.map('map', {
-      center: [latitude, longitude],
-      zoom: 13,
-      zoomControl: false,
-    }));
-  
-    if (!this.map) {
+    if (this.map) {
+      if (this.marker) {
+        this.map.removeLayer(this.marker);
+      }
+      this.marker = L.marker([latitude, longitude]).addTo(this.map);
+      this.map.setView([latitude, longitude], 13); // Update the map view
+    } else {
+      // Initialize the map if it hasn't been created
       this.map = L.map('map', {
         center: [latitude, longitude],
         zoom: 13,
         zoomControl: false,
       });
-  
+      
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '© OpenStreetMap contributors',
       }).addTo(this.map);
-    } else {
-      this.map.setView([latitude, longitude], 13);
+      
+      this.marker = L.marker([latitude, longitude]).addTo(this.map); // Add the marker
     }
   }
+  
   
   ngAfterViewInit(): void {
     setTimeout(() => {
@@ -215,22 +209,22 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit{
   }
 
   initMap(): void {
-    if (this.map) {
-      return;
+    const defaultBounds: L.LatLngBoundsExpression = [
+      [48.3, -139.1], // Southwest corner of BC
+      [60.0, -114.0], // Northeast corner of BC
+    ];
+  
+    if (!this.map) {
+      this.map = L.map('map', {
+        zoomControl: false,
+      });
+  
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors',
+      }).addTo(this.map);
+  
+      this.map.fitBounds(defaultBounds); // Default view for the BC region
     }
-    this.map = L.map('map', {
-      zoom: 13,
-      zoomControl: false, 
-    });
-
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '© OpenStreetMap contributors',
-    }).addTo(this.map);
-    
-
-    // Add a marker at the project's coordinates
-    // Bind a popup to the marker
-    // marker.bindPopup('Project Location: ' + this.sampleData.projectName).openPopup();
   }
 
   patchFormValues(data: any): void {
