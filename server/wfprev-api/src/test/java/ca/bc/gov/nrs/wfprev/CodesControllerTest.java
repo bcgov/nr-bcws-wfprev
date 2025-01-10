@@ -3,11 +3,7 @@ package ca.bc.gov.nrs.wfprev;
 import ca.bc.gov.nrs.wfone.common.service.api.ServiceException;
 import ca.bc.gov.nrs.wfprev.common.enums.CodeTables;
 import ca.bc.gov.nrs.wfprev.controllers.CodesController;
-import ca.bc.gov.nrs.wfprev.data.models.BCParksRegionCodeModel;
-import ca.bc.gov.nrs.wfprev.data.models.BCParksSectionCodeModel;
-import ca.bc.gov.nrs.wfprev.data.models.ForestAreaCodeModel;
-import ca.bc.gov.nrs.wfprev.data.models.GeneralScopeCodeModel;
-import ca.bc.gov.nrs.wfprev.data.models.ProjectTypeCodeModel;
+import ca.bc.gov.nrs.wfprev.data.models.*;
 import ca.bc.gov.nrs.wfprev.services.CodesService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -514,6 +510,26 @@ class CodesControllerTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 // Then
                 .andExpect(status().isInternalServerError());
+    }
+
+    void testGetObjectiveTypeCodes() throws Exception {
+        String exampleId1 = UUID.randomUUID().toString();
+        String exampleId2 = UUID.randomUUID().toString();
+
+        ObjectiveTypeCodeModel otc1 = new ObjectiveTypeCodeModel();
+        otc1.setObjectiveTypeCode(exampleId1);
+
+        ObjectiveTypeCodeModel otc2 = new ObjectiveTypeCodeModel();
+        otc1.setObjectiveTypeCode(exampleId2);
+
+        List<ObjectiveTypeCodeModel> otcList = Arrays.asList(otc1, otc2);
+        CollectionModel<ObjectiveTypeCodeModel> otcModel = CollectionModel.of(otcList);
+
+        when(codesService.getAllObjectiveTypeCodes()).thenReturn(otcModel);
+
+        mockMvc.perform(get("/codes/" + CodeTables.GENERAL_SCOPE_CODE)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
     }
 
 }

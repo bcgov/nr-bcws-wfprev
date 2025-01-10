@@ -36,7 +36,10 @@ public class ProjectResourceAssemblerTest {
         ProjectEntity projectEntity = assembler.toEntity(projectModel);
 
         // then it should have all the same values in the entity object
-        ProjectEntity expectedProjectEntity = ProjectEntity.builder().projectGuid(UUID.fromString(projectGuid)).primaryObjectiveTypeCode("random_test_string_1").secondaryObjectiveTypeCode("random_test_string_2").tertiaryObjectiveTypeCode("random_test_string_3").build();
+        ProjectEntity expectedProjectEntity = ProjectEntity.builder().projectGuid(UUID.fromString(projectGuid))
+                .primaryObjectiveTypeCode("random_test_string_1")
+                .secondaryObjectiveTypeCode("random_test_string_2")
+                .tertiaryObjectiveTypeCode("random_test_string_3").build();
         assertEquals(expectedProjectEntity, projectEntity);
     }
 
