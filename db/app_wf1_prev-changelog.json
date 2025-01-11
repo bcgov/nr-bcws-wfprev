@@ -732,8 +732,8 @@
           }
         ],
         "rollback": [
-          { "sql": "DROP INDEX  CONCURRENTLY   IF EXISTS  wfprev.index_prj_pln_fy_cfs_prj_code_trigram" },
-          { "sql": "DROP INDEX  CONCURRENTLY   IF EXISTS  wfprev.index_prj_pln_fy_bus_comment_trigram" },
+          { "sql": "DROP INDEX  IF EXISTS  wfprev.index_prj_pln_fy_cfs_prj_code_trigram" },
+          { "sql": "DROP INDEX  IF EXISTS  wfprev.index_prj_pln_fy_bus_comment_trigram" },
           { "sql": "DELETE FROM wfprev.objective_type_code" },
           { "sql": "DROP TABLE wfprev.activity_boundary" },
           { "sql": "DROP TABLE wfprev.activity_audit" },
