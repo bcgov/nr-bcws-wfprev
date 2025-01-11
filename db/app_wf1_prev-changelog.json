@@ -699,9 +699,23 @@
               "dbms": "postgresql", "endDelimiter": ";",
               "path": "scripts/01_00_07/00/dml/app_wf1_prev.dml.load_activity_funding_source.sql"
             }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_07/00/ddl/indexes/app_wf1_prev.ddl.project_plan_fiscal.business_area_comment_trigram_idx.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_07/00/ddl/indexes/app_wf1_prev.ddl.project_plan_fiscal.cfs_project_code_trigram_idx.sql"
+            }
           }
         ],
         "rollback": [
+          { "sql": "DROP INDEX  CONCURRENTLY   IF EXISTS  wfprev.index_prj_pln_fy_cfs_prj_code_trigram" },
+          { "sql": "DROP INDEX  CONCURRENTLY   IF EXISTS  wfprev.index_prj_pln_fy_bus_comment_trigram" },
           { "sql": "DELETE FROM wfprev.objective_type_code" },
           { "sql": "DROP TABLE wfprev.activity_boundary" },
           { "sql": "DROP TABLE wfprev.activity_audit" },
