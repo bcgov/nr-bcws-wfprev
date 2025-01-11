@@ -631,6 +631,24 @@
           {
             "sqlFile": {
               "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_07/00/ddl/WFPREV.silviculture_base.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_07/00/ddl/WFPREV.silviculture_technique.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_07/00/ddl/WFPREV.silviculture_method.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
               "path": "scripts/01_00_07/00/ddl/WFPREV.activity_funding_source.sql"
             }
           },
@@ -721,6 +739,9 @@
           { "sql": "DROP TABLE wfprev.activity_audit" },
           { "sql": "DROP TABLE wfprev.activity" },
           { "sql": "DROP TABLE wfprev.activity_funding_source" },
+          { "sql": "DROP TABLE wfprev.silviculture_method" },
+          { "sql": "DROP TABLE wfprev.silviculture_technique" },
+          { "sql": "DROP TABLE wfprev.silviculture_base" },
           { "sql": "DROP TABLE wfprev.silviculture_technique_code" },
           { "sql": "DROP TABLE wfprev.silviculture_method_code" },
           { "sql": "DROP TABLE wfprev.silviculture_base_code" },                    

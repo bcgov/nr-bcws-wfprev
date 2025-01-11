@@ -33,4 +33,6 @@ insert into wfprev.silviculture_base_code (silviculture_base_code, description, 
 values ('SU', 'Surveys', 16, to_date('01-01-1905', 'dd-mm-yyyy'), to_date('31-12-9999', 'dd-mm-yyyy'), 0, 'DATA_LOAD', to_date('15-11-2003 19:23:57', 'dd-mm-yyyy hh24:mi:ss'), 'DATA_LOAD', to_date('15-11-2003 19:23:57', 'dd-mm-yyyy hh24:mi:ss'));
 insert into wfprev.silviculture_base_code (silviculture_base_code, description, display_order, effective_date, expiry_date, revision_count, create_user, create_date, update_user, update_date)
 values ('SX', 'Silviculture Trials', 17, to_date('01-01-1905', 'dd-mm-yyyy'), to_date('31-12-9999', 'dd-mm-yyyy'), 0, 'DATA_LOAD', to_date('15-11-2003 19:23:57', 'dd-mm-yyyy hh24:mi:ss'), 'DATA_LOAD', to_date('15-11-2003 19:23:57', 'dd-mm-yyyy hh24:mi:ss'));
+insert into wfprev.silviculture_base_code (silviculture_base_code, description, display_order, effective_date, expiry_date, revision_count, create_user, create_date, update_user, update_date)
+values ('LBP', 'Land-Base Planning', 18, to_date('01-01-1905', 'dd-mm-yyyy'), to_date('31-12-9999', 'dd-mm-yyyy'), 0, 'DATA_LOAD', to_date('15-11-2003 19:23:57', 'dd-mm-yyyy hh24:mi:ss'), 'DATA_LOAD', to_date('15-11-2003 19:23:57', 'dd-mm-yyyy hh24:mi:ss'));
 
