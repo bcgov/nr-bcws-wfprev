@@ -22,7 +22,7 @@ export interface Project {
   projectName: string;
   projectNumber: number;
   projectTypeCode?: {
-    projectTypeCode: string;
+    projectTypeCode?: string;
   };
   revisionCount?: number;
   siteUnitName: string;

@@ -43,7 +43,7 @@ class SpringSecurityAuditorAwareTest {
         when(mockSecurityContext.getAuthentication()).thenReturn(mockAuthentication);
         when(mockAuthentication.isAuthenticated()).thenReturn(true);
         when(mockAuthentication.getPrincipal()).thenReturn(mockPrincipal);
-        when(mockPrincipal.getAttribute("preferred_username")).thenReturn("test_user");
+        when(mockPrincipal.getAttribute("client_id")).thenReturn("test_user");
 
         // When: getCurrentAuditor is called
         Optional<String> result = auditorAware.getCurrentAuditor();
