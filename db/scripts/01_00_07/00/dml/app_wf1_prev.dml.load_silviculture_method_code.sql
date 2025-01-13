@@ -353,3 +353,10 @@ insert into wfprev.silviculture_method_code (silviculture_method_code, descripti
 values ('CHOP', 'Chopping', 85, to_date('01-01-1905', 'dd-mm-yyyy'), to_date('31-12-9999', 'dd-mm-yyyy'), 0, 'DATA_LOAD', to_date('29-09-2005 09:12:21', 'dd-mm-yyyy hh24:mi:ss'), 'DATA_LOAD', to_date('29-09-2005 09:12:21', 'dd-mm-yyyy hh24:mi:ss'));
 insert into wfprev.silviculture_method_code (silviculture_method_code, description, display_order, effective_date, expiry_date, revision_count, create_user, create_date, update_user, update_date)
 values ('CLEAR', 'Clearcut', 86, to_date('01-01-1905', 'dd-mm-yyyy'), to_date('31-12-9999', 'dd-mm-yyyy'), 0, 'DATA_LOAD', to_date('29-09-2005 09:12:21', 'dd-mm-yyyy hh24:mi:ss'), 'DATA_LOAD', to_date('29-09-2005 09:12:21', 'dd-mm-yyyy hh24:mi:ss'));
+
+insert into wfprev.silviculture_method_code (silviculture_method_code, description, display_order, effective_date, expiry_date, revision_count, create_user, create_date, update_user, update_date)
+values ('BURY', 'Bury', 87, to_date('01-01-1905', 'dd-mm-yyyy'), to_date('31-12-9999', 'dd-mm-yyyy'), 0, 'DATA_LOAD', to_date('29-09-2005 09:12:21', 'dd-mm-yyyy hh24:mi:ss'), 'DATA_LOAD', to_date('29-09-2005 09:12:21', 'dd-mm-yyyy hh24:mi:ss'));
+insert into wfprev.silviculture_method_code (silviculture_method_code, description, display_order, effective_date, expiry_date, revision_count, create_user, create_date, update_user, update_date)
+values ('CSCAT', 'Chip and Scatter', 88, to_date('01-01-1905', 'dd-mm-yyyy'), to_date('31-12-9999', 'dd-mm-yyyy'), 0, 'DATA_LOAD', to_date('29-09-2005 09:12:21', 'dd-mm-yyyy hh24:mi:ss'), 'DATA_LOAD', to_date('29-09-2005 09:12:21', 'dd-mm-yyyy hh24:mi:ss'));
+insert into wfprev.silviculture_method_code (silviculture_method_code, description, display_order, effective_date, expiry_date, revision_count, create_user, create_date, update_user, update_date)
+values ('CHAUL', 'Chip and Haul', 89, to_date('01-01-1905', 'dd-mm-yyyy'), to_date('31-12-9999', 'dd-mm-yyyy'), 0, 'DATA_LOAD', to_date('29-09-2005 09:12:21', 'dd-mm-yyyy hh24:mi:ss'), 'DATA_LOAD', to_date('29-09-2005 09:12:21', 'dd-mm-yyyy hh24:mi:ss'));
