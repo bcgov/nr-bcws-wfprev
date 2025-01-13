@@ -739,7 +739,7 @@
           {
             "sqlFile": {
               "dbms": "postgresql", "endDelimiter": ";",
-              "path": "scripts/01_00_07/00/ddl/indexes/app_wf1_prev.indexes.sql"
+              "path": "scripts/01_00_07/00/ddl/app_wf1_prev.indexes.sql"
             }
           }
         ],
