@@ -790,19 +790,27 @@
               "dbms": "postgresql", "endDelimiter": ";",
               "path": "scripts/01_00_08/00/ddl/app_wf1_prev.ddl.modify_project_plan_fiscal.sql"
             }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_08/00/dml/app_wf1_prev.dml.plan_fiscal_status_code_update.sql"
+            }
           }
         ],
         "rollback": [
           { 
             "sqlFile": {
               "dbms": "postgresql", "endDelimiter": ";",
-              "path": "scripts/01_00_08/00/dml/app_wf1_prev.ddl.rollabck_project_plan_fiscal.sql"
+              "path": "scripts/01_00_08/00/ddl/rollback/app_wf1_prev.ddl.rollabck_project_plan_fiscal.sql"
             }
           },
-          { "sql": "DROP TABLE wfprev.event_history" },          
-          { "sql": "DROP TABLE wfprev.source_object_name_code" },          
-          { "sql": "DROP TABLE wfprev.event_history_type_code" },                    
-          { "sql": "DROP TABLE wfprev.attachment_content_type_code" }
+          { 
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_08/00/ddl/rollback/app_wf1_prev.ddl.rollabck_project.sql"
+            }
+          }
         ]
       }
     }
