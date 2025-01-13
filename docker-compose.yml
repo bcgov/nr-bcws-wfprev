@@ -57,10 +57,10 @@ services:
       - wfprev-network
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U wfprev -d wfprev" ]
-      interval: 5s
+      interval: 10s
       timeout: 5s
-      retries: 5
-      start_period: 10s
+      retries: 10  # Allow up to 10 retries (100 seconds total)
+      start_period: 15s  # Delay the first check by 15 seconds
 
   schemaspy:
     profiles:
