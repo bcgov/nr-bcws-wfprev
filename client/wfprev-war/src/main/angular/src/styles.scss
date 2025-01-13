@@ -8,6 +8,9 @@
     --wf-header-environment-color: #FCBA19;
     --wf-primary-color: #013366;
     --colour-white:#ffffff;
+    --success-color: #42814A;
+    --error-color: #CE3E39;
+    --font-size: 15px;
 }
 
 body {
@@ -39,16 +42,19 @@ body {
     }
 }
 
-.snackbar-success {
-    background-color: #2e703e;
+.mat-mdc-snack-bar-container{
+  .mdc-snackbar__label{
+    color: var(--colour-white);
+    font-family: var(--wf-font-family-main) !important;
+    font-size: 15px !important;
+    word-break: break-word;
+  }
+  &.snackbar-success {
+    background-color: var(--success-color);
     color: var(--colour-white);
     position: inherit;
     width: fit-content;
     text-align: center;
-    .mat-mdc-simple-snack-bar {
-      font-family: var(--wf-font-family-main) !important;
-      font-size: 13px;
-    }
     .mat-button-wrapper {
       color: white;
     }
@@ -57,26 +63,31 @@ body {
       border: 1px solid white;
       border-radius: 5px;
     }
-}
+  }
+  &.snackbar-error {
+    background-color: var(--error-color);
+    color: var(--colour-white);
+    position: inherit;
+    width: fit-content;
+    text-align: center;
+    .mat-button-wrapper {
+      color: white;
+    }
+    .mat-mdc-snack-bar-action {
+      color: white !important;
+      border: 1px solid white;
+      border-radius: 5px;
+    }
+  }
 
+  .mat-mdc-snackbar-surface {
+    background-color: inherit !important;
+    color: inherit !important;
+  }
+}
 
 html, body{
     font-family: var(--wf-font-family-main);
     height: 100%;
     overflow: hidden; /* Prevent scrolling if not needed */
 }
-.snackbar-error {
-    background-color: #FF0000;
-    color: var(--colour-white);
-    position: inherit;
-    width: fit-content;
-    text-align: center;
-    .mat-mdc-simple-snack-bar {
-      font-family: var(--wf-font-family-main);
-      font-size: 13px;
-    }
-    .mat-button-wrapper {
-      color: white;
-    }
-  }
-
