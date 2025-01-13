@@ -786,14 +786,14 @@ class CodesServiceTest {
         // Arrange
         String exampleId = UUID.randomUUID().toString();
         when(objectiveTypeCodeRepository.findById(exampleId))
-                .thenThrow(new RuntimeException("Error fetching general scope code"));
+                .thenThrow(new RuntimeException("Error fetching objective type code"));
 
         // Act & Assert
         ServiceException exception = assertThrows(
                 ServiceException.class,
                 () -> codesService.getObjectiveTypeCodeById(exampleId)
         );
-        assertTrue(exception.getMessage().contains("Error fetching general scope code"));
+        assertTrue(exception.getMessage().contains("Error fetching objective type code"));
     }
 
     @Test
