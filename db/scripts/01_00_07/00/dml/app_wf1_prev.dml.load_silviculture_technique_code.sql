@@ -112,3 +112,9 @@ values ('UP', 'Road Upgrading', 55, to_date('01-01-1905', 'dd-mm-yyyy'), to_date
 insert into wfprev.silviculture_technique_code (silviculture_technique_code, description, display_order, effective_date, expiry_date, revision_count, create_user, create_date, update_user, update_date)
 values ('WT', 'Wildlife Tree', 56, to_date('01-01-1905', 'dd-mm-yyyy'), to_date('31-12-9999', 'dd-mm-yyyy'), 0, 'DATA_LOAD', to_date('15-11-2003 19:24:00', 'dd-mm-yyyy hh24:mi:ss'), 'DATA_LOAD', to_date('15-11-2003 19:24:00', 'dd-mm-yyyy hh24:mi:ss'));
 
+insert into wfprev.silviculture_technique_code (silviculture_technique_code, description, display_order, effective_date, expiry_date, revision_count, create_user, create_date, update_user, update_date)
+values ('MO', 'Monitoring', 57, to_date('01-01-1905', 'dd-mm-yyyy'), to_date('31-12-9999', 'dd-mm-yyyy'), 0, 'DATA_LOAD', to_date('15-11-2003 19:24:00', 'dd-mm-yyyy hh24:mi:ss'), 'DATA_LOAD', to_date('15-11-2003 19:24:00', 'dd-mm-yyyy hh24:mi:ss'));
+insert into wfprev.silviculture_technique_code (silviculture_technique_code, description, display_order, effective_date, expiry_date, revision_count, create_user, create_date, update_user, update_date)
+values ('SH', 'Species Health', 58, to_date('01-01-1905', 'dd-mm-yyyy'), to_date('31-12-9999', 'dd-mm-yyyy'), 0, 'DATA_LOAD', to_date('15-11-2003 19:24:00', 'dd-mm-yyyy hh24:mi:ss'), 'DATA_LOAD', to_date('15-11-2003 19:24:00', 'dd-mm-yyyy hh24:mi:ss'));
+insert into wfprev.silviculture_technique_code (silviculture_technique_code, description, display_order, effective_date, expiry_date, revision_count, create_user, create_date, update_user, update_date)
+values ('IN', 'Inventory', 59, to_date('01-01-1905', 'dd-mm-yyyy'), to_date('31-12-9999', 'dd-mm-yyyy'), 0, 'DATA_LOAD', to_date('15-11-2003 19:24:00', 'dd-mm-yyyy hh24:mi:ss'), 'DATA_LOAD', to_date('15-11-2003 19:24:00', 'dd-mm-yyyy hh24:mi:ss'));

@@ -709,6 +709,24 @@
           {
             "sqlFile": {
               "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_07/00/dml/app_wf1_prev.dml.load_silviculture_base.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_07/00/dml/app_wf1_prev.dml.load_silviculture_technique.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_07/00/dml/app_wf1_prev.dml.load_silviculture_method.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
               "path": "scripts/01_00_07/00/dml/app_wf1_prev.dml.load_objective_type_code.sql"
             }
           },
@@ -721,18 +739,22 @@
           {
             "sqlFile": {
               "dbms": "postgresql", "endDelimiter": ";",
-              "path": "scripts/01_00_07/00/ddl/indexes/app_wf1_prev.ddl.project_plan_fiscal.business_area_comment_trigram_idx.sql"
-            }
-          },
-          {
-            "sqlFile": {
-              "dbms": "postgresql", "endDelimiter": ";",
-              "path": "scripts/01_00_07/00/ddl/indexes/app_wf1_prev.ddl.project_plan_fiscal.cfs_project_code_trigram_idx.sql"
+              "path": "scripts/01_00_07/00/ddl/indexes/app_wf1_prev.indexes.sql"
             }
           }
         ],
         "rollback": [
           { "sql": "DROP INDEX  IF EXISTS  wfprev.index_prj_pln_fy_cfs_prj_code_trigram" },
+          { "sql": "DROP INDEX  IF EXISTS  wfprev.index_prj_pln_fy_fn_partner_trigram" },
+          { "sql": "DROP INDEX  IF EXISTS  wfprev.index_prj_pln_fy_oth_partner_trigram" },
+          { "sql": "DROP INDEX  IF EXISTS  wfprev.index_prj_pln_fy_prj_fiscal_desc_trigram" },
+          { "sql": "DROP INDEX  IF EXISTS  wfprev.index_prj_pln_fy_prj_fiscal_name_trigram" },
+          { "sql": "DROP INDEX  IF EXISTS  wfprev.index_prj_pln_fy_results_no_trigram" },
+          { "sql": "DROP INDEX  IF EXISTS  wfprev.index_project_close_community_trigram" },
+          { "sql": "DROP INDEX  IF EXISTS  wfprev.index_project_prj_desc_trigram" },
+          { "sql": "DROP INDEX  IF EXISTS  wfprev.index_project_prj_lead_trigram" },
+          { "sql": "DROP INDEX  IF EXISTS  wfprev.index_project_prj_name_trigram" },
+          { "sql": "DROP INDEX  IF EXISTS  wfprev.index_project_site_unit_name_trigram" },
           { "sql": "DROP INDEX  IF EXISTS  wfprev.index_prj_pln_fy_bus_comment_trigram" },
           { "sql": "DELETE FROM wfprev.objective_type_code" },
           { "sql": "DROP TABLE wfprev.activity_boundary" },
