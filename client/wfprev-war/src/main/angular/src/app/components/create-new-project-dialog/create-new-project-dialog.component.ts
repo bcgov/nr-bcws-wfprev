@@ -180,7 +180,7 @@ export class CreateNewProjectDialogComponent implements OnInit {
           this.snackbarService.open(
             this.messages.projectCreatedSuccess,
             'OK',
-            { duration: 100000, panelClass: 'snackbar-success' },
+            { duration: 5000, panelClass: 'snackbar-success' },
           );
           this.dialogRef.close({ success: true });
         },
