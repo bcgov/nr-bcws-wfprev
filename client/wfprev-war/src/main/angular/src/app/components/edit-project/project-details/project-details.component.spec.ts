@@ -118,23 +118,42 @@ describe('ProjectDetailsComponent', () => {
 
   describe('Map Initialization', () => {
     let mapSpy: jasmine.SpyObj<L.Map>;
-
+    let markerSpy: jasmine.SpyObj<L.Marker>;
+  
     beforeEach(() => {
-      mapSpy = jasmine.createSpyObj('L.Map', ['setView', 'addLayer', 'remove', 'invalidateSize','fitBounds']);
+      mapSpy = jasmine.createSpyObj('L.Map', ['setView', 'addLayer', 'remove', 'invalidateSize', 'fitBounds', 'removeLayer']);
+      markerSpy = jasmine.createSpyObj('L.Marker', ['addTo']);
       spyOn(L, 'map').and.returnValue(mapSpy);
+      spyOn(L, 'marker').and.returnValue(markerSpy);
     });
 
+    it('should initialize the map when updateMap is called without initializing the map', () => {
+      component['map'] = undefined;
+      component.updateMap(49.553209, -119.965887);
+    
+      expect(L.map).toHaveBeenCalled();
+      expect(L.marker).toHaveBeenCalledWith([49.553209, -119.965887]);
+      expect(markerSpy.addTo).toHaveBeenCalledWith(mapSpy);
+    });
+
+    it('should not reinitialize the map if initMap is called and map already exists', () => {
+      component['map'] = mapSpy;
+      component.initMap();
+    
+      expect(L.map).not.toHaveBeenCalled();
+    });
+    
     it('should not reinitialize the map if it already exists', () => {
       component['map'] = mapSpy;
       component.ngAfterViewInit();
       expect(L.map).toHaveBeenCalledTimes(0);
     });
-
+  
     it('should initialize the map if it does not already exist', () => {
       component.updateMap(49.553209, -119.965887);
       expect(L.map).toHaveBeenCalled();
     });
-
+  
     it('should initialize map with default BC bounds if map is not defined', () => {
       component.initMap();
       expect(L.map).toHaveBeenCalled();
@@ -144,21 +163,68 @@ describe('ProjectDetailsComponent', () => {
       ]);
     });
   
-
+    it('should initialize the map when initMap is called and map does not exist', () => {
+      component['map'] = undefined; // Ensure map is not already initialized
+      component.initMap();
+  
+      expect(L.map).toHaveBeenCalled(); // Verify that the map was created
+      expect(mapSpy.fitBounds).toHaveBeenCalledWith([
+        [48.3, -139.1], // Southwest corner of BC
+        [60.0, -114.0], // Northeast corner of BC
+      ]); // Verify that fitBounds was called with default bounds
+    });
+  
     it('should update the map view with the new latitude and longitude', () => {
       component['map'] = mapSpy;
       component.updateMap(49.553209, -119.965887);
       expect(mapSpy.setView).toHaveBeenCalledWith([49.553209, -119.965887], 13);
     });
-
+  
     it('should add a marker when updating the map view', () => {
       component['map'] = mapSpy;
       component.updateMap(49.553209, -119.965887);
-      expect(mapSpy.addLayer).toHaveBeenCalled();
+      expect(L.marker).toHaveBeenCalledWith([49.553209, -119.965887]);
+      expect(markerSpy.addTo).toHaveBeenCalledWith(mapSpy);
     });
-
+  
+    it('should remove the existing marker when updating the map', () => {
+      component['map'] = mapSpy;
+      component['marker'] = markerSpy;
+    
+      component.updateMap(49.553209, -119.965887);
+    
+      expect(mapSpy.removeLayer).toHaveBeenCalledWith(markerSpy); // Ensure the old marker is removed
+      expect(L.marker).toHaveBeenCalledWith([49.553209, -119.965887]); // New marker added
+      expect(markerSpy.addTo).toHaveBeenCalledWith(mapSpy); // New marker added to the map
+    });
+    
+  
+    it('should initialize the map and add a marker when coordinates are provided', () => {
+      component['map'] = undefined; // Ensure the map is not already initialized
+  
+      component.updateMap(49.553209, -119.965887);
+  
+      expect(L.map).toHaveBeenCalled(); // Verify that the map is created
+      expect(L.marker).toHaveBeenCalledWith([49.553209, -119.965887]); // Marker created
+      expect(markerSpy.addTo).toHaveBeenCalledWith(mapSpy); // Marker added to the map
+    });
+  
+    it('should clean up the map on component destroy', () => {
+      component['map'] = mapSpy; // Assign the mock map to the component
+      component.ngOnDestroy(); // Trigger the lifecycle hook
+  
+      expect(mapSpy.remove).toHaveBeenCalled(); // Ensure the map was removed
+    });
+  
+    it('should do nothing when ngOnDestroy is called if map is not initialized', () => {
+      component['map'] = undefined; // Ensure the map is not initialized
+      component.ngOnDestroy(); // Trigger the lifecycle hook
+  
+      // No errors should occur, and no calls should be made
+      expect(mapSpy.remove).not.toHaveBeenCalled();
+    });
   });
-
+  
   describe('onCancel Method', () => {
     it('should reset the form', () => {
       spyOn(component.detailsForm, 'reset');
@@ -274,7 +340,14 @@ describe('ProjectDetailsComponent', () => {
       expect(projectServiceSpy.getProjectByProjectGuid).toHaveBeenCalledWith('test-guid');
     });
   
+    it('should not call getProjectByProjectGuid if projectGuid is missing', () => {
+      component.projectGuid = '';
+      component.loadProjectDetails();
+    
+      expect(mockProjectService.getProjectByProjectGuid).not.toHaveBeenCalled();
+    });
 
+    
     it('should handle successful response and update component state', () => {
       const mockResponse = {
         projectName: 'Test Project',
@@ -518,5 +591,12 @@ describe('ProjectDetailsComponent', () => {
       });
     });
     
+    it('should not call updateProject if detailsForm is invalid', () => {
+      component.detailsForm.controls['projectTypeCode'].setValue('');
+      component.onSave();
+    
+      expect(mockProjectService.updateProject).not.toHaveBeenCalled();
+    });
+
   });
 });

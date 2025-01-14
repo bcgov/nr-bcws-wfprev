@@ -13,6 +13,8 @@ import {
   validateLatLong,
   formatLatLong,
 } from 'src/app/utils/tools';
+import { OnDestroy } from '@angular/core';
+
 @Component({
   selector: 'app-project-details',
   standalone: true,
@@ -20,7 +22,7 @@ import {
   templateUrl: './project-details.component.html',
   styleUrl: './project-details.component.scss'
 })
-export class ProjectDetailsComponent implements OnInit, AfterViewInit{
+export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy{
   @Output() projectNameChange = new EventEmitter<string>();
 
   private map: L.Map | undefined;
@@ -59,6 +61,12 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit{
     this.initializeForm();
     this.loadCodeTables();
     this.loadProjectDetails();
+  }
+
+  ngOnDestroy(): void {
+    if (this.map) {
+      this.map.remove(); // Clean up the map
+    }
   }
 
   private initializeForm(): void {
