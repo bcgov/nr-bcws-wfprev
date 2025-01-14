@@ -187,7 +187,7 @@ public class ProjectResourceAssembler extends RepresentationModelAssemblerSuppor
         entity.setRevisionCount(nonNullOrDefault(model.getRevisionCount(), existingEntity.getRevisionCount()));
         entity.setProjectStatusCode(existingEntity.getProjectStatusCode());
         entity.setSiteUnitName(nonNullOrDefault(model.getSiteUnitName(), existingEntity.getSiteUnitName()));
-        entity.setProgramAreaGuid(existingEntity.getProgramAreaGuid());
+        entity.setProgramAreaGuid((UUID) nonNullOrDefault(model.getProgramAreaGuid(), existingEntity.getProgramAreaGuid()));
         entity.setForestRegionOrgUnitId(nonNullOrDefault(model.getForestRegionOrgUnitId(), existingEntity.getForestRegionOrgUnitId()));
         entity.setForestDistrictOrgUnitId(nonNullOrDefault(model.getForestDistrictOrgUnitId(), existingEntity.getForestDistrictOrgUnitId()));
         entity.setFireCentreOrgUnitId(nonNullOrDefault(model.getFireCentreOrgUnitId(), existingEntity.getFireCentreOrgUnitId()));
