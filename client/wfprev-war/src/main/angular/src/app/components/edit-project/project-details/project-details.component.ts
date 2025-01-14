@@ -52,7 +52,7 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit{
     private route: ActivatedRoute,
     private projectService: ProjectService,
     private readonly codeTableService: CodeTableServices,
-    private readonly snackbarService: MatSnackBar,
+    public snackbarService: MatSnackBar,
   ) {}
 
   ngOnInit(): void {
