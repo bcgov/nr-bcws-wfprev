@@ -25,7 +25,7 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit{
 
   private map: L.Map | undefined;
   private marker: L.Marker | undefined;
-  private projectGuid = '';
+  projectGuid = '';
   messages = Messages;
   detailsForm: FormGroup = this.fb.group({});
   originalFormValues: any = {};
@@ -49,8 +49,8 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit{
 
   constructor(
     private readonly fb: FormBuilder,
-    private readonly route: ActivatedRoute,
-    private readonly projectService: ProjectService,
+    private route: ActivatedRoute,
+    private projectService: ProjectService,
     private readonly codeTableService: CodeTableServices,
     private readonly snackbarService: MatSnackBar,
   ) {}
@@ -115,9 +115,12 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit{
       },
     });
   }
+  private callValidateLatLong(value: string) {
+    return validateLatLong(value);
+  }
   
   onLatLongChange(newLatLong: string): void {
-    const parsed = validateLatLong(newLatLong);
+    const parsed = this.callValidateLatLong(newLatLong);
     this.isLatLongDirty = !!parsed; // Set dirty flag if valid
   }
   

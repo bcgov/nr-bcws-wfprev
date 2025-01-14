@@ -9,7 +9,10 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { AppConfigService } from 'src/app/services/app-config.service';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { MatSnackBar } from '@angular/material/snack-bar';
-
+import { ProjectService } from 'src/app/services/project-services';
+import { ActivatedRoute } from '@angular/router';
+import { formatLatLong } from 'src/app/utils/tools';
+import * as Utils from 'src/app/utils/tools';
 
 const mockApplicationConfig = {
   application: {
@@ -51,8 +54,10 @@ describe('ProjectDetailsComponent', () => {
   let component: ProjectDetailsComponent;
   let fixture: ComponentFixture<ProjectDetailsComponent>;
   let mockSnackbar: jasmine.SpyObj<MatSnackBar>;
+  let mockProjectService: jasmine.SpyObj<ProjectService>;
 
   beforeEach(async () => {
+    mockProjectService = jasmine.createSpyObj('ProjectService', ['updateProject', 'getProjectByProjectGuid']);
     mockSnackbar = jasmine.createSpyObj('MatSnackBar', ['open']);
 
     await TestBed.configureTestingModule({
@@ -64,6 +69,8 @@ describe('ProjectDetailsComponent', () => {
         HttpClientTestingModule
       ],
       providers: [
+        { provide: ProjectService, useValue: mockProjectService },
+        { provide: MatSnackBar, useValue: mockSnackbar },
         { provide: AppConfigService, useClass: MockAppConfigService },
         { provide: OAuthService, useClass: MockOAuthService }, // Provide MockOAuthService
 
@@ -212,5 +219,231 @@ describe('ProjectDetailsComponent', () => {
       expect(result).toBe('49.553209, -119.965887');
     });
   });
+
+  describe('loadProjectDetails Method', () => {
+    let projectServiceSpy: jasmine.SpyObj<ProjectService>;
+    let routeSnapshotSpy: jasmine.SpyObj<ActivatedRoute>;
+    
+    beforeEach(() => {
+      projectServiceSpy = jasmine.createSpyObj('ProjectService', ['getProjectByProjectGuid']);
+      routeSnapshotSpy = jasmine.createSpyObj('ActivatedRoute', ['snapshot']);
+      component['projectService'] = projectServiceSpy;
+      component['route'] = routeSnapshotSpy;
+    });
   
+    it('should exit early if projectGuid is missing', () => {
+      routeSnapshotSpy.snapshot = { queryParamMap: new Map() } as any;
+      component.loadProjectDetails();
+      expect(projectServiceSpy.getProjectByProjectGuid).not.toHaveBeenCalled();
+    });
+  
+    it('should call projectService.getProjectByProjectGuid if projectGuid is present', () => {
+      routeSnapshotSpy.snapshot = { queryParamMap: { get: () => 'test-guid' } } as any;
+      projectServiceSpy.getProjectByProjectGuid.and.returnValue(of({}));
+      component.loadProjectDetails();
+      expect(projectServiceSpy.getProjectByProjectGuid).toHaveBeenCalledWith('test-guid');
+    });
+  
+
+    it('should handle successful response and update component state', () => {
+      const mockResponse = {
+        projectName: 'Test Project',
+        latitude: 49.2827,
+        longitude: -123.1207,
+        projectDescription: 'Test Description',
+      };
+      routeSnapshotSpy.snapshot = { queryParamMap: { get: () => 'test-guid' } } as any;
+      projectServiceSpy.getProjectByProjectGuid.and.returnValue(of(mockResponse));
+      spyOn(component, 'updateMap');
+      spyOn(component, 'populateFormWithProjectDetails');
+      spyOn(component.projectNameChange, 'emit');
+    
+      component.loadProjectDetails();
+    
+      const expectedLatLong = formatLatLong(mockResponse.latitude, mockResponse.longitude);
+    
+      expect(component.projectDetail).toEqual(mockResponse);
+      expect(component.projectNameChange.emit).toHaveBeenCalledWith('Test Project');
+      expect(component.latLong).toBe(expectedLatLong); // Use the utility's output
+      expect(component.updateMap).toHaveBeenCalledWith(49.2827, -123.1207);
+      expect(component.populateFormWithProjectDetails).toHaveBeenCalledWith(mockResponse);
+      expect(component.originalFormValues).toEqual(component.detailsForm.getRawValue());
+      expect(component.projectDescription).toBe('Test Description');
+      expect(component.isLatLongDirty).toBeFalse();
+      expect(component.isProjectDescriptionDirty).toBeFalse();
+    });
+  
+    it('should handle error response and set projectDetail to null', () => {
+      routeSnapshotSpy.snapshot = { queryParamMap: { get: () => 'test-guid' } } as any;
+      projectServiceSpy.getProjectByProjectGuid.and.returnValue(throwError(() => new Error('Error fetching data')));
+    
+      // Spy on console.error
+      spyOn(console, 'error');
+    
+      component.loadProjectDetails();
+    
+      expect(component.projectDetail).toBeNull();
+      expect(console.error).toHaveBeenCalledWith('Error fetching project details:', jasmine.any(Error));
+    });
+
+    describe('onLatLongChange Method', () => {
+      beforeEach(() => {
+        spyOn<any>(component, 'callValidateLatLong');
+      });
+    
+      it('should set isLatLongDirty to true when newLatLong is valid', () => {
+        (component['callValidateLatLong'] as jasmine.Spy).and.returnValue({ latitude: 49.2827, longitude: -123.1207 });
+    
+        component.onLatLongChange('49.2827, -123.1207');
+        expect(component.isLatLongDirty).toBeTrue();
+      });
+    
+      it('should set isLatLongDirty to false when newLatLong is invalid', () => {
+        (component['callValidateLatLong'] as jasmine.Spy).and.returnValue(null);
+    
+        component.onLatLongChange('invalid-lat-long');
+            expect(component.isLatLongDirty).toBeFalse();
+      });
+    });
+
+    describe('populateFormWithProjectDetails Method', () => {
+      it('should call patchFormValues with the correct data', () => {
+        const mockData = {
+          projectTypeCode: { projectTypeCode: 'Code1' },
+          fundingStream: 'Stream1',
+          programAreaGuid: 'Guid1',
+          projectLead: 'Lead1',
+          projectLeadEmailAddress: 'email@example.com',
+          siteUnitName: 'Site1',
+          closestCommunityName: 'Community1',
+          forestRegionOrgUnitId: 1,
+          forestDistrictOrgUnitId: 2,
+          primaryObjective: 'Objective1',
+          secondaryObjective: 'Objective2',
+          secondaryObjectiveRationale: 'Rationale1',
+          bcParksRegionOrgUnitId: 3,
+          bcParksSectionOrgUnitId: 4,
+          latitude: 49.2827,
+          longitude: -123.1207,
+        };
+    
+        spyOn(component, 'patchFormValues');
+        component.populateFormWithProjectDetails(mockData);
+    
+        expect(component.patchFormValues).toHaveBeenCalledWith(mockData);
+      });
+    });
+
+    describe('assignCodeTableData Method', () => {
+      it('should assign projectTypeCode when key is "projectTypeCode"', () => {
+        const mockData = {
+          _embedded: { projectTypeCode: ['Code1', 'Code2'] },
+        };
+    
+        component.assignCodeTableData('projectTypeCode', mockData);
+    
+        expect(component.projectTypeCode).toEqual(['Code1', 'Code2']);
+      });
+    
+      it('should assign programAreaCode when key is "programAreaCode"', () => {
+        const mockData = {
+          _embedded: { programArea: ['Area1', 'Area2'] },
+        };
+    
+        component.assignCodeTableData('programAreaCode', mockData);
+    
+        expect(component.programAreaCode).toEqual(['Area1', 'Area2']);
+      });
+    
+      it('should assign forestRegionCode when key is "forestRegionCode"', () => {
+        const mockData = {
+          _embedded: { forestRegionCode: ['Region1', 'Region2'] },
+        };
+    
+        component.assignCodeTableData('forestRegionCode', mockData);
+    
+        expect(component.forestRegionCode).toEqual(['Region1', 'Region2']);
+      });
+    
+      it('should assign forestDistrictCode when key is "forestDistrictCode"', () => {
+        const mockData = {
+          _embedded: { forestDistrictCode: ['District1', 'District2'] },
+        };
+    
+        component.assignCodeTableData('forestDistrictCode', mockData);
+    
+        expect(component.forestDistrictCode).toEqual(['District1', 'District2']);
+      });
+    
+      it('should assign bcParksRegionCode when key is "bcParksRegionCode"', () => {
+        const mockData = {
+          _embedded: { bcParksRegionCode: ['Region1', 'Region2'] },
+        };
+    
+        component.assignCodeTableData('bcParksRegionCode', mockData);
+    
+        expect(component.bcParksRegionCode).toEqual(['Region1', 'Region2']);
+      });
+    
+      it('should assign bcParksSectionCode when key is "bcParksSectionCode"', () => {
+        const mockData = {
+          _embedded: { bcParksSectionCode: ['Section1', 'Section2'] },
+        };
+    
+        component.assignCodeTableData('bcParksSectionCode', mockData);
+    
+        expect(component.bcParksSectionCode).toEqual(['Section1', 'Section2']);
+      });
+    });
+    
+    describe('onSaveProjectDescription Method', () => {
+      beforeEach(() => {
+        // Mock the ProjectService methods
+        mockProjectService.updateProject.and.returnValue(of({}));
+        mockProjectService.getProjectByProjectGuid.and.returnValue(
+          of({
+            projectDescription: 'Updated description',
+          })
+        );
+        // Initialize component state for the test
+        component.isProjectDescriptionDirty = true;
+        component.projectDescription = 'New Description';
+        component.projectDetail = { projectDescription: 'Old Description' };
+        component.projectGuid = 'test-guid';
+      });
+    
+    
+      it('should not call updateProject if isProjectDescriptionDirty is false', () => {
+        // Arrange
+        component.isProjectDescriptionDirty = false;
+    
+        // Act
+        component.onSaveProjectDescription();
+    
+        // Assert
+        expect(mockProjectService.updateProject).not.toHaveBeenCalled();
+        expect(mockProjectService.getProjectByProjectGuid).not.toHaveBeenCalled();
+      });
+    
+    });
+
+    describe('onSaveLatLong Method', () => {
+      beforeEach(() => {
+        // Set up mock data or necessary initialization
+        component.projectDetail = { latitude: 48.4284, longitude: -123.3656 };
+        component.projectGuid = 'test-guid';
+        component.latLong = '49.2827, -123.1207';
+        component.isLatLongDirty = true;
+      });
+    
+      it('should not update latitude and longitude if latLong is not dirty', () => {
+        component.isLatLongDirty = false;
+        component.onSaveLatLong();
+    
+        expect(component.isLatLongDirty).toBeFalse();
+        expect(component.projectDetail.latitude).toBeGreaterThan(0);
+      });
+    });
+    
+  });
 });
