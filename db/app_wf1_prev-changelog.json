@@ -579,6 +579,240 @@
           { "sql": "DROP TABLE wfprev.attachment_content_type_code" }
         ]
       }
-    }           
+    },
+    {
+      "changeSet": {
+        "id": "01_00_07_00",
+        "author": "hsaldyga",
+        "tagDatabase": { "tag" : "version_01_00_07_00" },
+        "changes": [
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_07/00/ddl/WFPREV.alter_project_plan_fiscal.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_07/00/ddl/WFPREV.activity_status_code.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_07/00/ddl/WFPREV.contract_phase_code.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_07/00/ddl/WFPREV.risk_rating_code.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_07/00/ddl/WFPREV.silviculture_base_code.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_07/00/ddl/WFPREV.silviculture_method_code.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_07/00/ddl/WFPREV.silviculture_technique_code.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_07/00/ddl/WFPREV.silviculture_base.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_07/00/ddl/WFPREV.silviculture_technique.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_07/00/ddl/WFPREV.silviculture_method.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_07/00/ddl/WFPREV.activity_funding_source.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_07/00/ddl/WFPREV.activity.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_07/00/ddl/WFPREV.activity_audit.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_07/00/ddl/WFPREV.activity_boundary.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_07/00/dml/app_wf1_prev.dml.load_activity_status_code.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_07/00/dml/app_wf1_prev.dml.load_contract_phase_code.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_07/00/dml/app_wf1_prev.dml.load_risk_rating_code.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_07/00/dml/app_wf1_prev.dml.load_silviculture_base_code.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_07/00/dml/app_wf1_prev.dml.load_silviculture_method_code.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_07/00/dml/app_wf1_prev.dml.load_silviculture_technique_code.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_07/00/dml/app_wf1_prev.dml.load_silviculture_base.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_07/00/dml/app_wf1_prev.dml.load_silviculture_technique.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_07/00/dml/app_wf1_prev.dml.load_silviculture_method.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_07/00/dml/app_wf1_prev.dml.load_objective_type_code.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_07/00/dml/app_wf1_prev.dml.load_activity_funding_source.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_07/00/ddl/app_wf1_prev.indexes.sql"
+            }
+          }
+        ],
+        "rollback": [
+          { "sql": "DROP INDEX  IF EXISTS  wfprev.index_prj_pln_fy_cfs_prj_code_trigram" },
+          { "sql": "DROP INDEX  IF EXISTS  wfprev.index_prj_pln_fy_fn_partner_trigram" },
+          { "sql": "DROP INDEX  IF EXISTS  wfprev.index_prj_pln_fy_oth_partner_trigram" },
+          { "sql": "DROP INDEX  IF EXISTS  wfprev.index_prj_pln_fy_prj_fiscal_desc_trigram" },
+          { "sql": "DROP INDEX  IF EXISTS  wfprev.index_prj_pln_fy_prj_fiscal_name_trigram" },
+          { "sql": "DROP INDEX  IF EXISTS  wfprev.index_prj_pln_fy_results_no_trigram" },
+          { "sql": "DROP INDEX  IF EXISTS  wfprev.index_project_close_community_trigram" },
+          { "sql": "DROP INDEX  IF EXISTS  wfprev.index_project_prj_desc_trigram" },
+          { "sql": "DROP INDEX  IF EXISTS  wfprev.index_project_prj_lead_trigram" },
+          { "sql": "DROP INDEX  IF EXISTS  wfprev.index_project_prj_name_trigram" },
+          { "sql": "DROP INDEX  IF EXISTS  wfprev.index_project_site_unit_name_trigram" },
+          { "sql": "DROP INDEX  IF EXISTS  wfprev.index_prj_pln_fy_bus_comment_trigram" },
+          { "sql": "DELETE FROM wfprev.objective_type_code" },
+          { "sql": "DROP TABLE wfprev.activity_boundary" },
+          { "sql": "DROP TABLE wfprev.activity_audit" },
+          { "sql": "DROP TABLE wfprev.activity" },
+          { "sql": "DROP TABLE wfprev.activity_funding_source" },
+          { "sql": "DROP TABLE wfprev.silviculture_method" },
+          { "sql": "DROP TABLE wfprev.silviculture_technique" },
+          { "sql": "DROP TABLE wfprev.silviculture_base" },
+          { "sql": "DROP TABLE wfprev.silviculture_technique_code" },
+          { "sql": "DROP TABLE wfprev.silviculture_method_code" },
+          { "sql": "DROP TABLE wfprev.silviculture_base_code" },                    
+          { "sql": "DROP TABLE wfprev.risk_rating_code" },
+          { "sql": "DROP TABLE wfprev.contract_phase_code" },
+          { "sql": "DROP TABLE wfprev.activity_status_code" }          
+        ]
+      }
+    },
+    {
+      "changeSet": {
+        "id": "01_00_08_00",
+        "author": "hsaldyga",
+        "tagDatabase": { "tag" : "version_01_00_08_00" },
+        "changes": [
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_08/00/ddl/app_wf1_prev.ddl.modify_project.sql"
+            }
+          },
+         {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_08/00/ddl/app_wf1_prev.ddl.modify_project_plan_fiscal.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_08/00/dml/app_wf1_prev.dml.plan_fiscal_status_code_update.sql"
+            }
+          }
+        ],
+        "rollback": [
+          { 
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_08/00/ddl/rollback/app_wf1_prev.ddl.rollback_project_plan_fiscal.sql"
+            }
+          },
+          { 
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_08/00/ddl/rollback/app_wf1_prev.ddl.rollback_project.sql"
+            }
+          }
+        ]
+      }
+    }
   ] 
 }
