@@ -1,0 +1,1 @@
+ALTER TABLE wfprev.project_plan_fiscal  ALTER COLUMN submitted_by_user_guid TYPE VARCHAR(36);
