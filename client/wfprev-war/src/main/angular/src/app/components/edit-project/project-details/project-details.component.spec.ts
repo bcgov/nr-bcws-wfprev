@@ -1,4 +1,4 @@
-import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ProjectDetailsComponent } from './project-details.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import * as L from 'leaflet';
@@ -12,7 +12,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { ProjectService } from 'src/app/services/project-services';
 import { ActivatedRoute } from '@angular/router';
 import { formatLatLong } from 'src/app/utils/tools';
-import * as Utils from 'src/app/utils/tools';
+import * as Tools from 'src/app/utils/tools'; // Import the tools module
 
 const mockApplicationConfig = {
   application: {
@@ -495,7 +495,18 @@ describe('ProjectDetailsComponent', () => {
 
     });
 
+    describe('callValidateLatLong Method', () => {
+      it('should call validateLatLong and return the expected result', () => {
+        const mockValue = '49.2827, -123.1207';
+        const mockReturn = { latitude: 49.2827, longitude: -123.1207 };
     
+        spyOn<any>(component, 'callValidateLatLong').and.returnValue(mockReturn);
+    
+        const result = component['callValidateLatLong'](mockValue);
+    
+        expect(result).toEqual(mockReturn);
+      });
+    });
     
   });
 });
