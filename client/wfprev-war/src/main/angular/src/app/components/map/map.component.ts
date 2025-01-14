@@ -53,9 +53,6 @@ export class MapComponent implements AfterViewInit{
       containerSel: self.mapContainer.nativeElement,
       config: mapConfig,
     })
-
-    const SMK = (window as any)['SMK'];
-    
   }
 
   clone(o: any) {
