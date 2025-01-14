@@ -141,6 +141,12 @@ describe('ProjectDetailsComponent', () => {
       expect(mapSpy.setView).toHaveBeenCalledWith([49.553209, -119.965887], 13);
     });
 
+    it('should add a marker when updating the map view', () => {
+      component['map'] = mapSpy;
+      component.updateMap(49.553209, -119.965887);
+      expect(mapSpy.addLayer).toHaveBeenCalled();
+    });
+
   });
 
   describe('onCancel Method', () => {
@@ -214,6 +220,20 @@ describe('ProjectDetailsComponent', () => {
   });
 
   describe('combineCoordinates Method', () => {
+    it('should return an empty string if latitude or longitude is missing', () => {
+      // Test case: Missing latitude
+      let result = component.combineCoordinates('', -119.965887);
+      expect(result).toBe('');
+  
+      // Test case: Missing longitude
+      result = component.combineCoordinates(49.553209, '');
+      expect(result).toBe('');
+  
+      // Test case: Both latitude and longitude are missing
+      result = component.combineCoordinates('', '');
+      expect(result).toBe('');
+    });
+
     it('should combine latitude and longitude into a string', () => {
       const result = component.combineCoordinates(49.553209, -119.965887);
       expect(result).toBe('49.553209, -119.965887');
@@ -411,8 +431,7 @@ describe('ProjectDetailsComponent', () => {
         component.projectDetail = { projectDescription: 'Old Description' };
         component.projectGuid = 'test-guid';
       });
-    
-    
+
       it('should not call updateProject if isProjectDescriptionDirty is false', () => {
         // Arrange
         component.isProjectDescriptionDirty = false;
@@ -444,6 +463,39 @@ describe('ProjectDetailsComponent', () => {
         expect(component.projectDetail.latitude).toBeGreaterThan(0);
       });
     });
+
+    describe('onCancelProjectDescription Method', () => {
+      it('should reset projectDescription and set isProjectDescriptionDirty to false if projectDetail exists', () => {
+        // Arrange: Set up the projectDetail with a mock description
+        component.projectDetail = { projectDescription: 'Original Description' };
+        component.projectDescription = 'Modified Description'; // Simulate a changed description
+        component.isProjectDescriptionDirty = true; // Simulate the dirty state
+  
+        // Act: Call the method
+        component.onCancelProjectDescription();
+  
+        // Assert: Check that projectDescription and isProjectDescriptionDirty are reset
+        expect(component.projectDescription).toBe('Original Description');
+        expect(component.isProjectDescriptionDirty).toBeFalse();
+      });
+  
+      it('should not change projectDescription or isProjectDescriptionDirty if projectDetail is null', () => {
+        // Arrange: Set projectDetail to null
+        component.projectDetail = null;
+        component.projectDescription = 'Some Description'; // Simulate a description
+        component.isProjectDescriptionDirty = true; // Simulate the dirty state
+  
+        // Act: Call the method
+        component.onCancelProjectDescription();
+  
+        // Assert: Ensure no changes are made
+        expect(component.projectDescription).toBe('Some Description');
+        expect(component.isProjectDescriptionDirty).toBeTrue();
+      });
+
+    });
+
+    
     
   });
 });

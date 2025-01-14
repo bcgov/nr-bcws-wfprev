@@ -321,6 +321,148 @@ describe('CreateNewProjectDialogComponent', () => {
       })
     );
   });
+
+  it('should show an error when latLong is in an invalid format', () => {
+    component.projectForm.patchValue({
+      projectName: 'New Project',
+      businessArea: 'Area 1',
+      forestRegion: 1,
+      forestDistrict: 2,
+      bcParksRegion: 3,
+      bcParksSection: 4,
+      projectLead: 'John Doe',
+      projectLeadEmail: 'john.doe@example.com',
+      siteUnitName: 'Unit 1',
+      closestCommunity: 'Community 1',
+      latLong: 'invalid, format', // Invalid latLong format
+    });
   
-    
+    component.onCreate();
+  
+    expect(mockSnackbarService.open).toHaveBeenCalledWith(
+      'Invalid latitude and longitude. Please ensure it is in the correct format and within BC boundaries.',
+      'OK',
+      { duration: 5000, panelClass: 'snackbar-error' }
+    );
+  
+    expect(mockProjectService.createProject).not.toHaveBeenCalled();
+  });
+  
+  it('should disable bcParksSection if region is deselected', () => {
+    component.projectForm.get('bcParksRegion')?.setValue(null); // No region selected
+    fixture.detectChanges();
+  
+    expect(component.projectForm.get('bcParksSection')?.disabled).toBeTrue();
+    expect(component.bcParksSections).toEqual([]);
+  });
+  
+  it('should handle error while fetching code tables', () => {
+    mockCodeTableService.fetchCodeTable.and.returnValue(throwError(() => new Error('Network error')));
+  
+    component.loadCodeTables();
+  
+    expect(mockCodeTableService.fetchCodeTable).toHaveBeenCalledWith('programAreaCodes');
+    expect(mockCodeTableService.fetchCodeTable).toHaveBeenCalledWith('forestRegionCodes');
+    // Add assertions for console.error or fallback logic
+  });
+  
+  it('should close dialog on cancel confirmation', () => {
+    const mockAfterClosed = of(true); // User confirmed
+    mockDialog.open.and.returnValue({ afterClosed: () => mockAfterClosed } as any);
+  
+    component.onCancel();
+  
+    mockAfterClosed.subscribe(() => {
+      expect(mockDialogRef.close).toHaveBeenCalled();
+    });
+  });
+
+  it('should create project with only required fields', () => {
+    component.projectForm.patchValue({
+      projectName: 'Required Project',
+      businessArea: 'Area 1',
+      forestRegion: 1,
+      forestDistrict: 2,
+      bcParksRegion: 3,
+      bcParksSection: 4,
+      closestCommunity: 'Community 1',
+    });
+  
+    mockProjectService.createProject.and.returnValue(of({}));
+  
+    component.onCreate();
+  
+    expect(mockProjectService.createProject).toHaveBeenCalledWith(
+      jasmine.objectContaining({
+        projectName: 'Required Project',
+      })
+    );
+  });
+
+  it('should return null if there are no errors', () => {
+    component.projectForm.get('projectName')?.setErrors(null);
+  
+    const errorMessage = component.getErrorMessage('projectName');
+  
+    expect(errorMessage).toBeNull();
+  });
+  
+  it('should return required field message when "required" error exists', () => {
+    component.projectForm.get('projectName')?.setErrors({ required: true });
+  
+    const errorMessage = component.getErrorMessage('projectName');
+  
+    expect(errorMessage).toBe(Messages.requiredField);
+  });
+  
+  it('should return max length exceeded message when "maxlength" error exists', () => {
+    component.projectForm.get('projectName')?.setErrors({ maxlength: true });
+  
+    const errorMessage = component.getErrorMessage('projectName');
+  
+    expect(errorMessage).toBe(Messages.maxLengthExceeded);
+  });
+  
+  it('should return invalid email message when "email" error exists', () => {
+    // Arrange: Set 'email' error on the control
+    component.projectForm.get('projectLeadEmail')?.setErrors({ email: true });
+  
+    // Act: Call the getErrorMessage method
+    const errorMessage = component.getErrorMessage('projectLeadEmail');
+  
+    // Assert: Expect the invalid email error message
+    expect(errorMessage).toBe(Messages.invalidEmail);
+  });
+
+  it('should show an error snackbar if creating a project fails', () => {
+    // Arrange: Simulate the createProject API call failing
+    mockProjectService.createProject.and.returnValue(throwError(() => new Error('Failed to create project')));
+  
+    // Populate the form with valid values
+    component.projectForm.patchValue({
+      projectName: 'New Project',
+      businessArea: 'Area 1',
+      forestRegion: 1,
+      forestDistrict: 2,
+      bcParksRegion: 3,
+      bcParksSection: 4,
+      projectLead: 'John Doe',
+      projectLeadEmail: 'john.doe@example.com',
+      siteUnitName: 'Unit 1',
+      closestCommunity: 'Community 1',
+    });
+  
+    // Act: Call the method to create a project
+    component.onCreate();
+  
+    // Assert
+    expect(mockProjectService.createProject).toHaveBeenCalled(); // Ensure createProject was called
+    expect(mockSnackbarService.open).toHaveBeenCalledWith(
+      component.messages.projectCreatedFailure,
+      'OK',
+      { duration: 5000, panelClass: 'snackbar-error' }
+    ); // Ensure the error snackbar was displayed
+  });
+  
+
 });

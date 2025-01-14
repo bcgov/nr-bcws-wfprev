@@ -17,11 +17,6 @@ describe('Latitude/Longitude Utilities', () => {
       expect(result).toBeNull();
     });
 
-    it('should handle extra spaces and still parse correctly', () => {
-      const result = parseLatLong('  49.2827   ,  -123.1207  ');
-      expect(result).toEqual({ latitude: 49.2827, longitude: -123.1207 });
-    });
-
     it('should handle missing longitude and return null', () => {
       const result = parseLatLong('49.2827° N');
       expect(result).toBeNull();

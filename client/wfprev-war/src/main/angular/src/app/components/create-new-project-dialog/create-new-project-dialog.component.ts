@@ -185,23 +185,12 @@ export class CreateNewProjectDialogComponent implements OnInit {
           this.dialogRef.close({ success: true });
         },
         error: (err) =>{
-          if (err.status === 500 && err.error.message.includes('duplicate')) {
-            this.dialog.open(ConfirmationDialogComponent, {
-              data: {
-                indicator: 'duplicate-project',
-                projectName: '',
-              },
-              width: '500px',
-            });
-          }
-          else{
             this.snackbarService.open(
               this.messages.projectCreatedFailure,
               'OK',
               { duration: 5000, panelClass: 'snackbar-error' }
             );
           }
-        }
       })
     }
   }
