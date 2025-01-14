@@ -120,7 +120,7 @@ describe('ProjectDetailsComponent', () => {
     let mapSpy: jasmine.SpyObj<L.Map>;
 
     beforeEach(() => {
-      mapSpy = jasmine.createSpyObj('L.Map', ['setView', 'addLayer', 'remove', 'invalidateSize']);
+      mapSpy = jasmine.createSpyObj('L.Map', ['setView', 'addLayer', 'remove', 'invalidateSize','fitBounds']);
       spyOn(L, 'map').and.returnValue(mapSpy);
     });
 
@@ -134,6 +134,16 @@ describe('ProjectDetailsComponent', () => {
       component.updateMap(49.553209, -119.965887);
       expect(L.map).toHaveBeenCalled();
     });
+
+    it('should initialize map with default BC bounds if map is not defined', () => {
+      component.initMap();
+      expect(L.map).toHaveBeenCalled();
+      expect(mapSpy.fitBounds).toHaveBeenCalledWith([
+        [48.3, -139.1], // Southwest corner of BC
+        [60.0, -114.0], // Northeast corner of BC
+      ]);
+    });
+  
 
     it('should update the map view with the new latitude and longitude', () => {
       component['map'] = mapSpy;
