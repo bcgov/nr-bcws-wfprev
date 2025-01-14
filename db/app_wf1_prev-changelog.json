@@ -802,13 +802,13 @@
           { 
             "sqlFile": {
               "dbms": "postgresql", "endDelimiter": ";",
-              "path": "scripts/01_00_08/00/ddl/rollback/app_wf1_prev.ddl.rollabck_project_plan_fiscal.sql"
+              "path": "scripts/01_00_08/00/ddl/rollback/app_wf1_prev.ddl.rollback_project_plan_fiscal.sql"
             }
           },
           { 
             "sqlFile": {
               "dbms": "postgresql", "endDelimiter": ";",
-              "path": "scripts/01_00_08/00/ddl/rollback/app_wf1_prev.ddl.rollabck_project.sql"
+              "path": "scripts/01_00_08/00/ddl/rollback/app_wf1_prev.ddl.rollback_project.sql"
             }
           }
         ]
