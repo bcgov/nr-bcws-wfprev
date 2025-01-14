@@ -17,7 +17,7 @@ COMMENT ON COLUMN "wfprev"."project_audit"."total_allocated_amount"
 
 
 ALTER TABLE wfprev.project DROP COLUMN  IF EXISTS  "total_estimated_cost_amount";
-ALTER TABLE wfprev.project DROP IF EXISTS COLUMN "total_forecast_amount";
+ALTER TABLE wfprev.project DROP COLUMN IF EXISTS "total_forecast_amount";
 
 ALTER TABLE wfprev.project_audit DROP COLUMN IF EXISTS "total_estimated_cost_amount";
 ALTER TABLE wfprev.project_audit DROP COLUMN IF EXISTS "total_forecast_amount";
