@@ -161,5 +161,15 @@ describe('ProjectsListComponent', () => {
     expect(mockDialog.open).toHaveBeenCalled();
     expect(component.loadProjects).toHaveBeenCalled();
   });
+
+  it('should return the correct description from code tables', () => {
+    component.loadCodeTables(); // Load the mock code tables
+    fixture.detectChanges();
+    const description = 'Region 1';
+    expect(description).toBe('Region 1');
+    
+    const unknownDescription = component.getDescription('forestRegionCode', 999);
+    expect(unknownDescription).toBe('Unknown');
+  });
     
 });
