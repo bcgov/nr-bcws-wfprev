@@ -169,4 +169,13 @@ public class ProjectEntity implements Serializable {
     @NotNull
     @Column(name = "update_date")
     private Date updateDate;
+
+    @Column(name = "primary_objective_type_code")
+    private String primaryObjectiveTypeCode;
+
+    @Column(name = "secondary_objective_type_code")
+    private String secondaryObjectiveTypeCode;
+
+    @Column(name = "tertiary_objective_type_code")
+    private String tertiaryObjectiveTypeCode;
 }
