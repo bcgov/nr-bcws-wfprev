@@ -74,6 +74,9 @@ public class ProjectResourceAssembler extends RepresentationModelAssemblerSuppor
         entity.setCreateDate(resource.getCreateDate());
         entity.setUpdateUser(resource.getUpdateUser());
         entity.setUpdateDate(resource.getUpdateDate());
+        entity.setPrimaryObjectiveTypeCode(resource.getPrimaryObjectiveTypeCode());
+        entity.setSecondaryObjectiveTypeCode(resource.getSecondaryObjectiveTypeCode());
+        entity.setTertiaryObjectiveTypeCode(resource.getTertiaryObjectiveTypeCode());
 
         return entity;
     }
@@ -124,6 +127,9 @@ public class ProjectResourceAssembler extends RepresentationModelAssemblerSuppor
         resource.setCreateDate(entity.getCreateDate());
         resource.setUpdateUser(entity.getUpdateUser());
         resource.setUpdateDate(entity.getUpdateDate());
+        resource.setPrimaryObjectiveTypeCode(entity.getPrimaryObjectiveTypeCode());
+        resource.setSecondaryObjectiveTypeCode(entity.getSecondaryObjectiveTypeCode());
+        resource.setTertiaryObjectiveTypeCode(entity.getTertiaryObjectiveTypeCode());
 
         return resource;
     }

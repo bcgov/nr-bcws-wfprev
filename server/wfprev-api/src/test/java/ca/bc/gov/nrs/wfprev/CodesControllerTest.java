@@ -3,11 +3,7 @@ package ca.bc.gov.nrs.wfprev;
 import ca.bc.gov.nrs.wfone.common.service.api.ServiceException;
 import ca.bc.gov.nrs.wfprev.common.enums.CodeTables;
 import ca.bc.gov.nrs.wfprev.controllers.CodesController;
-import ca.bc.gov.nrs.wfprev.data.models.BCParksRegionCodeModel;
-import ca.bc.gov.nrs.wfprev.data.models.BCParksSectionCodeModel;
-import ca.bc.gov.nrs.wfprev.data.models.ForestAreaCodeModel;
-import ca.bc.gov.nrs.wfprev.data.models.GeneralScopeCodeModel;
-import ca.bc.gov.nrs.wfprev.data.models.ProjectTypeCodeModel;
+import ca.bc.gov.nrs.wfprev.data.models.*;
 import ca.bc.gov.nrs.wfprev.services.CodesService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,6 +47,7 @@ class CodesControllerTest {
         testGetForestAreaCodes();
         testGetGeneralScopeCodes();
         testGetProjectTypeCodes();
+        testGetObjectiveTypeCodes();
     }
 
     void testGetForestAreaCodes() throws Exception {
@@ -113,6 +110,26 @@ class CodesControllerTest {
                 .andExpect(status().isOk());
     }
 
+    void testGetObjectiveTypeCodes() throws Exception {
+        String exampleId1 = UUID.randomUUID().toString();
+        String exampleId2 = UUID.randomUUID().toString();
+
+        ObjectiveTypeCodeModel otc1 = new ObjectiveTypeCodeModel();
+        otc1.setObjectiveTypeCode(exampleId1);
+
+        ObjectiveTypeCodeModel otc2 = new ObjectiveTypeCodeModel();
+        otc1.setObjectiveTypeCode(exampleId2);
+
+        List<ObjectiveTypeCodeModel> otcList = Arrays.asList(otc1, otc2);
+        CollectionModel<ObjectiveTypeCodeModel> otcModel = CollectionModel.of(otcList);
+
+        when(codesService.getAllObjectiveTypeCodes()).thenReturn(otcModel);
+
+        mockMvc.perform(get("/codes/" + CodeTables.OBJECTIVE_TYPE_CODE)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
+
     @Test
     @WithMockUser
     void testGetCodesById() throws Exception {
@@ -145,6 +162,16 @@ class CodesControllerTest {
         mockMvc.perform(get("/codes/{codeTable}/{id}", CodeTables.FOREST_AREA_CODE, faID)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
+
+        String otID = UUID.randomUUID().toString();
+        ObjectiveTypeCodeModel objectiveTypeCode = new ObjectiveTypeCodeModel();
+        objectiveTypeCode.setObjectiveTypeCode(otID);
+
+        when(codesService.getObjectiveTypeCodeById(otID)).thenReturn(objectiveTypeCode);
+
+        mockMvc.perform(get("/codes/{codeTable}/{id}", CodeTables.OBJECTIVE_TYPE_CODE, otID)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
     }
 
     @Test
@@ -156,6 +183,7 @@ class CodesControllerTest {
         when(codesService.getForestAreaCodeById(nonExistentId)).thenReturn(null);
         when(codesService.getGeneralScopeCodeById(nonExistentId)).thenReturn(null);
         when(codesService.getProjectTypeCodeById(nonExistentId)).thenReturn(null);
+        when(codesService.getObjectiveTypeCodeById(nonExistentId)).thenReturn(null);
 
         // Test valid code tables with non-existent ID
         mockMvc.perform(get("/codes/{codeTable}/{id}", "forestAreaCodes", nonExistentId)
@@ -169,6 +197,11 @@ class CodesControllerTest {
                 .andExpect(status().isNotFound());
 
         mockMvc.perform(get("/codes/{codeTable}/{id}", "projectTypeCodes", nonExistentId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("If-Match", "\"1\""))
+                .andExpect(status().isNotFound());
+
+        mockMvc.perform(get("/codes/{codeTable}/{id}", "objectTypeCodes", nonExistentId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("If-Match", "\"1\""))
                 .andExpect(status().isNotFound());
