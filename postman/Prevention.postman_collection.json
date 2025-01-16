@@ -816,6 +816,54 @@
 			"response": []
 		},
 		{
+			"name": "GET Project Plan Status Codes",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function() {",
+							"    pm.response.to.have.status(200);",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{LOCAL_API_URL}}/codes/projectPlanStatusCodes",
+					"host": [
+						"{{LOCAL_API_URL}}"
+					],
+					"path": [
+						"codes",
+						"projectPlanStatusCodes"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "Get ProjectFiscal",
 			"event": [
 				{
@@ -953,8 +1001,8 @@
 					"listen": "test",
 					"script": {
 						"exec": [
-							"pm.test(\"Status code is 200\", function() {",
-							"    pm.response.to.have.status(200);",
+							"pm.test(\"Status code is 204\", function() {",
+							"    pm.response.to.have.status(204);",
 							"})"
 						],
 						"type": "text/javascript",
