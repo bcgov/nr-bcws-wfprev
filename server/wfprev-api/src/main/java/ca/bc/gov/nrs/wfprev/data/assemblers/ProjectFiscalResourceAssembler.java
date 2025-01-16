@@ -50,9 +50,7 @@ public class ProjectFiscalResourceAssembler extends RepresentationModelAssembler
         model.setEstimatedClwrrAllocAmount(entity.getEstimatedClwrrAllocAmount());
         model.setTotalCostEstimateAmount(entity.getTotalCostEstimateAmount());
         model.setCfsProjectCode(entity.getCfsProjectCode());
-        model.setFiscalFundingRequestAmount(entity.getFiscalFundingRequestAmount());
-        model.setFiscalFundingAllocRationale(entity.getFiscalFundingAllocRationale());
-        model.setFiscalAllocatedAmount(entity.getFiscalAllocatedAmount());
+        model.setFiscalForecastAmount(entity.getFiscalForecastAmount());
         model.setFiscalAncillaryFundAmount(entity.getFiscalAncillaryFundAmount());
         model.setFiscalPlannedProjectSizeHa(entity.getFiscalPlannedProjectSizeHa());
         model.setFiscalPlannedCostPerHaAmt(entity.getFiscalPlannedCostPerHaAmt());
@@ -128,9 +126,7 @@ public class ProjectFiscalResourceAssembler extends RepresentationModelAssembler
         entity.setEstimatedClwrrAllocAmount(model.getEstimatedClwrrAllocAmount());
         entity.setTotalCostEstimateAmount(model.getTotalCostEstimateAmount());
         entity.setCfsProjectCode(model.getCfsProjectCode());
-        entity.setFiscalFundingRequestAmount(model.getFiscalFundingRequestAmount());
-        entity.setFiscalFundingAllocRationale(model.getFiscalFundingAllocRationale());
-        entity.setFiscalAllocatedAmount(model.getFiscalAllocatedAmount());
+        entity.setFiscalForecastAmount(model.getFiscalForecastAmount());
         entity.setFiscalAncillaryFundAmount(model.getFiscalAncillaryFundAmount());
         entity.setFiscalPlannedProjectSizeHa(model.getFiscalPlannedProjectSizeHa());
         entity.setFiscalPlannedCostPerHaAmt(model.getFiscalPlannedCostPerHaAmt());
@@ -202,12 +198,8 @@ public class ProjectFiscalResourceAssembler extends RepresentationModelAssembler
                 nonNullOrDefault(projectFiscalModel.getTotalCostEstimateAmount(), existingEntity.getTotalCostEstimateAmount()));
         existingEntity.setCfsProjectCode(
                 nonNullOrDefault(projectFiscalModel.getCfsProjectCode(), existingEntity.getCfsProjectCode()));
-        existingEntity.setFiscalFundingRequestAmount(
-                nonNullOrDefault(projectFiscalModel.getFiscalFundingRequestAmount(), existingEntity.getFiscalFundingRequestAmount()));
-        existingEntity.setFiscalFundingAllocRationale(
-                nonNullOrDefault(projectFiscalModel.getFiscalFundingAllocRationale(), existingEntity.getFiscalFundingAllocRationale()));
-        existingEntity.setFiscalAllocatedAmount(
-                nonNullOrDefault(projectFiscalModel.getFiscalAllocatedAmount(), existingEntity.getFiscalAllocatedAmount()));
+        existingEntity.setFiscalForecastAmount(
+                nonNullOrDefault(projectFiscalModel.getFiscalForecastAmount(), existingEntity.getFiscalForecastAmount()));
         existingEntity.setFiscalAncillaryFundAmount(
                 nonNullOrDefault(projectFiscalModel.getFiscalAncillaryFundAmount(), existingEntity.getFiscalAncillaryFundAmount()));
         existingEntity.setFiscalPlannedProjectSizeHa(

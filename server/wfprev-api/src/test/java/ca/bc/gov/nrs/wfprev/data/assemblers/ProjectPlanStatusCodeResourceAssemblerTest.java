@@ -1,7 +1,7 @@
 package ca.bc.gov.nrs.wfprev.data.assemblers;
 
-import ca.bc.gov.nrs.wfprev.data.entities.ObjectiveTypeCodeEntity;
-import ca.bc.gov.nrs.wfprev.data.models.ObjectiveTypeCodeModel;
+import ca.bc.gov.nrs.wfprev.data.entities.ProjectPlanStatusCodeEntity;
+import ca.bc.gov.nrs.wfprev.data.models.ProjectPlanStatusCodeModel;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.hateoas.CollectionModel;
@@ -11,27 +11,27 @@ import java.util.Date;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class ObjectiveTypeCodeResourceAssemblerTest {
-
-    private ObjectiveTypeCodeResourceAssembler assembler;
+public class ProjectPlanStatusCodeResourceAssemblerTest {
+    private ProjectPlanStatusCodeResourceAssembler assembler;
 
     @BeforeEach
     void setUp() {
-        assembler = new ObjectiveTypeCodeResourceAssembler();
+        assembler = new ProjectPlanStatusCodeResourceAssembler();
     }
 
     @Test
     void testToModel_Success() {
         // Arrange
-        ObjectiveTypeCodeEntity entity = createTestEntity();
+        ProjectPlanStatusCodeEntity entity = createTestEntity();
 
         // Act
-        ObjectiveTypeCodeModel model = assembler.toModel(entity);
+        ProjectPlanStatusCodeModel model = assembler.toModel(entity);
 
         // Assert
         assertNotNull(model);
-        assertEquals(entity.getObjectiveTypeCode(), model.getObjectiveTypeCode());
+        assertEquals(entity.getProjectPlanStatusCode(), model.getProjectPlanStatusCode());
         assertEquals(entity.getDescription(), model.getDescription());
         assertNotNull(model.getLinks());
         assertTrue(model.getLinks().hasLink("self"));
@@ -40,27 +40,27 @@ class ObjectiveTypeCodeResourceAssemblerTest {
     @Test
     void testToEntity_Success() {
         // Arrange
-        ObjectiveTypeCodeModel model = createTestModel();
+        ProjectPlanStatusCodeModel model = createTestModel();
 
         // Act
-        ObjectiveTypeCodeEntity entity = assembler.toEntity(model);
+        ProjectPlanStatusCodeEntity entity = assembler.toEntity(model);
 
         // Assert
         assertNotNull(entity);
-        assertEquals(model.getObjectiveTypeCode(), entity.getObjectiveTypeCode());
+        assertEquals(model.getProjectPlanStatusCode(), entity.getProjectPlanStatusCode());
         assertEquals(model.getDescription(), entity.getDescription());
     }
 
     @Test
     void testToCollectionModel_Success() {
         // Arrange
-        ObjectiveTypeCodeEntity entity1 = createTestEntity();
-        ObjectiveTypeCodeEntity entity2 = createTestEntity();
-        entity2.setObjectiveTypeCode("Code2");
-        List<ObjectiveTypeCodeEntity> entities = Arrays.asList(entity1, entity2);
+        ProjectPlanStatusCodeEntity entity1 = createTestEntity();
+        ProjectPlanStatusCodeEntity entity2 = createTestEntity();
+        entity2.setProjectPlanStatusCode("Code2");
+        List<ProjectPlanStatusCodeEntity> entities = Arrays.asList(entity1, entity2);
 
         // Act
-        CollectionModel<ObjectiveTypeCodeModel> collectionModel = assembler.toCollectionModel(entities);
+        CollectionModel<ProjectPlanStatusCodeModel> collectionModel = assembler.toCollectionModel(entities);
 
         // Assert
         assertNotNull(collectionModel);
@@ -69,9 +69,9 @@ class ObjectiveTypeCodeResourceAssemblerTest {
         assertTrue(collectionModel.getLinks().hasLink("self"));
     }
 
-    private ObjectiveTypeCodeEntity createTestEntity() {
-        ObjectiveTypeCodeEntity entity = new ObjectiveTypeCodeEntity();
-        entity.setObjectiveTypeCode("Code1");
+    private ProjectPlanStatusCodeEntity createTestEntity() {
+        ProjectPlanStatusCodeEntity entity = new ProjectPlanStatusCodeEntity();
+        entity.setProjectPlanStatusCode("Code1");
         entity.setDescription("Test Description");
         entity.setDisplayOrder(1);
         entity.setEffectiveDate(new Date());
@@ -84,9 +84,9 @@ class ObjectiveTypeCodeResourceAssemblerTest {
         return entity;
     }
 
-    private ObjectiveTypeCodeModel createTestModel() {
-        ObjectiveTypeCodeModel model = new ObjectiveTypeCodeModel();
-        model.setObjectiveTypeCode("Code1");
+    private ProjectPlanStatusCodeModel createTestModel() {
+        ProjectPlanStatusCodeModel model = new ProjectPlanStatusCodeModel();
+        model.setProjectPlanStatusCode("Code1");
         model.setDescription("Test Description");
         model.setDisplayOrder(1);
         model.setEffectiveDate(new Date());

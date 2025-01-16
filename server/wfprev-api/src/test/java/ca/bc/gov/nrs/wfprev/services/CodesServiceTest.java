@@ -27,6 +27,7 @@ class CodesServiceTest {
     private ProjectTypeCodeRepository projectTypeCodeRepository;
     private ProjectTypeCodeResourceAssembler projectTypeCodeResourceAssembler;
     private ObjectiveTypeCodeRepository objectiveTypeCodeRepository;
+    private ProjectPlanStatusCodeRepository projectPlanStatusCodeRepository;
 
     private ProgramAreaRepository programAreaRepository;
     private ProgramAreaResourceAssembler programAreaResourceAssembler;
@@ -37,6 +38,7 @@ class CodesServiceTest {
     private BCParksRegionCodeResourceAssembler bcParksRegionCodeResourceAssembler;
     private BCParksSectionCodeResourceAssembler bcParksSectionCodeResourceAssembler;
     private ObjectiveTypeCodeResourceAssembler objectiveTypeCodeResourceAssembler;
+    private ProjectPlanStatusCodeResourceAssembler projectPlanStatusCodeResourceAssembler;
 
     @BeforeEach
     void setup() {
@@ -56,12 +58,14 @@ class CodesServiceTest {
         bcParksSectionCodeResourceAssembler = mock(BCParksSectionCodeResourceAssembler.class);
         objectiveTypeCodeResourceAssembler = mock(ObjectiveTypeCodeResourceAssembler.class);
         objectiveTypeCodeRepository = mock(ObjectiveTypeCodeRepository.class);
+        projectPlanStatusCodeResourceAssembler = mock(ProjectPlanStatusCodeResourceAssembler.class);
+        projectPlanStatusCodeRepository = mock(ProjectPlanStatusCodeRepository.class);
 
         codesService = new CodesService(forestAreaCodeRepository, forestAreaCodeResourceAssembler,
                 generalScopeCodeRepository, generalScopeCodeResourceAssembler,
                 projectTypeCodeRepository, projectTypeCodeResourceAssembler, programAreaRepository, programAreaResourceAssembler,
                 forestOrgUnitCodeRepository, forestRegionUnitCodeResourceAssembler, forestDistrictUnitCodeResourceAssembler, bcParksOrgUnitCodeRepository, bcParksRegionCodeResourceAssembler,
-                bcParksSectionCodeResourceAssembler, objectiveTypeCodeResourceAssembler, objectiveTypeCodeRepository);
+                bcParksSectionCodeResourceAssembler, objectiveTypeCodeResourceAssembler, objectiveTypeCodeRepository, projectPlanStatusCodeResourceAssembler, projectPlanStatusCodeRepository);
     }
 
     @Test
@@ -825,6 +829,102 @@ class CodesServiceTest {
                 () -> codesService.getAllObjectiveTypeCodes()
         );
         assertEquals("Error fetching objective type codes", exception.getMessage());
+    }
+
+    @Test
+    void testGetAllProjectPlanStatusCodes_Success() throws ServiceException {
+        // Arrange
+        List<ProjectPlanStatusCodeEntity> entities = new ArrayList<>();
+        entities.add(new ProjectPlanStatusCodeEntity());
+        entities.add(new ProjectPlanStatusCodeEntity());
+
+        when(projectPlanStatusCodeRepository.findAll()).thenReturn(entities);
+        when(projectPlanStatusCodeResourceAssembler.toCollectionModel(entities))
+                .thenReturn(CollectionModel.of(new ArrayList<>()));
+
+        // Act
+        CollectionModel<ProjectPlanStatusCodeModel> result = codesService.getAllProjectPlanStatusCodes();
+
+        // Assert
+        assertNotNull(result);
+    }
+
+    @Test
+    void testGetProjectPlanStatusCodeById_Success() throws ServiceException {
+        // Arrange
+        String exampleId = UUID.randomUUID().toString();
+        ProjectPlanStatusCodeEntity entity = new ProjectPlanStatusCodeEntity();
+        when(projectPlanStatusCodeRepository.findById(exampleId))
+                .thenReturn(Optional.of(entity));
+        when(projectPlanStatusCodeResourceAssembler.toModel(entity))
+                .thenReturn(new ProjectPlanStatusCodeModel());
+
+        // Act
+        ProjectPlanStatusCodeModel result = codesService.getProjectPlanStatusCodeById(exampleId);
+
+        // Assert
+        assertNotNull(result);
+    }
+
+    @Test
+    void testGetProjectPlanStatusCodeById_NotFound() throws ServiceException {
+        // Arrange
+        String nonExistentId = UUID.randomUUID().toString();
+        when(projectPlanStatusCodeRepository.findById(nonExistentId))
+                .thenReturn(Optional.empty());
+
+        // Act
+        ProjectPlanStatusCodeModel result = codesService.getProjectPlanStatusCodeById(nonExistentId);
+
+        // Assert
+        assertNull(result);
+    }
+
+
+    @Test
+    void testProjectPlanStatusCodeById_Exception() {
+        // Arrange
+        String exampleId = UUID.randomUUID().toString();
+        when(projectPlanStatusCodeRepository.findById(exampleId))
+                .thenThrow(new RuntimeException("Error fetching project plan status code"));
+
+        // Act & Assert
+        ServiceException exception = assertThrows(
+                ServiceException.class,
+                () -> codesService.getProjectPlanStatusCodeById(exampleId)
+        );
+        assertTrue(exception.getMessage().contains("Error fetching project plan status code"));
+    }
+
+    @Test
+    void getAllProjectPlanStatusCodes_Success() throws ServiceException {
+        // Arrange
+        List<ProjectPlanStatusCodeEntity> entities = new ArrayList<>();
+        entities.add(new ProjectPlanStatusCodeEntity());
+        entities.add(new ProjectPlanStatusCodeEntity());
+
+        when(projectPlanStatusCodeRepository.findAll()).thenReturn(entities);
+        when(projectPlanStatusCodeResourceAssembler.toCollectionModel(entities))
+                .thenReturn(CollectionModel.of(new ArrayList<>()));
+
+        // Act
+        CollectionModel<ProjectPlanStatusCodeModel> result = codesService.getAllProjectPlanStatusCodes();
+
+        // Assert
+        assertNotNull(result);
+    }
+
+    @Test
+    void testGetAllProjectPlanStatusCodes_Exception() {
+        // Arrange
+        when(projectPlanStatusCodeRepository.findAll()).thenThrow(new RuntimeException("Error fetching project plan status codes"));
+
+        // Act & Assert
+        ServiceException exception = assertThrows(
+                ServiceException.class,
+                () -> codesService.getAllProjectPlanStatusCodes()
+        );
+        assertEquals("Error fetching project plan status codes", exception.getMessage());
     }
 
 }
