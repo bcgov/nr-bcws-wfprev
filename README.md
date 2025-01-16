@@ -39,6 +39,8 @@ WFPREV_BASE_URL=http://localhost:8080
     ```docker compose --profile api up```
     * to get GraalVM re-register, run :
     ```docker compose --profile api up --build```
+    * To wipe out the db on your local
+    ```docker compose down -v ```
 * NOTE - Windows users may have to fix the line endings in the server/wfprev-api/mvnw file.  The simplest way to do this is to run the following command:
 ```
 Open the mvnw file in a text editor (like VS Code or Notepad++).
