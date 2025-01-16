@@ -175,13 +175,12 @@ public class ProjectController extends CommonController {
 
     try {
       projectService.deleteProject(id);
-      log.debug(" << deleteProjectFiscal success");
+      log.debug(" << deleteProject success");
       return ResponseEntity.noContent().build();
     } catch (EntityNotFoundException e) {
       log.warn(" ### Project not found with id: {}", id, e);
       return ResponseEntity.notFound().build();
     } catch (IllegalArgumentException e) {
-      log.warn(" ### Invalid ID provided: {}", id, e);
       return ResponseEntity.badRequest().build();
     } catch (Exception e) {
       log.error(" ### Error while deleting Project ith id: {}", id, e);
