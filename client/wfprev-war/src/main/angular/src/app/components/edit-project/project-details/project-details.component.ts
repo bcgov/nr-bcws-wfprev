@@ -41,7 +41,7 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
   isProjectDescriptionDirty: boolean = false;
   latLong: string = ''; 
   isLatLongDirty: boolean = false;
-
+  isLatLongValid: boolean = false;
   projectTypeCode: any[] = [];
   programAreaCode: any[] = [];
   forestRegionCode: any[] = [];
@@ -128,8 +128,8 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
   }
   
   onLatLongChange(newLatLong: string): void {
-    const parsed = this.callValidateLatLong(newLatLong);
-    this.isLatLongDirty = !!parsed; // Set dirty flag if valid
+    this.latLong = newLatLong;
+    this.isLatLongDirty = true; // Always mark as dirty regardless of validity
   }
   
 
@@ -308,6 +308,7 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
   }
 
   onCancelProjectDescription(): void {
+    this.isProjectDescriptionDirty = false; 
     if (this.projectDetail) {
       this.projectDescription = this.projectDetail.projectDescription;
       this.isProjectDescriptionDirty = false; 
@@ -354,55 +355,55 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
 
   onSaveLatLong(): void {
     const parsed = validateLatLong(this.latLong);
-  
-    if (parsed && this.isLatLongDirty) {
-      const { latitude, longitude } = parsed;
-  
-      const updatedProject = {
-        ...this.projectDetail,
-        latitude,
-        longitude,
-      };
-  
-      this.projectService.updateProject(this.projectGuid, updatedProject).subscribe({
-        next: () => {
-          this.snackbarService.open(
-            this.messages.projectUpdatedSuccess,
-            'OK',
-            { duration: 3000, panelClass: 'snackbar-success' }
-          );
-          this.projectService.getProjectByProjectGuid(this.projectGuid).subscribe({
-            next: (data) => {
-              this.projectDetail = data;
-              this.latLong = formatLatLong(data.latitude, data.longitude);
-              this.isLatLongDirty = false;
-              this.updateMap(data.latitude, data.longitude);
-            },
-            error: (err) => {
-              console.error('Error fetching updated project details:', err);
-            },
-          });
-        },
-        error: (err) => {
-          console.error('Error saving latitude/longitude:', err);
-          this.snackbarService.open(
-            this.messages.projectUpdatedFailure,
-            'OK',
-            { duration: 3000, panelClass: 'snackbar-error' }
-          );
-        },
-      });
-    } else {
-      // Show appropriate error messages based on validation failure
+
+    if (!parsed) {
+      this.isLatLongValid = false;
       this.snackbarService.open(
         'Invalid latitude/longitude. Please ensure it is in the correct format and within BC boundaries.',
         'OK',
         { duration: 5000, panelClass: 'snackbar-error' }
       );
+      return;
     }
+
+    this.isLatLongValid = true;
+
+    const { latitude, longitude } = parsed;
+    const updatedProject = {
+      ...this.projectDetail,
+      latitude,
+      longitude,
+    };
+  
+    this.projectService.updateProject(this.projectGuid, updatedProject).subscribe({
+      next: () => {
+        this.snackbarService.open(
+          this.messages.projectUpdatedSuccess,
+          'OK',
+          { duration: 3000, panelClass: 'snackbar-success' }
+        );
+        this.projectService.getProjectByProjectGuid(this.projectGuid).subscribe({
+          next: (data) => {
+            this.projectDetail = data;
+            this.latLong = formatLatLong(data.latitude, data.longitude);
+            this.isLatLongDirty = false;
+            this.updateMap(data.latitude, data.longitude);
+          },
+          error: (err) => {
+            console.error('Error fetching updated project details:', err);
+          },
+        });
+      },
+      error: (err) => {
+        console.error('Error saving latitude/longitude:', err);
+        this.snackbarService.open(
+          this.messages.projectUpdatedFailure,
+          'OK',
+          { duration: 3000, panelClass: 'snackbar-error' }
+        );
+      },
+    });
   }
-  
-  
 
   onCancel(): void {
     // Reset form to original values

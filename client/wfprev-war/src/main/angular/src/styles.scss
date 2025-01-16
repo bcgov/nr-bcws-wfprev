@@ -91,3 +91,7 @@ html, body{
     height: 100%;
     overflow: hidden; /* Prevent scrolling if not needed */
 }
+
+.mat-mdc-tab-body-wrapper {
+  height: calc(100vh - 210px) !important
+}
