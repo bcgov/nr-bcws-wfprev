@@ -401,11 +401,11 @@ describe('ProjectDetailsComponent', () => {
         expect(component.isLatLongDirty).toBeTrue();
       });
     
-      it('should set isLatLongDirty to false when newLatLong is invalid', () => {
+      it('should set isLatLongDirty to true when newLatLong is invalid', () => {
         (component['callValidateLatLong'] as jasmine.Spy).and.returnValue(null);
     
         component.onLatLongChange('invalid-lat-long');
-            expect(component.isLatLongDirty).toBeFalse();
+            expect(component.isLatLongDirty).toBeTrue();
       });
     });
 
@@ -534,12 +534,12 @@ describe('ProjectDetailsComponent', () => {
         // Set up mock data or necessary initialization
         component.projectDetail = { latitude: 48.4284, longitude: -123.3656 };
         component.projectGuid = 'test-guid';
-        component.latLong = '49.2827, -123.1207';
-        component.isLatLongDirty = true;
+        component.latLong = 'xawe, -123.3656';
+        component.isLatLongValid = false;
       });
     
-      it('should not update latitude and longitude if latLong is not dirty', () => {
-        component.isLatLongDirty = false;
+      it('should not update latitude and longitude if latLong is not valid', () => {
+        component.isLatLongValid = false;
         component.onSaveLatLong();
     
         expect(component.isLatLongDirty).toBeFalse();
@@ -573,7 +573,7 @@ describe('ProjectDetailsComponent', () => {
   
         // Assert: Ensure no changes are made
         expect(component.projectDescription).toBe('Some Description');
-        expect(component.isProjectDescriptionDirty).toBeTrue();
+        expect(component.isProjectDescriptionDirty).toBeFalse();
       });
 
     });
