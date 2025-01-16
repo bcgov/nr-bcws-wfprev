@@ -17,6 +17,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.hateoas.CollectionModel;
@@ -159,30 +160,31 @@ public class ProjectController extends CommonController {
   }
 
   @DeleteMapping("/{id}")
-  @Operation(summary = "Delete Project Resource",
-             description = "Delete Project Resource",
-             security = @SecurityRequirement(name = "Webade-OAUTH2",
-             scopes = { "WFPREV" }),
-             extensions = { @Extension(properties = { @ExtensionProperty(name = "auth-type", value = "#{wso2.x-auth-type.app_and_app_user}"), @ExtensionProperty(name = "throttling-tier", value = "Unlimited") }) })
-  @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = ProjectModel.class)), headers = { @Header(name = "ETag", description = "The ETag response-header field provides the current value of the entity tag for the requested variant.", schema = @Schema(implementation = String.class)) }), @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(implementation = MessageListRsrc.class))), @ApiResponse(responseCode = "403", description = "Forbidden"), @ApiResponse(responseCode = "404", description = "Not Found"), @ApiResponse(responseCode = "409", description = "Conflict"), @ApiResponse(responseCode = "412", description = "Precondition Failed"), @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = MessageListRsrc.class))) })
-  @Parameter(name = HeaderConstants.VERSION_HEADER, description = HeaderConstants.VERSION_HEADER_DESCRIPTION, required = false, schema = @Schema(implementation = Integer.class), in = ParameterIn.HEADER)
-  @Parameter(name = HeaderConstants.IF_MATCH_HEADER, description = HeaderConstants.IF_MATCH_DESCRIPTION, required = true, schema = @Schema(implementation = String.class), in = ParameterIn.HEADER)
-  public ResponseEntity<ProjectModel> deleteProject(@PathVariable("id") String id) {
-    log.debug(" >> deleteProject");
-    ResponseEntity<ProjectModel> response;
+  @Operation(summary = "Delete a Project Resource",
+          description = "Delete a specific Project Resource by its ID",
+          security = @SecurityRequirement(name = "Webade-OAUTH2",
+                  scopes = {"WFPREV"}))
+  @ApiResponses(value = {
+          @ApiResponse(responseCode = "204", description = "No Content"),
+          @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(implementation = MessageListRsrc.class))),
+          @ApiResponse(responseCode = "404", description = "Not Found"),
+          @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = MessageListRsrc.class)))
+  })
+  public ResponseEntity<Void> deleteProject(@PathVariable("id") String id) {
+    log.debug(" >> deleteProject with id: {}", id);
 
     try {
-      ProjectModel resource = projectService.deleteProject(id);
-      response = resource == null ? notFound(): ok(resource);
-    } catch(ServiceException e) {
-      // most responses here will actually be Bad Requests, not Internal Server Errors
-      // This would be an ideal place to expand the "Catch" and return sensible
-      // HTTP status codes
-      response = internalServerError();
-      log.error(" ### Error while updating Project", e);
+      projectService.deleteProject(id);
+      log.debug(" << deleteProject success");
+      return ResponseEntity.noContent().build();
+    } catch (EntityNotFoundException e) {
+      log.warn(" ### Project not found with id: {}", id, e);
+      return ResponseEntity.notFound().build();
+    } catch (IllegalArgumentException e) {
+      return ResponseEntity.badRequest().build();
+    } catch (Exception e) {
+      log.error(" ### Error while deleting Project ith id: {}", id, e);
+      return internalServerError();
     }
-    
-    log.debug(" << deleteProject");
-    return response;
   }
 }

@@ -57,6 +57,8 @@ public class CodesController extends CommonController {
                 case CodeTables.BC_PARKS_REGION_CODE -> result = codesService.getAllBCParksRegionCodes();
                 case CodeTables.BC_PARKS_SECTION_CODE -> result = codesService.getAllBCParksSectionCodes();
                 case CodeTables.OBJECTIVE_TYPE_CODE -> result = codesService.getAllObjectiveTypeCodes();
+                case CodeTables.PROJECT_PLAN_STATUS_CODE -> result = codesService.getAllProjectPlanStatusCodes();
+
                 default -> {
                     log.error("Invalid code table: {}", codeTable);
                     return internalServerError();
@@ -131,6 +133,7 @@ public class CodesController extends CommonController {
             case CodeTables.BC_PARKS_REGION_CODE -> codesService.getBCParksRegionCodeById(Integer.parseInt(id));
             case CodeTables.BC_PARKS_SECTION_CODE -> codesService.getBCParksSectionCodeById(Integer.parseInt(id));
             case CodeTables.OBJECTIVE_TYPE_CODE -> codesService.getObjectiveTypeCodeById(id);
+            case CodeTables.PROJECT_PLAN_STATUS_CODE -> codesService.getProjectPlanStatusCodeById(id);
             default -> null;
         };
     }

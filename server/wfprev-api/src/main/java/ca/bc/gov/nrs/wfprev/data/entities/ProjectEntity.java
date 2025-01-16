@@ -103,11 +103,11 @@ public class ProjectEntity implements Serializable {
     @Column(name = "closest_community_name", length = 250)
     private String closestCommunityName;
 
-    @Column(name = "total_funding_request_amount", precision = 15, scale = 2)
-    private BigDecimal totalFundingRequestAmount;
+    @Column(name = "total_estimated_cost_amount", precision = 15, scale = 2)
+    private BigDecimal totalEstimatedCostAmount;
 
-    @Column(name = "total_allocated_amount", precision = 15, scale = 2)
-    private BigDecimal totalAllocatedAmount;
+    @Column(name = "total_forecast_amount", precision = 15, scale = 2)
+    private BigDecimal totalForecastAmount;
 
     @Column(name = "total_planned_project_size_ha", columnDefinition = "Decimal(15, 4) default '0'")
     private BigDecimal totalPlannedProjectSizeHa;

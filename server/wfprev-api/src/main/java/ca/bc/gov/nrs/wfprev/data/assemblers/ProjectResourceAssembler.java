@@ -58,8 +58,8 @@ public class ProjectResourceAssembler extends RepresentationModelAssemblerSuppor
         entity.setProjectLeadEmailAddress(resource.getProjectLeadEmailAddress());
         entity.setProjectDescription(resource.getProjectDescription());
         entity.setClosestCommunityName(resource.getClosestCommunityName());
-        entity.setTotalFundingRequestAmount(resource.getTotalFundingRequestAmount());
-        entity.setTotalAllocatedAmount(resource.getTotalAllocatedAmount());
+        entity.setTotalEstimatedCostAmount(resource.getTotalEstimatedCostAmount());
+        entity.setTotalForecastAmount(resource.getTotalForecastAmount());
         entity.setTotalPlannedProjectSizeHa(resource.getTotalPlannedProjectSizeHa());
         entity.setTotalPlannedCostPerHectare(resource.getTotalPlannedCostPerHectare());
         entity.setTotalActualAmount(resource.getTotalActualAmount());
@@ -111,8 +111,8 @@ public class ProjectResourceAssembler extends RepresentationModelAssemblerSuppor
         resource.setProjectLeadEmailAddress(entity.getProjectLeadEmailAddress());
         resource.setProjectDescription(entity.getProjectDescription());
         resource.setClosestCommunityName(entity.getClosestCommunityName());
-        resource.setTotalFundingRequestAmount(entity.getTotalFundingRequestAmount());
-        resource.setTotalAllocatedAmount(entity.getTotalAllocatedAmount());
+        resource.setTotalEstimatedCostAmount(entity.getTotalEstimatedCostAmount());
+        resource.setTotalForecastAmount(entity.getTotalForecastAmount());
         resource.setTotalPlannedProjectSizeHa(entity.getTotalPlannedProjectSizeHa());
         resource.setTotalPlannedCostPerHectare(entity.getTotalPlannedCostPerHectare());
         resource.setTotalActualAmount(entity.getTotalActualAmount());
@@ -182,8 +182,8 @@ public class ProjectResourceAssembler extends RepresentationModelAssemblerSuppor
         entity.setTotalActualProjectSizeHa(nonNullOrDefault(model.getTotalActualProjectSizeHa(), existingEntity.getTotalActualProjectSizeHa()));
         entity.setTotalActualCostPerHectareAmount(nonNullOrDefault(model.getTotalActualCostPerHectareAmount(), existingEntity.getTotalActualCostPerHectareAmount()));
         entity.setTotalActualAmount(nonNullOrDefault(model.getTotalActualAmount(), existingEntity.getTotalActualAmount()));
-        entity.setTotalAllocatedAmount(nonNullOrDefault(model.getTotalAllocatedAmount(), existingEntity.getTotalAllocatedAmount()));
-        entity.setTotalFundingRequestAmount(nonNullOrDefault(model.getTotalFundingRequestAmount(), existingEntity.getTotalFundingRequestAmount()));
+        entity.setTotalEstimatedCostAmount(nonNullOrDefault(model.getTotalEstimatedCostAmount(), existingEntity.getTotalForecastAmount()));
+        entity.setTotalForecastAmount(nonNullOrDefault(model.getTotalForecastAmount(), existingEntity.getTotalForecastAmount()));
         entity.setTotalPlannedCostPerHectare(nonNullOrDefault(model.getTotalPlannedCostPerHectare(), existingEntity.getTotalPlannedCostPerHectare()));
         entity.setTotalPlannedProjectSizeHa(nonNullOrDefault(model.getTotalPlannedProjectSizeHa(), existingEntity.getTotalPlannedProjectSizeHa()));
         entity.setIsMultiFiscalYearProj(nonNullOrDefault(model.getIsMultiFiscalYearProj(), existingEntity.getIsMultiFiscalYearProj()));
