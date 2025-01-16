@@ -3,22 +3,8 @@ package ca.bc.gov.nrs.wfprev.services;
 import ca.bc.gov.nrs.wfone.common.service.api.ServiceException;
 import ca.bc.gov.nrs.wfprev.common.services.CommonService;
 import ca.bc.gov.nrs.wfprev.data.assemblers.*;
-import ca.bc.gov.nrs.wfprev.data.entities.BCParksOrgUnitEntity;
-import ca.bc.gov.nrs.wfprev.data.entities.ForestAreaCodeEntity;
-import ca.bc.gov.nrs.wfprev.data.entities.ForestOrgUnitCodeEntity;
-import ca.bc.gov.nrs.wfprev.data.entities.GeneralScopeCodeEntity;
-import ca.bc.gov.nrs.wfprev.data.entities.ProgramAreaEntity;
-import ca.bc.gov.nrs.wfprev.data.entities.ProjectTypeCodeEntity;
-import ca.bc.gov.nrs.wfprev.data.entities.ObjectiveTypeCodeEntity;
-import ca.bc.gov.nrs.wfprev.data.models.BCParksRegionCodeModel;
-import ca.bc.gov.nrs.wfprev.data.models.BCParksSectionCodeModel;
-import ca.bc.gov.nrs.wfprev.data.models.ForestAreaCodeModel;
-import ca.bc.gov.nrs.wfprev.data.models.ForestDistrictUnitCodeModel;
-import ca.bc.gov.nrs.wfprev.data.models.ForestRegionUnitCodeModel;
-import ca.bc.gov.nrs.wfprev.data.models.GeneralScopeCodeModel;
-import ca.bc.gov.nrs.wfprev.data.models.ProgramAreaModel;
-import ca.bc.gov.nrs.wfprev.data.models.ProjectTypeCodeModel;
-import ca.bc.gov.nrs.wfprev.data.models.ObjectiveTypeCodeModel;
+import ca.bc.gov.nrs.wfprev.data.entities.*;
+import ca.bc.gov.nrs.wfprev.data.models.*;
 import ca.bc.gov.nrs.wfprev.data.repositories.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.hateoas.CollectionModel;
@@ -48,6 +34,8 @@ public class CodesService implements CommonService {
     private final BCParksOrgUnitCodeRepository bcParksOrgUnitCodeRepository;
     private final ObjectiveTypeCodeResourceAssembler objectiveTypeCodeResourceAssembler;
     private final ObjectiveTypeCodeRepository objectiveTypeCodeRepository;
+    private final ProjectPlanStatusCodeResourceAssembler projectPlanStatusCodeResourceAssembler;
+    private final ProjectPlanStatusCodeRepository projectPlanStatusCodeRepository;
 
 
     public CodesService(ForestAreaCodeRepository forestAreaCodeRepository, ForestAreaCodeResourceAssembler forestAreaCodeResourceAssembler,
@@ -55,7 +43,7 @@ public class CodesService implements CommonService {
                         ProjectTypeCodeRepository projectTypeCodeRepository, ProjectTypeCodeResourceAssembler projectTypeCodeResourceAssembler, ProgramAreaRepository programAreaRepository, ProgramAreaResourceAssembler programAreaResourceAssembler,
                         ForestOrgUnitCodeRepository forestRegionCodeRepository, ForestRegionUnitCodeResourceAssembler forestRegionCodeResourceAssembler, ForestDistrictUnitCodeResourceAssembler forestDistrictUnitCodeResourceAssembler,
                         BCParksOrgUnitCodeRepository bcParksOrgUnitCodeRepository, BCParksRegionCodeResourceAssembler bcParksRegionCodeResourceAssembler, BCParksSectionCodeResourceAssembler bcParksSectionCodeResourceAssembler,
-                        ObjectiveTypeCodeResourceAssembler objectiveTypeCodeResourceAssembler, ObjectiveTypeCodeRepository objectiveTypeCodeRepository) {
+                        ObjectiveTypeCodeResourceAssembler objectiveTypeCodeResourceAssembler, ObjectiveTypeCodeRepository objectiveTypeCodeRepository, ProjectPlanStatusCodeResourceAssembler projectPlanStatusCodeResourceAssembler, ProjectPlanStatusCodeRepository projectPlanStatusCodeRepository) {
         this.forestAreaCodeRepository = forestAreaCodeRepository;
         this.forestAreaCodeResourceAssembler = forestAreaCodeResourceAssembler;
         this.generalScopeCodeRepository = generalScopeCodeRepository;
@@ -72,6 +60,8 @@ public class CodesService implements CommonService {
         this.bcParksSectionCodeResourceAssembler = bcParksSectionCodeResourceAssembler;
         this.objectiveTypeCodeResourceAssembler = objectiveTypeCodeResourceAssembler;
         this.objectiveTypeCodeRepository = objectiveTypeCodeRepository;
+        this.projectPlanStatusCodeResourceAssembler = projectPlanStatusCodeResourceAssembler;
+        this.projectPlanStatusCodeRepository = projectPlanStatusCodeRepository;
     }
 
     /**
@@ -234,6 +224,23 @@ public class CodesService implements CommonService {
     public ObjectiveTypeCodeModel getObjectiveTypeCodeById(String id) throws ServiceException {
         try {
             return objectiveTypeCodeRepository.findById(id).map(objectiveTypeCodeResourceAssembler::toModel).orElse(null);
+        } catch (Exception e) {
+            throw new ServiceException(e.getLocalizedMessage(), e);
+        }
+    }
+
+    public CollectionModel<ProjectPlanStatusCodeModel> getAllProjectPlanStatusCodes() throws ServiceException {
+        try {
+            List<ProjectPlanStatusCodeEntity> entities = projectPlanStatusCodeRepository.findAll();
+            return projectPlanStatusCodeResourceAssembler.toCollectionModel(entities);
+        } catch (Exception e) {
+            throw new ServiceException(e.getLocalizedMessage(), e);
+        }
+    }
+
+    public ProjectPlanStatusCodeModel getProjectPlanStatusCodeById(String id) throws ServiceException {
+        try {
+            return projectPlanStatusCodeRepository.findById(id).map(projectPlanStatusCodeResourceAssembler::toModel).orElse(null);
         } catch (Exception e) {
             throw new ServiceException(e.getLocalizedMessage(), e);
         }

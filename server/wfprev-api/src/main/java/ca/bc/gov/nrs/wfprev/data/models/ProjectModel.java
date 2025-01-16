@@ -43,8 +43,8 @@ public class ProjectModel extends CommonModel<ProjectModel> {
 	private String projectLeadEmailAddress;
 	private String projectDescription;
 	private String closestCommunityName;
-	private BigDecimal totalFundingRequestAmount;
-	private BigDecimal totalAllocatedAmount;
+	private BigDecimal totalEstimatedCostAmount;
+	private BigDecimal totalForecastAmount;
 	private BigDecimal totalPlannedProjectSizeHa;
 	private BigDecimal totalPlannedCostPerHectare;
 	private BigDecimal totalActualAmount;
