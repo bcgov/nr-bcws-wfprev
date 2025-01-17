@@ -170,12 +170,15 @@ public class ProjectEntity implements Serializable {
     @Column(name = "update_date")
     private Date updateDate;
 
-    @Column(name = "primary_objective_type_code")
-    private String primaryObjectiveTypeCode;
+    @ManyToOne(fetch = FetchType.EAGER, optional = true)
+    @JoinColumn(name = "primary_objective_type_code")
+    private ObjectiveTypeCodeEntity primaryObjectiveTypeCode;
 
-    @Column(name = "secondary_objective_type_code")
-    private String secondaryObjectiveTypeCode;
+    @ManyToOne(fetch = FetchType.EAGER, optional = true)
+    @JoinColumn(name = "secondary_objective_type_code")
+    private ObjectiveTypeCodeEntity secondaryObjectiveTypeCode;
 
-    @Column(name = "tertiary_objective_type_code")
-    private String tertiaryObjectiveTypeCode;
+    @ManyToOne(fetch = FetchType.EAGER, optional = true)
+    @JoinColumn(name = "tertiary_objective_type_code")
+    private ObjectiveTypeCodeEntity tertiaryObjectiveTypeCode;
 }

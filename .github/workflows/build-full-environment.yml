@@ -46,6 +46,7 @@ jobs:
     with:
       DEFAULT_APPLICATION_ENVIRONMENT: dev
       IMAGE_TAG: latest
+      RUN_LIQUIBASE: true
     secrets: inherit
 
   wfprev-ui:
