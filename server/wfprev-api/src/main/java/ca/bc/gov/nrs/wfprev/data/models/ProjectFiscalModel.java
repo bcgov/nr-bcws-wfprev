@@ -39,9 +39,7 @@ public class ProjectFiscalModel extends CommonModel<ProjectFiscalModel> {
     private BigDecimal estimatedClwrrAllocAmount;
     private BigDecimal totalCostEstimateAmount;
     private String cfsProjectCode;
-    private BigDecimal fiscalFundingRequestAmount;
-    private String fiscalFundingAllocRationale;
-    private BigDecimal fiscalAllocatedAmount;
+    private BigDecimal fiscalForecastAmount;
     private BigDecimal fiscalAncillaryFundAmount;
     private BigDecimal fiscalPlannedProjectSizeHa;
     private BigDecimal fiscalPlannedCostPerHaAmt;

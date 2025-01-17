@@ -80,14 +80,8 @@ public class ProjectFiscalEntity implements Serializable {
     @Column(name = "cfs_project_code", length = 25)
     private String cfsProjectCode;
 
-    @Column(name = "fiscal_funding_request_amount", precision = 15, scale = 2)
-    private BigDecimal fiscalFundingRequestAmount;
-
-    @Column(name = "fiscal_funding_alloc_rationale", length = 4000)
-    private String fiscalFundingAllocRationale;
-
-    @Column(name = "fiscal_allocated_amount", precision = 15, scale = 2)
-    private BigDecimal fiscalAllocatedAmount;
+    @Column(name = "fiscal_forecast_amount", precision = 15, scale = 2)
+    private BigDecimal fiscalForecastAmount;
 
     @Column(name = "fiscal_ancillary_fund_amount", precision = 15, scale = 2)
     private BigDecimal fiscalAncillaryFundAmount;

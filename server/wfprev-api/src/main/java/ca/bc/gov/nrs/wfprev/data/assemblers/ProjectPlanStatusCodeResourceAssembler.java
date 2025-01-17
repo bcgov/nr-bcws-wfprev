@@ -9,20 +9,20 @@ import org.springframework.stereotype.Component;
 
 import ca.bc.gov.nrs.wfprev.common.enums.CodeTables;
 import ca.bc.gov.nrs.wfprev.controllers.CodesController;
-import ca.bc.gov.nrs.wfprev.data.entities.ObjectiveTypeCodeEntity;
-import ca.bc.gov.nrs.wfprev.data.models.ObjectiveTypeCodeModel;
+import ca.bc.gov.nrs.wfprev.data.entities.ProjectPlanStatusCodeEntity;
+import ca.bc.gov.nrs.wfprev.data.models.ProjectPlanStatusCodeModel;
 
 @Component
-public class ObjectiveTypeCodeResourceAssembler extends RepresentationModelAssemblerSupport<ObjectiveTypeCodeEntity, ObjectiveTypeCodeModel> {
+public class ProjectPlanStatusCodeResourceAssembler extends RepresentationModelAssemblerSupport<ProjectPlanStatusCodeEntity, ProjectPlanStatusCodeModel> {
 
-    public ObjectiveTypeCodeResourceAssembler() {
-        super(CodesController.class, ObjectiveTypeCodeModel.class);
+    public ProjectPlanStatusCodeResourceAssembler() {
+        super(CodesController.class, ProjectPlanStatusCodeModel.class);
     }
 
-    public ObjectiveTypeCodeEntity toEntity(ObjectiveTypeCodeModel resource) {
-        ObjectiveTypeCodeEntity entity = new ObjectiveTypeCodeEntity();
+    public ProjectPlanStatusCodeEntity toEntity(ProjectPlanStatusCodeModel resource) {
+        ProjectPlanStatusCodeEntity entity = new ProjectPlanStatusCodeEntity();
 
-        entity.setObjectiveTypeCode(resource.getObjectiveTypeCode());
+        entity.setProjectPlanStatusCode(resource.getProjectPlanStatusCode());
         entity.setDescription(resource.getDescription());
         entity.setDisplayOrder(resource.getDisplayOrder());
         entity.setEffectiveDate(resource.getEffectiveDate());
@@ -37,15 +37,15 @@ public class ObjectiveTypeCodeResourceAssembler extends RepresentationModelAssem
     }
 
     @Override
-    public ObjectiveTypeCodeModel toModel(ObjectiveTypeCodeEntity entity) {
-        ObjectiveTypeCodeModel resource = instantiateModel(entity);
+    public ProjectPlanStatusCodeModel toModel(ProjectPlanStatusCodeEntity entity) {
+        ProjectPlanStatusCodeModel resource = instantiateModel(entity);
 
         resource.add(linkTo(
                 methodOn(CodesController.class)
-                        .getCodeById(CodeTables.OBJECTIVE_TYPE_CODE, entity.getObjectiveTypeCode()))
+                        .getCodeById(CodeTables.PROJECT_PLAN_STATUS_CODE, entity.getProjectPlanStatusCode()))
                 .withSelfRel());
 
-        resource.setObjectiveTypeCode(entity.getObjectiveTypeCode());
+        resource.setProjectPlanStatusCode(entity.getProjectPlanStatusCode());
         resource.setDescription(entity.getDescription());
         resource.setDisplayOrder(entity.getDisplayOrder());
         resource.setEffectiveDate(entity.getEffectiveDate());
@@ -60,11 +60,11 @@ public class ObjectiveTypeCodeResourceAssembler extends RepresentationModelAssem
     }
 
     @Override
-    public CollectionModel<ObjectiveTypeCodeModel> toCollectionModel(Iterable<? extends ObjectiveTypeCodeEntity> entities)
+    public CollectionModel<ProjectPlanStatusCodeModel> toCollectionModel(Iterable<? extends ProjectPlanStatusCodeEntity> entities)
     {
-        CollectionModel<ObjectiveTypeCodeModel> resources = super.toCollectionModel(entities);
+        CollectionModel<ProjectPlanStatusCodeModel> resources = super.toCollectionModel(entities);
 
-        resources.add(linkTo(methodOn(CodesController.class).getCodes(CodeTables.OBJECTIVE_TYPE_CODE)).withSelfRel());
+        resources.add(linkTo(methodOn(CodesController.class).getCodes(CodeTables.PROJECT_PLAN_STATUS_CODE)).withSelfRel());
 
         return resources;
     }
