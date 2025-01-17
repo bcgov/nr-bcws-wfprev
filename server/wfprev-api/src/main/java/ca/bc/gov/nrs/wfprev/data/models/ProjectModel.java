@@ -3,6 +3,7 @@ package ca.bc.gov.nrs.wfprev.data.models;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import ca.bc.gov.nrs.wfprev.data.entities.ObjectiveTypeCodeEntity;
 import org.springframework.hateoas.server.core.Relation;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -54,8 +55,8 @@ public class ProjectModel extends CommonModel<ProjectModel> {
 	private BigDecimal latitude;
 	private BigDecimal longitude;
 	private Date lastProgressUpdateTimestamp;
-	private String primaryObjectiveTypeCode;
-	private String secondaryObjectiveTypeCode;
-	private String tertiaryObjectiveTypeCode;
+	private ObjectiveTypeCodeModel primaryObjectiveTypeCode;
+	private ObjectiveTypeCodeModel secondaryObjectiveTypeCode;
+	private ObjectiveTypeCodeModel tertiaryObjectiveTypeCode;
 
 }

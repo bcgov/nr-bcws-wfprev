@@ -1,14 +1,8 @@
 package ca.bc.gov.nrs.wfprev.data.assemblers;
 
 import ca.bc.gov.nrs.wfprev.controllers.ProjectController;
-import ca.bc.gov.nrs.wfprev.data.entities.ForestAreaCodeEntity;
-import ca.bc.gov.nrs.wfprev.data.entities.GeneralScopeCodeEntity;
-import ca.bc.gov.nrs.wfprev.data.entities.ProjectEntity;
-import ca.bc.gov.nrs.wfprev.data.entities.ProjectTypeCodeEntity;
-import ca.bc.gov.nrs.wfprev.data.models.ForestAreaCodeModel;
-import ca.bc.gov.nrs.wfprev.data.models.GeneralScopeCodeModel;
-import ca.bc.gov.nrs.wfprev.data.models.ProjectModel;
-import ca.bc.gov.nrs.wfprev.data.models.ProjectTypeCodeModel;
+import ca.bc.gov.nrs.wfprev.data.entities.*;
+import ca.bc.gov.nrs.wfprev.data.models.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
@@ -48,6 +42,15 @@ public class ProjectResourceAssembler extends RepresentationModelAssemblerSuppor
         if (resource.getProgramAreaGuid() != null) {
             entity.setProgramAreaGuid(UUID.fromString(resource.getProgramAreaGuid()));
         }
+        if (resource.getPrimaryObjectiveTypeCode() != null) {
+            entity.setPrimaryObjectiveTypeCode(toObjectiveTypeCodeEntity(resource.getPrimaryObjectiveTypeCode()));
+        }
+        if (resource.getSecondaryObjectiveTypeCode() != null) {
+            entity.setSecondaryObjectiveTypeCode(toObjectiveTypeCodeEntity(resource.getSecondaryObjectiveTypeCode()));
+        }
+        if (resource.getTertiaryObjectiveTypeCode() != null) {
+            entity.setTertiaryObjectiveTypeCode(toObjectiveTypeCodeEntity(resource.getTertiaryObjectiveTypeCode()));
+        }
         entity.setForestRegionOrgUnitId(resource.getForestRegionOrgUnitId());
         entity.setForestDistrictOrgUnitId(resource.getForestDistrictOrgUnitId());
         entity.setFireCentreOrgUnitId(resource.getFireCentreOrgUnitId());
@@ -74,9 +77,6 @@ public class ProjectResourceAssembler extends RepresentationModelAssemblerSuppor
         entity.setCreateDate(resource.getCreateDate());
         entity.setUpdateUser(resource.getUpdateUser());
         entity.setUpdateDate(resource.getUpdateDate());
-        entity.setPrimaryObjectiveTypeCode(resource.getPrimaryObjectiveTypeCode());
-        entity.setSecondaryObjectiveTypeCode(resource.getSecondaryObjectiveTypeCode());
-        entity.setTertiaryObjectiveTypeCode(resource.getTertiaryObjectiveTypeCode());
 
         return entity;
     }
@@ -99,6 +99,15 @@ public class ProjectResourceAssembler extends RepresentationModelAssemblerSuppor
         }
         if (entity.getGeneralScopeCode() != null) {
             resource.setGeneralScopeCode(toGeneralScopeCodeModel(entity.getGeneralScopeCode()));
+        }
+        if (entity.getPrimaryObjectiveTypeCode() != null) {
+            resource.setPrimaryObjectiveTypeCode(toObjectiveTypeCodeModel(entity.getPrimaryObjectiveTypeCode()));
+        }
+        if (entity.getSecondaryObjectiveTypeCode() != null) {
+            resource.setSecondaryObjectiveTypeCode(toObjectiveTypeCodeModel(entity.getSecondaryObjectiveTypeCode()));
+        }
+        if (entity.getTertiaryObjectiveTypeCode() != null) {
+            resource.setTertiaryObjectiveTypeCode(toObjectiveTypeCodeModel(entity.getTertiaryObjectiveTypeCode()));
         }
         resource.setProgramAreaGuid(entity.getProgramAreaGuid().toString());
         resource.setForestRegionOrgUnitId(entity.getForestRegionOrgUnitId());
@@ -127,9 +136,6 @@ public class ProjectResourceAssembler extends RepresentationModelAssemblerSuppor
         resource.setCreateDate(entity.getCreateDate());
         resource.setUpdateUser(entity.getUpdateUser());
         resource.setUpdateDate(entity.getUpdateDate());
-        resource.setPrimaryObjectiveTypeCode(entity.getPrimaryObjectiveTypeCode());
-        resource.setSecondaryObjectiveTypeCode(entity.getSecondaryObjectiveTypeCode());
-        resource.setTertiaryObjectiveTypeCode(entity.getTertiaryObjectiveTypeCode());
 
         return resource;
     }
@@ -172,6 +178,21 @@ public class ProjectResourceAssembler extends RepresentationModelAssemblerSuppor
         return ra.toEntity(code);
     }
 
+    private ProjectStatusCodeEntity toProjectStatusCodeEntity(ProjectStatusCodeModel code) {
+        ProjectStatusCodeResourceAssembler ra = new ProjectStatusCodeResourceAssembler();
+        return ra.toEntity(code);
+    }
+
+    private ObjectiveTypeCodeModel toObjectiveTypeCodeModel(ObjectiveTypeCodeEntity code) {
+        ObjectiveTypeCodeResourceAssembler ra = new ObjectiveTypeCodeResourceAssembler();
+        return ra.toModel(code);
+    }
+
+    private ObjectiveTypeCodeEntity toObjectiveTypeCodeEntity (ObjectiveTypeCodeModel code) {
+        ObjectiveTypeCodeResourceAssembler ra = new ObjectiveTypeCodeResourceAssembler();
+        return ra.toEntity(code);
+    }
+
     public ProjectEntity updateEntity(ProjectModel model, ProjectEntity existingEntity) {
         log.debug(">> updateEntity");
         System.out.println("In updateEntity");
@@ -191,7 +212,7 @@ public class ProjectResourceAssembler extends RepresentationModelAssemblerSuppor
         entity.setLongitude(nonNullOrDefault(model.getLongitude(), existingEntity.getLongitude()));
         entity.setForestAreaCode(nonNullOrDefault(toForestAreaCodeEntity(model.getForestAreaCode()), existingEntity.getForestAreaCode()));
         entity.setRevisionCount(nonNullOrDefault(model.getRevisionCount(), existingEntity.getRevisionCount()));
-        entity.setProjectStatusCode(existingEntity.getProjectStatusCode());
+        entity.setProjectStatusCode(nonNullOrDefault(toProjectStatusCodeEntity(model.getProjectStatusCode()), existingEntity.getProjectStatusCode()));
         entity.setSiteUnitName(nonNullOrDefault(model.getSiteUnitName(), existingEntity.getSiteUnitName()));
         entity.setProgramAreaGuid(
             nonNullOrDefault(
@@ -212,9 +233,12 @@ public class ProjectResourceAssembler extends RepresentationModelAssemblerSuppor
         entity.setCreateDate(existingEntity.getCreateDate());
         entity.setUpdateUser(existingEntity.getUpdateUser());
         entity.setUpdateDate(existingEntity.getUpdateDate());
-        entity.setProjectTypeCode(existingEntity.getProjectTypeCode());
-        entity.setGeneralScopeCode(existingEntity.getGeneralScopeCode());
+        entity.setProjectTypeCode(nonNullOrDefault(toProjectTypeCodeEntity(model.getProjectTypeCode()), existingEntity.getProjectTypeCode()));
+        entity.setGeneralScopeCode(nonNullOrDefault(toGeneralScopeCodeEntity(model.getGeneralScopeCode()), existingEntity.getGeneralScopeCode()));
         entity.setProjectNumber(existingEntity.getProjectNumber());
+        entity.setPrimaryObjectiveTypeCode(nonNullOrDefault(toObjectiveTypeCodeEntity(model.getPrimaryObjectiveTypeCode()), existingEntity.getPrimaryObjectiveTypeCode()));
+        entity.setSecondaryObjectiveTypeCode(nonNullOrDefault(toObjectiveTypeCodeEntity(model.getSecondaryObjectiveTypeCode()), existingEntity.getSecondaryObjectiveTypeCode()));
+        entity.setTertiaryObjectiveTypeCode(nonNullOrDefault(toObjectiveTypeCodeEntity(model.getTertiaryObjectiveTypeCode()), existingEntity.getTertiaryObjectiveTypeCode()));
 
         log.error("Updated entity: " + entity);
         return entity;
