@@ -3,16 +3,8 @@ package ca.bc.gov.nrs.wfprev.services;
 import ca.bc.gov.nrs.wfone.common.service.api.ServiceException;
 import ca.bc.gov.nrs.wfprev.SpringSecurityAuditorAware;
 import ca.bc.gov.nrs.wfprev.data.assemblers.ProjectResourceAssembler;
-import ca.bc.gov.nrs.wfprev.data.entities.ForestAreaCodeEntity;
-import ca.bc.gov.nrs.wfprev.data.entities.GeneralScopeCodeEntity;
-import ca.bc.gov.nrs.wfprev.data.entities.ProjectEntity;
-import ca.bc.gov.nrs.wfprev.data.entities.ProjectStatusCodeEntity;
-import ca.bc.gov.nrs.wfprev.data.entities.ProjectTypeCodeEntity;
-import ca.bc.gov.nrs.wfprev.data.models.ForestAreaCodeModel;
-import ca.bc.gov.nrs.wfprev.data.models.GeneralScopeCodeModel;
-import ca.bc.gov.nrs.wfprev.data.models.ProjectModel;
-import ca.bc.gov.nrs.wfprev.data.models.ProjectStatusCodeModel;
-import ca.bc.gov.nrs.wfprev.data.models.ProjectTypeCodeModel;
+import ca.bc.gov.nrs.wfprev.data.entities.*;
+import ca.bc.gov.nrs.wfprev.data.models.*;
 import ca.bc.gov.nrs.wfprev.data.repositories.*;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolation;
@@ -351,7 +343,10 @@ class ProjectServiceTest {
                 .projectName("Test Project")
                 .forestAreaCode(null)         // null ForestAreaCode
                 .projectTypeCode(null)        // null ProjectTypeCode
-                .generalScopeCode(null)       // null GeneralScopeCode
+                .generalScopeCode(null)    // null GeneralScopeCode
+                .primaryObjectiveTypeCode(null)
+                .secondaryObjectiveTypeCode(null)
+                .tertiaryObjectiveTypeCode(null)
                 .build();
 
         ProjectEntity savedEntity = new ProjectEntity();
@@ -373,6 +368,7 @@ class ProjectServiceTest {
         verify(forestAreaCodeRepository, never()).findById(any());
         verify(projectTypeCodeRepository, never()).findById(any());
         verify(generalScopeCodeRepository, never()).findById(any());
+        verify(objectiveTypeCodeRepository, never()).findById(any());
         assertNotNull(result);
     }
 
@@ -382,21 +378,33 @@ class ProjectServiceTest {
         String forestAreaCode = "FAC1";
         String projectTypeCode = "PTC1";
         String generalScopeCode = "GSC1";
+        String primaryObjectiveTypeCode = "PTC1";
+        String secondaryObjectiveTypeCode = "PTC2";
+        String tertiaryObjectiveTypeCode = "PTC3";
 
         ProjectModel inputModel = ProjectModel.builder()
                 .projectName("Test Project")
                 .forestAreaCode(ForestAreaCodeModel.builder().forestAreaCode(forestAreaCode).build())
                 .projectTypeCode(ProjectTypeCodeModel.builder().projectTypeCode(projectTypeCode).build())
                 .generalScopeCode(GeneralScopeCodeModel.builder().generalScopeCode(generalScopeCode).build())
+                .primaryObjectiveTypeCode(ObjectiveTypeCodeModel.builder().objectiveTypeCode(primaryObjectiveTypeCode).build())
+                .secondaryObjectiveTypeCode(ObjectiveTypeCodeModel.builder().objectiveTypeCode(secondaryObjectiveTypeCode).build())
+                .tertiaryObjectiveTypeCode(ObjectiveTypeCodeModel.builder().objectiveTypeCode(tertiaryObjectiveTypeCode).build())
                 .build();
 
         ForestAreaCodeEntity forestAreaEntity = ForestAreaCodeEntity.builder().forestAreaCode(forestAreaCode).build();
         ProjectTypeCodeEntity projectTypeEntity = ProjectTypeCodeEntity.builder().projectTypeCode(projectTypeCode).build();
         GeneralScopeCodeEntity generalScopeEntity = GeneralScopeCodeEntity.builder().generalScopeCode(generalScopeCode).build();
+        ObjectiveTypeCodeEntity primaryObjectiveTypeCodeEntity = ObjectiveTypeCodeEntity.builder().objectiveTypeCode(primaryObjectiveTypeCode).build();
+        ObjectiveTypeCodeEntity secondaryObjectiveTypeCodeEntity = ObjectiveTypeCodeEntity.builder().objectiveTypeCode(secondaryObjectiveTypeCode).build();
+        ObjectiveTypeCodeEntity tertiaryObjectiveTypeCodeEntity = ObjectiveTypeCodeEntity.builder().objectiveTypeCode(tertiaryObjectiveTypeCode).build();
 
         when(forestAreaCodeRepository.findById(forestAreaCode)).thenReturn(Optional.of(forestAreaEntity));
         when(projectTypeCodeRepository.findById(projectTypeCode)).thenReturn(Optional.of(projectTypeEntity));
         when(generalScopeCodeRepository.findById(generalScopeCode)).thenReturn(Optional.of(generalScopeEntity));
+        when(objectiveTypeCodeRepository.findById(primaryObjectiveTypeCode)).thenReturn(Optional.of(primaryObjectiveTypeCodeEntity));
+        when(objectiveTypeCodeRepository.findById(secondaryObjectiveTypeCode)).thenReturn(Optional.of(secondaryObjectiveTypeCodeEntity));
+        when(objectiveTypeCodeRepository.findById(tertiaryObjectiveTypeCode)).thenReturn(Optional.of(tertiaryObjectiveTypeCodeEntity));
 
         ProjectEntity savedEntity = new ProjectEntity();
         when(projectResourceAssembler.toEntity(any())).thenReturn(savedEntity);
@@ -418,6 +426,9 @@ class ProjectServiceTest {
         verify(forestAreaCodeRepository).findById(forestAreaCode);
         verify(projectTypeCodeRepository).findById(projectTypeCode);
         verify(generalScopeCodeRepository).findById(generalScopeCode);
+        verify(objectiveTypeCodeRepository).findById(primaryObjectiveTypeCode);
+        verify(objectiveTypeCodeRepository).findById(secondaryObjectiveTypeCode);
+        verify(objectiveTypeCodeRepository).findById(tertiaryObjectiveTypeCode);
         assertNotNull(result);
     }
 
