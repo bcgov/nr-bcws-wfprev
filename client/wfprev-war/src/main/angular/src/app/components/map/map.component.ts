@@ -1,4 +1,4 @@
-import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, Input, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, Input, OnDestroy, ViewChild } from '@angular/core';
 import { ResizablePanelComponent } from 'src/app/components/resizable-panel/resizable-panel.component';
 import { MapConfigService } from 'src/app/services/map-config.service';
 import { MapService } from 'src/app/services/map.service';
@@ -10,7 +10,7 @@ import { MapService } from 'src/app/services/map.service';
   templateUrl: './map.component.html',
   styleUrl: './map.component.scss'
 })
-export class MapComponent implements AfterViewInit{
+export class MapComponent implements AfterViewInit {
   @ViewChild('mapContainer', { static: false }) mapContainer!: ElementRef;
   mapConfig: any[] = [];
   
@@ -25,6 +25,7 @@ export class MapComponent implements AfterViewInit{
     private readonly mapService: MapService,
     private readonly mapConfigService: MapConfigService
   ) {}
+
 
   ngAfterViewInit(): void {
     this.initMap();
