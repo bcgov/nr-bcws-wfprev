@@ -1,16 +1,9 @@
 package ca.bc.gov.nrs.wfprev.data.assemblers;
 
-import ca.bc.gov.nrs.wfprev.data.entities.ForestAreaCodeEntity;
-import ca.bc.gov.nrs.wfprev.data.entities.GeneralScopeCodeEntity;
-import ca.bc.gov.nrs.wfprev.data.entities.ProjectEntity;
-import ca.bc.gov.nrs.wfprev.data.entities.ProjectTypeCodeEntity;
-import ca.bc.gov.nrs.wfprev.data.models.ForestAreaCodeModel;
-import ca.bc.gov.nrs.wfprev.data.models.GeneralScopeCodeModel;
-import ca.bc.gov.nrs.wfprev.data.models.ProjectTypeCodeModel;
+import ca.bc.gov.nrs.wfprev.data.entities.*;
+import ca.bc.gov.nrs.wfprev.data.models.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import ca.bc.gov.nrs.wfprev.data.models.ProjectModel;
 
 import java.math.BigDecimal;
 import java.util.UUID;
@@ -30,12 +23,13 @@ public class ProjectResourceAssemblerTest {
     void testToEntity_Success() {
         // given there is a project model
         ProjectModel projectModel = new ProjectModel();
+        ObjectiveTypeCodeModel objectiveTypeCodeModel = new ObjectiveTypeCodeModel();
         String projectGuid = UUID.randomUUID().toString();
         String programAreaGuid = UUID.randomUUID().toString();
         projectModel.setProjectGuid(projectGuid);
-        projectModel.setPrimaryObjectiveTypeCode("random_test_string_1");
-        projectModel.setSecondaryObjectiveTypeCode("random_test_string_2");
-        projectModel.setTertiaryObjectiveTypeCode("random_test_string_3");
+        projectModel.setPrimaryObjectiveTypeCode(objectiveTypeCodeModel);
+        projectModel.setSecondaryObjectiveTypeCode(objectiveTypeCodeModel);
+        projectModel.setTertiaryObjectiveTypeCode(objectiveTypeCodeModel);
         projectModel.setIsMultiFiscalYearProj(false);
         projectModel.setProjectNumber(1000);
         projectModel.setProgramAreaGuid(programAreaGuid);
@@ -47,14 +41,15 @@ public class ProjectResourceAssemblerTest {
         ProjectEntity projectEntity = assembler.toEntity(projectModel);
 
         // then it should have all the same values in the entity object
+        ObjectiveTypeCodeEntity objectiveTypeCodeEntity = new ObjectiveTypeCodeEntity();
         GeneralScopeCodeEntity generalScopeCodeEntity = new GeneralScopeCodeEntity(); // Mock or create an instance
         ForestAreaCodeEntity forestAreaCodeEntity = new ForestAreaCodeEntity();
         ProjectTypeCodeEntity projectTypeCodeEntity = new ProjectTypeCodeEntity();
 
         ProjectEntity expectedProjectEntity = ProjectEntity.builder().projectGuid(UUID.fromString(projectGuid))
-                .primaryObjectiveTypeCode("random_test_string_1")
-                .secondaryObjectiveTypeCode("random_test_string_2")
-                .tertiaryObjectiveTypeCode("random_test_string_3").projectNumber(1000).programAreaGuid(UUID.fromString(programAreaGuid))
+                .primaryObjectiveTypeCode(objectiveTypeCodeEntity)
+                .secondaryObjectiveTypeCode(objectiveTypeCodeEntity)
+                .tertiaryObjectiveTypeCode(objectiveTypeCodeEntity).projectNumber(1000).programAreaGuid(UUID.fromString(programAreaGuid))
                 .forestAreaCode(forestAreaCodeEntity)
                 .generalScopeCode(generalScopeCodeEntity)
                 .projectTypeCode(projectTypeCodeEntity).build();
@@ -68,6 +63,18 @@ public class ProjectResourceAssemblerTest {
         projectTypeCodeEntity.setProjectTypeCode("FUEL_MGMT");
         projectTypeCodeEntity.setDescription("Fuel Management");
 
+        ObjectiveTypeCodeEntity primaryObjectiveTypeCodeEntity = new ObjectiveTypeCodeEntity();
+        primaryObjectiveTypeCodeEntity.setObjectiveTypeCode("WRR");
+        primaryObjectiveTypeCodeEntity.setDescription("Wildfire Risk Reduction");
+
+        ObjectiveTypeCodeEntity secondaryObjectiveTypeCodeEntity = new ObjectiveTypeCodeEntity();
+        secondaryObjectiveTypeCodeEntity.setObjectiveTypeCode("CRIT_INFRA");
+        secondaryObjectiveTypeCodeEntity.setDescription("Critical Infrastructure");
+
+        ObjectiveTypeCodeEntity tertiaryObjectiveTypeCodeEntity = new ObjectiveTypeCodeEntity();
+        tertiaryObjectiveTypeCodeEntity.setObjectiveTypeCode("ECO_REST");
+        tertiaryObjectiveTypeCodeEntity.setDescription("Ecosystem Restoration");
+
         // Create and populate the ProjectEntity
         ProjectEntity projectEntity = new ProjectEntity();
         String projectGuid = UUID.randomUUID().toString();
@@ -75,9 +82,9 @@ public class ProjectResourceAssemblerTest {
         projectEntity.setProjectGuid(UUID.fromString(projectGuid));
         projectEntity.setProgramAreaGuid(UUID.fromString(programAreaGuid));
         projectEntity.setProjectTypeCode(projectTypeCodeEntity);
-        projectEntity.setPrimaryObjectiveTypeCode("random_test_string_1");
-        projectEntity.setSecondaryObjectiveTypeCode("random_test_string_2");
-        projectEntity.setTertiaryObjectiveTypeCode("random_test_string_3");
+        projectEntity.setPrimaryObjectiveTypeCode(primaryObjectiveTypeCodeEntity);
+        projectEntity.setSecondaryObjectiveTypeCode(secondaryObjectiveTypeCodeEntity);
+        projectEntity.setTertiaryObjectiveTypeCode(tertiaryObjectiveTypeCodeEntity);
         projectEntity.setIsMultiFiscalYearProj(false);
         projectEntity.setForestAreaCode(new ForestAreaCodeEntity());
         projectEntity.setGeneralScopeCode(new GeneralScopeCodeEntity());
@@ -93,9 +100,9 @@ public class ProjectResourceAssemblerTest {
                         .projectTypeCode("FUEL_MGMT")
                         .description("Fuel Management")
                         .build())
-                .primaryObjectiveTypeCode("random_test_string_1")
-                .secondaryObjectiveTypeCode("random_test_string_2")
-                .tertiaryObjectiveTypeCode("random_test_string_3")
+                .primaryObjectiveTypeCode(ObjectiveTypeCodeModel.builder().objectiveTypeCode("WRR").description("Wildfire Risk Reduction").build())
+                .secondaryObjectiveTypeCode(ObjectiveTypeCodeModel.builder().objectiveTypeCode("CRIT_INFRA").description("Critical Infrastructure").build())
+                .tertiaryObjectiveTypeCode(ObjectiveTypeCodeModel.builder().objectiveTypeCode("ECO_REST").description("Ecosystem Restoration").build())
                 .isMultiFiscalYearProj(false)
                 .forestAreaCode(new ForestAreaCodeModel())
                 .generalScopeCode(new GeneralScopeCodeModel())
@@ -108,9 +115,14 @@ public class ProjectResourceAssemblerTest {
     @Test
     void testUpdateEntity_Success() {
         ProjectModel model = new ProjectModel();
+        ObjectiveTypeCodeModel objectiveTypeCodeModel = new ObjectiveTypeCodeModel();
         model.setProjectName("Updated Project");
         model.setLatitude(BigDecimal.valueOf(50.123));
         model.setForestAreaCode(new ForestAreaCodeModel());
+        model.setGeneralScopeCode(new GeneralScopeCodeModel());
+        model.setPrimaryObjectiveTypeCode(objectiveTypeCodeModel);
+        model.setSecondaryObjectiveTypeCode(objectiveTypeCodeModel);
+        model.setTertiaryObjectiveTypeCode(objectiveTypeCodeModel);
 
         ProjectEntity existingEntity = new ProjectEntity();
         existingEntity.setProjectGuid(UUID.randomUUID());
