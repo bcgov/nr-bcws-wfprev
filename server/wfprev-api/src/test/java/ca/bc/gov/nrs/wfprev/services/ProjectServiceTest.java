@@ -13,11 +13,7 @@ import ca.bc.gov.nrs.wfprev.data.models.GeneralScopeCodeModel;
 import ca.bc.gov.nrs.wfprev.data.models.ProjectModel;
 import ca.bc.gov.nrs.wfprev.data.models.ProjectStatusCodeModel;
 import ca.bc.gov.nrs.wfprev.data.models.ProjectTypeCodeModel;
-import ca.bc.gov.nrs.wfprev.data.repositories.ForestAreaCodeRepository;
-import ca.bc.gov.nrs.wfprev.data.repositories.GeneralScopeCodeRepository;
-import ca.bc.gov.nrs.wfprev.data.repositories.ProjectRepository;
-import ca.bc.gov.nrs.wfprev.data.repositories.ProjectStatusCodeRepository;
-import ca.bc.gov.nrs.wfprev.data.repositories.ProjectTypeCodeRepository;
+import ca.bc.gov.nrs.wfprev.data.repositories.*;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
@@ -50,6 +46,7 @@ class ProjectServiceTest {
     private ProjectTypeCodeRepository projectTypeCodeRepository;
     private GeneralScopeCodeRepository generalScopeCodeRepository;
     private ProjectStatusCodeRepository projectStatusCodeRepository;
+    private ObjectiveTypeCodeRepository objectiveTypeCodeRepository;
     private SpringSecurityAuditorAware springSecurityAuditorAware;
 
     @BeforeEach
@@ -61,14 +58,15 @@ class ProjectServiceTest {
         generalScopeCodeRepository = mock(GeneralScopeCodeRepository.class);
         projectStatusCodeRepository = mock(ProjectStatusCodeRepository.class);
         springSecurityAuditorAware = mock(SpringSecurityAuditorAware.class);
-
+        objectiveTypeCodeRepository = mock(ObjectiveTypeCodeRepository.class);
 
         projectService = new ProjectService(projectRepository, projectResourceAssembler, forestAreaCodeRepository,
-                projectTypeCodeRepository, generalScopeCodeRepository, projectStatusCodeRepository);
+                projectTypeCodeRepository, generalScopeCodeRepository, projectStatusCodeRepository, objectiveTypeCodeRepository);
         setField(projectService, "forestAreaCodeRepository", forestAreaCodeRepository);
         setField(projectService, "projectTypeCodeRepository", projectTypeCodeRepository);
         setField(projectService, "generalScopeCodeRepository", generalScopeCodeRepository);
         setField(projectService, "projectStatusCodeRepository", projectStatusCodeRepository);
+        setField(projectService, "objectiveTypeCodeRepository", objectiveTypeCodeRepository);
     }
 
     @Test
