@@ -2,34 +2,10 @@ package ca.bc.gov.nrs.wfprev.services;
 
 import ca.bc.gov.nrs.wfone.common.service.api.ServiceException;
 import ca.bc.gov.nrs.wfprev.common.services.CommonService;
-import ca.bc.gov.nrs.wfprev.data.assemblers.BCParksRegionCodeResourceAssembler;
-import ca.bc.gov.nrs.wfprev.data.assemblers.BCParksSectionCodeResourceAssembler;
-import ca.bc.gov.nrs.wfprev.data.assemblers.ForestAreaCodeResourceAssembler;
-import ca.bc.gov.nrs.wfprev.data.assemblers.ForestDistrictUnitCodeResourceAssembler;
-import ca.bc.gov.nrs.wfprev.data.assemblers.ForestRegionUnitCodeResourceAssembler;
-import ca.bc.gov.nrs.wfprev.data.assemblers.GeneralScopeCodeResourceAssembler;
-import ca.bc.gov.nrs.wfprev.data.assemblers.ProgramAreaResourceAssembler;
-import ca.bc.gov.nrs.wfprev.data.assemblers.ProjectTypeCodeResourceAssembler;
-import ca.bc.gov.nrs.wfprev.data.entities.BCParksOrgUnitEntity;
-import ca.bc.gov.nrs.wfprev.data.entities.ForestAreaCodeEntity;
-import ca.bc.gov.nrs.wfprev.data.entities.ForestOrgUnitCodeEntity;
-import ca.bc.gov.nrs.wfprev.data.entities.GeneralScopeCodeEntity;
-import ca.bc.gov.nrs.wfprev.data.entities.ProgramAreaEntity;
-import ca.bc.gov.nrs.wfprev.data.entities.ProjectTypeCodeEntity;
-import ca.bc.gov.nrs.wfprev.data.models.BCParksRegionCodeModel;
-import ca.bc.gov.nrs.wfprev.data.models.BCParksSectionCodeModel;
-import ca.bc.gov.nrs.wfprev.data.models.ForestAreaCodeModel;
-import ca.bc.gov.nrs.wfprev.data.models.ForestDistrictUnitCodeModel;
-import ca.bc.gov.nrs.wfprev.data.models.ForestRegionUnitCodeModel;
-import ca.bc.gov.nrs.wfprev.data.models.GeneralScopeCodeModel;
-import ca.bc.gov.nrs.wfprev.data.models.ProgramAreaModel;
-import ca.bc.gov.nrs.wfprev.data.models.ProjectTypeCodeModel;
-import ca.bc.gov.nrs.wfprev.data.repositories.BCParksOrgUnitCodeRepository;
-import ca.bc.gov.nrs.wfprev.data.repositories.ForestAreaCodeRepository;
-import ca.bc.gov.nrs.wfprev.data.repositories.ForestOrgUnitCodeRepository;
-import ca.bc.gov.nrs.wfprev.data.repositories.GeneralScopeCodeRepository;
-import ca.bc.gov.nrs.wfprev.data.repositories.ProgramAreaRepository;
-import ca.bc.gov.nrs.wfprev.data.repositories.ProjectTypeCodeRepository;
+import ca.bc.gov.nrs.wfprev.data.assemblers.*;
+import ca.bc.gov.nrs.wfprev.data.entities.*;
+import ca.bc.gov.nrs.wfprev.data.models.*;
+import ca.bc.gov.nrs.wfprev.data.repositories.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.stereotype.Component;
@@ -56,13 +32,18 @@ public class CodesService implements CommonService {
     private final BCParksRegionCodeResourceAssembler bcParksRegionCodeResourceAssembler;
     private final BCParksSectionCodeResourceAssembler bcParksSectionCodeResourceAssembler;
     private final BCParksOrgUnitCodeRepository bcParksOrgUnitCodeRepository;
+    private final ObjectiveTypeCodeResourceAssembler objectiveTypeCodeResourceAssembler;
+    private final ObjectiveTypeCodeRepository objectiveTypeCodeRepository;
+    private final ProjectPlanStatusCodeResourceAssembler projectPlanStatusCodeResourceAssembler;
+    private final ProjectPlanStatusCodeRepository projectPlanStatusCodeRepository;
 
 
     public CodesService(ForestAreaCodeRepository forestAreaCodeRepository, ForestAreaCodeResourceAssembler forestAreaCodeResourceAssembler,
                         GeneralScopeCodeRepository generalScopeCodeRepository, GeneralScopeCodeResourceAssembler generalScopeCodeResourceAssembler,
                         ProjectTypeCodeRepository projectTypeCodeRepository, ProjectTypeCodeResourceAssembler projectTypeCodeResourceAssembler, ProgramAreaRepository programAreaRepository, ProgramAreaResourceAssembler programAreaResourceAssembler,
                         ForestOrgUnitCodeRepository forestRegionCodeRepository, ForestRegionUnitCodeResourceAssembler forestRegionCodeResourceAssembler, ForestDistrictUnitCodeResourceAssembler forestDistrictUnitCodeResourceAssembler,
-                        BCParksOrgUnitCodeRepository bcParksOrgUnitCodeRepository, BCParksRegionCodeResourceAssembler bcParksRegionCodeResourceAssembler, BCParksSectionCodeResourceAssembler bcParksSectionCodeResourceAssembler) {
+                        BCParksOrgUnitCodeRepository bcParksOrgUnitCodeRepository, BCParksRegionCodeResourceAssembler bcParksRegionCodeResourceAssembler, BCParksSectionCodeResourceAssembler bcParksSectionCodeResourceAssembler,
+                        ObjectiveTypeCodeResourceAssembler objectiveTypeCodeResourceAssembler, ObjectiveTypeCodeRepository objectiveTypeCodeRepository, ProjectPlanStatusCodeResourceAssembler projectPlanStatusCodeResourceAssembler, ProjectPlanStatusCodeRepository projectPlanStatusCodeRepository) {
         this.forestAreaCodeRepository = forestAreaCodeRepository;
         this.forestAreaCodeResourceAssembler = forestAreaCodeResourceAssembler;
         this.generalScopeCodeRepository = generalScopeCodeRepository;
@@ -77,6 +58,10 @@ public class CodesService implements CommonService {
         this.bcParksOrgUnitCodeRepository = bcParksOrgUnitCodeRepository;
         this.bcParksRegionCodeResourceAssembler = bcParksRegionCodeResourceAssembler;
         this.bcParksSectionCodeResourceAssembler = bcParksSectionCodeResourceAssembler;
+        this.objectiveTypeCodeResourceAssembler = objectiveTypeCodeResourceAssembler;
+        this.objectiveTypeCodeRepository = objectiveTypeCodeRepository;
+        this.projectPlanStatusCodeResourceAssembler = projectPlanStatusCodeResourceAssembler;
+        this.projectPlanStatusCodeRepository = projectPlanStatusCodeRepository;
     }
 
     /**
@@ -222,6 +207,40 @@ public class CodesService implements CommonService {
     public BCParksSectionCodeModel getBCParksSectionCodeById(Integer bcParksSectionId) {
         try {
             return bcParksOrgUnitCodeRepository.findById(bcParksSectionId).map(bcParksSectionCodeResourceAssembler::toModel).orElse(null);
+        } catch (Exception e) {
+            throw new ServiceException(e.getLocalizedMessage(), e);
+        }
+    }
+
+    public CollectionModel<ObjectiveTypeCodeModel> getAllObjectiveTypeCodes() throws ServiceException {
+        try {
+            List<ObjectiveTypeCodeEntity> entities = objectiveTypeCodeRepository.findAll();
+            return objectiveTypeCodeResourceAssembler.toCollectionModel(entities);
+        } catch (Exception e) {
+            throw new ServiceException(e.getLocalizedMessage(), e);
+        }
+    }
+
+    public ObjectiveTypeCodeModel getObjectiveTypeCodeById(String id) throws ServiceException {
+        try {
+            return objectiveTypeCodeRepository.findById(id).map(objectiveTypeCodeResourceAssembler::toModel).orElse(null);
+        } catch (Exception e) {
+            throw new ServiceException(e.getLocalizedMessage(), e);
+        }
+    }
+
+    public CollectionModel<ProjectPlanStatusCodeModel> getAllProjectPlanStatusCodes() throws ServiceException {
+        try {
+            List<ProjectPlanStatusCodeEntity> entities = projectPlanStatusCodeRepository.findAll();
+            return projectPlanStatusCodeResourceAssembler.toCollectionModel(entities);
+        } catch (Exception e) {
+            throw new ServiceException(e.getLocalizedMessage(), e);
+        }
+    }
+
+    public ProjectPlanStatusCodeModel getProjectPlanStatusCodeById(String id) throws ServiceException {
+        try {
+            return projectPlanStatusCodeRepository.findById(id).map(projectPlanStatusCodeResourceAssembler::toModel).orElse(null);
         } catch (Exception e) {
             throw new ServiceException(e.getLocalizedMessage(), e);
         }

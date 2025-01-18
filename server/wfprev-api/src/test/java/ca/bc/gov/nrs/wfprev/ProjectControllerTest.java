@@ -7,6 +7,7 @@ import ca.bc.gov.nrs.wfprev.data.models.ProjectTypeCodeModel;
 import ca.bc.gov.nrs.wfprev.services.ProjectService;
 import com.nimbusds.jose.shaded.gson.Gson;
 import com.nimbusds.jose.shaded.gson.GsonBuilder;
+import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.hateoas.CollectionModel;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
@@ -303,57 +305,73 @@ class ProjectControllerTest {
 
     @Test
     @WithMockUser
-    void testDeleteProject() throws Exception {
-        // Given
-        String projectGuid = UUID.randomUUID().toString();
-        ProjectModel project = new ProjectModel();
-        project.setProjectGuid(projectGuid);
+    void testDeleteAProject_Success() throws Exception {
+        // GIVEN a valid project  ID
+        String projectId = "456e7890-e89b-12d3-a456-426614174001";
 
-        when(projectService.deleteProject(projectGuid)).thenReturn(project);
+        // WHEN the delete endpoint is called
+        mockMvc.perform(delete("/projects/{id}", projectId)
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
+                        .accept(MediaType.APPLICATION_JSON))
+                // THEN the response status should be 204 No Content
+                .andExpect(status().isNoContent());
 
-        // When
-        mockMvc.perform(delete("/projects/{id}", projectGuid)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .header("Authorization", "Bearer admin-token"))
-                .andExpect(status().isOk());
-
-        // Then
-        verify(projectService, times(1)).deleteProject(projectGuid);
+        // THEN the service's delete method should be called once with the correct ID
+        verify(projectService).deleteProject(projectId);
     }
 
     @Test
     @WithMockUser
-    void testDeleteProject_Exception() throws Exception {
-        // Given
-        String projectGuid = UUID.randomUUID().toString();
-        when(projectService.deleteProject(projectGuid)).thenThrow(new ServiceException("Error deleting project"));
+    void testDeleteAProject_NotFound() throws Exception {
+        // GIVEN a project  ID that does not exist
+        String projectId = "456e7890-e89b-12d3-a456-426614174001";
+        doThrow(new EntityNotFoundException("Not found")).when(projectService).deleteProject(projectId);
 
-        // When
-        ResultActions result = mockMvc.perform(delete("/projects/{id}", projectGuid)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .header("Authorization", "Bearer admin-token"))
-                .andExpect(status().is5xxServerError());
+        // WHEN the delete endpoint is called
+        mockMvc.perform(delete("/projects/{id}", projectId)
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
+                        .accept(MediaType.APPLICATION_JSON))
+                // THEN the response status should be 404 Not Found
+                .andExpect(status().isNotFound());
 
-        // Then
-        verify(projectService, times(1)).deleteProject(projectGuid);
-        assertEquals(500, result.andReturn().getResponse().getStatus());
+        // THEN the service's delete method should be called once with the correct ID
+        verify(projectService).deleteProject(projectId);
     }
 
     @Test
     @WithMockUser
-    void testDeleteProject_notFound() throws Exception {
-        // Given
-        String projectGuid = UUID.randomUUID().toString();
-        when(projectService.deleteProject(projectGuid)).thenReturn(null);
-        // When
-        ResultActions result = mockMvc.perform(delete("/projects/{id}", projectGuid)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .header("Authorization", "Bearer admin-token"))
-                .andExpect(status().is4xxClientError());
+    void testDeleteAProject_InvalidId() throws Exception {
+        // GIVEN an invalid project  ID
+        String invalidId = "invalid-uuid";
+        doThrow(new IllegalArgumentException("Invalid UUID")).when(projectService).deleteProject(invalidId);
 
-        // Then
-        verify(projectService, times(1)).deleteProject(projectGuid);
-        assertEquals(404, result.andReturn().getResponse().getStatus());
+        // WHEN the delete endpoint is called
+        mockMvc.perform(delete("/projects/{id}", invalidId)
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
+                        .accept(MediaType.APPLICATION_JSON))
+                // THEN the response status should be 400 Bad Request
+                .andExpect(status().isBadRequest());
+
+        // THEN the service's delete method should be called once with the invalid ID
+        verify(projectService).deleteProject(invalidId);
+    }
+
+    @Test
+    @WithMockUser
+    void testDeleteAProject_InternalServerError() throws Exception {
+        // GIVEN a valid project  ID but an unexpected error occurs
+        String projectId = "456e7890-e89b-12d3-a456-426614174001";
+        doThrow(new RuntimeException("Unexpected error")).when(projectService).deleteProject(projectId);
+
+        // WHEN the delete endpoint is called
+        mockMvc.perform(delete("/projects/{id}", projectId)
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
+                        .accept(MediaType.APPLICATION_JSON))
+                // THEN the response status should be 500 Internal Server Error
+                .andExpect(status().isInternalServerError());
+
+        // THEN the service's delete method should be called once with the correct ID
+        verify(projectService).deleteProject(projectId);
     }
 
     @Test

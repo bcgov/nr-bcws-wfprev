@@ -92,6 +92,10 @@ html, body{
     overflow: hidden; /* Prevent scrolling if not needed */
 }
 
+.mat-mdc-tab-body-wrapper {
+  height: calc(100vh - 210px) !important
+}
+
 .custom-marker-cluster {
   background-color: transparent; /* Remove default background */
 }

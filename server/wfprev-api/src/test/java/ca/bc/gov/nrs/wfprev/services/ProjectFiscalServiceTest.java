@@ -73,9 +73,7 @@ class ProjectFiscalServiceTest {
         projectFiscalModel1.setEstimatedClwrrAllocAmount(BigDecimal.valueOf(10000));
         projectFiscalModel1.setTotalCostEstimateAmount(BigDecimal.valueOf(50000));
         projectFiscalModel1.setCfsProjectCode("CFS-123");
-        projectFiscalModel1.setFiscalFundingRequestAmount(BigDecimal.valueOf(20000));
-        projectFiscalModel1.setFiscalFundingAllocRationale("Rationale for funding allocation 1");
-        projectFiscalModel1.setFiscalAllocatedAmount(BigDecimal.valueOf(15000));
+        projectFiscalModel1.setFiscalForecastAmount(BigDecimal.valueOf(15000));
         projectFiscalModel1.setFiscalAncillaryFundAmount(BigDecimal.valueOf(5000));
         projectFiscalModel1.setFiscalPlannedProjectSizeHa(BigDecimal.valueOf(50));
         projectFiscalModel1.setFiscalPlannedCostPerHaAmt(BigDecimal.valueOf(300));
@@ -126,9 +124,7 @@ class ProjectFiscalServiceTest {
         projectFiscalModel2.setEstimatedClwrrAllocAmount(BigDecimal.valueOf(20000));
         projectFiscalModel2.setTotalCostEstimateAmount(BigDecimal.valueOf(60000));
         projectFiscalModel2.setCfsProjectCode("CFS-456");
-        projectFiscalModel2.setFiscalFundingRequestAmount(BigDecimal.valueOf(30000));
-        projectFiscalModel2.setFiscalFundingAllocRationale("Rationale for funding allocation 2");
-        projectFiscalModel2.setFiscalAllocatedAmount(BigDecimal.valueOf(25000));
+        projectFiscalModel2.setFiscalForecastAmount(BigDecimal.valueOf(25000));
         projectFiscalModel2.setFiscalAncillaryFundAmount(BigDecimal.valueOf(7000));
         projectFiscalModel2.setFiscalPlannedProjectSizeHa(BigDecimal.valueOf(70));
         projectFiscalModel2.setFiscalPlannedCostPerHaAmt(BigDecimal.valueOf(400));
@@ -273,9 +269,7 @@ class ProjectFiscalServiceTest {
         projectFiscalModel.setEstimatedClwrrAllocAmount(BigDecimal.valueOf(10000));
         projectFiscalModel.setTotalCostEstimateAmount(BigDecimal.valueOf(50000));
         projectFiscalModel.setCfsProjectCode("CFS-123");
-        projectFiscalModel.setFiscalFundingRequestAmount(BigDecimal.valueOf(20000));
-        projectFiscalModel.setFiscalFundingAllocRationale("Rationale for funding allocation 1");
-        projectFiscalModel.setFiscalAllocatedAmount(BigDecimal.valueOf(15000));
+        projectFiscalModel.setFiscalForecastAmount(BigDecimal.valueOf(20000));
         projectFiscalModel.setFiscalAncillaryFundAmount(BigDecimal.valueOf(5000));
         projectFiscalModel.setFiscalPlannedProjectSizeHa(BigDecimal.valueOf(50));
         projectFiscalModel.setFiscalPlannedCostPerHaAmt(BigDecimal.valueOf(300));
@@ -354,9 +348,7 @@ class ProjectFiscalServiceTest {
         projectFiscalModel.setEstimatedClwrrAllocAmount(BigDecimal.valueOf(10000));
         projectFiscalModel.setTotalCostEstimateAmount(BigDecimal.valueOf(50000));
         projectFiscalModel.setCfsProjectCode("CFS-123");
-        projectFiscalModel.setFiscalFundingRequestAmount(BigDecimal.valueOf(20000));
-        projectFiscalModel.setFiscalFundingAllocRationale("Rationale for funding allocation 1");
-        projectFiscalModel.setFiscalAllocatedAmount(BigDecimal.valueOf(15000));
+        projectFiscalModel.setFiscalActualAmount(BigDecimal.valueOf(15000));
         projectFiscalModel.setFiscalAncillaryFundAmount(BigDecimal.valueOf(5000));
         projectFiscalModel.setFiscalPlannedProjectSizeHa(BigDecimal.valueOf(50));
         projectFiscalModel.setFiscalPlannedCostPerHaAmt(BigDecimal.valueOf(300));
@@ -402,9 +394,7 @@ class ProjectFiscalServiceTest {
         projectFiscalModel.setEstimatedClwrrAllocAmount(BigDecimal.valueOf(10000));
         projectFiscalModel.setTotalCostEstimateAmount(BigDecimal.valueOf(50000));
         projectFiscalModel.setCfsProjectCode("CFS-123");
-        projectFiscalModel.setFiscalFundingRequestAmount(BigDecimal.valueOf(20000));
-        projectFiscalModel.setFiscalFundingAllocRationale("Rationale for funding allocation 1");
-        projectFiscalModel.setFiscalAllocatedAmount(BigDecimal.valueOf(15000));
+        projectFiscalModel.setFiscalForecastAmount(BigDecimal.valueOf(20000));
         projectFiscalModel.setFiscalAncillaryFundAmount(BigDecimal.valueOf(5000));
         projectFiscalModel.setFiscalPlannedProjectSizeHa(BigDecimal.valueOf(50));
         projectFiscalModel.setFiscalPlannedCostPerHaAmt(BigDecimal.valueOf(300));
@@ -461,9 +451,7 @@ class ProjectFiscalServiceTest {
         projectFiscalModel.setEstimatedClwrrAllocAmount(BigDecimal.valueOf(10000));
         projectFiscalModel.setTotalCostEstimateAmount(BigDecimal.valueOf(50000));
         projectFiscalModel.setCfsProjectCode("CFS-123");
-        projectFiscalModel.setFiscalFundingRequestAmount(BigDecimal.valueOf(20000));
-        projectFiscalModel.setFiscalFundingAllocRationale("Rationale for funding allocation 1");
-        projectFiscalModel.setFiscalAllocatedAmount(BigDecimal.valueOf(15000));
+        projectFiscalModel.setFiscalForecastAmount(BigDecimal.valueOf(20000));
         projectFiscalModel.setFiscalAncillaryFundAmount(BigDecimal.valueOf(5000));
         projectFiscalModel.setFiscalPlannedProjectSizeHa(BigDecimal.valueOf(50));
         projectFiscalModel.setFiscalPlannedCostPerHaAmt(BigDecimal.valueOf(300));

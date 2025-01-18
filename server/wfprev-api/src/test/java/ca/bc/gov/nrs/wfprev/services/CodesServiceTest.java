@@ -1,34 +1,10 @@
 package ca.bc.gov.nrs.wfprev.services;
 
 import ca.bc.gov.nrs.wfone.common.service.api.ServiceException;
-import ca.bc.gov.nrs.wfprev.data.assemblers.BCParksRegionCodeResourceAssembler;
-import ca.bc.gov.nrs.wfprev.data.assemblers.BCParksSectionCodeResourceAssembler;
-import ca.bc.gov.nrs.wfprev.data.assemblers.ForestAreaCodeResourceAssembler;
-import ca.bc.gov.nrs.wfprev.data.assemblers.ForestDistrictUnitCodeResourceAssembler;
-import ca.bc.gov.nrs.wfprev.data.assemblers.ForestRegionUnitCodeResourceAssembler;
-import ca.bc.gov.nrs.wfprev.data.assemblers.GeneralScopeCodeResourceAssembler;
-import ca.bc.gov.nrs.wfprev.data.assemblers.ProgramAreaResourceAssembler;
-import ca.bc.gov.nrs.wfprev.data.assemblers.ProjectTypeCodeResourceAssembler;
-import ca.bc.gov.nrs.wfprev.data.entities.BCParksOrgUnitEntity;
-import ca.bc.gov.nrs.wfprev.data.entities.ForestAreaCodeEntity;
-import ca.bc.gov.nrs.wfprev.data.entities.GeneralScopeCodeEntity;
-import ca.bc.gov.nrs.wfprev.data.entities.ProgramAreaEntity;
-import ca.bc.gov.nrs.wfprev.data.entities.ProjectTypeCodeEntity;
-import ca.bc.gov.nrs.wfprev.data.models.BCParksRegionCodeModel;
-import ca.bc.gov.nrs.wfprev.data.models.BCParksSectionCodeModel;
-import ca.bc.gov.nrs.wfprev.data.models.ForestAreaCodeModel;
-import ca.bc.gov.nrs.wfprev.data.models.ForestDistrictUnitCodeModel;
-import ca.bc.gov.nrs.wfprev.data.models.ForestRegionUnitCodeModel;
-import ca.bc.gov.nrs.wfprev.data.models.GeneralScopeCodeModel;
-import ca.bc.gov.nrs.wfprev.data.models.ProgramAreaModel;
-import ca.bc.gov.nrs.wfprev.data.models.ProjectTypeCodeModel;
-import ca.bc.gov.nrs.wfprev.data.repositories.BCParksOrgUnitCodeRepository;
-import ca.bc.gov.nrs.wfprev.data.repositories.ForestAreaCodeRepository;
-import ca.bc.gov.nrs.wfprev.data.repositories.ForestOrgUnitCodeRepository;
-import ca.bc.gov.nrs.wfprev.data.repositories.GeneralScopeCodeRepository;
-import ca.bc.gov.nrs.wfprev.data.repositories.ProgramAreaRepository;
-import ca.bc.gov.nrs.wfprev.data.repositories.ProjectTypeCodeRepository;
-import ca.bc.gov.nrs.wfprev.data.entities.ForestOrgUnitCodeEntity;
+import ca.bc.gov.nrs.wfprev.data.assemblers.*;
+import ca.bc.gov.nrs.wfprev.data.entities.*;
+import ca.bc.gov.nrs.wfprev.data.models.*;
+import ca.bc.gov.nrs.wfprev.data.repositories.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.hateoas.CollectionModel;
@@ -50,6 +26,8 @@ class CodesServiceTest {
     private GeneralScopeCodeResourceAssembler generalScopeCodeResourceAssembler;
     private ProjectTypeCodeRepository projectTypeCodeRepository;
     private ProjectTypeCodeResourceAssembler projectTypeCodeResourceAssembler;
+    private ObjectiveTypeCodeRepository objectiveTypeCodeRepository;
+    private ProjectPlanStatusCodeRepository projectPlanStatusCodeRepository;
 
     private ProgramAreaRepository programAreaRepository;
     private ProgramAreaResourceAssembler programAreaResourceAssembler;
@@ -59,6 +37,8 @@ class CodesServiceTest {
     private BCParksOrgUnitCodeRepository bcParksOrgUnitCodeRepository;
     private BCParksRegionCodeResourceAssembler bcParksRegionCodeResourceAssembler;
     private BCParksSectionCodeResourceAssembler bcParksSectionCodeResourceAssembler;
+    private ObjectiveTypeCodeResourceAssembler objectiveTypeCodeResourceAssembler;
+    private ProjectPlanStatusCodeResourceAssembler projectPlanStatusCodeResourceAssembler;
 
     @BeforeEach
     void setup() {
@@ -76,12 +56,16 @@ class CodesServiceTest {
         bcParksOrgUnitCodeRepository = mock(BCParksOrgUnitCodeRepository.class);
         bcParksRegionCodeResourceAssembler = mock(BCParksRegionCodeResourceAssembler.class);
         bcParksSectionCodeResourceAssembler = mock(BCParksSectionCodeResourceAssembler.class);
+        objectiveTypeCodeResourceAssembler = mock(ObjectiveTypeCodeResourceAssembler.class);
+        objectiveTypeCodeRepository = mock(ObjectiveTypeCodeRepository.class);
+        projectPlanStatusCodeResourceAssembler = mock(ProjectPlanStatusCodeResourceAssembler.class);
+        projectPlanStatusCodeRepository = mock(ProjectPlanStatusCodeRepository.class);
 
         codesService = new CodesService(forestAreaCodeRepository, forestAreaCodeResourceAssembler,
                 generalScopeCodeRepository, generalScopeCodeResourceAssembler,
                 projectTypeCodeRepository, projectTypeCodeResourceAssembler, programAreaRepository, programAreaResourceAssembler,
                 forestOrgUnitCodeRepository, forestRegionUnitCodeResourceAssembler, forestDistrictUnitCodeResourceAssembler, bcParksOrgUnitCodeRepository, bcParksRegionCodeResourceAssembler,
-                bcParksSectionCodeResourceAssembler);
+                bcParksSectionCodeResourceAssembler, objectiveTypeCodeResourceAssembler, objectiveTypeCodeRepository, projectPlanStatusCodeResourceAssembler, projectPlanStatusCodeRepository);
     }
 
     @Test
@@ -225,21 +209,6 @@ class CodesServiceTest {
 
 
     @Test
-    void testProjectTypeAreaCodeById_Exception() {
-        // Arrange
-        String exampleId = UUID.randomUUID().toString();
-        when(projectTypeCodeRepository.findById(exampleId))
-                .thenThrow(new RuntimeException("Error fetching project type code"));
-
-        // Act & Assert
-        ServiceException exception = assertThrows(
-                ServiceException.class,
-                () -> codesService.getProjectTypeCodeById(exampleId)
-        );
-        assertTrue(exception.getMessage().contains("Error fetching project type code"));
-    }
-
-    @Test
     void testGetAllGeneralScopeCodes_Success() throws ServiceException {
         // Arrange
         List<GeneralScopeCodeEntity> entities = new ArrayList<>();
@@ -315,6 +284,21 @@ class CodesServiceTest {
                 () -> codesService.getGeneralScopeCodeById(exampleId)
         );
         assertTrue(exception.getMessage().contains("Error fetching general scope code"));
+    }
+
+    @Test
+    void testProjectTypeAreaCodeById_Exception() {
+        // Arrange
+        String exampleId = UUID.randomUUID().toString();
+        when(projectTypeCodeRepository.findById(exampleId))
+                .thenThrow(new RuntimeException("Error fetching project type code"));
+
+        // Act & Assert
+        ServiceException exception = assertThrows(
+                ServiceException.class,
+                () -> codesService.getProjectTypeCodeById(exampleId)
+        );
+        assertTrue(exception.getMessage().contains("Error fetching project type code"));
     }
 
     @Test
@@ -750,4 +734,197 @@ class CodesServiceTest {
         verify(bcParksOrgUnitCodeRepository, times(1)).findById(bcParksSectionId);
         verifyNoInteractions(bcParksSectionCodeResourceAssembler);
     }
+
+    @Test
+    void testGetAllObjectiveTypeCodes_Success() throws ServiceException {
+        // Arrange
+        List<ObjectiveTypeCodeEntity> entities = new ArrayList<>();
+        entities.add(new ObjectiveTypeCodeEntity());
+        entities.add(new ObjectiveTypeCodeEntity());
+
+        when(objectiveTypeCodeRepository.findAll()).thenReturn(entities);
+        when(objectiveTypeCodeResourceAssembler.toCollectionModel(entities))
+                .thenReturn(CollectionModel.of(new ArrayList<>()));
+
+        // Act
+        CollectionModel<ObjectiveTypeCodeModel> result = codesService.getAllObjectiveTypeCodes();
+
+        // Assert
+        assertNotNull(result);
+    }
+
+    @Test
+    void testGetObjectiveTypeCodeById_Success() throws ServiceException {
+        // Arrange
+        String exampleId = UUID.randomUUID().toString();
+        ObjectiveTypeCodeEntity entity = new ObjectiveTypeCodeEntity();
+        when(objectiveTypeCodeRepository.findById(exampleId))
+                .thenReturn(Optional.of(entity));
+        when(objectiveTypeCodeResourceAssembler.toModel(entity))
+                .thenReturn(new ObjectiveTypeCodeModel());
+
+        // Act
+        ObjectiveTypeCodeModel result = codesService.getObjectiveTypeCodeById(exampleId);
+
+        // Assert
+        assertNotNull(result);
+    }
+
+    @Test
+    void testGetObjectiveTypeCodeById_NotFound() throws ServiceException {
+        // Arrange
+        String nonExistentId = UUID.randomUUID().toString();
+        when(objectiveTypeCodeRepository.findById(nonExistentId))
+                .thenReturn(Optional.empty());
+
+        // Act
+        ObjectiveTypeCodeModel result = codesService.getObjectiveTypeCodeById(nonExistentId);
+
+        // Assert
+        assertNull(result);
+    }
+
+
+    @Test
+    void testObjectiveTypeCodeById_Exception() {
+        // Arrange
+        String exampleId = UUID.randomUUID().toString();
+        when(objectiveTypeCodeRepository.findById(exampleId))
+                .thenThrow(new RuntimeException("Error fetching objective type code"));
+
+        // Act & Assert
+        ServiceException exception = assertThrows(
+                ServiceException.class,
+                () -> codesService.getObjectiveTypeCodeById(exampleId)
+        );
+        assertTrue(exception.getMessage().contains("Error fetching objective type code"));
+    }
+
+    @Test
+    void getAllObjectiveTypeCodes_Success() throws ServiceException {
+        // Arrange
+        List<ObjectiveTypeCodeEntity> entities = new ArrayList<>();
+        entities.add(new ObjectiveTypeCodeEntity());
+        entities.add(new ObjectiveTypeCodeEntity());
+
+        when(objectiveTypeCodeRepository.findAll()).thenReturn(entities);
+        when(objectiveTypeCodeResourceAssembler.toCollectionModel(entities))
+                .thenReturn(CollectionModel.of(new ArrayList<>()));
+
+        // Act
+        CollectionModel<ObjectiveTypeCodeModel> result = codesService.getAllObjectiveTypeCodes();
+
+        // Assert
+        assertNotNull(result);
+    }
+
+    @Test
+    void testGetAllObjectiveTypeCodes_Exception() {
+        // Arrange
+        when(objectiveTypeCodeRepository.findAll()).thenThrow(new RuntimeException("Error fetching objective type codes"));
+
+        // Act & Assert
+        ServiceException exception = assertThrows(
+                ServiceException.class,
+                () -> codesService.getAllObjectiveTypeCodes()
+        );
+        assertEquals("Error fetching objective type codes", exception.getMessage());
+    }
+
+    @Test
+    void testGetAllProjectPlanStatusCodes_Success() throws ServiceException {
+        // Arrange
+        List<ProjectPlanStatusCodeEntity> entities = new ArrayList<>();
+        entities.add(new ProjectPlanStatusCodeEntity());
+        entities.add(new ProjectPlanStatusCodeEntity());
+
+        when(projectPlanStatusCodeRepository.findAll()).thenReturn(entities);
+        when(projectPlanStatusCodeResourceAssembler.toCollectionModel(entities))
+                .thenReturn(CollectionModel.of(new ArrayList<>()));
+
+        // Act
+        CollectionModel<ProjectPlanStatusCodeModel> result = codesService.getAllProjectPlanStatusCodes();
+
+        // Assert
+        assertNotNull(result);
+    }
+
+    @Test
+    void testGetProjectPlanStatusCodeById_Success() throws ServiceException {
+        // Arrange
+        String exampleId = UUID.randomUUID().toString();
+        ProjectPlanStatusCodeEntity entity = new ProjectPlanStatusCodeEntity();
+        when(projectPlanStatusCodeRepository.findById(exampleId))
+                .thenReturn(Optional.of(entity));
+        when(projectPlanStatusCodeResourceAssembler.toModel(entity))
+                .thenReturn(new ProjectPlanStatusCodeModel());
+
+        // Act
+        ProjectPlanStatusCodeModel result = codesService.getProjectPlanStatusCodeById(exampleId);
+
+        // Assert
+        assertNotNull(result);
+    }
+
+    @Test
+    void testGetProjectPlanStatusCodeById_NotFound() throws ServiceException {
+        // Arrange
+        String nonExistentId = UUID.randomUUID().toString();
+        when(projectPlanStatusCodeRepository.findById(nonExistentId))
+                .thenReturn(Optional.empty());
+
+        // Act
+        ProjectPlanStatusCodeModel result = codesService.getProjectPlanStatusCodeById(nonExistentId);
+
+        // Assert
+        assertNull(result);
+    }
+
+
+    @Test
+    void testProjectPlanStatusCodeById_Exception() {
+        // Arrange
+        String exampleId = UUID.randomUUID().toString();
+        when(projectPlanStatusCodeRepository.findById(exampleId))
+                .thenThrow(new RuntimeException("Error fetching project plan status code"));
+
+        // Act & Assert
+        ServiceException exception = assertThrows(
+                ServiceException.class,
+                () -> codesService.getProjectPlanStatusCodeById(exampleId)
+        );
+        assertTrue(exception.getMessage().contains("Error fetching project plan status code"));
+    }
+
+    @Test
+    void getAllProjectPlanStatusCodes_Success() throws ServiceException {
+        // Arrange
+        List<ProjectPlanStatusCodeEntity> entities = new ArrayList<>();
+        entities.add(new ProjectPlanStatusCodeEntity());
+        entities.add(new ProjectPlanStatusCodeEntity());
+
+        when(projectPlanStatusCodeRepository.findAll()).thenReturn(entities);
+        when(projectPlanStatusCodeResourceAssembler.toCollectionModel(entities))
+                .thenReturn(CollectionModel.of(new ArrayList<>()));
+
+        // Act
+        CollectionModel<ProjectPlanStatusCodeModel> result = codesService.getAllProjectPlanStatusCodes();
+
+        // Assert
+        assertNotNull(result);
+    }
+
+    @Test
+    void testGetAllProjectPlanStatusCodes_Exception() {
+        // Arrange
+        when(projectPlanStatusCodeRepository.findAll()).thenThrow(new RuntimeException("Error fetching project plan status codes"));
+
+        // Act & Assert
+        ServiceException exception = assertThrows(
+                ServiceException.class,
+                () -> codesService.getAllProjectPlanStatusCodes()
+        );
+        assertEquals("Error fetching project plan status codes", exception.getMessage());
+    }
+
 }
