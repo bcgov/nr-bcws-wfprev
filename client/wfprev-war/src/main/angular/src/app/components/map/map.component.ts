@@ -1,4 +1,4 @@
-import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, Input, OnDestroy, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnDestroy, ViewChild } from '@angular/core';
 import { ResizablePanelComponent } from 'src/app/components/resizable-panel/resizable-panel.component';
 import { MapConfigService } from 'src/app/services/map-config.service';
 import { MapService } from 'src/app/services/map.service';
@@ -13,7 +13,7 @@ import { MapService } from 'src/app/services/map.service';
 export class MapComponent implements AfterViewInit {
   @ViewChild('mapContainer', { static: false }) mapContainer!: ElementRef;
   mapConfig: any[] = [];
-  
+  mapIndex = 0;
   panelContent: string = `
     The goal of the BC Wildfire Service (BCWS) Prevention Program is to reduce the negative impacts of wildfire on public safety, property, the environment and the economy using the seven disciplines of the FireSmart program.
     <br>
@@ -26,9 +26,15 @@ export class MapComponent implements AfterViewInit {
     private readonly mapConfigService: MapConfigService
   ) {}
 
-
   ngAfterViewInit(): void {
-    this.initMap();
+    // Check if mapContainer.nativeElement is defined before accessing it
+    if (this.mapContainer?.nativeElement) {
+      this.initMap();
+      this.mapIndex = this.mapService.getMapIndex() + 1;
+      this.mapService.setMapIndex(this.mapIndex);
+    } else {
+      console.error('Map container is not available.');
+    }
   }
 
   private initMap(): void {
@@ -43,6 +49,7 @@ export class MapComponent implements AfterViewInit {
     .then(() => {
       const deviceConfig = { viewer: { device: 'desktop' } };
       this.mapConfig = [...mapConfig, deviceConfig, 'theme=wf', '?'];
+      console.log('mapConfig:');
       console.log('mapConfig: ', JSON.stringify(this.mapConfig));
     })
     .catch((error) => {
@@ -50,7 +57,7 @@ export class MapComponent implements AfterViewInit {
     });
 
     this.mapService.createSMK({
-      id: 'map',
+      id: this.mapIndex,
       containerSel: self.mapContainer.nativeElement,
       config: mapConfig,
     })

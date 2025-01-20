@@ -11,8 +11,5 @@
   },
   "rest": {
     "wfprev": "#{WFPREV_BASE_URL}#"
-  },
-  "mapServices": {
-    "openmapsBaseUrl": "https://maps.dev.bcwildfireservices.com/geo/pub/ows"
   }
 }

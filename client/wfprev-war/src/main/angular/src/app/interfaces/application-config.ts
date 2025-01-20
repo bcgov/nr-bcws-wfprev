@@ -22,13 +22,8 @@ export interface WebADE {
   checkTokenUrl?: string;
 }
 
-export interface MapServices {
-  openmapsBaseUrl: string;
-}
-
 export interface ApplicationConfig {
   application: Application
   rest: RestConfig;
   webade: WebADE;
-  mapServices: MapServices
 }
