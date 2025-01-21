@@ -101,7 +101,7 @@ export class ProjectsListComponent implements OnInit {
   editProject(project: any, event: Event) {
     event.stopPropagation();
     this.router.navigate([ResourcesRoutes.EDIT_PROJECT], {
-      queryParams: { projectNumber: project.projectNumber, name: project.projectName }
+      queryParams: { projectGuid: project.projectGuid }
     });
   }
 

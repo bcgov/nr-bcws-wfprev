@@ -5,7 +5,6 @@
 .map-content {
   height: calc(100vh - 250px);
   flex-grow: 1;
-  // padding: 10px;
   background-color: #f1f1f1;
   overflow: auto;  // In case the content exceeds the container height
 }
