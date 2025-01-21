@@ -6,7 +6,7 @@
 
 /* Create Tables */
 
-CREATE TABLE "wfprev"."actvty_progress_audit"
+CREATE TABLE "wfprev"."activity_progress_audit"
 (
 	"audit_table_sequence" decimal(15) NOT NULL,    -- Added by transform - intent is make this sequence noncached so order is maintained
 	"audit_action_code" varchar(10)	 NOT NULL,    -- Contains the reason the audit record is written - Insert/Update/Delete/Conversion
@@ -37,96 +37,96 @@ TABLESPACE	PG_DEFAULT
 
 /* Create Table Comments, Sequences for Autonumber Columns */
 
-COMMENT ON COLUMN "wfprev"."actvty_progress_audit"."audit_table_sequence"
+COMMENT ON COLUMN "wfprev"."activity_progress_audit"."audit_table_sequence"
 	IS 'Added by transform - intent is make this sequence noncached so order is maintained'
 ;
 
-COMMENT ON COLUMN "wfprev"."actvty_progress_audit"."audit_action_code"
+COMMENT ON COLUMN "wfprev"."activity_progress_audit"."audit_action_code"
 	IS 'Contains the reason the audit record is written - Insert/Update/Delete/Conversion'
 ;
 
-COMMENT ON COLUMN "wfprev"."actvty_progress_audit"."activity_progress_guid"
+COMMENT ON COLUMN "wfprev"."activity_progress_audit"."activity_progress_guid"
 	IS 'activity_progress_guid is a unique identifier for the record.'
 ;
 
-COMMENT ON COLUMN "wfprev"."actvty_progress_audit"."activity_guid"
+COMMENT ON COLUMN "wfprev"."activity_progress_audit"."activity_guid"
 	IS 'activity_guid: Is a foreign key to activity: Activity is used to track the treatment activities that are planned for the project for the fiscal year.'
 ;
 
-COMMENT ON COLUMN "wfprev"."actvty_progress_audit"."project_plan_fiscal_perf_guid"
+COMMENT ON COLUMN "wfprev"."activity_progress_audit"."project_plan_fiscal_perf_guid"
 	IS 'project_plan_fiscal_perf_guid: Is a foreign key to project_plan_fiscal_perf: Project Plan Fiscal Performance records the progress made to date on a project for the fiscal year as reported by the business area.  '
 ;
 
-COMMENT ON COLUMN "wfprev"."actvty_progress_audit"."entered_timestamp"
+COMMENT ON COLUMN "wfprev"."activity_progress_audit"."entered_timestamp"
 	IS 'Entered Timestamp is the date and time the comment was entered.'
 ;
 
-COMMENT ON COLUMN "wfprev"."actvty_progress_audit"."activity_status_code"
+COMMENT ON COLUMN "wfprev"."activity_progress_audit"."activity_status_code"
 	IS 'activity_status_code: Is a foreign key to activity_status_code: Activity Status Code is the status of an activity for a fiscal year. Values are:  	- Active 	- Completed 	- Deleted 	- Archived'
 ;
 
-COMMENT ON COLUMN "wfprev"."actvty_progress_audit"."contract_phase_code"
+COMMENT ON COLUMN "wfprev"."activity_progress_audit"."contract_phase_code"
 	IS 'contract_phase_code: Is a foreign key to contract_phase_code: Contract Phase Code is used to track the general status of contracts that are out for bid to suppliers to complete treatment work for the project. Values are:  	- Contract Out For Bid 	- Contract Awarded 	- Multiple Contracts Out For Bid 	- Multiple Contracts Awarded'
 ;
 
-COMMENT ON COLUMN "wfprev"."actvty_progress_audit"."risk_rating_code"
+COMMENT ON COLUMN "wfprev"."activity_progress_audit"."risk_rating_code"
 	IS 'risk_rating_code: Is a foreign key to risk_rating_code: Risk Rating Code are ratings that determine the level of risk of a project not spending allocated budget.  Values:  	- Low Risk 	- Moderate Risk 	- High Risk'
 ;
 
-COMMENT ON COLUMN "wfprev"."actvty_progress_audit"."reported_spend_amount"
+COMMENT ON COLUMN "wfprev"."activity_progress_audit"."reported_spend_amount"
 	IS 'Reported Spend Amount is the amount that has been reported to have been spent on the activity. It may include amounts that have not been entered in CFS yet.'
 ;
 
-COMMENT ON COLUMN "wfprev"."actvty_progress_audit"."completed_area_ha"
+COMMENT ON COLUMN "wfprev"."activity_progress_audit"."completed_area_ha"
 	IS 'Completed Area Ha is the area that a treatment has been completed by the applied activity.'
 ;
 
-COMMENT ON COLUMN "wfprev"."actvty_progress_audit"."progress_comment"
+COMMENT ON COLUMN "wfprev"."activity_progress_audit"."progress_comment"
 	IS 'Progress Comment is free-form text providing additional detail regarding the progress made on a project or activity.'
 ;
 
-COMMENT ON COLUMN "wfprev"."actvty_progress_audit"."commenter_userid"
+COMMENT ON COLUMN "wfprev"."activity_progress_audit"."commenter_userid"
 	IS 'Commenter Userid is the IDIR or BCEID userid of the user that added the comment.   The client has a business requirement to display the Userid of the user in their application interfaces.'
 ;
 
-COMMENT ON COLUMN "wfprev"."actvty_progress_audit"."commenter_guid"
+COMMENT ON COLUMN "wfprev"."activity_progress_audit"."commenter_guid"
 	IS 'Commenter Guid is the user GUID identifying the person who created the comment.   The user guid is stored in this field corresponds to a user authorized in the WebADE platform.'
 ;
 
-COMMENT ON COLUMN "wfprev"."actvty_progress_audit"."system_generated_ind"
+COMMENT ON COLUMN "wfprev"."activity_progress_audit"."system_generated_ind"
 	IS 'System Generated Ind indicates whether or not the comment was generated by the application (''Y'') or was user entered (''N'').'
 ;
 
-COMMENT ON COLUMN "wfprev"."actvty_progress_audit"."outstanding_obligations_ind"
+COMMENT ON COLUMN "wfprev"."activity_progress_audit"."outstanding_obligations_ind"
 	IS 'Outstanding Obligations Ind indicates whether there are outstanding obligations for the treatment activity (Y) or not (N). As activities draw to an end, there may be some uncompleted work for which there is an obligation to complete at another time. This field indicates if there are such obligations.'
 ;
 
-COMMENT ON COLUMN "wfprev"."actvty_progress_audit"."activity_comment"
+COMMENT ON COLUMN "wfprev"."activity_progress_audit"."activity_comment"
 	IS 'Treatment Activity Comment is used to document activity comments including outstanding obligations.'
 ;
 
-COMMENT ON COLUMN "wfprev"."actvty_progress_audit"."revision_count"
+COMMENT ON COLUMN "wfprev"."activity_progress_audit"."revision_count"
 	IS 'REVISION_COUNT is the number of times that the row of data has been changed. The column is used for optimistic locking via application code.'
 ;
 
-COMMENT ON COLUMN "wfprev"."actvty_progress_audit"."create_user"
+COMMENT ON COLUMN "wfprev"."activity_progress_audit"."create_user"
 	IS 'CREATE_USER is an audit column that indicates the user that created the record.'
 ;
 
-COMMENT ON COLUMN "wfprev"."actvty_progress_audit"."create_date"
+COMMENT ON COLUMN "wfprev"."activity_progress_audit"."create_date"
 	IS 'CREATE_DATE is the date and time the row of data was created.'
 ;
 
-COMMENT ON COLUMN "wfprev"."actvty_progress_audit"."update_user"
+COMMENT ON COLUMN "wfprev"."activity_progress_audit"."update_user"
 	IS 'UPDATE_USER is an audit column that indicates the user that updated the record.'
 ;
 
-COMMENT ON COLUMN "wfprev"."actvty_progress_audit"."update_date"
+COMMENT ON COLUMN "wfprev"."activity_progress_audit"."update_date"
 	IS 'UPDATE_DATE is the date and time the row of data was updated.'
 ;
 
 /* Create Primary Keys, Indexes, Uniques, Checks */
 
-ALTER TABLE "wfprev"."actvty_progress_audit" ADD CONSTRAINT "actprg_aud_pk"
+ALTER TABLE "wfprev"."activity_progress_audit" ADD CONSTRAINT "actprg_aud_pk"
 	PRIMARY KEY (audit_table_sequence)
 ;

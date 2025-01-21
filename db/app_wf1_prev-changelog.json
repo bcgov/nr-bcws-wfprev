@@ -847,7 +847,7 @@
           {
             "sqlFile": {
               "dbms": "postgresql", "endDelimiter": ";",
-              "path": "scripts/01_00_09/00/ddl/WFPREV.actvty_progress_audit.sql"
+              "path": "scripts/01_00_09/00/ddl/WFPREV.activity_progress_audit.sql"
             }
           },
           {
@@ -859,9 +859,9 @@
 
         ],
         "rollback": [
-          { "sql": "DROP TABLE wfprev.actvty_progress_audit" },
-          { "sql": "DROP TABLE wfprev.activity_progress.sql" },
-          { "sql": "DROP TABLE wfprev.project_plan_fiscal_perf_audit.sql" },
+          { "sql": "DROP TABLE wfprev.activity_progress_audit" },
+          { "sql": "DROP TABLE wfprev.activity_progress" },
+          { "sql": "DROP TABLE wfprev.project_plan_fiscal_perf_audit" },
           { "sql": "DROP TABLE wfprev.project_plan_fiscal_perf" },
           { "sql": "DROP TABLE wfprev.reporting_period_code" }
         ]
