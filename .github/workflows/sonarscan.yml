@@ -69,6 +69,11 @@ jobs:
             echo "No coverage directory found. Skipping deletion."
           fi
 
+      # Use the NPMRC secret to set up npm authentication
+      - name: Add .npmrc file
+        working-directory: ./client/wfprev-war/src/main/angular
+        run: echo -e $NPMRC > ~/.npmrc
+
       - name: Install dependencies and Angular CLI
         working-directory: ./client/wfprev-war/src/main/angular
         run: |
