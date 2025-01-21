@@ -71,33 +71,33 @@ describe('ProjectsListComponent', () => {
       { projectNumber: 1, projectName: 'Project 1' },
       { projectNumber: 2, projectName: 'Project 2' },
     ];
-  
+
     // Trigger change detection to update the DOM
     fixture.detectChanges();
-  
+
     // Query DOM elements
     const projectItems = fixture.debugElement.queryAll(By.css('.project-name'));
-  
+
     // Assertions
     expect(projectItems.length).toBe(2); // Mock data contains 2 projects
     expect(projectItems[0].nativeElement.textContent).toContain('Project 1');
     expect(projectItems[1].nativeElement.textContent).toContain('Project 2');
   });
-  
+
   it('should load code tables on init', () => {
     expect(mockCodeTableService.fetchCodeTable).toHaveBeenCalledWith('programAreaCodes');
     expect(mockCodeTableService.fetchCodeTable).toHaveBeenCalledWith('forestRegionCodes');
   });
-  
+
   it('should handle errors when loading code tables', () => {
     mockCodeTableService.fetchCodeTable.and.returnValue(throwError('Error fetching data'));
     component.loadCodeTables();
     fixture.detectChanges();
-  
+
     expect(component.programAreaCode).toEqual([]);
     expect(component.forestRegionCode).toEqual([]);
   });
-  
+
 
   it('should handle errors when loading projects', () => {
     mockProjectService.fetchProjects.and.returnValue(throwError('Error fetching projects'));
@@ -105,7 +105,7 @@ describe('ProjectsListComponent', () => {
     fixture.detectChanges();
     expect(component.projectList).toEqual([]);
   });
-  
+
 
   it('should open the dialog to create a new project and reload projects if successful', () => {
     spyOn(component, 'loadProjects');
@@ -123,20 +123,20 @@ describe('ProjectsListComponent', () => {
     fixture.detectChanges();
     const description = 'Region 1';
     expect(description).toBe('Region 1');
-  
+
     const unknownDescription = component.getDescription('forestRegionCode', 999);
     expect(unknownDescription).toBe('Unknown');
   });
-  
+
 
   it('should handle sort change correctly', () => {
     spyOn(component, 'onSortChange').and.callThrough();
-  
+
     const select = debugElement.query(By.css('select')).nativeElement;
     select.value = 'ascending'; // Change to "ascending"
     select.dispatchEvent(new Event('change'));
     fixture.detectChanges();
-  
+
     expect(component.onSortChange).toHaveBeenCalled();
     expect(component.selectedSort).toBe('ascending');
   });
@@ -145,12 +145,18 @@ describe('ProjectsListComponent', () => {
     const mockRouter = TestBed.inject(Router);
     spyOn(mockRouter, 'navigate');
     const mockEvent = jasmine.createSpyObj('Event', ['stopPropagation']);
-    const project = { projectGuid: 'test-guid'};
-  
+    const project = {
+      projectNumber: 1234567,
+      projectName: 'test-project'
+    };
+
     component.editProject(project, mockEvent);
-  
+
     expect(mockRouter.navigate).toHaveBeenCalledWith([ResourcesRoutes.EDIT_PROJECT], {
-      queryParams: { projectGuid: project.projectGuid },
+      queryParams: {
+        projectNumber: project.projectNumber,
+        name: project.projectName
+      },
     });
     expect(mockEvent.stopPropagation).toHaveBeenCalled();
   });
@@ -167,9 +173,9 @@ describe('ProjectsListComponent', () => {
     fixture.detectChanges();
     const description = 'Region 1';
     expect(description).toBe('Region 1');
-    
+
     const unknownDescription = component.getDescription('forestRegionCode', 999);
     expect(unknownDescription).toBe('Unknown');
   });
-    
+
 });

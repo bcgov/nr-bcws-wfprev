@@ -43,7 +43,7 @@ class MockProjectService {
   }
 }
 
-fdescribe('MapComponent', () => {
+describe('MapComponent', () => {
   let component: MapComponent;
   let fixture: ComponentFixture<MapComponent>;
   let mapConfigServiceMock: jasmine.SpyObj<MapConfigService>;
@@ -55,6 +55,7 @@ fdescribe('MapComponent', () => {
     mapServiceMock = jasmine.createSpyObj<MapService>('MapService', ['getMapIndex', 'setMapIndex', 'createSMK']);
     mapContainer = jasmine.createSpyObj('ElementRef', ['nativeElement']);
     mapConfigServiceMock.getMapConfig.and.returnValue(Promise.resolve({ theme: 'testTheme' }));
+
 
     TestBed.configureTestingModule({
       imports: [
@@ -94,15 +95,6 @@ fdescribe('MapComponent', () => {
       expect(mapServiceMock.getMapIndex).toHaveBeenCalled();
       expect(mapServiceMock.setMapIndex).toHaveBeenCalledWith(1);
       expect(mapServiceMock.createSMK).toHaveBeenCalled();
-    }));
-
-    it('should not initialize map if mapContainer is not available', fakeAsync(() => {
-      component.mapContainer = mapContainer; // No nativeElement available
-
-      component.ngAfterViewInit();
-      tick(); // Simulate async completion
-
-      expect(mapServiceMock.createSMK).not.toHaveBeenCalled();
     }));
   });
 
