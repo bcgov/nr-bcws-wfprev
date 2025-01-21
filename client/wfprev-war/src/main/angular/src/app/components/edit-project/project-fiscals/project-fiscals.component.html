@@ -1,1 +1,169 @@
-<p>project-fiscals works!</p>
+<div class="fiscals-container">
+  <div>
+    <div class="button-row">
+      <button mat-raised-button class="primary" (click)="addNewFiscal()">
+        <img alt="create-project" class="icon" src="/assets/add-button.svg" width="19" height="19">
+        Add New Fiscal
+      </button>
+    </div>
+      <mat-tab-group class="custom-tab-group" *ngIf="projectFiscals?.length" [(selectedIndex)]="selectedTabIndex">
+        <mat-tab *ngFor="let fiscal of projectFiscals; let i = index" [label]="fiscal.fiscalYearFormatted || 'New Fiscal'">
+          <mat-expansion-panel [expanded]="true" class="fiscal-expansion-panel">
+            <mat-expansion-panel-header>
+              <span class="project-title">Fiscal Detail</span>
+            </mat-expansion-panel-header>
+            <form class="form-grid" [formGroup]="fiscalForms[i]">
+
+              <div class="form-item">
+                <label>Fiscal Year<span class="required">*</span></label>
+                <select id="fiscalYear" formControlName="fiscalYear">
+                  <option *ngFor="let year of fiscalYears" [value]="year.split('/')[0]">{{ year }}</option>
+                </select>
+              </div>
+
+              <div class="form-item">
+                <label>Fiscal Name<span class="required">*</span></label>
+                <input type="text" id="projectFiscalName" formControlName="projectFiscalName" />
+              </div>
+
+              <div class="form-item">
+                <label>Activity Category<span class="required">*</span></label>
+                <select id="activityCategoryCode" formControlName="activityCategoryCode">
+                  <option [value]="fiscalForms[i].value?.activityCategoryCode">
+                    {{ fiscalForms[i].value?.activityCategoryCode || 'Select Activity Category' }}
+                  </option>
+                </select>
+              </div>
+
+              <!-- NEED TO ADD THIS Proposal Type IN API  -->
+              <!-- <div class="form-item">
+                <label>Proposal Type<span class="required">*</span></label>
+                <select id="proposalType" formControlName="proposalType">
+                  <option [value]="fiscalForms[i]?.value?.proposalType">
+                    {{ fiscalForms[i]?.value?.proposalType || 'Select Proposal Type' }}
+                  </option>            
+                </select>
+              </div> -->
+
+              <div class="form-item">
+                <label>Fiscal Status<span class="required">*</span></label>
+                <select id="planFiscalStatusCode" formControlName="planFiscalStatusCode">
+                  <option [value]="fiscalForms[i].value?.planFiscalStatusCode">
+                    {{ fiscalForms[i].value?.planFiscalStatusCode || 'Select Fiscal Status' }}
+                  </option>
+                </select>
+              </div>
+
+              <div class="form-item">
+                <label>Planned Hectares</label>
+                <input type="text" id="fiscalPlannedProjectSizeHa" formControlName="fiscalPlannedProjectSizeHa" />
+              </div>
+
+              <div class="form-item">
+                <label>Completed Hectares</label>
+                <input type="text" id="fiscalCompletedSizeHa" formControlName="fiscalCompletedSizeHa" />
+              </div>
+
+              <div class="form-item">
+                <label>Results ID</label>
+                <input type="text" id="resultsOpeningId" formControlName="resultsOpeningId" />
+              </div>
+
+              <div class="form-item">
+                <label>First Nations Engagement</label>
+                <div class="toggle-container">
+                  <mat-slide-toggle 
+                    id="firstYearNationsEngagement" 
+                    formControlName="firstNationsEngagementInd">
+                  </mat-slide-toggle>
+                  <span class="toggle-label">
+                    {{ fiscalForms[i].value?.firstNationsEngagementInd ? 'Yes' : 'No' }}
+                  </span>
+                </div>
+              </div>
+
+              <div class="form-item">
+                <label>First Nations Co-Delivery</label>
+                <div class="toggle-container">
+                  <mat-slide-toggle 
+                    id="firstNationsDelivPartInd" 
+                    formControlName="firstNationsDelivPartInd">
+                  </mat-slide-toggle>
+                  <span class="toggle-label">
+                    {{ fiscalForms[i].value?.firstNationsDelivPartInd ? 'Yes' : 'No' }}
+                  </span>
+                </div>
+              </div>
+
+              <div class="form-item">
+                <label>Name of First Nations Co-Delivery Partners</label>
+                <input type="text" id="firstNationsPartner" formControlName="firstNationsPartner" />
+              </div>
+              
+              <div class="form-item half-width">
+                <label>Description</label>
+                <textarea id="projectFiscalDescription" formControlName="projectFiscalDescription" rows="4" cols="50"></textarea>
+              </div>
+              <div class="form-item half-width">
+                <label>Other Partners</label>
+                <input type="text" id="otherPartners" formControlName="otherPartners" />
+              </div>
+    <!-- Budget Section -->
+              <div class="budget-section">
+                <span class="budget-title"> Budget</span>
+                <div class="separator"></div>
+              </div>
+
+              <div class="form-item budget-width">
+                <label>Original Cost Estimate</label>
+                <input type="number" id="totalCostEstimateAmount" 
+                  formControlName="totalCostEstimateAmount" />
+              </div>
+
+              <div class="form-item budget-width">
+                <label>Forecast Amount</label>
+                <input type="Cost" id="" />
+              </div>
+
+              <div class="form-item budget-width">
+                <label>CFS Code</label>
+                <input type="text" id="cfsProjectCode" formControlName="cfsProjectCode"/>
+              </div>
+
+              <div class="form-item budget-width">
+                <label>Ancilliary Funding Provider</label>
+                <select id="ancillaryFundingSourceGuid" formControlName="ancillaryFundingSourceGuid">
+                  <option [value]="fiscalForms[i].value?.ancillaryFundingSourceGuid">
+                    {{ fiscalForms[i].value?.ancillaryFundingSourceGuid || 'Select' }}
+                  </option>
+                </select>
+              </div>
+
+              <div class="form-item budget-width">
+                <label>Ancilliary Funding Amount</label>
+                <input type="Cost" id="fiscalAncillaryFundAmount" formControlName="fiscalAncillaryFundAmount"/>
+              </div>
+
+              <div class="form-item budget-width">
+                <label>Reported Spend</label>
+                <input type="Cost" id="fiscalReportedSpendAmount" formControlName="fiscalReportedSpendAmount"/>
+              </div>
+
+              <div class="form-item cfs-width">
+                <label>CFS Actual Spend</label>
+                <input type="Cost" id=""/>
+              </div>
+            </form>
+            <div class="fiscal-footer">
+              <div class="footer-button-row">
+                <button class="secondary" (click)="onCancelFiscal()" >Cancel</button>
+                <button type="button" (click)="onSaveFiscal()"
+                  class="primary">Save
+                </button>
+              </div>
+            </div>
+          </mat-expansion-panel>
+        </mat-tab>
+      </mat-tab-group>
+  </div>
+</div>
