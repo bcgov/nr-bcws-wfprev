@@ -40,6 +40,7 @@ export class CreateNewProjectDialogComponent implements OnInit {
   bcParksRegions : any[] = [];
   bcParksSections: any[] = [];
   allBcParksSections: any[] = []; // To hold all sections initially
+  objectiveTypes: any[] = [];
 
   constructor(
     private readonly fb: FormBuilder,
@@ -62,6 +63,9 @@ export class CreateNewProjectDialogComponent implements OnInit {
       projectLeadEmail: ['', [Validators.email, Validators.maxLength(50)]],
       siteUnitName: ['', [Validators.maxLength(50)]],
       closestCommunity: ['', [Validators.required, Validators.maxLength(50)]],
+      primaryObjective: ['', [Validators.required]],
+      secondaryObjective: [''],
+      secondaryObjectiveRationale: ['',[Validators.maxLength(50)]],
   });
 
   // Dynamically enable/disable bcParksSection based on bcParksRegion selection
@@ -89,12 +93,23 @@ export class CreateNewProjectDialogComponent implements OnInit {
       { name: 'forestDistrictCodes', property: 'forestDistricts', embeddedKey: 'forestDistrictCode' },
       { name: 'bcParksRegionCodes', property: 'bcParksRegions', embeddedKey: 'bcParksRegionCode' },
       { name: 'bcParksSectionCodes', property: 'allBcParksSections', embeddedKey: 'bcParksSectionCode' },
+      { name: 'objectiveTypeCodes', property: 'objectiveTypes', embeddedKey: 'objectiveTypeCode' },
+
     ];
   
     codeTables.forEach((table) => {
       this.codeTableService.fetchCodeTable(table.name).subscribe({
         next: (data) => {
           this[table.property] = data?._embedded?.[table.embeddedKey] || [];
+          if (table.name === 'objectiveTypeCodes') {
+            const defaultObjective = this.objectiveTypes.find(
+              (type) => type.objectiveTypeCode === 'WRR'
+            );
+      
+            if (defaultObjective) {
+              this.projectForm.get('primaryObjective')?.setValue('WRR');
+            }
+          }
         },
         error: (err) => {
           console.error(`Error fetching ${table.name}`, err);
@@ -168,6 +183,14 @@ export class CreateNewProjectDialogComponent implements OnInit {
         totalPlannedCostPerHectare:
           this.projectForm.get('totalPlannedCostPerHectare')?.value ?? '',
         totalActualAmount: this.projectForm.get('totalActualAmount')?.value ?? 0,
+        primaryObjectiveTypeCode: {
+          objectiveTypeCode: this.projectForm.get('primaryObjective')?.value
+        },
+        secondaryObjectiveTypeCode: {
+          objectiveTypeCode: this.projectForm.get('secondaryObjective')?.value
+        },
+        secondaryObjectiveRationale: this.projectForm.get('secondaryObjectiveRationale')?.value,
+        
         isMultiFiscalYearProj: false,
         ...(validatedLatLong && {
           latitude: Number(validatedLatLong.latitude),

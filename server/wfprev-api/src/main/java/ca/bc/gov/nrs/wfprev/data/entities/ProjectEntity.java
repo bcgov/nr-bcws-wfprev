@@ -181,4 +181,7 @@ public class ProjectEntity implements Serializable {
     @ManyToOne(fetch = FetchType.EAGER, optional = true)
     @JoinColumn(name = "tertiary_objective_type_code")
     private ObjectiveTypeCodeEntity tertiaryObjectiveTypeCode;
+
+    @Column(name = "secondary_objective_rationale", length = 300)
+    private String secondaryObjectiveRationale;
 }
