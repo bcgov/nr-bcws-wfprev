@@ -24,6 +24,10 @@
       ],
       "useDefineForClassFields": false,
       "resolveJsonModule": true,
+      "types": [
+        "leaflet",
+        "leaflet.markercluster"
+      ]
     },
     "angularCompilerOptions": {
       "enableI18nLegacyMessageIdFormat": false,
