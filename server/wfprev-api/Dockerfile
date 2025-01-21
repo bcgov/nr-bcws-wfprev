@@ -5,7 +5,7 @@ FROM tomcat:10.1-jdk21
 RUN rm -rf /usr/local/tomcat/webapps/*
 
 # Copy the WAR file to the Tomcat webapps directory with the new name
-COPY ./target/*.war /usr/local/tomcat/webapps/wfprev-api.war
+COPY *.war /usr/local/tomcat/webapps/pub#wfprev-api.war
 
 ENV TOMCAT_HOME=/usr/local/tomcat \
     CATALINA_HOME=/usr/local/tomcat \

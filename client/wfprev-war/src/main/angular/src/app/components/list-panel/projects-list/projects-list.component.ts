@@ -137,6 +137,7 @@ export class ProjectsListComponent implements OnInit {
     });
   }
 
+  // Temporary function, to be replaced with SMK layer config when /features endpoint exists in the API
   loadCoordinatesOnMap() {
     if (this.projectList?.length > 0) {
       const coords = this.projectList
@@ -180,7 +181,7 @@ export class ProjectsListComponent implements OnInit {
         });
       };
 
-      // Helper function to generate polygon points
+      // Helper function to generate random polygon points. This will be replaced by /features endpoint in API
       const generatePolygonPoints = (
         center: { latitude: number; longitude: number },
         radius: number = 50, // Average radius of 15 km
@@ -271,6 +272,7 @@ export class ProjectsListComponent implements OnInit {
     }
   }
 
+  // Temporary function, to be replaced with SMK layer config when /features endpoint exists in the API
   highlightProjectPolygons(project: any) {
     const coord = { latitude: project.latitude, longitude: project.longitude };
   

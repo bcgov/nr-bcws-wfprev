@@ -47,18 +47,6 @@ describe('MapService', () => {
     expect(service.getMapIndex()).toBe(5);
   });
 
-//   it('should create SMK with valid options', async () => {
-//     const mockOptions = {
-//       config: [],
-//     };
-//     const smkInitSpy = (window as any)['SMK'].INIT;
-
-//     await service.createSMK(mockOptions);
-//     expect(smkInitSpy).toHaveBeenCalled();
-//     expect(mockOptions.config).toContain(jasmine.objectContaining({
-//       tools: [{ type: 'baseMaps' }]
-//     }));
-//   });
 
   it('should throw error if SMK initialization fails', async () => {
     const mockOptions = {
@@ -74,14 +62,6 @@ describe('MapService', () => {
     }
   });
 
-//   it('should patch SMK correctly', async () => {
-//     const patchSpy = spyOn(service, 'patch').and.callThrough();
-//     await service.patch();
-//     expect(patchSpy).toHaveBeenCalled();
-//     expect((window as any)['SMK'].TYPE.Viewer.prototype.mapResized).toHaveBeenCalled();
-//     expect((window as any)['SMK'].TYPE.Viewer.leaflet.prototype.map.invalidateSize).toHaveBeenCalledWith({ animate: false });
-//   });
-
   it('should clone an object correctly', () => {
     const obj = { a: 1, b: { c: 2 } };
     const clonedObj = service.clone(obj);
@@ -89,14 +69,6 @@ describe('MapService', () => {
     expect(clonedObj).toEqual(obj);
     expect(clonedObj).not.toBe(obj); // Ensure it's a deep clone
   });
-
-//   it('should define the OpenStreetMap layer correctly', () => {
-//     const defineOpenStreetMapLayerSpy = spyOn(service, 'defineOpenStreetMapLayer').and.callThrough();
-//     service.defineOpenStreetMapLayer();
-//     expect(defineOpenStreetMapLayerSpy).toHaveBeenCalled();
-//     expect(service.baseMapIds).toContain('openstreetmap');
-//     expect((window as any)['SMK'].TYPE.Viewer.prototype.basemap['openstreetmap']).toBeDefined();
-//   });
 
   it('should handle patch promise rejection gracefully', async () => {
     const smk = (window as any)['SMK'];
