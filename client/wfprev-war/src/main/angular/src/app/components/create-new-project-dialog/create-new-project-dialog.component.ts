@@ -186,9 +186,11 @@ export class CreateNewProjectDialogComponent implements OnInit {
         primaryObjectiveTypeCode: {
           objectiveTypeCode: this.projectForm.get('primaryObjective')?.value
         },
-        secondaryObjectiveTypeCode: {
-          objectiveTypeCode: this.projectForm.get('secondaryObjective')?.value
-        },
+        ...(this.projectForm.get('secondaryObjective')?.value && {
+          secondaryObjectiveTypeCode: {
+            objectiveTypeCode: this.projectForm.get('secondaryObjective')?.value
+          }
+        }),
         secondaryObjectiveRationale: this.projectForm.get('secondaryObjectiveRationale')?.value,
         
         isMultiFiscalYearProj: false,
