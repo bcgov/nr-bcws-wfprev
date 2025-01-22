@@ -1,5 +1,6 @@
 package ca.bc.gov.nrs.wfprev.entities;
 
+import ca.bc.gov.nrs.wfprev.data.entities.ObjectiveTypeCodeEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ProjectEntity;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
@@ -26,6 +27,8 @@ class ProjectEntityTest {
     }
 
     private ProjectEntity createValidProjectEntity() {
+        ObjectiveTypeCodeEntity objectiveTypeCodeEntity = new ObjectiveTypeCodeEntity();
+        objectiveTypeCodeEntity.setObjectiveTypeCode("WRR");
         return ProjectEntity.builder()
                 .projectGuid(UUID.randomUUID())
                 .siteUnitName("Valid Site Unit")
@@ -34,6 +37,7 @@ class ProjectEntityTest {
                 .projectName("Valid Project Name")
                 .totalActualAmount(BigDecimal.valueOf(1000.00))
                 .isMultiFiscalYearProj(true)
+                .primaryObjectiveTypeCode(objectiveTypeCodeEntity)
                 .revisionCount(1)
                 .createUser("tester")
                 .createDate(new Date())
@@ -222,6 +226,20 @@ class ProjectEntityTest {
                 .hasSize(1)
                 .anyMatch(violation ->
                         violation.getPropertyPath().toString().equals("updateDate") &&
+                                violation.getMessage().equals("must not be null"));
+    }
+
+    @Test
+    void testPrimaryObjectiveTypeCode_IsNull() {
+        ProjectEntity project = createValidProjectEntity();
+        project.setPrimaryObjectiveTypeCode(null);
+
+        Set<ConstraintViolation<ProjectEntity>> violations = validator.validate(project);
+
+        assertThat(violations)
+                .hasSize(1)
+                .anyMatch(violation ->
+                        violation.getPropertyPath().toString().equals("primaryObjectiveTypeCode") &&
                                 violation.getMessage().equals("must not be null"));
     }
 
