@@ -856,7 +856,12 @@
               "path": "scripts/01_00_09/00/dml/app_wf1_prev.dml.reporting_period_code.sql"
             }
           },
-
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_09/00/ddl/wfprev.ddl.modify_activity_unique_key_constraint.sql"
+            }
+          }
         ],
         "rollback": [
           { "sql": "DROP TABLE wfprev.activity_progress_audit" },
