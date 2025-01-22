@@ -44,6 +44,17 @@ jobs:
       - run: npm install
         working-directory: client/wfprev-war/src/main/angular
 
+      - name: Check if @types/leaflet.markercluster is installed
+        run: |
+          if [ -d "node_modules/@types/leaflet.markercluster" ]; then
+            echo "@types/leaflet.markercluster is installed.";
+            ls -R node_modules/@types/leaflet.markercluster;
+          else
+            echo "@types/leaflet.markercluster is NOT installed.";
+            exit 1;
+          fi
+        working-directory: client/wfprev-war/src/main/angular
+
       # Run unit tests and generate code coverage      
       - run: npm run test -- --watch=false --code-coverage
         working-directory: client/wfprev-war/src/main/angular
