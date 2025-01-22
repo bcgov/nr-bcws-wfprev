@@ -49,7 +49,13 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'         
+          node-version: '20' 
+          
+      - name: Add .npmrc file
+        run: echo -e $NPMRC > ~/.npmrc    
+
+      - name: Install Angular CLI globally
+        run: npm install -g @angular/cli
      
       - name: Clear cache
         working-directory: ./client/wfprev-war/src/main/angular
@@ -67,7 +73,7 @@ jobs:
             echo "No coverage directory found. Skipping deletion."
           fi
 
-      - name: Install dependencies and Angular CLI
+      - name: Install dependencies
         working-directory: ./client/wfprev-war/src/main/angular
         run: npm install
 
