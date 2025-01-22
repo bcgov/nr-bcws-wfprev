@@ -1,0 +1,196 @@
+import { TestBed } from '@angular/core/testing';
+import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { AppConfigService } from 'src/app/services/app-config.service';
+import { TokenService } from 'src/app/services/token.service';
+import { Project } from 'src/app/components/models';
+import { ProjectService } from 'src/app/services/project-services';
+
+describe('ProjectService', () => {
+  let service: ProjectService;
+  let httpMock: HttpTestingController;
+  let mockAppConfigService: jasmine.SpyObj<AppConfigService>;
+  let mockTokenService: jasmine.SpyObj<TokenService>;
+
+  const mockConfig = {
+    rest: {
+      wfprev: 'http://mock-api.com'
+    },
+    application: {
+      lazyAuthenticate: true,
+      enableLocalStorageToken: true,
+      localStorageTokenKey: 'oauth',
+      allowLocalExpiredToken: false,
+      baseUrl: 'http://mock-base-url.com',
+      acronym: 'TEST', // Add a mock acronym
+      version: '1.0.0', // Add a mock version
+      environment: 'test', // Add a mock environment
+    },
+    webade: {
+      oauth2Url: 'http://mock-oauth-url.com',
+      clientId: 'mock-client-id',
+      authScopes: 'mock-scope',
+      checkTokenUrl: 'http://mock-check-token-url.com',
+      enableCheckToken: false,
+    }
+  };
+  
+  
+
+  beforeEach(() => {
+    mockAppConfigService = jasmine.createSpyObj('AppConfigService', ['getConfig']);
+    mockTokenService = jasmine.createSpyObj('TokenService', ['getOauthToken']);
+
+    mockAppConfigService.getConfig.and.returnValue(mockConfig);
+    mockTokenService.getOauthToken.and.returnValue('mock-token');
+
+    TestBed.configureTestingModule({
+      imports: [HttpClientTestingModule],
+      providers: [
+        ProjectService,
+        { provide: AppConfigService, useValue: mockAppConfigService },
+        { provide: TokenService, useValue: mockTokenService },
+      ]
+    });
+
+    service = TestBed.inject(ProjectService);
+    httpMock = TestBed.inject(HttpTestingController);
+  });
+
+  afterEach(() => {
+    httpMock.verify();
+  });
+
+  it('should fetch projects', () => {
+    const mockProjects = [{ projectName: 'Project 1' }];
+    service.fetchProjects().subscribe((projects) => {
+      expect(projects).toEqual(mockProjects);
+    });
+
+    const req = httpMock.expectOne('http://mock-api.com/wfprev-api/projects');
+    expect(req.request.method).toBe('GET');
+    expect(req.request.headers.get('Authorization')).toBe('Bearer mock-token');
+    req.flush(mockProjects);
+  });
+
+  it('should create a project', () => {
+    const mockProject = { projectName: 'New Project' };
+    service.createProject(mockProject).subscribe((response) => {
+      expect(response).toEqual(mockProject);
+    });
+
+    const req = httpMock.expectOne('http://mock-api.com/wfprev-api/projects');
+    expect(req.request.method).toBe('POST');
+    expect(req.request.headers.get('Authorization')).toBe('Bearer mock-token');
+    expect(req.request.body).toEqual(mockProject);
+    req.flush(mockProject);
+  });
+
+  it('should fetch project by project GUID', () => {
+    const mockProject = { projectName: 'Project 1' };
+    const projectGuid = '12345';
+    service.getProjectByProjectGuid(projectGuid).subscribe((project) => {
+      expect(project).toEqual(mockProject);
+    });
+
+    const req = httpMock.expectOne(`http://mock-api.com/wfprev-api/projects/${projectGuid}`);
+    expect(req.request.method).toBe('GET');
+    expect(req.request.headers.get('Authorization')).toBe('Bearer mock-token');
+    req.flush(mockProject);
+  });
+
+  it('should update a project', () => {
+    const projectGuid = '12345';
+    const updatedProject: Project = {
+        projectName: 'Updated Project',
+        bcParksRegionOrgUnitId: 1,
+        bcParksSectionOrgUnitId: 2,
+        closestCommunityName: 'Community',
+        fireCentreOrgUnitId: 3,
+        isMultiFiscalYearProj: false,
+        programAreaGuid: 'program-guid',
+        projectDescription: 'Description',
+        projectLead: 'Lead',
+        projectLeadEmailAddress: 'email@example.com',
+        projectNumber: 100,
+        siteUnitName: 'Site Unit',
+        totalActualAmount: 1000,
+        totalAllocatedAmount: 500,
+        totalFundingRequestAmount: 200,
+        totalPlannedCostPerHectare: 10,
+        totalPlannedProjectSizeHa: 20,
+        forestDistrictOrgUnitId: 0,
+        forestRegionOrgUnitId: 0
+    };
+
+    service.updateProject(projectGuid, updatedProject).subscribe((response) => {
+      expect(response).toEqual(updatedProject);
+    });
+
+    const req = httpMock.expectOne(`http://mock-api.com/wfprev-api/projects/${projectGuid}`);
+    expect(req.request.method).toBe('PUT');
+    expect(req.request.headers.get('Authorization')).toBe('Bearer mock-token');
+    expect(req.request.body).toEqual(updatedProject);
+    req.flush(updatedProject);
+  });
+
+  it('should handle errors when fetching projects', () => {
+    service.fetchProjects().subscribe({
+      next: () => fail('Should have failed with an error'),
+      error: (error) => {
+        expect(error.message).toBe('Failed to fetch projects');
+      }
+    });
+
+    const req = httpMock.expectOne('http://mock-api.com/wfprev-api/projects');
+    expect(req.request.method).toBe('GET');
+    req.flush('Error', { status: 500, statusText: 'Server Error' });
+  });
+
+  it('should handle errors when fetching project details', () => {
+    const projectGuid = '12345';
+    service.getProjectByProjectGuid(projectGuid).subscribe({
+      next: () => fail('Should have failed with an error'),
+      error: (error) => {
+        expect(error.message).toBe('Failed to fetch project details');
+      }
+    });
+
+    const req = httpMock.expectOne(`http://mock-api.com/wfprev-api/projects/${projectGuid}`);
+    req.flush('Error', { status: 500, statusText: 'Server Error' });
+  });
+
+  it('should handle errors when updating a project', () => {
+    const projectGuid = '12345';
+    const updatedProject: Project = {
+        projectName: 'Updated Project',
+        bcParksRegionOrgUnitId: 1,
+        bcParksSectionOrgUnitId: 2,
+        closestCommunityName: 'Community',
+        fireCentreOrgUnitId: 3,
+        isMultiFiscalYearProj: false,
+        programAreaGuid: 'program-guid',
+        projectDescription: 'Description',
+        projectLead: 'Lead',
+        projectLeadEmailAddress: 'email@example.com',
+        projectNumber: 100,
+        siteUnitName: 'Site Unit',
+        totalActualAmount: 1000,
+        totalAllocatedAmount: 500,
+        totalFundingRequestAmount: 200,
+        totalPlannedCostPerHectare: 10,
+        totalPlannedProjectSizeHa: 20,
+        forestDistrictOrgUnitId: 0,
+        forestRegionOrgUnitId: 0
+    };
+
+    service.updateProject(projectGuid, updatedProject).subscribe({
+      next: () => fail('Should have failed with an error'),
+      error: (error) => {
+        expect(error.message).toBe('Failed to update project');
+      }
+    });
+
+    const req = httpMock.expectOne(`http://mock-api.com/wfprev-api/projects/${projectGuid}`);
+    req.flush('Error', { status: 500, statusText: 'Server Error' });
+  });
+});
