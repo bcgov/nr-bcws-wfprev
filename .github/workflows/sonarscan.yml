@@ -50,14 +50,14 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'         
-          cache: 'yarn'
-          cache-dependency-path: './client/wfprev-war/src/main/angular/yarn.lock'
+          cache: 'npm'
+          cache-dependency-path: './client/wfprev-war/src/main/angular/package-lock.json'
      
       - name: Clear cache
         working-directory: ./client/wfprev-war/src/main/angular
         run: |
           rm -rf node_modules
-          yarn cache clean
+          npm cache clean --force
 
       - name: Delete existing coverage folder
         working-directory: ./client/wfprev-war/src/main/angular
@@ -77,12 +77,12 @@ jobs:
       - name: Install dependencies and Angular CLI
         working-directory: ./client/wfprev-war/src/main/angular
         run: |
-          yarn install
-          yarn global add @angular/cli
+          npm install
+          npm install -g @angular/cli
 
       - name: Run client tests with coverage
         working-directory: ./client/wfprev-war/src/main/angular
-        run: $(yarn global bin)/ng test --no-watch --code-coverage
+        run: ng test --no-watch --code-coverage
      
       - name: Build, Test, and Analyze
         run: |
