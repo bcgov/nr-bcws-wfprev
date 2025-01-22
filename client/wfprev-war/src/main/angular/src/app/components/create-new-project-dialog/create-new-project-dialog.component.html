@@ -95,6 +95,26 @@
             </div>
           </div>
         </div>
+        <div class="form-row">
+          <div class="form-field">
+            <label>Primary Objective<span class="required">*</span></label>
+            <select formControlName="primaryObjective">
+              <option value="">select...</option>
+              <option *ngFor="let type of objectiveTypes" [value]="type.objectiveTypeCode">{{ type.description }}</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <label>Secondary Objective</label>
+            <select formControlName="secondaryObjective">
+              <option value="">select...</option>
+              <option *ngFor="let type of objectiveTypes" [value]="type.objectiveTypeCode">{{ type.description }}</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <label>Secondary Objective Rationale</label>
+            <input type="text" formControlName="secondaryObjectiveRationale" placeholder="Input..." class="project-input"/>
+          </div>
+        </div>
       </div>
 
     <div class="footer">
