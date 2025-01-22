@@ -147,7 +147,6 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
       { name: 'bcParksRegionCodes', embeddedKey: 'bcParksRegionCode' },
       { name: 'bcParksSectionCodes', embeddedKey: 'bcParksSectionCode' },
       { name: 'objectiveTypeCodes', embeddedKey: 'objectiveTypeCode' },
-
     ];
   
     codeTables.forEach((table) => {
