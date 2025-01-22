@@ -50,14 +50,14 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'         
-          cache: 'npm'
-          cache-dependency-path: './client/wfprev-war/src/main/angular/package-lock.json'
+          cache: 'yarn'
+          cache-dependency-path: './client/wfprev-war/src/main/angular/yarn.lock'
      
       - name: Clear cache
         working-directory: ./client/wfprev-war/src/main/angular
         run: |
           rm -rf node_modules
-          npm cache clean --force
+          yarn cache clean
 
       - name: Delete existing coverage folder
         working-directory: ./client/wfprev-war/src/main/angular
@@ -69,31 +69,15 @@ jobs:
             echo "No coverage directory found. Skipping deletion."
           fi
 
-      # Use the NPMRC secret to set up npm authentication
-      - name: Add .npmrc file
-        working-directory: ./client/wfprev-war/src/main/angular
-        run: echo -e $NPMRC > ~/.npmrc
-
       - name: Install dependencies and Angular CLI
         working-directory: ./client/wfprev-war/src/main/angular
         run: |
-          npm install
-          npm install -g @angular/cli
-
-      - name: Check if @types/leaflet.markercluster is installed
-        run: |
-          if [ -d "node_modules/@types/leaflet.markercluster" ]; then
-            echo "@types/leaflet.markercluster is installed.";
-            ls -R node_modules/@types/leaflet.markercluster;
-          else
-            echo "@types/leaflet.markercluster is NOT installed.";
-            exit 1;
-          fi
-        working-directory: client/wfprev-war/src/main/angular
+          yarn install
+          yarn global add @angular/cli
 
       - name: Run client tests with coverage
         working-directory: ./client/wfprev-war/src/main/angular
-        run: ng test --no-watch --code-coverage
+        run: $(yarn global bin)/ng test --no-watch --code-coverage
      
       - name: Build, Test, and Analyze
         run: |
