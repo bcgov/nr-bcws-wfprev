@@ -813,6 +813,64 @@
           }
         ]
       }
+    },
+    {
+      "changeSet": {
+        "id": "01_00_09_00",
+        "author": "hsaldyga",
+        "tagDatabase": { "tag" : "version_01_00_09_00" },
+        "changes": [
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_09/00/ddl/WFPREV.reporting_period_code.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_09/00/ddl/WFPREV.project_plan_fiscal_perf.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_09/00/ddl/WFPREV.project_plan_fiscal_perf_audit.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_09/00/ddl/WFPREV.activity_progress.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_09/00/ddl/WFPREV.activity_progress_audit.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_09/00/dml/app_wf1_prev.dml.reporting_period_code.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_09/00/ddl/wfprev.ddl.modify_activity_unique_key_constraint.sql"
+            }
+          }
+        ],
+        "rollback": [
+          { "sql": "DROP TABLE wfprev.activity_progress_audit" },
+          { "sql": "DROP TABLE wfprev.activity_progress" },
+          { "sql": "DROP TABLE wfprev.project_plan_fiscal_perf_audit" },
+          { "sql": "DROP TABLE wfprev.project_plan_fiscal_perf" },
+          { "sql": "DROP TABLE wfprev.reporting_period_code" }
+        ]
+      }
     }
   ] 
 }
