@@ -101,12 +101,6 @@
           "builder": "@angular-devkit/build-angular:karma",
           "options": {
             "codeCoverage": true,
-            "codeCoverageExclude": [
-              "src/app/app.module.ts",
-              "src/app/app.routing.ts",
-              "src/app/app.component.ts",
-              "src/app/components/list-panel/projects-list/projects-list.component.ts"
-            ],
             "sourceMap": true,
             "main": "src/test.ts",
             "polyfills": "src/polyfills.ts",
