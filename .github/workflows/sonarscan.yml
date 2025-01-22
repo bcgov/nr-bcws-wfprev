@@ -53,7 +53,7 @@ jobs:
 
       - name: Add .npmrc file
         working-directory: ./client/wfprev-war/src/main/angular
-        run: echo "${{ secrets.NPMRC }}" > ~/.npmrc
+        run: echo -e $NPMRC > ~/.npmrc
         
       - name: Debug .npmrc
         run: cat ~/.npmrc 
