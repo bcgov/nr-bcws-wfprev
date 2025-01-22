@@ -69,6 +69,18 @@ class ObjectiveTypeCodeResourceAssemblerTest {
         assertTrue(collectionModel.getLinks().hasLink("self"));
     }
 
+    @Test
+    void testToNullEntity_Success() {
+        // Arrange
+        ObjectiveTypeCodeModel model = null;
+
+        // Act
+        ObjectiveTypeCodeEntity entity = assembler.toEntity(model);
+
+        // Assert
+        assertNull(entity);
+    }
+
     private ObjectiveTypeCodeEntity createTestEntity() {
         ObjectiveTypeCodeEntity entity = new ObjectiveTypeCodeEntity();
         entity.setObjectiveTypeCode("Code1");

@@ -19,19 +19,23 @@ public class ObjectiveTypeCodeResourceAssembler extends RepresentationModelAssem
         super(CodesController.class, ObjectiveTypeCodeModel.class);
     }
 
-    public ObjectiveTypeCodeEntity toEntity(ObjectiveTypeCodeModel resource) {
+    public ObjectiveTypeCodeEntity toEntity(ObjectiveTypeCodeModel model) {
+        if (model == null) {
+            return null;
+        }
+
         ObjectiveTypeCodeEntity entity = new ObjectiveTypeCodeEntity();
 
-        entity.setObjectiveTypeCode(resource.getObjectiveTypeCode());
-        entity.setDescription(resource.getDescription());
-        entity.setDisplayOrder(resource.getDisplayOrder());
-        entity.setEffectiveDate(resource.getEffectiveDate());
-        entity.setExpiryDate(resource.getExpiryDate());
-        entity.setRevisionCount(resource.getRevisionCount());
-        entity.setCreateUser(resource.getCreateUser());
-        entity.setCreateDate(resource.getCreateDate());
-        entity.setUpdateUser(resource.getUpdateUser());
-        entity.setUpdateDate(resource.getUpdateDate());
+        entity.setObjectiveTypeCode(model.getObjectiveTypeCode());
+        entity.setDescription(model.getDescription());
+        entity.setDisplayOrder(model.getDisplayOrder());
+        entity.setEffectiveDate(model.getEffectiveDate());
+        entity.setExpiryDate(model.getExpiryDate());
+        entity.setRevisionCount(model.getRevisionCount());
+        entity.setCreateUser(model.getCreateUser());
+        entity.setCreateDate(model.getCreateDate());
+        entity.setUpdateUser(model.getUpdateUser());
+        entity.setUpdateDate(model.getUpdateDate());
 
         return entity;
     }
