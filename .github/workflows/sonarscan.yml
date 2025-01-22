@@ -61,6 +61,7 @@ jobs:
       - name: Clear cache
         working-directory: ./client/wfprev-war/src/main/angular
         run: |
+          rm -f package-lock.json
           rm -rf node_modules
           npm cache clean --force
 
