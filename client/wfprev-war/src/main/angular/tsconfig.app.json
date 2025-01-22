@@ -3,7 +3,13 @@
     "extends": "./tsconfig.json",
     "compilerOptions": {
       "outDir": "./out-tsc/app",
-      "types": []
+      "typeRoots": [
+      "node_modules/@types"
+    ],
+    "types": [
+      "leaflet",
+      "leaflet.markercluster"
+    ]
     },
     "files": [
       "src/main.ts",

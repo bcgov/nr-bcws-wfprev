@@ -23,13 +23,6 @@
       "dom"
     ],
     "useDefineForClassFields": false,
-    "typeRoots": [
-      "node_modules/@types"
-    ],
-    "types": [
-      "leaflet",
-      "leaflet.markercluster"
-    ]
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,
