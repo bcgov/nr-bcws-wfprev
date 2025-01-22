@@ -236,9 +236,9 @@ public class ProjectResourceAssembler extends RepresentationModelAssemblerSuppor
         entity.setProjectTypeCode(nonNullOrDefault(toProjectTypeCodeEntity(model.getProjectTypeCode()), existingEntity.getProjectTypeCode()));
         entity.setGeneralScopeCode(nonNullOrDefault(toGeneralScopeCodeEntity(model.getGeneralScopeCode()), existingEntity.getGeneralScopeCode()));
         entity.setProjectNumber(existingEntity.getProjectNumber());
-        entity.setPrimaryObjectiveTypeCode(nonNullOrDefault(toObjectiveTypeCodeEntity(model.getPrimaryObjectiveTypeCode()), existingEntity.getPrimaryObjectiveTypeCode()));
-        entity.setSecondaryObjectiveTypeCode(nonNullOrDefault(toObjectiveTypeCodeEntity(model.getSecondaryObjectiveTypeCode()), existingEntity.getSecondaryObjectiveTypeCode()));
-        entity.setTertiaryObjectiveTypeCode(nonNullOrDefault(toObjectiveTypeCodeEntity(model.getTertiaryObjectiveTypeCode()), existingEntity.getTertiaryObjectiveTypeCode()));
+        entity.setPrimaryObjectiveTypeCode(nonNullOrDefault(toObjectiveTypeCodeEntity(model.getPrimaryObjectiveTypeCode() != null ? model.getPrimaryObjectiveTypeCode() : null), existingEntity.getPrimaryObjectiveTypeCode()));
+        entity.setSecondaryObjectiveTypeCode(nonNullOrDefault(toObjectiveTypeCodeEntity(model.getSecondaryObjectiveTypeCode() != null ? model.getSecondaryObjectiveTypeCode() : null), existingEntity.getSecondaryObjectiveTypeCode()));
+        entity.setTertiaryObjectiveTypeCode(nonNullOrDefault(toObjectiveTypeCodeEntity(model.getTertiaryObjectiveTypeCode() != null ? model.getTertiaryObjectiveTypeCode() : null), existingEntity.getTertiaryObjectiveTypeCode()));
 
         log.error("Updated entity: " + entity);
         return entity;
