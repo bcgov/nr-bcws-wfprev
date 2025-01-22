@@ -88,27 +88,27 @@
 
       <div class="form-item">
         <label>Primary Objective<span class="required">*</span></label>
-        <select id="fundingStream" formControlName="primaryObjective">
-          <option value="fundingStream1">Primary Objective1</option>
-          <option value="fundingStream2">Primary Objective2</option>
-          <option value="fundingStream3">Primary Objective3</option>
+        <select id="fundingStream" formControlName="primaryObjectiveTypeCode">
+          <option *ngFor="let item of objectiveTypeCode" [value]="item.objectiveTypeCode">
+            {{ item.description }}
+          </option>
         </select>
       </div>
 
       <div class="form-item">
         <label>Secondary Objective</label>
-        <select id="fundingStream" formControlName="secondaryObjective">
-          <option value="fundingStream1">Secondary Objective1</option>
-          <option value="fundingStream2">Secondary Objective2</option>
-          <option value="fundingStream3">Secondary Objective3</option>
+        <select id="fundingStream" formControlName="secondaryObjectiveTypeCode">
+          <option *ngFor="let item of objectiveTypeCode" [value]="item.objectiveTypeCode">
+            {{ item.description }}
+          </option>
         </select>
       </div>
 
       <div class="form-item secondary-rational">
-        <label for="totalFundingRequestAmount">Secondary Objective Rationale</label>
+        <label for="secondaryObjectiveRationale">Secondary Objective Rationale</label>
         <input
-          type="number"
-          id="totalFundingRequestAmount"
+          type="text"
+          id="secondaryObjectiveRationale"
           formControlName="secondaryObjectiveRationale"
           placeholder="Enter Secondary Objective Rationale"
         />

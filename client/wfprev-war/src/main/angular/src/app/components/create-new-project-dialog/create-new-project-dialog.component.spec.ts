@@ -75,6 +75,9 @@ describe('CreateNewProjectDialogComponent', () => {
       projectLeadEmail: '',
       siteUnitName: '',
       closestCommunity: '',
+      primaryObjective : '',
+      secondaryObjective: '',
+      secondaryObjectiveRationale: '',
     });
   });
 
@@ -149,6 +152,7 @@ describe('CreateNewProjectDialogComponent', () => {
       projectLeadEmail: 'john.doe@example.com', // Optional field
       siteUnitName: 'Unit 1', // Optional field
       closestCommunity: 'Community 1', // Required field
+      primaryObjective: 'WRR' // Required field
     });
   
     // Call the function to create a project
@@ -251,6 +255,7 @@ describe('CreateNewProjectDialogComponent', () => {
       projectLeadEmail: 'john.doe@example.com',
       siteUnitName: 'Unit 1',
       closestCommunity: 'Community 1',
+      primaryObjective: 'WRR'
     });
   
     mockProjectService.createProject.and.returnValue(of({}));
@@ -278,6 +283,7 @@ describe('CreateNewProjectDialogComponent', () => {
       siteUnitName: 'Unit 1',
       closestCommunity: 'Community 1',
       latLong: '70.123456, -123.332177', // Invalid latitude
+      primaryObjective: 'WRR'
     });
   
     component.onCreate();
@@ -305,6 +311,7 @@ describe('CreateNewProjectDialogComponent', () => {
       siteUnitName: 'Unit 1',
       closestCommunity: 'Community 1',
       latLong: '48.3, -139', // Boundary value for BC
+      primaryObjective: 'WRR'
     });
   
     mockProjectService.createProject.and.returnValue(of({}));
@@ -335,6 +342,7 @@ describe('CreateNewProjectDialogComponent', () => {
       siteUnitName: 'Unit 1',
       closestCommunity: 'Community 1',
       latLong: 'invalid, format', // Invalid latLong format
+      primaryObjective: 'WRR'
     });
   
     component.onCreate();
@@ -386,6 +394,7 @@ describe('CreateNewProjectDialogComponent', () => {
       bcParksRegion: 3,
       bcParksSection: 4,
       closestCommunity: 'Community 1',
+      primaryObjective: 'WRR'
     });
   
     mockProjectService.createProject.and.returnValue(of({}));
@@ -404,6 +413,17 @@ describe('CreateNewProjectDialogComponent', () => {
   
     const errorMessage = component.getErrorMessage('projectName');
   
+    expect(errorMessage).toBeNull();
+  });
+
+  it('should return null if there are no errors on the form control', () => {
+    // Arrange: Ensure no errors are set for the 'projectName' control
+    component.projectForm.get('projectName')?.setErrors(null); // Clear errors
+    
+    // Act: Call the getErrorMessage method
+    const errorMessage = component.getErrorMessage('projectName');
+    
+    // Assert: Expect the method to return null
     expect(errorMessage).toBeNull();
   });
   
@@ -450,6 +470,7 @@ describe('CreateNewProjectDialogComponent', () => {
       projectLeadEmail: 'john.doe@example.com',
       siteUnitName: 'Unit 1',
       closestCommunity: 'Community 1',
+      primaryObjective: 'WRR'
     });
   
     // Act: Call the method to create a project
