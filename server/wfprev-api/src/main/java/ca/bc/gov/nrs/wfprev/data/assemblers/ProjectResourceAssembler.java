@@ -51,6 +51,9 @@ public class ProjectResourceAssembler extends RepresentationModelAssemblerSuppor
         if (resource.getTertiaryObjectiveTypeCode() != null) {
             entity.setTertiaryObjectiveTypeCode(toObjectiveTypeCodeEntity(resource.getTertiaryObjectiveTypeCode()));
         }
+        if (resource.getSecondaryObjectiveRationale() != null) {
+            entity.setSecondaryObjectiveRationale(resource.getSecondaryObjectiveRationale());
+        }
         entity.setForestRegionOrgUnitId(resource.getForestRegionOrgUnitId());
         entity.setForestDistrictOrgUnitId(resource.getForestDistrictOrgUnitId());
         entity.setFireCentreOrgUnitId(resource.getFireCentreOrgUnitId());
@@ -108,6 +111,9 @@ public class ProjectResourceAssembler extends RepresentationModelAssemblerSuppor
         }
         if (entity.getTertiaryObjectiveTypeCode() != null) {
             resource.setTertiaryObjectiveTypeCode(toObjectiveTypeCodeModel(entity.getTertiaryObjectiveTypeCode()));
+        }
+        if (entity.getSecondaryObjectiveRationale() != null) {
+            resource.setSecondaryObjectiveRationale(entity.getSecondaryObjectiveRationale());
         }
         resource.setProgramAreaGuid(entity.getProgramAreaGuid().toString());
         resource.setForestRegionOrgUnitId(entity.getForestRegionOrgUnitId());
@@ -236,10 +242,13 @@ public class ProjectResourceAssembler extends RepresentationModelAssemblerSuppor
         entity.setProjectTypeCode(nonNullOrDefault(toProjectTypeCodeEntity(model.getProjectTypeCode()), existingEntity.getProjectTypeCode()));
         entity.setGeneralScopeCode(nonNullOrDefault(toGeneralScopeCodeEntity(model.getGeneralScopeCode()), existingEntity.getGeneralScopeCode()));
         entity.setProjectNumber(existingEntity.getProjectNumber());
-        entity.setPrimaryObjectiveTypeCode(nonNullOrDefault(toObjectiveTypeCodeEntity(model.getPrimaryObjectiveTypeCode() != null ? model.getPrimaryObjectiveTypeCode() : null), existingEntity.getPrimaryObjectiveTypeCode()));
-        entity.setSecondaryObjectiveTypeCode(nonNullOrDefault(toObjectiveTypeCodeEntity(model.getSecondaryObjectiveTypeCode() != null ? model.getSecondaryObjectiveTypeCode() : null), existingEntity.getSecondaryObjectiveTypeCode()));
-        entity.setTertiaryObjectiveTypeCode(nonNullOrDefault(toObjectiveTypeCodeEntity(model.getTertiaryObjectiveTypeCode() != null ? model.getTertiaryObjectiveTypeCode() : null), existingEntity.getTertiaryObjectiveTypeCode()));
-
+        entity.setPrimaryObjectiveTypeCode(nonNullOrDefault(toObjectiveTypeCodeEntity(model.getPrimaryObjectiveTypeCode() != null ? 
+            model.getPrimaryObjectiveTypeCode() : null), existingEntity.getPrimaryObjectiveTypeCode()));
+        entity.setSecondaryObjectiveTypeCode(nonNullOrDefault(toObjectiveTypeCodeEntity(model.getSecondaryObjectiveTypeCode() != null ? 
+            model.getSecondaryObjectiveTypeCode() : null), existingEntity.getSecondaryObjectiveTypeCode()));
+        entity.setTertiaryObjectiveTypeCode(nonNullOrDefault(toObjectiveTypeCodeEntity(model.getTertiaryObjectiveTypeCode() != null ? 
+            model.getTertiaryObjectiveTypeCode() : null), existingEntity.getTertiaryObjectiveTypeCode()));
+        entity.setSecondaryObjectiveRationale(nonNullOrDefault(model.getSecondaryObjectiveRationale(), existingEntity.getSecondaryObjectiveRationale()));
         log.error("Updated entity: " + entity);
         return entity;
     }

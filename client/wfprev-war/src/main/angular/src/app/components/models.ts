@@ -35,4 +35,11 @@ export interface Project {
   updateUser?: string;
   latitude?: number;
   longitude?: number;
+  primaryObjectiveTypeCode?: {
+    objectiveTypeCode: string;
+  };
+  secondaryObjectiveTypeCode?: {
+    objectiveTypeCode: string;
+  }
+  secondaryObjectiveRationale? :string;
 }
