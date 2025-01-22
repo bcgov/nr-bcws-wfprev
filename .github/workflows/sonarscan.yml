@@ -50,15 +50,16 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20' 
-          
+
+      - name: Install Angular CLI globally
+        run: npm install -g @angular/cli
+
       - name: Add .npmrc file
+        working-directory: ./client/wfprev-war/src/main/angular
         run: echo "${{ secrets.NPMRC }}" > ~/.npmrc
         
       - name: Debug .npmrc
         run: cat ~/.npmrc 
-
-      - name: Install Angular CLI globally
-        run: npm install -g @angular/cli
      
       - name: Clear cache
         working-directory: ./client/wfprev-war/src/main/angular
