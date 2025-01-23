@@ -249,6 +249,7 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
       programAreaGuid: data.programAreaGuid || '',
       projectLead: data.projectLead,
       projectLeadEmailAddress: data.projectLeadEmailAddress,
+      projectDescription: data.projectDescription,
       siteUnitName: data.siteUnitName,
       closestCommunityName: data.closestCommunityName,
       forestRegionOrgUnitId: data.forestRegionOrgUnitId,
