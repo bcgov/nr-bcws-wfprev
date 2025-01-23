@@ -48,6 +48,7 @@ class CodesControllerTest {
         testGetGeneralScopeCodes();
         testGetProjectTypeCodes();
         testGetObjectiveTypeCodes();
+        testGetActivityStatusCodes();
     }
 
     void testGetForestAreaCodes() throws Exception {
@@ -130,6 +131,26 @@ class CodesControllerTest {
                 .andExpect(status().isOk());
     }
 
+    void testGetActivityStatusCodes() throws Exception {
+        String exampleId1 = UUID.randomUUID().toString();
+        String exampleId2 = UUID.randomUUID().toString();
+
+        ActivityStatusCodeModel asc1 = new ActivityStatusCodeModel();
+        asc1.setActivityStatusCode(exampleId1);
+
+        ActivityStatusCodeModel asc2 = new ActivityStatusCodeModel();
+        asc1.setActivityStatusCode(exampleId2);
+
+        List<ActivityStatusCodeModel> ascList = Arrays.asList(asc1, asc2);
+        CollectionModel<ActivityStatusCodeModel> ascModel = CollectionModel.of(ascList);
+
+        when(codesService.getAllActivityStatusCodes()).thenReturn(ascModel);
+
+        mockMvc.perform(get("/codes/" + CodeTables.ACTIVITY_STATUS_CODE)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
+
     @Test
     @WithMockUser
     void testGetCodesById() throws Exception {
@@ -172,6 +193,16 @@ class CodesControllerTest {
         mockMvc.perform(get("/codes/{codeTable}/{id}", CodeTables.OBJECTIVE_TYPE_CODE, otID)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
+
+        String asID = UUID.randomUUID().toString();
+        ActivityStatusCodeModel activityStatusCode = new ActivityStatusCodeModel();
+        activityStatusCode.setActivityStatusCode(asID);
+
+        when(codesService.getActivityStatusCodeById(asID)).thenReturn(activityStatusCode);
+
+        mockMvc.perform(get("/codes/{codeTable}/{id}", CodeTables.ACTIVITY_STATUS_CODE, asID)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
     }
 
     @Test
@@ -184,6 +215,7 @@ class CodesControllerTest {
         when(codesService.getGeneralScopeCodeById(nonExistentId)).thenReturn(null);
         when(codesService.getProjectTypeCodeById(nonExistentId)).thenReturn(null);
         when(codesService.getObjectiveTypeCodeById(nonExistentId)).thenReturn(null);
+        when(codesService.getActivityStatusCodeById(nonExistentId)).thenReturn(null);
 
         // Test valid code tables with non-existent ID
         mockMvc.perform(get("/codes/{codeTable}/{id}", "forestAreaCodes", nonExistentId)
@@ -202,6 +234,11 @@ class CodesControllerTest {
                 .andExpect(status().isNotFound());
 
         mockMvc.perform(get("/codes/{codeTable}/{id}", "objectTypeCodes", nonExistentId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("If-Match", "\"1\""))
+                .andExpect(status().isNotFound());
+
+        mockMvc.perform(get("/codes/{codeTable}/{id}", "activityStatusCodes", nonExistentId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("If-Match", "\"1\""))
                 .andExpect(status().isNotFound());
