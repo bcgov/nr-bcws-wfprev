@@ -36,6 +36,8 @@ public class CodesService implements CommonService {
     private final ObjectiveTypeCodeRepository objectiveTypeCodeRepository;
     private final ProjectPlanStatusCodeResourceAssembler projectPlanStatusCodeResourceAssembler;
     private final ProjectPlanStatusCodeRepository projectPlanStatusCodeRepository;
+    private final ActivityStatusCodeResourceAssembler activityStatusCodeResourceAssembler;
+    private final ActivityStatusCodeRepository activityStatusCodeRepository;
 
 
     public CodesService(ForestAreaCodeRepository forestAreaCodeRepository, ForestAreaCodeResourceAssembler forestAreaCodeResourceAssembler,
@@ -43,7 +45,8 @@ public class CodesService implements CommonService {
                         ProjectTypeCodeRepository projectTypeCodeRepository, ProjectTypeCodeResourceAssembler projectTypeCodeResourceAssembler, ProgramAreaRepository programAreaRepository, ProgramAreaResourceAssembler programAreaResourceAssembler,
                         ForestOrgUnitCodeRepository forestRegionCodeRepository, ForestRegionUnitCodeResourceAssembler forestRegionCodeResourceAssembler, ForestDistrictUnitCodeResourceAssembler forestDistrictUnitCodeResourceAssembler,
                         BCParksOrgUnitCodeRepository bcParksOrgUnitCodeRepository, BCParksRegionCodeResourceAssembler bcParksRegionCodeResourceAssembler, BCParksSectionCodeResourceAssembler bcParksSectionCodeResourceAssembler,
-                        ObjectiveTypeCodeResourceAssembler objectiveTypeCodeResourceAssembler, ObjectiveTypeCodeRepository objectiveTypeCodeRepository, ProjectPlanStatusCodeResourceAssembler projectPlanStatusCodeResourceAssembler, ProjectPlanStatusCodeRepository projectPlanStatusCodeRepository) {
+                        ObjectiveTypeCodeResourceAssembler objectiveTypeCodeResourceAssembler, ObjectiveTypeCodeRepository objectiveTypeCodeRepository, ProjectPlanStatusCodeResourceAssembler projectPlanStatusCodeResourceAssembler,
+                        ProjectPlanStatusCodeRepository projectPlanStatusCodeRepository, ActivityStatusCodeResourceAssembler activityStatusCodeResourceAssembler, ActivityStatusCodeRepository activityStatusCodeRepository) {
         this.forestAreaCodeRepository = forestAreaCodeRepository;
         this.forestAreaCodeResourceAssembler = forestAreaCodeResourceAssembler;
         this.generalScopeCodeRepository = generalScopeCodeRepository;
@@ -62,6 +65,8 @@ public class CodesService implements CommonService {
         this.objectiveTypeCodeRepository = objectiveTypeCodeRepository;
         this.projectPlanStatusCodeResourceAssembler = projectPlanStatusCodeResourceAssembler;
         this.projectPlanStatusCodeRepository = projectPlanStatusCodeRepository;
+        this.activityStatusCodeResourceAssembler = activityStatusCodeResourceAssembler;
+        this.activityStatusCodeRepository = activityStatusCodeRepository;
     }
 
     /**
@@ -241,6 +246,23 @@ public class CodesService implements CommonService {
     public ProjectPlanStatusCodeModel getProjectPlanStatusCodeById(String id) throws ServiceException {
         try {
             return projectPlanStatusCodeRepository.findById(id).map(projectPlanStatusCodeResourceAssembler::toModel).orElse(null);
+        } catch (Exception e) {
+            throw new ServiceException(e.getLocalizedMessage(), e);
+        }
+    }
+
+    public CollectionModel<ActivityStatusCodeModel> getAllActivityStatusCodes() throws ServiceException {
+        try {
+            List<ActivityStatusCodeEntity> entities = activityStatusCodeRepository.findAll();
+            return activityStatusCodeResourceAssembler.toCollectionModel(entities);
+        } catch (Exception e) {
+            throw new ServiceException(e.getLocalizedMessage(), e);
+        }
+    }
+
+    public ActivityStatusCodeModel getActivityStatusCodeById(String id) throws ServiceException {
+        try {
+            return activityStatusCodeRepository.findById(id).map(activityStatusCodeResourceAssembler::toModel).orElse(null);
         } catch (Exception e) {
             throw new ServiceException(e.getLocalizedMessage(), e);
         }
