@@ -117,13 +117,13 @@ jobs:
             echo "quality_gate_failed=false" >> $GITHUB_OUTPUT
           fi
 
-      # - name: Notify Slack on Failure 
-      #   if: failure() || steps.sonarcloud_quality_gate.outputs.quality_gate_failed == 'true'
-      #   uses: ravsamhq/notify-slack-action@2.5.0
-      #   with:
-      #     status: 'failure'
-      #     notification_title: "SonarScan - Failed on ${{github.ref_name}} - <${{ vars.SONARCLOUD_NEW_CODE_URL }}|View SonarCloud Failure>"
-      #     message_format: ":fire: *SonarScan* failed in <${{github.server_url}}/${{github.repository}}/${{github.ref_name}}|${{github.repository}}>"
-      #     footer: "Linked Repo <${{github.server_url}}/${{github.repository}}|${{github.repository}}> | <${{github.server_url}}/${{github.repository}}/actions/runs/${{github.run_id}}|View Failure>"
-      #   env:
-      #     SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+      - name: Notify Slack on Failure 
+        if: failure() || steps.sonarcloud_quality_gate.outputs.quality_gate_failed == 'true'
+        uses: ravsamhq/notify-slack-action@2.5.0
+        with:
+          status: 'failure'
+          notification_title: "SonarScan - Failed on ${{github.ref_name}} - <${{ vars.SONARCLOUD_NEW_CODE_URL }}|View SonarCloud Failure>"
+          message_format: ":fire: *SonarScan* failed in <${{github.server_url}}/${{github.repository}}/${{github.ref_name}}|${{github.repository}}>"
+          footer: "Linked Repo <${{github.server_url}}/${{github.repository}}|${{github.repository}}> | <${{github.server_url}}/${{github.repository}}/actions/runs/${{github.run_id}}|View Failure>"
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
