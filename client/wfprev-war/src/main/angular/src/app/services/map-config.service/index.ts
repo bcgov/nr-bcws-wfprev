@@ -6,7 +6,7 @@ import { AppConfigService } from '../app-config.service';
 
 @Injectable()
 export class MapConfigService {
-  constructor(private appConfig: AppConfigService) {}
+  constructor(private readonly appConfig: AppConfigService) {}
 
   getMapConfig(): Promise<any> {
 

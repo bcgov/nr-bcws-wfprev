@@ -5,7 +5,7 @@ export class MapService {
   private mapIndex: number = 0;
   baseMapIds: string[] = [];
   private patchPromise: Promise<any> | undefined;
-  private smkBaseUrl = `${window.location.protocol}//${window.location.host}/assets/smk/`;
+  private readonly smkBaseUrl = `${window.location.protocol}//${window.location.host}/assets/smk/`;
 
   getMapIndex(): number {
     return this.mapIndex;

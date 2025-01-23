@@ -181,6 +181,8 @@ export class ProjectsListComponent implements OnInit {
         });
       };
 
+      const self = this;
+
       // Helper function to generate random polygon points. This will be replaced by /features endpoint in API
       const generatePolygonPoints = (
         center: { latitude: number; longitude: number },
@@ -190,7 +192,8 @@ export class ProjectsListComponent implements OnInit {
         const points = [];
         for (let i = 0; i < 50; i++) {
           const angle = (i / 50) * Math.PI * 2; // Angle in radians
-          const offset = radius + Math.random() * variance - variance / 2; // Randomize radius
+          const randomFactor = self.getSecureRandomNumber(); // Secure random value
+          const offset = radius + randomFactor * variance - variance / 2; // Randomize radius
           const lat = center.latitude + offset * Math.sin(angle) / 111; // Approx 111 km per degree latitude
           const lng = center.longitude + offset * Math.cos(angle) / (111 * Math.cos(center.latitude * (Math.PI / 180)));
           points.push([lat, lng]);
@@ -270,6 +273,12 @@ export class ProjectsListComponent implements OnInit {
       // Add the cluster group to the map
       map?.$viewer?.map.addLayer(markersCluster);
     }
+  }
+
+  getSecureRandomNumber() {
+    const array = new Uint32Array(1);
+    window.crypto.getRandomValues(array);
+    return array[0] / (0xFFFFFFFF + 1); // Normalize to [0, 1)
   }
 
   // Temporary function, to be replaced with SMK layer config when /features endpoint exists in the API
