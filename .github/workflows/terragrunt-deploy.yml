@@ -13,6 +13,9 @@ on:
       IMAGE_TAG:
         required: true
         type: string
+      RUN_LIQUIBASE:
+        required: true
+        type: string
   workflow_dispatch:
     inputs:
       DEFAULT_APPLICATION_ENVIRONMENT:

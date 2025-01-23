@@ -4,17 +4,9 @@ import ca.bc.gov.nrs.wfone.common.service.api.ServiceException;
 import ca.bc.gov.nrs.wfprev.SpringSecurityAuditorAware;
 import ca.bc.gov.nrs.wfprev.common.services.CommonService;
 import ca.bc.gov.nrs.wfprev.data.assemblers.ProjectResourceAssembler;
-import ca.bc.gov.nrs.wfprev.data.entities.ForestAreaCodeEntity;
-import ca.bc.gov.nrs.wfprev.data.entities.GeneralScopeCodeEntity;
-import ca.bc.gov.nrs.wfprev.data.entities.ProjectEntity;
-import ca.bc.gov.nrs.wfprev.data.entities.ProjectStatusCodeEntity;
-import ca.bc.gov.nrs.wfprev.data.entities.ProjectTypeCodeEntity;
+import ca.bc.gov.nrs.wfprev.data.entities.*;
 import ca.bc.gov.nrs.wfprev.data.models.ProjectModel;
-import ca.bc.gov.nrs.wfprev.data.repositories.ForestAreaCodeRepository;
-import ca.bc.gov.nrs.wfprev.data.repositories.GeneralScopeCodeRepository;
-import ca.bc.gov.nrs.wfprev.data.repositories.ProjectRepository;
-import ca.bc.gov.nrs.wfprev.data.repositories.ProjectStatusCodeRepository;
-import ca.bc.gov.nrs.wfprev.data.repositories.ProjectTypeCodeRepository;
+import ca.bc.gov.nrs.wfprev.data.repositories.*;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import jakarta.validation.ConstraintViolationException;
@@ -36,6 +28,7 @@ public class ProjectService implements CommonService {
     private final ProjectTypeCodeRepository projectTypeCodeRepository;
     private final GeneralScopeCodeRepository generalScopeCodeRepository;
     private final ProjectStatusCodeRepository projectStatusCodeRepository;
+    private final ObjectiveTypeCodeRepository objectiveTypeCodeRepository;
 
 
     public ProjectService(
@@ -44,13 +37,15 @@ public class ProjectService implements CommonService {
             ForestAreaCodeRepository forestAreaCodeRepository,
             ProjectTypeCodeRepository projectTypeCodeRepository,
             GeneralScopeCodeRepository generalScopeCodeRepository,
-            ProjectStatusCodeRepository projectStatusCodeRepository) {
+            ProjectStatusCodeRepository projectStatusCodeRepository,
+            ObjectiveTypeCodeRepository objectiveTypeCodeRepository) {
         this.projectRepository = projectRepository;
         this.projectResourceAssembler = projectResourceAssembler;
         this.forestAreaCodeRepository = forestAreaCodeRepository;
         this.projectTypeCodeRepository = projectTypeCodeRepository;
         this.generalScopeCodeRepository = generalScopeCodeRepository;
         this.projectStatusCodeRepository = projectStatusCodeRepository;
+        this.objectiveTypeCodeRepository = objectiveTypeCodeRepository;
     }
 
     public CollectionModel<ProjectModel> getAllProjects() throws ServiceException {
@@ -125,6 +120,17 @@ public class ProjectService implements CommonService {
             entity.setGeneralScopeCode(loadGeneralScopeCode(resource.getGeneralScopeCode().getGeneralScopeCode()));
         }
 
+        if (resource.getPrimaryObjectiveTypeCode() != null && resource.getPrimaryObjectiveTypeCode().getObjectiveTypeCode() != null) {
+            entity.setPrimaryObjectiveTypeCode(loadObjectiveTypeCode(resource.getPrimaryObjectiveTypeCode().getObjectiveTypeCode()));
+        }
+
+        if (resource.getSecondaryObjectiveTypeCode() != null && resource.getSecondaryObjectiveTypeCode().getObjectiveTypeCode() != null) {
+            entity.setSecondaryObjectiveTypeCode(loadObjectiveTypeCode(resource.getSecondaryObjectiveTypeCode().getObjectiveTypeCode()));
+        }
+        if (resource.getTertiaryObjectiveTypeCode() != null && resource.getTertiaryObjectiveTypeCode().getObjectiveTypeCode() != null) {
+            entity.setTertiaryObjectiveTypeCode(loadObjectiveTypeCode(resource.getTertiaryObjectiveTypeCode().getObjectiveTypeCode()));
+        }
+
         String projectStatusCode1 = resource.getProjectStatusCode() != null
                 ? resource.getProjectStatusCode().getProjectStatusCode()
                 : null;
@@ -150,6 +156,12 @@ public class ProjectService implements CommonService {
         return generalScopeCodeRepository
                 .findById(generalScopeCode)
                 .orElseThrow(() -> new EntityNotFoundException("General Scope Code not found: " + generalScopeCode));
+    }
+
+    private ObjectiveTypeCodeEntity loadObjectiveTypeCode(String objectiveTypeCode) {
+        return objectiveTypeCodeRepository
+                .findById(objectiveTypeCode)
+                .orElseThrow(() -> new EntityNotFoundException("Objective Type Code not found: " + objectiveTypeCode));
     }
 
     private ProjectStatusCodeEntity loadOrSetDefaultProjectStatusCode(String projectStatusCode) {

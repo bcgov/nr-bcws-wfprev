@@ -48,6 +48,7 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
   forestDistrictCode: any[] = [];
   bcParksRegionCode: any[] = [];
   bcParksSectionCode: any[] = [];
+  objectiveTypeCode: any[] = [];
 
   constructor(
     private readonly fb: FormBuilder,
@@ -80,8 +81,8 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
       closestCommunityName: ['', [Validators.required]],
       forestRegionOrgUnitId: [''],
       forestDistrictOrgUnitId: [''],
-      primaryObjective: [''],
-      secondaryObjective: [''],
+      primaryObjectiveTypeCode: [''],
+      secondaryObjectiveTypeCode: [''],
       secondaryObjectiveRationale: [''],
       bcParksRegionOrgUnitId: [''],
       bcParksSectionOrgUnitId: [''],
@@ -145,6 +146,8 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
       { name: 'forestDistrictCodes', embeddedKey: 'forestDistrictCode' },
       { name: 'bcParksRegionCodes', embeddedKey: 'bcParksRegionCode' },
       { name: 'bcParksSectionCodes', embeddedKey: 'bcParksSectionCode' },
+      { name: 'objectiveTypeCodes', embeddedKey: 'objectiveTypeCode' },
+
     ];
   
     codeTables.forEach((table) => {
@@ -178,6 +181,9 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
         break;
       case 'bcParksSectionCode':
         this.bcParksSectionCode = data._embedded.bcParksSectionCode || [];
+        break;
+      case 'objectiveTypeCode':
+        this.objectiveTypeCode = data._embedded.objectiveTypeCode || [];
         break;
     }
   }
@@ -249,8 +255,8 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
       closestCommunityName: data.closestCommunityName,
       forestRegionOrgUnitId: data.forestRegionOrgUnitId,
       forestDistrictOrgUnitId: data.forestDistrictOrgUnitId,
-      primaryObjective: data.primaryObjective,
-      secondaryObjective: data.secondaryObjective,
+      primaryObjectiveTypeCode: data.primaryObjectiveTypeCode?.objectiveTypeCode || '',
+      secondaryObjectiveTypeCode: data.secondaryObjectiveTypeCode?.objectiveTypeCode,
       secondaryObjectiveRationale: data.secondaryObjectiveRationale,
       bcParksRegionOrgUnitId: data.bcParksRegionOrgUnitId,
       bcParksSectionOrgUnitId: data.bcParksSectionOrgUnitId,
@@ -273,7 +279,21 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
           forestAreaCode: {
             forestAreaCode: "COAST",
           },
+          primaryObjectiveTypeCode: {
+            objectiveTypeCode: this.detailsForm.get('primaryObjectiveTypeCode')?.value 
+                ? this.detailsForm.get('primaryObjectiveTypeCode')?.value 
+                : this.projectDetail.primaryObjectiveTypeCode?.objectiveTypeCode
+          },
+          tertiaryObjectiveTypeCode: {
+            objectiveTypeCode: 'FOR_HEALTH'
+          }      
         };
+        const secondaryObjectiveValue = this.detailsForm.get('secondaryObjectiveTypeCode')?.value;
+        if (secondaryObjectiveValue) {
+          updatedProject.secondaryObjectiveTypeCode = {
+            objectiveTypeCode: secondaryObjectiveValue,
+          };
+        }
         this.projectService.updateProject(this.projectGuid, updatedProject).subscribe({
           next: () => {
             this.snackbarService.open(
