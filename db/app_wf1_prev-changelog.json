@@ -918,7 +918,7 @@
           {
             "sqlFile": {
               "dbms": "postgresql", "endDelimiter": ";",
-              "path": "scripts/01_00_10/00/dml/"
+              "path": "scripts/01_00_10/00/dml/app_wf1_prev.dml.burn_impl_season_code.sql"
             }
           }
         ],
