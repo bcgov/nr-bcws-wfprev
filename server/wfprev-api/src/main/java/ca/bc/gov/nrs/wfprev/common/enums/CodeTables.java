@@ -12,4 +12,5 @@ public class CodeTables {
   public static final String BC_PARKS_SECTION_CODE = "bcParksSectionCodes";
   public static final String OBJECTIVE_TYPE_CODE = "objectiveTypeCodes";
   public static final String PROJECT_PLAN_STATUS_CODE = "projectPlanStatusCodes";
+  public static final String ACTIVITY_STATUS_CODE = "activityStatusCodes";
 }
