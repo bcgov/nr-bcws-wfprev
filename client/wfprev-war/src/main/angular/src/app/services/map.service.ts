@@ -4,7 +4,6 @@ import { Injectable } from '@angular/core';
 export class MapService {
   private mapIndex: number = 0;
   baseMapIds: string[] = [];
-  private patchPromise: Promise<any> | undefined;
   private readonly smkBaseUrl = `${window.location.protocol}//${window.location.host}/assets/smk/`;
 
   getMapIndex(): number {
@@ -54,66 +53,65 @@ export class MapService {
       });
   }
 
-  public patch(): Promise<any> {
+  public async patch(): Promise<any> {
     try {
       const mapService = this;
       const SMK = (window as any)['SMK'];
-
-        this.patchPromise = Promise.resolve()
-          .then(() => {
-            console.log('start patching SMK');
-
-            // Create a DIV for a temporary map.
-            // This map is used to ensure that SMK is completely loaded before monkey-patching
-            const temp = document.createElement('div');
-            temp.style.display = 'none';
-            temp.style.visibility = 'hidden';
-            temp.style.position = 'absolute';
-            temp.style.left = '-5000px';
-            temp.style.top = '-5000px';
-            temp.style.right = '-4000px';
-            temp.style.bottom = '-4000px';
-            document.body.appendChild(temp);
-
-            console.log('patching')
-
-            return SMK.INIT({
-              id: 999,
-              containerSel: temp,
-              baseUrl: mapService.smkBaseUrl,
-              config: 'show-tool=bespoke',
-            }).then((smk: any) => {
-              this.defineOpenStreetMapLayer();
-              smk.destroy();
-              temp?.parentElement?.removeChild(temp);
-            });
-          })
-          .then(() => {
-            SMK.TYPE.Viewer.leaflet.prototype.mapResized = () => {
-              const prototype = SMK.TYPE.Viewer.leaflet.prototype;
-              setTimeout(() => {
-                prototype.map.invalidateSize({ animate: false });
-              }, 500);
-            };
-
-            const oldInit = SMK.TYPE.Viewer.leaflet.prototype.initialize;
-            SMK.TYPE.Viewer.leaflet.prototype.initialize = function (smk: any) {
-              // Call the existing initializer
-              oldInit.apply(this, arguments);
-
-              // Set the maximum bounds that can be panned to.
-              const L = window['L'];
-              const maxBounds = L.latLngBounds([
-                L.latLng(90, -180),
-                L.latLng(0, -90),
-              ]);
-              this.map.setMaxBounds(maxBounds);
-            };
-          })
-          .then(() => {
-            console.log('done patching SMK');
-          });
-      return this.patchPromise;
+  
+      console.log('start patching SMK');
+  
+      // Create a DIV for a temporary map.
+      // This map is used to ensure that SMK is completely loaded before monkey-patching
+      const temp = document.createElement('div');
+      temp.style.display = 'none';
+      temp.style.visibility = 'hidden';
+      temp.style.position = 'absolute';
+      temp.style.left = '-5000px';
+      temp.style.top = '-5000px';
+      temp.style.right = '-4000px';
+      temp.style.bottom = '-4000px';
+      document.body.appendChild(temp);
+  
+      console.log('patching');
+  
+      // Await the initialization of SMK
+      const smk = await SMK.INIT({
+        id: 999,
+        containerSel: temp,
+        baseUrl: mapService.smkBaseUrl,
+        config: 'show-tool=bespoke',
+      });
+  
+      this.defineOpenStreetMapLayer();
+      smk.destroy();
+      temp?.parentElement?.removeChild(temp);
+  
+      // Patch the SMK Viewer functionality
+      SMK.TYPE.Viewer.leaflet.prototype.mapResized = () => {
+        const prototype = SMK.TYPE.Viewer.leaflet.prototype;
+        setTimeout(() => {
+          prototype.map.invalidateSize({ animate: false });
+        }, 500);
+      };
+  
+      const oldInit = SMK.TYPE.Viewer.leaflet.prototype.initialize;
+      SMK.TYPE.Viewer.leaflet.prototype.initialize = function (smk: any) {
+        // Call the existing initializer
+        oldInit.apply(this, arguments);
+  
+        // Set the maximum bounds that can be panned to.
+        const L = window['L'];
+        const maxBounds = L.latLngBounds([
+          L.latLng(90, -180),
+          L.latLng(0, -90),
+        ]);
+        this.map.setMaxBounds(maxBounds);
+      };
+  
+      console.log('done patching SMK');
+  
+      // Return a resolved promise explicitly for compatibility
+      return Promise.resolve();
     } catch (error) {
       console.error('Error occurred during patching:', error);
       throw error; // Re-throw the error to propagate it to the caller
