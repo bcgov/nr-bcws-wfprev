@@ -81,7 +81,7 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
       closestCommunityName: ['', [Validators.required]],
       forestRegionOrgUnitId: [''],
       forestDistrictOrgUnitId: [''],
-      primaryObjectiveTypeCode: [''],
+      primaryObjectiveTypeCode: ['', [Validators.required]],
       secondaryObjectiveTypeCode: [''],
       secondaryObjectiveRationale: [''],
       bcParksRegionOrgUnitId: [''],
