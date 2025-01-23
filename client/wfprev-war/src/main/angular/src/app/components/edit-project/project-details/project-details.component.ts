@@ -256,7 +256,7 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
       forestRegionOrgUnitId: data.forestRegionOrgUnitId,
       forestDistrictOrgUnitId: data.forestDistrictOrgUnitId,
       primaryObjectiveTypeCode: data.primaryObjectiveTypeCode?.objectiveTypeCode || '',
-      secondaryObjectiveTypeCode: data.secondaryObjectiveTypeCode?.objectiveTypeCode || '',
+      secondaryObjectiveTypeCode: data.secondaryObjectiveTypeCode?.objectiveTypeCode,
       secondaryObjectiveRationale: data.secondaryObjectiveRationale,
       bcParksRegionOrgUnitId: data.bcParksRegionOrgUnitId,
       bcParksSectionOrgUnitId: data.bcParksSectionOrgUnitId,
@@ -282,17 +282,18 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
           primaryObjectiveTypeCode: {
             objectiveTypeCode: this.detailsForm.get('primaryObjectiveTypeCode')?.value 
                 ? this.detailsForm.get('primaryObjectiveTypeCode')?.value 
-                : this.projectDetail.primaryObjectiveTypeCode.objectiveTypeCode
-          },
-          secondaryObjectiveTypeCode: {
-            objectiveTypeCode: this.detailsForm.get('secondaryObjectiveTypeCode')?.value 
-                ? this.detailsForm.get('secondaryObjectiveTypeCode')?.value 
-                : this.projectDetail.secondaryObjectiveTypeCode.objectiveTypeCode
+                : this.projectDetail.primaryObjectiveTypeCode?.objectiveTypeCode
           },
           tertiaryObjectiveTypeCode: {
             objectiveTypeCode: 'FOR_HEALTH'
           }      
         };
+        const secondaryObjectiveValue = this.detailsForm.get('secondaryObjectiveTypeCode')?.value;
+        if (secondaryObjectiveValue) {
+          updatedProject.secondaryObjectiveTypeCode = {
+            objectiveTypeCode: secondaryObjectiveValue,
+          };
+        }
         this.projectService.updateProject(this.projectGuid, updatedProject).subscribe({
           next: () => {
             this.snackbarService.open(
