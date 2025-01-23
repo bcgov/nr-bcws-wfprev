@@ -38,7 +38,6 @@ export class ProjectsListComponent implements OnInit {
     this.loadCodeTables();
     this.loadProjects();
     setTimeout(() => { this.loadCoordinatesOnMap(); }, 3000);
-    console.log('Initialized projectList:', this.projectList);
   }
 
   loadCodeTables(): void {

@@ -20,16 +20,16 @@ export class MapComponent implements AfterViewInit {
     British Columbia is experiencing a serious and sustained increase in extreme wildfire behaviour and fire events particularly in the wildland-urban interface. More human activity and development is taking place in or near forests, creating greater consequences for the socioeconomic health and safety of citizens and visitors. At the same time, the impacts of climate change are increasing, fire size and severity are increasing, and fire seasons are becoming longer. Prevention is more than stopping new, human-caused fires. FireSmart is based on the premise of shared responsibility and on promoting the integration and collaboration of wildfire prevention and mitigation efforts. All partners and stakeholders have a role to play.
   `;
 
-  constructor(    
+  constructor(
     protected cdr: ChangeDetectorRef,
     private readonly mapService: MapService,
     private readonly mapConfigService: MapConfigService
-  ) {}
+  ) { }
 
-  ngAfterViewInit(): void {
+  async ngAfterViewInit(): Promise<void> {
     // Check if mapContainer.nativeElement is defined before accessing it
     if (this.mapContainer?.nativeElement) {
-      this.initMap();
+      await this.initMap();
       this.mapIndex = this.mapService.getMapIndex() + 1;
       this.mapService.setMapIndex(this.mapIndex);
     } else {
@@ -37,30 +37,25 @@ export class MapComponent implements AfterViewInit {
     }
   }
 
-  private initMap(): void {
-    const self = this;
-    const mapConfig = this.clone(this.mapConfig);
-
-    this.mapConfigService
-    .getMapConfig()
-    .then((mapState) => {
-      mapConfig.push(mapState);
-    })
-    .then(() => {
-      const deviceConfig = { viewer: { device: 'desktop' } };
-      this.mapConfig = [...mapConfig, deviceConfig, 'theme=wf', '?'];
-      console.log('mapConfig:');
-      console.log('mapConfig: ', JSON.stringify(this.mapConfig));
-    })
-    .catch((error) => {
+  private async initMap(): Promise<any> {
+    try {
+      const baseConfig = this.clone(this.mapConfig);
+      const mapState = await this.mapConfigService.getMapConfig();
+      baseConfig.push(mapState);
+      this.mapConfig = this.buildMapConfig(baseConfig);
+      this.mapService.createSMK({
+        id: this.mapIndex,
+        containerSel: this.mapContainer.nativeElement,
+        config: this.mapConfig,
+      });
+    } catch (error) {
       console.error('Error loading map:', error);
-    });
+    }
+  }
 
-    this.mapService.createSMK({
-      id: this.mapIndex,
-      containerSel: self.mapContainer.nativeElement,
-      config: mapConfig,
-    })
+  private buildMapConfig(baseConfig: any): object[] {
+    const deviceConfig = { viewer: { device: 'desktop' } };
+    return [...baseConfig, deviceConfig, 'theme=wf', '?'];
   }
 
   clone(o: any) {
