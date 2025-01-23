@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { ProjectsListComponent } from './projects-list.component';
 import { By } from '@angular/platform-browser';
 import { DebugElement } from '@angular/core';
@@ -11,19 +11,44 @@ import { ProjectService } from 'src/app/services/project-services';
 import { CodeTableServices } from 'src/app/services/code-table-services';
 import { ResourcesRoutes } from 'src/app/utils';
 import { of, throwError } from 'rxjs';
+import L from 'leaflet';
+import { CreateNewProjectDialogComponent } from 'src/app/components/create-new-project-dialog/create-new-project-dialog.component';
 
 describe('ProjectsListComponent', () => {
   let component: ProjectsListComponent;
   let fixture: ComponentFixture<ProjectsListComponent>;
   let debugElement: DebugElement;
+  let mockMap: any;
+  let mockViewer: any;
+  let mockMarkerClusterGroup: any;
+  let mockMarker: any;
+  let mockPolygon: any;
+
+  const mockProjectList = [
+    { 
+      projectNumber: 1, 
+      projectName: 'Project 1', 
+      forestRegionOrgUnitId: 101, 
+      totalPlannedProjectSizeHa: 100,
+      latitude: 49.2827,
+      longitude: -123.1207,
+      projectGuid: 'guid1'
+    },
+    { 
+      projectNumber: 2, 
+      projectName: 'Project 2', 
+      forestRegionOrgUnitId: 102, 
+      totalPlannedProjectSizeHa: 200,
+      latitude: 49.2849,
+      longitude: -123.1217,
+      projectGuid: 'guid2'
+    },
+  ];
 
   let mockProjectService = {
     fetchProjects: jasmine.createSpy('fetchProjects').and.returnValue(of({
       _embedded: {
-        project: [
-          { projectNumber: 1, projectName: 'Project 1', forestRegionOrgUnitId: 101, totalPlannedProjectSizeHa: 100 },
-          { projectNumber: 2, projectName: 'Project 2', forestRegionOrgUnitId: 102, totalPlannedProjectSizeHa: 200 },
-        ],
+        project: mockProjectList,
       },
     })),
   };
@@ -44,20 +69,50 @@ describe('ProjectsListComponent', () => {
     }),
   };
 
+  let mockRouter: jasmine.SpyObj<Router>;
+
   beforeEach(async () => {
+    mockRouter = jasmine.createSpyObj('Router', ['navigate']);
+
+    // Setup Leaflet mocks
+    mockMap = {
+      addLayer: jasmine.createSpy('addLayer'),
+      on: jasmine.createSpy('on')
+    };
+
+    mockViewer = {
+      map: mockMap
+    };
+
+    mockMarkerClusterGroup = jasmine.createSpyObj('markerClusterGroup', ['addLayer']);
+    mockMarker = jasmine.createSpyObj('marker', ['on', 'setIcon', 'getLatLng']);
+    mockPolygon = jasmine.createSpyObj('polygon', ['setStyle']);
+
+    // Setup Leaflet spies
+    spyOn(L, 'markerClusterGroup').and.returnValue(mockMarkerClusterGroup);
+    spyOn(L, 'marker').and.returnValue(mockMarker);
+    spyOn(L, 'polygon').and.returnValue(mockPolygon);
+  
     await TestBed.configureTestingModule({
-      imports: [ProjectsListComponent, BrowserAnimationsModule, MatExpansionModule, MatSlideToggleModule],
+      imports: [
+        ProjectsListComponent,
+        BrowserAnimationsModule,
+        MatExpansionModule,
+        MatSlideToggleModule
+      ],
       providers: [
         { provide: ProjectService, useValue: mockProjectService },
         { provide: CodeTableServices, useValue: mockCodeTableService },
         { provide: MatDialog, useValue: mockDialog },
-        { provide: ActivatedRoute, useValue: ActivatedRoute },
+        { provide: Router, useValue: mockRouter },
+        { provide: ActivatedRoute, useValue: {} }
       ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(ProjectsListComponent);
     component = fixture.componentInstance;
     debugElement = fixture.debugElement;
+    component.getActiveMap = () => ({ $viewer: mockViewer });
     fixture.detectChanges();
   });
 
@@ -66,20 +121,11 @@ describe('ProjectsListComponent', () => {
   });
 
   it('should render the correct number of projects', () => {
-    // Mock the project data to simulate a successful API response
-    component.projectList = [
-      { projectNumber: 1, projectName: 'Project 1' },
-      { projectNumber: 2, projectName: 'Project 2' },
-    ];
-
-    // Trigger change detection to update the DOM
+    component.projectList = mockProjectList;
     fixture.detectChanges();
 
-    // Query DOM elements
     const projectItems = fixture.debugElement.queryAll(By.css('.project-name'));
-
-    // Assertions
-    expect(projectItems.length).toBe(2); // Mock data contains 2 projects
+    expect(projectItems.length).toBe(2);
     expect(projectItems[0].nativeElement.textContent).toContain('Project 1');
     expect(projectItems[1].nativeElement.textContent).toContain('Project 2');
   });
@@ -90,7 +136,7 @@ describe('ProjectsListComponent', () => {
   });
 
   it('should handle errors when loading code tables', () => {
-    mockCodeTableService.fetchCodeTable.and.returnValue(throwError('Error fetching data'));
+    mockCodeTableService.fetchCodeTable.and.returnValue(throwError(() => new Error('Error fetching data')));
     component.loadCodeTables();
     fixture.detectChanges();
 
@@ -98,82 +144,166 @@ describe('ProjectsListComponent', () => {
     expect(component.forestRegionCode).toEqual([]);
   });
 
-
   it('should handle errors when loading projects', () => {
-    mockProjectService.fetchProjects.and.returnValue(throwError('Error fetching projects'));
+    mockProjectService.fetchProjects.and.returnValue(throwError(() => new Error('Error fetching projects')));
     component.loadProjects();
     fixture.detectChanges();
     expect(component.projectList).toEqual([]);
   });
 
-
   it('should open the dialog to create a new project and reload projects if successful', () => {
     spyOn(component, 'loadProjects');
+    
     component.createNewProject();
-    expect(mockDialog.open).toHaveBeenCalledWith(jasmine.any(Function), jasmine.objectContaining({
-      width: '880px',
-      disableClose: true,
-      hasBackdrop: true,
-    }));
+    
+    expect(mockDialog.open).toHaveBeenCalledWith(
+      CreateNewProjectDialogComponent,
+      {
+        width: '880px',
+        disableClose: true,
+        hasBackdrop: true,
+      }
+    );
     expect(component.loadProjects).toHaveBeenCalled();
   });
 
   it('should return the correct description from code tables', () => {
-    component.loadCodeTables(); // Load the mock code tables
-    fixture.detectChanges();
-    const description = 'Region 1';
-    expect(description).toBe('Region 1');
+    component.programAreaCode = [{ programAreaGuid: 'guid1', programAreaName: 'Area 1' }];
+    component.forestRegionCode = [{ orgUnitId: 101, orgUnitName: 'Region 1' }];
+
+    const programAreaDescription = component.getDescription('programAreaCode', 'guid1');
+    expect(programAreaDescription).toBe('Area 1');
+
+    const regionDescription = component.getDescription('forestRegionCode', 101);
+    expect(regionDescription).toBe('Region 1');
 
     const unknownDescription = component.getDescription('forestRegionCode', 999);
     expect(unknownDescription).toBe('Unknown');
   });
 
-
   it('should handle sort change correctly', () => {
-    spyOn(component, 'onSortChange').and.callThrough();
-
-    const select = debugElement.query(By.css('select')).nativeElement;
-    select.value = 'ascending'; // Change to "ascending"
-    select.dispatchEvent(new Event('change'));
-    fixture.detectChanges();
-
-    expect(component.onSortChange).toHaveBeenCalled();
+    const mockEvent = { target: { value: 'ascending' } };
+    component.onSortChange(mockEvent);
     expect(component.selectedSort).toBe('ascending');
   });
 
-  it('should navigate to the edit project route with the correct query parameters and stop event propagation', () => {
-    const mockRouter = TestBed.inject(Router);
-    spyOn(mockRouter, 'navigate');
+  it('should navigate to the edit project route with correct parameters', () => {
     const mockEvent = jasmine.createSpyObj('Event', ['stopPropagation']);
-    const project = {
-      projectGuid: '27602cd9-4b6e-9be0-e063-690a0a0afb50'
-    };
+    const project = { projectGuid: 'test-guid' };
 
     component.editProject(project, mockEvent);
 
-    expect(mockRouter.navigate).toHaveBeenCalledWith([ResourcesRoutes.EDIT_PROJECT], {
-      queryParams: {
-        projectGuid: project.projectGuid,
-      },
-    });
+    expect(mockRouter.navigate).toHaveBeenCalledWith(
+      [ResourcesRoutes.EDIT_PROJECT],
+      { queryParams: { projectGuid: project.projectGuid } }
+    );
     expect(mockEvent.stopPropagation).toHaveBeenCalled();
   });
 
-  it('should reload projects if createNewProject dialog returns success', () => {
-    spyOn(component, 'loadProjects');
-    component.createNewProject();
-    expect(mockDialog.open).toHaveBeenCalled();
-    expect(component.loadProjects).toHaveBeenCalled();
+  // Map Function Tests
+  describe('loadCoordinatesOnMap', () => {
+    beforeEach(() => {
+      component.projectList = mockProjectList;
+      mockMarker.getLatLng.and.returnValue({ lat: 49.2827, lng: -123.1207 });
+    });
+
+    it('should create markers and clusters for valid coordinates', fakeAsync(() => {
+      component.loadCoordinatesOnMap();
+      tick();
+
+      expect(L.marker).toHaveBeenCalledTimes(2);
+      expect(mockMarkerClusterGroup.addLayer).toHaveBeenCalledTimes(2);
+      expect(mockMap.addLayer).toHaveBeenCalledWith(mockMarkerClusterGroup);
+    }));
+
+    it('should filter out projects with null coordinates', fakeAsync(() => {
+      component.projectList = [
+        ...mockProjectList,
+        { 
+          projectNumber: 3,
+          projectName: 'Project 3',
+          latitude: null,
+          longitude: -123.1207
+        }
+      ];
+      
+      component.loadCoordinatesOnMap();
+      tick();
+
+      expect(L.marker).toHaveBeenCalledTimes(2);
+    }));
+
+    it('should handle marker click events correctly', fakeAsync(() => {
+      component.loadCoordinatesOnMap();
+      tick();
+
+      const clickHandler = mockMarker.on.calls.argsFor(0)[1];
+      
+      // Test activation
+      clickHandler();
+      expect(mockMarker.setIcon).toHaveBeenCalled();
+      expect(mockPolygon.setStyle).toHaveBeenCalledWith({ weight: 5 });
+
+      // Test deactivation
+      clickHandler();
+      expect(mockPolygon.setStyle).toHaveBeenCalledWith({ weight: 2 });
+    }));
+
+    it('should not create markers when projectList is empty', fakeAsync(() => {
+      component.projectList = [];
+      component.loadCoordinatesOnMap();
+      tick();
+
+      expect(L.marker).not.toHaveBeenCalled();
+      expect(mockMarkerClusterGroup.addLayer).not.toHaveBeenCalled();
+    }));
   });
 
-  it('should return the correct description from code tables', () => {
-    component.loadCodeTables(); // Load the mock code tables
-    fixture.detectChanges();
-    const description = 'Region 1';
-    expect(description).toBe('Region 1');
+  describe('highlightProjectPolygons', () => {
+    beforeEach(() => {
+      component.markerPolygons = new Map();
+      component.markerPolygons.set(mockMarker, [mockPolygon]);
+      mockMarker.getLatLng.and.returnValue({ lat: 49.2827, lng: -123.1207 });
+    });
 
-    const unknownDescription = component.getDescription('forestRegionCode', 999);
-    expect(unknownDescription).toBe('Unknown');
+    it('should highlight polygons for matching coordinates', () => {
+      const project = { latitude: 49.2827, longitude: -123.1207 };
+      component.highlightProjectPolygons(project);
+
+      expect(mockMarker.setIcon).toHaveBeenCalled();
+      expect(mockPolygon.setStyle).toHaveBeenCalledWith({ weight: 5 });
+    });
+
+    it('should reset previously active marker', () => {
+      const oldMarker = jasmine.createSpyObj('marker', ['setIcon']);
+      component.activeMarker = oldMarker;
+      
+      const project = { latitude: 49.2827, longitude: -123.1207 };
+      component.highlightProjectPolygons(project);
+
+      expect(oldMarker.setIcon).toHaveBeenCalled();
+    });
+
+    it('should not highlight when coordinates do not match any marker', () => {
+      const project = { latitude: 0, longitude: 0 };
+      component.highlightProjectPolygons(project);
+
+      expect(mockPolygon.setStyle).not.toHaveBeenCalled();
+    });
+
+    it('should update activeMarker when highlighting new marker', () => {
+      const project = { latitude: 49.2827, longitude: -123.1207 };
+      component.highlightProjectPolygons(project);
+
+      expect(component.activeMarker).toBe(mockMarker);
+    });
+
+    it('should handle null project coordinates', () => {
+      const project = { latitude: null, longitude: null };
+      component.highlightProjectPolygons(project);
+
+      expect(mockMarker.setIcon).not.toHaveBeenCalled();
+      expect(mockPolygon.setStyle).not.toHaveBeenCalled();
+    });
   });
-
 });
