@@ -43,3 +43,36 @@ export interface Project {
   }
   secondaryObjectiveRationale? :string;
 }
+
+export interface ProjectFiscal {
+  projectGuid?: string;
+  projectPlanFiscalGuid?: string;
+  activityCategoryCode?: string;
+  fiscalYear?: number;
+  projectPlanStatusCode?: string;
+  planFiscalStatusCode?: string;
+  projectFiscalName?: string;
+  projectFiscalDescription?: string;
+  businessAreaComment?: string;
+  estimatedClwrrAllocAmount?: number;
+  fiscalAncillaryFundAmount?: number;
+  fiscalPlannedProjectSizeHa?: number;
+  fiscalPlannedCostPerHaAmt?: number;
+  fiscalReportedSpendAmount?: number;
+  fiscalActualAmount?: number;
+  fiscalCompletedSizeHa?: number;
+  fiscalActualCostPerHaAmt?: number;
+  firstNationsDelivPartInd?: boolean;
+  firstNationsEngagementInd?: boolean;
+  firstNationsPartner?: string;
+  resultsNumber?: string;
+  resultsOpeningId?: string;
+  resultsContactEmail?: string;
+  submittedByName?: string;
+  submittedByUserGuid?: string;
+  submittedByUserUserid?: string;
+  submissionTimestamp?: string;
+  isApprovedInd?: boolean;
+  isDelayedInd?: boolean;
+  fiscalForecastAmount?: number;
+}

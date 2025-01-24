@@ -7,6 +7,9 @@ import { ActivatedRoute } from '@angular/router';
 import { ProjectService } from 'src/app/services/project-services';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatExpansionModule } from '@angular/material/expansion';
+import { ProjectFiscal } from 'src/app/components/models';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { Messages } from 'src/app/utils/messages';
 
 @Component({
   selector: 'app-project-fiscals',
@@ -29,11 +32,13 @@ export class ProjectFiscalsComponent implements OnInit {
   fiscalForms: FormGroup[] = [];
   fiscalYears: string[] = [];
   selectedTabIndex = 0;
-
+  messages = Messages;
+  
   constructor(
     private route: ActivatedRoute,
     private projectService: ProjectService,
-    private readonly fb: FormBuilder
+    private readonly fb: FormBuilder,
+    private readonly snackbarService: MatSnackBar,
   ) {}
 
   ngOnInit(): void {
@@ -112,7 +117,86 @@ export class ProjectFiscalsComponent implements OnInit {
 
   }
 
-  onSaveFiscal() {
-    
+  onSaveFiscal(index: number): void {
+      const originalData = this.projectFiscals[index];
+      const formData = this.fiscalForms[index].value;
+      const updatedData = {
+        ...originalData, // Include all original data and overwrite with form data
+        ...formData,
+      };
+  
+      const isUpdate = this.projectFiscals[index]?.projectPlanFiscalGuid;
+      const projectFiscal: ProjectFiscal = {
+        projectGuid: updatedData.projectGuid,
+        projectPlanFiscalGuid: updatedData.projectPlanFiscalGuid,
+        activityCategoryCode: updatedData.activityCategoryCode,
+        fiscalYear: updatedData.fiscalYear ? parseInt(updatedData.fiscalYear, 10) : undefined,
+        projectPlanStatusCode: updatedData.projectPlanStatusCode,
+        planFiscalStatusCode: updatedData.planFiscalStatusCode,
+        projectFiscalName: updatedData.projectFiscalName,
+        projectFiscalDescription: updatedData.projectFiscalDescription,
+        businessAreaComment: updatedData.businessAreaComment,
+        estimatedClwrrAllocAmount: updatedData.estimatedClwrrAllocAmount,
+        fiscalAncillaryFundAmount: updatedData.fiscalAncillaryFundAmount,
+        fiscalPlannedProjectSizeHa: updatedData.fiscalPlannedProjectSizeHa,
+        fiscalPlannedCostPerHaAmt: updatedData.fiscalPlannedCostPerHaAmt,
+        fiscalReportedSpendAmount: updatedData.fiscalReportedSpendAmount,
+        fiscalActualAmount: updatedData.fiscalActualAmount,
+        fiscalCompletedSizeHa: updatedData.fiscalCompletedSizeHa,
+        fiscalActualCostPerHaAmt: updatedData.fiscalActualCostPerHaAmt,
+        firstNationsDelivPartInd: updatedData.firstNationsDelivPartInd,
+        firstNationsEngagementInd: updatedData.firstNationsEngagementInd,
+        firstNationsPartner: updatedData.firstNationsPartner,
+        resultsNumber: updatedData.resultsNumber,
+        resultsOpeningId: updatedData.resultsOpeningId,
+        resultsContactEmail: updatedData.resultsContactEmail,
+        submittedByName: updatedData.submittedByName,
+        submittedByUserGuid: updatedData.submittedByUserGuid,
+        submittedByUserUserid: updatedData.submittedByUserUserid,
+        submissionTimestamp: updatedData.submissionTimestamp,
+        isApprovedInd: updatedData.isApprovedInd,
+        isDelayedInd: updatedData.isDelayedInd,
+        fiscalForecastAmount: updatedData.fiscalForecastAmount,
+      };
+
+      if (isUpdate) {
+        // update the existing fiscal
+        this.projectService.updateProjectFiscal(this.projectGuid, updatedData.projectPlanFiscalGuid, projectFiscal).subscribe({
+          next: (response) => {
+            this.snackbarService.open(
+              this.messages.projectFiscalUpdatedSuccess,
+              'OK',
+              { duration: 5000, panelClass: 'snackbar-success' },
+            );
+          },
+          error: () => {
+            this.snackbarService.open(
+              this.messages.projectFiscalUpdatedFailure,
+              'OK',
+              { duration: 5000, panelClass: 'snackbar-error' }
+            );
+          }
+        })
+      }
+      else {
+        // create new fiscal
+        this.projectService.createProjectFiscal(this.projectGuid, projectFiscal).subscribe({
+          next: (response) => {
+            this.snackbarService.open(
+              this.messages.projectFiscalCreatedSuccess,
+              'OK',
+              { duration: 5000, panelClass: 'snackbar-success' },
+            );
+          },
+          error: () =>{
+              this.snackbarService.open(
+                this.messages.projectFiscalCreatedFailure,
+                'OK',
+                { duration: 5000, panelClass: 'snackbar-error' }
+              );
+            }
+        });
+      }
   }
+  
 }

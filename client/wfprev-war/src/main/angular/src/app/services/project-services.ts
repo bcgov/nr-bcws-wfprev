@@ -1,7 +1,7 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { catchError, map, Observable,throwError } from "rxjs";
-import { Project } from "src/app/components/models";
+import { Project, ProjectFiscal } from "src/app/components/models";
 import { AppConfigService } from "src/app/services/app-config.service";
 import { TokenService } from "src/app/services/token.service";
 
@@ -98,5 +98,34 @@ export class ProjectService {
             })
         );
     }
-    
+
+    createProjectFiscal(projectGuid: string, projectFiscal: ProjectFiscal): Observable<any> {
+        const baseUrl = `${this.appConfigService.getConfig().rest['wfprev']}/wfprev-api/projects`;
+        const url = `${baseUrl}/${projectGuid}/projectFiscals`;
+        return this.httpClient.post<any>(
+            url,
+            projectFiscal,
+            {
+                headers: {
+                    Authorization: `Bearer ${this.tokenService.getOauthToken()}`,
+                }
+            }
+        );
+    }
+
+    updateProjectFiscal(projectGuid: string, projectPlanFiscalGuid: string, projectFiscal: ProjectFiscal): Observable<any> {
+        const baseUrl = `${this.appConfigService.getConfig().rest['wfprev']}/wfprev-api/projects`;
+        const url = `${baseUrl}/${projectGuid}/projectFiscals/${projectPlanFiscalGuid}`;
+        return this.httpClient.put(url, projectFiscal,{
+            headers: {
+                Authorization: `Bearer ${this.tokenService.getOauthToken()}`,
+            }
+        }).pipe(
+            map((response: any) => response),
+            catchError((error) => {
+                console.error("Error update project fiscal", error);
+                return throwError(() => new Error("Failed to update project fiscal"));
+            })
+        );
+    }
  }
