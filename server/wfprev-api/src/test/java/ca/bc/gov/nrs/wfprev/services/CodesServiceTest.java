@@ -29,6 +29,8 @@ class CodesServiceTest {
     private ObjectiveTypeCodeRepository objectiveTypeCodeRepository;
     private ProjectPlanStatusCodeRepository projectPlanStatusCodeRepository;
     private ActivityStatusCodeRepository activityStatusCodeRepository;
+    private RiskRatingCodeRepository riskRatingCodeRepository;
+    private ContractPhaseCodeRepository contractPhaseCodeRepository;
 
     private ProgramAreaRepository programAreaRepository;
     private ProgramAreaResourceAssembler programAreaResourceAssembler;
@@ -41,6 +43,8 @@ class CodesServiceTest {
     private ObjectiveTypeCodeResourceAssembler objectiveTypeCodeResourceAssembler;
     private ProjectPlanStatusCodeResourceAssembler projectPlanStatusCodeResourceAssembler;
     private ActivityStatusCodeResourceAssembler activityStatusCodeResourceAssembler;
+    private RiskRatingCodeResourceAssembler riskRatingCodeResourceAssembler;
+    private ContractPhaseCodeResourceAssembler contractPhaseCodeResourceAssembler;
 
     @BeforeEach
     void setup() {
@@ -64,13 +68,17 @@ class CodesServiceTest {
         projectPlanStatusCodeRepository = mock(ProjectPlanStatusCodeRepository.class);
         activityStatusCodeResourceAssembler = mock(ActivityStatusCodeResourceAssembler.class);
         activityStatusCodeRepository = mock(ActivityStatusCodeRepository.class);
+        riskRatingCodeResourceAssembler = mock(RiskRatingCodeResourceAssembler.class);
+        riskRatingCodeRepository = mock(RiskRatingCodeRepository.class);
+        contractPhaseCodeResourceAssembler = mock(ContractPhaseCodeResourceAssembler.class);
+        contractPhaseCodeRepository = mock(ContractPhaseCodeRepository.class);
 
         codesService = new CodesService(forestAreaCodeRepository, forestAreaCodeResourceAssembler,
                 generalScopeCodeRepository, generalScopeCodeResourceAssembler,
                 projectTypeCodeRepository, projectTypeCodeResourceAssembler, programAreaRepository, programAreaResourceAssembler,
                 forestOrgUnitCodeRepository, forestRegionUnitCodeResourceAssembler, forestDistrictUnitCodeResourceAssembler, bcParksOrgUnitCodeRepository, bcParksRegionCodeResourceAssembler,
                 bcParksSectionCodeResourceAssembler, objectiveTypeCodeResourceAssembler, objectiveTypeCodeRepository, projectPlanStatusCodeResourceAssembler, projectPlanStatusCodeRepository,
-                activityStatusCodeResourceAssembler, activityStatusCodeRepository);
+                activityStatusCodeResourceAssembler, activityStatusCodeRepository, riskRatingCodeResourceAssembler, riskRatingCodeRepository, contractPhaseCodeResourceAssembler, contractPhaseCodeRepository);
     }
 
     @Test
@@ -1008,5 +1016,160 @@ class CodesServiceTest {
         );
         assertTrue(exception.getMessage().contains("Error fetching activity status code"));
     }
+
+    @Test
+    void testGetAllRiskRatingCodes_Success() throws ServiceException {
+        // Arrange
+        List<RiskRatingCodeEntity> entities = new ArrayList<>();
+        entities.add(new RiskRatingCodeEntity());
+        entities.add(new RiskRatingCodeEntity());
+
+        when(riskRatingCodeRepository.findAll()).thenReturn(entities);
+        when(riskRatingCodeResourceAssembler.toCollectionModel(entities))
+                .thenReturn(CollectionModel.of(new ArrayList<>()));
+
+        // Act
+        CollectionModel<RiskRatingCodeModel> result = codesService.getAllRiskRatingCodes();
+
+        // Assert
+        assertNotNull(result);
+    }
+
+    @Test
+    void testGetAllRiskRatingCodes_Exception() {
+        // Arrange
+        when(riskRatingCodeRepository.findAll()).thenThrow(new RuntimeException("Error fetching risk rating codes"));
+
+        // Act & Assert
+        ServiceException exception = assertThrows(
+                ServiceException.class,
+                () -> codesService.getAllRiskRatingCodes()
+        );
+        assertEquals("Error fetching risk rating codes", exception.getMessage());
+    }
+
+    @Test
+    void testGetRiskRatingCodeById_Success() throws ServiceException {
+        // Arrange
+        String exampleId = UUID.randomUUID().toString();
+        RiskRatingCodeEntity entity = new RiskRatingCodeEntity();
+        when(riskRatingCodeRepository.findById(exampleId))
+                .thenReturn(Optional.of(entity));
+        when(riskRatingCodeResourceAssembler.toModel(entity))
+                .thenReturn(new RiskRatingCodeModel());
+
+        // Act
+        RiskRatingCodeModel result = codesService.getRiskRatingCodeById(exampleId);
+
+        // Assert
+        assertNotNull(result);
+    }
+
+    @Test
+    void testGetRiskRatingCodeById_NotFound() throws ServiceException {
+        // Arrange
+        String nonExistentId = UUID.randomUUID().toString();
+        when(riskRatingCodeRepository.findById(nonExistentId))
+                .thenReturn(Optional.empty());
+
+        // Act
+        RiskRatingCodeModel result = codesService.getRiskRatingCodeById(nonExistentId);
+
+        // Assert
+        assertNull(result);
+    }
+
+    @Test
+    void testGetRiskRatingCodeById_Exception() {
+        // Arrange
+        String exampleId = UUID.randomUUID().toString();
+        when(riskRatingCodeRepository.findById(exampleId))
+                .thenThrow(new RuntimeException("Error fetching risk rating code"));
+
+        // Act & Assert
+        ServiceException exception = assertThrows(
+                ServiceException.class,
+                () -> codesService.getRiskRatingCodeById(exampleId)
+        );
+        assertTrue(exception.getMessage().contains("Error fetching risk rating code"));
+    }
+
+    @Test
+    void testGetAllContractPhaseCodes_Success() throws ServiceException {
+        // Arrange
+        List<ContractPhaseCodeEntity> entities = new ArrayList<>();
+        entities.add(new ContractPhaseCodeEntity());
+        entities.add(new ContractPhaseCodeEntity());
+
+        when(contractPhaseCodeRepository.findAll()).thenReturn(entities);
+        when(contractPhaseCodeResourceAssembler.toCollectionModel(entities))
+                .thenReturn(CollectionModel.of(new ArrayList<>()));
+
+        // Act
+        CollectionModel<ContractPhaseCodeModel> result = codesService.getAllContractPhaseCodes();
+
+        // Assert
+        assertNotNull(result);
+    }
+
+    @Test
+    void testGetAllContractPhaseCodes_Exception() {
+        // Arrange
+        when(contractPhaseCodeRepository.findAll()).thenThrow(new RuntimeException("Error fetching contract phase codes"));
+
+        // Act & Assert
+        ServiceException exception = assertThrows(
+                ServiceException.class,
+                () -> codesService.getAllContractPhaseCodes()
+        );
+        assertEquals("Error fetching contract phase codes", exception.getMessage());
+    }
+
+    @Test
+    void testGetContractPhaseCodeById_Success() throws ServiceException {
+        // Arrange
+        String exampleId = UUID.randomUUID().toString();
+        ContractPhaseCodeEntity entity = new ContractPhaseCodeEntity();
+        when(contractPhaseCodeRepository.findById(exampleId))
+                .thenReturn(Optional.of(entity));
+        when(contractPhaseCodeResourceAssembler.toModel(entity))
+                .thenReturn(new ContractPhaseCodeModel());
+
+        // Act
+        ContractPhaseCodeModel result = codesService.getContractPhaseCodeById(exampleId);
+
+        // Assert
+        assertNotNull(result);
+    }
+
+    @Test
+    void testGetContractPhaseCodeById_NotFound() throws ServiceException {
+        // Arrange
+        String nonExistentId = UUID.randomUUID().toString();
+        when(contractPhaseCodeRepository.findById(nonExistentId))
+                .thenReturn(Optional.empty());
+
+        // Act
+        ContractPhaseCodeModel result = codesService.getContractPhaseCodeById(nonExistentId);
+
+        // Assert
+        assertNull(result);
+    }
+
+    @Test
+    void testGetContractPhaseCodeById_Exception() {
+        // Arrange
+        String exampleId = UUID.randomUUID().toString();
+        when(contractPhaseCodeRepository.findById(exampleId))
+                .thenThrow(new RuntimeException("Error fetching contract phase code"));
+
+        // Act & Assert
+        ServiceException exception = assertThrows(
+                ServiceException.class,
+                () -> codesService.getContractPhaseCodeById(exampleId)
+        );
+        assertTrue(exception.getMessage().contains("Error fetching contract phase code"));
+    }
+
 
 }

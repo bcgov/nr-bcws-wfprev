@@ -13,4 +13,6 @@ public class CodeTables {
   public static final String OBJECTIVE_TYPE_CODE = "objectiveTypeCodes";
   public static final String PROJECT_PLAN_STATUS_CODE = "projectPlanStatusCodes";
   public static final String ACTIVITY_STATUS_CODE = "activityStatusCodes";
+  public static final String RISK_RATING_CODE = "riskRatingCodes";
+  public static final String CONTRACT_PHASE_CODE = "contractPhaseCodes";
 }

@@ -49,6 +49,8 @@ class CodesControllerTest {
         testGetProjectTypeCodes();
         testGetObjectiveTypeCodes();
         testGetActivityStatusCodes();
+        testGetRiskRatingCodes();
+        testGetContractPhaseCodes();
     }
 
     void testGetForestAreaCodes() throws Exception {
@@ -151,6 +153,46 @@ class CodesControllerTest {
                 .andExpect(status().isOk());
     }
 
+    void testGetRiskRatingCodes() throws Exception {
+        String exampleId1 = UUID.randomUUID().toString();
+        String exampleId2 = UUID.randomUUID().toString();
+
+        RiskRatingCodeModel rrc1 = new RiskRatingCodeModel();
+        rrc1.setRiskRatingCode(exampleId1);
+
+        RiskRatingCodeModel rrc2 = new RiskRatingCodeModel();
+        rrc1.setRiskRatingCode(exampleId2);
+
+        List<RiskRatingCodeModel> rrcList = Arrays.asList(rrc1, rrc2);
+        CollectionModel<RiskRatingCodeModel> rrcModel = CollectionModel.of(rrcList);
+
+        when(codesService.getAllRiskRatingCodes()).thenReturn(rrcModel);
+
+        mockMvc.perform(get("/codes/" + CodeTables.RISK_RATING_CODE)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
+
+    void testGetContractPhaseCodes() throws Exception {
+        String exampleId1 = UUID.randomUUID().toString();
+        String exampleId2 = UUID.randomUUID().toString();
+
+        ContractPhaseCodeModel cpc1 = new ContractPhaseCodeModel();
+        cpc1.setContractPhaseCode(exampleId1);
+
+        ContractPhaseCodeModel cpc2 = new ContractPhaseCodeModel();
+        cpc1.setContractPhaseCode(exampleId2);
+
+        List<ContractPhaseCodeModel> cpcList = Arrays.asList(cpc1, cpc2);
+        CollectionModel<ContractPhaseCodeModel> cpcModel = CollectionModel.of(cpcList);
+
+        when(codesService.getAllContractPhaseCodes()).thenReturn(cpcModel);
+
+        mockMvc.perform(get("/codes/" + CodeTables.CONTRACT_PHASE_CODE)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
+
     @Test
     @WithMockUser
     void testGetCodesById() throws Exception {
@@ -201,6 +243,26 @@ class CodesControllerTest {
         when(codesService.getActivityStatusCodeById(asID)).thenReturn(activityStatusCode);
 
         mockMvc.perform(get("/codes/{codeTable}/{id}", CodeTables.ACTIVITY_STATUS_CODE, asID)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        String rrID = UUID.randomUUID().toString();
+        RiskRatingCodeModel riskRatingCode = new RiskRatingCodeModel();
+        riskRatingCode.setRiskRatingCode(rrID);
+
+        when(codesService.getRiskRatingCodeById(rrID)).thenReturn(riskRatingCode);
+
+        mockMvc.perform(get("/codes/{codeTable}/{id}", CodeTables.RISK_RATING_CODE, rrID)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        String cpID = UUID.randomUUID().toString();
+        ContractPhaseCodeModel contractPhaseCode = new ContractPhaseCodeModel();
+        contractPhaseCode.setContractPhaseCode(cpID);
+
+        when(codesService.getContractPhaseCodeById(cpID)).thenReturn(contractPhaseCode);
+
+        mockMvc.perform(get("/codes/{codeTable}/{id}", CodeTables.CONTRACT_PHASE_CODE, cpID)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
