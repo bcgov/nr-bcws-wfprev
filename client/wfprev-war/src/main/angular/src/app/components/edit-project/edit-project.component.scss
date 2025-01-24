@@ -14,8 +14,13 @@
     // Angular Material tab header overrides
     ::ng-deep {
       .mat-mdc-tab-header {
-        width: 50%;
+        width: 25%;
         padding-left: 30px;
+      }
+
+      .mat-mdc-tab-label {
+        width: 150px; /* Set each tab to a fixed width */
+        text-align: center; /* Center-align the tab label */
       }
   
       .mat-mdc-tab {

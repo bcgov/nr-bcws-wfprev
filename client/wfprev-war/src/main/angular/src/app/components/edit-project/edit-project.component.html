@@ -2,7 +2,7 @@
     <div class="project-title">
         <span>{{projectName}}</span>
     </div>
-    <mat-tab-group class="custom-tab-group">
+    <mat-tab-group class="custom-tab-group" (selectedTabChange)="onTabChange($event)">
         <!-- Details Tab -->
         <mat-tab label="Details">
             <div class="details-tab">
@@ -11,23 +11,9 @@
         </mat-tab>
     
         <!-- Fiscals Tab -->
-        <mat-tab label="Fiscals">
+        <mat-tab label="Fiscal Years">
             <div class="fiscals-tab">
-            <p>Fiscals Section</p>
-            </div>
-        </mat-tab>
-    
-        <!-- Documents Tab -->
-        <mat-tab label="Documents">
-            <div class="documents-tab">
-            <p>Documents Section</p>
-            </div>
-        </mat-tab>
-    
-        <!-- History Tab -->
-        <mat-tab label="History">
-            <div class="history-tab">
-            <p>History Section</p>
+                <ng-container #fiscalsContainer></ng-container>
             </div>
         </mat-tab>
     </mat-tab-group>
