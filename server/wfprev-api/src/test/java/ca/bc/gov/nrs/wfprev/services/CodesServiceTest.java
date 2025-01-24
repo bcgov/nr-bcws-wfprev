@@ -28,6 +28,7 @@ class CodesServiceTest {
     private ProjectTypeCodeResourceAssembler projectTypeCodeResourceAssembler;
     private ObjectiveTypeCodeRepository objectiveTypeCodeRepository;
     private ProjectPlanStatusCodeRepository projectPlanStatusCodeRepository;
+    private ActivityStatusCodeRepository activityStatusCodeRepository;
 
     private ProgramAreaRepository programAreaRepository;
     private ProgramAreaResourceAssembler programAreaResourceAssembler;
@@ -39,6 +40,7 @@ class CodesServiceTest {
     private BCParksSectionCodeResourceAssembler bcParksSectionCodeResourceAssembler;
     private ObjectiveTypeCodeResourceAssembler objectiveTypeCodeResourceAssembler;
     private ProjectPlanStatusCodeResourceAssembler projectPlanStatusCodeResourceAssembler;
+    private ActivityStatusCodeResourceAssembler activityStatusCodeResourceAssembler;
 
     @BeforeEach
     void setup() {
@@ -60,12 +62,15 @@ class CodesServiceTest {
         objectiveTypeCodeRepository = mock(ObjectiveTypeCodeRepository.class);
         projectPlanStatusCodeResourceAssembler = mock(ProjectPlanStatusCodeResourceAssembler.class);
         projectPlanStatusCodeRepository = mock(ProjectPlanStatusCodeRepository.class);
+        activityStatusCodeResourceAssembler = mock(ActivityStatusCodeResourceAssembler.class);
+        activityStatusCodeRepository = mock(ActivityStatusCodeRepository.class);
 
         codesService = new CodesService(forestAreaCodeRepository, forestAreaCodeResourceAssembler,
                 generalScopeCodeRepository, generalScopeCodeResourceAssembler,
                 projectTypeCodeRepository, projectTypeCodeResourceAssembler, programAreaRepository, programAreaResourceAssembler,
                 forestOrgUnitCodeRepository, forestRegionUnitCodeResourceAssembler, forestDistrictUnitCodeResourceAssembler, bcParksOrgUnitCodeRepository, bcParksRegionCodeResourceAssembler,
-                bcParksSectionCodeResourceAssembler, objectiveTypeCodeResourceAssembler, objectiveTypeCodeRepository, projectPlanStatusCodeResourceAssembler, projectPlanStatusCodeRepository);
+                bcParksSectionCodeResourceAssembler, objectiveTypeCodeResourceAssembler, objectiveTypeCodeRepository, projectPlanStatusCodeResourceAssembler, projectPlanStatusCodeRepository,
+                activityStatusCodeResourceAssembler, activityStatusCodeRepository);
     }
 
     @Test
@@ -925,6 +930,83 @@ class CodesServiceTest {
                 () -> codesService.getAllProjectPlanStatusCodes()
         );
         assertEquals("Error fetching project plan status codes", exception.getMessage());
+    }
+
+    @Test
+    void testGetAllActivityStatusCodes_Success() throws ServiceException {
+        // Arrange
+        List<ActivityStatusCodeEntity> entities = new ArrayList<>();
+        entities.add(new ActivityStatusCodeEntity());
+        entities.add(new ActivityStatusCodeEntity());
+
+        when(activityStatusCodeRepository.findAll()).thenReturn(entities);
+        when(activityStatusCodeResourceAssembler.toCollectionModel(entities))
+                .thenReturn(CollectionModel.of(new ArrayList<>()));
+
+        // Act
+        CollectionModel<ActivityStatusCodeModel> result = codesService.getAllActivityStatusCodes();
+
+        // Assert
+        assertNotNull(result);
+    }
+
+    @Test
+    void testGetAllActivityStatusCodes_Exception() {
+        // Arrange
+        when(activityStatusCodeRepository.findAll()).thenThrow(new RuntimeException("Error fetching activity status codes"));
+
+        // Act & Assert
+        ServiceException exception = assertThrows(
+                ServiceException.class,
+                () -> codesService.getAllActivityStatusCodes()
+        );
+        assertEquals("Error fetching activity status codes", exception.getMessage());
+    }
+
+    @Test
+    void testGetActivityStatusCodeById_Success() throws ServiceException {
+        // Arrange
+        String exampleId = UUID.randomUUID().toString();
+        ActivityStatusCodeEntity entity = new ActivityStatusCodeEntity();
+        when(activityStatusCodeRepository.findById(exampleId))
+                .thenReturn(Optional.of(entity));
+        when(activityStatusCodeResourceAssembler.toModel(entity))
+                .thenReturn(new ActivityStatusCodeModel());
+
+        // Act
+        ActivityStatusCodeModel result = codesService.getActivityStatusCodeById(exampleId);
+
+        // Assert
+        assertNotNull(result);
+    }
+
+    @Test
+    void testGetActivityStatusCodeById_NotFound() throws ServiceException {
+        // Arrange
+        String nonExistentId = UUID.randomUUID().toString();
+        when(activityStatusCodeRepository.findById(nonExistentId))
+                .thenReturn(Optional.empty());
+
+        // Act
+        ActivityStatusCodeModel result = codesService.getActivityStatusCodeById(nonExistentId);
+
+        // Assert
+        assertNull(result);
+    }
+
+    @Test
+    void testGetActivityStatusCodeById_Exception() {
+        // Arrange
+        String exampleId = UUID.randomUUID().toString();
+        when(activityStatusCodeRepository.findById(exampleId))
+                .thenThrow(new RuntimeException("Error fetching activity status code"));
+
+        // Act & Assert
+        ServiceException exception = assertThrows(
+                ServiceException.class,
+                () -> codesService.getActivityStatusCodeById(exampleId)
+        );
+        assertTrue(exception.getMessage().contains("Error fetching activity status code"));
     }
 
 }

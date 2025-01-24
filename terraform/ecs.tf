@@ -84,7 +84,7 @@ resource "aws_ecs_task_definition" "wfprev_server" {
       },
       {
         name = "WFPREV_DATASOURCE_URL"
-        value = "jdbc:postgresql://${aws_db_instance.wfprev_pgsqlDB.endpoint}/${aws_db_instance.wfprev_pgsqlDB.name}"
+        value = "jdbc:postgresql://${aws_db_instance.wfprev_pgsqlDB.endpoint}/${aws_db_instance.wfprev_pgsqlDB.db_name}"
       },
       {
         name  = "WFPREV_DATASOURCE_USERNAME"
@@ -163,7 +163,7 @@ resource "aws_ecs_task_definition" "wfprev-liquibase" {
       environment = [
         {
           name = "LIQUIBASE_COMMAND_URL"
-          value = "jdbc:postgresql://${aws_db_instance.wfprev_pgsqlDB.endpoint}/${aws_db_instance.wfprev_pgsqlDB.name}"
+          value = "jdbc:postgresql://${aws_db_instance.wfprev_pgsqlDB.endpoint}/${aws_db_instance.wfprev_pgsqlDB.db_name}"
         },
         {
           name = "LIQUIBASE_COMMAND_USERNAME"
