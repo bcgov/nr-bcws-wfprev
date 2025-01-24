@@ -918,11 +918,25 @@
           {
             "sqlFile": {
               "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_10/00/ddl/WFPREV.cultural_rx_fire_project.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_10/00/ddl/WFPREV.cultural_rx_fire_prj_audit.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
               "path": "scripts/01_00_10/00/dml/app_wf1_prev.dml.burn_impl_season_code.sql"
             }
           }
         ],
         "rollback": [
+          { "sql": "DROP TABLE wfprev.cultural_rx_fire_prj_audit" },
+          { "sql": "DROP TABLE wfprev.cultural_rx_fire_project" },
           { "sql": "DROP TABLE wfprev.cultural_rx_fire_plan_audit" },
           { "sql": "DROP TABLE wfprev.cultural_rx_fire_plan" },
           { "sql": "DROP TABLE wfprev.fuel_management_plan_audit" },
