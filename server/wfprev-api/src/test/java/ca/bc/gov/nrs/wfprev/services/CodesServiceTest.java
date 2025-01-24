@@ -67,6 +67,7 @@ class CodesServiceTest {
         projectPlanStatusCodeRepository = mock(ProjectPlanStatusCodeRepository.class);
         activityStatusCodeResourceAssembler = mock(ActivityStatusCodeResourceAssembler.class);
         activityStatusCodeRepository = mock(ActivityStatusCodeRepository.class);
+        activityCategoryCodeResourceAssembler = mock(ActivityCategoryCodeResourceAssembler.class);
         activityCategoryCodeRepository = mock(ActivityCategoryCodeRepository.class);
 
         codesService = new CodesService(forestAreaCodeRepository, forestAreaCodeResourceAssembler,
