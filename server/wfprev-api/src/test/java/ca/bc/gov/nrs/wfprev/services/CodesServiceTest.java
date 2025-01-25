@@ -16,6 +16,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 class CodesServiceTest {
@@ -29,6 +30,7 @@ class CodesServiceTest {
     private ObjectiveTypeCodeRepository objectiveTypeCodeRepository;
     private ProjectPlanStatusCodeRepository projectPlanStatusCodeRepository;
     private ActivityStatusCodeRepository activityStatusCodeRepository;
+    private ActivityCategoryCodeRepository activityCategoryCodeRepository;
 
     private ProgramAreaRepository programAreaRepository;
     private ProgramAreaResourceAssembler programAreaResourceAssembler;
@@ -41,6 +43,7 @@ class CodesServiceTest {
     private ObjectiveTypeCodeResourceAssembler objectiveTypeCodeResourceAssembler;
     private ProjectPlanStatusCodeResourceAssembler projectPlanStatusCodeResourceAssembler;
     private ActivityStatusCodeResourceAssembler activityStatusCodeResourceAssembler;
+    private ActivityCategoryCodeResourceAssembler activityCategoryCodeResourceAssembler;
 
     @BeforeEach
     void setup() {
@@ -64,13 +67,15 @@ class CodesServiceTest {
         projectPlanStatusCodeRepository = mock(ProjectPlanStatusCodeRepository.class);
         activityStatusCodeResourceAssembler = mock(ActivityStatusCodeResourceAssembler.class);
         activityStatusCodeRepository = mock(ActivityStatusCodeRepository.class);
+        activityCategoryCodeResourceAssembler = mock(ActivityCategoryCodeResourceAssembler.class);
+        activityCategoryCodeRepository = mock(ActivityCategoryCodeRepository.class);
 
         codesService = new CodesService(forestAreaCodeRepository, forestAreaCodeResourceAssembler,
                 generalScopeCodeRepository, generalScopeCodeResourceAssembler,
                 projectTypeCodeRepository, projectTypeCodeResourceAssembler, programAreaRepository, programAreaResourceAssembler,
                 forestOrgUnitCodeRepository, forestRegionUnitCodeResourceAssembler, forestDistrictUnitCodeResourceAssembler, bcParksOrgUnitCodeRepository, bcParksRegionCodeResourceAssembler,
                 bcParksSectionCodeResourceAssembler, objectiveTypeCodeResourceAssembler, objectiveTypeCodeRepository, projectPlanStatusCodeResourceAssembler, projectPlanStatusCodeRepository,
-                activityStatusCodeResourceAssembler, activityStatusCodeRepository);
+                activityStatusCodeResourceAssembler, activityStatusCodeRepository, activityCategoryCodeResourceAssembler, activityCategoryCodeRepository);
     }
 
     @Test
@@ -1008,5 +1013,83 @@ class CodesServiceTest {
         );
         assertTrue(exception.getMessage().contains("Error fetching activity status code"));
     }
+
+    @Test
+    void testGetAllActivityCategoryCodes_Success() throws ServiceException {
+        // Arrange
+        List<ActivityCategoryCodeEntity> entities = new ArrayList<>();
+        entities.add(new ActivityCategoryCodeEntity());
+        entities.add(new ActivityCategoryCodeEntity());
+
+        when(activityCategoryCodeRepository.findAll()).thenReturn(entities);
+        when(activityCategoryCodeResourceAssembler.toCollectionModel(entities))
+                .thenReturn(CollectionModel.of(new ArrayList<>()));
+
+        // Act
+        CollectionModel<ActivityCategoryCodeModel> result = codesService.getAllActivityCategoryCodes();
+
+        // Assert
+        assertNotNull(result);
+    }
+
+    @Test
+    void testGetAllActivityCategoryCodes_Exception() {
+        // Arrange
+        when(activityCategoryCodeRepository.findAll()).thenThrow(new RuntimeException("Error fetching activity category codes"));
+    
+        // Act & Assert
+        ServiceException exception = assertThrows(
+                ServiceException.class,
+                () -> codesService.getAllActivityCategoryCodes()
+        );
+        assertEquals("Error fetching activity category codes", exception.getMessage());
+    }
+    
+    @Test
+    void testGetActivityCategoryCodeById_Success() throws ServiceException {
+        // Arrange
+        String exampleId = UUID.randomUUID().toString();
+        ActivityCategoryCodeEntity entity = new ActivityCategoryCodeEntity();
+        when(activityCategoryCodeRepository.findById(exampleId))
+                .thenReturn(Optional.of(entity));
+        when(activityCategoryCodeResourceAssembler.toModel(entity))
+                .thenReturn(new ActivityCategoryCodeModel());
+
+        // Act
+        ActivityCategoryCodeModel result = codesService.getActivityCategoryCodeById(exampleId);
+
+        // Assert
+        assertNotNull(result);
+    }
+
+    @Test
+    void testGetActivityCategoryCodeById_NotFound() throws ServiceException {
+        // Arrange
+        String nonExistentId = UUID.randomUUID().toString();
+        when(activityCategoryCodeRepository.findById(nonExistentId))
+                .thenReturn(Optional.empty());
+
+        // Act
+        ActivityCategoryCodeModel result = codesService.getActivityCategoryCodeById(nonExistentId);
+
+        // Assert
+        assertNull(result);
+    }
+
+    @Test
+    void testGetActivityCategoryCodeById_Exception() {
+        // Arrange
+        String exampleId = UUID.randomUUID().toString();
+        when(activityCategoryCodeRepository.findById(exampleId))
+                .thenThrow(new RuntimeException("Error fetching activity category code"));
+
+        // Act & Assert
+        ServiceException exception = assertThrows(
+                ServiceException.class,
+                () -> codesService.getActivityCategoryCodeById(exampleId)
+        );
+        assertTrue(exception.getMessage().contains("Error fetching activity category code"));
+    }
+
 
 }
