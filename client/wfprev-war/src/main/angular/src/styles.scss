@@ -93,5 +93,28 @@ html, body{
 }
 
 .mat-mdc-tab-body-wrapper {
-  height: calc(100vh - 250px) !important
+  height: calc(100vh - 210px) !important
+}
+
+.custom-marker-cluster {
+  background-color: transparent; /* Remove default background */
+}
+
+.cluster-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background-color: #5595D9; /* Blue background */
+  border-radius: 50%; /* Circular shape */
+  color: white; /* White text */
+  font-size: 16px; /* Text size */
+  font-weight: bold; /* Bold text */
+  border: 1px solid black; /* Optional white border */
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); /* Optional shadow */
+}
+
+.cluster-icon span {
+  margin: 0; /* Center text properly */
 }
