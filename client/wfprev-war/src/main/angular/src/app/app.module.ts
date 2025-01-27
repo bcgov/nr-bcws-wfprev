@@ -12,6 +12,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatDialogModule } from '@angular/material/dialog';
 import { ErrorPageComponent } from './components/error-page/error-page/error-page.component';
 import { CustomDateTimeProvider, CustomOAuthLogger } from './utils';
+import { MapConfigService } from './services/map-config.service';
 
 @NgModule({
   declarations: [AppComponent],
@@ -25,12 +26,13 @@ import { CustomDateTimeProvider, CustomOAuthLogger } from './utils';
     MatMenuModule,
     BrowserAnimationsModule,
     MatDialogModule,
-    ErrorPageComponent
+    ErrorPageComponent,
   ],
   providers: [
     provideHttpClient(withInterceptorsFromDi()),
     OAuthService,
     UrlHelperService,
+    MapConfigService,
     { provide: OAuthLogger, useClass: CustomOAuthLogger},
     { provide: DateTimeProvider, useClass: CustomDateTimeProvider },
   ],
