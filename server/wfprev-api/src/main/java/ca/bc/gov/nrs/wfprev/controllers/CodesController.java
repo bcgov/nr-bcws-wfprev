@@ -61,6 +61,7 @@ public class CodesController extends CommonController {
                 case CodeTables.ACTIVITY_STATUS_CODE -> result = codesService.getAllActivityStatusCodes();
                 case CodeTables.RISK_RATING_CODE -> result = codesService.getAllRiskRatingCodes();
                 case CodeTables.CONTRACT_PHASE_CODE -> result = codesService.getAllContractPhaseCodes();
+                case CodeTables.ACTIVITY_CATEGORY_CODE -> result = codesService.getAllActivityCategoryCodes();
 
                 default -> {
                     log.error("Invalid code table: {}", codeTable);
@@ -140,6 +141,7 @@ public class CodesController extends CommonController {
             case CodeTables.ACTIVITY_STATUS_CODE -> codesService.getActivityStatusCodeById(id);
             case CodeTables.RISK_RATING_CODE -> codesService.getRiskRatingCodeById(id);
             case CodeTables.CONTRACT_PHASE_CODE -> codesService.getContractPhaseCodeById(id);
+            case CodeTables.ACTIVITY_CATEGORY_CODE -> codesService.getActivityCategoryCodeById(id);
             default -> null;
         };
     }

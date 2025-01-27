@@ -9,23 +9,23 @@ import org.springframework.stereotype.Component;
 
 import ca.bc.gov.nrs.wfprev.common.enums.CodeTables;
 import ca.bc.gov.nrs.wfprev.controllers.CodesController;
-import ca.bc.gov.nrs.wfprev.data.entities.RiskRatingCodeEntity;
-import ca.bc.gov.nrs.wfprev.data.models.RiskRatingCodeModel;
+import ca.bc.gov.nrs.wfprev.data.entities.ActivityCategoryCodeEntity;
+import ca.bc.gov.nrs.wfprev.data.models.ActivityCategoryCodeModel;
 
 @Component
-public class RiskRatingCodeResourceAssembler extends RepresentationModelAssemblerSupport<RiskRatingCodeEntity, RiskRatingCodeModel> {
+public class ActivityCategoryCodeResourceAssembler extends RepresentationModelAssemblerSupport<ActivityCategoryCodeEntity, ActivityCategoryCodeModel> {
 
-    public RiskRatingCodeResourceAssembler() {
-        super(CodesController.class, RiskRatingCodeModel.class);
+    public ActivityCategoryCodeResourceAssembler() {
+        super(CodesController.class, ActivityCategoryCodeModel.class);
     }
 
-    public RiskRatingCodeEntity toEntity(RiskRatingCodeModel model) {
-        if(model == null) {
+    public ActivityCategoryCodeEntity toEntity(ActivityCategoryCodeModel model) {
+        if (model == null) {
             return null;
         }
-        RiskRatingCodeEntity entity = new RiskRatingCodeEntity();
+        ActivityCategoryCodeEntity entity = new ActivityCategoryCodeEntity();
 
-        entity.setRiskRatingCode(model.getRiskRatingCode());
+        entity.setActivityCategoryCode(model.getActivityCategoryCode());
         entity.setDescription(model.getDescription());
         entity.setDisplayOrder(model.getDisplayOrder());
         entity.setEffectiveDate(model.getEffectiveDate());
@@ -40,15 +40,15 @@ public class RiskRatingCodeResourceAssembler extends RepresentationModelAssemble
     }
 
     @Override
-    public RiskRatingCodeModel toModel(RiskRatingCodeEntity entity) {
-        RiskRatingCodeModel model = instantiateModel(entity);
+    public ActivityCategoryCodeModel toModel(ActivityCategoryCodeEntity entity) {
+        ActivityCategoryCodeModel model = instantiateModel(entity);
 
         model.add(linkTo(
                 methodOn(CodesController.class)
-                        .getCodeById(CodeTables.RISK_RATING_CODE, entity.getRiskRatingCode()))
+                        .getCodeById(CodeTables.ACTIVITY_CATEGORY_CODE, entity.getActivityCategoryCode()))
                 .withSelfRel());
 
-        model.setRiskRatingCode(entity.getRiskRatingCode());
+        model.setActivityCategoryCode(entity.getActivityCategoryCode());
         model.setDescription(entity.getDescription());
         model.setDisplayOrder(entity.getDisplayOrder());
         model.setEffectiveDate(entity.getEffectiveDate());
@@ -63,11 +63,10 @@ public class RiskRatingCodeResourceAssembler extends RepresentationModelAssemble
     }
 
     @Override
-    public CollectionModel<RiskRatingCodeModel> toCollectionModel(Iterable<? extends RiskRatingCodeEntity> entities)
-    {
-        CollectionModel<RiskRatingCodeModel> resources = super.toCollectionModel(entities);
+    public CollectionModel<ActivityCategoryCodeModel> toCollectionModel(Iterable<? extends ActivityCategoryCodeEntity> entities) {
+        CollectionModel<ActivityCategoryCodeModel> resources = super.toCollectionModel(entities);
 
-        resources.add(linkTo(methodOn(CodesController.class).getCodes(CodeTables.RISK_RATING_CODE)).withSelfRel());
+        resources.add(linkTo(methodOn(CodesController.class).getCodes(CodeTables.ACTIVITY_CATEGORY_CODE)).withSelfRel());
 
         return resources;
     }

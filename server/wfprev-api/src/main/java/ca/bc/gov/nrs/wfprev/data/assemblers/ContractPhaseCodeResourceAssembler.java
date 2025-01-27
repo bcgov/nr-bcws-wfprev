@@ -45,7 +45,7 @@ public class ContractPhaseCodeResourceAssembler extends RepresentationModelAssem
 
         model.add(linkTo(
                 methodOn(CodesController.class)
-                        .getCodeById(CodeTables.ACTIVITY_STATUS_CODE, entity.getContractPhaseCode()))
+                        .getCodeById(CodeTables.CONTRACT_PHASE_CODE, entity.getContractPhaseCode()))
                 .withSelfRel());
 
         model.setContractPhaseCode(entity.getContractPhaseCode());
@@ -67,7 +67,7 @@ public class ContractPhaseCodeResourceAssembler extends RepresentationModelAssem
     {
         CollectionModel<ContractPhaseCodeModel> resources = super.toCollectionModel(entities);
 
-        resources.add(linkTo(methodOn(CodesController.class).getCodes(CodeTables.ACTIVITY_STATUS_CODE)).withSelfRel());
+        resources.add(linkTo(methodOn(CodesController.class).getCodes(CodeTables.CONTRACT_PHASE_CODE)).withSelfRel());
 
         return resources;
     }
