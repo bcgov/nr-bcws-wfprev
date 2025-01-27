@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { Injector } from '@angular/core';
 import { AppConfigService } from '../services/app-config.service';
 import { TokenService } from 'src/app/services/token.service';
-import { CustomOAuthLogger, CustomDateTimeProvider } from './index';
+import { CustomOAuthLogger, CustomDateTimeProvider, getActiveMap } from './index';
 
 describe('App Initializer and Custom Classes', () => {
   let injector: Injector;
@@ -72,6 +72,80 @@ describe('App Initializer and Custom Classes', () => {
       const result = dateTimeProvider.new();
       expect(newSpy).toHaveBeenCalled();
       expect(result).toBeInstanceOf(Date);
+    });
+  });
+
+  describe('getActiveMap', () => {
+    let originalWindow: any;
+  
+    beforeEach(() => {
+      // Save the original window object to restore after each test
+      originalWindow = { ...window };
+    });
+  
+    afterEach(() => {
+      // Restore the original window object
+      (window as any).SMK = originalWindow.SMK;
+    });
+  
+    it('should return the map from smk parameter when provided', () => {
+      const mockMap = {
+        $viewer: { map: { _layersMaxZoom: 0 } },
+      };
+      const smk = {
+        MAP: {
+          'mock-key': mockMap,
+        },
+      };
+  
+      const result = getActiveMap(smk);
+  
+      expect(result).toBe(mockMap);
+      expect(mockMap.$viewer.map._layersMaxZoom).toBe(20);
+    });
+  
+    it('should fall back to window.SMK when smk is null', () => {
+      const mockMap = {
+        $viewer: { map: { _layersMaxZoom: 0 } },
+      };
+  
+      (window as any).SMK = {
+        MAP: {
+          'mock-key': mockMap,
+        },
+      };
+  
+      const result = getActiveMap(null);
+  
+      expect(result).toBe(mockMap);
+      expect(mockMap.$viewer.map._layersMaxZoom).toBe(20);
+    });
+  
+    it('should handle SMK.MAP with no keys', () => {
+      (window as any).SMK = {
+        MAP: {},
+      };
+  
+      const result = getActiveMap(null);
+  
+      expect(result).toBeUndefined();
+    });
+  
+    it('should handle smk being null and SMK.MAP having multiple keys', () => {
+      const mockMap1 = { $viewer: { map: { _layersMaxZoom: 0 } } };
+      const mockMap2 = { $viewer: { map: { _layersMaxZoom: 0 } } };
+  
+      (window as any).SMK = {
+        MAP: {
+          'key1': mockMap1,
+          'key2': mockMap2,
+        },
+      };
+  
+      const result = getActiveMap(null);
+  
+      expect(result).toBe(mockMap2); // Should return the last map
+      expect(mockMap2.$viewer.map._layersMaxZoom).toBe(20);
     });
   });
 });

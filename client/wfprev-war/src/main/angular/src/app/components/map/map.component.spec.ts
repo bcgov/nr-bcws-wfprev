@@ -1,119 +1,156 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { MapComponent } from './map.component';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
-import * as L from 'leaflet';
-import { AppConfigService } from 'src/app/services/app-config.service';
+import { MapConfigService } from 'src/app/services/map-config.service';
+import { MapService } from 'src/app/services/map.service';
+import { ResizablePanelComponent } from 'src/app/components/resizable-panel/resizable-panel.component';
 import { of } from 'rxjs';
-import { ChangeDetectorRef } from '@angular/core';
-
-// Mock ApplicationConfig
-const mockApplicationConfig = {
-  application: {
-    baseUrl: 'http://test.com',
-    lazyAuthenticate: false, // Ensure this property is defined
-    enableLocalStorageToken: true,
-    acronym: 'TEST',
-    environment: 'DEV',
-    version: '1.0.0',
-  },
-  webade: {
-    oauth2Url: 'http://oauth.test',
-    clientId: 'test-client',
-    authScopes: 'TEST.*',
-  },
-  rest: {},
-};
+import { ElementRef } from '@angular/core';
+import { HttpClientTestingModule } from '@angular/common/http/testing';  
+import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { AppConfigService } from 'src/app/services/app-config.service';
+import { CodeTableServices } from 'src/app/services/code-table-services';
+import { ProjectService } from 'src/app/services/project-services';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 // Mock AppConfigService
 class MockAppConfigService {
-  private appConfig = mockApplicationConfig;
-
-  loadAppConfig(): Promise<void> {
-    return Promise.resolve(); // Simulate successful configuration loading
+  getConfig() {
+    return {
+      application: {
+        baseUrl: 'http://localhost',
+        lazyAuthenticate: false,
+        enableLocalStorageToken: false,
+      },
+    };
   }
 
-  getConfig(): any {
-    return this.appConfig; // Return mock configuration
+  loadAppConfig() {
+    return Promise.resolve(true); // Mock loadAppConfig to return a resolved promise
+  }
+}
+
+// Mock CodeTableServices
+class MockCodeTableServices {
+  fetchCodeTable() {
+    return of({ wfprev: 'mockedData' }); // Mock fetchCodeTable to return an observable
+  }
+}
+
+// Mock ProjectService
+class MockProjectService {
+  fetchProjects() {
+    return of({ wfprev: 'mockedData' }); // Mock fetchProjects to return an observable
   }
 }
 
 describe('MapComponent', () => {
   let component: MapComponent;
   let fixture: ComponentFixture<MapComponent>;
-  let mapMock: Partial<L.Map>;
-  let cdrMock: jasmine.SpyObj<ChangeDetectorRef>;
-  let mockAppConfigService: jasmine.SpyObj<AppConfigService>;
+  let mapConfigServiceMock: jasmine.SpyObj<MapConfigService>;
+  let mapServiceMock: jasmine.SpyObj<MapService>;
+  let mapContainer: jasmine.SpyObj<ElementRef>;
 
-  beforeEach(async () => {
-    mapMock = {
-      fitBounds: jasmine.createSpy('fitBounds'),
-      invalidateSize: jasmine.createSpy('invalidateSize'),
-      addLayer: jasmine.createSpy('addLayer'),
-    };
-  
-    cdrMock = jasmine.createSpyObj('ChangeDetectorRef', ['markForCheck']);
-    mockAppConfigService = jasmine.createSpyObj('AppConfigService', ['getConfig']);
-    mockAppConfigService.getConfig.and.returnValue({
-      application: {
-        acronym: 'TEST',
-        version: '1.0',
-        baseUrl: 'https://test.example.com',
-        environment: 'test',
-        lazyAuthenticate: false,
-        enableLocalStorageToken: true,
-        allowLocalExpiredToken: false,
-        localStorageTokenKey: 'test-token-key'
-      },
-      rest: {
-        someServiceUrl: 'https://rest.example.com'
-      },
-      webade: {
-        oauth2Url: 'https://auth.example.com',
-        clientId: 'test-client-id',
-        authScopes: 'read write',
-        enableCheckToken: true,
-        checkTokenUrl: 'https://auth.example.com/check-token'
-      }
-    });
-  
-    spyOn(L, 'map').and.returnValue(mapMock as L.Map);
-  
-    await TestBed.configureTestingModule({
+  beforeEach(() => {
+    mapConfigServiceMock = jasmine.createSpyObj<MapConfigService>('MapConfigService', ['getMapConfig']);
+    mapServiceMock = jasmine.createSpyObj<MapService>('MapService', ['getMapIndex', 'setMapIndex', 'createSMK']);
+    mapContainer = jasmine.createSpyObj('ElementRef', ['nativeElement']);
+    mapConfigServiceMock.getMapConfig.and.returnValue(Promise.resolve({ theme: 'testTheme' }));
+
+
+    TestBed.configureTestingModule({
       imports: [
         MapComponent,
-        BrowserAnimationsModule,
+        ResizablePanelComponent,
         HttpClientTestingModule,
+        BrowserAnimationsModule,
       ],
       providers: [
+        { provide: MapConfigService, useValue: mapConfigServiceMock },
+        { provide: MapService, useValue: mapServiceMock },
         { provide: AppConfigService, useClass: MockAppConfigService },
+        { provide: CodeTableServices, useClass: MockCodeTableServices },
+        { provide: ProjectService, useClass: MockProjectService },
       ],
-    }).compileComponents();
-
-    // Simulate configuration loading
-    const appConfigService = TestBed.inject(AppConfigService);
-    await appConfigService.loadAppConfig();
+      schemas: [NO_ERRORS_SCHEMA],
+    });
 
     fixture = TestBed.createComponent(MapComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
+
+    spyOn(console, 'error'); // Spy on console.error for error handling tests
   });
 
-  it('should create the component', () => {
-    expect(component).toBeTruthy();
+  describe('ngAfterViewInit', () => {
+    it('should initialize map if mapContainer is available', fakeAsync(() => {
+      mapContainer.nativeElement = document.createElement('div');
+      component.mapContainer = mapContainer;
+
+      mapServiceMock.getMapIndex.and.returnValue(0);
+      mapConfigServiceMock.getMapConfig.and.returnValue(Promise.resolve('mockConfig'));
+
+      component.ngAfterViewInit();
+      tick(); // Simulate async completion
+
+      expect(mapServiceMock.getMapIndex).toHaveBeenCalled();
+      expect(mapServiceMock.setMapIndex).toHaveBeenCalledWith(1);
+      expect(mapServiceMock.createSMK).toHaveBeenCalled();
+    }));
   });
 
-  it('should initialize the Leaflet map', () => {
-    expect(L.map).toHaveBeenCalledWith('map');
-    expect(mapMock.fitBounds).toHaveBeenCalledWith([
-      [48.3, -139.1],
-      [60.0, -114.0],
-    ]);
+  describe('initMap', () => {
+    it('should initialize map with correct config and device settings', fakeAsync(() => {
+      mapContainer.nativeElement = document.createElement('div');
+      component.mapContainer = mapContainer;
+
+      const mockConfig = { theme: 'testTheme' };
+      mapConfigServiceMock.getMapConfig.and.returnValue(Promise.resolve(mockConfig));
+      mapServiceMock.getMapIndex.and.returnValue(1);
+
+      component.ngAfterViewInit();
+      tick(); // Simulate async completion
+
+      expect(component.mapConfig).toEqual([
+        mockConfig,
+        { viewer: { device: 'desktop' } },
+        'theme=wf',
+        '?',
+      ]);
+      expect(mapServiceMock.createSMK).toHaveBeenCalled();
+    }));
+
+    it('should handle errors while loading mapConfig', fakeAsync(() => {
+      mapContainer.nativeElement = document.createElement('div');
+      component.mapContainer = mapContainer;
+
+      mapConfigServiceMock.getMapConfig.and.returnValue(Promise.reject('Config Load Error'));
+
+      component.ngAfterViewInit();
+      tick(); // Simulate async completion
+
+      expect(console.error).toHaveBeenCalledWith('Error loading map:', 'Config Load Error');
+    }));
   });
 
-  it('should call invalidateSize() on panel resize', () => {
-    component['map'] = mapMock as L.Map;
-    component.onPanelResized();
-    expect(mapMock.invalidateSize).toHaveBeenCalled();
+  describe('clone', () => {
+    it('should return a deep clone of an object', () => {
+      const original = { prop: 'value' };
+      const clone = component.clone(original);
+
+      expect(clone).not.toBe(original);
+      expect(clone.prop).toBe('value');
+    });
+  });
+
+  describe('mapIndex and mapService', () => {
+    it('should update mapIndex after getting map index', fakeAsync(() => {
+      mapServiceMock.getMapIndex.and.returnValue(5);
+
+      component.ngAfterViewInit();
+      tick(); // Simulate async completion
+
+      expect(component.mapIndex).toBe(6);
+      expect(mapServiceMock.setMapIndex).toHaveBeenCalledWith(6);
+    }));
   });
 });
