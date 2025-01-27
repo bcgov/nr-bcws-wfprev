@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { AfterViewInit, Component, EventEmitter, OnInit, Output  } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { AfterViewInit, Component, EventEmitter, OnInit, Output, OnDestroy  } from '@angular/core';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators , FormsModule } from '@angular/forms';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { ActivatedRoute } from '@angular/router';
 import L from 'leaflet';
@@ -8,12 +8,10 @@ import { ProjectService } from 'src/app/services/project-services';
 import { CodeTableServices } from 'src/app/services/code-table-services';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Messages } from 'src/app/utils/messages';
-import { FormsModule } from '@angular/forms';
 import {
   validateLatLong,
   formatLatLong,
 } from 'src/app/utils/tools';
-import { OnDestroy } from '@angular/core';
 
 @Component({
   selector: 'app-project-details',
@@ -81,7 +79,7 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
       closestCommunityName: ['', [Validators.required]],
       forestRegionOrgUnitId: [''],
       forestDistrictOrgUnitId: [''],
-      primaryObjectiveTypeCode: [''],
+      primaryObjectiveTypeCode: ['', [Validators.required]],
       secondaryObjectiveTypeCode: [''],
       secondaryObjectiveRationale: [''],
       bcParksRegionOrgUnitId: [''],
@@ -97,7 +95,7 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
   }
 
   loadProjectDetails(): void {
-    this.projectGuid = this.route.snapshot?.queryParamMap?.get('projectGuid') || '';
+    this.projectGuid = this.route.snapshot?.queryParamMap?.get('projectGuid') ?? '';
     if (!this.projectGuid) return;
   
     this.projectService.getProjectByProjectGuid(this.projectGuid).subscribe({
@@ -251,6 +249,7 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
       programAreaGuid: data.programAreaGuid || '',
       projectLead: data.projectLead,
       projectLeadEmailAddress: data.projectLeadEmailAddress,
+      projectDescription: data.projectDescription,
       siteUnitName: data.siteUnitName,
       closestCommunityName: data.closestCommunityName,
       forestRegionOrgUnitId: data.forestRegionOrgUnitId,

@@ -36,6 +36,10 @@ public class CodesService implements CommonService {
     private final ObjectiveTypeCodeRepository objectiveTypeCodeRepository;
     private final ProjectPlanStatusCodeResourceAssembler projectPlanStatusCodeResourceAssembler;
     private final ProjectPlanStatusCodeRepository projectPlanStatusCodeRepository;
+    private final ActivityStatusCodeResourceAssembler activityStatusCodeResourceAssembler;
+    private final ActivityStatusCodeRepository activityStatusCodeRepository;
+    private final ActivityCategoryCodeResourceAssembler activityCategoryCodeResourceAssembler;
+    private final ActivityCategoryCodeRepository activityCategoryCodeRepository;
 
 
     public CodesService(ForestAreaCodeRepository forestAreaCodeRepository, ForestAreaCodeResourceAssembler forestAreaCodeResourceAssembler,
@@ -43,7 +47,9 @@ public class CodesService implements CommonService {
                         ProjectTypeCodeRepository projectTypeCodeRepository, ProjectTypeCodeResourceAssembler projectTypeCodeResourceAssembler, ProgramAreaRepository programAreaRepository, ProgramAreaResourceAssembler programAreaResourceAssembler,
                         ForestOrgUnitCodeRepository forestRegionCodeRepository, ForestRegionUnitCodeResourceAssembler forestRegionCodeResourceAssembler, ForestDistrictUnitCodeResourceAssembler forestDistrictUnitCodeResourceAssembler,
                         BCParksOrgUnitCodeRepository bcParksOrgUnitCodeRepository, BCParksRegionCodeResourceAssembler bcParksRegionCodeResourceAssembler, BCParksSectionCodeResourceAssembler bcParksSectionCodeResourceAssembler,
-                        ObjectiveTypeCodeResourceAssembler objectiveTypeCodeResourceAssembler, ObjectiveTypeCodeRepository objectiveTypeCodeRepository, ProjectPlanStatusCodeResourceAssembler projectPlanStatusCodeResourceAssembler, ProjectPlanStatusCodeRepository projectPlanStatusCodeRepository) {
+                        ObjectiveTypeCodeResourceAssembler objectiveTypeCodeResourceAssembler, ObjectiveTypeCodeRepository objectiveTypeCodeRepository, ProjectPlanStatusCodeResourceAssembler projectPlanStatusCodeResourceAssembler,
+                        ProjectPlanStatusCodeRepository projectPlanStatusCodeRepository, ActivityStatusCodeResourceAssembler activityStatusCodeResourceAssembler, ActivityStatusCodeRepository activityStatusCodeRepository,
+                        ActivityCategoryCodeResourceAssembler activityCategoryCodeResourceAssembler, ActivityCategoryCodeRepository activityCategoryCodeRepository) {
         this.forestAreaCodeRepository = forestAreaCodeRepository;
         this.forestAreaCodeResourceAssembler = forestAreaCodeResourceAssembler;
         this.generalScopeCodeRepository = generalScopeCodeRepository;
@@ -62,6 +68,10 @@ public class CodesService implements CommonService {
         this.objectiveTypeCodeRepository = objectiveTypeCodeRepository;
         this.projectPlanStatusCodeResourceAssembler = projectPlanStatusCodeResourceAssembler;
         this.projectPlanStatusCodeRepository = projectPlanStatusCodeRepository;
+        this.activityStatusCodeResourceAssembler = activityStatusCodeResourceAssembler;
+        this.activityStatusCodeRepository = activityStatusCodeRepository;
+        this.activityCategoryCodeResourceAssembler = activityCategoryCodeResourceAssembler;
+        this.activityCategoryCodeRepository = activityCategoryCodeRepository;
     }
 
     /**
@@ -245,4 +255,41 @@ public class CodesService implements CommonService {
             throw new ServiceException(e.getLocalizedMessage(), e);
         }
     }
+
+    public CollectionModel<ActivityStatusCodeModel> getAllActivityStatusCodes() throws ServiceException {
+        try {
+            List<ActivityStatusCodeEntity> entities = activityStatusCodeRepository.findAll();
+            return activityStatusCodeResourceAssembler.toCollectionModel(entities);
+        } catch (Exception e) {
+            throw new ServiceException(e.getLocalizedMessage(), e);
+        }
+    }
+
+    public ActivityStatusCodeModel getActivityStatusCodeById(String id) throws ServiceException {
+        try {
+            return activityStatusCodeRepository.findById(id).map(activityStatusCodeResourceAssembler::toModel).orElse(null);
+        } catch (Exception e) {
+            throw new ServiceException(e.getLocalizedMessage(), e);
+        }
+    }
+
+    public CollectionModel<ActivityCategoryCodeModel> getAllActivityCategoryCodes() throws ServiceException {
+        try {
+            List<ActivityCategoryCodeEntity> entities = activityCategoryCodeRepository.findAll();
+            return activityCategoryCodeResourceAssembler.toCollectionModel(entities);
+        } catch (Exception e) {
+            throw new ServiceException(e.getLocalizedMessage(), e);
+        }
+    }
+
+    public ActivityCategoryCodeModel getActivityCategoryCodeById(String id) throws ServiceException {
+        try {
+            return activityCategoryCodeRepository.findById(id)
+                    .map(activityCategoryCodeResourceAssembler::toModel)
+                    .orElse(null);
+        } catch (Exception e) {
+            throw new ServiceException(e.getLocalizedMessage(), e);
+        }
+    }
+    
 }
