@@ -871,6 +871,79 @@
           { "sql": "DROP TABLE wfprev.reporting_period_code" }
         ]
       }
-    }
+    },
+    {
+      "changeSet": {
+        "id": "01_00_10_00",
+        "author": "hsaldyga",
+        "tagDatabase": { "tag" : "version_01_00_10_00" },
+        "changes": [
+          {  "sql": "UPDATE wfprev.bc_parks_org_unit SET org_unit_name = 'Kootenay' WHERE org_unit_identifier = 10"  },
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_10/00/ddl/WFPREV.burn_impl_season_code.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_10/00/ddl/WFPREV.fuel_management_plan.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_10/00/ddl/WFPREV.fuel_management_plan_audit.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_10/00/ddl/wfprev.ddl.drop_misnamed_tables.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_10/00/ddl/WFPREV.cultural_rx_fire_plan.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_10/00/ddl/WFPREV.cultural_rx_fire_plan_audit.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_10/00/ddl/WFPREV.cultural_rx_fire_project.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_10/00/ddl/WFPREV.cultural_rx_fire_prj_audit.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_10/00/dml/app_wf1_prev.dml.burn_impl_season_code.sql"
+            }
+          }
+        ],
+        "rollback": [
+          { "sql": "DROP TABLE wfprev.cultural_rx_fire_prj_audit" },
+          { "sql": "DROP TABLE wfprev.cultural_rx_fire_project" },
+          { "sql": "DROP TABLE wfprev.cultural_rx_fire_plan_audit" },
+          { "sql": "DROP TABLE wfprev.cultural_rx_fire_plan" },
+          { "sql": "DROP TABLE wfprev.fuel_management_plan_audit" },
+          { "sql": "DROP TABLE wfprev.fuel_management_plan" },
+          { "sql": "DROP TABLE wfprev.burn_impl_season_code" }
+        ]
+      }
+    }    
   ] 
 }
