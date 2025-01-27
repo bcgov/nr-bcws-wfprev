@@ -1170,7 +1170,7 @@ class CodesServiceTest {
         // Act & Assert
         ServiceException exception = assertThrows(
                 ServiceException.class,
-                () -> codesService.getRiskRatingCodeById(exampleId)
+                () -> codesService.getActivityCategoryCodeById(exampleId)
         );
         assertTrue(exception.getMessage().contains("Error fetching activity category code"));
     }
