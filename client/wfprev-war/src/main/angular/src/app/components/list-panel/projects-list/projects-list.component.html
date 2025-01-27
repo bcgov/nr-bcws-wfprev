@@ -9,7 +9,7 @@
       </select>
       <div class="result-count">
             <!-- Result Count -->
-        <span>{{ projectList?.length }} Results</span>
+        <span>{{ projectList.length }} Results</span>
       </div>
     </div>
     <div class="create-project-button-container">
@@ -25,7 +25,7 @@
   <div class="list-contents">
     <mat-accordion>
       
-      <mat-expansion-panel *ngFor="let project of projectList" #panel="matExpansionPanel">
+      <mat-expansion-panel *ngFor="let project of projectList?.length ? projectList : []" (click)="highlightProjectPolygons(project)" #panel="matExpansionPanel">
         <mat-expansion-panel-header class="expansion-panel-header">
           <mat-panel-title class="project-title">
             <div class="custom-indicator">

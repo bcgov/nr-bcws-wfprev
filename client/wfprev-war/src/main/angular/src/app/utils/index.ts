@@ -45,3 +45,21 @@ export class CustomDateTimeProvider extends DateTimeProvider {
     return new Date();
   }
 }
+
+export function getActiveMap(smk: any | null = null) {
+    const SMK = smk || (window as any)['SMK'];
+    const key = Object.keys(SMK.MAP)[Object.keys(SMK.MAP).length - 1];
+    if (key) {
+      const map = SMK.MAP[key];
+      map.$viewer.map._layersMaxZoom = 20;
+      return map;
+    }
+    // Sort of a fail-safe if the object doesn't have a key to force-retry with the window SMK object
+    else {
+      const smkMap = SMK.MAP;
+      const lastKey = Object.keys(smkMap).pop(); // Safely gets the last key
+      if (lastKey) {
+          return smkMap[lastKey]; // Use the key to access the value
+      }
+    }
+}

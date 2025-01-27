@@ -49,15 +49,21 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'         
-          cache: 'yarn'
-          cache-dependency-path: './client/wfprev-war/src/main/angular/yarn.lock'
+          node-version: '20' 
+
+      - name: Add .npmrc file
+        working-directory: ./client/wfprev-war/src/main/angular
+        run: echo -e $NPMRC > ~/.npmrc
+        
+      - name: Debug .npmrc
+        run: cat ~/.npmrc 
      
       - name: Clear cache
         working-directory: ./client/wfprev-war/src/main/angular
         run: |
+          rm -f package-lock.json
           rm -rf node_modules
-          yarn cache clean
+          npm cache clean --force
 
       - name: Delete existing coverage folder
         working-directory: ./client/wfprev-war/src/main/angular
@@ -69,15 +75,16 @@ jobs:
             echo "No coverage directory found. Skipping deletion."
           fi
 
-      - name: Install dependencies and Angular CLI
+      - name: Install dependencies
         working-directory: ./client/wfprev-war/src/main/angular
-        run: |
-          yarn install
-          yarn global add @angular/cli
+        run: npm install
+
+      - name: Install Angular CLI globally
+        run: npm install -g @angular/cli  
 
       - name: Run client tests with coverage
         working-directory: ./client/wfprev-war/src/main/angular
-        run: $(yarn global bin)/ng test --no-watch --code-coverage
+        run: ng test --no-watch --code-coverage
      
       - name: Build, Test, and Analyze
         run: |
