@@ -960,6 +960,54 @@
 			"response": []
 		},
 		{
+			"name": "GET Fiscal Status Codes",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function() {",
+							"    pm.response.to.have.status(200);",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{LOCAL_API_URL}}/codes/planFiscalStatusCodes",
+					"host": [
+						"{{LOCAL_API_URL}}"
+					],
+					"path": [
+						"codes",
+						"planFiscalStatusCodes"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "Get ProjectFiscal",
 			"event": [
 				{

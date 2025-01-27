@@ -31,6 +31,8 @@ class CodesServiceTest {
     private ProjectPlanStatusCodeRepository projectPlanStatusCodeRepository;
     private ActivityStatusCodeRepository activityStatusCodeRepository;
     private ActivityCategoryCodeRepository activityCategoryCodeRepository;
+    private PlanFiscalStatusCodeRepository planFiscalStatusCodeRepository;
+
 
     private ProgramAreaRepository programAreaRepository;
     private ProgramAreaResourceAssembler programAreaResourceAssembler;
@@ -44,6 +46,7 @@ class CodesServiceTest {
     private ProjectPlanStatusCodeResourceAssembler projectPlanStatusCodeResourceAssembler;
     private ActivityStatusCodeResourceAssembler activityStatusCodeResourceAssembler;
     private ActivityCategoryCodeResourceAssembler activityCategoryCodeResourceAssembler;
+    private PlanFiscalStatusCodeResourceAssembler planFiscalStatusCodeResourceAssembler;
 
     @BeforeEach
     void setup() {
@@ -69,13 +72,16 @@ class CodesServiceTest {
         activityStatusCodeRepository = mock(ActivityStatusCodeRepository.class);
         activityCategoryCodeResourceAssembler = mock(ActivityCategoryCodeResourceAssembler.class);
         activityCategoryCodeRepository = mock(ActivityCategoryCodeRepository.class);
+        planFiscalStatusCodeResourceAssembler = mock(PlanFiscalStatusCodeResourceAssembler.class);
+        planFiscalStatusCodeRepository = mock(PlanFiscalStatusCodeRepository.class);
 
         codesService = new CodesService(forestAreaCodeRepository, forestAreaCodeResourceAssembler,
                 generalScopeCodeRepository, generalScopeCodeResourceAssembler,
                 projectTypeCodeRepository, projectTypeCodeResourceAssembler, programAreaRepository, programAreaResourceAssembler,
                 forestOrgUnitCodeRepository, forestRegionUnitCodeResourceAssembler, forestDistrictUnitCodeResourceAssembler, bcParksOrgUnitCodeRepository, bcParksRegionCodeResourceAssembler,
                 bcParksSectionCodeResourceAssembler, objectiveTypeCodeResourceAssembler, objectiveTypeCodeRepository, projectPlanStatusCodeResourceAssembler, projectPlanStatusCodeRepository,
-                activityStatusCodeResourceAssembler, activityStatusCodeRepository, activityCategoryCodeResourceAssembler, activityCategoryCodeRepository);
+                activityStatusCodeResourceAssembler, activityStatusCodeRepository, activityCategoryCodeResourceAssembler, activityCategoryCodeRepository, planFiscalStatusCodeResourceAssembler, 
+                planFiscalStatusCodeRepository);
     }
 
     @Test
@@ -1089,6 +1095,83 @@ class CodesServiceTest {
                 () -> codesService.getActivityCategoryCodeById(exampleId)
         );
         assertTrue(exception.getMessage().contains("Error fetching activity category code"));
+    }
+
+    @Test
+    void testGetAllPlanFiscalStatusCodes_Success() throws ServiceException {
+        // Arrange
+        List<PlanFiscalStatusCodeEntity> entities = new ArrayList<>();
+        entities.add(new PlanFiscalStatusCodeEntity());
+        entities.add(new PlanFiscalStatusCodeEntity());
+    
+        when(planFiscalStatusCodeRepository.findAll()).thenReturn(entities);
+        when(planFiscalStatusCodeResourceAssembler.toCollectionModel(entities))
+                .thenReturn(CollectionModel.of(new ArrayList<>()));
+    
+        // Act
+        CollectionModel<PlanFiscalStatusCodeModel> result = codesService.getAllPlanFiscalStatusCodes();
+    
+        // Assert
+        assertNotNull(result);
+    }
+    
+    @Test
+    void testGetAllPlanFiscalStatusCodes_Exception() {
+        // Arrange
+        when(planFiscalStatusCodeRepository.findAll()).thenThrow(new RuntimeException("Error fetching plan fiscal status codes"));
+    
+        // Act & Assert
+        ServiceException exception = assertThrows(
+                ServiceException.class,
+                () -> codesService.getAllPlanFiscalStatusCodes()
+        );
+        assertEquals("Error fetching plan fiscal status codes", exception.getMessage());
+    }
+    
+    @Test
+    void testGetPlanFiscalStatusCodeById_Success() throws ServiceException {
+        // Arrange
+        String pfsExampleId = UUID.randomUUID().toString();
+        PlanFiscalStatusCodeEntity entity = new PlanFiscalStatusCodeEntity();
+        when(planFiscalStatusCodeRepository.findById(pfsExampleId))
+                .thenReturn(Optional.of(entity));
+        when(planFiscalStatusCodeResourceAssembler.toModel(entity))
+                .thenReturn(new PlanFiscalStatusCodeModel());
+    
+        // Act
+        PlanFiscalStatusCodeModel result = codesService.getPlanFiscalStatusCodeById(pfsExampleId);
+    
+        // Assert
+        assertNotNull(result);
+    }
+    
+    @Test
+    void testGetPlanFiscalStatusCodeById_NotFound() throws ServiceException {
+        // Arrange
+        String nonExistentId = UUID.randomUUID().toString();
+        when(planFiscalStatusCodeRepository.findById(nonExistentId))
+                .thenReturn(Optional.empty());
+    
+        // Act
+        PlanFiscalStatusCodeModel result = codesService.getPlanFiscalStatusCodeById(nonExistentId);
+    
+        // Assert
+        assertNull(result);
+    }
+    
+    @Test
+    void testGetPlanFiscalStatusCodeById_Exception() {
+        // Arrange
+        String pfsExampleId = UUID.randomUUID().toString();
+        when(planFiscalStatusCodeRepository.findById(pfsExampleId))
+                .thenThrow(new RuntimeException("Error fetching plan fiscal status code"));
+    
+        // Act & Assert
+        ServiceException exception = assertThrows(
+                ServiceException.class,
+                () -> codesService.getPlanFiscalStatusCodeById(pfsExampleId)
+        );
+        assertTrue(exception.getMessage().contains("Error fetching plan fiscal status code"));
     }
 
 
