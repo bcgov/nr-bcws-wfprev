@@ -10,6 +10,7 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { ProjectFiscal } from 'src/app/components/models';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Messages } from 'src/app/utils/messages';
+import { CodeTableServices } from 'src/app/services/code-table-services';
 
 @Component({
   selector: 'app-project-fiscals',
@@ -33,15 +34,20 @@ export class ProjectFiscalsComponent implements OnInit {
   fiscalYears: string[] = [];
   selectedTabIndex = 0;
   messages = Messages;
-  
+  activityCategoryCode: any[] = [];
+  planFiscalStatusCode: any[] = [];
+  ancillaryFundingSourceCode: any[] = [];
+
   constructor(
     private route: ActivatedRoute,
     private projectService: ProjectService,
+    private codeTableService: CodeTableServices,
     private readonly fb: FormBuilder,
     private readonly snackbarService: MatSnackBar,
   ) {}
 
   ngOnInit(): void {
+    this.loadCodeTables();
     this.generateFiscalYears();
     this.loadProjectFiscals();
   }
@@ -56,7 +62,39 @@ export class ProjectFiscalsComponent implements OnInit {
     });
   }
   
+  loadCodeTables(): void {
+    const codeTables = [
+      { name: 'activityCategoryCodes', embeddedKey: 'activityCategoryCode' },
+      { name: 'planFiscalStatusCodes', embeddedKey: 'planFiscalStatusCode' },
+      { name: 'ancillaryFundingSourceCodes', embeddedKey: 'ancillaryFundingSourceCode' },
+    ];
+  
+    codeTables.forEach((table) => {
+      this.codeTableService.fetchCodeTable(table.name).subscribe({
+        next: (data) => {
+          this.assignCodeTableData(table.embeddedKey, data);
+        },
+        error: (err) => {
+          console.error(`Error fetching ${table.name}`, err);
+          this.assignCodeTableData(table.embeddedKey, []);
+        },
+      });
+    });
+  }
 
+  assignCodeTableData(key: string, data: any): void {
+    switch (key) {
+      case 'activityCategoryCode':
+        this.activityCategoryCode = data._embedded.activityCategoryCode || [];
+        break;
+      case 'planFiscalStatusCode':
+        this.planFiscalStatusCode = data._embedded.planFiscalStatusCode || [];
+        break;
+      case 'ancillaryFundingSourceCode':
+        this.ancillaryFundingSourceCode = data._embedded.ancillaryFundingSourceCode || [];
+        break;
+    }
+  }
 
   private createFiscalForm(fiscal?: any): FormGroup {
     return this.fb.group({
@@ -107,7 +145,7 @@ export class ProjectFiscalsComponent implements OnInit {
   
 
   addNewFiscal(): void {
-    const newFiscalData = { fiscalYear: '', projectFiscalName: '' };
+    const newFiscalData = { fiscalYear: '', projectFiscalName: '', projectGuid: this.projectGuid };
     this.projectFiscals.push(newFiscalData);
     this.fiscalForms.push(this.createFiscalForm(newFiscalData));
     this.selectedTabIndex = this.projectFiscals.length - 1; // Navigate to the newly added tab
@@ -131,7 +169,7 @@ export class ProjectFiscalsComponent implements OnInit {
         projectPlanFiscalGuid: updatedData.projectPlanFiscalGuid,
         activityCategoryCode: updatedData.activityCategoryCode,
         fiscalYear: updatedData.fiscalYear ? parseInt(updatedData.fiscalYear, 10) : undefined,
-        projectPlanStatusCode: updatedData.projectPlanStatusCode,
+        projectPlanStatusCode: isUpdate ? updatedData.projectPlanStatusCode : "ACTIVE",
         planFiscalStatusCode: updatedData.planFiscalStatusCode,
         projectFiscalName: updatedData.projectFiscalName,
         projectFiscalDescription: updatedData.projectFiscalDescription,
@@ -154,11 +192,11 @@ export class ProjectFiscalsComponent implements OnInit {
         submittedByUserGuid: updatedData.submittedByUserGuid,
         submittedByUserUserid: updatedData.submittedByUserUserid,
         submissionTimestamp: updatedData.submissionTimestamp,
-        isApprovedInd: updatedData.isApprovedInd,
-        isDelayedInd: updatedData.isDelayedInd,
+        isApprovedInd: isUpdate ? updatedData.isApprovedInd : true,
+        isDelayedInd: isUpdate ? updatedData.isDelayedInd : false,
         fiscalForecastAmount: updatedData.fiscalForecastAmount,
       };
-
+      debugger
       if (isUpdate) {
         // update the existing fiscal
         this.projectService.updateProjectFiscal(this.projectGuid, updatedData.projectPlanFiscalGuid, projectFiscal).subscribe({

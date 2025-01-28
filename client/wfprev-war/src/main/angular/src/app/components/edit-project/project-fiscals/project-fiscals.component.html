@@ -29,8 +29,8 @@
               <div class="form-item">
                 <label>Activity Category<span class="required">*</span></label>
                 <select id="activityCategoryCode" formControlName="activityCategoryCode">
-                  <option [value]="fiscalForms[i].value?.activityCategoryCode">
-                    {{ fiscalForms[i].value?.activityCategoryCode || 'Select Activity Category' }}
+                  <option *ngFor="let item of activityCategoryCode" [value]="item.activityCategoryCode">
+                    {{ item.description || 'Select Activity Category' }}
                   </option>
                 </select>
               </div>
@@ -48,8 +48,8 @@
               <div class="form-item">
                 <label>Fiscal Status<span class="required">*</span></label>
                 <select id="planFiscalStatusCode" formControlName="planFiscalStatusCode">
-                  <option [value]="fiscalForms[i].value?.planFiscalStatusCode">
-                    {{ fiscalForms[i].value?.planFiscalStatusCode || 'Select Fiscal Status' }}
+                  <option *ngFor="let item of planFiscalStatusCode" [value]="item.planFiscalStatusCode">
+                    {{ item.description || 'Select Fiscal Status' }}
                   </option>
                 </select>
               </div>
@@ -133,8 +133,9 @@
               <div class="form-item budget-width">
                 <label>Ancilliary Funding Provider</label>
                 <select id="ancillaryFundingSourceGuid" formControlName="ancillaryFundingSourceGuid">
-                  <option [value]="fiscalForms[i].value?.ancillaryFundingSourceGuid">
-                    {{ fiscalForms[i].value?.ancillaryFundingSourceGuid || 'Select' }}
+                  <option value="" >Select</option>
+                  <option *ngFor="let item of ancillaryFundingSourceCode"[value]="item.fundingSourceAbbreviation">
+                    {{ item.fundingSourceName || 'Select' }}
                   </option>
                 </select>
               </div>
