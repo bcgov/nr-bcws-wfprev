@@ -1,5 +1,5 @@
-  
-CREATE OR REPLACE FUNCTION wfprev.fnc_audit_activity() RETURNS TRIGGER AS $fnc_audit_activity$
+
+CREATE OR REPLACE FUNCTION wfprev.fnc_audit_activity() RETURNS TRIGGER AS $$
 DECLARE 
   v_audit_action VARCHAR(10); 
 BEGIN 
@@ -146,15 +146,15 @@ EXCEPTION
       RAISE WARNING '[wfprev.fnc_audit_activity] - UDF ERROR [OTHER] - SQLSTATE: %, SQLERRM: %',SQLSTATE,SQLERRM; 
       RETURN NULL; 
 END; 
-$fnc_audit_activity$ LANGUAGE plpgsql; 
+$$ LANGUAGE plpgsql; 
 
-  
+
 CREATE OR REPLACE TRIGGER trigger_audit_activity
 AFTER INSERT OR UPDATE OR DELETE ON wfprev.activity 
 FOR EACH ROW EXECUTE PROCEDURE wfprev.fnc_audit_activity();
 
-  
-CREATE OR REPLACE FUNCTION wfprev.fnc_audit_activity_progress() RETURNS TRIGGER AS $fnc_audit_activity_progress$
+
+CREATE OR REPLACE FUNCTION wfprev.fnc_audit_activity_progress() RETURNS TRIGGER AS $$
 DECLARE 
   v_audit_action VARCHAR(10); 
 BEGIN 
@@ -281,15 +281,15 @@ EXCEPTION
       RAISE WARNING '[wfprev.fnc_audit_activity_progress] - UDF ERROR [OTHER] - SQLSTATE: %, SQLERRM: %',SQLSTATE,SQLERRM; 
       RETURN NULL; 
 END; 
-$fnc_audit_activity_progress$ LANGUAGE plpgsql; 
+$$ LANGUAGE plpgsql; 
 
-  
+
 CREATE OR REPLACE TRIGGER trigger_audit_activity_progress
 AFTER INSERT OR UPDATE OR DELETE ON wfprev.activity_progress 
 FOR EACH ROW EXECUTE PROCEDURE wfprev.fnc_audit_activity_progress();
 
-  
-CREATE OR REPLACE FUNCTION wfprev.fnc_audit_cultural_rx_fire_plan() RETURNS TRIGGER AS $fnc_audit_cultural_rx_fire_plan$
+
+CREATE OR REPLACE FUNCTION wfprev.fnc_audit_cultural_rx_fire_plan() RETURNS TRIGGER AS $$
 DECLARE 
   v_audit_action VARCHAR(10); 
 BEGIN 
@@ -380,15 +380,15 @@ EXCEPTION
       RAISE WARNING '[wfprev.fnc_audit_cultural_rx_fire_plan] - UDF ERROR [OTHER] - SQLSTATE: %, SQLERRM: %',SQLSTATE,SQLERRM; 
       RETURN NULL; 
 END; 
-$fnc_audit_cultural_rx_fire_plan$ LANGUAGE plpgsql; 
+$$ LANGUAGE plpgsql; 
 
-  
+
 CREATE OR REPLACE TRIGGER trigger_audit_cultural_rx_fire_plan
 AFTER INSERT OR UPDATE OR DELETE ON wfprev.cultural_rx_fire_plan 
 FOR EACH ROW EXECUTE PROCEDURE wfprev.fnc_audit_cultural_rx_fire_plan();
 
-  
-CREATE OR REPLACE FUNCTION wfprev.fnc_audit_cultural_rx_fire_project() RETURNS TRIGGER AS $fnc_audit_cultural_rx_fire_project$
+
+CREATE OR REPLACE FUNCTION wfprev.fnc_audit_cultural_rx_fire_project() RETURNS TRIGGER AS $$
 DECLARE 
   v_audit_action VARCHAR(10); 
 BEGIN 
@@ -479,15 +479,15 @@ EXCEPTION
       RAISE WARNING '[wfprev.fnc_audit_cultural_rx_fire_project] - UDF ERROR [OTHER] - SQLSTATE: %, SQLERRM: %',SQLSTATE,SQLERRM; 
       RETURN NULL; 
 END; 
-$fnc_audit_cultural_rx_fire_project$ LANGUAGE plpgsql; 
+$$ LANGUAGE plpgsql; 
 
-  
+
 CREATE OR REPLACE TRIGGER trigger_audit_cultural_rx_fire_project
 AFTER INSERT OR UPDATE OR DELETE ON wfprev.cultural_rx_fire_project 
 FOR EACH ROW EXECUTE PROCEDURE wfprev.fnc_audit_cultural_rx_fire_project();
 
-  
-CREATE OR REPLACE FUNCTION wfprev.fnc_audit_fuel_management_plan() RETURNS TRIGGER AS $fnc_audit_fuel_management_plan$
+
+CREATE OR REPLACE FUNCTION wfprev.fnc_audit_fuel_management_plan() RETURNS TRIGGER AS $$
 DECLARE 
   v_audit_action VARCHAR(10); 
 BEGIN 
@@ -562,15 +562,15 @@ EXCEPTION
       RAISE WARNING '[wfprev.fnc_audit_fuel_management_plan] - UDF ERROR [OTHER] - SQLSTATE: %, SQLERRM: %',SQLSTATE,SQLERRM; 
       RETURN NULL; 
 END; 
-$fnc_audit_fuel_management_plan$ LANGUAGE plpgsql; 
+$$ LANGUAGE plpgsql; 
 
-  
+
 CREATE OR REPLACE TRIGGER trigger_audit_fuel_management_plan
 AFTER INSERT OR UPDATE OR DELETE ON wfprev.fuel_management_plan 
 FOR EACH ROW EXECUTE PROCEDURE wfprev.fnc_audit_fuel_management_plan();
 
-  
-CREATE OR REPLACE FUNCTION wfprev.fnc_audit_fuel_management_project() RETURNS TRIGGER AS $fnc_audit_fuel_management_project$
+
+CREATE OR REPLACE FUNCTION wfprev.fnc_audit_fuel_management_project() RETURNS TRIGGER AS $$
 DECLARE 
   v_audit_action VARCHAR(10); 
 BEGIN 
@@ -681,15 +681,15 @@ EXCEPTION
       RAISE WARNING '[wfprev.fnc_audit_fuel_management_project] - UDF ERROR [OTHER] - SQLSTATE: %, SQLERRM: %',SQLSTATE,SQLERRM; 
       RETURN NULL; 
 END; 
-$fnc_audit_fuel_management_project$ LANGUAGE plpgsql; 
+$$ LANGUAGE plpgsql; 
 
-  
+
 CREATE OR REPLACE TRIGGER trigger_audit_fuel_management_project
 AFTER INSERT OR UPDATE OR DELETE ON wfprev.fuel_management_project 
 FOR EACH ROW EXECUTE PROCEDURE wfprev.fnc_audit_fuel_management_project();
 
-  
-CREATE OR REPLACE FUNCTION wfprev.fnc_audit_project() RETURNS TRIGGER AS $fnc_audit_project$
+
+CREATE OR REPLACE FUNCTION wfprev.fnc_audit_project() RETURNS TRIGGER AS $$
 DECLARE 
   v_audit_action VARCHAR(10); 
 BEGIN 
@@ -702,8 +702,12 @@ BEGIN
       project_type_code,
       project_number,
       site_unit_name,
+      primary_objective_type_code,
+      primary_funding_source_guid,
       forest_area_code,
       general_scope_code,
+      secondary_objective_type_code,
+      tertiary_objective_type_code,
       project_status_code,
       program_area_guid,
       forest_region_org_unit_id,
@@ -720,22 +724,18 @@ BEGIN
       total_planned_cost_per_hectare,
       total_actual_amount,
       total_actual_project_size_ha,
-      total_actual_cost_per_hectare_amount,
+      total_actual_cost_per_hectare_,
+      secondary_objective_rationale,
+      tertiary_objective_rationale,
       is_multi_fiscal_year_proj_ind,
+      last_progress_update_timestamp,
       latitude,
       longitude,
-      last_progress_update_timestamp,
       revision_count,
       create_user,
       create_date,
       update_user,
       update_date,
-      primary_objective_type_code,
-      secondary_objective_type_code,
-      secondary_objective_rationale,
-      tertiary_objective_type_code,
-      tertiary_objective_rationale,
-      primary_funding_source_guid,
       total_estimated_cost_amount,
       total_forecast_amount 
     ) 
@@ -746,8 +746,12 @@ BEGIN
       NEW.project_type_code,
       NEW.project_number,
       NEW.site_unit_name,
+      NEW.primary_objective_type_code,
+      NEW.primary_funding_source_guid,
       NEW.forest_area_code,
       NEW.general_scope_code,
+      NEW.secondary_objective_type_code,
+      NEW.tertiary_objective_type_code,
       NEW.project_status_code,
       NEW.program_area_guid,
       NEW.forest_region_org_unit_id,
@@ -764,22 +768,18 @@ BEGIN
       NEW.total_planned_cost_per_hectare,
       NEW.total_actual_amount,
       NEW.total_actual_project_size_ha,
-      NEW.total_actual_cost_per_hectare_amount,
+      NEW.total_actual_cost_per_hectare_,
+      NEW.secondary_objective_rationale,
+      NEW.tertiary_objective_rationale,
       NEW.is_multi_fiscal_year_proj_ind,
+      NEW.last_progress_update_timestamp,
       NEW.latitude,
       NEW.longitude,
-      NEW.last_progress_update_timestamp,
       NEW.revision_count,
       NEW.create_user,
       NEW.create_date,
       NEW.update_user,
       NEW.update_date,
-      NEW.primary_objective_type_code,
-      NEW.secondary_objective_type_code,
-      NEW.secondary_objective_rationale,
-      NEW.tertiary_objective_type_code,
-      NEW.tertiary_objective_rationale,
-      NEW.primary_funding_source_guid,
       NEW.total_estimated_cost_amount,
       NEW.total_forecast_amount 
     ); 
@@ -793,8 +793,12 @@ BEGIN
       project_type_code,
       project_number,
       site_unit_name,
+      primary_objective_type_code,
+      primary_funding_source_guid,
       forest_area_code,
       general_scope_code,
+      secondary_objective_type_code,
+      tertiary_objective_type_code,
       project_status_code,
       program_area_guid,
       forest_region_org_unit_id,
@@ -811,22 +815,18 @@ BEGIN
       total_planned_cost_per_hectare,
       total_actual_amount,
       total_actual_project_size_ha,
-      total_actual_cost_per_hectare_amount,
+      total_actual_cost_per_hectare_,
+      secondary_objective_rationale,
+      tertiary_objective_rationale,
       is_multi_fiscal_year_proj_ind,
+      last_progress_update_timestamp,
       latitude,
       longitude,
-      last_progress_update_timestamp,
       revision_count,
       create_user,
       create_date,
       update_user,
       update_date,
-      primary_objective_type_code,
-      secondary_objective_type_code,
-      secondary_objective_rationale,
-      tertiary_objective_type_code,
-      tertiary_objective_rationale,
-      primary_funding_source_guid,
       total_estimated_cost_amount,
       total_forecast_amount 
     ) 
@@ -837,8 +837,12 @@ BEGIN
       OLD.project_type_code,
       OLD.project_number,
       OLD.site_unit_name,
+      OLD.primary_objective_type_code,
+      OLD.primary_funding_source_guid,
       OLD.forest_area_code,
       OLD.general_scope_code,
+      OLD.secondary_objective_type_code,
+      OLD.tertiary_objective_type_code,
       OLD.project_status_code,
       OLD.program_area_guid,
       OLD.forest_region_org_unit_id,
@@ -855,22 +859,18 @@ BEGIN
       OLD.total_planned_cost_per_hectare,
       OLD.total_actual_amount,
       OLD.total_actual_project_size_ha,
-      OLD.total_actual_cost_per_hectare_amount,
+      OLD.total_actual_cost_per_hectare_,
+      OLD.secondary_objective_rationale,
+      OLD.tertiary_objective_rationale,
       OLD.is_multi_fiscal_year_proj_ind,
+      OLD.last_progress_update_timestamp,
       OLD.latitude,
       OLD.longitude,
-      OLD.last_progress_update_timestamp,
       OLD.revision_count,
       OLD.create_user,
       OLD.create_date,
       OLD.update_user,
       OLD.update_date,
-      OLD.primary_objective_type_code,
-      OLD.secondary_objective_type_code,
-      OLD.secondary_objective_rationale,
-      OLD.tertiary_objective_type_code,
-      OLD.tertiary_objective_rationale,
-      OLD.primary_funding_source_guid,
       OLD.total_estimated_cost_amount,
       OLD.total_forecast_amount 
     ); 
@@ -892,15 +892,15 @@ EXCEPTION
       RAISE WARNING '[wfprev.fnc_audit_project] - UDF ERROR [OTHER] - SQLSTATE: %, SQLERRM: %',SQLSTATE,SQLERRM; 
       RETURN NULL; 
 END; 
-$fnc_audit_project$ LANGUAGE plpgsql; 
+$$ LANGUAGE plpgsql; 
 
-  
+
 CREATE OR REPLACE TRIGGER trigger_audit_project
 AFTER INSERT OR UPDATE OR DELETE ON wfprev.project 
 FOR EACH ROW EXECUTE PROCEDURE wfprev.fnc_audit_project();
 
-  
-CREATE OR REPLACE FUNCTION wfprev.fnc_audit_project_boundary() RETURNS TRIGGER AS $fnc_audit_project_boundary$
+
+CREATE OR REPLACE FUNCTION wfprev.fnc_audit_project_boundary() RETURNS TRIGGER AS $$
 DECLARE 
   v_audit_action VARCHAR(10); 
 BEGIN 
@@ -1003,15 +1003,15 @@ EXCEPTION
       RAISE WARNING '[wfprev.fnc_audit_project_boundary] - UDF ERROR [OTHER] - SQLSTATE: %, SQLERRM: %',SQLSTATE,SQLERRM; 
       RETURN NULL; 
 END; 
-$fnc_audit_project_boundary$ LANGUAGE plpgsql; 
+$$ LANGUAGE plpgsql; 
 
-  
+
 CREATE OR REPLACE TRIGGER trigger_audit_project_boundary
 AFTER INSERT OR UPDATE OR DELETE ON wfprev.project_boundary 
 FOR EACH ROW EXECUTE PROCEDURE wfprev.fnc_audit_project_boundary();
 
-  
-CREATE OR REPLACE FUNCTION wfprev.fnc_audit_project_plan_fiscal() RETURNS TRIGGER AS $fnc_audit_project_plan_fiscal$
+
+CREATE OR REPLACE FUNCTION wfprev.fnc_audit_project_plan_fiscal() RETURNS TRIGGER AS $$
 DECLARE 
   v_audit_action VARCHAR(10); 
 BEGIN 
@@ -1270,15 +1270,15 @@ EXCEPTION
       RAISE WARNING '[wfprev.fnc_audit_project_plan_fiscal] - UDF ERROR [OTHER] - SQLSTATE: %, SQLERRM: %',SQLSTATE,SQLERRM; 
       RETURN NULL; 
 END; 
-$fnc_audit_project_plan_fiscal$ LANGUAGE plpgsql; 
+$$ LANGUAGE plpgsql; 
 
-  
+
 CREATE OR REPLACE TRIGGER trigger_audit_project_plan_fiscal
 AFTER INSERT OR UPDATE OR DELETE ON wfprev.project_plan_fiscal 
 FOR EACH ROW EXECUTE PROCEDURE wfprev.fnc_audit_project_plan_fiscal();
 
-  
-CREATE OR REPLACE FUNCTION wfprev.fnc_audit_project_plan_fiscal_perf() RETURNS TRIGGER AS $fnc_audit_project_plan_fiscal_perf$
+
+CREATE OR REPLACE FUNCTION wfprev.fnc_audit_project_plan_fiscal_perf() RETURNS TRIGGER AS $$
 DECLARE 
   v_audit_action VARCHAR(10); 
 BEGIN 
@@ -1401,9 +1401,9 @@ EXCEPTION
       RAISE WARNING '[wfprev.fnc_audit_project_plan_fiscal_perf] - UDF ERROR [OTHER] - SQLSTATE: %, SQLERRM: %',SQLSTATE,SQLERRM; 
       RETURN NULL; 
 END; 
-$fnc_audit_project_plan_fiscal_perf$ LANGUAGE plpgsql; 
+$$ LANGUAGE plpgsql; 
 
-  
+
 CREATE OR REPLACE TRIGGER trigger_audit_project_plan_fiscal_perf
 AFTER INSERT OR UPDATE OR DELETE ON wfprev.project_plan_fiscal_perf 
 FOR EACH ROW EXECUTE PROCEDURE wfprev.fnc_audit_project_plan_fiscal_perf();

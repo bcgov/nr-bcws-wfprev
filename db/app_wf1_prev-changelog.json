@@ -953,7 +953,7 @@
         "changes": [
           {
             "sqlFile": {
-              "dbms": "postgresql", "endDelimiter": ";",
+              "dbms": "postgresql", "endDelimiter": "$",
               "path": "scripts/01_00_11/00/ddl/wfprev.ddl.create_audit_table_triggers.sql"
             }
           }
