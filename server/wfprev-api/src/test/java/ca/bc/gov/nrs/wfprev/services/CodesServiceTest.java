@@ -76,6 +76,8 @@ class CodesServiceTest {
         planFiscalStatusCodeResourceAssembler = mock(PlanFiscalStatusCodeResourceAssembler.class);
         planFiscalStatusCodeRepository = mock(PlanFiscalStatusCodeRepository.class);
         ancillaryFundingSourceCodeRepository = mock(AncillaryFundingSourceCodeRepository.class);
+        ancillaryFundingSourceCodeResourceAssembler = mock(AncillaryFundingSourceCodeResourceAssembler.class);
+
 
         codesService = new CodesService(forestAreaCodeRepository, forestAreaCodeResourceAssembler,
                 generalScopeCodeRepository, generalScopeCodeResourceAssembler,
