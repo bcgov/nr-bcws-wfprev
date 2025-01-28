@@ -22,6 +22,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -50,6 +51,7 @@ class CodesControllerTest {
         testGetObjectiveTypeCodes();
         testGetActivityStatusCodes();
         testGetActivityCategoryCodes();
+        testGetPlanFiscalStatusCodes();
     }
 
     void testGetForestAreaCodes() throws Exception {
@@ -171,6 +173,48 @@ class CodesControllerTest {
                     .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
         }
+        
+        void testGetAncillaryFundingSourceCodes() throws Exception {
+        String exampleId1 = UUID.randomUUID().toString();
+        String exampleId2 = UUID.randomUUID().toString();
+        
+        AncillaryFundingSourceCodeModel acc1 = new AncillaryFundingSourceCodeModel();
+        acc1.setAncillaryFundingSourceGuid(exampleId1);
+        
+        AncillaryFundingSourceCodeModel acc2 = new AncillaryFundingSourceCodeModel();
+        acc2.setAncillaryFundingSourceGuid(exampleId2);
+        
+        List<AncillaryFundingSourceCodeModel> accList = Arrays.asList(acc1, acc2);
+        CollectionModel<AncillaryFundingSourceCodeModel> accModel = CollectionModel.of(accList);
+        
+        when(codesService.getAllAncillaryFundingSourceCodes()).thenReturn(accModel);
+        
+        mockMvc.perform(get("/codes/" + CodeTables.ANCILLARY_FUNDING_SOURCE_CODE)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+                }
+
+    void testGetPlanFiscalStatusCodes() throws Exception {
+    String exampleId1 = UUID.randomUUID().toString();
+    String exampleId2 = UUID.randomUUID().toString();
+
+    PlanFiscalStatusCodeModel acc1 = new PlanFiscalStatusCodeModel();
+    acc1.setPlanFiscalStatusCode(exampleId1);
+
+    PlanFiscalStatusCodeModel acc2 = new PlanFiscalStatusCodeModel();
+    acc2.setPlanFiscalStatusCode(exampleId2);
+
+    List<PlanFiscalStatusCodeModel> accList = Arrays.asList(acc1, acc2);
+    CollectionModel<PlanFiscalStatusCodeModel> accModel = CollectionModel.of(accList);
+
+    when(codesService.getAllPlanFiscalStatusCodes()).thenReturn(accModel);
+
+    mockMvc.perform(get("/codes/" + CodeTables.PLAN_FISCAL_STATUS_CODE)
+                    .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk());
+        }
+
+
 
 
     @Test
@@ -232,7 +276,29 @@ class CodesControllerTest {
         
         when(codesService.getActivityCategoryCodeById(acID)).thenReturn(activityCategoryCode);
         
+
         mockMvc.perform(get("/codes/{codeTable}/{id}", CodeTables.ACTIVITY_CATEGORY_CODE, acID)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        String afsID = UUID.randomUUID().toString();
+        AncillaryFundingSourceCodeModel ancillaryFundingSourceCode = new AncillaryFundingSourceCodeModel();
+        ancillaryFundingSourceCode.setAncillaryFundingSourceGuid(afsID);
+        
+        when(codesService.getAncillaryFundingSourceCodeById(afsID)).thenReturn(ancillaryFundingSourceCode);
+        
+        mockMvc.perform(get("/codes/{codeTable}/{id}", CodeTables.ANCILLARY_FUNDING_SOURCE_CODE, afsID)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+
+        String pfsID = UUID.randomUUID().toString();
+        PlanFiscalStatusCodeModel planFiscalStatusCode = new PlanFiscalStatusCodeModel();
+        planFiscalStatusCode.setPlanFiscalStatusCode(pfsID);
+        
+        when(codesService.getPlanFiscalStatusCodeById(pfsID)).thenReturn(planFiscalStatusCode);
+        
+        mockMvc.perform(get("/codes/{codeTable}/{id}", CodeTables.PLAN_FISCAL_STATUS_CODE, pfsID)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
@@ -249,7 +315,8 @@ class CodesControllerTest {
         when(codesService.getObjectiveTypeCodeById(nonExistentId)).thenReturn(null);
         when(codesService.getActivityStatusCodeById(nonExistentId)).thenReturn(null);
         when(codesService.getActivityCategoryCodeById(nonExistentId)).thenReturn(null);
-
+        when(codesService.getPlanFiscalStatusCodeById(nonExistentId)).thenReturn(null);
+        when(codesService.getAncillaryFundingSourceCodeById(nonExistentId)).thenReturn(null);
         // Test valid code tables with non-existent ID
         mockMvc.perform(get("/codes/{codeTable}/{id}", "forestAreaCodes", nonExistentId)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -280,6 +347,17 @@ class CodesControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .header("If-Match", "\"1\""))
         .andExpect(status().isNotFound());
+
+        mockMvc.perform(get("/codes/{codeTable}/{id}", "planFiscalStatusCodes", nonExistentId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("If-Match", "\"1\""))
+        .andExpect(status().isNotFound());
+
+        mockMvc.perform(get("/codes/{codeTable}/{id}", "ancillaryFundintSourceCodes", nonExistentId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("If-Match", "\"1\""))
+        .andExpect(status().isNotFound());
+
         // Test invalid code table - should also return 404 since it hits the default case
         mockMvc.perform(get("/codes/{codeTable}/{id}", "invalidCodeTable", nonExistentId)
                         .contentType(MediaType.APPLICATION_JSON)

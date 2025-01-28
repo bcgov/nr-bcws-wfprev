@@ -20,7 +20,7 @@ import java.util.UUID;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class AncillaryFundingSourceEntity implements Serializable {
+public class AncillaryFundingSourceCodeEntity implements Serializable {
 
     @Id
     @UuidGenerator

@@ -40,6 +40,10 @@ public class CodesService implements CommonService {
     private final ActivityStatusCodeRepository activityStatusCodeRepository;
     private final ActivityCategoryCodeResourceAssembler activityCategoryCodeResourceAssembler;
     private final ActivityCategoryCodeRepository activityCategoryCodeRepository;
+    private final PlanFiscalStatusCodeResourceAssembler planFiscalStatusCodeResourceAssembler;
+    private final PlanFiscalStatusCodeRepository planFiscalStatusCodeRepository;
+    private final AncillaryFundingSourceCodeResourceAssembler ancillaryFundingSourceCodeResourceAssembler;
+    private final AncillaryFundingSourceCodeRepository ancillaryFundingSourceCodeRepository;
 
 
     public CodesService(ForestAreaCodeRepository forestAreaCodeRepository, ForestAreaCodeResourceAssembler forestAreaCodeResourceAssembler,
@@ -49,7 +53,9 @@ public class CodesService implements CommonService {
                         BCParksOrgUnitCodeRepository bcParksOrgUnitCodeRepository, BCParksRegionCodeResourceAssembler bcParksRegionCodeResourceAssembler, BCParksSectionCodeResourceAssembler bcParksSectionCodeResourceAssembler,
                         ObjectiveTypeCodeResourceAssembler objectiveTypeCodeResourceAssembler, ObjectiveTypeCodeRepository objectiveTypeCodeRepository, ProjectPlanStatusCodeResourceAssembler projectPlanStatusCodeResourceAssembler,
                         ProjectPlanStatusCodeRepository projectPlanStatusCodeRepository, ActivityStatusCodeResourceAssembler activityStatusCodeResourceAssembler, ActivityStatusCodeRepository activityStatusCodeRepository,
-                        ActivityCategoryCodeResourceAssembler activityCategoryCodeResourceAssembler, ActivityCategoryCodeRepository activityCategoryCodeRepository) {
+                        ActivityCategoryCodeResourceAssembler activityCategoryCodeResourceAssembler, ActivityCategoryCodeRepository activityCategoryCodeRepository,
+                        PlanFiscalStatusCodeResourceAssembler planFiscalStatusCodeResourceAssembler, PlanFiscalStatusCodeRepository planFiscalStatusCodeRepository,
+                        AncillaryFundingSourceCodeResourceAssembler ancillaryFundingSourceCodeResourceAssembler, AncillaryFundingSourceCodeRepository ancillaryFundingSourceCodeRepository) {
         this.forestAreaCodeRepository = forestAreaCodeRepository;
         this.forestAreaCodeResourceAssembler = forestAreaCodeResourceAssembler;
         this.generalScopeCodeRepository = generalScopeCodeRepository;
@@ -72,6 +78,10 @@ public class CodesService implements CommonService {
         this.activityStatusCodeRepository = activityStatusCodeRepository;
         this.activityCategoryCodeResourceAssembler = activityCategoryCodeResourceAssembler;
         this.activityCategoryCodeRepository = activityCategoryCodeRepository;
+        this.planFiscalStatusCodeResourceAssembler = planFiscalStatusCodeResourceAssembler;
+        this.planFiscalStatusCodeRepository = planFiscalStatusCodeRepository;
+        this.ancillaryFundingSourceCodeResourceAssembler = ancillaryFundingSourceCodeResourceAssembler;
+        this.ancillaryFundingSourceCodeRepository = ancillaryFundingSourceCodeRepository;
     }
 
     /**
@@ -286,6 +296,44 @@ public class CodesService implements CommonService {
         try {
             return activityCategoryCodeRepository.findById(id)
                     .map(activityCategoryCodeResourceAssembler::toModel)
+                    .orElse(null);
+        } catch (Exception e) {
+            throw new ServiceException(e.getLocalizedMessage(), e);
+        }
+    }
+
+    public CollectionModel<PlanFiscalStatusCodeModel> getAllPlanFiscalStatusCodes() throws ServiceException {
+        try {
+            List<PlanFiscalStatusCodeEntity> entities = planFiscalStatusCodeRepository.findAll();
+            return planFiscalStatusCodeResourceAssembler.toCollectionModel(entities);
+        } catch (Exception e) {
+            throw new ServiceException(e.getLocalizedMessage(), e);
+        }
+    }
+    
+    public PlanFiscalStatusCodeModel getPlanFiscalStatusCodeById(String id) throws ServiceException {
+        try {
+            return planFiscalStatusCodeRepository.findById(id)
+                    .map(planFiscalStatusCodeResourceAssembler::toModel)
+                    .orElse(null);
+        } catch (Exception e) {
+            throw new ServiceException(e.getLocalizedMessage(), e);
+        }
+    }
+
+    public CollectionModel<AncillaryFundingSourceCodeModel> getAllAncillaryFundingSourceCodes() throws ServiceException {
+        try {
+            List<AncillaryFundingSourceCodeEntity> entities = ancillaryFundingSourceCodeRepository.findAll();
+            return ancillaryFundingSourceCodeResourceAssembler.toCollectionModel(entities);
+        } catch (Exception e) {
+            throw new ServiceException(e.getLocalizedMessage(), e);
+        }
+    }
+
+    public AncillaryFundingSourceCodeModel getAncillaryFundingSourceCodeById(String id) throws ServiceException {
+        try {
+            return ancillaryFundingSourceCodeRepository.findById(id)
+                    .map(ancillaryFundingSourceCodeResourceAssembler::toModel)
                     .orElse(null);
         } catch (Exception e) {
             throw new ServiceException(e.getLocalizedMessage(), e);
