@@ -38,8 +38,8 @@ public class ProjectFiscalResourceAssembler extends RepresentationModelAssembler
                 : null);
         model.setActivityCategoryCode(entity.getActivityCategoryCode());
         model.setFiscalYear(entity.getFiscalYear() != null ? entity.getFiscalYear().longValue() : null);
-        model.setAncillaryFundingSourceGuid(entity.getAncillaryFundingSource() != null
-                ? entity.getAncillaryFundingSource().getAncillaryFundingSourceGuid().toString()
+        model.setAncillaryFundingSourceGuid(entity.getAncillaryFundingSourceGuid() != null
+                ? entity.getAncillaryFundingSourceGuid().getAncillaryFundingSourceGuid().toString()
                 : null);
         model.setProjectPlanStatusCode(entity.getProjectPlanStatusCode());
         model.setPlanFiscalStatusCode(entity.getPlanFiscalStatusCode());
