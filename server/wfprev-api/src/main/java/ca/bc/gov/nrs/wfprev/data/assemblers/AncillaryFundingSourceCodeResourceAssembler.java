@@ -3,6 +3,8 @@ package ca.bc.gov.nrs.wfprev.data.assemblers;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
+import java.util.UUID;
+
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
 import org.springframework.stereotype.Component;
@@ -25,11 +27,9 @@ public class AncillaryFundingSourceCodeResourceAssembler extends RepresentationM
         }
         AncillaryFundingSourceCodeEntity entity = new AncillaryFundingSourceCodeEntity();
 
-        entity.setAncillaryFundingSourceCode(model.getAncillaryFundingSourceCode());
-        entity.setDescription(model.getDescription());
-        entity.setDisplayOrder(model.getDisplayOrder());
-        entity.setEffectiveDate(model.getEffectiveDate());
-        entity.setExpiryDate(model.getExpiryDate());
+        entity.setAncillaryFundingSourceGuid(UUID.fromString(model.getAncillaryFundingSourceGuid()));
+        entity.setFundingSourceName(model.getFundingSourceName());
+        entity.setFundingSourceAbbreviation(model.getFundingSourceAbbreviation());
         entity.setRevisionCount(model.getRevisionCount());
         entity.setCreateUser(model.getCreateUser());
         entity.setCreateDate(model.getCreateDate());
@@ -45,14 +45,12 @@ public class AncillaryFundingSourceCodeResourceAssembler extends RepresentationM
 
         model.add(linkTo(
                 methodOn(CodesController.class)
-                        .getCodeById(CodeTables.ANCILLARY_FUNDING_SOURCE_CODE, entity.getFundingSourceCode()))
+                        .getCodeById(CodeTables.ANCILLARY_FUNDING_SOURCE_CODE, entity.getAncillaryFundingSourceGuid().toString()))
                 .withSelfRel());
 
-        model.setFundingSourceCode(entity.getFundingSourceCode());
-        model.setDescription(entity.getDescription());
-        model.setDisplayOrder(entity.getDisplayOrder());
-        model.setEffectiveDate(entity.getEffectiveDate());
-        model.setExpiryDate(entity.getExpiryDate());
+        model.setAncillaryFundingSourceGuid(entity.getAncillaryFundingSourceGuid().toString());
+        model.setFundingSourceName(entity.getFundingSourceName());
+        model.setFundingSourceAbbreviation(entity.getFundingSourceAbbreviation());
         model.setRevisionCount(entity.getRevisionCount());
         model.setCreateUser(entity.getCreateUser());
         model.setCreateDate(entity.getCreateDate());

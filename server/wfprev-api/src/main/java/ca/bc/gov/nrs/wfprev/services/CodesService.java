@@ -323,7 +323,7 @@ public class CodesService implements CommonService {
 
     public CollectionModel<AncillaryFundingSourceCodeModel> getAllAncillaryFundingSourceCodes() throws ServiceException {
         try {
-            List<ActivityCategoryCodeEntity> entities = activityCategoryCodeRepository.findAll();
+            List<AncillaryFundingSourceCodeEntity> entities = ancillaryFundingSourceCodeRepository.findAll();
             return ancillaryFundingSourceCodeResourceAssembler.toCollectionModel(entities);
         } catch (Exception e) {
             throw new ServiceException(e.getLocalizedMessage(), e);

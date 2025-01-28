@@ -48,7 +48,7 @@ public class ProjectFiscalEntity implements Serializable {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "ancillary_funding_source_guid", referencedColumnName = "ancillary_funding_source_guid")
-    private AncillaryFundingSourceEntity ancillaryFundingSource;
+    private AncillaryFundingSourceCodeEntity ancillaryFundingSourceGuid;
 
     @NotNull
     @Column(name = "project_plan_status_code", length = 10)

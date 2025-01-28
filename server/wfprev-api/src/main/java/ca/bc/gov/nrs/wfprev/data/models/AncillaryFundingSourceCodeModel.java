@@ -24,8 +24,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AncillaryFundingSourceCodeModel extends CommonModel<AncillaryFundingSourceCodeModel> {
-    private String AncillaryFundingSourceCode;
-    private String description;
+    private String ancillaryFundingSourceGuid;
+    private String fundingSourceAbbreviation;
+    private String fundingSourceName;
     private Integer displayOrder;
     private Date effectiveDate;
     private Date expiryDate;
