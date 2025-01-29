@@ -1,18 +1,19 @@
 package ca.bc.gov.nrs.wfprev.services;
 
-import ca.bc.gov.nrs.wfone.common.service.api.ServiceException;
-import ca.bc.gov.nrs.wfprev.common.services.CommonService;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
 import ca.bc.gov.nrs.wfprev.data.assemblers.*;
 import ca.bc.gov.nrs.wfprev.data.entities.*;
 import ca.bc.gov.nrs.wfprev.data.models.*;
 import ca.bc.gov.nrs.wfprev.data.repositories.*;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import ca.bc.gov.nrs.wfone.common.service.api.ServiceException;
+import ca.bc.gov.nrs.wfprev.common.services.CommonService;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
@@ -38,8 +39,16 @@ public class CodesService implements CommonService {
     private final ProjectPlanStatusCodeRepository projectPlanStatusCodeRepository;
     private final ActivityStatusCodeResourceAssembler activityStatusCodeResourceAssembler;
     private final ActivityStatusCodeRepository activityStatusCodeRepository;
+    private final RiskRatingCodeResourceAssembler riskRatingCodeResourceAssembler;
+    private final RiskRatingCodeRepository riskRatingCodeRepository;
+    private final ContractPhaseCodeResourceAssembler contractPhaseCodeResourceAssembler;
+    private final ContractPhaseCodeRepository contractPhaseCodeRepository;
     private final ActivityCategoryCodeResourceAssembler activityCategoryCodeResourceAssembler;
     private final ActivityCategoryCodeRepository activityCategoryCodeRepository;
+    private final PlanFiscalStatusCodeResourceAssembler planFiscalStatusCodeResourceAssembler;
+    private final PlanFiscalStatusCodeRepository planFiscalStatusCodeRepository;
+    private final AncillaryFundingSourceCodeResourceAssembler ancillaryFundingSourceCodeResourceAssembler;
+    private final AncillaryFundingSourceCodeRepository ancillaryFundingSourceCodeRepository;
 
 
     public CodesService(ForestAreaCodeRepository forestAreaCodeRepository, ForestAreaCodeResourceAssembler forestAreaCodeResourceAssembler,
@@ -49,7 +58,10 @@ public class CodesService implements CommonService {
                         BCParksOrgUnitCodeRepository bcParksOrgUnitCodeRepository, BCParksRegionCodeResourceAssembler bcParksRegionCodeResourceAssembler, BCParksSectionCodeResourceAssembler bcParksSectionCodeResourceAssembler,
                         ObjectiveTypeCodeResourceAssembler objectiveTypeCodeResourceAssembler, ObjectiveTypeCodeRepository objectiveTypeCodeRepository, ProjectPlanStatusCodeResourceAssembler projectPlanStatusCodeResourceAssembler,
                         ProjectPlanStatusCodeRepository projectPlanStatusCodeRepository, ActivityStatusCodeResourceAssembler activityStatusCodeResourceAssembler, ActivityStatusCodeRepository activityStatusCodeRepository,
-                        ActivityCategoryCodeResourceAssembler activityCategoryCodeResourceAssembler, ActivityCategoryCodeRepository activityCategoryCodeRepository) {
+                        RiskRatingCodeResourceAssembler riskRatingCodeResourceAssembler, RiskRatingCodeRepository riskRatingCodeRepository, ContractPhaseCodeResourceAssembler contractPhaseCodeResourceAssembler, ContractPhaseCodeRepository contractPhaseCodeRepository,
+                        ActivityCategoryCodeResourceAssembler activityCategoryCodeResourceAssembler, ActivityCategoryCodeRepository activityCategoryCodeRepository,
+                        PlanFiscalStatusCodeResourceAssembler planFiscalStatusCodeResourceAssembler, PlanFiscalStatusCodeRepository planFiscalStatusCodeRepository,
+                        AncillaryFundingSourceCodeResourceAssembler ancillaryFundingSourceCodeResourceAssembler, AncillaryFundingSourceCodeRepository ancillaryFundingSourceCodeRepository) {
         this.forestAreaCodeRepository = forestAreaCodeRepository;
         this.forestAreaCodeResourceAssembler = forestAreaCodeResourceAssembler;
         this.generalScopeCodeRepository = generalScopeCodeRepository;
@@ -70,8 +82,16 @@ public class CodesService implements CommonService {
         this.projectPlanStatusCodeRepository = projectPlanStatusCodeRepository;
         this.activityStatusCodeResourceAssembler = activityStatusCodeResourceAssembler;
         this.activityStatusCodeRepository = activityStatusCodeRepository;
+        this.riskRatingCodeResourceAssembler = riskRatingCodeResourceAssembler;
+        this.riskRatingCodeRepository = riskRatingCodeRepository;
+        this.contractPhaseCodeResourceAssembler = contractPhaseCodeResourceAssembler;
+        this.contractPhaseCodeRepository = contractPhaseCodeRepository;
         this.activityCategoryCodeResourceAssembler = activityCategoryCodeResourceAssembler;
         this.activityCategoryCodeRepository = activityCategoryCodeRepository;
+        this.planFiscalStatusCodeResourceAssembler = planFiscalStatusCodeResourceAssembler;
+        this.planFiscalStatusCodeRepository = planFiscalStatusCodeRepository;
+        this.ancillaryFundingSourceCodeResourceAssembler = ancillaryFundingSourceCodeResourceAssembler;
+        this.ancillaryFundingSourceCodeRepository = ancillaryFundingSourceCodeRepository;
     }
 
     /**
@@ -273,6 +293,15 @@ public class CodesService implements CommonService {
         }
     }
 
+    public CollectionModel<RiskRatingCodeModel> getAllRiskRatingCodes() throws ServiceException {
+        try {
+            List<RiskRatingCodeEntity> entities = riskRatingCodeRepository.findAll();
+            return riskRatingCodeResourceAssembler.toCollectionModel(entities);
+        } catch (Exception e) {
+            throw new ServiceException(e.getLocalizedMessage(), e);
+        }
+    }
+
     public CollectionModel<ActivityCategoryCodeModel> getAllActivityCategoryCodes() throws ServiceException {
         try {
             List<ActivityCategoryCodeEntity> entities = activityCategoryCodeRepository.findAll();
@@ -282,10 +311,72 @@ public class CodesService implements CommonService {
         }
     }
 
+    public RiskRatingCodeModel getRiskRatingCodeById(String id) throws ServiceException {
+        try {
+            return riskRatingCodeRepository.findById(id).map(riskRatingCodeResourceAssembler::toModel).orElse(null);
+        } catch (Exception e) {
+            throw new ServiceException(e.getLocalizedMessage(), e);
+        }
+    }
     public ActivityCategoryCodeModel getActivityCategoryCodeById(String id) throws ServiceException {
         try {
             return activityCategoryCodeRepository.findById(id)
                     .map(activityCategoryCodeResourceAssembler::toModel)
+                    .orElse(null);
+        } catch (Exception e) {
+            throw new ServiceException(e.getLocalizedMessage(), e);
+        }
+    }
+
+    public CollectionModel<ContractPhaseCodeModel> getAllContractPhaseCodes() throws ServiceException {
+        try {
+            List<ContractPhaseCodeEntity> entities = contractPhaseCodeRepository.findAll();
+            return contractPhaseCodeResourceAssembler.toCollectionModel(entities);
+        } catch (Exception e) {
+            throw new ServiceException(e.getLocalizedMessage(), e);
+        }
+    }
+
+    public CollectionModel<PlanFiscalStatusCodeModel> getAllPlanFiscalStatusCodes() throws ServiceException {
+        try {
+            List<PlanFiscalStatusCodeEntity> entities = planFiscalStatusCodeRepository.findAll();
+            return planFiscalStatusCodeResourceAssembler.toCollectionModel(entities);
+        } catch (Exception e) {
+            throw new ServiceException(e.getLocalizedMessage(), e);
+        }
+    }
+    
+    public PlanFiscalStatusCodeModel getPlanFiscalStatusCodeById(String id) throws ServiceException {
+        try {
+            return planFiscalStatusCodeRepository.findById(id)
+                    .map(planFiscalStatusCodeResourceAssembler::toModel)
+                    .orElse(null);
+        } catch (Exception e) {
+            throw new ServiceException(e.getLocalizedMessage(), e);
+        }
+    }
+
+    public ContractPhaseCodeModel getContractPhaseCodeById(String id) throws ServiceException {
+        try {
+            return contractPhaseCodeRepository.findById(id).map(contractPhaseCodeResourceAssembler::toModel).orElse(null);
+        } catch (Exception e) {
+            throw new ServiceException(e.getLocalizedMessage(), e);
+        }
+    }
+
+    public CollectionModel<AncillaryFundingSourceCodeModel> getAllAncillaryFundingSourceCodes() throws ServiceException {
+        try {
+            List<AncillaryFundingSourceCodeEntity> entities = ancillaryFundingSourceCodeRepository.findAll();
+            return ancillaryFundingSourceCodeResourceAssembler.toCollectionModel(entities);
+        } catch (Exception e) {
+            throw new ServiceException(e.getLocalizedMessage(), e);
+        }
+    }
+
+    public AncillaryFundingSourceCodeModel getAncillaryFundingSourceCodeById(String id) throws ServiceException {
+        try {
+            return ancillaryFundingSourceCodeRepository.findById(id)
+                    .map(ancillaryFundingSourceCodeResourceAssembler::toModel)
                     .orElse(null);
         } catch (Exception e) {
             throw new ServiceException(e.getLocalizedMessage(), e);
