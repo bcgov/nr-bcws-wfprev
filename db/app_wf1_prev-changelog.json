@@ -944,6 +944,23 @@
           { "sql": "DROP TABLE wfprev.burn_impl_season_code" }
         ]
       }
+    },
+    {
+      "changeSet": {
+        "id": "01_00_11_00",
+        "author": "hsaldyga",
+        "tagDatabase": { "tag" : "version_01_00_11_00" },
+        "changes": [
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": "$",
+              "path": "scripts/01_00_11/00/ddl/wfprev.ddl.create_audit_table_triggers.sql"
+            }
+          }
+       ],
+        "rollback": [
+        ]
+      }
     }    
   ] 
 }

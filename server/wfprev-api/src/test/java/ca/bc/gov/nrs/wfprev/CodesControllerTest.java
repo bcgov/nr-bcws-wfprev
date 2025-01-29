@@ -50,6 +50,8 @@ class CodesControllerTest {
         testGetProjectTypeCodes();
         testGetObjectiveTypeCodes();
         testGetActivityStatusCodes();
+        testGetRiskRatingCodes();
+        testGetContractPhaseCodes();
         testGetActivityCategoryCodes();
         testGetPlanFiscalStatusCodes();
     }
@@ -154,68 +156,106 @@ class CodesControllerTest {
                 .andExpect(status().isOk());
     }
 
-    void testGetActivityCategoryCodes() throws Exception {
-    String exampleId1 = UUID.randomUUID().toString();
-    String exampleId2 = UUID.randomUUID().toString();
-
-    ActivityCategoryCodeModel acc1 = new ActivityCategoryCodeModel();
-    acc1.setActivityCategoryCode(exampleId1);
-
-    ActivityCategoryCodeModel acc2 = new ActivityCategoryCodeModel();
-    acc2.setActivityCategoryCode(exampleId2);
-
-    List<ActivityCategoryCodeModel> accList = Arrays.asList(acc1, acc2);
-    CollectionModel<ActivityCategoryCodeModel> accModel = CollectionModel.of(accList);
-
-    when(codesService.getAllActivityCategoryCodes()).thenReturn(accModel);
-
-    mockMvc.perform(get("/codes/" + CodeTables.ACTIVITY_CATEGORY_CODE)
-                    .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk());
-        }
-        
-        void testGetAncillaryFundingSourceCodes() throws Exception {
+    void testGetRiskRatingCodes() throws Exception {
         String exampleId1 = UUID.randomUUID().toString();
         String exampleId2 = UUID.randomUUID().toString();
-        
+
+        RiskRatingCodeModel rrc1 = new RiskRatingCodeModel();
+        rrc1.setRiskRatingCode(exampleId1);
+
+        RiskRatingCodeModel rrc2 = new RiskRatingCodeModel();
+        rrc1.setRiskRatingCode(exampleId2);
+
+        List<RiskRatingCodeModel> rrcList = Arrays.asList(rrc1, rrc2);
+        CollectionModel<RiskRatingCodeModel> rrcModel = CollectionModel.of(rrcList);
+
+        when(codesService.getAllRiskRatingCodes()).thenReturn(rrcModel);
+
+        mockMvc.perform(get("/codes/" + CodeTables.RISK_RATING_CODE)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
+
+    void testGetContractPhaseCodes() throws Exception {
+        String exampleId1 = UUID.randomUUID().toString();
+        String exampleId2 = UUID.randomUUID().toString();
+
+        ContractPhaseCodeModel cpc1 = new ContractPhaseCodeModel();
+        cpc1.setContractPhaseCode(exampleId1);
+
+        ContractPhaseCodeModel cpc2 = new ContractPhaseCodeModel();
+        cpc1.setContractPhaseCode(exampleId2);
+
+        List<ContractPhaseCodeModel> cpcList = Arrays.asList(cpc1, cpc2);
+        CollectionModel<ContractPhaseCodeModel> cpcModel = CollectionModel.of(cpcList);
+
+        when(codesService.getAllContractPhaseCodes()).thenReturn(cpcModel);
+
+        mockMvc.perform(get("/codes/" + CodeTables.CONTRACT_PHASE_CODE)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
+
+    void testGetActivityCategoryCodes() throws Exception {
+        String exampleId1 = UUID.randomUUID().toString();
+        String exampleId2 = UUID.randomUUID().toString();
+
+        ActivityCategoryCodeModel acc1 = new ActivityCategoryCodeModel();
+        acc1.setActivityCategoryCode(exampleId1);
+
+        ActivityCategoryCodeModel acc2 = new ActivityCategoryCodeModel();
+        acc2.setActivityCategoryCode(exampleId2);
+
+        List<ActivityCategoryCodeModel> accList = Arrays.asList(acc1, acc2);
+        CollectionModel<ActivityCategoryCodeModel> accModel = CollectionModel.of(accList);
+
+        when(codesService.getAllActivityCategoryCodes()).thenReturn(accModel);
+
+
+        mockMvc.perform(get("/codes/" + CodeTables.ACTIVITY_CATEGORY_CODE)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
+
+    void testGetAncillaryFundingSourceCodes() throws Exception {
+        String exampleId1 = UUID.randomUUID().toString();
+        String exampleId2 = UUID.randomUUID().toString();
+
         AncillaryFundingSourceCodeModel acc1 = new AncillaryFundingSourceCodeModel();
         acc1.setAncillaryFundingSourceGuid(exampleId1);
-        
+
         AncillaryFundingSourceCodeModel acc2 = new AncillaryFundingSourceCodeModel();
         acc2.setAncillaryFundingSourceGuid(exampleId2);
-        
+
         List<AncillaryFundingSourceCodeModel> accList = Arrays.asList(acc1, acc2);
         CollectionModel<AncillaryFundingSourceCodeModel> accModel = CollectionModel.of(accList);
-        
+
         when(codesService.getAllAncillaryFundingSourceCodes()).thenReturn(accModel);
-        
+
         mockMvc.perform(get("/codes/" + CodeTables.ANCILLARY_FUNDING_SOURCE_CODE)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
-                }
+    }
 
     void testGetPlanFiscalStatusCodes() throws Exception {
-    String exampleId1 = UUID.randomUUID().toString();
-    String exampleId2 = UUID.randomUUID().toString();
+        String exampleId1 = UUID.randomUUID().toString();
+        String exampleId2 = UUID.randomUUID().toString();
 
-    PlanFiscalStatusCodeModel acc1 = new PlanFiscalStatusCodeModel();
-    acc1.setPlanFiscalStatusCode(exampleId1);
+        PlanFiscalStatusCodeModel acc1 = new PlanFiscalStatusCodeModel();
+        acc1.setPlanFiscalStatusCode(exampleId1);
 
-    PlanFiscalStatusCodeModel acc2 = new PlanFiscalStatusCodeModel();
-    acc2.setPlanFiscalStatusCode(exampleId2);
+        PlanFiscalStatusCodeModel acc2 = new PlanFiscalStatusCodeModel();
+        acc2.setPlanFiscalStatusCode(exampleId2);
 
-    List<PlanFiscalStatusCodeModel> accList = Arrays.asList(acc1, acc2);
-    CollectionModel<PlanFiscalStatusCodeModel> accModel = CollectionModel.of(accList);
+        List<PlanFiscalStatusCodeModel> accList = Arrays.asList(acc1, acc2);
+        CollectionModel<PlanFiscalStatusCodeModel> accModel = CollectionModel.of(accList);
 
-    when(codesService.getAllPlanFiscalStatusCodes()).thenReturn(accModel);
+        when(codesService.getAllPlanFiscalStatusCodes()).thenReturn(accModel);
 
-    mockMvc.perform(get("/codes/" + CodeTables.PLAN_FISCAL_STATUS_CODE)
-                    .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk());
-        }
-
-
-
+        mockMvc.perform(get("/codes/" + CodeTables.PLAN_FISCAL_STATUS_CODE)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
 
     @Test
     @WithMockUser
@@ -270,12 +310,31 @@ class CodesControllerTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
 
+        String rrID = UUID.randomUUID().toString();
+        RiskRatingCodeModel riskRatingCode = new RiskRatingCodeModel();
+        riskRatingCode.setRiskRatingCode(rrID);
+
+        when(codesService.getRiskRatingCodeById(rrID)).thenReturn(riskRatingCode);
+
+        mockMvc.perform(get("/codes/{codeTable}/{id}", CodeTables.RISK_RATING_CODE, rrID)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        String cpID = UUID.randomUUID().toString();
+        ContractPhaseCodeModel contractPhaseCode = new ContractPhaseCodeModel();
+        contractPhaseCode.setContractPhaseCode(cpID);
+
+        when(codesService.getContractPhaseCodeById(cpID)).thenReturn(contractPhaseCode);
+
+        mockMvc.perform(get("/codes/{codeTable}/{id}", CodeTables.CONTRACT_PHASE_CODE, cpID)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
         String acID = UUID.randomUUID().toString();
         ActivityCategoryCodeModel activityCategoryCode = new ActivityCategoryCodeModel();
         activityCategoryCode.setActivityCategoryCode(acID);
-        
+
         when(codesService.getActivityCategoryCodeById(acID)).thenReturn(activityCategoryCode);
-        
 
         mockMvc.perform(get("/codes/{codeTable}/{id}", CodeTables.ACTIVITY_CATEGORY_CODE, acID)
                         .contentType(MediaType.APPLICATION_JSON))
@@ -284,9 +343,9 @@ class CodesControllerTest {
         String afsID = UUID.randomUUID().toString();
         AncillaryFundingSourceCodeModel ancillaryFundingSourceCode = new AncillaryFundingSourceCodeModel();
         ancillaryFundingSourceCode.setAncillaryFundingSourceGuid(afsID);
-        
+
         when(codesService.getAncillaryFundingSourceCodeById(afsID)).thenReturn(ancillaryFundingSourceCode);
-        
+
         mockMvc.perform(get("/codes/{codeTable}/{id}", CodeTables.ANCILLARY_FUNDING_SOURCE_CODE, afsID)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
@@ -295,9 +354,9 @@ class CodesControllerTest {
         String pfsID = UUID.randomUUID().toString();
         PlanFiscalStatusCodeModel planFiscalStatusCode = new PlanFiscalStatusCodeModel();
         planFiscalStatusCode.setPlanFiscalStatusCode(pfsID);
-        
+
         when(codesService.getPlanFiscalStatusCodeById(pfsID)).thenReturn(planFiscalStatusCode);
-        
+
         mockMvc.perform(get("/codes/{codeTable}/{id}", CodeTables.PLAN_FISCAL_STATUS_CODE, pfsID)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
@@ -344,19 +403,19 @@ class CodesControllerTest {
                 .andExpect(status().isNotFound());
 
         mockMvc.perform(get("/codes/{codeTable}/{id}", "activityCategoryCodes", nonExistentId)
-                .contentType(MediaType.APPLICATION_JSON)
-                .header("If-Match", "\"1\""))
-        .andExpect(status().isNotFound());
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("If-Match", "\"1\""))
+                .andExpect(status().isNotFound());
 
         mockMvc.perform(get("/codes/{codeTable}/{id}", "planFiscalStatusCodes", nonExistentId)
-                .contentType(MediaType.APPLICATION_JSON)
-                .header("If-Match", "\"1\""))
-        .andExpect(status().isNotFound());
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("If-Match", "\"1\""))
+                .andExpect(status().isNotFound());
 
-        mockMvc.perform(get("/codes/{codeTable}/{id}", "ancillaryFundintSourceCodes", nonExistentId)
-                .contentType(MediaType.APPLICATION_JSON)
-                .header("If-Match", "\"1\""))
-        .andExpect(status().isNotFound());
+        mockMvc.perform(get("/codes/{codeTable}/{id}", "ancillaryFundingSourceCodes", nonExistentId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("If-Match", "\"1\""))
+                .andExpect(status().isNotFound());
 
         // Test invalid code table - should also return 404 since it hits the default case
         mockMvc.perform(get("/codes/{codeTable}/{id}", "invalidCodeTable", nonExistentId)
@@ -629,7 +688,6 @@ class CodesControllerTest {
         bcparksSectionCodeModel.setIntegerAlias(1);
 
         CollectionModel<BCParksSectionCodeModel> bcparksSectionCodeCollectionModel = CollectionModel.of(Arrays.asList(bcparksSectionCodeModel));
-
 
         when(codesService.getAllBCParksSectionCodes()).thenReturn(bcparksSectionCodeCollectionModel);
 

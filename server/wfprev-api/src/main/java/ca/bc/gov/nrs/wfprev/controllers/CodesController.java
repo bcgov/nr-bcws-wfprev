@@ -59,6 +59,8 @@ public class CodesController extends CommonController {
                 case CodeTables.OBJECTIVE_TYPE_CODE -> result = codesService.getAllObjectiveTypeCodes();
                 case CodeTables.PROJECT_PLAN_STATUS_CODE -> result = codesService.getAllProjectPlanStatusCodes();
                 case CodeTables.ACTIVITY_STATUS_CODE -> result = codesService.getAllActivityStatusCodes();
+                case CodeTables.RISK_RATING_CODE -> result = codesService.getAllRiskRatingCodes();
+                case CodeTables.CONTRACT_PHASE_CODE -> result = codesService.getAllContractPhaseCodes();
                 case CodeTables.ACTIVITY_CATEGORY_CODE -> result = codesService.getAllActivityCategoryCodes();
                 case CodeTables.PLAN_FISCAL_STATUS_CODE -> result = codesService.getAllPlanFiscalStatusCodes();
                 case CodeTables.ANCILLARY_FUNDING_SOURCE_CODE -> result = codesService.getAllAncillaryFundingSourceCodes();
@@ -138,6 +140,8 @@ public class CodesController extends CommonController {
             case CodeTables.OBJECTIVE_TYPE_CODE -> codesService.getObjectiveTypeCodeById(id);
             case CodeTables.PROJECT_PLAN_STATUS_CODE -> codesService.getProjectPlanStatusCodeById(id);
             case CodeTables.ACTIVITY_STATUS_CODE -> codesService.getActivityStatusCodeById(id);
+            case CodeTables.RISK_RATING_CODE -> codesService.getRiskRatingCodeById(id);
+            case CodeTables.CONTRACT_PHASE_CODE -> codesService.getContractPhaseCodeById(id);
             case CodeTables.ACTIVITY_CATEGORY_CODE -> codesService.getActivityCategoryCodeById(id);
             case CodeTables.PLAN_FISCAL_STATUS_CODE -> codesService.getPlanFiscalStatusCodeById(id);
             case CodeTables.ANCILLARY_FUNDING_SOURCE_CODE -> codesService.getAncillaryFundingSourceCodeById(id);
