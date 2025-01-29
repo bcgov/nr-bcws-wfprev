@@ -22,6 +22,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -52,6 +53,7 @@ class CodesControllerTest {
         testGetRiskRatingCodes();
         testGetContractPhaseCodes();
         testGetActivityCategoryCodes();
+        testGetPlanFiscalStatusCodes();
     }
 
     void testGetForestAreaCodes() throws Exception {
@@ -70,7 +72,7 @@ class CodesControllerTest {
         when(codesService.getAllForestAreaCodes()).thenReturn(facModel);
 
         mockMvc.perform(get("/codes/" + CodeTables.FOREST_AREA_CODE)
-                .contentType(MediaType.APPLICATION_JSON))
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
 
@@ -90,7 +92,7 @@ class CodesControllerTest {
         when(codesService.getAllGeneralScopeCodes()).thenReturn(facModel);
 
         mockMvc.perform(get("/codes/" + CodeTables.GENERAL_SCOPE_CODE)
-                .contentType(MediaType.APPLICATION_JSON))
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
 
@@ -110,7 +112,7 @@ class CodesControllerTest {
         when(codesService.getAllProjectTypeCodes()).thenReturn(projectTypeCodeModels);
 
         mockMvc.perform(get("/codes/" + CodeTables.PROJECT_TYPE_CODE)
-                .contentType(MediaType.APPLICATION_JSON))
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
 
@@ -130,7 +132,7 @@ class CodesControllerTest {
         when(codesService.getAllObjectiveTypeCodes()).thenReturn(otcModel);
 
         mockMvc.perform(get("/codes/" + CodeTables.OBJECTIVE_TYPE_CODE)
-                .contentType(MediaType.APPLICATION_JSON))
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
 
@@ -154,7 +156,7 @@ class CodesControllerTest {
                 .andExpect(status().isOk());
     }
 
-     void testGetRiskRatingCodes() throws Exception {
+    void testGetRiskRatingCodes() throws Exception {
         String exampleId1 = UUID.randomUUID().toString();
         String exampleId2 = UUID.randomUUID().toString();
 
@@ -170,7 +172,7 @@ class CodesControllerTest {
         when(codesService.getAllRiskRatingCodes()).thenReturn(rrcModel);
 
         mockMvc.perform(get("/codes/" + CodeTables.RISK_RATING_CODE)
-                .contentType(MediaType.APPLICATION_JSON))
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
 
@@ -190,7 +192,7 @@ class CodesControllerTest {
         when(codesService.getAllContractPhaseCodes()).thenReturn(cpcModel);
 
         mockMvc.perform(get("/codes/" + CodeTables.CONTRACT_PHASE_CODE)
-                .contentType(MediaType.APPLICATION_JSON))
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
 
@@ -209,8 +211,49 @@ class CodesControllerTest {
 
         when(codesService.getAllActivityCategoryCodes()).thenReturn(accModel);
 
+
         mockMvc.perform(get("/codes/" + CodeTables.ACTIVITY_CATEGORY_CODE)
-                .contentType(MediaType.APPLICATION_JSON))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
+
+    void testGetAncillaryFundingSourceCodes() throws Exception {
+        String exampleId1 = UUID.randomUUID().toString();
+        String exampleId2 = UUID.randomUUID().toString();
+
+        AncillaryFundingSourceCodeModel acc1 = new AncillaryFundingSourceCodeModel();
+        acc1.setAncillaryFundingSourceGuid(exampleId1);
+
+        AncillaryFundingSourceCodeModel acc2 = new AncillaryFundingSourceCodeModel();
+        acc2.setAncillaryFundingSourceGuid(exampleId2);
+
+        List<AncillaryFundingSourceCodeModel> accList = Arrays.asList(acc1, acc2);
+        CollectionModel<AncillaryFundingSourceCodeModel> accModel = CollectionModel.of(accList);
+
+        when(codesService.getAllAncillaryFundingSourceCodes()).thenReturn(accModel);
+
+        mockMvc.perform(get("/codes/" + CodeTables.ANCILLARY_FUNDING_SOURCE_CODE)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
+
+    void testGetPlanFiscalStatusCodes() throws Exception {
+        String exampleId1 = UUID.randomUUID().toString();
+        String exampleId2 = UUID.randomUUID().toString();
+
+        PlanFiscalStatusCodeModel acc1 = new PlanFiscalStatusCodeModel();
+        acc1.setPlanFiscalStatusCode(exampleId1);
+
+        PlanFiscalStatusCodeModel acc2 = new PlanFiscalStatusCodeModel();
+        acc2.setPlanFiscalStatusCode(exampleId2);
+
+        List<PlanFiscalStatusCodeModel> accList = Arrays.asList(acc1, acc2);
+        CollectionModel<PlanFiscalStatusCodeModel> accModel = CollectionModel.of(accList);
+
+        when(codesService.getAllPlanFiscalStatusCodes()).thenReturn(accModel);
+
+        mockMvc.perform(get("/codes/" + CodeTables.PLAN_FISCAL_STATUS_CODE)
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
 
@@ -224,7 +267,7 @@ class CodesControllerTest {
         when(codesService.getProjectTypeCodeById(ptID)).thenReturn(projectTypeCode);
 
         mockMvc.perform(get("/codes/{codeTable}/{id}", CodeTables.PROJECT_TYPE_CODE, ptID)
-                .contentType(MediaType.APPLICATION_JSON))
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
 
         String gsID = UUID.randomUUID().toString();
@@ -234,7 +277,7 @@ class CodesControllerTest {
         when(codesService.getGeneralScopeCodeById(gsID)).thenReturn(generalScopeCode);
 
         mockMvc.perform(get("/codes/{codeTable}/{id}", CodeTables.GENERAL_SCOPE_CODE, gsID)
-                .contentType(MediaType.APPLICATION_JSON))
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
 
         String faID = UUID.randomUUID().toString();
@@ -244,7 +287,7 @@ class CodesControllerTest {
         when(codesService.getForestAreaCodeById(faID)).thenReturn(forestAreaCode);
 
         mockMvc.perform(get("/codes/{codeTable}/{id}", CodeTables.FOREST_AREA_CODE, faID)
-                .contentType(MediaType.APPLICATION_JSON))
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
 
         String otID = UUID.randomUUID().toString();
@@ -254,7 +297,7 @@ class CodesControllerTest {
         when(codesService.getObjectiveTypeCodeById(otID)).thenReturn(objectiveTypeCode);
 
         mockMvc.perform(get("/codes/{codeTable}/{id}", CodeTables.OBJECTIVE_TYPE_CODE, otID)
-                .contentType(MediaType.APPLICATION_JSON))
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
 
         String asID = UUID.randomUUID().toString();
@@ -264,7 +307,7 @@ class CodesControllerTest {
         when(codesService.getActivityStatusCodeById(asID)).thenReturn(activityStatusCode);
 
         mockMvc.perform(get("/codes/{codeTable}/{id}", CodeTables.ACTIVITY_STATUS_CODE, asID)
-                .contentType(MediaType.APPLICATION_JSON))
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
 
         String rrID = UUID.randomUUID().toString();
@@ -274,7 +317,7 @@ class CodesControllerTest {
         when(codesService.getRiskRatingCodeById(rrID)).thenReturn(riskRatingCode);
 
         mockMvc.perform(get("/codes/{codeTable}/{id}", CodeTables.RISK_RATING_CODE, rrID)
-                .contentType(MediaType.APPLICATION_JSON))
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
 
         String cpID = UUID.randomUUID().toString();
@@ -284,7 +327,7 @@ class CodesControllerTest {
         when(codesService.getContractPhaseCodeById(cpID)).thenReturn(contractPhaseCode);
 
         mockMvc.perform(get("/codes/{codeTable}/{id}", CodeTables.CONTRACT_PHASE_CODE, cpID)
-                .contentType(MediaType.APPLICATION_JSON))
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
 
         String acID = UUID.randomUUID().toString();
@@ -294,7 +337,28 @@ class CodesControllerTest {
         when(codesService.getActivityCategoryCodeById(acID)).thenReturn(activityCategoryCode);
 
         mockMvc.perform(get("/codes/{codeTable}/{id}", CodeTables.ACTIVITY_CATEGORY_CODE, acID)
-                .contentType(MediaType.APPLICATION_JSON))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        String afsID = UUID.randomUUID().toString();
+        AncillaryFundingSourceCodeModel ancillaryFundingSourceCode = new AncillaryFundingSourceCodeModel();
+        ancillaryFundingSourceCode.setAncillaryFundingSourceGuid(afsID);
+
+        when(codesService.getAncillaryFundingSourceCodeById(afsID)).thenReturn(ancillaryFundingSourceCode);
+
+        mockMvc.perform(get("/codes/{codeTable}/{id}", CodeTables.ANCILLARY_FUNDING_SOURCE_CODE, afsID)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+
+        String pfsID = UUID.randomUUID().toString();
+        PlanFiscalStatusCodeModel planFiscalStatusCode = new PlanFiscalStatusCodeModel();
+        planFiscalStatusCode.setPlanFiscalStatusCode(pfsID);
+
+        when(codesService.getPlanFiscalStatusCodeById(pfsID)).thenReturn(planFiscalStatusCode);
+
+        mockMvc.perform(get("/codes/{codeTable}/{id}", CodeTables.PLAN_FISCAL_STATUS_CODE, pfsID)
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
 
@@ -310,41 +374,53 @@ class CodesControllerTest {
         when(codesService.getObjectiveTypeCodeById(nonExistentId)).thenReturn(null);
         when(codesService.getActivityStatusCodeById(nonExistentId)).thenReturn(null);
         when(codesService.getActivityCategoryCodeById(nonExistentId)).thenReturn(null);
-
+        when(codesService.getPlanFiscalStatusCodeById(nonExistentId)).thenReturn(null);
+        when(codesService.getAncillaryFundingSourceCodeById(nonExistentId)).thenReturn(null);
         // Test valid code tables with non-existent ID
         mockMvc.perform(get("/codes/{codeTable}/{id}", "forestAreaCodes", nonExistentId)
-                .contentType(MediaType.APPLICATION_JSON)
-                .header("If-Match", "\"1\""))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("If-Match", "\"1\""))
                 .andExpect(status().isNotFound());
 
         mockMvc.perform(get("/codes/{codeTable}/{id}", "generalScopeCodes", nonExistentId)
-                .contentType(MediaType.APPLICATION_JSON)
-                .header("If-Match", "\"1\""))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("If-Match", "\"1\""))
                 .andExpect(status().isNotFound());
 
         mockMvc.perform(get("/codes/{codeTable}/{id}", "projectTypeCodes", nonExistentId)
-                .contentType(MediaType.APPLICATION_JSON)
-                .header("If-Match", "\"1\""))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("If-Match", "\"1\""))
                 .andExpect(status().isNotFound());
 
         mockMvc.perform(get("/codes/{codeTable}/{id}", "objectTypeCodes", nonExistentId)
-                .contentType(MediaType.APPLICATION_JSON)
-                .header("If-Match", "\"1\""))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("If-Match", "\"1\""))
                 .andExpect(status().isNotFound());
 
         mockMvc.perform(get("/codes/{codeTable}/{id}", "activityStatusCodes", nonExistentId)
-                .contentType(MediaType.APPLICATION_JSON)
-                .header("If-Match", "\"1\""))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("If-Match", "\"1\""))
                 .andExpect(status().isNotFound());
 
         mockMvc.perform(get("/codes/{codeTable}/{id}", "activityCategoryCodes", nonExistentId)
-                .contentType(MediaType.APPLICATION_JSON)
-                .header("If-Match", "\"1\""))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("If-Match", "\"1\""))
                 .andExpect(status().isNotFound());
+
+        mockMvc.perform(get("/codes/{codeTable}/{id}", "planFiscalStatusCodes", nonExistentId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("If-Match", "\"1\""))
+                .andExpect(status().isNotFound());
+
+        mockMvc.perform(get("/codes/{codeTable}/{id}", "ancillaryFundingSourceCodes", nonExistentId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("If-Match", "\"1\""))
+                .andExpect(status().isNotFound());
+
         // Test invalid code table - should also return 404 since it hits the default case
         mockMvc.perform(get("/codes/{codeTable}/{id}", "invalidCodeTable", nonExistentId)
-                .contentType(MediaType.APPLICATION_JSON)
-                .header("If-Match", "\"1\""))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("If-Match", "\"1\""))
                 .andExpect(status().isNotFound());
     }
 
@@ -354,7 +430,7 @@ class CodesControllerTest {
         when(codesService.getAllForestAreaCodes()).thenThrow(new ServiceException("Service error"));
 
         mockMvc.perform(get("/codes/{codeTable}", CodeTables.FOREST_AREA_CODE)
-                .contentType(MediaType.APPLICATION_JSON))
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isInternalServerError());
     }
 
@@ -365,7 +441,7 @@ class CodesControllerTest {
         when(codesService.getProjectTypeCodeById(id)).thenThrow(new ServiceException("Service error"));
 
         mockMvc.perform(get("/codes/{codeTable}/{id}", CodeTables.PROJECT_TYPE_CODE, id)
-                .contentType(MediaType.APPLICATION_JSON))
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isInternalServerError());
     }
 
@@ -377,7 +453,7 @@ class CodesControllerTest {
 
         // Perform the request
         mockMvc.perform(get("/codes/{codeTable}", CodeTables.FOREST_AREA_CODE)
-                .contentType(MediaType.APPLICATION_JSON))
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
 
         // Verify that the correct service method is called
@@ -391,7 +467,7 @@ class CodesControllerTest {
         when(codesService.getAllGeneralScopeCodes()).thenReturn(CollectionModel.empty());
 
         mockMvc.perform(get("/codes/{codeTable}", CodeTables.GENERAL_SCOPE_CODE)
-                .contentType(MediaType.APPLICATION_JSON))
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
 
         verify(codesService, times(1)).getAllGeneralScopeCodes();
@@ -404,7 +480,7 @@ class CodesControllerTest {
         when(codesService.getAllProgramAreaCodes()).thenReturn(CollectionModel.empty());
 
         mockMvc.perform(get("/codes/{codeTable}", CodeTables.PROGRAM_AREA_CODE)
-                .contentType(MediaType.APPLICATION_JSON))
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
 
         verify(codesService, times(1)).getAllProgramAreaCodes();
@@ -418,7 +494,7 @@ class CodesControllerTest {
         when(codesService.getForestAreaCodeById(id)).thenReturn(null);
 
         mockMvc.perform(get("/codes/{codeTable}/{id}", CodeTables.FOREST_AREA_CODE, id)
-                .contentType(MediaType.APPLICATION_JSON))
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
 
         verify(codesService, times(1)).getForestAreaCodeById(id);
@@ -431,7 +507,7 @@ class CodesControllerTest {
         String id = UUID.randomUUID().toString();
 
         mockMvc.perform(get("/codes/{codeTable}/{id}", CodeTables.GENERAL_SCOPE_CODE, id)
-                .contentType(MediaType.APPLICATION_JSON))
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
 
         verify(codesService, times(1)).getGeneralScopeCodeById(id);
@@ -444,7 +520,7 @@ class CodesControllerTest {
         String id = UUID.randomUUID().toString();
 
         mockMvc.perform(get("/codes/{codeTable}/{id}", CodeTables.PROJECT_TYPE_CODE, id)
-                .contentType(MediaType.APPLICATION_JSON))
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
 
         verify(codesService, times(1)).getProjectTypeCodeById(id);
@@ -457,7 +533,7 @@ class CodesControllerTest {
         String id = UUID.randomUUID().toString();
 
         mockMvc.perform(get("/codes/{codeTable}/{id}", CodeTables.PROGRAM_AREA_CODE, id)
-                .contentType(MediaType.APPLICATION_JSON))
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
 
         verify(codesService, times(1)).getProgramAreaCodeById(id);
@@ -469,7 +545,7 @@ class CodesControllerTest {
     void testGetForestRegionCodes() throws Exception {
         when(codesService.getAllForestRegionCodes()).thenReturn(CollectionModel.empty());
         mockMvc.perform(get("/codes/{codeTable}", CodeTables.FOREST_REGION_CODE)
-                .contentType(MediaType.APPLICATION_JSON))
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
         verify(codesService, times(1)).getAllForestRegionCodes();
         verifyNoMoreInteractions(codesService);
@@ -482,7 +558,7 @@ class CodesControllerTest {
         when(codesService.getForestRegionCodeById(id)).thenReturn(null);
 
         mockMvc.perform(get("/codes/{codeTable}/{id}", CodeTables.FOREST_REGION_CODE, id)
-                .contentType(MediaType.APPLICATION_JSON))
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
 
         verify(codesService, times(1)).getForestRegionCodeById(anyInt());
@@ -496,7 +572,7 @@ class CodesControllerTest {
         when(codesService.getForestDistrictCodeById(id)).thenReturn(null);
 
         mockMvc.perform(get("/codes/{codeTable}/{id}", CodeTables.FOREST_DISTRICT_CODE, id)
-                .contentType(MediaType.APPLICATION_JSON))
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
 
         verify(codesService, times(1)).getForestDistrictCodeById(anyInt());
@@ -508,7 +584,7 @@ class CodesControllerTest {
     void testGetForestDistrictCodes() throws Exception {
         when(codesService.getAllForestDistrictCodes()).thenReturn(CollectionModel.empty());
         mockMvc.perform(get("/codes/{codeTable}", CodeTables.FOREST_DISTRICT_CODE)
-                .contentType(MediaType.APPLICATION_JSON))
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
         verify(codesService, times(1)).getAllForestDistrictCodes();
         verifyNoMoreInteractions(codesService);
@@ -532,7 +608,7 @@ class CodesControllerTest {
 
         // WHEN
         mockMvc.perform(get("/codes/{codeTable}", CodeTables.BC_PARKS_REGION_CODE)
-                .contentType(MediaType.APPLICATION_JSON))
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 // THEN
                 .andExpect(jsonPath("$._embedded.bcParksRegionCode[0].bcParksOrgUnitTypeCode").value("REGION"))
@@ -562,7 +638,7 @@ class CodesControllerTest {
 
         // When
         mockMvc.perform(get("/codes/{codeTable}/{id}", CodeTables.BC_PARKS_REGION_CODE, "1")
-                .contentType(MediaType.APPLICATION_JSON))
+                        .contentType(MediaType.APPLICATION_JSON))
                 // Then
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.bcParksOrgUnitTypeCode").value("REGION"))
@@ -580,7 +656,7 @@ class CodesControllerTest {
 
         // When
         mockMvc.perform(get("/codes/{codeTable}/{id}", CodeTables.BC_PARKS_REGION_CODE, "1")
-                .contentType(MediaType.APPLICATION_JSON))
+                        .contentType(MediaType.APPLICATION_JSON))
                 // Then
                 .andExpect(status().isNotFound());
     }
@@ -593,7 +669,7 @@ class CodesControllerTest {
 
         // When
         mockMvc.perform(get("/codes/{codeTable}/{id}", CodeTables.BC_PARKS_REGION_CODE, "1")
-                .contentType(MediaType.APPLICATION_JSON))
+                        .contentType(MediaType.APPLICATION_JSON))
                 // Then
                 .andExpect(status().isInternalServerError());
     }
@@ -617,7 +693,7 @@ class CodesControllerTest {
 
         // WHEN
         mockMvc.perform(get("/codes/{codeTable}", CodeTables.BC_PARKS_SECTION_CODE)
-                .contentType(MediaType.APPLICATION_JSON))
+                        .contentType(MediaType.APPLICATION_JSON))
                 // THEN
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$._embedded.bcParksSectionCode[0].bcParksOrgUnitTypeCode").value("SECTION"))
@@ -647,7 +723,7 @@ class CodesControllerTest {
 
         // When
         mockMvc.perform(get("/codes/{codeTable}/{id}", CodeTables.BC_PARKS_SECTION_CODE, "1")
-                .contentType(MediaType.APPLICATION_JSON))
+                        .contentType(MediaType.APPLICATION_JSON))
                 // Then
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.bcParksOrgUnitTypeCode").value("SECTION"))
@@ -665,7 +741,7 @@ class CodesControllerTest {
 
         // When
         mockMvc.perform(get("/codes/{codeTable}/{id}", CodeTables.BC_PARKS_SECTION_CODE, "1")
-                .contentType(MediaType.APPLICATION_JSON))
+                        .contentType(MediaType.APPLICATION_JSON))
                 // Then
                 .andExpect(status().isNotFound());
     }
@@ -678,7 +754,7 @@ class CodesControllerTest {
 
         // When
         mockMvc.perform(get("/codes/{codeTable}/{id}", CodeTables.BC_PARKS_SECTION_CODE, "1")
-                .contentType(MediaType.APPLICATION_JSON))
+                        .contentType(MediaType.APPLICATION_JSON))
                 // Then
                 .andExpect(status().isInternalServerError());
     }
