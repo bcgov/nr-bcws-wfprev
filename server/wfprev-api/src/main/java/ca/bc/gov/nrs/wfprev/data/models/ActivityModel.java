@@ -47,9 +47,4 @@ public class ActivityModel extends CommonModel<ActivityModel> {
     private Boolean outstandingObligationsInd;
     private String activityComment;
     private Boolean isSpatialAddedInd;
-    private Integer revisionCount;
-    private String createUser;
-    private Date createDate;
-    private String updateUser;
-    private Date updateDate;
 }

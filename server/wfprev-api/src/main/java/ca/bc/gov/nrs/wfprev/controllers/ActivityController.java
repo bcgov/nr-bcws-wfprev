@@ -79,51 +79,6 @@ public class ActivityController extends CommonController {
         return response;
     }
 
-    @PostMapping
-    @Operation(
-            summary = "Create an Activity",
-            description = "Create a new Activity for a Project Fiscal",
-            security = @SecurityRequirement(name = "Webade-OAUTH2", scopes = {"WFPREV"}),
-            extensions = {
-                    @Extension(properties = {
-                            @ExtensionProperty(name = "auth-type", value = "#{wso2.x-auth-type.app_and_app_user}"),
-                            @ExtensionProperty(name = "throttling-tier", value = "Unlimited")
-                    })
-            }
-    )
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Created",
-                    content = @Content(schema = @Schema(implementation = ActivityModel.class))),
-            @ApiResponse(responseCode = "400", description = "Bad Request",
-                    content = @Content(schema = @Schema(implementation = MessageListRsrc.class))),
-            @ApiResponse(responseCode = "500", description = "Internal Server Error",
-                    content = @Content(schema = @Schema(implementation = MessageListRsrc.class)))
-    })
-    public ResponseEntity<ActivityModel> createActivity(
-            @PathVariable("projectId") String projectId,
-            @PathVariable("projectFiscalId") String projectFiscalId,
-            @Valid @RequestBody ActivityModel activityModel) {
-        log.debug(" >> createActivity");
-        ResponseEntity<ActivityModel> response;
-
-        try {
-            ActivityModel createdModel = activityService.createActivity(projectId, projectFiscalId, activityModel);
-            response = ResponseEntity.status(201).body(createdModel);
-        } catch (DataIntegrityViolationException e) {
-            response = badRequest();
-            log.error(" ### DataIntegrityViolationException while creating Activity", e);
-        } catch (ServiceException e) {
-            response = internalServerError();
-            log.error(" ### Service Exception while creating Activity", e);
-        } catch (Exception e) {
-            response = internalServerError();
-            log.error(" ### Error while creating Activity", e);
-        }
-
-        log.debug(" << createActivity");
-        return response;
-    }
-
     @PutMapping("/{id}")
     @Operation(
             summary = "Update Activity",
@@ -169,6 +124,51 @@ public class ActivityController extends CommonController {
         }
 
         log.debug(" << updateActivity");
+        return response;
+    }
+
+    @PostMapping
+    @Operation(
+            summary = "Create an Activity",
+            description = "Create a new Activity for a Project Fiscal",
+            security = @SecurityRequirement(name = "Webade-OAUTH2", scopes = {"WFPREV"}),
+            extensions = {
+                    @Extension(properties = {
+                            @ExtensionProperty(name = "auth-type", value = "#{wso2.x-auth-type.app_and_app_user}"),
+                            @ExtensionProperty(name = "throttling-tier", value = "Unlimited")
+                    })
+            }
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Created",
+                    content = @Content(schema = @Schema(implementation = ActivityModel.class))),
+            @ApiResponse(responseCode = "400", description = "Bad Request",
+                    content = @Content(schema = @Schema(implementation = MessageListRsrc.class))),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error",
+                    content = @Content(schema = @Schema(implementation = MessageListRsrc.class)))
+    })
+    public ResponseEntity<ActivityModel> createActivity(
+            @PathVariable("projectId") String projectId,
+            @PathVariable("projectFiscalId") String projectFiscalId,
+            @Valid @RequestBody ActivityModel activityModel) {
+        log.debug(" >> createActivity");
+        ResponseEntity<ActivityModel> response;
+
+        try {
+            ActivityModel createdModel = activityService.createActivity(projectId, projectFiscalId, activityModel);
+            response = ResponseEntity.status(201).body(createdModel);
+        } catch (DataIntegrityViolationException e) {
+            response = badRequest();
+            log.error(" ### DataIntegrityViolationException while creating Activity", e);
+        } catch (ServiceException e) {
+            response = internalServerError();
+            log.error(" ### Service Exception while creating Activity", e);
+        } catch (Exception e) {
+            response = internalServerError();
+            log.error(" ### Error while creating Activity", e);
+        }
+
+        log.debug(" << createActivity");
         return response;
     }
 

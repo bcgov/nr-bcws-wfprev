@@ -120,8 +120,7 @@ public class ActivityResourceAssembler extends RepresentationModelAssemblerSuppo
 
     @Override
     public CollectionModel<ActivityModel> toCollectionModel(Iterable<? extends ActivityEntity> entities) {
-        CollectionModel<ActivityModel> resources = super.toCollectionModel(entities);
-        return resources;
+         return super.toCollectionModel(entities);
     }
 
     private ActivityStatusCodeModel toActivityStatusCodeModel(ActivityStatusCodeEntity code) {
@@ -206,11 +205,10 @@ public class ActivityResourceAssembler extends RepresentationModelAssemblerSuppo
         entity.setOutstandingObligationsInd(nonNullOrDefault(model.getOutstandingObligationsInd(), existingEntity.getOutstandingObligationsInd()));
         entity.setActivityComment(nonNullOrDefault(model.getActivityComment(), existingEntity.getActivityComment()));
         entity.setIsSpatialAddedInd(nonNullOrDefault(model.getIsSpatialAddedInd(), existingEntity.getIsSpatialAddedInd()));
-        entity.setRevisionCount(nonNullOrDefault(model.getRevisionCount(), existingEntity.getRevisionCount()));
-        entity.setCreateUser(existingEntity.getCreateUser());
-        entity.setCreateDate(existingEntity.getCreateDate());
-        entity.setUpdateUser(existingEntity.getUpdateUser());
-        entity.setUpdateDate(existingEntity.getUpdateDate());
+        entity.setCreateUser(model.getCreateUser());
+        entity.setCreateDate(model.getCreateDate());
+        entity.setUpdateUser(model.getUpdateUser());
+        entity.setUpdateDate(model.getUpdateDate());
 
         return entity;
     }

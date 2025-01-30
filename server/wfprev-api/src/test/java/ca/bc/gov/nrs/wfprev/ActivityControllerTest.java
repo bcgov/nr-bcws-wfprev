@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.hateoas.CollectionModel;
@@ -26,6 +27,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.Date;
 import java.util.List;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
@@ -34,9 +36,10 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 
 @WebMvcTest(ActivityController.class)
 @Import({TestSpringSecurity.class, TestcontainersConfiguration.class})
@@ -62,6 +65,117 @@ class ActivityControllerTest {
                 .registerTypeAdapter(Date.class, (JsonDeserializer<Date>) (json, typeOfT, context) -> new Date(json.getAsLong()))
                 .serializeSpecialFloatingPointValues();
         gson = builder.create();
+    }
+
+    @Test
+    @WithMockUser
+    void testCreateActivity_Success() throws Exception {
+        ActivityModel requestModel = ActivityModel.builder()
+                .activityGuid("123e4567-e89b-12d3-a456-426614174000")
+                .projectPlanFiscalGuid("123e4567-e89b-12d3-a456-426614174001")
+                .activityName("New Activity")
+                .activityDescription("New Description")
+                .build();
+
+        when(activityService.createActivity(anyString(), anyString(), any(ActivityModel.class)))
+                .thenReturn(requestModel);
+
+        mockMvc.perform(post("/projects/{projectId}/projectFiscals/{projectFiscalId}/activities",
+                        "123e4567-e89b-12d3-a456-426614174001",
+                        "123e4567-e89b-12d3-a456-426614174002")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(gson.toJson(requestModel)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.activityGuid").value(requestModel.getActivityGuid()));
+
+        verify(activityService).createActivity(anyString(), anyString(), any(ActivityModel.class));
+    }
+
+    @Test
+    @WithMockUser
+    void testCreateActivity_DataIntegrityViolation() throws Exception {
+        ActivityModel requestModel = ActivityModel.builder()
+                .activityGuid("123e4567-e89b-12d3-a456-426614174000")
+                .projectPlanFiscalGuid("123e4567-e89b-12d3-a456-426614174001")
+                .activityName("New Activity")
+                .activityDescription("New Description")
+                .build();
+
+        when(activityService.createActivity(anyString(), anyString(), any(ActivityModel.class)))
+                .thenThrow(new DataIntegrityViolationException("Duplicate entry"));
+
+        mockMvc.perform(post("/projects/{projectId}/projectFiscals/{projectFiscalId}/activities",
+                        "123e4567-e89b-12d3-a456-426614174001",
+                        "123e4567-e89b-12d3-a456-426614174002")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(gson.toJson(requestModel)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @WithMockUser
+    void testUpdateActivity_Success() throws Exception {
+        ActivityModel requestModel = ActivityModel.builder()
+                .activityGuid("123e4567-e89b-12d3-a456-426614174000")
+                .projectPlanFiscalGuid("123e4567-e89b-12d3-a456-426614174001")
+                .activityName("Updated Activity")
+                .activityDescription("Updated Description")
+                .build();
+
+        when(activityService.updateActivity(anyString(), anyString(), any(ActivityModel.class)))
+                .thenReturn(requestModel);
+
+        mockMvc.perform(put("/projects/{projectId}/projectFiscals/{projectFiscalId}/activities/{id}",
+                        "123e4567-e89b-12d3-a456-426614174001",
+                        "123e4567-e89b-12d3-a456-426614174002",
+                        requestModel.getActivityGuid())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(gson.toJson(requestModel)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.activityGuid").value(requestModel.getActivityGuid()));
+
+        verify(activityService).updateActivity(anyString(), anyString(), any(ActivityModel.class));
+    }
+
+    @Test
+    @WithMockUser
+    void testUpdateActivity_NotFound() throws Exception {
+        ActivityModel requestModel = ActivityModel.builder()
+                .activityGuid("123e4567-e89b-12d3-a456-426614174000")
+                .projectPlanFiscalGuid("123e4567-e89b-12d3-a456-426614174001")
+                .activityName("Updated Activity")
+                .activityDescription("Updated Description")
+                .build();
+
+        when(activityService.updateActivity(anyString(), anyString(), any(ActivityModel.class)))
+                .thenReturn(null);
+
+        mockMvc.perform(put("/projects/{projectId}/projectFiscals/{projectFiscalId}/activities/{id}",
+                        "123e4567-e89b-12d3-a456-426614174001",
+                        "123e4567-e89b-12d3-a456-426614174002",
+                        requestModel.getActivityGuid())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(gson.toJson(requestModel)))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @WithMockUser
+    void testUpdateActivity_IdMismatch() throws Exception {
+        ActivityModel requestModel = ActivityModel.builder()
+                .activityGuid("different-id")
+                .projectPlanFiscalGuid("123e4567-e89b-12d3-a456-426614174001")
+                .activityName("Updated Activity")
+                .activityDescription("Updated Description")
+                .build();
+
+        mockMvc.perform(put("/projects/{projectId}/projectFiscals/{projectFiscalId}/activities/{id}",
+                        "123e4567-e89b-12d3-a456-426614174001",
+                        "123e4567-e89b-12d3-a456-426614174002",
+                        "123e4567-e89b-12d3-a456-426614174000")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(gson.toJson(requestModel)))
+                .andExpect(status().isBadRequest());
     }
 
     @Test
