@@ -75,11 +75,11 @@ public class ActivityEntity implements Serializable {
     private UUID activityFundingSourceGuid;
 
     @NotNull
-    @Column(name = "activity_name", length = 4000)
+    @Column(name = "activity_name", length = 4000, nullable = false)
     private String activityName;
 
     @NotNull
-    @Column(name = "activity_description", length = 4000)
+    @Column(name = "activity_description", length = 4000, nullable = false)
     private String activityDescription;
 
     @NotNull

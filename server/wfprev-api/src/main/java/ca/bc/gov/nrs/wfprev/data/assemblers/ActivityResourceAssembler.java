@@ -205,8 +205,9 @@ public class ActivityResourceAssembler extends RepresentationModelAssemblerSuppo
         entity.setOutstandingObligationsInd(nonNullOrDefault(model.getOutstandingObligationsInd(), existingEntity.getOutstandingObligationsInd()));
         entity.setActivityComment(nonNullOrDefault(model.getActivityComment(), existingEntity.getActivityComment()));
         entity.setIsSpatialAddedInd(nonNullOrDefault(model.getIsSpatialAddedInd(), existingEntity.getIsSpatialAddedInd()));
-        entity.setCreateUser(model.getCreateUser());
-        entity.setCreateDate(model.getCreateDate());
+        entity.setRevisionCount(nonNullOrDefault(model.getRevisionCount(), existingEntity.getRevisionCount()));
+        entity.setCreateUser(existingEntity.getCreateUser());
+        entity.setCreateDate(existingEntity.getCreateDate());
         entity.setUpdateUser(model.getUpdateUser());
         entity.setUpdateDate(model.getUpdateDate());
 

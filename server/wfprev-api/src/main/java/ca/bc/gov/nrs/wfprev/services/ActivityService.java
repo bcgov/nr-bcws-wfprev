@@ -23,6 +23,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.stereotype.Component;
 
+import java.text.MessageFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -31,12 +32,12 @@ import java.util.UUID;
 @Component
 public class ActivityService implements CommonService {
 
-    private static final String FISCAL_NOT_FOUND = "Project Fiscal not found: ";
-    private static final String PROJECT_FISCAL = "Project Fiscal ";
-    private static final String DOES_NOT_BELONG_PROJECT = " does not belong to Project ";
-    private static final String DOES_NOT_BELONG_FISCAL = " does not belong to Project Fiscal ";
-    private static final String ACTIVITY_NOT_FOUND = "Activity not found: ";
-    private static final String ACTIVITY = "Activity ";
+    private static final String FISCAL_NOT_FOUND = "Project Fiscal not found";
+    private static final String PROJECT_FISCAL = "Project Fiscal";
+    private static final String DOES_NOT_BELONG_PROJECT = "does not belong to Project";
+    private static final String DOES_NOT_BELONG_FISCAL = "does not belong to Project Fiscal";
+    private static final String ACTIVITY_NOT_FOUND = "Activity not found";
+    private static final String ACTIVITY = "Activity";
 
     private final ActivityRepository activityRepository;
     private final ActivityResourceAssembler activityResourceAssembler;
@@ -67,10 +68,10 @@ public class ActivityService implements CommonService {
         try {
             // Verify project fiscal exists and belongs to project
             ProjectFiscalEntity projectFiscal = projectFiscalRepository.findById(UUID.fromString(fiscalGuid))
-                    .orElseThrow(() -> new EntityNotFoundException(FISCAL_NOT_FOUND + fiscalGuid));
+                    .orElseThrow(() -> new EntityNotFoundException(MessageFormat.format("{0}: {1}", FISCAL_NOT_FOUND, fiscalGuid)));
 
             if (!projectFiscal.getProject().getProjectGuid().toString().equals(projectGuid)) {
-                throw new EntityNotFoundException(PROJECT_FISCAL + fiscalGuid + DOES_NOT_BELONG_PROJECT + projectGuid);
+                throw new EntityNotFoundException(MessageFormat.format("{0}: {1} {2}: {3}", PROJECT_FISCAL, fiscalGuid, DOES_NOT_BELONG_PROJECT, projectGuid));
             }
 
             // Find all activities for this project fiscal
@@ -93,12 +94,12 @@ public class ActivityService implements CommonService {
         // Verify project fiscal exists and belongs to project
         ProjectFiscalModel projectFiscal = projectFiscalService.getProjectFiscal(fiscalGuid);
         if (!projectFiscal.getProjectGuid().equals(projectGuid)) {
-            throw new EntityNotFoundException(PROJECT_FISCAL + fiscalGuid + DOES_NOT_BELONG_PROJECT + projectGuid);
+            throw new EntityNotFoundException(MessageFormat.format("{0}: {1} {2}: {3}",PROJECT_FISCAL, fiscalGuid, DOES_NOT_BELONG_PROJECT, projectGuid));
         }
 
         initializeNewActivity(resource, fiscalGuid);
         ProjectFiscalEntity projectFiscalEntity = projectFiscalRepository.findById(UUID.fromString(fiscalGuid))
-                .orElseThrow(() -> new EntityNotFoundException(FISCAL_NOT_FOUND + fiscalGuid));
+                .orElseThrow(() -> new EntityNotFoundException(MessageFormat.format("{0}: {1}",FISCAL_NOT_FOUND, fiscalGuid)));
 
         ActivityEntity entity = activityResourceAssembler.toEntity(resource);
         entity.setProjectPlanFiscalGuid(projectFiscalEntity.getProjectPlanFiscalGuid());
@@ -121,18 +122,18 @@ public class ActivityService implements CommonService {
         // Verify activity exists
         UUID activityGuid = UUID.fromString(resource.getActivityGuid());
         ActivityEntity existingEntity = (ActivityEntity) activityRepository.findById(activityGuid)
-                .orElseThrow(() -> new EntityNotFoundException(ACTIVITY_NOT_FOUND + resource.getActivityGuid()));
+                .orElseThrow(() -> new EntityNotFoundException(MessageFormat.format("{0}: {1}", ACTIVITY_NOT_FOUND, resource.getActivityGuid())));
 
         // Verify activity belongs to the specified project fiscal
         if (!existingEntity.getProjectPlanFiscalGuid().toString().equals(fiscalGuid)) {
-            throw new EntityNotFoundException(ACTIVITY + activityGuid + DOES_NOT_BELONG_FISCAL + fiscalGuid);
+            throw new EntityNotFoundException(MessageFormat.format("{0}: {1} {2}: {3}",ACTIVITY, activityGuid, DOES_NOT_BELONG_FISCAL, fiscalGuid));
         }
 
         // Verify project fiscal belongs to project
         ProjectFiscalEntity projectFiscal = projectFiscalRepository.findById(UUID.fromString(fiscalGuid))
-                .orElseThrow(() -> new EntityNotFoundException(FISCAL_NOT_FOUND + fiscalGuid));
+                .orElseThrow(() -> new EntityNotFoundException(MessageFormat.format("{0}: {1}",FISCAL_NOT_FOUND, fiscalGuid)));
         if (!projectFiscal.getProject().getProjectGuid().toString().equals(projectGuid)) {
-            throw new EntityNotFoundException(PROJECT_FISCAL + fiscalGuid + DOES_NOT_BELONG_PROJECT + projectGuid);
+            throw new EntityNotFoundException(MessageFormat.format("{0}: {1} {2}: {3}",PROJECT_FISCAL, fiscalGuid, DOES_NOT_BELONG_PROJECT, projectGuid));
         }
 
         ActivityEntity entity = activityResourceAssembler.updateEntity(resource, existingEntity);
@@ -156,18 +157,18 @@ public class ActivityService implements CommonService {
     public ActivityModel getActivity(String projectGuid, String fiscalGuid, String activityGuid) {
         // Get the activity
         ActivityEntity activity = activityRepository.findById(UUID.fromString(activityGuid))
-                .orElseThrow(() -> new EntityNotFoundException(ACTIVITY_NOT_FOUND + activityGuid));
+                .orElseThrow(() -> new EntityNotFoundException(MessageFormat.format("{0}: {1}",ACTIVITY_NOT_FOUND, activityGuid)));
 
         // Verify activity belongs to the specified project fiscal
         if (!activity.getProjectPlanFiscalGuid().toString().equals(fiscalGuid)) {
-            throw new EntityNotFoundException(ACTIVITY + activityGuid + DOES_NOT_BELONG_FISCAL + fiscalGuid);
+            throw new EntityNotFoundException(MessageFormat.format("{0}: {1} {2}: {3}",ACTIVITY, activityGuid, DOES_NOT_BELONG_FISCAL, fiscalGuid));
         }
 
         // Verify project fiscal belongs to project
         ProjectFiscalEntity projectFiscal = projectFiscalRepository.findById(UUID.fromString(fiscalGuid))
-                .orElseThrow(() -> new EntityNotFoundException(FISCAL_NOT_FOUND + fiscalGuid));
+                .orElseThrow(() -> new EntityNotFoundException(MessageFormat.format("{0}: {1}", FISCAL_NOT_FOUND, fiscalGuid)));
         if (!projectFiscal.getProject().getProjectGuid().toString().equals(projectGuid)) {
-            throw new EntityNotFoundException(PROJECT_FISCAL + fiscalGuid + DOES_NOT_BELONG_PROJECT + projectGuid);
+            throw new EntityNotFoundException(MessageFormat.format("{0}: {1} {2}: {3}", PROJECT_FISCAL, fiscalGuid, DOES_NOT_BELONG_PROJECT, projectGuid));
         }
 
         return activityResourceAssembler.toModel(activity);
@@ -176,18 +177,18 @@ public class ActivityService implements CommonService {
     public void deleteActivity(String projectGuid, String fiscalGuid, String activityGuid) {
         // Get the activity
         ActivityEntity activity = activityRepository.findById(UUID.fromString(activityGuid))
-                .orElseThrow(() -> new EntityNotFoundException(ACTIVITY_NOT_FOUND + activityGuid));
+                .orElseThrow(() -> new EntityNotFoundException(MessageFormat.format("{0}: {1}", ACTIVITY_NOT_FOUND, activityGuid)));
 
         // Verify activity belongs to the specified project fiscal
         if (!activity.getProjectPlanFiscalGuid().toString().equals(fiscalGuid)) {
-            throw new EntityNotFoundException(ACTIVITY + activityGuid + DOES_NOT_BELONG_FISCAL + fiscalGuid);
+            throw new EntityNotFoundException(MessageFormat.format("{0}: {1} {2}: {3}", ACTIVITY, activityGuid, DOES_NOT_BELONG_FISCAL, fiscalGuid));
         }
 
         // Verify project fiscal belongs to project
         ProjectFiscalEntity projectFiscal = projectFiscalRepository.findById(UUID.fromString(fiscalGuid))
-                .orElseThrow(() -> new EntityNotFoundException(FISCAL_NOT_FOUND + fiscalGuid));
+                .orElseThrow(() -> new EntityNotFoundException(MessageFormat.format("{0}: {1}", FISCAL_NOT_FOUND, fiscalGuid)));
         if (!projectFiscal.getProject().getProjectGuid().toString().equals(projectGuid)) {
-            throw new EntityNotFoundException(PROJECT_FISCAL + fiscalGuid + DOES_NOT_BELONG_PROJECT + projectGuid);
+            throw new EntityNotFoundException(MessageFormat.format("{0}: {1} {2}: {3}", PROJECT_FISCAL, fiscalGuid, DOES_NOT_BELONG_PROJECT, projectGuid));
         }
 
         activityRepository.deleteById(UUID.fromString(activityGuid));
@@ -195,39 +196,27 @@ public class ActivityService implements CommonService {
 
     public void assignAssociatedEntities(ActivityModel resource, ActivityEntity entity) {
         if (resource.getActivityStatusCode() != null) {
-            String forestAreaCode1 = resource.getActivityStatusCode().getActivityStatusCode();
-            ActivityStatusCodeEntity activityStatusCode = loadActivityStatusCode(forestAreaCode1);
-            entity.setActivityStatusCode(activityStatusCode);
+            String activityStatusCode = resource.getActivityStatusCode().getActivityStatusCode();
+            ActivityStatusCodeEntity activityStatusCodeEntity = activityStatusCodeRepository
+                    .findById(activityStatusCode)
+                    .orElseThrow(() -> new IllegalArgumentException("ActivityStatusCode not found: " + activityStatusCode));
+            entity.setActivityStatusCode(activityStatusCodeEntity);
         }
 
         if(resource.getRiskRatingCode() != null) {
-            String riskRatingCode1 = resource.getRiskRatingCode().getRiskRatingCode();
-            RiskRatingCodeEntity riskRatingCode = loadRiskRatingCode(riskRatingCode1);
-            entity.setRiskRatingCode(riskRatingCode);
+            String riskRatingCode = resource.getRiskRatingCode().getRiskRatingCode();
+            RiskRatingCodeEntity riskRatingCodeEntity = riskRatingCodeRepository
+                    .findById(riskRatingCode)
+                    .orElseThrow(() -> new IllegalArgumentException("RiskRatingCode not found: " + riskRatingCode));
+            entity.setRiskRatingCode(riskRatingCodeEntity);
         }
 
         if(resource.getContractPhaseCode() != null) {
-            String contractPhaseCode1 = resource.getContractPhaseCode().getContractPhaseCode();
-            ContractPhaseCodeEntity contractPhaseCode = loadContractPhaseCode(contractPhaseCode1);
-            entity.setContractPhaseCode(contractPhaseCode);
+            String contractPhaseCode = resource.getContractPhaseCode().getContractPhaseCode();
+            ContractPhaseCodeEntity contractPhaseCodeEntity = contractPhaseCodeRepository
+                    .findById(contractPhaseCode)
+                    .orElseThrow(() -> new IllegalArgumentException("ContractPhaseCode not found: " + contractPhaseCode));
+            entity.setContractPhaseCode(contractPhaseCodeEntity);
         }
-    }
-
-    public ActivityStatusCodeEntity loadActivityStatusCode(String activityStatusCode) {
-        return activityStatusCodeRepository
-                .findById(activityStatusCode)
-                .orElseThrow(() -> new IllegalArgumentException("ActivityStatusCode not found: " + activityStatusCode));
-    }
-
-    public RiskRatingCodeEntity loadRiskRatingCode(String riskRatingCode) {
-        return riskRatingCodeRepository
-                .findById(riskRatingCode)
-                .orElseThrow(() -> new IllegalArgumentException("RiskRatingCode not found: " + riskRatingCode));
-    }
-
-    public ContractPhaseCodeEntity loadContractPhaseCode(String contractPhaseCode) {
-        return contractPhaseCodeRepository
-                .findById(contractPhaseCode)
-                .orElseThrow(() -> new IllegalArgumentException("ContractPhaseCode not found: " + contractPhaseCode));
     }
 }
