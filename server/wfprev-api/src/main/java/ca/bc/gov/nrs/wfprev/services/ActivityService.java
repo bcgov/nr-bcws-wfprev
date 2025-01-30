@@ -31,6 +31,13 @@ import java.util.UUID;
 @Component
 public class ActivityService implements CommonService {
 
+    private final String fiscalNotFoundString = "Project Fiscal not found: ";
+    private final String projectFiscalString = "Project Fiscal ";
+    private final String doesNotBelongToProjectString = " does not belong to Project ";
+    private final String doesNotBelongToFiscalString = " does not belong to Project Fiscal ";
+    private final String activityNotFoundString = "Activity not found: ";
+    private final String activityString = "Activity ";
+
     private final ActivityRepository activityRepository;
     private final ActivityResourceAssembler activityResourceAssembler;
     private final ProjectFiscalRepository projectFiscalRepository;
@@ -60,10 +67,10 @@ public class ActivityService implements CommonService {
         try {
             // Verify project fiscal exists and belongs to project
             ProjectFiscalEntity projectFiscal = projectFiscalRepository.findById(UUID.fromString(fiscalGuid))
-                    .orElseThrow(() -> new EntityNotFoundException("Project Fiscal not found: " + fiscalGuid));
+                    .orElseThrow(() -> new EntityNotFoundException(fiscalNotFoundString + fiscalGuid));
 
             if (!projectFiscal.getProject().getProjectGuid().toString().equals(projectGuid)) {
-                throw new EntityNotFoundException("Project Fiscal " + fiscalGuid + " does not belong to Project " + projectGuid);
+                throw new EntityNotFoundException(projectFiscalString + fiscalGuid + doesNotBelongToProjectString + projectGuid);
             }
 
             // Find all activities for this project fiscal
@@ -86,12 +93,12 @@ public class ActivityService implements CommonService {
         // Verify project fiscal exists and belongs to project
         ProjectFiscalModel projectFiscal = projectFiscalService.getProjectFiscal(fiscalGuid);
         if (!projectFiscal.getProjectGuid().equals(projectGuid)) {
-            throw new EntityNotFoundException("Project Fiscal " + fiscalGuid + " does not belong to Project " + projectGuid);
+            throw new EntityNotFoundException(projectFiscalString + fiscalGuid + doesNotBelongToProjectString + projectGuid);
         }
 
         initializeNewActivity(resource, fiscalGuid);
         ProjectFiscalEntity projectFiscalEntity = projectFiscalRepository.findById(UUID.fromString(fiscalGuid))
-                .orElseThrow(() -> new EntityNotFoundException("Project Fiscal not found: " + fiscalGuid));
+                .orElseThrow(() -> new EntityNotFoundException(fiscalNotFoundString + fiscalGuid));
 
         ActivityEntity entity = activityResourceAssembler.toEntity(resource);
         entity.setProjectPlanFiscalGuid(projectFiscalEntity.getProjectPlanFiscalGuid());
@@ -114,18 +121,18 @@ public class ActivityService implements CommonService {
         // Verify activity exists
         UUID activityGuid = UUID.fromString(resource.getActivityGuid());
         ActivityEntity existingEntity = (ActivityEntity) activityRepository.findById(activityGuid)
-                .orElseThrow(() -> new EntityNotFoundException("Activity not found: " + resource.getActivityGuid()));
+                .orElseThrow(() -> new EntityNotFoundException(activityNotFoundString + resource.getActivityGuid()));
 
         // Verify activity belongs to the specified project fiscal
         if (!existingEntity.getProjectPlanFiscalGuid().toString().equals(fiscalGuid)) {
-            throw new EntityNotFoundException("Activity " + activityGuid + " does not belong to Project Fiscal " + fiscalGuid);
+            throw new EntityNotFoundException(activityString + activityGuid + doesNotBelongToFiscalString + fiscalGuid);
         }
 
         // Verify project fiscal belongs to project
         ProjectFiscalEntity projectFiscal = projectFiscalRepository.findById(UUID.fromString(fiscalGuid))
-                .orElseThrow(() -> new EntityNotFoundException("Project Fiscal not found: " + fiscalGuid));
+                .orElseThrow(() -> new EntityNotFoundException(fiscalNotFoundString + fiscalGuid));
         if (!projectFiscal.getProject().getProjectGuid().toString().equals(projectGuid)) {
-            throw new EntityNotFoundException("Project Fiscal " + fiscalGuid + " does not belong to Project " + projectGuid);
+            throw new EntityNotFoundException(projectFiscalString + fiscalGuid + doesNotBelongToProjectString + projectGuid);
         }
 
         ActivityEntity entity = activityResourceAssembler.updateEntity(resource, existingEntity);
@@ -149,18 +156,18 @@ public class ActivityService implements CommonService {
     public ActivityModel getActivity(String projectGuid, String fiscalGuid, String activityGuid) {
         // Get the activity
         ActivityEntity activity = activityRepository.findById(UUID.fromString(activityGuid))
-                .orElseThrow(() -> new EntityNotFoundException("Activity not found: " + activityGuid));
+                .orElseThrow(() -> new EntityNotFoundException(activityNotFoundString + activityGuid));
 
         // Verify activity belongs to the specified project fiscal
         if (!activity.getProjectPlanFiscalGuid().toString().equals(fiscalGuid)) {
-            throw new EntityNotFoundException("Activity " + activityGuid + " does not belong to Project Fiscal " + fiscalGuid);
+            throw new EntityNotFoundException(activityString + activityGuid + doesNotBelongToFiscalString + fiscalGuid);
         }
 
         // Verify project fiscal belongs to project
         ProjectFiscalEntity projectFiscal = projectFiscalRepository.findById(UUID.fromString(fiscalGuid))
-                .orElseThrow(() -> new EntityNotFoundException("Project Fiscal not found: " + fiscalGuid));
+                .orElseThrow(() -> new EntityNotFoundException(fiscalNotFoundString + fiscalGuid));
         if (!projectFiscal.getProject().getProjectGuid().toString().equals(projectGuid)) {
-            throw new EntityNotFoundException("Project Fiscal " + fiscalGuid + " does not belong to Project " + projectGuid);
+            throw new EntityNotFoundException(projectFiscalString + fiscalGuid + doesNotBelongToProjectString + projectGuid);
         }
 
         return activityResourceAssembler.toModel(activity);
@@ -169,18 +176,18 @@ public class ActivityService implements CommonService {
     public void deleteActivity(String projectGuid, String fiscalGuid, String activityGuid) {
         // Get the activity
         ActivityEntity activity = activityRepository.findById(UUID.fromString(activityGuid))
-                .orElseThrow(() -> new EntityNotFoundException("Activity not found: " + activityGuid));
+                .orElseThrow(() -> new EntityNotFoundException(activityNotFoundString + activityGuid));
 
         // Verify activity belongs to the specified project fiscal
         if (!activity.getProjectPlanFiscalGuid().toString().equals(fiscalGuid)) {
-            throw new EntityNotFoundException("Activity " + activityGuid + " does not belong to Project Fiscal " + fiscalGuid);
+            throw new EntityNotFoundException(activityString + activityGuid + doesNotBelongToFiscalString + fiscalGuid);
         }
 
         // Verify project fiscal belongs to project
         ProjectFiscalEntity projectFiscal = projectFiscalRepository.findById(UUID.fromString(fiscalGuid))
-                .orElseThrow(() -> new EntityNotFoundException("Project Fiscal not found: " + fiscalGuid));
+                .orElseThrow(() -> new EntityNotFoundException(fiscalNotFoundString + fiscalGuid));
         if (!projectFiscal.getProject().getProjectGuid().toString().equals(projectGuid)) {
-            throw new EntityNotFoundException("Project Fiscal " + fiscalGuid + " does not belong to Project " + projectGuid);
+            throw new EntityNotFoundException(projectFiscalString + fiscalGuid + doesNotBelongToProjectString + projectGuid);
         }
 
         activityRepository.deleteById(UUID.fromString(activityGuid));
