@@ -31,12 +31,12 @@ import java.util.UUID;
 @Component
 public class ActivityService implements CommonService {
 
-    private final String fiscalNotFoundString = "Project Fiscal not found: ";
-    private final String projectFiscalString = "Project Fiscal ";
-    private final String doesNotBelongToProjectString = " does not belong to Project ";
-    private final String doesNotBelongToFiscalString = " does not belong to Project Fiscal ";
-    private final String activityNotFoundString = "Activity not found: ";
-    private final String activityString = "Activity ";
+    private final static String fiscalNotFoundString = "Project Fiscal not found: ";
+    private final static String projectFiscalString = "Project Fiscal ";
+    private final static String doesNotBelongToProjectString = " does not belong to Project ";
+    private final static String doesNotBelongToFiscalString = " does not belong to Project Fiscal ";
+    private final static String activityNotFoundString = "Activity not found: ";
+    private final static String activityString = "Activity ";
 
     private final ActivityRepository activityRepository;
     private final ActivityResourceAssembler activityResourceAssembler;
