@@ -11,6 +11,7 @@ import { ProjectFiscal } from 'src/app/components/models';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Messages } from 'src/app/utils/messages';
 import { CodeTableServices } from 'src/app/services/code-table-services';
+import { MatMenuModule } from '@angular/material/menu';
 
 @Component({
   selector: 'app-project-fiscals',
@@ -24,7 +25,8 @@ import { CodeTableServices } from 'src/app/services/code-table-services';
     MatButtonModule,
     MatSlideToggleModule,
     MatExpansionModule,
-    CurrencyPipe
+    CurrencyPipe,
+    MatMenuModule
   ]
 })
 export class ProjectFiscalsComponent implements OnInit {
@@ -97,10 +99,10 @@ export class ProjectFiscalsComponent implements OnInit {
   }
 
   private createFiscalForm(fiscal?: any): FormGroup {
-    return this.fb.group({
+    const form = this.fb.group({
       fiscalYear: [fiscal?.fiscalYear || '', [Validators.required]],
       projectFiscalName: [fiscal?.projectFiscalName || '', [Validators.required]],
-      activityCategoryCode: [fiscal?.activityCategoryCode || ''],
+      activityCategoryCode: [fiscal?.activityCategoryCode || '', [Validators.required]],
       proposalType: [fiscal?.proposalType || ''],
       planFiscalStatusCode: [fiscal?.planFiscalStatusCode || ''],
       fiscalPlannedProjectSizeHa: [fiscal?.fiscalPlannedProjectSizeHa || ''],
@@ -110,30 +112,44 @@ export class ProjectFiscalsComponent implements OnInit {
       firstNationsDelivPartInd: [fiscal?.firstNationsDelivPartInd || false],
       firstNationsPartner: [fiscal?.firstNationsPartner || ''],
       projectFiscalDescription: [fiscal?.projectFiscalDescription || '', [Validators.required]],
-      otherPartners: [fiscal?.otherPartners || ''],
+      otherPartner: [fiscal?.otherPartner || ''],
       totalCostEstimateAmount: [fiscal?.totalCostEstimateAmount ?? ''],
       forecastAmount: [fiscal?.forecastAmount ?? ''],
       cfsProjectCode: [fiscal?.cfsProjectCode || ''],
       ancillaryFundingSourceGuid: [fiscal?.ancillaryFundingSourceGuid || ''],
       fiscalAncillaryFundAmount: [fiscal?.fiscalAncillaryFundAmount ?? ''],
       fiscalReportedSpendAmount: [fiscal?.fiscalReportedSpendAmount ?? ''],
-      cfsActualSpend: [fiscal?.cfsActualSpend || '']
+      cfsActualSpend: [fiscal?.cfsActualSpend || ''],
+      fiscalForecastAmount: [fiscal?.fiscalForecastAmount || ''],
+      fiscalActualAmount: [fiscal?.fiscalActualAmount || '']
     });
+    
+    return form;
+    
   }
 
-  loadProjectFiscals(): void {
+  loadProjectFiscals(markFormsPristine: boolean = false): void {
+    const previousTabIndex = this.selectedTabIndex; // Preserve the current tab index
+  
     this.projectGuid = this.route.snapshot?.queryParamMap?.get('projectGuid') || '';
     if (!this.projectGuid) return;
   
     this.projectService.getProjectFiscalsByProjectGuid(this.projectGuid).subscribe({
       next: (data) => {
-        this.projectFiscals = (data._embedded.projectFiscals || []).map((fiscal:any) => {
-          return {
-            ...fiscal,
-            fiscalYearFormatted: `${fiscal.fiscalYear}/${(fiscal.fiscalYear + 1).toString().slice(-2)}`
-          };
+        this.projectFiscals = (data._embedded.projectFiscals || []).map((fiscal: any) => ({
+          ...fiscal,
+          fiscalYearFormatted: `${fiscal.fiscalYear}/${(fiscal.fiscalYear + 1).toString().slice(-2)}`
+        })).sort((a: { fiscalYear: number }, b: { fiscalYear: number }) => a.fiscalYear - b.fiscalYear); // Sorting by fiscalYear
+  
+        this.fiscalForms = this.projectFiscals.map((fiscal) => {
+          const form = this.createFiscalForm(fiscal);
+          if (markFormsPristine) {
+            form.markAsPristine(); // Mark forms as NOT dirty after refreshing
+          }
+          return form;
         });
-        this.fiscalForms = this.projectFiscals.map((fiscal) => this.createFiscalForm(fiscal));
+  
+        this.selectedTabIndex = previousTabIndex < this.projectFiscals.length ? previousTabIndex : 0;
       },
       error: (err) => {
         console.error('Error fetching project details:', err);
@@ -142,6 +158,8 @@ export class ProjectFiscalsComponent implements OnInit {
       },
     });
   }
+  
+  
   
 
   addNewFiscal(): void {
@@ -195,8 +213,11 @@ export class ProjectFiscalsComponent implements OnInit {
         isApprovedInd: isUpdate ? updatedData.isApprovedInd : true,
         isDelayedInd: isUpdate ? updatedData.isDelayedInd : false,
         fiscalForecastAmount: updatedData.fiscalForecastAmount,
+        totalCostEstimateAmount: updatedData.totalCostEstimateAmount,
+        cfsProjectCode: updatedData.cfsProjectCode,
+        ancillaryFundingSourceGuid: updatedData.ancillaryFundingSourceGuid,
+        otherPartner: updatedData.otherPartner
       };
-      debugger
       if (isUpdate) {
         // update the existing fiscal
         this.projectService.updateProjectFiscal(this.projectGuid, updatedData.projectPlanFiscalGuid, projectFiscal).subscribe({
@@ -206,6 +227,7 @@ export class ProjectFiscalsComponent implements OnInit {
               'OK',
               { duration: 5000, panelClass: 'snackbar-success' },
             );
+            this.loadProjectFiscals(true);
           },
           error: () => {
             this.snackbarService.open(
@@ -225,6 +247,7 @@ export class ProjectFiscalsComponent implements OnInit {
               'OK',
               { duration: 5000, panelClass: 'snackbar-success' },
             );
+            this.loadProjectFiscals(true);
           },
           error: () =>{
               this.snackbarService.open(
@@ -236,5 +259,4 @@ export class ProjectFiscalsComponent implements OnInit {
         });
       }
   }
-  
 }

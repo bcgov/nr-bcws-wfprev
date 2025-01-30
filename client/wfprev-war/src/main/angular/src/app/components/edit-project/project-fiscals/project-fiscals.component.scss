@@ -269,3 +269,38 @@
               }
           }
       }
+  
+.header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  .dropdown-button{
+    color: #FFF;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    margin-right: 40px;
+    background-color: var(--wf-primary-color);
+    border-radius: 0;
+    width: auto;
+    border-radius: 10px;
+    height: 35px;
+    span{
+      padding-right: 10px;
+      vertical-align: top;
+    }
+  }
+
+  .action-icon{
+    width: 14px;
+    height: 14px;
+  }
+}
+
+.new-fiscal-button {
+  font-size: 12px !important;
+  font-weight: 400 !important;
+  font-family: var(--wf-font-family-main);
+}

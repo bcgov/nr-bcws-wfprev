@@ -75,4 +75,8 @@ export interface ProjectFiscal {
   isApprovedInd?: boolean;
   isDelayedInd?: boolean;
   fiscalForecastAmount?: number;
+  totalCostEstimateAmount?: number;
+  cfsProjectCode?: string;
+  ancillaryFundingSourceGuid?: string;
+  otherPartner?: string
 }
