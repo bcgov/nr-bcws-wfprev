@@ -12,6 +12,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { Messages } from 'src/app/utils/messages';
 import { CodeTableServices } from 'src/app/services/code-table-services';
 import { MatMenuModule } from '@angular/material/menu';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-project-fiscals',
@@ -39,7 +40,7 @@ export class ProjectFiscalsComponent implements OnInit {
   activityCategoryCode: any[] = [];
   planFiscalStatusCode: any[] = [];
   ancillaryFundingSourceCode: any[] = [];
-
+  originalFiscalValues: any[] = []
   constructor(
     private route: ActivatedRoute,
     private projectService: ProjectService,
@@ -72,15 +73,11 @@ export class ProjectFiscalsComponent implements OnInit {
     ];
   
     codeTables.forEach((table) => {
-      this.codeTableService.fetchCodeTable(table.name).subscribe({
-        next: (data) => {
-          this.assignCodeTableData(table.embeddedKey, data);
-        },
-        error: (err) => {
-          console.error(`Error fetching ${table.name}`, err);
-          this.assignCodeTableData(table.embeddedKey, []);
-        },
-      });
+      this.fetchData(
+        this.codeTableService.fetchCodeTable(table.name),
+        (data) => this.assignCodeTableData(table.embeddedKey, data),
+        `Error fetching ${table.name}`
+      );
     });
   }
 
@@ -98,7 +95,7 @@ export class ProjectFiscalsComponent implements OnInit {
     }
   }
 
-  private createFiscalForm(fiscal?: any): FormGroup {
+  createFiscalForm(fiscal?: any): FormGroup {
     const form = this.fb.group({
       fiscalYear: [fiscal?.fiscalYear || '', [Validators.required]],
       projectFiscalName: [fiscal?.projectFiscalName || '', [Validators.required]],
@@ -129,36 +126,33 @@ export class ProjectFiscalsComponent implements OnInit {
   }
 
   loadProjectFiscals(markFormsPristine: boolean = false): void {
-    const previousTabIndex = this.selectedTabIndex; // Preserve the current tab index
-  
+    const previousTabIndex = this.selectedTabIndex;
     this.projectGuid = this.route.snapshot?.queryParamMap?.get('projectGuid') || '';
     if (!this.projectGuid) return;
   
-    this.projectService.getProjectFiscalsByProjectGuid(this.projectGuid).subscribe({
-      next: (data) => {
-        this.projectFiscals = (data._embedded.projectFiscals || []).map((fiscal: any) => ({
+    this.fetchData(
+      this.projectService.getProjectFiscalsByProjectGuid(this.projectGuid),
+      (data) => {
+        this.projectFiscals = (data._embedded?.projectFiscals || []).map((fiscal: any) => ({
           ...fiscal,
-          fiscalYearFormatted: `${fiscal.fiscalYear}/${(fiscal.fiscalYear + 1).toString().slice(-2)}`
-        })).sort((a: { fiscalYear: number }, b: { fiscalYear: number }) => a.fiscalYear - b.fiscalYear); // Sorting by fiscalYear
-  
+          fiscalYearFormatted: `${fiscal.fiscalYear}/${(fiscal.fiscalYear + 1).toString().slice(-2)}`,
+        })).sort((a: { fiscalYear: number }, b: { fiscalYear: number }) => a.fiscalYear - b.fiscalYear);
+        
+        this.originalFiscalValues = JSON.parse(JSON.stringify(this.projectFiscals));
+        
         this.fiscalForms = this.projectFiscals.map((fiscal) => {
           const form = this.createFiscalForm(fiscal);
           if (markFormsPristine) {
-            form.markAsPristine(); // Mark forms as NOT dirty after refreshing
+            form.markAsPristine();
           }
           return form;
         });
   
         this.selectedTabIndex = previousTabIndex < this.projectFiscals.length ? previousTabIndex : 0;
       },
-      error: (err) => {
-        console.error('Error fetching project details:', err);
-        this.projectFiscals = [];
-        this.fiscalForms = [];
-      },
-    });
+      'Error fetching project details'
+    );
   }
-  
   
   
 
@@ -169,8 +163,33 @@ export class ProjectFiscalsComponent implements OnInit {
     this.selectedTabIndex = this.projectFiscals.length - 1; // Navigate to the newly added tab
   }
 
-  onCancelFiscal() {
+  onCancelFiscal(index: number): void {
+    if (!this.fiscalForms[index]) return; // Ensure form exists
+  
+    const isNewEntry = !this.projectFiscals[index]?.projectPlanFiscalGuid;
+  
+    if (isNewEntry) {
+      // Case 1: New entry → Clear all fields
+      this.fiscalForms[index].reset();
+    } else {
+      // Case 2: Existing entry → Revert to original API values
+      const originalData = this.originalFiscalValues[index];
+      this.fiscalForms[index].patchValue(originalData);
+  
+      // Mark form as pristine (not dirty)
+      this.fiscalForms[index].markAsPristine();
+      this.fiscalForms[index].markAsUntouched();
+    }
+  }
 
+  fetchData<T>(fetchFn: Observable<T>, assignFn: (data: T) => void, errorMessage: string): void {
+    fetchFn.subscribe({
+      next: (data) => assignFn(data),
+      error: (err) => {
+        console.error(errorMessage, err);
+        assignFn({} as T); // Assign default empty data
+      },
+    });
   }
 
   onSaveFiscal(index: number): void {
