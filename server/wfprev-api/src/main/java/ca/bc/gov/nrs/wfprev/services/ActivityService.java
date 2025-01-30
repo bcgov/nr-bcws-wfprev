@@ -193,7 +193,7 @@ public class ActivityService implements CommonService {
         activityRepository.deleteById(UUID.fromString(activityGuid));
     }
 
-    private void assignAssociatedEntities(ActivityModel resource, ActivityEntity entity) {
+    public void assignAssociatedEntities(ActivityModel resource, ActivityEntity entity) {
         if (resource.getActivityStatusCode() != null) {
             String forestAreaCode1 = resource.getActivityStatusCode().getActivityStatusCode();
             ActivityStatusCodeEntity activityStatusCode = loadActivityStatusCode(forestAreaCode1);
@@ -213,19 +213,19 @@ public class ActivityService implements CommonService {
         }
     }
 
-    private ActivityStatusCodeEntity loadActivityStatusCode(String activityStatusCode) {
+    public ActivityStatusCodeEntity loadActivityStatusCode(String activityStatusCode) {
         return activityStatusCodeRepository
                 .findById(activityStatusCode)
                 .orElseThrow(() -> new IllegalArgumentException("ActivityStatusCode not found: " + activityStatusCode));
     }
 
-    private RiskRatingCodeEntity loadRiskRatingCode(String riskRatingCode) {
+    public RiskRatingCodeEntity loadRiskRatingCode(String riskRatingCode) {
         return riskRatingCodeRepository
                 .findById(riskRatingCode)
                 .orElseThrow(() -> new IllegalArgumentException("RiskRatingCode not found: " + riskRatingCode));
     }
 
-    private ContractPhaseCodeEntity loadContractPhaseCode(String contractPhaseCode) {
+    public ContractPhaseCodeEntity loadContractPhaseCode(String contractPhaseCode) {
         return contractPhaseCodeRepository
                 .findById(contractPhaseCode)
                 .orElseThrow(() -> new IllegalArgumentException("ContractPhaseCode not found: " + contractPhaseCode));

@@ -4,7 +4,10 @@ import ca.bc.gov.nrs.wfone.common.service.api.ServiceException;
 import ca.bc.gov.nrs.wfprev.data.assemblers.ActivityResourceAssembler;
 import ca.bc.gov.nrs.wfprev.data.entities.*;
 import ca.bc.gov.nrs.wfprev.data.models.ActivityModel;
+import ca.bc.gov.nrs.wfprev.data.models.ActivityStatusCodeModel;
+import ca.bc.gov.nrs.wfprev.data.models.ContractPhaseCodeModel;
 import ca.bc.gov.nrs.wfprev.data.models.ProjectFiscalModel;
+import ca.bc.gov.nrs.wfprev.data.models.RiskRatingCodeModel;
 import ca.bc.gov.nrs.wfprev.data.repositories.*;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
@@ -307,5 +310,141 @@ class ActivityServiceTest {
         // WHEN/THEN
         assertThrows(DataIntegrityViolationException.class, () ->
                 activityService.updateActivity(projectGuid, fiscalGuid, activityModel));
+    }
+
+    @Test
+    void testAssignAssociatedEntities_AllCodesPresent() {
+        // GIVEN
+        ActivityModel resource = new ActivityModel();
+        ActivityStatusCodeModel statusCode = new ActivityStatusCodeModel();
+        statusCode.setActivityStatusCode("STATUS1");
+        RiskRatingCodeModel riskCode = new RiskRatingCodeModel();
+        riskCode.setRiskRatingCode("RISK1");
+        ContractPhaseCodeModel phaseCode = new ContractPhaseCodeModel();
+        phaseCode.setContractPhaseCode("PHASE1");
+
+        resource.setActivityStatusCode(statusCode);
+        resource.setRiskRatingCode(riskCode);
+        resource.setContractPhaseCode(phaseCode);
+
+        ActivityEntity entity = new ActivityEntity();
+
+        ActivityStatusCodeEntity statusEntity = new ActivityStatusCodeEntity();
+        RiskRatingCodeEntity riskEntity = new RiskRatingCodeEntity();
+        ContractPhaseCodeEntity phaseEntity = new ContractPhaseCodeEntity();
+
+        when(activityStatusCodeRepository.findById("STATUS1")).thenReturn(Optional.of(statusEntity));
+        when(riskRatingCodeRepository.findById("RISK1")).thenReturn(Optional.of(riskEntity));
+        when(contractPhaseCodeRepository.findById("PHASE1")).thenReturn(Optional.of(phaseEntity));
+
+        // WHEN
+        activityService.assignAssociatedEntities(resource, entity);
+
+        // THEN
+        assertEquals(statusEntity, entity.getActivityStatusCode());
+        assertEquals(riskEntity, entity.getRiskRatingCode());
+        assertEquals(phaseEntity, entity.getContractPhaseCode());
+        verify(activityStatusCodeRepository).findById("STATUS1");
+        verify(riskRatingCodeRepository).findById("RISK1");
+        verify(contractPhaseCodeRepository).findById("PHASE1");
+    }
+
+    @Test
+    void testAssignAssociatedEntities_NullCodes() {
+        // GIVEN
+        ActivityModel resource = new ActivityModel();
+        ActivityEntity entity = new ActivityEntity();
+
+        // WHEN
+        activityService.assignAssociatedEntities(resource, entity);
+
+        // THEN
+        assertNull(entity.getActivityStatusCode());
+        assertNull(entity.getRiskRatingCode());
+        assertNull(entity.getContractPhaseCode());
+        verifyNoInteractions(activityStatusCodeRepository);
+        verifyNoInteractions(riskRatingCodeRepository);
+        verifyNoInteractions(contractPhaseCodeRepository);
+    }
+
+    @Test
+    void testLoadActivityStatusCode_Success() {
+        // GIVEN
+        String code = "STATUS1";
+        ActivityStatusCodeEntity entity = new ActivityStatusCodeEntity();
+        when(activityStatusCodeRepository.findById(code)).thenReturn(Optional.of(entity));
+
+        // WHEN
+        ActivityStatusCodeEntity result = activityService.loadActivityStatusCode(code);
+
+        // THEN
+        assertEquals(entity, result);
+        verify(activityStatusCodeRepository).findById(code);
+    }
+
+    @Test
+    void testLoadActivityStatusCode_NotFound() {
+        // GIVEN
+        String code = "INVALID_STATUS";
+        when(activityStatusCodeRepository.findById(code)).thenReturn(Optional.empty());
+
+        // WHEN/THEN
+        assertThrows(IllegalArgumentException.class, () ->
+                activityService.loadActivityStatusCode(code));
+        verify(activityStatusCodeRepository).findById(code);
+    }
+
+    @Test
+    void testLoadRiskRatingCode_Success() {
+        // GIVEN
+        String code = "RISK1";
+        RiskRatingCodeEntity entity = new RiskRatingCodeEntity();
+        when(riskRatingCodeRepository.findById(code)).thenReturn(Optional.of(entity));
+
+        // WHEN
+        RiskRatingCodeEntity result = activityService.loadRiskRatingCode(code);
+
+        // THEN
+        assertEquals(entity, result);
+        verify(riskRatingCodeRepository).findById(code);
+    }
+
+    @Test
+    void testLoadRiskRatingCode_NotFound() {
+        // GIVEN
+        String code = "INVALID_RISK";
+        when(riskRatingCodeRepository.findById(code)).thenReturn(Optional.empty());
+
+        // WHEN/THEN
+        assertThrows(IllegalArgumentException.class, () ->
+                activityService.loadRiskRatingCode(code));
+        verify(riskRatingCodeRepository).findById(code);
+    }
+
+    @Test
+    void testLoadContractPhaseCode_Success() {
+        // GIVEN
+        String code = "PHASE1";
+        ContractPhaseCodeEntity entity = new ContractPhaseCodeEntity();
+        when(contractPhaseCodeRepository.findById(code)).thenReturn(Optional.of(entity));
+
+        // WHEN
+        ContractPhaseCodeEntity result = activityService.loadContractPhaseCode(code);
+
+        // THEN
+        assertEquals(entity, result);
+        verify(contractPhaseCodeRepository).findById(code);
+    }
+
+    @Test
+    void testLoadContractPhaseCode_NotFound() {
+        // GIVEN
+        String code = "INVALID_PHASE";
+        when(contractPhaseCodeRepository.findById(code)).thenReturn(Optional.empty());
+
+        // WHEN/THEN
+        assertThrows(IllegalArgumentException.class, () ->
+                activityService.loadContractPhaseCode(code));
+        verify(contractPhaseCodeRepository).findById(code);
     }
 }
