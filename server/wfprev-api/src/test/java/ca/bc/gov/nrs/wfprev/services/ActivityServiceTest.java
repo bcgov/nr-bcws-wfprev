@@ -2,24 +2,43 @@ package ca.bc.gov.nrs.wfprev.services;
 
 import ca.bc.gov.nrs.wfone.common.service.api.ServiceException;
 import ca.bc.gov.nrs.wfprev.data.assemblers.ActivityResourceAssembler;
-import ca.bc.gov.nrs.wfprev.data.entities.*;
+import ca.bc.gov.nrs.wfprev.data.entities.ActivityEntity;
+import ca.bc.gov.nrs.wfprev.data.entities.ActivityStatusCodeEntity;
+import ca.bc.gov.nrs.wfprev.data.entities.ContractPhaseCodeEntity;
+import ca.bc.gov.nrs.wfprev.data.entities.ProjectEntity;
+import ca.bc.gov.nrs.wfprev.data.entities.ProjectFiscalEntity;
+import ca.bc.gov.nrs.wfprev.data.entities.RiskRatingCodeEntity;
 import ca.bc.gov.nrs.wfprev.data.models.ActivityModel;
 import ca.bc.gov.nrs.wfprev.data.models.ActivityStatusCodeModel;
 import ca.bc.gov.nrs.wfprev.data.models.ContractPhaseCodeModel;
 import ca.bc.gov.nrs.wfprev.data.models.ProjectFiscalModel;
 import ca.bc.gov.nrs.wfprev.data.models.RiskRatingCodeModel;
-import ca.bc.gov.nrs.wfprev.data.repositories.*;
+import ca.bc.gov.nrs.wfprev.data.repositories.ActivityRepository;
+import ca.bc.gov.nrs.wfprev.data.repositories.ActivityStatusCodeRepository;
+import ca.bc.gov.nrs.wfprev.data.repositories.ContractPhaseCodeRepository;
+import ca.bc.gov.nrs.wfprev.data.repositories.ProjectFiscalRepository;
+import ca.bc.gov.nrs.wfprev.data.repositories.RiskRatingCodeRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.hateoas.CollectionModel;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
 
 class ActivityServiceTest {
 
