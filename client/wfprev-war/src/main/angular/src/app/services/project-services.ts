@@ -110,6 +110,11 @@ export class ProjectService {
                     Authorization: `Bearer ${this.tokenService.getOauthToken()}`,
                 }
             }
+        ).pipe(
+            catchError((error) => {
+                console.error("Error creating project fiscal", error);
+                return throwError(() => new Error("Failed to create project fiscal"));
+            })
         );
     }
 

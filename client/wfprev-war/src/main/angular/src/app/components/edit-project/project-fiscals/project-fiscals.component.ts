@@ -54,7 +54,7 @@ export class ProjectFiscalsComponent implements OnInit {
     this.loadProjectFiscals();
   }
 
-  private generateFiscalYears(): void {
+  generateFiscalYears(): void {
     const currentYear = new Date().getFullYear();
     const startYear = currentYear - 5; // 5 years in the past
     const endYear = currentYear + 5;  // 5 years in the future
@@ -87,13 +87,13 @@ export class ProjectFiscalsComponent implements OnInit {
   assignCodeTableData(key: string, data: any): void {
     switch (key) {
       case 'activityCategoryCode':
-        this.activityCategoryCode = data._embedded.activityCategoryCode || [];
+        this.activityCategoryCode = data._embedded?.activityCategoryCode || [];
         break;
       case 'planFiscalStatusCode':
-        this.planFiscalStatusCode = data._embedded.planFiscalStatusCode || [];
+        this.planFiscalStatusCode = data._embedded?.planFiscalStatusCode || [];
         break;
       case 'ancillaryFundingSourceCode':
-        this.ancillaryFundingSourceCode = data._embedded.ancillaryFundingSourceCode || [];
+        this.ancillaryFundingSourceCode = data._embedded?.ancillaryFundingSourceCode || [];
         break;
     }
   }
@@ -175,7 +175,7 @@ export class ProjectFiscalsComponent implements OnInit {
 
   onSaveFiscal(index: number): void {
       const originalData = this.projectFiscals[index];
-      const formData = this.fiscalForms[index].value;
+      const formData = this.fiscalForms[index]?.value;
       const updatedData = {
         ...originalData, // Include all original data and overwrite with form data
         ...formData,

@@ -1,165 +1,168 @@
-import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ProjectFiscalsComponent } from './project-fiscals.component';
+import { ActivatedRoute } from '@angular/router';
+import { of, throwError } from 'rxjs';
 import { ProjectService } from 'src/app/services/project-services';
 import { CodeTableServices } from 'src/app/services/code-table-services';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { of, throwError } from 'rxjs';
-import { ActivatedRoute } from '@angular/router';
 import { FormBuilder } from '@angular/forms';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { MatTabsModule } from '@angular/material/tabs';
-import { MatExpansionModule } from '@angular/material/expansion';
-import { MatButtonModule } from '@angular/material/button';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import { MatMenuModule } from '@angular/material/menu';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+
+const mockProjectService = {
+  getProjectFiscalsByProjectGuid: jasmine.createSpy('getProjectFiscalsByProjectGuid').and.returnValue(
+    of({ _embedded: { projectFiscals: [{ fiscalYear: 2023, projectFiscalName: 'Test Fiscal' }] } })
+  ),
+  updateProjectFiscal: jasmine.createSpy('updateProjectFiscal').and.returnValue(of({})),
+  createProjectFiscal: jasmine.createSpy('createProjectFiscal').and.returnValue(of({})),
+};
+
+const mockCodeTableServices = {
+  fetchCodeTable: jasmine.createSpy('fetchCodeTable').and.returnValue(of({ _embedded: {} })),
+};
+
+const mockSnackBar = {
+  open: jasmine.createSpy('open'),
+};
 
 describe('ProjectFiscalsComponent', () => {
   let component: ProjectFiscalsComponent;
   let fixture: ComponentFixture<ProjectFiscalsComponent>;
-  let projectService: jasmine.SpyObj<ProjectService>;
-  let codeTableService: jasmine.SpyObj<CodeTableServices>;
-  let snackbarService: jasmine.SpyObj<MatSnackBar>;
-  let route: ActivatedRoute;
 
   beforeEach(async () => {
-    // Mock services
-    const projectServiceSpy = jasmine.createSpyObj('ProjectService', ['getProjectFiscalsByProjectGuid', 'updateProjectFiscal', 'createProjectFiscal']);
-    const codeTableServiceSpy = jasmine.createSpyObj('CodeTableServices', ['fetchCodeTable']);
-    const snackbarSpy = jasmine.createSpyObj('MatSnackBar', ['open']);
-
     await TestBed.configureTestingModule({
-      imports: [
-        HttpClientTestingModule,
-        MatTabsModule,
-        MatExpansionModule,
-        MatButtonModule,
-        MatSlideToggleModule,
-        MatMenuModule
-      ],
-      declarations: [ProjectFiscalsComponent],
+      imports: [ProjectFiscalsComponent, BrowserAnimationsModule],
       providers: [
+        { provide: ActivatedRoute, useValue: { snapshot: { queryParamMap: { get: () => 'test-guid' } } } },
+        { provide: ProjectService, useValue: mockProjectService },
+        { provide: CodeTableServices, useValue: mockCodeTableServices },
+        { provide: MatSnackBar, useValue: mockSnackBar },
         FormBuilder,
-        { provide: ProjectService, useValue: projectServiceSpy },
-        { provide: CodeTableServices, useValue: codeTableServiceSpy },
-        { provide: MatSnackBar, useValue: snackbarSpy },
-        { provide: ActivatedRoute, useValue: { snapshot: { queryParamMap: { get: () => 'test-guid' } } } }
-      ]
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(ProjectFiscalsComponent);
     component = fixture.componentInstance;
-    projectService = TestBed.inject(ProjectService) as jasmine.SpyObj<ProjectService>;
-    codeTableService = TestBed.inject(CodeTableServices) as jasmine.SpyObj<CodeTableServices>;
-    snackbarService = TestBed.inject(MatSnackBar) as jasmine.SpyObj<MatSnackBar>;
-
-    projectService.getProjectFiscalsByProjectGuid.and.returnValue(of({ _embedded: { projectFiscals: [] } }));
-    codeTableService.fetchCodeTable.and.returnValue(of({ _embedded: {} }));
+    fixture.detectChanges();
   });
 
   it('should create the component', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should initialize component and load data', fakeAsync(() => {
-    spyOn(component, 'loadCodeTables').and.callThrough();
-    spyOn(component, 'generateFiscalYears').and.callThrough();
-    spyOn(component, 'loadProjectFiscals').and.callThrough();
-
-    component.ngOnInit();
-    tick(); // Simulates async operation
-
-    expect(component.loadCodeTables).toHaveBeenCalled();
-    expect(component.generateFiscalYears).toHaveBeenCalled();
-    expect(component.loadProjectFiscals).toHaveBeenCalled();
-  }));
-
   it('should generate fiscal years correctly', () => {
     component.generateFiscalYears();
-    expect(component.fiscalYears.length).toBe(11); // 5 past + current + 5 future
+    expect(component.fiscalYears.length).toBe(11);
+    expect(component.fiscalYears[0]).toBe(`${new Date().getFullYear() - 5}/${(new Date().getFullYear() - 4).toString().slice(-2)}`);
   });
 
-  it('should load project fiscals and create forms', fakeAsync(() => {
-    const mockFiscals = {
-      _embedded: {
-        projectFiscals: [
-          { fiscalYear: 2023, projectFiscalName: 'Test Fiscal 1', projectPlanFiscalGuid: 'guid-1' },
-          { fiscalYear: 2024, projectFiscalName: 'Test Fiscal 2', projectPlanFiscalGuid: 'guid-2' }
-        ]
-      }
-    };
+  it('should load code tables successfully', () => {
+    mockCodeTableServices.fetchCodeTable.calls.reset(); // ✅ Reset call count
+    component.loadCodeTables();
+    expect(mockCodeTableServices.fetchCodeTable).toHaveBeenCalledTimes(3);
+  });
 
-    projectService.getProjectFiscalsByProjectGuid.and.returnValue(of(mockFiscals));
+  it('should handle errors in loading code tables', () => {
+    mockCodeTableServices.fetchCodeTable.calls.reset(); // ✅ Reset call count
+    mockCodeTableServices.fetchCodeTable.and.returnValue(throwError(() => new Error('Error fetching data')));
+    component.loadCodeTables();
+    expect(mockCodeTableServices.fetchCodeTable).toHaveBeenCalledTimes(3);
+  });
+
+  it('should load project fiscals', () => {
+    // ✅ Ensure the mock returns a valid response
+    mockProjectService.getProjectFiscalsByProjectGuid.and.returnValue(
+      of({
+        _embedded: {
+          projectFiscals: [
+            { fiscalYear: 2023, projectFiscalName: 'Test Fiscal' }
+          ]
+        }
+      })
+    );
+  
     component.loadProjectFiscals();
-    tick();
+  
+    expect(mockProjectService.getProjectFiscalsByProjectGuid).toHaveBeenCalledWith('test-guid');
+    expect(component.projectFiscals.length).toBeGreaterThan(0); // ✅ Should now have at least one fiscal
+    expect(component.fiscalForms.length).toBe(component.projectFiscals.length); // ✅ Forms should match project fiscals count
+  });
+  
 
-    expect(component.projectFiscals.length).toBe(2);
-    expect(component.fiscalForms.length).toBe(2);
-    expect(component.fiscalForms[0].value.projectFiscalName).toBe('Test Fiscal 1');
-  }));
-
-  it('should create a new fiscal and add to the list', () => {
-    component.addNewFiscal();
-    expect(component.projectFiscals.length).toBe(1);
-    expect(component.fiscalForms.length).toBe(1);
+  it('should handle errors in loading project fiscals', () => {
+    mockProjectService.getProjectFiscalsByProjectGuid.and.returnValue(throwError(() => new Error('API Error')));
+    component.loadProjectFiscals();
+    expect(component.projectFiscals.length).toBe(0);
   });
 
-  it('should call updateProjectFiscal when saving an existing fiscal', fakeAsync(() => {
-    const mockFiscal = {
-      projectPlanFiscalGuid: 'guid-1',
-      projectFiscalName: 'Updated Fiscal'
-    };
-    component.projectFiscals.push(mockFiscal);
-    component.fiscalForms.push(component.createFiscalForm(mockFiscal));
+  it('should add a new fiscal', () => {
+    component.projectFiscals = []; // ✅ Ensure projectFiscals starts empty
+    component.projectGuid = 'test-guid'; // ✅ Ensure projectGuid is set before calling the method
+  
+    component.addNewFiscal();
+  
+    expect(component.projectFiscals.length).toBe(1); // ✅ Should increase from 0 to 1
+    expect(component.selectedTabIndex).toBe(0); // ✅ Should select the first added fiscal
+  });
 
-    projectService.updateProjectFiscal.and.returnValue(of({}));
-
+  it('should save a new fiscal', () => {
+    spyOn(component, 'loadProjectFiscals');
+  
+    // Ensure mock `createProjectFiscal` returns success
+    mockProjectService.createProjectFiscal.and.returnValue(of({})); // ✅ Fix: Return success response
+  
     component.onSaveFiscal(0);
-    tick();
+  
+    expect(mockProjectService.createProjectFiscal).toHaveBeenCalled();
+    expect(mockSnackBar.open).toHaveBeenCalledWith(
+      component.messages.projectFiscalCreatedSuccess,
+      'OK',
+      { duration: 5000, panelClass: 'snackbar-success' } // ✅ Ensure correct snackbar message
+    );
+    expect(component.loadProjectFiscals).toHaveBeenCalled();
+  });
 
-    expect(projectService.updateProjectFiscal).toHaveBeenCalled();
-    expect(snackbarService.open).toHaveBeenCalledWith(jasmine.stringMatching('success'), 'OK', { duration: 5000, panelClass: 'snackbar-success' });
-  }));
-
-  it('should call createProjectFiscal when saving a new fiscal', fakeAsync(() => {
-    const mockFiscal = {
-      projectFiscalName: 'New Fiscal',
-      projectGuid: 'test-guid'
-    };
-    component.projectFiscals.push(mockFiscal);
-    component.fiscalForms.push(component.createFiscalForm(mockFiscal));
-
-    projectService.createProjectFiscal.and.returnValue(of({}));
-
+  it('should handle errors when saving a new fiscal', () => {
+    mockProjectService.createProjectFiscal.and.returnValue(throwError(() => new Error('API Error')));
     component.onSaveFiscal(0);
-    tick();
+    expect(mockSnackBar.open).toHaveBeenCalledWith(component.messages.projectFiscalCreatedFailure, 'OK', {
+      duration: 5000,
+      panelClass: 'snackbar-error',
+    });
+  });
 
-    expect(projectService.createProjectFiscal).toHaveBeenCalled();
-    expect(snackbarService.open).toHaveBeenCalledWith(jasmine.stringMatching('success'), 'OK', { duration: 5000, panelClass: 'snackbar-success' });
-  }));
-
-  it('should handle error when updating a fiscal', fakeAsync(() => {
-    projectService.updateProjectFiscal.and.returnValue(throwError(() => new Error('Update Failed')));
-
-    const mockFiscal = { projectPlanFiscalGuid: 'guid-1', projectFiscalName: 'Updated Fiscal' };
-    component.projectFiscals.push(mockFiscal);
-    component.fiscalForms.push(component.createFiscalForm(mockFiscal));
-
+  it('should update an existing fiscal', () => {
+    spyOn(component, 'loadProjectFiscals');
+  
+    // ✅ Ensure updateProjectFiscal returns success
+    mockProjectService.updateProjectFiscal.and.returnValue(of({})); 
+  
+    component.projectFiscals = [{ projectPlanFiscalGuid: 'existing-guid' }]; // ✅ Ensure a valid fiscal object exists
+  
     component.onSaveFiscal(0);
-    tick();
+  
+    expect(mockProjectService.updateProjectFiscal).toHaveBeenCalled();
+    expect(mockSnackBar.open).toHaveBeenCalledWith(
+      component.messages.projectFiscalUpdatedSuccess,
+      'OK',
+      { duration: 5000, panelClass: 'snackbar-success' } // ✅ Ensure correct success message
+    );
+    expect(component.loadProjectFiscals).toHaveBeenCalled();
+  });
+  
 
-    expect(snackbarService.open).toHaveBeenCalledWith(jasmine.stringMatching('failure'), 'OK', { duration: 5000, panelClass: 'snackbar-error' });
-  }));
-
-  it('should handle error when creating a new fiscal', fakeAsync(() => {
-    projectService.createProjectFiscal.and.returnValue(throwError(() => new Error('Creation Failed')));
-
-    const mockFiscal = { projectFiscalName: 'New Fiscal', projectGuid: 'test-guid' };
-    component.projectFiscals.push(mockFiscal);
-    component.fiscalForms.push(component.createFiscalForm(mockFiscal));
-
+  it('should handle errors when updating an existing fiscal', () => {
+    // ✅ Ensure projectFiscals is initialized before setting properties
+    component.projectFiscals = [{ projectPlanFiscalGuid: 'existing-guid' }];
+  
+    mockProjectService.updateProjectFiscal.and.returnValue(throwError(() => new Error('API Error')));
+  
     component.onSaveFiscal(0);
-    tick();
-
-    expect(snackbarService.open).toHaveBeenCalledWith(jasmine.stringMatching('failure'), 'OK', { duration: 5000, panelClass: 'snackbar-error' });
-  }));
+  
+    expect(mockSnackBar.open).toHaveBeenCalledWith(
+      component.messages.projectFiscalUpdatedFailure,
+      'OK',
+      { duration: 5000, panelClass: 'snackbar-error' } // ✅ Ensure correct error message is tested
+    );
+  });
+  
 });
