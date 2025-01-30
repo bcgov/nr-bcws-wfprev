@@ -1,7 +1,7 @@
 <div class="fiscals-container">
   <div>
     <div class="button-row">
-      <button mat-raised-button class="primary" (click)="addNewFiscal()">
+      <button mat-raised-button class="primary new-fiscal-button" (click)="addNewFiscal()">
         <img alt="create-project" class="icon" src="/assets/add-button.svg" width="19" height="19">
         Add New Fiscal
       </button>
@@ -10,8 +10,26 @@
         <mat-tab *ngFor="let fiscal of projectFiscals; let i = index" [label]="fiscal.fiscalYearFormatted || 'New Fiscal'">
           <mat-expansion-panel [expanded]="true" class="fiscal-expansion-panel">
             <mat-expansion-panel-header>
-              <span class="project-title">Fiscal Detail</span>
+              <div class="header-container">
+                <span class="project-title">Fiscal Detail</span>
+                <button class="dropdown-button" mat-icon-button [matMenuTriggerFor]="menu" (click)="$event.stopPropagation()">
+                  <!-- Three-dot menu icon -->
+                   <span>Actions</span>
+                   <img class="action-icon" alt="actions" src="/assets/dropdown-icon-white.svg">
+                </button>
+              </div>
             </mat-expansion-panel-header>
+            <mat-menu #menu="matMenu">
+              <button mat-menu-item>
+                 Delete Fiscal Year
+              </button>
+              <button mat-menu-item >
+                 Add Performance Update
+              </button>
+              <button mat-menu-item >
+                Closeout Fiscal
+             </button>
+            </mat-menu>
             <form class="form-grid" [formGroup]="fiscalForms[i]">
 
               <div class="form-item">
@@ -101,12 +119,12 @@
               </div>
               
               <div class="form-item half-width">
-                <label>Description</label>
+                <label>Description<span class="required">*</span></label>
                 <textarea id="projectFiscalDescription" formControlName="projectFiscalDescription" rows="4" cols="50"></textarea>
               </div>
               <div class="form-item half-width">
                 <label>Other Partners</label>
-                <input type="text" id="otherPartners" formControlName="otherPartners" />
+                <input type="text" id="otherPartner" formControlName="otherPartner" />
               </div>
     <!-- Budget Section -->
               <div class="budget-section">
@@ -122,7 +140,8 @@
 
               <div class="form-item budget-width">
                 <label>Forecast Amount</label>
-                <input type="Cost" id="" />
+                <input type="Cost" id="fiscalForecastAmount" 
+                  formControlName="fiscalForecastAmount"/>
               </div>
 
               <div class="form-item budget-width">
@@ -134,7 +153,7 @@
                 <label>Ancilliary Funding Provider</label>
                 <select id="ancillaryFundingSourceGuid" formControlName="ancillaryFundingSourceGuid">
                   <option value="" >Select</option>
-                  <option *ngFor="let item of ancillaryFundingSourceCode"[value]="item.fundingSourceAbbreviation">
+                  <option *ngFor="let item of ancillaryFundingSourceCode"[value]="item.ancillaryFundingSourceGuid">
                     {{ item.fundingSourceName || 'Select' }}
                   </option>
                 </select>
@@ -152,13 +171,13 @@
 
               <div class="form-item cfs-width">
                 <label>CFS Actual Spend</label>
-                <input type="Cost" id=""/>
+                <input type="Cost" id="fiscalActualAmount" formControlName="fiscalActualAmount"/>
               </div>
             </form>
             <div class="fiscal-footer">
               <div class="footer-button-row">
-                <button class="secondary" (click)="onCancelFiscal()" >Cancel</button>
-                <button type="button" (click)="onSaveFiscal(i)"
+                <button class="secondary" (click)="onCancelFiscal()" [disabled]="!fiscalForms[i].dirty" >Cancel</button>
+                <button type="button" (click)="onSaveFiscal(i)" [disabled]="!fiscalForms[i].valid || !fiscalForms[i].dirty"
                   class="primary">Save
                 </button>
               </div>
