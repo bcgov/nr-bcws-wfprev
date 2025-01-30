@@ -1,5 +1,6 @@
 package ca.bc.gov.nrs.wfprev;
 
+import ca.bc.gov.nrs.wfone.common.service.api.ServiceException;
 import ca.bc.gov.nrs.wfprev.controllers.ActivityController;
 import ca.bc.gov.nrs.wfprev.data.models.ActivityModel;
 import ca.bc.gov.nrs.wfprev.services.ActivityService;
@@ -114,6 +115,48 @@ class ActivityControllerTest {
 
     @Test
     @WithMockUser
+    void testCreateActivity_ServiceException() throws Exception {
+        ActivityModel requestModel = ActivityModel.builder()
+                .activityGuid("123e4567-e89b-12d3-a456-426614174000")
+                .projectPlanFiscalGuid("123e4567-e89b-12d3-a456-426614174001")
+                .activityName("New Activity")
+                .activityDescription("New Description")
+                .build();
+
+        when(activityService.createActivity(anyString(), anyString(), any(ActivityModel.class)))
+                .thenThrow(new ServiceException("Service exception"));
+
+        mockMvc.perform(post("/projects/{projectId}/projectFiscals/{projectFiscalId}/activities",
+                        "123e4567-e89b-12d3-a456-426614174001",
+                        "123e4567-e89b-12d3-a456-426614174002")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(gson.toJson(requestModel)))
+                .andExpect(status().isInternalServerError());
+    }
+
+    @Test
+    @WithMockUser
+    void testCreateActivity_Exception() throws Exception {
+        ActivityModel requestModel = ActivityModel.builder()
+                .activityGuid("123e4567-e89b-12d3-a456-426614174000")
+                .projectPlanFiscalGuid("123e4567-e89b-12d3-a456-426614174001")
+                .activityName("New Activity")
+                .activityDescription("New Description")
+                .build();
+
+        when(activityService.createActivity(anyString(), anyString(), any(ActivityModel.class)))
+                .thenThrow(new RuntimeException("Test exception"));
+
+        mockMvc.perform(post("/projects/{projectId}/projectFiscals/{projectFiscalId}/activities",
+                        "123e4567-e89b-12d3-a456-426614174001",
+                        "123e4567-e89b-12d3-a456-426614174002")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(gson.toJson(requestModel)))
+                .andExpect(status().isInternalServerError());
+    }
+
+    @Test
+    @WithMockUser
     void testUpdateActivity_Success() throws Exception {
         ActivityModel requestModel = ActivityModel.builder()
                 .activityGuid("123e4567-e89b-12d3-a456-426614174000")
@@ -135,6 +178,50 @@ class ActivityControllerTest {
                 .andExpect(jsonPath("$.activityGuid").value(requestModel.getActivityGuid()));
 
         verify(activityService).updateActivity(anyString(), anyString(), any(ActivityModel.class));
+    }
+
+    @Test
+    @WithMockUser
+    void testUpdateActivity_EntityNotFoundException() throws Exception {
+        ActivityModel requestModel = ActivityModel.builder()
+                .activityGuid("123e4567-e89b-12d3-a456-426614174000")
+                .projectPlanFiscalGuid("123e4567-e89b-12d3-a456-426614174001")
+                .activityName("Updated Activity")
+                .activityDescription("Updated Description")
+                .build();
+
+        when(activityService.updateActivity(anyString(), anyString(), any(ActivityModel.class)))
+                .thenThrow(new EntityNotFoundException("Entity Not Found"));
+
+        mockMvc.perform(put("/projects/{projectId}/projectFiscals/{projectFiscalId}/activities/{id}",
+                        "123e4567-e89b-12d3-a456-426614174001",
+                        "123e4567-e89b-12d3-a456-426614174002",
+                        requestModel.getActivityGuid())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(gson.toJson(requestModel)))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @WithMockUser
+    void testUpdateActivity_Exception() throws Exception {
+        ActivityModel requestModel = ActivityModel.builder()
+                .activityGuid("123e4567-e89b-12d3-a456-426614174000")
+                .projectPlanFiscalGuid("123e4567-e89b-12d3-a456-426614174001")
+                .activityName("Updated Activity")
+                .activityDescription("Updated Description")
+                .build();
+
+        when(activityService.updateActivity(anyString(), anyString(), any(ActivityModel.class)))
+                .thenThrow(new RuntimeException("Test exception"));
+
+        mockMvc.perform(put("/projects/{projectId}/projectFiscals/{projectFiscalId}/activities/{id}",
+                        "123e4567-e89b-12d3-a456-426614174001",
+                        "123e4567-e89b-12d3-a456-426614174002",
+                        requestModel.getActivityGuid())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(gson.toJson(requestModel)))
+                .andExpect(status().isInternalServerError());
     }
 
     @Test
@@ -247,6 +334,27 @@ class ActivityControllerTest {
 
     @Test
     @WithMockUser
+    void testGetActivity_Exception() throws Exception {
+        ActivityModel model = ActivityModel.builder()
+                .activityGuid("123e4567-e89b-12d3-a456-426614174000")
+                .projectPlanFiscalGuid("123e4567-e89b-12d3-a456-426614174001")
+                .activityName("Test Activity")
+                .activityDescription("Test Description")
+                .build();
+
+        when(activityService.getActivity(anyString(), anyString(), anyString()))
+                .thenThrow(new RuntimeException("Test exception"));
+
+        mockMvc.perform(get("/projects/{projectId}/projectFiscals/{projectFiscalId}/activities/{id}",
+                        "123e4567-e89b-12d3-a456-426614174001",
+                        "123e4567-e89b-12d3-a456-426614174002",
+                        model.getActivityGuid())
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isInternalServerError());
+    }
+
+    @Test
+    @WithMockUser
     void testGetActivity_NotFound() throws Exception {
         when(activityService.getActivity(anyString(), anyString(), anyString()))
                 .thenReturn(null);
@@ -290,5 +398,21 @@ class ActivityControllerTest {
                         .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @WithMockUser
+    void testDeleteActivity_Exception() throws Exception {
+        String activityId = "123e4567-e89b-12d3-a456-426614174000";
+        doThrow(new RuntimeException("Test exception"))
+                .when(activityService).deleteActivity(anyString(), anyString(), anyString());
+
+        mockMvc.perform(delete("/projects/{projectId}/projectFiscals/{projectFiscalId}/activities/{id}",
+                        "123e4567-e89b-12d3-a456-426614174001",
+                        "123e4567-e89b-12d3-a456-426614174002",
+                        activityId)
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isInternalServerError());
     }
 }
