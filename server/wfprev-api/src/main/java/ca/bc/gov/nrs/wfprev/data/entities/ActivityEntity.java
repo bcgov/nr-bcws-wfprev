@@ -83,11 +83,11 @@ public class ActivityEntity implements Serializable {
     private String activityDescription;
 
     @NotNull
-    @Column(name = "activity_start_date")
+    @Column(name = "activity_start_date", nullable = false)
     private Date activityStartDate;
 
     @NotNull
-    @Column(name = "activity_end_date")
+    @Column(name = "activity_end_date", nullable = false)
     private Date activityEndDate;
 
     @Column(name = "planned_spend_amount", precision = 15, scale = 2)
