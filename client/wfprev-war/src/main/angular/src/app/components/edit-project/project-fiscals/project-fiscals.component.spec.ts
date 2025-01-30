@@ -164,5 +164,38 @@ describe('ProjectFiscalsComponent', () => {
       { duration: 5000, panelClass: 'snackbar-error' } // ✅ Ensure correct error message is tested
     );
   });
-  
+
+  it('should clear all fields for a new fiscal entry on cancel', () => {
+    component.projectFiscals = [{ fiscalYear: '', projectFiscalName: '', projectGuid: 'test-guid' }];
+    component.fiscalForms = [component.createFiscalForm(component.projectFiscals[0])];
+
+    spyOn(component.fiscalForms[0], 'reset');
+
+    component.onCancelFiscal(0);
+
+    expect(component.fiscalForms[0].reset).toHaveBeenCalled();
+  });
+
+  it('should revert to original values for an existing fiscal entry on cancel', () => {
+    component.projectFiscals = [{ projectPlanFiscalGuid: 'existing-guid', fiscalYear: 2023, projectFiscalName: 'Test Fiscal' }];
+    component.originalFiscalValues = [{ projectPlanFiscalGuid: 'existing-guid', fiscalYear: 2023, projectFiscalName: 'Test Fiscal (Original)' }];
+    component.fiscalForms = [component.createFiscalForm(component.projectFiscals[0])];
+
+    spyOn(component.fiscalForms[0], 'patchValue');
+    spyOn(component.fiscalForms[0], 'markAsPristine');
+    spyOn(component.fiscalForms[0], 'markAsUntouched');
+
+    component.onCancelFiscal(0);
+
+    expect(component.fiscalForms[0].patchValue).toHaveBeenCalledWith(component.originalFiscalValues[0]);
+    expect(component.fiscalForms[0].markAsPristine).toHaveBeenCalled();
+    expect(component.fiscalForms[0].markAsUntouched).toHaveBeenCalled();
+  });
+
+  it('should not fail if onCancelFiscal() is called with an invalid index', () => {
+    component.projectFiscals = [];
+    component.fiscalForms = [];
+
+    expect(() => component.onCancelFiscal(0)).not.toThrow();
+  });
 });
