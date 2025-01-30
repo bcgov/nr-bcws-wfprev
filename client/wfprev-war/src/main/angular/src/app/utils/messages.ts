@@ -7,4 +7,8 @@ export const Messages = {
   projectUpdatedSuccess: 'Project Updated Successfully',
   projectUpdatedFailure: 'Project Updated failed',
   confirmCancel: 'Are you sure you want to cancel?',
+  projectFiscalCreatedSuccess: 'Project Fiscal Created Successfully',
+  projectFiscalCreatedFailure: 'Create Project Fiscal Failed',
+  projectFiscalUpdatedSuccess: 'Project Fiscal Updated Successfully',
+  projectFiscalUpdatedFailure: 'Project Fiscal Updated Failed',
 };
