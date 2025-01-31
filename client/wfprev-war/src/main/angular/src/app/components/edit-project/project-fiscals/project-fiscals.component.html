@@ -75,12 +75,12 @@
 
                 <div class="form-item">
                   <label>Planned Hectares</label>
-                  <input type="text" id="fiscalPlannedProjectSizeHa" formControlName="fiscalPlannedProjectSizeHa" />
+                  <input type="number" id="fiscalPlannedProjectSizeHa" formControlName="fiscalPlannedProjectSizeHa" />
                 </div>
 
                 <div class="form-item">
                   <label>Completed Hectares</label>
-                  <input type="text" id="fiscalCompletedSizeHa" formControlName="fiscalCompletedSizeHa" />
+                  <input type="number" id="fiscalCompletedSizeHa" formControlName="fiscalCompletedSizeHa" />
                 </div>
 
                 <div class="form-item">
@@ -141,8 +141,9 @@
 
                 <div class="form-item budget-width">
                   <label>Forecast Amount</label>
-                  <input type="Cost" id="fiscalForecastAmount" 
-                    formControlName="fiscalForecastAmount"/>
+                  <input type="number" id="fiscalForecastAmount" 
+                    formControlName="fiscalForecastAmount"
+                    />
                 </div>
 
                 <div class="form-item budget-width">
@@ -151,7 +152,7 @@
                 </div>
 
                 <div class="form-item budget-width">
-                  <label>Ancilliary Funding Provider</label>
+                  <label>Ancillary Funding Provider</label>
                   <select id="ancillaryFundingSourceGuid" formControlName="ancillaryFundingSourceGuid">
                     <option value="" >Select</option>
                     <option *ngFor="let item of ancillaryFundingSourceCode"[value]="item.ancillaryFundingSourceGuid">
@@ -161,18 +162,18 @@
                 </div>
 
                 <div class="form-item budget-width">
-                  <label>Ancilliary Funding Amount</label>
-                  <input type="Cost" id="fiscalAncillaryFundAmount" formControlName="fiscalAncillaryFundAmount"/>
+                  <label>Ancillary Funding Amount</label>
+                  <input type="number" id="fiscalAncillaryFundAmount" formControlName="fiscalAncillaryFundAmount"/>
                 </div>
 
                 <div class="form-item budget-width">
                   <label>Reported Spend</label>
-                  <input type="Cost" id="fiscalReportedSpendAmount" formControlName="fiscalReportedSpendAmount"/>
+                  <input type="number" id="fiscalReportedSpendAmount" formControlName="fiscalReportedSpendAmount"/>
                 </div>
 
                 <div class="form-item cfs-width">
                   <label>CFS Actual Spend</label>
-                  <input type="Cost" id="fiscalActualAmount" formControlName="fiscalActualAmount"/>
+                  <input type="number" id="fiscalActualAmount" formControlName="fiscalActualAmount"/>
                 </div>
               </form>
               <div class="fiscal-footer">
