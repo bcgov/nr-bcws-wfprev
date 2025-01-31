@@ -14,7 +14,18 @@ import { MatIconModule } from '@angular/material/icon';
   ],
 })
 export class ConfirmationDialogComponent {
-  dialogUsage: string;
+  dialogUsage: string = 'confirm-cancel';
+
+  private readonly dialogMessages: Record<string, string> = {
+    'confirm-cancel': 'Are you sure you want to cancel?<br />This information will not be saved.',
+    'duplicate-project': 'This Project already exists:<br />',
+    'confirm-delete': 'Are you sure you want to delete this fiscal year?<br />This action cannot be undone.',
+    'confirm-unsave': 'Are you sure you want to leave this page?<br />The changes you made will not be saved.'
+  };
+
+  get dialogMessage(): string {
+    return this.dialogMessages[this.dialogUsage] || '';
+  }
 
   get dialogTitle(): string {
     switch (this.dialogUsage) {
@@ -22,6 +33,8 @@ export class ConfirmationDialogComponent {
         return 'Confirm Cancel';
       case 'confirm-delete':
         return 'Confirm Delete';
+      case 'confirm-unsave':
+        return 'Confirm Unsave'
       default:
         return 'Duplicate Found';
     }

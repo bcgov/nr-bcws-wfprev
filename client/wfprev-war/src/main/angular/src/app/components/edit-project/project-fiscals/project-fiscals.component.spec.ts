@@ -1,11 +1,11 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ProjectFiscalsComponent } from './project-fiscals.component';
 import { ActivatedRoute } from '@angular/router';
-import { of, throwError } from 'rxjs';
+import { Observable, of, throwError } from 'rxjs';
 import { ProjectService } from 'src/app/services/project-services';
 import { CodeTableServices } from 'src/app/services/code-table-services';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { FormBuilder } from '@angular/forms';
+import { FormBuilder, FormGroup } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ConfirmationDialogComponent } from 'src/app/components/confirmation-dialog/confirmation-dialog.component';
 
@@ -280,6 +280,68 @@ describe('ProjectFiscalsComponent', () => {
   
   it('should return false for isUndeletable if form is null', () => {
     expect(component.isUndeletable(null)).toBe(false);
+  });
+
+  it('should return false if no forms are dirty', () => {
+    component.fiscalForms = [new FormGroup({})]; // No fields, not dirty
+    expect(component.isFormDirty()).toBe(false);
+  });
+
+  it('should return true if at least one form is dirty', () => {
+    const form1 = new FormGroup({});
+    spyOnProperty(form1, 'dirty', 'get').and.returnValue(true);
+  
+    const form2 = new FormGroup({});
+    spyOnProperty(form2, 'dirty', 'get').and.returnValue(false);
+  
+    component.fiscalForms = [form1, form2];
+  
+    expect(component.isFormDirty()).toBe(true);
+  });
+
+  it('should return true from canDeactivate() if no forms are dirty', () => {
+    spyOn(component, 'isFormDirty').and.returnValue(false);
+    expect(component.canDeactivate()).toBe(true);
+  });
+  
+  it('should open a confirmation dialog if forms are dirty and return false when user cancels', (done) => {
+    spyOn(component, 'isFormDirty').and.returnValue(true);
+    
+    const mockDialogRef = { afterClosed: () => of(false) };
+    spyOn(component.dialog, 'open').and.returnValue(mockDialogRef as any);
+  
+    const result = component.canDeactivate();
+    
+    if (result instanceof Observable) {
+      result.subscribe((value: boolean) => {
+        expect(component.dialog.open).toHaveBeenCalledWith(ConfirmationDialogComponent, {
+          data: { indicator: 'confirm-unsave' },
+          width: '500px',
+        });
+        expect(value).toBe(false);
+        done();
+      });
+    } else {
+      fail('Expected an Observable but received something else');
+    }
+  });
+  
+  it('should allow navigation if user confirms in the dialog', (done) => {
+    spyOn(component, 'isFormDirty').and.returnValue(true);
+    
+    const mockDialogRef = { afterClosed: () => of(true) };
+    spyOn(component.dialog, 'open').and.returnValue(mockDialogRef as any);
+  
+    const result = component.canDeactivate();
+    
+    if (result instanceof Observable) {
+      result.subscribe((value: boolean) => {
+        expect(value).toBe(true);
+        done();
+      });
+    } else {
+      fail('Expected an Observable but received something else');
+    }
   });
   
 });
