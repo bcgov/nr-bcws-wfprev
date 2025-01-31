@@ -16,6 +16,17 @@ import { MatIconModule } from '@angular/material/icon';
 export class ConfirmationDialogComponent {
   dialogUsage: string;
 
+  get dialogTitle(): string {
+    switch (this.dialogUsage) {
+      case 'confirm-cancel':
+        return 'Confirm Cancel';
+      case 'confirm-delete':
+        return 'Confirm Delete';
+      default:
+        return 'Duplicate Found';
+    }
+  }
+
   constructor(
     private readonly dialogRef: MatDialogRef<ConfirmationDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: { indicator: string }
