@@ -181,9 +181,10 @@ public class ProjectController extends CommonController {
       log.warn(" ### Project not found with id: {}", id, e);
       return ResponseEntity.notFound().build();
     } catch (IllegalArgumentException e) {
+      log.error(" ### IllegalArgumentException while deleting Project with id: {}", id, e);
       return ResponseEntity.badRequest().build();
     } catch (Exception e) {
-      log.error(" ### Error while deleting Project ith id: {}", id, e);
+      log.error(" ### Error while deleting Project with id: {}", id, e);
       return internalServerError();
     }
   }

@@ -231,6 +231,82 @@
 			"response": []
 		},
 		{
+			"name": "Create Activity",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Parse the response JSON",
+							"const response = pm.response.json();",
+							"",
+							"// Check if the access token exists in the response",
+							"if (response.projectPlanFiscalGuid) {",
+							"    // Save the token to an environment variable",
+							"    pm.environment.set(\"activityGuid\", response.activityGuid);",
+							"    console.log(\"Activity Guid saved successfully!\");",
+							"} else {",
+							"    console.error(\"Failed to set Activity Guid:\", response);",
+							"}",
+							"",
+							"pm.test(\"Status code is 201\", function() {",
+							"    pm.response.to.have.status(201);",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"projectPlanFiscalGuid\": \"{{projectPlanFiscalGuid}}\",\n  \"activityStatusCode\": {\n    \"activityStatusCode\": \"ACTIVE\"\n  },\n  \"silvicultureBaseGuid\": \"aa0a073b-f729-4b3b-9128-810010662772\",\n  \"silvicultureTechniqueGuid\": \"6be605c1-1b9e-4205-b843-92ad662d5176\",\n  \"silvicultureMethodGuid\": \"74ec0cbf-ff97-4583-ac29-b86f4fe77c24\",\n  \"riskRatingCode\": {\n    \"riskRatingCode\": \"LOW_RISK\"\n  },\n  \"contractPhaseCode\": {\n    \"contractPhaseCode\": \"AWARDED\"\n  },\n  \"activityFundingSourceGuid\": \"2141ef38-0a0d-422e-a990-6e9d3d2a4bc8\",\n  \"activityName\": \"Test Silviculture Activity\",\n  \"activityDescription\": \"This is a test activity for silviculture operations\",\n  \"activityStartDate\": \"2025-04-01\",\n  \"activityEndDate\": \"2025-09-30\",\n  \"plannedSpendAmount\": 100000.00,\n  \"plannedTreatmentAreaHa\": 125.5000,\n  \"reportedSpendAmount\": 0.00,\n  \"completedAreaHa\": 0.0000,\n  \"isResultsReportableInd\": true,\n  \"outstandingObligationsInd\": false,\n  \"activityComment\": \"Initial test activity creation\",\n  \"isSpatialAddedInd\": false\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{LOCAL_API_URL}}/projects/{{projectGuid}}/projectFiscals/{{projectPlanFiscalGuid}}/activities",
+					"host": [
+						"{{LOCAL_API_URL}}"
+					],
+					"path": [
+						"projects",
+						"{{projectGuid}}",
+						"projectFiscals",
+						"{{projectPlanFiscalGuid}}",
+						"activities"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "Update Project Fiscal",
 			"event": [
 				{
@@ -288,6 +364,72 @@
 						"{{projectGuid}}}",
 						"projectFiscals",
 						"{{projectPlanFiscalGuid}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Activity",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function() {",
+							"    pm.response.to.have.status(200);",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"activityGuid\": \"{{activityGuid}}\",\n  \"projectPlanFiscalGuid\": \"{{projectPlanFiscalGuid}}\",\n  \"activityStatusCode\": {\n    \"activityStatusCode\": \"COMPLETED\"\n  },\n  \"silvicultureBaseGuid\": \"3bcf99c5-0891-4bbf-bdf5-2161c1b38d91\",\n  \"silvicultureTechniqueGuid\": \"970a3b25-03ba-42fd-b68e-c9272a707d0a\",\n  \"silvicultureMethodGuid\": \"1a230400-564c-4d42-9b61-2c2f5be65d13\",\n  \"riskRatingCode\": {\n    \"riskRatingCode\": \"HIGH_RISK\"\n  },\n  \"contractPhaseCode\": {\n    \"contractPhaseCode\": \"MULT_BID\"\n  },\n  \"activityFundingSourceGuid\": \"04543243-28ed-4a2b-8935-5f91acdb608c\",\n  \"activityName\": \"Updated Silviculture Activity\",\n  \"activityDescription\": \"This is an updated test activity for silviculture operations\",\n  \"activityStartDate\": \"2026-05-01\",\n  \"activityEndDate\": \"2026-10-31\",\n  \"plannedSpendAmount\": 150000.00,\n  \"plannedTreatmentAreaHa\": 135.7500,\n  \"reportedSpendAmount\": 50000.00,\n  \"completedAreaHa\": 120.5000,\n  \"isResultsReportableInd\": false,\n  \"outstandingObligationsInd\": true,\n  \"activityComment\": \"Updated activity after completion\",\n  \"isSpatialAddedInd\": true\n}",
+
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{LOCAL_API_URL}}/projects/{{projectGuid}}/projectFiscals/{{projectPlanFiscalGuid}}/activities/{{activityGuid}}",
+					"host": [
+						"{{LOCAL_API_URL}}"
+					],
+					"path": [
+						"projects",
+						"{{projectGuid}}",
+						"projectFiscals",
+						"{{projectPlanFiscalGuid}}",
+						"activities",
+						"{{activityGuid}}"
 					]
 				}
 			},
@@ -1152,7 +1294,50 @@
 			"response": []
 		},
 		{
-			"name": "Get ProjectFiscal",
+			"name": "Get Project Fiscals",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function() {",
+							"    pm.response.to.have.status(200);",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{LOCAL_API_URL}}/projects/{{projectGuid}}/projectFiscals",
+					"host": [
+						"{{LOCAL_API_URL}}"
+					],
+					"path": [
+						"projects",
+						"{{projectGuid}}",
+						"projectFiscals"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Project Fiscal",
 			"event": [
 				{
 					"listen": "test",
@@ -1196,7 +1381,7 @@
 			"response": []
 		},
 		{
-			"name": "Get ProjectFiscals",
+			"name": "Get Activities",
 			"event": [
 				{
 					"listen": "test",
@@ -1225,14 +1410,62 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{LOCAL_API_URL}}/projects/{{projectGuid}}/projectFiscals",
+					"raw": "{{LOCAL_API_URL}}/projects/{{projectGuid}}/projectFiscals/{{projectPlanFiscalGuid}}/activities",
 					"host": [
 						"{{LOCAL_API_URL}}"
 					],
 					"path": [
 						"projects",
 						"{{projectGuid}}",
-						"projectFiscals"
+						"projectFiscals",
+						"{{projectPlanFiscalGuid}}",
+						"activities"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Activity",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function() {",
+							"    pm.response.to.have.status(200);",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{LOCAL_API_URL}}/projects/{{projectGuid}}/projectFiscals/{{projectPlanFiscalGuid}}/activities/{{activityGuid}}",
+					"host": [
+						"{{LOCAL_API_URL}}"
+					],
+					"path": [
+						"projects",
+						"{{projectGuid}}",
+						"projectFiscals",
+						"{{projectPlanFiscalGuid}}",
+						"activities",
+						"{{activityGuid}}"
 					]
 				}
 			},
@@ -1319,6 +1552,52 @@
 					"path": [
 						"projects",
 						"{{projectGuid}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Activity",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 204\", function() {",
+							"    pm.response.to.have.status(204);",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{LOCAL_API_URL}}/projects/{{projectGuid}}/projectFiscals/{{projectPlanFiscalGuid}}/activities/{{activityGuid}}",
+					"host": [
+						"{{LOCAL_API_URL}}"
+					],
+					"path": [
+						"projects",
+						"{{projectGuid}}",
+						"projectFiscals",
+						"{{projectPlanFiscalGuid}}",
+						"activities",
+						"{{activityGuid}}"
 					]
 				}
 			},
