@@ -38,9 +38,10 @@ public class ProjectFiscalService implements CommonService {
         this.projectResourceAssembler = projectResourceAssembler;
     }
 
-    public CollectionModel<ProjectFiscalModel> getAllProjectFiscals() throws ServiceException {
-        List<ProjectFiscalEntity> all = projectFiscalRepository.findAll();
-        return projectFiscalResourceAssembler.toCollectionModel(all);
+    public CollectionModel<ProjectFiscalModel> getAllProjectFiscals(String projectId) throws ServiceException {
+        UUID projectGuid = UUID.fromString(projectId);
+        List<ProjectFiscalEntity> projectFiscals = projectFiscalRepository.findAllByProject_ProjectGuid(projectGuid);
+        return projectFiscalResourceAssembler.toCollectionModel(projectFiscals);
     }
 
     public ProjectFiscalModel createProjectFiscal(ProjectFiscalModel projectFiscalModel) {
