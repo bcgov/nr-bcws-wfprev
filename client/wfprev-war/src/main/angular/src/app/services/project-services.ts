@@ -133,4 +133,21 @@ export class ProjectService {
             })
         );
     }
+
+    deleteProjectFiscalByProjectPlanFiscalGuid(projectGuid: string, projectPlanFiscalGuid: string): Observable<any> {
+        const baseUrl = `${this.appConfigService.getConfig().rest['wfprev']}/wfprev-api/projects`;
+        const url = `${baseUrl}/${projectGuid}/projectFiscals/${projectPlanFiscalGuid}`;
+            
+        return this.httpClient.delete(url, {
+            headers: {
+                Authorization: `Bearer ${this.tokenService.getOauthToken()}`,
+            }
+        }).pipe(
+            map((response: any) => response),
+            catchError((error) => {
+                console.error("Error delete project fiscals", error);
+                return throwError(() => new Error("Failed to delete project fiscals"));
+            })
+        );
+    }
  }
