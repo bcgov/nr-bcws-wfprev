@@ -31,7 +31,7 @@
                   Closeout Fiscal
               </button>
               </mat-menu>
-              <form class="form-grid" [formGroup]="fiscalForms[i]">
+              <form class="form-grid" *ngIf="fiscalForms[i]" [formGroup]="fiscalForms[i]">
 
                 <div class="form-item">
                   <label>Fiscal Year<span class="required">*</span></label>
@@ -121,7 +121,16 @@
                 
                 <div class="form-item half-width">
                   <label>Description<span class="required">*</span></label>
-                  <textarea id="projectFiscalDescription" formControlName="projectFiscalDescription" rows="4" cols="50"></textarea>
+                  <textarea 
+                    id="projectFiscalDescription" 
+                    formControlName="projectFiscalDescription" 
+                    rows="4" cols="50"
+                  >
+                  </textarea>
+                  <div class="error" *ngIf="fiscalForms[i] && fiscalForms[i].get('projectFiscalDescription')?.hasError('maxlength') 
+                    && fiscalForms[i].get('projectFiscalDescription')?.touched">
+                    {{ messages.maxLengthExceeded }}
+                  </div>
                 </div>
                 <div class="form-item half-width">
                   <label>Other Partners</label>
@@ -177,9 +186,12 @@
               </form>
               <div class="fiscal-footer">
                 <div class="footer-button-row">
-                  <button class="secondary" (click)="onCancelFiscal(i)" [disabled]="!fiscalForms[i].dirty" >Cancel</button>
-                  <button type="button" (click)="onSaveFiscal(i)" [disabled]="!fiscalForms[i].valid || !fiscalForms[i].dirty"
-                    class="primary">Save
+                  <button class="secondary" (click)="onCancelFiscal(i)" *ngIf="fiscalForms[i]" [disabled]="!fiscalForms[i].dirty">
+                    Cancel
+                  </button>
+                  <button type="button" (click)="onSaveFiscal(i)" *ngIf="fiscalForms[i]" [disabled]="!fiscalForms[i].valid || !fiscalForms[i].dirty"
+                    class="primary">
+                    Save
                   </button>
                 </div>
               </div>
