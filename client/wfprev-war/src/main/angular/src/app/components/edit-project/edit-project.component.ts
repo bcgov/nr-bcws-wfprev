@@ -15,7 +15,7 @@ import { CanComponentDeactivate } from 'src/app/services/util/can-deactive.guard
 export class EditProjectComponent implements CanComponentDeactivate {
   projectName: string | null = null;
   @ViewChild('fiscalsContainer', { read: ViewContainerRef }) fiscalsContainer!: ViewContainerRef;
-  private projectFiscalsComponentRef: ComponentRef<any> | null = null;
+  projectFiscalsComponentRef: ComponentRef<any> | null = null;
 
   constructor() {}
 
