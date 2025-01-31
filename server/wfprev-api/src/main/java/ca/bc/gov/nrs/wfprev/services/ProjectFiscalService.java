@@ -61,7 +61,7 @@ public class ProjectFiscalService implements CommonService {
     public ProjectFiscalModel updateProjectFiscal(ProjectFiscalModel projectFiscalModel) {
         UUID guid = UUID.fromString(projectFiscalModel.getProjectPlanFiscalGuid());
         ProjectFiscalEntity existingEntity = projectFiscalRepository.findById(guid)
-                .orElseThrow(() -> new EntityNotFoundException("Project not found: " + projectFiscalModel.getProjectPlanFiscalGuid()));
+                .orElseThrow(() -> new EntityNotFoundException("Project fiscal not found: " + projectFiscalModel.getProjectPlanFiscalGuid()));
 
         ProjectFiscalEntity entity = projectFiscalResourceAssembler.updateEntity(projectFiscalModel, existingEntity);
         return saveProjectFiscal(entity);
@@ -86,7 +86,7 @@ public class ProjectFiscalService implements CommonService {
     public ProjectFiscalModel getProjectFiscal(String uuid) {
         UUID guid = UUID.fromString(uuid);
         ProjectFiscalEntity entity = projectFiscalRepository.findById(guid)
-                .orElseThrow(() -> new EntityNotFoundException("Project not found: " + uuid));
+                .orElseThrow(() -> new EntityNotFoundException("Project fiscal not found: " + uuid));
         return projectFiscalResourceAssembler.toModel(entity);
     }
 
