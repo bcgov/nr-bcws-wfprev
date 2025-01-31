@@ -7,6 +7,7 @@ import { CodeTableServices } from 'src/app/services/code-table-services';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { FormBuilder } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { ConfirmationDialogComponent } from 'src/app/components/confirmation-dialog/confirmation-dialog.component';
 
 const mockProjectService = {
   getProjectFiscalsByProjectGuid: jasmine.createSpy('getProjectFiscalsByProjectGuid').and.returnValue(
@@ -14,6 +15,8 @@ const mockProjectService = {
   ),
   updateProjectFiscal: jasmine.createSpy('updateProjectFiscal').and.returnValue(of({})),
   createProjectFiscal: jasmine.createSpy('createProjectFiscal').and.returnValue(of({})),
+  deleteProjectFiscalByProjectPlanFiscalGuid: jasmine.createSpy('deleteProjectFiscalByProjectPlanFiscalGuid').and.returnValue(of({})), // ✅ Add this line
+
 };
 
 const mockCodeTableServices = {
@@ -30,7 +33,7 @@ describe('ProjectFiscalsComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ProjectFiscalsComponent, BrowserAnimationsModule],
+      imports: [ProjectFiscalsComponent, BrowserAnimationsModule, ConfirmationDialogComponent],
       providers: [
         { provide: ActivatedRoute, useValue: { snapshot: { queryParamMap: { get: () => 'test-guid' } } } },
         { provide: ProjectService, useValue: mockProjectService },
@@ -198,4 +201,85 @@ describe('ProjectFiscalsComponent', () => {
 
     expect(() => component.onCancelFiscal(0)).not.toThrow();
   });
+
+  it('should open confirmation dialog when deleting a fiscal year', () => {
+    spyOn(component.dialog, 'open').and.returnValue({
+      afterClosed: () => of(true) // Simulate user clicking "Confirm"
+    } as any);
+  
+    component.projectFiscals = [{ projectPlanFiscalGuid: 'test-guid' }];
+    component.deleteFiscalYear({ value: component.projectFiscals[0] });
+  
+    expect(component.dialog.open).toHaveBeenCalledWith(ConfirmationDialogComponent, {
+      data: { indicator: 'confirm-delete' },
+      width: '500px',
+    });
+  });
+  
+  it('should delete a fiscal year after confirmation', () => {
+    spyOn(component.dialog, 'open').and.returnValue({
+      afterClosed: () => of(true) // Simulate user clicking "Confirm"
+    } as any);
+    spyOn(component, 'loadProjectFiscals');
+  
+    mockProjectService.deleteProjectFiscalByProjectPlanFiscalGuid = jasmine.createSpy().and.returnValue(of({}));
+  
+    component.projectFiscals = [{ projectPlanFiscalGuid: 'test-guid' }];
+    component.deleteFiscalYear({ value: component.projectFiscals[0] });
+  
+    expect(mockProjectService.deleteProjectFiscalByProjectPlanFiscalGuid).toHaveBeenCalledWith('test-guid', 'test-guid');
+    expect(mockSnackBar.open).toHaveBeenCalledWith(
+      component.messages.projectFiscalDeletedSuccess,
+      'OK',
+      { duration: 5000, panelClass: 'snackbar-success' }
+    );
+    expect(component.loadProjectFiscals).toHaveBeenCalledWith(true);
+  });
+  
+  it('should show error snackbar if deletion fails', () => {
+    spyOn(component.dialog, 'open').and.returnValue({
+      afterClosed: () => of(true) // Simulate user clicking "Confirm"
+    } as any);
+  
+    mockProjectService.deleteProjectFiscalByProjectPlanFiscalGuid = jasmine.createSpy().and.returnValue(
+      throwError(() => new Error('API Error'))
+    );
+  
+    component.projectFiscals = [{ projectPlanFiscalGuid: 'test-guid' }];
+    component.deleteFiscalYear({ value: component.projectFiscals[0] });
+  
+    expect(mockSnackBar.open).toHaveBeenCalledWith(
+      component.messages.projectFiscalDeletedFailure,
+      'OK',
+      { duration: 5000, panelClass: 'snackbar-error' }
+    );
+  });
+  
+  it('should reload fiscal years if projectPlanFiscalGuid is missing', () => {
+    spyOn(component, 'loadProjectFiscals');
+  
+    component.deleteFiscalYear({ value: { projectPlanFiscalGuid: null } });
+  
+    expect(component.loadProjectFiscals).toHaveBeenCalledWith(true);
+  });
+  
+  it('should return true for isUndeletable if isApprovedInd is true', () => {
+    const form = { value: { isApprovedInd: true } };
+    expect(component.isUndeletable(form)).toBe(true);
+  });
+  
+  it('should return false for isUndeletable if isApprovedInd is false', () => {
+    const form = { value: { isApprovedInd: false } };
+    expect(component.isUndeletable(form)).toBe(false);
+  });
+  
+  it('should return false for isUndeletable if isApprovedInd is undefined', () => {
+    const form = { value: {} };
+    expect(component.isUndeletable(form)).toBe(false);
+  });
+  
+  it('should return false for isUndeletable if form is null', () => {
+    expect(component.isUndeletable(null)).toBe(false);
+  });
+  
 });

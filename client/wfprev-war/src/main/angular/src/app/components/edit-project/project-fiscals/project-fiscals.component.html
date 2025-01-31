@@ -21,7 +21,7 @@
                 </div>
               </mat-expansion-panel-header>
               <mat-menu #menu="matMenu">
-                <button mat-menu-item>
+                <button mat-menu-item (click)="deleteFiscalYear(fiscalForms[i])" [disabled]="isUndeletable(fiscalForms[i])">
                   Delete Fiscal Year
                 </button>
                 <button mat-menu-item >
