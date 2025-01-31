@@ -283,5 +283,36 @@ it('should handle errors when creating a project fiscal', () => {
     const req = httpMock.expectOne(`http://mock-api.com/wfprev-api/projects/${projectGuid}/projectFiscals/${projectPlanFiscalGuid}`);
     req.flush('Error', { status: 500, statusText: 'Server Error' });
   });
+
+  it('should delete a project fiscal', () => {
+    const projectGuid = '12345';
+    const projectPlanFiscalGuid = 'fiscal-6789';
+  
+    service.deleteProjectFiscalByProjectPlanFiscalGuid(projectGuid, projectPlanFiscalGuid).subscribe((response) => {
+      expect(response).toBeTruthy(); // Expect a success response
+    });
+  
+    const req = httpMock.expectOne(`http://mock-api.com/wfprev-api/projects/${projectGuid}/projectFiscals/${projectPlanFiscalGuid}`);
+    expect(req.request.method).toBe('DELETE'); // Ensure DELETE method is used
+    expect(req.request.headers.get('Authorization')).toBe('Bearer mock-token'); // Check Authorization header
+    req.flush({}); // Simulate successful deletion response
+  });
+
+  it('should handle errors when deleting a project fiscal', () => {
+    const projectGuid = '12345';
+    const projectPlanFiscalGuid = 'fiscal-6789';
+  
+    service.deleteProjectFiscalByProjectPlanFiscalGuid(projectGuid, projectPlanFiscalGuid).subscribe({
+      next: () => fail('Should have failed with an error'),
+      error: (error) => {
+        expect(error.message).toBe('Failed to delete project fiscals'); // Check error message
+      }
+    });
+  
+    const req = httpMock.expectOne(`http://mock-api.com/wfprev-api/projects/${projectGuid}/projectFiscals/${projectPlanFiscalGuid}`);
+    req.flush('Error', { status: 500, statusText: 'Server Error' }); // Simulate server error response
+  });
+  
+  
   
 });

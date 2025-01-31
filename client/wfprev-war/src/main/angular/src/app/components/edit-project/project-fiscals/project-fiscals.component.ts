@@ -13,6 +13,8 @@ import { Messages } from 'src/app/utils/messages';
 import { CodeTableServices } from 'src/app/services/code-table-services';
 import { MatMenuModule } from '@angular/material/menu';
 import { Observable } from 'rxjs';
+import { MatDialog } from '@angular/material/dialog';
+import { ConfirmationDialogComponent } from 'src/app/components/confirmation-dialog/confirmation-dialog.component';
 
 @Component({
   selector: 'app-project-fiscals',
@@ -47,6 +49,8 @@ export class ProjectFiscalsComponent implements OnInit {
     private codeTableService: CodeTableServices,
     private readonly fb: FormBuilder,
     private readonly snackbarService: MatSnackBar,
+    public readonly dialog: MatDialog,
+    
   ) {}
 
   ngOnInit(): void {
@@ -108,7 +112,7 @@ export class ProjectFiscalsComponent implements OnInit {
       firstNationsEngagementInd: [fiscal?.firstNationsEngagementInd || false],
       firstNationsDelivPartInd: [fiscal?.firstNationsDelivPartInd || false],
       firstNationsPartner: [fiscal?.firstNationsPartner || ''],
-      projectFiscalDescription: [fiscal?.projectFiscalDescription || '', [Validators.required]],
+      projectFiscalDescription: [fiscal?.projectFiscalDescription || '', [Validators.required, Validators.maxLength(500)]],
       otherPartner: [fiscal?.otherPartner || ''],
       totalCostEstimateAmount: [fiscal?.totalCostEstimateAmount ?? ''],
       forecastAmount: [fiscal?.forecastAmount ?? ''],
@@ -118,7 +122,9 @@ export class ProjectFiscalsComponent implements OnInit {
       fiscalReportedSpendAmount: [fiscal?.fiscalReportedSpendAmount ?? ''],
       cfsActualSpend: [fiscal?.cfsActualSpend || ''],
       fiscalForecastAmount: [fiscal?.fiscalForecastAmount || ''],
-      fiscalActualAmount: [fiscal?.fiscalActualAmount || '']
+      fiscalActualAmount: [fiscal?.fiscalActualAmount || ''],
+      projectPlanFiscalGuid: [fiscal?.projectPlanFiscalGuid || ''],
+      isApprovedInd: [fiscal?.isApprovedInd || false]
     });
     
     return form;
@@ -229,7 +235,7 @@ export class ProjectFiscalsComponent implements OnInit {
         submittedByUserGuid: updatedData.submittedByUserGuid,
         submittedByUserUserid: updatedData.submittedByUserUserid,
         submissionTimestamp: updatedData.submissionTimestamp,
-        isApprovedInd: isUpdate ? updatedData.isApprovedInd : true,
+        isApprovedInd: isUpdate ? updatedData.isApprovedInd : false,
         isDelayedInd: isUpdate ? updatedData.isDelayedInd : false,
         fiscalForecastAmount: updatedData.fiscalForecastAmount,
         totalCostEstimateAmount: updatedData.totalCostEstimateAmount,
@@ -277,5 +283,44 @@ export class ProjectFiscalsComponent implements OnInit {
             }
         });
       }
+  }
+
+  deleteFiscalYear(form: any) {
+    const formData = form.value;
+    if (formData.projectPlanFiscalGuid) {
+      const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+        data: { indicator: 'confirm-delete' },
+        width: '500px',
+      });
+  
+      dialogRef.afterClosed().subscribe((confirmed: boolean) => {
+        if (confirmed) {
+          this.projectService.deleteProjectFiscalByProjectPlanFiscalGuid(this.projectGuid, formData.projectPlanFiscalGuid)
+            .subscribe({
+              next: () => {
+                this.snackbarService.open(
+                  this.messages.projectFiscalDeletedSuccess,
+                  'OK',
+                  { duration: 5000, panelClass: 'snackbar-success' }
+                );
+                this.loadProjectFiscals(true);
+              },
+              error: () => {
+                this.snackbarService.open(
+                  this.messages.projectFiscalDeletedFailure,
+                  'OK',
+                  { duration: 5000, panelClass: 'snackbar-error' }
+                );
+              }
+            });
+        }
+      });
+    } else{
+      this.loadProjectFiscals(true);
+    }
+  }
+  
+  isUndeletable(form: any): boolean {
+    return !!form?.value?.isApprovedInd;
   }
 }

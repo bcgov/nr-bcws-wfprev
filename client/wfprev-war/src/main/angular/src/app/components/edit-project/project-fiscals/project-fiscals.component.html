@@ -21,7 +21,7 @@
                 </div>
               </mat-expansion-panel-header>
               <mat-menu #menu="matMenu">
-                <button mat-menu-item>
+                <button mat-menu-item (click)="deleteFiscalYear(fiscalForms[i])" [disabled]="isUndeletable(fiscalForms[i])">
                   Delete Fiscal Year
                 </button>
                 <button mat-menu-item >
@@ -31,7 +31,7 @@
                   Closeout Fiscal
               </button>
               </mat-menu>
-              <form class="form-grid" [formGroup]="fiscalForms[i]">
+              <form class="form-grid" *ngIf="fiscalForms[i]" [formGroup]="fiscalForms[i]">
 
                 <div class="form-item">
                   <label>Fiscal Year<span class="required">*</span></label>
@@ -75,12 +75,12 @@
 
                 <div class="form-item">
                   <label>Planned Hectares</label>
-                  <input type="text" id="fiscalPlannedProjectSizeHa" formControlName="fiscalPlannedProjectSizeHa" />
+                  <input type="number" id="fiscalPlannedProjectSizeHa" formControlName="fiscalPlannedProjectSizeHa" />
                 </div>
 
                 <div class="form-item">
                   <label>Completed Hectares</label>
-                  <input type="text" id="fiscalCompletedSizeHa" formControlName="fiscalCompletedSizeHa" />
+                  <input type="number" id="fiscalCompletedSizeHa" formControlName="fiscalCompletedSizeHa" />
                 </div>
 
                 <div class="form-item">
@@ -121,7 +121,16 @@
                 
                 <div class="form-item half-width">
                   <label>Description<span class="required">*</span></label>
-                  <textarea id="projectFiscalDescription" formControlName="projectFiscalDescription" rows="4" cols="50"></textarea>
+                  <textarea 
+                    id="projectFiscalDescription" 
+                    formControlName="projectFiscalDescription" 
+                    rows="4" cols="50"
+                  >
+                  </textarea>
+                  <div class="error" *ngIf="fiscalForms[i] && fiscalForms[i].get('projectFiscalDescription')?.hasError('maxlength') 
+                    && fiscalForms[i].get('projectFiscalDescription')?.touched">
+                    {{ messages.maxLengthExceeded }}
+                  </div>
                 </div>
                 <div class="form-item half-width">
                   <label>Other Partners</label>
@@ -141,8 +150,9 @@
 
                 <div class="form-item budget-width">
                   <label>Forecast Amount</label>
-                  <input type="Cost" id="fiscalForecastAmount" 
-                    formControlName="fiscalForecastAmount"/>
+                  <input type="number" id="fiscalForecastAmount" 
+                    formControlName="fiscalForecastAmount"
+                    />
                 </div>
 
                 <div class="form-item budget-width">
@@ -151,7 +161,7 @@
                 </div>
 
                 <div class="form-item budget-width">
-                  <label>Ancilliary Funding Provider</label>
+                  <label>Ancillary Funding Provider</label>
                   <select id="ancillaryFundingSourceGuid" formControlName="ancillaryFundingSourceGuid">
                     <option value="" >Select</option>
                     <option *ngFor="let item of ancillaryFundingSourceCode"[value]="item.ancillaryFundingSourceGuid">
@@ -161,25 +171,28 @@
                 </div>
 
                 <div class="form-item budget-width">
-                  <label>Ancilliary Funding Amount</label>
-                  <input type="Cost" id="fiscalAncillaryFundAmount" formControlName="fiscalAncillaryFundAmount"/>
+                  <label>Ancillary Funding Amount</label>
+                  <input type="number" id="fiscalAncillaryFundAmount" formControlName="fiscalAncillaryFundAmount"/>
                 </div>
 
                 <div class="form-item budget-width">
                   <label>Reported Spend</label>
-                  <input type="Cost" id="fiscalReportedSpendAmount" formControlName="fiscalReportedSpendAmount"/>
+                  <input type="number" id="fiscalReportedSpendAmount" formControlName="fiscalReportedSpendAmount"/>
                 </div>
 
                 <div class="form-item cfs-width">
                   <label>CFS Actual Spend</label>
-                  <input type="Cost" id="fiscalActualAmount" formControlName="fiscalActualAmount"/>
+                  <input type="number" id="fiscalActualAmount" formControlName="fiscalActualAmount"/>
                 </div>
               </form>
               <div class="fiscal-footer">
                 <div class="footer-button-row">
-                  <button class="secondary" (click)="onCancelFiscal(i)" [disabled]="!fiscalForms[i].dirty" >Cancel</button>
-                  <button type="button" (click)="onSaveFiscal(i)" [disabled]="!fiscalForms[i].valid || !fiscalForms[i].dirty"
-                    class="primary">Save
+                  <button class="secondary" (click)="onCancelFiscal(i)" *ngIf="fiscalForms[i]" [disabled]="!fiscalForms[i].dirty">
+                    Cancel
+                  </button>
+                  <button type="button" (click)="onSaveFiscal(i)" *ngIf="fiscalForms[i]" [disabled]="!fiscalForms[i].valid || !fiscalForms[i].dirty"
+                    class="primary">
+                    Save
                   </button>
                 </div>
               </div>
