@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.mock;
 
-class ProjectFiscalResourceAssemberTest {
+class ProjectFiscalResourceAssemblerTest {
 
     ProjectFiscalResourceAssembler assembler = new ProjectFiscalResourceAssembler();
 
