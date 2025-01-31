@@ -11,7 +11,11 @@
           .form-item {
             flex: 1 1 calc(20% - 20px); // 5 items per row with a 20px gap
             min-width: 200px;
-      
+            .error {
+              color: red;
+              font-size: 12px;
+              margin-top: 4px;
+            }
             label {
                 padding: 9px;
                 color: #282828;
@@ -51,6 +55,10 @@
               box-sizing: border-box;
               resize: vertical;
               min-height: 80px;
+              height: auto;
+              line-height: 1.5;
+              white-space: pre-wrap;
+              word-wrap: break-word;
             }
           }
       
@@ -168,9 +176,9 @@
       }
       
       .button-row{
-        position: fixed;
-        right: 3%;
-        z-index: 100;
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
         button {
             &.primary {
               @extend .button-primary;
