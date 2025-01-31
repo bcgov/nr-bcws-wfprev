@@ -112,7 +112,7 @@ export class ProjectFiscalsComponent implements OnInit {
       firstNationsEngagementInd: [fiscal?.firstNationsEngagementInd || false],
       firstNationsDelivPartInd: [fiscal?.firstNationsDelivPartInd || false],
       firstNationsPartner: [fiscal?.firstNationsPartner || ''],
-      projectFiscalDescription: [fiscal?.projectFiscalDescription || '', [Validators.required]],
+      projectFiscalDescription: [fiscal?.projectFiscalDescription || '', [Validators.required, Validators.maxLength(500)]],
       otherPartner: [fiscal?.otherPartner || ''],
       totalCostEstimateAmount: [fiscal?.totalCostEstimateAmount ?? ''],
       forecastAmount: [fiscal?.forecastAmount ?? ''],
