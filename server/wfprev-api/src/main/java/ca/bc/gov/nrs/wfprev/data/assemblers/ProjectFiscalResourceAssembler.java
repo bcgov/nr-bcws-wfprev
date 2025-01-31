@@ -40,7 +40,6 @@ public class ProjectFiscalResourceAssembler extends RepresentationModelAssembler
                 entity.getAncillaryFundingSourceGuid().toString() : null);
         model.setActivityCategoryCode(entity.getActivityCategoryCode());
         model.setFiscalYear(entity.getFiscalYear() != null ? entity.getFiscalYear().longValue() : null);
-        model.setAncillaryFundingSourceGuid(String.valueOf(entity.getAncillaryFundingSourceGuid()));
         model.setProjectPlanStatusCode(entity.getProjectPlanStatusCode());
         model.setPlanFiscalStatusCode(entity.getPlanFiscalStatusCode());
         model.setEndorsementCode(entity.getEndorsementCode());
