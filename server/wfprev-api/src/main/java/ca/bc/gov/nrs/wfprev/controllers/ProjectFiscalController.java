@@ -57,12 +57,15 @@ public class ProjectFiscalController extends CommonController {
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = CollectionModel.class))), @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(implementation = MessageListRsrc.class))), @ApiResponse(responseCode = "403", description = "Forbidden"), @ApiResponse(responseCode = "404", description = "Not Found"), @ApiResponse(responseCode = "409", description = "Conflict"), @ApiResponse(responseCode = "412", description = "Precondition Failed"), @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = MessageListRsrc.class)))})
     @Parameter(name = HeaderConstants.VERSION_HEADER, description = HeaderConstants.VERSION_HEADER_DESCRIPTION, required = false, schema = @Schema(implementation = Integer.class), in = ParameterIn.HEADER)
     @Parameter(name = HeaderConstants.IF_MATCH_HEADER, description = HeaderConstants.IF_MATCH_DESCRIPTION, required = true, schema = @Schema(implementation = String.class), in = ParameterIn.HEADER)
-    public ResponseEntity<CollectionModel<ProjectFiscalModel>> getAllProjectFiscals() {
+    public ResponseEntity<CollectionModel<ProjectFiscalModel>> getAllProjectFiscals(@PathVariable("projectId") String projectId) {
         log.debug(" >> getAllProjectFiscals");
         ResponseEntity<CollectionModel<ProjectFiscalModel>> response;
 
         try {
-            response = ok(projectFiscalService.getAllProjectFiscals());
+            response = ok(projectFiscalService.getAllProjectFiscals(projectId));
+        } catch (ServiceException e) {
+            response = internalServerError();
+            log.error(" ### ServiceException while fetching Project Fiscals", e);
         } catch (RuntimeException e) {
             response = internalServerError();
             log.error(" ### Error while fetching Project Fiscals", e);

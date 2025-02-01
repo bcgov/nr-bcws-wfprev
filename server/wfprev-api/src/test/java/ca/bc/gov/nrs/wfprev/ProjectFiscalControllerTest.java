@@ -149,11 +149,12 @@ class ProjectFiscalControllerTest {
     @Test
     @WithMockUser
     void testGetAllProjectFiscals_Success() throws Exception {
+        String projectGuid = "123e4567-e89b-12d3-a456-426614174001";
         // GIVEN a list of ProjectFiscalModel
         List<ProjectFiscalModel> projectFiscalModels = List.of(
                 ProjectFiscalModel.builder()
                         .projectPlanFiscalGuid("123e4567-e89b-12d3-a456-426614174000")
-                        .projectGuid("123e4567-e89b-12d3-a456-426614174001")
+                        .projectGuid(projectGuid)
                         .activityCategoryCode("Tactical Planning")
                         .fiscalYear(2024L)
                         .submissionTimestamp(new Date(1672531200000L))
@@ -167,7 +168,7 @@ class ProjectFiscalControllerTest {
                         .build()
         );
 
-        when(projectFiscalService.getAllProjectFiscals()).thenReturn(CollectionModel.of(projectFiscalModels));
+        when(projectFiscalService.getAllProjectFiscals(projectGuid)).thenReturn(CollectionModel.of(projectFiscalModels));
 
         // WHEN we call the getAllProjectFiscals method
         mockMvc.perform(get("/projects/123e4567-e89b-12d3-a456-426614174001/projectFiscals")
@@ -202,20 +203,25 @@ class ProjectFiscalControllerTest {
     @WithMockUser
     void testGetAllProjectFiscals_ServiceException() throws Exception {
         // GIVEN the service throws a ServiceException
-        when(projectFiscalService.getAllProjectFiscals()).thenThrow(new ServiceException("Test ServiceException"));
+        when(projectFiscalService.getAllProjectFiscals(anyString()))
+                .thenThrow(new ServiceException("Test ServiceException"));
+
         // WHEN we call the getAllProjectFiscals method
         mockMvc.perform(get("/projects/1234/projectFiscals")
                         .contentType(MediaType.APPLICATION_JSON))
                 // THEN we expect a 500 Internal Server Error
                 .andExpect(status().isInternalServerError())
                 .andExpect(jsonPath("$").doesNotExist()); // Ensure no body is returned
+
+        // Verify if the service was called
+        verify(projectFiscalService).getAllProjectFiscals("1234");
     }
 
     @Test
     @WithMockUser
     void testGetAllProjectFiscals_Empty() throws Exception {
         // GIVEN an empty list from the service
-        when(projectFiscalService.getAllProjectFiscals()).thenReturn(CollectionModel.of(Collections.emptyList()));
+        when(projectFiscalService.getAllProjectFiscals("123e4567-e89b-12d3-a456-426614174001")).thenReturn(CollectionModel.of(Collections.emptyList()));
 
         // WHEN we call the getAllProjectFiscals method
         mockMvc.perform(get("/projects/1234/projectFiscals")
@@ -230,7 +236,8 @@ class ProjectFiscalControllerTest {
     @WithMockUser
     void testGetAllProjectFiscals_UnexpectedException() throws Exception {
         // GIVEN the service throws a RuntimeException
-        when(projectFiscalService.getAllProjectFiscals()).thenThrow(new RuntimeException("Unexpected error"));
+        when(projectFiscalService.getAllProjectFiscals(anyString()))
+                .thenThrow(new RuntimeException("Unexpected error"));
 
         // WHEN we call the getAllProjectFiscals method
         mockMvc.perform(get("/projects/1234/projectFiscals")
@@ -238,6 +245,9 @@ class ProjectFiscalControllerTest {
                 // THEN we expect a 500 Internal Server Error
                 .andExpect(status().isInternalServerError())
                 .andExpect(jsonPath("$").doesNotExist()); // Ensure no body is returned
+
+        // Verify the service was called
+        verify(projectFiscalService).getAllProjectFiscals("1234");
     }
 
     @Test
