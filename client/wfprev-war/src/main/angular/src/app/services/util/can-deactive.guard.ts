@@ -12,7 +12,7 @@ export interface CanComponentDeactivate {
 export class CanDeactivateGuard implements CanDeactivate<CanComponentDeactivate> {
   canDeactivate(component: CanComponentDeactivate): Observable<boolean> | Promise<boolean> | boolean {
     // If the component doesn't have canDeactivate, allow navigation
-    if (!component?.canDeactivate) {
+    if (!component || !Object.hasOwn(component, 'canDeactivate')) {
       return true;
     }
 
