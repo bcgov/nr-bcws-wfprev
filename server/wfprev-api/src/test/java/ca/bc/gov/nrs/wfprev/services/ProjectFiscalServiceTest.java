@@ -47,10 +47,18 @@ class ProjectFiscalServiceTest {
     @Test
     void testGetAllProjectFiscals_Empty() {
         // GIVEN I have no project fiscals
-        when(projectFiscalRepository.findAll()).thenReturn(Collections.emptyList());
-        when(projectFiscalResourceAssembler.toCollectionModel(Collections.emptyList())).thenReturn(CollectionModel.of(Collections.emptyList()));
+        UUID projectGuid = UUID.fromString("123e4567-e89b-12d3-a456-426614174001");
+
+        // Update the mock to use the new repository method
+        when(projectFiscalRepository.findAllByProject_ProjectGuid(projectGuid))
+                .thenReturn(Collections.emptyList());
+        when(projectFiscalResourceAssembler.toCollectionModel(Collections.emptyList()))
+                .thenReturn(CollectionModel.of(Collections.emptyList()));
+
         // WHEN I get all project fiscals
-        CollectionModel<ProjectFiscalModel> allProjectFiscals = projectFiscalService.getAllProjectFiscals();
+        CollectionModel<ProjectFiscalModel> allProjectFiscals =
+                projectFiscalService.getAllProjectFiscals(projectGuid.toString());
+
         // THEN I should get an empty list
         assertEquals(0, allProjectFiscals.getContent().size());
     }
@@ -190,11 +198,17 @@ class ProjectFiscalServiceTest {
                         .build()
         );
 
-        when(projectFiscalRepository.findAll()).thenReturn(entities);
-        when(projectFiscalResourceAssembler.toCollectionModel(entities)).thenReturn(CollectionModel.of(Arrays.asList(projectFiscalModel1, projectFiscalModel2)));
+        UUID projectGuid = UUID.fromString("123e4567-e89b-12d3-a456-426614174001");
+
+        // Update the mock to use the new repository method
+        when(projectFiscalRepository.findAllByProject_ProjectGuid(projectGuid))
+                .thenReturn(entities);
+        when(projectFiscalResourceAssembler.toCollectionModel(entities))
+                .thenReturn(CollectionModel.of(Arrays.asList(projectFiscalModel1, projectFiscalModel2)));
 
         // WHEN I get all project fiscals
-        CollectionModel<ProjectFiscalModel> allProjectFiscals = projectFiscalService.getAllProjectFiscals();
+        CollectionModel<ProjectFiscalModel> allProjectFiscals =
+                projectFiscalService.getAllProjectFiscals(projectGuid.toString());
 
         // THEN I should get a list with some elements
         Assertions.assertNotEquals(0, allProjectFiscals.getContent().size());
