@@ -15,6 +15,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { Observable } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmationDialogComponent } from 'src/app/components/confirmation-dialog/confirmation-dialog.component';
+import { CanComponentDeactivate } from 'src/app/services/util/can-deactive.guard';
 
 @Component({
   selector: 'app-project-fiscals',
@@ -32,7 +33,7 @@ import { ConfirmationDialogComponent } from 'src/app/components/confirmation-dia
     MatMenuModule
   ]
 })
-export class ProjectFiscalsComponent implements OnInit {
+export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  {
   projectGuid = '';
   projectFiscals: any[] = [];
   fiscalForms: FormGroup[] = [];
@@ -57,6 +58,22 @@ export class ProjectFiscalsComponent implements OnInit {
     this.loadCodeTables();
     this.generateFiscalYears();
     this.loadProjectFiscals();
+  }
+  
+
+  canDeactivate(): Observable<boolean> | boolean {
+    if (this.isFormDirty()) {
+      const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+        data: { indicator: 'confirm-unsave' },
+        width: '500px',
+      });
+      return dialogRef.afterClosed();
+    }
+    return true;
+  }
+
+  isFormDirty(): boolean {
+    return this.fiscalForms.some(form => form.dirty);
   }
 
   generateFiscalYears(): void {
