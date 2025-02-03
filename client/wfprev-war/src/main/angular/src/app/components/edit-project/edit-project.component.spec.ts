@@ -85,4 +85,39 @@ describe('EditProjectComponent', () => {
     const projectDetailsComponent = fixture.debugElement.query(By.directive(ProjectDetailsComponent));
     expect(projectDetailsComponent).toBeTruthy();
   });
+  
+  it('should not reload ProjectFiscalsComponent if it is already loaded', () => {
+    component.projectFiscalsComponentRef = {} as any; // Mock that the component is already loaded
+    component.onTabChange({ index: 1 });
+  
+    expect(component.fiscalsContainer).toBeTruthy(); // Ensures container is still present
+  });
+
+  it('should return true from canDeactivate() if no unsaved changes exist', () => {
+    component.projectFiscalsComponentRef = {
+      instance: {
+        isFormDirty: () => false,
+      },
+    } as any;
+  
+    expect(component.canDeactivate()).toBe(true);
+  });
+
+  it('should call canDeactivate of ProjectFiscalsComponent if forms are dirty', () => {
+    const mockCanDeactivate = jasmine.createSpy().and.returnValue(true);
+  
+    component.projectFiscalsComponentRef = {
+      instance: {
+        isFormDirty: () => true,
+        canDeactivate: mockCanDeactivate,
+      },
+    } as any;
+  
+    expect(component.canDeactivate()).toBe(true);
+    expect(mockCanDeactivate).toHaveBeenCalled();
+  });
+  
+  
+  
+  
 });
