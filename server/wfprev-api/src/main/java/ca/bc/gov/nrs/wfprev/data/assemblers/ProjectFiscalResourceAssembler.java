@@ -116,9 +116,9 @@ public class ProjectFiscalResourceAssembler extends RepresentationModelAssembler
         entity.setFiscalYear(model.getFiscalYear() != null
                 ? BigDecimal.valueOf(model.getFiscalYear())
                 : null);
-        if (model.getAncillaryFundingSourceGuid() != null) {
+        if (model.getAncillaryFundingSourceGuid() != null && !model.getAncillaryFundingSourceGuid().trim().isEmpty()) {
             entity.setAncillaryFundingSourceGuid(UUID.fromString(model.getAncillaryFundingSourceGuid()));
-        }
+        }else entity.setAncillaryFundingSourceGuid(null);
         entity.setProjectPlanStatusCode(model.getProjectPlanStatusCode());
         entity.setPlanFiscalStatusCode(model.getPlanFiscalStatusCode());
         entity.setEndorsementCode(model.getEndorsementCode());
@@ -182,10 +182,14 @@ public class ProjectFiscalResourceAssembler extends RepresentationModelAssembler
                 projectFiscalModel.getFiscalYear() != null
                         ? BigDecimal.valueOf(projectFiscalModel.getFiscalYear())
                         : existingEntity.getFiscalYear());
-        existingEntity.setAncillaryFundingSourceGuid(nonNullOrDefault(
-                projectFiscalModel.getAncillaryFundingSourceGuid() != null ? UUID.fromString(projectFiscalModel.getAncillaryFundingSourceGuid()) : null,
-                existingEntity.getAncillaryFundingSourceGuid()
-        ));
+        existingEntity.setAncillaryFundingSourceGuid(
+                nonNullOrDefault(
+                        isValidUuid(projectFiscalModel.getAncillaryFundingSourceGuid())
+                                ? UUID.fromString(projectFiscalModel.getAncillaryFundingSourceGuid())
+                                : null,
+                        existingEntity.getAncillaryFundingSourceGuid()
+                )
+        );
         existingEntity.setProjectPlanStatusCode(
                 nonNullOrDefault(projectFiscalModel.getProjectPlanStatusCode(), existingEntity.getProjectPlanStatusCode()));
         existingEntity.setPlanFiscalStatusCode(
@@ -280,5 +284,9 @@ public class ProjectFiscalResourceAssembler extends RepresentationModelAssembler
 
     private <T> T nonNullOrDefault(T newValue, T existingValue) {
         return newValue != null ? newValue : existingValue;
+    }
+
+    private boolean isValidUuid(String uuid) {
+        return uuid != null && !uuid.trim().isEmpty();
     }
 }
