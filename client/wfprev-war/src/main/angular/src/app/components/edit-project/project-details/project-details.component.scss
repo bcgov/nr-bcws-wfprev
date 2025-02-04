@@ -165,8 +165,10 @@
     gap: 19px;
   }
 
-  .project-description-container{
+  .project-left-section{
     flex:1;
+    display: flex;
+    flex-direction: column;
     padding-left: 19px;
     background-color: var(--colour-white);
     mat-expansion-panel {
@@ -206,6 +208,9 @@
         border: 1px solid #C7C7C7;
         background: #F2F2F2;
       }
+    app-fiscal-year-projects {
+        margin-top: 20px; /* Add spacing between project description and fiscal projects */
+    }
   }
 
   .map-section{

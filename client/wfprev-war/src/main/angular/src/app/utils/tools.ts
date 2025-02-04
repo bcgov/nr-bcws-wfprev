@@ -35,3 +35,7 @@ export function validateLatLong(latLong: string): { latitude: number; longitude:
 export function formatLatLong(latitude: number, longitude: number): string {
   return `${latitude.toFixed(4)}° N, ${longitude.toFixed(4)}° W`;
 }
+
+export function convertFiscalYear(fiscalYear: number): string {
+  return `${fiscalYear}/${(fiscalYear + 1).toString().slice(-2)}`;
+}
