@@ -1,0 +1,152 @@
+mat-expansion-panel {
+    border-bottom: 1px solid #C6C8CB;
+    margin: 0px !important;
+    background-color: #FFF;
+
+    ::ng-deep .mat-expansion-panel-body{
+        padding: 0;
+    }
+
+    .project-title {
+        background-color: inherit;
+        font-weight: bold;
+        display: flex;
+        color: #000;
+        font-size: 20px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: normal;
+        gap:10px;
+    }
+}
+.fiscals-content{
+    padding: 0 10px;
+    border-top: 1px solid #D9D9D9;
+    .fiscal-item{
+        padding: 10px;
+        border-radius: 10px;
+        border: 1px solid #DFE0E2;
+        background: #FFF;
+        margin: 20px 0;
+    }
+    .fiscal-title-row{
+        display: flex;
+        .section-1 {
+            flex: 0 0 65%;
+            display: flex;
+            flex-shrink: 0;
+            color: #000;
+            font-size: 20px;
+            font-style: normal;
+            font-weight: 700;
+            line-height: normal;
+        }
+        .section-2{
+            flex:1;
+            color: #000;
+            font-size: 14px;
+            font-style: normal;
+            font-weight: 400;
+            line-height: normal;
+            .fiscal-year{
+                font-size: 16px;
+                font-weight: 700;
+            }
+        }
+        .section-3 {
+            gap: 3px;
+            color: #474543;
+            font-size: 16px;
+            font-style: normal;
+            font-weight: 700;
+            flex: 1;
+            .status-icon{
+                width: 25px;
+                height: 25px;
+                vertical-align: middle;
+            }
+        }
+    }
+    
+    .fiscal-data{
+        padding-top: 16px;
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        .data-title{
+            color: #000;
+            font-size: 14px;
+            font-style: normal;
+            font-weight: 400;
+            line-height: normal;
+        }
+        .data-value{
+            color: #282828;
+            font-size: 16px;
+            font-weight: 700;
+        }
+        span:nth-child(1) { 
+            flex: 3;  // 30% of the row
+        }
+        
+        span:nth-child(2) { 
+            flex: 3;  // 30% of the row
+        }
+        
+        span:nth-child(3) { 
+            flex: 4;  // 40% of the row
+        }
+        .complete-fiscal-last-performance-update{
+            flex: 1 1 100%;
+            padding-top: 10px;
+        }
+    }
+
+    .activities-content{
+        padding-top: 10px;
+        .title{
+            color: #000;
+            font-size: 16px;
+            font-style: normal;
+            font-weight: 400;
+            line-height: normal;
+        }
+        .activities-table {
+            width: 100%;
+            border-collapse: collapse;
+          
+            th, td {
+              padding: 8px;
+              border-bottom: 1px solid #ddd;
+            }
+          
+            th {
+                color: #000;
+                font-size: 12px;
+                font-style: normal;
+                font-weight: 400;
+                line-height: normal;
+                background-color: var(--colour-white);
+            }
+          
+            tr:nth-child(odd) {
+                border: 1px solid #D9D9D9;
+                background: var(--colour-light-grey);
+            }
+          
+            tr:nth-child(even) {
+                border: 1px solid #D9D9D9;
+                background-color: var(--colour-white);
+            }
+          }
+    }
+}
+.fiscal-empty-content{
+    color: #242424;
+    font-family: var(--wf-font-family-main);
+    font-size: 16px;
+    font-style: italic;
+    font-weight: 400;
+    line-height: normal;
+    padding: 20px;
+}
