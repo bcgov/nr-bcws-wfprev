@@ -36,12 +36,12 @@ type Story = StoryObj<FiscalYearProjectsComponent>;
 export const Default: Story = {
   args: {
     projectFiscals: [
-      { fiscalYearFormatted: '2023/2024' },
-      { fiscalYearFormatted: '2024/2025' }
+      { fiscalYearFormatted: '2023/24' },
+      { fiscalYearFormatted: '2024/25' }
     ],
     fiscalForms: [
       new FormGroup({
-        fiscalYear: new FormControl('2023/2024'),
+        fiscalYear: new FormControl('2023/24'),
         projectFiscalName: new FormControl('Project Alpha'),
         activityCategoryCode: new FormControl('A1'),
         planFiscalStatusCode: new FormControl('Active'),
@@ -62,7 +62,7 @@ export const Default: Story = {
         fiscalActualAmount: new FormControl(20000),
       }),
     ],
-    fiscalYears: ['2023/2024', '2024/2025'],
+    fiscalYears: ['2023/24', '2024/25'],
     activityCategoryCode: [{ activityCategoryCode: 'A1', description: 'Category A' }],
     planFiscalStatusCode: [{ planFiscalStatusCode: 'Active', description: 'Active' }],
     ancillaryFundingSourceCode: [{ ancillaryFundingSourceGuid: 'FUND001', fundingSourceName: 'Government Fund' }],
@@ -72,11 +72,11 @@ export const Default: Story = {
 export const WithNewFiscal: Story = {
   args: {
     projectFiscals: [
-      { fiscalYearFormatted: '2025/2026' }
+      { fiscalYearFormatted: '2025/26' }
     ],
     fiscalForms: [
       new FormGroup({
-        fiscalYear: new FormControl('2025/2026'),
+        fiscalYear: new FormControl('2025/26'),
         projectFiscalName: new FormControl('New Fiscal Project'),
         activityCategoryCode: new FormControl('B2'),
         planFiscalStatusCode: new FormControl('Pending'),
@@ -97,7 +97,7 @@ export const WithNewFiscal: Story = {
         fiscalActualAmount: new FormControl(3000),
       }),
     ],
-    fiscalYears: ['2025/2026'],
+    fiscalYears: ['2025/26'],
     activityCategoryCode: [{ activityCategoryCode: 'B2', description: 'Category B' }],
     planFiscalStatusCode: [{ planFiscalStatusCode: 'Pending', description: 'Pending' }],
     ancillaryFundingSourceCode: [{ ancillaryFundingSourceGuid: 'FUND002', fundingSourceName: 'Private Investment' }],
