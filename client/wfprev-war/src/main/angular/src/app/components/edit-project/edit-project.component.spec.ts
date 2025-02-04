@@ -117,7 +117,15 @@ describe('EditProjectComponent', () => {
     expect(mockCanDeactivate).toHaveBeenCalled();
   });
   
+  it('should call refreshFiscalData when switching back to Details tab', () => {
+    // Mock the ProjectDetailsComponent and its method
+    component.projectDetailsComponent = jasmine.createSpyObj('ProjectDetailsComponent', ['refreshFiscalData']);
   
+    // Simulate selecting the "Details" tab (index 0)
+    component.onTabChange({ index: 0 });
   
+    // Expect refreshFiscalData to have been called
+    expect(component.projectDetailsComponent.refreshFiscalData).toHaveBeenCalled();
+  });  
   
 });

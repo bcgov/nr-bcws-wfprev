@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { AfterViewInit, Component, EventEmitter, OnInit, Output, OnDestroy  } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, OnInit, Output, OnDestroy, ViewChild  } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators , FormsModule } from '@angular/forms';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { ActivatedRoute } from '@angular/router';
@@ -12,15 +12,17 @@ import {
   validateLatLong,
   formatLatLong,
 } from 'src/app/utils/tools';
+import { FiscalYearProjectsComponent } from 'src/app/components/edit-project/project-details/fiscal-year-projects/fiscal-year-projects.component';
 
 @Component({
   selector: 'app-project-details',
   standalone: true,
-  imports: [ReactiveFormsModule,MatExpansionModule,CommonModule,FormsModule],
+  imports: [ReactiveFormsModule,MatExpansionModule,CommonModule,FormsModule,FiscalYearProjectsComponent],
   templateUrl: './project-details.component.html',
   styleUrl: './project-details.component.scss'
 })
 export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy{
+  @ViewChild(FiscalYearProjectsComponent) fiscalYearProjectsComponent!: FiscalYearProjectsComponent;
   @Output() projectNameChange = new EventEmitter<string>();
 
   private map: L.Map | undefined;
@@ -65,6 +67,12 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
   ngOnDestroy(): void {
     if (this.map) {
       this.map.remove(); // Clean up the map
+    }
+  }
+
+  refreshFiscalData(): void {
+    if (this.fiscalYearProjectsComponent) {
+      this.fiscalYearProjectsComponent.loadProjectFiscals();
     }
   }
 
