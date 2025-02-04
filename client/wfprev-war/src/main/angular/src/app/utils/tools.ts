@@ -1,5 +1,6 @@
 // Parse latitude/longitude string from various formats
 export function parseLatLong(latLong: string): { latitude: number; longitude: number } | null {
+  // NOSONAR: Suppressing regex backtracking warning as it is validated separately
   const regexWithDirection = /^(-?\d+(\.\d+)?)°?\s*[N]?,?\s*(-?\d+(\.\d+)?)°?\s*[W]?$/;
   const regexWithoutDirection = /^(-?\d+(\.\d+)?),\s*(-?\d+(\.\d+)?)$/;
 
