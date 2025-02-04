@@ -1,6 +1,6 @@
 // Parse latitude/longitude string from various formats
 export function parseLatLong(latLong: string): { latitude: number; longitude: number } | null {
-  const regexWithDirection = /^(-?\d+(\.\d+)?)°?\s*[N]?,?\s*(-?\d+(\.\d+)?)°?\s*[W]?$/;
+  const regexWithDirection = /^(-?\d{1,3}(?:\.\d{1,8})?)°?\s*[N]?,?\s+(-?\d{1,3}(?:\.\d{1,8})?)°?\s*[W]?$/;
   const regexWithoutDirection = /^(-?\d+(\.\d+)?),\s*(-?\d+(\.\d+)?)$/;
 
   let match = latLong.match(regexWithDirection);
