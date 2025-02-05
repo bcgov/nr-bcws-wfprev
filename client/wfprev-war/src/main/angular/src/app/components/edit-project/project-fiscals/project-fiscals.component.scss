@@ -312,3 +312,21 @@
   font-weight: 400 !important;
   font-family: var(--wf-font-family-main);
 }
+
+.no-fiscals{
+  color: #000;
+  font-family: var(--wf-font-family-main);
+  font-size: 20px;
+  font-style: italic;
+  font-weight: 400;
+  line-height: normal;
+  padding-left: 70px;
+}
+
+::ng-deep .mat-mdc-menu-panel {
+  min-width: max-content;
+}
+
+::ng-deep .cdk-overlay-pane {
+  transform: translateX(-50%);
+}

@@ -15,10 +15,11 @@ import { CanComponentDeactivate } from 'src/app/services/util/can-deactive.guard
 export class EditProjectComponent implements CanComponentDeactivate {
   projectName: string | null = null;
   @ViewChild('fiscalsContainer', { read: ViewContainerRef }) fiscalsContainer!: ViewContainerRef;
+  @ViewChild(ProjectDetailsComponent) projectDetailsComponent!: ProjectDetailsComponent;
+
   projectFiscalsComponentRef: ComponentRef<any> | null = null;
 
   constructor() {}
-
   onTabChange(event: any): void {
     // Check if "Fiscal Years" tab is selected
     if (event.index === 1 && !this.projectFiscalsComponentRef) {
@@ -29,6 +30,8 @@ export class EditProjectComponent implements CanComponentDeactivate {
           this.projectFiscalsComponentRef.instance.loadProjectFiscals();
         }
       );
+    } else if (event.index === 0) {
+      this.projectDetailsComponent.refreshFiscalData();
     }
   }
 
