@@ -38,6 +38,8 @@ public class ProjectFiscalResourceAssembler extends RepresentationModelAssembler
                 : null);
         model.setAncillaryFundingSourceGuid(entity.getAncillaryFundingSourceGuid() != null ?
                 entity.getAncillaryFundingSourceGuid().toString() : null);
+        model.setFundingSourceGuid(entity.getFundingSourceGuid() != null ?
+                entity.getFundingSourceGuid().toString() : null);
         model.setActivityCategoryCode(entity.getActivityCategoryCode());
         model.setFiscalYear(entity.getFiscalYear() != null ? entity.getFiscalYear().longValue() : null);
         model.setProjectPlanStatusCode(entity.getProjectPlanStatusCode());
@@ -84,7 +86,6 @@ public class ProjectFiscalResourceAssembler extends RepresentationModelAssembler
         model.setDelayRationale(entity.getDelayRationale());
         model.setAbandonedRationale(entity.getAbandonedRationale());
         model.setLastProgressUpdateTimestamp(entity.getLastProgressUpdateTimestamp());
-
         // Set audit fields
         model.setCreateUser(entity.getCreateUser());
         model.setUpdateUser(entity.getUpdateUser());
@@ -119,6 +120,11 @@ public class ProjectFiscalResourceAssembler extends RepresentationModelAssembler
         if (model.getAncillaryFundingSourceGuid() != null && !model.getAncillaryFundingSourceGuid().trim().isEmpty()) {
             entity.setAncillaryFundingSourceGuid(UUID.fromString(model.getAncillaryFundingSourceGuid()));
         }else entity.setAncillaryFundingSourceGuid(null);
+
+        if (model.getFundingSourceGuid() != null && !model.getFundingSourceGuid().trim().isEmpty()) {
+        entity.setFundingSourceGuid(UUID.fromString(model.getFundingSourceGuid()));
+        }else entity.setFundingSourceGuid(null);
+
         entity.setProjectPlanStatusCode(model.getProjectPlanStatusCode());
         entity.setPlanFiscalStatusCode(model.getPlanFiscalStatusCode());
         entity.setEndorsementCode(model.getEndorsementCode());
@@ -188,6 +194,15 @@ public class ProjectFiscalResourceAssembler extends RepresentationModelAssembler
                                 ? UUID.fromString(projectFiscalModel.getAncillaryFundingSourceGuid())
                                 : null,
                         existingEntity.getAncillaryFundingSourceGuid()
+                )
+        );
+
+        existingEntity.setFundingSourceGuid(
+                nonNullOrDefault(
+                        isValidUuid(projectFiscalModel.getFundingSourceGuid())
+                                ? UUID.fromString(projectFiscalModel.getFundingSourceGuid())
+                                : null,
+                        existingEntity.getFundingSourceGuid()
                 )
         );
         existingEntity.setProjectPlanStatusCode(

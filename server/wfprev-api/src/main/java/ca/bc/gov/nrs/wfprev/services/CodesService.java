@@ -49,7 +49,8 @@ public class CodesService implements CommonService {
     private final PlanFiscalStatusCodeRepository planFiscalStatusCodeRepository;
     private final AncillaryFundingSourceCodeResourceAssembler ancillaryFundingSourceCodeResourceAssembler;
     private final AncillaryFundingSourceCodeRepository ancillaryFundingSourceCodeRepository;
-
+    private final FundingSourceCodeResourceAssembler fundingSourceCodeResourceAssembler;
+    private final FundingSourceCodeRepository fundingSourceCodeRepository;
 
     public CodesService(ForestAreaCodeRepository forestAreaCodeRepository, ForestAreaCodeResourceAssembler forestAreaCodeResourceAssembler,
                         GeneralScopeCodeRepository generalScopeCodeRepository, GeneralScopeCodeResourceAssembler generalScopeCodeResourceAssembler,
@@ -61,7 +62,8 @@ public class CodesService implements CommonService {
                         RiskRatingCodeResourceAssembler riskRatingCodeResourceAssembler, RiskRatingCodeRepository riskRatingCodeRepository, ContractPhaseCodeResourceAssembler contractPhaseCodeResourceAssembler, ContractPhaseCodeRepository contractPhaseCodeRepository,
                         ActivityCategoryCodeResourceAssembler activityCategoryCodeResourceAssembler, ActivityCategoryCodeRepository activityCategoryCodeRepository,
                         PlanFiscalStatusCodeResourceAssembler planFiscalStatusCodeResourceAssembler, PlanFiscalStatusCodeRepository planFiscalStatusCodeRepository,
-                        AncillaryFundingSourceCodeResourceAssembler ancillaryFundingSourceCodeResourceAssembler, AncillaryFundingSourceCodeRepository ancillaryFundingSourceCodeRepository) {
+                        AncillaryFundingSourceCodeResourceAssembler ancillaryFundingSourceCodeResourceAssembler, AncillaryFundingSourceCodeRepository ancillaryFundingSourceCodeRepository,
+                        FundingSourceCodeResourceAssembler fundingSourceCodeResourceAssembler, FundingSourceCodeRepository fundingSourceCodeRepository) {
         this.forestAreaCodeRepository = forestAreaCodeRepository;
         this.forestAreaCodeResourceAssembler = forestAreaCodeResourceAssembler;
         this.generalScopeCodeRepository = generalScopeCodeRepository;
@@ -92,6 +94,8 @@ public class CodesService implements CommonService {
         this.planFiscalStatusCodeRepository = planFiscalStatusCodeRepository;
         this.ancillaryFundingSourceCodeResourceAssembler = ancillaryFundingSourceCodeResourceAssembler;
         this.ancillaryFundingSourceCodeRepository = ancillaryFundingSourceCodeRepository;
+        this.fundingSourceCodeResourceAssembler = fundingSourceCodeResourceAssembler;
+        this.fundingSourceCodeRepository = fundingSourceCodeRepository;
     }
 
     /**
@@ -377,6 +381,25 @@ public class CodesService implements CommonService {
         try {
             return ancillaryFundingSourceCodeRepository.findById(id)
                     .map(ancillaryFundingSourceCodeResourceAssembler::toModel)
+                    .orElse(null);
+        } catch (Exception e) {
+            throw new ServiceException(e.getLocalizedMessage(), e);
+        }
+    }
+
+    public CollectionModel<FundingSourceCodeModel> getAllFundingSourceCodes() throws ServiceException {
+        try {
+            List<FundingSourceCodeEntity> entities = fundingSourceCodeRepository.findAll();
+            return fundingSourceCodeResourceAssembler.toCollectionModel(entities);
+        } catch (Exception e) {
+            throw new ServiceException(e.getLocalizedMessage(), e);
+        }
+    }
+
+    public FundingSourceCodeModel getFundingSourceCodeById(String id) throws ServiceException {
+        try {
+            return fundingSourceCodeRepository.findById(id)
+                    .map(fundingSourceCodeResourceAssembler::toModel)
                     .orElse(null);
         } catch (Exception e) {
             throw new ServiceException(e.getLocalizedMessage(), e);
