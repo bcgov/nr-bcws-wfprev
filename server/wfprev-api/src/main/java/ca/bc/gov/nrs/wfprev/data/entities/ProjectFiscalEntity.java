@@ -49,6 +49,9 @@ public class ProjectFiscalEntity implements Serializable {
     @Column(name = "ancillary_funding_source_guid", columnDefinition = "uuid")
     private UUID ancillaryFundingSourceGuid;
 
+    @Column(name = "funding_source_guid", columnDefinition = "uuid")
+    private UUID fundingSourceGuid;
+
     @NotNull
     @Column(name = "project_plan_status_code", length = 10)
     private String projectPlanStatusCode;
