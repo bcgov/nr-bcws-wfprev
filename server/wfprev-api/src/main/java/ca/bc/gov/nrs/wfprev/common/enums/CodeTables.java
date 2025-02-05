@@ -18,4 +18,5 @@ public class CodeTables {
   public static final String CONTRACT_PHASE_CODE = "contractPhaseCodes";
   public static final String PLAN_FISCAL_STATUS_CODE = "planFiscalStatusCodes";
   public static final String ANCILLARY_FUNDING_SOURCE_CODE = "ancillaryFundingSourceCodes";
+  public static final String FUNDING_SOURCE_CODE = "fundingSourceCodes";
 }
