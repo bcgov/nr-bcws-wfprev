@@ -961,6 +961,56 @@
         "rollback": [
         ]
       }
+    },
+    {
+      "changeSet": {
+        "id": "01_00_12_00",
+        "author": "hsaldyga",
+        "tagDatabase": { "tag" : "version_01_00_12_00" },
+        "changes": [
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_12/00/ddl/WFPREV.proposal_type_code.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_12/00/ddl/wfprev.ddl.modify_project_plan_fiscal.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": "$",
+              "path": "scripts/01_00_12/00/ddl/wfprev.ddl.create_project_plan_fiscal_trigger.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_12/00/dml/app_wf1_prev.dml.proposal_type_code.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_12/00/dml/app_wf1_prev.dml.update_program_area.sql"
+            }
+          }
+       ],
+        "rollback": [
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": "$",
+              "path": "scripts/01_00_12/00/ddl/rollback/wfprev.ddl.create_project_plan_fiscal_trigger.sql"
+            }
+          },
+          { "sql": "ALTER TABLE wfprev.project_plan_fiscal_audit DROP COLUMN proposal_type_code" },
+          { "sql": "ALTER TABLE wfprev.project_plan_fiscal DROP COLUMN proposal_type_code" },
+          { "sql": "DROP TABLE wfprev.proposal_type_code" }
+        ]
+      }
     }    
   ] 
 }
