@@ -961,6 +961,26 @@
         "rollback": [
         ]
       }
-    }    
+    },
+    {
+      "changeSet": {
+        "id": "01_00_12_00",
+        "author": "Lucsa Li",
+        "tagDatabase": { "tag" : "version_01_00_12_00" },
+        "changes": [
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_00_12/00/ddl/WFPREV.alter_project_plan_fiscal.sql"
+            }
+          }
+        ],
+        "rollback": [
+          { "sql": "ALTER TABLE wfprev.project_plan_fiscal DROP COLUMN funding_source_guid" }
+        ]
+      }
+    }
+    
   ] 
 }
