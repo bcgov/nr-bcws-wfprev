@@ -84,7 +84,6 @@ public class ProjectFiscalResourceAssembler extends RepresentationModelAssembler
         model.setDelayRationale(entity.getDelayRationale());
         model.setAbandonedRationale(entity.getAbandonedRationale());
         model.setLastProgressUpdateTimestamp(entity.getLastProgressUpdateTimestamp());
-
         // Set audit fields
         model.setCreateUser(entity.getCreateUser());
         model.setUpdateUser(entity.getUpdateUser());
@@ -119,6 +118,7 @@ public class ProjectFiscalResourceAssembler extends RepresentationModelAssembler
         if (model.getAncillaryFundingSourceGuid() != null && !model.getAncillaryFundingSourceGuid().trim().isEmpty()) {
             entity.setAncillaryFundingSourceGuid(UUID.fromString(model.getAncillaryFundingSourceGuid()));
         }else entity.setAncillaryFundingSourceGuid(null);
+
         entity.setProjectPlanStatusCode(model.getProjectPlanStatusCode());
         entity.setPlanFiscalStatusCode(model.getPlanFiscalStatusCode());
         entity.setEndorsementCode(model.getEndorsementCode());
