@@ -1,25 +1,24 @@
 package ca.bc.gov.nrs.wfprev.common.serializers;
 
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.ObjectCodec;
+import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.io.ParseException;
-import com.vividsolutions.jts.io.geojson.GeoJsonReader;
-import org.junit.jupiter.api.Assertions;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.geolatte.geom.Geometry;
+import org.geolatte.geom.Point;
+import org.geolatte.geom.json.GeolatteGeomModule;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import static org.mockito.ArgumentMatchers.any;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.IOException;
-import java.io.Reader;
-import java.io.StringReader;
 
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class GeoJsonJacksonDeserializerTest {
@@ -34,54 +33,57 @@ class GeoJsonJacksonDeserializerTest {
     private JsonNode jsonNode;
 
     @Mock
-    private GeoJsonReader geoJsonReader;
+    private DeserializationContext deserializationContext;
 
     @InjectMocks
     private GeoJsonJacksonDeserializer geoJsonJacksonDeserializer;
 
-    @Test
-    void testDeserialize_Success() throws IOException, ParseException {
-        // Given
-        String geoJsonString = "{\"type\":\"Point\",\"coordinates\":[10.0,20.0]}";
-        Geometry expectedGeometry = new GeoJsonReader().read(new StringReader(geoJsonString));
+    private ObjectMapper geolatteMapper;
 
-        when(jsonParser.getCodec()).thenReturn(objectCodec);
-        when(objectCodec.readTree(jsonParser)).thenReturn(jsonNode);
-        when(jsonNode.toString()).thenReturn(geoJsonString);
-        when(geoJsonReader.read(any(Reader.class))).thenReturn(expectedGeometry);
-
-        // When
-        Geometry result = geoJsonJacksonDeserializer.deserialize(jsonParser, null);
-
-        // Then
-        Assertions.assertNotNull(result);
-        Assertions.assertEquals(expectedGeometry.toString(), result.toString());
+    @BeforeEach
+    void setup() {
+        geolatteMapper = new ObjectMapper();
+        geolatteMapper.registerModule(new GeolatteGeomModule());
     }
 
     @Test
-    void testDeserialize_ParseException() throws IOException, ParseException {
-        // Given
-        String invalidGeoJsonString = "{\"type\":\"InvalidType\",\"coordinates\":[10.0,20.0]}";
+    void testDeserialize_Success() throws IOException {
+        // Given a valid GeoJSON Point
+        String geoJsonString = "{\"type\":\"Point\",\"coordinates\":[10.0,20.0]}";
+        jsonNode = geolatteMapper.readTree(geoJsonString);
+        Geometry expectedGeometry = geolatteMapper.treeToValue(jsonNode, Point.class);
 
         when(jsonParser.getCodec()).thenReturn(objectCodec);
         when(objectCodec.readTree(jsonParser)).thenReturn(jsonNode);
-        when(jsonNode.toString()).thenReturn(invalidGeoJsonString);
-        when(geoJsonReader.read(any(Reader.class))).thenThrow(new ParseException("Invalid GeoJson", new Throwable()));
 
         // When
-        Assertions.assertThrows(IOException.class, () -> geoJsonJacksonDeserializer.deserialize(jsonParser, null));
+        Geometry result = geoJsonJacksonDeserializer.deserialize(jsonParser, deserializationContext);
+
+        // Then
+        assertNotNull(result);
+        assertEquals(expectedGeometry, result);
+    }
+
+    @Test
+    void testDeserialize_InvalidGeoJson() throws IOException {
+        // Given an invalid GeoJSON structure
+        String invalidGeoJsonString = "{\"type\":\"InvalidType\",\"coordinates\":[10.0,20.0]}";
+        jsonNode = geolatteMapper.readTree(invalidGeoJsonString);
+
+        when(jsonParser.getCodec()).thenReturn(objectCodec);
+        when(objectCodec.readTree(jsonParser)).thenReturn(jsonNode);
+
+        // Expect IOException because it cannot map to a valid Geometry
+        assertThrows(IOException.class, () -> geoJsonJacksonDeserializer.deserialize(jsonParser, deserializationContext));
     }
 
     @Test
     void testDeserialize_RuntimeException() throws IOException {
-        // Given
-        String geoJsonString = "{\"type\":\"Point\",\"coordinates\":[10.0,20.0]}";
-
+        // Given an exception during parsing
         when(jsonParser.getCodec()).thenReturn(objectCodec);
-        when(objectCodec.readTree(jsonParser)).thenReturn(jsonNode);
-        when(jsonNode.toString()).thenReturn(geoJsonString);
+        when(objectCodec.readTree(jsonParser)).thenThrow(new IOException("Test exception"));
 
-        // When
-        Assertions.assertDoesNotThrow(() -> geoJsonJacksonDeserializer.deserialize(jsonParser, null));
+        // Expect IOException when deserializing
+        assertThrows(IOException.class, () -> geoJsonJacksonDeserializer.deserialize(jsonParser, deserializationContext));
     }
 }
