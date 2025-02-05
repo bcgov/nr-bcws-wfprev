@@ -81,10 +81,12 @@ public class ActivityBoundaryService implements CommonService {
                 .orElseThrow(() -> new EntityNotFoundException(MessageFormat.format(KEY_FORMAT, ACTIVITY_NOT_FOUND, activityGuid)));
 
         ActivityBoundaryEntity entity = activityBoundaryResourceAssembler.toEntity(resource);
-        entity.setActivityGuid(activityEntity.getActivityGuid());
+        if(entity != null && entity.getActivityGuid() != null) {
+            entity.setActivityGuid(activityEntity.getActivityGuid());
 
-        ActivityBoundaryEntity savedEntity = activityBoundaryRepository.save(entity);
-        return activityBoundaryResourceAssembler.toModel(savedEntity);
+            ActivityBoundaryEntity savedEntity = activityBoundaryRepository.save(entity);
+            return activityBoundaryResourceAssembler.toModel(savedEntity);
+        } else throw new IllegalArgumentException("ActivityBoundaryModel resource to be created cannot be null");
     }
 
     private void initializeNewActivityBoundary(ActivityBoundaryModel resource, String activityGuid) {
@@ -101,28 +103,33 @@ public class ActivityBoundaryService implements CommonService {
         activityService.getActivity(projectGuid, fiscalGuid, activityGuid);
 
         // Verify boundary exists
-        UUID boundaryGuid = UUID.fromString(resource.getActivityBoundaryGuid());
-        ActivityBoundaryEntity existingEntity = activityBoundaryRepository.findByActivityBoundaryGuid(boundaryGuid)
-                .orElseThrow(() -> new EntityNotFoundException(MessageFormat.format(KEY_FORMAT, BOUNDARY_NOT_FOUND, resource.getActivityBoundaryGuid())));
+        if(resource != null && resource.getActivityGuid() != null) {
+            UUID boundaryGuid = UUID.fromString(resource.getActivityBoundaryGuid());
+            ActivityBoundaryEntity existingEntity = activityBoundaryRepository.findByActivityBoundaryGuid(boundaryGuid)
+                    .orElseThrow(() -> new EntityNotFoundException(MessageFormat.format(KEY_FORMAT, BOUNDARY_NOT_FOUND, resource.getActivityBoundaryGuid())));
 
-        // Verify boundary belongs to the specified activity
-        if (!existingEntity.getActivityGuid().toString().equals(activityGuid)) {
-            throw new EntityNotFoundException(MessageFormat.format(EXTENDED_KEY_FORMAT, BOUNDARY, boundaryGuid, DOES_NOT_BELONG_ACTIVITY, activityGuid));
-        }
+            // Verify boundary belongs to the specified activity
+            if (!existingEntity.getActivityGuid().toString().equals(activityGuid)) {
+                throw new EntityNotFoundException(MessageFormat.format(EXTENDED_KEY_FORMAT, BOUNDARY, boundaryGuid, DOES_NOT_BELONG_ACTIVITY, activityGuid));
+            }
 
-        ActivityBoundaryEntity entity = activityBoundaryResourceAssembler.updateEntity(resource, existingEntity);
-        return saveActivityBoundary(entity);
+            ActivityBoundaryEntity entity = activityBoundaryResourceAssembler.updateEntity(resource, existingEntity);
+            return saveActivityBoundary(entity);
+        } else throw new IllegalArgumentException("ActivityBoundaryModel resource to be updated cannot be null");
     }
 
     private ActivityBoundaryModel saveActivityBoundary(ActivityBoundaryEntity entity) {
         try {
             ActivityBoundaryEntity savedEntity = activityBoundaryRepository.saveAndFlush(entity);
             return activityBoundaryResourceAssembler.toModel(savedEntity);
-        } catch (DataIntegrityViolationException | ConstraintViolationException e) {
-            log.error("Data integrity or constraint violation: {}", e.getMessage(), e);
+        } catch (IllegalArgumentException e) {
+            log.error("IllegalArgumentException for Activity Boundary: {}", e.getMessage(), e);
             throw e;
         } catch (EntityNotFoundException e) {
-            log.error("Invalid reference data: {}", e.getMessage(), e);
+            log.error("EntityNotFoundException for Activity Boundary: {}", e.getMessage(), e);
+            throw e;
+        } catch (Exception e) {
+            log.error("Exception for Activity Boundary: {}", e.getMessage(), e);
             throw e;
         }
     }

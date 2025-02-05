@@ -174,7 +174,7 @@ public class ActivityBoundaryController extends CommonController {
             log.error(" ### DataIntegrityViolationException while updating Activity Boundary", e);
             return badRequest();
         } catch (EntityNotFoundException e) {
-            log.warn(" ### Activity Boundary not found: {}", id, e);
+            log.warn(" ### Activity Boundary not found for update: {}", id, e);
             return notFound();
         } catch (Exception e) {
             log.error(" ### Error while updating Activity Boundary", e);
@@ -204,7 +204,7 @@ public class ActivityBoundaryController extends CommonController {
             activityBoundaryService.deleteActivityBoundary(projectGuid, projectPlanFiscalGuid, activityGuid, id);
             return ResponseEntity.noContent().build();
         } catch (EntityNotFoundException e) {
-            log.warn(" ### Activity Boundary not found: {}", id, e);
+            log.warn(" ### Activity Boundary for deletion not found: {}", id, e);
             return notFound();
         } catch (Exception e) {
             log.error(" ### Error while deleting Activity Boundary", e);

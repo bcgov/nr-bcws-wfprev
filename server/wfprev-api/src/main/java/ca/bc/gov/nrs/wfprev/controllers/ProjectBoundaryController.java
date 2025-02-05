@@ -1,12 +1,26 @@
 package ca.bc.gov.nrs.wfprev.controllers;
 
-import java.util.Date;
-import java.util.UUID;
-
+import ca.bc.gov.nrs.common.wfone.rest.resource.HeaderConstants;
+import ca.bc.gov.nrs.common.wfone.rest.resource.MessageListRsrc;
+import ca.bc.gov.nrs.wfone.common.service.api.ServiceException;
+import ca.bc.gov.nrs.wfprev.common.controllers.CommonController;
+import ca.bc.gov.nrs.wfprev.data.models.ProjectBoundaryModel;
+import ca.bc.gov.nrs.wfprev.services.ProjectBoundaryService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.extensions.Extension;
+import io.swagger.v3.oas.annotations.extensions.ExtensionProperty;
+import io.swagger.v3.oas.annotations.headers.Header;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.hateoas.CollectionModel;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,25 +31,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import ca.bc.gov.nrs.common.wfone.rest.resource.HeaderConstants;
-import ca.bc.gov.nrs.common.wfone.rest.resource.MessageListRsrc;
-import ca.bc.gov.nrs.wfone.common.service.api.ServiceException;
-import ca.bc.gov.nrs.wfprev.common.controllers.CommonController;
-import ca.bc.gov.nrs.wfprev.data.models.ProjectBoundaryModel;
-import ca.bc.gov.nrs.wfprev.services.ProjectBoundaryService;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.Parameters;
-import io.swagger.v3.oas.annotations.enums.ParameterIn;
-import io.swagger.v3.oas.annotations.extensions.Extension;
-import io.swagger.v3.oas.annotations.extensions.ExtensionProperty;
-import io.swagger.v3.oas.annotations.headers.Header;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import lombok.extern.slf4j.Slf4j;
+import java.util.Date;
+import java.util.UUID;
 
 @RestController
 @Slf4j
@@ -110,7 +107,6 @@ public class ProjectBoundaryController extends CommonController {
   @Parameter(name = HeaderConstants.IF_MATCH_HEADER, description = HeaderConstants.IF_MATCH_DESCRIPTION, required = true, schema = @Schema(implementation = String.class), in = ParameterIn.HEADER)
   public ResponseEntity<ProjectBoundaryModel> createProjectBoundary(@RequestBody ProjectBoundaryModel resource) {
     log.debug(" >> createProjectBoundary");
-    ResponseEntity<ProjectBoundaryModel> response;
 
     try {
       // set the default values for a newly created resource
@@ -158,7 +154,7 @@ public class ProjectBoundaryController extends CommonController {
       log.error(" ### DataIntegrityViolationException while updating Project Boundary", e);
       return badRequest();
     } catch (EntityNotFoundException e) {
-      log.warn(" ### Project Boundary not found: {}", id, e);
+      log.warn(" ### Project Boundary not found while updating: {}", id, e);
       return notFound();
     } catch (Exception e) {
       log.error(" ### Error while updating Project Boundary", e);
@@ -180,10 +176,10 @@ public class ProjectBoundaryController extends CommonController {
     log.debug(" >> deleteProjectBoundary");
 
     try {
-      ProjectBoundaryModel resource = projectBoundaryService.deleteProjectBoundary(id);
+      projectBoundaryService.deleteProjectBoundary(id);
       return ResponseEntity.noContent().build();
     } catch (EntityNotFoundException e) {
-      log.warn(" ### Project Boundary not found: {}", id, e);
+      log.warn(" ### Project Boundary for deletion not found: {}", id, e);
       return notFound();
     } catch (Exception e) {
       log.error(" ### Error while deleting Project Boundary", e);

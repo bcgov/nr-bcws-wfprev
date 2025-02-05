@@ -1,19 +1,12 @@
 package ca.bc.gov.nrs.wfprev.data.assemblers;
 
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
-
-import ca.bc.gov.nrs.wfprev.controllers.ActivityController;
-import ca.bc.gov.nrs.wfprev.data.entities.ActivityEntity;
-import ca.bc.gov.nrs.wfprev.data.models.ActivityModel;
+import ca.bc.gov.nrs.wfprev.controllers.ActivityBoundaryController;
+import ca.bc.gov.nrs.wfprev.data.entities.ActivityBoundaryEntity;
+import ca.bc.gov.nrs.wfprev.data.models.ActivityBoundaryModel;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
 import org.springframework.stereotype.Component;
-
-import ca.bc.gov.nrs.wfprev.controllers.ActivityBoundaryController;
-import ca.bc.gov.nrs.wfprev.data.entities.ActivityBoundaryEntity;
-import ca.bc.gov.nrs.wfprev.data.models.ActivityBoundaryModel;
 
 import java.util.UUID;
 
@@ -26,6 +19,10 @@ public class ActivityBoundaryResourceAssembler extends RepresentationModelAssemb
     }
 
     public ActivityBoundaryEntity toEntity(ActivityBoundaryModel resource) {
+        if(resource == null){
+            return null;
+        }
+
         ActivityBoundaryEntity entity = new ActivityBoundaryEntity();
 
         entity.setActivityBoundaryGuid(UUID.fromString(resource.getActivityBoundaryGuid()));

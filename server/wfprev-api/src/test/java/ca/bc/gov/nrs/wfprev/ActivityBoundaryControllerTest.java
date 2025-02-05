@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.hateoas.CollectionModel;
@@ -85,6 +86,18 @@ class ActivityBoundaryControllerTest {
 
     @Test
     @WithMockUser
+    void testGetAllActivityBoundaries_RuntimeException() throws Exception {
+        when(activityBoundaryService.getAllActivityBoundaries(anyString(), anyString(), anyString()))
+                .thenThrow(new RuntimeException("Unexpected error"));
+
+        mockMvc.perform(get("/projects/{projectId}/projectFiscals/{projectFiscalId}/activities/{activityId}/activityBoundary",
+                        UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID())
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isInternalServerError());
+    }
+
+    @Test
+    @WithMockUser
     void testGetActivityBoundary_Success() throws Exception {
         UUID boundaryId = UUID.randomUUID();
         ActivityBoundaryModel model = ActivityBoundaryModel.builder().activityBoundaryGuid(boundaryId.toString()).build();
@@ -115,6 +128,20 @@ class ActivityBoundaryControllerTest {
 
     @Test
     @WithMockUser
+    void testGetActivityBoundary_EntityNotFoundException() throws Exception {
+        UUID boundaryId = UUID.randomUUID();
+
+        when(activityBoundaryService.getActivityBoundary(anyString(), anyString(), anyString(), anyString()))
+                .thenThrow(new EntityNotFoundException("Boundary not found"));
+
+        mockMvc.perform(get("/projects/{projectId}/projectFiscals/{projectFiscalId}/activities/{activityId}/activityBoundary/{id}",
+                        UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), boundaryId)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @WithMockUser
     void testCreateActivityBoundary_Success() throws Exception {
         ActivityBoundaryModel requestModel = ActivityBoundaryModel.builder().activityBoundaryGuid(UUID.randomUUID().toString()).build();
 
@@ -127,6 +154,21 @@ class ActivityBoundaryControllerTest {
                         .content(gson.toJson(requestModel)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.activityBoundaryGuid").value(requestModel.getActivityBoundaryGuid()));
+    }
+
+    @Test
+    @WithMockUser
+    void testCreateActivityBoundary_DataIntegrityViolationException() throws Exception {
+        ActivityBoundaryModel requestModel = ActivityBoundaryModel.builder().activityBoundaryGuid(UUID.randomUUID().toString()).build();
+
+        when(activityBoundaryService.createActivityBoundary(anyString(), anyString(), anyString(), any(ActivityBoundaryModel.class)))
+                .thenThrow(new DataIntegrityViolationException("Data Integrity Violation"));
+
+        mockMvc.perform(post("/projects/{projectId}/projectFiscals/{projectFiscalId}/activities/{activityId}/activityBoundary",
+                        UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(gson.toJson(requestModel)))
+                .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -147,7 +189,7 @@ class ActivityBoundaryControllerTest {
 
     @Test
     @WithMockUser
-    void testUpdateActivityBoundary_NotFound() throws Exception {
+    void testUpdateActivityBoundary_EntityNotFoundException() throws Exception {
         UUID boundaryId = UUID.randomUUID();
         ActivityBoundaryModel requestModel = ActivityBoundaryModel.builder().activityBoundaryGuid(boundaryId.toString()).build();
 
@@ -159,6 +201,21 @@ class ActivityBoundaryControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(gson.toJson(requestModel)))
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @WithMockUser
+    void testUpdateActivityBoundary_DataIntegrityViolationException() throws Exception {
+        ActivityBoundaryModel requestModel = ActivityBoundaryModel.builder().activityBoundaryGuid(UUID.randomUUID().toString()).build();
+
+        when(activityBoundaryService.updateActivityBoundary(anyString(), anyString(), anyString(), any(ActivityBoundaryModel.class)))
+                .thenThrow(new DataIntegrityViolationException("Data Integrity Violation"));
+
+        mockMvc.perform(put("/projects/{projectId}/projectFiscals/{projectFiscalId}/activities/{activityId}/activityBoundary/{id}",
+                        UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), requestModel.getActivityBoundaryGuid())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(gson.toJson(requestModel)))
+                .andExpect(status().isBadRequest());
     }
 
     @Test
