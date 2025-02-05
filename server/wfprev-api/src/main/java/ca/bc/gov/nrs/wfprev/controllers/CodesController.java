@@ -64,6 +64,7 @@ public class CodesController extends CommonController {
                 case CodeTables.ACTIVITY_CATEGORY_CODE -> result = codesService.getAllActivityCategoryCodes();
                 case CodeTables.PLAN_FISCAL_STATUS_CODE -> result = codesService.getAllPlanFiscalStatusCodes();
                 case CodeTables.ANCILLARY_FUNDING_SOURCE_CODE -> result = codesService.getAllAncillaryFundingSourceCodes();
+                case CodeTables.FUNDING_SOURCE_CODE -> result = codesService.getAllFundingSourceCodes();
                 default -> {
                     log.error("Invalid code table: {}", codeTable);
                     return internalServerError();
@@ -145,6 +146,7 @@ public class CodesController extends CommonController {
             case CodeTables.ACTIVITY_CATEGORY_CODE -> codesService.getActivityCategoryCodeById(id);
             case CodeTables.PLAN_FISCAL_STATUS_CODE -> codesService.getPlanFiscalStatusCodeById(id);
             case CodeTables.ANCILLARY_FUNDING_SOURCE_CODE -> codesService.getAncillaryFundingSourceCodeById(id);
+            case CodeTables.FUNDING_SOURCE_CODE -> codesService.getFundingSourceCodeById(id);
             default -> null;
         };
     }
