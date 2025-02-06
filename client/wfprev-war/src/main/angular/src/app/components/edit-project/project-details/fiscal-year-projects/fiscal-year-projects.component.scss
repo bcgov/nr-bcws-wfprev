@@ -8,6 +8,7 @@ mat-expansion-panel {
     }
 
     .project-title {
+        font-family: var(--wf-font-family-main) !important;
         background-color: inherit;
         font-weight: bold;
         display: flex;
