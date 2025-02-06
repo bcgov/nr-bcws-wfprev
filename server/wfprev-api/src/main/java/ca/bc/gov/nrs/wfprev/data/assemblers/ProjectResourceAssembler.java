@@ -119,7 +119,7 @@ public class ProjectResourceAssembler extends RepresentationModelAssemblerSuppor
             resource.setSecondaryObjectiveRationale(entity.getSecondaryObjectiveRationale());
         }
         resource.setProgramAreaGuid(entity.getProgramAreaGuid().toString());
-        resource.setPrimaryFundingSourceGuid(entity.getPrimaryFundingSourceGuid().toString());
+        resource.setPrimaryFundingSourceGuid(entity.getPrimaryFundingSourceGuid() != null ? entity.getPrimaryFundingSourceGuid().toString() : null);
         resource.setForestRegionOrgUnitId(entity.getForestRegionOrgUnitId());
         resource.setForestDistrictOrgUnitId(entity.getForestDistrictOrgUnitId());
         resource.setFireCentreOrgUnitId(entity.getFireCentreOrgUnitId());
