@@ -118,7 +118,6 @@
     mat-expansion-panel {
       border-bottom: 1px solid #C6C8CB;
       margin: 0px !important;
-
       ::ng-deep .mat-expansion-indicator {
         display: none !important; 
       }
@@ -141,6 +140,7 @@
       }
 
       .project-title {
+        font-family: var(--wf-font-family-main) !important;
         background-color: inherit;
         font-weight: bold;
         display: flex;
@@ -168,6 +168,7 @@
       }
 
       .detail {
+        font-family: var(--wf-font-family-main) !important;
         display: flex;
         flex-direction: column; /* Stack the label and value vertically */
         gap: 2px; /* Spacing between label and value */
@@ -219,6 +220,7 @@
       }
 
       .action-item {
+        font-family: var(--wf-font-family-main) !important;
         display: flex;
         flex-direction: column;
         align-items: center;
