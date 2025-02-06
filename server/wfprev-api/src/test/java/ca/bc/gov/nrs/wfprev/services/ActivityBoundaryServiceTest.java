@@ -77,6 +77,20 @@ class ActivityBoundaryServiceTest {
     }
 
     @Test
+    void testGetAllActivityBoundaries_InvalidGuidFormat() {
+        // GIVEN an invalid activityGuid format
+        String projectGuid = "project-guid";
+        String fiscalGuid = "fiscal-guid";
+        String invalidActivityGuid = "invalid-uuid"; // Not a valid UUID
+
+        // WHEN / THEN
+        ServiceException thrown = assertThrows(ServiceException.class, () ->
+                activityBoundaryService.getAllActivityBoundaries(projectGuid, fiscalGuid, invalidActivityGuid));
+
+        assertTrue(thrown.getMessage().contains("Invalid GUID format"));
+    }
+
+    @Test
     void testCreateActivityBoundary_Success() {
         // GIVEN
         String activityGuid = "789e1234-e89b-12d3-a456-426614174002";
@@ -109,6 +123,39 @@ class ActivityBoundaryServiceTest {
         verify(activityBoundaryRepository).save(any(ActivityBoundaryEntity.class));
     }
 
+    @Test
+    void testCreateActivityBoundary_NullEntity() {
+        // GIVEN
+        String projectGuid = "project-guid";
+        String fiscalGuid = "fiscal-guid";
+        String activityGuid = "789e1234-e89b-12d3-a456-426614174002"; // Valid UUID
+        ActivityBoundaryModel resource = new ActivityBoundaryModel();
+
+        when(activityService.getActivity(any(), any(), eq(activityGuid))).thenReturn(new ActivityModel());
+        when(activityRepository.findById(UUID.fromString(activityGuid)))
+                .thenReturn(Optional.of(new ActivityEntity()));
+        when(activityBoundaryResourceAssembler.toEntity(resource)).thenReturn(null); // Simulate failure
+
+        // WHEN / THEN
+        IllegalArgumentException thrown = assertThrows(IllegalArgumentException.class, () ->
+                activityBoundaryService.createActivityBoundary(projectGuid, fiscalGuid, activityGuid, resource));
+
+        assertTrue(thrown.getMessage().contains("ActivityBoundaryModel resource to be created cannot be null"));
+    }
+
+
+    @Test
+    void testCreateActivityBoundary_InvalidGuidFormat() {
+        // GIVEN
+        String projectGuid = "project-guid";
+        String fiscalGuid = "fiscal-guid";
+        String invalidActivityGuid = "invalid-uuid"; // Not a valid UUID
+        ActivityBoundaryModel resource = new ActivityBoundaryModel();
+
+        // WHEN / THEN
+        assertThrows(IllegalArgumentException.class, () ->
+                activityBoundaryService.createActivityBoundary(projectGuid, fiscalGuid, invalidActivityGuid, resource));
+    }
 
     @Test
     void testUpdateActivityBoundary_Success() {
@@ -163,6 +210,50 @@ class ActivityBoundaryServiceTest {
         assertTrue(thrown.getMessage().contains("Activity Boundary not found"));
     }
 
+    @Test
+    void testSaveActivityBoundary_IllegalArgumentException() {
+        // GIVEN
+        ActivityBoundaryEntity boundaryEntity = new ActivityBoundaryEntity();
+
+        when(activityBoundaryRepository.saveAndFlush(any(ActivityBoundaryEntity.class)))
+                .thenThrow(new IllegalArgumentException("Invalid argument"));
+
+        // WHEN / THEN
+        IllegalArgumentException thrown = assertThrows(IllegalArgumentException.class, () ->
+                activityBoundaryService.saveActivityBoundary(boundaryEntity));
+
+        assertTrue(thrown.getMessage().contains("Invalid argument"));
+    }
+
+    @Test
+    void testSaveActivityBoundary_EntityNotFoundException() {
+        // GIVEN
+        ActivityBoundaryEntity boundaryEntity = new ActivityBoundaryEntity();
+
+        when(activityBoundaryRepository.saveAndFlush(any(ActivityBoundaryEntity.class)))
+                .thenThrow(new EntityNotFoundException("Entity not found"));
+
+        // WHEN / THEN
+        EntityNotFoundException thrown = assertThrows(EntityNotFoundException.class, () ->
+                activityBoundaryService.saveActivityBoundary(boundaryEntity));
+
+        assertTrue(thrown.getMessage().contains("Entity not found"));
+    }
+
+    @Test
+    void testSaveActivityBoundary_GenericException() {
+        // GIVEN
+        ActivityBoundaryEntity boundaryEntity = new ActivityBoundaryEntity();
+
+        when(activityBoundaryRepository.saveAndFlush(any(ActivityBoundaryEntity.class)))
+                .thenThrow(new RuntimeException("Unexpected error"));
+
+        // WHEN / THEN
+        RuntimeException thrown = assertThrows(RuntimeException.class, () ->
+                activityBoundaryService.saveActivityBoundary(boundaryEntity));
+
+        assertTrue(thrown.getMessage().contains("Unexpected error"));
+    }
 
     @Test
     void testDeleteActivityBoundary_Success() {

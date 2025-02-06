@@ -118,7 +118,7 @@ public class ActivityBoundaryService implements CommonService {
         } else throw new IllegalArgumentException("ActivityBoundaryModel resource to be updated cannot be null");
     }
 
-    private ActivityBoundaryModel saveActivityBoundary(ActivityBoundaryEntity entity) {
+    public ActivityBoundaryModel saveActivityBoundary(ActivityBoundaryEntity entity) {
         try {
             ActivityBoundaryEntity savedEntity = activityBoundaryRepository.saveAndFlush(entity);
             return activityBoundaryResourceAssembler.toModel(savedEntity);

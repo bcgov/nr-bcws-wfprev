@@ -98,6 +98,18 @@ class ActivityBoundaryControllerTest {
 
     @Test
     @WithMockUser
+    void testGetAllActivityBoundaries_Exception() throws Exception {
+        when(activityBoundaryService.getAllActivityBoundaries(anyString(), anyString(), anyString()))
+                .thenThrow(new RuntimeException("Runtime exception"));
+
+        mockMvc.perform(get("/projects/{projectId}/projectFiscals/{projectFiscalId}/activities/{activityId}/activityBoundary",
+                        UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID())
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isInternalServerError());
+    }
+
+    @Test
+    @WithMockUser
     void testGetActivityBoundary_Success() throws Exception {
         UUID boundaryId = UUID.randomUUID();
         ActivityBoundaryModel model = ActivityBoundaryModel.builder().activityBoundaryGuid(boundaryId.toString()).build();
@@ -110,6 +122,20 @@ class ActivityBoundaryControllerTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.activityBoundaryGuid").value(model.getActivityBoundaryGuid()));
+    }
+
+    @Test
+    @WithMockUser
+    void testGetActivityBoundary_Exception() throws Exception {
+        UUID boundaryId = UUID.randomUUID();
+
+        when(activityBoundaryService.getActivityBoundary(anyString(), anyString(), anyString(), anyString()))
+                .thenThrow(new RuntimeException("Runtime exception"));
+
+        mockMvc.perform(get("/projects/{projectId}/projectFiscals/{projectFiscalId}/activities/{activityId}/activityBoundary/{id}",
+                        UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), boundaryId)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isInternalServerError());
     }
 
     @Test
@@ -173,6 +199,21 @@ class ActivityBoundaryControllerTest {
 
     @Test
     @WithMockUser
+    void testCreateActivityBoundary_Exception() throws Exception {
+        ActivityBoundaryModel requestModel = ActivityBoundaryModel.builder().activityBoundaryGuid(UUID.randomUUID().toString()).build();
+
+        when(activityBoundaryService.createActivityBoundary(anyString(), anyString(), anyString(), any(ActivityBoundaryModel.class)))
+                .thenThrow(new RuntimeException("Runtime exception"));
+
+        mockMvc.perform(post("/projects/{projectId}/projectFiscals/{projectFiscalId}/activities/{activityId}/activityBoundary",
+                        UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(gson.toJson(requestModel)))
+                .andExpect(status().isInternalServerError());
+    }
+
+    @Test
+    @WithMockUser
     void testUpdateActivityBoundary_Success() throws Exception {
         ActivityBoundaryModel requestModel = ActivityBoundaryModel.builder().activityBoundaryGuid(UUID.randomUUID().toString()).build();
 
@@ -205,6 +246,21 @@ class ActivityBoundaryControllerTest {
 
     @Test
     @WithMockUser
+    void testUpdateActivityBoundary_Exception() throws Exception {
+        ActivityBoundaryModel requestModel = ActivityBoundaryModel.builder().activityBoundaryGuid(UUID.randomUUID().toString()).build();
+
+        when(activityBoundaryService.updateActivityBoundary(anyString(), anyString(), anyString(), any(ActivityBoundaryModel.class)))
+                .thenThrow(new RuntimeException("Runtime exception"));
+
+        mockMvc.perform(put("/projects/{projectId}/projectFiscals/{projectFiscalId}/activities/{activityId}/activityBoundary/{id}",
+                        UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), requestModel.getActivityBoundaryGuid())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(gson.toJson(requestModel)))
+                .andExpect(status().isInternalServerError());
+    }
+
+    @Test
+    @WithMockUser
     void testUpdateActivityBoundary_DataIntegrityViolationException() throws Exception {
         ActivityBoundaryModel requestModel = ActivityBoundaryModel.builder().activityBoundaryGuid(UUID.randomUUID().toString()).build();
 
@@ -231,4 +287,5 @@ class ActivityBoundaryControllerTest {
 
         verify(activityBoundaryService).deleteActivityBoundary(anyString(), anyString(), anyString(), eq(boundaryId.toString()));
     }
+
 }
