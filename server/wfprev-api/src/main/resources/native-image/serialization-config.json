@@ -13,6 +13,8 @@
   { "name": "ca.bc.gov.nrs.wfprev.data.models.ContractPhaseCodeModel" },
   { "name": "ca.bc.gov.nrs.wfprev.data.models.ProjectFiscalModel"},
   { "name": "ca.bc.gov.nrs.wfprev.data.models.ActivityModel" },
+  { "name": "ca.bc.gov.nrs.wfprev.data.models.SourceObjectNameCodeModel" },
+  { "name": "ca.bc.gov.nrs.wfprev.data.models.AttachmentContentTypeCodeModel" },
 
   { "name": "ca.bc.gov.nrs.wfprev.data.entities.ForestAreaCodeEntity" },
   { "name": "ca.bc.gov.nrs.wfprev.data.entities.GeneralScopeCodeEntity" },
@@ -25,6 +27,8 @@
   { "name": "ca.bc.gov.nrs.wfprev.data.entities.RiskRatingCodeCodeEntity" },
   { "name": "ca.bc.gov.nrs.wfprev.data.entities.ContractPhaseCodeEntity" },
   { "name": "ca.bc.gov.nrs.wfprev.data.entities.ActivityEntity" },
+  { "name": "ca.bc.gov.nrs.wfprev.data.entities.SourceObjectNameCodeEntity" },
+  { "name": "ca.bc.gov.nrs.wfprev.data.entities.AttachmentContentTypeCodeEntity" },
   { "name": "org.springframework.hateoas.RepresentationModel"},
   { "name": "org.springframework.hateoas.Link"},
   { "name": "org.springframework.hateoas.Links"},
