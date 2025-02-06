@@ -973,6 +973,21 @@
     "allDeclaredFields": true
   },
   {
+    "name": "ca.bc.gov.nrs.wfprev.data.entities.ActivityBoundaryEntity",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true
+  },
+  {
+    "name": "ca.bc.gov.nrs.wfprev.data.models.ActivityBoundaryModel",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
     "name": "ca.bc.gov.nrs.wfprev.data.entities.FundingSourceCodeEntity",
     "allDeclaredConstructors": true,
     "allPublicConstructors": true,
