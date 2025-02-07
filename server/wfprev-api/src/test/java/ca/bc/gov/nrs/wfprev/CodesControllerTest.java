@@ -3,7 +3,21 @@ package ca.bc.gov.nrs.wfprev;
 import ca.bc.gov.nrs.wfone.common.service.api.ServiceException;
 import ca.bc.gov.nrs.wfprev.common.enums.CodeTables;
 import ca.bc.gov.nrs.wfprev.controllers.CodesController;
-import ca.bc.gov.nrs.wfprev.data.models.*;
+import ca.bc.gov.nrs.wfprev.data.models.ActivityCategoryCodeModel;
+import ca.bc.gov.nrs.wfprev.data.models.ActivityStatusCodeModel;
+import ca.bc.gov.nrs.wfprev.data.models.AncillaryFundingSourceCodeModel;
+import ca.bc.gov.nrs.wfprev.data.models.AttachmentContentTypeCodeModel;
+import ca.bc.gov.nrs.wfprev.data.models.BCParksRegionCodeModel;
+import ca.bc.gov.nrs.wfprev.data.models.BCParksSectionCodeModel;
+import ca.bc.gov.nrs.wfprev.data.models.ContractPhaseCodeModel;
+import ca.bc.gov.nrs.wfprev.data.models.ForestAreaCodeModel;
+import ca.bc.gov.nrs.wfprev.data.models.FundingSourceCodeModel;
+import ca.bc.gov.nrs.wfprev.data.models.GeneralScopeCodeModel;
+import ca.bc.gov.nrs.wfprev.data.models.ObjectiveTypeCodeModel;
+import ca.bc.gov.nrs.wfprev.data.models.PlanFiscalStatusCodeModel;
+import ca.bc.gov.nrs.wfprev.data.models.ProjectTypeCodeModel;
+import ca.bc.gov.nrs.wfprev.data.models.RiskRatingCodeModel;
+import ca.bc.gov.nrs.wfprev.data.models.SourceObjectNameCodeModel;
 import ca.bc.gov.nrs.wfprev.services.CodesService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,6 +69,7 @@ class CodesControllerTest {
         testGetActivityCategoryCodes();
         testGetPlanFiscalStatusCodes();
         testGetAncillaryFundingSourceCodes();
+        testGetFundingSourceCodes();
     }
 
     void testGetForestAreaCodes() throws Exception {
@@ -387,9 +402,29 @@ class CodesControllerTest {
         FundingSourceCodeModel fundingSourceCode = new FundingSourceCodeModel();
         fundingSourceCode.setFundingSourceGuid(afsID);
 
-        when(codesService.getFundingSourceCodeById(afsID)).thenReturn(fundingSourceCode);
+        when(codesService.getFundingSourceCodeById(fsID)).thenReturn(fundingSourceCode);
 
-        mockMvc.perform(get("/codes/{codeTable}/{id}", CodeTables.FUNDING_SOURCE_CODE, afsID)
+        mockMvc.perform(get("/codes/{codeTable}/{id}", CodeTables.FUNDING_SOURCE_CODE, fsID)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        String soncID = UUID.randomUUID().toString();
+        SourceObjectNameCodeModel sourceObjectNameCode = new SourceObjectNameCodeModel();
+        sourceObjectNameCode.setSourceObjectNameCode(soncID);
+
+        when(codesService.getSourceObjectNameCodeById(soncID)).thenReturn(sourceObjectNameCode);
+
+        mockMvc.perform(get("/codes/{codeTable}/{id}", CodeTables.SOURCE_OBJECT_NAME_CODE, soncID)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        String actcID = UUID.randomUUID().toString();
+        AttachmentContentTypeCodeModel attachmentContentTypeCode = new AttachmentContentTypeCodeModel();
+        attachmentContentTypeCode.setAttachmentContentTypeCode(actcID);
+
+        when(codesService.getAttachmentContentTypeCodeById(actcID)).thenReturn(attachmentContentTypeCode);
+
+        mockMvc.perform(get("/codes/{codeTable}/{id}", CodeTables.ATTACHMENT_CONTENT_TYPE_CODE, actcID)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
@@ -409,6 +444,8 @@ class CodesControllerTest {
         when(codesService.getPlanFiscalStatusCodeById(nonExistentId)).thenReturn(null);
         when(codesService.getAncillaryFundingSourceCodeById(nonExistentId)).thenReturn(null);
         when(codesService.getFundingSourceCodeById(nonExistentId)).thenReturn(null);
+        when(codesService.getSourceObjectNameCodeById(nonExistentId)).thenReturn(null);
+        when(codesService.getAttachmentContentTypeCodeById(nonExistentId)).thenReturn(null);
 
         // Test valid code tables with non-existent ID
         mockMvc.perform(get("/codes/{codeTable}/{id}", "forestAreaCodes", nonExistentId)
@@ -452,6 +489,16 @@ class CodesControllerTest {
                 .andExpect(status().isNotFound());
 
         mockMvc.perform(get("/codes/{codeTable}/{id}", "fundingSourceCodes", nonExistentId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("If-Match", "\"1\""))
+                .andExpect(status().isNotFound());
+
+        mockMvc.perform(get("/codes/{codeTable}/{id}", "sourceObjectNameCodes", nonExistentId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("If-Match", "\"1\""))
+                .andExpect(status().isNotFound());
+
+        mockMvc.perform(get("/codes/{codeTable}/{id}", "attachmentContentTypeCodes", nonExistentId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("If-Match", "\"1\""))
                 .andExpect(status().isNotFound());
@@ -628,6 +675,29 @@ class CodesControllerTest {
         verify(codesService, times(1)).getAllForestDistrictCodes();
         verifyNoMoreInteractions(codesService);
     }
+
+    @Test
+    @WithMockUser
+    void testGetSourceObjectNameCodes() throws Exception {
+        when(codesService.getAllSourceObjectNameCodes()).thenReturn(CollectionModel.empty());
+        mockMvc.perform(get("/codes/{codeTable}", CodeTables.SOURCE_OBJECT_NAME_CODE)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+        verify(codesService, times(1)).getAllSourceObjectNameCodes();
+        verifyNoMoreInteractions(codesService);
+    }
+
+    @Test
+    @WithMockUser
+    void testGetAttachmentContentTypeCodes() throws Exception {
+        when(codesService.getAllAttachmentContentTypeCodes()).thenReturn(CollectionModel.empty());
+        mockMvc.perform(get("/codes/{codeTable}", CodeTables.ATTACHMENT_CONTENT_TYPE_CODE)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+        verify(codesService, times(1)).getAllAttachmentContentTypeCodes();
+        verifyNoMoreInteractions(codesService);
+    }
+
 
     @Test
     @WithMockUser
