@@ -1,6 +1,5 @@
 package ca.bc.gov.nrs.wfprev;
 
-import ca.bc.gov.nrs.wfprev.common.exceptions.ServiceException;
 import ca.bc.gov.nrs.wfprev.common.serializers.GeoJsonJacksonDeserializer;
 import ca.bc.gov.nrs.wfprev.common.serializers.GeoJsonJacksonSerializer;
 import ca.bc.gov.nrs.wfprev.controllers.ProjectBoundaryController;
@@ -9,10 +8,10 @@ import ca.bc.gov.nrs.wfprev.services.ProjectBoundaryService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import jakarta.persistence.EntityNotFoundException;
-import org.geolatte.geom.Geometry;
 import org.geolatte.geom.json.GeolatteGeomModule;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.postgresql.geometric.PGpolygon;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -57,8 +56,8 @@ class ProjectBoundaryControllerTest {
     void setup() {
         objectMapper = new ObjectMapper();
         SimpleModule geoJsonModule = new SimpleModule();
-        geoJsonModule.addSerializer(Geometry.class, new GeoJsonJacksonSerializer());
-        geoJsonModule.addDeserializer(Geometry.class, new GeoJsonJacksonDeserializer());
+        geoJsonModule.addSerializer(PGpolygon.class, new GeoJsonJacksonSerializer());
+        geoJsonModule.addDeserializer(PGpolygon.class, new GeoJsonJacksonDeserializer());
         objectMapper.registerModule(geoJsonModule);
         objectMapper.registerModule(new GeolatteGeomModule());
     }

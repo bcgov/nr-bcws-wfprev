@@ -1,89 +1,118 @@
 package ca.bc.gov.nrs.wfprev.common.serializers;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.ObjectCodec;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.geolatte.geom.Geometry;
-import org.geolatte.geom.Point;
-import org.geolatte.geom.json.GeolatteGeomModule;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.postgresql.geometric.PGpolygon;
 
-import java.io.IOException;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-
-@ExtendWith(MockitoExtension.class)
 class GeoJsonJacksonDeserializerTest {
 
-    @Mock
-    private JsonParser jsonParser;
-
-    @Mock
-    private ObjectCodec objectCodec;
-
-    @Mock
-    private JsonNode jsonNode;
-
-    @Mock
-    private DeserializationContext deserializationContext;
-
-    @InjectMocks
-    private GeoJsonJacksonDeserializer geoJsonJacksonDeserializer;
-
-    private ObjectMapper geolatteMapper;
+    private ObjectMapper objectMapper;
 
     @BeforeEach
-    void setup() {
-        geolatteMapper = new ObjectMapper();
-        geolatteMapper.registerModule(new GeolatteGeomModule());
+    void setUp() {
+        objectMapper = new ObjectMapper();
+        SimpleModule module = new SimpleModule();
+        module.addDeserializer(PGpolygon.class, new GeoJsonJacksonDeserializer());
+        objectMapper.registerModule(module);
     }
 
     @Test
-    void testDeserialize_Success() throws IOException {
-        // Given a valid GeoJSON Point
-        String geoJsonString = "{\"type\":\"Point\",\"coordinates\":[10.0,20.0]}";
-        jsonNode = geolatteMapper.readTree(geoJsonString);
-        Geometry expectedGeometry = geolatteMapper.treeToValue(jsonNode, Point.class);
+    void testValidPolygonDeserialization() throws JsonProcessingException {
+        String validGeoJson = """
+        {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [-125.0000, 50.0000],
+              [-125.0001, 50.0001],
+              [-125.0002, 50.0000],
+              [-125.0000, 50.0000]
+            ]
+          ]
+        }
+        """;
 
-        when(jsonParser.getCodec()).thenReturn(objectCodec);
-        when(objectCodec.readTree(jsonParser)).thenReturn(jsonNode);
-
-        // When
-        Geometry result = geoJsonJacksonDeserializer.deserialize(jsonParser, deserializationContext);
-
-        // Then
-        assertNotNull(result);
-        assertEquals(expectedGeometry, result);
+        PGpolygon polygon = objectMapper.readValue(validGeoJson, PGpolygon.class);
+        assertNotNull(polygon);
+        assertEquals("((-125.0,50.0),(-125.0001,50.0001),(-125.0002,50.0),(-125.0,50.0))", polygon.toString());
     }
 
     @Test
-    void testDeserialize_InvalidGeoJson() throws IOException {
-        // Given an invalid GeoJSON structure
-        String invalidGeoJsonString = "{\"type\":\"InvalidType\",\"coordinates\":[10.0,20.0]}";
-        jsonNode = geolatteMapper.readTree(invalidGeoJsonString);
+    void testMissingTypeField() {
+        String missingTypeGeoJson = """
+        {
+          "coordinates": [
+            [
+              [-125.0000, 50.0000],
+              [-125.0001, 50.0001],
+              [-125.0002, 50.0000],
+              [-125.0000, 50.0000]
+            ]
+          ]
+        }
+        """;
 
-        when(jsonParser.getCodec()).thenReturn(objectCodec);
-        when(objectCodec.readTree(jsonParser)).thenReturn(jsonNode);
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            objectMapper.readValue(missingTypeGeoJson, PGpolygon.class);
+        });
 
-        // Expect IOException because it cannot map to a valid Geometry
-        assertThrows(IOException.class, () -> geoJsonJacksonDeserializer.deserialize(jsonParser, deserializationContext));
+        assertTrue(exception.getMessage().contains("Missing 'type' field in GeoJSON"));
     }
 
     @Test
-    void testDeserialize_RuntimeException() throws IOException {
-        // Given an exception during parsing
-        when(jsonParser.getCodec()).thenReturn(objectCodec);
-        when(objectCodec.readTree(jsonParser)).thenThrow(new IOException("Test exception"));
+    void testInvalidTypeField() {
+        String invalidTypeGeoJson = """
+        {
+          "type": "Point",
+          "coordinates": [
+            [-125.0000, 50.0000]
+          ]
+        }
+        """;
 
-        // Expect IOException when deserializing
-        assertThrows(IOException.class, () -> geoJsonJacksonDeserializer.deserialize(jsonParser, deserializationContext));
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            objectMapper.readValue(invalidTypeGeoJson, PGpolygon.class);
+        });
+
+        assertTrue(exception.getMessage().contains("Invalid GeoJSON type"));
+    }
+
+    @Test
+    void testMissingCoordinatesField() {
+        String missingCoordinatesGeoJson = """
+        {
+          "type": "Polygon"
+        }
+        """;
+
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            objectMapper.readValue(missingCoordinatesGeoJson, PGpolygon.class);
+        });
+
+        assertTrue(exception.getMessage().contains("Invalid or missing 'coordinates' field"));
+    }
+
+    @Test
+    void testInvalidCoordinatesFormat() {
+        String invalidCoordinatesGeoJson = """
+        {
+          "type": "Polygon",
+          "coordinates": "INVALID"
+        }
+        """;
+
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            objectMapper.readValue(invalidCoordinatesGeoJson, PGpolygon.class);
+        });
+
+        assertTrue(exception.getMessage().contains("Invalid or missing 'coordinates' field"));
     }
 }

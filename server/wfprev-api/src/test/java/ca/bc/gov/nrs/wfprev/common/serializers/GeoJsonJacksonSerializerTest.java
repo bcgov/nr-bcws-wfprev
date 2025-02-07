@@ -2,61 +2,73 @@ package ca.bc.gov.nrs.wfprev.common.serializers;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
-import org.geolatte.geom.Polygon;
-import org.geolatte.geom.crs.CoordinateReferenceSystems;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.postgresql.geometric.PGpoint;
+import org.postgresql.geometric.PGpolygon;
 
 import java.io.IOException;
 
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-@ExtendWith(MockitoExtension.class)
 class GeoJsonJacksonSerializerTest {
 
-    @Mock
-    private JsonGenerator jsonGenerator;
-
-    @Mock
-    private SerializerProvider serializerProvider;
-
     private GeoJsonJacksonSerializer serializer;
+    private JsonGenerator jsonGenerator;
+    private SerializerProvider serializerProvider;
 
     @BeforeEach
     void setUp() {
         serializer = new GeoJsonJacksonSerializer();
+        jsonGenerator = mock(JsonGenerator.class);
+        serializerProvider = mock(SerializerProvider.class);
     }
 
     @Test
-    void serialize_NullGeometry_WritesNull() throws IOException {
-        // WHEN
-        serializer.serialize(null, jsonGenerator, serializerProvider);
+    void testSerialize_ValidPolygon() throws IOException {
+        // Create a mock PGpolygon
+        PGpoint[] points = {
+                new PGpoint(-123.3656, 48.4284),
+                new PGpoint(-123.3657, 48.4285),
+                new PGpoint(-123.3658, 48.4284),
+                new PGpoint(-123.3656, 48.4284) // Closing the ring
+        };
+        PGpolygon polygon = new PGpolygon(points);
 
-        // THEN
+        // Serialize the polygon
+        serializer.serialize(polygon, jsonGenerator, serializerProvider);
+
+        // Verify JSON output structure
+        verify(jsonGenerator).writeStartObject();
+        verify(jsonGenerator).writeStringField("type", "Polygon");
+
+        verify(jsonGenerator).writeFieldName("coordinates");
+
+        verify(jsonGenerator).writeEndObject();
+    }
+
+    @Test
+    void testSerialize_NullPolygon() throws IOException {
+        serializer.serialize(null, jsonGenerator, serializerProvider);
         verify(jsonGenerator).writeNull();
     }
 
     @Test
-    void serialize_ValidGeometry_WritesGeoJson() throws IOException {
-        // GIVEN: A simple Polygon
-        Polygon polygon = org.geolatte.geom.builder.DSL.polygon(
-                CoordinateReferenceSystems.WGS84,
-                org.geolatte.geom.builder.DSL.ring(
-                        org.geolatte.geom.builder.DSL.g(0.0, 0.0),
-                        org.geolatte.geom.builder.DSL.g(1.0, 0.0),
-                        org.geolatte.geom.builder.DSL.g(1.0, 1.0),
-                        org.geolatte.geom.builder.DSL.g(0.0, 1.0),
-                        org.geolatte.geom.builder.DSL.g(0.0, 0.0) // Close the ring
-                )
-        );
+    void testSerialize_ExceptionHandling() throws IOException {
+        // Create a mock PGpolygon
+        PGpoint[] points = {new PGpoint(-123.3656, 48.4284)};
+        PGpolygon polygon = new PGpolygon(points);
 
-        // WHEN: Call serialize method
-        serializer.serialize(polygon, jsonGenerator, serializerProvider);
+        doThrow(new IOException("Test Exception")).when(jsonGenerator).writeStartObject();
 
-        // THEN: Verify that writeObject was called on jsonGenerator
-        verify(jsonGenerator).writeObject(org.mockito.ArgumentMatchers.any());
+        try {
+            serializer.serialize(polygon, jsonGenerator, serializerProvider);
+        } catch (IOException e) {
+            // Expected exception
+        }
+
+        verify(jsonGenerator).writeStartObject();
     }
 }

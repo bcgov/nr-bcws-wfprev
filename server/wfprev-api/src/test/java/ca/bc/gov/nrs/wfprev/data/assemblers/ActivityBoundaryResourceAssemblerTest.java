@@ -2,10 +2,11 @@ package ca.bc.gov.nrs.wfprev.data.assemblers;
 
 import ca.bc.gov.nrs.wfprev.data.entities.ActivityBoundaryEntity;
 import ca.bc.gov.nrs.wfprev.data.models.ActivityBoundaryModel;
-import org.geolatte.geom.codec.Wkt;
 import org.junit.jupiter.api.Test;
+import org.postgresql.geometric.PGpolygon;
 
 import java.math.BigDecimal;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
@@ -20,7 +21,7 @@ class ActivityBoundaryResourceAssemblerTest {
     ActivityBoundaryResourceAssembler assembler = new ActivityBoundaryResourceAssembler();
 
     @Test
-    void testToModel_MapsEntityToModel() {
+    void testToModel_MapsEntityToModel() throws SQLException {
         // Arrange
         ActivityBoundaryEntity entity = new ActivityBoundaryEntity();
         entity.setActivityBoundaryGuid(UUID.randomUUID());
@@ -33,7 +34,7 @@ class ActivityBoundaryResourceAssemblerTest {
         entity.setCollectorName("test_user");
         entity.setBoundarySizeHa(BigDecimal.valueOf(100.0000));
         entity.setBoundaryComment("Initial test activity boundary creation");
-        entity.setGeometry(Wkt.fromWkt("POLYGON((-123.3656 48.4284, -123.3657 48.4285, -123.3658 48.4284, -123.3656 48.4284))"));
+        entity.setGeometry(new PGpolygon("((-123.3656,48.4284),(-123.3657,48.4285),(-123.3658,48.4284),(-123.3656,48.4284))"));
 
         // Act
         ActivityBoundaryModel model = assembler.toModel(entity);
@@ -54,7 +55,7 @@ class ActivityBoundaryResourceAssemblerTest {
     }
 
     @Test
-    void testToEntity_MapsModelToEntity() {
+    void testToEntity_MapsModelToEntity() throws SQLException {
         // Arrange
         ActivityBoundaryModel model = new ActivityBoundaryModel();
         model.setActivityBoundaryGuid(UUID.randomUUID().toString());
@@ -67,7 +68,7 @@ class ActivityBoundaryResourceAssemblerTest {
         model.setCollectorName("test_user");
         model.setBoundarySizeHa(BigDecimal.valueOf(100.0000));
         model.setBoundaryComment("Initial test activity boundary creation");
-        model.setGeometry(Wkt.fromWkt("POLYGON((-123.3656 48.4284, -123.3657 48.4285, -123.3658 48.4284, -123.3656 48.4284))"));
+        model.setGeometry(new PGpolygon("((-123.3656,48.4284),(-123.3657,48.4285),(-123.3658,48.4284),(-123.3656,48.4284))"));
 
         // Act
         ActivityBoundaryEntity entity = assembler.toEntity(model);

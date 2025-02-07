@@ -4,12 +4,12 @@ import ca.bc.gov.nrs.wfprev.common.entities.CommonModel;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonRootName;
-import org.geolatte.geom.Geometry;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.postgresql.geometric.PGpolygon;
 import org.springframework.hateoas.server.core.Relation;
 
 import java.math.BigDecimal;
@@ -34,5 +34,5 @@ public class ActivityBoundaryModel extends CommonModel<ActivityBoundaryModel> {
     private String collectorName;
     private BigDecimal boundarySizeHa;
     private String boundaryComment;
-    private Geometry geometry;
+    private PGpolygon geometry;
 }

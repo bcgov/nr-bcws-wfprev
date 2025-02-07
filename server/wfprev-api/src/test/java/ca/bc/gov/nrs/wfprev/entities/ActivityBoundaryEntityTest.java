@@ -5,19 +5,17 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
-import org.geolatte.geom.Geometry;
-import org.geolatte.geom.builder.DSL;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.postgresql.geometric.PGpolygon;
 
 import java.math.BigDecimal;
+import java.sql.SQLException;
 import java.util.Date;
 import java.util.Set;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.geolatte.geom.builder.DSL.g;
-import static org.geolatte.geom.crs.CoordinateReferenceSystems.WGS84;
 
 class ActivityBoundaryEntityTest {
 
@@ -29,20 +27,7 @@ class ActivityBoundaryEntityTest {
         validator = factory.getValidator();
     }
 
-    private Geometry createSamplePolygon() {
-        // Create a simple square polygon
-        return DSL.polygon(WGS84,
-                DSL.ring(
-                        g(0.0, 0.0),
-                        g(0.0, 1.0),
-                        g(1.0, 1.0),
-                        g(1.0, 0.0),
-                        g(0.0, 0.0)
-                )
-        );
-    }
-
-    private ActivityBoundaryEntity createValidActivityBoundaryEntity() {
+    private ActivityBoundaryEntity createValidActivityBoundaryEntity() throws SQLException {
         return ActivityBoundaryEntity.builder()
                 .activityBoundaryGuid(UUID.randomUUID())
                 .activityGuid(UUID.randomUUID())
@@ -54,7 +39,7 @@ class ActivityBoundaryEntityTest {
                 .collectorName("Test Collector")
                 .boundarySizeHa(BigDecimal.valueOf(100.0000))
                 .boundaryComment("Test Boundary Comment")
-                .geometry(createSamplePolygon())
+                .geometry(new PGpolygon("((-123.3656,48.4284),(-123.3657,48.4285),(-123.3658,48.4284),(-123.3656,48.4284))"))
                 .revisionCount(0)
                 .createUser("tester")
                 .createDate(new Date())
@@ -64,7 +49,7 @@ class ActivityBoundaryEntityTest {
     }
 
     @Test
-    void testActivityGuid_IsNull() {
+    void testActivityGuid_IsNull() throws SQLException {
         ActivityBoundaryEntity entity = createValidActivityBoundaryEntity();
         entity.setActivityGuid(null);
 
@@ -78,7 +63,7 @@ class ActivityBoundaryEntityTest {
     }
 
     @Test
-    void testSystemStartTimestamp_IsNull() {
+    void testSystemStartTimestamp_IsNull() throws SQLException {
         ActivityBoundaryEntity entity = createValidActivityBoundaryEntity();
         entity.setSystemStartTimestamp(null);
 
@@ -92,7 +77,7 @@ class ActivityBoundaryEntityTest {
     }
 
     @Test
-    void testSystemEndTimestamp_IsNull() {
+    void testSystemEndTimestamp_IsNull() throws SQLException {
         ActivityBoundaryEntity entity = createValidActivityBoundaryEntity();
         entity.setSystemEndTimestamp(null);
 
@@ -106,7 +91,7 @@ class ActivityBoundaryEntityTest {
     }
 
     @Test
-    void testCollectionDate_IsNull() {
+    void testCollectionDate_IsNull() throws SQLException {
         ActivityBoundaryEntity entity = createValidActivityBoundaryEntity();
         entity.setCollectionDate(null);
 
@@ -120,7 +105,7 @@ class ActivityBoundaryEntityTest {
     }
 
     @Test
-    void testBoundarySizeHa_IsNull() {
+    void testBoundarySizeHa_IsNull() throws SQLException {
         ActivityBoundaryEntity entity = createValidActivityBoundaryEntity();
         entity.setBoundarySizeHa(null);
 
@@ -134,7 +119,7 @@ class ActivityBoundaryEntityTest {
     }
 
     @Test
-    void testGeometry_IsNull() {
+    void testGeometry_IsNull() throws SQLException {
         ActivityBoundaryEntity entity = createValidActivityBoundaryEntity();
         entity.setGeometry(null);
 
@@ -148,7 +133,7 @@ class ActivityBoundaryEntityTest {
     }
 
     @Test
-    void testCreateUser_IsNull() {
+    void testCreateUser_IsNull() throws SQLException {
         ActivityBoundaryEntity entity = createValidActivityBoundaryEntity();
         entity.setCreateUser(null);
 
@@ -162,7 +147,7 @@ class ActivityBoundaryEntityTest {
     }
 
     @Test
-    void testCreateDate_IsNull() {
+    void testCreateDate_IsNull() throws SQLException {
         ActivityBoundaryEntity entity = createValidActivityBoundaryEntity();
         entity.setCreateDate(null);
 
@@ -176,7 +161,7 @@ class ActivityBoundaryEntityTest {
     }
 
     @Test
-    void testUpdateUser_IsNull() {
+    void testUpdateUser_IsNull() throws SQLException {
         ActivityBoundaryEntity entity = createValidActivityBoundaryEntity();
         entity.setUpdateUser(null);
 
@@ -190,7 +175,7 @@ class ActivityBoundaryEntityTest {
     }
 
     @Test
-    void testUpdateDate_IsNull() {
+    void testUpdateDate_IsNull() throws SQLException {
         ActivityBoundaryEntity entity = createValidActivityBoundaryEntity();
         entity.setUpdateDate(null);
 
@@ -204,7 +189,7 @@ class ActivityBoundaryEntityTest {
     }
 
     @Test
-    void testRevisionCount_IsNull() {
+    void testRevisionCount_IsNull() throws SQLException {
         ActivityBoundaryEntity entity = createValidActivityBoundaryEntity();
         entity.setRevisionCount(null);
 
@@ -218,7 +203,7 @@ class ActivityBoundaryEntityTest {
     }
 
     @Test
-    void testAllFields_AreValid() {
+    void testAllFields_AreValid() throws SQLException {
         ActivityBoundaryEntity entity = createValidActivityBoundaryEntity();
 
         Set<ConstraintViolation<ActivityBoundaryEntity>> violations = validator.validate(entity);

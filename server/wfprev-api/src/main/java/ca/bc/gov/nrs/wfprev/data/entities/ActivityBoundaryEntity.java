@@ -2,6 +2,7 @@ package ca.bc.gov.nrs.wfprev.data.entities;
 
 import ca.bc.gov.nrs.wfprev.common.serializers.GeoJsonJacksonDeserializer;
 import ca.bc.gov.nrs.wfprev.common.serializers.GeoJsonJacksonSerializer;
+import ca.bc.gov.nrs.wfprev.common.types.PostgresPolygonType;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -19,10 +20,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import org.geolatte.geom.Geometry;
-import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.annotations.JdbcType;
 import org.hibernate.annotations.UuidGenerator;
-import org.hibernate.type.SqlTypes;
+import org.postgresql.geometric.PGpolygon;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
@@ -84,11 +84,11 @@ public class ActivityBoundaryEntity implements Serializable {
     private String boundaryComment;
 
     @NotNull
-    @Column(name="geometry", columnDefinition = "geometry(Geometry,4326)", nullable = false)
-    @JsonSerialize(using = GeoJsonJacksonSerializer.class)
+    @Column(name = "geometry", columnDefinition = "polygon")
+    @JdbcType(PostgresPolygonType.class)
     @JsonDeserialize(using = GeoJsonJacksonDeserializer.class)
-    @JdbcTypeCode(SqlTypes.GEOMETRY)
-    public Geometry geometry;
+    @JsonSerialize(using = GeoJsonJacksonSerializer.class)
+    private PGpolygon geometry;
 
     @Column(name = "revision_count", columnDefinition="Decimal(10) default '0'", nullable = false)
     @NotNull

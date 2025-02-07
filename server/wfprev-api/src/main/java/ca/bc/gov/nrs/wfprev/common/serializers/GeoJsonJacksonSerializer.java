@@ -2,29 +2,63 @@ package ca.bc.gov.nrs.wfprev.common.serializers;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.geolatte.geom.Geometry;
-import org.geolatte.geom.json.GeolatteGeomModule;
+import lombok.extern.slf4j.Slf4j;
+import org.postgresql.geometric.PGpoint;
+import org.postgresql.geometric.PGpolygon;
 
 import java.io.IOException;
 
-public class GeoJsonJacksonSerializer extends JsonSerializer<Geometry> {
-    final ObjectMapper geolatteMapper;
-
-    public GeoJsonJacksonSerializer() {
-        this.geolatteMapper = new ObjectMapper();
-        this.geolatteMapper.registerModule(new GeolatteGeomModule());
-    }
+@Slf4j
+public class GeoJsonJacksonSerializer extends JsonSerializer<PGpolygon> {
 
     @Override
-    public void serialize(Geometry geometry, JsonGenerator gen, SerializerProvider serializers) throws IOException {
-        if (geometry == null) {
+    public void serialize(PGpolygon polygon, JsonGenerator gen, SerializerProvider serializers) throws IOException {
+        if (polygon == null) {
             gen.writeNull();
             return;
         }
-        ObjectNode geoJson = geolatteMapper.valueToTree(geometry);
-        gen.writeObject(geoJson);
+
+        try {
+            gen.writeStartObject();
+
+            // Write GeoJSON type
+            gen.writeStringField("type", "Polygon");
+
+            // Start coordinates array
+            gen.writeFieldName("coordinates");
+            gen.writeStartArray(); // Outer array for polygon
+            gen.writeStartArray(); // Inner array for ring
+
+            // Convert each point to coordinates
+            PGpoint[] points = polygon.points;
+            for (PGpoint point : points) {
+                gen.writeStartArray();
+                gen.writeNumber(point.x);
+                gen.writeNumber(point.y);
+                gen.writeEndArray();
+            }
+
+            // If the first and last points aren't the same, close the ring
+            if (points.length > 0 && !pointsEqual(points[0], points[points.length - 1])) {
+                gen.writeStartArray();
+                gen.writeNumber(points[0].x);
+                gen.writeNumber(points[0].y);
+                gen.writeEndArray();
+            }
+
+            gen.writeEndArray(); // End ring array
+            gen.writeEndArray(); // End polygon array
+
+            gen.writeEndObject();
+
+        } catch (Exception e) {
+            log.error("Error serializing polygon: {}", e.getMessage(), e);
+            throw new IOException("Error serializing polygon: " + e.getMessage(), e);
+        }
+    }
+
+    private boolean pointsEqual(PGpoint p1, PGpoint p2) {
+        return p1.x == p2.x && p1.y == p2.y;
     }
 }

@@ -2,9 +2,10 @@ package ca.bc.gov.nrs.wfprev;
 
 import ca.bc.gov.nrs.wfprev.common.serializers.GeoJsonJacksonDeserializer;
 import ca.bc.gov.nrs.wfprev.common.serializers.GeoJsonJacksonSerializer;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import jakarta.servlet.DispatcherType;
-import org.geolatte.geom.Geometry;
+import org.postgresql.geometric.PGpolygon;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -14,7 +15,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.core.Ordered;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.web.filter.ForwardedHeaderFilter;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 @SpringBootApplication
 @EnableJpaAuditing(auditorAwareRef = "springSecurityAuditorAware")
@@ -57,8 +57,8 @@ public class WfprevApiApplication {
 		ObjectMapper mapper = new ObjectMapper();
 		SimpleModule module = new SimpleModule();
 
-		module.addSerializer(Geometry.class, new GeoJsonJacksonSerializer());
-		module.addDeserializer(Geometry.class, new GeoJsonJacksonDeserializer());
+		module.addSerializer(PGpolygon.class, new GeoJsonJacksonSerializer());
+		module.addDeserializer(PGpolygon.class, new GeoJsonJacksonDeserializer());
 
 		mapper.registerModule(module);
 		return mapper;
