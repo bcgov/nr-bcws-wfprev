@@ -12,6 +12,7 @@
         
   
       .form-item {
+        font-family: "BCSans", "Noto Sans", Verdana, Arial, sans-serif !important;
         flex: 1 1 calc(20% - 20px); // 5 items per row with a 20px gap
         min-width: 200px;
   
@@ -26,6 +27,7 @@
   
         input,
         select{
+            font-family: var(--wf-font-family-main) !important;
             color: #282828;
             font-size: 15px;
             font-style: normal;
@@ -44,6 +46,10 @@
             background-repeat: no-repeat;
             background-position: right 10px center;
             background-size: 12px;
+        }
+
+        option {
+          font-family: var(--wf-font-family-main) !important;
         }
         textarea {
           width: 100%;
@@ -181,6 +187,7 @@
         }
     
         .project-title {
+            font-family: var(--wf-font-family-main);
             background-color: inherit;
             font-weight: bold;
             display: flex;

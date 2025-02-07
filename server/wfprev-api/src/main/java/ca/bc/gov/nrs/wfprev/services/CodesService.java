@@ -51,6 +51,10 @@ public class CodesService implements CommonService {
     private final AncillaryFundingSourceCodeRepository ancillaryFundingSourceCodeRepository;
     private final FundingSourceCodeResourceAssembler fundingSourceCodeResourceAssembler;
     private final FundingSourceCodeRepository fundingSourceCodeRepository;
+    private final SourceObjectNameCodeResourceAssembler sourceObjectNameCodeResourceAssembler;
+    private final SourceObjectNameCodeRepository sourceObjectNameCodeRepository;
+    private final AttachmentContentTypeCodeResourceAssembler attachmentContentTypeCodeResourceAssembler;
+    private final AttachmentContentTypeCodeRepository attachmentContentTypeCodeRepository;
 
     public CodesService(ForestAreaCodeRepository forestAreaCodeRepository, ForestAreaCodeResourceAssembler forestAreaCodeResourceAssembler,
                         GeneralScopeCodeRepository generalScopeCodeRepository, GeneralScopeCodeResourceAssembler generalScopeCodeResourceAssembler,
@@ -63,7 +67,8 @@ public class CodesService implements CommonService {
                         ActivityCategoryCodeResourceAssembler activityCategoryCodeResourceAssembler, ActivityCategoryCodeRepository activityCategoryCodeRepository,
                         PlanFiscalStatusCodeResourceAssembler planFiscalStatusCodeResourceAssembler, PlanFiscalStatusCodeRepository planFiscalStatusCodeRepository,
                         AncillaryFundingSourceCodeResourceAssembler ancillaryFundingSourceCodeResourceAssembler, AncillaryFundingSourceCodeRepository ancillaryFundingSourceCodeRepository,
-                        FundingSourceCodeResourceAssembler fundingSourceCodeResourceAssembler, FundingSourceCodeRepository fundingSourceCodeRepository) {
+                        FundingSourceCodeResourceAssembler fundingSourceCodeResourceAssembler, FundingSourceCodeRepository fundingSourceCodeRepository, SourceObjectNameCodeResourceAssembler sourceObjectNameCodeResourceAssembler, SourceObjectNameCodeRepository sourceObjectNameCodeRepository,
+                        AttachmentContentTypeCodeResourceAssembler attachmentContentTypeCodeResourceAssembler, AttachmentContentTypeCodeRepository attachmentContentTypeCodeRepository) {
         this.forestAreaCodeRepository = forestAreaCodeRepository;
         this.forestAreaCodeResourceAssembler = forestAreaCodeResourceAssembler;
         this.generalScopeCodeRepository = generalScopeCodeRepository;
@@ -96,6 +101,10 @@ public class CodesService implements CommonService {
         this.ancillaryFundingSourceCodeRepository = ancillaryFundingSourceCodeRepository;
         this.fundingSourceCodeResourceAssembler = fundingSourceCodeResourceAssembler;
         this.fundingSourceCodeRepository = fundingSourceCodeRepository;
+        this.sourceObjectNameCodeRepository = sourceObjectNameCodeRepository;
+        this.sourceObjectNameCodeResourceAssembler = sourceObjectNameCodeResourceAssembler;
+        this.attachmentContentTypeCodeResourceAssembler = attachmentContentTypeCodeResourceAssembler;
+        this.attachmentContentTypeCodeRepository = attachmentContentTypeCodeRepository;
     }
 
     /**
@@ -349,7 +358,7 @@ public class CodesService implements CommonService {
             throw new ServiceException(e.getLocalizedMessage(), e);
         }
     }
-    
+
     public PlanFiscalStatusCodeModel getPlanFiscalStatusCodeById(String id) throws ServiceException {
         try {
             return planFiscalStatusCodeRepository.findById(id)
@@ -400,6 +409,44 @@ public class CodesService implements CommonService {
         try {
             return fundingSourceCodeRepository.findById(id)
                     .map(fundingSourceCodeResourceAssembler::toModel)
+                    .orElse(null);
+        } catch (Exception e) {
+            throw new ServiceException(e.getLocalizedMessage(), e);
+        }
+    }
+
+    public CollectionModel<SourceObjectNameCodeModel> getAllSourceObjectNameCodes() throws ServiceException {
+        try {
+            List<SourceObjectNameCodeEntity> entities = sourceObjectNameCodeRepository.findAll();
+            return sourceObjectNameCodeResourceAssembler.toCollectionModel(entities);
+        } catch (Exception e) {
+            throw new ServiceException(e.getLocalizedMessage(), e);
+        }
+    }
+
+    public SourceObjectNameCodeModel getSourceObjectNameCodeById(String id) throws ServiceException {
+        try {
+            return sourceObjectNameCodeRepository.findById(id)
+                    .map(sourceObjectNameCodeResourceAssembler::toModel)
+                    .orElse(null);
+        } catch (Exception e) {
+            throw new ServiceException(e.getLocalizedMessage(), e);
+        }
+    }
+
+    public CollectionModel<AttachmentContentTypeCodeModel> getAllAttachmentContentTypeCodes() throws ServiceException {
+        try {
+            List<AttachmentContentTypeCodeEntity> entities = attachmentContentTypeCodeRepository.findAll();
+            return attachmentContentTypeCodeResourceAssembler.toCollectionModel(entities);
+        } catch (Exception e) {
+            throw new ServiceException(e.getLocalizedMessage(), e);
+        }
+    }
+
+    public AttachmentContentTypeCodeModel getAttachmentContentTypeCodeById(String id) throws ServiceException {
+        try {
+            return attachmentContentTypeCodeRepository.findById(id)
+                    .map(attachmentContentTypeCodeResourceAssembler::toModel)
                     .orElse(null);
         } catch (Exception e) {
             throw new ServiceException(e.getLocalizedMessage(), e);

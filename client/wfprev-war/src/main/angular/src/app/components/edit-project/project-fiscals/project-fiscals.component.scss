@@ -6,7 +6,7 @@
             flex-wrap: wrap;
             gap: 20px;
             justify-content: space-between;
-            
+            font-family: var(--wf-font-family-main) !important;
       
           .form-item {
             flex: 1 1 calc(20% - 20px); // 5 items per row with a 20px gap
@@ -27,6 +27,7 @@
       
             input,
             select{
+                font-family: var(--wf-font-family-main) !important;
                 color: #282828;
                 font-size: 15px;
                 font-style: normal;
@@ -59,6 +60,8 @@
               line-height: 1.5;
               white-space: pre-wrap;
               word-wrap: break-word;
+              font-family: var(--wf-font-family-main) !important;
+
             }
           }
       
@@ -227,6 +230,7 @@
         }
     
         .project-title {
+            font-family: var(--wf-font-family-main) !important;
             background-color: inherit;
             font-weight: bold;
             display: flex;
@@ -296,6 +300,7 @@
     border-radius: 10px;
     height: 35px;
     span{
+      font-family: var(--wf-font-family-main) !important;
       padding-right: 10px;
       vertical-align: top;
     }
@@ -329,4 +334,9 @@
 
 ::ng-deep .cdk-overlay-pane {
   transform: translateX(-50%);
+}
+
+::ng-deep .mat-mdc-menu-item {
+  text-align: left !important;
+  display: block;
 }

@@ -33,5 +33,9 @@
       .mat-mdc-tab-indicator {
         background-color: black !important; /* Change the underline color to black */
       }
+      
+      .mdc-tab__text-label{
+        font-family: var(--wf-font-family-main) !important;
+      }
     }
   }

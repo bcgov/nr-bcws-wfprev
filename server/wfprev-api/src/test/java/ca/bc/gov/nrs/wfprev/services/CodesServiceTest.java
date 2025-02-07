@@ -36,6 +36,8 @@ class CodesServiceTest {
     private PlanFiscalStatusCodeRepository planFiscalStatusCodeRepository;
     private AncillaryFundingSourceCodeRepository ancillaryFundingSourceCodeRepository;
     private FundingSourceCodeRepository fundingSourceCodeRepository;
+    private SourceObjectNameCodeRepository sourceObjectNameCodeRepository;
+    private AttachmentContentTypeCodeRepository attachmentContentTypeCodeRepository;
 
     private ProgramAreaRepository programAreaRepository;
     private ProgramAreaResourceAssembler programAreaResourceAssembler;
@@ -54,6 +56,8 @@ class CodesServiceTest {
     private PlanFiscalStatusCodeResourceAssembler planFiscalStatusCodeResourceAssembler;
     private AncillaryFundingSourceCodeResourceAssembler ancillaryFundingSourceCodeResourceAssembler;
     private FundingSourceCodeResourceAssembler fundingSourceCodeResourceAssembler;
+    private SourceObjectNameCodeResourceAssembler sourceObjectNameCodeResourceAssembler;
+    private AttachmentContentTypeCodeResourceAssembler attachmentContentTypeCodeResourceAssembler;
 
     @BeforeEach
     void setup() {
@@ -89,6 +93,10 @@ class CodesServiceTest {
         ancillaryFundingSourceCodeResourceAssembler = mock(AncillaryFundingSourceCodeResourceAssembler.class);
         fundingSourceCodeRepository = mock(FundingSourceCodeRepository.class);
         fundingSourceCodeResourceAssembler = mock(FundingSourceCodeResourceAssembler.class);
+        sourceObjectNameCodeRepository = mock(SourceObjectNameCodeRepository.class);
+        sourceObjectNameCodeResourceAssembler = mock(SourceObjectNameCodeResourceAssembler.class);
+        attachmentContentTypeCodeRepository = mock(AttachmentContentTypeCodeRepository.class);
+        attachmentContentTypeCodeResourceAssembler = mock(AttachmentContentTypeCodeResourceAssembler.class);
 
         codesService = new CodesService(forestAreaCodeRepository, forestAreaCodeResourceAssembler,
                 generalScopeCodeRepository, generalScopeCodeResourceAssembler,
@@ -97,7 +105,7 @@ class CodesServiceTest {
                 bcParksSectionCodeResourceAssembler, objectiveTypeCodeResourceAssembler, objectiveTypeCodeRepository, projectPlanStatusCodeResourceAssembler, projectPlanStatusCodeRepository,
                 activityStatusCodeResourceAssembler, activityStatusCodeRepository, riskRatingCodeResourceAssembler, riskRatingCodeRepository, contractPhaseCodeResourceAssembler, contractPhaseCodeRepository,
                 activityCategoryCodeResourceAssembler, activityCategoryCodeRepository, planFiscalStatusCodeResourceAssembler, planFiscalStatusCodeRepository, ancillaryFundingSourceCodeResourceAssembler, ancillaryFundingSourceCodeRepository,
-                fundingSourceCodeResourceAssembler, fundingSourceCodeRepository);
+                fundingSourceCodeResourceAssembler, fundingSourceCodeRepository, sourceObjectNameCodeResourceAssembler, sourceObjectNameCodeRepository, attachmentContentTypeCodeResourceAssembler, attachmentContentTypeCodeRepository);
     }
 
     @Test
@@ -1466,6 +1474,158 @@ class CodesServiceTest {
                 () -> codesService.getFundingSourceCodeById(exampleId)
         );
         assertTrue(exception.getMessage().contains("Error fetching funding source code"));
+    }
+
+    @Test
+    void testGetAllSourceObjectNameCodes_Success() throws ServiceException {
+        // Arrange
+        List<SourceObjectNameCodeEntity> entities = new ArrayList<>();
+        entities.add(new SourceObjectNameCodeEntity());
+        entities.add(new SourceObjectNameCodeEntity());
+        when(sourceObjectNameCodeRepository.findAll()).thenReturn(entities);
+        when(sourceObjectNameCodeResourceAssembler.toCollectionModel(entities))
+                .thenReturn(CollectionModel.of(new ArrayList<>()));
+
+        // Act
+        CollectionModel<SourceObjectNameCodeModel> result = codesService.getAllSourceObjectNameCodes();
+
+        // Assert
+        assertNotNull(result);
+    }
+
+    @Test
+    void testGetAllSourceObjectNameCodes_Exception() {
+        // Arrange
+        when(sourceObjectNameCodeRepository.findAll()).thenThrow(new RuntimeException("Error fetching source object name codes"));
+
+        // Act & Assert
+        ServiceException exception = assertThrows(
+                ServiceException.class,
+                () -> codesService.getAllSourceObjectNameCodes()
+        );
+        assertEquals("Error fetching source object name codes", exception.getMessage());
+    }
+
+    @Test
+    void testGetSourceObjectNameCodeById_Success() throws ServiceException {
+        // Arrange
+        String exampleId = UUID.randomUUID().toString();
+        SourceObjectNameCodeEntity entity = new SourceObjectNameCodeEntity();
+        when(sourceObjectNameCodeRepository.findById(exampleId))
+                .thenReturn(Optional.of(entity));
+        when(sourceObjectNameCodeResourceAssembler.toModel(entity))
+                .thenReturn(new SourceObjectNameCodeModel());
+
+        // Act
+        SourceObjectNameCodeModel result = codesService.getSourceObjectNameCodeById(exampleId);
+
+        // Assert
+        assertNotNull(result);
+    }
+
+    @Test
+    void testGetSourceObjectNameCodeById_NotFound() throws ServiceException {
+        // Arrange
+        String nonExistentId = UUID.randomUUID().toString();
+        when(sourceObjectNameCodeRepository.findById(nonExistentId))
+                .thenReturn(Optional.empty());
+
+        // Act
+        SourceObjectNameCodeModel result = codesService.getSourceObjectNameCodeById(nonExistentId);
+
+        // Assert
+        assertNull(result);
+    }
+
+    @Test
+    void testGetSourceObjectNameCodeById_Exception() {
+        // Arrange
+        String exampleId = UUID.randomUUID().toString();
+        when(sourceObjectNameCodeRepository.findById(exampleId))
+                .thenThrow(new RuntimeException("Error fetching source object name code"));
+
+        // Act & Assert
+        ServiceException exception = assertThrows(
+                ServiceException.class,
+                () -> codesService.getSourceObjectNameCodeById(exampleId)
+        );
+        assertTrue(exception.getMessage().contains("Error fetching source object name code"));
+    }
+
+    @Test
+    void testGetAllAttachmentContentTypeCodes_Success() throws ServiceException {
+        // Arrange
+        List<AttachmentContentTypeCodeEntity> entities = new ArrayList<>();
+        entities.add(new AttachmentContentTypeCodeEntity());
+        entities.add(new AttachmentContentTypeCodeEntity());
+        when(attachmentContentTypeCodeRepository.findAll()).thenReturn(entities);
+        when(attachmentContentTypeCodeResourceAssembler.toCollectionModel(entities))
+                .thenReturn(CollectionModel.of(new ArrayList<>()));
+
+        // Act
+        CollectionModel<AttachmentContentTypeCodeModel> result = codesService.getAllAttachmentContentTypeCodes();
+
+        // Assert
+        assertNotNull(result);
+    }
+
+    @Test
+    void testGetAllAttachmentContentTypeCodes_Exception() {
+        // Arrange
+        when(attachmentContentTypeCodeRepository.findAll()).thenThrow(new RuntimeException("Error fetching attachment content type name codes"));
+
+        // Act & Assert
+        ServiceException exception = assertThrows(
+                ServiceException.class,
+                () -> codesService.getAllAttachmentContentTypeCodes()
+        );
+        assertEquals("Error fetching attachment content type name codes", exception.getMessage());
+    }
+
+    @Test
+    void testGetAttachmentContentTypeCodeById_Success() throws ServiceException {
+        // Arrange
+        String exampleId = UUID.randomUUID().toString();
+        AttachmentContentTypeCodeEntity entity = new AttachmentContentTypeCodeEntity();
+        when(attachmentContentTypeCodeRepository.findById(exampleId))
+                .thenReturn(Optional.of(entity));
+        when(attachmentContentTypeCodeResourceAssembler.toModel(entity))
+                .thenReturn(new AttachmentContentTypeCodeModel());
+
+        // Act
+        AttachmentContentTypeCodeModel result = codesService.getAttachmentContentTypeCodeById(exampleId);
+
+        // Assert
+        assertNotNull(result);
+    }
+
+    @Test
+    void testGetAttachmentContentTypeCodeById_NotFound() throws ServiceException {
+        // Arrange
+        String nonExistentId = UUID.randomUUID().toString();
+        when(attachmentContentTypeCodeRepository.findById(nonExistentId))
+                .thenReturn(Optional.empty());
+
+        // Act
+        AttachmentContentTypeCodeModel result = codesService.getAttachmentContentTypeCodeById(nonExistentId);
+
+        // Assert
+        assertNull(result);
+    }
+
+    @Test
+    void testGetAttachmentContentTypeCodeById_Exception() {
+        // Arrange
+        String exampleId = UUID.randomUUID().toString();
+        when(attachmentContentTypeCodeRepository.findById(exampleId))
+                .thenThrow(new RuntimeException("Error fetching attachment content type name code"));
+
+        // Act & Assert
+        ServiceException exception = assertThrows(
+                ServiceException.class,
+                () -> codesService.getAttachmentContentTypeCodeById(exampleId)
+        );
+        assertTrue(exception.getMessage().contains("Error fetching attachment content type name code"));
     }
     
 }
