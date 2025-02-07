@@ -1,0 +1,25 @@
+@import "../project-fiscals/project-fiscals.component.scss";
+
+.activites-container{
+    padding-top: 12px;
+
+    .expansion-panel{
+        border: 1px solid #D9D9D9;
+        
+        .dropdown-button{
+            span{
+                padding-left: 10px;
+            }
+        }
+    }
+    
+    .activity-title{
+        display: flex;
+        color: #000;
+        font-family: var(--wf-font-family-main);
+        font-size: 20px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: normal;
+    }
+}

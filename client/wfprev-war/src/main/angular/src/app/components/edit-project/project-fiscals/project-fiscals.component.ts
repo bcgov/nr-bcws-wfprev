@@ -1,5 +1,5 @@
 import { CommonModule, CurrencyPipe } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTabsModule } from '@angular/material/tabs';
@@ -16,6 +16,7 @@ import { Observable } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmationDialogComponent } from 'src/app/components/confirmation-dialog/confirmation-dialog.component';
 import { CanComponentDeactivate } from 'src/app/services/util/can-deactive.guard';
+import { ActivitiesComponent } from 'src/app/components/edit-project/activities/activities.component';
 
 @Component({
   selector: 'app-project-fiscals',
@@ -30,7 +31,8 @@ import { CanComponentDeactivate } from 'src/app/services/util/can-deactive.guard
     MatSlideToggleModule,
     MatExpansionModule,
     CurrencyPipe,
-    MatMenuModule
+    MatMenuModule,
+    ActivitiesComponent
   ]
 })
 export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  {
@@ -39,6 +41,7 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  
   fiscalForms: FormGroup[] = [];
   fiscalYears: string[] = [];
   selectedTabIndex = 0;
+  currentFiscalGuid = '';
   messages = Messages;
   activityCategoryCode: any[] = [];
   planFiscalStatusCode: any[] = [];
@@ -51,7 +54,7 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  
     private readonly fb: FormBuilder,
     private readonly snackbarService: MatSnackBar,
     public readonly dialog: MatDialog,
-    
+    public cd: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -122,7 +125,7 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  
       projectFiscalName: [fiscal?.projectFiscalName || '', [Validators.required]],
       activityCategoryCode: [fiscal?.activityCategoryCode || '', [Validators.required]],
       proposalType: [fiscal?.proposalType || ''],
-      planFiscalStatusCode: [fiscal?.planFiscalStatusCode || ''],
+      planFiscalStatusCode: [fiscal?.planFiscalStatusCode || '', {}],
       fiscalPlannedProjectSizeHa: [fiscal?.fiscalPlannedProjectSizeHa || ''],
       fiscalCompletedSizeHa: [fiscal?.fiscalCompletedSizeHa ?? ''],
       resultsOpeningId: [fiscal?.resultsOpeningId || ''],
@@ -170,14 +173,26 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  
           }
           return form;
         });
-  
+        this.updateCurrentFiscalGuid();
         this.selectedTabIndex = previousTabIndex < this.projectFiscals.length ? previousTabIndex : 0;
       },
       'Error fetching project details'
     );
   }
   
-  
+  updateCurrentFiscalGuid(): void {
+    if (this.projectFiscals.length > 0 && this.projectFiscals[this.selectedTabIndex]) {
+      this.currentFiscalGuid = this.projectFiscals[this.selectedTabIndex].projectPlanFiscalGuid || '';
+    } else {
+      this.currentFiscalGuid = ''; // Reset if no fiscal is selected
+    }
+    this.cd.detectChanges();
+  }
+
+  onTabChange(index: number): void {
+    this.selectedTabIndex = index;
+    this.updateCurrentFiscalGuid();
+  }
 
   addNewFiscal(): void {
     const newFiscalData = { fiscalYear: '', projectFiscalName: '', projectGuid: this.projectGuid };
