@@ -27,10 +27,17 @@ public class PolygonConverter implements AttributeConverter<PGpolygon, String> {
      * Utility method to create a PGpolygon from an array of points
      */
     public static PGpolygon createPolygon(double[][] points) {
+        if (points == null || points.length == 0) {
+            throw new IllegalArgumentException("Error creating polygon from points: Input array is empty or null");
+        }
+
         try {
             StringBuilder sb = new StringBuilder();
             sb.append("(");
             for (int i = 0; i < points.length; i++) {
+                if (points[i] == null || points[i].length != 2) {
+                    throw new IllegalArgumentException("Invalid point format at index " + i);
+                }
                 if (i > 0) sb.append(",");
                 sb.append("(").append(points[i][0]).append(",").append(points[i][1]).append(")");
             }
