@@ -111,4 +111,64 @@ class PostgresPolygonTypeTest {
         assertNotNull(extractedPolygon);
         assertEquals(pgObject.getValue(), extractedPolygon.getValue());
     }
+
+    @Test
+    void testBinder_DoBind_CallableStatement_ByName() throws Exception {
+        PGpolygon polygon = new PGpolygon("((-123.3656,48.4284),(-123.3657,48.4285),(-123.3658,48.4284),(-123.3656,48.4284))");
+
+        BasicBinder<PGpolygon> binder = postgresPolygonType.getBinder(javaType);
+
+        Method doBindMethod = BasicBinder.class.getDeclaredMethod("doBind", CallableStatement.class, Object.class, String.class, WrapperOptions.class);
+        doBindMethod.setAccessible(true);
+
+        doBindMethod.invoke(binder, callableStatement, polygon, "polygon_param", wrapperOptions);
+
+        verify(callableStatement).setObject(eq("polygon_param"), any(PGobject.class));
+    }
+
+    @Test
+    void testBinder_DoBind_NullValue_CallableStatement_ByName() throws Exception {
+        BasicBinder<PGpolygon> binder = postgresPolygonType.getBinder(javaType);
+
+        Method doBindMethod = BasicBinder.class.getDeclaredMethod("doBind", CallableStatement.class, Object.class, String.class, WrapperOptions.class);
+        doBindMethod.setAccessible(true);
+
+        doBindMethod.invoke(binder, callableStatement, null, "polygon_param", wrapperOptions);
+
+        verify(callableStatement).setNull("polygon_param", Types.OTHER);
+    }
+
+    @Test
+    void testExtractor_DoExtract_CallableStatement_ByName() throws Exception {
+        BasicExtractor<PGpolygon> extractor = postgresPolygonType.getExtractor(javaType);
+        PGobject pgObject = new PGobject();
+        pgObject.setType("polygon");
+        pgObject.setValue("((-123.3656,48.4284),(-123.3657,48.4285),(-123.3658,48.4284),(-123.3656,48.4284))");
+
+        when(callableStatement.getObject("polygon_param")).thenReturn(pgObject);
+        when(javaType.wrap(any(), any())).thenAnswer(invocation -> new PGpolygon(pgObject.getValue()));
+
+        Method doExtractMethod = BasicExtractor.class.getDeclaredMethod("doExtract", CallableStatement.class, String.class, WrapperOptions.class);
+        doExtractMethod.setAccessible(true);
+
+        PGpolygon extractedPolygon = (PGpolygon) doExtractMethod.invoke(extractor, callableStatement, "polygon_param", wrapperOptions);
+
+        assertNotNull(extractedPolygon);
+        assertEquals(pgObject.getValue(), extractedPolygon.getValue());
+    }
+
+    @Test
+    void testExtractor_DoExtract_NullValue_CallableStatement_ByName() throws Exception {
+        BasicExtractor<PGpolygon> extractor = postgresPolygonType.getExtractor(javaType);
+
+        when(callableStatement.getObject("polygon_param")).thenReturn(null);
+
+        Method doExtractMethod = BasicExtractor.class.getDeclaredMethod("doExtract", CallableStatement.class, String.class, WrapperOptions.class);
+        doExtractMethod.setAccessible(true);
+
+        PGpolygon extractedPolygon = (PGpolygon) doExtractMethod.invoke(extractor, callableStatement, "polygon_param", wrapperOptions);
+
+        assertNull(extractedPolygon);
+    }
+
 }

@@ -15,6 +15,7 @@ import java.sql.SQLException;
 import java.sql.Types;
 
 public class PostgresPolygonType implements JdbcType {
+    private static final String POLYGON = "polygon";
 
     @Override
     public int getJdbcTypeCode() {
@@ -28,7 +29,7 @@ public class PostgresPolygonType implements JdbcType {
             protected void doBind(PreparedStatement st, T value, int index, WrapperOptions options) throws SQLException {
                 if (value instanceof PGpolygon polygon) {
                     PGobject pgo = new PGobject();
-                    pgo.setType("polygon");
+                    pgo.setType(POLYGON);
                     pgo.setValue(polygon.getValue());
                     st.setObject(index, pgo);
                 } else {
@@ -40,7 +41,7 @@ public class PostgresPolygonType implements JdbcType {
             protected void doBind(CallableStatement st, T value, String name, WrapperOptions options) throws SQLException {
                 if (value instanceof PGpolygon polygon) {
                     PGobject pgo = new PGobject();
-                    pgo.setType("polygon");
+                    pgo.setType(POLYGON);
                     pgo.setValue(polygon.getValue());
                     st.setObject(name, pgo);
                 } else {
@@ -55,8 +56,8 @@ public class PostgresPolygonType implements JdbcType {
         return new BasicExtractor<>(javaType, this) {
             @Override
             protected T doExtract(ResultSet rs, int index, WrapperOptions options) throws SQLException {
-                Object obj = rs.getObject(index);
-                if (obj instanceof PGobject pgObj && "polygon".equals(pgObj.getType())) {
+                if (rs != null && rs.getObject(index) != null
+                        && rs.getObject(index) instanceof PGobject pgObj && POLYGON.equals(pgObj.getType())) {
                     return javaType.wrap(new PGpolygon(pgObj.getValue()), options);
                 }
                 return null;
@@ -64,8 +65,8 @@ public class PostgresPolygonType implements JdbcType {
 
             @Override
             protected T doExtract(CallableStatement statement, int index, WrapperOptions options) throws SQLException {
-                Object obj = statement.getObject(index);
-                if (obj instanceof PGobject pgObj && "polygon".equals(pgObj.getType())) {
+                if (statement != null && statement.getObject(index) !=null
+                        && statement.getObject(index) instanceof PGobject pgObj && POLYGON.equals(pgObj.getType())) {
                     return javaType.wrap(new PGpolygon(pgObj.getValue()), options);
                 }
                 return null;
@@ -73,8 +74,8 @@ public class PostgresPolygonType implements JdbcType {
 
             @Override
             protected T doExtract(CallableStatement statement, String name, WrapperOptions options) throws SQLException {
-                Object obj = statement.getObject(name);
-                if (obj instanceof PGobject pgObj && "polygon".equals(pgObj.getType())) {
+                if (statement != null && statement.getObject(name) != null
+                        && statement.getObject(name) instanceof PGobject pgObj && POLYGON.equals(pgObj.getType())) {
                     return javaType.wrap(new PGpolygon(pgObj.getValue()), options);
                 }
                 return null;
