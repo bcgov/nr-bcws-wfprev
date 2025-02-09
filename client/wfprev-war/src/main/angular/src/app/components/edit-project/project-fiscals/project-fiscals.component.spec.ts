@@ -208,7 +208,7 @@ describe('ProjectFiscalsComponent', () => {
     } as any);
   
     component.projectFiscals = [{ projectPlanFiscalGuid: 'test-guid' }];
-    component.deleteFiscalYear({ value: component.projectFiscals[0] });
+    component.deleteFiscalYear({ value: component.projectFiscals[0] },0);
   
     expect(component.dialog.open).toHaveBeenCalledWith(ConfirmationDialogComponent, {
       data: { indicator: 'confirm-delete' },
@@ -225,7 +225,7 @@ describe('ProjectFiscalsComponent', () => {
     mockProjectService.deleteProjectFiscalByProjectPlanFiscalGuid = jasmine.createSpy().and.returnValue(of({}));
   
     component.projectFiscals = [{ projectPlanFiscalGuid: 'test-guid' }];
-    component.deleteFiscalYear({ value: component.projectFiscals[0] });
+    component.deleteFiscalYear({ value: component.projectFiscals[0]},0);
   
     expect(mockProjectService.deleteProjectFiscalByProjectPlanFiscalGuid).toHaveBeenCalledWith('test-guid', 'test-guid');
     expect(mockSnackBar.open).toHaveBeenCalledWith(
@@ -246,21 +246,13 @@ describe('ProjectFiscalsComponent', () => {
     );
   
     component.projectFiscals = [{ projectPlanFiscalGuid: 'test-guid' }];
-    component.deleteFiscalYear({ value: component.projectFiscals[0] });
+    component.deleteFiscalYear({ value: component.projectFiscals[0] },0);
   
     expect(mockSnackBar.open).toHaveBeenCalledWith(
       component.messages.projectFiscalDeletedFailure,
       'OK',
       { duration: 5000, panelClass: 'snackbar-error' }
     );
-  });
-  
-  it('should reload fiscal years if projectPlanFiscalGuid is missing', () => {
-    spyOn(component, 'loadProjectFiscals');
-  
-    component.deleteFiscalYear({ value: { projectPlanFiscalGuid: null } });
-  
-    expect(component.loadProjectFiscals).toHaveBeenCalledWith(true);
   });
   
   it('should return true for isUndeletable if isApprovedInd is true', () => {
@@ -343,5 +335,40 @@ describe('ProjectFiscalsComponent', () => {
       fail('Expected an Observable but received something else');
     }
   });
+
+  it('should not allow negative values for fiscalPlannedProjectSizeHa', () => {
+    component.fiscalForms[0] = component.createFiscalForm();
+    const control = component.fiscalForms[0].get('fiscalPlannedProjectSizeHa');
   
+    control?.setValue(-10);
+    expect(control?.valid).toBeFalse();
+    expect(control?.hasError('min')).toBeTrue();
+  
+    control?.setValue(10);
+    expect(control?.valid).toBeTrue(); 
+  });
+
+  it('should not allow negative values for totalCostEstimateAmount', () => {
+    component.fiscalForms[0] = component.createFiscalForm();
+    const control = component.fiscalForms[0].get('totalCostEstimateAmount');
+  
+    control?.setValue(-100);
+    expect(control?.valid).toBeFalse();
+    expect(control?.hasError('min')).toBeTrue();
+  
+    control?.setValue(100);
+    expect(control?.valid).toBeTrue();
+  });
+
+  it('should not allow negative values for fiscalForecastAmount', () => {
+    component.fiscalForms[0] = component.createFiscalForm();
+    const control = component.fiscalForms[0].get('fiscalForecastAmount');
+  
+    control?.setValue(-500);
+    expect(control?.valid).toBeFalse();
+    expect(control?.hasError('min')).toBeTrue();
+  
+    control?.setValue(500);
+    expect(control?.valid).toBeTrue();
+  });
 });
