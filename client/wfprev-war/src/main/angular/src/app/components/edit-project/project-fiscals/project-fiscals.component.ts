@@ -122,24 +122,24 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  
       projectFiscalName: [fiscal?.projectFiscalName || '', [Validators.required]],
       activityCategoryCode: [fiscal?.activityCategoryCode || '', [Validators.required]],
       proposalType: [fiscal?.proposalType || ''],
-      planFiscalStatusCode: [fiscal?.planFiscalStatusCode || ''],
-      fiscalPlannedProjectSizeHa: [fiscal?.fiscalPlannedProjectSizeHa || ''],
-      fiscalCompletedSizeHa: [fiscal?.fiscalCompletedSizeHa ?? ''],
+      planFiscalStatusCode: [fiscal?.planFiscalStatusCode || 'DRAFT', [Validators.required]],
+      fiscalPlannedProjectSizeHa: [fiscal?.fiscalPlannedProjectSizeHa || '', [Validators.min(0)]],
+      fiscalCompletedSizeHa: [fiscal?.fiscalCompletedSizeHa ?? '', [Validators.min(0)]],
       resultsOpeningId: [fiscal?.resultsOpeningId || ''],
       firstNationsEngagementInd: [fiscal?.firstNationsEngagementInd || false],
       firstNationsDelivPartInd: [fiscal?.firstNationsDelivPartInd || false],
       firstNationsPartner: [fiscal?.firstNationsPartner || ''],
       projectFiscalDescription: [fiscal?.projectFiscalDescription || '', [Validators.required, Validators.maxLength(500)]],
       otherPartner: [fiscal?.otherPartner || ''],
-      totalCostEstimateAmount: [fiscal?.totalCostEstimateAmount ?? ''],
+      totalCostEstimateAmount: [fiscal?.totalCostEstimateAmount ?? '' , [Validators.min(0)]],
       forecastAmount: [fiscal?.forecastAmount ?? ''],
       cfsProjectCode: [fiscal?.cfsProjectCode || ''],
       ancillaryFundingSourceGuid: [fiscal?.ancillaryFundingSourceGuid || ''],
-      fiscalAncillaryFundAmount: [fiscal?.fiscalAncillaryFundAmount ?? ''],
-      fiscalReportedSpendAmount: [fiscal?.fiscalReportedSpendAmount ?? ''],
+      fiscalAncillaryFundAmount: [fiscal?.fiscalAncillaryFundAmount ?? '' , [Validators.min(0)]],
+      fiscalReportedSpendAmount: [fiscal?.fiscalReportedSpendAmount ?? '' , [Validators.min(0)]],
       cfsActualSpend: [fiscal?.cfsActualSpend || ''],
-      fiscalForecastAmount: [fiscal?.fiscalForecastAmount || ''],
-      fiscalActualAmount: [fiscal?.fiscalActualAmount || ''],
+      fiscalForecastAmount: [fiscal?.fiscalForecastAmount || '' , [Validators.min(0)]],
+      fiscalActualAmount: [fiscal?.fiscalActualAmount || '' , [Validators.min(0)]],
       projectPlanFiscalGuid: [fiscal?.projectPlanFiscalGuid || ''],
       isApprovedInd: [fiscal?.isApprovedInd || false]
     });
@@ -177,10 +177,18 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  
     );
   }
   
-  
+  get hasUnsavedFiscal(): boolean {
+    return this.projectFiscals.some(fiscal => !fiscal.projectPlanFiscalGuid);
+  }
 
   addNewFiscal(): void {
-    const newFiscalData = { fiscalYear: '', projectFiscalName: '', projectGuid: this.projectGuid };
+      // Check if there is already an unsaved fiscal year
+    const hasUnsavedFiscal = this.projectFiscals.some(fiscal => !fiscal.projectPlanFiscalGuid);
+    if (hasUnsavedFiscal) {
+      // And to prevent adding another unsaved fiscal
+      return; 
+    }
+    const newFiscalData = { fiscalYear: '', projectFiscalName: '', projectGuid: this.projectGuid, planFiscalStatusCode: 'DRAFT'};
     this.projectFiscals.push(newFiscalData);
     this.fiscalForms.push(this.createFiscalForm(newFiscalData));
     this.selectedTabIndex = this.projectFiscals.length - 1; // Navigate to the newly added tab
@@ -222,7 +230,6 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  
         ...originalData, // Include all original data and overwrite with form data
         ...formData,
       };
-  
       const isUpdate = this.projectFiscals[index]?.projectPlanFiscalGuid;
       const projectFiscal: ProjectFiscal = {
         projectGuid: updatedData.projectGuid,
@@ -261,6 +268,7 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  
         otherPartner: updatedData.otherPartner
       };
       if (isUpdate) {
+        debugger
         // update the existing fiscal
         this.projectService.updateProjectFiscal(this.projectGuid, updatedData.projectPlanFiscalGuid, projectFiscal).subscribe({
           next: (response) => {
@@ -302,16 +310,18 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  
       }
   }
 
-  deleteFiscalYear(form: any) {
+  deleteFiscalYear(form: any, index: number): void {
     const formData = form.value;
-    if (formData.projectPlanFiscalGuid) {
-      const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-        data: { indicator: 'confirm-delete' },
-        width: '500px',
-      });
   
-      dialogRef.afterClosed().subscribe((confirmed: boolean) => {
-        if (confirmed) {
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      data: { indicator: 'confirm-delete' },
+      width: '500px',
+    });
+  
+    dialogRef.afterClosed().subscribe((confirmed: boolean) => {
+      if (confirmed) {
+        if (formData.projectPlanFiscalGuid) {
+          // Delete from the service call if it's a saved fiscal year
           this.projectService.deleteProjectFiscalByProjectPlanFiscalGuid(this.projectGuid, formData.projectPlanFiscalGuid)
             .subscribe({
               next: () => {
@@ -330,11 +340,21 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  
                 );
               }
             });
+        } else {
+          // If it's an unsaved draft, just remove it from the list
+          this.projectFiscals.splice(index, 1);
+          this.fiscalForms.splice(index, 1);
+  
+          this.snackbarService.open(
+            this.messages.projectFiscalDeletedSuccess,
+            "OK",
+            { duration: 5000, panelClass: "snackbar-warning" }
+          );
+  
+          this.selectedTabIndex = Math.max(0, this.selectedTabIndex - 1);
         }
-      });
-    } else{
-      this.loadProjectFiscals(true);
-    }
+      }
+    });
   }
   
   isUndeletable(form: any): boolean {
