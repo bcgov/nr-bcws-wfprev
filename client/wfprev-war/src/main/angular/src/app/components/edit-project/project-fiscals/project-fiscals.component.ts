@@ -268,7 +268,6 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  
         otherPartner: updatedData.otherPartner
       };
       if (isUpdate) {
-        debugger
         // update the existing fiscal
         this.projectService.updateProjectFiscal(this.projectGuid, updatedData.projectPlanFiscalGuid, projectFiscal).subscribe({
           next: (response) => {
