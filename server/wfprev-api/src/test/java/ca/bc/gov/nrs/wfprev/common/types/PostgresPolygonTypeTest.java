@@ -10,9 +10,14 @@ import org.postgresql.geometric.PGpolygon;
 import org.postgresql.util.PGobject;
 
 import java.lang.reflect.Method;
-import java.sql.*;
+import java.sql.CallableStatement;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.Types;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 class PostgresPolygonTypeTest {

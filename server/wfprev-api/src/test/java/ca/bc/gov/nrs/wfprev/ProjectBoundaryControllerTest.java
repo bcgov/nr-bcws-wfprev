@@ -8,7 +8,6 @@ import ca.bc.gov.nrs.wfprev.services.ProjectBoundaryService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import jakarta.persistence.EntityNotFoundException;
-import org.geolatte.geom.json.GeolatteGeomModule;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.postgresql.geometric.PGpolygon;
@@ -59,7 +58,7 @@ class ProjectBoundaryControllerTest {
         geoJsonModule.addSerializer(PGpolygon.class, new GeoJsonJacksonSerializer());
         geoJsonModule.addDeserializer(PGpolygon.class, new GeoJsonJacksonDeserializer());
         objectMapper.registerModule(geoJsonModule);
-        objectMapper.registerModule(new GeolatteGeomModule());
+
     }
 
     @Test

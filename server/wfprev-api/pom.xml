@@ -217,16 +217,6 @@
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.geolatte</groupId>
-            <artifactId>geolatte-geom</artifactId>
-            <version>1.9.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.geolatte</groupId>
-            <artifactId>geolatte-geojson</artifactId>
-            <version>1.9.1</version>
-        </dependency>
     </dependencies>
 
     <build>
