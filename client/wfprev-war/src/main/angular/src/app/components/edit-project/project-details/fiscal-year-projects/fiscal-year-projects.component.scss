@@ -31,6 +31,7 @@ mat-expansion-panel {
         margin: 20px 0;
     }
     .fiscal-title-row{
+        font-family: var(--wf-font-family-main);
         display: flex;
         .section-1 {
             flex: 0 0 65%;
@@ -70,6 +71,7 @@ mat-expansion-panel {
     }
     
     .fiscal-data{
+        font-family: var(--wf-font-family-main);
         padding-top: 16px;
         display: flex;
         justify-content: space-between;
@@ -104,6 +106,7 @@ mat-expansion-panel {
     }
 
     .activities-content{
+        font-family: var(--wf-font-family-main);
         padding-top: 10px;
         .title{
             color: #000;
@@ -119,6 +122,7 @@ mat-expansion-panel {
             th, td {
               padding: 8px;
               border-bottom: 1px solid #ddd;
+              font-family: var(--wf-font-family-main);
             }
           
             th {
