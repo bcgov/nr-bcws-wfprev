@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { ChangeDetectorRef, Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
@@ -28,7 +28,8 @@ export class ActivitiesComponent implements OnChanges {
       private readonly fb: FormBuilder,
       private readonly snackbarService: MatSnackBar,
       public readonly dialog: MatDialog,
-      public cd: ChangeDetectorRef
+      public cd: ChangeDetectorRef,
+      public datePipe: DatePipe
     ) {}
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['fiscalGuid'] && changes['fiscalGuid'].currentValue) {
@@ -106,5 +107,11 @@ export class ActivitiesComponent implements OnChanges {
     return `${base} - ${method} - ${technique}`;
   }
   
+  getLastUpdated(index: number) {
+    const activity = this.activities[index];
+    if (!activity) return 'N/A'; // Handle missing data
+
+    return this.datePipe.transform(activity.updateDate, 'yyyy-MM-dd');
+  }
 
 }
