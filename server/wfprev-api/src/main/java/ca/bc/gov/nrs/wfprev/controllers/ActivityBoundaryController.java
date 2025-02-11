@@ -21,6 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -127,8 +128,13 @@ public class ActivityBoundaryController extends CommonController {
             @PathVariable String projectGuid,
             @PathVariable String projectPlanFiscalGuid,
             @PathVariable String activityGuid,
-            @Valid @RequestBody ActivityBoundaryModel resource) {
+            @Valid @RequestBody ActivityBoundaryModel resource,
+            BindingResult result) {
         log.debug(" >> createActivityBoundary");
+
+        if (result.hasErrors()) {
+            return ResponseEntity.badRequest().body((ActivityBoundaryModel) result.getAllErrors());
+        }
 
         try {
             resource.setCreateDate(new Date());
@@ -164,12 +170,15 @@ public class ActivityBoundaryController extends CommonController {
             @PathVariable String projectPlanFiscalGuid,
             @PathVariable String activityGuid,
             @PathVariable String id,
-            @Valid @RequestBody ActivityBoundaryModel resource) {
+            @Valid @RequestBody ActivityBoundaryModel resource,
+            BindingResult result) {
         log.debug(" >> updateActivityBoundary");
 
         try {
             if (!id.equalsIgnoreCase(resource.getActivityBoundaryGuid())) {
                 return badRequest();
+            }else if (result.hasErrors()) {
+                return ResponseEntity.badRequest().body((ActivityBoundaryModel) result.getAllErrors());
             }
 
             resource.setUpdateDate(new Date());

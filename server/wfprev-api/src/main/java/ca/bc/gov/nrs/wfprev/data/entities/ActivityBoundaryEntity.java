@@ -3,6 +3,7 @@ package ca.bc.gov.nrs.wfprev.data.entities;
 import ca.bc.gov.nrs.wfprev.common.serializers.PGPolygonDeserializer;
 import ca.bc.gov.nrs.wfprev.common.serializers.PGPolygonSerializer;
 import ca.bc.gov.nrs.wfprev.common.types.PostgresPolygonType;
+import ca.bc.gov.nrs.wfprev.common.validators.Geometry;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -88,6 +89,7 @@ public class ActivityBoundaryEntity implements Serializable {
     @JdbcType(PostgresPolygonType.class)
     @JsonDeserialize(using = PGPolygonDeserializer.class)
     @JsonSerialize(using = PGPolygonSerializer.class)
+    @Geometry
     private PGpolygon geometry;
 
     @Column(name = "revision_count", columnDefinition="Decimal(10) default '0'", nullable = false)
