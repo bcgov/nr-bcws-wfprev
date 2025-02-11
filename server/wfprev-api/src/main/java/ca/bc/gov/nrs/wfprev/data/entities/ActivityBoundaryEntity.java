@@ -1,7 +1,7 @@
 package ca.bc.gov.nrs.wfprev.data.entities;
 
-import ca.bc.gov.nrs.wfprev.common.serializers.GeoJsonJacksonDeserializer;
-import ca.bc.gov.nrs.wfprev.common.serializers.GeoJsonJacksonSerializer;
+import ca.bc.gov.nrs.wfprev.common.serializers.PGPolygonDeserializer;
+import ca.bc.gov.nrs.wfprev.common.serializers.PGPolygonSerializer;
 import ca.bc.gov.nrs.wfprev.common.types.PostgresPolygonType;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -86,8 +86,8 @@ public class ActivityBoundaryEntity implements Serializable {
     @NotNull
     @Column(name = "geometry", columnDefinition = "polygon")
     @JdbcType(PostgresPolygonType.class)
-    @JsonDeserialize(using = GeoJsonJacksonDeserializer.class)
-    @JsonSerialize(using = GeoJsonJacksonSerializer.class)
+    @JsonDeserialize(using = PGPolygonDeserializer.class)
+    @JsonSerialize(using = PGPolygonSerializer.class)
     private PGpolygon geometry;
 
     @Column(name = "revision_count", columnDefinition="Decimal(10) default '0'", nullable = false)

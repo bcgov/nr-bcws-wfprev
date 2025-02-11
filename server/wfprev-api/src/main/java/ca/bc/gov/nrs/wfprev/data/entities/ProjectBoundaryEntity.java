@@ -1,7 +1,8 @@
 package ca.bc.gov.nrs.wfprev.data.entities;
 
-import ca.bc.gov.nrs.wfprev.common.serializers.GeoJsonJacksonDeserializer;
-import ca.bc.gov.nrs.wfprev.common.serializers.GeoJsonJacksonSerializer;
+import ca.bc.gov.nrs.wfprev.common.serializers.PGMultiPolygonDeserializer;
+import ca.bc.gov.nrs.wfprev.common.serializers.PGPolygonDeserializer;
+import ca.bc.gov.nrs.wfprev.common.serializers.PGPolygonSerializer;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -78,14 +79,14 @@ public class ProjectBoundaryEntity implements Serializable {
 	private String boundaryComment;
 
   @NotNull
-	@JsonSerialize(using=GeoJsonJacksonSerializer.class)
-	@JsonDeserialize(using=GeoJsonJacksonDeserializer.class)
+	@JsonSerialize(using= PGPolygonSerializer.class)
+	@JsonDeserialize(using= PGPolygonDeserializer.class)
   @Column(name="location_geometry", columnDefinition = "geometry(Point,4326)")
 	public Geometry locationGeometry;
 
 	@NotNull
-	@JsonSerialize(using=GeoJsonJacksonSerializer.class)
-	@JsonDeserialize(using=GeoJsonJacksonDeserializer.class)
+	@JsonSerialize(using= PGPolygonSerializer.class)
+	@JsonDeserialize(using= PGPolygonDeserializer.class)
 	@Column(name="boundary_geometry", columnDefinition = "geometry(Polygon,4326)")
 	public Geometry boundaryGeometry;
 

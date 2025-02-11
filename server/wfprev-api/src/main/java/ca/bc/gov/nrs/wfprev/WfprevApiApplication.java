@@ -1,10 +1,10 @@
 package ca.bc.gov.nrs.wfprev;
 
-import ca.bc.gov.nrs.wfprev.common.serializers.GeoJsonJacksonDeserializer;
-import ca.bc.gov.nrs.wfprev.common.serializers.GeoJsonJacksonSerializer;
+import ca.bc.gov.nrs.wfprev.common.serializers.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import jakarta.servlet.DispatcherType;
+import org.postgresql.geometric.PGpoint;
 import org.postgresql.geometric.PGpolygon;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -57,8 +57,15 @@ public class WfprevApiApplication {
 		ObjectMapper mapper = new ObjectMapper();
 		SimpleModule module = new SimpleModule();
 
-		module.addSerializer(PGpolygon.class, new GeoJsonJacksonSerializer());
-		module.addDeserializer(PGpolygon.class, new GeoJsonJacksonDeserializer());
+		module.addSerializer(PGpoint.class, new PGPointSerializer());
+		module.addSerializer(PGpoint[].class, new PGLineStringSerializer());
+		module.addSerializer(PGpolygon.class, new PGPolygonSerializer());
+		module.addSerializer(PGpolygon[].class, new PGMultiPolygonSerializer());
+
+		module.addDeserializer(PGpoint.class, new PGPointDeserializer());
+		module.addDeserializer(PGpoint[].class, new PGLineStringDeserializer());
+		module.addDeserializer(PGpolygon.class, new PGPolygonDeserializer());
+		module.addDeserializer(PGpolygon[].class, new PGMultiPolygonDeserializer());
 
 		mapper.registerModule(module);
 		return mapper;

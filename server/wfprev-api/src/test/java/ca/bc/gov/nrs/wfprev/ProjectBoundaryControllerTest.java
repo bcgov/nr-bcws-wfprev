@@ -1,7 +1,7 @@
 package ca.bc.gov.nrs.wfprev;
 
-import ca.bc.gov.nrs.wfprev.common.serializers.GeoJsonJacksonDeserializer;
-import ca.bc.gov.nrs.wfprev.common.serializers.GeoJsonJacksonSerializer;
+import ca.bc.gov.nrs.wfprev.common.serializers.PGPolygonDeserializer;
+import ca.bc.gov.nrs.wfprev.common.serializers.PGPolygonSerializer;
 import ca.bc.gov.nrs.wfprev.controllers.ProjectBoundaryController;
 import ca.bc.gov.nrs.wfprev.data.models.ProjectBoundaryModel;
 import ca.bc.gov.nrs.wfprev.services.ProjectBoundaryService;
@@ -55,8 +55,8 @@ class ProjectBoundaryControllerTest {
     void setup() {
         objectMapper = new ObjectMapper();
         SimpleModule geoJsonModule = new SimpleModule();
-        geoJsonModule.addSerializer(PGpolygon.class, new GeoJsonJacksonSerializer());
-        geoJsonModule.addDeserializer(PGpolygon.class, new GeoJsonJacksonDeserializer());
+        geoJsonModule.addSerializer(PGpolygon.class, new PGPolygonSerializer());
+        geoJsonModule.addDeserializer(PGpolygon.class, new PGPolygonDeserializer());
         objectMapper.registerModule(geoJsonModule);
 
     }
