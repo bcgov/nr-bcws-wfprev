@@ -126,7 +126,7 @@ class ActivityBoundaryEntityTest {
         Set<ConstraintViolation<ActivityBoundaryEntity>> violations = validator.validate(entity);
 
         assertThat(violations)
-                .hasSize(1)
+                .hasSize(2)
                 .anyMatch(violation ->
                         violation.getPropertyPath().toString().equals("geometry") &&
                                 violation.getMessage().equals("must not be null"));
