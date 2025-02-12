@@ -241,7 +241,7 @@
 							"const response = pm.response.json();",
 							"",
 							"// Check if the access token exists in the response",
-							"if (response.projectPlanFiscalGuid) {",
+							"if (response.activityGuid) {",
 							"    // Save the token to an environment variable",
 							"    pm.environment.set(\"activityGuid\", response.activityGuid);",
 							"    console.log(\"Activity Guid saved successfully!\");",
@@ -301,6 +301,84 @@
 						"projectFiscals",
 						"{{projectPlanFiscalGuid}}",
 						"activities"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Activity Boundary",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Parse the response JSON",
+							"const response = pm.response.json();",
+							"",
+							"// Check if the access token exists in the response",
+							"if (response.activityBoundaryGuid) {",
+							"    // Save the token to an environment variable",
+							"    pm.environment.set(\"activityBoundaryGuid\", response.activityBoundaryGuid);",
+							"    console.log(\"Activity Boundary Guid saved successfully!\");",
+							"} else {",
+							"    console.error(\"Failed to set Activity Boundary Guid:\", response);",
+							"}",
+							"",
+							"pm.test(\"Status code is 201\", function() {",
+							"    pm.response.to.have.status(201);",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"activityGuid\": \"{{activityGuid}}\",\n  \"systemStartTimestamp\": \"2026-01-01\",\n  \"systemEndTimestamp\": \"2026-12-31\",\n  \"plannedSpendAmount\": 200000.00,\n  \"mappingLabel\": \"Test mapping label\",\n  \"collectionDate\": \"2026-01-15\",\n  \"collectionMethod\": \"Test collection method\",\n  \"collectorName\": \"Test_user\",\n  \"boundarySizeHa\": 200.5000,\n  \"boundaryComment\": \"Test activity boundary comment\",\n  \"geometry\": {\n    \"type\": \"Polygon\",\n    \"coordinates\": [\n      [\n        [-124.0000, 49.0000],\n        [-124.0001, 49.0001],\n        [-124.0002, 49.0000],\n        [-124.0000, 49.0000]\n      ]\n    ]\n  }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{LOCAL_API_URL}}/projects/{{projectGuid}}/projectFiscals/{{projectPlanFiscalGuid}}/activities/{{activityGuid}}/activityBoundary",
+					"host": [
+						"{{LOCAL_API_URL}}"
+					],
+					"path": [
+						"projects",
+						"{{projectGuid}}",
+						"projectFiscals",
+						"{{projectPlanFiscalGuid}}",
+						"activities",
+						"{{activityGuid}}",
+						"activityBoundary"
 					]
 				}
 			},
@@ -430,6 +508,73 @@
 						"{{projectPlanFiscalGuid}}",
 						"activities",
 						"{{activityGuid}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Activity Boundary",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function() {",
+							"    pm.response.to.have.status(200);",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"activityBoundaryGuid\": \"{{activityBoundaryGuid}}\",\n  \"activityGuid\": \"{{activityGuid}}\",\n  \"systemStartTimestamp\": \"2027-02-01\",\n  \"systemEndTimestamp\": \"2027-11-30\",\n  \"plannedSpendAmount\": 300000.00,\n  \"mappingLabel\": \"Updated test mapping label\",\n  \"collectionDate\": \"2027-02-10\",\n  \"collectionMethod\": \"Updated test collection method\",\n  \"collectorName\": \"Updated_user\",\n  \"boundarySizeHa\": 300.7500,\n  \"boundaryComment\": \"Updated test activity boundary comment\",\n  \"geometry\": {\n    \"type\": \"Polygon\",\n    \"coordinates\": [\n      [\n        [-125.0000, 50.0000],\n        [-125.0001, 50.0001],\n        [-125.0002, 50.0000],\n        [-125.0000, 50.0000]\n      ]\n    ]\n  }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{LOCAL_API_URL}}/projects/{{projectGuid}}/projectFiscals/{{projectPlanFiscalGuid}}/activities/{{activityGuid}}/activityBoundary/{{activityBoundaryGuid}}",
+					"host": [
+						"{{LOCAL_API_URL}}"
+					],
+					"path": [
+						"projects",
+						"{{projectGuid}}",
+						"projectFiscals",
+						"{{projectPlanFiscalGuid}}",
+						"activities",
+						"{{activityGuid}}",
+						"activityBoundary",
+						"{{activityBoundaryGuid}}"
 					]
 				}
 			},
@@ -1616,6 +1761,101 @@
 			"response": []
 		},
 		{
+			"name": "Get Activity Boundaries",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function() {",
+							"    pm.response.to.have.status(200);",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{LOCAL_API_URL}}/projects/{{projectGuid}}/projectFiscals/{{projectPlanFiscalGuid}}/activities/{{activityGuid}}/activityBoundary",
+					"host": [
+						"{{LOCAL_API_URL}}"
+					],
+					"path": [
+						"projects",
+						"{{projectGuid}}",
+						"projectFiscals",
+						"{{projectPlanFiscalGuid}}",
+						"activities",
+						"{{activityGuid}}",
+						"activityBoundary"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Activity Boundary",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function() {",
+							"    pm.response.to.have.status(200);",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{LOCAL_API_URL}}/projects/{{projectGuid}}/projectFiscals/{{projectPlanFiscalGuid}}/activities/{{activityGuid}}/{{activityGuid}}/activityBoundary/{{activityBoundaryGuid}}",
+					"host": [
+						"{{LOCAL_API_URL}}"
+					],
+					"path": [
+						"projects",
+						"{{projectGuid}}",
+						"projectFiscals",
+						"{{projectPlanFiscalGuid}}",
+						"activities",
+						"{{activityGuid}}",
+						"activityBoundary",
+						"{{activityBoundaryGuid}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "Delete Project Fiscal",
 			"event": [
 				{
@@ -1742,6 +1982,54 @@
 						"{{projectPlanFiscalGuid}}",
 						"activities",
 						"{{activityGuid}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Activity Boundary",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 204\", function() {",
+							"    pm.response.to.have.status(204);",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{LOCAL_API_URL}}/projects/{{projectGuid}}/projectFiscals/{{projectPlanFiscalGuid}}/activities/{{activityGuid}}/activityBoundary/{{activityBoundaryGuid}}",
+					"host": [
+						"{{LOCAL_API_URL}}"
+					],
+					"path": [
+						"projects",
+						"{{projectGuid}}",
+						"projectFiscals",
+						"{{projectPlanFiscalGuid}}",
+						"activities",
+						"{{activityGuid}}",
+						"activityBoundary",
+						"{{activityBoundaryGuid}}"
 					]
 				}
 			},

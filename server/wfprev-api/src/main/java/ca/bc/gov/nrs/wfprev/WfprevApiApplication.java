@@ -1,11 +1,11 @@
 package ca.bc.gov.nrs.wfprev;
 
-import ca.bc.gov.nrs.wfprev.common.serializers.GeoJsonJacksonDeserializer;
-import ca.bc.gov.nrs.wfprev.common.serializers.GeoJsonJacksonSerializer;
+import ca.bc.gov.nrs.wfprev.common.serializers.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.vividsolutions.jts.geom.Geometry;
 import jakarta.servlet.DispatcherType;
+import org.postgresql.geometric.PGpoint;
+import org.postgresql.geometric.PGpolygon;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -31,34 +31,43 @@ public class WfprevApiApplication {
 	 * for Hateoas links behind a proxy passing X-Forwarded-Host.
 	 * This is how we get the links to match the URL people hit
 	 * vs the URL of the internal service.
-	 * 
+	 * <p>
 	 * Alternative here would be to supply an environment variable override.
-	 * 
+	 * <p>
 	 * Note, the application.properties has a configuration to handle this in place
 	 * server.forward-headers-strategy
-	 * 
+	 * <p>
 	 * This can act as an override
-	 * 
+	 *
 	 * @return
 	 */
 	@Bean
 	@ConditionalOnMissingFilterBean(ForwardedHeaderFilter.class)
 	@ConditionalOnProperty(value = "server.forward-headers-strategy", havingValue = "framework")
 	public FilterRegistrationBean<ForwardedHeaderFilter> forwardedHeaderFilter() {
-			ForwardedHeaderFilter filter = new ForwardedHeaderFilter();
-			FilterRegistrationBean<ForwardedHeaderFilter> registration = new FilterRegistrationBean<>(filter);
-			registration.setDispatcherTypes(DispatcherType.REQUEST, DispatcherType.ASYNC, DispatcherType.ERROR);
-			registration.setOrder(Ordered.HIGHEST_PRECEDENCE);
-			return registration;
+		ForwardedHeaderFilter filter = new ForwardedHeaderFilter();
+		FilterRegistrationBean<ForwardedHeaderFilter> registration = new FilterRegistrationBean<>(filter);
+		registration.setDispatcherTypes(DispatcherType.REQUEST, DispatcherType.ASYNC, DispatcherType.ERROR);
+		registration.setOrder(Ordered.HIGHEST_PRECEDENCE);
+		return registration;
 	}
 
 	@Bean
-	public ObjectMapper registerObjectMapper(){
+	public ObjectMapper registerObjectMapper() {
 		ObjectMapper mapper = new ObjectMapper();
-    SimpleModule simpleModule = new SimpleModule();
-    simpleModule.addSerializer(new GeoJsonJacksonSerializer());
-    simpleModule.addDeserializer(Geometry.class, new GeoJsonJacksonDeserializer());
-    mapper.registerModule(simpleModule);
+		SimpleModule module = new SimpleModule();
+
+		module.addSerializer(PGpoint.class, new PGPointSerializer());
+		module.addSerializer(PGpoint[].class, new PGLineStringSerializer());
+		module.addSerializer(PGpolygon.class, new PGPolygonSerializer());
+		module.addSerializer(PGpolygon[].class, new PGMultiPolygonSerializer());
+
+		module.addDeserializer(PGpoint.class, new PGPointDeserializer());
+		module.addDeserializer(PGpoint[].class, new PGLineStringDeserializer());
+		module.addDeserializer(PGpolygon.class, new PGPolygonDeserializer());
+		module.addDeserializer(PGpolygon[].class, new PGMultiPolygonDeserializer());
+
+		mapper.registerModule(module);
 		return mapper;
 	}
 }
