@@ -155,7 +155,7 @@ class ProjectBoundaryServiceTest {
         ProjectBoundaryModel model = new ProjectBoundaryModel();
         model.setProjectBoundaryGuid(exampleId);
         ProjectBoundaryEntity entity = new ProjectBoundaryEntity();
-        entity.setProjectBoundaryGuid(exampleId);
+        entity.setProjectBoundaryGuid(UUID.fromString(exampleId));
         when(projectBoundaryRepository.findById(exampleId))
                 .thenReturn(Optional.of(entity))
                 .thenReturn(Optional.empty());
@@ -180,7 +180,7 @@ class ProjectBoundaryServiceTest {
         ProjectBoundaryModel model = new ProjectBoundaryModel();
         model.setProjectBoundaryGuid(exampleId);
         ProjectBoundaryEntity entity = new ProjectBoundaryEntity();
-        entity.setProjectBoundaryGuid(exampleId);
+        entity.setProjectBoundaryGuid(UUID.fromString(exampleId));
         when(projectBoundaryRepository.findById(exampleId))
                 .thenReturn(Optional.of(entity));
         when(projectBoundaryResourceAssembler.toModel(entity))
