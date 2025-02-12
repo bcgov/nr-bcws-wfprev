@@ -1,11 +1,12 @@
 package ca.bc.gov.nrs.wfprev.common.serializers;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import ca.bc.gov.nrs.wfprev.WfprevApiApplication;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.postgresql.geometric.PGpolygon;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class PGMultiPolygonDeserializerTest {
     private final ObjectMapper mapper = new WfprevApiApplication().registerObjectMapper();
