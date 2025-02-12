@@ -31,7 +31,7 @@
                 color: #282828;
                 font-size: 15px;
                 font-style: normal;
-                font-weight: 700;
+                font-weight: 400;
                 width: 100%;
                 margin: 8px;
                 font-size: 14px;
@@ -332,9 +332,9 @@
   min-width: max-content;
 }
 
-::ng-deep .cdk-overlay-pane {
-  transform: translateX(-50%);
-}
+// ::ng-deep .cdk-overlay-pane {
+//   transform: translateX(-50%);
+// }
 
 ::ng-deep .mat-mdc-menu-item {
   text-align: left !important;

@@ -1,19 +1,32 @@
-import { CommonModule, DatePipe } from '@angular/common';
-import { ChangeDetectorRef, Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { ChangeDetectorRef, Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, FormsModule  } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatExpansionModule } from '@angular/material/expansion';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute } from '@angular/router';
+import moment from 'moment';
 import { CodeTableServices } from 'src/app/services/code-table-services';
 import { ProjectService } from 'src/app/services/project-services';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatDateFormats, MatNativeDateModule, MAT_DATE_FORMATS, MAT_DATE_LOCALE, DateAdapter } from '@angular/material/core';
+import { MatInputModule } from '@angular/material/input';
 
 @Component({
   selector: 'app-activities',
   standalone: true,
-  imports: [MatExpansionModule,ReactiveFormsModule,CommonModule],
+  imports: [MatExpansionModule,
+    ReactiveFormsModule,
+    CommonModule,
+    MatSlideToggleModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    MatInputModule,
+    FormsModule
+  ],
   templateUrl: './activities.component.html',
-  styleUrl: './activities.component.scss'
+  styleUrl: './activities.component.scss',
 })
 export class ActivitiesComponent implements OnChanges {
   @Input() fiscalGuid: string = '';
@@ -28,8 +41,7 @@ export class ActivitiesComponent implements OnChanges {
       private readonly fb: FormBuilder,
       private readonly snackbarService: MatSnackBar,
       public readonly dialog: MatDialog,
-      public cd: ChangeDetectorRef,
-      public datePipe: DatePipe
+      public cd: ChangeDetectorRef
     ) {}
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['fiscalGuid'] && changes['fiscalGuid'].currentValue) {
@@ -83,8 +95,10 @@ export class ActivitiesComponent implements OnChanges {
       activityFundingSourceGuid: [activity?.activityFundingSourceGuid || ''],
       activityName: [activity?.activityName || '', [Validators.required]],
       activityDescription: [activity?.activityDescription || '', [Validators.required, Validators.maxLength(500)]],
-      activityStartDate: [activity?.activityStartDate || '', [Validators.required]],
-      activityEndDate: [activity?.activityEndDate || '', [Validators.required]],
+      activityDateRange: this.fb.group({
+        activityStartDate: [this.formatDate(activity?.activityStartDate) || '', Validators.required],
+        activityEndDate: [this.formatDate(activity?.activityEndDate) || '', Validators.required]
+      }),
       plannedSpendAmount: [activity?.plannedSpendAmount ?? ''],
       plannedTreatmentAreaHa: [activity?.plannedTreatmentAreaHa ?? ''],
       reportedSpendAmount: [activity?.reportedSpendAmount ?? ''],
@@ -97,6 +111,9 @@ export class ActivitiesComponent implements OnChanges {
     });
   }
 
+  formatDate(date: string | Date): string {
+    return date ? moment(date).format('YYYY-MM-DD') : '';
+  }
   getActivityTitle(index: number) {
     const activity = this.activities[index];
     if (!activity) return 'N/A'; // Handle missing data
@@ -110,8 +127,17 @@ export class ActivitiesComponent implements OnChanges {
   getLastUpdated(index: number) {
     const activity = this.activities[index];
     if (!activity) return 'N/A'; // Handle missing data
+    
+    return moment(activity.updateDate).format('YYYY-MM-DD');
+  }
 
-    return this.datePipe.transform(activity.updateDate, 'yyyy-MM-dd');
+  toggleActivityStatus(index: number) {
+    const currentStatus = this.activityForms[index].value?.activityStatusCode;
+    const newStatus = currentStatus === 'COMPLETED' ? 'ACTIVE' : 'COMPLETED';
+  
+    this.activityForms[index].patchValue({
+      activityStatusCode: newStatus
+    });
   }
 
 }

@@ -1,8 +1,8 @@
 @import "../project-fiscals/project-fiscals.component.scss";
 
-.activites-container{
+.fiscals-container{
     padding-top: 12px;
-
+    margin: 0;
     .expansion-panel{
         border: 1px solid #D9D9D9;
         
@@ -14,12 +14,82 @@
     }
     
     .activity-title{
-        display: flex;
+        font-family: var(--wf-font-family-main) !important;
+        flex-wrap: wrap;
         color: #000;
         font-family: var(--wf-font-family-main);
         font-size: 20px;
         font-style: normal;
         font-weight: 400;
         line-height: normal;
+        .update-date{
+            padding-left: 4px;
+            font-size: 12px;
+            font-style: italic;
+            font-weight: 400;
+            line-height: normal;
+        }
     }
+    .form-item{
+        flex: 1 1 calc(25% - 20px) !important; // 4 items per row with a 20px gap
+    }
+    .full-width{
+        flex: 1 1 100% !important;
+    }
+    .five-columns{
+        flex: 1 1 calc(20% - 20px) !important; // 5 items per row with a 20px gap
+    }
+
+    .mat-date-range-input {
+        display: flex;
+        justify-content: space-between;
+        font-weight: 400;
+        font-size: 16px;
+        color: #282828;
+    }
+    
+    .mat-date-range-input input {
+        border: none !important; /* Remove borders */
+        box-shadow: none !important;
+        text-align: center;
+        background: transparent;
+        margin: 0 !important;
+    }
+    
+    .mat-form-field-appearance-outline .mat-form-field-outline {
+        display: none !important; /* Hide the default outlined box */
+    }
+    
+    .mat-datepicker-toggle {
+        margin-left: 8px; /* Add space between date input and calendar icon */
+    }
+    
+    .date-range-container {
+        display: flex;
+        align-items: center;
+    }
+
+    .date-separator {
+        margin: 0 5px;
+      }
+
 }
+
+
+.custom-overlay-container .cdk-overlay-pane {
+    left: 190px !important;
+    transform: none !important;
+}
+
+:host ::ng-deep .mdc-text-field--filled:not(.mdc-text-field--disabled) {
+    background-color: white;
+  }
+
+:host ::ng-deep .mat-mdc-form-field-flex{
+    height: 20px;
+    margin: 4px;
+}
+:host ::ng-deep .mat-mdc-form-field-infix{
+    padding: 0 !important;
+}
+  
