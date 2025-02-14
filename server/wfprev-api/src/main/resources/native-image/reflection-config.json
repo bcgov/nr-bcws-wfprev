@@ -1031,35 +1031,5 @@
     "allDeclaredConstructors": true,
     "allDeclaredMethods": true,
     "allDeclaredFields": true
-  },
-  {
-    "name": "org.hibernate.spatial.HSMessageLogger",
-    "allDeclaredMethods": true,
-    "allDeclaredConstructors": true,
-    "allDeclaredFields": true
-  },
-  {
-    "name": "org.hibernate.spatial.integration.SpatialInitializer",
-    "allDeclaredMethods": true,
-    "allDeclaredConstructors": true,
-    "allDeclaredFields": true
-  },
-  {
-    "name": "org.hibernate.spatial.integration.SpatialService",
-    "allDeclaredMethods": true,
-    "allDeclaredConstructors": true,
-    "allDeclaredFields": true
-  },
-  {
-    "name": "org.jboss.logging.Logger",
-    "allDeclaredMethods": true,
-    "allDeclaredConstructors": true,
-    "allDeclaredFields": true
-  },
-  {
-    "name": "org.jboss.logging.LoggerProvider",
-    "allDeclaredMethods": true,
-    "allDeclaredConstructors": true,
-    "allDeclaredFields": true
   }
 ]
