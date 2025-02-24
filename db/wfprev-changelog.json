@@ -76,5 +76,21 @@
        ]
       }
     },
+     {
+      "changeSet": {
+        "id": "01_00_13_01",
+        "author": "hsaldyga",
+        "tagDatabase": { "tag" : "version_01_00_13_01" },
+        "changes": [
+          {
+            "sqlFile": {
+             "dbms": "postgresql",
+             "endDelimiter": ";",
+             "path": "scripts/01_00_13/01/grants/wfprev.grants.sql"
+           }
+         }
+       ]
+      }
+    }
  ] 
 }

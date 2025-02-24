@@ -1,0 +1,1 @@
+DROP TABLE wfprev.funding_source;
