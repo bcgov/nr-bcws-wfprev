@@ -50,7 +50,7 @@ public class SilvicultureTechniqueCodeResourceAssembler extends RepresentationMo
 
         model.setSilvicultureTechniqueGuid(String.valueOf(entity.getSilvicultureTechniqueGuid()));
         model.setSilvicultureTechniqueCode(entity.getSilvicultureTechniqueCode());
-        model.setSilvicultureTechniqueGuid(String.valueOf(entity.getSilvicultureTechniqueGuid()));
+        model.setSilvicultureBaseGuid(String.valueOf(entity.getSilvicultureBaseGuid()));
         model.setDescription(entity.getDescription());
         model.setRevisionCount(entity.getRevisionCount());
         model.setCreateUser(entity.getCreateUser());
