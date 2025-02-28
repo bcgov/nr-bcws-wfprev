@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectorRef, Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, FormsModule  } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatExpansionModule } from '@angular/material/expansion';
@@ -28,12 +28,14 @@ import { MatInputModule } from '@angular/material/input';
   templateUrl: './activities.component.html',
   styleUrl: './activities.component.scss',
 })
-export class ActivitiesComponent implements OnChanges {
+export class ActivitiesComponent implements OnChanges, OnInit{
   @Input() fiscalGuid: string = '';
   projectGuid = '';
   activities: any[] = [];
   originalActivitiesValues: any[] = [];
+  contractPhaseCode: any[] = [];
   activityForms: FormGroup[] = [];
+  
     constructor(
       private route: ActivatedRoute,
       private projectService: ProjectService,
@@ -43,12 +45,41 @@ export class ActivitiesComponent implements OnChanges {
       public readonly dialog: MatDialog,
       public cd: ChangeDetectorRef
     ) {}
+
+  ngOnInit(): void {
+    this.loadCodeTables();
+  }
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['fiscalGuid'] && changes['fiscalGuid'].currentValue) {
       this.getActivities();
     }
   }
 
+  loadCodeTables(): void {
+    const codeTables = [
+      { name: 'contractPhaseCodes', embeddedKey: 'contractPhaseCode' },
+    ];
+  
+    codeTables.forEach((table) => {
+      this.codeTableService.fetchCodeTable(table.name).subscribe({
+        next: (data) => {
+          this.assignCodeTableData(table.embeddedKey, data);
+        },
+        error: (err) => {
+          console.error(`Error fetching ${table.name}`, err);
+          this.assignCodeTableData(table.embeddedKey, []); // Assign empty array on error
+        },
+      });
+    });
+  }
+
+  assignCodeTableData(key: string, data: any): void {
+    switch (key) {
+      case 'contractPhaseCode':
+        this.contractPhaseCode = data._embedded.contractPhaseCode || [];
+        break;
+    }
+  }
 
   getActivities(): void {
     if (!this.fiscalGuid) return;
@@ -91,7 +122,7 @@ export class ActivitiesComponent implements OnChanges {
       silvicultureTechniqueGuid: [activity?.silvicultureTechniqueGuid || ''],
       silvicultureMethodGuid: [activity?.silvicultureMethodGuid || ''],
       riskRatingCode: [activity?.riskRatingCode || ''],
-      contractPhaseCode: [activity?.contractPhaseCode || ''],
+      contractPhaseCode: [activity?.contractPhaseCode?.contractPhaseCode || ''],
       activityFundingSourceGuid: [activity?.activityFundingSourceGuid || ''],
       activityName: [activity?.activityName || '', [Validators.required]],
       activityDescription: [activity?.activityDescription || '', [Validators.required, Validators.maxLength(500)]],

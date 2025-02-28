@@ -64,14 +64,14 @@
                             </select>
                         </div>
                         <div class="form-item">
-                            <label>Method</label>
-                            <select id="silvicultureMethodeGuid" formControlName="silvicultureMethodGuid">
+                            <label>Technique</label>
+                            <select id="silvicultureTechniqueGuid" formControlName="silvicultureTechniqueGuid">
                                 <option value="" >Select</option>
                             </select>
                         </div>
                         <div class="form-item">
-                            <label>Technique</label>
-                            <select id="silvicultureTechniqueGuid" formControlName="silvicultureTechniqueGuid">
+                            <label>Method</label>
+                            <select id="silvicultureMethodeGuid" formControlName="silvicultureMethodGuid">
                                 <option value="" >Select</option>
                             </select>
                         </div>
@@ -117,7 +117,9 @@
                         <div class="form-item five-columns">
                             <label>Contract Phase</label>
                             <select id="contractPhaseCode" formControlName="contractPhaseCode">
-                                <option value="" >Select</option>
+                                <option *ngFor="let item of contractPhaseCode" [value]="item.contractPhaseCode">
+                                    {{ item.description }}
+                                </option>
                             </select>
                         </div>
 
