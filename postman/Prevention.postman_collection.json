@@ -1439,54 +1439,6 @@
 			"response": []
 		},
 		{
-			"name": "GET Funding Source Codes",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Status code is 200\", function() {",
-							"    pm.response.to.have.status(200);",
-							"})"
-						],
-						"type": "text/javascript",
-						"packages": {}
-					}
-				}
-			],
-			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "{{accessToken}}",
-							"type": "string"
-						}
-					]
-				},
-				"method": "GET",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json",
-						"type": "text"
-					}
-				],
-				"url": {
-					"raw": "{{LOCAL_API_URL}}/codes/fundingSourceCodes",
-					"host": [
-						"{{LOCAL_API_URL}}"
-					],
-					"path": [
-						"codes",
-						"fundingSourceCodes"
-					]
-				}
-			},
-			"response": []
-		},
-		{
 			"name": "GET Source Object Name Codes",
 			"event": [
 				{
@@ -1577,6 +1529,150 @@
 					"path": [
 						"codes",
 						"attachmentContentTypeCodes"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET Silviculture Base Codes",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function() {",
+							"    pm.response.to.have.status(200);",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{LOCAL_API_URL}}/codes/silvicultureBaseCodes",
+					"host": [
+						"{{LOCAL_API_URL}}"
+					],
+					"path": [
+						"codes",
+						"silvicultureBaseCodes"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET Silviculture Method Codes",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function() {",
+							"    pm.response.to.have.status(200);",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{LOCAL_API_URL}}/codes/silvicultureMethodCodes",
+					"host": [
+						"{{LOCAL_API_URL}}"
+					],
+					"path": [
+						"codes",
+						"silvicultureMethodCodes"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET Silviculture Technique Codes",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function() {",
+							"    pm.response.to.have.status(200);",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{LOCAL_API_URL}}/codes/silvicultureTechniqueCodes",
+					"host": [
+						"{{LOCAL_API_URL}}"
+					],
+					"path": [
+						"codes",
+						"silvicultureTechniqueCodes"
 					]
 				}
 			},
