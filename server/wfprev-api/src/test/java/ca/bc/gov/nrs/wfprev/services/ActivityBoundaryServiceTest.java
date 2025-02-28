@@ -272,7 +272,7 @@ class ActivityBoundaryServiceTest {
         activityBoundaryService.deleteActivityBoundary("project-guid", "fiscal-guid", activityGuid, boundaryGuid);
 
         // THEN
-        verify(activityBoundaryRepository).deleteByActivityGuid(UUID.fromString(boundaryGuid));
+        verify(activityBoundaryRepository).deleteByActivityBoundaryGuid(UUID.fromString(boundaryGuid));
     }
 
     @Test
