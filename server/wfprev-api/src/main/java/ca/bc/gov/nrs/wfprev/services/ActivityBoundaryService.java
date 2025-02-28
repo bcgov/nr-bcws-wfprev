@@ -151,6 +151,7 @@ public class ActivityBoundaryService implements CommonService {
         return activityBoundaryResourceAssembler.toModel(boundary);
     }
 
+    @Transactional
     public void deleteActivityBoundary(
             String projectGuid, String fiscalGuid, String activityGuid, String boundaryGuid) {
         // Verify activity exists and belongs to the correct hierarchy
@@ -165,6 +166,6 @@ public class ActivityBoundaryService implements CommonService {
             throw new EntityNotFoundException(MessageFormat.format(EXTENDED_KEY_FORMAT, BOUNDARY, boundaryGuid, DOES_NOT_BELONG_ACTIVITY, activityGuid));
         }
 
-        activityBoundaryRepository.deleteByActivityGuid(UUID.fromString(boundaryGuid));
+        activityBoundaryRepository.deleteByActivityBoundaryGuid(UUID.fromString(boundaryGuid));
     }
 }
