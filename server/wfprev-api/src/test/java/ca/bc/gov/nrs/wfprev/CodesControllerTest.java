@@ -17,6 +17,9 @@ import ca.bc.gov.nrs.wfprev.data.models.ObjectiveTypeCodeModel;
 import ca.bc.gov.nrs.wfprev.data.models.PlanFiscalStatusCodeModel;
 import ca.bc.gov.nrs.wfprev.data.models.ProjectTypeCodeModel;
 import ca.bc.gov.nrs.wfprev.data.models.RiskRatingCodeModel;
+import ca.bc.gov.nrs.wfprev.data.models.SilvicultureBaseCodeModel;
+import ca.bc.gov.nrs.wfprev.data.models.SilvicultureMethodCodeModel;
+import ca.bc.gov.nrs.wfprev.data.models.SilvicultureTechniqueCodeModel;
 import ca.bc.gov.nrs.wfprev.data.models.SourceObjectNameCodeModel;
 import ca.bc.gov.nrs.wfprev.services.CodesService;
 import org.junit.jupiter.api.Test;
@@ -70,6 +73,9 @@ class CodesControllerTest {
         testGetPlanFiscalStatusCodes();
         testGetAncillaryFundingSourceCodes();
         testGetFundingSourceCodes();
+        testGetSilvicultureBaseCodes();
+        testGetSilvicultureMethodCodes();
+        testGetSilvicultureTechniqueCodes();
     }
 
     void testGetForestAreaCodes() throws Exception {
@@ -293,6 +299,66 @@ class CodesControllerTest {
                 .andExpect(status().isOk());
                 }
 
+    void testGetSilvicultureBaseCodes() throws Exception {
+        String exampleId1 = UUID.randomUUID().toString();
+        String exampleId2 = UUID.randomUUID().toString();
+
+        SilvicultureBaseCodeModel sbc1 = new SilvicultureBaseCodeModel();
+        sbc1.setSilvicultureBaseGuid(exampleId1);
+
+        SilvicultureBaseCodeModel sbc2 = new SilvicultureBaseCodeModel();
+        sbc2.setSilvicultureBaseGuid(exampleId2);
+
+        List<SilvicultureBaseCodeModel> sbcList = Arrays.asList(sbc1, sbc2);
+        CollectionModel<SilvicultureBaseCodeModel> sbcModel = CollectionModel.of(sbcList);
+
+        when(codesService.getAllSilvicultureBaseCodes()).thenReturn(sbcModel);
+
+        mockMvc.perform(get("/codes/" + CodeTables.SILVICULTURE_BASE_CODE)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
+
+    void testGetSilvicultureMethodCodes() throws Exception {
+        String exampleId1 = UUID.randomUUID().toString();
+        String exampleId2 = UUID.randomUUID().toString();
+
+        SilvicultureMethodCodeModel sbm1 = new SilvicultureMethodCodeModel();
+        sbm1.setSilvicultureMethodGuid(exampleId1);
+
+        SilvicultureMethodCodeModel sbm2 = new SilvicultureMethodCodeModel();
+        sbm2.setSilvicultureMethodGuid(exampleId2);
+
+        List<SilvicultureMethodCodeModel> sbmList = Arrays.asList(sbm1, sbm2);
+        CollectionModel<SilvicultureMethodCodeModel> sbmModel = CollectionModel.of(sbmList);
+
+        when(codesService.getAllSilvicultureMethodCodes()).thenReturn(sbmModel);
+
+        mockMvc.perform(get("/codes/" + CodeTables.SILVICULTURE_METHOD_CODE)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
+
+    void testGetSilvicultureTechniqueCodes() throws Exception {
+        String exampleId1 = UUID.randomUUID().toString();
+        String exampleId2 = UUID.randomUUID().toString();
+
+        SilvicultureTechniqueCodeModel stc1 = new SilvicultureTechniqueCodeModel();
+        stc1.setSilvicultureTechniqueGuid(exampleId1);
+
+        SilvicultureTechniqueCodeModel stc2 = new SilvicultureTechniqueCodeModel();
+        stc2.setSilvicultureTechniqueGuid(exampleId2);
+
+        List<SilvicultureTechniqueCodeModel> stcList = Arrays.asList(stc1, stc2);
+        CollectionModel<SilvicultureTechniqueCodeModel> stcModel = CollectionModel.of(stcList);
+
+        when(codesService.getAllSilvicultureTechniqueCodes()).thenReturn(stcModel);
+
+        mockMvc.perform(get("/codes/" + CodeTables.SILVICULTURE_TECHNIQUE_CODE)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
+
     @Test
     @WithMockUser
     void testGetCodesById() throws Exception {
@@ -427,6 +493,36 @@ class CodesControllerTest {
         mockMvc.perform(get("/codes/{codeTable}/{id}", CodeTables.ATTACHMENT_CONTENT_TYPE_CODE, actcID)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
+
+        String sbcID = UUID.randomUUID().toString();
+        SilvicultureBaseCodeModel silvicultureBaseCode = new SilvicultureBaseCodeModel();
+        silvicultureBaseCode.setSilvicultureBaseCode(sbcID);
+
+        when(codesService.getSilvicultureBaseCodeById(sbcID)).thenReturn(silvicultureBaseCode);
+
+        mockMvc.perform(get("/codes/{codeTable}/{id}", CodeTables.SILVICULTURE_BASE_CODE, sbcID)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        String smcID = UUID.randomUUID().toString();
+        SilvicultureMethodCodeModel silvicultureMethodCode = new SilvicultureMethodCodeModel();
+        silvicultureMethodCode.setSilvicultureMethodCode(smcID);
+
+        when(codesService.getSilvicultureMethodCodeById(smcID)).thenReturn(silvicultureMethodCode);
+
+        mockMvc.perform(get("/codes/{codeTable}/{id}", CodeTables.SILVICULTURE_METHOD_CODE, smcID)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        String stcID = UUID.randomUUID().toString();
+        SilvicultureTechniqueCodeModel silvicultureTechniqueCode = new SilvicultureTechniqueCodeModel();
+        silvicultureTechniqueCode.setSilvicultureTechniqueCode(stcID);
+
+        when(codesService.getSilvicultureTechniqueCodeById(stcID)).thenReturn(silvicultureTechniqueCode);
+
+        mockMvc.perform(get("/codes/{codeTable}/{id}", CodeTables.SILVICULTURE_TECHNIQUE_CODE, stcID)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
     }
 
     @Test
@@ -446,6 +542,9 @@ class CodesControllerTest {
         when(codesService.getFundingSourceCodeById(nonExistentId)).thenReturn(null);
         when(codesService.getSourceObjectNameCodeById(nonExistentId)).thenReturn(null);
         when(codesService.getAttachmentContentTypeCodeById(nonExistentId)).thenReturn(null);
+        when(codesService.getSilvicultureBaseCodeById(nonExistentId)).thenReturn(null);
+        when(codesService.getSilvicultureMethodCodeById(nonExistentId)).thenReturn(null);
+        when(codesService.getSilvicultureTechniqueCodeById(nonExistentId)).thenReturn(null);
 
         // Test valid code tables with non-existent ID
         mockMvc.perform(get("/codes/{codeTable}/{id}", "forestAreaCodes", nonExistentId)
@@ -499,6 +598,21 @@ class CodesControllerTest {
                 .andExpect(status().isNotFound());
 
         mockMvc.perform(get("/codes/{codeTable}/{id}", "attachmentContentTypeCodes", nonExistentId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("If-Match", "\"1\""))
+                .andExpect(status().isNotFound());
+
+        mockMvc.perform(get("/codes/{codeTable}/{id}", "silvicultureBaseCodes", nonExistentId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("If-Match", "\"1\""))
+                .andExpect(status().isNotFound());
+
+        mockMvc.perform(get("/codes/{codeTable}/{id}", "silvicultureMethodCodes", nonExistentId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("If-Match", "\"1\""))
+                .andExpect(status().isNotFound());
+
+        mockMvc.perform(get("/codes/{codeTable}/{id}", "silvicultureTechniqueCodes", nonExistentId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("If-Match", "\"1\""))
                 .andExpect(status().isNotFound());
@@ -695,6 +809,17 @@ class CodesControllerTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
         verify(codesService, times(1)).getAllAttachmentContentTypeCodes();
+        verifyNoMoreInteractions(codesService);
+    }
+
+    @Test
+    @WithMockUser
+    void testGetAllSilvicultureBaseCodes() throws Exception {
+        when(codesService.getAllSilvicultureBaseCodes()).thenReturn(CollectionModel.empty());
+        mockMvc.perform(get("/codes/{codeTable}", CodeTables.SILVICULTURE_BASE_CODE)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+        verify(codesService, times(1)).getAllSilvicultureBaseCodes();
         verifyNoMoreInteractions(codesService);
     }
 

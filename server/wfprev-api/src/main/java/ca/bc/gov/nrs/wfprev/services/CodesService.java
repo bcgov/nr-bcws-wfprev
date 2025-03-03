@@ -55,6 +55,12 @@ public class CodesService implements CommonService {
     private final SourceObjectNameCodeRepository sourceObjectNameCodeRepository;
     private final AttachmentContentTypeCodeResourceAssembler attachmentContentTypeCodeResourceAssembler;
     private final AttachmentContentTypeCodeRepository attachmentContentTypeCodeRepository;
+    private final SilvicultureBaseCodeResourceAssembler silvicultureBaseCodeResourceAssembler;
+    private final SilvicultureBaseCodeRepository silvicultureBaseCodeRepository;
+    private final SilvicultureMethodCodeResourceAssembler silvicultureMethodCodeResourceAssembler;
+    private final SilvicultureMethodCodeRepository silvicultureMethodCodeRepository;
+    private final SilvicultureTechniqueCodeResourceAssembler silvicultureTechniqueCodeResourceAssembler;
+    private final SilvicultureTechniqueCodeRepository silvicultureTechniqueCodeRepository;
 
     public CodesService(ForestAreaCodeRepository forestAreaCodeRepository, ForestAreaCodeResourceAssembler forestAreaCodeResourceAssembler,
                         GeneralScopeCodeRepository generalScopeCodeRepository, GeneralScopeCodeResourceAssembler generalScopeCodeResourceAssembler,
@@ -68,7 +74,8 @@ public class CodesService implements CommonService {
                         PlanFiscalStatusCodeResourceAssembler planFiscalStatusCodeResourceAssembler, PlanFiscalStatusCodeRepository planFiscalStatusCodeRepository,
                         AncillaryFundingSourceCodeResourceAssembler ancillaryFundingSourceCodeResourceAssembler, AncillaryFundingSourceCodeRepository ancillaryFundingSourceCodeRepository,
                         FundingSourceCodeResourceAssembler fundingSourceCodeResourceAssembler, FundingSourceCodeRepository fundingSourceCodeRepository, SourceObjectNameCodeResourceAssembler sourceObjectNameCodeResourceAssembler, SourceObjectNameCodeRepository sourceObjectNameCodeRepository,
-                        AttachmentContentTypeCodeResourceAssembler attachmentContentTypeCodeResourceAssembler, AttachmentContentTypeCodeRepository attachmentContentTypeCodeRepository) {
+                        AttachmentContentTypeCodeResourceAssembler attachmentContentTypeCodeResourceAssembler, AttachmentContentTypeCodeRepository attachmentContentTypeCodeRepository, SilvicultureBaseCodeResourceAssembler silvicultureBaseCodeResourceAssembler, SilvicultureBaseCodeRepository silvicultureBaseCodeRepository,
+                        SilvicultureMethodCodeResourceAssembler silvicultureMethodCodeResourceAssembler, SilvicultureMethodCodeRepository silvicultureMethodCodeRepository, SilvicultureTechniqueCodeResourceAssembler silvicultureTechniqueCodeResourceAssembler, SilvicultureTechniqueCodeRepository silvicultureTechniqueCodeRepository) {
         this.forestAreaCodeRepository = forestAreaCodeRepository;
         this.forestAreaCodeResourceAssembler = forestAreaCodeResourceAssembler;
         this.generalScopeCodeRepository = generalScopeCodeRepository;
@@ -105,6 +112,12 @@ public class CodesService implements CommonService {
         this.sourceObjectNameCodeResourceAssembler = sourceObjectNameCodeResourceAssembler;
         this.attachmentContentTypeCodeResourceAssembler = attachmentContentTypeCodeResourceAssembler;
         this.attachmentContentTypeCodeRepository = attachmentContentTypeCodeRepository;
+        this.silvicultureBaseCodeResourceAssembler = silvicultureBaseCodeResourceAssembler;
+        this.silvicultureBaseCodeRepository = silvicultureBaseCodeRepository;
+        this.silvicultureMethodCodeResourceAssembler = silvicultureMethodCodeResourceAssembler;
+        this.silvicultureMethodCodeRepository = silvicultureMethodCodeRepository;
+        this.silvicultureTechniqueCodeResourceAssembler = silvicultureTechniqueCodeResourceAssembler;
+        this.silvicultureTechniqueCodeRepository = silvicultureTechniqueCodeRepository;
     }
 
     /**
@@ -448,6 +461,72 @@ public class CodesService implements CommonService {
             return attachmentContentTypeCodeRepository.findById(id)
                     .map(attachmentContentTypeCodeResourceAssembler::toModel)
                     .orElse(null);
+        } catch (Exception e) {
+            throw new ServiceException(e.getLocalizedMessage(), e);
+        }
+    }
+
+    public CollectionModel<SilvicultureBaseCodeModel> getAllSilvicultureBaseCodes() throws ServiceException {
+        try {
+            List<SilvicultureBaseCodeEntity> entities = silvicultureBaseCodeRepository.findAll();
+            return silvicultureBaseCodeResourceAssembler.toCollectionModel(entities);
+        } catch (Exception e) {
+            throw new ServiceException(e.getLocalizedMessage(), e);
+        }
+    }
+
+    public SilvicultureBaseCodeModel getSilvicultureBaseCodeById(String id) throws ServiceException {
+        try {
+            UUID uuid = UUID.fromString(id);
+            return silvicultureBaseCodeRepository.findById(uuid)
+                    .map(silvicultureBaseCodeResourceAssembler::toModel)
+                    .orElse(null);
+        } catch (IllegalArgumentException e) {
+            throw new ServiceException("Invalid UUID format for base: " + id, e);
+        } catch (Exception e) {
+            throw new ServiceException(e.getLocalizedMessage(), e);
+        }
+    }
+
+    public CollectionModel<SilvicultureMethodCodeModel> getAllSilvicultureMethodCodes() throws ServiceException {
+        try {
+            List<SilvicultureMethodCodeEntity> entities = silvicultureMethodCodeRepository.findAll();
+            return silvicultureMethodCodeResourceAssembler.toCollectionModel(entities);
+        } catch (Exception e) {
+            throw new ServiceException(e.getLocalizedMessage(), e);
+        }
+    }
+
+    public SilvicultureMethodCodeModel getSilvicultureMethodCodeById(String id) throws ServiceException {
+        try {
+            UUID uuid = UUID.fromString(id);
+            return silvicultureMethodCodeRepository.findById(uuid)
+                    .map(silvicultureMethodCodeResourceAssembler::toModel)
+                    .orElse(null);
+        } catch (IllegalArgumentException e) {
+            throw new ServiceException("Invalid UUID format for method: " + id, e);
+        } catch (Exception e) {
+            throw new ServiceException(e.getLocalizedMessage(), e);
+        }
+    }
+
+    public CollectionModel<SilvicultureTechniqueCodeModel> getAllSilvicultureTechniqueCodes() throws ServiceException {
+        try {
+            List<SilvicultureTechniqueCodeEntity> entities = silvicultureTechniqueCodeRepository.findAll();
+            return silvicultureTechniqueCodeResourceAssembler.toCollectionModel(entities);
+        } catch (Exception e) {
+            throw new ServiceException(e.getLocalizedMessage(), e);
+        }
+    }
+
+    public SilvicultureTechniqueCodeModel getSilvicultureTechniqueCodeById(String id) throws ServiceException {
+        try {
+            UUID uuid = UUID.fromString(id);
+            return silvicultureTechniqueCodeRepository.findById(uuid)
+                    .map(silvicultureTechniqueCodeResourceAssembler::toModel)
+                    .orElse(null);
+        } catch (IllegalArgumentException e) {
+            throw new ServiceException("Invalid UUID format for technique: " + id, e);
         } catch (Exception e) {
             throw new ServiceException(e.getLocalizedMessage(), e);
         }

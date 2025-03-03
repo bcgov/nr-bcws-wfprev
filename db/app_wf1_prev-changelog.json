@@ -1011,6 +1011,48 @@
           { "sql": "DROP TABLE wfprev.proposal_type_code" }
         ]
       }
-    }    
+    },   
+    {
+      "changeSet": {
+        "id": "01_00_13_00",
+        "author": "hsaldyga",
+        "tagDatabase": { "tag" : "version_01_00_13_00" },
+        "changes": [
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_13/00/ddl/WFPREV.funding_stream.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_13/00/ddl/app_wf1_prev.ddl.modify_project.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_13/00/ddl/app_wf1_prev.ddl.modify_project_audit.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_13/00/ddl/app_wf1_prev.ddl.drop_funding_source.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": "$",
+              "path": "scripts/01_00_13/00/ddl/app_wf1_prev.ddl.update_project_trigger.sql"
+            }
+          }
+       ],
+        "rollback": [
+          { "sql": "DROP TABLE wfprev.funding_stream" }
+        ]
+      }
+    }        
   ] 
 }

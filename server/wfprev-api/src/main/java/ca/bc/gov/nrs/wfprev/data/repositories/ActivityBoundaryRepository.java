@@ -16,5 +16,5 @@ public interface ActivityBoundaryRepository extends CommonRepository<ActivityBou
 
     Optional<ActivityBoundaryEntity> findByActivityBoundaryGuid(@NotNull UUID id);
 
-    void deleteByActivityGuid(@NotNull UUID id);
+    void deleteByActivityBoundaryGuid(@NotNull UUID id);
 }
