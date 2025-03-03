@@ -42,9 +42,6 @@ public class ProjectResourceAssembler extends RepresentationModelAssemblerSuppor
         if (resource.getProgramAreaGuid() != null) {
             entity.setProgramAreaGuid(UUID.fromString(resource.getProgramAreaGuid()));
         }
-        if (resource.getPrimaryFundingSourceGuid() != null) {
-            entity.setPrimaryFundingSourceGuid(UUID.fromString(resource.getPrimaryFundingSourceGuid()));
-        }
         if (resource.getPrimaryObjectiveTypeCode() != null) {
             entity.setPrimaryObjectiveTypeCode(toObjectiveTypeCodeEntity(resource.getPrimaryObjectiveTypeCode()));
         }
@@ -119,7 +116,6 @@ public class ProjectResourceAssembler extends RepresentationModelAssemblerSuppor
             resource.setSecondaryObjectiveRationale(entity.getSecondaryObjectiveRationale());
         }
         resource.setProgramAreaGuid(entity.getProgramAreaGuid().toString());
-        resource.setPrimaryFundingSourceGuid(entity.getPrimaryFundingSourceGuid() != null ? entity.getPrimaryFundingSourceGuid().toString() : null);
         resource.setForestRegionOrgUnitId(entity.getForestRegionOrgUnitId());
         resource.setForestDistrictOrgUnitId(entity.getForestDistrictOrgUnitId());
         resource.setFireCentreOrgUnitId(entity.getFireCentreOrgUnitId());
@@ -228,12 +224,6 @@ public class ProjectResourceAssembler extends RepresentationModelAssemblerSuppor
             nonNullOrDefault(
                 model.getProgramAreaGuid() != null ? UUID.fromString(model.getProgramAreaGuid()) : null,
                 existingEntity.getProgramAreaGuid()
-            )
-        );
-        entity.setPrimaryFundingSourceGuid(
-            nonNullOrDefault(
-                model.getPrimaryFundingSourceGuid() != null ? UUID.fromString(model.getPrimaryFundingSourceGuid()) : null,
-                existingEntity.getPrimaryFundingSourceGuid()
             )
         );
         entity.setForestRegionOrgUnitId(nonNullOrDefault(model.getForestRegionOrgUnitId(), existingEntity.getForestRegionOrgUnitId()));
