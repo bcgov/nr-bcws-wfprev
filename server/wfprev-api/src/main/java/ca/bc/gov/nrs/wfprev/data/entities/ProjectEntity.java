@@ -185,7 +185,4 @@ public class ProjectEntity implements Serializable {
 
     @Column(name = "secondary_objective_rationale", length = 300)
     private String secondaryObjectiveRationale;
-
-    @Column(name = "primary_funding_source_guid", columnDefinition = "uuid")
-    private UUID primaryFundingSourceGuid;
 }

@@ -1,12 +1,5 @@
 package ca.bc.gov.nrs.wfprev.controllers;
 
-import org.springframework.hateoas.CollectionModel;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
 import ca.bc.gov.nrs.common.wfone.rest.resource.HeaderConstants;
 import ca.bc.gov.nrs.common.wfone.rest.resource.MessageListRsrc;
 import ca.bc.gov.nrs.wfone.common.service.api.ServiceException;
@@ -16,7 +9,6 @@ import ca.bc.gov.nrs.wfprev.common.enums.CodeTables;
 import ca.bc.gov.nrs.wfprev.services.CodesService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.extensions.Extension;
 import io.swagger.v3.oas.annotations.extensions.ExtensionProperty;
@@ -26,6 +18,12 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @Slf4j
@@ -65,6 +63,12 @@ public class CodesController extends CommonController {
                 case CodeTables.PLAN_FISCAL_STATUS_CODE -> result = codesService.getAllPlanFiscalStatusCodes();
                 case CodeTables.ANCILLARY_FUNDING_SOURCE_CODE -> result = codesService.getAllAncillaryFundingSourceCodes();
                 case CodeTables.FUNDING_SOURCE_CODE -> result = codesService.getAllFundingSourceCodes();
+                case CodeTables.SOURCE_OBJECT_NAME_CODE -> result = codesService.getAllSourceObjectNameCodes();
+                case CodeTables.ATTACHMENT_CONTENT_TYPE_CODE -> result = codesService.getAllAttachmentContentTypeCodes();
+                case CodeTables.SILVICULTURE_BASE_CODE -> result = codesService.getAllSilvicultureBaseCodes();
+                case CodeTables.SILVICULTURE_METHOD_CODE -> result = codesService.getAllSilvicultureMethodCodes();
+                case CodeTables.SILVICULTURE_TECHNIQUE_CODE -> result = codesService.getAllSilvicultureTechniqueCodes();
+
                 default -> {
                     log.error("Invalid code table: {}", codeTable);
                     return internalServerError();
@@ -147,6 +151,11 @@ public class CodesController extends CommonController {
             case CodeTables.PLAN_FISCAL_STATUS_CODE -> codesService.getPlanFiscalStatusCodeById(id);
             case CodeTables.ANCILLARY_FUNDING_SOURCE_CODE -> codesService.getAncillaryFundingSourceCodeById(id);
             case CodeTables.FUNDING_SOURCE_CODE -> codesService.getFundingSourceCodeById(id);
+            case CodeTables.SOURCE_OBJECT_NAME_CODE -> codesService.getSourceObjectNameCodeById(id);
+            case CodeTables.ATTACHMENT_CONTENT_TYPE_CODE -> codesService.getAttachmentContentTypeCodeById(id);
+            case CodeTables.SILVICULTURE_BASE_CODE -> codesService.getSilvicultureBaseCodeById(id);
+            case CodeTables.SILVICULTURE_METHOD_CODE -> codesService.getSilvicultureMethodCodeById(id);
+            case CodeTables.SILVICULTURE_TECHNIQUE_CODE -> codesService.getSilvicultureTechniqueCodeById(id);
             default -> null;
         };
     }

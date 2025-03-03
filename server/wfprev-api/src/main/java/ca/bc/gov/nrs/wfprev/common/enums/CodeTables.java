@@ -19,4 +19,9 @@ public class CodeTables {
   public static final String PLAN_FISCAL_STATUS_CODE = "planFiscalStatusCodes";
   public static final String ANCILLARY_FUNDING_SOURCE_CODE = "ancillaryFundingSourceCodes";
   public static final String FUNDING_SOURCE_CODE = "fundingSourceCodes";
+  public static final String SOURCE_OBJECT_NAME_CODE = "sourceObjectNameCodes";
+  public static final String ATTACHMENT_CONTENT_TYPE_CODE = "attachmentContentTypeCodes";
+  public static final String SILVICULTURE_BASE_CODE = "silvicultureBaseCodes";
+  public static final String SILVICULTURE_METHOD_CODE = "silvicultureMethodCodes";
+  public static final String SILVICULTURE_TECHNIQUE_CODE = "silvicultureTechniqueCodes";
 }

@@ -11,6 +11,8 @@ import ca.bc.gov.nrs.wfprev.controllers.ProjectBoundaryController;
 import ca.bc.gov.nrs.wfprev.data.entities.ProjectBoundaryEntity;
 import ca.bc.gov.nrs.wfprev.data.models.ProjectBoundaryModel;
 
+import java.util.UUID;
+
 @Component
 public class ProjectBoundaryResourceAssembler extends RepresentationModelAssemblerSupport<ProjectBoundaryEntity, ProjectBoundaryModel> {
 
@@ -21,8 +23,8 @@ public class ProjectBoundaryResourceAssembler extends RepresentationModelAssembl
   public ProjectBoundaryEntity toEntity(ProjectBoundaryModel resource) {
     ProjectBoundaryEntity entity = new ProjectBoundaryEntity();
 
-    entity.setProjectBoundaryGuid(resource.getProjectBoundaryGuid());
-    entity.setProjectGuid(resource.getProjectGuid());
+    entity.setProjectBoundaryGuid(UUID.fromString(resource.getProjectBoundaryGuid()));
+    entity.setProjectGuid(UUID.fromString(resource.getProjectGuid()));
     entity.setSystemStartTimestamp(resource.getSystemStartTimestamp());
     entity.setSystemEndTimestamp(resource.getSystemEndTimestamp());
     entity.setMappingLabel(resource.getMappingLabel());
@@ -48,11 +50,11 @@ public class ProjectBoundaryResourceAssembler extends RepresentationModelAssembl
      
     resource.add(linkTo(
         methodOn(ProjectBoundaryController.class)
-        .getById(entity.getProjectBoundaryGuid()))
+        .getById(String.valueOf(entity.getProjectBoundaryGuid())))
         .withSelfRel());
      
-        resource.setProjectBoundaryGuid(entity.getProjectBoundaryGuid());
-        resource.setProjectGuid(entity.getProjectGuid());
+        resource.setProjectBoundaryGuid(String.valueOf(entity.getProjectBoundaryGuid()));
+        resource.setProjectGuid(String.valueOf(entity.getProjectGuid()));
         resource.setSystemStartTimestamp(entity.getSystemStartTimestamp());
         resource.setSystemEndTimestamp(entity.getSystemEndTimestamp());
         resource.setMappingLabel(entity.getMappingLabel());

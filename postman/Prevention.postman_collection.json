@@ -137,7 +137,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"projectTypeCode\": {\n        \"projectTypeCode\": \"FUEL_MGMT\"\n    },\n    \"siteUnitName\": \"Vancouver Forest Unit\",\n    \"forestAreaCode\": {\n        \"forestAreaCode\": \"WEST\"\n    },\n    \"generalScopeCode\": {\n        \"generalScopeCode\": \"SL_ACT\"\n    },\n    \"project_status_code\": \"ACTIVE\",\n    \"programAreaGuid\": \"27602cd9-4b6e-9be0-e063-690a0a0afb50\",\n   \"primaryFundingSourceGuid\": \"2141ef38-0a0d-422e-a990-6e9d3d2a4bc8\",\n  \"projectName\": \"Sample Forest Management Project\",\n    \"projectLead\": \"Jane Smith\",\n    \"projectLeadEmailAddress\": \"jane.smith@example.com\",\n    \"projectDescription\": \"This is a comprehensive forest management project focusing on sustainable practices\",\n    \"closestCommunityName\": \"Vancouver\",\n    \"totalEstimatedCostAmount\": 100000.00,\n    \"totalForecastAmount\": 95000.00,\n    \"totalPlannedProjectSizeHa\": 500.00,\n    \"totalPlannedCostPerHectare\": 200.00,\n    \"totalActualAmount\": 0.00,\n    \"isMultiFiscalYearProj\": false,\n    \"forestRegionOrgUnitId\": 1001,\n    \"forestDistrictOrgUnitId\": 2001,\n    \"fireCentreOrgUnitId\": 3001,\n    \"bcParksRegionOrgUnitId\": 4001,\n    \"bcParksSectionOrgUnitId\": 5001,\n    \"primaryObjectiveTypeCode\": {\n        \"objectiveTypeCode\": \"CRIT_INFRA\"\n    },\n    \"secondaryObjectiveTypeCode\": {\n        \"objectiveTypeCode\": \"WRR\"\n    },\n  \"secondaryObjectiveRationale\": \"Rationale test\",\n   \"tertiaryObjectiveTypeCode\": {\n        \"objectiveTypeCode\": \"ECO_REST\"\n    },\n    \"latitude\": 49.246292, \n    \"longitude\": -123.116226\n}",
+					"raw": "{\n    \"projectTypeCode\": {\n        \"projectTypeCode\": \"FUEL_MGMT\"\n    },\n    \"siteUnitName\": \"Vancouver Forest Unit\",\n    \"forestAreaCode\": {\n        \"forestAreaCode\": \"WEST\"\n    },\n    \"generalScopeCode\": {\n        \"generalScopeCode\": \"SL_ACT\"\n    },\n    \"project_status_code\": \"ACTIVE\",\n    \"programAreaGuid\": \"27602cd9-4b6e-9be0-e063-690a0a0afb50\",\n  \"projectName\": \"Sample Forest Management Project\",\n    \"projectLead\": \"Jane Smith\",\n    \"projectLeadEmailAddress\": \"jane.smith@example.com\",\n    \"projectDescription\": \"This is a comprehensive forest management project focusing on sustainable practices\",\n    \"closestCommunityName\": \"Vancouver\",\n    \"totalEstimatedCostAmount\": 100000.00,\n    \"totalForecastAmount\": 95000.00,\n    \"totalPlannedProjectSizeHa\": 500.00,\n    \"totalPlannedCostPerHectare\": 200.00,\n    \"totalActualAmount\": 0.00,\n    \"isMultiFiscalYearProj\": false,\n    \"forestRegionOrgUnitId\": 1001,\n    \"forestDistrictOrgUnitId\": 2001,\n    \"fireCentreOrgUnitId\": 3001,\n    \"bcParksRegionOrgUnitId\": 4001,\n    \"bcParksSectionOrgUnitId\": 5001,\n    \"primaryObjectiveTypeCode\": {\n        \"objectiveTypeCode\": \"CRIT_INFRA\"\n    },\n    \"secondaryObjectiveTypeCode\": {\n        \"objectiveTypeCode\": \"WRR\"\n    },\n  \"secondaryObjectiveRationale\": \"Rationale test\",\n   \"tertiaryObjectiveTypeCode\": {\n        \"objectiveTypeCode\": \"ECO_REST\"\n    },\n    \"latitude\": 49.246292, \n    \"longitude\": -123.116226\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -241,7 +241,7 @@
 							"const response = pm.response.json();",
 							"",
 							"// Check if the access token exists in the response",
-							"if (response.projectPlanFiscalGuid) {",
+							"if (response.activityGuid) {",
 							"    // Save the token to an environment variable",
 							"    pm.environment.set(\"activityGuid\", response.activityGuid);",
 							"    console.log(\"Activity Guid saved successfully!\");",
@@ -301,6 +301,84 @@
 						"projectFiscals",
 						"{{projectPlanFiscalGuid}}",
 						"activities"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Activity Boundary",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Parse the response JSON",
+							"const response = pm.response.json();",
+							"",
+							"// Check if the access token exists in the response",
+							"if (response.activityBoundaryGuid) {",
+							"    // Save the token to an environment variable",
+							"    pm.environment.set(\"activityBoundaryGuid\", response.activityBoundaryGuid);",
+							"    console.log(\"Activity Boundary Guid saved successfully!\");",
+							"} else {",
+							"    console.error(\"Failed to set Activity Boundary Guid:\", response);",
+							"}",
+							"",
+							"pm.test(\"Status code is 201\", function() {",
+							"    pm.response.to.have.status(201);",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"activityGuid\": \"{{activityGuid}}\",\n  \"systemStartTimestamp\": \"2026-01-01\",\n  \"systemEndTimestamp\": \"2026-12-31\",\n  \"plannedSpendAmount\": 200000.00,\n  \"mappingLabel\": \"Test mapping label\",\n  \"collectionDate\": \"2026-01-15\",\n  \"collectionMethod\": \"Test collection method\",\n  \"collectorName\": \"Test_user\",\n  \"boundarySizeHa\": 200.5000,\n  \"boundaryComment\": \"Test activity boundary comment\",\n  \"geometry\": {\n    \"type\": \"Polygon\",\n    \"coordinates\": [\n      [\n        [-124.0000, 49.0000],\n        [-124.0001, 49.0001],\n        [-124.0002, 49.0000],\n        [-124.0000, 49.0000]\n      ]\n    ]\n  }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{LOCAL_API_URL}}/projects/{{projectGuid}}/projectFiscals/{{projectPlanFiscalGuid}}/activities/{{activityGuid}}/activityBoundary",
+					"host": [
+						"{{LOCAL_API_URL}}"
+					],
+					"path": [
+						"projects",
+						"{{projectGuid}}",
+						"projectFiscals",
+						"{{projectPlanFiscalGuid}}",
+						"activities",
+						"{{activityGuid}}",
+						"activityBoundary"
 					]
 				}
 			},
@@ -436,6 +514,73 @@
 			"response": []
 		},
 		{
+			"name": "Update Activity Boundary",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function() {",
+							"    pm.response.to.have.status(200);",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"activityBoundaryGuid\": \"{{activityBoundaryGuid}}\",\n  \"activityGuid\": \"{{activityGuid}}\",\n  \"systemStartTimestamp\": \"2027-02-01\",\n  \"systemEndTimestamp\": \"2027-11-30\",\n  \"plannedSpendAmount\": 300000.00,\n  \"mappingLabel\": \"Updated test mapping label\",\n  \"collectionDate\": \"2027-02-10\",\n  \"collectionMethod\": \"Updated test collection method\",\n  \"collectorName\": \"Updated_user\",\n  \"boundarySizeHa\": 300.7500,\n  \"boundaryComment\": \"Updated test activity boundary comment\",\n  \"geometry\": {\n    \"type\": \"Polygon\",\n    \"coordinates\": [\n      [\n        [-125.0000, 50.0000],\n        [-125.0001, 50.0001],\n        [-125.0002, 50.0000],\n        [-125.0000, 50.0000]\n      ]\n    ]\n  }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{LOCAL_API_URL}}/projects/{{projectGuid}}/projectFiscals/{{projectPlanFiscalGuid}}/activities/{{activityGuid}}/activityBoundary/{{activityBoundaryGuid}}",
+					"host": [
+						"{{LOCAL_API_URL}}"
+					],
+					"path": [
+						"projects",
+						"{{projectGuid}}",
+						"projectFiscals",
+						"{{projectPlanFiscalGuid}}",
+						"activities",
+						"{{activityGuid}}",
+						"activityBoundary",
+						"{{activityBoundaryGuid}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "GET Projects",
 			"event": [
 				{
@@ -559,7 +704,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"projectGuid\": \"{{projectGuid}}\",\n    \"projectTypeCode\": {\n        \"projectTypeCode\": \"FUEL_MGMT\"\n    },\n    \"siteUnitName\": \"Vancouver Forest Unit\",\n    \"forestAreaCode\": {\n        \"forestAreaCode\": \"COAST\"\n    },\n    \"generalScopeCode\": {\n        \"generalScopeCode\": \"SL_ACT\"\n    },\n    \"project_status_code\": \"ACTIVE\",\n    \"programAreaGuid\": \"27602cd9-4b6e-9be0-e063-690a0a0afb50\",\n    \"primaryFundingSourceGuid\": \"2f84b1d7-4d84-432f-922c-e489fe7d764f\",\n  \"projectName\": \"Test 3\",\n    \"projectLead\": \"Jane Smith\",\n    \"projectLeadEmailAddress\": \"jane.smith@example.com\",\n    \"projectDescription\": \"This is a comprehensive forest management project focusing on sustainable practices\",\n    \"closestCommunityName\": \"Vancouver\",\n    \"totalEstimatedCostAmount\": 177000.00,\n    \"totalForecastAmount\": 125000.00,\n    \"totalPlannedProjectSizeHa\": 500.00,\n    \"totalPlannedCostPerHectare\": 200.00,\n    \"totalActualAmount\": 0.00,\n    \"isMultiFiscalYearProj\": false,\n    \"forestRegionOrgUnitId\": 1001,\n    \"forestDistrictOrgUnitId\": 2001,\n    \"fireCentreOrgUnitId\": 3001,\n    \"bcParksRegionOrgUnitId\": 4001,\n    \"bcParksSectionOrgUnitId\": 5001,\n    \"primaryObjectiveTypeCode\": {\n        \"objectiveTypeCode\": \"RECONCIL\"\n    },\n    \"secondaryObjectiveTypeCode\": {\n        \"objectiveTypeCode\": \"HAZ_ABATE\"\n    },\n   \"secondaryObjectiveRationale\": \"Rationale test\",\n   \"tertiaryObjectiveTypeCode\": {\n        \"objectiveTypeCode\": \"FOR_HEALTH\"\n    },\n    \"latitude\": 53.916943, \n    \"longitude\": -122.749443 \n}",
+					"raw": "{\n    \"projectGuid\": \"{{projectGuid}}\",\n    \"projectTypeCode\": {\n        \"projectTypeCode\": \"FUEL_MGMT\"\n    },\n    \"siteUnitName\": \"Vancouver Forest Unit\",\n    \"forestAreaCode\": {\n        \"forestAreaCode\": \"COAST\"\n    },\n    \"generalScopeCode\": {\n        \"generalScopeCode\": \"SL_ACT\"\n    },\n    \"project_status_code\": \"ACTIVE\",\n    \"programAreaGuid\": \"27602cd9-4b6e-9be0-e063-690a0a0afb50\",\n  \"projectName\": \"Test 3\",\n    \"projectLead\": \"Jane Smith\",\n    \"projectLeadEmailAddress\": \"jane.smith@example.com\",\n    \"projectDescription\": \"This is a comprehensive forest management project focusing on sustainable practices\",\n    \"closestCommunityName\": \"Vancouver\",\n    \"totalEstimatedCostAmount\": 177000.00,\n    \"totalForecastAmount\": 125000.00,\n    \"totalPlannedProjectSizeHa\": 500.00,\n    \"totalPlannedCostPerHectare\": 200.00,\n    \"totalActualAmount\": 0.00,\n    \"isMultiFiscalYearProj\": false,\n    \"forestRegionOrgUnitId\": 1001,\n    \"forestDistrictOrgUnitId\": 2001,\n    \"fireCentreOrgUnitId\": 3001,\n    \"bcParksRegionOrgUnitId\": 4001,\n    \"bcParksSectionOrgUnitId\": 5001,\n    \"primaryObjectiveTypeCode\": {\n        \"objectiveTypeCode\": \"RECONCIL\"\n    },\n    \"secondaryObjectiveTypeCode\": {\n        \"objectiveTypeCode\": \"HAZ_ABATE\"\n    },\n   \"secondaryObjectiveRationale\": \"Rationale test\",\n   \"tertiaryObjectiveTypeCode\": {\n        \"objectiveTypeCode\": \"FOR_HEALTH\"\n    },\n    \"latitude\": 53.916943, \n    \"longitude\": -122.749443 \n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -1294,7 +1439,7 @@
 			"response": []
 		},
 		{
-			"name": "GET Funding Source Codes",
+			"name": "GET Source Object Name Codes",
 			"event": [
 				{
 					"listen": "test",
@@ -1329,13 +1474,205 @@
 					}
 				],
 				"url": {
-					"raw": "{{LOCAL_API_URL}}/codes/fundingSourceCodes",
+					"raw": "{{LOCAL_API_URL}}/codes/sourceObjectNameCodes",
 					"host": [
 						"{{LOCAL_API_URL}}"
 					],
 					"path": [
 						"codes",
-						"fundingSourceCodes"
+						"sourceObjectNameCodes"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET Attachment Content Type Codes",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function() {",
+							"    pm.response.to.have.status(200);",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{LOCAL_API_URL}}/codes/attachmentContentTypeCodes",
+					"host": [
+						"{{LOCAL_API_URL}}"
+					],
+					"path": [
+						"codes",
+						"attachmentContentTypeCodes"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET Silviculture Base Codes",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function() {",
+							"    pm.response.to.have.status(200);",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{LOCAL_API_URL}}/codes/silvicultureBaseCodes",
+					"host": [
+						"{{LOCAL_API_URL}}"
+					],
+					"path": [
+						"codes",
+						"silvicultureBaseCodes"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET Silviculture Method Codes",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function() {",
+							"    pm.response.to.have.status(200);",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{LOCAL_API_URL}}/codes/silvicultureMethodCodes",
+					"host": [
+						"{{LOCAL_API_URL}}"
+					],
+					"path": [
+						"codes",
+						"silvicultureMethodCodes"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET Silviculture Technique Codes",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function() {",
+							"    pm.response.to.have.status(200);",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{LOCAL_API_URL}}/codes/silvicultureTechniqueCodes",
+					"host": [
+						"{{LOCAL_API_URL}}"
+					],
+					"path": [
+						"codes",
+						"silvicultureTechniqueCodes"
 					]
 				}
 			},
@@ -1520,6 +1857,101 @@
 			"response": []
 		},
 		{
+			"name": "Get Activity Boundaries",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function() {",
+							"    pm.response.to.have.status(200);",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{LOCAL_API_URL}}/projects/{{projectGuid}}/projectFiscals/{{projectPlanFiscalGuid}}/activities/{{activityGuid}}/activityBoundary",
+					"host": [
+						"{{LOCAL_API_URL}}"
+					],
+					"path": [
+						"projects",
+						"{{projectGuid}}",
+						"projectFiscals",
+						"{{projectPlanFiscalGuid}}",
+						"activities",
+						"{{activityGuid}}",
+						"activityBoundary"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Activity Boundary",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function() {",
+							"    pm.response.to.have.status(200);",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{LOCAL_API_URL}}/projects/{{projectGuid}}/projectFiscals/{{projectPlanFiscalGuid}}/activities/{{activityGuid}}/{{activityGuid}}/activityBoundary/{{activityBoundaryGuid}}",
+					"host": [
+						"{{LOCAL_API_URL}}"
+					],
+					"path": [
+						"projects",
+						"{{projectGuid}}",
+						"projectFiscals",
+						"{{projectPlanFiscalGuid}}",
+						"activities",
+						"{{activityGuid}}",
+						"activityBoundary",
+						"{{activityBoundaryGuid}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "Delete Project Fiscal",
 			"event": [
 				{
@@ -1646,6 +2078,54 @@
 						"{{projectPlanFiscalGuid}}",
 						"activities",
 						"{{activityGuid}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Activity Boundary",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 204\", function() {",
+							"    pm.response.to.have.status(204);",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{LOCAL_API_URL}}/projects/{{projectGuid}}/projectFiscals/{{projectPlanFiscalGuid}}/activities/{{activityGuid}}/activityBoundary/{{activityBoundaryGuid}}",
+					"host": [
+						"{{LOCAL_API_URL}}"
+					],
+					"path": [
+						"projects",
+						"{{projectGuid}}",
+						"projectFiscals",
+						"{{projectPlanFiscalGuid}}",
+						"activities",
+						"{{activityGuid}}",
+						"activityBoundary",
+						"{{activityBoundaryGuid}}"
 					]
 				}
 			},

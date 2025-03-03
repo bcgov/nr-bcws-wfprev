@@ -126,7 +126,9 @@
                         <div class="form-item five-columns">
                             <label>Funding Source Code</label>
                             <select id="activityFundingSourceGuid" formControlName="activityFundingSourceGuid">
-                                <option value="" >Select</option>
+                                <option *ngFor="let item of fundingSourceCode" [value]="item.fundingSourceGuid">
+                                    {{ item.fundingSourceName }}
+                                </option>
                             </select>
                         </div>
                     </form>

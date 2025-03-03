@@ -1,22 +1,12 @@
 package ca.bc.gov.nrs.wfprev.data.entities;
 
-import java.io.Serializable;
-import java.math.BigDecimal;
-import java.util.Date;
-
-import org.hibernate.annotations.UuidGenerator;
-import org.springframework.data.annotation.CreatedBy;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedBy;
-import org.springframework.data.annotation.LastModifiedDate;
-
+import ca.bc.gov.nrs.wfprev.common.serializers.PGMultiPolygonDeserializer;
+import ca.bc.gov.nrs.wfprev.common.serializers.PGPolygonDeserializer;
+import ca.bc.gov.nrs.wfprev.common.serializers.PGPolygonSerializer;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.vividsolutions.jts.geom.Geometry;
-
-import ca.bc.gov.nrs.wfprev.common.serializers.GeoJsonJacksonDeserializer;
-import ca.bc.gov.nrs.wfprev.common.serializers.GeoJsonJacksonSerializer;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -30,6 +20,16 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.UuidGenerator;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
+
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.UUID;
 
 @Entity
 @Table(name = "project_boundary")
@@ -44,11 +44,11 @@ public class ProjectBoundaryEntity implements Serializable {
   @UuidGenerator
   @GeneratedValue(strategy = GenerationType.UUID)
   @Column(name = "project_boundary_guid")
-  private String projectBoundaryGuid;
+  private UUID projectBoundaryGuid;
 
   @Column(name = "project_guid")
   @NotNull
-  private String projectGuid;
+  private UUID projectGuid;
   
   @NotNull
 	@Column(name="system_start_timestamp")
@@ -79,15 +79,15 @@ public class ProjectBoundaryEntity implements Serializable {
 	private String boundaryComment;
 
   @NotNull
-	@JsonSerialize(using=GeoJsonJacksonSerializer.class)
-	@JsonDeserialize(using=GeoJsonJacksonDeserializer.class)
+	@JsonSerialize(using= PGPolygonSerializer.class)
+	@JsonDeserialize(using= PGPolygonDeserializer.class)
   @Column(name="location_geometry", columnDefinition = "geometry(Point,4326)")
 	public Geometry locationGeometry;
 
 	@NotNull
-	@JsonSerialize(using=GeoJsonJacksonSerializer.class)
-	@JsonDeserialize(using=GeoJsonJacksonDeserializer.class)
-	@Column(name="boundary_geometry", columnDefinition = "geometry(Geometry,4326)")
+	@JsonSerialize(using= PGPolygonSerializer.class)
+	@JsonDeserialize(using= PGPolygonDeserializer.class)
+	@Column(name="boundary_geometry", columnDefinition = "geometry(Polygon,4326)")
 	public Geometry boundaryGeometry;
 
   @Column(name = "revision_count", columnDefinition="Decimal(10) default '0'")

@@ -34,6 +34,7 @@ export class ActivitiesComponent implements OnChanges, OnInit{
   activities: any[] = [];
   originalActivitiesValues: any[] = [];
   contractPhaseCode: any[] = [];
+  fundingSourceCode: any[] = [];
   activityForms: FormGroup[] = [];
   
     constructor(
@@ -58,6 +59,7 @@ export class ActivitiesComponent implements OnChanges, OnInit{
   loadCodeTables(): void {
     const codeTables = [
       { name: 'contractPhaseCodes', embeddedKey: 'contractPhaseCode' },
+      { name: 'fundingSourceCodes', embeddedKey: 'fundingSourceCode' },
     ];
   
     codeTables.forEach((table) => {
@@ -77,6 +79,9 @@ export class ActivitiesComponent implements OnChanges, OnInit{
     switch (key) {
       case 'contractPhaseCode':
         this.contractPhaseCode = data._embedded.contractPhaseCode || [];
+        break;
+      case 'fundingSourceCode':
+        this.fundingSourceCode = data._embedded.fundingSourceCode || [];
         break;
     }
   }
