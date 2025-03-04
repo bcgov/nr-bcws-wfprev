@@ -118,7 +118,6 @@ export class ActivitiesComponent implements OnChanges, OnInit{
   }
 
   assignCodeTableData(key: string, data: any): void {
-    this.fundingSourceCode = this.fundingSourcesTable;
     switch (key) {
       case 'contractPhaseCode':
         this.contractPhaseCode = data._embedded.contractPhaseCode || [];
