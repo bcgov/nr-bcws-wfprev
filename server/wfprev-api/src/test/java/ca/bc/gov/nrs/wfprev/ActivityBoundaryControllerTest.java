@@ -11,6 +11,8 @@ import com.nimbusds.jose.shaded.gson.JsonSerializer;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.postgresql.geometric.PGpoint;
+import org.postgresql.geometric.PGpolygon;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -24,6 +26,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -56,6 +59,25 @@ class ActivityBoundaryControllerTest {
 
     @MockBean(name = "springSecurityAuditorAware")
     private AuditorAware<String> auditorAware;
+
+    String activityBoundaryJson = """
+    {
+        "activityBoundaryGuid": "%s",
+        "activityGuid": "%s",
+        "systemStartTimestamp": %d,
+        "systemEndTimestamp": %d,
+        "collectionDate": %d,
+        "boundarySizeHa": 10.5,
+        "geometry": {
+            "coordinates": [[
+                [-123.3656, 48.4284],
+                [-123.3657, 48.4285],
+                [-123.3658, 48.4284],
+                [-123.3656, 48.4284]
+            ]]
+        }
+    }
+""";
 
     @BeforeEach
     void setup() {
@@ -169,15 +191,23 @@ class ActivityBoundaryControllerTest {
     @Test
     @WithMockUser
     void testCreateActivityBoundary_Success() throws Exception {
-        ActivityBoundaryModel requestModel = ActivityBoundaryModel.builder().activityBoundaryGuid(UUID.randomUUID().toString()).build();
+        ActivityBoundaryModel requestModel = buildActivityBoundaryRequestModel();
 
         when(activityBoundaryService.createActivityBoundary(anyString(), anyString(), anyString(), any(ActivityBoundaryModel.class)))
                 .thenReturn(requestModel);
 
+        String requestJson = activityBoundaryJson.formatted(
+                requestModel.getActivityBoundaryGuid(),
+                requestModel.getActivityGuid(),
+                requestModel.getSystemStartTimestamp().getTime(),
+                requestModel.getSystemEndTimestamp().getTime() + 1000,
+                requestModel.getCollectionDate().getTime()
+        );
+
         mockMvc.perform(post("/projects/{projectId}/projectFiscals/{projectFiscalId}/activities/{activityId}/activityBoundary",
                         UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID())
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(gson.toJson(requestModel)))
+                        .content(requestJson))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.activityBoundaryGuid").value(requestModel.getActivityBoundaryGuid()));
     }
@@ -185,45 +215,69 @@ class ActivityBoundaryControllerTest {
     @Test
     @WithMockUser
     void testCreateActivityBoundary_DataIntegrityViolationException() throws Exception {
-        ActivityBoundaryModel requestModel = ActivityBoundaryModel.builder().activityBoundaryGuid(UUID.randomUUID().toString()).build();
+        ActivityBoundaryModel requestModel = buildActivityBoundaryRequestModel();
 
         when(activityBoundaryService.createActivityBoundary(anyString(), anyString(), anyString(), any(ActivityBoundaryModel.class)))
                 .thenThrow(new DataIntegrityViolationException("Data Integrity Violation"));
 
+        String requestJson = activityBoundaryJson.formatted(
+                requestModel.getActivityBoundaryGuid(),
+                requestModel.getActivityGuid(),
+                requestModel.getSystemStartTimestamp().getTime(),
+                requestModel.getSystemEndTimestamp().getTime() + 1000,
+                requestModel.getCollectionDate().getTime()
+        );
+
         mockMvc.perform(post("/projects/{projectId}/projectFiscals/{projectFiscalId}/activities/{activityId}/activityBoundary",
                         UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID())
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(gson.toJson(requestModel)))
+                        .content(requestJson))
                 .andExpect(status().isBadRequest());
     }
 
     @Test
     @WithMockUser
     void testCreateActivityBoundary_Exception() throws Exception {
-        ActivityBoundaryModel requestModel = ActivityBoundaryModel.builder().activityBoundaryGuid(UUID.randomUUID().toString()).build();
+        ActivityBoundaryModel requestModel = buildActivityBoundaryRequestModel();
 
         when(activityBoundaryService.createActivityBoundary(anyString(), anyString(), anyString(), any(ActivityBoundaryModel.class)))
                 .thenThrow(new RuntimeException("Runtime exception"));
 
+        String requestJson = activityBoundaryJson.formatted(
+                requestModel.getActivityBoundaryGuid(),
+                requestModel.getActivityGuid(),
+                requestModel.getSystemStartTimestamp().getTime(),
+                requestModel.getSystemEndTimestamp().getTime() + 1000,
+                requestModel.getCollectionDate().getTime()
+        );
+
         mockMvc.perform(post("/projects/{projectId}/projectFiscals/{projectFiscalId}/activities/{activityId}/activityBoundary",
                         UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID())
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(gson.toJson(requestModel)))
+                        .content(requestJson))
                 .andExpect(status().isInternalServerError());
     }
 
     @Test
     @WithMockUser
     void testUpdateActivityBoundary_Success() throws Exception {
-        ActivityBoundaryModel requestModel = ActivityBoundaryModel.builder().activityBoundaryGuid(UUID.randomUUID().toString()).build();
+        ActivityBoundaryModel requestModel = buildActivityBoundaryRequestModel();
 
         when(activityBoundaryService.updateActivityBoundary(anyString(), anyString(), anyString(), any(ActivityBoundaryModel.class)))
                 .thenReturn(requestModel);
 
+        String requestJson = activityBoundaryJson.formatted(
+                requestModel.getActivityBoundaryGuid(),
+                requestModel.getActivityGuid(),
+                requestModel.getSystemStartTimestamp().getTime(),
+                requestModel.getSystemEndTimestamp().getTime() + 1000,
+                requestModel.getCollectionDate().getTime()
+        );
+
         mockMvc.perform(put("/projects/{projectId}/projectFiscals/{projectFiscalId}/activities/{activityId}/activityBoundary/{id}",
                         UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), requestModel.getActivityBoundaryGuid())
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(gson.toJson(requestModel)))
+                        .content(requestJson))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.activityBoundaryGuid").value(requestModel.getActivityBoundaryGuid()));
     }
@@ -232,45 +286,69 @@ class ActivityBoundaryControllerTest {
     @WithMockUser
     void testUpdateActivityBoundary_EntityNotFoundException() throws Exception {
         UUID boundaryId = UUID.randomUUID();
-        ActivityBoundaryModel requestModel = ActivityBoundaryModel.builder().activityBoundaryGuid(boundaryId.toString()).build();
+        ActivityBoundaryModel requestModel = buildActivityBoundaryRequestModel();
 
         when(activityBoundaryService.updateActivityBoundary(anyString(), anyString(), anyString(), any(ActivityBoundaryModel.class)))
                 .thenThrow(new EntityNotFoundException("Boundary not found"));
 
+        String requestJson = activityBoundaryJson.formatted(
+                requestModel.getActivityBoundaryGuid(),
+                requestModel.getActivityGuid(),
+                requestModel.getSystemStartTimestamp().getTime(),
+                requestModel.getSystemEndTimestamp().getTime() + 1000,
+                requestModel.getCollectionDate().getTime()
+        );
+
         mockMvc.perform(put("/projects/{projectId}/projectFiscals/{projectFiscalId}/activities/{activityId}/activityBoundary/{id}",
                         UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), boundaryId)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(gson.toJson(requestModel)))
+                        .content(requestJson))
                 .andExpect(status().isNotFound());
     }
 
     @Test
     @WithMockUser
     void testUpdateActivityBoundary_Exception() throws Exception {
-        ActivityBoundaryModel requestModel = ActivityBoundaryModel.builder().activityBoundaryGuid(UUID.randomUUID().toString()).build();
+        ActivityBoundaryModel requestModel = buildActivityBoundaryRequestModel();
 
         when(activityBoundaryService.updateActivityBoundary(anyString(), anyString(), anyString(), any(ActivityBoundaryModel.class)))
                 .thenThrow(new RuntimeException("Runtime exception"));
 
+        String requestJson = activityBoundaryJson.formatted(
+                requestModel.getActivityBoundaryGuid(),
+                requestModel.getActivityGuid(),
+                requestModel.getSystemStartTimestamp().getTime(),
+                requestModel.getSystemEndTimestamp().getTime() + 1000,
+                requestModel.getCollectionDate().getTime()
+        );
+
         mockMvc.perform(put("/projects/{projectId}/projectFiscals/{projectFiscalId}/activities/{activityId}/activityBoundary/{id}",
                         UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), requestModel.getActivityBoundaryGuid())
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(gson.toJson(requestModel)))
+                        .content(requestJson))
                 .andExpect(status().isInternalServerError());
     }
 
     @Test
     @WithMockUser
     void testUpdateActivityBoundary_DataIntegrityViolationException() throws Exception {
-        ActivityBoundaryModel requestModel = ActivityBoundaryModel.builder().activityBoundaryGuid(UUID.randomUUID().toString()).build();
+        ActivityBoundaryModel requestModel = buildActivityBoundaryRequestModel();
 
         when(activityBoundaryService.updateActivityBoundary(anyString(), anyString(), anyString(), any(ActivityBoundaryModel.class)))
                 .thenThrow(new DataIntegrityViolationException("Data Integrity Violation"));
 
+        String requestJson = activityBoundaryJson.formatted(
+                requestModel.getActivityBoundaryGuid(),
+                requestModel.getActivityGuid(),
+                requestModel.getSystemStartTimestamp().getTime(),
+                requestModel.getSystemEndTimestamp().getTime() + 1000,
+                requestModel.getCollectionDate().getTime()
+        );
+
         mockMvc.perform(put("/projects/{projectId}/projectFiscals/{projectFiscalId}/activities/{activityId}/activityBoundary/{id}",
                         UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), requestModel.getActivityBoundaryGuid())
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(gson.toJson(requestModel)))
+                        .content(requestJson))
                 .andExpect(status().isBadRequest());
     }
 
@@ -286,6 +364,23 @@ class ActivityBoundaryControllerTest {
                 .andExpect(status().isNoContent());
 
         verify(activityBoundaryService).deleteActivityBoundary(anyString(), anyString(), anyString(), eq(boundaryId.toString()));
+    }
+
+    ActivityBoundaryModel buildActivityBoundaryRequestModel(){
+        return ActivityBoundaryModel.builder()
+                .activityBoundaryGuid(UUID.randomUUID().toString())
+                .activityGuid(UUID.randomUUID().toString())
+                .systemStartTimestamp(new Date())
+                .systemEndTimestamp(new Date())
+                .collectionDate(new Date())
+                .boundarySizeHa(new BigDecimal("10.5"))
+                .geometry(new PGpolygon(new PGpoint[]{
+                        new PGpoint(-123.3656, 48.4284),
+                        new PGpoint(-123.3657, 48.4285),
+                        new PGpoint(-123.3658, 48.4284),
+                        new PGpoint(-123.3656, 48.4284)
+                }))
+                .build();
     }
 
 }

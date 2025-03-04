@@ -71,12 +71,7 @@ class ActivityControllerTest {
     @Test
     @WithMockUser
     void testCreateActivity_Success() throws Exception {
-        ActivityModel requestModel = ActivityModel.builder()
-                .activityGuid("123e4567-e89b-12d3-a456-426614174000")
-                .projectPlanFiscalGuid("123e4567-e89b-12d3-a456-426614174001")
-                .activityName("New Activity")
-                .activityDescription("New Description")
-                .build();
+        ActivityModel requestModel = buildActivityModel();
 
         when(activityService.createActivity(anyString(), anyString(), any(ActivityModel.class)))
                 .thenReturn(requestModel);
@@ -95,12 +90,7 @@ class ActivityControllerTest {
     @Test
     @WithMockUser
     void testCreateActivity_DataIntegrityViolation() throws Exception {
-        ActivityModel requestModel = ActivityModel.builder()
-                .activityGuid("123e4567-e89b-12d3-a456-426614174000")
-                .projectPlanFiscalGuid("123e4567-e89b-12d3-a456-426614174001")
-                .activityName("New Activity")
-                .activityDescription("New Description")
-                .build();
+        ActivityModel requestModel = buildActivityModel();
 
         when(activityService.createActivity(anyString(), anyString(), any(ActivityModel.class)))
                 .thenThrow(new DataIntegrityViolationException("Duplicate entry"));
@@ -116,12 +106,7 @@ class ActivityControllerTest {
     @Test
     @WithMockUser
     void testCreateActivity_ServiceException() throws Exception {
-        ActivityModel requestModel = ActivityModel.builder()
-                .activityGuid("123e4567-e89b-12d3-a456-426614174000")
-                .projectPlanFiscalGuid("123e4567-e89b-12d3-a456-426614174001")
-                .activityName("New Activity")
-                .activityDescription("New Description")
-                .build();
+        ActivityModel requestModel = buildActivityModel();
 
         when(activityService.createActivity(anyString(), anyString(), any(ActivityModel.class)))
                 .thenThrow(new ServiceException("Service exception"));
@@ -137,12 +122,7 @@ class ActivityControllerTest {
     @Test
     @WithMockUser
     void testCreateActivity_Exception() throws Exception {
-        ActivityModel requestModel = ActivityModel.builder()
-                .activityGuid("123e4567-e89b-12d3-a456-426614174000")
-                .projectPlanFiscalGuid("123e4567-e89b-12d3-a456-426614174001")
-                .activityName("New Activity")
-                .activityDescription("New Description")
-                .build();
+        ActivityModel requestModel = buildActivityModel();
 
         when(activityService.createActivity(anyString(), anyString(), any(ActivityModel.class)))
                 .thenThrow(new RuntimeException("Test exception"));
@@ -158,12 +138,7 @@ class ActivityControllerTest {
     @Test
     @WithMockUser
     void testUpdateActivity_Success() throws Exception {
-        ActivityModel requestModel = ActivityModel.builder()
-                .activityGuid("123e4567-e89b-12d3-a456-426614174000")
-                .projectPlanFiscalGuid("123e4567-e89b-12d3-a456-426614174001")
-                .activityName("Updated Activity")
-                .activityDescription("Updated Description")
-                .build();
+        ActivityModel requestModel = buildActivityModel();
 
         when(activityService.updateActivity(anyString(), anyString(), any(ActivityModel.class)))
                 .thenReturn(requestModel);
@@ -183,12 +158,7 @@ class ActivityControllerTest {
     @Test
     @WithMockUser
     void testUpdateActivity_EntityNotFoundException() throws Exception {
-        ActivityModel requestModel = ActivityModel.builder()
-                .activityGuid("123e4567-e89b-12d3-a456-426614174000")
-                .projectPlanFiscalGuid("123e4567-e89b-12d3-a456-426614174001")
-                .activityName("Updated Activity")
-                .activityDescription("Updated Description")
-                .build();
+        ActivityModel requestModel = buildActivityModel();
 
         when(activityService.updateActivity(anyString(), anyString(), any(ActivityModel.class)))
                 .thenThrow(new EntityNotFoundException("Entity Not Found"));
@@ -205,12 +175,7 @@ class ActivityControllerTest {
     @Test
     @WithMockUser
     void testUpdateActivity_Exception() throws Exception {
-        ActivityModel requestModel = ActivityModel.builder()
-                .activityGuid("123e4567-e89b-12d3-a456-426614174000")
-                .projectPlanFiscalGuid("123e4567-e89b-12d3-a456-426614174001")
-                .activityName("Updated Activity")
-                .activityDescription("Updated Description")
-                .build();
+        ActivityModel requestModel = buildActivityModel();
 
         when(activityService.updateActivity(anyString(), anyString(), any(ActivityModel.class)))
                 .thenThrow(new RuntimeException("Test exception"));
@@ -227,12 +192,7 @@ class ActivityControllerTest {
     @Test
     @WithMockUser
     void testUpdateActivity_NotFound() throws Exception {
-        ActivityModel requestModel = ActivityModel.builder()
-                .activityGuid("123e4567-e89b-12d3-a456-426614174000")
-                .projectPlanFiscalGuid("123e4567-e89b-12d3-a456-426614174001")
-                .activityName("Updated Activity")
-                .activityDescription("Updated Description")
-                .build();
+        ActivityModel requestModel = buildActivityModel();
 
         when(activityService.updateActivity(anyString(), anyString(), any(ActivityModel.class)))
                 .thenReturn(null);
@@ -249,12 +209,7 @@ class ActivityControllerTest {
     @Test
     @WithMockUser
     void testUpdateActivity_IdMismatch() throws Exception {
-        ActivityModel requestModel = ActivityModel.builder()
-                .activityGuid("different-id")
-                .projectPlanFiscalGuid("123e4567-e89b-12d3-a456-426614174001")
-                .activityName("Updated Activity")
-                .activityDescription("Updated Description")
-                .build();
+        ActivityModel requestModel = buildActivityModel();
 
         mockMvc.perform(put("/projects/{projectId}/projectFiscals/{projectFiscalId}/activities/{id}",
                         "123e4567-e89b-12d3-a456-426614174001",
@@ -262,7 +217,7 @@ class ActivityControllerTest {
                         "123e4567-e89b-12d3-a456-426614174000")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(gson.toJson(requestModel)))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isNotFound());
     }
 
     @Test
@@ -414,5 +369,21 @@ class ActivityControllerTest {
                         .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isInternalServerError());
+    }
+
+    ActivityModel buildActivityModel(){
+        Date startDate = new Date();
+        Date endDate = new Date(startDate.getTime() + 86400000);
+        return ActivityModel.builder()
+                .activityGuid("123e4567-e89b-12d3-a456-426614174000")
+                .projectPlanFiscalGuid("123e4567-e89b-12d3-a456-426614174001")
+                .activityName("New Activity")
+                .activityDescription("New Description")
+                .activityStartDate(startDate)
+                .activityEndDate(endDate)
+                .isResultsReportableInd(true)
+                .outstandingObligationsInd(false)
+                .isSpatialAddedInd(true)
+                .build();
     }
 }

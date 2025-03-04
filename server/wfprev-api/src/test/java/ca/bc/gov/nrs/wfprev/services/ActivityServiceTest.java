@@ -19,6 +19,7 @@ import ca.bc.gov.nrs.wfprev.data.repositories.ContractPhaseCodeRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.ProjectFiscalRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.RiskRatingCodeRepository;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.Validator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -50,6 +51,7 @@ class ActivityServiceTest {
     private ContractPhaseCodeRepository contractPhaseCodeRepository;
     private RiskRatingCodeRepository riskRatingCodeRepository;
     private ActivityService activityService;
+    private Validator validator;
 
     @BeforeEach
     void setup() {
@@ -60,6 +62,7 @@ class ActivityServiceTest {
         activityStatusCodeRepository = mock(ActivityStatusCodeRepository.class);
         contractPhaseCodeRepository = mock(ContractPhaseCodeRepository.class);
         riskRatingCodeRepository = mock(RiskRatingCodeRepository.class);
+        validator = mock(Validator.class);
 
         activityService = new ActivityService(
                 activityRepository,
@@ -68,7 +71,8 @@ class ActivityServiceTest {
                 projectFiscalService,
                 activityStatusCodeRepository,
                 contractPhaseCodeRepository,
-                riskRatingCodeRepository
+                riskRatingCodeRepository,
+                validator
         );
     }
 

@@ -9,8 +9,10 @@ import ca.bc.gov.nrs.wfprev.data.models.ActivityModel;
 import ca.bc.gov.nrs.wfprev.data.repositories.ActivityBoundaryRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.ActivityRepository;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.Validator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
 
 import java.math.BigDecimal;
@@ -35,6 +37,7 @@ class ActivityBoundaryServiceTest {
     private ActivityRepository activityRepository;
     private ActivityService activityService;
     private ActivityBoundaryService activityBoundaryService;
+    private Validator validator;
 
     @BeforeEach
     void setup() {
@@ -42,12 +45,14 @@ class ActivityBoundaryServiceTest {
         activityBoundaryResourceAssembler = mock(ActivityBoundaryResourceAssembler.class);
         activityRepository = mock(ActivityRepository.class);
         activityService = mock(ActivityService.class);
+        validator = mock(Validator.class);
 
         activityBoundaryService = new ActivityBoundaryService(
                 activityBoundaryRepository,
                 activityBoundaryResourceAssembler,
                 activityRepository,
-                activityService
+                activityService,
+                validator
         );
     }
 
