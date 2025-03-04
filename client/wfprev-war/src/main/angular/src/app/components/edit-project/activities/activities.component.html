@@ -22,15 +22,30 @@
                             </div>
                         </div>
                         <div class="status-indicators">
-                            <span *ngIf="activityForms[i]?.value?.isSpatialAddedInd" class="status-tag">
-                                Spatial Added
+                            <ng-container *ngIf="activityForms[i]?.value?.isSpatialAddedInd; else notSpatialAdded">
+                                <span class="status-tag">
+                                    <img alt="status" class="status-icon" src="/assets/spatial-added-icon.svg">Spatial Added
+                                </span>
+                            </ng-container>
+                            
+                            <ng-template #notSpatialAdded>
+                                <span class="status-tag inactive">
+                                    <img alt="status" class="status-icon" src="/assets/no-spatial-added-icon.svg">Not Spatial Added
+                                </span>
+                            </ng-template>
+
+                            <span class="status-tag">
+                                <img 
+                                    alt="status" 
+                                    class="status-icon" 
+                                    [src]="'/assets/' + getRiskIcon(activityForms[i]?.value?.riskRatingCode?.riskRatingCode) + '.svg'">
+                                {{ getRiskDescription(activityForms[i]?.value?.riskRatingCode?.description) }}
                             </span>
-                            <span *ngIf="activityForms[i]?.value?.riskRatingCode?.riskRatingCode" class="status-tag">
-                                {{activityForms[i].value.riskRatingCode.description}}
-                            </span>
+
                             <span *ngIf="activityForms[i]?.value?.outstandingObligationsInd" class="status-tag">
-                                <img alt="status" class="status-icon" src="/assets/warning.svg">Outstanding Obligations
+                                <img alt="status" class="status-icon" src="/assets/warning-activity.svg">Outstanding Obligations
                             </span>
+
                             <span *ngIf="activityForms[i]?.value?.activityStatusCode?.activityStatusCode === 'COMPLETED'" class="status-tag">
                                 <img alt="status" class="status-icon" src="/assets/complete-icon.svg">Complete
                             </span>
@@ -50,7 +65,7 @@
                             </div>
                         </div>
                         <div class="form-item">
-                            <label>Completed Hectares(To Date)</label>
+                            <label>Completed Hectares</label>
                             <input type="number" id="completedAreaHa" formControlName="completedAreaHa"/>
                         </div>
                         <div class="form-item">
@@ -71,7 +86,7 @@
                             </div>
                         </div>
 
-                        <div class="form-item" *ngIf="projectTypeCode ==='FUEL_MGMT'">
+                        <div class="form-item three-columns" *ngIf="projectTypeCode ==='FUEL_MGMT'">
                             <label>Activity Base<span class="required">*</span></label>
                             <select id="silvicultureBaseGuid" formControlName="silvicultureBaseGuid">
                                 <option value="">Select...</option>
@@ -81,7 +96,7 @@
                             </select>
                         </div>
 
-                        <div class="form-item">
+                        <div class="form-item three-columns">
                             <label>Technique</label>
                             <select id="silvicultureTechniqueGuid" formControlName="silvicultureTechniqueGuid" [disabled]="!filteredTechniqueCode.length">
                               <option [value]="null">Select...</option>
@@ -91,7 +106,7 @@
                             </select>
                           </div>
                           
-                        <div class="form-item">
+                        <div class="form-item three-columns">
                             <label>Method</label>
                             <select id="silvicultureMethodGuid" formControlName="silvicultureMethodGuid" [disabled]="!filteredMethodCode.length">
                               <option [value]="null">Select...</option>
@@ -101,11 +116,20 @@
                             </select>
                         </div>
 
-                        <div class="form-item">
+                        <div class="form-item two-columns">
                             <label>Activity Name<span class="required">*</span></label>
                             <input type="text" id="activityName" formControlName="activityName"/>
                         </div>
 
+                        
+                        <div class="form-item two-columns">
+                            <label>Funding Source Code</label>
+                            <select id="activityFundingSourceGuid" formControlName="activityFundingSourceGuid">
+                                <option *ngFor="let item of fundingSourceCode" [value]="item.fundingSourceGuid">
+                                    {{ item.fundingSourceName }}
+                                </option>
+                            </select>
+                        </div>
 
                         <div class="form-item full-width">
                             <label>Activity Description<span class="required">*</span></label>
@@ -149,14 +173,6 @@
                             </select>
                         </div>
 
-                        <div class="form-item five-columns">
-                            <label>Funding Source Code</label>
-                            <select id="activityFundingSourceGuid" formControlName="activityFundingSourceGuid">
-                                <option *ngFor="let item of fundingSourceCode" [value]="item.fundingSourceGuid">
-                                    {{ item.fundingSourceName }}
-                                </option>
-                            </select>
-                        </div>
 
                         <div class="form-item full-width">
                             <label>Activity outcomes and comments (Include approach for Outstanding Obligations if they remain):</label>
@@ -179,12 +195,12 @@
                     </form>
                     <div class="project-activity-footer">
                         <div class="button-row">
-                            <button class="secondary" (click)="onCancelActivity()" [disabled]="!isActivityDirty">Cancel</button>
-                            <button class="primary" [disabled]="!isActivityDirty" (click)="onSaveActivity()">
-                              Save
-                            </button>
+                          <button class="secondary" (click)="onCancelActivity(i)" [disabled]="!isActivityDirty[i]">Cancel</button>
+                          <button class="primary" [disabled]="!isActivityDirty[i]" (click)="onSaveActivity(i)">
+                            Save
+                          </button>
                         </div>
-                    </div>
+                    </div>       
                 </mat-expansion-panel>
             </div>
         </div>

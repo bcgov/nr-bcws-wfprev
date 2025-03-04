@@ -1,6 +1,7 @@
 @import "../project-fiscals/project-fiscals.component.scss";
 
 .fiscals-container{
+    width: 70%;
     padding-top: 12px;
     margin: 0;
     .expansion-panel{
@@ -54,9 +55,14 @@
         width: 24px;
         height: 24px;
     }
-    
+    .two-columns{
+        flex: 1 1 calc(50% - 20px) !important; // 2 items per row with a 20px gap
+    }
+    .three-columns{
+        flex: 1 1 calc(33% - 20px) !important; // 3 items per row with a 20px gap
+    }
     .form-item{
-        flex: 1 1 calc(25% - 20px) !important; // 4 items per row with a 20px gap
+        flex: 1 1 calc(25% - 20px); // 4 items per row with a 20px gap
     }
     .full-width{
         flex: 1 1 100% !important;

@@ -45,7 +45,7 @@ export class ActivitiesComponent implements OnChanges, OnInit{
   activityForms: FormGroup[] = [];
   projectTypeCode = '';
   isEditingComment: boolean[] = [];
-  isActivityDirty: boolean = false;
+  isActivityDirty: boolean[] = [];
   //use this temporary code.. the table got dropped via liquibase script.
   fundingSourcesTable = [
     {
@@ -98,7 +98,7 @@ export class ActivitiesComponent implements OnChanges, OnInit{
   loadCodeTables(): void {
     const codeTables = [
       { name: 'contractPhaseCodes', embeddedKey: 'contractPhaseCode' },
-      // { name: 'fundingSourceCodes', embeddedKey: 'fundingSourceCode' },
+      { name: 'fundingSourceCodes', embeddedKey: 'fundingSourceCode' },
       { name: 'silvicultureBaseCodes', embeddedKey: 'silvicultureBaseCode'},
       { name: 'silvicultureTechniqueCodes', embeddedKey: 'silvicultureTechniqueCode'},
       { name: 'silvicultureMethodCodes', embeddedKey: 'silvicultureMethodCode'}
@@ -225,6 +225,13 @@ export class ActivitiesComponent implements OnChanges, OnInit{
     form.get('silvicultureBaseGuid')?.valueChanges.subscribe((baseGuid) => this.onBaseChange(baseGuid, form));
     form.get('silvicultureTechniqueGuid')?.valueChanges.subscribe((techniqueGuid) => this.onTechniqueChange(techniqueGuid, form));
 
+    form.valueChanges.subscribe(() => {
+      const index = this.activityForms.indexOf(form);
+      if (index !== -1) {
+        this.isActivityDirty[index] = form.dirty
+      }
+    })
+
     return form;
   }
 
@@ -306,10 +313,99 @@ export class ActivitiesComponent implements OnChanges, OnInit{
     this.isEditingComment[index] = false;
   }
 
-  onSaveActivity(){
-
+  getRiskIcon(riskCode: string): string {
+    const riskMap: { [key: string]: string } = {
+      'LOW_RISK': 'low-risk',
+      'MODRT_RISK': 'medium-risk',
+      'HIGH_RISK': 'high-risk'
+    };
+  
+    return riskMap[riskCode] || 'none-risk';
   }
-  onCancelActivity(){
-
+  
+  getRiskDescription(description: string | null | undefined): string {
+    return description || 'None'; // Default to "None" if description is empty or null
   }
+
+  onSaveActivity(index: number): void {
+    const originalData = this.activities[index];
+    const formData = this.activityForms[index]?.value;
+  
+    const updatedData = {
+      ...originalData, // Include all original data and overwrite with form data
+      ...formData,
+    };
+  
+    const isUpdate = !!this.activities[index]?.activityGuid;
+  
+    if (isUpdate) {
+      // Update existing activity
+      this.projectService.updateFiscalActivities(this.projectGuid, this.fiscalGuid, updatedData.activityGuid, updatedData).subscribe({
+        next: () => {
+          this.snackbarService.open(
+            'Activity updated successfully!',
+            'OK',
+            { duration: 5000, panelClass: 'snackbar-success' }
+          );
+          this.isActivityDirty[index] = false;
+          this.activityForms[index].markAsPristine(); // reset dirty tracking
+          this.getActivities(); // Refresh activities after saving
+        },
+        error: () => {
+          this.snackbarService.open(
+            'Failed to update activity. Please try again later.',
+            'OK',
+            { duration: 5000, panelClass: 'snackbar-error' }
+          );
+        }
+      });
+    } else {
+      // Create new activity
+      this.projectService.createFiscalActivity(this.projectGuid, this.fiscalGuid, updatedData).subscribe({
+        next: (response) => {
+          this.snackbarService.open(
+            'New activity created successfully!',
+            'OK',
+            { duration: 5000, panelClass: 'snackbar-success' }
+          );
+          this.isActivityDirty[index] = false;
+          this.activityForms[index].markAsPristine(); // Reset dirty tracking
+          this.getActivities();
+        },
+        error: () => {
+          this.snackbarService.open(
+            'Failed to create activity. Please try again later.',
+            'OK',
+            { duration: 5000, panelClass: 'snackbar-error' }
+          );
+        }
+      });
+    }
+  }
+  
+  onCancelActivity(index: number): void {
+    if (!this.activityForms[index]) return;
+  
+    const isNewEntry = !this.activities[index]?.activityGuid;
+  
+    if (isNewEntry) {
+      // Remove the new entry
+      this.activities.splice(index, 1);
+      this.activityForms.splice(index, 1);
+      this.snackbarService.open(
+        'New activity creation cancelled.',
+        'OK',
+        { duration: 3000, panelClass: 'snackbar-warning' }
+      );
+    } else {
+      // Reset to original values
+      const originalData = this.originalActivitiesValues[index];
+      this.activityForms[index].patchValue(originalData);
+      this.activityForms[index].markAsPristine();
+      this.activityForms[index].markAsUntouched();
+      this.isActivityDirty[index] = false;
+    }
+  }
+  
+  
 }
