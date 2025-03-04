@@ -35,7 +35,46 @@ export class ActivitiesComponent implements OnChanges, OnInit{
   originalActivitiesValues: any[] = [];
   contractPhaseCode: any[] = [];
   fundingSourceCode: any[] = [];
+  silvicultureBaseCode: any[] = [];
+  silvicultureTechniqueCode: any[] = [];
+  silvicultureMethodCode: any[] = [];
+
+  filteredTechniqueCode: any[] = [];
+  filteredMethodCode: any[] = [];
+
   activityForms: FormGroup[] = [];
+  projectTypeCode = '';
+  isEditingComment: boolean[] = [];
+  isActivityDirty: boolean = false;
+  //use this temporary code.. the table got dropped via liquibase script.
+  fundingSourcesTable = [
+    {
+      fundingSourceGuid: "2141ef38-0a0d-422e-a990-6e9d3d2a4bc8",
+      fundingSourceCode: "WRR",
+      fundingSourceName: "Wildfire Risk Reduction"
+    },
+    {
+      fundingSourceGuid: "8739d565-5ff8-4b74-b115-23ada22f84fb",
+      fundingSourceCode: "BCP",
+      fundingSourceName: "BC Parks"
+    },
+    {
+      fundingSourceGuid: "04543243-28ed-4a2b-8935-5f91acdb608c",
+      fundingSourceCode: "FEP",
+      fundingSourceName: "Forest Employment Program"
+    },
+    {
+      fundingSourceGuid: "483707b1-86f2-4d54-94f5-8cbf1aaef0c7",
+      fundingSourceCode: "FESBC",
+      fundingSourceName: "Forest Enhancement Society of BC"
+    },
+    {
+      fundingSourceGuid: "2f84b1d7-4d84-432f-922c-e489fe7d764f",
+      fundingSourceCode: "CFS",
+      fundingSourceName: "FireSmart Community Funding Supports"
+    }
+  ];
+  
   
     constructor(
       private route: ActivatedRoute,
@@ -48,10 +87,10 @@ export class ActivitiesComponent implements OnChanges, OnInit{
     ) {}
 
   ngOnInit(): void {
-    this.loadCodeTables();
   }
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['fiscalGuid'] && changes['fiscalGuid'].currentValue) {
+      this.loadCodeTables();
       this.getActivities();
     }
   }
@@ -59,7 +98,10 @@ export class ActivitiesComponent implements OnChanges, OnInit{
   loadCodeTables(): void {
     const codeTables = [
       { name: 'contractPhaseCodes', embeddedKey: 'contractPhaseCode' },
-      { name: 'fundingSourceCodes', embeddedKey: 'fundingSourceCode' },
+      // { name: 'fundingSourceCodes', embeddedKey: 'fundingSourceCode' },
+      { name: 'silvicultureBaseCodes', embeddedKey: 'silvicultureBaseCode'},
+      { name: 'silvicultureTechniqueCodes', embeddedKey: 'silvicultureTechniqueCode'},
+      { name: 'silvicultureMethodCodes', embeddedKey: 'silvicultureMethodCode'}
     ];
   
     codeTables.forEach((table) => {
@@ -76,12 +118,22 @@ export class ActivitiesComponent implements OnChanges, OnInit{
   }
 
   assignCodeTableData(key: string, data: any): void {
+    this.fundingSourceCode = this.fundingSourcesTable;
     switch (key) {
       case 'contractPhaseCode':
         this.contractPhaseCode = data._embedded.contractPhaseCode || [];
         break;
       case 'fundingSourceCode':
         this.fundingSourceCode = data._embedded.fundingSourceCode || [];
+        break;
+      case 'silvicultureBaseCode':
+        this.silvicultureBaseCode = data._embedded.silvicultureBaseCode || [];
+        break;
+      case 'silvicultureTechniqueCode':
+        this.silvicultureTechniqueCode = data._embedded.silvicultureTechniqueCode || [];
+        break;
+      case 'silvicultureMethodCode':
+        this.silvicultureMethodCode = data._embedded.silvicultureMethodCode || [];
         break;
     }
   }
@@ -90,42 +142,58 @@ export class ActivitiesComponent implements OnChanges, OnInit{
     if (!this.fiscalGuid) return;
   
     this.projectGuid = this.route.snapshot?.queryParamMap?.get('projectGuid') || '';
-  
-    this.projectService.getFiscalActivities(this.projectGuid, this.fiscalGuid).subscribe({
-      next: (data) => {
-        if (data && data._embedded?.activities) {
-          this.activities = data._embedded.activities;
-        } else {
-          this.activities = [];
-        }
-  
-        this.originalActivitiesValues = JSON.parse(JSON.stringify(this.activities));
-  
-        this.activityForms = this.activities.map((activity) => this.createActivityForm(activity));
-  
-        this.cd.detectChanges();
-      },
-      error: (error) => {
-        console.error('Error fetching activities:', error);
-        this.activities = [];
+    
+    if (this.projectGuid){
 
-        this.snackbarService.open(
-          'Failed to load activities. Please try again later.',
-          'OK',
-          { duration: 5000, panelClass: 'snackbar-error' }
-        );
-      }
-    });
+      this.getProjectType(this.projectGuid);
+    
+      this.projectService.getFiscalActivities(this.projectGuid, this.fiscalGuid).subscribe({
+        next: (data) => {
+          if (data && data._embedded?.activities) {
+            this.activities = data._embedded.activities;
+          } else {
+            this.activities = [];
+          }
+    
+          this.originalActivitiesValues = JSON.parse(JSON.stringify(this.activities));
+    
+          this.activityForms = this.activities.map((activity) => this.createActivityForm(activity));
+    
+          this.cd.detectChanges();
+        },
+        error: (error) => {
+          console.error('Error fetching activities:', error);
+          this.activities = [];
+
+          this.snackbarService.open(
+            'Failed to load activities. Please try again later.',
+            'OK',
+            { duration: 5000, panelClass: 'snackbar-error' }
+          );
+        }
+      });
+    }
+  }
+
+  getProjectType(projectGuid: string) {
+        this.projectService.getProjectByProjectGuid(this.projectGuid).subscribe({
+          next: (data) => {
+            this.projectTypeCode = data.projectTypeCode?.projectTypeCode
+          },
+          error: (err) => {
+            console.error('Error fetching project:', err);
+          },
+        });
   }
 
   createActivityForm(activity?: any): FormGroup {
-    return this.fb.group({
+    const form = this.fb.group({
       activityGuid: [activity?.activityGuid || ''],
       projectPlanFiscalGuid: [activity?.projectPlanFiscalGuid || ''],
       activityStatusCode: [activity?.activityStatusCode || ''],
       silvicultureBaseGuid: [activity?.silvicultureBaseGuid || ''],
-      silvicultureTechniqueGuid: [activity?.silvicultureTechniqueGuid || ''],
-      silvicultureMethodGuid: [activity?.silvicultureMethodGuid || ''],
+      silvicultureTechniqueGuid: [activity?.silvicultureTechniqueGuid || {value: null, disabled: true}],
+      silvicultureMethodGuid: [activity?.silvicultureMethodGuid || {value: null, disabled: true }],
       riskRatingCode: [activity?.riskRatingCode || ''],
       contractPhaseCode: [activity?.contractPhaseCode?.contractPhaseCode || ''],
       activityFundingSourceGuid: [activity?.activityFundingSourceGuid || ''],
@@ -145,20 +213,66 @@ export class ActivitiesComponent implements OnChanges, OnInit{
       isSpatialAddedInd: [activity?.isSpatialAddedInd || false],
       createDate: [activity?.createDate || ''], // ISO 8601 date format
     });
+
+    if (activity?.silvicultureBaseGuid) {
+      this.filteredTechniqueCode = this.silvicultureTechniqueCode.filter(t => t.silvicultureBaseGuid === activity.silvicultureBaseGuid);
+    }  
+    if (activity?.silvicultureTechniqueGuid) {
+      this.filteredMethodCode = this.silvicultureMethodCode.filter(m => m.silvicultureTechniqueGuid === activity.silvicultureTechniqueGuid);
+    }
+
+    // Handle user selection changes
+    form.get('silvicultureBaseGuid')?.valueChanges.subscribe((baseGuid) => this.onBaseChange(baseGuid, form));
+    form.get('silvicultureTechniqueGuid')?.valueChanges.subscribe((techniqueGuid) => this.onTechniqueChange(techniqueGuid, form));
+
+    return form;
+  }
+
+  onBaseChange(baseGuid: string, form: FormGroup) {
+    if (!baseGuid) {
+      form.get('silvicultureTechniqueGuid')?.setValue(null);
+      form.get('silvicultureTechniqueGuid')?.disable();
+      form.get('silvicultureMethodGuid')?.setValue(null);
+      form.get('silvicultureMethodGuid')?.disable();
+      this.filteredTechniqueCode = [];
+      return;
+    }
+
+    this.filteredTechniqueCode = this.silvicultureTechniqueCode.filter(t => t.silvicultureBaseGuid === baseGuid);
+    form.get('silvicultureTechniqueGuid')?.enable();
+    form.get('silvicultureTechniqueGuid')?.setValue(null);
+    form.get('silvicultureMethodGuid')?.setValue(null);
+    form.get('silvicultureMethodGuid')?.disable();
+    this.filteredMethodCode = [];
+  }
+
+  onTechniqueChange(techniqueGuid: string, form: FormGroup) {
+    if (!techniqueGuid) {
+      form.get('silvicultureMethodGuid')?.setValue(null);
+      form.get('silvicultureMethodGuid')?.disable();
+      this.filteredMethodCode = [];
+      return;
+    }
+
+    this.filteredMethodCode = this.silvicultureMethodCode.filter(m => m.silvicultureTechniqueGuid === techniqueGuid);
+    form.get('silvicultureMethodGuid')?.enable();
+    form.get('silvicultureMethodGuid')?.setValue(null);
   }
 
   formatDate(date: string | Date): string {
     return date ? moment(date).format('YYYY-MM-DD') : '';
   }
-  getActivityTitle(index: number) {
+  getActivityTitle(index: number): string {
     const activity = this.activities[index];
     if (!activity) return 'N/A'; // Handle missing data
-
-    const base = activity.silvicultureBaseGuid || 'Unknown Base';
-    const method = activity.silvicultureMethodGuid || 'Unknown Method';
-    const technique = activity.silvicultureTechniqueGuid || 'Unknown Technique';
+  
+    const base = this.silvicultureBaseCode.find(b => b.silvicultureBaseGuid === activity.silvicultureBaseGuid)?.description || 'Unknown Base';
+    const method = this.silvicultureMethodCode.find(m => m.silvicultureMethodGuid === activity.silvicultureMethodGuid)?.description || 'Unknown Method';
+    const technique = this.silvicultureTechniqueCode.find(t => t.silvicultureTechniqueGuid === activity.silvicultureTechniqueGuid)?.description || 'Unknown Technique';
+  
     return `${base} - ${method} - ${technique}`;
   }
+  
   
   getLastUpdated(index: number) {
     const activity = this.activities[index];
@@ -176,4 +290,26 @@ export class ActivitiesComponent implements OnChanges, OnInit{
     });
   }
 
+  addActivity(): void {
+    const newActivity = {};
+    this.activities.push(newActivity);
+    this.activityForms.push(this.createActivityForm(newActivity));
+    
+    this.cd.detectChanges();
+  }
+
+  toggleEditComment(index: number) {
+    this.isEditingComment[index] = true;
+  }
+  
+  saveComment(index: number) {
+    this.isEditingComment[index] = false;
+  }
+
+  onSaveActivity(){
+
+  }
+  onCancelActivity(){
+
+  }
 }

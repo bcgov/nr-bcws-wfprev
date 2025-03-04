@@ -3,7 +3,7 @@
         <mat-expansion-panel-header>
             <div class="header-container">
                 <span class="project-title">Activities</span>
-                <button class="dropdown-button" mat-icon-button (click)="$event.stopPropagation()">
+                <button class="dropdown-button" mat-icon-button (click)="addActivity(); $event.stopPropagation()">
                     <img class="action-icon" alt="actions" src="/assets/add-button.svg">
                   <span>Add Activity</span>
                 </button>
@@ -20,6 +20,20 @@
                             <div class="update-date">
                                 Last Updated: {{getLastUpdated(i)}}
                             </div>
+                        </div>
+                        <div class="status-indicators">
+                            <span *ngIf="activityForms[i]?.value?.isSpatialAddedInd" class="status-tag">
+                                Spatial Added
+                            </span>
+                            <span *ngIf="activityForms[i]?.value?.riskRatingCode?.riskRatingCode" class="status-tag">
+                                {{activityForms[i].value.riskRatingCode.description}}
+                            </span>
+                            <span *ngIf="activityForms[i]?.value?.outstandingObligationsInd" class="status-tag">
+                                <img alt="status" class="status-icon" src="/assets/warning.svg">Outstanding Obligations
+                            </span>
+                            <span *ngIf="activityForms[i]?.value?.activityStatusCode?.activityStatusCode === 'COMPLETED'" class="status-tag">
+                                <img alt="status" class="status-icon" src="/assets/complete-icon.svg">Complete
+                            </span>
                         </div>
                     </mat-expansion-panel-header>
                     <form class="form-grid" *ngIf="activityForms[i]" [formGroup]="activityForms[i]">
@@ -57,24 +71,36 @@
                             </div>
                         </div>
 
-                        <div class="form-item">
-                            <label>Activity Base</label>
+                        <div class="form-item" *ngIf="projectTypeCode ==='FUEL_MGMT'">
+                            <label>Activity Base<span class="required">*</span></label>
                             <select id="silvicultureBaseGuid" formControlName="silvicultureBaseGuid">
-                                <option value="" >Select</option>
+                                <option value="">Select...</option>
+                                <option *ngFor="let item of silvicultureBaseCode" [value]="item.silvicultureBaseGuid">
+                                    {{ item.description }}
+                                </option>
                             </select>
                         </div>
+
                         <div class="form-item">
                             <label>Technique</label>
-                            <select id="silvicultureTechniqueGuid" formControlName="silvicultureTechniqueGuid">
-                                <option value="" >Select</option>
+                            <select id="silvicultureTechniqueGuid" formControlName="silvicultureTechniqueGuid" [disabled]="!filteredTechniqueCode.length">
+                              <option [value]="null">Select...</option>
+                              <option *ngFor="let item of filteredTechniqueCode" [value]="item.silvicultureTechniqueGuid">
+                                {{ item.description }}
+                              </option>
                             </select>
-                        </div>
+                          </div>
+                          
                         <div class="form-item">
                             <label>Method</label>
-                            <select id="silvicultureMethodeGuid" formControlName="silvicultureMethodGuid">
-                                <option value="" >Select</option>
+                            <select id="silvicultureMethodGuid" formControlName="silvicultureMethodGuid" [disabled]="!filteredMethodCode.length">
+                              <option [value]="null">Select...</option>
+                              <option *ngFor="let item of filteredMethodCode" [value]="item.silvicultureMethodGuid">
+                                {{ item.description }}
+                              </option>
                             </select>
                         </div>
+
                         <div class="form-item">
                             <label>Activity Name<span class="required">*</span></label>
                             <input type="text" id="activityName" formControlName="activityName"/>
@@ -131,7 +157,34 @@
                                 </option>
                             </select>
                         </div>
+
+                        <div class="form-item full-width">
+                            <label>Activity outcomes and comments (Include approach for Outstanding Obligations if they remain):</label>
+                        
+                            <span 
+                                *ngIf="!isEditingComment[i] && activityForms[i].value?.activityComment" 
+                                class="comment-display" 
+                                (click)="toggleEditComment(i)">
+                                {{ activityForms[i].value?.activityComment }}
+                            </span>
+                        
+                            <input 
+                                *ngIf="isEditingComment[i] || !activityForms[i].value?.activityComment" 
+                                type="text" 
+                                id="activityComment" 
+                                formControlName="activityComment"
+                                (blur)="saveComment(i)"
+                                (keydown.enter)="saveComment(i)">
+                        </div>
                     </form>
+                    <div class="project-activity-footer">
+                        <div class="button-row">
+                            <button class="secondary" (click)="onCancelActivity()" [disabled]="!isActivityDirty">Cancel</button>
+                            <button class="primary" [disabled]="!isActivityDirty" (click)="onSaveActivity()">
+                              Save
+                            </button>
+                        </div>
+                    </div>
                 </mat-expansion-panel>
             </div>
         </div>

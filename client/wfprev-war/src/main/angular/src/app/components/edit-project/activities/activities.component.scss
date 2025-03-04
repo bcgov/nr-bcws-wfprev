@@ -30,6 +30,31 @@
             line-height: normal;
         }
     }
+
+    .status-indicators {
+        font-family: var(--wf-font-family-main);
+        font-size: 16px;
+        font-weight: 400;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-left: auto;
+        padding-right: 20px;
+    }
+    
+    .status-tag {
+        display: flex;
+        padding: 5px 0px;
+        align-items: center;
+        gap: 5px;
+        font-size: 16px;
+    }
+
+    .status-icon{
+        width: 24px;
+        height: 24px;
+    }
+    
     .form-item{
         flex: 1 1 calc(25% - 20px) !important; // 4 items per row with a 20px gap
     }
@@ -38,6 +63,22 @@
     }
     .five-columns{
         flex: 1 1 calc(20% - 20px) !important; // 5 items per row with a 20px gap
+    }
+
+    .comment-display {
+        font-family: var(--wf-font-family-main);
+        font-size: 16px;
+        display:flex;
+        padding-top: 8px;
+        padding-left: 8px;
+        font-weight: 700;
+        color: #282828;
+        cursor: pointer;
+        border-bottom: none;
+    }
+    
+    input#activityComment {
+        border-bottom: 1px solid black; // Underline when editing
     }
 
     .mat-date-range-input {
@@ -75,6 +116,16 @@
 
 }
 
+.project-activity-footer{
+    border-top: 1px solid #D9D9D9;
+    .button-row{
+        padding: 14px 17px 14px 23px;
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 17px;
+    }
+}
 
 .custom-overlay-container .cdk-overlay-pane {
     left: 190px !important;
