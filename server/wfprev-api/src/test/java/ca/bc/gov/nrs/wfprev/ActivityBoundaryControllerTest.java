@@ -32,15 +32,8 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.anyString;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -260,6 +253,29 @@ class ActivityBoundaryControllerTest {
 
     @Test
     @WithMockUser
+    void testCreateActivityBoundary_IllegalArgumentException() throws Exception {
+        ActivityBoundaryModel requestModel = buildActivityBoundaryRequestModel();
+
+        when(activityBoundaryService.createActivityBoundary(anyString(), anyString(), anyString(), any(ActivityBoundaryModel.class)))
+                .thenThrow(new IllegalArgumentException ("Illegal Argument exception"));
+
+        String requestJson = activityBoundaryJson.formatted(
+                requestModel.getActivityBoundaryGuid(),
+                requestModel.getActivityGuid(),
+                requestModel.getSystemStartTimestamp().getTime(),
+                requestModel.getSystemEndTimestamp().getTime() + 1000,
+                requestModel.getCollectionDate().getTime()
+        );
+
+        mockMvc.perform(post("/projects/{projectId}/projectFiscals/{projectFiscalId}/activities/{activityId}/activityBoundary",
+                        UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJson))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @WithMockUser
     void testUpdateActivityBoundary_Success() throws Exception {
         ActivityBoundaryModel requestModel = buildActivityBoundaryRequestModel();
 
@@ -327,6 +343,29 @@ class ActivityBoundaryControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestJson))
                 .andExpect(status().isInternalServerError());
+    }
+
+    @Test
+    @WithMockUser
+    void testUpdateActivityBoundary_IllegalArgumentException() throws Exception {
+        ActivityBoundaryModel requestModel = buildActivityBoundaryRequestModel();
+
+        when(activityBoundaryService.updateActivityBoundary(anyString(), anyString(), anyString(), any(ActivityBoundaryModel.class)))
+                .thenThrow(new IllegalArgumentException("Runtime exception"));
+
+        String requestJson = activityBoundaryJson.formatted(
+                requestModel.getActivityBoundaryGuid(),
+                requestModel.getActivityGuid(),
+                requestModel.getSystemStartTimestamp().getTime(),
+                requestModel.getSystemEndTimestamp().getTime() + 1000,
+                requestModel.getCollectionDate().getTime()
+        );
+
+        mockMvc.perform(put("/projects/{projectId}/projectFiscals/{projectFiscalId}/activities/{activityId}/activityBoundary/{id}",
+                        UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), requestModel.getActivityBoundaryGuid())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJson))
+                .andExpect(status().isBadRequest());
     }
 
     @Test

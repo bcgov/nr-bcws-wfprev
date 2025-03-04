@@ -137,6 +137,22 @@ class ActivityControllerTest {
 
     @Test
     @WithMockUser
+    void testCreateActivity_IllegalArgumentException() throws Exception {
+        ActivityModel requestModel = buildActivityModel();
+
+        when(activityService.createActivity(anyString(), anyString(), any(ActivityModel.class)))
+                .thenThrow(new IllegalArgumentException("Illegal Argument exception"));
+
+        mockMvc.perform(post("/projects/{projectId}/projectFiscals/{projectFiscalId}/activities",
+                        "123e4567-e89b-12d3-a456-426614174001",
+                        "123e4567-e89b-12d3-a456-426614174002")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(gson.toJson(requestModel)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @WithMockUser
     void testUpdateActivity_Success() throws Exception {
         ActivityModel requestModel = buildActivityModel();
 
@@ -187,6 +203,23 @@ class ActivityControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(gson.toJson(requestModel)))
                 .andExpect(status().isInternalServerError());
+    }
+
+    @Test
+    @WithMockUser
+    void testUpdateActivity_IllegalArgumentException() throws Exception {
+        ActivityModel requestModel = buildActivityModel();
+
+        when(activityService.updateActivity(anyString(), anyString(), any(ActivityModel.class)))
+                .thenThrow(new IllegalArgumentException("Illegal Argument exception"));
+
+        mockMvc.perform(put("/projects/{projectId}/projectFiscals/{projectFiscalId}/activities/{id}",
+                        "123e4567-e89b-12d3-a456-426614174001",
+                        "123e4567-e89b-12d3-a456-426614174002",
+                        requestModel.getActivityGuid())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(gson.toJson(requestModel)))
+                .andExpect(status().isBadRequest());
     }
 
     @Test

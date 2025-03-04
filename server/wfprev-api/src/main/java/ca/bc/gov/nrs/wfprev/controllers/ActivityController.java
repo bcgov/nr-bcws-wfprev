@@ -128,9 +128,6 @@ public class ActivityController extends CommonController {
         } catch (EntityNotFoundException e) {
             response = notFound();
             log.warn(" ### Activity not found with id: {}", id, e);
-        } catch (ServiceException e) {
-            log.error(" ### Service Exception while updating Activity", e);
-            response = internalServerError();
         } catch (IllegalArgumentException e) {
             response = ResponseEntity.badRequest().build();
             log.error(" ### IllegalArgumentException while updating Activity", e);
@@ -176,9 +173,6 @@ public class ActivityController extends CommonController {
         } catch (DataIntegrityViolationException e) {
             response = badRequest();
             log.error(" ### DataIntegrityViolationException while creating Activity", e);
-        } catch (ServiceException e) {
-            response = internalServerError();
-            log.error(" ### Service Exception while creating Activity", e);
         } catch (IllegalArgumentException e) {
             response = ResponseEntity.badRequest().build();
             log.error(" ### IllegalArgumentException while creating Activity", e);

@@ -12,8 +12,12 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -237,5 +241,32 @@ class GlobalExceptionHandlerTest {
         Map<String, String> errors = (Map<String, String>) response.getBody();
         assertEquals(1, errors.size());
         assertEquals("Invalid JSON format", errors.get("error"));
+    }
+
+    @Test
+    void testHandleMethodArgumentNotValid() {
+        // Given
+        BindingResult bindingResult = mock(BindingResult.class);
+        List<FieldError> fieldErrors = List.of(
+                new FieldError("activityModel", "activityName", "must not be empty"),
+                new FieldError("activityModel", "activityStartDate", "must be a valid date")
+        );
+
+        when(bindingResult.getFieldErrors()).thenReturn(fieldErrors);
+
+        MethodArgumentNotValidException ex = new MethodArgumentNotValidException(null, bindingResult);
+
+        // When
+        ResponseEntity<Object> response = handler.handleMethodArgumentNotValid(ex);
+
+        // Then
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertTrue(response.getBody() instanceof Map);
+
+        @SuppressWarnings("unchecked")
+        Map<String, String> errors = (Map<String, String>) response.getBody();
+        assertEquals(2, errors.size());
+        assertEquals("must not be empty", errors.get("activityName"));
+        assertEquals("must be a valid date", errors.get("activityStartDate"));
     }
 }

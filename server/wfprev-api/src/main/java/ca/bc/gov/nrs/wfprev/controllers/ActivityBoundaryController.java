@@ -39,7 +39,6 @@ import java.util.Date;
 @RequestMapping(value = "/projects/{projectGuid}/projectFiscals/{projectPlanFiscalGuid}/activities/{activityGuid}/activityBoundary")
 public class ActivityBoundaryController extends CommonController {
     private final ActivityBoundaryService activityBoundaryService;
-    private ResponseEntity<ActivityBoundaryModel> activityBoundaryModelResponseEntity;
 
     public ActivityBoundaryController(ActivityBoundaryService activityBoundaryService) {
         super(ActivityBoundaryController.class.getName());
@@ -144,9 +143,6 @@ public class ActivityBoundaryController extends CommonController {
         } catch (DataIntegrityViolationException e) {
             log.error(" ### DataIntegrityViolationException while creating Activity Boundary", e);
             return badRequest();
-        } catch (ServiceException e) {
-            log.error(" ### Service Exception while creating Activity Boundary", e);
-            return internalServerError();
         } catch (IllegalArgumentException e) {
             log.error(" ### IllegalArgumentException while creating Activity Boundary", e);
             return badRequest();
@@ -188,9 +184,6 @@ public class ActivityBoundaryController extends CommonController {
         } catch (EntityNotFoundException e) {
             log.warn(" ### Activity Boundary not found for update: {}", id, e);
             return notFound();
-        } catch (ServiceException e) {
-            log.error(" ### Service Exception while updating Activity Boundary", e);
-            return internalServerError();
         } catch (IllegalArgumentException e) {
             log.error(" ### IllegalArgumentException while updating Activity Boundary", e);
             return badRequest();
