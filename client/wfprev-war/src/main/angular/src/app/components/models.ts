@@ -80,3 +80,28 @@ export interface ProjectFiscal {
   ancillaryFundingSourceGuid?: string;
   otherPartner?: string
 }
+
+export interface ActivityModel {
+  activityGuid?: string;
+  projectPlanFiscalGuid?: string;
+  activityStatusCode?: string;
+  silvicultureBaseGuid?: string;
+  silvicultureTechniqueGuid?: string;
+  silvicultureMethodGuid?: string;
+  riskRatingCode?: string;
+  contractPhaseCode?: string;
+  activityFundingSourceGuid?: string;
+  activityName?: string;
+  activityDescription?: string;
+  activityStartDate?: string; // ISO 8601 format: "YYYY-MM-DDTHH:mm:ss.SSSZ"
+  activityEndDate?: string; // ISO 8601 format
+  plannedSpendAmount?: number;
+  plannedTreatmentAreaHa?: number;
+  reportedSpendAmount?: number;
+  completedAreaHa?: number;
+  isResultsReportableInd?: boolean;
+  outstandingObligationsInd?: boolean;
+  activityComment?: string;
+  isSpatialAddedInd?: boolean;
+  createDate?: string; // ISO 8601 format, e.g., "2025-02-06T23:56:53.663+00:00"
+}
