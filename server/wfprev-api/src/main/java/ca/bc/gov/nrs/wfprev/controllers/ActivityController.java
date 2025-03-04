@@ -178,7 +178,7 @@ public class ActivityController extends CommonController {
             log.error(" ### IllegalArgumentException while creating Activity", e);
         } catch (RuntimeException e) {
             log.error(" ### RuntimeException while creating Activity", e);
-            return internalServerError();
+            response = internalServerError();
         }
 
         log.debug(" << createActivity");
