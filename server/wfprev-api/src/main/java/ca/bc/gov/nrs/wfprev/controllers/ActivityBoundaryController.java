@@ -2,6 +2,7 @@ package ca.bc.gov.nrs.wfprev.controllers;
 
 import ca.bc.gov.nrs.common.wfone.rest.resource.HeaderConstants;
 import ca.bc.gov.nrs.common.wfone.rest.resource.MessageListRsrc;
+import ca.bc.gov.nrs.wfone.common.service.api.ServiceException;
 import ca.bc.gov.nrs.wfprev.common.controllers.CommonController;
 import ca.bc.gov.nrs.wfprev.data.models.ActivityBoundaryModel;
 import ca.bc.gov.nrs.wfprev.services.ActivityBoundaryService;
@@ -128,13 +129,8 @@ public class ActivityBoundaryController extends CommonController {
             @PathVariable String projectGuid,
             @PathVariable String projectPlanFiscalGuid,
             @PathVariable String activityGuid,
-            @Valid @RequestBody ActivityBoundaryModel resource,
-            BindingResult result) {
+            @Valid @RequestBody ActivityBoundaryModel resource) {
         log.debug(" >> createActivityBoundary");
-
-        if (result.hasErrors()) {
-            return ResponseEntity.badRequest().body((ActivityBoundaryModel) result.getAllErrors());
-        }
 
         try {
             resource.setCreateDate(new Date());
@@ -147,8 +143,11 @@ public class ActivityBoundaryController extends CommonController {
         } catch (DataIntegrityViolationException e) {
             log.error(" ### DataIntegrityViolationException while creating Activity Boundary", e);
             return badRequest();
-        } catch (Exception e) {
-            log.error(" ### Error while creating Activity Boundary", e);
+        } catch (IllegalArgumentException e) {
+            log.error(" ### IllegalArgumentException while creating Activity Boundary", e);
+            return badRequest();
+        } catch (RuntimeException e) {
+            log.error(" ### RuntimeException while creating Activity Boundary", e);
             return internalServerError();
         }
     }
@@ -170,17 +169,10 @@ public class ActivityBoundaryController extends CommonController {
             @PathVariable String projectPlanFiscalGuid,
             @PathVariable String activityGuid,
             @PathVariable String id,
-            @Valid @RequestBody ActivityBoundaryModel resource,
-            BindingResult result) {
+            @Valid @RequestBody ActivityBoundaryModel resource) {
         log.debug(" >> updateActivityBoundary");
 
         try {
-            if (!id.equalsIgnoreCase(resource.getActivityBoundaryGuid())) {
-                return badRequest();
-            }else if (result.hasErrors()) {
-                return ResponseEntity.badRequest().body((ActivityBoundaryModel) result.getAllErrors());
-            }
-
             resource.setUpdateDate(new Date());
 
             ActivityBoundaryModel updatedResource = activityBoundaryService.updateActivityBoundary(
@@ -192,8 +184,11 @@ public class ActivityBoundaryController extends CommonController {
         } catch (EntityNotFoundException e) {
             log.warn(" ### Activity Boundary not found for update: {}", id, e);
             return notFound();
-        } catch (Exception e) {
-            log.error(" ### Error while updating Activity Boundary", e);
+        } catch (IllegalArgumentException e) {
+            log.error(" ### IllegalArgumentException while updating Activity Boundary", e);
+            return badRequest();
+        } catch (RuntimeException e) {
+            log.error(" ### RuntimeException while updating Activity Boundary", e);
             return internalServerError();
         }
     }

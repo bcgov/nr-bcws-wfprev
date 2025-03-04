@@ -17,8 +17,11 @@ import ca.bc.gov.nrs.wfprev.data.repositories.ProjectFiscalRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.RiskRatingCodeRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
+import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.Validator;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.stereotype.Component;
@@ -26,6 +29,7 @@ import org.springframework.stereotype.Component;
 import java.text.MessageFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Slf4j
@@ -48,6 +52,7 @@ public class ActivityService implements CommonService {
     private final ActivityStatusCodeRepository activityStatusCodeRepository;
     private final ContractPhaseCodeRepository contractPhaseCodeRepository;
     private final RiskRatingCodeRepository riskRatingCodeRepository;
+    private final Validator validator;
 
     public ActivityService(
             ActivityRepository activityRepository,
@@ -56,7 +61,8 @@ public class ActivityService implements CommonService {
             ProjectFiscalService projectFiscalService,
             ActivityStatusCodeRepository activityStatusCodeRepository,
             ContractPhaseCodeRepository contractPhaseCodeRepository,
-            RiskRatingCodeRepository riskRatingCodeRepository) {
+            RiskRatingCodeRepository riskRatingCodeRepository,
+            Validator validator) {
         this.activityRepository = activityRepository;
         this.activityResourceAssembler = activityResourceAssembler;
         this.projectFiscalRepository = projectFiscalRepository;
@@ -64,6 +70,7 @@ public class ActivityService implements CommonService {
         this.activityStatusCodeRepository = activityStatusCodeRepository;
         this.contractPhaseCodeRepository = contractPhaseCodeRepository;
         this.riskRatingCodeRepository = riskRatingCodeRepository;
+        this.validator = validator;
     }
 
     public CollectionModel<ActivityModel> getAllActivities(String projectGuid, String fiscalGuid) throws ServiceException {
@@ -93,6 +100,11 @@ public class ActivityService implements CommonService {
 
     @Transactional
     public ActivityModel createActivity(String projectGuid, String fiscalGuid, ActivityModel resource) {
+        Set<ConstraintViolation<ActivityModel>> violations = validator.validate(resource);
+        if (!violations.isEmpty()) {
+            throw new ConstraintViolationException(violations);
+        }
+
         // Verify project fiscal exists and belongs to project
         ProjectFiscalModel projectFiscal = projectFiscalService.getProjectFiscal(fiscalGuid);
         if (!projectFiscal.getProjectGuid().equals(projectGuid)) {
@@ -121,6 +133,11 @@ public class ActivityService implements CommonService {
 
     @Transactional
     public ActivityModel updateActivity(String projectGuid, String fiscalGuid, ActivityModel resource) {
+        Set<ConstraintViolation<ActivityModel>> violations = validator.validate(resource);
+        if (!violations.isEmpty()) {
+            throw new ConstraintViolationException(violations);
+        }
+
         // Verify activity exists
         UUID activityGuid = UUID.fromString(resource.getActivityGuid());
         ActivityEntity existingEntity = (ActivityEntity) activityRepository.findById(activityGuid)
