@@ -89,4 +89,34 @@ public class ActivityBoundaryTimestampValidatorTest {
         // Then
         assertTrue(result);
     }
+
+    @Test
+    void testInvalidTimestamps_EndTimestampNotAfterStartTimestamp() {
+        // Given
+        ActivityBoundaryModel boundary = new ActivityBoundaryModel();
+        Date startTimestamp = new Date(1700000000000L);
+        Date endTimestamp = new Date(1700000000000L); // Same timestamp as start
+        boundary.setSystemStartTimestamp(startTimestamp);
+        boundary.setSystemEndTimestamp(endTimestamp);
+
+        // Mock the chain for constraint violation building
+        ConstraintValidatorContext.ConstraintViolationBuilder builder = mock(ConstraintValidatorContext.ConstraintViolationBuilder.class);
+        ConstraintValidatorContext.ConstraintViolationBuilder.NodeBuilderCustomizableContext nodeBuilder =
+                mock(ConstraintValidatorContext.ConstraintViolationBuilder.NodeBuilderCustomizableContext.class);
+
+        // Set up the complete mock chain
+        when(context.buildConstraintViolationWithTemplate(anyString())).thenReturn(builder);
+        when(builder.addPropertyNode(anyString())).thenReturn(nodeBuilder);
+        when(nodeBuilder.addConstraintViolation()).thenReturn(context);
+
+        // When
+        boolean result = validator.isValid(boundary, context);
+
+        // Then
+        assertFalse(result);
+        verify(context).disableDefaultConstraintViolation();
+        verify(context).buildConstraintViolationWithTemplate("systemEndTimestamp must be after systemStartTimestamp");
+        verify(builder).addPropertyNode("systemEndTimestamp");
+        verify(nodeBuilder).addConstraintViolation();
+    }
 }

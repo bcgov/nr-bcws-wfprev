@@ -89,4 +89,34 @@ public class ActivityDateValidatorTest {
         // Then
         assertTrue(result);
     }
+
+    @Test
+    void testInvalidDates_EndDateNotAfterStartDate() {
+        // Given
+        ActivityModel activity = new ActivityModel();
+        Date startDate = new Date(1700000000000L);
+        Date endDate = new Date(1700000000000L); // Same timestamp as start date
+        activity.setActivityStartDate(startDate);
+        activity.setActivityEndDate(endDate);
+
+        // Mock the chain for constraint violation building with proper types
+        ConstraintValidatorContext.ConstraintViolationBuilder builder = mock(ConstraintValidatorContext.ConstraintViolationBuilder.class);
+        ConstraintValidatorContext.ConstraintViolationBuilder.NodeBuilderCustomizableContext nodeBuilder =
+                mock(ConstraintValidatorContext.ConstraintViolationBuilder.NodeBuilderCustomizableContext.class);
+
+        // Set up the complete mock chain
+        when(context.buildConstraintViolationWithTemplate(anyString())).thenReturn(builder);
+        when(builder.addPropertyNode(anyString())).thenReturn(nodeBuilder);
+        when(nodeBuilder.addConstraintViolation()).thenReturn(context);
+
+        // When
+        boolean result = validator.isValid(activity, context);
+
+        // Then
+        assertFalse(result);
+        verify(context).disableDefaultConstraintViolation();
+        verify(context).buildConstraintViolationWithTemplate("activityEndDate must be after activityStartDate");
+        verify(builder).addPropertyNode("activityEndDate");
+        verify(nodeBuilder).addConstraintViolation();
+    }
 }
