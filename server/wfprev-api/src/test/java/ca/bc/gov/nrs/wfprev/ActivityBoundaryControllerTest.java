@@ -32,8 +32,15 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -54,23 +61,23 @@ class ActivityBoundaryControllerTest {
     private AuditorAware<String> auditorAware;
 
     String activityBoundaryJson = """
-    {
-        "activityBoundaryGuid": "%s",
-        "activityGuid": "%s",
-        "systemStartTimestamp": %d,
-        "systemEndTimestamp": %d,
-        "collectionDate": %d,
-        "boundarySizeHa": 10.5,
-        "geometry": {
-            "coordinates": [[
-                [-123.3656, 48.4284],
-                [-123.3657, 48.4285],
-                [-123.3658, 48.4284],
-                [-123.3656, 48.4284]
-            ]]
-        }
-    }
-""";
+                {
+                    "activityBoundaryGuid": "%s",
+                    "activityGuid": "%s",
+                    "systemStartTimestamp": %d,
+                    "systemEndTimestamp": %d,
+                    "collectionDate": %d,
+                    "boundarySizeHa": 10.5,
+                    "geometry": {
+                        "coordinates": [[
+                            [-123.3656, 48.4284],
+                            [-123.3657, 48.4285],
+                            [-123.3658, 48.4284],
+                            [-123.3656, 48.4284]
+                        ]]
+                    }
+                }
+            """;
 
     @BeforeEach
     void setup() {
@@ -257,7 +264,7 @@ class ActivityBoundaryControllerTest {
         ActivityBoundaryModel requestModel = buildActivityBoundaryRequestModel();
 
         when(activityBoundaryService.createActivityBoundary(anyString(), anyString(), anyString(), any(ActivityBoundaryModel.class)))
-                .thenThrow(new IllegalArgumentException ("Illegal Argument exception"));
+                .thenThrow(new IllegalArgumentException("Illegal Argument exception"));
 
         String requestJson = activityBoundaryJson.formatted(
                 requestModel.getActivityBoundaryGuid(),
@@ -405,7 +412,7 @@ class ActivityBoundaryControllerTest {
         verify(activityBoundaryService).deleteActivityBoundary(anyString(), anyString(), anyString(), eq(boundaryId.toString()));
     }
 
-    ActivityBoundaryModel buildActivityBoundaryRequestModel(){
+    ActivityBoundaryModel buildActivityBoundaryRequestModel() {
         return ActivityBoundaryModel.builder()
                 .activityBoundaryGuid(UUID.randomUUID().toString())
                 .activityGuid(UUID.randomUUID().toString())
