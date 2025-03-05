@@ -71,6 +71,18 @@
         flex: 1 1 calc(20% - 20px) !important; // 5 items per row with a 20px gap
     }
 
+    .narrow-width{
+        max-width: 150px;
+    }
+
+    .first-section{
+        display: flex;
+        gap:20px;
+        width: 100%;
+        border-bottom: 1px solid #D9D9D9;
+        padding-bottom: 16px;
+    }
+
     .comment-display {
         font-family: var(--wf-font-family-main);
         font-size: 16px;
@@ -120,16 +132,47 @@
         margin: 0 5px;
       }
 
+    input[readonly] {
+        border-bottom: 1px dashed #2D2D2D !important;
+        background-color: #FFF;
+    }
 }
 
-.project-activity-footer{
-    border-top: 1px solid #D9D9D9;
-    .button-row{
+.project-activity-footer {
+    .button-row {
         padding: 14px 17px 14px 23px;
         display: flex;
-        justify-content: flex-end;
+        justify-content: space-between;
         align-items: center;
-        gap: 17px;
+    }
+
+    .delete-container {
+        flex: 1;
+    }
+
+    .delete {
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+        
+        img {
+          margin-right: 10px;
+        }
+      
+        &-active span {
+          color: #2D2D2D;
+        }
+      
+        &-inactive {
+          span {
+            color: #9F9D9C;
+          }
+        }
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 10px; // Adjust spacing between Cancel & Save
     }
 }
 

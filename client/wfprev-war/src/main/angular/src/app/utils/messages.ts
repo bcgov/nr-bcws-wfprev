@@ -14,4 +14,11 @@ export const Messages = {
   projectFiscalUpdatedFailure: 'Project Fiscal Updated Failed',
   projectFiscalDeletedSuccess: 'Project Fiscal Deleted Successfully',
   projectFiscalDeletedFailure: 'Project Fiscal Deleted Failed',
+  activityCreatedSuccess: 'Activity Created Successfully',
+  activityUpdatedSuccess: 'Activity Updated Successfully',
+  activityDeletedSuccess: 'Activity Deleted Successfully',
+  activityCreatedFailure: 'Activity Created Failed',
+  activityUpdatedFailure: 'Activity Updated Failed',
+  activityDeletedFailure: 'Activity Deleted Failed',
+
 };

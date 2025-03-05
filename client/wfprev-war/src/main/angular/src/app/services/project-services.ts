@@ -199,4 +199,21 @@ export class ProjectService {
             })
         )
     }
+
+    deleteActivity(projectGuid: string, projectPlanFiscalGuid: string, actiityGuid: string): Observable<any> {
+        const baseUrl = `${this.appConfigService.getConfig().rest['wfprev']}/wfprev-api/projects`;
+        const url = `${baseUrl}/${projectGuid}/projectFiscals/${projectPlanFiscalGuid}/activities/${actiityGuid}`;
+            
+        return this.httpClient.delete(url, {
+            headers: {
+                Authorization: `Bearer ${this.tokenService.getOauthToken()}`,
+            }
+        }).pipe(
+            map((response: any) => response),
+            catchError((error) => {
+                console.error("Error delete activity", error);
+                return throwError(() => new Error("Failed to delete activity"));
+            })
+        );
+    }
  }

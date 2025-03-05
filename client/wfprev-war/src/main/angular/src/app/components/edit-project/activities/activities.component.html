@@ -46,48 +46,52 @@
                                 <img alt="status" class="status-icon" src="/assets/warning-activity.svg">Outstanding Obligations
                             </span>
 
-                            <span *ngIf="activityForms[i]?.value?.activityStatusCode?.activityStatusCode === 'COMPLETED'" class="status-tag">
+                            <span *ngIf="activityForms[i]?.value?.activityStatusCode === 'COMPLETED'" class="status-tag">
                                 <img alt="status" class="status-icon" src="/assets/complete-icon.svg">Complete
                             </span>
                         </div>
                     </mat-expansion-panel-header>
                     <form class="form-grid" *ngIf="activityForms[i]" [formGroup]="activityForms[i]">
-                        <div class="form-item">
-                            <label>Results Reportable</label>
-                            <div class="toggle-container">
-                                <mat-slide-toggle 
-                                  id="isResultsReportableInd" 
-                                  formControlName="isResultsReportableInd">
-                                </mat-slide-toggle>
-                                <span class="toggle-label">
-                                  {{ activityForms[i].value?.isResultsReportableInd ? 'Yes' : 'No' }}
-                                </span>
+                        <div class="first-section">
+                            <div class="form-item narrow-width">
+                                <label>Results Reportable</label>
+                                <div class="toggle-container">
+                                    <mat-slide-toggle 
+                                    id="isResultsReportableInd" 
+                                    formControlName="isResultsReportableInd"
+                                    (change)="toggleResultsReportableInd(i)">
+                                    </mat-slide-toggle>
+                                    <span class="toggle-label">
+                                    {{ activityForms[i].value?.isResultsReportableInd ? 'Yes' : 'No' }}
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="form-item narrow-width">
+                                <label>Completed Hectares</label>
+                                <input type="number" id="completedAreaHa" formControlName="completedAreaHa"/>
+                            </div>
+                            <div class="form-item narrow-width">
+                                <label>Reported Spend</label>
+                                <input type="number" id="reportedSpendAmount" formControlName="reportedSpendAmount"/>
+                            </div>
+                            <div class="form-item narrow-width">
+                                <label>Activity Status</label>
+                                <div class="toggle-container">
+                                    <mat-slide-toggle 
+                                        id="activityStatusCode" 
+                                        [checked]="activityForms[i].value?.activityStatusCode === 'COMPLETED'"
+                                        (change)="toggleActivityStatus(i)">
+                                    </mat-slide-toggle>
+                                    <span class="toggle-label">
+                                    Complete
+                                    </span>
+                                </div>
                             </div>
                         </div>
-                        <div class="form-item">
-                            <label>Completed Hectares</label>
-                            <input type="number" id="completedAreaHa" formControlName="completedAreaHa"/>
-                        </div>
-                        <div class="form-item">
-                            <label>Reported Spend</label>
-                            <input type="number" id="reportedSpendAmount" formControlName="reportedSpendAmount"/>
-                        </div>
-                        <div class="form-item">
-                            <label>Activity Status</label>
-                            <div class="toggle-container">
-                                <mat-slide-toggle 
-                                    id="activityStatusCode" 
-                                    [checked]="activityForms[i].value?.activityStatusCode === 'COMPLETED'"
-                                    (change)="toggleActivityStatus(i)">
-                                </mat-slide-toggle>
-                                <span class="toggle-label">
-                                  Complete
-                                </span>
-                            </div>
-                        </div>
-
                         <div class="form-item three-columns" *ngIf="projectTypeCode ==='FUEL_MGMT'">
-                            <label>Activity Base<span class="required">*</span></label>
+                            <label>Activity Base
+                                <span class="required" *ngIf="activityForms[i]?.value?.isResultsReportableInd">*</span>
+                            </label>
                             <select id="silvicultureBaseGuid" formControlName="silvicultureBaseGuid">
                                 <option value="">Select...</option>
                                 <option *ngFor="let item of silvicultureBaseCode" [value]="item.silvicultureBaseGuid">
@@ -99,7 +103,7 @@
                         <div class="form-item three-columns">
                             <label>Technique</label>
                             <select id="silvicultureTechniqueGuid" formControlName="silvicultureTechniqueGuid" [disabled]="!filteredTechniqueCode.length">
-                              <option [value]="null">Select...</option>
+                              <option [value]=null>Select...</option>
                               <option *ngFor="let item of filteredTechniqueCode" [value]="item.silvicultureTechniqueGuid">
                                 {{ item.description }}
                               </option>
@@ -109,7 +113,7 @@
                         <div class="form-item three-columns">
                             <label>Method</label>
                             <select id="silvicultureMethodGuid" formControlName="silvicultureMethodGuid" [disabled]="!filteredMethodCode.length">
-                              <option [value]="null">Select...</option>
+                              <option [value]=null>Select...</option>
                               <option *ngFor="let item of filteredMethodCode" [value]="item.silvicultureMethodGuid">
                                 {{ item.description }}
                               </option>
@@ -118,13 +122,19 @@
 
                         <div class="form-item two-columns">
                             <label>Activity Name<span class="required">*</span></label>
-                            <input type="text" id="activityName" formControlName="activityName"/>
+                            <input 
+                                type="text" 
+                                id="activityName" 
+                                formControlName="activityName"
+                                [readonly]="activityForms[i]?.value?.isResultsReportableInd"
+                            />
                         </div>
 
                         
                         <div class="form-item two-columns">
                             <label>Funding Source Code</label>
                             <select id="activityFundingSourceGuid" formControlName="activityFundingSourceGuid">
+                                <option [value]=null>Select...</option>
                                 <option *ngFor="let item of fundingSourceCode" [value]="item.fundingSourceGuid">
                                     {{ item.fundingSourceName }}
                                 </option>
@@ -155,7 +165,7 @@
                         </div>
 
                         <div class="form-item five-columns">
-                            <label>Planned Hectares</label>
+                            <label>Planned Hectares<span class="required">*</span></label>
                             <input type="number" id="plannedTreatmentAreaHa" formControlName="plannedTreatmentAreaHa" min="0"/>
                         </div>
 
@@ -195,12 +205,22 @@
                     </form>
                     <div class="project-activity-footer">
                         <div class="button-row">
-                          <button class="secondary" (click)="onCancelActivity(i)" [disabled]="!isActivityDirty[i]">Cancel</button>
-                          <button class="primary" [disabled]="!isActivityDirty[i]" (click)="onSaveActivity(i)">
-                            Save
-                          </button>
+                            <div class="delete-container">
+                                <div class="delete" 
+                                     [ngClass]="{ 'delete-active': canDeleteActivity(i), 'delete-inactive': !canDeleteActivity(i) }"
+                                     (click)="canDeleteActivity(i) ? onDeleteActivity(i) : null">
+                                    <img class="status" alt="Delete" [src]="getDeleteIcon(i)">
+                                    <span>Delete</span>
+                                </div>
+                            </div>
+                            <div class="action-buttons">
+                                <button class="secondary" (click)="onCancelActivity(i)" [disabled]="!isActivityDirty[i]">Cancel</button>
+                                <button class="primary" [disabled]="!isActivityDirty[i] || !activityForms[i].valid" (click)="onSaveActivity(i)">
+                                    Save
+                                </button>
+                            </div>
                         </div>
-                    </div>       
+                    </div>                        
                 </mat-expansion-panel>
             </div>
         </div>
