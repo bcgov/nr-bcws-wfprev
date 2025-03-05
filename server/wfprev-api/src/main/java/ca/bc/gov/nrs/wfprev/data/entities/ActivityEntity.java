@@ -1,5 +1,6 @@
 package ca.bc.gov.nrs.wfprev.data.entities;
 
+import ca.bc.gov.nrs.wfprev.common.validators.ActivityDates;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

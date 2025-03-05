@@ -9,6 +9,10 @@ import ca.bc.gov.nrs.wfprev.data.models.ActivityModel;
 import ca.bc.gov.nrs.wfprev.data.repositories.ActivityBoundaryRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.ActivityRepository;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.Path;
+import jakarta.validation.Validator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.hateoas.CollectionModel;
@@ -16,6 +20,7 @@ import org.springframework.hateoas.CollectionModel;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -35,6 +40,7 @@ class ActivityBoundaryServiceTest {
     private ActivityRepository activityRepository;
     private ActivityService activityService;
     private ActivityBoundaryService activityBoundaryService;
+    private Validator validator;
 
     @BeforeEach
     void setup() {
@@ -42,12 +48,14 @@ class ActivityBoundaryServiceTest {
         activityBoundaryResourceAssembler = mock(ActivityBoundaryResourceAssembler.class);
         activityRepository = mock(ActivityRepository.class);
         activityService = mock(ActivityService.class);
+        validator = mock(Validator.class);
 
         activityBoundaryService = new ActivityBoundaryService(
                 activityBoundaryRepository,
                 activityBoundaryResourceAssembler,
                 activityRepository,
-                activityService
+                activityService,
+                validator
         );
     }
 
@@ -158,6 +166,28 @@ class ActivityBoundaryServiceTest {
     }
 
     @Test
+    void testCreateActivityBoundary_ConstraintViolationException() {
+        // GIVEN
+        String projectGuid = "project-guid";
+        String fiscalGuid = "fiscal-guid";
+        String activityGuid = "789e1234-e89b-12d3-a456-426614174002";
+
+        ActivityBoundaryModel invalidBoundaryModel = new ActivityBoundaryModel();
+
+        // Create the set of constraint violations before using it in when()
+        Set<ConstraintViolation<ActivityBoundaryModel>> violations =
+                Set.of(mockConstraintViolation("boundarySizeHa must be positive"));
+
+        when(validator.validate(invalidBoundaryModel)).thenReturn(violations);
+
+        // WHEN / THEN
+        ConstraintViolationException thrown = assertThrows(ConstraintViolationException.class, () ->
+                activityBoundaryService.createActivityBoundary(projectGuid, fiscalGuid, activityGuid, invalidBoundaryModel));
+
+        assertTrue(thrown.getMessage().contains("boundarySizeHa must be positive"));
+    }
+
+    @Test
     void testUpdateActivityBoundary_Success() {
         // GIVEN
         String activityGuid = "789e1234-e89b-12d3-a456-426614174002";
@@ -208,6 +238,32 @@ class ActivityBoundaryServiceTest {
                 activityBoundaryService.updateActivityBoundary("project-guid", "fiscal-guid", activityGuid, boundaryModel));
 
         assertTrue(thrown.getMessage().contains("Activity Boundary not found"));
+    }
+
+    @Test
+    void testUpdateActivityBoundary_ConstraintViolationException() {
+        // GIVEN
+        String projectGuid = "project-guid";
+        String fiscalGuid = "fiscal-guid";
+        String activityGuid = "789e1234-e89b-12d3-a456-426614174002";
+        String boundaryGuid = "101e7890-e89b-12d3-a456-426614174003";
+
+        ActivityBoundaryModel invalidBoundaryModel = new ActivityBoundaryModel();
+        invalidBoundaryModel.setActivityBoundaryGuid(boundaryGuid);
+        invalidBoundaryModel.setActivityGuid(activityGuid);
+        // Simulate invalid value, e.g., negative boundary size
+        invalidBoundaryModel.setBoundarySizeHa(new BigDecimal("-5.0"));
+
+        Set<ConstraintViolation<ActivityBoundaryModel>> violations =
+                Set.of(mockConstraintViolation("boundarySizeHa must be positive"));
+
+        when(validator.validate(invalidBoundaryModel)).thenReturn(violations);
+
+        // WHEN / THEN
+        ConstraintViolationException thrown = assertThrows(ConstraintViolationException.class, () ->
+                activityBoundaryService.updateActivityBoundary(projectGuid, fiscalGuid, activityGuid, invalidBoundaryModel));
+
+        assertTrue(thrown.getMessage().contains("boundarySizeHa must be positive"));
     }
 
     @Test
@@ -358,5 +414,13 @@ class ActivityBoundaryServiceTest {
                 activityBoundaryService.getActivityBoundary(projectGuid, fiscalGuid, activityGuid, boundaryGuid));
 
         assertTrue(thrown.getMessage().contains("does not belong to Activity"));
+    }
+
+    private ConstraintViolation<ActivityBoundaryModel> mockConstraintViolation(String message) {
+        Path path = mock(Path.class);
+        ConstraintViolation<ActivityBoundaryModel> violation = mock(ConstraintViolation.class);
+        when(violation.getMessage()).thenReturn(message);
+        when(violation.getPropertyPath()).thenReturn(path);
+        return violation;
     }
 }

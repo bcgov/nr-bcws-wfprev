@@ -121,15 +121,19 @@ public class ActivityController extends CommonController {
             } else {
                 response = badRequest();
             }
+
+        } catch (DataIntegrityViolationException e) {
+            log.error(" ### DataIntegrityViolationException while updating Activity", e);
+            response = badRequest();
         } catch (EntityNotFoundException e) {
             response = notFound();
             log.warn(" ### Activity not found with id: {}", id, e);
         } catch (IllegalArgumentException e) {
             response = ResponseEntity.badRequest().build();
             log.error(" ### IllegalArgumentException while updating Activity", e);
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
+            log.error(" ### RuntimeException while updating Activity", e);
             response = internalServerError();
-            log.error(" ### Error while updating Activity", e);
         }
 
         log.debug(" << updateActivity");
@@ -169,15 +173,12 @@ public class ActivityController extends CommonController {
         } catch (DataIntegrityViolationException e) {
             response = badRequest();
             log.error(" ### DataIntegrityViolationException while creating Activity", e);
-        } catch (ServiceException e) {
-            response = internalServerError();
-            log.error(" ### Service Exception while creating Activity", e);
         } catch (IllegalArgumentException e) {
             response = ResponseEntity.badRequest().build();
             log.error(" ### IllegalArgumentException while creating Activity", e);
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
+            log.error(" ### RuntimeException while creating Activity", e);
             response = internalServerError();
-            log.error(" ### Error while creating Activity", e);
         }
 
         log.debug(" << createActivity");
