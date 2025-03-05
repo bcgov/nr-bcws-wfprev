@@ -6,12 +6,16 @@ import ca.bc.gov.nrs.wfprev.data.assemblers.ActivityBoundaryResourceAssembler;
 import ca.bc.gov.nrs.wfprev.data.entities.ActivityBoundaryEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ActivityEntity;
 import ca.bc.gov.nrs.wfprev.data.models.ActivityBoundaryModel;
+import ca.bc.gov.nrs.wfprev.data.models.ActivityModel;
 import ca.bc.gov.nrs.wfprev.data.repositories.ActivityBoundaryRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.ActivityRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
+import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.Validator;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.stereotype.Component;
@@ -19,6 +23,7 @@ import org.springframework.stereotype.Component;
 import java.text.MessageFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Slf4j
@@ -36,16 +41,19 @@ public class ActivityBoundaryService implements CommonService {
     private final ActivityBoundaryResourceAssembler activityBoundaryResourceAssembler;
     private final ActivityRepository activityRepository;
     private final ActivityService activityService;
+    private final Validator validator;
 
     public ActivityBoundaryService(
             ActivityBoundaryRepository activityBoundaryRepository,
             ActivityBoundaryResourceAssembler activityBoundaryResourceAssembler,
             ActivityRepository activityRepository,
-            ActivityService activityService) {
+            ActivityService activityService,
+            Validator validator) {
         this.activityBoundaryRepository = activityBoundaryRepository;
         this.activityBoundaryResourceAssembler = activityBoundaryResourceAssembler;
         this.activityRepository = activityRepository;
         this.activityService = activityService;
+        this.validator = validator;
     }
 
     public CollectionModel<ActivityBoundaryModel> getAllActivityBoundaries(
@@ -73,6 +81,11 @@ public class ActivityBoundaryService implements CommonService {
     @Transactional
     public ActivityBoundaryModel createActivityBoundary(
             String projectGuid, String fiscalGuid, String activityGuid, ActivityBoundaryModel resource) {
+        Set<ConstraintViolation<ActivityBoundaryModel>> violations = validator.validate(resource);
+        if (!violations.isEmpty()) {
+            throw new ConstraintViolationException(violations);
+        }
+
         // Verify activity exists and belongs to the correct hierarchy
         activityService.getActivity(projectGuid, fiscalGuid, activityGuid);
 
@@ -99,6 +112,11 @@ public class ActivityBoundaryService implements CommonService {
     @Transactional
     public ActivityBoundaryModel updateActivityBoundary(
             String projectGuid, String fiscalGuid, String activityGuid, ActivityBoundaryModel resource) {
+        Set<ConstraintViolation<ActivityBoundaryModel>> violations = validator.validate(resource);
+        if (!violations.isEmpty()) {
+            throw new ConstraintViolationException(violations);
+        }
+
         // Verify activity exists and belongs to the correct hierarchy
         activityService.getActivity(projectGuid, fiscalGuid, activityGuid);
 
