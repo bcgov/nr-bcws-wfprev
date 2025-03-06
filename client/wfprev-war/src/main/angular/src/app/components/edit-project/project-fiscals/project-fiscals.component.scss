@@ -31,7 +31,7 @@
                 color: #282828;
                 font-size: 15px;
                 font-style: normal;
-                font-weight: 700;
+                font-weight: 400;
                 width: 100%;
                 margin: 8px;
                 font-size: 14px;
@@ -297,7 +297,7 @@
     background-color: var(--wf-primary-color);
     border-radius: 0;
     width: auto;
-    border-radius: 10px;
+    border-radius: 8px;
     height: 35px;
     span{
       font-family: var(--wf-font-family-main) !important;
@@ -330,10 +330,6 @@
 
 ::ng-deep .mat-mdc-menu-panel {
   min-width: max-content;
-}
-
-::ng-deep .cdk-overlay-pane {
-  transform: translateX(-50%);
 }
 
 ::ng-deep .mat-mdc-menu-item {

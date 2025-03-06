@@ -1,0 +1,228 @@
+<div class="fiscals-container">
+    <mat-expansion-panel [expanded] = 'true' class="expansion-panel">
+        <mat-expansion-panel-header>
+            <div class="header-container">
+                <span class="project-title">Activities</span>
+                <button class="dropdown-button" mat-icon-button (click)="addActivity(); $event.stopPropagation()">
+                    <img class="action-icon" alt="actions" src="/assets/add-button.svg">
+                  <span>Add Activity</span>
+                </button>
+            </div>
+        </mat-expansion-panel-header>
+        <div *ngIf="activities?.length">
+            <div *ngFor="let activity of activities; let i = index">
+                <mat-expansion-panel class="expansion-panel">
+                    <mat-expansion-panel-header>
+                        <div class="activity-title">
+                            <div>
+                                {{getActivityTitle(i)}}
+                            </div>
+                            <div class="update-date">
+                                Last Updated: {{getLastUpdated(i)}}
+                            </div>
+                        </div>
+                        <div class="status-indicators">
+                            <ng-container *ngIf="activityForms[i]?.value?.isSpatialAddedInd; else notSpatialAdded">
+                                <span class="status-tag">
+                                    <img alt="status" class="status-icon" src="/assets/spatial-added-icon.svg">Spatial Added
+                                </span>
+                            </ng-container>
+                            
+                            <ng-template #notSpatialAdded>
+                                <span class="status-tag inactive">
+                                    <img alt="status" class="status-icon" src="/assets/no-spatial-added-icon.svg">Not Spatial Added
+                                </span>
+                            </ng-template>
+<!-- hide risk badge for now until performance update is implement -->
+                            <!-- <span class="status-tag">
+                                <img 
+                                    alt="status" 
+                                    class="status-icon" 
+                                    [src]="'/assets/' + getRiskIcon(activityForms[i]?.value?.riskRatingCode?.riskRatingCode) + '.svg'">
+                                {{ getRiskDescription(activityForms[i]?.value?.riskRatingCode?.description) }}
+                            </span> -->
+
+                            <span *ngIf="activityForms[i]?.value?.outstandingObligationsInd" class="status-tag">
+                                <img alt="status" class="status-icon" src="/assets/warning-activity.svg">Outstanding Obligations
+                            </span>
+
+                            <span *ngIf="activityForms[i]?.value?.activityStatusCode === 'COMPLETED'" class="status-tag">
+                                <img alt="status" class="status-icon" src="/assets/complete-icon.svg">Complete
+                            </span>
+                        </div>
+                    </mat-expansion-panel-header>
+                    <form class="form-grid" *ngIf="activityForms[i]" [formGroup]="activityForms[i]">
+                        <div class="first-section">
+                            <div class="form-item narrow-width">
+                                <label>Results Reportable</label>
+                                <div class="toggle-container">
+                                    <mat-slide-toggle 
+                                    id="isResultsReportableInd" 
+                                    formControlName="isResultsReportableInd"
+                                    (change)="toggleResultsReportableInd(i)">
+                                    </mat-slide-toggle>
+                                    <span class="toggle-label">
+                                    {{ activityForms[i].value?.isResultsReportableInd ? 'Yes' : 'No' }}
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="form-item narrow-width">
+                                <label>Completed Hectares</label>
+                                <input type="number" id="completedAreaHa" formControlName="completedAreaHa"/>
+                            </div>
+                            <div class="form-item narrow-width">
+                                <label>Reported Spend</label>
+                                <input type="number" id="reportedSpendAmount" formControlName="reportedSpendAmount"/>
+                            </div>
+                            <div class="form-item narrow-width">
+                                <label>Activity Status</label>
+                                <div class="toggle-container">
+                                    <mat-slide-toggle 
+                                        id="activityStatusCode" 
+                                        [checked]="activityForms[i].value?.activityStatusCode === 'COMPLETED'"
+                                        (change)="toggleActivityStatus(i)">
+                                    </mat-slide-toggle>
+                                    <span class="toggle-label">
+                                    Complete
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-item three-columns" *ngIf="projectTypeCode ==='FUEL_MGMT'">
+                            <label>Activity Base
+                                <span class="required" *ngIf="activityForms[i]?.value?.isResultsReportableInd">*</span>
+                            </label>
+                            <select id="silvicultureBaseGuid" formControlName="silvicultureBaseGuid">
+                                <option value="">Select...</option>
+                                <option *ngFor="let item of silvicultureBaseCode" [value]="item.silvicultureBaseGuid">
+                                    {{ item.description }}
+                                </option>
+                            </select>
+                        </div>
+
+                        <div class="form-item three-columns">
+                            <label>Technique</label>
+                            <select id="silvicultureTechniqueGuid" formControlName="silvicultureTechniqueGuid" [disabled]="!filteredTechniqueCode.length">
+                              <option [value]=null>Select...</option>
+                              <option *ngFor="let item of filteredTechniqueCode" [value]="item.silvicultureTechniqueGuid">
+                                {{ item.description }}
+                              </option>
+                            </select>
+                          </div>
+                          
+                        <div class="form-item three-columns">
+                            <label>Method</label>
+                            <select id="silvicultureMethodGuid" formControlName="silvicultureMethodGuid" [disabled]="!filteredMethodCode.length">
+                              <option [value]=null>Select...</option>
+                              <option *ngFor="let item of filteredMethodCode" [value]="item.silvicultureMethodGuid">
+                                {{ item.description }}
+                              </option>
+                            </select>
+                        </div>
+
+                        <div class="form-item two-columns">
+                            <label>Activity Name<span class="required">*</span></label>
+                            <input 
+                                type="text" 
+                                id="activityName" 
+                                formControlName="activityName"
+                                [readonly]="activityForms[i]?.value?.isResultsReportableInd"
+                            />
+                        </div>
+
+                        
+                        <div class="form-item two-columns">
+                            <label>Funding Source Code</label>
+                            <select id="activityFundingSourceGuid" formControlName="activityFundingSourceGuid">
+                                <option [value]=null>Select...</option>
+                                <option *ngFor="let item of fundingSourceCode" [value]="item.fundingSourceGuid">
+                                    {{ item.fundingSourceName }}
+                                </option>
+                            </select>
+                        </div>
+
+                        <div class="form-item full-width">
+                            <label>Activity Description<span class="required">*</span></label>
+                            <textarea 
+                              id="activityDescription" 
+                              formControlName="activityDescription" 
+                              rows="1" cols="30"
+                            >
+                            </textarea>
+                        </div>
+                        <div class="form-item five-columns">
+                            <label>Activity Start and End <span class="required">*</span></label>
+                            <div class="date-range-container">
+                                <mat-form-field>
+                                    <mat-date-range-input [rangePicker]="picker" formGroupName="activityDateRange">
+                                        <input matStartDate [value]="getFormattedDate(activityForms[i].value.activityDateRange.activityStartDate)" formControlName="activityStartDate" placeholder="YYYY/MM/DD">
+                                        <input matEndDate [value]="getFormattedDate(activityForms[i].value.activityDateRange.activityEndDate)" formControlName="activityEndDate" placeholder="YYYY/MM/DD">                                        
+                                    </mat-date-range-input>
+                                    <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                                    <mat-date-range-picker #picker panelClass="custom-overlay"></mat-date-range-picker>
+                                </mat-form-field>
+                            </div>
+                        </div>
+
+                        <div class="form-item five-columns">
+                            <label>Planned Hectares<span class="required">*</span></label>
+                            <input type="number" id="plannedTreatmentAreaHa" formControlName="plannedTreatmentAreaHa" min="0"/>
+                        </div>
+
+                        <div class="form-item five-columns">
+                            <label>Planned Spend</label>
+                            <input type="number" id="plannedSpendAmount" formControlName="plannedSpendAmount" min="0"/>
+                        </div>
+
+                        <div class="form-item five-columns">
+                            <label>Contract Phase</label>
+                            <select id="contractPhaseCode" formControlName="contractPhaseCode">
+                                <option *ngFor="let item of contractPhaseCode" [value]="item.contractPhaseCode">
+                                    {{ item.description }}
+                                </option>
+                            </select>
+                        </div>
+
+
+                        <div class="form-item full-width">
+                            <label>Activity outcomes and comments (Include approach for Outstanding Obligations if they remain):</label>
+                        
+                            <span 
+                                *ngIf="!isEditingComment[i] && activityForms[i].value?.activityComment" 
+                                class="comment-display" 
+                                (click)="toggleEditComment(i)">
+                                {{ activityForms[i].value?.activityComment }}
+                            </span>
+                        
+                            <input 
+                                *ngIf="isEditingComment[i] || !activityForms[i].value?.activityComment" 
+                                type="text" 
+                                id="activityComment" 
+                                formControlName="activityComment"
+                                (blur)="saveComment(i)"
+                                (keydown.enter)="saveComment(i)">
+                        </div>
+                    </form>
+                    <div class="project-activity-footer">
+                        <div class="button-row">
+                            <div class="delete-container">
+                                <div class="delete" 
+                                     [ngClass]="{ 'delete-active': canDeleteActivity(i), 'delete-inactive': !canDeleteActivity(i) }"
+                                     (click)="canDeleteActivity(i) ? onDeleteActivity(i) : null">
+                                    <img class="status" alt="Delete" [src]="getDeleteIcon(i)">
+                                    <span>Delete</span>
+                                </div>
+                            </div>
+                            <div class="action-buttons">
+                                <button class="secondary" (click)="onCancelActivity(i)" [disabled]="!isActivityDirty[i]">Cancel</button>
+                                <button class="primary" [disabled]="!isActivityDirty[i] || !activityForms[i].valid" (click)="onSaveActivity(i)">
+                                    Save
+                                </button>
+                            </div>
+                        </div>
+                    </div>                        
+                </mat-expansion-panel>
+            </div>
+        </div>
+    </mat-expansion-panel>
+</div>
