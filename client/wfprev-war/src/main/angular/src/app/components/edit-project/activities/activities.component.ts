@@ -160,6 +160,11 @@ export class ActivitiesComponent implements OnChanges, OnInit{
         });
   }
 
+  getFormattedDate(date: string | null): string {
+    return date ? moment.utc(date).format('YYYY-MM-DD') : '';
+  }
+  
+
   createActivityForm(activity?: any): FormGroup {
     const form = this.fb.group({
       activityGuid: [activity?.activityGuid || ''],
@@ -174,8 +179,8 @@ export class ActivitiesComponent implements OnChanges, OnInit{
       activityName: [activity?.activityName || '', [Validators.required]],
       activityDescription: [activity?.activityDescription || '', [Validators.required, Validators.maxLength(500)]],
       activityDateRange: this.fb.group({
-        activityStartDate: [this.formatDate(activity?.activityStartDate) || '', Validators.required],
-        activityEndDate: [this.formatDate(activity?.activityEndDate) || '', Validators.required]
+        activityStartDate: [activity?.activityStartDate ? moment.utc(activity.activityStartDate).format('YYYY-MM-DD') : '', Validators.required],
+        activityEndDate: [activity?.activityEndDate ? moment.utc(activity.activityEndDate).format('YYYY-MM-DD') : '', Validators.required]
       }),
       plannedSpendAmount: [activity?.plannedSpendAmount ?? '', [Validators.min(0)]],
       plannedTreatmentAreaHa: [activity?.plannedTreatmentAreaHa ?? '', [Validators.required,Validators.min(0)]],
@@ -187,7 +192,6 @@ export class ActivitiesComponent implements OnChanges, OnInit{
       isSpatialAddedInd: [activity?.isSpatialAddedInd || false],
       createDate: [activity?.createDate || ''], // ISO 8601 date format
     });
-
     if (activity?.silvicultureBaseGuid) {
       this.filteredTechniqueCode = this.silvicultureTechniqueCode.filter(t => t.silvicultureBaseGuid === activity.silvicultureBaseGuid);
     }  
@@ -287,8 +291,9 @@ export class ActivitiesComponent implements OnChanges, OnInit{
   }
 
   formatDate(date: string | Date): string {
-    return date ? moment(date).format('YYYY-MM-DD') : '';
+    return date ? moment.utc(date).format('YYYY-MM-DD') : ''; // Forces UTC interpretation
   }
+  
   getActivityTitle(index: number): string {
     const activity = this.activityForms[index]?.value;
     if (!activity) return 'N/A';
@@ -368,9 +373,14 @@ export class ActivitiesComponent implements OnChanges, OnInit{
     let formData = { ...form.getRawValue() };
   
     //extract start and end dates separetely
-    const activityStartDate = formData.activityDateRange?.activityStartDate || null;
-    const activityEndDate = formData.activityDateRange?.activityEndDate || null;
-  
+    const activityStartDate = formData.activityDateRange?.activityStartDate
+      ? moment.utc(formData.activityDateRange.activityStartDate, 'YYYY-MM-DD').toISOString()
+      : null;
+
+    const activityEndDate = formData.activityDateRange?.activityEndDate
+      ? moment.utc(formData.activityDateRange.activityEndDate, 'YYYY-MM-DD').toISOString()
+      : null;
+    
     let updatedData:any = {
       ...originalData, // Include all original data and overwrite with form data
       ...formData,
@@ -526,9 +536,7 @@ export class ActivitiesComponent implements OnChanges, OnInit{
     // The activity is marked as Complete
   
     // We dont have permissions and performance implemneted yet. Check single condition that prevent deletion
-    const isCompleted = activity.activityStatusCode === 'COMPLETED';
-  
-    return !isCompleted;
+    return activity.activityStatusCode !== 'COMPLETED'; 
   }
   
   getDeleteIcon(index: number): string {
