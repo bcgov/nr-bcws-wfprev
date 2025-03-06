@@ -205,5 +205,164 @@ describe('ActivitiesComponent', () => {
     expect(component.activityForms[0].pristine).toBeTrue();
   });
   
+  it('should disable and clear method field if techniqueGuid is null', () => {
+    const form = component.createActivityForm({});
+    component.activityForms.push(form);
+  
+    // Set a default value to method field before calling function
+    form.get('silvicultureMethodGuid')?.setValue('some-value');
+    form.get('silvicultureMethodGuid')?.enable();
+  
+    component.onTechniqueChange(null as any, form);
+  
+    expect(form.get('silvicultureMethodGuid')?.value).toBeNull();
+    expect(form.get('silvicultureMethodGuid')?.disabled).toBeTrue();
+    expect(component.filteredMethodCode.length).toBe(0);
+  });
+  
+  it('should filter and enable method field when techniqueGuid is provided', () => {
+    const form = component.createActivityForm({});
+    component.activityForms.push(form);
+  
+    // Mock silvicultureMethodCode data
+    component.silvicultureMethodCode = [
+      { silvicultureTechniqueGuid: 'technique1', silvicultureMethodGuid: 'method1' },
+      { silvicultureTechniqueGuid: 'technique2', silvicultureMethodGuid: 'method2' }
+    ];
+  
+    component.onTechniqueChange('technique1', form);
+  
+    expect(component.filteredMethodCode).toEqual([{ silvicultureTechniqueGuid: 'technique1', silvicultureMethodGuid: 'method1' }]);
+    expect(form.get('silvicultureMethodGuid')?.enabled).toBeTrue();
+    expect(form.get('silvicultureMethodGuid')?.value).toBeNull();
+  });
 
+  it('should return "N/A" if activity is missing', () => {
+    expect(component.getActivityTitle(0)).toBe('N/A');
+  });
+  
+  it('should return activity name if Results Reportable is OFF', () => {
+    const form = component.createActivityForm({
+      activityName: 'Manual Activity',
+      isResultsReportableInd: false
+    });
+    component.activityForms.push(form);
+  
+    expect(component.getActivityTitle(0)).toBe('Manual Activity');
+  });
+  
+  it('should return "N/A" if Results Reportable is ON but no base, technique, or method is set', () => {
+    const form = component.createActivityForm({
+      isResultsReportableInd: true,
+      silvicultureBaseGuid: null,
+      silvicultureTechniqueGuid: null,
+      silvicultureMethodGuid: null
+    });
+    component.activityForms.push(form);
+  
+    expect(component.getActivityTitle(0)).toBe('N/A');
+  });
+  
+  it('should construct title from base, technique, and method when Results Reportable is ON', () => {
+    component.silvicultureBaseCode = [{ silvicultureBaseGuid: 'base1', description: 'Base A' }];
+    component.silvicultureTechniqueCode = [{ silvicultureTechniqueGuid: 'tech1', description: 'Technique B' }];
+    component.silvicultureMethodCode = [{ silvicultureMethodGuid: 'method1', description: 'Method C' }];
+  
+    const form = component.createActivityForm({
+      isResultsReportableInd: true,
+      silvicultureBaseGuid: 'base1',
+      silvicultureTechniqueGuid: 'tech1',
+      silvicultureMethodGuid: 'method1'
+    });
+    component.activityForms.push(form);
+  
+    expect(component.getActivityTitle(0)).toBe('Base A - Technique B - Method C');
+  });
+  
+  it('should construct title with missing elements when Results Reportable is ON', () => {
+    component.silvicultureBaseCode = [{ silvicultureBaseGuid: 'base1', description: 'Base A' }];
+    component.silvicultureTechniqueCode = [{ silvicultureTechniqueGuid: 'tech1', description: 'Technique B' }];
+    component.silvicultureMethodCode = [{ silvicultureMethodGuid: 'method1', description: 'Method C' }];
+  
+    // Only Base and Technique set
+    const form1 = component.createActivityForm({
+      isResultsReportableInd: true,
+      silvicultureBaseGuid: 'base1',
+      silvicultureTechniqueGuid: 'tech1',
+      silvicultureMethodGuid: null
+    });
+    component.activityForms.push(form1);
+  
+    expect(component.getActivityTitle(0)).toBe('Base A - Technique B');
+  
+    // Only Base set
+    const form2 = component.createActivityForm({
+      isResultsReportableInd: true,
+      silvicultureBaseGuid: 'base1',
+      silvicultureTechniqueGuid: null,
+      silvicultureMethodGuid: null
+    });
+    component.activityForms.push(form2);
+  
+    expect(component.getActivityTitle(1)).toBe('Base A');
+  });
+
+  it('should enable required validator and disable activityName when Results Reportable is ON', () => {
+    const form = component.createActivityForm({
+      isResultsReportableInd: true,
+      activityName: 'Original Name'
+    });
+  
+    component.activityForms.push(form);
+    spyOn(component, 'getActivityTitle').and.returnValue('Generated Title');
+  
+    component.toggleResultsReportableInd(0);
+  
+    expect(form.get('silvicultureBaseGuid')?.validator).toBeTruthy(); // Validator should be set
+    expect(form.get('activityName')?.disabled).toBeTrue();
+    expect(form.get('activityName')?.value).toBe('Generated Title');
+  });
+  
+  it('should clear validators and enable activityName when Results Reportable is OFF', () => {
+    const form = component.createActivityForm({
+      isResultsReportableInd: false,
+      activityName: 'Original Name'
+    });
+  
+    component.activityForms.push(form);
+    spyOn(component, 'getActivityTitle').and.returnValue('Generated Title');
+  
+    component.toggleResultsReportableInd(0);
+  
+    expect(form.get('silvicultureBaseGuid')?.validator).toBeNull(); // Validator should be cleared
+    expect(form.get('activityName')?.enabled).toBeTrue();
+    expect(form.get('activityName')?.value).toBe('');
+  });
+  
+  it('should update activityName dynamically when base, technique, or method changes', () => {
+    component.silvicultureBaseCode = [{ silvicultureBaseGuid: 'base1', description: 'Base A' }];
+    component.silvicultureTechniqueCode = [{ silvicultureTechniqueGuid: 'tech1', description: 'Technique B' }];
+    component.silvicultureMethodCode = [{ silvicultureMethodGuid: 'method1', description: 'Method C' }];
+  
+    const form = component.createActivityForm({
+      isResultsReportableInd: true,
+      silvicultureBaseGuid: '',
+      silvicultureTechniqueGuid: '',
+      silvicultureMethodGuid: ''
+    });
+  
+    component.activityForms.push(form);
+    spyOn(component, 'getActivityTitle').and.returnValue('Updated Title');
+  
+    component.toggleResultsReportableInd(0);
+  
+    form.get('silvicultureBaseGuid')?.setValue('base1');
+    form.get('silvicultureTechniqueGuid')?.setValue('tech1');
+    form.get('silvicultureMethodGuid')?.setValue('method1');
+  
+    component.cd.detectChanges();
+  
+    expect(form.get('activityName')?.value).toBe('Updated Title');
+  });
+  
 });

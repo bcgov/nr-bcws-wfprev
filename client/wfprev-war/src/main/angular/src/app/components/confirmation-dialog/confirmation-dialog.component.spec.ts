@@ -186,5 +186,37 @@ describe('ConfirmationDialogComponent', () => {
       expect(messageElement.textContent.trim()).toContain('The changes you made will not be saved.');
     });
   });
+
+  describe('with "delete-activity" data', () => {
+    beforeEach(async () => {
+      await TestBed.configureTestingModule({
+        imports: [ConfirmationDialogComponent],
+        providers: [
+          { provide: MatDialogRef, useValue: mockDialogRef },
+          { provide: MAT_DIALOG_DATA, useValue: { indicator: 'delete-activity', name: 'Test Activity' } },
+        ],
+      }).compileComponents();
+  
+      fixture = TestBed.createComponent(ConfirmationDialogComponent);
+      component = fixture.componentInstance;
+      fixture.detectChanges();
+    });
+  
+    it('should set dialogUsage to "delete-activity"', () => {
+      expect(component.dialogUsage).toBe('delete-activity');
+    });
+  
+    it('should render the correct title for "delete-activity"', () => {
+      const titleElement = fixture.nativeElement.querySelector('.title-bar');
+      expect(titleElement.textContent.trim()).toBe('Delete Activity');
+    });
+  
+    it('should display the correct message for "delete-activity"', () => {
+      const messageElement = fixture.nativeElement.querySelector('.dialog-content p');
+      expect(messageElement.textContent.trim()).toContain('Are you sure you want to delete Test Activity?');
+      expect(messageElement.textContent.trim()).toContain('This action cannot be reversed and will immediately remove the activity from the Fiscal scope.');
+    });
+  });
+  
   
 });
