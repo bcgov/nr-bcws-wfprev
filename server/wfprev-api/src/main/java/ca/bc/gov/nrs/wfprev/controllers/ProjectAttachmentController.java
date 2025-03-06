@@ -3,8 +3,10 @@ package ca.bc.gov.nrs.wfprev.controllers;
 import ca.bc.gov.nrs.common.wfone.rest.resource.HeaderConstants;
 import ca.bc.gov.nrs.common.wfone.rest.resource.MessageListRsrc;
 import ca.bc.gov.nrs.wfprev.common.controllers.CommonController;
-import ca.bc.gov.nrs.wfprev.data.models.ActivityBoundaryModel;
-import ca.bc.gov.nrs.wfprev.services.ActivityBoundaryService;
+import ca.bc.gov.nrs.wfprev.data.models.FileAttachmentModel;
+import ca.bc.gov.nrs.wfprev.data.models.ProjectModel;
+import ca.bc.gov.nrs.wfprev.services.FileAttachmentService;
+import ca.bc.gov.nrs.wfprev.services.ProjectService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -34,19 +36,21 @@ import java.util.Date;
 
 @RestController
 @Slf4j
-@RequestMapping(value = "/projects/{projectGuid}/projectFiscals/{projectPlanFiscalGuid}/activities/{activityGuid}/activityBoundary")
-public class ActivityBoundaryController extends CommonController {
-    private final ActivityBoundaryService activityBoundaryService;
+@RequestMapping(value = "/projects/{projectGuid}/attachments")
+public class ProjectAttachmentController extends CommonController {
+    private final FileAttachmentService fileAttachmentService;
+    private final ProjectService projectService;
 
-    public ActivityBoundaryController(ActivityBoundaryService activityBoundaryService) {
-        super(ActivityBoundaryController.class.getName());
-        this.activityBoundaryService = activityBoundaryService;
+    public ProjectAttachmentController(FileAttachmentService fileAttachmentService, ProjectService projectService) {
+        super(ProjectAttachmentController.class.getName());
+        this.fileAttachmentService = fileAttachmentService;
+        this.projectService = projectService;
     }
 
     @GetMapping
     @Operation(
-            summary = "Fetch all Activity Boundaries",
-            description = "Fetch all Activity Boundaries for an Activity",
+            summary = "Fetch all File Attachments for a Project",
+            description = "Fetch all File Attachments for a Project",
             security = @SecurityRequirement(name = "Webade-OAUTH2", scopes = {"WFPREV"}),
             extensions = {
                     @Extension(properties = {
@@ -65,95 +69,101 @@ public class ActivityBoundaryController extends CommonController {
             required = false, schema = @Schema(implementation = Integer.class), in = ParameterIn.HEADER)
     @Parameter(name = HeaderConstants.IF_MATCH_HEADER, description = HeaderConstants.IF_MATCH_DESCRIPTION,
             required = true, schema = @Schema(implementation = String.class), in = ParameterIn.HEADER)
-    public ResponseEntity<CollectionModel<ActivityBoundaryModel>> getAllActivityBoundaries(
-            @PathVariable String projectGuid,
-            @PathVariable String projectPlanFiscalGuid,
-            @PathVariable String activityGuid) {
-        log.debug(" >> getAllActivityBoundaries");
-
+    public ResponseEntity<CollectionModel<FileAttachmentModel>> getAllFileAttachments(
+            @PathVariable String projectGuid) {
+        log.debug(" >> getAllFileAttachments");
         try {
-            return ok(activityBoundaryService.getAllActivityBoundaries(projectGuid, projectPlanFiscalGuid, activityGuid));
+            if (!isValidProject(projectGuid)) {
+                log.warn(" ### Invalid projectGuid for : {}", projectGuid);
+                return notFound();
+            }
+            return ok(fileAttachmentService.getAllFileAttachments(projectGuid));
         } catch (RuntimeException e) {
-            log.error(" ### Error while fetching Activity Boundaries", e);
+            log.error(" ### Error while fetching File Attachments for Project", e);
             return internalServerError();
         }
     }
 
     @GetMapping("/{id}")
     @Operation(
-            summary = "Fetch an Activity Boundary",
-            description = "Fetch a specific Activity Boundary by ID",
+            summary = "Fetch an File Attachment for a Project",
+            description = "Fetch a specific File Attachment by ID",
             security = @SecurityRequirement(name = "Webade-OAUTH2", scopes = {"WFPREV"})
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK",
-                    content = @Content(schema = @Schema(implementation = ActivityBoundaryModel.class))),
+                    content = @Content(schema = @Schema(implementation = FileAttachmentModel.class))),
             @ApiResponse(responseCode = "404", description = "Not Found"),
             @ApiResponse(responseCode = "500", description = "Internal Server Error")
     })
-    public ResponseEntity<ActivityBoundaryModel> getActivityBoundary(
-            @PathVariable String projectGuid,
-            @PathVariable String projectPlanFiscalGuid,
-            @PathVariable String activityGuid,
-            @PathVariable String id) {
-        log.debug(" >> getActivityBoundary for boundary: {}", id);
-
+    public ResponseEntity<FileAttachmentModel> getFileAttachment(
+            @PathVariable String id,
+            @PathVariable String projectGuid) {
+        log.debug(" >> getFileAttachment: {}", id);
         try {
-            ActivityBoundaryModel resource = activityBoundaryService.getActivityBoundary(
-                    projectGuid, projectPlanFiscalGuid, activityGuid, id);
+            if (!isValidProject(projectGuid)) {
+                log.warn(" ### Invalid projectGuid for getFileAttachment: {}", projectGuid);
+                return notFound();
+            }
+            FileAttachmentModel resource = fileAttachmentService.getFileAttachmentById(id);
             return resource == null ? notFound() : ok(resource);
         } catch (EntityNotFoundException e) {
-            log.warn(" ### Activity Boundary not found: {}", id, e);
+            log.warn(" ### File Attachment not found: {}", id, e);
             return notFound();
         } catch (Exception e) {
-            log.error(" ### Error while fetching Activity Boundary", e);
+            log.error(" ### Error while fetching File Attachment for Project", e);
             return internalServerError();
         }
     }
 
     @PostMapping
     @Operation(
-            summary = "Create an Activity Boundary",
-            description = "Create a new Activity Boundary for an Activity",
+            summary = "Create a File Attachment for a Project",
+            description = "Create a new File Attachment for a Project",
             security = @SecurityRequirement(name = "Webade-OAUTH2", scopes = {"WFPREV"})
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Created",
-                    content = @Content(schema = @Schema(implementation = ActivityBoundaryModel.class))),
+                    content = @Content(schema = @Schema(implementation = FileAttachmentModel.class))),
             @ApiResponse(responseCode = "400", description = "Bad Request"),
             @ApiResponse(responseCode = "500", description = "Internal Server Error")
     })
-    public ResponseEntity<ActivityBoundaryModel> createActivityBoundary(
-            @PathVariable String projectGuid,
-            @PathVariable String projectPlanFiscalGuid,
-            @PathVariable String activityGuid,
-            @Valid @RequestBody ActivityBoundaryModel resource) {
-        log.debug(" >> createActivityBoundary");
-
+    public ResponseEntity<FileAttachmentModel> createFileAttachment(
+            @Valid @RequestBody FileAttachmentModel resource,
+            @PathVariable String projectGuid) {
+        log.debug(" >> createFileAttachment");
         try {
-            resource.setCreateDate(new Date());
-            resource.setUpdateDate(new Date());
+            if (!isValidProject(projectGuid)) {
+                log.warn(" ### Invalid projectGuid for createFileAttachment: {}", projectGuid);
+                return notFound();
+            }
+
+            resource.setCreateUser(getWebAdeAuthentication().getUserId());
+            resource.setUpdateUser(getWebAdeAuthentication().getUserId());
+            resource.setUploadedByUserId(getWebAdeAuthentication().getUserId());
+            resource.setUploadedByUserGuid(getWebAdeAuthentication().getClientId());
+            resource.setUploadedByUserType(getWebAdeAuthentication().getUserTypeCode());
+            resource.setUploadedByTimestamp(new Date());
             resource.setRevisionCount(0);
 
-            ActivityBoundaryModel newResource = activityBoundaryService.createActivityBoundary(
-                    projectGuid, projectPlanFiscalGuid, activityGuid, resource);
+            FileAttachmentModel newResource = fileAttachmentService.createFileAttachment(resource);
             return ResponseEntity.status(201).body(newResource);
         } catch (DataIntegrityViolationException e) {
-            log.error(" ### DataIntegrityViolationException while creating Activity Boundary", e);
+            log.error(" ### DataIntegrityViolationException while creating File Attachment for Project", e);
             return badRequest();
         } catch (IllegalArgumentException e) {
-            log.error(" ### IllegalArgumentException while creating Activity Boundary", e);
+            log.error(" ### IllegalArgumentException while creating File Attachment for Project", e);
             return badRequest();
         } catch (RuntimeException e) {
-            log.error(" ### RuntimeException while creating Activity Boundary", e);
+            log.error(" ### RuntimeException while creating File Attachment for Project", e);
             return internalServerError();
         }
     }
 
     @PutMapping("/{id}")
     @Operation(
-            summary = "Update Activity Boundary",
-            description = "Update an existing Activity Boundary",
+            summary = "Update File Attachment for a Project",
+            description = "Update an existing File Attachment for a Project",
             security = @SecurityRequirement(name = "Webade-OAUTH2", scopes = {"WFPREV"})
     )
     @ApiResponses(value = {
@@ -162,39 +172,38 @@ public class ActivityBoundaryController extends CommonController {
             @ApiResponse(responseCode = "404", description = "Not Found"),
             @ApiResponse(responseCode = "500", description = "Internal Server Error")
     })
-    public ResponseEntity<ActivityBoundaryModel> updateActivityBoundary(
-            @PathVariable String projectGuid,
-            @PathVariable String projectPlanFiscalGuid,
-            @PathVariable String activityGuid,
+    public ResponseEntity<FileAttachmentModel> updateFileAttachment(
             @PathVariable String id,
-            @Valid @RequestBody ActivityBoundaryModel resource) {
-        log.debug(" >> updateActivityBoundary");
-
+            @PathVariable String projectGuid,
+            @Valid @RequestBody FileAttachmentModel resource) {
+        log.debug(" >> updateFileAttachment");
         try {
+            if (!isValidProject(projectGuid)) {
+                log.warn(" ### Invalid projectGuid for updateFileAttachment: {}", projectGuid);
+                return notFound();
+            }
             resource.setUpdateDate(new Date());
-
-            ActivityBoundaryModel updatedResource = activityBoundaryService.updateActivityBoundary(
-                    projectGuid, projectPlanFiscalGuid, activityGuid, resource);
+            FileAttachmentModel updatedResource = fileAttachmentService.updateFileAttachment(resource);
             return updatedResource == null ? notFound() : ok(updatedResource);
         } catch (DataIntegrityViolationException e) {
-            log.error(" ### DataIntegrityViolationException while updating Activity Boundary", e);
+            log.error(" ### DataIntegrityViolationException while updating File Attachment for Project", e);
             return badRequest();
         } catch (EntityNotFoundException e) {
-            log.warn(" ### Activity Boundary not found for update: {}", id, e);
+            log.warn(" ### File Attachment not found for update: {}", id, e);
             return notFound();
         } catch (IllegalArgumentException e) {
-            log.error(" ### IllegalArgumentException while updating Activity Boundary", e);
+            log.error(" ### IllegalArgumentException while updating File Attachment for Project", e);
             return badRequest();
         } catch (RuntimeException e) {
-            log.error(" ### RuntimeException while updating Activity Boundary", e);
+            log.error(" ### RuntimeException while updating File Attachment for Project", e);
             return internalServerError();
         }
     }
 
     @DeleteMapping("/{id}")
     @Operation(
-            summary = "Delete an Activity Boundary",
-            description = "Delete a specific Activity Boundary by ID",
+            summary = "Delete an File Attachment for a Project",
+            description = "Delete a specific File Attachment by ID",
             security = @SecurityRequirement(name = "Webade-OAUTH2", scopes = {"WFPREV"})
     )
     @ApiResponses(value = {
@@ -202,22 +211,33 @@ public class ActivityBoundaryController extends CommonController {
             @ApiResponse(responseCode = "404", description = "Not Found"),
             @ApiResponse(responseCode = "500", description = "Internal Server Error")
     })
-    public ResponseEntity<Void> deleteActivityBoundary(
-            @PathVariable String projectGuid,
-            @PathVariable String projectPlanFiscalGuid,
-            @PathVariable String activityGuid,
-            @PathVariable String id) {
-        log.debug(" >> deleteActivityBoundary");
-
+    public ResponseEntity<Void> deleteFileAttachment(
+            @PathVariable String id,
+            @PathVariable String projectGuid) {
+        log.debug(" >> deleteFileAttachment");
         try {
-            activityBoundaryService.deleteActivityBoundary(projectGuid, projectPlanFiscalGuid, activityGuid, id);
+            if (!isValidProject(projectGuid)) {
+                log.warn(" ### Invalid projectGuid for deleteFileAttachment: {}", projectGuid);
+                return notFound();
+            }
+            fileAttachmentService.deleteFileAttachment(id);
             return ResponseEntity.noContent().build();
         } catch (EntityNotFoundException e) {
-            log.warn(" ### Activity Boundary for deletion not found: {}", id, e);
+            log.warn(" ### File Attachment for deletion not found: {}", id, e);
             return notFound();
         } catch (Exception e) {
-            log.error(" ### Error while deleting Activity Boundary", e);
+            log.error(" ### Error while deleting File Attachment for Project", e);
             return internalServerError();
         }
     }
+
+    private boolean isValidProject(String projectGuid) {
+        try {
+            return projectService.getProjectById(projectGuid) != null;
+        } catch (Exception e) {
+            log.error(" ### Error while validating projectGuid: {}", projectGuid, e);
+            return false;
+        }
+    }
+
 }

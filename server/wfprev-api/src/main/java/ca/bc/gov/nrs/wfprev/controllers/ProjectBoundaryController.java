@@ -36,7 +36,7 @@ import java.util.UUID;
 
 @RestController
 @Slf4j
-@RequestMapping(value="/projectBoundaries")
+@RequestMapping(value="project/{projectguid}/projectBoundaries")
 public class ProjectBoundaryController extends CommonController {
   private ProjectBoundaryService projectBoundaryService;
 
