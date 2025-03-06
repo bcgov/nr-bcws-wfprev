@@ -6,7 +6,7 @@
         Add New Fiscal
       </button>
     </div>
-      <mat-tab-group class="custom-tab-group" *ngIf="projectFiscals?.length; else noFiscals" [(selectedIndex)]="selectedTabIndex">
+      <mat-tab-group class="custom-tab-group" *ngIf="projectFiscals?.length; else noFiscals" [(selectedIndex)]="selectedTabIndex" (selectedTabChange)="onTabChange($event.index)">
         <mat-tab *ngFor="let fiscal of projectFiscals; let i = index" [label]="fiscal.fiscalYearFormatted || 'New Fiscal'">
           <mat-accordion [multi]="true">
             <mat-expansion-panel [expanded]="true" class="fiscal-expansion-panel">
@@ -225,6 +225,7 @@
                 </div>
               </div>
             </mat-expansion-panel>
+            <app-activities [fiscalGuid]="currentFiscalGuid"></app-activities>
           </mat-accordion>
         </mat-tab>
       </mat-tab-group>
