@@ -130,14 +130,6 @@ public abstract class CommonController {
   }
 
   /**
-   * 400 Bad Request
-   * @return
-   */
-  protected final <T> ResponseEntity<String> badRequest(String message) {
-    return ResponseEntity.badRequest().body(message);
-  }
-
-  /**
    * 500 Internal Server Error
    * @param <T>
    * @return
