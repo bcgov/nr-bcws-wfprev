@@ -104,8 +104,8 @@ describe('ConfirmationDialogComponent', () => {
     it('should render Go Back and Confirm buttons', () => {
       const buttons = fixture.nativeElement.querySelectorAll('button');
       expect(buttons.length).toBe(2);
-      expect(buttons[0].textContent.trim()).toBe('Go Back');
-      expect(buttons[1].textContent.trim()).toBe('Confirm');
+      expect(buttons[0].textContent.trim()).toBe('Cancel');
+      expect(buttons[1].textContent.trim()).toBe('Continue');
     });
 
     it('should call onGoBack when Go Back button is clicked', () => {

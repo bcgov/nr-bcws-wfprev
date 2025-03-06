@@ -33,14 +33,14 @@
                                     <img alt="status" class="status-icon" src="/assets/no-spatial-added-icon.svg">Not Spatial Added
                                 </span>
                             </ng-template>
-
-                            <span class="status-tag">
+<!-- hide risk badge for now until performance update is implement -->
+                            <!-- <span class="status-tag">
                                 <img 
                                     alt="status" 
                                     class="status-icon" 
                                     [src]="'/assets/' + getRiskIcon(activityForms[i]?.value?.riskRatingCode?.riskRatingCode) + '.svg'">
                                 {{ getRiskDescription(activityForms[i]?.value?.riskRatingCode?.description) }}
-                            </span>
+                            </span> -->
 
                             <span *ngIf="activityForms[i]?.value?.outstandingObligationsInd" class="status-tag">
                                 <img alt="status" class="status-icon" src="/assets/warning-activity.svg">Outstanding Obligations
@@ -155,8 +155,8 @@
                             <div class="date-range-container">
                                 <mat-form-field>
                                     <mat-date-range-input [rangePicker]="picker" formGroupName="activityDateRange">
-                                        <input matStartDate formControlName="activityStartDate" placeholder="YYYY-MM-DD">
-                                        <input matEndDate formControlName="activityEndDate" placeholder="YYYY-MM-DD">
+                                        <input matStartDate [value]="getFormattedDate(activityForms[i].value.activityDateRange.activityStartDate)" formControlName="activityStartDate" placeholder="YYYY/MM/DD">
+                                        <input matEndDate [value]="getFormattedDate(activityForms[i].value.activityDateRange.activityEndDate)" formControlName="activityEndDate" placeholder="YYYY/MM/DD">                                        
                                     </mat-date-range-input>
                                     <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
                                     <mat-date-range-picker #picker panelClass="custom-overlay"></mat-date-range-picker>
