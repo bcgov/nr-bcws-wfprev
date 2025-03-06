@@ -1,0 +1,548 @@
+import { CommonModule } from '@angular/common';
+import { ChangeDetectorRef, Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, FormsModule  } from '@angular/forms';
+import { MatDialog } from '@angular/material/dialog';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { ActivatedRoute } from '@angular/router';
+import moment from 'moment';
+import { CodeTableServices } from 'src/app/services/code-table-services';
+import { ProjectService } from 'src/app/services/project-services';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatDateFormats, MatNativeDateModule, MAT_DATE_FORMATS, MAT_DATE_LOCALE, DateAdapter } from '@angular/material/core';
+import { MatInputModule } from '@angular/material/input';
+import { Messages } from 'src/app/utils/messages';
+import { ConfirmationDialogComponent } from 'src/app/components/confirmation-dialog/confirmation-dialog.component';
+
+@Component({
+  selector: 'app-activities',
+  standalone: true,
+  imports: [MatExpansionModule,
+    ReactiveFormsModule,
+    CommonModule,
+    MatSlideToggleModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    MatInputModule,
+    FormsModule
+  ],
+  templateUrl: './activities.component.html',
+  styleUrl: './activities.component.scss',
+})
+export class ActivitiesComponent implements OnChanges, OnInit{
+  @Input() fiscalGuid: string = '';
+  messages = Messages;
+  
+  projectGuid = '';
+  activities: any[] = [];
+  originalActivitiesValues: any[] = [];
+  contractPhaseCode: any[] = [];
+  fundingSourceCode: any[] = [];
+  silvicultureBaseCode: any[] = [];
+  silvicultureTechniqueCode: any[] = [];
+  silvicultureMethodCode: any[] = [];
+
+  filteredTechniqueCode: any[] = [];
+  filteredMethodCode: any[] = [];
+
+  activityForms: FormGroup[] = [];
+  projectTypeCode = '';
+  isEditingComment: boolean[] = [];
+  isActivityDirty: boolean[] = [];
+  
+    constructor(
+      private route: ActivatedRoute,
+      private projectService: ProjectService,
+      private codeTableService: CodeTableServices,
+      private readonly fb: FormBuilder,
+      private readonly snackbarService: MatSnackBar,
+      public readonly dialog: MatDialog,
+      public cd: ChangeDetectorRef
+    ) {}
+
+  ngOnInit(): void {
+  }
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['fiscalGuid'] && changes['fiscalGuid'].currentValue) {
+      this.loadCodeTables();
+      this.getActivities();
+    }
+  }
+
+  loadCodeTables(): void {
+    const codeTables = [
+      { name: 'contractPhaseCodes', embeddedKey: 'contractPhaseCode' },
+      { name: 'fundingSourceCodes', embeddedKey: 'fundingSourceCode' },
+      { name: 'silvicultureBaseCodes', embeddedKey: 'silvicultureBaseCode'},
+      { name: 'silvicultureTechniqueCodes', embeddedKey: 'silvicultureTechniqueCode'},
+      { name: 'silvicultureMethodCodes', embeddedKey: 'silvicultureMethodCode'}
+    ];
+  
+    codeTables.forEach((table) => {
+      this.codeTableService.fetchCodeTable(table.name).subscribe({
+        next: (data) => {
+          this.assignCodeTableData(table.embeddedKey, data);
+        },
+        error: (err) => {
+          console.error(`Error fetching ${table.name}`, err);
+          this.assignCodeTableData(table.embeddedKey, []); // Assign empty array on error
+        },
+      });
+    });
+  }
+
+  assignCodeTableData(key: string, data: any): void {
+    switch (key) {
+      case 'contractPhaseCode':
+        this.contractPhaseCode = data._embedded.contractPhaseCode || [];
+        break;
+      case 'fundingSourceCode':
+        this.fundingSourceCode = data._embedded.fundingSourceCode || [];
+        break;
+      case 'silvicultureBaseCode':
+        this.silvicultureBaseCode = data._embedded.silvicultureBaseCode || [];
+        break;
+      case 'silvicultureTechniqueCode':
+        this.silvicultureTechniqueCode = data._embedded.silvicultureTechniqueCode || [];
+        break;
+      case 'silvicultureMethodCode':
+        this.silvicultureMethodCode = data._embedded.silvicultureMethodCode || [];
+        break;
+    }
+  }
+
+  getActivities(): void {
+    if (!this.fiscalGuid) return;
+  
+    this.projectGuid = this.route.snapshot?.queryParamMap?.get('projectGuid') || '';
+    
+    if (this.projectGuid){
+
+      this.getProjectType(this.projectGuid);
+    
+      this.projectService.getFiscalActivities(this.projectGuid, this.fiscalGuid).subscribe({
+        next: (data) => {
+          if (data && data._embedded?.activities) {
+            this.activities = data._embedded.activities;
+          } else {
+            this.activities = [];
+          }
+    
+          this.originalActivitiesValues = JSON.parse(JSON.stringify(this.activities));
+    
+          this.activityForms = this.activities.map((activity) => this.createActivityForm(activity));
+    
+          this.cd.detectChanges();
+        },
+        error: (error) => {
+          console.error('Error fetching activities:', error);
+          this.activities = [];
+
+          this.snackbarService.open(
+            'Failed to load activities. Please try again later.',
+            'OK',
+            { duration: 5000, panelClass: 'snackbar-error' }
+          );
+        }
+      });
+    }
+  }
+
+  getProjectType(projectGuid: string) {
+        this.projectService.getProjectByProjectGuid(this.projectGuid).subscribe({
+          next: (data) => {
+            this.projectTypeCode = data.projectTypeCode?.projectTypeCode
+          },
+          error: (err) => {
+            console.error('Error fetching project:', err);
+          },
+        });
+  }
+
+  getFormattedDate(date: string | null): string {
+    return date ? moment.utc(date).format('YYYY-MM-DD') : '';
+  }
+  
+
+  createActivityForm(activity?: any): FormGroup {
+    const form = this.fb.group({
+      activityGuid: [activity?.activityGuid || ''],
+      projectPlanFiscalGuid: [activity?.projectPlanFiscalGuid || ''],
+      activityStatusCode: [activity?.activityStatusCode?.activityStatusCode || 'ACTIVE'],
+      silvicultureBaseGuid: [activity?.silvicultureBaseGuid || ''],
+      silvicultureTechniqueGuid: [activity?.silvicultureTechniqueGuid || {value: null, disabled: true}],
+      silvicultureMethodGuid: [activity?.silvicultureMethodGuid || {value: null, disabled: true }],
+      riskRatingCode: [activity?.riskRatingCode || {'riskRatingCode':'LOW_RISK'}],
+      contractPhaseCode: [activity?.contractPhaseCode?.contractPhaseCode || ''],
+      activityFundingSourceGuid: [activity?.activityFundingSourceGuid || ''],
+      activityName: [activity?.activityName || '', [Validators.required]],
+      activityDescription: [activity?.activityDescription || '', [Validators.required, Validators.maxLength(500)]],
+      activityDateRange: this.fb.group({
+        activityStartDate: [activity?.activityStartDate ? moment.utc(activity.activityStartDate).format('YYYY-MM-DD') : '', Validators.required],
+        activityEndDate: [activity?.activityEndDate ? moment.utc(activity.activityEndDate).format('YYYY-MM-DD') : '', Validators.required]
+      }),
+      plannedSpendAmount: [activity?.plannedSpendAmount ?? '', [Validators.min(0)]],
+      plannedTreatmentAreaHa: [activity?.plannedTreatmentAreaHa ?? '', [Validators.required,Validators.min(0)]],
+      reportedSpendAmount: [activity?.reportedSpendAmount ?? '', [Validators.min(0)]],
+      completedAreaHa: [activity?.completedAreaHa ?? '', [Validators.min(0)]],
+      isResultsReportableInd: [activity?.isResultsReportableInd || false],
+      outstandingObligationsInd: [activity?.outstandingObligationsInd || false],
+      activityComment: [activity?.activityComment || ''],
+      isSpatialAddedInd: [activity?.isSpatialAddedInd || false],
+      createDate: [activity?.createDate || ''], // ISO 8601 date format
+    });
+    if (activity?.silvicultureBaseGuid) {
+      this.filteredTechniqueCode = this.silvicultureTechniqueCode.filter(t => t.silvicultureBaseGuid === activity.silvicultureBaseGuid);
+    }  
+    if (activity?.silvicultureTechniqueGuid) {
+      this.filteredMethodCode = this.silvicultureMethodCode.filter(m => m.silvicultureTechniqueGuid === activity.silvicultureTechniqueGuid);
+    }
+
+    // Handle user selection changes
+    form.get('silvicultureBaseGuid')?.valueChanges.subscribe((baseGuid) => this.onBaseChange(baseGuid, form));
+    form.get('silvicultureTechniqueGuid')?.valueChanges.subscribe((techniqueGuid) => this.onTechniqueChange(techniqueGuid, form));
+
+    form.valueChanges.subscribe(() => {
+      const index = this.activityForms.indexOf(form);
+      if (index !== -1) {
+        this.isActivityDirty[index] = form.dirty
+      }
+    })
+
+    return form;
+  }
+
+  onBaseChange(baseGuid: string, form: FormGroup) {
+    if (!baseGuid) {
+      form.get('silvicultureTechniqueGuid')?.setValue(null);
+      form.get('silvicultureTechniqueGuid')?.disable();
+      form.get('silvicultureMethodGuid')?.setValue(null);
+      form.get('silvicultureMethodGuid')?.disable();
+      this.filteredTechniqueCode = [];
+      return;
+    }
+
+    this.filteredTechniqueCode = this.silvicultureTechniqueCode.filter(t => t.silvicultureBaseGuid === baseGuid);
+    form.get('silvicultureTechniqueGuid')?.enable();
+    form.get('silvicultureTechniqueGuid')?.setValue(null);
+    form.get('silvicultureMethodGuid')?.setValue(null);
+    form.get('silvicultureMethodGuid')?.disable();
+    this.filteredMethodCode = [];
+  }
+
+  toggleResultsReportableInd(index: number): void {
+    const form = this.activityForms[index];
+  
+    if (!form) return;
+  
+    const isReportable = form.get('isResultsReportableInd')?.value;
+  
+    const baseField = form.get('silvicultureBaseGuid');
+    const nameField = form.get('activityName');
+  
+    if (isReportable) {
+      baseField?.setValidators([Validators.required]);
+      nameField?.disable();
+      nameField?.setValue(this.getActivityTitle(index)); // Set name initially
+  
+      form.get('silvicultureBaseGuid')?.valueChanges.subscribe(() => {
+        if (form.get('isResultsReportableInd')?.value) {
+          nameField?.setValue(this.getActivityTitle(index));
+        }
+      });
+  
+      form.get('silvicultureTechniqueGuid')?.valueChanges.subscribe(() => {
+        if (form.get('isResultsReportableInd')?.value) {
+          nameField?.setValue(this.getActivityTitle(index));
+        }
+      });
+  
+      form.get('silvicultureMethodGuid')?.valueChanges.subscribe(() => {
+        if (form.get('isResultsReportableInd')?.value) {
+          nameField?.setValue(this.getActivityTitle(index));
+        }
+      });
+    } else {
+      baseField?.clearValidators();
+      nameField?.enable();
+      nameField?.setValue(''); // Clear name when toggle is OFF
+    }
+  
+    baseField?.updateValueAndValidity();
+    nameField?.updateValueAndValidity();
+    this.cd.detectChanges();
+  }
+  
+  
+  
+
+  onTechniqueChange(techniqueGuid: string, form: FormGroup) {
+    if (!techniqueGuid) {
+      form.get('silvicultureMethodGuid')?.setValue(null);
+      form.get('silvicultureMethodGuid')?.disable();
+      this.filteredMethodCode = [];
+      return;
+    }
+
+    this.filteredMethodCode = this.silvicultureMethodCode.filter(m => m.silvicultureTechniqueGuid === techniqueGuid);
+    form.get('silvicultureMethodGuid')?.enable();
+    form.get('silvicultureMethodGuid')?.setValue(null);
+  }
+
+  formatDate(date: string | Date): string {
+    return date ? moment.utc(date).format('YYYY-MM-DD') : ''; // Forces UTC interpretation
+  }
+  
+  getActivityTitle(index: number): string {
+    const activity = this.activityForms[index]?.value;
+    if (!activity) return 'N/A';
+  
+    // If Results Reportable is ON, construct Base - Technique - Method dynamically
+    if (activity.isResultsReportableInd) {
+      const parts: string[] = [];
+  
+      const base = this.silvicultureBaseCode.find(b => b.silvicultureBaseGuid === activity.silvicultureBaseGuid)?.description;
+      const technique = this.silvicultureTechniqueCode.find(t => t.silvicultureTechniqueGuid === activity.silvicultureTechniqueGuid)?.description;
+      const method = this.silvicultureMethodCode.find(m => m.silvicultureMethodGuid === activity.silvicultureMethodGuid)?.description;
+  
+      if (base) parts.push(base);
+      if (technique) parts.push(technique);
+      if (method) parts.push(method);
+  
+      return parts.length ? parts.join(' - ') : 'N/A';
+    } 
+  
+    // If Results Reportable is OFF, use the Activity Name (if available)
+    return activity.activityName?.trim() || 'N/A';
+  }
+  
+  
+  
+  getLastUpdated(index: number) {
+    const activity = this.activities[index];
+    if (!activity) return 'N/A'; // Handle missing data
+    
+    return moment(activity.updateDate).format('YYYY-MM-DD');
+  }
+
+  toggleActivityStatus(index: number) {
+    const currentStatus = this.activityForms[index].value?.activityStatusCode;
+    const newStatus = currentStatus === 'COMPLETED' ? 'ACTIVE' : 'COMPLETED';
+  
+    this.activityForms[index].patchValue({
+      activityStatusCode: newStatus
+    });
+    this.isActivityDirty[index] = true;
+  }
+
+  addActivity(): void {
+    const newActivity = {};
+    this.activities.push(newActivity);
+    this.activityForms.push(this.createActivityForm(newActivity));
+    
+    this.cd.detectChanges();
+  }
+
+  toggleEditComment(index: number) {
+    this.isEditingComment[index] = true;
+  }
+  
+  saveComment(index: number) {
+    this.isEditingComment[index] = false;
+  }
+
+  getRiskIcon(riskCode: string): string {
+    const riskMap: { [key: string]: string } = {
+      'LOW_RISK': 'low-risk',
+      'MODRT_RISK': 'medium-risk',
+      'HIGH_RISK': 'high-risk'
+    };
+  
+    return riskMap[riskCode] || 'none-risk';
+  }
+  
+  getRiskDescription(description: string | null | undefined): string {
+    return description || 'None'; // Default to "None" if description is empty or null
+  }
+
+  onSaveActivity(index: number): void {
+    const originalData = this.activities[index];
+    const form = this.activityForms[index];
+    if (!form) return;
+    let formData = { ...form.getRawValue() };
+  
+    //extract start and end dates separetely
+    const activityStartDate = formData.activityDateRange?.activityStartDate
+      ? moment.utc(formData.activityDateRange.activityStartDate, 'YYYY-MM-DD').toISOString()
+      : null;
+
+    const activityEndDate = formData.activityDateRange?.activityEndDate
+      ? moment.utc(formData.activityDateRange.activityEndDate, 'YYYY-MM-DD').toISOString()
+      : null;
+    
+    let updatedData:any = {
+      ...originalData, // Include all original data and overwrite with form data
+      ...formData,
+      activityStartDate,
+      activityEndDate,
+      contractPhaseCode: formData.contractPhaseCode
+        ? { contractPhaseCode: formData.contractPhaseCode}
+        : null,
+      activityStatusCode: formData.activityStatusCode
+        ? { activityStatusCode: formData.activityStatusCode}
+        : null,
+    };
+    delete updatedData.activityDateRange;
+
+    if (!updatedData.projectPlanFiscalGuid) {
+      updatedData.projectPlanFiscalGuid = this.fiscalGuid;
+    }
+    // Remove empty or null values
+    updatedData = this.removeEmptyFields(updatedData, [
+      'projectPlanFiscalGuid',
+      'activityStartDate',
+      'activityEndDate',
+      'activityName'
+    ]);
+  
+    const isUpdate = !!this.activities[index]?.activityGuid;
+  
+    if (isUpdate) {
+      // Update existing activity
+      this.projectService.updateFiscalActivities(this.projectGuid, this.fiscalGuid, updatedData.activityGuid, updatedData).subscribe({
+        next: () => {
+          this.snackbarService.open(
+            this.messages.activityUpdatedSuccess,
+            'OK',
+            { duration: 5000, panelClass: 'snackbar-success' }
+          );
+          this.isActivityDirty[index] = false;
+          this.activityForms[index].markAsPristine(); // reset dirty tracking
+          this.getActivities(); // Refresh activities after saving
+        },
+        error: () => {
+          this.snackbarService.open(
+            this.messages.activityUpdatedFailure,
+            'OK',
+            { duration: 5000, panelClass: 'snackbar-error' }
+          );
+        }
+      });
+    } else {
+      // Create new activity
+      this.projectService.createFiscalActivity(this.projectGuid, this.fiscalGuid, updatedData).subscribe({
+        next: (response) => {
+          this.snackbarService.open(
+            this.messages.activityCreatedSuccess,
+            'OK',
+            { duration: 5000, panelClass: 'snackbar-success' }
+          );
+          this.isActivityDirty[index] = false;
+          this.activityForms[index].markAsPristine(); // Reset dirty tracking
+          this.getActivities();
+        },
+        error: () => {
+          this.snackbarService.open(
+            this.messages.activityCreatedFailure,
+            'OK',
+            { duration: 5000, panelClass: 'snackbar-error' }
+          );
+        }
+      });
+    }
+  }
+
+  removeEmptyFields(obj: any, alwaysInclude: string[] = []): any {
+    return Object.fromEntries(
+      Object.entries(obj)
+        .filter(([key, value]) =>
+          alwaysInclude.includes(key) || // Always include these keys
+          (value !== null && value !== undefined && value !== '' &&
+          !(Array.isArray(value) && value.length === 0) &&
+          !(typeof value === 'object' && Object.keys(value).length === 0))
+        )
+    );
+  }
+  
+  onCancelActivity(index: number): void {
+    if (!this.activityForms[index]) return;
+  
+    const isNewEntry = !this.activities[index]?.activityGuid;
+  
+    if (isNewEntry) {
+      // Remove the new entry
+      this.activities.splice(index, 1);
+      this.activityForms.splice(index, 1);
+    } else {
+      // Reset to original values
+      const originalData = this.originalActivitiesValues[index];
+      this.activityForms[index].patchValue(originalData);
+      this.activityForms[index].markAsPristine();
+      this.activityForms[index].markAsUntouched();
+      this.isActivityDirty[index] = false;
+    }
+  }
+
+  onDeleteActivity(index:number): void{
+    const data = this.activityForms[index]?.value;
+    const activityGuid = data.activityGuid;
+    const activityName = data.activityName;
+    if (activityGuid){
+      const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+        data: { indicator: 'delete-activity', name:activityName},
+        width: '500px',
+      });
+    
+      dialogRef.afterClosed().subscribe((confirmed: boolean) => {
+        if (confirmed) {
+            // Delete from the service call if it's a saved fiscal year
+            this.projectService.deleteActivity(this.projectGuid, this.fiscalGuid, activityGuid)
+              .subscribe({
+                next: () => {
+                  this.snackbarService.open(
+                    this.messages.activityDeletedSuccess,
+                    'OK',
+                    { duration: 5000, panelClass: 'snackbar-success' }
+                  );
+                  this.getActivities()
+                },
+                error: () => {
+                  this.snackbarService.open(
+                    this.messages.activityDeletedFailure,
+                    'OK',
+                    { duration: 5000, panelClass: 'snackbar-error' }
+                  );
+                }
+              });
+          }
+        }
+      )
+    }
+      
+  }
+
+  canDeleteActivity(index: number): boolean {
+    const activity = this.activityForms[index]?.value;
+    if (!activity) return false;
+  
+    // Delete is available when:
+    // Activity is not set to Complete
+    // Does not have a Performance update on the Fiscal
+    // Delete is in an inactive state when:
+    // The user does not have permission to delete
+    // The Activity has been started ie. there is a Performance Update on the Fiscal
+    // The Activity has polygon files associated to it
+    // The activity is marked as Complete
+  
+    // We dont have permissions and performance implemneted yet. Check single condition that prevent deletion
+    return activity.activityStatusCode !== 'COMPLETED'; 
+  }
+  
+  getDeleteIcon(index: number): string {
+    return this.canDeleteActivity(index) ? '/assets/delete-icon.svg' : '/assets/delete-disabled-icon.svg';
+  }
+  
+  
+  
+}
