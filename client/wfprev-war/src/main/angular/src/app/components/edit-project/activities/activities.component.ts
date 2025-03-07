@@ -14,6 +14,7 @@ import { MatDateFormats, MatNativeDateModule, MAT_DATE_FORMATS, MAT_DATE_LOCALE,
 import { MatInputModule } from '@angular/material/input';
 import { Messages } from 'src/app/utils/messages';
 import { ConfirmationDialogComponent } from 'src/app/components/confirmation-dialog/confirmation-dialog.component';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 
 @Component({
   selector: 'app-activities',
@@ -25,7 +26,8 @@ import { ConfirmationDialogComponent } from 'src/app/components/confirmation-dia
     MatDatepickerModule,
     MatNativeDateModule,
     MatInputModule,
-    FormsModule
+    FormsModule,
+    MatCheckboxModule
   ],
   templateUrl: './activities.component.html',
   styleUrl: './activities.component.scss',
@@ -48,7 +50,6 @@ export class ActivitiesComponent implements OnChanges, OnInit{
 
   activityForms: FormGroup[] = [];
   projectTypeCode = '';
-  isEditingComment: boolean[] = [];
   isActivityDirty: boolean[] = [];
   
     constructor(
@@ -188,7 +189,7 @@ export class ActivitiesComponent implements OnChanges, OnInit{
       completedAreaHa: [activity?.completedAreaHa ?? '', [Validators.min(0)]],
       isResultsReportableInd: [activity?.isResultsReportableInd || false],
       outstandingObligationsInd: [activity?.outstandingObligationsInd || false],
-      activityComment: [activity?.activityComment || ''],
+      activityComment: [activity?.activityComment || '', [Validators.maxLength(500)]],
       isSpatialAddedInd: [activity?.isSpatialAddedInd || false],
       createDate: [activity?.createDate || ''], // ISO 8601 date format
     });
@@ -342,14 +343,6 @@ export class ActivitiesComponent implements OnChanges, OnInit{
     this.activityForms.push(this.createActivityForm(newActivity));
     
     this.cd.detectChanges();
-  }
-
-  toggleEditComment(index: number) {
-    this.isEditingComment[index] = true;
-  }
-  
-  saveComment(index: number) {
-    this.isEditingComment[index] = false;
   }
 
   getRiskIcon(riskCode: string): string {

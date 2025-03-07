@@ -6,6 +6,10 @@
     margin: 0;
     .expansion-panel{
         border: 1px solid #D9D9D9;
+
+        .mat-expansion-panel-header{
+            border-bottom: 1px solid #D9D9D9;;
+        }
         
         .dropdown-button{
             span{
@@ -24,7 +28,7 @@
         font-weight: 400;
         line-height: normal;
         .update-date{
-            padding-left: 4px;
+            padding-top: 4px;
             font-size: 12px;
             font-style: italic;
             font-weight: 400;
@@ -64,6 +68,9 @@
     .form-item{
         flex: 1 1 calc(25% - 20px); // 4 items per row with a 20px gap
     }
+    .form-item.wide{
+        grid-column: span 2;
+    }
     .full-width{
         flex: 1 1 100% !important;
     }
@@ -72,15 +79,35 @@
     }
 
     .narrow-width{
-        max-width: 150px;
+        max-width: 210px;
+    }
+
+    .comment-container {
+        display: flex;
+        gap: 10px;
+        align-items: flex-start;
+    }
+    
+    .checkbox-container {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        .checkbox-label {
+            padding: 0 !important;
+            white-space: nowrap;
+        }
+    }
+    
+    .textarea-container {
+        flex-grow: 1;
+        width: 100%;
     }
 
     .first-section{
         display: flex;
         gap:20px;
         width: 100%;
-        border-bottom: 1px solid #D9D9D9;
-        padding-bottom: 16px;
+        padding-top: 16px;
     }
 
     .comment-display {
@@ -192,4 +219,3 @@
 :host ::ng-deep .mat-mdc-form-field-infix{
     padding: 0 !important;
 }
-  

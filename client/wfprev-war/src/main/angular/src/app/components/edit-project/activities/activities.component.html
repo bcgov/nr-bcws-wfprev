@@ -3,7 +3,7 @@
         <mat-expansion-panel-header>
             <div class="header-container">
                 <span class="project-title">Activities</span>
-                <button class="dropdown-button" mat-icon-button (click)="addActivity(); $event.stopPropagation()">
+                <button class="dropdown-button" mat-icon-button (click)="addActivity(); $event.stopPropagation()" *ngIf="fiscalGuid">
                     <img class="action-icon" alt="actions" src="/assets/add-button.svg">
                   <span>Add Activity</span>
                 </button>
@@ -54,6 +54,14 @@
                     <form class="form-grid" *ngIf="activityForms[i]" [formGroup]="activityForms[i]">
                         <div class="first-section">
                             <div class="form-item narrow-width">
+                                <label>Completed Hectares (Ha)</label>
+                                <input type="number" id="completedAreaHa" formControlName="completedAreaHa"/>
+                            </div>
+                            <div class="form-item narrow-width">
+                                <label>Reported Spend</label>
+                                <input type="number" id="reportedSpendAmount" formControlName="reportedSpendAmount"/>
+                            </div>
+                            <div class="form-item narrow-width">
                                 <label>Results Reportable</label>
                                 <div class="toggle-container">
                                     <mat-slide-toggle 
@@ -65,14 +73,6 @@
                                     {{ activityForms[i].value?.isResultsReportableInd ? 'Yes' : 'No' }}
                                     </span>
                                 </div>
-                            </div>
-                            <div class="form-item narrow-width">
-                                <label>Completed Hectares</label>
-                                <input type="number" id="completedAreaHa" formControlName="completedAreaHa"/>
-                            </div>
-                            <div class="form-item narrow-width">
-                                <label>Reported Spend</label>
-                                <input type="number" id="reportedSpendAmount" formControlName="reportedSpendAmount"/>
                             </div>
                             <div class="form-item narrow-width">
                                 <label>Activity Status</label>
@@ -141,16 +141,7 @@
                             </select>
                         </div>
 
-                        <div class="form-item full-width">
-                            <label>Activity Description<span class="required">*</span></label>
-                            <textarea 
-                              id="activityDescription" 
-                              formControlName="activityDescription" 
-                              rows="1" cols="30"
-                            >
-                            </textarea>
-                        </div>
-                        <div class="form-item five-columns">
+                        <div class="form-item wide">
                             <label>Activity Start and End <span class="required">*</span></label>
                             <div class="date-range-container">
                                 <mat-form-field>
@@ -164,17 +155,17 @@
                             </div>
                         </div>
 
-                        <div class="form-item five-columns">
-                            <label>Planned Hectares<span class="required">*</span></label>
+                        <div class="form-item">
+                            <label>Planned Hectares (Ha)<span class="required">*</span></label>
                             <input type="number" id="plannedTreatmentAreaHa" formControlName="plannedTreatmentAreaHa" min="0"/>
                         </div>
 
-                        <div class="form-item five-columns">
+                        <div class="form-item">
                             <label>Planned Spend</label>
                             <input type="number" id="plannedSpendAmount" formControlName="plannedSpendAmount" min="0"/>
                         </div>
 
-                        <div class="form-item five-columns">
+                        <div class="form-item">
                             <label>Contract Phase</label>
                             <select id="contractPhaseCode" formControlName="contractPhaseCode">
                                 <option *ngFor="let item of contractPhaseCode" [value]="item.contractPhaseCode">
@@ -185,23 +176,32 @@
 
 
                         <div class="form-item full-width">
-                            <label>Activity outcomes and comments (Include approach for Outstanding Obligations if they remain):</label>
-                        
-                            <span 
-                                *ngIf="!isEditingComment[i] && activityForms[i].value?.activityComment" 
-                                class="comment-display" 
-                                (click)="toggleEditComment(i)">
-                                {{ activityForms[i].value?.activityComment }}
-                            </span>
-                        
-                            <input 
-                                *ngIf="isEditingComment[i] || !activityForms[i].value?.activityComment" 
-                                type="text" 
-                                id="activityComment" 
-                                formControlName="activityComment"
-                                (blur)="saveComment(i)"
-                                (keydown.enter)="saveComment(i)">
+                            <label>Activity Description<span class="required">*</span></label>
+                            <textarea 
+                              id="activityDescription" 
+                              formControlName="activityDescription" 
+                              rows="1" cols="30"
+                            >
+                            </textarea>
                         </div>
+
+                        <div class="form-item full-width comment-container">
+                            <div class="checkbox-container">
+                                <label class="checkbox-label">Outstanding Obligation</label>
+                                <mat-checkbox formControlName="outstandingObligationsInd">Yes</mat-checkbox>
+                            </div>
+                            <div class="textarea-container">
+                                <label>Activity outcomes and comments (Include approach for Outstanding Obligations if they remain):</label>
+                                <textarea 
+                                    id="activityComment" 
+                                    formControlName="activityComment" 
+                                    rows="2" 
+                                    cols="50">
+                                </textarea>
+                            </div>
+                        </div>
+                        
+                        
                     </form>
                     <div class="project-activity-footer">
                         <div class="button-row">
