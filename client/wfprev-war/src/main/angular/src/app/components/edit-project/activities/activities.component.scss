@@ -12,8 +12,14 @@
         }
         
         .dropdown-button{
+            cursor: pointer;
             span{
                 padding-left: 10px;
+            }
+            &:disabled{
+                background-color: #c0c0c0 !important;
+                cursor: not-allowed;
+                border: none;
             }
         }
     }
@@ -70,6 +76,7 @@
     }
     .form-item.wide{
         grid-column: span 2;
+        min-width: unset !important;
     }
     .full-width{
         flex: 1 1 100% !important;
