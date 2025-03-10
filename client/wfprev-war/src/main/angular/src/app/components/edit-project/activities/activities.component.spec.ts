@@ -192,19 +192,31 @@ describe('ActivitiesComponent', () => {
   });
 
   it('should set form control to pristine on cancel', () => {
-    const testActivity = { activityGuid: 'test-guid', activityName: 'Original Name' };
+    const testActivity = { 
+      activityGuid: 'test-guid', 
+      activityName: 'Original Name',
+      activityStartDate: '2025-03-10T00:00:00.000+00:00',
+      activityEndDate: '2025-03-20T00:00:00.000+00:00',
+    };
+
     component.activities.push(testActivity);
+    component.originalActivitiesValues.push({ ...testActivity });
+
     const form = component.createActivityForm(testActivity);
     component.activityForms.push(form);
-    component.isActivityDirty.push(true); // Mark as dirty
-  
+    component.isActivityDirty.push(true);
+
     form.get('activityName')?.setValue('Modified Name');
+
     component.onCancelActivity(0);
-  
+
     expect(component.isActivityDirty[0]).toBeFalse();
     expect(component.activityForms[0].pristine).toBeTrue();
+    expect(component.activityForms[0].get('activityName')?.value).toBe('Original Name');
+    expect(component.activityForms[0].get('activityDateRange.activityStartDate')?.value).toBe('2025-03-10');
+    expect(component.activityForms[0].get('activityDateRange.activityEndDate')?.value).toBe('2025-03-20');
   });
-  
+
   it('should disable and clear method field if techniqueGuid is null', () => {
     const form = component.createActivityForm({});
     component.activityForms.push(form);
@@ -364,5 +376,27 @@ describe('ActivitiesComponent', () => {
   
     expect(form.get('activityName')?.value).toBe('Updated Title');
   });
+
+  it('should disable "Add Activity" button when isNewActivityBeingAdded is true', () => {
+    component.fiscalGuid = 'test-guid'; // Ensure button is rendered
+    component.isNewActivityBeingAdded = true;
+    fixture.detectChanges(); // Update the DOM
+  
+    const button = fixture.nativeElement.querySelector('.dropdown-button');
+    expect(button).not.toBeNull(); // Ensure button exists
+    expect(button?.disabled).toBeTrue();
+  });
+  
+  it('should enable "Add Activity" button when isNewActivityBeingAdded is false', () => {
+    component.fiscalGuid = 'test-guid'; // Ensure button is rendered
+    component.isNewActivityBeingAdded = false;
+    fixture.detectChanges(); // Update the DOM
+  
+    const button = fixture.nativeElement.querySelector('.dropdown-button');
+    expect(button).not.toBeNull(); // Ensure button exists
+    expect(button?.disabled).toBeFalse();
+  });
   
 });
+
+

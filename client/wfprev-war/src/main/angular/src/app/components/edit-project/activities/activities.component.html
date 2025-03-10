@@ -3,7 +3,7 @@
         <mat-expansion-panel-header>
             <div class="header-container">
                 <span class="project-title">Activities</span>
-                <button class="dropdown-button" mat-icon-button (click)="addActivity(); $event.stopPropagation()" *ngIf="fiscalGuid">
+                <button class="dropdown-button" mat-icon-button (click)="addActivity(); $event.stopPropagation()" *ngIf="fiscalGuid" [disabled]="isNewActivityBeingAdded">
                     <img class="action-icon" alt="actions" src="/assets/add-button.svg">
                   <span>Add Activity</span>
                 </button>
@@ -30,7 +30,7 @@
                             
                             <ng-template #notSpatialAdded>
                                 <span class="status-tag inactive">
-                                    <img alt="status" class="status-icon" src="/assets/no-spatial-added-icon.svg">Not Spatial Added
+                                    <img alt="status" class="status-icon" src="/assets/no-spatial-added-icon.svg">No Spatial Added
                                 </span>
                             </ng-template>
 <!-- hide risk badge for now until performance update is implement -->
@@ -121,7 +121,7 @@
                         </div>
 
                         <div class="form-item two-columns">
-                            <label>Activity Name<span class="required">*</span></label>
+                            <label>Activity Name<span class="required" *ngIf="!activityForms[i]?.value?.isResultsReportableInd">*</span></label>
                             <input 
                                 type="text" 
                                 id="activityName" 
