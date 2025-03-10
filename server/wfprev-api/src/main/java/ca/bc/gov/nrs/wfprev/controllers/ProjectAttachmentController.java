@@ -160,17 +160,17 @@ public class ProjectAttachmentController extends CommonController {
     }
 
     @PutMapping("/{id}")
-    @Operation(
-            summary = "Update File Attachment for a Project",
-            description = "Update an existing File Attachment for a Project",
-            security = @SecurityRequirement(name = "Webade-OAUTH2", scopes = {"WFPREV"})
-    )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK"),
             @ApiResponse(responseCode = "400", description = "Bad Request"),
             @ApiResponse(responseCode = "404", description = "Not Found"),
             @ApiResponse(responseCode = "500", description = "Internal Server Error")
     })
+    @Operation(
+            summary = "Update File Attachment for a Project",
+            description = "Update an existing File Attachment for a Project",
+            security = @SecurityRequirement(name = "Webade-OAUTH2", scopes = {"WFPREV"})
+    )
     public ResponseEntity<FileAttachmentModel> updateFileAttachment(
             @PathVariable String id,
             @PathVariable String projectGuid,
