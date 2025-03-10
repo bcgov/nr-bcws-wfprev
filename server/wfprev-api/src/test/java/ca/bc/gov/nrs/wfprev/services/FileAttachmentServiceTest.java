@@ -2,6 +2,7 @@ package ca.bc.gov.nrs.wfprev.services;
 
 import ca.bc.gov.nrs.wfone.common.service.api.ServiceException;
 import ca.bc.gov.nrs.wfprev.data.assemblers.FileAttachmentResourceAssembler;
+import ca.bc.gov.nrs.wfprev.data.entities.AttachmentContentTypeCodeEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.FileAttachmentEntity;
 import ca.bc.gov.nrs.wfprev.data.models.FileAttachmentModel;
 import ca.bc.gov.nrs.wfprev.data.repositories.AttachmentContentTypeCodeRepository;
@@ -26,7 +27,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class FileAttachmentServiceTest {
+public class FileAttachmentServiceTest {
 
     @Mock
     private FileAttachmentRepository fileAttachmentRepository;
@@ -56,7 +57,7 @@ class FileAttachmentServiceTest {
     }
 
     @Test
-    void getAllFileAttachments_Success() throws ServiceException {
+    void testGetAllFileAttachments_Success() throws ServiceException {
         when(fileAttachmentRepository.findAllBySourceObjectUniqueId("123"))
                 .thenReturn(List.of(mockEntity));
         when(fileAttachmentResourceAssembler.toCollectionModel(anyList()))
@@ -69,7 +70,7 @@ class FileAttachmentServiceTest {
     }
 
     @Test
-    void getFileAttachmentById_Success() throws ServiceException {
+    void testGetFileAttachmentById_Success() throws ServiceException {
         when(fileAttachmentRepository.findById(testUuid))
                 .thenReturn(Optional.of(mockEntity));
         when(fileAttachmentResourceAssembler.toModel(mockEntity))
@@ -82,7 +83,7 @@ class FileAttachmentServiceTest {
     }
 
     @Test
-    void getFileAttachmentById_NotFound() {
+    void testGetFileAttachmentById_NotFound() {
         when(fileAttachmentRepository.findById(testUuid)).thenReturn(Optional.empty());
 
         FileAttachmentModel result = fileAttachmentService.getFileAttachmentById(testUuid.toString());
@@ -91,7 +92,41 @@ class FileAttachmentServiceTest {
     }
 
     @Test
-    void createFileAttachment_Success() throws ServiceException {
+    void testGetFileAttachmentById_ServiceException() {
+        String validId = "123e4567-e89b-12d3-a456-426614174000";
+        when(fileAttachmentRepository.findById(any(UUID.class)))
+                .thenThrow(new RuntimeException("Database error"));
+
+        ServiceException exception = assertThrows(ServiceException.class, () -> {
+            fileAttachmentService.getFileAttachmentById(validId);
+        });
+
+        assertEquals("Database error", exception.getMessage());
+    }
+
+    @Test
+    void testGetFileAttachmentById_returnsNull_whenFileAttachmentNotFound() {
+        String validId = "123e4567-e89b-12d3-a456-426614174000";
+        when(fileAttachmentRepository.findById(any(UUID.class))).thenReturn(Optional.empty());
+
+        FileAttachmentModel result = fileAttachmentService.getFileAttachmentById(validId);
+
+        assertNull(result);
+    }
+
+    @Test
+    void testGetFileAttachmentById_InvalidUUID() {
+        String invalidId = "invalid-uuid";
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            fileAttachmentService.getFileAttachmentById(invalidId);
+        });
+
+        assertEquals("Invalid UUID: " + invalidId, exception.getMessage());
+    }
+
+    @Test
+    void testCreateFileAttachment_Success() throws ServiceException {
         when(fileAttachmentResourceAssembler.toEntity(mockModel)).thenReturn(mockEntity);
         when(fileAttachmentRepository.saveAndFlush(mockEntity)).thenReturn(mockEntity);
         when(fileAttachmentResourceAssembler.toModel(mockEntity)).thenReturn(mockModel);
@@ -102,7 +137,7 @@ class FileAttachmentServiceTest {
     }
 
     @Test
-    void updateFileAttachment_Success() {
+    void testUpdateFileAttachment_Success() {
         when(fileAttachmentRepository.findById(testUuid)).thenReturn(Optional.of(mockEntity));
         when(fileAttachmentResourceAssembler.updateEntity(mockModel, mockEntity)).thenReturn(mockEntity);
         when(fileAttachmentRepository.saveAndFlush(mockEntity)).thenReturn(mockEntity);
@@ -115,7 +150,7 @@ class FileAttachmentServiceTest {
     }
 
     @Test
-    void updateFileAttachment_NotFound() {
+    void testUpdateFileAttachment_NotFound() {
         when(fileAttachmentRepository.findById(testUuid)).thenReturn(Optional.empty());
 
         Exception exception = assertThrows(EntityNotFoundException.class, () ->
@@ -126,7 +161,7 @@ class FileAttachmentServiceTest {
     }
 
     @Test
-    void deleteFileAttachment_Success() throws ServiceException {
+    void testDeleteFileAttachment_Success() throws ServiceException {
         when(fileAttachmentRepository.findById(testUuid)).thenReturn(Optional.of(mockEntity));
         when(fileAttachmentResourceAssembler.toModel(mockEntity)).thenReturn(mockModel);
 
@@ -137,7 +172,7 @@ class FileAttachmentServiceTest {
     }
 
     @Test
-    void deleteFileAttachment_NotFound() {
+    void testDeleteFileAttachment_NotFound() {
         when(fileAttachmentRepository.findById(testUuid)).thenReturn(Optional.empty());
 
         Exception exception = assertThrows(EntityNotFoundException.class, () ->
@@ -148,7 +183,37 @@ class FileAttachmentServiceTest {
     }
 
     @Test
-    void saveFileAttachment_ThrowsDataIntegrityViolationException() {
+    void testDeleteFileAttachment_RuntimeException() {
+        when(fileAttachmentRepository.findById(testUuid)).thenReturn(Optional.of(mockEntity));
+        doThrow(new RuntimeException("Unexpected error"))
+                .when(fileAttachmentRepository).delete(any(FileAttachmentEntity.class));
+
+        Exception exception = assertThrows(RuntimeException.class, () ->
+                fileAttachmentService.deleteFileAttachment(testUuid.toString())
+        );
+
+        assertEquals("Unexpected error", exception.getMessage());
+    }
+
+    @Test
+    void testDeleteFileAttachment_ServiceException() {
+        String validId = "123e4567-e89b-12d3-a456-426614174000";
+        FileAttachmentEntity mockEntity = new FileAttachmentEntity();
+
+        when(fileAttachmentRepository.findById(UUID.fromString(validId))).thenReturn(Optional.of(mockEntity));
+        doThrow(new RuntimeException("Unexpected error during deletion"))
+                .when(fileAttachmentRepository).delete(mockEntity);
+
+        ServiceException exception = assertThrows(ServiceException.class, () -> {
+            fileAttachmentService.deleteFileAttachment(validId);
+        });
+
+        assertEquals("Unexpected error during deletion", exception.getMessage());
+    }
+
+
+    @Test
+    void testSaveFileAttachment_DataIntegrityViolationException() {
         when(fileAttachmentResourceAssembler.toEntity(mockModel)).thenReturn(mockEntity);
         when(fileAttachmentRepository.saveAndFlush(mockEntity))
                 .thenThrow(new DataIntegrityViolationException("Constraint Violation"));
@@ -159,4 +224,5 @@ class FileAttachmentServiceTest {
 
         assertEquals("Constraint Violation", exception.getMessage());
     }
+
 }

@@ -132,7 +132,7 @@ public class FileAttachmentService implements CommonService {
 
             return model;
         } catch (EntityNotFoundException e) {
-            throw e; // Let EntityNotFoundException propagate
+            throw e;
         } catch (Exception e) {
             throw new ServiceException(e.getLocalizedMessage(), e);
         }

@@ -1,8 +1,6 @@
 package ca.bc.gov.nrs.wfprev;
 
-import ca.bc.gov.nrs.wfone.common.webade.authentication.WebAdeAuthentication;
 import ca.bc.gov.nrs.wfprev.controllers.ProjectAttachmentController;
-import ca.bc.gov.nrs.wfprev.controllers.ProjectBoundaryController;
 import ca.bc.gov.nrs.wfprev.data.models.AttachmentContentTypeCodeModel;
 import ca.bc.gov.nrs.wfprev.data.models.FileAttachmentModel;
 import ca.bc.gov.nrs.wfprev.data.models.ProjectModel;
@@ -26,19 +24,17 @@ import org.springframework.context.annotation.Import;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Date;
+import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.anyString;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -100,7 +96,6 @@ public class ProjectAttachmentControllerTest {
     }
 
     @Test
-    
     void testCreateFileAttachment_DataIntegrityViolation() throws Exception {
         FileAttachmentModel requestModel = buildFileAttachmentModel();
 
@@ -113,6 +108,36 @@ public class ProjectAttachmentControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(gson.toJson(requestModel)))
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void testCreateFileAttachment_IllegalArgumentException() throws Exception {
+        FileAttachmentModel requestModel = buildFileAttachmentModel();
+
+        when(fileAttachmentService.createFileAttachment(any(FileAttachmentModel.class)))
+                .thenThrow(new IllegalArgumentException("Illegal argument"));
+        when(projectService.getProjectById(anyString())).thenReturn(new ProjectModel());
+
+        mockMvc.perform(post("/projects/{projectId}/attachments", "123e4567-e89b-12d3-a456-426614174001")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer admin-token")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(gson.toJson(requestModel)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void testCreateFileAttachment_RuntimeException() throws Exception {
+        FileAttachmentModel requestModel = buildFileAttachmentModel();
+
+        when(fileAttachmentService.createFileAttachment(any(FileAttachmentModel.class)))
+                .thenThrow(new RuntimeException("Runtime exception"));
+        when(projectService.getProjectById(anyString())).thenReturn(new ProjectModel());
+
+        mockMvc.perform(post("/projects/{projectId}/attachments", "123e4567-e89b-12d3-a456-426614174001")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer admin-token")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(gson.toJson(requestModel)))
+                .andExpect(status().isInternalServerError());
     }
 
     @Test
@@ -142,6 +167,52 @@ public class ProjectAttachmentControllerTest {
     }
 
     @Test
+    void testGetAllFileAttachments_Success() throws Exception {
+        String projectGuid = "123e4567-e89b-12d3-a456-426614174001";
+
+        List<FileAttachmentModel> fileAttachments = List.of(buildFileAttachmentModel(), buildFileAttachmentModel());
+        CollectionModel<FileAttachmentModel> collectionModel = CollectionModel.of(fileAttachments);
+
+        when(fileAttachmentService.getAllFileAttachments(anyString())).thenReturn(collectionModel);
+        when(projectService.getProjectById(anyString())).thenReturn(new ProjectModel());
+
+        mockMvc.perform(get("/projects/{projectGuid}/attachments", projectGuid)
+                        .header(HttpHeaders.IF_MATCH, "some-etag")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void testGetAllFileAttachments_NotFound() throws Exception {
+        String invalidProjectGuid = "invalid-guid";
+
+        when(projectService.getProjectById(anyString())).thenReturn(null);
+
+        mockMvc.perform(get("/projects/{projectGuid}/attachments", invalidProjectGuid)
+                        .header(HttpHeaders.IF_MATCH, "some-etag")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void testGetAllFileAttachments_InternalServerError() throws Exception {
+        String projectGuid = "123e4567-e89b-12d3-a456-426614174001";
+
+        when(projectService.getProjectById(anyString())).thenReturn(new ProjectModel());
+
+        when(fileAttachmentService.getAllFileAttachments(anyString()))
+                .thenThrow(new RuntimeException("Database failure"));
+
+        mockMvc.perform(get("/projects/{projectGuid}/attachments", projectGuid)
+                        .header(HttpHeaders.IF_MATCH, "some-etag") // Required header
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isInternalServerError()); // Expecting 500 now
+    }
+
+    @Test
     void testDeleteFileAttachment_Success() throws Exception {
         String attachmentId = "123e4567-e89b-12d3-a456-426614174000";
         when(projectService.getProjectById(anyString())).thenReturn(new ProjectModel());
@@ -155,16 +226,45 @@ public class ProjectAttachmentControllerTest {
     }
 
     @Test
-    void testDeleteFileAttachment_NotFound() throws Exception {
+    void testDeleteFileAttachment_InvalidProject() throws Exception {
         String attachmentId = "123e4567-e89b-12d3-a456-426614174000";
-        doThrow(new EntityNotFoundException("Not found"))
-                .when(fileAttachmentService).deleteFileAttachment(anyString());
 
-        mockMvc.perform(delete("/projects/{projectId}/attachments/{id}", "123e4567-e89b-12d3-a456-426614174001", attachmentId)
+        when(projectService.getProjectById(anyString())).thenReturn(null); // Simulating invalid project
+
+        mockMvc.perform(delete("/projects/{projectGuid}/attachments/{id}", "invalid-guid", attachmentId)
                         .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
                         .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isNotFound()); // 404
     }
+
+    @Test
+    void testDeleteFileAttachment_EntityNotFound() throws Exception {
+        String attachmentId = "123e4567-e89b-12d3-a456-426614174000";
+
+        when(projectService.getProjectById(anyString())).thenReturn(new ProjectModel());
+        doThrow(new EntityNotFoundException("Attachment not found"))
+                .when(fileAttachmentService).deleteFileAttachment(anyString());
+
+        mockMvc.perform(delete("/projects/{projectGuid}/attachments/{id}", "123e4567-e89b-12d3-a456-426614174001", attachmentId)
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound()); // 404
+    }
+
+    @Test
+    void testDeleteFileAttachment_Exception() throws Exception {
+        String attachmentId = "123e4567-e89b-12d3-a456-426614174000";
+
+        when(projectService.getProjectById(anyString())).thenReturn(new ProjectModel());
+        doThrow(new RuntimeException("Unexpected error"))
+                .when(fileAttachmentService).deleteFileAttachment(anyString());
+
+        mockMvc.perform(delete("/projects/{projectGuid}/attachments/{id}", "123e4567-e89b-12d3-a456-426614174001", attachmentId)
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isInternalServerError()); // 500
+    }
+
 
     @Test
     void testUpdateFileAttachment_Success() throws Exception {
@@ -198,21 +298,82 @@ public class ProjectAttachmentControllerTest {
                 .andExpect(status().isNotFound());
     }
 
+    @Test
+    void testUpdateFileAttachment_DataIntegrityViolation() throws Exception {
+        FileAttachmentModel requestModel = buildFileAttachmentModel();
+
+        when(projectService.getProjectById(anyString())).thenReturn(new ProjectModel());
+        when(fileAttachmentService.updateFileAttachment(any(FileAttachmentModel.class)))
+                .thenThrow(new DataIntegrityViolationException("Constraint violation"));
+
+        mockMvc.perform(put("/projects/{projectGuid}/attachments/{id}", "123e4567-e89b-12d3-a456-426614174001", requestModel.getFileAttachmentGuid())
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(gson.toJson(requestModel)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void testUpdateFileAttachment_EntityNotFound() throws Exception {
+        FileAttachmentModel requestModel = buildFileAttachmentModel();
+
+        when(projectService.getProjectById(anyString())).thenReturn(new ProjectModel());
+        when(fileAttachmentService.updateFileAttachment(any(FileAttachmentModel.class)))
+                .thenThrow(new EntityNotFoundException("Attachment not found"));
+
+        mockMvc.perform(put("/projects/{projectGuid}/attachments/{id}", "123e4567-e89b-12d3-a456-426614174001", requestModel.getFileAttachmentGuid())
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(gson.toJson(requestModel)))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void testUpdateFileAttachment_IllegalArgumentException() throws Exception {
+        FileAttachmentModel requestModel = buildFileAttachmentModel();
+
+        when(projectService.getProjectById(anyString())).thenReturn(new ProjectModel());
+        when(fileAttachmentService.updateFileAttachment(any(FileAttachmentModel.class)))
+                .thenThrow(new IllegalArgumentException("Invalid input"));
+
+        mockMvc.perform(put("/projects/{projectGuid}/attachments/{id}", "123e4567-e89b-12d3-a456-426614174001", requestModel.getFileAttachmentGuid())
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(gson.toJson(requestModel)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void testUpdateFileAttachment_RuntimeException() throws Exception {
+        FileAttachmentModel requestModel = buildFileAttachmentModel();
+
+        when(projectService.getProjectById(anyString())).thenReturn(new ProjectModel());
+        when(fileAttachmentService.updateFileAttachment(any(FileAttachmentModel.class)))
+                .thenThrow(new RuntimeException("Unexpected error"));
+
+        mockMvc.perform(put("/projects/{projectGuid}/attachments/{id}", "123e4567-e89b-12d3-a456-426614174001", requestModel.getFileAttachmentGuid())
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(gson.toJson(requestModel)))
+                .andExpect(status().isInternalServerError());
+    }
+
+
     private FileAttachmentModel buildFileAttachmentModel() {
         return FileAttachmentModel.builder()
                 .fileAttachmentGuid("123e4567-e89b-12d3-a456-426614174000")
-                .sourceObjectNameCode(new SourceObjectNameCodeModel())  // Replace with actual object if needed
+                .sourceObjectNameCode(new SourceObjectNameCodeModel())
                 .sourceObjectUniqueId("source-unique-id-001")
                 .documentPath("/documents/attachment.pdf")
                 .fileIdentifier("file-identifier-001")
                 .wildfireYear(2024)
-                .attachmentContentTypeCode(new AttachmentContentTypeCodeModel())  // Replace with actual object if needed
+                .attachmentContentTypeCode(new AttachmentContentTypeCodeModel())
                 .attachmentDescription("Sample file attachment")
                 .attachmentReadOnlyInd(false)
                 .uploadedByUserType("USER")
                 .uploadedByUserId("user123")
                 .uploadedByUserGuid("user-guid-123")
-                .uploadedByTimestamp(new Date())  // Current timestamp
+                .uploadedByTimestamp(new Date())
                 .build();
     }
 
