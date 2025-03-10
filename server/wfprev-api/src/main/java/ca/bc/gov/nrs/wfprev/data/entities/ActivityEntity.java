@@ -41,6 +41,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ActivityEntity implements Serializable {
+    private static final long serialVersionUID = 1L;
 
     @Id
     @UuidGenerator
