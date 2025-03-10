@@ -6,7 +6,7 @@
         Add New Fiscal
       </button>
     </div>
-      <mat-tab-group class="custom-tab-group" *ngIf="projectFiscals?.length; else noFiscals" [(selectedIndex)]="selectedTabIndex">
+      <mat-tab-group class="custom-tab-group" *ngIf="projectFiscals?.length; else noFiscals" [(selectedIndex)]="selectedTabIndex" (selectedTabChange)="onTabChange($event.index)">
         <mat-tab *ngFor="let fiscal of projectFiscals; let i = index" [label]="fiscal.fiscalYearFormatted || 'New Fiscal'">
           <mat-accordion [multi]="true">
             <mat-expansion-panel [expanded]="true" class="fiscal-expansion-panel">
@@ -74,7 +74,7 @@
                 </div>
 
                 <div class="form-item">
-                  <label>Planned Hectares</label>
+                  <label>Planned Hectares (Ha)</label>
                   <input type="number" id="fiscalPlannedProjectSizeHa" formControlName="fiscalPlannedProjectSizeHa" min="0"/>
                   <div class="error" *ngIf="fiscalForms[i] && fiscalForms[i].get('fiscalPlannedProjectSizeHa')?.hasError('min') 
                     && fiscalForms[i].get('fiscalPlannedProjectSizeHa')?.touched">
@@ -83,7 +83,7 @@
                 </div>
 
                 <div class="form-item">
-                  <label>Completed Hectares</label>
+                  <label>Completed Hectares (Ha)</label>
                   <input type="number" id="fiscalCompletedSizeHa" formControlName="fiscalCompletedSizeHa" min="0"/>
                   <div class="error" *ngIf="fiscalForms[i] && fiscalForms[i].get('fiscalCompletedSizeHa')?.hasError('min') 
                     && fiscalForms[i].get('fiscalCompletedSizeHa')?.touched">
@@ -225,6 +225,7 @@
                 </div>
               </div>
             </mat-expansion-panel>
+            <app-activities [fiscalGuid]="currentFiscalGuid"></app-activities>
           </mat-accordion>
         </mat-tab>
       </mat-tab-group>
