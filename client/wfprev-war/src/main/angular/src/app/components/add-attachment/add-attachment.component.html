@@ -1,0 +1,29 @@
+<div class="dialog-container">
+    <div class="title-bar">
+      Add Attachment
+    </div>
+    <div class="dialog-content">
+      <!-- File Upload Section -->
+       <div class="file-upload">
+          <button class="choose-file" (click)="chooseFile()">Choose File</button>
+          <span>{{getFileName()}}</span>
+       </div>
+       <div class="attachment-detail">
+        <label>Attachment Type (Required)</label>
+        <select>
+          <option value="">select</option>
+          <option *ngFor="let type of attachmentTypes" [value]="type">{{ type }}</option>
+        </select>
+       </div>
+       <div>
+
+       </div>
+    </div>
+    <div class="footer">
+      <div class="button-row">
+        <button class="secondary" (click)="onGoBack()">Cancel</button>
+        <button class="primary" (click)="onConfirm()">Save</button>
+      </div>
+    </div>
+  </div>
+  

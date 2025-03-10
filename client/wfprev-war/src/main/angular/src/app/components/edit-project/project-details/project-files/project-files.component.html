@@ -1,0 +1,36 @@
+<div class="project-files-container">
+    <div class="title-container">
+        <span class="title-text">
+            Files
+        </span>
+        <button class="primary" (click)="openFileUploadModal()">
+            Upload File
+        </button> 
+    </div>
+                    
+    <!--  Show Table 1 when status is COMPLETE -->
+    <table mat-table [dataSource]="projectFiles" class="activities-table">
+        <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef> Name </th>
+            <td mat-cell *matCellDef="let file"> {{ file.name }} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="description">
+            <th mat-header-cell *matHeaderCellDef> Description </th>
+            <td mat-cell *matCellDef="let file"> {{ file.description }} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="endDate">
+            <th mat-header-cell *matHeaderCellDef> End Date </th>
+            <td mat-cell *matCellDef="let file"> {{ file.endDate | date:'yyyy-MM-dd' }} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="completedHectares">
+            <th mat-header-cell *matHeaderCellDef> Completed Hectares (Ha)</th>
+            <td mat-cell *matCellDef="let file"> {{ file.completedHectares }} </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+</div>

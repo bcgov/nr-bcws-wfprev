@@ -1,0 +1,30 @@
+.project-files-container{
+    padding-top: 25px;
+}
+
+.title-container{
+    color: #000;
+    font-family: var(--wf-font-family-main);
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 400;
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+
+    .title-text{
+        padding-left: 12px;
+    }
+
+}
+button{
+    padding: 12px 32px;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+}
+button.primary {
+    background-color: var(--wf-primary-color);
+    color: #fff;
+}
