@@ -313,6 +313,131 @@ it('should handle errors when creating a project fiscal', () => {
     req.flush('Error', { status: 500, statusText: 'Server Error' }); // Simulate server error response
   });
   
+  it('should fetch fiscal activities', () => {
+    const projectGuid = '12345';
+    const projectPlanFiscalGuid = 'fiscal-6789';
+    const mockActivities = { _embedded: { activities: [{ activityName: 'Test Activity' }] } };
   
+    service.getFiscalActivities(projectGuid, projectPlanFiscalGuid).subscribe((activities) => {
+      expect(activities).toEqual(mockActivities);
+    });
+  
+    const req = httpMock.expectOne(`http://mock-api.com/wfprev-api/projects/${projectGuid}/projectFiscals/${projectPlanFiscalGuid}/activities`);
+    expect(req.request.method).toBe('GET');
+    expect(req.request.headers.get('Authorization')).toBe('Bearer mock-token');
+    req.flush(mockActivities);
+  });
+  
+  it('should handle errors when fetching fiscal activities', () => {
+    const projectGuid = '12345';
+    const projectPlanFiscalGuid = 'fiscal-6789';
+  
+    service.getFiscalActivities(projectGuid, projectPlanFiscalGuid).subscribe({
+      next: () => fail('Should have failed with an error'),
+      error: (error) => {
+        expect(error.message).toBe('Failed to fetch activities');
+      }
+    });
+  
+    const req = httpMock.expectOne(`http://mock-api.com/wfprev-api/projects/${projectGuid}/projectFiscals/${projectPlanFiscalGuid}/activities`);
+    req.flush('Error', { status: 500, statusText: 'Server Error' });
+  });
+  
+  it('should create a fiscal activity', () => {
+    const projectGuid = '12345';
+    const projectPlanFiscalGuid = 'fiscal-6789';
+    const newActivity = { activityName: 'New Activity' };
+  
+    service.createFiscalActivity(projectGuid, projectPlanFiscalGuid, newActivity).subscribe((response) => {
+      expect(response).toEqual(newActivity);
+    });
+  
+    const req = httpMock.expectOne(`http://mock-api.com/wfprev-api/projects/${projectGuid}/projectFiscals/${projectPlanFiscalGuid}/activities`);
+    expect(req.request.method).toBe('POST');
+    expect(req.request.headers.get('Authorization')).toBe('Bearer mock-token');
+    expect(req.request.body).toEqual(newActivity);
+    req.flush(newActivity);
+  });
+  
+  it('should handle errors when creating a fiscal activity', () => {
+    const projectGuid = '12345';
+    const projectPlanFiscalGuid = 'fiscal-6789';
+    const newActivity = { activityName: 'New Activity' };
+  
+    service.createFiscalActivity(projectGuid, projectPlanFiscalGuid, newActivity).subscribe({
+      next: () => fail('Should have failed with an error'),
+      error: (error) => {
+        expect(error.message).toBe('Failed to create activities');
+      }
+    });
+  
+    const req = httpMock.expectOne(`http://mock-api.com/wfprev-api/projects/${projectGuid}/projectFiscals/${projectPlanFiscalGuid}/activities`);
+    req.flush('Error', { status: 500, statusText: 'Server Error' });
+  });
+  
+  it('should update a fiscal activity', () => {
+    const projectGuid = '12345';
+    const projectPlanFiscalGuid = 'fiscal-6789';
+    const activityGuid = 'activity-001';
+    const updatedActivity = { activityName: 'Updated Activity' };
+  
+    service.updateFiscalActivities(projectGuid, projectPlanFiscalGuid, activityGuid, updatedActivity).subscribe((response) => {
+      expect(response).toEqual(updatedActivity);
+    });
+  
+    const req = httpMock.expectOne(`http://mock-api.com/wfprev-api/projects/${projectGuid}/projectFiscals/${projectPlanFiscalGuid}/activities/${activityGuid}`);
+    expect(req.request.method).toBe('PUT');
+    expect(req.request.headers.get('Authorization')).toBe('Bearer mock-token');
+    expect(req.request.body).toEqual(updatedActivity);
+    req.flush(updatedActivity);
+  });
+  
+  it('should handle errors when updating a fiscal activity', () => {
+    const projectGuid = '12345';
+    const projectPlanFiscalGuid = 'fiscal-6789';
+    const activityGuid = 'activity-001';
+    const updatedActivity = { activityName: 'Updated Activity' };
+  
+    service.updateFiscalActivities(projectGuid, projectPlanFiscalGuid, activityGuid, updatedActivity).subscribe({
+      next: () => fail('Should have failed with an error'),
+      error: (error) => {
+        expect(error.message).toBe('Failed to update activities');
+      }
+    });
+  
+    const req = httpMock.expectOne(`http://mock-api.com/wfprev-api/projects/${projectGuid}/projectFiscals/${projectPlanFiscalGuid}/activities/${activityGuid}`);
+    req.flush('Error', { status: 500, statusText: 'Server Error' });
+  });
+  
+  it('should delete an activity', () => {
+    const projectGuid = '12345';
+    const projectPlanFiscalGuid = 'fiscal-6789';
+    const activityGuid = 'activity-001';
+  
+    service.deleteActivity(projectGuid, projectPlanFiscalGuid, activityGuid).subscribe((response) => {
+      expect(response).toBeTruthy();
+    });
+  
+    const req = httpMock.expectOne(`http://mock-api.com/wfprev-api/projects/${projectGuid}/projectFiscals/${projectPlanFiscalGuid}/activities/${activityGuid}`);
+    expect(req.request.method).toBe('DELETE');
+    expect(req.request.headers.get('Authorization')).toBe('Bearer mock-token');
+    req.flush({});
+  });
+  
+  it('should handle errors when deleting an activity', () => {
+    const projectGuid = '12345';
+    const projectPlanFiscalGuid = 'fiscal-6789';
+    const activityGuid = 'activity-001';
+  
+    service.deleteActivity(projectGuid, projectPlanFiscalGuid, activityGuid).subscribe({
+      next: () => fail('Should have failed with an error'),
+      error: (error) => {
+        expect(error.message).toBe('Failed to delete activity');
+      }
+    });
+  
+    const req = httpMock.expectOne(`http://mock-api.com/wfprev-api/projects/${projectGuid}/projectFiscals/${projectPlanFiscalGuid}/activities/${activityGuid}`);
+    req.flush('Error', { status: 500, statusText: 'Server Error' });
+  });
   
 });

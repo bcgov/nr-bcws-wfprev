@@ -14,8 +14,10 @@
     // Angular Material tab header overrides
     ::ng-deep {
       .mat-mdc-tab-header {
-        width: 25%;
         padding-left: 30px;
+        display: flex;
+        flex-wrap: wrap;
+        width: auto;
       }
 
       .mat-mdc-tab-label {
@@ -28,6 +30,8 @@
         color: #000;
         font-style: normal;
         font-weight: 400;
+        max-width: 200px;
+        flex: 1 1 auto;
       }
   
       .mat-mdc-tab-indicator {

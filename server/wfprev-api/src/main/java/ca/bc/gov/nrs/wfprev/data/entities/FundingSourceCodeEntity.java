@@ -23,7 +23,7 @@ import java.util.Date;
 import java.util.UUID;
 
 @Entity
-@Table(name = "funding_source", schema = "wfprev")
+@Table(name = "activity_funding_source", schema = "wfprev")
 @JsonIgnoreProperties(ignoreUnknown = false)
 @Data
 @Builder
@@ -34,7 +34,7 @@ public class FundingSourceCodeEntity implements Serializable {
     @Id
     @UuidGenerator
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "funding_source_guid", nullable = false, updatable = false)
+    @Column(name = "activity_funding_source_guid", nullable = false, updatable = false)
     private UUID fundingSourceGuid;
 
     @Column(name = "funding_source_abbreviation", length = 20, nullable = false)

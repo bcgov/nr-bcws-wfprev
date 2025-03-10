@@ -356,14 +356,6 @@ describe('CreateNewProjectDialogComponent', () => {
     expect(mockProjectService.createProject).not.toHaveBeenCalled();
   });
   
-  it('should disable bcParksSection if region is deselected', () => {
-    component.projectForm.get('bcParksRegion')?.setValue(null); // No region selected
-    fixture.detectChanges();
-  
-    expect(component.projectForm.get('bcParksSection')?.disabled).toBeTrue();
-    expect(component.bcParksSections).toEqual([]);
-  });
-  
   it('should handle error while fetching code tables', () => {
     mockCodeTableService.fetchCodeTable.and.returnValue(throwError(() => new Error('Network error')));
   

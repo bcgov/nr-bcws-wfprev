@@ -150,4 +150,70 @@ export class ProjectService {
             })
         );
     }
+
+    getFiscalActivities(projectGuid: string, projectPlanFiscalGuid: string): Observable<any> {
+        const baseUrl = `${this.appConfigService.getConfig().rest['wfprev']}/wfprev-api/projects`;
+        const url = `${baseUrl}/${projectGuid}/projectFiscals/${projectPlanFiscalGuid}/activities`;
+            
+        return this.httpClient.get(url, {
+            headers: {
+                Authorization: `Bearer ${this.tokenService.getOauthToken()}`,
+            }
+        }).pipe(
+            map((response: any) => response),
+            catchError((error) => {
+                console.error("Error fetching activities", error);
+                return throwError(() => new Error("Failed to fetch activities"));
+            })
+        );
+    }
+
+    updateFiscalActivities(projectGuid: string, projectPlanFiscalGuid: string, activityGuid: string, activities: any): Observable<any> {
+        const baseUrl = `${this.appConfigService.getConfig().rest['wfprev']}/wfprev-api/projects`;
+        const url = `${baseUrl}/${projectGuid}/projectFiscals/${projectPlanFiscalGuid}/activities/${activityGuid}`;
+        return this.httpClient.put(url,activities,{
+            headers: {
+                Authorization: `Bearer ${this.tokenService.getOauthToken()}`,
+            }
+        }).pipe (
+            map((response: any) => response),
+            catchError((error) => {
+                console.error("Error update activities",error);
+                return throwError(() => new Error("Failed to update activities"))
+            })
+        )
+    }
+
+    createFiscalActivity(projectGuid: string, projectPlanFiscalGuid: string, activity: any): Observable<any> {
+        const baseUrl = `${this.appConfigService.getConfig().rest['wfprev']}/wfprev-api/projects`;
+        const url = `${baseUrl}/${projectGuid}/projectFiscals/${projectPlanFiscalGuid}/activities`;
+        return this.httpClient.post(url,activity,{
+            headers: {
+                Authorization: `Bearer ${this.tokenService.getOauthToken()}`,
+            }
+        }).pipe (
+            map((response: any) => response),
+            catchError((error) => {
+                console.error("Error create activities",error);
+                return throwError(() => new Error("Failed to create activities"))
+            })
+        )
+    }
+
+    deleteActivity(projectGuid: string, projectPlanFiscalGuid: string, actiityGuid: string): Observable<any> {
+        const baseUrl = `${this.appConfigService.getConfig().rest['wfprev']}/wfprev-api/projects`;
+        const url = `${baseUrl}/${projectGuid}/projectFiscals/${projectPlanFiscalGuid}/activities/${actiityGuid}`;
+            
+        return this.httpClient.delete(url, {
+            headers: {
+                Authorization: `Bearer ${this.tokenService.getOauthToken()}`,
+            }
+        }).pipe(
+            map((response: any) => response),
+            catchError((error) => {
+                console.error("Error delete activity", error);
+                return throwError(() => new Error("Failed to delete activity"));
+            })
+        );
+    }
  }
