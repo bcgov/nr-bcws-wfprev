@@ -4,7 +4,6 @@ import ca.bc.gov.nrs.common.wfone.rest.resource.HeaderConstants;
 import ca.bc.gov.nrs.common.wfone.rest.resource.MessageListRsrc;
 import ca.bc.gov.nrs.wfprev.common.controllers.CommonController;
 import ca.bc.gov.nrs.wfprev.data.models.FileAttachmentModel;
-import ca.bc.gov.nrs.wfprev.data.models.ProjectModel;
 import ca.bc.gov.nrs.wfprev.services.FileAttachmentService;
 import ca.bc.gov.nrs.wfprev.services.ProjectService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -85,17 +84,17 @@ public class ProjectAttachmentController extends CommonController {
     }
 
     @GetMapping("/{id}")
-    @Operation(
-            summary = "Fetch an File Attachment for a Project",
-            description = "Fetch a specific File Attachment by ID",
-            security = @SecurityRequirement(name = "Webade-OAUTH2", scopes = {"WFPREV"})
-    )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK",
                     content = @Content(schema = @Schema(implementation = FileAttachmentModel.class))),
             @ApiResponse(responseCode = "404", description = "Not Found"),
             @ApiResponse(responseCode = "500", description = "Internal Server Error")
     })
+    @Operation(
+            summary = "Fetch a File Attachment for a Project",
+            description = "Fetch a specific File Attachment by ID",
+            security = @SecurityRequirement(name = "Webade-OAUTH2", scopes = {"WFPREV"})
+    )
     public ResponseEntity<FileAttachmentModel> getFileAttachment(
             @PathVariable String id,
             @PathVariable String projectGuid) {
@@ -201,16 +200,16 @@ public class ProjectAttachmentController extends CommonController {
     }
 
     @DeleteMapping("/{id}")
-    @Operation(
-            summary = "Delete an File Attachment for a Project",
-            description = "Delete a specific File Attachment by ID",
-            security = @SecurityRequirement(name = "Webade-OAUTH2", scopes = {"WFPREV"})
-    )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "No Content"),
             @ApiResponse(responseCode = "404", description = "Not Found"),
             @ApiResponse(responseCode = "500", description = "Internal Server Error")
     })
+    @Operation(
+            summary = "Delete an File Attachment for a Project",
+            description = "Delete a specific File Attachment by ID",
+            security = @SecurityRequirement(name = "Webade-OAUTH2", scopes = {"WFPREV"})
+    )
     public ResponseEntity<Void> deleteFileAttachment(
             @PathVariable String id,
             @PathVariable String projectGuid) {

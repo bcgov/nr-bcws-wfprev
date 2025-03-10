@@ -198,7 +198,6 @@ public class FileAttachmentServiceTest {
     @Test
     void testDeleteFileAttachment_ServiceException() {
         String validId = "123e4567-e89b-12d3-a456-426614174000";
-        FileAttachmentEntity mockEntity = new FileAttachmentEntity();
 
         when(fileAttachmentRepository.findById(UUID.fromString(validId))).thenReturn(Optional.of(mockEntity));
         doThrow(new RuntimeException("Unexpected error during deletion"))
