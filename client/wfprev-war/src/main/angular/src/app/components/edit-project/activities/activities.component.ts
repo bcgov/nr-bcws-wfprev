@@ -500,37 +500,42 @@ export class ActivitiesComponent implements OnChanges, OnInit{
     const data = this.activityForms[index]?.value;
     const activityGuid = data.activityGuid;
     const activityName = data.activityName;
-    if (activityGuid){
-      const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-        data: { indicator: 'delete-activity', name:activityName},
-        width: '500px',
-      });
-    
-      dialogRef.afterClosed().subscribe((confirmed: boolean) => {
-        if (confirmed) {
-            // Delete from the service call if it's a saved fiscal year
-            this.projectService.deleteActivity(this.projectGuid, this.fiscalGuid, activityGuid)
-              .subscribe({
-                next: () => {
-                  this.snackbarService.open(
-                    this.messages.activityDeletedSuccess,
-                    'OK',
-                    { duration: 5000, panelClass: 'snackbar-success' }
-                  );
-                  this.getActivities()
-                },
-                error: () => {
-                  this.snackbarService.open(
-                    this.messages.activityDeletedFailure,
-                    'OK',
-                    { duration: 5000, panelClass: 'snackbar-error' }
-                  );
-                }
-              });
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      data: { indicator: 'delete-activity', name:activityName},
+      width: '500px',
+    });
+  
+    dialogRef.afterClosed().subscribe((confirmed: boolean) => {
+      if (confirmed) {
+          if (!activityGuid) {
+            // If no activityGuid, simply remove it from the local list
+            this.activities.splice(index, 1);
+            this.activityForms.splice(index, 1);
+            this.isNewActivityBeingAdded = false;
+            return;
           }
+          // Delete from the service call if it's a saved fiscal year
+          this.projectService.deleteActivity(this.projectGuid, this.fiscalGuid, activityGuid)
+            .subscribe({
+              next: () => {
+                this.snackbarService.open(
+                  this.messages.activityDeletedSuccess,
+                  'OK',
+                  { duration: 5000, panelClass: 'snackbar-success' }
+                );
+                this.getActivities()
+              },
+              error: () => {
+                this.snackbarService.open(
+                  this.messages.activityDeletedFailure,
+                  'OK',
+                  { duration: 5000, panelClass: 'snackbar-error' }
+                );
+              }
+            });
         }
-      )
-    }
+      }
+    )
       
   }
 
