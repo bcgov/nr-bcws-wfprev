@@ -35,6 +35,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 export class ActivitiesComponent implements OnChanges, OnInit{
   @Input() fiscalGuid: string = '';
   messages = Messages;
+  isNewActivityBeingAdded = false;
   
   projectGuid = '';
   activities: any[] = [];
@@ -338,6 +339,9 @@ export class ActivitiesComponent implements OnChanges, OnInit{
   }
 
   addActivity(): void {
+    if (this.isNewActivityBeingAdded) return;
+
+    this.isNewActivityBeingAdded = true;
     const newActivity = {};
     this.activities.push(newActivity);
     this.activityForms.push(this.createActivityForm(newActivity));
@@ -373,18 +377,18 @@ export class ActivitiesComponent implements OnChanges, OnInit{
     const activityEndDate = formData.activityDateRange?.activityEndDate
       ? moment.utc(formData.activityDateRange.activityEndDate, 'YYYY-MM-DD').toISOString()
       : null;
-    
     let updatedData:any = {
       ...originalData, // Include all original data and overwrite with form data
       ...formData,
       activityStartDate,
       activityEndDate,
-      contractPhaseCode: formData.contractPhaseCode
+      contractPhaseCode: typeof formData.contractPhaseCode === 'string' 
         ? { contractPhaseCode: formData.contractPhaseCode}
-        : null,
-      activityStatusCode: formData.activityStatusCode
-        ? { activityStatusCode: formData.activityStatusCode}
-        : null,
+        : formData.contractPhaseCode,
+      activityStatusCode: typeof formData.activityStatusCode === 'string' 
+        ? { activityStatusCode: formData.activityStatusCode } 
+        : formData.activityStatusCode,
+      
     };
     delete updatedData.activityDateRange;
 
@@ -444,36 +448,51 @@ export class ActivitiesComponent implements OnChanges, OnInit{
         }
       });
     }
+    this.isNewActivityBeingAdded = false;
   }
 
   removeEmptyFields(obj: any, alwaysInclude: string[] = []): any {
     return Object.fromEntries(
-      Object.entries(obj)
-        .filter(([key, value]) =>
-          alwaysInclude.includes(key) || // Always include these keys
-          (value !== null && value !== undefined && value !== '' &&
-          !(Array.isArray(value) && value.length === 0) &&
-          !(typeof value === 'object' && Object.keys(value).length === 0))
-        )
+        Object.entries(obj).filter(([key, value]) => {
+            if (alwaysInclude.includes(key)) return true;
+            if (value === null || value === undefined || value === '') return false;
+            if (typeof value === 'object' && Object.keys(value).length > 0) {
+                const cleanedValue = this.removeEmptyFields(value);
+                return Object.keys(cleanedValue).length > 0;
+            }
+
+            return true;
+        })
     );
   }
+
+
   
   onCancelActivity(index: number): void {
     if (!this.activityForms[index]) return;
   
     const isNewEntry = !this.activities[index]?.activityGuid;
-  
+    const originalData = this.originalActivitiesValues[index];
+
     if (isNewEntry) {
       // Remove the new entry
       this.activities.splice(index, 1);
       this.activityForms.splice(index, 1);
+      this.isNewActivityBeingAdded = false;
     } else {
       // Reset to original values
-      const originalData = this.originalActivitiesValues[index];
-      this.activityForms[index].patchValue(originalData);
+      this.activityForms[index].reset(this.createActivityForm(originalData).getRawValue(), { emitEvent: false });
+
+      this.activityForms[index].get('activityDateRange')?.setValue({
+        activityStartDate: originalData.activityStartDate ? moment.utc(originalData.activityStartDate).format('YYYY-MM-DD') : '',
+        activityEndDate: originalData.activityEndDate ? moment.utc(originalData.activityEndDate).format('YYYY-MM-DD') : '',
+      }, { emitEvent: false });
+  
       this.activityForms[index].markAsPristine();
       this.activityForms[index].markAsUntouched();
       this.isActivityDirty[index] = false;
+  
+      this.cd.detectChanges();
     }
   }
 
@@ -481,37 +500,42 @@ export class ActivitiesComponent implements OnChanges, OnInit{
     const data = this.activityForms[index]?.value;
     const activityGuid = data.activityGuid;
     const activityName = data.activityName;
-    if (activityGuid){
-      const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-        data: { indicator: 'delete-activity', name:activityName},
-        width: '500px',
-      });
-    
-      dialogRef.afterClosed().subscribe((confirmed: boolean) => {
-        if (confirmed) {
-            // Delete from the service call if it's a saved fiscal year
-            this.projectService.deleteActivity(this.projectGuid, this.fiscalGuid, activityGuid)
-              .subscribe({
-                next: () => {
-                  this.snackbarService.open(
-                    this.messages.activityDeletedSuccess,
-                    'OK',
-                    { duration: 5000, panelClass: 'snackbar-success' }
-                  );
-                  this.getActivities()
-                },
-                error: () => {
-                  this.snackbarService.open(
-                    this.messages.activityDeletedFailure,
-                    'OK',
-                    { duration: 5000, panelClass: 'snackbar-error' }
-                  );
-                }
-              });
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      data: { indicator: 'delete-activity', name:activityName},
+      width: '500px',
+    });
+  
+    dialogRef.afterClosed().subscribe((confirmed: boolean) => {
+      if (confirmed) {
+          if (!activityGuid) {
+            // If no activityGuid, simply remove it from the local list
+            this.activities.splice(index, 1);
+            this.activityForms.splice(index, 1);
+            this.isNewActivityBeingAdded = false;
+            return;
           }
+          // Delete from the service call if it's a saved fiscal year
+          this.projectService.deleteActivity(this.projectGuid, this.fiscalGuid, activityGuid)
+            .subscribe({
+              next: () => {
+                this.snackbarService.open(
+                  this.messages.activityDeletedSuccess,
+                  'OK',
+                  { duration: 5000, panelClass: 'snackbar-success' }
+                );
+                this.getActivities()
+              },
+              error: () => {
+                this.snackbarService.open(
+                  this.messages.activityDeletedFailure,
+                  'OK',
+                  { duration: 5000, panelClass: 'snackbar-error' }
+                );
+              }
+            });
         }
-      )
-    }
+      }
+    )
       
   }
 
