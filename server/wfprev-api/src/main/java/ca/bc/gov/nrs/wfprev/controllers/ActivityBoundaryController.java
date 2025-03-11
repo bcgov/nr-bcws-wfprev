@@ -2,7 +2,6 @@ package ca.bc.gov.nrs.wfprev.controllers;
 
 import ca.bc.gov.nrs.common.wfone.rest.resource.HeaderConstants;
 import ca.bc.gov.nrs.common.wfone.rest.resource.MessageListRsrc;
-import ca.bc.gov.nrs.wfone.common.service.api.ServiceException;
 import ca.bc.gov.nrs.wfprev.common.controllers.CommonController;
 import ca.bc.gov.nrs.wfprev.data.models.ActivityBoundaryModel;
 import ca.bc.gov.nrs.wfprev.services.ActivityBoundaryService;
@@ -22,7 +21,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
