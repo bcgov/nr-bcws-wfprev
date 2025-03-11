@@ -45,6 +45,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ActivityBoundaryEntity implements Serializable {
+    private static final long serialVersionUID = 1L;
 
     @Id
     @UuidGenerator
