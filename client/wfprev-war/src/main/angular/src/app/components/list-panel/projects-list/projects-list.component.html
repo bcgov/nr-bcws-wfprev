@@ -4,7 +4,7 @@
     <div class="sort-dropdown">
       <label>Sort:</label>
       <select id="sort" (change)="onSortChange($event)">
-        <option class="default-option" value="">select...</option>
+        <option class="default-option" value="">select</option>
         <option *ngFor="let option of sortOptions" [value]="option.value">{{ option.label }}</option>
       </select>
       <div class="result-count">
