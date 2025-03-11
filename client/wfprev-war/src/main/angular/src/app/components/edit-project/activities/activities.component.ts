@@ -10,11 +10,25 @@ import moment from 'moment';
 import { CodeTableServices } from 'src/app/services/code-table-services';
 import { ProjectService } from 'src/app/services/project-services';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatDateFormats, MatNativeDateModule, MAT_DATE_FORMATS, MAT_DATE_LOCALE, DateAdapter } from '@angular/material/core';
+import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE, MatNativeDateModule} from '@angular/material/core';
 import { MatInputModule } from '@angular/material/input';
 import { Messages } from 'src/app/utils/messages';
 import { ConfirmationDialogComponent } from 'src/app/components/confirmation-dialog/confirmation-dialog.component';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { Observable } from 'rxjs';
+import { CanComponentDeactivate } from 'src/app/services/util/can-deactive.guard';
+import { MomentDateAdapter } from '@angular/material-moment-adapter';
+
+
+export const CUSTOM_DATE_FORMATS = {
+  parse: { dateInput: 'YYYY/MM/DD' },
+  display: {
+    dateInput: 'YYYY/MM/DD',
+    monthYearLabel: 'YYYY MMM',
+    dateA11yLabel: 'LL',
+    monthYearA11yLabel: 'YYYY MMMM',
+  },
+};
 
 @Component({
   selector: 'app-activities',
@@ -31,8 +45,14 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
   ],
   templateUrl: './activities.component.html',
   styleUrl: './activities.component.scss',
+  providers: [
+    { provide: MAT_DATE_FORMATS, useValue: CUSTOM_DATE_FORMATS },
+    { provide: MAT_DATE_LOCALE, useValue: 'en-CA' }, // Change locale to Canada (YYYY/MM/DD format)
+    { provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE] }
+    ],
 })
-export class ActivitiesComponent implements OnChanges, OnInit{
+
+export class ActivitiesComponent implements OnChanges, OnInit, CanComponentDeactivate{
   @Input() fiscalGuid: string = '';
   messages = Messages;
   isNewActivityBeingAdded = false;
@@ -52,7 +72,7 @@ export class ActivitiesComponent implements OnChanges, OnInit{
   activityForms: FormGroup[] = [];
   projectTypeCode = '';
   isActivityDirty: boolean[] = [];
-  
+  expandedPanels: boolean[] = [];
     constructor(
       private route: ActivatedRoute,
       private projectService: ProjectService,
@@ -97,22 +117,30 @@ export class ActivitiesComponent implements OnChanges, OnInit{
   assignCodeTableData(key: string, data: any): void {
     switch (key) {
       case 'contractPhaseCode':
-        this.contractPhaseCode = data._embedded.contractPhaseCode || [];
+        this.contractPhaseCode = this.sortArray(data._embedded.contractPhaseCode || [], 'description');
         break;
       case 'fundingSourceCode':
-        this.fundingSourceCode = data._embedded.fundingSourceCode || [];
+        this.fundingSourceCode = this.sortArray(data._embedded.fundingSourceCode || [], 'description');
         break;
       case 'silvicultureBaseCode':
-        this.silvicultureBaseCode = data._embedded.silvicultureBaseCode || [];
+        this.silvicultureBaseCode = this.sortArray(data._embedded.silvicultureBaseCode || [], 'description');
         break;
       case 'silvicultureTechniqueCode':
-        this.silvicultureTechniqueCode = data._embedded.silvicultureTechniqueCode || [];
+        this.silvicultureMethodCode = this.sortArray(data._embedded.silvicultureMethodCode || [], 'description');
         break;
       case 'silvicultureMethodCode':
-        this.silvicultureMethodCode = data._embedded.silvicultureMethodCode || [];
+        this.silvicultureTechniqueCode = this.sortArray(data._embedded.silvicultureTechniqueCode || [], 'description');
         break;
     }
   }
+
+  sortArray<T>(array: T[], key?: keyof T): T[] {
+    if (!array) return [];
+    return key
+      ? array.sort((a, b) => String(a[key]).localeCompare(String(b[key])))
+      : array.sort((a, b) => String(a).localeCompare(String(b)));
+  }
+
 
   getActivities(): void {
     if (!this.fiscalGuid) return;
@@ -134,7 +162,8 @@ export class ActivitiesComponent implements OnChanges, OnInit{
           this.originalActivitiesValues = JSON.parse(JSON.stringify(this.activities));
     
           this.activityForms = this.activities.map((activity) => this.createActivityForm(activity));
-    
+          this.expandedPanels = this.activities.map((_, i) => this.expandedPanels[i] || false);
+
           this.cd.detectChanges();
         },
         error: (error) => {
@@ -211,7 +240,6 @@ export class ActivitiesComponent implements OnChanges, OnInit{
         this.isActivityDirty[index] = form.dirty
       }
     })
-
     return form;
   }
 
@@ -298,7 +326,7 @@ export class ActivitiesComponent implements OnChanges, OnInit{
   
   getActivityTitle(index: number): string {
     const activity = this.activityForms[index]?.value;
-    if (!activity) return 'N/A';
+    if (!activity) return '';
   
     // If Results Reportable is ON, construct Base - Technique - Method dynamically
     if (activity.isResultsReportableInd) {
@@ -312,18 +340,18 @@ export class ActivitiesComponent implements OnChanges, OnInit{
       if (technique) parts.push(technique);
       if (method) parts.push(method);
   
-      return parts.length ? parts.join(' - ') : 'N/A';
+      return parts.length ? parts.join(' - ') : '';
     } 
   
     // If Results Reportable is OFF, use the Activity Name (if available)
-    return activity.activityName?.trim() || 'N/A';
+    return activity.activityName?.trim() || '';
   }
   
   
   
   getLastUpdated(index: number) {
     const activity = this.activities[index];
-    if (!activity) return 'N/A'; // Handle missing data
+    if (!activity) return ''; // Handle missing data
     
     return moment(activity.updateDate).format('YYYY-MM-DD');
   }
@@ -345,7 +373,8 @@ export class ActivitiesComponent implements OnChanges, OnInit{
     const newActivity = {};
     this.activities.push(newActivity);
     this.activityForms.push(this.createActivityForm(newActivity));
-    
+    this.expandedPanels = this.activities.map((_, i) => i === this.activities.length - 1);
+
     this.cd.detectChanges();
   }
 
@@ -416,6 +445,7 @@ export class ActivitiesComponent implements OnChanges, OnInit{
           );
           this.isActivityDirty[index] = false;
           this.activityForms[index].markAsPristine(); // reset dirty tracking
+          this.expandedPanels[index] = true;
           this.getActivities(); // Refresh activities after saving
         },
         error: () => {
@@ -437,6 +467,7 @@ export class ActivitiesComponent implements OnChanges, OnInit{
           );
           this.isActivityDirty[index] = false;
           this.activityForms[index].markAsPristine(); // Reset dirty tracking
+          this.expandedPanels.push(true);
           this.getActivities();
         },
         error: () => {
@@ -559,7 +590,19 @@ export class ActivitiesComponent implements OnChanges, OnInit{
   getDeleteIcon(index: number): string {
     return this.canDeleteActivity(index) ? '/assets/delete-icon.svg' : '/assets/delete-disabled-icon.svg';
   }
-  
-  
-  
+
+  isFormDirty(): boolean {
+    return this.activityForms.some((form) => form.dirty);
+  }
+
+  canDeactivate(): Observable<boolean> | boolean {
+    if (this.isFormDirty()) {
+      const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+        data: { indicator: 'confirm-unsave' },
+        width: '500px',
+      });
+      return dialogRef.afterClosed();
+    }
+    return true;
+  }
 }

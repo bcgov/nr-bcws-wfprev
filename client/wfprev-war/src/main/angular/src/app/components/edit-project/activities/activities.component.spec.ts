@@ -9,7 +9,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
-import { of } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { ProjectService } from 'src/app/services/project-services';
 import { CodeTableServices } from 'src/app/services/code-table-services';
 import * as moment from 'moment';
@@ -249,8 +249,8 @@ describe('ActivitiesComponent', () => {
     expect(form.get('silvicultureMethodGuid')?.value).toBeNull();
   });
 
-  it('should return "N/A" if activity is missing', () => {
-    expect(component.getActivityTitle(0)).toBe('N/A');
+  it('should return "" if activity is missing', () => {
+    expect(component.getActivityTitle(0)).toBe('');
   });
   
   it('should return activity name if Results Reportable is OFF', () => {
@@ -263,7 +263,7 @@ describe('ActivitiesComponent', () => {
     expect(component.getActivityTitle(0)).toBe('Manual Activity');
   });
   
-  it('should return "N/A" if Results Reportable is ON but no base, technique, or method is set', () => {
+  it('should return "" if Results Reportable is ON but no base, technique, or method is set', () => {
     const form = component.createActivityForm({
       isResultsReportableInd: true,
       silvicultureBaseGuid: null,
@@ -272,7 +272,7 @@ describe('ActivitiesComponent', () => {
     });
     component.activityForms.push(form);
   
-    expect(component.getActivityTitle(0)).toBe('N/A');
+    expect(component.getActivityTitle(0)).toBe('');
   });
   
   it('should construct title from base, technique, and method when Results Reportable is ON', () => {
@@ -396,6 +396,90 @@ describe('ActivitiesComponent', () => {
     expect(button).not.toBeNull(); // Ensure button exists
     expect(button?.disabled).toBeFalse();
   });
+
+  it('should sort an array of objects by a given key', () => {
+    const testArray = [
+      { name: 'Charlie' },
+      { name: 'Alice' },
+      { name: 'Bob' }
+    ];
+  
+    const sortedArray = component.sortArray(testArray, 'name');
+    expect(sortedArray).toEqual([
+      { name: 'Alice' },
+      { name: 'Bob' },
+      { name: 'Charlie' }
+    ]);
+  });
+  
+  it('should sort an array of strings when no key is provided', () => {
+    const testArray = ['Charlie', 'Alice', 'Bob'];
+    
+    const sortedArray = component.sortArray(testArray);
+    expect(sortedArray).toEqual(['Alice', 'Bob', 'Charlie']);
+  });
+  
+  it('should return an empty array when input is null or undefined', () => {
+    expect(component.sortArray(null as any)).toEqual([]);
+    expect(component.sortArray(undefined as any)).toEqual([]);
+  });
+  
+  it('should return the original array if there is no key and all elements are equal', () => {
+    const testArray = ['same', 'same', 'same'];
+    
+    const sortedArray = component.sortArray(testArray);
+    expect(sortedArray).toEqual(['same', 'same', 'same']);
+  });
+
+  it('should detect if any form is dirty', () => {
+    const form1 = component.createActivityForm({});
+    const form2 = component.createActivityForm({});
+  
+    form1.markAsPristine();
+    form2.markAsDirty();
+    
+    component.activityForms.push(form1, form2);
+  
+    expect(component.isFormDirty()).toBeTrue();
+  });
+  
+  it('should return false if no forms are dirty', () => {
+    const form1 = component.createActivityForm({});
+    const form2 = component.createActivityForm({});
+    
+    form1.markAsPristine();
+    form2.markAsPristine();
+    
+    component.activityForms.push(form1, form2);
+    
+    expect(component.isFormDirty()).toBeFalse();
+  });
+
+  it('should return an observable from canDeactivate when a form is dirty', () => {
+    const form = component.createActivityForm({});
+    component.activityForms.push(form);
+    
+    form.markAsDirty();
+    
+    mockDialog.open.and.returnValue({
+      afterClosed: () => of(true)
+    } as any);
+  
+    const result = component.canDeactivate();
+  
+    expect(mockDialog.open).toHaveBeenCalledWith(jasmine.any(Function), jasmine.any(Object));
+    expect(result).toBeInstanceOf(Observable);
+  });
+
+  it('should return true from canDeactivate when no forms are dirty', () => {
+    const form = component.createActivityForm({});
+    component.activityForms.push(form);
+    
+    form.markAsPristine();
+    
+    expect(component.canDeactivate()).toBeTrue();
+  });
+  
   
 });
 

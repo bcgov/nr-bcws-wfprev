@@ -168,6 +168,7 @@
           color: #fff;
           background-color: #c0c0c0;
           cursor: not-allowed;
+          border: none;
         }
       }
     
@@ -297,7 +298,7 @@
     background-color: var(--wf-primary-color);
     border-radius: 0;
     width: auto;
-    border-radius: 8px;
+    border-radius: 4px;
     height: 35px;
     span{
       font-family: var(--wf-font-family-main) !important;
