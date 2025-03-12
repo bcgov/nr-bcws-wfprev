@@ -79,6 +79,10 @@ resource "aws_ecs_task_definition" "wfprev_server" {
         value = var.WFPREV_BASE_URL
       },
       {
+        name  = "WFDM_BASE_URL",
+        value = var.WFDM_BASE_URL
+      },
+      {
         name  = "WFPREV_CHECK_TOKEN_URL",
         value = var.WFPREV_CHECK_TOKEN_URL
       },

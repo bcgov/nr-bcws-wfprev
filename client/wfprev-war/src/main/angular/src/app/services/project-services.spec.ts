@@ -4,6 +4,7 @@ import { AppConfigService } from 'src/app/services/app-config.service';
 import { TokenService } from 'src/app/services/token.service';
 import { Project } from 'src/app/components/models';
 import { ProjectService } from 'src/app/services/project-services';
+import { HttpEventType } from '@angular/common/http';
 
 describe('ProjectService', () => {
   let service: ProjectService;
@@ -13,7 +14,8 @@ describe('ProjectService', () => {
 
   const mockConfig = {
     rest: {
-      wfprev: 'http://mock-api.com'
+      wfprev: 'http://mock-api.com',
+      wfdm: 'http://mock-wfdm-api.com'
     },
     application: {
       lazyAuthenticate: true,
@@ -439,5 +441,39 @@ it('should handle errors when creating a project fiscal', () => {
     const req = httpMock.expectOne(`http://mock-api.com/wfprev-api/projects/${projectGuid}/projectFiscals/${projectPlanFiscalGuid}/activities/${activityGuid}`);
     req.flush('Error', { status: 500, statusText: 'Server Error' });
   });
+
+  it('should upload a document with progress tracking', (done) => {
+    const mockFile = new File(['dummy content'], 'test-file.txt', { type: 'text/plain' });
+  
+    const mockResponse = { success: true, filePath: '/mock/path/test-file.txt' };
+  
+    const uploadProgressSpy = jasmine.createSpy('onProgress');
+  
+    service.uploadDocument({
+      file: mockFile,
+      onProgress: uploadProgressSpy
+    }).subscribe({
+      next: (event) => {
+        if (event) {
+          expect(event).toEqual(mockResponse);
+          expect(uploadProgressSpy).toHaveBeenCalled();
+          done();
+        }
+      },
+      error: () => fail('Should not fail during upload')
+    });
+  
+    const req = httpMock.expectOne(`${mockConfig.rest.wfdm}/documents`);
+    expect(req.request.method).toBe('POST');
+    expect(req.request.headers.get('Authorization')).toBe('Bearer mock-token');
+    expect(req.request.body).toBeInstanceOf(FormData);
+  
+    // Simulating upload progress event
+    req.event({ type: HttpEventType.UploadProgress, loaded: 500, total: 1000 });
+  
+    // Simulating successful upload response
+    req.flush(mockResponse);
+  });
+  
   
 });

@@ -6,12 +6,13 @@
   "webade": {
       "oauth2Url": "https://wfappsi.nrs.gov.bc.ca/ext/oauth2/v1/oauth/authorize",
       "clientId": "WFNEWS-UI",
-      "authScopes": "WFNEWS.*",
+      "authScopes": "WFNEWS.* WFDM.*",
       "enableCheckToken": true,
       "checkTokenUrl": "./assets/data/checktoken-user.json"
     },
 
   "rest": {
-    "wfprev":"http://localhost:8080"
+    "wfprev":"http://localhost:8080",
+    "wfdm":"https://i1bcwsapi.nrs.gov.bc.ca/wfdm-document-management-api"
   }
 }

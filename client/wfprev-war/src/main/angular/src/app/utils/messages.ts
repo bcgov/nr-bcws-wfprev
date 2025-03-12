@@ -20,5 +20,6 @@ export const Messages = {
   activityCreatedFailure: 'Activity Created Failed',
   activityUpdatedFailure: 'Activity Update Failed',
   activityDeletedFailure: 'Activity Deleted Failed',
-
+  fileUploadSuccess: 'File Uploaded Successfully',
+  fileUploadFailure: 'File Uploaded Failed',
 };

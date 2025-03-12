@@ -126,10 +126,10 @@ export class ActivitiesComponent implements OnChanges, OnInit, CanComponentDeact
         this.silvicultureBaseCode = this.sortArray(data._embedded.silvicultureBaseCode || [], 'description');
         break;
       case 'silvicultureTechniqueCode':
-        this.silvicultureMethodCode = this.sortArray(data._embedded.silvicultureMethodCode || [], 'description');
+        this.silvicultureTechniqueCode = this.sortArray(data._embedded.silvicultureTechniqueCode || [], 'description');
         break;
       case 'silvicultureMethodCode':
-        this.silvicultureTechniqueCode = this.sortArray(data._embedded.silvicultureTechniqueCode || [], 'description');
+        this.silvicultureMethodCode = this.sortArray(data._embedded.silvicultureMethodCode || [], 'description');
         break;
     }
   }
@@ -371,12 +371,20 @@ export class ActivitiesComponent implements OnChanges, OnInit, CanComponentDeact
 
     this.isNewActivityBeingAdded = true;
     const newActivity = {};
-    this.activities.push(newActivity);
-    this.activityForms.push(this.createActivityForm(newActivity));
-    this.expandedPanels = this.activities.map((_, i) => i === this.activities.length - 1);
-
+    
+    this.activities.unshift(newActivity);
+    this.activityForms.unshift(this.createActivityForm(newActivity));
+    this.expandedPanels = [true, ...this.expandedPanels]; // Ensure the new activity is expanded
+  
     this.cd.detectChanges();
-  }
+
+    setTimeout(() => {
+        const newActivityElement = document.getElementById('activity-0');
+        if (newActivityElement) {
+            newActivityElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    }, 100);
+}
 
   getRiskIcon(riskCode: string): string {
     const riskMap: { [key: string]: string } = {

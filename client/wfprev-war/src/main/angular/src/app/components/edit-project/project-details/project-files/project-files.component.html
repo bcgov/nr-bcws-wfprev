@@ -1,0 +1,70 @@
+<div class="project-files-container">
+    <div class="title-container">
+        <span class="title-text">
+            Files
+        </span>
+        <button class="primary" (click)="openFileUploadModal()">
+            <img class="icon" src="/assets/upload-file.svg">
+            <span>Upload File</span>
+        </button> 
+    </div>
+                    
+    <table mat-table [dataSource]="projectFiles" class="files-table">
+
+        <ng-container matColumnDef="attachmentType">
+            <th mat-header-cell *matHeaderCellDef> Attachment Type </th>
+            <td mat-cell *matCellDef="let file"> {{ file.attachmentType }} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="fileName">
+            <th mat-header-cell *matHeaderCellDef> File Name </th>
+            <td mat-cell *matCellDef="let file"> {{ file.fileName }} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="fileType">
+            <th mat-header-cell *matHeaderCellDef> File Type </th>
+            <td mat-cell *matCellDef="let file"> {{ file.fileType }} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="uploadedBy">
+            <th mat-header-cell *matHeaderCellDef> Uploaded By </th>
+            <td mat-cell *matCellDef="let file"> {{ file.uploadedBy }} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="uploadedDate">
+            <th mat-header-cell *matHeaderCellDef> Uploaded Date </th>
+            <td mat-cell *matCellDef="let file"> {{ file.uploadedDate | date:'yyyy-MM-dd' }} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="polygonHectares">
+            <th mat-header-cell *matHeaderCellDef> Polygon Hectares </th>
+            <td mat-cell *matCellDef="let file"> {{ file.polygonHectares | number }} Ha </td>
+        </ng-container>
+
+        <ng-container matColumnDef="description">
+            <th mat-header-cell *matHeaderCellDef> Description </th>
+            <td mat-cell *matCellDef="let file"> {{ file.description }} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="download">
+            <th mat-header-cell *matHeaderCellDef> Download </th>
+            <td mat-cell *matCellDef="let file">
+                <button class="table-button" mat-icon-button (click)="downloadFile(file)">
+                    <img src="/assets/download.svg">
+                </button>
+            </td>
+        </ng-container>
+
+        <ng-container matColumnDef="delete">
+            <th mat-header-cell *matHeaderCellDef> Delete </th>
+            <td mat-cell *matCellDef="let file">
+                <button class="table-button" mat-icon-button (click)="deleteFile(file)">
+                    <img src="/assets/delete-icon.svg">
+                </button>
+            </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+</div>
