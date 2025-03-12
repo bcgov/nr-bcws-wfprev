@@ -371,4 +371,68 @@ describe('ProjectFiscalsComponent', () => {
     control?.setValue(500);
     expect(control?.valid).toBeTrue();
   });
+
+  it('should sort fiscalYears, activityCategoryCode, planFiscalStatusCode, and ancillaryFundingSourceCode in loadDropdownOptions', () => {
+    // Mock unsorted data
+    component.fiscalYears = ['2025/26', '2023/24', '2024/25'];
+    component.activityCategoryCode = [
+      { description: 'Category C' },
+      { description: 'Category A' },
+      { description: 'Category B' }
+    ];
+    component.planFiscalStatusCode = [
+      { description: 'Status 2' },
+      { description: 'Status 1' }
+    ];
+    component.ancillaryFundingSourceCode = [
+      { fundingSourceName: 'Funding Z' },
+      { fundingSourceName: 'Funding X' },
+      { fundingSourceName: 'Funding Y' }
+    ];
+  
+    component.loadDropdownOptions();
+  
+    expect(component.fiscalYears).toEqual(['2023/24', '2024/25', '2025/26']);
+    expect(component.activityCategoryCode).toEqual([
+      { description: 'Category A' },
+      { description: 'Category B' },
+      { description: 'Category C' }
+    ]);
+    expect(component.planFiscalStatusCode).toEqual([
+      { description: 'Status 1' },
+      { description: 'Status 2' }
+    ]);
+    expect(component.ancillaryFundingSourceCode).toEqual([
+      { fundingSourceName: 'Funding X' },
+      { fundingSourceName: 'Funding Y' },
+      { fundingSourceName: 'Funding Z' }
+    ]);
+  });
+
+  it('should not throw error if loadDropdownOptions is called with empty arrays', () => {
+    component.fiscalYears = [];
+    component.activityCategoryCode = [];
+    component.planFiscalStatusCode = [];
+    component.ancillaryFundingSourceCode = [];
+  
+    expect(() => component.loadDropdownOptions()).not.toThrow();
+    expect(component.fiscalYears).toEqual([]);
+    expect(component.activityCategoryCode).toEqual([]);
+    expect(component.planFiscalStatusCode).toEqual([]);
+    expect(component.ancillaryFundingSourceCode).toEqual([]);
+  });
+
+  it('should handle null or undefined values in loadDropdownOptions without errors', () => {
+    component.fiscalYears = null as any;
+    component.activityCategoryCode = null as any;
+    component.planFiscalStatusCode = null as any;
+    component.ancillaryFundingSourceCode = null as any;
+  
+    expect(() => component.loadDropdownOptions()).not.toThrow();
+    expect(component.fiscalYears).toEqual([]);
+    expect(component.activityCategoryCode).toEqual([]);
+    expect(component.planFiscalStatusCode).toEqual([]);
+    expect(component.ancillaryFundingSourceCode).toEqual([]);
+  });
+
 });
