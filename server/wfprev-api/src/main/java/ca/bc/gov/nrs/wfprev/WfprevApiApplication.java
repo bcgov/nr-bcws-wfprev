@@ -3,6 +3,7 @@ package ca.bc.gov.nrs.wfprev;
 import ca.bc.gov.nrs.wfprev.common.serializers.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.vividsolutions.jts.geom.Geometry;
 import jakarta.servlet.DispatcherType;
 import org.postgresql.geometric.PGpoint;
 import org.postgresql.geometric.PGpolygon;
