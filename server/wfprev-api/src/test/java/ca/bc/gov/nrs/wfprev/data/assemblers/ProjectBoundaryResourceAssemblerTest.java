@@ -3,6 +3,9 @@ package ca.bc.gov.nrs.wfprev.data.assemblers;
 import ca.bc.gov.nrs.wfprev.data.entities.ProjectBoundaryEntity;
 import ca.bc.gov.nrs.wfprev.data.models.ProjectBoundaryModel;
 import org.junit.jupiter.api.Test;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Point;
 import org.postgresql.geometric.PGpolygon;
 
 import java.math.BigDecimal;
@@ -21,6 +24,10 @@ class ProjectBoundaryResourceAssemblerTest {
 
     @Test
     void testToModel_MapsEntityToModel() throws SQLException {
+
+        GeometryFactory geometryFactory = new GeometryFactory();
+        Point locationPoint = geometryFactory.createPoint(new Coordinate(-123.3656, 48.4284));
+
         // Arrange
         ProjectBoundaryEntity entity = new ProjectBoundaryEntity();
         entity.setProjectBoundaryGuid(UUID.randomUUID());
@@ -33,7 +40,7 @@ class ProjectBoundaryResourceAssemblerTest {
         entity.setCollectorName("test_user");
         entity.setBoundarySizeHa(BigDecimal.valueOf(100.0000));
         entity.setBoundaryComment("Initial test project boundary creation");
-        entity.setLocationGeometry(new PGpolygon("((-123.3656,48.4284),(-123.3657,48.4285),(-123.3658,48.4284),(-123.3656,48.4284))"));
+        entity.setLocationGeometry(locationPoint);
         entity.setBoundaryGeometry(new PGpolygon("((-123.3656,48.4284),(-123.3657,48.4285),(-123.3658,48.4284),(-123.3656,48.4284))"));
 
         // Act
@@ -57,6 +64,10 @@ class ProjectBoundaryResourceAssemblerTest {
 
     @Test
     void testToEntity_MapsModelToEntity() throws SQLException {
+
+        GeometryFactory geometryFactory = new GeometryFactory();
+        Point locationPoint = geometryFactory.createPoint(new Coordinate(-123.3656, 48.4284));
+
         // Arrange
         ProjectBoundaryModel model = new ProjectBoundaryModel();
         model.setProjectBoundaryGuid(UUID.randomUUID().toString());
@@ -69,7 +80,7 @@ class ProjectBoundaryResourceAssemblerTest {
         model.setCollectorName("test_user");
         model.setBoundarySizeHa(BigDecimal.valueOf(100.0000));
         model.setBoundaryComment("Initial test project boundary creation");
-        model.setLocationGeometry(new PGpolygon("((-123.3656,48.4284),(-123.3657,48.4285),(-123.3658,48.4284),(-123.3656,48.4284))"));
+        model.setLocationGeometry(locationPoint);
         model.setBoundaryGeometry(new PGpolygon("((-123.3656,48.4284),(-123.3657,48.4285),(-123.3658,48.4284),(-123.3656,48.4284))"));
 
         // Act
