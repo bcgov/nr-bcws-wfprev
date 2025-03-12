@@ -126,10 +126,10 @@ export class ActivitiesComponent implements OnChanges, OnInit, CanComponentDeact
         this.silvicultureBaseCode = this.sortArray(data._embedded.silvicultureBaseCode || [], 'description');
         break;
       case 'silvicultureTechniqueCode':
-        this.silvicultureMethodCode = this.sortArray(data._embedded.silvicultureMethodCode || [], 'description');
+        this.silvicultureTechniqueCode = this.sortArray(data._embedded.silvicultureTechniqueCode || [], 'description');
         break;
       case 'silvicultureMethodCode':
-        this.silvicultureTechniqueCode = this.sortArray(data._embedded.silvicultureTechniqueCode || [], 'description');
+        this.silvicultureMethodCode = this.sortArray(data._embedded.silvicultureMethodCode || [], 'description');
         break;
     }
   }
