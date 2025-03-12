@@ -46,7 +46,7 @@ public class PGPolygonDeserializer extends JsonDeserializer<PGpolygon> {
         return points.toArray(new PGpoint[0]);
     }
 
-    private PGpolygon convertSinglePointToBufferedPolygon(JsonNode pointNode) {
+    public PGpolygon convertSinglePointToBufferedPolygon(JsonNode pointNode) {
         if (!pointNode.isArray() || pointNode.size() != 2) {
             throw new IllegalArgumentException("Invalid point format in polygon ring");
         }
