@@ -371,18 +371,20 @@ export class ActivitiesComponent implements OnChanges, OnInit, CanComponentDeact
 
     this.isNewActivityBeingAdded = true;
     const newActivity = {};
+    
     this.activities.unshift(newActivity);
     this.activityForms.unshift(this.createActivityForm(newActivity));
-    this.expandedPanels.unshift(true);
+    this.expandedPanels = [true, ...this.expandedPanels]; // Ensure the new activity is expanded
   
     this.cd.detectChanges();
 
     setTimeout(() => {
-      const lastActivityIndex = this.activities.length - 1;
-      const lastActivityElement = document.getElementById(`activity-${lastActivityIndex}`);
-      lastActivityElement?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        const newActivityElement = document.getElementById('activity-0');
+        if (newActivityElement) {
+            newActivityElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
     }, 100);
-  }
+}
 
   getRiskIcon(riskCode: string): string {
     const riskMap: { [key: string]: string } = {
