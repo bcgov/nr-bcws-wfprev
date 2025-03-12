@@ -1,6 +1,7 @@
 package ca.bc.gov.nrs.wfprev.handlers;
 
 import com.fasterxml.jackson.core.JsonParseException;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import org.hibernate.validator.internal.engine.path.PathImpl;
@@ -268,5 +269,23 @@ class GlobalExceptionHandlerTest {
         assertEquals(2, errors.size());
         assertEquals("must not be empty", errors.get("activityName"));
         assertEquals("must be a valid date", errors.get("activityStartDate"));
+    }
+
+    @Test
+    void testHandleEntityNotFoundException() {
+        // Given
+        EntityNotFoundException ex = new EntityNotFoundException("Project Boundary not found");
+
+        // When
+        ResponseEntity<Object> response = handler.handleEntityNotFoundException(ex);
+
+        // Then
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertTrue(response.getBody() instanceof Map);
+
+        @SuppressWarnings("unchecked")
+        Map<String, String> errors = (Map<String, String>) response.getBody();
+        assertEquals(1, errors.size());
+        assertEquals("Project Boundary not found", errors.get("error"));
     }
 }
