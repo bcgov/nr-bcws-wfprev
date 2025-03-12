@@ -102,7 +102,6 @@ jobs:
           -DWFPREV_DATASOURCE_USERNAME=${{ secrets.WFPREV_USERNAME }} \
           -DWFPREV_DATASOURCE_PASSWORD=${{ secrets.DB_PASS }} \
           -DWFPREV_BASE_URL=${{ vars.WFPREV_BASE_URL }}
-          -DWFDM_BASE_URL=${{ vars.WFDM_BASE_URL }}
       - name: SonarCloud Scan Action
         uses: SonarSource/sonarcloud-github-action@master
 
