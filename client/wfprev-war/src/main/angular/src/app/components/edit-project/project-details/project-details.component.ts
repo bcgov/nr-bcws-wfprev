@@ -13,11 +13,12 @@ import {
   formatLatLong,
 } from 'src/app/utils/tools';
 import { FiscalYearProjectsComponent } from 'src/app/components/edit-project/project-details/fiscal-year-projects/fiscal-year-projects.component';
+import { ProjectFilesComponent } from 'src/app/components/edit-project/project-details/project-files/project-files.component';
 
 @Component({
   selector: 'app-project-details',
   standalone: true,
-  imports: [ReactiveFormsModule,MatExpansionModule,CommonModule,FormsModule,FiscalYearProjectsComponent],
+  imports: [ReactiveFormsModule,MatExpansionModule,CommonModule,FormsModule,FiscalYearProjectsComponent,ProjectFilesComponent],
   templateUrl: './project-details.component.html',
   styleUrl: './project-details.component.scss'
 })
