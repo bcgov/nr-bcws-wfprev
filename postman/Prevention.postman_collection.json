@@ -243,10 +243,10 @@
 							"// Check if the access token exists in the response",
 							"if (response.fileAttachmentGuid) {",
 							"    // Save the token to an environment variable",
-							"    pm.environment.set(\"fileAttachmentGuid\", response.fileAttachmentGuid);",
-							"    console.log(\"fileAttachmentGuid saved successfully!\");",
+							"    pm.environment.set(\"projectFileAttachmentGuid\", response.fileAttachmentGuid);",
+							"    console.log(\"projectFileAttachmentGuid saved successfully!\");",
 							"} else {",
-							"    console.error(\"Failed to set fileAttachmentGuid:\", response);",
+							"    console.error(\"Failed to set projectFileAttachmentGuid:\", response);",
 							"}",
 							"",
 							"pm.test(\"Status code is 201\", function() {",
@@ -449,6 +449,84 @@
 						"projectFiscals",
 						"{{projectPlanFiscalGuid}}",
 						"activities"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Activity Attachment",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Parse the response JSON",
+							"const response = pm.response.json();",
+							"",
+							"// Check if the access token exists in the response",
+							"if (response.fileAttachmentGuid) {",
+							"    // Save the token to an environment variable",
+							"    pm.environment.set(\"activityFileAttachmentGuid\", response.fileAttachmentGuid);",
+							"    console.log(\"activityFileAttachmentGuid saved successfully!\");",
+							"} else {",
+							"    console.error(\"Failed to set activityFileAttachmentGuid:\", response);",
+							"}",
+							"",
+							"pm.test(\"Status code is 201\", function() {",
+							"    pm.response.to.have.status(201);",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"sourceObjectNameCode\": {\n    \"sourceObjectNameCode\": \"TREATMENT_ACTIVITY\"\n  },\n  \"sourceObjectUniqueId\": \"{{activityGuid}}\",\n  \"documentPath\": \"/files/uploads/2025/document1.pdf\",\n  \"fileIdentifier\": \"document-2025-001\",\n  \"wildfireYear\": 2025,\n  \"attachmentContentTypeCode\": {\n    \"attachmentContentTypeCode\": \"KML\"\n  },\n  \"attachmentDescription\": \"Wildfire attachment report description\",\n  \"attachmentReadOnlyInd\": false\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{LOCAL_API_URL}}/projects/{{projectGuid}}/projectFiscals/{{projectPlanFiscalGuid}}/activities/{{activityGuid}}/attachments",
+					"host": [
+						"{{LOCAL_API_URL}}"
+					],
+					"path": [
+						"projects",
+						"{{projectGuid}}",
+						"projectFiscals",
+						"{{projectPlanFiscalGuid}}",
+						"activities",
+						"{{activityGuid}}",
+						"attachments"
 					]
 				}
 			},
@@ -687,7 +765,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n  \"fileAttachmentGuid\": \"{{fileAttachmentGuid}}\",\n  \"sourceObjectNameCode\": {\n    \"sourceObjectNameCode\": \"PROJECT\"\n  },\n  \"sourceObjectUniqueId\": \"{{projectGuid}}\",\n  \"documentPath\": \"/files/uploads/2026/document1.pdf\",\n  \"fileIdentifier\": \"document-2026-001\",\n  \"wildfireYear\": 2026,\n  \"attachmentContentTypeCode\": {\n    \"attachmentContentTypeCode\": \"DOCUMENT\"\n  },\n  \"attachmentDescription\": \"Wildfire assessment report description has been updated\",\n  \"attachmentReadOnlyInd\": true\n}",
+					"raw": "{\n  \"fileAttachmentGuid\": \"{{projectFileAttachmentGuid}}\",\n  \"sourceObjectNameCode\": {\n    \"sourceObjectNameCode\": \"PROJECT\"\n  },\n  \"sourceObjectUniqueId\": \"{{projectGuid}}\",\n  \"documentPath\": \"/files/uploads/2026/document1.pdf\",\n  \"fileIdentifier\": \"document-2026-001\",\n  \"wildfireYear\": 2026,\n  \"attachmentContentTypeCode\": {\n    \"attachmentContentTypeCode\": \"DOCUMENT\"\n  },\n  \"attachmentDescription\": \"Wildfire assessment report description has been updated\",\n  \"attachmentReadOnlyInd\": true\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -695,7 +773,7 @@
 					}
 				},
 				"url": {
-					"raw": "{{LOCAL_API_URL}}/projects/{{projectGuid}}}/attachments/{{fileAttachmentGuid}}",
+					"raw": "{{LOCAL_API_URL}}/projects/{{projectGuid}}}/attachments/{{projectFileAttachmentGuid}}",
 					"host": [
 						"{{LOCAL_API_URL}}"
 					],
@@ -703,7 +781,7 @@
 						"projects",
 						"{{projectGuid}}",
 						"attachments",
-						"{{fileAttachmentGuid}}"
+						"{{projectFileAttachmentGuid}}"
 					]
 				}
 			},
@@ -833,6 +911,73 @@
 						"{{projectPlanFiscalGuid}}",
 						"activities",
 						"{{activityGuid}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Activity Attachment",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function() {",
+							"    pm.response.to.have.status(200);",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"fileAttachmentGuid\": \"{{activityFileAttachmentGuid}}\",\n  \"sourceObjectNameCode\": {\n    \"sourceObjectNameCode\": \"TREATMENT_ACTIVITY\"\n  },\n  \"sourceObjectUniqueId\": \"{{activityGuid}}\",\n  \"documentPath\": \"/files/uploads/2026/document1.pdf\",\n  \"fileIdentifier\": \"document-2026-001\",\n  \"wildfireYear\": 2026,\n  \"attachmentContentTypeCode\": {\n    \"attachmentContentTypeCode\": \"DOCUMENT\"\n  },\n  \"attachmentDescription\": \"Wildfire assessment report description has been updated\",\n  \"attachmentReadOnlyInd\": true\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{LOCAL_API_URL}}/projects/{{projectGuid}}}/projectFiscals/{{projectPlanFiscalGuid}}/activities/{{activityGuid}}/attachments/{{activityFileAttachmentGuid}}",
+					"host": [
+						"{{LOCAL_API_URL}}"
+					],
+					"path": [
+						"projects",
+						"{{projectGuid}}",
+						"projectFiscals",
+						"{{projectPlanFiscalGuid}}",
+						"activities",
+						"{{activityGuid}}",
+						"attachments",
+						"{{activityFileAttachmentGuid}}"
 					]
 				}
 			},
@@ -2069,7 +2214,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{LOCAL_API_URL}}/projects/{{projectGuid}}/attachments/{{fileAttachmentGuid}}",
+					"raw": "{{LOCAL_API_URL}}/projects/{{projectGuid}}/attachments/{{projectFileAttachmentGuid}}",
 					"host": [
 						"{{LOCAL_API_URL}}"
 					],
@@ -2077,7 +2222,7 @@
 						"projects",
 						"{{projectGuid}}",
 						"attachments",
-						"{{fileAttachmentGuid}}"
+						"{{projectFileAttachmentGuid}}"
 					]
 				}
 			},
@@ -2305,6 +2450,101 @@
 			"response": []
 		},
 		{
+			"name": "Get Activity Attachment",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function() {",
+							"    pm.response.to.have.status(200);",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{LOCAL_API_URL}}/projects/{{projectGuid}}/projectFiscals/{{projectPlanFiscalGuid}}/activities/{{activityGuid}}/attachments/{{activityFileAttachmentGuid}}",
+					"host": [
+						"{{LOCAL_API_URL}}"
+					],
+					"path": [
+						"projects",
+						"{{projectGuid}}",
+						"projectFiscals",
+						"{{projectPlanFiscalGuid}}",
+						"activities",
+						"{{activityGuid}}",
+						"attachments",
+						"{{activityFileAttachmentGuid}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Activity Attachments",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function() {",
+							"    pm.response.to.have.status(200);",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{LOCAL_API_URL}}/projects/{{projectGuid}}/projectFiscals/{{projectPlanFiscalGuid}}/activities/{{activityGuid}}/attachments",
+					"host": [
+						"{{LOCAL_API_URL}}"
+					],
+					"path": [
+						"projects",
+						"{{projectGuid}}",
+						"projectFiscals",
+						"{{projectPlanFiscalGuid}}",
+						"activities",
+						"{{activityGuid}}",
+						"attachments"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "Get Activity Boundaries",
 			"event": [
 				{
@@ -2515,7 +2755,7 @@
 				"method": "DELETE",
 				"header": [],
 				"url": {
-					"raw": "{{LOCAL_API_URL}}/projects/{{projectGuid}}/attachments/{{fileAttachmentGuid}}",
+					"raw": "{{LOCAL_API_URL}}/projects/{{projectGuid}}/attachments/{{projectFileAttachmentGuid}}",
 					"host": [
 						"{{LOCAL_API_URL}}"
 					],
@@ -2523,7 +2763,7 @@
 						"projects",
 						"{{projectGuid}}",
 						"attachments",
-						"{{fileAttachmentGuid}}"
+						"{{projectFileAttachmentGuid}}"
 					]
 				}
 			},
@@ -2614,6 +2854,54 @@
 						"{{projectPlanFiscalGuid}}",
 						"activities",
 						"{{activityGuid}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Project Attachment",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 204\", function() {",
+							"    pm.response.to.have.status(204);",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{LOCAL_API_URL}}/projects/{{projectGuid}}/projectFiscals/{{projectPlanFiscalGuid}}/activities/{{activityGuid}}/attachments/{{activityFileAttachmentGuid}}",
+					"host": [
+						"{{LOCAL_API_URL}}"
+					],
+					"path": [
+						"projects",
+						"{{projectGuid}}",
+						"projectFiscals",
+						"{{projectPlanFiscalGuid}}",
+						"activities",
+						"{{activityGuid}}",
+						"attachments",
+						"{{projectFileAttachmentGuid}}"
 					]
 				}
 			},
