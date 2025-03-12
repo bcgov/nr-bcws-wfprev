@@ -142,7 +142,7 @@ export class ActivitiesComponent implements OnChanges, OnInit, CanComponentDeact
   }
 
 
-  getActivities(): void {
+  getActivities(callback?: () => void): void {
     if (!this.fiscalGuid) return;
   
     this.projectGuid = this.route.snapshot?.queryParamMap?.get('projectGuid') || '';
@@ -154,7 +154,7 @@ export class ActivitiesComponent implements OnChanges, OnInit, CanComponentDeact
       this.projectService.getFiscalActivities(this.projectGuid, this.fiscalGuid).subscribe({
         next: (data) => {
           if (data && data._embedded?.activities) {
-            this.activities = data._embedded.activities;
+            this.activities = data._embedded.activities.reverse(); //Keep newest activity at the top
           } else {
             this.activities = [];
           }
@@ -165,6 +165,8 @@ export class ActivitiesComponent implements OnChanges, OnInit, CanComponentDeact
           this.expandedPanels = this.activities.map((_, i) => this.expandedPanels[i] || false);
 
           this.cd.detectChanges();
+          // do callback (e.g., scrolling, expanding panel) if provided
+          if (callback) callback();
         },
         error: (error) => {
           console.error('Error fetching activities:', error);
@@ -453,8 +455,8 @@ export class ActivitiesComponent implements OnChanges, OnInit, CanComponentDeact
           );
           this.isActivityDirty[index] = false;
           this.activityForms[index].markAsPristine(); // reset dirty tracking
-          this.expandedPanels[index] = true;
-          this.getActivities(); // Refresh activities after saving
+          this.expandedPanels = this.activities.map((_, i) => i === index);
+          this.getActivities(() => this.scrollToActivity(0));
         },
         error: () => {
           this.snackbarService.open(
@@ -476,7 +478,10 @@ export class ActivitiesComponent implements OnChanges, OnInit, CanComponentDeact
           this.isActivityDirty[index] = false;
           this.activityForms[index].markAsPristine(); // Reset dirty tracking
           this.expandedPanels.push(true);
-          this.getActivities();
+          this.getActivities(() => {  
+            this.expandedPanels = this.activities.map((_, i) => i === 0);
+            this.scrollToActivity(0);
+        });
         },
         error: () => {
           this.snackbarService.open(
@@ -489,6 +494,15 @@ export class ActivitiesComponent implements OnChanges, OnInit, CanComponentDeact
     }
     this.isNewActivityBeingAdded = false;
   }
+
+  scrollToActivity(index: number): void {
+    setTimeout(() => {
+        const savedActivityElement = document.getElementById(`activity-${index}`);
+        if (savedActivityElement) {
+            savedActivityElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    }, 100);
+}
 
   removeEmptyFields(obj: any, alwaysInclude: string[] = []): any {
     return Object.fromEntries(

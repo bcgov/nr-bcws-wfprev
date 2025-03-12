@@ -479,6 +479,23 @@ describe('ActivitiesComponent', () => {
     
     expect(component.canDeactivate()).toBeTrue();
   });
+
+  it('should scroll to the correct activity element', (done) => {
+    const index = 2;
+    const elementId = `activity-${index}`;
+    const mockElement = document.createElement('div');
+    spyOn(document, 'getElementById').and.returnValue(mockElement);
+    spyOn(mockElement, 'scrollIntoView');
+  
+    component.scrollToActivity(index);
+  
+    setTimeout(() => {
+      expect(document.getElementById).toHaveBeenCalledWith(elementId);
+      expect(mockElement.scrollIntoView).toHaveBeenCalledWith({ behavior: 'smooth', block: 'start' });
+      done();
+    }, 150);
+  });
+  
   
   
 });
