@@ -243,15 +243,16 @@ export class ProjectService {
     
         // Prepare metadata
         const metadata = [
+            //API only supports http:// and does not work with https:// . Suppress the Sonar Warning for These Lines
             { 
-                '@type': 'https://resources.wfdm.nrs.gov.bc.ca/fileMetadataResource',
-                'type': 'https://resources.wfdm.nrs.gov.bc.ca/fileMetadataResource',
+                '@type': 'http://resources.wfdm.nrs.gov.bc.ca/fileMetadataResource', // NOSONAR
+                'type': 'http://resources.wfdm.nrs.gov.bc.ca/fileMetadataResource', // NOSONAR
                 'metadataName': 'actual-filename',
                 'metadataValue': file.name 
             },
             { 
-                '@type': 'https://resources.wfdm.nrs.gov.bc.ca/fileMetadataResource',
-                'type': 'https://resources.wfdm.nrs.gov.bc.ca/fileMetadataResource',
+                '@type': 'http://resources.wfdm.nrs.gov.bc.ca/fileMetadataResource', // NOSONAR
+                'type': 'http://resources.wfdm.nrs.gov.bc.ca/fileMetadataResource', // NOSONAR
                 'metadataName': 'content-type',
                 'metadataValue': file.type 
             }
@@ -259,8 +260,8 @@ export class ProjectService {
         
     
         const fileDetails = {
-            '@type': 'https://resources.wfdm.nrs.gov.bc.ca/fileDetails',
-            type: "https://resources.wfdm.nrs.gov.bc.ca/fileDetails",
+            '@type': 'http://resources.wfdm.nrs.gov.bc.ca/fileDetails', // NOSONAR
+            type: "http://resources.wfdm.nrs.gov.bc.ca/fileDetails", // NOSONAR
             fileSize: file.size,
             filePath: filePath,
             security: [],
