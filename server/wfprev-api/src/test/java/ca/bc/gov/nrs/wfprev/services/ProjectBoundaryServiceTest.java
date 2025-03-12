@@ -284,5 +284,72 @@ class ProjectBoundaryServiceTest {
         assertThrows(EntityNotFoundException.class, () -> projectBoundaryService.deleteProjectBoundary(projectGuid, boundaryGuid));
     }
 
+    @Test
+    void testSaveProjectBoundary_Success() {
+        // Arrange
+        ProjectBoundaryEntity entity = new ProjectBoundaryEntity();
+        ProjectBoundaryModel expectedModel = new ProjectBoundaryModel();
+
+        when(projectBoundaryRepository.saveAndFlush(entity)).thenReturn(entity);
+        when(projectBoundaryResourceAssembler.toModel(entity)).thenReturn(expectedModel);
+
+        // Act
+        ProjectBoundaryModel result = projectBoundaryService.saveProjectBoundary(entity);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(expectedModel, result);
+        verify(projectBoundaryRepository, times(1)).saveAndFlush(entity);
+        verify(projectBoundaryResourceAssembler, times(1)).toModel(entity);
+    }
+
+    @Test
+    void testSaveProjectBoundary_ThrowsIllegalArgumentException() {
+        // Arrange
+        ProjectBoundaryEntity entity = new ProjectBoundaryEntity();
+
+        when(projectBoundaryRepository.saveAndFlush(entity)).thenThrow(new IllegalArgumentException("Invalid argument"));
+
+        // Act & Assert
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            projectBoundaryService.saveProjectBoundary(entity);
+        });
+
+        assertEquals("Invalid argument", exception.getMessage());
+        verify(projectBoundaryRepository, times(1)).saveAndFlush(entity);
+    }
+
+    @Test
+    void testSaveProjectBoundary_ThrowsEntityNotFoundException() {
+        // Arrange
+        ProjectBoundaryEntity entity = new ProjectBoundaryEntity();
+
+        when(projectBoundaryRepository.saveAndFlush(entity)).thenThrow(new EntityNotFoundException("Entity not found"));
+
+        // Act & Assert
+        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> {
+            projectBoundaryService.saveProjectBoundary(entity);
+        });
+
+        assertEquals("Entity not found", exception.getMessage());
+        verify(projectBoundaryRepository, times(1)).saveAndFlush(entity);
+    }
+
+    @Test
+    void testSaveProjectBoundary_ThrowsGenericException() {
+        // Arrange
+        ProjectBoundaryEntity entity = new ProjectBoundaryEntity();
+
+        when(projectBoundaryRepository.saveAndFlush(entity)).thenThrow(new RuntimeException("Unexpected error"));
+
+        // Act & Assert
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            projectBoundaryService.saveProjectBoundary(entity);
+        });
+
+        assertEquals("Unexpected error", exception.getMessage());
+        verify(projectBoundaryRepository, times(1)).saveAndFlush(entity);
+    }
+
 
 }
