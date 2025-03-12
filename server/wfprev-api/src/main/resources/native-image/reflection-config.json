@@ -988,6 +988,12 @@
     "allDeclaredFields": true
   },
   {
+    "name": "ca.bc.gov.nrs.wfprev.data.models.ProjectBoundaryModel",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
     "name": "ca.bc.gov.nrs.wfprev.data.entities.FundingSourceCodeEntity",
     "allDeclaredConstructors": true,
     "allPublicConstructors": true,
@@ -1160,6 +1166,12 @@
   },
   {
     "name": "ca.bc.gov.nrs.wfprev.common.validators.ActivityBoundaryTimestampValidator",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "ca.bc.gov.nrs.wfprev.common.validators.ProjectBoundaryTimestampValidator",
     "allDeclaredConstructors": true,
     "allDeclaredMethods": true,
     "allDeclaredFields": true

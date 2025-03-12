@@ -15,6 +15,9 @@ import java.util.Map;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
+
+    private final static String ERROR = "error";
+
     @ExceptionHandler({ConstraintViolationException.class, DataIntegrityViolationException.class})
     public ResponseEntity<Object> handleValidationExceptions(Exception ex) {
         Map<String, String> errors = new HashMap<>();
@@ -32,7 +35,7 @@ public class GlobalExceptionHandler {
             });
         } else {
             // DataIntegrityViolationException
-            errors.put("error", "Data integrity violation: " + ex.getMessage());
+            errors.put(ERROR, "Data integrity violation: " + ex.getMessage());
         }
 
         return ResponseEntity
@@ -43,7 +46,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex) {
         Map<String, String> errors = new HashMap<>();
-        errors.put("error", "Invalid JSON format");
+        errors.put(ERROR, "Invalid JSON format");
 
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
@@ -66,7 +69,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<Object> handleEntityNotFoundException(EntityNotFoundException ex) {
         Map<String, String> error = new HashMap<>();
-        error.put("error", ex.getMessage());
+        error.put(ERROR, ex.getMessage());
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
