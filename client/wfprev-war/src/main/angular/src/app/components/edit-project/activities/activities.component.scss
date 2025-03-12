@@ -117,6 +117,23 @@
         padding-top: 16px;
     }
 
+    .currency-input {
+        position: relative;
+        display: flex;
+        align-items: center;
+    
+        .currency-symbol {
+            position: absolute;
+            left: 10px;
+            font-size: 16px;
+            color: #282828;
+        }
+    
+        input {
+            padding-left: 20px;
+        }
+    }
+
     .comment-display {
         font-family: var(--wf-font-family-main);
         font-size: 16px;
