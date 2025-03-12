@@ -168,6 +168,7 @@
           color: #fff;
           background-color: #c0c0c0;
           cursor: not-allowed;
+          border: none;
         }
       }
     
@@ -288,8 +289,11 @@
   align-items: center;
   width: 100%;
   .dropdown-button{
+    padding: 12px;
+    display: flex;
+    align-items: center;
     color: #FFF;
-    font-size: 12px;
+    font-size: 16px;
     font-style: normal;
     font-weight: 400;
     line-height: normal;
@@ -297,7 +301,7 @@
     background-color: var(--wf-primary-color);
     border-radius: 0;
     width: auto;
-    border-radius: 8px;
+    border-radius: 4px;
     height: 35px;
     span{
       font-family: var(--wf-font-family-main) !important;
@@ -305,15 +309,17 @@
       vertical-align: top;
     }
   }
-
   .action-icon{
-    width: 14px;
-    height: 14px;
+    width: 15px;
+    height: 15px;
   }
 }
 
 .new-fiscal-button {
-  font-size: 12px !important;
+  padding: 12px !important;
+  display: flex;
+  align-items: center;
+  font-size: 16px !important;
   font-weight: 400 !important;
   font-family: var(--wf-font-family-main);
 }

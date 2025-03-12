@@ -1,5 +1,5 @@
 import { CommonModule, CurrencyPipe } from '@angular/common';
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTabsModule } from '@angular/material/tabs';
@@ -36,6 +36,8 @@ import { ActivitiesComponent } from 'src/app/components/edit-project/activities/
   ]
 })
 export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  {
+  @ViewChild(ActivitiesComponent) activitiesComponent!: ActivitiesComponent;
+
   projectGuid = '';
   projectFiscals: any[] = [];
   fiscalForms: FormGroup[] = [];
@@ -76,7 +78,10 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  
   }
 
   isFormDirty(): boolean {
-    return this.fiscalForms.some(form => form.dirty);
+    const fiscalDirty = this.fiscalForms.some(form => form.dirty);
+    const activitiesDirty = this.activitiesComponent?.isFormDirty?.() ?? false;
+
+    return fiscalDirty || activitiesDirty;
   }
 
   generateFiscalYears(): void {
@@ -103,6 +108,8 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  
         `Error fetching ${table.name}`
       );
     });
+
+    this.loadDropdownOptions();
   }
 
   assignCodeTableData(key: string, data: any): void {
@@ -117,6 +124,20 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  
         this.ancillaryFundingSourceCode = data._embedded?.ancillaryFundingSourceCode || [];
         break;
     }
+  }
+
+  loadDropdownOptions() {
+    this.fiscalYears = this.sortArray(this.fiscalYears);
+    this.activityCategoryCode = this.sortArray(this.activityCategoryCode, 'description');
+    this.planFiscalStatusCode = this.sortArray(this.planFiscalStatusCode, 'description');
+    this.ancillaryFundingSourceCode = this.sortArray(this.ancillaryFundingSourceCode, 'fundingSourceName');
+  }
+
+  sortArray<T>(array: T[], key?: keyof T): T[] {
+    if (!array) return [];
+    return key 
+      ? array.sort((a, b) => String(a[key]).localeCompare(String(b[key]))) 
+      : array.sort((a, b) => String(a).localeCompare(String(b)));
   }
 
   createFiscalForm(fiscal?: any): FormGroup {
@@ -377,3 +398,4 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  
     return !!form?.value?.isApprovedInd;
   }
 }
+
