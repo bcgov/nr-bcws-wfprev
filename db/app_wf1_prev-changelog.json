@@ -1077,6 +1077,29 @@
           { "sql": "DELETE FROM wfprev.silviculture_method WHERE silviculture_method_guid IN ('371602c1-1313-490f-86f9-2cc43ea63474','b23f90de-268a-4798-a334-3f07f021e9cc','bd1af34c-4a9f-4be8-a2bd-228ce4566210','12e130e7-20b8-4bfc-b712-cd3400558acb','12dac4a3-84f3-493f-bffe-317d00beeddf')" }
         ]
       }
+    },
+    {
+      "changeSet": {
+        "id": "01_00_15_00",
+        "author": "hsaldyga",
+        "tagDatabase": { "tag" : "version_01_00_15_00" },
+        "changes": [
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_15/00/ddl/app_wf1_prev.ddl.modify_project_boundary.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": "$",
+              "path": "scripts/01_00_15/00/ddl/app_wf1_prev.ddl.alter_audit_table_triggers.sql"
+            }
+          }
+      ],
+        "rollback": [
+        ]
+      }
     }
    ] 
 }
