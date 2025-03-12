@@ -244,14 +244,14 @@ export class ProjectService {
         // Prepare metadata
         const metadata = [
             { 
-                '@type': 'http://resources.wfdm.nrs.gov.bc.ca/fileMetadataResource',
-                'type': 'http://resources.wfdm.nrs.gov.bc.ca/fileMetadataResource',
+                '@type': 'https://resources.wfdm.nrs.gov.bc.ca/fileMetadataResource',
+                'type': 'https://resources.wfdm.nrs.gov.bc.ca/fileMetadataResource',
                 'metadataName': 'actual-filename',
                 'metadataValue': file.name 
             },
             { 
-                '@type': 'http://resources.wfdm.nrs.gov.bc.ca/fileMetadataResource',
-                'type': 'http://resources.wfdm.nrs.gov.bc.ca/fileMetadataResource',
+                '@type': 'https://resources.wfdm.nrs.gov.bc.ca/fileMetadataResource',
+                'type': 'https://resources.wfdm.nrs.gov.bc.ca/fileMetadataResource',
                 'metadataName': 'content-type',
                 'metadataValue': file.type 
             }
@@ -259,8 +259,8 @@ export class ProjectService {
         
     
         const fileDetails = {
-            '@type': 'http://resources.wfdm.nrs.gov.bc.ca/fileDetails',
-            type: "http://resources.wfdm.nrs.gov.bc.ca/fileDetails",
+            '@type': 'https://resources.wfdm.nrs.gov.bc.ca/fileDetails',
+            type: "https://resources.wfdm.nrs.gov.bc.ca/fileDetails",
             fileSize: file.size,
             filePath: filePath,
             security: [],
