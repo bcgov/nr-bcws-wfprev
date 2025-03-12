@@ -161,15 +161,15 @@ public class ActivityAttachmentController extends CommonController {
 
     @PutMapping("/{id}")
     @Operation(
-            summary = "Update File Attachment for an Activity",
+            security = @SecurityRequirement(name = "Webade-OAUTH2", scopes = {"WFPREV"}),
             description = "Update an existing File Attachment for an Activity",
-            security = @SecurityRequirement(name = "Webade-OAUTH2", scopes = {"WFPREV"})
+            summary = "Update File Attachment for an Activity"
     )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "500", description = "Internal Server Error"),
-            @ApiResponse(responseCode = "404", description = "Not Found"),
-            @ApiResponse(responseCode = "400", description = "Bad Request"),
-            @ApiResponse(responseCode = "200", description = "OK")
+            @ApiResponse(responseCode = "500", description = "Internal Server Error Response"),
+            @ApiResponse(responseCode = "404", description = "Not Found Response"),
+            @ApiResponse(responseCode = "400", description = "Bad Request Response"),
+            @ApiResponse(responseCode = "200", description = "OK Response")
     })
     public ResponseEntity<FileAttachmentModel> updateFileAttachment(
             @PathVariable String id,
