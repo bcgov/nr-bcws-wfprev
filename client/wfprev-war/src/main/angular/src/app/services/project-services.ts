@@ -222,10 +222,10 @@ export class ProjectService {
 
     uploadDocument({
         file,
-        fileName = file.name, // Default to original filename
-        userId = 'idir/lli', // Get user ID dynamically
+        fileName = file.name,
+        userId = 'idir/lli',
         uploadDirectory = UPLOAD_DIRECTORY,
-        onProgress = () => {} // Optional progress callback
+        onProgress = () => {}
     }: {
         file: File;
         fileName?: string;
@@ -275,18 +275,16 @@ export class ProjectService {
             new Blob([JSON.stringify(fileDetails)], { type: 'application/json' })
         );
         formData.append('file', file);
-    
-        // API URL
+
         const url = `${this.appConfigService.getConfig().rest['wfdm']}/documents`;
         const headers = new HttpHeaders({
-            // Authorization: `Bearer 30187EA644E8CE94E0630409228E0655`,
             Authorization: `Bearer ${this.tokenService.getOauthToken()}`,
 
           });
     
         // Make HTTP POST request with progress tracking
         const req = new HttpRequest('POST', url, formData, {
-            headers: headers,  // Attach headers here
+            headers: headers,
             reportProgress: true,
             responseType: 'json'
           });

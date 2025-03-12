@@ -20,6 +20,7 @@ export class ProjectFilesComponent {
   }
   displayedColumns: string[] = ['name', 'description', 'endDate', 'completedHectares'];
 
+  // hardcode table, will be replaced by the attachment api data
   projectFiles = [
     { name: 'Site Prep', description: 'Preparing the site for seeding', startDate:'2024-02-15', endDate: '2024-03-15', completedHectares: 50 },
     { name: 'Seeding', description: 'Planting seeds for reforestation', endDate: '2024-05-10', completedHectares: 100 },
