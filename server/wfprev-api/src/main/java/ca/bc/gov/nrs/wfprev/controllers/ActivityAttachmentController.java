@@ -143,13 +143,7 @@ public class ActivityAttachmentController extends CommonController {
                 return notFound();
             }
 
-            resource.setCreateUser(getWebAdeAuthentication().getUserId());
-            resource.setUpdateUser(getWebAdeAuthentication().getUserId());
-            resource.setUploadedByUserId(getWebAdeAuthentication().getUserId());
-            resource.setUploadedByUserGuid(getWebAdeAuthentication().getClientId());
-            resource.setUploadedByUserType(getWebAdeAuthentication().getUserTypeCode());
-            resource.setUploadedByTimestamp(new Date());
-            resource.setRevisionCount(0);
+            initializeNewActivityAttachment(resource);
 
             FileAttachmentModel newResource = fileAttachmentService.createFileAttachment(resource);
             return ResponseEntity.status(201).body(newResource);
@@ -247,6 +241,16 @@ public class ActivityAttachmentController extends CommonController {
             log.error(" ### Error while validating activityGuid: {}", activityGuid, e);
             return false;
         }
+    }
+
+    private void initializeNewActivityAttachment(FileAttachmentModel resource) {
+        resource.setCreateUser(getWebAdeAuthentication().getUserId());
+        resource.setUpdateUser(getWebAdeAuthentication().getUserId());
+        resource.setUploadedByUserId(getWebAdeAuthentication().getUserId());
+        resource.setUploadedByUserGuid(getWebAdeAuthentication().getClientId());
+        resource.setUploadedByUserType(getWebAdeAuthentication().getUserTypeCode());
+        resource.setUploadedByTimestamp(new Date());
+        resource.setRevisionCount(0);
     }
 
 }
