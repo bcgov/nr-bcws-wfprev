@@ -1,15 +1,17 @@
 package ca.bc.gov.nrs.wfprev;
 
-import ca.bc.gov.nrs.wfprev.common.serializers.PGPolygonDeserializer;
-import ca.bc.gov.nrs.wfprev.common.serializers.PGPolygonSerializer;
 import ca.bc.gov.nrs.wfprev.controllers.ProjectBoundaryController;
 import ca.bc.gov.nrs.wfprev.data.models.ProjectBoundaryModel;
 import ca.bc.gov.nrs.wfprev.services.ProjectBoundaryService;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.nimbusds.jose.shaded.gson.Gson;
+import com.nimbusds.jose.shaded.gson.GsonBuilder;
+import com.nimbusds.jose.shaded.gson.JsonDeserializer;
+import com.nimbusds.jose.shaded.gson.JsonPrimitive;
+import com.nimbusds.jose.shaded.gson.JsonSerializer;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.postgresql.geometric.PGpoint;
 import org.postgresql.geometric.PGpolygon;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -19,14 +21,21 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.hateoas.CollectionModel;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -36,7 +45,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(ProjectBoundaryController.class)
-@Import({TestSpringSecurity.class, TestcontainersConfiguration.class, MockMvcRestExceptionConfiguration.class})
+@Import({TestSpringSecurity.class, TestcontainersConfiguration.class})
 @MockBean(JpaMetamodelMappingContext.class)
 class ProjectBoundaryControllerTest {
 
@@ -46,247 +55,275 @@ class ProjectBoundaryControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
+    private Gson gson;
+
     @MockBean(name = "springSecurityAuditorAware")
     private AuditorAware<String> auditorAware;
 
-    private ObjectMapper objectMapper;
+    String projectBoundaryJson = """
+                {
+                    "projectBoundaryGuid": "%s",
+                    "projectGuid": "%s",
+                    "systemStartTimestamp": %d,
+                    "systemEndTimestamp": %d,
+                    "collectionDate": %d,
+                    "boundarySizeHa": 10.5,
+                    "locationGeometry": {
+                        "coordinates": [[
+                            [-123.3656, 48.4284],
+                            [-123.3657, 48.4285],
+                            [-123.3658, 48.4284],
+                            [-123.3656, 48.4284]
+                        ]]
+                    },
+                    "boundaryGeometry": {
+                        "coordinates": [[
+                            [-123.3656, 48.4284],
+                            [-123.3657, 48.4285],
+                            [-123.3658, 48.4284],
+                            [-123.3656, 48.4284]
+                        ]]
+                    }
+                }
+            """;
 
     @BeforeEach
     void setup() {
-        objectMapper = new ObjectMapper();
-        SimpleModule geoJsonModule = new SimpleModule();
-        geoJsonModule.addSerializer(PGpolygon.class, new PGPolygonSerializer());
-        geoJsonModule.addDeserializer(PGpolygon.class, new PGPolygonDeserializer());
-        objectMapper.registerModule(geoJsonModule);
-
+        GsonBuilder builder = new GsonBuilder();
+        builder.serializeNulls()
+                .registerTypeAdapter(Date.class, (JsonSerializer<Date>) (src, typeOfSrc, context) -> new JsonPrimitive(src.getTime()))
+                .registerTypeAdapter(Date.class, (JsonDeserializer<Date>) (json, typeOfT, context) -> new Date(json.getAsLong()))
+                .serializeSpecialFloatingPointValues();
+        gson = builder.create();
     }
 
     @Test
     @WithMockUser
     void testGetAllProjectBoundaries_Success() throws Exception {
-        // GIVEN: Mock service response with a collection of ProjectBoundaryModel
-        ProjectBoundaryModel project1 = new ProjectBoundaryModel();
-        project1.setProjectGuid(UUID.randomUUID().toString());
+        List<ProjectBoundaryModel> boundaries = List.of(
+                ProjectBoundaryModel.builder().projectBoundaryGuid(UUID.randomUUID().toString()).build(),
+                ProjectBoundaryModel.builder().projectBoundaryGuid(UUID.randomUUID().toString()).build()
+        );
 
-        ProjectBoundaryModel project2 = new ProjectBoundaryModel();
-        project2.setProjectGuid(UUID.randomUUID().toString());
+        when(projectBoundaryService.getAllProjectBoundaries(anyString()))
+                .thenReturn(CollectionModel.of(boundaries));
 
-        CollectionModel<ProjectBoundaryModel> responseCollection = CollectionModel.of(List.of(project1, project2));
-
-        when(projectBoundaryService.getAllProjectBoundaries()).thenReturn(responseCollection);
-
-        // WHEN / THEN: Perform GET request and expect 200 OK with correct response
-        mockMvc.perform(get("/projectBoundaries")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .header("Authorization", "Bearer admin-token"))
+        mockMvc.perform(get("/projects/{projectId}/projectBoundary",
+                        UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID())
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
 
     @Test
     @WithMockUser
     void testGetAllProjectBoundaries_RuntimeException() throws Exception {
-        // GIVEN: Service throws RuntimeException
-        when(projectBoundaryService.getAllProjectBoundaries()).thenThrow(new RuntimeException("Unexpected error"));
+        when(projectBoundaryService.getAllProjectBoundaries(anyString()))
+                .thenThrow(new RuntimeException("Unexpected error"));
 
-        // WHEN / THEN: Expect 500 Internal Server Error
-        mockMvc.perform(get("/projectBoundaries")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .header("Authorization", "Bearer admin-token"))
+        mockMvc.perform(get("/projects/{projectId}/projectBoundary",
+                        UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID())
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isInternalServerError());
     }
 
+    @Test
+    @WithMockUser
+    void testGetAllProjectBoundaries_Exception() throws Exception {
+        when(projectBoundaryService.getAllProjectBoundaries(anyString()))
+                .thenThrow(new RuntimeException("Runtime exception"));
+
+        mockMvc.perform(get("/projects/{projectId}/projectBoundary",
+                        UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID())
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isInternalServerError());
+    }
 
     @Test
     @WithMockUser
-    void testGetProjectBoundary() throws Exception {
-        String guid = UUID.randomUUID().toString();
+    void testGetProjectBoundary_Success() throws Exception {
+        UUID boundaryId = UUID.randomUUID();
+        ProjectBoundaryModel model = ProjectBoundaryModel.builder().projectBoundaryGuid(boundaryId.toString()).build();
 
-        ProjectBoundaryModel project = new ProjectBoundaryModel();
-        project.setProjectGuid(guid);
+        when(projectBoundaryService.getProjectBoundary(anyString(), anyString()))
+                .thenReturn(model);
 
-        when(projectBoundaryService.getProjectBoundaryById(guid)).thenReturn(project);
-
-        mockMvc.perform(get("/projectBoundaries/{id}", guid)
+        mockMvc.perform(get("/projects/{projectId}/projectBoundary/{id}",
+                        UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), boundaryId)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.projectGuid").value(guid));
+                .andExpect(jsonPath("$.projectBoundaryGuid").value(model.getProjectBoundaryGuid()));
     }
 
     @Test
     @WithMockUser
-    void testGetById_Success() throws Exception {
-        // GIVEN
-        String guid = UUID.randomUUID().toString();
-        ProjectBoundaryModel project = new ProjectBoundaryModel();
-        project.setProjectGuid(guid);
+    void testGetProjectBoundary_Exception() throws Exception {
+        UUID boundaryId = UUID.randomUUID();
 
-        when(projectBoundaryService.getProjectBoundaryById(guid)).thenReturn(project);
+        when(projectBoundaryService.getProjectBoundary(anyString(), anyString()))
+                .thenThrow(new RuntimeException("Runtime exception"));
 
-        // WHEN / THEN
-        mockMvc.perform(get("/projectBoundaries/{id}", guid)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .header("Authorization", "Bearer admin-token"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.projectGuid").value(guid));
-    }
-
-    @Test
-    @WithMockUser
-    void testGetById_NotFound_NullResponse() throws Exception {
-        // GIVEN
-        String guid = UUID.randomUUID().toString();
-        when(projectBoundaryService.getProjectBoundaryById(guid)).thenReturn(null); // Simulate not found
-
-        // WHEN / THEN
-        mockMvc.perform(get("/projectBoundaries/{id}", guid)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .header("Authorization", "Bearer admin-token"))
-                .andExpect(status().isNotFound());
-    }
-
-    @Test
-    @WithMockUser
-    void testGetById_EntityNotFoundException() throws Exception {
-        // GIVEN
-        String guid = UUID.randomUUID().toString();
-        when(projectBoundaryService.getProjectBoundaryById(guid)).thenThrow(new EntityNotFoundException("Not found"));
-
-        // WHEN / THEN
-        mockMvc.perform(get("/projectBoundaries/{id}", guid)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .header("Authorization", "Bearer admin-token"))
-                .andExpect(status().isNotFound());
-    }
-
-    @Test
-    @WithMockUser
-    void testGetById_InternalServerError() throws Exception {
-        // GIVEN
-        String guid = UUID.randomUUID().toString();
-        when(projectBoundaryService.getProjectBoundaryById(guid)).thenThrow(new RuntimeException("Unexpected error"));
-
-        // WHEN / THEN
-        mockMvc.perform(get("/projectBoundaries/{id}", guid)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .header("Authorization", "Bearer admin-token"))
+        mockMvc.perform(get("/projects/{projectId}/projectBoundary/{id}",
+                        UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), boundaryId)
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isInternalServerError());
-    }
-
-
-    @Test
-    @WithMockUser
-    void testCreateProjectBoundary() throws Exception {
-        String guid = UUID.randomUUID().toString();
-        ProjectBoundaryModel project = new ProjectBoundaryModel();
-        project.setProjectGuid(guid);
-        project.setProjectBoundaryGuid(guid);
-
-        when(projectBoundaryService.createOrUpdateProjectBoundary(any(ProjectBoundaryModel.class)))
-                .thenReturn(project);
-
-        String json = objectMapper.writeValueAsString(project);
-
-        mockMvc.perform(post("/projectBoundaries")
-                        .content(json)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .header("Authorization", "Bearer admin-token"))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.projectGuid").value(guid));
     }
 
     @Test
     @WithMockUser
     void testCreateProjectBoundary_DataIntegrityViolationException() throws Exception {
-        ProjectBoundaryModel project = new ProjectBoundaryModel();
+        ProjectBoundaryModel requestModel = buildProjectBoundaryRequestModel();
 
-        when(projectBoundaryService.createOrUpdateProjectBoundary(any(ProjectBoundaryModel.class)))
-                .thenThrow(DataIntegrityViolationException.class);
+        when(projectBoundaryService.createProjectBoundary(anyString(), any(ProjectBoundaryModel.class)))
+                .thenThrow(new DataIntegrityViolationException("Data Integrity Violation"));
 
-        String json = objectMapper.writeValueAsString(project);
+        String requestJson = projectBoundaryJson.formatted(
+                requestModel.getProjectBoundaryGuid(),
+                requestModel.getProjectGuid(),
+                requestModel.getSystemStartTimestamp().getTime(),
+                requestModel.getSystemEndTimestamp().getTime() + 1000,
+                requestModel.getCollectionDate().getTime()
+        );
 
-        mockMvc.perform(post("/projectBoundaries")
-                        .content(json)
+        mockMvc.perform(post("/projects/{projectId}/projectBoundary",
+                        UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID())
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .header("Authorization", "Bearer admin-token"))
+                        .content(requestJson))
                 .andExpect(status().isBadRequest());
     }
 
     @Test
     @WithMockUser
-    void testUpdateProjectBoundary() throws Exception {
-        String guid = UUID.randomUUID().toString();
-        ProjectBoundaryModel project = new ProjectBoundaryModel();
-        project.setProjectGuid(guid);
-        project.setProjectBoundaryGuid(guid);
-        project.setBoundaryComment("Updated Comment");
+    void testCreateProjectBoundary_IllegalArgumentException() throws Exception {
+        ProjectBoundaryModel requestModel = buildProjectBoundaryRequestModel();
 
-        when(projectBoundaryService.createOrUpdateProjectBoundary(any(ProjectBoundaryModel.class)))
-                .thenReturn(project);
+        when(projectBoundaryService.createProjectBoundary(anyString(), any(ProjectBoundaryModel.class)))
+                .thenThrow(new IllegalArgumentException("Illegal Argument exception"));
 
-        String json = objectMapper.writeValueAsString(project);
+        String requestJson = projectBoundaryJson.formatted(
+                requestModel.getProjectBoundaryGuid(),
+                requestModel.getProjectGuid(),
+                requestModel.getSystemStartTimestamp().getTime(),
+                requestModel.getSystemEndTimestamp().getTime() + 1000,
+                requestModel.getCollectionDate().getTime()
+        );
 
-        mockMvc.perform(put("/projectBoundaries/{id}", guid)
-                        .content(json)
+        mockMvc.perform(post("/projects/{projectId}/projectBoundary",
+                        UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID())
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .header("Authorization", "Bearer admin-token"))
+                        .content(requestJson))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @WithMockUser
+    void testUpdateProjectBoundary_Success() throws Exception {
+        ProjectBoundaryModel requestModel = buildProjectBoundaryRequestModel();
+
+        when(projectBoundaryService.updateProjectBoundary(anyString(), any(ProjectBoundaryModel.class)))
+                .thenReturn(requestModel);
+
+        String requestJson = projectBoundaryJson.formatted(
+                requestModel.getProjectBoundaryGuid(),
+                requestModel.getProjectGuid(),
+                requestModel.getSystemStartTimestamp().getTime(),
+                requestModel.getSystemEndTimestamp().getTime() + 1000,
+                requestModel.getCollectionDate().getTime()
+        );
+
+        mockMvc.perform(put("/projects/{projectId}/projectBoundary/{id}",
+                        UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), requestModel.getProjectBoundaryGuid())
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJson))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.boundaryComment").value("Updated Comment"));
+                .andExpect(jsonPath("$.projectBoundaryGuid").value(requestModel.getProjectBoundaryGuid()));
+    }
+
+    @Test
+    @WithMockUser
+    void testUpdateProjectBoundary_IllegalArgumentException() throws Exception {
+        ProjectBoundaryModel requestModel = buildProjectBoundaryRequestModel();
+
+        when(projectBoundaryService.updateProjectBoundary(anyString(), any(ProjectBoundaryModel.class)))
+                .thenThrow(new IllegalArgumentException("Runtime exception"));
+
+        String requestJson = projectBoundaryJson.formatted(
+                requestModel.getProjectBoundaryGuid(),
+                requestModel.getProjectGuid(),
+                requestModel.getSystemStartTimestamp().getTime(),
+                requestModel.getSystemEndTimestamp().getTime() + 1000,
+                requestModel.getCollectionDate().getTime()
+        );
+
+        mockMvc.perform(put("/projects/{projectId}/projectBoundary/{id}",
+                        UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), requestModel.getProjectBoundaryGuid())
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJson))
+                .andExpect(status().isBadRequest());
     }
 
     @Test
     @WithMockUser
     void testUpdateProjectBoundary_DataIntegrityViolationException() throws Exception {
-        String guid = UUID.randomUUID().toString();
-        ProjectBoundaryModel project = new ProjectBoundaryModel();
-        project.setProjectGuid(guid);
-        project.setProjectBoundaryGuid(guid);
+        ProjectBoundaryModel requestModel = buildProjectBoundaryRequestModel();
 
-        when(projectBoundaryService.createOrUpdateProjectBoundary(any(ProjectBoundaryModel.class)))
-                .thenThrow(DataIntegrityViolationException.class);
+        when(projectBoundaryService.updateProjectBoundary(anyString(), any(ProjectBoundaryModel.class)))
+                .thenThrow(new DataIntegrityViolationException("Data Integrity Violation"));
 
-        String json = objectMapper.writeValueAsString(project);
+        String requestJson = projectBoundaryJson.formatted(
+                requestModel.getProjectBoundaryGuid(),
+                requestModel.getProjectGuid(),
+                requestModel.getSystemStartTimestamp().getTime(),
+                requestModel.getSystemEndTimestamp().getTime() + 1000,
+                requestModel.getCollectionDate().getTime()
+        );
 
-        mockMvc.perform(put("/projectBoundaries/{id}", guid)
-                        .content(json)
+        mockMvc.perform(put("/projects/{projectId}/projectBoundary/{id}",
+                        UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), requestModel.getProjectBoundaryGuid())
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .header("Authorization", "Bearer admin-token"))
+                        .content(requestJson))
                 .andExpect(status().isBadRequest());
     }
 
     @Test
     @WithMockUser
-    void testDeleteProjectBoundary() throws Exception {
-        String guid = UUID.randomUUID().toString();
+    void testDeleteProjectBoundary_Success() throws Exception {
+        UUID boundaryId = UUID.randomUUID();
+        doNothing().when(projectBoundaryService).deleteProjectBoundary(anyString(), anyString());
 
-        mockMvc.perform(delete("/projectBoundaries/{id}", guid)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .header("Authorization", "Bearer admin-token"))
+        mockMvc.perform(delete("/projects/{projectId}/projectBoundary/{id}",
+                        UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), boundaryId)
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer test-token"))
                 .andExpect(status().isNoContent());
+
+        verify(projectBoundaryService).deleteProjectBoundary(anyString(), anyString());
     }
 
-    @Test
-    @WithMockUser
-    void testDeleteProjectBoundary_EntityNotFoundException() throws Exception {
-        String guid = UUID.randomUUID().toString();
-        when(projectBoundaryService.deleteProjectBoundary(guid)).thenThrow(EntityNotFoundException.class);
-
-        mockMvc.perform(delete("/projectBoundaries/{id}", guid)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .header("Authorization", "Bearer admin-token"))
-                .andExpect(status().isNotFound());
+    ProjectBoundaryModel buildProjectBoundaryRequestModel() {
+        return ProjectBoundaryModel.builder()
+                .projectBoundaryGuid(UUID.randomUUID().toString())
+                .projectGuid(UUID.randomUUID().toString())
+                .systemStartTimestamp(new Date())
+                .systemEndTimestamp(new Date())
+                .collectionDate(new Date())
+                .boundarySizeHa(new BigDecimal("10.5"))
+                .locationGeometry(new PGpolygon(new PGpoint[]{
+                        new PGpoint(-123.3656, 48.4284),
+                        new PGpoint(-123.3657, 48.4285),
+                        new PGpoint(-123.3658, 48.4284),
+                        new PGpoint(-123.3656, 48.4284)
+                }))
+                .boundaryGeometry(new PGpolygon(new PGpoint[]{
+                        new PGpoint(-123.3656, 48.4284),
+                        new PGpoint(-123.3657, 48.4285),
+                        new PGpoint(-123.3658, 48.4284),
+                        new PGpoint(-123.3656, 48.4284)
+                }))
+                .build();
     }
 
-    @Test
-    @WithMockUser
-    void testDeleteProjectBoundary_InternalServerError() throws Exception {
-        String guid = UUID.randomUUID().toString();
-        when(projectBoundaryService.deleteProjectBoundary(guid)).thenThrow(RuntimeException.class);
-
-        mockMvc.perform(delete("/projectBoundaries/{id}", guid)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .header("Authorization", "Bearer admin-token"))
-                .andExpect(status().isInternalServerError());
-    }
 }
-
-

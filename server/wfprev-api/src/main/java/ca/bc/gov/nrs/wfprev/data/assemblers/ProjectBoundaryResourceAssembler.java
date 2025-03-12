@@ -1,18 +1,20 @@
 package ca.bc.gov.nrs.wfprev.data.assemblers;
 
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
-
+import ca.bc.gov.nrs.wfprev.controllers.ProjectBoundaryController;
+import ca.bc.gov.nrs.wfprev.data.entities.ProjectBoundaryEntity;
+import ca.bc.gov.nrs.wfprev.data.models.ProjectBoundaryModel;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
 import org.springframework.stereotype.Component;
 
-import ca.bc.gov.nrs.wfprev.controllers.ProjectBoundaryController;
-import ca.bc.gov.nrs.wfprev.data.entities.ProjectBoundaryEntity;
-import ca.bc.gov.nrs.wfprev.data.models.ProjectBoundaryModel;
-
+import java.util.Iterator;
 import java.util.UUID;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
+@Slf4j
 @Component
 public class ProjectBoundaryResourceAssembler extends RepresentationModelAssemblerSupport<ProjectBoundaryEntity, ProjectBoundaryModel> {
 
@@ -50,7 +52,7 @@ public class ProjectBoundaryResourceAssembler extends RepresentationModelAssembl
      
     resource.add(linkTo(
         methodOn(ProjectBoundaryController.class)
-        .getById(String.valueOf(entity.getProjectBoundaryGuid())))
+        .getProjectBoundary(String.valueOf(entity.getProjectGuid()), String.valueOf(entity.getProjectBoundaryGuid())))
         .withSelfRel());
      
         resource.setProjectBoundaryGuid(String.valueOf(entity.getProjectBoundaryGuid()));
@@ -79,9 +81,42 @@ public class ProjectBoundaryResourceAssembler extends RepresentationModelAssembl
   public CollectionModel<ProjectBoundaryModel> toCollectionModel(Iterable<? extends ProjectBoundaryEntity> entities) 
   {
     CollectionModel<ProjectBoundaryModel> resources = super.toCollectionModel(entities);
-     
-    resources.add(linkTo(methodOn(ProjectBoundaryController.class).getAllProjectBoundaries()).withSelfRel());
+
+      Iterator<? extends ProjectBoundaryEntity> iterator = entities.iterator();
+      if (iterator.hasNext()) {
+          String projectGuid = String.valueOf(iterator.next().getProjectGuid());
+          resources.add(linkTo(methodOn(ProjectBoundaryController.class).getAllProjectBoundaries(projectGuid)).withSelfRel());
+      }
      
     return resources;
   }
+
+    public ProjectBoundaryEntity updateEntity(ProjectBoundaryModel model, ProjectBoundaryEntity existingEntity) {
+        log.debug(">> updateEntity");
+        ProjectBoundaryEntity entity = new ProjectBoundaryEntity();
+
+        entity.setProjectBoundaryGuid(existingEntity.getProjectBoundaryGuid());
+        entity.setProjectGuid(existingEntity.getProjectGuid());
+        entity.setSystemStartTimestamp(nonNullOrDefault(model.getSystemStartTimestamp(), existingEntity.getSystemStartTimestamp()));
+        entity.setSystemEndTimestamp(nonNullOrDefault(model.getSystemEndTimestamp(), existingEntity.getSystemEndTimestamp()));
+        entity.setMappingLabel(nonNullOrDefault(model.getMappingLabel(), existingEntity.getMappingLabel()));
+        entity.setCollectionDate(nonNullOrDefault(model.getCollectionDate(), existingEntity.getCollectionDate()));
+        entity.setCollectionMethod(nonNullOrDefault(model.getCollectionMethod(), existingEntity.getCollectionMethod()));
+        entity.setCollectorName(nonNullOrDefault(model.getCollectorName(), existingEntity.getCollectorName()));
+        entity.setBoundarySizeHa(nonNullOrDefault(model.getBoundarySizeHa(), existingEntity.getBoundarySizeHa()));
+        entity.setBoundaryComment(nonNullOrDefault(model.getBoundaryComment(), existingEntity.getBoundaryComment()));
+        entity.setRevisionCount(nonNullOrDefault(model.getRevisionCount(), existingEntity.getRevisionCount()));
+        entity.setBoundaryGeometry(nonNullOrDefault(model.getBoundaryGeometry(), existingEntity.getBoundaryGeometry()));
+        entity.setLocationGeometry(nonNullOrDefault(model.getLocationGeometry(), existingEntity.getLocationGeometry()));
+        entity.setCreateUser(existingEntity.getCreateUser());
+        entity.setCreateDate(existingEntity.getCreateDate());
+        entity.setUpdateUser(model.getUpdateUser());
+        entity.setUpdateDate(model.getUpdateDate());
+
+        return entity;
+    }
+
+    private <T> T nonNullOrDefault(T newValue, T existingValue) {
+        return newValue != null ? newValue : existingValue;
+    }
 }
