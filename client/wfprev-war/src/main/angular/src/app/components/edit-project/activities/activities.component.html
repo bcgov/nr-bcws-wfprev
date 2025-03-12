@@ -5,12 +5,12 @@
                 <span class="project-title">Activities</span>
                 <button class="dropdown-button" mat-icon-button (click)="addActivity(); $event.stopPropagation()" *ngIf="fiscalGuid" [disabled]="isNewActivityBeingAdded">
                     <img class="action-icon" alt="actions" src="/assets/add-button.svg">
-                  <span>Add Activity</span>
+                    <span>Add Activity</span>
                 </button>
             </div>
         </mat-expansion-panel-header>
         <div *ngIf="activities?.length">
-            <div *ngFor="let activity of activities; let i = index">
+            <div *ngFor="let activity of activities; let i = index" [id]="'activity-' + i">
                 <mat-expansion-panel class="expansion-panel" [(expanded)]="expandedPanels[i]">
                     <mat-expansion-panel-header>
                         <div class="activity-title">
