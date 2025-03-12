@@ -57,6 +57,8 @@ jobs:
           files: ${{ env.APP_CONFIG_FILE }}
       env:
         WFPREV_BASE_URL: ${{ vars.WFPREV_BASE_URL }}
+        WFDM_BASE_URL: ${{ vars.WFDM_BASE_URL }}
+
         WEBADE_OAUTH2_CHECK_AUTHORIZE_URL: ${{ vars.WEBADE_OAUTH2_CHECK_AUTHORIZE_URL }}
         WFPREV_CHECK_TOKEN_URL: ${{ vars.WFPREV_CHECK_TOKEN_URL }}
 
@@ -102,6 +104,8 @@ jobs:
         WFPREV_DATASOURCE_USERNAME: ${{secrets.WFPREV_USERNAME}}
         WFPREV_DATASOURCE_PASSWORD: ${{secrets.DB_PASS}}
         server_count: ${{vars.WFPREV_SERVER_INSTANCE_COUNT}}
+        # WFDM API
+        WFDM_BASE_URL: ${{vars.WFDM_BASE_URL}}
         # WFPREV UI
         CLIENT_IMAGE: ${{ steps.getDigestUI.outputs.IMAGE_UI_BY_DIGEST }}
         WEBADE_OAUTH2_WFPREV_UI_CLIENT_SECRET: ${{ secrets.WEBADE_OAUTH2_WFPREV_UI_CLIENT_SECRET }}
