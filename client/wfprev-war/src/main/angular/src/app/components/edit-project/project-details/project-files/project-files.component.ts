@@ -1,9 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTableModule } from '@angular/material/table';
 import { AddAttachmentComponent } from 'src/app/components/add-attachment/add-attachment.component';
 import { ProjectService } from 'src/app/services/project-services';
+import { Messages } from 'src/app/utils/messages';
 
 @Component({
   selector: 'app-project-files',
@@ -15,16 +17,34 @@ import { ProjectService } from 'src/app/services/project-services';
 export class ProjectFilesComponent {
   constructor(
     public projectService: ProjectService,
+    private readonly snackbarService: MatSnackBar,
     public readonly dialog: MatDialog)
-  {
-  }
-  displayedColumns: string[] = ['name', 'description', 'endDate', 'completedHectares'];
+  {}
+
+  messages = Messages;  
+  displayedColumns: string[] = [
+    'attachmentType',
+    'fileName',
+    'fileType',
+    'uploadedBy',
+    'uploadedDate',
+    'polygonHectares',
+    'description',
+    'download',
+    'delete'
+  ];
 
   // hardcode table, will be replaced by the attachment api data
   projectFiles = [
-    { name: 'Site Prep', description: 'Preparing the site for seeding', startDate:'2024-02-15', endDate: '2024-03-15', completedHectares: 50 },
-    { name: 'Seeding', description: 'Planting seeds for reforestation', endDate: '2024-05-10', completedHectares: 100 },
-    { name: 'Monitoring', description: 'Tracking vegetation growth', endDate: '2024-08-25', completedHectares: 75 },
+    {
+      attachmentType: 'Activity Polygon',
+      fileName: 'Polygon234',
+      fileType: 'KMZ',
+      uploadedBy: 'IDIR\\LULI',
+      uploadedDate: '2024-12-05',
+      polygonHectares: 22555,
+      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
+    }
   ];
 
   openFileUploadModal(){
@@ -44,9 +64,22 @@ export class ProjectFilesComponent {
       file
     }).subscribe({
       next: (response) => {
+        this.snackbarService.open(
+          this.messages.fileUploadSuccess,
+          'OK',
+          { duration: 5000, panelClass: 'snackbar-success' },
+        );
       },
       error: () => {
       }
     })
+  }
+
+  deleteFile(file:any){
+    //to do
+  }
+
+  downloadFile(file:any){
+    // to do
   }
 }

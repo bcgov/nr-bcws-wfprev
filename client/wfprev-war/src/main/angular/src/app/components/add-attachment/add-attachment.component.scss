@@ -36,16 +36,16 @@
     }
     .choose-file{
         font-family: var(--wf-font-family-main);
-        padding: 8px 16px;
         border: none;
         border-radius: 4px;
         font-size: 16px;
         cursor: pointer;
         background-color: var(--wf-primary-color);
         color: #fff;
+        gap: 8px;
+        padding: 12px;
         display: flex;
         align-items: center;
-        gap: 8px;
       }
   }
 
