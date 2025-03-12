@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class PGPolygonDeserializerTest {
     private final ObjectMapper mapper = new WfprevApiApplication().registerObjectMapper();
     private static final double BUFFER_SIZE = 0.0001;
-    private final PGPolygonDeserializer deserializer = new PGPolygonDeserializer(); // Adjust based on actual class name
+    private final PGPolygonDeserializer deserializer = new PGPolygonDeserializer();
 
     @Test
     void testDeserializePGPolygon() throws Exception {
