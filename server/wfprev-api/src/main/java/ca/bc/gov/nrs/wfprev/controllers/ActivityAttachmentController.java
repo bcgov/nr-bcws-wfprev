@@ -208,9 +208,10 @@ public class ActivityAttachmentController extends CommonController {
             security = @SecurityRequirement(name = "Webade-OAUTH2", scopes = {"WFPREV"})
     )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "204", description = "No Content"),
-            @ApiResponse(responseCode = "404", description = "Not Found"),
-            @ApiResponse(responseCode = "500", description = "Internal Server Error")
+            @ApiResponse(responseCode = "500", description = "Internal Server Error Response"),
+            @ApiResponse(responseCode = "404", description = "Not Found Response"),
+            @ApiResponse(responseCode = "400", description = "Bad Request Response"),
+            @ApiResponse(responseCode = "204", description = "No Content Response"),
     })
     public ResponseEntity<Void> deleteFileAttachment(
             @PathVariable String id,
