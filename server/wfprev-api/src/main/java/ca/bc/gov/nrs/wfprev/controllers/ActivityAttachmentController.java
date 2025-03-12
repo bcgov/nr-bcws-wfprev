@@ -87,10 +87,10 @@ public class ActivityAttachmentController extends CommonController {
 
     @GetMapping("/{id}")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "OK",
-                    content = @Content(schema = @Schema(implementation = FileAttachmentModel.class))),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error"),
             @ApiResponse(responseCode = "404", description = "Not Found"),
-            @ApiResponse(responseCode = "500", description = "Internal Server Error")
+            @ApiResponse(responseCode = "200", description = "OK",
+                    content = @Content(schema = @Schema(implementation = FileAttachmentModel.class)))
     })
     @Operation(
             summary = "Fetch a File Attachment for an Activity",
@@ -121,10 +121,10 @@ public class ActivityAttachmentController extends CommonController {
 
     @PostMapping
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Created",
-                    content = @Content(schema = @Schema(implementation = FileAttachmentModel.class))),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error"),
             @ApiResponse(responseCode = "400", description = "Bad Request"),
-            @ApiResponse(responseCode = "500", description = "Internal Server Error")
+            @ApiResponse(responseCode = "201", description = "Created",
+                    content = @Content(schema = @Schema(implementation = FileAttachmentModel.class)))
     })
     @Operation(
             summary = "Create a File Attachment for an Activity",
@@ -166,10 +166,10 @@ public class ActivityAttachmentController extends CommonController {
             security = @SecurityRequirement(name = "Webade-OAUTH2", scopes = {"WFPREV"})
     )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "OK"),
-            @ApiResponse(responseCode = "400", description = "Bad Request"),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error"),
             @ApiResponse(responseCode = "404", description = "Not Found"),
-            @ApiResponse(responseCode = "500", description = "Internal Server Error")
+            @ApiResponse(responseCode = "400", description = "Bad Request"),
+            @ApiResponse(responseCode = "200", description = "OK")
     })
     public ResponseEntity<FileAttachmentModel> updateFileAttachment(
             @PathVariable String id,
@@ -211,7 +211,7 @@ public class ActivityAttachmentController extends CommonController {
             @ApiResponse(responseCode = "500", description = "Internal Server Error Response"),
             @ApiResponse(responseCode = "404", description = "Not Found Response"),
             @ApiResponse(responseCode = "400", description = "Bad Request Response"),
-            @ApiResponse(responseCode = "204", description = "No Content Response"),
+            @ApiResponse(responseCode = "204", description = "No Content Response")
     })
     public ResponseEntity<Void> deleteFileAttachment(
             @PathVariable String id,
