@@ -16,7 +16,7 @@ import java.util.Map;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    private final static String ERROR = "error";
+    private static final String ERROR = "error";
 
     @ExceptionHandler({ConstraintViolationException.class, DataIntegrityViolationException.class})
     public ResponseEntity<Object> handleValidationExceptions(Exception ex) {

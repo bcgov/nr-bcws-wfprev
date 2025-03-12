@@ -48,8 +48,8 @@ public class ActivityAttachmentController extends CommonController {
 
     @GetMapping
     @Operation(
-            summary = "Fetch all File Attachments for a Activity",
-            description = "Fetch all File Attachments for a Activity",
+            summary = "Fetch all File Attachments for an Activity",
+            description = "Fetch all File Attachments for an Activity",
             security = @SecurityRequirement(name = "Webade-OAUTH2", scopes = {"WFPREV"}),
             extensions = {
                     @Extension(properties = {
@@ -93,7 +93,7 @@ public class ActivityAttachmentController extends CommonController {
             @ApiResponse(responseCode = "500", description = "Internal Server Error")
     })
     @Operation(
-            summary = "Fetch a File Attachment for a Activity",
+            summary = "Fetch a File Attachment for an Activity",
             description = "Fetch a specific File Attachment by ID",
             security = @SecurityRequirement(name = "Webade-OAUTH2", scopes = {"WFPREV"})
     )
@@ -120,17 +120,17 @@ public class ActivityAttachmentController extends CommonController {
     }
 
     @PostMapping
-    @Operation(
-            summary = "Create a File Attachment for a Activity",
-            description = "Create a new File Attachment for a Activity",
-            security = @SecurityRequirement(name = "Webade-OAUTH2", scopes = {"WFPREV"})
-    )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Created",
                     content = @Content(schema = @Schema(implementation = FileAttachmentModel.class))),
             @ApiResponse(responseCode = "400", description = "Bad Request"),
             @ApiResponse(responseCode = "500", description = "Internal Server Error")
     })
+    @Operation(
+            summary = "Create a File Attachment for an Activity",
+            description = "Create a new File Attachment for an Activity",
+            security = @SecurityRequirement(name = "Webade-OAUTH2", scopes = {"WFPREV"})
+    )
     public ResponseEntity<FileAttachmentModel> createFileAttachment(
             @Valid @RequestBody FileAttachmentModel resource,
             @PathVariable String projectGuid,
@@ -166,17 +166,17 @@ public class ActivityAttachmentController extends CommonController {
     }
 
     @PutMapping("/{id}")
+    @Operation(
+            summary = "Update File Attachment for an Activity",
+            description = "Update an existing File Attachment for an Activity",
+            security = @SecurityRequirement(name = "Webade-OAUTH2", scopes = {"WFPREV"})
+    )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK"),
             @ApiResponse(responseCode = "400", description = "Bad Request"),
             @ApiResponse(responseCode = "404", description = "Not Found"),
             @ApiResponse(responseCode = "500", description = "Internal Server Error")
     })
-    @Operation(
-            summary = "Update File Attachment for a Activity",
-            description = "Update an existing File Attachment for a Activity",
-            security = @SecurityRequirement(name = "Webade-OAUTH2", scopes = {"WFPREV"})
-    )
     public ResponseEntity<FileAttachmentModel> updateFileAttachment(
             @PathVariable String id,
             @PathVariable String projectGuid,
@@ -208,16 +208,16 @@ public class ActivityAttachmentController extends CommonController {
     }
 
     @DeleteMapping("/{id}")
+    @Operation(
+            summary = "Delete an File Attachment for an Activity",
+            description = "Delete a specific File Attachment by ID",
+            security = @SecurityRequirement(name = "Webade-OAUTH2", scopes = {"WFPREV"})
+    )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "No Content"),
             @ApiResponse(responseCode = "404", description = "Not Found"),
             @ApiResponse(responseCode = "500", description = "Internal Server Error")
     })
-    @Operation(
-            summary = "Delete an File Attachment for a Activity",
-            description = "Delete a specific File Attachment by ID",
-            security = @SecurityRequirement(name = "Webade-OAUTH2", scopes = {"WFPREV"})
-    )
     public ResponseEntity<Void> deleteFileAttachment(
             @PathVariable String id,
             @PathVariable String projectGuid,

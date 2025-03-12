@@ -47,7 +47,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(ActivityAttachmentController.class)
 @Import({TestSpringSecurity.class, TestcontainersConfiguration.class, MockMvcRestExceptionConfiguration.class})
 @MockBean(JpaMetamodelMappingContext.class)
-public class ActivityAttachmentControllerTest {
+class ActivityAttachmentControllerTest {
 
     @MockBean
     private FileAttachmentService fileAttachmentService;
@@ -165,6 +165,55 @@ public class ActivityAttachmentControllerTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
     }
+
+    @Test
+    void testGetAllFileAttachments_Success() throws Exception {
+        List<FileAttachmentModel> mockAttachments = List.of(buildFileAttachmentModel());
+
+        when(activityService.getActivity(anyString(), anyString(), anyString()))
+                .thenReturn(new ActivityModel());
+        when(fileAttachmentService.getAllFileAttachments(anyString()))
+                .thenReturn(CollectionModel.of(mockAttachments));
+
+        mockMvc.perform(get("/projects/{projectGuid}/projectFiscals/{projectPlanFiscalGuid}/activities/{activityGuid}/attachments",
+                        "123e4567-e89b-12d3-a456-426614174001",
+                        "123e4567-e89b-12d3-a456-426614174002",
+                        "123e4567-e89b-12d3-a456-426614174003")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer admin-token")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void testGetAllFileAttachments_InvalidActivity() throws Exception {
+        when(activityService.getActivity(anyString(), anyString(), anyString()))
+                .thenReturn(null);
+
+        mockMvc.perform(get("/projects/{projectGuid}/projectFiscals/{projectPlanFiscalGuid}/activities/{activityGuid}/attachments",
+                        "123e4567-e89b-12d3-a456-426614174001",
+                        "123e4567-e89b-12d3-a456-426614174002",
+                        "invalid-guid")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer admin-token")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void testGetAllFileAttachments_RuntimeException() throws Exception {
+        when(activityService.getActivity(anyString(), anyString(), anyString()))
+                .thenReturn(new ActivityModel());
+        when(fileAttachmentService.getAllFileAttachments(anyString()))
+                .thenThrow(new RuntimeException("Unexpected error"));
+
+        mockMvc.perform(get("/projects/{projectGuid}/projectFiscals/{projectPlanFiscalGuid}/activities/{activityGuid}/attachments",
+                        "123e4567-e89b-12d3-a456-426614174001",
+                        "123e4567-e89b-12d3-a456-426614174002",
+                        "123e4567-e89b-12d3-a456-426614174003")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer admin-token")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isInternalServerError());
+    }
+
 
     @Test
     void testDeleteFileAttachment_Success() throws Exception {
