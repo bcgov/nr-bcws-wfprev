@@ -6,12 +6,14 @@
     "webade": {
         "oauth2Url": "#{WEBADE_OAUTH2_CHECK_AUTHORIZE_URL}#",
         "clientId": "WFNEWS-UI",
-        "authScopes": "WFNEWS.*",
+        "authScopes": "WFNEWS.*, WFMD.*",
         "enableCheckToken": true,
         "checkTokenUrl": "#{WFPREV_CHECK_TOKEN_URL}#"
       },
 
     "rest": {
-      "wfprev":"#{WFPREV_BASE_URL}#"
+      "wfprev":"#{WFPREV_BASE_URL}#",
+      "wfdm":"#{WFDM_BASE_URL}#"
+
     }
   }

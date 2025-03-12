@@ -1,9 +1,12 @@
-import { HttpClient } from "@angular/common/http";
+import { HttpClient, HttpRequest, HttpHeaders, HttpEventType, HttpResponse } from "@angular/common/http";
 import { Injectable } from "@angular/core";
+import { UUID } from "angular2-uuid";
 import { catchError, map, Observable,throwError } from "rxjs";
 import { Project, ProjectFiscal } from "src/app/components/models";
 import { AppConfigService } from "src/app/services/app-config.service";
 import { TokenService } from "src/app/services/token.service";
+
+export const UPLOAD_DIRECTORY = '/WFPREV/uploads';
 
 @Injectable({
     providedIn: 'root',
@@ -216,4 +219,93 @@ export class ProjectService {
             })
         );
     }
+
+    uploadDocument({
+        file,
+        fileName = file.name,
+        userId = 'idir/lli',
+        uploadDirectory = UPLOAD_DIRECTORY,
+        onProgress = () => {}
+    }: {
+        file: File;
+        fileName?: string;
+        userId?: string;
+        uploadDirectory?: string;
+        onProgress?: (percent: number, loaded: number, total: number) => void;
+    }): Observable<any> {
+        if (!file) {
+            return throwError(() => new Error("No file provided for upload"));
+        }
+    
+        // Generate unique file path
+        const uniqueFileName = `${UUID.UUID()}--${fileName}`;
+        const filePath = `${uploadDirectory}/users/${userId}/${uniqueFileName}`;
+    
+        // Prepare metadata
+        const metadata = [
+            { 
+                '@type': 'http://resources.wfdm.nrs.gov.bc.ca/fileMetadataResource',
+                'type': 'http://resources.wfdm.nrs.gov.bc.ca/fileMetadataResource',
+                'metadataName': 'actual-filename',
+                'metadataValue': file.name 
+            },
+            { 
+                '@type': 'http://resources.wfdm.nrs.gov.bc.ca/fileMetadataResource',
+                'type': 'http://resources.wfdm.nrs.gov.bc.ca/fileMetadataResource',
+                'metadataName': 'content-type',
+                'metadataValue': file.type 
+            }
+        ];
+        
+    
+        const fileDetails = {
+            '@type': 'http://resources.wfdm.nrs.gov.bc.ca/fileDetails',
+            type: "http://resources.wfdm.nrs.gov.bc.ca/fileDetails",
+            fileSize: file.size,
+            filePath: filePath,
+            security: [],
+            metadata: metadata,
+            fileType: 'DOCUMENT'
+        };
+    
+        // Prepare FormData
+        const formData = new FormData();
+        formData.append(
+            'resource',
+            new Blob([JSON.stringify(fileDetails)], { type: 'application/json' })
+        );
+        formData.append('file', file);
+
+        const url = `${this.appConfigService.getConfig().rest['wfdm']}/documents`;
+        const headers = new HttpHeaders({
+            Authorization: `Bearer ${this.tokenService.getOauthToken()}`,
+
+          });
+    
+        // Make HTTP POST request with progress tracking
+        const req = new HttpRequest('POST', url, formData, {
+            headers: headers,
+            reportProgress: true,
+            responseType: 'json'
+          });
+          
+    
+        return this.httpClient.request(req).pipe(
+            map((event) => {
+                if (event.type === HttpEventType.UploadProgress) {
+                    const percentDone = Math.round((100 * event.loaded) / (event.total || file.size));
+                    onProgress(percentDone, event.loaded, event.total || file.size);
+                } else if (event instanceof HttpResponse) {
+                    onProgress(100, file.size, file.size);
+                    return event.body; // Successfully uploaded
+                }
+                return null;
+            }),
+            catchError((error) => {
+                console.error("Error uploading document", error);
+                return throwError(() => new Error("Failed to upload document"));
+            })
+        );
+    }
+    
  }
