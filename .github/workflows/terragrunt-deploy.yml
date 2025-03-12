@@ -144,6 +144,8 @@ jobs:
           WFPREV_DATASOURCE_USERNAME: ${{secrets.WFPREV_USERNAME}}
           WFPREV_DATASOURCE_PASSWORD: ${{secrets.DB_PASS}}
           server_count: ${{vars.WFPREV_SERVER_INSTANCE_COUNT}}
+          # WFDM API
+          WFDM_BASE_URL: ${{vars.WFDM_BASE_URL}}
           # WFPREV UI
           CLIENT_IMAGE: ${{ steps.getDigestUI.outputs.IMAGE_UI_BY_DIGEST }}
           WEBADE_OAUTH2_WFPREV_UI_CLIENT_SECRET: ${{ secrets.WEBADE_OAUTH2_WFPREV_UI_CLIENT_SECRET }}

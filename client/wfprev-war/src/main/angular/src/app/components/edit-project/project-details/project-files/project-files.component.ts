@@ -3,6 +3,7 @@ import { Component } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatTableModule } from '@angular/material/table';
 import { AddAttachmentComponent } from 'src/app/components/add-attachment/add-attachment.component';
+import { ProjectService } from 'src/app/services/project-services';
 
 @Component({
   selector: 'app-project-files',
@@ -13,6 +14,7 @@ import { AddAttachmentComponent } from 'src/app/components/add-attachment/add-at
 })
 export class ProjectFilesComponent {
   constructor(
+    public projectService: ProjectService,
     public readonly dialog: MatDialog)
   {
   }
@@ -28,5 +30,22 @@ export class ProjectFilesComponent {
     const dialogRef = this.dialog.open(AddAttachmentComponent, {
       width: '1000px',
     });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result?.file) {
+        this.uploadFile(result.file)
+      }
+    })
+  }
+
+  uploadFile(file: File): void{
+    this.projectService.uploadDocument({
+      file
+    }).subscribe({
+      next: (response) => {
+      },
+      error: () => {
+      }
+    })
   }
 }
