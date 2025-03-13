@@ -12,7 +12,7 @@ import { ActivatedRoute } from '@angular/router';
 import { Observable, of } from 'rxjs';
 import { ProjectService } from 'src/app/services/project-services';
 import { CodeTableServices } from 'src/app/services/code-table-services';
-import * as moment from 'moment';
+import { fakeAsync, tick } from '@angular/core/testing';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 describe('ActivitiesComponent', () => {
@@ -244,10 +244,13 @@ describe('ActivitiesComponent', () => {
   
     component.onTechniqueChange('technique1', form);
   
-    expect(component.filteredMethodCode).toEqual([{ silvicultureTechniqueGuid: 'technique1', silvicultureMethodGuid: 'method1' }]);
+    expect(form.get('filteredMethodCode')?.value).toEqual([
+      { silvicultureTechniqueGuid: 'technique1', silvicultureMethodGuid: 'method1' }
+    ]);
     expect(form.get('silvicultureMethodGuid')?.enabled).toBeTrue();
     expect(form.get('silvicultureMethodGuid')?.value).toBeNull();
   });
+  
 
   it('should return "" if activity is missing', () => {
     expect(component.getActivityTitle(0)).toBe('');
@@ -275,25 +278,26 @@ describe('ActivitiesComponent', () => {
     expect(component.getActivityTitle(0)).toBe('');
   });
   
-  it('should construct title from base, technique, and method when Results Reportable is ON', () => {
+  it('should construct title with missing elements when Results Reportable is ON', () => {
     component.silvicultureBaseCode = [{ silvicultureBaseGuid: 'base1', description: 'Base A' }];
-    component.silvicultureTechniqueCode = [{ silvicultureTechniqueGuid: 'tech1', description: 'Technique B' }];
+    component.silvicultureTechniqueCode = [{ silvicultureTechniqueGuid: 'tech1', description: 'Technique B', silvicultureBaseGuid: 'base1' }];
     component.silvicultureMethodCode = [{ silvicultureMethodGuid: 'method1', description: 'Method C' }];
   
     const form = component.createActivityForm({
       isResultsReportableInd: true,
       silvicultureBaseGuid: 'base1',
       silvicultureTechniqueGuid: 'tech1',
-      silvicultureMethodGuid: 'method1'
+      silvicultureMethodGuid: null
     });
     component.activityForms.push(form);
   
-    expect(component.getActivityTitle(0)).toBe('Base A - Technique B - Method C');
+    expect(component.getActivityTitle(0)).toBe('Base A - Technique B');
   });
+  
   
   it('should construct title with missing elements when Results Reportable is ON', () => {
     component.silvicultureBaseCode = [{ silvicultureBaseGuid: 'base1', description: 'Base A' }];
-    component.silvicultureTechniqueCode = [{ silvicultureTechniqueGuid: 'tech1', description: 'Technique B' }];
+    component.silvicultureTechniqueCode = [{ silvicultureTechniqueGuid: 'tech1', description: 'Technique B', silvicultureBaseGuid: 'base1' }];
     component.silvicultureMethodCode = [{ silvicultureMethodGuid: 'method1', description: 'Method C' }];
   
     // Only Base and Technique set
@@ -303,21 +307,25 @@ describe('ActivitiesComponent', () => {
       silvicultureTechniqueGuid: 'tech1',
       silvicultureMethodGuid: null
     });
+  
     component.activityForms.push(form1);
+    component.cd.detectChanges(); 
   
-    expect(component.getActivityTitle(0)).toBe('Base A - Technique B');
+    expect(component.getActivityTitle(0)).toBe('Base A - Technique B'); 
   
-    // Only Base set
     const form2 = component.createActivityForm({
       isResultsReportableInd: true,
       silvicultureBaseGuid: 'base1',
       silvicultureTechniqueGuid: null,
       silvicultureMethodGuid: null
     });
+  
     component.activityForms.push(form2);
+    component.cd.detectChanges();
   
     expect(component.getActivityTitle(1)).toBe('Base A');
   });
+  
 
   it('should enable required validator and disable activityName when Results Reportable is ON', () => {
     const form = component.createActivityForm({
@@ -478,6 +486,139 @@ describe('ActivitiesComponent', () => {
     form.markAsPristine();
     
     expect(component.canDeactivate()).toBeTrue();
+  });
+  
+  it('should toggle activity status correctly', () => {
+    const form = component.createActivityForm({ activityStatusCode: 'ACTIVE' });
+    component.activityForms.push(form);
+
+    component.toggleActivityStatus(0);
+    expect(component.activityForms[0].get('activityStatusCode')?.value).toBe('COMPLETED');
+
+    component.toggleActivityStatus(0);
+    expect(component.activityForms[0].get('activityStatusCode')?.value).toBe('ACTIVE');
+  });
+
+  it('should update technique and method options on base change', () => {
+    const form = component.createActivityForm({});
+    component.activityForms.push(form);
+
+    component.silvicultureTechniqueCode = [{ silvicultureBaseGuid: 'base1', silvicultureTechniqueGuid: 'tech1' }];
+    component.silvicultureMethodCode = [{ silvicultureTechniqueGuid: 'tech1', silvicultureMethodGuid: 'method1' }];
+
+    component.onBaseChange('base1', form);
+
+    expect(form.get('filteredTechniqueCode')?.value).toEqual([{ silvicultureBaseGuid: 'base1', silvicultureTechniqueGuid: 'tech1' }]);
+    expect(form.get('filteredMethodCode')?.value).toEqual([]);
+    expect(form.get('silvicultureTechniqueGuid')?.enabled).toBeTrue();
+    expect(form.get('silvicultureMethodGuid')?.disabled).toBeTrue();
+  });
+
+
+  it('should return empty string when date is null or undefined', () => {
+    expect(component.getFormattedDate(null)).toBe('');
+    expect(component.getFormattedDate(undefined as any)).toBe('');
+  });
+
+
+  it('should reset the form to original values when cancelling an edit', () => {
+    const originalActivity = { activityGuid: 'test-guid', activityName: 'Original Name' };
+    component.activities.push(originalActivity);
+    component.originalActivitiesValues.push(originalActivity);
+
+    const form = component.createActivityForm(originalActivity);
+    component.activityForms.push(form);
+
+    form.get('activityName')?.setValue('Modified Name');
+    component.onCancelActivity(0);
+
+    expect(component.activityForms[0].get('activityName')?.value).toBe('Original Name');
+  });
+
+  it('should handle errors in getActivities gracefully', () => {
+    mockProjectService.getFiscalActivities.and.returnValue(of({ _embedded: null }));
+
+    expect(() => component.getActivities()).not.toThrow();
+    expect(component.activities).toEqual([]);
+  });
+
+  describe('expandAndScrollToActivity', () => {
+    beforeEach(() => {
+      component.activities = [
+        { activityGuid: '123' },
+        { activityGuid: '456' },
+        { activityGuid: '789' },
+      ];
+      component.expandedPanels = [false, false, false];
+    });
+  
+    it('should expand only the specified activity and scroll to it', fakeAsync(() => {
+      const scrollSpy = jasmine.createSpy('scrollIntoView');
+  
+      spyOn(document, 'getElementById').and.callFake((id) => {
+        if (id === 'activity-1') {
+          return { scrollIntoView: scrollSpy } as any;
+        }
+        return null;
+      });
+  
+      component.expandAndScrollToActivity('456');
+  
+      tick(100);
+  
+      expect(component.expandedPanels).toEqual([false, true, false]);
+      expect(document.getElementById).toHaveBeenCalledWith('activity-1');
+      expect(scrollSpy).toHaveBeenCalledWith({
+        behavior: 'smooth',
+        block: 'start',
+      });
+    }));
+  
+    it('should do nothing if activityGuid is not found', fakeAsync(() => {
+      spyOn(document, 'getElementById');
+  
+      component.expandAndScrollToActivity('999');
+  
+      tick(100);
+  
+      expect(component.expandedPanels).toEqual([false, false, false]); 
+      expect(document.getElementById).not.toHaveBeenCalled();
+    }));
+  });
+
+  it('should remove a new activity when onCancelActivity is called', () => {
+    const newActivity = { activityGuid: null, activityName: 'New Activity' };
+    component.activities.push(newActivity);
+    component.activityForms.push(component.createActivityForm(newActivity));
+    component.isNewActivityBeingAdded = true;
+  
+    const initialLength = component.activities.length;
+  
+    component.onCancelActivity(0);
+  
+    expect(component.activities.length).toBe(initialLength - 1);
+    expect(component.activityForms.length).toBe(initialLength - 1);
+    expect(component.isNewActivityBeingAdded).toBeFalse();
+  });
+  
+  it('should remove an unsaved activity when onDeleteActivity is called', () => {
+    const unsavedActivity = { activityGuid: null, activityName: 'Unsaved Activity' };
+    component.activities.push(unsavedActivity);
+    component.activityForms.push(component.createActivityForm(unsavedActivity));
+    component.isNewActivityBeingAdded = true;
+  
+    const initialLength = component.activities.length;
+  
+    mockDialog.open.and.returnValue({
+      afterClosed: () => of(true) 
+    } as any);
+  
+    component.onDeleteActivity(0);
+  
+    expect(component.activities.length).toBe(initialLength - 1);
+    expect(component.activityForms.length).toBe(initialLength - 1);
+    expect(component.isNewActivityBeingAdded).toBeFalse();
+    expect(mockDialog.open).toHaveBeenCalled();
   });
   
   

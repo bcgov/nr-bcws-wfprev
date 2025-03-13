@@ -7,6 +7,9 @@ import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Point;
 import org.postgresql.geometric.PGpolygon;
 
 import java.math.BigDecimal;
@@ -28,6 +31,8 @@ class ProjectBoundaryEntityTest {
     }
 
     private ProjectBoundaryEntity createValidProjectBoundaryEntity() throws SQLException {
+        GeometryFactory geometryFactory = new GeometryFactory();
+        Point locationPoint = geometryFactory.createPoint(new Coordinate(-123.3656, 48.4284));
         return ProjectBoundaryEntity.builder()
                 .projectBoundaryGuid(UUID.randomUUID())
                 .projectGuid(UUID.randomUUID())
@@ -40,7 +45,7 @@ class ProjectBoundaryEntityTest {
                 .boundarySizeHa(BigDecimal.valueOf(100.0000))
                 .boundaryComment("Test Boundary Comment")
                 .boundaryGeometry(new PGpolygon("((-123.3656,48.4284),(-123.3657,48.4285),(-123.3658,48.4284),(-123.3656,48.4284))"))
-                .locationGeometry(new PGpolygon("((-123.3656,48.4284),(-123.3657,48.4285),(-123.3658,48.4284),(-123.3656,48.4284))"))
+                .locationGeometry(locationPoint)
                 .revisionCount(0)
                 .createUser("tester")
                 .createDate(new Date())

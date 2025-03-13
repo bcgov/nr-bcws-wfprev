@@ -11,6 +11,9 @@ import com.nimbusds.jose.shaded.gson.JsonSerializer;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Point;
 import org.postgresql.geometric.PGpoint;
 import org.postgresql.geometric.PGpolygon;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,14 +71,7 @@ class ProjectBoundaryControllerTest {
                     "systemEndTimestamp": %d,
                     "collectionDate": %d,
                     "boundarySizeHa": 10.5,
-                    "locationGeometry": {
-                        "coordinates": [[
-                            [-123.3656, 48.4284],
-                            [-123.3657, 48.4285],
-                            [-123.3658, 48.4284],
-                            [-123.3656, 48.4284]
-                        ]]
-                    },
+                    "locationGeometry": [-123.3656, 48.4284],
                     "boundaryGeometry": {
                         "coordinates": [[
                             [-123.3656, 48.4284],
@@ -292,6 +288,7 @@ class ProjectBoundaryControllerTest {
     @Test
     @WithMockUser
     void testDeleteProjectBoundary_Success() throws Exception {
+
         UUID boundaryId = UUID.randomUUID();
         doNothing().when(projectBoundaryService).deleteProjectBoundary(anyString(), anyString());
 
@@ -304,6 +301,9 @@ class ProjectBoundaryControllerTest {
     }
 
     ProjectBoundaryModel buildProjectBoundaryRequestModel() {
+        GeometryFactory geometryFactory = new GeometryFactory();
+        Point locationPoint = geometryFactory.createPoint(new Coordinate(-123.3656, 48.4284));
+
         return ProjectBoundaryModel.builder()
                 .projectBoundaryGuid(UUID.randomUUID().toString())
                 .projectGuid(UUID.randomUUID().toString())
@@ -311,12 +311,7 @@ class ProjectBoundaryControllerTest {
                 .systemEndTimestamp(new Date())
                 .collectionDate(new Date())
                 .boundarySizeHa(new BigDecimal("10.5"))
-                .locationGeometry(new PGpolygon(new PGpoint[]{
-                        new PGpoint(-123.3656, 48.4284),
-                        new PGpoint(-123.3657, 48.4285),
-                        new PGpoint(-123.3658, 48.4284),
-                        new PGpoint(-123.3656, 48.4284)
-                }))
+                .locationGeometry(locationPoint)
                 .boundaryGeometry(new PGpolygon(new PGpoint[]{
                         new PGpoint(-123.3656, 48.4284),
                         new PGpoint(-123.3657, 48.4285),
