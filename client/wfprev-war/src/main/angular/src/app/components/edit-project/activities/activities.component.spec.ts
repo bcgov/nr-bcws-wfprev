@@ -488,6 +488,60 @@ describe('ActivitiesComponent', () => {
     expect(component.canDeactivate()).toBeTrue();
   });
   
+  it('should toggle activity status correctly', () => {
+    const form = component.createActivityForm({ activityStatusCode: 'ACTIVE' });
+    component.activityForms.push(form);
+
+    component.toggleActivityStatus(0);
+    expect(component.activityForms[0].get('activityStatusCode')?.value).toBe('COMPLETED');
+
+    component.toggleActivityStatus(0);
+    expect(component.activityForms[0].get('activityStatusCode')?.value).toBe('ACTIVE');
+  });
+
+  it('should update technique and method options on base change', () => {
+    const form = component.createActivityForm({});
+    component.activityForms.push(form);
+
+    component.silvicultureTechniqueCode = [{ silvicultureBaseGuid: 'base1', silvicultureTechniqueGuid: 'tech1' }];
+    component.silvicultureMethodCode = [{ silvicultureTechniqueGuid: 'tech1', silvicultureMethodGuid: 'method1' }];
+
+    component.onBaseChange('base1', form);
+
+    expect(form.get('filteredTechniqueCode')?.value).toEqual([{ silvicultureBaseGuid: 'base1', silvicultureTechniqueGuid: 'tech1' }]);
+    expect(form.get('filteredMethodCode')?.value).toEqual([]);
+    expect(form.get('silvicultureTechniqueGuid')?.enabled).toBeTrue();
+    expect(form.get('silvicultureMethodGuid')?.disabled).toBeTrue();
+  });
+
+
+  it('should return empty string when date is null or undefined', () => {
+    expect(component.getFormattedDate(null)).toBe('');
+    expect(component.getFormattedDate(undefined as any)).toBe('');
+  });
+
+
+  it('should reset the form to original values when cancelling an edit', () => {
+    const originalActivity = { activityGuid: 'test-guid', activityName: 'Original Name' };
+    component.activities.push(originalActivity);
+    component.originalActivitiesValues.push(originalActivity);
+
+    const form = component.createActivityForm(originalActivity);
+    component.activityForms.push(form);
+
+    form.get('activityName')?.setValue('Modified Name');
+    component.onCancelActivity(0);
+
+    expect(component.activityForms[0].get('activityName')?.value).toBe('Original Name');
+  });
+
+  it('should handle errors in getActivities gracefully', () => {
+    mockProjectService.getFiscalActivities.and.returnValue(of({ _embedded: null }));
+
+    expect(() => component.getActivities()).not.toThrow();
+    expect(component.activities).toEqual([]);
+  });
+
   
   
 });
