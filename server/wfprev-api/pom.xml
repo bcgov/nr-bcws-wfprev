@@ -255,7 +255,7 @@
                             <buildArg>
                                 -H:ResourceConfigurationFiles=${project.basedir}/src/main/resources/native-image/resource-config.json
                             </buildArg>
-                            <buildArg>--initialize-at-build-time=org.geolatte.geom,ch.qos.logback,org.slf4j</buildArg>
+                            <buildArg>--initialize-at-build-time=org.geolatte.geom,ch.qos.logback,org.slf4j,org.apache.logging.log4j,com.fasterxml.jackson.databind,com.fasterxml.jackson.core,com.fasterxml.jackson.annotation,org.apache.logging.slf4j</buildArg>
                         </buildArgs>
                     </configuration>
                 </plugin>

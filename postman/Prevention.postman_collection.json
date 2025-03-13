@@ -1324,7 +1324,7 @@
 			"response": []
 		},
 		{
-			"name": "GETProject Type Codes",
+			"name": "GET Project Type Codes",
 			"event": [
 				{
 					"listen": "test",
@@ -2634,6 +2634,53 @@
 						"{{activityGuid}}",
 						"activityBoundary",
 						"{{activityBoundaryGuid}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Features",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function() {",
+							"    pm.response.to.have.status(200);",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{LOCAL_API_URL}}/features",
+					"host": [
+						"{{LOCAL_API_URL}}"
+					],
+					"path": [
+						"features"
 					]
 				}
 			},
