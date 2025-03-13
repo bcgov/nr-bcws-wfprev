@@ -12,7 +12,7 @@ import { ActivatedRoute } from '@angular/router';
 import { Observable, of } from 'rxjs';
 import { ProjectService } from 'src/app/services/project-services';
 import { CodeTableServices } from 'src/app/services/code-table-services';
-import * as moment from 'moment';
+import { fakeAsync, tick } from '@angular/core/testing';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 describe('ActivitiesComponent', () => {
@@ -542,6 +542,84 @@ describe('ActivitiesComponent', () => {
     expect(component.activities).toEqual([]);
   });
 
+  describe('expandAndScrollToActivity', () => {
+    beforeEach(() => {
+      component.activities = [
+        { activityGuid: '123' },
+        { activityGuid: '456' },
+        { activityGuid: '789' },
+      ];
+      component.expandedPanels = [false, false, false];
+    });
+  
+    it('should expand only the specified activity and scroll to it', fakeAsync(() => {
+      const scrollSpy = jasmine.createSpy('scrollIntoView');
+  
+      spyOn(document, 'getElementById').and.callFake((id) => {
+        if (id === 'activity-1') {
+          return { scrollIntoView: scrollSpy } as any;
+        }
+        return null;
+      });
+  
+      component.expandAndScrollToActivity('456');
+  
+      tick(100);
+  
+      expect(component.expandedPanels).toEqual([false, true, false]);
+      expect(document.getElementById).toHaveBeenCalledWith('activity-1');
+      expect(scrollSpy).toHaveBeenCalledWith({
+        behavior: 'smooth',
+        block: 'start',
+      });
+    }));
+  
+    it('should do nothing if activityGuid is not found', fakeAsync(() => {
+      spyOn(document, 'getElementById');
+  
+      component.expandAndScrollToActivity('999');
+  
+      tick(100);
+  
+      expect(component.expandedPanels).toEqual([false, false, false]); 
+      expect(document.getElementById).not.toHaveBeenCalled();
+    }));
+  });
+
+  it('should remove a new activity when onCancelActivity is called', () => {
+    const newActivity = { activityGuid: null, activityName: 'New Activity' };
+    component.activities.push(newActivity);
+    component.activityForms.push(component.createActivityForm(newActivity));
+    component.isNewActivityBeingAdded = true;
+  
+    const initialLength = component.activities.length;
+  
+    component.onCancelActivity(0);
+  
+    expect(component.activities.length).toBe(initialLength - 1);
+    expect(component.activityForms.length).toBe(initialLength - 1);
+    expect(component.isNewActivityBeingAdded).toBeFalse();
+  });
+  
+  it('should remove an unsaved activity when onDeleteActivity is called', () => {
+    const unsavedActivity = { activityGuid: null, activityName: 'Unsaved Activity' };
+    component.activities.push(unsavedActivity);
+    component.activityForms.push(component.createActivityForm(unsavedActivity));
+    component.isNewActivityBeingAdded = true;
+  
+    const initialLength = component.activities.length;
+  
+    mockDialog.open.and.returnValue({
+      afterClosed: () => of(true) 
+    } as any);
+  
+    component.onDeleteActivity(0);
+  
+    expect(component.activities.length).toBe(initialLength - 1);
+    expect(component.activityForms.length).toBe(initialLength - 1);
+    expect(component.isNewActivityBeingAdded).toBeFalse();
+    expect(mockDialog.open).toHaveBeenCalled();
+  });
   
   
 });
