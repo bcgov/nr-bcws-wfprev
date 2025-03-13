@@ -154,7 +154,14 @@ export class ActivitiesComponent implements OnChanges, OnInit, CanComponentDeact
       this.projectService.getFiscalActivities(this.projectGuid, this.fiscalGuid).subscribe({
         next: (data) => {
           if (data && data._embedded?.activities) {
-            this.activities = data._embedded.activities.reverse(); //Keep newest activity at the top
+            this.activities = data._embedded.activities;
+            // Sort activities alphabetically by activityName (case insensitive)
+            this.activities.sort((a, b) => {
+              const nameA = (a.activityName || '').toLowerCase();
+              const nameB = (b.activityName || '').toLowerCase();
+              return nameA.localeCompare(nameB);
+            });
+
           } else {
             this.activities = [];
           }
@@ -204,8 +211,8 @@ export class ActivitiesComponent implements OnChanges, OnInit, CanComponentDeact
       projectPlanFiscalGuid: [activity?.projectPlanFiscalGuid || ''],
       activityStatusCode: [activity?.activityStatusCode?.activityStatusCode || 'ACTIVE'],
       silvicultureBaseGuid: [activity?.silvicultureBaseGuid || ''],
-      silvicultureTechniqueGuid: [activity?.silvicultureTechniqueGuid || {value: null, disabled: true}],
-      silvicultureMethodGuid: [activity?.silvicultureMethodGuid || {value: null, disabled: true }],
+      silvicultureTechniqueGuid: [activity?.silvicultureTechniqueGuid || {value: '', disabled: true}],
+      silvicultureMethodGuid: [activity?.silvicultureMethodGuid || {value: '', disabled: true }],
       riskRatingCode: [activity?.riskRatingCode || {'riskRatingCode':'LOW_RISK'}],
       contractPhaseCode: [activity?.contractPhaseCode?.contractPhaseCode || ''],
       activityFundingSourceGuid: [activity?.activityFundingSourceGuid || ''],
@@ -224,6 +231,8 @@ export class ActivitiesComponent implements OnChanges, OnInit, CanComponentDeact
       activityComment: [activity?.activityComment || '', [Validators.maxLength(500)]],
       isSpatialAddedInd: [activity?.isSpatialAddedInd || false],
       createDate: [activity?.createDate || ''], // ISO 8601 date format
+      filteredTechniqueCode: [[]], //  Store technique options inside form
+      filteredMethodCode: [[]], //  Store method options inside form
     });
     if (activity?.silvicultureBaseGuid) {
       this.filteredTechniqueCode = this.silvicultureTechniqueCode.filter(t => t.silvicultureBaseGuid === activity.silvicultureBaseGuid);
@@ -232,9 +241,12 @@ export class ActivitiesComponent implements OnChanges, OnInit, CanComponentDeact
       this.filteredMethodCode = this.silvicultureMethodCode.filter(m => m.silvicultureTechniqueGuid === activity.silvicultureTechniqueGuid);
     }
 
+    this.updateTechniqueAndMethodOptions(form, activity);
     // Handle user selection changes
     form.get('silvicultureBaseGuid')?.valueChanges.subscribe((baseGuid) => this.onBaseChange(baseGuid, form));
     form.get('silvicultureTechniqueGuid')?.valueChanges.subscribe((techniqueGuid) => this.onTechniqueChange(techniqueGuid, form));
+    form.get('silvicultureMethodGuid')?.valueChanges.subscribe((methodGuid) => this.onMethodChange(methodGuid, form));
+
 
     form.valueChanges.subscribe(() => {
       const index = this.activityForms.indexOf(form);
@@ -245,22 +257,61 @@ export class ActivitiesComponent implements OnChanges, OnInit, CanComponentDeact
     return form;
   }
 
+  //Ensure Each Activity Resets its Technique and Method Options
+  updateTechniqueAndMethodOptions(form: FormGroup, activity?: any) {
+    const baseGuid = activity?.silvicultureBaseGuid;
+    const techniqueGuid = activity?.silvicultureTechniqueGuid;
+  
+    const filteredTechniques = baseGuid ? this.silvicultureTechniqueCode.filter(t => t.silvicultureBaseGuid === baseGuid) : [];
+    const filteredMethods = techniqueGuid ? this.silvicultureMethodCode.filter(m => m.silvicultureTechniqueGuid === techniqueGuid) : [];
+  
+    form.patchValue({
+      filteredTechniqueCode: filteredTechniques,
+      filteredMethodCode: filteredMethods
+    });
+  
+    if (filteredTechniques.length > 0) {
+      form.get('silvicultureTechniqueGuid')?.enable();
+    } else {
+      form.get('silvicultureTechniqueGuid')?.disable();
+    }
+  
+    if (filteredMethods.length > 0) {
+      form.get('silvicultureMethodGuid')?.enable();
+    } else {
+      form.get('silvicultureMethodGuid')?.disable();
+    }
+  
+    this.cd.detectChanges();
+  }
+  
+
   onBaseChange(baseGuid: string, form: FormGroup) {
     if (!baseGuid) {
-      form.get('silvicultureTechniqueGuid')?.setValue(null);
+      form.patchValue({
+        silvicultureTechniqueGuid: null,
+        silvicultureMethodGuid: null,
+        filteredTechniqueCode: [],
+        filteredMethodCode: []
+      });
       form.get('silvicultureTechniqueGuid')?.disable();
-      form.get('silvicultureMethodGuid')?.setValue(null);
       form.get('silvicultureMethodGuid')?.disable();
-      this.filteredTechniqueCode = [];
       return;
     }
-
-    this.filteredTechniqueCode = this.silvicultureTechniqueCode.filter(t => t.silvicultureBaseGuid === baseGuid);
+  
+    const filteredTechniques = this.silvicultureTechniqueCode.filter(t => t.silvicultureBaseGuid === baseGuid);
+  
+    form.patchValue({
+      silvicultureTechniqueGuid: null,
+      silvicultureMethodGuid: null,
+      filteredTechniqueCode: filteredTechniques,
+      filteredMethodCode: []
+    });
+  
     form.get('silvicultureTechniqueGuid')?.enable();
-    form.get('silvicultureTechniqueGuid')?.setValue(null);
-    form.get('silvicultureMethodGuid')?.setValue(null);
     form.get('silvicultureMethodGuid')?.disable();
-    this.filteredMethodCode = [];
+  
+    this.updateActivityName(form);
   }
 
   toggleResultsReportableInd(index: number): void {
@@ -307,25 +358,63 @@ export class ActivitiesComponent implements OnChanges, OnInit, CanComponentDeact
   }
   
   
-  
 
   onTechniqueChange(techniqueGuid: string, form: FormGroup) {
     if (!techniqueGuid) {
-      form.get('silvicultureMethodGuid')?.setValue(null);
+      form.patchValue({
+        silvicultureMethodGuid: null,
+        filteredMethodCode: []
+      });
       form.get('silvicultureMethodGuid')?.disable();
-      this.filteredMethodCode = [];
       return;
     }
-
-    this.filteredMethodCode = this.silvicultureMethodCode.filter(m => m.silvicultureTechniqueGuid === techniqueGuid);
+  
+    const filteredMethods = this.silvicultureMethodCode.filter(m => m.silvicultureTechniqueGuid === techniqueGuid);
+  
+    form.patchValue({
+      silvicultureMethodGuid: null,
+      filteredMethodCode: filteredMethods
+    });
+  
     form.get('silvicultureMethodGuid')?.enable();
-    form.get('silvicultureMethodGuid')?.setValue(null);
-  }
-
-  formatDate(date: string | Date): string {
-    return date ? moment.utc(date).format('YYYY-MM-DD') : ''; // Forces UTC interpretation
+  
+    this.updateActivityName(form);
   }
   
+
+  onMethodChange(methodGuid: string, form: FormGroup) {  
+    if (methodGuid){
+      this.updateActivityName(form);
+    }
+  }
+
+  updateActivityName(form: FormGroup) {
+    if (form.get('isResultsReportableInd')?.value) {
+      const baseGuid = form.get('silvicultureBaseGuid')?.value;
+      const techniqueGuid = form.get('silvicultureTechniqueGuid')?.value;
+      const methodGuid = form.get('silvicultureMethodGuid')?.value;
+  
+      const baseDesc = this.silvicultureBaseCode.find(b => b.silvicultureBaseGuid === baseGuid)?.description;
+      const techniqueDesc = this.silvicultureTechniqueCode.find(t => t.silvicultureTechniqueGuid === techniqueGuid && t.silvicultureBaseGuid === baseGuid)?.description;
+      const methodDesc = this.silvicultureMethodCode.find(m => m.silvicultureMethodGuid === methodGuid && m.silvicultureTechniqueGuid === techniqueGuid)?.description;  
+      //  reset technique/method if no longer valid
+      if (!techniqueDesc) {
+        form.get('silvicultureTechniqueGuid')?.setValue(null, { emitEvent: false });
+        form.get('silvicultureMethodGuid')?.setValue(null, { emitEvent: false });
+      }
+      if (!methodDesc) {
+        form.get('silvicultureMethodGuid')?.setValue(null, { emitEvent: false });
+      }
+  
+      //  Generate new activity name
+      const newName = [baseDesc, techniqueDesc, methodDesc].filter(Boolean).join(' - ');
+  
+      form.get('activityName')?.setValue(newName, { emitEvent: false });
+      
+      this.cd.detectChanges();
+    }
+  }
+
   getActivityTitle(index: number): string {
     const activity = this.activityForms[index]?.value;
     if (!activity) return '';
@@ -456,7 +545,7 @@ export class ActivitiesComponent implements OnChanges, OnInit, CanComponentDeact
           this.isActivityDirty[index] = false;
           this.activityForms[index].markAsPristine(); // reset dirty tracking
           this.expandedPanels = this.activities.map((_, i) => i === index);
-          this.getActivities(() => this.scrollToActivity(0));
+          this.getActivities(() => this.expandAndScrollToActivity(updatedData.activityGuid));
         },
         error: () => {
           this.snackbarService.open(
@@ -478,10 +567,7 @@ export class ActivitiesComponent implements OnChanges, OnInit, CanComponentDeact
           this.isActivityDirty[index] = false;
           this.activityForms[index].markAsPristine(); // Reset dirty tracking
           this.expandedPanels.push(true);
-          this.getActivities(() => {  
-            this.expandedPanels = this.activities.map((_, i) => i === 0);
-            this.scrollToActivity(0);
-        });
+          this.getActivities(() => this.expandAndScrollToActivity(response.activityGuid));
         },
         error: () => {
           this.snackbarService.open(
@@ -495,30 +581,37 @@ export class ActivitiesComponent implements OnChanges, OnInit, CanComponentDeact
     this.isNewActivityBeingAdded = false;
   }
 
-  scrollToActivity(index: number): void {
-    setTimeout(() => {
+  expandAndScrollToActivity(activityGuid: string): void {
+    // Find the index of the newly saved activity
+    const index = this.activities.findIndex(activity => activity.activityGuid === activityGuid);
+  
+    if (index !== -1) {
+      // Expand only the newly saved activity
+      this.expandedPanels = this.activities.map((_, i) => i === index);
+  
+      // Scroll to the newly saved activity
+      setTimeout(() => {
         const savedActivityElement = document.getElementById(`activity-${index}`);
         if (savedActivityElement) {
-            savedActivityElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          savedActivityElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
-    }, 100);
-}
+      }, 100);
+    }
+  }
 
   removeEmptyFields(obj: any, alwaysInclude: string[] = []): any {
     return Object.fromEntries(
-        Object.entries(obj).filter(([key, value]) => {
-            if (alwaysInclude.includes(key)) return true;
-            if (value === null || value === undefined || value === '') return false;
-            if (typeof value === 'object' && Object.keys(value).length > 0) {
-                const cleanedValue = this.removeEmptyFields(value);
-                return Object.keys(cleanedValue).length > 0;
-            }
-
-            return true;
-        })
+      Object.entries(obj).filter(([key, value]) => {
+        if (alwaysInclude.includes(key)) return true;
+        if (value === undefined || value === '') return false;
+        if (typeof value === 'object' && value !== null && Object.keys(value).length > 0) {
+          const cleanedValue = this.removeEmptyFields(value, alwaysInclude);
+          return Object.keys(cleanedValue).length > 0;
+        }
+        return true;
+      })
     );
   }
-
 
   
   onCancelActivity(index: number): void {
