@@ -1,0 +1,8 @@
+{
+  "resources": {
+    "includes": [
+      {"pattern": "org/geolatte/geom/crs/spatial_ref_sys.csv"},
+      {"pattern": "org/geolatte/geom/crs/epsg.properties"}
+    ]
+  }
+}

@@ -52,6 +52,7 @@
   { "name": "java.math.BigInteger" },
   { "name": "org.postgresql.util.PGobject" },
   { "name": "org.postgresql.geometric.PGpolygon"},
-  { "name": "org.postgresql.geometric.PGpoint"}
+  { "name": "org.postgresql.geometric.PGpoint"},
+  { "name": "org.locationtech.jts.geom.Point"}
 
 ]
