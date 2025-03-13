@@ -1,6 +1,13 @@
 package ca.bc.gov.nrs.wfprev;
 
-import ca.bc.gov.nrs.wfprev.common.serializers.*;
+import ca.bc.gov.nrs.wfprev.common.serializers.PGLineStringDeserializer;
+import ca.bc.gov.nrs.wfprev.common.serializers.PGLineStringSerializer;
+import ca.bc.gov.nrs.wfprev.common.serializers.PGMultiPolygonDeserializer;
+import ca.bc.gov.nrs.wfprev.common.serializers.PGMultiPolygonSerializer;
+import ca.bc.gov.nrs.wfprev.common.serializers.PGPointDeserializer;
+import ca.bc.gov.nrs.wfprev.common.serializers.PGPointSerializer;
+import ca.bc.gov.nrs.wfprev.common.serializers.PGPolygonDeserializer;
+import ca.bc.gov.nrs.wfprev.common.serializers.PGPolygonSerializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import jakarta.servlet.DispatcherType;

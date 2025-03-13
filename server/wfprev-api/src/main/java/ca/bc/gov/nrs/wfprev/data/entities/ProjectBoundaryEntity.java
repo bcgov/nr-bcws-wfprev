@@ -1,12 +1,12 @@
 package ca.bc.gov.nrs.wfprev.data.entities;
 
-import ca.bc.gov.nrs.wfprev.common.serializers.PGMultiPolygonDeserializer;
 import ca.bc.gov.nrs.wfprev.common.serializers.PGPolygonDeserializer;
 import ca.bc.gov.nrs.wfprev.common.serializers.PGPolygonSerializer;
+import ca.bc.gov.nrs.wfprev.common.types.PostgresPolygonType;
+import ca.bc.gov.nrs.wfprev.common.validators.Geometry;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.vividsolutions.jts.geom.Geometry;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -20,7 +20,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.JdbcType;
 import org.hibernate.annotations.UuidGenerator;
+import org.postgresql.geometric.PGpolygon;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
@@ -40,78 +42,84 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ProjectBoundaryEntity implements Serializable {
-  @Id
-  @UuidGenerator
-  @GeneratedValue(strategy = GenerationType.UUID)
-  @Column(name = "project_boundary_guid")
-  private UUID projectBoundaryGuid;
+    private static final long serialVersionUID = 1L;
 
-  @Column(name = "project_guid")
-  @NotNull
-  private UUID projectGuid;
-  
-  @NotNull
-	@Column(name="system_start_timestamp")
-	private Date systemStartTimestamp;
+    @Id
+    @UuidGenerator
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "project_boundary_guid")
+    private UUID projectBoundaryGuid;
 
-  @NotNull
-	@Column(name="system_end_timestamp")
-	private Date systemEndTimestamp;
+    @Column(name = "project_guid")
+    @NotNull
+    private UUID projectGuid;
 
-  @Column(name="mapping_label", length = 250)
-	private String mappingLabel;
+    @NotNull
+    @Column(name = "system_start_timestamp")
+    private Date systemStartTimestamp;
 
-  @NotNull
-	@Column(name="collection_date")
-	private Date collectionDate;
+    @NotNull
+    @Column(name = "system_end_timestamp")
+    private Date systemEndTimestamp;
 
-  @Column(name="collection_method", length = 4000)
-	private String collectionMethod;
+    @Column(name = "mapping_label", length = 250)
+    private String mappingLabel;
 
-  @Column(name="collector_name", length = 100)
-	private String collectorName;
+    @NotNull
+    @Column(name = "collection_date")
+    private Date collectionDate;
 
-  @NotNull
-  @Column(name = "boundary_size_ha", precision = 19, scale = 4)
-  private BigDecimal boundarySizeHa;
+    @Column(name = "collection_method", length = 4000)
+    private String collectionMethod;
 
-  @Column(name="boundary_comment", length = 2000)
-	private String boundaryComment;
+    @Column(name = "collector_name", length = 100)
+    private String collectorName;
 
-  @NotNull
-	@JsonSerialize(using= PGPolygonSerializer.class)
-	@JsonDeserialize(using= PGPolygonDeserializer.class)
-  @Column(name="location_geometry", columnDefinition = "geometry(Point,4326)")
-	public Geometry locationGeometry;
+    @NotNull
+    @Column(name = "boundary_size_ha", precision = 19, scale = 4)
+    private BigDecimal boundarySizeHa;
 
-	@NotNull
-	@JsonSerialize(using= PGPolygonSerializer.class)
-	@JsonDeserialize(using= PGPolygonDeserializer.class)
-	@Column(name="boundary_geometry", columnDefinition = "geometry(Polygon,4326)")
-	public Geometry boundaryGeometry;
+    @Column(name = "boundary_comment", length = 2000)
+    private String boundaryComment;
 
-  @Column(name = "revision_count", columnDefinition="Decimal(10) default '0'")
-  @NotNull
-  @Version
-  private Integer revisionCount;
+    @NotNull
+    @Column(name = "location_geometry", columnDefinition = "polygon")
+    @JdbcType(PostgresPolygonType.class)
+    @JsonDeserialize(using = PGPolygonDeserializer.class)
+    @JsonSerialize(using = PGPolygonSerializer.class)
+    @Geometry
+    public PGpolygon locationGeometry;
 
-  @CreatedBy
-  @NotNull
-	@Column(name="create_user", length = 64)
-	private String createUser;
+    @NotNull
+    @Column(name = "boundary_geometry", columnDefinition = "polygon")
+    @JdbcType(PostgresPolygonType.class)
+    @JsonDeserialize(using = PGPolygonDeserializer.class)
+    @JsonSerialize(using = PGPolygonSerializer.class)
+    @Geometry
+    public PGpolygon boundaryGeometry;
 
-  @CreatedDate
-  @NotNull
-	@Column(name="create_date")
-	private Date createDate;
+    @Column(name = "revision_count", columnDefinition = "Decimal(10) default '0'")
+    @NotNull
+    @Version
+    private Integer revisionCount;
 
-  @LastModifiedBy
-  @NotNull
-	@Column(name="update_user", length = 64)
-	private String updateUser;
+    @CreatedBy
+    @NotNull
+    @Column(name = "create_user", length = 64)
+    private String createUser;
 
-  @LastModifiedDate
-  @NotNull
-	@Column(name="update_date")
-	private Date updateDate;
+    @CreatedDate
+    @NotNull
+    @Column(name = "create_date")
+    private Date createDate;
+
+    @LastModifiedBy
+    @NotNull
+    @Column(name = "update_user", length = 64)
+    private String updateUser;
+
+    @LastModifiedDate
+    @NotNull
+    @Column(name = "update_date")
+    private Date updateDate;
 }
