@@ -2,6 +2,8 @@ package ca.bc.gov.nrs.wfprev.data.entities;
 
 import ca.bc.gov.nrs.wfprev.common.serializers.PGPolygonDeserializer;
 import ca.bc.gov.nrs.wfprev.common.serializers.PGPolygonSerializer;
+import ca.bc.gov.nrs.wfprev.common.serializers.PointDeserializer;
+import ca.bc.gov.nrs.wfprev.common.serializers.PointSerializer;
 import ca.bc.gov.nrs.wfprev.common.types.PostgresPolygonType;
 import ca.bc.gov.nrs.wfprev.common.validators.Geometry;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -21,7 +23,10 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.JdbcType;
+import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.UuidGenerator;
+import org.hibernate.type.SqlTypes;
+import org.locationtech.jts.geom.Point;
 import org.postgresql.geometric.PGpolygon;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
@@ -83,12 +88,11 @@ public class ProjectBoundaryEntity implements Serializable {
     private String boundaryComment;
 
     @NotNull
-    @Column(name = "location_geometry", columnDefinition = "polygon")
-    @JdbcType(PostgresPolygonType.class)
-    @JsonDeserialize(using = PGPolygonDeserializer.class)
-    @JsonSerialize(using = PGPolygonSerializer.class)
-    @Geometry
-    public PGpolygon locationGeometry;
+    @Column(name = "location_geometry", columnDefinition = "geometry(Point, 4326)")
+    @JdbcTypeCode(SqlTypes.GEOMETRY)
+    @JsonDeserialize(using = PointDeserializer.class)
+    @JsonSerialize(using = PointSerializer.class)
+    private Point locationGeometry;
 
     @NotNull
     @Column(name = "boundary_geometry", columnDefinition = "polygon")
