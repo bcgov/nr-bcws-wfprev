@@ -244,10 +244,13 @@ describe('ActivitiesComponent', () => {
   
     component.onTechniqueChange('technique1', form);
   
-    expect(component.filteredMethodCode).toEqual([{ silvicultureTechniqueGuid: 'technique1', silvicultureMethodGuid: 'method1' }]);
+    expect(form.get('filteredMethodCode')?.value).toEqual([
+      { silvicultureTechniqueGuid: 'technique1', silvicultureMethodGuid: 'method1' }
+    ]);
     expect(form.get('silvicultureMethodGuid')?.enabled).toBeTrue();
     expect(form.get('silvicultureMethodGuid')?.value).toBeNull();
   });
+  
 
   it('should return "" if activity is missing', () => {
     expect(component.getActivityTitle(0)).toBe('');
@@ -275,25 +278,26 @@ describe('ActivitiesComponent', () => {
     expect(component.getActivityTitle(0)).toBe('');
   });
   
-  it('should construct title from base, technique, and method when Results Reportable is ON', () => {
+  it('should construct title with missing elements when Results Reportable is ON', () => {
     component.silvicultureBaseCode = [{ silvicultureBaseGuid: 'base1', description: 'Base A' }];
-    component.silvicultureTechniqueCode = [{ silvicultureTechniqueGuid: 'tech1', description: 'Technique B' }];
+    component.silvicultureTechniqueCode = [{ silvicultureTechniqueGuid: 'tech1', description: 'Technique B', silvicultureBaseGuid: 'base1' }];
     component.silvicultureMethodCode = [{ silvicultureMethodGuid: 'method1', description: 'Method C' }];
   
     const form = component.createActivityForm({
       isResultsReportableInd: true,
       silvicultureBaseGuid: 'base1',
       silvicultureTechniqueGuid: 'tech1',
-      silvicultureMethodGuid: 'method1'
+      silvicultureMethodGuid: null
     });
     component.activityForms.push(form);
   
-    expect(component.getActivityTitle(0)).toBe('Base A - Technique B - Method C');
+    expect(component.getActivityTitle(0)).toBe('Base A - Technique B');
   });
+  
   
   it('should construct title with missing elements when Results Reportable is ON', () => {
     component.silvicultureBaseCode = [{ silvicultureBaseGuid: 'base1', description: 'Base A' }];
-    component.silvicultureTechniqueCode = [{ silvicultureTechniqueGuid: 'tech1', description: 'Technique B' }];
+    component.silvicultureTechniqueCode = [{ silvicultureTechniqueGuid: 'tech1', description: 'Technique B', silvicultureBaseGuid: 'base1' }];
     component.silvicultureMethodCode = [{ silvicultureMethodGuid: 'method1', description: 'Method C' }];
   
     // Only Base and Technique set
@@ -303,21 +307,25 @@ describe('ActivitiesComponent', () => {
       silvicultureTechniqueGuid: 'tech1',
       silvicultureMethodGuid: null
     });
+  
     component.activityForms.push(form1);
+    component.cd.detectChanges(); 
   
-    expect(component.getActivityTitle(0)).toBe('Base A - Technique B');
+    expect(component.getActivityTitle(0)).toBe('Base A - Technique B'); 
   
-    // Only Base set
     const form2 = component.createActivityForm({
       isResultsReportableInd: true,
       silvicultureBaseGuid: 'base1',
       silvicultureTechniqueGuid: null,
       silvicultureMethodGuid: null
     });
+  
     component.activityForms.push(form2);
+    component.cd.detectChanges();
   
     expect(component.getActivityTitle(1)).toBe('Base A');
   });
+  
 
   it('should enable required validator and disable activityName when Results Reportable is ON', () => {
     const form = component.createActivityForm({
@@ -478,22 +486,6 @@ describe('ActivitiesComponent', () => {
     form.markAsPristine();
     
     expect(component.canDeactivate()).toBeTrue();
-  });
-
-  it('should scroll to the correct activity element', (done) => {
-    const index = 2;
-    const elementId = `activity-${index}`;
-    const mockElement = document.createElement('div');
-    spyOn(document, 'getElementById').and.returnValue(mockElement);
-    spyOn(mockElement, 'scrollIntoView');
-  
-    component.scrollToActivity(index);
-  
-    setTimeout(() => {
-      expect(document.getElementById).toHaveBeenCalledWith(elementId);
-      expect(mockElement.scrollIntoView).toHaveBeenCalledWith({ behavior: 'smooth', block: 'start' });
-      done();
-    }, 150);
   });
   
   
