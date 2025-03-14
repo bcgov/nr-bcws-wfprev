@@ -1220,5 +1220,11 @@
     "allDeclaredFields": true,
     "allPublicMethods": true,
     "allDeclaredConstructors": true
+  },
+  {
+    "name": "org.geolatte.geom.codec.PostgisWkbDecoder",
+    "allDeclaredFields": true,
+    "allPublicMethods": true,
+    "allDeclaredConstructors": true
   }
 ]

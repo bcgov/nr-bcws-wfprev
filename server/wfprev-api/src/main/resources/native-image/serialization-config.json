@@ -42,7 +42,7 @@
   { "name": "org.springframework.hateoas.RepresentationModel"},
   { "name": "org.springframework.hateoas.Link"},
   { "name": "org.springframework.hateoas.Links"},
-  { "name": "java.util.Date"},
+  { "name": "java.util.Date" },
   { "name": "java.sql.Timestamp" },
   { "name": "java.lang.Number" },
   { "name": "java.lang.Integer" },
@@ -51,8 +51,22 @@
   { "name": "java.math.BigDecimal" },
   { "name": "java.math.BigInteger" },
   { "name": "org.postgresql.util.PGobject" },
-  { "name": "org.postgresql.geometric.PGpolygon"},
-  { "name": "org.postgresql.geometric.PGpoint"},
-  { "name": "org.locationtech.jts.geom.Point"}
+  { "name":"org.geolatte.geom.AbstractPositionSequence" }, 
+  { "name":"org.geolatte.geom.PackedPositionSequence" }, 
+  { "name":"org.geolatte.geom.Positions$CanMakeG2D" }, 
+  { "name":"org.geolatte.geom.jts.PointSequenceCoordinateSequenceFactory" }, 
+  { "name":"org.locationtech.jts.geom.Geometry" }, 
+  { "name":"org.locationtech.jts.geom.GeometryFactory" }, 
+  { "name":"org.locationtech.jts.geom.Point" }, 
+  { "name":"org.locationtech.jts.geom.PrecisionModel" },
+  { "name":"org.locationtech.jts.geom.PrecisionModel$Type" },
+  { "name":"org.locationtech.jts.geom.impl.CoordinateArraySequence" },
+  { "name":"org.locationtech.jts.geom.impl.CoordinateArraySequenceFactory" },
+  { "name":"org.locationtech.jts.geom.Coordinate" },
+  { "name":"org.locationtech.jts.geom.Coordinate[]" },
+  { "name":"org.postgresql.geometric.PGpoint" }, 
+  { "name":"org.postgresql.geometric.PGpoint[]" }, 
+  { "name":"org.postgresql.geometric.PGpolygon" }
+
 
 ]
