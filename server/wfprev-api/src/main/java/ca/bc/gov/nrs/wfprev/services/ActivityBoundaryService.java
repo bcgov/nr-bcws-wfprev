@@ -25,6 +25,7 @@ import org.springframework.hateoas.CollectionModel;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.MessageFormat;
 import java.util.Date;
 import java.util.List;
@@ -209,8 +210,8 @@ public class ActivityBoundaryService implements CommonService {
         if(project != null && boundary.getGeometry() != null && !polygon.isNull()) {
             PGpoint centroid = projectBoundaryService.calculateCentroid(polygon);
 
-            BigDecimal latitude = BigDecimal.valueOf(centroid.y);
-            BigDecimal longitude = BigDecimal.valueOf(centroid.x);
+            BigDecimal latitude = BigDecimal.valueOf(centroid.y).setScale(7, RoundingMode.HALF_UP);
+            BigDecimal longitude = BigDecimal.valueOf(centroid.x).setScale(7, RoundingMode.HALF_UP);
 
             project.setLatitude(latitude);
             project.setLongitude(longitude);
