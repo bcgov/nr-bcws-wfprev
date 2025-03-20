@@ -210,11 +210,11 @@ public class ActivityBoundaryService implements CommonService {
         if(project != null && boundary.getGeometry() != null && !polygon.isNull()) {
             PGpoint centroid = projectBoundaryService.calculateCentroid(polygon);
 
-            BigDecimal latitude = BigDecimal.valueOf(centroid.y).setScale(7, RoundingMode.HALF_UP);
-            BigDecimal longitude = BigDecimal.valueOf(centroid.x).setScale(7, RoundingMode.HALF_UP);
+            BigDecimal latitude = BigDecimal.valueOf(centroid.y);
+            BigDecimal longitude = BigDecimal.valueOf(centroid.x);
 
-            project.setLatitude(latitude);
-            project.setLongitude(longitude);
+            project.setLatitude(latitude.scale() > 7 ? latitude.setScale(7, RoundingMode.HALF_UP) : latitude);
+            project.setLongitude(longitude.scale() > 7 ? longitude.setScale(7, RoundingMode.HALF_UP) : longitude);
             projectService.updateProject(project);
         } else {
             throw new EntityNotFoundException("Project could not be found while attempting to update coordinates");
