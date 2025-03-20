@@ -6,6 +6,7 @@ import ca.bc.gov.nrs.wfprev.data.entities.ActivityBoundaryEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ActivityEntity;
 import ca.bc.gov.nrs.wfprev.data.models.ActivityBoundaryModel;
 import ca.bc.gov.nrs.wfprev.data.models.ActivityModel;
+import ca.bc.gov.nrs.wfprev.data.models.ProjectModel;
 import ca.bc.gov.nrs.wfprev.data.repositories.ActivityBoundaryRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.ActivityRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -15,6 +16,8 @@ import jakarta.validation.Path;
 import jakarta.validation.Validator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.postgresql.geometric.PGpoint;
+import org.postgresql.geometric.PGpolygon;
 import org.springframework.hateoas.CollectionModel;
 
 import java.math.BigDecimal;
@@ -40,6 +43,8 @@ class ActivityBoundaryServiceTest {
     private ActivityRepository activityRepository;
     private ActivityService activityService;
     private ActivityBoundaryService activityBoundaryService;
+    private ProjectBoundaryService projectBoundaryService;
+    private ProjectService projectService;
     private Validator validator;
 
     @BeforeEach
@@ -48,6 +53,8 @@ class ActivityBoundaryServiceTest {
         activityBoundaryResourceAssembler = mock(ActivityBoundaryResourceAssembler.class);
         activityRepository = mock(ActivityRepository.class);
         activityService = mock(ActivityService.class);
+        projectBoundaryService = mock(ProjectBoundaryService.class);
+        projectService = mock(ProjectService.class);
         validator = mock(Validator.class);
 
         activityBoundaryService = new ActivityBoundaryService(
@@ -55,6 +62,8 @@ class ActivityBoundaryServiceTest {
                 activityBoundaryResourceAssembler,
                 activityRepository,
                 activityService,
+                projectBoundaryService,
+                projectService,
                 validator
         );
     }
@@ -102,6 +111,7 @@ class ActivityBoundaryServiceTest {
     void testCreateActivityBoundary_Success() {
         // GIVEN
         String activityGuid = "789e1234-e89b-12d3-a456-426614174002";
+        String projectGuid = "101e7890-e89b-12d3-a456-426614174004";
 
         ActivityBoundaryModel boundaryModel = new ActivityBoundaryModel();
         boundaryModel.setActivityGuid(activityGuid);
@@ -112,24 +122,38 @@ class ActivityBoundaryServiceTest {
 
         ActivityBoundaryEntity boundaryEntity = new ActivityBoundaryEntity();
         boundaryEntity.setActivityGuid(UUID.fromString(activityGuid));
+        boundaryEntity.setGeometry(new PGpolygon(new PGpoint[]{
+                new PGpoint(0.0, 0.0),
+                new PGpoint(1.0, 0.0),
+                new PGpoint(1.0, 1.0),
+                new PGpoint(0.0, 1.0)
+        }));
+
+        ProjectModel mockProject = new ProjectModel();
+        mockProject.setProjectGuid(projectGuid);
+        mockProject.setLatitude(BigDecimal.ZERO);
+        mockProject.setLongitude(BigDecimal.ZERO);
 
         when(activityService.getActivity(any(), any(), eq(activityGuid))).thenReturn(new ActivityModel());
         when(activityRepository.findById(UUID.fromString(activityGuid))).thenReturn(Optional.of(activityEntity));
-        when(activityBoundaryResourceAssembler.toEntity(any(ActivityBoundaryModel.class)))
-                .thenReturn(boundaryEntity); // ✅ Ensures it returns a valid entity
-        when(activityBoundaryRepository.save(any(ActivityBoundaryEntity.class)))
-                .thenReturn(boundaryEntity);
-        when(activityBoundaryResourceAssembler.toModel(any(ActivityBoundaryEntity.class)))
-                .thenReturn(boundaryModel); // ✅ Corrected to match expected return type
+        when(activityBoundaryResourceAssembler.toEntity(any(ActivityBoundaryModel.class))).thenReturn(boundaryEntity);
+        when(activityBoundaryRepository.save(any(ActivityBoundaryEntity.class))).thenReturn(boundaryEntity);
+        when(activityBoundaryResourceAssembler.toModel(any(ActivityBoundaryEntity.class))).thenReturn(boundaryModel);
+        when(projectService.getProjectById(eq(projectGuid))).thenReturn(mockProject);
+        when(projectBoundaryService.calculateCentroid(any())).thenReturn(new PGpoint(0.5, 0.5));
 
         // WHEN
         ActivityBoundaryModel result = activityBoundaryService.createActivityBoundary(
-                "project-guid", "fiscal-guid", activityGuid, boundaryModel);
+                projectGuid, "fiscal-guid", activityGuid, boundaryModel);
 
         // THEN
         assertNotNull(result);
+        assertEquals(BigDecimal.valueOf(0.5), mockProject.getLatitude());
+        assertEquals(BigDecimal.valueOf(0.5), mockProject.getLongitude());
         verify(activityBoundaryRepository).save(any(ActivityBoundaryEntity.class));
+        verify(projectService).updateProject(any(ProjectModel.class));
     }
+
 
     @Test
     void testCreateActivityBoundary_NullEntity() {
@@ -192,13 +216,25 @@ class ActivityBoundaryServiceTest {
         // GIVEN
         String activityGuid = "789e1234-e89b-12d3-a456-426614174002";
         String boundaryGuid = "101e7890-e89b-12d3-a456-426614174003";
+        String projectGuid = "101e7890-e89b-12d3-a456-426614174004";
 
         ActivityBoundaryModel boundaryModel = new ActivityBoundaryModel();
         boundaryModel.setActivityBoundaryGuid(boundaryGuid);
         boundaryModel.setActivityGuid(activityGuid);
 
+        ProjectModel mockProject = new ProjectModel();
+        mockProject.setProjectGuid(projectGuid);
+        mockProject.setLatitude(BigDecimal.ZERO);
+        mockProject.setLongitude(BigDecimal.ZERO);
+
         ActivityBoundaryEntity existingEntity = new ActivityBoundaryEntity();
         existingEntity.setActivityGuid(UUID.fromString(activityGuid));
+        existingEntity.setGeometry(new PGpolygon(new PGpoint[]{
+                new PGpoint(0.0, 0.0),
+                new PGpoint(1.0, 0.0),
+                new PGpoint(1.0, 1.0),
+                new PGpoint(0.0, 1.0)
+        }));
 
         when(activityService.getActivity(any(), any(), eq(activityGuid))).thenReturn(null);
         when(activityBoundaryRepository.findByActivityBoundaryGuid(UUID.fromString(boundaryGuid)))
@@ -209,15 +245,22 @@ class ActivityBoundaryServiceTest {
                 .thenReturn(existingEntity);
         when(activityBoundaryResourceAssembler.toModel(existingEntity))
                 .thenReturn(boundaryModel);
+        when(projectService.getProjectById(eq(projectGuid)))
+                .thenReturn(mockProject);
+        when(projectBoundaryService.calculateCentroid(any()))
+                .thenReturn(new PGpoint(0.5, 0.5));
 
         // WHEN
         ActivityBoundaryModel result = activityBoundaryService.updateActivityBoundary(
-                "project-guid", "fiscal-guid", activityGuid, boundaryModel);
+                projectGuid, "fiscal-guid", activityGuid, boundaryModel);
 
         // THEN
         assertNotNull(result);
+        assertEquals(BigDecimal.valueOf(0.5), mockProject.getLatitude());
+        assertEquals(BigDecimal.valueOf(0.5), mockProject.getLongitude());
         verify(activityBoundaryRepository).saveAndFlush(any(ActivityBoundaryEntity.class));
     }
+
 
     @Test
     void testUpdateActivityBoundary_NotFound() {

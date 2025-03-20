@@ -5,8 +5,10 @@ import ca.bc.gov.nrs.wfprev.common.services.CommonService;
 import ca.bc.gov.nrs.wfprev.data.assemblers.ActivityBoundaryResourceAssembler;
 import ca.bc.gov.nrs.wfprev.data.entities.ActivityBoundaryEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ActivityEntity;
+import ca.bc.gov.nrs.wfprev.data.entities.ProjectBoundaryEntity;
 import ca.bc.gov.nrs.wfprev.data.models.ActivityBoundaryModel;
 import ca.bc.gov.nrs.wfprev.data.models.ActivityModel;
+import ca.bc.gov.nrs.wfprev.data.models.ProjectModel;
 import ca.bc.gov.nrs.wfprev.data.repositories.ActivityBoundaryRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.ActivityRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -15,11 +17,14 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validator;
 import lombok.extern.slf4j.Slf4j;
+import org.postgresql.geometric.PGpoint;
+import org.postgresql.geometric.PGpolygon;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.util.Date;
 import java.util.List;
@@ -41,6 +46,8 @@ public class ActivityBoundaryService implements CommonService {
     private final ActivityBoundaryResourceAssembler activityBoundaryResourceAssembler;
     private final ActivityRepository activityRepository;
     private final ActivityService activityService;
+    private final ProjectBoundaryService projectBoundaryService;
+    private final ProjectService projectService;
     private final Validator validator;
 
     public ActivityBoundaryService(
@@ -48,11 +55,15 @@ public class ActivityBoundaryService implements CommonService {
             ActivityBoundaryResourceAssembler activityBoundaryResourceAssembler,
             ActivityRepository activityRepository,
             ActivityService activityService,
+            ProjectBoundaryService projectBoundaryService,
+            ProjectService projectService,
             Validator validator) {
         this.activityBoundaryRepository = activityBoundaryRepository;
         this.activityBoundaryResourceAssembler = activityBoundaryResourceAssembler;
         this.activityRepository = activityRepository;
         this.activityService = activityService;
+        this.projectBoundaryService = projectBoundaryService;
+        this.projectService = projectService;
         this.validator = validator;
     }
 
@@ -98,6 +109,8 @@ public class ActivityBoundaryService implements CommonService {
             entity.setActivityGuid(activityEntity.getActivityGuid());
 
             ActivityBoundaryEntity savedEntity = activityBoundaryRepository.save(entity);
+
+            updateProjectCoordinates(savedEntity, projectGuid);
             return activityBoundaryResourceAssembler.toModel(savedEntity);
         } else throw new IllegalArgumentException("ActivityBoundaryModel resource to be created cannot be null");
     }
@@ -132,6 +145,8 @@ public class ActivityBoundaryService implements CommonService {
             }
 
             ActivityBoundaryEntity entity = activityBoundaryResourceAssembler.updateEntity(resource, existingEntity);
+
+            updateProjectCoordinates(entity, projectGuid);
             return saveActivityBoundary(entity);
         } else throw new IllegalArgumentException("ActivityBoundaryModel resource to be updated cannot be null");
     }
@@ -185,5 +200,23 @@ public class ActivityBoundaryService implements CommonService {
         }
 
         activityBoundaryRepository.deleteByActivityBoundaryGuid(UUID.fromString(boundaryGuid));
+    }
+
+    public void updateProjectCoordinates(ActivityBoundaryEntity boundary, String projectGuid) {
+        ProjectModel project = projectService.getProjectById(String.valueOf(projectGuid));
+        PGpolygon polygon = boundary.getGeometry();
+
+        if(project != null && boundary.getGeometry() != null && !polygon.isNull()) {
+            PGpoint centroid = projectBoundaryService.calculateCentroid(polygon);
+
+            BigDecimal latitude = BigDecimal.valueOf(centroid.y);
+            BigDecimal longitude = BigDecimal.valueOf(centroid.x);
+
+            project.setLatitude(latitude);
+            project.setLongitude(longitude);
+            projectService.updateProject(project);
+        } else {
+            throw new EntityNotFoundException("Project could not be found while attempting to update coordinates");
+        }
     }
 }

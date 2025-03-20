@@ -20,6 +20,7 @@ import org.postgresql.geometric.PGpolygon;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.util.Date;
 import java.util.List;
@@ -102,6 +103,9 @@ public class ProjectBoundaryService implements CommonService {
       entity.setProjectGuid(projectEntity.getProjectGuid());
 
       ProjectBoundaryEntity savedEntity = projectBoundaryRepository.save(entity);
+
+      updateProjectCoordinates(savedEntity);
+
       return projectBoundaryResourceAssembler.toModel(savedEntity);
     } else throw new IllegalArgumentException("ProjectBoundaryModel resource to be created cannot be null");
   }
@@ -138,6 +142,9 @@ public class ProjectBoundaryService implements CommonService {
   public ProjectBoundaryModel saveProjectBoundary(ProjectBoundaryEntity entity) {
     try {
       ProjectBoundaryEntity savedEntity = projectBoundaryRepository.saveAndFlush(entity);
+
+      updateProjectCoordinates(savedEntity);
+
       return projectBoundaryResourceAssembler.toModel(savedEntity);
     } catch (IllegalArgumentException e) {
       log.error("IllegalArgumentException for Project Boundary: {}", e.getMessage(), e);
@@ -187,5 +194,64 @@ public class ProjectBoundaryService implements CommonService {
     }
 
     projectBoundaryRepository.deleteByProjectBoundaryGuid(UUID.fromString(boundaryGuid));
+  }
+
+  public void updateProjectCoordinates(ProjectBoundaryEntity boundary) {
+    ProjectModel project = projectService.getProjectById(String.valueOf(boundary.getProjectGuid()));
+    PGpolygon polygon = boundary.getBoundaryGeometry();
+
+    if(project != null && boundary.getBoundaryGeometry() != null && !polygon.isNull()) {
+
+      PGpoint centroid = calculateCentroid(polygon);
+
+      BigDecimal latitude = BigDecimal.valueOf(centroid.y);
+      BigDecimal longitude = BigDecimal.valueOf(centroid.x);
+
+      project.setLatitude(latitude);
+      project.setLongitude(longitude);
+      projectService.updateProject(project);
+    } else {
+      throw new EntityNotFoundException("Project could not be found while attempting to update coordinates");
+    }
+  }
+
+  public PGpoint calculateCentroid(PGpolygon polygon) {
+      // Extract points from the polygon
+      PGpoint[] points = polygon.points;
+
+      // Initialize variables for centroid calculation
+      double totalArea = 0;
+      double centroidX = 0;
+      double centroidY = 0;
+
+      // For simple centroid calculation
+      if (points.length <= 2) {
+        // Just return the first point if there aren't enough points for a proper polygon
+        return points[0];
+      }
+
+      // Calculate centroid using the weighted average method
+      for (int i = 0; i < points.length; i++) {
+        int j = (i + 1) % points.length;
+        double crossProduct = points[i].x * points[j].y - points[j].x * points[i].y;
+
+        totalArea += crossProduct;
+        centroidX += (points[i].x + points[j].x) * crossProduct;
+        centroidY += (points[i].y + points[j].y) * crossProduct;
+      }
+
+      // Finalize the centroid calculation
+      totalArea /= 2.0;
+      centroidX /= (6.0 * totalArea);
+      centroidY /= (6.0 * totalArea);
+
+      // Handle the sign of the area (clockwise vs counterclockwise)
+      if (totalArea < 0) {
+        centroidX = -centroidX;
+        centroidY = -centroidY;
+      }
+
+      return new PGpoint(centroidX, centroidY);
+
   }
 }
