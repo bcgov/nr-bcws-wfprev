@@ -5,7 +5,7 @@
     <div class="dialog-content">
       <!-- File Upload Section -->
         <div class="file-upload">
-          <input #fileInput hidden type="file" (change)="onFileSelected($event)" accept=".pdf,.doc,.docx,.jpg,.png"/>
+          <input #fileInput hidden type="file" (change)="onFileSelected($event)" [accept]="getAcceptedFileTypes()"/>
           <button class="choose-file" (click)="fileInput.click()">
             <img alt="upload-icon" class="icon" src="/assets/upload.svg" />
             Choose File</button>
@@ -15,7 +15,7 @@
         <label>Attachment Type (Required)</label>
         <select class="custom-select" [(ngModel)]="attachmentType">
           <option value="">Select</option>
-          <option *ngFor="let type of attachmentTypes" value="type">{{ type }}</option>
+          <option *ngFor="let type of attachmentTypes" [value]="type">{{ type }}</option>
         </select>
        </div>
        <div class="attachment-detail">

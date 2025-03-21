@@ -1,10 +1,14 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTableModule } from '@angular/material/table';
+import { EMPTY, switchMap } from 'rxjs';
 import { AddAttachmentComponent } from 'src/app/components/add-attachment/add-attachment.component';
+import { FileAttachment, ProjectBoundary } from 'src/app/components/models';
+import { AttachmentService } from 'src/app/services/attachment-service';
 import { ProjectService } from 'src/app/services/project-services';
+import { SpatialService } from 'src/app/services/spatial-services';
 import { Messages } from 'src/app/utils/messages';
 
 @Component({
@@ -15,10 +19,15 @@ import { Messages } from 'src/app/utils/messages';
   styleUrl: './project-files.component.scss'
 })
 export class ProjectFilesComponent {
+  @Input() projectGuid: string = '';
+
   constructor(
     public projectService: ProjectService,
     private readonly snackbarService: MatSnackBar,
-    public readonly dialog: MatDialog)
+    public readonly dialog: MatDialog,
+    public attachmentService: AttachmentService,
+    public spatialService: SpatialService
+  )
   {}
 
   messages = Messages;  
@@ -59,21 +68,62 @@ export class ProjectFilesComponent {
     })
   }
 
-  uploadFile(file: File): void{
-    this.projectService.uploadDocument({
-      file
-    }).subscribe({
-      next: (response) => {
-        this.snackbarService.open(
-          this.messages.fileUploadSuccess,
-          'OK',
-          { duration: 5000, panelClass: 'snackbar-success' },
+  uploadFile(file: File): void {
+    this.projectService.uploadDocument({ file }).pipe(
+      switchMap((response) => {
+        if (!response) {
+          console.error('Upload failed: No response from uploadDocument');
+          return EMPTY;
+        }
+  
+        const attachment: FileAttachment = {
+          sourceObjectNameCode: { sourceObjectNameCode: "PROJECT" },
+          sourceObjectUniqueId: this.projectGuid,
+          documentPath: response.filePath,
+          fileIdentifier: response.fileId,
+          attachmentContentTypeCode: { attachmentContentTypeCode: "OTHER" },
+          attachmentDescription: "DESCRIPTION",
+          attachmentReadOnlyInd: false
+        };
+  
+        return this.attachmentService.createProjectAttachment(this.projectGuid, attachment).pipe(
+          switchMap(() => {
+            // Define your project boundary data
+            const projectBoundary: ProjectBoundary = {
+              projectGuid: this.projectGuid,
+              systemStartTimestamp: "2026-01-01",
+              systemEndTimestamp: "2026-12-31",
+              mappingLabel: "Test mapping label",
+              collectionDate: "2026-01-15",
+              collectionMethod: "Test collection method",
+              collectorName: "Test_user",
+              boundarySizeHa: 200.5,
+              boundaryComment: "Test activity boundary comment",
+              boundaryGeometry: {
+                type: "Polygon",
+                coordinates: [
+                  [
+                    [-124.0000, 49.0000],
+                    [-124.0001, 49.0001],
+                    [-124.0002, 49.0000],
+                    [-124.0000, 49.0000]
+                  ]
+                ]
+              },
+              locationGeometry: [-124.0000, 49.0000]
+            };
+  
+            // Call createProjectBoundary after the attachment is successful
+            return this.projectService.createProjectBoundary(this.projectGuid, projectBoundary);
+          })
         );
-      },
-      error: () => {
-      }
-    })
+      })
+    ).subscribe({
+      next: () => console.log('Project boundary created successfully'),
+      error: (error) => console.error('Error during file upload or boundary creation:', error),
+    });
   }
+  
 
   deleteFile(file:any){
     //to do
