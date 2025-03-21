@@ -3,6 +3,7 @@ package ca.bc.gov.nrs.wfprev;
 import ca.bc.gov.nrs.wfprev.controllers.ActivityBoundaryController;
 import ca.bc.gov.nrs.wfprev.data.models.ActivityBoundaryModel;
 import ca.bc.gov.nrs.wfprev.services.ActivityBoundaryService;
+import ca.bc.gov.nrs.wfprev.services.CoordinatesService;
 import com.nimbusds.jose.shaded.gson.Gson;
 import com.nimbusds.jose.shaded.gson.GsonBuilder;
 import com.nimbusds.jose.shaded.gson.JsonDeserializer;
@@ -51,6 +52,9 @@ class ActivityBoundaryControllerTest {
 
     @MockBean
     private ActivityBoundaryService activityBoundaryService;
+
+    @MockBean
+    private CoordinatesService coordinatesService;
 
     @Autowired
     private MockMvc mockMvc;
