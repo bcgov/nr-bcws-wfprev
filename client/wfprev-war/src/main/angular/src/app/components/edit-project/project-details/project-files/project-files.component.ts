@@ -3,7 +3,7 @@ import { Component, Input } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTableModule } from '@angular/material/table';
-import { EMPTY, switchMap } from 'rxjs';
+import { EMPTY, from, switchMap } from 'rxjs';
 import { AddAttachmentComponent } from 'src/app/components/add-attachment/add-attachment.component';
 import { FileAttachment, ProjectBoundary } from 'src/app/components/models';
 import { AttachmentService } from 'src/app/services/attachment-service';
@@ -87,36 +87,33 @@ export class ProjectFilesComponent {
         };
   
         return this.attachmentService.createProjectAttachment(this.projectGuid, attachment).pipe(
-          switchMap(() => {
-            // Define your project boundary data
-            const projectBoundary: ProjectBoundary = {
-              projectGuid: this.projectGuid,
-              systemStartTimestamp: "2026-01-01",
-              systemEndTimestamp: "2026-12-31",
-              mappingLabel: "Test mapping label",
-              collectionDate: "2026-01-15",
-              collectionMethod: "Test collection method",
-              collectorName: "Test_user",
-              boundarySizeHa: 200.5,
-              boundaryComment: "Test activity boundary comment",
-              boundaryGeometry: {
-                type: "Polygon",
-                coordinates: [
-                  [
-                    [-124.0000, 49.0000],
-                    [-124.0001, 49.0001],
-                    [-124.0002, 49.0000],
-                    [-124.0000, 49.0000]
-                  ]
-                ]
-              },
-              locationGeometry: [-124.0000, 49.0000]
-            };
-  
-            // Call createProjectBoundary after the attachment is successful
-            return this.projectService.createProjectBoundary(this.projectGuid, projectBoundary);
-          })
+          switchMap(() => from(this.extractCoordinates(file))) // Extract coordinates
         );
+      }),
+      switchMap((coordinates) => {
+        if (!coordinates || coordinates.length === 0) {
+          console.log('File is not a spatial file. Skipping project boundary creation.');
+          return EMPTY; // Skip createProjectBoundary
+        }
+  
+        const projectBoundary: ProjectBoundary = {
+          projectGuid: this.projectGuid,
+          systemStartTimestamp: "2026-01-01",
+          systemEndTimestamp: "2026-12-31",
+          mappingLabel: "Test mapping label",
+          collectionDate: "2026-01-15",
+          collectionMethod: "Test collection method",
+          collectorName: "Test_user",
+          boundarySizeHa: 200.5,
+          boundaryComment: "Test activity boundary comment",
+          boundaryGeometry: {
+            type: "Polygon",
+            coordinates: coordinates as number[][][]
+          },
+          locationGeometry: coordinates[0][0] as [number, number]
+        };
+  
+        return this.projectService.createProjectBoundary(this.projectGuid, projectBoundary);
       })
     ).subscribe({
       next: () => console.log('Project boundary created successfully'),
@@ -124,6 +121,25 @@ export class ProjectFilesComponent {
     });
   }
   
+  private async extractCoordinates(file: File): Promise<number[][][]> {
+    const fileType = file.name.split('.').pop()?.toLowerCase();
+
+    try {
+      if (fileType === 'kml') {
+        return this.spatialService.extractKMLCoordinates(await file.text()) as number[][][];
+      } else if (fileType === 'kmz') {
+        return await this.spatialService.extractKMZCoordinates(file) as number[][][];
+      } else if (fileType === 'shp') {
+        return await this.spatialService.extractSHPCoordinates(file) as number[][][];
+      } else {
+        console.error('Unsupported file type:', fileType);
+        return [];
+      }
+    } catch (error) {
+      console.error('Error extracting coordinates:', error);
+      return [];
+    }
+  }
 
   deleteFile(file:any){
     //to do
