@@ -91,12 +91,12 @@ jobs:
           fi
 
      # moved to pre-release
-     # - name: Get digest of API docker image
-     #   id: getDigestAPI
-     #   run: |
-     #     export IMAGE='${{vars.REPOSITORY_HOST}}/${{ github.repository }}-wfprev-api:${{ inputs.IMAGE_TAG }}'
-     #     docker pull $IMAGE
-     #     echo "IMAGE_API_BY_DIGEST=$(docker inspect --format='{{index .RepoDigests 0}}' $IMAGE)" >> $GITHUB_OUTPUT
+      - name: Get digest of API docker image
+        id: getDigestAPI
+        run: |
+          export IMAGE='${{vars.REPOSITORY_HOST}}/${{ github.repository }}-wfprev-api:${{ inputs.IMAGE_TAG }}'
+          docker pull $IMAGE
+          echo "IMAGE_API_BY_DIGEST=$(docker inspect --format='{{index .RepoDigests 0}}' $IMAGE)" >> $GITHUB_OUTPUT
 
      # No image for UI components anymore
      # - name: Get digest of UI docker image
