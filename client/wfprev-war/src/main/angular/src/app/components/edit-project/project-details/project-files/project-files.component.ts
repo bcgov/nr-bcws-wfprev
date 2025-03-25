@@ -10,7 +10,7 @@ import { AttachmentService } from 'src/app/services/attachment-service';
 import { ProjectService } from 'src/app/services/project-services';
 import { SpatialService } from 'src/app/services/spatial-services';
 import { Messages } from 'src/app/utils/messages';
-import { ZipReader, BlobReader, TextWriter, BlobWriter } from '@zip.js/zip.js';
+import { ZipReader, BlobReader, TextWriter, BlobWriter, Uint8ArrayWriter } from '@zip.js/zip.js';
 import * as fgdb from 'fgdb';
 import { Buffer } from 'buffer';
 import process from 'process';
@@ -172,8 +172,6 @@ export class ProjectFilesComponent {
             entry.filename.endsWith('.gdbtable') ||
             entry.filename.endsWith('.gdbblx'));
 
-
-
           if (kmlEntry) {
             const extractedKML = await kmlEntry.getData?.(new BlobWriter());
             if (extractedKML) {
@@ -199,38 +197,64 @@ export class ProjectFilesComponent {
           if (gdbEntries.length > 0) {
             const fgdb = require('fgdb');
             let files: File[] = []
+            const extractedFiles: { [key: string]: ArrayBuffer } = {};
             try {
-              const zip = new JSZip();
+              const zipReader = new ZipReader(new BlobReader(file));
+              const entries = await zipReader.getEntries();
 
-              // Add each file to the zip
-              for (const file of files) {
-                const fileBuffer = await this.readFileAsArrayBuffer(file);
-                // Use the webkitRelativePath to maintain folder structure in the ZIP
-                zip.file(file.webkitRelativePath, fileBuffer);
+              // Locate the .gdb folder within the .zip archive
+              // const gdbFolder = entries.find(entry => entry.filename.endsWith('.gdb/'));
+
+              // if (!gdbFolder) {
+              //   throw new Error('No .gdb folder found inside the ZIP archive.');
+              // }
+
+              // Filter out spatial data files within the .gdb folder
+              // const gdbEntries = entries.filter(entry =>
+              // (entry.filename.endsWith('.gdbtable') || entry.filename.endsWith('.gdbindexes') ||
+              //   entry.filename.endsWith('.gdbgeom')));
+              const gdbEntries = entries;
+
+              if (gdbEntries.length === 0) {
+                throw new Error('No spatial data files found in the .gdb folder.');
               }
-        
-              // Generate the zip file
-              const zipContent = await zip.generateAsync({ type: 'uint8array' });
-        
-              console.log('ZIP file created:', {
-                totalFiles: files.length,
-                zipSize: zipContent.length
+
+              const extractedFiles: { [key: string]: ArrayBuffer } = {};
+
+              // Read each file
+              for (const entry of gdbEntries) {
+                if (entry.getData) {  // Ensure getData() is defined before calling it
+                  const fileData = await entry.getData(new BlobWriter());
+                  const buffer = await fileData.arrayBuffer();
+                  extractedFiles[entry.filename] = buffer;
+                } else {
+                  console.warn(`Skipping file ${entry.filename} as it has no getData() method.`);
+                }
+              }
+
+              // Convert extracted files into a zip (in-memory)
+              const zip = new JSZip();
+              Object.entries(extractedFiles).forEach(([filename, data]) => {
+                zip.file(filename, data);
               });
-        
-              // Process the ZIP with fgdb
-              const geodatabase = await fgdb(zipContent);
-              console.log('Geodatabase structure:', Object.keys(geodatabase));
-        
-              // You can further process specific layers or tables here
+
+              const zipContent = await zip.generateAsync({ type: 'arraybuffer' });
+              console.log('ZIP Content:', zipContent);
+              // Process the Geodatabase
+              const geodatabase = await fgdb(extractedFiles);
+              console.log('Geodatabase Tables:', Object.keys(geodatabase.tables));
+
+              // Extract coordinates
               if (geodatabase.tables) {
-                console.log('Available tables:', Object.keys(geodatabase.tables));
+                const spatialData = geodatabase.tables['your_spatial_table_name']; // Adjust as needed
+                console.log('Spatial Data:', spatialData);
               }
-        
+
             } catch (error) {
               console.error('Error processing Geodatabase:', error);
             }
           }
-        
+
 
           console.error('No supported spatial files found in ZIP or GDB.');
           return [];
@@ -248,8 +272,8 @@ export class ProjectFilesComponent {
     }
   }
 
-   // Helper method to read file as ArrayBuffer
-   private readFileAsArrayBuffer(file: File): Promise<ArrayBuffer> {
+  // Helper method to read file as ArrayBuffer
+  private readFileAsArrayBuffer(file: File): Promise<ArrayBuffer> {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.onload = () => resolve(reader.result as ArrayBuffer);
