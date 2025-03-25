@@ -23,8 +23,8 @@ jobs:
 
       - name: Tag relevant images
         run: |
-          docker pull ${{vars.REGISTRY}}/${{ github.repository }}-${{ matrix.component-name }}:merge
-          docker tag ${{vars.REGISTRY}}/${{ github.repository }}-${{ matrix.component-name }}:merge ${{vars.REGISTRY}}/${{ github.repository }}-${{ matrix.component-name }}:${{ github.event.release.tag_name }}
+          docker pull ${{vars.REGISTRY}}/${{ github.repository }}-${{ matrix.component-name }}:latest
+          docker tag ${{vars.REGISTRY}}/${{ github.repository }}-${{ matrix.component-name }}:latest ${{vars.REGISTRY}}/${{ github.repository }}-${{ matrix.component-name }}:${{ github.event.release.tag_name }}
           docker push ${{vars.REGISTRY}}/${{ github.repository }}-${{ matrix.component-name }}:${{ github.event.release.tag_name }}
 
   # include additional steps for DLV, PRD
