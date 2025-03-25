@@ -1,7 +1,6 @@
-
 on:
   release:
-    types: [prereleased]
+    types: [released]
 
 jobs:
   tag-builds:
@@ -31,11 +30,11 @@ jobs:
   # rename to deploy-wftst, rename environment to tst
   deploy-test:
     needs: tag-builds
-    if: ${{ contains(github.event.release.tag_name, '-rc') }}
+    if: ${{ contains(github.event.release.tag_name, '-release') }}
     uses: ./.github/workflows/terragrunt-deploy.yml
     secrets: inherit
     with:
-      DEFAULT_APPLICATION_ENVIRONMENT: tst
+      DEFAULT_APPLICATION_ENVIRONMENT: prd
       IMAGE_TAG: ${{ github.event.release.tag_name }}
       COMMAND: apply
       RUN_LIQUIBASE: 'true'
