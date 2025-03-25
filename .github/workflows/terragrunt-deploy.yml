@@ -27,8 +27,8 @@ on:
         type: choice
         options:
         - dev
-        - test
-        - prod
+        - tst
+        - prd
       IMAGE_TAG:
         required: true
         type: string
