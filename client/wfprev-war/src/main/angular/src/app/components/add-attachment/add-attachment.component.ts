@@ -64,7 +64,7 @@ export class AddAttachmentComponent {
   getAcceptedFileTypes(): string {
     switch (this.attachmentType) {
       case 'Gross Project Area Boundary':
-        return '.kml,.kmz,.shp,.gdb';
+        return '.kml,.kmz,.shp,.gdb,.zip';
       case 'Other':
         return '.".pdf,.doc,.docx,.jpg,.png';
       default:

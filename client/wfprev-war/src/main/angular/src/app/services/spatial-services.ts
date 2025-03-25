@@ -1,9 +1,9 @@
 import { Injectable } from "@angular/core";
 import * as toGeoJSON from '@tmcw/togeojson';
-import { DOMParser } from '@xmldom/xmldom';
-import JSZip from 'jszip';
 import * as shp from 'shpjs';
+import { DOMParser } from '@xmldom/xmldom';
 import { Geometry, Position } from 'geojson';
+import { ZipReader, BlobReader, TextWriter } from '@zip.js/zip.js';
 
 type CoordinateTypes = Position | Position[] | Position[][] | Position[][][];
 
@@ -29,36 +29,95 @@ export class SpatialService {
     }
 
     async extractKMZCoordinates(kmzFile: File): Promise<CoordinateTypes[]> {
-        const zip = new JSZip();
-        const content = await zip.loadAsync(kmzFile);
-
-        const kmlFile = Object.keys(content.files).find(file => file.endsWith('.kml'));
-        if (!kmlFile) throw new Error('No KML file found in KMZ');
-
-        const kmlString = await zip.file(kmlFile)?.async('text');
-        if (!kmlString) throw new Error('Failed to extract KML content');
-
-        const coordinates = this.parseKMLToCoordinates(kmlString);
-        console.log(coordinates);
-        return coordinates;
+        const zipReader = new ZipReader(new BlobReader(kmzFile));
+        
+        try {
+            const entries = await zipReader.getEntries();
+            const kmlEntry = entries.find(entry => entry.filename.endsWith('.kml'));
+            
+            if (!kmlEntry) throw new Error('No KML file found in KMZ');
+            
+            const kmlString = await kmlEntry.getData?.(new TextWriter());
+            
+            if (!kmlString) throw new Error('Failed to extract KML content');
+            
+            const coordinates = this.parseKMLToCoordinates(kmlString);
+            console.log(coordinates);
+            
+            return coordinates;
+        } catch (error) {
+            console.error('Error extracting KMZ coordinates:', error);
+            return [];
+        } finally {
+            // Ensure the zip reader is closed
+            await zipReader.close();
+        }
     }
 
-    async extractSHPCoordinates(shpFile: File): Promise<CoordinateTypes[]> {
-        const arrayBuffer = await shpFile.arrayBuffer();
-        const geoJson = await shp.default(arrayBuffer);
-
-        const featureCollections = Array.isArray(geoJson) ? geoJson : [geoJson];
-
-        const coordinates = featureCollections.flatMap(fc => 
-            fc.features.map(feature => this.getCoordinatesFromGeometry(feature.geometry))
-        ).filter(Boolean) as CoordinateTypes[];
-
-        console.log(coordinates);
-        return coordinates;
+    async extractSHPCoordinates(shpZipFile: File): Promise<CoordinateTypes[]> {
+        try {
+          // Read the zip file as an ArrayBuffer
+          const arrayBuffer = await shpZipFile.arrayBuffer();
+      
+          // Process the shapefile, which can handle zip files directly
+          const geoJson = await shp.default(arrayBuffer);
+      
+          // Normalize to always work with an array of feature collections
+          const featureCollections = Array.isArray(geoJson) ? geoJson : [geoJson];
+      
+          // Extract coordinates from each feature
+          const coordinates = featureCollections.flatMap(fc => 
+            fc.features.map((feature: { geometry: Geometry | null | undefined; }) => this.getCoordinatesFromGeometry(feature.geometry))
+          ).filter(Boolean) as CoordinateTypes[];
+      
+          console.log(`Extracted ${coordinates.length} coordinates`);
+          console.log(coordinates)
+          return coordinates;
+        } catch (error) {
+          console.error('Error extracting coordinates from shapefile:', error);
+          throw error;
+        }
     }
 
+
+// Helper method to extract coordinates from feature geometry
+public extractGeometryCoordinates(feature: any): number[][] {
+    try {
+        if (!feature.geometry) {
+            console.warn('No geometry found in feature');
+            return [];
+        }
+
+        switch (feature.geometry.type) {
+            case 'Point':
+                return [[feature.geometry.coordinates[0], feature.geometry.coordinates[1]]];
+
+            case 'LineString':
+                return feature.geometry.coordinates;
+
+            case 'Polygon':
+                return feature.geometry.coordinates[0];
+
+            case 'MultiPoint':
+                return feature.geometry.coordinates;
+
+            case 'MultiLineString':
+                return feature.geometry.coordinates.flat();
+
+            case 'MultiPolygon':
+                return feature.geometry.coordinates[0][0];
+
+            default:
+                console.warn(`Unsupported geometry type: ${feature.geometry.type}`);
+                return [];
+        }
+    } catch (error) {
+        console.error('Error extracting coordinates from feature:', error);
+        return [];
+    }
+}
     // Extracts coordinates from a geometry object
-    private getCoordinatesFromGeometry(geometry: Geometry | null | undefined): CoordinateTypes | null {
+    public getCoordinatesFromGeometry(geometry: Geometry | null | undefined): CoordinateTypes | null {
         if (!geometry) return null;
 
         switch (geometry.type) {
