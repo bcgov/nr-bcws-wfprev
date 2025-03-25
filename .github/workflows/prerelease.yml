@@ -37,5 +37,5 @@ jobs:
     with:
       DEFAULT_APPLICATION_ENVIRONMENT: test
       IMAGE_TAG: ${{ github.event.release.tag_name }}
-      IS_HOTFIX: 'false'
       COMMAND: apply
+      RUN_LIQUIBASE: 'true'
