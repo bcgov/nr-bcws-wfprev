@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input } from '@angular/core';
+import { ChangeDetectorRef, Component, Input } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTableModule } from '@angular/material/table';
@@ -15,7 +15,19 @@ import * as fgdb from 'fgdb';
 import { Buffer } from 'buffer';
 import process from 'process';
 import JSZip from 'jszip';
+import { MatTableDataSource } from '@angular/material/table';
 (window as any).process = process;
+
+interface ProjectFile {
+  attachmentType: string;
+  fileName: string;
+  fileType: string;
+  uploadedBy: string;
+  uploadedDate: string;
+  polygonHectares: number;
+  description: string;
+}
+
 
 
 @Component({
@@ -33,7 +45,8 @@ export class ProjectFilesComponent {
     private readonly snackbarService: MatSnackBar,
     public readonly dialog: MatDialog,
     public attachmentService: AttachmentService,
-    public spatialService: SpatialService
+    public spatialService: SpatialService,
+    private cdr: ChangeDetectorRef
   ) { }
 
   messages = Messages;
@@ -50,17 +63,9 @@ export class ProjectFilesComponent {
   ];
 
   // hardcode table, will be replaced by the attachment api data
-  projectFiles = [
-    {
-      attachmentType: 'Activity Polygon',
-      fileName: 'Polygon234',
-      fileType: 'KMZ',
-      uploadedBy: 'IDIR\\LULI',
-      uploadedDate: '2024-12-05',
-      polygonHectares: 22555,
-      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
-    }
-  ];
+  projectFiles: ProjectFile[] = [];
+
+  dataSource = new MatTableDataSource<ProjectFile>(this.projectFiles);
 
   openFileUploadModal() {
     const dialogRef = this.dialog.open(AddAttachmentComponent, {
@@ -69,31 +74,71 @@ export class ProjectFilesComponent {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result?.file) {
-        this.uploadFile(result.file)
+        this.uploadAttachment(result.file)
       }
     })
   }
 
-  // uploadFile(file: File): void {
-  //   // if file type is not set, set it in a new file
-  //   const fileType = file?.name?.split('.').pop()?.toLowerCase();
-  //   if(!file.type) file = new File([file], file.name, { type: fileType });
-  //   this.projectService.uploadDocument({ file }).pipe(
-  //     switchMap((response) => {
-  //       if (!response) {
-  //         console.error('Upload failed: No response from uploadDocument');
-  //         return EMPTY;
-  //       }
+  // Define allowed file types (excluding PNG)
+private allowedFileTypes: string[] = ['kml', 'kmz', 'zip', 'shp', 'gdb'];
 
-  //       const attachment: FileAttachment = {
-  //         sourceObjectNameCode: { sourceObjectNameCode: "PROJECT" },
-  //         sourceObjectUniqueId: this.projectGuid,
-  //         documentPath: response.filePath,
-  //         fileIdentifier: response.fileId,
-  //         attachmentContentTypeCode: { attachmentContentTypeCode: "OTHER" },
-  //         attachmentDescription: "DESCRIPTION",
-  //         attachmentReadOnlyInd: false
-  //       };
+uploadAttachment(file: File): void {
+  // Extract file extension and validate it
+  const fileExtension = file.name.split('.').pop()?.toLowerCase();
+
+  if (!fileExtension || !this.allowedFileTypes.includes(fileExtension)) {
+    this.snackbarService.open('  The spatial file was not uploaded because the file format is not accepted. Only KML, KMZ, SHP, and GDB are allowed.', 'Close', {
+      duration: 5000,
+      panelClass: ['snackbar-error'],
+    });
+    return;
+  }
+
+  // Create attachment object
+  const attachment: FileAttachment = {
+    sourceObjectNameCode: { sourceObjectNameCode: "PROJECT" },
+    sourceObjectUniqueId: this.projectGuid,
+    documentPath: file.name,
+    fileIdentifier: Math.random().toFixed(5),
+    attachmentContentTypeCode: { attachmentContentTypeCode: "OTHER" },
+    attachmentDescription: "DESCRIPTION",
+    attachmentReadOnlyInd: false
+  };
+
+  // Send to the backend
+  this.attachmentService.createProjectAttachment(this.projectGuid, attachment).subscribe({
+    next: (response) => {
+      if (response) {
+        const newProjectFile = {
+          attachmentType: response.attachmentType || 'Project Polygon',
+          fileName: response.documentPath || file.name,
+          fileType: response.fileType || 'DOCUMENT',
+          uploadedBy: response.uploadedBy || 'IDIR\\SSYLVER',
+          uploadedDate: response.uploadedDate || new Date().toISOString().split('T')[0],
+          polygonHectares: response.polygonHectares || 0,
+          description: response.description || 'description',
+        };
+
+        // Update the list and refresh the table
+        this.projectFiles.push(newProjectFile);
+        this.dataSource.data = [...this.projectFiles];
+
+        // Show success snackbar
+        this.snackbarService.open('File uploaded successfully.', 'Close', {
+          duration: 5000,
+          panelClass: ['snackbar-success'],
+        });
+      }
+    },
+    error: () => {
+      // Show error snackbar
+      this.snackbarService.open('Failed to upload file. Please try again.', 'Close', {
+        duration: 5000,
+        panelClass: ['snackbar-error'],
+      });
+    },
+  });
+}
 
   //       return this.attachmentService.createProjectAttachment(this.projectGuid, attachment).pipe(
   //         switchMap(() => from(this.extractCoordinates(file))) // Extract coordinates
@@ -168,9 +213,9 @@ export class ProjectFilesComponent {
           const kmzEntry = entries.find(entry => entry.filename.endsWith('.kmz'));
           const shpEntry = entries.find(entry => entry.filename.endsWith('.shp'));
           const dbfEntry = entries.find(entry => entry.filename.endsWith('.dbf'));
-          const gdbEntries = entries.filter(entry => entry.filename.endsWith('.gdbfile') ||
-            entry.filename.endsWith('.gdbtable') ||
-            entry.filename.endsWith('.gdbblx'));
+          const containsGdbTable = entries.some(entry => entry.filename.includes('.gdbtable'));
+
+          const gdbEntries = containsGdbTable ? entries : undefined;
 
           if (kmlEntry) {
             const extractedKML = await kmlEntry.getData?.(new BlobWriter());
@@ -194,61 +239,18 @@ export class ProjectFilesComponent {
             return await this.spatialService.extractSHPCoordinates(file) as number[][][];
           }
 
-          if (gdbEntries.length > 0) {
-            const fgdb = require('fgdb');
-            let files: File[] = []
-            const extractedFiles: { [key: string]: ArrayBuffer } = {};
+          if (gdbEntries) {
             try {
-              const zipReader = new ZipReader(new BlobReader(file));
-              const entries = await zipReader.getEntries();
-
-              // Locate the .gdb folder within the .zip archive
-              // const gdbFolder = entries.find(entry => entry.filename.endsWith('.gdb/'));
-
-              // if (!gdbFolder) {
-              //   throw new Error('No .gdb folder found inside the ZIP archive.');
-              // }
-
-              // Filter out spatial data files within the .gdb folder
-              // const gdbEntries = entries.filter(entry =>
-              // (entry.filename.endsWith('.gdbtable') || entry.filename.endsWith('.gdbindexes') ||
-              //   entry.filename.endsWith('.gdbgeom')));
-              const gdbEntries = entries;
-
-              if (gdbEntries.length === 0) {
-                throw new Error('No spatial data files found in the .gdb folder.');
-              }
-
-              const extractedFiles: { [key: string]: ArrayBuffer } = {};
-
-              // Read each file
-              for (const entry of gdbEntries) {
-                if (entry.getData) {  // Ensure getData() is defined before calling it
-                  const fileData = await entry.getData(new BlobWriter());
-                  const buffer = await fileData.arrayBuffer();
-                  extractedFiles[entry.filename] = buffer;
-                } else {
-                  console.warn(`Skipping file ${entry.filename} as it has no getData() method.`);
-                }
-              }
-
-              // Convert extracted files into a zip (in-memory)
-              const zip = new JSZip();
-              Object.entries(extractedFiles).forEach(([filename, data]) => {
-                zip.file(filename, data);
+              const fgdb = require('fgdb');
+              fgdb(file)
+              .then((geojsonData: any) => {
+                console.log('Extracted GeoJSON:', geojsonData);
+                this.snackbarService.open('GeoJSON extraction successful!', 'Close', { duration: 3000 });
+              })
+              .catch((error: any) => {
+                console.error('Error extracting GeoJSON:', error);
+                this.snackbarService.open('Failed to extract GeoJSON', 'Close', { duration: 3000 });
               });
-
-              const zipContent = await zip.generateAsync({ type: 'arraybuffer' });
-              console.log('ZIP Content:', zipContent);
-              // Process the Geodatabase
-              const geodatabase = await fgdb(extractedFiles);
-              console.log('Geodatabase Tables:', Object.keys(geodatabase.tables));
-
-              // Extract coordinates
-              if (geodatabase.tables) {
-                const spatialData = geodatabase.tables['your_spatial_table_name']; // Adjust as needed
-                console.log('Spatial Data:', spatialData);
-              }
 
             } catch (error) {
               console.error('Error processing Geodatabase:', error);
@@ -301,10 +303,15 @@ export class ProjectFilesComponent {
     this.extractCoordinates(file)
   }
 
-  deleteFile(file: any) {
-    //to do
+  deleteFile(fileToDelete: ProjectFile): void {
+    // Remove the file by filtering out the one to delete
+    this.projectFiles = this.projectFiles.filter(file => file !== fileToDelete);
+  
+    // Update the MatTable data source to reflect the change
+    this.dataSource.data = [...this.projectFiles];
+  
+    console.log('Updated project files:', this.projectFiles);
   }
-
   downloadFile(file: any) {
     // to do
   }
