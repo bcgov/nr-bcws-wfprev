@@ -2,6 +2,7 @@ package ca.bc.gov.nrs.wfprev;
 
 import ca.bc.gov.nrs.wfprev.controllers.ProjectBoundaryController;
 import ca.bc.gov.nrs.wfprev.data.models.ProjectBoundaryModel;
+import ca.bc.gov.nrs.wfprev.services.CoordinatesService;
 import ca.bc.gov.nrs.wfprev.services.ProjectBoundaryService;
 import com.nimbusds.jose.shaded.gson.Gson;
 import com.nimbusds.jose.shaded.gson.GsonBuilder;
@@ -54,6 +55,9 @@ class ProjectBoundaryControllerTest {
 
     @MockBean
     private ProjectBoundaryService projectBoundaryService;
+
+    @MockBean
+    private CoordinatesService coordinatesService;
 
     @Autowired
     private MockMvc mockMvc;
