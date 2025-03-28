@@ -11,6 +11,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.locationtech.jts.geom.MultiPolygon;
 import org.postgresql.geometric.PGpolygon;
 import org.springframework.hateoas.server.core.Relation;
 
@@ -43,5 +44,5 @@ public class ActivityBoundaryModel extends CommonModel<ActivityBoundaryModel> {
     private BigDecimal boundarySizeHa;
     private String boundaryComment;
     @NotNull(message = "ActivityBoundary geometry must not be null")
-    private PGpolygon geometry;
+    private MultiPolygon geometry;
 }
