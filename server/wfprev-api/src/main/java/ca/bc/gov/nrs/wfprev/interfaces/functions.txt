@@ -1,0 +1,5 @@
+?OpenGeodatabase@FileGDBAPI@@YAHAEBV?$basic_string@_WU?$char_traits@_W@std@@V?$allocator@_W@2@@std@@AEAVGeodatabase@1@@Z
+?OpenGeodatabase@Geodatabase@FileGDBAPI@@AEAAHAEBV?$basic_string@_WU?$char_traits@_W@std@@V?$allocator@_W@2@@std@@@Z
+?CloseGeodatabase@FileGDBAPI@@YAHAEAVGeodatabase@1@@Z
+?CloseGeodatabase@Geodatabase@FileGDBAPI@@AEAAHXZ
+
