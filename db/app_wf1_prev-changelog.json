@@ -1100,6 +1100,29 @@
         "rollback": [
         ]
       }
+    },
+    {
+      "changeSet": {
+        "id": "01_00_16_00",
+        "author": "hsaldyga",
+        "tagDatabase": { "tag" : "version_01_00_16_00" },
+        "changes": [
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_16/00/ddl/app_wf1_prev.ddl.modify_activity_boundary.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_16/00/ddl/app_wf1_prev.ddl.modify_project_boundary.sql"
+            }
+          }
+      ],
+        "rollback": [
+        ]
+      }
     }
    ] 
 }
