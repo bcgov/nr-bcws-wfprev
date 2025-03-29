@@ -16,6 +16,10 @@ on:
       RUN_LIQUIBASE:
         required: true
         type: string
+      COMMAND:
+        required: true
+        type: string
+        default: apply
   workflow_dispatch:
     inputs:
       DEFAULT_APPLICATION_ENVIRONMENT:
@@ -24,7 +28,7 @@ on:
         options:
         - dev
         - test
-        - prod
+        - prd
       IMAGE_TAG:
         required: true
         type: string
@@ -37,6 +41,10 @@ on:
       TARGET_LIQUIBASE_TAG: 
         required: false
         type: string
+      COMMAND:
+        required: true
+        type: string
+        default: apply
       # IS_HOTFIX:
       #   required: true
       #   type: string
@@ -59,11 +67,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      # - name: retrieve lambda artifacts
-      #   uses: actions/download-artifact@v3
-      #   with:
-      #     name: lambda-functions
-      #     path: ${{env.TG_SRC_PATH}}/lambda-functions
 
       - id: changeLogCount
         name: Determine changelog to execute
@@ -87,6 +90,7 @@ jobs:
             echo "TARGET_LIQUIBASE_TAG=--tag=${{inputs.TARGET_LIQUIBASE_TAG}}" >> $GITHUB_OUTPUT
           fi
 
+     # moved to pre-release
       - name: Get digest of API docker image
         id: getDigestAPI
         run: |
@@ -94,12 +98,31 @@ jobs:
           docker pull $IMAGE
           echo "IMAGE_API_BY_DIGEST=$(docker inspect --format='{{index .RepoDigests 0}}' $IMAGE)" >> $GITHUB_OUTPUT
 
-      - name: Get digest of UI docker image
-        id: getDigestUI
-        run: |
-          export IMAGE='${{vars.REPOSITORY_HOST}}/${{ github.repository }}-wfprev-war:${{ inputs.IMAGE_TAG }}'
-          docker pull $IMAGE
-          echo "IMAGE_UI_BY_DIGEST=$(docker inspect --format='{{index .RepoDigests 0}}' $IMAGE)" >> $GITHUB_OUTPUT
+     # No image for UI components anymore
+     # - name: Get digest of UI docker image
+     #   id: getDigestUI
+     #   run: |
+     #     export IMAGE='${{vars.REPOSITORY_HOST}}/${{ github.repository }}-wfprev-war:${{ inputs.IMAGE_TAG }}'
+     #     docker pull $IMAGE
+     #     echo "IMAGE_UI_BY_DIGEST=$(docker inspect --format='{{index .RepoDigests 0}}' $IMAGE)" >> $GITHUB_OUTPUT
+
+     # For future environment configurtion enhancement
+     # - id: mapEnvironments
+     #   name: Check if deploy is pr-based and which namespace it deploys to
+     #   run: |
+     #     if [ "${{ inputs.DEFAULT_APPLICATION_ENVIRONMENT }}" == "wfint" ]; then
+     #       echo "NAMESPACE_ENV=dev" >> $GITHUB_OUTPUT
+     #       echo "SHORTENED_ENV=int" >> $GITHUB_OUTPUT
+     #     elif [ "${{ inputs.DEFAULT_APPLICATION_ENVIRONMENT }}" == "wfdlv" ]; then
+     #       echo "NAMESPACE_ENV=tools" >> $GITHUB_OUTPUT
+     #       echo "SHORTENED_ENV=dlv" >> $GITHUB_OUTPUT
+     #     elif [ "${{ inputs.DEFAULT_APPLICATION_ENVIRONMENT }}" == "wftst" ]; then
+     #       echo "NAMESPACE_ENV=test" >> $GITHUB_OUTPUT
+     #       echo "SHORTENED_ENV=tst" >> $GITHUB_OUTPUT
+     #     elif [ "${{ inputs.DEFAULT_APPLICATION_ENVIRONMENT }}" == "wfprd" ]; then
+     #       echo "NAMESPACE_ENV=prod" >> $GITHUB_OUTPUT
+     #       echo "SHORTENED_ENV=prd" >> $GITHUB_OUTPUT
+     #     fi
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
@@ -119,8 +142,6 @@ jobs:
 
       - name: Terragrunt Apply
         working-directory: ${{env.TG_SRC_PATH}}
-
-        
         env:
           # Necessary for all components
           TFC_PROJECT: ${{ secrets.TFC_PROJECT }}
