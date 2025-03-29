@@ -96,7 +96,7 @@ public class GeoJsonFeaturesService implements CommonService {
             feature.put("type", "Feature");
 
             Map<String, Object> geometry = new HashMap<>();
-            geometry.put("type", "MultiPolygon"); // <-- Changed from "Polygon" to "MultiPolygon"
+            geometry.put("type", "MultiPolygon");
 
             List<List<List<double[]>>> polygons = new ArrayList<>();
 

@@ -16,14 +16,15 @@ import org.locationtech.jts.geom.Polygon;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.postgresql.geometric.PGpoint;
-import org.postgresql.geometric.PGpolygon;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.when;
 
@@ -122,6 +123,66 @@ class GeoJsonFeaturesServiceTest {
 
         assertEquals("Feature", feature.get("type"));
         assertEquals("MultiPolygon", ((Map<?, ?>) feature.get("geometry")).get("type"));
+    }
+
+    @Test
+    void testCreatePolygonFeature_WithInteriorHole() {
+        GeometryFactory geometryFactory = new GeometryFactory();
+
+        // Define the exterior ring (outer boundary)
+        Coordinate[] exteriorCoords = {
+                new Coordinate(-123.3656, 48.4284),
+                new Coordinate(-123.3657, 48.4285),
+                new Coordinate(-123.3658, 48.4284),
+                new Coordinate(-123.3656, 48.4284) // Closing the polygon
+        };
+        LinearRing exteriorRing = geometryFactory.createLinearRing(exteriorCoords);
+
+        // Define the interior ring (hole)
+        Coordinate[] interiorCoords = {
+                new Coordinate(-123.36565, 48.42845),
+                new Coordinate(-123.36570, 48.42846),
+                new Coordinate(-123.36572, 48.42844),
+                new Coordinate(-123.36565, 48.42845) // Closing the hole
+        };
+        LinearRing interiorRing = geometryFactory.createLinearRing(interiorCoords);
+
+        // Create a polygon with a hole
+        Polygon polygonWithHole = geometryFactory.createPolygon(exteriorRing, new LinearRing[]{interiorRing});
+
+        // Create a MultiPolygon from the polygon with a hole
+        MultiPolygon multiPolygon = geometryFactory.createMultiPolygon(new Polygon[]{polygonWithHole});
+
+        // Create properties for the feature
+        Map<String, Object> properties = new HashMap<>();
+        properties.put("name", "Test Polygon with Hole");
+
+        // Call the method under test
+        Map<String, Object> feature = geoJsonFeaturesService.createPolygonFeature(multiPolygon, properties);
+
+        // Assertions
+        assertNotNull(feature);
+        assertEquals("Feature", feature.get("type"));
+
+        Map<String, Object> geometry = (Map<String, Object>) feature.get("geometry");
+        assertNotNull(geometry);
+        assertEquals("MultiPolygon", geometry.get("type"));
+
+        List<List<List<double[]>>> coordinates = (List<List<List<double[]>>>) geometry.get("coordinates");
+
+        // Assert that we have one polygon in the MultiPolygon
+        assertEquals(1, coordinates.size());
+
+        // Assert that the polygon has both an exterior and interior ring
+        assertEquals(2, coordinates.get(0).size()); // 1 exterior + 1 interior (hole)
+
+        // Validate that the hole coordinates exist
+        List<double[]> holeCoordinates = coordinates.get(0).get(1);
+        assertNotNull(holeCoordinates);
+        assertFalse(holeCoordinates.isEmpty());
+
+        // Validate first coordinate in the hole matches expected
+        assertArrayEquals(new double[]{-123.36565, 48.42845}, holeCoordinates.get(0), 1e-6);
     }
 
     @Test

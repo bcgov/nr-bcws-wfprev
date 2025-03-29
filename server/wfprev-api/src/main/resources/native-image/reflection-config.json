@@ -1222,6 +1222,12 @@
     "allDeclaredConstructors": true
   },
   {
+    "name": "org.locationtech.jts.geom.MultiPolygon",
+    "allDeclaredFields": true,
+    "allPublicMethods": true,
+    "allDeclaredConstructors": true
+  },
+  {
     "name": "org.geolatte.geom.codec.PostgisWkbDecoder",
     "allDeclaredFields": true,
     "allPublicMethods": true,

@@ -16,8 +16,6 @@ import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LinearRing;
 import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Polygon;
-import org.postgresql.geometric.PGpoint;
-import org.postgresql.geometric.PGpolygon;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -425,7 +423,7 @@ class ActivityBoundaryControllerTest {
                 new Coordinate(-123.3656, 48.4284),
                 new Coordinate(-123.3657, 48.4285),
                 new Coordinate(-123.3658, 48.4284),
-                new Coordinate(-123.3656, 48.4284) // Closing the polygon
+                new Coordinate(-123.3656, 48.4284)
         };
 
         LinearRing shell = geometryFactory.createLinearRing(coordinates);

@@ -12,7 +12,6 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.locationtech.jts.geom.MultiPolygon;
-import org.postgresql.geometric.PGpolygon;
 import org.springframework.hateoas.server.core.Relation;
 
 import java.math.BigDecimal;

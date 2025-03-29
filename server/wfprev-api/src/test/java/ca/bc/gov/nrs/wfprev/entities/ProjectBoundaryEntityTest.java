@@ -39,7 +39,7 @@ class ProjectBoundaryEntityTest {
                 new Coordinate(-123.3656, 48.4284),
                 new Coordinate(-123.3657, 48.4285),
                 new Coordinate(-123.3658, 48.4284),
-                new Coordinate(-123.3656, 48.4284) // Closing the polygon
+                new Coordinate(-123.3656, 48.4284) 
         };
 
         LinearRing shell = geometryFactory.createLinearRing(coordinates);

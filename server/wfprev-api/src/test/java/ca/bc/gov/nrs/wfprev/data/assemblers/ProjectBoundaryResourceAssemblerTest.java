@@ -10,7 +10,6 @@ import org.locationtech.jts.geom.LinearRing;
 import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
-import org.postgresql.geometric.PGpolygon;
 
 import java.math.BigDecimal;
 import java.sql.SQLException;
@@ -36,7 +35,7 @@ class ProjectBoundaryResourceAssemblerTest {
                 new Coordinate(-123.3656, 48.4284),
                 new Coordinate(-123.3657, 48.4285),
                 new Coordinate(-123.3658, 48.4284),
-                new Coordinate(-123.3656, 48.4284) // Closing the polygon
+                new Coordinate(-123.3656, 48.4284)
         };
 
         LinearRing shell = geometryFactory.createLinearRing(coordinates);
