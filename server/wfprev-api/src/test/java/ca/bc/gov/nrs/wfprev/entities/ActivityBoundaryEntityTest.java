@@ -7,7 +7,11 @@ import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.postgresql.geometric.PGpolygon;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.LinearRing;
+import org.locationtech.jts.geom.MultiPolygon;
+import org.locationtech.jts.geom.Polygon;
 
 import java.math.BigDecimal;
 import java.sql.SQLException;
@@ -21,10 +25,26 @@ class ActivityBoundaryEntityTest {
 
     private Validator validator;
 
+    private MultiPolygon multiPolygon;
+
     @BeforeEach
     void setUp() {
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         validator = factory.getValidator();
+
+        GeometryFactory geometryFactory = new GeometryFactory();
+
+        Coordinate[] coordinates = {
+                new Coordinate(-123.3656, 48.4284),
+                new Coordinate(-123.3657, 48.4285),
+                new Coordinate(-123.3658, 48.4284),
+                new Coordinate(-123.3656, 48.4284) // Closing the polygon
+        };
+
+        LinearRing shell = geometryFactory.createLinearRing(coordinates);
+        Polygon polygon = geometryFactory.createPolygon(shell);
+
+        multiPolygon = geometryFactory.createMultiPolygon(new Polygon[]{polygon});
     }
 
     private ActivityBoundaryEntity createValidActivityBoundaryEntity() throws SQLException {
@@ -39,7 +59,7 @@ class ActivityBoundaryEntityTest {
                 .collectorName("Test Collector")
                 .boundarySizeHa(BigDecimal.valueOf(100.0000))
                 .boundaryComment("Test Boundary Comment")
-                .geometry(new PGpolygon("((-123.3656,48.4284),(-123.3657,48.4285),(-123.3658,48.4284),(-123.3656,48.4284))"))
+                .geometry(multiPolygon)
                 .revisionCount(0)
                 .createUser("tester")
                 .createDate(new Date())
@@ -126,7 +146,7 @@ class ActivityBoundaryEntityTest {
         Set<ConstraintViolation<ActivityBoundaryEntity>> violations = validator.validate(entity);
 
         assertThat(violations)
-                .hasSize(2)
+                .hasSize(1)
                 .anyMatch(violation ->
                         violation.getPropertyPath().toString().equals("geometry") &&
                                 violation.getMessage().equals("must not be null"));

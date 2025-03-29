@@ -9,8 +9,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.LinearRing;
+import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Point;
-import org.postgresql.geometric.PGpolygon;
+import org.locationtech.jts.geom.Polygon;
 
 import java.math.BigDecimal;
 import java.sql.SQLException;
@@ -24,10 +26,26 @@ class ProjectBoundaryEntityTest {
 
     private Validator validator;
 
+    private MultiPolygon multiPolygon;
+
     @BeforeEach
     void setUp() {
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         validator = factory.getValidator();
+
+        GeometryFactory geometryFactory = new GeometryFactory();
+
+        Coordinate[] coordinates = {
+                new Coordinate(-123.3656, 48.4284),
+                new Coordinate(-123.3657, 48.4285),
+                new Coordinate(-123.3658, 48.4284),
+                new Coordinate(-123.3656, 48.4284) // Closing the polygon
+        };
+
+        LinearRing shell = geometryFactory.createLinearRing(coordinates);
+        Polygon polygon = geometryFactory.createPolygon(shell);
+
+        multiPolygon = geometryFactory.createMultiPolygon(new Polygon[]{polygon});
     }
 
     private ProjectBoundaryEntity createValidProjectBoundaryEntity() throws SQLException {
@@ -44,7 +62,7 @@ class ProjectBoundaryEntityTest {
                 .collectorName("Test Collector")
                 .boundarySizeHa(BigDecimal.valueOf(100.0000))
                 .boundaryComment("Test Boundary Comment")
-                .boundaryGeometry(new PGpolygon("((-123.3656,48.4284),(-123.3657,48.4285),(-123.3658,48.4284),(-123.3656,48.4284))"))
+                .boundaryGeometry(multiPolygon)
                 .locationGeometry(locationPoint)
                 .revisionCount(0)
                 .createUser("tester")

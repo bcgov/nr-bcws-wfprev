@@ -9,7 +9,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.LinearRing;
+import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.geom.Polygon;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -52,19 +55,25 @@ class GeoJsonFeaturesServiceTest {
         projectBoundaryEntity.setProjectBoundaryGuid(UUID.fromString(projectGuid));
         projectBoundaryEntity.setLocationGeometry(point);
 
-        // Create a mock polygon geometry (PGpolygon)
-        PGpoint[] pgPoints = {
-                new PGpoint(1.0, 2.0),
-                new PGpoint(3.0, 4.0),
-                new PGpoint(5.0, 6.0),
-                new PGpoint(1.0, 2.0) // Closing the polygon
+        // Create a mock MultiPolygon geometry
+        Coordinate[] coordinates = {
+                new Coordinate(1.0, 2.0),
+                new Coordinate(3.0, 4.0),
+                new Coordinate(5.0, 6.0),
+                new Coordinate(1.0, 2.0) // Closing the polygon
         };
-        PGpolygon polygon = new PGpolygon(pgPoints);
-        projectBoundaryEntity.setBoundaryGeometry(polygon);
+
+        LinearRing shell = geometryFactory.createLinearRing(coordinates);
+        Polygon polygon = geometryFactory.createPolygon(shell);
+
+        // Create a MultiPolygon from a single Polygon
+        MultiPolygon multiPolygon = geometryFactory.createMultiPolygon(new Polygon[]{polygon});
+
+        projectBoundaryEntity.setBoundaryGeometry(multiPolygon);
 
         activityBoundaryEntity = new ActivityBoundaryEntity();
         activityBoundaryEntity.setActivityBoundaryGuid(UUID.fromString(activityGuid));
-        activityBoundaryEntity.setGeometry(polygon);
+        activityBoundaryEntity.setGeometry(multiPolygon);
     }
 
     @Test
@@ -95,19 +104,24 @@ class GeoJsonFeaturesServiceTest {
 
     @Test
     void testCreatePolygonFeature() {
-        PGpoint[] pgPoints = {
-                new PGpoint(1.0, 2.0),
-                new PGpoint(3.0, 4.0),
-                new PGpoint(5.0, 6.0),
-                new PGpoint(1.0, 2.0) // Closing the polygon
+        GeometryFactory geometryFactory = new GeometryFactory();
+        Coordinate[] coordinates = {
+                new Coordinate(1.0, 2.0),
+                new Coordinate(3.0, 4.0),
+                new Coordinate(5.0, 6.0),
+                new Coordinate(1.0, 2.0)
         };
-        PGpolygon polygon = new PGpolygon(pgPoints);
+        LinearRing shell = geometryFactory.createLinearRing(coordinates);
+        Polygon polygon = geometryFactory.createPolygon(shell);
+
+        // Create a MultiPolygon from a single Polygon
+        MultiPolygon multiPolygon = geometryFactory.createMultiPolygon(new Polygon[]{polygon});
 
         Map<String, Object> properties = Map.of("key", "value");
-        Map<String, Object> feature = geoJsonFeaturesService.createPolygonFeature(polygon, properties);
+        Map<String, Object> feature = geoJsonFeaturesService.createPolygonFeature(multiPolygon, properties);
 
         assertEquals("Feature", feature.get("type"));
-        assertEquals("Polygon", ((Map<?, ?>) feature.get("geometry")).get("type"));
+        assertEquals("MultiPolygon", ((Map<?, ?>) feature.get("geometry")).get("type"));
     }
 
     @Test

@@ -357,7 +357,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n  \"projectGuid\": \"{{projectGuid}}\",\n  \"systemStartTimestamp\": \"2026-01-01\",\n  \"systemEndTimestamp\": \"2026-12-31\",\n  \"mappingLabel\": \"Test mapping label\",\n  \"collectionDate\": \"2026-01-15\",\n  \"collectionMethod\": \"Test collection method\",\n  \"collectorName\": \"Test_user\",\n  \"boundarySizeHa\": 200.5000,\n  \"boundaryComment\": \"Test activity boundary comment\",\n  \"boundaryGeometry\": {\n    \"type\": \"Polygon\",\n    \"coordinates\": [\n      [\n        [-124.0000, 49.0000],\n        [-124.0001, 49.0001],\n        [-124.0002, 49.0000],\n        [-124.0000, 49.0000]\n      ]\n    ]\n  }\n,\n  \"locationGeometry\": [-124.0000, 49.0000]\n}",
+					"raw": "{\n  \"projectGuid\": \"{{projectGuid}}\",\n  \"systemStartTimestamp\": \"2026-01-01\",\n  \"systemEndTimestamp\": \"2026-12-31\",\n  \"mappingLabel\": \"Test mapping label\",\n  \"collectionDate\": \"2026-01-15\",\n  \"collectionMethod\": \"Test collection method\",\n  \"collectorName\": \"Test_user\",\n  \"boundarySizeHa\": 200.5000,\n  \"boundaryComment\": \"Test activity boundary comment\",\n  \"boundaryGeometry\": {\n    \"type\": \"MultiPolygon\",\n    \"coordinates\": [\n      [\n    [\n    [-124.0000, 49.0000],\n        [-124.0001, 49.0001],\n        [-124.0002, 49.0000],\n        [-124.0000, 49.0000]\n   ]\n    ]\n    ]\n  }\n,\n  \"locationGeometry\": [-124.0000, 49.0000]\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -585,7 +585,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n  \"activityGuid\": \"{{activityGuid}}\",\n  \"systemStartTimestamp\": \"2026-01-01\",\n  \"systemEndTimestamp\": \"2026-12-31\",\n  \"plannedSpendAmount\": 200000.00,\n  \"mappingLabel\": \"Test mapping label\",\n  \"collectionDate\": \"2026-01-15\",\n  \"collectionMethod\": \"Test collection method\",\n  \"collectorName\": \"Test_user\",\n  \"boundarySizeHa\": 200.5000,\n  \"boundaryComment\": \"Test activity boundary comment\",\n  \"geometry\": {\n    \"type\": \"Polygon\",\n    \"coordinates\": [\n      [\n        [-124.0000, 49.0000],\n        [-124.0001, 49.0001],\n        [-124.0002, 49.0000],\n        [-124.0000, 49.0000]\n      ]\n    ]\n  }\n}",
+					"raw": "{\n  \"activityGuid\": \"{{activityGuid}}\",\n  \"systemStartTimestamp\": \"2026-01-01\",\n  \"systemEndTimestamp\": \"2026-12-31\",\n  \"plannedSpendAmount\": 200000.00,\n  \"mappingLabel\": \"Test mapping label\",\n  \"collectionDate\": \"2026-01-15\",\n  \"collectionMethod\": \"Test collection method\",\n  \"collectorName\": \"Test_user\",\n  \"boundarySizeHa\": 200.5000,\n  \"boundaryComment\": \"Test activity boundary comment\",\n  \"geometry\": {\n    \"type\": \"MultiPolygon\",\n    \"coordinates\": [\n      [\n    [\n     [-124.0000, 49.0000],\n        [-124.0001, 49.0001],\n        [-124.0002, 49.0000],\n        [-124.0000, 49.0000]\n   ]\n   ]\n    ]\n  }\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -828,7 +828,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n  \"projectBoundaryGuid\": \"{{projectBoundaryGuid}}\",\n  \"projectGuid\": \"{{projectGuid}}\",\n  \"systemStartTimestamp\": \"2027-02-01\",\n  \"systemEndTimestamp\": \"2027-11-30\",\n  \"mappingLabel\": \"Updated test mapping label\",\n  \"collectionDate\": \"2027-02-10\",\n  \"collectionMethod\": \"Updated test collection method\",\n  \"collectorName\": \"Updated_user\",\n  \"boundarySizeHa\": 300.7500,\n  \"boundaryComment\": \"Updated test project boundary comment\",\n  \"boundaryGeometry\": {\n    \"type\": \"Polygon\",\n    \"coordinates\": [\n      [\n        [-125.0000, 50.0000],\n        [-125.0001, 50.0001],\n        [-125.0002, 50.0000],\n        [-125.0000, 50.0000]\n      ]\n    ]\n  },\n  \"locationGeometry\": [-125.0002, 50.0000]\n}",
+					"raw": "{\n  \"projectBoundaryGuid\": \"{{projectBoundaryGuid}}\",\n  \"projectGuid\": \"{{projectGuid}}\",\n  \"systemStartTimestamp\": \"2027-02-01\",\n  \"systemEndTimestamp\": \"2027-11-30\",\n  \"mappingLabel\": \"Updated test mapping label\",\n  \"collectionDate\": \"2027-02-10\",\n  \"collectionMethod\": \"Updated test collection method\",\n  \"collectorName\": \"Updated_user\",\n  \"boundarySizeHa\": 300.7500,\n  \"boundaryComment\": \"Updated test project boundary comment\",\n  \"boundaryGeometry\": {\n    \"type\": \"MultiPolygon\",\n    \"coordinates\": [\n      [\n    [\n    [-125.0000, 50.0000],\n        [-125.0001, 50.0001],\n        [-125.0002, 50.0000],\n        [-125.0000, 50.0000]\n   ]\n   ]\n    ]\n  },\n  \"locationGeometry\": [-125.0002, 50.0000]\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -1024,7 +1024,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n  \"activityBoundaryGuid\": \"{{activityBoundaryGuid}}\",\n  \"activityGuid\": \"{{activityGuid}}\",\n  \"systemStartTimestamp\": \"2027-02-01\",\n  \"systemEndTimestamp\": \"2027-11-30\",\n  \"plannedSpendAmount\": 300000.00,\n  \"mappingLabel\": \"Updated test mapping label\",\n  \"collectionDate\": \"2027-02-10\",\n  \"collectionMethod\": \"Updated test collection method\",\n  \"collectorName\": \"Updated_user\",\n  \"boundarySizeHa\": 300.7500,\n  \"boundaryComment\": \"Updated test activity boundary comment\",\n  \"geometry\": {\n    \"type\": \"Polygon\",\n    \"coordinates\": [\n      [\n        [-125.0000, 50.0000],\n        [-125.0001, 50.0001],\n        [-125.0002, 50.0000],\n        [-125.0000, 50.0000]\n      ]\n    ]\n  }\n}",
+					"raw": "{\n  \"activityBoundaryGuid\": \"{{activityBoundaryGuid}}\",\n  \"activityGuid\": \"{{activityGuid}}\",\n  \"systemStartTimestamp\": \"2027-02-01\",\n  \"systemEndTimestamp\": \"2027-11-30\",\n  \"plannedSpendAmount\": 300000.00,\n  \"mappingLabel\": \"Updated test mapping label\",\n  \"collectionDate\": \"2027-02-10\",\n  \"collectionMethod\": \"Updated test collection method\",\n  \"collectorName\": \"Updated_user\",\n  \"boundarySizeHa\": 300.7500,\n  \"boundaryComment\": \"Updated test activity boundary comment\",\n  \"geometry\": {\n    \"type\": \"MultiPolygon\",\n    \"coordinates\": [\n      [\n    [\n    [-125.0000, 50.0000],\n        [-125.0001, 50.0001],\n        [-125.0002, 50.0000],\n        [-125.0000, 50.0000]\n    ]\n   ]\n    ]\n  }\n}",
 					"options": {
 						"raw": {
 							"language": "json"

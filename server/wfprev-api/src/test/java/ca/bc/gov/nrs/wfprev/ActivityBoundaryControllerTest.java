@@ -11,6 +11,11 @@ import com.nimbusds.jose.shaded.gson.JsonSerializer;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.LinearRing;
+import org.locationtech.jts.geom.MultiPolygon;
+import org.locationtech.jts.geom.Polygon;
 import org.postgresql.geometric.PGpoint;
 import org.postgresql.geometric.PGpolygon;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,12 +74,13 @@ class ActivityBoundaryControllerTest {
                     "collectionDate": %d,
                     "boundarySizeHa": 10.5,
                     "geometry": {
-                        "coordinates": [[
+                        "type": "MultiPolygon",
+                        "coordinates": [[[
                             [-123.3656, 48.4284],
                             [-123.3657, 48.4285],
                             [-123.3658, 48.4284],
                             [-123.3656, 48.4284]
-                        ]]
+                        ]]]
                     }
                 }
             """;
@@ -413,6 +419,19 @@ class ActivityBoundaryControllerTest {
     }
 
     ActivityBoundaryModel buildActivityBoundaryRequestModel() {
+        GeometryFactory geometryFactory = new GeometryFactory();
+
+        Coordinate[] coordinates = {
+                new Coordinate(-123.3656, 48.4284),
+                new Coordinate(-123.3657, 48.4285),
+                new Coordinate(-123.3658, 48.4284),
+                new Coordinate(-123.3656, 48.4284) // Closing the polygon
+        };
+
+        LinearRing shell = geometryFactory.createLinearRing(coordinates);
+        Polygon polygon = geometryFactory.createPolygon(shell);
+        MultiPolygon multiPolygon = geometryFactory.createMultiPolygon(new Polygon[]{polygon});
+
         return ActivityBoundaryModel.builder()
                 .activityBoundaryGuid(UUID.randomUUID().toString())
                 .activityGuid(UUID.randomUUID().toString())
@@ -420,12 +439,7 @@ class ActivityBoundaryControllerTest {
                 .systemEndTimestamp(new Date())
                 .collectionDate(new Date())
                 .boundarySizeHa(new BigDecimal("10.5"))
-                .geometry(new PGpolygon(new PGpoint[]{
-                        new PGpoint(-123.3656, 48.4284),
-                        new PGpoint(-123.3657, 48.4285),
-                        new PGpoint(-123.3658, 48.4284),
-                        new PGpoint(-123.3656, 48.4284)
-                }))
+                .geometry(multiPolygon)
                 .build();
     }
 
