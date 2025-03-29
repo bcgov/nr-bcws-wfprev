@@ -67,7 +67,12 @@
   { "name":"org.locationtech.jts.geom.Coordinate[]" },
   { "name":"org.postgresql.geometric.PGpoint" }, 
   { "name":"org.postgresql.geometric.PGpoint[]" }, 
-  { "name":"org.postgresql.geometric.PGpolygon" }
-
-
+  { "name":"org.postgresql.geometric.PGpolygon" },
+  { "name":"org.locationtech.jts.geom.Polygon" },
+  { "name":"org.locationtech.jts.geom.GeometryCollection" },
+  { "name":"org.locationtech.jts.geom.LineString" },
+  { "name":"org.locationtech.jts.geom.LinearRing" },
+  { "name":"org.locationtech.jts.geom.Envelope" },
+  { "name":"org.locationtech.jts.geom.CoordinateSequence" },
+  { "name":"org.locationtech.jts.geom.PrecisionModel" }
 ]
