@@ -1222,6 +1222,54 @@
     "allDeclaredConstructors": true
   },
   {
+    "name": "org.locationtech.jts.geom.Polygon",
+    "allDeclaredFields": true,
+    "allPublicMethods": true,
+    "allDeclaredConstructors": true
+  },
+  {
+    "name": "org.locationtech.jts.geom.MultiPolygon",
+    "allDeclaredFields": true,
+    "allPublicMethods": true,
+    "allDeclaredConstructors": true
+  },
+  {
+    "name": "org.locationtech.jts.geom.GeometryCollection",
+    "allDeclaredFields": true,
+    "allPublicMethods": true,
+    "allDeclaredConstructors": true
+  },
+  {
+    "name": "org.locationtech.jts.geom.LineString",
+    "allDeclaredFields": true,
+    "allPublicMethods": true,
+    "allDeclaredConstructors": true
+  },
+  {
+    "name": "org.locationtech.jts.geom.LinearRing",
+    "allDeclaredFields": true,
+    "allPublicMethods": true,
+    "allDeclaredConstructors": true
+  },
+  {
+    "name": "org.locationtech.jts.geom.Envelope",
+    "allDeclaredFields": true,
+    "allPublicMethods": true,
+    "allDeclaredConstructors": true
+  },
+  {
+    "name": "org.locationtech.jts.geom.CoordinateSequence",
+    "allDeclaredFields": true,
+    "allPublicMethods": true,
+    "allDeclaredConstructors": true
+  },
+  {
+    "name": "org.locationtech.jts.geom.PrecisionModel",
+    "allDeclaredFields": true,
+    "allPublicMethods": true,
+    "allDeclaredConstructors": true
+  },
+  {
     "name": "org.geolatte.geom.codec.PostgisWkbDecoder",
     "allDeclaredFields": true,
     "allPublicMethods": true,

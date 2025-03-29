@@ -2,11 +2,14 @@ package ca.bc.gov.nrs.wfprev.data.assemblers;
 
 import ca.bc.gov.nrs.wfprev.data.entities.ProjectBoundaryEntity;
 import ca.bc.gov.nrs.wfprev.data.models.ProjectBoundaryModel;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.LinearRing;
+import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Point;
-import org.postgresql.geometric.PGpolygon;
+import org.locationtech.jts.geom.Polygon;
 
 import java.math.BigDecimal;
 import java.sql.SQLException;
@@ -21,6 +24,25 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 class ProjectBoundaryResourceAssemblerTest {
 
     ProjectBoundaryResourceAssembler assembler = new ProjectBoundaryResourceAssembler();
+
+    MultiPolygon multiPolygon;
+
+    @BeforeEach
+    void setUp(){
+        GeometryFactory geometryFactory = new GeometryFactory();
+
+        Coordinate[] coordinates = {
+                new Coordinate(-123.3656, 48.4284),
+                new Coordinate(-123.3657, 48.4285),
+                new Coordinate(-123.3658, 48.4284),
+                new Coordinate(-123.3656, 48.4284)
+        };
+
+        LinearRing shell = geometryFactory.createLinearRing(coordinates);
+        Polygon polygon = geometryFactory.createPolygon(shell);
+
+        multiPolygon = geometryFactory.createMultiPolygon(new Polygon[]{polygon});
+    }
 
     @Test
     void testToModel_MapsEntityToModel() throws SQLException {
@@ -41,7 +63,7 @@ class ProjectBoundaryResourceAssemblerTest {
         entity.setBoundarySizeHa(BigDecimal.valueOf(100.0000));
         entity.setBoundaryComment("Initial test project boundary creation");
         entity.setLocationGeometry(locationPoint);
-        entity.setBoundaryGeometry(new PGpolygon("((-123.3656,48.4284),(-123.3657,48.4285),(-123.3658,48.4284),(-123.3656,48.4284))"));
+        entity.setBoundaryGeometry(multiPolygon);
 
         // Act
         ProjectBoundaryModel model = assembler.toModel(entity);
@@ -81,7 +103,7 @@ class ProjectBoundaryResourceAssemblerTest {
         model.setBoundarySizeHa(BigDecimal.valueOf(100.0000));
         model.setBoundaryComment("Initial test project boundary creation");
         model.setLocationGeometry(locationPoint);
-        model.setBoundaryGeometry(new PGpolygon("((-123.3656,48.4284),(-123.3657,48.4285),(-123.3658,48.4284),(-123.3656,48.4284))"));
+        model.setBoundaryGeometry(multiPolygon);
 
         // Act
         ProjectBoundaryEntity entity = assembler.toEntity(model);

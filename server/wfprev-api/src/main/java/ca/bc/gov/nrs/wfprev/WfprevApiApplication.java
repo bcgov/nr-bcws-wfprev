@@ -25,6 +25,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.core.Ordered;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.web.filter.ForwardedHeaderFilter;
+import org.n52.jackson.datatype.jts.JtsModule;
 
 @SpringBootApplication
 @EnableJpaAuditing(auditorAwareRef = "springSecurityAuditorAware")
@@ -78,6 +79,8 @@ public class WfprevApiApplication {
 		module.addDeserializer(PGpolygon.class, new PGPolygonDeserializer());
 		module.addDeserializer(PGpolygon[].class, new PGMultiPolygonDeserializer());
 		module.addDeserializer(Point.class, new PointDeserializer());
+
+		mapper.registerModule(new JtsModule());
 
 		mapper.registerModule(module);
 		return mapper;

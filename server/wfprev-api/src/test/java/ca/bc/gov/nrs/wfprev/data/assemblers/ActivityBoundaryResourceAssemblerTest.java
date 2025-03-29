@@ -2,8 +2,13 @@ package ca.bc.gov.nrs.wfprev.data.assemblers;
 
 import ca.bc.gov.nrs.wfprev.data.entities.ActivityBoundaryEntity;
 import ca.bc.gov.nrs.wfprev.data.models.ActivityBoundaryModel;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.postgresql.geometric.PGpolygon;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.LinearRing;
+import org.locationtech.jts.geom.MultiPolygon;
+import org.locationtech.jts.geom.Polygon;
 
 import java.math.BigDecimal;
 import java.sql.SQLException;
@@ -20,6 +25,25 @@ class ActivityBoundaryResourceAssemblerTest {
 
     ActivityBoundaryResourceAssembler assembler = new ActivityBoundaryResourceAssembler();
 
+    MultiPolygon multiPolygon;
+
+    @BeforeEach
+    void setUp(){
+        GeometryFactory geometryFactory = new GeometryFactory();
+
+        Coordinate[] coordinates = {
+                new Coordinate(-123.3656, 48.4284),
+                new Coordinate(-123.3657, 48.4285),
+                new Coordinate(-123.3658, 48.4284),
+                new Coordinate(-123.3656, 48.4284)
+        };
+
+        LinearRing shell = geometryFactory.createLinearRing(coordinates);
+        Polygon polygon = geometryFactory.createPolygon(shell);
+
+        multiPolygon = geometryFactory.createMultiPolygon(new Polygon[]{polygon});
+    }
+
     @Test
     void testToModel_MapsEntityToModel() throws SQLException {
         // Arrange
@@ -34,7 +58,7 @@ class ActivityBoundaryResourceAssemblerTest {
         entity.setCollectorName("test_user");
         entity.setBoundarySizeHa(BigDecimal.valueOf(100.0000));
         entity.setBoundaryComment("Initial test activity boundary creation");
-        entity.setGeometry(new PGpolygon("((-123.3656,48.4284),(-123.3657,48.4285),(-123.3658,48.4284),(-123.3656,48.4284))"));
+        entity.setGeometry(multiPolygon);
 
         // Act
         ActivityBoundaryModel model = assembler.toModel(entity);
@@ -68,7 +92,7 @@ class ActivityBoundaryResourceAssemblerTest {
         model.setCollectorName("test_user");
         model.setBoundarySizeHa(BigDecimal.valueOf(100.0000));
         model.setBoundaryComment("Initial test activity boundary creation");
-        model.setGeometry(new PGpolygon("((-123.3656,48.4284),(-123.3657,48.4285),(-123.3658,48.4284),(-123.3656,48.4284))"));
+        model.setGeometry(multiPolygon);
 
         // Act
         ActivityBoundaryEntity entity = assembler.toEntity(model);
