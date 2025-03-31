@@ -1,6 +1,6 @@
 # CloudFront Origin Access Identity (OAI) for secure access to S3
 data "aws_acm_certificate" "wfhr-us-certificate" {
-  domain = "wfpev-${var.TARGET_ENV}.nrs.gov.bc.ca"
+  domain = "wfprev-${var.TARGET_ENV}.nrs.gov.bc.ca"
   provider = aws.aws-us
 }
 
