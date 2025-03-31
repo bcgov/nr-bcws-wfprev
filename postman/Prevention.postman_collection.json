@@ -2907,7 +2907,7 @@
 			"response": []
 		},
 		{
-			"name": "Delete Project Attachment",
+			"name": "Delete Activity Attachment",
 			"event": [
 				{
 					"listen": "test",
@@ -2948,7 +2948,7 @@
 						"activities",
 						"{{activityGuid}}",
 						"attachments",
-						"{{projectFileAttachmentGuid}}"
+						"{{activityFileAttachmentGuid}}"
 					]
 				}
 			},
