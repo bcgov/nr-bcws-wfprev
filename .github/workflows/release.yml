@@ -26,8 +26,6 @@ jobs:
           docker tag ${{vars.REGISTRY}}/${{ github.repository }}-${{ matrix.component-name }}:latest ${{vars.REGISTRY}}/${{ github.repository }}-${{ matrix.component-name }}:${{ github.event.release.tag_name }}
           docker push ${{vars.REGISTRY}}/${{ github.repository }}-${{ matrix.component-name }}:${{ github.event.release.tag_name }}
 
-  # include additional steps for DLV, PRD
-  # rename to deploy-wftst, rename environment to tst
   deploy-prd:
     needs: tag-builds
     if: ${{ contains(github.event.release.tag_name, '-release') }}
