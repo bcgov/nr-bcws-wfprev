@@ -39,3 +39,10 @@ jobs:
       IMAGE_TAG: ${{ github.event.release.tag_name }}
       COMMAND: apply
       RUN_LIQUIBASE: 'true'
+
+  wfprev-ui:
+    uses: ./.github/workflows/client-build.yml
+    needs: [deploy-test]
+    with:
+      DEFAULT_APPLICATION_ENVIRONMENT: test
+    secrets: inherit
