@@ -3,7 +3,7 @@ import { ChangeDetectorRef, Component, Input } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTableModule } from '@angular/material/table';
-import { EMPTY, from, switchMap } from 'rxjs';
+import { catchError, EMPTY, from, map, switchMap, throwError } from 'rxjs';
 import { AddAttachmentComponent } from 'src/app/components/add-attachment/add-attachment.component';
 import { FileAttachment, ProjectBoundary } from 'src/app/components/models';
 import { AttachmentService } from 'src/app/services/attachment-service';
@@ -11,11 +11,12 @@ import { ProjectService } from 'src/app/services/project-services';
 import { SpatialService } from 'src/app/services/spatial-services';
 import { Messages } from 'src/app/utils/messages';
 import { ZipReader, BlobReader, TextWriter, BlobWriter, Uint8ArrayWriter } from '@zip.js/zip.js';
-import * as fgdb from 'fgdb';
 import { Buffer } from 'buffer';
 import process from 'process';
 import JSZip from 'jszip';
 import { MatTableDataSource } from '@angular/material/table';
+import * as turf from '@turf/turf';
+
 (window as any).process = process;
 
 interface ProjectFile {
@@ -28,8 +29,6 @@ interface ProjectFile {
   description: string;
 }
 
-
-
 @Component({
   selector: 'app-project-files',
   standalone: true,
@@ -39,6 +38,8 @@ interface ProjectFile {
 })
 export class ProjectFilesComponent {
   @Input() projectGuid: string = '';
+  attachmentDescription: string = '';
+  uploadedBy = '';
 
   constructor(
     public projectService: ProjectService,
@@ -74,137 +75,154 @@ export class ProjectFilesComponent {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result?.file) {
-        this.uploadAttachment(result.file)
+        this.uploadFile(result.file)
+      }
+      if (result?.description) {
+        this.attachmentDescription = result.description;
       }
     })
   }
 
   // Define allowed file types (excluding PNG)
-private allowedFileTypes: string[] = ['kml', 'kmz', 'zip', 'shp', 'gdb'];
+  private allowedFileTypes: string[] = ['kml', 'kmz', 'zip', 'shp', 'gdb'];
 
-uploadAttachment(file: File): void {
-  // Extract file extension and validate it
-  const fileExtension = file.name.split('.').pop()?.toLowerCase();
-
-  if (!fileExtension || !this.allowedFileTypes.includes(fileExtension)) {
-    this.snackbarService.open('  The spatial file was not uploaded because the file format is not accepted. Only KML, KMZ, SHP, and GDB are allowed.', 'Close', {
-      duration: 5000,
-      panelClass: ['snackbar-error'],
-    });
-    return;
-  }
-
-  // Create attachment object
-  const attachment: FileAttachment = {
-    sourceObjectNameCode: { sourceObjectNameCode: "PROJECT" },
-    sourceObjectUniqueId: this.projectGuid,
-    documentPath: file.name,
-    fileIdentifier: Math.random().toFixed(5),
-    attachmentContentTypeCode: { attachmentContentTypeCode: "OTHER" },
-    attachmentDescription: "DESCRIPTION",
-    attachmentReadOnlyInd: false
-  };
-
-  // Send to the backend
-  this.attachmentService.createProjectAttachment(this.projectGuid, attachment).subscribe({
-    next: (response) => {
-      if (response) {
-        const newProjectFile = {
-          attachmentType: response.attachmentType || 'Project Polygon',
-          fileName: response.documentPath || file.name,
-          fileType: response.fileType || 'DOCUMENT',
-          uploadedBy: response.uploadedBy || 'IDIR\\SSYLVER',
-          uploadedDate: response.uploadedDate || new Date().toISOString().split('T')[0],
-          polygonHectares: response.polygonHectares || 0,
-          description: response.description || 'description',
-        };
-
-        // Update the list and refresh the table
-        this.projectFiles.push(newProjectFile);
-        this.dataSource.data = [...this.projectFiles];
-
-        // Show success snackbar
-        this.snackbarService.open('File uploaded successfully.', 'Close', {
+  uploadFile(file: File): void {
+    this.projectService.uploadDocument({
+      file
+    }).subscribe({
+      next: (response) => {
+        if (response)
+          this.uploadAttachment(file, response)
+      },
+      error: (err) => {
+        this.snackbarService.open('  The spatial file was not uploaded.', 'Close', {
           duration: 5000,
-          panelClass: ['snackbar-success'],
+          panelClass: ['snackbar-error'],
         });
       }
-    },
-    error: () => {
-      // Show error snackbar
-      this.snackbarService.open('Failed to upload file. Please try again.', 'Close', {
-        duration: 5000,
+    })
+  }
+
+  uploadAttachment(file: File, response: any): void {
+    // Extract file extension and validate it
+    const fileExtension = file.name.split('.').pop()?.toLowerCase();
+
+    if (!fileExtension || !this.allowedFileTypes.includes(fileExtension)) {
+      this.snackbarService.open('  The spatial file was not uploaded because the file format is not accepted. Only KML, KMZ, SHP, and GDB are allowed.', 'Close', {
+        duration: 10000,
         panelClass: ['snackbar-error'],
       });
-    },
-  });
-}
+      return;
+    }
 
-  //       return this.attachmentService.createProjectAttachment(this.projectGuid, attachment).pipe(
-  //         switchMap(() => from(this.extractCoordinates(file))) // Extract coordinates
-  //       );
-  //     }),
-  //     switchMap((coordinates) => {
-  //       if (!coordinates || coordinates.length === 0) {
-  //         console.log('File is not a spatial file. Skipping project boundary creation.');
-  //         return EMPTY; // Skip createProjectBoundary
-  //       }
+    // Create attachment object
+    const attachment: FileAttachment = {
+      sourceObjectNameCode: { sourceObjectNameCode: "PROJECT" },
+      sourceObjectUniqueId: this.projectGuid,
+      documentPath: file.name,
+      fileIdentifier: response.fileId,
+      attachmentContentTypeCode: { attachmentContentTypeCode: "DOCUMENT" },
+      attachmentDescription: this.attachmentDescription,
+      attachmentReadOnlyInd: false
+    };
 
-  //       const projectBoundary: ProjectBoundary = {
-  //         projectGuid: this.projectGuid,
-  //         systemStartTimestamp: "2026-01-01",
-  //         systemEndTimestamp: "2026-12-31",
-  //         mappingLabel: "Test mapping label",
-  //         collectionDate: "2026-01-15",
-  //         collectionMethod: "Test collection method",
-  //         collectorName: "Test_user",
-  //         boundarySizeHa: 200.5,
-  //         boundaryComment: "Test activity boundary comment",
-  //         boundaryGeometry: {
-  //           type: "Polygon",
-  //           coordinates: coordinates as number[][][]
-  //         },
-  //         locationGeometry: coordinates[0][0] as [number, number]
-  //       };
+    // Send to the backend
+    this.attachmentService.createProjectAttachment(this.projectGuid, attachment).subscribe({
+      next: (response) => {
+        if (response) {
+          this.uploadedBy = response?.uploadedByUserId;
+          const newProjectFile = {
+            attachmentType: 'Project Polygon',
+            fileName: response.documentPath || file.name,
+            fileType: 'DOCUMENT',
+            uploadedBy: response.uploadedByUserId,
+            uploadedDate: response.uploadedByTimestamp,
+            polygonHectares: response.polygonHectares || 0,
+            description: this.attachmentDescription,
+          };
 
-  //       return this.projectService.createProjectBoundary(this.projectGuid, projectBoundary);
-  //     })
-  //   ).subscribe({
-  //     next: () => console.log('Project boundary created successfully'),
-  //     error: (error) => console.error('Error during file upload or boundary creation:', error),
-  //   });
-  // }
+          // Update the list and refresh the table
+          this.projectFiles = [newProjectFile]
+          this.dataSource.data = [...this.projectFiles];
 
-  // private async extractCoordinates(file: File): Promise<number[][][]> {
-  //   const fileType = file.name.split('.').pop()?.toLowerCase();
+          // Show success snackbar
+          this.extractCoordinates(file).then(response => {
+            if (response) {
+              console.log(response)
+              this.updateProjectBoundary(file, response)
+              this.snackbarService.open('File uploaded successfully.', 'Close', {
+                duration: 10000,
+                panelClass: 'snackbar-success',
+              });
+            }
+          })
+        }
+      },
+      error: () => {
+        // Show error snackbar
+        this.snackbarService.open('Failed to upload file. Please try again.', 'Close', {
+          duration: 10000,
+          panelClass: 'snackbar-error',
+        });
+      },
+    });
+  }
 
-  //   try {
-  //     if (fileType === 'kml') {
-  //       return this.spatialService.extractKMLCoordinates(await file.text()) as number[][][];
-  //     } else if (fileType === 'kmz') {
-  //       return await this.spatialService.extractKMZCoordinates(file) as number[][][];
-  //     } else if (fileType === 'shp') {
-  //       return await this.spatialService.extractSHPCoordinates(file) as number[][][];
-  //     } else {
-  //       console.error('Unsupported file type:', fileType);
-  //       return [];
-  //     }
-  //   } catch (error) {
-  //     console.error('Error extracting coordinates:', error);
-  //     return []; 
-  //   }
-  // }
+  updateProjectBoundary(file: File, response: number[][]) {
+    const now = new Date();
+    const futureDate = new Date(now);
+    futureDate.setFullYear(futureDate.getFullYear() + 1);
+  
+    const boundary: ProjectBoundary = {
+      projectGuid: this.projectGuid,
+      systemStartTimestamp: now.toISOString(),
+      systemEndTimestamp: futureDate.toISOString(),
+      collectionDate: now.toISOString().split('T')[0],
+      collectorName: this.uploadedBy,
+      boundarySizeHa: 0,
+      boundaryGeometry: {
+        type: "MultiPolygon",
+        coordinates: response,
+      },
+      locationGeometry: [-124.0, 49.0]
+    };
+  
+    // Ensure the HTTP request is triggered by subscribing
+    this.projectService.createProjectBoundary(this.projectGuid, boundary).pipe(
+      map((resp: any) => resp),
+      catchError((error) => {
+        console.error("Error creating project boundary", error);
+        return throwError(() => new Error("Failed to create project boundary"));
+      })
+    ).subscribe({
+      next: (resp) => {
+        console.log('Project boundary created successfully:', resp);
+  
+        // Show success notification
+        this.snackbarService.open('Project boundary updated successfully.', 'Close', {
+          duration: 5000,
+          panelClass: 'snackbar-success',
+        });
+      },
+      error: (error) => {
+        this.snackbarService.open('Failed to update project boundary.', 'Close', {
+          duration: 5000,
+          panelClass: 'snackbar-error',
+        });
+      },
+      complete: () => console.log('Project boundary update completed.')
+    });
+  }
 
-
-  private async extractCoordinates(file: File): Promise<number[][][]> {
+  private async extractCoordinates(file: File): Promise<number[][]> {
     const fileType = file.name.split('.').pop()?.toLowerCase();
     try {
       if (fileType === 'kml') {
-        return this.spatialService.extractKMLCoordinates(await file.text()) as number[][][];
+        return this.spatialService.extractKMLCoordinates(await file.text()) as unknown as number[][];
       } else if (fileType === 'kmz') {
-        return await this.spatialService.extractKMZCoordinates(file) as number[][][];
+        return await this.spatialService.extractKMZCoordinates(file) as unknown as number[][];
       } else if (fileType === 'shp') {
-        return await this.spatialService.extractSHPCoordinates(file) as number[][][];
+        return await this.spatialService.extractSHPCoordinates(file) as unknown as number[][];
       } else if (fileType === 'zip' || fileType === 'gdb') {
         const zipReader = new ZipReader(new BlobReader(file));
         const entries = await zipReader.getEntries();
@@ -222,7 +240,7 @@ uploadAttachment(file: File): void {
             if (extractedKML) {
               return await this.spatialService.extractKMZCoordinates(
                 new File([extractedKML], 'extracted.kml')
-              ) as number[][][];
+              ) as unknown as number[][];
             }
           }
 
@@ -231,26 +249,26 @@ uploadAttachment(file: File): void {
             if (extractedKMZ) {
               return await this.spatialService.extractKMZCoordinates(
                 new File([extractedKMZ], 'extracted.kmz')
-              ) as number[][][];
+              ) as unknown as number[][];
             }
           }
 
           if (shpEntry && dbfEntry) {
-            return await this.spatialService.extractSHPCoordinates(file) as number[][][];
+            return await this.spatialService.extractSHPCoordinates(file) as unknown as number[][];
           }
 
           if (gdbEntries) {
             try {
-              const fgdb = require('fgdb');
-              fgdb(file)
-              .then((geojsonData: any) => {
-                console.log('Extracted GeoJSON:', geojsonData);
-                this.snackbarService.open('GeoJSON extraction successful!', 'Close', { duration: 3000 });
-              })
-              .catch((error: any) => {
-                console.error('Error extracting GeoJSON:', error);
-                this.snackbarService.open('Failed to extract GeoJSON', 'Close', { duration: 3000 });
-              });
+              const gdal = require("gdal-next")
+              gdal.open(file)
+                .then((geojsonData: any) => {
+                  console.log('Extracted GeoJSON:', geojsonData);
+                  this.snackbarService.open('GeoJSON extraction successful!', 'Close', { duration: 3000 });
+                })
+                .catch((error: any) => {
+                  console.error('Error extracting GeoJSON:', error);
+                  this.snackbarService.open('Failed to extract GeoJSON', 'Close', { duration: 3000 });
+                });
 
             } catch (error) {
               console.error('Error processing Geodatabase:', error);
@@ -274,45 +292,28 @@ uploadAttachment(file: File): void {
     }
   }
 
-  // Helper method to read file as ArrayBuffer
-  private readFileAsArrayBuffer(file: File): Promise<ArrayBuffer> {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve(reader.result as ArrayBuffer);
-      reader.onerror = reject;
-      reader.readAsArrayBuffer(file);
-    });
-  }
-
-  // Concatenate multiple ArrayBuffers
-  private concatenateBuffers(buffers: ArrayBuffer[]): ArrayBuffer {
-    const totalLength = buffers.reduce((acc, buffer) => acc + buffer.byteLength, 0);
-    const combinedBuffer = new Uint8Array(totalLength);
-
-    let offset = 0;
-    for (const buffer of buffers) {
-      combinedBuffer.set(new Uint8Array(buffer), offset);
-      offset += buffer.byteLength;
-    }
-
-    return combinedBuffer.buffer;
-  }
-
-
-  uploadFile(file: File) {
-    this.extractCoordinates(file)
-  }
-
   deleteFile(fileToDelete: ProjectFile): void {
     // Remove the file by filtering out the one to delete
     this.projectFiles = this.projectFiles.filter(file => file !== fileToDelete);
-  
+
     // Update the MatTable data source to reflect the change
     this.dataSource.data = [...this.projectFiles];
-  
+
     console.log('Updated project files:', this.projectFiles);
   }
+
   downloadFile(file: any) {
     // to do
+  }
+
+  getCentroid(polygon: any) {
+    const poly = turf.polygon([polygon]);
+    const centroid = turf.centroid(poly);
+    const centroidCoords: [number, number] = [
+      centroid.geometry.coordinates[0],
+      centroid.geometry.coordinates[1],
+    ];
+    console.log(centroid)
+    return centroidCoords
   }
 }

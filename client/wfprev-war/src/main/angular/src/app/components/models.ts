@@ -138,7 +138,7 @@ export interface ProjectBoundary {
 }
 
 export interface Geometry {
-  type?: "Polygon"; 
-  coordinates?: number[][][];
+  type?: "MultiPolygon"; 
+  coordinates?: number[][];
 }
 
