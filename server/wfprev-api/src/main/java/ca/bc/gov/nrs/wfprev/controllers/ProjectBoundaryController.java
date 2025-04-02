@@ -128,7 +128,7 @@ public class ProjectBoundaryController extends CommonController {
             resource.setUpdateUser(getWebAdeAuthentication().getUserId());
             resource.setRevisionCount(0);
 
-            ProjectBoundaryModel newResource = projectBoundaryService.createProjectBoundary(projectGuid, resource);
+            ProjectBoundaryModel newResource = projectBoundaryService.createOrUpdateProjectBoundary(projectGuid, resource);
             return ResponseEntity.status(201).body(newResource);
         } catch (DataIntegrityViolationException e) {
             log.error(" ### DataIntegrityViolationException while creating Project Boundary", e);

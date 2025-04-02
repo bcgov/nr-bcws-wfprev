@@ -102,7 +102,7 @@ class ProjectBoundaryServiceTest {
         when(projectBoundaryResourceAssembler.toModel(entity)).thenReturn(resource);
 
         // Act
-        ProjectBoundaryModel result = projectBoundaryService.createProjectBoundary(projectGuid, resource);
+        ProjectBoundaryModel result = projectBoundaryService.createOrUpdateProjectBoundary(projectGuid, resource);
 
         // Assert
         assertNotNull(result, "Resulting ProjectBoundaryModel should not be null");
@@ -116,7 +116,7 @@ class ProjectBoundaryServiceTest {
 
         when(validator.validate(resource)).thenReturn(violations);
 
-        assertThrows(ConstraintViolationException.class, () -> projectBoundaryService.createProjectBoundary(projectGuid, resource));
+        assertThrows(ConstraintViolationException.class, () -> projectBoundaryService.createOrUpdateProjectBoundary(projectGuid, resource));
     }
 
     @Test

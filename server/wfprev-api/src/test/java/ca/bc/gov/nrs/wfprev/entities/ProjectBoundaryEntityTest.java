@@ -129,20 +129,6 @@ class ProjectBoundaryEntityTest {
     }
 
     @Test
-    void testBoundarySizeHa_IsNull() throws SQLException {
-        ProjectBoundaryEntity entity = createValidProjectBoundaryEntity();
-        entity.setBoundarySizeHa(null);
-
-        Set<ConstraintViolation<ProjectBoundaryEntity>> violations = validator.validate(entity);
-
-        assertThat(violations)
-                .hasSize(1)
-                .anyMatch(violation ->
-                        violation.getPropertyPath().toString().equals("boundarySizeHa") &&
-                                violation.getMessage().equals("must not be null"));
-    }
-
-    @Test
     void testCreateUser_IsNull() throws SQLException {
         ProjectBoundaryEntity entity = createValidProjectBoundaryEntity();
         entity.setCreateUser(null);

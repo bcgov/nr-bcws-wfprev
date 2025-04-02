@@ -6,7 +6,6 @@ import ca.bc.gov.nrs.wfprev.data.assemblers.ProjectBoundaryResourceAssembler;
 import ca.bc.gov.nrs.wfprev.data.entities.ProjectBoundaryEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ProjectEntity;
 import ca.bc.gov.nrs.wfprev.data.models.ProjectBoundaryModel;
-import ca.bc.gov.nrs.wfprev.data.models.ProjectModel;
 import ca.bc.gov.nrs.wfprev.data.repositories.ProjectBoundaryRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.ProjectRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -15,13 +14,11 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validator;
 import lombok.extern.slf4j.Slf4j;
-import org.postgresql.geometric.PGpoint;
-import org.postgresql.geometric.PGpolygon;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
 import java.text.MessageFormat;
-import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -80,7 +77,7 @@ public class ProjectBoundaryService implements CommonService {
   }
 
   @Transactional
-  public ProjectBoundaryModel createProjectBoundary(
+  public ProjectBoundaryModel createOrUpdateProjectBoundary(
           String projectGuid, ProjectBoundaryModel resource) {
     Set<ConstraintViolation<ProjectBoundaryModel>> violations = validator.validate(resource);
     if (!violations.isEmpty()) {
@@ -95,15 +92,24 @@ public class ProjectBoundaryService implements CommonService {
     ProjectEntity projectEntity = projectRepository.findById(UUID.fromString(projectGuid))
             .orElseThrow(() -> new EntityNotFoundException(MessageFormat.format(KEY_FORMAT, PROJECT_NOT_FOUND, projectGuid)));
 
-    resource.setProjectBoundaryGuid(UUID.randomUUID().toString());
+    updateFieldsFromBoundaryGeometry(resource);
 
-    ProjectBoundaryEntity entity = projectBoundaryResourceAssembler.toEntity(resource);
-    if(entity != null && entity.getProjectGuid() != null) {
-      entity.setProjectGuid(projectEntity.getProjectGuid());
+    List<ProjectBoundaryEntity> existingEntityList = projectBoundaryRepository.findByProjectGuid(UUID.fromString(projectGuid));
 
-      ProjectBoundaryEntity savedEntity = projectBoundaryRepository.save(entity);
+    if (!existingEntityList.isEmpty() && existingEntityList.getFirst() != null) {
+      // Update existing boundary
+      ProjectBoundaryEntity existingEntity = existingEntityList.getFirst();
+      ProjectBoundaryEntity updatedEntity = projectBoundaryResourceAssembler.updateEntity(resource, existingEntity);
+      return saveProjectBoundary(updatedEntity);
+    } else {
+      // Create new boundary
+      resource.setProjectBoundaryGuid(UUID.randomUUID().toString());
+      ProjectBoundaryEntity newEntity = projectBoundaryResourceAssembler.toEntity(resource);
+      newEntity.setProjectGuid(projectEntity.getProjectGuid());
+      log.info("Creating entity: {}", newEntity);
+      ProjectBoundaryEntity savedEntity = projectBoundaryRepository.save(newEntity);
       return projectBoundaryResourceAssembler.toModel(savedEntity);
-    } else throw new IllegalArgumentException("ProjectBoundaryModel resource to be created cannot be null");
+    }
   }
 
   @Transactional
@@ -130,6 +136,7 @@ public class ProjectBoundaryService implements CommonService {
         throw new EntityNotFoundException(MessageFormat.format(EXTENDED_KEY_FORMAT, BOUNDARY, boundaryGuid, DOES_NOT_BELONG_PROJECT, projectGuid));
       }
 
+      updateFieldsFromBoundaryGeometry(resource);
       ProjectBoundaryEntity entity = projectBoundaryResourceAssembler.updateEntity(resource, existingEntity);
       return saveProjectBoundary(entity);
     } else throw new IllegalArgumentException("ProjectBoundaryModel resource to be updated cannot be null");
@@ -137,6 +144,7 @@ public class ProjectBoundaryService implements CommonService {
 
   public ProjectBoundaryModel saveProjectBoundary(ProjectBoundaryEntity entity) {
     try {
+      log.info("Saving entity: {}", entity);
       ProjectBoundaryEntity savedEntity = projectBoundaryRepository.saveAndFlush(entity);
       return projectBoundaryResourceAssembler.toModel(savedEntity);
     } catch (IllegalArgumentException e) {
@@ -187,5 +195,14 @@ public class ProjectBoundaryService implements CommonService {
     }
 
     projectBoundaryRepository.deleteByProjectBoundaryGuid(UUID.fromString(boundaryGuid));
+  }
+
+  private ProjectBoundaryModel updateFieldsFromBoundaryGeometry(ProjectBoundaryModel model) {
+    if(model.getBoundaryGeometry() != null) {
+      model.setBoundarySizeHa(BigDecimal.valueOf(model.getBoundaryGeometry().getArea() / 10000.0));
+      if(model.getLocationGeometry() == null) {
+        model.setLocationGeometry(model.getBoundaryGeometry().getCentroid());
+      }
+    } return model;
   }
 }
