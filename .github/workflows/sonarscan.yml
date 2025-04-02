@@ -11,6 +11,11 @@ on:
   pull_request:
     branches: [ main, feature/* ]
     types: [opened, synchronize, reopened]
+  workflow_dispatch:
+    inputs:
+      TAG:
+        type: string
+        description: Additional tag to add to built images
 jobs:
   sonarcloud:
     name: SonarCloud Scan
