@@ -1,6 +1,6 @@
 {
   "application": {
-    "baseUrl": "http://localhost:6200/"
+    "baseUrl": "http://localhost:4200/"
   },
 
   "webade": {

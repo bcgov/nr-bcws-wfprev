@@ -14,7 +14,6 @@ import {
 } from 'src/app/utils/tools';
 import { FiscalYearProjectsComponent } from 'src/app/components/edit-project/project-details/fiscal-year-projects/fiscal-year-projects.component';
 import { ProjectFilesComponent } from 'src/app/components/edit-project/project-details/project-files/project-files.component';
-(window as any).global = window;
 
 @Component({
   selector: 'app-project-details',

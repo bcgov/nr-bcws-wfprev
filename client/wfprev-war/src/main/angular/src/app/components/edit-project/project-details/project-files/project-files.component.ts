@@ -2,20 +2,16 @@ import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component, Input } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { MatTableModule } from '@angular/material/table';
-import { catchError, EMPTY, from, map, switchMap, throwError } from 'rxjs';
+import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { BlobReader, BlobWriter, ZipReader } from '@zip.js/zip.js';
+import process from 'process';
+import { catchError, lastValueFrom, map, of, tap, throwError } from 'rxjs';
 import { AddAttachmentComponent } from 'src/app/components/add-attachment/add-attachment.component';
 import { FileAttachment, ProjectBoundary } from 'src/app/components/models';
 import { AttachmentService } from 'src/app/services/attachment-service';
 import { ProjectService } from 'src/app/services/project-services';
 import { SpatialService } from 'src/app/services/spatial-services';
 import { Messages } from 'src/app/utils/messages';
-import { ZipReader, BlobReader, TextWriter, BlobWriter, Uint8ArrayWriter } from '@zip.js/zip.js';
-import { Buffer } from 'buffer';
-import process from 'process';
-import JSZip from 'jszip';
-import { MatTableDataSource } from '@angular/material/table';
-import * as turf from '@turf/turf';
 
 (window as any).process = process;
 
@@ -184,7 +180,9 @@ export class ProjectFilesComponent {
         type: "MultiPolygon",
         coordinates: response,
       },
-      locationGeometry: [-124.0, 49.0]
+      //actual centroid will be calculated in API 
+      //sum of all project and activity polygons - WFPREV-146
+      locationGeometry: [-124, 49]
     };
   
     // Ensure the HTTP request is triggered by subscribing
@@ -219,16 +217,11 @@ export class ProjectFilesComponent {
     try {
       if (fileType === 'kml') {
         return this.spatialService.extractKMLCoordinates(await file.text()) as unknown as number[][];
-      } else if (fileType === 'kmz') {
-        return await this.spatialService.extractKMZCoordinates(file) as unknown as number[][];
-      } else if (fileType === 'shp') {
-        return await this.spatialService.extractSHPCoordinates(file) as unknown as number[][];
-      } else if (fileType === 'zip' || fileType === 'gdb') {
+      } else if (fileType === 'zip' || fileType === 'gdb' || fileType === 'kmz') {
         const zipReader = new ZipReader(new BlobReader(file));
         const entries = await zipReader.getEntries();
         try {
           const kmlEntry = entries.find(entry => entry.filename.endsWith('.kml'));
-          const kmzEntry = entries.find(entry => entry.filename.endsWith('.kmz'));
           const shpEntry = entries.find(entry => entry.filename.endsWith('.shp'));
           const dbfEntry = entries.find(entry => entry.filename.endsWith('.dbf'));
           const containsGdbTable = entries.some(entry => entry.filename.includes('.gdbtable'));
@@ -244,42 +237,36 @@ export class ProjectFilesComponent {
             }
           }
 
-          if (kmzEntry) {
-            const extractedKMZ = await kmzEntry.getData?.(new BlobWriter());
-            if (extractedKMZ) {
-              return await this.spatialService.extractKMZCoordinates(
-                new File([extractedKMZ], 'extracted.kmz')
-              ) as unknown as number[][];
-            }
-          }
-
-          if (shpEntry && dbfEntry) {
+          else if (shpEntry && dbfEntry) {
             return await this.spatialService.extractSHPCoordinates(file) as unknown as number[][];
           }
 
-          if (gdbEntries) {
+          else if (gdbEntries) {
             try {
-              const gdal = require("gdal-next")
-              gdal.open(file)
-                .then((geojsonData: any) => {
-                  console.log('Extracted GeoJSON:', geojsonData);
-                  this.snackbarService.open('GeoJSON extraction successful!', 'Close', { duration: 3000 });
-                })
-                .catch((error: any) => {
-                  console.error('Error extracting GeoJSON:', error);
-                  this.snackbarService.open('Failed to extract GeoJSON', 'Close', { duration: 3000 });
-                });
-
+              const geojsonData = await lastValueFrom(
+                this.spatialService.extractGDBGeometry(file).pipe(
+                  tap((data: any) => {
+                    console.log("Full GeoJSON Data:", data);
+                  }),
+                  catchError((error: any) => {
+                    console.error("Error extracting GeoJSON:", error);
+                    return of(null); 
+                  })
+                )
+              );
+          
+              if (geojsonData) {
+                console.log("Extracted Coordinates:", geojsonData.coordinates);
+                return geojsonData[0].coordinates;
+              }
             } catch (error) {
-              console.error('Error processing Geodatabase:', error);
+              console.error("Error processing Geodatabase:", error);
             }
           }
-
 
           console.error('No supported spatial files found in ZIP or GDB.');
           return [];
         } finally {
-          // Always close the zip reader to free up resources 
           await zipReader.close();
         }
       } else {
@@ -304,16 +291,5 @@ export class ProjectFilesComponent {
 
   downloadFile(file: any) {
     // to do
-  }
-
-  getCentroid(polygon: any) {
-    const poly = turf.polygon([polygon]);
-    const centroid = turf.centroid(poly);
-    const centroidCoords: [number, number] = [
-      centroid.geometry.coordinates[0],
-      centroid.geometry.coordinates[1],
-    ];
-    console.log(centroid)
-    return centroidCoords
   }
 }

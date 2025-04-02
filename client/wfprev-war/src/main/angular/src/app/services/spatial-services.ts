@@ -4,12 +4,16 @@ import * as shp from 'shpjs';
 import { DOMParser } from '@xmldom/xmldom';
 import { Geometry, Position } from 'geojson';
 import { ZipReader, BlobReader, TextWriter } from '@zip.js/zip.js';
+import { catchError, map, Observable, throwError } from "rxjs";
+import { HttpClient } from "@angular/common/http";
 type CoordinateTypes = Position | Position[] | Position[][] | Position[][][];
 
 @Injectable({
     providedIn: 'root',
 })
 export class SpatialService {
+
+     constructor(private readonly httpClient: HttpClient){}
 
     private parseKMLToCoordinates(kmlString: string): Position[][][] {
         const kmlDom = new DOMParser().parseFromString(kmlString, 'text/xml');
@@ -180,12 +184,35 @@ export class SpatialService {
         }
     }
 
-    stripAltitude(geometry: Geometry) {
+    stripAltitude(geometry: Geometry): Geometry {
         if (geometry.type === "Polygon" || geometry.type === "MultiPolygon") {
             geometry.coordinates = geometry.coordinates.map((ring: any) =>
-                ring.map((coords: any) => coords.map(([lng, lat]: number[]) => [lng, lat]))
+                ring.map((coords: any) => 
+                    coords.map(([lng, lat]: number[]) => [lng, lat]) // Remove altitude
+                )
             );
         }
         return geometry;
+    }
+    
+    extractGDBGeometry(file: File): Observable<any> {
+        // this will be replaced with node js server in AWS - WFPREV-402
+        const url = 'http://localhost:3000/upload';
+        
+        const formData = new FormData();
+        formData.append('file', file); 
+    
+        return this.httpClient.post<any>(url, formData).pipe(
+            map((response) => {
+                console.log('Raw response:', response);
+                return response.map((geom: any) => {
+                    return this.stripAltitude(geom);
+                });
+            }),
+            catchError((error) => {
+                console.error("Error extracting geodatabase geometry", error);
+                return throwError(() => new Error("Failed to extract geodatabase geometry"));
+            })
+        );
     }
 }

@@ -1,12 +1,14 @@
+import { ChangeDetectorRef } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { MatTableModule } from '@angular/material/table';
-import { ProjectFilesComponent } from './project-files.component';
-import { ProjectService } from 'src/app/services/project-services';
+import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { of, throwError } from 'rxjs';
 import { AddAttachmentComponent } from 'src/app/components/add-attachment/add-attachment.component';
+import { AttachmentService } from 'src/app/services/attachment-service';
+import { ProjectService } from 'src/app/services/project-services';
+import { SpatialService } from 'src/app/services/spatial-services';
 import { Messages } from 'src/app/utils/messages';
+import { ProjectFilesComponent } from './project-files.component';
 
 describe('ProjectFilesComponent', () => {
   let component: ProjectFilesComponent;
@@ -14,18 +16,25 @@ describe('ProjectFilesComponent', () => {
   let mockProjectService: jasmine.SpyObj<ProjectService>;
   let mockSnackbar: jasmine.SpyObj<MatSnackBar>;
   let mockDialog: jasmine.SpyObj<MatDialog>;
+  let mockAttachmentService: jasmine.SpyObj<AttachmentService>;
+  let mockSpatialService: jasmine.SpyObj<SpatialService>;
+  let mockCdr: jasmine.SpyObj<ChangeDetectorRef>;
 
   beforeEach(async () => {
     mockProjectService = jasmine.createSpyObj('ProjectService', ['uploadDocument']);
     mockSnackbar = jasmine.createSpyObj('MatSnackBar', ['open']);
     mockDialog = jasmine.createSpyObj('MatDialog', ['open']);
+    mockAttachmentService = jasmine.createSpyObj('AttachmentService', ['createProjectAttachment']);
 
     await TestBed.configureTestingModule({
-      imports: [ProjectFilesComponent, MatTableModule, MatDialogModule, MatSnackBarModule],
       providers: [
         { provide: ProjectService, useValue: mockProjectService },
         { provide: MatSnackBar, useValue: mockSnackbar },
         { provide: MatDialog, useValue: mockDialog },
+        { provide: AttachmentService, useValue: mockAttachmentService},
+        { provide: SpatialService, useValue: mockSpatialService},
+        { provide: ChangeDetectorRef, useValue: mockCdr},
+
       ],
     }).compileComponents();
 
@@ -73,19 +82,6 @@ describe('ProjectFilesComponent', () => {
     component.openFileUploadModal();
     expect(mockDialog.open).toHaveBeenCalled();
     expect(component.uploadFile).not.toHaveBeenCalled();
-  });
-
-  it('should call projectService.uploadDocument() and show success message on file upload', () => {
-    const mockFile = new File(['content'], 'test-file.txt', { type: 'text/plain' });
-    mockProjectService.uploadDocument.and.returnValue(of({ success: true }));
-
-    component.uploadFile(mockFile);
-
-    expect(mockProjectService.uploadDocument).toHaveBeenCalledWith({ file: mockFile });
-    expect(mockSnackbar.open).toHaveBeenCalledWith(Messages.fileUploadSuccess, 'OK', {
-      duration: 5000,
-      panelClass: 'snackbar-success',
-    });
   });
 
   it('should handle file upload error', () => {

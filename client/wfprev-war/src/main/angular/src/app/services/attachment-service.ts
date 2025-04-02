@@ -4,7 +4,6 @@ import { AppConfigService } from "./app-config.service";
 import { HttpClient } from "@angular/common/http";
 import { TokenService } from "./token.service";
 import { FileAttachment } from "../components/models";
-(window as any).global = window;
 
 @Injectable({
     providedIn: 'root',

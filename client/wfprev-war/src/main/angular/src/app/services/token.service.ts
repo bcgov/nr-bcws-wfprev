@@ -204,7 +204,6 @@ export class TokenService {
     this.authToken.complete();
     this.credentials.next(this.tokenDetails);
     this.credentials.complete();
-    console.log(this.credentials)
   }
 
   public updateToken(oauthToken: any): void {

@@ -5,6 +5,7 @@ import { TokenService } from 'src/app/services/token.service';
 import { Project } from 'src/app/components/models';
 import { ProjectService } from 'src/app/services/project-services';
 import { HttpEventType } from '@angular/common/http';
+import { of } from 'rxjs';
 
 describe('ProjectService', () => {
   let service: ProjectService;
@@ -40,7 +41,7 @@ describe('ProjectService', () => {
 
   beforeEach(() => {
     mockAppConfigService = jasmine.createSpyObj('AppConfigService', ['getConfig']);
-    mockTokenService = jasmine.createSpyObj('TokenService', ['getOauthToken']);
+    mockTokenService = jasmine.createSpyObj('TokenService', ['getOauthToken'], { credentialsEmitter: of({ userGuid: 'mock-user-guid' }) });
 
     mockAppConfigService.getConfig.and.returnValue(mockConfig);
     mockTokenService.getOauthToken.and.returnValue('mock-token');
