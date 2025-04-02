@@ -1,0 +1,48 @@
+
+on:
+  release:
+    types: [prereleased]
+
+jobs:
+  tag-builds:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        component-name: [
+          wfprev-api
+        ]
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ vars.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN}}
+
+      - name: Tag relevant images
+        run: |
+          docker pull ${{vars.REGISTRY}}/${{ github.repository }}-${{ matrix.component-name }}:latest
+          docker tag ${{vars.REGISTRY}}/${{ github.repository }}-${{ matrix.component-name }}:latest ${{vars.REGISTRY}}/${{ github.repository }}-${{ matrix.component-name }}:${{ github.event.release.tag_name }}
+          docker push ${{vars.REGISTRY}}/${{ github.repository }}-${{ matrix.component-name }}:${{ github.event.release.tag_name }}
+
+  # include additional steps for DLV, PRD
+  # rename to deploy-wftst, rename environment to tst
+  deploy-test:
+    needs: tag-builds
+    if: ${{ contains(github.event.release.tag_name, '-rc') }}
+    uses: ./.github/workflows/terragrunt-deploy.yml
+    secrets: inherit
+    with:
+      DEFAULT_APPLICATION_ENVIRONMENT: test
+      IMAGE_TAG: ${{ github.event.release.tag_name }}
+      COMMAND: apply
+      RUN_LIQUIBASE: 'true'
+
+  wfprev-ui:
+    uses: ./.github/workflows/client-build.yml
+    needs: [deploy-test]
+    with:
+      DEFAULT_APPLICATION_ENVIRONMENT: test
+    secrets: inherit
