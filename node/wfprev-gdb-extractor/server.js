@@ -129,9 +129,12 @@ app.use(cors({
 // Set up route
 app.post("/upload", handleUpload);
 
-app.listen(3000, () => console.log("Server running on port 3000"));
-
-// Export for testing
-module.exports = {
+if (require.main === module) {
+    // Start the server only if the file is run directly, not during tests
+    const server = app.listen(3000, () => console.log("Server running on port 3000"));
+  }
+  
+  module.exports = {
+    app,
     handleUpload
-};
+  }
