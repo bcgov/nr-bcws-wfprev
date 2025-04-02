@@ -1,4 +1,3 @@
-// server.js
 const express = require("express");
 const fileUpload = require("express-fileupload");
 const gdal = require("gdal-async");
@@ -122,9 +121,9 @@ async function handleUpload(req, res) {
     }
 }
 
-// Allow requests from localhost:4200
+// TO-DO - update this to use Github secrets in WFPREV-402 terraform tasks
 app.use(cors({
-    origin: 'http://localhost:4200'
+    origin: ['http://localhost:4200', 'https://wfprev-dev.nrs.gov.bc.ca', 'https://wfprev-tst.nrs.gov.bc.ca/', 'https://wfprev-dev.nrs.gov.bc.ca']
 }));
 
 // Set up route

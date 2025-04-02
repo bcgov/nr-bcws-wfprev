@@ -106,7 +106,6 @@ public class ProjectBoundaryService implements CommonService {
       resource.setProjectBoundaryGuid(UUID.randomUUID().toString());
       ProjectBoundaryEntity newEntity = projectBoundaryResourceAssembler.toEntity(resource);
       newEntity.setProjectGuid(projectEntity.getProjectGuid());
-      log.info("Creating entity: {}", newEntity);
       ProjectBoundaryEntity savedEntity = projectBoundaryRepository.save(newEntity);
       return projectBoundaryResourceAssembler.toModel(savedEntity);
     }
@@ -144,7 +143,6 @@ public class ProjectBoundaryService implements CommonService {
 
   public ProjectBoundaryModel saveProjectBoundary(ProjectBoundaryEntity entity) {
     try {
-      log.info("Saving entity: {}", entity);
       ProjectBoundaryEntity savedEntity = projectBoundaryRepository.saveAndFlush(entity);
       return projectBoundaryResourceAssembler.toModel(savedEntity);
     } catch (IllegalArgumentException e) {

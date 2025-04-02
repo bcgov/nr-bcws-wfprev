@@ -56,7 +56,24 @@ jobs:
         run: echo -e $NPMRC > ~/.npmrc
         
       - name: Debug .npmrc
-        run: cat ~/.npmrc 
+        run: cat ~/.npmrc
+
+      - name: Install dependencies for Node.js server
+        working-directory: ./node/wfprev-gdb-extractor
+        run: npm install
+
+      - name: Run tests with coverage for Node.js server
+        working-directory: ./node/wfprev-gdb-extractor
+        run: npm test -- --coverage
+
+      - name: Upload coverage report to SonarCloud
+        run: |
+            sonar-scanner \
+            -Dsonar.projectKey=bcgov_nr-bcws-wfprev \
+            -Dsonar.sources=./node/wfprev-gdb-extractor \
+            -Dsonar.tests=./node/wfprev-gdb-extractor \
+            -Dsonar.javascript.lcov.reportPaths=./node/wfprev-gdb-extractor/coverage/lcov.info \
+            -Dsonar.login=${{ secrets.SONAR_TOKEN }}
      
       - name: Clear cache
         working-directory: ./client/wfprev-war/src/main/angular
