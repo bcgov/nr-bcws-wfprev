@@ -1,8 +1,8 @@
 # CloudFront Origin Access Identity (OAI) for secure access to S3
-data "aws_acm_certificate" "wfhr-us-certificate" {
-  domain = "wfprev-${var.TARGET_ENV}.nrs.gov.bc.ca"
-  provider = aws.aws-us
-}
+#data "aws_acm_certificate" "wfhr-us-certificate" {
+#  domain = "wfprev-${var.TARGET_ENV}.nrs.gov.bc.ca"
+#  provider = aws.aws-us
+#}
 
 resource "aws_cloudfront_origin_access_identity" "oai" {
   comment = "OAI for wfprev UI"
@@ -96,7 +96,7 @@ resource "aws_cloudfront_distribution" "wfprev_app_distribution" {
   }
  
   viewer_certificate {
-    acm_certificate_arn = data.aws_acm_certificate.wfhr-us-certificate.arn
+    acm_certificate_arn = aws_acm_certificate.wfprev_domain_certificate.arn
     ssl_support_method  = "sni-only"
   }
 
