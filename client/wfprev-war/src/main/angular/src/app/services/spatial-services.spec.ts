@@ -3,7 +3,7 @@ import { HttpClientTestingModule, HttpTestingController } from '@angular/common/
 import { SpatialService } from './spatial-services';
 import { Geometry, Point, LineString, Polygon, MultiPolygon, GeometryCollection } from 'geojson';
 
-fdescribe('SpatialService', () => {
+describe('SpatialService', () => {
   let service: SpatialService;
   let httpMock: HttpTestingController;
 
