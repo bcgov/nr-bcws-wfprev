@@ -66,7 +66,7 @@ export class AddAttachmentComponent {
       case 'Gross Project Area Boundary':
         return '.kml,.kmz,.shp,.gdb,.zip';
       case 'Other':
-        return '.".pdf,.doc,.docx,.jpg,.png';
+        return '.pdf,.doc,.docx,.jpg,.png';
       default:
         return '';
     }
