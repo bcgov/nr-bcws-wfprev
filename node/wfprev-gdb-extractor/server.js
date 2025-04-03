@@ -7,10 +7,21 @@ const extract = require("extract-zip");
 const cors = require('cors');
 
 const app = express();
+
+// Hide X-Powered-By header to prevent Express version disclosure
+app.disable('x-powered-by');
+
 app.use(fileUpload());
 
 // Ensure 'uploads' directory exists
 if (!fs.existsSync("uploads")) fs.mkdirSync("uploads");
+
+// Function to validate file path (prevent zip slip vulnerability)
+function isValidPath(filePath, destinationPath) {
+    const normalizedPath = path.normalize(filePath);
+    // Check if the normalized path attempts to navigate outside the destination directory
+    return normalizedPath.startsWith(destinationPath);
+}
 
 // Extract the handler function so it can be tested independently
 async function handleUpload(req, res) {
@@ -18,18 +29,39 @@ async function handleUpload(req, res) {
         return res.status(400).send("No file uploaded.");
     }
 
-    const zipPath = path.join(__dirname, "uploads", req.files.file.name);
-    await req.files.file.mv(zipPath);
+    // Validate file extension
+    const fileName = req.files.file.name;
+    if (!fileName.toLowerCase().endsWith('.zip')) {
+        return res.status(400).send("Only ZIP files are allowed.");
+    }
 
-    // Extract ZIP file
-    const unzipPath = zipPath.replace(".zip", "");
+    const zipPath = path.join(__dirname, "uploads", fileName);
+    const unzipPath = path.join(__dirname, "uploads", path.basename(fileName, '.zip'));
+    
+    await req.files.file.mv(zipPath);
     console.log(`Extracting ${zipPath} to ${unzipPath}`);
 
     try {
-        await extract(zipPath, { dir: unzipPath });
+        // Use onEntry callback to validate each file path before extraction
+        await extract(zipPath, { 
+            dir: unzipPath,
+            onEntry: (entry) => {
+                const destPath = path.join(unzipPath, entry.fileName);
+                // Validate path to prevent zip slip attack
+                if (!isValidPath(destPath, unzipPath)) {
+                    throw new Error(`Attempted zip slip attack with file: ${entry.fileName}`);
+                }
+            }
+        });
         console.log("Extraction complete.");
     } catch (err) {
         console.error("Extraction failed:", err);
+        // Clean up the zip file
+        try {
+            fs.unlinkSync(zipPath);
+        } catch (cleanupErr) {
+            console.error("Error during cleanup:", cleanupErr);
+        }
         return res.status(500).send("Extraction failed.");
     }
 
@@ -94,8 +126,19 @@ async function handleUpload(req, res) {
                 };
 
                 try {
-                    deleteFolderRecursive(path.join(__dirname, "uploads"));
-                    fs.mkdirSync("uploads");
+                    // Delete the zip file
+                    if (fs.existsSync(zipPath)) {
+                        fs.unlinkSync(zipPath);
+                    }
+                    
+                    // Delete the extracted directory
+                    deleteFolderRecursive(unzipPath);
+                    
+                    // Ensure uploads directory exists
+                    if (!fs.existsSync("uploads")) {
+                        fs.mkdirSync("uploads");
+                    }
+                    
                     console.log("Cleanup completed successfully");
                 } catch (cleanupErr) {
                     console.error("Manual cleanup error:", cleanupErr);
@@ -132,9 +175,9 @@ app.post("/upload", handleUpload);
 if (require.main === module) {
     // Start the server only if the file is run directly, not during tests
     const server = app.listen(3000, () => console.log("Server running on port 3000"));
-  }
+}
   
-  module.exports = {
+module.exports = {
     app,
     handleUpload
-  }
+}
