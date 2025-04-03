@@ -173,7 +173,7 @@ async function handleUpload(req, res) {
 
 // TO-DO - update this to use Github secrets in WFPREV-402 terraform tasks
 app.use(cors({
-    origin: ['http://localhost:4200', 'https://wfprev-dev.nrs.gov.bc.ca', 'https://wfprev-tst.nrs.gov.bc.ca/', 'https://wfprev-dev.nrs.gov.bc.ca']
+    origin: ['http://localhost:4200', 'https://wfprev-dev.nrs.gov.bc.ca', 'https://wfprev-tst.nrs.gov.bc.ca/', 'https://wfprev.nrs.gov.bc.ca']
 }));
 
 // Set up route
