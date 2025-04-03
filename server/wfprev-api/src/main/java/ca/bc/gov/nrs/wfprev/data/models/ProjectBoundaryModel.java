@@ -40,10 +40,8 @@ public class ProjectBoundaryModel extends CommonModel<ProjectBoundaryModel> {
 	private Date collectionDate;
 	private String collectionMethod;
 	private String collectorName;
-	@NotNull(message = "ProjectBoundary boundarySizeHa must not be null")
 	private BigDecimal boundarySizeHa;
 	private String boundaryComment;
-	@NotNull(message = "ProjectBoundary locationGeometry must not be null")
 	private Point locationGeometry;
 	@NotNull(message = "ProjectBoundary boundaryGeometry must not be null")
 	private MultiPolygon boundaryGeometry;
