@@ -3,8 +3,8 @@ import * as toGeoJSON from '@tmcw/togeojson';
 import * as shp from 'shpjs';
 import { DOMParser } from '@xmldom/xmldom';
 import { Geometry, Position } from 'geojson';
-import { ZipReader, BlobReader, TextWriter } from '@zip.js/zip.js';
-import { catchError, map, Observable, throwError } from "rxjs";
+import { ZipReader, BlobReader, TextWriter, BlobWriter } from '@zip.js/zip.js';
+import { catchError, lastValueFrom, map, Observable, of, throwError } from "rxjs";
 import { HttpClient } from "@angular/common/http";
 type CoordinateTypes = Position | Position[] | Position[][] | Position[][][];
 
@@ -211,4 +211,67 @@ export class SpatialService {
             })
         );
     }
+
+    public async extractCoordinates(file: File): Promise<number[][]> {
+        const fileType = file.name.split('.').pop()?.toLowerCase();
+        try {
+          if (fileType === 'kml') {
+            return this.extractKMLCoordinates(await file.text()) as unknown as number[][];
+          } else if (fileType === 'zip' || fileType === 'gdb' || fileType === 'kmz') {
+            const zipReader = new ZipReader(new BlobReader(file));
+            const entries = await zipReader.getEntries();
+            try {
+              const kmlEntry = entries.find(entry => entry.filename.endsWith('.kml'));
+              const shpEntry = entries.find(entry => entry.filename.endsWith('.shp'));
+              const dbfEntry = entries.find(entry => entry.filename.endsWith('.dbf'));
+              const containsGdbTable = entries.some(entry => entry.filename.includes('.gdbtable'));
+    
+              const gdbEntries = containsGdbTable ? entries : undefined;
+    
+              if (kmlEntry) {
+                const extractedKML = await kmlEntry.getData?.(new BlobWriter());
+                if (extractedKML) {
+                  return await this.extractKMZCoordinates(
+                    new File([extractedKML], 'extracted.kml')
+                  ) as unknown as number[][];
+                }
+              }
+    
+              else if (shpEntry && dbfEntry) {
+                return await this.extractSHPCoordinates(file) as unknown as number[][];
+              }
+    
+              else if (gdbEntries) {
+                try {
+                  const geojsonData = await lastValueFrom(
+                    this.extractGDBGeometry(file).pipe(
+                      catchError((error: any) => {
+                        console.error("Error extracting GeoJSON:", error);
+                        return of(null);
+                      })
+                    )
+                  );
+    
+                  if (geojsonData) {
+                    return geojsonData[0].coordinates;
+                  }
+                } catch (error) {
+                  console.error("Error processing Geodatabase file:", error);
+                }
+              }
+    
+              console.error('No supported spatial files found in ZIP or GDB.');
+              return [];
+            } finally {
+              await zipReader.close();
+            }
+          } else {
+            console.error('Unsupported file type:', fileType);
+            return [];
+          }
+        } catch (error) {
+          console.error('Error extracting coordinates:', error);
+          return [];
+        }
+      }
 }

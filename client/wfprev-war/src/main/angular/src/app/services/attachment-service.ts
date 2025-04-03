@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { catchError, Observable, throwError } from "rxjs";
+import { catchError, map, Observable, throwError } from "rxjs";
 import { AppConfigService } from "./app-config.service";
 import { HttpClient } from "@angular/common/http";
 import { TokenService } from "./token.service";
@@ -34,6 +34,40 @@ export class AttachmentService {
                 catchError((error) => {
                     console.error("Error creating project attachment", error);
                     return throwError(() => new Error("Failed to create project attachment"));
+                })
+            );
+        }
+
+    getProjectAttachments(projectGuid: string): Observable<any> {
+            const baseUrl = `${this.appConfigService.getConfig().rest['wfprev']}/wfprev-api/projects`;
+            const url = `${baseUrl}/${projectGuid}/attachments`;
+                
+            return this.httpClient.get(url, {
+                headers: {
+                    Authorization: `Bearer ${this.tokenService.getOauthToken()}`,
+                }
+            }).pipe(
+                map((response: any) => response),
+                catchError((error) => {
+                    console.error("Error fetching project boundaries", error);
+                    return throwError(() => new Error("Failed to fetch project attachments"));
+                })
+            );
+        }
+
+        deleteProjectAttachment(projectGuid: string, attachmentGuid: string): Observable<any> {
+            const baseUrl = `${this.appConfigService.getConfig().rest['wfprev']}/wfprev-api/projects`;
+            const url = `${baseUrl}/${projectGuid}/attachments/${attachmentGuid}`;
+                
+            return this.httpClient.delete(url, {
+                headers: {
+                    Authorization: `Bearer ${this.tokenService.getOauthToken()}`,
+                }
+            }).pipe(
+                map((response: any) => response),
+                catchError((error) => {
+                    console.error("Error fetching project boundaries", error);
+                    return throwError(() => new Error("Failed to fetch project attachments"));
                 })
             );
         }

@@ -41,7 +41,7 @@ export interface Project {
   secondaryObjectiveTypeCode?: {
     objectiveTypeCode: string;
   }
-  secondaryObjectiveRationale? :string;
+  secondaryObjectiveRationale?: string;
 }
 
 export interface ProjectFiscal {
@@ -120,13 +120,13 @@ export interface FileAttachment {
   };
   attachmentDescription?: string;
   attachmentReadOnlyInd: boolean;
-  createDate?: string; 
-} 
+  createDate?: string;
+}
 
 export interface ProjectBoundary {
   projectGuid?: string;
-  systemStartTimestamp?: string; 
-  systemEndTimestamp?: string; 
+  systemStartTimestamp?: string;
+  systemEndTimestamp?: string;
   mappingLabel?: string;
   collectionDate?: string;
   collectionMethod?: string;
@@ -134,11 +134,22 @@ export interface ProjectBoundary {
   boundarySizeHa?: number;
   boundaryComment?: string;
   boundaryGeometry?: Geometry;
-  locationGeometry?: [number, number]; 
+  locationGeometry?: [number, number];
 }
 
 export interface Geometry {
-  type?: "MultiPolygon"; 
+  type?: "MultiPolygon";
   coordinates?: number[][];
+}
+
+export interface ProjectFile {
+  fileAttachmentGuid?: string,
+  attachmentType?: string,
+  fileName?: string,
+  fileType?: string,
+  uploadedBy?: string,
+  uploadedDate?: string,
+  polygonHectares?: string,
+  description?: string,
 }
 

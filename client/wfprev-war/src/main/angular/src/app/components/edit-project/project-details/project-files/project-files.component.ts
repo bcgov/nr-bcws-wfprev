@@ -1,50 +1,39 @@
-import { CommonModule } from '@angular/common';
-import { ChangeDetectorRef, Component, Input } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
+import { Component, Input, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatDialog } from '@angular/material/dialog';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
-import { BlobReader, BlobWriter, ZipReader } from '@zip.js/zip.js';
-import process from 'process';
-import { catchError, lastValueFrom, map, of, tap, throwError } from 'rxjs';
-import { AddAttachmentComponent } from 'src/app/components/add-attachment/add-attachment.component';
-import { FileAttachment, ProjectBoundary } from 'src/app/components/models';
 import { AttachmentService } from 'src/app/services/attachment-service';
 import { ProjectService } from 'src/app/services/project-services';
-import { SpatialService } from 'src/app/services/spatial-services';
-import { Messages } from 'src/app/utils/messages';
+import { FileAttachment, ProjectBoundary, ProjectFile } from 'src/app/components/models';
+import { AddAttachmentComponent } from 'src/app/components/add-attachment/add-attachment.component';
 import { ConfirmationDialogComponent } from 'src/app/components/confirmation-dialog/confirmation-dialog.component';
-
-(window as any).process = process;
-
-interface ProjectFile {
-  attachmentType: string;
-  fileName: string;
-  fileType: string;
-  uploadedBy: string;
-  uploadedDate: string;
-  polygonHectares: number;
-  description: string;
-}
+import { Messages } from 'src/app/utils/messages';
+import { CommonModule } from '@angular/common';
+import { SpatialService } from 'src/app/services/spatial-services';
+import { BlobReader, BlobWriter, ZipReader } from '@zip.js/zip.js';
+import { catchError, lastValueFrom, map, of, throwError } from 'rxjs';
 
 @Component({
   selector: 'app-project-files',
   standalone: true,
-  imports: [CommonModule, MatTableModule],
+  imports: [MatTableModule, CommonModule],
   templateUrl: './project-files.component.html',
-  styleUrl: './project-files.component.scss'
+  styleUrls: ['./project-files.component.scss']
 })
-export class ProjectFilesComponent {
+export class ProjectFilesComponent implements OnInit {
   @Input() projectGuid: string = '';
   attachmentDescription: string = '';
   uploadedBy = '';
+
+  projectFiles: ProjectFile[] = [];
+  dataSource = new MatTableDataSource<ProjectFile>(this.projectFiles);
 
   constructor(
     public projectService: ProjectService,
     private readonly snackbarService: MatSnackBar,
     public readonly dialog: MatDialog,
     public attachmentService: AttachmentService,
-    public spatialService: SpatialService,
-    private cdr: ChangeDetectorRef
+    public spatialService: SpatialService
   ) { }
 
   messages = Messages;
@@ -60,10 +49,61 @@ export class ProjectFilesComponent {
     'delete'
   ];
 
-  // hardcode table, will be replaced by the attachment api data
-  projectFiles: ProjectFile[] = [];
+  ngOnInit(): void {
+    this.loadProjectAttachments();
+  }
 
-  dataSource = new MatTableDataSource<ProjectFile>(this.projectFiles);
+  loadProjectAttachments(): void {
+    if (this.projectGuid) {
+      this.attachmentService.getProjectAttachments(this.projectGuid).subscribe({
+        next: (response) => {
+          console.log('Project Attachments Response:', response);
+
+          if (response?._embedded?.fileAttachment && Array.isArray(response._embedded.fileAttachment)) {
+            const fileAttachment = response._embedded.fileAttachment[0];
+
+            // Now, call getProjectBoundaries to get the boundary data
+            this.projectService.getProjectBoundaries(this.projectGuid).subscribe({
+              next: (boundaryResponse) => {
+                console.log('Project Boundaries Response:', boundaryResponse);
+
+                // Check if the response has the projectBoundary array and access the first boundary
+                const boundarySizeHa = boundaryResponse?._embedded?.projectBoundary?.[0]?.boundarySizeHa;
+
+                if (boundarySizeHa !== undefined) {
+                  // Set the polygonHectares from the boundarySizeHa
+                  fileAttachment.polygonHectares = boundarySizeHa;
+
+                  // Push the fileAttachment with the updated polygonHectares to projectFiles
+                  this.projectFiles = [];
+                  this.projectFiles.push(fileAttachment);
+                  console.log('Updated Project Files:', this.projectFiles);
+                } else {
+                  console.error('boundarySizeHa not found in project boundaries');
+                }
+
+                // Refresh the table data source
+                this.dataSource.data = []
+                this.dataSource.data = [...this.projectFiles];
+              },
+              error: (error) => {
+                console.error('Error fetching project boundaries', error);
+              }
+            });
+          } else {
+            console.error('Expected an array of project files inside _embedded.fileAttachment, but got:', response);
+            this.projectFiles = [];
+          }
+        },
+        error: (err) => {
+          this.snackbarService.open('Failed to load project attachments.', 'Close', {
+            duration: 5000,
+            panelClass: 'snackbar-error',
+          });
+        },
+      });
+    }
+  }
 
   openFileUploadModal() {
     const dialogRef = this.dialog.open(AddAttachmentComponent, {
@@ -72,7 +112,7 @@ export class ProjectFilesComponent {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result?.file) {
-        this.uploadFile(result.file)
+        this.uploadFile(result.file);
       }
       if (result?.description) {
         this.attachmentDescription = result.description;
@@ -80,39 +120,33 @@ export class ProjectFilesComponent {
     })
   }
 
-  // Define allowed file types (excluding PNG)
-  private allowedFileTypes: string[] = ['kml', 'kmz', 'zip', 'shp', 'gdb'];
-
   uploadFile(file: File): void {
-    this.projectService.uploadDocument({
-      file
-    }).subscribe({
+    this.projectService.uploadDocument({ file }).subscribe({
       next: (response) => {
-        if (response)
-          this.uploadAttachment(file, response)
+        if (response) {
+          this.uploadAttachment(file, response);
+        }
       },
-      error: (err) => {
-        this.snackbarService.open('  The spatial file was not uploaded.', 'Close', {
+      error: () => {
+        this.snackbarService.open('The spatial file was not uploaded.', 'Close', {
           duration: 5000,
-          panelClass: ['snackbar-error'],
+          panelClass: 'snackbar-error',
         });
       }
-    })
+    });
   }
 
   uploadAttachment(file: File, response: any): void {
-    // Extract file extension and validate it
     const fileExtension = file.name.split('.').pop()?.toLowerCase();
 
-    if (!fileExtension || !this.allowedFileTypes.includes(fileExtension)) {
-      this.snackbarService.open('  The spatial file was not uploaded because the file format is not accepted. Only KML, KMZ, SHP, and GDB are allowed.', 'Close', {
+    if (!fileExtension) {
+      this.snackbarService.open('The spatial file was not uploaded because the file format is not accepted.', 'Close', {
         duration: 10000,
         panelClass: ['snackbar-error'],
       });
       return;
     }
 
-    // Create attachment object
     const attachment: FileAttachment = {
       sourceObjectNameCode: { sourceObjectNameCode: "PROJECT" },
       sourceObjectUniqueId: this.projectGuid,
@@ -120,38 +154,24 @@ export class ProjectFilesComponent {
       fileIdentifier: response.fileId,
       attachmentContentTypeCode: { attachmentContentTypeCode: "DOCUMENT" },
       attachmentDescription: this.attachmentDescription,
-      attachmentReadOnlyInd: false
+      attachmentReadOnlyInd: false,
     };
 
-    // Send to the backend
     this.attachmentService.createProjectAttachment(this.projectGuid, attachment).subscribe({
       next: (response) => {
         if (response) {
           this.uploadedBy = response?.uploadedByUserId;
-          const newProjectFile = {
-            attachmentType: 'Project Polygon',
-            fileName: response.documentPath || file.name,
-            fileType: 'DOCUMENT',
-            uploadedBy: response.uploadedByUserId,
-            uploadedDate: response.uploadedByTimestamp,
-            polygonHectares: response.polygonHectares || 0,
-            description: this.attachmentDescription,
-          };
 
-          // Update the list and refresh the table
-          this.projectFiles = [newProjectFile]
-          this.dataSource.data = [...this.projectFiles];
-
-          // Show success snackbar
-          this.extractCoordinates(file).then(response => {
+          this.spatialService.extractCoordinates(file).then(response => {
             if (response) {
               this.updateProjectBoundary(file, response)
             }
           })
+
+          this.loadProjectAttachments();
         }
       },
       error: () => {
-        // Show error snackbar
         this.snackbarService.open('Failed to upload file. Please try again.', 'Close', {
           duration: 10000,
           panelClass: 'snackbar-error',
@@ -164,24 +184,19 @@ export class ProjectFilesComponent {
     const now = new Date();
     const futureDate = new Date(now);
     futureDate.setFullYear(futureDate.getFullYear() + 1);
-  
+
     const boundary: ProjectBoundary = {
       projectGuid: this.projectGuid,
       systemStartTimestamp: now.toISOString(),
       systemEndTimestamp: futureDate.toISOString(),
       collectionDate: now.toISOString().split('T')[0],
       collectorName: this.uploadedBy,
-      boundarySizeHa: 0,
       boundaryGeometry: {
         type: "MultiPolygon",
         coordinates: response,
-      },
-      //actual centroid will be calculated in API 
-      //sum of all project and activity polygons - WFPREV-146
-      locationGeometry: [-124, 49]
+      }
     };
-  
-    // Ensure the HTTP request is triggered by subscribing
+
     this.projectService.createProjectBoundary(this.projectGuid, boundary).pipe(
       map((resp: any) => resp),
       catchError((error) => {
@@ -189,13 +204,13 @@ export class ProjectFilesComponent {
         return throwError(() => new Error("Failed to create project boundary"));
       })
     ).subscribe({
-      next: (resp) => {
+      next: () => {
         this.snackbarService.open('File uploaded successfully.', 'Close', {
           duration: 5000,
           panelClass: 'snackbar-success',
         });
       },
-      error: (error) => {
+      error: () => {
         this.snackbarService.open('Failed to update project boundary.', 'Close', {
           duration: 5000,
           panelClass: 'snackbar-error',
@@ -204,92 +219,50 @@ export class ProjectFilesComponent {
     });
   }
 
-  private async extractCoordinates(file: File): Promise<number[][]> {
-    const fileType = file.name.split('.').pop()?.toLowerCase();
-    try {
-      if (fileType === 'kml') {
-        return this.spatialService.extractKMLCoordinates(await file.text()) as unknown as number[][];
-      } else if (fileType === 'zip' || fileType === 'gdb' || fileType === 'kmz') {
-        const zipReader = new ZipReader(new BlobReader(file));
-        const entries = await zipReader.getEntries();
-        try {
-          const kmlEntry = entries.find(entry => entry.filename.endsWith('.kml'));
-          const shpEntry = entries.find(entry => entry.filename.endsWith('.shp'));
-          const dbfEntry = entries.find(entry => entry.filename.endsWith('.dbf'));
-          const containsGdbTable = entries.some(entry => entry.filename.includes('.gdbtable'));
-
-          const gdbEntries = containsGdbTable ? entries : undefined;
-
-          if (kmlEntry) {
-            const extractedKML = await kmlEntry.getData?.(new BlobWriter());
-            if (extractedKML) {
-              return await this.spatialService.extractKMZCoordinates(
-                new File([extractedKML], 'extracted.kml')
-              ) as unknown as number[][];
+  deleteFile(fileToDelete: ProjectFile): void {
+    // Open the confirmation dialog
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      data: { indicator: 'confirm-delete-attachment' },
+      width: '500px',
+    });
+  
+    dialogRef.afterClosed().subscribe((confirmed: boolean) => {
+      if (confirmed) {
+        if (fileToDelete?.fileAttachmentGuid) {
+          this.attachmentService.deleteProjectAttachment(this.projectGuid, fileToDelete.fileAttachmentGuid).subscribe({
+            next: () => {
+              this.projectFiles = this.projectFiles.filter(file => file !== fileToDelete);
+              this.dataSource.data = [...this.projectFiles];
+  
+              // Show success message in snackbar
+              this.snackbarService.open('File has been deleted successfully.', 'Close', {
+                duration: 5000,
+                panelClass: 'snackbar-success',
+              });
+            },
+            error: (error) => {
+              // Handle any error during the deletion process
+              console.error('Error deleting the file:', error);
+              this.snackbarService.open('Failed to delete the file. Please try again.', 'Close', {
+                duration: 5000,
+                panelClass: 'snackbar-error',
+              });
             }
-          }
-
-          else if (shpEntry && dbfEntry) {
-            return await this.spatialService.extractSHPCoordinates(file) as unknown as number[][];
-          }
-
-          else if (gdbEntries) {
-            try {
-              const geojsonData = await lastValueFrom(
-                this.spatialService.extractGDBGeometry(file).pipe(
-                  catchError((error: any) => {
-                    console.error("Error extracting GeoJSON:", error);
-                    return of(null); 
-                  })
-                )
-              );
-          
-              if (geojsonData) {
-                return geojsonData[0].coordinates;
-              }
-            } catch (error) {
-              console.error("Error processing Geodatabase file:", error);
-            }
-          }
-
-          console.error('No supported spatial files found in ZIP or GDB.');
-          return [];
-        } finally {
-          await zipReader.close();
+          });
+        } else {
+          // If fileAttachmentGuid is not defined, handle the case gracefully
+          console.error('File attachment GUID is missing or undefined');
+          this.snackbarService.open('Failed to delete the file due to missing GUID.', 'Close', {
+            duration: 5000,
+            panelClass: 'snackbar-error',
+          });
         }
-      } else {
-        console.error('Unsupported file type:', fileType);
-        return [];
-      }
-    } catch (error) {
-      console.error('Error extracting coordinates:', error);
-      return [];
-    }
-  }
-
-    deleteFile(fileToDelete: ProjectFile): void {
-      const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-        data: { indicator: 'confirm-delete-attachment' },
-        width: '500px',
-      });
-
-      dialogRef.afterClosed().subscribe((confirmed: boolean) => {
-        if (confirmed) {
-        // Remove the file by filtering out the one to delete
-        this.projectFiles = this.projectFiles.filter(file => file !== fileToDelete);
-
-        // Update the MatTable data source to reflect the change
-        this.dataSource.data = [...this.projectFiles];
-
-        this.snackbarService.open('File has been deleted successfully.', 'Close', {
-          duration: 5000,
-          panelClass: 'snackbar-success',
-        });
       }
     });
   }
+  
 
   downloadFile(file: any) {
-    // to do
+    // Implementation for file download
   }
 }
