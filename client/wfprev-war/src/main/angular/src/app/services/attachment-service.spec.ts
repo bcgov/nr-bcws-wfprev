@@ -103,4 +103,68 @@ describe('AttachmentService', () => {
         req.flush('Error', { status: 500, statusText: 'Internal Server Error' });
 
     });
+
+    it('should send a GET request to fetch project attachments', () => {
+        const projectGuid = 'test-guid';
+        const mockResponse = [{ fileAttachmentGuid: '12345', attachmentDescription: 'Test file' }];
+        
+        service.getProjectAttachments(projectGuid).subscribe(response => {
+            expect(response).toEqual(mockResponse);
+        });
+    
+        const req = httpMock.expectOne(`${mockApplicationConfig.rest.wfprev}/wfprev-api/projects/${projectGuid}/attachments`);
+    
+        expect(req.request.method).toBe('GET');
+        expect(req.request.headers.get('Authorization')).toBe('Bearer mock-token');
+    
+        req.flush(mockResponse); 
+    });
+
+    it('should handle errors correctly when fetching project attachments', () => {
+        const projectGuid = 'test-guid';
+    
+        service.getProjectAttachments(projectGuid).subscribe({
+            next: () => fail('Expected an error'),
+            error: (error) => {
+                expect(error.message).toBe('Failed to fetch project attachments');
+            }
+        });
+    
+        const req = httpMock.expectOne(`${mockApplicationConfig.rest.wfprev}/wfprev-api/projects/${projectGuid}/attachments`);
+    
+        req.flush('Error', { status: 500, statusText: 'Internal Server Error' });
+    });
+
+    it('should send a DELETE request to delete a project attachment', () => {
+        const projectGuid = 'test-guid';
+        const attachmentGuid = '12345';
+    
+        service.deleteProjectAttachment(projectGuid, attachmentGuid).subscribe(response => {
+            expect(response).toEqual({ success: true });
+        });
+    
+        const req = httpMock.expectOne(`${mockApplicationConfig.rest.wfprev}/wfprev-api/projects/${projectGuid}/attachments/${attachmentGuid}`);
+    
+        expect(req.request.method).toBe('DELETE');
+        expect(req.request.headers.get('Authorization')).toBe('Bearer mock-token');
+    
+        req.flush({ success: true }); // Mock API response
+    });
+
+    it('should handle errors correctly when deleting project attachment', () => {
+        const projectGuid = 'test-guid';
+        const attachmentGuid = '12345';
+    
+        service.deleteProjectAttachment(projectGuid, attachmentGuid).subscribe({
+            next: () => fail('Expected an error'),
+            error: (error) => {
+                expect(error.message).toBe('Failed to fetch project attachments');
+            }
+        });
+    
+        const req = httpMock.expectOne(`${mockApplicationConfig.rest.wfprev}/wfprev-api/projects/${projectGuid}/attachments/${attachmentGuid}`);
+    
+        req.flush('Error', { status: 500, statusText: 'Internal Server Error' });
+    });
+
 });

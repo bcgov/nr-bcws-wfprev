@@ -7,69 +7,69 @@ import { FileAttachment } from "../components/models";
 
 @Injectable({
     providedIn: 'root',
-  })
+})
 
 export class AttachmentService {
 
-     constructor(
-            private readonly appConfigService: AppConfigService,
-            private readonly httpClient: HttpClient,
-            private readonly tokenService: TokenService,
-        ){}
-    
+    constructor(
+        private readonly appConfigService: AppConfigService,
+        private readonly httpClient: HttpClient,
+        private readonly tokenService: TokenService,
+    ) { }
+
 
     createProjectAttachment(projectGuid: string, attachment: FileAttachment): Observable<any> {
-            const baseUrl = `${this.appConfigService.getConfig().rest['wfprev']}/wfprev-api/projects`;
-            const url = `${baseUrl}/${projectGuid}/attachments`;
-            console.log(attachment)
-            return this.httpClient.post<any>(
-                url,
-                attachment,
-                {
-                    headers: {
-                        Authorization: `Bearer ${this.tokenService.getOauthToken()}`,
-                    }
+        const baseUrl = `${this.appConfigService.getConfig().rest['wfprev']}/wfprev-api/projects`;
+        const url = `${baseUrl}/${projectGuid}/attachments`;
+        console.log(attachment)
+        return this.httpClient.post<any>(
+            url,
+            attachment,
+            {
+                headers: {
+                    Authorization: `Bearer ${this.tokenService.getOauthToken()}`,
                 }
-            ).pipe(
-                catchError((error) => {
-                    console.error("Error creating project attachment", error);
-                    return throwError(() => new Error("Failed to create project attachment"));
-                })
-            );
-        }
+            }
+        ).pipe(
+            catchError((error) => {
+                console.error("Error creating project attachment", error);
+                return throwError(() => new Error("Failed to create project attachment"));
+            })
+        );
+    }
 
     getProjectAttachments(projectGuid: string): Observable<any> {
-            const baseUrl = `${this.appConfigService.getConfig().rest['wfprev']}/wfprev-api/projects`;
-            const url = `${baseUrl}/${projectGuid}/attachments`;
-                
-            return this.httpClient.get(url, {
-                headers: {
-                    Authorization: `Bearer ${this.tokenService.getOauthToken()}`,
-                }
-            }).pipe(
-                map((response: any) => response),
-                catchError((error) => {
-                    console.error("Error fetching project boundaries", error);
-                    return throwError(() => new Error("Failed to fetch project attachments"));
-                })
-            );
-        }
+        const baseUrl = `${this.appConfigService.getConfig().rest['wfprev']}/wfprev-api/projects`;
+        const url = `${baseUrl}/${projectGuid}/attachments`;
 
-        deleteProjectAttachment(projectGuid: string, attachmentGuid: string): Observable<any> {
-            const baseUrl = `${this.appConfigService.getConfig().rest['wfprev']}/wfprev-api/projects`;
-            const url = `${baseUrl}/${projectGuid}/attachments/${attachmentGuid}`;
-                
-            return this.httpClient.delete(url, {
-                headers: {
-                    Authorization: `Bearer ${this.tokenService.getOauthToken()}`,
-                }
-            }).pipe(
-                map((response: any) => response),
-                catchError((error) => {
-                    console.error("Error fetching project boundaries", error);
-                    return throwError(() => new Error("Failed to fetch project attachments"));
-                })
-            );
-        }
+        return this.httpClient.get(url, {
+            headers: {
+                Authorization: `Bearer ${this.tokenService.getOauthToken()}`,
+            }
+        }).pipe(
+            map((response: any) => response),
+            catchError((error) => {
+                console.error("Error fetching project boundaries", error);
+                return throwError(() => new Error("Failed to fetch project attachments"));
+            })
+        );
+    }
+
+    deleteProjectAttachment(projectGuid: string, attachmentGuid: string): Observable<any> {
+        const baseUrl = `${this.appConfigService.getConfig().rest['wfprev']}/wfprev-api/projects`;
+        const url = `${baseUrl}/${projectGuid}/attachments/${attachmentGuid}`;
+
+        return this.httpClient.delete(url, {
+            headers: {
+                Authorization: `Bearer ${this.tokenService.getOauthToken()}`,
+            }
+        }).pipe(
+            map((response: any) => response),
+            catchError((error) => {
+                console.error("Error fetching project boundaries", error);
+                return throwError(() => new Error("Failed to fetch project attachments"));
+            })
+        );
+    }
 
 }
