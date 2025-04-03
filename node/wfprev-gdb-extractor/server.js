@@ -39,7 +39,6 @@ async function handleUpload(req, res) {
     const unzipPath = path.join(__dirname, "uploads", path.basename(fileName, '.zip'));
     
     await req.files.file.mv(zipPath);
-    console.log(`Extracting ${zipPath} to ${unzipPath}`);
 
     try {
         // Use onEntry callback to validate each file path before extraction
@@ -53,7 +52,6 @@ async function handleUpload(req, res) {
                 }
             }
         });
-        console.log("Extraction complete.");
     } catch (err) {
         console.error("Extraction failed:", err);
         // Clean up the zip file
@@ -69,7 +67,6 @@ async function handleUpload(req, res) {
     let extractedFiles;
     try {
         extractedFiles = fs.readdirSync(unzipPath);
-        console.log("Extracted files:", extractedFiles);
     } catch (err) {
         console.error("Error reading extracted files:", err);
         return res.status(500).send("Error reading extracted files.");
@@ -82,7 +79,6 @@ async function handleUpload(req, res) {
     }
 
     const gdbPath = path.join(unzipPath, gdbFolder);
-    console.log(`Opening GDB: ${gdbPath}`);
 
     let dataset;
     let results = [];
@@ -138,8 +134,6 @@ async function handleUpload(req, res) {
                     if (!fs.existsSync("uploads")) {
                         fs.mkdirSync("uploads");
                     }
-                    
-                    console.log("Cleanup completed successfully");
                 } catch (cleanupErr) {
                     console.error("Manual cleanup error:", cleanupErr);
                 }
