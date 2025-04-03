@@ -26,7 +26,6 @@ export class SpatialService {
       
     extractKMLCoordinates(kmlString: string): Position[][][] {
         const coordinates = this.parseKMLToCoordinates(kmlString);
-        console.log('Extracted coordinates from KML:', coordinates);
         return coordinates;
     }
 
@@ -44,7 +43,6 @@ export class SpatialService {
             if (!kmlString) throw new Error('Failed to extract KML content');
             
             const coordinates = this.parseKMLToCoordinates(kmlString);
-            console.log('Extracted coordinates from KMZ:', coordinates);
             
             return coordinates;
         } catch (error) {
@@ -73,7 +71,6 @@ export class SpatialService {
                 .filter(Boolean)
             ) as unknown as Position[][][];
         
-            console.log(`Extracted ${coordinates.length} coordinate sets from shapefile`);
             return coordinates;
         } catch (error) {
             console.error('Error extracting coordinates from shapefile:', error);
@@ -204,7 +201,6 @@ export class SpatialService {
     
         return this.httpClient.post<any>(url, formData).pipe(
             map((response) => {
-                console.log('Raw response:', response);
                 return response.map((geom: any) => {
                     return this.stripAltitude(geom);
                 });

@@ -12,6 +12,7 @@ import { AttachmentService } from 'src/app/services/attachment-service';
 import { ProjectService } from 'src/app/services/project-services';
 import { SpatialService } from 'src/app/services/spatial-services';
 import { Messages } from 'src/app/utils/messages';
+import { ConfirmationDialogComponent } from 'src/app/components/confirmation-dialog/confirmation-dialog.component';
 
 (window as any).process = process;
 
@@ -144,12 +145,7 @@ export class ProjectFilesComponent {
           // Show success snackbar
           this.extractCoordinates(file).then(response => {
             if (response) {
-              console.log(response)
               this.updateProjectBoundary(file, response)
-              this.snackbarService.open('File uploaded successfully.', 'Close', {
-                duration: 10000,
-                panelClass: 'snackbar-success',
-              });
             }
           })
         }
@@ -194,10 +190,7 @@ export class ProjectFilesComponent {
       })
     ).subscribe({
       next: (resp) => {
-        console.log('Project boundary created successfully:', resp);
-  
-        // Show success notification
-        this.snackbarService.open('Project boundary updated successfully.', 'Close', {
+        this.snackbarService.open('File uploaded successfully.', 'Close', {
           duration: 5000,
           panelClass: 'snackbar-success',
         });
@@ -207,8 +200,7 @@ export class ProjectFilesComponent {
           duration: 5000,
           panelClass: 'snackbar-error',
         });
-      },
-      complete: () => console.log('Project boundary update completed.')
+      }
     });
   }
 
@@ -245,9 +237,6 @@ export class ProjectFilesComponent {
             try {
               const geojsonData = await lastValueFrom(
                 this.spatialService.extractGDBGeometry(file).pipe(
-                  tap((data: any) => {
-                    console.log("Full GeoJSON Data:", data);
-                  }),
                   catchError((error: any) => {
                     console.error("Error extracting GeoJSON:", error);
                     return of(null); 
@@ -256,11 +245,10 @@ export class ProjectFilesComponent {
               );
           
               if (geojsonData) {
-                console.log("Extracted Coordinates:", geojsonData.coordinates);
                 return geojsonData[0].coordinates;
               }
             } catch (error) {
-              console.error("Error processing Geodatabase:", error);
+              console.error("Error processing Geodatabase file:", error);
             }
           }
 
@@ -279,14 +267,26 @@ export class ProjectFilesComponent {
     }
   }
 
-  deleteFile(fileToDelete: ProjectFile): void {
-    // Remove the file by filtering out the one to delete
-    this.projectFiles = this.projectFiles.filter(file => file !== fileToDelete);
+    deleteFile(fileToDelete: ProjectFile): void {
+      const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+        data: { indicator: 'confirm-delete-attachment' },
+        width: '500px',
+      });
 
-    // Update the MatTable data source to reflect the change
-    this.dataSource.data = [...this.projectFiles];
+      dialogRef.afterClosed().subscribe((confirmed: boolean) => {
+        if (confirmed) {
+        // Remove the file by filtering out the one to delete
+        this.projectFiles = this.projectFiles.filter(file => file !== fileToDelete);
 
-    console.log('Updated project files:', this.projectFiles);
+        // Update the MatTable data source to reflect the change
+        this.dataSource.data = [...this.projectFiles];
+
+        this.snackbarService.open('File has been deleted successfully.', 'Close', {
+          duration: 5000,
+          panelClass: 'snackbar-success',
+        });
+      }
+    });
   }
 
   downloadFile(file: any) {
