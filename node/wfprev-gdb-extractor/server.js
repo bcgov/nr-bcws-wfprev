@@ -5,12 +5,19 @@ const fs = require("fs");
 const path = require("path");
 const extract = require("extract-zip");
 const cors = require('cors');
+const rateLimit = require('express-rate-limit');
 
 const app = express();
 
 // Hide X-Powered-By header to prevent Express version disclosure
 app.disable('x-powered-by');
 
+const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 100 // limit each IP to 100 requests per windowMs
+});
+
+app.use(limiter);
 app.use(fileUpload());
 
 // Ensure 'uploads' directory exists
@@ -35,8 +42,14 @@ async function handleUpload(req, res) {
         return res.status(400).send("Only ZIP files are allowed.");
     }
 
-    const zipPath = path.join(__dirname, "uploads", fileName);
-    const unzipPath = path.join(__dirname, "uploads", path.basename(fileName, '.zip'));
+    let zipPath = path.join(__dirname, "uploads", fileName);
+    const unzipPath = path.resolve(__dirname, "uploads", path.basename(fileName, '.zip'));
+
+    // Validate zipPath to ensure it is within the uploads directory
+    zipPath = path.resolve(zipPath);
+    if (!zipPath.startsWith(path.resolve(__dirname, "uploads"))) {
+        return res.status(400).send("Invalid file path.");
+    }
     
     await req.files.file.mv(zipPath);
 
