@@ -21,17 +21,6 @@ const mockShpModule = {
     ]
   })
 };
-const mockDOMParser = {
-  parseFromString: jasmine.createSpy('parseFromString').and.returnValue({})
-};
-
-const mockToGeoJSON = {
-  kml: jasmine.createSpy('kml').and.returnValue({
-    features: [
-      { geometry: { type: 'Polygon', coordinates: [[[1, 2], [3, 4], [5, 6], [1, 2]]] } }
-    ]
-  })
-};
 
 describe('SpatialService', () => {
   let service: SpatialService;
@@ -49,8 +38,6 @@ describe('SpatialService', () => {
     // Assign mock modules to global scope
     (window as any).zip = mockZipModule;
     (window as any).shp = mockShpModule;
-    (window as any).DOMParser = function() { return mockDOMParser; };
-  (window as any).toGeoJSON = mockToGeoJSON;
   });
 
   afterEach(() => {
