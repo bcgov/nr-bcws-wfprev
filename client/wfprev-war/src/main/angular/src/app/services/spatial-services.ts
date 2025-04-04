@@ -214,64 +214,86 @@ export class SpatialService {
 
     public async extractCoordinates(file: File): Promise<number[][]> {
         const fileType = file.name.split('.').pop()?.toLowerCase();
+        if (!fileType) return [];
+    
         try {
-          if (fileType === 'kml') {
-            return this.extractKMLCoordinates(await file.text()) as unknown as number[][];
-          } else if (fileType === 'zip' || fileType === 'gdb' || fileType === 'kmz') {
-            const zipReader = new ZipReader(new BlobReader(file));
-            const entries = await zipReader.getEntries();
-            try {
-              const kmlEntry = entries.find(entry => entry.filename.endsWith('.kml'));
-              const shpEntry = entries.find(entry => entry.filename.endsWith('.shp'));
-              const dbfEntry = entries.find(entry => entry.filename.endsWith('.dbf'));
-              const containsGdbTable = entries.some(entry => entry.filename.includes('.gdbtable'));
-    
-              const gdbEntries = containsGdbTable ? entries : undefined;
-    
-              if (kmlEntry) {
-                const extractedKML = await kmlEntry.getData?.(new BlobWriter());
-                if (extractedKML) {
-                  return await this.extractKMZCoordinates(
-                    new File([extractedKML], 'extracted.kml')
-                  ) as unknown as number[][];
-                }
-              }
-    
-              else if (shpEntry && dbfEntry) {
-                return await this.extractSHPCoordinates(file) as unknown as number[][];
-              }
-    
-              else if (gdbEntries) {
-                try {
-                  const geojsonData = await lastValueFrom(
-                    this.extractGDBGeometry(file).pipe(
-                      catchError((error: any) => {
-                        console.error("Error extracting GeoJSON:", error);
-                        return of(null);
-                      })
-                    )
-                  );
-    
-                  if (geojsonData) {
-                    return geojsonData[0].coordinates;
-                  }
-                } catch (error) {
-                  console.error("Error processing Geodatabase file:", error);
-                }
-              }
-    
-              console.error('No supported spatial files found in ZIP or GDB.');
-              return [];
-            } finally {
-              await zipReader.close();
+            if (fileType === 'kml') {
+                return this.extractKMLCoordinates(await file.text()) as unknown as number[][];
             }
-          } else {
+    
+            if (['zip', 'gdb', 'kmz'].includes(fileType)) {
+                return await this.handleCompressedFile(file);
+            }
+    
             console.error('Unsupported file type:', fileType);
             return [];
-          }
         } catch (error) {
-          console.error('Error extracting coordinates:', error);
-          return [];
+            console.error('Error extracting coordinates:', error);
+            return [];
         }
-      }
+    }
+    
+    private async handleCompressedFile(file: File): Promise<number[][]> {
+        const zipReader = new ZipReader(new BlobReader(file));
+        try {
+            const entries = await zipReader.getEntries();
+    
+            if (this.hasKMLEntry(entries)) {
+                return await this.handleKMZ(entries);
+            }
+    
+            if (this.hasSHPEntry(entries)) {
+                return await this.extractSHPCoordinates(file) as unknown as number[][];
+            }
+    
+            if (this.hasGDBEntries(entries)) {
+                return await this.handleGDB(file);
+            }
+    
+            console.error('No supported spatial files found in ZIP or GDB.');
+            return [];
+        } finally {
+            await zipReader.close();
+        }
+    }
+    
+    private hasKMLEntry(entries: any[]): boolean {
+        return entries.some(entry => entry.filename.endsWith('.kml'));
+    }
+    
+    private hasSHPEntry(entries: any[]): boolean {
+        return entries.some(entry => entry.filename.endsWith('.shp')) &&
+               entries.some(entry => entry.filename.endsWith('.dbf'));
+    }
+    
+    private hasGDBEntries(entries: any[]): boolean {
+        return entries.some(entry => entry.filename.includes('.gdbtable'));
+    }
+    
+    private async handleKMZ(entries: any[]): Promise<number[][]> {
+        const kmlEntry = entries.find(entry => entry.filename.endsWith('.kml'));
+        const kmlBlob = await kmlEntry?.getData?.(new BlobWriter());
+        if (kmlBlob) {
+            const kmlFile = new File([kmlBlob], 'extracted.kml');
+            return await this.extractKMZCoordinates(kmlFile) as unknown as number[][];
+        }
+        return [];
+    }
+    
+    private async handleGDB(file: File): Promise<number[][]> {
+        try {
+            const geojsonData = await lastValueFrom(
+                this.extractGDBGeometry(file).pipe(
+                    catchError((error: any) => {
+                        console.error("Error extracting GeoJSON:", error);
+                        return of(null);
+                    })
+                )
+            );
+            return geojsonData?.[0]?.coordinates || [];
+        } catch (error) {
+            console.error("Error processing Geodatabase file:", error);
+            return [];
+        }
+    }
 }
