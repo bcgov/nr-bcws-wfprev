@@ -51,7 +51,7 @@ const mockShpModule = {
   entry: jasmine.createSpy('entry').and.returnValue({})
 };
 
-fdescribe('SpatialService', () => {
+describe('SpatialService', () => {
   let service: SpatialService;
   let httpMock: HttpTestingController;
 
