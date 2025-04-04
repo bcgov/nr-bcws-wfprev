@@ -3,7 +3,6 @@ import { HttpClientTestingModule, HttpTestingController } from '@angular/common/
 import { SpatialService } from './spatial-services';
 import { Geometry, Point, LineString, Polygon, MultiPoint, MultiLineString, MultiPolygon, GeometryCollection, Position } from 'geojson';
 
-// Create mock ZIP module implementation
 const mockZipModule = {
   ZipReader: jasmine.createSpy('ZipReader').and.callFake(() => ({
     getEntries: jasmine.createSpy('getEntries').and.resolveTo([
@@ -15,9 +14,19 @@ const mockZipModule = {
   TextWriter: jasmine.createSpy('TextWriter').and.returnValue({})
 };
 
-// Create mock SHP module implementation
 const mockShpModule = {
   default: jasmine.createSpy('default').and.resolveTo({
+    features: [
+      { geometry: { type: 'Polygon', coordinates: [[[1, 2], [3, 4], [5, 6], [1, 2]]] } }
+    ]
+  })
+};
+const mockDOMParser = {
+  parseFromString: jasmine.createSpy('parseFromString').and.returnValue({})
+};
+
+const mockToGeoJSON = {
+  kml: jasmine.createSpy('kml').and.returnValue({
     features: [
       { geometry: { type: 'Polygon', coordinates: [[[1, 2], [3, 4], [5, 6], [1, 2]]] } }
     ]
@@ -40,6 +49,8 @@ describe('SpatialService', () => {
     // Assign mock modules to global scope
     (window as any).zip = mockZipModule;
     (window as any).shp = mockShpModule;
+    (window as any).DOMParser = function() { return mockDOMParser; };
+  (window as any).toGeoJSON = mockToGeoJSON;
   });
 
   afterEach(() => {
@@ -758,4 +769,20 @@ describe('SpatialService', () => {
       req.flush('Error', mockError);
     });
   });
+  
+  // Test for extractKMLCoordinates
+  describe('extractKMLCoordinates', () => {
+    it('should extract coordinates from KML string', () => {
+      // Spy on the private method it calls
+      spyOn<any>(service, 'parseKMLToCoordinates').and.returnValue([[[[1, 2], [3, 4], [5, 6], [1, 2]]]]);
+      
+      // Call the actual method - no need to replace it with a spy
+      const result = service.extractKMLCoordinates('<kml>test</kml>');
+      
+      // Verify the call and result
+      expect((service as any).parseKMLToCoordinates).toHaveBeenCalledWith('<kml>test</kml>');
+      expect(result).toEqual([[[[1, 2], [3, 4], [5, 6], [1, 2]]]]);
+    });
+  });
+  
 });
