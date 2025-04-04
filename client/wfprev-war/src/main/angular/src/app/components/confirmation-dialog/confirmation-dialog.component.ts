@@ -21,6 +21,7 @@ export class ConfirmationDialogComponent {
     'duplicate-project': 'This Project already exists:<br />',
     'confirm-delete': 'Are you sure you want to delete this fiscal year?<br />This action cannot be undone.',
     'confirm-unsave': 'Are you sure you want to leave this page?<br />The changes you made will not be saved.',
+    'confirm-delete-attachment': 'Are you sure you want to delete this file?<br />',
   };
 
   get dialogMessage(): string {

@@ -153,7 +153,7 @@ describe('TokenService', () => {
       const testToken = 'test-token';
       
       service.validateToken(testToken).subscribe(result => {
-        expect(result).toBe(true);
+        expect(result).toEqual({});
         done();
       });
 

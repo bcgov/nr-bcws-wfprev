@@ -2,22 +2,27 @@ import { HttpClient, HttpRequest, HttpHeaders, HttpEventType, HttpResponse } fro
 import { Injectable } from "@angular/core";
 import { UUID } from "angular2-uuid";
 import { catchError, map, Observable,throwError } from "rxjs";
-import { Project, ProjectFiscal } from "src/app/components/models";
+import { Project, ProjectBoundary, ProjectFiscal } from "src/app/components/models";
 import { AppConfigService } from "src/app/services/app-config.service";
 import { TokenService } from "src/app/services/token.service";
 
-export const UPLOAD_DIRECTORY = '/WFPREV/uploads';
+export const UPLOAD_DIRECTORY = '/WFPREV_TEMP/uploads';
 
 @Injectable({
     providedIn: 'root',
   })
 
 export class ProjectService {
+    userGuid: string | undefined;
+
     constructor(
         private readonly appConfigService: AppConfigService,
         private readonly httpClient: HttpClient,
         private readonly tokenService: TokenService,
     ){
+        this.tokenService.credentialsEmitter.subscribe((cred) => {
+            this.userGuid = cred.userGuid ? cred.userGuid : cred.user_guid;
+          });
     }
 
     fetchProjects(): Observable<any> {
@@ -220,10 +225,46 @@ export class ProjectService {
         );
     }
 
+    getProjectBoundaries(projectGuid: string): Observable<any> {
+        const baseUrl = `${this.appConfigService.getConfig().rest['wfprev']}/wfprev-api/projects`;
+        const url = `${baseUrl}/${projectGuid}/projectBoundary`;
+            
+        return this.httpClient.get(url, {
+            headers: {
+                Authorization: `Bearer ${this.tokenService.getOauthToken()}`,
+            }
+        }).pipe(
+            map((response: any) => response),
+            catchError((error) => {
+                console.error("Error fetching project boundaries", error);
+                return throwError(() => new Error("Failed to fetch project boundaries"));
+            })
+        );
+    }
+
+    createProjectBoundary(projectGuid: string, projectFiscal: ProjectBoundary): Observable<any> {
+        const baseUrl = `${this.appConfigService.getConfig().rest['wfprev']}/wfprev-api/projects`;
+        const url = `${baseUrl}/${projectGuid}/projectBoundary`;
+        return this.httpClient.post<any>(
+            url,
+            projectFiscal,
+            {
+                headers: {
+                    Authorization: `Bearer ${this.tokenService.getOauthToken()}`,
+                }
+            }
+        ).pipe(
+            catchError((error) => {
+                console.error("Error creating project boundary", error);
+                return throwError(() => new Error("Failed to create project boundary"));
+            })
+        );
+    }
+
     uploadDocument({
         file,
         fileName = file.name,
-        userId = 'idir/lli',
+        userId = this.userGuid,
         uploadDirectory = UPLOAD_DIRECTORY,
         onProgress = () => {}
     }: {
@@ -308,5 +349,6 @@ export class ProjectService {
             })
         );
     }
+
     
  }
