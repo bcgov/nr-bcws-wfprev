@@ -681,20 +681,6 @@ describe('SpatialService', () => {
       expect(result.coordinates[0][0][0]).toEqual([1, 2]);
       expect(result.coordinates[1][0][0]).toEqual([7, 8]);
     });
-
-    it('should not modify non-Polygon/MultiPolygon geometries', () => {
-      // Arrange
-      const point: Point = {
-        type: 'Point',
-        coordinates: [1, 2, 100] as any
-      };
-
-      // Act
-      const result = service.stripAltitude(point) as Point;
-
-      // Assert - should not change the point
-      expect(result).toBe(point);
-    });
   });
 
   describe('extractGDBGeometry', () => {

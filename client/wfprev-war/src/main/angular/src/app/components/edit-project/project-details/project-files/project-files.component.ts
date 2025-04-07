@@ -57,7 +57,6 @@ export class ProjectFilesComponent implements OnInit {
     if (this.projectGuid) {
       this.attachmentService.getProjectAttachments(this.projectGuid).subscribe({
         next: (response) => {
-          console.log('Project Attachments Response:', response);
 
           if (response?._embedded?.fileAttachment && Array.isArray(response._embedded.fileAttachment)) {
             const fileAttachment = response._embedded.fileAttachment[0];
@@ -65,8 +64,6 @@ export class ProjectFilesComponent implements OnInit {
             // Now, call getProjectBoundaries to get the boundary data
             this.projectService.getProjectBoundaries(this.projectGuid).subscribe({
               next: (boundaryResponse) => {
-                console.log('Project Boundaries Response:', boundaryResponse);
-
                 // Check if the response has the projectBoundary array and access the first boundary
                 const boundarySizeHa = boundaryResponse?._embedded?.projectBoundary?.[0]?.boundarySizeHa;
 
@@ -77,7 +74,6 @@ export class ProjectFilesComponent implements OnInit {
                   // Push the fileAttachment with the updated polygonHectares to projectFiles
                   this.projectFiles = [];
                   this.projectFiles.push(fileAttachment);
-                  console.log('Updated Project Files:', this.projectFiles);
                 } else {
                   console.error('boundarySizeHa not found in project boundaries');
                 }
