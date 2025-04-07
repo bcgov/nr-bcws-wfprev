@@ -59,31 +59,6 @@ export class SpatialService {
         return coordinates;
     }
 
-    async extractKMZCoordinates(kmzFile: File): Promise<Position[][][]> {
-        const zipReader = new ZipReader(new BlobReader(kmzFile));
-
-        try {
-            const entries = await zipReader.getEntries();
-            const kmlEntry = entries.find(entry => entry.filename.endsWith('.kml'));
-
-            if (!kmlEntry) throw new Error('No KML file found in KMZ');
-
-            const kmlString = await kmlEntry.getData?.(new TextWriter());
-
-            if (!kmlString) throw new Error('Failed to extract KML content');
-
-            const coordinates = this.parseKMLToCoordinates(kmlString);
-
-            return coordinates;
-        } catch (error) {
-            console.error('Error extracting KMZ coordinates:', error);
-            return [];
-        } finally {
-            // Ensure the zip reader is closed
-            await zipReader.close();
-        }
-    }
-
     async extractSHPCoordinates(shpZipFile: File): Promise<Position[][][]> {
         try {
             // Read the zip file as an ArrayBuffer
@@ -304,7 +279,7 @@ export class SpatialService {
                 return this.extractKMLCoordinates(await file.text()) as unknown as number[][];
             }
 
-            if (['zip', 'gdb', 'kmz'].includes(fileType)) {
+            if (['zip', 'gdb'].includes(fileType)) {
                 return await this.handleCompressedFile(file);
             }
 
@@ -316,14 +291,10 @@ export class SpatialService {
         }
     }
 
-    private async handleCompressedFile(file: File): Promise<number[][]> {
+    public async handleCompressedFile(file: File): Promise<number[][]> {
         const zipReader = new ZipReader(new BlobReader(file));
         try {
             const entries = await zipReader.getEntries();
-
-            if (this.hasKMLEntry(entries)) {
-                return await this.handleKMZ(entries);
-            }
 
             if (this.hasSHPEntry(entries)) {
                 return await this.extractSHPCoordinates(file) as unknown as number[][];
@@ -340,10 +311,6 @@ export class SpatialService {
         }
     }
 
-    private hasKMLEntry(entries: any[]): boolean {
-        return entries.some(entry => entry.filename.endsWith('.kml'));
-    }
-
     private hasSHPEntry(entries: any[]): boolean {
         return entries.some(entry => entry.filename.endsWith('.shp')) &&
             entries.some(entry => entry.filename.endsWith('.dbf'));
@@ -351,16 +318,6 @@ export class SpatialService {
 
     private hasGDBEntries(entries: any[]): boolean {
         return entries.some(entry => entry.filename.includes('.gdbtable'));
-    }
-
-    private async handleKMZ(entries: any[]): Promise<number[][]> {
-        const kmlEntry = entries.find(entry => entry.filename.endsWith('.kml'));
-        const kmlBlob = await kmlEntry?.getData?.(new BlobWriter());
-        if (kmlBlob) {
-            const kmlFile = new File([kmlBlob], 'extracted.kml');
-            return await this.extractKMZCoordinates(kmlFile) as unknown as number[][];
-        }
-        return [];
     }
 
     private async handleGDB(file: File): Promise<number[][]> {
