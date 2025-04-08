@@ -22,6 +22,7 @@ import {
   styleUrls: ['./create-new-project-dialog.component.scss']
 })
 export class CreateNewProjectDialogComponent implements OnInit {
+  Validators = Validators;
   [key: string]: any; // Add this line to allow dynamic properties
   projectForm: FormGroup;
   messages = Messages;
@@ -57,8 +58,8 @@ export class CreateNewProjectDialogComponent implements OnInit {
       businessArea: ['', [Validators.required]],
       forestRegion: ['', [Validators.required]],
       forestDistrict: ['', [Validators.required]],
-      bcParksRegion: ['', [Validators.required]],
-      bcParksSection: [{ value: '', disabled: true }, Validators.required],
+      bcParksRegion: [''],
+      bcParksSection: [{ value: '', disabled: true }],
       projectLead: ['', [Validators.maxLength(50)]],
       projectLeadEmail: ['', [Validators.email, Validators.maxLength(50)]],
       siteUnitName: ['', [Validators.maxLength(50)]],
@@ -66,6 +67,23 @@ export class CreateNewProjectDialogComponent implements OnInit {
       primaryObjective: ['', [Validators.required]],
       secondaryObjective: [''],
       secondaryObjectiveRationale: ['',[Validators.maxLength(50)]],
+  });
+
+  // Watch for business area changes
+  this.projectForm.get('businessArea')?.valueChanges.subscribe((businessAreaId: string) => {
+    const bcParksRegionControl = this.projectForm.get('bcParksRegion');
+
+    const isBcParks = this.businessAreas.find(
+      area => area.programAreaGuid === businessAreaId && area.programAreaName === 'BC Parks (BCP)'
+    );
+
+    if (isBcParks) {
+      bcParksRegionControl?.setValidators([Validators.required]);
+    } else {
+      bcParksRegionControl?.clearValidators();
+      this.projectForm.get('bcParksSection')?.disable(); // Reset section
+    }
+    bcParksRegionControl?.updateValueAndValidity();
   });
 
   // Dynamically enable/disable bcParksSection based on bcParksRegion selection
@@ -234,4 +252,12 @@ export class CreateNewProjectDialogComponent implements OnInit {
       }
     });
   }
+
+  hasValidator(controlName: string, validator: any): boolean {
+    const control = this.projectForm.get(controlName);
+    if (!control?.validator) return false;
+    const validatorFn = control.validator({} as any);
+    return !!validatorFn && validatorFn.hasOwnProperty(validator.name);
+  }
+  
 }
