@@ -1,8 +1,8 @@
 import { TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { SpatialService } from './spatial-services';
-import { Geometry, Point, LineString, Polygon, MultiPoint, MultiLineString, MultiPolygon, GeometryCollection, Position, GeoJsonProperties, FeatureCollection } from 'geojson';
-import * as turf from '@turf/turf';
+import { Geometry, Point, LineString, Polygon, MultiPoint, MultiLineString, MultiPolygon, GeometryCollection, Position } from 'geojson';
+import { throwError } from 'rxjs';
 
 // Create mock ZIP module implementation
 const mockZipModule = {
@@ -686,307 +686,63 @@ describe('SpatialService', () => {
     });
   });
 
-  // fdescribe('validateMultiPolygon', () => {
-  //   let consoleSpy: jasmine.Spy;
-  //   let consoleErrorSpy: jasmine.Spy;
-    
-  //   // Store original functions
-  //   let originalMultiPolygon: any;
-  //   let originalPolygon: any;
-  //   let originalBooleanValid: any;
-  //   let originalKinks: any;
-    
-  //   beforeEach(() => {
-  //     // Assuming the method is part of a service
-  //     // service = TestBed.inject(YourServiceName);
-      
-  //     // Alternatively, if you're testing a standalone function:
-  //     // service = { validateMultiPolygon };
-      
-  //     // Spy on console methods
-  //     consoleSpy = spyOn(console, 'log');
-  //     consoleErrorSpy = spyOn(console, 'error');
-      
-  //     // Store original functions
-  //     originalMultiPolygon = turf.multiPolygon;
-  //     originalPolygon = turf.polygon;
-  //     originalBooleanValid = turf.booleanValid;
-  //     originalKinks = turf.kinks;
-  //   });
-    
-  //   afterEach(() => {
-  //     // Restore original functions
-  //     (turf as any).multiPolygon = originalMultiPolygon;
-  //     (turf as any).polygon = originalPolygon;
-  //     (turf as any).booleanValid = originalBooleanValid;
-  //     (turf as any).kinks = originalKinks;
-  //   });
-    
-  //   it('should validate a valid multipolygon with coordinate array input', () => {
-  //     // Valid multipolygon coordinates (two separate polygons)
-  //     const validMultiPolygon: Position[][][] = [
-  //       [
-  //         [[0, 0], [0, 1], [1, 1], [1, 0], [0, 0]] // first polygon - square
-  //       ],
-  //       [
-  //         [[2, 2], [2, 3], [3, 3], [3, 2], [2, 2]] // second polygon - another square
-  //       ]
-  //     ];
-      
-  //     // Create a properly formatted empty FeatureCollection
-  //     const emptyKinks: FeatureCollection<Point, GeoJsonProperties> = {
-  //       type: 'FeatureCollection',
-  //       features: []
-  //     };
-      
-  //     // Mock turf functions
-  //     const mockMultiPolygon = jasmine.createSpy('multiPolygon').and.callFake((coords) => {
-  //       return { type: 'Feature', geometry: { type: 'MultiPolygon', coordinates: coords } };
-  //     });
-      
-  //     const mockPolygon = jasmine.createSpy('polygon').and.callFake((coords) => {
-  //       return { type: 'Feature', geometry: { type: 'Polygon', coordinates: coords } };
-  //     });
-      
-  //     const mockBooleanValid = jasmine.createSpy('booleanValid').and.returnValue(true);
-  //     const mockKinks = jasmine.createSpy('kinks').and.returnValue(emptyKinks);
-      
-  //     // Override turf functions with mocks using type assertion
-  //     (turf as any).multiPolygon = mockMultiPolygon;
-  //     (turf as any).polygon = mockPolygon;
-  //     (turf as any).booleanValid = mockBooleanValid;
-  //     (turf as any).kinks = mockKinks;
-      
-  //     // Execute the function
-  //     expect(() => service.validateMultiPolygon(validMultiPolygon)).not.toThrow();
-      
-  //     // Verify turf methods were called correctly
-  //     expect(mockMultiPolygon).toHaveBeenCalledWith(validMultiPolygon);
-  //     expect(mockBooleanValid).toHaveBeenCalled();
-  //     expect(mockKinks).toHaveBeenCalledTimes(2); // Once for each polygon
-  //     expect(consoleSpy).toHaveBeenCalledWith('MultiPolygon validation passed - no self-intersections detected');
-  //   });
-    
-  //   it('should validate a valid multipolygon with GeoJSON input', () => {
-  //     // Valid multipolygon as GeoJSON
-  //     const validGeoJSON = {
-  //       type: 'MultiPolygon',
-  //       coordinates: [
-  //         [
-  //           [[0, 0], [0, 1], [1, 1], [1, 0], [0, 0]]
-  //         ],
-  //         [
-  //           [[2, 2], [2, 3], [3, 3], [3, 2], [2, 2]]
-  //         ]
-  //       ]
-  //     };
-      
-  //     // Create a properly formatted empty FeatureCollection
-  //     const emptyKinks: FeatureCollection<Point, GeoJsonProperties> = {
-  //       type: 'FeatureCollection',
-  //       features: []
-  //     };
-      
-  //     // Mock turf functions with type assertion
-  //     (turf as any).multiPolygon = jasmine.createSpy('multiPolygon').and.callFake((coords) => {
-  //       return { type: 'Feature', geometry: { type: 'MultiPolygon', coordinates: coords } };
-  //     });
-      
-  //     (turf as any).polygon = jasmine.createSpy('polygon').and.callFake((coords) => {
-  //       return { type: 'Feature', geometry: { type: 'Polygon', coordinates: coords } };
-  //     });
-      
-  //     (turf as any).booleanValid = jasmine.createSpy('booleanValid').and.returnValue(true);
-  //     (turf as any).kinks = jasmine.createSpy('kinks').and.returnValue(emptyKinks);
-      
-  //     // expect(() => service.validateMultiPolygon(validGeoJSON)).not.toThrow();
-      
-  //     expect(consoleSpy).toHaveBeenCalledWith('MultiPolygon validation passed - no self-intersections detected');
-  //   });
-    
-  //   it('should throw an error when a polygon has self-intersections', () => {
-  //     // MultiPolygon with a self-intersecting polygon
-  //     const selfIntersectingPolygon: Position[][][] = [
-  //       [
-  //         // Butterfly shape with crossing lines
-  //         [[0, 0], [1, 1], [0, 1], [1, 0], [0, 0]]
-  //       ]
-  //     ];
-      
-  //     // Mock kinks to return one intersection point with proper structure
-  //     const mockKinks: FeatureCollection<Point, GeoJsonProperties> = {
-  //       type: 'FeatureCollection',
-  //       features: [{
-  //         type: 'Feature',
-  //         properties: {},
-  //         geometry: {
-  //           type: 'Point',
-  //           coordinates: [0.5, 0.5]
-  //         }
-  //       }]
-  //     };
-      
-  //     // Mock turf functions with type assertion
-  //     (turf as any).multiPolygon = jasmine.createSpy('multiPolygon').and.callFake((coords) => {
-  //       return { type: 'Feature', geometry: { type: 'MultiPolygon', coordinates: coords } };
-  //     });
-      
-  //     (turf as any).polygon = jasmine.createSpy('polygon').and.callFake((coords) => {
-  //       return { type: 'Feature', geometry: { type: 'Polygon', coordinates: coords } };
-  //     });
-      
-  //     (turf as any).booleanValid = jasmine.createSpy('booleanValid').and.returnValue(false);
-  //     (turf as any).kinks = jasmine.createSpy('kinks').and.returnValue(mockKinks);
-      
-  //     expect(() => service.validateMultiPolygon(selfIntersectingPolygon))
-  //       .toThrowError('Found 1 self-intersections in the multipolygon');
-        
-  //     expect(consoleErrorSpy).toHaveBeenCalled();
-  //   });
-    
-  //   it('should throw an error when overall geometry is invalid', () => {
-  //     // MultiPolygon with valid polygons but invalid topology
-  //     const invalidTopologyMultiPolygon: Position[][][] = [
-  //       [
-  //         [[0, 0], [0, 1], [1, 1], [1, 0], [0, 0]]
-  //       ]
-  //     ];
-      
-  //     // No self-intersections but invalid topology
-  //     const emptyKinks: FeatureCollection<Point, GeoJsonProperties> = {
-  //       type: 'FeatureCollection',
-  //       features: []
-  //     };
-      
-  //     // Mock turf functions with type assertion
-  //     (turf as any).multiPolygon = jasmine.createSpy('multiPolygon').and.callFake((coords) => {
-  //       return { type: 'Feature', geometry: { type: 'MultiPolygon', coordinates: coords } };
-  //     });
-      
-  //     (turf as any).polygon = jasmine.createSpy('polygon').and.callFake((coords) => {
-  //       return { type: 'Feature', geometry: { type: 'Polygon', coordinates: coords } };
-  //     });
-      
-  //     (turf as any).kinks = jasmine.createSpy('kinks').and.returnValue(emptyKinks);
-  //     (turf as any).booleanValid = jasmine.createSpy('booleanValid').and.returnValue(false);
-      
-  //     expect(() => service.validateMultiPolygon(invalidTopologyMultiPolygon))
-  //       .toThrowError('Invalid geometry: Other topology errors detected in multipolygon');
-        
-  //     expect(consoleErrorSpy).toHaveBeenCalled();
-  //   });
-    
-  //   it('should throw an error when an individual polygon is invalid', () => {
-  //     // MultiPolygon with an invalid polygon
-  //     const invalidPolygonMulti: Position[][][] = [
-  //       [
-  //         [[0, 0], [0, 1], [1, 0], [0, 0]] // Missing a vertex, not enough points
-  //       ]
-  //     ];
-      
-  //     // Mock turf functions with type assertion
-  //     (turf as any).multiPolygon = jasmine.createSpy('multiPolygon').and.callFake((coords) => {
-  //       return { type: 'Feature', geometry: { type: 'MultiPolygon', coordinates: coords } };
-  //     });
-      
-  //     // Mock polygon to throw an error
-  //     (turf as any).polygon = jasmine.createSpy('polygon').and.throwError('Invalid polygon');
-      
-  //     expect(() => service.validateMultiPolygon(invalidPolygonMulti))
-  //       .toThrowError('Invalid polygon in multipolygon');
-        
-  //     expect(consoleErrorSpy).toHaveBeenCalled();
-  //   });
-    
-  //   it('should handle multiple self-intersections across different polygons', () => {
-  //     // MultiPolygon with multiple polygons having self-intersections
-  //     const multiSelfIntersectingPolygon: Position[][][] = [
-  //       [
-  //         // First polygon with intersection
-  //         [[0, 0], [1, 1], [0, 1], [1, 0], [0, 0]]
-  //       ],
-  //       [
-  //         // Second polygon with intersection
-  //         [[2, 2], [3, 3], [2, 3], [3, 2], [2, 2]]
-  //       ]
-  //     ];
-      
-  //     // Mock kinks to return different intersection points for each polygon with proper structure
-  //     const mockKinks1: FeatureCollection<Point, GeoJsonProperties> = {
-  //       type: 'FeatureCollection',
-  //       features: [{
-  //         type: 'Feature',
-  //         properties: {},
-  //         geometry: {
-  //           type: 'Point',
-  //           coordinates: [0.5, 0.5]
-  //         }
-  //       }]
-  //     };
-      
-  //     const mockKinks2: FeatureCollection<Point, GeoJsonProperties> = {
-  //       type: 'FeatureCollection',
-  //       features: [{
-  //         type: 'Feature',
-  //         properties: {},
-  //         geometry: {
-  //           type: 'Point',
-  //           coordinates: [2.5, 2.5]
-  //         }
-  //       }]
-  //     };
-      
-  //     // Mock turf functions with type assertion
-  //     (turf as any).multiPolygon = jasmine.createSpy('multiPolygon').and.callFake((coords: any) => {
-  //       return { type: 'Feature', geometry: { type: 'MultiPolygon', coordinates: coords } };
-  //     });
-      
-  //     (turf as any).polygon = jasmine.createSpy('polygon').and.callFake((coords: any) => {
-  //       return { type: 'Feature', geometry: { type: 'Polygon', coordinates: coords } };
-  //     });
-      
-  //     (turf as any).booleanValid = jasmine.createSpy('booleanValid').and.returnValue(false);
-      
-  //     // Set up kinks to return different values for each call
-  //     const kinksSpy = jasmine.createSpy('kinks');
-  //     kinksSpy.and.returnValues(mockKinks1, mockKinks2);
-  //     (turf as any).kinks = kinksSpy;
-      
-  //     expect(() => service.validateMultiPolygon(multiSelfIntersectingPolygon))
-  //       .toThrowError('Found 2 self-intersections in the multipolygon');
-        
-  //     expect(consoleErrorSpy).toHaveBeenCalled();
-  //   });
-    
-  //   it('should handle and propagate unexpected errors', () => {
-  //     const validMultiPolygon: Position[][][] = [
-  //       [
-  //         [[0, 0], [0, 1], [1, 1], [1, 0], [0, 0]]
-  //       ]
-  //     ];
-      
-  //     // Simulate an unexpected error in turf.multiPolygon
-  //     (turf as any).multiPolygon = jasmine.createSpy('multiPolygon').and.throwError('Unexpected error');
-      
-  //     expect(() => service.validateMultiPolygon(validMultiPolygon))
-  //       .toThrowError('Unexpected error');
-        
-  //     expect(consoleErrorSpy).toHaveBeenCalled();
-  //   });
-    
-  //   it('should handle empty multipolygons', () => {
-  //     // Empty multipolygon
-  //     const emptyMultiPolygon: Position[][][] = [];
-      
-  //     // Simulate an error for empty multipolygon
-  //     (turf as any).multiPolygon = jasmine.createSpy('multiPolygon').and.throwError('Cannot create MultiPolygon with no coordinates');
-      
-  //     expect(() => service.validateMultiPolygon(emptyMultiPolygon))
-  //       .toThrowError('Cannot create MultiPolygon with no coordinates');
-        
-  //     expect(consoleErrorSpy).toHaveBeenCalled();
-  //   });
-  // });
+  describe('hasSHPEntry', () => {
+    it('should return true if both .shp and .dbf entries exist', () => {
+      const entries = [
+        { filename: 'file1.shp' },
+        { filename: 'file2.dbf' },
+        { filename: 'file3.prj' }
+      ];
+      expect((service as any).hasSHPEntry(entries)).toBeTrue();
+    });
 
+    it('should return false if .shp is missing', () => {
+      const entries = [
+        { filename: 'file2.dbf' },
+        { filename: 'file3.prj' }
+      ];
+      expect((service as any).hasSHPEntry(entries)).toBeFalse();
+    });
 
+    it('should return false if .dbf is missing', () => {
+      const entries = [
+        { filename: 'file1.shp' },
+        { filename: 'file3.prj' }
+      ];
+      expect((service as any).hasSHPEntry(entries)).toBeFalse();
+    });
+  });
+
+  describe('hasGDBEntries', () => {
+    it('should return true if any filename includes .gdbtable', () => {
+      const entries = [
+        { filename: 'feature1.gdbtable' },
+        { filename: 'feature2.gdbtablx' }
+      ];
+      expect((service as any).hasGDBEntries(entries)).toBeTrue();
+    });
+
+    it('should return false if no .gdbtable entries exist', () => {
+      const entries = [
+        { filename: 'feature2.gdbtablx' },
+        { filename: 'randomfile.txt' }
+      ];
+      expect((service as any).hasGDBEntries(entries)).toBeFalse();
+    });
+  });
+
+  describe('handleGDB', () => {   
+
+    it('should return empty array if extractGDBGeometry throws', async () => {
+      const mockFile = new File([], 'test.gdb');
+
+      spyOn(service as any, 'extractGDBGeometry').and.returnValue(throwError(() => new Error('Extraction failed')));
+      spyOn(service as any, 'validateMultiPolygon').and.stub();
+
+      const result = await (service as any).handleGDB(mockFile);
+
+      expect(result).toEqual([]);
+    });
+
+  });
 });
