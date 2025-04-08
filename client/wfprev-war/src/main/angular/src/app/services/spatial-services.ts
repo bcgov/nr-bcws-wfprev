@@ -383,29 +383,10 @@ export class SpatialService {
                 throw new Error('Invalid geometry: Other topology errors detected in multipolygon');
             }
 
-            // const britishColumbiaBoundary = this.getBritishColumbiaGeoJSON(); 
-            // const isInBC = turf.booleanWithin(multiPolygon, britishColumbiaBoundary);
-    
-            // if (!isInBC) {
-            //     throw new Error('The MultiPolygon is not fully within British Columbia');
-            // }
-
         } catch (error) {
             console.error('Validation error:', error);
             throw error;
         }
     }
 
-    getBritishColumbiaGeoJSON(): GeoJSON.Polygon {
-        return {
-            type: "Polygon",
-            coordinates: [[
-                [-139.05, 60.00],
-                [-114.05, 60.00],
-                [-114.05, 48.30],
-                [-139.05, 48.30],
-                [-139.05, 60.00] 
-            ]]
-        };
-    }
 }
