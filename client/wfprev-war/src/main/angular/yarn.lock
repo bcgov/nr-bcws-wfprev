@@ -2364,7 +2364,7 @@
   resolved "http://bwa.nrs.gov.bc.ca/int/artifactory/api/npm/nrs-virtual-npm/@thednp/shorty/-/shorty-2.0.10.tgz"
   integrity sha1-iCYeb9vPknpexeepfVW1rP7/J7I=
 
-"@tmcw/togeojson@^7.0.0":
+"@tmcw/togeojson@7.0.0":
   version "7.0.0"
   resolved "http://bwa.nrs.gov.bc.ca/int/artifactory/api/npm/nrs-virtual-npm/@tmcw/togeojson/-/togeojson-7.0.0.tgz"
   integrity sha1-TKJkdBiENWeVrVQf3do0jofsarc=
@@ -3689,7 +3689,7 @@
     "@types/geojson" "^7946.0.10"
     tslib "^2.8.1"
 
-"@turf/turf@^7.2.0":
+"@turf/turf@7.2.0":
   version "7.2.0"
   resolved "http://bwa.nrs.gov.bc.ca/int/artifactory/api/npm/nrs-virtual-npm/@turf/turf/-/turf-7.2.0.tgz"
   integrity sha1-u5BmmtL4sGDtekS5bhyaTB3xRkA=
@@ -4135,7 +4135,7 @@
     "@types/node" "*"
     "@types/send" "*"
 
-"@types/shapefile@^0.6.4":
+"@types/shapefile@0.6.4":
   version "0.6.4"
   resolved "http://bwa.nrs.gov.bc.ca/int/artifactory/api/npm/nrs-virtual-npm/@types/shapefile/-/shapefile-0.6.4.tgz"
   integrity sha1-biMptM/mnJlB2cdj+M5qC9lmDHE=
@@ -4143,7 +4143,7 @@
     "@types/geojson" "*"
     "@types/node" "*"
 
-"@types/shpjs@^3.4.7":
+"@types/shpjs@3.4.7":
   version "3.4.7"
   resolved "http://bwa.nrs.gov.bc.ca/int/artifactory/api/npm/nrs-virtual-npm/@types/shpjs/-/shpjs-3.4.7.tgz"
   integrity sha1-zXYXCWRmzAhu0m+L6PUxevnqUDM=
@@ -4192,7 +4192,7 @@
   dependencies:
     "@types/node" "*"
 
-"@types/xmldom@^0.1.34":
+"@types/xmldom@0.1.34":
   version "0.1.34"
   resolved "http://bwa.nrs.gov.bc.ca/int/artifactory/api/npm/nrs-virtual-npm/@types/xmldom/-/xmldom-0.1.34.tgz"
   integrity sha1-p1L3O98JzG14s9Oy58pN0EzJb9I=
@@ -4364,7 +4364,7 @@
     "@webassemblyjs/ast" "1.14.1"
     "@xtuc/long" "4.2.2"
 
-"@xmldom/xmldom@^0.9.8":
+"@xmldom/xmldom@0.9.8":
   version "0.9.8"
   resolved "http://bwa.nrs.gov.bc.ca/int/artifactory/api/npm/nrs-virtual-npm/@xmldom/xmldom/-/xmldom-0.9.8.tgz"
   integrity sha1-FHHoK9/56PIO6LvmDU/6ilFueNg=
@@ -4400,7 +4400,7 @@
   resolved "http://bwa.nrs.gov.bc.ca/int/artifactory/api/npm/nrs-virtual-npm/@yarnpkg/lockfile/-/lockfile-1.1.0.tgz"
   integrity sha1-53qX+9NFt22DJF7c0X05OxtB+zE=
 
-"@zip.js/zip.js@^2.7.57":
+"@zip.js/zip.js@2.7.57":
   version "2.7.57"
   resolved "http://bwa.nrs.gov.bc.ca/int/artifactory/api/npm/nrs-virtual-npm/@zip.js/zip.js/-/zip.js-2.7.57.tgz"
   integrity sha1-ZqfdwHHz46p4mvUGR8BKUlaF4aQ=
@@ -4639,11 +4639,6 @@ array-flatten@1.1.1:
   version "1.1.1"
   resolved "http://bwa.nrs.gov.bc.ca/int/artifactory/api/npm/nrs-virtual-npm/array-flatten/-/array-flatten-1.1.1.tgz"
   integrity sha1-ml9pkFGx5wczKPKgCJaLZOopVdI=
-
-array-source@0.0:
-  version "0.0.4"
-  resolved "http://bwa.nrs.gov.bc.ca/int/artifactory/api/npm/nrs-virtual-npm/array-source/-/array-source-0.0.4.tgz"
-  integrity sha1-pSXfSoSxN20nxnfNQmqXw4gviso=
 
 arraybuffer.prototype.slice@^1.0.4:
   version "1.0.4"
@@ -4893,14 +4888,6 @@ buffer@^5.5.0:
   dependencies:
     base64-js "^1.3.1"
     ieee754 "^1.1.13"
-
-buffer@^6.0.3:
-  version "6.0.3"
-  resolved "http://bwa.nrs.gov.bc.ca/int/artifactory/api/npm/nrs-virtual-npm/buffer/-/buffer-6.0.3.tgz"
-  integrity sha1-Ks5XhFnMj74qcKqo9S7mO2p0xsY=
-  dependencies:
-    base64-js "^1.3.1"
-    ieee754 "^1.2.1"
 
 bundle-name@^4.1.0:
   version "4.1.0"
@@ -6539,23 +6526,6 @@ fd-package-json@^1.2.0:
   dependencies:
     walk-up-path "^3.0.1"
 
-fgdb@^1.0.0:
-  version "1.0.0"
-  resolved "http://bwa.nrs.gov.bc.ca/int/artifactory/api/npm/nrs-virtual-npm/fgdb/-/fgdb-1.0.0.tgz"
-  integrity sha1-DPpBkjbYFUK5r1P/qgd2hTUUk1E=
-  dependencies:
-    jszip "~0.2.1"
-    lie "^3.0.0"
-    long "~1.1.2"
-    proj4 "^2.3.6"
-
-file-source@0.6:
-  version "0.6.1"
-  resolved "http://bwa.nrs.gov.bc.ca/int/artifactory/api/npm/nrs-virtual-npm/file-source/-/file-source-0.6.1.tgz"
-  integrity sha1-rhidSZN2a4Zad/g63Pm5pQTNN9w=
-  dependencies:
-    stream-source "0.3"
-
 filesize@^10.0.12:
   version "10.1.6"
   resolved "http://bwa.nrs.gov.bc.ca/int/artifactory/api/npm/nrs-virtual-npm/filesize/-/filesize-10.1.6.tgz"
@@ -7334,7 +7304,7 @@ icss-utils@^5.0.0, icss-utils@^5.1.0:
   resolved "http://bwa.nrs.gov.bc.ca/int/artifactory/api/npm/nrs-virtual-npm/icss-utils/-/icss-utils-5.1.0.tgz"
   integrity sha1-xr5oWKvQE9do6YNmrkfiXViHsa4=
 
-ieee754@^1.1.12, ieee754@^1.1.13, ieee754@^1.2.1:
+ieee754@^1.1.12, ieee754@^1.1.13:
   version "1.2.1"
   resolved "http://bwa.nrs.gov.bc.ca/int/artifactory/api/npm/nrs-virtual-npm/ieee754/-/ieee754-1.2.1.tgz"
   integrity sha1-jrehCmP/8l0VpXsAFYbRd9Gw01I=
@@ -7355,11 +7325,6 @@ image-size@~0.5.0:
   version "0.5.5"
   resolved "http://bwa.nrs.gov.bc.ca/int/artifactory/api/npm/nrs-virtual-npm/image-size/-/image-size-0.5.5.tgz"
   integrity sha1-Cd/Uq50g4p6xw+gLiZA3jfnjy5w=
-
-immediate@~3.0.5:
-  version "3.0.6"
-  resolved "http://bwa.nrs.gov.bc.ca/int/artifactory/api/npm/nrs-virtual-npm/immediate/-/immediate-3.0.6.tgz"
-  integrity sha1-nbHb0Pr43m++D13V5Wu2BigN5ps=
 
 immutable@^4.0.0:
   version "4.3.7"
@@ -7998,21 +7963,6 @@ jsts@2.7.1:
   resolved "http://bwa.nrs.gov.bc.ca/int/artifactory/api/npm/nrs-virtual-npm/jsts/-/jsts-2.7.1.tgz"
   integrity sha1-qSHAzJ7v7vWIvVPpUuCneC2BLVI=
 
-jszip@^3.10.1:
-  version "3.10.1"
-  resolved "http://bwa.nrs.gov.bc.ca/int/artifactory/api/npm/nrs-virtual-npm/jszip/-/jszip-3.10.1.tgz"
-  integrity sha1-NK7nDrGOofrsL1iSCKFX0f6wkcI=
-  dependencies:
-    lie "~3.3.0"
-    pako "~1.0.2"
-    readable-stream "~2.3.6"
-    setimmediate "^1.0.5"
-
-jszip@~0.2.1:
-  version "0.2.1"
-  resolved "http://bwa.nrs.gov.bc.ca/int/artifactory/api/npm/nrs-virtual-npm/jszip/-/jszip-0.2.1.tgz"
-  integrity sha1-BGBUYWAkcIAWcM9b7EsRzfuCBe4=
-
 karma-chrome-launcher@3.1.0:
   version "3.1.0"
   resolved "http://bwa.nrs.gov.bc.ca/int/artifactory/api/npm/nrs-virtual-npm/karma-chrome-launcher/-/karma-chrome-launcher-3.1.0.tgz"
@@ -8159,13 +8109,6 @@ license-webpack-plugin@4.0.2:
   dependencies:
     webpack-sources "^3.0.0"
 
-lie@^3.0.0, lie@~3.3.0:
-  version "3.3.0"
-  resolved "http://bwa.nrs.gov.bc.ca/int/artifactory/api/npm/nrs-virtual-npm/lie/-/lie-3.3.0.tgz"
-  integrity sha1-3Pgt7lRfRgdNryAMfBxaCOD0D2o=
-  dependencies:
-    immediate "~3.0.5"
-
 lines-and-columns@^1.1.6:
   version "1.2.4"
   resolved "http://bwa.nrs.gov.bc.ca/int/artifactory/api/npm/nrs-virtual-npm/lines-and-columns/-/lines-and-columns-1.2.4.tgz"
@@ -8291,11 +8234,6 @@ loglevel@^1.9.1:
   version "1.9.2"
   resolved "http://bwa.nrs.gov.bc.ca/int/artifactory/api/npm/nrs-virtual-npm/loglevel/-/loglevel-1.9.2.tgz"
   integrity sha1-wuAo1sdXcgEH305kUIUw22Yhugg=
-
-long@~1.1.2:
-  version "1.1.5"
-  resolved "http://bwa.nrs.gov.bc.ca/int/artifactory/api/npm/nrs-virtual-npm/long/-/long-1.1.5.tgz"
-  integrity sha1-tcLBCj2D7g7Aqv+z5OcR0B9gfpo=
 
 loose-envify@^1.1.0:
   version "1.4.0"
@@ -9279,11 +9217,6 @@ pako@^0.2.5:
   resolved "http://bwa.nrs.gov.bc.ca/int/artifactory/api/npm/nrs-virtual-npm/pako/-/pako-0.2.9.tgz"
   integrity sha1-8/dSL073gjSNqBYbrZ7P1Rv4OnU=
 
-pako@~1.0.2:
-  version "1.0.11"
-  resolved "http://bwa.nrs.gov.bc.ca/int/artifactory/api/npm/nrs-virtual-npm/pako/-/pako-1.0.11.tgz"
-  integrity sha1-bJWZ00DVTf05RjgCUqNXBaa5kr8=
-
 param-case@^3.0.4:
   version "3.0.4"
   resolved "http://bwa.nrs.gov.bc.ca/int/artifactory/api/npm/nrs-virtual-npm/param-case/-/param-case-3.0.4.tgz"
@@ -9417,14 +9350,6 @@ path-scurry@^1.11.1:
   dependencies:
     lru-cache "^10.2.0"
     minipass "^5.0.0 || ^6.0.2 || ^7.0.0"
-
-path-source@0.1:
-  version "0.1.3"
-  resolved "http://bwa.nrs.gov.bc.ca/int/artifactory/api/npm/nrs-virtual-npm/path-source/-/path-source-0.1.3.tgz"
-  integrity sha1-A5B8WVSAqiWWoVqQHET3RXNuenM=
-  dependencies:
-    array-source "0.0"
-    file-source "0.6"
 
 path-to-regexp@0.1.12:
   version "0.1.12"
@@ -9698,7 +9623,7 @@ process@^0.11.10:
   resolved "http://bwa.nrs.gov.bc.ca/int/artifactory/api/npm/nrs-virtual-npm/process/-/process-0.11.10.tgz"
   integrity sha1-czIwDoQBYb2j5podHZGn1LwW8YI=
 
-proj4@^2.1.4, proj4@^2.3.6:
+proj4@^2.1.4:
   version "2.15.0"
   resolved "http://bwa.nrs.gov.bc.ca/int/artifactory/api/npm/nrs-virtual-npm/proj4/-/proj4-2.15.0.tgz"
   integrity sha1-13yZVoYcjtUWBxxCCNV2zr6ADrU=
@@ -9880,7 +9805,7 @@ react-is@^18.0.0:
   dependencies:
     loose-envify "^1.1.0"
 
-readable-stream@^2.0.1, readable-stream@~2.3.6:
+readable-stream@^2.0.1:
   version "2.3.8"
   resolved "http://bwa.nrs.gov.bc.ca/int/artifactory/api/npm/nrs-virtual-npm/readable-stream/-/readable-stream-2.3.8.tgz"
   integrity sha1-kRJegEK7obmIf0k0X2J3Anzovps=
@@ -9893,16 +9818,7 @@ readable-stream@^2.0.1, readable-stream@~2.3.6:
     string_decoder "~1.1.1"
     util-deprecate "~1.0.1"
 
-readable-stream@^3.0.6:
-  version "3.6.2"
-  resolved "http://bwa.nrs.gov.bc.ca/int/artifactory/api/npm/nrs-virtual-npm/readable-stream/-/readable-stream-3.6.2.tgz"
-  integrity sha1-VqmzbqllwAxak+8x6xEaDxEFaWc=
-  dependencies:
-    inherits "^2.0.3"
-    string_decoder "^1.1.1"
-    util-deprecate "^1.0.1"
-
-readable-stream@^3.4.0:
+readable-stream@^3.0.6, readable-stream@^3.4.0:
   version "3.6.2"
   resolved "http://bwa.nrs.gov.bc.ca/int/artifactory/api/npm/nrs-virtual-npm/readable-stream/-/readable-stream-3.6.2.tgz"
   integrity sha1-VqmzbqllwAxak+8x6xEaDxEFaWc=
@@ -10519,11 +10435,6 @@ set-proto@^1.0.0:
     es-errors "^1.3.0"
     es-object-atoms "^1.0.0"
 
-setimmediate@^1.0.5:
-  version "1.0.5"
-  resolved "http://bwa.nrs.gov.bc.ca/int/artifactory/api/npm/nrs-virtual-npm/setimmediate/-/setimmediate-1.0.5.tgz"
-  integrity sha1-KQy7Iy4waULX1+qbg3Mqt4VvgoU=
-
 setprototypeof@1.1.0:
   version "1.1.0"
   resolved "http://bwa.nrs.gov.bc.ca/int/artifactory/api/npm/nrs-virtual-npm/setprototypeof/-/setprototypeof-1.1.0.tgz"
@@ -10540,18 +10451,6 @@ shallow-clone@^3.0.0:
   integrity sha1-jymBrZJTH1UDWwH7IwdppA4C76M=
   dependencies:
     kind-of "^6.0.2"
-
-shapefile@^0.6.6:
-  version "0.6.6"
-  resolved "http://bwa.nrs.gov.bc.ca/int/artifactory/api/npm/nrs-virtual-npm/shapefile/-/shapefile-0.6.6.tgz"
-  integrity sha1-b+4VK5+yschfaQKFtpL7aMlaX08=
-  dependencies:
-    array-source "0.0"
-    commander "2"
-    path-source "0.1"
-    slice-source "0.4"
-    stream-source "0.3"
-    text-encoding "^0.6.4"
 
 shebang-command@^1.2.0:
   version "1.2.0"
@@ -10582,7 +10481,7 @@ shell-quote@^1.8.1:
   resolved "http://bwa.nrs.gov.bc.ca/int/artifactory/api/npm/nrs-virtual-npm/shell-quote/-/shell-quote-1.8.2.tgz"
   integrity sha1-0tg+BXlZ1T7CYTEenpuPUdyyk0o=
 
-shpjs@^6.1.0:
+shpjs@6.1.0:
   version "6.1.0"
   resolved "http://bwa.nrs.gov.bc.ca/int/artifactory/api/npm/nrs-virtual-npm/shpjs/-/shpjs-6.1.0.tgz"
   integrity sha1-Gpcp8ygJKWWXEeBQgkkvZKRxTw0=
@@ -10693,11 +10592,6 @@ slice-ansi@^7.1.0:
   dependencies:
     ansi-styles "^6.2.1"
     is-fullwidth-code-point "^5.0.0"
-
-slice-source@0.4:
-  version "0.4.1"
-  resolved "http://bwa.nrs.gov.bc.ca/int/artifactory/api/npm/nrs-virtual-npm/slice-source/-/slice-source-0.4.1.tgz"
-  integrity sha1-QKV6wDxmaLXaIA4FN44AC/KmHXk=
 
 smart-buffer@^4.2.0:
   version "4.2.0"
@@ -10944,11 +10838,6 @@ stream-combiner@^0.2.2:
   dependencies:
     duplexer "~0.1.1"
     through "~2.3.4"
-
-stream-source@0.3:
-  version "0.3.5"
-  resolved "http://bwa.nrs.gov.bc.ca/int/artifactory/api/npm/nrs-virtual-npm/stream-source/-/stream-source-0.3.5.tgz"
-  integrity sha1-uX9S0PjqVm2wcdtnm5hUA6MeA0A=
 
 streamroller@^3.1.5:
   version "3.1.5"
@@ -11249,11 +11138,6 @@ terser@^5.10.0, terser@^5.31.1, terser@^5.4.0, terser@5.31.6:
     commander "^2.20.0"
     source-map-support "~0.5.20"
 
-text-encoding@^0.6.4:
-  version "0.6.4"
-  resolved "http://bwa.nrs.gov.bc.ca/int/artifactory/api/npm/nrs-virtual-npm/text-encoding/-/text-encoding-0.6.4.tgz"
-  integrity sha1-45mpgiV6J22uQou5KEXLcb3CbRk=
-
 thingies@^1.20.0:
   version "1.21.0"
   resolved "http://bwa.nrs.gov.bc.ca/int/artifactory/api/npm/nrs-virtual-npm/thingies/-/thingies-1.21.0.tgz"
@@ -11289,12 +11173,7 @@ tinyexec@^0.3.2:
   resolved "http://bwa.nrs.gov.bc.ca/int/artifactory/api/npm/nrs-virtual-npm/tinyexec/-/tinyexec-0.3.2.tgz"
   integrity sha1-lBeU5leoXklld5lcbu9m9T9Cs9I=
 
-tinyqueue@^2.0.0:
-  version "2.0.3"
-  resolved "http://bwa.nrs.gov.bc.ca/int/artifactory/api/npm/nrs-virtual-npm/tinyqueue/-/tinyqueue-2.0.3.tgz"
-  integrity sha1-ZNhJLr8554Ade9NAYuKbRbIDXwg=
-
-tinyqueue@^2.0.3:
+tinyqueue@^2.0.0, tinyqueue@^2.0.3:
   version "2.0.3"
   resolved "http://bwa.nrs.gov.bc.ca/int/artifactory/api/npm/nrs-virtual-npm/tinyqueue/-/tinyqueue-2.0.3.tgz"
   integrity sha1-ZNhJLr8554Ade9NAYuKbRbIDXwg=
@@ -11986,29 +11865,24 @@ websocket-extensions@>=0.1.1:
     "@angular/platform-browser-dynamic" "18.2.3"
     "@angular/router" "18.2.3"
     "@bcgov/smk" "1.2.3"
-    "@tmcw/togeojson" "^7.0.0"
-    "@turf/turf" "^7.2.0"
+    "@tmcw/togeojson" "7.0.0"
+    "@turf/turf" "7.2.0"
     "@types/leaflet" "1.9.12"
     "@types/leaflet.markercluster" "1.5.5"
-    "@types/shpjs" "^3.4.7"
-    "@xmldom/xmldom" "^0.9.8"
-    "@zip.js/zip.js" "^2.7.57"
+    "@types/shpjs" "3.4.7"
+    "@xmldom/xmldom" "0.9.8"
+    "@zip.js/zip.js" "2.7.57"
     angular-oauth2-oidc "17.0.2"
     angular2-uuid "1.1.1"
-    buffer "^6.0.3"
-    fgdb "^1.0.0"
-    jszip "^3.10.1"
     leaflet "1.9.4"
     leaflet.markercluster "1.5.3"
     ngx-moment "6.0.2"
-    process "^0.11.10"
     rxjs "7.5.0"
-    shapefile "^0.6.6"
-    shpjs "^6.1.0"
+    shpjs "6.1.0"
     tslib "2.8.1"
     vanilla-text-mask "5.1.1"
     wfprev "file:"
-    xmldom "^0.6.0"
+    xmldom "0.6.0"
     zone.js "0.14.10"
 
 whatwg-encoding@^3.1.1:
@@ -12220,7 +12094,7 @@ xmldoc@^1.3.0:
   dependencies:
     sax "^1.2.4"
 
-xmldom@^0.6.0:
+xmldom@0.6.0:
   version "0.6.0"
   resolved "http://bwa.nrs.gov.bc.ca/int/artifactory/api/npm/nrs-virtual-npm/xmldom/-/xmldom-0.6.0.tgz"
   integrity sha1-Q6luy4vuzpkc7zgsCDl9gtTQxG8=
