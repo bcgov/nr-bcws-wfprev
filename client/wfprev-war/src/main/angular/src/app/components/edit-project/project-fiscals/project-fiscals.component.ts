@@ -17,6 +17,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { ConfirmationDialogComponent } from 'src/app/components/confirmation-dialog/confirmation-dialog.component';
 import { CanComponentDeactivate } from 'src/app/services/util/can-deactive.guard';
 import { ActivitiesComponent } from 'src/app/components/edit-project/activities/activities.component';
+import { FiscalMapComponent } from 'src/app/components/edit-project/fiscal-map/fiscal-map.component';
 
 @Component({
   selector: 'app-project-fiscals',
@@ -32,7 +33,8 @@ import { ActivitiesComponent } from 'src/app/components/edit-project/activities/
     MatExpansionModule,
     CurrencyPipe,
     MatMenuModule,
-    ActivitiesComponent
+    ActivitiesComponent,
+    FiscalMapComponent
   ]
 })
 export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  {
