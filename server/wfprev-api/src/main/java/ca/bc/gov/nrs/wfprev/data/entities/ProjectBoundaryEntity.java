@@ -75,14 +75,12 @@ public class ProjectBoundaryEntity implements Serializable {
     @Column(name = "collector_name", length = 100)
     private String collectorName;
 
-    @NotNull
     @Column(name = "boundary_size_ha", precision = 19, scale = 4)
     private BigDecimal boundarySizeHa;
 
     @Column(name = "boundary_comment", length = 2000)
     private String boundaryComment;
 
-    @NotNull
     @Column(name = "location_geometry", columnDefinition = "geometry(Point, 4326)")
     @JdbcTypeCode(SqlTypes.GEOMETRY)
     @JsonDeserialize(using = PointDeserializer.class)
