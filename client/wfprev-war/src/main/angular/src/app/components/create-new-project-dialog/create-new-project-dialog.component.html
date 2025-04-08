@@ -49,7 +49,9 @@
             </select>
           </div>
           <div class="form-field">
-            <label>BC Parks Region<span class="required">*</span></label>
+            <label>
+              BC Parks Region<span class="required" *ngIf="hasValidator('bcParksRegion', Validators.required)">*</span>
+            </label>
             <select formControlName="bcParksRegion">
               <option value="">select</option>
               <option *ngFor="let region of bcParksRegions" [value]="region.orgUnitId">{{ region.orgUnitName }}</option>
