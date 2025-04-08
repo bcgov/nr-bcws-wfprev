@@ -57,15 +57,28 @@ export class ProjectFilesComponent implements OnInit {
     if (this.projectGuid) {
       this.attachmentService.getProjectAttachments(this.projectGuid).subscribe({
         next: (response) => {
-
+          // ensure the latest attachment is displayed
           if (response?._embedded?.fileAttachment && Array.isArray(response._embedded.fileAttachment)) {
-            const fileAttachment = response._embedded.fileAttachment[0];
+            const fileAttachment = response._embedded.fileAttachment.reduce((latest: any, current: any) => {
+              const latestTime = new Date(latest.uploadedByTimestamp || 0).getTime();
+              const currentTime = new Date(current.uploadedByTimestamp || 0).getTime();
+              return currentTime > latestTime ? current : latest;
+            });
 
             // Now, call getProjectBoundaries to get the boundary data
             this.projectService.getProjectBoundaries(this.projectGuid).subscribe({
               next: (boundaryResponse) => {
-                // Check if the response has the projectBoundary array and access the first boundary
-                const boundarySizeHa = boundaryResponse?._embedded?.projectBoundary?.[0]?.boundarySizeHa;
+                const boundaries = boundaryResponse?._embedded?.projectBoundary;
+                let boundarySizeHa = undefined;
+
+                if (boundaries && boundaries.length > 0) {
+                  // Sort boundaries by systemStartTimestamp in descending order
+                  const latestBoundary = boundaries.sort((a: { systemStartTimestamp: string | number | Date; }, b: { systemStartTimestamp: string | number | Date; }) =>
+                    new Date(b.systemStartTimestamp).getTime() - new Date(a.systemStartTimestamp).getTime()
+                  )[0];
+                  console.log('setting boundary size')
+                  boundarySizeHa = latestBoundary.boundarySizeHa;
+                }
 
                 if (boundarySizeHa !== undefined) {
                   // Set the polygonHectares from the boundarySizeHa
@@ -221,7 +234,7 @@ export class ProjectFilesComponent implements OnInit {
       data: { indicator: 'confirm-delete-attachment' },
       width: '500px',
     });
-  
+
     dialogRef.afterClosed().subscribe((confirmed: boolean) => {
       if (confirmed) {
         if (fileToDelete?.fileAttachmentGuid) {
@@ -229,7 +242,7 @@ export class ProjectFilesComponent implements OnInit {
             next: () => {
               this.projectFiles = this.projectFiles.filter(file => file !== fileToDelete);
               this.dataSource.data = [...this.projectFiles];
-  
+
               // Show success message in snackbar
               this.snackbarService.open('File has been deleted successfully.', 'Close', {
                 duration: 5000,
@@ -256,7 +269,7 @@ export class ProjectFilesComponent implements OnInit {
       }
     });
   }
-  
+
 
   downloadFile(file: any) {
     // Implementation for file download
