@@ -1,12 +1,12 @@
+import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import * as toGeoJSON from '@tmcw/togeojson';
-import * as shp from 'shpjs';
-import { DOMParser } from '@xmldom/xmldom';
-import { Geometry, Position } from 'geojson';
-import { ZipReader, BlobReader, TextWriter, BlobWriter } from '@zip.js/zip.js';
-import { catchError, lastValueFrom, map, Observable, of, throwError } from "rxjs";
-import { HttpClient } from "@angular/common/http";
 import * as turf from '@turf/turf';
+import { DOMParser } from '@xmldom/xmldom';
+import { BlobReader, ZipReader } from '@zip.js/zip.js';
+import { Geometry, Position } from 'geojson';
+import { catchError, lastValueFrom, map, Observable, of, throwError } from "rxjs";
+import * as shp from 'shpjs';
 type CoordinateTypes = Position | Position[] | Position[][] | Position[][][];
 
 @Injectable({
@@ -15,16 +15,6 @@ type CoordinateTypes = Position | Position[] | Position[][] | Position[][][];
 export class SpatialService {
 
     constructor(private readonly httpClient: HttpClient) { }
-
-    BC_BOUNDARY = turf.polygon([
-        [
-            [-139.05, 60.0],
-            [-139.05, 48.3],
-            [-114.05, 48.3],
-            [-114.05, 60.0],
-            [-139.05, 60.0]
-        ]
-    ]);
 
     private parseKMLToCoordinates(kmlString: string): Position[][][] {
         const kmlDom = new DOMParser().parseFromString(kmlString, 'text/xml');
@@ -42,9 +32,7 @@ export class SpatialService {
                     // This is already properly nested for MultiPolygon [[[x,y], [x,y]]]
                     allCoords = allCoords.concat(coords);
                 } else {
-                    // Add proper nesting if needed
                     console.error("Unexpected coordinate structure:", coords);
-                    // Handle special cases if needed
                 }
             }
         });

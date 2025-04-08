@@ -58,7 +58,7 @@ describe('SpatialService', () => {
     expect(service).toBeTruthy();
   });
 
-  describe('parseKMLToCoordinates (integration)', () => {
+  describe('parseKMLToCoordinates', () => {
     it('should parse real KML and return proper coordinates', () => {
       const kmlString = `
         <kml xmlns="http://www.opengis.net/kml/2.2">
@@ -85,6 +85,32 @@ describe('SpatialService', () => {
         [[[1, 2], [3, 4], [5, 6], [1, 2]]]
       ]);
     });
+
+    it('should log error for unexpected coordinate structure in KML', () => {
+      const kmlString = `
+        <kml xmlns="http://www.opengis.net/kml/2.2">
+          <Placemark>
+            <Polygon>
+              <outerBoundaryIs>
+                <LinearRing>
+                  <coordinates>-122.0,37.0,0 -122.0,38.0,0 -121.0,38.0,0 -121.0,37.0,0 -122.0,37.0,0</coordinates>
+                </LinearRing>
+              </outerBoundaryIs>
+            </Polygon>
+          </Placemark>
+        </kml>
+      `;
+    
+      const malformedCoords = [[1, 2], [3, 4]]; // Not nested deeply enough for MultiPolygon
+    
+      spyOn(service as any, 'extractMultiPolygonCoordinates').and.returnValue(malformedCoords as any);
+      const consoleSpy = spyOn(console, 'error');
+    
+      (service as any).parseKMLToCoordinates(kmlString);
+    
+      expect(consoleSpy).toHaveBeenCalledWith('Unexpected coordinate structure:', malformedCoords);
+    });
+    
   });
   
 

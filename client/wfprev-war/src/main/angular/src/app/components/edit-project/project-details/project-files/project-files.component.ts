@@ -1,17 +1,16 @@
+import { CommonModule } from '@angular/common';
 import { Component, Input, OnInit } from '@angular/core';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
-import { AttachmentService } from 'src/app/services/attachment-service';
-import { ProjectService } from 'src/app/services/project-services';
-import { FileAttachment, ProjectBoundary, ProjectFile } from 'src/app/components/models';
+import { catchError, map, throwError } from 'rxjs';
 import { AddAttachmentComponent } from 'src/app/components/add-attachment/add-attachment.component';
 import { ConfirmationDialogComponent } from 'src/app/components/confirmation-dialog/confirmation-dialog.component';
-import { Messages } from 'src/app/utils/messages';
-import { CommonModule } from '@angular/common';
+import { FileAttachment, ProjectBoundary, ProjectFile } from 'src/app/components/models';
+import { AttachmentService } from 'src/app/services/attachment-service';
+import { ProjectService } from 'src/app/services/project-services';
 import { SpatialService } from 'src/app/services/spatial-services';
-import { BlobReader, BlobWriter, ZipReader } from '@zip.js/zip.js';
-import { catchError, lastValueFrom, map, of, throwError } from 'rxjs';
+import { Messages } from 'src/app/utils/messages';
 
 @Component({
   selector: 'app-project-files',
