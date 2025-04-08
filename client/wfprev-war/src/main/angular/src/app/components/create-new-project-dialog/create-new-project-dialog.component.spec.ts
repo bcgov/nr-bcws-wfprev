@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { of, throwError } from 'rxjs';
 import { CreateNewProjectDialogComponent } from './create-new-project-dialog.component';
@@ -476,6 +476,46 @@ describe('CreateNewProjectDialogComponent', () => {
       { duration: 5000, panelClass: 'snackbar-error' }
     ); // Ensure the error snackbar was displayed
   });
+
+  it('should set bcParksRegion as required when BC Parks business area is selected', () => {
+    component.businessAreas = [
+      { programAreaGuid: 'bcp-guid', programAreaName: 'BC Parks (BCP)' },
+      { programAreaGuid: 'other-guid', programAreaName: 'Other Area' }
+    ];
   
+    component.projectForm.get('businessArea')?.setValue('bcp-guid');
+    fixture.detectChanges();
+  
+    const bcParksRegionControl = component.projectForm.get('bcParksRegion');
+    bcParksRegionControl?.setValue('some-region');
+    bcParksRegionControl?.markAsTouched();
+  
+    expect(bcParksRegionControl?.hasError('required')).toBeFalse();
+    bcParksRegionControl?.setValue('');
+    fixture.detectChanges();
+    expect(bcParksRegionControl?.hasError('required')).toBeTrue();
+  });
+  
+  it('should clear bcParksRegion required validator when a non-BC Parks business area is selected', () => {
+    component.businessAreas = [
+      { programAreaGuid: 'bcp-guid', programAreaName: 'BC Parks (BCP)' },
+      { programAreaGuid: 'non-bcp-guid', programAreaName: 'Other Area' }
+    ];
+  
+    // Initially select BC Parks to trigger required
+    component.projectForm.get('businessArea')?.setValue('bcp-guid');
+    fixture.detectChanges();
+  
+    const bcParksRegionControl = component.projectForm.get('bcParksRegion');
+    expect(bcParksRegionControl?.validator).toBeTruthy();
+  
+    // Switch to a non-BCP area
+    component.projectForm.get('businessArea')?.setValue('non-bcp-guid');
+    fixture.detectChanges();
+  
+    // Assert required validator is gone
+    expect(bcParksRegionControl?.hasValidator?.(Validators.required)).toBeFalse();
+    expect(bcParksRegionControl?.validator).toBeFalsy();
+  });
 
 });
