@@ -8,14 +8,14 @@ import com.nimbusds.jose.shaded.gson.GsonBuilder;
 import com.nimbusds.jose.shaded.gson.JsonDeserializer;
 import com.nimbusds.jose.shaded.gson.JsonPrimitive;
 import com.nimbusds.jose.shaded.gson.JsonSerializer;
-import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.LinearRing;
+import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Point;
-import org.postgresql.geometric.PGpoint;
-import org.postgresql.geometric.PGpolygon;
+import org.locationtech.jts.geom.Polygon;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -36,7 +36,6 @@ import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -73,12 +72,13 @@ class ProjectBoundaryControllerTest {
                     "boundarySizeHa": 10.5,
                     "locationGeometry": [-123.3656, 48.4284],
                     "boundaryGeometry": {
-                        "coordinates": [[
+                        "type": "MultiPolygon",
+                        "coordinates": [[[
                             [-123.3656, 48.4284],
                             [-123.3657, 48.4285],
                             [-123.3658, 48.4284],
                             [-123.3656, 48.4284]
-                        ]]
+                        ]]]
                     }
                 }
             """;
@@ -169,7 +169,7 @@ class ProjectBoundaryControllerTest {
     void testCreateProjectBoundary_DataIntegrityViolationException() throws Exception {
         ProjectBoundaryModel requestModel = buildProjectBoundaryRequestModel();
 
-        when(projectBoundaryService.createProjectBoundary(anyString(), any(ProjectBoundaryModel.class)))
+        when(projectBoundaryService.createOrUpdateProjectBoundary(anyString(), any(ProjectBoundaryModel.class)))
                 .thenThrow(new DataIntegrityViolationException("Data Integrity Violation"));
 
         String requestJson = projectBoundaryJson.formatted(
@@ -193,7 +193,7 @@ class ProjectBoundaryControllerTest {
     void testCreateProjectBoundary_IllegalArgumentException() throws Exception {
         ProjectBoundaryModel requestModel = buildProjectBoundaryRequestModel();
 
-        when(projectBoundaryService.createProjectBoundary(anyString(), any(ProjectBoundaryModel.class)))
+        when(projectBoundaryService.createOrUpdateProjectBoundary(anyString(), any(ProjectBoundaryModel.class)))
                 .thenThrow(new IllegalArgumentException("Illegal Argument exception"));
 
         String requestJson = projectBoundaryJson.formatted(
@@ -303,6 +303,16 @@ class ProjectBoundaryControllerTest {
     ProjectBoundaryModel buildProjectBoundaryRequestModel() {
         GeometryFactory geometryFactory = new GeometryFactory();
         Point locationPoint = geometryFactory.createPoint(new Coordinate(-123.3656, 48.4284));
+        Coordinate[] coordinates = {
+                new Coordinate(-123.3656, 48.4284),
+                new Coordinate(-123.3657, 48.4285),
+                new Coordinate(-123.3658, 48.4284),
+                new Coordinate(-123.3656, 48.4284)
+        };
+
+        LinearRing shell = geometryFactory.createLinearRing(coordinates);
+        Polygon polygon = geometryFactory.createPolygon(shell);
+        MultiPolygon multiPolygon = geometryFactory.createMultiPolygon(new Polygon[]{polygon});
 
         return ProjectBoundaryModel.builder()
                 .projectBoundaryGuid(UUID.randomUUID().toString())
@@ -312,12 +322,7 @@ class ProjectBoundaryControllerTest {
                 .collectionDate(new Date())
                 .boundarySizeHa(new BigDecimal("10.5"))
                 .locationGeometry(locationPoint)
-                .boundaryGeometry(new PGpolygon(new PGpoint[]{
-                        new PGpoint(-123.3656, 48.4284),
-                        new PGpoint(-123.3657, 48.4285),
-                        new PGpoint(-123.3658, 48.4284),
-                        new PGpoint(-123.3656, 48.4284)
-                }))
+                .boundaryGeometry(multiPolygon)
                 .build();
     }
 

@@ -1,12 +1,6 @@
 package ca.bc.gov.nrs.wfprev.data.entities;
 
-import ca.bc.gov.nrs.wfprev.common.serializers.PGPolygonDeserializer;
-import ca.bc.gov.nrs.wfprev.common.serializers.PGPolygonSerializer;
-import ca.bc.gov.nrs.wfprev.common.types.PostgresPolygonType;
-import ca.bc.gov.nrs.wfprev.common.validators.Geometry;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -21,9 +15,10 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.JdbcType;
+import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.UuidGenerator;
-import org.postgresql.geometric.PGpolygon;
+import org.hibernate.type.SqlTypes;
+import org.locationtech.jts.geom.MultiPolygon;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
@@ -86,12 +81,9 @@ public class ActivityBoundaryEntity implements Serializable {
     private String boundaryComment;
 
     @NotNull
-    @Column(name = "geometry", columnDefinition = "polygon")
-    @JdbcType(PostgresPolygonType.class)
-    @JsonDeserialize(using = PGPolygonDeserializer.class)
-    @JsonSerialize(using = PGPolygonSerializer.class)
-    @Geometry
-    private PGpolygon geometry;
+    @Column(name = "geometry", columnDefinition = "geometry(Multipolygon, 4326)")
+    @JdbcTypeCode(SqlTypes.GEOMETRY)
+    private MultiPolygon geometry;
 
     @Column(name = "revision_count", columnDefinition="Decimal(10) default '0'", nullable = false)
     @NotNull

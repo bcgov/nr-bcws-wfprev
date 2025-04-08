@@ -7,7 +7,11 @@ import ca.bc.gov.nrs.wfprev.data.repositories.ActivityBoundaryRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.ProjectBoundaryRepository;
 import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.LinearRing;
+import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.geom.Polygon;
 import org.postgresql.geometric.PGpolygon;
 import org.springframework.stereotype.Component;
 
@@ -87,40 +91,54 @@ public class GeoJsonFeaturesService implements CommonService {
         return feature;
     }
 
-    Map<String, Object> createPolygonFeature(@NotNull PGpolygon polygon, Map<String, Object> properties) {
-        Map<String, Object> feature = new HashMap<>();
-        feature.put("type", "Feature");
+        public static Map<String, Object> createPolygonFeature(@NotNull MultiPolygon multiPolygon, Map<String, Object> properties) {
+            Map<String, Object> feature = new HashMap<>();
+            feature.put("type", "Feature");
 
-        Map<String, Object> geometry = new HashMap<>();
-        geometry.put("type", "Polygon");
+            Map<String, Object> geometry = new HashMap<>();
+            geometry.put("type", "MultiPolygon");
 
-        // Convert PGpolygon to GeoJSON coordinates
-        List<List<double[]>> rings = new ArrayList<>();
-        List<double[]> exteriorRing = new ArrayList<>();
+            List<List<List<double[]>>> polygons = new ArrayList<>();
 
-        // Parse the points from the polygon
-        org.postgresql.geometric.PGpoint[] points = polygon.points;
+            // Iterate over each Polygon in the MultiPolygon
+            for (int i = 0; i < multiPolygon.getNumGeometries(); i++) {
+                Polygon polygon = (Polygon) multiPolygon.getGeometryN(i);
+                List<List<double[]>> rings = new ArrayList<>();
 
-        // Create a single ring (exterior)
-        for (org.postgresql.geometric.PGpoint point : points) {
-            exteriorRing.add(new double[]{point.x, point.y});
+                // Process the exterior ring
+                rings.add(extractCoordinates(polygon.getExteriorRing()));
+
+                // Process interior rings (holes)
+                for (int j = 0; j < polygon.getNumInteriorRing(); j++) {
+                    rings.add(extractCoordinates(polygon.getInteriorRingN(j)));
+                }
+
+                polygons.add(rings);
+            }
+
+            geometry.put("coordinates", polygons);
+            feature.put("geometry", geometry);
+            feature.put("properties", properties);
+
+            return feature;
         }
 
-        // Close the ring if it's not already closed
-        if (points.length > 0 &&
-                (points[0].x != points[points.length - 1].x ||
-                        points[0].y != points[points.length - 1].y)) {
-            exteriorRing.add(new double[]{points[0].x, points[0].y});
+        private static List<double[]> extractCoordinates(LinearRing linearRing) {
+            List<double[]> coordinates = new ArrayList<>();
+            Coordinate[] coords = linearRing.getCoordinates();
+            for (Coordinate coord : coords) {
+                coordinates.add(new double[]{coord.x, coord.y});
+            }
+
+            // Ensure the ring is closed
+            if (coords.length > 0 &&
+                    (coords[0].x != coords[coords.length - 1].x ||
+                            coords[0].y != coords[coords.length - 1].y)) {
+                coordinates.add(new double[]{coords[0].x, coords[0].y});
+            }
+
+            return coordinates;
         }
-
-        rings.add(exteriorRing);
-        geometry.put("coordinates", rings);
-
-        feature.put("geometry", geometry);
-        feature.put("properties", properties);
-
-        return feature;
-    }
 
     Map<String, Object> createProjectProperties(ProjectBoundaryEntity pb) {
         Map<String, Object> properties = new HashMap<>();

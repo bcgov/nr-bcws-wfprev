@@ -26,9 +26,7 @@ jobs:
           docker tag ${{vars.REGISTRY}}/${{ github.repository }}-${{ matrix.component-name }}:latest ${{vars.REGISTRY}}/${{ github.repository }}-${{ matrix.component-name }}:${{ github.event.release.tag_name }}
           docker push ${{vars.REGISTRY}}/${{ github.repository }}-${{ matrix.component-name }}:${{ github.event.release.tag_name }}
 
-  # include additional steps for DLV, PRD
-  # rename to deploy-wftst, rename environment to tst
-  deploy-test:
+  deploy-prd:
     needs: tag-builds
     if: ${{ contains(github.event.release.tag_name, '-release') }}
     uses: ./.github/workflows/terragrunt-deploy.yml
@@ -38,3 +36,10 @@ jobs:
       IMAGE_TAG: ${{ github.event.release.tag_name }}
       COMMAND: apply
       RUN_LIQUIBASE: 'true'
+
+  wfprev-ui:
+    uses: ./.github/workflows/client-build.yml
+    needs: [deploy-prd]
+    with:
+      DEFAULT_APPLICATION_ENVIRONMENT: prd
+    secrets: inherit
