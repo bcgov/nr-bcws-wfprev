@@ -225,7 +225,10 @@
                 </div>
               </div>
             </mat-expansion-panel>
-            <app-activities [fiscalGuid]="currentFiscalGuid"></app-activities>
+            <div class="activities-map-container">
+              <app-activities class="activities-panel" [fiscalGuid]="currentFiscalGuid"></app-activities>
+              <app-fiscal-map class="fiscal-map-panel" [fiscalGuid]="selectedTabIndex"></app-fiscal-map>
+            </div>
           </mat-accordion>
         </mat-tab>
       </mat-tab-group>
