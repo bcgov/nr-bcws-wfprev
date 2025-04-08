@@ -26,12 +26,14 @@ export class MapComponent implements AfterViewInit {
     private readonly mapConfigService: MapConfigService
   ) { }
 
-  async ngAfterViewInit(): Promise<void> {
-    // Check if mapContainer.nativeElement is defined before accessing it
+  ngAfterViewInit(): void {
     if (this.mapContainer?.nativeElement) {
-      await this.initMap();
-      this.mapIndex = this.mapService.getMapIndex() + 1;
-      this.mapService.setMapIndex(this.mapIndex);
+      this.initMap()
+        .then(() => {
+          this.mapIndex = this.mapService.getMapIndex() + 1;
+          this.mapService.setMapIndex(this.mapIndex);
+        })
+        .catch((error) => console.error('Error initializing map:', error));
     } else {
       console.error('Map container is not available.');
     }
