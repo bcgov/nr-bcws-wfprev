@@ -1,3 +1,5 @@
+import { Position } from 'geojson';
+
 export interface Project {
   bcParksRegionOrgUnitId: number;
   bcParksSectionOrgUnitId: number;
@@ -139,7 +141,7 @@ export interface ProjectBoundary {
 
 export interface Geometry {
   type?: "MultiPolygon";
-  coordinates?: number[][];
+  coordinates?: Position[][][];
 }
 
 export interface ProjectFile {
@@ -152,4 +154,5 @@ export interface ProjectFile {
   polygonHectares?: string,
   description?: string,
 }
+
 

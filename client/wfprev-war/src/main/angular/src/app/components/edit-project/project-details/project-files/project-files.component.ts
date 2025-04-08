@@ -11,6 +11,7 @@ import { AttachmentService } from 'src/app/services/attachment-service';
 import { ProjectService } from 'src/app/services/project-services';
 import { SpatialService } from 'src/app/services/spatial-services';
 import { Messages } from 'src/app/utils/messages';
+import { Position } from 'geojson';
 
 @Component({
   selector: 'app-project-files',
@@ -175,7 +176,7 @@ export class ProjectFilesComponent implements OnInit {
     });
   }
 
-  updateProjectBoundary(file: File, response: number[][]) {
+  updateProjectBoundary(file: File, response: Position[][][]) {
     const now = new Date();
     const futureDate = new Date(now);
     futureDate.setFullYear(futureDate.getFullYear() + 1);

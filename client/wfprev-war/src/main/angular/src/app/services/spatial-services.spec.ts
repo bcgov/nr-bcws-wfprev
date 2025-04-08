@@ -78,7 +78,7 @@ describe('SpatialService', () => {
         </kml>
       `;
   
-      // Don’t spy, call the real method through the public one (if needed, cast to call private)
+      spyOn(service as any, 'validateMultiPolygon').and.returnValue(true);
       const result = (service as any).parseKMLToCoordinates(kmlString);
   
       expect(result).toEqual([
@@ -104,6 +104,7 @@ describe('SpatialService', () => {
       const malformedCoords = [[1, 2], [3, 4]]; // Not nested deeply enough for MultiPolygon
     
       spyOn(service as any, 'extractMultiPolygonCoordinates').and.returnValue(malformedCoords as any);
+      spyOn(service as any, 'validateMultiPolygon').and.stub();
       const consoleSpy = spyOn(console, 'error');
     
       (service as any).parseKMLToCoordinates(kmlString);
@@ -657,7 +658,7 @@ describe('SpatialService', () => {
   describe('extractCoordinates', () => {    
     it('should handle a ZIP file by calling handleCompressedFile', async () => {
       const mockFile = new File([''], 'test.zip');
-      const mockCoords = [[3, 4]];
+      const mockCoords = [[[[3, 4]]]] as Position[][][];
       spyOn(service, 'handleCompressedFile').and.returnValue(Promise.resolve(mockCoords));
   
       const result = await service.extractCoordinates(mockFile);
@@ -668,12 +669,12 @@ describe('SpatialService', () => {
   
     it('should handle a GDB file by calling handleCompressedFile', async () => {
       const mockFile = new File([''], 'data.gdb');
-      spyOn(service, 'handleCompressedFile').and.returnValue(Promise.resolve([[5, 6]]));
+      spyOn(service, 'handleCompressedFile').and.returnValue(Promise.resolve([[[[5, 6]]]] as Position[][][]));
   
       const result = await service.extractCoordinates(mockFile);
   
       expect(service.handleCompressedFile).toHaveBeenCalledWith(mockFile);
-      expect(result).toEqual([[5, 6]]);
+      expect(result).toEqual([[[[5, 6]]]] as Position[][][]);
     });
   
     it('should return an empty array for unsupported file types', async () => {
@@ -771,4 +772,35 @@ describe('SpatialService', () => {
     });
 
   });
+
+  describe('validateMultiPolygon', () => {
+    it('should throw an error for a self-intersecting polygon', () => {
+        const coords: Position[][][] = [
+            [
+                [
+                    [-125, 49], [-124, 50], [-125, 50], [-124, 49], [-125, 49] // bowtie shape
+                ]
+            ]
+        ];
+        expect(() => service.validateMultiPolygon(coords)).toThrowError(/self-intersections/i);
+    });
+
+    it('should throw an error for invalid geometry', () => {
+        const coords: Position[][][] = [
+            [
+                [
+                    [-125, 49], [-125, 49], [-125, 49], [-125, 49], [-125, 49] // all points same
+                ]
+            ]
+        ];
+        expect(() => service.validateMultiPolygon(coords)).toThrowError(/Invalid geometry/i);
+    });
+
+    it('should log and rethrow errors', () => {
+        const coords: any = 'not even remotely valid';
+        spyOn(console, 'error');
+        expect(() => service.validateMultiPolygon(coords)).toThrow();
+        expect(console.error).toHaveBeenCalled();
+    });
+});
 });

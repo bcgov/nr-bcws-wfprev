@@ -10,6 +10,7 @@ import { AttachmentService } from 'src/app/services/attachment-service';
 import { ProjectService } from 'src/app/services/project-services';
 import { SpatialService } from 'src/app/services/spatial-services';
 import { ProjectFilesComponent } from './project-files.component';
+import { Position } from 'geojson';
 
 describe('ProjectFilesComponent', () => {
   let component: ProjectFilesComponent;
@@ -259,7 +260,13 @@ describe('ProjectFilesComponent', () => {
       const mockFile = new File(['content'], 'test-file.txt', { type: 'text/plain' });
       const response = { fileId: 'test-file-id' };
       const attachmentResponse = { uploadedByUserId: 'test-user' };
-      const coordinates = [[123, 456]];
+      const coordinates: Position[][][] = [
+        [
+          [
+            [123, 456]
+          ]
+        ]
+      ];
 
       mockAttachmentService.createProjectAttachment.and.returnValue(of(attachmentResponse));
       mockSpatialService.extractCoordinates.and.returnValue(Promise.resolve(coordinates));
@@ -308,7 +315,13 @@ describe('ProjectFilesComponent', () => {
   describe('updateProjectBoundary', () => {
     it('should create project boundary successfully', () => {
       const mockFile = new File(['content'], 'test-file.txt', { type: 'text/plain' });
-      const coordinates = [[123, 456]];
+      const coordinates: Position[][][] = [
+        [
+          [
+            [123, 456]
+          ]
+        ]
+      ];
       component.uploadedBy = 'test-user';
 
       mockProjectService.createProjectBoundary.and.returnValue(of({ success: true }));
@@ -336,7 +349,13 @@ describe('ProjectFilesComponent', () => {
 
     it('should handle boundary creation error', () => {
       const mockFile = new File(['content'], 'test-file.txt', { type: 'text/plain' });
-      const coordinates = [[123, 456]];
+      const coordinates: Position[][][] = [
+        [
+          [
+            [123, 456]
+          ]
+        ]
+      ];
 
       mockProjectService.createProjectBoundary.and.returnValue(
         throwError(() => new Error('Failed to create boundary'))

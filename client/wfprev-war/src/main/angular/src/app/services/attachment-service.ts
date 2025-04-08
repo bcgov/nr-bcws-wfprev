@@ -21,7 +21,6 @@ export class AttachmentService {
     createProjectAttachment(projectGuid: string, attachment: FileAttachment): Observable<any> {
         const baseUrl = `${this.appConfigService.getConfig().rest['wfprev']}/wfprev-api/projects`;
         const url = `${baseUrl}/${projectGuid}/attachments`;
-        console.log(attachment)
         return this.httpClient.post<any>(
             url,
             attachment,
@@ -49,7 +48,7 @@ export class AttachmentService {
         }).pipe(
             map((response: any) => response),
             catchError((error) => {
-                console.error("Error fetching project boundaries", error);
+                console.error("Error fetching project attachments", error);
                 return throwError(() => new Error("Failed to fetch project attachments"));
             })
         );
@@ -66,8 +65,8 @@ export class AttachmentService {
         }).pipe(
             map((response: any) => response),
             catchError((error) => {
-                console.error("Error fetching project boundaries", error);
-                return throwError(() => new Error("Failed to fetch project attachments"));
+                console.error("Error deleting project attachment", error);
+                return throwError(() => new Error("Failed to delete project attachment"));
             })
         );
     }

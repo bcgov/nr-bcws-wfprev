@@ -158,7 +158,7 @@ describe('AttachmentService', () => {
         service.deleteProjectAttachment(projectGuid, attachmentGuid).subscribe({
             next: () => fail('Expected an error'),
             error: (error) => {
-                expect(error.message).toBe('Failed to fetch project attachments');
+                expect(error.message).toBe('Failed to delete project attachment');
             }
         });
     

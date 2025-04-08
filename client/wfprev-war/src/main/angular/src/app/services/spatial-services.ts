@@ -7,7 +7,7 @@ import { BlobReader, ZipReader } from '@zip.js/zip.js';
 import { Geometry, Position } from 'geojson';
 import { catchError, lastValueFrom, map, Observable, of, throwError } from "rxjs";
 import * as shp from 'shpjs';
-type CoordinateTypes = Position | Position[] | Position[][] | Position[][][];
+export type CoordinateTypes = Position | Position[] | Position[][] | Position[][][];
 
 @Injectable({
     providedIn: 'root',
@@ -258,13 +258,13 @@ export class SpatialService {
         );
     }
 
-    public async extractCoordinates(file: File): Promise<number[][]> {
+    public async extractCoordinates(file: File): Promise<Position[][][]> {
         const fileType = file.name.split('.').pop()?.toLowerCase();
         if (!fileType) return [];
 
         try {
             if (fileType === 'kml') {
-                return this.extractKMLCoordinates(await file.text()) as unknown as number[][];
+                return this.extractKMLCoordinates(await file.text());
             }
 
             if (['zip', 'gdb'].includes(fileType)) {
@@ -279,13 +279,13 @@ export class SpatialService {
         }
     }
 
-    public async handleCompressedFile(file: File): Promise<number[][]> {
+    public async handleCompressedFile(file: File): Promise<Position[][][]> {
         const zipReader = new ZipReader(new BlobReader(file));
         try {
             const entries = await zipReader.getEntries();
 
             if (this.hasSHPEntry(entries)) {
-                return await this.extractSHPCoordinates(file) as unknown as number[][];
+                return await this.extractSHPCoordinates(file);
             }
 
             if (this.hasGDBEntries(entries)) {
@@ -308,7 +308,7 @@ export class SpatialService {
         return entries.some(entry => entry.filename.includes('.gdbtable'));
     }
 
-    private async handleGDB(file: File): Promise<number[][]> {
+    private async handleGDB(file: File): Promise<Position[][][]> {
         try {
             const geojsonData = await lastValueFrom(
                 this.extractGDBGeometry(file).pipe(
@@ -383,11 +383,29 @@ export class SpatialService {
                 throw new Error('Invalid geometry: Other topology errors detected in multipolygon');
             }
 
-            console.log('MultiPolygon validation passed - no self-intersections detected');
+            // const britishColumbiaBoundary = this.getBritishColumbiaGeoJSON(); 
+            // const isInBC = turf.booleanWithin(multiPolygon, britishColumbiaBoundary);
+    
+            // if (!isInBC) {
+            //     throw new Error('The MultiPolygon is not fully within British Columbia');
+            // }
 
         } catch (error) {
             console.error('Validation error:', error);
             throw error;
         }
+    }
+
+    getBritishColumbiaGeoJSON(): GeoJSON.Polygon {
+        return {
+            type: "Polygon",
+            coordinates: [[
+                [-139.05, 60.00],
+                [-114.05, 60.00],
+                [-114.05, 48.30],
+                [-139.05, 48.30],
+                [-139.05, 60.00] 
+            ]]
+        };
     }
 }

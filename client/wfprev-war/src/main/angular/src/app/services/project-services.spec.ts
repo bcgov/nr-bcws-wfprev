@@ -6,6 +6,7 @@ import { Project, ProjectBoundary } from 'src/app/components/models';
 import { ProjectService } from 'src/app/services/project-services';
 import { HttpEventType } from '@angular/common/http';
 import { of } from 'rxjs';
+import { Position } from 'geojson';
 
 describe('ProjectService', () => {
   let service: ProjectService;
@@ -24,9 +25,9 @@ describe('ProjectService', () => {
       localStorageTokenKey: 'oauth',
       allowLocalExpiredToken: false,
       baseUrl: 'http://mock-base-url.com',
-      acronym: 'TEST', // Add a mock acronym
-      version: '1.0.0', // Add a mock version
-      environment: 'test', // Add a mock environment
+      acronym: 'TEST', 
+      version: '1.0.0', 
+      environment: 'test', 
     },
     webade: {
       oauth2Url: 'http://mock-oauth-url.com',
@@ -46,10 +47,16 @@ describe('ProjectService', () => {
     boundarySizeHa: 100,
     boundaryGeometry: {
       type: "MultiPolygon",
-      coordinates:
-        [
-          [-124, 49], [-125, 50], [-126, 49], [-124, 49]
-        ],
+      coordinates: [
+        [ 
+          [ 
+            [-124, 49],
+            [-125, 50],
+            [-126, 49],
+            [-124, 49], 
+          ]
+        ]
+      ] as Position[][][]   
     },
     locationGeometry: [-124, 49],
   };
