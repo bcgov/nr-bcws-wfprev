@@ -1,3 +1,5 @@
+import { Position } from 'geojson';
+
 export interface Project {
   bcParksRegionOrgUnitId: number;
   bcParksSectionOrgUnitId: number;
@@ -41,7 +43,7 @@ export interface Project {
   secondaryObjectiveTypeCode?: {
     objectiveTypeCode: string;
   }
-  secondaryObjectiveRationale? :string;
+  secondaryObjectiveRationale?: string;
 }
 
 export interface ProjectFiscal {
@@ -105,3 +107,52 @@ export interface ActivityModel {
   isSpatialAddedInd?: boolean;
   createDate?: string; // ISO 8601 format, e.g., "2025-02-06T23:56:53.663+00:00"
 }
+
+export interface FileAttachment {
+  fileAttachmentGuid?: string;
+  sourceObjectNameCode?: {
+    sourceObjectNameCode: string;
+  };
+  sourceObjectUniqueId?: string;
+  documentPath?: string;
+  fileIdentifier?: string;
+  wildfireYear?: number;
+  attachmentContentTypeCode?: {
+    attachmentContentTypeCode: string;
+  };
+  attachmentDescription?: string;
+  attachmentReadOnlyInd: boolean;
+  createDate?: string;
+}
+
+export interface ProjectBoundary {
+  projectGuid?: string;
+  systemStartTimestamp?: string;
+  systemEndTimestamp?: string;
+  mappingLabel?: string;
+  collectionDate?: string;
+  collectionMethod?: string;
+  collectorName?: string;
+  boundarySizeHa?: number;
+  boundaryComment?: string;
+  boundaryGeometry?: Geometry;
+  locationGeometry?: [number, number];
+}
+
+export interface Geometry {
+  type?: "MultiPolygon";
+  coordinates?: Position[][][];
+}
+
+export interface ProjectFile {
+  fileAttachmentGuid?: string,
+  attachmentType?: string,
+  fileName?: string,
+  fileType?: string,
+  uploadedBy?: string,
+  uploadedDate?: string,
+  polygonHectares?: string,
+  description?: string,
+}
+
+
