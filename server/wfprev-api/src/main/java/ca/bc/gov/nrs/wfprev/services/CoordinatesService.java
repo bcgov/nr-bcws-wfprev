@@ -74,7 +74,10 @@ public class CoordinatesService implements CommonService {
             project.setLatitude(latitude.scale() > 7 ? latitude.setScale(7, RoundingMode.HALF_UP) : latitude);
             project.setLongitude(longitude.scale() > 7 ? longitude.setScale(7, RoundingMode.HALF_UP) : longitude);
             projectService.updateProject(project);
-        } else {
+        } else if (project != null && allMultiPolygons.isEmpty()){
+            log.info("No polygons found for project while attempting to update coordinates");
+        }
+        else {
             throw new EntityNotFoundException("Project could not be found while attempting to update coordinates");
         }
     }
