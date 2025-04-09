@@ -107,6 +107,26 @@ class CoordinatesServiceTest {
         CoordinatesService spyService = spy(coordinatesService);
         doReturn(Collections.emptyList()).when(spyService).getAllPolygonsForProject(projectGuid);
 
+        // Act
+        spyService.updateProjectCoordinates(projectGuid);
+
+        // Verify the updateProject method was NOT called
+        verify(projectService, never()).updateProject(any(ProjectModel.class));
+    }
+
+    @Test
+    void testUpdateProjectCoordinates_NoProject() {
+        // Arrange
+        String projectGuid = UUID.randomUUID().toString();
+
+        ProjectModel projectModel = new ProjectModel();
+        projectModel.setProjectGuid(projectGuid);
+
+        when(projectService.getProjectById(projectGuid)).thenReturn(null);
+
+        CoordinatesService spyService = spy(coordinatesService);
+        doReturn(Collections.emptyList()).when(spyService).getAllPolygonsForProject(projectGuid);
+
         // Act & Assert
         assertThrows(EntityNotFoundException.class, () -> {
             spyService.updateProjectCoordinates(projectGuid);
