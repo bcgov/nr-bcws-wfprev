@@ -24,6 +24,7 @@ env:
   TG_SRC_PATH: terraform
   TFC_PROJECT: ${{ secrets.TFC_PROJECT }} 
   TARGET_ENV: ${{ inputs.DEFAULT_APPLICATION_ENVIRONMENT }}
+  NPMRC: ${{ secrets.NPMRC }}
 
 jobs:
   build-and-deploy:
