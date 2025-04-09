@@ -1,5 +1,4 @@
 //NOTE: US certificate is needed for cloudfront
-
 resource "aws_acm_certificate" "wfprev_domain_certificate" {
   domain_name       = data.aws_route53_zone.wfprev_route53_zone.name
   validation_method = "DNS"
