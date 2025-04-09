@@ -218,6 +218,7 @@ public class ActivityBoundaryController extends CommonController {
 
         try {
             activityBoundaryService.deleteActivityBoundary(projectGuid, projectPlanFiscalGuid, activityGuid, id);
+            coordinatesService.updateProjectCoordinates(projectGuid);
             return ResponseEntity.noContent().build();
         } catch (EntityNotFoundException e) {
             log.warn(" ### Activity Boundary for deletion not found: {}", id, e);

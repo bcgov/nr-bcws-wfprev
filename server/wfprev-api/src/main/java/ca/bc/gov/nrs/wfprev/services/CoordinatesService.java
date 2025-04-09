@@ -8,6 +8,11 @@ import ca.bc.gov.nrs.wfprev.data.models.ProjectFiscalModel;
 import ca.bc.gov.nrs.wfprev.data.models.ProjectModel;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryCollection;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.MultiPolygon;
+import org.locationtech.jts.geom.Point;
 import org.postgresql.geometric.PGpoint;
 import org.postgresql.geometric.PGpolygon;
 import org.springframework.hateoas.CollectionModel;
@@ -43,14 +48,28 @@ public class CoordinatesService implements CommonService {
 
     public void updateProjectCoordinates(String projectGuid) {
         ProjectModel project = projectService.getProjectById(projectGuid);
-        List<PGpolygon> allPolygons = getAllPolygonsForProject(projectGuid);
+        List<MultiPolygon> allMultiPolygons = getAllPolygonsForProject(projectGuid);
 
-        if (project != null && !allPolygons.isEmpty()) {
+        if (project != null && !allMultiPolygons.isEmpty()) {
 
-            PGpoint centroid = calculateCentroid(allPolygons);
+            // Get the GeometryFactory from the first polygon
+            // (We're just borrowing the factory, not limiting which polygons are included)
+            GeometryFactory factory = allMultiPolygons.getFirst().getFactory();
 
-            BigDecimal latitude = BigDecimal.valueOf(centroid.y);
-            BigDecimal longitude = BigDecimal.valueOf(centroid.x);
+            // Convert the entire list of MultiPolygons to an array of Geometry objects
+            // toArray(new Geometry[0]) converts all MultiPolygons in the list, not just the first one
+            // The empty array is just used as a type hint for Java's generic system
+            Geometry[] geometryArray = allMultiPolygons.toArray(new Geometry[0]);
+
+            // Create a GeometryCollection containing all MultiPolygons from the list
+            // This collection now includes every MultiPolygon, not just the first one
+            GeometryCollection collection = factory.createGeometryCollection(geometryArray);
+
+            // Get the centroid of the entire collection
+            Point overallCentroid = collection.getCentroid();
+
+            BigDecimal latitude = BigDecimal.valueOf(overallCentroid.getY());
+            BigDecimal longitude = BigDecimal.valueOf(overallCentroid.getX());
 
             project.setLatitude(latitude.scale() > 7 ? latitude.setScale(7, RoundingMode.HALF_UP) : latitude);
             project.setLongitude(longitude.scale() > 7 ? longitude.setScale(7, RoundingMode.HALF_UP) : longitude);
@@ -60,41 +79,8 @@ public class CoordinatesService implements CommonService {
         }
     }
 
-    public PGpoint calculateCentroid(List<PGpolygon> polygons) {
-        // Initialize variables for centroid calculation
-        double totalX = 0;
-        double totalY = 0;
-        int totalPoints = 0;
-
-        // Iterate through all polygons
-        for (PGpolygon polygon : polygons) {
-            if (polygon.points == null) {
-                continue; // Skip empty polygons
-            }
-
-            // Sum up all points' coordinates
-            for (PGpoint point : polygon.points) {
-                totalX += point.x;
-                totalY += point.y;
-                totalPoints++;
-            }
-        }
-
-        // Check if any points were processed
-        if (totalPoints == 0) {
-            throw new IllegalArgumentException("No points found in the polygons.");
-        }
-
-        // Calculate the average of all points
-        double centroidX = totalX / totalPoints;
-        double centroidY = totalY / totalPoints;
-
-        return new PGpoint(centroidX, centroidY);
-
-    }
-
-    public List<PGpolygon> getAllPolygonsForProject(String projectGuid) {
-        List<PGpolygon> polygons = new ArrayList<>();
+    public List<MultiPolygon> getAllPolygonsForProject(String projectGuid) {
+        List<MultiPolygon> polygons = new ArrayList<>();
         CollectionModel<ProjectBoundaryModel> projectBoundaries = projectBoundaryService.getAllProjectBoundaries(projectGuid);
 
         for (ProjectBoundaryModel projectBoundary : projectBoundaries) {

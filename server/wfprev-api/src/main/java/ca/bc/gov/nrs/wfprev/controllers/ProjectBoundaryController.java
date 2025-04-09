@@ -198,6 +198,7 @@ public class ProjectBoundaryController extends CommonController {
 
         try {
             projectBoundaryService.deleteProjectBoundary(projectGuid, id);
+            coordinatesService.updateProjectCoordinates(projectGuid);
             return ResponseEntity.noContent().build();
         } catch (Exception e) {
             log.error(" ### Error while deleting Project Boundary", e);
