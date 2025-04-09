@@ -1,10 +1,10 @@
+import { HttpClient, HttpHandler, HttpHeaders } from "@angular/common/http";
 import { Injectable, Injector } from "@angular/core";
-import { HttpClient, HttpErrorResponse, HttpHandler, HttpHeaders } from "@angular/common/http";
+import { MatSnackBar } from "@angular/material/snack-bar";
 import { OAuthService } from "angular-oauth2-oidc";
 import momentInstance from "moment";
 import { AsyncSubject, Observable, catchError, firstValueFrom, map, of } from "rxjs";
 import { AppConfigService } from "./app-config.service";
-import { MatSnackBar } from "@angular/material/snack-bar";
 
 const moment = momentInstance;
 const OAUTH_LOCAL_STORAGE_KEY = 'oauth';
@@ -150,7 +150,7 @@ export class TokenService {
     }
   }
 
-  public validateToken(token: string): Observable<boolean> {
+  public validateToken(token: string): Observable<any> {
     const http = new HttpClient(this.injector.get(HttpHandler));
     const config = this.appConfigService.getConfig();
     const checkTokenUrl = config.webade.checkTokenUrl ? config.webade.checkTokenUrl : "null";
@@ -166,7 +166,7 @@ export class TokenService {
         observe: 'response'
       }
     ).pipe(
-      map(response => response.status === 200),
+      map(response => response.body),
       catchError(() => of(false))
     );
 

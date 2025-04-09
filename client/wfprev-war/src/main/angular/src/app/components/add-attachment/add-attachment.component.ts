@@ -60,4 +60,15 @@ export class AddAttachmentComponent {
   getFileName(): string {
     return this.selectedFileName || 'No File Chosen';
   }
+
+  getAcceptedFileTypes(): string {
+    switch (this.attachmentType) {
+      case 'Gross Project Area Boundary':
+        return '.kml,.kmz,.shp,.gdb,.zip';
+      case 'Other':
+        return '.pdf,.doc,.docx,.jpg,.png';
+      default:
+        return '';
+    }
+  }
 }

@@ -2,9 +2,6 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { AddAttachmentComponent } from './add-attachment.component';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { TokenService } from 'src/app/services/token.service';
-import { FormsModule } from '@angular/forms';
-import { MatInputModule } from '@angular/material/input';
-import { CommonModule } from '@angular/common';
 
 describe('AddAttachmentComponent', () => {
   let component: AddAttachmentComponent;
@@ -17,7 +14,7 @@ describe('AddAttachmentComponent', () => {
     mockTokenService = jasmine.createSpyObj('TokenService', ['getToken']);
 
     await TestBed.configureTestingModule({
-      imports: [AddAttachmentComponent], // ✅ Use imports for standalone components
+      imports: [AddAttachmentComponent],
       providers: [
         { provide: MatDialogRef, useValue: mockDialogRef },
         { provide: TokenService, useValue: mockTokenService },
@@ -129,5 +126,23 @@ describe('AddAttachmentComponent', () => {
   it('should return selected file name if a file is chosen', () => {
     component.selectedFileName = 'test-file.txt';
     expect(component.getFileName()).toBe('test-file.txt');
+  });
+
+  it('should return correct file types for "Gross Project Area Boundary"', () => {
+    component.attachmentType = 'Gross Project Area Boundary';
+    const result = component.getAcceptedFileTypes();
+    expect(result).toBe('.kml,.kmz,.shp,.gdb,.zip');
+  });
+
+  it('should return correct file types for "Other"', () => {
+    component.attachmentType = 'Other';
+    const result = component.getAcceptedFileTypes();
+    expect(result).toBe('.pdf,.doc,.docx,.jpg,.png');
+  });
+
+  it('should return an empty string for unknown attachmentType', () => {
+    component.attachmentType = 'Unknown';
+    const result = component.getAcceptedFileTypes();
+    expect(result).toBe('');
   });
 });
