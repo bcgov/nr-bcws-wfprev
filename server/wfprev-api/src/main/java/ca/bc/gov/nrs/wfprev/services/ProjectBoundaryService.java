@@ -14,6 +14,9 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validator;
 import lombok.extern.slf4j.Slf4j;
+import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.operation.TransformException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.stereotype.Component;
 
@@ -22,6 +25,13 @@ import java.text.MessageFormat;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+
+import org.locationtech.jts.geom.MultiPolygon;
+import org.locationtech.jts.geom.Geometry;
+import org.geotools.referencing.CRS;
+import org.geotools.geometry.jts.JTS;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.opengis.referencing.operation.MathTransform;
 
 @Slf4j
 @Component
@@ -197,10 +207,35 @@ public class ProjectBoundaryService implements CommonService {
 
   private ProjectBoundaryModel updateFieldsFromBoundaryGeometry(ProjectBoundaryModel model) {
     if(model.getBoundaryGeometry() != null) {
-      model.setBoundarySizeHa(BigDecimal.valueOf(model.getBoundaryGeometry().getArea() / 10000.0));
+      model.setBoundarySizeHa(BigDecimal.valueOf(getAreaInHectares(model.getBoundaryGeometry())));
       if(model.getLocationGeometry() == null) {
         model.setLocationGeometry(model.getBoundaryGeometry().getCentroid());
       }
     } return model;
+  }
+
+  public double getAreaInHectares(MultiPolygon multiPolygon) {
+    try {
+      // Get the source CRS (WGS84)
+      CoordinateReferenceSystem sourceCRS = CRS.decode("EPSG:4326");
+
+      // decode as BC Albers
+      CoordinateReferenceSystem targetCRS = CRS.decode("EPSG:3005");
+
+      // Create transform from geographic to projected
+      MathTransform transform = CRS.findMathTransform(sourceCRS, targetCRS, true);
+
+      // Transform the geometry
+      Geometry projectedGeom = JTS.transform(multiPolygon, transform);
+
+      // Calculate area in square meters
+      double areaInSquareMeters = projectedGeom.getArea();
+
+      // Convert to hectares (1 hectare = 10,000 square meters)
+      return areaInSquareMeters / 10000.0;
+
+    } catch (FactoryException | TransformException e) {
+      throw new DataIntegrityViolationException(e.getMessage());
+    }
   }
 }

@@ -13,6 +13,15 @@
     <groupId>ca.bc.gov.nrs.wfprev</groupId>
     <artifactId>wfprev-api</artifactId>
     <version>1.0.0-SNAPSHOT</version>
+    <repositories>
+        <repository>
+            <id>osgeo</id>
+            <name>OSGeo Release Repository</name>
+            <url>https://repo.osgeo.org/repository/release/</url>
+            <snapshots><enabled>false</enabled></snapshots>
+            <releases><enabled>true</enabled></releases>
+        </repository>
+    </repositories>
     <packaging>jar</packaging>
     <name>wfprev-api</name>
     <url/>
@@ -221,6 +230,23 @@
             <groupId>org.n52.jackson</groupId>
             <artifactId>jackson-datatype-jts</artifactId>
             <version>2.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.geotools</groupId>
+            <artifactId>gt-main</artifactId>
+            <version>25.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.geotools</groupId>
+            <artifactId>gt-epsg-hsql</artifactId>
+            <version>25.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.geotools</groupId>
+            <artifactId>gt-referencing</artifactId>
+            <version>25.0</version>
         </dependency>
     </dependencies>
 
