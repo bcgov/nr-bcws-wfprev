@@ -4,6 +4,7 @@ import ca.bc.gov.nrs.common.wfone.rest.resource.HeaderConstants;
 import ca.bc.gov.nrs.common.wfone.rest.resource.MessageListRsrc;
 import ca.bc.gov.nrs.wfprev.common.controllers.CommonController;
 import ca.bc.gov.nrs.wfprev.data.models.ProjectBoundaryModel;
+import ca.bc.gov.nrs.wfprev.services.CoordinatesService;
 import ca.bc.gov.nrs.wfprev.services.ProjectBoundaryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -37,10 +38,12 @@ import java.util.Date;
 @RequestMapping(value = "/projects/{projectGuid}/projectBoundary")
 public class ProjectBoundaryController extends CommonController {
     private final ProjectBoundaryService projectBoundaryService;
+    private final CoordinatesService coordinatesService;
 
-    public ProjectBoundaryController(ProjectBoundaryService projectBoundaryService) {
+    public ProjectBoundaryController(ProjectBoundaryService projectBoundaryService, CoordinatesService coordinatesService) {
         super(ProjectBoundaryController.class.getName());
         this.projectBoundaryService = projectBoundaryService;
+        this.coordinatesService = coordinatesService;
     }
 
     @GetMapping
@@ -129,6 +132,8 @@ public class ProjectBoundaryController extends CommonController {
             resource.setRevisionCount(0);
 
             ProjectBoundaryModel newResource = projectBoundaryService.createOrUpdateProjectBoundary(projectGuid, resource);
+            coordinatesService.updateProjectCoordinates(projectGuid);
+
             return ResponseEntity.status(201).body(newResource);
         } catch (DataIntegrityViolationException e) {
             log.error(" ### DataIntegrityViolationException while creating Project Boundary", e);
@@ -163,6 +168,8 @@ public class ProjectBoundaryController extends CommonController {
 
             ProjectBoundaryModel updatedResource = projectBoundaryService.updateProjectBoundary(
                     projectGuid, resource);
+            coordinatesService.updateProjectCoordinates(projectGuid);
+
             return updatedResource == null ? notFound() : ok(updatedResource);
         } catch (DataIntegrityViolationException e) {
             log.error(" ### DataIntegrityViolationException while updating Project Boundary", e);
@@ -191,6 +198,7 @@ public class ProjectBoundaryController extends CommonController {
 
         try {
             projectBoundaryService.deleteProjectBoundary(projectGuid, id);
+            coordinatesService.updateProjectCoordinates(projectGuid);
             return ResponseEntity.noContent().build();
         } catch (Exception e) {
             log.error(" ### Error while deleting Project Boundary", e);

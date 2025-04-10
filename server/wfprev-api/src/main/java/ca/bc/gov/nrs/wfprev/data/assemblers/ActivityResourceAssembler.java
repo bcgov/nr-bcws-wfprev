@@ -169,18 +169,9 @@ public class ActivityResourceAssembler extends RepresentationModelAssemblerSuppo
                 toActivityStatusCodeEntity(model.getActivityStatusCode()),
                 existingEntity.getActivityStatusCode()
         ));
-        entity.setSilvicultureBaseGuid(nonNullOrDefault(
-                model.getSilvicultureBaseGuid() != null ? UUID.fromString(model.getSilvicultureBaseGuid()) : null,
-                existingEntity.getSilvicultureBaseGuid()
-        ));
-        entity.setSilvicultureTechniqueGuid(nonNullOrDefault(
-                model.getSilvicultureTechniqueGuid() != null ? UUID.fromString(model.getSilvicultureTechniqueGuid()) : null,
-                existingEntity.getSilvicultureTechniqueGuid()
-        ));
-        entity.setSilvicultureMethodGuid(nonNullOrDefault(
-                model.getSilvicultureMethodGuid() != null ? UUID.fromString(model.getSilvicultureMethodGuid()) : null,
-                existingEntity.getSilvicultureMethodGuid()
-        ));
+        entity.setSilvicultureBaseGuid(model.getSilvicultureBaseGuid() != null ? UUID.fromString(model.getSilvicultureBaseGuid()) : null);
+        entity.setSilvicultureTechniqueGuid(model.getSilvicultureTechniqueGuid() != null ? UUID.fromString(model.getSilvicultureTechniqueGuid()) : null);
+        entity.setSilvicultureMethodGuid(model.getSilvicultureMethodGuid() != null ? UUID.fromString(model.getSilvicultureMethodGuid()) : null);
         entity.setRiskRatingCode(nonNullOrDefault(
                 toRiskRatingCodeEntity(model.getRiskRatingCode()),
                 existingEntity.getRiskRatingCode()
