@@ -389,7 +389,6 @@ describe('ProjectFilesComponent', () => {
         systemStartTimestamp: new Date().toISOString()
       };
   
-      // ✅ Just assign returnValue directly instead of spyOn again
       mockDialog.open.and.returnValue({
         afterClosed: () => of(true)
       } as any);

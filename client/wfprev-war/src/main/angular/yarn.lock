@@ -11865,7 +11865,6 @@ websocket-extensions@>=0.1.1:
     "@angular/platform-browser-dynamic" "18.2.3"
     "@angular/router" "18.2.3"
     "@bcgov/smk" "1.2.3"
-    "@capacitor/angular" "^2.0.3"
     "@tmcw/togeojson" "7.0.0"
     "@turf/turf" "7.2.0"
     "@types/leaflet" "1.9.12"

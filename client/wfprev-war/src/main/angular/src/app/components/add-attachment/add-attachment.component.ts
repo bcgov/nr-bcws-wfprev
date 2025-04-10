@@ -25,6 +25,7 @@ export class AddAttachmentComponent {
     private readonly dialogRef: MatDialogRef<AddAttachmentComponent>,
     @Inject(MAT_DIALOG_DATA) public data: { indicator: string; name: string }
   ) {
+    // only show Gross Project Area Boundary as a dropdown option if project boundary is being updated
     const isProjectFiles = data.indicator === 'project-files';
 
     this.attachmentTypes = isProjectFiles

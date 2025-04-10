@@ -142,7 +142,6 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
   }
 
   onFilesUpdated(): void {
-    // You can call a method to fetch new geometry, re-center the map, etc.
     this.loadProjectDetails();
   }
   
