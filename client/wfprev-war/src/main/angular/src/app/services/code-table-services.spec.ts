@@ -157,4 +157,26 @@ describe('CodeTableServices', () => {
     const req = httpMock.expectOne(expectedUrl);
     req.flush('Error', { status: 500, statusText: 'Server Error' });
   });
+
+  it('should return cached fire centres if already fetched', () => {
+    const cachedFireCentres = {
+      type: 'FeatureCollection',
+      features: [{ id: 99, properties: { name: 'Cached Centre' } }]
+    };
+  
+    // Manually set the cache
+    (service as any).fireCentresCache = cachedFireCentres;
+  
+    service.fetchFireCentres().subscribe((response) => {
+      expect(response).toEqual(cachedFireCentres);
+    });
+  
+    // Assert that no HTTP request was made
+    httpMock.expectNone(
+      'http://mock-api.com/geo/pub/WHSE_LEGAL_ADMIN_BOUNDARIES.DRP_MOF_FIRE_CENTRES_SP/ows' +
+      '?service=WFS&version=1.1.0&request=GetFeature&srsName=EPSG:4326' +
+      '&typename=pub:WHSE_LEGAL_ADMIN_BOUNDARIES.DRP_MOF_FIRE_CENTRES_SP' +
+      '&outputformat=application/json&propertyName=(MOF_FIRE_CENTRE_ID,MOF_FIRE_CENTRE_NAME)'
+    );
+  });
 });

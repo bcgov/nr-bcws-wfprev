@@ -632,7 +632,28 @@ describe('ProjectDetailsComponent', () => {
         })
       );
     });
+    describe('refreshFiscalData Method', () => {
+      it('should call loadProjectFiscals on FiscalYearProjectsComponent', () => {
+        // Arrange
+        component.fiscalYearProjectsComponent = {
+          loadProjectFiscals: jasmine.createSpy('loadProjectFiscals')
+        } as any;
     
+        // Act
+        component.refreshFiscalData();
+    
+        // Assert
+        expect(component.fiscalYearProjectsComponent.loadProjectFiscals).toHaveBeenCalled();
+      });
+    
+      it('should not throw if fiscalYearProjectsComponent is undefined', () => {
+        // Arrange
+        component.fiscalYearProjectsComponent = undefined!;
+    
+        // Act
+        expect(() => component.refreshFiscalData()).not.toThrow();
+      });
+    });
 
   });
 });
