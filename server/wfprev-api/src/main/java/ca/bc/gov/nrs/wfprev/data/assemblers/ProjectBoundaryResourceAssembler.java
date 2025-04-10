@@ -105,7 +105,7 @@ public class ProjectBoundaryResourceAssembler extends RepresentationModelAssembl
         entity.setCollectorName(nonNullOrDefault(model.getCollectorName(), existingEntity.getCollectorName()));
         entity.setBoundarySizeHa(nonNullOrDefault(model.getBoundarySizeHa(), existingEntity.getBoundarySizeHa()));
         entity.setBoundaryComment(nonNullOrDefault(model.getBoundaryComment(), existingEntity.getBoundaryComment()));
-        entity.setRevisionCount(nonNullOrDefault(model.getRevisionCount(), existingEntity.getRevisionCount()));
+        entity.setRevisionCount(existingEntity.getRevisionCount());
         entity.setBoundaryGeometry(nonNullOrDefault(model.getBoundaryGeometry(), existingEntity.getBoundaryGeometry()));
         entity.setLocationGeometry(nonNullOrDefault(model.getLocationGeometry(), existingEntity.getLocationGeometry()));
         entity.setCreateUser(existingEntity.getCreateUser());

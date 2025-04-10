@@ -1,35 +1,40 @@
 import { HttpClient, HttpRequest, HttpHeaders, HttpEventType, HttpResponse } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { UUID } from "angular2-uuid";
-import { catchError, map, Observable,throwError } from "rxjs";
-import { Project, ProjectFiscal } from "src/app/components/models";
+import { catchError, map, Observable, throwError } from "rxjs";
+import { Project, ProjectBoundary, ProjectFiscal } from "src/app/components/models";
 import { AppConfigService } from "src/app/services/app-config.service";
 import { TokenService } from "src/app/services/token.service";
 
-export const UPLOAD_DIRECTORY = '/WFPREV/uploads';
+export const UPLOAD_DIRECTORY = '/WFPREV_TEMP/uploads';
 
 @Injectable({
     providedIn: 'root',
-  })
+})
 
 export class ProjectService {
+    userGuid: string | undefined;
+
     constructor(
         private readonly appConfigService: AppConfigService,
         private readonly httpClient: HttpClient,
         private readonly tokenService: TokenService,
-    ){
+    ) {
+        this.tokenService.credentialsEmitter.subscribe((cred) => {
+            this.userGuid = cred.userGuid ? cred.userGuid : cred.user_guid;
+        });
     }
 
     fetchProjects(): Observable<any> {
         const url = `${this.appConfigService.getConfig().rest['wfprev']
-        }/wfprev-api/projects`;
-    
+            }/wfprev-api/projects`;
+
         return this.httpClient.get(
             url, {
-                headers: {
-                    Authorization: `Bearer ${this.tokenService.getOauthToken()}`,
-                }
+            headers: {
+                Authorization: `Bearer ${this.tokenService.getOauthToken()}`,
             }
+        }
         ).pipe(
             map((response: any) => response),
             catchError((error) => {
@@ -55,7 +60,7 @@ export class ProjectService {
     getProjectByProjectGuid(projectGuid: string): Observable<any> {
         const baseUrl = `${this.appConfigService.getConfig().rest['wfprev']}/wfprev-api/projects`;
         const url = `${baseUrl}/${projectGuid}`;
-    
+
         return this.httpClient.get(url, {
             headers: {
                 Authorization: `Bearer ${this.tokenService.getOauthToken()}`,
@@ -69,10 +74,10 @@ export class ProjectService {
         );
     }
 
-    updateProject(projectGuid: string, projectData:Project): Observable<any> {
+    updateProject(projectGuid: string, projectData: Project): Observable<any> {
         const baseUrl = `${this.appConfigService.getConfig().rest['wfprev']}/wfprev-api/projects`;
         const url = `${baseUrl}/${projectGuid}`;
-        return this.httpClient.put(url, projectData,{
+        return this.httpClient.put(url, projectData, {
             headers: {
                 Authorization: `Bearer ${this.tokenService.getOauthToken()}`,
             }
@@ -88,7 +93,7 @@ export class ProjectService {
     getProjectFiscalsByProjectGuid(projectGuid: string): Observable<any> {
         const baseUrl = `${this.appConfigService.getConfig().rest['wfprev']}/wfprev-api/projects`;
         const url = `${baseUrl}/${projectGuid}/projectFiscals`;
-            
+
         return this.httpClient.get(url, {
             headers: {
                 Authorization: `Bearer ${this.tokenService.getOauthToken()}`,
@@ -124,7 +129,7 @@ export class ProjectService {
     updateProjectFiscal(projectGuid: string, projectPlanFiscalGuid: string, projectFiscal: ProjectFiscal): Observable<any> {
         const baseUrl = `${this.appConfigService.getConfig().rest['wfprev']}/wfprev-api/projects`;
         const url = `${baseUrl}/${projectGuid}/projectFiscals/${projectPlanFiscalGuid}`;
-        return this.httpClient.put(url, projectFiscal,{
+        return this.httpClient.put(url, projectFiscal, {
             headers: {
                 Authorization: `Bearer ${this.tokenService.getOauthToken()}`,
             }
@@ -140,7 +145,7 @@ export class ProjectService {
     deleteProjectFiscalByProjectPlanFiscalGuid(projectGuid: string, projectPlanFiscalGuid: string): Observable<any> {
         const baseUrl = `${this.appConfigService.getConfig().rest['wfprev']}/wfprev-api/projects`;
         const url = `${baseUrl}/${projectGuid}/projectFiscals/${projectPlanFiscalGuid}`;
-            
+
         return this.httpClient.delete(url, {
             headers: {
                 Authorization: `Bearer ${this.tokenService.getOauthToken()}`,
@@ -157,7 +162,7 @@ export class ProjectService {
     getFiscalActivities(projectGuid: string, projectPlanFiscalGuid: string): Observable<any> {
         const baseUrl = `${this.appConfigService.getConfig().rest['wfprev']}/wfprev-api/projects`;
         const url = `${baseUrl}/${projectGuid}/projectFiscals/${projectPlanFiscalGuid}/activities`;
-            
+
         return this.httpClient.get(url, {
             headers: {
                 Authorization: `Bearer ${this.tokenService.getOauthToken()}`,
@@ -174,14 +179,14 @@ export class ProjectService {
     updateFiscalActivities(projectGuid: string, projectPlanFiscalGuid: string, activityGuid: string, activities: any): Observable<any> {
         const baseUrl = `${this.appConfigService.getConfig().rest['wfprev']}/wfprev-api/projects`;
         const url = `${baseUrl}/${projectGuid}/projectFiscals/${projectPlanFiscalGuid}/activities/${activityGuid}`;
-        return this.httpClient.put(url,activities,{
+        return this.httpClient.put(url, activities, {
             headers: {
                 Authorization: `Bearer ${this.tokenService.getOauthToken()}`,
             }
-        }).pipe (
+        }).pipe(
             map((response: any) => response),
             catchError((error) => {
-                console.error("Error update activities",error);
+                console.error("Error update activities", error);
                 return throwError(() => new Error("Failed to update activities"))
             })
         )
@@ -190,14 +195,14 @@ export class ProjectService {
     createFiscalActivity(projectGuid: string, projectPlanFiscalGuid: string, activity: any): Observable<any> {
         const baseUrl = `${this.appConfigService.getConfig().rest['wfprev']}/wfprev-api/projects`;
         const url = `${baseUrl}/${projectGuid}/projectFiscals/${projectPlanFiscalGuid}/activities`;
-        return this.httpClient.post(url,activity,{
+        return this.httpClient.post(url, activity, {
             headers: {
                 Authorization: `Bearer ${this.tokenService.getOauthToken()}`,
             }
-        }).pipe (
+        }).pipe(
             map((response: any) => response),
             catchError((error) => {
-                console.error("Error create activities",error);
+                console.error("Error create activities", error);
                 return throwError(() => new Error("Failed to create activities"))
             })
         )
@@ -206,7 +211,7 @@ export class ProjectService {
     deleteActivity(projectGuid: string, projectPlanFiscalGuid: string, actiityGuid: string): Observable<any> {
         const baseUrl = `${this.appConfigService.getConfig().rest['wfprev']}/wfprev-api/projects`;
         const url = `${baseUrl}/${projectGuid}/projectFiscals/${projectPlanFiscalGuid}/activities/${actiityGuid}`;
-            
+
         return this.httpClient.delete(url, {
             headers: {
                 Authorization: `Bearer ${this.tokenService.getOauthToken()}`,
@@ -254,13 +259,12 @@ export class ProjectService {
         );
     }
 
-
     uploadDocument({
         file,
         fileName = file.name,
-        userId = 'idir/lli',
+        userId = this.userGuid,
         uploadDirectory = UPLOAD_DIRECTORY,
-        onProgress = () => {}
+        onProgress = () => { }
     }: {
         file: File;
         fileName?: string;
@@ -271,29 +275,39 @@ export class ProjectService {
         if (!file) {
             return throwError(() => new Error("No file provided for upload"));
         }
-    
+
         // Generate unique file path
         const uniqueFileName = `${UUID.UUID()}--${fileName}`;
         const filePath = `${uploadDirectory}/users/${userId}/${uniqueFileName}`;
-    
-        // Prepare metadata
+
+        // Detect if it's a KML file
+        const isKml = file.name.toLowerCase().endsWith('.kml');
+
+        // Manually set content type if it's missing or incorrect
+        const contentType = isKml
+            ? 'application/vnd.google-earth.kml+xml'
+            : file.type || 'application/octet-stream';
+
+        // Wrap the file in a Blob with correct content type
+        const typedFile = new Blob([file], { type: contentType });
+
+        // Update metadata
         const metadata = [
-            //API only supports http:// and does not work with https:// . Suppress the Sonar Warning for These Lines
-            { 
+            {
                 '@type': 'http://resources.wfdm.nrs.gov.bc.ca/fileMetadataResource', // NOSONAR
                 'type': 'http://resources.wfdm.nrs.gov.bc.ca/fileMetadataResource', // NOSONAR
                 'metadataName': 'actual-filename',
-                'metadataValue': file.name 
+                'metadataValue': file.name
             },
-            { 
+            {
                 '@type': 'http://resources.wfdm.nrs.gov.bc.ca/fileMetadataResource', // NOSONAR
                 'type': 'http://resources.wfdm.nrs.gov.bc.ca/fileMetadataResource', // NOSONAR
                 'metadataName': 'content-type',
-                'metadataValue': file.type 
+                'metadataValue': contentType
             }
         ];
-        
-    
+
+
         const fileDetails = {
             '@type': 'http://resources.wfdm.nrs.gov.bc.ca/fileDetails', // NOSONAR
             type: "http://resources.wfdm.nrs.gov.bc.ca/fileDetails", // NOSONAR
@@ -303,29 +317,30 @@ export class ProjectService {
             metadata: metadata,
             fileType: 'DOCUMENT'
         };
-    
+
         // Prepare FormData
         const formData = new FormData();
         formData.append(
             'resource',
             new Blob([JSON.stringify(fileDetails)], { type: 'application/json' })
         );
+        formData.append('file', typedFile, file.name);
         formData.append('file', file);
 
         const url = `${this.appConfigService.getConfig().rest['wfdm']}/documents`;
         const headers = new HttpHeaders({
             Authorization: `Bearer ${this.tokenService.getOauthToken()}`,
 
-          });
-    
+        });
+
         // Make HTTP POST request with progress tracking
         const req = new HttpRequest('POST', url, formData, {
             headers: headers,
             reportProgress: true,
             responseType: 'json'
-          });
-          
-    
+        });
+
+
         return this.httpClient.request(req).pipe(
             map((event) => {
                 if (event.type === HttpEventType.UploadProgress) {
@@ -343,5 +358,6 @@ export class ProjectService {
             })
         );
     }
-    
- }
+
+
+}
