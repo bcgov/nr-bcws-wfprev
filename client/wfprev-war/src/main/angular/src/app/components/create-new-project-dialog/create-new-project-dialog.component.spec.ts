@@ -23,7 +23,12 @@ describe('CreateNewProjectDialogComponent', () => {
     mockDialog = jasmine.createSpyObj('MatDialog', ['open']);
     mockDialogRef = jasmine.createSpyObj('MatDialogRef', ['close']);
     mockProjectService = jasmine.createSpyObj('ProjectService', ['createProject']);
-    mockCodeTableService = jasmine.createSpyObj('CodeTableServices', ['fetchCodeTable']);
+    mockCodeTableService = jasmine.createSpyObj('CodeTableServices', [
+      'fetchCodeTable',
+      'fetchFireCentres'
+    ]);
+    mockCodeTableService.fetchFireCentres.and.returnValue(of([{ name: 'Fire Centre 1' }]));
+
     mockSnackbarService = jasmine.createSpyObj('MatSnackBar', ['open']);
 
     mockCodeTableService.fetchCodeTable.and.callFake((name: string) => {
@@ -64,6 +69,7 @@ describe('CreateNewProjectDialogComponent', () => {
   it('should initialize the form with default values', () => {
     const formValues = component.projectForm.getRawValue();
     expect(formValues).toEqual({
+      projectType: '',
       projectName: '',
       latLong: '',
       businessArea: '',
@@ -71,6 +77,7 @@ describe('CreateNewProjectDialogComponent', () => {
       forestDistrict: '',
       bcParksRegion: '',
       bcParksSection: '',
+      fireCentre: '',
       projectLead: '',
       projectLeadEmail: '',
       siteUnitName: '',
@@ -142,12 +149,14 @@ describe('CreateNewProjectDialogComponent', () => {
   
     // Populate the form with valid values
     component.projectForm.patchValue({
+      projectType: 'FUEL_MGMT', // Required field
       projectName: 'New Project', // Required field
       businessArea: 'Area 1', // Required field
       forestRegion: 1, // Required field
       forestDistrict: 2, // Required field
       bcParksRegion: 3, // Required field
       bcParksSection: 4, // Required field
+      fireCentre: 5,// Required field
       projectLead: 'John Doe', // Optional field
       projectLeadEmail: 'john.doe@example.com', // Optional field
       siteUnitName: 'Unit 1', // Optional field
@@ -244,6 +253,7 @@ describe('CreateNewProjectDialogComponent', () => {
 
   it('should validate latLong and set latitude and longitude correctly', () => {
     component.projectForm.patchValue({
+      projectType: 'FUEL_MGMT',
       projectName: 'New Project',
       latLong: '48.484245, -123.332177',
       businessArea: 'Area 1',
@@ -251,6 +261,7 @@ describe('CreateNewProjectDialogComponent', () => {
       forestDistrict: 2,
       bcParksRegion: 3,
       bcParksSection: 4,
+      fireCentre: 5,
       projectLead: 'John Doe',
       projectLeadEmail: 'john.doe@example.com',
       siteUnitName: 'Unit 1',
@@ -272,12 +283,14 @@ describe('CreateNewProjectDialogComponent', () => {
   
   it('should show an error when latLong is outside BC boundaries', () => {
     component.projectForm.patchValue({
+      projectType: 'FUEL_MGMT',
       projectName: 'New Project',
       businessArea: 'Area 1',
       forestRegion: 1,
       forestDistrict: 2,
       bcParksRegion: 3,
       bcParksSection: 4,
+      fireCentre: 5,
       projectLead: 'John Doe',
       projectLeadEmail: 'john.doe@example.com',
       siteUnitName: 'Unit 1',
@@ -300,12 +313,14 @@ describe('CreateNewProjectDialogComponent', () => {
 
   it('should handle latLong with boundary values correctly', () => {
     component.projectForm.patchValue({
+      projectType: 'FUEL_MGMT',
       projectName: 'New Project',
       businessArea: 'Area 1',
       forestRegion: 1,
       forestDistrict: 2,
       bcParksRegion: 3,
       bcParksSection: 4,
+      fireCentre: 5,
       projectLead: 'John Doe',
       projectLeadEmail: 'john.doe@example.com',
       siteUnitName: 'Unit 1',
@@ -331,12 +346,14 @@ describe('CreateNewProjectDialogComponent', () => {
 
   it('should show an error when latLong is in an invalid format', () => {
     component.projectForm.patchValue({
+      projectType: 'FUEL_MGMT',
       projectName: 'New Project',
       businessArea: 'Area 1',
       forestRegion: 1,
       forestDistrict: 2,
       bcParksRegion: 3,
       bcParksSection: 4,
+      fireCentre: 5,
       projectLead: 'John Doe',
       projectLeadEmail: 'john.doe@example.com',
       siteUnitName: 'Unit 1',
@@ -379,12 +396,14 @@ describe('CreateNewProjectDialogComponent', () => {
 
   it('should create project with only required fields', () => {
     component.projectForm.patchValue({
+      projectType: 'FUEL_MGMT',
       projectName: 'Required Project',
       businessArea: 'Area 1',
       forestRegion: 1,
       forestDistrict: 2,
       bcParksRegion: 3,
       bcParksSection: 4,
+      fireCentre: 5,
       closestCommunity: 'Community 1',
       primaryObjective: 'WRR'
     });
@@ -452,12 +471,14 @@ describe('CreateNewProjectDialogComponent', () => {
   
     // Populate the form with valid values
     component.projectForm.patchValue({
+      projectType: 'FUEL_MGMT',
       projectName: 'New Project',
       businessArea: 'Area 1',
       forestRegion: 1,
       forestDistrict: 2,
       bcParksRegion: 3,
       bcParksSection: 4,
+      fireCentre: 5,
       projectLead: 'John Doe',
       projectLeadEmail: 'john.doe@example.com',
       siteUnitName: 'Unit 1',
@@ -518,4 +539,59 @@ describe('CreateNewProjectDialogComponent', () => {
     expect(bcParksRegionControl?.validator).toBeFalsy();
   });
 
+  it('should show required error for fireCentre when empty', () => {
+    const control = component.projectForm.get('fireCentre');
+    control?.setValue('');
+    control?.markAsTouched();
+    control?.updateValueAndValidity();
+  
+    expect(control?.hasError('required')).toBeTrue();
+  });
+
+  it('should set default projectType to FUEL_MGMT when projectTypeCodes includes it', () => {
+    const mockProjectTypeResponse = {
+      _embedded: {
+        projectTypeCode: [
+          { projectTypeCode: 'FUEL_MGMT', name: 'Fuel Management' },
+          { projectTypeCode: 'OTHER', name: 'Other' }
+        ]
+      }
+    };
+  
+    mockCodeTableService.fetchCodeTable.and.callFake((name: string) => {
+      if (name === 'projectTypeCodes') {
+        return of(mockProjectTypeResponse);
+      }
+      return of({ _embedded: [] });
+    });
+  
+    component.loadCodeTables();
+    fixture.detectChanges();
+  
+    expect(component.projectForm.get('projectType')?.value).toBe('FUEL_MGMT');
+  });
+
+  it('should set default primaryObjective to WRR when objectiveTypeCodes includes it', () => {
+    const mockObjectiveTypeResponse = {
+      _embedded: {
+        objectiveTypeCode: [
+          { objectiveTypeCode: 'WRR', name: 'Watershed Restoration' },
+          { objectiveTypeCode: 'OTHER', name: 'Other' }
+        ]
+      }
+    };
+  
+    mockCodeTableService.fetchCodeTable.and.callFake((name: string) => {
+      if (name === 'objectiveTypeCodes') {
+        return of(mockObjectiveTypeResponse);
+      }
+      return of({ _embedded: [] });
+    });
+  
+    component.loadCodeTables();
+    fixture.detectChanges();
+  
+    expect(component.projectForm.get('primaryObjective')?.value).toBe('WRR');
+  });
+  
 });

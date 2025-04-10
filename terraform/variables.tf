@@ -109,6 +109,11 @@ variable "WFDM_BASE_URL" {
   default = ""
 }
 
+variable "OPENMAPS_URL" {
+  type    = string
+  default = ""
+}
+
 variable "WFPREV_CHECK_TOKEN_URL" {
   type    = string
   default = ""
