@@ -828,7 +828,7 @@ describe('SpatialService', () => {
           [
             [-139.1, 48.3], [-114, 48.3], [-114, 60], [-139.1, 60], [-139.1, 48.3]
           ]
-        ]).geometry // 👈 this is the key fix
+        ]).geometry
       );
       mockService.validateMultiPolygon(coords);
     
