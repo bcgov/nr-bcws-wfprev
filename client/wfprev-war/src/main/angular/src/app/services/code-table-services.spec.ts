@@ -14,6 +14,7 @@ describe('CodeTableServices', () => {
     rest: {
       wfprev: 'http://mock-api.com',
       openmaps: 'http://mock-api.com'
+      
     },
     application: {
       lazyAuthenticate: true,
