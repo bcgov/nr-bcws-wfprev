@@ -23,7 +23,12 @@ describe('CreateNewProjectDialogComponent', () => {
     mockDialog = jasmine.createSpyObj('MatDialog', ['open']);
     mockDialogRef = jasmine.createSpyObj('MatDialogRef', ['close']);
     mockProjectService = jasmine.createSpyObj('ProjectService', ['createProject']);
-    mockCodeTableService = jasmine.createSpyObj('CodeTableServices', ['fetchCodeTable']);
+    mockCodeTableService = jasmine.createSpyObj('CodeTableServices', [
+      'fetchCodeTable',
+      'fetchFireCentres'
+    ]);
+    mockCodeTableService.fetchFireCentres.and.returnValue(of([{ name: 'Fire Centre 1' }]));
+
     mockSnackbarService = jasmine.createSpyObj('MatSnackBar', ['open']);
 
     mockCodeTableService.fetchCodeTable.and.callFake((name: string) => {
@@ -64,6 +69,7 @@ describe('CreateNewProjectDialogComponent', () => {
   it('should initialize the form with default values', () => {
     const formValues = component.projectForm.getRawValue();
     expect(formValues).toEqual({
+      projectType: '',
       projectName: '',
       latLong: '',
       businessArea: '',
@@ -143,6 +149,7 @@ describe('CreateNewProjectDialogComponent', () => {
   
     // Populate the form with valid values
     component.projectForm.patchValue({
+      projectType: 'FUEL_MGMT', // Required field
       projectName: 'New Project', // Required field
       businessArea: 'Area 1', // Required field
       forestRegion: 1, // Required field
@@ -246,6 +253,7 @@ describe('CreateNewProjectDialogComponent', () => {
 
   it('should validate latLong and set latitude and longitude correctly', () => {
     component.projectForm.patchValue({
+      projectType: 'FUEL_MGMT',
       projectName: 'New Project',
       latLong: '48.484245, -123.332177',
       businessArea: 'Area 1',
@@ -275,6 +283,7 @@ describe('CreateNewProjectDialogComponent', () => {
   
   it('should show an error when latLong is outside BC boundaries', () => {
     component.projectForm.patchValue({
+      projectType: 'FUEL_MGMT',
       projectName: 'New Project',
       businessArea: 'Area 1',
       forestRegion: 1,
@@ -304,6 +313,7 @@ describe('CreateNewProjectDialogComponent', () => {
 
   it('should handle latLong with boundary values correctly', () => {
     component.projectForm.patchValue({
+      projectType: 'FUEL_MGMT',
       projectName: 'New Project',
       businessArea: 'Area 1',
       forestRegion: 1,
@@ -336,6 +346,7 @@ describe('CreateNewProjectDialogComponent', () => {
 
   it('should show an error when latLong is in an invalid format', () => {
     component.projectForm.patchValue({
+      projectType: 'FUEL_MGMT',
       projectName: 'New Project',
       businessArea: 'Area 1',
       forestRegion: 1,
@@ -385,6 +396,7 @@ describe('CreateNewProjectDialogComponent', () => {
 
   it('should create project with only required fields', () => {
     component.projectForm.patchValue({
+      projectType: 'FUEL_MGMT',
       projectName: 'Required Project',
       businessArea: 'Area 1',
       forestRegion: 1,
@@ -459,6 +471,7 @@ describe('CreateNewProjectDialogComponent', () => {
   
     // Populate the form with valid values
     component.projectForm.patchValue({
+      projectType: 'FUEL_MGMT',
       projectName: 'New Project',
       businessArea: 'Area 1',
       forestRegion: 1,
