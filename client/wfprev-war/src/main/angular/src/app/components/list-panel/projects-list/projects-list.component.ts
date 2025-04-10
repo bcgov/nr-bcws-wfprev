@@ -124,7 +124,7 @@ export class ProjectsListComponent implements OnInit {
 
   createNewProject(): void {
     const dialogRef = this.dialog.open(CreateNewProjectDialogComponent, {
-      width: '880px',
+      width: '1000px',
       disableClose: true,
       hasBackdrop: true,
     });

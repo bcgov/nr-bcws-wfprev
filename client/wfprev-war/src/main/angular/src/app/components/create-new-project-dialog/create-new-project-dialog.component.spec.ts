@@ -71,6 +71,7 @@ describe('CreateNewProjectDialogComponent', () => {
       forestDistrict: '',
       bcParksRegion: '',
       bcParksSection: '',
+      fireCentre: '',
       projectLead: '',
       projectLeadEmail: '',
       siteUnitName: '',
@@ -148,6 +149,7 @@ describe('CreateNewProjectDialogComponent', () => {
       forestDistrict: 2, // Required field
       bcParksRegion: 3, // Required field
       bcParksSection: 4, // Required field
+      fireCentre: 5,// Required field
       projectLead: 'John Doe', // Optional field
       projectLeadEmail: 'john.doe@example.com', // Optional field
       siteUnitName: 'Unit 1', // Optional field
@@ -251,6 +253,7 @@ describe('CreateNewProjectDialogComponent', () => {
       forestDistrict: 2,
       bcParksRegion: 3,
       bcParksSection: 4,
+      fireCentre: 5,
       projectLead: 'John Doe',
       projectLeadEmail: 'john.doe@example.com',
       siteUnitName: 'Unit 1',
@@ -278,6 +281,7 @@ describe('CreateNewProjectDialogComponent', () => {
       forestDistrict: 2,
       bcParksRegion: 3,
       bcParksSection: 4,
+      fireCentre: 5,
       projectLead: 'John Doe',
       projectLeadEmail: 'john.doe@example.com',
       siteUnitName: 'Unit 1',
@@ -306,6 +310,7 @@ describe('CreateNewProjectDialogComponent', () => {
       forestDistrict: 2,
       bcParksRegion: 3,
       bcParksSection: 4,
+      fireCentre: 5,
       projectLead: 'John Doe',
       projectLeadEmail: 'john.doe@example.com',
       siteUnitName: 'Unit 1',
@@ -337,6 +342,7 @@ describe('CreateNewProjectDialogComponent', () => {
       forestDistrict: 2,
       bcParksRegion: 3,
       bcParksSection: 4,
+      fireCentre: 5,
       projectLead: 'John Doe',
       projectLeadEmail: 'john.doe@example.com',
       siteUnitName: 'Unit 1',
@@ -385,6 +391,7 @@ describe('CreateNewProjectDialogComponent', () => {
       forestDistrict: 2,
       bcParksRegion: 3,
       bcParksSection: 4,
+      fireCentre: 5,
       closestCommunity: 'Community 1',
       primaryObjective: 'WRR'
     });
@@ -458,6 +465,7 @@ describe('CreateNewProjectDialogComponent', () => {
       forestDistrict: 2,
       bcParksRegion: 3,
       bcParksSection: 4,
+      fireCentre: 5,
       projectLead: 'John Doe',
       projectLeadEmail: 'john.doe@example.com',
       siteUnitName: 'Unit 1',
@@ -516,6 +524,15 @@ describe('CreateNewProjectDialogComponent', () => {
     // Assert required validator is gone
     expect(bcParksRegionControl?.hasValidator?.(Validators.required)).toBeFalse();
     expect(bcParksRegionControl?.validator).toBeFalsy();
+  });
+
+  it('should show required error for fireCentre when empty', () => {
+    const control = component.projectForm.get('fireCentre');
+    control?.setValue('');
+    control?.markAsTouched();
+    control?.updateValueAndValidity();
+  
+    expect(control?.hasError('required')).toBeTrue();
   });
 
 });
