@@ -6,7 +6,6 @@ import ca.bc.gov.nrs.wfprev.data.assemblers.ProjectBoundaryResourceAssembler;
 import ca.bc.gov.nrs.wfprev.data.entities.ProjectBoundaryEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ProjectEntity;
 import ca.bc.gov.nrs.wfprev.data.models.ProjectBoundaryModel;
-import ca.bc.gov.nrs.wfprev.data.models.ProjectModel;
 import ca.bc.gov.nrs.wfprev.data.repositories.ProjectBoundaryRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.ProjectRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -15,16 +14,24 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validator;
 import lombok.extern.slf4j.Slf4j;
-import org.postgresql.geometric.PGpoint;
-import org.postgresql.geometric.PGpolygon;
+import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.operation.TransformException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
 import java.text.MessageFormat;
-import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+
+import org.locationtech.jts.geom.MultiPolygon;
+import org.locationtech.jts.geom.Geometry;
+import org.geotools.referencing.CRS;
+import org.geotools.geometry.jts.JTS;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.opengis.referencing.operation.MathTransform;
 
 @Slf4j
 @Component
@@ -80,7 +87,7 @@ public class ProjectBoundaryService implements CommonService {
   }
 
   @Transactional
-  public ProjectBoundaryModel createProjectBoundary(
+  public ProjectBoundaryModel createOrUpdateProjectBoundary(
           String projectGuid, ProjectBoundaryModel resource) {
     Set<ConstraintViolation<ProjectBoundaryModel>> violations = validator.validate(resource);
     if (!violations.isEmpty()) {
@@ -95,15 +102,23 @@ public class ProjectBoundaryService implements CommonService {
     ProjectEntity projectEntity = projectRepository.findById(UUID.fromString(projectGuid))
             .orElseThrow(() -> new EntityNotFoundException(MessageFormat.format(KEY_FORMAT, PROJECT_NOT_FOUND, projectGuid)));
 
-    resource.setProjectBoundaryGuid(UUID.randomUUID().toString());
+    updateFieldsFromBoundaryGeometry(resource);
 
-    ProjectBoundaryEntity entity = projectBoundaryResourceAssembler.toEntity(resource);
-    if(entity != null && entity.getProjectGuid() != null) {
-      entity.setProjectGuid(projectEntity.getProjectGuid());
+    List<ProjectBoundaryEntity> existingEntityList = projectBoundaryRepository.findByProjectGuid(UUID.fromString(projectGuid));
 
-      ProjectBoundaryEntity savedEntity = projectBoundaryRepository.save(entity);
+    if (!existingEntityList.isEmpty() && existingEntityList.getFirst() != null) {
+      // Update existing boundary
+      ProjectBoundaryEntity existingEntity = existingEntityList.getFirst();
+      ProjectBoundaryEntity updatedEntity = projectBoundaryResourceAssembler.updateEntity(resource, existingEntity);
+      return saveProjectBoundary(updatedEntity);
+    } else {
+      // Create new boundary
+      resource.setProjectBoundaryGuid(UUID.randomUUID().toString());
+      ProjectBoundaryEntity newEntity = projectBoundaryResourceAssembler.toEntity(resource);
+      newEntity.setProjectGuid(projectEntity.getProjectGuid());
+      ProjectBoundaryEntity savedEntity = projectBoundaryRepository.save(newEntity);
       return projectBoundaryResourceAssembler.toModel(savedEntity);
-    } else throw new IllegalArgumentException("ProjectBoundaryModel resource to be created cannot be null");
+    }
   }
 
   @Transactional
@@ -130,6 +145,7 @@ public class ProjectBoundaryService implements CommonService {
         throw new EntityNotFoundException(MessageFormat.format(EXTENDED_KEY_FORMAT, BOUNDARY, boundaryGuid, DOES_NOT_BELONG_PROJECT, projectGuid));
       }
 
+      updateFieldsFromBoundaryGeometry(resource);
       ProjectBoundaryEntity entity = projectBoundaryResourceAssembler.updateEntity(resource, existingEntity);
       return saveProjectBoundary(entity);
     } else throw new IllegalArgumentException("ProjectBoundaryModel resource to be updated cannot be null");
@@ -187,5 +203,39 @@ public class ProjectBoundaryService implements CommonService {
     }
 
     projectBoundaryRepository.deleteByProjectBoundaryGuid(UUID.fromString(boundaryGuid));
+  }
+
+  private ProjectBoundaryModel updateFieldsFromBoundaryGeometry(ProjectBoundaryModel model) {
+    if(model.getBoundaryGeometry() != null) {
+      model.setBoundarySizeHa(BigDecimal.valueOf(getAreaInHectares(model.getBoundaryGeometry())));
+      if(model.getLocationGeometry() == null) {
+        model.setLocationGeometry(model.getBoundaryGeometry().getCentroid());
+      }
+    } return model;
+  }
+
+  public double getAreaInHectares(MultiPolygon multiPolygon) {
+    try {
+      // Get the source CRS (WGS84)
+      CoordinateReferenceSystem sourceCRS = CRS.decode("EPSG:4326");
+
+      // decode as BC Albers
+      CoordinateReferenceSystem targetCRS = CRS.decode("EPSG:3005");
+
+      // Create transform from geographic to projected
+      MathTransform transform = CRS.findMathTransform(sourceCRS, targetCRS, true);
+
+      // Transform the geometry
+      Geometry projectedGeom = JTS.transform(multiPolygon, transform);
+
+      // Calculate area in square meters
+      double areaInSquareMeters = projectedGeom.getArea();
+
+      // Convert to hectares (1 hectare = 10,000 square meters)
+      return areaInSquareMeters / 10000.0;
+
+    } catch (FactoryException | TransformException e) {
+      throw new DataIntegrityViolationException(e.getMessage());
+    }
   }
 }

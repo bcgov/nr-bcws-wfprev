@@ -6,6 +6,13 @@
       <div class="dialog-content">
         <div class="form-row">
           <div class="form-field">
+            <label>Project Type<span class="required">*</span></label>
+            <select formControlName="projectType">
+              <option value="">select</option>
+              <option *ngFor="let type of projectTypes" [value]="type.projectTypeCode">{{ type.description }}</option>
+            </select>
+          </div>
+          <div class="form-field">
             <label for="projectName">Project Name<span class="required">*</span></label>
             <input
               type="text"
@@ -18,13 +25,8 @@
               {{messages.maxLengthExceeded}}
             </div>
           </div>
-          <div class="form-field">
-            <label>Lat/Long</label>
-            <input type="text" formControlName="latLong" placeholder="Manually entered or pasted from clipboard" class="project-input"/>
-            <div class="error" *ngIf="projectForm.get('latLong')?.hasError('maxlength') && projectForm.get('latLong')?.touched">
-              {{messages.maxLengthExceeded}}
-            </div>
-          </div>
+        </div>
+        <div class="form-row">
           <div class="form-field">
             <label>Business Area<span class="required">*</span></label>
             <select formControlName="businessArea">
@@ -32,8 +34,6 @@
               <option *ngFor="let area of businessAreas" [value]="area.programAreaGuid">{{ area.programAreaName }}</option>
             </select>
           </div>
-        </div>
-        <div class="form-row">
           <div class="form-field">
             <label>Forest Region<span class="required">*</span></label>
             <select formControlName="forestRegion">
@@ -48,22 +48,40 @@
               <option *ngFor="let district of forestDistricts" [value]="district.orgUnitId">{{ district.orgUnitName }}</option>
             </select>
           </div>
+        </div>
+        <div class="form-row">
           <div class="form-field">
-            <label>BC Parks Region<span class="required">*</span></label>
+            <label>
+              BC Parks Region<span class="required" *ngIf="hasValidator('bcParksRegion', Validators.required)">*</span>
+            </label>
             <select formControlName="bcParksRegion">
               <option value="">select</option>
               <option *ngFor="let region of bcParksRegions" [value]="region.orgUnitId">{{ region.orgUnitName }}</option>
             </select>
           </div>
           <div class="form-field">
-            <label>BC Parks Section<span class="required">*</span></label>
+            <label>BC Parks Section</label>
             <select formControlName="bcParksSection">
               <option value="">select</option>
               <option *ngFor="let section of bcParksSections" [value]="section.orgUnitId">{{ section.orgUnitName }}</option>
             </select>
           </div>
+          <div class="form-field">
+            <label>BCWS Fire Centre<span class="required">*</span></label>
+            <select formControlName="fireCentre">
+              <option value="">select</option>
+              <option *ngFor="let item of fireCentres" [value]="item?.properties?.MOF_FIRE_CENTRE_ID">{{ item?.properties.MOF_FIRE_CENTRE_NAME }}</option>
+            </select>
+          </div>
         </div>
         <div class="form-row">
+          <div class="form-field">
+            <label>Closest Community<span class="required">*</span></label>
+            <input type="text" formControlName="closestCommunity" placeholder="Begin Typing" class="project-input"/>
+            <div class="error" *ngIf="projectForm.get('closestCommunity')?.hasError('maxlength') && projectForm.get('closestCommunity')?.touched">
+              {{messages.maxLengthExceeded}}
+            </div>
+          </div>
           <div class="form-field">
             <label>Project Lead</label>
             <input type="text" formControlName="projectLead" placeholder="Last Name, First Name" class="project-input"/>
@@ -72,7 +90,7 @@
             </div>
           </div>
           <div class="form-field">
-            <label>Project Lead E-mail</label>
+            <label>Contact Email</label>
             <input type="email" formControlName="projectLeadEmail" placeholder="n@n.n" class="project-input" />
             <div class="error" *ngIf="projectForm.get('projectLeadEmail')?.hasError('email') && projectForm.get('projectLeadEmail')?.touched">
               {{messages.invalidEmail}}
@@ -84,18 +102,12 @@
         </div>
         <div class="form-row">
           <div class="form-field">
-            <label>Site Unit Name</label>
-            <input type="text" formControlName="siteUnitName" placeholder="Input..." class="project-input"/>
-          </div>
-          <div class="form-field">
-            <label>Closest Community<span class="required">*</span></label>
-            <input type="text" formControlName="closestCommunity" placeholder="Begin Typing" class="project-input"/>
-            <div class="error" *ngIf="projectForm.get('closestCommunity')?.hasError('maxlength') && projectForm.get('closestCommunity')?.touched">
+            <label>Lat/Long</label>
+            <input type="text" formControlName="latLong" placeholder="Manually entered or pasted from clipboard" class="project-input"/>
+            <div class="error" *ngIf="projectForm.get('latLong')?.hasError('maxlength') && projectForm.get('latLong')?.touched">
               {{messages.maxLengthExceeded}}
             </div>
           </div>
-        </div>
-        <div class="form-row">
           <div class="form-field">
             <label>Primary Objective<span class="required">*</span></label>
             <select formControlName="primaryObjective">
@@ -110,6 +122,8 @@
               <option *ngFor="let type of objectiveTypes" [value]="type.objectiveTypeCode">{{ type.description }}</option>
             </select>
           </div>
+        </div>
+        <div class="form-row">
           <div class="form-field">
             <label>Secondary Objective Rationale</label>
             <input type="text" formControlName="secondaryObjectiveRationale" placeholder="Input..." class="project-input"/>

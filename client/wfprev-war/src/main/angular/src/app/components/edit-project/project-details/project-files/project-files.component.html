@@ -9,31 +9,31 @@
         </button> 
     </div>
                     
-    <table mat-table [dataSource]="projectFiles" class="files-table">
+    <table mat-table [dataSource]="dataSource" class="files-table">
 
         <ng-container matColumnDef="attachmentType">
             <th mat-header-cell *matHeaderCellDef> Attachment Type </th>
-            <td mat-cell *matCellDef="let file"> {{ file.attachmentType }} </td>
+            <td mat-cell *matCellDef="let file"> {{ file.attachmentContentTypeCode?.description }} </td>
         </ng-container>
 
         <ng-container matColumnDef="fileName">
             <th mat-header-cell *matHeaderCellDef> File Name </th>
-            <td mat-cell *matCellDef="let file"> {{ file.fileName }} </td>
+            <td mat-cell *matCellDef="let file"> {{ file.documentPath }} </td>
         </ng-container>
 
         <ng-container matColumnDef="fileType">
             <th mat-header-cell *matHeaderCellDef> File Type </th>
-            <td mat-cell *matCellDef="let file"> {{ file.fileType }} </td>
+            <td mat-cell *matCellDef="let file"> {{ file.documentPath?.split('.').pop()?.toUpperCase() }} </td>
         </ng-container>
 
         <ng-container matColumnDef="uploadedBy">
             <th mat-header-cell *matHeaderCellDef> Uploaded By </th>
-            <td mat-cell *matCellDef="let file"> {{ file.uploadedBy }} </td>
+            <td mat-cell *matCellDef="let file"> {{ file.uploadedByUserId }} </td>
         </ng-container>
 
         <ng-container matColumnDef="uploadedDate">
             <th mat-header-cell *matHeaderCellDef> Uploaded Date </th>
-            <td mat-cell *matCellDef="let file"> {{ file.uploadedDate | date:'yyyy-MM-dd' }} </td>
+            <td mat-cell *matCellDef="let file"> {{ file.uploadedByTimestamp | date:'yyyy-MM-dd' }} </td>
         </ng-container>
 
         <ng-container matColumnDef="polygonHectares">
@@ -43,7 +43,7 @@
 
         <ng-container matColumnDef="description">
             <th mat-header-cell *matHeaderCellDef> Description </th>
-            <td mat-cell *matCellDef="let file"> {{ file.description }} </td>
+            <td mat-cell *matCellDef="let file"> {{ file.attachmentDescription }} </td>
         </ng-container>
 
         <ng-container matColumnDef="download">

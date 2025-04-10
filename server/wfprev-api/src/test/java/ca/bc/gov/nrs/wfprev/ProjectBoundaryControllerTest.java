@@ -2,6 +2,7 @@ package ca.bc.gov.nrs.wfprev;
 
 import ca.bc.gov.nrs.wfprev.controllers.ProjectBoundaryController;
 import ca.bc.gov.nrs.wfprev.data.models.ProjectBoundaryModel;
+import ca.bc.gov.nrs.wfprev.services.CoordinatesService;
 import ca.bc.gov.nrs.wfprev.services.ProjectBoundaryService;
 import com.nimbusds.jose.shaded.gson.Gson;
 import com.nimbusds.jose.shaded.gson.GsonBuilder;
@@ -53,6 +54,9 @@ class ProjectBoundaryControllerTest {
 
     @MockBean
     private ProjectBoundaryService projectBoundaryService;
+
+    @MockBean
+    private CoordinatesService coordinatesService;
 
     @Autowired
     private MockMvc mockMvc;
@@ -169,7 +173,7 @@ class ProjectBoundaryControllerTest {
     void testCreateProjectBoundary_DataIntegrityViolationException() throws Exception {
         ProjectBoundaryModel requestModel = buildProjectBoundaryRequestModel();
 
-        when(projectBoundaryService.createProjectBoundary(anyString(), any(ProjectBoundaryModel.class)))
+        when(projectBoundaryService.createOrUpdateProjectBoundary(anyString(), any(ProjectBoundaryModel.class)))
                 .thenThrow(new DataIntegrityViolationException("Data Integrity Violation"));
 
         String requestJson = projectBoundaryJson.formatted(
@@ -193,7 +197,7 @@ class ProjectBoundaryControllerTest {
     void testCreateProjectBoundary_IllegalArgumentException() throws Exception {
         ProjectBoundaryModel requestModel = buildProjectBoundaryRequestModel();
 
-        when(projectBoundaryService.createProjectBoundary(anyString(), any(ProjectBoundaryModel.class)))
+        when(projectBoundaryService.createOrUpdateProjectBoundary(anyString(), any(ProjectBoundaryModel.class)))
                 .thenThrow(new IllegalArgumentException("Illegal Argument exception"));
 
         String requestJson = projectBoundaryJson.formatted(
