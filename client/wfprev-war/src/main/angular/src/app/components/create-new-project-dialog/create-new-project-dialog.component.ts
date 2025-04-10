@@ -42,6 +42,8 @@ export class CreateNewProjectDialogComponent implements OnInit {
   bcParksSections: any[] = [];
   allBcParksSections: any[] = []; // To hold all sections initially
   objectiveTypes: any[] = [];
+  projectTypes: any[] = [];
+  fireCentres: any[] = [];
 
   constructor(
     private readonly fb: FormBuilder,
@@ -50,9 +52,9 @@ export class CreateNewProjectDialogComponent implements OnInit {
     private readonly snackbarService: MatSnackBar,
     private readonly projectService: ProjectService,
     private readonly codeTableService: CodeTableServices
-
   ) {
     this.projectForm = this.fb.group({
+      projectType: ['', [Validators.required]],
       projectName: ['', [Validators.required, Validators.maxLength(50)]],
       latLong: ['', [Validators.maxLength(25)]],
       businessArea: ['', [Validators.required]],
@@ -60,6 +62,7 @@ export class CreateNewProjectDialogComponent implements OnInit {
       forestDistrict: ['', [Validators.required]],
       bcParksRegion: [''],
       bcParksSection: [{ value: '', disabled: true }],
+      fireCentre: ['', [Validators.required]],
       projectLead: ['', [Validators.maxLength(50)]],
       projectLeadEmail: ['', [Validators.email, Validators.maxLength(50)]],
       siteUnitName: ['', [Validators.maxLength(50)]],
@@ -112,6 +115,7 @@ export class CreateNewProjectDialogComponent implements OnInit {
       { name: 'bcParksRegionCodes', property: 'bcParksRegions', embeddedKey: 'bcParksRegionCode' },
       { name: 'bcParksSectionCodes', property: 'allBcParksSections', embeddedKey: 'bcParksSectionCode' },
       { name: 'objectiveTypeCodes', property: 'objectiveTypes', embeddedKey: 'objectiveTypeCode' },
+      { name: 'projectTypeCodes', property: 'projectTypes', embeddedKey: 'projectTypeCode' },
 
     ];
   
@@ -128,11 +132,35 @@ export class CreateNewProjectDialogComponent implements OnInit {
               this.projectForm.get('primaryObjective')?.setValue('WRR');
             }
           }
+
+          if (table.name === 'projectTypeCodes') {
+            const defaultProjectType = this.projectTypes.find(
+              (type) => type.projectTypeCode === 'FUEL_MGMT'
+            );
+      
+            if (defaultProjectType) {
+              this.projectForm.get('projectType')?.setValue('FUEL_MGMT');
+            }
+          }
         },
         error: (err) => {
           console.error(`Error fetching ${table.name}`, err);
         },
       });
+    });
+
+    this.loadFireCentres();
+
+  }
+
+  loadFireCentres(): void {
+    this.codeTableService.fetchFireCentres().subscribe({
+      next: (response) => {
+        this.fireCentres = response?.features ?? [];
+      },
+      error: (error) => {
+        console.error('Failed to load fire centres', error);
+      }
     });
   }
   getErrorMessage(controlName: string): string | null {
@@ -177,16 +205,16 @@ export class CreateNewProjectDialogComponent implements OnInit {
         forestDistrictOrgUnitId: Number(this.projectForm.get('forestDistrict')?.value) || 0,
         bcParksRegionOrgUnitId: Number(this.projectForm.get('bcParksRegion')?.value) || 0,
         bcParksSectionOrgUnitId: Number(this.projectForm.get('bcParksSection')?.value) || 0,
+        fireCentreOrgUnitId: Number(this.projectForm.get('fireCentre')?.value) || 0,
         projectLead: this.projectForm.get('projectLead')?.value ?? '',
         projectLeadEmailAddress: this.projectForm.get('projectLeadEmail')?.value ?? '',
         siteUnitName: this.projectForm.get('siteUnitName')?.value ?? '',
         closestCommunityName: this.projectForm.get('closestCommunity')?.value ?? '',
-        fireCentreOrgUnitId: this.projectForm.get('fireCentre')?.value ?? 0,
         generalScopeCode: {
           generalScopeCode: "SL_ACT"
         },
         projectTypeCode: {
-          projectTypeCode: "FUEL_MGMT"
+          projectTypeCode: this.projectForm.get('projectType')?.value ?? ''
         },
         forestAreaCode: {
           forestAreaCode: "COAST",

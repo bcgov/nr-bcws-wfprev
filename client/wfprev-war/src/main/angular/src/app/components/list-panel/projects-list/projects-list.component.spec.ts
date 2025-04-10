@@ -159,7 +159,7 @@ describe('ProjectsListComponent', () => {
     expect(mockDialog.open).toHaveBeenCalledWith(
       CreateNewProjectDialogComponent,
       {
-        width: '880px',
+        width: '1000px',
         disableClose: true,
         hasBackdrop: true,
       }
