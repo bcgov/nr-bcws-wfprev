@@ -1304,5 +1304,17 @@
     "allDeclaredFields": true,
     "allPublicMethods": true,
     "allDeclaredConstructors": true
+  },
+  {
+    "name": "org.opengis.referencing.FactoryException",
+    "allDeclaredFields": true,
+    "allPublicMethods": true,
+    "allDeclaredConstructors": true
+  },
+  {
+    "name": "org.opengis.referencing.operation.TransformException",
+    "allDeclaredFields": true,
+    "allPublicMethods": true,
+    "allDeclaredConstructors": true
   }
 ]
