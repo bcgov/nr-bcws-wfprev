@@ -209,6 +209,35 @@ describe('ProjectDetailsComponent', () => {
       expect(markerSpy.addTo).toHaveBeenCalledWith(mapSpy);
     });
 
+    it('should remove old boundary layer if it exists before adding a new one', fakeAsync(() => {
+      const mockOldLayer = jasmine.createSpyObj('L.Layer', ['remove']);
+      const mockBoundary = {
+        boundaryGeometry: {
+          type: 'Polygon',
+          coordinates: [[[0, 0], [0, 1], [1, 1], [1, 0], [0, 0]]]
+        },
+        systemStartTimestamp: '2024-01-01T00:00:00Z'
+      };
+    
+      // Setup existing map, old boundaryLayer, and projectGuid
+      component['map'] = mapSpy;
+      component['boundaryLayer'] = mockOldLayer as any; // Simulate existing boundary
+      component['projectGuid'] = 'some-guid';
+    
+      // Mock response from the service
+      projectServiceSpy.getProjectBoundaries.and.returnValue(of({
+        _embedded: {
+          projectBoundary: [mockBoundary]
+        }
+      }));
+    
+      component.updateMap(49.553209, -119.965887);
+      tick(); // flush observable
+    
+      expect(mapSpy.removeLayer).toHaveBeenCalledWith(mockOldLayer);
+      expect(component['boundaryLayer']).not.toBe(mockOldLayer);
+    }));
+
     it('should not reinitialize the map if initMap is called and map already exists', () => {
       component['map'] = mapSpy;
       component.initMap();
