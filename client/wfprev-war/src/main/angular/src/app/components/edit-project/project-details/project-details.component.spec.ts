@@ -114,6 +114,14 @@ describe('ProjectDetailsComponent', () => {
       component.latLongForm.controls['longitude'].setValue('-119.965887');
       expect(component.latLongForm.valid).toBeTrue();
     });
+
+    it('should include fireCentreId as required in the form', () => {
+      const control = component.detailsForm.get('fireCentreId');
+      expect(control).toBeTruthy();
+      control?.setValue('');
+      control?.markAsTouched();
+      expect(control?.hasError('required')).toBeTrue();
+    });
   });
 
   describe('Map Initialization', () => {
@@ -435,6 +443,12 @@ describe('ProjectDetailsComponent', () => {
     
         expect(component.patchFormValues).toHaveBeenCalledWith(mockData);
       });
+
+      it('should patch fireCentreId from fireCentreOrgUnitId in projectDetail', () => {
+        const mockData = { fireCentreOrgUnitId: 456 };
+        component.patchFormValues(mockData);
+        expect(component.detailsForm.get('fireCentreId')?.value).toBe(456);
+      });
     });
 
     describe('assignCodeTableData Method', () => {
@@ -597,6 +611,31 @@ describe('ProjectDetailsComponent', () => {
     
       expect(mockProjectService.updateProject).not.toHaveBeenCalled();
     });
+    
+    it('should include fireCentreOrgUnitId in the updateProject payload', () => {
+      component.projectGuid = 'test-guid';
+      component.projectDetail = { projectTypeCode: { projectTypeCode: 'TEST' }, primaryObjectiveTypeCode: {} };
+      component.detailsForm.patchValue({
+        projectTypeCode: 'FUEL_MGMT',
+        programAreaGuid: 'area-guid',
+        closestCommunityName: 'Test City',
+        primaryObjectiveTypeCode: 'WRR',
+        fireCentreId: 123, // <- Required field
+      });
+    
+      mockProjectService.updateProject.and.returnValue(of({}));
+      mockProjectService.getProjectByProjectGuid.and.returnValue(of({}));
+    
+      component.onSave();
+    
+      expect(mockProjectService.updateProject).toHaveBeenCalledWith(
+        'test-guid',
+        jasmine.objectContaining({
+          fireCentreOrgUnitId: 123,
+        })
+      );
+    });
+    
 
   });
 });
