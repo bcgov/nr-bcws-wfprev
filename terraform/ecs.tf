@@ -83,6 +83,10 @@ resource "aws_ecs_task_definition" "wfprev_server" {
         value = var.WFDM_BASE_URL
       },
       {
+        name  = "OPENMAPS_URL",
+        value = var.OPENMAPS_URL
+      },
+      {
         name  = "WFPREV_CHECK_TOKEN_URL",
         value = var.WFPREV_CHECK_TOKEN_URL
       },
