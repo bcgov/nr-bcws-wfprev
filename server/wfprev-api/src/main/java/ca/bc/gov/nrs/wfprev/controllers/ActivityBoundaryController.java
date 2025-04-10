@@ -5,6 +5,7 @@ import ca.bc.gov.nrs.common.wfone.rest.resource.MessageListRsrc;
 import ca.bc.gov.nrs.wfprev.common.controllers.CommonController;
 import ca.bc.gov.nrs.wfprev.data.models.ActivityBoundaryModel;
 import ca.bc.gov.nrs.wfprev.services.ActivityBoundaryService;
+import ca.bc.gov.nrs.wfprev.services.CoordinatesService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -37,10 +38,12 @@ import java.util.Date;
 @RequestMapping(value = "/projects/{projectGuid}/projectFiscals/{projectPlanFiscalGuid}/activities/{activityGuid}/activityBoundary")
 public class ActivityBoundaryController extends CommonController {
     private final ActivityBoundaryService activityBoundaryService;
+    private final CoordinatesService coordinatesService;
 
-    public ActivityBoundaryController(ActivityBoundaryService activityBoundaryService) {
+    public ActivityBoundaryController(ActivityBoundaryService activityBoundaryService, CoordinatesService coordinatesService) {
         super(ActivityBoundaryController.class.getName());
         this.activityBoundaryService = activityBoundaryService;
+        this.coordinatesService = coordinatesService;
     }
 
     @GetMapping
@@ -137,6 +140,8 @@ public class ActivityBoundaryController extends CommonController {
 
             ActivityBoundaryModel newResource = activityBoundaryService.createActivityBoundary(
                     projectGuid, projectPlanFiscalGuid, activityGuid, resource);
+            coordinatesService.updateProjectCoordinates(projectGuid);
+
             return ResponseEntity.status(201).body(newResource);
         } catch (DataIntegrityViolationException e) {
             log.error(" ### DataIntegrityViolationException while creating Activity Boundary", e);
@@ -175,6 +180,8 @@ public class ActivityBoundaryController extends CommonController {
 
             ActivityBoundaryModel updatedResource = activityBoundaryService.updateActivityBoundary(
                     projectGuid, projectPlanFiscalGuid, activityGuid, resource);
+            coordinatesService.updateProjectCoordinates(projectGuid);
+
             return updatedResource == null ? notFound() : ok(updatedResource);
         } catch (DataIntegrityViolationException e) {
             log.error(" ### DataIntegrityViolationException while updating Activity Boundary", e);
@@ -211,6 +218,7 @@ public class ActivityBoundaryController extends CommonController {
 
         try {
             activityBoundaryService.deleteActivityBoundary(projectGuid, projectPlanFiscalGuid, activityGuid, id);
+            coordinatesService.updateProjectCoordinates(projectGuid);
             return ResponseEntity.noContent().build();
         } catch (EntityNotFoundException e) {
             log.warn(" ### Activity Boundary for deletion not found: {}", id, e);
