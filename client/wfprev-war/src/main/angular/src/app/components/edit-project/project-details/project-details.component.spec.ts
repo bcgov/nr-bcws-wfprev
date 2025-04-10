@@ -129,7 +129,7 @@ describe('ProjectDetailsComponent', () => {
     });
   });
 
-  fdescribe('Map Initialization', () => {
+  describe('Map Initialization', () => {
     let mapSpy: jasmine.SpyObj<L.Map>;
     let markerSpy: jasmine.SpyObj<L.Marker>;
     let geoJsonLayerSpy: jasmine.SpyObj<L.GeoJSON>;
