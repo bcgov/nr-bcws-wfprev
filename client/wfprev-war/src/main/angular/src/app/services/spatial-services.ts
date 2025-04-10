@@ -1,5 +1,6 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
+import { MatSnackBar } from "@angular/material/snack-bar";
 import * as toGeoJSON from '@tmcw/togeojson';
 import * as turf from '@turf/turf';
 import { DOMParser } from '@xmldom/xmldom';
@@ -14,7 +15,9 @@ export type CoordinateTypes = Position | Position[] | Position[][] | Position[][
 })
 export class SpatialService {
 
-    constructor(private readonly httpClient: HttpClient) { }
+    constructor(private readonly httpClient: HttpClient,
+        private readonly snackbarService: MatSnackBar
+    ) { }
 
     private parseKMLToCoordinates(kmlString: string): Position[][][] {
         const kmlDom = new DOMParser().parseFromString(kmlString, 'text/xml');
@@ -327,8 +330,6 @@ export class SpatialService {
     }
 
     validateMultiPolygon(coordinates: Position[][][] | GeoJSON.MultiPolygon): void {
-        console.log('Input received: ', JSON.stringify(coordinates));
-
         try {
             let multiPolygonCoords: Position[][][];
 
@@ -347,7 +348,6 @@ export class SpatialService {
             // Check overall validity
             const isValid = turf.booleanValid(multiPolygon);
             
-
             // Process each polygon individually for kinks
             let selfIntersections = [];
 
@@ -379,14 +379,40 @@ export class SpatialService {
                 throw new Error(`Found ${selfIntersections.length} self-intersections in the multipolygon`);
             }
 
+            const britishColumbiaBoundary = this.getBritishColumbiaGeoJSON(); 
+            const isInBC = turf.booleanIntersects(multiPolygon, britishColumbiaBoundary);
+    
+            if (!isInBC) {
+                this.snackbarService.open('Geometry is outside of BC.', 'Close', {
+                    duration: 5000,
+                    panelClass: 'snackbar-error',
+                  });
+            }
+
             if (!isValid) {
-                throw new Error('Invalid geometry: Other topology errors detected in multipolygon');
+                this.snackbarService.open('Geometry is invalid.', 'Close', {
+                    duration: 5000,
+                    panelClass: 'snackbar-error',
+                  });
             }
 
         } catch (error) {
             console.error('Validation error:', error);
             throw error;
         }
+    }
+
+    getBritishColumbiaGeoJSON(): GeoJSON.Polygon {
+        return {
+            type: "Polygon",
+            coordinates: [[
+                [-139.05, 60.00],
+                [-114.05, 60.00],
+                [-114.05, 48.30],
+                [-139.05, 48.30],
+                [-139.05, 60.00] 
+            ]]
+        };
     }
 
 }

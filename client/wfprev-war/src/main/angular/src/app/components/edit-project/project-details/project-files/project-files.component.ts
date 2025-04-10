@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
@@ -21,6 +21,7 @@ import { Position } from 'geojson';
   styleUrls: ['./project-files.component.scss']
 })
 export class ProjectFilesComponent implements OnInit {
+  @Output() filesUpdated = new EventEmitter<void>();
   @Input() projectGuid: string = '';
   attachmentDescription: string = '';
   uploadedBy = '';
@@ -76,20 +77,19 @@ export class ProjectFilesComponent implements OnInit {
                   const latestBoundary = boundaries.sort((a: { systemStartTimestamp: string | number | Date; }, b: { systemStartTimestamp: string | number | Date; }) =>
                     new Date(b.systemStartTimestamp).getTime() - new Date(a.systemStartTimestamp).getTime()
                   )[0];
-                  console.log('setting boundary size')
                   boundarySizeHa = latestBoundary.boundarySizeHa;
                 }
 
                 if (boundarySizeHa !== undefined) {
                   // Set the polygonHectares from the boundarySizeHa
                   fileAttachment.polygonHectares = boundarySizeHa;
-
-                  // Push the fileAttachment with the updated polygonHectares to projectFiles
-                  this.projectFiles = [];
-                  this.projectFiles.push(fileAttachment);
                 } else {
                   console.error('boundarySizeHa not found in project boundaries');
                 }
+
+                // Push the fileAttachment with the updated polygonHectares to projectFiles
+                this.projectFiles = [];
+                this.projectFiles.push(fileAttachment);
 
                 // Refresh the table data source
                 this.dataSource.data = []
@@ -117,6 +117,9 @@ export class ProjectFilesComponent implements OnInit {
   openFileUploadModal() {
     const dialogRef = this.dialog.open(AddAttachmentComponent, {
       width: '1000px',
+      data: {
+        indicator: 'project-files'
+      }
     });
 
     dialogRef.afterClosed().subscribe(result => {
@@ -137,7 +140,7 @@ export class ProjectFilesComponent implements OnInit {
         }
       },
       error: () => {
-        this.snackbarService.open('The spatial file was not uploaded.', 'Close', {
+        this.snackbarService.open('Could not reach file upload server.', 'Close', {
           duration: 5000,
           panelClass: 'snackbar-error',
         });
@@ -218,6 +221,7 @@ export class ProjectFilesComponent implements OnInit {
           duration: 5000,
           panelClass: 'snackbar-success',
         });
+        this.filesUpdated.emit();
       },
       error: () => {
         this.snackbarService.open('Failed to update project boundary.', 'Close', {
@@ -243,11 +247,31 @@ export class ProjectFilesComponent implements OnInit {
               this.projectFiles = this.projectFiles.filter(file => file !== fileToDelete);
               this.dataSource.data = [...this.projectFiles];
 
-              // Show success message in snackbar
-              this.snackbarService.open('File has been deleted successfully.', 'Close', {
-                duration: 5000,
-                panelClass: 'snackbar-success',
-              });
+              this.projectService.getProjectBoundaries(this.projectGuid).subscribe(response => {
+                const boundaries = response?._embedded?.projectBoundary;
+
+                if (boundaries && boundaries.length > 0) {
+                  const latest = boundaries.sort((a: any, b: any) =>
+                    new Date(b.systemStartTimestamp).getTime() - new Date(a.systemStartTimestamp).getTime()
+                  )[0];
+
+                  const boundaryGuid = latest.projectBoundaryGuid;
+                  this.projectService.deleteProjectBoundary(this.projectGuid, boundaryGuid).subscribe({
+                    next: () => {
+                      this.filesUpdated.emit();
+                      // Show success message in snackbar
+                      this.snackbarService.open('File has been deleted successfully.', 'Close', {
+                        duration: 5000,
+                        panelClass: 'snackbar-success',
+                      });
+                    }
+                  })
+
+                } else {
+                  console.log('No boundaries found');
+                }
+
+              })
             },
             error: (error) => {
               // Handle any error during the deletion process

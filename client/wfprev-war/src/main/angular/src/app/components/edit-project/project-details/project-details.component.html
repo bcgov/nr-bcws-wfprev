@@ -212,6 +212,6 @@
             </div>
           </form>
         </div>
-        <app-project-files [projectGuid]="projectGuid"></app-project-files>
+        <app-project-files (filesUpdated)="onFilesUpdated()" [projectGuid]="projectGuid"></app-project-files>
     </div>
   </div>

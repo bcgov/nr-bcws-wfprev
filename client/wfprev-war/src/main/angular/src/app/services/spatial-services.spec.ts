@@ -785,15 +785,28 @@ describe('SpatialService', () => {
         expect(() => service.validateMultiPolygon(coords)).toThrowError(/self-intersections/i);
     });
 
-    it('should throw an error for invalid geometry', () => {
-        const coords: Position[][][] = [
-            [
-                [
-                    [-125, 49], [-125, 49], [-125, 49], [-125, 49], [-125, 49] // all points same
-                ]
-            ]
-        ];
-        expect(() => service.validateMultiPolygon(coords)).toThrowError(/Invalid geometry/i);
+    it('should show a snackbar for invalid geometry', () => {
+      const coords: Position[][][] = [
+        [
+          [
+            [-125, 49], [-125, 49], [-125, 49], [-125, 49], [-125, 49] // invalid polygon
+          ]
+        ]
+      ];
+    
+      const mockSnackbar = jasmine.createSpyObj('MatSnackBar', ['open']);
+      const service = new SpatialService(null as any, mockSnackbar); // Inject mock snackbar
+    
+      service.validateMultiPolygon(coords);
+    
+      expect(mockSnackbar.open).toHaveBeenCalledWith(
+        'Geometry is invalid.',
+        'Close',
+        jasmine.objectContaining({
+          duration: 5000,
+          panelClass: 'snackbar-error'
+        })
+      );
     });
 
     it('should log and rethrow errors', () => {

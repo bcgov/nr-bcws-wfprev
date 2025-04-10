@@ -28,7 +28,8 @@ describe('ProjectFilesComponent', () => {
     mockProjectService = jasmine.createSpyObj('ProjectService', [
       'uploadDocument', 
       'getProjectBoundaries', 
-      'createProjectBoundary'
+      'createProjectBoundary',
+      'deleteProjectBoundary'
     ]);
     mockSnackbar = jasmine.createSpyObj('MatSnackBar', ['open']);
     mockDialog = jasmine.createSpyObj('MatDialog', ['open']);
@@ -196,7 +197,10 @@ describe('ProjectFilesComponent', () => {
       spyOn(component, 'uploadFile').and.stub();
 
       component.openFileUploadModal();
-      expect(mockDialog.open).toHaveBeenCalledWith(AddAttachmentComponent, { width: '1000px' });
+      expect(mockDialog.open).toHaveBeenCalledWith(AddAttachmentComponent, {
+        width: '1000px',
+        data: { indicator: 'project-files' },
+      });
       expect(component.uploadFile).toHaveBeenCalledWith(mockFile);
     });
 
@@ -248,7 +252,7 @@ describe('ProjectFilesComponent', () => {
 
       expect(mockProjectService.uploadDocument).toHaveBeenCalledWith({ file: mockFile });
       expect(mockSnackbar.open).toHaveBeenCalledWith(
-        'The spatial file was not uploaded.',
+        'Could not reach file upload server.',
         'Close',
         jasmine.any(Object)
       );
@@ -374,35 +378,54 @@ describe('ProjectFilesComponent', () => {
 
   describe('deleteFile', () => {
     it('should open confirmation dialog and delete file when confirmed', () => {
-      const mockProjectFile = { 
+      const mockProjectGuid = 'mock-guid';
+      const mockProjectFile: ProjectFile = {
         fileAttachmentGuid: 'test-guid',
         fileName: 'test-file.txt'
-      } as ProjectFile;
-      
+      };
+  
+      const mockBoundary = {
+        projectBoundaryGuid: 'boundary-guid',
+        systemStartTimestamp: new Date().toISOString()
+      };
+  
+      // ✅ Just assign returnValue directly instead of spyOn again
       mockDialog.open.and.returnValue({
-        afterClosed: () => of(true) // Simulating user confirming deletion
+        afterClosed: () => of(true)
       } as any);
-      
+  
       mockAttachmentService.deleteProjectAttachment.and.returnValue(of({}));
-      
+      mockProjectService.getProjectBoundaries.and.returnValue(of({
+        _embedded: { projectBoundary: [mockBoundary] }
+      }));
+      mockProjectService.deleteProjectBoundary.and.returnValue(of({}));
+      mockSnackbar.open.and.stub();
+  
+      component.projectGuid = mockProjectGuid;
       component.projectFiles = [mockProjectFile];
-      component.dataSource.data = component.projectFiles;
-      
+      component.dataSource.data = [mockProjectFile];
+  
       component.deleteFile(mockProjectFile);
-      
+  
       expect(mockDialog.open).toHaveBeenCalledWith(
-        ConfirmationDialogComponent, 
+        ConfirmationDialogComponent,
         jasmine.objectContaining({
-          data: { indicator: 'confirm-delete-attachment' }
+          data: { indicator: 'confirm-delete-attachment' },
+          width: '500px'
         })
       );
-      
+  
       expect(mockAttachmentService.deleteProjectAttachment).toHaveBeenCalledWith(
-        mockProjectGuid, 
+        mockProjectGuid,
         'test-guid'
       );
-      
+  
+      expect(mockProjectService.getProjectBoundaries).toHaveBeenCalledWith(mockProjectGuid);
+      expect(mockProjectService.deleteProjectBoundary).toHaveBeenCalledWith(mockProjectGuid, 'boundary-guid');
+  
       expect(component.projectFiles.length).toBe(0);
+      expect(component.dataSource.data.length).toBe(0);
+  
       expect(mockSnackbar.open).toHaveBeenCalledWith(
         'File has been deleted successfully.',
         'Close',
