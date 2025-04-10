@@ -571,4 +571,27 @@ describe('CreateNewProjectDialogComponent', () => {
     expect(component.projectForm.get('projectType')?.value).toBe('FUEL_MGMT');
   });
 
+  it('should set default primaryObjective to WRR when objectiveTypeCodes includes it', () => {
+    const mockObjectiveTypeResponse = {
+      _embedded: {
+        objectiveTypeCode: [
+          { objectiveTypeCode: 'WRR', name: 'Watershed Restoration' },
+          { objectiveTypeCode: 'OTHER', name: 'Other' }
+        ]
+      }
+    };
+  
+    mockCodeTableService.fetchCodeTable.and.callFake((name: string) => {
+      if (name === 'objectiveTypeCodes') {
+        return of(mockObjectiveTypeResponse);
+      }
+      return of({ _embedded: [] });
+    });
+  
+    component.loadCodeTables();
+    fixture.detectChanges();
+  
+    expect(component.projectForm.get('primaryObjective')?.value).toBe('WRR');
+  });
+  
 });
