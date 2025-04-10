@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { ProjectDetailsComponent } from './project-details.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import * as L from 'leaflet';
@@ -31,10 +31,23 @@ const mockApplicationConfig = {
   rest: {},
 };
 
+const mockBounds = jasmine.createSpyObj('LatLngBounds', ['isValid']);
+mockBounds.isValid.and.returnValue(true);
+
+const mockGeoJsonLayer = jasmine.createSpyObj('Layer', ['addTo', 'getBounds']);
+mockGeoJsonLayer.addTo.and.returnValue(mockGeoJsonLayer);
+mockGeoJsonLayer.getBounds.and.returnValue(mockBounds);
+
 class MockOAuthService {
   // Mock any OAuthService methods used in your component
   getAccessToken(): string {
     return 'mock-access-token';
+  }
+  configure(config: any): void {
+    // no-op
+  }
+  initImplicitFlow(): void {
+    // no-op
   }
 }
 
@@ -116,16 +129,76 @@ describe('ProjectDetailsComponent', () => {
     });
   });
 
-  describe('Map Initialization', () => {
+  fdescribe('Map Initialization', () => {
     let mapSpy: jasmine.SpyObj<L.Map>;
     let markerSpy: jasmine.SpyObj<L.Marker>;
+    let geoJsonLayerSpy: jasmine.SpyObj<L.GeoJSON>;
+    let projectServiceSpy: jasmine.SpyObj<ProjectService>;
   
     beforeEach(() => {
       mapSpy = jasmine.createSpyObj('L.Map', ['setView', 'addLayer', 'remove', 'invalidateSize', 'fitBounds', 'removeLayer']);
       markerSpy = jasmine.createSpyObj('L.Marker', ['addTo']);
+      geoJsonLayerSpy = jasmine.createSpyObj('L.GeoJSON', ['addTo', 'getBounds']);
+      projectServiceSpy = jasmine.createSpyObj('ProjectService', ['getProjectBoundaries']);
+    
+      // Provide the service to the component
+      component['projectService'] = projectServiceSpy;
       spyOn(L, 'map').and.returnValue(mapSpy);
       spyOn(L, 'marker').and.returnValue(markerSpy);
+      spyOn(L, 'geoJSON').and.returnValue(geoJsonLayerSpy);
+    
+      // Return a valid bounds object from getBounds
+      geoJsonLayerSpy.getBounds.and.returnValue({
+        isValid: () => true,
+      } as any);
     });
+
+    it('should fetch project boundaries and display the latest boundary on the map', fakeAsync(() => {
+      const mockBoundary = {
+        boundaryGeometry: {
+          type: 'Polygon',
+          coordinates: [[[0, 0], [0, 1], [1, 1], [1, 0], [0, 0]]]
+        },
+        systemStartTimestamp: '2024-01-01T00:00:00Z'
+      };
+    
+      component['map'] = mapSpy;
+      component['projectGuid'] = 'some-guid';
+    
+      projectServiceSpy.getProjectBoundaries.and.returnValue(of({
+        _embedded: {
+          projectBoundary: [mockBoundary]
+        }
+      }));
+    
+      component.updateMap(49.553209, -119.965887);
+      tick(); // advance the observable
+
+      const mockBound = {
+        boundaryGeometry: {
+          type: 'Polygon',
+          coordinates: [[[0, 0], [0, 1], [1, 1], [1, 0], [0, 0]]]
+        } as GeoJSON.Polygon,
+        systemStartTimestamp: '2024-01-01T00:00:00Z'
+      };
+    
+      expect(projectServiceSpy.getProjectBoundaries).toHaveBeenCalledWith('some-guid');
+      expect(L.geoJSON).toHaveBeenCalledWith(mockBound.boundaryGeometry, jasmine.any(Object));
+      expect(geoJsonLayerSpy.addTo).toHaveBeenCalledWith(mapSpy);
+    }));
+
+    it('should log error when fetching project boundaries fails', fakeAsync(() => {
+      const consoleSpy = spyOn(console, 'error');
+      component['map'] = mapSpy;
+      component['projectGuid'] = 'some-guid';
+    
+      projectServiceSpy.getProjectBoundaries.and.returnValue(throwError(() => new Error('Fetch failed')));
+    
+      component.updateMap(49.553209, -119.965887);
+      tick();
+    
+      expect(consoleSpy).toHaveBeenCalledWith('Error fetching project boundaries', jasmine.any(Error));
+    }));
 
     it('should initialize the map when updateMap is called without initializing the map', () => {
       component['map'] = undefined;
