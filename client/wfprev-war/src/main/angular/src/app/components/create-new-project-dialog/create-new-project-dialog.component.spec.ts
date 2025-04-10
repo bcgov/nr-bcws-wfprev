@@ -548,4 +548,27 @@ describe('CreateNewProjectDialogComponent', () => {
     expect(control?.hasError('required')).toBeTrue();
   });
 
+  it('should set default projectType to FUEL_MGMT when projectTypeCodes includes it', () => {
+    const mockProjectTypeResponse = {
+      _embedded: {
+        projectTypeCode: [
+          { projectTypeCode: 'FUEL_MGMT', name: 'Fuel Management' },
+          { projectTypeCode: 'OTHER', name: 'Other' }
+        ]
+      }
+    };
+  
+    mockCodeTableService.fetchCodeTable.and.callFake((name: string) => {
+      if (name === 'projectTypeCodes') {
+        return of(mockProjectTypeResponse);
+      }
+      return of({ _embedded: [] });
+    });
+  
+    component.loadCodeTables();
+    fixture.detectChanges();
+  
+    expect(component.projectForm.get('projectType')?.value).toBe('FUEL_MGMT');
+  });
+
 });
