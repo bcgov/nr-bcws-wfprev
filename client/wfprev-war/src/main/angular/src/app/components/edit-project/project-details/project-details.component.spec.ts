@@ -325,27 +325,24 @@ describe('ProjectDetailsComponent', () => {
   });
 
   describe('loadProjectDetails Method', () => {
-    let projectServiceSpy: jasmine.SpyObj<ProjectService>;
     let routeSnapshotSpy: jasmine.SpyObj<ActivatedRoute>;
     
     beforeEach(() => {
-      projectServiceSpy = jasmine.createSpyObj('ProjectService', ['getProjectByProjectGuid']);
       routeSnapshotSpy = jasmine.createSpyObj('ActivatedRoute', ['snapshot']);
-      component['projectService'] = projectServiceSpy;
       component['route'] = routeSnapshotSpy;
     });
   
     it('should exit early if projectGuid is missing', () => {
       routeSnapshotSpy.snapshot = { queryParamMap: new Map() } as any;
       component.loadProjectDetails();
-      expect(projectServiceSpy.getProjectByProjectGuid).not.toHaveBeenCalled();
+      expect(mockProjectService.getProjectByProjectGuid).not.toHaveBeenCalled();
     });
   
     it('should call projectService.getProjectByProjectGuid if projectGuid is present', () => {
       routeSnapshotSpy.snapshot = { queryParamMap: { get: () => 'test-guid' } } as any;
-      projectServiceSpy.getProjectByProjectGuid.and.returnValue(of({}));
+      mockProjectService.getProjectByProjectGuid.and.returnValue(of({}));
       component.loadProjectDetails();
-      expect(projectServiceSpy.getProjectByProjectGuid).toHaveBeenCalledWith('test-guid');
+      expect(mockProjectService.getProjectByProjectGuid).toHaveBeenCalledWith('test-guid');
     });
   
     it('should not call getProjectByProjectGuid if projectGuid is missing', () => {
@@ -364,7 +361,7 @@ describe('ProjectDetailsComponent', () => {
         projectDescription: 'Test Description',
       };
       routeSnapshotSpy.snapshot = { queryParamMap: { get: () => 'test-guid' } } as any;
-      projectServiceSpy.getProjectByProjectGuid.and.returnValue(of(mockResponse));
+      mockProjectService.getProjectByProjectGuid.and.returnValue(of(mockResponse));
       spyOn(component, 'updateMap');
       spyOn(component, 'populateFormWithProjectDetails');
       spyOn(component.projectNameChange, 'emit');
@@ -386,7 +383,7 @@ describe('ProjectDetailsComponent', () => {
   
     it('should handle error response and set projectDetail to null', () => {
       routeSnapshotSpy.snapshot = { queryParamMap: { get: () => 'test-guid' } } as any;
-      projectServiceSpy.getProjectByProjectGuid.and.returnValue(throwError(() => new Error('Error fetching data')));
+      mockProjectService.getProjectByProjectGuid.and.returnValue(throwError(() => new Error('Error fetching data')));
     
       // Spy on console.error
       spyOn(console, 'error');
