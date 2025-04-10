@@ -22,6 +22,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 @Component
@@ -57,9 +58,9 @@ public class CoordinatesService implements CommonService {
             GeometryFactory factory = allMultiPolygons.getFirst().getFactory();
 
             // Convert the entire list of MultiPolygons to an array of Geometry objects
-            // toArray(new Geometry[0]) converts all MultiPolygons in the list, not just the first one
-            // The empty array is just used as a type hint for Java's generic system
-            Geometry[] geometryArray = allMultiPolygons.toArray(new Geometry[0]);
+            Geometry[] geometryArray = allMultiPolygons.stream()
+                    .filter(Objects::nonNull)
+                    .toArray(Geometry[]::new);
 
             // Create a GeometryCollection containing all MultiPolygons from the list
             // This collection now includes every MultiPolygon, not just the first one
