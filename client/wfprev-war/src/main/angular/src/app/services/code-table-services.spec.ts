@@ -12,7 +12,8 @@ describe('CodeTableServices', () => {
 
   const mockConfig = {
     rest: {
-      wfprev: 'http://mock-api.com'
+      wfprev: 'http://mock-api.com',
+      openmaps: 'http://mock-api.com'
     },
     application: {
       lazyAuthenticate: true,
@@ -113,5 +114,46 @@ describe('CodeTableServices', () => {
     const req = httpMock.expectOne(`http://mock-api.com/wfprev-api/codes/${codeTableName}`);
     expect(req.request.method).toBe('GET');
     req.flush(mockResponse);
+  });
+
+  it('should fetch fire centres from the API and cache the result', () => {
+    const mockFireCentreResponse = {
+      type: 'FeatureCollection',
+      features: [{ id: 1, properties: { name: 'Fire Centre 1' } }]
+    };
+  
+    service.fetchFireCentres().subscribe((response) => {
+      expect(response).toEqual(mockFireCentreResponse);
+      expect((service as any).fireCentresCache).toEqual(mockFireCentreResponse);
+    });
+  
+    const expectedUrl =
+      'http://mock-api.com/geo/pub/WHSE_LEGAL_ADMIN_BOUNDARIES.DRP_MOF_FIRE_CENTRES_SP/ows' +
+      '?service=WFS&version=1.1.0&request=GetFeature&srsName=EPSG:4326' +
+      '&typename=pub:WHSE_LEGAL_ADMIN_BOUNDARIES.DRP_MOF_FIRE_CENTRES_SP' +
+      '&outputformat=application/json&propertyName=(MOF_FIRE_CENTRE_ID,MOF_FIRE_CENTRE_NAME)';
+  
+    const req = httpMock.expectOne(expectedUrl);
+    expect(req.request.method).toBe('GET');
+    expect(req.request.headers.get('Authorization')).toBe('Bearer mock-token');
+    req.flush(mockFireCentreResponse);
+  });
+
+  it('should handle error when fetching fire centres', () => {
+    service.fetchFireCentres().subscribe({
+      next: () => fail('Expected an error'),
+      error: (err) => {
+        expect(err.message).toBe('Failed to get fire centres');
+      }
+    });
+  
+    const expectedUrl =
+      'http://mock-api.com/geo/pub/WHSE_LEGAL_ADMIN_BOUNDARIES.DRP_MOF_FIRE_CENTRES_SP/ows' +
+      '?service=WFS&version=1.1.0&request=GetFeature&srsName=EPSG:4326' +
+      '&typename=pub:WHSE_LEGAL_ADMIN_BOUNDARIES.DRP_MOF_FIRE_CENTRES_SP' +
+      '&outputformat=application/json&propertyName=(MOF_FIRE_CENTRE_ID,MOF_FIRE_CENTRE_NAME)';
+  
+    const req = httpMock.expectOne(expectedUrl);
+    req.flush('Error', { status: 500, statusText: 'Server Error' });
   });
 });
