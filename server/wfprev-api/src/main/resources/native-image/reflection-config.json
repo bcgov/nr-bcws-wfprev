@@ -1274,5 +1274,11 @@
     "allDeclaredFields": true,
     "allPublicMethods": true,
     "allDeclaredConstructors": true
+  },
+  {
+    "name": "org.locationtech.jts.geom.GeometryFactory",
+    "allDeclaredFields": true,
+    "allPublicMethods": true,
+    "allDeclaredConstructors": true
   }
 ]
