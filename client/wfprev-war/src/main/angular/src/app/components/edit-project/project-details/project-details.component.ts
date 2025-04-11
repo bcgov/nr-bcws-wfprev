@@ -51,7 +51,7 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
   bcParksRegionCode: any[] = [];
   bcParksSectionCode: any[] = [];
   objectiveTypeCode: any[] = [];
-
+  fireCentres: any[] = [];
   constructor(
     private readonly fb: FormBuilder,
     private route: ActivatedRoute,
@@ -94,7 +94,7 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
       secondaryObjectiveRationale: [''],
       bcParksRegionOrgUnitId: [''],
       bcParksSectionOrgUnitId: [''],
-      projectDescription: [''],
+      fireCentreId: ['', [Validators.required]],
       latitude: [''],
       longitude: [''],
     });
@@ -171,6 +171,19 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
           this.assignCodeTableData(table.embeddedKey, []); // Assign empty array on error
         },
       });
+    });
+
+    this.loadFireCentres();
+  }
+
+  loadFireCentres(): void {
+    this.codeTableService.fetchFireCentres().subscribe({
+      next: (response) => {
+        this.fireCentres = response?.features ?? [];
+      },
+      error: (error) => {
+        console.error('Failed to load fire centres', error);
+      }
     });
   }
   assignCodeTableData(key: string, data: any): void {
@@ -316,6 +329,7 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
       secondaryObjectiveRationale: data.secondaryObjectiveRationale,
       bcParksRegionOrgUnitId: data.bcParksRegionOrgUnitId,
       bcParksSectionOrgUnitId: data.bcParksSectionOrgUnitId,
+      fireCentreId: data.fireCentreOrgUnitId,
       latitude: data.latitude,
       longitude: data.longitude,
     });
@@ -330,6 +344,7 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
           forestDistrictOrgUnitId: Number(this.detailsForm.get('forestDistrictOrgUnitId')?.value),
           bcParksRegionOrgUnitId: Number(this.detailsForm.get('bcParksRegionOrgUnitId')?.value),
           bcParksSectionOrgUnitId: Number(this.detailsForm.get('bcParksSectionOrgUnitId')?.value),
+          fireCentreOrgUnitId: Number(this.detailsForm.get('fireCentreId')?.value),
           projectTypeCode: this.detailsForm.get('projectTypeCode')?.value
           ? { projectTypeCode: this.detailsForm.get('projectTypeCode')?.value} : this.projectDetail.projectTypeCode,
           forestAreaCode: {

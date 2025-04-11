@@ -132,6 +132,15 @@
         </select>
       </div>
   
+      <div class="form-item">
+        <label>BCWS Fire Centre<span class="required">*</span></label>
+        <select id="fireCentre" formControlName="fireCentreId">
+          <option *ngFor="let item of fireCentres" [value]="item.properties.MOF_FIRE_CENTRE_ID">
+            {{ item.properties.MOF_FIRE_CENTRE_NAME }}
+          </option>
+        </select>
+      </div>
+
       <div class="footer">
           <div class="button-row">
             <button class="secondary" (click)="onCancel()" [disabled]="!detailsForm.dirty">Cancel</button>

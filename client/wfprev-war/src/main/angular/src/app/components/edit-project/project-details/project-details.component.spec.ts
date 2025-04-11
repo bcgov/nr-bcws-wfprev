@@ -127,6 +127,14 @@ describe('ProjectDetailsComponent', () => {
       component.latLongForm.controls['longitude'].setValue('-119.965887');
       expect(component.latLongForm.valid).toBeTrue();
     });
+
+    it('should include fireCentreId as required in the form', () => {
+      const control = component.detailsForm.get('fireCentreId');
+      expect(control).toBeTruthy();
+      control?.setValue('');
+      control?.markAsTouched();
+      expect(control?.hasError('required')).toBeTrue();
+    });
   });
 
   describe('Map Initialization', () => {
@@ -419,27 +427,24 @@ describe('ProjectDetailsComponent', () => {
   });
 
   describe('loadProjectDetails Method', () => {
-    let projectServiceSpy: jasmine.SpyObj<ProjectService>;
     let routeSnapshotSpy: jasmine.SpyObj<ActivatedRoute>;
     
     beforeEach(() => {
-      projectServiceSpy = jasmine.createSpyObj('ProjectService', ['getProjectByProjectGuid']);
       routeSnapshotSpy = jasmine.createSpyObj('ActivatedRoute', ['snapshot']);
-      component['projectService'] = projectServiceSpy;
       component['route'] = routeSnapshotSpy;
     });
   
     it('should exit early if projectGuid is missing', () => {
       routeSnapshotSpy.snapshot = { queryParamMap: new Map() } as any;
       component.loadProjectDetails();
-      expect(projectServiceSpy.getProjectByProjectGuid).not.toHaveBeenCalled();
+      expect(mockProjectService.getProjectByProjectGuid).not.toHaveBeenCalled();
     });
   
     it('should call projectService.getProjectByProjectGuid if projectGuid is present', () => {
       routeSnapshotSpy.snapshot = { queryParamMap: { get: () => 'test-guid' } } as any;
-      projectServiceSpy.getProjectByProjectGuid.and.returnValue(of({}));
+      mockProjectService.getProjectByProjectGuid.and.returnValue(of({}));
       component.loadProjectDetails();
-      expect(projectServiceSpy.getProjectByProjectGuid).toHaveBeenCalledWith('test-guid');
+      expect(mockProjectService.getProjectByProjectGuid).toHaveBeenCalledWith('test-guid');
     });
   
     it('should not call getProjectByProjectGuid if projectGuid is missing', () => {
@@ -458,7 +463,7 @@ describe('ProjectDetailsComponent', () => {
         projectDescription: 'Test Description',
       };
       routeSnapshotSpy.snapshot = { queryParamMap: { get: () => 'test-guid' } } as any;
-      projectServiceSpy.getProjectByProjectGuid.and.returnValue(of(mockResponse));
+      mockProjectService.getProjectByProjectGuid.and.returnValue(of(mockResponse));
       spyOn(component, 'updateMap');
       spyOn(component, 'populateFormWithProjectDetails');
       spyOn(component.projectNameChange, 'emit');
@@ -480,7 +485,7 @@ describe('ProjectDetailsComponent', () => {
   
     it('should handle error response and set projectDetail to null', () => {
       routeSnapshotSpy.snapshot = { queryParamMap: { get: () => 'test-guid' } } as any;
-      projectServiceSpy.getProjectByProjectGuid.and.returnValue(throwError(() => new Error('Error fetching data')));
+      mockProjectService.getProjectByProjectGuid.and.returnValue(throwError(() => new Error('Error fetching data')));
     
       // Spy on console.error
       spyOn(console, 'error');
@@ -536,6 +541,12 @@ describe('ProjectDetailsComponent', () => {
         component.populateFormWithProjectDetails(mockData);
     
         expect(component.patchFormValues).toHaveBeenCalledWith(mockData);
+      });
+
+      it('should patch fireCentreId from fireCentreOrgUnitId in projectDetail', () => {
+        const mockData = { fireCentreOrgUnitId: 456 };
+        component.patchFormValues(mockData);
+        expect(component.detailsForm.get('fireCentreId')?.value).toBe(456);
       });
     });
 
@@ -698,6 +709,52 @@ describe('ProjectDetailsComponent', () => {
       component.onSave();
     
       expect(mockProjectService.updateProject).not.toHaveBeenCalled();
+    });
+    
+    it('should include fireCentreOrgUnitId in the updateProject payload', () => {
+      component.projectGuid = 'test-guid';
+      component.projectDetail = { projectTypeCode: { projectTypeCode: 'TEST' }, primaryObjectiveTypeCode: {} };
+      component.detailsForm.patchValue({
+        projectTypeCode: 'FUEL_MGMT',
+        programAreaGuid: 'area-guid',
+        closestCommunityName: 'Test City',
+        primaryObjectiveTypeCode: 'WRR',
+        fireCentreId: 123, // <- Required field
+      });
+    
+      mockProjectService.updateProject.and.returnValue(of({}));
+      mockProjectService.getProjectByProjectGuid.and.returnValue(of({}));
+    
+      component.onSave();
+    
+      expect(mockProjectService.updateProject).toHaveBeenCalledWith(
+        'test-guid',
+        jasmine.objectContaining({
+          fireCentreOrgUnitId: 123,
+        })
+      );
+    });
+    describe('refreshFiscalData Method', () => {
+      it('should call loadProjectFiscals on FiscalYearProjectsComponent', () => {
+        // Arrange
+        component.fiscalYearProjectsComponent = {
+          loadProjectFiscals: jasmine.createSpy('loadProjectFiscals')
+        } as any;
+    
+        // Act
+        component.refreshFiscalData();
+    
+        // Assert
+        expect(component.fiscalYearProjectsComponent.loadProjectFiscals).toHaveBeenCalled();
+      });
+    
+      it('should not throw if fiscalYearProjectsComponent is undefined', () => {
+        // Arrange
+        component.fiscalYearProjectsComponent = undefined!;
+    
+        // Act
+        expect(() => component.refreshFiscalData()).not.toThrow();
+      });
     });
 
   });

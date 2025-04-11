@@ -138,10 +138,11 @@ select {
   font-size: 16px; /* Font size similar to inputs */
   color: #333; /* Text color */
   outline: none;
-  border-radius: 4px;
-  border: 1px solid #DFE0E2;
+  border-radius: 0;
   background: #FFF;
   background-color: transparent; /* Transparent background to match input style */
+  border: none;
+  border-bottom: 1px solid #282828;
 
   &::placeholder {
     color: #aaa; /* Placeholder color */

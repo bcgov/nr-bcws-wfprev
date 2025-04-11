@@ -59,7 +59,7 @@ jobs:
       env:
         WFPREV_BASE_URL: ${{ vars.WFPREV_BASE_URL }}
         WFDM_BASE_URL: ${{ vars.WFDM_BASE_URL }}
-
+        OPENMAPS_URL: ${{ vars.OPENMAPS_URL }}
         WEBADE_OAUTH2_CHECK_AUTHORIZE_URL: ${{ vars.WEBADE_OAUTH2_CHECK_AUTHORIZE_URL }}
         WFPREV_CHECK_TOKEN_URL: ${{ vars.WFPREV_CHECK_TOKEN_URL }}
 
@@ -118,6 +118,8 @@ jobs:
         server_count: ${{vars.WFPREV_SERVER_INSTANCE_COUNT}}
         # WFDM API
         WFDM_BASE_URL: ${{vars.WFDM_BASE_URL}}
+        # OPENMAPS
+        OPENMAPS_URL: ${{vars.OPENMAPS_URL}}
         # WFPREV UI
         CLIENT_IMAGE: ${{ steps.getDigestUI.outputs.IMAGE_UI_BY_DIGEST }}
         WEBADE_OAUTH2_WFPREV_UI_CLIENT_SECRET: ${{ secrets.WEBADE_OAUTH2_WFPREV_UI_CLIENT_SECRET }}
