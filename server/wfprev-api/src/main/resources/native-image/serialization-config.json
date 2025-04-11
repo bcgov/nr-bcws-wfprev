@@ -74,8 +74,5 @@
   { "name":"org.locationtech.jts.geom.LinearRing" },
   { "name":"org.locationtech.jts.geom.Envelope" },
   { "name":"org.locationtech.jts.geom.CoordinateSequence" },
-  { "name":"org.locationtech.jts.geom.PrecisionModel" },
-  { "name":"org.opengis.referencing.crs.CoordinateReferenceSystem" },
-  { "name":"org.geotools.referencing.crs.DefaultGeographicCRS" },
-  { "name":"org.geotools.referencing.operation.DefaultMathTransformFactory" }
+  { "name":"org.locationtech.jts.geom.PrecisionModel" }
 ]

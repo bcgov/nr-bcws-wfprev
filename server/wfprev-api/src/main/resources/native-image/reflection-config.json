@@ -1276,43 +1276,7 @@
     "allDeclaredConstructors": true
   },
   {
-    "name": "org.opengis.referencing.operation.MathTransform",
-    "allDeclaredFields": true,
-    "allPublicMethods": true,
-    "allDeclaredConstructors": true
-  },
-  {
     "name": "org.locationtech.jts.geom.GeometryFactory",
-    "allDeclaredFields": true,
-    "allPublicMethods": true,
-    "allDeclaredConstructors": true
-  },
-  {
-    "name": "org.geotools.referencing.CRS",
-    "allDeclaredFields": true,
-    "allPublicMethods": true,
-    "allDeclaredConstructors": true
-  },
-  {
-    "name": "org.geotools.referencing.crs.DefaultGeographicCRS",
-    "allDeclaredFields": true,
-    "allPublicMethods": true,
-    "allDeclaredConstructors": true
-  },
-  {
-    "name": "org.geotools.referencing.operation.DefaultMathTransformFactory",
-    "allDeclaredFields": true,
-    "allPublicMethods": true,
-    "allDeclaredConstructors": true
-  },
-  {
-    "name": "org.opengis.referencing.FactoryException",
-    "allDeclaredFields": true,
-    "allPublicMethods": true,
-    "allDeclaredConstructors": true
-  },
-  {
-    "name": "org.opengis.referencing.operation.TransformException",
     "allDeclaredFields": true,
     "allPublicMethods": true,
     "allDeclaredConstructors": true

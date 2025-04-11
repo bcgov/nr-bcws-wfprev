@@ -2,10 +2,7 @@
   "resources": {
     "includes": [
       {"pattern": "org/geolatte/geom/crs/spatial_ref_sys.csv"},
-      {"pattern": "org/geolatte/geom/crs/epsg.properties"},
-      { "pattern": "org/geotools/metadata/i18n/.*\\.properties" },
-      { "pattern": "org/geotools/referencing/.*\\.properties" },
-      { "pattern": "org/geotools/.*\\.xml" }
+      {"pattern": "org/geolatte/geom/crs/epsg.properties"}
     ]
   }
 }
