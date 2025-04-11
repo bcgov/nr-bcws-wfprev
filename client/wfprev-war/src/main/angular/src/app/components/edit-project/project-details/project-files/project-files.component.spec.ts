@@ -300,20 +300,19 @@ describe('ProjectFilesComponent', () => {
     it('should handle create attachment error', () => {
       const mockFile = new File(['content'], 'test-file.txt', { type: 'text/plain' });
       const response = { fileId: 'test-file-id' };
-
+    
+      spyOn(console, 'log'); // or use 'error' if you're logging with console.error
+    
       mockAttachmentService.createProjectAttachment.and.returnValue(
         throwError(() => new Error('Failed to create attachment'))
       );
-
+    
       component.uploadAttachment(mockFile, response);
-
+    
       expect(mockAttachmentService.createProjectAttachment).toHaveBeenCalled();
-      expect(mockSnackbar.open).toHaveBeenCalledWith(
-        'Failed to upload file. Please try again.',
-        'Close',
-        jasmine.any(Object)
-      );
+      expect(console.log).toHaveBeenCalledWith('Failed to upload attachment: ', jasmine.any(Error));
     });
+    
   });
 
   describe('updateProjectBoundary', () => {
@@ -360,18 +359,19 @@ describe('ProjectFilesComponent', () => {
           ]
         ]
       ];
-
+    
+      spyOn(console, 'error');
+    
       mockProjectService.createProjectBoundary.and.returnValue(
         throwError(() => new Error('Failed to create boundary'))
       );
-
+    
       component.updateProjectBoundary(mockFile, coordinates);
-
+    
       expect(mockProjectService.createProjectBoundary).toHaveBeenCalled();
-      expect(mockSnackbar.open).toHaveBeenCalledWith(
-        'Failed to update project boundary.',
-        'Close',
-        jasmine.any(Object)
+      expect(console.error).toHaveBeenCalledWith(
+        'Failed to upload project geometry: ',
+        jasmine.any(Error)
       );
     });
   });

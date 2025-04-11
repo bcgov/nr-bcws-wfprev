@@ -183,11 +183,8 @@ export class ProjectFilesComponent implements OnInit {
           this.loadProjectAttachments();
         }
       },
-      error: () => {
-        this.snackbarService.open('Failed to upload file. Please try again.', 'Close', {
-          duration: 10000,
-          panelClass: 'snackbar-error',
-        });
+      error: (error) => {
+        console.log('Failed to upload attachment: ', error)
       },
     });
   }
@@ -223,11 +220,8 @@ export class ProjectFilesComponent implements OnInit {
         });
         this.filesUpdated.emit();
       },
-      error: () => {
-        this.snackbarService.open('Failed to update project boundary.', 'Close', {
-          duration: 5000,
-          panelClass: 'snackbar-error',
-        });
+      error: (error) => {
+        console.error('Failed to upload project geometry: ', error)
       }
     });
   }

@@ -4,7 +4,7 @@ import { MatSnackBar } from "@angular/material/snack-bar";
 import * as toGeoJSON from '@tmcw/togeojson';
 import * as turf from '@turf/turf';
 import { DOMParser } from '@xmldom/xmldom';
-import { BlobReader, ZipReader } from '@zip.js/zip.js';
+import { BlobReader, TextWriter, ZipReader } from '@zip.js/zip.js';
 import { Geometry, Position } from 'geojson';
 import { catchError, lastValueFrom, map, Observable, of, throwError } from "rxjs";
 import * as shp from 'shpjs';
@@ -264,20 +264,27 @@ export class SpatialService {
     public async extractCoordinates(file: File): Promise<Position[][][]> {
         const fileType = file.name.split('.').pop()?.toLowerCase();
         if (!fileType) return [];
-
+    
         try {
             if (fileType === 'kml') {
                 return this.extractKMLCoordinates(await file.text());
-            }
-
-            if (['zip', 'gdb'].includes(fileType)) {
+            } else if (fileType === 'kmz') {
+                return await this.handleKMZFile(file);
+            } else if (['zip', 'gdb'].includes(fileType)) {
                 return await this.handleCompressedFile(file);
+            } else {
+                this.snackbarService.open('Unsupported file type: ' + fileType, 'Close', {
+                    duration: 5000,
+                    panelClass: 'snackbar-error',
+                });
+                return [];
             }
-
-            console.error('Unsupported file type:', fileType);
-            return [];
         } catch (error) {
             console.error('Error extracting coordinates:', error);
+            this.snackbarService.open('Error extracting coordinates.', 'Close', {
+                duration: 5000,
+                panelClass: 'snackbar-error',
+            });
             return [];
         }
     }
@@ -289,14 +296,17 @@ export class SpatialService {
 
             if (this.hasSHPEntry(entries)) {
                 return await this.extractSHPCoordinates(file);
-            }
-
-            if (this.hasGDBEntries(entries)) {
+            } else if (this.hasGDBEntries(entries)) {
                 return await this.handleGDB(file);
+            } else if (this.hasKMZEntry(entries)) {
+                return await this.handleKMZ(entries);
+            } else {
+                this.snackbarService.open('Geometry is invalid.', 'Close', {
+                    duration: 5000,
+                    panelClass: 'snackbar-error',
+                });
+                return [];
             }
-
-            console.error('No supported spatial files found in ZIP or GDB.');
-            return [];
         } finally {
             await zipReader.close();
         }
@@ -311,6 +321,10 @@ export class SpatialService {
         return entries.some(entry => entry.filename.includes('.gdbtable'));
     }
 
+    private hasKMZEntry(entries: any[]): boolean {
+        return entries.some(entry => entry.filename.toLowerCase().endsWith('.kml'));
+    }
+    
     private async handleGDB(file: File): Promise<Position[][][]> {
         try {
             const geojsonData = await lastValueFrom(
@@ -325,6 +339,57 @@ export class SpatialService {
             return geojsonData?.[0]?.coordinates || [];
         } catch (error) {
             console.error("Error processing Geodatabase file:", error);
+            return [];
+        }
+    }
+    
+    public async handleKMZFile(file: File): Promise<Position[][][]> {
+        try {
+            const zipReader = new ZipReader(new BlobReader(file));
+            const entries = await zipReader.getEntries();
+            
+            // Look for any KML file in the archive
+            const kmlEntry = entries.find(entry => 
+                entry.filename.toLowerCase().endsWith('.kml'));
+                
+            if (!kmlEntry) {
+                await zipReader.close();
+                throw new Error('No KML file found inside KMZ archive');
+            }
+            
+            // Get the KML content and process it
+            const kmlText = await kmlEntry?.getData?.(new TextWriter());
+            await zipReader.close();
+
+            if(kmlText) {
+                return this.extractKMLCoordinates(kmlText);
+            } else return[];
+            
+        } catch (error) {
+            console.error("Error processing KMZ file:", error);
+            return[];
+        }
+    }
+
+    private async handleKMZ(entries: any[]): Promise<Position[][][]> {
+        try {
+            const kmlEntry = entries.find(entry => 
+                entry.filename.toLowerCase().endsWith('.kml'));
+                
+            if (!kmlEntry) {
+                console.error('No KML file found inside KMZ archive');
+                return [];
+            }
+            
+            try {
+                const kmlText = await kmlEntry.getData(new TextWriter()) as string;
+                return this.extractKMLCoordinates(kmlText);
+            } catch (dataError) {
+                console.error('Failed to extract KML data:', dataError);
+                return [];
+            }
+        } catch (error) {
+            console.error("Error processing KMZ file:", error);
             return [];
         }
     }
@@ -347,7 +412,7 @@ export class SpatialService {
 
             // Check overall validity
             const isValid = turf.booleanValid(multiPolygon);
-            
+
             // Process each polygon individually for kinks
             let selfIntersections = [];
 
@@ -375,25 +440,30 @@ export class SpatialService {
                 console.error('Self-intersections found at points:',
                     selfIntersections.map(f => f.geometry.coordinates)
                 );
-
-                throw new Error(`Found ${selfIntersections.length} self-intersections in the multipolygon`);
+                this.snackbarService.open(`Found ${selfIntersections.length} self-intersections in the uploaded geometry.`, 'Close', {
+                    duration: 5000,
+                    panelClass: 'snackbar-error',
+                });
+                throw new Error('Self-intersections found in the uploaded geometry.');
             }
 
-            const britishColumbiaBoundary = this.getBritishColumbiaGeoJSON(); 
+            const britishColumbiaBoundary = this.getBritishColumbiaGeoJSON();
             const isInBC = turf.booleanIntersects(multiPolygon, britishColumbiaBoundary);
-    
+
             if (!isInBC) {
                 this.snackbarService.open('Geometry is outside of BC.', 'Close', {
                     duration: 5000,
                     panelClass: 'snackbar-error',
-                  });
+                });
+                throw new Error('Geometry is outside of BC.');
             }
 
             if (!isValid) {
                 this.snackbarService.open('Geometry is invalid.', 'Close', {
                     duration: 5000,
                     panelClass: 'snackbar-error',
-                  });
+                });
+                throw new Error('Geometry is invalid.');
             }
 
         } catch (error) {
@@ -410,7 +480,7 @@ export class SpatialService {
                 [-114.05, 60.00],
                 [-114.05, 48.30],
                 [-139.05, 48.30],
-                [-139.05, 60.00] 
+                [-139.05, 60.00]
             ]]
         };
     }
