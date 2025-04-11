@@ -3,6 +3,7 @@ import { HttpClientTestingModule, HttpTestingController } from '@angular/common/
 import { SpatialService } from './spatial-services';
 import { Geometry, Point, LineString, Polygon, MultiPoint, MultiLineString, MultiPolygon, GeometryCollection, Position } from 'geojson';
 import { throwError } from 'rxjs';
+import { polygon } from '@turf/helpers';
 
 // Create mock ZIP module implementation
 const mockZipModule = {
@@ -785,15 +786,60 @@ describe('SpatialService', () => {
         expect(() => service.validateMultiPolygon(coords)).toThrowError(/self-intersections/i);
     });
 
-    it('should throw an error for invalid geometry', () => {
-        const coords: Position[][][] = [
-            [
-                [
-                    [-125, 49], [-125, 49], [-125, 49], [-125, 49], [-125, 49] // all points same
-                ]
-            ]
-        ];
-        expect(() => service.validateMultiPolygon(coords)).toThrowError(/Invalid geometry/i);
+    it('should show a snackbar for invalid geometry', () => {
+      const coords: Position[][][] = [
+        [
+          [
+            [-125, 49], [-125, 49], [-125, 49], [-125, 49], [-125, 49] // invalid polygon
+          ]
+        ]
+      ];
+    
+      const mockSnackbar = jasmine.createSpyObj('MatSnackBar', ['open']);
+      const service = new SpatialService(null as any, mockSnackbar); // Inject mock snackbar
+    
+      service.validateMultiPolygon(coords);
+    
+      expect(mockSnackbar.open).toHaveBeenCalledWith(
+        'Geometry is invalid.',
+        'Close',
+        jasmine.objectContaining({
+          duration: 5000,
+          panelClass: 'snackbar-error'
+        })
+      );
+    });
+
+    it('should show a snackbar when geometry is outside of BC', () => {
+      const coords: Position[][][] = [
+        [
+          [
+            [-100, 40], [-100, 41], [-99, 41], [-99, 40], [-100, 40] // Somewhere in the US
+          ]
+        ]
+      ];
+    
+      const mockSnackbar = jasmine.createSpyObj('MatSnackBar', ['open']);
+      
+      // Mock getBritishColumbiaGeoJSON to return a BC boundary that doesn't intersect
+      const mockService = new SpatialService(null as any, mockSnackbar);
+      spyOn(mockService, 'getBritishColumbiaGeoJSON').and.returnValue(
+        polygon([
+          [
+            [-139.1, 48.3], [-114, 48.3], [-114, 60], [-139.1, 60], [-139.1, 48.3]
+          ]
+        ]).geometry
+      );
+      mockService.validateMultiPolygon(coords);
+    
+      expect(mockSnackbar.open).toHaveBeenCalledWith(
+        'Geometry is outside of BC.',
+        'Close',
+        jasmine.objectContaining({
+          duration: 5000,
+          panelClass: 'snackbar-error'
+        })
+      );
     });
 
     it('should log and rethrow errors', () => {
