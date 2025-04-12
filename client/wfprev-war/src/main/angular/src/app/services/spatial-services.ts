@@ -8,7 +8,6 @@ import { BlobReader, TextWriter, ZipReader } from '@zip.js/zip.js';
 import { Feature, Geometry, Polygon, Position } from 'geojson';
 import { catchError, firstValueFrom, lastValueFrom, map, Observable, of, throwError } from "rxjs";
 import * as shp from 'shpjs';
-import * as martinez from 'martinez-polygon-clipping';
 export type CoordinateTypes = Position | Position[] | Position[][] | Position[][][];
 
 @Injectable({
