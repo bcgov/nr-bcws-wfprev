@@ -179,8 +179,6 @@ export class ProjectFilesComponent implements OnInit {
               this.updateProjectBoundary(file, response)
             }
           })
-
-          this.loadProjectAttachments();
         }
       },
       error: (error) => {
@@ -218,6 +216,7 @@ export class ProjectFilesComponent implements OnInit {
           duration: 5000,
           panelClass: 'snackbar-success',
         });
+        this.loadProjectAttachments();
         this.filesUpdated.emit();
       },
       error: (error) => {
@@ -258,6 +257,7 @@ export class ProjectFilesComponent implements OnInit {
                         duration: 5000,
                         panelClass: 'snackbar-success',
                       });
+                      this.loadProjectAttachments();
                     }
                   })
 

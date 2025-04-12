@@ -3,9 +3,10 @@ import { HttpClientTestingModule, HttpTestingController } from '@angular/common/
 import { SpatialService } from './spatial-services';
 import { Geometry, Point, LineString, Polygon, MultiPoint, MultiLineString, MultiPolygon, GeometryCollection, Position } from 'geojson';
 import { throwError } from 'rxjs';
-import { polygon } from '@turf/helpers';
+import * as turf from '@turf/turf';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ZipReader } from '@zip.js/zip.js';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 // Create mock ZIP module implementation
 const mockZipModule = {
@@ -28,6 +29,8 @@ const mockShpModule = {
   })
 };
 
+const mockSnackbar = jasmine.createSpyObj('MatSnackBar', ['open']);
+
 describe('SpatialService', () => {
   let service: SpatialService;
   let httpMock: HttpTestingController;
@@ -38,7 +41,9 @@ describe('SpatialService', () => {
         HttpClientTestingModule,
         BrowserAnimationsModule
       ],
-      providers: [SpatialService]
+      providers: [SpatialService,
+        { provide: MatSnackBar, useValue: mockSnackbar }
+      ]
     });
 
     service = TestBed.inject(SpatialService);
@@ -65,7 +70,7 @@ describe('SpatialService', () => {
   });
 
   describe('parseKMLToCoordinates', () => {
-    it('should parse real KML and return proper coordinates', () => {
+    it('should parse real KML and return proper coordinates', async () => {
       const kmlString = `
         <kml xmlns="http://www.opengis.net/kml/2.2">
           <Document>
@@ -85,14 +90,14 @@ describe('SpatialService', () => {
       `;
 
       spyOn(service as any, 'validateMultiPolygon').and.returnValue(true);
-      const result = (service as any).parseKMLToCoordinates(kmlString);
+      const result = await (service as any).parseKMLToCoordinates(kmlString);
 
       expect(result).toEqual([
         [[[1, 2], [3, 4], [5, 6], [1, 2]]]
       ]);
     });
 
-    it('should log error for unexpected coordinate structure in KML', () => {
+    it('should log error for unexpected coordinate structure in KML', async () => {
       const kmlString = `
         <kml xmlns="http://www.opengis.net/kml/2.2">
           <Placemark>
@@ -113,7 +118,7 @@ describe('SpatialService', () => {
       spyOn(service as any, 'validateMultiPolygon').and.stub();
       const consoleSpy = spyOn(console, 'error');
 
-      (service as any).parseKMLToCoordinates(kmlString);
+      await (service as any).parseKMLToCoordinates(kmlString);
 
       expect(consoleSpy).toHaveBeenCalledWith('Unexpected coordinate structure:', malformedCoords);
     });
@@ -123,14 +128,14 @@ describe('SpatialService', () => {
 
   // Tests for extractKMLCoordinates public method
   describe('extractKMLCoordinates', () => {
-    it('should call parseKMLToCoordinates and return its result', () => {
+    it('should call parseKMLToCoordinates and return its result', async () => {
       // Mock the private parseKMLToCoordinates method
       spyOn<any>(service, 'parseKMLToCoordinates').and.returnValue([
         [[[1, 2], [3, 4], [5, 6], [1, 2]]]
       ]);
 
       // Act
-      const result = service.extractKMLCoordinates('<mock-kml></mock-kml>');
+      const result = await service.extractKMLCoordinates('<mock-kml></mock-kml>');
 
       // Assert
       expect(result).toEqual([
@@ -704,18 +709,16 @@ describe('SpatialService', () => {
       spyOn(mockFile, 'text').and.returnValue(Promise.resolve('<kml>bad</kml>'));
       spyOn(service, 'extractKMLCoordinates').and.throwError('KML error');
 
-      const result = await service.extractCoordinates(mockFile);
-
-      expect(result).toEqual([]);
+      await expectAsync(service.extractCoordinates(mockFile))
+        .toBeRejectedWithError('Error extracting coordinates.');
     });
 
     it('should catch errors thrown by handleCompressedFile', async () => {
       const mockFile = new File([''], 'data.zip');
       spyOn(service, 'handleCompressedFile').and.throwError('ZIP error');
 
-      const result = await service.extractCoordinates(mockFile);
-
-      expect(result).toEqual([]);
+      await expectAsync(service.extractCoordinates(mockFile))
+        .toBeRejectedWithError('Error extracting coordinates.');
     });
   });
 
@@ -780,80 +783,102 @@ describe('SpatialService', () => {
   });
 
   describe('validateMultiPolygon', () => {
-    it('should throw an error for a self-intersecting polygon', () => {
-      const coords: Position[][][] = [
-        [
-          [
-            [-125, 49], [-124, 50], [-125, 50], [-124, 49], [-125, 49] // bowtie shape
-          ]
-        ]
-      ];
-      expect(() => service.validateMultiPolygon(coords)).toThrowError(/self-intersections/i);
+    let service: SpatialService;
+    let mockSnackbar: jasmine.SpyObj<MatSnackBar>;
+
+    beforeEach(() => {
+      mockSnackbar = jasmine.createSpyObj('MatSnackBar', ['open']);
+      service = new SpatialService(null as any, mockSnackbar);
     });
 
-    it('should show a snackbar for invalid geometry and throw an error', () => {
+    it('should validate a correct multipolygon without errors', async () => {
       const coords: Position[][][] = [
-        [
-          [
-            [-125, 49], [-125, 49], [-125, 49], [-125, 49], [-125, 49] // Invalid polygon
-          ]
-        ]
+        [[[1, 2], [3, 4], [5, 6], [1, 2]]]
       ];
 
-      const mockSnackbar = jasmine.createSpyObj('MatSnackBar', ['open']);
-      const service = new SpatialService(null as any, mockSnackbar); // Inject mock snackbar
+      spyOn(service, 'validateGeometryInBC').and.returnValue(Promise.resolve(true));
 
-      expect(() => service.validateMultiPolygon(coords)).toThrowError('Geometry is invalid.');
+      await expectAsync(service.validateMultiPolygon(coords)).toBeResolved();
+      expect(mockSnackbar.open).not.toHaveBeenCalled();
+    });
 
+    it('should throw an error for invalid multipolygon geometry', async () => {
+      const coords: Position[][][] = [
+        [[[0, 0], [1, 1], [2, 2], [0, 0]]] // A degenerate polygon (collinear)
+      ];
+
+      spyOn(service as any, 'isValidGeometry').and.returnValue(false);
+      spyOn(service, 'validateGeometryInBC').and.returnValue(Promise.resolve(true));
+
+      await expectAsync(service.validateMultiPolygon(coords)).toBeRejectedWithError('Geometry is invalid.');
       expect(mockSnackbar.open).toHaveBeenCalledWith(
         'Geometry is invalid.',
         'Close',
-        jasmine.objectContaining({
-          duration: 5000,
-          panelClass: 'snackbar-error'
-        })
+        jasmine.objectContaining({ duration: 5000 })
       );
     });
 
-    it('should show a snackbar and throw an error when geometry is outside of BC', () => {
+    it('should throw an error for self-intersections', async () => {
       const coords: Position[][][] = [
-        [
-          [
-            [-100, 40], [-100, 41], [-99, 41], [-99, 40], [-100, 40] // Outside BC
-          ]
-        ]
+        [[[0, 0], [1, 1], [1, 0], [0, 1], [0, 0]]] // Known self-intersecting polygon (bowtie)
       ];
 
-      const mockSnackbar = jasmine.createSpyObj('MatSnackBar', ['open']);
-      const mockService = new SpatialService(null as any, mockSnackbar);
+      spyOn(service as any, 'isValidGeometry').and.returnValue(true);
+      spyOn(service as any, 'getKinks').and.callFake(() => ({
+        type: 'FeatureCollection',
+        features: [
+          {
+            type: 'Feature',
+            geometry: {
+              type: 'Point',
+              coordinates: [0.5, 0.5]
+            },
+            properties: {}
+          }
+        ]
+      }));
+      spyOn(service, 'validateGeometryInBC').and.returnValue(Promise.resolve(true));
 
-      spyOn(mockService, 'getBritishColumbiaGeoJSON').and.returnValue(
-        polygon([
-          [
-            [-139.1, 48.3], [-114, 48.3], [-114, 60], [-139.1, 60], [-139.1, 48.3]
-          ]
-        ]).geometry
+      await expectAsync(service.validateMultiPolygon(coords)).toBeRejectedWithError('Self-intersections found in the uploaded geometry.');
+      expect(mockSnackbar.open).toHaveBeenCalledWith(
+        'Found 1 self-intersections in the uploaded geometry.',
+        'Close',
+        jasmine.objectContaining({ duration: 5000 })
       );
+    });
 
-      expect(() => mockService.validateMultiPolygon(coords)).toThrowError('Geometry is outside of BC.');
+    it('should throw an error when geometry is outside of BC', async () => {
+      const coords: Position[][][] = [
+        [[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]]
+      ];
 
+      spyOn(service as any, 'isValidGeometry').and.returnValue(true);
+      spyOn(service as any, 'getKinks').and.callThrough();
+      spyOn(service, 'validateGeometryInBC').and.returnValue(Promise.resolve(false));
+
+      await expectAsync(service.validateMultiPolygon(coords)).toBeRejectedWithError('Geometry is invalid.');
       expect(mockSnackbar.open).toHaveBeenCalledWith(
         'Geometry is outside of BC.',
         'Close',
-        jasmine.objectContaining({
-          duration: 5000,
-          panelClass: 'snackbar-error'
-        })
+        jasmine.objectContaining({ duration: 5000 })
       );
     });
 
-    it('should log and rethrow errors', () => {
-      const coords: any = 'not even remotely valid';
-      spyOn(console, 'error');
-      expect(() => service.validateMultiPolygon(coords)).toThrow();
-      expect(console.error).toHaveBeenCalled();
+    it('should accept a GeoJSON.MultiPolygon input and validate it', async () => {
+      const geoJson: GeoJSON.MultiPolygon = {
+        type: 'MultiPolygon',
+        coordinates: [
+          [[[1, 2], [3, 4], [5, 6], [1, 2]]]
+        ]
+      };
+
+      spyOn(service, 'validateGeometryInBC').and.returnValue(Promise.resolve(true));
+
+      await expectAsync(service.validateMultiPolygon(geoJson)).toBeResolved();
+      expect(mockSnackbar.open).not.toHaveBeenCalled();
     });
   });
+
 
   describe('hasKMZEntry', () => {
     it('should return true if KMZ entry exists', () => {
@@ -917,7 +942,7 @@ describe('SpatialService', () => {
 
       const coords = await service.handleKMZFile(mockFile);
 
-      expect(getDataSpy).toHaveBeenCalled(); 
+      expect(getDataSpy).toHaveBeenCalled();
       expect(service['extractKMLCoordinates']).toHaveBeenCalledWith(mockKML);
       expect(coords).toEqual([]);
 
@@ -933,5 +958,71 @@ describe('SpatialService', () => {
 
       expect(coords).toEqual([]);
     });
+  });
+
+  describe('handleCompressedFile', () => {
+    it('should extract SHP coordinates if SHP entry exists', async () => {
+      const mockFile = new File(['dummy'], 'file.zip');
+      const mockCoords: Position[][][] = [[[[1, 2]]]];
+
+      spyOn(ZipReader.prototype, 'getEntries').and.returnValue(Promise.resolve(['shapefile.shp'] as any));
+      spyOn(service as any, 'hasSHPEntry').and.returnValue(true);
+      spyOn(service as any, 'extractSHPCoordinates').and.returnValue(Promise.resolve(mockCoords));
+      spyOn(ZipReader.prototype, 'close').and.returnValue(Promise.resolve());
+
+      const result = await service.handleCompressedFile(mockFile);
+
+      expect(service['extractSHPCoordinates']).toHaveBeenCalledWith(mockFile);
+      expect(result).toEqual(mockCoords);
+    });
+
+    it('should handle GDB if GDB entries exist', async () => {
+      const mockFile = new File(['dummy'], 'file.zip');
+      const mockCoords: Position[][][] = [[[[3, 4]]]];
+
+      spyOn(ZipReader.prototype, 'getEntries').and.returnValue(Promise.resolve(['foo.gdb'] as any));
+      spyOn(service as any, 'hasSHPEntry').and.returnValue(false);
+      spyOn(service as any, 'hasGDBEntries').and.returnValue(true);
+      spyOn(service as any, 'handleGDB').and.returnValue(Promise.resolve(mockCoords));
+      spyOn(ZipReader.prototype, 'close').and.returnValue(Promise.resolve());
+
+      const result = await service.handleCompressedFile(mockFile);
+
+      expect(service['handleGDB']).toHaveBeenCalledWith(mockFile);
+      expect(result).toEqual(mockCoords);
+    });
+
+    it('should handle KMZ if KMZ entry exists', async () => {
+      const mockFile = new File(['dummy'], 'file.kmz');
+      const mockCoords: Position[][][] = [[[[5, 6]]]];
+
+      spyOn(ZipReader.prototype, 'getEntries').and.returnValue(Promise.resolve(['doc.kml'] as any));
+      spyOn(service as any, 'hasSHPEntry').and.returnValue(false);
+      spyOn(service as any, 'hasGDBEntries').and.returnValue(false);
+      spyOn(service as any, 'hasKMZEntry').and.returnValue(true);
+      spyOn(service as any, 'handleKMZ').and.returnValue(Promise.resolve(mockCoords));
+      spyOn(ZipReader.prototype, 'close').and.returnValue(Promise.resolve());
+
+      const result = await service.handleCompressedFile(mockFile);
+
+      expect(service['handleKMZ']).toHaveBeenCalledWith(['doc.kml'] as any);
+      expect(result).toEqual(mockCoords);
+    });
+
+    it('should always close the zipReader', async () => {
+      const mockFile = new File(['dummy'], 'file.zip');
+
+      spyOn(ZipReader.prototype, 'getEntries').and.throwError('Simulated error');
+      const closeSpy = spyOn(ZipReader.prototype, 'close').and.returnValue(Promise.resolve());
+
+      try {
+        await service.handleCompressedFile(mockFile);
+      } catch (e) {
+        // catch expected error
+      }
+
+      expect(closeSpy).toHaveBeenCalled();
+    });
+
   });
 });

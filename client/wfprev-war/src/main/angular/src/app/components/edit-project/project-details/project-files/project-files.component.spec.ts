@@ -301,7 +301,7 @@ describe('ProjectFilesComponent', () => {
       const mockFile = new File(['content'], 'test-file.txt', { type: 'text/plain' });
       const response = { fileId: 'test-file-id' };
     
-      spyOn(console, 'log'); // or use 'error' if you're logging with console.error
+      spyOn(console, 'log'); 
     
       mockAttachmentService.createProjectAttachment.and.returnValue(
         throwError(() => new Error('Failed to create attachment'))

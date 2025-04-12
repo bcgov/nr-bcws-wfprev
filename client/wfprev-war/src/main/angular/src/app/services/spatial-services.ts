@@ -5,9 +5,10 @@ import * as toGeoJSON from '@tmcw/togeojson';
 import * as turf from '@turf/turf';
 import { DOMParser } from '@xmldom/xmldom';
 import { BlobReader, TextWriter, ZipReader } from '@zip.js/zip.js';
-import { Geometry, Position } from 'geojson';
-import { catchError, lastValueFrom, map, Observable, of, throwError } from "rxjs";
+import { Feature, Geometry, Polygon, Position } from 'geojson';
+import { catchError, firstValueFrom, lastValueFrom, map, Observable, of, throwError } from "rxjs";
 import * as shp from 'shpjs';
+import * as martinez from 'martinez-polygon-clipping';
 export type CoordinateTypes = Position | Position[] | Position[][] | Position[][][];
 
 @Injectable({
@@ -19,7 +20,7 @@ export class SpatialService {
         private readonly snackbarService: MatSnackBar
     ) { }
 
-    private parseKMLToCoordinates(kmlString: string): Position[][][] {
+    private async parseKMLToCoordinates(kmlString: string): Promise<Position[][][]> {
         const kmlDom = new DOMParser().parseFromString(kmlString, 'text/xml');
         const geoJson = toGeoJSON.kml(kmlDom);
 
@@ -40,13 +41,13 @@ export class SpatialService {
             }
         });
 
-        this.validateMultiPolygon(allCoords)
+        await this.validateMultiPolygon(allCoords)
 
         return allCoords;
     }
 
-    extractKMLCoordinates(kmlString: string): Position[][][] {
-        const coordinates = this.parseKMLToCoordinates(kmlString);
+    async extractKMLCoordinates(kmlString: string): Promise<Position[][][]> {
+        const coordinates = await this.parseKMLToCoordinates(kmlString);
         return coordinates;
     }
 
@@ -82,7 +83,7 @@ export class SpatialService {
                 }
             }
 
-            this.validateMultiPolygon(allCoords);
+            await this.validateMultiPolygon(allCoords);
             return allCoords;
         } catch (error) {
             console.error('Error extracting coordinates from shapefile:', error);
@@ -264,7 +265,7 @@ export class SpatialService {
     public async extractCoordinates(file: File): Promise<Position[][][]> {
         const fileType = file.name.split('.').pop()?.toLowerCase();
         if (!fileType) return [];
-    
+
         try {
             if (fileType === 'kml') {
                 return this.extractKMLCoordinates(await file.text());
@@ -281,11 +282,13 @@ export class SpatialService {
             }
         } catch (error) {
             console.error('Error extracting coordinates:', error);
-            this.snackbarService.open('Error extracting coordinates.', 'Close', {
-                duration: 5000,
-                panelClass: 'snackbar-error',
-            });
-            return [];
+            if (!this.snackbarService._openedSnackBarRef) {
+                this.snackbarService.open('Error encountered while attempting to extract coordinates.', 'Close', {
+                    duration: 5000,
+                    panelClass: 'snackbar-error',
+                });
+            }
+            throw new Error('Error extracting coordinates.')
         }
     }
 
@@ -301,7 +304,7 @@ export class SpatialService {
             } else if (this.hasKMZEntry(entries)) {
                 return await this.handleKMZ(entries);
             } else {
-                this.snackbarService.open('Geometry is invalid.', 'Close', {
+                this.snackbarService.open('File format is not accepted. Valid formats are KM;, KMZ, GDB, and SHP.', 'Close', {
                     duration: 5000,
                     panelClass: 'snackbar-error',
                 });
@@ -324,7 +327,7 @@ export class SpatialService {
     private hasKMZEntry(entries: any[]): boolean {
         return entries.some(entry => entry.filename.toLowerCase().endsWith('.kml'));
     }
-    
+
     private async handleGDB(file: File): Promise<Position[][][]> {
         try {
             const geojsonData = await lastValueFrom(
@@ -335,52 +338,52 @@ export class SpatialService {
                     })
                 )
             );
-            this.validateMultiPolygon(geojsonData?.[0])
+            await this.validateMultiPolygon(geojsonData?.[0])
             return geojsonData?.[0]?.coordinates || [];
         } catch (error) {
             console.error("Error processing Geodatabase file:", error);
             return [];
         }
     }
-    
+
     public async handleKMZFile(file: File): Promise<Position[][][]> {
         try {
             const zipReader = new ZipReader(new BlobReader(file));
             const entries = await zipReader.getEntries();
-            
+
             // Look for any KML file in the archive
-            const kmlEntry = entries.find(entry => 
+            const kmlEntry = entries.find(entry =>
                 entry.filename.toLowerCase().endsWith('.kml'));
-                
+
             if (!kmlEntry) {
                 await zipReader.close();
                 throw new Error('No KML file found inside KMZ archive');
             }
-            
+
             // Get the KML content and process it
             const kmlText = await kmlEntry?.getData?.(new TextWriter());
             await zipReader.close();
 
-            if(kmlText) {
+            if (kmlText) {
                 return this.extractKMLCoordinates(kmlText);
-            } else return[];
-            
+            } else return [];
+
         } catch (error) {
             console.error("Error processing KMZ file:", error);
-            return[];
+            return [];
         }
     }
 
     private async handleKMZ(entries: any[]): Promise<Position[][][]> {
         try {
-            const kmlEntry = entries.find(entry => 
+            const kmlEntry = entries.find(entry =>
                 entry.filename.toLowerCase().endsWith('.kml'));
-                
+
             if (!kmlEntry) {
                 console.error('No KML file found inside KMZ archive');
                 return [];
             }
-            
+
             try {
                 const kmlText = await kmlEntry.getData(new TextWriter()) as string;
                 return this.extractKMLCoordinates(kmlText);
@@ -394,7 +397,7 @@ export class SpatialService {
         }
     }
 
-    validateMultiPolygon(coordinates: Position[][][] | GeoJSON.MultiPolygon): void {
+    async validateMultiPolygon(coordinates: Position[][][] | GeoJSON.MultiPolygon): Promise<void> {
         try {
             let multiPolygonCoords: Position[][][];
 
@@ -411,7 +414,7 @@ export class SpatialService {
             const multiPolygon = turf.multiPolygon(multiPolygonCoords);
 
             // Check overall validity
-            const isValid = turf.booleanValid(multiPolygon);
+            const isValid = this.isValidGeometry(multiPolygon);
 
             // Process each polygon individually for kinks
             let selfIntersections = [];
@@ -423,7 +426,7 @@ export class SpatialService {
                     const singlePolygon = turf.polygon(polygonCoords);
 
                     // Now use kinks() on the single polygon
-                    const kinks = turf.kinks(singlePolygon);
+                    const kinks = this.getKinks(singlePolygon);
 
                     // If we found intersections, add them to our results
                     if (kinks.features.length > 0) {
@@ -447,17 +450,6 @@ export class SpatialService {
                 throw new Error('Self-intersections found in the uploaded geometry.');
             }
 
-            const britishColumbiaBoundary = this.getBritishColumbiaGeoJSON();
-            const isInBC = turf.booleanIntersects(multiPolygon, britishColumbiaBoundary);
-
-            if (!isInBC) {
-                this.snackbarService.open('Geometry is outside of BC.', 'Close', {
-                    duration: 5000,
-                    panelClass: 'snackbar-error',
-                });
-                throw new Error('Geometry is outside of BC.');
-            }
-
             if (!isValid) {
                 this.snackbarService.open('Geometry is invalid.', 'Close', {
                     duration: 5000,
@@ -466,23 +458,80 @@ export class SpatialService {
                 throw new Error('Geometry is invalid.');
             }
 
+            await this.validateGeometryInBC(multiPolygon).then(response => {
+                if (!response) {
+                    this.snackbarService.open('Geometry is outside of BC.', 'Close', {
+                        duration: 5000,
+                        panelClass: 'snackbar-error',
+                    });
+                    throw new Error('Geometry is invalid.');
+                }
+            })
+
         } catch (error) {
             console.error('Validation error:', error);
             throw error;
         }
     }
 
-    getBritishColumbiaGeoJSON(): GeoJSON.Polygon {
-        return {
-            type: "Polygon",
-            coordinates: [[
-                [-139.05, 60.00],
-                [-114.05, 60.00],
-                [-114.05, 48.30],
-                [-139.05, 48.30],
-                [-139.05, 60.00]
-            ]]
-        };
+    async validateGeometryInBC(geometry: any): Promise<boolean> {
+        try {
+            const bcPolygonGeometry = await firstValueFrom(this.getBritishColumbiaGeoJSON());
+
+            // Create BC polygon as a GeoJSON feature
+            const bcFeature = turf.feature({
+                type: 'MultiPolygon',
+                coordinates: bcPolygonGeometry
+            });
+
+            // Wrap input geometry into a Feature if it isn’t already
+            const inputFeature = geometry.type === 'Feature' ? geometry : turf.feature(geometry);
+
+            console.log('BC Feature:', JSON.stringify(bcFeature));
+            console.log('Input Feature:', JSON.stringify(inputFeature));
+
+            // Check intersection
+            const intersection = turf.booleanIntersects(bcFeature, inputFeature);
+
+
+            if (!intersection) {
+                this.snackbarService.open('Geometry is outside British Columbia.', 'Close', {
+                    duration: 5000,
+                    panelClass: 'snackbar-error',
+                });
+                return false;
+            }
+
+            return true;
+
+        } catch (err) {
+            console.error('Validation error:', err);
+            this.snackbarService.open('Error validating geometry in BC.', 'Close', {
+                duration: 5000,
+                panelClass: 'snackbar-error',
+            });
+            return false;
+        }
     }
 
+    getBritishColumbiaGeoJSON(): Observable<number[][][][]> {
+        return this.httpClient.get<any>('assets/data/british_columbia.geojson').pipe(
+            map((geojson) => {
+                const geometry = geojson?.features[0]?.geometry;
+                if (geometry.type === 'MultiPolygon') {
+                    return geometry.coordinates;
+                } else {
+                    throw new Error('Expected MultiPolygon geometry in BC GeoJSON.');
+                }
+            })
+        );
+    }
+
+    private isValidGeometry(feature: GeoJSON.Feature): boolean {
+        return turf.booleanValid(feature);
+    }
+
+    private getKinks(polygon: Feature<Polygon>) {
+        return turf.kinks(polygon);
+      }
 }
