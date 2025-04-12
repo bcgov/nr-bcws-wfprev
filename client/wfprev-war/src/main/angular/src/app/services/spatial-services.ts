@@ -486,12 +486,8 @@ export class SpatialService {
             // Wrap input geometry into a Feature if it isn’t already
             const inputFeature = geometry.type === 'Feature' ? geometry : turf.feature(geometry);
 
-            console.log('BC Feature:', JSON.stringify(bcFeature));
-            console.log('Input Feature:', JSON.stringify(inputFeature));
-
             // Check intersection
-            const intersection = turf.booleanIntersects(bcFeature, inputFeature);
-
+            const intersection = this.intersectsWithBC(bcFeature, inputFeature);
 
             if (!intersection) {
                 this.snackbarService.open('Geometry is outside British Columbia.', 'Close', {
@@ -532,5 +528,10 @@ export class SpatialService {
 
     private getKinks(polygon: Feature<Polygon>) {
         return turf.kinks(polygon);
-      }
+    }
+
+    private intersectsWithBC(bcFeature: GeoJSON.Feature, inputFeature: GeoJSON.Feature): boolean {
+        return turf.booleanIntersects(bcFeature, inputFeature);
+    }
+      
 }

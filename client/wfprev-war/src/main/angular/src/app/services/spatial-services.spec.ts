@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { SpatialService } from './spatial-services';
 import { Geometry, Point, LineString, Polygon, MultiPoint, MultiLineString, MultiPolygon, GeometryCollection, Position } from 'geojson';
-import { throwError } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import * as turf from '@turf/turf';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ZipReader } from '@zip.js/zip.js';
@@ -1023,6 +1023,73 @@ describe('SpatialService', () => {
 
       expect(closeSpy).toHaveBeenCalled();
     });
+  });
 
+  describe('validateGeometryInBC', () => {
+    let service: SpatialService;
+    let mockSnackbar: jasmine.SpyObj<MatSnackBar>;
+  
+    beforeEach(() => {
+      mockSnackbar = jasmine.createSpyObj('MatSnackBar', ['open']);
+      service = new SpatialService(null as any, mockSnackbar);
+    });
+  
+    it('should return true when geometry intersects with BC', async () => {
+      const bcCoords: MultiPolygon['coordinates'] = [
+        [[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]]
+      ];
+  
+      spyOn(service, 'getBritishColumbiaGeoJSON').and.returnValue(of(bcCoords));
+  
+      spyOn<any>(service, 'intersectsWithBC').and.returnValue(true);
+  
+      const input = {
+        type: 'Polygon',
+        coordinates: [[[0.2, 0.2], [0.8, 0.2], [0.5, 0.8], [0.2, 0.2]]]
+      };
+  
+      const result = await service.validateGeometryInBC(input);
+      expect(result).toBeTrue();
+      expect(mockSnackbar.open).not.toHaveBeenCalled();
+    });
+  
+    it('should return false and show snackbar if geometry is outside BC', async () => {
+      const bcCoords: MultiPolygon['coordinates'] = [
+        [[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]]
+      ];
+  
+      spyOn(service, 'getBritishColumbiaGeoJSON').and.returnValue(of(bcCoords));
+      spyOn<any>(service, 'intersectsWithBC').and.returnValue((false));
+  
+      const input = {
+        type: 'Polygon',
+        coordinates: [[[10, 10], [11, 10], [11, 11], [10, 11], [10, 10]]]
+      };
+  
+      const result = await service.validateGeometryInBC(input);
+      expect(result).toBeFalse();
+      expect(mockSnackbar.open).toHaveBeenCalledWith(
+        'Geometry is outside British Columbia.',
+        'Close',
+        jasmine.objectContaining({ duration: 5000 })
+      );
+    });
+  
+    it('should return false and show error snackbar if an exception occurs', async () => {
+      spyOn(service, 'getBritishColumbiaGeoJSON').and.returnValue(throwError(() => new Error('Failed to load BC boundary')));
+  
+      const input = {
+        type: 'Polygon',
+        coordinates: [[[0, 0], [1, 1], [2, 2], [0, 0]]]
+      };
+  
+      const result = await service.validateGeometryInBC(input);
+      expect(result).toBeFalse();
+      expect(mockSnackbar.open).toHaveBeenCalledWith(
+        'Error validating geometry in BC.',
+        'Close',
+        jasmine.objectContaining({ duration: 5000 })
+      );
+    });
   });
 });
