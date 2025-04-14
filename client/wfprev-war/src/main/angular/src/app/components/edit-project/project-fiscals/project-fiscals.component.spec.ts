@@ -24,6 +24,9 @@ const mockProjectService = {
     latitude: '48.4284',
     longitude: '-123.3656'
   })),
+  getProjectBoundaries: jasmine.createSpy('getProjectBoundaries').and.returnValue(
+    of({ _embedded: { projectBoundary: [] } })
+  ),
 };
 
 const mockCodeTableServices = {
@@ -40,10 +43,13 @@ describe('ProjectFiscalsComponent', () => {
 
   @Component({
     selector: 'app-fiscal-map',
-    template: ''
+    template: '<div></div>'
   })
-  class MockFiscalMapComponent {}
-
+  class MockFiscalMapComponent {
+    ngOnInit() {}
+    ngAfterViewInit() {}
+    initMap() {}
+  }
   @Component({
     selector: 'app-activities',
     template: ''
@@ -63,8 +69,14 @@ describe('ProjectFiscalsComponent', () => {
         { provide: MatSnackBar, useValue: mockSnackBar },
         FormBuilder,
       ],
-    }).compileComponents();
-
+    })
+    .overrideComponent(ProjectFiscalsComponent, {
+      set: {
+        imports: []  // Remove the real FiscalMapComponent and ActivitiesComponent
+      }
+    })
+    .compileComponents();
+    
     fixture = TestBed.createComponent(ProjectFiscalsComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

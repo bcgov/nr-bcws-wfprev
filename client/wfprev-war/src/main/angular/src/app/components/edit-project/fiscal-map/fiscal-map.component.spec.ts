@@ -22,6 +22,10 @@ class MockProjectService {
     latitude: '48.4284',
     longitude: '-123.3656'
   }));
+
+  getProjectBoundaries = jasmine.createSpy().and.returnValue(of({
+    _embedded: { projectBoundary: [] }
+  }));
 }
 
 const mockActivatedRoute = {
@@ -51,9 +55,23 @@ describe('FiscalMapComponent', () => {
       fitBounds: jasmine.createSpy('fitBounds'),
       remove: jasmine.createSpy('remove'),
       addLayer: jasmine.createSpy('addLayer'),
+      on: jasmine.createSpy('on'),
       zoomControl: {
         setPosition: jasmine.createSpy('setPosition')
+      },
+      _controlCorners: {
+        bottomleft: document.createElement('div'),
+        bottomright: document.createElement('div'),
+        topleft: document.createElement('div'),
+        topright: document.createElement('div')
       }
+    };
+
+    mockMapInstance._controlCorners = {
+      bottomleft: document.createElement('div'),
+      bottomright: document.createElement('div'),
+      topleft: document.createElement('div'),
+      topright: document.createElement('div')
     };
 
     spyOn(L, 'map').and.returnValue(mockMapInstance);
@@ -63,11 +81,16 @@ describe('FiscalMapComponent', () => {
     spyOn(L, 'featureGroup').and.returnValue({
       getBounds: () => ({})
     } as any);
-    (L as any).control = jasmine.createSpy('control').and.returnValue({
+    spyOn(L as any, 'control').and.returnValue({
       addTo: jasmine.createSpy('addTo'),
-      onAdd: jasmine.createSpy('onAdd')
-    });
+      getPosition: jasmine.createSpy('getPosition'),
+      setPosition: jasmine.createSpy('setPosition'),
+      getContainer: jasmine.createSpy('getContainer'),
+      remove: jasmine.createSpy('remove'),
+      options: {}
+    }); 
     const mockProjectService = new MockProjectService();
+    
     await TestBed.configureTestingModule({
       imports: [FiscalMapComponent],
       providers: [

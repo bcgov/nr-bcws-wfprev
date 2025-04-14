@@ -1,8 +1,10 @@
 import { AfterViewInit, Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router, UrlTree } from '@angular/router';
 import * as L from 'leaflet';
 import { forkJoin, map } from 'rxjs';
 import { ProjectService } from 'src/app/services/project-services';
+import { ResourcesRoutes } from 'src/app/utils';
+import { LeafletLegendService, createFullPageControl } from 'src/app/utils/tools';
 
 @Component({
   selector: 'app-fiscal-map',
@@ -27,6 +29,7 @@ export class FiscalMapComponent implements AfterViewInit, OnDestroy, OnInit {
   constructor(
     private projectService: ProjectService,
     private route: ActivatedRoute,
+    protected router: Router,
   ) {}
 
   private map: L.Map | undefined;
@@ -34,9 +37,11 @@ export class FiscalMapComponent implements AfterViewInit, OnDestroy, OnInit {
   projectFiscals: any[] = [];
   allActivities: any[] = [];
   allActivityBoundaries: any[] = [];
+  projectBoundary: any[] = [];
   projectLatitude = '';
   projectLongitude = '';
   ngOnInit(): void{
+    this.getProjectBoundary();
     this.getAllActivitiesBoundaries();
   }
 
@@ -54,7 +59,7 @@ export class FiscalMapComponent implements AfterViewInit, OnDestroy, OnInit {
 
   getProjectCoordinates() {
     this.projectService.getProjectByProjectGuid(this.projectGuid).subscribe(project => {
-      if (project.latitude && project.longitude) {
+      if (project.latitude && project.longitude && this.map) {
         this.projectLatitude = project.latitude;
         this.projectLongitude = project.longitude;
         if (this.map) {
@@ -67,6 +72,19 @@ export class FiscalMapComponent implements AfterViewInit, OnDestroy, OnInit {
         }
       }
     })
+  }
+  getProjectBoundary() {
+    this.projectGuid = this.route.snapshot?.queryParamMap?.get('projectGuid') || '';
+    if (this.projectGuid) {
+      this.projectService.getProjectBoundaries(this.projectGuid).subscribe((data) => {
+        const boundary = data?._embedded?.projectBoundary || [];
+        this.projectBoundary = boundary;
+  
+        if (this.map && boundary.length > 0) {
+          this.plotProjectBoundary(boundary);
+        }
+      });
+    }
   }
   getAllActivitiesBoundaries() {
     this.projectGuid = this.route.snapshot?.queryParamMap?.get('projectGuid') || '';
@@ -114,10 +132,15 @@ export class FiscalMapComponent implements AfterViewInit, OnDestroy, OnInit {
             this.allActivityBoundaries = allResults.filter(r => 
               r !== null && r.boundary && Object.keys(r.boundary).length > 0
             );
-
-            if (this.allActivityBoundaries.length > 0 && this.map) {
-              this.plotBoundariesOnMap(this.allActivityBoundaries)
-            } else{
+            const hasActivityPolygons = this.allActivityBoundaries.length > 0;
+            const hasProjectPolygons = this.projectBoundary?.length > 0;
+            
+            if (hasActivityPolygons && this.map) {
+              this.plotBoundariesOnMap(this.allActivityBoundaries);
+            }
+            
+            //  Only show pin if NO polygons exist at all
+            if (!hasActivityPolygons && !hasProjectPolygons) {
               this.getProjectCoordinates();
             }
           });
@@ -148,7 +171,7 @@ export class FiscalMapComponent implements AfterViewInit, OnDestroy, OnInit {
         const geoJsonOptions: L.GeoJSONOptions = {
           style: {
             color,
-            weight: 2,
+            weight: fiscalYear === this.currentFiscalYear ? 4 : 2,
             fillOpacity: 0.1
           }
         };
@@ -174,6 +197,31 @@ export class FiscalMapComponent implements AfterViewInit, OnDestroy, OnInit {
       this.map!.fitBounds(group.getBounds(), { padding: [20, 20] });
     }
   }
+
+  plotProjectBoundary(boundary: any[]): void {
+    boundary.forEach((item: any) => {
+      const geometry = item.geometry;
+      if (!geometry) return;
+  
+      const geoJsonOptions: L.GeoJSONOptions = {
+        style: {
+          color: '#3f3f3f',
+          weight: 2,
+          fillOpacity: 0.1
+        }
+      };
+  
+      const addToMap = (geom: any) => {
+        L.geoJSON(geom, geoJsonOptions).addTo(this.map!);
+      };
+  
+      if (geometry.type === 'GeometryCollection') {
+        geometry.geometries.forEach((subGeom: any) => addToMap(subGeom));
+      } else {
+        addToMap(geometry);
+      }
+    });
+  }
   
 
   initMap(): void {
@@ -194,37 +242,76 @@ export class FiscalMapComponent implements AfterViewInit, OnDestroy, OnInit {
       attribution: '© OpenStreetMap contributors'
     }).addTo(this.map);
 
-    this.addLegend();
+    const legendHelper = new LeafletLegendService();
+    legendHelper.addLegend(this.map!, this.fiscalColorMap);
+    const bcBounds = L.latLngBounds([48.3, -139.1], [60.0, -114.0]);
+    this.map.fitBounds(bcBounds, { padding: [20, 20] });
+    createFullPageControl(() => this.openFullMap()).addTo(this.map!);
   }
 
-  addLegend(): void {
-    const legend = (L.control as any)({ position: 'bottomleft' });
+  openFullMap(): void {
+    const latLngs: L.LatLng[] = [];
+    // handle this based on following steps and scenarios.
+    // 1. Add activity boundaries
+    this.allActivityBoundaries?.forEach(entry => {
+      entry.boundary?.forEach((item: any) => {
+        const geometry = item.geometry;
+        const layer = L.geoJSON(geometry);
+        const layerBounds = layer.getBounds();
+        latLngs.push(layerBounds.getSouthWest());
+        latLngs.push(layerBounds.getNorthEast());
+      });
+    });
   
-    legend.onAdd = () => {
-      const div = L.DomUtil.create('div', 'legend');
-      div.innerHTML = `
-        <div class="legend-title">Polygon Colour Legend</div>
-        <div class="legend-item">
-          <span class="legend-color" style="background-color: #3f3f3f;"></span>
-          Gross Project Boundary
-        </div>
-        <div class="legend-item">
-          <span class="legend-color" style="background-color: ${this.fiscalColorMap.past};"></span>
-          Past Fiscal Activities
-        </div>
-        <div class="legend-item">
-          <span class="legend-color" style="background-color: ${this.fiscalColorMap.present};"></span>
-          Present Fiscal Activities
-        </div>
-        <div class="legend-item">
-          <span class="legend-color" style="background-color: ${this.fiscalColorMap.future};"></span>
-          Future Fiscal Activities
-        </div>
-      `;
-      return div;
-    };
+    // 2. Add project boundaries
+    this.projectBoundary?.forEach((item: any) => {
+      const geometry = item.geometry;
+      const layer = L.geoJSON(geometry);
+      const layerBounds = layer.getBounds();
+      latLngs.push(layerBounds.getSouthWest());
+      latLngs.push(layerBounds.getNorthEast());
+    });
   
-    legend.addTo(this.map!);
+    let urlTree: UrlTree;
+  
+    // 3. If there are any polygons, use combined bounds
+    if (latLngs.length > 0) {
+      const bounds = L.latLngBounds(latLngs);
+      const bbox = [
+        bounds.getWest().toFixed(6),
+        bounds.getSouth().toFixed(6),
+        bounds.getEast().toFixed(6),
+        bounds.getNorth().toFixed(6),
+      ].join(',');
+  
+      urlTree = this.router.createUrlTree([ResourcesRoutes.MAP], {
+        queryParams: { bbox }
+      });
+  
+    } else if (this.projectLatitude && this.projectLongitude) {
+      // 4. No polygons, but project has coordinates → zoom to small area around point
+      const lat = parseFloat(this.projectLatitude);
+      const lng = parseFloat(this.projectLongitude);
+      const delta = 0.01;
+  
+      const bbox = [
+        (lng - delta).toFixed(6),
+        (lat - delta).toFixed(6),
+        (lng + delta).toFixed(6),
+        (lat + delta).toFixed(6),
+      ].join(',');
+  
+      urlTree = this.router.createUrlTree([ResourcesRoutes.MAP], {
+        queryParams: { bbox }
+      });
+  
+    } else {
+      // 5. No polygons AND no coordinates → just open map
+      urlTree = this.router.createUrlTree([ResourcesRoutes.MAP]);
+    }
+  
+    const fullUrl = window.location.origin + this.router.serializeUrl(urlTree);
+    window.open(fullUrl, '_blank');
   }
   
   
