@@ -3,6 +3,12 @@ on:
     branches: [ main ]
   pull_request:
     branches: [ main ]
+  workflow_dispatch:
+    inputs:
+      DEFAULT_APPLICATION_ENVIRONMENT:
+        required: true
+        type: string
+        default: dev
 
 jobs:
   build-node-server:
