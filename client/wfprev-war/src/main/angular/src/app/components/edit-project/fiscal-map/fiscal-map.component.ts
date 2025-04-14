@@ -1,8 +1,10 @@
 import { AfterViewInit, Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router, UrlTree } from '@angular/router';
 import * as L from 'leaflet';
 import { forkJoin, map } from 'rxjs';
 import { ProjectService } from 'src/app/services/project-services';
+import { ResourcesRoutes } from 'src/app/utils';
+import { LeafletLegendService, createFullPageControl } from 'src/app/utils/tools';
 
 @Component({
   selector: 'app-fiscal-map',
@@ -27,6 +29,7 @@ export class FiscalMapComponent implements AfterViewInit, OnDestroy, OnInit {
   constructor(
     private projectService: ProjectService,
     private route: ActivatedRoute,
+    protected router: Router,
   ) {}
 
   private map: L.Map | undefined;
@@ -194,38 +197,45 @@ export class FiscalMapComponent implements AfterViewInit, OnDestroy, OnInit {
       attribution: '© OpenStreetMap contributors'
     }).addTo(this.map);
 
-    this.addLegend();
+    const legendHelper = new LeafletLegendService();
+    legendHelper.addLegend(this.map!, this.fiscalColorMap);
+    createFullPageControl(() => this.openFullMap()).addTo(this.map!);
   }
 
-  addLegend(): void {
-    const legend = (L.control as any)({ position: 'bottomleft' });
+  openFullMap(): void {
+    if (!this.allActivityBoundaries || this.allActivityBoundaries.length === 0) {
+      return;
+    }
   
-    legend.onAdd = () => {
-      const div = L.DomUtil.create('div', 'legend');
-      div.innerHTML = `
-        <div class="legend-title">Polygon Colour Legend</div>
-        <div class="legend-item">
-          <span class="legend-color" style="background-color: #3f3f3f;"></span>
-          Gross Project Boundary
-        </div>
-        <div class="legend-item">
-          <span class="legend-color" style="background-color: ${this.fiscalColorMap.past};"></span>
-          Past Fiscal Activities
-        </div>
-        <div class="legend-item">
-          <span class="legend-color" style="background-color: ${this.fiscalColorMap.present};"></span>
-          Present Fiscal Activities
-        </div>
-        <div class="legend-item">
-          <span class="legend-color" style="background-color: ${this.fiscalColorMap.future};"></span>
-          Future Fiscal Activities
-        </div>
-      `;
-      return div;
-    };
+    const latLngs: L.LatLng[] = [];
   
-    legend.addTo(this.map!);
+    this.allActivityBoundaries.forEach(entry => {
+      entry.boundary?.forEach((item: any) => {
+        const geometry = item.geometry;
+        const layer = L.geoJSON(geometry);
+        const layerBounds = layer.getBounds();
+  
+        latLngs.push(layerBounds.getSouthWest());
+        latLngs.push(layerBounds.getNorthEast());
+      });
+    });
+  
+    if (latLngs.length === 0) return;
+  
+    const bounds = L.latLngBounds(latLngs);
+    const bbox = [
+      bounds.getWest().toFixed(6),
+      bounds.getSouth().toFixed(6),
+      bounds.getEast().toFixed(6),
+      bounds.getNorth().toFixed(6),
+    ].join(',');
+    
+    const urlTree: UrlTree = this.router.createUrlTree([ResourcesRoutes.MAP], {
+      queryParams: { bbox }
+    });
+  
+    const fullUrl = window.location.origin + this.router.serializeUrl(urlTree);
+    window.open(fullUrl, '_blank');
+    
   }
-  
-  
 }

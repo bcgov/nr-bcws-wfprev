@@ -23,13 +23,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-import org.locationtech.jts.geom.MultiPolygon;
-import org.locationtech.jts.geom.Geometry;
-import org.geotools.referencing.CRS;
-import org.geotools.geometry.jts.JTS;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.operation.MathTransform;
-
 @Slf4j
 @Component
 public class ProjectBoundaryService implements CommonService {
