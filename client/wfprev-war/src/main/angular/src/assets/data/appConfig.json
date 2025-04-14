@@ -14,6 +14,6 @@
     "rest": {
       "wfprev":"#{WFPREV_BASE_URL}#",
       "wfdm":"#{WFDM_BASE_URL}#",
-      "openmaps":"#{OPENMAPS_URL}"
+      "openmaps":"https://openmaps.gov.bc.ca"
     }
   }

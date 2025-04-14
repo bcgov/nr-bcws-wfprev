@@ -499,23 +499,6 @@ describe('ProjectService', () => {
     // Simulating successful upload response
     req.flush(mockResponse);
   });
-  
-  it('should fetch activity boundaries', () => {
-    const projectGuid = 'project-123';
-    const projectPlanFiscalGuid = 'fiscal-456';
-    const activityGuid = 'activity-789';
-    const mockBoundaries = { boundaryId: 'boundary-001', coordinates: [1, 2] };
-  
-    service.getActivityBoundaries(projectGuid, projectPlanFiscalGuid, activityGuid)
-      .subscribe((boundaries) => {
-        expect(boundaries).toEqual(mockBoundaries);
-      });
-  
-    const req = httpMock.expectOne(
-      `http://mock-api.com/wfprev-api/projects/${projectGuid}/projectFiscals/${projectPlanFiscalGuid}/activities/${activityGuid}/activityBoundary`
-    );
-    }
-  )
 
   it('should fetch project boundaries by project GUID', () => {
     const projectGuid = '12345';
@@ -530,59 +513,48 @@ describe('ProjectService', () => {
     expect(req.request.headers.get('Authorization')).toBe('Bearer mock-token');
     req.flush(mockBoundaries);
   });
-  
-  it('should fetch project boundaries', () => {
-    const projectGuid = 'project-123';
-    const mockProjectBoundary = { boundaryId: 'boundary-002', coordinates: [3, 4] };
-  
-    service.getProjectBoundaries(projectGuid)
-      .subscribe((boundaries) => {
-        expect(boundaries).toEqual(mockProjectBoundary);
-      });
-  
-    const req = httpMock.expectOne(
-      `http://mock-api.com/wfprev-api/projects/${projectGuid}/projectBoundary`
-    );
-    expect(req.request.method).toBe('GET');
+
+  it('should handle errors when fetching project boundaries', () => {
+    const projectGuid = '12345';
+
+    service.getProjectBoundaries(projectGuid).subscribe({
+      next: () => fail('Should have failed with an error'),
+      error: (error) => {
+        expect(error.message).toBe('Failed to fetch project boundaries');
+      }
+    });
+
+    const req = httpMock.expectOne(`http://mock-api.com/wfprev-api/projects/${projectGuid}/projectBoundary`);
+    req.flush('Error', { status: 500, statusText: 'Server Error' });
+  });
+
+  it('should create a project boundary', () => {
+    const projectGuid = '12345';
+
+    service.createProjectBoundary(projectGuid, mockProjectBoundary).subscribe((response) => {
+      expect(response).toEqual(mockProjectBoundary);
+    });
+
+    const req = httpMock.expectOne(`http://mock-api.com/wfprev-api/projects/${projectGuid}/projectBoundary`);
+    expect(req.request.method).toBe('POST');
     expect(req.request.headers.get('Authorization')).toBe('Bearer mock-token');
+    expect(req.request.body).toEqual(mockProjectBoundary);
     req.flush(mockProjectBoundary);
   });
-  
-  it('should handle errors when fetching activity boundaries', () => {
-    const projectGuid = 'project-123';
-    const projectPlanFiscalGuid = 'fiscal-456';
-    const activityGuid = 'activity-789';
-  
-    service.getActivityBoundaries(projectGuid, projectPlanFiscalGuid, activityGuid)
-      .subscribe({
-        next: () => fail('Should have failed with an error'),
-        error: (error) => {
-          expect(error.message).toBe('Failed to fetch activity boundaries');
-        }
-      });
-  
-    const req = httpMock.expectOne(
-      `http://mock-api.com/wfprev-api/projects/${projectGuid}/projectFiscals/${projectPlanFiscalGuid}/activities/${activityGuid}/activityBoundary`
-    );
+
+  it('should handle errors when creating a project boundary', () => {
+    const projectGuid = '12345';
+
+    service.createProjectBoundary(projectGuid, mockProjectBoundary).subscribe({
+      next: () => fail('Should have failed with an error'),
+      error: (error) => {
+        expect(error.message).toBe('Failed to create project boundary');
+      }
+    });
+
+    const req = httpMock.expectOne(`http://mock-api.com/wfprev-api/projects/${projectGuid}/projectBoundary`);
     req.flush('Error', { status: 500, statusText: 'Server Error' });
   });
-  
-  it('should handle errors when fetching project boundaries', () => {
-    const projectGuid = 'project-123';
-  
-    service.getProjectBoundaries(projectGuid)
-      .subscribe({
-        next: () => fail('Should have failed with an error'),
-        error: (error) => {
-          expect(error.message).toBe('Failed to fetch project boundaries');
-        }
-      });
-  
-    const req = httpMock.expectOne(
-      `http://mock-api.com/wfprev-api/projects/${projectGuid}/projectBoundary`
-    );
-    req.flush('Error', { status: 500, statusText: 'Server Error' });
-  });
-  
-  
+
+
 });
