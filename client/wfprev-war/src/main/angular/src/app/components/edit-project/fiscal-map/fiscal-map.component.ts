@@ -164,10 +164,10 @@ export class FiscalMapComponent implements AfterViewInit, OnDestroy, OnInit {
         color = this.fiscalColorMap.future;
       }
   
-      boundaryEntry.boundary.forEach((item: any) => {
+      for (const item of boundaryEntry.boundary) {
         const geometry = item.geometry;
-        if (!geometry) return;
-  
+        if (!geometry) continue;
+      
         const geoJsonOptions: L.GeoJSONOptions = {
           style: {
             color,
@@ -175,20 +175,23 @@ export class FiscalMapComponent implements AfterViewInit, OnDestroy, OnInit {
             fillOpacity: 0.1
           }
         };
-  
+      
         const addToMap = (geom: any) => {
           const layer = L.geoJSON(geom, geoJsonOptions).addTo(this.map!);
           if (fiscalYear === this.currentFiscalYear) {
             currentFiscalPolygons.push(layer);
           }
         };
-  
+      
         if (geometry.type === 'GeometryCollection') {
-          geometry.geometries.forEach((subGeom: any) => addToMap(subGeom));
+          for (const subGeom of geometry.geometries) {
+            addToMap(subGeom);
+          }
         } else {
           addToMap(geometry);
         }
-      });
+      }
+      
     });
   
     // Zoom to current fiscal year polygons
@@ -295,10 +298,10 @@ export class FiscalMapComponent implements AfterViewInit, OnDestroy, OnInit {
       const delta = 0.01;
   
       const bbox = [
-        (lng - delta).toFixed(6),
-        (lat - delta).toFixed(6),
-        (lng + delta).toFixed(6),
-        (lat + delta).toFixed(6),
+        lng - delta,
+        lat - delta,
+        lng + delta,
+        lat + delta,
       ].join(',');
   
       urlTree = this.router.createUrlTree([ResourcesRoutes.MAP], {
