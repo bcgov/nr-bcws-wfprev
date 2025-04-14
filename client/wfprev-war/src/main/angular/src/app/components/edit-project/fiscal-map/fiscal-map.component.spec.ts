@@ -42,18 +42,22 @@ describe('FiscalMapComponent', () => {
   let mockMapInstance: any;
   let originalLControl: any;
 
+  let geoJsonAddToSpy: jasmine.Spy;
+
   beforeEach(async () => {
     // Add fake map container to DOM
     const container = document.createElement('div');
     container.setAttribute('id', 'fiscalMap');
     document.body.appendChild(container);
-
+  
     originalLControl = L.control;
-
+  
+    geoJsonAddToSpy = jasmine.createSpy('addTo').and.returnValue({}); // shared spy
+  
     mockMapInstance = {
       setView: jasmine.createSpy('setView'),
       fitBounds: jasmine.createSpy('fitBounds'),
-      remove: jasmine.createSpy('remove'),
+      remove: jasmine.createSpy('remove'), // important for ngOnDestroy
       addLayer: jasmine.createSpy('addLayer'),
       on: jasmine.createSpy('on'),
       zoomControl: {
@@ -66,18 +70,11 @@ describe('FiscalMapComponent', () => {
         topright: document.createElement('div')
       }
     };
-
-    mockMapInstance._controlCorners = {
-      bottomleft: document.createElement('div'),
-      bottomright: document.createElement('div'),
-      topleft: document.createElement('div'),
-      topright: document.createElement('div')
-    };
-
+  
     spyOn(L, 'map').and.returnValue(mockMapInstance);
     spyOn(L, 'marker').and.returnValue({ addTo: jasmine.createSpy('addTo') } as any);
     spyOn(L, 'tileLayer').and.returnValue({ addTo: jasmine.createSpy('addTo') } as any);
-    spyOn(L, 'geoJSON').and.returnValue({ addTo: jasmine.createSpy('addTo') } as any);
+    spyOn(L, 'geoJSON').and.returnValue({ addTo: geoJsonAddToSpy } as any); // single spy
     spyOn(L, 'featureGroup').and.returnValue({
       getBounds: () => ({})
     } as any);
@@ -88,9 +85,10 @@ describe('FiscalMapComponent', () => {
       getContainer: jasmine.createSpy('getContainer'),
       remove: jasmine.createSpy('remove'),
       options: {}
-    }); 
+    });
+  
     const mockProjectService = new MockProjectService();
-    
+  
     await TestBed.configureTestingModule({
       imports: [FiscalMapComponent],
       providers: [
@@ -98,10 +96,11 @@ describe('FiscalMapComponent', () => {
         { provide: ActivatedRoute, useValue: mockActivatedRoute }
       ]
     }).compileComponents();
-
+  
     fixture = TestBed.createComponent(FiscalMapComponent);
     component = fixture.componentInstance;
   });
+  
 
   afterEach(() => {
     const container = document.getElementById('fiscalMap');
@@ -156,4 +155,93 @@ describe('FiscalMapComponent', () => {
     tick();
     expect(spy).toHaveBeenCalled();
   }));
+
+  it('should plot activity boundaries for different fiscal years', () => {
+    const mockFitBounds = jasmine.createSpy('fitBounds');
+    const mockRemove = jasmine.createSpy('remove');
+    (component as any).map = { fitBounds: mockFitBounds, remove: mockRemove };
+  
+    component.plotBoundariesOnMap([
+      {
+        fiscalYear: component.currentFiscalYear - 1,
+        boundary: [{ geometry: { type: 'Polygon', coordinates: [] } }]
+      },
+      {
+        fiscalYear: component.currentFiscalYear,
+        boundary: [{ geometry: { type: 'Polygon', coordinates: [] } }]
+      },
+      {
+        fiscalYear: component.currentFiscalYear + 1,
+        boundary: [{ geometry: { type: 'Polygon', coordinates: [] } }]
+      }
+    ]);
+  
+    expect(L.geoJSON).toHaveBeenCalledTimes(3);
+    expect(geoJsonAddToSpy).toHaveBeenCalledTimes(3);
+    expect(mockFitBounds).toHaveBeenCalled();
+  });
+  
+  
+
+  it('should handle GeometryCollection in plotBoundariesOnMap', () => {
+    (component as any).map = mockMapInstance;
+  
+    const mockBoundaries = [
+      {
+        fiscalYear: component.currentFiscalYear,
+        boundary: [{
+          geometry: {
+            type: 'GeometryCollection',
+            geometries: [
+              { type: 'Polygon', coordinates: [] },
+              { type: 'Polygon', coordinates: [] }
+            ]
+          }
+        }]
+      }
+    ];
+  
+    component.plotBoundariesOnMap(mockBoundaries);
+  
+    expect(L.geoJSON).toHaveBeenCalledTimes(2);
+    expect(geoJsonAddToSpy).toHaveBeenCalledTimes(2);
+  });
+  
+
+  it('should skip boundary items without geometry in plotBoundariesOnMap', () => {
+    (component as any).map = mockMapInstance;
+  
+    component.plotBoundariesOnMap([
+      {
+        fiscalYear: component.currentFiscalYear,
+        boundary: [{ notGeometry: true }]
+      }
+    ]);
+  
+    expect(L.geoJSON).not.toHaveBeenCalled();
+  });
+
+  it('should plot project boundary with normal and GeometryCollection', () => {
+    (component as any).map = mockMapInstance;
+  
+    const boundary = [
+      { geometry: { type: 'Polygon', coordinates: [] } },
+      {
+        geometry: {
+          type: 'GeometryCollection',
+          geometries: [
+            { type: 'Polygon', coordinates: [] },
+            { type: 'Polygon', coordinates: [] }
+          ]
+        }
+      },
+      { noGeometry: true }
+    ];
+  
+    component.plotProjectBoundary(boundary);
+    expect(L.geoJSON).toHaveBeenCalledTimes(3);
+    expect(geoJsonAddToSpy).toHaveBeenCalledTimes(3);
+  });
+  
+
 });
