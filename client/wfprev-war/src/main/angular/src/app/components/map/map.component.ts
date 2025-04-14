@@ -38,25 +38,33 @@ export class MapComponent implements AfterViewInit {
 
           setTimeout(() => {
             const bboxParam = this.route.snapshot.queryParamMap.get('bbox');
-            if (bboxParam) {
-              const bboxParts = bboxParam.split(',').map(parseFloat);
-              if (bboxParts.length === 4 && bboxParts.every(v => !isNaN(v))) {
-                const [west, south, east, north] = bboxParts;
           
-                const smk = this.mapService.getSMKInstance();
-                debugger
-                if (smk?.$viewer?.map?.fitBounds) {
-                  const bounds = smk.$viewer.map.getBounds().pad(0);
-                  smk.$viewer.map.fitBounds([
-                    [south, west],
-                    [north, east]
-                  ], {
-                    padding: [20, 20]
-                  });
-                } else {
-                  console.warn('Could not access Leaflet map inside SMK.');
-                }
+            if (!bboxParam) return;
+          
+            const bboxParts = bboxParam.split(',').map(parseFloat);
+            if (bboxParts.length !== 4 || bboxParts.some(isNaN)) {
+              console.warn('Invalid bbox query parameter:', bboxParam);
+              return;
+            }
+          
+            const [west, south, east, north] = bboxParts;
+          
+            try {
+              const smk = this.mapService.getSMKInstance();
+          
+              if (!smk || !smk.$viewer || !smk.$viewer.map || !smk.$viewer.map.fitBounds) {
+                console.warn('Could not access Leaflet map inside SMK.');
+                return;
               }
+          
+              smk.$viewer.map.fitBounds([
+                [south, west],
+                [north, east]
+              ], {
+                padding: [20, 20]
+              });
+            } catch (error) {
+              console.error('Error while fitting map bounds from bbox:', error);
             }
           }, 500);
           

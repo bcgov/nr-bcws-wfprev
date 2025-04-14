@@ -242,6 +242,179 @@ describe('FiscalMapComponent', () => {
     expect(L.geoJSON).toHaveBeenCalledTimes(3);
     expect(geoJsonAddToSpy).toHaveBeenCalledTimes(3);
   });
+
+  it('should handle forkJoin results correctly in getAllActivitiesBoundaries', fakeAsync(() => {
+    const mockProjectGuid = 'mock-guid';
+    component['projectGuid'] = mockProjectGuid;
+    component['map'] = mockMapInstance;
   
+    const mockFiscal = {
+      fiscalYear: component.currentFiscalYear,
+      projectPlanFiscalGuid: 'fiscal-1'
+    };
+  
+    const mockActivity = {
+      activityGuid: 'activity-1',
+      fiscalYear: mockFiscal.fiscalYear,
+      projectPlanFiscalGuid: mockFiscal.projectPlanFiscalGuid
+    };
+  
+    const mockBoundary = {
+      _embedded: {
+        activityBoundary: [{ geometry: { type: 'Polygon', coordinates: [] } }]
+      }
+    };
+  
+    const projectService = TestBed.inject(ProjectService) as unknown as MockProjectService;
+  
+    // Override getProjectFiscalsByProjectGuid
+    projectService.getProjectFiscalsByProjectGuid.and.returnValue(of({
+      _embedded: {
+        projectFiscals: [mockFiscal]
+      }
+    }));
+  
+    // Override getFiscalActivities
+    projectService.getFiscalActivities.and.returnValue(of({
+      _embedded: {
+        activities: [mockActivity]
+      }
+    }));
+  
+    // Override getActivityBoundaries
+    projectService.getActivityBoundaries.and.returnValue(of(mockBoundary));
+  
+    // Stub projectBoundary as empty
+    component['projectBoundary'] = [];
+  
+    const plotSpy = spyOn(component as any, 'plotBoundariesOnMap');
+    const coordSpy = spyOn(component, 'getProjectCoordinates');
+  
+    fixture.detectChanges(); // trigger ngOnInit()
+    tick(); // resolve observables
+  
+    expect(projectService.getProjectFiscalsByProjectGuid).toHaveBeenCalled();
+    expect(projectService.getFiscalActivities).toHaveBeenCalled();
+    expect(projectService.getActivityBoundaries).toHaveBeenCalled();
+    expect(plotSpy).toHaveBeenCalledWith(jasmine.any(Array));
+    expect(coordSpy).not.toHaveBeenCalled();
+  }));
+  
+  it('should call getProjectCoordinates if no polygons exist', fakeAsync(() => {
+    const mockProjectGuid = 'mock-guid';
+    component['projectGuid'] = mockProjectGuid;
+    component['map'] = mockMapInstance;
+  
+    const mockFiscal = {
+      fiscalYear: component.currentFiscalYear,
+      projectPlanFiscalGuid: 'fiscal-1'
+    };
+  
+    const mockActivity = {
+      activityGuid: 'activity-1',
+      fiscalYear: mockFiscal.fiscalYear,
+      projectPlanFiscalGuid: mockFiscal.projectPlanFiscalGuid
+    };
+  
+    const emptyBoundary = {
+      _embedded: {
+        activityBoundary: [] // no geometry
+      }
+    };
+  
+    const projectService = TestBed.inject(ProjectService) as unknown as MockProjectService;
+  
+    projectService.getProjectFiscalsByProjectGuid.and.returnValue(of({
+      _embedded: {
+        projectFiscals: [mockFiscal]
+      }
+    }));
+  
+    projectService.getFiscalActivities.and.returnValue(of({
+      _embedded: {
+        activities: [mockActivity]
+      }
+    }));
+  
+    projectService.getActivityBoundaries.and.returnValue(of(emptyBoundary));
+  
+    component['projectBoundary'] = []; // no project polygons
+  
+    const plotSpy = spyOn(component as any, 'plotBoundariesOnMap');
+    const coordSpy = spyOn(component, 'getProjectCoordinates');
+  
+    fixture.detectChanges(); // trigger ngOnInit()
+    tick(); // flush observables
+  
+    expect(plotSpy).not.toHaveBeenCalled();
+    expect(coordSpy).toHaveBeenCalled();
+  }));
+  
+  
+  describe('openFullMap()', () => {
+    let originalWindowOpen: any;
+  
+    beforeEach(() => {
+      originalWindowOpen = window.open;
+      window.open = jasmine.createSpy('open');
+    });
+  
+    afterEach(() => {
+      window.open = originalWindowOpen;
+    });
+  
+    it('should open map with bbox from boundaries', () => {
+      const mockGetBounds = jasmine.createSpy().and.returnValue(
+        L.latLngBounds([[48, -125], [49, -123]])
+      );
+  
+      (L.geoJSON as jasmine.Spy).and.callFake(() => ({
+        getBounds: mockGetBounds
+      }) as any);
+  
+      component['allActivityBoundaries'] = [
+        {
+          boundary: [{ geometry: { type: 'Polygon', coordinates: [] } }]
+        }
+      ];
+  
+      component['projectBoundary'] = [
+        {
+          geometry: { type: 'Polygon', coordinates: [] }
+        }
+      ];
+  
+      component.openFullMap();
+  
+      expect(window.open).toHaveBeenCalled();
+      const url = (window.open as jasmine.Spy).calls.mostRecent().args[0];
+      expect(url).toContain('/map?bbox=');
+    });
+  
+    it('should open map with bbox from coordinates if no boundaries', () => {
+      component['projectLatitude'] = '48.4284';
+      component['projectLongitude'] = '-123.3656';
+      component['allActivityBoundaries'] = [];
+      component['projectBoundary'] = [];
+  
+      component.openFullMap();
+  
+      expect(window.open).toHaveBeenCalled();
+      const url = (window.open as jasmine.Spy).calls.mostRecent().args[0];
+      expect(url).toContain('/map?bbox=');
+    });
+  
+    it('should open map without bbox if no boundaries or coordinates', () => {
+      component['projectLatitude'] = '';
+      component['projectLongitude'] = '';
+      component['allActivityBoundaries'] = [];
+      component['projectBoundary'] = [];
+  
+      component.openFullMap();
+  
+      expect(window.open).toHaveBeenCalledWith(jasmine.stringMatching(/\/map$/), '_blank');
+    });
+  });
 
 });
+
