@@ -1,5 +1,20 @@
 package ca.bc.gov.nrs.wfprev.services;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryCollection;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.MultiPolygon;
+import org.locationtech.jts.geom.Point;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.stereotype.Component;
+
 import ca.bc.gov.nrs.wfprev.common.services.CommonService;
 import ca.bc.gov.nrs.wfprev.data.models.ActivityBoundaryModel;
 import ca.bc.gov.nrs.wfprev.data.models.ActivityModel;
@@ -8,21 +23,6 @@ import ca.bc.gov.nrs.wfprev.data.models.ProjectFiscalModel;
 import ca.bc.gov.nrs.wfprev.data.models.ProjectModel;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
-import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.GeometryCollection;
-import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.MultiPolygon;
-import org.locationtech.jts.geom.Point;
-import org.postgresql.geometric.PGpoint;
-import org.postgresql.geometric.PGpolygon;
-import org.springframework.hateoas.CollectionModel;
-import org.springframework.stereotype.Component;
-
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
 
 @Slf4j
 @Component
@@ -55,7 +55,16 @@ public class CoordinatesService implements CommonService {
 
             // Get the GeometryFactory from the first polygon
             // (We're just borrowing the factory, not limiting which polygons are included)
-            GeometryFactory factory = allMultiPolygons.getFirst().getFactory();
+            Optional<MultiPolygon> firstNonNull = allMultiPolygons.stream()
+                    .filter(Objects::nonNull)
+                    .findFirst();
+
+            if (firstNonNull.isEmpty()) {
+                log.info("No valid MultiPolygon geometries found to calculate centroid.");
+                return; 
+            }
+
+            GeometryFactory factory = firstNonNull.get().getFactory();
 
             // Convert the entire list of MultiPolygons to an array of Geometry objects
             Geometry[] geometryArray = allMultiPolygons.stream()
