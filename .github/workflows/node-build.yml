@@ -1,0 +1,35 @@
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-node-server:
+    runs-on: ubuntu-latest
+
+    env:
+      NPMRC: ${{ secrets.NPMRC }} 
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Add .npmrc file
+      working-directory: ./node/wfprev-gdb-extractor
+      run: echo -e "$NPMRC" > ~/.npmrc
+
+    - name: Debug .npmrc
+      run: cat ~/.npmrc
+
+    - name: Clear cache
+      working-directory: ./node/wfprev-gdb-extractor
+      run: |
+        rm -f package-lock.json
+        rm -rf node_modules
+        npm cache clean --force
+
+    - name: Install dependencies
+      working-directory: ./node/wfprev-gdb-extractor
+      run: npm install
+
