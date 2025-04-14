@@ -225,6 +225,23 @@ export class ProjectService {
         );
     }
 
+    getProjectBoundaries(projectGuid: string): Observable<any> {
+        const baseUrl = `${this.appConfigService.getConfig().rest['wfprev']}/wfprev-api/projects`;
+        const url = `${baseUrl}/${projectGuid}/projectBoundary`;
+
+        return this.httpClient.get(url, {
+            headers: {
+                Authorization: `Bearer ${this.tokenService.getOauthToken()}`,
+            }
+        }).pipe(
+            map((response: any) => response),
+            catchError((error) => {
+                console.error("Error fetching project boundaries", error);
+                return throwError(() => new Error("Failed to fetch project boundaries"));
+            })
+        );
+    }
+
     getActivityBoundaries(projectGuid: string, projectPlanFiscalGuid: string, activityGuid: string): Observable<any> {
         const baseUrl = `${this.appConfigService.getConfig().rest['wfprev']}/wfprev-api/projects`;
         const url = `${baseUrl}/${projectGuid}/projectFiscals/${projectPlanFiscalGuid}/activities/${activityGuid}/activityBoundary`;
@@ -238,23 +255,6 @@ export class ProjectService {
             catchError((error) => {
                 console.error("Error fetching activity boundaries", error);
                 return throwError(() => new Error("Failed to fetch activity boundaries"));
-            })
-        );
-    }
-
-    getProjectBoundaries(projectGuid: string): Observable<any> {
-        const baseUrl = `${this.appConfigService.getConfig().rest['wfprev']}/wfprev-api/projects`;
-        const url = `${baseUrl}/${projectGuid}/projectBoundary`;
-            
-        return this.httpClient.get(url, {
-            headers: {
-                Authorization: `Bearer ${this.tokenService.getOauthToken()}`,
-            }
-        }).pipe(
-            map((response: any) => response),
-            catchError((error) => {
-                console.error("Error fetching project boundaries", error);
-                return throwError(() => new Error("Failed to fetch project boundaries"));
             })
         );
     }
