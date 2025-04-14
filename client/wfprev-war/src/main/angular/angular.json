@@ -32,7 +32,7 @@
             "assets": [
               "src/favicon.ico",
               "src/assets",
-              "src/assets/data/appConfig.json",
+              "src/assets/data",
               {
                 "glob": "**/*",
                 "input": "node_modules/@bcgov/smk/dist/assets",
