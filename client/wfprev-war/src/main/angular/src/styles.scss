@@ -127,7 +127,6 @@ html, body{
 }
 .leaflet-control .legend {
   background: white;
-  padding: 10px;
   border-radius: 5px;
   line-height: 1.4em;
   font-size: 13px;
@@ -141,6 +140,7 @@ html, body{
   font-size: 12px;
   font-style: normal;
   font-weight: 700;
+  margin-left: 4px;
   margin-bottom: 5px;
   font-family: var(--wf-font-family-main) !important;
 }
@@ -149,6 +149,8 @@ html, body{
   display: flex;
   align-items: center;
   margin-bottom: 4px;
+  margin-left:4px;
+  font-family: var(--wf-font-family-main) !important;
 }
 
 .leaflet-control .legend-color {

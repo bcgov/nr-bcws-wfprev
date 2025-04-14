@@ -259,6 +259,25 @@ export class ProjectService {
         );
     }
 
+    createProjectBoundary(projectGuid: string, projectFiscal: ProjectBoundary): Observable<any> {
+        const baseUrl = `${this.appConfigService.getConfig().rest['wfprev']}/wfprev-api/projects`;
+        const url = `${baseUrl}/${projectGuid}/projectBoundary`;
+        return this.httpClient.post<any>(
+            url,
+            projectFiscal,
+            {
+                headers: {
+                    Authorization: `Bearer ${this.tokenService.getOauthToken()}`,
+                }
+            }
+        ).pipe(
+            catchError((error) => {
+                console.error("Error creating project boundary", error);
+                return throwError(() => new Error("Failed to create project boundary"));
+            })
+        );
+    }
+
     uploadDocument({
         file,
         fileName = file.name,
