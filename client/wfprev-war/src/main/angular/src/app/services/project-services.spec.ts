@@ -556,5 +556,34 @@ describe('ProjectService', () => {
     req.flush('Error', { status: 500, statusText: 'Server Error' });
   });
 
+  it('should delete a project boundary', () => {
+    const projectGuid = 'project-123';
+    const projectBoundaryGuid = 'boundary-456';
+  
+    service.deleteProjectBoundary(projectGuid, projectBoundaryGuid).subscribe((response) => {
+      expect(response).toBeTruthy(); 
+    });
+  
+    const req = httpMock.expectOne(`http://mock-api.com/wfprev-api/projects/${projectGuid}/projectBoundary/${projectBoundaryGuid}`);
+    expect(req.request.method).toBe('DELETE');
+    expect(req.request.headers.get('Authorization')).toBe('Bearer mock-token');
+    req.flush({}); 
+  });
+  
+  it('should handle errors when deleting a project boundary', () => {
+    const projectGuid = 'project-123';
+    const projectBoundaryGuid = 'boundary-456';
+  
+    service.deleteProjectBoundary(projectGuid, projectBoundaryGuid).subscribe({
+      next: () => fail('Should have failed with an error'),
+      error: (error) => {
+        expect(error.message).toBe('Failed to delete project boundary');
+      }
+    });
+  
+    const req = httpMock.expectOne(`http://mock-api.com/wfprev-api/projects/${projectGuid}/projectBoundary/${projectBoundaryGuid}`);
+    req.flush('Error', { status: 500, statusText: 'Server Error' });
+  });
+
 
 });
