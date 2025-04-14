@@ -696,11 +696,13 @@ describe('SpatialService', () => {
     it('should catch errors thrown by extractKMLCoordinates', async () => {
       const mockFile = new File(['<kml></kml>'], 'error.kml');
       spyOn(mockFile, 'text').and.returnValue(Promise.resolve('<kml>bad</kml>'));
-      spyOn(service, 'extractKMLCoordinates').and.throwError('KML error');
-  
+    
+      (service.extractKMLCoordinates as any) = jasmine.createSpy('extractKMLCoordinates').and.throwError('KML error');
+    
       const result = await service.extractCoordinates(mockFile);
-  
+    
       expect(result).toEqual([]);
+      expect(service.extractKMLCoordinates).toHaveBeenCalled();
     });
   
     it('should catch errors thrown by handleCompressedFile', async () => {
