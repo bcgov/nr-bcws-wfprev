@@ -1,8 +1,6 @@
+name: Build & Dockerize Node.js Server
+
 on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
   workflow_dispatch:
     inputs:
       DEFAULT_APPLICATION_ENVIRONMENT:
@@ -15,18 +13,21 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      NPMRC: ${{ secrets.NPMRC }} 
+      NPMRC: ${{ secrets.NPMRC }}
+      IMAGE_NAME: ${{ github.repository }}-wfprev-gdb-extractor
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
 
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+
     - name: Add .npmrc file
       working-directory: ./node/wfprev-gdb-extractor
       run: echo -e "$NPMRC" > ~/.npmrc
-
-    - name: Debug .npmrc
-      run: cat ~/.npmrc
 
     - name: Clear cache
       working-directory: ./node/wfprev-gdb-extractor
@@ -37,5 +38,42 @@ jobs:
 
     - name: Install dependencies
       working-directory: ./node/wfprev-gdb-extractor
-      run: npm install
+      run: npm ci
 
+    - name: Run tests
+      working-directory: ./node/wfprev-gdb-extractor
+      run: npm test
+
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v2
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+
+    - name: Login to GitHub Container Registry
+      uses: docker/login-action@v2
+      with:
+        registry: ${{ vars.REGISTRY }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Extract Docker metadata
+      id: meta
+      uses: docker/metadata-action@v5
+      with:
+        images: ${{ vars.REGISTRY }}/${{ env.IMAGE_NAME }}
+        tags: |
+          type=schedule
+          type=ref,event=branch
+          type=ref,event=pr
+          type=ref,event=tag
+          type=raw,value=${{ github.sha }}
+
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v6
+      with:
+        context: ./node/wfprev-gdb-extractor
+        file: ./node/wfprev-gdb-extractor/Dockerfile
+        push: true
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
