@@ -28,6 +28,7 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
 
   private map: L.Map | undefined;
   private marker: L.Marker | undefined;
+  boundaryLayer: L.GeoJSON | null = null;
   projectGuid = '';
   messages = Messages;
   detailsForm: FormGroup = this.fb.group({});
@@ -139,8 +140,11 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
     this.latLong = newLatLong;
     this.isLatLongDirty = true; // Always mark as dirty regardless of validity
   }
-  
 
+  onFilesUpdated(): void {
+    this.loadProjectDetails();
+  }
+  
   populateFormWithProjectDetails(data: any): void {
     this.patchFormValues(data);
   }
@@ -227,7 +231,51 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
         attribution: '© OpenStreetMap contributors',
       }).addTo(this.map);
       
+      
       this.marker = L.marker([latitude, longitude]).addTo(this.map); // Add the marker
+
+    }
+
+    if (this.projectGuid) {
+      this.projectService.getProjectBoundaries(this.projectGuid).subscribe({
+        next: (boundaryResponse) => {
+          const boundaries = boundaryResponse?._embedded?.projectBoundary;
+    
+          // Remove old boundary layer if it exists
+          if (this.boundaryLayer && this.map) {
+            this.map.removeLayer(this.boundaryLayer);
+            this.boundaryLayer = null;
+          }
+    
+          if (boundaries && boundaries.length > 0) {
+            const latestBoundary = boundaries.sort((a: any, b: any) =>
+              new Date(b.systemStartTimestamp).getTime() - new Date(a.systemStartTimestamp).getTime()
+            )[0];
+    
+            const boundaryGeometry = latestBoundary.boundaryGeometry;
+    
+            if (boundaryGeometry && this.map) {
+              // Create new GeoJSON layer
+              this.boundaryLayer = L.geoJSON(boundaryGeometry, {
+                style: {
+                  color: '#000000',
+                  weight: 3,
+                  opacity: 1,
+                  fillOpacity: 0
+                }
+              }).addTo(this.map);
+    
+              // Fit the map view to the new boundary
+              if (this.boundaryLayer?.getBounds()?.isValid()) {
+                this.map.fitBounds(this.boundaryLayer.getBounds());
+              }
+            }
+          }
+        },
+        error: (error) => {
+          console.error('Error fetching project boundaries', error);
+        }
+      });
     }
   }
   
