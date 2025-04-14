@@ -28,7 +28,8 @@ describe('ProjectFilesComponent', () => {
     mockProjectService = jasmine.createSpyObj('ProjectService', [
       'uploadDocument', 
       'getProjectBoundaries', 
-      'createProjectBoundary'
+      'createProjectBoundary',
+      'deleteProjectBoundary'
     ]);
     mockSnackbar = jasmine.createSpyObj('MatSnackBar', ['open']);
     mockDialog = jasmine.createSpyObj('MatDialog', ['open']);
@@ -196,7 +197,10 @@ describe('ProjectFilesComponent', () => {
       spyOn(component, 'uploadFile').and.stub();
 
       component.openFileUploadModal();
-      expect(mockDialog.open).toHaveBeenCalledWith(AddAttachmentComponent, { width: '1000px' });
+      expect(mockDialog.open).toHaveBeenCalledWith(AddAttachmentComponent, {
+        width: '1000px',
+        data: { indicator: 'project-files' },
+      });
       expect(component.uploadFile).toHaveBeenCalledWith(mockFile);
     });
 
@@ -248,7 +252,7 @@ describe('ProjectFilesComponent', () => {
 
       expect(mockProjectService.uploadDocument).toHaveBeenCalledWith({ file: mockFile });
       expect(mockSnackbar.open).toHaveBeenCalledWith(
-        'The spatial file was not uploaded.',
+        'Could not reach file upload server.',
         'Close',
         jasmine.any(Object)
       );
@@ -296,20 +300,19 @@ describe('ProjectFilesComponent', () => {
     it('should handle create attachment error', () => {
       const mockFile = new File(['content'], 'test-file.txt', { type: 'text/plain' });
       const response = { fileId: 'test-file-id' };
-
+    
+      spyOn(console, 'log'); 
+    
       mockAttachmentService.createProjectAttachment.and.returnValue(
         throwError(() => new Error('Failed to create attachment'))
       );
-
+    
       component.uploadAttachment(mockFile, response);
-
+    
       expect(mockAttachmentService.createProjectAttachment).toHaveBeenCalled();
-      expect(mockSnackbar.open).toHaveBeenCalledWith(
-        'Failed to upload file. Please try again.',
-        'Close',
-        jasmine.any(Object)
-      );
+      expect(console.log).toHaveBeenCalledWith('Failed to upload attachment: ', jasmine.any(Error));
     });
+    
   });
 
   describe('updateProjectBoundary', () => {
@@ -356,53 +359,72 @@ describe('ProjectFilesComponent', () => {
           ]
         ]
       ];
-
+    
+      spyOn(console, 'error');
+    
       mockProjectService.createProjectBoundary.and.returnValue(
         throwError(() => new Error('Failed to create boundary'))
       );
-
+    
       component.updateProjectBoundary(mockFile, coordinates);
-
+    
       expect(mockProjectService.createProjectBoundary).toHaveBeenCalled();
-      expect(mockSnackbar.open).toHaveBeenCalledWith(
-        'Failed to update project boundary.',
-        'Close',
-        jasmine.any(Object)
+      expect(console.error).toHaveBeenCalledWith(
+        'Failed to upload project geometry: ',
+        jasmine.any(Error)
       );
     });
   });
 
   describe('deleteFile', () => {
     it('should open confirmation dialog and delete file when confirmed', () => {
-      const mockProjectFile = { 
+      const mockProjectGuid = 'mock-guid';
+      const mockProjectFile: ProjectFile = {
         fileAttachmentGuid: 'test-guid',
         fileName: 'test-file.txt'
-      } as ProjectFile;
-      
+      };
+  
+      const mockBoundary = {
+        projectBoundaryGuid: 'boundary-guid',
+        systemStartTimestamp: new Date().toISOString()
+      };
+  
       mockDialog.open.and.returnValue({
-        afterClosed: () => of(true) // Simulating user confirming deletion
+        afterClosed: () => of(true)
       } as any);
-      
+  
       mockAttachmentService.deleteProjectAttachment.and.returnValue(of({}));
-      
+      mockProjectService.getProjectBoundaries.and.returnValue(of({
+        _embedded: { projectBoundary: [mockBoundary] }
+      }));
+      mockProjectService.deleteProjectBoundary.and.returnValue(of({}));
+      mockSnackbar.open.and.stub();
+  
+      component.projectGuid = mockProjectGuid;
       component.projectFiles = [mockProjectFile];
-      component.dataSource.data = component.projectFiles;
-      
+      component.dataSource.data = [mockProjectFile];
+  
       component.deleteFile(mockProjectFile);
-      
+  
       expect(mockDialog.open).toHaveBeenCalledWith(
-        ConfirmationDialogComponent, 
+        ConfirmationDialogComponent,
         jasmine.objectContaining({
-          data: { indicator: 'confirm-delete-attachment' }
+          data: { indicator: 'confirm-delete-attachment' },
+          width: '500px'
         })
       );
-      
+  
       expect(mockAttachmentService.deleteProjectAttachment).toHaveBeenCalledWith(
-        mockProjectGuid, 
+        mockProjectGuid,
         'test-guid'
       );
-      
+  
+      expect(mockProjectService.getProjectBoundaries).toHaveBeenCalledWith(mockProjectGuid);
+      expect(mockProjectService.deleteProjectBoundary).toHaveBeenCalledWith(mockProjectGuid, 'boundary-guid');
+  
       expect(component.projectFiles.length).toBe(0);
+      expect(component.dataSource.data.length).toBe(0);
+  
       expect(mockSnackbar.open).toHaveBeenCalledWith(
         'File has been deleted successfully.',
         'Close',

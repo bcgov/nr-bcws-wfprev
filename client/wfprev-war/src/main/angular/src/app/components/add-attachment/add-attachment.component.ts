@@ -11,20 +11,28 @@ import { FormsModule } from '@angular/forms';
   templateUrl: './add-attachment.component.html',
   styleUrls: ['./add-attachment.component.scss'],
   standalone: true,
-  imports: [CommonModule, MatInputModule,FormsModule ]
+  imports: [CommonModule, MatInputModule, FormsModule]
 })
 export class AddAttachmentComponent {
   selectedFile: File | null = null;
   selectedFileName: string = '';
   attachmentType: string = '';
   description: string = '';
-  attachmentTypes = ['Gross Project Area Boundary','Other'];
+  attachmentTypes = [''];
   isDescriptionTooLong: boolean = false;
   constructor(
     private readonly tokenService: TokenService,
     private readonly dialogRef: MatDialogRef<AddAttachmentComponent>,
     @Inject(MAT_DIALOG_DATA) public data: { indicator: string; name: string }
   ) {
+    // only show Gross Project Area Boundary as a dropdown option if project boundary is being updated
+    const isProjectFiles = data.indicator === 'project-files';
+
+    this.attachmentTypes = isProjectFiles
+      ? ['Gross Project Area Boundary']
+      : ['Gross Project Area Boundary', 'Other'];
+
+    this.attachmentType = isProjectFiles ? 'Gross Project Area Boundary' : '';
   }
 
   onFileSelected(event: any): void {
