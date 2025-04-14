@@ -38,7 +38,7 @@ jobs:
 
     - name: Install dependencies
       working-directory: ./node/wfprev-gdb-extractor
-      run: npm ci
+      run: npm install
 
     - name: Run tests
       working-directory: ./node/wfprev-gdb-extractor
