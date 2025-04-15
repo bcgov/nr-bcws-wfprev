@@ -585,5 +585,39 @@ describe('ProjectService', () => {
     req.flush('Error', { status: 500, statusText: 'Server Error' });
   });
 
+  it('should fetch activity boundaries', () => {
+    const projectGuid = '12345';
+    const projectPlanFiscalGuid = 'fiscal-6789';
+    const activityGuid = 'activity-001';
+    const mockBoundaries = { _embedded: { activityBoundary: [{ id: 'abc' }] } };
+  
+    service.getActivityBoundaries(projectGuid, projectPlanFiscalGuid, activityGuid).subscribe((boundaries) => {
+      expect(boundaries).toEqual(mockBoundaries);
+    });
+  
+    const req = httpMock.expectOne(
+      `http://mock-api.com/wfprev-api/projects/${projectGuid}/projectFiscals/${projectPlanFiscalGuid}/activities/${activityGuid}/activityBoundary`
+    );
+    expect(req.request.method).toBe('GET');
+    expect(req.request.headers.get('Authorization')).toBe('Bearer mock-token');
+    req.flush(mockBoundaries);
+  });
 
+  it('should handle errors when fetching activity boundaries', () => {
+    const projectGuid = '12345';
+    const projectPlanFiscalGuid = 'fiscal-6789';
+    const activityGuid = 'activity-001';
+  
+    service.getActivityBoundaries(projectGuid, projectPlanFiscalGuid, activityGuid).subscribe({
+      next: () => fail('Should have failed with an error'),
+      error: (error) => {
+        expect(error.message).toBe('Failed to fetch activity boundaries');
+      }
+    });
+  
+    const req = httpMock.expectOne(
+      `http://mock-api.com/wfprev-api/projects/${projectGuid}/projectFiscals/${projectPlanFiscalGuid}/activities/${activityGuid}/activityBoundary`
+    );
+    req.flush('Error', { status: 500, statusText: 'Server Error' });
+  });
 });

@@ -8,6 +8,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ConfirmationDialogComponent } from 'src/app/components/confirmation-dialog/confirmation-dialog.component';
+import { Component } from '@angular/core';
 
 const mockProjectService = {
   getProjectFiscalsByProjectGuid: jasmine.createSpy('getProjectFiscalsByProjectGuid').and.returnValue(
@@ -15,8 +16,17 @@ const mockProjectService = {
   ),
   updateProjectFiscal: jasmine.createSpy('updateProjectFiscal').and.returnValue(of({})),
   createProjectFiscal: jasmine.createSpy('createProjectFiscal').and.returnValue(of({})),
-  deleteProjectFiscalByProjectPlanFiscalGuid: jasmine.createSpy('deleteProjectFiscalByProjectPlanFiscalGuid').and.returnValue(of({})), // ✅ Add this line
-
+  deleteProjectFiscalByProjectPlanFiscalGuid: jasmine.createSpy('deleteProjectFiscalByProjectPlanFiscalGuid').and.returnValue(of({})),
+  getFiscalActivities: jasmine.createSpy('getFiscalActivities').and.returnValue(of({
+    _embedded: { activities: [] }
+  })),
+  getProjectByProjectGuid: jasmine.createSpy('getProjectByProjectGuid').and.returnValue(of({
+    latitude: '48.4284',
+    longitude: '-123.3656'
+  })),
+  getProjectBoundaries: jasmine.createSpy('getProjectBoundaries').and.returnValue(
+    of({ _embedded: { projectBoundary: [] } })
+  ),
 };
 
 const mockCodeTableServices = {
@@ -31,9 +41,27 @@ describe('ProjectFiscalsComponent', () => {
   let component: ProjectFiscalsComponent;
   let fixture: ComponentFixture<ProjectFiscalsComponent>;
 
+  @Component({
+    selector: 'app-fiscal-map',
+    template: '<div></div>'
+  })
+  class MockFiscalMapComponent {
+    ngOnInit() {}
+    ngAfterViewInit() {}
+    initMap() {}
+  }
+  @Component({
+    selector: 'app-activities',
+    template: ''
+  })
+  class MockActivitiesComponent {
+    isFormDirty = () => false;
+  }
+  
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ProjectFiscalsComponent, BrowserAnimationsModule, ConfirmationDialogComponent],
+      imports: [BrowserAnimationsModule],
+      declarations: [MockFiscalMapComponent, MockActivitiesComponent],
       providers: [
         { provide: ActivatedRoute, useValue: { snapshot: { queryParamMap: { get: () => 'test-guid' } } } },
         { provide: ProjectService, useValue: mockProjectService },
@@ -41,8 +69,14 @@ describe('ProjectFiscalsComponent', () => {
         { provide: MatSnackBar, useValue: mockSnackBar },
         FormBuilder,
       ],
-    }).compileComponents();
-
+    })
+    .overrideComponent(ProjectFiscalsComponent, {
+      set: {
+        imports: []  // Remove the real FiscalMapComponent and ActivitiesComponent
+      }
+    })
+    .compileComponents();
+    
     fixture = TestBed.createComponent(ProjectFiscalsComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

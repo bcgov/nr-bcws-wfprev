@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { ComponentFixture, TestBed, fakeAsync, flush, tick } from '@angular/core/testing';
 import { MapComponent } from './map.component';
 import { MapConfigService } from 'src/app/services/map-config.service';
 import { MapService } from 'src/app/services/map.service';
@@ -11,6 +11,7 @@ import { AppConfigService } from 'src/app/services/app-config.service';
 import { CodeTableServices } from 'src/app/services/code-table-services';
 import { ProjectService } from 'src/app/services/project-services';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { ActivatedRoute } from '@angular/router';
 
 // Mock AppConfigService
 class MockAppConfigService {
@@ -52,7 +53,7 @@ describe('MapComponent', () => {
 
   beforeEach(() => {
     mapConfigServiceMock = jasmine.createSpyObj<MapConfigService>('MapConfigService', ['getMapConfig']);
-    mapServiceMock = jasmine.createSpyObj<MapService>('MapService', ['getMapIndex', 'setMapIndex', 'createSMK']);
+    mapServiceMock = jasmine.createSpyObj<MapService>('MapService', ['getMapIndex', 'setMapIndex', 'createSMK','getSMKInstance']);
     mapContainer = jasmine.createSpyObj('ElementRef', ['nativeElement']);
     mapConfigServiceMock.getMapConfig.and.returnValue(Promise.resolve({ theme: 'testTheme' }));
 
@@ -70,6 +71,19 @@ describe('MapComponent', () => {
         { provide: AppConfigService, useClass: MockAppConfigService },
         { provide: CodeTableServices, useClass: MockCodeTableServices },
         { provide: ProjectService, useClass: MockProjectService },
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: {
+              queryParamMap: {
+                get: (key: string) => {
+                  if (key === 'bbox') return '10,20,30,40';
+                  return null;
+                }
+              }
+            }
+          }
+        }
       ],
       schemas: [NO_ERRORS_SCHEMA],
     });
@@ -85,31 +99,63 @@ describe('MapComponent', () => {
     it('should initialize map if mapContainer is available', fakeAsync(() => {
       mapContainer.nativeElement = document.createElement('div');
       component.mapContainer = mapContainer;
-
+    
       mapServiceMock.getMapIndex.and.returnValue(0);
+      mapServiceMock.getSMKInstance.and.returnValue({
+        $viewer: {
+          map: {
+            getBounds: () => ({
+              pad: () => ({
+                toBBoxString: () => 'mocked',
+              }),
+            }),
+            fitBounds: jasmine.createSpy('fitBounds'),
+          },
+        },
+      });
+      
+    
       mapConfigServiceMock.getMapConfig.and.returnValue(Promise.resolve('mockConfig'));
-
+    
       component.ngAfterViewInit();
-      tick(); // Simulate async completion
-
+      tick();
+      tick(500);  // simulate setTimeout
+      flush();  
+    
       expect(mapServiceMock.getMapIndex).toHaveBeenCalled();
       expect(mapServiceMock.setMapIndex).toHaveBeenCalledWith(1);
       expect(mapServiceMock.createSMK).toHaveBeenCalled();
     }));
+    
   });
 
   describe('initMap', () => {
     it('should initialize map with correct config and device settings', fakeAsync(() => {
       mapContainer.nativeElement = document.createElement('div');
       component.mapContainer = mapContainer;
-
+  
       const mockConfig = { theme: 'testTheme' };
       mapConfigServiceMock.getMapConfig.and.returnValue(Promise.resolve(mockConfig));
       mapServiceMock.getMapIndex.and.returnValue(1);
-
+  
+      mapServiceMock.getSMKInstance.and.returnValue({
+        $viewer: {
+          map: {
+            getBounds: () => ({
+              pad: () => ({
+                toBBoxString: () => 'mocked',
+              }),
+            }),
+            fitBounds: jasmine.createSpy('fitBounds'),
+          },
+        },
+      });
+  
       component.ngAfterViewInit();
-      tick(); // Simulate async completion
-
+      tick();      // resolves mapConfig promise
+      tick(500);   // handles setTimeout in ngAfterViewInit
+      flush();     // clears timers if any remain
+  
       expect(component.mapConfig).toEqual([
         mockConfig,
         { viewer: { device: 'desktop' } },
@@ -118,19 +164,22 @@ describe('MapComponent', () => {
       ]);
       expect(mapServiceMock.createSMK).toHaveBeenCalled();
     }));
+  });
 
     it('should handle errors while loading mapConfig', fakeAsync(() => {
       mapContainer.nativeElement = document.createElement('div');
       component.mapContainer = mapContainer;
-
+    
       mapConfigServiceMock.getMapConfig.and.returnValue(Promise.reject('Config Load Error'));
-
+    
       component.ngAfterViewInit();
-      tick(); // Simulate async completion
-
+      tick();
+      tick(500);
+      flush(); 
+    
       expect(console.error).toHaveBeenCalledWith('Error loading map:', 'Config Load Error');
     }));
-  });
+    
 
   describe('clone', () => {
     it('should return a deep clone of an object', () => {
@@ -145,12 +194,15 @@ describe('MapComponent', () => {
   describe('mapIndex and mapService', () => {
     it('should update mapIndex after getting map index', fakeAsync(() => {
       mapServiceMock.getMapIndex.and.returnValue(5);
-
+      mapServiceMock.getSMKInstance.and.returnValue({ $viewer: { map: { getBounds: () => ({ pad: () => [] }), fitBounds: () => {} } } });
+  
       component.ngAfterViewInit();
-      tick(); // Simulate async completion
-
+      tick();
+      tick(500);
+  
       expect(component.mapIndex).toBe(6);
       expect(mapServiceMock.setMapIndex).toHaveBeenCalledWith(6);
     }));
   });
+  
 });
