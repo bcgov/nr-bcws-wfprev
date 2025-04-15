@@ -27,8 +27,8 @@ export class FiscalMapComponent implements AfterViewInit, OnDestroy, OnInit {
   };
   
   constructor(
-    private projectService: ProjectService,
-    private route: ActivatedRoute,
+    readonly projectService: ProjectService,
+    readonly route: ActivatedRoute,
     protected router: Router,
   ) {}
 
@@ -66,7 +66,7 @@ export class FiscalMapComponent implements AfterViewInit, OnDestroy, OnInit {
           const lat = parseFloat(this.projectLatitude);
           const lng = parseFloat(this.projectLongitude);
   
-          const marker = L.marker([lat, lng]).addTo(this.map);
+          L.marker([lat, lng]).addTo(this.map);
   
           this.map.setView([lat, lng], 14); 
         }
@@ -74,10 +74,10 @@ export class FiscalMapComponent implements AfterViewInit, OnDestroy, OnInit {
     })
   }
   getProjectBoundary() {
-    this.projectGuid = this.route.snapshot?.queryParamMap?.get('projectGuid') || '';
+    this.projectGuid = this.route.snapshot?.queryParamMap?.get('projectGuid') ?? '';
     if (this.projectGuid) {
       this.projectService.getProjectBoundaries(this.projectGuid).subscribe((data) => {
-        const boundary = data?._embedded?.projectBoundary || [];
+        const boundary = data?._embedded?.projectBoundary ?? [];
         this.projectBoundary = boundary;
   
         if (this.map && boundary.length > 0) {
@@ -87,18 +87,18 @@ export class FiscalMapComponent implements AfterViewInit, OnDestroy, OnInit {
     }
   }
   getAllActivitiesBoundaries() {
-    this.projectGuid = this.route.snapshot?.queryParamMap?.get('projectGuid') || '';
+    this.projectGuid = this.route.snapshot?.queryParamMap?.get('projectGuid') ?? '';
   
     if (this.projectGuid) {
       this.projectService.getProjectFiscalsByProjectGuid(this.projectGuid).subscribe((data) => {
-        this.projectFiscals = (data._embedded?.projectFiscals || []).sort(
+        this.projectFiscals = (data._embedded?.projectFiscals ?? []).sort(
           (a: { fiscalYear: number }, b: { fiscalYear: number }) => a.fiscalYear - b.fiscalYear
         );
   
         const activityRequests = this.projectFiscals.map(fiscal =>
           this.projectService.getFiscalActivities(this.projectGuid, fiscal.projectPlanFiscalGuid).pipe(
             map((response: any) => {
-              const activities = response?._embedded?.activities || [];
+              const activities = response?._embedded?.activities ?? [];
               return activities.map((activity: any) => ({
                 ...activity,
                 fiscalYear: fiscal.fiscalYear,
@@ -129,9 +129,8 @@ export class FiscalMapComponent implements AfterViewInit, OnDestroy, OnInit {
           );
   
           forkJoin(boundaryRequests).subscribe((allResults) => {
-            this.allActivityBoundaries = allResults.filter(r => 
-              r !== null && r.boundary && Object.keys(r.boundary).length > 0
-            );
+            this.allActivityBoundaries = allResults.filter(r => r?.boundary && Object.keys(r.boundary).length > 0);
+
             const hasActivityPolygons = this.allActivityBoundaries.length > 0;
             const hasProjectPolygons = this.projectBoundary?.length > 0;
             
@@ -244,17 +243,17 @@ export class FiscalMapComponent implements AfterViewInit, OnDestroy, OnInit {
       zoomControl: true,
     });
 
-    (this.map.zoomControl as L.Control.Zoom).setPosition('topright');
+    (this.map.zoomControl).setPosition('topright');
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '© OpenStreetMap contributors'
     }).addTo(this.map);
 
     const legendHelper = new LeafletLegendService();
-    legendHelper.addLegend(this.map!, this.fiscalColorMap);
+    legendHelper.addLegend(this.map, this.fiscalColorMap);
     const bcBounds = L.latLngBounds([48.3, -139.1], [60.0, -114.0]);
     this.map.fitBounds(bcBounds, { padding: [20, 20] });
-    createFullPageControl(() => this.openFullMap()).addTo(this.map!);
+    createFullPageControl(() => this.openFullMap()).addTo(this.map);
   }
 
   openFullMap(): void {
