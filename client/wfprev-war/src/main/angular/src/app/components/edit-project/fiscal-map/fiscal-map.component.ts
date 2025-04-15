@@ -202,6 +202,8 @@ export class FiscalMapComponent implements AfterViewInit, OnDestroy, OnInit {
   }
 
   plotProjectBoundary(boundary: any[]): void {
+    const layers: L.Layer[] = [];
+  
     boundary.forEach((item: any) => {
       const geometry = item.boundaryGeometry;
       if (!geometry) return;
@@ -215,7 +217,8 @@ export class FiscalMapComponent implements AfterViewInit, OnDestroy, OnInit {
       };
   
       const addToMap = (geom: any) => {
-        L.geoJSON(geom, geoJsonOptions).addTo(this.map!);
+        const layer = L.geoJSON(geom, geoJsonOptions).addTo(this.map!);
+        layers.push(layer);
       };
   
       if (geometry.type === 'GeometryCollection') {
@@ -224,6 +227,11 @@ export class FiscalMapComponent implements AfterViewInit, OnDestroy, OnInit {
         addToMap(geometry);
       }
     });
+  
+    if (layers.length > 0 && this.map) {
+      const group = L.featureGroup(layers);
+      this.map.fitBounds(group.getBounds(), { padding: [20, 20] });
+    }
   }
   
 
@@ -268,7 +276,7 @@ export class FiscalMapComponent implements AfterViewInit, OnDestroy, OnInit {
   
     // 2. Add project boundaries
     this.projectBoundary?.forEach((item: any) => {
-      const geometry = item.geometry;
+      const geometry = item.boundaryGeometry;
       const layer = L.geoJSON(geometry);
       const layerBounds = layer.getBounds();
       latLngs.push(layerBounds.getSouthWest());
