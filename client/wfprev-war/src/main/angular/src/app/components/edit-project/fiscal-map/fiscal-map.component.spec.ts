@@ -350,6 +350,54 @@ describe('FiscalMapComponent', () => {
     expect(plotSpy).not.toHaveBeenCalled();
     expect(coordSpy).toHaveBeenCalled();
   }));
+
+  it('should correctly map activities with fiscal data', () => {
+    const fiscal = { fiscalYear: 2023, projectPlanFiscalGuid: 'fiscal-guid' };
+    const response = {
+      _embedded: {
+        activities: [
+          { activityGuid: 'a1', name: 'Activity 1' },
+          { activityGuid: 'a2', name: 'Activity 2' }
+        ]
+      }
+    };
+  
+    const result = (component as any).mapFiscalActivities(response, fiscal);
+    expect(result.length).toBe(2);
+    expect(result[0]).toEqual(jasmine.objectContaining({
+      activityGuid: 'a1',
+      fiscalYear: 2023,
+      projectPlanFiscalGuid: 'fiscal-guid'
+    }));
+  });
+
+  it('should correctly map activity boundary if boundary exists', () => {
+    const activity = {
+      activityGuid: 'act-1',
+      fiscalYear: 2022
+    };
+    const boundary = {
+      _embedded: {
+        activityBoundary: [{ geometry: { type: 'Polygon' } }]
+      }
+    };
+  
+    const result = (component as any).mapActivityBoundary(boundary, activity);
+    expect(result).toEqual({
+      activityGuid: 'act-1',
+      fiscalYear: 2022,
+      boundary: boundary._embedded.activityBoundary
+    });
+  });
+  
+  it('should return null if boundary is null', () => {
+    const activity = {
+      activityGuid: 'act-1',
+      fiscalYear: 2022
+    };
+    const result = (component as any).mapActivityBoundary(null, activity);
+    expect(result).toBeNull();
+  });
   
   
   describe('openFullMap()', () => {

@@ -86,65 +86,80 @@ export class FiscalMapComponent implements AfterViewInit, OnDestroy, OnInit {
       });
     }
   }
-  getAllActivitiesBoundaries() {
+  
+  getAllActivitiesBoundaries(): void {
     this.projectGuid = this.route.snapshot?.queryParamMap?.get('projectGuid') ?? '';
+    if (!this.projectGuid) return;
   
-    if (this.projectGuid) {
-      this.projectService.getProjectFiscalsByProjectGuid(this.projectGuid).subscribe((data) => {
-        this.projectFiscals = (data._embedded?.projectFiscals ?? []).sort(
-          (a: { fiscalYear: number }, b: { fiscalYear: number }) => a.fiscalYear - b.fiscalYear
-        );
+    this.projectService.getProjectFiscalsByProjectGuid(this.projectGuid).subscribe(data =>
+      this.handleFiscalsResponse(data)
+    );
+  }
   
-        const activityRequests = this.projectFiscals.map(fiscal =>
-          this.projectService.getFiscalActivities(this.projectGuid, fiscal.projectPlanFiscalGuid).pipe(
-            map((response: any) => {
-              const activities = response?._embedded?.activities ?? [];
-              return activities.map((activity: any) => ({
-                ...activity,
-                fiscalYear: fiscal.fiscalYear,
-                projectPlanFiscalGuid: fiscal.projectPlanFiscalGuid
-              }));
-            })
-          )
-        );
+  private handleFiscalsResponse(data: any): void {
+    this.projectFiscals = (data._embedded?.projectFiscals ?? []).sort(
+      (a: { fiscalYear: number }, b: { fiscalYear: number }) => a.fiscalYear - b.fiscalYear
+    );
   
-        forkJoin(activityRequests).subscribe((allActivityArrays) => {
-          const allActivities = allActivityArrays.flat();
+    const activityRequests = this.projectFiscals.map(fiscal =>
+      this.projectService.getFiscalActivities(this.projectGuid, fiscal.projectPlanFiscalGuid).pipe(
+        map(response => this.mapFiscalActivities(response, fiscal))
+      )
+    );
   
-          if (allActivities.length === 0) {
-            // no activites at all.
-            this.getProjectCoordinates(); 
-            return;
-          }
-          const boundaryRequests = allActivities.map(activity =>
-            this.projectService
-              .getActivityBoundaries(this.projectGuid, activity.projectPlanFiscalGuid, activity.activityGuid)
-              .pipe(
-                map(boundary => boundary ? ({
-                  activityGuid: activity.activityGuid,
-                  fiscalYear: activity.fiscalYear,
-                  boundary: boundary?._embedded?.activityBoundary
-                }) : null),
-              )
-          );
+    forkJoin(activityRequests).subscribe(allActivityArrays =>
+      this.handleActivitiesResponse(allActivityArrays.flat())
+    );
+  }
   
-          forkJoin(boundaryRequests).subscribe((allResults) => {
-            this.allActivityBoundaries = allResults.filter(r => r?.boundary && Object.keys(r.boundary).length > 0);
-
-            const hasActivityPolygons = this.allActivityBoundaries.length > 0;
-            const hasProjectPolygons = this.projectBoundary?.length > 0;
-            
-            if (hasActivityPolygons && this.map) {
-              this.plotBoundariesOnMap(this.allActivityBoundaries);
-            }
-            
-            //  Only show pin if NO polygons exist at all
-            if (!hasActivityPolygons && !hasProjectPolygons) {
-              this.getProjectCoordinates();
-            }
-          });
-        });
-      });
+  private mapFiscalActivities(response: any, fiscal: any): any[] {
+    const activities = response?._embedded?.activities ?? [];
+    return activities.map((activity: any) => ({
+      ...activity,
+      fiscalYear: fiscal.fiscalYear,
+      projectPlanFiscalGuid: fiscal.projectPlanFiscalGuid
+    }));
+  }
+  
+  private handleActivitiesResponse(allActivities: any[]): void {
+    if (allActivities.length === 0) {
+      this.getProjectCoordinates();
+      return;
+    }
+  
+    const boundaryRequests = allActivities.map(activity =>
+      this.projectService
+        .getActivityBoundaries(this.projectGuid, activity.projectPlanFiscalGuid, activity.activityGuid)
+        .pipe(
+          map(boundary => this.mapActivityBoundary(boundary, activity))
+        )
+    );
+  
+    forkJoin(boundaryRequests).subscribe(allResults =>
+      this.handleBoundariesResponse(allResults)
+    );
+  }
+  
+  private mapActivityBoundary(boundary: any, activity: any): any {
+    return boundary ? {
+      activityGuid: activity.activityGuid,
+      fiscalYear: activity.fiscalYear,
+      boundary: boundary?._embedded?.activityBoundary
+    } : null;
+  }
+  
+  private handleBoundariesResponse(results: any[]): void {
+    this.allActivityBoundaries = results.filter(r => r?.boundary && Object.keys(r.boundary).length > 0);
+  
+    const hasActivityPolygons = this.allActivityBoundaries.length > 0;
+    const hasProjectPolygons = this.projectBoundary?.length > 0;
+  
+    if (hasActivityPolygons && this.map) {
+      this.plotBoundariesOnMap(this.allActivityBoundaries);
+    }
+  
+    if (!hasActivityPolygons && !hasProjectPolygons) {
+      this.getProjectCoordinates();
     }
   }
   
