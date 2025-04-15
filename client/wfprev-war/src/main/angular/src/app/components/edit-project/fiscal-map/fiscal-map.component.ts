@@ -203,7 +203,7 @@ export class FiscalMapComponent implements AfterViewInit, OnDestroy, OnInit {
 
   plotProjectBoundary(boundary: any[]): void {
     boundary.forEach((item: any) => {
-      const geometry = item.geometry;
+      const geometry = item.boundaryGeometry;
       if (!geometry) return;
   
       const geoJsonOptions: L.GeoJSONOptions = {

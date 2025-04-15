@@ -225,9 +225,9 @@ describe('FiscalMapComponent', () => {
     (component as any).map = mockMapInstance;
   
     const boundary = [
-      { geometry: { type: 'Polygon', coordinates: [] } },
+      { boundaryGeometry: { type: 'Polygon', coordinates: [] } },
       {
-        geometry: {
+        boundaryGeometry: {
           type: 'GeometryCollection',
           geometries: [
             { type: 'Polygon', coordinates: [] },
@@ -242,6 +242,7 @@ describe('FiscalMapComponent', () => {
     expect(L.geoJSON).toHaveBeenCalledTimes(3);
     expect(geoJsonAddToSpy).toHaveBeenCalledTimes(3);
   });
+  
 
   it('should handle forkJoin results correctly in getAllActivitiesBoundaries', fakeAsync(() => {
     const mockProjectGuid = 'mock-guid';
