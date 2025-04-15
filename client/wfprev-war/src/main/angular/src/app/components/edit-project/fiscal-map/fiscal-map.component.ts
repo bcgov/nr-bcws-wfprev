@@ -27,8 +27,8 @@ export class FiscalMapComponent implements AfterViewInit, OnDestroy, OnInit {
   };
   
   constructor(
-    private projectService: ProjectService,
-    private route: ActivatedRoute,
+    readonly projectService: ProjectService,
+    readonly route: ActivatedRoute,
     protected router: Router,
   ) {}
 
@@ -66,7 +66,7 @@ export class FiscalMapComponent implements AfterViewInit, OnDestroy, OnInit {
           const lat = parseFloat(this.projectLatitude);
           const lng = parseFloat(this.projectLongitude);
   
-          const marker = L.marker([lat, lng]).addTo(this.map);
+          L.marker([lat, lng]).addTo(this.map);
   
           this.map.setView([lat, lng], 14); 
         }
@@ -74,10 +74,10 @@ export class FiscalMapComponent implements AfterViewInit, OnDestroy, OnInit {
     })
   }
   getProjectBoundary() {
-    this.projectGuid = this.route.snapshot?.queryParamMap?.get('projectGuid') || '';
+    this.projectGuid = this.route.snapshot?.queryParamMap?.get('projectGuid') ?? '';
     if (this.projectGuid) {
       this.projectService.getProjectBoundaries(this.projectGuid).subscribe((data) => {
-        const boundary = data?._embedded?.projectBoundary || [];
+        const boundary = data?._embedded?.projectBoundary ?? [];
         this.projectBoundary = boundary;
   
         if (this.map && boundary.length > 0) {
@@ -86,71 +86,85 @@ export class FiscalMapComponent implements AfterViewInit, OnDestroy, OnInit {
       });
     }
   }
-  getAllActivitiesBoundaries() {
-    this.projectGuid = this.route.snapshot?.queryParamMap?.get('projectGuid') || '';
   
-    if (this.projectGuid) {
-      this.projectService.getProjectFiscalsByProjectGuid(this.projectGuid).subscribe((data) => {
-        this.projectFiscals = (data._embedded?.projectFiscals || []).sort(
-          (a: { fiscalYear: number }, b: { fiscalYear: number }) => a.fiscalYear - b.fiscalYear
-        );
+  getAllActivitiesBoundaries(): void {
+    this.projectGuid = this.route.snapshot?.queryParamMap?.get('projectGuid') ?? '';
+    if (!this.projectGuid) return;
   
-        const activityRequests = this.projectFiscals.map(fiscal =>
-          this.projectService.getFiscalActivities(this.projectGuid, fiscal.projectPlanFiscalGuid).pipe(
-            map((response: any) => {
-              const activities = response?._embedded?.activities || [];
-              return activities.map((activity: any) => ({
-                ...activity,
-                fiscalYear: fiscal.fiscalYear,
-                projectPlanFiscalGuid: fiscal.projectPlanFiscalGuid
-              }));
-            })
-          )
-        );
+    this.projectService.getProjectFiscalsByProjectGuid(this.projectGuid).subscribe(data =>
+      this.handleFiscalsResponse(data)
+    );
+  }
   
-        forkJoin(activityRequests).subscribe((allActivityArrays) => {
-          const allActivities = allActivityArrays.flat();
+  private handleFiscalsResponse(data: any): void {
+    this.projectFiscals = (data._embedded?.projectFiscals ?? []).sort(
+      (a: { fiscalYear: number }, b: { fiscalYear: number }) => a.fiscalYear - b.fiscalYear
+    );
   
-          if (allActivities.length === 0) {
-            // no activites at all.
-            this.getProjectCoordinates(); 
-            return;
-          }
-          const boundaryRequests = allActivities.map(activity =>
-            this.projectService
-              .getActivityBoundaries(this.projectGuid, activity.projectPlanFiscalGuid, activity.activityGuid)
-              .pipe(
-                map(boundary => boundary ? ({
-                  activityGuid: activity.activityGuid,
-                  fiscalYear: activity.fiscalYear,
-                  boundary: boundary?._embedded?.activityBoundary
-                }) : null),
-              )
-          );
+    const activityRequests = this.projectFiscals.map(fiscal =>
+      this.projectService.getFiscalActivities(this.projectGuid, fiscal.projectPlanFiscalGuid).pipe(
+        map(response => this.mapFiscalActivities(response, fiscal))
+      )
+    );
   
-          forkJoin(boundaryRequests).subscribe((allResults) => {
-            this.allActivityBoundaries = allResults.filter(r => 
-              r !== null && r.boundary && Object.keys(r.boundary).length > 0
-            );
-            const hasActivityPolygons = this.allActivityBoundaries.length > 0;
-            const hasProjectPolygons = this.projectBoundary?.length > 0;
-            
-            if (hasActivityPolygons && this.map) {
-              this.plotBoundariesOnMap(this.allActivityBoundaries);
-            }
-            
-            //  Only show pin if NO polygons exist at all
-            if (!hasActivityPolygons && !hasProjectPolygons) {
-              this.getProjectCoordinates();
-            }
-          });
-        });
-      });
+    forkJoin(activityRequests).subscribe(allActivityArrays =>
+      this.handleActivitiesResponse(allActivityArrays.flat())
+    );
+  }
+  
+  private mapFiscalActivities(response: any, fiscal: any): any[] {
+    const activities = response?._embedded?.activities ?? [];
+    return activities.map((activity: any) => ({
+      ...activity,
+      fiscalYear: fiscal.fiscalYear,
+      projectPlanFiscalGuid: fiscal.projectPlanFiscalGuid
+    }));
+  }
+  
+  private handleActivitiesResponse(allActivities: any[]): void {
+    if (allActivities.length === 0) {
+      this.getProjectCoordinates();
+      return;
+    }
+  
+    const boundaryRequests = allActivities.map(activity =>
+      this.projectService
+        .getActivityBoundaries(this.projectGuid, activity.projectPlanFiscalGuid, activity.activityGuid)
+        .pipe(
+          map(boundary => this.mapActivityBoundary(boundary, activity))
+        )
+    );
+  
+    forkJoin(boundaryRequests).subscribe(allResults =>
+      this.handleBoundariesResponse(allResults)
+    );
+  }
+  
+  private mapActivityBoundary(boundary: any, activity: any): any {
+    return boundary ? {
+      activityGuid: activity.activityGuid,
+      fiscalYear: activity.fiscalYear,
+      boundary: boundary?._embedded?.activityBoundary
+    } : null;
+  }
+  
+  private handleBoundariesResponse(results: any[]): void {
+    this.allActivityBoundaries = results.filter(r => r?.boundary && Object.keys(r.boundary).length > 0);
+  
+    const hasActivityPolygons = this.allActivityBoundaries.length > 0;
+    const hasProjectPolygons = this.projectBoundary?.length > 0;
+  
+    if (hasActivityPolygons && this.map) {
+      this.plotBoundariesOnMap(this.allActivityBoundaries);
+    }
+  
+    if (!hasActivityPolygons && !hasProjectPolygons) {
+      this.getProjectCoordinates();
     }
   }
   
   plotBoundariesOnMap(boundaries: any[]): void {
-    const currentFiscalPolygons: L.Layer[] = [];
+    const allFiscalPolygons: L.Layer[] = [];
   
     boundaries.forEach(boundaryEntry => {
       const fiscalYear = boundaryEntry.fiscalYear;
@@ -167,7 +181,7 @@ export class FiscalMapComponent implements AfterViewInit, OnDestroy, OnInit {
       for (const item of boundaryEntry.boundary) {
         const geometry = item.geometry;
         if (!geometry) continue;
-      
+  
         const geoJsonOptions: L.GeoJSONOptions = {
           style: {
             color,
@@ -175,12 +189,10 @@ export class FiscalMapComponent implements AfterViewInit, OnDestroy, OnInit {
             fillOpacity: 0.1
           }
         };
-      
+  
         const addToMap = (geom: any) => {
           const layer = L.geoJSON(geom, geoJsonOptions).addTo(this.map!);
-          if (fiscalYear === this.currentFiscalYear) {
-            currentFiscalPolygons.push(layer);
-          }
+          allFiscalPolygons.push(layer); //  Track all layers
         };
       
         if (geometry.type === 'GeometryCollection') {
@@ -191,12 +203,11 @@ export class FiscalMapComponent implements AfterViewInit, OnDestroy, OnInit {
           addToMap(geometry);
         }
       }
-      
     });
   
-    // Zoom to current fiscal year polygons
-    if (currentFiscalPolygons.length > 0) {
-      const group = L.featureGroup(currentFiscalPolygons);
+    //  Zoom to ALL fiscal year polygons
+    if (allFiscalPolygons.length > 0) {
+      const group = L.featureGroup(allFiscalPolygons);
       this.map!.fitBounds(group.getBounds(), { padding: [20, 20] });
     }
   }
@@ -247,17 +258,17 @@ export class FiscalMapComponent implements AfterViewInit, OnDestroy, OnInit {
       zoomControl: true,
     });
 
-    (this.map.zoomControl as L.Control.Zoom).setPosition('topright');
+    (this.map.zoomControl).setPosition('topright');
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '© OpenStreetMap contributors'
     }).addTo(this.map);
 
     const legendHelper = new LeafletLegendService();
-    legendHelper.addLegend(this.map!, this.fiscalColorMap);
+    legendHelper.addLegend(this.map, this.fiscalColorMap);
     const bcBounds = L.latLngBounds([48.3, -139.1], [60.0, -114.0]);
     this.map.fitBounds(bcBounds, { padding: [20, 20] });
-    createFullPageControl(() => this.openFullMap()).addTo(this.map!);
+    createFullPageControl(() => this.openFullMap()).addTo(this.map);
   }
 
   openFullMap(): void {
