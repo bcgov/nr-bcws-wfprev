@@ -150,7 +150,7 @@ export class FiscalMapComponent implements AfterViewInit, OnDestroy, OnInit {
   }
   
   plotBoundariesOnMap(boundaries: any[]): void {
-    const currentFiscalPolygons: L.Layer[] = [];
+    const allFiscalPolygons: L.Layer[] = [];
   
     boundaries.forEach(boundaryEntry => {
       const fiscalYear = boundaryEntry.fiscalYear;
@@ -167,7 +167,7 @@ export class FiscalMapComponent implements AfterViewInit, OnDestroy, OnInit {
       for (const item of boundaryEntry.boundary) {
         const geometry = item.geometry;
         if (!geometry) continue;
-      
+  
         const geoJsonOptions: L.GeoJSONOptions = {
           style: {
             color,
@@ -175,12 +175,10 @@ export class FiscalMapComponent implements AfterViewInit, OnDestroy, OnInit {
             fillOpacity: 0.1
           }
         };
-      
+  
         const addToMap = (geom: any) => {
           const layer = L.geoJSON(geom, geoJsonOptions).addTo(this.map!);
-          if (fiscalYear === this.currentFiscalYear) {
-            currentFiscalPolygons.push(layer);
-          }
+          allFiscalPolygons.push(layer); //  Track all layers
         };
       
         if (geometry.type === 'GeometryCollection') {
@@ -191,12 +189,11 @@ export class FiscalMapComponent implements AfterViewInit, OnDestroy, OnInit {
           addToMap(geometry);
         }
       }
-      
     });
   
-    // Zoom to current fiscal year polygons
-    if (currentFiscalPolygons.length > 0) {
-      const group = L.featureGroup(currentFiscalPolygons);
+    //  Zoom to ALL fiscal year polygons
+    if (allFiscalPolygons.length > 0) {
+      const group = L.featureGroup(allFiscalPolygons);
       this.map!.fitBounds(group.getBounds(), { padding: [20, 20] });
     }
   }
