@@ -242,6 +242,23 @@ export class ProjectService {
         );
     }
 
+    getActivityBoundaries(projectGuid: string, projectPlanFiscalGuid: string, activityGuid: string): Observable<any> {
+        const baseUrl = `${this.appConfigService.getConfig().rest['wfprev']}/wfprev-api/projects`;
+        const url = `${baseUrl}/${projectGuid}/projectFiscals/${projectPlanFiscalGuid}/activities/${activityGuid}/activityBoundary`;
+            
+        return this.httpClient.get(url, {
+            headers: {
+                Authorization: `Bearer ${this.tokenService.getOauthToken()}`,
+            }
+        }).pipe(
+            map((response: any) => response),
+            catchError((error) => {
+                console.error("Error fetching activity boundaries", error);
+                return throwError(() => new Error("Failed to fetch activity boundaries"));
+            })
+        );
+    }
+
     createProjectBoundary(projectGuid: string, projectFiscal: ProjectBoundary): Observable<any> {
         const baseUrl = `${this.appConfigService.getConfig().rest['wfprev']}/wfprev-api/projects`;
         const url = `${baseUrl}/${projectGuid}/projectBoundary`;
