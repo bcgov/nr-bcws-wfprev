@@ -1,4 +1,5 @@
 name: Build & Dockerize Node.js Server
+
 on:
   workflow_dispatch:
     inputs:
@@ -6,6 +7,7 @@ on:
         required: true
         type: string
         default: dev
+
 jobs:
   build-node-server:
     runs-on: ubuntu-latest
@@ -13,6 +15,7 @@ jobs:
       NPMRC: ${{ secrets.NPMRC }}
       IMAGE_NAME: ${{ github.repository }}-wfprev-gdb-extractor
       AWS_REGION: ca-central-1 
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
@@ -41,29 +44,17 @@ jobs:
     - name: Create Lambda deployment package
       working-directory: ./node/wfprev-gdb-extractor
       run: |
-        # Remove dev dependencies for smaller package size
         npm prune --production
-        # Create zip file with all required files
         zip -r ../../lambda-deployment.zip . -x "*.git*" "*.github*" "tests/*" "*.zip"
-    
-    # Configure AWS credentials
-    - name: Configure AWS credentials
+
+    # Authenticate to AWS using OIDC and assume IAM role
+    - name: Configure AWS credentials (OIDC)
       uses: aws-actions/configure-aws-credentials@v4
       with:
-        #aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        #aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        role-to-assume: arn:aws:iam::${{ env.GITHUB_ACTIONS_ACCOUNT_ID }}:role/${{ env.GITHUB_ACTIONS_ROLE_NAME }}
         aws-region: ${{ env.AWS_REGION }}
-    
-    # Upload Lambda package to S3
-    - name: Upload Lambda package to S3
-      run: |
-        ENVIRONMENT="${{ github.event.inputs.DEFAULT_APPLICATION_ENVIRONMENT }}"
-        TIMESTAMP=$(date +%Y%m%d%H%M%S)
-        LAMBDA_PACKAGE_KEY="lambda-deployment-${TIMESTAMP}.zip"
-        aws s3 cp lambda-deployment.zip s3://wfprev-${ENVIRONMENT}-lambda-bucket/${LAMBDA_PACKAGE_KEY}
-        echo "LAMBDA_PACKAGE_KEY=$LAMBDA_PACKAGE_KEY" >> $GITHUB_OUTPUT
-      id: lambda-upload
-    
+
+    # Docker setup
     - name: Set up QEMU
       uses: docker/setup-qemu-action@v2
     
