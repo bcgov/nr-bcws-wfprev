@@ -25,7 +25,6 @@ export class CodeTableServices {
     // If not cached, fetch from the API
     const url = `${this.appConfigService.getConfig().rest['wfprev']
     }/wfprev-api/codes/${codeTableName}`;
-
     return this.httpClient.get(
       url, {
         headers: {

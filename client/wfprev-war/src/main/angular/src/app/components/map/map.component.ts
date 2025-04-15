@@ -1,4 +1,6 @@
 import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, ViewChild } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import L from 'leaflet';
 import { ResizablePanelComponent } from 'src/app/components/resizable-panel/resizable-panel.component';
 import { MapConfigService } from 'src/app/services/map-config.service';
 import { MapService } from 'src/app/services/map.service';
@@ -23,7 +25,8 @@ export class MapComponent implements AfterViewInit {
   constructor(
     protected cdr: ChangeDetectorRef,
     private readonly mapService: MapService,
-    private readonly mapConfigService: MapConfigService
+    private readonly mapConfigService: MapConfigService,
+    private readonly route: ActivatedRoute
   ) { }
 
   ngAfterViewInit(): void {
@@ -32,6 +35,39 @@ export class MapComponent implements AfterViewInit {
         .then(() => {
           this.mapIndex = this.mapService.getMapIndex() + 1;
           this.mapService.setMapIndex(this.mapIndex);
+
+          setTimeout(() => {
+            const bboxParam = this.route.snapshot.queryParamMap.get('bbox');
+          
+            if (!bboxParam) return;
+          
+            const bboxParts = bboxParam.split(',').map(parseFloat);
+            if (bboxParts.length !== 4 || bboxParts.some(isNaN)) {
+              console.warn('Invalid bbox query parameter:', bboxParam);
+              return;
+            }
+          
+            const [west, south, east, north] = bboxParts;
+          
+            try {
+              const smk = this.mapService.getSMKInstance();
+          
+              if (!smk || !smk.$viewer || !smk.$viewer.map || !smk.$viewer.map.fitBounds) {
+                console.warn('Could not access Leaflet map inside SMK.');
+                return;
+              }
+          
+              smk.$viewer.map.fitBounds([
+                [south, west],
+                [north, east]
+              ], {
+                padding: [20, 20]
+              });
+            } catch (error) {
+              console.error('Error while fitting map bounds from bbox:', error);
+            }
+          }, 500);
+          
         })
         .catch((error) => console.error('Error initializing map:', error));
     } else {
@@ -39,13 +75,14 @@ export class MapComponent implements AfterViewInit {
     }
   }
 
-  private async initMap(): Promise<any> {
+  private async initMap(): Promise<void> {
     try {
       const baseConfig = this.clone(this.mapConfig);
       const mapState = await this.mapConfigService.getMapConfig();
       baseConfig.push(mapState);
       this.mapConfig = this.buildMapConfig(baseConfig);
-      this.mapService.createSMK({
+
+      await this.mapService.createSMK({
         id: this.mapIndex,
         containerSel: this.mapContainer.nativeElement,
         config: this.mapConfig,

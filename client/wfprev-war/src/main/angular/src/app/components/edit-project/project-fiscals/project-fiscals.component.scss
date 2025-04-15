@@ -343,3 +343,18 @@
   text-align: left !important;
   display: block;
 }
+
+.activities-map-container{
+  display: flex;
+  gap: 20px;
+  width: 100%;
+}
+
+.activities-panel {
+  flex: 0 0 69%;
+}
+
+.fiscal-map-panel {
+  flex: 0 0 30%;
+}
+

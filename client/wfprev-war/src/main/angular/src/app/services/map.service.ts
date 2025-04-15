@@ -5,6 +5,7 @@ export class MapService {
   private mapIndex: number = 0;
   baseMapIds: string[] = [];
   private readonly smkBaseUrl = `${window.location.protocol}//${window.location.host}/assets/smk/`;
+  private smkInstance: any = null;
 
   getMapIndex(): number {
     return this.mapIndex;
@@ -41,6 +42,9 @@ export class MapService {
           return SMK.INIT({
             baseUrl: mapService.smkBaseUrl,
             ...option,
+          }).then((smk: any) =>{
+            this.smkInstance = smk;
+            return smk;
           });
         } catch (error) {
           console.error('Error occurred during SMK initialization:', error);
@@ -137,4 +141,7 @@ export class MapService {
     };
   }
   
+  getSMKInstance() {
+    return this.smkInstance;
+  }
 }
