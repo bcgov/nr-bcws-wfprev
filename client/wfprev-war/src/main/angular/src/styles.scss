@@ -119,3 +119,44 @@ html, body{
 .cluster-icon span {
   margin: 0; /* Center text properly */
 }
+
+/* Global styles.scss */
+
+.leaflet-control{
+  background: linear-gradient(90deg, #FFF 0%, rgba(255, 255, 255, 0.00) 84.96%);
+}
+.leaflet-control .legend {
+  background: white;
+  border-radius: 5px;
+  line-height: 1.4em;
+  font-size: 13px;
+  color: #000;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+  width: fit-content;
+  min-width: 200px;
+}
+
+.leaflet-control .legend-title {
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 700;
+  margin-left: 4px;
+  margin-bottom: 5px;
+  font-family: var(--wf-font-family-main) !important;
+}
+
+.leaflet-control .legend-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 4px;
+  margin-left:4px;
+  font-family: var(--wf-font-family-main) !important;
+}
+
+.leaflet-control .legend-color {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  margin-right: 8px;
+  border-radius: 2px;
+}
