@@ -45,8 +45,14 @@ resource "aws_apigatewayv2_integration" "wfprev_vpc_integration" {
 resource "aws_apigatewayv2_stage" "wfprev_stage" {
   api_id = aws_apigatewayv2_api.wfprev_api_gateway.id
   name   = "wfprev-api"
-}
 
+  access_log_settings {
+    destination_arn = ""  # Explicitly empty
+    format          = ""  # Explicitly empty
+  }
+
+  auto_deploy = true
+}
 resource "aws_apigatewayv2_deployment" "wfprev_deployment" {
   
   api_id = aws_apigatewayv2_api.wfprev_api_gateway.id
