@@ -3,6 +3,6 @@ resource "aws_cloudwatch_log_group" "api_logs" {
   retention_in_days = 90
 
   lifecycle {
-    prevent_destroy = true
+    #prevent_destroy = true
   }
 }

@@ -140,6 +140,11 @@ jobs:
         with:
           terragrunt_version: ${{ env.TG_VERSION }}
 
+      - name: Terraform Untaint Log Group
+        working-directory: ${{ env.TG_SRC_PATH }}
+        run: |
+            terragrunt run-all untaint aws_cloudwatch_log_group.api_logs || echo "Resource not tainted or already untainted"    
+
       - name: Terragrunt Apply
         working-directory: ${{env.TG_SRC_PATH}}
         env:
