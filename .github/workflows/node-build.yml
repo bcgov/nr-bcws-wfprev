@@ -51,7 +51,7 @@ jobs:
     - name: Configure AWS credentials (OIDC)
       uses: aws-actions/configure-aws-credentials@v4
       with:
-        role-to-assume: arn:aws:iam::${{ env.GITHUB_ACTIONS_ACCOUNT_ID }}:role/${{ env.GITHUB_ACTIONS_ROLE_NAME }}
+        role-to-assume: ${{ vars.ACTIONS_ROLE_ARN }}
         aws-region: ${{ env.AWS_REGION }}
 
     # Docker setup
