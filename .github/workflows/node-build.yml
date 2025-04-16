@@ -98,7 +98,7 @@ jobs:
     - name: Tag image as latest
       run: |
           docker tag ${{ vars.REGISTRY }}/${{ github.repository_owner }}/nr-bcws-wfprev-wfprev-gdb-extractor:$GITHUB_SHA \
-                      ${{ vars.REGISTRY }}/${{ github.repository_owner }}//nr-bcws-wfprev-wfprev-gdb-extractor:latest
+                      ${{ vars.REGISTRY }}/${{ github.repository_owner }}/nr-bcws-wfprev-wfprev-gdb-extractor:latest
       
     - name: Push latest tag
       run: |
