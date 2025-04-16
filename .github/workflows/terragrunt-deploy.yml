@@ -140,10 +140,9 @@ jobs:
         with:
           terragrunt_version: ${{ env.TG_VERSION }}
 
-      - name: Terraform Untaint Log Group
+      - name: Remove log group from Terraform state
         working-directory: ${{ env.TG_SRC_PATH }}
-        run: |
-            terragrunt run-all untaint aws_cloudwatch_log_group.api_logs || echo "Resource not tainted or already untainted"    
+        run: terragrunt state rm aws_cloudwatch_log_group.api_logs || echo "Already removed"   
 
       - name: Terragrunt Apply
         working-directory: ${{env.TG_SRC_PATH}}
