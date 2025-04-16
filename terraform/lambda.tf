@@ -83,26 +83,26 @@ resource "aws_apigatewayv2_api" "api" {
   }
 }
 
-resource "aws_apigatewayv2_stage" "default" {
-  api_id      = aws_apigatewayv2_api.api.id
-  name        = "$default"
-  auto_deploy = true
+# resource "aws_apigatewayv2_stage" "default" {
+#   api_id      = aws_apigatewayv2_api.api.id
+#   name        = "$default"
+#   auto_deploy = true
 
-  access_log_settings {
-    destination_arn = aws_cloudwatch_log_group.api_logs.arn
-    format = jsonencode({
-      requestId      = "$context.requestId"
-      ip             = "$context.identity.sourceIp"
-      requestTime    = "$context.requestTime"
-      httpMethod     = "$context.httpMethod"
-      path           = "$context.path"
-      routeKey       = "$context.routeKey"
-      status         = "$context.status"
-      responseLength = "$context.responseLength"
-      integrationErrorMessage = "$context.integrationErrorMessage"
-    })
-  }
-}
+#   access_log_settings {
+#     destination_arn = aws_cloudwatch_log_group.api_logs.arn
+#     format = jsonencode({
+#       requestId      = "$context.requestId"
+#       ip             = "$context.identity.sourceIp"
+#       requestTime    = "$context.requestTime"
+#       httpMethod     = "$context.httpMethod"
+#       path           = "$context.path"
+#       routeKey       = "$context.routeKey"
+#       status         = "$context.status"
+#       responseLength = "$context.responseLength"
+#       integrationErrorMessage = "$context.integrationErrorMessage"
+#     })
+#   }
+# }
 
 # resource "aws_cloudwatch_log_group" "api_logs" {
 #   name              = "/aws/apigateway/wfprev-${var.TARGET_ENV}"
