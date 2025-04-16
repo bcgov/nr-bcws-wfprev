@@ -64,7 +64,7 @@ resource "aws_lambda_function" "gdb_processor" {
 
   environment {
     variables = {
-      ALLOWED_ORIGINS = ["https://wfprev-dev.nrs.gov.bc.ca"]
+      ALLOWED_ORIGINS = "https://wfprev-dev.nrs.gov.bc.ca"
       NODE_ENV        = var.TARGET_ENV
     }
   }
