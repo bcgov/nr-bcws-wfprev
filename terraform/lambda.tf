@@ -1,7 +1,3 @@
-provider "aws" {
-  region = var.AWS_REGION
-}
-
 # Lambda execution role
 resource "aws_iam_role" "lambda_role" {
   name = "wfprev-${var.TARGET_ENV}-lambda-role"
