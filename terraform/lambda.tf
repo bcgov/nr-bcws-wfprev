@@ -22,7 +22,7 @@ resource "aws_iam_role_policy_attachment" "lambda_basic" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
 }
 
-# S3 access policy (if your Lambda interacts with S3 at runtime)
+# Optional: S3 access policy
 resource "aws_iam_policy" "s3_access" {
   name        = "wfprev-${var.TARGET_ENV}-s3-access"
   description = "Allow Lambda to access S3 bucket"
@@ -51,7 +51,7 @@ resource "aws_iam_role_policy_attachment" "s3_access" {
   policy_arn = aws_iam_policy.s3_access.arn
 }
 
-# Lambda function using container image from GHCR
+# Lambda function using container image
 resource "aws_lambda_function" "gdb_processor" {
   function_name = "wfprev-${var.TARGET_ENV}"
   role          = aws_iam_role.lambda_role.arn
@@ -70,6 +70,12 @@ resource "aws_lambda_function" "gdb_processor" {
   }
 }
 
+# Optional: Lambda log group (useful for retention control, remove if not needed)
+resource "aws_cloudwatch_log_group" "lambda_logs" {
+  name              = "/aws/lambda/${aws_lambda_function.gdb_processor.function_name}"
+  retention_in_days = 30
+}
+
 # API Gateway
 resource "aws_apigatewayv2_api" "api" {
   name          = "wfprev-${var.TARGET_ENV}-api"
@@ -81,41 +87,6 @@ resource "aws_apigatewayv2_api" "api" {
     allow_headers = ["content-type", "x-amz-date", "authorization", "x-api-key", "x-amz-security-token"]
     max_age       = 300
   }
-}
-
-# resource "aws_apigatewayv2_stage" "default" {
-#   api_id      = aws_apigatewayv2_api.api.id
-#   name        = "$default"
-#   auto_deploy = true
-
-#   access_log_settings {
-#     destination_arn = aws_cloudwatch_log_group.api_logs.arn
-#     format = jsonencode({
-#       requestId      = "$context.requestId"
-#       ip             = "$context.identity.sourceIp"
-#       requestTime    = "$context.requestTime"
-#       httpMethod     = "$context.httpMethod"
-#       path           = "$context.path"
-#       routeKey       = "$context.routeKey"
-#       status         = "$context.status"
-#       responseLength = "$context.responseLength"
-#       integrationErrorMessage = "$context.integrationErrorMessage"
-#     })
-#   }
-# }
-
-# resource "aws_cloudwatch_log_group" "api_logs" {
-#   name              = "/aws/apigateway/wfprev-${var.TARGET_ENV}"
-#   retention_in_days = 30
-  
-#   lifecycle {
-#     prevent_destroy = true
-#   }
-# }
-
-resource "aws_cloudwatch_log_group" "lambda_logs" {
-  name              = "/aws/lambda/${aws_lambda_function.gdb_processor.function_name}"
-  retention_in_days = 30
 }
 
 resource "aws_apigatewayv2_integration" "lambda_integration" {
@@ -138,6 +109,7 @@ resource "aws_apigatewayv2_route" "health_route" {
   target    = "integrations/${aws_apigatewayv2_integration.lambda_integration.id}"
 }
 
+# Lambda permission for API Gateway
 resource "aws_lambda_permission" "api_gateway" {
   statement_id  = "AllowAPIGatewayInvoke"
   action        = "lambda:InvokeFunction"
