@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       NPMRC: ${{ secrets.NPMRC }}
-      IMAGE_NAME: ${{ github.repository }}-wfprev-gdb-extractor
+      IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/nr-bcws-wfprev-wfprev-gdb-extractor
       AWS_REGION: ca-central-1 
 
     steps:
@@ -69,7 +69,7 @@ jobs:
     - name: Login to GitHub Container Registry
       uses: docker/login-action@v2
       with:
-        registry: ${{ vars.REGISTRY }}
+        registry: ghcr.io
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
     
