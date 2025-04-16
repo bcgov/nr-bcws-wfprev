@@ -76,12 +76,10 @@ resource "aws_apigatewayv2_stage" "default" {
 
 resource "aws_cloudwatch_log_group" "api_logs" {
   name              = "/aws/apigateway/wfprev-${var.TARGET_ENV}"
-  retention_in_days = 30
 }
 
 resource "aws_cloudwatch_log_group" "lambda_logs" {
   name              = "/aws/lambda/${aws_lambda_function.gdb_processor.function_name}"
-  retention_in_days = 30
 }
 
 resource "aws_apigatewayv2_integration" "lambda_integration" {
