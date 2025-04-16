@@ -196,4 +196,4 @@ jobs:
           WFPREV_LIQUIBASE_COMMAND_PASSWORD: ${{ secrets.WFPREV_LIQUIBASE_COMMAND_PASSWORD }}
           TARGET_LIQUIBASE_TAG: ${{ steps.liquibaseCommand.outputs.TARGET_LIQUIBASE_TAG }}
 
-        run: terragrunt apply --terragrunt-non-interactive -auto-approve -target=aws_apigatewayv2_deployment.wfprev_deployment -target=aws_apigatewayv2_stage.wfprev_stage
+        run: terragrunt apply --terragrunt-non-interactive -auto-approve
