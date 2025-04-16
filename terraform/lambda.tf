@@ -56,7 +56,7 @@ resource "aws_lambda_function" "gdb_processor" {
   function_name = "wfprev-${var.TARGET_ENV}"
   role          = aws_iam_role.lambda_role.arn
   package_type  = "Image"
-
+  
   image_uri     = "ghcr.io/bcgov/nr-bcws-wfprev-wfprev-gdb-extractor:latest"
 
   memory_size   = var.WFPREV_LAMBDA_MEMORY
@@ -67,15 +67,6 @@ resource "aws_lambda_function" "gdb_processor" {
       ALLOWED_ORIGINS = "https://wfprev-dev.nrs.gov.bc.ca"
       NODE_ENV        = var.TARGET_ENV
     }
-  }
-}
-
-# Optional: Lambda log group (useful for retention control, remove if not needed)
-resource "aws_cloudwatch_log_group" "lambda_logs" {
-  name              = "/aws/lambda/${aws_lambda_function.gdb_processor.function_name}"
-  retention_in_days = 30
-  lifecycle {
-    prevent_destroy = true
   }
 }
 
