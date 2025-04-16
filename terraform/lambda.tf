@@ -59,33 +59,17 @@ resource "aws_apigatewayv2_stage" "default" {
   auto_deploy = true
 
   access_log_settings {
-    destination_arn = aws_cloudwatch_log_group.api_logs.arn
-    format = jsonencode({
-      requestId      = "$context.requestId"
-      ip             = "$context.identity.sourceIp"
-      requestTime    = "$context.requestTime"
-      httpMethod     = "$context.httpMethod"
-      path           = "$context.path"
-      routeKey       = "$context.routeKey"
-      status         = "$context.status"
-      responseLength = "$context.responseLength"
-      integrationErrorMessage = "$context.integrationErrorMessage"
-    })
+    destination_arn = null
+    format = null
   }
 }
 
 resource "aws_cloudwatch_log_group" "api_logs" {
   name              = "/aws/apigateway/wfprev-${var.TARGET_ENV}"
-   lifecycle {
-    prevent_destroy = true
-  }
 }
 
 resource "aws_cloudwatch_log_group" "lambda_logs" {
   name              = "/aws/lambda/${aws_lambda_function.gdb_processor.function_name}"
-   lifecycle {
-    prevent_destroy = true
-  }
 }
 
 resource "aws_apigatewayv2_integration" "lambda_integration" {
