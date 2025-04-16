@@ -59,8 +59,8 @@ resource "aws_apigatewayv2_stage" "default" {
   auto_deploy = true
 
   access_log_settings {
-    destination_arn = null
-    format = null
+    destination_arn = ""
+    format = ""
   }
 }
 
