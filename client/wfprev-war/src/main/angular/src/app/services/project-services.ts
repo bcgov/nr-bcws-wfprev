@@ -225,22 +225,6 @@ export class ProjectService {
         );
     }
 
-    getProjectBoundaries(projectGuid: string): Observable<any> {
-        const baseUrl = `${this.appConfigService.getConfig().rest['wfprev']}/wfprev-api/projects`;
-        const url = `${baseUrl}/${projectGuid}/projectBoundary`;
-
-        return this.httpClient.get(url, {
-            headers: {
-                Authorization: `Bearer ${this.tokenService.getOauthToken()}`,
-            }
-        }).pipe(
-            map((response: any) => response),
-            catchError((error) => {
-                console.error("Error fetching project boundaries", error);
-                return throwError(() => new Error("Failed to fetch project boundaries"));
-            })
-        );
-    }
 
     getActivityBoundaries(projectGuid: string, projectPlanFiscalGuid: string, activityGuid: string): Observable<any> {
         const baseUrl = `${this.appConfigService.getConfig().rest['wfprev']}/wfprev-api/projects`;
@@ -255,6 +239,59 @@ export class ProjectService {
             catchError((error) => {
                 console.error("Error fetching activity boundaries", error);
                 return throwError(() => new Error("Failed to fetch activity boundaries"));
+            })
+        );
+    }
+
+    createActivityBoundary(projectGuid: string, fiscalGuid: string, activityGuid: string, activityBoundary: ActivityBoundary): Observable<any> {
+        const baseUrl = `${this.appConfigService.getConfig().rest['wfprev']}/wfprev-api/projects`;
+        const url = `${baseUrl}/${projectGuid}/projectFiscals/${fiscalGuid}/activities/${activityGuid}/activityBoundary`;
+        return this.httpClient.post<any>(
+            url,
+            activityBoundary,
+            {
+                headers: {
+                    Authorization: `Bearer ${this.tokenService.getOauthToken()}`,
+                }
+            }
+        ).pipe(
+            catchError((error) => {
+                console.error("Error creating activity boundary", error);
+                return throwError(() => new Error("Failed to create activity boundary"));
+            })
+        );
+    }
+
+    deleteActivityBoundary(projectGuid: string, fiscalGuid: string, actiityGuid: string, activityBoundaryGuid: string): Observable<any> {
+        const baseUrl = `${this.appConfigService.getConfig().rest['wfprev']}/wfprev-api/projects`;
+        const url = `${baseUrl}/${projectGuid}/projectFiscals/${fiscalGuid}/activities/${actiityGuid}/activityBoundary/${activityBoundaryGuid}`;
+
+        return this.httpClient.delete(url, {
+            headers: {
+                Authorization: `Bearer ${this.tokenService.getOauthToken()}`,
+            }
+        }).pipe(
+            map((response: any) => response),
+            catchError((error) => {
+                console.error("Error deleting activity boundary", error);
+                return throwError(() => new Error("Failed to delete activity boundary"));
+            })
+        );
+    }
+
+    getProjectBoundaries(projectGuid: string): Observable<any> {
+        const baseUrl = `${this.appConfigService.getConfig().rest['wfprev']}/wfprev-api/projects`;
+        const url = `${baseUrl}/${projectGuid}/projectBoundary`;
+
+        return this.httpClient.get(url, {
+            headers: {
+                Authorization: `Bearer ${this.tokenService.getOauthToken()}`,
+            }
+        }).pipe(
+            map((response: any) => response),
+            catchError((error) => {
+                console.error("Error fetching project boundaries", error);
+                return throwError(() => new Error("Failed to fetch project boundaries"));
             })
         );
     }
@@ -391,25 +428,6 @@ export class ProjectService {
             catchError((error) => {
                 console.error("Error uploading document", error);
                 return throwError(() => new Error("Failed to upload document"));
-            })
-        );
-    }
-
-    createActivityBoundary(projectGuid: string, fiscalGuid: string, activityGuid: string, activityBoundary: ActivityBoundary): Observable<any> {
-        const baseUrl = `${this.appConfigService.getConfig().rest['wfprev']}/wfprev-api/projects`;
-        const url = `${baseUrl}/${projectGuid}/projectFiscals/${fiscalGuid}/activities/${activityGuid}/activityBoundary`;
-        return this.httpClient.post<any>(
-            url,
-            activityBoundary,
-            {
-                headers: {
-                    Authorization: `Bearer ${this.tokenService.getOauthToken()}`,
-                }
-            }
-        ).pipe(
-            catchError((error) => {
-                console.error("Error creating activity boundary", error);
-                return throwError(() => new Error("Failed to create activity boundary"));
             })
         );
     }
