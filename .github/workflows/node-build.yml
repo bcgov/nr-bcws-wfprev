@@ -95,8 +95,7 @@ jobs:
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
 
-    - name: Tag and push latest image (only on main)
-      # if: github.ref == 'refs/heads/main'
+    - name: Tag and push latest image
       run: |
           IMAGE=${{ vars.REGISTRY }}/${{ github.repository_owner }}/nr-bcws-wfprev-wfprev-gdb-extractor
           docker pull $IMAGE:${{ github.sha }}
