@@ -94,3 +94,12 @@ jobs:
         push: true
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
+
+    - name: Tag image as latest
+      run: |
+          docker tag ${{ vars.REGISTRY }}/${{ github.repository_owner }}/nr-bcws-wfprev-wfprev-gdb-extractor:$GITHUB_SHA \
+                      ${{ vars.REGISTRY }}/${{ github.repository_owner }}//nr-bcws-wfprev-wfprev-gdb-extractor:latest
+      
+    - name: Push latest tag
+      run: |
+          docker push ${{ vars.REGISTRY }}/${{ github.repository_owner }}/nr-bcws-wfprev-wfprev-gdb-extractor:latest
