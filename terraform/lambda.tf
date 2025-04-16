@@ -76,10 +76,16 @@ resource "aws_apigatewayv2_stage" "default" {
 
 resource "aws_cloudwatch_log_group" "api_logs" {
   name              = "/aws/apigateway/wfprev-${var.TARGET_ENV}"
+   lifecycle {
+    prevent_destroy = true
+  }
 }
 
 resource "aws_cloudwatch_log_group" "lambda_logs" {
   name              = "/aws/lambda/${aws_lambda_function.gdb_processor.function_name}"
+   lifecycle {
+    prevent_destroy = true
+  }
 }
 
 resource "aws_apigatewayv2_integration" "lambda_integration" {
