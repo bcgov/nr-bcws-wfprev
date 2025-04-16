@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectorRef, Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, FormsModule  } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatExpansionModule } from '@angular/material/expansion';
@@ -56,6 +56,8 @@ export const CUSTOM_DATE_FORMATS = {
 
 export class ActivitiesComponent implements OnChanges, OnInit, CanComponentDeactivate{
   @Input() fiscalGuid: string = '';
+  @Output() boundariesUpdated = new EventEmitter<void>();
+
   messages = Messages;
   isNewActivityBeingAdded = false;
   
@@ -722,5 +724,9 @@ export class ActivitiesComponent implements OnChanges, OnInit, CanComponentDeact
       return dialogRef.afterClosed();
     }
     return true;
+  }
+
+  onFilesChanged() {
+    this.boundariesUpdated.emit(); // Notify ProjectFiscalsComponent
   }
 }

@@ -129,13 +129,12 @@ export class ProjectFilesComponent implements OnInit {
     this.attachmentService.getActivityAttachments(this.projectGuid, this.fiscalGuid, this.activityGuid).subscribe({
       next: (response) => {
         if (response?._embedded?.fileAttachment && Array.isArray(response._embedded.fileAttachment)) {
-          const fileAttachment = response._embedded.fileAttachment.reduce((latest: any, current: any) => {
-            const latestTime = new Date(latest.uploadedByTimestamp || 0).getTime();
-            const currentTime = new Date(current.uploadedByTimestamp || 0).getTime();
-            return currentTime > latestTime ? current : latest;
+          const fileAttachments = response._embedded.fileAttachment.sort((a: any, b: any) => {
+            const timeA = new Date(a.uploadedByTimestamp || 0).getTime();
+            const timeB = new Date(b.uploadedByTimestamp || 0).getTime();
+            return timeB - timeA; // latest first
           });
-  
-          this.projectFiles = [fileAttachment];
+          this.projectFiles = fileAttachments;
           this.dataSource.data = [...this.projectFiles];
         } else {
           console.error('Expected an array of activity files inside _embedded.fileAttachment, but got:', response);
@@ -432,7 +431,25 @@ export class ProjectFilesComponent implements OnInit {
     return !!this.activityGuid && !!this.fiscalGuid;
   }
 
-  downloadFile(file: any) {
-    // Implementation for file download
+  downloadFile(file: any): void {
+    this.projectService.downloadDocument(file.fileIdentifier).subscribe({
+      next: (blob: Blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = file.documentPath || 'downloaded-file'; // fallback filename
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+      },
+      error: (err) => {
+        console.error('Download failed', err);
+        this.snackbarService.open('Failed to download the file.', 'Close', {
+          duration: 5000,
+          panelClass: 'snackbar-error',
+        });
+      }
+    });
   }
 }

@@ -432,4 +432,15 @@ export class ProjectService {
         );
     }
 
+    downloadDocument(fileId: string): Observable<Blob> {
+        const url = `${this.appConfigService.getConfig().rest['wfdm']}/documents/${fileId}/bytes`;
+        const headers = new HttpHeaders({
+          Authorization: `Bearer ${this.tokenService.getOauthToken()}`,
+        });
+      
+        return this.httpClient.get(url, {
+          headers: headers,
+          responseType: 'blob'
+        });
+      }
 }

@@ -149,7 +149,33 @@ export class FiscalMapComponent implements AfterViewInit, OnDestroy, OnInit {
   }
   
   private handleBoundariesResponse(results: any[]): void {
-    this.allActivityBoundaries = results.filter(r => r?.boundary && Object.keys(r.boundary).length > 0);
+    // Filter out nulls or empty boundary arrays
+    const validResults = results.filter(r => r?.boundary && r.boundary.length > 0);
+  
+    // For each activity, keep only the latest boundary
+    const dedupedResults: any[] = [];
+    const seenActivityGuids = new Set<string>();
+  
+    for (const result of validResults) {
+      const { activityGuid, fiscalYear, boundary } = result;
+  
+      if (seenActivityGuids.has(activityGuid)) continue;
+      seenActivityGuids.add(activityGuid);
+      // Get the latest boundary for this activity based on systemStartTimestamp
+      const latestBoundary = boundary.reduce((latest: any, current: any) => {
+        return new Date(current.systemStartTimestamp) > new Date(latest.systemStartTimestamp)
+          ? current
+          : latest;
+      });
+  
+      dedupedResults.push({
+        activityGuid,
+        fiscalYear,
+        boundary: [latestBoundary], // preserve original structure
+      });
+    }
+  
+    this.allActivityBoundaries = dedupedResults;
   
     const hasActivityPolygons = this.allActivityBoundaries.length > 0;
     const hasProjectPolygons = this.projectBoundary?.length > 0;
