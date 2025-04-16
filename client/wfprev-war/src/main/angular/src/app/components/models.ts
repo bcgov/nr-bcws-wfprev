@@ -139,6 +139,20 @@ export interface ProjectBoundary {
   locationGeometry?: [number, number];
 }
 
+export interface ActivityBoundary {
+  activityGuid?: string;
+  systemStartTimestamp?: string;
+  systemEndTimestamp?: string;
+  plannedSpendAmount?: number;
+  mappingLabel?: string;
+  collectionDate?: string;
+  collectionMethod?: string;
+  collectorName?: string;
+  boundarySizeHa?: number;
+  boundaryComment?: string;
+  geometry?: Geometry;
+}
+
 export interface Geometry {
   type?: "MultiPolygon";
   coordinates?: Position[][][];

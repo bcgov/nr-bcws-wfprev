@@ -71,4 +71,56 @@ export class AttachmentService {
         );
     }
 
+    createActivityAttachment(projectGuid: string, projectPlanFiscalGuid: string, activityGuid: string, attachment: FileAttachment): Observable<any> {
+        const baseUrl = `${this.appConfigService.getConfig().rest['wfprev']}/wfprev-api/projects`;
+        const url = `${baseUrl}/${projectGuid}/projectFiscals/${projectPlanFiscalGuid}/activities/${activityGuid}/attachments`;
+        return this.httpClient.post<any>(
+            url,
+            attachment,
+            {
+                headers: {
+                    Authorization: `Bearer ${this.tokenService.getOauthToken()}`,
+                }
+            }
+        ).pipe(
+            catchError((error) => {
+                console.error("Error creating activity attachment", error);
+                return throwError(() => new Error("Failed to create activity attachment"));
+            })
+        );
+    }
+
+    getActivityAttachments(projectGuid: string, projectPlanFiscalGuid: string, activityGuid: string): Observable<any> {
+        const baseUrl = `${this.appConfigService.getConfig().rest['wfprev']}/wfprev-api/projects`;
+        const url = `${baseUrl}/${projectGuid}/projectFiscals/${projectPlanFiscalGuid}/activities/${activityGuid}/attachments`;
+        
+        return this.httpClient.get(url, {
+            headers: {
+                Authorization: `Bearer ${this.tokenService.getOauthToken()}`,
+            }
+        }).pipe(
+            map((response: any) => response),
+            catchError((error) => {
+                console.error("Error fetching activity attachments", error);
+                return throwError(() => new Error("Failed to fetch activity attachments"));
+            })
+        )
+    }
+
+    deleteActivityAttachments(projectGuid: string, projectPlanFiscalGuid: string, activityGuid: string, activityFileAttachmentGuid: string): Observable<any> {
+        const baseUrl = `${this.appConfigService.getConfig().rest['wfprev']}/wfprev-api/projects`;
+        const url = `${baseUrl}/${projectGuid}/projectFiscals/${projectPlanFiscalGuid}/activities/${activityGuid}/attachments/${activityFileAttachmentGuid}`;
+
+        return this.httpClient.delete(url, {
+            headers: {
+                Authorization: `Bearer ${this.tokenService.getOauthToken()}`,
+            }
+        }).pipe(
+            map((response: any) => response),
+            catchError((error) => {
+                console.error("Error delete activity attachments", error);
+                return throwError(() => new Error("Failed to delete activity attachments"));
+            })
+        );
+    }
 }

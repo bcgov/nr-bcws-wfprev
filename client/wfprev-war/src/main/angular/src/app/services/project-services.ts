@@ -2,7 +2,7 @@ import { HttpClient, HttpRequest, HttpHeaders, HttpEventType, HttpResponse } fro
 import { Injectable } from "@angular/core";
 import { UUID } from "angular2-uuid";
 import { catchError, map, Observable, throwError } from "rxjs";
-import { Project, ProjectBoundary, ProjectFiscal } from "src/app/components/models";
+import { ActivityBoundary, Project, ProjectBoundary, ProjectFiscal } from "src/app/components/models";
 import { AppConfigService } from "src/app/services/app-config.service";
 import { TokenService } from "src/app/services/token.service";
 
@@ -259,12 +259,12 @@ export class ProjectService {
         );
     }
 
-    createProjectBoundary(projectGuid: string, projectFiscal: ProjectBoundary): Observable<any> {
+    createProjectBoundary(projectGuid: string, projectBoundary: ProjectBoundary): Observable<any> {
         const baseUrl = `${this.appConfigService.getConfig().rest['wfprev']}/wfprev-api/projects`;
         const url = `${baseUrl}/${projectGuid}/projectBoundary`;
         return this.httpClient.post<any>(
             url,
-            projectFiscal,
+            projectBoundary,
             {
                 headers: {
                     Authorization: `Bearer ${this.tokenService.getOauthToken()}`,
@@ -395,5 +395,23 @@ export class ProjectService {
         );
     }
 
+    createActivityBoundary(projectGuid: string, fiscalGuid: string, activityGuid: string, activityBoundary: ActivityBoundary): Observable<any> {
+        const baseUrl = `${this.appConfigService.getConfig().rest['wfprev']}/wfprev-api/projects`;
+        const url = `${baseUrl}/${projectGuid}/projectFiscals/${fiscalGuid}/activities/${activityGuid}/activityBoundary`;
+        return this.httpClient.post<any>(
+            url,
+            activityBoundary,
+            {
+                headers: {
+                    Authorization: `Bearer ${this.tokenService.getOauthToken()}`,
+                }
+            }
+        ).pipe(
+            catchError((error) => {
+                console.error("Error creating activity boundary", error);
+                return throwError(() => new Error("Failed to create activity boundary"));
+            })
+        );
+    }
 
 }
