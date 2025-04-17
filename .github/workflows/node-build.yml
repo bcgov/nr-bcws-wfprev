@@ -31,8 +31,7 @@ jobs:
         node-version: '20'
     
     - name: Add .npmrc file
-      working-directory: ./node/wfprev-gdb-extractor
-      run: echo -e "$NPMRC" > ~/.npmrc
+      run: echo -e "$NPMRC" > ./node/wfprev-gdb-extractor/.npmrc  # Ensure it's in the right directory
     
     - name: Clear cache
       working-directory: ./node/wfprev-gdb-extractor
