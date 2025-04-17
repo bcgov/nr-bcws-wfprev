@@ -465,5 +465,56 @@ describe('FiscalMapComponent', () => {
     });
   });
 
+  it('should exit early in getAllActivitiesBoundaries if projectGuid is missing', () => {
+    const route = TestBed.inject(ActivatedRoute);
+    
+    // Fix here — treat `get` as a method
+    spyOn(route.snapshot.queryParamMap, 'get').and.returnValue(null);
+  
+    const spy = spyOn(component as any, 'handleFiscalsResponse');
+    
+    component.getAllActivitiesBoundaries();
+  
+    expect(spy).not.toHaveBeenCalled();
+  });
+  
+  
+  
+  it('should sort projectFiscals by fiscalYear in handleFiscalsResponse', () => {
+    const mockData = {
+      _embedded: {
+        projectFiscals: [
+          { fiscalYear: 2025, projectPlanFiscalGuid: 'f3' },
+          { fiscalYear: 2023, projectPlanFiscalGuid: 'f1' },
+          { fiscalYear: 2024, projectPlanFiscalGuid: 'f2' }
+        ]
+      }
+    };
+  
+    const service = TestBed.inject(ProjectService) as unknown as MockProjectService;
+    service.getFiscalActivities.and.callFake((_guid: string, fiscalGuid: string) => {
+      return of({ _embedded: { activities: [] } });
+    });
+  
+    (component as any).handleFiscalsResponse(mockData);
+  
+    expect(component['projectFiscals'].map((f: any) => f.fiscalYear)).toEqual([2023, 2024, 2025]);
+  });
+  
+  it('should skip items without geometry in plotProjectBoundary', () => {
+    (component as any).map = mockMapInstance;
+  
+    const boundaries = [
+      { boundaryGeometry: null },
+      { noGeometry: true },
+      {}
+    ];
+  
+    component.plotProjectBoundary(boundaries);
+  
+    expect(L.geoJSON).not.toHaveBeenCalled();
+  });
+  
+
 });
 
