@@ -1,14 +1,12 @@
-# Use official Node.js v20 Alpine image
-FROM node:20-alpine
+# Use AWS Lambda Node.js base image
+FROM public.ecr.aws/lambda/nodejs:20
 
-# Create app directory
-WORKDIR /usr/src/app
+WORKDIR /var/task
 
-# Copy only what's needed (app code and pre-installed node_modules)
+COPY package*.json ./
+COPY .npmrc .npmrc
+RUN npm install
+
 COPY . .
 
-# Expose your app's port (change if needed)
-EXPOSE 3000
-
-# Run the app
-CMD ["node", "server.js"]
+CMD ["node", "lambda.js"]
