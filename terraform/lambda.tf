@@ -27,7 +27,7 @@ resource "aws_lambda_function" "gdb_processor" {
   role          = aws_iam_role.lambda_role.arn
   package_type  = "Image"
 
-  image_uri     = "ghcr.io/bcgov/nr-bcws-wfprev-wfprev-gdb-extractor:latest"
+  image_uri     = "ghcr.io/bcgov/nr-bcws-wfprev-wfprev-gdb-extractor@sha256:5edbc71bca0cbc90b482998e013bf7d16f6e09c023f7ebf5eaf1cb294cc1a3b5"
 
   memory_size   = var.WFPREV_LAMBDA_MEMORY
   timeout       = var.WFPREV_LAMBDA_TIMEOUT
