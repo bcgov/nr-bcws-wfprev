@@ -138,11 +138,13 @@ jobs:
 
       - uses: peter-murray/terragrunt-github-action@v1.0.0
         with:
-          terragrunt_version: ${{ env.TG_VERSION }}
+          terragrunt_version: ${{ env.TG_VERSION }}  
 
-      - name: Remove log group from Terraform state
-        working-directory: ${{ env.TG_SRC_PATH }}
-        run: terragrunt state rm aws_cloudwatch_log_group.api_logs || echo "Already removed"   
+      - name: Show Terraform State
+        working-directory: ${{env.TG_SRC_PATH}}
+        run: |
+            echo "Dumping current Terraform state..."
+            terragrunt state list || echo "No state or state not yet initialized"    
 
       - name: Terragrunt Apply
         working-directory: ${{env.TG_SRC_PATH}}
