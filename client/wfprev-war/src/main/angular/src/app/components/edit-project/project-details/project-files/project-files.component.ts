@@ -6,7 +6,7 @@ import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { catchError, map, throwError } from 'rxjs';
 import { AddAttachmentComponent } from 'src/app/components/add-attachment/add-attachment.component';
 import { ConfirmationDialogComponent } from 'src/app/components/confirmation-dialog/confirmation-dialog.component';
-import { ActivityBoundary, FileAttachment, ProjectBoundary, ProjectFile } from 'src/app/components/models';
+import { ActivityBoundary, FileAttachment, Project, ProjectBoundary, ProjectFile } from 'src/app/components/models';
 import { AttachmentService } from 'src/app/services/attachment-service';
 import { ProjectService } from 'src/app/services/project-services';
 import { SpatialService } from 'src/app/services/spatial-services';
@@ -68,13 +68,10 @@ export class ProjectFilesComponent implements OnInit {
         next: (response) => {
           // ensure the latest attachment is displayed
           if (response?._embedded?.fileAttachment && Array.isArray(response._embedded.fileAttachment)) {
-            const fileAttachment = response._embedded.fileAttachment.reduce((latest: any, current: any) => {
-              const latestTime = new Date(latest.uploadedByTimestamp || 0).getTime();
-              const currentTime = new Date(current.uploadedByTimestamp || 0).getTime();
-              return currentTime > latestTime ? current : latest;
+            const fileAttachments = response._embedded.fileAttachment.sort((a: FileAttachment, b: FileAttachment) => {
+              return new Date(b.uploadedByTimestamp ?? 0).getTime() - new Date(a.uploadedByTimestamp ?? 0).getTime();
             });
-
-            // Now, call getProjectBoundaries to get the boundary data
+            
             this.projectService.getProjectBoundaries(this.projectGuid).subscribe({
               next: (boundaryResponse) => {
                 const boundaries = boundaryResponse?._embedded?.projectBoundary;
@@ -87,20 +84,18 @@ export class ProjectFilesComponent implements OnInit {
                   )[0];
                   boundarySizeHa = latestBoundary.boundarySizeHa;
                 }
-
                 if (boundarySizeHa !== undefined) {
-                  // Set the polygonHectares from the boundarySizeHa
-                  fileAttachment.polygonHectares = boundarySizeHa;
+                  // Add boundarySizeHa to each attachment
+                  this.projectFiles = fileAttachments.map((file: FileAttachment) => ({
+                    ...file,
+                    polygonHectares: boundarySizeHa
+                  }));
                 } else {
                   console.error('boundarySizeHa not found in project boundaries');
+                  this.projectFiles = fileAttachments;
                 }
 
-                // Push the fileAttachment with the updated polygonHectares to projectFiles
-                this.projectFiles = [];
-                this.projectFiles.push(fileAttachment);
-
                 // Refresh the table data source
-                this.dataSource.data = []
                 this.dataSource.data = [...this.projectFiles];
               },
               error: (error) => {
@@ -129,7 +124,7 @@ export class ProjectFilesComponent implements OnInit {
     this.attachmentService.getActivityAttachments(this.projectGuid, this.fiscalGuid, this.activityGuid).subscribe({
       next: (response) => {
         if (response?._embedded?.fileAttachment && Array.isArray(response._embedded.fileAttachment)) {
-          const fileAttachments = response._embedded.fileAttachment.sort((a: any, b: any) => {
+          const fileAttachments = response._embedded.fileAttachment.sort((a: FileAttachment, b: FileAttachment) => {
             const timeA = new Date(a.uploadedByTimestamp || 0).getTime();
             const timeB = new Date(b.uploadedByTimestamp || 0).getTime();
             return timeB - timeA; // latest first
@@ -258,7 +253,7 @@ export class ProjectFilesComponent implements OnInit {
     };
 
     this.projectService.createProjectBoundary(this.projectGuid, boundary).pipe(
-      map((resp: any) => resp),
+      map((resp: ProjectBoundary) => resp),
       catchError((error) => {
         console.error("Error creating project boundary", error);
         return throwError(() => new Error("Failed to create project boundary"));
@@ -298,7 +293,7 @@ export class ProjectFilesComponent implements OnInit {
     };
 
     this.projectService.createActivityBoundary(this.projectGuid, this.fiscalGuid, this.activityGuid, boundary).pipe(
-      map((resp: any) => resp),
+      map((resp: ActivityBoundary) => resp),
       catchError((error) => {
         console.error("Error creating activity boundary", error);
         return throwError(() => new Error("Failed to create activity boundary"));
@@ -339,8 +334,8 @@ export class ProjectFilesComponent implements OnInit {
                 this.projectService.getActivityBoundaries(this.projectGuid, this.fiscalGuid, this.activityGuid).subscribe(response => {
                   const boundaries = response?._embedded?.activityBoundary;
                   if (boundaries && boundaries.length > 0) {
-                    const latest = boundaries.sort((a: any, b: any) =>
-                      new Date(b.systemStartTimestamp).getTime() - new Date(a.systemStartTimestamp).getTime()
+                    const latest = boundaries.sort((a: ActivityBoundary, b: ActivityBoundary) =>
+                      new Date(b.systemStartTimestamp ?? 0).getTime() - new Date(a.systemStartTimestamp ?? 0).getTime()
                     )[0];
   
                     const activityBoundaryGuid = latest.activityBoundaryGuid;
@@ -382,8 +377,8 @@ export class ProjectFilesComponent implements OnInit {
                   const boundaries = response?._embedded?.projectBoundary;
   
                   if (boundaries && boundaries.length > 0) {
-                    const latest = boundaries.sort((a: any, b: any) =>
-                      new Date(b.systemStartTimestamp).getTime() - new Date(a.systemStartTimestamp).getTime()
+                    const latest = boundaries.sort((a: ProjectBoundary, b: ProjectBoundary) =>
+                      new Date(b.systemStartTimestamp ?? 0).getTime() - new Date(a.systemStartTimestamp ?? 0).getTime()
                     )[0];
   
                     const boundaryGuid = latest.projectBoundaryGuid;
@@ -431,25 +426,33 @@ export class ProjectFilesComponent implements OnInit {
     return !!this.activityGuid && !!this.fiscalGuid;
   }
 
-  downloadFile(file: any): void {
-    this.projectService.downloadDocument(file.fileIdentifier).subscribe({
-      next: (blob: Blob) => {
-        const url = window.URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = file.documentPath || 'downloaded-file'; // fallback filename
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        window.URL.revokeObjectURL(url);
-      },
-      error: (err) => {
-        console.error('Download failed', err);
-        this.snackbarService.open('Failed to download the file.', 'Close', {
-          duration: 5000,
-          panelClass: 'snackbar-error',
-        });
-      }
-    });
+  downloadFile(file: FileAttachment): void {
+    if (file.fileIdentifier) {
+      this.projectService.downloadDocument(file.fileIdentifier).subscribe({
+        next: (blob: Blob) => {
+          const url = window.URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = file.documentPath || 'downloaded-file'; // fallback filename
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          window.URL.revokeObjectURL(url);
+        },
+        error: (err) => {
+          console.error('Download failed', err);
+          this.snackbarService.open('Failed to download the file.', 'Close', {
+            duration: 5000,
+            panelClass: 'snackbar-error',
+          });
+        }
+      });
+    } else{
+      console.error('The file has no file Id');
+      this.snackbarService.open('Failed to download the file.', 'Close', {
+        duration: 5000,
+        panelClass: 'snackbar-error',
+      });
+    }
   }
 }

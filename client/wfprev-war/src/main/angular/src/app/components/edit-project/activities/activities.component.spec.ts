@@ -14,6 +14,7 @@ import { ProjectService } from 'src/app/services/project-services';
 import { CodeTableServices } from 'src/app/services/code-table-services';
 import { fakeAsync, tick } from '@angular/core/testing';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 describe('ActivitiesComponent', () => {
   let component: ActivitiesComponent;
@@ -40,7 +41,8 @@ describe('ActivitiesComponent', () => {
         MatDatepickerModule,
         MatNativeDateModule,
         MatInputModule,
-        BrowserAnimationsModule
+        BrowserAnimationsModule,
+        HttpClientTestingModule
       ],
       providers: [
         FormBuilder,
@@ -620,8 +622,7 @@ describe('ActivitiesComponent', () => {
     expect(component.isNewActivityBeingAdded).toBeFalse();
     expect(mockDialog.open).toHaveBeenCalled();
   });
-  
-  
+
 });
 
 

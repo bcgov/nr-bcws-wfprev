@@ -123,6 +123,8 @@ export interface FileAttachment {
   attachmentDescription?: string;
   attachmentReadOnlyInd: boolean;
   createDate?: string;
+  systemStartTimestamp?: string;
+  uploadedByTimestamp?: string;
 }
 
 export interface ProjectBoundary {
@@ -168,5 +170,3 @@ export interface ProjectFile {
   polygonHectares?: string,
   description?: string,
 }
-
-
