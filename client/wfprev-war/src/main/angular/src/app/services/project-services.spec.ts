@@ -620,4 +620,84 @@ describe('ProjectService', () => {
     );
     req.flush('Error', { status: 500, statusText: 'Server Error' });
   });
+
+  it('should create an activity boundary', () => {
+    const projectGuid = 'project-1';
+    const fiscalGuid = 'fiscal-1';
+    const activityGuid = 'activity-1';
+    const mockBoundary = { boundarySizeHa: 12 };
+  
+    service.createActivityBoundary(projectGuid, fiscalGuid, activityGuid, mockBoundary).subscribe(response => {
+      expect(response).toEqual(mockBoundary);
+    });
+  
+    const req = httpMock.expectOne(`http://mock-api.com/wfprev-api/projects/${projectGuid}/projectFiscals/${fiscalGuid}/activities/${activityGuid}/activityBoundary`);
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body).toEqual(mockBoundary);
+    req.flush(mockBoundary);
+  });
+
+  it('should handle errors when creating an activity boundary', () => {
+    const projectGuid = 'project-1';
+    const fiscalGuid = 'fiscal-1';
+    const activityGuid = 'activity-1';
+    const mockBoundary = { boundarySizeHa: 12 };
+  
+    service.createActivityBoundary(projectGuid, fiscalGuid, activityGuid, mockBoundary).subscribe({
+      next: () => fail('Should have failed'),
+      error: (err) => {
+        expect(err.message).toBe('Failed to create activity boundary');
+      }
+    });
+  
+    const req = httpMock.expectOne(`http://mock-api.com/wfprev-api/projects/${projectGuid}/projectFiscals/${fiscalGuid}/activities/${activityGuid}/activityBoundary`);
+    req.flush('Error', { status: 500, statusText: 'Server Error' });
+  });
+
+  it('should delete an activity boundary', () => {
+    const projectGuid = 'project-1';
+    const fiscalGuid = 'fiscal-1';
+    const activityGuid = 'activity-1';
+    const boundaryGuid = 'boundary-1';
+  
+    service.deleteActivityBoundary(projectGuid, fiscalGuid, activityGuid, boundaryGuid).subscribe(response => {
+      expect(response).toBeTruthy();
+    });
+  
+    const req = httpMock.expectOne(`http://mock-api.com/wfprev-api/projects/${projectGuid}/projectFiscals/${fiscalGuid}/activities/${activityGuid}/activityBoundary/${boundaryGuid}`);
+    expect(req.request.method).toBe('DELETE');
+    req.flush({});
+  });
+
+  it('should handle errors when deleting an activity boundary', () => {
+    const projectGuid = 'project-1';
+    const fiscalGuid = 'fiscal-1';
+    const activityGuid = 'activity-1';
+    const boundaryGuid = 'boundary-1';
+  
+    service.deleteActivityBoundary(projectGuid, fiscalGuid, activityGuid, boundaryGuid).subscribe({
+      next: () => fail('Should have failed'),
+      error: (err) => {
+        expect(err.message).toBe('Failed to delete activity boundary');
+      }
+    });
+  
+    const req = httpMock.expectOne(`http://mock-api.com/wfprev-api/projects/${projectGuid}/projectFiscals/${fiscalGuid}/activities/${activityGuid}/activityBoundary/${boundaryGuid}`);
+    req.flush('Error', { status: 500, statusText: 'Server Error' });
+  });
+
+  it('should download a document by file ID', () => {
+    const fileId = 'file-123';
+    const mockBlob = new Blob(['test content'], { type: 'application/pdf' });
+  
+    service.downloadDocument(fileId).subscribe(response => {
+      expect(response).toEqual(mockBlob);
+    });
+  
+    const req = httpMock.expectOne(`http://mock-wfdm-api.com/documents/${fileId}/bytes`);
+    expect(req.request.method).toBe('GET');
+    expect(req.request.headers.get('Authorization')).toBe('Bearer mock-token');
+    expect(req.request.responseType).toBe('blob');
+    req.flush(mockBlob);
+  });
 });
