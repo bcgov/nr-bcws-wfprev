@@ -11,6 +11,7 @@ import { ProjectService } from 'src/app/services/project-services';
 import { SpatialService } from 'src/app/services/spatial-services';
 import { ProjectFilesComponent } from './project-files.component';
 import { Position } from 'geojson';
+import { ActivatedRoute } from '@angular/router';
 
 describe('ProjectFilesComponent', () => {
   let component: ProjectFilesComponent;
@@ -29,7 +30,8 @@ describe('ProjectFilesComponent', () => {
       'uploadDocument', 
       'getProjectBoundaries', 
       'createProjectBoundary',
-      'deleteProjectBoundary'
+      'deleteProjectBoundary',
+      "downloadDocument"
     ]);
     mockSnackbar = jasmine.createSpyObj('MatSnackBar', ['open']);
     mockDialog = jasmine.createSpyObj('MatDialog', ['open']);
@@ -59,6 +61,7 @@ describe('ProjectFilesComponent', () => {
         { provide: AttachmentService, useValue: mockAttachmentService },
         { provide: SpatialService, useValue: mockSpatialService },
         { provide: ChangeDetectorRef, useValue: mockCdr },
+        { provide: ActivatedRoute, useValue: { snapshot: { queryParamMap: { get: () => 'mock-project-guid' } } } },
       ],
     }).compileComponents();
 
@@ -504,11 +507,120 @@ describe('ProjectFilesComponent', () => {
   
   describe('downloadFile', () => {
     it('should have a downloadFile method', () => {
-      expect(component.downloadFile).toBeDefined();
-      
-      // Since the implementation is empty, just test that it can be called
-      const mockFile = { fileName: 'test.txt' };
+      const mockFile = { fileIdentifier: '123', documentPath: 'test.txt' };
+    
+      mockProjectService.downloadDocument.and.returnValue(of(new Blob(['test-content'], { type: 'text/plain' })));
+    
       expect(() => component.downloadFile(mockFile)).not.toThrow();
+    });
+
+    it('should show snackbar error if file download fails', () => {
+      const mockFile = { fileIdentifier: 'abc', documentPath: 'file.txt' };
+      const mockError = new Error('Failed to download');
+    
+      mockProjectService.downloadDocument.and.returnValue(throwError(() => mockError));
+      spyOn(console, 'error');
+    
+      component.downloadFile(mockFile);
+    
+      expect(console.error).toHaveBeenCalledWith('Download failed', mockError);
+      expect(mockSnackbar.open).toHaveBeenCalledWith(
+        'Failed to download the file.',
+        'Close',
+        jasmine.any(Object)
+      );
+    });
+  });
+
+  it('should show error if uploaded file has no extension', () => {
+    const mockFile = new File(['content'], 'file.', { type: 'text/plain' });
+  
+    component.uploadAttachment(mockFile, { fileId: 'some-id' });
+  
+    expect(mockSnackbar.open).toHaveBeenCalledWith(
+      'The spatial file was not uploaded because the file format is not accepted.',
+      'Close',
+      jasmine.any(Object)
+    );
+  });
+
+  describe('isActivityContext', () => {
+    it('should return true if activityGuid and fiscalGuid are set', () => {
+      component.activityGuid = 'activity';
+      component.fiscalGuid = 'fiscal';
+      expect(component.isActivityContext).toBeTrue();
+    });
+  
+    it('should return false if either activityGuid or fiscalGuid is missing', () => {
+      component.activityGuid = '';
+      component.fiscalGuid = 'fiscal';
+      expect(component.isActivityContext).toBeFalse();
+    });
+  });
+
+  describe('loadActivityAttachments', () => {
+    it('should load activity attachments and update dataSource', () => {
+      const attachments = [
+        { fileName: 'a.txt', uploadedByTimestamp: '2024-01-01T10:00:00Z' },
+        { fileName: 'b.txt', uploadedByTimestamp: '2024-01-01T12:00:00Z' }
+      ];
+  
+      mockAttachmentService.getActivityAttachments = jasmine.createSpy().and.returnValue(
+        of({ _embedded: { fileAttachment: attachments } })
+      );
+  
+      component.fiscalGuid = 'fiscal';
+      component.activityGuid = 'activity';
+      component.loadActivityAttachments();
+  
+      expect(component.projectFiles.length).toBe(2);
+      expect(component.dataSource.data.length).toBe(2);
+    });
+  
+    it('should handle malformed response and fallback to empty list', () => {
+      mockAttachmentService.getActivityAttachments = jasmine.createSpy().and.returnValue(of({ _embedded: {} }));
+  
+      component.fiscalGuid = 'fiscal';
+      component.activityGuid = 'activity';
+  
+      spyOn(console, 'error');
+      component.loadActivityAttachments();
+  
+      expect(console.error).toHaveBeenCalled();
+      expect(component.projectFiles.length).toBe(0);
+    });
+  
+    it('should show snackbar on error', () => {
+      mockAttachmentService.getActivityAttachments = jasmine.createSpy().and.returnValue(
+        throwError(() => new Error('fail'))
+      );
+  
+      component.fiscalGuid = 'fiscal';
+      component.activityGuid = 'activity';
+  
+      component.loadActivityAttachments();
+  
+      expect(mockSnackbar.open).toHaveBeenCalledWith(
+        'Failed to load activity attachments.',
+        'Close',
+        jasmine.any(Object)
+      );
+    });
+
+    it('should set description and call uploadFile when both are returned from modal', () => {
+      const mockFile = new File(['dummy'], 'file.txt');
+      const description = 'my description';
+    
+      mockDialog.open.and.returnValue({
+        afterClosed: () => of({ file: mockFile, description }),
+      } as any);
+    
+      spyOn(component, 'uploadFile').and.stub();
+    
+      component.openFileUploadModal();
+    
+      expect(component.attachmentDescription).toBe(description);
+      expect(component.uploadFile).toHaveBeenCalledWith(mockFile);
     });
   });
 });

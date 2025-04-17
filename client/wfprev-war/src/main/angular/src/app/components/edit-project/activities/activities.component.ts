@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectorRef, Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, FormsModule  } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatExpansionModule } from '@angular/material/expansion';
@@ -18,6 +18,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { Observable } from 'rxjs';
 import { CanComponentDeactivate } from 'src/app/services/util/can-deactive.guard';
 import { MomentDateAdapter } from '@angular/material-moment-adapter';
+import { ProjectFilesComponent } from 'src/app/components/edit-project/project-details/project-files/project-files.component';
 
 
 export const CUSTOM_DATE_FORMATS = {
@@ -41,7 +42,8 @@ export const CUSTOM_DATE_FORMATS = {
     MatNativeDateModule,
     MatInputModule,
     FormsModule,
-    MatCheckboxModule
+    MatCheckboxModule,
+    ProjectFilesComponent
   ],
   templateUrl: './activities.component.html',
   styleUrl: './activities.component.scss',
@@ -54,6 +56,8 @@ export const CUSTOM_DATE_FORMATS = {
 
 export class ActivitiesComponent implements OnChanges, OnInit, CanComponentDeactivate{
   @Input() fiscalGuid: string = '';
+  @Output() boundariesUpdated = new EventEmitter<void>();
+
   messages = Messages;
   isNewActivityBeingAdded = false;
   
@@ -417,6 +421,7 @@ export class ActivitiesComponent implements OnChanges, OnInit, CanComponentDeact
 
   getActivityTitle(index: number): string {
     const activity = this.activityForms[index]?.value;
+    
     if (!activity) return '';
   
     // If Results Reportable is ON, construct Base - Technique - Method dynamically
@@ -719,5 +724,9 @@ export class ActivitiesComponent implements OnChanges, OnInit, CanComponentDeact
       return dialogRef.afterClosed();
     }
     return true;
+  }
+
+  onFilesChanged() {
+    this.boundariesUpdated.emit(); // Notify ProjectFiscalsComponent
   }
 }

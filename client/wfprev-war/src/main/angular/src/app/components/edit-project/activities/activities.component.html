@@ -210,9 +210,12 @@
                                 </textarea>
                             </div>
                         </div>
-                        
-                        
                     </form>
+                    <div class="activity-files">
+                        <app-project-files *ngIf="activityForms[i]?.value?.activityGuid && fiscalGuid" [activityGuid]="activityForms[i]?.value?.activityGuid" [fiscalGuid]="fiscalGuid" (filesUpdated)="onFilesChanged()">
+                            {{activityForms[i]?.value?.activityGuid}}
+                        </app-project-files>
+                    </div>
                     <div class="project-activity-footer">
                         <div class="button-row">
                             <div class="delete-container">
