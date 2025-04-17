@@ -2,6 +2,7 @@ import { AfterViewInit, Component, Input, OnDestroy, OnInit } from '@angular/cor
 import { ActivatedRoute, Router, UrlTree } from '@angular/router';
 import * as L from 'leaflet';
 import { forkJoin, map } from 'rxjs';
+import { FileAttachment } from 'src/app/components/models';
 import { ProjectService } from 'src/app/services/project-services';
 import { ResourcesRoutes } from 'src/app/utils';
 import { LeafletLegendService, createFullPageControl } from 'src/app/utils/tools';
@@ -33,6 +34,9 @@ export class FiscalMapComponent implements AfterViewInit, OnDestroy, OnInit {
   ) {}
 
   private map: L.Map | undefined;
+  private activityBoundaryGroup: L.LayerGroup = L.layerGroup();
+  private projectBoundaryGroup: L.LayerGroup = L.layerGroup();
+
   projectGuid = '';
   projectFiscals: any[] = [];
   allActivities: any[] = [];
@@ -162,8 +166,8 @@ export class FiscalMapComponent implements AfterViewInit, OnDestroy, OnInit {
       if (seenActivityGuids.has(activityGuid)) continue;
       seenActivityGuids.add(activityGuid);
       // Get the latest boundary for this activity based on systemStartTimestamp
-      const latestBoundary = boundary.reduce((latest: any, current: any) => {
-        return new Date(current.systemStartTimestamp) > new Date(latest.systemStartTimestamp)
+      const latestBoundary = boundary.reduce((latest: FileAttachment, current: FileAttachment) => {
+        return new Date(current.systemStartTimestamp ?? 0) > new Date(latest.systemStartTimestamp ?? 0)
           ? current
           : latest;
       });
@@ -181,7 +185,7 @@ export class FiscalMapComponent implements AfterViewInit, OnDestroy, OnInit {
     const hasProjectPolygons = this.projectBoundary?.length > 0;
   
     if (hasActivityPolygons && this.map) {
-      this.plotBoundariesOnMap(this.allActivityBoundaries);
+      this.plotActivityBoundariesOnMap(this.allActivityBoundaries);
     }
   
     if (!hasActivityPolygons && !hasProjectPolygons) {
@@ -189,7 +193,8 @@ export class FiscalMapComponent implements AfterViewInit, OnDestroy, OnInit {
     }
   }
   
-  plotBoundariesOnMap(boundaries: any[]): void {
+  plotActivityBoundariesOnMap(boundaries: any[]): void {
+    this.activityBoundaryGroup.clearLayers(); // clears old activity polygons
     const allFiscalPolygons: L.Layer[] = [];
   
     boundaries.forEach(boundaryEntry => {
@@ -217,7 +222,7 @@ export class FiscalMapComponent implements AfterViewInit, OnDestroy, OnInit {
         };
   
         const addToMap = (geom: any) => {
-          const layer = L.geoJSON(geom, geoJsonOptions).addTo(this.map!);
+          const layer = L.geoJSON(geom, geoJsonOptions).addTo(this.activityBoundaryGroup);
           allFiscalPolygons.push(layer); //  Track all layers
         };
       
@@ -231,14 +236,30 @@ export class FiscalMapComponent implements AfterViewInit, OnDestroy, OnInit {
       }
     });
   
-    //  Zoom to ALL fiscal year polygons
-    if (allFiscalPolygons.length > 0) {
-      const group = L.featureGroup(allFiscalPolygons);
+    const allLayers: L.Layer[] = [...allFiscalPolygons];
+    // Add project boundary as well
+    this.projectBoundary.forEach((item: any) => {
+      const geometry = item.boundaryGeometry;
+      if (!geometry) return;
+    
+      const layer = L.geoJSON(geometry, {
+        style: {
+          color: '#3f3f3f',
+          weight: 2,
+          fillOpacity: 0.1,
+        }
+      });
+      allLayers.push(layer);
+    });
+    
+    if (allLayers.length > 0) {
+      const group = L.featureGroup(allLayers);
       this.map!.fitBounds(group.getBounds(), { padding: [20, 20] });
     }
   }
 
   plotProjectBoundary(boundary: any[]): void {
+    this.projectBoundaryGroup.clearLayers();
     const layers: L.Layer[] = [];
   
     boundary.forEach((item: any) => {
@@ -254,7 +275,7 @@ export class FiscalMapComponent implements AfterViewInit, OnDestroy, OnInit {
       };
   
       const addToMap = (geom: any) => {
-        const layer = L.geoJSON(geom, geoJsonOptions).addTo(this.map!);
+        const layer = L.geoJSON(geom, geoJsonOptions).addTo(this.projectBoundaryGroup);
         layers.push(layer);
       };
   
@@ -289,6 +310,9 @@ export class FiscalMapComponent implements AfterViewInit, OnDestroy, OnInit {
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '© OpenStreetMap contributors'
     }).addTo(this.map);
+
+    this.activityBoundaryGroup.addTo(this.map);
+    this.projectBoundaryGroup.addTo(this.map);
 
     const legendHelper = new LeafletLegendService();
     legendHelper.addLegend(this.map, this.fiscalColorMap);

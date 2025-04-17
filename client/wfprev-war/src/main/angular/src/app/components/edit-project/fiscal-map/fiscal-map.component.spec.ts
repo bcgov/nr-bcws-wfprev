@@ -161,7 +161,7 @@ describe('FiscalMapComponent', () => {
     const mockRemove = jasmine.createSpy('remove');
     (component as any).map = { fitBounds: mockFitBounds, remove: mockRemove };
   
-    component.plotBoundariesOnMap([
+    component.plotActivityBoundariesOnMap([
       {
         fiscalYear: component.currentFiscalYear - 1,
         boundary: [{ geometry: { type: 'Polygon', coordinates: [] } }]
@@ -183,7 +183,7 @@ describe('FiscalMapComponent', () => {
   
   
 
-  it('should handle GeometryCollection in plotBoundariesOnMap', () => {
+  it('should handle GeometryCollection in plotActivityBoundariesOnMap', () => {
     (component as any).map = mockMapInstance;
   
     const mockBoundaries = [
@@ -201,17 +201,17 @@ describe('FiscalMapComponent', () => {
       }
     ];
   
-    component.plotBoundariesOnMap(mockBoundaries);
+    component.plotActivityBoundariesOnMap(mockBoundaries);
   
     expect(L.geoJSON).toHaveBeenCalledTimes(2);
     expect(geoJsonAddToSpy).toHaveBeenCalledTimes(2);
   });
   
 
-  it('should skip boundary items without geometry in plotBoundariesOnMap', () => {
+  it('should skip boundary items without geometry in plotActivityBoundariesOnMap', () => {
     (component as any).map = mockMapInstance;
   
-    component.plotBoundariesOnMap([
+    component.plotActivityBoundariesOnMap([
       {
         fiscalYear: component.currentFiscalYear,
         boundary: [{ notGeometry: true }]
@@ -288,7 +288,7 @@ describe('FiscalMapComponent', () => {
     // Stub projectBoundary as empty
     component['projectBoundary'] = [];
   
-    const plotSpy = spyOn(component as any, 'plotBoundariesOnMap');
+    const plotSpy = spyOn(component as any, 'plotActivityBoundariesOnMap');
     const coordSpy = spyOn(component, 'getProjectCoordinates');
   
     fixture.detectChanges(); // trigger ngOnInit()
@@ -341,7 +341,7 @@ describe('FiscalMapComponent', () => {
   
     component['projectBoundary'] = []; // no project polygons
   
-    const plotSpy = spyOn(component as any, 'plotBoundariesOnMap');
+    const plotSpy = spyOn(component as any, 'plotActivityBoundariesOnMap');
     const coordSpy = spyOn(component, 'getProjectCoordinates');
   
     fixture.detectChanges(); // trigger ngOnInit()

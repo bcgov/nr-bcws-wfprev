@@ -91,6 +91,10 @@ export class ActivitiesComponent implements OnChanges, OnInit, CanComponentDeact
   }
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['fiscalGuid'] && changes['fiscalGuid'].currentValue) {
+      // Clear previous state before loading new fiscal data
+      this.activities = [];
+      this.activityForms = [];
+
       this.loadCodeTables();
       this.getActivities();
     }
