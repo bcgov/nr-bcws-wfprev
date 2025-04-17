@@ -84,6 +84,9 @@ jobs:
           type=ref,event=pr
           type=ref,event=tag
           type=raw,value=${{ github.sha }}
+
+    - name: List files in ./node/wfprev-gdb-extractor
+      run: ls -al ./node/wfprev-gdb-extractor
     
     - name: Build and push Docker image
       uses: docker/build-push-action@v6
