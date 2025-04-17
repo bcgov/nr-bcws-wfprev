@@ -515,6 +515,35 @@ describe('FiscalMapComponent', () => {
     expect(L.geoJSON).not.toHaveBeenCalled();
   });
   
+  it('should plot project boundaries inside plotActivityBoundariesOnMap', () => {
+    const mockFitBounds = jasmine.createSpy('fitBounds');
+    const mockRemove = jasmine.createSpy('remove');
+
+    (component as any).map = { fitBounds: mockFitBounds, remove: mockRemove };
+    
+    const activityBoundaries = [
+      {
+        fiscalYear: component.currentFiscalYear,
+        boundary: [
+          { geometry: { type: 'Polygon', coordinates: [] } }
+        ]
+      }
+    ];
+  
+    component['projectBoundary'] = [
+      { boundaryGeometry: { type: 'Polygon', coordinates: [] } }
+    ];
+  
+    component.plotActivityBoundariesOnMap(activityBoundaries);
+  
+    expect(L.geoJSON).toHaveBeenCalledWith(
+      jasmine.objectContaining({ type: 'Polygon' }),
+      jasmine.objectContaining({
+        style: jasmine.objectContaining({ color: '#3f3f3f' })
+      })
+    );
+  });
+  
 
 });
 
