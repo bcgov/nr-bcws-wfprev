@@ -5,7 +5,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { of, throwError } from 'rxjs';
 import { AddAttachmentComponent } from 'src/app/components/add-attachment/add-attachment.component';
 import { ConfirmationDialogComponent } from 'src/app/components/confirmation-dialog/confirmation-dialog.component';
-import { ProjectFile } from 'src/app/components/models';
+import { FileAttachment, ProjectFile } from 'src/app/components/models';
 import { AttachmentService } from 'src/app/services/attachment-service';
 import { ProjectService } from 'src/app/services/project-services';
 import { SpatialService } from 'src/app/services/spatial-services';
@@ -507,7 +507,11 @@ describe('ProjectFilesComponent', () => {
   
   describe('downloadFile', () => {
     it('should have a downloadFile method', () => {
-      const mockFile = { fileIdentifier: '123', documentPath: 'test.txt' };
+      const mockFile: FileAttachment = {
+        fileIdentifier: '123',
+        documentPath: 'test.txt',
+        attachmentReadOnlyInd: false
+      };
     
       mockProjectService.downloadDocument.and.returnValue(of(new Blob(['test-content'], { type: 'text/plain' })));
     

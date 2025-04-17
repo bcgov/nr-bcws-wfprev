@@ -121,7 +121,7 @@ export interface FileAttachment {
     attachmentContentTypeCode: string;
   };
   attachmentDescription?: string;
-  attachmentReadOnlyInd: boolean;
+  attachmentReadOnlyInd?: boolean;
   createDate?: string;
   systemStartTimestamp?: string;
   uploadedByTimestamp?: string;
@@ -169,4 +169,6 @@ export interface ProjectFile {
   uploadedDate?: string,
   polygonHectares?: string,
   description?: string,
+  fileIdentifier?: string,
+  documentPath?: string
 }
