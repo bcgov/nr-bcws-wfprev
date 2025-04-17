@@ -193,7 +193,62 @@ jobs:
           TARGET_LIQUIBASE_TAG: ${{ steps.liquibaseCommand.outputs.TARGET_LIQUIBASE_TAG }}
         run: |
             echo "Dumping current Terraform state..."
-            terragrunt state list || echo "No state or state not yet initialized"    
+            terragrunt state list || echo "No state or state not yet initialized"   
+            
+      - name: Remove CloudWatch log group from state
+        working-directory: ${{env.TG_SRC_PATH}}
+        env:
+          # Necessary for all components
+          TFC_PROJECT: ${{ secrets.TFC_PROJECT }}
+          TARGET_ENV: ${{ inputs.DEFAULT_APPLICATION_ENVIRONMENT }}
+          APP_COUNT: ${{vars.APP_COUNT}}
+          LOGGING_LEVEL: ${{vars.LOGGING_LEVEL}}
+
+          # Necessary for WFPREV API
+          WFPREV_API_NAME: wfprev-api
+          WFPREV_API_IMAGE: ${{ steps.getDigestAPI.outputs.IMAGE_API_BY_DIGEST }}
+          WFPREV_API_CPU_UNITS: ${{vars.WFPREV_API_CPU_UNITS}}
+          WFPREV_API_MEMORY: ${{vars.WFPREV_API_MEMORY}}
+          WFPREV_API_PORT: ${{vars.WFPREV_API_PORT}}
+          TARGET_AWS_ACCOUNT_ID: ${{secrets.TARGET_AWS_ACCOUNT_ID}}
+          WFPREV_CLIENT_ID: ${{vars.WFPREV_CLIENT_ID}}
+          WFPREV_CLIENT_SECRET: ${{secrets.WFPREV_CLIENT_SECRET}}
+          WEBADE_OAUTH2_CHECK_TOKEN_URL: ${{vars.WEBADE_OAUTH2_CHECK_TOKEN_URL}}
+          WEBADE_OAUTH2_CHECK_AUTHORIZE_URL: ${{vars.WEBADE_OAUTH2_CHECK_AUTHORIZE_URL}}
+          WFPREV_BASE_URL: ${{vars.WFPREV_BASE_URL}}
+          WFPREV_DATASOURCE_URL: ${{vars.WFPREV_DATASOURCE_URL}}
+          WFPREV_DATASOURCE_USERNAME: ${{secrets.WFPREV_USERNAME}}
+          WFPREV_DATASOURCE_PASSWORD: ${{secrets.DB_PASS}}
+          server_count: ${{vars.WFPREV_SERVER_INSTANCE_COUNT}}
+          # WFDM API
+          WFDM_BASE_URL: ${{vars.WFDM_BASE_URL}}
+          # OPENMAPS
+          OPENMAPS_URL: ${{vars.OPENMAPS_URL}}
+          # WFPREV UI
+          CLIENT_IMAGE: ${{ steps.getDigestUI.outputs.IMAGE_UI_BY_DIGEST }}
+          WEBADE_OAUTH2_WFPREV_UI_CLIENT_SECRET: ${{ secrets.WEBADE_OAUTH2_WFPREV_UI_CLIENT_SECRET }}
+          WFPREV_CLIENT_MEMORY: ${{vars.WFPREV_CLIENT_MEMORY}}
+          WFPREV_CLIENT_CPU_UNITS : ${{vars.WFPREV_CLIENT_CPU_UNITS}}
+          WFPREV_CHECK_TOKEN_URL: ${{vars.WFPREV_CHECK_TOKEN_URL}}
+
+          # DB
+          WFPREV_USERNAME: ${{secrets.WFPREV_USERNAME}}
+          DB_PASS: ${{secrets.DB_PASS}}
+          DB_INSTANCE_TYPE: ${{vars.DB_INSTANCE_TYPE}}
+
+          #liquibase
+          COMMAND: ${{ steps.liquibaseCommand.outputs.LIQUIBASE_COMMAND }}
+          PROXY_COUNT: ${{ steps.changeLogCount.outputs.PROXY_COUNT }}
+          NONPROXY_COUNT: ${{ steps.changeLogCount.outputs.NONPROXY_COUNT }}
+          LIQUIBASE_IMAGE: ${{vars.REPOSITORY_HOST}}/${{ github.repository_owner }}/${{ vars.LIQUIBASE_IMAGE }}:${{ inputs.IMAGE_TAG }}
+          LIQUIBASE_COMMAND_USERNAME: ${{ vars.LIQUIBASE_COMMAND_USERNAME }}
+          LIQUIBASE_COMMAND_PASSWORD: ${{ secrets.LIQUIBASE_COMMAND_PASSWORD }}
+          APP_WF1_PREV_LIQUIBASE_COMMAND_PASSWORD: ${{ secrets.APP_WF1_PREV_LIQUIBASE_COMMAND_PASSWORD }}
+          WFPREV_LIQUIBASE_COMMAND_PASSWORD: ${{ secrets.WFPREV_LIQUIBASE_COMMAND_PASSWORD }}
+          TARGET_LIQUIBASE_TAG: ${{ steps.liquibaseCommand.outputs.TARGET_LIQUIBASE_TAG }}
+        run: |
+          echo "Removing aws_cloudwatch_log_group.api_logs from state..."
+          terragrunt state rm aws_cloudwatch_log_group.api_logs || echo "Already removed or not found"
 
       - name: Terragrunt Apply
         working-directory: ${{env.TG_SRC_PATH}}
