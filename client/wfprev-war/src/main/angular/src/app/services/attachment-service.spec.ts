@@ -167,4 +167,101 @@ describe('AttachmentService', () => {
         req.flush('Error', { status: 500, statusText: 'Internal Server Error' });
     });
 
+    it('should create an activity attachment', () => {
+        const projectGuid = 'proj-001';
+        const fiscalGuid = 'fiscal-001';
+        const activityGuid = 'activity-001';
+      
+        service.createActivityAttachment(projectGuid, fiscalGuid, activityGuid, attachment).subscribe((response) => {
+          expect(response).toEqual({ success: true });
+        });
+      
+        const req = httpMock.expectOne(`${mockApplicationConfig.rest.wfprev}/wfprev-api/projects/${projectGuid}/projectFiscals/${fiscalGuid}/activities/${activityGuid}/attachments`);
+        expect(req.request.method).toBe('POST');
+        expect(req.request.body).toEqual(attachment);
+        expect(req.request.headers.get('Authorization')).toBe('Bearer mock-token');
+        req.flush({ success: true });
+      });
+      
+      it('should handle errors when creating an activity attachment', () => {
+        const projectGuid = 'proj-001';
+        const fiscalGuid = 'fiscal-001';
+        const activityGuid = 'activity-001';
+      
+        service.createActivityAttachment(projectGuid, fiscalGuid, activityGuid, attachment).subscribe({
+          next: () => fail('Expected error'),
+          error: (err) => {
+            expect(err.message).toBe('Failed to create activity attachment');
+          }
+        });
+      
+        const req = httpMock.expectOne(`${mockApplicationConfig.rest.wfprev}/wfprev-api/projects/${projectGuid}/projectFiscals/${fiscalGuid}/activities/${activityGuid}/attachments`);
+        req.flush('Error', { status: 500, statusText: 'Internal Server Error' });
+      });
+      
+      it('should fetch activity attachments', () => {
+        const projectGuid = 'proj-001';
+        const fiscalGuid = 'fiscal-001';
+        const activityGuid = 'activity-001';
+        const mockResponse = [{ fileAttachmentGuid: '12345', attachmentDescription: 'Activity file' }];
+      
+        service.getActivityAttachments(projectGuid, fiscalGuid, activityGuid).subscribe(response => {
+          expect(response).toEqual(mockResponse);
+        });
+      
+        const req = httpMock.expectOne(`${mockApplicationConfig.rest.wfprev}/wfprev-api/projects/${projectGuid}/projectFiscals/${fiscalGuid}/activities/${activityGuid}/attachments`);
+        expect(req.request.method).toBe('GET');
+        expect(req.request.headers.get('Authorization')).toBe('Bearer mock-token');
+        req.flush(mockResponse);
+      });
+      
+      it('should handle errors when fetching activity attachments', () => {
+        const projectGuid = 'proj-001';
+        const fiscalGuid = 'fiscal-001';
+        const activityGuid = 'activity-001';
+      
+        service.getActivityAttachments(projectGuid, fiscalGuid, activityGuid).subscribe({
+          next: () => fail('Expected error'),
+          error: (err) => {
+            expect(err.message).toBe('Failed to fetch activity attachments');
+          }
+        });
+      
+        const req = httpMock.expectOne(`${mockApplicationConfig.rest.wfprev}/wfprev-api/projects/${projectGuid}/projectFiscals/${fiscalGuid}/activities/${activityGuid}/attachments`);
+        req.flush('Error', { status: 500, statusText: 'Internal Server Error' });
+      });
+      
+      it('should delete an activity attachment', () => {
+        const projectGuid = 'proj-001';
+        const fiscalGuid = 'fiscal-001';
+        const activityGuid = 'activity-001';
+        const fileGuid = 'file-789';
+      
+        service.deleteActivityAttachments(projectGuid, fiscalGuid, activityGuid, fileGuid).subscribe(response => {
+          expect(response).toEqual({ success: true });
+        });
+      
+        const req = httpMock.expectOne(`${mockApplicationConfig.rest.wfprev}/wfprev-api/projects/${projectGuid}/projectFiscals/${fiscalGuid}/activities/${activityGuid}/attachments/${fileGuid}`);
+        expect(req.request.method).toBe('DELETE');
+        expect(req.request.headers.get('Authorization')).toBe('Bearer mock-token');
+        req.flush({ success: true });
+      });
+      
+      it('should handle errors when deleting activity attachment', () => {
+        const projectGuid = 'proj-001';
+        const fiscalGuid = 'fiscal-001';
+        const activityGuid = 'activity-001';
+        const fileGuid = 'file-789';
+      
+        service.deleteActivityAttachments(projectGuid, fiscalGuid, activityGuid, fileGuid).subscribe({
+          next: () => fail('Expected error'),
+          error: (err) => {
+            expect(err.message).toBe('Failed to delete activity attachments');
+          }
+        });
+      
+        const req = httpMock.expectOne(`${mockApplicationConfig.rest.wfprev}/wfprev-api/projects/${projectGuid}/projectFiscals/${fiscalGuid}/activities/${activityGuid}/attachments/${fileGuid}`);
+        req.flush('Error', { status: 500, statusText: 'Internal Server Error' });
+      });
+      
 });
