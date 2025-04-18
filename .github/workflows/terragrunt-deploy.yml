@@ -124,6 +124,13 @@ jobs:
       #       echo "SHORTENED_ENV=prd" >> $GITHUB_OUTPUT
       #     fi
 
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: ${{ secrets.AWS_TERRAFORM_ROLE_TO_ASSUME }}
+          role-session-name: wfprev-terraform-s3
+          aws-region: ca-central-1
+
       - name: Create ECR Repository for GDB Extractor (if not exists)
         run: |
           aws ecr describe-repositories --repository-names nr-bcws-wfprev-wfprev-gdb-extractor --region ca-central-1 || \
@@ -145,13 +152,6 @@ jobs:
           docker tag ${{vars.REPOSITORY_HOST}}/${{ github.repository_owner }}/nr-bcws-wfprev-wfprev-gdb-extractor:latest ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.ca-central-1.amazonaws.com/nr-bcws-wfprev-wfprev-gdb-extractor:latest
           docker push ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.ca-central-1.amazonaws.com/nr-bcws-wfprev-wfprev-gdb-extractor:latest
           echo "GDB_EXTRACTOR_IMAGE=${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.ca-central-1.amazonaws.com/nr-bcws-wfprev-wfprev-gdb-extractor:latest" >> $GITHUB_ENV
-
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v2
-        with:
-          role-to-assume: ${{ secrets.AWS_TERRAFORM_ROLE_TO_ASSUME }}
-          role-session-name: wfprev-terraform-s3
-          aws-region: ca-central-1
 
       - uses: hashicorp/setup-terraform@v2
         with:
