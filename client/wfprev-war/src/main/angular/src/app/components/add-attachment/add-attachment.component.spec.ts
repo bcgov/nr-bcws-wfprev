@@ -18,7 +18,7 @@ describe('AddAttachmentComponent', () => {
       providers: [
         { provide: MatDialogRef, useValue: mockDialogRef },
         { provide: TokenService, useValue: mockTokenService },
-        { provide: MAT_DIALOG_DATA, useValue: { indicator: 'test', name: 'Test Name' } },
+        { provide: MAT_DIALOG_DATA, useValue: { indicator: 'project-files', name: 'Test Name' } },
       ],
     }).compileComponents();
 
@@ -34,9 +34,9 @@ describe('AddAttachmentComponent', () => {
   it('should initialize with default values', () => {
     expect(component.selectedFile).toBeNull();
     expect(component.selectedFileName).toBe('');
-    expect(component.attachmentType).toBe('');
+    expect(component.attachmentType).toBe('Gross Project Area Boundary');
     expect(component.description).toBe('');
-    expect(component.attachmentTypes).toEqual(['Gross Project Area Boundary', 'Other']);
+    expect(component.attachmentTypes).toEqual(['Gross Project Area Boundary']);
     expect(component.isDescriptionTooLong).toBeFalse();
   });
 

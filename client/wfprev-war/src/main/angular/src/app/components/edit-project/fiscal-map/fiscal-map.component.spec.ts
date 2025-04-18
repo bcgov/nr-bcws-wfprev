@@ -161,7 +161,7 @@ describe('FiscalMapComponent', () => {
     const mockRemove = jasmine.createSpy('remove');
     (component as any).map = { fitBounds: mockFitBounds, remove: mockRemove };
   
-    component.plotBoundariesOnMap([
+    component.plotActivityBoundariesOnMap([
       {
         fiscalYear: component.currentFiscalYear - 1,
         boundary: [{ geometry: { type: 'Polygon', coordinates: [] } }]
@@ -183,7 +183,7 @@ describe('FiscalMapComponent', () => {
   
   
 
-  it('should handle GeometryCollection in plotBoundariesOnMap', () => {
+  it('should handle GeometryCollection in plotActivityBoundariesOnMap', () => {
     (component as any).map = mockMapInstance;
   
     const mockBoundaries = [
@@ -201,17 +201,17 @@ describe('FiscalMapComponent', () => {
       }
     ];
   
-    component.plotBoundariesOnMap(mockBoundaries);
+    component.plotActivityBoundariesOnMap(mockBoundaries);
   
     expect(L.geoJSON).toHaveBeenCalledTimes(2);
     expect(geoJsonAddToSpy).toHaveBeenCalledTimes(2);
   });
   
 
-  it('should skip boundary items without geometry in plotBoundariesOnMap', () => {
+  it('should skip boundary items without geometry in plotActivityBoundariesOnMap', () => {
     (component as any).map = mockMapInstance;
   
-    component.plotBoundariesOnMap([
+    component.plotActivityBoundariesOnMap([
       {
         fiscalYear: component.currentFiscalYear,
         boundary: [{ notGeometry: true }]
@@ -288,7 +288,7 @@ describe('FiscalMapComponent', () => {
     // Stub projectBoundary as empty
     component['projectBoundary'] = [];
   
-    const plotSpy = spyOn(component as any, 'plotBoundariesOnMap');
+    const plotSpy = spyOn(component as any, 'plotActivityBoundariesOnMap');
     const coordSpy = spyOn(component, 'getProjectCoordinates');
   
     fixture.detectChanges(); // trigger ngOnInit()
@@ -341,7 +341,7 @@ describe('FiscalMapComponent', () => {
   
     component['projectBoundary'] = []; // no project polygons
   
-    const plotSpy = spyOn(component as any, 'plotBoundariesOnMap');
+    const plotSpy = spyOn(component as any, 'plotActivityBoundariesOnMap');
     const coordSpy = spyOn(component, 'getProjectCoordinates');
   
     fixture.detectChanges(); // trigger ngOnInit()
@@ -464,6 +464,86 @@ describe('FiscalMapComponent', () => {
       expect(window.open).toHaveBeenCalledWith(jasmine.stringMatching(/\/map$/), '_blank');
     });
   });
+
+  it('should exit early in getAllActivitiesBoundaries if projectGuid is missing', () => {
+    const route = TestBed.inject(ActivatedRoute);
+    
+    // Fix here — treat `get` as a method
+    spyOn(route.snapshot.queryParamMap, 'get').and.returnValue(null);
+  
+    const spy = spyOn(component as any, 'handleFiscalsResponse');
+    
+    component.getAllActivitiesBoundaries();
+  
+    expect(spy).not.toHaveBeenCalled();
+  });
+  
+  
+  
+  it('should sort projectFiscals by fiscalYear in handleFiscalsResponse', () => {
+    const mockData = {
+      _embedded: {
+        projectFiscals: [
+          { fiscalYear: 2025, projectPlanFiscalGuid: 'f3' },
+          { fiscalYear: 2023, projectPlanFiscalGuid: 'f1' },
+          { fiscalYear: 2024, projectPlanFiscalGuid: 'f2' }
+        ]
+      }
+    };
+  
+    const service = TestBed.inject(ProjectService) as unknown as MockProjectService;
+    service.getFiscalActivities.and.callFake((_guid: string, fiscalGuid: string) => {
+      return of({ _embedded: { activities: [] } });
+    });
+  
+    (component as any).handleFiscalsResponse(mockData);
+  
+    expect(component['projectFiscals'].map((f: any) => f.fiscalYear)).toEqual([2023, 2024, 2025]);
+  });
+  
+  it('should skip items without geometry in plotProjectBoundary', () => {
+    (component as any).map = mockMapInstance;
+  
+    const boundaries = [
+      { boundaryGeometry: null },
+      { noGeometry: true },
+      {}
+    ];
+  
+    component.plotProjectBoundary(boundaries);
+  
+    expect(L.geoJSON).not.toHaveBeenCalled();
+  });
+  
+  it('should plot project boundaries inside plotActivityBoundariesOnMap', () => {
+    const mockFitBounds = jasmine.createSpy('fitBounds');
+    const mockRemove = jasmine.createSpy('remove');
+
+    (component as any).map = { fitBounds: mockFitBounds, remove: mockRemove };
+    
+    const activityBoundaries = [
+      {
+        fiscalYear: component.currentFiscalYear,
+        boundary: [
+          { geometry: { type: 'Polygon', coordinates: [] } }
+        ]
+      }
+    ];
+  
+    component['projectBoundary'] = [
+      { boundaryGeometry: { type: 'Polygon', coordinates: [] } }
+    ];
+  
+    component.plotActivityBoundariesOnMap(activityBoundaries);
+  
+    expect(L.geoJSON).toHaveBeenCalledWith(
+      jasmine.objectContaining({ type: 'Polygon' }),
+      jasmine.objectContaining({
+        style: jasmine.objectContaining({ color: '#3f3f3f' })
+      })
+    );
+  });
+  
 
 });
 
