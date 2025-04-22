@@ -146,6 +146,10 @@ jobs:
           docker pull $IMAGE
           echo "GDB_EXTRACTOR_IMAGE=$(docker inspect --format='{{index .RepoDigests 0}}' $IMAGE)" >> $GITHUB_OUTPUT
 
+      - name: Echo digest
+        run: |
+         echo "GDB Digest: ${{ steps.getDigestGDB.outputs.GDB_EXTRACTOR_IMAGE }}"
+
       - uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: ${{ env.TF_VERSION }}
