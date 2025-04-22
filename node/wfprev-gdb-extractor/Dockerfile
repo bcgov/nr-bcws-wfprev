@@ -15,4 +15,4 @@ RUN npm install
 COPY . .
 
 # Set the Lambda function entry point
-CMD ["node", "lambda.js"]
+CMD ["lambda.handler"]
