@@ -37,3 +37,46 @@ resource "aws_lambda_function" "gdb_processor" {
     }
   }
 }
+
+# API Gateway
+resource "aws_apigatewayv2_api" "http_api" {
+  name          = "wfprev-${var.TARGET_ENV}-gdb-api"
+  protocol_type = "HTTP"
+}
+
+# Integration
+resource "aws_apigatewayv2_integration" "lambda_integration" {
+  api_id                 = aws_apigatewayv2_api.http_api.id
+  integration_type       = "AWS_PROXY"
+  integration_uri        = aws_lambda_function.gdb_processor.invoke_arn
+  integration_method     = "POST"
+  payload_format_version = "2.0"
+}
+
+# Route
+resource "aws_apigatewayv2_route" "upload_route" {
+  api_id    = aws_apigatewayv2_api.http_api.id
+  route_key = "POST /upload"
+  target    = "integrations/${aws_apigatewayv2_integration.lambda_integration.id}"
+}
+
+# Deployment Stage
+resource "aws_apigatewayv2_stage" "default" {
+  api_id      = aws_apigatewayv2_api.http_api.id
+  name        = "$default"
+  auto_deploy = true
+}
+
+# Lambda Permission
+resource "aws_lambda_permission" "allow_apigw" {
+  statement_id  = "AllowAPIGatewayInvoke"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.gdb_processor.function_name
+  principal     = "apigateway.amazonaws.com"
+  source_arn    = "${aws_apigatewayv2_api.http_api.execution_arn}/*/*"
+}
+
+# Output
+output "api_gateway_url" {
+  value = "${aws_apigatewayv2_api.http_api.api_endpoint}/upload"
+}
