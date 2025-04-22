@@ -22,7 +22,7 @@ resource "aws_iam_role_policy_attachment" "lambda_basic" {
 }
 
 resource "aws_lambda_function" "gdb_processor" {
-  function_name = "wfprev-${var.TARGET_ENV}"
+  function_name = "wfprev-gdb-${var.TARGET_ENV}"
   role          = aws_iam_role.lambda_role.arn
   package_type  = "Image"
 
