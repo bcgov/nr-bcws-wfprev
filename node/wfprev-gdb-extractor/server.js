@@ -8,7 +8,7 @@ const cors = require('cors');
 const rateLimit = require('express-rate-limit');
 
 const app = express();
-app.set('trust proxy', true);
+app.set('trust proxy', 1);
 
 // Hide X-Powered-By header to prevent Express version disclosure
 app.disable('x-powered-by');
@@ -19,6 +19,10 @@ const limiter = rateLimit({
 });
 
 app.use(limiter);
+app.use((req, res, next) => {
+    console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
+    next();
+  });
 app.use(fileUpload());
 
 const uploadDir = '/tmp/uploads';
