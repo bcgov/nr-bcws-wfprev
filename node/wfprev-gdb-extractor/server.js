@@ -20,8 +20,11 @@ const limiter = rateLimit({
 app.use(limiter);
 app.use(fileUpload());
 
-// Ensure 'uploads' directory exists
-if (!fs.existsSync("uploads")) fs.mkdirSync("uploads");
+const uploadDir = '/tmp/uploads';
+
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir);
+}
 
 // Function to validate file path (prevent zip slip vulnerability)
 function isValidPath(filePath, destinationPath) {
