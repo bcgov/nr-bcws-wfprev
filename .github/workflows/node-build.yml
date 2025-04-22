@@ -103,3 +103,32 @@ jobs:
           docker pull $IMAGE:${{ github.sha }}
           docker tag $IMAGE:${{ github.sha }} $IMAGE:latest
           docker push $IMAGE:latest
+
+          - name: Configure AWS Credentials
+          uses: aws-actions/configure-aws-credentials@v2
+          with:
+            role-to-assume: ${{ secrets.AWS_TERRAFORM_ROLE_TO_ASSUME }}
+            role-session-name: wfprev-terraform-s3
+            aws-region: ca-central-1
+  
+    - name: Create ECR Repository for GDB Extractor (if not exists)
+      run: |
+        aws ecr describe-repositories --repository-names nr-bcws-wfprev-wfprev-gdb-extractor --region ca-central-1 || \
+        aws ecr create-repository --repository-name nr-bcws-wfprev-wfprev-gdb-extractor --region ca-central-1
+
+    - name: Get AWS Account ID
+      id: getAwsAccount
+      run: |
+        echo "AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)" >> $GITHUB_ENV
+
+    - name: Login to Amazon ECR
+      run: |
+        aws ecr get-login-password --region ca-central-1 | docker login --username AWS --password-stdin ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.ca-central-1.amazonaws.com
+
+    - name: Pull, Tag, and Push GDB Extractor Docker image to ECR
+      id: pushGdbExtractorImage
+      run: |
+        docker pull ${{vars.REPOSITORY_HOST}}/${{ github.repository_owner }}/nr-bcws-wfprev-wfprev-gdb-extractor:latest
+        docker tag ${{vars.REPOSITORY_HOST}}/${{ github.repository_owner }}/nr-bcws-wfprev-wfprev-gdb-extractor:latest ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.ca-central-1.amazonaws.com/nr-bcws-wfprev-wfprev-gdb-extractor:latest
+        docker push ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.ca-central-1.amazonaws.com/nr-bcws-wfprev-wfprev-gdb-extractor:latest
+        echo "GDB_EXTRACTOR_IMAGE=${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.ca-central-1.amazonaws.com/nr-bcws-wfprev-wfprev-gdb-extractor:latest" >> $GITHUB_ENV
