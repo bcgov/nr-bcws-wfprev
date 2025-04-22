@@ -100,13 +100,6 @@ jobs:
           export IMAGE='${{vars.REPOSITORY_HOST}}/${{ github.repository }}-wfprev-api:${{ inputs.IMAGE_TAG }}'
           docker pull $IMAGE
           echo "IMAGE_API_BY_DIGEST=$(docker inspect --format='{{index .RepoDigests 0}}' $IMAGE)" >> $GITHUB_OUTPUT
-
-      - name: Get digest of GDB extractor docker image
-        id: getDigestGDB
-        run: |
-          IMAGE="183631341627.dkr.ecr.ca-central-1.amazonaws.com/nr-bcws-wfprev-wfprev-gdb-extractor:${{ inputs.IMAGE_TAG }}"
-          docker pull $IMAGE
-          echo "GDB_EXTRACTOR_IMAGE=$(docker inspect --format='{{index .RepoDigests 0}}' $IMAGE)" >> $GITHUB_OUTPUT
         
       # No image for UI components anymore
       # - name: Get digest of UI docker image
@@ -140,6 +133,13 @@ jobs:
           role-to-assume: ${{ secrets.AWS_TERRAFORM_ROLE_TO_ASSUME }}
           role-session-name: wfprev-terraform-s3
           aws-region: ca-central-1
+
+      - name: Get digest of GDB extractor docker image
+        id: getDigestGDB
+        run: |
+          IMAGE="183631341627.dkr.ecr.ca-central-1.amazonaws.com/nr-bcws-wfprev-wfprev-gdb-extractor:${{ inputs.IMAGE_TAG }}"
+          docker pull $IMAGE
+          echo "GDB_EXTRACTOR_IMAGE=$(docker inspect --format='{{index .RepoDigests 0}}' $IMAGE)" >> $GITHUB_OUTPUT
 
       - uses: hashicorp/setup-terraform@v2
         with:
