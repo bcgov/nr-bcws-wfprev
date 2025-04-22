@@ -20,6 +20,9 @@ on:
         required: true
         type: string
         default: apply
+      GDB_EXTRACTOR_IMAGE:
+        required: true
+        type: string
   workflow_dispatch:
     inputs:
       DEFAULT_APPLICATION_ENVIRONMENT:

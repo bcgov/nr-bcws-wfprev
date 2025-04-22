@@ -25,7 +25,13 @@ on:
         description: Additional tag to add to built images
 
 jobs: 
-    
+  node-build:
+    uses: ./.github/workflows/node-build.yml
+    secrets: inherit
+    with:
+      COMPONENT_NAME: wfprev-gdb-extractor
+      TAG: latest
+
   wfprev-api:
     uses: ./.github/workflows/mvn-build.yml
     secrets: inherit
@@ -42,12 +48,13 @@ jobs:
       
   terragrunt-deploy-dev:
     uses: ./.github/workflows/terragrunt-deploy.yml
-    needs: [wfprev-api, liquibase-build]
+    needs: [node-build, wfprev-api, liquibase-build]
     with:
       DEFAULT_APPLICATION_ENVIRONMENT: dev
       IMAGE_TAG: latest
       RUN_LIQUIBASE: true
       COMMAND: apply
+      GDB_EXTRACTOR_IMAGE: ${{ needs.node-build.outputs.gdb_digest }}
     secrets: inherit
 
   wfprev-ui:

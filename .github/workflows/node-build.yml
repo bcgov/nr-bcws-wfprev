@@ -5,6 +5,14 @@ on:
         required: true
         type: string
         default: dev
+  workflow_call:
+    inputs:
+      COMPONENT_NAME:
+        type: string
+        required: true
+      TAG:
+        required: false
+        type: string
 
 permissions:
   id-token: write   
@@ -130,3 +138,17 @@ jobs:
         docker tag ${{vars.REPOSITORY_HOST}}/${{ github.repository_owner }}/nr-bcws-wfprev-wfprev-gdb-extractor:latest ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.ca-central-1.amazonaws.com/nr-bcws-wfprev-wfprev-gdb-extractor:latest
         docker push ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.ca-central-1.amazonaws.com/nr-bcws-wfprev-wfprev-gdb-extractor:latest
         echo "GDB_EXTRACTOR_IMAGE=${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.ca-central-1.amazonaws.com/nr-bcws-wfprev-wfprev-gdb-extractor:latest" >> $GITHUB_ENV
+
+    - name: Get Digest of GDB Extractor ECR image
+      id: getGdbDigest
+      run: |
+        DIGEST=$(aws ecr describe-images \
+          --repository-name nr-bcws-wfprev-wfprev-gdb-extractor \
+          --image-ids imageTag=latest \
+          --query 'imageDetails[0].imageDigest' \
+          --output text)
+        echo "GDB_EXTRACTOR_IMAGE=${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.ca-central-1.amazonaws.com/nr-bcws-wfprev-wfprev-gdb-extractor@${DIGEST}" >> $GITHUB_ENV
+        echo "digest_output=${{ env.GDB_EXTRACTOR_IMAGE }}" >> $GITHUB_OUTPUT
+        
+    outputs:
+          gdb_digest: ${{ steps.getGdbDigest.outputs.digest_output }}
