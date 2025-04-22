@@ -9,11 +9,12 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
-import { Observable, of } from 'rxjs';
+import { Observable, of, throwError } from 'rxjs';
 import { ProjectService } from 'src/app/services/project-services';
 import { CodeTableServices } from 'src/app/services/code-table-services';
 import { fakeAsync, tick } from '@angular/core/testing';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 describe('ActivitiesComponent', () => {
   let component: ActivitiesComponent;
@@ -24,7 +25,15 @@ describe('ActivitiesComponent', () => {
   let mockDialog: jasmine.SpyObj<MatDialog>;
 
   beforeEach(async () => {
-    mockProjectService = jasmine.createSpyObj('ProjectService', ['getFiscalActivities', 'updateFiscalActivities', 'createFiscalActivity']);
+    mockProjectService = jasmine.createSpyObj('ProjectService', [
+      'getFiscalActivities',
+      'updateFiscalActivities',
+      'createFiscalActivity',
+      'getProjectByProjectGuid'
+    ]);
+  
+    mockProjectService.getProjectByProjectGuid.and.returnValue(of({ projectTypeCode: { projectTypeCode: 'STANDARD' } }));
+  
     mockCodeTableService = jasmine.createSpyObj('CodeTableServices', ['fetchCodeTable']);
     mockSnackbarService = jasmine.createSpyObj('MatSnackBar', ['open']);
     mockDialog = jasmine.createSpyObj('MatDialog', ['open']);
@@ -40,7 +49,8 @@ describe('ActivitiesComponent', () => {
         MatDatepickerModule,
         MatNativeDateModule,
         MatInputModule,
-        BrowserAnimationsModule
+        BrowserAnimationsModule,
+        HttpClientTestingModule
       ],
       providers: [
         FormBuilder,
@@ -620,7 +630,54 @@ describe('ActivitiesComponent', () => {
     expect(component.isNewActivityBeingAdded).toBeFalse();
     expect(mockDialog.open).toHaveBeenCalled();
   });
+
+  it('should exit early in getActivities if fiscalGuid is missing', () => {
+    component.fiscalGuid = '';
+    component.getActivities();
+    expect(mockProjectService.getFiscalActivities).not.toHaveBeenCalled();
+  });
   
+  it('should exit early in getActivities if projectGuid is missing', () => {
+    component.fiscalGuid = 'test-fiscal-guid';
+    const route = TestBed.inject(ActivatedRoute);
+    spyOn(route.snapshot.queryParamMap, 'get').and.returnValue(null); // simulate missing projectGuid
+    component.getActivities();
+    expect(mockProjectService.getFiscalActivities).not.toHaveBeenCalled();
+  });
+  
+  it('should handle empty activities array gracefully', () => {
+    component.fiscalGuid = 'test-fiscal-guid';
+    spyOn(TestBed.inject(ActivatedRoute).snapshot.queryParamMap, 'get').and.returnValue('project-guid');
+    mockProjectService.getFiscalActivities.and.returnValue(of({ _embedded: { activities: [] } }));
+    component.getActivities();
+    expect(component.activities).toEqual([]);
+  });
+  
+  it('should call callback after fetching activities', () => {
+    component.fiscalGuid = 'test-fiscal-guid';
+    spyOn(TestBed.inject(ActivatedRoute).snapshot.queryParamMap, 'get').and.returnValue('project-guid');
+    const callback = jasmine.createSpy('callback');
+    mockProjectService.getFiscalActivities.and.returnValue(of({
+      _embedded: { activities: [{ activityName: 'B' }, { activityName: 'A' }] }
+    }));
+    component.getActivities(callback);
+    expect(callback).toHaveBeenCalled();
+    expect(component.activities[0].activityName).toBe('A');
+  });
+  
+  it('should handle error and show snackbar when getFiscalActivities fails', () => {
+    component.fiscalGuid = 'test-fiscal-guid';
+    spyOn(TestBed.inject(ActivatedRoute).snapshot.queryParamMap, 'get').and.returnValue('project-guid');
+    spyOn(console, 'error');
+    mockProjectService.getFiscalActivities.and.returnValue(throwError(() => new Error('API failure')));
+
+    component.getActivities();
+    expect(mockSnackbarService.open).toHaveBeenCalledWith(
+      'Failed to load activities. Please try again later.',
+      'OK',
+      { duration: 5000, panelClass: 'snackbar-error' }
+    );
+  });
   
 });
 

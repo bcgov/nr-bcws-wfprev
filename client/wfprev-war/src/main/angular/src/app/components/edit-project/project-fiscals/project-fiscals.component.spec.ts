@@ -469,4 +469,21 @@ describe('ProjectFiscalsComponent', () => {
     expect(component.ancillaryFundingSourceCode).toEqual([]);
   });
 
+  it('should refresh boundaries on map when onBoundariesChanged is called', () => {
+    component.fiscalMapComponent = {
+      getAllActivitiesBoundaries: jasmine.createSpy('getAllActivitiesBoundaries')
+    } as any;
+  
+    component.onBoundariesChanged();
+  
+    expect(component.fiscalMapComponent.getAllActivitiesBoundaries).toHaveBeenCalled();
+  });
+
+  it('should update selectedTabIndex and currentFiscalGuid on tab change', () => {
+    const updateSpy = spyOn(component, 'updateCurrentFiscalGuid');
+    component.onTabChange(2);
+  
+    expect(component.selectedTabIndex).toBe(2);
+    expect(updateSpy).toHaveBeenCalled();
+  });
 });

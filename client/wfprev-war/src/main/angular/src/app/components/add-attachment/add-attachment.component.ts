@@ -25,14 +25,17 @@ export class AddAttachmentComponent {
     private readonly dialogRef: MatDialogRef<AddAttachmentComponent>,
     @Inject(MAT_DIALOG_DATA) public data: { indicator: string; name: string }
   ) {
-    // only show Gross Project Area Boundary as a dropdown option if project boundary is being updated
+    // For project level, only show Gross Project Area Boundary as a dropdown option if project boundary is being updated
+    // We might need to change the logic here when we start uploading non-geospatial files.
     const isProjectFiles = data.indicator === 'project-files';
-
-    this.attachmentTypes = isProjectFiles
-      ? ['Gross Project Area Boundary']
-      : ['Gross Project Area Boundary', 'Other'];
-
-    this.attachmentType = isProjectFiles ? 'Gross Project Area Boundary' : '';
+    const isActivityFiles = data.indicator === 'activity-files'
+    if (isProjectFiles) {
+      this.attachmentTypes = ['Gross Project Area Boundary'];
+      this.attachmentType = 'Gross Project Area Boundary';
+    } else if (isActivityFiles) {
+      this.attachmentTypes = ['Activity Polygon', 'Other'];
+      this.attachmentType = 'Activity Polygon'; 
+    }
   }
 
   onFileSelected(event: any): void {
