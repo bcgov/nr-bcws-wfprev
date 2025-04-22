@@ -142,7 +142,7 @@ jobs:
       - name: Get digest of GDB extractor docker image
         id: getDigestGDB
         run: |
-          IMAGE="183631341627.dkr.ecr.ca-central-1.amazonaws.com/nr-bcws-wfprev-wfprev-gdb-extractor:${{ inputs.IMAGE_TAG }}"
+          IMAGE="183631341627.dkr.ecr.ca-central-1.amazonaws.com/nr-bcws-wfprev-wfprev-gdb-extractor:latest"
           docker pull $IMAGE
           echo "GDB_EXTRACTOR_IMAGE=$(docker inspect --format='{{index .RepoDigests 0}}' $IMAGE)" >> $GITHUB_OUTPUT
 
