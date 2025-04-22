@@ -101,6 +101,13 @@ jobs:
           docker pull $IMAGE
           echo "IMAGE_API_BY_DIGEST=$(docker inspect --format='{{index .RepoDigests 0}}' $IMAGE)" >> $GITHUB_OUTPUT
 
+      - name: Get digest of GDB extractor docker image
+        id: getDigestGDB
+        run: |
+          IMAGE="183631341627.dkr.ecr.ca-central-1.amazonaws.com/nr-bcws-wfprev-wfprev-gdb-extractor:${{ inputs.IMAGE_TAG }}"
+          docker pull $IMAGE
+          echo "GDB_EXTRACTOR_IMAGE=$(docker inspect --format='{{index .RepoDigests 0}}' $IMAGE)" >> $GITHUB_OUTPUT
+        
       # No image for UI components anymore
       # - name: Get digest of UI docker image
       #   id: getDigestUI
@@ -185,7 +192,7 @@ jobs:
           DB_INSTANCE_TYPE: ${{vars.DB_INSTANCE_TYPE}}
 
           # GDB Extractor Lambda Image
-          GDB_EXTRACTOR_IMAGE: ${{ env.GDB_EXTRACTOR_IMAGE }}
+          WFPREV_GDB_EXTRACTOR_DIGEST: ${{ steps.getDigestGDB.outputs.GDB_EXTRACTOR_IMAGE }}
 
           #liquibase
           COMMAND: ${{ steps.liquibaseCommand.outputs.LIQUIBASE_COMMAND }}
