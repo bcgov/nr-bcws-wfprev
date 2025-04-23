@@ -39,6 +39,7 @@ import { FiscalMapComponent } from 'src/app/components/edit-project/fiscal-map/f
 })
 export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  {
   @ViewChild(ActivitiesComponent) activitiesComponent!: ActivitiesComponent;
+  @ViewChild('fiscalMapRef') fiscalMapComponent!: FiscalMapComponent;
 
   projectGuid = '';
   projectFiscals: any[] = [];
@@ -398,6 +399,12 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  
   
   isUndeletable(form: any): boolean {
     return !!form?.value?.isApprovedInd;
+  }
+
+  onBoundariesChanged(): void {
+    if (this.fiscalMapComponent) {
+      this.fiscalMapComponent.getAllActivitiesBoundaries(); // refresh boundaries on map
+    }
   }
 }
 
