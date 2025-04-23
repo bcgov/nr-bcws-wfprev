@@ -1,7 +1,13 @@
 const awsServerlessExpress = require('aws-serverless-express');
 const { app } = require('./server');
 
-const server = awsServerlessExpress.createServer(app);
+const binaryMimeTypes = [
+  'multipart/form-data',
+  'application/zip',
+  'application/octet-stream'
+];
+
+const server = awsServerlessExpress.createServer(app, null, binaryMimeTypes);
 
 exports.handler = (event, context) => {
   console.log("=== Incoming Lambda Event ===");
@@ -9,7 +15,7 @@ exports.handler = (event, context) => {
   console.log("Raw Path:", event.rawPath || event.path);
   console.log("Headers:", JSON.stringify(event.headers, null, 2));
   console.log("Is Base64 Encoded:", event.isBase64Encoded);
-  console.log("Body (truncated):", event.body?.slice(0, 300)); // avoid spamming logs
+  console.log("Body (truncated):", event.body?.slice(0, 300));
   console.log("============================");
 
   return awsServerlessExpress.proxy(server, event, context);
