@@ -1280,5 +1280,33 @@
     "allDeclaredFields": true,
     "allPublicMethods": true,
     "allDeclaredConstructors": true
+  },
+  {
+    "name": "software.amazon.awssdk.services.lambda.LambdaClient",
+    "allDeclaredMethods": true,
+    "allPublicMethods": true
+  },
+  {
+    "name": "software.amazon.awssdk.services.lambda.model.InvokeRequest",
+    "allDeclaredConstructors": true,
+    "allPublicMethods": true,
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "software.amazon.awssdk.services.lambda.model.InvokeResponse",
+    "allDeclaredConstructors": true,
+    "allPublicMethods": true,
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "software.amazon.awssdk.core.SdkBytes",
+    "allDeclaredConstructors": true,
+    "allPublicMethods": true,
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "software.amazon.awssdk.core.exception.SdkException",
+    "allDeclaredConstructors": true,
+    "allPublicMethods": true
   }
 ]
