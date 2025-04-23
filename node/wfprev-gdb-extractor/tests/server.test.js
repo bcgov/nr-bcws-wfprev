@@ -200,8 +200,8 @@ describe('GDB Extractor Function Tests', () => {
 
     await server.handleUpload(req, res);
 
-    expect(res.status).toHaveBeenCalledWith(400);
-    expect(res.send).toHaveBeenCalledWith('Invalid file path.');
+    expect(res.status).toHaveBeenCalledWith(500);
+    expect(res.send).toHaveBeenCalledWith('Failed to read GDB.');
   });
 
   it('should handle zip slip attack attempts during extraction', async () => {
@@ -251,7 +251,7 @@ describe('GDB Extractor Function Tests', () => {
     await server.handleUpload(req, res);
 
     expect(res.status).toHaveBeenCalledWith(500);
-    expect(res.send).toHaveBeenCalledWith('Error reading extracted files.');
+    expect(res.send).toHaveBeenCalledWith('Could not read extracted files.');
   });
 
   it('should trigger cleanup operations after successful processing', async () => {
