@@ -9,7 +9,7 @@ const binaryMimeTypes = [
 
 const server = awsServerlessExpress.createServer(app, null, binaryMimeTypes);
 
-exports.handler = async (event, context) => {
+exports.handler = (event, context) => {
   console.log("=== Incoming Lambda Event ===");
   console.log("HTTP Method:", event.requestContext?.http?.method);
   console.log("Raw Path:", event.rawPath);
