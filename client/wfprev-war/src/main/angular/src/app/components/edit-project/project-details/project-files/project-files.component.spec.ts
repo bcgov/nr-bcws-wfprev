@@ -99,6 +99,16 @@ describe('ProjectFilesComponent', () => {
       component.ngOnInit();
       expect(component.loadProjectAttachments).toHaveBeenCalled();
     });
+    it('should call loadActivityAttachments when activityGuid and fiscalGuid are present', () => {
+      component.activityGuid = 'activity-guid';
+      component.fiscalGuid = 'fiscal-guid';
+    
+      spyOn(component, 'loadActivityAttachments');
+    
+      component.ngOnInit();
+    
+      expect(component.loadActivityAttachments).toHaveBeenCalled();
+    });
   });
 
   describe('loadProjectAttachments', () => {
@@ -320,6 +330,24 @@ describe('ProjectFilesComponent', () => {
       expect(console.log).toHaveBeenCalledWith('Failed to upload attachment: ', jasmine.any(Error));
     });
     
+    it('should call finishWithoutGeometry if type is "Other"', async () => {
+      const mockFile = new File(['test'], 'test-file.txt', { type: 'text/plain' });
+      const response = { fileId: 'test-file-id' };
+      const uploadResponse = { uploadedByUserId: 'tester' };
+    
+      component.projectGuid = 'project-guid';
+      component.fiscalGuid = 'fiscal-guid';
+      component.activityGuid = 'activity-guid';
+    
+      spyOn(component as any, 'finishWithoutGeometry');
+      mockAttachmentService.createActivityAttachment.and.returnValue(of(uploadResponse));
+    
+      await component.uploadAttachment(mockFile, response, 'Other');
+    
+      expect(mockAttachmentService.createActivityAttachment).toHaveBeenCalled();
+      expect(component.uploadedBy).toBe('tester');
+      expect(component.finishWithoutGeometry).toHaveBeenCalled();
+    });
   });
 
   describe('updateProjectBoundary', () => {
