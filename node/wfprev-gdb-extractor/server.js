@@ -4,195 +4,163 @@ const gdal = require("gdal-async");
 const fs = require("fs");
 const path = require("path");
 const extract = require("extract-zip");
-const cors = require('cors');
-const rateLimit = require('express-rate-limit');
+const cors = require("cors");
+const rateLimit = require("express-rate-limit");
+const awsServerlessExpressMiddleware = require("aws-serverless-express/middleware");
 
 const app = express();
-app.set('trust proxy', 1);
+app.set("trust proxy", 1);
+app.disable("x-powered-by");
 
-// Hide X-Powered-By header to prevent Express version disclosure
-app.disable('x-powered-by');
+app.use(awsServerlessExpressMiddleware.eventContext());
 
 const limiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 100 // limit each IP to 100 requests per windowMs
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100,
 });
-
 app.use(limiter);
-app.use((req, res, next) => {
-    console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
-    next();
-  });
-app.use(fileUpload());
 
-const uploadDir = '/tmp/uploads';
-
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir);
-}
-
-// Function to validate file path (prevent zip slip vulnerability)
-function isValidPath(filePath, destinationPath) {
-    const normalizedPath = path.normalize(filePath);
-    // Check if the normalized path attempts to navigate outside the destination directory
-    return normalizedPath.startsWith(destinationPath);
-}
-
-// Extract the handler function so it can be tested independently
-async function handleUpload(req, res) {
-    if (!req.files || !req.files.file) {
-        return res.status(400).send("No file uploaded.");
-    }
-
-    // Validate file extension
-    const fileName = req.files.file.name;
-    if (!fileName.toLowerCase().endsWith('.zip')) {
-        return res.status(400).send("Only ZIP files are allowed.");
-    }
-
-    let zipPath = path.join(__dirname, "uploads", fileName);
-    const unzipPath = path.resolve(__dirname, "uploads", path.basename(fileName, '.zip'));
-
-    // Validate zipPath to ensure it is within the uploads directory
-    zipPath = path.resolve(zipPath);
-    if (!zipPath.startsWith(path.resolve(__dirname, "uploads"))) {
-        return res.status(400).send("Invalid file path.");
-    }
-    
-    await req.files.file.mv(zipPath);
-
-    try {
-        // Use onEntry callback to validate each file path before extraction
-        await extract(zipPath, { 
-            dir: unzipPath,
-            onEntry: (entry) => {
-                const destPath = path.join(unzipPath, entry.fileName);
-                // Validate path to prevent zip slip attack
-                if (!isValidPath(destPath, unzipPath)) {
-                    throw new Error(`Attempted zip slip attack with file: ${entry.fileName}`);
-                }
-            }
-        });
-    } catch (err) {
-        console.error("Extraction failed:", err);
-        // Clean up the zip file
-        try {
-            fs.unlinkSync(zipPath);
-        } catch (cleanupErr) {
-            console.error("Error during cleanup:", cleanupErr);
-        }
-        return res.status(500).send("Extraction failed.");
-    }
-
-    // Locate .gdb folder
-    let extractedFiles;
-    try {
-        extractedFiles = fs.readdirSync(unzipPath);
-    } catch (err) {
-        console.error("Error reading extracted files:", err);
-        return res.status(500).send("Error reading extracted files.");
-    }
-
-    const gdbFolder = extractedFiles.find(f => f.endsWith(".gdb"));
-
-    if (!gdbFolder) {
-        return res.status(400).send("No .gdb found.");
-    }
-
-    const gdbPath = path.join(unzipPath, gdbFolder);
-
-    let dataset;
-    let results = [];
-
-    try {
-        // Read GDB and extract coordinates
-        dataset = gdal.open(gdbPath);
-
-        dataset.layers.forEach((layer) => {
-            layer.features.forEach((feature) => {
-                const geom = feature.getGeometry();
-                if (geom) results.push(JSON.parse(geom.toJSON()));
-            });
-        });
-
-        // Important: Close the dataset before cleaning up
-        dataset.close();
-        dataset = null;
-
-        // Send response before cleanup
-        res.json(results);
-
-        // Clean up after response has been sent
-        setTimeout(() => {
-            try {
-                // Use the fs module to delete files one by one instead of rimraf
-                const deleteFolderRecursive = function(directoryPath) {
-                    if (fs.existsSync(directoryPath)) {
-                        fs.readdirSync(directoryPath).forEach((file) => {
-                            const curPath = path.join(directoryPath, file);
-                            if (fs.lstatSync(curPath).isDirectory()) {
-                                // Recursive
-                                deleteFolderRecursive(curPath);
-                            } else {
-                                // Delete file
-                                fs.unlinkSync(curPath);
-                            }
-                        });
-                        fs.rmdirSync(directoryPath);
-                    }
-                };
-
-                try {
-                    // Delete the zip file
-                    if (fs.existsSync(zipPath)) {
-                        fs.unlinkSync(zipPath);
-                    }
-                    
-                    // Delete the extracted directory
-                    deleteFolderRecursive(unzipPath);
-                    
-                    // Ensure uploads directory exists
-                    if (!fs.existsSync("uploads")) {
-                        fs.mkdirSync("uploads");
-                    }
-                } catch (cleanupErr) {
-                    console.error("Manual cleanup error:", cleanupErr);
-                }
-            } catch (error) {
-                console.error("Cleanup operation failed:", error);
-            }
-        }, 2000); // 2 second delay for safer cleanup
-
-    } catch (err) {
-        console.error("Error reading GDB:", err);
-        // Make sure to close the dataset if it was opened
-        if (dataset) {
-            try {
-                dataset.close();
-                dataset = null;
-            } catch (closeErr) {
-                console.error("Error closing dataset:", closeErr);
-            }
-        }
-
-        return res.status(500).send("Failed to read GDB.");
-    }
-}
-
-// TO-DO - update this to use Github secrets in WFPREV-402 terraform tasks
 app.use(cors({
-    origin: ['http://localhost:4200', 'https://wfprev-dev.nrs.gov.bc.ca', 'https://wfprev-tst.nrs.gov.bc.ca/', 'https://wfprev.nrs.gov.bc.ca']
+  origin: [
+    "http://localhost:4200",
+    "https://wfprev-dev.nrs.gov.bc.ca",
+    "https://wfprev-tst.nrs.gov.bc.ca",
+    "https://wfprev.nrs.gov.bc.ca"
+  ]
 }));
 
-// Set up route
+// Decode base64 body if necessary (Lambda -> API Gateway)
+app.use((req, res, next) => {
+  const event = req.apiGateway?.event;
+  if (event?.isBase64Encoded && event.body) {
+    const buff = Buffer.from(event.body, "base64");
+    req.body = buff;
+    req.headers["content-length"] = buff.length;
+  }
+  next();
+});
+
+app.use((req, res, next) => {
+  console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
+  next();
+});
+
+app.use(fileUpload());
+
+const uploadDir = "/tmp/uploads";
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
+
+function isValidPath(filePath, destinationPath) {
+  const normalizedPath = path.normalize(filePath);
+  return normalizedPath.startsWith(destinationPath);
+}
+
+async function handleUpload(req, res) {
+  if (!req.files || !req.files.file) {
+    return res.status(400).send("No file uploaded.");
+  }
+
+  const fileName = req.files.file.name;
+  if (!fileName.toLowerCase().endsWith(".zip")) {
+    return res.status(400).send("Only ZIP files are allowed.");
+  }
+
+  const zipPath = path.join(uploadDir, fileName);
+  const unzipPath = path.join(uploadDir, path.basename(fileName, ".zip"));
+
+  await req.files.file.mv(zipPath);
+
+  try {
+    await extract(zipPath, {
+      dir: unzipPath,
+      onEntry: (entry) => {
+        const destPath = path.join(unzipPath, entry.fileName);
+        if (!isValidPath(destPath, unzipPath)) {
+          throw new Error(`Zip slip detected: ${entry.fileName}`);
+        }
+      }
+    });
+  } catch (err) {
+    console.error("Extraction failed:", err);
+    try { fs.unlinkSync(zipPath); } catch (cleanupErr) {}
+    return res.status(500).send("Extraction failed.");
+  }
+
+  let extractedFiles;
+  try {
+    extractedFiles = fs.readdirSync(unzipPath);
+  } catch (err) {
+    console.error("Failed to read extracted dir:", err);
+    return res.status(500).send("Could not read extracted files.");
+  }
+
+  const gdbFolder = extractedFiles.find(f => f.endsWith(".gdb"));
+  if (!gdbFolder) {
+    return res.status(400).send("No .gdb found.");
+  }
+
+  const gdbPath = path.join(unzipPath, gdbFolder);
+
+  let dataset;
+  const results = [];
+
+  try {
+    dataset = gdal.open(gdbPath);
+    dataset.layers.forEach((layer) => {
+      layer.features.forEach((feature) => {
+        const geom = feature.getGeometry();
+        if (geom) results.push(JSON.parse(geom.toJSON()));
+      });
+    });
+
+    dataset.close();
+    dataset = null;
+
+    res.json(results);
+
+    // Post-response cleanup
+    setTimeout(() => {
+      try {
+        if (fs.existsSync(zipPath)) fs.unlinkSync(zipPath);
+
+        const deleteFolderRecursive = (dirPath) => {
+          if (fs.existsSync(dirPath)) {
+            fs.readdirSync(dirPath).forEach((file) => {
+              const curPath = path.join(dirPath, file);
+              if (fs.lstatSync(curPath).isDirectory()) {
+                deleteFolderRecursive(curPath);
+              } else {
+                fs.unlinkSync(curPath);
+              }
+            });
+            fs.rmdirSync(dirPath);
+          }
+        };
+        deleteFolderRecursive(unzipPath);
+      } catch (cleanupErr) {
+        console.error("Cleanup failed:", cleanupErr);
+      }
+    }, 2000);
+  } catch (err) {
+    console.error("Error reading GDB:", err);
+    if (dataset) {
+      try {
+        dataset.close();
+      } catch (_) {}
+    }
+    return res.status(500).send("Failed to read GDB.");
+  }
+}
+
 app.post("/upload", handleUpload);
 
 if (require.main === module) {
-    // Start the server only if the file is run directly, not during tests
-    const server = app.listen(3000, () => console.log("Server running on port 3000"));
+  app.listen(3000, () => console.log("Server running on port 3000"));
 }
-  
+
 module.exports = {
-    app,
-    handleUpload
-}
+  app,
+  handleUpload
+};
