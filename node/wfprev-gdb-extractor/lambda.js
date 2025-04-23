@@ -23,6 +23,17 @@ exports.handler = (event, context) => {
     // For HTTP API v2
     event.httpMethod = event.requestContext.http.method;
     event.path = event.rawPath;
+    
+    // Extract client IP address for rate limiter
+    if (event.headers && (event.headers['x-forwarded-for'] || event.headers['X-Forwarded-For'])) {
+      // Normalize header name (API Gateway might use different casing)
+      const forwardedHeader = event.headers['x-forwarded-for'] || event.headers['X-Forwarded-For'];
+      // Set the IP for express-rate-limit
+      event.ip = forwardedHeader.split(',')[0].trim();
+    } else if (event.requestContext.http.sourceIp) {
+      // Fallback to source IP
+      event.ip = event.requestContext.http.sourceIp;
+    }
   }
 
   return awsServerlessExpress.proxy(server, event, context);

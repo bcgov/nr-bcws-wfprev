@@ -4,7 +4,6 @@ const gdal = require("gdal-async");
 const fs = require("fs");
 const path = require("path");
 const extract = require("extract-zip");
-const cors = require("cors");
 const rateLimit = require("express-rate-limit");
 const awsServerlessExpressMiddleware = require("aws-serverless-express/middleware");
 
@@ -17,17 +16,28 @@ app.use(awsServerlessExpressMiddleware.eventContext());
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 100,
+  // Add a custom key generator that handles Lambda events
+  keyGenerator: (req) => {
+    // Check for IP set by Lambda handler
+    if (req.ip) return req.ip;
+    
+    // Fallback to Express standard methods
+    return req.ip || 
+           (req.headers && (req.headers['x-forwarded-for'] || req.headers['X-Forwarded-For'])) || 
+           req.connection.remoteAddress || 
+           '127.0.0.1';
+  },
+  // Skip check for health endpoints if you have any
+  skip: (req) => {
+    return req.path === '/health' || req.path === '/ping';
+  },
+  // Handle errors more gracefully
+  handler: (req, res, next, options) => {
+    console.log("Rate limit exceeded:", req.ip);
+    res.status(options.statusCode).send("Too many requests, please try again later.");
+  }
 });
 app.use(limiter);
-
-app.use(cors({
-  origin: [
-    "http://localhost:4200",
-    "https://wfprev-dev.nrs.gov.bc.ca",
-    "https://wfprev-tst.nrs.gov.bc.ca",
-    "https://wfprev.nrs.gov.bc.ca"
-  ]
-}));
 
 app.use((req, res, next) => {
   const event = req.apiGateway?.event;
