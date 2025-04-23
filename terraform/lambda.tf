@@ -76,6 +76,13 @@ resource "aws_lambda_permission" "allow_apigw" {
   source_arn    = "${aws_apigatewayv2_api.http_api.execution_arn}/*/*"
 }
 
+# catch-all debug route
+resource "aws_apigatewayv2_route" "catch_all" {
+  api_id    = aws_apigatewayv2_api.http_api.id
+  route_key = "ANY /{proxy+}"
+  target    = "integrations/${aws_apigatewayv2_integration.lambda_integration.id}"
+}
+
 # Output
 output "api_gateway_url" {
   value = "${aws_apigatewayv2_api.http_api.api_endpoint}"
