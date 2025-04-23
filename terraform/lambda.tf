@@ -78,5 +78,5 @@ resource "aws_lambda_permission" "allow_apigw" {
 
 # Output
 output "api_gateway_url" {
-  value = "${aws_apigatewayv2_api.http_api.api_endpoint}/upload"
+  value = "${aws_apigatewayv2_api.http_api.api_endpoint}"
 }
