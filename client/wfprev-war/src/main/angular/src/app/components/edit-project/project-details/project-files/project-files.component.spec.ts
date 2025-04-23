@@ -824,9 +824,9 @@ describe('ProjectFilesComponent', () => {
   
     it('should show snackbar, call loadActivityAttachments and emit event when isActivityContext is true', () => {
       component.fiscalGuid = 'fiscal-guid';
-      component.activityGuid = 'activity-guid'; // triggers activity context
+      component.activityGuid = 'activity-guid';
   
-      (component as any).finishWithoutGeometry(); // or make method public
+      (component as any).finishWithoutGeometry();
   
       expect(mockSnackbar.open).toHaveBeenCalledWith(
         'File uploaded successfully.',
@@ -840,9 +840,9 @@ describe('ProjectFilesComponent', () => {
   
     it('should show snackbar, call loadProjectAttachments and emit event when isActivityContext is false', () => {
       component.fiscalGuid = '';
-      component.activityGuid = ''; // not an activity context
+      component.activityGuid = '';
   
-      (component as any).finishWithoutGeometry(); // or make method public
+      (component as any).finishWithoutGeometry();
   
       expect(mockSnackbar.open).toHaveBeenCalledWith(
         'File uploaded successfully.',
