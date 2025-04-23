@@ -38,16 +38,6 @@ resource "aws_lambda_function" "gdb_processor" {
   }
 }
 
-resource "aws_cloudwatch_log_group" "lambda_logs" {
-  name              = "/aws/lambda/${aws_lambda_function.gdb_processor.function_name}"
-  retention_in_days = 30
-
-  lifecycle {
-    create_before_destroy = true
-    ignore_changes        = [name]
-  }
-}
-
 # # API Gateway
 # resource "aws_apigatewayv2_api" "http_api" {
 #   name          = "wfprev-${var.TARGET_ENV}-gdb-api"
