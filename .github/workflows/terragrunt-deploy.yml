@@ -137,12 +137,12 @@ jobs:
       - name: Authenticate Docker to AWS ECR
         run: |
           aws ecr get-login-password --region ca-central-1 | \
-          docker login --username AWS --password-stdin 183631341627.dkr.ecr.ca-central-1.amazonaws.com     
+          docker login --username AWS --password-stdin ${{ secrets.TARGET_AWS_ACCOUNT_ID }}.dkr.ecr.ca-central-1.amazonaws.com     
 
       - name: Get digest of GDB extractor docker image
         id: getDigestGDB
         run: |
-          IMAGE="183631341627.dkr.ecr.ca-central-1.amazonaws.com/nr-bcws-wfprev-wfprev-gdb-extractor:latest"
+          IMAGE="${{ secrets.TARGET_AWS_ACCOUNT_ID }}.dkr.ecr.ca-central-1.amazonaws.com/nr-bcws-wfprev-wfprev-gdb-extractor:latest"
           docker pull $IMAGE
           echo "GDB_EXTRACTOR_IMAGE=$(docker inspect --format='{{index .RepoDigests 0}}' $IMAGE)" >> $GITHUB_OUTPUT
 

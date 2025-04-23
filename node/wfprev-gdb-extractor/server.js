@@ -29,7 +29,6 @@ app.use(cors({
   ]
 }));
 
-// Decode base64 body if necessary (Lambda -> API Gateway)
 app.use((req, res, next) => {
   const event = req.apiGateway?.event;
   if (event?.isBase64Encoded && event.body) {
@@ -37,11 +36,6 @@ app.use((req, res, next) => {
     req.body = buff;
     req.headers["content-length"] = buff.length;
   }
-  next();
-});
-
-app.use((req, res, next) => {
-  console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
   next();
 });
 
@@ -57,6 +51,61 @@ function isValidPath(filePath, destinationPath) {
   return normalizedPath.startsWith(destinationPath);
 }
 
+async function extractAndParseGDB(zipBuffer, zipFileName = "upload.zip") {
+  const zipPath = path.join(uploadDir, zipFileName);
+  const unzipPath = path.join(uploadDir, path.basename(zipFileName, ".zip"));
+
+  fs.writeFileSync(zipPath, zipBuffer);
+
+  await extract(zipPath, {
+    dir: unzipPath,
+    onEntry: (entry) => {
+      const destPath = path.join(unzipPath, entry.fileName);
+      if (!isValidPath(destPath, unzipPath)) {
+        throw new Error(`Zip slip detected: ${entry.fileName}`);
+      }
+    }
+  });
+
+  const files = fs.readdirSync(unzipPath);
+  const gdbFolder = files.find(f => f.endsWith(".gdb"));
+  if (!gdbFolder) throw new Error("No .gdb found.");
+
+  const gdbPath = path.join(unzipPath, gdbFolder);
+  const dataset = gdal.open(gdbPath);
+  const results = [];
+
+  dataset.layers.forEach((layer) => {
+    layer.features.forEach((feature) => {
+      const geom = feature.getGeometry();
+      if (geom) results.push(JSON.parse(geom.toJSON()));
+    });
+  });
+
+  dataset.close();
+
+  // Clean up
+  try { fs.unlinkSync(zipPath); } catch (_) {}
+  try {
+    const deleteRecursive = (dir) => {
+      if (fs.existsSync(dir)) {
+        fs.readdirSync(dir).forEach((file) => {
+          const curPath = path.join(dir, file);
+          if (fs.lstatSync(curPath).isDirectory()) {
+            deleteRecursive(curPath);
+          } else {
+            fs.unlinkSync(curPath);
+          }
+        });
+        fs.rmdirSync(dir);
+      }
+    };
+    deleteRecursive(unzipPath);
+  } catch (_) {}
+
+  return results;
+}
+
 async function handleUpload(req, res) {
   if (!req.files || !req.files.file) {
     return res.status(400).send("No file uploaded.");
@@ -67,90 +116,12 @@ async function handleUpload(req, res) {
     return res.status(400).send("Only ZIP files are allowed.");
   }
 
-  const zipPath = path.join(uploadDir, fileName);
-  const unzipPath = path.join(uploadDir, path.basename(fileName, ".zip"));
-
-  await req.files.file.mv(zipPath);
-
   try {
-    await extract(zipPath, {
-      dir: unzipPath,
-      onEntry: (entry) => {
-        const destPath = path.join(unzipPath, entry.fileName);
-        if (!isValidPath(destPath, unzipPath)) {
-          throw new Error(`Zip slip detected: ${entry.fileName}`);
-        }
-      }
-    });
-  } catch (err) {
-    console.error("Extraction failed:", err);
-    try { fs.unlinkSync(zipPath); } catch (cleanupErr) {}
-    return res.status(500).send("Extraction failed.");
-  }
-
-  let extractedFiles;
-  try {
-    extractedFiles = fs.readdirSync(unzipPath);
-  } catch (err) {
-    console.error("Failed to read extracted dir:", err);
-    return res.status(500).send("Could not read extracted files.");
-  }
-
-  const gdbFolder = extractedFiles.find(f => f.endsWith(".gdb"));
-  if (!gdbFolder) {
-    return res.status(400).send("No .gdb found.");
-  }
-
-  const gdbPath = path.join(unzipPath, gdbFolder);
-
-  let dataset;
-  const results = [];
-
-  try {
-    dataset = gdal.open(gdbPath);
-    dataset.layers.forEach((layer) => {
-      layer.features.forEach((feature) => {
-        const geom = feature.getGeometry();
-        if (geom) results.push(JSON.parse(geom.toJSON()));
-      });
-    });
-
-    dataset.close();
-    dataset = null;
-
+    const results = await extractAndParseGDB(req.files.file.data, fileName);
     res.json(results);
-
-    // Post-response cleanup
-    setTimeout(() => {
-      try {
-        if (fs.existsSync(zipPath)) fs.unlinkSync(zipPath);
-
-        const deleteFolderRecursive = (dirPath) => {
-          if (fs.existsSync(dirPath)) {
-            fs.readdirSync(dirPath).forEach((file) => {
-              const curPath = path.join(dirPath, file);
-              if (fs.lstatSync(curPath).isDirectory()) {
-                deleteFolderRecursive(curPath);
-              } else {
-                fs.unlinkSync(curPath);
-              }
-            });
-            fs.rmdirSync(dirPath);
-          }
-        };
-        deleteFolderRecursive(unzipPath);
-      } catch (cleanupErr) {
-        console.error("Cleanup failed:", cleanupErr);
-      }
-    }, 2000);
   } catch (err) {
-    console.error("Error reading GDB:", err);
-    if (dataset) {
-      try {
-        dataset.close();
-      } catch (_) {}
-    }
-    return res.status(500).send("Failed to read GDB.");
+    console.error("Upload error:", err);
+    res.status(500).send(err.message || "Processing failed.");
   }
 }
 
@@ -162,5 +133,32 @@ if (require.main === module) {
 
 module.exports = {
   app,
-  handleUpload
+  handleUpload,
+};
+
+exports.handler = async (event) => {
+  try {
+    const base64Zip = event.file;
+    if (!base64Zip) {
+      return {
+        statusCode: 400,
+        body: "Missing 'file' in payload"
+      };
+    }
+
+    const buffer = Buffer.from(base64Zip, "base64");
+    const results = await extractAndParseGDB(buffer);
+
+    return {
+      statusCode: 200,
+      body: JSON.stringify(results),
+      headers: { "Content-Type": "application/json" }
+    };
+  } catch (err) {
+    console.error("Lambda handler error:", err);
+    return {
+      statusCode: 500,
+      body: "Failed to process GDB: " + err.message
+    };
+  }
 };
