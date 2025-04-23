@@ -155,7 +155,8 @@ export class ProjectFilesComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result?.file) {
-        this.uploadFile(result.file);
+        const selectedType = result.type;
+        this.uploadFile(result.file, selectedType);
       }
       if (result?.description) {
         this.attachmentDescription = result.description;
@@ -163,11 +164,11 @@ export class ProjectFilesComponent implements OnInit {
     })
   }
 
-  uploadFile(file: File): void {
+  uploadFile(file: File, type: string): void {
     this.projectService.uploadDocument({ file }).subscribe({
       next: (response) => {
         if (response) {
-          this.uploadAttachment(file, response);
+          this.uploadAttachment(file, response, type);
         }
       },
       error: () => {
@@ -179,7 +180,7 @@ export class ProjectFilesComponent implements OnInit {
     });
   }
 
-  uploadAttachment(file: File, response: any): void {
+  uploadAttachment(file: File, response: any, type: string): void {
     const fileExtension = file.name.split('.').pop()?.toLowerCase();
     if (!fileExtension) {
       this.snackbarService.open('The spatial file was not uploaded because the file format is not accepted.', 'Close', {
@@ -206,11 +207,15 @@ export class ProjectFilesComponent implements OnInit {
           if (response) {
             this.uploadedBy = response?.uploadedByUserId;
 
-            this.spatialService.extractCoordinates(file).then(response => {
-              if (response) {
-                this.updateActivityBoundary(file, response)
-              }
-            })
+            if (type === 'Other') {
+              this.finishWithoutGeometry();
+            } else{
+              this.spatialService.extractCoordinates(file).then(response => {
+                if (response) {
+                  this.updateActivityBoundary(file, response)
+                }
+              })
+            }
           }
         }
       })
@@ -233,6 +238,20 @@ export class ProjectFilesComponent implements OnInit {
           },
         });
       }
+  }
+
+  finishWithoutGeometry() {
+    this.snackbarService.open('File uploaded successfully.', 'Close', {
+      duration: 5000,
+      panelClass: 'snackbar-success',
+    });
+
+    if (this.isActivityContext) {
+      this.loadActivityAttachments();
+    } else {
+      this.loadProjectAttachments();
+    }
+    this.filesUpdated.emit();
   }
 
   updateProjectBoundary(file: File, response: Position[][][]) {

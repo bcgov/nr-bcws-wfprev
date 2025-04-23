@@ -137,7 +137,7 @@ describe('AddAttachmentComponent', () => {
   it('should return correct file types for "Other"', () => {
     component.attachmentType = 'Other';
     const result = component.getAcceptedFileTypes();
-    expect(result).toBe('.pdf,.doc,.docx,.jpg,.png');
+    expect(result).toBe('');
   });
 
   it('should return an empty string for unknown attachmentType', () => {
