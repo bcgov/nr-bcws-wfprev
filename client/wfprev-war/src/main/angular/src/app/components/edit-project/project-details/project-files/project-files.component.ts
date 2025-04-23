@@ -6,7 +6,7 @@ import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { catchError, map, throwError } from 'rxjs';
 import { AddAttachmentComponent } from 'src/app/components/add-attachment/add-attachment.component';
 import { ConfirmationDialogComponent } from 'src/app/components/confirmation-dialog/confirmation-dialog.component';
-import { ActivityBoundary, FileAttachment, Project, ProjectBoundary, ProjectFile } from 'src/app/components/models';
+import { ActivityBoundary, FileAttachment, ProjectBoundary, ProjectFile } from 'src/app/components/models';
 import { AttachmentService } from 'src/app/services/attachment-service';
 import { ProjectService } from 'src/app/services/project-services';
 import { SpatialService } from 'src/app/services/spatial-services';
@@ -38,7 +38,7 @@ export class ProjectFilesComponent implements OnInit {
     public readonly dialog: MatDialog,
     public attachmentService: AttachmentService,
     public spatialService: SpatialService,
-    private route: ActivatedRoute,
+    private readonly route: ActivatedRoute,
   ) { }
 
   messages = Messages;
@@ -119,14 +119,14 @@ export class ProjectFilesComponent implements OnInit {
 
   loadActivityAttachments(): void {
     if (!this.fiscalGuid || !this.activityGuid) return;
-    this.projectGuid = this.route.snapshot?.queryParamMap?.get('projectGuid') || '';
+    this.projectGuid = this.route.snapshot?.queryParamMap?.get('projectGuid') ?? '';
     // Find projectPlanFiscalGuid from the activityGuid
     this.attachmentService.getActivityAttachments(this.projectGuid, this.fiscalGuid, this.activityGuid).subscribe({
       next: (response) => {
         if (response?._embedded?.fileAttachment && Array.isArray(response._embedded.fileAttachment)) {
           const fileAttachments = response._embedded.fileAttachment.sort((a: FileAttachment, b: FileAttachment) => {
-            const timeA = new Date(a.uploadedByTimestamp || 0).getTime();
-            const timeB = new Date(b.uploadedByTimestamp || 0).getTime();
+            const timeA = new Date(a.uploadedByTimestamp ?? 0).getTime();
+            const timeB = new Date(b.uploadedByTimestamp ?? 0).getTime();
             return timeB - timeA; // latest first
           });
           this.projectFiles = fileAttachments;
@@ -452,7 +452,7 @@ export class ProjectFilesComponent implements OnInit {
           const url = window.URL.createObjectURL(blob);
           const link = document.createElement('a');
           link.href = url;
-          link.download = file.documentPath || 'downloaded-file'; // fallback filename
+          link.download = file.documentPath ?? 'downloaded-file'; // fallback filename
           document.body.appendChild(link);
           link.click();
           document.body.removeChild(link);
