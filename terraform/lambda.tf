@@ -38,52 +38,57 @@ resource "aws_lambda_function" "gdb_processor" {
   }
 }
 
-# API Gateway
-resource "aws_apigatewayv2_api" "http_api" {
-  name          = "wfprev-${var.TARGET_ENV}-gdb-api"
-  protocol_type = "HTTP"
+resource "aws_cloudwatch_log_group" "lambda_logs" {
+  name              = "/aws/lambda/${aws_lambda_function.gdb_processor.function_name}"
+  retention_in_days = 30
 }
 
-# Integration
-resource "aws_apigatewayv2_integration" "lambda_integration" {
-  api_id                 = aws_apigatewayv2_api.http_api.id
-  integration_type       = "AWS_PROXY"
-  integration_uri        = aws_lambda_function.gdb_processor.invoke_arn
-  integration_method     = "POST"
-  payload_format_version = "2.0"
-}
+# # API Gateway
+# resource "aws_apigatewayv2_api" "http_api" {
+#   name          = "wfprev-${var.TARGET_ENV}-gdb-api"
+#   protocol_type = "HTTP"
+# }
 
-# Route
-resource "aws_apigatewayv2_route" "upload_route" {
-  api_id    = aws_apigatewayv2_api.http_api.id
-  route_key = "POST /upload"
-  target    = "integrations/${aws_apigatewayv2_integration.lambda_integration.id}"
-}
+# # Integration
+# resource "aws_apigatewayv2_integration" "lambda_integration" {
+#   api_id                 = aws_apigatewayv2_api.http_api.id
+#   integration_type       = "AWS_PROXY"
+#   integration_uri        = aws_lambda_function.gdb_processor.invoke_arn
+#   integration_method     = "POST"
+#   payload_format_version = "2.0"
+# }
 
-# Deployment Stage
-resource "aws_apigatewayv2_stage" "default" {
-  api_id      = aws_apigatewayv2_api.http_api.id
-  name        = "$default"
-  auto_deploy = true
-}
+# # Route
+# resource "aws_apigatewayv2_route" "upload_route" {
+#   api_id    = aws_apigatewayv2_api.http_api.id
+#   route_key = "POST /upload"
+#   target    = "integrations/${aws_apigatewayv2_integration.lambda_integration.id}"
+# }
 
-# Lambda Permission
-resource "aws_lambda_permission" "allow_apigw" {
-  statement_id  = "AllowAPIGatewayInvoke"
-  action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.gdb_processor.function_name
-  principal     = "apigateway.amazonaws.com"
-  source_arn    = "${aws_apigatewayv2_api.http_api.execution_arn}/*/*"
-}
+# # Deployment Stage
+# resource "aws_apigatewayv2_stage" "default" {
+#   api_id      = aws_apigatewayv2_api.http_api.id
+#   name        = "$default"
+#   auto_deploy = true
+# }
 
-# catch-all debug route
-resource "aws_apigatewayv2_route" "catch_all" {
-  api_id    = aws_apigatewayv2_api.http_api.id
-  route_key = "ANY /{proxy+}"
-  target    = "integrations/${aws_apigatewayv2_integration.lambda_integration.id}"
-}
+# # Lambda Permission
+# resource "aws_lambda_permission" "allow_apigw" {
+#   statement_id  = "AllowAPIGatewayInvoke"
+#   action        = "lambda:InvokeFunction"
+#   function_name = aws_lambda_function.gdb_processor.function_name
+#   principal     = "apigateway.amazonaws.com"
+#   source_arn    = "${aws_apigatewayv2_api.http_api.execution_arn}/*/*"
+# }
 
-# Output
-output "api_gateway_url" {
-  value = "${aws_apigatewayv2_api.http_api.api_endpoint}"
-}
+# # catch-all debug route
+# resource "aws_apigatewayv2_route" "catch_all" {
+#   api_id    = aws_apigatewayv2_api.http_api.id
+#   route_key = "ANY /{proxy+}"
+#   target    = "integrations/${aws_apigatewayv2_integration.lambda_integration.id}"
+# }
+
+# # Output
+# output "api_gateway_url" {
+#   value = "${aws_apigatewayv2_api.http_api.api_endpoint}"
+# }
