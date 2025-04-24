@@ -79,6 +79,10 @@ resource "aws_ecs_task_definition" "wfprev_server" {
         value = var.WFPREV_BASE_URL
       },
       {
+        name  = "WFPREV_GDB_FUNCTION_NAME",
+        value = var.WFPREV_BASE_URL
+      },
+      {
         name  = "WFDM_BASE_URL",
         value = var.WFDM_BASE_URL
       },

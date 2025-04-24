@@ -25,6 +25,8 @@ spring:
           provider: bytebuddy
         show_sql: true
         format_sql: true
+  lambda:
+    gdbExtractorFunctionName: ${WFPREV_GDB_FUNCTION_NAME}
 
 logging:
   level:

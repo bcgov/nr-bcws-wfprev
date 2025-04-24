@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -35,6 +36,9 @@ import java.util.Map;
 @Slf4j
 @RequestMapping(value = "/gdb")
 public class GDBLambdaController {
+
+    @Value("${spring.lambda.gdbExtractorFunctionName}")
+    private String lambdaFunctionName;
 
     private final LambdaClient lambdaClient;
     private final ObjectMapper objectMapper;
@@ -81,7 +85,7 @@ public class GDBLambdaController {
             String jsonPayload = objectMapper.writeValueAsString(Map.of("file", base64Encoded));
 
             InvokeRequest request = InvokeRequest.builder()
-                    .functionName("wfprev-gdb-dev")
+                    .functionName(lambdaFunctionName)
                     .payload(SdkBytes.fromUtf8String(jsonPayload))
                     .build();
 
