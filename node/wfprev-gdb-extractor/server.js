@@ -6,6 +6,7 @@ const fs = require("fs");
 const path = require("path");
 const extract = require("extract-zip");
 const rateLimit = require("express-rate-limit");
+const tmp = require("tmp");
 
 const app = express();
 app.set("trust proxy", 1);
@@ -13,16 +14,10 @@ app.disable("x-powered-by");
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100
+  max: 100,
 });
 app.use(limiter);
-
 app.use(fileUpload());
-
-const uploadDir = "/tmp/uploads";
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
-}
 
 function isValidPath(filePath, destinationPath) {
   const normalizedPath = path.normalize(filePath);
@@ -30,18 +25,12 @@ function isValidPath(filePath, destinationPath) {
 }
 
 async function extractAndParseGDB(zipBuffer, zipFileName = "upload.zip") {
-  const zipPath = path.join(uploadDir, zipFileName);
-  const unzipPath = path.join(uploadDir, path.basename(zipFileName, ".zip"));
+  const tmpDir = tmp.dirSync({ unsafeCleanup: true });
+  const zipPath = path.join(tmpDir.name, zipFileName);
+  const unzipPath = path.join(tmpDir.name, path.basename(zipFileName, ".zip"));
 
-  // Ensure upload directory exists
-  if (!fs.existsSync(uploadDir)) {
-    fs.mkdirSync(uploadDir, { recursive: true });
-  }
-
-  // Write the buffer to a file
   fs.writeFileSync(zipPath, zipBuffer);
 
-  // Extract the zip file
   await extract(zipPath, {
     dir: unzipPath,
     onEntry: (entry) => {
@@ -49,15 +38,13 @@ async function extractAndParseGDB(zipBuffer, zipFileName = "upload.zip") {
       if (!isValidPath(destPath, unzipPath)) {
         throw new Error(`Zip slip detected: ${entry.fileName}`);
       }
-    }
+    },
   });
 
-  // Find the .gdb folder
   const files = fs.readdirSync(unzipPath);
-  const gdbFolder = files.find(f => f.endsWith(".gdb"));
+  const gdbFolder = files.find((f) => f.endsWith(".gdb"));
   if (!gdbFolder) throw new Error("No .gdb found.");
 
-  // Parse the GDB
   const gdbPath = path.join(unzipPath, gdbFolder);
   const dataset = gdal.open(gdbPath);
   const results = [];
@@ -71,26 +58,8 @@ async function extractAndParseGDB(zipBuffer, zipFileName = "upload.zip") {
 
   dataset.close();
 
-  // Clean up
-  try { fs.unlinkSync(zipPath); } catch (_) {}
-  try {
-    const deleteRecursive = (dir) => {
-      if (fs.existsSync(dir)) {
-        fs.readdirSync(dir).forEach((file) => {
-          const curPath = path.join(dir, file);
-          if (fs.lstatSync(curPath).isDirectory()) {
-            deleteRecursive(curPath);
-          } else {
-            fs.unlinkSync(curPath);
-          }
-        });
-        fs.rmdirSync(dir);
-      }
-    };
-    deleteRecursive(unzipPath);
-  } catch (err) {
-    console.error("Cleanup error:", err);
-  }
+  // Clean up tmp files
+  tmpDir.removeCallback();
 
   return results;
 }
@@ -100,7 +69,7 @@ async function handleUpload(req, res) {
     return res.status(400).send("No file uploaded.");
   }
 
-  const fileName = require("sanitize-filename")(path.basename(req.files.file.name));
+  const fileName = sanitizeFilename(path.basename(req.files.file.name));
   if (!fileName.toLowerCase().endsWith(".zip")) {
     return res.status(400).send("Only ZIP files are allowed.");
   }
@@ -123,5 +92,5 @@ if (require.main === module) {
 module.exports = {
   app,
   handleUpload,
-  extractAndParseGDB 
+  extractAndParseGDB,
 };

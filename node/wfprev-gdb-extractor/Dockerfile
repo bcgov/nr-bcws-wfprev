@@ -3,16 +3,15 @@ FROM public.ecr.aws/lambda/nodejs:20
 
 WORKDIR /var/task
 
-# Copy package.json files
+# Copy only the necessary files
 COPY package*.json ./
-
-# Copy the .npmrc file - simple relative path
 COPY .npmrc .npmrc
 
-RUN npm install
+RUN npm install --omit=dev --ignore-scripts
 
-# Copy the rest of the application code
-COPY . .
+# Copy only runtime-relevant source files
+COPY lambda.js .
+COPY server.js .
 
 # Set the Lambda function entry point
 CMD ["lambda.handler"]

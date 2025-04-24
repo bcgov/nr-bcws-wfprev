@@ -17,21 +17,36 @@ jest.mock("gdal-async", () => ({
 
 jest.mock("fs");
 jest.mock("extract-zip", () => jest.fn(() => Promise.resolve()));
+jest.mock("tmp", () => {
+  const path = require("path");
+  return {
+    dirSync: jest.fn(() => {
+      const name = "/mock-tmp-dir";
+      return {
+        name,
+        removeCallback: jest.fn(),
+      };
+    }),
+    fileSync: jest.fn(() => {
+      const name = "/mock-tmp-dir/mock-file.zip";
+      return {
+        name,
+        removeCallback: jest.fn(),
+      };
+    }),
+  };
+});
 
 const gdal = require("gdal-async");
+const tmp = require("tmp");
 const { app, extractAndParseGDB, handleUpload } = require("../server");
 
 describe("Server Module", () => {
   beforeEach(() => {
     jest.clearAllMocks();
 
-    fs.existsSync.mockReturnValue(true);
-    fs.mkdirSync.mockImplementation(() => {});
     fs.writeFileSync.mockImplementation(() => {});
     fs.readdirSync.mockReturnValue(["test.gdb"]);
-    fs.unlinkSync.mockImplementation(() => {});
-    fs.lstatSync.mockReturnValue({ isDirectory: () => false });
-    fs.rmdirSync.mockImplementation(() => {});
   });
 
   describe("POST /upload", () => {
