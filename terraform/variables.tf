@@ -121,6 +121,11 @@ variable "WFPREV_BASE_URL" {
   default = ""
 }
 
+variable "WFPREV_GDB_FUNCTION_NAME" {
+  type    = string
+  default = ""
+}
+
 variable "WFDM_BASE_URL" {
   type    = string
   default = ""

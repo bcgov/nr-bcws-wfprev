@@ -1,40 +1,44 @@
-const awsServerlessExpress = require('aws-serverless-express');
-const { app } = require('./server');
+const { extractAndParseGDB } = require('./server');
 
-const binaryMimeTypes = [
-  'multipart/form-data',
-  'application/zip',
-  'application/octet-stream'
-];
-
-const server = awsServerlessExpress.createServer(app, null, binaryMimeTypes);
-
-exports.handler = (event, context) => {
+exports.handler = async (event) => {
   console.log("=== Incoming Lambda Event ===");
-  console.log("HTTP Method:", event.requestContext?.http?.method);
-  console.log("Raw Path:", event.rawPath);
-  console.log("Headers:", JSON.stringify(event.headers, null, 2));
-  console.log("Is Base64 Encoded:", event.isBase64Encoded);
-  console.log("Body (truncated):", event.body?.slice(0, 300));
-  console.log("============================");
-
-  // Map the HTTP API v2 event to something Express can understand
-  if (event.requestContext && event.requestContext.http) {
-    // For HTTP API v2
-    event.httpMethod = event.requestContext.http.method;
-    event.path = event.rawPath;
-    
-    // Extract client IP address for rate limiter
-    if (event.headers && (event.headers['x-forwarded-for'] || event.headers['X-Forwarded-For'])) {
-      // Normalize header name (API Gateway might use different casing)
-      const forwardedHeader = event.headers['x-forwarded-for'] || event.headers['X-Forwarded-For'];
-      // Set the IP for express-rate-limit
-      event.ip = forwardedHeader.split(',')[0].trim();
-    } else if (event.requestContext.http.sourceIp) {
-      // Fallback to source IP
-      event.ip = event.requestContext.http.sourceIp;
+  console.log("Event payload:", JSON.stringify(event, null, 2).slice(0, 500) + "...");
+  
+  try {
+    // Check if we have the file data in the expected field
+    const base64Zip = event.file;
+    if (!base64Zip) {
+      console.error("No file data found in the event");
+      return {
+        statusCode: 400,
+        body: JSON.stringify({ error: "Missing 'file' in payload" }),
+        headers: { "Content-Type": "application/json" }
+      };
     }
-  }
 
-  return awsServerlessExpress.proxy(server, event, context);
+    // Convert base64 to buffer and process it
+    const buffer = Buffer.from(base64Zip, "base64");
+    console.log(`Received file size: ${buffer.length} bytes`);
+    
+    // Process the file
+    const results = await extractAndParseGDB(buffer);
+    console.log(`Extracted ${results.length} geometries from GDB`);
+
+    // Return the results
+    return {
+      statusCode: 200,
+      body: JSON.stringify(results),
+      headers: { "Content-Type": "application/json" }
+    };
+  } catch (err) {
+    console.error("Lambda handler error:", err);
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ 
+        error: "Failed to process GDB", 
+        message: err.message 
+      }),
+      headers: { "Content-Type": "application/json" }
+    };
+  }
 };

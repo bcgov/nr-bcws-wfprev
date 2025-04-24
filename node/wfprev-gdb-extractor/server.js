@@ -5,49 +5,16 @@ const fs = require("fs");
 const path = require("path");
 const extract = require("extract-zip");
 const rateLimit = require("express-rate-limit");
-const awsServerlessExpressMiddleware = require("aws-serverless-express/middleware");
 
 const app = express();
 app.set("trust proxy", 1);
 app.disable("x-powered-by");
 
-app.use(awsServerlessExpressMiddleware.eventContext());
-
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100,
-  // Add a custom key generator that handles Lambda events
-  keyGenerator: (req) => {
-    // Check for IP set by Lambda handler
-    if (req.ip) return req.ip;
-    
-    // Fallback to Express standard methods
-    return req.ip || 
-           (req.headers && (req.headers['x-forwarded-for'] || req.headers['X-Forwarded-For'])) || 
-           req.connection.remoteAddress || 
-           '127.0.0.1';
-  },
-  // Skip check for health endpoints if you have any
-  skip: (req) => {
-    return req.path === '/health' || req.path === '/ping';
-  },
-  // Handle errors more gracefully
-  handler: (req, res, next, options) => {
-    console.log("Rate limit exceeded:", req.ip);
-    res.status(options.statusCode).send("Too many requests, please try again later.");
-  }
+  max: 100
 });
 app.use(limiter);
-
-app.use((req, res, next) => {
-  const event = req.apiGateway?.event;
-  if (event?.isBase64Encoded && event.body) {
-    const buff = Buffer.from(event.body, "base64");
-    req.body = buff;
-    req.headers["content-length"] = buff.length;
-  }
-  next();
-});
 
 app.use(fileUpload());
 
@@ -65,8 +32,15 @@ async function extractAndParseGDB(zipBuffer, zipFileName = "upload.zip") {
   const zipPath = path.join(uploadDir, zipFileName);
   const unzipPath = path.join(uploadDir, path.basename(zipFileName, ".zip"));
 
+  // Ensure upload directory exists
+  if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir, { recursive: true });
+  }
+
+  // Write the buffer to a file
   fs.writeFileSync(zipPath, zipBuffer);
 
+  // Extract the zip file
   await extract(zipPath, {
     dir: unzipPath,
     onEntry: (entry) => {
@@ -77,10 +51,12 @@ async function extractAndParseGDB(zipBuffer, zipFileName = "upload.zip") {
     }
   });
 
+  // Find the .gdb folder
   const files = fs.readdirSync(unzipPath);
   const gdbFolder = files.find(f => f.endsWith(".gdb"));
   if (!gdbFolder) throw new Error("No .gdb found.");
 
+  // Parse the GDB
   const gdbPath = path.join(unzipPath, gdbFolder);
   const dataset = gdal.open(gdbPath);
   const results = [];
@@ -111,7 +87,9 @@ async function extractAndParseGDB(zipBuffer, zipFileName = "upload.zip") {
       }
     };
     deleteRecursive(unzipPath);
-  } catch (_) {}
+  } catch (err) {
+    console.error("Cleanup error:", err);
+  }
 
   return results;
 }
@@ -144,31 +122,5 @@ if (require.main === module) {
 module.exports = {
   app,
   handleUpload,
-};
-
-exports.handler = async (event) => {
-  try {
-    const base64Zip = event.file;
-    if (!base64Zip) {
-      return {
-        statusCode: 400,
-        body: "Missing 'file' in payload"
-      };
-    }
-
-    const buffer = Buffer.from(base64Zip, "base64");
-    const results = await extractAndParseGDB(buffer);
-
-    return {
-      statusCode: 200,
-      body: JSON.stringify(results),
-      headers: { "Content-Type": "application/json" }
-    };
-  } catch (err) {
-    console.error("Lambda handler error:", err);
-    return {
-      statusCode: 500,
-      body: "Failed to process GDB: " + err.message
-    };
-  }
+  extractAndParseGDB  // Export this function to be used by the Lambda handler
 };
