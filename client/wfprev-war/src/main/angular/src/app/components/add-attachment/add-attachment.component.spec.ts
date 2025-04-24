@@ -34,9 +34,11 @@ describe('AddAttachmentComponent', () => {
   it('should initialize with default values', () => {
     expect(component.selectedFile).toBeNull();
     expect(component.selectedFileName).toBe('');
-    expect(component.attachmentType).toBe('Gross Project Area Boundary');
+    expect(component.attachmentType).toBe('MAP');
     expect(component.description).toBe('');
-    expect(component.attachmentTypes).toEqual(['Gross Project Area Boundary']);
+    expect(component.attachmentTypes).toEqual([
+      { label: 'Gross Project Area Boundary', value: 'MAP' }
+    ]);
     expect(component.isDescriptionTooLong).toBeFalse();
   });
 
@@ -129,7 +131,7 @@ describe('AddAttachmentComponent', () => {
   });
 
   it('should return correct file types for "Gross Project Area Boundary"', () => {
-    component.attachmentType = 'Gross Project Area Boundary';
+    component.attachmentType = 'MAP';
     const result = component.getAcceptedFileTypes();
     expect(result).toBe('.kml,.kmz,.shp,.gdb,.zip');
   });
@@ -145,4 +147,47 @@ describe('AddAttachmentComponent', () => {
     const result = component.getAcceptedFileTypes();
     expect(result).toBe('');
   });
+  it('should initialize attachment types for activity-files', async () => {
+    fixture.destroy();
+    await TestBed.resetTestingModule().configureTestingModule({
+      imports: [AddAttachmentComponent],
+      providers: [
+        { provide: MatDialogRef, useValue: mockDialogRef },
+        { provide: TokenService, useValue: mockTokenService },
+        { provide: MAT_DIALOG_DATA, useValue: { indicator: 'activity-files', name: 'Activity' } },
+      ],
+    }).compileComponents();
+  
+    const newFixture = TestBed.createComponent(AddAttachmentComponent);
+    const newComponent = newFixture.componentInstance;
+    newFixture.detectChanges();
+  
+    expect(newComponent.attachmentTypes).toEqual([
+      { label: 'Activity Polygon', value: 'MAP' },
+      { label: 'Prescription', value: 'DOCUMENT' },
+      { label: 'Other', value: 'OTHER' }
+    ]);
+    expect(newComponent.attachmentType).toBe('MAP');
+  });
+
+  it('should return empty accepted file types if attachmentType is empty', () => {
+    component.attachmentType = '';
+    const result = component.getAcceptedFileTypes();
+    expect(result).toBe('');
+  });
+
+  it('should not confirm if description exceeds 150 characters', () => {
+    const mockFile = new File(['content'], 'file.txt');
+    component.selectedFile = mockFile;
+    component.selectedFileName = 'file.txt';
+    component.attachmentType = 'MAP';
+    component.description = 'a'.repeat(151); // invalid length of text
+  
+    component.onConfirm();
+  
+    expect(mockDialogRef.close).not.toHaveBeenCalled();
+  });
+  
+  
+  
 });

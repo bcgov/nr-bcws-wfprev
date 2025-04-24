@@ -195,7 +195,7 @@ export class ProjectFilesComponent implements OnInit {
       sourceObjectUniqueId: this.isActivityContext? this.activityGuid : this.projectGuid,
       documentPath: file.name,
       fileIdentifier: response.fileId,
-      attachmentContentTypeCode: { attachmentContentTypeCode: "DOCUMENT" },
+      attachmentContentTypeCode: { attachmentContentTypeCode: type },
       attachmentDescription: this.attachmentDescription,
       attachmentReadOnlyInd: false,
     };
@@ -207,7 +207,7 @@ export class ProjectFilesComponent implements OnInit {
           if (response) {
             this.uploadedBy = response?.uploadedByUserId;
 
-            if (type === 'Other') {
+            if (type === 'OTHER' || type === 'DOCUMENT') {
               this.finishWithoutGeometry();
             } else{
               this.spatialService.extractCoordinates(file).then(response => {
@@ -472,6 +472,17 @@ export class ProjectFilesComponent implements OnInit {
         duration: 5000,
         panelClass: 'snackbar-error',
       });
+    }
+  }
+
+  translateAttachmentType(description: string): string {
+    switch (description) {
+      case 'Map':
+        return this.isActivityContext ? 'Activity Polygon' : 'Project Boundary';
+      case 'Document':
+        return 'Prescription';
+      default:
+        return description;
     }
   }
 }
