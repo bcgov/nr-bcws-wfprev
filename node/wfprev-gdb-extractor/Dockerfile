@@ -1,19 +1,27 @@
 # Use AWS Lambda Node.js base image
-# NOSONAR:Dockerfile:NonRootUser
+# NOSONAR: Use of base image is required for Lambda compatibility
 FROM public.ecr.aws/lambda/nodejs:20
+
+# Explicitly create a non-root user (Sonar-friendly workaround)
+RUN addgroup app && adduser -S -G app app
 
 WORKDIR /var/task
 
-# Copy only the necessary files
+# Copy necessary files for installation
 COPY package*.json ./
 COPY .npmrc .npmrc
 
-# NOSONAR:javascript:S4721
-RUN npm install 
+# NOSONAR: Installing native dependencies like gdal-async requires scripts
+RUN --mount=type=secret,id=npm_token \
+    npm install
 
-# Copy only runtime-relevant source files
+# Copy only runtime code
 COPY server.js .
 COPY lambda.js .
+
+# Change ownership to non-root user and switch
+RUN chown -R app:app /var/task
+USER app
 
 # Set the Lambda function entry point
 CMD ["lambda.handler"]
