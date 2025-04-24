@@ -1,10 +1,11 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { ResourcesRoutes } from 'src/app/utils';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
+import { TokenService } from 'src/app/services/token.service';
 
 @Component({
   selector: 'app-app-header',
@@ -18,10 +19,11 @@ import { CommonModule } from '@angular/common';
   templateUrl: './app-header.component.html',
   styleUrls: ['./app-header.component.scss']
 })
-export class AppHeaderComponent {
+export class AppHeaderComponent implements OnInit{
 
   constructor(
     protected router: Router,
+    private readonly tokenService: TokenService
   ) {
   }
 
@@ -29,6 +31,15 @@ export class AppHeaderComponent {
   environment:string = 'DEV'
   title:string = 'PREVENTION'
   currentUser: string = 'User_1'
+
+  ngOnInit(): void {
+    this.tokenService.credentialsEmitter.subscribe(() => {
+      const name = this.tokenService.getUserFullName();
+      if (name) {
+        this.currentUser = name;
+      }
+    });
+  }
 
   onLogoutClick(){
     //clear token will be implemented after authorization piece done
