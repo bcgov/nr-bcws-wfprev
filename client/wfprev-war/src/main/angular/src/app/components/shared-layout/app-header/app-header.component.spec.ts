@@ -4,26 +4,65 @@ import { Router } from '@angular/router';
 import { By } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ResourcesRoutes } from 'src/app/utils';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { AppConfigService } from 'src/app/services/app-config.service';
+import { Subject } from 'rxjs';
+import { TokenService } from 'src/app/services/token.service';
 
 describe('AppHeaderComponent', () => {
   let component: AppHeaderComponent;
   let fixture: ComponentFixture<AppHeaderComponent>;
+  let mockTokenService: any;
+  let credentialsSubject: Subject<void>;
+
+  const mockConfig = {
+    application: {
+      lazyAuthenticate: false,
+      enableLocalStorageToken: true,
+      localStorageTokenKey: 'test-oauth',
+      allowLocalExpiredToken: false,
+      baseUrl: 'http://test.com'
+    },
+    webade: {
+      oauth2Url: 'http://oauth.test',
+      clientId: 'test-client',
+      authScopes: ['GET_PROJECT'],
+      enableCheckToken: false,
+      checkTokenUrl: 'http://check-token.test'
+    }
+  };
+  
+  const mockAppConfigService = {
+    getConfig: jasmine.createSpy('getConfig').and.returnValue(mockConfig),
+    loadConfig: jasmine.createSpy('loadConfig').and.returnValue(Promise.resolve(mockConfig))
+  };
 
   beforeEach(async () => {
+    credentialsSubject = new Subject<void>();
+  
+    mockTokenService = {
+      getUserFullName: jasmine.createSpy('getUserFullName').and.returnValue('Mocked User'),
+      credentialsEmitter: credentialsSubject
+    };
+  
     await TestBed.configureTestingModule({
       imports: [
         AppHeaderComponent,
         BrowserAnimationsModule,
+        HttpClientTestingModule
       ],
       providers: [
         { provide: Router, useValue: { navigate: jasmine.createSpy('navigate') } },
+        { provide: AppConfigService, useValue: mockAppConfigService },
+        { provide: TokenService, useValue: mockTokenService }
       ],
     }).compileComponents();
-
+  
     fixture = TestBed.createComponent(AppHeaderComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
+  
 
   it('should create the component', () => {
     expect(component).toBeTruthy();
@@ -95,4 +134,15 @@ describe('AppHeaderComponent', () => {
     const menuElement = fixture.debugElement.query(By.css('mat-menu'));
     expect(menuElement).toBeTruthy();
   });
+
+  it('should set currentUser when credentialsEmitter emits a value', () => {
+    const mockName = 'Mike David';
+    mockTokenService.getUserFullName.and.returnValue(mockName);
+  
+    component.ngOnInit();
+    credentialsSubject.next();
+  
+    expect(component.currentUser).toBe(mockName);
+  });
+  
 });
