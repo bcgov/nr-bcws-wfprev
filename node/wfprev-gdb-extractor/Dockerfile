@@ -7,7 +7,7 @@ WORKDIR /var/task
 COPY package*.json ./
 COPY .npmrc .npmrc
 
-RUN npm install --omit=dev
+RUN npm install
 
 # Copy only runtime-relevant source files
 COPY server.js .
