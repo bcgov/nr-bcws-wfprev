@@ -18,10 +18,9 @@ export class AddAttachmentComponent {
   selectedFileName: string = '';
   attachmentType: string = '';
   description: string = '';
-  attachmentTypes = [''];
+  attachmentTypes: { label: string, value: string }[] = [];
   isDescriptionTooLong: boolean = false;
   constructor(
-    private readonly tokenService: TokenService,
     private readonly dialogRef: MatDialogRef<AddAttachmentComponent>,
     @Inject(MAT_DIALOG_DATA) public data: { indicator: string; name: string }
   ) {
@@ -30,12 +29,18 @@ export class AddAttachmentComponent {
     const isProjectFiles = data.indicator === 'project-files';
     const isActivityFiles = data.indicator === 'activity-files'
     if (isProjectFiles) {
-      this.attachmentTypes = ['Gross Project Area Boundary'];
+      this.attachmentTypes = [
+        { label: 'Gross Project Area Boundary', value: 'MAP' }
+      ];
       this.attachmentType = 'Gross Project Area Boundary';
     } else if (isActivityFiles) {
-      this.attachmentTypes = ['Activity Polygon', 'Other'];
-      this.attachmentType = 'Activity Polygon'; 
+      this.attachmentTypes = [
+        { label: 'Activity Polygon', value: 'MAP' },
+        { label: 'Prescription', value: 'DOCUMENT' },
+        { label: 'Other', value: 'OTHER' }
+      ];
     }
+    this.attachmentType = 'MAP';
   }
 
   onFileSelected(event: any): void {
@@ -73,14 +78,12 @@ export class AddAttachmentComponent {
   }
 
   getAcceptedFileTypes(): string {
-    switch (this.attachmentType) {
-      case 'Gross Project Area Boundary':
-      case 'Activity Polygon':
-        return '.kml,.kmz,.shp,.gdb,.zip';
-      case 'Other':
-        return '';
-      default:
-        return '';
+    if (
+      this.attachmentType === 'MAP'
+    ) {
+      return '.kml,.kmz,.shp,.gdb,.zip';
+    } else {
+      return '';
     }
   }
 }

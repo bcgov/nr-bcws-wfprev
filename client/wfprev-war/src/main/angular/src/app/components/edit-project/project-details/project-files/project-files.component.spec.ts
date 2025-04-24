@@ -342,7 +342,7 @@ describe('ProjectFilesComponent', () => {
       spyOn(component as any, 'finishWithoutGeometry');
       mockAttachmentService.createActivityAttachment.and.returnValue(of(uploadResponse));
     
-      await component.uploadAttachment(mockFile, response, 'Other');
+      await component.uploadAttachment(mockFile, response, 'OTHER');
     
       expect(mockAttachmentService.createActivityAttachment).toHaveBeenCalled();
       expect(component.uploadedBy).toBe('tester');
@@ -882,5 +882,30 @@ describe('ProjectFilesComponent', () => {
       expect(component.filesUpdated.emit).toHaveBeenCalled();
     });
   });
+
+  describe('translateAttachmentType', () => {
+    it('should return "Activity Polygon" when description is "Map" and isActivityContext is true', () => {
+      component.activityGuid = 'activity-guid';
+      component.fiscalGuid = 'fiscal-guid';
+  
+      const result = component.translateAttachmentType('Map');
+      expect(result).toBe('Activity Polygon');
+    });
+  
+    it('should return "Project Boundary" when description is "Map" and isActivityContext is false', () => {
+      component.activityGuid = '';
+      component.fiscalGuid = '';
+  
+      const result = component.translateAttachmentType('Map');
+      expect(result).toBe('Project Boundary');
+    });
+  
+    it('should return "Prescription" when description is "Document"', () => {
+      const result = component.translateAttachmentType('Document');
+      expect(result).toBe('Prescription');
+    });
+  
+  });
+  
   
 });
