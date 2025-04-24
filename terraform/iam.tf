@@ -189,6 +189,26 @@ resource "aws_iam_role_policy_attachment" "github_actions_policy_attach" {
   policy_arn = aws_iam_policy.github_actions_policy.arn
 }
 
+resource "aws_iam_policy" "invoke_lambda" {
+  name = "wfprev-invoke-lambda"
+  description = "Allow invoking the GDB Processor Lambda"
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Action = "lambda:InvokeFunction",
+        Resource = aws_lambda_function.gdb_processor.arn
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "attach_invoke_lambda" {
+  role       = aws_iam_role.wfprev_app_container_role.name
+  policy_arn = aws_iam_policy.invoke_lambda.arn
+}
+
 # Output for the AWS Account ID
 output "github_actions_account_id" {
   value       = regex("^arn:aws:iam::([0-9]+):", aws_iam_role.github_actions_role.arn)[0]
