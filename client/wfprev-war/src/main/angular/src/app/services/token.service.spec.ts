@@ -310,4 +310,21 @@ describe('emitTokens', () => {
   });
 });
 
+describe('getUserFullName', () => {
+  it('should return full name when both first and last names are present', () => {
+    service['tokenDetails'] = { given_name: 'John', family_name: 'Doe' };
+    expect(service.getUserFullName()).toBe('John Doe');
+  });
+
+  it('should return null if both names are missing', () => {
+    service['tokenDetails'] = {};
+    expect(service.getUserFullName()).toBeNull();
+  });
+
+  it('should return null if tokenDetails is undefined', () => {
+    service['tokenDetails'] = undefined!;
+    expect(service.getUserFullName()).toBeNull();
+  });
+});
+
 });
