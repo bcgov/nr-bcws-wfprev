@@ -1,112 +1,98 @@
 const request = require("supertest");
-const path = require("path");
 const fs = require("fs");
-const mockFs = require("mock-fs");
 const extract = require("extract-zip");
+
+jest.mock("gdal-async", () => ({
+  open: jest.fn().mockReturnValue({
+    layers: [{
+      features: [{
+        getGeometry: () => ({
+          toJSON: () => '{"type":"Point","coordinates":[1,1]}'
+        })
+      }]
+    }],
+    close: jest.fn()
+  })
+}));
+
+jest.mock("fs");
+jest.mock("extract-zip", () => jest.fn(() => Promise.resolve()));
+
 const gdal = require("gdal-async");
+const { app, extractAndParseGDB, handleUpload } = require("../server");
 
-jest.mock("extract-zip");
-jest.mock("gdal-async");
+describe("Server Module", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
 
-const { app } = require("../server"); // adjust to your file location
-
-describe("POST /upload", () => {
-  afterEach(() => {
-    mockFs.restore();
-    jest.resetAllMocks();
+    fs.existsSync.mockReturnValue(true);
+    fs.mkdirSync.mockImplementation(() => {});
+    fs.writeFileSync.mockImplementation(() => {});
+    fs.readdirSync.mockReturnValue(["test.gdb"]);
+    fs.unlinkSync.mockImplementation(() => {});
+    fs.lstatSync.mockReturnValue({ isDirectory: () => false });
+    fs.rmdirSync.mockImplementation(() => {});
   });
 
-  it("should return 400 if no file is uploaded", async () => {
-    const res = await request(app).post("/upload");
-    expect(res.statusCode).toBe(400);
-    expect(res.text).toBe("No file uploaded.");
-  });
-
-  it("should return 400 if file is not a zip", async () => {
-    const res = await request(app)
-      .post("/upload")
-      .attach("file", Buffer.from("dummy content"), "data.txt");
-
-    expect(res.statusCode).toBe(400);
-    expect(res.text).toBe("Only ZIP files are allowed.");
-  });
-
-  it("should return 500 if no .gdb folder is found", async () => {
-    extract.mockImplementation(async () => {});
-    mockFs({
-      "/tmp/uploads": {
-        "test.zip": "fake zip content",
-        "test": { "not_a_gdb.txt": "data" }
-      }
+  describe("POST /upload", () => {
+    test("should return 400 for missing file", async () => {
+      const res = await request(app).post("/upload");
+      expect(res.status).toBe(400);
+      expect(res.text).toBe("No file uploaded.");
     });
 
-    const res = await request(app)
-      .post("/upload")
-      .attach("file", Buffer.from("fake zip"), "test.zip");
+    test("should return 400 for non-ZIP file", async () => {
+      const res = await request(app)
+        .post("/upload")
+        .attach("file", Buffer.from("not a zip"), "file.txt");
+      expect(res.status).toBe(400);
+      expect(res.text).toBe("Only ZIP files are allowed.");
+    });
 
-    expect(res.statusCode).toBe(500);
-    expect(res.text).toBe("No .gdb found.");
+    test("should extract GDB and return parsed GeoJSON", async () => {
+      const res = await request(app)
+        .post("/upload")
+        .attach("file", Buffer.from("mock zip"), "test.zip");
+      expect(res.status).toBe(200);
+      expect(res.body).toEqual([{ type: "Point", coordinates: [1, 1] }]);
+    });
+
+    test("should handle ZIP slip attack", async () => {
+      extract.mockImplementationOnce((_, opts) => {
+        opts.onEntry({ fileName: "../malicious.txt" });
+        return Promise.resolve();
+      });
+
+      const res = await request(app)
+        .post("/upload")
+        .attach("file", Buffer.from("mock zip"), "test.zip");
+      expect(res.status).toBe(500);
+      expect(res.text).toContain("Zip slip detected");
+    });
+
+    test("should handle extract error", async () => {
+      extract.mockImplementationOnce(() => { throw new Error("Extract failed"); });
+
+      const res = await request(app)
+        .post("/upload")
+        .attach("file", Buffer.from("zip content"), "test.zip");
+      expect(res.status).toBe(500);
+      expect(res.text).toBe("Extract failed");
+    });
   });
 
-  it("should return geometry data if GDB is valid", async () => {
-    const mockFeature = {
-      getGeometry: () => ({
-        toJSON: () => JSON.stringify({ type: "Point", coordinates: [1, 2] })
-      }),
-    };
-
-    const mockLayer = {
-      features: [mockFeature, mockFeature],
-    };
-
-    const mockDataset = {
-      layers: [mockLayer],
-      close: jest.fn(),
-    };
-
-    gdal.open.mockReturnValue(mockDataset);
-
-    extract.mockImplementation(async () => {});
-    mockFs({
-      "/tmp/uploads": {
-        "test.zip": "fake zip content",
-        "test": {
-          "sample.gdb": {}
-        }
-      }
+  describe("extractAndParseGDB", () => {
+    test("should parse GDB and return GeoJSON", async () => {
+      const buf = Buffer.from("zip content");
+      const result = await extractAndParseGDB(buf, "sample.zip");
+      expect(result).toEqual([{ type: "Point", coordinates: [1, 1] }]);
+      expect(gdal.open).toHaveBeenCalled();
     });
 
-    const res = await request(app)
-      .post("/upload")
-      .attach("file", Buffer.from("fake zip"), "test.zip");
-
-    expect(res.statusCode).toBe(200);
-    expect(res.body).toEqual([
-      { type: "Point", coordinates: [1, 2] },
-      { type: "Point", coordinates: [1, 2] }
-    ]);
-  });
-
-  it("should return 500 if GDB reading fails", async () => {
-    gdal.open.mockImplementation(() => {
-      throw new Error("GDB read error");
+    test("should throw error if .gdb folder is missing", async () => {
+      fs.readdirSync.mockReturnValueOnce([]);
+      await expect(extractAndParseGDB(Buffer.from("zip"), "sample.zip"))
+        .rejects.toThrow("No .gdb found.");
     });
-
-    extract.mockImplementation(async () => {});
-    mockFs({
-      "/tmp/uploads": {
-        "test.zip": "fake zip content",
-        "test": {
-          "sample.gdb": {}
-        }
-      }
-    });
-
-    const res = await request(app)
-      .post("/upload")
-      .attach("file", Buffer.from("fake zip"), "test.zip");
-
-    expect(res.statusCode).toBe(500);
-    expect(res.text).toBe("GDB read error");
   });
 });

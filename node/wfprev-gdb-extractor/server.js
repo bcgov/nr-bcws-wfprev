@@ -122,5 +122,5 @@ if (require.main === module) {
 module.exports = {
   app,
   handleUpload,
-  extractAndParseGDB  // Export this function to be used by the Lambda handler
+  extractAndParseGDB 
 };
