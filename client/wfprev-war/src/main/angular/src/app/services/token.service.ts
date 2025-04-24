@@ -215,6 +215,13 @@ export class TokenService {
     return this.oauth?.access_token ?? null;
   }
 
+  public getUserFullName(): string | null {
+    const first = (this.tokenDetails?.given_name ?? this.tokenDetails?.givenName) ?? '';
+    const last = (this.tokenDetails?.family_name ?? this.tokenDetails?.familyName) ?? '';
+    const fullName = `${first} ${last}`.trim();
+    return fullName || null;
+  }
+
   public doesUserHaveApplicationPermissions(scopes?: string[]): boolean {
     if (this.tokenDetails?.scope?.length > 0 && scopes?.length) {
       return scopes.every(scope => this.tokenDetails.scope.includes(scope));
