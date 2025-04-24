@@ -42,6 +42,7 @@ variable "WFPREV_LAMBDA_TIMEOUT" {
 variable "WFPREV_GDB_EXTRACTOR_DIGEST" {
   description = "Digest-based URI for the Lambda image"
   type        = string
+  default     = ""
 }
 
 variable "client_container_name" {

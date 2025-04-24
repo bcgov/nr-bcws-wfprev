@@ -45,33 +45,33 @@ describe('ProjectsListComponent', () => {
     },
   ];
 
-  let mockProjectService = {
-    fetchProjects: jasmine.createSpy('fetchProjects').and.returnValue(of({
+  let mockProjectService: jasmine.SpyObj<ProjectService>;
+  let mockCodeTableService: jasmine.SpyObj<CodeTableServices>;
+  let mockDialog: jasmine.SpyObj<MatDialog>;
+  let mockRouter: jasmine.SpyObj<Router>;
+
+  beforeEach(async () => {
+    mockProjectService = jasmine.createSpyObj('ProjectService', ['fetchProjects']);
+    mockProjectService.fetchProjects.and.returnValue(of({
       _embedded: {
         project: mockProjectList,
       },
-    })),
-  };
+    }));
 
-  let mockCodeTableService = {
-    fetchCodeTable: jasmine.createSpy('fetchCodeTable').and.callFake((name: 'programAreaCodes' | 'forestRegionCodes') => {
+    mockCodeTableService = jasmine.createSpyObj('CodeTableServices', ['fetchCodeTable']);
+    mockCodeTableService.fetchCodeTable.and.callFake((name: 'programAreaCodes' | 'forestRegionCodes') => {
       const mockData = {
         programAreaCodes: { _embedded: { programArea: [{ programAreaGuid: 'guid1', programAreaName: 'Area 1' }] } },
         forestRegionCodes: { _embedded: { forestRegionCode: [{ orgUnitId: 101, orgUnitName: 'Region 1' }] } },
       };
       return of(mockData[name]);
-    }),
-  };
+    });
 
-  let mockDialog = {
-    open: jasmine.createSpy('open').and.returnValue({
+    mockDialog = jasmine.createSpyObj('MatDialog', ['open']);
+    mockDialog.open.and.returnValue({
       afterClosed: () => of({ success: true }),
-    }),
-  };
+    } as any);
 
-  let mockRouter: jasmine.SpyObj<Router>;
-
-  beforeEach(async () => {
     mockRouter = jasmine.createSpyObj('Router', ['navigate']);
 
     // Setup Leaflet mocks
@@ -88,7 +88,6 @@ describe('ProjectsListComponent', () => {
     mockMarker = jasmine.createSpyObj('marker', ['on', 'setIcon', 'getLatLng']);
     mockPolygon = jasmine.createSpyObj('polygon', ['setStyle']);
 
-    // Setup Leaflet spies
     spyOn(L, 'markerClusterGroup').and.returnValue(mockMarkerClusterGroup);
     spyOn(L, 'marker').and.returnValue(mockMarker);
     spyOn(L, 'polygon').and.returnValue(mockPolygon);
