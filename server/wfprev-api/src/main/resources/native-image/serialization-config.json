@@ -74,5 +74,7 @@
   { "name":"org.locationtech.jts.geom.LinearRing" },
   { "name":"org.locationtech.jts.geom.Envelope" },
   { "name":"org.locationtech.jts.geom.CoordinateSequence" },
-  { "name":"org.locationtech.jts.geom.PrecisionModel" }
+  { "name":"org.locationtech.jts.geom.PrecisionModel" },
+  { "name":"software.amazon.awssdk.services.lambda.model.InvokeResponse" },
+  { "name":"software.amazon.awssdk.services.lambda.model.InvokeRequest" }
 ]

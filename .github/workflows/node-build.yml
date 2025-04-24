@@ -1,41 +1,154 @@
 on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
   workflow_dispatch:
     inputs:
       DEFAULT_APPLICATION_ENVIRONMENT:
         required: true
         type: string
         default: dev
+  workflow_call:
+    inputs:
+      COMPONENT_NAME:
+        type: string
+        required: true
+      TAG:
+        required: false
+        type: string
+
+permissions:
+  id-token: write   
+  contents: read  
+  packages: write
 
 jobs:
   build-node-server:
     runs-on: ubuntu-latest
-
     env:
-      NPMRC: ${{ secrets.NPMRC }} 
+      NPMRC: ${{ secrets.NPMRC }}
+      IMAGE_NAME: ${{ github.repository_owner }}/nr-bcws-wfprev-wfprev-gdb-extractor
+      AWS_REGION: ca-central-1 
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
-
+    
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+    
     - name: Add .npmrc file
-      working-directory: ./node/wfprev-gdb-extractor
-      run: echo -e "$NPMRC" > ~/.npmrc
-
-    - name: Debug .npmrc
-      run: cat ~/.npmrc
-
+      run: echo -e "$NPMRC" > ./node/wfprev-gdb-extractor/.npmrc  # Ensure it's in the right directory
+    
     - name: Clear cache
       working-directory: ./node/wfprev-gdb-extractor
       run: |
         rm -f package-lock.json
         rm -rf node_modules
         npm cache clean --force
-
+    
     - name: Install dependencies
       working-directory: ./node/wfprev-gdb-extractor
       run: npm install
+    
+    # Package Lambda function code
+    - name: Create Lambda deployment package
+      working-directory: ./node/wfprev-gdb-extractor
+      run: |
+        npm prune --production
+        zip -r ../../lambda-deployment.zip . -x "*.git*" "*.github*" "tests/*" "*.zip"
 
+    # Authenticate to AWS using OIDC and assume IAM role
+    - name: Configure AWS credentials (OIDC)
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        role-to-assume: arn:aws:iam::${{ secrets.TARGET_AWS_ACCOUNT_ID }}:role/github-actions-role
+        aws-region: ${{ env.AWS_REGION }}
+        role-session-name: GitHubActions
+
+    # Docker setup
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v2
+    
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+    
+    - name: Login to GitHub Container Registry
+      uses: docker/login-action@v2
+      with:
+        registry: ${{ vars.REGISTRY }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: Extract Docker metadata
+      id: meta
+      uses: docker/metadata-action@v5
+      with:
+        images: ${{ vars.REGISTRY }}/${{ env.IMAGE_NAME }}
+        tags: |
+          type=schedule
+          type=ref,event=branch
+          type=ref,event=pr
+          type=ref,event=tag
+          type=raw,value=${{ github.sha }}
+
+    - name: List files in ./node/wfprev-gdb-extractor
+      run: ls -al ./node/wfprev-gdb-extractor
+    
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v6
+      with:
+        context: ./node/wfprev-gdb-extractor
+        file: ./node/wfprev-gdb-extractor/Dockerfile
+        push: true
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
+
+    - name: Tag and push latest image
+      run: |
+          IMAGE=${{ vars.REGISTRY }}/${{ github.repository_owner }}/nr-bcws-wfprev-wfprev-gdb-extractor
+          docker pull $IMAGE:${{ github.sha }}
+          docker tag $IMAGE:${{ github.sha }} $IMAGE:latest
+          docker push $IMAGE:latest
+
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v2
+      with:
+        role-to-assume: ${{ secrets.AWS_TERRAFORM_ROLE_TO_ASSUME }}
+        role-session-name: wfprev-terraform-s3
+        aws-region: ca-central-1
+  
+    - name: Create ECR Repository for GDB Extractor (if not exists)
+      run: |
+        aws ecr describe-repositories --repository-names nr-bcws-wfprev-wfprev-gdb-extractor --region ca-central-1 || \
+        aws ecr create-repository --repository-name nr-bcws-wfprev-wfprev-gdb-extractor --region ca-central-1
+
+    - name: Get AWS Account ID
+      id: getAwsAccount
+      run: |
+        echo "AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)" >> $GITHUB_ENV
+
+    - name: Login to Amazon ECR
+      run: |
+        aws ecr get-login-password --region ca-central-1 | docker login --username AWS --password-stdin ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.ca-central-1.amazonaws.com
+
+    - name: Pull, Tag, and Push GDB Extractor Docker image to ECR
+      id: pushGdbExtractorImage
+      run: |
+        docker pull ${{vars.REPOSITORY_HOST}}/${{ github.repository_owner }}/nr-bcws-wfprev-wfprev-gdb-extractor:latest
+        docker tag ${{vars.REPOSITORY_HOST}}/${{ github.repository_owner }}/nr-bcws-wfprev-wfprev-gdb-extractor:latest ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.ca-central-1.amazonaws.com/nr-bcws-wfprev-wfprev-gdb-extractor:latest
+        docker push ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.ca-central-1.amazonaws.com/nr-bcws-wfprev-wfprev-gdb-extractor:latest
+        echo "GDB_EXTRACTOR_IMAGE=${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.ca-central-1.amazonaws.com/nr-bcws-wfprev-wfprev-gdb-extractor:latest" >> $GITHUB_ENV
+
+    - name: Get Digest of GDB Extractor ECR image
+      id: getGdbDigest
+      run: |
+        DIGEST=$(aws ecr describe-images \
+          --repository-name nr-bcws-wfprev-wfprev-gdb-extractor \
+          --image-ids imageTag=latest \
+          --query 'imageDetails[0].imageDigest' \
+          --output text)
+        echo "GDB_EXTRACTOR_IMAGE=${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.ca-central-1.amazonaws.com/nr-bcws-wfprev-wfprev-gdb-extractor@${DIGEST}" >> $GITHUB_ENV
+        echo "digest_output=${{ env.GDB_EXTRACTOR_IMAGE }}" >> $GITHUB_OUTPUT
+        
+    outputs:
+          gdb_digest: ${{ steps.getGdbDigest.outputs.digest_output }}

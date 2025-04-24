@@ -27,6 +27,23 @@ variable "WFPREV_API_MEMORY" {
   type        = number
 }
 
+variable "WFPREV_LAMBDA_MEMORY" {
+  description = "lambda memory to provision (in MiB)"
+  type        = number
+  default     = 1024
+}
+
+variable "WFPREV_LAMBDA_TIMEOUT" {
+  description = "lambda timeout in seconds"
+  type        = number
+  default     = 300
+}
+
+variable "WFPREV_GDB_EXTRACTOR_DIGEST" {
+  description = "Digest-based URI for the Lambda image"
+  type        = string
+}
+
 variable "client_container_name" {
   description = "Container name"
   default     = "wfprev-client-app"
@@ -100,6 +117,11 @@ variable "WFPREV_CLIENT_SECRET" {
 }
 
 variable "WFPREV_BASE_URL" {
+  type    = string
+  default = ""
+}
+
+variable "WFPREV_GDB_FUNCTION_NAME" {
   type    = string
   default = ""
 }
