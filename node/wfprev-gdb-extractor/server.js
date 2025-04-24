@@ -1,4 +1,5 @@
 const express = require("express");
+const sanitizeFilename = require("sanitize-filename");
 const fileUpload = require("express-fileupload");
 const gdal = require("gdal-async");
 const fs = require("fs");
@@ -99,7 +100,7 @@ async function handleUpload(req, res) {
     return res.status(400).send("No file uploaded.");
   }
 
-  const fileName = req.files.file.name;
+  const fileName = require("sanitize-filename")(path.basename(req.files.file.name));
   if (!fileName.toLowerCase().endsWith(".zip")) {
     return res.status(400).send("Only ZIP files are allowed.");
   }
