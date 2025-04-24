@@ -96,10 +96,10 @@ public class GDBLambdaController {
 
         } catch (IOException e) {
             log.error("IO error during file processing", e);
-            return ResponseEntity.status(500).body("File processing error: " + e.getMessage());
+            return ResponseEntity.status(500).body("Encountered error while processing file.");
         } catch (Exception e) {
             log.error("Error invoking Lambda function", e);
-            return ResponseEntity.status(500).body("Lambda invocation error: " + e.getMessage());
+            return ResponseEntity.status(500).body("Encountered error while invoking lambda.");
         }
     }
 }

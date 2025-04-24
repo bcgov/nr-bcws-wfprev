@@ -78,8 +78,7 @@ public class GDBLambdaControllerTest {
 
         // Assert
         assertEquals(500, response.getStatusCodeValue());
-        assertTrue(response.getBody().contains("File processing error"));
-        assertTrue(response.getBody().contains("Simulated IO error"));
+        assertTrue(response.getBody().contains("Encountered error while processing file."));
 
         verify(lambdaClient, never()).invoke((InvokeRequest) any()); // Lambda should not be invoked on file read failure
     }
@@ -98,7 +97,6 @@ public class GDBLambdaControllerTest {
 
         // Assert
         assertEquals(500, response.getStatusCodeValue());
-        assertTrue(response.getBody().contains("Lambda invocation error"));
-        assertTrue(response.getBody().contains("Simulated Lambda failure"));
+        assertTrue(response.getBody().contains("Encountered error while invoking lambda."));
     }
 }
