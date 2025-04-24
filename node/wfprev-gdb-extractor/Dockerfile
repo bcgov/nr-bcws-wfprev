@@ -7,11 +7,11 @@ WORKDIR /var/task
 COPY package*.json ./
 COPY .npmrc .npmrc
 
-RUN npm install --omit=dev --ignore-scripts
+RUN npm install --omit=dev
 
 # Copy only runtime-relevant source files
-COPY lambda.js .
 COPY server.js .
+COPY lambda.js .
 
 # Set the Lambda function entry point
 CMD ["lambda.handler"]
