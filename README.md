@@ -31,6 +31,7 @@ SPRING_MAIN_ALLOW_BEAN_DEFINITION_OVERRIDING=true
 WFPREV_DB_PASSWORD=***
 POSTGRES_PASSWORD=**
 WFPREV_BASE_URL=http://localhost:8080
+WFPREV_GDB_FUNCTION_NAME=wfprev-gdb-dev
 ```
 
 * Then run this command```docker compose up```
