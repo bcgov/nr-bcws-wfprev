@@ -217,7 +217,13 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
       if (this.marker) {
         this.map.removeLayer(this.marker);
       }
-      this.marker = L.marker([latitude, longitude]).addTo(this.map);
+      const teardropIcon = L.icon({
+        iconUrl: '/assets/blue-pin-drop.svg',
+        iconSize: [30, 50],
+        iconAnchor: [12, 41],
+      });
+      this.marker = L.marker([latitude, longitude], { icon: teardropIcon }).addTo(this.map);
+      
       this.map.setView([latitude, longitude], 13); // Update the map view
     } else {
       // Initialize the map if it hasn't been created
@@ -232,7 +238,13 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
       }).addTo(this.map);
       
       
-      this.marker = L.marker([latitude, longitude]).addTo(this.map); // Add the marker
+      this.marker = L.marker([latitude, longitude], {
+        icon: L.icon({
+          iconUrl: '/assets/blue-pin-drop.svg',
+          iconSize: [30, 50],
+          iconAnchor: [12, 41],
+        }),
+      }).addTo(this.map);
 
     }
 

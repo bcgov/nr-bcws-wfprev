@@ -16,7 +16,7 @@ import { LeafletLegendService, createFullPageControl } from 'src/app/utils/tools
 })
 export class FiscalMapComponent implements AfterViewInit, OnDestroy, OnInit {
     @Input() fiscalGuid: any = '';
-  
+    @Input() selectedFiscalYear: number = new Date().getFullYear();
   currentFiscalYear = new Date().getMonth() >= 3
     ? new Date().getFullYear()
     : new Date().getFullYear() - 1;
@@ -70,7 +70,12 @@ export class FiscalMapComponent implements AfterViewInit, OnDestroy, OnInit {
           const lat = parseFloat(this.projectLatitude);
           const lng = parseFloat(this.projectLongitude);
   
-          L.marker([lat, lng]).addTo(this.map);
+          const teardropIcon = L.icon({
+            iconUrl: '/assets/blue-pin-drop.svg',
+            iconSize: [30, 50],
+            iconAnchor: [12, 41],
+          });
+          L.marker([lat, lng], { icon: teardropIcon }).addTo(this.map);
   
           this.map.setView([lat, lng], 14); 
         }
@@ -216,7 +221,7 @@ export class FiscalMapComponent implements AfterViewInit, OnDestroy, OnInit {
         const geoJsonOptions: L.GeoJSONOptions = {
           style: {
             color,
-            weight: fiscalYear === this.currentFiscalYear ? 4 : 2,
+            weight: fiscalYear === this.selectedFiscalYear ? 4 : 2,
             fillOpacity: 0.1
           }
         };
