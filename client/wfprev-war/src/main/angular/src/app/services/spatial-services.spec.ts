@@ -7,6 +7,8 @@ import * as turf from '@turf/turf';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ZipReader } from '@zip.js/zip.js';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { AppConfigService } from './app-config.service';
+import { TokenService } from './token.service';
 
 // Create mock ZIP module implementation
 const mockZipModule = {
@@ -34,15 +36,46 @@ const mockSnackbar = jasmine.createSpyObj('MatSnackBar', ['open']);
 describe('SpatialService', () => {
   let service: SpatialService;
   let httpMock: HttpTestingController;
+  let mockAppConfigService: jasmine.SpyObj<AppConfigService>;
+  let mockTokenService: jasmine.SpyObj<TokenService>;
+
+  const mockConfig = {
+    rest: {
+      wfprev: 'http://mock-api.com',
+      wfdm: 'http://mock-wfdm-api.com'
+    },
+    application: {
+      lazyAuthenticate: true,
+      enableLocalStorageToken: true,
+      localStorageTokenKey: 'oauth',
+      allowLocalExpiredToken: false,
+      baseUrl: 'http://mock-base-url.com',
+      acronym: 'TEST',
+      version: '1.0.0',
+      environment: 'test',
+    },
+    webade: {
+      oauth2Url: 'http://mock-oauth-url.com',
+      clientId: 'mock-client-id',
+      authScopes: 'mock-scope',
+      checkTokenUrl: 'http://mock-check-token-url.com',
+      enableCheckToken: false,
+    }
+  };
 
   beforeEach(() => {
+    mockAppConfigService = jasmine.createSpyObj('AppConfigService', ['getConfig']);
+    mockTokenService = jasmine.createSpyObj('TokenService', ['getOauthToken'], { credentialsEmitter: of({ userGuid: 'mock-user-guid' }) });
+
+    mockAppConfigService.getConfig.and.returnValue(mockConfig);
+    mockTokenService.getOauthToken.and.returnValue('mock-token');
+
     TestBed.configureTestingModule({
-      imports: [
-        HttpClientTestingModule,
-        BrowserAnimationsModule
-      ],
-      providers: [SpatialService,
-        { provide: MatSnackBar, useValue: mockSnackbar }
+      imports: [HttpClientTestingModule, BrowserAnimationsModule],
+      providers: [
+        SpatialService,
+        { provide: AppConfigService, useValue: mockAppConfigService },
+        { provide: TokenService, useValue: mockTokenService },
       ]
     });
 
@@ -605,65 +638,46 @@ describe('SpatialService', () => {
   });
 
   describe('extractGDBGeometry', () => {
-    it('should call API and return processed geometry', () => {
-      // Arrange
-      const mockFile = new File(['dummy content'], 'test.gdb');
-      const mockResponse = [
-        {
-          type: 'Polygon',
-          coordinates: [[[1, 2, 100], [3, 4, 200], [5, 6, 300], [1, 2, 100]]]
-        }
-      ];
+    const mockFile = new File(['some data'], 'data.gdb');
+    const mockGeometry = {
+      type: 'MultiPolygon',
+      coordinates: [
+        [[[100, 50], [101, 51], [102, 50], [100, 50]]],
+        [[[-120, 45], [-121, 46], [-122, 45], [-120, 45]]]
+      ]
+    } as Geometry;
 
-      // Spy on stripAltitude to control the return value
-      spyOn(service, 'stripAltitude').and.returnValue({
-        type: 'Polygon',
-        coordinates: [[[1, 2], [3, 4], [5, 6], [1, 2]]]
+
+    it('should extract and process geometry when the API returns valid data', (done: () => void) => {
+      // Spy on stripAltitude and return the input geometry unchanged
+      const stripAltitudeSpy = spyOn(service, 'stripAltitude').and.callFake((geom) => geom);
+    
+      service.extractGDBGeometry(mockFile).subscribe((result) => {
+        expect(result.length).toBe(1); 
+        expect(stripAltitudeSpy).toHaveBeenCalledTimes(1);
+        expect(stripAltitudeSpy.calls.mostRecent().args[0]).toEqual(mockGeometry);
+        done();
       });
-
-      // Act
-      const result = service.extractGDBGeometry(mockFile);
-
-      // Assert expectations before request is fulfilled
-      result.subscribe(data => {
-        expect(data).toEqual([
-          {
-            type: 'Polygon',
-            coordinates: [[[1, 2], [3, 4], [5, 6], [1, 2]]]
-          }
-        ]);
-      });
-
-      // Fulfill the HTTP request
-      const req = httpMock.expectOne('http://localhost:3000/upload');
+    
+      const req = httpMock.expectOne('http://mock-api.com/wfprev-api/gdb/extract');
       expect(req.request.method).toBe('POST');
-      req.flush(mockResponse);
+      req.flush({ body: JSON.stringify([mockGeometry]) });
     });
 
-    it('should handle API errors', (done) => {
-      // Arrange
-      const mockFile = new File(['dummy content'], 'test.gdb');
-      const mockError = { status: 500, statusText: 'Internal Server Error' };
-
-      // Act
-      const result = service.extractGDBGeometry(mockFile);
-
-      // Assert
-      result.subscribe({
-        next: () => {
-          done.fail('Should have failed with error');
-        },
+    it('should handle error gracefully when the API returns an error', (done: () => void) => {
+      service.extractGDBGeometry(mockFile).subscribe({
+        next: () => fail('Expected an error, but got a successful response'),
         error: (error) => {
-          expect(error).toBeInstanceOf(Error);
           expect(error.message).toBe('Failed to extract geodatabase geometry');
           done();
         }
       });
 
-      // Fulfill the HTTP request with an error
-      const req = httpMock.expectOne('http://localhost:3000/upload');
-      req.flush('Error', mockError);
+      const req = httpMock.expectOne('http://mock-api.com/wfprev-api/gdb/extract');
+      expect(req.request.method).toBe('POST');
+      req.flush('Error', { status: 500, statusText: 'Internal Server Error' });
     });
+
   });
 
   describe('extractCoordinates', () => {
@@ -788,9 +802,25 @@ describe('SpatialService', () => {
 
     beforeEach(() => {
       mockSnackbar = jasmine.createSpyObj('MatSnackBar', ['open']);
-      service = new SpatialService(null as any, mockSnackbar);
-    });
+      const mockHttp = jasmine.createSpyObj('HttpClient', ['post']);
+      const mockAppConfigService = {
+        getConfig: () => ({
+          rest: {
+            wfprev: 'http://mock-url'
+          }
+        })
+      };
+      const mockTokenService = {
+        getOauthToken: () => 'mock-token'
+      };
 
+      service = new SpatialService(
+        mockHttp,
+        mockSnackbar,
+        mockAppConfigService as any,
+        mockTokenService as any
+      );
+    });
     it('should validate a correct multipolygon without errors', async () => {
       const coords: Position[][][] = [
         [[[1, 2], [3, 4], [5, 6], [1, 2]]]
@@ -1028,44 +1058,61 @@ describe('SpatialService', () => {
   describe('validateGeometryInBC', () => {
     let service: SpatialService;
     let mockSnackbar: jasmine.SpyObj<MatSnackBar>;
-  
     beforeEach(() => {
       mockSnackbar = jasmine.createSpyObj('MatSnackBar', ['open']);
-      service = new SpatialService(null as any, mockSnackbar);
+      const mockHttp = jasmine.createSpyObj('HttpClient', ['post']);
+      const mockAppConfigService = {
+        getConfig: () => ({
+          rest: {
+            wfprev: 'http://mock-url'
+          }
+        })
+      };
+      const mockTokenService = {
+        getOauthToken: () => 'mock-token'
+      };
+
+      service = new SpatialService(
+        mockHttp,
+        mockSnackbar,
+        mockAppConfigService as any,
+        mockTokenService as any
+      );
     });
-  
+
+
     it('should return true when geometry intersects with BC', async () => {
       const bcCoords: MultiPolygon['coordinates'] = [
         [[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]]
       ];
-  
+
       spyOn(service, 'getBritishColumbiaGeoJSON').and.returnValue(of(bcCoords));
-  
+
       spyOn<any>(service, 'intersectsWithBC').and.returnValue(true);
-  
+
       const input = {
         type: 'Polygon',
         coordinates: [[[0.2, 0.2], [0.8, 0.2], [0.5, 0.8], [0.2, 0.2]]]
       };
-  
+
       const result = await service.validateGeometryInBC(input);
       expect(result).toBeTrue();
       expect(mockSnackbar.open).not.toHaveBeenCalled();
     });
-  
+
     it('should return false and show snackbar if geometry is outside BC', async () => {
       const bcCoords: MultiPolygon['coordinates'] = [
         [[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]]
       ];
-  
+
       spyOn(service, 'getBritishColumbiaGeoJSON').and.returnValue(of(bcCoords));
       spyOn<any>(service, 'intersectsWithBC').and.returnValue((false));
-  
+
       const input = {
         type: 'Polygon',
         coordinates: [[[10, 10], [11, 10], [11, 11], [10, 11], [10, 10]]]
       };
-  
+
       const result = await service.validateGeometryInBC(input);
       expect(result).toBeFalse();
       expect(mockSnackbar.open).toHaveBeenCalledWith(
@@ -1074,15 +1121,15 @@ describe('SpatialService', () => {
         jasmine.objectContaining({ duration: 5000 })
       );
     });
-  
+
     it('should return false and show error snackbar if an exception occurs', async () => {
       spyOn(service, 'getBritishColumbiaGeoJSON').and.returnValue(throwError(() => new Error('Failed to load BC boundary')));
-  
+
       const input = {
         type: 'Polygon',
         coordinates: [[[0, 0], [1, 1], [2, 2], [0, 0]]]
       };
-  
+
       const result = await service.validateGeometryInBC(input);
       expect(result).toBeFalse();
       expect(mockSnackbar.open).toHaveBeenCalledWith(
