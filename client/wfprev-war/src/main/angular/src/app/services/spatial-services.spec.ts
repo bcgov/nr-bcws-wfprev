@@ -7,7 +7,6 @@ import * as turf from '@turf/turf';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ZipReader } from '@zip.js/zip.js';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { ProjectService } from './project-services';
 import { AppConfigService } from './app-config.service';
 import { TokenService } from './token.service';
 
@@ -51,9 +50,9 @@ describe('SpatialService', () => {
       localStorageTokenKey: 'oauth',
       allowLocalExpiredToken: false,
       baseUrl: 'http://mock-base-url.com',
-      acronym: 'TEST', 
-      version: '1.0.0', 
-      environment: 'test', 
+      acronym: 'TEST',
+      version: '1.0.0',
+      environment: 'test',
     },
     webade: {
       oauth2Url: 'http://mock-oauth-url.com',
@@ -640,59 +639,45 @@ describe('SpatialService', () => {
 
   describe('extractGDBGeometry', () => {
     const mockFile = new File(['some data'], 'data.gdb');
-    const mockResponse = [
-      { body: '[{"type": "MultiPolygon", "coordinates": [[[[100, 50], [101, 51], [102, 50], [100, 50]]], [[[-120, 45], [-121, 46], [-122, 45], [-120, 45]]]]}' }
-    ];
-  
-    // it('should return geometries when the file is valid and the API responds correctly', (done: () => void) => {
-    //   jasmine.DEFAULT_TIMEOUT_INTERVAL = 15000; // Increase timeout to 15 seconds for this test
-  
-    //   service.extractGDBGeometry(mockFile).subscribe({
-    //     next: (geometries) => {
-    //       expect(geometries.length).toBe(1); 
-    //       expect(geometries[0].type).toBe('MultiPolygon');
-    //       done();
-    //     },
-    //     error: (err) => {
-    //       fail('Expected successful response, but got error: ' + err.message);
-    //       done();
-    //     }
-    //   });
-  
-    //   const req = httpMock.expectOne('http://mock-api.com/wfprev-api/gdb/extract');
-    //   expect(req.request.method).toBe('POST');
-    //   expect(req.request.headers.get('Authorization')).toBe('Bearer mock-token');
-    //   req.flush(mockResponse); // Return mock response
-    // });
-  
+    const mockGeometry = {
+      type: 'MultiPolygon',
+      coordinates: [
+        [[[100, 50], [101, 51], [102, 50], [100, 50]]],
+        [[[-120, 45], [-121, 46], [-122, 45], [-120, 45]]]
+      ]
+    } as Geometry;
+
+
+    it('should extract and process geometry when the API returns valid data', (done: () => void) => {
+      // Spy on stripAltitude and return the input geometry unchanged
+      const stripAltitudeSpy = spyOn(service, 'stripAltitude').and.callFake((geom) => geom);
+    
+      service.extractGDBGeometry(mockFile).subscribe((result) => {
+        expect(result.length).toBe(1); 
+        expect(stripAltitudeSpy).toHaveBeenCalledTimes(1);
+        expect(stripAltitudeSpy.calls.mostRecent().args[0]).toEqual(mockGeometry);
+        done();
+      });
+    
+      const req = httpMock.expectOne('http://mock-api.com/wfprev-api/gdb/extract');
+      expect(req.request.method).toBe('POST');
+      req.flush({ body: JSON.stringify([mockGeometry]) });
+    });
+
     it('should handle error gracefully when the API returns an error', (done: () => void) => {
-      const errorMessage = 'Failed to extract geodatabase geometry';
-  
-      // Mock the error response
       service.extractGDBGeometry(mockFile).subscribe({
         next: () => fail('Expected an error, but got a successful response'),
         error: (error) => {
-          expect(error.message).toBe(errorMessage);
+          expect(error.message).toBe('Failed to extract geodatabase geometry');
           done();
         }
       });
-  
+
       const req = httpMock.expectOne('http://mock-api.com/wfprev-api/gdb/extract');
       expect(req.request.method).toBe('POST');
-      req.flush('Error', { status: 500, statusText: 'Internal Server Error' }); // Simulate error
+      req.flush('Error', { status: 500, statusText: 'Internal Server Error' });
     });
-  
-    it('should return empty array for unsupported file types', (done: () => void) => {
-      const mockUnsupportedFile = new File(['some data'], 'data.txt');
-  
-      service.extractGDBGeometry(mockUnsupportedFile).subscribe((geometries) => {
-        expect(geometries).toEqual([]); // Should return an empty array
-        done();
-      });
-  
-      const req = httpMock.expectOne('http://mock-api.com/wfprev-api/gdb/extract');
-      req.flush([]); // Empty response (or error, based on your handling of unsupported file types)
-    });
+
   });
 
   describe('extractCoordinates', () => {
@@ -828,7 +813,7 @@ describe('SpatialService', () => {
       const mockTokenService = {
         getOauthToken: () => 'mock-token'
       };
-    
+
       service = new SpatialService(
         mockHttp,
         mockSnackbar,
@@ -1086,7 +1071,7 @@ describe('SpatialService', () => {
       const mockTokenService = {
         getOauthToken: () => 'mock-token'
       };
-    
+
       service = new SpatialService(
         mockHttp,
         mockSnackbar,
@@ -1094,40 +1079,40 @@ describe('SpatialService', () => {
         mockTokenService as any
       );
     });
-    
-  
+
+
     it('should return true when geometry intersects with BC', async () => {
       const bcCoords: MultiPolygon['coordinates'] = [
         [[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]]
       ];
-  
+
       spyOn(service, 'getBritishColumbiaGeoJSON').and.returnValue(of(bcCoords));
-  
+
       spyOn<any>(service, 'intersectsWithBC').and.returnValue(true);
-  
+
       const input = {
         type: 'Polygon',
         coordinates: [[[0.2, 0.2], [0.8, 0.2], [0.5, 0.8], [0.2, 0.2]]]
       };
-  
+
       const result = await service.validateGeometryInBC(input);
       expect(result).toBeTrue();
       expect(mockSnackbar.open).not.toHaveBeenCalled();
     });
-  
+
     it('should return false and show snackbar if geometry is outside BC', async () => {
       const bcCoords: MultiPolygon['coordinates'] = [
         [[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]]
       ];
-  
+
       spyOn(service, 'getBritishColumbiaGeoJSON').and.returnValue(of(bcCoords));
       spyOn<any>(service, 'intersectsWithBC').and.returnValue((false));
-  
+
       const input = {
         type: 'Polygon',
         coordinates: [[[10, 10], [11, 10], [11, 11], [10, 11], [10, 10]]]
       };
-  
+
       const result = await service.validateGeometryInBC(input);
       expect(result).toBeFalse();
       expect(mockSnackbar.open).toHaveBeenCalledWith(
@@ -1136,15 +1121,15 @@ describe('SpatialService', () => {
         jasmine.objectContaining({ duration: 5000 })
       );
     });
-  
+
     it('should return false and show error snackbar if an exception occurs', async () => {
       spyOn(service, 'getBritishColumbiaGeoJSON').and.returnValue(throwError(() => new Error('Failed to load BC boundary')));
-  
+
       const input = {
         type: 'Polygon',
         coordinates: [[[0, 0], [1, 1], [2, 2], [0, 0]]]
       };
-  
+
       const result = await service.validateGeometryInBC(input);
       expect(result).toBeFalse();
       expect(mockSnackbar.open).toHaveBeenCalledWith(

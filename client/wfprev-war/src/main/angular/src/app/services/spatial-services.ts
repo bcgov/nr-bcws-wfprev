@@ -257,16 +257,17 @@ export class SpatialService {
 
         return this.httpClient.post<any>(url, formData, { headers }).pipe(
             map((response) => {
-            return response.map((geom: any) => {
-                const geometries: Geometry[] = JSON.parse(geom.body);
+              const body = JSON.parse(response.body); 
+              return body.map((geom: any) => {
+                const geometries: Geometry[] = [geom]; 
                 return geometries.map(this.stripAltitude);
-            }).flat();
+              }).flat();
             }),
             catchError((error) => {
-            console.error("Error extracting geodatabase geometry", error);
-            return throwError(() => new Error("Failed to extract geodatabase geometry"));
+              console.error("Error extracting geodatabase geometry", error);
+              return throwError(() => new Error("Failed to extract geodatabase geometry"));
             })
-        );
+          );
     }
 
     public async extractCoordinates(file: File): Promise<Position[][][]> {
