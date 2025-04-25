@@ -13,7 +13,7 @@
 
         <ng-container matColumnDef="attachmentType">
             <th mat-header-cell *matHeaderCellDef> Attachment Type </th>
-            <td mat-cell *matCellDef="let file"> {{ file.attachmentContentTypeCode?.description }} </td>
+            <td mat-cell *matCellDef="let file"> {{ translateAttachmentType(file.attachmentContentTypeCode?.description) }} </td>
         </ng-container>
 
         <ng-container matColumnDef="fileName">
