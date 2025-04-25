@@ -1,4 +1,4 @@
-import { HttpClient } from "@angular/common/http";
+import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import * as toGeoJSON from '@tmcw/togeojson';
@@ -8,6 +8,8 @@ import { BlobReader, TextWriter, ZipReader } from '@zip.js/zip.js';
 import { Feature, Geometry, Polygon, Position } from 'geojson';
 import { catchError, firstValueFrom, lastValueFrom, map, Observable, of, throwError } from "rxjs";
 import * as shp from 'shpjs';
+import { AppConfigService } from "./app-config.service";
+import { TokenService } from "./token.service";
 export type CoordinateTypes = Position | Position[] | Position[][] | Position[][][];
 
 @Injectable({
@@ -16,7 +18,9 @@ export type CoordinateTypes = Position | Position[] | Position[][] | Position[][
 export class SpatialService {
 
     constructor(private readonly httpClient: HttpClient,
-        private readonly snackbarService: MatSnackBar
+        private readonly snackbarService: MatSnackBar,
+        private readonly appConfigService: AppConfigService,
+        private readonly tokenService: TokenService
     ) { }
 
     private async parseKMLToCoordinates(kmlString: string): Promise<Position[][][]> {
@@ -242,21 +246,25 @@ export class SpatialService {
     }
 
     extractGDBGeometry(file: File): Observable<any> {
-        // this will be replaced with node js server in AWS - WFPREV-402
-        const url = 'http://localhost:3000/upload';
-
+        // this will not work locally as it is connecting to AWS SDK. 
+        // testing locally with higher environments will also give a CORS error.
+        const url = `${this.appConfigService.getConfig().rest['wfprev']}/wfprev-api/gdb/extract`;
         const formData = new FormData();
         formData.append('file', file);
+        const headers = new HttpHeaders({
+            Authorization: `Bearer ${this.tokenService.getOauthToken()}`
+        });
 
-        return this.httpClient.post<any>(url, formData).pipe(
+        return this.httpClient.post<any>(url, formData, { headers }).pipe(
             map((response) => {
-                return response.map((geom: any) => {
-                    return this.stripAltitude(geom);
-                });
+            return response.map((geom: any) => {
+                const geometries: Geometry[] = JSON.parse(geom.body);
+                return geometries.map(this.stripAltitude);
+            }).flat();
             }),
             catchError((error) => {
-                console.error("Error extracting geodatabase geometry", error);
-                return throwError(() => new Error("Failed to extract geodatabase geometry"));
+            console.error("Error extracting geodatabase geometry", error);
+            return throwError(() => new Error("Failed to extract geodatabase geometry"));
             })
         );
     }
