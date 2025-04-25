@@ -335,7 +335,7 @@ export class ProjectFilesComponent implements OnInit {
   deleteFile(fileToDelete: ProjectFile): void {
     // Open the confirmation dialog
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-      data: { indicator: 'confirm-delete-attachment' },
+      data: { indicator: 'delete-attachment' },
       width: '500px',
     });
 

@@ -19,12 +19,14 @@ export class ConfirmationDialogComponent {
   private readonly dialogMessages: Record<string, string> = {
     'confirm-cancel': 'Are you sure you want to cancel?<br />This information will not be saved.',
     'duplicate-project': 'This Project already exists:<br />',
-    'confirm-delete': 'Are you sure you want to delete this fiscal year?<br />This action cannot be undone.',
     'confirm-unsave': 'Are you sure you want to leave this page?<br />The changes you made will not be saved.',
-    'confirm-delete-attachment': 'Are you sure you want to delete this file?<br />',
+    'delete-attachment': 'Are you sure you want to delete this file?<br />',
   };
 
   get dialogMessage(): string {
+    if (this.dialogUsage === 'delete-fiscal-year') {
+      return this.getDeleteFiscalYearMessage();
+    }
     if (this.dialogUsage === 'delete-activity') {
       return this.getDeleteActivityMessage();
     }
@@ -35,15 +37,28 @@ export class ConfirmationDialogComponent {
     switch (this.dialogUsage) {
       case 'confirm-cancel':
         return 'Confirm Cancel';
-      case 'confirm-delete':
-        return 'Confirm Delete';
       case 'confirm-unsave':
         return 'Confirm Unsave'
+      case 'delete-attachment':
+        return 'Delete Attachment';
+      case 'delete-fiscal-year':
+        return 'Delete Fiscal Year'
       case 'delete-activity':
         return 'Delete Activity'
       default:
         return 'Duplicate Found';
     }
+  }
+
+  get confirmButtonText(): string {
+    if (this.dialogUsage.startsWith('delete-')) {
+      return 'Delete';
+    }
+    return 'Continue';
+  }
+
+  get isDeleteDialog(): boolean {
+    return this.dialogUsage.startsWith('delete-');
   }
 
   constructor(
@@ -56,12 +71,16 @@ export class ConfirmationDialogComponent {
   getDeleteActivityMessage(): string {
     return `Are you sure you want to delete ${this.data?.name || 'this activity'}? This action cannot be reversed and will immediately remove the activity from the Fiscal scope.`;
   }
+
+  getDeleteFiscalYearMessage(): string {
+    return `Are you sure you want to delete ${this.data?.name || 'this fiscal year'}? This action cannot be reversed and will immediately remove the Fiscal Year from the Project scope.`;
+  }
   onGoBack(): void {
-    this.dialogRef.close(false); // Close without confirmation
+    this.dialogRef.close(false);
   }
 
   onConfirm(): void {
-    this.dialogRef.close(true); // Close with confirmation
+    this.dialogRef.close(true);
   }
 }
 
