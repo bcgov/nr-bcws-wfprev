@@ -352,12 +352,16 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  
 
   deleteFiscalYear(form: any, index: number): void {
     const formData = form.value;
-  
+    const fiscalName = this.projectFiscals[this.selectedTabIndex]?.projectFiscalName;
+    const fiscalYear = this.projectFiscals[this.selectedTabIndex]?.fiscalYear;
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-      data: { indicator: 'confirm-delete' },
-      width: '500px',
+      data: { 
+        indicator: 'delete-fiscal-year', 
+        name: (fiscalName && fiscalYear) ? `${fiscalName}:${fiscalYear}` : null
+      },
+      width: '600px',
     });
-  
+
     dialogRef.afterClosed().subscribe((confirmed: boolean) => {
       if (confirmed) {
         if (formData.projectPlanFiscalGuid) {

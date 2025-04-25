@@ -444,7 +444,7 @@ describe('ProjectFilesComponent', () => {
       expect(mockDialog.open).toHaveBeenCalledWith(
         ConfirmationDialogComponent,
         jasmine.objectContaining({
-          data: { indicator: 'confirm-delete-attachment' },
+          data: { indicator: 'delete-attachment' },
           width: '500px'
         })
       );
