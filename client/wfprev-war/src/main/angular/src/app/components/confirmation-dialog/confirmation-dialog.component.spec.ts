@@ -131,7 +131,7 @@ describe('ConfirmationDialogComponent', () => {
         imports: [ConfirmationDialogComponent],
         providers: [
           { provide: MatDialogRef, useValue: mockDialogRef },
-          { provide: MAT_DIALOG_DATA, useValue: { indicator: 'confirm-delete' } },
+          { provide: MAT_DIALOG_DATA, useValue: { indicator: 'delete-fiscal-year', name: '2024' } },
         ],
       }).compileComponents();
   
@@ -140,19 +140,19 @@ describe('ConfirmationDialogComponent', () => {
       fixture.detectChanges();
     });
   
-    it('should set dialogUsage to "confirm-delete"', () => {
-      expect(component.dialogUsage).toBe('confirm-delete');
+    it('should set dialogUsage to "delete-fiscal-year"', () => {
+      expect(component.dialogUsage).toBe('delete-fiscal-year');
     });
   
-    it('should render the correct title for "confirm-delete"', () => {
+    it('should render the correct title for "delete-fiscal-year"', () => {
       const titleElement = fixture.nativeElement.querySelector('.title-bar');
-      expect(titleElement.textContent.trim()).toBe('Confirm Delete');
+      expect(titleElement.textContent.trim()).toBe('Delete Fiscal Year');
     });
   
-    it('should display the correct message for "confirm-delete"', () => {
+    it('should display the correct message for "delete-fiscal-year"', () => {
       const messageElement = fixture.nativeElement.querySelector('.dialog-content p');
-      expect(messageElement.textContent.trim()).toContain('Are you sure you want to delete this fiscal year?');
-      expect(messageElement.textContent.trim()).toContain('This action cannot be undone.');
+      expect(messageElement.textContent.trim()).toContain('Are you sure you want to delete 2024?');
+      expect(messageElement.textContent.trim()).toContain('This action cannot be reversed and will immediately remove the Fiscal Year from the Project scope.');
     });
   });
 
@@ -218,5 +218,28 @@ describe('ConfirmationDialogComponent', () => {
     });
   });
   
+  describe('confirmButtonText', () => {
+    it('should return "Delete" when dialogUsage starts with "delete-"', () => {
+      component.dialogUsage = 'delete-activity';
+      expect(component.confirmButtonText).toBe('Delete');
+    });
+  
+    it('should return "Continue" when dialogUsage does not start with "delete-"', () => {
+      component.dialogUsage = 'confirm-cancel';
+      expect(component.confirmButtonText).toBe('Continue');
+    });
+  });
+  
+  describe('isDeleteDialog', () => {
+    it('should return true when dialogUsage starts with "delete-"', () => {
+      component.dialogUsage = 'delete-fiscal-year';
+      expect(component.isDeleteDialog).toBeTrue();
+    });
+  
+    it('should return false when dialogUsage does not start with "delete-"', () => {
+      component.dialogUsage = 'confirm-unsave';
+      expect(component.isDeleteDialog).toBeFalse();
+    });
+  });
   
 });

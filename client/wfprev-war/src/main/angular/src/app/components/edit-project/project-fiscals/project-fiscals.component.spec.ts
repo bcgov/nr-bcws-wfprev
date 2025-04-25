@@ -245,8 +245,8 @@ describe('ProjectFiscalsComponent', () => {
     component.deleteFiscalYear({ value: component.projectFiscals[0] },0);
   
     expect(component.dialog.open).toHaveBeenCalledWith(ConfirmationDialogComponent, {
-      data: { indicator: 'confirm-delete' },
-      width: '500px',
+      data: { indicator: 'delete-fiscal-year', name: null },
+      width: '600px',
     });
   });
   
@@ -486,4 +486,5 @@ describe('ProjectFiscalsComponent', () => {
     expect(component.selectedTabIndex).toBe(2);
     expect(updateSpy).toHaveBeenCalled();
   });
+  
 });

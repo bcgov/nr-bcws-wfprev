@@ -1,6 +1,9 @@
 @import '../create-new-project-dialog/create-new-project-dialog.component.scss';
 
 .dialog-container {
+  .title-bar{
+    gap: 8px;
+  }
   .dialog-content {
     display: flex;
     flex-direction: column;
@@ -27,4 +30,19 @@
       }
     }
   }
+}
+
+.cancel-button {
+  background: none;
+  border: none;
+  color: #2D2D2D;
+  font-weight: 400;
+}
+
+.delete-button {
+  border: 1px solid #CE3E39 !important;
+  color: #CE3E39;
+  background: transparent;
+  font-weight: 400;
+  border-radius: 4px !important;
 }
