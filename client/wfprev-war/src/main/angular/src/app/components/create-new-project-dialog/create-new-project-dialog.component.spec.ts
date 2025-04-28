@@ -174,7 +174,7 @@ describe('CreateNewProjectDialogComponent', () => {
       'OK',
       { duration: 5000, panelClass: 'snackbar-success' }
     ); // Ensure snackbar was called
-    expect(mockDialogRef.close).toHaveBeenCalledWith({ success: true, projectGuid: '999999' }); // Ensure the dialog was closed
+    expect(mockDialogRef.close).toHaveBeenCalledWith({ success: true, projectGuid: '999999' });
   });
   
   // Future task
