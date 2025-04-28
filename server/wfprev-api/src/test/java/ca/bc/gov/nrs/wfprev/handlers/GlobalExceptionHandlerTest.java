@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonParseException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.ValidationException;
 import org.hibernate.validator.internal.engine.path.PathImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -287,5 +288,24 @@ class GlobalExceptionHandlerTest {
         Map<String, String> errors = (Map<String, String>) response.getBody();
         assertEquals(1, errors.size());
         assertEquals("Project Boundary not found", errors.get("error"));
+    }
+
+    @Test
+    void testHandleValidationException() {
+        // Given
+        String errorMessage = "Validation failed";
+        ValidationException ex = new ValidationException(errorMessage);
+
+        // When
+        ResponseEntity<Object> response = handler.handleValidationException(ex);
+
+        // Then
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertTrue(response.getBody() instanceof Map);
+
+        @SuppressWarnings("unchecked")
+        Map<String, String> error = (Map<String, String>) response.getBody();
+        assertEquals(1, error.size());
+        assertEquals(errorMessage, error.get("error"));
     }
 }
