@@ -145,7 +145,7 @@ describe('CreateNewProjectDialogComponent', () => {
 
   it('should create a new project and close dialog on success', () => {
     // Mock createProject to simulate a successful API response
-    mockProjectService.createProject.and.returnValue(of({}));
+    mockProjectService.createProject.and.returnValue(of({ projectGuid: '999999' }));
   
     // Populate the form with valid values
     component.projectForm.patchValue({
@@ -174,7 +174,7 @@ describe('CreateNewProjectDialogComponent', () => {
       'OK',
       { duration: 5000, panelClass: 'snackbar-success' }
     ); // Ensure snackbar was called
-    expect(mockDialogRef.close).toHaveBeenCalledWith({ success: true }); // Ensure the dialog was closed
+    expect(mockDialogRef.close).toHaveBeenCalledWith({ success: true, projectGuid: '999999' });
   });
   
   // Future task
