@@ -81,7 +81,7 @@ public class GlobalExceptionHandler {
         error.put(ERROR, ex.getMessage());
 
         return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
+                .status(HttpStatus.CONFLICT)
                 .body(error);
     }
 }

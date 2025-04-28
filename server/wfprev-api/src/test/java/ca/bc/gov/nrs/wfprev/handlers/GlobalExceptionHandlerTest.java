@@ -300,7 +300,7 @@ class GlobalExceptionHandlerTest {
         ResponseEntity<Object> response = handler.handleValidationException(ex);
 
         // Then
-        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
         assertTrue(response.getBody() instanceof Map);
 
         @SuppressWarnings("unchecked")
