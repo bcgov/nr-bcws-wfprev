@@ -130,7 +130,13 @@ export class ProjectsListComponent implements OnInit {
     });
     // Subscribe to the afterClosed method to handle the result
     dialogRef.afterClosed().subscribe((result) => {
-      if (result && result.success === true) {
+      if (result && result.success === true && result.projectGuid) {
+        //if the result has projectGuid return, navigate immediately
+        this.router.navigate([ResourcesRoutes.EDIT_PROJECT], {
+          queryParams: { projectGuid: result.projectGuid }
+        });
+      } else if (result && result.success === true) {
+        //if no projectGuid returned, reload projects normally
         this.loadProjects();
       }
     });
