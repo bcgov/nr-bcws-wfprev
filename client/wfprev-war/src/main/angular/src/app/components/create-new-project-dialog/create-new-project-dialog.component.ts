@@ -9,7 +9,7 @@ import { ProjectService } from 'src/app/services/project-services';
 import { CodeTableServices } from 'src/app/services/code-table-services';
 import { Project } from 'src/app/components/models';
 import {
-  validateLatLong,
+  validateLatLong, trimLatLong
 } from 'src/app/utils/tools';
 @Component({
   selector: 'app-create-new-project-dialog',
@@ -56,7 +56,7 @@ export class CreateNewProjectDialogComponent implements OnInit {
     this.projectForm = this.fb.group({
       projectType: ['', [Validators.required]],
       projectName: ['', [Validators.required, Validators.maxLength(50)]],
-      latLong: ['', [Validators.maxLength(25)]],
+      latLong: ['', [Validators.maxLength(40)]],
       businessArea: ['', [Validators.required]],
       forestRegion: ['', [Validators.required]],
       forestDistrict: ['', [Validators.required]],
@@ -241,8 +241,8 @@ export class CreateNewProjectDialogComponent implements OnInit {
         
         isMultiFiscalYearProj: false,
         ...(validatedLatLong && {
-          latitude: Number(validatedLatLong.latitude),
-          longitude: Number(validatedLatLong.longitude),
+          latitude: trimLatLong(Number(validatedLatLong.latitude)),
+          longitude: trimLatLong(Number(validatedLatLong.longitude)),
         }), // Conditionally include latitude and longitude
       };
       
@@ -287,5 +287,4 @@ export class CreateNewProjectDialogComponent implements OnInit {
     const validatorFn = control.validator({} as any);
     return !!validatorFn && validatorFn.hasOwnProperty(validator.name);
   }
-  
 }
