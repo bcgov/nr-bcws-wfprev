@@ -213,7 +213,12 @@ describe('ProjectDetailsComponent', () => {
       component.updateMap(49.553209, -119.965887);
     
       expect(L.map).toHaveBeenCalled();
-      expect(L.marker).toHaveBeenCalledWith([49.553209, -119.965887]);
+      expect(L.marker).toHaveBeenCalledWith(
+        [49.553209, -119.965887],
+        jasmine.objectContaining({
+          icon: jasmine.any(Object),
+        })
+      );
       expect(markerSpy.addTo).toHaveBeenCalledWith(mapSpy);
     });
 
@@ -293,7 +298,12 @@ describe('ProjectDetailsComponent', () => {
     it('should add a marker when updating the map view', () => {
       component['map'] = mapSpy;
       component.updateMap(49.553209, -119.965887);
-      expect(L.marker).toHaveBeenCalledWith([49.553209, -119.965887]);
+      expect(L.marker).toHaveBeenCalledWith(
+        [49.553209, -119.965887],
+        jasmine.objectContaining({
+          icon: jasmine.any(Object),
+        })
+      );
       expect(markerSpy.addTo).toHaveBeenCalledWith(mapSpy);
     });
   
@@ -304,7 +314,12 @@ describe('ProjectDetailsComponent', () => {
       component.updateMap(49.553209, -119.965887);
     
       expect(mapSpy.removeLayer).toHaveBeenCalledWith(markerSpy); // Ensure the old marker is removed
-      expect(L.marker).toHaveBeenCalledWith([49.553209, -119.965887]); // New marker added
+      expect(L.marker).toHaveBeenCalledWith(
+        [49.553209, -119.965887],
+        jasmine.objectContaining({
+          icon: jasmine.any(Object),
+        })
+      );
       expect(markerSpy.addTo).toHaveBeenCalledWith(mapSpy); // New marker added to the map
     });
     
@@ -315,7 +330,12 @@ describe('ProjectDetailsComponent', () => {
       component.updateMap(49.553209, -119.965887);
   
       expect(L.map).toHaveBeenCalled(); // Verify that the map is created
-      expect(L.marker).toHaveBeenCalledWith([49.553209, -119.965887]); // Marker created
+      expect(L.marker).toHaveBeenCalledWith(
+        [49.553209, -119.965887],
+        jasmine.objectContaining({
+          icon: jasmine.any(Object)
+        })
+      );
       expect(markerSpy.addTo).toHaveBeenCalledWith(mapSpy); // Marker added to the map
     });
   
