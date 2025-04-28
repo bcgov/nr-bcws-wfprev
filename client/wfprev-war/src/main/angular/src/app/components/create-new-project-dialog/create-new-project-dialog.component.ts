@@ -253,7 +253,7 @@ export class CreateNewProjectDialogComponent implements OnInit {
             'OK',
             { duration: 5000, panelClass: 'snackbar-success' },
           );
-          this.dialogRef.close({ success: true });
+          this.dialogRef.close({ success: true, projectGuid: response.projectGuid });
         },
         error: (err) =>{
             this.snackbarService.open(
