@@ -11,6 +11,7 @@ import { Messages } from 'src/app/utils/messages';
 import {
   validateLatLong,
   formatLatLong,
+  trimLatLong,
 } from 'src/app/utils/tools';
 import { FiscalYearProjectsComponent } from 'src/app/components/edit-project/project-details/fiscal-year-projects/fiscal-year-projects.component';
 import { ProjectFilesComponent } from 'src/app/components/edit-project/project-details/project-files/project-files.component';
@@ -474,8 +475,8 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
     const { latitude, longitude } = parsed;
     const updatedProject = {
       ...this.projectDetail,
-      latitude,
-      longitude,
+      latitude: trimLatLong(Number(latitude)),
+      longitude: trimLatLong(Number(longitude)),
     };
   
     this.projectService.updateProject(this.projectGuid, updatedProject).subscribe({
