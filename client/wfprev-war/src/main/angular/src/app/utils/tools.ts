@@ -105,3 +105,15 @@ export function createFullPageControl(callback: () => void, iconPath: string = '
   return fullScreenControl;
 }
 
+export function trimLatLong(value: number): number {
+  if (value == null) return value;
+  
+  // Limit to 6 decimals
+  const trimmed = Number(value.toFixed(6)); 
+
+  if (Math.abs(trimmed) >= 1000) {
+    throw new Error('Latitude/Longitude value too large'); 
+  }
+  
+  return trimmed;
+}

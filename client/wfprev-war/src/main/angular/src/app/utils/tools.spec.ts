@@ -1,4 +1,4 @@
-import { parseLatLong, validateLatLong, formatLatLong } from './tools';
+import { parseLatLong, validateLatLong, formatLatLong, trimLatLong } from './tools';
 
 describe('Latitude/Longitude Utilities', () => {
   describe('parseLatLong', () => {
@@ -64,6 +64,24 @@ describe('Latitude/Longitude Utilities', () => {
     it('should format small decimal values correctly', () => {
       const result = formatLatLong(49.0001, -123.0001);
       expect(result).toBe('49.0001° N, -123.0001° W');
+    });
+  });
+
+  describe('trimLatLong', () => {
+    it('should trim number to 6 decimal places', () => {
+      expect(trimLatLong(49.123456789)).toBe(49.123457);
+    });
+  
+    it('should return null if input is null', () => {
+      expect(trimLatLong(null as any)).toBeNull();
+    });
+  
+    it('should throw error if value >= 1000', () => {
+      expect(() => trimLatLong(1234.567891)).toThrow();
+    });
+  
+    it('should handle negative numbers correctly', () => {
+      expect(trimLatLong(-123.456789)).toBe(-123.456789);
     });
   });
 });
