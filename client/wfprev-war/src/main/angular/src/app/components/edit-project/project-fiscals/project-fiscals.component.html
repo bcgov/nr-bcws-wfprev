@@ -227,7 +227,7 @@
             </mat-expansion-panel>
             <div class="activities-map-container">
               <app-activities class="activities-panel" [fiscalGuid]="currentFiscalGuid" (boundariesUpdated)="onBoundariesChanged()"></app-activities>
-              <app-fiscal-map class="fiscal-map-panel" *ngIf="selectedTabIndex === i" [fiscalGuid]="selectedTabIndex" #fiscalMapRef></app-fiscal-map>
+              <app-fiscal-map class="fiscal-map-panel" *ngIf="selectedTabIndex === i" [fiscalGuid]="selectedTabIndex" [selectedFiscalYear]="projectFiscals[selectedTabIndex]?.fiscalYear"  #fiscalMapRef></app-fiscal-map>
             </div>
           </mat-accordion>
         </mat-tab>
