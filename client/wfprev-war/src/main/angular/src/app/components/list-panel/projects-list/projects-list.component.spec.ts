@@ -305,4 +305,41 @@ describe('ProjectsListComponent', () => {
       expect(mockPolygon.setStyle).not.toHaveBeenCalled();
     });
   });
+
+  it('should navigate to edit project page if projectGuid is returned after project creation', () => {
+    // Mock the dialog to return success with projectGuid
+    mockDialog.open.and.returnValue({
+      afterClosed: () => of({ success: true, projectGuid: 'new-guid' })
+    } as any);
+  
+    component.createNewProject();
+  
+    expect(mockDialog.open).toHaveBeenCalledWith(
+      CreateNewProjectDialogComponent,
+      {
+        width: '1000px',
+        disableClose: true,
+        hasBackdrop: true,
+      }
+    );
+  
+    expect(mockRouter.navigate).toHaveBeenCalledWith(
+      [ResourcesRoutes.EDIT_PROJECT],
+      { queryParams: { projectGuid: 'new-guid' } }
+    );
+  });
+  
+  it('should reload projects if no projectGuid is returned after project creation', () => {
+    spyOn(component, 'loadProjects');
+  
+    // Mock the dialog to return success without projectGuid
+    mockDialog.open.and.returnValue({
+      afterClosed: () => of({ success: true })
+    } as any);
+  
+    component.createNewProject();
+  
+    expect(component.loadProjects).toHaveBeenCalled();
+  });
+  
 });
