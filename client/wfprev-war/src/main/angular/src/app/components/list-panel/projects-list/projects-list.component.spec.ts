@@ -330,7 +330,6 @@ describe('ProjectsListComponent', () => {
   
   it('should reload projects if no projectGuid is returned after project creation', () => {
     spyOn(component, 'loadProjects');
-  
     mockDialog.open.and.returnValue({
       afterClosed: () => of({ success: true })
     } as any);
