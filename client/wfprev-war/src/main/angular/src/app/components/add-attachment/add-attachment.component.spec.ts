@@ -164,8 +164,8 @@ describe('AddAttachmentComponent', () => {
   
     expect(newComponent.attachmentTypes).toEqual([
       { label: 'Activity Polygon', value: 'MAP' },
+      { label: 'Other', value: 'OTHER' },
       { label: 'Prescription', value: 'DOCUMENT' },
-      { label: 'Other', value: 'OTHER' }
     ]);
     expect(newComponent.attachmentType).toBe('MAP');
   });
