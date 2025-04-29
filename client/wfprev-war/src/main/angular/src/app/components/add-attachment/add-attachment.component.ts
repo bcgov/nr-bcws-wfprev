@@ -36,8 +36,8 @@ export class AddAttachmentComponent {
     } else if (isActivityFiles) {
       this.attachmentTypes = [
         { label: 'Activity Polygon', value: 'MAP' },
-        { label: 'Prescription', value: 'DOCUMENT' },
-        { label: 'Other', value: 'OTHER' }
+        { label: 'Other', value: 'OTHER' },
+        { label: 'Prescription', value: 'DOCUMENT' }
       ];
     }
     this.attachmentType = 'MAP';
