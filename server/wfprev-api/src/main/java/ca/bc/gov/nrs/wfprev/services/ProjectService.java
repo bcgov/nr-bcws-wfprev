@@ -10,6 +10,7 @@ import ca.bc.gov.nrs.wfprev.data.repositories.*;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.ValidationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.hateoas.CollectionModel;
@@ -86,10 +87,25 @@ public class ProjectService implements CommonService {
         return saveProject(resource, entity);
     }
 
-    private ProjectModel saveProject(ProjectModel resource, ProjectEntity entity) {
+    public ProjectModel saveProject(ProjectModel resource, ProjectEntity entity) {
         try {
             assignAssociatedEntities(resource, entity);
+            // Check for duplicate name, accounting for updates
+            if (entity.getProjectGuid() != null) {
+                // For updates, check if another project has this name
+                boolean duplicateExists = projectRepository.findByProjectName(entity.getProjectName())
+                        .stream()
+                        .anyMatch(existing -> !existing.getProjectGuid().equals(entity.getProjectGuid()));
 
+                if (duplicateExists) {
+                    throw new ValidationException("Project name already exists: " + entity.getProjectName());
+                }
+            } else {
+                // For new projects, simple check is fine
+                if (projectRepository.existsByProjectName(entity.getProjectName())) {
+                    throw new ValidationException("Project name already exists: " + entity.getProjectName());
+                }
+            }
             ProjectEntity savedEntity = projectRepository.saveAndFlush(entity);
             return projectResourceAssembler.toModel(savedEntity);
         } catch (EntityNotFoundException e) {
