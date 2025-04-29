@@ -255,13 +255,19 @@ export class CreateNewProjectDialogComponent implements OnInit {
           );
           this.dialogRef.close({ success: true, projectGuid: response.projectGuid });
         },
-        error: (err) =>{
-            this.snackbarService.open(
-              this.messages.projectCreatedFailure,
-              'OK',
-              { duration: 5000, panelClass: 'snackbar-error' }
-            );
-          }
+        error: (err) => {
+          // 409 is duplicate project name error
+          const errorMessage =
+            err?.status === 409 && err?.error?.error
+              ? err.error.error
+              : this.messages.projectCreatedFailure;
+        
+          this.snackbarService.open(
+            errorMessage,
+            'OK',
+            { duration: 5000, panelClass: 'snackbar-error' }
+          );
+        }
       })
     }
   }
