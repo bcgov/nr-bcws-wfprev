@@ -9,6 +9,7 @@ import ca.bc.gov.nrs.wfprev.data.repositories.*;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.ValidationException;
 import org.hibernate.validator.internal.engine.path.PathImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,6 +20,7 @@ import org.springframework.hateoas.CollectionModel;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -59,6 +61,12 @@ class ProjectServiceTest {
         setField(projectService, "generalScopeCodeRepository", generalScopeCodeRepository);
         setField(projectService, "projectStatusCodeRepository", projectStatusCodeRepository);
         setField(projectService, "objectiveTypeCodeRepository", objectiveTypeCodeRepository);
+
+        ProjectStatusCodeEntity activeStatus = new ProjectStatusCodeEntity();
+        activeStatus.setProjectStatusCode("ACTIVE");
+        activeStatus.setDescription("Active");
+
+        when(projectStatusCodeRepository.findById("ACTIVE")).thenReturn(Optional.of(activeStatus));
     }
 
     @Test
@@ -926,6 +934,78 @@ class ProjectServiceTest {
                 () -> projectService.getProjectById(invalidGuid)
         );
         assertEquals("Invalid UUID: invalid-uuid", exception.getMessage());
+    }
+
+    @Test
+    void test_save_project_should_throw_validation_exception_for_duplicate_name_on_create() {
+        // Given: New project (no projectGuid yet)
+        ProjectModel inputModel = ProjectModel.builder()
+                .projectName("Duplicate Project")
+                .build();
+        ProjectEntity entity = ProjectEntity.builder()
+                .projectName("Duplicate Project")
+                .build();
+
+        when(projectRepository.existsByProjectName("Duplicate Project")).thenReturn(true);
+
+        // When/Then
+        ValidationException exception = assertThrows(ValidationException.class, () -> {
+            projectService.saveProject(inputModel, entity);
+        });
+
+        assertTrue(exception.getMessage().contains("Project name already exists"));
+    }
+
+    @Test
+    void test_save_project_should_throw_validation_exception_for_duplicate_name_on_update() {
+        // Given: Existing project (has projectGuid)
+        UUID existingGuid = UUID.randomUUID();
+        ProjectModel inputModel = ProjectModel.builder()
+                .projectGuid(existingGuid.toString())
+                .projectName("Duplicate Project")
+                .build();
+        ProjectEntity entity = ProjectEntity.builder()
+                .projectGuid(existingGuid)
+                .projectName("Duplicate Project")
+                .build();
+
+        ProjectEntity otherEntityWithSameName = ProjectEntity.builder()
+                .projectGuid(UUID.randomUUID()) // Different GUID
+                .projectName("Duplicate Project")
+                .build();
+
+        when(projectRepository.findByProjectName("Duplicate Project"))
+                .thenReturn(Collections.singletonList(otherEntityWithSameName));
+
+        // When/Then
+        ValidationException exception = assertThrows(ValidationException.class, () -> {
+            projectService.saveProject(inputModel, entity);
+        });
+
+        assertTrue(exception.getMessage().contains("Project name already exists"));
+    }
+
+    @Test
+    void test_save_project_should_save_successfully_when_no_duplicate_exists() {
+        // Given: New project
+        ProjectModel inputModel = ProjectModel.builder()
+                .projectName("Unique Project")
+                .build();
+        ProjectEntity entity = ProjectEntity.builder()
+                .projectName("Unique Project")
+                .build();
+
+        when(projectRepository.existsByProjectName("Unique Project")).thenReturn(false);
+        when(projectRepository.saveAndFlush(any(ProjectEntity.class))).thenReturn(entity);
+        when(projectResourceAssembler.toModel(any(ProjectEntity.class))).thenReturn(inputModel);
+
+        // When
+        ProjectModel result = projectService.saveProject(inputModel, entity);
+
+        // Then
+        assertNotNull(result);
+        verify(projectRepository).saveAndFlush(entity);
+        verify(projectResourceAssembler).toModel(entity);
     }
 
     private void setField(Object target, String fieldName, Object value) {

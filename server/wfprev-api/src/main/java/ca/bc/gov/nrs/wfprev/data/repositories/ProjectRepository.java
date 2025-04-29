@@ -5,9 +5,14 @@ import ca.bc.gov.nrs.wfprev.data.entities.ProjectEntity;
 
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
+import java.util.List;
 import java.util.UUID;
 
 @RepositoryRestResource(exported = false)
 public interface ProjectRepository extends CommonRepository<ProjectEntity, UUID> {
+
+    List<ProjectEntity> findByProjectName(String projectName);
+
+    boolean existsByProjectName(String projectName);
   
 }

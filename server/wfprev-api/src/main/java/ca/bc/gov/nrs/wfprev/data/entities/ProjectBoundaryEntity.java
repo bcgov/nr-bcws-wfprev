@@ -88,7 +88,7 @@ public class ProjectBoundaryEntity implements Serializable {
     private Point locationGeometry;
 
     @NotNull
-    @Column(name = "boundary_geometry", columnDefinition = "geometry(Multipolygon, 4326)")
+    @Column(name = "boundary_geometry", nullable = false, columnDefinition = "geometry(Multipolygon, 4326)")
     @JdbcTypeCode(SqlTypes.GEOMETRY)
     public MultiPolygon boundaryGeometry;
 
