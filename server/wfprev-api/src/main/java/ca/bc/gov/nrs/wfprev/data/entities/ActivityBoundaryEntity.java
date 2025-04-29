@@ -81,7 +81,7 @@ public class ActivityBoundaryEntity implements Serializable {
     private String boundaryComment;
 
     @NotNull
-    @Column(name = "geometry", columnDefinition = "geometry(Multipolygon, 4326)")
+    @Column(name = "geometry", nullable = false, columnDefinition = "geometry(Multipolygon, 4326)")
     @JdbcTypeCode(SqlTypes.GEOMETRY)
     private MultiPolygon geometry;
 
