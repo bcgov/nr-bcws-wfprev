@@ -106,20 +106,20 @@ export class ProjectsListComponent implements OnInit {
 
   getDescription(codeTable: string, code: number | string): string {
     const table = this[codeTable];
-    if (!table) return 'Unknown'; // Return 'Unknown' if the table is not loaded
+    if (!table) return ''; // Return empty value if the table is not loaded
 
     let entry;
 
     if (codeTable === 'programAreaCode') {
       // Search by programAreaGuid if the codeTable is programAreaCode
       entry = table.find((item: any) => item.programAreaGuid === code);
-      return entry ? entry.programAreaName : 'Unknown'
+      return entry ? entry.programAreaName : ''
     } else {
       // Default to searching by orgUnitId
       entry = table.find((item: any) => item.orgUnitId === code);
     }
 
-    return entry ? entry.orgUnitName : 'Unknown';
+    return entry ? entry.orgUnitName : '';
   }
 
   createNewProject(): void {

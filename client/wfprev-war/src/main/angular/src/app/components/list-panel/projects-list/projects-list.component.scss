@@ -136,17 +136,23 @@
 
       .expansion-panel-header{
         min-height: 152px;
-        padding:0 35px;
+        padding: 10px 0;
       }
 
       .project-title {
         font-family: var(--wf-font-family-main) !important;
         background-color: inherit;
-        font-weight: bold;
         display: flex;
 
+        .indicator-icon{
+          width: 17px;
+          height: 17px;
+        }
         .project-name {
           flex:1;
+          font-size: 20px;
+          font-style: normal;
+          font-weight: 700
         }
 
         mat-panel-title {
@@ -165,15 +171,18 @@
         font-family: var(--wf-font-family-main);
         color: #282828;;
         font-weight: 400;
+        padding: 0 10px;
       }
 
       .detail {
         font-family: var(--wf-font-family-main) !important;
         display: flex;
         flex-direction: column; /* Stack the label and value vertically */
-        gap: 2px; /* Spacing between label and value */
+        gap: 3px; /* Spacing between label and value */
         .heavy-font{
           font-weight: 700;
+          font-size: 16px;
+          color: #474543
         }
       }
       
@@ -213,10 +222,7 @@
       .action-items {
         display: flex;
         justify-content: flex-end;
-        gap: 10px;
         align-items: center;
-        position: relative;
-        top: 50%;
       }
 
       .action-item {
@@ -248,8 +254,7 @@
   }
   
 .custom-indicator{
-  position: absolute;
-  left: 10px;
+  padding: 10px;
 }
 
 .create-project-button-container{
@@ -277,4 +282,11 @@
       }
     }
   }
+}
+
+.divider{
+  width: 100%;
+  height: 1px;
+  background-color: #D8D8D8;
+  margin: 5px 0;
 }
