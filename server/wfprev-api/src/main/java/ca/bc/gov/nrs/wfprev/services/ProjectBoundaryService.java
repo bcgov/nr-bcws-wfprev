@@ -75,13 +75,8 @@ public class ProjectBoundaryService implements CommonService {
               .map(projectBoundaryResourceAssembler::toModel)
               .toList();
 
-      boundaryModels.forEach(b -> {
-        try {
-          log.info("Mapped ProjectBoundaryModel: {}", objectMapper.writeValueAsString(b));
-        } catch (JsonProcessingException e) {
-          log.warn("Failed to serialize ProjectBoundaryModel for logging", e);
-        }
-      });
+      // DEBUG LOG each model
+      boundaryModels.forEach(b -> log.info("Mapped ProjectBoundaryModel: {}", b));
 
       return CollectionModel.of(boundaryModels);
 

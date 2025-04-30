@@ -45,4 +45,32 @@ public class ProjectBoundaryModel extends CommonModel<ProjectBoundaryModel> {
 	private Point locationGeometry;
 	@NotNull(message = "ProjectBoundary boundaryGeometry must not be null")
 	private MultiPolygon boundaryGeometry;
+	@Override
+	public String toString() {
+		return "ProjectBoundaryModel{" +
+				"projectBoundaryGuid='" + projectBoundaryGuid + '\'' +
+				", projectGuid='" + projectGuid + '\'' +
+				", systemStartTimestamp=" + systemStartTimestamp +
+				", systemEndTimestamp=" + systemEndTimestamp +
+				", mappingLabel='" + mappingLabel + '\'' +
+				", collectionDate=" + collectionDate +
+				", collectionMethod='" + collectionMethod + '\'' +
+				", collectorName='" + collectorName + '\'' +
+				", boundarySizeHa=" + boundarySizeHa +
+				", boundaryComment='" + boundaryComment + '\'' +
+				", locationGeometry=" + safeGeometrySummary(locationGeometry) +
+				", boundaryGeometry=" + safeGeometrySummary(boundaryGeometry) +
+				'}';
+	}
+
+	private String safeGeometrySummary(Object geom) {
+		if (geom == null) {
+			return "null";
+		}
+		try {
+			return geom.getClass().getSimpleName() + ": " + geom.toString();
+		} catch (Exception e) {
+			return geom.getClass().getSimpleName() + ": [unprintable geometry: " + e.getMessage() + "]";
+		}
+	}
 }
