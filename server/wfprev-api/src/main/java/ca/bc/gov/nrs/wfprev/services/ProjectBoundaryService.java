@@ -69,9 +69,6 @@ public class ProjectBoundaryService implements CommonService {
               .map(projectBoundaryResourceAssembler::toModel)
               .toList();
 
-      // DEBUG LOG each model
-      boundaryModels.forEach(b -> log.info("Mapped ProjectBoundaryModel: {}", b));
-
       return CollectionModel.of(boundaryModels);
 
     } catch (IllegalArgumentException e) {
