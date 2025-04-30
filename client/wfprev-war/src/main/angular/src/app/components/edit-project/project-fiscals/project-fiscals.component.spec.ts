@@ -253,7 +253,7 @@ describe('ProjectFiscalsComponent', () => {
     expect(component.dialog.open).toHaveBeenCalledWith(ConfirmationDialogComponent, {
       data: {
         indicator: 'delete-fiscal-year',
-        name: 'My Plan:2025/26'  // 🟢 Updated expected string
+        name: 'My Plan:2025/26'
       },
       width: '600px',
     });
