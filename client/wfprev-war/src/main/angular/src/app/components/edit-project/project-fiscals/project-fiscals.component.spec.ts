@@ -241,14 +241,24 @@ describe('ProjectFiscalsComponent', () => {
       afterClosed: () => of(true) // Simulate user clicking "Confirm"
     } as any);
   
-    component.projectFiscals = [{ projectPlanFiscalGuid: 'test-guid' }];
-    component.deleteFiscalYear({ value: component.projectFiscals[0] },0);
+    component.projectFiscals = [{
+      projectPlanFiscalGuid: 'test-guid',
+      fiscalYear: 2025,
+      projectFiscalName: 'My Plan'
+    }];
+    component.selectedTabIndex = 0;
+  
+    component.deleteFiscalYear({ value: component.projectFiscals[0] }, 0);
   
     expect(component.dialog.open).toHaveBeenCalledWith(ConfirmationDialogComponent, {
-      data: { indicator: 'delete-fiscal-year', name: null },
+      data: {
+        indicator: 'delete-fiscal-year',
+        name: 'My Plan:2025/26'  // 🟢 Updated expected string
+      },
       width: '600px',
     });
   });
+  
   
   it('should delete a fiscal year after confirmation', () => {
     spyOn(component.dialog, 'open').and.returnValue({
