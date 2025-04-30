@@ -354,10 +354,12 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  
     const formData = form.value;
     const fiscalName = this.projectFiscals[this.selectedTabIndex]?.projectFiscalName;
     const fiscalYear = this.projectFiscals[this.selectedTabIndex]?.fiscalYear;
+    const formattedYear = fiscalYear ? `${fiscalYear}/${(fiscalYear + 1).toString().slice(-2)}` : null;
+
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       data: { 
         indicator: 'delete-fiscal-year', 
-        name: (fiscalName && fiscalYear) ? `${fiscalName}:${fiscalYear}` : null
+        name: (fiscalName && fiscalYear) ? `${fiscalName}:${formattedYear}` : null
       },
       width: '600px',
     });
