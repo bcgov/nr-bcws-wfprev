@@ -83,8 +83,8 @@ public class ProjectBoundaryEntity implements Serializable {
 
     @Column(name = "location_geometry", columnDefinition = "geometry(Point, 4326)")
     @JdbcTypeCode(SqlTypes.GEOMETRY)
-//    @JsonDeserialize(using = PointDeserializer.class)
-//    @JsonSerialize(using = PointSerializer.class)
+    @JsonDeserialize(using = PointDeserializer.class)
+    @JsonSerialize(using = PointSerializer.class)
     private Point locationGeometry;
 
     @NotNull

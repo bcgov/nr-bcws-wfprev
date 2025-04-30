@@ -3,7 +3,6 @@ package ca.bc.gov.nrs.wfprev.handlers;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.ValidationException;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +16,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 @ControllerAdvice
-@Slf4j
 public class GlobalExceptionHandler {
 
     private static final String ERROR = "error";
@@ -90,7 +88,6 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(HttpMessageNotWritableException.class)
     public ResponseEntity<Object> handleHttpMessageNotWritable(HttpMessageNotWritableException ex) {
-        log.error("HttpMessageNotWritableException occurred", ex);  // Logs full error with stack trace
         Map<String, String> errors = new HashMap<>();
         errors.put(ERROR, "Unable to serialize response");
 

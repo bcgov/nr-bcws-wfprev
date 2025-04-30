@@ -72,13 +72,13 @@ public class ProjectBoundaryController extends CommonController {
             @PathVariable String projectGuid) {
         log.debug(" >> getAllProjectBoundaries");
 
-//        try {
+        try {
             return ok(projectBoundaryService.getAllProjectBoundaries(projectGuid));
 
-//        } catch (RuntimeException e) {
-//            log.error(" ### Error while fetching Project Boundaries", e);
-//            return internalServerError();
-//        }
+        } catch (RuntimeException e) {
+            log.error(" ### Error while fetching Project Boundaries", e);
+            return internalServerError();
+        }
     }
 
     @GetMapping("/{id}")

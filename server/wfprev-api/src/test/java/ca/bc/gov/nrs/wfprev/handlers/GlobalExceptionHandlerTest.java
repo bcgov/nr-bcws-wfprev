@@ -14,6 +14,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -307,5 +308,23 @@ class GlobalExceptionHandlerTest {
         Map<String, String> error = (Map<String, String>) response.getBody();
         assertEquals(1, error.size());
         assertEquals(errorMessage, error.get("error"));
+    }
+
+    @Test
+    void testHandleHttpMessageNotWritable() {
+        // Given
+        HttpMessageNotWritableException ex = new HttpMessageNotWritableException("Serialization failed");
+
+        // When
+        ResponseEntity<Object> response = handler.handleHttpMessageNotWritable(ex);
+
+        // Then
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertTrue(response.getBody() instanceof Map);
+
+        @SuppressWarnings("unchecked")
+        Map<String, String> errors = (Map<String, String>) response.getBody();
+        assertEquals(1, errors.size());
+        assertEquals("Unable to serialize response", errors.get("error"));
     }
 }

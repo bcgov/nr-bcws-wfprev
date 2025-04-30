@@ -8,15 +8,12 @@ import ca.bc.gov.nrs.wfprev.data.entities.ProjectEntity;
 import ca.bc.gov.nrs.wfprev.data.models.ProjectBoundaryModel;
 import ca.bc.gov.nrs.wfprev.data.repositories.ProjectBoundaryRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.ProjectRepository;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validator;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.stereotype.Component;
 
@@ -29,9 +26,6 @@ import java.util.UUID;
 @Slf4j
 @Component
 public class ProjectBoundaryService implements CommonService {
-
-  @Autowired
-  private ObjectMapper objectMapper;
 
   private static final String PROJECT_NOT_FOUND = "Project not found";
   private static final String BOUNDARY_NOT_FOUND = "Project Boundary not found";
@@ -207,9 +201,7 @@ public class ProjectBoundaryService implements CommonService {
   private ProjectBoundaryModel updateFieldsFromBoundaryGeometry(ProjectBoundaryModel model) {
     if(model.getBoundaryGeometry() != null) {
       model.setBoundarySizeHa(BigDecimal.valueOf(model.getBoundaryGeometry().getArea() / 10000.0));
-      if(model.getLocationGeometry() == null) {
-        model.setLocationGeometry(model.getBoundaryGeometry().getCentroid());
-      }
+      model.setLocationGeometry(model.getBoundaryGeometry().getCentroid());
     } return model;
   }
 }
