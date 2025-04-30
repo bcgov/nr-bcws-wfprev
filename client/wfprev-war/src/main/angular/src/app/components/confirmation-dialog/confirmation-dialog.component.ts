@@ -17,10 +17,10 @@ export class ConfirmationDialogComponent {
   dialogUsage: string = 'confirm-cancel';
 
   private readonly dialogMessages: Record<string, string> = {
-    'confirm-cancel': 'Are you sure you want to cancel?<br />This information will not be saved.',
-    'duplicate-project': 'This Project already exists:<br />',
-    'confirm-unsave': 'Are you sure you want to leave this page?<br />The changes you made will not be saved.',
-    'delete-attachment': 'Are you sure you want to delete this file?<br />',
+    'confirm-cancel': 'Are you sure you want to cancel? This information will not be saved.',
+    'duplicate-project': 'This Project already exists: ',
+    'confirm-unsave': 'Are you sure you want to leave this page? The changes you made will not be saved.',
+    'delete-attachment': 'Are you sure you want to delete this file? ',
   };
 
   get dialogMessage(): string {
