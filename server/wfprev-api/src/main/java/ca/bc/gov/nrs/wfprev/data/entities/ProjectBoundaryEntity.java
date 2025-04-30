@@ -12,6 +12,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -88,6 +89,7 @@ public class ProjectBoundaryEntity implements Serializable {
     private Point locationGeometry;
 
     @NotNull
+    @NotEmpty
     @Column(name = "boundary_geometry", nullable = false, columnDefinition = "geometry(Multipolygon, 4326)")
     @JdbcTypeCode(SqlTypes.GEOMETRY)
     public MultiPolygon boundaryGeometry;
