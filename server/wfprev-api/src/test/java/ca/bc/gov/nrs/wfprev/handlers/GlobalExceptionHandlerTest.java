@@ -14,8 +14,10 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import java.util.HashSet;
@@ -273,6 +275,36 @@ class GlobalExceptionHandlerTest {
     }
 
     @Test
+    void testHandleMethodArgumentNotValid_WithGlobalErrors() {
+        // Given
+        BindingResult bindingResult = mock(BindingResult.class);
+        List<FieldError> fieldErrors = List.of(
+                new FieldError("activityModel", "activityName", "must not be empty")
+        );
+        List<ObjectError> globalErrors = List.of(
+                new ObjectError("activityModel", "Date range is invalid")
+        );
+
+        when(bindingResult.getFieldErrors()).thenReturn(fieldErrors);
+        when(bindingResult.getGlobalErrors()).thenReturn(globalErrors);
+
+        MethodArgumentNotValidException ex = new MethodArgumentNotValidException(null, bindingResult);
+
+        // When
+        ResponseEntity<Object> response = handler.handleMethodArgumentNotValid(ex);
+
+        // Then
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertTrue(response.getBody() instanceof Map);
+
+        @SuppressWarnings("unchecked")
+        Map<String, String> errors = (Map<String, String>) response.getBody();
+        assertEquals(2, errors.size());
+        assertEquals("must not be empty", errors.get("activityName"));
+        assertEquals("Date range is invalid", errors.get("activityModel")); // Global error key
+    }
+
+    @Test
     void testHandleEntityNotFoundException() {
         // Given
         EntityNotFoundException ex = new EntityNotFoundException("Project Boundary not found");
@@ -307,5 +339,23 @@ class GlobalExceptionHandlerTest {
         Map<String, String> error = (Map<String, String>) response.getBody();
         assertEquals(1, error.size());
         assertEquals(errorMessage, error.get("error"));
+    }
+
+    @Test
+    void testHandleHttpMessageNotWritable() {
+        // Given
+        HttpMessageNotWritableException ex = new HttpMessageNotWritableException("Serialization failed");
+
+        // When
+        ResponseEntity<Object> response = handler.handleHttpMessageNotWritable(ex);
+
+        // Then
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertTrue(response.getBody() instanceof Map);
+
+        @SuppressWarnings("unchecked")
+        Map<String, String> errors = (Map<String, String>) response.getBody();
+        assertEquals(1, errors.size());
+        assertEquals("Unable to serialize response", errors.get("error"));
     }
 }

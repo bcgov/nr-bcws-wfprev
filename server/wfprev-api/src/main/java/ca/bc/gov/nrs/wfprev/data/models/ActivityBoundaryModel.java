@@ -2,6 +2,7 @@ package ca.bc.gov.nrs.wfprev.data.models;
 
 import ca.bc.gov.nrs.wfprev.common.entities.CommonModel;
 import ca.bc.gov.nrs.wfprev.common.validators.ActivityBoundaryTimestamps;
+import ca.bc.gov.nrs.wfprev.common.validators.NotEmptyActivityBoundary;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonRootName;
@@ -17,6 +18,7 @@ import org.springframework.hateoas.server.core.Relation;
 import java.math.BigDecimal;
 import java.util.Date;
 
+@NotEmptyActivityBoundary
 @ActivityBoundaryTimestamps
 @Data
 @EqualsAndHashCode(callSuper = false)
