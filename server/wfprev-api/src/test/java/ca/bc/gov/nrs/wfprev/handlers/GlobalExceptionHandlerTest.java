@@ -17,6 +17,7 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import java.util.HashSet;
@@ -271,6 +272,36 @@ class GlobalExceptionHandlerTest {
         assertEquals(2, errors.size());
         assertEquals("must not be empty", errors.get("activityName"));
         assertEquals("must be a valid date", errors.get("activityStartDate"));
+    }
+
+    @Test
+    void testHandleMethodArgumentNotValid_WithGlobalErrors() {
+        // Given
+        BindingResult bindingResult = mock(BindingResult.class);
+        List<FieldError> fieldErrors = List.of(
+                new FieldError("activityModel", "activityName", "must not be empty")
+        );
+        List<ObjectError> globalErrors = List.of(
+                new ObjectError("activityModel", "Date range is invalid")
+        );
+
+        when(bindingResult.getFieldErrors()).thenReturn(fieldErrors);
+        when(bindingResult.getGlobalErrors()).thenReturn(globalErrors);
+
+        MethodArgumentNotValidException ex = new MethodArgumentNotValidException(null, bindingResult);
+
+        // When
+        ResponseEntity<Object> response = handler.handleMethodArgumentNotValid(ex);
+
+        // Then
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertTrue(response.getBody() instanceof Map);
+
+        @SuppressWarnings("unchecked")
+        Map<String, String> errors = (Map<String, String>) response.getBody();
+        assertEquals(2, errors.size());
+        assertEquals("must not be empty", errors.get("activityName"));
+        assertEquals("Date range is invalid", errors.get("activityModel")); // Global error key
     }
 
     @Test
