@@ -62,7 +62,7 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
     private projectService: ProjectService,
     private readonly codeTableService: CodeTableServices,
     public snackbarService: MatSnackBar,
-    public readonly dialog: MatDialog,
+    public dialog: MatDialog,
     
   ) {}
 
