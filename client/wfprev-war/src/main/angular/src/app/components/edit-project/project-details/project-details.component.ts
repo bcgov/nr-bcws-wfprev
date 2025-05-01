@@ -15,6 +15,9 @@ import {
 } from 'src/app/utils/tools';
 import { FiscalYearProjectsComponent } from 'src/app/components/edit-project/project-details/fiscal-year-projects/fiscal-year-projects.component';
 import { ProjectFilesComponent } from 'src/app/components/edit-project/project-details/project-files/project-files.component';
+import { Observable } from 'rxjs';
+import { ConfirmationDialogComponent } from 'src/app/components/confirmation-dialog/confirmation-dialog.component';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-project-details',
@@ -59,6 +62,8 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
     private projectService: ProjectService,
     private readonly codeTableService: CodeTableServices,
     public snackbarService: MatSnackBar,
+    public readonly dialog: MatDialog,
+    
   ) {}
 
   ngOnInit(): void {
@@ -513,4 +518,21 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
     // Reset form to original values
     this.detailsForm.reset(this.originalFormValues);
   }
+
+  public isFormDirty(): boolean {
+    return this.detailsForm.dirty || this.isProjectDescriptionDirty || this.isLatLongDirty;
+  }
+  
+
+  canDeactivate(): Observable<boolean> | boolean {
+    if (this.isFormDirty()) {
+      const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+        data: { indicator: 'confirm-unsave' },
+        width: '500px',
+      });
+      return dialogRef.afterClosed();
+    }
+    return true;
+  }
+  
 }
