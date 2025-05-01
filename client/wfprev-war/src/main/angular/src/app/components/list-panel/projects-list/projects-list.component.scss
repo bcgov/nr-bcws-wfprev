@@ -1,3 +1,10 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
 .list-header {
     display: flex;
     align-items: center;
@@ -8,9 +15,10 @@
     font-size: 14px;
     gap: 12px;
     position: relative;
-  }
+    background: #fff;
+}
   
-  .sort-dropdown {
+.sort-dropdown {
     display: flex;
     align-items: center;
     gap:5px;
@@ -114,7 +122,27 @@
   }
   
   .list-contents {
-    height: calc(100vh - 330px);
+    height: calc(100vh - 180px);
+    overflow-y: auto;
+    padding-bottom: 8px;
+    
+    &::-webkit-scrollbar {
+        width: 8px;
+    }
+    
+    &::-webkit-scrollbar-track {
+        background: #f1f1f1;
+    }
+    
+    &::-webkit-scrollbar-thumb {
+        background: #888;
+        border-radius: 4px;
+    }
+    
+    &::-webkit-scrollbar-thumb:hover {
+        background: #555;
+    }
+
     mat-expansion-panel {
       border-bottom: 1px solid #C6C8CB;
       margin: 0px !important;

@@ -1,13 +1,11 @@
 <div class="resizable-panel" [style.width]="panelWidth">
-  <mat-tab-group [(selectedIndex)]="selectedTabIndex" class="tab-group">
-    <mat-tab label="Projects">
-      <app-projects-list></app-projects-list>
-    </mat-tab>
-  </mat-tab-group>
+  <div class="scrollable-content">
+    <app-projects-list></app-projects-list>
+  </div>
 
-  <div class="panel-controls">
+  <!-- <div class="panel-controls">
     <button *ngFor="let breakpoint of breakpoints" (click)="resizePanel(breakpoint)">
       {{ breakpoint }}%
     </button>
-  </div>
+  </div> -->
 </div>
