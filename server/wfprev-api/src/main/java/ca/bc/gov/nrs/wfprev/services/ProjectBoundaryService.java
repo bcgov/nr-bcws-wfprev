@@ -198,9 +198,7 @@ public class ProjectBoundaryService implements CommonService {
   private ProjectBoundaryModel updateFieldsFromBoundaryGeometry(ProjectBoundaryModel model) {
     if(model.getBoundaryGeometry() != null) {
       model.setBoundarySizeHa(BigDecimal.valueOf(model.getBoundaryGeometry().getArea() / 10000.0));
-      if(model.getLocationGeometry() == null) {
-        model.setLocationGeometry(model.getBoundaryGeometry().getCentroid());
-      }
+      model.setLocationGeometry(model.getBoundaryGeometry().getCentroid());
     } return model;
   }
 }

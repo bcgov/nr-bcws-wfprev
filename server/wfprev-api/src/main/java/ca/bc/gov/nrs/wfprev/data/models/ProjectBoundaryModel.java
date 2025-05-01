@@ -1,6 +1,7 @@
 package ca.bc.gov.nrs.wfprev.data.models;
 
 import ca.bc.gov.nrs.wfprev.common.entities.CommonModel;
+import ca.bc.gov.nrs.wfprev.common.validators.NotEmptyProjectBoundary;
 import ca.bc.gov.nrs.wfprev.common.validators.ProjectBoundaryTimestamps;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -19,6 +20,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 @ProjectBoundaryTimestamps
+@NotEmptyProjectBoundary
 @Data
 @EqualsAndHashCode(callSuper = false)
 @JsonRootName(value = "projectBoundary")

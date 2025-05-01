@@ -90,7 +90,7 @@ public class ProjectBoundaryEntity implements Serializable {
     @NotNull
     @Column(name = "boundary_geometry", nullable = false, columnDefinition = "geometry(Multipolygon, 4326)")
     @JdbcTypeCode(SqlTypes.GEOMETRY)
-    public MultiPolygon boundaryGeometry;
+    private MultiPolygon boundaryGeometry;
 
     @Column(name = "revision_count", columnDefinition = "Decimal(10) default '0'")
     @NotNull
