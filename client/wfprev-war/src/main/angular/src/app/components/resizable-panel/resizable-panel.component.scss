@@ -1,10 +1,13 @@
 .resizable-panel {
+  width: 684px;
+  min-width: 684px;
+  max-width: 684px;
+  height: 100vh;
   display: flex;
   flex-direction: column;
-  height: 100vh;
   background-color: #fff;
-  transition: width 0.3s ease;
-  width: 50vw;
+  border-right: 1px solid #ccc;
+
 
   .scrollable-content {
     flex: 1;

@@ -9,7 +9,7 @@
       </select>
       <div class="result-count">
             <!-- Result Count -->
-        <span>{{ projectList.length }} Results</span>
+        <span>{{ allProjects.length }} Results</span>
       </div>
     </div>
     <div class="create-project-button-container">
@@ -22,10 +22,10 @@
     </div>
   </div>
 
-  <div class="list-contents">
+  <div class="list-contents" (scroll)="handleScroll($event)">
     <mat-accordion>
       
-      <mat-expansion-panel *ngFor="let project of projectList?.length ? projectList : []" (click)="highlightProjectPolygons(project)" #panel="matExpansionPanel">
+      <mat-expansion-panel *ngFor="let project of displayedProjects?.length ? displayedProjects : []" (click)="highlightProjectPolygons(project)" (opened)="getFiscal(project)" #panel="matExpansionPanel">
         <mat-expansion-panel-header class="expansion-panel-header">
           <mat-panel-title class="project-title">
             <div class="custom-indicator">
@@ -55,7 +55,7 @@
             <div class="project-header-details">
               <div class="detail">
                 <span>Project Type</span>
-                <span>{{ project.projectTypeCode?.description }}</span>
+                <span class="heavy-font">{{ project.projectTypeCode?.description }}</span>
               </div>
               <div class="detail">
                 <span>Business Area</span>
@@ -63,52 +63,37 @@
               </div>
               <div class="detail">
                 <span>Forest Region</span>
-                <span>{{ getDescription('forestRegionCode',project.forestRegionOrgUnitId) }}</span>
+                <span class="heavy-font">{{ stripSuffix(getDescription('forestRegionCode',project.forestRegionOrgUnitId), ' Forest Region') }}</span>
               </div>
-              <div class="detail">
-                <span>Business Area Lead</span>
-                <span>{{ project.projectLead }}</span>
-              </div>
-              <div class="detail">
-                <span>Site Unit</span>
-                <span>{{ project.siteUnitName }}</span>
-              </div>
-            </div>
-            
+            </div>  
           </div>
           
         </mat-expansion-panel-header>
+        <div class="project-item-expansion-panel-body">
 
-        <div class="expanded-project-details">
-          <div class="fiscal-expanded">
+          <div class="project-header-details-2">
             <div class="detail">
-              <span class="heavy-font">Fiscal Year</span>
+              <span>Forest District</span>
+              <span class="heavy-font">{{ stripSuffix(getDescription('forestDistrictCode',project.forestDistrictOrgUnitId), ' Forest District') }}</span>
             </div>
             <div class="detail">
-              <span class="heavy-font">Project ID 0023</span>
+              <span>BC Parks Region</span>
+              <span class="heavy-font">{{ getDescription('bcParksRegionCode', project.bcParksRegionOrgUnitId) }}</span>
             </div>
             <div class="detail">
-              <span>Status</span>
-              <span class="heavy-font">value01</span>
-            </div>
-            <div class="detail">
-              <span>Phase</span>
-              <span class="heavy-font">value02</span>
-            </div>
-            <div class="detail">
-              <span>Risk</span>
-              <span class="heavy-font">value03</span>
-            </div>
-            <div class="detail">
-              <span>Activity Category</span>
-              <span class="heavy-font">value04</span>
+              <span>BC Parks Section</span>
+              <span class="heavy-font">{{ getDescription('bcParksSectionCode', project.bcParksSectionOrgUnitId) }}</span>
             </div>
           </div>
-          <div>
-            <div class="activity-types">
-              <span *ngFor="let activity of fiscalYearActivityTypes" class="activity-type">
-                {{ activity }}
-              </span>
+          <div *ngIf="project.projectFiscals?.length" class="fiscal-section">
+            <div *ngFor="let fiscal of project.projectFiscals" class="fiscal-card">
+              <div class="fiscal-card-title">
+                <span>{{fiscal.projectFiscalName}}</span>
+                <span>{{getDescription('planFiscalStatusCode', fiscal.planFiscalStatusCode)}}</span>
+              </div>
+              <div class="fiscal-card-body">
+                lalala
+              </div>
             </div>
           </div>
         </div>

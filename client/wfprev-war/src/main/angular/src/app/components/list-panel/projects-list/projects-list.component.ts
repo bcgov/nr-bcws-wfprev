@@ -23,9 +23,18 @@ export class ProjectsListComponent implements OnInit {
   projectList: any[] = [];
   programAreaCode: any[] = [];
   forestRegionCode: any[] = [];
+  forestDistrictCode: any[] = [];
+  bcParksRegionCode: any[] = [];
+  bcParksSectionCode: any[] = [];
+  planFiscalStatusCode: any[] = [];
   markerPolygons: Map<L.Marker, L.Polygon[]> = new Map();
   activeMarker: L.Marker | null = null;
   getActiveMap = getActiveMap
+  allProjects: any[] = [];
+  displayedProjects: any[] = [];
+  pageSize = 25;
+  currentPage = 0;
+  isLoading = false;
   constructor(
     private readonly router: Router,
     private readonly projectService: ProjectService,
@@ -44,6 +53,11 @@ export class ProjectsListComponent implements OnInit {
     const codeTables = [
       { name: 'programAreaCodes', property: 'businessAreas', embeddedKey: 'programArea' },
       { name: 'forestRegionCodes', property: 'forestRegions', embeddedKey: 'forestRegionCode' },
+      { name: 'forestDistrictCodes', property: 'forestDistricts', embeddedKey: 'forestDistrictCode' },
+      { name: 'bcParksRegionCodes', property: 'bcParksRegions', embeddedKey: 'bcParksRegionCode' },
+      { name: 'bcParksSectionCodes', property: 'bcParksSections', embeddedKey: 'bcParksSectionCode' },
+      { name: 'planFiscalStatusCodes', property: 'planFiscalStatusCode', embeddedKey: 'planFiscalStatusCode' }
+
     ];
 
     codeTables.forEach((table) => {
@@ -53,6 +67,14 @@ export class ProjectsListComponent implements OnInit {
             this.programAreaCode = data._embedded.programArea;
           } else if (table.name === 'forestRegionCodes') {
             this.forestRegionCode = data._embedded.forestRegionCode;
+          } else if (table.name === 'forestDistrictCodes') {
+            this.forestDistrictCode = data._embedded.forestDistrictCode;
+          } else if (table.name === 'bcParksRegionCodes') {
+            this.bcParksRegionCode = data._embedded.bcParksRegionCode;
+          } else if (table.name === 'bcParksSectionCodes') {
+            this.bcParksSectionCode = data._embedded.bcParksSectionCode;
+          } else if (table.name === 'planFiscalStatusCodes') {
+            this.planFiscalStatusCode = data._embedded.planFiscalStatusCode;
           }
         },
         error: (err) => {
@@ -63,6 +85,14 @@ export class ProjectsListComponent implements OnInit {
             this.programAreaCode = [];
           } else if (table.name === 'forestRegionCodes') {
             this.forestRegionCode = [];
+          } else if (table.name === 'forestDistrictCodes') {
+            this.forestDistrictCode = [];
+          } else if (table.name === 'bcParksRegionCodes') {
+            this.bcParksRegionCode = [];
+          } else if (table.name === 'bcParksSectionCodes') {
+            this.bcParksSectionCode = [];
+          } else if (table.name === 'planFiscalStatusCodes') {
+            this.planFiscalStatusCode = [];
           }
         },
       });
@@ -71,13 +101,21 @@ export class ProjectsListComponent implements OnInit {
 
 
   loadProjects() {
+    this.isLoading = true;
     this.projectService.fetchProjects().subscribe({
       next: (data) => {
-        this.projectList = data._embedded?.project || [];
+        this.allProjects = (data._embedded?.project || []).sort((a: any, b: any) =>
+          a.projectName.localeCompare(b.projectName)
+        );
+        this.currentPage = 0;
+        this.displayedProjects = this.allProjects.slice(0, this.pageSize);
+        this.isLoading = false;
       },
       error: (err) => {
         console.error('Error fetching projects:', err);
-        this.projectList = [];
+        this.allProjects = [];
+        this.displayedProjects = [];
+        this.isLoading = false;
       }
     });
   }
@@ -95,7 +133,17 @@ export class ProjectsListComponent implements OnInit {
 
   onSortChange(event: any): void {
     this.selectedSort = event.target.value;
+  
+    if (this.selectedSort === 'ascending') {
+      this.allProjects.sort((a, b) => a.projectName.localeCompare(b.projectName));
+    } else if (this.selectedSort === 'descending') {
+      this.allProjects.sort((a, b) => b.projectName.localeCompare(a.projectName));
+    }
+  
+    const totalVisible = (this.currentPage + 1) * this.pageSize;
+    this.displayedProjects = this.allProjects.slice(0, totalVisible);
   }
+  
 
   editProject(project: any, event: Event) {
     event.stopPropagation();
@@ -106,21 +154,31 @@ export class ProjectsListComponent implements OnInit {
 
   getDescription(codeTable: string, code: number | string): string {
     const table = this[codeTable];
-    if (!table) return ''; // Return empty value if the table is not loaded
-
+    if (!table || !code) return '';
+  
     let entry;
-
-    if (codeTable === 'programAreaCode') {
-      // Search by programAreaGuid if the codeTable is programAreaCode
-      entry = table.find((item: any) => item.programAreaGuid === code);
-      return entry ? entry.programAreaName : ''
-    } else {
-      // Default to searching by orgUnitId
-      entry = table.find((item: any) => item.orgUnitId === code);
+  
+    switch (codeTable) {
+      case 'programAreaCode':
+        entry = table.find((item: any) => item.programAreaGuid === code);
+        return entry ? entry.programAreaName : '';
+  
+      case 'forestRegionCode':
+      case 'forestDistrictCode':
+      case 'bcParksRegionCode':
+      case 'bcParksSectionCode':
+        entry = table.find((item: any) => item.orgUnitId === code);
+        return entry ? entry.orgUnitName : '';
+  
+      case 'planFiscalStatusCode':
+        entry = table.find((item: any) => item.planFiscalStatusCode === code);
+        return entry ? entry.description : '';
+  
+      default:
+        return '';
     }
-
-    return entry ? entry.orgUnitName : '';
   }
+  
 
   createNewProject(): void {
     const dialogRef = this.dialog.open(CreateNewProjectDialogComponent, {
@@ -331,4 +389,40 @@ export class ProjectsListComponent implements OnInit {
     }
   }
 
+  // Helper to strip a suffix from a string (e.g., ' Forest Region' or ' Forest District')
+  stripSuffix(value: string, suffix: string): string {
+    if (!value) return '';
+    return value.endsWith(suffix) ? value.slice(0, -suffix.length).trim() : value;
+  }
+
+  onScroll() {
+    if (this.isLoading) return;
+    const nextPage = this.currentPage + 1;
+    const start = nextPage * this.pageSize;
+    const end = start + this.pageSize;
+    if (start < this.allProjects.length) {
+      this.displayedProjects = this.displayedProjects.concat(this.allProjects.slice(start, end));
+      this.currentPage = nextPage;
+    }
+  }
+
+  handleScroll(event: any) {
+    const element = event.target;
+    if (element.scrollHeight - element.scrollTop === element.clientHeight) {
+      this.onScroll();
+    }
+  }
+
+  getFiscal(project: any): void {
+    this.projectService.getProjectFiscalsByProjectGuid(project.projectGuid).subscribe({
+      next: (data) => {
+        project.projectFiscals = data._embedded?.projectFiscals ?? [];
+      },
+      error: (err) => {
+        console.error(`Error fetching fiscals for project ${project.projectGuid}`, err);
+        project.projectFiscals = [];
+      }
+    });
+  }
+  
 }
