@@ -41,9 +41,14 @@ export class EditProjectComponent implements CanComponentDeactivate {
   }
 
   canDeactivate(): Observable<boolean> | boolean {
-    if (this.projectFiscalsComponentRef?.instance?.isFormDirty()) {
+    if (this.projectDetailsComponent?.isFormDirty?.()) {
+      return this.projectDetailsComponent.canDeactivate?.();
+    }
+  
+    if (this.projectFiscalsComponentRef?.instance?.isFormDirty?.()) {
       return this.projectFiscalsComponentRef.instance.canDeactivate();
     }
+  
     return true;
   }
 

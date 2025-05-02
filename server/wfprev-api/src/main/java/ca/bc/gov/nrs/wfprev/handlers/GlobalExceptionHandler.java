@@ -7,6 +7,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -58,10 +59,18 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex) {
         Map<String, String> errors = new HashMap<>();
 
+        // Field-level errors
         ex.getBindingResult().getFieldErrors().forEach(error -> {
             String fieldName = error.getField();
             String errorMessage = error.getDefaultMessage();
             errors.put(fieldName, errorMessage);
+        });
+
+        // Class-level (global) errors
+        ex.getBindingResult().getGlobalErrors().forEach(error -> {
+            String objectName = error.getObjectName();
+            String errorMessage = error.getDefaultMessage();
+            errors.put(objectName, errorMessage);
         });
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
@@ -83,5 +92,15 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .status(HttpStatus.CONFLICT)
                 .body(error);
+    }
+
+    @ExceptionHandler(HttpMessageNotWritableException.class)
+    public ResponseEntity<Object> handleHttpMessageNotWritable(HttpMessageNotWritableException ex) {
+        Map<String, String> errors = new HashMap<>();
+        errors.put(ERROR, "Unable to serialize response");
+
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(errors);
     }
 }

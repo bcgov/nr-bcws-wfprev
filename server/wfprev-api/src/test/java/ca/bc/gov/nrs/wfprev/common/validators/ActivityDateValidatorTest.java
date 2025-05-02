@@ -14,7 +14,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class ActivityDateValidatorTest {
+class ActivityDateValidatorTest {
 
     private ActivityDateValidator validator;
     private ConstraintValidatorContext context;
