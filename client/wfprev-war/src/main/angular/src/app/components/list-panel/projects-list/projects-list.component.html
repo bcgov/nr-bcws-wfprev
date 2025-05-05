@@ -106,21 +106,30 @@
                   <span>Activity Category</span>
                   <span class="fiscal-value wrap-text">{{getDescription('activityCategoryCode',fiscal.activityCategoryCode)}}</span>
                 </div>
-                <div class="fiscal-body-item">
+                <div class="fiscal-body-item" *ngIf="fiscal.fiscalForecastAmount">
                   <span>Forecast Amount</span>
-                  <span class="fiscal-value">{{fiscal.fiscalForecastAmount}}</span>
+                  <span class="fiscal-value">
+                    ${{ (fiscal.fiscalForecastAmount % 1 === 0) ? (fiscal.fiscalForecastAmount | number:'1.0-0') : (fiscal.fiscalForecastAmount | number:'1.2-2') }}
+                  </span>
                 </div>
-                <div class="fiscal-body-item" *ngIf="fiscal.fiscalStatus !== 'COMPLETE'">
+                <div class="fiscal-body-item" *ngIf="fiscal.planFiscalStatusCode === 'COMPLETE' && fiscal.fiscalPlannedProjectSizeHa">
                   <span>Planned Hectares</span>
-                  <span class="fiscal-value">{{fiscal.fiscalPlannedProjectSizeHa}}</span>
+                  <span class="fiscal-value">
+                    {{ (fiscal.fiscalPlannedProjectSizeHa % 1 === 0) ? (fiscal.fiscalPlannedProjectSizeHa | number:'1.0-0') : (fiscal.fiscalPlannedProjectSizeHa | number:'1.2-2') }} Ha
+                  </span>
                 </div>
-                <div class="fiscal-body-item">
+                <div class="fiscal-body-item" *ngIf="fiscal.fiscalCompletedSizeHa">
                   <span>Completed Hectares</span>
-                  <span class="fiscal-value">{{fiscal.fiscalCompletedSizeHa}}</span>
+                  <span class="fiscal-value">
+                    {{ (fiscal.fiscalCompletedSizeHa % 1 === 0) ? (fiscal.fiscalCompletedSizeHa | number:'1.0-0') : (fiscal.fiscalCompletedSizeHa | number:'1.2-2') }} Ha
+                  </span>
                 </div>
-                <div class="fiscal-body-item" *ngIf="fiscal.fiscalStatus === 'COMPLETE'">
+                <div class="fiscal-body-item" *ngIf="fiscal.planFiscalStatusCode === 'COMPLETE' && fiscal.fiscalActualAmount">
                   <span>CFS Actual Spend</span>
-                  <span class="fiscal-value">{{fiscal.fiscalActualAmount}}</span>
+                  <span class="fiscal-value">
+                    ${{ (fiscal.fiscalActualAmount % 1 === 0) ? (fiscal.fiscalActualAmount | number:'1.0-0') : (fiscal.fiscalActualAmount | number:'1.2-2') }}
+                  </span>
+                  <span class="fiscal-value">{{fiscal.fiscalActualAmount | currency:'CAD':'symbol-narrow':'1.2-2'}}</span>
                 </div>
               </div>
             </div>
