@@ -27,6 +27,7 @@ export class ProjectsListComponent implements OnInit {
   bcParksRegionCode: any[] = [];
   bcParksSectionCode: any[] = [];
   planFiscalStatusCode: any[] = [];
+  activityCategoryCode: any[] = [];
   markerPolygons: Map<L.Marker, L.Polygon[]> = new Map();
   activeMarker: L.Marker | null = null;
   getActiveMap = getActiveMap
@@ -56,7 +57,8 @@ export class ProjectsListComponent implements OnInit {
       { name: 'forestDistrictCodes', property: 'forestDistricts', embeddedKey: 'forestDistrictCode' },
       { name: 'bcParksRegionCodes', property: 'bcParksRegions', embeddedKey: 'bcParksRegionCode' },
       { name: 'bcParksSectionCodes', property: 'bcParksSections', embeddedKey: 'bcParksSectionCode' },
-      { name: 'planFiscalStatusCodes', property: 'planFiscalStatusCode', embeddedKey: 'planFiscalStatusCode' }
+      { name: 'planFiscalStatusCodes', property: 'planFiscalStatusCode', embeddedKey: 'planFiscalStatusCode' },
+      { name: 'activityCategoryCodes', property: 'activityCategoryCode', embeddedKey: 'activityCategoryCode' }
 
     ];
 
@@ -75,6 +77,8 @@ export class ProjectsListComponent implements OnInit {
             this.bcParksSectionCode = data._embedded.bcParksSectionCode;
           } else if (table.name === 'planFiscalStatusCodes') {
             this.planFiscalStatusCode = data._embedded.planFiscalStatusCode;
+          } else if (table.name === 'activityCategoryCodes') {
+            this.activityCategoryCode = data._embedded.activityCategoryCode;
           }
         },
         error: (err) => {
@@ -93,6 +97,8 @@ export class ProjectsListComponent implements OnInit {
             this.bcParksSectionCode = [];
           } else if (table.name === 'planFiscalStatusCodes') {
             this.planFiscalStatusCode = [];
+          } else if (table.name === 'activityCategoryCodes') {
+            this.activityCategoryCode = [];
           }
         },
       });
@@ -162,7 +168,6 @@ export class ProjectsListComponent implements OnInit {
       case 'programAreaCode':
         entry = table.find((item: any) => item.programAreaGuid === code);
         return entry ? entry.programAreaName : '';
-  
       case 'forestRegionCode':
       case 'forestDistrictCode':
       case 'bcParksRegionCode':
@@ -174,6 +179,9 @@ export class ProjectsListComponent implements OnInit {
         entry = table.find((item: any) => item.planFiscalStatusCode === code);
         return entry ? entry.description : '';
   
+      case 'activityCategoryCode':
+        entry = table.find((item: any) => item.activityCategoryCode === code);
+        return entry ? entry.description : '';
       default:
         return '';
     }

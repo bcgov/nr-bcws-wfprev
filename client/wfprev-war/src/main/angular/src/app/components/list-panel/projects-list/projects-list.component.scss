@@ -164,7 +164,7 @@
 
       .expansion-panel-header{
         min-height: 115px;
-        padding: 10px 0;
+        padding: 0;
       }
 
       .project-title {
@@ -233,12 +233,45 @@
         padding:10px 0;
 
         .fiscal-card-title {
-          padding: 0 15px 0px 15px;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 2px 15px;
           border-bottom: 1px solid #A5A4A4;
-          line-height: normal;
           font-weight: 700;
           font-size: 16px;
           color: #474543;
+        }
+
+        .status-container {
+          display: flex;
+          gap: 5px;
+        }
+
+        .fiscal-card-body{
+          display: flex;
+          padding: 15px;
+          justify-content: space-between;
+
+          .fiscal-body-item{
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+          }
+        }
+
+        .fiscal-value{
+          color: #474543;
+          font-size: 16px;
+          font-style: normal;
+          font-weight: 700;
+          line-height: normal;
+        }
+
+        .wrap-text{
+          word-wrap: break-word;
+          white-space: normal;
+          max-width: 184px;
         }
       }
 
