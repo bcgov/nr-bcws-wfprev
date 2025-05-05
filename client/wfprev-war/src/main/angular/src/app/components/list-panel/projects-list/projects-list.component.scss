@@ -1,3 +1,10 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
 .list-header {
     display: flex;
     align-items: center;
@@ -8,9 +15,10 @@
     font-size: 14px;
     gap: 12px;
     position: relative;
-  }
+    background: #fff;
+}
   
-  .sort-dropdown {
+.sort-dropdown {
     display: flex;
     align-items: center;
     gap:5px;
@@ -22,7 +30,7 @@
     }
     select {
       margin-top: 4px;
-      width: 113px;
+      width: 120px;
       padding: 8px 9px; /* Same padding as text inputs */
       font-size: 16px; /* Font size similar to inputs */
       color: #333; /* Text color */
@@ -114,7 +122,27 @@
   }
   
   .list-contents {
-    height: calc(100vh - 330px);
+    height: calc(100vh - 180px);
+    overflow-y: auto;
+    padding-bottom: 8px;
+    
+    &::-webkit-scrollbar {
+        width: 8px;
+    }
+    
+    &::-webkit-scrollbar-track {
+        background: #f1f1f1;
+    }
+    
+    &::-webkit-scrollbar-thumb {
+        background: #888;
+        border-radius: 4px;
+    }
+    
+    &::-webkit-scrollbar-thumb:hover {
+        background: #555;
+    }
+
     mat-expansion-panel {
       border-bottom: 1px solid #C6C8CB;
       margin: 0px !important;
@@ -135,18 +163,24 @@
       }
 
       .expansion-panel-header{
-        min-height: 152px;
-        padding:0 35px;
+        min-height: 115px;
+        padding: 0;
       }
 
       .project-title {
         font-family: var(--wf-font-family-main) !important;
         background-color: inherit;
-        font-weight: bold;
         display: flex;
 
+        .indicator-icon{
+          width: 17px;
+          height: 17px;
+        }
         .project-name {
           flex:1;
+          font-size: 20px;
+          font-style: normal;
+          font-weight: 700
         }
 
         mat-panel-title {
@@ -165,29 +199,79 @@
         font-family: var(--wf-font-family-main);
         color: #282828;;
         font-weight: 400;
+        padding: 0 10px;
+      }
+
+      .project-header-details-2 {
+        @extend .project-header-details;
+        padding: 0;
       }
 
       .detail {
         font-family: var(--wf-font-family-main) !important;
         display: flex;
         flex-direction: column; /* Stack the label and value vertically */
-        gap: 2px; /* Spacing between label and value */
+        gap: 3px; /* Spacing between label and value */
         .heavy-font{
           font-weight: 700;
+          font-size: 16px;
+          color: #474543
         }
       }
       
-      
-      .expanded-project-details {
-        padding: 10px;
-        display: grid;
-        grid-template-columns: 70% 30%;
+      .fiscal-section{
+        display: flex;
+        flex-direction: column;
         gap: 10px;
-        border-radius: 6px;
-        border: 1px solid #949494;
-        .fiscal-expanded{
-          display: grid;
-          grid-template-columns: repeat(2, 1fr);
+      }
+
+      .fiscal-card {
+        font-family: var(--wf-font-family-main) !important;
+        border-radius: 10px;
+        border: 1px solid #3470B1;
+        background: #FFF;
+        padding:10px 0;
+
+        .fiscal-card-title {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 2px 15px;
+          border-bottom: 1px solid #A5A4A4;
+          font-weight: 700;
+          font-size: 16px;
+          color: #474543;
+        }
+
+        .status-container {
+          display: flex;
+          gap: 5px;
+        }
+
+        .fiscal-card-body{
+          display: flex;
+          padding: 15px;
+          justify-content: space-between;
+
+          .fiscal-body-item{
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+          }
+        }
+
+        .fiscal-value{
+          color: #474543;
+          font-size: 16px;
+          font-style: normal;
+          font-weight: 700;
+          line-height: normal;
+        }
+
+        .wrap-text{
+          word-wrap: break-word;
+          white-space: normal;
+          max-width: 184px;
         }
       }
 
@@ -213,10 +297,7 @@
       .action-items {
         display: flex;
         justify-content: flex-end;
-        gap: 10px;
         align-items: center;
-        position: relative;
-        top: 50%;
       }
 
       .action-item {
@@ -248,8 +329,7 @@
   }
   
 .custom-indicator{
-  position: absolute;
-  left: 10px;
+  padding: 10px;
 }
 
 .create-project-button-container{
@@ -277,4 +357,15 @@
       }
     }
   }
+}
+
+.divider{
+  width: 100%;
+  height: 1px;
+  background-color: #D8D8D8;
+  margin: 5px 0;
+}
+
+::ng-deep .mat-expansion-panel-body {
+  padding: 0 10px 16px !important;
 }
