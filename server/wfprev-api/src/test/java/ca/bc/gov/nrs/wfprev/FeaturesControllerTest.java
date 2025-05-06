@@ -1,7 +1,7 @@
 package ca.bc.gov.nrs.wfprev;
 
-import ca.bc.gov.nrs.wfprev.controllers.GeoJsonFeaturesController;
-import ca.bc.gov.nrs.wfprev.services.GeoJsonFeaturesService;
+import ca.bc.gov.nrs.wfprev.controllers.FeaturesController;
+import ca.bc.gov.nrs.wfprev.services.FeaturesService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -20,13 +20,13 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-class GeoJsonFeaturesControllerTest {
+class FeaturesControllerTest {
 
     @Mock
-    private GeoJsonFeaturesService geoJsonFeaturesService;
+    private FeaturesService featuresService;
 
     @InjectMocks
-    private GeoJsonFeaturesController geoJsonFeaturesController;
+    private FeaturesController featuresController;
 
     @BeforeEach
     void setUp() {
@@ -34,35 +34,35 @@ class GeoJsonFeaturesControllerTest {
     }
 
     @Test
-    void testGetAllFeaturesGeoJson_Success() {
+    void testGetAllFeatures_Success() {
         // Mock response
         Map<String, Object> mockGeoJson = Collections.singletonMap("type", "FeatureCollection");
-        when(geoJsonFeaturesService.getAllFeaturesGeoJson()).thenReturn(mockGeoJson);
+        when(featuresService.getAllFeatures()).thenReturn(mockGeoJson);
 
         // Call controller method
-        Map<String, Object> response = geoJsonFeaturesController.getAllFeaturesGeoJson();
+        Map<String, Object> response = featuresController.getAllFeatures();
 
         // Verify response
         assertNotNull(response);
         assertEquals("FeatureCollection", response.get("type"));
 
         // Verify interaction with service
-        verify(geoJsonFeaturesService, times(1)).getAllFeaturesGeoJson();
+        verify(featuresService, times(1)).getAllFeatures();
     }
 
     @Test
-    void testGetAllFeaturesGeoJson_Failure() {
+    void testGetAllFeatures_Failure() {
         // Mock exception in service
-        when(geoJsonFeaturesService.getAllFeaturesGeoJson())
+        when(featuresService.getAllFeatures())
                 .thenThrow(new RuntimeException("Database error"));
 
         // Verify exception handling
         DataIntegrityViolationException thrown = assertThrows(
                 DataIntegrityViolationException.class,
-                () -> geoJsonFeaturesController.getAllFeaturesGeoJson()
+                () -> featuresController.getAllFeatures()
         );
 
         assertTrue(thrown.getMessage().contains("Error encountered while fetching GeoJson features"));
-        verify(geoJsonFeaturesService, times(1)).getAllFeaturesGeoJson();
+        verify(featuresService, times(1)).getAllFeatures();
     }
 }

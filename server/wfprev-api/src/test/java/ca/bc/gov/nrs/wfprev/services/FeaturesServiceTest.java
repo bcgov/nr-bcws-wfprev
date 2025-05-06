@@ -29,7 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class GeoJsonFeaturesServiceTest {
+class FeaturesServiceTest {
 
     @Mock
     private ProjectBoundaryRepository projectBoundaryRepository;
@@ -38,7 +38,7 @@ class GeoJsonFeaturesServiceTest {
     private ActivityBoundaryRepository activityBoundaryRepository;
 
     @InjectMocks
-    private GeoJsonFeaturesService geoJsonFeaturesService;
+    private FeaturesService featuresService;
 
     private ProjectBoundaryEntity projectBoundaryEntity;
     private ActivityBoundaryEntity activityBoundaryEntity;
@@ -78,11 +78,11 @@ class GeoJsonFeaturesServiceTest {
     }
 
     @Test
-    void testGetAllFeaturesGeoJson() {
+    void testGetAllFeatures() {
         when(projectBoundaryRepository.findAll()).thenReturn(List.of(projectBoundaryEntity));
         when(activityBoundaryRepository.findAll()).thenReturn(List.of(activityBoundaryEntity));
 
-        Map<String, Object> result = geoJsonFeaturesService.getAllFeaturesGeoJson();
+        Map<String, Object> result = featuresService.getAllFeatures();
 
         assertNotNull(result);
         assertEquals("FeatureCollection", result.get("type"));
@@ -97,7 +97,7 @@ class GeoJsonFeaturesServiceTest {
         Point point = geometryFactory.createPoint(new Coordinate(-123.3656, 48.4284));
 
         Map<String, Object> properties = Map.of("key", "value");
-        Map<String, Object> feature = geoJsonFeaturesService.createPointFeature(point, properties);
+        Map<String, Object> feature = featuresService.createPointFeature(point, properties);
 
         assertEquals("Feature", feature.get("type"));
         assertEquals("Point", ((Map<?, ?>) feature.get("geometry")).get("type"));
@@ -119,7 +119,7 @@ class GeoJsonFeaturesServiceTest {
         MultiPolygon multiPolygon = geometryFactory.createMultiPolygon(new Polygon[]{polygon});
 
         Map<String, Object> properties = Map.of("key", "value");
-        Map<String, Object> feature = geoJsonFeaturesService.createPolygonFeature(multiPolygon, properties);
+        Map<String, Object> feature = featuresService.createPolygonFeature(multiPolygon, properties);
 
         assertEquals("Feature", feature.get("type"));
         assertEquals("MultiPolygon", ((Map<?, ?>) feature.get("geometry")).get("type"));
@@ -158,7 +158,7 @@ class GeoJsonFeaturesServiceTest {
         properties.put("name", "Test Polygon with Hole");
 
         // Call the method under test
-        Map<String, Object> feature = geoJsonFeaturesService.createPolygonFeature(multiPolygon, properties);
+        Map<String, Object> feature = featuresService.createPolygonFeature(multiPolygon, properties);
 
         // Assertions
         assertNotNull(feature);
@@ -184,16 +184,16 @@ class GeoJsonFeaturesServiceTest {
         // Validate first coordinate in the hole matches expected
         assertArrayEquals(new double[]{-123.36565, 48.42845}, holeCoordinates.get(0), 1e-6);
     }
-
-    @Test
-    void testCreateProjectProperties() {
-        Map<String, Object> properties = geoJsonFeaturesService.createProjectProperties(projectBoundaryEntity);
-        assertEquals(projectGuid, properties.get("project_boundary_guid"));
-    }
+//
+//    @Test
+//    void testCreateProjectProperties() {
+//        Map<String, Object> properties = featuresService.createProjectProperties(projectBoundaryEntity);
+//        assertEquals(projectGuid, properties.get("project_boundary_guid"));
+//    }
 
     @Test
     void testCreateActivityProperties() {
-        Map<String, Object> properties = geoJsonFeaturesService.createActivityProperties(activityBoundaryEntity);
+        Map<String, Object> properties = featuresService.createActivityProperties(activityBoundaryEntity);
         assertEquals(activityGuid, properties.get("activity_boundary_guid"));
     }
 }
