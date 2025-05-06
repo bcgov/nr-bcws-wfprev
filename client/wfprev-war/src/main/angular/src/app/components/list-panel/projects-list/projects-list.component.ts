@@ -432,5 +432,11 @@ export class ProjectsListComponent implements OnInit {
       }
     });
   }
+
+  getFiscalYearDisplay(fiscalYear: number | null | undefined): string | null {
+    if (typeof fiscalYear !== 'number') return null;
+    const nextYear = (fiscalYear + 1) % 100;
+    return `${fiscalYear}/${nextYear.toString().padStart(2, '0')}`;
+  }
   
 }

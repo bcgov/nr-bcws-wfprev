@@ -93,12 +93,13 @@
                   <ng-container [ngSwitch]="fiscal.planFiscalStatusCode">
                     <img *ngSwitchCase="'DRAFT'" src="/assets/draft-icon.svg" alt="draft" class="status-icon" />
                     <img *ngSwitchCase="'PROPOSED'" src="/assets/proposed-icon.svg" alt="proposed" class="status-icon" />
-                    <img *ngSwitchCase="'IN_PROG'" src="/assets/in-progress-icon.svg" alt="in progress" class="status-icon" />
+                    <img *ngSwitchCase="'IN_PROG'" src="/assets/in-progress-icon-only.svg" alt="in progress" class="status-icon" />
                     <img *ngSwitchCase="'COMPLETE'" src="/assets/complete-icon.svg" alt="completed" class="status-icon" />
                     <img *ngSwitchCase="'ABANDONED'" src="/assets/abandoned-icon.svg" alt="abandoned" class="status-icon" />
                     <img *ngSwitchCase="'PREPARED'" src="/assets/prepared-icon.svg" alt="prepared" class="status-icon" />
                   </ng-container>
                   <span>{{getDescription('planFiscalStatusCode', fiscal.planFiscalStatusCode)}}</span>
+                  <span class="individual-fiscal-year">{{getFiscalYearDisplay(fiscal.fiscalYear)}}</span>
                 </div>
               </div>
               <div class="fiscal-card-body">
@@ -106,30 +107,29 @@
                   <span>Activity Category</span>
                   <span class="fiscal-value wrap-text">{{getDescription('activityCategoryCode',fiscal.activityCategoryCode)}}</span>
                 </div>
-                <div class="fiscal-body-item" *ngIf="fiscal.fiscalForecastAmount">
+                <div class="fiscal-body-item">
                   <span>Forecast Amount</span>
-                  <span class="fiscal-value">
+                  <span class="fiscal-value" *ngIf="fiscal.fiscalForecastAmount">
                     ${{ (fiscal.fiscalForecastAmount % 1 === 0) ? (fiscal.fiscalForecastAmount | number:'1.0-0') : (fiscal.fiscalForecastAmount | number:'1.2-2') }}
                   </span>
                 </div>
-                <div class="fiscal-body-item" *ngIf="fiscal.planFiscalStatusCode === 'COMPLETE' && fiscal.fiscalPlannedProjectSizeHa">
+                <div class="fiscal-body-item" *ngIf="fiscal.planFiscalStatusCode !== 'COMPLETE'">
                   <span>Planned Hectares</span>
-                  <span class="fiscal-value">
+                  <span class="fiscal-value" *ngIf="fiscal.fiscalPlannedProjectSizeHa">
                     {{ (fiscal.fiscalPlannedProjectSizeHa % 1 === 0) ? (fiscal.fiscalPlannedProjectSizeHa | number:'1.0-0') : (fiscal.fiscalPlannedProjectSizeHa | number:'1.2-2') }} Ha
                   </span>
                 </div>
-                <div class="fiscal-body-item" *ngIf="fiscal.fiscalCompletedSizeHa">
+                <div class="fiscal-body-item">
                   <span>Completed Hectares</span>
-                  <span class="fiscal-value">
+                  <span class="fiscal-value" *ngIf="fiscal.fiscalCompletedSizeHa">
                     {{ (fiscal.fiscalCompletedSizeHa % 1 === 0) ? (fiscal.fiscalCompletedSizeHa | number:'1.0-0') : (fiscal.fiscalCompletedSizeHa | number:'1.2-2') }} Ha
                   </span>
                 </div>
-                <div class="fiscal-body-item" *ngIf="fiscal.planFiscalStatusCode === 'COMPLETE' && fiscal.fiscalActualAmount">
+                <div class="fiscal-body-item" *ngIf="fiscal.planFiscalStatusCode === 'COMPLETE'">
                   <span>CFS Actual Spend</span>
-                  <span class="fiscal-value">
+                  <span class="fiscal-value" *ngIf="fiscal.fiscalActualAmount">
                     ${{ (fiscal.fiscalActualAmount % 1 === 0) ? (fiscal.fiscalActualAmount | number:'1.0-0') : (fiscal.fiscalActualAmount | number:'1.2-2') }}
                   </span>
-                  <span class="fiscal-value">{{fiscal.fiscalActualAmount | currency:'CAD':'symbol-narrow':'1.2-2'}}</span>
                 </div>
               </div>
             </div>
@@ -139,4 +139,3 @@
     </mat-accordion>
   </div>
 </div>
-
