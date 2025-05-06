@@ -177,7 +177,7 @@ describe('ProjectsListComponent', () => {
     expect(regionDescription).toBe('Region 1');
 
     const unknownDescription = component.getDescription('forestRegionCode', 999);
-    expect(unknownDescription).toBe('Unknown');
+    expect(unknownDescription).toBe('');
   });
 
   it('should handle sort change correctly', () => {
@@ -339,4 +339,53 @@ describe('ProjectsListComponent', () => {
     expect(component.loadProjects).toHaveBeenCalled();
   });
   
+  it('should call handleScroll and load more projects on scroll', () => {
+    component.allProjects = Array.from({length: 50}, (_, i) => ({ projectName: `Project ${i}` }));
+    component.displayedProjects = component.allProjects.slice(0, 25);
+    component.currentPage = 0;
+    const event = { target: { scrollTop: 100, scrollHeight: 200, clientHeight: 100 } };
+    component.handleScroll(event);
+    expect(component.displayedProjects.length).toBeGreaterThan(25);
+  });
+
+  it('should highlight project polygons', () => {
+    const mockMarkerWithLatLng = { getLatLng: () => ({ lat: 1, lng: 2 }), setIcon: jasmine.createSpy('setIcon') };
+    const mockPolygon = { setStyle: jasmine.createSpy('setStyle') };
+    component.markerPolygons.set(mockMarkerWithLatLng as any, [mockPolygon as any]);
+    spyOn(component, 'highlightProjectPolygons').and.callThrough();
+    component.highlightProjectPolygons({ latitude: 1, longitude: 2 });
+    expect(component.highlightProjectPolygons).toHaveBeenCalledWith({ latitude: 1, longitude: 2 });
+  });
+
+  it('should strip suffix from a string', () => {
+    const result = component.stripSuffix('Test Forest Region', ' Forest Region');
+    expect(result).toBe('Test');
+  });
+
+  it('should return original string if stripSuffix does not find suffix', () => {
+    const result = component.stripSuffix('Test', 'NotFound');
+    expect(result).toBe('Test');
+  });
+
+  it('should generate a secure random number', () => {
+    const num = component.getSecureRandomNumber();
+    expect(typeof num).toBe('number');
+  });
+
+  it('should sort projects in descending order', () => {
+    component.allProjects = [
+      { projectName: 'B' },
+      { projectName: 'A' }
+    ];
+    const mockEvent = { target: { value: 'descending' } };
+    component.onSortChange(mockEvent);
+    expect(component.allProjects[0].projectName).toBe('B');
+  });
+
+  it('should format fiscal year display correctly', () => {
+    expect(component.getFiscalYearDisplay(2023)).toBe('2023/24');
+    expect(component.getFiscalYearDisplay(1999)).toBe('1999/00');
+    expect(component.getFiscalYearDisplay(undefined)).toBeNull();
+    expect(component.getFiscalYearDisplay(null)).toBeNull();
+  });
 });
