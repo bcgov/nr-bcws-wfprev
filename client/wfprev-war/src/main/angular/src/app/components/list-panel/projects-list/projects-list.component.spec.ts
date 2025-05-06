@@ -381,4 +381,11 @@ describe('ProjectsListComponent', () => {
     component.onSortChange(mockEvent);
     expect(component.allProjects[0].projectName).toBe('B');
   });
+
+  it('should format fiscal year display correctly', () => {
+    expect(component.getFiscalYearDisplay(2023)).toBe('2023/24');
+    expect(component.getFiscalYearDisplay(1999)).toBe('1999/00');
+    expect(component.getFiscalYearDisplay(undefined)).toBeNull();
+    expect(component.getFiscalYearDisplay(null)).toBeNull();
+  });
 });
