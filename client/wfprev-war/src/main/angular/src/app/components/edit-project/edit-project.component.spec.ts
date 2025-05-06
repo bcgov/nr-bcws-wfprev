@@ -7,11 +7,12 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ProjectDetailsComponent } from 'src/app/components/edit-project/project-details/project-details.component';
 import { HttpClientModule } from '@angular/common/http';
 import { AppConfigService } from 'src/app/services/app-config.service';
+import { Router } from '@angular/router';
 
 const mockApplicationConfig = {
   application: {
     baseUrl: 'http://test.com',
-    lazyAuthenticate: false, // Ensure this property is defined
+    lazyAuthenticate: false,
     enableLocalStorageToken: true,
     acronym: 'TEST',
     environment: 'DEV',
@@ -26,19 +27,34 @@ const mockApplicationConfig = {
 };
 
 class MockAppConfigService {
-  private appConfig = mockApplicationConfig;
+  private appConfig = {
+    application: {
+      baseUrl: 'http://test.com',
+      lazyAuthenticate: false,
+      enableLocalStorageToken: true,
+      acronym: 'TEST',
+      environment: 'DEV',
+      version: '1.0.0',
+    },
+    webade: {
+      oauth2Url: 'http://oauth.test',
+      clientId: 'test-client',
+      authScopes: 'TEST.*',
+    },
+    rest: {},
+  };
 
   loadAppConfig(): Promise<void> {
-    return Promise.resolve(); // Simulate successful configuration loading
+    return Promise.resolve();
   }
 
   getConfig(): any {
-    return this.appConfig; // Return mock configuration
+    return this.appConfig;
   }
 }
 
 class MockProjectService {
-  // Add mock methods if needed
+
 }
 
 describe('EditProjectComponent', () => {
@@ -62,8 +78,8 @@ describe('EditProjectComponent', () => {
       imports: [EditProjectComponent, BrowserAnimationsModule, HttpClientModule],
       providers: [
         { provide: ActivatedRoute, useValue: mockActivatedRoute },
-        { provide: AppConfigService, useClass: MockAppConfigService }, // Provide mock AppConfigService
-        { provide: MockProjectService, useClass: MockProjectService }, // Provide mock ProjectService
+        { provide: AppConfigService, useClass: MockAppConfigService },
+        { provide: MockProjectService, useClass: MockProjectService },
       ],
     }).compileComponents();
 
@@ -87,10 +103,10 @@ describe('EditProjectComponent', () => {
   });
   
   it('should not reload ProjectFiscalsComponent if it is already loaded', () => {
-    component.projectFiscalsComponentRef = {} as any; // Mock that the component is already loaded
+    component.projectFiscalsComponentRef = {} as any;
     component.onTabChange({ index: 1 });
   
-    expect(component.fiscalsContainer).toBeTruthy(); // Ensures container is still present
+    expect(component.fiscalsContainer).toBeTruthy();
   });
 
   it('should return true from canDeactivate() if no unsaved changes exist', () => {
@@ -124,4 +140,91 @@ describe('EditProjectComponent', () => {
     expect(component.projectDetailsComponent.refreshFiscalData).toHaveBeenCalled();
   });
   
+});
+
+describe('EditProjectComponent (extended coverage)', () => {
+  let component: EditProjectComponent;
+  let fixture: ComponentFixture<EditProjectComponent>;
+  let router: Router;
+
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [EditProjectComponent, BrowserAnimationsModule, HttpClientModule],
+      providers: [
+        { provide: Router, useValue: { navigate: jasmine.createSpy('navigate') } },
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            queryParamMap: of({
+              has: () => false,
+              get: () => null,
+              getAll: () => [],
+              keys: []
+            })
+          }
+        },
+        { provide: AppConfigService, useClass: MockAppConfigService },
+      ]
+      
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(EditProjectComponent);
+    component = fixture.componentInstance;
+    router = TestBed.inject(Router);
+    fixture.detectChanges();
+  });
+
+  it('should have projectName as null by default', () => {
+    expect(component.projectName).toBeNull();
+  });
+
+  it('should have activeRoute as empty string by default', () => {
+    expect(component.activeRoute).toBe('');
+  });
+
+  it('should set activeRoute and navigate to list', () => {
+    component.setActive('list');
+    expect(component.activeRoute).toBe('list');
+    expect(router.navigate).toHaveBeenCalledWith([jasmine.anything()]);
+  });
+
+  it('should set activeRoute and navigate to map', () => {
+    component.setActive('map');
+    expect(component.activeRoute).toBe('map');
+    expect(router.navigate).toHaveBeenCalledWith([jasmine.anything()]);
+  });
+
+  it('should set activeRoute but not navigate for unknown menuItem', () => {
+    component.setActive('unknown');
+    expect(component.activeRoute).toBe('unknown');
+    expect((router.navigate as jasmine.Spy).calls.count()).toBe(0);
+  });
+
+  it('should return true from canDeactivate if both components are not dirty', () => {
+    component.projectDetailsComponent = { isFormDirty: () => false } as any;
+    component.projectFiscalsComponentRef = { instance: { isFormDirty: () => false } } as any;
+    expect(component.canDeactivate()).toBe(true);
+  });
+
+  it('should call canDeactivate on projectDetailsComponent if dirty', () => {
+    const mockCanDeactivate = jasmine.createSpy().and.returnValue(true);
+    component.projectDetailsComponent = {
+      isFormDirty: () => true,
+      canDeactivate: mockCanDeactivate
+    } as any;
+    expect(component.canDeactivate()).toBe(true);
+    expect(mockCanDeactivate).toHaveBeenCalled();
+  });
+
+  it('should call canDeactivate on projectFiscalsComponentRef if dirty', () => {
+    const mockCanDeactivate = jasmine.createSpy().and.returnValue(true);
+    component.projectFiscalsComponentRef = {
+      instance: {
+        isFormDirty: () => true,
+        canDeactivate: mockCanDeactivate
+      }
+    } as any;
+    expect(component.canDeactivate()).toBe(true);
+    expect(mockCanDeactivate).toHaveBeenCalled();
+  });
 });
