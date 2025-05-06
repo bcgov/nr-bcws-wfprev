@@ -388,4 +388,51 @@ describe('ProjectsListComponent', () => {
     expect(component.getFiscalYearDisplay(undefined)).toBeNull();
     expect(component.getFiscalYearDisplay(null)).toBeNull();
   });
+
+  it('should return plan fiscal status description from code table', () => {
+    component.planFiscalStatusCode = [{ planFiscalStatusCode: 'PS1', description: 'Planned' }];
+    const result = component.getDescription('planFiscalStatusCode', 'PS1');
+    expect(result).toBe('Planned');
+  });
+  
+  it('should return activity category description from code table', () => {
+    component.activityCategoryCode = [{ activityCategoryCode: 'AC1', description: 'Clearing' }];
+    const result = component.getDescription('activityCategoryCode', 'AC1');
+    expect(result).toBe('Clearing');
+  });
+
+  it('should fetch and sort project fiscals in descending order', () => {
+    const project: { projectGuid: string; projectFiscals?: any[] } = { projectGuid: 'guid1' };
+    const mockResponse = {
+      _embedded: {
+        projectFiscals: [
+          { fiscalYear: 2020 },
+          { fiscalYear: 2023 },
+          { fiscalYear: 2021 }
+        ]
+      }
+    };
+  
+    mockProjectService.getProjectFiscalsByProjectGuid = jasmine.createSpy()
+      .and.returnValue(of(mockResponse));
+  
+    component.getFiscal(project);
+  
+    expect(project.projectFiscals).toEqual([
+      { fiscalYear: 2023 },
+      { fiscalYear: 2021 },
+      { fiscalYear: 2020 }
+    ]);
+  });
+  
+  it('should handle error and assign empty fiscals array', () => {
+    const project: { projectGuid: string; projectFiscals?: any[] } = { projectGuid: 'guid1' };
+    mockProjectService.getProjectFiscalsByProjectGuid = jasmine.createSpy()
+      .and.returnValue(throwError(() => new Error('Failed to fetch')));
+  
+    component.getFiscal(project);
+  
+    expect(project.projectFiscals).toEqual([]);
+  });
+  
 });

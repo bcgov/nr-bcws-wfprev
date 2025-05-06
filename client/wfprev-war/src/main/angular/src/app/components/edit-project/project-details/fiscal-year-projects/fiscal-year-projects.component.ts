@@ -15,13 +15,10 @@ import { MatTableModule } from '@angular/material/table';
 })
 export class FiscalYearProjectsComponent implements OnInit{
   projectFiscals: any[] = [];
+  activities: any[] = [];
+  activitiesMap: { [fiscalGuid: string]: any[] } = {};
+  projectGuid: string = '';
 
-  //this fake data will be replaced by fiscalActivities once it is ready
-  activities = [
-    { name: 'Site Prep', description: 'Preparing the site for seeding', startDate:'2024-02-15', endDate: '2024-03-15', completedHectares: 50 },
-    { name: 'Seeding', description: 'Planting seeds for reforestation', endDate: '2024-05-10', completedHectares: 100 },
-    { name: 'Monitoring', description: 'Tracking vegetation growth', endDate: '2024-08-25', completedHectares: 75 },
-  ];
   displayedColumnsComplete: string[] = ['name', 'description', 'endDate', 'completedHectares'];
   displayedColumnsPlanned: string[] = ['name', 'description', 'startDate', 'endDate', 'plannedHectares'];
 
@@ -35,29 +32,74 @@ export class FiscalYearProjectsComponent implements OnInit{
     "PREPARED": "Prepared"
   };
 
-  convertFiscalYear = convertFiscalYear
+  convertFiscalYear = convertFiscalYear;
+  
   constructor(
     private route: ActivatedRoute,
     private projectService: ProjectService
   ) {}
+
   ngOnInit(): void {
+    this.projectGuid = this.route.snapshot?.queryParamMap?.get('projectGuid') || '';
+    if (this.projectGuid) {
       this.loadProjectFiscals();
+    }
   }
 
   loadProjectFiscals(): void {
-    const projectGuid = this.route.snapshot?.queryParamMap?.get('projectGuid');
-    if (projectGuid) {
-      this.projectService.getProjectFiscalsByProjectGuid(projectGuid).subscribe((data) => {
-        this.projectFiscals = (data._embedded?.projectFiscals || []).sort((a: { fiscalYear: number; }, b: { fiscalYear: number; }) => a.fiscalYear - b.fiscalYear);
-      });
-    }
+    this.projectService.getProjectFiscalsByProjectGuid(this.projectGuid).subscribe({
+      next: (data) => {
+        this.projectFiscals = (data._embedded?.projectFiscals || []).map((fiscal: any) => ({
+          ...fiscal,
+          fiscalYearFormatted: `${fiscal.fiscalYear}/${(fiscal.fiscalYear + 1).toString().slice(-2)}`,
+        })).sort((a: { fiscalYear: number }, b: { fiscalYear: number }) => b.fiscalYear - a.fiscalYear);
+        
+        // Load activities for each fiscal
+        this.projectFiscals.forEach(fiscal => {
+          this.loadActivities(fiscal.projectPlanFiscalGuid);
+        });
+      },
+      error: (error) => {
+        console.error('Error fetching project fiscals:', error);
+      }
+    });
+  }
+
+  loadActivities(fiscalGuid: string): void {
+    this.projectService.getFiscalActivities(this.projectGuid, fiscalGuid).subscribe({
+      next: (data) => {
+        if (data && data._embedded?.activities) {
+          const fiscalActivities = data._embedded.activities.map((activity: any) => ({
+            name: activity.activityName,
+            description: activity.activityDescription,
+            startDate: this.formatDate(activity.activityStartDate),
+            endDate: this.formatDate(activity.activityEndDate),
+            completedHectares: activity.completedAreaHa,
+            plannedHectares: activity.plannedTreatmentAreaHa
+          }));
+          this.activitiesMap[fiscalGuid] = fiscalActivities;
+        } else {
+          this.activitiesMap[fiscalGuid] = [];
+        }
+      },
+      error: (error) => {
+        console.error('Error fetching activities:', error);
+        this.activitiesMap[fiscalGuid] = [];
+      }
+    });
+  }
+
+  private formatDate(dateString: string): string {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    return date.toISOString().split('T')[0];
   }
 
   getStatusIcon(statusCode: string): string {
     const iconMap: Record<string, string> = {
       "DRAFT": "draft-icon.svg",
       "PROPOSED": "proposed-icon.svg",
-      "IN_PROG": "in-progress-icon.svg",
+      "IN_PROG": "in-progress-icon-only.svg",
       "COMPLETE": "complete-icon.svg",
       "ABANDONED": "abandoned-icon.svg",
       "PREPARED": "prepared-icon.svg"
