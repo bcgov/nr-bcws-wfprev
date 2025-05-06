@@ -43,3 +43,20 @@
       }
     }
   }
+
+  .navigate{
+    width: fit-content;
+    padding: 12px 24px;
+    font-family: var(--wf-font-family-main) !important;
+    font-size: 15px;
+    font-weight: 400;
+    color: #2D2D2D;
+    display: flex;
+    align-items: center; 
+    gap: 8px;
+    cursor: pointer;
+    .icon{
+      width: 24px;
+      height: 24px;
+    }
+  }

@@ -1,4 +1,10 @@
 <div>
+    <div class="navigate" (click)="setActive('map')">
+        <img alt="menu-icon" class="icon" src="/assets/menu.svg" />
+        <span class="span-class" [class.active]="activeRoute === 'map'">
+        Return to Project List
+        </span>
+    </div>
     <div class="project-title">
         <span>{{projectName}}</span>
     </div>
