@@ -72,7 +72,7 @@
                     <div class="title">Activities</div>
                 
                     <!--  Show Table 1 when status is COMPLETE -->
-                    <table mat-table [dataSource]="activities" class="activities-table" *ngIf="fiscal.planFiscalStatusCode === 'COMPLETE'">
+                    <table mat-table [dataSource]="activitiesMap[fiscal.projectPlanFiscalGuid] || []" class="activities-table" *ngIf="fiscal.planFiscalStatusCode === 'COMPLETE'">
                         <ng-container matColumnDef="name">
                             <th mat-header-cell *matHeaderCellDef> Name </th>
                             <td mat-cell *matCellDef="let activity"> {{ activity.name }} </td>
@@ -98,7 +98,7 @@
                     </table>
                 
                     <!--  Show Table 2 when status is NOT COMPLETE -->
-                    <table mat-table [dataSource]="activities" class="activities-table" *ngIf="fiscal.planFiscalStatusCode !== 'COMPLETE'">
+                    <table mat-table [dataSource]="activitiesMap[fiscal.projectPlanFiscalGuid] || []" class="activities-table" *ngIf="fiscal.planFiscalStatusCode !== 'COMPLETE'">
                         <ng-container matColumnDef="name">
                             <th mat-header-cell *matHeaderCellDef> Name </th>
                             <td mat-cell *matCellDef="let activity"> {{ activity.name }} </td>
