@@ -777,5 +777,48 @@ describe('ProjectDetailsComponent', () => {
       });
     });
 
+    describe('isFormDirty and canDeactivate', () => {
+      it('should return true from isFormDirty if any of the flags or form is dirty', () => {
+        component.detailsForm.markAsDirty();
+        component.isProjectDescriptionDirty = false;
+        component.isLatLongDirty = false;
+        expect(component.isFormDirty()).toBeTrue();
+    
+        component.detailsForm.markAsPristine();
+        component.isProjectDescriptionDirty = true;
+        expect(component.isFormDirty()).toBeTrue();
+    
+        component.isProjectDescriptionDirty = false;
+        component.isLatLongDirty = true;
+        expect(component.isFormDirty()).toBeTrue();
+      });
+    
+      it('should return false from isFormDirty if all are clean', () => {
+        component.detailsForm.markAsPristine();
+        component.isProjectDescriptionDirty = false;
+        component.isLatLongDirty = false;
+        expect(component.isFormDirty()).toBeFalse();
+      });
+    
+      it('should return true from canDeactivate if form is clean', () => {
+        component.detailsForm.markAsPristine();
+        component.isProjectDescriptionDirty = false;
+        component.isLatLongDirty = false;
+        expect(component.canDeactivate()).toBeTrue();
+      });
+    
+      it('should open confirmation dialog if form is dirty in canDeactivate', () => {
+        const dialogRefSpyObj = jasmine.createSpyObj({ afterClosed: of(true) });
+        const dialogSpy = jasmine.createSpyObj('MatDialog', ['open']);
+        dialogSpy.open.and.returnValue(dialogRefSpyObj);
+        component['dialog'] = dialogSpy;
+    
+        component.detailsForm.markAsDirty();
+        const result = component.canDeactivate();
+        expect(dialogSpy.open).toHaveBeenCalled();
+        expect(result).toBe(dialogRefSpyObj.afterClosed());
+      });
+    });
+    
   });
 });

@@ -9,7 +9,7 @@
       </select>
       <div class="result-count">
             <!-- Result Count -->
-        <span>{{ projectList.length }} Results</span>
+        <span>{{ allProjects.length }} Results</span>
       </div>
     </div>
     <div class="create-project-button-container">
@@ -22,10 +22,10 @@
     </div>
   </div>
 
-  <div class="list-contents">
+  <div class="list-contents" (scroll)="handleScroll($event)">
     <mat-accordion>
       
-      <mat-expansion-panel *ngFor="let project of projectList?.length ? projectList : []" (click)="highlightProjectPolygons(project)" #panel="matExpansionPanel">
+      <mat-expansion-panel *ngFor="let project of displayedProjects?.length ? displayedProjects : []" (click)="highlightProjectPolygons(project)" (opened)="getFiscal(project)" #panel="matExpansionPanel">
         <mat-expansion-panel-header class="expansion-panel-header">
           <mat-panel-title class="project-title">
             <div class="custom-indicator">
@@ -44,74 +44,94 @@
             </div>
             <span class="project-name"> {{ project.projectName }} </span>
             <div class="action-items">
-              <div class="action-item">
-                <img alt="detail-icon" class="icon" src="/assets/detail-icon.svg" />
-                <span>Details</span>
-              </div>
               <div class="action-item" (click)="editProject(project, $event)">
                 <img alt="edit-icon" class="icon" src="/assets/edit-icon.svg" />
                 <span>Edit</span>
               </div>
             </div>
           </mat-panel-title>
+          <div class="divider"></div>
           <div>
             <div class="project-header-details">
               <div class="detail">
-                <span>Region</span>
-                <span>{{ getDescription('forestRegionCode',project.forestRegionOrgUnitId) }}</span>
-              </div>
-              <div class="detail">
-                <span>Total Hectares</span>
-                <span>{{ project.totalPlannedProjectSizeHa }} Ha</span>
+                <span>Project Type</span>
+                <span class="heavy-font">{{ project.projectTypeCode?.description }}</span>
               </div>
               <div class="detail">
                 <span>Business Area</span>
-                <span>{{ getDescription('programAreaCode',project.programAreaGuid) }}</span>
+                <span class="heavy-font">{{ getDescription('programAreaCode',project.programAreaGuid) }}</span>
               </div>
               <div class="detail">
-                <span>Business Area Lead</span>
-                <span>{{ project.projectLead }}</span>
+                <span>Forest Region</span>
+                <span class="heavy-font">{{ stripSuffix(getDescription('forestRegionCode',project.forestRegionOrgUnitId), ' Forest Region') }}</span>
               </div>
-              <div class="detail">
-                <span>Site Unit</span>
-                <span>{{ project.siteUnitName }}</span>
-              </div>
-            </div>
-            
+            </div>  
           </div>
           
         </mat-expansion-panel-header>
+        <div class="project-item-expansion-panel-body">
 
-        <div class="expanded-project-details">
-          <div class="fiscal-expanded">
+          <div class="project-header-details-2">
             <div class="detail">
-              <span class="heavy-font">Fiscal Year</span>
+              <span>Forest District</span>
+              <span class="heavy-font">{{ stripSuffix(getDescription('forestDistrictCode',project.forestDistrictOrgUnitId), ' Forest District') }}</span>
             </div>
             <div class="detail">
-              <span class="heavy-font">Project ID 0023</span>
+              <span>BC Parks Region</span>
+              <span class="heavy-font">{{ getDescription('bcParksRegionCode', project.bcParksRegionOrgUnitId) }}</span>
             </div>
             <div class="detail">
-              <span>Status</span>
-              <span class="heavy-font">value01</span>
-            </div>
-            <div class="detail">
-              <span>Phase</span>
-              <span class="heavy-font">value02</span>
-            </div>
-            <div class="detail">
-              <span>Risk</span>
-              <span class="heavy-font">value03</span>
-            </div>
-            <div class="detail">
-              <span>Activity Category</span>
-              <span class="heavy-font">value04</span>
+              <span>BC Parks Section</span>
+              <span class="heavy-font">{{ getDescription('bcParksSectionCode', project.bcParksSectionOrgUnitId) }}</span>
             </div>
           </div>
-          <div>
-            <div class="activity-types">
-              <span *ngFor="let activity of fiscalYearActivityTypes" class="activity-type">
-                {{ activity }}
-              </span>
+          <div *ngIf="project.projectFiscals?.length" class="fiscal-section">
+            <div *ngFor="let fiscal of project.projectFiscals" class="fiscal-card">
+              <div class="fiscal-card-title">
+                <span>{{fiscal.projectFiscalName}}</span>
+                <div class="status-container">
+                  <ng-container [ngSwitch]="fiscal.planFiscalStatusCode">
+                    <img *ngSwitchCase="'DRAFT'" src="/assets/draft-icon.svg" alt="draft" class="status-icon" />
+                    <img *ngSwitchCase="'PROPOSED'" src="/assets/proposed-icon.svg" alt="proposed" class="status-icon" />
+                    <img *ngSwitchCase="'IN_PROG'" src="/assets/in-progress-icon-only.svg" alt="in progress" class="status-icon" />
+                    <img *ngSwitchCase="'COMPLETE'" src="/assets/complete-icon.svg" alt="completed" class="status-icon" />
+                    <img *ngSwitchCase="'ABANDONED'" src="/assets/abandoned-icon.svg" alt="abandoned" class="status-icon" />
+                    <img *ngSwitchCase="'PREPARED'" src="/assets/prepared-icon.svg" alt="prepared" class="status-icon" />
+                  </ng-container>
+                  <span>{{getDescription('planFiscalStatusCode', fiscal.planFiscalStatusCode)}}</span>
+                  <span class="individual-fiscal-year">{{getFiscalYearDisplay(fiscal.fiscalYear)}}</span>
+                </div>
+              </div>
+              <div class="fiscal-card-body">
+                <div class="fiscal-body-item">
+                  <span>Activity Category</span>
+                  <span class="fiscal-value wrap-text">{{getDescription('activityCategoryCode',fiscal.activityCategoryCode)}}</span>
+                </div>
+                <div class="fiscal-body-item">
+                  <span>Forecast Amount</span>
+                  <span class="fiscal-value" *ngIf="fiscal.fiscalForecastAmount">
+                    ${{ (fiscal.fiscalForecastAmount % 1 === 0) ? (fiscal.fiscalForecastAmount | number:'1.0-0') : (fiscal.fiscalForecastAmount | number:'1.2-2') }}
+                  </span>
+                </div>
+                <div class="fiscal-body-item" *ngIf="fiscal.planFiscalStatusCode !== 'COMPLETE'">
+                  <span>Planned Hectares</span>
+                  <span class="fiscal-value" *ngIf="fiscal.fiscalPlannedProjectSizeHa">
+                    {{ (fiscal.fiscalPlannedProjectSizeHa % 1 === 0) ? (fiscal.fiscalPlannedProjectSizeHa | number:'1.0-0') : (fiscal.fiscalPlannedProjectSizeHa | number:'1.2-2') }} Ha
+                  </span>
+                </div>
+                <div class="fiscal-body-item">
+                  <span>Completed Hectares</span>
+                  <span class="fiscal-value" *ngIf="fiscal.fiscalCompletedSizeHa">
+                    {{ (fiscal.fiscalCompletedSizeHa % 1 === 0) ? (fiscal.fiscalCompletedSizeHa | number:'1.0-0') : (fiscal.fiscalCompletedSizeHa | number:'1.2-2') }} Ha
+                  </span>
+                </div>
+                <div class="fiscal-body-item" *ngIf="fiscal.planFiscalStatusCode === 'COMPLETE'">
+                  <span>CFS Actual Spend</span>
+                  <span class="fiscal-value" *ngIf="fiscal.fiscalActualAmount">
+                    ${{ (fiscal.fiscalActualAmount % 1 === 0) ? (fiscal.fiscalActualAmount | number:'1.0-0') : (fiscal.fiscalActualAmount | number:'1.2-2') }}
+                  </span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -119,4 +139,3 @@
     </mat-accordion>
   </div>
 </div>
-

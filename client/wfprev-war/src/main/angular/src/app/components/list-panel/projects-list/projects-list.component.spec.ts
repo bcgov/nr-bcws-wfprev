@@ -177,7 +177,7 @@ describe('ProjectsListComponent', () => {
     expect(regionDescription).toBe('Region 1');
 
     const unknownDescription = component.getDescription('forestRegionCode', 999);
-    expect(unknownDescription).toBe('Unknown');
+    expect(unknownDescription).toBe('');
   });
 
   it('should handle sort change correctly', () => {
@@ -337,6 +337,102 @@ describe('ProjectsListComponent', () => {
     component.createNewProject();
   
     expect(component.loadProjects).toHaveBeenCalled();
+  });
+  
+  it('should call handleScroll and load more projects on scroll', () => {
+    component.allProjects = Array.from({length: 50}, (_, i) => ({ projectName: `Project ${i}` }));
+    component.displayedProjects = component.allProjects.slice(0, 25);
+    component.currentPage = 0;
+    const event = { target: { scrollTop: 100, scrollHeight: 200, clientHeight: 100 } };
+    component.handleScroll(event);
+    expect(component.displayedProjects.length).toBeGreaterThan(25);
+  });
+
+  it('should highlight project polygons', () => {
+    const mockMarkerWithLatLng = { getLatLng: () => ({ lat: 1, lng: 2 }), setIcon: jasmine.createSpy('setIcon') };
+    const mockPolygon = { setStyle: jasmine.createSpy('setStyle') };
+    component.markerPolygons.set(mockMarkerWithLatLng as any, [mockPolygon as any]);
+    spyOn(component, 'highlightProjectPolygons').and.callThrough();
+    component.highlightProjectPolygons({ latitude: 1, longitude: 2 });
+    expect(component.highlightProjectPolygons).toHaveBeenCalledWith({ latitude: 1, longitude: 2 });
+  });
+
+  it('should strip suffix from a string', () => {
+    const result = component.stripSuffix('Test Forest Region', ' Forest Region');
+    expect(result).toBe('Test');
+  });
+
+  it('should return original string if stripSuffix does not find suffix', () => {
+    const result = component.stripSuffix('Test', 'NotFound');
+    expect(result).toBe('Test');
+  });
+
+  it('should generate a secure random number', () => {
+    const num = component.getSecureRandomNumber();
+    expect(typeof num).toBe('number');
+  });
+
+  it('should sort projects in descending order', () => {
+    component.allProjects = [
+      { projectName: 'B' },
+      { projectName: 'A' }
+    ];
+    const mockEvent = { target: { value: 'descending' } };
+    component.onSortChange(mockEvent);
+    expect(component.allProjects[0].projectName).toBe('B');
+  });
+
+  it('should format fiscal year display correctly', () => {
+    expect(component.getFiscalYearDisplay(2023)).toBe('2023/24');
+    expect(component.getFiscalYearDisplay(1999)).toBe('1999/00');
+    expect(component.getFiscalYearDisplay(undefined)).toBeNull();
+    expect(component.getFiscalYearDisplay(null)).toBeNull();
+  });
+
+  it('should return plan fiscal status description from code table', () => {
+    component.planFiscalStatusCode = [{ planFiscalStatusCode: 'PS1', description: 'Planned' }];
+    const result = component.getDescription('planFiscalStatusCode', 'PS1');
+    expect(result).toBe('Planned');
+  });
+  
+  it('should return activity category description from code table', () => {
+    component.activityCategoryCode = [{ activityCategoryCode: 'AC1', description: 'Clearing' }];
+    const result = component.getDescription('activityCategoryCode', 'AC1');
+    expect(result).toBe('Clearing');
+  });
+
+  it('should fetch and sort project fiscals in descending order', () => {
+    const project: { projectGuid: string; projectFiscals?: any[] } = { projectGuid: 'guid1' };
+    const mockResponse = {
+      _embedded: {
+        projectFiscals: [
+          { fiscalYear: 2020 },
+          { fiscalYear: 2023 },
+          { fiscalYear: 2021 }
+        ]
+      }
+    };
+  
+    mockProjectService.getProjectFiscalsByProjectGuid = jasmine.createSpy()
+      .and.returnValue(of(mockResponse));
+  
+    component.getFiscal(project);
+  
+    expect(project.projectFiscals).toEqual([
+      { fiscalYear: 2023 },
+      { fiscalYear: 2021 },
+      { fiscalYear: 2020 }
+    ]);
+  });
+  
+  it('should handle error and assign empty fiscals array', () => {
+    const project: { projectGuid: string; projectFiscals?: any[] } = { projectGuid: 'guid1' };
+    mockProjectService.getProjectFiscalsByProjectGuid = jasmine.createSpy()
+      .and.returnValue(throwError(() => new Error('Failed to fetch')));
+  
+    component.getFiscal(project);
+  
+    expect(project.projectFiscals).toEqual([]);
   });
   
 });

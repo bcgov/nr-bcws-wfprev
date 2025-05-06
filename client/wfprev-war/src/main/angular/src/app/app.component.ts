@@ -20,19 +20,7 @@ export class AppComponent {
     protected dialog: MatDialog
   ) {
   }
-
-  setActive(menuItem: string): void {
-    this.activeRoute = menuItem;
-    switch (menuItem) {
-      case 'list':
-        this.router.navigate([ResourcesRoutes.LIST]);
-        break;
-      case 'map':
-        this.router.navigate([ResourcesRoutes.MAP]);
-        break;
-    }
-  }
-
+  
   goHome(): void {
     this.router.navigate([ResourcesRoutes.LANDING]); // Navigate back to the home page
   }
