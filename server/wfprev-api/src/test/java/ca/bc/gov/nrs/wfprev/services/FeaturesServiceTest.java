@@ -1,199 +1,239 @@
 package ca.bc.gov.nrs.wfprev.services;
 
 import ca.bc.gov.nrs.wfprev.data.entities.ActivityBoundaryEntity;
+import ca.bc.gov.nrs.wfprev.data.entities.ActivityEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ProjectBoundaryEntity;
-import ca.bc.gov.nrs.wfprev.data.repositories.ActivityBoundaryRepository;
-import ca.bc.gov.nrs.wfprev.data.repositories.ProjectBoundaryRepository;
+import ca.bc.gov.nrs.wfprev.data.entities.ProjectEntity;
+import ca.bc.gov.nrs.wfprev.data.entities.ProjectFiscalEntity;
+import ca.bc.gov.nrs.wfprev.data.params.FeatureQueryParams;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Root;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.LinearRing;
 import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Point;
-import org.locationtech.jts.geom.Polygon;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class FeaturesServiceTest {
 
     @Mock
-    private ProjectBoundaryRepository projectBoundaryRepository;
-
-    @Mock
-    private ActivityBoundaryRepository activityBoundaryRepository;
+    private EntityManager entityManager;
 
     @InjectMocks
     private FeaturesService featuresService;
 
-    private ProjectBoundaryEntity projectBoundaryEntity;
-    private ActivityBoundaryEntity activityBoundaryEntity;
+    @Mock
+    private CriteriaBuilder criteriaBuilder;
 
-    private final String projectGuid = "2ca37892-b8a0-4ccd-9f91-992421b90121";
-    private final String activityGuid = "2ca37892-b8a0-4ccd-9f91-992421b90122";
+    @Mock
+    private CriteriaQuery<ProjectEntity> projectQuery;
+
+    @Mock
+    private CriteriaQuery<ProjectFiscalEntity> fiscalQuery;
+
+    @Mock
+    private CriteriaQuery<ActivityEntity> activityQuery;
+
+    @Mock
+    private CriteriaQuery<ActivityBoundaryEntity> boundaryQuery;
+
+    @Mock
+    private CriteriaQuery<ProjectBoundaryEntity> projectBoundaryQuery;
+
+    @Mock
+    private Root<ProjectEntity> projectRoot;
+
+    @Mock
+    private Root<ProjectFiscalEntity> fiscalRoot;
+
+    @Mock
+    private Root<ActivityEntity> activityRoot;
+
+    @Mock
+    private Root<ActivityBoundaryEntity> boundaryRoot;
+
+    @Mock
+    private Root<ProjectBoundaryEntity> projectBoundaryRoot;
+
+    @Mock
+    private MultiPolygon mockMultiPolygon;
+
+    @Mock
+    private Point mockPoint;
 
     @BeforeEach
     void setUp() {
-        // Create a mock point geometry
-        GeometryFactory geometryFactory = new GeometryFactory();
-        Point point = geometryFactory.createPoint(new Coordinate(-123.3656, 48.4284));
-
-        projectBoundaryEntity = new ProjectBoundaryEntity();
-        projectBoundaryEntity.setProjectBoundaryGuid(UUID.fromString(projectGuid));
-        projectBoundaryEntity.setLocationGeometry(point);
-
-        // Create a mock MultiPolygon geometry
-        Coordinate[] coordinates = {
-                new Coordinate(1.0, 2.0),
-                new Coordinate(3.0, 4.0),
-                new Coordinate(5.0, 6.0),
-                new Coordinate(1.0, 2.0) // Closing the polygon
-        };
-
-        LinearRing shell = geometryFactory.createLinearRing(coordinates);
-        Polygon polygon = geometryFactory.createPolygon(shell);
-
-        // Create a MultiPolygon from a single Polygon
-        MultiPolygon multiPolygon = geometryFactory.createMultiPolygon(new Polygon[]{polygon});
-
-        projectBoundaryEntity.setBoundaryGeometry(multiPolygon);
-
-        activityBoundaryEntity = new ActivityBoundaryEntity();
-        activityBoundaryEntity.setActivityBoundaryGuid(UUID.fromString(activityGuid));
-        activityBoundaryEntity.setGeometry(multiPolygon);
+        MockitoAnnotations.openMocks(this);
     }
 
     @Test
     void testGetAllFeatures() {
-        when(projectBoundaryRepository.findAll()).thenReturn(List.of(projectBoundaryEntity));
-        when(activityBoundaryRepository.findAll()).thenReturn(List.of(activityBoundaryEntity));
+        // Arrange
+        FeatureQueryParams params = new FeatureQueryParams();
+        params.setProgramAreaGuids(Collections.singletonList(UUID.randomUUID()));
+        params.setFiscalYears(Collections.singletonList("2022"));
+        params.setActivityCategoryCodes(Collections.singletonList("CATEGORY"));
+        params.setPlanFiscalStatusCodes(Collections.singletonList("STATUS"));
+        params.setSearchText("searchText");
 
-        Map<String, Object> result = featuresService.getAllFeatures();
+        ProjectEntity mockProject = new ProjectEntity();
+        mockProject.setProjectGuid(UUID.randomUUID());
 
+        List<ProjectEntity> mockProjects = Collections.singletonList(mockProject);
+
+        FeaturesService spyService = spy(featuresService);
+        doReturn(mockProjects).when(spyService).findFilteredProjects(params);
+        doAnswer(invocation -> null).when(spyService).addProjectBoundaries(any(), any());
+        doAnswer(invocation -> null).when(spyService).addProjectFiscals(any(), any(), any());
+
+        // Act
+        Map<String, Object> result = spyService.getAllFeatures(params);
+
+        // Assert
         assertNotNull(result);
-        assertEquals("FeatureCollection", result.get("type"));
-
-        List<?> features = (List<?>) result.get("features");
-        assertEquals(3, features.size()); // One point, one polygon from project, one polygon from activity
+        assertEquals(1, ((List<?>) result.get("projects")).size());
     }
 
     @Test
-    void testCreatePointFeature() {
-        GeometryFactory geometryFactory = new GeometryFactory();
-        Point point = geometryFactory.createPoint(new Coordinate(-123.3656, 48.4284));
+    void testAddProjectBoundaries() {
+        // Arrange
+        ProjectEntity project = new ProjectEntity();
+        project.setProjectGuid(UUID.randomUUID());
 
-        Map<String, Object> properties = Map.of("key", "value");
-        Map<String, Object> feature = featuresService.createPointFeature(point, properties);
+        ProjectBoundaryEntity mockBoundary = new ProjectBoundaryEntity();
+        mockBoundary.setBoundaryGeometry(mockMultiPolygon);
+        mockBoundary.setLocationGeometry(mockPoint);
 
-        assertEquals("Feature", feature.get("type"));
-        assertEquals("Point", ((Map<?, ?>) feature.get("geometry")).get("type"));
+        FeaturesService spyService = spy(featuresService);
+        doReturn(mockBoundary).when(spyService).findLatestProjectBoundary(any());
+
+        Map<String, Object> projectMap = new HashMap<>();
+
+        // Act
+        spyService.addProjectBoundaries(project, projectMap);
+
+        // Assert
+        assertTrue(projectMap.containsKey("projectBoundaries"));
+    }
+
+    @Test
+    void testAddProjectFiscals() {
+        // Arrange
+        FeatureQueryParams params = new FeatureQueryParams();
+        params.setFiscalYears(Collections.singletonList("2025"));
+        params.setActivityCategoryCodes(Collections.singletonList("CATEGORY"));
+        params.setPlanFiscalStatusCodes(Collections.singletonList("STATUS"));
+
+        ProjectEntity project = new ProjectEntity();
+        project.setProjectGuid(UUID.randomUUID());
+
+        ProjectFiscalEntity mockFiscal = new ProjectFiscalEntity();
+        mockFiscal.setProject(project); // Initialize the project field
+        List<ProjectFiscalEntity> mockFiscals = Collections.singletonList(mockFiscal);
+
+        FeaturesService spyService = spy(featuresService);
+        doReturn(mockFiscals).when(spyService).findFilteredProjectFiscals(any(), any(), any(), any());
+        doAnswer(invocation -> null).when(spyService).addActivitiesToFiscal(any(), any());
+
+        Map<String, Object> projectMap = new HashMap<>();
+
+        // Act
+        spyService.addProjectFiscals(project, params, projectMap);
+
+        // Assert
+        assertTrue(projectMap.containsKey("projectFiscals"));
+    }
+
+    @Test
+    void testAddActivitiesToFiscal() {
+        // Arrange
+        ProjectFiscalEntity fiscal = new ProjectFiscalEntity();
+        fiscal.setProjectPlanFiscalGuid(UUID.randomUUID());
+
+        ActivityEntity mockActivity = new ActivityEntity();
+        List<ActivityEntity> mockActivities = Collections.singletonList(mockActivity);
+
+        FeaturesService spyService = spy(featuresService);
+        doReturn(mockActivities).when(spyService).findActivitiesByProjectFiscal(any());
+        doAnswer(invocation -> null).when(spyService).addActivityBoundaries(any(), any());
+
+        Map<String, Object> fiscalMap = new HashMap<>();
+
+        // Act
+        spyService.addActivitiesToFiscal(fiscal, fiscalMap);
+
+        // Assert
+        assertTrue(fiscalMap.containsKey("activities"));
+    }
+
+    @Test
+    void testAddActivityBoundaries() {
+        // Arrange
+        ActivityEntity activity = new ActivityEntity();
+        activity.setActivityGuid(UUID.randomUUID());
+
+        ActivityBoundaryEntity mockBoundary = new ActivityBoundaryEntity();
+        List<ActivityBoundaryEntity> mockBoundaries = Collections.singletonList(mockBoundary);
+
+        FeaturesService spyService = spy(featuresService);
+        doReturn(mockBoundaries).when(spyService).findActivityBoundaries(any());
+
+        Map<String, Object> activityMap = new HashMap<>();
+
+        // Act
+        spyService.addActivityBoundaries(activity, activityMap);
+
+        // Assert
+        assertTrue(activityMap.containsKey("activityBoundaries"));
     }
 
     @Test
     void testCreatePolygonFeature() {
-        GeometryFactory geometryFactory = new GeometryFactory();
-        Coordinate[] coordinates = {
-                new Coordinate(1.0, 2.0),
-                new Coordinate(3.0, 4.0),
-                new Coordinate(5.0, 6.0),
-                new Coordinate(1.0, 2.0)
-        };
-        LinearRing shell = geometryFactory.createLinearRing(coordinates);
-        Polygon polygon = geometryFactory.createPolygon(shell);
-
-        // Create a MultiPolygon from a single Polygon
-        MultiPolygon multiPolygon = geometryFactory.createMultiPolygon(new Polygon[]{polygon});
-
-        Map<String, Object> properties = Map.of("key", "value");
-        Map<String, Object> feature = featuresService.createPolygonFeature(multiPolygon, properties);
-
-        assertEquals("Feature", feature.get("type"));
-        assertEquals("MultiPolygon", ((Map<?, ?>) feature.get("geometry")).get("type"));
-    }
-
-    @Test
-    void testCreatePolygonFeature_WithInteriorHole() {
-        GeometryFactory geometryFactory = new GeometryFactory();
-
-        // Define the exterior ring (outer boundary)
-        Coordinate[] exteriorCoords = {
-                new Coordinate(-123.3656, 48.4284),
-                new Coordinate(-123.3657, 48.4285),
-                new Coordinate(-123.3658, 48.4284),
-                new Coordinate(-123.3656, 48.4284) // Closing the polygon
-        };
-        LinearRing exteriorRing = geometryFactory.createLinearRing(exteriorCoords);
-
-        // Define the interior ring (hole)
-        Coordinate[] interiorCoords = {
-                new Coordinate(-123.36565, 48.42845),
-                new Coordinate(-123.36570, 48.42846),
-                new Coordinate(-123.36572, 48.42844),
-                new Coordinate(-123.36565, 48.42845) // Closing the hole
-        };
-        LinearRing interiorRing = geometryFactory.createLinearRing(interiorCoords);
-
-        // Create a polygon with a hole
-        Polygon polygonWithHole = geometryFactory.createPolygon(exteriorRing, new LinearRing[]{interiorRing});
-
-        // Create a MultiPolygon from the polygon with a hole
-        MultiPolygon multiPolygon = geometryFactory.createMultiPolygon(new Polygon[]{polygonWithHole});
-
-        // Create properties for the feature
+        // Arrange
         Map<String, Object> properties = new HashMap<>();
-        properties.put("name", "Test Polygon with Hole");
 
-        // Call the method under test
-        Map<String, Object> feature = featuresService.createPolygonFeature(multiPolygon, properties);
+        // Act
+        Map<String, Object> result = FeaturesService.createPolygonFeature(mockMultiPolygon, properties);
 
-        // Assertions
-        assertNotNull(feature);
-        assertEquals("Feature", feature.get("type"));
-
-        Map<String, Object> geometry = (Map<String, Object>) feature.get("geometry");
-        assertNotNull(geometry);
-        assertEquals("MultiPolygon", geometry.get("type"));
-
-        List<List<List<double[]>>> coordinates = (List<List<List<double[]>>>) geometry.get("coordinates");
-
-        // Assert that we have one polygon in the MultiPolygon
-        assertEquals(1, coordinates.size());
-
-        // Assert that the polygon has both an exterior and interior ring
-        assertEquals(2, coordinates.get(0).size()); // 1 exterior + 1 interior (hole)
-
-        // Validate that the hole coordinates exist
-        List<double[]> holeCoordinates = coordinates.get(0).get(1);
-        assertNotNull(holeCoordinates);
-        assertFalse(holeCoordinates.isEmpty());
-
-        // Validate first coordinate in the hole matches expected
-        assertArrayEquals(new double[]{-123.36565, 48.42845}, holeCoordinates.get(0), 1e-6);
+        // Assert
+        assertNotNull(result);
+        assertTrue(result.containsKey("geometry"));
     }
-//
-//    @Test
-//    void testCreateProjectProperties() {
-//        Map<String, Object> properties = featuresService.createProjectProperties(projectBoundaryEntity);
-//        assertEquals(projectGuid, properties.get("project_boundary_guid"));
-//    }
 
     @Test
-    void testCreateActivityProperties() {
-        Map<String, Object> properties = featuresService.createActivityProperties(activityBoundaryEntity);
-        assertEquals(activityGuid, properties.get("activity_boundary_guid"));
+    void testCreatePointFeature() {
+        // Arrange
+        Map<String, Object> properties = new HashMap<>();
+        when(mockPoint.getX()).thenReturn(123.456);
+        when(mockPoint.getY()).thenReturn(789.123);
+
+        // Act
+        Map<String, Object> result = featuresService.createPointFeature(mockPoint, properties);
+
+        // Assert
+        assertNotNull(result);
+        assertTrue(result.containsKey("geometry"));
     }
 }

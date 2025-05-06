@@ -1,68 +1,80 @@
 package ca.bc.gov.nrs.wfprev;
 
 import ca.bc.gov.nrs.wfprev.controllers.FeaturesController;
+import ca.bc.gov.nrs.wfprev.data.params.FeatureQueryParams;
 import ca.bc.gov.nrs.wfprev.services.FeaturesService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.springframework.dao.DataIntegrityViolationException;
 
-import java.util.Collections;
+import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class FeaturesControllerTest {
 
-    @Mock
     private FeaturesService featuresService;
-
-    @InjectMocks
     private FeaturesController featuresController;
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
+        featuresService = mock(FeaturesService.class);
+        featuresController = new FeaturesController(featuresService);
     }
 
     @Test
-    void testGetAllFeatures_Success() {
-        // Mock response
-        Map<String, Object> mockGeoJson = Collections.singletonMap("type", "FeatureCollection");
-        when(featuresService.getAllFeatures()).thenReturn(mockGeoJson);
+    void testGetAllFeatures_WithQueryParams_ReturnsExpectedMap() {
+        // Prepare input parameters
+        List<UUID> programAreaGuids = List.of(UUID.randomUUID());
+        List<String> fiscalYears = List.of("2024");
+        List<String> activityCategoryCodes = List.of("AC1");
+        List<String> planFiscalStatusCodes = List.of("PFS1");
+        List<String> forestRegionOrgUnitIds = List.of("FR1");
+        List<String> forestDistrictOrgUnitIds = List.of("FD1");
+        List<String> fireCentreOrgUnitIds = List.of("FC1");
+        String searchText = "some text";
+
+        // Expected result from service
+        Map<String, Object> expectedResponse = Map.of("type", "FeatureCollection");
+
+        // Mock service call
+        when(featuresService.getAllFeatures(any(FeatureQueryParams.class))).thenReturn(expectedResponse);
 
         // Call controller method
-        Map<String, Object> response = featuresController.getAllFeatures();
+        Map<String, Object> result = featuresController.getAllFeatures(
+                programAreaGuids,
+                fiscalYears,
+                activityCategoryCodes,
+                planFiscalStatusCodes,
+                forestRegionOrgUnitIds,
+                forestDistrictOrgUnitIds,
+                fireCentreOrgUnitIds,
+                searchText
+        );
 
-        // Verify response
-        assertNotNull(response);
-        assertEquals("FeatureCollection", response.get("type"));
-
-        // Verify interaction with service
-        verify(featuresService, times(1)).getAllFeatures();
+        // Verify
+        assertEquals(expectedResponse, result);
+        verify(featuresService, times(1)).getAllFeatures(any(FeatureQueryParams.class));
     }
 
     @Test
-    void testGetAllFeatures_Failure() {
-        // Mock exception in service
-        when(featuresService.getAllFeatures())
-                .thenThrow(new RuntimeException("Database error"));
+    void testGetAllFeatures_WithNoParams_CallsServiceWithEmptyParams() {
+        // Expected result
+        Map<String, Object> expected = Map.of("type", "FeatureCollection");
 
-        // Verify exception handling
-        DataIntegrityViolationException thrown = assertThrows(
-                DataIntegrityViolationException.class,
-                () -> featuresController.getAllFeatures()
+        when(featuresService.getAllFeatures(any(FeatureQueryParams.class))).thenReturn(expected);
+
+        Map<String, Object> result = featuresController.getAllFeatures(
+                null, null, null, null, null, null, null, null
         );
 
-        assertTrue(thrown.getMessage().contains("Error encountered while fetching GeoJson features"));
-        verify(featuresService, times(1)).getAllFeatures();
+        assertEquals(expected, result);
+        verify(featuresService, times(1)).getAllFeatures(any(FeatureQueryParams.class));
     }
 }

@@ -12,6 +12,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
 import jakarta.validation.constraints.NotNull;
@@ -30,6 +31,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 @Entity
 @EntityListeners(AuditingEntityListener.class)
@@ -54,6 +56,9 @@ public class ProjectEntity implements Serializable {
 
     @Column(name = "project_number", columnDefinition = "Decimal(10)", insertable = false, updatable = true)
     private Integer projectNumber;
+
+    @OneToMany(mappedBy = "project")
+    private List<ProjectFiscalEntity> projectFiscals;
 
     @NotNull
     @Column(name = "site_unit_name", length = 250)

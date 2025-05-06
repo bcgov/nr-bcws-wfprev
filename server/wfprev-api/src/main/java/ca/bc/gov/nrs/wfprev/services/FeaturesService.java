@@ -6,15 +6,9 @@ import ca.bc.gov.nrs.wfprev.data.entities.ActivityEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ProjectBoundaryEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ProjectEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ProjectFiscalEntity;
-import ca.bc.gov.nrs.wfprev.data.repositories.ActivityBoundaryRepository;
-import ca.bc.gov.nrs.wfprev.data.repositories.ActivityRepository;
-import ca.bc.gov.nrs.wfprev.data.repositories.ProgramAreaRepository;
-import ca.bc.gov.nrs.wfprev.data.repositories.ProjectBoundaryRepository;
-import ca.bc.gov.nrs.wfprev.data.repositories.ProjectFiscalRepository;
-import ca.bc.gov.nrs.wfprev.data.repositories.ProjectRepository;
+import ca.bc.gov.nrs.wfprev.data.params.FeatureQueryParams;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import jakarta.persistence.Tuple;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Join;
@@ -29,21 +23,13 @@ import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
 import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.UUID;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Slf4j
 @Component
@@ -52,257 +38,320 @@ public class FeaturesService implements CommonService {
     @PersistenceContext
     private EntityManager entityManager;
 
-    private final ProjectRepository projectRepository;
-    private final ProjectFiscalRepository projectFiscalRepository;
-    private final ActivityRepository activityRepository;
-    private final ProjectBoundaryRepository projectBoundaryRepository;
-    private final ActivityBoundaryRepository activityBoundaryRepository;
+    private static final String GEOMETRY = "geometry";
+    private static final String PROJECT_FISCALS = "projectFiscals";
+    private static final String FISCAL_YEAR = "fiscalYear";
+    private static final String ACTIVITY_CATEGORY_CODE = "activityCategoryCode";
+    private static final String PLAN_FISCAL_STATUS_CODE = "planFiscalStatusCode";
+    private static final String PROJECT_GUID = "projectGuid";
 
-    public FeaturesService(
-            ProjectRepository projectRepository,
-            ProjectFiscalRepository projectFiscalRepository,
-            ProjectBoundaryRepository projectBoundaryRepository,
-            ProgramAreaRepository programAreaRepository,
-            ActivityBoundaryRepository activityBoundaryRepository,
-            ActivityRepository activityRepository) {
-        this.projectBoundaryRepository = projectBoundaryRepository;
-        this.activityBoundaryRepository = activityBoundaryRepository;
-        this.projectRepository = projectRepository;
-        this.projectFiscalRepository = projectFiscalRepository;
-        this.activityRepository = activityRepository;
-
-    }
-
-
-    public Map<String, Object> getAllFeatures(
-            List<UUID> programAreaGuids,
-            List<String> fiscalYears,
-            List<String> forestRegionOrgUnitIds,
-            List<String> forestDistrictOrgUnitIds,
-            List<String> fireCentreOrgUnitIds,
-            List<String> activityCategoryCodes,
-            List<String> planFiscalStatusCodes,
-            String searchText
-    ) {
-        List<ProjectEntity> projectEntities = projectRepository.findAll();
-        List<ProjectFiscalEntity> projectFiscalEntities = projectFiscalRepository.findAll();
-        List<ActivityEntity> activityEntities = activityRepository.findAll(); // Get all activities
-
-        // Retrieve all project boundaries
-        Map<UUID, List<ProjectBoundaryEntity>> boundariesByProjectGuid = new HashMap<>();
-        List<ProjectBoundaryEntity> allBoundaries = projectBoundaryRepository.findAll();
-
-        // Group boundaries by project GUID
-        for (ProjectBoundaryEntity boundary : allBoundaries) {
-            UUID projectGuid = boundary.getProjectGuid();
-            boundariesByProjectGuid.computeIfAbsent(projectGuid, k -> new ArrayList<>()).add(boundary);
-        }
-
-        // Get all activity boundaries and group them by activity GUID
-        Map<UUID, List<ActivityBoundaryEntity>> boundariesByActivityGuid = new HashMap<>();
-        List<ActivityBoundaryEntity> allActivityBoundaries = activityBoundaryRepository.findAll();
-
-        for (ActivityBoundaryEntity boundary : allActivityBoundaries) {
-            UUID activityGuid = boundary.getActivityGuid();
-            boundariesByActivityGuid.computeIfAbsent(activityGuid, k -> new ArrayList<>()).add(boundary);
-        }
-
-        // Map activities by project fiscal GUID
-        Map<UUID, List<ActivityEntity>> activitiesByProjectFiscalGuid = new HashMap<>();
-        for (ActivityEntity activity : activityEntities) {
-            UUID projectFiscalGuid = activity.getProjectPlanFiscalGuid();
-            activitiesByProjectFiscalGuid.computeIfAbsent(projectFiscalGuid, k -> new ArrayList<>()).add(activity);
-        }
-
-        // Group fiscals by projectGuid with filters applied
-        Map<UUID, List<ProjectFiscalEntity>> fiscalsByProjectGuid = new HashMap<>();
-        for (ProjectFiscalEntity fiscal : projectFiscalEntities) {
-            UUID projectGuid = fiscal.getProject().getProjectGuid();
-
-            boolean fiscalMatches = (fiscalYears == null || fiscalYears.isEmpty() ||
-                    fiscalYears.contains(fiscal.getFiscalYear().stripTrailingZeros().toPlainString())) &&
-                    (activityCategoryCodes == null || activityCategoryCodes.isEmpty() ||
-                            activityCategoryCodes.contains(fiscal.getActivityCategoryCode())) &&
-                    (planFiscalStatusCodes == null || planFiscalStatusCodes.isEmpty() ||
-                            planFiscalStatusCodes.contains(fiscal.getPlanFiscalStatusCode()));
-
-            if (fiscalMatches) {
-                fiscalsByProjectGuid.computeIfAbsent(projectGuid, k -> new ArrayList<>()).add(fiscal);
-            }
-        }
-
+    public Map<String, Object> getAllFeatures(FeatureQueryParams params) {
+        List<ProjectEntity> filteredProjects = findFilteredProjects(params);
         List<Map<String, Object>> projects = new ArrayList<>();
 
-        for (ProjectEntity proj : projectEntities) {
-            boolean projectMatches =
-                    (programAreaGuids == null || programAreaGuids.isEmpty() ||
-                            programAreaGuids.contains(proj.getProgramAreaGuid())) &&
-                            (forestRegionOrgUnitIds == null || forestRegionOrgUnitIds.isEmpty() ||
-                                    forestRegionOrgUnitIds.contains(String.valueOf(proj.getForestRegionOrgUnitId()))) &&
-                            (forestDistrictOrgUnitIds == null || forestDistrictOrgUnitIds.isEmpty() ||
-                                    forestDistrictOrgUnitIds.contains(String.valueOf(proj.getForestDistrictOrgUnitId()))) &&
-                            (fireCentreOrgUnitIds == null || fireCentreOrgUnitIds.isEmpty() ||
-                                    fireCentreOrgUnitIds.contains(String.valueOf(proj.getFireCentreOrgUnitId())));
-
-            if (!projectMatches) continue;
-
-            List<ProjectFiscalEntity> fiscals = fiscalsByProjectGuid.getOrDefault(proj.getProjectGuid(), Collections.emptyList());
-
-            if (fiscals.isEmpty()) continue;
-
-            // Search text filter
-            if (searchText != null && !searchText.isBlank()) {
-                String lowered = searchText.toLowerCase();
-                boolean match = matchesSearchText(proj, fiscals, lowered);
-                if (!match) continue;
-            }
-
-            Map<String, Object> projectMap = new HashMap<>();
-            projectMap.put("project", createProjectProperties(proj));
-
-            // Get the boundaries for this project
-            List<ProjectBoundaryEntity> projectBoundaries = boundariesByProjectGuid.getOrDefault(proj.getProjectGuid(), Collections.emptyList());
-
-            // Only add the latest boundary if it exists
-            if (!projectBoundaries.isEmpty()) {
-                ProjectBoundaryEntity latestBoundary = findLatestBoundary(projectBoundaries);
-                if (latestBoundary != null
-                        && latestBoundary.getBoundaryGeometry() != null
-                        && !latestBoundary.getBoundaryGeometry().isEmpty()) {
-                    List<Map<String, Object>> boundariesList = new ArrayList<>();
-
-                    // Create boundary entry with geometry
-                    Map<String, Object> boundaryMap = new HashMap<>();
-
-                    // Use the createPolygonFeature to handle the geometry conversion
-                    Map<String, Object> polygonFeature = createPolygonFeature(
-                            latestBoundary.getBoundaryGeometry(),
-                            Collections.emptyMap()
-                    );
-
-                    // Extract just the geometry part from the feature
-                    if (polygonFeature != null && !polygonFeature.isEmpty()) {
-                        boundaryMap.put("boundaryGeometry", polygonFeature.get("geometry"));
-                        boundariesList.add(boundaryMap);
-                    }
-
-                    // If there's a point geometry, add it too
-                    if (latestBoundary.getLocationGeometry() != null
-                            && !latestBoundary.getLocationGeometry().isEmpty()) {
-                        Map<String, Object> pointFeature = createPointFeature(
-                                latestBoundary.getLocationGeometry(),
-                                Collections.emptyMap()
-                        );
-
-                        if (pointFeature != null && !pointFeature.isEmpty()) {
-                            Map<String, Object> pointBoundaryMap = new HashMap<>();
-                            pointBoundaryMap.put("locationGeometry", pointFeature.get("geometry")); // Use just the geometry
-                            boundariesList.add(pointBoundaryMap);
-                        }
-                    }
-
-                    projectMap.put("projectBoundaries", boundariesList);
-                }
-            }
-
-            // Add fiscal information
-            List<Map<String, Object>> fiscalPropsList = new ArrayList<>();
-            for (ProjectFiscalEntity fiscal : fiscals) {
-                Map<String, Object> fiscalMap = createProjectFiscalProperties(fiscal);
-
-                // Get activities for this fiscal
-                List<ActivityEntity> activities = activitiesByProjectFiscalGuid.getOrDefault(
-                        fiscal.getProjectPlanFiscalGuid(), Collections.emptyList());
-
-                if (!activities.isEmpty()) {
-                    List<Map<String, Object>> activityMapList = new ArrayList<>();
-
-                    for (ActivityEntity activity : activities) {
-                        Map<String, Object> activityMap = new HashMap<>();
-
-                        // Get boundaries for this activity
-                        List<ActivityBoundaryEntity> activityBoundaries = boundariesByActivityGuid.getOrDefault(
-                                activity.getActivityGuid(), Collections.emptyList());
-
-                        if (!activityBoundaries.isEmpty()) {
-                            List<Map<String, Object>> activityBoundariesList = new ArrayList<>();
-
-                            for (ActivityBoundaryEntity activityBoundary : activityBoundaries) {
-                                Map<String, Object> boundaryMap = new HashMap<>();
-
-                                // Add only the geometry
-                                if (activityBoundary.getGeometry() != null &&
-                                        !activityBoundary.getGeometry().isEmpty()) {
-                                    Map<String, Object> polygonFeature = createPolygonFeature(
-                                            activityBoundary.getGeometry(),
-                                            Collections.emptyMap()
-                                    );
-
-                                    if (polygonFeature != null && !polygonFeature.isEmpty()) {
-                                        boundaryMap.put("activityGeometry", polygonFeature.get("geometry"));
-                                        activityBoundariesList.add(boundaryMap);
-                                    }
-                                }
-                            }
-
-                            activityMap.put("activityBoundaries", activityBoundariesList);
-                        }
-
-                        activityMapList.add(activityMap);
-                    }
-
-                    fiscalMap.put("activities", activityMapList);
-                }
-
-                fiscalPropsList.add(fiscalMap);
-            }
-
-            projectMap.put("projectFiscals", fiscalPropsList);
+        for (ProjectEntity project : filteredProjects) {
+            Map<String, Object> projectMap = createProjectProperties(project);
+            addProjectBoundaries(project, projectMap);
+            addProjectFiscals(project, params, projectMap);
             projects.add(projectMap);
         }
 
-        Map<String, Object> projectCollection = new HashMap<>();
-        projectCollection.put("projects", projects);
-        return projectCollection;
+        return Map.of("projects", projects);
     }
 
-    private ProjectBoundaryEntity findLatestBoundary(List<ProjectBoundaryEntity> boundaries) {
-        if (boundaries == null || boundaries.isEmpty()) {
-            return null;
+    void addProjectBoundaries(ProjectEntity project, Map<String, Object> projectMap) {
+        ProjectBoundaryEntity latestBoundary = findLatestProjectBoundary(project.getProjectGuid());
+        if (latestBoundary != null) {
+            List<Map<String, Object>> boundariesList = processProjectBoundary(latestBoundary);
+            if (!boundariesList.isEmpty()) {
+                projectMap.put("projectBoundaries", boundariesList);
+            }
+        }
+    }
+
+    void addProjectFiscals(ProjectEntity project, FeatureQueryParams params, Map<String, Object> projectMap) {
+        List<ProjectFiscalEntity> projectFiscals = findFilteredProjectFiscals(
+                project.getProjectGuid(),
+                params.getFiscalYears(),
+                params.getActivityCategoryCodes(),
+                params.getPlanFiscalStatusCodes()
+        );
+
+        if (!projectFiscals.isEmpty()) {
+            List<Map<String, Object>> fiscalPropsList = new ArrayList<>();
+            for (ProjectFiscalEntity fiscal : projectFiscals) {
+                Map<String, Object> fiscalMap = createProjectFiscalProperties(fiscal);
+                addActivitiesToFiscal(fiscal, fiscalMap);
+                fiscalPropsList.add(fiscalMap);
+            }
+            projectMap.put(PROJECT_FISCALS, fiscalPropsList);
+        }
+    }
+
+    void addActivitiesToFiscal(ProjectFiscalEntity fiscal, Map<String, Object> fiscalMap) {
+        List<ActivityEntity> activities = findActivitiesByProjectFiscal(fiscal.getProjectPlanFiscalGuid());
+        if (!activities.isEmpty()) {
+            List<Map<String, Object>> activityMapList = new ArrayList<>();
+            for (ActivityEntity activity : activities) {
+                Map<String, Object> activityMap = new HashMap<>();
+                addActivityBoundaries(activity, activityMap);
+                activityMapList.add(activityMap);
+            }
+            fiscalMap.put("activities", activityMapList);
+        }
+    }
+
+    void addActivityBoundaries(ActivityEntity activity, Map<String, Object> activityMap) {
+        List<ActivityBoundaryEntity> activityBoundaries = findActivityBoundaries(activity.getActivityGuid());
+        if (!activityBoundaries.isEmpty()) {
+            List<Map<String, Object>> activityBoundariesList = new ArrayList<>();
+            for (ActivityBoundaryEntity activityBoundary : activityBoundaries) {
+                addActivityBoundaryGeometry(activityBoundary, activityBoundariesList);
+            }
+            activityMap.put("activityBoundaries", activityBoundariesList);
+        }
+    }
+
+    private void addActivityBoundaryGeometry(ActivityBoundaryEntity activityBoundary, List<Map<String, Object>> activityBoundariesList) {
+        if (activityBoundary.getGeometry() != null && !activityBoundary.getGeometry().isEmpty()) {
+            Map<String, Object> boundaryMap = new HashMap<>();
+            Map<String, Object> polygonFeature = createPolygonFeature(activityBoundary.getGeometry(), Collections.emptyMap());
+            if (!polygonFeature.isEmpty()) {
+                boundaryMap.put("activityGeometry", polygonFeature.get(GEOMETRY));
+                activityBoundariesList.add(boundaryMap);
+            }
+        }
+    }
+
+    private List<Map<String, Object>> processProjectBoundary(ProjectBoundaryEntity latestBoundary) {
+        List<Map<String, Object>> boundariesList = new ArrayList<>();
+        processBoundaryGeometry(latestBoundary, boundariesList);
+        processLocationGeometry(latestBoundary, boundariesList);
+        return boundariesList;
+    }
+
+    private void processBoundaryGeometry(ProjectBoundaryEntity latestBoundary, List<Map<String, Object>> boundariesList) {
+        if (latestBoundary.getBoundaryGeometry() != null && !latestBoundary.getBoundaryGeometry().isEmpty()) {
+            Map<String, Object> boundaryMap = new HashMap<>();
+            Map<String, Object> polygonFeature = createPolygonFeature(latestBoundary.getBoundaryGeometry(), Collections.emptyMap());
+            if (!polygonFeature.isEmpty()) {
+                boundaryMap.put("boundaryGeometry", polygonFeature.get(GEOMETRY));
+                boundariesList.add(boundaryMap);
+            }
+        }
+    }
+
+    private void processLocationGeometry(ProjectBoundaryEntity latestBoundary, List<Map<String, Object>> boundariesList) {
+        if (latestBoundary.getLocationGeometry() != null && !latestBoundary.getLocationGeometry().isEmpty()) {
+            Map<String, Object> pointFeature = createPointFeature(latestBoundary.getLocationGeometry(), Collections.emptyMap());
+            if (!pointFeature.isEmpty()) {
+                Map<String, Object> pointBoundaryMap = new HashMap<>();
+                pointBoundaryMap.put("locationGeometry", pointFeature.get(GEOMETRY));
+                boundariesList.add(pointBoundaryMap);
+            }
+        }
+    }
+
+
+    List<ProjectEntity> findFilteredProjects(FeatureQueryParams params) {
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        CriteriaQuery<ProjectEntity> query = cb.createQuery(ProjectEntity.class);
+        Root<ProjectEntity> project = query.from(ProjectEntity.class);
+
+        List<Predicate> predicates = new ArrayList<>();
+
+        addProjectLevelFilters(project, predicates, params);
+        addFiscalAttributeFilters(cb, project, predicates, params);
+        addSearchTextFilters(cb, project, predicates, params);
+
+        if (!predicates.isEmpty()) {
+            query.where(cb.and(predicates.toArray(new Predicate[0])));
         }
 
-        // Sort boundaries by update date (descending) and return the first one
-        return boundaries.stream()
-                .sorted(Comparator.comparing(ProjectBoundaryEntity::getUpdateDate).reversed())
-                .findFirst()
-                .orElse(null);
+        query.distinct(true);
+
+        return entityManager.createQuery(query).getResultList();
     }
 
-    private boolean matchesSearchText(ProjectEntity project, List<ProjectFiscalEntity> fiscals, String searchText) {
-        return Stream.of(
-                        project.getProjectName(),
-                        project.getProjectLead(),
-                        project.getProjectDescription(),
-                        project.getClosestCommunityName(),
-                        project.getSiteUnitName(),
-                        String.valueOf(project.getProjectNumber())
-                )
-                .filter(Objects::nonNull)
-                .map(String::toLowerCase)
-                .anyMatch(value -> value.contains(searchText))
-                ||
-                fiscals.stream().anyMatch(fiscal ->
-                        Stream.of(
-                                        fiscal.getProjectFiscalName(),
-                                        fiscal.getFirstNationsPartner(),
-                                        fiscal.getOtherPartner()
-                                )
-                                .filter(Objects::nonNull)
-                                .map(String::toLowerCase)
-                                .anyMatch(value -> value.contains(searchText))
-                );
+    private void addProjectLevelFilters(Root<ProjectEntity> project, List<Predicate> predicates, FeatureQueryParams params) {
+        if (params.getProgramAreaGuids() != null && !params.getProgramAreaGuids().isEmpty()) {
+            predicates.add(project.get("programAreaGuid").in(params.getProgramAreaGuids()));
+        }
+
+        if (params.getForestRegionOrgUnitIds() != null && !params.getForestRegionOrgUnitIds().isEmpty()) {
+            predicates.add(project.get("forestRegionOrgUnitId").in(params.getForestRegionOrgUnitIds()));
+        }
+
+        if (params.getForestDistrictOrgUnitIds() != null && !params.getForestDistrictOrgUnitIds().isEmpty()) {
+            predicates.add(project.get("forestDistrictOrgUnitId").in(params.getForestDistrictOrgUnitIds()));
+        }
+
+        if (params.getFireCentreOrgUnitIds() != null && !params.getFireCentreOrgUnitIds().isEmpty()) {
+            predicates.add(project.get("fireCentreOrgUnitId").in(params.getFireCentreOrgUnitIds()));
+        }
     }
 
+    private void addFiscalAttributeFilters(CriteriaBuilder cb, Root<ProjectEntity> project, List<Predicate> predicates, FeatureQueryParams params) {
+        if ((params.getFiscalYears() != null && !params.getFiscalYears().isEmpty()) ||
+                (params.getActivityCategoryCodes() != null && !params.getActivityCategoryCodes().isEmpty()) ||
+                (params.getPlanFiscalStatusCodes() != null && !params.getPlanFiscalStatusCodes().isEmpty())) {
+
+            Join<ProjectEntity, ProjectFiscalEntity> fiscal = project.join(PROJECT_FISCALS, JoinType.INNER);
+
+            addFiscalYearFilters(cb, fiscal, predicates, params.getFiscalYears());
+            addActivityCategoryCodeFilters(fiscal, predicates, params.getActivityCategoryCodes());
+            addPlanFiscalStatusCodeFilters(fiscal, predicates, params.getPlanFiscalStatusCodes());
+        }
+    }
+
+    private void addFiscalYearFilters(CriteriaBuilder cb, Join<ProjectEntity, ProjectFiscalEntity> fiscal, List<Predicate> predicates, List<String> fiscalYears) {
+        if (fiscalYears != null && !fiscalYears.isEmpty()) {
+            List<Predicate> fiscalYearPredicates = new ArrayList<>();
+            for (String year : fiscalYears) {
+                fiscalYearPredicates.add(cb.like(fiscal.get(FISCAL_YEAR).as(String.class), year + "%"));
+            }
+            predicates.add(cb.or(fiscalYearPredicates.toArray(new Predicate[0])));
+        }
+    }
+
+    private void addActivityCategoryCodeFilters(Join<ProjectEntity, ProjectFiscalEntity> fiscal, List<Predicate> predicates, List<String> activityCategoryCodes) {
+        if (activityCategoryCodes != null && !activityCategoryCodes.isEmpty()) {
+            predicates.add(fiscal.get(ACTIVITY_CATEGORY_CODE).in(activityCategoryCodes));
+        }
+    }
+
+    private void addPlanFiscalStatusCodeFilters(Join<ProjectEntity, ProjectFiscalEntity> fiscal, List<Predicate> predicates, List<String> planFiscalStatusCodes) {
+        if (planFiscalStatusCodes != null && !planFiscalStatusCodes.isEmpty()) {
+            predicates.add(fiscal.get(PLAN_FISCAL_STATUS_CODE).in(planFiscalStatusCodes));
+        }
+    }
+
+    private void addSearchTextFilters(CriteriaBuilder cb, Root<ProjectEntity> project, List<Predicate> predicates, FeatureQueryParams params) {
+        if (params.getSearchText() != null && !params.getSearchText().isBlank()) {
+            String likeParam = "%" + params.getSearchText().toLowerCase() + "%";
+
+            List<Predicate> searchPredicates = new ArrayList<>();
+            searchPredicates.add(cb.like(cb.lower(project.get("projectName")), likeParam));
+            searchPredicates.add(cb.like(cb.lower(project.get("projectLead")), likeParam));
+            searchPredicates.add(cb.like(cb.lower(project.get("projectDescription")), likeParam));
+            searchPredicates.add(cb.like(cb.lower(project.get("closestCommunityName")), likeParam));
+            searchPredicates.add(cb.like(cb.lower(project.get("siteUnitName")), likeParam));
+            searchPredicates.add(cb.like(cb.lower(project.get("projectNumber").as(String.class)), likeParam));
+
+            // Join with fiscal for additional search filters
+            Join<ProjectEntity, ProjectFiscalEntity> fiscal = project.join(PROJECT_FISCALS, JoinType.LEFT);
+            searchPredicates.add(cb.like(cb.lower(fiscal.get("projectFiscalName")), likeParam));
+            searchPredicates.add(cb.like(cb.lower(fiscal.get("firstNationsPartner")), likeParam));
+            searchPredicates.add(cb.like(cb.lower(fiscal.get("otherPartner")), likeParam));
+
+            predicates.add(cb.or(searchPredicates.toArray(new Predicate[0])));
+        }
+    }
+
+    List<ProjectFiscalEntity> findFilteredProjectFiscals(
+            UUID projectGuid,
+            List<String> fiscalYears,
+            List<String> activityCategoryCodes,
+            List<String> planFiscalStatusCodes
+    ) {
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        CriteriaQuery<ProjectFiscalEntity> query = cb.createQuery(ProjectFiscalEntity.class);
+        Root<ProjectFiscalEntity> fiscal = query.from(ProjectFiscalEntity.class);
+
+        List<Predicate> predicates = new ArrayList<>();
+
+        // Filter by project GUID
+        predicates.add(cb.equal(fiscal.get("project").get(PROJECT_GUID), projectGuid));
+
+        // Fiscal year filter
+        if (fiscalYears != null && !fiscalYears.isEmpty()) {
+            List<Predicate> fiscalYearPredicates = new ArrayList<>();
+            for (String year : fiscalYears) {
+                fiscalYearPredicates.add(cb.like(fiscal.get(FISCAL_YEAR).as(String.class), year + "%"));
+            }
+            predicates.add(cb.or(fiscalYearPredicates.toArray(new Predicate[0])));
+        }
+
+        // Activity category filter
+        if (activityCategoryCodes != null && !activityCategoryCodes.isEmpty()) {
+            predicates.add(fiscal.get(ACTIVITY_CATEGORY_CODE).in(activityCategoryCodes));
+        }
+
+        // Plan fiscal status filter
+        if (planFiscalStatusCodes != null && !planFiscalStatusCodes.isEmpty()) {
+            predicates.add(fiscal.get(PLAN_FISCAL_STATUS_CODE).in(planFiscalStatusCodes));
+        }
+
+        query.where(cb.and(predicates.toArray(new Predicate[0])));
+
+        return entityManager.createQuery(query).getResultList();
+    }
+
+    List<ActivityEntity> findActivitiesByProjectFiscal(UUID projectFiscalGuid) {
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        CriteriaQuery<ActivityEntity> query = cb.createQuery(ActivityEntity.class);
+        Root<ActivityEntity> activity = query.from(ActivityEntity.class);
+
+        query.where(cb.equal(activity.get("projectPlanFiscalGuid"), projectFiscalGuid));
+
+        return entityManager.createQuery(query).getResultList();
+    }
+
+    List<ActivityBoundaryEntity> findActivityBoundaries(UUID activityGuid) {
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        CriteriaQuery<ActivityBoundaryEntity> query = cb.createQuery(ActivityBoundaryEntity.class);
+        Root<ActivityBoundaryEntity> boundary = query.from(ActivityBoundaryEntity.class);
+
+        query.where(cb.equal(boundary.get("activityGuid"), activityGuid));
+
+        return entityManager.createQuery(query).getResultList();
+    }
+
+    ProjectBoundaryEntity findLatestProjectBoundary(UUID projectGuid) {
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        CriteriaQuery<ProjectBoundaryEntity> query = cb.createQuery(ProjectBoundaryEntity.class);
+        Root<ProjectBoundaryEntity> boundary = query.from(ProjectBoundaryEntity.class);
+
+        query.where(cb.equal(boundary.get(PROJECT_GUID), projectGuid));
+        query.orderBy(cb.desc(boundary.get("updateDate")));
+
+        List<ProjectBoundaryEntity> results = entityManager.createQuery(query)
+                .setMaxResults(1)  // Only get the first result (most recent)
+                .getResultList();
+
+        return results.isEmpty() ? null : results.getFirst();
+    }
+
+    private Map<String, Object> createProjectProperties(ProjectEntity project) {
+        Map<String, Object> properties = new HashMap<>();
+        properties.put("projectName", project.getProjectName());
+        properties.put(PROJECT_GUID, project.getProjectGuid());
+        properties.put("projectNumber", project.getProjectNumber());
+        properties.put("programAreaGuid", project.getProgramAreaGuid());
+        properties.put("forestRegionOrgUnitId", project.getForestRegionOrgUnitId());
+        properties.put("forestDistrictOrgUnitId", project.getForestDistrictOrgUnitId());
+        properties.put("fireCentreOrgUnitId", project.getFireCentreOrgUnitId());
+        properties.put("projectLead", project.getProjectLead());
+        properties.put("projectDescription", project.getProjectDescription());
+        properties.put("closestCommunityName", project.getClosestCommunityName());
+        properties.put("siteUnitName", project.getSiteUnitName());
+
+        return properties;
+    }
+
+    private Map<String, Object> createProjectFiscalProperties(ProjectFiscalEntity fiscal) {
+        Map<String, Object> props = new HashMap<>();
+        props.put("projectFiscalGuid", fiscal.getProjectPlanFiscalGuid());
+        props.put(PROJECT_GUID, fiscal.getProject().getProjectGuid());
+        props.put("projectFiscalName", fiscal.getProjectFiscalName());
+        props.put(PLAN_FISCAL_STATUS_CODE, fiscal.getPlanFiscalStatusCode());
+        props.put(FISCAL_YEAR, fiscal.getFiscalYear());
+        props.put(ACTIVITY_CATEGORY_CODE, fiscal.getActivityCategoryCode());
+        props.put("firstNationsPartner", fiscal.getFirstNationsPartner());
+        props.put("otherPartner", fiscal.getOtherPartner());
+
+        return props;
+    }
 
     Map<String, Object> createPointFeature(@NotNull Point point, Map<String, Object> properties) {
         try {
@@ -316,11 +365,11 @@ public class FeaturesService implements CommonService {
             double[] coordinates = new double[]{point.getX(), point.getY()};
             geometry.put("coordinates", coordinates);
 
-            feature.put("geometry", geometry);
+            feature.put(GEOMETRY, geometry);
             feature.put("properties", properties);
 
             return feature;
-        }catch (Exception e) {
+        } catch (Exception e) {
             log.error("Exception while creating Point feature {}", e.getMessage());
         } return Collections.emptyMap();
     }
@@ -352,14 +401,13 @@ public class FeaturesService implements CommonService {
             }
 
             geometry.put("coordinates", polygons);
-            feature.put("geometry", geometry);
+            feature.put(GEOMETRY, geometry);
             feature.put("properties", properties);
 
             return feature;
         } catch (Exception e) {
             log.error("Exception while creating Multipolygon feature {}", e.getMessage());
         } return Collections.emptyMap();
-
     }
 
     private static List<double[]> extractCoordinates(LinearRing linearRing) {
@@ -378,39 +426,4 @@ public class FeaturesService implements CommonService {
 
         return coordinates;
     }
-
-    Map<String, Object> createProjectProperties(ProjectEntity project) {
-        Map<String, Object> properties = new HashMap<>();
-        properties.put("projectName", project.getProjectName());
-        properties.put("projectGuid", project.getProjectGuid());
-        properties.put("projectNumber", project.getProjectNumber());
-        properties.put("programAreaGuid", project.getProgramAreaGuid());
-        properties.put("forestRegionOrgUnitId", project.getForestRegionOrgUnitId());
-        properties.put("forestDistrictOrgUnitId", project.getForestDistrictOrgUnitId());
-        properties.put("fireCentreOrgUnitId", project.getFireCentreOrgUnitId());
-        properties.put("projectLead", project.getProjectLead());
-        properties.put("projectDescription", project.getProjectDescription());
-        properties.put("closestCommunityName", project.getClosestCommunityName());
-        properties.put("siteUnitName", project.getSiteUnitName());
-
-        return properties;
-    }
-
-    private Map<String, Object> createProjectFiscalProperties(ProjectFiscalEntity fiscal) {
-        Map<String, Object> props = new HashMap<>();
-        props.put("projectFiscalGuid", fiscal.getProjectPlanFiscalGuid());
-        props.put("projectGuid", fiscal.getProject().getProjectGuid());
-        props.put("projectFiscalName", fiscal.getProjectFiscalName());
-        props.put("projectFiscalStatus", fiscal.getPlanFiscalStatusCode());
-        props.put("fiscalYear", fiscal.getFiscalYear());
-        props.put("activityCategoryCode", fiscal.getActivityCategoryCode());
-        props.put("firstNationsPartner", fiscal.getFirstNationsPartner());
-        props.put("otherPartner", fiscal.getOtherPartner());
-
-        return props;
-    }
-
-
 }
-
-

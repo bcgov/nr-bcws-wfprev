@@ -3,6 +3,7 @@ package ca.bc.gov.nrs.wfprev.controllers;
 import ca.bc.gov.nrs.common.wfone.rest.resource.HeaderConstants;
 import ca.bc.gov.nrs.common.wfone.rest.resource.MessageListRsrc;
 import ca.bc.gov.nrs.wfprev.common.controllers.CommonController;
+import ca.bc.gov.nrs.wfprev.data.params.FeatureQueryParams;
 import ca.bc.gov.nrs.wfprev.services.FeaturesService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -15,9 +16,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.hateoas.CollectionModel;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -69,10 +68,16 @@ public class FeaturesController extends CommonController {
             @RequestParam(required = false) List<String> fireCentreOrgUnitId,
             @RequestParam(required = false) String searchText
     ) {
-        return featuresService.getAllFeatures(
-                programAreaGuid, fiscalYear, forestRegionOrgUnitId,
-                forestDistrictOrgUnitId, fireCentreOrgUnitId,
-                activityCategoryCode, planFiscalStatusCode, searchText
-        );
+        FeatureQueryParams queryParams = new FeatureQueryParams();
+        queryParams.setProgramAreaGuids(programAreaGuid);
+        queryParams.setFiscalYears(fiscalYear);
+        queryParams.setActivityCategoryCodes(activityCategoryCode);
+        queryParams.setPlanFiscalStatusCodes(planFiscalStatusCode);
+        queryParams.setForestRegionOrgUnitIds(forestRegionOrgUnitId);
+        queryParams.setForestDistrictOrgUnitIds(forestDistrictOrgUnitId);
+        queryParams.setFireCentreOrgUnitIds(fireCentreOrgUnitId);
+        queryParams.setSearchText(searchText);
+
+        return featuresService.getAllFeatures(queryParams);
     }
 }
