@@ -634,4 +634,5 @@ class FeaturesServiceTest {
         // Verify that no predicates were added
         assertTrue(predicates.isEmpty(), "Expected no predicates to be added.");
     }
+
 }
