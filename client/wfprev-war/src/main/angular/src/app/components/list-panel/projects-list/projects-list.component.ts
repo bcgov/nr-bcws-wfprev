@@ -10,6 +10,7 @@ import { CreateNewProjectDialogComponent } from 'src/app/components/create-new-p
 import { MatDialog } from '@angular/material/dialog';
 import L from 'leaflet';
 import 'leaflet.markercluster';
+import { SharedCodeTableService } from 'src/app/services/shared-code-table.service';
 
 @Component({
   selector: 'app-projects-list',
@@ -40,7 +41,8 @@ export class ProjectsListComponent implements OnInit {
     private readonly router: Router,
     private readonly projectService: ProjectService,
     private readonly codeTableService: CodeTableServices,
-    private readonly dialog: MatDialog
+    private readonly dialog: MatDialog,
+    private readonly sharedCodeTableService: SharedCodeTableService
 
   ) {
   }
@@ -61,6 +63,10 @@ export class ProjectsListComponent implements OnInit {
       { name: 'activityCategoryCodes', property: 'activityCategoryCode', embeddedKey: 'activityCategoryCode' }
 
     ];
+    const loaded: any = {};
+    let loadedCount = 0;
+    const totalTables = codeTables.length;
+  
 
     codeTables.forEach((table) => {
       this.codeTableService.fetchCodeTable(table.name).subscribe({
@@ -80,6 +86,16 @@ export class ProjectsListComponent implements OnInit {
           } else if (table.name === 'activityCategoryCodes') {
             this.activityCategoryCode = data._embedded.activityCategoryCode;
           }
+
+          const items = data._embedded?.[table.embeddedKey] || [];
+          this[table.property] = items;
+          loaded[table.property] = items;
+  
+          loadedCount++;
+          if (loadedCount === totalTables) {
+            this.sharedCodeTableService.updateCodeTables(loaded);
+          }
+
         },
         error: (err) => {
           console.error(`Error fetching ${table.name}`, err);
@@ -99,6 +115,14 @@ export class ProjectsListComponent implements OnInit {
             this.planFiscalStatusCode = [];
           } else if (table.name === 'activityCategoryCodes') {
             this.activityCategoryCode = [];
+          }
+
+          this[table.property] = [];
+          loaded[table.property] = [];
+  
+          loadedCount++;
+          if (loadedCount === totalTables) {
+            this.sharedCodeTableService.updateCodeTables(loaded);
           }
         },
       });

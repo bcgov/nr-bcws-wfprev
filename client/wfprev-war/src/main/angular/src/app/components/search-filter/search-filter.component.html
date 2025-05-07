@@ -17,10 +17,13 @@
     <div class="field search-input filter-search-input">
       <mat-label class="label">Business Area</mat-label>
       <mat-form-field appearance="fill" class="filter-item">
-        <mat-select [(ngModel)]="selectedBusinessArea" multiple>
-          <mat-option *ngFor="let option of businessAreaOptions" [value]="option.value">
-            {{ option.label }}
-          </mat-option>
+        <mat-select [(ngModel)]="selectedBusinessArea"
+          (selectionChange)="onSelectAll($event,'selectedBusinessArea', businessAreaOptions)"
+          multiple>
+        <mat-option value="__ALL__">All</mat-option>
+        <mat-option *ngFor="let option of businessAreaOptions" [value]="option.value">
+          {{ option.label }}
+        </mat-option>
         </mat-select>
       </mat-form-field>
     </div>
@@ -28,58 +31,74 @@
     <div class="field search-input filter-search-input">
       <mat-label class="label">Fiscal Year(s)</mat-label>
       <mat-form-field appearance="fill" class="filter-item">
-        <mat-select [(ngModel)]="selectedFiscalYears" multiple>
+        <mat-select [(ngModel)]="selectedFiscalYears"
+                    (selectionChange)="onSelectAll($event,'selectedFiscalYears', fiscalYearOptions)"
+                    multiple>
+          <mat-option value="__ALL__">All</mat-option>
           <mat-option *ngFor="let option of fiscalYearOptions" [value]="option.value">
             {{ option.label }}
           </mat-option>
         </mat-select>
       </mat-form-field>
     </div>
-
+    
     <div class="field search-input filter-search-input">
       <mat-label class="label">Activity Category</mat-label>
       <mat-form-field appearance="fill" class="filter-item">
-        <mat-select [(ngModel)]="selectedActivity" multiple>
+        <mat-select [(ngModel)]="selectedActivity"
+                    (selectionChange)="onSelectAll($event,'selectedActivity', activityOptions)"
+                    multiple>
+          <mat-option value="__ALL__">All</mat-option>
           <mat-option *ngFor="let option of activityOptions" [value]="option.value">
             {{ option.label }}
           </mat-option>
         </mat-select>
       </mat-form-field>
     </div>
-
+    
     <div class="field search-input filter-search-input">
       <mat-label class="label">Forest Region</mat-label>
       <mat-form-field appearance="fill" class="filter-item">
-        <mat-select [(ngModel)]="selectedForestRegion" multiple>
+        <mat-select [(ngModel)]="selectedForestRegion"
+                    (ngModelChange)="onForestRegionChange()"
+                    (selectionChange)="onSelectAll($event,'selectedForestRegion', forestRegionOptions)"
+                    multiple>
+          <mat-option value="__ALL__">All</mat-option>
           <mat-option *ngFor="let option of forestRegionOptions" [value]="option.value">
             {{ option.label }}
           </mat-option>
         </mat-select>
       </mat-form-field>
     </div>
-
+    
     <div class="field search-input filter-search-input">
       <mat-label class="label">Forest District</mat-label>
       <mat-form-field appearance="fill" class="filter-item">
-        <mat-select [(ngModel)]="selectedForestDistrict" multiple>
+        <mat-select [(ngModel)]="selectedForestDistrict"
+                    (selectionChange)="onSelectAll($event,'selectedForestDistrict', forestDistrictOptions)"
+                    multiple>
+          <mat-option value="__ALL__">All</mat-option>
           <mat-option *ngFor="let option of forestDistrictOptions" [value]="option.value">
             {{ option.label }}
           </mat-option>
         </mat-select>
       </mat-form-field>
     </div>
-
+    
     <div class="field search-input filter-search-input">
       <mat-label class="label">Fire Centre</mat-label>
       <mat-form-field appearance="fill" class="filter-item">
-        <mat-select [(ngModel)]="selectedFireCentre" multiple>
+        <mat-select [(ngModel)]="selectedFireCentre"
+                    (selectionChange)="onSelectAll($event,'selectedFireCentre', fireCentreOptions)"
+                    multiple>
+          <mat-option value="__ALL__">All</mat-option>
           <mat-option *ngFor="let option of fireCentreOptions" [value]="option.value">
             {{ option.label }}
           </mat-option>
         </mat-select>
       </mat-form-field>
     </div>
-
+    
 
     <!-- Reset button -->
     <button mat-stroked-button class="filter-item reset-button" (click)="onReset()">Reset</button>
