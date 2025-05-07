@@ -424,7 +424,9 @@ export class ProjectsListComponent implements OnInit {
   getFiscal(project: any): void {
     this.projectService.getProjectFiscalsByProjectGuid(project.projectGuid).subscribe({
       next: (data) => {
-        project.projectFiscals = data._embedded?.projectFiscals ?? [];
+        project.projectFiscals = (data._embedded?.projectFiscals ?? []).sort((a: any, b: any) => 
+          (b.fiscalYear || 0) - (a.fiscalYear || 0)
+        );
       },
       error: (err) => {
         console.error(`Error fetching fiscals for project ${project.projectGuid}`, err);
