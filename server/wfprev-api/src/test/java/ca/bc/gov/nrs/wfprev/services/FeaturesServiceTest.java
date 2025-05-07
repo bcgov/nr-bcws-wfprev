@@ -37,10 +37,13 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -491,7 +494,7 @@ class FeaturesServiceTest {
         assertArrayEquals(new double[]{0, 0}, result.get(0));
         assertArrayEquals(new double[]{1, 1}, result.get(1));
         assertArrayEquals(new double[]{2, 0}, result.get(2));
-        assertArrayEquals(new double[]{0, 0}, result.get(3)); // Closed ring
+        assertArrayEquals(new double[]{0, 0}, result.get(3));
     }
 
     @Test
@@ -500,7 +503,7 @@ class FeaturesServiceTest {
         Coordinate[] coords = {
                 new Coordinate(0, 0),
                 new Coordinate(1, 1),
-                new Coordinate(2, 0) // Open ring
+                new Coordinate(2, 0)
         };
         LinearRing mockLinearRing = mock(LinearRing.class);
         when(mockLinearRing.getCoordinates()).thenReturn(coords);
@@ -513,7 +516,7 @@ class FeaturesServiceTest {
         assertArrayEquals(new double[]{0, 0}, result.get(0));
         assertArrayEquals(new double[]{1, 1}, result.get(1));
         assertArrayEquals(new double[]{2, 0}, result.get(2));
-        assertArrayEquals(new double[]{0, 0}, result.get(3)); // Closing point added
+        assertArrayEquals(new double[]{0, 0}, result.get(3));
     }
 
     @Test
@@ -530,4 +533,105 @@ class FeaturesServiceTest {
         assertTrue(result.isEmpty(), "Expected an empty list for an empty ring.");
     }
 
+    @Test
+    void testAddSearchTextFilters_WithValidSearchText() {
+        // Arrange
+        CriteriaBuilder cb = mock(CriteriaBuilder.class);
+        Root<ProjectEntity> project = mock(Root.class);
+        List<Predicate> predicates = new ArrayList<>();
+        FeatureQueryParams params = mock(FeatureQueryParams.class);
+
+        when(params.getSearchText()).thenReturn("test");
+
+        Predicate mockPredicate = mock(Predicate.class);
+        when(cb.like(any(), anyString())).thenReturn(mockPredicate);
+
+        Join<Object, Object> fiscal = mock(Join.class);
+
+        when(project.join(eq("projectFiscals"), eq(JoinType.LEFT))).thenReturn(fiscal);
+
+        when(project.get("projectName")).thenReturn(mock(Path.class));
+        when(project.get("projectLead")).thenReturn(mock(Path.class));
+        when(project.get("projectDescription")).thenReturn(mock(Path.class));
+        when(project.get("closestCommunityName")).thenReturn(mock(Path.class));
+        when(project.get("siteUnitName")).thenReturn(mock(Path.class));
+        when(project.get("projectNumber")).thenReturn(mock(Path.class));
+
+        when(fiscal.get("projectFiscalName")).thenReturn(mock(Path.class));
+        when(fiscal.get("firstNationsPartner")).thenReturn(mock(Path.class));
+        when(fiscal.get("otherPartner")).thenReturn(mock(Path.class));
+
+        // Act
+        new FeaturesService().addSearchTextFilters(cb, project, predicates, params);
+
+        // Assert
+        assertEquals(1, predicates.size(), "Expected one top-level predicate to be added.");
+        verify(cb, times(9)).like(any(), eq("%test%"));
+    }
+
+    @Test
+    void testAddSearchTextFilters_WithNullOrBlankSearchText() {
+        // Arrange
+        CriteriaBuilder cb = mock(CriteriaBuilder.class);
+        Root<ProjectEntity> project = mock(Root.class);
+        List<Predicate> predicates = new ArrayList<>();
+        FeatureQueryParams params = mock(FeatureQueryParams.class);
+
+        // Mock params.getSearchText() to return null
+        when(params.getSearchText()).thenReturn(null);
+
+        // Act
+        featuresService.addSearchTextFilters(cb, project, predicates, params);
+
+        // Assert
+        assertTrue(predicates.isEmpty(), "Expected no predicates to be added when searchText is null.");
+
+        // Test with blank search text
+        when(params.getSearchText()).thenReturn("   ");
+
+        // Act again
+        new FeaturesService().addSearchTextFilters(cb, project, predicates, params);
+
+        // Assert again
+        assertTrue(predicates.isEmpty(), "Expected no predicates to be added when searchText is blank.");
+    }
+
+    @Test
+    void testAddFiscalAttributeFilters_WithEmptyParams() {
+        // Arrange
+        CriteriaBuilder cb = mock(CriteriaBuilder.class);
+        Root<ProjectEntity> project = mock(Root.class);
+        List<Predicate> predicates = new ArrayList<>();
+        FeatureQueryParams params = mock(FeatureQueryParams.class);
+
+        // Mock empty parameters
+        when(params.getFiscalYears()).thenReturn(Collections.emptyList());
+        when(params.getActivityCategoryCodes()).thenReturn(Collections.emptyList());
+        when(params.getPlanFiscalStatusCodes()).thenReturn(Collections.emptyList());
+
+        // Act
+        new FeaturesService().addFiscalAttributeFilters(cb, project, predicates, params);
+
+        // Assert
+        verify(project, never()).join(anyString(), any(JoinType.class));
+        assertTrue(predicates.isEmpty(), "Expected no predicates to be added.");
+    }
+
+    @Test
+    void testAddFiscalYearFilters_WithEmptyYears() {
+        // Arrange
+        CriteriaBuilder cb = mock(CriteriaBuilder.class);
+        @SuppressWarnings("unchecked")
+        Join<ProjectEntity, ProjectFiscalEntity> fiscal = (Join<ProjectEntity, ProjectFiscalEntity>) mock(Join.class);
+        List<Predicate> predicates = new ArrayList<>();
+        List<String> fiscalYears = Collections.emptyList();
+
+        // Act
+        new FeaturesService().addFiscalYearFilters(cb, fiscal, predicates, fiscalYears);
+
+        // Assert
+        verify(cb, never()).like(any(), anyString());
+        // Verify that no predicates were added
+        assertTrue(predicates.isEmpty(), "Expected no predicates to be added.");
+    }
 }
