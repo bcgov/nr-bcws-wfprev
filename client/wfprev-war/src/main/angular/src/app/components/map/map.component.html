@@ -1,11 +1,17 @@
 <div class="map-container">
-    <!-- Left side panel with dynamic content -->
-  <app-resizable-panel> 
-    <div [innerHTML]="panelContent"></div>
-  </app-resizable-panel>
+  <div class="search-filter">
+    <app-search-filter></app-search-filter>
+  </div>
+  
+  <div class="content-row">
+    <!-- Left side panel -->
+    <app-resizable-panel>
+      <div [innerHTML]="panelContent"></div>
+    </app-resizable-panel>
 
-   <!-- Map content -->
-  <div class="map-content">
-    <div #mapContainer id="map"></div>
+    <!-- Map content -->
+    <div class="map-content">
+      <div #mapContainer id="map"></div>
+    </div>
   </div>
 </div>

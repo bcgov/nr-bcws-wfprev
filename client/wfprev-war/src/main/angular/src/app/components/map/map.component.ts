@@ -1,14 +1,14 @@
 import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import L from 'leaflet';
 import { ResizablePanelComponent } from 'src/app/components/resizable-panel/resizable-panel.component';
+import { SearchFilterComponent } from 'src/app/components/search-filter/search-filter.component';
 import { MapConfigService } from 'src/app/services/map-config.service';
 import { MapService } from 'src/app/services/map.service';
 
 @Component({
   selector: 'app-map',
   standalone: true,
-  imports: [ResizablePanelComponent],
+  imports: [ResizablePanelComponent,SearchFilterComponent],
   templateUrl: './map.component.html',
   styleUrl: './map.component.scss'
 })

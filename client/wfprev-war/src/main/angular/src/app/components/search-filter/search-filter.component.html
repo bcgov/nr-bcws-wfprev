@@ -1,0 +1,76 @@
+<div class="search-filter-bar">
+  <div class="filter-row">
+    <!-- Search input -->
+    <div class="field search-input">
+      <mat-label class="label">Search</mat-label>
+      <input class="search-input" aria-label="Search" [(ngModel)]="searchText" (ngModelChange)="onSearch()" />
+      <button mat-icon-button class="input-search-button"
+              aria-label="Search"
+              (click)="onSearch()"
+              matTooltip="Search">
+        <mat-icon>search</mat-icon>
+      </button>
+    </div>
+    
+
+    <!-- Filters -->
+    <div class="field search-input">
+      <mat-label class="label">Business Area</mat-label>
+      <mat-form-field appearance="fill" class="filter-item">
+        <mat-select [(ngModel)]="selectedBusinessArea" multiple>
+          <mat-option *ngFor="let option of businessAreaOptions" [value]="option.value">
+            {{ option.label }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <mat-form-field appearance="fill" class="filter-item">
+      <mat-label>Fiscal Year(s)</mat-label>
+      <mat-select [(ngModel)]="selectedFiscalYears" multiple>
+        <mat-option *ngFor="let option of fiscalYearOptions" [value]="option.value">
+          {{ option.label }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="filter-item">
+      <mat-label>Activity Category</mat-label>
+      <mat-select [(ngModel)]="selectedActivity" multiple>
+        <mat-option *ngFor="let option of activityOptions" [value]="option.value">
+          {{ option.label }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="filter-item">
+      <mat-label>Forest Region</mat-label>
+      <mat-select [(ngModel)]="selectedForestRegion" multiple>
+        <mat-option *ngFor="let option of forestRegionOptions" [value]="option.value">
+          {{ option.label }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="filter-item">
+      <mat-label>Forest District</mat-label>
+      <mat-select [(ngModel)]="selectedForestDistrict" multiple>
+        <mat-option *ngFor="let option of forestDistrictOptions" [value]="option.value">
+          {{ option.label }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="filter-item">
+      <mat-label>Fire Centre</mat-label>
+      <mat-select [(ngModel)]="selectedFireCentre" multiple>
+        <mat-option *ngFor="let option of fireCentreOptions" [value]="option.value">
+          {{ option.label }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <!-- Reset button -->
+    <button mat-stroked-button class="filter-item reset-button" (click)="onReset()">Reset</button>
+  </div>
+</div>

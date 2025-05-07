@@ -1,8 +1,24 @@
 .map-container {
     display: flex;
+    flex-direction: column;
     height: 100vh;
     overflow: hidden;
 }
+
+.search-filter {
+    background-color: #fff;
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #A5A4A4;
+}
+
+.content-row {
+    display: flex;
+    flex-grow: 1;
+    height: calc(100vh - 60px); /* subtract height of search-filter */
+}
+  
   
 .map-content {
     height: 100vh;
