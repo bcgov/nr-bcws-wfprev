@@ -7,8 +7,10 @@ import ca.bc.gov.nrs.wfprev.data.entities.ProjectEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ProjectFiscalEntity;
 import ca.bc.gov.nrs.wfprev.data.params.FeatureQueryParams;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Path;
 import jakarta.persistence.criteria.Root;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,6 +22,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -32,56 +35,31 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class FeaturesServiceTest {
 
-    @Mock
-    private EntityManager entityManager;
+    @Mock private EntityManager entityManager;
+    @InjectMocks private FeaturesService featuresService;
 
-    @InjectMocks
-    private FeaturesService featuresService;
+    @Mock private CriteriaBuilder criteriaBuilder;
+    @Mock private CriteriaQuery<ProjectEntity> projectQuery;
+    @Mock private CriteriaQuery<ProjectFiscalEntity> fiscalQuery;
+    @Mock private CriteriaQuery<ActivityEntity> activityQuery;
+    @Mock private CriteriaQuery<ActivityBoundaryEntity> boundaryQuery;
+    @Mock private CriteriaQuery<ProjectBoundaryEntity> projectBoundaryQuery;
 
-    @Mock
-    private CriteriaBuilder criteriaBuilder;
+    @Mock private Root<ProjectEntity> projectRoot;
+    @Mock private Root<ProjectFiscalEntity> fiscalRoot;
+    @Mock private Root<ActivityEntity> activityRoot;
+    @Mock private Root<ActivityBoundaryEntity> boundaryRoot;
+    @Mock private Root<ProjectBoundaryEntity> projectBoundaryRoot;
 
-    @Mock
-    private CriteriaQuery<ProjectEntity> projectQuery;
-
-    @Mock
-    private CriteriaQuery<ProjectFiscalEntity> fiscalQuery;
-
-    @Mock
-    private CriteriaQuery<ActivityEntity> activityQuery;
-
-    @Mock
-    private CriteriaQuery<ActivityBoundaryEntity> boundaryQuery;
-
-    @Mock
-    private CriteriaQuery<ProjectBoundaryEntity> projectBoundaryQuery;
-
-    @Mock
-    private Root<ProjectEntity> projectRoot;
-
-    @Mock
-    private Root<ProjectFiscalEntity> fiscalRoot;
-
-    @Mock
-    private Root<ActivityEntity> activityRoot;
-
-    @Mock
-    private Root<ActivityBoundaryEntity> boundaryRoot;
-
-    @Mock
-    private Root<ProjectBoundaryEntity> projectBoundaryRoot;
-
-    @Mock
-    private MultiPolygon mockMultiPolygon;
-
-    @Mock
-    private Point mockPoint;
+    @Mock private MultiPolygon mockMultiPolygon;
+    @Mock private Point mockPoint;
 
     @BeforeEach
     void setUp() {
@@ -90,7 +68,6 @@ class FeaturesServiceTest {
 
     @Test
     void testGetAllFeatures() {
-        // Arrange
         FeatureQueryParams params = new FeatureQueryParams();
         params.setProgramAreaGuids(Collections.singletonList(UUID.randomUUID()));
         params.setFiscalYears(Collections.singletonList("2022"));
@@ -100,7 +77,6 @@ class FeaturesServiceTest {
 
         ProjectEntity mockProject = new ProjectEntity();
         mockProject.setProjectGuid(UUID.randomUUID());
-
         List<ProjectEntity> mockProjects = Collections.singletonList(mockProject);
 
         FeaturesService spyService = spy(featuresService);
@@ -108,17 +84,14 @@ class FeaturesServiceTest {
         doAnswer(invocation -> null).when(spyService).addProjectBoundaries(any(), any());
         doAnswer(invocation -> null).when(spyService).addProjectFiscals(any(), any(), any());
 
-        // Act
         Map<String, Object> result = spyService.getAllFeatures(params);
 
-        // Assert
         assertNotNull(result);
         assertEquals(1, ((List<?>) result.get("projects")).size());
     }
 
     @Test
     void testAddProjectBoundaries() {
-        // Arrange
         ProjectEntity project = new ProjectEntity();
         project.setProjectGuid(UUID.randomUUID());
 
@@ -130,17 +103,13 @@ class FeaturesServiceTest {
         doReturn(mockBoundary).when(spyService).findLatestProjectBoundary(any());
 
         Map<String, Object> projectMap = new HashMap<>();
-
-        // Act
         spyService.addProjectBoundaries(project, projectMap);
 
-        // Assert
         assertTrue(projectMap.containsKey("projectBoundaries"));
     }
 
     @Test
     void testAddProjectFiscals() {
-        // Arrange
         FeatureQueryParams params = new FeatureQueryParams();
         params.setFiscalYears(Collections.singletonList("2025"));
         params.setActivityCategoryCodes(Collections.singletonList("CATEGORY"));
@@ -150,7 +119,7 @@ class FeaturesServiceTest {
         project.setProjectGuid(UUID.randomUUID());
 
         ProjectFiscalEntity mockFiscal = new ProjectFiscalEntity();
-        mockFiscal.setProject(project); // Initialize the project field
+        mockFiscal.setProject(project);
         List<ProjectFiscalEntity> mockFiscals = Collections.singletonList(mockFiscal);
 
         FeaturesService spyService = spy(featuresService);
@@ -158,17 +127,13 @@ class FeaturesServiceTest {
         doAnswer(invocation -> null).when(spyService).addActivitiesToFiscal(any(), any());
 
         Map<String, Object> projectMap = new HashMap<>();
-
-        // Act
         spyService.addProjectFiscals(project, params, projectMap);
 
-        // Assert
         assertTrue(projectMap.containsKey("projectFiscals"));
     }
 
     @Test
     void testAddActivitiesToFiscal() {
-        // Arrange
         ProjectFiscalEntity fiscal = new ProjectFiscalEntity();
         fiscal.setProjectPlanFiscalGuid(UUID.randomUUID());
 
@@ -180,17 +145,13 @@ class FeaturesServiceTest {
         doAnswer(invocation -> null).when(spyService).addActivityBoundaries(any(), any());
 
         Map<String, Object> fiscalMap = new HashMap<>();
-
-        // Act
         spyService.addActivitiesToFiscal(fiscal, fiscalMap);
 
-        // Assert
         assertTrue(fiscalMap.containsKey("activities"));
     }
 
     @Test
     void testAddActivityBoundaries() {
-        // Arrange
         ActivityEntity activity = new ActivityEntity();
         activity.setActivityGuid(UUID.randomUUID());
 
@@ -201,38 +162,132 @@ class FeaturesServiceTest {
         doReturn(mockBoundaries).when(spyService).findActivityBoundaries(any());
 
         Map<String, Object> activityMap = new HashMap<>();
-
-        // Act
         spyService.addActivityBoundaries(activity, activityMap);
 
-        // Assert
         assertTrue(activityMap.containsKey("activityBoundaries"));
     }
 
     @Test
+    void testAddActivityBoundaryGeometry() {
+        ActivityBoundaryEntity boundary = new ActivityBoundaryEntity();
+        boundary.setGeometry(mockMultiPolygon);
+
+        List<Map<String, Object>> activityBoundaries = new ArrayList<>();
+        featuresService.addActivityBoundaryGeometry(boundary, activityBoundaries);
+
+        assertEquals(1, activityBoundaries.size());
+        assertTrue(activityBoundaries.get(0).containsKey("activityGeometry"));
+    }
+
+    @Test
+    void testFindFilteredProjects() {
+        FeatureQueryParams params = new FeatureQueryParams();
+
+        when(entityManager.getCriteriaBuilder()).thenReturn(criteriaBuilder);
+        when(criteriaBuilder.createQuery(ProjectEntity.class)).thenReturn(projectQuery);
+        when(projectQuery.from(ProjectEntity.class)).thenReturn(projectRoot);
+        TypedQuery<ProjectEntity> mockQuery = mock(TypedQuery.class);
+        when(entityManager.createQuery(projectQuery)).thenReturn(mockQuery);
+        when(mockQuery.getResultList()).thenReturn(Collections.singletonList(new ProjectEntity()));
+
+        List<ProjectEntity> result = featuresService.findFilteredProjects(params);
+
+        assertNotNull(result);
+        assertEquals(1, result.size());
+    }
+
+    @Test
+    void testFindFilteredProjectFiscals() {
+        UUID projectGuid = UUID.randomUUID();
+        FeatureQueryParams params = new FeatureQueryParams();
+        params.setFiscalYears(List.of("2024"));
+
+        // Mock criteria builder and query
+        when(entityManager.getCriteriaBuilder()).thenReturn(criteriaBuilder);
+        when(criteriaBuilder.createQuery(ProjectFiscalEntity.class)).thenReturn(fiscalQuery);
+        when(fiscalQuery.from(ProjectFiscalEntity.class)).thenReturn(fiscalRoot);
+
+        Path projectPath = mock(Path.class);
+        Path guidPath = mock(Path.class);
+        Path categoryPath = mock(Path.class);
+        Path statusPath = mock(Path.class);
+        Path fiscalYearPath = mock(Path.class);
+
+        when(fiscalRoot.get("project")).thenReturn(projectPath);
+        when(projectPath.get("projectGuid")).thenReturn(guidPath);
+        when(fiscalRoot.get("activityCategoryCode")).thenReturn(categoryPath);
+        when(fiscalRoot.get("planFiscalStatusCode")).thenReturn(statusPath);
+        when(fiscalRoot.get("fiscalYear")).thenReturn(fiscalYearPath);
+
+        // Mock query behavior
+        TypedQuery<ProjectFiscalEntity> mockQuery = mock(TypedQuery.class);
+        when(entityManager.createQuery(fiscalQuery)).thenReturn(mockQuery);
+        when(mockQuery.getResultList()).thenReturn(Collections.singletonList(new ProjectFiscalEntity()));
+
+        // Call method under test
+        List<ProjectFiscalEntity> result = featuresService.findFilteredProjectFiscals(
+                projectGuid,
+                params.getFiscalYears(),
+                List.of("CATEGORY"),
+                List.of("STATUS")
+        );
+
+        assertNotNull(result);
+        assertEquals(1, result.size());
+    }
+
+    @Test
+    void testFindActivitiesByProjectFiscal() {
+        UUID fiscalGuid = UUID.randomUUID();
+
+        when(entityManager.getCriteriaBuilder()).thenReturn(criteriaBuilder);
+        when(criteriaBuilder.createQuery(ActivityEntity.class)).thenReturn(activityQuery);
+        when(activityQuery.from(ActivityEntity.class)).thenReturn(activityRoot);
+        TypedQuery<ActivityEntity> mockQuery = mock(TypedQuery.class);
+        when(entityManager.createQuery(activityQuery)).thenReturn(mockQuery);
+        when(mockQuery.getResultList()).thenReturn(Collections.singletonList(new ActivityEntity()));
+
+        List<ActivityEntity> result = featuresService.findActivitiesByProjectFiscal(fiscalGuid);
+
+        assertNotNull(result);
+        assertEquals(1, result.size());
+    }
+
+    @Test
+    void testFindLatestProjectBoundary() {
+        UUID projectGuid = UUID.randomUUID();
+
+        when(entityManager.getCriteriaBuilder()).thenReturn(criteriaBuilder);
+        when(criteriaBuilder.createQuery(ProjectBoundaryEntity.class)).thenReturn(projectBoundaryQuery);
+        when(projectBoundaryQuery.from(ProjectBoundaryEntity.class)).thenReturn(projectBoundaryRoot);
+
+        TypedQuery<ProjectBoundaryEntity> mockQuery = mock(TypedQuery.class);
+        when(entityManager.createQuery(projectBoundaryQuery)).thenReturn(mockQuery);
+
+        when(mockQuery.setMaxResults(1)).thenReturn(mockQuery);
+
+        ProjectBoundaryEntity mockBoundary = new ProjectBoundaryEntity();
+        when(mockQuery.getResultList()).thenReturn(List.of(mockBoundary));
+
+        ProjectBoundaryEntity result = featuresService.findLatestProjectBoundary(projectGuid);
+
+        assertNotNull(result);
+    }
+
+    @Test
     void testCreatePolygonFeature() {
-        // Arrange
         Map<String, Object> properties = new HashMap<>();
-
-        // Act
         Map<String, Object> result = FeaturesService.createPolygonFeature(mockMultiPolygon, properties);
-
-        // Assert
         assertNotNull(result);
         assertTrue(result.containsKey("geometry"));
     }
 
     @Test
     void testCreatePointFeature() {
-        // Arrange
         Map<String, Object> properties = new HashMap<>();
         when(mockPoint.getX()).thenReturn(123.456);
         when(mockPoint.getY()).thenReturn(789.123);
-
-        // Act
         Map<String, Object> result = featuresService.createPointFeature(mockPoint, properties);
-
-        // Assert
         assertNotNull(result);
         assertTrue(result.containsKey("geometry"));
     }

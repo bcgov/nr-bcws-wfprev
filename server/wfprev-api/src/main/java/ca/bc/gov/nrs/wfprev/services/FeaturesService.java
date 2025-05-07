@@ -112,7 +112,7 @@ public class FeaturesService implements CommonService {
         }
     }
 
-    private void addActivityBoundaryGeometry(ActivityBoundaryEntity activityBoundary, List<Map<String, Object>> activityBoundariesList) {
+    void addActivityBoundaryGeometry(ActivityBoundaryEntity activityBoundary, List<Map<String, Object>> activityBoundariesList) {
         if (activityBoundary.getGeometry() != null && !activityBoundary.getGeometry().isEmpty()) {
             Map<String, Object> boundaryMap = new HashMap<>();
             Map<String, Object> polygonFeature = createPolygonFeature(activityBoundary.getGeometry(), Collections.emptyMap());
