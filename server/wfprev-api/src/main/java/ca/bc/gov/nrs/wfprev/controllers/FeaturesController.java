@@ -3,6 +3,7 @@ package ca.bc.gov.nrs.wfprev.controllers;
 import ca.bc.gov.nrs.common.wfone.rest.resource.HeaderConstants;
 import ca.bc.gov.nrs.common.wfone.rest.resource.MessageListRsrc;
 import ca.bc.gov.nrs.wfprev.common.controllers.CommonController;
+import ca.bc.gov.nrs.wfprev.common.exceptions.ServiceException;
 import ca.bc.gov.nrs.wfprev.data.params.FeatureQueryParams;
 import ca.bc.gov.nrs.wfprev.services.FeaturesService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -17,6 +18,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.hateoas.CollectionModel;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -58,7 +60,7 @@ public class FeaturesController extends CommonController {
             required = false, schema = @Schema(implementation = Integer.class), in = ParameterIn.HEADER)
     @Parameter(name = HeaderConstants.IF_MATCH_HEADER, description = HeaderConstants.IF_MATCH_DESCRIPTION,
             required = true, schema = @Schema(implementation = String.class), in = ParameterIn.HEADER)
-    public Map<String, Object> getAllFeatures(
+    public ResponseEntity<Map<String, Object>> getAllFeatures(
             @RequestParam(required = false) List<UUID> programAreaGuid,
             @RequestParam(required = false) List<String> fiscalYear,
             @RequestParam(required = false) List<String> activityCategoryCode,
@@ -68,16 +70,23 @@ public class FeaturesController extends CommonController {
             @RequestParam(required = false) List<String> fireCentreOrgUnitId,
             @RequestParam(required = false) String searchText
     ) {
-        FeatureQueryParams queryParams = new FeatureQueryParams();
-        queryParams.setProgramAreaGuids(programAreaGuid);
-        queryParams.setFiscalYears(fiscalYear);
-        queryParams.setActivityCategoryCodes(activityCategoryCode);
-        queryParams.setPlanFiscalStatusCodes(planFiscalStatusCode);
-        queryParams.setForestRegionOrgUnitIds(forestRegionOrgUnitId);
-        queryParams.setForestDistrictOrgUnitIds(forestDistrictOrgUnitId);
-        queryParams.setFireCentreOrgUnitIds(fireCentreOrgUnitId);
-        queryParams.setSearchText(searchText);
+        try {
+            FeatureQueryParams queryParams = new FeatureQueryParams();
+            queryParams.setProgramAreaGuids(programAreaGuid);
+            queryParams.setFiscalYears(fiscalYear);
+            queryParams.setActivityCategoryCodes(activityCategoryCode);
+            queryParams.setPlanFiscalStatusCodes(planFiscalStatusCode);
+            queryParams.setForestRegionOrgUnitIds(forestRegionOrgUnitId);
+            queryParams.setForestDistrictOrgUnitIds(forestDistrictOrgUnitId);
+            queryParams.setFireCentreOrgUnitIds(fireCentreOrgUnitId);
+            queryParams.setSearchText(searchText);
 
-        return featuresService.getAllFeatures(queryParams);
+            Map<String, Object> result = featuresService.getAllFeatures(queryParams);
+            return ResponseEntity.ok(result);
+
+        } catch(ServiceException e) {
+            log.error("Error encountered while fetching features:", e);
+            return internalServerError();
+        }
     }
 }

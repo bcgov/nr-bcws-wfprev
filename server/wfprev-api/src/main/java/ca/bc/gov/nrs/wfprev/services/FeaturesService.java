@@ -1,5 +1,6 @@
 package ca.bc.gov.nrs.wfprev.services;
 
+import ca.bc.gov.nrs.wfprev.common.exceptions.ServiceException;
 import ca.bc.gov.nrs.wfprev.common.services.CommonService;
 import ca.bc.gov.nrs.wfprev.data.entities.ActivityBoundaryEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ActivityEntity;
@@ -45,18 +46,23 @@ public class FeaturesService implements CommonService {
     private static final String PLAN_FISCAL_STATUS_CODE = "planFiscalStatusCode";
     private static final String PROJECT_GUID = "projectGuid";
 
-    public Map<String, Object> getAllFeatures(FeatureQueryParams params) {
-        List<ProjectEntity> filteredProjects = findFilteredProjects(params);
-        List<Map<String, Object>> projects = new ArrayList<>();
+    public Map<String, Object> getAllFeatures(FeatureQueryParams params) throws ServiceException {
+        try {
+            List<ProjectEntity> filteredProjects = findFilteredProjects(params);
+            List<Map<String, Object>> projects = new ArrayList<>();
 
-        for (ProjectEntity project : filteredProjects) {
-            Map<String, Object> projectMap = createProjectProperties(project);
-            addProjectBoundaries(project, projectMap);
-            addProjectFiscals(project, params, projectMap);
-            projects.add(projectMap);
+            for (ProjectEntity project : filteredProjects) {
+                Map<String, Object> projectMap = createProjectProperties(project);
+                addProjectBoundaries(project, projectMap);
+                addProjectFiscals(project, params, projectMap);
+                projects.add(projectMap);
+            }
+
+            return Map.of("projects", projects);
+        }catch (Exception e){
+            log.error("Error encountered while fetching features:", e);
+            throw new ServiceException(e.getLocalizedMessage(), e);
         }
-
-        return Map.of("projects", projects);
     }
 
     void addProjectBoundaries(ProjectEntity project, Map<String, Object> projectMap) {
@@ -173,7 +179,7 @@ public class FeaturesService implements CommonService {
         return entityManager.createQuery(query).getResultList();
     }
 
-    private void addProjectLevelFilters(Root<ProjectEntity> project, List<Predicate> predicates, FeatureQueryParams params) {
+    void addProjectLevelFilters(Root<ProjectEntity> project, List<Predicate> predicates, FeatureQueryParams params) {
         if (params.getProgramAreaGuids() != null && !params.getProgramAreaGuids().isEmpty()) {
             predicates.add(project.get("programAreaGuid").in(params.getProgramAreaGuids()));
         }
@@ -191,7 +197,7 @@ public class FeaturesService implements CommonService {
         }
     }
 
-    private void addFiscalAttributeFilters(CriteriaBuilder cb, Root<ProjectEntity> project, List<Predicate> predicates, FeatureQueryParams params) {
+    void addFiscalAttributeFilters(CriteriaBuilder cb, Root<ProjectEntity> project, List<Predicate> predicates, FeatureQueryParams params) {
         if ((params.getFiscalYears() != null && !params.getFiscalYears().isEmpty()) ||
                 (params.getActivityCategoryCodes() != null && !params.getActivityCategoryCodes().isEmpty()) ||
                 (params.getPlanFiscalStatusCodes() != null && !params.getPlanFiscalStatusCodes().isEmpty())) {
@@ -204,7 +210,7 @@ public class FeaturesService implements CommonService {
         }
     }
 
-    private void addFiscalYearFilters(CriteriaBuilder cb, Join<ProjectEntity, ProjectFiscalEntity> fiscal, List<Predicate> predicates, List<String> fiscalYears) {
+    void addFiscalYearFilters(CriteriaBuilder cb, Join<ProjectEntity, ProjectFiscalEntity> fiscal, List<Predicate> predicates, List<String> fiscalYears) {
         if (fiscalYears != null && !fiscalYears.isEmpty()) {
             List<Predicate> fiscalYearPredicates = new ArrayList<>();
             for (String year : fiscalYears) {
@@ -214,19 +220,19 @@ public class FeaturesService implements CommonService {
         }
     }
 
-    private void addActivityCategoryCodeFilters(Join<ProjectEntity, ProjectFiscalEntity> fiscal, List<Predicate> predicates, List<String> activityCategoryCodes) {
+    void addActivityCategoryCodeFilters(Join<ProjectEntity, ProjectFiscalEntity> fiscal, List<Predicate> predicates, List<String> activityCategoryCodes) {
         if (activityCategoryCodes != null && !activityCategoryCodes.isEmpty()) {
             predicates.add(fiscal.get(ACTIVITY_CATEGORY_CODE).in(activityCategoryCodes));
         }
     }
 
-    private void addPlanFiscalStatusCodeFilters(Join<ProjectEntity, ProjectFiscalEntity> fiscal, List<Predicate> predicates, List<String> planFiscalStatusCodes) {
+    void addPlanFiscalStatusCodeFilters(Join<ProjectEntity, ProjectFiscalEntity> fiscal, List<Predicate> predicates, List<String> planFiscalStatusCodes) {
         if (planFiscalStatusCodes != null && !planFiscalStatusCodes.isEmpty()) {
             predicates.add(fiscal.get(PLAN_FISCAL_STATUS_CODE).in(planFiscalStatusCodes));
         }
     }
 
-    private void addSearchTextFilters(CriteriaBuilder cb, Root<ProjectEntity> project, List<Predicate> predicates, FeatureQueryParams params) {
+    void addSearchTextFilters(CriteriaBuilder cb, Root<ProjectEntity> project, List<Predicate> predicates, FeatureQueryParams params) {
         if (params.getSearchText() != null && !params.getSearchText().isBlank()) {
             String likeParam = "%" + params.getSearchText().toLowerCase() + "%";
 
@@ -410,7 +416,7 @@ public class FeaturesService implements CommonService {
         } return Collections.emptyMap();
     }
 
-    private static List<double[]> extractCoordinates(LinearRing linearRing) {
+    static List<double[]> extractCoordinates(LinearRing linearRing) {
         List<double[]> coordinates = new ArrayList<>();
         Coordinate[] coords = linearRing.getCoordinates();
         for (Coordinate coord : coords) {

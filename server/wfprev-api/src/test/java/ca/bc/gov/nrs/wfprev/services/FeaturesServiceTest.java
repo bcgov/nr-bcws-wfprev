@@ -1,5 +1,6 @@
 package ca.bc.gov.nrs.wfprev.services;
 
+import ca.bc.gov.nrs.wfprev.common.exceptions.ServiceException;
 import ca.bc.gov.nrs.wfprev.data.entities.ActivityBoundaryEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ActivityEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ProjectBoundaryEntity;
@@ -10,11 +11,16 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Path;
+import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.LinearRing;
 import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Point;
 import org.mockito.InjectMocks;
@@ -29,14 +35,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -51,13 +62,15 @@ class FeaturesServiceTest {
     @Mock private CriteriaQuery<ActivityEntity> activityQuery;
     @Mock private CriteriaQuery<ActivityBoundaryEntity> boundaryQuery;
     @Mock private CriteriaQuery<ProjectBoundaryEntity> projectBoundaryQuery;
-
+    @Mock private Path<Object> path;
+    @Mock private CriteriaBuilder.In<Object> inClause;
     @Mock private Root<ProjectEntity> projectRoot;
     @Mock private Root<ProjectFiscalEntity> fiscalRoot;
     @Mock private Root<ActivityEntity> activityRoot;
     @Mock private Root<ActivityBoundaryEntity> boundaryRoot;
     @Mock private Root<ProjectBoundaryEntity> projectBoundaryRoot;
-
+    @Mock private Join<ProjectEntity, ProjectFiscalEntity> fiscalJoin;
+    @Mock private Predicate mockPredicate;
     @Mock private MultiPolygon mockMultiPolygon;
     @Mock private Point mockPoint;
 
@@ -67,7 +80,7 @@ class FeaturesServiceTest {
     }
 
     @Test
-    void testGetAllFeatures() {
+    void testGetAllFeatures() throws ServiceException {
         FeatureQueryParams params = new FeatureQueryParams();
         params.setProgramAreaGuids(Collections.singletonList(UUID.randomUUID()));
         params.setFiscalYears(Collections.singletonList("2022"));
@@ -238,19 +251,26 @@ class FeaturesServiceTest {
 
     @Test
     void testFindActivitiesByProjectFiscal() {
+        // Arrange
         UUID fiscalGuid = UUID.randomUUID();
+
+        CriteriaBuilder criteriaBuilder = mock(CriteriaBuilder.class);
+        CriteriaQuery<ActivityEntity> activityQuery = mock(CriteriaQuery.class);
+        Root<ActivityEntity> activityRoot = mock(Root.class);
+        TypedQuery<ActivityEntity> mockQuery = mock(TypedQuery.class);
 
         when(entityManager.getCriteriaBuilder()).thenReturn(criteriaBuilder);
         when(criteriaBuilder.createQuery(ActivityEntity.class)).thenReturn(activityQuery);
         when(activityQuery.from(ActivityEntity.class)).thenReturn(activityRoot);
-        TypedQuery<ActivityEntity> mockQuery = mock(TypedQuery.class);
         when(entityManager.createQuery(activityQuery)).thenReturn(mockQuery);
         when(mockQuery.getResultList()).thenReturn(Collections.singletonList(new ActivityEntity()));
 
+        // Act
         List<ActivityEntity> result = featuresService.findActivitiesByProjectFiscal(fiscalGuid);
 
-        assertNotNull(result);
-        assertEquals(1, result.size());
+        // Assert
+        assertNotNull(result, "Expected a non-null result.");
+        assertEquals(1, result.size(), "Expected exactly one result.");
     }
 
     @Test
@@ -291,4 +311,223 @@ class FeaturesServiceTest {
         assertNotNull(result);
         assertTrue(result.containsKey("geometry"));
     }
+
+    @Test
+    void testAddProjectLevelFilters_WithForestRegionOrgUnitIds() {
+        // Arrange
+        FeatureQueryParams params = new FeatureQueryParams();
+        params.setForestRegionOrgUnitIds(List.of("Region1", "Region2"));
+        List<Predicate> predicates = new ArrayList<>();
+
+        when(projectRoot.get("forestRegionOrgUnitId")).thenReturn(path);
+
+        // Act
+        featuresService.addProjectLevelFilters(projectRoot, predicates, params);
+
+        // Assert
+        assertEquals(1, predicates.size(), "Expected one predicate for forestRegionOrgUnitIds");
+        verify(projectRoot, times(1)).get("forestRegionOrgUnitId");
+    }
+
+    @Test
+    void testAddProjectLevelFilters_WithMultipleConditions() {
+        // Arrange
+        FeatureQueryParams params = new FeatureQueryParams();
+        params.setProgramAreaGuids(List.of(UUID.randomUUID()));
+        params.setForestRegionOrgUnitIds(List.of("Region1"));
+        params.setForestDistrictOrgUnitIds(List.of("District1"));
+        params.setFireCentreOrgUnitIds(List.of("Centre1"));
+        List<Predicate> predicates = new ArrayList<>();
+
+        // Mocking the paths
+        when(projectRoot.get("programAreaGuid")).thenReturn(path);
+        when(projectRoot.get("forestRegionOrgUnitId")).thenReturn(path);
+        when(projectRoot.get("forestDistrictOrgUnitId")).thenReturn(path);
+        when(projectRoot.get("fireCentreOrgUnitId")).thenReturn(path);
+
+        // Act
+        featuresService.addProjectLevelFilters(projectRoot, predicates, params);
+
+        // Assert
+        assertEquals(4, predicates.size(), "Expected four predicates for all conditions");
+        verify(projectRoot, times(1)).get("programAreaGuid");
+        verify(projectRoot, times(1)).get("forestRegionOrgUnitId");
+        verify(projectRoot, times(1)).get("forestDistrictOrgUnitId");
+        verify(projectRoot, times(1)).get("fireCentreOrgUnitId");
+    }
+
+    @Test
+    void testAddProjectLevelFilters_WithNoConditions() {
+        // Arrange
+        FeatureQueryParams params = new FeatureQueryParams();
+        List<Predicate> predicates = new ArrayList<>();
+
+        // Act
+        featuresService.addProjectLevelFilters(projectRoot, predicates, params);
+
+        // Assert
+        assertEquals(0, predicates.size(), "Expected no predicates for empty params");
+    }
+
+    @Test
+    void testAddFiscalAttributeFilters_WithNoFilters() {
+        // Arrange
+        FeatureQueryParams params = new FeatureQueryParams(); // No filters provided
+        List<Predicate> predicates = new ArrayList<>();
+
+        // Act
+        featuresService.addFiscalAttributeFilters(criteriaBuilder, projectRoot, predicates, params);
+
+        // Assert
+        verify(projectRoot, never()).join(anyString(), any(JoinType.class));
+        // Ensure predicates list remains empty
+        assertEquals(0, predicates.size(), "Predicates should remain empty when no filters are provided.");
+    }
+
+    @Test
+    void testAddActivityCategoryCodeFilters_WithValidCodes() {
+        // Arrange
+        List<String> activityCategoryCodes = List.of("Code1", "Code2");
+        List<Predicate> predicates = new ArrayList<>();
+
+        @SuppressWarnings("unchecked")
+        Join<ProjectEntity, ProjectFiscalEntity> fiscal = (Join<ProjectEntity, ProjectFiscalEntity>) mock(Join.class);
+
+        @SuppressWarnings("unchecked")
+        Path<Object> mockPath = (Path<Object>) mock(Path.class);
+        Predicate mockPredicate = mock(Predicate.class);
+
+        when(fiscal.get("activityCategoryCode")).thenReturn(mockPath);
+        when(mockPath.in(activityCategoryCodes)).thenReturn(mockPredicate);
+
+        // Act
+        featuresService.addActivityCategoryCodeFilters(fiscal, predicates, activityCategoryCodes);
+
+        // Assert
+        verify(fiscal, times(1)).get("activityCategoryCode");
+        verify(mockPath, times(1)).in(activityCategoryCodes);
+        assertEquals(1, predicates.size(), "Expected one predicate to be added.");
+        assertTrue(predicates.contains(mockPredicate), "Expected the predicate to be added to the list.");
+    }
+
+    @Test
+    void testAddActivityCategoryCodeFilters_WithNullOrEmptyCodes() {
+        // Arrange
+        List<String> activityCategoryCodes = null;
+        List<Predicate> predicates = new ArrayList<>();
+
+        @SuppressWarnings("unchecked")
+        Join<ProjectEntity, ProjectFiscalEntity> fiscal = (Join<ProjectEntity, ProjectFiscalEntity>) mock(Join.class);
+
+        // Act
+        featuresService.addActivityCategoryCodeFilters(fiscal, predicates, activityCategoryCodes);
+
+        // Assert
+        verify(fiscal, never()).get(anyString());
+        assertEquals(0, predicates.size(), "Expected no predicates to be added.");
+    }
+
+    @Test
+    void testAddPlanFiscalStatusCodeFilters_WithValidCodes() {
+        // Arrange
+        List<String> planFiscalStatusCodes = List.of("Status1", "Status2");
+        List<Predicate> predicates = new ArrayList<>();
+
+        @SuppressWarnings("unchecked")
+        Join<ProjectEntity, ProjectFiscalEntity> fiscal = (Join<ProjectEntity, ProjectFiscalEntity>) mock(Join.class);
+
+        @SuppressWarnings("unchecked")
+        Path<Object> mockPath = (Path<Object>) mock(Path.class);
+        Predicate mockPredicate = mock(Predicate.class);
+
+        // Mock the behavior of fiscal.get()
+        when(fiscal.get("planFiscalStatusCode")).thenReturn(mockPath);
+        when(mockPath.in(planFiscalStatusCodes)).thenReturn(mockPredicate);
+
+        // Act
+        featuresService.addPlanFiscalStatusCodeFilters(fiscal, predicates, planFiscalStatusCodes);
+
+        // Assert
+        verify(fiscal, times(1)).get("planFiscalStatusCode");
+        verify(mockPath, times(1)).in(planFiscalStatusCodes);
+        assertEquals(1, predicates.size(), "Expected one predicate to be added.");
+        assertTrue(predicates.contains(mockPredicate), "Expected the predicate to be added to the list.");
+    }
+
+    @Test
+    void testAddPlanFiscalStatusCodeFilters_WithNullOrEmptyCodes() {
+        // Arrange
+        List<String> planFiscalStatusCodes = null; // or Collections.emptyList()
+        List<Predicate> predicates = new ArrayList<>();
+
+        @SuppressWarnings("unchecked")
+        Join<ProjectEntity, ProjectFiscalEntity> fiscal = (Join<ProjectEntity, ProjectFiscalEntity>) mock(Join.class);
+
+        // Act
+        featuresService.addPlanFiscalStatusCodeFilters(fiscal, predicates, planFiscalStatusCodes);
+
+        // Assert
+        verify(fiscal, never()).get(anyString());
+        assertEquals(0, predicates.size(), "Expected no predicates to be added.");
+    }
+
+    @Test
+    void testExtractCoordinates_ClosedRing() {
+        // Arrange
+        Coordinate[] coords = {
+                new Coordinate(0, 0),
+                new Coordinate(1, 1),
+                new Coordinate(2, 0),
+                new Coordinate(0, 0) // Closed ring
+        };
+        LinearRing mockLinearRing = mock(LinearRing.class);
+        when(mockLinearRing.getCoordinates()).thenReturn(coords);
+
+        // Act
+        List<double[]> result = FeaturesService.extractCoordinates(mockLinearRing);
+
+        // Assert
+        assertEquals(4, result.size(), "Expected 4 coordinates for a closed ring.");
+        assertArrayEquals(new double[]{0, 0}, result.get(0));
+        assertArrayEquals(new double[]{1, 1}, result.get(1));
+        assertArrayEquals(new double[]{2, 0}, result.get(2));
+        assertArrayEquals(new double[]{0, 0}, result.get(3)); // Closed ring
+    }
+
+    @Test
+    void testExtractCoordinates_OpenRing() {
+        // Arrange
+        Coordinate[] coords = {
+                new Coordinate(0, 0),
+                new Coordinate(1, 1),
+                new Coordinate(2, 0) // Open ring
+        };
+        LinearRing mockLinearRing = mock(LinearRing.class);
+        when(mockLinearRing.getCoordinates()).thenReturn(coords);
+
+        // Act
+        List<double[]> result = FeaturesService.extractCoordinates(mockLinearRing);
+
+        // Assert
+        assertEquals(4, result.size(), "Expected 4 coordinates for an open ring (with closing point added).");
+        assertArrayEquals(new double[]{0, 0}, result.get(0));
+        assertArrayEquals(new double[]{1, 1}, result.get(1));
+        assertArrayEquals(new double[]{2, 0}, result.get(2));
+        assertArrayEquals(new double[]{0, 0}, result.get(3)); // Closing point added
+    }
+
+    @Test
+    void testExtractCoordinates_EmptyRing() {
+        // Arrange
+        Coordinate[] coords = {};
+        LinearRing mockLinearRing = mock(LinearRing.class);
+        when(mockLinearRing.getCoordinates()).thenReturn(coords);
+
+        // Act
+        List<double[]> result = FeaturesService.extractCoordinates(mockLinearRing);
+
+        // Assert
+        assertTrue(result.isEmpty(), "Expected an empty list for an empty ring.");
+    }
+
 }
