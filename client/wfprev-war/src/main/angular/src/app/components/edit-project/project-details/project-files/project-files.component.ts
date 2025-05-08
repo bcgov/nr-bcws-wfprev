@@ -71,7 +71,7 @@ export class ProjectFilesComponent implements OnInit {
             const fileAttachments = response._embedded.fileAttachment.sort((a: FileAttachment, b: FileAttachment) => {
               return new Date(b.uploadedByTimestamp ?? 0).getTime() - new Date(a.uploadedByTimestamp ?? 0).getTime();
             });
-            
+
             this.projectService.getProjectBoundaries(this.projectGuid).subscribe({
               next: (boundaryResponse) => {
                 const boundaries = boundaryResponse?._embedded?.projectBoundary;
@@ -82,14 +82,18 @@ export class ProjectFilesComponent implements OnInit {
                   const latestBoundary = boundaries.sort((a: { systemStartTimestamp: string | number | Date; }, b: { systemStartTimestamp: string | number | Date; }) =>
                     new Date(b.systemStartTimestamp).getTime() - new Date(a.systemStartTimestamp).getTime()
                   )[0];
-                  boundarySizeHa = latestBoundary.boundarySizeHa;
-                }
-                if (boundarySizeHa !== undefined) {
-                  // Add boundarySizeHa to each attachment
+                  // Create a map of projectGuid to boundarySizeHa
+                  const boundarySizeMap = new Map<string, number>();
+                  boundaries.forEach((boundary: { projectGuid: string; boundarySizeHa: number; }) => {
+                    boundarySizeMap.set(boundary.projectGuid, boundary.boundarySizeHa);
+                  });
+
+                  // Map file attachments to include polygonHectares from the corresponding boundary
                   this.projectFiles = fileAttachments.map((file: FileAttachment) => ({
                     ...file,
-                    polygonHectares: boundarySizeHa
+                    polygonHectares: file.sourceObjectUniqueId ? boundarySizeMap.get(file.sourceObjectUniqueId) ?? null : null
                   }));
+
                 } else {
                   console.error('boundarySizeHa not found in project boundaries');
                   this.projectFiles = fileAttachments;
@@ -144,7 +148,7 @@ export class ProjectFilesComponent implements OnInit {
       }
     });
   }
-  
+
   openFileUploadModal() {
     const dialogRef = this.dialog.open(AddAttachmentComponent, {
       width: '1000px',
@@ -191,8 +195,8 @@ export class ProjectFilesComponent implements OnInit {
     }
 
     const attachment: FileAttachment = {
-      sourceObjectNameCode: { sourceObjectNameCode: this.isActivityContext? "TREATMENT_ACTIVITY" : "PROJECT" },
-      sourceObjectUniqueId: this.isActivityContext? this.activityGuid : this.projectGuid,
+      sourceObjectNameCode: { sourceObjectNameCode: this.isActivityContext ? "TREATMENT_ACTIVITY" : "PROJECT" },
+      sourceObjectUniqueId: this.isActivityContext ? this.activityGuid : this.projectGuid,
       documentPath: file.name,
       fileIdentifier: response.fileId,
       attachmentContentTypeCode: { attachmentContentTypeCode: type },
@@ -209,7 +213,7 @@ export class ProjectFilesComponent implements OnInit {
 
             if (type === 'OTHER' || type === 'DOCUMENT') {
               this.finishWithoutGeometry();
-            } else{
+            } else {
               this.spatialService.extractCoordinates(file).then(response => {
                 if (response) {
                   this.updateActivityBoundary(file, response)
@@ -221,23 +225,23 @@ export class ProjectFilesComponent implements OnInit {
       })
     } else {
       // Project level
-        this.attachmentService.createProjectAttachment(this.projectGuid, attachment).subscribe({
-          next: (response) => {
-            if (response) {
-              this.uploadedBy = response?.uploadedByUserId;
+      this.attachmentService.createProjectAttachment(this.projectGuid, attachment).subscribe({
+        next: (response) => {
+          if (response) {
+            this.uploadedBy = response?.uploadedByUserId;
 
-              this.spatialService.extractCoordinates(file).then(response => {
-                if (response) {
-                  this.updateProjectBoundary(file, response)
-                }
-              })
-            }
-          },
-          error: (error) => {
-            console.log('Failed to upload attachment: ', error)
-          },
-        });
-      }
+            this.spatialService.extractCoordinates(file).then(response => {
+              if (response) {
+                this.updateProjectBoundary(file, response)
+              }
+            })
+          }
+        },
+        error: (error) => {
+          console.log('Failed to upload attachment: ', error)
+        },
+      });
+    }
   }
 
   finishWithoutGeometry() {
@@ -349,16 +353,16 @@ export class ProjectFilesComponent implements OnInit {
               next: () => {
                 this.projectFiles = this.projectFiles.filter(file => file !== fileToDelete);
                 this.dataSource.data = [...this.projectFiles];
-  
+
                 this.projectService.getActivityBoundaries(this.projectGuid, this.fiscalGuid, this.activityGuid).subscribe(response => {
                   const boundaries = response?._embedded?.activityBoundary;
                   if (boundaries && boundaries.length > 0) {
                     const latest = boundaries.sort((a: ActivityBoundary, b: ActivityBoundary) =>
                       new Date(b.systemStartTimestamp ?? 0).getTime() - new Date(a.systemStartTimestamp ?? 0).getTime()
                     )[0];
-  
+
                     const activityBoundaryGuid = latest.activityBoundaryGuid;
-                    this.projectService.deleteActivityBoundary(this.projectGuid,this.fiscalGuid, this.activityGuid, activityBoundaryGuid).subscribe({
+                    this.projectService.deleteActivityBoundary(this.projectGuid, this.fiscalGuid, this.activityGuid, activityBoundaryGuid).subscribe({
                       next: () => {
                         this.filesUpdated.emit();
                         // Show success message in snackbar
@@ -369,11 +373,11 @@ export class ProjectFilesComponent implements OnInit {
                         this.loadActivityAttachments();
                       }
                     })
-  
+
                   } else {
                     console.log('No boundaries found');
                   }
-  
+
                 })
               },
               error: (error) => {
@@ -385,21 +389,21 @@ export class ProjectFilesComponent implements OnInit {
                 });
               }
             });
-          }else {
+          } else {
             // delete project attachment
             this.attachmentService.deleteProjectAttachment(this.projectGuid, fileToDelete.fileAttachmentGuid).subscribe({
               next: () => {
                 this.projectFiles = this.projectFiles.filter(file => file !== fileToDelete);
                 this.dataSource.data = [...this.projectFiles];
-  
+
                 this.projectService.getProjectBoundaries(this.projectGuid).subscribe(response => {
                   const boundaries = response?._embedded?.projectBoundary;
-  
+
                   if (boundaries && boundaries.length > 0) {
                     const latest = boundaries.sort((a: ProjectBoundary, b: ProjectBoundary) =>
                       new Date(b.systemStartTimestamp ?? 0).getTime() - new Date(a.systemStartTimestamp ?? 0).getTime()
                     )[0];
-  
+
                     const boundaryGuid = latest.projectBoundaryGuid;
                     this.projectService.deleteProjectBoundary(this.projectGuid, boundaryGuid).subscribe({
                       next: () => {
@@ -412,11 +416,11 @@ export class ProjectFilesComponent implements OnInit {
                         this.loadProjectAttachments();
                       }
                     })
-  
+
                   } else {
                     console.log('No boundaries found');
                   }
-  
+
                 })
               },
               error: (error) => {
@@ -466,7 +470,7 @@ export class ProjectFilesComponent implements OnInit {
           });
         }
       });
-    } else{
+    } else {
       console.error('The file has no file Id');
       this.snackbarService.open('Failed to download the file.', 'Close', {
         duration: 5000,

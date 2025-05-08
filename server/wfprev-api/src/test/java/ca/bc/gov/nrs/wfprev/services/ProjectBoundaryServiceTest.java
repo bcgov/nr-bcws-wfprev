@@ -14,8 +14,14 @@ import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.LinearRing;
+import org.locationtech.jts.geom.MultiPolygon;
+import org.locationtech.jts.geom.Polygon;
 import org.springframework.hateoas.CollectionModel;
 
+import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -402,6 +408,29 @@ class ProjectBoundaryServiceTest {
         // Verify the create path was not taken
         verify(projectBoundaryResourceAssembler, times(0)).toEntity(any());
         verify(projectBoundaryRepository, times(0)).save(any());
+    }
+
+    @Test
+    void testConvertMultiPolygonAreaToHectares() {
+        GeometryFactory geometryFactory = new GeometryFactory();
+
+        Coordinate[] coords = new Coordinate[] {
+                new Coordinate(0.0, 0.0),
+                new Coordinate(0.01, 0.0),
+                new Coordinate(0.01, 0.01),
+                new Coordinate(0.0, 0.01),
+                new Coordinate(0.0, 0.0)
+        };
+        LinearRing shell = geometryFactory.createLinearRing(coords);
+        Polygon polygon = geometryFactory.createPolygon(shell, null);
+
+        MultiPolygon multiPolygon = geometryFactory.createMultiPolygon(new Polygon[]{ polygon });
+
+        BigDecimal result = projectBoundaryService.convertMultiPolygonAreaToHectares(multiPolygon);
+
+        BigDecimal expected = new BigDecimal("123.6431");
+
+        assertEquals(expected, result, "Area in hectares should match expected conversion");
     }
 
 
