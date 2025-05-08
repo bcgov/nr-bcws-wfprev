@@ -11,6 +11,7 @@ import { MatDialog } from '@angular/material/dialog';
 import L from 'leaflet';
 import 'leaflet.markercluster';
 import { SharedCodeTableService } from 'src/app/services/shared-code-table.service';
+import { SharedService } from 'src/app/services/shared-service';
 
 @Component({
   selector: 'app-projects-list',
@@ -42,14 +43,36 @@ export class ProjectsListComponent implements OnInit {
     private readonly projectService: ProjectService,
     private readonly codeTableService: CodeTableServices,
     private readonly dialog: MatDialog,
-    private readonly sharedCodeTableService: SharedCodeTableService
-
+    private readonly sharedCodeTableService: SharedCodeTableService,
+    private readonly sharedService: SharedService
   ) {
   }
   ngOnInit(): void {
     this.loadCodeTables();
     this.loadProjects();
     setTimeout(() => { this.loadCoordinatesOnMap(); }, 3000);
+
+    this.sharedService.filters$.subscribe(filters => {
+      if (filters) {
+        this.isLoading = true;
+        this.projectService.getFeatures(filters).subscribe({
+          next: (data) => {
+            this.allProjects = (data.projects || []).sort((a: any, b: any) =>
+              a.projectName.localeCompare(b.projectName)
+            );
+            this.currentPage = 0;
+            this.displayedProjects = this.allProjects.slice(0, this.pageSize);
+            this.isLoading = false;
+          },
+          error: (err) => {
+            console.error('Error fetching features:', err);
+            this.allProjects = [];
+            this.displayedProjects = [];
+            this.isLoading = false;
+          }
+        });
+      }
+    });
   }
 
   loadCodeTables(): void {
@@ -233,8 +256,9 @@ export class ProjectsListComponent implements OnInit {
 
   // Temporary function, to be replaced with SMK layer config when /features endpoint exists in the API
   loadCoordinatesOnMap() {
-    if (this.projectList?.length > 0) {
-      const coords = this.projectList
+    if (this.displayedProjects?.length > 0) {
+      debugger
+      const coords = this.displayedProjects
         .filter((project: any) => project.latitude != null && project.longitude != null) // Check if both latitude and longitude are defined and not null
         .map((project: any) => ({
           latitude: project.latitude,

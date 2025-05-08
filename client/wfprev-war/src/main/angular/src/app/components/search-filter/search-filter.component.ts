@@ -8,6 +8,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { SharedCodeTableService } from 'src/app/services/shared-code-table.service';
 import { CodeTableServices } from 'src/app/services/code-table-services';
+import { SharedService } from 'src/app/services/shared-service';
 
 @Component({
   selector: 'app-search-filter',
@@ -29,7 +30,8 @@ export class SearchFilterComponent implements OnInit {
 
   constructor(
     private readonly sharedCodeTableService: SharedCodeTableService,
-    private readonly codeTableService: CodeTableServices
+    private readonly codeTableService: CodeTableServices,
+    private sharedService: SharedService
   ) {}
 
   ngOnInit(): void {
@@ -110,8 +112,22 @@ export class SearchFilterComponent implements OnInit {
   selectedFireCentre: string[] = [];
   selectedFiscalStatus: string[] = [];
 
+  emitFilters() {
+    this.sharedService.updateFilters({
+      searchText: this.searchText,
+      programAreaGuid: this.selectedBusinessArea,
+      fiscalYear: this.selectedFiscalYears,
+      activityCategoryCode: this.selectedActivity,
+      forestRegionOrgUnitId: this.selectedForestRegion,
+      forestDistrictOrgUnitId: this.selectedForestDistrict,
+      fireCentreOrgUnitId: this.selectedFireCentre,
+      planFiscalStatusCode: this.selectedFiscalStatus
+    });
+  }
+
   onSearch() {
     console.log('Searching for:', this.searchText);
+    this.emitFilters();
   }
 
   onReset() {
@@ -123,6 +139,7 @@ export class SearchFilterComponent implements OnInit {
     this.selectedForestDistrict = [];
     this.selectedFireCentre = [];
     this.selectedFiscalStatus = [];
+    this.emitFilters();
   }
 
   generateFiscalYearOptions(): void {
@@ -150,6 +167,7 @@ export class SearchFilterComponent implements OnInit {
           value: item.orgUnitId
         }))
       );
+      this.emitFilters();
       return;
     }
 
@@ -167,6 +185,7 @@ export class SearchFilterComponent implements OnInit {
     this.selectedForestDistrict = this.selectedForestDistrict.filter(id =>
       this.forestDistrictOptions.some(opt => opt.value === id)
     );
+    this.emitFilters();
   }
 
   prependAllAndSort(options: { label: string, value: any }[]): { label: string, value: any }[] {
@@ -176,18 +195,22 @@ export class SearchFilterComponent implements OnInit {
   
   onSelectAll(event: any, model: keyof SearchFilterComponent, options: { value: any }[]) {
     const allOptionValue = '__ALL__';
-    const selected = (this[model] as any[]) || [];
-  
-    const allOptionIndex = selected.indexOf(allOptionValue);
-    const isAllNowSelected = allOptionIndex > -1;
-  
-    const allValues = [allOptionValue, ...options.map(o => o.value)];
-  
-    if (isAllNowSelected) {
-      (this[model] as any[]) = allValues;
-    } else {
+    let selected = (this[model] as any[]) || [];
+    const allValues = options.map(o => o.value);
+
+    if (selected.includes(allOptionValue)) {
+      (this[model] as any[]) = [allOptionValue, ...allValues];
+    } else if (event && event.source && event.source.value === allOptionValue) {
       (this[model] as any[]) = [];
+    } else {
+      selected = selected.filter(v => v !== allOptionValue);
+      if (selected.length === allValues.length) {
+        (this[model] as any[]) = [allOptionValue, ...allValues];
+      } else {
+        (this[model] as any[]) = selected;
+      }
     }
+    this.emitFilters();
   }
   
   
