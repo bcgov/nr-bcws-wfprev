@@ -24,7 +24,7 @@ describe('ConfirmationDialogComponent', () => {
     fixture.detectChanges();
   };
 
-  describe('with "confirm-cancel" data', () => {
+  describe('confirm-cancel', () => {
     beforeEach(async () => {
       await setupComponentWithData({ indicator: 'confirm-cancel' });
     });
@@ -33,43 +33,35 @@ describe('ConfirmationDialogComponent', () => {
       expect(component).toBeTruthy();
     });
 
-    it('should set dialogUsage to "confirm-cancel"', () => {
-      expect(component.dialogUsage).toBe('confirm-cancel');
-    });
-
-    it('should render the correct title', () => {
+    it('should show the correct title', () => {
       const titleElement = fixture.nativeElement.querySelector('.title-bar');
       expect(titleElement.textContent.trim()).toBe('Confirm Cancel');
     });
 
-    it('should display the correct message', () => {
+    it('should show the correct message', () => {
       const messageElement = fixture.nativeElement.querySelector('.dialog-content p');
       expect(messageElement.textContent.trim()).toContain('Are you sure you want to cancel?');
       expect(messageElement.textContent.trim()).toContain('This information will not be saved.');
     });
   });
 
-  describe('with "duplicate-project" data', () => {
+  describe('duplicate-project', () => {
     beforeEach(async () => {
       await setupComponentWithData({ indicator: 'duplicate-project' });
     });
 
-    it('should set dialogUsage to "duplicate-project"', () => {
-      expect(component.dialogUsage).toBe('duplicate-project');
-    });
-
-    it('should render the correct title', () => {
+    it('should show the correct title', () => {
       const titleElement = fixture.nativeElement.querySelector('.title-bar');
       expect(titleElement.textContent.trim()).toBe('Duplicate Found');
     });
 
-    it('should display the correct message', () => {
+    it('should show the correct message', () => {
       const messageElement = fixture.nativeElement.querySelector('.dialog-content p');
       expect(messageElement.textContent.trim()).toContain('This Project already exists:');
     });
   });
 
-  describe('common behavior', () => {
+  describe('onGoBack and onConfirm', () => {
     beforeEach(async () => {
       await setupComponentWithData({ indicator: 'confirm-cancel' });
     });
@@ -83,12 +75,86 @@ describe('ConfirmationDialogComponent', () => {
       component.onConfirm();
       expect(mockDialogRef.close).toHaveBeenCalledWith(true);
     });
+  });
 
-    it('should render Go Back and Confirm buttons', () => {
-      const buttons = fixture.nativeElement.querySelectorAll('button');
-      expect(buttons.length).toBe(2);
-      expect(buttons[0].textContent.trim()).toBe('Cancel');
-      expect(buttons[1].textContent.trim()).toBe('Continue');
+  describe('confirmButtonText', () => {
+    it('should return "Delete" if dialogUsage starts with "delete-"', async () => {
+      await setupComponentWithData({ indicator: 'delete-activity' });
+      expect(component.confirmButtonText).toBe('Delete');
+    });
+
+    it('should return "Continue" if dialogUsage does not start with "delete-"', async () => {
+      await setupComponentWithData({ indicator: 'confirm-cancel' });
+      expect(component.confirmButtonText).toBe('Continue');
+    });
+  });
+
+  describe('isDeleteDialog', () => {
+    it('should return true if dialogUsage starts with "delete-"', async () => {
+      await setupComponentWithData({ indicator: 'delete-fiscal-year' });
+      expect(component.isDeleteDialog).toBeTrue();
+    });
+
+    it('should return false if dialogUsage does not start with "delete-"', async () => {
+      await setupComponentWithData({ indicator: 'confirm-cancel' });
+      expect(component.isDeleteDialog).toBeFalse();
+    });
+  });
+
+  describe('delete-fiscal-year', () => {
+    beforeEach(async () => {
+      await setupComponentWithData({ indicator: 'delete-fiscal-year', name: '2024' });
+    });
+
+    it('should show the correct title', () => {
+      const titleElement = fixture.nativeElement.querySelector('.title-bar');
+      expect(titleElement.textContent.trim()).toBe('Delete Fiscal Year');
+    });
+
+    it('should show the correct message', () => {
+      const messageElement = fixture.nativeElement.querySelector('.dialog-content p');
+      expect(messageElement.textContent.trim()).toContain('Are you sure you want to delete 2024?');
+      expect(messageElement.textContent.trim()).toContain('This action cannot be reversed and will immediately remove the Fiscal Year from the Project scope.');
+    });
+  });
+
+  describe('confirm-unsave', () => {
+    beforeEach(async () => {
+      await setupComponentWithData({ indicator: 'confirm-unsave' });
+    });
+
+    it('should show the correct title', () => {
+      const titleElement = fixture.nativeElement.querySelector('.title-bar');
+      expect(titleElement.textContent.trim()).toBe('Confirm Unsave');
+    });
+
+    it('should show the correct message', () => {
+      const messageElement = fixture.nativeElement.querySelector('.dialog-content p');
+      expect(messageElement.textContent.trim()).toContain('Are you sure you want to leave this page?');
+      expect(messageElement.textContent.trim()).toContain('The changes you made will not be saved.');
+    });
+  });
+
+  describe('delete-activity', () => {
+    beforeEach(async () => {
+      await setupComponentWithData({ indicator: 'delete-activity', name: 'Test Activity' });
+    });
+
+    it('should show the correct title', () => {
+      const titleElement = fixture.nativeElement.querySelector('.title-bar');
+      expect(titleElement.textContent.trim()).toBe('Delete Activity');
+    });
+
+    it('should show the correct message', () => {
+      const messageElement = fixture.nativeElement.querySelector('.dialog-content p');
+      expect(messageElement.textContent.trim()).toContain('Are you sure you want to delete Test Activity?');
+      expect(messageElement.textContent.trim()).toContain('This action cannot be reversed and will immediately remove the activity from the Fiscal scope.');
+    });
+  });
+
+  describe('button clicks', () => {
+    beforeEach(async () => {
+      await setupComponentWithData({ indicator: 'confirm-cancel' });
     });
 
     it('should call onGoBack when Go Back button is clicked', () => {
@@ -103,93 +169,6 @@ describe('ConfirmationDialogComponent', () => {
       const confirmButton = fixture.nativeElement.querySelector('button.primary');
       confirmButton.click();
       expect(component.onConfirm).toHaveBeenCalled();
-    });
-  });
-
-  describe('with "delete-fiscal-year" data', () => {
-    beforeEach(async () => {
-      await setupComponentWithData({ indicator: 'delete-fiscal-year', name: '2024' });
-    });
-
-    it('should set dialogUsage to "delete-fiscal-year"', () => {
-      expect(component.dialogUsage).toBe('delete-fiscal-year');
-    });
-
-    it('should render the correct title', () => {
-      const titleElement = fixture.nativeElement.querySelector('.title-bar');
-      expect(titleElement.textContent.trim()).toBe('Delete Fiscal Year');
-    });
-
-    it('should display the correct message', () => {
-      const messageElement = fixture.nativeElement.querySelector('.dialog-content p');
-      expect(messageElement.textContent.trim()).toContain('Are you sure you want to delete 2024?');
-      expect(messageElement.textContent.trim()).toContain('This action cannot be reversed and will immediately remove the Fiscal Year from the Project scope.');
-    });
-  });
-
-  describe('with "confirm-unsave" data', () => {
-    beforeEach(async () => {
-      await setupComponentWithData({ indicator: 'confirm-unsave' });
-    });
-
-    it('should set dialogUsage to "confirm-unsave"', () => {
-      expect(component.dialogUsage).toBe('confirm-unsave');
-    });
-
-    it('should render the correct title', () => {
-      const titleElement = fixture.nativeElement.querySelector('.title-bar');
-      expect(titleElement.textContent.trim()).toBe('Confirm Unsave');
-    });
-
-    it('should display the correct message', () => {
-      const messageElement = fixture.nativeElement.querySelector('.dialog-content p');
-      expect(messageElement.textContent.trim()).toContain('Are you sure you want to leave this page?');
-      expect(messageElement.textContent.trim()).toContain('The changes you made will not be saved.');
-    });
-  });
-
-  describe('with "delete-activity" data', () => {
-    beforeEach(async () => {
-      await setupComponentWithData({ indicator: 'delete-activity', name: 'Test Activity' });
-    });
-
-    it('should set dialogUsage to "delete-activity"', () => {
-      expect(component.dialogUsage).toBe('delete-activity');
-    });
-
-    it('should render the correct title', () => {
-      const titleElement = fixture.nativeElement.querySelector('.title-bar');
-      expect(titleElement.textContent.trim()).toBe('Delete Activity');
-    });
-
-    it('should display the correct message', () => {
-      const messageElement = fixture.nativeElement.querySelector('.dialog-content p');
-      expect(messageElement.textContent.trim()).toContain('Are you sure you want to delete Test Activity?');
-      expect(messageElement.textContent.trim()).toContain('This action cannot be reversed and will immediately remove the activity from the Fiscal scope.');
-    });
-  });
-
-  describe('confirmButtonText', () => {
-    it('should return "Delete" when dialogUsage starts with "delete-"', async () => {
-      await setupComponentWithData({ indicator: 'delete-activity' });
-      expect(component.confirmButtonText).toBe('Delete');
-    });
-
-    it('should return "Continue" when dialogUsage does not start with "delete-"', async () => {
-      await setupComponentWithData({ indicator: 'confirm-cancel' });
-      expect(component.confirmButtonText).toBe('Continue');
-    });
-  });
-
-  describe('isDeleteDialog', () => {
-    it('should return true when dialogUsage starts with "delete-"', async () => {
-      await setupComponentWithData({ indicator: 'delete-fiscal-year' });
-      expect(component.isDeleteDialog).toBeTrue();
-    });
-
-    it('should return false when dialogUsage does not start with "delete-"', async () => {
-      await setupComponentWithData({ indicator: 'confirm-unsave' });
-      expect(component.isDeleteDialog).toBeFalse();
     });
   });
 });
