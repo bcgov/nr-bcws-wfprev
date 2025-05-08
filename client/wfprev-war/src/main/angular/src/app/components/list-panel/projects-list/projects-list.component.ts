@@ -15,9 +15,9 @@ import { SharedCodeTableService } from 'src/app/services/shared-code-table.servi
 @Component({
   selector: 'app-projects-list',
   standalone: true,
-  imports: [MatSlideToggleModule, CommonModule, MatExpansionModule], // Add FormsModule here
+  imports: [MatSlideToggleModule, CommonModule, MatExpansionModule],
   templateUrl: './projects-list.component.html',
-  styleUrls: ['./projects-list.component.scss'], // Corrected to 'styleUrls'
+  styleUrls: ['./projects-list.component.scss'],
 })
 export class ProjectsListComponent implements OnInit {
   [key: string]: any;
@@ -129,26 +129,6 @@ export class ProjectsListComponent implements OnInit {
     });
   }
 
-
-  loadProjects() {
-    this.isLoading = true;
-    this.projectService.fetchProjects().subscribe({
-      next: (data) => {
-        this.allProjects = (data._embedded?.project || []).sort((a: any, b: any) =>
-          a.projectName.localeCompare(b.projectName)
-        );
-        this.currentPage = 0;
-        this.displayedProjects = this.allProjects.slice(0, this.pageSize);
-        this.isLoading = false;
-      },
-      error: (err) => {
-        console.error('Error fetching projects:', err);
-        this.allProjects = [];
-        this.displayedProjects = [];
-        this.isLoading = false;
-      }
-    });
-  }
   sortOptions = [
     { label: 'Name (A-Z)', value: 'ascending' },
     { label: 'Name (Z-A)', value: 'descending' },
@@ -160,6 +140,25 @@ export class ProjectsListComponent implements OnInit {
 
   fiscalYearActivityTypes = ['Clearing', 'Burning', 'Pruning']
 
+  loadProjects(): void {
+    this.isLoading = true;
+    this.projectService.getFeatures().subscribe({
+      next: (data) => {
+        this.allProjects = (data.projects || []).sort((a: any, b: any) =>
+          a.projectName.localeCompare(b.projectName)
+        );
+        this.currentPage = 0;
+        this.displayedProjects = this.allProjects.slice(0, this.pageSize);
+        this.isLoading = false;
+      },
+      error: (err) => {
+        console.error('Error fetching features:', err);
+        this.allProjects = [];
+        this.displayedProjects = [];
+        this.isLoading = false;
+      }
+    });
+  }
 
   onSortChange(event: any): void {
     this.selectedSort = event.target.value;
@@ -443,20 +442,6 @@ export class ProjectsListComponent implements OnInit {
     if (element.scrollHeight - element.scrollTop === element.clientHeight) {
       this.onScroll();
     }
-  }
-
-  getFiscal(project: any): void {
-    this.projectService.getProjectFiscalsByProjectGuid(project.projectGuid).subscribe({
-      next: (data) => {
-        project.projectFiscals = (data._embedded?.projectFiscals ?? []).sort((a: any, b: any) => 
-          (b.fiscalYear || 0) - (a.fiscalYear || 0)
-        );
-      },
-      error: (err) => {
-        console.error(`Error fetching fiscals for project ${project.projectGuid}`, err);
-        project.projectFiscals = [];
-      }
-    });
   }
 
   getFiscalYearDisplay(fiscalYear: number | null | undefined): string | null {

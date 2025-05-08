@@ -173,15 +173,7 @@ export class SearchFilterComponent implements OnInit {
     const sorted = [...options].sort((a, b) => a.label.localeCompare(b.label));
     return [{ label: 'All', value: '__ALL__' }, ...sorted];
   }
-
-  // onSelectAll(model: keyof SearchFilterComponent, options: { label: string; value: any }[]): void {
-  //   const values = options
-  //     .filter(o => o.value !== '__ALL__')
-  //     .map(o => o.value);
   
-  //   (this[model] as any[]) = values;
-  // }
-
   onSelectAll(event: any, model: keyof SearchFilterComponent, options: { value: any }[]) {
     const allOptionValue = '__ALL__';
     const selected = (this[model] as any[]) || [];
