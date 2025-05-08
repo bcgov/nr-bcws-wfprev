@@ -188,7 +188,7 @@ describe('ProjectFiscalsComponent', () => {
   });
   
 
-  it('should handle errors when updating an existing fiscal', () => {
+  it('should handle errors when updating an existing fiscal', fakeAsync(() => {
     // ✅ Ensure projectFiscals is initialized before setting properties
     component.projectFiscals = [{ projectPlanFiscalGuid: 'existing-guid' }];
   
@@ -201,7 +201,7 @@ describe('ProjectFiscalsComponent', () => {
       'OK',
       { duration: 5000, panelClass: 'snackbar-error' } // ✅ Ensure correct error message is tested
     );
-  });
+  }));
 
   it('should clear all fields for a new fiscal entry on cancel', () => {
     component.projectFiscals = [{ fiscalYear: '', projectFiscalName: '', projectGuid: 'test-guid' }];
