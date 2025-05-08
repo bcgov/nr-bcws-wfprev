@@ -38,30 +38,30 @@ describe('ConfirmationDialogComponent', () => {
       expect(titleElement.textContent.trim()).toBe('Confirm Cancel');
     });
 
-    it('should show the correct message', () => {
+    it('should display the correct message for "confirm-cancel', () => {
       const messageElement = fixture.nativeElement.querySelector('.dialog-content p');
       expect(messageElement.textContent.trim()).toContain('Are you sure you want to cancel?');
       expect(messageElement.textContent.trim()).toContain('This information will not be saved.');
     });
   });
 
-  describe('duplicate-project', () => {
+  describe('with "duplicate-project" data', () => {
     beforeEach(async () => {
       await setupComponentWithData({ indicator: 'duplicate-project' });
     });
 
-    it('should show the correct title', () => {
+    it('should render the correct title for "duplicate-project"', () => {
       const titleElement = fixture.nativeElement.querySelector('.title-bar');
       expect(titleElement.textContent.trim()).toBe('Duplicate Found');
     });
 
-    it('should show the correct message', () => {
+    it('should display the correct message for "duplicate-project"', () => {
       const messageElement = fixture.nativeElement.querySelector('.dialog-content p');
       expect(messageElement.textContent.trim()).toContain('This Project already exists:');
     });
   });
 
-  describe('onGoBack and onConfirm', () => {
+  describe('common behavior', () => {
     beforeEach(async () => {
       await setupComponentWithData({ indicator: 'confirm-cancel' });
     });
@@ -111,14 +111,14 @@ describe('ConfirmationDialogComponent', () => {
       expect(titleElement.textContent.trim()).toBe('Delete Fiscal Year');
     });
 
-    it('should show the correct message', () => {
+    it('should display the correct message for "delete-fiscal-year', () => {
       const messageElement = fixture.nativeElement.querySelector('.dialog-content p');
       expect(messageElement.textContent.trim()).toContain('Are you sure you want to delete 2024?');
       expect(messageElement.textContent.trim()).toContain('This action cannot be reversed and will immediately remove the Fiscal Year from the Project scope.');
     });
   });
 
-  describe('confirm-unsave', () => {
+  describe('with "confirm-unsave" data', () => {
     beforeEach(async () => {
       await setupComponentWithData({ indicator: 'confirm-unsave' });
     });
@@ -128,14 +128,14 @@ describe('ConfirmationDialogComponent', () => {
       expect(titleElement.textContent.trim()).toBe('Confirm Unsave');
     });
 
-    it('should show the correct message', () => {
+    it('should display the correct message for "confirm-unsave"', () => {
       const messageElement = fixture.nativeElement.querySelector('.dialog-content p');
       expect(messageElement.textContent.trim()).toContain('Are you sure you want to leave this page?');
       expect(messageElement.textContent.trim()).toContain('The changes you made will not be saved.');
     });
   });
 
-  describe('delete-activity', () => {
+  describe('with "delete-activity" data', () => {
     beforeEach(async () => {
       await setupComponentWithData({ indicator: 'delete-activity', name: 'Test Activity' });
     });
@@ -145,7 +145,7 @@ describe('ConfirmationDialogComponent', () => {
       expect(titleElement.textContent.trim()).toBe('Delete Activity');
     });
 
-    it('should show the correct message', () => {
+    it('should display the correct message for "delete-activity"', () => {
       const messageElement = fixture.nativeElement.querySelector('.dialog-content p');
       expect(messageElement.textContent.trim()).toContain('Are you sure you want to delete Test Activity?');
       expect(messageElement.textContent.trim()).toContain('This action cannot be reversed and will immediately remove the activity from the Fiscal scope.');
