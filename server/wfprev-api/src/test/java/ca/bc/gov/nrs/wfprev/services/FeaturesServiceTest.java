@@ -28,8 +28,10 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,13 +39,11 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -633,6 +633,57 @@ class FeaturesServiceTest {
         verify(cb, never()).like(any(), anyString());
         // Verify that no predicates were added
         assertTrue(predicates.isEmpty(), "Expected no predicates to be added.");
+    }
+
+    @Test
+    void testCreateActivityProperties() {
+        UUID guid = UUID.randomUUID();
+        UUID fiscalGuid = UUID.randomUUID();
+        Date now = new Date();
+
+        ActivityEntity activity = ActivityEntity.builder()
+                .activityGuid(guid)
+                .projectPlanFiscalGuid(fiscalGuid)
+                .activityName("Tree Planting")
+                .activityDescription("Planting 500 trees")
+                .activityStartDate(now)
+                .activityEndDate(now)
+                .plannedSpendAmount(new BigDecimal("15000.50"))
+                .plannedTreatmentAreaHa(new BigDecimal("12.3456"))
+                .reportedSpendAmount(new BigDecimal("13000.00"))
+                .completedAreaHa(new BigDecimal("10.1234"))
+                .isResultsReportableInd(true)
+                .outstandingObligationsInd(false)
+                .activityComment("Completed early")
+                .isSpatialAddedInd(true)
+                .revisionCount(1)
+                .createUser("tester")
+                .createDate(now)
+                .updateUser("tester")
+                .updateDate(now)
+                .build();
+
+        Map<String, Object> result = featuresService.createActivityProperties(activity);
+
+        assertEquals(guid, result.get("activityGuid"));
+        assertEquals(fiscalGuid, result.get("projectPlanFiscalGuid"));
+        assertEquals("Tree Planting", result.get("activityName"));
+        assertEquals("Planting 500 trees", result.get("activityDescription"));
+        assertEquals(now, result.get("activityStartDate"));
+        assertEquals(now, result.get("activityEndDate"));
+        assertEquals(new BigDecimal("15000.50"), result.get("plannedSpendAmount"));
+        assertEquals(new BigDecimal("12.3456"), result.get("plannedTreatmentAreaHa"));
+        assertEquals(new BigDecimal("13000.00"), result.get("reportedSpendAmount"));
+        assertEquals(new BigDecimal("10.1234"), result.get("completedAreaHa"));
+        assertEquals(true, result.get("isResultsReportableInd"));
+        assertEquals(false, result.get("outstandingObligationsInd"));
+        assertEquals("Completed early", result.get("activityComment"));
+        assertEquals(true, result.get("isSpatialAddedInd"));
+        assertEquals(1, result.get("revisionCount"));
+        assertEquals("tester", result.get("createUser"));
+        assertEquals(now, result.get("createDate"));
+        assertEquals("tester", result.get("updateUser"));
+        assertEquals(now, result.get("updateDate"));
     }
 
 }

@@ -151,7 +151,7 @@ describe('ProjectDetailsComponent', () => {
     
       // Provide the service to the component
       component['projectService'] = projectServiceSpy;
-      spyOn(L, 'map').and.returnValue(mapSpy);
+      spyOn(L, 'map').and.returnValue(mapSpy as unknown as L.Map);
       spyOn(L, 'marker').and.returnValue(markerSpy);
       spyOn(L, 'geoJSON').and.returnValue(geoJsonLayerSpy);
     

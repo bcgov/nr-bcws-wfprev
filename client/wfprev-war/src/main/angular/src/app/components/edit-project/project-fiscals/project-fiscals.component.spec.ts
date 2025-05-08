@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { ProjectFiscalsComponent } from './project-fiscals.component';
 import { ActivatedRoute } from '@angular/router';
 import { Observable, of, throwError } from 'rxjs';
@@ -105,7 +105,7 @@ describe('ProjectFiscalsComponent', () => {
     expect(mockCodeTableServices.fetchCodeTable).toHaveBeenCalledTimes(3);
   });
 
-  it('should load project fiscals', () => {
+  it('should load project fiscals', fakeAsync(() => {
     // ✅ Ensure the mock returns a valid response
     mockProjectService.getProjectFiscalsByProjectGuid.and.returnValue(
       of({
@@ -118,11 +118,12 @@ describe('ProjectFiscalsComponent', () => {
     );
   
     component.loadProjectFiscals();
+    tick();
   
     expect(mockProjectService.getProjectFiscalsByProjectGuid).toHaveBeenCalledWith('test-guid');
     expect(component.projectFiscals.length).toBeGreaterThan(0); // ✅ Should now have at least one fiscal
     expect(component.fiscalForms.length).toBe(component.projectFiscals.length); // ✅ Forms should match project fiscals count
-  });
+  }));
   
 
   it('should handle errors in loading project fiscals', () => {
@@ -187,7 +188,7 @@ describe('ProjectFiscalsComponent', () => {
   });
   
 
-  it('should handle errors when updating an existing fiscal', () => {
+  it('should handle errors when updating an existing fiscal', fakeAsync(() => {
     // ✅ Ensure projectFiscals is initialized before setting properties
     component.projectFiscals = [{ projectPlanFiscalGuid: 'existing-guid' }];
   
@@ -200,7 +201,7 @@ describe('ProjectFiscalsComponent', () => {
       'OK',
       { duration: 5000, panelClass: 'snackbar-error' } // ✅ Ensure correct error message is tested
     );
-  });
+  }));
 
   it('should clear all fields for a new fiscal entry on cancel', () => {
     component.projectFiscals = [{ fiscalYear: '', projectFiscalName: '', projectGuid: 'test-guid' }];
