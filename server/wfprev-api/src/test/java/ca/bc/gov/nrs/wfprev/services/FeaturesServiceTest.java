@@ -638,11 +638,12 @@ class FeaturesServiceTest {
     @Test
     void testCreateActivityProperties() {
         UUID guid = UUID.randomUUID();
+        UUID fiscalGuid = UUID.randomUUID();
         Date now = new Date();
 
         ActivityEntity activity = ActivityEntity.builder()
                 .activityGuid(guid)
-                .projectPlanFiscalGuid(UUID.randomUUID())
+                .projectPlanFiscalGuid(fiscalGuid)
                 .activityName("Tree Planting")
                 .activityDescription("Planting 500 trees")
                 .activityStartDate(now)
@@ -665,11 +666,24 @@ class FeaturesServiceTest {
         Map<String, Object> result = featuresService.createActivityProperties(activity);
 
         assertEquals(guid, result.get("activityGuid"));
+        assertEquals(fiscalGuid, result.get("projectPlanFiscalGuid"));
         assertEquals("Tree Planting", result.get("activityName"));
+        assertEquals("Planting 500 trees", result.get("activityDescription"));
+        assertEquals(now, result.get("activityStartDate"));
+        assertEquals(now, result.get("activityEndDate"));
         assertEquals(new BigDecimal("15000.50"), result.get("plannedSpendAmount"));
+        assertEquals(new BigDecimal("12.3456"), result.get("plannedTreatmentAreaHa"));
+        assertEquals(new BigDecimal("13000.00"), result.get("reportedSpendAmount"));
+        assertEquals(new BigDecimal("10.1234"), result.get("completedAreaHa"));
         assertEquals(true, result.get("isResultsReportableInd"));
+        assertEquals(false, result.get("outstandingObligationsInd"));
+        assertEquals("Completed early", result.get("activityComment"));
+        assertEquals(true, result.get("isSpatialAddedInd"));
+        assertEquals(1, result.get("revisionCount"));
         assertEquals("tester", result.get("createUser"));
         assertEquals(now, result.get("createDate"));
+        assertEquals("tester", result.get("updateUser"));
+        assertEquals(now, result.get("updateDate"));
     }
 
 }

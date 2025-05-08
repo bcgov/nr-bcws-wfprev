@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, tick } from '@angular/core/testing';
 import { ProjectFiscalsComponent } from './project-fiscals.component';
 import { ActivatedRoute } from '@angular/router';
 import { Observable, of, throwError } from 'rxjs';
@@ -118,6 +118,7 @@ describe('ProjectFiscalsComponent', () => {
     );
   
     component.loadProjectFiscals();
+    tick();
   
     expect(mockProjectService.getProjectFiscalsByProjectGuid).toHaveBeenCalledWith('test-guid');
     expect(component.projectFiscals.length).toBeGreaterThan(0); // ✅ Should now have at least one fiscal
