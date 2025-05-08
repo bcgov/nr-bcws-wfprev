@@ -224,7 +224,7 @@ ngOnInit(): void {
 
   setupSearchDebounce(): void {
     this.searchTextChanged
-      .pipe(debounceTime(1000)) // 1s debounce time
+      .pipe(debounceTime(3000)) // 3s debounce time
       .subscribe((value: string) => {
         this.searchText = value;
         this.onSearch();

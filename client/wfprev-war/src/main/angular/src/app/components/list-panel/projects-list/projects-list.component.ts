@@ -267,6 +267,7 @@ export class ProjectsListComponent implements OnInit {
   // Temporary function, to be replaced with SMK layer config when /features endpoint exists in the API
   loadCoordinatesOnMap() {
     if (this.displayedProjects?.length > 0) {
+      debugger
       const coords = this.displayedProjects
         .filter((project: any) => project.latitude != null && project.longitude != null) // Check if both latitude and longitude are defined and not null
         .map((project: any) => ({

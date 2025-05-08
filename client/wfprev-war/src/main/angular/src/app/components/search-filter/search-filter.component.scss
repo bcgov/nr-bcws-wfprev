@@ -17,8 +17,8 @@
 }
 
 .field.search-input {
-  width: 312px;
-  flex-basis: 312px;
+  width: 300px;
+  flex-basis: 300px;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
@@ -68,6 +68,11 @@
   font-style: normal;
   font-weight: 400;
   line-height: normal;
+}
+
+.textsearch{
+  width: 400px !important;
+  flex-basis: 400px !important;
 }
 
 .filter-search-input{

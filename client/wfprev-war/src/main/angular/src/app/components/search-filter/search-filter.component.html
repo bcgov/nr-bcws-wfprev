@@ -1,7 +1,7 @@
 <div class="search-filter-bar">
   <div class="filter-row">
     <!-- Search input -->
-    <div class="field search-input">
+    <div class="field search-input textsearch">
       <mat-label class="label">Search</mat-label>
       <input class="search-input" aria-label="Search"
         [(ngModel)]="searchText"
@@ -95,7 +95,20 @@
         </mat-select>
       </mat-form-field>
     </div>
-    
+
+    <div class="field search-input filter-search-input">
+      <mat-label class="label">Fiscal Status</mat-label>
+      <mat-form-field appearance="fill" class="filter-item">
+        <mat-select [(ngModel)]="selectedFiscalStatus" placeholder="Select"
+                    (selectionChange)="onSelectAll($event,'selectedFiscalStatus', fiscalStatusOptions)"
+                    multiple>
+          <mat-option *ngFor="let option of fiscalStatusOptions" [value]="option.value">
+            {{ option.label }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+        
 
     <!-- Reset button -->
     <button mat-stroked-button class="filter-item reset-button" (click)="onReset()">Reset</button>
