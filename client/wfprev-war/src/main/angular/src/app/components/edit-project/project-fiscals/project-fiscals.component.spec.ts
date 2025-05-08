@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed, tick } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { ProjectFiscalsComponent } from './project-fiscals.component';
 import { ActivatedRoute } from '@angular/router';
 import { Observable, of, throwError } from 'rxjs';
@@ -105,7 +105,7 @@ describe('ProjectFiscalsComponent', () => {
     expect(mockCodeTableServices.fetchCodeTable).toHaveBeenCalledTimes(3);
   });
 
-  it('should load project fiscals', () => {
+  it('should load project fiscals', fakeAsync(() => {
     // ✅ Ensure the mock returns a valid response
     mockProjectService.getProjectFiscalsByProjectGuid.and.returnValue(
       of({
@@ -123,7 +123,7 @@ describe('ProjectFiscalsComponent', () => {
     expect(mockProjectService.getProjectFiscalsByProjectGuid).toHaveBeenCalledWith('test-guid');
     expect(component.projectFiscals.length).toBeGreaterThan(0); // ✅ Should now have at least one fiscal
     expect(component.fiscalForms.length).toBe(component.projectFiscals.length); // ✅ Forms should match project fiscals count
-  });
+  }));
   
 
   it('should handle errors in loading project fiscals', () => {
