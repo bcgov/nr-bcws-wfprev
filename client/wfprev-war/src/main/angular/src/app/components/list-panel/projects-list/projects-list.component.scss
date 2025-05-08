@@ -16,6 +16,7 @@
     gap: 12px;
     position: relative;
     background: #fff;
+    flex-wrap: wrap;
 }
   
 .sort-dropdown {
@@ -163,7 +164,7 @@
       }
 
       .expansion-panel-header{
-        min-height: 115px;
+        height: 120px;
         padding: 0;
       }
 
@@ -171,6 +172,7 @@
         font-family: var(--wf-font-family-main) !important;
         background-color: inherit;
         display: flex;
+        flex-wrap: wrap;
 
         .indicator-icon{
           width: 17px;
@@ -362,6 +364,20 @@
       }
     }
   }
+}
+
+.fiscal-action-container {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.fiscal-range {
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 700;
+  color: #474543;
+  font-family: var(--wf-font-family-main);
 }
 
 .divider{

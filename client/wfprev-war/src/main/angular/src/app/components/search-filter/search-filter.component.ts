@@ -9,7 +9,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { SharedCodeTableService } from 'src/app/services/shared-code-table.service';
 import { CodeTableServices } from 'src/app/services/code-table-services';
 import { SharedService } from 'src/app/services/shared-service';
-
+import { Subject } from 'rxjs';
+import { debounceTime } from 'rxjs/operators';
 @Component({
   selector: 'app-search-filter',
   standalone: true,
@@ -34,67 +35,8 @@ export class SearchFilterComponent implements OnInit {
     private sharedService: SharedService
   ) {}
 
-  ngOnInit(): void {
-    this.generateFiscalYearOptions();
-
-    this.sharedCodeTableService.codeTables$.subscribe((tables) => {
-      if (!tables) return;
-
-      this.businessAreaOptions = this.prependAllAndSort(
-        (tables.businessAreas ?? []).map((item: any) => ({
-          label: item.programAreaName,
-          value: item.programAreaGuid
-        }))
-      );
-
-      this.forestRegionOptions = this.prependAllAndSort(
-        (tables.forestRegions ?? []).map((item: any) => ({
-          label: item.orgUnitName,
-          value: item.orgUnitId
-        }))
-      );
-
-      this.rawForestDistricts = tables.forestDistricts ?? [];
-
-      this.forestDistrictOptions = this.prependAllAndSort(
-        this.rawForestDistricts.map((item: any) => ({
-          label: item.orgUnitName,
-          value: item.orgUnitId
-        }))
-      );
-
-      this.activityOptions = this.prependAllAndSort(
-        (tables.activityCategoryCode ?? []).map((item: any) => ({
-          label: item.description,
-          value: item.activityCategoryCode
-        }))
-      );
-
-      this.fiscalStatusOptions = this.prependAllAndSort(
-        (tables.planFiscalStatusCode ?? []).map((item: any) => ({
-          label: item.description,
-          value: item.planFiscalStatusCode
-        }))
-      );
-    });
-
-    this.codeTableService.fetchFireCentres().subscribe({
-      next: (data) => {
-        const features = data?.features ?? [];
-        this.fireCentreOptions = this.prependAllAndSort(
-          features.map((f: any) => ({
-            label: f.properties.MOF_FIRE_CENTRE_NAME,
-            value: f.properties.MOF_FIRE_CENTRE_ID
-          }))
-        );
-      },
-      error: () => {
-        this.fireCentreOptions = [];
-      }
-    });
-  }
-
   searchText: string = '';
+  searchTextChanged: Subject<string> = new Subject<string>();
 
   businessAreaOptions: { label: string, value: any }[] = [];
   fiscalYearOptions: { label: string, value: string }[] = [];
@@ -111,6 +53,13 @@ export class SearchFilterComponent implements OnInit {
   selectedForestDistrict: string[] = [];
   selectedFireCentre: string[] = [];
   selectedFiscalStatus: string[] = [];
+
+ngOnInit(): void {
+  this.generateFiscalYearOptions();
+  this.setupCodeTableSubscription();
+  this.loadFireCentres();
+  this.setupSearchDebounce();
+}
 
   emitFilters() {
     this.sharedService.updateFilters({
@@ -213,6 +162,78 @@ export class SearchFilterComponent implements OnInit {
     this.emitFilters();
   }
   
-  
+  setupCodeTableSubscription(): void {
+    this.sharedCodeTableService.codeTables$.subscribe((tables) => {
+      if (!tables) return;
+
+      this.businessAreaOptions = this.prependAllAndSort(
+        (tables.businessAreas ?? []).map((item: any) => ({
+          label: item.programAreaName,
+          value: item.programAreaGuid
+        }))
+      );
+
+      this.forestRegionOptions = this.prependAllAndSort(
+        (tables.forestRegions ?? []).map((item: any) => ({
+          label: item.orgUnitName,
+          value: item.orgUnitId
+        }))
+      );
+
+      this.rawForestDistricts = tables.forestDistricts ?? [];
+
+      this.forestDistrictOptions = this.prependAllAndSort(
+        this.rawForestDistricts.map((item: any) => ({
+          label: item.orgUnitName,
+          value: item.orgUnitId
+        }))
+      );
+
+      this.activityOptions = this.prependAllAndSort(
+        (tables.activityCategoryCode ?? []).map((item: any) => ({
+          label: item.description,
+          value: item.activityCategoryCode
+        }))
+      );
+
+      this.fiscalStatusOptions = this.prependAllAndSort(
+        (tables.planFiscalStatusCode ?? []).map((item: any) => ({
+          label: item.description,
+          value: item.planFiscalStatusCode
+        }))
+      );
+    });
+  }
+
+  loadFireCentres(): void {
+    this.codeTableService.fetchFireCentres().subscribe({
+      next: (data) => {
+        const features = data?.features ?? [];
+        this.fireCentreOptions = this.prependAllAndSort(
+          features.map((f: any) => ({
+            label: f.properties.MOF_FIRE_CENTRE_NAME,
+            value: f.properties.MOF_FIRE_CENTRE_ID
+          }))
+        );
+      },
+      error: () => {
+        this.fireCentreOptions = [];
+      }
+    });
+  }
+
+  setupSearchDebounce(): void {
+    this.searchTextChanged
+      .pipe(debounceTime(1000)) // 1s debounce time
+      .subscribe((value: string) => {
+        this.searchText = value;
+        this.onSearch();
+      });
+  }
+
+  clearSearch(): void{
+    this.searchText = '';
+    this.emitFilters();
+  }
   
 }

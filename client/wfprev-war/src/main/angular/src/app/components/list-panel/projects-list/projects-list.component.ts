@@ -30,6 +30,7 @@ export class ProjectsListComponent implements OnInit {
   bcParksSectionCode: any[] = [];
   planFiscalStatusCode: any[] = [];
   activityCategoryCode: any[] = [];
+  projectTypeCode: any[] = [];
   markerPolygons: Map<L.Marker, L.Polygon[]> = new Map();
   activeMarker: L.Marker | null = null;
   getActiveMap = getActiveMap
@@ -83,7 +84,8 @@ export class ProjectsListComponent implements OnInit {
       { name: 'bcParksRegionCodes', property: 'bcParksRegions', embeddedKey: 'bcParksRegionCode' },
       { name: 'bcParksSectionCodes', property: 'bcParksSections', embeddedKey: 'bcParksSectionCode' },
       { name: 'planFiscalStatusCodes', property: 'planFiscalStatusCode', embeddedKey: 'planFiscalStatusCode' },
-      { name: 'activityCategoryCodes', property: 'activityCategoryCode', embeddedKey: 'activityCategoryCode' }
+      { name: 'activityCategoryCodes', property: 'activityCategoryCode', embeddedKey: 'activityCategoryCode' },
+      { name: 'projectTypeCodes', property: 'projectTypeCode', embeddedKey: 'projectTypeCode' }
 
     ];
     const loaded: any = {};
@@ -108,9 +110,11 @@ export class ProjectsListComponent implements OnInit {
             this.planFiscalStatusCode = data._embedded.planFiscalStatusCode;
           } else if (table.name === 'activityCategoryCodes') {
             this.activityCategoryCode = data._embedded.activityCategoryCode;
+          } else if (table.name === 'projectTypeCodes') {
+            this.projectTypeCode = data._embedded.projectTypeCode;
           }
 
-          const items = data._embedded?.[table.embeddedKey] || [];
+          const items = data._embedded?.[table.embeddedKey] ?? [];
           this[table.property] = items;
           loaded[table.property] = items;
   
@@ -137,6 +141,8 @@ export class ProjectsListComponent implements OnInit {
           } else if (table.name === 'planFiscalStatusCodes') {
             this.planFiscalStatusCode = [];
           } else if (table.name === 'activityCategoryCodes') {
+            this.activityCategoryCode = [];
+          } else if (table.name === 'projectTypeCodes') {
             this.activityCategoryCode = [];
           }
 
@@ -228,6 +234,10 @@ export class ProjectsListComponent implements OnInit {
       case 'activityCategoryCode':
         entry = table.find((item: any) => item.activityCategoryCode === code);
         return entry ? entry.description : '';
+
+      case 'projectTypeCode':
+          entry = table.find((item: any) => item.projectTypeCode === code);
+          return entry ? entry.description : '';
       default:
         return '';
     }
@@ -257,7 +267,6 @@ export class ProjectsListComponent implements OnInit {
   // Temporary function, to be replaced with SMK layer config when /features endpoint exists in the API
   loadCoordinatesOnMap() {
     if (this.displayedProjects?.length > 0) {
-      debugger
       const coords = this.displayedProjects
         .filter((project: any) => project.latitude != null && project.longitude != null) // Check if both latitude and longitude are defined and not null
         .map((project: any) => ({
@@ -473,5 +482,27 @@ export class ProjectsListComponent implements OnInit {
     const nextYear = (fiscalYear + 1) % 100;
     return `${fiscalYear}/${nextYear.toString().padStart(2, '0')}`;
   }
+
+  getProjectFiscalYearRange(project: any): string | null {
+    if (!project?.projectFiscals?.length) return null;
+  
+    const uniqueYears = Array.from(
+      new Set(project.projectFiscals.map((f: any) => f.fiscalYear))
+    ).filter((y): y is number => typeof y === 'number').sort((a, b) => a - b);
+  
+    if (uniqueYears.length === 0) return null;
+  
+    const formatYear = (year: number): string => {
+      const next = (year + 1) % 100;
+      return `${year}/${next.toString().padStart(2, '0')}`;
+    };
+  
+    if (uniqueYears.length === 1) {
+      return formatYear(uniqueYears[0]);
+    } else {
+      return `${formatYear(uniqueYears[0])} - ${formatYear(uniqueYears[uniqueYears.length - 1])}`;
+    }
+  }
+  
   
 }
