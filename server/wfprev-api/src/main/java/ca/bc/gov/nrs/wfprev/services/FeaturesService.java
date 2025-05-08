@@ -45,6 +45,13 @@ public class FeaturesService implements CommonService {
     private static final String ACTIVITY_CATEGORY_CODE = "activityCategoryCode";
     private static final String PLAN_FISCAL_STATUS_CODE = "planFiscalStatusCode";
     private static final String PROJECT_GUID = "projectGuid";
+    private static final String PROJECT_PLAN_FISCAL_GUID = "projectPlanFiscalGuid";
+    private static final String CREATE_USER = "createUser";
+    private static final String UPDATE_USER = "updateUser";
+    private static final String CREATE_DATE = "createDate";
+    private static final String UPDATE_DATE = "updateDate";
+    private static final String REVISION_COUNT = "revisionCount";
+
 
     public Map<String, Object> getAllFeatures(FeatureQueryParams params) throws ServiceException {
         try {
@@ -298,7 +305,7 @@ public class FeaturesService implements CommonService {
         CriteriaQuery<ActivityEntity> query = cb.createQuery(ActivityEntity.class);
         Root<ActivityEntity> activity = query.from(ActivityEntity.class);
 
-        query.where(cb.equal(activity.get("projectPlanFiscalGuid"), projectFiscalGuid));
+        query.where(cb.equal(activity.get(PROJECT_PLAN_FISCAL_GUID), projectFiscalGuid));
 
         return entityManager.createQuery(query).getResultList();
     }
@@ -319,7 +326,7 @@ public class FeaturesService implements CommonService {
         Root<ProjectBoundaryEntity> boundary = query.from(ProjectBoundaryEntity.class);
 
         query.where(cb.equal(boundary.get(PROJECT_GUID), projectGuid));
-        query.orderBy(cb.desc(boundary.get("updateDate")));
+        query.orderBy(cb.desc(boundary.get(UPDATE_DATE)));
 
         List<ProjectBoundaryEntity> results = entityManager.createQuery(query)
                 .setMaxResults(1)  // Only get the first result (most recent)
@@ -330,7 +337,7 @@ public class FeaturesService implements CommonService {
 
     private Map<String, Object> createProjectProperties(ProjectEntity project) {
         Map<String, Object> properties = new HashMap<>();
-        properties.put("projectGuid", project.getProjectGuid());
+        properties.put(PROJECT_GUID, project.getProjectGuid());
         properties.put("projectTypeCode", project.getProjectTypeCode() != null ? project.getProjectTypeCode().getProjectTypeCode() : null);
         properties.put("projectNumber", project.getProjectNumber());
         properties.put("siteUnitName", project.getSiteUnitName());
@@ -358,12 +365,12 @@ public class FeaturesService implements CommonService {
         properties.put("latitude", project.getLatitude());
         properties.put("longitude", project.getLongitude());
         properties.put("lastProgressUpdateTimestamp", project.getLastProgressUpdateTimestamp());
-        properties.put("revisionCount", project.getRevisionCount());
+        properties.put(REVISION_COUNT, project.getRevisionCount());
         properties.put("projectStatusCode", project.getProjectStatusCode() != null ? project.getProjectStatusCode().getProjectStatusCode() : null);
-        properties.put("createUser", project.getCreateUser());
-        properties.put("createDate", project.getCreateDate());
-        properties.put("updateUser", project.getUpdateUser());
-        properties.put("updateDate", project.getUpdateDate());
+        properties.put(CREATE_USER, project.getCreateUser());
+        properties.put(CREATE_DATE, project.getCreateDate());
+        properties.put(UPDATE_USER, project.getUpdateUser());
+        properties.put(UPDATE_DATE, project.getUpdateDate());
         properties.put("primaryObjectiveTypeCode", project.getPrimaryObjectiveTypeCode() != null ? project.getPrimaryObjectiveTypeCode().getObjectiveTypeCode() : null);
         properties.put("secondaryObjectiveTypeCode", project.getSecondaryObjectiveTypeCode() != null ? project.getSecondaryObjectiveTypeCode().getObjectiveTypeCode() : null);
         properties.put("tertiaryObjectiveTypeCode", project.getTertiaryObjectiveTypeCode() != null ? project.getTertiaryObjectiveTypeCode().getObjectiveTypeCode() : null);
@@ -374,7 +381,7 @@ public class FeaturesService implements CommonService {
 
     private Map<String, Object> createProjectFiscalProperties(ProjectFiscalEntity fiscal) {
         Map<String, Object> props = new HashMap<>();
-        props.put("projectPlanFiscalGuid", fiscal.getProjectPlanFiscalGuid());
+        props.put(PROJECT_PLAN_FISCAL_GUID, fiscal.getProjectPlanFiscalGuid());
         props.put(PROJECT_GUID, fiscal.getProject().getProjectGuid());
         props.put(ACTIVITY_CATEGORY_CODE, fiscal.getActivityCategoryCode());
         props.put(FISCAL_YEAR, fiscal.getFiscalYear());
@@ -423,11 +430,11 @@ public class FeaturesService implements CommonService {
         props.put("delayRationale", fiscal.getDelayRationale());
         props.put("abandonedRationale", fiscal.getAbandonedRationale());
         props.put("lastProgressUpdateTimestamp", fiscal.getLastProgressUpdateTimestamp());
-        props.put("revisionCount", fiscal.getRevisionCount());
-        props.put("createUser", fiscal.getCreateUser());
-        props.put("createDate", fiscal.getCreateDate());
-        props.put("updateUser", fiscal.getUpdateUser());
-        props.put("updateDate", fiscal.getUpdateDate());
+        props.put(REVISION_COUNT, fiscal.getRevisionCount());
+        props.put(CREATE_USER, fiscal.getCreateUser());
+        props.put(CREATE_DATE, fiscal.getCreateDate());
+        props.put(UPDATE_USER, fiscal.getUpdateUser());
+        props.put(UPDATE_DATE, fiscal.getUpdateDate());
 
         return props;
     }
@@ -435,7 +442,7 @@ public class FeaturesService implements CommonService {
     Map<String, Object> createActivityProperties(ActivityEntity activity) {
         Map<String, Object> map = new HashMap<>();
         map.put("activityGuid", activity.getActivityGuid());
-        map.put("projectPlanFiscalGuid", activity.getProjectPlanFiscalGuid());
+        map.put(PROJECT_PLAN_FISCAL_GUID, activity.getProjectPlanFiscalGuid());
         map.put("activityStatusCode", activity.getActivityStatusCode() != null ? activity.getActivityStatusCode().getActivityStatusCode() : null);
         map.put("silvicultureBaseGuid", activity.getSilvicultureBaseGuid());
         map.put("silvicultureTechniqueGuid", activity.getSilvicultureTechniqueGuid());
@@ -455,11 +462,11 @@ public class FeaturesService implements CommonService {
         map.put("outstandingObligationsInd", activity.getOutstandingObligationsInd());
         map.put("activityComment", activity.getActivityComment());
         map.put("isSpatialAddedInd", activity.getIsSpatialAddedInd());
-        map.put("revisionCount", activity.getRevisionCount());
-        map.put("createUser", activity.getCreateUser());
-        map.put("createDate", activity.getCreateDate());
-        map.put("updateUser", activity.getUpdateUser());
-        map.put("updateDate", activity.getUpdateDate());
+        map.put(REVISION_COUNT, activity.getRevisionCount());
+        map.put(CREATE_USER, activity.getCreateUser());
+        map.put(CREATE_DATE, activity.getCreateDate());
+        map.put(UPDATE_USER, activity.getUpdateUser());
+        map.put(UPDATE_DATE, activity.getUpdateDate());
         return map;
     }
 
