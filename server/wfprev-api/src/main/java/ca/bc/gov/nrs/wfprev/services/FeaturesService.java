@@ -45,6 +45,13 @@ public class FeaturesService implements CommonService {
     private static final String ACTIVITY_CATEGORY_CODE = "activityCategoryCode";
     private static final String PLAN_FISCAL_STATUS_CODE = "planFiscalStatusCode";
     private static final String PROJECT_GUID = "projectGuid";
+    private static final String PROJECT_PLAN_FISCAL_GUID = "projectPlanFiscalGuid";
+    private static final String CREATE_USER = "createUser";
+    private static final String UPDATE_USER = "updateUser";
+    private static final String CREATE_DATE = "createDate";
+    private static final String UPDATE_DATE = "updateDate";
+    private static final String REVISION_COUNT = "revisionCount";
+
 
     public Map<String, Object> getAllFeatures(FeatureQueryParams params) throws ServiceException {
         try {
@@ -99,7 +106,7 @@ public class FeaturesService implements CommonService {
         if (!activities.isEmpty()) {
             List<Map<String, Object>> activityMapList = new ArrayList<>();
             for (ActivityEntity activity : activities) {
-                Map<String, Object> activityMap = new HashMap<>();
+                Map<String, Object> activityMap = createActivityProperties(activity);
                 addActivityBoundaries(activity, activityMap);
                 activityMapList.add(activityMap);
             }
@@ -298,7 +305,7 @@ public class FeaturesService implements CommonService {
         CriteriaQuery<ActivityEntity> query = cb.createQuery(ActivityEntity.class);
         Root<ActivityEntity> activity = query.from(ActivityEntity.class);
 
-        query.where(cb.equal(activity.get("projectPlanFiscalGuid"), projectFiscalGuid));
+        query.where(cb.equal(activity.get(PROJECT_PLAN_FISCAL_GUID), projectFiscalGuid));
 
         return entityManager.createQuery(query).getResultList();
     }
@@ -319,7 +326,7 @@ public class FeaturesService implements CommonService {
         Root<ProjectBoundaryEntity> boundary = query.from(ProjectBoundaryEntity.class);
 
         query.where(cb.equal(boundary.get(PROJECT_GUID), projectGuid));
-        query.orderBy(cb.desc(boundary.get("updateDate")));
+        query.orderBy(cb.desc(boundary.get(UPDATE_DATE)));
 
         List<ProjectBoundaryEntity> results = entityManager.createQuery(query)
                 .setMaxResults(1)  // Only get the first result (most recent)
@@ -330,33 +337,137 @@ public class FeaturesService implements CommonService {
 
     private Map<String, Object> createProjectProperties(ProjectEntity project) {
         Map<String, Object> properties = new HashMap<>();
-        properties.put("projectName", project.getProjectName());
         properties.put(PROJECT_GUID, project.getProjectGuid());
+        properties.put("projectTypeCode", project.getProjectTypeCode() != null ? project.getProjectTypeCode().getProjectTypeCode() : null);
         properties.put("projectNumber", project.getProjectNumber());
+        properties.put("siteUnitName", project.getSiteUnitName());
+        properties.put("forestAreaCode", project.getForestAreaCode() != null ? project.getForestAreaCode().getForestAreaCode() : null);
+        properties.put("generalScopeCode", project.getGeneralScopeCode() != null ? project.getGeneralScopeCode().getGeneralScopeCode() : null);
         properties.put("programAreaGuid", project.getProgramAreaGuid());
         properties.put("forestRegionOrgUnitId", project.getForestRegionOrgUnitId());
         properties.put("forestDistrictOrgUnitId", project.getForestDistrictOrgUnitId());
         properties.put("fireCentreOrgUnitId", project.getFireCentreOrgUnitId());
+        properties.put("bcParksRegionOrgUnitId", project.getBcParksRegionOrgUnitId());
+        properties.put("bcParksSectionOrgUnitId", project.getBcParksSectionOrgUnitId());
+        properties.put("projectName", project.getProjectName());
         properties.put("projectLead", project.getProjectLead());
+        properties.put("projectLeadEmailAddress", project.getProjectLeadEmailAddress());
         properties.put("projectDescription", project.getProjectDescription());
         properties.put("closestCommunityName", project.getClosestCommunityName());
-        properties.put("siteUnitName", project.getSiteUnitName());
+        properties.put("totalEstimatedCostAmount", project.getTotalEstimatedCostAmount());
+        properties.put("totalForecastAmount", project.getTotalForecastAmount());
+        properties.put("totalPlannedProjectSizeHa", project.getTotalPlannedProjectSizeHa());
+        properties.put("totalPlannedCostPerHectare", project.getTotalPlannedCostPerHectare());
+        properties.put("totalActualAmount", project.getTotalActualAmount());
+        properties.put("totalActualProjectSizeHa", project.getTotalActualProjectSizeHa());
+        properties.put("totalActualCostPerHectareAmount", project.getTotalActualCostPerHectareAmount());
+        properties.put("isMultiFiscalYearProj", project.getIsMultiFiscalYearProj());
+        properties.put("latitude", project.getLatitude());
+        properties.put("longitude", project.getLongitude());
+        properties.put("lastProgressUpdateTimestamp", project.getLastProgressUpdateTimestamp());
+        properties.put(REVISION_COUNT, project.getRevisionCount());
+        properties.put("projectStatusCode", project.getProjectStatusCode() != null ? project.getProjectStatusCode().getProjectStatusCode() : null);
+        properties.put(CREATE_USER, project.getCreateUser());
+        properties.put(CREATE_DATE, project.getCreateDate());
+        properties.put(UPDATE_USER, project.getUpdateUser());
+        properties.put(UPDATE_DATE, project.getUpdateDate());
+        properties.put("primaryObjectiveTypeCode", project.getPrimaryObjectiveTypeCode() != null ? project.getPrimaryObjectiveTypeCode().getObjectiveTypeCode() : null);
+        properties.put("secondaryObjectiveTypeCode", project.getSecondaryObjectiveTypeCode() != null ? project.getSecondaryObjectiveTypeCode().getObjectiveTypeCode() : null);
+        properties.put("tertiaryObjectiveTypeCode", project.getTertiaryObjectiveTypeCode() != null ? project.getTertiaryObjectiveTypeCode().getObjectiveTypeCode() : null);
+        properties.put("secondaryObjectiveRationale", project.getSecondaryObjectiveRationale());
 
         return properties;
     }
 
     private Map<String, Object> createProjectFiscalProperties(ProjectFiscalEntity fiscal) {
         Map<String, Object> props = new HashMap<>();
-        props.put("projectFiscalGuid", fiscal.getProjectPlanFiscalGuid());
+        props.put(PROJECT_PLAN_FISCAL_GUID, fiscal.getProjectPlanFiscalGuid());
         props.put(PROJECT_GUID, fiscal.getProject().getProjectGuid());
-        props.put("projectFiscalName", fiscal.getProjectFiscalName());
-        props.put(PLAN_FISCAL_STATUS_CODE, fiscal.getPlanFiscalStatusCode());
-        props.put(FISCAL_YEAR, fiscal.getFiscalYear());
         props.put(ACTIVITY_CATEGORY_CODE, fiscal.getActivityCategoryCode());
+        props.put(FISCAL_YEAR, fiscal.getFiscalYear());
+        props.put("ancillaryFundingSourceGuid", fiscal.getAncillaryFundingSourceGuid());
+        props.put("projectPlanStatusCode", fiscal.getProjectPlanStatusCode());
+        props.put(PLAN_FISCAL_STATUS_CODE, fiscal.getPlanFiscalStatusCode());
+        props.put("endorsementCode", fiscal.getEndorsementCode());
+        props.put("projectFiscalName", fiscal.getProjectFiscalName());
+        props.put("projectFiscalDescription", fiscal.getProjectFiscalDescription());
+        props.put("businessAreaComment", fiscal.getBusinessAreaComment());
+        props.put("estimatedClwrrAllocAmount", fiscal.getEstimatedClwrrAllocAmount());
+        props.put("totalCostEstimateAmount", fiscal.getTotalCostEstimateAmount());
+        props.put("cfsProjectCode", fiscal.getCfsProjectCode());
+        props.put("fiscalForecastAmount", fiscal.getFiscalForecastAmount());
+        props.put("fiscalAncillaryFundAmount", fiscal.getFiscalAncillaryFundAmount());
+        props.put("fiscalPlannedProjectSizeHa", fiscal.getFiscalPlannedProjectSizeHa());
+        props.put("fiscalPlannedCostPerHaAmt", fiscal.getFiscalPlannedCostPerHaAmt());
+        props.put("fiscalReportedSpendAmount", fiscal.getFiscalReportedSpendAmount());
+        props.put("fiscalActualAmount", fiscal.getFiscalActualAmount());
+        props.put("fiscalCompletedSizeHa", fiscal.getFiscalCompletedSizeHa());
+        props.put("fiscalActualCostPerHaAmt", fiscal.getFiscalActualCostPerHaAmt());
+        props.put("firstNationsDelivPartInd", fiscal.getFirstNationsDelivPartInd());
+        props.put("firstNationsEngagementInd", fiscal.getFirstNationsEngagementInd());
         props.put("firstNationsPartner", fiscal.getFirstNationsPartner());
         props.put("otherPartner", fiscal.getOtherPartner());
+        props.put("resultsNumber", fiscal.getResultsNumber());
+        props.put("resultsOpeningId", fiscal.getResultsOpeningId());
+        props.put("resultsContactEmail", fiscal.getResultsContactEmail());
+        props.put("submittedByName", fiscal.getSubmittedByName());
+        props.put("submittedByUserGuid", fiscal.getSubmittedByUserGuid());
+        props.put("submittedByUserUserid", fiscal.getSubmittedByUserUserid());
+        props.put("submissionTimestamp", fiscal.getSubmissionTimestamp());
+        props.put("endorsementEvalTimestamp", fiscal.getEndorsementEvalTimestamp());
+        props.put("endorserName", fiscal.getEndorserName());
+        props.put("endorserUserGuid", fiscal.getEndorserUserGuid());
+        props.put("endorserUserUserid", fiscal.getEndorserUserUserid());
+        props.put("endorsementTimestamp", fiscal.getEndorsementTimestamp());
+        props.put("endorsementComment", fiscal.getEndorsementComment());
+        props.put("isApprovedInd", fiscal.getIsApprovedInd());
+        props.put("approverName", fiscal.getApproverName());
+        props.put("approverUserGuid", fiscal.getApproverUserGuid());
+        props.put("approverUserUserid", fiscal.getApproverUserUserid());
+        props.put("approvedTimestamp", fiscal.getApprovedTimestamp());
+        props.put("accomplishmentsComment", fiscal.getAccomplishmentsComment());
+        props.put("isDelayedInd", fiscal.getIsDelayedInd());
+        props.put("delayRationale", fiscal.getDelayRationale());
+        props.put("abandonedRationale", fiscal.getAbandonedRationale());
+        props.put("lastProgressUpdateTimestamp", fiscal.getLastProgressUpdateTimestamp());
+        props.put(REVISION_COUNT, fiscal.getRevisionCount());
+        props.put(CREATE_USER, fiscal.getCreateUser());
+        props.put(CREATE_DATE, fiscal.getCreateDate());
+        props.put(UPDATE_USER, fiscal.getUpdateUser());
+        props.put(UPDATE_DATE, fiscal.getUpdateDate());
 
         return props;
+    }
+
+    Map<String, Object> createActivityProperties(ActivityEntity activity) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("activityGuid", activity.getActivityGuid());
+        map.put(PROJECT_PLAN_FISCAL_GUID, activity.getProjectPlanFiscalGuid());
+        map.put("activityStatusCode", activity.getActivityStatusCode() != null ? activity.getActivityStatusCode().getActivityStatusCode() : null);
+        map.put("silvicultureBaseGuid", activity.getSilvicultureBaseGuid());
+        map.put("silvicultureTechniqueGuid", activity.getSilvicultureTechniqueGuid());
+        map.put("silvicultureMethodGuid", activity.getSilvicultureMethodGuid());
+        map.put("riskRatingCode", activity.getRiskRatingCode() != null ? activity.getRiskRatingCode().getRiskRatingCode() : null);
+        map.put("contractPhaseCode", activity.getContractPhaseCode() != null ? activity.getContractPhaseCode().getContractPhaseCode() : null);
+        map.put("activityFundingSourceGuid", activity.getActivityFundingSourceGuid());
+        map.put("activityName", activity.getActivityName());
+        map.put("activityDescription", activity.getActivityDescription());
+        map.put("activityStartDate", activity.getActivityStartDate());
+        map.put("activityEndDate", activity.getActivityEndDate());
+        map.put("plannedSpendAmount", activity.getPlannedSpendAmount());
+        map.put("plannedTreatmentAreaHa", activity.getPlannedTreatmentAreaHa());
+        map.put("reportedSpendAmount", activity.getReportedSpendAmount());
+        map.put("completedAreaHa", activity.getCompletedAreaHa());
+        map.put("isResultsReportableInd", activity.getIsResultsReportableInd());
+        map.put("outstandingObligationsInd", activity.getOutstandingObligationsInd());
+        map.put("activityComment", activity.getActivityComment());
+        map.put("isSpatialAddedInd", activity.getIsSpatialAddedInd());
+        map.put(REVISION_COUNT, activity.getRevisionCount());
+        map.put(CREATE_USER, activity.getCreateUser());
+        map.put(CREATE_DATE, activity.getCreateDate());
+        map.put(UPDATE_USER, activity.getUpdateUser());
+        map.put(UPDATE_DATE, activity.getUpdateDate());
+        return map;
     }
 
     Map<String, Object> createPointFeature(@NotNull Point point, Map<String, Object> properties) {
