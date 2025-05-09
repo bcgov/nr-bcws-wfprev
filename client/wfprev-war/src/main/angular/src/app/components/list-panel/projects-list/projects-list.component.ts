@@ -477,7 +477,7 @@ export class ProjectsListComponent implements OnInit {
 
   handleScroll(event: any) {
     const element = event.target;
-    if (element.scrollHeight - element.scrollTop === element.clientHeight) {
+    if (element.scrollHeight - element.scrollTop <= element.clientHeight + 10) {
       this.onScroll();
     }
   }
