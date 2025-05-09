@@ -7,10 +7,11 @@ import { MapService } from 'src/app/services/map.service';
 import { LeafletLegendService } from 'src/app/utils/tools';
 import { SharedService } from 'src/app/services/shared-service';
 import * as L from 'leaflet';
+
 @Component({
   selector: 'app-map',
   standalone: true,
-  imports: [ResizablePanelComponent,SearchFilterComponent],
+  imports: [ResizablePanelComponent, SearchFilterComponent],
   templateUrl: './map.component.html',
   styleUrl: './map.component.scss'
 })
@@ -30,7 +31,11 @@ export class MapComponent implements AfterViewInit {
     future: '#E7298A'
   };
 
-  private markersLayerGroup = L.layerGroup();
+  private readonly markersLayerGroup = L.layerGroup();
+  private isMapReady = false;
+  private latestProjects: any[] = [];
+  private hasClusterBeenAddedToMap = false;
+  private markersClusterGroup: L.MarkerClusterGroup | null = null;
 
   constructor(
     protected cdr: ChangeDetectorRef,
@@ -38,75 +43,48 @@ export class MapComponent implements AfterViewInit {
     private readonly mapConfigService: MapConfigService,
     private readonly route: ActivatedRoute,
     private readonly sharedService: SharedService
-  ) { }
+  ) {}
 
   ngAfterViewInit(): void {
-    if (this.mapContainer?.nativeElement) {
-      this.initMap()
-        .then(() => {
-          this.mapIndex = this.mapService.getMapIndex() + 1;
-          this.mapService.setMapIndex(this.mapIndex);
-
-          setTimeout(() => {
-            const bboxParam = this.route.snapshot.queryParamMap.get('bbox');
-          
-            if (!bboxParam) return;
-          
-            const bboxParts = bboxParam.split(',').map(parseFloat);
-            if (bboxParts.length !== 4 || bboxParts.some(isNaN)) {
-              console.warn('Invalid bbox query parameter:', bboxParam);
-              return;
-            }
-          
-            const [west, south, east, north] = bboxParts;
-          
-            try {
-              const smk = this.mapService.getSMKInstance();
-          
-              if (!smk || !smk.$viewer || !smk.$viewer.map || !smk.$viewer.map.fitBounds) {
-                console.warn('Could not access Leaflet map inside SMK.');
-                return;
-              }
-          
-              smk.$viewer.map.fitBounds([
-                [south, west],
-                [north, east]
-              ], {
-                padding: [20, 20]
-              });
-            } catch (error) {
-              console.error('Error while fitting map bounds from bbox:', error);
-            }
-          }, 500);
-
-          const smk = this.mapService.getSMKInstance();
-          const map = smk?.$viewer?.map;
-
-          if (map) {
-            const legendHelper = new LeafletLegendService();
-            legendHelper.addLegend(map, this.fiscalColorMap);
-          }
-          
-        })
-        .catch((error) => console.error('Error initializing map:', error));
-
-        const map = this.mapService.getSMKInstance()?.$viewer?.map;
-
-        if (map) {
-          const legendHelper = new LeafletLegendService();
-          legendHelper.addLegend(map, this.fiscalColorMap);
-
-          // Add the marker layer group to the map
-          this.markersLayerGroup.addTo(map);
-
-          // Subscribe to project updates
-          this.sharedService.displayedProjects$.subscribe(projects => {
-            this.updateMarkers(projects);
-          });
-        }
-    } else {
+    if (!this.mapContainer?.nativeElement) {
       console.error('Map container is not available.');
+      return;
     }
+
+    this.sharedService.displayedProjects$.subscribe(projects => {
+      this.latestProjects = projects;
+      if (this.isMapReady) {
+        this.updateMarkers(projects);
+      }
+    });
+
+    this.initMap().then(() => {
+      const smk = this.mapService.getSMKInstance();
+      const map = smk?.$viewer?.map;
+
+      if (map) {
+        const legendHelper = new LeafletLegendService();
+        legendHelper.addLegend(map, this.fiscalColorMap);
+
+        this.markersClusterGroup = L.markerClusterGroup({
+          showCoverageOnHover: false,
+          iconCreateFunction: (cluster) => {
+            const count = cluster.getChildCount();
+            return L.divIcon({
+              html: `<div class="cluster-icon"><span>${count}</span></div>`,
+              className: 'custom-marker-cluster',
+              iconSize: L.point(40, 40),
+            });
+          }
+        });
+
+        map.addLayer(this.markersClusterGroup);
+        this.hasClusterBeenAddedToMap = true;
+      }
+
+      this.isMapReady = true;
+      this.updateMarkers(this.latestProjects);
+    });
   }
 
   private async initMap(): Promise<void> {
@@ -136,24 +114,37 @@ export class MapComponent implements AfterViewInit {
   }
 
   updateMarkers(projects: any[]) {
-    const map = this.mapService.getSMKInstance()?.$viewer?.map;
-    if (!map) return;
+    const smk = this.mapService.getSMKInstance();
+    const map = smk?.$viewer?.map;
 
-    this.markersLayerGroup.clearLayers(); // Remove old markers
+    if (!map || !this.markersClusterGroup) {
+      console.warn('[Map] Skipping updateMarkers — map or cluster group not ready');
+      return;
+    }
+
+    try {
+      this.markersClusterGroup.clearLayers();
+    } catch (err) {
+      console.error('[Map] Error clearing markers:', err);
+    }
 
     projects
       .filter(p => p.latitude != null && p.longitude != null)
       .forEach(project => {
-        const marker = L.marker([project.latitude, project.longitude], {
-          icon: L.icon({
-            iconUrl: '/assets/blue-pin-drop.svg',
-            iconSize: [30, 50],
-            iconAnchor: [12, 41],
-            popupAnchor: [1, -34],
-          })
-        });
-        this.markersLayerGroup.addLayer(marker);
+        try {
+          const marker = L.marker([project.latitude, project.longitude], {
+            icon: L.icon({
+              iconUrl: '/assets/blue-pin-drop.svg',
+              iconSize: [30, 50],
+              iconAnchor: [12, 41],
+              popupAnchor: [1, -34],
+            })
+          });
+
+          this.markersClusterGroup!.addLayer(marker); 
+        } catch (err) {
+          console.error('[Map] Failed to add marker:', project, err);
+        }
       });
   }
 }
-

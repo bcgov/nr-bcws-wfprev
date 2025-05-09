@@ -51,7 +51,7 @@ export class ProjectsListComponent implements OnInit {
   ngOnInit(): void {
     this.loadCodeTables();
     this.loadProjects();
-    setTimeout(() => { this.loadCoordinatesOnMap(); }, 6000);
+    // setTimeout(() => { this.loadCoordinatesOnMap(); }, 6000);
 
     this.sharedService.filters$.subscribe(filters => {
       if (filters) {
@@ -63,8 +63,9 @@ export class ProjectsListComponent implements OnInit {
             );
             this.currentPage = 0;
             this.displayedProjects = this.allProjects.slice(0, this.pageSize);
-            this.isLoading = false;
+            // display the pins on the map
             this.sharedService.updateDisplayedProjects(this.displayedProjects);
+            this.isLoading = false;
           },
           error: (err) => {
             console.error('Error fetching features:', err);
@@ -179,6 +180,7 @@ export class ProjectsListComponent implements OnInit {
         );
         this.currentPage = 0;
         this.displayedProjects = this.allProjects.slice(0, this.pageSize);
+        this.sharedService.updateDisplayedProjects(this.displayedProjects); 
         this.isLoading = false;
 
       },
