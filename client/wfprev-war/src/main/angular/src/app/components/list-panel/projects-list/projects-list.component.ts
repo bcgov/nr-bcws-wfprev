@@ -45,7 +45,7 @@ export class ProjectsListComponent implements OnInit {
     private readonly codeTableService: CodeTableServices,
     private readonly dialog: MatDialog,
     private readonly sharedCodeTableService: SharedCodeTableService,
-    private readonly sharedService: SharedService
+    public readonly sharedService: SharedService
   ) {
   }
   ngOnInit(): void {
@@ -496,7 +496,6 @@ export class ProjectsListComponent implements OnInit {
     this.allProjects = [];
     this.displayedProjects = [];
     this.isLoading = false;
-}
-  
+  }
   
 }
