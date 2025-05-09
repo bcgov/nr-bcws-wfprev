@@ -45,7 +45,7 @@ export class ProjectsListComponent implements OnInit {
     private readonly codeTableService: CodeTableServices,
     private readonly dialog: MatDialog,
     private readonly sharedCodeTableService: SharedCodeTableService,
-    private readonly sharedService: SharedService
+    public readonly sharedService: SharedService
   ) {
   }
   ngOnInit(): void {
@@ -56,22 +56,8 @@ export class ProjectsListComponent implements OnInit {
       if (filters) {
         this.isLoading = true;
         this.projectService.getFeatures(filters).subscribe({
-          next: (data) => {
-            this.allProjects = (data.projects || []).sort((a: any, b: any) =>
-              a.projectName.localeCompare(b.projectName)
-            );
-            this.currentPage = 0;
-            this.displayedProjects = this.allProjects.slice(0, this.pageSize);
-            // display the pins on the map
-            this.sharedService.updateDisplayedProjects(this.displayedProjects);
-            this.isLoading = false;
-          },
-          error: (err) => {
-            console.error('Error fetching features:', err);
-            this.allProjects = [];
-            this.displayedProjects = [];
-            this.isLoading = false;
-          }
+          next: (data) => this.processProjectsResponse(data),
+          error: (err) => this.handleProjectError(err),
         });
       }
     });
@@ -173,22 +159,8 @@ export class ProjectsListComponent implements OnInit {
   loadProjects(): void {
     this.isLoading = true;
     this.projectService.getFeatures().subscribe({
-      next: (data) => {
-        this.allProjects = (data.projects || []).sort((a: any, b: any) =>
-          a.projectName.localeCompare(b.projectName)
-        );
-        this.currentPage = 0;
-        this.displayedProjects = this.allProjects.slice(0, this.pageSize);
-        this.sharedService.updateDisplayedProjects(this.displayedProjects); 
-        this.isLoading = false;
-
-      },
-      error: (err) => {
-        console.error('Error fetching features:', err);
-        this.allProjects = [];
-        this.displayedProjects = [];
-        this.isLoading = false;
-      }
+      next: (data) => this.processProjectsResponse(data),
+      error: (err) => this.handleProjectError(err),
     });
   }
 
@@ -477,7 +449,7 @@ export class ProjectsListComponent implements OnInit {
 
   handleScroll(event: any) {
     const element = event.target;
-    if (element.scrollHeight - element.scrollTop === element.clientHeight) {
+    if (element.scrollHeight - element.scrollTop <= element.clientHeight + 10) {
       this.onScroll();
     }
   }
@@ -508,6 +480,22 @@ export class ProjectsListComponent implements OnInit {
       return `${formatYear(uniqueYears[0])} - ${formatYear(uniqueYears[uniqueYears.length - 1])}`;
     }
   }
-  
+
+  processProjectsResponse(data: any): void {
+    this.allProjects = (data.projects || []).sort((a: any, b: any) =>
+      a.projectName.localeCompare(b.projectName)
+    );
+    this.currentPage = 0;
+    this.displayedProjects = this.allProjects.slice(0, this.pageSize);
+    this.sharedService.updateDisplayedProjects(this.displayedProjects);
+    this.isLoading = false;
+  }
+
+  handleProjectError(err: any): void {
+    console.error('Error fetching features:', err);
+    this.allProjects = [];
+    this.displayedProjects = [];
+    this.isLoading = false;
+  }
   
 }
