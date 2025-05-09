@@ -121,7 +121,7 @@ describe('ProjectsListComponent', () => {
   });
 
  it('should render the correct number of projects', () => {
-  component.displayedProjects = mockProjectList; // ✅ Correct property
+  component.displayedProjects = mockProjectList;
   fixture.detectChanges();
 
   const projectItems = fixture.debugElement.queryAll(By.css('.project-name'));

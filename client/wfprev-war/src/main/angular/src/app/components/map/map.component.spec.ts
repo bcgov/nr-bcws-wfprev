@@ -177,12 +177,12 @@ describe('MapComponent', () => {
       mapContainer.nativeElement = document.createElement('div');
       component.mapContainer = mapContainer;
 
-      const mockConfig = { theme: 'testTheme' }; // ✅ Same object
+      const mockConfig = { theme: 'testTheme' };
       mapConfigServiceMock.getMapConfig.and.returnValue(Promise.resolve(mockConfig));
       mapServiceMock.getMapIndex.and.returnValue(1);
       mapServiceMock.getSMKInstance.and.returnValue(createMockSMKInstance());
 
-      component.ngAfterViewInit(); // ✅ Ensures initMap gets called
+      component.ngAfterViewInit();
 
       tick();
       flush();

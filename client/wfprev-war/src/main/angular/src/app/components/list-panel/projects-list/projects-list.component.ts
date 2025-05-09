@@ -51,7 +51,6 @@ export class ProjectsListComponent implements OnInit {
   ngOnInit(): void {
     this.loadCodeTables();
     this.loadProjects();
-    // setTimeout(() => { this.loadCoordinatesOnMap(); }, 6000);
 
     this.sharedService.filters$.subscribe(filters => {
       if (filters) {
