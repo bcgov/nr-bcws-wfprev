@@ -62,15 +62,16 @@ ngOnInit(): void {
 }
 
   emitFilters() {
+    const sanitize = (arr: any[]) => arr.filter(v => v !== '__ALL__');
     this.sharedService.updateFilters({
       searchText: this.searchText,
-      programAreaGuid: this.selectedBusinessArea,
-      fiscalYear: this.selectedFiscalYears,
-      activityCategoryCode: this.selectedActivity,
-      forestRegionOrgUnitId: this.selectedForestRegion,
-      forestDistrictOrgUnitId: this.selectedForestDistrict,
-      fireCentreOrgUnitId: this.selectedFireCentre,
-      planFiscalStatusCode: this.selectedFiscalStatus
+      programAreaGuid: sanitize(this.selectedBusinessArea),
+      fiscalYear: sanitize(this.selectedFiscalYears),
+      activityCategoryCode: sanitize(this.selectedActivity),
+      forestRegionOrgUnitId: sanitize(this.selectedForestRegion),
+      forestDistrictOrgUnitId: sanitize(this.selectedForestDistrict),
+      fireCentreOrgUnitId: sanitize(this.selectedFireCentre),
+      planFiscalStatusCode: sanitize(this.selectedFiscalStatus)
     });
   }
 
