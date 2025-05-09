@@ -123,8 +123,10 @@
   }
   
   .list-contents {
-    height: calc(100vh - 180px);
+    flex: 1;
+    min-height: 0;
     overflow-y: auto;
+    overflow-x: hidden;
     padding-bottom: 8px;
     
     &::-webkit-scrollbar {

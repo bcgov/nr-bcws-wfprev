@@ -51,7 +51,7 @@ export class ProjectsListComponent implements OnInit {
   ngOnInit(): void {
     this.loadCodeTables();
     this.loadProjects();
-    setTimeout(() => { this.loadCoordinatesOnMap(); }, 3000);
+    setTimeout(() => { this.loadCoordinatesOnMap(); }, 6000);
 
     this.sharedService.filters$.subscribe(filters => {
       if (filters) {
@@ -64,6 +64,7 @@ export class ProjectsListComponent implements OnInit {
             this.currentPage = 0;
             this.displayedProjects = this.allProjects.slice(0, this.pageSize);
             this.isLoading = false;
+            this.sharedService.updateDisplayedProjects(this.displayedProjects);
           },
           error: (err) => {
             console.error('Error fetching features:', err);
@@ -179,6 +180,7 @@ export class ProjectsListComponent implements OnInit {
         this.currentPage = 0;
         this.displayedProjects = this.allProjects.slice(0, this.pageSize);
         this.isLoading = false;
+
       },
       error: (err) => {
         console.error('Error fetching features:', err);
@@ -200,6 +202,7 @@ export class ProjectsListComponent implements OnInit {
   
     const totalVisible = (this.currentPage + 1) * this.pageSize;
     this.displayedProjects = this.allProjects.slice(0, totalVisible);
+    this.sharedService.updateDisplayedProjects(this.displayedProjects);
   }
   
 
@@ -467,6 +470,7 @@ export class ProjectsListComponent implements OnInit {
     if (start < this.allProjects.length) {
       this.displayedProjects = this.displayedProjects.concat(this.allProjects.slice(start, end));
       this.currentPage = nextPage;
+      this.sharedService.updateDisplayedProjects(this.displayedProjects);
     }
   }
 

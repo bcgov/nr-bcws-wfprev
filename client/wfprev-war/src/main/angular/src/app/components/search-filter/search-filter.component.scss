@@ -60,6 +60,7 @@
 }
 
 .reset-button {
+  width: 100px;
   white-space: nowrap;
   height: 46px;
   margin-left: auto;
@@ -68,6 +69,8 @@
   font-style: normal;
   font-weight: 400;
   line-height: normal;
+  min-width: unset;
+  border-color: black;
 }
 
 .textsearch{

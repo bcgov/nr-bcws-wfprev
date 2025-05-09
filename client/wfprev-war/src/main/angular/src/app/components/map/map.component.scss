@@ -16,7 +16,7 @@
 .content-row {
     display: flex;
     flex-grow: 1;
-    height: calc(100vh - 60px); /* subtract height of search-filter */
+  height: 100%;
 }
   
   
@@ -35,4 +35,8 @@
     bottom: 0;
     width: 100%;
     height: 100%;
+}
+
+.content-row > * {
+  height: 100%;
 }
