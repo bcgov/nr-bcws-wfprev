@@ -80,7 +80,7 @@ public class ProjectBoundaryService implements CommonService {
   }
 
   @Transactional
-  public ProjectBoundaryModel createOrUpdateProjectBoundary(
+  public ProjectBoundaryModel createProjectBoundary(
           String projectGuid, ProjectBoundaryModel resource) {
     Set<ConstraintViolation<ProjectBoundaryModel>> violations = validator.validate(resource);
     if (!violations.isEmpty()) {
@@ -97,21 +97,15 @@ public class ProjectBoundaryService implements CommonService {
 
     updateFieldsFromBoundaryGeometry(resource);
 
-    List<ProjectBoundaryEntity> existingEntityList = projectBoundaryRepository.findByProjectGuid(UUID.fromString(projectGuid));
+    resource.setProjectBoundaryGuid(UUID.randomUUID().toString());
 
-    if (!existingEntityList.isEmpty() && existingEntityList.getFirst() != null) {
-      // Update existing boundary
-      ProjectBoundaryEntity existingEntity = existingEntityList.getFirst();
-      ProjectBoundaryEntity updatedEntity = projectBoundaryResourceAssembler.updateEntity(resource, existingEntity);
-      return saveProjectBoundary(updatedEntity);
-    } else {
-      // Create new boundary
-      resource.setProjectBoundaryGuid(UUID.randomUUID().toString());
-      ProjectBoundaryEntity newEntity = projectBoundaryResourceAssembler.toEntity(resource);
-      newEntity.setProjectGuid(projectEntity.getProjectGuid());
-      ProjectBoundaryEntity savedEntity = projectBoundaryRepository.save(newEntity);
+    ProjectBoundaryEntity entity = projectBoundaryResourceAssembler.toEntity(resource);
+    if(entity != null && entity.getProjectGuid() != null) {
+      entity.setProjectGuid(projectEntity.getProjectGuid());
+
+      ProjectBoundaryEntity savedEntity = projectBoundaryRepository.save(entity);
       return projectBoundaryResourceAssembler.toModel(savedEntity);
-    }
+    } else throw new IllegalArgumentException("ProjectBoundaryModel resource to be created cannot be null");
   }
 
   @Transactional
