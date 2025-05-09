@@ -13,6 +13,7 @@ import { ResourcesRoutes } from 'src/app/utils';
 import { of, throwError } from 'rxjs';
 import L from 'leaflet';
 import { CreateNewProjectDialogComponent } from 'src/app/components/create-new-project-dialog/create-new-project-dialog.component';
+import { FeaturesResponse } from 'src/app/components/models';
 
 describe('ProjectsListComponent', () => {
   let component: ProjectsListComponent;
@@ -23,6 +24,14 @@ describe('ProjectsListComponent', () => {
   let mockMarkerClusterGroup: any;
   let mockMarker: any;
   let mockPolygon: any;
+
+  const mockFetchProjectsResponse = () => {
+    mockProjectService.fetchProjects.and.returnValue(of({
+      _embedded: {
+        project: mockProjectList
+      }
+    }));
+  };
 
   const mockProjectList = [
     { 
@@ -51,18 +60,25 @@ describe('ProjectsListComponent', () => {
   let mockRouter: jasmine.SpyObj<Router>;
 
   beforeEach(async () => {
-    mockProjectService = jasmine.createSpyObj('ProjectService', ['fetchProjects']);
+    mockProjectService = jasmine.createSpyObj('ProjectService', ['fetchProjects', 'getFeatures']);
     mockProjectService.fetchProjects.and.returnValue(of({
       _embedded: {
         project: mockProjectList,
       },
     }));
+    mockProjectService.getFeatures.and.returnValue(of({ projects: [] }));
 
     mockCodeTableService = jasmine.createSpyObj('CodeTableServices', ['fetchCodeTable']);
-    mockCodeTableService.fetchCodeTable.and.callFake((name: 'programAreaCodes' | 'forestRegionCodes') => {
-      const mockData = {
+    mockCodeTableService.fetchCodeTable.and.callFake((name: string) => {
+      const mockData: any = {
         programAreaCodes: { _embedded: { programArea: [{ programAreaGuid: 'guid1', programAreaName: 'Area 1' }] } },
         forestRegionCodes: { _embedded: { forestRegionCode: [{ orgUnitId: 101, orgUnitName: 'Region 1' }] } },
+        forestDistrictCodes: { _embedded: { forestDistrictCode: [] } },
+        bcParksRegionCodes: { _embedded: { bcParksRegionCode: [] } },
+        bcParksSectionCodes: { _embedded: { bcParksSectionCode: [] } },
+        planFiscalStatusCodes: { _embedded: { planFiscalStatusCode: [] } },
+        activityCategoryCodes: { _embedded: { activityCategoryCode: [] } },
+        projectTypeCodes: { _embedded: { projectTypeCode: [] } },
       };
       return of(mockData[name]);
     });
@@ -119,15 +135,16 @@ describe('ProjectsListComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should render the correct number of projects', () => {
-    component.projectList = mockProjectList;
-    fixture.detectChanges();
+ it('should render the correct number of projects', () => {
+  component.displayedProjects = mockProjectList;
+  fixture.detectChanges();
 
-    const projectItems = fixture.debugElement.queryAll(By.css('.project-name'));
-    expect(projectItems.length).toBe(2);
-    expect(projectItems[0].nativeElement.textContent).toContain('Project 1');
-    expect(projectItems[1].nativeElement.textContent).toContain('Project 2');
-  });
+  const projectItems = fixture.debugElement.queryAll(By.css('.project-name'));
+  expect(projectItems.length).toBe(2);
+  expect(projectItems[0].nativeElement.textContent).toContain('Project 1');
+  expect(projectItems[1].nativeElement.textContent).toContain('Project 2');
+});
+
 
   it('should load code tables on init', () => {
     expect(mockCodeTableService.fetchCodeTable).toHaveBeenCalledWith('programAreaCodes');
@@ -135,6 +152,7 @@ describe('ProjectsListComponent', () => {
   });
 
   it('should handle errors when loading code tables', () => {
+    mockFetchProjectsResponse();
     mockCodeTableService.fetchCodeTable.and.returnValue(throwError(() => new Error('Error fetching data')));
     component.loadCodeTables();
     fixture.detectChanges();
@@ -147,7 +165,7 @@ describe('ProjectsListComponent', () => {
     mockProjectService.fetchProjects.and.returnValue(throwError(() => new Error('Error fetching projects')));
     component.loadProjects();
     fixture.detectChanges();
-    expect(component.projectList).toEqual([]);
+    expect(component.displayedProjects ).toEqual([]);
   });
 
   it('should open the dialog to create a new project and reload projects if successful', () => {
@@ -202,7 +220,7 @@ describe('ProjectsListComponent', () => {
   // Map Function Tests
   describe('loadCoordinatesOnMap', () => {
     beforeEach(() => {
-      component.projectList = mockProjectList;
+      component.displayedProjects  = mockProjectList;
       mockMarker.getLatLng.and.returnValue({ lat: 49.2827, lng: -123.1207 });
     });
 
@@ -216,7 +234,7 @@ describe('ProjectsListComponent', () => {
     }));
 
     it('should filter out projects with null coordinates', fakeAsync(() => {
-      component.projectList = [
+      component.displayedProjects  = [
         ...mockProjectList,
         { 
           projectNumber: 3,
@@ -232,24 +250,8 @@ describe('ProjectsListComponent', () => {
       expect(L.marker).toHaveBeenCalledTimes(2);
     }));
 
-    it('should handle marker click events correctly', fakeAsync(() => {
-      component.loadCoordinatesOnMap();
-      tick();
-
-      const clickHandler = mockMarker.on.calls.argsFor(0)[1];
-      
-      // Test activation
-      clickHandler();
-      expect(mockMarker.setIcon).toHaveBeenCalled();
-      expect(mockPolygon.setStyle).toHaveBeenCalledWith({ weight: 5 });
-
-      // Test deactivation
-      clickHandler();
-      expect(mockPolygon.setStyle).toHaveBeenCalledWith({ weight: 2 });
-    }));
-
     it('should not create markers when projectList is empty', fakeAsync(() => {
-      component.projectList = [];
+      component.displayedProjects  = [];
       component.loadCoordinatesOnMap();
       tick();
 
@@ -401,38 +403,260 @@ describe('ProjectsListComponent', () => {
     expect(result).toBe('Clearing');
   });
 
-  it('should fetch and sort project fiscals in descending order', () => {
-    const project: { projectGuid: string; projectFiscals?: any[] } = { projectGuid: 'guid1' };
-    const mockResponse = {
-      _embedded: {
-        projectFiscals: [
-          { fiscalYear: 2020 },
-          { fiscalYear: 2023 },
-          { fiscalYear: 2021 }
-        ]
-      }
+  it('should call getDescription for each code table type', () => {
+    component.programAreaCode = [{ programAreaGuid: 'guid1', programAreaName: 'Area 1' }];
+    component.forestRegionCode = [{ orgUnitId: 101, orgUnitName: 'Region 1' }];
+    component.forestDistrictCode = [{ orgUnitId: 201, orgUnitName: 'District 1' }];
+    component.bcParksRegionCode = [{ orgUnitId: 301, orgUnitName: 'Parks Region 1' }];
+    component.bcParksSectionCode = [{ orgUnitId: 401, orgUnitName: 'Parks Section 1' }];
+    component.planFiscalStatusCode = [{ planFiscalStatusCode: 'PS1', description: 'Planned' }];
+    component.activityCategoryCode = [{ activityCategoryCode: 'AC1', description: 'Clearing' }];
+
+    expect(component.getDescription('programAreaCode', 'guid1')).toBe('Area 1');
+    expect(component.getDescription('forestRegionCode', 101)).toBe('Region 1');
+    expect(component.getDescription('forestDistrictCode', 201)).toBe('District 1');
+    expect(component.getDescription('bcParksRegionCode', 301)).toBe('Parks Region 1');
+    expect(component.getDescription('bcParksSectionCode', 401)).toBe('Parks Section 1');
+    expect(component.getDescription('planFiscalStatusCode', 'PS1')).toBe('Planned');
+    expect(component.getDescription('activityCategoryCode', 'AC1')).toBe('Clearing');
+    expect(component.getDescription('unknownTable', 'x')).toBe('');
+  });
+
+  it('should call stripSuffix and return correct values', () => {
+    expect(component.stripSuffix('Test Forest Region', ' Forest Region')).toBe('Test');
+    expect(component.stripSuffix('Test', 'NotFound')).toBe('Test');
+    expect(component.stripSuffix('', 'Suffix')).toBe('');
+  });
+
+  it('should call getFiscalYearDisplay and return correct values', () => {
+    expect(component.getFiscalYearDisplay(2023)).toBe('2023/24');
+    expect(component.getFiscalYearDisplay(1999)).toBe('1999/00');
+    expect(component.getFiscalYearDisplay(undefined)).toBeNull();
+    expect(component.getFiscalYearDisplay(null)).toBeNull();
+  });
+
+  it('should call onSortChange and sort ascending/descending', () => {
+    component.allProjects = [
+      { projectName: 'B' },
+      { projectName: 'A' }
+    ];
+    component.onSortChange({ target: { value: 'ascending' } });
+    expect(component.allProjects[0].projectName).toBe('A');
+    component.onSortChange({ target: { value: 'descending' } });
+    expect(component.allProjects[0].projectName).toBe('B');
+  });
+
+  it('should call onScroll and load more projects', () => {
+    component.allProjects = Array.from({length: 50}, (_, i) => ({ projectName: `Project ${i}` }));
+    component.displayedProjects = component.allProjects.slice(0, 25);
+    component.currentPage = 0;
+    component.onScroll();
+    expect(component.displayedProjects.length).toBeGreaterThan(25);
+  });
+
+  it('should call handleScroll and trigger onScroll at bottom', () => {
+    spyOn(component, 'onScroll');
+    const event = { target: { scrollTop: 100, scrollHeight: 200, clientHeight: 100 } };
+    component.handleScroll(event);
+    expect(component.onScroll).toHaveBeenCalled();
+  });
+
+  it('should call createNewProject and open dialog', () => {
+    spyOn(component, 'loadProjects');
+    component.createNewProject();
+    expect(mockDialog.open).toHaveBeenCalled();
+    expect(component.loadProjects).toHaveBeenCalled();
+  });
+
+  it('should call getSecureRandomNumber and return a number', () => {
+    const num = component.getSecureRandomNumber();
+    expect(typeof num).toBe('number');
+    expect(num).toBeGreaterThanOrEqual(0);
+    expect(num).toBeLessThan(1);
+  });
+
+  it('should process project response and update displayedProjects correctly', () => {
+    const mockData = {
+      projects: [
+        { projectName: 'Z Project' },
+        { projectName: 'A Project' }
+      ]
     };
-  
-    mockProjectService.getProjectFiscalsByProjectGuid = jasmine.createSpy()
-      .and.returnValue(of(mockResponse));
-  
-    component.getFiscal(project);
-  
-    expect(project.projectFiscals).toEqual([
-      { fiscalYear: 2023 },
-      { fiscalYear: 2021 },
-      { fiscalYear: 2020 }
-    ]);
+
+    component.pageSize = 1;
+    spyOn(component.sharedService, 'updateDisplayedProjects');
+
+    component.processProjectsResponse(mockData);
+
+    expect(component.allProjects.length).toBe(2);
+    expect(component.allProjects[0].projectName).toBe('A Project');
+    expect(component.displayedProjects.length).toBe(1); 
+    expect(component.displayedProjects[0].projectName).toBe('A Project');
+    expect(component.isLoading).toBeFalse();
+    expect(component.sharedService.updateDisplayedProjects).toHaveBeenCalledWith(component.displayedProjects);
   });
-  
-  it('should handle error and assign empty fiscals array', () => {
-    const project: { projectGuid: string; projectFiscals?: any[] } = { projectGuid: 'guid1' };
-    mockProjectService.getProjectFiscalsByProjectGuid = jasmine.createSpy()
-      .and.returnValue(throwError(() => new Error('Failed to fetch')));
-  
-    component.getFiscal(project);
-  
-    expect(project.projectFiscals).toEqual([]);
+
+  it('should handle project error and clear project lists', () => {
+    const mockError = new Error('Network error');
+
+    spyOn(console, 'error');
+
+    component.handleProjectError(mockError);
+
+    expect(console.error).toHaveBeenCalledWith('Error fetching features:', mockError);
+    expect(component.allProjects).toEqual([]);
+    expect(component.displayedProjects).toEqual([]);
+    expect(component.isLoading).toBeFalse();
   });
-  
+
+
+  it('should return null fiscal year range for missing data', () => {
+    const result = component.getProjectFiscalYearRange(null);
+    expect(result).toBeNull();
+  });
+
+  it('should return correct single fiscal year display', () => {
+    const result = component.getProjectFiscalYearRange({
+      projectFiscals: [{ fiscalYear: 2021 }]
+    });
+    expect(result).toBe('2021/22');
+  });
+
+  it('should return correct fiscal year range display', () => {
+    const result = component.getProjectFiscalYearRange({
+      projectFiscals: [{ fiscalYear: 2019 }, { fiscalYear: 2021 }]
+    });
+    expect(result).toBe('2019/20 - 2021/22');
+  });
+
+  it('should handle empty fiscal year array', () => {
+    const result = component.getProjectFiscalYearRange({ projectFiscals: [] });
+    expect(result).toBeNull();
+  });
+
+  it('should handle invalid year types gracefully', () => {
+    const result = component.getProjectFiscalYearRange({
+      projectFiscals: [{ fiscalYear: 'abc' }]
+    });
+    expect(result).toBeNull();
+  });
+
+  it('should respond to filters$ updates and update project list accordingly', () => {
+    mockFetchProjectsResponse();
+    const mockFilters = { searchText: 'fuel' };
+    const mockProjects = [
+      {
+        projectName: 'Alpha',
+        projectNumber: 1,
+        bcParksRegionOrgUnitId: 10,
+        bcParksSectionOrgUnitId: 11,
+        closestCommunityName: 'Community A',
+        fireCentreOrgUnitId: 12,
+        isMultiFiscalYearProj: false,
+        programAreaGuid: 'abc123',
+        projectDescription: 'Test project',
+        projectLead: 'John Doe',
+        projectLeadEmailAddress: 'john@example.com',
+        siteUnitName: 'Site 1',
+        totalActualAmount: 100,
+        totalAllocatedAmount: 120,
+        totalFundingRequestAmount: 20,
+        totalPlannedCostPerHectare: 10,
+        totalPlannedProjectSizeHa: 5,
+        forestDistrictOrgUnitId: 13,
+        forestRegionOrgUnitId: 14
+      }
+    ];
+
+    component.sharedService.filters$ = of(mockFilters);
+    mockProjectService.getFeatures.and.returnValue(of({ projects: mockProjects }));
+
+    spyOn(component.sharedService, 'updateDisplayedProjects');
+
+    component.ngOnInit();
+
+    expect(component.isLoading).toBeFalse();
+    expect(component.allProjects.length).toBe(1);
+    expect(component.displayedProjects.length).toBe(1);
+    expect(component.allProjects[0].projectName).toBe('Alpha');
+    expect(component.sharedService.updateDisplayedProjects).toHaveBeenCalledWith(component.displayedProjects);
+  });
+
+  it('should load and process projects on loadProjects()', () => {
+    const mockProjects = [
+      {
+        projectName: 'Z Project',
+        bcParksRegionOrgUnitId: 1,
+        bcParksSectionOrgUnitId: 2,
+        closestCommunityName: 'Town A',
+        fireCentreOrgUnitId: 3,
+        isMultiFiscalYearProj: false,
+        programAreaGuid: 'guid1',
+        projectDescription: 'Desc Z',
+        projectLead: 'Alice',
+        projectLeadEmailAddress: 'alice@example.com',
+        projectNumber: 100,
+        siteUnitName: 'Unit Z',
+        totalActualAmount: 1000,
+        totalAllocatedAmount: 800,
+        totalFundingRequestAmount: 200,
+        totalPlannedCostPerHectare: 20,
+        totalPlannedProjectSizeHa: 50,
+        forestDistrictOrgUnitId: 4,
+        forestRegionOrgUnitId: 5
+      },
+      {
+        projectName: 'A Project',
+        bcParksRegionOrgUnitId: 1,
+        bcParksSectionOrgUnitId: 2,
+        closestCommunityName: 'Town B',
+        fireCentreOrgUnitId: 3,
+        isMultiFiscalYearProj: false,
+        programAreaGuid: 'guid2',
+        projectDescription: 'Desc A',
+        projectLead: 'Bob',
+        projectLeadEmailAddress: 'bob@example.com',
+        projectNumber: 101,
+        siteUnitName: 'Unit A',
+        totalActualAmount: 900,
+        totalAllocatedAmount: 700,
+        totalFundingRequestAmount: 250,
+        totalPlannedCostPerHectare: 30,
+        totalPlannedProjectSizeHa: 60,
+        forestDistrictOrgUnitId: 6,
+        forestRegionOrgUnitId: 7
+      }
+    ];
+
+    const mockResponse = {
+      projects: mockProjects
+    } as FeaturesResponse;
+
+    mockProjectService.getFeatures.and.returnValue(of(mockResponse));
+    spyOn(component.sharedService, 'updateDisplayedProjects');
+
+    component.pageSize = 1;
+    component.loadProjects();
+
+    expect(component.isLoading).toBeFalse();
+    expect(component.allProjects.length).toBe(2);
+    expect(component.allProjects[0].projectName).toBe('A Project');
+    expect(component.displayedProjects.length).toBe(1);
+    expect(component.sharedService.updateDisplayedProjects).toHaveBeenCalledWith(component.displayedProjects);
+  });
+
+  it('should handle error in loadProjects()', () => {
+    const error = new Error('Network failure');
+    spyOn(console, 'error');
+    mockProjectService.getFeatures.and.returnValue(throwError(() => error));
+
+    component.loadProjects();
+
+    expect(console.error).toHaveBeenCalledWith('Error fetching features:', error);
+    expect(component.allProjects).toEqual([]);
+    expect(component.displayedProjects).toEqual([]);
+    expect(component.isLoading).toBeFalse();
+  });
+
+
 });

@@ -1,0 +1,94 @@
+.search-filter-bar {
+  padding: 5px;
+  background-color: white;
+}
+
+.filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 12px;
+}
+
+.filter-item {
+  min-width: 160px;
+  flex: 0 0 auto;
+  height: 65px;
+}
+
+.field.search-input {
+  width: 300px;
+  flex-basis: 300px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  position: relative;
+
+  .label {
+    font-family: var(--wf-font-family-main) !important;
+    font-weight: 400;
+    padding: 5px 2px;
+    font-size: 14px;
+    color: #282828;
+    font-style: normal;
+  }
+
+  input.search-input {
+    border: 1px solid #DFE0E2;
+    border-radius: 4px;
+    background-color: #fff;
+    height: 40px;
+    padding: 0 36px 0 8px;
+    font-family: var(--wf-font-family-main) !important;
+    font-size: 14px;
+
+    &:focus {
+      outline: none;
+      box-shadow: 0 0 4px #3E7FFF;
+    }
+  }
+
+  .input-search-button {
+    position: absolute;
+    top: 35px;
+    right: 6px;
+    height: 30px;
+    width: 30px;
+    padding: 0;
+    line-height: 1;
+  }
+}
+
+.reset-button {
+  width: 100px;
+  white-space: nowrap;
+  height: 46px;
+  margin-left: auto;
+  font-family: var(--wf-font-family-main) !important;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  min-width: unset;
+  border-color: black;
+}
+
+.textsearch{
+  width: 400px !important;
+  flex-basis: 400px !important;
+}
+
+.filter-search-input{
+  margin-bottom: -22px;
+}
+
+::ng-deep .mdc-text-field--filled:not(.mdc-text-field--disabled) {
+  border: 1px solid #A5A4A4;
+  border-bottom: none;
+  background: #FFF !important;
+}
+
+::ng-deep .mdc-text-field--outlined .mat-mdc-form-field-infix,
+::ng-deep .mdc-text-field--no-label .mat-mdc-form-field-infix {
+  padding-top: 10px !important;
+}

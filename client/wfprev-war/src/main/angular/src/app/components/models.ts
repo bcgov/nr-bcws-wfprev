@@ -44,6 +44,7 @@ export interface Project {
     objectiveTypeCode: string;
   }
   secondaryObjectiveRationale?: string;
+  projectFiscals?: ProjectFiscalExtended[];
 }
 
 export interface ProjectFiscal {
@@ -171,4 +172,20 @@ export interface ProjectFile {
   description?: string,
   fileIdentifier?: string,
   documentPath?: string
+}
+
+export interface FeaturesResponse {
+  projects?: ProjectExtended[];
+}
+
+export interface ProjectExtended extends Project {
+  projectFiscals?: ProjectFiscalExtended[];
+}
+
+export interface ProjectFiscalExtended extends ProjectFiscal {
+  activities?: ActivityWithBoundaries[];
+}
+
+export interface ActivityWithBoundaries extends ActivityModel {
+  activityBoundaries?: ActivityBoundary[];
 }

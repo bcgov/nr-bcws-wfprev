@@ -1,0 +1,116 @@
+<div class="search-filter-bar">
+  <div class="filter-row">
+    <!-- Search input -->
+    <div class="field search-input textsearch">
+      <mat-label class="label">Search</mat-label>
+      <input class="search-input" aria-label="Search"
+        [(ngModel)]="searchText"
+        (ngModelChange)="searchTextChanged.next($event)" 
+      />
+      <button *ngIf="searchText.length" mat-icon-button class="input-search-button"
+              aria-label="Search"
+              matTooltip="Search"
+              (click)="clearSearch(); $event.stopPropagation()">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+    
+
+    <!-- Filters -->
+    <div class="field search-input filter-search-input">
+      <mat-label class="label">Business Area</mat-label>
+      <mat-form-field appearance="fill" class="filter-item">
+        <mat-select [(ngModel)]="selectedBusinessArea" placeholder="Select"
+          (selectionChange)="onSelectAll($event,'selectedBusinessArea', businessAreaOptions)"
+          multiple>
+        <mat-option *ngFor="let option of businessAreaOptions" [value]="option.value">
+          {{ option.label }}
+        </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <div class="field search-input filter-search-input">
+      <mat-label class="label">Fiscal Year(s)</mat-label>
+      <mat-form-field appearance="fill" class="filter-item">
+        <mat-select [(ngModel)]="selectedFiscalYears" placeholder="Select"
+                    (selectionChange)="onSelectAll($event,'selectedFiscalYears', fiscalYearOptions)"
+                    multiple>
+          <mat-option *ngFor="let option of fiscalYearOptions" [value]="option.value">
+            {{ option.label }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+    
+    <div class="field search-input filter-search-input">
+      <mat-label class="label">Activity Category</mat-label>
+      <mat-form-field appearance="fill" class="filter-item">
+        <mat-select [(ngModel)]="selectedActivity" placeholder="Select"
+                    (selectionChange)="onSelectAll($event,'selectedActivity', activityOptions)"
+                    multiple>
+          <mat-option *ngFor="let option of activityOptions" [value]="option.value">
+            {{ option.label }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+    
+    <div class="field search-input filter-search-input">
+      <mat-label class="label">Forest Region</mat-label>
+      <mat-form-field appearance="fill" class="filter-item">
+        <mat-select [(ngModel)]="selectedForestRegion" placeholder="Select"
+                    (ngModelChange)="onForestRegionChange()"
+                    (selectionChange)="onSelectAll($event,'selectedForestRegion', forestRegionOptions)"
+                    multiple>
+          <mat-option *ngFor="let option of forestRegionOptions" [value]="option.value">
+            {{ option.label }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+    
+    <div class="field search-input filter-search-input">
+      <mat-label class="label">Forest District</mat-label>
+      <mat-form-field appearance="fill" class="filter-item">
+        <mat-select [(ngModel)]="selectedForestDistrict" placeholder="Select"
+                    (selectionChange)="onSelectAll($event,'selectedForestDistrict', forestDistrictOptions)"
+                    multiple>
+          <mat-option *ngFor="let option of forestDistrictOptions" [value]="option.value">
+            {{ option.label }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+    
+    <div class="field search-input filter-search-input">
+      <mat-label class="label">Fire Centre</mat-label>
+      <mat-form-field appearance="fill" class="filter-item">
+        <mat-select [(ngModel)]="selectedFireCentre" placeholder="Select"
+                    (selectionChange)="onSelectAll($event,'selectedFireCentre', fireCentreOptions)"
+                    multiple>
+          <mat-option *ngFor="let option of fireCentreOptions" [value]="option.value">
+            {{ option.label }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <div class="field search-input filter-search-input">
+      <mat-label class="label">Fiscal Status</mat-label>
+      <mat-form-field appearance="fill" class="filter-item">
+        <mat-select [(ngModel)]="selectedFiscalStatus" placeholder="Select"
+                    (selectionChange)="onSelectAll($event,'selectedFiscalStatus', fiscalStatusOptions)"
+                    multiple>
+          <mat-option *ngFor="let option of fiscalStatusOptions" [value]="option.value">
+            {{ option.label }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+        
+
+    <!-- Reset button -->
+    <button mat-stroked-button class="filter-item reset-button" (click)="onReset()">Reset</button>
+  </div>
+</div>

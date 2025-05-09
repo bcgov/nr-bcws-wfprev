@@ -89,8 +89,6 @@ body {
 
 html, body{
     font-family: var(--wf-font-family-main) !important;
-    height: 100%;
-    overflow: hidden; /* Prevent scrolling if not needed */
 }
 
 .mat-mdc-tab-body-wrapper {

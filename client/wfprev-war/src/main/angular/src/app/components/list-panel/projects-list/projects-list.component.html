@@ -25,7 +25,7 @@
   <div class="list-contents" (scroll)="handleScroll($event)">
     <mat-accordion>
       
-      <mat-expansion-panel *ngFor="let project of displayedProjects?.length ? displayedProjects : []" (click)="highlightProjectPolygons(project)" (opened)="getFiscal(project)" #panel="matExpansionPanel">
+      <mat-expansion-panel *ngFor="let project of displayedProjects?.length ? displayedProjects : []" (click)="highlightProjectPolygons(project)" #panel="matExpansionPanel">
         <mat-expansion-panel-header class="expansion-panel-header">
           <mat-panel-title class="project-title">
             <div class="custom-indicator">
@@ -43,10 +43,15 @@
               />
             </div>
             <span class="project-name"> {{ project.projectName }} </span>
-            <div class="action-items">
-              <div class="action-item" (click)="editProject(project, $event)">
-                <img alt="edit-icon" class="icon" src="/assets/edit-icon.svg" />
-                <span>Edit</span>
+            <div class="fiscal-action-container">
+              <div class="fiscal-range" *ngIf="getProjectFiscalYearRange(project)">
+                {{ getProjectFiscalYearRange(project) }}
+              </div>
+              <div class="action-items">
+                <div class="action-item" (click)="editProject(project, $event)">
+                  <img alt="edit-icon" class="icon" src="/assets/edit-icon.svg" />
+                  <span>Edit</span>
+                </div>
               </div>
             </div>
           </mat-panel-title>
@@ -55,7 +60,7 @@
             <div class="project-header-details">
               <div class="detail">
                 <span>Project Type</span>
-                <span class="heavy-font">{{ project.projectTypeCode?.description }}</span>
+                <span class="heavy-font">{{ getDescription('projectTypeCode', project.projectTypeCode) }}</span>
               </div>
               <div class="detail">
                 <span>Business Area</span>
