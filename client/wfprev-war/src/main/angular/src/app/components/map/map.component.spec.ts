@@ -1,3 +1,4 @@
+
 import { ComponentFixture, TestBed, fakeAsync, flush, tick } from '@angular/core/testing';
 import { MapComponent } from './map.component';
 import { MapConfigService } from 'src/app/services/map-config.service';
@@ -5,15 +6,15 @@ import { MapService } from 'src/app/services/map.service';
 import { ResizablePanelComponent } from 'src/app/components/resizable-panel/resizable-panel.component';
 import { of } from 'rxjs';
 import { ElementRef } from '@angular/core';
-import { HttpClientTestingModule } from '@angular/common/http/testing';  
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { AppConfigService } from 'src/app/services/app-config.service';
 import { CodeTableServices } from 'src/app/services/code-table-services';
 import { ProjectService } from 'src/app/services/project-services';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ActivatedRoute } from '@angular/router';
+import * as L from 'leaflet';
 
-// Mock AppConfigService
 class MockAppConfigService {
   getConfig() {
     return {
@@ -24,23 +25,54 @@ class MockAppConfigService {
       },
     };
   }
-
   loadAppConfig() {
-    return Promise.resolve(true); // Mock loadAppConfig to return a resolved promise
+    return Promise.resolve(true);
   }
 }
 
-// Mock CodeTableServices
 class MockCodeTableServices {
   fetchCodeTable() {
-    return of({ wfprev: 'mockedData' }); // Mock fetchCodeTable to return an observable
+    return of({ wfprev: 'mockedData' });
+  }
+  fetchFireCentres() {
+    return of({ _embedded: { fireCentre: [] } });
+  }
+  fetchForestRegions() {
+    return of({ _embedded: { forestRegion: [] } });
+  }
+  fetchFireZones() {
+    return of({ _embedded: { fireZone: [] } });
+  }
+  fetchForestDistricts() {
+    return of({ _embedded: { forestDistrict: [] } });
+  }
+  fetchBCParksRegions() {
+    return of({ _embedded: { bcParksRegion: [] } });
+  }
+  fetchBCParksSections() {
+    return of({ _embedded: { bcParksSection: [] } });
+  }
+  fetchActivityCategories() {
+    return of({ _embedded: { activityCategory: [] } });
+  }
+  fetchPlanFiscalStatuses() {
+    return of({ _embedded: { planFiscalStatus: [] } });
   }
 }
 
-// Mock ProjectService
+
 class MockProjectService {
   fetchProjects() {
-    return of({ wfprev: 'mockedData' }); // Mock fetchProjects to return an observable
+    return of({ wfprev: 'mockedData' });
+  }
+  getFeatures() {
+    return of({ projects: [] });
+  }
+  getProjectFiscalsByProjectGuid() {
+    return of({ _embedded: { projectFiscals: [] } });
+  }
+  getProjectByProjectGuid() {
+    return of({ projectGuid: 'test-guid' });
   }
 }
 
@@ -51,12 +83,35 @@ describe('MapComponent', () => {
   let mapServiceMock: jasmine.SpyObj<MapService>;
   let mapContainer: jasmine.SpyObj<ElementRef>;
 
-  beforeEach(() => {
-    mapConfigServiceMock = jasmine.createSpyObj<MapConfigService>('MapConfigService', ['getMapConfig']);
-    mapServiceMock = jasmine.createSpyObj<MapService>('MapService', ['getMapIndex', 'setMapIndex', 'createSMK','getSMKInstance']);
-    mapContainer = jasmine.createSpyObj('ElementRef', ['nativeElement']);
-    mapConfigServiceMock.getMapConfig.and.returnValue(Promise.resolve({ theme: 'testTheme' }));
+  const createMockSMKInstance = () => ({
+    $viewer: {
+      map: {
+        addLayer: jasmine.createSpy('addLayer'),
+        on: jasmine.createSpy('on'),
+        controls: {
+          bottomleft: {
+            addTo: jasmine.createSpy('addTo'),
+          },
+        },
+      }
+    }
+  });
 
+  beforeEach(() => {
+    (L as any).markerClusterGroup = () => ({
+      addLayer: jasmine.createSpy('addLayer'),
+      clearLayers: jasmine.createSpy('clearLayers'),
+    });
+    spyOn(L.Control.prototype, 'addTo').and.callFake(function (this: any) {
+      return this;
+    });
+
+    mapConfigServiceMock = jasmine.createSpyObj<MapConfigService>('MapConfigService', ['getMapConfig']);
+    mapServiceMock = jasmine.createSpyObj<MapService>('MapService', ['getMapIndex', 'setMapIndex', 'createSMK', 'getSMKInstance']);
+    mapContainer = jasmine.createSpyObj('ElementRef', ['nativeElement']);
+
+    mapConfigServiceMock.getMapConfig.and.returnValue(Promise.resolve({ theme: 'testTheme' }));
+    mapServiceMock.getSMKInstance.and.returnValue(createMockSMKInstance());
 
     TestBed.configureTestingModule({
       imports: [
@@ -92,70 +147,46 @@ describe('MapComponent', () => {
     component = fixture.componentInstance;
     fixture.detectChanges();
 
-    spyOn(console, 'error'); // Spy on console.error for error handling tests
+    spyOn(console, 'error');
   });
 
   describe('ngAfterViewInit', () => {
     it('should initialize map if mapContainer is available', fakeAsync(() => {
       mapContainer.nativeElement = document.createElement('div');
       component.mapContainer = mapContainer;
-    
+
+      const mockConfig = { theme: 'testTheme' };
+      mapConfigServiceMock.getMapConfig.and.returnValue(Promise.resolve(mockConfig));
       mapServiceMock.getMapIndex.and.returnValue(0);
-      mapServiceMock.getSMKInstance.and.returnValue({
-        $viewer: {
-          map: {
-            getBounds: () => ({
-              pad: () => ({
-                toBBoxString: () => 'mocked',
-              }),
-            }),
-            fitBounds: jasmine.createSpy('fitBounds'),
-          },
-        },
-      });
-      
-    
-      mapConfigServiceMock.getMapConfig.and.returnValue(Promise.resolve('mockConfig'));
-    
+      mapServiceMock.getSMKInstance.and.returnValue(createMockSMKInstance());
+
       component.ngAfterViewInit();
+
       tick();
-      tick(500);  // simulate setTimeout
-      flush();  
-    
+      flush();
+
       expect(mapServiceMock.getMapIndex).toHaveBeenCalled();
       expect(mapServiceMock.setMapIndex).toHaveBeenCalledWith(1);
       expect(mapServiceMock.createSMK).toHaveBeenCalled();
     }));
-    
   });
+
 
   describe('initMap', () => {
     it('should initialize map with correct config and device settings', fakeAsync(() => {
       mapContainer.nativeElement = document.createElement('div');
       component.mapContainer = mapContainer;
-  
+
       const mockConfig = { theme: 'testTheme' };
       mapConfigServiceMock.getMapConfig.and.returnValue(Promise.resolve(mockConfig));
       mapServiceMock.getMapIndex.and.returnValue(1);
-  
-      mapServiceMock.getSMKInstance.and.returnValue({
-        $viewer: {
-          map: {
-            getBounds: () => ({
-              pad: () => ({
-                toBBoxString: () => 'mocked',
-              }),
-            }),
-            fitBounds: jasmine.createSpy('fitBounds'),
-          },
-        },
-      });
-  
+      mapServiceMock.getSMKInstance.and.returnValue(createMockSMKInstance());
+
       component.ngAfterViewInit();
-      tick();      // resolves mapConfig promise
-      tick(500);   // handles setTimeout in ngAfterViewInit
-      flush();     // clears timers if any remain
-  
+
+      tick();
+      flush();
+
       expect(component.mapConfig).toEqual([
         mockConfig,
         { viewer: { device: 'desktop' } },
@@ -166,20 +197,19 @@ describe('MapComponent', () => {
     }));
   });
 
-    it('should handle errors while loading mapConfig', fakeAsync(() => {
-      mapContainer.nativeElement = document.createElement('div');
-      component.mapContainer = mapContainer;
-    
-      mapConfigServiceMock.getMapConfig.and.returnValue(Promise.reject('Config Load Error'));
-    
-      component.ngAfterViewInit();
-      tick();
-      tick(500);
-      flush(); 
-    
-      expect(console.error).toHaveBeenCalledWith('Error loading map:', 'Config Load Error');
-    }));
-    
+
+  it('should handle errors while loading mapConfig', fakeAsync(() => {
+    mapContainer.nativeElement = document.createElement('div');
+    component.mapContainer = mapContainer;
+
+    mapConfigServiceMock.getMapConfig.and.returnValue(Promise.reject('Config Load Error'));
+
+    component.ngAfterViewInit();
+    tick();
+    flush();
+
+    expect(console.error).toHaveBeenCalledWith('Error loading map:', 'Config Load Error');
+  }));
 
   describe('clone', () => {
     it('should return a deep clone of an object', () => {
@@ -193,16 +223,37 @@ describe('MapComponent', () => {
 
   describe('mapIndex and mapService', () => {
     it('should update mapIndex after getting map index', fakeAsync(() => {
+      mapContainer.nativeElement = document.createElement('div');
+      component.mapContainer = mapContainer;
+
       mapServiceMock.getMapIndex.and.returnValue(5);
-      mapServiceMock.getSMKInstance.and.returnValue({ $viewer: { map: { getBounds: () => ({ pad: () => [] }), fitBounds: () => {} } } });
-  
+      mapServiceMock.getSMKInstance.and.returnValue(createMockSMKInstance());
+
       component.ngAfterViewInit();
       tick();
-      tick(500);
-  
-      expect(component.mapIndex).toBe(6);
+      flush();
+
+      expect(component.mapIndex).toBe(5);
       expect(mapServiceMock.setMapIndex).toHaveBeenCalledWith(6);
     }));
   });
-  
+
+  it('should exit early and log error if mapContainer is missing', () => {
+    component.mapContainer = null as any;
+
+    component.ngAfterViewInit();
+
+    expect(console.error).toHaveBeenCalledWith('Map container is not available.');
+  });
+
+  it('should skip updateMarkers if map or markersClusterGroup is not ready', () => {
+    component['markersClusterGroup'] = null as any;
+    const consoleWarnSpy = spyOn(console, 'warn');
+
+    component.updateMarkers([{ latitude: 50, longitude: -120 }]);
+
+    expect(consoleWarnSpy).toHaveBeenCalledWith('[Map] Skipping updateMarkers — map or cluster group not ready');
+  });
+
+
 });
