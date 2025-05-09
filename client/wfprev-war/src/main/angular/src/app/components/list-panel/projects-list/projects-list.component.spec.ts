@@ -51,12 +51,13 @@ describe('ProjectsListComponent', () => {
   let mockRouter: jasmine.SpyObj<Router>;
 
   beforeEach(async () => {
-    mockProjectService = jasmine.createSpyObj('ProjectService', ['fetchProjects']);
+    mockProjectService = jasmine.createSpyObj('ProjectService', ['fetchProjects', 'getFeatures']);
     mockProjectService.fetchProjects.and.returnValue(of({
       _embedded: {
         project: mockProjectList,
       },
     }));
+    mockProjectService.getFeatures.and.returnValue(of({ projects: [] }));
 
     mockCodeTableService = jasmine.createSpyObj('CodeTableServices', ['fetchCodeTable']);
     mockCodeTableService.fetchCodeTable.and.callFake((name: 'programAreaCodes' | 'forestRegionCodes') => {
@@ -416,7 +417,7 @@ describe('ProjectsListComponent', () => {
     mockProjectService.getProjectFiscalsByProjectGuid = jasmine.createSpy()
       .and.returnValue(of(mockResponse));
   
-    component.getFiscal(project);
+    component['getFiscal'](project);
   
     expect(project.projectFiscals).toEqual([
       { fiscalYear: 2023 },
@@ -430,9 +431,80 @@ describe('ProjectsListComponent', () => {
     mockProjectService.getProjectFiscalsByProjectGuid = jasmine.createSpy()
       .and.returnValue(throwError(() => new Error('Failed to fetch')));
   
-    component.getFiscal(project);
+    component['getFiscal'](project);
   
     expect(project.projectFiscals).toEqual([]);
   });
   
+  it('should call getDescription for each code table type', () => {
+    component.programAreaCode = [{ programAreaGuid: 'guid1', programAreaName: 'Area 1' }];
+    component.forestRegionCode = [{ orgUnitId: 101, orgUnitName: 'Region 1' }];
+    component.forestDistrictCode = [{ orgUnitId: 201, orgUnitName: 'District 1' }];
+    component.bcParksRegionCode = [{ orgUnitId: 301, orgUnitName: 'Parks Region 1' }];
+    component.bcParksSectionCode = [{ orgUnitId: 401, orgUnitName: 'Parks Section 1' }];
+    component.planFiscalStatusCode = [{ planFiscalStatusCode: 'PS1', description: 'Planned' }];
+    component.activityCategoryCode = [{ activityCategoryCode: 'AC1', description: 'Clearing' }];
+
+    expect(component.getDescription('programAreaCode', 'guid1')).toBe('Area 1');
+    expect(component.getDescription('forestRegionCode', 101)).toBe('Region 1');
+    expect(component.getDescription('forestDistrictCode', 201)).toBe('District 1');
+    expect(component.getDescription('bcParksRegionCode', 301)).toBe('Parks Region 1');
+    expect(component.getDescription('bcParksSectionCode', 401)).toBe('Parks Section 1');
+    expect(component.getDescription('planFiscalStatusCode', 'PS1')).toBe('Planned');
+    expect(component.getDescription('activityCategoryCode', 'AC1')).toBe('Clearing');
+    expect(component.getDescription('unknownTable', 'x')).toBe('');
+  });
+
+  it('should call stripSuffix and return correct values', () => {
+    expect(component.stripSuffix('Test Forest Region', ' Forest Region')).toBe('Test');
+    expect(component.stripSuffix('Test', 'NotFound')).toBe('Test');
+    expect(component.stripSuffix('', 'Suffix')).toBe('');
+  });
+
+  it('should call getFiscalYearDisplay and return correct values', () => {
+    expect(component.getFiscalYearDisplay(2023)).toBe('2023/24');
+    expect(component.getFiscalYearDisplay(1999)).toBe('1999/00');
+    expect(component.getFiscalYearDisplay(undefined)).toBeNull();
+    expect(component.getFiscalYearDisplay(null)).toBeNull();
+  });
+
+  it('should call onSortChange and sort ascending/descending', () => {
+    component.allProjects = [
+      { projectName: 'B' },
+      { projectName: 'A' }
+    ];
+    component.onSortChange({ target: { value: 'ascending' } });
+    expect(component.allProjects[0].projectName).toBe('A');
+    component.onSortChange({ target: { value: 'descending' } });
+    expect(component.allProjects[0].projectName).toBe('B');
+  });
+
+  it('should call onScroll and load more projects', () => {
+    component.allProjects = Array.from({length: 50}, (_, i) => ({ projectName: `Project ${i}` }));
+    component.displayedProjects = component.allProjects.slice(0, 25);
+    component.currentPage = 0;
+    component.onScroll();
+    expect(component.displayedProjects.length).toBeGreaterThan(25);
+  });
+
+  it('should call handleScroll and trigger onScroll at bottom', () => {
+    spyOn(component, 'onScroll');
+    const event = { target: { scrollTop: 100, scrollHeight: 200, clientHeight: 100 } };
+    component.handleScroll(event);
+    expect(component.onScroll).toHaveBeenCalled();
+  });
+
+  it('should call createNewProject and open dialog', () => {
+    spyOn(component, 'loadProjects');
+    component.createNewProject();
+    expect(mockDialog.open).toHaveBeenCalled();
+    expect(component.loadProjects).toHaveBeenCalled();
+  });
+
+  it('should call getSecureRandomNumber and return a number', () => {
+    const num = component.getSecureRandomNumber();
+    expect(typeof num).toBe('number');
+    expect(num).toBeGreaterThanOrEqual(0);
+    expect(num).toBeLessThan(1);
+  });
 });

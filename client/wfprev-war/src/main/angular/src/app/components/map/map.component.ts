@@ -31,7 +31,7 @@ export class MapComponent implements AfterViewInit {
     future: '#E7298A'
   };
 
-  private readonly markersLayerGroup = L.layerGroup();
+  private markersLayerGroup = L.layerGroup();
   private isMapReady = false;
   private latestProjects: any[] = [];
   private hasClusterBeenAddedToMap = false;
@@ -45,47 +45,51 @@ export class MapComponent implements AfterViewInit {
     private readonly sharedService: SharedService
   ) {}
 
-  ngAfterViewInit(): void {
-    if (!this.mapContainer?.nativeElement) {
-      console.error('Map container is not available.');
-      return;
+ngAfterViewInit(): void {
+  if (!this.mapContainer?.nativeElement) {
+    console.error('Map container is not available.');
+    return;
+  }
+
+  this.mapIndex = this.mapService.getMapIndex();
+  this.mapService.setMapIndex(this.mapIndex + 1);
+
+  this.sharedService.displayedProjects$.subscribe(projects => {
+    this.latestProjects = projects;
+    if (this.isMapReady) {
+      this.updateMarkers(projects);
+    }
+  });
+
+  this.initMap().then(() => {
+    const smk = this.mapService.getSMKInstance();
+    const map = smk?.$viewer?.map;
+
+    if (map) {
+      const legendHelper = new LeafletLegendService();
+      legendHelper.addLegend(map, this.fiscalColorMap);
+
+      this.markersClusterGroup = L.markerClusterGroup({
+        showCoverageOnHover: false,
+        iconCreateFunction: (cluster) => {
+          const count = cluster.getChildCount();
+          return L.divIcon({
+            html: `<div class="cluster-icon"><span>${count}</span></div>`,
+            className: 'custom-marker-cluster',
+            iconSize: L.point(40, 40),
+          });
+        }
+      });
+
+      map.addLayer(this.markersClusterGroup);
+      this.hasClusterBeenAddedToMap = true;
     }
 
-    this.sharedService.displayedProjects$.subscribe(projects => {
-      this.latestProjects = projects;
-      if (this.isMapReady) {
-        this.updateMarkers(projects);
-      }
-    });
+    this.isMapReady = true;
+    this.updateMarkers(this.latestProjects);
+  });
+}
 
-    this.initMap().then(() => {
-      const smk = this.mapService.getSMKInstance();
-      const map = smk?.$viewer?.map;
-
-      if (map) {
-        const legendHelper = new LeafletLegendService();
-        legendHelper.addLegend(map, this.fiscalColorMap);
-
-        this.markersClusterGroup = L.markerClusterGroup({
-          showCoverageOnHover: false,
-          iconCreateFunction: (cluster) => {
-            const count = cluster.getChildCount();
-            return L.divIcon({
-              html: `<div class="cluster-icon"><span>${count}</span></div>`,
-              className: 'custom-marker-cluster',
-              iconSize: L.point(40, 40),
-            });
-          }
-        });
-
-        map.addLayer(this.markersClusterGroup);
-        this.hasClusterBeenAddedToMap = true;
-      }
-
-      this.isMapReady = true;
-      this.updateMarkers(this.latestProjects);
-    });
-  }
 
   private async initMap(): Promise<void> {
     try {
