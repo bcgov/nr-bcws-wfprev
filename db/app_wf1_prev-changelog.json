@@ -1123,6 +1123,26 @@
         "rollback": [
         ]
       }
+    },
+   {
+      "changeSet": {
+        "id": "01_00_17_00",
+        "author": "hsaldyga",
+        "tagDatabase": { "tag" : "version_01_00_17_00" },
+        "changes": [
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_17/00/dml/app_wf1_prev.dml.load_activity_category_code.sql"
+            }
+          }
+      ],
+        "rollback": [
+          { "sql": "DELETE FROM wfprev.activity_category_code WHERE activity_category_code IN ('WUIWRRPLAN','OPER_TREAT','PLN_DEV','COORD','IMPL_DELIV','MON_MAINT')" },
+          { "sql": "UPDATE wfprev.activity_category_code SET display_order = display_order - 1  WHERE activity_category_code IN ('MNT_SURVEY','MNT_OP_TRT','OTH_ASSSRV','OTH_ADMIN')" }
+        ]
+      }
     }
+ 
    ] 
 }
