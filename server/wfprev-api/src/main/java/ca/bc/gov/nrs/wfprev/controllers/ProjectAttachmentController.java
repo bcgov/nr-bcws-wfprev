@@ -76,7 +76,7 @@ public class ProjectAttachmentController extends CommonController {
                 log.warn(" ### Invalid projectGuid for : {}", projectGuid);
                 return notFound();
             }
-            return ok(fileAttachmentService.getAllFileAttachments(projectGuid));
+            return ok(fileAttachmentService.getAllProjectAttachments(projectGuid));
         } catch (RuntimeException e) {
             log.error(" ### Error while fetching File Attachments for Project", e);
             return internalServerError();

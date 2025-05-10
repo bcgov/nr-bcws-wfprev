@@ -41,6 +41,7 @@ public class ActivityBoundaryService implements CommonService {
     private final ActivityBoundaryResourceAssembler activityBoundaryResourceAssembler;
     private final ActivityRepository activityRepository;
     private final ActivityService activityService;
+    private final ProjectBoundaryService projectBoundaryService;
     private final Validator validator;
 
     public ActivityBoundaryService(
@@ -48,11 +49,13 @@ public class ActivityBoundaryService implements CommonService {
             ActivityBoundaryResourceAssembler activityBoundaryResourceAssembler,
             ActivityRepository activityRepository,
             ActivityService activityService,
+            ProjectBoundaryService projectBoundaryService,
             Validator validator) {
         this.activityBoundaryRepository = activityBoundaryRepository;
         this.activityBoundaryResourceAssembler = activityBoundaryResourceAssembler;
         this.activityRepository = activityRepository;
         this.activityService = activityService;
+        this.projectBoundaryService = projectBoundaryService;
         this.validator = validator;
     }
 
@@ -96,7 +99,7 @@ public class ActivityBoundaryService implements CommonService {
         ActivityBoundaryEntity entity = activityBoundaryResourceAssembler.toEntity(resource);
         if(entity != null && entity.getActivityGuid() != null) {
             entity.setActivityGuid(activityEntity.getActivityGuid());
-
+            entity.setBoundarySizeHa(projectBoundaryService.convertMultiPolygonAreaToHectares(entity.getGeometry()));
             ActivityBoundaryEntity savedEntity = activityBoundaryRepository.save(entity);
             return activityBoundaryResourceAssembler.toModel(savedEntity);
         } else throw new IllegalArgumentException("ActivityBoundaryModel resource to be created cannot be null");
@@ -129,6 +132,10 @@ public class ActivityBoundaryService implements CommonService {
             // Verify boundary belongs to the specified activity
             if (!existingEntity.getActivityGuid().toString().equals(activityGuid)) {
                 throw new EntityNotFoundException(MessageFormat.format(EXTENDED_KEY_FORMAT, BOUNDARY, boundaryGuid, DOES_NOT_BELONG_ACTIVITY, activityGuid));
+            }
+
+            if(resource.getGeometry()!= null && !resource.getGeometry().isEmpty()) {
+                resource.setBoundarySizeHa(projectBoundaryService.convertMultiPolygonAreaToHectares(resource.getGeometry()));
             }
 
             ActivityBoundaryEntity entity = activityBoundaryResourceAssembler.updateEntity(resource, existingEntity);

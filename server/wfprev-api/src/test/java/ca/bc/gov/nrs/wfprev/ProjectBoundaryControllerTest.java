@@ -173,7 +173,7 @@ class ProjectBoundaryControllerTest {
     void testCreateProjectBoundary_DataIntegrityViolationException() throws Exception {
         ProjectBoundaryModel requestModel = buildProjectBoundaryRequestModel();
 
-        when(projectBoundaryService.createOrUpdateProjectBoundary(anyString(), any(ProjectBoundaryModel.class)))
+        when(projectBoundaryService.createProjectBoundary(anyString(), any(ProjectBoundaryModel.class)))
                 .thenThrow(new DataIntegrityViolationException("Data Integrity Violation"));
 
         String requestJson = projectBoundaryJson.formatted(
@@ -197,7 +197,7 @@ class ProjectBoundaryControllerTest {
     void testCreateProjectBoundary_IllegalArgumentException() throws Exception {
         ProjectBoundaryModel requestModel = buildProjectBoundaryRequestModel();
 
-        when(projectBoundaryService.createOrUpdateProjectBoundary(anyString(), any(ProjectBoundaryModel.class)))
+        when(projectBoundaryService.createProjectBoundary(anyString(), any(ProjectBoundaryModel.class)))
                 .thenThrow(new IllegalArgumentException("Illegal Argument exception"));
 
         String requestJson = projectBoundaryJson.formatted(

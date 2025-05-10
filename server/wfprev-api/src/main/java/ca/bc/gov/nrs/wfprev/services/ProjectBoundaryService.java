@@ -14,10 +14,13 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validator;
 import lombok.extern.slf4j.Slf4j;
+import org.locationtech.jts.geom.MultiPolygon;
+import org.locationtech.jts.geom.Polygon;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.MessageFormat;
 import java.util.List;
 import java.util.Set;
@@ -77,7 +80,7 @@ public class ProjectBoundaryService implements CommonService {
   }
 
   @Transactional
-  public ProjectBoundaryModel createOrUpdateProjectBoundary(
+  public ProjectBoundaryModel createProjectBoundary(
           String projectGuid, ProjectBoundaryModel resource) {
     Set<ConstraintViolation<ProjectBoundaryModel>> violations = validator.validate(resource);
     if (!violations.isEmpty()) {
@@ -94,21 +97,15 @@ public class ProjectBoundaryService implements CommonService {
 
     updateFieldsFromBoundaryGeometry(resource);
 
-    List<ProjectBoundaryEntity> existingEntityList = projectBoundaryRepository.findByProjectGuid(UUID.fromString(projectGuid));
+    resource.setProjectBoundaryGuid(UUID.randomUUID().toString());
 
-    if (!existingEntityList.isEmpty() && existingEntityList.getFirst() != null) {
-      // Update existing boundary
-      ProjectBoundaryEntity existingEntity = existingEntityList.getFirst();
-      ProjectBoundaryEntity updatedEntity = projectBoundaryResourceAssembler.updateEntity(resource, existingEntity);
-      return saveProjectBoundary(updatedEntity);
-    } else {
-      // Create new boundary
-      resource.setProjectBoundaryGuid(UUID.randomUUID().toString());
-      ProjectBoundaryEntity newEntity = projectBoundaryResourceAssembler.toEntity(resource);
-      newEntity.setProjectGuid(projectEntity.getProjectGuid());
-      ProjectBoundaryEntity savedEntity = projectBoundaryRepository.save(newEntity);
+    ProjectBoundaryEntity entity = projectBoundaryResourceAssembler.toEntity(resource);
+    if(entity != null && entity.getProjectGuid() != null) {
+      entity.setProjectGuid(projectEntity.getProjectGuid());
+
+      ProjectBoundaryEntity savedEntity = projectBoundaryRepository.save(entity);
       return projectBoundaryResourceAssembler.toModel(savedEntity);
-    }
+    } else throw new IllegalArgumentException("ProjectBoundaryModel resource to be created cannot be null");
   }
 
   @Transactional
@@ -197,8 +194,42 @@ public class ProjectBoundaryService implements CommonService {
 
   private ProjectBoundaryModel updateFieldsFromBoundaryGeometry(ProjectBoundaryModel model) {
     if(model.getBoundaryGeometry() != null) {
-      model.setBoundarySizeHa(BigDecimal.valueOf(model.getBoundaryGeometry().getArea() / 10000.0));
+      model.setBoundarySizeHa(convertMultiPolygonAreaToHectares(model.getBoundaryGeometry()));
       model.setLocationGeometry(model.getBoundaryGeometry().getCentroid());
     } return model;
+  }
+
+  public BigDecimal convertMultiPolygonAreaToHectares(MultiPolygon multiPolygon) {
+    double totalAreaHectares = 0.0;
+
+    // Process each polygon in the MultiPolygon separately
+    for (int i = 0; i < multiPolygon.getNumGeometries(); i++) {
+      Polygon polygon = (Polygon) multiPolygon.getGeometryN(i);
+
+      // Get centroid of this specific polygon for more accurate conversion
+      double latitude = polygon.getCentroid().getY();
+      double latRad = Math.toRadians(latitude);
+
+      // Earth's radius in meters
+      double earthRadius = 6371000;
+
+      // Length of 1 degree in meters at this latitude
+      double metersPerLatDegree = Math.PI * earthRadius / 180.0;
+      double metersPerLonDegree = metersPerLatDegree * Math.cos(latRad);
+
+      // Area of 1 square degree in square meters at this latitude
+      double squareMetersPerSquareDegree = metersPerLatDegree * metersPerLonDegree;
+
+      // Convert this polygon's area to hectares
+      double polygonAreaSqDegrees = polygon.getArea();
+      double polygonAreaSqMeters = polygonAreaSqDegrees * squareMetersPerSquareDegree;
+      double polygonAreaHectares = polygonAreaSqMeters / 10000.0;
+
+      totalAreaHectares += polygonAreaHectares;
+    }
+
+    // Round to 4 decimal places
+    return BigDecimal.valueOf(totalAreaHectares)
+            .setScale(4, RoundingMode.HALF_UP);
   }
 }

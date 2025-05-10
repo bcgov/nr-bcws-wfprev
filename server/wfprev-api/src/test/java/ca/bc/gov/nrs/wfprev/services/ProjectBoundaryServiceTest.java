@@ -14,8 +14,14 @@ import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.LinearRing;
+import org.locationtech.jts.geom.MultiPolygon;
+import org.locationtech.jts.geom.Polygon;
 import org.springframework.hateoas.CollectionModel;
 
+import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -102,7 +108,7 @@ class ProjectBoundaryServiceTest {
         when(projectBoundaryResourceAssembler.toModel(entity)).thenReturn(resource);
 
         // Act
-        ProjectBoundaryModel result = projectBoundaryService.createOrUpdateProjectBoundary(projectGuid, resource);
+        ProjectBoundaryModel result = projectBoundaryService.createProjectBoundary(projectGuid, resource);
 
         // Assert
         assertNotNull(result, "Resulting ProjectBoundaryModel should not be null");
@@ -116,7 +122,7 @@ class ProjectBoundaryServiceTest {
 
         when(validator.validate(resource)).thenReturn(violations);
 
-        assertThrows(ConstraintViolationException.class, () -> projectBoundaryService.createOrUpdateProjectBoundary(projectGuid, resource));
+        assertThrows(ConstraintViolationException.class, () -> projectBoundaryService.createProjectBoundary(projectGuid, resource));
     }
 
     @Test
@@ -352,56 +358,26 @@ class ProjectBoundaryServiceTest {
     }
 
     @Test
-    void testCreateOrUpdateProjectBoundary_UpdatesExistingBoundary() {
-        // Arrange
-        String projectGuid = UUID.randomUUID().toString();
-        ProjectBoundaryModel resource = new ProjectBoundaryModel();
-        resource.setProjectGuid(projectGuid);
+    void testConvertMultiPolygonAreaToHectares() {
+        GeometryFactory geometryFactory = new GeometryFactory();
 
-        ProjectEntity projectEntity = new ProjectEntity();
-        projectEntity.setProjectGuid(UUID.fromString(projectGuid));
+        Coordinate[] coords = new Coordinate[] {
+                new Coordinate(0.0, 0.0),
+                new Coordinate(0.01, 0.0),
+                new Coordinate(0.01, 0.01),
+                new Coordinate(0.0, 0.01),
+                new Coordinate(0.0, 0.0)
+        };
+        LinearRing shell = geometryFactory.createLinearRing(coords);
+        Polygon polygon = geometryFactory.createPolygon(shell, null);
 
-        ProjectBoundaryEntity existingEntity = new ProjectBoundaryEntity();
-        existingEntity.setProjectGuid(UUID.fromString(projectGuid));
-        List<ProjectBoundaryEntity> existingEntities = List.of(existingEntity);
+        MultiPolygon multiPolygon = geometryFactory.createMultiPolygon(new Polygon[]{ polygon });
 
-        ProjectBoundaryEntity updatedEntity = new ProjectBoundaryEntity();
-        updatedEntity.setProjectGuid(UUID.fromString(projectGuid));
+        BigDecimal result = projectBoundaryService.convertMultiPolygonAreaToHectares(multiPolygon);
 
-        // Mock validations pass
-        when(validator.validate(resource)).thenReturn(Collections.emptySet());
+        BigDecimal expected = new BigDecimal("123.6431");
 
-        // Mock project exists
-        when(projectRepository.findById(UUID.fromString(projectGuid))).thenReturn(Optional.of(projectEntity));
-
-        // Mock existing boundary found
-        when(projectBoundaryRepository.findByProjectGuid(UUID.fromString(projectGuid))).thenReturn(existingEntities);
-
-        // Setup update of existing entity
-        when(projectBoundaryResourceAssembler.updateEntity(resource, existingEntity)).thenReturn(updatedEntity);
-
-        // Mock save operation
-        when(projectBoundaryRepository.saveAndFlush(updatedEntity)).thenReturn(updatedEntity);
-
-        // Mock conversion back to model
-        ProjectBoundaryModel expectedModel = new ProjectBoundaryModel();
-        when(projectBoundaryResourceAssembler.toModel(updatedEntity)).thenReturn(expectedModel);
-
-        // Act
-        ProjectBoundaryModel result = projectBoundaryService.createOrUpdateProjectBoundary(projectGuid, resource);
-
-        // Assert
-        assertNotNull(result);
-        assertEquals(expectedModel, result);
-
-        // Verify the update path was taken
-        verify(projectBoundaryResourceAssembler, times(1)).updateEntity(resource, existingEntity);
-        verify(projectBoundaryRepository, times(1)).saveAndFlush(updatedEntity);
-        verify(projectBoundaryResourceAssembler, times(1)).toModel(updatedEntity);
-
-        // Verify the create path was not taken
-        verify(projectBoundaryResourceAssembler, times(0)).toEntity(any());
-        verify(projectBoundaryRepository, times(0)).save(any());
+        assertEquals(expected, result, "Area in hectares should match expected conversion");
     }
 
 

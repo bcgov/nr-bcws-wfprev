@@ -173,7 +173,7 @@ public class ProjectAttachmentControllerTest {
         List<FileAttachmentModel> fileAttachments = List.of(buildFileAttachmentModel(), buildFileAttachmentModel());
         CollectionModel<FileAttachmentModel> collectionModel = CollectionModel.of(fileAttachments);
 
-        when(fileAttachmentService.getAllFileAttachments(anyString())).thenReturn(collectionModel);
+        when(fileAttachmentService.getAllProjectAttachments(anyString())).thenReturn(collectionModel);
         when(projectService.getProjectById(anyString())).thenReturn(new ProjectModel());
 
         mockMvc.perform(get("/projects/{projectGuid}/attachments", projectGuid)
@@ -202,7 +202,7 @@ public class ProjectAttachmentControllerTest {
 
         when(projectService.getProjectById(anyString())).thenReturn(new ProjectModel());
 
-        when(fileAttachmentService.getAllFileAttachments(anyString()))
+        when(fileAttachmentService.getAllProjectAttachments(anyString()))
                 .thenThrow(new RuntimeException("Database failure"));
 
         mockMvc.perform(get("/projects/{projectGuid}/attachments", projectGuid)

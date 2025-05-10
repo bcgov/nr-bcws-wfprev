@@ -78,7 +78,7 @@ public class ActivityAttachmentController extends CommonController {
                 log.warn(" ### Invalid activityGuid for : {}", activityGuid);
                 return notFound();
             }
-            return ok(fileAttachmentService.getAllFileAttachments(activityGuid));
+            return ok(fileAttachmentService.getAllActivityAttachments(activityGuid));
         } catch (RuntimeException e) {
             log.error(" ### Error while fetching File Attachments for Activity", e);
             return internalServerError();

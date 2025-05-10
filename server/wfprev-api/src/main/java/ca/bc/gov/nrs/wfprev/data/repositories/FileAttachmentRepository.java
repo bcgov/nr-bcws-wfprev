@@ -10,4 +10,6 @@ import java.util.UUID;
 @RepositoryRestResource(exported = false)
 public interface FileAttachmentRepository extends CommonRepository<FileAttachmentEntity, UUID> {
     List<FileAttachmentEntity> findAllBySourceObjectUniqueId(String sourceObjectUniqueId);
+
+    List<FileAttachmentEntity> findAllBySourceObjectUniqueIdIn(List<String> boundaryGuids);
 }

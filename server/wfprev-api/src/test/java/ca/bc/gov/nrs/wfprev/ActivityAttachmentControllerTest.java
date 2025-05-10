@@ -172,7 +172,7 @@ class ActivityAttachmentControllerTest {
 
         when(activityService.getActivity(anyString(), anyString(), anyString()))
                 .thenReturn(new ActivityModel());
-        when(fileAttachmentService.getAllFileAttachments(anyString()))
+        when(fileAttachmentService.getAllActivityAttachments(anyString()))
                 .thenReturn(CollectionModel.of(mockAttachments));
 
         mockMvc.perform(get("/projects/{projectGuid}/projectFiscals/{projectPlanFiscalGuid}/activities/{activityGuid}/attachments",
@@ -202,7 +202,7 @@ class ActivityAttachmentControllerTest {
     void testGetAllFileAttachments_RuntimeException() throws Exception {
         when(activityService.getActivity(anyString(), anyString(), anyString()))
                 .thenReturn(new ActivityModel());
-        when(fileAttachmentService.getAllFileAttachments(anyString()))
+        when(fileAttachmentService.getAllActivityAttachments(anyString()))
                 .thenThrow(new RuntimeException("Unexpected error"));
 
         mockMvc.perform(get("/projects/{projectGuid}/projectFiscals/{projectPlanFiscalGuid}/activities/{activityGuid}/attachments",
