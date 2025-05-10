@@ -42,7 +42,9 @@ describe('ProjectFilesComponent', () => {
       'createProjectAttachment', 
       'getProjectAttachments',
       'deleteProjectAttachment',
-      "createActivityAttachment"
+      'createActivityAttachment',
+      'getActivityAttachments',
+      'deleteActivityAttachments'
     ]);
     mockSpatialService = jasmine.createSpyObj('SpatialService', ['extractCoordinates']);
     mockCdr = jasmine.createSpyObj('ChangeDetectorRef', ['detectChanges']);
@@ -204,6 +206,29 @@ describe('ProjectFilesComponent', () => {
     });
   });
 
+  describe('loadActivityAttachments', () => {
+    it('should handle missing fileAttachment array', () => {
+      mockProjectService.getActivityBoundaries.and.returnValue(of({ _embedded: { activityBoundary: [] } }));
+      mockAttachmentService.getActivityAttachments.and.returnValue(of({ _embedded: {} }));
+  
+      spyOn(console, 'error');
+      component.loadActivityAttachments();
+  
+      expect(component.projectFiles.length).toBe(0);
+    });
+  
+    it('should not run if fiscalGuid or activityGuid is missing', () => {
+      component.fiscalGuid = '';
+      component.activityGuid = '';
+  
+      component.loadActivityAttachments();
+  
+      expect(mockProjectService.getActivityBoundaries).not.toHaveBeenCalled();
+      expect(mockAttachmentService.getActivityAttachments).not.toHaveBeenCalled();
+    });
+  });
+  
+
   describe('openFileUploadModal', () => {
     it('should open file upload modal and call uploadFile if a file is selected', () => {
       const mockFile = new File(['content'], 'test-file.txt', { type: 'text/plain' });
@@ -286,18 +311,16 @@ describe('ProjectFilesComponent', () => {
       const mockBoundaryResp = { projectBoundaryGuid: 'mock-boundary-id' };
       const mockCoordinates = [[[[0, 0], [1, 1], [1, 0], [0, 0]]]];
     
-      // Mock services
       mockSpatialService.extractCoordinates.and.returnValue(Promise.resolve(mockCoordinates));
       mockProjectService.createProjectBoundary.and.returnValue(of(mockBoundaryResp));
       mockAttachmentService.createProjectAttachment.and.returnValue(of({}));
     
-      // Required values
       component.uploadedBy = 'test-user';
       component.attachmentDescription = 'Test spatial file';
     
       component.uploadAttachment(mockFile, mockFileUploadResp, 'kml');
     
-      tick(); // resolves promise from extractCoordinates
+      tick(); 
       fixture.detectChanges();
     
       expect(mockSpatialService.extractCoordinates).toHaveBeenCalledWith(mockFile);
