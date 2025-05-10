@@ -1,5 +1,5 @@
 import { ChangeDetectorRef } from '@angular/core';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { of, throwError } from 'rxjs';
@@ -276,79 +276,63 @@ describe('ProjectFilesComponent', () => {
     });
   });
 
-  // fdescribe('uploadAttachment', () => {
-  //   it('should create project attachment and extract coordinates on success', () => {
-  //     const mockFile = new File(['content'], 'test-file.txt', { type: 'text/plain' });
-  //     const response = { fileId: 'test-file-id' };
-  //     const attachmentResponse = { uploadedByUserId: 'test-user' };
-  //     const coordinates: Position[][][] = [
-  //       [
-  //         [
-  //           [123, 456]
-  //         ]
-  //       ]
-  //     ];
+  describe('uploadAttachment', () => {
+    it('should handle spatial file upload and create project boundary', fakeAsync(() => {
+      const mockFile = new File(['dummy content'], 'test.kml', {
+        type: 'application/vnd.google-earth.kml+xml',
+      });
+    
+      const mockFileUploadResp = { fileId: 'mock-file-id' };
+      const mockBoundaryResp = { projectBoundaryGuid: 'mock-boundary-id' };
+      const mockCoordinates = [[[[0, 0], [1, 1], [1, 0], [0, 0]]]];
+    
+      // Mock services
+      mockSpatialService.extractCoordinates.and.returnValue(Promise.resolve(mockCoordinates));
+      mockProjectService.createProjectBoundary.and.returnValue(of(mockBoundaryResp));
+      mockAttachmentService.createProjectAttachment.and.returnValue(of({}));
+    
+      // Required values
+      component.uploadedBy = 'test-user';
+      component.attachmentDescription = 'Test spatial file';
+    
+      component.uploadAttachment(mockFile, mockFileUploadResp, 'kml');
+    
+      tick(); // resolves promise from extractCoordinates
+      fixture.detectChanges();
+    
+      expect(mockSpatialService.extractCoordinates).toHaveBeenCalledWith(mockFile);
+      expect(mockProjectService.createProjectBoundary).toHaveBeenCalledWith(mockProjectGuid, {
+        projectGuid: mockProjectGuid,
+        systemStartTimestamp: jasmine.any(String),
+        systemEndTimestamp: jasmine.any(String),
+        collectionDate: jasmine.any(String),
+        collectorName: 'test-user',
+        boundaryGeometry: {
+          type: 'MultiPolygon',
+          coordinates: mockCoordinates
+        }
+      });
+    
+      expect(mockAttachmentService.createProjectAttachment).toHaveBeenCalledWith(mockProjectGuid, {
+        sourceObjectNameCode: { sourceObjectNameCode: 'PROJECT' },
+        sourceObjectUniqueId: 'mock-boundary-id',
+        documentPath: 'test.kml',
+        fileIdentifier: 'mock-file-id',
+        attachmentContentTypeCode: { attachmentContentTypeCode: 'kml' },
+        attachmentDescription: 'Test spatial file',
+        attachmentReadOnlyInd: false
+      }); 
+    }));
 
-  //     mockAttachmentService.createProjectAttachment.and.returnValue(of(attachmentResponse));
-  //     mockSpatialService.extractCoordinates.and.returnValue(Promise.resolve(coordinates));
-      
-  //     spyOn(component, 'createProjectBoundary').and.stub();
-  //     spyOn(component, 'loadProjectAttachments').and.stub();
-
-  //     component.uploadAttachment(mockFile, response, 'Activity Polygon');
-
-  //     expect(mockAttachmentService.createProjectAttachment).toHaveBeenCalledWith(
-  //       mockProjectGuid,
-  //       jasmine.objectContaining({
-  //         fileIdentifier: 'test-file-id',
-  //         documentPath: 'test-file.txt'
-  //       })
-  //     );
-
-  //     // We need to use fixture.whenStable() for promises
-  //     fixture.whenStable().then(() => {
-  //       expect(component.uploadedBy).toBe('test-user');
-  //       expect(mockSpatialService.extractCoordinates).toHaveBeenCalledWith(mockFile);
-  //       expect(component.createProjectBoundary).toHaveBeenCalledWith(mockFile, coordinates);
-  //       expect(component.loadProjectAttachments).toHaveBeenCalled();
-  //     });
-  //   });
-
-  //   it('should handle create attachment error', () => {
-  //     const mockFile = new File(['content'], 'test-file.txt', { type: 'text/plain' });
-  //     const response = { fileId: 'test-file-id' };
+    it('should call finishWithoutGeometry for unsupported extension', () => {
+      const mockFile = new File([''], 'test.txt', { type: 'text/plain' });
+      spyOn(component, 'finishWithoutGeometry');
     
-  //     spyOn(console, 'log'); 
+      component.uploadAttachment(mockFile, {}, 'OTHER');
     
-  //     mockAttachmentService.createProjectAttachment.and.returnValue(
-  //       throwError(() => new Error('Failed to create attachment'))
-  //     );
-    
-  //     component.uploadAttachment(mockFile, response, 'Activity Polygon');
-    
-  //     expect(mockAttachmentService.createProjectAttachment).toHaveBeenCalled();
-  //     expect(console.log).toHaveBeenCalledWith('Failed to upload attachment: ', jasmine.any(Error));
-  //   });
-    
-  //   it('should call finishWithoutGeometry if type is "Other"', async () => {
-  //     const mockFile = new File(['test'], 'test-file.txt', { type: 'text/plain' });
-  //     const response = { fileId: 'test-file-id' };
-  //     const uploadResponse = { uploadedByUserId: 'tester' };
-    
-  //     component.projectGuid = 'project-guid';
-  //     component.fiscalGuid = 'fiscal-guid';
-  //     component.activityGuid = 'activity-guid';
-    
-  //     spyOn(component as any, 'finishWithoutGeometry');
-  //     mockAttachmentService.createActivityAttachment.and.returnValue(of(uploadResponse));
-    
-  //     await component.uploadAttachment(mockFile, response, 'OTHER');
-    
-  //     expect(mockAttachmentService.createActivityAttachment).toHaveBeenCalled();
-  //     expect(component.uploadedBy).toBe('tester');
-  //     expect(component.finishWithoutGeometry).toHaveBeenCalled();
-  //   });
-  // });
+      expect(component.finishWithoutGeometry).toHaveBeenCalled();
+    });
+  });
 
   describe('createProjectBoundary', () => {
     it('should create project boundary successfully', () => {
