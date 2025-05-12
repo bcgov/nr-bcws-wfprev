@@ -236,7 +236,7 @@ export class ProjectFilesComponent implements OnInit {
       futureDate.setFullYear(futureDate.getFullYear() + 1);
   
       if (this.isActivityContext && this.projectGuid) {
-        // === Create ACTIVITY boundary ===
+        // Create Activity boundary 
         const activityBoundary: ActivityBoundary = {
           activityGuid: this.activityGuid,
           systemStartTimestamp: now.toISOString(),
@@ -282,7 +282,7 @@ export class ProjectFilesComponent implements OnInit {
         });
   
       } else {
-        // === Create PROJECT boundary ===
+        // Create Project boundary
         const projectBoundary: ProjectBoundary = {
           projectGuid: this.projectGuid,
           systemStartTimestamp: now.toISOString(),
