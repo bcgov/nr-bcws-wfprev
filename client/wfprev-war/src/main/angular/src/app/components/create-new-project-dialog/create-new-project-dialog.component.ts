@@ -44,7 +44,7 @@ export class CreateNewProjectDialogComponent implements OnInit {
   objectiveTypes: any[] = [];
   projectTypes: any[] = [];
   fireCentres: any[] = [];
-
+  forestDistrictsBackup: any[] = [];
   constructor(
     private readonly fb: FormBuilder,
     private readonly dialog: MatDialog,
@@ -89,6 +89,25 @@ export class CreateNewProjectDialogComponent implements OnInit {
     bcParksRegionControl?.updateValueAndValidity();
   });
 
+  this.projectForm.get('forestRegion')?.valueChanges.subscribe((regionId: number) => {
+    if (regionId) {
+      // Filter districts where parentOrgUnitId === selected forestRegion
+      this.forestDistricts = this.forestDistrictsBackup.filter(
+        (district) => String(district.parentOrgUnitId) === String(regionId)
+      );
+      
+      // If current forestDistrict is invalid, clear it
+      const currentDistrict = this.projectForm.get('forestDistrict')?.value;
+      const validDistrictIds = this.forestDistricts.map(d => d.orgUnitId);
+      if (!validDistrictIds.includes(currentDistrict)) {
+        this.projectForm.get('forestDistrict')?.setValue('');
+      }
+
+    } else {
+      this.forestDistricts = [...this.forestDistrictsBackup];
+    }
+  });
+
   // Dynamically enable/disable bcParksSection based on bcParksRegion selection
     this.projectForm.get('bcParksRegion')?.valueChanges.subscribe((regionId: number) => {
       if (regionId) {
@@ -123,6 +142,12 @@ export class CreateNewProjectDialogComponent implements OnInit {
       this.codeTableService.fetchCodeTable(table.name).subscribe({
         next: (data) => {
           this[table.property] = data?._embedded?.[table.embeddedKey] || [];
+
+          if (table.name === 'forestDistrictCodes') {
+            this.forestDistrictsBackup = this[table.property];
+            this.forestDistricts = [...this.forestDistrictsBackup]; // default to full list
+          }
+          
           if (table.name === 'objectiveTypeCodes') {
             const defaultObjective = this.objectiveTypes.find(
               (type) => type.objectiveTypeCode === 'WRR'
