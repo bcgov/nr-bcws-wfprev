@@ -240,7 +240,6 @@ export class ProjectsListComponent implements OnInit {
     });
   }
 
-  // Temporary function, to be replaced with SMK layer config when /features endpoint exists in the API
   loadCoordinatesOnMap() {
     if (this.displayedProjects?.length > 0) {
       const coords = this.displayedProjects
