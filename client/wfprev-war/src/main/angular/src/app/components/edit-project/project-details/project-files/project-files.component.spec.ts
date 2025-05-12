@@ -67,7 +67,7 @@ describe('ProjectFilesComponent', () => {
         { provide: AttachmentService, useValue: mockAttachmentService },
         { provide: SpatialService, useValue: mockSpatialService },
         { provide: ChangeDetectorRef, useValue: mockCdr },
-        { provide: ActivatedRoute, useValue: { snapshot: { queryParamMap: { get: () => 'mock-project-guid' } } } },
+        { provide: ActivatedRoute, useValue: { snapshot: { queryParamMap: { get: () => 'test-project-guid' } } } },
       ],
     }).compileComponents();
 
@@ -207,6 +207,100 @@ describe('ProjectFilesComponent', () => {
   });
 
   describe('loadActivityAttachments', () => {
+    const mockActivityGuid = 'test-activity-guid';
+    const mockFiscalGuid = 'test-fiscal-guid';
+  
+    beforeEach(() => {
+      component.projectGuid = mockProjectGuid;
+      component.activityGuid = mockActivityGuid;
+      component.fiscalGuid = mockFiscalGuid;
+    });
+  
+    it('should load activity attachments and boundaries successfully', () => {
+      const mockBoundaries = [
+        { activityBoundaryGuid: 'abc', boundarySizeHa: 25 }
+      ];
+  
+      const mockFiles = [
+        { fileName: 'file1.txt', sourceObjectUniqueId: 'abc', uploadedByTimestamp: '2024-01-01T00:00:00Z' }
+      ];
+  
+      const mockBoundaryResponse = {
+        _embedded: { activityBoundary: mockBoundaries }
+      };
+  
+      const mockAttachmentResponse = {
+        _embedded: { fileAttachment: mockFiles }
+      };
+  
+      mockProjectService.getActivityBoundaries.and.returnValue(of(mockBoundaryResponse));
+      mockAttachmentService.getActivityAttachments.and.returnValue(of(mockAttachmentResponse));
+  
+      component.loadActivityAttachments();
+  
+      expect(mockProjectService.getActivityBoundaries).toHaveBeenCalledWith(mockProjectGuid, mockFiscalGuid, mockActivityGuid);
+      expect(mockAttachmentService.getActivityAttachments).toHaveBeenCalledWith(mockProjectGuid, mockFiscalGuid, mockActivityGuid);
+    });
+  
+    it('should handle case where boundaries are empty', () => {
+      const mockBoundaryResponse = { _embedded: { activityBoundary: [] } };
+      const mockAttachmentResponse = {
+        _embedded: {
+          fileAttachment: [{ fileName: 'test.txt', uploadedByTimestamp: '2024-01-01T00:00:00Z' }]
+        }
+      };
+  
+      mockProjectService.getActivityBoundaries.and.returnValue(of(mockBoundaryResponse));
+      mockAttachmentService.getActivityAttachments.and.returnValue(of(mockAttachmentResponse));
+  
+      component.loadActivityAttachments();
+  
+      expect(component.projectFiles.length).toBe(1);
+      expect(component.projectFiles[0].polygonHectares).toBeNull();
+    });
+  
+    it('should handle missing fileAttachment array', () => {
+      const mockBoundaryResponse = { _embedded: { activityBoundary: [] } };
+      const mockAttachmentResponse = { _embedded: {} };
+  
+      mockProjectService.getActivityBoundaries.and.returnValue(of(mockBoundaryResponse));
+      mockAttachmentService.getActivityAttachments.and.returnValue(of(mockAttachmentResponse));
+  
+      spyOn(console, 'error');
+      component.loadActivityAttachments();
+  
+      expect(component.projectFiles.length).toBe(0);
+      expect(console.error).toHaveBeenCalled();
+    });
+  
+    it('should show snackbar on getActivityAttachments error', () => {
+      const mockBoundaryResponse = { _embedded: { activityBoundary: [] } };
+  
+      mockProjectService.getActivityBoundaries.and.returnValue(of(mockBoundaryResponse));
+      mockAttachmentService.getActivityAttachments.and.returnValue(
+        throwError(() => new Error('Failed to load attachments'))
+      );
+  
+      component.loadActivityAttachments();
+  
+      expect(mockSnackbar.open).toHaveBeenCalledWith(
+        'Failed to load activity attachments.',
+        'Close',
+        jasmine.any(Object)
+      );
+    });
+  
+    it('should log error on getActivityBoundaries error', () => {
+      mockProjectService.getActivityBoundaries.and.returnValue(
+        throwError(() => new Error('Failed to load boundaries'))
+      );
+  
+      spyOn(console, 'error');
+      component.loadActivityAttachments();
+  
+      expect(console.error).toHaveBeenCalledWith('Failed to load activity boundaries:', jasmine.any(Error));
+    });
+
     it('should handle missing fileAttachment array', () => {
       mockProjectService.getActivityBoundaries.and.returnValue(of({ _embedded: { activityBoundary: [] } }));
       mockAttachmentService.getActivityAttachments.and.returnValue(of({ _embedded: {} }));
@@ -355,6 +449,67 @@ describe('ProjectFilesComponent', () => {
     
       expect(component.finishWithoutGeometry).toHaveBeenCalled();
     });
+
+    it('should handle spatial file upload and create activity boundary when in activity context', fakeAsync(() => {
+      const mockFile = new File(['dummy content'], 'test.kml', {
+        type: 'application/vnd.google-earth.kml+xml',
+      });
+    
+      const mockFileUploadResp = { fileId: 'mock-file-id' };
+      const mockBoundaryResp = { activityBoundaryGuid: 'mock-boundary-id' };
+      const mockCoordinates = [[[[0, 0], [1, 1], [1, 0], [0, 0]]]];
+    
+      // Mock dependencies
+      mockSpatialService.extractCoordinates.and.returnValue(Promise.resolve(mockCoordinates));
+      mockProjectService.createActivityBoundary.and.returnValue(of(mockBoundaryResp));
+      mockAttachmentService.createActivityAttachment.and.returnValue(of({}));
+      mockProjectService.getActivityBoundaries.and.returnValue(of([]));
+      mockAttachmentService.getActivityAttachments.and.returnValue(of([]));
+    
+      // Simulate activity context
+      spyOnProperty(component, 'isActivityContext', 'get').and.returnValue(true);
+      component.projectGuid = 'mock-project-guid';
+      component.fiscalGuid = 'mock-fiscal-guid';
+      component.activityGuid = 'mock-activity-guid';
+      component.uploadedBy = 'test-user';
+      component.attachmentDescription = 'Test spatial file';
+    
+      // Call method
+      component.uploadAttachment(mockFile, mockFileUploadResp, 'kml');
+    
+      tick(); 
+      fixture.detectChanges();
+    
+      expect(mockSpatialService.extractCoordinates).toHaveBeenCalledWith(mockFile);
+      expect(mockProjectService.createActivityBoundary).toHaveBeenCalledWith(
+        'mock-project-guid',
+        'mock-fiscal-guid',
+        'mock-activity-guid',
+        jasmine.objectContaining({
+          activityGuid: 'mock-activity-guid',
+          collectorName: 'test-user',
+          geometry: {
+            type: 'MultiPolygon',
+            coordinates: mockCoordinates
+          }
+        })
+      );
+    
+      expect(mockAttachmentService.createActivityAttachment).toHaveBeenCalledWith(
+        'mock-project-guid',
+        'mock-fiscal-guid',
+        'mock-activity-guid',
+        jasmine.objectContaining({
+          sourceObjectNameCode: { sourceObjectNameCode: 'TREATMENT_ACTIVITY' },
+          sourceObjectUniqueId: 'mock-boundary-id',
+          documentPath: 'test.kml',
+          fileIdentifier: 'mock-file-id',
+          attachmentContentTypeCode: { attachmentContentTypeCode: 'kml' },
+          attachmentDescription: 'Test spatial file',
+          attachmentReadOnlyInd: false
+        })
+      );
+    }));
   });
 
   describe('createProjectBoundary', () => {
