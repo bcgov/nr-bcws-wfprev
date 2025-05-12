@@ -40,6 +40,7 @@ class ActivityBoundaryServiceTest {
     private ActivityRepository activityRepository;
     private ActivityService activityService;
     private ActivityBoundaryService activityBoundaryService;
+    private ProjectBoundaryService projectBoundaryService;
     private Validator validator;
 
     @BeforeEach
@@ -48,6 +49,7 @@ class ActivityBoundaryServiceTest {
         activityBoundaryResourceAssembler = mock(ActivityBoundaryResourceAssembler.class);
         activityRepository = mock(ActivityRepository.class);
         activityService = mock(ActivityService.class);
+        projectBoundaryService = mock(ProjectBoundaryService.class);
         validator = mock(Validator.class);
 
         activityBoundaryService = new ActivityBoundaryService(
@@ -55,6 +57,7 @@ class ActivityBoundaryServiceTest {
                 activityBoundaryResourceAssembler,
                 activityRepository,
                 activityService,
+                projectBoundaryService,
                 validator
         );
     }
