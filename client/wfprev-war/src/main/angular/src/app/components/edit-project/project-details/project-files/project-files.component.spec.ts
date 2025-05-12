@@ -320,6 +320,22 @@ describe('ProjectFilesComponent', () => {
       expect(mockProjectService.getActivityBoundaries).not.toHaveBeenCalled();
       expect(mockAttachmentService.getActivityAttachments).not.toHaveBeenCalled();
     });
+
+    it('should set description and call uploadFile when both are returned from modal', () => {
+      const mockFile = new File(['dummy'], 'file.txt');
+      const description = 'my description';
+    
+      mockDialog.open.and.returnValue({
+        afterClosed: () => of({ file: mockFile, description, type: 'Activity Polygon' }),
+      } as any);
+    
+      spyOn(component, 'uploadFile').and.stub();
+    
+      component.openFileUploadModal();
+    
+      expect(component.attachmentDescription).toBe(description);
+      expect(component.uploadFile).toHaveBeenCalledWith(mockFile, 'Activity Polygon');
+    });
   });
   
 
@@ -753,53 +769,6 @@ describe('ProjectFilesComponent', () => {
   });
 
   describe('loadActivityAttachments', () => {
-    // it('should load activity attachments and update dataSource', () => {
-    //   const attachments = [
-    //     { fileName: 'a.txt', uploadedByTimestamp: '2024-01-01T10:00:00Z' },
-    //     { fileName: 'b.txt', uploadedByTimestamp: '2024-01-01T12:00:00Z' }
-    //   ];
-  
-    //   mockAttachmentService.getActivityAttachments = jasmine.createSpy().and.returnValue(
-    //     of({ _embedded: { fileAttachment: attachments } })
-    //   );
-  
-    //   component.fiscalGuid = 'fiscal';
-    //   component.activityGuid = 'activity';
-    //   component.loadActivityAttachments();
-  
-    //   expect(component.projectFiles.length).toBe(2);
-    //   expect(component.dataSource.data.length).toBe(2);
-    // });
-  
-    // it('should handle malformed response and fallback to empty list', () => {
-    //   mockAttachmentService.getActivityAttachments = jasmine.createSpy().and.returnValue(of({ _embedded: {} }));
-  
-    //   component.fiscalGuid = 'fiscal';
-    //   component.activityGuid = 'activity';
-  
-    //   spyOn(console, 'error');
-    //   component.loadActivityAttachments();
-  
-    //   expect(console.error).toHaveBeenCalled();
-    //   expect(component.projectFiles.length).toBe(0);
-    // });
-  
-    // it('should show snackbar on error', () => {
-    //   mockAttachmentService.getActivityAttachments = jasmine.createSpy().and.returnValue(
-    //     throwError(() => new Error('fail'))
-    //   );
-  
-    //   component.fiscalGuid = 'fiscal';
-    //   component.activityGuid = 'activity';
-  
-    //   component.loadActivityAttachments();
-  
-    //   expect(mockSnackbar.open).toHaveBeenCalledWith(
-    //     'Failed to load activity attachments.',
-    //     'Close',
-    //     jasmine.any(Object)
-    //   );
-    // });
 
     it('should set description and call uploadFile when both are returned from modal', () => {
       const mockFile = new File(['dummy'], 'file.txt');
@@ -965,41 +934,6 @@ describe('ProjectFilesComponent', () => {
     expect(mockProjectService.getActivityBoundaries).toHaveBeenCalled();
     expect(console.log).toHaveBeenCalledWith('No boundaries found');
   });
-
-  // it('should create activity attachment and update activity boundary when isActivityContext is true', async () => {
-  //   const mockFile = new File(['content'], 'activity-file.geojson', { type: 'application/geo+json' });
-  //   const mockResponse = { uploadedByUserId: 'user-abc' };
-  //   const mockCoordinates: Position[][][] = [
-  //     [[[123.4, 45.6], [123.5, 45.7], [123.4, 45.6]]]
-  //   ];
-  
-  //   component.projectGuid = 'project-guid';
-  //   component.fiscalGuid = 'fiscal-guid';
-  //   component.activityGuid = 'activity-guid';
-  //   component.attachmentDescription = 'activity file';
-    
-  //   spyOn(component, 'createActivityBoundary');
-  //   mockAttachmentService.createActivityAttachment.and.returnValue(of(mockResponse));
-  //   mockSpatialService.extractCoordinates.and.returnValue(Promise.resolve(mockCoordinates));
-  
-  //   await component.uploadAttachment(mockFile, { fileId: 'file-xyz' }, 'Activity Polygon');
-  
-  //   expect(mockAttachmentService.createActivityAttachment).toHaveBeenCalledWith(
-  //     'project-guid',
-  //     'fiscal-guid',
-  //     'activity-guid',
-  //     jasmine.objectContaining({
-  //       documentPath: 'activity-file.geojson',
-  //       fileIdentifier: 'file-xyz',
-  //       attachmentDescription: 'activity file',
-  //       sourceObjectNameCode: { sourceObjectNameCode: 'TREATMENT_ACTIVITY' },
-  //       sourceObjectUniqueId: 'activity-guid',
-  //     })
-  //   );
-  
-  //   expect(mockSpatialService.extractCoordinates).toHaveBeenCalledWith(mockFile);
-  //   expect(component.createActivityBoundary).toHaveBeenCalledWith(mockFile, mockCoordinates);
-  // });
   
   describe('finishWithoutGeometry', () => {
     beforeEach(() => {
