@@ -29,7 +29,7 @@ export class AppHeaderComponent implements OnInit{
 
 
   environment:string = 'DEV'
-  title:string = 'RESILIENCE'
+  title:string = 'PREVENTION'
   currentUser: string = 'User_1'
 
   ngOnInit(): void {
