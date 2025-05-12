@@ -86,11 +86,18 @@ export class FiscalMapComponent implements AfterViewInit, OnDestroy, OnInit {
     this.projectGuid = this.route.snapshot?.queryParamMap?.get('projectGuid') ?? '';
     if (this.projectGuid) {
       this.projectService.getProjectBoundaries(this.projectGuid).subscribe((data) => {
-        const boundary = data?._embedded?.projectBoundary ?? [];
-        this.projectBoundary = boundary;
+        const boundaries = data?._embedded?.projectBoundary ?? [];
+        if (boundaries.length > 0) {
+          // Sort boundaries by systemStartTimestamp descending and pick the latest
+          const latestBoundary = boundaries.sort((a: { systemStartTimestamp: string | number | Date; }, b: { systemStartTimestamp: string | number | Date; }) =>
+            new Date(b.systemStartTimestamp).getTime() - new Date(a.systemStartTimestamp).getTime()
+          )[0];
   
-        if (this.map && boundary.length > 0) {
-          this.plotProjectBoundary(boundary);
+          this.projectBoundary = [latestBoundary]; 
+  
+          if (this.map) {
+            this.plotProjectBoundary(this.projectBoundary);
+          }
         }
       });
     }
