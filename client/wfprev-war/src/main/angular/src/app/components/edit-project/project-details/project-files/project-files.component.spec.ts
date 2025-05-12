@@ -459,22 +459,18 @@ describe('ProjectFilesComponent', () => {
       const mockBoundaryResp = { activityBoundaryGuid: 'mock-boundary-id' };
       const mockCoordinates = [[[[0, 0], [1, 1], [1, 0], [0, 0]]]];
     
-      // Mock dependencies
       mockSpatialService.extractCoordinates.and.returnValue(Promise.resolve(mockCoordinates));
       mockProjectService.createActivityBoundary.and.returnValue(of(mockBoundaryResp));
       mockAttachmentService.createActivityAttachment.and.returnValue(of({}));
       mockProjectService.getActivityBoundaries.and.returnValue(of([]));
       mockAttachmentService.getActivityAttachments.and.returnValue(of([]));
     
-      // Simulate activity context
       spyOnProperty(component, 'isActivityContext', 'get').and.returnValue(true);
       component.projectGuid = 'mock-project-guid';
       component.fiscalGuid = 'mock-fiscal-guid';
       component.activityGuid = 'mock-activity-guid';
       component.uploadedBy = 'test-user';
       component.attachmentDescription = 'Test spatial file';
-    
-      // Call method
       component.uploadAttachment(mockFile, mockFileUploadResp, 'kml');
     
       tick(); 
