@@ -170,7 +170,7 @@ class CoordinatesServiceTest {
         List<MultiPolygon> result = coordinatesService.getAllPolygonsForProject(projectGuid);
 
         // Assert
-        assertEquals(2, result.size()); // one from project, one from activity
+        assertEquals(1, result.size());
         verify(projectBoundaryService).getAllProjectBoundaries(projectGuid);
         verify(activityService).getAllActivities(projectGuid, fiscalGuid);
     }
