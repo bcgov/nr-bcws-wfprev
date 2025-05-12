@@ -127,6 +127,69 @@ describe('FiscalMapComponent', () => {
     expect(spy).toHaveBeenCalled();
   }));
 
+  it('should get project boundaries and select the latest one', () => {
+    const mockProjectBoundaries = {
+      _embedded: {
+        projectBoundary: [
+          {
+            id: '1',
+            geometry: { type: 'Polygon', coordinates: [[]] },
+            systemStartTimestamp: '2023-01-01T12:00:00Z'
+          },
+          {
+            id: '2',
+            geometry: { type: 'Polygon', coordinates: [[]] },
+            systemStartTimestamp: '2023-02-01T12:00:00Z'
+          },
+          {
+            id: '3',
+            geometry: { type: 'Polygon', coordinates: [[]] },
+            systemStartTimestamp: '2022-12-01T12:00:00Z'
+          }
+        ]
+      }
+    };
+  
+    const projectService = TestBed.inject(ProjectService);
+    (projectService.getProjectBoundaries as jasmine.Spy).and.returnValue(of(mockProjectBoundaries));
+  
+    spyOn(component, 'plotProjectBoundary');
+    
+    component.map = mockMapInstance;
+  
+    component.getProjectBoundary();
+  
+    expect(component.projectGuid).toBe('mock-project-guid');
+    
+    expect(projectService.getProjectBoundaries).toHaveBeenCalledWith('mock-project-guid');
+  
+    expect(component.projectBoundary.length).toBe(1);
+    expect(component.projectBoundary[0].id).toBe('2');
+    
+    expect(component.plotProjectBoundary).toHaveBeenCalledWith(component.projectBoundary);
+  });
+  
+  it('should handle empty project boundaries', () => {
+    const mockEmptyBoundaries = {
+      _embedded: {
+        projectBoundary: []
+      }
+    };
+  
+    const projectService = TestBed.inject(ProjectService);
+    (projectService.getProjectBoundaries as jasmine.Spy).and.returnValue(of(mockEmptyBoundaries));
+  
+    spyOn(component, 'plotProjectBoundary');
+    
+    component.map = mockMapInstance;
+  
+    component.getProjectBoundary();
+    expect(projectService.getProjectBoundaries).toHaveBeenCalledWith('mock-project-guid');
+  
+    expect(component.projectBoundary).toEqual([]);
+    expect(component.plotProjectBoundary).not.toHaveBeenCalled();
+  });
+
   it('should fetch and mark project coordinates', () => {
     (component as any).map = mockMapInstance;
     component['projectGuid'] = 'mock-project-guid';
