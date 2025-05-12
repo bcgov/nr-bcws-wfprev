@@ -700,4 +700,69 @@ describe('ProjectService', () => {
     expect(req.request.responseType).toBe('blob');
     req.flush(mockBlob);
   });
+
+  it('should fetch features with query params', () => {
+    const mockResponse = {
+      projects: [
+        {
+          projectName: 'Test Project',
+          bcParksRegionOrgUnitId: 1,
+          bcParksSectionOrgUnitId: 1,
+          closestCommunityName: 'Sample',
+          fireCentreOrgUnitId: 1,
+          isMultiFiscalYearProj: false,
+          programAreaGuid: 'guid-1',
+          projectDescription: 'Test description',
+          projectLead: 'Lead Name',
+          projectLeadEmailAddress: 'lead@example.com',
+          projectNumber: 101,
+          siteUnitName: 'Site A',
+          totalActualAmount: 100,
+          totalAllocatedAmount: 50,
+          totalFundingRequestAmount: 20,
+          totalPlannedCostPerHectare: 2,
+          totalPlannedProjectSizeHa: 10,
+          forestDistrictOrgUnitId: 1,
+          forestRegionOrgUnitId: 1
+        }
+      ]
+    };
+
+    const params = {
+      programAreaGuid: ['guid-1'],
+      fiscalYear: ['2023'],
+      searchText: 'fuel'
+    };
+
+    service.getFeatures(params).subscribe(response => {
+      expect(response).toEqual(mockResponse);
+    });
+
+    const req = httpMock.expectOne((request) => {
+      return request.url === 'http://mock-api.com/wfprev-api/features' &&
+            request.params.has('programAreaGuid') &&
+            request.params.has('fiscalYear') &&
+            request.params.get('searchText') === 'fuel';
+    });
+
+    expect(req.request.method).toBe('GET');
+    expect(req.request.headers.get('Authorization')).toBe('Bearer mock-token');
+    req.flush(mockResponse);
+  });
+
+  it('should handle errors when fetching features', () => {
+    service.getFeatures({ searchText: 'fire' }).subscribe({
+      next: () => fail('Should have failed'),
+      error: (err) => {
+        expect(err.message).toBe('Failed to fetch features');
+      }
+    });
+
+    const req = httpMock.expectOne((request) =>
+      request.url === 'http://mock-api.com/wfprev-api/features'
+    );
+    req.flush('Error', { status: 500, statusText: 'Server Error' });
+  });
+
+
 });

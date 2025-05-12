@@ -1,8 +1,8 @@
-import { HttpClient, HttpRequest, HttpHeaders, HttpEventType, HttpResponse } from "@angular/common/http";
+import { HttpClient, HttpRequest, HttpHeaders, HttpEventType, HttpResponse, HttpParams } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { UUID } from "angular2-uuid";
 import { catchError, map, Observable, throwError } from "rxjs";
-import { ActivityBoundary, Project, ProjectBoundary, ProjectFiscal } from "src/app/components/models";
+import { ActivityBoundary, FeaturesResponse, Project, ProjectBoundary, ProjectFiscal } from "src/app/components/models";
 import { AppConfigService } from "src/app/services/app-config.service";
 import { TokenService } from "src/app/services/token.service";
 
@@ -442,5 +442,44 @@ export class ProjectService {
           headers: headers,
           responseType: 'blob'
         });
-      }
+    }
+
+    getFeatures(params?: {
+        programAreaGuid?: string[];
+        fiscalYear?: string[];
+        activityCategoryCode?: string[];
+        planFiscalStatusCode?: string[];
+        forestRegionOrgUnitId?: string[];
+        forestDistrictOrgUnitId?: string[];
+        fireCentreOrgUnitId?: string[];
+        searchText?: string;
+    }): Observable<FeaturesResponse> {
+        const baseUrl = `${this.appConfigService.getConfig().rest['wfprev']}/wfprev-api/features`;
+    
+        let httpParams = new HttpParams();
+        if (params) {
+            for (const key in params) {
+                const value = params[key as keyof typeof params];
+                if (Array.isArray(value)) {
+                    value.forEach(v => httpParams = httpParams.append(key, v));
+                } else if (value) {
+                    httpParams = httpParams.set(key, value);
+                }
+            }
+        }
+    
+        return this.httpClient.get<FeaturesResponse>(baseUrl, {
+            headers: {
+                Authorization: `Bearer ${this.tokenService.getOauthToken()}`,
+            },
+            params: httpParams
+        }).pipe(
+            catchError((error) => {
+                console.error("Error fetching features", error);
+                return throwError(() => new Error("Failed to fetch features"));
+            })
+        );
+    }
+    
+    
 }
