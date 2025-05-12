@@ -747,7 +747,6 @@ describe('ProjectService', () => {
 
     expect(req.request.method).toBe('GET');
     expect(req.request.headers.get('Authorization')).toBe('Bearer mock-token');
-    expect(req.request.headers.get('If-Match')).toBe('any');
     req.flush(mockResponse);
   });
 

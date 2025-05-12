@@ -471,7 +471,6 @@ export class ProjectService {
         return this.httpClient.get<FeaturesResponse>(baseUrl, {
             headers: {
                 Authorization: `Bearer ${this.tokenService.getOauthToken()}`,
-                'If-Match': 'any'
             },
             params: httpParams
         }).pipe(
