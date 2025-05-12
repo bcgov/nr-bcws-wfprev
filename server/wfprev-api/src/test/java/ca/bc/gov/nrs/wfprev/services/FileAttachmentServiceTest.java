@@ -2,10 +2,14 @@ package ca.bc.gov.nrs.wfprev.services;
 
 import ca.bc.gov.nrs.wfone.common.service.api.ServiceException;
 import ca.bc.gov.nrs.wfprev.data.assemblers.FileAttachmentResourceAssembler;
+import ca.bc.gov.nrs.wfprev.data.entities.ActivityBoundaryEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.FileAttachmentEntity;
+import ca.bc.gov.nrs.wfprev.data.entities.ProjectBoundaryEntity;
 import ca.bc.gov.nrs.wfprev.data.models.FileAttachmentModel;
+import ca.bc.gov.nrs.wfprev.data.repositories.ActivityBoundaryRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.AttachmentContentTypeCodeRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.FileAttachmentRepository;
+import ca.bc.gov.nrs.wfprev.data.repositories.ProjectBoundaryRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.SourceObjectNameCodeRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
@@ -47,6 +51,12 @@ public class FileAttachmentServiceTest {
     @Mock
     private SourceObjectNameCodeRepository sourceObjectNameCodeRepository;
 
+    @Mock
+    private ProjectBoundaryRepository projectBoundaryRepository;
+
+    @Mock
+    private ActivityBoundaryRepository activityBoundaryRepository;
+
     @InjectMocks
     private FileAttachmentService fileAttachmentService;
 
@@ -63,13 +73,40 @@ public class FileAttachmentServiceTest {
     }
 
     @Test
-    void testGetAllFileAttachments_Success() throws ServiceException {
-        when(fileAttachmentRepository.findAllBySourceObjectUniqueId("123"))
+    void testGetAllProjectAttachments_Success() throws ServiceException {
+        UUID projectGuid = UUID.randomUUID();
+        UUID projectBoundaryGuid = UUID.randomUUID();
+
+        ProjectBoundaryEntity mockBoundary = new ProjectBoundaryEntity();
+        mockBoundary.setProjectBoundaryGuid(projectBoundaryGuid);
+
+        when(projectBoundaryRepository.findByProjectGuid(projectGuid)).thenReturn(List.of(mockBoundary));
+        when(fileAttachmentRepository.findAllBySourceObjectUniqueIdIn(List.of(projectBoundaryGuid.toString())))
                 .thenReturn(List.of(mockEntity));
         when(fileAttachmentResourceAssembler.toCollectionModel(anyList()))
                 .thenReturn(CollectionModel.of(List.of(mockModel)));
 
-        CollectionModel<FileAttachmentModel> result = fileAttachmentService.getAllFileAttachments("123");
+        CollectionModel<FileAttachmentModel> result = fileAttachmentService.getAllProjectAttachments(projectGuid.toString());
+
+        assertNotNull(result);
+        assertEquals(1, result.getContent().size());
+    }
+
+    @Test
+    void testGetAllActivityAttachments_Success() throws ServiceException {
+        UUID activityGuid = UUID.randomUUID();
+        UUID activityBoundaryGuid = UUID.randomUUID();
+
+        ActivityBoundaryEntity mockActivityBoundary = new ActivityBoundaryEntity();
+        mockActivityBoundary.setActivityBoundaryGuid(activityBoundaryGuid);
+
+        when(activityBoundaryRepository.findByActivityGuid(activityGuid)).thenReturn(List.of(mockActivityBoundary));
+        when(fileAttachmentRepository.findAllBySourceObjectUniqueIdIn(List.of(activityBoundaryGuid.toString())))
+                .thenReturn(List.of(mockEntity));
+        when(fileAttachmentResourceAssembler.toCollectionModel(anyList()))
+                .thenReturn(CollectionModel.of(List.of(mockModel)));
+
+        CollectionModel<FileAttachmentModel> result = fileAttachmentService.getAllActivityAttachments(activityGuid.toString());
 
         assertNotNull(result);
         assertEquals(1, result.getContent().size());
