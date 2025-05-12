@@ -33,7 +33,7 @@ export class FiscalMapComponent implements AfterViewInit, OnDestroy, OnInit {
     protected router: Router,
   ) {}
 
-  private map: L.Map | undefined;
+  map: L.Map | undefined;
   private activityBoundaryGroup: L.LayerGroup = L.layerGroup();
   private projectBoundaryGroup: L.LayerGroup = L.layerGroup();
 
@@ -82,6 +82,7 @@ export class FiscalMapComponent implements AfterViewInit, OnDestroy, OnInit {
       }
     })
   }
+
   getProjectBoundary() {
     this.projectGuid = this.route.snapshot?.queryParamMap?.get('projectGuid') ?? '';
     if (this.projectGuid) {
