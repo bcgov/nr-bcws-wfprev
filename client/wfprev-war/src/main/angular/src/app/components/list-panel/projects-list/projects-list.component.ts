@@ -10,13 +10,15 @@ import { CreateNewProjectDialogComponent } from 'src/app/components/create-new-p
 import { MatDialog } from '@angular/material/dialog';
 import L from 'leaflet';
 import 'leaflet.markercluster';
+import { SharedCodeTableService } from 'src/app/services/shared-code-table.service';
+import { SharedService } from 'src/app/services/shared-service';
 
 @Component({
   selector: 'app-projects-list',
   standalone: true,
-  imports: [MatSlideToggleModule, CommonModule, MatExpansionModule], // Add FormsModule here
+  imports: [MatSlideToggleModule, CommonModule, MatExpansionModule],
   templateUrl: './projects-list.component.html',
-  styleUrls: ['./projects-list.component.scss'], // Corrected to 'styleUrls'
+  styleUrls: ['./projects-list.component.scss'],
 })
 export class ProjectsListComponent implements OnInit {
   [key: string]: any;
@@ -28,6 +30,7 @@ export class ProjectsListComponent implements OnInit {
   bcParksSectionCode: any[] = [];
   planFiscalStatusCode: any[] = [];
   activityCategoryCode: any[] = [];
+  projectTypeCode: any[] = [];
   markerPolygons: Map<L.Marker, L.Polygon[]> = new Map();
   activeMarker: L.Marker | null = null;
   getActiveMap = getActiveMap
@@ -40,14 +43,24 @@ export class ProjectsListComponent implements OnInit {
     private readonly router: Router,
     private readonly projectService: ProjectService,
     private readonly codeTableService: CodeTableServices,
-    private readonly dialog: MatDialog
-
+    private readonly dialog: MatDialog,
+    private readonly sharedCodeTableService: SharedCodeTableService,
+    public readonly sharedService: SharedService
   ) {
   }
   ngOnInit(): void {
     this.loadCodeTables();
     this.loadProjects();
-    setTimeout(() => { this.loadCoordinatesOnMap(); }, 3000);
+
+    this.sharedService.filters$.subscribe(filters => {
+      if (filters) {
+        this.isLoading = true;
+        this.projectService.getFeatures(filters).subscribe({
+          next: (data) => this.processProjectsResponse(data),
+          error: (err) => this.handleProjectError(err),
+        });
+      }
+    });
   }
 
   loadCodeTables(): void {
@@ -58,9 +71,14 @@ export class ProjectsListComponent implements OnInit {
       { name: 'bcParksRegionCodes', property: 'bcParksRegions', embeddedKey: 'bcParksRegionCode' },
       { name: 'bcParksSectionCodes', property: 'bcParksSections', embeddedKey: 'bcParksSectionCode' },
       { name: 'planFiscalStatusCodes', property: 'planFiscalStatusCode', embeddedKey: 'planFiscalStatusCode' },
-      { name: 'activityCategoryCodes', property: 'activityCategoryCode', embeddedKey: 'activityCategoryCode' }
+      { name: 'activityCategoryCodes', property: 'activityCategoryCode', embeddedKey: 'activityCategoryCode' },
+      { name: 'projectTypeCodes', property: 'projectTypeCode', embeddedKey: 'projectTypeCode' }
 
     ];
+    const loaded: any = {};
+    let loadedCount = 0;
+    const totalTables = codeTables.length;
+  
 
     codeTables.forEach((table) => {
       this.codeTableService.fetchCodeTable(table.name).subscribe({
@@ -79,7 +97,19 @@ export class ProjectsListComponent implements OnInit {
             this.planFiscalStatusCode = data._embedded.planFiscalStatusCode;
           } else if (table.name === 'activityCategoryCodes') {
             this.activityCategoryCode = data._embedded.activityCategoryCode;
+          } else if (table.name === 'projectTypeCodes') {
+            this.projectTypeCode = data._embedded.projectTypeCode;
           }
+
+          const items = data._embedded?.[table.embeddedKey] ?? [];
+          this[table.property] = items;
+          loaded[table.property] = items;
+  
+          loadedCount++;
+          if (loadedCount === totalTables) {
+            this.sharedCodeTableService.updateCodeTables(loaded);
+          }
+
         },
         error: (err) => {
           console.error(`Error fetching ${table.name}`, err);
@@ -99,32 +129,22 @@ export class ProjectsListComponent implements OnInit {
             this.planFiscalStatusCode = [];
           } else if (table.name === 'activityCategoryCodes') {
             this.activityCategoryCode = [];
+          } else if (table.name === 'projectTypeCodes') {
+            this.activityCategoryCode = [];
+          }
+
+          this[table.property] = [];
+          loaded[table.property] = [];
+  
+          loadedCount++;
+          if (loadedCount === totalTables) {
+            this.sharedCodeTableService.updateCodeTables(loaded);
           }
         },
       });
     });
   }
 
-
-  loadProjects() {
-    this.isLoading = true;
-    this.projectService.fetchProjects().subscribe({
-      next: (data) => {
-        this.allProjects = (data._embedded?.project || []).sort((a: any, b: any) =>
-          a.projectName.localeCompare(b.projectName)
-        );
-        this.currentPage = 0;
-        this.displayedProjects = this.allProjects.slice(0, this.pageSize);
-        this.isLoading = false;
-      },
-      error: (err) => {
-        console.error('Error fetching projects:', err);
-        this.allProjects = [];
-        this.displayedProjects = [];
-        this.isLoading = false;
-      }
-    });
-  }
   sortOptions = [
     { label: 'Name (A-Z)', value: 'ascending' },
     { label: 'Name (Z-A)', value: 'descending' },
@@ -136,6 +156,13 @@ export class ProjectsListComponent implements OnInit {
 
   fiscalYearActivityTypes = ['Clearing', 'Burning', 'Pruning']
 
+  loadProjects(): void {
+    this.isLoading = true;
+    this.projectService.getFeatures().subscribe({
+      next: (data) => this.processProjectsResponse(data),
+      error: (err) => this.handleProjectError(err),
+    });
+  }
 
   onSortChange(event: any): void {
     this.selectedSort = event.target.value;
@@ -148,6 +175,7 @@ export class ProjectsListComponent implements OnInit {
   
     const totalVisible = (this.currentPage + 1) * this.pageSize;
     this.displayedProjects = this.allProjects.slice(0, totalVisible);
+    this.sharedService.updateDisplayedProjects(this.displayedProjects);
   }
   
 
@@ -182,6 +210,10 @@ export class ProjectsListComponent implements OnInit {
       case 'activityCategoryCode':
         entry = table.find((item: any) => item.activityCategoryCode === code);
         return entry ? entry.description : '';
+
+      case 'projectTypeCode':
+          entry = table.find((item: any) => item.projectTypeCode === code);
+          return entry ? entry.description : '';
       default:
         return '';
     }
@@ -208,10 +240,9 @@ export class ProjectsListComponent implements OnInit {
     });
   }
 
-  // Temporary function, to be replaced with SMK layer config when /features endpoint exists in the API
   loadCoordinatesOnMap() {
-    if (this.projectList?.length > 0) {
-      const coords = this.projectList
+    if (this.displayedProjects?.length > 0) {
+      const coords = this.displayedProjects
         .filter((project: any) => project.latitude != null && project.longitude != null) // Check if both latitude and longitude are defined and not null
         .map((project: any) => ({
           latitude: project.latitude,
@@ -411,34 +442,59 @@ export class ProjectsListComponent implements OnInit {
     if (start < this.allProjects.length) {
       this.displayedProjects = this.displayedProjects.concat(this.allProjects.slice(start, end));
       this.currentPage = nextPage;
+      this.sharedService.updateDisplayedProjects(this.displayedProjects);
     }
   }
 
   handleScroll(event: any) {
     const element = event.target;
-    if (element.scrollHeight - element.scrollTop === element.clientHeight) {
+    if (element.scrollHeight - element.scrollTop <= element.clientHeight + 10) {
       this.onScroll();
     }
-  }
-
-  getFiscal(project: any): void {
-    this.projectService.getProjectFiscalsByProjectGuid(project.projectGuid).subscribe({
-      next: (data) => {
-        project.projectFiscals = (data._embedded?.projectFiscals ?? []).sort((a: any, b: any) => 
-          (b.fiscalYear || 0) - (a.fiscalYear || 0)
-        );
-      },
-      error: (err) => {
-        console.error(`Error fetching fiscals for project ${project.projectGuid}`, err);
-        project.projectFiscals = [];
-      }
-    });
   }
 
   getFiscalYearDisplay(fiscalYear: number | null | undefined): string | null {
     if (typeof fiscalYear !== 'number') return null;
     const nextYear = (fiscalYear + 1) % 100;
     return `${fiscalYear}/${nextYear.toString().padStart(2, '0')}`;
+  }
+
+  getProjectFiscalYearRange(project: any): string | null {
+    if (!project?.projectFiscals?.length) return null;
+  
+    const uniqueYears = Array.from(
+      new Set(project.projectFiscals.map((f: any) => f.fiscalYear))
+    ).filter((y): y is number => typeof y === 'number').sort((a, b) => a - b);
+  
+    if (uniqueYears.length === 0) return null;
+  
+    const formatYear = (year: number): string => {
+      const next = (year + 1) % 100;
+      return `${year}/${next.toString().padStart(2, '0')}`;
+    };
+  
+    if (uniqueYears.length === 1) {
+      return formatYear(uniqueYears[0]);
+    } else {
+      return `${formatYear(uniqueYears[0])} - ${formatYear(uniqueYears[uniqueYears.length - 1])}`;
+    }
+  }
+
+  processProjectsResponse(data: any): void {
+    this.allProjects = (data.projects || []).sort((a: any, b: any) =>
+      a.projectName.localeCompare(b.projectName)
+    );
+    this.currentPage = 0;
+    this.displayedProjects = this.allProjects.slice(0, this.pageSize);
+    this.sharedService.updateDisplayedProjects(this.displayedProjects);
+    this.isLoading = false;
+  }
+
+  handleProjectError(err: any): void {
+    console.error('Error fetching features:', err);
+    this.allProjects = [];
+    this.displayedProjects = [];
+    this.isLoading = false;
   }
   
 }
