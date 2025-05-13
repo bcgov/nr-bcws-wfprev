@@ -658,5 +658,21 @@ describe('ProjectsListComponent', () => {
     expect(component.isLoading).toBeFalse();
   });
 
+  it('should return projectFiscals sorted in descending fiscalYear order', () => {
+    const project = {
+      projectFiscals: [
+        { fiscalYear: 2021 },
+        { fiscalYear: 2023 },
+        { fiscalYear: 2022 }
+      ]
+    };
+
+    const result = component.getSortedProjectFiscalsDesc(project);
+
+    expect(result.length).toBe(3);
+    expect(result[0].fiscalYear).toBe(2023);
+    expect(result[1].fiscalYear).toBe(2022);
+    expect(result[2].fiscalYear).toBe(2021);
+  });
 
 });

@@ -496,5 +496,10 @@ export class ProjectsListComponent implements OnInit {
     this.displayedProjects = [];
     this.isLoading = false;
   }
+
+  getSortedProjectFiscalsDesc(project: any): any[] {
+    if (!project?.projectFiscals?.length) return [];
+    return [...project.projectFiscals].sort((a, b) => b.fiscalYear - a.fiscalYear);
+  }
   
 }
