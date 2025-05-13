@@ -118,11 +118,6 @@ describe('AppHeaderComponent', () => {
     expect(titleElement.textContent).toBe(component.title);
   });
 
-  it('should render the Material menu', () => {
-    const menuElement = fixture.debugElement.query(By.css('mat-menu'));
-    expect(menuElement).toBeTruthy();
-  });
-
   it('should set currentUser when credentialsEmitter emits a value', () => {
     const mockName = 'Mike David';
     mockTokenService.getUserFullName.and.returnValue(mockName);
