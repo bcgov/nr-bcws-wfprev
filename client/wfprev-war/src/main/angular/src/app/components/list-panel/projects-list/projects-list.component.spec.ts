@@ -90,11 +90,17 @@ describe('ProjectsListComponent', () => {
 
     mockRouter = jasmine.createSpyObj('Router', ['navigate']);
 
-    // Setup Leaflet mocks
+    let registeredClickCallback: Function;
+
     mockMap = {
       addLayer: jasmine.createSpy('addLayer'),
-      on: jasmine.createSpy('on')
+      on: jasmine.createSpy('on').and.callFake((event: string, callback: Function) => {
+        if (event === 'click') {
+          registeredClickCallback = callback;
+        }
+      })
     };
+
 
     mockViewer = {
       map: mockMap
@@ -717,21 +723,38 @@ describe('ProjectsListComponent', () => {
     expect(mockPolygon2.setStyle).toHaveBeenCalledWith({ weight: 2 });
   }));
 
-  it('should reset active markers and polygon styles on map click', fakeAsync(() => {
+  it('should return project type description from code table', () => {
+    component.projectTypeCode = [{ projectTypeCode: 'PT1', description: 'Type A' }];
+    const result = component.getDescription('projectTypeCode', 'PT1');
+    expect(result).toBe('Type A');
+  });
+
+  it('should return empty string for unknown codeTable', () => {
+    const result = component.getDescription('invalidTableName' as any, 'ANY');
+    expect(result).toBe('');
+  });
+
+  it('should respond to map click and reset markers', fakeAsync(() => {
+    const fakeIcon = L.icon({
+      iconUrl: '/assets/blue-pin-drop.svg',
+      iconSize: [30, 50],
+      iconAnchor: [12, 41],
+      popupAnchor: [1, -34],
+    });
+
+    const fakeMapClickHandler = jasmine.createSpy('clickHandler');
+    const mockMarker = jasmine.createSpyObj('marker', ['setIcon']);
     const mockPolygon = jasmine.createSpyObj('polygon', ['setStyle']);
-    const mockActiveMarker = jasmine.createSpyObj('marker', ['setIcon', 'getLatLng']);
-    mockActiveMarker.getLatLng.and.returnValue({ lat: 49.2827, lng: -123.1207 });
 
-    const markerStates = new Map<L.Marker, boolean>();
-    markerStates.set(mockActiveMarker, true);
+    component.markerPolygons.set(mockMarker, [mockPolygon]);
+    const markerStates = new Map<L.Marker, boolean>([[mockMarker, true]]);
 
-    const createMarkerIconSpy = jasmine.createSpy().and.returnValue('reset-icon');
-    (component as any).getActiveMap = () => ({
+    component.getActiveMap = () => ({
       $viewer: {
         map: {
           on: (event: string, cb: Function) => {
             if (event === 'click') {
-              cb(); // simulate map click
+              cb();
             }
           },
           addLayer: () => {}
@@ -739,23 +762,16 @@ describe('ProjectsListComponent', () => {
       }
     });
 
-    component.markerPolygons.set(mockActiveMarker, [mockPolygon]);
+    const originalCreateMarkerIcon = L.icon;
+    spyOn(L, 'icon').and.returnValue(fakeIcon);
 
-    const oldLoad = (component as any).loadCoordinatesOnMap;
     (component as any).loadCoordinatesOnMap = function () {
       const map = this.getActiveMap();
-      const internalMarkerStates = markerStates;
-
       map.$viewer.map.on('click', () => {
-        internalMarkerStates.forEach((isActive, marker) => {
+        markerStates.forEach((isActive, marker) => {
           if (isActive) {
-            marker.setIcon(L.icon({
-              iconUrl: '/assets/blue-pin-drop.svg',
-              iconSize: [30, 50],
-              iconAnchor: [12, 41],
-              popupAnchor: [1, -34],
-            }));
-            internalMarkerStates.set(marker, false);
+            marker.setIcon(fakeIcon);
+            markerStates.set(marker, false);
             const associatedPolygons = this.markerPolygons.get(marker);
             associatedPolygons?.forEach((polygon: any) => polygon.setStyle({ weight: 2 }));
           }
@@ -766,15 +782,10 @@ describe('ProjectsListComponent', () => {
     component.loadCoordinatesOnMap();
     tick();
 
-    expect(mockActiveMarker.setIcon).toHaveBeenCalledWith(jasmine.objectContaining({
-      options: jasmine.objectContaining({
-        iconUrl: '/assets/blue-pin-drop.svg'
-      })
-    }));
-
+    expect(mockMarker.setIcon).toHaveBeenCalledWith(fakeIcon);
     expect(mockPolygon.setStyle).toHaveBeenCalledWith({ weight: 2 });
+
+    (L.icon as any).and.callFake(originalCreateMarkerIcon);
   }));
-
-
 
 });
