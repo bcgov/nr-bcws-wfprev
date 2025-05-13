@@ -481,7 +481,7 @@ export class ProjectsListComponent implements OnInit {
   }
 
   processProjectsResponse(data: any): void {
-    this.allProjects = (data.projects || []).sort((a: any, b: any) =>
+    this.allProjects = (data.projects ?? []).sort((a: any, b: any) =>
       a.projectName.localeCompare(b.projectName)
     );
     this.currentPage = 0;
@@ -495,6 +495,11 @@ export class ProjectsListComponent implements OnInit {
     this.allProjects = [];
     this.displayedProjects = [];
     this.isLoading = false;
+  }
+
+  getSortedProjectFiscalsDesc(project: any): any[] {
+    if (!project?.projectFiscals?.length) return [];
+    return [...project.projectFiscals].sort((a, b) => b.fiscalYear - a.fiscalYear);
   }
   
 }
