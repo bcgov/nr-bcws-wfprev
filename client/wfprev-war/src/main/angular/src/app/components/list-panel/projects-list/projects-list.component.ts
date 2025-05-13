@@ -481,7 +481,7 @@ export class ProjectsListComponent implements OnInit {
   }
 
   processProjectsResponse(data: any): void {
-    this.allProjects = (data.projects || []).sort((a: any, b: any) =>
+    this.allProjects = (data.projects ?? []).sort((a: any, b: any) =>
       a.projectName.localeCompare(b.projectName)
     );
     this.currentPage = 0;

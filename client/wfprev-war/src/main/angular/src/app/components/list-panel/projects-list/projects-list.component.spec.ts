@@ -680,18 +680,14 @@ describe('ProjectsListComponent', () => {
     const mockPolygon2 = jasmine.createSpyObj('polygon', ['setStyle']);
     const mockClickedMarker = jasmine.createSpyObj('marker', ['setIcon', 'on', 'getLatLng']);
 
-    // Setup mock marker to simulate Leaflet behavior
     mockClickedMarker.getLatLng.and.returnValue({ lat: 49.2827, lng: -123.1207 });
 
-    // Return new marker on L.marker
     (L.marker as jasmine.Spy).and.returnValue(mockClickedMarker);
     
-    // Replace L.polygon to return different mock polygons
     (L.polygon as jasmine.Spy).and.callFake(() => {
       return [mockPolygon1, mockPolygon2][(L.polygon as jasmine.Spy).calls.count() - 1] || mockPolygon1;
     });
 
-    // Ensure displayedProjects has coordinates
     component.displayedProjects = [{
       latitude: 49.2827,
       longitude: -123.1207,
@@ -701,11 +697,9 @@ describe('ProjectsListComponent', () => {
     component.loadCoordinatesOnMap();
     tick();
 
-    // Simulate storing the polygons with the marker
     const clickHandler = (mockClickedMarker.on as jasmine.Spy).calls.mostRecent().args[1];
     component.markerPolygons.set(mockClickedMarker, [mockPolygon1, mockPolygon2]);
 
-    // Simulate marker click: First time (activates)
     clickHandler();
 
     expect(mockClickedMarker.setIcon).toHaveBeenCalledWith(jasmine.objectContaining({
@@ -714,7 +708,6 @@ describe('ProjectsListComponent', () => {
     expect(mockPolygon1.setStyle).toHaveBeenCalledWith({ weight: 5 });
     expect(mockPolygon2.setStyle).toHaveBeenCalledWith({ weight: 5 });
 
-    // Simulate marker click again: Second time (deactivates)
     clickHandler();
 
     expect(mockClickedMarker.setIcon).toHaveBeenCalledWith(jasmine.objectContaining({
@@ -723,6 +716,65 @@ describe('ProjectsListComponent', () => {
     expect(mockPolygon1.setStyle).toHaveBeenCalledWith({ weight: 2 });
     expect(mockPolygon2.setStyle).toHaveBeenCalledWith({ weight: 2 });
   }));
+
+  it('should reset active markers and polygon styles on map click', fakeAsync(() => {
+    const mockPolygon = jasmine.createSpyObj('polygon', ['setStyle']);
+    const mockActiveMarker = jasmine.createSpyObj('marker', ['setIcon', 'getLatLng']);
+    mockActiveMarker.getLatLng.and.returnValue({ lat: 49.2827, lng: -123.1207 });
+
+    const markerStates = new Map<L.Marker, boolean>();
+    markerStates.set(mockActiveMarker, true);
+
+    const createMarkerIconSpy = jasmine.createSpy().and.returnValue('reset-icon');
+    (component as any).getActiveMap = () => ({
+      $viewer: {
+        map: {
+          on: (event: string, cb: Function) => {
+            if (event === 'click') {
+              cb(); // simulate map click
+            }
+          },
+          addLayer: () => {}
+        }
+      }
+    });
+
+    component.markerPolygons.set(mockActiveMarker, [mockPolygon]);
+
+    const oldLoad = (component as any).loadCoordinatesOnMap;
+    (component as any).loadCoordinatesOnMap = function () {
+      const map = this.getActiveMap();
+      const internalMarkerStates = markerStates;
+
+      map.$viewer.map.on('click', () => {
+        internalMarkerStates.forEach((isActive, marker) => {
+          if (isActive) {
+            marker.setIcon(L.icon({
+              iconUrl: '/assets/blue-pin-drop.svg',
+              iconSize: [30, 50],
+              iconAnchor: [12, 41],
+              popupAnchor: [1, -34],
+            }));
+            internalMarkerStates.set(marker, false);
+            const associatedPolygons = this.markerPolygons.get(marker);
+            associatedPolygons?.forEach((polygon: any) => polygon.setStyle({ weight: 2 }));
+          }
+        });
+      });
+    };
+
+    component.loadCoordinatesOnMap();
+    tick();
+
+    expect(mockActiveMarker.setIcon).toHaveBeenCalledWith(jasmine.objectContaining({
+      options: jasmine.objectContaining({
+        iconUrl: '/assets/blue-pin-drop.svg'
+      })
+    }));
+
+    expect(mockPolygon.setStyle).toHaveBeenCalledWith({ weight: 2 });
+  }));
+
 
 
 });
