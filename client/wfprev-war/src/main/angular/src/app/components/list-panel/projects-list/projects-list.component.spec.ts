@@ -675,4 +675,54 @@ describe('ProjectsListComponent', () => {
     expect(result[2].fiscalYear).toBe(2021);
   });
 
+  it('should toggle marker active state and update polygon styles on marker click', fakeAsync(() => {
+    const mockPolygon1 = jasmine.createSpyObj('polygon', ['setStyle']);
+    const mockPolygon2 = jasmine.createSpyObj('polygon', ['setStyle']);
+    const mockClickedMarker = jasmine.createSpyObj('marker', ['setIcon', 'on', 'getLatLng']);
+
+    // Setup mock marker to simulate Leaflet behavior
+    mockClickedMarker.getLatLng.and.returnValue({ lat: 49.2827, lng: -123.1207 });
+
+    // Return new marker on L.marker
+    (L.marker as jasmine.Spy).and.returnValue(mockClickedMarker);
+    
+    // Replace L.polygon to return different mock polygons
+    (L.polygon as jasmine.Spy).and.callFake(() => {
+      return [mockPolygon1, mockPolygon2][(L.polygon as jasmine.Spy).calls.count() - 1] || mockPolygon1;
+    });
+
+    // Ensure displayedProjects has coordinates
+    component.displayedProjects = [{
+      latitude: 49.2827,
+      longitude: -123.1207,
+      projectName: 'Test Project'
+    }];
+
+    component.loadCoordinatesOnMap();
+    tick();
+
+    // Simulate storing the polygons with the marker
+    const clickHandler = (mockClickedMarker.on as jasmine.Spy).calls.mostRecent().args[1];
+    component.markerPolygons.set(mockClickedMarker, [mockPolygon1, mockPolygon2]);
+
+    // Simulate marker click: First time (activates)
+    clickHandler();
+
+    expect(mockClickedMarker.setIcon).toHaveBeenCalledWith(jasmine.objectContaining({
+      options: jasmine.objectContaining({ iconUrl: '/assets/active-pin-drop.svg' })
+    }));
+    expect(mockPolygon1.setStyle).toHaveBeenCalledWith({ weight: 5 });
+    expect(mockPolygon2.setStyle).toHaveBeenCalledWith({ weight: 5 });
+
+    // Simulate marker click again: Second time (deactivates)
+    clickHandler();
+
+    expect(mockClickedMarker.setIcon).toHaveBeenCalledWith(jasmine.objectContaining({
+      options: jasmine.objectContaining({ iconUrl: '/assets/blue-pin-drop.svg' })
+    }));
+    expect(mockPolygon1.setStyle).toHaveBeenCalledWith({ weight: 2 });
+    expect(mockPolygon2.setStyle).toHaveBeenCalledWith({ weight: 2 });
+  }));
+
+
 });
