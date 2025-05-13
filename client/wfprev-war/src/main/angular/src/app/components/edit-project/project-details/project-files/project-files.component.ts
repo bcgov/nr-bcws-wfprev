@@ -71,31 +71,34 @@ export class ProjectFilesComponent implements OnInit {
             const fileAttachments = response._embedded.fileAttachment.sort((a: FileAttachment, b: FileAttachment) => {
               return new Date(b.uploadedByTimestamp ?? 0).getTime() - new Date(a.uploadedByTimestamp ?? 0).getTime();
             });
-            
+
             this.projectService.getProjectBoundaries(this.projectGuid).subscribe({
               next: (boundaryResponse) => {
                 const boundaries = boundaryResponse?._embedded?.projectBoundary;
                 let boundarySizeHa = undefined;
-
+            
                 if (boundaries && boundaries.length > 0) {
                   // Sort boundaries by systemStartTimestamp in descending order
-                  const latestBoundary = boundaries.sort((a: { systemStartTimestamp: string | number | Date; }, b: { systemStartTimestamp: string | number | Date; }) =>
+                  const latestBoundary = boundaries.sort((a: { systemStartTimestamp: string | number | Date }, b: { systemStartTimestamp: string | number | Date }) =>
                     new Date(b.systemStartTimestamp).getTime() - new Date(a.systemStartTimestamp).getTime()
                   )[0];
-                  boundarySizeHa = latestBoundary.boundarySizeHa;
-                }
-                if (boundarySizeHa !== undefined) {
-                  // Add boundarySizeHa to each attachment
+          
+                  const boundarySizeMap = new Map<string, number>();
+                  boundaries.forEach((boundary: { projectBoundaryGuid: string; boundarySizeHa: number }) => {
+                    boundarySizeMap.set(boundary.projectBoundaryGuid, boundary.boundarySizeHa);
+                  });
+            
                   this.projectFiles = fileAttachments.map((file: FileAttachment) => ({
                     ...file,
-                    polygonHectares: boundarySizeHa
+                    polygonHectares: file.sourceObjectUniqueId ? boundarySizeMap.get(file.sourceObjectUniqueId) ?? null : null
                   }));
+            
                 } else {
-                  console.error('boundarySizeHa not found in project boundaries');
+                  console.error('No project boundaries found for this project');
                   this.projectFiles = fileAttachments;
                 }
-
-                // Refresh the table data source
+            
+                
                 this.dataSource.data = [...this.projectFiles];
               },
               error: (error) => {
@@ -120,31 +123,55 @@ export class ProjectFilesComponent implements OnInit {
   loadActivityAttachments(): void {
     if (!this.fiscalGuid || !this.activityGuid) return;
     this.projectGuid = this.route.snapshot?.queryParamMap?.get('projectGuid') ?? '';
-    // Find projectPlanFiscalGuid from the activityGuid
-    this.attachmentService.getActivityAttachments(this.projectGuid, this.fiscalGuid, this.activityGuid).subscribe({
-      next: (response) => {
-        if (response?._embedded?.fileAttachment && Array.isArray(response._embedded.fileAttachment)) {
-          const fileAttachments = response._embedded.fileAttachment.sort((a: FileAttachment, b: FileAttachment) => {
-            const timeA = new Date(a.uploadedByTimestamp ?? 0).getTime();
-            const timeB = new Date(b.uploadedByTimestamp ?? 0).getTime();
-            return timeB - timeA; // latest first
+  
+    // Fetch activity boundaries
+    this.projectService.getActivityBoundaries(this.projectGuid, this.fiscalGuid, this.activityGuid).subscribe({
+      next: (boundaryResponse) => {
+        const boundaries = boundaryResponse?._embedded?.activityBoundary;
+  
+        // Build map of activityBoundaryGuid → boundarySizeHa to set polygon hecatares for each file
+        const boundarySizeMap = new Map<string, number>();
+        if (boundaries && boundaries.length > 0) {
+          boundaries.forEach((boundary: { activityBoundaryGuid: string, boundarySizeHa: number }) => {
+            boundarySizeMap.set(boundary.activityBoundaryGuid, boundary.boundarySizeHa);
           });
-          this.projectFiles = fileAttachments;
-          this.dataSource.data = [...this.projectFiles];
-        } else {
-          console.error('Expected an array of activity files inside _embedded.fileAttachment, but got:', response);
-          this.projectFiles = [];
         }
-      },
-      error: (err) => {
-        this.snackbarService.open('Failed to load activity attachments.', 'Close', {
-          duration: 5000,
-          panelClass: 'snackbar-error',
+  
+        this.attachmentService.getActivityAttachments(this.projectGuid, this.fiscalGuid, this.activityGuid).subscribe({
+          next: (response) => {
+            if (response?._embedded?.fileAttachment && Array.isArray(response._embedded.fileAttachment)) {
+              const fileAttachments = response._embedded.fileAttachment.sort((a: FileAttachment, b: FileAttachment) => {
+                const timeA = new Date(a.uploadedByTimestamp ?? 0).getTime();
+                const timeB = new Date(b.uploadedByTimestamp ?? 0).getTime();
+                return timeB - timeA; // latest first
+              });
+  
+              // Set polygonHectares for each attachment
+              this.projectFiles = fileAttachments.map((file: FileAttachment) => ({
+                ...file,
+                polygonHectares: file.sourceObjectUniqueId ? boundarySizeMap.get(file.sourceObjectUniqueId) ?? null : null
+              }));
+  
+              this.dataSource.data = [...this.projectFiles];
+            } else {
+              console.error('Expected an array of activity files inside _embedded.fileAttachment, but got:', response);
+              this.projectFiles = [];
+            }
+          },
+          error: (err) => {
+            this.snackbarService.open('Failed to load activity attachments.', 'Close', {
+              duration: 5000,
+              panelClass: 'snackbar-error',
+            });
+          }
         });
+      },
+      error: (error) => {
+        console.error('Failed to load activity boundaries:', error);
       }
     });
   }
-  
+
   openFileUploadModal() {
     const dialogRef = this.dialog.open(AddAttachmentComponent, {
       width: '1000px',
@@ -180,7 +207,7 @@ export class ProjectFilesComponent implements OnInit {
     });
   }
 
-  uploadAttachment(file: File, response: any, type: string): void {
+  uploadAttachment(file: File, fileUploadResp: any, type: string): void {
     const fileExtension = file.name.split('.').pop()?.toLowerCase();
     if (!fileExtension) {
       this.snackbarService.open('The spatial file was not uploaded because the file format is not accepted.', 'Close', {
@@ -189,55 +216,119 @@ export class ProjectFilesComponent implements OnInit {
       });
       return;
     }
-
-    const attachment: FileAttachment = {
-      sourceObjectNameCode: { sourceObjectNameCode: this.isActivityContext? "TREATMENT_ACTIVITY" : "PROJECT" },
-      sourceObjectUniqueId: this.isActivityContext? this.activityGuid : this.projectGuid,
-      documentPath: file.name,
-      fileIdentifier: response.fileId,
-      attachmentContentTypeCode: { attachmentContentTypeCode: type },
-      attachmentDescription: this.attachmentDescription,
-      attachmentReadOnlyInd: false,
-    };
-
-    if (this.isActivityContext && this.projectGuid) {
-      // Activity level
-      this.attachmentService.createActivityAttachment(this.projectGuid, this.fiscalGuid, this.activityGuid, attachment).subscribe({
-        next: (response) => {
-          if (response) {
-            this.uploadedBy = response?.uploadedByUserId;
-
-            if (type === 'OTHER' || type === 'DOCUMENT') {
-              this.finishWithoutGeometry();
-            } else{
-              this.spatialService.extractCoordinates(file).then(response => {
-                if (response) {
-                  this.updateActivityBoundary(file, response)
-                }
-              })
-            }
+  
+    if ((type === 'OTHER' || type === 'DOCUMENT') || !fileExtension.match(/zip|gdb|kml|kmz|shp/)) {
+      this.finishWithoutGeometry();
+      return;
+    }
+  
+    this.spatialService.extractCoordinates(file).then((geometry) => {
+      if (!geometry) {
+        this.snackbarService.open('Could not extract geometry from spatial file.', 'Close', {
+          duration: 5000,
+          panelClass: ['snackbar-error'],
+        });
+        return;
+      }
+  
+      const now = new Date();
+      const futureDate = new Date(now);
+      futureDate.setFullYear(futureDate.getFullYear() + 1);
+  
+      if (this.isActivityContext && this.projectGuid) {
+        // Create Activity boundary 
+        const activityBoundary: ActivityBoundary = {
+          activityGuid: this.activityGuid,
+          systemStartTimestamp: now.toISOString(),
+          systemEndTimestamp: futureDate.toISOString(),
+          collectionDate: now.toISOString().split('T')[0],
+          collectorName: this.uploadedBy,
+          plannedSpendAmount: 20000,
+          boundarySizeHa: 0,
+          geometry: {
+            type: "MultiPolygon",
+            coordinates: geometry,
           }
-        }
-      })
-    } else {
-      // Project level
-        this.attachmentService.createProjectAttachment(this.projectGuid, attachment).subscribe({
-          next: (response) => {
-            if (response) {
-              this.uploadedBy = response?.uploadedByUserId;
-
-              this.spatialService.extractCoordinates(file).then(response => {
-                if (response) {
-                  this.updateProjectBoundary(file, response)
-                }
-              })
-            }
+        };
+  
+        this.projectService.createActivityBoundary(this.projectGuid, this.fiscalGuid, this.activityGuid, activityBoundary).subscribe({
+          next: (boundaryResp) => {
+            const boundaryGuid = boundaryResp?.activityBoundaryGuid;
+  
+            const attachment: FileAttachment = {
+              sourceObjectNameCode: { sourceObjectNameCode: "TREATMENT_ACTIVITY" },
+              sourceObjectUniqueId: boundaryGuid,
+              documentPath: file.name,
+              fileIdentifier: fileUploadResp.fileId,
+              attachmentContentTypeCode: { attachmentContentTypeCode: type },
+              attachmentDescription: this.attachmentDescription,
+              attachmentReadOnlyInd: false,
+            };
+  
+            this.attachmentService.createActivityAttachment(this.projectGuid, this.fiscalGuid, this.activityGuid, attachment).subscribe({
+              next: () => {
+                this.snackbarService.open('File uploaded successfully.', 'Close', {
+                  duration: 5000,
+                  panelClass: 'snackbar-success',
+                });
+                this.loadActivityAttachments();
+                this.filesUpdated.emit();
+              }
+            });
           },
-          error: (error) => {
-            console.log('Failed to upload attachment: ', error)
+          error: (err) => {
+            console.error('Failed to create activity boundary', err);
+          }
+        });
+  
+      } else {
+        // Create Project boundary
+        const projectBoundary: ProjectBoundary = {
+          projectGuid: this.projectGuid,
+          systemStartTimestamp: now.toISOString(),
+          systemEndTimestamp: futureDate.toISOString(),
+          collectionDate: now.toISOString().split('T')[0],
+          collectorName: this.uploadedBy,
+          boundaryGeometry: {
+            type: "MultiPolygon",
+            coordinates: geometry,
+          }
+        };
+  
+        this.projectService.createProjectBoundary(this.projectGuid, projectBoundary).subscribe({
+          next: (boundaryResp) => {
+            const boundaryGuid = boundaryResp?.projectBoundaryGuid;
+  
+            const attachment: FileAttachment = {
+              sourceObjectNameCode: { sourceObjectNameCode: "PROJECT" },
+              sourceObjectUniqueId: boundaryGuid,
+              documentPath: file.name,
+              fileIdentifier: fileUploadResp.fileId,
+              attachmentContentTypeCode: { attachmentContentTypeCode: type },
+              attachmentDescription: this.attachmentDescription,
+              attachmentReadOnlyInd: false,
+            };
+  
+            this.attachmentService.createProjectAttachment(this.projectGuid, attachment).subscribe({
+              next: () => {
+                this.snackbarService.open('File uploaded successfully.', 'Close', {
+                  duration: 5000,
+                  panelClass: 'snackbar-success',
+                });
+                this.loadProjectAttachments();
+                this.filesUpdated.emit();
+              },
+              error: (err) => {
+                console.error('Failed to create project attachment', err);
+              }
+            });
           },
+          error: (err) => {
+            console.error('Failed to create project boundary', err);
+          }
         });
       }
+    });
   }
 
   finishWithoutGeometry() {
@@ -254,7 +345,7 @@ export class ProjectFilesComponent implements OnInit {
     this.filesUpdated.emit();
   }
 
-  updateProjectBoundary(file: File, response: Position[][][]) {
+  createProjectBoundary(file: File, response: Position[][][]) {
     const now = new Date();
     const futureDate = new Date(now);
     futureDate.setFullYear(futureDate.getFullYear() + 1);
@@ -292,7 +383,7 @@ export class ProjectFilesComponent implements OnInit {
     });
   }
 
-  updateActivityBoundary(file: File, response: Position[][][]) {
+  createActivityBoundary(file: File, response: Position[][][]) {
     const now = new Date();
     const futureDate = new Date(now);
     futureDate.setFullYear(futureDate.getFullYear() + 1);
@@ -349,16 +440,16 @@ export class ProjectFilesComponent implements OnInit {
               next: () => {
                 this.projectFiles = this.projectFiles.filter(file => file !== fileToDelete);
                 this.dataSource.data = [...this.projectFiles];
-  
+
                 this.projectService.getActivityBoundaries(this.projectGuid, this.fiscalGuid, this.activityGuid).subscribe(response => {
                   const boundaries = response?._embedded?.activityBoundary;
                   if (boundaries && boundaries.length > 0) {
                     const latest = boundaries.sort((a: ActivityBoundary, b: ActivityBoundary) =>
                       new Date(b.systemStartTimestamp ?? 0).getTime() - new Date(a.systemStartTimestamp ?? 0).getTime()
                     )[0];
-  
+
                     const activityBoundaryGuid = latest.activityBoundaryGuid;
-                    this.projectService.deleteActivityBoundary(this.projectGuid,this.fiscalGuid, this.activityGuid, activityBoundaryGuid).subscribe({
+                    this.projectService.deleteActivityBoundary(this.projectGuid, this.fiscalGuid, this.activityGuid, activityBoundaryGuid).subscribe({
                       next: () => {
                         this.filesUpdated.emit();
                         // Show success message in snackbar
@@ -369,11 +460,11 @@ export class ProjectFilesComponent implements OnInit {
                         this.loadActivityAttachments();
                       }
                     })
-  
+
                   } else {
                     console.log('No boundaries found');
                   }
-  
+
                 })
               },
               error: (error) => {
@@ -385,21 +476,21 @@ export class ProjectFilesComponent implements OnInit {
                 });
               }
             });
-          }else {
+          } else {
             // delete project attachment
             this.attachmentService.deleteProjectAttachment(this.projectGuid, fileToDelete.fileAttachmentGuid).subscribe({
               next: () => {
                 this.projectFiles = this.projectFiles.filter(file => file !== fileToDelete);
                 this.dataSource.data = [...this.projectFiles];
-  
+
                 this.projectService.getProjectBoundaries(this.projectGuid).subscribe(response => {
                   const boundaries = response?._embedded?.projectBoundary;
-  
+
                   if (boundaries && boundaries.length > 0) {
                     const latest = boundaries.sort((a: ProjectBoundary, b: ProjectBoundary) =>
                       new Date(b.systemStartTimestamp ?? 0).getTime() - new Date(a.systemStartTimestamp ?? 0).getTime()
                     )[0];
-  
+
                     const boundaryGuid = latest.projectBoundaryGuid;
                     this.projectService.deleteProjectBoundary(this.projectGuid, boundaryGuid).subscribe({
                       next: () => {
@@ -412,11 +503,11 @@ export class ProjectFilesComponent implements OnInit {
                         this.loadProjectAttachments();
                       }
                     })
-  
+
                   } else {
                     console.log('No boundaries found');
                   }
-  
+
                 })
               },
               error: (error) => {
@@ -466,7 +557,7 @@ export class ProjectFilesComponent implements OnInit {
           });
         }
       });
-    } else{
+    } else {
       console.error('The file has no file Id');
       this.snackbarService.open('Failed to download the file.', 'Close', {
         duration: 5000,

@@ -3,6 +3,7 @@ package ca.bc.gov.nrs.wfprev.services;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -96,10 +97,14 @@ public class CoordinatesService implements CommonService {
         List<MultiPolygon> polygons = new ArrayList<>();
         CollectionModel<ProjectBoundaryModel> projectBoundaries = projectBoundaryService.getAllProjectBoundaries(projectGuid);
 
-        for (ProjectBoundaryModel projectBoundary : projectBoundaries) {
-            polygons.add(projectBoundary.getBoundaryGeometry());
-        }
+        // only use latest project boundary for coordinate updates
+        Optional<ProjectBoundaryModel> latestBoundary = projectBoundaries.getContent().stream()
+                .filter(b -> b.getBoundaryGeometry() != null && b.getSystemStartTimestamp() != null)
+                .max(Comparator.comparing(ProjectBoundaryModel::getSystemStartTimestamp));
 
+        latestBoundary.ifPresent(boundary -> polygons.add(boundary.getBoundaryGeometry()));
+
+        // use all activity boundaries associated with project for coordinate updates
         CollectionModel<ProjectFiscalModel> projectFiscals = projectFiscalService.getAllProjectFiscals(String.valueOf(projectGuid));
 
         for (ProjectFiscalModel projectFiscal : projectFiscals) {

@@ -3,12 +3,16 @@ package ca.bc.gov.nrs.wfprev.services;
 import ca.bc.gov.nrs.wfone.common.service.api.ServiceException;
 import ca.bc.gov.nrs.wfprev.common.services.CommonService;
 import ca.bc.gov.nrs.wfprev.data.assemblers.FileAttachmentResourceAssembler;
+import ca.bc.gov.nrs.wfprev.data.entities.ActivityBoundaryEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.AttachmentContentTypeCodeEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.FileAttachmentEntity;
+import ca.bc.gov.nrs.wfprev.data.entities.ProjectBoundaryEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.SourceObjectNameCodeEntity;
 import ca.bc.gov.nrs.wfprev.data.models.FileAttachmentModel;
+import ca.bc.gov.nrs.wfprev.data.repositories.ActivityBoundaryRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.AttachmentContentTypeCodeRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.FileAttachmentRepository;
+import ca.bc.gov.nrs.wfprev.data.repositories.ProjectBoundaryRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.SourceObjectNameCodeRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
@@ -18,6 +22,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -29,22 +34,55 @@ public class FileAttachmentService implements CommonService {
     private final FileAttachmentResourceAssembler fileAttachmentResourceAssembler;
     private final AttachmentContentTypeCodeRepository attachmentContentTypeCodeRepository;
     private final SourceObjectNameCodeRepository sourceObjectNameCodeRepository;
+    private final ProjectBoundaryRepository projectBoundaryRepository;
+    private final ActivityBoundaryRepository activityBoundaryRepository;
 
     public FileAttachmentService(
             FileAttachmentRepository fileAttachmentRepository,
             FileAttachmentResourceAssembler fileAttachmentResourceAssembler,
             AttachmentContentTypeCodeRepository attachmentContentTypeCodeRepository,
-            SourceObjectNameCodeRepository sourceObjectNameCodeRepository) {
+            SourceObjectNameCodeRepository sourceObjectNameCodeRepository,
+            ProjectBoundaryRepository projectBoundaryRepository,
+            ActivityBoundaryRepository activityBoundaryRepository) {
         this.fileAttachmentRepository = fileAttachmentRepository;
         this.fileAttachmentResourceAssembler = fileAttachmentResourceAssembler;
         this.attachmentContentTypeCodeRepository = attachmentContentTypeCodeRepository;
         this.sourceObjectNameCodeRepository = sourceObjectNameCodeRepository;
+        this.projectBoundaryRepository = projectBoundaryRepository;
+        this.activityBoundaryRepository = activityBoundaryRepository;
     }
 
-    public CollectionModel<FileAttachmentModel> getAllFileAttachments(String id) throws ServiceException {
+    public CollectionModel<FileAttachmentModel> getAllProjectAttachments(String projectGuid) throws ServiceException {
         try {
-            List<FileAttachmentEntity> all = fileAttachmentRepository.findAllBySourceObjectUniqueId(id);
-            return fileAttachmentResourceAssembler.toCollectionModel(all);
+            List<ProjectBoundaryEntity> projectBoundaries = projectBoundaryRepository.findByProjectGuid(UUID.fromString(projectGuid));
+
+            List<String> boundaryGuids = new ArrayList<>();
+            for (ProjectBoundaryEntity projectBoundary : projectBoundaries) {
+                UUID projectBoundaryGuid = projectBoundary.getProjectBoundaryGuid();
+                boundaryGuids.add(String.valueOf(projectBoundaryGuid));
+            }
+
+            List<FileAttachmentEntity> attachments = fileAttachmentRepository.findAllBySourceObjectUniqueIdIn(boundaryGuids);
+
+            return fileAttachmentResourceAssembler.toCollectionModel(attachments);
+        } catch (Exception e) {
+            throw new ServiceException(e.getLocalizedMessage(), e);
+        }
+    }
+
+    public CollectionModel<FileAttachmentModel> getAllActivityAttachments(String activityGuid) throws ServiceException {
+        try {
+            List<ActivityBoundaryEntity> activityBoundaries = activityBoundaryRepository.findByActivityGuid(UUID.fromString(activityGuid));
+
+            List<String> boundaryGuids = new ArrayList<>();
+            for (ActivityBoundaryEntity activityBoundary : activityBoundaries) {
+                UUID activityBoundaryGuid = activityBoundary.getActivityBoundaryGuid();
+                boundaryGuids.add(String.valueOf(activityBoundaryGuid));
+            }
+
+            List<FileAttachmentEntity> attachments = fileAttachmentRepository.findAllBySourceObjectUniqueIdIn(boundaryGuids);
+
+            return fileAttachmentResourceAssembler.toCollectionModel(attachments);
         } catch (Exception e) {
             throw new ServiceException(e.getLocalizedMessage(), e);
         }
