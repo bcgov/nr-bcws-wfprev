@@ -676,13 +676,8 @@ describe('ProjectsListComponent', () => {
   });
 
   it('should return empty array if projectFiscals is missing or empty', () => {
-    // Case: project is undefined
     expect(component.getSortedProjectFiscalsDesc(undefined)).toEqual([]);
-
-    // Case: projectFiscals is undefined
     expect(component.getSortedProjectFiscalsDesc({})).toEqual([]);
-
-    // Case: projectFiscals is an empty array
     expect(component.getSortedProjectFiscalsDesc({ projectFiscals: [] })).toEqual([]);
   });
 
