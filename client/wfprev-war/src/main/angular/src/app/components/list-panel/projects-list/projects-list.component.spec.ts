@@ -675,6 +675,13 @@ describe('ProjectsListComponent', () => {
     expect(result[2].fiscalYear).toBe(2021);
   });
 
+  it('should return empty array if projectFiscals is missing or empty', () => {
+    expect(component.getSortedProjectFiscalsDesc(undefined)).toEqual([]);
+    expect(component.getSortedProjectFiscalsDesc({})).toEqual([]);
+    expect(component.getSortedProjectFiscalsDesc({ projectFiscals: [] })).toEqual([]);
+  });
+
+
   it('should toggle marker active state and update polygon styles on marker click', fakeAsync(() => {
     const mockPolygon1 = jasmine.createSpyObj('polygon', ['setStyle']);
     const mockPolygon2 = jasmine.createSpyObj('polygon', ['setStyle']);
