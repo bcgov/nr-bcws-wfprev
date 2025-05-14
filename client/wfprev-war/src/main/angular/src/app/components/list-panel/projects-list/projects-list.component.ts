@@ -12,11 +12,13 @@ import L from 'leaflet';
 import 'leaflet.markercluster';
 import { SharedCodeTableService } from 'src/app/services/shared-code-table.service';
 import { SharedService } from 'src/app/services/shared-service';
+import { MatTooltipModule } from '@angular/material/tooltip';
+
 
 @Component({
   selector: 'app-projects-list',
   standalone: true,
-  imports: [MatSlideToggleModule, CommonModule, MatExpansionModule],
+  imports: [MatSlideToggleModule, CommonModule, MatExpansionModule, MatTooltipModule],
   templateUrl: './projects-list.component.html',
   styleUrls: ['./projects-list.component.scss'],
 })
