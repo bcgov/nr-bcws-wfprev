@@ -118,8 +118,6 @@ describe('ResizablePanelComponent', () => {
 
   it('should delegate scroll event to projectList.handleScroll', () => {
     const mockScrollEvent = new Event('scroll');
-
-    // Mock the projectList instance and its handleScroll method
     component.projectList = {
       handleScroll: jasmine.createSpy('handleScroll')
     } as any;
