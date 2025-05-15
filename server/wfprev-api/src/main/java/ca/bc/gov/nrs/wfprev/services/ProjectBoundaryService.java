@@ -199,7 +199,22 @@ public class ProjectBoundaryService implements CommonService {
     } return model;
   }
 
-
+  /**
+   * Converts the area of a {@link MultiPolygon} from degrees to hectares using a geodetically accurate method
+   * based on the WGS84 ellipsoidal Earth model.
+   * <p>
+   * For each polygon in the MultiPolygon, the method:
+   * <ul>
+   *   <li>Calculates the centroid latitude</li>
+   *   <li>Computes the meridian and prime vertical radii of curvature</li>
+   *   <li>Estimates the size of one square degree at that latitude</li>
+   *   <li>Converts the polygon's area from degrees to square meters, then to hectares</li>
+   * </ul>
+   * This approach improves accuracy compared to spherical approximations, particularly for large or high-latitude geometries.
+   *
+   * @param multiPolygon the JTS MultiPolygon geometry to convert
+   * @return the total area in hectares, rounded to 4 decimal places
+   */
   public BigDecimal convertMultiPolygonAreaToHectares(MultiPolygon multiPolygon) {
     double totalAreaHectares = 0.0;
 
