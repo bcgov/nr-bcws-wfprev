@@ -247,7 +247,7 @@ public class ProjectBoundaryService implements CommonService {
       // Area of 1 square degree in square meters at this latitude
       double squareMetersPerSquareDegree = metersPerLatDegree * metersPerLonDegree;
 
-      // Convert this polygon's area to hectares using more accurate WGS84 parameters
+      // Convert this polygon's area to hectares using WGS84 parameters
       double polygonAreaSqDegrees = polygon.getArea();
       double polygonAreaSqMeters = polygonAreaSqDegrees * squareMetersPerSquareDegree;
       double polygonAreaHectares = polygonAreaSqMeters / 10000.0;
