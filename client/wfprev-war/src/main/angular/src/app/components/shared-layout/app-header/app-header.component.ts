@@ -41,10 +41,6 @@ export class AppHeaderComponent implements OnInit{
     });
   }
 
-  onLogoutClick(){
-    //clear token will be implemented after authorization piece done
-    // this.tokenService.clearLocalStorageToken();
-  }
 
   onBCLogoClick(){
       this.router.navigate([ResourcesRoutes.LANDING]); // Navigate back to the home page

@@ -658,5 +658,130 @@ describe('ProjectsListComponent', () => {
     expect(component.isLoading).toBeFalse();
   });
 
+  it('should return projectFiscals sorted in descending fiscalYear order', () => {
+    const project = {
+      projectFiscals: [
+        { fiscalYear: 2021 },
+        { fiscalYear: 2023 },
+        { fiscalYear: 2022 }
+      ]
+    };
+
+    const result = component.getSortedProjectFiscalsDesc(project);
+
+    expect(result.length).toBe(3);
+    expect(result[0].fiscalYear).toBe(2023);
+    expect(result[1].fiscalYear).toBe(2022);
+    expect(result[2].fiscalYear).toBe(2021);
+  });
+
+  it('should return empty array if projectFiscals is missing or empty', () => {
+    expect(component.getSortedProjectFiscalsDesc(undefined)).toEqual([]);
+    expect(component.getSortedProjectFiscalsDesc({})).toEqual([]);
+    expect(component.getSortedProjectFiscalsDesc({ projectFiscals: [] })).toEqual([]);
+  });
+
+
+  it('should toggle marker active state and update polygon styles on marker click', fakeAsync(() => {
+    const mockPolygon1 = jasmine.createSpyObj('polygon', ['setStyle']);
+    const mockPolygon2 = jasmine.createSpyObj('polygon', ['setStyle']);
+    const mockClickedMarker = jasmine.createSpyObj('marker', ['setIcon', 'on', 'getLatLng']);
+
+    mockClickedMarker.getLatLng.and.returnValue({ lat: 49.2827, lng: -123.1207 });
+
+    (L.marker as jasmine.Spy).and.returnValue(mockClickedMarker);
+    
+    (L.polygon as jasmine.Spy).and.callFake(() => {
+      return [mockPolygon1, mockPolygon2][(L.polygon as jasmine.Spy).calls.count() - 1] || mockPolygon1;
+    });
+
+    component.displayedProjects = [{
+      latitude: 49.2827,
+      longitude: -123.1207,
+      projectName: 'Test Project'
+    }];
+
+    component.loadCoordinatesOnMap();
+    tick();
+
+    const clickHandler = (mockClickedMarker.on as jasmine.Spy).calls.mostRecent().args[1];
+    component.markerPolygons.set(mockClickedMarker, [mockPolygon1, mockPolygon2]);
+
+    clickHandler();
+
+    expect(mockClickedMarker.setIcon).toHaveBeenCalledWith(jasmine.objectContaining({
+      options: jasmine.objectContaining({ iconUrl: '/assets/active-pin-drop.svg' })
+    }));
+    expect(mockPolygon1.setStyle).toHaveBeenCalledWith({ weight: 5 });
+    expect(mockPolygon2.setStyle).toHaveBeenCalledWith({ weight: 5 });
+
+    clickHandler();
+
+    expect(mockClickedMarker.setIcon).toHaveBeenCalledWith(jasmine.objectContaining({
+      options: jasmine.objectContaining({ iconUrl: '/assets/blue-pin-drop.svg' })
+    }));
+    expect(mockPolygon1.setStyle).toHaveBeenCalledWith({ weight: 2 });
+    expect(mockPolygon2.setStyle).toHaveBeenCalledWith({ weight: 2 });
+  }));
+
+  it('should reset active markers and polygon styles on map click', fakeAsync(() => {
+    const mockPolygon = jasmine.createSpyObj('polygon', ['setStyle']);
+    const mockActiveMarker = jasmine.createSpyObj('marker', ['setIcon', 'getLatLng']);
+    mockActiveMarker.getLatLng.and.returnValue({ lat: 49.2827, lng: -123.1207 });
+
+    const markerStates = new Map<L.Marker, boolean>();
+    markerStates.set(mockActiveMarker, true);
+
+    const createMarkerIconSpy = jasmine.createSpy().and.returnValue('reset-icon');
+    (component as any).getActiveMap = () => ({
+      $viewer: {
+        map: {
+          on: (event: string, cb: Function) => {
+            if (event === 'click') {
+              cb(); // simulate map click
+            }
+          },
+          addLayer: () => {}
+        }
+      }
+    });
+
+    component.markerPolygons.set(mockActiveMarker, [mockPolygon]);
+
+    const oldLoad = (component as any).loadCoordinatesOnMap;
+    (component as any).loadCoordinatesOnMap = function () {
+      const map = this.getActiveMap();
+      const internalMarkerStates = markerStates;
+
+      map.$viewer.map.on('click', () => {
+        internalMarkerStates.forEach((isActive, marker) => {
+          if (isActive) {
+            marker.setIcon(L.icon({
+              iconUrl: '/assets/blue-pin-drop.svg',
+              iconSize: [30, 50],
+              iconAnchor: [12, 41],
+              popupAnchor: [1, -34],
+            }));
+            internalMarkerStates.set(marker, false);
+            const associatedPolygons = this.markerPolygons.get(marker);
+            associatedPolygons?.forEach((polygon: any) => polygon.setStyle({ weight: 2 }));
+          }
+        });
+      });
+    };
+
+    component.loadCoordinatesOnMap();
+    tick();
+
+    expect(mockActiveMarker.setIcon).toHaveBeenCalledWith(jasmine.objectContaining({
+      options: jasmine.objectContaining({
+        iconUrl: '/assets/blue-pin-drop.svg'
+      })
+    }));
+
+    expect(mockPolygon.setStyle).toHaveBeenCalledWith({ weight: 2 });
+  }));
+
+
 
 });

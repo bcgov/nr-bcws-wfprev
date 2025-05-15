@@ -118,23 +118,6 @@ describe('AppHeaderComponent', () => {
     expect(titleElement.textContent).toBe(component.title);
   });
 
-  it('should call onLogoutClick() when Logout is clicked', () => {
-    spyOn(component, 'onLogoutClick');
-    const menuTrigger = fixture.debugElement.query(By.css('button[mat-button]'));
-    menuTrigger.triggerEventHandler('click', null);
-    fixture.detectChanges();
-
-    const logoutButton = fixture.debugElement.query(By.css('button[mat-menu-item]'));
-    expect(logoutButton).toBeTruthy();
-    logoutButton.triggerEventHandler('click', null);
-    expect(component.onLogoutClick).toHaveBeenCalled();
-  });
-
-  it('should render the Material menu', () => {
-    const menuElement = fixture.debugElement.query(By.css('mat-menu'));
-    expect(menuElement).toBeTruthy();
-  });
-
   it('should set currentUser when credentialsEmitter emits a value', () => {
     const mockName = 'Mike David';
     mockTokenService.getUserFullName.and.returnValue(mockName);

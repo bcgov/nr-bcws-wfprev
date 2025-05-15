@@ -23,8 +23,7 @@
   </div>
 
   <div class="list-contents" (scroll)="handleScroll($event)">
-    <mat-accordion>
-      
+    <mat-accordion [multi]="true">
       <mat-expansion-panel *ngFor="let project of displayedProjects?.length ? displayedProjects : []" (click)="highlightProjectPolygons(project)" #panel="matExpansionPanel">
         <mat-expansion-panel-header class="expansion-panel-header">
           <mat-panel-title class="project-title">
@@ -91,9 +90,9 @@
             </div>
           </div>
           <div *ngIf="project.projectFiscals?.length" class="fiscal-section">
-            <div *ngFor="let fiscal of project.projectFiscals" class="fiscal-card">
+            <div *ngFor="let fiscal of getSortedProjectFiscalsDesc(project)" class="fiscal-card">
               <div class="fiscal-card-title">
-                <span>{{fiscal.projectFiscalName}}</span>
+                <span matTooltip="{{ fiscal.projectFiscalName }}">{{fiscal.projectFiscalName}}</span>
                 <div class="status-container">
                   <ng-container [ngSwitch]="fiscal.planFiscalStatusCode">
                     <img *ngSwitchCase="'DRAFT'" src="/assets/draft-icon.svg" alt="draft" class="status-icon" />
