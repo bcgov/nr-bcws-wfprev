@@ -4,3 +4,15 @@
   font-weight: 800;
   cursor: pointer;
 }
+
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.app-content {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+}

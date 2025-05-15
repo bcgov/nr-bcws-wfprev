@@ -2,12 +2,11 @@
   width: 684px;
   min-width: 684px;
   max-width: 684px;
-  height: 100vh;
+  height: 100%;
   display: flex;
   flex-direction: column;
   background-color: #fff;
   border-right: 1px solid #ccc;
-
 
   .scrollable-content {
     flex: 1;
