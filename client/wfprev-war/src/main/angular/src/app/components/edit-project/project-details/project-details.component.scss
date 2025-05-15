@@ -13,7 +13,7 @@
   
       .form-item {
         font-family: "BCSans", "Noto Sans", Verdana, Arial, sans-serif !important;
-        flex: 1 1 calc(25% - 20px); // 4 items per row with a 20px gap
+        flex: 1 1 calc(25% - 15px); // 4 items per row with a 20px gap
         min-width: 200px;
         max-width: 500px;
   
@@ -33,7 +33,7 @@
             font-style: normal;
             font-weight: 400;
             width: 100%;
-            margin: 8px;
+            // margin: 8px;
             font-size: 16px;
             border: none;
             border-bottom: 1px solid #282828;
@@ -54,7 +54,7 @@
         }
         textarea {
           width: 100%;
-          margin: 8px;
+          // margin: 0;
           font-size: 14px;
           border: 1px solid #ccc;
           border-radius: 4px;
@@ -99,7 +99,10 @@
 
       .secondary-rational{
         flex: 1 1 20%; // Set the width to 50% of the row
-      }
+        width: 100%;
+        max-width: 1000px;
+        min-width: 500px;
+        }
     }
   }
   
