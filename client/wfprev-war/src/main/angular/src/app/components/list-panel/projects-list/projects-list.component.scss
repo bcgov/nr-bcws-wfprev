@@ -3,7 +3,6 @@
   flex-direction: column;
   flex: 1;
   min-height: 0;
-  height: 100vh;
 }
 
 .list-header {
@@ -124,7 +123,7 @@
   }
   
   .list-contents {
-    max-height: calc(100vh - 90px);
+    // max-height: calc(100vh - 270px);
     flex: 1;
     min-height: 0;
     overflow-y: auto;

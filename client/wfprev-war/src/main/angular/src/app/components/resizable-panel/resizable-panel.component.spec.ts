@@ -115,4 +115,17 @@ describe('ResizablePanelComponent', () => {
     component.selectTab(2); // Select the third tab
     expect(component.selectedTabIndex).toBe(2); // Check updated tab index
   });
+
+  it('should delegate scroll event to projectList.handleScroll', () => {
+    const mockScrollEvent = new Event('scroll');
+
+    // Mock the projectList instance and its handleScroll method
+    component.projectList = {
+      handleScroll: jasmine.createSpy('handleScroll')
+    } as any;
+
+    component.onParentScroll(mockScrollEvent);
+
+    expect(component.projectList.handleScroll).toHaveBeenCalledWith(mockScrollEvent);
+  });
 });
