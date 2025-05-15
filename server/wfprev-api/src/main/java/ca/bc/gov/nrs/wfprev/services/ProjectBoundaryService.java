@@ -14,17 +14,10 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validator;
 import lombok.extern.slf4j.Slf4j;
-import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Polygon;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.stereotype.Component;
-import org.geotools.geometry.jts.JTS;
-import org.geotools.referencing.CRS;
-import org.geotools.referencing.crs.DefaultGeographicCRS;
-import org.geotools.referencing.GeodeticCalculator;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.operation.MathTransform;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -206,6 +199,7 @@ public class ProjectBoundaryService implements CommonService {
     } return model;
   }
 
+
   public BigDecimal convertMultiPolygonAreaToHectares(MultiPolygon multiPolygon) {
     double totalAreaHectares = 0.0;
 
@@ -213,53 +207,37 @@ public class ProjectBoundaryService implements CommonService {
     for (int i = 0; i < multiPolygon.getNumGeometries(); i++) {
       Polygon polygon = (Polygon) multiPolygon.getGeometryN(i);
 
-      // Using JTS to calculate geodetic area
-      Geometry projectedPolygon = null;
-      try {
-        // Create a proper projection centered on the polygon
-        double centerLat = polygon.getCentroid().getY();
-        double centerLon = polygon.getCentroid().getX();
+      // Get centroid latitude for this polygon
+      double latitude = polygon.getCentroid().getY();
+      double latRad = Math.toRadians(latitude);
 
-        // Create an appropriate UTM projection based on the centroid
-        int utmZone = (int)Math.floor((centerLon + 180) / 6) + 1;
-        String epsgCode = "EPSG:" + (centerLat >= 0 ? 32600 : 32700) + utmZone;
+      // WGS84 ellipsoid parameters
+      double semiMajorAxis = 6378137.0; // meters, WGS84 semi-major axis
+      double semiMinorAxis = 6356752.314245; // meters, WGS84 semi-minor axis
+      double eccentricitySquared = 1 - ((semiMinorAxis * semiMinorAxis) / (semiMajorAxis * semiMajorAxis));
 
-        CoordinateReferenceSystem targetCRS = CRS.decode(epsgCode);
-        MathTransform transform = CRS.findMathTransform(DefaultGeographicCRS.WGS84, targetCRS, true);
+      // Calculate the meridian radius of curvature
+      double numerator = semiMajorAxis * (1 - eccentricitySquared);
+      double denominatorFactor = 1 - eccentricitySquared * Math.sin(latRad) * Math.sin(latRad);
+      double denominator = Math.pow(denominatorFactor, 1.5);
+      double meridianRadius = numerator / denominator;
 
-        // Project the polygon
-        projectedPolygon = JTS.transform(polygon, transform);
+      // Calculate the prime vertical radius of curvature
+      double primeVerticalRadius = semiMajorAxis / Math.sqrt(denominatorFactor);
 
-        // Calculate area in square meters and convert to hectares
-        double areaSqMeters = projectedPolygon.getArea();
-        double areaHectares = areaSqMeters / 10000.0;
+      // Length of 1 degree in meters at this latitude
+      double metersPerLatDegree = (Math.PI / 180.0) * meridianRadius;
+      double metersPerLonDegree = (Math.PI / 180.0) * primeVerticalRadius * Math.cos(latRad);
 
-        totalAreaHectares += areaHectares;
-      } catch (Exception e) {
-        // Fallback to approximate calculation if projection fails
-        System.err.println("Projection failed, using fallback method: " + e.getMessage());
+      // Area of 1 square degree in square meters at this latitude
+      double squareMetersPerSquareDegree = metersPerLatDegree * metersPerLonDegree;
 
-        // This is your original calculation, kept as fallback
-        double latitude = polygon.getCentroid().getY();
-        double latRad = Math.toRadians(latitude);
+      // Convert this polygon's area to hectares using more accurate WGS84 parameters
+      double polygonAreaSqDegrees = polygon.getArea();
+      double polygonAreaSqMeters = polygonAreaSqDegrees * squareMetersPerSquareDegree;
+      double polygonAreaHectares = polygonAreaSqMeters / 10000.0;
 
-        // Using WGS84 semi-major axis instead of average Earth radius
-        double earthSemiMajorAxis = 6378137.0; // meters
-
-        // Length of 1 degree in meters at this latitude (more accurate)
-        double metersPerLatDegree = Math.PI * earthSemiMajorAxis / 180.0;
-        double metersPerLonDegree = metersPerLatDegree * Math.cos(latRad);
-
-        // Area of 1 square degree in square meters at this latitude
-        double squareMetersPerSquareDegree = metersPerLatDegree * metersPerLonDegree;
-
-        // Convert this polygon's area to hectares
-        double polygonAreaSqDegrees = polygon.getArea();
-        double polygonAreaSqMeters = polygonAreaSqDegrees * squareMetersPerSquareDegree;
-        double polygonAreaHectares = polygonAreaSqMeters / 10000.0;
-
-        totalAreaHectares += polygonAreaHectares;
-      }
+      totalAreaHectares += polygonAreaHectares;
     }
 
     // Round to 4 decimal places
