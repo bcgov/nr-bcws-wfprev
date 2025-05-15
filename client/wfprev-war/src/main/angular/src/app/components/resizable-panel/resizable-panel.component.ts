@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, Output, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatTabsModule } from '@angular/material/tabs';
 import { ProjectsListComponent } from 'src/app/components/list-panel/projects-list/projects-list.component';
@@ -16,6 +16,7 @@ export class ResizablePanelComponent {
   breakpoints = [5, 50, 90];
   selectedTabIndex = 0; // Default selected tab
   @Output() panelResized = new EventEmitter<void>();
+  @ViewChild('projectList') projectList!: ProjectsListComponent;
 
   tabs = [
     { name: 'Projects', component: 'app-tab1' },
@@ -30,5 +31,9 @@ export class ResizablePanelComponent {
 
   selectTab(index: number): void {
     this.selectedTabIndex = index;
+  }
+
+  onParentScroll(event: Event) {
+    this.projectList.handleScroll(event);
   }
 }
