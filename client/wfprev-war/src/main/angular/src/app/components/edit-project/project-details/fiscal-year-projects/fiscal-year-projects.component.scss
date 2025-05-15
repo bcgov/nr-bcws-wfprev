@@ -7,6 +7,10 @@ mat-expansion-panel {
         padding: 0;
     }
 
+    ::ng-deep .mat-expansion-indicator {
+        display: none;
+      }
+
     .project-title {
         font-family: var(--wf-font-family-main) !important;
         background-color: inherit;
