@@ -3,7 +3,6 @@
   flex-direction: column;
   flex: 1;
   min-height: 0;
-  height: 100vh;
 }
 
 .list-header {
@@ -124,7 +123,6 @@
   }
   
   .list-contents {
-    max-height: calc(100vh - 90px);
     flex: 1;
     min-height: 0;
     overflow-y: auto;
@@ -168,7 +166,7 @@
       }
 
       .expansion-panel-header {
-        padding: 10px 0;
+        padding: 10px 0 15px;
         height: auto;
       }
 
@@ -238,16 +236,23 @@
         background: #FFF;
         padding:10px 0;
 
-        .fiscal-card-title {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          padding: 2px 15px;
-          border-bottom: 1px solid #A5A4A4;
-          font-weight: 700;
-          font-size: 16px;
-          color: #474543;
+      .fiscal-card-title {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 2px 15px;
+        border-bottom: 1px solid #A5A4A4;
+        font-weight: 700;
+        font-size: 16px;
+        color: #474543;
+
+        span {
+          max-width: 380px;
+          overflow: hidden;
+          white-space: nowrap;
+          text-overflow: ellipsis;
         }
+      }
 
         .status-container {
           display: flex;

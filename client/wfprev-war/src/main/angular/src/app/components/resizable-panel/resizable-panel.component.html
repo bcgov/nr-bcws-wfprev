@@ -1,5 +1,5 @@
 <div class="resizable-panel">
-  <div class="scrollable-content">
-    <app-projects-list></app-projects-list>
+  <div class="scrollable-content" (scroll)="onParentScroll($event)">
+    <app-projects-list #projectList></app-projects-list>
   </div>
 </div>
