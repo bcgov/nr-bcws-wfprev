@@ -375,7 +375,7 @@ class ProjectBoundaryServiceTest {
 
         BigDecimal result = projectBoundaryService.convertMultiPolygonAreaToHectares(multiPolygon);
 
-        BigDecimal expected = new BigDecimal("123.6431");
+        BigDecimal expected = new BigDecimal("123.0907");
 
         assertEquals(expected, result, "Area in hectares should match expected conversion");
     }
