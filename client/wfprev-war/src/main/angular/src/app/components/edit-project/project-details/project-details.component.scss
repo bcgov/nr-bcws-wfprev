@@ -15,7 +15,8 @@
         font-family: "BCSans", "Noto Sans", Verdana, Arial, sans-serif !important;
         flex: 1 1 calc(25% - 15px); // 4 items per row with a 20px gap
         min-width: 200px;
-        max-width: 500px;
+        max-width: 700px;
+        width: 22vw;
   
         label {
             padding: 9px;
@@ -39,6 +40,10 @@
             border-bottom: 1px solid #282828;
             outline: none;
             padding: 2px 12px;
+        }
+
+        input {   
+            width: 22vw;
         }
 
         select{
@@ -80,8 +85,7 @@
       }
 
       .funding-stream {
-        input,
-        select{
+        input{ 
         border-bottom: 1px dashed #282828;
         }
       }
@@ -98,11 +102,14 @@
       }
 
       .secondary-rational{
-        flex: 1 1 20%; // Set the width to 50% of the row
         width: 100%;
-        max-width: 1000px;
-        min-width: 500px;
+        max-width: 2000px;
+        min-width: 800px;
         }
+
+      .fire-centre {
+        flex: 1 1 calc(25% - 50px);
+      }
     }
   }
   
