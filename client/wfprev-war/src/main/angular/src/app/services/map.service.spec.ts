@@ -196,4 +196,15 @@ describe('MapService', () => {
       expect(mockSMK.TYPE.Viewer.prototype.basemap['openstreetmap']).toBeDefined();
     });
   });
+
+  describe('clearSMKInstance', () => {
+    it('should clear the smkInstance by setting it to null', () => {
+      (service as any).smkInstance = { some: 'value' };
+      expect(service.getSMKInstance()).not.toBeNull();
+      service.clearSMKInstance();
+      expect(service.getSMKInstance()).toBeNull();
+    });
+  });
+
+
 });
