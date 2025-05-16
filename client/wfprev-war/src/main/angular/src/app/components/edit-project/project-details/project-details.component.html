@@ -12,7 +12,7 @@
 
     <div class="form-item funding-stream">
       <label>Funding Stream</label>
-      <input type="text" placeholder="Funding Stream" readonly />
+      <input type="text" readonly />
     </div>
 
     <div class="form-item">
@@ -25,8 +25,9 @@
     </div>
 
     <div class="form-item">
-      <label for="projectLead">Project Code</label>
-      <input type="text" id="projectLead" formControlName="projectCode" placeholder="Begin Typing" />
+      <label for="closestCommunityName">Closest Community<span class="required">*</span></label>
+      <input type="text" id="closestCommunityName" formControlName="closestCommunityName"
+      placeholder="Begin Typing" />
     </div>
 
     <div class="form-item">
@@ -78,9 +79,8 @@
     </div>
 
     <div class="form-item">
-      <label for="closestCommunityName">Closest Community<span class="required">*</span></label>
-      <input type="text" id="closestCommunityName" formControlName="closestCommunityName"
-      placeholder="Begin Typing" />
+      <label for="projectLead">Project Lead<span class="required">*</span></label>
+      <input type="text" id="projectLead" formControlName="projectLead" placeholder="Begin Typing" />
     </div>
 
     <div class="form-item">
@@ -90,11 +90,11 @@
     </div>
 
     <div class="form-item">
-      <label for="projectLead">Project Lead<span class="required">*</span></label>
-      <input type="text" id="projectLead" formControlName="projectLead" placeholder="Begin Typing" />
+      <label for="siteUnitName">Planning Unit</label>
+      <input type="text" id="siteUnitName" formControlName="siteUnitName" placeholder="Begin Typing" />
     </div>
 
-    <div class="form-item">
+    <div class="form-item objective-field">
       <label>Primary Objective<span class="required">*</span></label>
       <select id="fundingStream" formControlName="primaryObjectiveTypeCode">
         <option *ngFor="let item of objectiveTypeCode" [value]="item.objectiveTypeCode">
@@ -103,7 +103,7 @@
       </select>
     </div>
 
-    <div class="form-item">
+    <div class="form-item objective-field">
       <label>Secondary Objective</label>
       <select id="fundingStream" formControlName="secondaryObjectiveTypeCode">
         <option value="">Select</option>
@@ -117,11 +117,6 @@
       <label for="secondaryObjectiveRationale">Secondary Objective Rationale</label>
       <textarea id="projectFiscalDescription" formControlName="projectFiscalDescription" rows="4" cols="50">
         </textarea>
-    </div>
-
-    <div class="form-item site-unit">
-      <label for="siteUnitName">Planning Unit</label>
-      <input type="text" id="siteUnitName" formControlName="siteUnitName" placeholder="Begin Typing" />
     </div>
 
     <div class="footer">
