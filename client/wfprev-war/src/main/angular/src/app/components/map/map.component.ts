@@ -31,7 +31,6 @@ export class MapComponent implements AfterViewInit, OnDestroy  {
     future: '#E7298A'
   };
 
-  private markersLayerGroup = L.layerGroup();
   private isMapReady = false;
   private latestProjects: any[] = [];
   private hasClusterBeenAddedToMap = false;
@@ -46,13 +45,11 @@ export class MapComponent implements AfterViewInit, OnDestroy  {
   ) {}
 
   ngOnDestroy(): void {
-    const smk = this.mapService.getSMKInstance();
-    if (smk && smk.destroy) {
-      smk.destroy();
-    }
+    this.mapService.getSMKInstance()?.destroy();
     this.mapService.clearSMKInstance(); 
   }
-  
+
+    
 ngAfterViewInit(): void {
   if (!this.mapContainer?.nativeElement) {
     console.error('Map container is not available.');
