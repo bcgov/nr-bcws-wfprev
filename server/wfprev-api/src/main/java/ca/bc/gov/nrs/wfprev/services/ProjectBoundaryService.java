@@ -199,6 +199,22 @@ public class ProjectBoundaryService implements CommonService {
     } return model;
   }
 
+  /**
+   * Converts the area of a {@link MultiPolygon} from degrees to hectares using a geodetically accurate method
+   * based on the WGS84 ellipsoidal Earth model.
+   * <p>
+   * For each polygon in the MultiPolygon, the method:
+   * <ul>
+   *   <li>Calculates the centroid latitude</li>
+   *   <li>Computes the meridian and prime vertical radii of curvature</li>
+   *   <li>Estimates the size of one square degree at that latitude</li>
+   *   <li>Converts the polygon's area from degrees to square meters, then to hectares</li>
+   * </ul>
+   * This approach improves accuracy compared to spherical approximations, particularly for large or high-latitude geometries.
+   *
+   * @param multiPolygon the JTS MultiPolygon geometry to convert
+   * @return the total area in hectares, rounded to 4 decimal places
+   */
   public BigDecimal convertMultiPolygonAreaToHectares(MultiPolygon multiPolygon) {
     double totalAreaHectares = 0.0;
 
@@ -206,21 +222,32 @@ public class ProjectBoundaryService implements CommonService {
     for (int i = 0; i < multiPolygon.getNumGeometries(); i++) {
       Polygon polygon = (Polygon) multiPolygon.getGeometryN(i);
 
-      // Get centroid of this specific polygon for more accurate conversion
+      // Get centroid latitude for this polygon
       double latitude = polygon.getCentroid().getY();
       double latRad = Math.toRadians(latitude);
 
-      // Earth's radius in meters
-      double earthRadius = 6371000;
+      // WGS84 ellipsoid parameters
+      double semiMajorAxis = 6378137.0; // meters, WGS84 semi-major axis
+      double semiMinorAxis = 6356752.314245; // meters, WGS84 semi-minor axis
+      double eccentricitySquared = 1 - ((semiMinorAxis * semiMinorAxis) / (semiMajorAxis * semiMajorAxis));
+
+      // Calculate the meridian radius of curvature
+      double numerator = semiMajorAxis * (1 - eccentricitySquared);
+      double denominatorFactor = 1 - eccentricitySquared * Math.sin(latRad) * Math.sin(latRad);
+      double denominator = Math.pow(denominatorFactor, 1.5);
+      double meridianRadius = numerator / denominator;
+
+      // Calculate the prime vertical radius of curvature
+      double primeVerticalRadius = semiMajorAxis / Math.sqrt(denominatorFactor);
 
       // Length of 1 degree in meters at this latitude
-      double metersPerLatDegree = Math.PI * earthRadius / 180.0;
-      double metersPerLonDegree = metersPerLatDegree * Math.cos(latRad);
+      double metersPerLatDegree = (Math.PI / 180.0) * meridianRadius;
+      double metersPerLonDegree = (Math.PI / 180.0) * primeVerticalRadius * Math.cos(latRad);
 
       // Area of 1 square degree in square meters at this latitude
       double squareMetersPerSquareDegree = metersPerLatDegree * metersPerLonDegree;
 
-      // Convert this polygon's area to hectares
+      // Convert this polygon's area to hectares using WGS84 parameters
       double polygonAreaSqDegrees = polygon.getArea();
       double polygonAreaSqMeters = polygonAreaSqDegrees * squareMetersPerSquareDegree;
       double polygonAreaHectares = polygonAreaSqMeters / 10000.0;
