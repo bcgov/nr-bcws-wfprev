@@ -45,9 +45,13 @@ export class MapComponent implements AfterViewInit, OnDestroy  {
   ) {}
 
   ngOnDestroy(): void {
-    this.mapService.getSMKInstance()?.destroy();
-    this.mapService.clearSMKInstance(); 
+    const smk = this.mapService.getSMKInstance();
+    if (typeof smk?.destroy === 'function') {
+      smk.destroy();
+    }
+    this.mapService.clearSMKInstance();
   }
+
 
     
 ngAfterViewInit(): void {
