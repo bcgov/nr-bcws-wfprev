@@ -1,4 +1,4 @@
-import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnDestroy, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ResizablePanelComponent } from 'src/app/components/resizable-panel/resizable-panel.component';
 import { SearchFilterComponent } from 'src/app/components/search-filter/search-filter.component';
@@ -15,7 +15,7 @@ import * as L from 'leaflet';
   templateUrl: './map.component.html',
   styleUrl: './map.component.scss'
 })
-export class MapComponent implements AfterViewInit {
+export class MapComponent implements AfterViewInit, OnDestroy  {
   @ViewChild('mapContainer', { static: false }) mapContainer!: ElementRef;
   mapConfig: any[] = [];
   mapIndex = 0;
@@ -45,6 +45,14 @@ export class MapComponent implements AfterViewInit {
     private readonly sharedService: SharedService
   ) {}
 
+  ngOnDestroy(): void {
+    const smk = this.mapService.getSMKInstance();
+    if (smk && smk.destroy) {
+      smk.destroy();
+    }
+    this.mapService.clearSMKInstance(); 
+  }
+  
 ngAfterViewInit(): void {
   if (!this.mapContainer?.nativeElement) {
     console.error('Map container is not available.');
