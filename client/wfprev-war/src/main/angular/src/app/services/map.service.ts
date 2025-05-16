@@ -15,6 +15,10 @@ export class MapService {
     this.mapIndex = index;
   }
 
+  clearSMKInstance(): void {
+    this.smkInstance = null;
+  }
+
   createSMK(option: any) {
     const SMK = (window as any)['SMK'];
     const mapService = this;
