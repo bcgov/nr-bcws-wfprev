@@ -26,23 +26,7 @@
             line-height: normal;
         }
   
-        input,
-        select{
-          .form-item {
-        font-family: "BCSans", "Noto Sans", Verdana, Arial, sans-serif !important;
-        flex: 1 1 calc(25% - 20px); // 4 items per row with a 20px gap
-        min-width: 200px;
-        max-width: 700px;
-  
-        label {
-            padding: 9px;
-            color: #474543;
-            font-size: 14px;
-            font-style: normal;
-            font-weight: 400;
-            line-height: normal;
-        }
-  
+    
         input,
         select{
             font-family: var(--wf-font-family-main) !important;
@@ -83,41 +67,6 @@
         .objective-field {
           flex: 0 0 calc(25% - 20px) !important;
           max-width: calc(25% - 20px) !important;
-        }
-      }
-            font-family: var(--wf-font-family-main) !important;
-            color: #282828;
-            font-style: normal;
-            font-weight: 400;
-            width: 100%;
-            margin: 8px;
-            font-size: 16px;
-            border: none;
-            border-bottom: 1px solid #282828;
-            outline: none;
-            padding: 8px 12px;
-            box-sizing: border-box;
-    }
-
-        select{
-            -webkit-appearance: none;
-            background-image: url('/assets/dropdown-icon.svg');
-            background-repeat: no-repeat;
-            background-position: right 10px center;
-            background-size: 20px 20px;
-        }
-
-        option {
-          font-family: var(--wf-font-family-main) !important;
-        }
-        textarea {
-          width: 100%;
-          font-size: 14px;
-          border: 1px solid #ccc;
-          border-radius: 4px;
-          box-sizing: border-box;
-          resize: vertical;
-          height: 30px;
         }
       }
   
