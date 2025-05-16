@@ -107,7 +107,7 @@ describe('MapComponent', () => {
     });
 
     mapConfigServiceMock = jasmine.createSpyObj<MapConfigService>('MapConfigService', ['getMapConfig']);
-    mapServiceMock = jasmine.createSpyObj<MapService>('MapService', ['getMapIndex', 'setMapIndex', 'createSMK', 'getSMKInstance']);
+    mapServiceMock = jasmine.createSpyObj<MapService>('MapService', ['getMapIndex', 'setMapIndex', 'createSMK', 'getSMKInstance','clearSMKInstance']);
     mapContainer = jasmine.createSpyObj('ElementRef', ['nativeElement']);
 
     mapConfigServiceMock.getMapConfig.and.returnValue(Promise.resolve({ theme: 'testTheme' }));
@@ -254,6 +254,47 @@ describe('MapComponent', () => {
 
     expect(consoleWarnSpy).toHaveBeenCalledWith('[Map] Skipping updateMarkers — map or cluster group not ready');
   });
+
+  describe('ngOnDestroy', () => {
+  it('should destroy SMK instance and clear it from the map service', () => {
+    const destroySpy = jasmine.createSpy('destroy');
+    const smkMock = {
+      destroy: destroySpy,
+      $viewer: { map: {} }
+    };
+
+    mapServiceMock.getSMKInstance.and.returnValue(smkMock);
+    mapServiceMock.clearSMKInstance = jasmine.createSpy('clearSMKInstance');
+
+    component.ngOnDestroy();
+
+    expect(destroySpy).toHaveBeenCalled();
+    expect(mapServiceMock.clearSMKInstance).toHaveBeenCalled();
+  });
+
+  it('should only call clearSMKInstance if smk has no destroy method', () => {
+    const smkMock = {
+      $viewer: { map: {} }
+    };
+
+    mapServiceMock.getSMKInstance.and.returnValue(smkMock);
+    mapServiceMock.clearSMKInstance = jasmine.createSpy('clearSMKInstance');
+
+    component.ngOnDestroy();
+
+    expect(mapServiceMock.clearSMKInstance).toHaveBeenCalled();
+  });
+
+  it('should do nothing if no smk instance exists', () => {
+    mapServiceMock.getSMKInstance.and.returnValue(null);
+    mapServiceMock.clearSMKInstance = jasmine.createSpy('clearSMKInstance');
+
+    component.ngOnDestroy();
+
+    expect(mapServiceMock.clearSMKInstance).toHaveBeenCalled();
+  });
+});
+
 
 
 });
