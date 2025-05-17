@@ -1,331 +1,367 @@
 .details-container {
-    margin: 19px;
-    border-radius: 6px;
-    border: 1px solid #C6C8CB;
+  margin: 19px;
+  border-radius: 6px;
+  border: 1px solid #C6C8CB;
+  overflow: hidden;
 
-    .form-grid {
-        padding: 18px;
-        display: flex;
-        flex-wrap: wrap;
-        gap: 20px;
-        justify-content: space-between;
-        
-  
-      .form-item {
-        font-family: "BCSans", "Noto Sans", Verdana, Arial, sans-serif !important;
-        flex: 1 1 calc(25% - 20px); // 4 items per row with a 20px gap
-        min-width: 200px;
-        max-width: 700px;
-  
-        label {
-            padding: 9px;
-            color: #474543;
-            font-size: 14px;
-            font-style: normal;
-            font-weight: 400;
-            line-height: normal;
-        }
-  
-    
-        input,
-        select{
-            font-family: var(--wf-font-family-main) !important;
-            color: #282828;
-            font-style: normal;
-            font-weight: 400;
-            width: 100%;
-            margin: 8px;
-            font-size: 16px;
-            border: none;
-            border-bottom: 1px solid #282828;
-            outline: none;
-            padding: 8px 12px;
-            box-sizing: border-box;
-        }
+  .form-grid {
+    padding: 18px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: space-between;
 
-        select{
-            -webkit-appearance: none;
-            background-image: url('/assets/dropdown-icon.svg');
-            background-repeat: no-repeat;
-            background-position: right 10px center;
-            background-size: 20px 20px;
-        }
+    .form-item {
+      font-family: "BCSans", "Noto Sans", Verdana, Arial, sans-serif !important;
+      flex: 1 1 calc(25% - 20px); // 4 items per row with a 20px gap
+      min-width: 200px;
+      max-width: 700px;
 
+      label {
+        padding: 9px;
+        color: #474543;
+        font-size: 14px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: normal;
+      }
+
+      input,
+      select {
+        font-family: var(--wf-font-family-main) !important;
+        color: #282828;
+        font-style: normal;
+        font-weight: 400;
+        width: 100%;
+        margin: 8px;
+        font-size: 16px;
+        border: none;
+        border-bottom: 1px solid #282828;
+        outline: none;
+        padding: 8px 12px;
+        box-sizing: border-box;
+
+        // Add overflow control
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+      }
+
+      select {
+        -webkit-appearance: none;
+        background-image: url('/assets/dropdown-icon.svg');
+        background-repeat: no-repeat;
+        background-position: right 10px center;
+        background-size: 20px 20px;
+
+        // Fix option width on open dropdown
         option {
-          font-family: var(--wf-font-family-main) !important;
-        }
-        textarea {
-          width: 100%;
-          font-size: 14px;
-          border: 1px solid #ccc;
-          border-radius: 4px;
-          box-sizing: border-box;
-          resize: vertical;
-          height: 30px;
-        }
-
-        .objective-field {
-          flex: 0 0 calc(25% - 20px) !important;
-          max-width: calc(25% - 20px) !important;
-        }
-      }
-  
-      .full-width {
-        flex: 1 1 100%; // Span the entire row
-      }
-  
-      .form-actions {
-        display: flex;
-        gap: 10px;
-        justify-content: flex-end;
-  
-        button {
-          padding: 10px 20px;
-          font-size: 16px;
+          max-width: 100%;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
         }
       }
 
-      .funding-stream {
-        input{ 
-        border-bottom: 1px dashed #282828;
-        }
+      option {
+        font-family: var(--wf-font-family-main) !important;
       }
 
-      .secondary-rational{
-        flex: 0 0 calc(50% - 15px); // Half-width
-        min-width: 200px;
-        max-width: 1200px;
-      
-        textarea {
-          width: 100%;
-          height: 45px;
-        }
+      textarea {
+        width: 100%;
+        font-size: 14px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+        resize: vertical;
+        height: 30px;
       }
 
       .objective-field {
         flex: 0 0 calc(25% - 20px) !important;
         max-width: calc(25% - 20px) !important;
       }
+    }
 
-      .fire-centre {
-        flex: 1 1 calc(25% - 50px);
+    .full-width {
+      flex: 1 1 100%; // Span the entire row
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+
+      button {
+        padding: 10px 20px;
+        font-size: 16px;
       }
     }
-    
-  }
-  
-  @media (max-width: 1024px) {
-    .form-grid {
-      .form-item {
-        flex: 1 1 calc(33.33% - 20px); // 3 items per row on medium screens
+
+    .funding-stream {
+      input {
+        border-bottom: 1px dashed #282828;
       }
     }
-  }
-  
-  @media (max-width: 768px) {
-    .form-grid {
-      .form-item {
-        flex: 1 1 calc(50% - 20px); // 2 items per row on small screens
+
+    .secondary-rational {
+      flex: 0 0 calc(50% - 15px); // Half-width
+      min-width: 200px;
+      max-width: 1200px;
+
+      textarea {
+        width: 100%;
+        height: 45px;
+        padding: 10px 16px;
+        box-sizing: border-box; 
+        font-size: 16px;
+        font-family: var(--wf-font-family-main);
+        overflow: hidden;
       }
     }
-  }
-  
-  @media (max-width: 480px) {
-    .form-grid {
-      .form-item {
-        flex: 1 1 100%; // 1 item per row on very small screens
-      }
+
+    .objective-field {
+      flex: 0 0 calc(25% - 20px) !important;
+      max-width: calc(25% - 20px) !important;
+    }
+
+    .fire-centre {
+      flex: 1 1 calc(25% - 50px);
     }
   }
 
-  .footer{
-    border-top: 1px solid #C7C7C7;
-    background: #F2F2F2;
-    width: 100vw;
-    margin: -18px;
+}
+
+@media (max-width: 1024px) {
+  .form-grid {
+    .form-item {
+      flex: 1 1 calc(33.33% - 20px); // 3 items per row on medium screens
+    }
   }
-  
-  .button-row{
-    display: flex;
-    height: 43px;
-    padding: 14px 17px 14px 23px;
-    justify-content: flex-end;
-    align-items: flex-start;
-    gap: 14px;
+}
+
+@media (max-width: 768px) {
+  .form-grid {
+    .form-item {
+      flex: 1 1 calc(50% - 20px); // 2 items per row on small screens
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .form-grid {
+    .form-item {
+      flex: 1 1 100%; // 1 item per row on very small screens
+    }
+  }
+}
+
+.footer {
+  border-top: 1px solid #C7C7C7;
+  background: #F2F2F2;
+  width: 100vw;
+  margin: -18px;
+}
+
+.button-row {
+  display: flex;
+  height: 43px;
+  padding: 14px 17px 14px 23px;
+  justify-content: flex-end;
+  align-items: flex-start;
+  gap: 14px;
+  background: #FFF;
+
+  button {
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    height: 40px;
+    min-width: 67px;
+    padding: 0 16px;
+    box-sizing: border-box;
+    line-height: 1;
+  }
+
+  button.primary {
+    background-color: var(--wf-primary-color);
+    color: #fff;
+    border: none;
+  }
+
+  button.primary:disabled {
+    background-color: #c0c0c0;
+    cursor: not-allowed;
+  }
+
+  button.secondary {
+    border-radius: 4px;
     background: #FFF;
-    button {
-      border: none;
-      border-radius: 4px;
-      font-size: 16px;
-      cursor: pointer;
-      height: 40px;
-      min-width: 67px;
-      padding: 0 16px;
-      box-sizing: border-box;
-      line-height: 1;
+    color: #2D2D2D;
+    font-family: var(--wf-font-family-main);
+    font-style: normal;
+    border: none;
+    outline: none;
+  }
+
+  button.secondary:focus {
+    outline: none;
+    box-shadow: none;
+  }
+
+  button.secondary:disabled {
+    color: #fff;
+    background-color: #c0c0c0;
+    cursor: not-allowed;
+    border: none
+  }
+}
+
+.description-map-section {
+  display: flex;
+  width: 100%;
+  height: auto;
+  gap: 19px;
+}
+
+.project-left-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding-left: 19px;
+  background-color: var(--colour-white);
+
+  mat-expansion-panel {
+    border-bottom: 1px solid #C6C8CB;
+    margin: 0px !important;
+    background-color: #FFF;
+
+    ::ng-deep .mat-expansion-panel-body {
+      padding: 0;
     }
-    
-    button.primary {
-      background-color: var(--wf-primary-color);
-      color: #fff;
-      border: none;
+
+    ::ng-deep .mat-expansion-indicator {
+      display: none;
     }
-    
-    button.primary:disabled {
-      background-color: #c0c0c0;
-      cursor: not-allowed;
-    }
-    
-    button.secondary {
-      border-radius: 4px;
-      background: #FFF;
-      color: #2D2D2D;
+
+    .project-title {
       font-family: var(--wf-font-family-main);
+      background-color: inherit;
+      font-weight: bold;
+      display: flex;
+      color: #000;
+      font-size: 20px;
       font-style: normal;
-      border: none; 
-      outline: none;
-    }
-
-    button.secondary:focus {
-      outline: none;
-      box-shadow: none;
-    }  
-
-    button.secondary:disabled {
-      color:#fff;
-      background-color: #c0c0c0;
-      cursor: not-allowed;
-      border:none
+      font-weight: 400;
+      line-height: normal;
+      gap: 10px;
     }
   }
 
-  .description-map-section{
-    display: flex;
-    width: 100%;
-    height: auto;
-    gap: 19px;
+  .project-description {
+    .editable-description {
+      box-sizing: border-box;
+      padding: 16px;
+      width: 100%;
+      font-size: 16px;
+      font-weight: 400;
+      border: none;
+      color: #242424;
+      font-family: var(--wf-font-family-main);
+      height: 50px;
+      min-height: 50px;
+      resize: vertical;
+      overflow: hidden;
+    }
   }
 
-  .project-left-section{
-    flex:1;
+  .project-description-footer {
+    border: 1px solid #C7C7C7;
+    background: #F2F2F2;
+  }
+
+  app-fiscal-year-projects {
+    margin-top: 20px;
+    /* Add spacing between project description and fiscal projects */
+  }
+}
+
+.map-section {
+  padding-right: 19px;
+  flex: 1;
+  height: 600px;
+  /* Fixed height for the map */
+  position: relative;
+
+  /* Ensure positioning context for the map */
+  #map {
+    height: 100%;
+  }
+}
+
+.latlong-section {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  padding: 10px;
+  border-top: 1px solid #ccc;
+  font-family: var(--wf-font-family-main);
+
+  form {
     display: flex;
     flex-direction: column;
-    padding-left: 19px;
-    background-color: var(--colour-white);
-    mat-expansion-panel {
-        border-bottom: 1px solid #C6C8CB;
-        margin: 0px !important;
-        background-color: #FFF;
-
-        ::ng-deep .mat-expansion-panel-body{
-            padding: 0;
-        }
-
-        ::ng-deep .mat-expansion-indicator {
-          display: none;
-        }
-    
-        .project-title {
-            font-family: var(--wf-font-family-main);
-            background-color: inherit;
-            font-weight: bold;
-            display: flex;
-            color: #000;
-            font-size: 20px;
-            font-style: normal;
-            font-weight: 400;
-            line-height: normal;
-            gap:10px;
-        }
-      }
-
-      .project-description{
-        .editable-description{
-            box-sizing: border-box; 
-            padding:16px;
-            width: 100%;
-            font-size: 16px;
-            font-weight: 400;
-            border: none;
-            color: #242424;
-            font-family: "BCSans", "Noto Sans", Verdana, Arial, sans-serif !important;
-        }
-      }
-
-      .project-description-footer{
-        border: 1px solid #C7C7C7;
-        background: #F2F2F2;
-      }
-    app-fiscal-year-projects {
-        margin-top: 20px; /* Add spacing between project description and fiscal projects */
-    }
-  }
-
-  .map-section{
-    padding-right: 19px;
-    flex: 1;
-    height: 600px; /* Fixed height for the map */
-    position: relative; /* Ensure positioning context for the map */
-    #map {
-        height: 100%;
-    }
-  }
-
-  .latlong-section {
-    display: flex;
-    flex-direction: column; 
+    /* Stack label and input/button container */
     align-items: flex-end;
-    padding: 10px;
-    border-top: 1px solid #ccc;
-    font-family: "BCSans", "Noto Sans", Verdana, Arial, sans-serif !important;
-  
-    form {
+    gap: 5px;
+
+    label {
+      font-weight: bold;
+      margin-bottom: 5px;
+      /* Add space below the label */
+      text-align: right;
+      /* Align label text to the right */
+    }
+
+    .input-group {
       display: flex;
-      flex-direction: column; /* Stack label and input/button container */
-      align-items: flex-end; 
-      gap: 5px;
-  
-      label {
-        font-weight: bold;
-        margin-bottom: 5px; /* Add space below the label */
-        text-align: right; /* Align label text to the right */
+      /* Align input and button side by side */
+      align-items: center;
+      /* Vertically center-align the button */
+      gap: 10px;
+      /* Add space between the input and button */
+
+      input {
+        padding: 5px;
+        font-size: 14px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        width: 300px;
+        /* Adjust input width */
       }
-  
-      .input-group {
-        display: flex; /* Align input and button side by side */
-        align-items: center; /* Vertically center-align the button */
-        gap: 10px; /* Add space between the input and button */
-  
-        input {
-          padding: 5px;
-          font-size: 14px;
-          border: 1px solid #ccc;
-          border-radius: 4px;
-          width: 300px; /* Adjust input width */
-        }
-  
-        button {
-          padding: 12px 32px;
-          border: none;
-          border-radius: 4px;
-          font-size: 16px;
-          cursor: pointer;
-        }
-        
-        button.primary {
-          background-color: var(--wf-primary-color);
-          color: #fff;
-        }
-        
-        button.primary:disabled {
-          background-color: #c0c0c0;
-          cursor: not-allowed;
-        }
-        
+
+      button {
+        padding: 12px 32px;
+        border: none;
+        border-radius: 4px;
+        font-size: 16px;
+        cursor: pointer;
       }
+
+      button.primary {
+        background-color: var(--wf-primary-color);
+        color: #fff;
+      }
+
+      button.primary:disabled {
+        background-color: #c0c0c0;
+        cursor: not-allowed;
+      }
+
     }
   }
+}
 
-  .required {
-    color: #EF1616;
-  }
+.required {
+  color: #EF1616;
+}

@@ -1,6 +1,6 @@
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { ProjectDetailsComponent } from './project-details.component';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import * as L from 'leaflet';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { of, throwError } from 'rxjs'; // Import 'of' from RxJS
@@ -733,15 +733,21 @@ describe('ProjectDetailsComponent', () => {
     
     it('should include fireCentreOrgUnitId in the updateProject payload', () => {
       component.projectGuid = 'test-guid';
-      component.projectDetail = { projectTypeCode: { projectTypeCode: 'TEST' }, primaryObjectiveTypeCode: {} };
-      component.detailsForm.patchValue({
-        projectTypeCode: 'FUEL_MGMT',
-        programAreaGuid: 'area-guid',
-        closestCommunityName: 'Test City',
-        primaryObjectiveTypeCode: 'WRR',
-        fireCentreId: 123, // <- Required field
+      component.projectDetail = { 
+        projectTypeCode: { projectTypeCode: 'TEST' }, 
+        primaryObjectiveTypeCode: {} 
+      };
+      
+      component.detailsForm = new FormGroup({
+        projectTypeCode: new FormControl('FUEL_MGMT'),
+        programAreaGuid: new FormControl('area-guid'),
+        closestCommunityName: new FormControl('Test City'),
+        primaryObjectiveTypeCode: new FormControl('WRR'),
+        fireCentreId: new FormControl(123)
       });
-    
+  
+      spyOnProperty(component.detailsForm, 'valid', 'get').and.returnValue(true);
+      
       mockProjectService.updateProject.and.returnValue(of({}));
       mockProjectService.getProjectByProjectGuid.and.returnValue(of({}));
     
@@ -754,6 +760,7 @@ describe('ProjectDetailsComponent', () => {
         })
       );
     });
+
     describe('refreshFiscalData Method', () => {
       it('should call loadProjectFiscals on FiscalYearProjectsComponent', () => {
         // Arrange
