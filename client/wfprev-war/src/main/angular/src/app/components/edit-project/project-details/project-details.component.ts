@@ -195,25 +195,25 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
   assignCodeTableData(key: string, data: any): void {
     switch (key) {
       case 'projectTypeCode':
-        this.projectTypeCode = data._embedded.projectTypeCode || [];
+        this.projectTypeCode = data._embedded.projectTypeCode ?? [];
         break;
       case 'programAreaCode':
-        this.programAreaCode = data._embedded.programArea || [];
+        this.programAreaCode = data._embedded.programArea ?? [];
         break;
       case 'forestRegionCode':
-        this.forestRegionCode = data._embedded.forestRegionCode || [];
+        this.forestRegionCode = data._embedded.forestRegionCode ?? [];
         break;
       case 'forestDistrictCode':
-        this.forestDistrictCode = data._embedded.forestDistrictCode || [];
+        this.forestDistrictCode = data._embedded.forestDistrictCode ?? [];
         break;
       case 'bcParksRegionCode':
-        this.bcParksRegionCode = data._embedded.bcParksRegionCode || [];
+        this.bcParksRegionCode = data._embedded.bcParksRegionCode ?? [];
         break;
       case 'bcParksSectionCode':
-        this.bcParksSectionCode = data._embedded.bcParksSectionCode || [];
+        this.bcParksSectionCode = data._embedded.bcParksSectionCode ?? [];
         break;
       case 'objectiveTypeCode':
-        this.objectiveTypeCode = data._embedded.objectiveTypeCode || [];
+        this.objectiveTypeCode = data._embedded.objectiveTypeCode ?? [];
         break;
     }
   }
@@ -332,21 +332,21 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
 
   patchFormValues(data: any): void {
     this.detailsForm.patchValue({
-      projectTypeCode: data.projectTypeCode?.projectTypeCode || '',
+      projectTypeCode: data.projectTypeCode?.projectTypeCode ?? '',
       fundingStream: data.fundingStream,
-      programAreaGuid: data.programAreaGuid || '',
+      programAreaGuid: data.programAreaGuid ?? '',
       projectLead: data.projectLead,
       projectLeadEmailAddress: data.projectLeadEmailAddress,
       projectDescription: data.projectDescription,
       siteUnitName: data.siteUnitName,
       closestCommunityName: data.closestCommunityName,
-      forestRegionOrgUnitId: data.forestRegionOrgUnitId || '',
-      forestDistrictOrgUnitId: data.forestDistrictOrgUnitId || '',
-      primaryObjectiveTypeCode: data.primaryObjectiveTypeCode?.objectiveTypeCode || '',
-      secondaryObjectiveTypeCode: data.secondaryObjectiveTypeCode?.objectiveTypeCode || '',
+      forestRegionOrgUnitId: data.forestRegionOrgUnitId ?? '',
+      forestDistrictOrgUnitId: data.forestDistrictOrgUnitId ?? '',
+      primaryObjectiveTypeCode: data.primaryObjectiveTypeCode?.objectiveTypeCode ?? '',
+      secondaryObjectiveTypeCode: data.secondaryObjectiveTypeCode?.objectiveTypeCode ?? '',
       secondaryObjectiveRationale: data.secondaryObjectiveRationale,
-      bcParksRegionOrgUnitId: data.bcParksRegionOrgUnitId || '',
-      bcParksSectionOrgUnitId: data.bcParksSectionOrgUnitId || '',
+      bcParksRegionOrgUnitId: data.bcParksRegionOrgUnitId ?? '',
+      bcParksSectionOrgUnitId: data.bcParksSectionOrgUnitId ?? '',
       fireCentreId: data.fireCentreOrgUnitId,
       latitude: data.latitude,
       longitude: data.longitude,
@@ -520,7 +520,7 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
   }
 
   public isFormDirty(): boolean {
-    return this.detailsForm.dirty || this.isProjectDescriptionDirty || this.isLatLongDirty;
+    return this.detailsForm.dirty ?? this.isProjectDescriptionDirty ?? this.isLatLongDirty;
   }
   
 
