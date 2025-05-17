@@ -520,7 +520,7 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
   }
 
   public isFormDirty(): boolean {
-    return this.detailsForm.dirty ?? this.isProjectDescriptionDirty ?? this.isLatLongDirty;
+    return this.detailsForm.dirty || this.isProjectDescriptionDirty || this.isLatLongDirty;
   }
   
 
