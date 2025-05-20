@@ -33,7 +33,7 @@
         font-style: normal;
         font-weight: 400;
         width: 100%;
-        margin: 8px;
+        margin: 8px 0px;
         font-size: 16px;
         border: none;
         border-bottom: 1px solid #282828;
@@ -105,9 +105,16 @@
     }
 
     .secondary-rational {
-      flex: 0 0 calc(50% - 15px); // Half-width
-      min-width: 200px;
+      flex: 0 0 calc(50% - 10px); // Half-width
       max-width: 1200px;
+      min-width: 200px;
+
+      @media (max-width: 768px) {
+        flex: 1 1 calc(50% - 20px);
+      }
+      @media (max-width: 480px) {
+        flex: 1 1 100%;
+      }
 
       textarea {
         width: 100%;
@@ -117,12 +124,22 @@
         font-size: 16px;
         font-family: var(--wf-font-family-main);
         overflow: hidden;
+        margin-top: 8px;
       }
     }
 
     .objective-field {
-      flex: 0 0 calc(25% - 20px) !important;
-      max-width: calc(25% - 20px) !important;
+      min-width: 150px;
+      max-width: 700px;
+      @media (max-width: 768px) {
+        flex: 1 1 calc(50% - 20px);
+      }
+      @media (max-width: 480px) {
+        flex: 1 1 100%;
+      }
+      select {
+        margin-top: 14px;
+      }
     }
 
     .fire-centre {

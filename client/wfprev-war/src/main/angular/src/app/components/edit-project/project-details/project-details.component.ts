@@ -534,5 +534,59 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
     }
     return true;
   }
+
+  getSelectedProjectType(): string {
+    const selectedId = this.detailsForm.get('projectTypeCode')?.value;
+    const selected = this.projectTypeCode.find(item => item.projectTypeCode === selectedId);
+    return selected ? selected.description : '';
+  }
+  
+  getSelectedProgramAreaName(): string {
+    const selectedId = this.detailsForm.get('programAreaGuid')?.value;
+    const selected = this.programAreaCode.find(item => item.programAreaGuid === selectedId);
+    return selected ? selected.programAreaName : '';
+  }
+  
+  getSelectedForestRegionName(): string {
+    const selectedId = this.detailsForm.get('forestRegionOrgUnitId')?.value;
+    const selected = this.forestRegionCode.find(item => item.orgUnitId === selectedId);
+    return selected ? selected.orgUnitName : '';
+  }
+  
+  getSelectedForestDistrictName(): string {
+    const selectedId = this.detailsForm.get('forestDistrictOrgUnitId')?.value;
+    const selected = this.forestDistrictCode.find(item => item.orgUnitId === selectedId);
+    return selected ? selected.orgUnitName : '';
+  }
+  
+  getSelectedBcParksRegionName(): string {
+    const selectedId = this.detailsForm.get('bcParksRegionOrgUnitId')?.value;
+    const selected = this.bcParksRegionCode.find(item => item.orgUnitId === selectedId);
+    return selected ? selected.orgUnitName : '';
+  }
+  
+  getSelectedBcParksSectionName(): string {
+    const selectedId = this.detailsForm.get('bcParksSectionOrgUnitId')?.value;
+    const selected = this.bcParksSectionCode.find(item => item.orgUnitId === selectedId);
+    return selected ? selected.orgUnitName : '';
+  }
+  
+  getSelectedFireCentreName(): string {
+    const selectedId = this.detailsForm.get('fireCentreId')?.value;
+    const selected = this.fireCentres.find(item => item.properties.MOF_FIRE_CENTRE_ID === selectedId);
+    return selected ? selected.properties.MOF_FIRE_CENTRE_NAME : '';
+  }
+  
+  getSelectedPrimaryObjectiveName(): string {
+    const selectedId = this.detailsForm.get('primaryObjectiveTypeCode')?.value;
+    const selected = this.objectiveTypeCode.find(item => item.objectiveTypeCode === selectedId);
+    return selected ? selected.description : '';
+  }
+  
+  getSelectedSecondaryObjectiveName(): string {
+    const selectedId = this.detailsForm.get('secondaryObjectiveTypeCode')?.value;
+    const selected = this.objectiveTypeCode.find(item => item.objectiveTypeCode === selectedId);
+    return selected ? selected.description : '';
+  }
   
 }

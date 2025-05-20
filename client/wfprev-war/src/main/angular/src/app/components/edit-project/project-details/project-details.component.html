@@ -1,6 +1,6 @@
 <div class="details-container">
   <form [formGroup]="detailsForm" class="form-grid" *ngIf="projectDetail">
-    <div class="form-item">
+    <div class="form-item" [attr.title]="getSelectedProjectType()">
       <label>Project Type<span class="required">*</span></label>
       <select id="projectTypeCode" formControlName="projectTypeCode">
         <option value="">Select</option>
@@ -15,7 +15,7 @@
       <input type="text" readonly />
     </div>
 
-    <div class="form-item">
+    <div class="form-item" [attr.title]="getSelectedProgramAreaName()">
       <label>Business/Program Area<span class="required">*</span></label>
       <select id="programAreaGuid" formControlName="programAreaGuid">
         <option *ngFor="let item of programAreaCode" [value]="item.programAreaGuid">
@@ -30,7 +30,7 @@
       placeholder="Begin Typing" />
     </div>
 
-    <div class="form-item">
+    <div class="form-item" [attr.title]="getSelectedForestRegionName()">
       <label>Forest Region<span class="required">*</span></label>
       <select id="forestRegionOrgUnitId" formControlName="forestRegionOrgUnitId">
         <option *ngFor="let item of forestRegionCode" [value]="item.orgUnitId">
@@ -39,7 +39,7 @@
       </select>
     </div>
 
-    <div class="form-item">
+    <div class="form-item" [attr.title]="getSelectedForestDistrictName()">
       <label> Forest District </label>
       <select id="forestDistrictOrgUnitId" formControlName="forestDistrictOrgUnitId">
         <option value="">Select</option>
@@ -49,7 +49,7 @@
       </select>
     </div>
 
-    <div class="form-item">
+    <div class="form-item" [attr.title]="getSelectedBcParksRegionName()">
       <label> BC Parks Region </label>
       <select id="bcParksRegionOrgUnitId" formControlName="bcParksRegionOrgUnitId">
         <option value="">Select</option>
@@ -59,7 +59,7 @@
       </select>
     </div>
 
-    <div class="form-item">
+    <div class="form-item" [attr.title]="getSelectedBcParksSectionName()">
       <label>BC Parks Section</label>
       <select id="bcParksSectionOrgUnitId" formControlName="bcParksSectionOrgUnitId">
         <option value="">Select</option>
@@ -69,7 +69,7 @@
       </select>
     </div>
 
-    <div class="form-item">
+    <div class="form-item" [attr.title]="getSelectedFireCentreName()">
       <label>BCWS Fire Centre<span class="required">*</span></label>
       <select id="fireCentre" formControlName="fireCentreId">
         <option *ngFor="let item of fireCentres" [value]="item.properties.MOF_FIRE_CENTRE_ID">
@@ -94,7 +94,7 @@
       <input type="text" id="siteUnitName" formControlName="siteUnitName" placeholder="Begin Typing" />
     </div>
 
-    <div class="form-item objective-field">
+    <div class="form-item objective-field" [attr.title]="getSelectedPrimaryObjectiveName()">
       <label>Primary Objective<span class="required">*</span></label>
       <select id="fundingStream" formControlName="primaryObjectiveTypeCode">
         <option *ngFor="let item of objectiveTypeCode" [value]="item.objectiveTypeCode">
@@ -103,7 +103,7 @@
       </select>
     </div>
 
-    <div class="form-item objective-field">
+    <div class="form-item objective-field" [attr.title]="getSelectedSecondaryObjectiveName()">
       <label>Secondary Objective</label>
       <select id="fundingStream" formControlName="secondaryObjectiveTypeCode">
         <option value="">Select</option>
