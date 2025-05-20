@@ -218,7 +218,7 @@ export class ProjectFilesComponent implements OnInit {
     }
   
     if ((type === 'OTHER' || type === 'DOCUMENT') || !fileExtension.match(/zip|gdb|kml|kmz|shp/)) {
-      this.finishWithoutGeometry();
+      this.finishWithoutGeometry(file, fileUploadResp, type);
       return;
     }
   
@@ -253,11 +253,10 @@ export class ProjectFilesComponent implements OnInit {
   
         this.projectService.createActivityBoundary(this.projectGuid, this.fiscalGuid, this.activityGuid, activityBoundary).subscribe({
           next: (boundaryResp) => {
-            const boundaryGuid = boundaryResp?.activityBoundaryGuid;
   
             const attachment: FileAttachment = {
               sourceObjectNameCode: { sourceObjectNameCode: "TREATMENT_ACTIVITY" },
-              sourceObjectUniqueId: boundaryGuid,
+              sourceObjectUniqueId: this.activityGuid,
               documentPath: file.name,
               fileIdentifier: fileUploadResp.fileId,
               attachmentContentTypeCode: { attachmentContentTypeCode: type },
@@ -297,11 +296,10 @@ export class ProjectFilesComponent implements OnInit {
   
         this.projectService.createProjectBoundary(this.projectGuid, projectBoundary).subscribe({
           next: (boundaryResp) => {
-            const boundaryGuid = boundaryResp?.projectBoundaryGuid;
   
             const attachment: FileAttachment = {
               sourceObjectNameCode: { sourceObjectNameCode: "PROJECT" },
-              sourceObjectUniqueId: boundaryGuid,
+              sourceObjectUniqueId: this.projectGuid,
               documentPath: file.name,
               fileIdentifier: fileUploadResp.fileId,
               attachmentContentTypeCode: { attachmentContentTypeCode: type },
@@ -331,19 +329,40 @@ export class ProjectFilesComponent implements OnInit {
     });
   }
 
-  finishWithoutGeometry() {
-    this.snackbarService.open('File uploaded successfully.', 'Close', {
-      duration: 5000,
-      panelClass: 'snackbar-success',
-    });
+  finishWithoutGeometry(file: File, fileUploadResp: any, type: string) {
+    const attachment: FileAttachment = {
+      sourceObjectNameCode: { sourceObjectNameCode: this.isActivityContext ? 'TREATMENT_ACTIVITY' : 'PROJECT' },
+      sourceObjectUniqueId: this.isActivityContext ? this.activityGuid : this.projectGuid,
+      documentPath: file.name,
+      fileIdentifier: fileUploadResp.fileId,
+      attachmentContentTypeCode: { attachmentContentTypeCode: type },
+      attachmentDescription: this.attachmentDescription,
+      attachmentReadOnlyInd: false,
+    };
 
-    if (this.isActivityContext) {
-      this.loadActivityAttachments();
-    } else {
-      this.loadProjectAttachments();
-    }
-    this.filesUpdated.emit();
+    const create$ = this.isActivityContext
+      ? this.attachmentService.createActivityAttachment(this.projectGuid, this.fiscalGuid, this.activityGuid, attachment)
+      : this.attachmentService.createProjectAttachment(this.projectGuid, attachment);
+
+    create$.subscribe({
+      next: () => {
+        this.snackbarService.open('File uploaded successfully.', 'Close', {
+          duration: 5000,
+          panelClass: 'snackbar-success',
+        });
+        this.isActivityContext ? this.loadActivityAttachments() : this.loadProjectAttachments();
+        this.filesUpdated.emit();
+      },
+      error: (err) => {
+        console.error('Failed to create attachment', err);
+        this.snackbarService.open('Failed to create attachment.', 'Close', {
+          duration: 5000,
+          panelClass: 'snackbar-error',
+        });
+      }
+    });
   }
+
 
   createProjectBoundary(file: File, response: Position[][][]) {
     const now = new Date();

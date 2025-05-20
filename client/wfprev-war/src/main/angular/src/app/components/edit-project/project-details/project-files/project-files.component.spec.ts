@@ -448,7 +448,7 @@ describe('ProjectFilesComponent', () => {
     
       expect(mockAttachmentService.createProjectAttachment).toHaveBeenCalledWith(mockProjectGuid, {
         sourceObjectNameCode: { sourceObjectNameCode: 'PROJECT' },
-        sourceObjectUniqueId: 'mock-boundary-id',
+        sourceObjectUniqueId: 'test-project-guid',
         documentPath: 'test.kml',
         fileIdentifier: 'mock-file-id',
         attachmentContentTypeCode: { attachmentContentTypeCode: 'kml' },
@@ -513,14 +513,14 @@ describe('ProjectFilesComponent', () => {
         'mock-activity-guid',
         jasmine.objectContaining({
           sourceObjectNameCode: { sourceObjectNameCode: 'TREATMENT_ACTIVITY' },
-          sourceObjectUniqueId: 'mock-boundary-id',
-          documentPath: 'test.kml',
+          sourceObjectUniqueId: 'mock-activity-guid',
           fileIdentifier: 'mock-file-id',
           attachmentContentTypeCode: { attachmentContentTypeCode: 'kml' },
           attachmentDescription: 'Test spatial file',
           attachmentReadOnlyInd: false
         })
       );
+
     }));
   });
 
@@ -945,9 +945,13 @@ describe('ProjectFilesComponent', () => {
     it('should show snackbar, call loadActivityAttachments and emit event when isActivityContext is true', () => {
       component.fiscalGuid = 'fiscal-guid';
       component.activityGuid = 'activity-guid';
-  
-      (component as any).finishWithoutGeometry();
-  
+
+      const mockFile = new File(['dummy'], 'test.txt');
+      const mockUploadResp = { fileId: 'mock-id' };
+      const mockType = 'DOCUMENT';
+      mockAttachmentService.createActivityAttachment.and.returnValue(of({}));
+      component.finishWithoutGeometry(mockFile, mockUploadResp, mockType);
+
       expect(mockSnackbar.open).toHaveBeenCalledWith(
         'File uploaded successfully.',
         'Close',
@@ -961,9 +965,13 @@ describe('ProjectFilesComponent', () => {
     it('should show snackbar, call loadProjectAttachments and emit event when isActivityContext is false', () => {
       component.fiscalGuid = '';
       component.activityGuid = '';
-  
-      (component as any).finishWithoutGeometry();
-  
+
+      const mockFile = new File(['dummy'], 'file.txt');
+      const mockUploadResp = { fileId: 'mock-id' };
+      const mockType = 'DOCUMENT';
+
+      component.finishWithoutGeometry(mockFile, mockUploadResp, mockType);
+
       expect(mockSnackbar.open).toHaveBeenCalledWith(
         'File uploaded successfully.',
         'Close',
@@ -973,6 +981,7 @@ describe('ProjectFilesComponent', () => {
       expect(component.loadActivityAttachments).not.toHaveBeenCalled();
       expect(component.filesUpdated.emit).toHaveBeenCalled();
     });
+
   });
 
   describe('translateAttachmentType', () => {
@@ -996,6 +1005,46 @@ describe('ProjectFilesComponent', () => {
       const result = component.translateAttachmentType('Document');
       expect(result).toBe('Prescription');
     });
+
+    it('should create activity attachment and handle success in activity context', () => {
+      component.projectGuid = 'project-guid';
+      component.fiscalGuid = 'fiscal-guid';
+      component.activityGuid = 'activity-guid';
+      component.attachmentDescription = 'Test Description';
+
+      const mockFile = new File(['data'], 'test.kml');
+      const mockUploadResp = { fileId: 'abc123' };
+      const mockType = 'kml';
+
+      const expectedAttachment = jasmine.objectContaining({
+        sourceObjectNameCode: { sourceObjectNameCode: 'TREATMENT_ACTIVITY' },
+        sourceObjectUniqueId: 'activity-guid',
+        documentPath: 'test.kml',
+        fileIdentifier: 'abc123',
+        attachmentContentTypeCode: { attachmentContentTypeCode: 'kml' },
+        attachmentDescription: 'Test Description',
+        attachmentReadOnlyInd: false
+      });
+
+      mockAttachmentService.createActivityAttachment.and.returnValue(of({}));
+
+      spyOn(component.filesUpdated, 'emit');
+      spyOn(component, 'loadActivityAttachments');
+
+      component.finishWithoutGeometry(mockFile, mockUploadResp, mockType);
+
+      expect(mockAttachmentService.createActivityAttachment).toHaveBeenCalledWith(
+        'project-guid', 'fiscal-guid', 'activity-guid', expectedAttachment
+      );
+
+      expect(mockSnackbar.open).toHaveBeenCalledWith(
+        'File uploaded successfully.', 'Close', jasmine.any(Object)
+      );
+
+      expect(component.loadActivityAttachments).toHaveBeenCalled();
+      expect(component.filesUpdated.emit).toHaveBeenCalled();
+    });
+
   
   });
   
