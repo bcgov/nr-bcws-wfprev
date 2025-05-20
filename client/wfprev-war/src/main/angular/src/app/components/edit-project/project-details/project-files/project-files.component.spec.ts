@@ -448,7 +448,7 @@ describe('ProjectFilesComponent', () => {
     
       expect(mockAttachmentService.createProjectAttachment).toHaveBeenCalledWith(mockProjectGuid, {
         sourceObjectNameCode: { sourceObjectNameCode: 'PROJECT' },
-        sourceObjectUniqueId: 'test-project-guid',
+        sourceObjectUniqueId: 'mock-boundary-id',
         documentPath: 'test.kml',
         fileIdentifier: 'mock-file-id',
         attachmentContentTypeCode: { attachmentContentTypeCode: 'kml' },
@@ -513,14 +513,14 @@ describe('ProjectFilesComponent', () => {
         'mock-activity-guid',
         jasmine.objectContaining({
           sourceObjectNameCode: { sourceObjectNameCode: 'TREATMENT_ACTIVITY' },
-          sourceObjectUniqueId: 'mock-activity-guid',
+          sourceObjectUniqueId: 'mock-boundary-id',
+          documentPath: 'test.kml',
           fileIdentifier: 'mock-file-id',
           attachmentContentTypeCode: { attachmentContentTypeCode: 'kml' },
           attachmentDescription: 'Test spatial file',
           attachmentReadOnlyInd: false
         })
       );
-
     }));
   });
 
@@ -946,10 +946,12 @@ describe('ProjectFilesComponent', () => {
       component.fiscalGuid = 'fiscal-guid';
       component.activityGuid = 'activity-guid';
 
-      const mockFile = new File(['dummy'], 'test.txt');
-      const mockUploadResp = { fileId: 'mock-id' };
+      const mockFile = new File(['dummy'], 'test.doc');
+      const mockUploadResp = { fileId: 'abc123' };
       const mockType = 'DOCUMENT';
+
       mockAttachmentService.createActivityAttachment.and.returnValue(of({}));
+
       component.finishWithoutGeometry(mockFile, mockUploadResp, mockType);
 
       expect(mockSnackbar.open).toHaveBeenCalledWith(
@@ -961,14 +963,17 @@ describe('ProjectFilesComponent', () => {
       expect(component.loadProjectAttachments).not.toHaveBeenCalled();
       expect(component.filesUpdated.emit).toHaveBeenCalled();
     });
+
   
     it('should show snackbar, call loadProjectAttachments and emit event when isActivityContext is false', () => {
       component.fiscalGuid = '';
       component.activityGuid = '';
 
-      const mockFile = new File(['dummy'], 'file.txt');
-      const mockUploadResp = { fileId: 'mock-id' };
+      const mockFile = new File(['dummy'], 'test.pdf');
+      const mockUploadResp = { fileId: 'xyz456' };
       const mockType = 'DOCUMENT';
+
+      mockAttachmentService.createProjectAttachment.and.returnValue(of({}));
 
       component.finishWithoutGeometry(mockFile, mockUploadResp, mockType);
 
@@ -981,7 +986,6 @@ describe('ProjectFilesComponent', () => {
       expect(component.loadActivityAttachments).not.toHaveBeenCalled();
       expect(component.filesUpdated.emit).toHaveBeenCalled();
     });
-
   });
 
   describe('translateAttachmentType', () => {
@@ -1006,6 +1010,7 @@ describe('ProjectFilesComponent', () => {
       expect(result).toBe('Prescription');
     });
 
+    
     it('should create activity attachment and handle success in activity context', () => {
       component.projectGuid = 'project-guid';
       component.fiscalGuid = 'fiscal-guid';
@@ -1044,7 +1049,6 @@ describe('ProjectFilesComponent', () => {
       expect(component.loadActivityAttachments).toHaveBeenCalled();
       expect(component.filesUpdated.emit).toHaveBeenCalled();
     });
-
   
   });
   

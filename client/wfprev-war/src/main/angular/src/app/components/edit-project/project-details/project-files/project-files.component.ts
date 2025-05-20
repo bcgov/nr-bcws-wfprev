@@ -153,6 +153,7 @@ export class ProjectFilesComponent implements OnInit {
               }));
   
               this.dataSource.data = [...this.projectFiles];
+              debugger
             } else {
               console.error('Expected an array of activity files inside _embedded.fileAttachment, but got:', response);
               this.projectFiles = [];
@@ -253,10 +254,10 @@ export class ProjectFilesComponent implements OnInit {
   
         this.projectService.createActivityBoundary(this.projectGuid, this.fiscalGuid, this.activityGuid, activityBoundary).subscribe({
           next: (boundaryResp) => {
-  
+            const boundaryGuid = boundaryResp?.activityBoundaryGuid;
             const attachment: FileAttachment = {
               sourceObjectNameCode: { sourceObjectNameCode: "TREATMENT_ACTIVITY" },
-              sourceObjectUniqueId: this.activityGuid,
+              sourceObjectUniqueId: boundaryGuid,
               documentPath: file.name,
               fileIdentifier: fileUploadResp.fileId,
               attachmentContentTypeCode: { attachmentContentTypeCode: type },
@@ -296,10 +297,10 @@ export class ProjectFilesComponent implements OnInit {
   
         this.projectService.createProjectBoundary(this.projectGuid, projectBoundary).subscribe({
           next: (boundaryResp) => {
-  
+            const boundaryGuid = boundaryResp?.projectBoundaryGuid;
             const attachment: FileAttachment = {
               sourceObjectNameCode: { sourceObjectNameCode: "PROJECT" },
-              sourceObjectUniqueId: this.projectGuid,
+              sourceObjectUniqueId: boundaryGuid,
               documentPath: file.name,
               fileIdentifier: fileUploadResp.fileId,
               attachmentContentTypeCode: { attachmentContentTypeCode: type },
