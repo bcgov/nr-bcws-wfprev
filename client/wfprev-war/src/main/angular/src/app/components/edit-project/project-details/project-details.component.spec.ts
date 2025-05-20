@@ -829,7 +829,7 @@ describe('ProjectDetailsComponent', () => {
     
   });
 
-  fdescribe('Drowdown tooltips', () => {
+  describe('Drowdown tooltips', () => {
     beforeEach(async () => {
       component.projectTypeCode = [
         { projectTypeCode: 'REST', description: 'Restoration' },
