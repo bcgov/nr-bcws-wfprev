@@ -153,7 +153,6 @@ export class ProjectFilesComponent implements OnInit {
               }));
   
               this.dataSource.data = [...this.projectFiles];
-              debugger
             } else {
               console.error('Expected an array of activity files inside _embedded.fileAttachment, but got:', response);
               this.projectFiles = [];
