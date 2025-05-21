@@ -76,7 +76,7 @@
                 <div class="form-item">
                   <label>Proposal Type<span class="required">*</span></label>
                   <select id="proposalTypeCode" formControlName="proposalTypeCode">
-                    <option *ngFor="let item of planFiscalStatusCode" [value]="item.proposalTypeCode">
+                    <option *ngFor="let item of proposalTypeCode" [value]="item.proposalTypeCode">
                       {{ item.description || 'Select' }}
                     </option>
                   </select>

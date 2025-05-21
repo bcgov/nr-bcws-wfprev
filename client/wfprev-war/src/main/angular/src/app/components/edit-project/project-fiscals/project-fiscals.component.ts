@@ -53,6 +53,7 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  
   activityCategoryCode: any[] = [];
   planFiscalStatusCode: any[] = [];
   ancillaryFundingSourceCode: any[] = [];
+  proposalTypeCode: any[] = [];
   originalFiscalValues: any[] = []
   constructor(
     private route: ActivatedRoute,
@@ -104,6 +105,7 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  
       { name: 'activityCategoryCodes', embeddedKey: 'activityCategoryCode' },
       { name: 'planFiscalStatusCodes', embeddedKey: 'planFiscalStatusCode' },
       { name: 'ancillaryFundingSourceCodes', embeddedKey: 'ancillaryFundingSourceCode' },
+      { name: 'proposalTypeCodes', embeddedKey: 'proposalTypeCode'}
     ];
   
     codeTables.forEach((table) => {
@@ -128,6 +130,9 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  
       case 'ancillaryFundingSourceCode':
         this.ancillaryFundingSourceCode = data._embedded?.ancillaryFundingSourceCode || [];
         break;
+      case 'proposalTypeCode':
+        this.proposalTypeCode = data._embedded?.proposalTypeCode || [];
+        break;
     }
   }
 
@@ -136,6 +141,7 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  
     this.activityCategoryCode = this.sortArray(this.activityCategoryCode, 'description');
     this.planFiscalStatusCode = this.sortArray(this.planFiscalStatusCode, 'description');
     this.ancillaryFundingSourceCode = this.sortArray(this.ancillaryFundingSourceCode, 'fundingSourceName');
+    this.proposalTypeCode = this.sortArray(this.proposalTypeCode, 'description');
   }
 
   sortArray<T>(array: T[], key?: keyof T): T[] {
@@ -150,7 +156,7 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  
       fiscalYear: [fiscal?.fiscalYear || '', [Validators.required]],
       projectFiscalName: [fiscal?.projectFiscalName || '', [Validators.required]],
       activityCategoryCode: [fiscal?.activityCategoryCode || '', [Validators.required]],
-      proposalType: [fiscal?.proposalType || ''],
+      proposalType: [fiscal?.proposalType || '', [Validators.required]],
       planFiscalStatusCode: [fiscal?.planFiscalStatusCode || 'DRAFT', [Validators.required]],
       fiscalPlannedProjectSizeHa: [fiscal?.fiscalPlannedProjectSizeHa || '', [Validators.min(0)]],
       fiscalCompletedSizeHa: [fiscal?.fiscalCompletedSizeHa ?? '', [Validators.min(0)]],
