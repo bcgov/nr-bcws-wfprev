@@ -113,8 +113,6 @@ class CodesServiceTest {
         silvicultureMethodCodeResourceAssembler = mock(SilvicultureMethodCodeResourceAssembler.class);
         silvicultureTechniqueCodeRepository = mock(SilvicultureTechniqueCodeRepository.class);
         silvicultureTechniqueCodeResourceAssembler = mock(SilvicultureTechniqueCodeResourceAssembler.class);
-        proposalTypeCodeRepository = mock(ProposalTypeCodeRepository.class);
-        proposalTypeCodeResourceAssembler = mock(ProposalTypeCodeResourceAssembler.class);
 
         codesService = new CodesService(forestAreaCodeRepository, forestAreaCodeResourceAssembler,
                 generalScopeCodeRepository, generalScopeCodeResourceAssembler,
