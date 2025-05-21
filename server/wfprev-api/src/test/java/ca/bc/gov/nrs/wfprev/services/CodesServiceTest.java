@@ -64,6 +64,8 @@ class CodesServiceTest {
     private SilvicultureBaseCodeResourceAssembler silvicultureBaseCodeResourceAssembler;
     private SilvicultureMethodCodeResourceAssembler silvicultureMethodCodeResourceAssembler;
     private SilvicultureTechniqueCodeResourceAssembler silvicultureTechniqueCodeResourceAssembler;
+    private ProposalTypeCodeRepository proposalTypeCodeRepository;
+    private ProposalTypeCodeResourceAssembler proposalTypeCodeResourceAssembler;
 
     @BeforeEach
     void setup() {
@@ -73,6 +75,8 @@ class CodesServiceTest {
         generalScopeCodeResourceAssembler = mock(GeneralScopeCodeResourceAssembler.class);
         projectTypeCodeRepository = mock(ProjectTypeCodeRepository.class);
         projectTypeCodeResourceAssembler = mock(ProjectTypeCodeResourceAssembler.class);
+        proposalTypeCodeRepository = mock(ProposalTypeCodeRepository.class);
+        proposalTypeCodeResourceAssembler = mock(ProposalTypeCodeResourceAssembler.class);
         programAreaRepository = mock(ProgramAreaRepository.class);
         programAreaResourceAssembler = mock(ProgramAreaResourceAssembler.class);
         forestOrgUnitCodeRepository = mock(ForestOrgUnitCodeRepository.class);
@@ -110,7 +114,6 @@ class CodesServiceTest {
         silvicultureTechniqueCodeRepository = mock(SilvicultureTechniqueCodeRepository.class);
         silvicultureTechniqueCodeResourceAssembler = mock(SilvicultureTechniqueCodeResourceAssembler.class);
 
-
         codesService = new CodesService(forestAreaCodeRepository, forestAreaCodeResourceAssembler,
                 generalScopeCodeRepository, generalScopeCodeResourceAssembler,
                 projectTypeCodeRepository, projectTypeCodeResourceAssembler, programAreaRepository, programAreaResourceAssembler,
@@ -119,7 +122,8 @@ class CodesServiceTest {
                 activityStatusCodeResourceAssembler, activityStatusCodeRepository, riskRatingCodeResourceAssembler, riskRatingCodeRepository, contractPhaseCodeResourceAssembler, contractPhaseCodeRepository,
                 activityCategoryCodeResourceAssembler, activityCategoryCodeRepository, planFiscalStatusCodeResourceAssembler, planFiscalStatusCodeRepository, ancillaryFundingSourceCodeResourceAssembler, ancillaryFundingSourceCodeRepository,
                 fundingSourceCodeResourceAssembler, fundingSourceCodeRepository, sourceObjectNameCodeResourceAssembler, sourceObjectNameCodeRepository, attachmentContentTypeCodeResourceAssembler, attachmentContentTypeCodeRepository,
-                silvicultureBaseCodeResourceAssembler, silvicultureBaseCodeRepository, silvicultureMethodCodeResourceAssembler, silvicultureMethodCodeRepository, silvicultureTechniqueCodeResourceAssembler, silvicultureTechniqueCodeRepository);
+                silvicultureBaseCodeResourceAssembler, silvicultureBaseCodeRepository, silvicultureMethodCodeResourceAssembler, silvicultureMethodCodeRepository, silvicultureTechniqueCodeResourceAssembler, silvicultureTechniqueCodeRepository,
+                proposalTypeCodeRepository, proposalTypeCodeResourceAssembler);
     }
 
     @Test
@@ -261,6 +265,83 @@ class CodesServiceTest {
         assertNull(result);
     }
 
+        @Test
+        void testGetProposalTypeCodeById_Success() throws ServiceException {
+        // Arrange
+        String exampleId = UUID.randomUUID().toString();
+        ProposalTypeCodeEntity entity = new ProposalTypeCodeEntity();
+        when(proposalTypeCodeRepository.findById(exampleId))
+                .thenReturn(Optional.of(entity));
+        when(proposalTypeCodeResourceAssembler.toModel(entity))
+                .thenReturn(new ProposalTypeCodeModel());
+
+        // Act
+        ProposalTypeCodeModel result = codesService.getProposalTypeCodeById(exampleId);
+
+        // Assert
+        assertNotNull(result);
+        }
+
+        @Test
+        void testGetProposalTypeCodeById_NotFound() throws ServiceException {
+        // Arrange
+        String nonExistentId = UUID.randomUUID().toString();
+        when(proposalTypeCodeRepository.findById(nonExistentId))
+                .thenReturn(Optional.empty());
+
+        // Act
+        ProposalTypeCodeModel result = codesService.getProposalTypeCodeById(nonExistentId);
+
+        // Assert
+        assertNull(result);
+        }
+
+        @Test
+        void testGetAllProposalTypeCodes_Success() throws ServiceException {
+                // Arrange
+                List<ProposalTypeCodeEntity> entities = new ArrayList<>();
+                entities.add(new ProposalTypeCodeEntity());
+                entities.add(new ProposalTypeCodeEntity());
+                when(proposalTypeCodeRepository.findAll()).thenReturn(entities);
+                when(proposalTypeCodeResourceAssembler.toCollectionModel(entities))
+                        .thenReturn(CollectionModel.of(new ArrayList<>()));
+
+                // Act
+                CollectionModel<ProposalTypeCodeModel> result = codesService.getAllProposalTypeCodes();
+
+                // Assert
+                assertNotNull(result);
+        }
+
+
+        @Test
+        void testGetAllProposalTypeCodes_Exception() {
+                // Arrange
+                when(proposalTypeCodeRepository.findAll()).thenThrow(new RuntimeException("Error fetching proposal type codes"));
+
+                // Act & Assert
+                ServiceException exception = assertThrows(
+                        ServiceException.class,
+                        () -> codesService.getAllProposalTypeCodes()
+                );
+                assertEquals("Error fetching proposal type codes", exception.getMessage());
+        }
+
+
+        @Test
+        void testGetProposalTypeCodeById_Exception() {
+                // Arrange
+                String exampleId = UUID.randomUUID().toString();
+                when(proposalTypeCodeRepository.findById(exampleId))
+                        .thenThrow(new RuntimeException("Error fetching proposal type code"));
+
+                // Act & Assert
+                ServiceException exception = assertThrows(
+                        ServiceException.class,
+                        () -> codesService.getProposalTypeCodeById(exampleId)
+                );
+                assertTrue(exception.getMessage().contains("Error fetching proposal type code"));
+        }
 
     @Test
     void testGetAllGeneralScopeCodes_Success() throws ServiceException {

@@ -68,6 +68,7 @@ public class CodesController extends CommonController {
                 case CodeTables.SILVICULTURE_BASE_CODE -> result = codesService.getAllSilvicultureBaseCodes();
                 case CodeTables.SILVICULTURE_METHOD_CODE -> result = codesService.getAllSilvicultureMethodCodes();
                 case CodeTables.SILVICULTURE_TECHNIQUE_CODE -> result = codesService.getAllSilvicultureTechniqueCodes();
+                case CodeTables.PROPOSAL_TYPE_CODE -> result = codesService.getAllProposalTypeCodes();
 
                 default -> {
                     log.error("Invalid code table: {}", codeTable);
@@ -156,6 +157,7 @@ public class CodesController extends CommonController {
             case CodeTables.SILVICULTURE_BASE_CODE -> codesService.getSilvicultureBaseCodeById(id);
             case CodeTables.SILVICULTURE_METHOD_CODE -> codesService.getSilvicultureMethodCodeById(id);
             case CodeTables.SILVICULTURE_TECHNIQUE_CODE -> codesService.getSilvicultureTechniqueCodeById(id);
+            case CodeTables.PROPOSAL_TYPE_CODE -> codesService.getProposalTypeCodeById(id);
             default -> null;
         };
     }
