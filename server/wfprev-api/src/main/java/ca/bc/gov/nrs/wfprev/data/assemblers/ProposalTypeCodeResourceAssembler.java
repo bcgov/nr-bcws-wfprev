@@ -20,6 +20,9 @@ public class ProposalTypeCodeResourceAssembler extends RepresentationModelAssemb
   }
 
   public ProposalTypeCodeEntity toEntity(ProposalTypeCodeModel resource) {
+    if (resource == null) {
+        return null;
+    }
     ProposalTypeCodeEntity entity = new ProposalTypeCodeEntity();
 
     entity.setProposalTypeCode(resource.getProposalTypeCode());
