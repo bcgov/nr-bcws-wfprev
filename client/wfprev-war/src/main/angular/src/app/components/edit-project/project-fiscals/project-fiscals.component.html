@@ -34,15 +34,15 @@
               <form class="form-grid" *ngIf="fiscalForms[i]" [formGroup]="fiscalForms[i]">
 
                 <div class="form-item">
+                  <label>Fiscal Activity Name<span class="required">*</span></label>
+                  <input type="text" id="projectFiscalName" formControlName="projectFiscalName" />
+                </div>
+
+                <div class="form-item">
                   <label>Fiscal Year<span class="required">*</span></label>
                   <select id="fiscalYear" formControlName="fiscalYear">
                     <option *ngFor="let year of fiscalYears" [value]="year.split('/')[0]">{{ year }}</option>
                   </select>
-                </div>
-
-                <div class="form-item">
-                  <label>Fiscal Name<span class="required">*</span></label>
-                  <input type="text" id="projectFiscalName" formControlName="projectFiscalName" />
                 </div>
 
                 <div class="form-item">
@@ -68,7 +68,16 @@
                   <label>Fiscal Status<span class="required">*</span></label>
                   <select id="planFiscalStatusCode" formControlName="planFiscalStatusCode">
                     <option *ngFor="let item of planFiscalStatusCode" [value]="item.planFiscalStatusCode">
-                      {{ item.description || 'Select Fiscal Status' }}
+                      {{ item.description || 'Select' }}
+                    </option>
+                  </select>
+                </div>
+
+                <div class="form-item">
+                  <label>Proposal Type<span class="required">*</span></label>
+                  <select id="proposalTypeCode" formControlName="proposalTypeCode">
+                    <option *ngFor="let item of planFiscalStatusCode" [value]="item.proposalTypeCode">
+                      {{ item.description || 'Select' }}
                     </option>
                   </select>
                 </div>
@@ -92,7 +101,7 @@
                 </div>
 
                 <div class="form-item">
-                  <label>Results ID</label>
+                  <label>RESULTS ID</label>
                   <input type="text" id="resultsOpeningId" formControlName="resultsOpeningId" />
                 </div>
 
@@ -123,7 +132,7 @@
                 </div>
 
                 <div class="form-item">
-                  <label>Name of First Nations Co-Delivery Partners</label>
+                  <label>First Nation Co-Delivery Partners</label>
                   <input type="text" id="firstNationsPartner" formControlName="firstNationsPartner" />
                 </div>
                 
@@ -196,7 +205,7 @@
                 </div>
 
                 <div class="form-item budget-width">
-                  <label>Reported Spend</label>
+                  <label>Final Reported Spend</label>
                   <input type="number" id="fiscalReportedSpendAmount" formControlName="fiscalReportedSpendAmount"/>
                   <div class="error" *ngIf="fiscalForms[i] && fiscalForms[i].get('fiscalReportedSpendAmount')?.hasError('min') 
                     && fiscalForms[i].get('fiscalReportedSpendAmount')?.touched">
