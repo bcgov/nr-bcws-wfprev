@@ -100,9 +100,10 @@ public class FileAttachmentServiceTest {
         ActivityBoundaryEntity mockActivityBoundary = new ActivityBoundaryEntity();
         mockActivityBoundary.setActivityBoundaryGuid(activityBoundaryGuid);
 
+        List<String> sourceObjectIds = List.of(activityBoundaryGuid.toString(), activityGuid.toString());
+
         when(activityBoundaryRepository.findByActivityGuid(activityGuid)).thenReturn(List.of(mockActivityBoundary));
-        when(fileAttachmentRepository.findAllBySourceObjectUniqueIdIn(List.of(activityBoundaryGuid.toString())))
-                .thenReturn(List.of(mockEntity));
+        when(fileAttachmentRepository.findAllBySourceObjectUniqueIdIn(sourceObjectIds)).thenReturn(List.of(mockEntity));
         when(fileAttachmentResourceAssembler.toCollectionModel(anyList()))
                 .thenReturn(CollectionModel.of(List.of(mockModel)));
 
