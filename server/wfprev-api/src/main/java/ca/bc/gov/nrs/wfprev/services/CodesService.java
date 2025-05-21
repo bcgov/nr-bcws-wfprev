@@ -61,6 +61,8 @@ public class CodesService implements CommonService {
     private final SilvicultureMethodCodeRepository silvicultureMethodCodeRepository;
     private final SilvicultureTechniqueCodeResourceAssembler silvicultureTechniqueCodeResourceAssembler;
     private final SilvicultureTechniqueCodeRepository silvicultureTechniqueCodeRepository;
+    private ProposalTypeCodeRepository proposalTypeCodeRepository;
+    private ProposalTypeCodeResourceAssembler proposalTypeCodeResourceAssembler;
 
     public CodesService(ForestAreaCodeRepository forestAreaCodeRepository, ForestAreaCodeResourceAssembler forestAreaCodeResourceAssembler,
                         GeneralScopeCodeRepository generalScopeCodeRepository, GeneralScopeCodeResourceAssembler generalScopeCodeResourceAssembler,
@@ -75,7 +77,8 @@ public class CodesService implements CommonService {
                         AncillaryFundingSourceCodeResourceAssembler ancillaryFundingSourceCodeResourceAssembler, AncillaryFundingSourceCodeRepository ancillaryFundingSourceCodeRepository,
                         FundingSourceCodeResourceAssembler fundingSourceCodeResourceAssembler, FundingSourceCodeRepository fundingSourceCodeRepository, SourceObjectNameCodeResourceAssembler sourceObjectNameCodeResourceAssembler, SourceObjectNameCodeRepository sourceObjectNameCodeRepository,
                         AttachmentContentTypeCodeResourceAssembler attachmentContentTypeCodeResourceAssembler, AttachmentContentTypeCodeRepository attachmentContentTypeCodeRepository, SilvicultureBaseCodeResourceAssembler silvicultureBaseCodeResourceAssembler, SilvicultureBaseCodeRepository silvicultureBaseCodeRepository,
-                        SilvicultureMethodCodeResourceAssembler silvicultureMethodCodeResourceAssembler, SilvicultureMethodCodeRepository silvicultureMethodCodeRepository, SilvicultureTechniqueCodeResourceAssembler silvicultureTechniqueCodeResourceAssembler, SilvicultureTechniqueCodeRepository silvicultureTechniqueCodeRepository) {
+                        SilvicultureMethodCodeResourceAssembler silvicultureMethodCodeResourceAssembler, SilvicultureMethodCodeRepository silvicultureMethodCodeRepository, SilvicultureTechniqueCodeResourceAssembler silvicultureTechniqueCodeResourceAssembler, SilvicultureTechniqueCodeRepository silvicultureTechniqueCodeRepository, 
+                        ProposalTypeCodeRepository proposalTypeCodeRepository, ProposalTypeCodeResourceAssembler proposalTypeCodeResourceAssembler) {
         this.forestAreaCodeRepository = forestAreaCodeRepository;
         this.forestAreaCodeResourceAssembler = forestAreaCodeResourceAssembler;
         this.generalScopeCodeRepository = generalScopeCodeRepository;
@@ -118,6 +121,7 @@ public class CodesService implements CommonService {
         this.silvicultureMethodCodeRepository = silvicultureMethodCodeRepository;
         this.silvicultureTechniqueCodeResourceAssembler = silvicultureTechniqueCodeResourceAssembler;
         this.silvicultureTechniqueCodeRepository = silvicultureTechniqueCodeRepository;
+        this.proposalTypeCodeRepository = proposalTypeCodeRepository;
     }
 
     /**
@@ -532,4 +536,21 @@ public class CodesService implements CommonService {
         }
     }
     
+    public CollectionModel<ProposalTypeCodeModel> getAllProposalTypeCodes() throws ServiceException {
+        try {
+            List<ProposalTypeCodeEntity> entities = proposalTypeCodeRepository.findAll();
+            return proposalTypeCodeResourceAssembler.toCollectionModel(entities);
+        } catch (Exception e) {
+            throw new ServiceException(e.getLocalizedMessage(), e);
+        }
+    }
+
+    public ProposalTypeCodeModel getProposalTypeCodeById(String id) throws ServiceException {
+        try {
+            return proposalTypeCodeRepository.findById(id).map(proposalTypeCodeResourceAssembler::toModel).orElse(null);
+        } catch (Exception e) {
+            throw new ServiceException(e.getLocalizedMessage(), e);
+        }
+    }
+
 }

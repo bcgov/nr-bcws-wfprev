@@ -64,6 +64,8 @@ class CodesServiceTest {
     private SilvicultureBaseCodeResourceAssembler silvicultureBaseCodeResourceAssembler;
     private SilvicultureMethodCodeResourceAssembler silvicultureMethodCodeResourceAssembler;
     private SilvicultureTechniqueCodeResourceAssembler silvicultureTechniqueCodeResourceAssembler;
+    private ProposalTypeCodeRepository proposalTypeCodeRepository;
+    private ProposalTypeCodeResourceAssembler proposalTypeCodeResourceAssembler;
 
     @BeforeEach
     void setup() {
@@ -73,6 +75,8 @@ class CodesServiceTest {
         generalScopeCodeResourceAssembler = mock(GeneralScopeCodeResourceAssembler.class);
         projectTypeCodeRepository = mock(ProjectTypeCodeRepository.class);
         projectTypeCodeResourceAssembler = mock(ProjectTypeCodeResourceAssembler.class);
+        proposalTypeCodeRepository = mock(ProposalTypeCodeRepository.class);
+        proposalTypeCodeResourceAssembler = mock(ProposalTypeCodeResourceAssembler.class);
         programAreaRepository = mock(ProgramAreaRepository.class);
         programAreaResourceAssembler = mock(ProgramAreaResourceAssembler.class);
         forestOrgUnitCodeRepository = mock(ForestOrgUnitCodeRepository.class);
@@ -119,7 +123,8 @@ class CodesServiceTest {
                 activityStatusCodeResourceAssembler, activityStatusCodeRepository, riskRatingCodeResourceAssembler, riskRatingCodeRepository, contractPhaseCodeResourceAssembler, contractPhaseCodeRepository,
                 activityCategoryCodeResourceAssembler, activityCategoryCodeRepository, planFiscalStatusCodeResourceAssembler, planFiscalStatusCodeRepository, ancillaryFundingSourceCodeResourceAssembler, ancillaryFundingSourceCodeRepository,
                 fundingSourceCodeResourceAssembler, fundingSourceCodeRepository, sourceObjectNameCodeResourceAssembler, sourceObjectNameCodeRepository, attachmentContentTypeCodeResourceAssembler, attachmentContentTypeCodeRepository,
-                silvicultureBaseCodeResourceAssembler, silvicultureBaseCodeRepository, silvicultureMethodCodeResourceAssembler, silvicultureMethodCodeRepository, silvicultureTechniqueCodeResourceAssembler, silvicultureTechniqueCodeRepository);
+                silvicultureBaseCodeResourceAssembler, silvicultureBaseCodeRepository, silvicultureMethodCodeResourceAssembler, silvicultureMethodCodeRepository, silvicultureTechniqueCodeResourceAssembler, silvicultureTechniqueCodeRepository,
+                proposalTypeCodeRepository, proposalTypeCodeResourceAssembler);
     }
 
     @Test
@@ -260,6 +265,37 @@ class CodesServiceTest {
         // Assert
         assertNull(result);
     }
+
+        @Test
+        void testGetProposalTypeCodeById_Success() throws ServiceException {
+        // Arrange
+        String exampleId = UUID.randomUUID().toString();
+        ProposalTypeCodeEntity entity = new ProposalTypeCodeEntity();
+        when(proposalTypeCodeRepository.findById(exampleId))
+                .thenReturn(Optional.of(entity));
+        when(proposalTypeCodeResourceAssembler.toModel(entity))
+                .thenReturn(new ProposalTypeCodeModel());
+
+        // Act
+        ProposalTypeCodeModel result = codesService.getProposalTypeCodeById(exampleId);
+
+        // Assert
+        assertNotNull(result);
+        }
+
+        @Test
+        void testGetProposalTypeCodeById_NotFound() throws ServiceException {
+        // Arrange
+        String nonExistentId = UUID.randomUUID().toString();
+        when(proposalTypeCodeRepository.findById(nonExistentId))
+                .thenReturn(Optional.empty());
+
+        // Act
+        ProposalTypeCodeModel result = codesService.getProposalTypeCodeById(nonExistentId);
+
+        // Assert
+        assertNull(result);
+        }
 
 
     @Test
