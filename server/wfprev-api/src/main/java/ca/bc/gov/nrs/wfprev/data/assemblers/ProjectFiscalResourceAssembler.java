@@ -42,6 +42,7 @@ public class ProjectFiscalResourceAssembler extends RepresentationModelAssembler
         model.setFiscalYear(entity.getFiscalYear() != null ? entity.getFiscalYear().longValue() : null);
         model.setProjectPlanStatusCode(entity.getProjectPlanStatusCode());
         model.setPlanFiscalStatusCode(entity.getPlanFiscalStatusCode());
+        model.setProposalTypeCode(entity.getProposalTypeCode());
         model.setEndorsementCode(entity.getEndorsementCode());
         model.setProjectFiscalName(entity.getProjectFiscalName());
         model.setProjectFiscalDescription(entity.getProjectFiscalDescription());
@@ -121,6 +122,7 @@ public class ProjectFiscalResourceAssembler extends RepresentationModelAssembler
 
         entity.setProjectPlanStatusCode(model.getProjectPlanStatusCode());
         entity.setPlanFiscalStatusCode(model.getPlanFiscalStatusCode());
+        entity.setProposalTypeCode(model.getProposalTypeCode());
         entity.setEndorsementCode(model.getEndorsementCode());
         entity.setProjectFiscalName(model.getProjectFiscalName());
         entity.setProjectFiscalDescription(model.getProjectFiscalDescription());
@@ -194,6 +196,8 @@ public class ProjectFiscalResourceAssembler extends RepresentationModelAssembler
                 nonNullOrDefault(projectFiscalModel.getProjectPlanStatusCode(), existingEntity.getProjectPlanStatusCode()));
         existingEntity.setPlanFiscalStatusCode(
                 nonNullOrDefault(projectFiscalModel.getPlanFiscalStatusCode(), existingEntity.getPlanFiscalStatusCode()));
+        existingEntity.setProposalTypeCode(
+                nonNullOrDefault(projectFiscalModel.getProposalTypeCode(), existingEntity.getProposalTypeCode()));
         existingEntity.setEndorsementCode(
                 nonNullOrDefault(projectFiscalModel.getEndorsementCode(), existingEntity.getEndorsementCode()));
         existingEntity.setProjectFiscalName(
