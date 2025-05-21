@@ -97,23 +97,18 @@ public class FileAttachmentServiceTest {
         UUID activityGuid = UUID.randomUUID();
         UUID activityBoundaryGuid = UUID.randomUUID();
 
-        // Mock boundary
         ActivityBoundaryEntity mockActivityBoundary = new ActivityBoundaryEntity();
         mockActivityBoundary.setActivityBoundaryGuid(activityBoundaryGuid);
 
-        // Combine both GUIDs as strings for query
         List<String> sourceObjectIds = List.of(activityBoundaryGuid.toString(), activityGuid.toString());
 
-        // Mock repository responses
         when(activityBoundaryRepository.findByActivityGuid(activityGuid)).thenReturn(List.of(mockActivityBoundary));
         when(fileAttachmentRepository.findAllBySourceObjectUniqueIdIn(sourceObjectIds)).thenReturn(List.of(mockEntity));
         when(fileAttachmentResourceAssembler.toCollectionModel(anyList()))
                 .thenReturn(CollectionModel.of(List.of(mockModel)));
 
-        // Execute
         CollectionModel<FileAttachmentModel> result = fileAttachmentService.getAllActivityAttachments(activityGuid.toString());
 
-        // Verify
         assertNotNull(result);
         assertEquals(1, result.getContent().size());
     }
