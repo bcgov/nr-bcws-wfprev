@@ -25,6 +25,7 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Component
@@ -70,19 +71,45 @@ public class FileAttachmentService implements CommonService {
         }
     }
 
+    /**
+     * Retrieves all file attachments associated with a specific activity.
+     * <p>
+     * Attachments can be linked to an activity in two ways:
+     * <ul>
+     *     <li>If the attachment is a spatial file, it is associated with an {@code ActivityBoundaryEntity}.
+     *         In this case, the attachment's {@code sourceObjectUniqueId} is set to the {@code activityBoundaryGuid}
+     *         of the corresponding boundary, which in turn is linked to the activity via its {@code activityGuid}.</li>
+     *     <li>If the attachment is not a spatial file, it is directly linked to the activity, and its
+     *         {@code sourceObjectUniqueId} is set to the {@code activityGuid}.</li>
+     * </ul>
+     * This method collects all such attachments by:
+     * <ol>
+     *     <li>Finding all {@code ActivityBoundaryEntity} records associated with the given activity.</li>
+     *     <li>Extracting their {@code activityBoundaryGuid} values.</li>
+     *     <li>Querying for attachments where the {@code sourceObjectUniqueId} matches either the
+     *         {@code activityGuid} or any of the related {@code activityBoundaryGuid}s.</li>
+     * </ol>
+     *
+     * @param activityGuid the unique identifier of the activity
+     * @return a {@link CollectionModel} containing all associated {@link FileAttachmentModel} instances
+     * @throws ServiceException if an error occurs while retrieving the attachments
+     */
     public CollectionModel<FileAttachmentModel> getAllActivityAttachments(String activityGuid) throws ServiceException {
         try {
+            // Get all ActivityBoundaryGuids linked to the activity
             List<ActivityBoundaryEntity> activityBoundaries = activityBoundaryRepository.findByActivityGuid(UUID.fromString(activityGuid));
+            List<String> boundaryGuids = activityBoundaries.stream()
+                    .map(ab -> ab.getActivityBoundaryGuid().toString())
+                    .toList();
 
-            List<String> boundaryGuids = new ArrayList<>();
-            for (ActivityBoundaryEntity activityBoundary : activityBoundaries) {
-                UUID activityBoundaryGuid = activityBoundary.getActivityBoundaryGuid();
-                boundaryGuids.add(String.valueOf(activityBoundaryGuid));
-            }
+            // Combine activityGuid and boundaryGuids for attachment lookup
+            List<String> sourceObjectIds = new ArrayList<>(boundaryGuids);
+            sourceObjectIds.add(activityGuid); // add the activityGuid itself
 
-            List<FileAttachmentEntity> attachments = fileAttachmentRepository.findAllBySourceObjectUniqueIdIn(boundaryGuids);
+            // Fetch all attachments where sourceObjectUniqueId is in the list
+            List<FileAttachmentEntity> allAttachments = fileAttachmentRepository.findAllBySourceObjectUniqueIdIn(sourceObjectIds);
 
-            return fileAttachmentResourceAssembler.toCollectionModel(attachments);
+            return fileAttachmentResourceAssembler.toCollectionModel(allAttachments);
         } catch (Exception e) {
             throw new ServiceException(e.getLocalizedMessage(), e);
         }
