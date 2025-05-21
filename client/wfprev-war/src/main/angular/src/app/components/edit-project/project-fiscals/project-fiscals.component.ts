@@ -18,6 +18,7 @@ import { ConfirmationDialogComponent } from 'src/app/components/confirmation-dia
 import { CanComponentDeactivate } from 'src/app/services/util/can-deactive.guard';
 import { ActivitiesComponent } from 'src/app/components/edit-project/activities/activities.component';
 import { FiscalMapComponent } from 'src/app/components/edit-project/fiscal-map/fiscal-map.component';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-project-fiscals',
@@ -34,7 +35,8 @@ import { FiscalMapComponent } from 'src/app/components/edit-project/fiscal-map/f
     CurrencyPipe,
     MatMenuModule,
     ActivitiesComponent,
-    FiscalMapComponent
+    FiscalMapComponent,
+    MatTooltipModule
   ]
 })
 export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  {

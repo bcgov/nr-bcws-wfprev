@@ -9,7 +9,7 @@
             font-family: var(--wf-font-family-main) !important;
       
           .form-item {
-            flex: 1 1 calc(20% - 20px); // 5 items per row with a 20px gap
+            flex: 1 1 calc(25% - 15px); // 4 items per row with a 15px gap
             min-width: 200px;
             .error {
               color: red;
@@ -38,6 +38,7 @@
                 border: none;
                 border-bottom: 1px solid #282828;
                 outline: none;
+                text-overflow: ellipsis;
             }
     
             select{
