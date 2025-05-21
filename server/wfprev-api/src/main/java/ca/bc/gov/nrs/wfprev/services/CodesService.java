@@ -121,6 +121,7 @@ public class CodesService implements CommonService {
         this.silvicultureMethodCodeRepository = silvicultureMethodCodeRepository;
         this.silvicultureTechniqueCodeResourceAssembler = silvicultureTechniqueCodeResourceAssembler;
         this.silvicultureTechniqueCodeRepository = silvicultureTechniqueCodeRepository;
+        this.proposalTypeCodeResourceAssembler = proposalTypeCodeResourceAssembler;
         this.proposalTypeCodeRepository = proposalTypeCodeRepository;
     }
 
