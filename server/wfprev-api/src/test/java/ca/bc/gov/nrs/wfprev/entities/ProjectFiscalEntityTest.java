@@ -34,6 +34,7 @@ class ProjectFiscalEntityTest {
                 .fiscalYear(BigDecimal.valueOf(2024))
                 .projectPlanStatusCode("STATUS")
                 .planFiscalStatusCode("FISCAL")
+                .proposalTypeCode("NEW")
                 .projectFiscalName("Valid Fiscal Name")
                 .firstNationsDelivPartInd(true)
                 .firstNationsEngagementInd(false)
