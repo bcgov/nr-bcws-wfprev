@@ -93,7 +93,7 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
       programAreaGuid: ['', [Validators.required]],
       projectLead: ['', [Validators.required, Validators.maxLength(50)]],
       projectLeadEmailAddress: ['', [Validators.email, Validators.maxLength(50)]],
-      siteUnitName: [''],
+      siteUnitName: ['', [Validators.maxLength(50)]],
       closestCommunityName: ['', [Validators.required, Validators.maxLength(50)]],
       forestRegionOrgUnitId: ['', [Validators.required]],
       forestDistrictOrgUnitId: [''],
