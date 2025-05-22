@@ -4,11 +4,18 @@
   left: 0;
   width: 100%;
   height: 100%;
-  display: flex;
+  display: flexq;
   justify-content: center;
   align-items: center; 
   z-index: 99999;
+  pointer-events: auto !important;
+  
 }
+
+// ::ng-deep .mat-tooltip-show {
+//   opacity: 1 !important;
+//   visibility: visible !important;
+// }
 
 ::ng-deep .mat-dialog-container {
   max-width: 90%; 
@@ -131,6 +138,10 @@
   }
 }
 
+// ::ng-deep .cdk-overlay-connected-position-bounding-box {
+//   display: block;
+// }
+
 select {
   margin-top: 4px;
   width: 90%; /* Match input field width */
@@ -165,12 +176,11 @@ select {
 
   textarea {
     width: 100%;
-    height: 72px;
+    min-height: 45px;
     padding: 10px 16px;
     box-sizing: border-box; 
     font-size: 16px;
     font-family: var(--wf-font-family-main);
-    overflow: hidden;
     margin-top: 8px;
   }
 }

@@ -11,12 +11,16 @@ import { Project } from 'src/app/components/models';
 import {
   validateLatLong, trimLatLong
 } from 'src/app/utils/tools';
+import { TextFieldModule } from '@angular/cdk/text-field';
+import { MatTooltipModule  } from '@angular/material/tooltip';
 @Component({
   selector: 'app-create-new-project-dialog',
   standalone: true,
   imports: [
     ReactiveFormsModule,
     CommonModule,
+    TextFieldModule,
+    MatTooltipModule 
   ],
   templateUrl: './create-new-project-dialog.component.html',
   styleUrls: ['./create-new-project-dialog.component.scss']
@@ -63,7 +67,7 @@ export class CreateNewProjectDialogComponent implements OnInit {
       bcParksRegion: [''],
       bcParksSection: [{ value: '', disabled: true }],
       fireCentre: ['', [Validators.required]],
-      projectLead: ['', [Validators.maxLength(50)]],
+      projectLead: ['', [Validators.required, Validators.maxLength(50)]],
       projectLeadEmail: ['', [Validators.email, Validators.maxLength(50)]],
       siteUnitName: ['', [Validators.maxLength(50)]],
       closestCommunity: ['', [Validators.required, Validators.maxLength(50)]],
