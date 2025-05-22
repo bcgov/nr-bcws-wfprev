@@ -21,6 +21,7 @@ import ca.bc.gov.nrs.wfprev.data.models.SilvicultureBaseCodeModel;
 import ca.bc.gov.nrs.wfprev.data.models.SilvicultureMethodCodeModel;
 import ca.bc.gov.nrs.wfprev.data.models.SilvicultureTechniqueCodeModel;
 import ca.bc.gov.nrs.wfprev.data.models.SourceObjectNameCodeModel;
+import ca.bc.gov.nrs.wfprev.data.models.ProposalTypeCodeModel;
 import ca.bc.gov.nrs.wfprev.services.CodesService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,6 +66,7 @@ class CodesControllerTest {
         testGetForestAreaCodes();
         testGetGeneralScopeCodes();
         testGetProjectTypeCodes();
+        testGetProposalTypeCodes();
         testGetObjectiveTypeCodes();
         testGetActivityStatusCodes();
         testGetRiskRatingCodes();
@@ -137,6 +139,26 @@ class CodesControllerTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
+
+    void testGetProposalTypeCodes() throws Exception {
+        String exampleId1 = UUID.randomUUID().toString();
+        String exampleId2 = UUID.randomUUID().toString();
+
+        ProposalTypeCodeModel ptc1 = new ProposalTypeCodeModel();
+        ptc1.setProposalTypeCode(exampleId1);
+
+        ProposalTypeCodeModel ptc2 = new ProposalTypeCodeModel();
+        ptc2.setProposalTypeCode(exampleId2);
+
+        List<ProposalTypeCodeModel> ptcList = Arrays.asList(ptc1, ptc2);
+        CollectionModel<ProposalTypeCodeModel> ptcModel = CollectionModel.of(ptcList);
+
+        when(codesService.getAllProposalTypeCodes()).thenReturn(ptcModel);
+
+        mockMvc.perform(get("/codes/" + CodeTables.PROPOSAL_TYPE_CODE)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+        }
 
     void testGetObjectiveTypeCodes() throws Exception {
         String exampleId1 = UUID.randomUUID().toString();
@@ -523,6 +545,14 @@ class CodesControllerTest {
         mockMvc.perform(get("/codes/{codeTable}/{id}", CodeTables.SILVICULTURE_TECHNIQUE_CODE, stcID)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
+
+        String propID = UUID.randomUUID().toString();
+        ProposalTypeCodeModel proposalTypeCode = new ProposalTypeCodeModel();
+        proposalTypeCode.setProposalTypeCode(propID);
+        when(codesService.getProposalTypeCodeById(propID)).thenReturn(proposalTypeCode);
+        mockMvc.perform(get("/codes/{codeTable}/{id}", CodeTables.PROPOSAL_TYPE_CODE, propID)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
     }
 
     @Test
@@ -726,6 +756,20 @@ class CodesControllerTest {
         verify(codesService, times(1)).getProjectTypeCodeById(id);
         verifyNoMoreInteractions(codesService);
     }
+
+        @Test
+        @WithMockUser
+        void testGetProposalTypeCodeById_VerifyServiceCall() throws Exception {
+                String id = UUID.randomUUID().toString();
+
+                mockMvc.perform(get("/codes/{codeTable}/{id}", CodeTables.PROPOSAL_TYPE_CODE, id)
+                                .contentType(MediaType.APPLICATION_JSON))
+                        .andExpect(status().isNotFound());
+
+                verify(codesService, times(1)).getProposalTypeCodeById(id);
+                verifyNoMoreInteractions(codesService);
+        }
+
 
     @Test
     @WithMockUser
