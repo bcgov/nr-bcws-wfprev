@@ -91,15 +91,15 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
       projectTypeCode: ['', [Validators.required]],
       fundingStream: [''],
       programAreaGuid: ['', [Validators.required]],
-      projectLead: ['', [Validators.required]],
-      projectLeadEmailAddress: ['', [Validators.email]],
+      projectLead: ['', [Validators.required, Validators.maxLength(50)]],
+      projectLeadEmailAddress: ['', [Validators.email, Validators.maxLength(50)]],
       siteUnitName: [''],
-      closestCommunityName: ['', [Validators.required]],
+      closestCommunityName: ['', [Validators.required, Validators.maxLength(50)]],
       forestRegionOrgUnitId: ['', [Validators.required]],
       forestDistrictOrgUnitId: [''],
       primaryObjectiveTypeCode: ['', [Validators.required]],
       secondaryObjectiveTypeCode: [''],
-      secondaryObjectiveRationale: [''],
+      secondaryObjectiveRationale: ['', [Validators.maxLength(50)]],
       bcParksRegionOrgUnitId: [''],
       bcParksSectionOrgUnitId: [''],
       fireCentreId: ['', [Validators.required]],
@@ -344,8 +344,8 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
       closestCommunityName: data.closestCommunityName,
       forestRegionOrgUnitId: data.forestRegionOrgUnitId ?? '',
       forestDistrictOrgUnitId: data.forestDistrictOrgUnitId ?? '',
-      primaryObjectiveTypeCode: data.primaryObjectiveTypeCode?.objectiveTypeCode ?? '',
-      secondaryObjectiveTypeCode: data.secondaryObjectiveTypeCode?.objectiveTypeCode ?? '',
+      primaryObjectiveTypeCode: data.primaryObjectiveTypeCode?.objectiveTypeCode ?? null,
+      secondaryObjectiveTypeCode: data.secondaryObjectiveTypeCode?.objectiveTypeCode ?? null,
       secondaryObjectiveRationale: data.secondaryObjectiveRationale,
       bcParksRegionOrgUnitId: data.bcParksRegionOrgUnitId ?? '',
       bcParksSectionOrgUnitId: data.bcParksSectionOrgUnitId ?? '',
@@ -385,6 +385,7 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
             objectiveTypeCode: secondaryObjectiveValue,
           };
         }
+        console.log(JSON.stringify(updatedProject))
         this.projectService.updateProject(this.projectGuid, updatedProject).subscribe({
           next: () => {
             this.snackbarService.open(
@@ -589,6 +590,20 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
     const selectedId = this.detailsForm.get('secondaryObjectiveTypeCode')?.value;
     const selected = this.objectiveTypeCode.find(item => item.objectiveTypeCode === selectedId);
     return selected ? selected.description : '';
+  }
+
+  getErrorMessage(controlName: string): string | null {
+    const control = this.detailsForm.get(controlName);
+    if (!control?.errors) return null;
+
+    if (control.hasError('maxlength')) {
+      return this.messages.maxLengthExceeded;
+    }
+    if (control.hasError('email')) {
+      return this.messages.invalidEmail;
+    }
+
+    return null;
   }
   
 }

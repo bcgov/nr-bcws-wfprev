@@ -1,6 +1,6 @@
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { ProjectDetailsComponent } from './project-details.component';
-import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import * as L from 'leaflet';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { of, throwError } from 'rxjs'; // Import 'of' from RxJS
@@ -89,7 +89,7 @@ describe('ProjectDetailsComponent', () => {
 
       ],
     }).compileComponents();
-  
+
     const appConfigService = TestBed.inject(AppConfigService);
     await appConfigService.loadAppConfig(); // Ensure the config is loaded before running tests
 
@@ -142,19 +142,19 @@ describe('ProjectDetailsComponent', () => {
     let markerSpy: jasmine.SpyObj<L.Marker>;
     let geoJsonLayerSpy: jasmine.SpyObj<L.GeoJSON>;
     let projectServiceSpy: jasmine.SpyObj<ProjectService>;
-  
+
     beforeEach(() => {
       mapSpy = jasmine.createSpyObj('L.Map', ['setView', 'addLayer', 'remove', 'invalidateSize', 'fitBounds', 'removeLayer']);
       markerSpy = jasmine.createSpyObj('L.Marker', ['addTo']);
       geoJsonLayerSpy = jasmine.createSpyObj('L.GeoJSON', ['addTo', 'getBounds']);
       projectServiceSpy = jasmine.createSpyObj('ProjectService', ['getProjectBoundaries']);
-    
+
       // Provide the service to the component
       component['projectService'] = projectServiceSpy;
       spyOn(L, 'map').and.returnValue(mapSpy as unknown as L.Map);
       spyOn(L, 'marker').and.returnValue(markerSpy);
       spyOn(L, 'geoJSON').and.returnValue(geoJsonLayerSpy);
-    
+
       // Return a valid bounds object from getBounds
       geoJsonLayerSpy.getBounds.and.returnValue({
         isValid: () => true,
@@ -169,16 +169,16 @@ describe('ProjectDetailsComponent', () => {
         },
         systemStartTimestamp: '2024-01-01T00:00:00Z'
       };
-    
+
       component['map'] = mapSpy;
       component['projectGuid'] = 'some-guid';
-    
+
       projectServiceSpy.getProjectBoundaries.and.returnValue(of({
         _embedded: {
           projectBoundary: [mockBoundary]
         }
       }));
-    
+
       component.updateMap(49.553209, -119.965887);
       tick(); // advance the observable
 
@@ -189,7 +189,7 @@ describe('ProjectDetailsComponent', () => {
         } as GeoJSON.Polygon,
         systemStartTimestamp: '2024-01-01T00:00:00Z'
       };
-    
+
       expect(projectServiceSpy.getProjectBoundaries).toHaveBeenCalledWith('some-guid');
       expect(L.geoJSON).toHaveBeenCalledWith(mockBound.boundaryGeometry, jasmine.any(Object));
       expect(geoJsonLayerSpy.addTo).toHaveBeenCalledWith(mapSpy);
@@ -199,19 +199,19 @@ describe('ProjectDetailsComponent', () => {
       const consoleSpy = spyOn(console, 'error');
       component['map'] = mapSpy;
       component['projectGuid'] = 'some-guid';
-    
+
       projectServiceSpy.getProjectBoundaries.and.returnValue(throwError(() => new Error('Fetch failed')));
-    
+
       component.updateMap(49.553209, -119.965887);
       tick();
-    
+
       expect(consoleSpy).toHaveBeenCalledWith('Error fetching project boundaries', jasmine.any(Error));
     }));
 
     it('should initialize the map when updateMap is called without initializing the map', () => {
       component['map'] = undefined;
       component.updateMap(49.553209, -119.965887);
-    
+
       expect(L.map).toHaveBeenCalled();
       expect(L.marker).toHaveBeenCalledWith(
         [49.553209, -119.965887],
@@ -231,22 +231,22 @@ describe('ProjectDetailsComponent', () => {
         },
         systemStartTimestamp: '2024-01-01T00:00:00Z'
       };
-    
+
       // Setup existing map, old boundaryLayer, and projectGuid
       component['map'] = mapSpy;
       component['boundaryLayer'] = mockOldLayer as any; // Simulate existing boundary
       component['projectGuid'] = 'some-guid';
-    
+
       // Mock response from the service
       projectServiceSpy.getProjectBoundaries.and.returnValue(of({
         _embedded: {
           projectBoundary: [mockBoundary]
         }
       }));
-    
+
       component.updateMap(49.553209, -119.965887);
       tick(); // flush observable
-    
+
       expect(mapSpy.removeLayer).toHaveBeenCalledWith(mockOldLayer);
       expect(component['boundaryLayer']).not.toBe(mockOldLayer);
     }));
@@ -254,21 +254,21 @@ describe('ProjectDetailsComponent', () => {
     it('should not reinitialize the map if initMap is called and map already exists', () => {
       component['map'] = mapSpy;
       component.initMap();
-    
+
       expect(L.map).not.toHaveBeenCalled();
     });
-    
+
     it('should not reinitialize the map if it already exists', () => {
       component['map'] = mapSpy;
       component.ngAfterViewInit();
       expect(L.map).toHaveBeenCalledTimes(0);
     });
-  
+
     it('should initialize the map if it does not already exist', () => {
       component.updateMap(49.553209, -119.965887);
       expect(L.map).toHaveBeenCalled();
     });
-  
+
     it('should initialize map with default BC bounds if map is not defined', () => {
       component.initMap();
       expect(L.map).toHaveBeenCalled();
@@ -277,24 +277,24 @@ describe('ProjectDetailsComponent', () => {
         [60.0, -114.0], // Northeast corner of BC
       ]);
     });
-  
+
     it('should initialize the map when initMap is called and map does not exist', () => {
       component['map'] = undefined; // Ensure map is not already initialized
       component.initMap();
-  
+
       expect(L.map).toHaveBeenCalled(); // Verify that the map was created
       expect(mapSpy.fitBounds).toHaveBeenCalledWith([
         [48.3, -139.1], // Southwest corner of BC
         [60.0, -114.0], // Northeast corner of BC
       ]); // Verify that fitBounds was called with default bounds
     });
-  
+
     it('should update the map view with the new latitude and longitude', () => {
       component['map'] = mapSpy;
       component.updateMap(49.553209, -119.965887);
       expect(mapSpy.setView).toHaveBeenCalledWith([49.553209, -119.965887], 13);
     });
-  
+
     it('should add a marker when updating the map view', () => {
       component['map'] = mapSpy;
       component.updateMap(49.553209, -119.965887);
@@ -306,13 +306,13 @@ describe('ProjectDetailsComponent', () => {
       );
       expect(markerSpy.addTo).toHaveBeenCalledWith(mapSpy);
     });
-  
+
     it('should remove the existing marker when updating the map', () => {
       component['map'] = mapSpy;
       component['marker'] = markerSpy;
-    
+
       component.updateMap(49.553209, -119.965887);
-    
+
       expect(mapSpy.removeLayer).toHaveBeenCalledWith(markerSpy); // Ensure the old marker is removed
       expect(L.marker).toHaveBeenCalledWith(
         [49.553209, -119.965887],
@@ -322,13 +322,13 @@ describe('ProjectDetailsComponent', () => {
       );
       expect(markerSpy.addTo).toHaveBeenCalledWith(mapSpy); // New marker added to the map
     });
-    
-  
+
+
     it('should initialize the map and add a marker when coordinates are provided', () => {
       component['map'] = undefined; // Ensure the map is not already initialized
-  
+
       component.updateMap(49.553209, -119.965887);
-  
+
       expect(L.map).toHaveBeenCalled(); // Verify that the map is created
       expect(L.marker).toHaveBeenCalledWith(
         [49.553209, -119.965887],
@@ -338,23 +338,23 @@ describe('ProjectDetailsComponent', () => {
       );
       expect(markerSpy.addTo).toHaveBeenCalledWith(mapSpy); // Marker added to the map
     });
-  
+
     it('should clean up the map on component destroy', () => {
       component['map'] = mapSpy; // Assign the mock map to the component
       component.ngOnDestroy(); // Trigger the lifecycle hook
-  
+
       expect(mapSpy.remove).toHaveBeenCalled(); // Ensure the map was removed
     });
-  
+
     it('should do nothing when ngOnDestroy is called if map is not initialized', () => {
       component['map'] = undefined; // Ensure the map is not initialized
       component.ngOnDestroy(); // Trigger the lifecycle hook
-  
+
       // No errors should occur, and no calls should be made
       expect(mapSpy.remove).not.toHaveBeenCalled();
     });
   });
-  
+
   describe('onCancel Method', () => {
     it('should reset the form', () => {
       spyOn(component.detailsForm, 'reset');
@@ -384,23 +384,23 @@ describe('ProjectDetailsComponent', () => {
         projectLead: component.projectDetail.projectLead,
         projectLeadEmailAddress: component.projectDetail.projectLeadEmailAddress,
       });
-  
+
       // Trigger change detection to update the DOM
       fixture.detectChanges();
     });
-  
+
     it('should display form inputs with correct initial values', () => {
       const projectLeadInput = fixture.nativeElement.querySelector('#projectLead');
       expect(projectLeadInput.value).toBe('John Doe'); // Expect the value to match the mock data
     });
-  
+
     it('should update form values when inputs are changed', () => {
       const projectLeadControl = component.detailsForm.controls['projectLead'];
       projectLeadControl.setValue('New Lead');
-  
+
       // Trigger change detection to reflect the updated value in the DOM
       fixture.detectChanges();
-  
+
       expect(component.detailsForm.controls['projectLead'].value).toBe('New Lead');
     });
   });
@@ -430,11 +430,11 @@ describe('ProjectDetailsComponent', () => {
       // Test case: Missing latitude
       let result = component.combineCoordinates('', -119.965887);
       expect(result).toBe('');
-  
+
       // Test case: Missing longitude
       result = component.combineCoordinates(49.553209, '');
       expect(result).toBe('');
-  
+
       // Test case: Both latitude and longitude are missing
       result = component.combineCoordinates('', '');
       expect(result).toBe('');
@@ -448,33 +448,33 @@ describe('ProjectDetailsComponent', () => {
 
   describe('loadProjectDetails Method', () => {
     let routeSnapshotSpy: jasmine.SpyObj<ActivatedRoute>;
-    
+
     beforeEach(() => {
       routeSnapshotSpy = jasmine.createSpyObj('ActivatedRoute', ['snapshot']);
       component['route'] = routeSnapshotSpy;
     });
-  
+
     it('should exit early if projectGuid is missing', () => {
       routeSnapshotSpy.snapshot = { queryParamMap: new Map() } as any;
       component.loadProjectDetails();
       expect(mockProjectService.getProjectByProjectGuid).not.toHaveBeenCalled();
     });
-  
+
     it('should call projectService.getProjectByProjectGuid if projectGuid is present', () => {
       routeSnapshotSpy.snapshot = { queryParamMap: { get: () => 'test-guid' } } as any;
       mockProjectService.getProjectByProjectGuid.and.returnValue(of({}));
       component.loadProjectDetails();
       expect(mockProjectService.getProjectByProjectGuid).toHaveBeenCalledWith('test-guid');
     });
-  
+
     it('should not call getProjectByProjectGuid if projectGuid is missing', () => {
       component.projectGuid = '';
       component.loadProjectDetails();
-    
+
       expect(mockProjectService.getProjectByProjectGuid).not.toHaveBeenCalled();
     });
 
-    
+
     it('should handle successful response and update component state', () => {
       const mockResponse = {
         projectName: 'Test Project',
@@ -487,11 +487,11 @@ describe('ProjectDetailsComponent', () => {
       spyOn(component, 'updateMap');
       spyOn(component, 'populateFormWithProjectDetails');
       spyOn(component.projectNameChange, 'emit');
-    
+
       component.loadProjectDetails();
-    
+
       const expectedLatLong = formatLatLong(mockResponse.latitude, mockResponse.longitude);
-    
+
       expect(component.projectDetail).toEqual(mockResponse);
       expect(component.projectNameChange.emit).toHaveBeenCalledWith('Test Project');
       expect(component.latLong).toBe(expectedLatLong); // Use the utility's output
@@ -502,16 +502,16 @@ describe('ProjectDetailsComponent', () => {
       expect(component.isLatLongDirty).toBeFalse();
       expect(component.isProjectDescriptionDirty).toBeFalse();
     });
-  
+
     it('should handle error response and set projectDetail to null', () => {
       routeSnapshotSpy.snapshot = { queryParamMap: { get: () => 'test-guid' } } as any;
       mockProjectService.getProjectByProjectGuid.and.returnValue(throwError(() => new Error('Error fetching data')));
-    
+
       // Spy on console.error
       spyOn(console, 'error');
-    
+
       component.loadProjectDetails();
-    
+
       expect(component.projectDetail).toBeNull();
       expect(console.error).toHaveBeenCalledWith('Error fetching project details:', jasmine.any(Error));
     });
@@ -520,19 +520,19 @@ describe('ProjectDetailsComponent', () => {
       beforeEach(() => {
         spyOn<any>(component, 'callValidateLatLong');
       });
-    
+
       it('should set isLatLongDirty to true when newLatLong is valid', () => {
         (component['callValidateLatLong'] as jasmine.Spy).and.returnValue({ latitude: 49.2827, longitude: -123.1207 });
-    
+
         component.onLatLongChange('49.2827, -123.1207');
         expect(component.isLatLongDirty).toBeTrue();
       });
-    
+
       it('should set isLatLongDirty to true when newLatLong is invalid', () => {
         (component['callValidateLatLong'] as jasmine.Spy).and.returnValue(null);
-    
+
         component.onLatLongChange('invalid-lat-long');
-            expect(component.isLatLongDirty).toBeTrue();
+        expect(component.isLatLongDirty).toBeTrue();
       });
     });
 
@@ -556,10 +556,10 @@ describe('ProjectDetailsComponent', () => {
           latitude: 49.2827,
           longitude: -123.1207,
         };
-    
+
         spyOn(component, 'patchFormValues');
         component.populateFormWithProjectDetails(mockData);
-    
+
         expect(component.patchFormValues).toHaveBeenCalledWith(mockData);
       });
 
@@ -575,63 +575,63 @@ describe('ProjectDetailsComponent', () => {
         const mockData = {
           _embedded: { projectTypeCode: ['Code1', 'Code2'] },
         };
-    
+
         component.assignCodeTableData('projectTypeCode', mockData);
-    
+
         expect(component.projectTypeCode).toEqual(['Code1', 'Code2']);
       });
-    
+
       it('should assign programAreaCode when key is "programAreaCode"', () => {
         const mockData = {
           _embedded: { programArea: ['Area1', 'Area2'] },
         };
-    
+
         component.assignCodeTableData('programAreaCode', mockData);
-    
+
         expect(component.programAreaCode).toEqual(['Area1', 'Area2']);
       });
-    
+
       it('should assign forestRegionCode when key is "forestRegionCode"', () => {
         const mockData = {
           _embedded: { forestRegionCode: ['Region1', 'Region2'] },
         };
-    
+
         component.assignCodeTableData('forestRegionCode', mockData);
-    
+
         expect(component.forestRegionCode).toEqual(['Region1', 'Region2']);
       });
-    
+
       it('should assign forestDistrictCode when key is "forestDistrictCode"', () => {
         const mockData = {
           _embedded: { forestDistrictCode: ['District1', 'District2'] },
         };
-    
+
         component.assignCodeTableData('forestDistrictCode', mockData);
-    
+
         expect(component.forestDistrictCode).toEqual(['District1', 'District2']);
       });
-    
+
       it('should assign bcParksRegionCode when key is "bcParksRegionCode"', () => {
         const mockData = {
           _embedded: { bcParksRegionCode: ['Region1', 'Region2'] },
         };
-    
+
         component.assignCodeTableData('bcParksRegionCode', mockData);
-    
+
         expect(component.bcParksRegionCode).toEqual(['Region1', 'Region2']);
       });
-    
+
       it('should assign bcParksSectionCode when key is "bcParksSectionCode"', () => {
         const mockData = {
           _embedded: { bcParksSectionCode: ['Section1', 'Section2'] },
         };
-    
+
         component.assignCodeTableData('bcParksSectionCode', mockData);
-    
+
         expect(component.bcParksSectionCode).toEqual(['Section1', 'Section2']);
       });
     });
-    
+
     describe('onSaveProjectDescription Method', () => {
       beforeEach(() => {
         // Mock the ProjectService methods
@@ -651,15 +651,15 @@ describe('ProjectDetailsComponent', () => {
       it('should not call updateProject if isProjectDescriptionDirty is false', () => {
         // Arrange
         component.isProjectDescriptionDirty = false;
-    
+
         // Act
         component.onSaveProjectDescription();
-    
+
         // Assert
         expect(mockProjectService.updateProject).not.toHaveBeenCalled();
         expect(mockProjectService.getProjectByProjectGuid).not.toHaveBeenCalled();
       });
-    
+
     });
 
     describe('onSaveLatLong Method', () => {
@@ -670,11 +670,11 @@ describe('ProjectDetailsComponent', () => {
         component.latLong = 'xawe, -123.3656';
         component.isLatLongValid = false;
       });
-    
+
       it('should not update latitude and longitude if latLong is not valid', () => {
         component.isLatLongValid = false;
         component.onSaveLatLong();
-    
+
         expect(component.isLatLongDirty).toBeFalse();
         expect(component.projectDetail.latitude).toBeGreaterThan(0);
       });
@@ -686,24 +686,24 @@ describe('ProjectDetailsComponent', () => {
         component.projectDetail = { projectDescription: 'Original Description' };
         component.projectDescription = 'Modified Description'; // Simulate a changed description
         component.isProjectDescriptionDirty = true; // Simulate the dirty state
-  
+
         // Act: Call the method
         component.onCancelProjectDescription();
-  
+
         // Assert: Check that projectDescription and isProjectDescriptionDirty are reset
         expect(component.projectDescription).toBe('Original Description');
         expect(component.isProjectDescriptionDirty).toBeFalse();
       });
-  
+
       it('should not change projectDescription or isProjectDescriptionDirty if projectDetail is null', () => {
         // Arrange: Set projectDetail to null
         component.projectDetail = null;
         component.projectDescription = 'Some Description'; // Simulate a description
         component.isProjectDescriptionDirty = true; // Simulate the dirty state
-  
+
         // Act: Call the method
         component.onCancelProjectDescription();
-  
+
         // Assert: Ensure no changes are made
         expect(component.projectDescription).toBe('Some Description');
         expect(component.isProjectDescriptionDirty).toBeFalse();
@@ -715,29 +715,29 @@ describe('ProjectDetailsComponent', () => {
       it('should call validateLatLong and return the expected result', () => {
         const mockValue = '49.2827, -123.1207';
         const mockReturn = { latitude: 49.2827, longitude: -123.1207 };
-    
+
         spyOn<any>(component, 'callValidateLatLong').and.returnValue(mockReturn);
-    
+
         const result = component['callValidateLatLong'](mockValue);
-    
+
         expect(result).toEqual(mockReturn);
       });
     });
-    
+
     it('should not call updateProject if detailsForm is invalid', () => {
       component.detailsForm.controls['projectTypeCode'].setValue('');
       component.onSave();
-    
+
       expect(mockProjectService.updateProject).not.toHaveBeenCalled();
     });
-    
+
     it('should include fireCentreOrgUnitId in the updateProject payload', () => {
       component.projectGuid = 'test-guid';
-      component.projectDetail = { 
-        projectTypeCode: { projectTypeCode: 'TEST' }, 
-        primaryObjectiveTypeCode: {} 
+      component.projectDetail = {
+        projectTypeCode: { projectTypeCode: 'TEST' },
+        primaryObjectiveTypeCode: {}
       };
-      
+
       component.detailsForm = new FormGroup({
         projectTypeCode: new FormControl('FUEL_MGMT'),
         programAreaGuid: new FormControl('area-guid'),
@@ -745,14 +745,14 @@ describe('ProjectDetailsComponent', () => {
         primaryObjectiveTypeCode: new FormControl('WRR'),
         fireCentreId: new FormControl(123)
       });
-  
+
       spyOnProperty(component.detailsForm, 'valid', 'get').and.returnValue(true);
-      
+
       mockProjectService.updateProject.and.returnValue(of({}));
       mockProjectService.getProjectByProjectGuid.and.returnValue(of({}));
-    
+
       component.onSave();
-    
+
       expect(mockProjectService.updateProject).toHaveBeenCalledWith(
         'test-guid',
         jasmine.objectContaining({
@@ -767,18 +767,18 @@ describe('ProjectDetailsComponent', () => {
         component.fiscalYearProjectsComponent = {
           loadProjectFiscals: jasmine.createSpy('loadProjectFiscals')
         } as any;
-    
+
         // Act
         component.refreshFiscalData();
-    
+
         // Assert
         expect(component.fiscalYearProjectsComponent.loadProjectFiscals).toHaveBeenCalled();
       });
-    
+
       it('should not throw if fiscalYearProjectsComponent is undefined', () => {
         // Arrange
         component.fiscalYearProjectsComponent = undefined!;
-    
+
         // Act
         expect(() => component.refreshFiscalData()).not.toThrow();
       });
@@ -790,43 +790,43 @@ describe('ProjectDetailsComponent', () => {
         component.isProjectDescriptionDirty = false;
         component.isLatLongDirty = false;
         expect(component.isFormDirty()).toBeTrue();
-    
+
         component.detailsForm.markAsPristine();
         component.isProjectDescriptionDirty = true;
         expect(component.isFormDirty()).toBeTrue();
-    
+
         component.isProjectDescriptionDirty = false;
         component.isLatLongDirty = true;
         expect(component.isFormDirty()).toBeTrue();
       });
-    
+
       it('should return false from isFormDirty if all are clean', () => {
         component.detailsForm.markAsPristine();
         component.isProjectDescriptionDirty = false;
         component.isLatLongDirty = false;
         expect(component.isFormDirty()).toBeFalse();
       });
-    
+
       it('should return true from canDeactivate if form is clean', () => {
         component.detailsForm.markAsPristine();
         component.isProjectDescriptionDirty = false;
         component.isLatLongDirty = false;
         expect(component.canDeactivate()).toBeTrue();
       });
-    
+
       it('should open confirmation dialog if form is dirty in canDeactivate', () => {
         const dialogRefSpyObj = jasmine.createSpyObj({ afterClosed: of(true) });
         const dialogSpy = jasmine.createSpyObj('MatDialog', ['open']);
         dialogSpy.open.and.returnValue(dialogRefSpyObj);
         component['dialog'] = dialogSpy;
-    
+
         component.detailsForm.markAsDirty();
         const result = component.canDeactivate();
         expect(dialogSpy.open).toHaveBeenCalled();
         expect(result).toBe(dialogRefSpyObj.afterClosed());
       });
     });
-    
+
   });
 
   describe('Drowdown tooltips', () => {
@@ -835,31 +835,31 @@ describe('ProjectDetailsComponent', () => {
         { projectTypeCode: 'REST', description: 'Restoration' },
         { projectTypeCode: 'MIT', description: 'Mitigation' }
       ];
-      
+
       component.programAreaCode = [
         { programAreaGuid: 'guid123', programAreaName: 'Wildfire Services' }
       ];
-      
+
       component.forestRegionCode = [
         { orgUnitId: 10, orgUnitName: 'Coastal' }
       ];
-      
+
       component.forestDistrictCode = [
         { orgUnitId: 20, orgUnitName: 'Chilliwack' }
       ];
-      
+
       component.bcParksRegionCode = [
         { orgUnitId: 30, orgUnitName: 'Thompson-Okanagan' }
       ];
-      
+
       component.bcParksSectionCode = [
         { orgUnitId: 40, orgUnitName: 'Shuswap Section' }
       ];
-      
+
       component.fireCentres = [
         { properties: { MOF_FIRE_CENTRE_ID: 50, MOF_FIRE_CENTRE_NAME: 'Kamloops Fire Centre' } }
       ];
-      
+
       component.objectiveTypeCode = [
         { objectiveTypeCode: 'OBJ1', description: 'Reduce Fire Risk' },
         { objectiveTypeCode: 'OBJ2', description: 'Ecosystem Restoration' }
@@ -869,45 +869,79 @@ describe('ProjectDetailsComponent', () => {
       component.detailsForm.patchValue({ projectTypeCode: 'REST' });
       expect(component.getSelectedProjectType()).toBe('Restoration');
     });
-    
+
     it('should return the selected program area name', () => {
       component.detailsForm.patchValue({ programAreaGuid: 'guid123' });
       expect(component.getSelectedProgramAreaName()).toBe('Wildfire Services');
     });
-    
+
     it('should return the selected forest region name', () => {
       component.detailsForm.patchValue({ forestRegionOrgUnitId: 10 });
       expect(component.getSelectedForestRegionName()).toBe('Coastal');
     });
-    
+
     it('should return the selected forest district name', () => {
       component.detailsForm.patchValue({ forestDistrictOrgUnitId: 20 });
       expect(component.getSelectedForestDistrictName()).toBe('Chilliwack');
     });
-    
+
     it('should return the selected BC Parks region name', () => {
       component.detailsForm.patchValue({ bcParksRegionOrgUnitId: 30 });
       expect(component.getSelectedBcParksRegionName()).toBe('Thompson-Okanagan');
     });
-    
+
     it('should return the selected BC Parks section name', () => {
       component.detailsForm.patchValue({ bcParksSectionOrgUnitId: 40 });
       expect(component.getSelectedBcParksSectionName()).toBe('Shuswap Section');
     });
-    
+
     it('should return the selected fire centre name', () => {
       component.detailsForm.patchValue({ fireCentreId: 50 });
       expect(component.getSelectedFireCentreName()).toBe('Kamloops Fire Centre');
     });
-    
+
     it('should return the selected primary objective name', () => {
       component.detailsForm.patchValue({ primaryObjectiveTypeCode: 'OBJ1' });
       expect(component.getSelectedPrimaryObjectiveName()).toBe('Reduce Fire Risk');
     });
-    
+
     it('should return the selected secondary objective name', () => {
       component.detailsForm.patchValue({ secondaryObjectiveTypeCode: 'OBJ2' });
       expect(component.getSelectedSecondaryObjectiveName()).toBe('Ecosystem Restoration');
+    });
+  });
+
+  describe('Error messages', () => {
+    beforeEach(() => {
+      component.detailsForm = new FormGroup({
+        name: new FormControl('', [Validators.maxLength(5)]),
+        email: new FormControl('', [Validators.email]),
+      });
+    });
+    it('should return maxLengthExceeded message for maxlength error', () => {
+      fixture.detectChanges();
+      const nameControl = component.detailsForm.get('name');
+      nameControl?.setValue('TooLongName');
+      nameControl?.markAsTouched();
+      nameControl?.updateValueAndValidity(); 
+
+      expect(component.getErrorMessage('name')).toBe('Exceeds number of allowed characters.');
+    });
+
+    it('should return invalidEmail message for email error', () => {
+      const emailControl = component.detailsForm.get('email');
+      emailControl?.setValue('invalid-email');
+      emailControl?.markAsTouched();
+      emailControl?.updateValueAndValidity(); 
+
+      expect(component.getErrorMessage('email')).toBe('Please enter a valid email address.');
+    });
+
+    it('should return null if no errors', () => {
+      component.detailsForm.get('email')?.setValue('a@b.co');
+      component.detailsForm.get('email')?.markAsTouched();
+
+      expect(component.getErrorMessage('email')).toBeNull();
     });
   });
 });
