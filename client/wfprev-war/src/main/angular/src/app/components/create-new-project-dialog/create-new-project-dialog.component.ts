@@ -59,7 +59,7 @@ export class CreateNewProjectDialogComponent implements OnInit {
       latLong: ['', [Validators.maxLength(40)]],
       businessArea: ['', [Validators.required]],
       forestRegion: ['', [Validators.required]],
-      forestDistrict: ['', [Validators.required]],
+      forestDistrict: [''],
       bcParksRegion: [''],
       bcParksSection: [{ value: '', disabled: true }],
       fireCentre: ['', [Validators.required]],
