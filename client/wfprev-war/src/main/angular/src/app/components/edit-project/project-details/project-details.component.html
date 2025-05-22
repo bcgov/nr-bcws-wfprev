@@ -1,226 +1,195 @@
 <div class="details-container">
-    <form [formGroup]="detailsForm" class="form-grid" *ngIf="projectDetail">
-      <div class="form-item">
-        <label>Project Type<span class="required">*</span></label>
-        <select id="projectTypeCode" formControlName="projectTypeCode">
-          <option *ngFor="let item of projectTypeCode" [value]="item.projectTypeCode">
-            {{ item.description }}
-          </option>
-        </select>
-      </div>
-        
-      <div class="form-item">
-        <label>Funding Stream</label>
-        <select id="fundingStream" formControlName="fundingStream">
-          <option value="fundingStream1">fundingStream1</option>
-          <option value="fundingStream2">fundingStream2</option>
-          <option value="fundingStream3">fundingStream3</option>
-        </select>
-      </div>
-
-      
-      <div class="form-item">
-        <label>Business/Program Area<span class="required">*</span></label>
-        <select id="programAreaGuid" formControlName="programAreaGuid">
-          <option *ngFor="let item of programAreaCode" [value]="item.programAreaGuid">
-            {{ item.programAreaName }}
-          </option>
-        </select>
-      </div>
-
-      <div class="form-item">
-        <label for="projectLead">Project Lead</label>
-        <input
-          type="text"
-          id="projectLead"
-          formControlName="projectLead"
-          placeholder="Enter Project Lead"
-        />
-      </div>
-  
-      <div class="form-item">
-        <label for="projectLeadEmailAddress">Contact Email</label>
-        <input
-          type="email"
-          id="projectLeadEmailAddress"
-          formControlName="projectLeadEmailAddress"
-          placeholder="Enter Email"
-        />
-      </div>
-
-      <div class="form-item site-unit">
-        <label for="siteUnitName">Site Unit(Planning Unit)</label>
-        <input
-          type="text"
-          id="siteUnitName"
-          formControlName="siteUnitName"
-          placeholder="Enter Site Unit"
-        />
-      </div>
-
-      <div class="form-item closet-community">
-        <label for="closestCommunityName">Closest Community<span class="required">*</span></label>
-        <input
-          type="text"
-          id="closestCommunityName"
-          formControlName="closestCommunityName"
-          placeholder="Enter Community Name"
-        />
-      </div>
-
-      <div class="form-item">
-        <label>Forest Region</label>
-        <select id="forestRegionOrgUnitId" formControlName="forestRegionOrgUnitId">
-          <option *ngFor="let item of forestRegionCode" [value]="item.orgUnitId">
-            {{ item.orgUnitName }}
-          </option>
-        </select>
-      </div>
-
-      <div class="form-item">
-        <label> Forest District </label>
-        <select id="forestDistrictOrgUnitId" formControlName="forestDistrictOrgUnitId">
-          <option *ngFor="let item of forestDistrictCode" [value]="item.orgUnitId">
-            {{ item.orgUnitName }}
-          </option>
-        </select>
-      </div>
-
-      <div class="form-item">
-        <label>Primary Objective<span class="required">*</span></label>
-        <select id="fundingStream" formControlName="primaryObjectiveTypeCode">
-          <option *ngFor="let item of objectiveTypeCode" [value]="item.objectiveTypeCode">
-            {{ item.description }}
-          </option>
-        </select>
-      </div>
-
-      <div class="form-item">
-        <label>Secondary Objective</label>
-        <select id="fundingStream" formControlName="secondaryObjectiveTypeCode">
-          <option *ngFor="let item of objectiveTypeCode" [value]="item.objectiveTypeCode">
-            {{ item.description }}
-          </option>
-        </select>
-      </div>
-
-      <div class="form-item secondary-rational">
-        <label for="secondaryObjectiveRationale">Secondary Objective Rationale</label>
-        <input
-          type="text"
-          id="secondaryObjectiveRationale"
-          formControlName="secondaryObjectiveRationale"
-          placeholder="Enter Secondary Objective Rationale"
-        />
-      </div>
-
-      <div class="form-item">
-        <label> BC Parks Region </label>
-        <select id="bcParksRegionOrgUnitId" formControlName="bcParksRegionOrgUnitId">
-          <option *ngFor="let item of bcParksRegionCode" [value]="item.orgUnitId">
-            {{ item.orgUnitName }}
-          </option>
-        </select>
-      </div>
-
-      <div class="form-item">
-        <label>BC Parks Section</label>
-        <select id="bcParksSectionOrgUnitId" formControlName="bcParksSectionOrgUnitId">
-          <option *ngFor="let item of bcParksSectionCode" [value]="item.orgUnitId">
-            {{ item.orgUnitName }}
-          </option>
-        </select>
-      </div>
-  
-      <div class="form-item">
-        <label>BCWS Fire Centre<span class="required">*</span></label>
-        <select id="fireCentre" formControlName="fireCentreId">
-          <option *ngFor="let item of fireCentres" [value]="item.properties.MOF_FIRE_CENTRE_ID">
-            {{ item.properties.MOF_FIRE_CENTRE_NAME }}
-          </option>
-        </select>
-      </div>
-
-      <div class="footer">
-          <div class="button-row">
-            <button class="secondary" (click)="onCancel()" [disabled]="!detailsForm.dirty">Cancel</button>
-            <button type="button" (click)="onSave()"
-              [disabled]="!detailsForm.valid || !detailsForm.dirty"
-              class="primary">Save
-            </button>
-          </div>
-        </div>
-    </form>
-  </div>
-  <div class="description-map-section">
-    <div class="project-left-section">
-        <mat-expansion-panel #panel="matExpansionPanel">
-            <mat-expansion-panel-header class="expansion-panel-header">
-              <mat-panel-title class="project-title">
-                <div class="custom-indicator">
-                    <img
-                        *ngIf="!panel.expanded"
-                        src="/assets/collapsed-indicator.svg"
-                        alt="Collapsed Icon"
-                        class="indicator-icon"
-                    />
-                    <img
-                        *ngIf="panel.expanded"
-                        src="/assets/expanded-indicator.svg"
-                        alt="Expanded Icon"
-                        class="indicator-icon"
-                    />
-                </div>
-                <span>Project Description</span>
-              </mat-panel-title>
-            </mat-expansion-panel-header>
-            <div class="project-form">
-                <form class="project-description">
-                    <textarea
-                      [(ngModel)]="projectDescription"
-                      name="projectDescription"
-                      rows="10"
-                      class="editable-description"
-                      placeholder="Enter project description"
-                      (ngModelChange)="onProjectDescriptionChange($event)"
-                    ></textarea>
-                <div class="project-description-footer">
-                    <div class="button-row">
-                        <button class="secondary" (click)="onCancelProjectDescription()" [disabled]="!isProjectDescriptionDirty">Cancel</button>
-                        <button class="primary" [disabled]="!isProjectDescriptionDirty" (click)="onSaveProjectDescription()">
-                          Save
-                        </button>
-                    </div>
-                    </div>
-                </form>
-            </div>
-        
-        
-          </mat-expansion-panel>
-      <app-fiscal-year-projects></app-fiscal-year-projects>
+  <form [formGroup]="detailsForm" class="form-grid" *ngIf="projectDetail">
+    <div class="form-item">
+      <label>Project Type<span class="required">*</span></label>
+      <select id="projectTypeCode" formControlName="projectTypeCode" [matTooltip]="getSelectedProjectType()">
+        <option value="">Select</option>
+        <option *ngFor="let item of projectTypeCode" [value]="item.projectTypeCode">
+          {{ item.description }}
+        </option>
+      </select>
     </div>
 
-    <div class="map-section">
-        <div id="map"></div>
-        <div class="latlong-section">
-          <form>
-            <label for="coordinates">Latitude/Longitude:</label>
-            <div class="input-group">
-              <input
-                type="text"
-                id="coordinates"
-                [(ngModel)]="latLong"
-                name="latLong"
-                placeholder="Enter Latitude/Longitude (e.g., 56.9835° N, 127.3656° W)"
-                (ngModelChange)="onLatLongChange($event)"
-              />
-              <button type="button" (click)="onSaveLatLong()"
-                [disabled]="!isLatLongDirty"
-                class="primary">Save
+    <div class="form-item funding-stream">
+      <label>Funding Stream</label>
+      <input type="text" readonly />
+    </div>
+
+    <div class="form-item">
+      <label>Business/Program Area<span class="required">*</span></label>
+      <select id="programAreaGuid" formControlName="programAreaGuid" [matTooltip]="getSelectedProgramAreaName()">
+        <option *ngFor="let item of programAreaCode" [value]="item.programAreaGuid">
+          {{ item.programAreaName }}
+        </option>
+      </select>
+    </div>
+
+    <div class="form-item">
+      <label for="closestCommunityName">Closest Community<span class="required">*</span></label>
+      <input type="text" id="closestCommunityName" formControlName="closestCommunityName" placeholder="Begin Typing"
+        [matTooltip]="detailsForm.get('closestCommunityName')?.value" />
+    </div>
+
+    <div class="form-item">
+      <label>Forest Region<span class="required">*</span></label>
+      <select id="forestRegionOrgUnitId" formControlName="forestRegionOrgUnitId"
+        [matTooltip]="getSelectedForestRegionName()">
+        <option *ngFor="let item of forestRegionCode" [value]="item.orgUnitId">
+          {{ item.orgUnitName }}
+        </option>
+      </select>
+    </div>
+
+    <div class="form-item">
+      <label> Forest District </label>
+      <select id="forestDistrictOrgUnitId" formControlName="forestDistrictOrgUnitId"
+        [matTooltip]="getSelectedForestDistrictName()">
+        <option value="">Select</option>
+        <option *ngFor="let item of forestDistrictCode" [value]="item.orgUnitId">
+          {{ item.orgUnitName }}
+        </option>
+      </select>
+    </div>
+
+    <div class="form-item">
+      <label> BC Parks Region </label>
+      <select id="bcParksRegionOrgUnitId" formControlName="bcParksRegionOrgUnitId"
+        [matTooltip]="getSelectedBcParksRegionName()">
+        <option value="">Select</option>
+        <option *ngFor="let item of bcParksRegionCode" [value]="item.orgUnitId">
+          {{ item.orgUnitName }}
+        </option>
+      </select>
+    </div>
+
+    <div class="form-item">
+      <label>BC Parks Section</label>
+      <select id="bcParksSectionOrgUnitId" formControlName="bcParksSectionOrgUnitId"
+        [matTooltip]="getSelectedBcParksSectionName()">
+        <option value="">Select</option>
+        <option *ngFor="let item of bcParksSectionCode" [value]="item.orgUnitId">
+          {{ item.orgUnitName }}
+        </option>
+      </select>
+    </div>
+
+    <div class="form-item">
+      <label>BCWS Fire Centre<span class="required">*</span></label>
+      <select id="fireCentre" formControlName="fireCentreId" [matTooltip]="getSelectedFireCentreName()">
+        <option *ngFor="let item of fireCentres" [value]="item.properties.MOF_FIRE_CENTRE_ID">
+          {{ item.properties.MOF_FIRE_CENTRE_NAME }}
+        </option>
+      </select>
+    </div>
+
+    <div class="form-item">
+      <label for="projectLead">Project Lead<span class="required">*</span></label>
+      <input type="text" id="projectLead" formControlName="projectLead" placeholder="Begin Typing"
+        [matTooltip]="detailsForm.get('projectLead')?.value" />
+    </div>
+
+    <div class="form-item">
+      <label for="projectLeadEmailAddress">Project Lead Email</label>
+      <input type="email" id="projectLeadEmailAddress" formControlName="projectLeadEmailAddress"
+        placeholder="Begin Typing" [matTooltip]="detailsForm.get('projectLeadEmailAddress')?.value" />
+    </div>
+
+    <div class="form-item">
+      <label for="siteUnitName">Planning Unit</label>
+      <input type="text" id="siteUnitName" formControlName="siteUnitName" placeholder="Begin Typing"
+        [matTooltip]="detailsForm.get('siteUnitName')?.value" />
+    </div>
+
+    <div class="objective-group">
+      <div class="form-item objective-field">
+        <label>Primary Objective<span class="required">*</span></label>
+        <select id="fundingStream" formControlName="primaryObjectiveTypeCode"
+          [matTooltip]="getSelectedPrimaryObjectiveName()">
+          <option *ngFor="let item of objectiveTypeCode" [value]="item.objectiveTypeCode">
+            {{ item.description }}
+          </option>
+        </select>
+      </div>
+
+      <div class="form-item objective-field">
+        <label>Secondary Objective</label>
+        <select id="fundingStream" formControlName="secondaryObjectiveTypeCode"
+          [matTooltip]="getSelectedSecondaryObjectiveName()">
+          <option value="">Select</option>
+          <option *ngFor="let item of objectiveTypeCode" [value]="item.objectiveTypeCode">
+            {{ item.description }}
+          </option>
+        </select>
+      </div>
+
+      <div class="form-item secondary-rationale">
+        <label for="secondaryObjectiveRationale">Secondary Objective Rationale</label>
+        <textarea id="secondaryObjectiveRationale" formControlName="secondaryObjectiveRationale"
+          placeholder="Begin Typing" rows="1" cdkTextareaAutosize cdkAutosizeMinRows="1" cdkAutosizeMaxRows="10"
+          [matTooltip]="detailsForm.get('secondaryObjectiveRationale')?.value"></textarea>
+      </div>
+    </div>
+
+    <div class="footer">
+      <div class="button-row">
+        <button class="secondary" (click)="onCancel()" [disabled]="!detailsForm.dirty">Cancel</button>
+        <button type="button" (click)="onSave()" [disabled]="!detailsForm.valid || !detailsForm.dirty"
+          class="primary">Save
+        </button>
+      </div>
+    </div>
+  </form>
+</div>
+<div class="description-map-section">
+  <div class="project-left-section">
+    <mat-expansion-panel #panel="matExpansionPanel">
+      <mat-expansion-panel-header class="expansion-panel-header">
+        <mat-panel-title class="project-title">
+          <div class="custom-indicator">
+            <img *ngIf="!panel.expanded" src="/assets/collapsed-indicator.svg" alt="Collapsed Icon"
+              class="indicator-icon" />
+            <img *ngIf="panel.expanded" src="/assets/expanded-indicator.svg" alt="Expanded Icon"
+              class="indicator-icon" />
+          </div>
+          <span>Project Description</span>
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <div class="project-form">
+        <form class="project-description">
+          <textarea [(ngModel)]="projectDescription" name="projectDescription" rows="1" class="editable-description"
+            cdkTextareaAutosize cdkAutosizeMinRows="1" cdkAutosizeMaxRows="10" placeholder="Begin Typing"
+            (ngModelChange)="onProjectDescriptionChange($event)"></textarea>
+          <div class="project-description-footer">
+            <div class="button-row">
+              <button class="secondary" (click)="onCancelProjectDescription()"
+                [disabled]="!isProjectDescriptionDirty">Cancel</button>
+              <button class="primary" [disabled]="!isProjectDescriptionDirty" (click)="onSaveProjectDescription()">
+                Save
               </button>
             </div>
-          </form>
-        </div>
-        <app-project-files (filesUpdated)="onFilesUpdated()" [projectGuid]="projectGuid"></app-project-files>
-    </div>
+          </div>
+        </form>
+      </div>
+
+
+    </mat-expansion-panel>
+    <app-fiscal-year-projects></app-fiscal-year-projects>
   </div>
+
+  <div class="map-section">
+    <div id="map"></div>
+    <div class="latlong-section">
+      <form>
+        <label for="coordinates">Latitude/Longitude:</label>
+        <div class="input-group">
+          <input type="text" id="coordinates" [(ngModel)]="latLong" name="latLong"
+            placeholder="Enter Latitude/Longitude (e.g., 56.9835° N, 127.3656° W)"
+            (ngModelChange)="onLatLongChange($event)" />
+          <button type="button" (click)="onSaveLatLong()" [disabled]="!isLatLongDirty" class="primary">Save
+          </button>
+        </div>
+      </form>
+    </div>
+    <app-project-files (filesUpdated)="onFilesUpdated()" [projectGuid]="projectGuid"></app-project-files>
+  </div>
+</div>

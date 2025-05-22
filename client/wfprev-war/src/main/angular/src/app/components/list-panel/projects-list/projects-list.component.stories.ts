@@ -95,8 +95,8 @@ export const Default: Story = {
     ],
     fiscalYearActivityTypes: ['Clearing', 'Burning', 'Pruning'],
     sortOptions: [
-      { label: 'Name (A-Z)', value: 'ascending' },
-      { label: 'Name (Z-A)', value: 'descending' },
+      { label: 'Project Name (A-Z)', value: 'ascending' },
+      { label: 'Project Name (Z-A)', value: 'descending' },
     ],
   },
 };

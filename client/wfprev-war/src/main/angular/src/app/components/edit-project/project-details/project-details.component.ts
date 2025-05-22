@@ -18,11 +18,13 @@ import { ProjectFilesComponent } from 'src/app/components/edit-project/project-d
 import { Observable } from 'rxjs';
 import { ConfirmationDialogComponent } from 'src/app/components/confirmation-dialog/confirmation-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
+import { MatTooltip } from '@angular/material/tooltip';
+import { TextFieldModule } from '@angular/cdk/text-field';
 
 @Component({
   selector: 'app-project-details',
   standalone: true,
-  imports: [ReactiveFormsModule,MatExpansionModule,CommonModule,FormsModule,FiscalYearProjectsComponent,ProjectFilesComponent],
+  imports: [ReactiveFormsModule,MatExpansionModule,CommonModule,FormsModule,FiscalYearProjectsComponent,ProjectFilesComponent,MatTooltip,TextFieldModule],
   templateUrl: './project-details.component.html',
   styleUrl: './project-details.component.scss'
 })
@@ -89,11 +91,11 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
       projectTypeCode: ['', [Validators.required]],
       fundingStream: [''],
       programAreaGuid: ['', [Validators.required]],
-      projectLead: [''],
+      projectLead: ['', [Validators.required]],
       projectLeadEmailAddress: ['', [Validators.email]],
       siteUnitName: [''],
       closestCommunityName: ['', [Validators.required]],
-      forestRegionOrgUnitId: [''],
+      forestRegionOrgUnitId: ['', [Validators.required]],
       forestDistrictOrgUnitId: [''],
       primaryObjectiveTypeCode: ['', [Validators.required]],
       secondaryObjectiveTypeCode: [''],
@@ -195,25 +197,25 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
   assignCodeTableData(key: string, data: any): void {
     switch (key) {
       case 'projectTypeCode':
-        this.projectTypeCode = data._embedded.projectTypeCode || [];
+        this.projectTypeCode = data._embedded.projectTypeCode ?? [];
         break;
       case 'programAreaCode':
-        this.programAreaCode = data._embedded.programArea || [];
+        this.programAreaCode = data._embedded.programArea ?? [];
         break;
       case 'forestRegionCode':
-        this.forestRegionCode = data._embedded.forestRegionCode || [];
+        this.forestRegionCode = data._embedded.forestRegionCode ?? [];
         break;
       case 'forestDistrictCode':
-        this.forestDistrictCode = data._embedded.forestDistrictCode || [];
+        this.forestDistrictCode = data._embedded.forestDistrictCode ?? [];
         break;
       case 'bcParksRegionCode':
-        this.bcParksRegionCode = data._embedded.bcParksRegionCode || [];
+        this.bcParksRegionCode = data._embedded.bcParksRegionCode ?? [];
         break;
       case 'bcParksSectionCode':
-        this.bcParksSectionCode = data._embedded.bcParksSectionCode || [];
+        this.bcParksSectionCode = data._embedded.bcParksSectionCode ?? [];
         break;
       case 'objectiveTypeCode':
-        this.objectiveTypeCode = data._embedded.objectiveTypeCode || [];
+        this.objectiveTypeCode = data._embedded.objectiveTypeCode ?? [];
         break;
     }
   }
@@ -332,21 +334,21 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
 
   patchFormValues(data: any): void {
     this.detailsForm.patchValue({
-      projectTypeCode: data.projectTypeCode?.projectTypeCode || '',
+      projectTypeCode: data.projectTypeCode?.projectTypeCode ?? '',
       fundingStream: data.fundingStream,
-      programAreaGuid: data.programAreaGuid || '',
+      programAreaGuid: data.programAreaGuid ?? '',
       projectLead: data.projectLead,
       projectLeadEmailAddress: data.projectLeadEmailAddress,
       projectDescription: data.projectDescription,
       siteUnitName: data.siteUnitName,
       closestCommunityName: data.closestCommunityName,
-      forestRegionOrgUnitId: data.forestRegionOrgUnitId,
-      forestDistrictOrgUnitId: data.forestDistrictOrgUnitId,
-      primaryObjectiveTypeCode: data.primaryObjectiveTypeCode?.objectiveTypeCode || '',
-      secondaryObjectiveTypeCode: data.secondaryObjectiveTypeCode?.objectiveTypeCode,
+      forestRegionOrgUnitId: data.forestRegionOrgUnitId ?? '',
+      forestDistrictOrgUnitId: data.forestDistrictOrgUnitId ?? '',
+      primaryObjectiveTypeCode: data.primaryObjectiveTypeCode?.objectiveTypeCode ?? '',
+      secondaryObjectiveTypeCode: data.secondaryObjectiveTypeCode?.objectiveTypeCode ?? '',
       secondaryObjectiveRationale: data.secondaryObjectiveRationale,
-      bcParksRegionOrgUnitId: data.bcParksRegionOrgUnitId,
-      bcParksSectionOrgUnitId: data.bcParksSectionOrgUnitId,
+      bcParksRegionOrgUnitId: data.bcParksRegionOrgUnitId ?? '',
+      bcParksSectionOrgUnitId: data.bcParksSectionOrgUnitId ?? '',
       fireCentreId: data.fireCentreOrgUnitId,
       latitude: data.latitude,
       longitude: data.longitude,
@@ -533,6 +535,60 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
       return dialogRef.afterClosed();
     }
     return true;
+  }
+
+  getSelectedProjectType(): string {
+    const selectedId = this.detailsForm.get('projectTypeCode')?.value;
+    const selected = this.projectTypeCode.find(item => item.projectTypeCode === selectedId);
+    return selected ? selected.description : '';
+  }
+  
+  getSelectedProgramAreaName(): string {
+    const selectedId = this.detailsForm.get('programAreaGuid')?.value;
+    const selected = this.programAreaCode.find(item => item.programAreaGuid === selectedId);
+    return selected ? selected.programAreaName : '';
+  }
+  
+  getSelectedForestRegionName(): string {
+    const selectedId = this.detailsForm.get('forestRegionOrgUnitId')?.value;
+    const selected = this.forestRegionCode.find(item => item.orgUnitId === selectedId);
+    return selected ? selected.orgUnitName : '';
+  }
+  
+  getSelectedForestDistrictName(): string {
+    const selectedId = this.detailsForm.get('forestDistrictOrgUnitId')?.value;
+    const selected = this.forestDistrictCode.find(item => item.orgUnitId === selectedId);
+    return selected ? selected.orgUnitName : '';
+  }
+  
+  getSelectedBcParksRegionName(): string {
+    const selectedId = this.detailsForm.get('bcParksRegionOrgUnitId')?.value;
+    const selected = this.bcParksRegionCode.find(item => item.orgUnitId === selectedId);
+    return selected ? selected.orgUnitName : '';
+  }
+  
+  getSelectedBcParksSectionName(): string {
+    const selectedId = this.detailsForm.get('bcParksSectionOrgUnitId')?.value;
+    const selected = this.bcParksSectionCode.find(item => item.orgUnitId === selectedId);
+    return selected ? selected.orgUnitName : '';
+  }
+  
+  getSelectedFireCentreName(): string {
+    const selectedId = this.detailsForm.get('fireCentreId')?.value;
+    const selected = this.fireCentres.find(item => item.properties.MOF_FIRE_CENTRE_ID === selectedId);
+    return selected ? selected.properties.MOF_FIRE_CENTRE_NAME : '';
+  }
+  
+  getSelectedPrimaryObjectiveName(): string {
+    const selectedId = this.detailsForm.get('primaryObjectiveTypeCode')?.value;
+    const selected = this.objectiveTypeCode.find(item => item.objectiveTypeCode === selectedId);
+    return selected ? selected.description : '';
+  }
+  
+  getSelectedSecondaryObjectiveName(): string {
+    const selectedId = this.detailsForm.get('secondaryObjectiveTypeCode')?.value;
+    const selected = this.objectiveTypeCode.find(item => item.objectiveTypeCode === selectedId);
+    return selected ? selected.description : '';
   }
   
 }
