@@ -95,14 +95,30 @@ describe('ProjectFiscalsComponent', () => {
   it('should load code tables successfully', () => {
     mockCodeTableServices.fetchCodeTable.calls.reset(); // ✅ Reset call count
     component.loadCodeTables();
-    expect(mockCodeTableServices.fetchCodeTable).toHaveBeenCalledTimes(3);
+    expect(mockCodeTableServices.fetchCodeTable).toHaveBeenCalledTimes(4);
+  });
+
+  it('should sort proposalTypeCode in loadDropdownOptions', () => {
+    component.proposalTypeCode = [
+      { description: 'Proposal C' },
+      { description: 'Proposal A' },
+      { description: 'Proposal B' }
+    ];
+
+    component.loadDropdownOptions();
+
+    expect(component.proposalTypeCode).toEqual([
+      { description: 'Proposal A' },
+      { description: 'Proposal B' },
+      { description: 'Proposal C' }
+    ]);
   });
 
   it('should handle errors in loading code tables', () => {
     mockCodeTableServices.fetchCodeTable.calls.reset(); // ✅ Reset call count
     mockCodeTableServices.fetchCodeTable.and.returnValue(throwError(() => new Error('Error fetching data')));
     component.loadCodeTables();
-    expect(mockCodeTableServices.fetchCodeTable).toHaveBeenCalledTimes(3);
+    expect(mockCodeTableServices.fetchCodeTable).toHaveBeenCalledTimes(4);
   });
 
   it('should load project fiscals', fakeAsync(() => {
