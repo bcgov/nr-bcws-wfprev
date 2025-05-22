@@ -74,6 +74,7 @@ class ProjectFiscalServiceTest {
         projectFiscalModel1.setAncillaryFundingSourceGuid("789e1234-e89b-12d3-a456-426614174002");
         projectFiscalModel1.setProjectPlanStatusCode("PLAN_STATUS_1");
         projectFiscalModel1.setPlanFiscalStatusCode("FISCAL_STATUS_1");
+        projectFiscalModel1.setProposalTypeCode("NEW");
         projectFiscalModel1.setEndorsementCode("ENDORSEMENT_CODE_1");
         projectFiscalModel1.setProjectFiscalName("Test Project Fiscal 1");
         projectFiscalModel1.setProjectFiscalDescription("Description of Test Project Fiscal 1");
@@ -125,6 +126,7 @@ class ProjectFiscalServiceTest {
         projectFiscalModel2.setAncillaryFundingSourceGuid("789e1234-e89b-12d3-a456-426614174003");
         projectFiscalModel2.setProjectPlanStatusCode("PLAN_STATUS_2");
         projectFiscalModel2.setPlanFiscalStatusCode("FISCAL_STATUS_2");
+        projectFiscalModel2.setProposalTypeCode("NEW");
         projectFiscalModel2.setEndorsementCode("ENDORSEMENT_CODE_2");
         projectFiscalModel2.setProjectFiscalName("Test Project Fiscal 2");
         projectFiscalModel2.setProjectFiscalDescription("Description of Test Project Fiscal 2");
@@ -178,6 +180,7 @@ class ProjectFiscalServiceTest {
                         .fiscalYear(BigDecimal.valueOf(2023))
                         .projectPlanStatusCode("ACTIVE")
                         .planFiscalStatusCode("DRAFT")
+                        .proposalTypeCode("NEW")
                         .projectFiscalName("Fiscal Plan 1")
                         .totalCostEstimateAmount(BigDecimal.valueOf(100000))
                         .isApprovedInd(true)
@@ -192,6 +195,7 @@ class ProjectFiscalServiceTest {
                         .fiscalYear(BigDecimal.valueOf(2024))
                         .projectPlanStatusCode("DRAFT")
                         .planFiscalStatusCode("PROPOSED")
+                        .proposalTypeCode("NEW")
                         .projectFiscalName("Fiscal Plan 2")
                         .totalCostEstimateAmount(BigDecimal.valueOf(200000))
                         .isApprovedInd(false)
@@ -276,6 +280,7 @@ class ProjectFiscalServiceTest {
         projectFiscalModel.setAncillaryFundingSourceGuid("789e1234-e89b-12d3-a456-426614174002");
         projectFiscalModel.setProjectPlanStatusCode("PLAN_STATUS_1");
         projectFiscalModel.setPlanFiscalStatusCode("FISCAL_STATUS_1");
+        projectFiscalModel.setProposalTypeCode("NEW");
         projectFiscalModel.setEndorsementCode("ENDORSEMENT_CODE_1");
         projectFiscalModel.setProjectFiscalName("Test Project Fiscal 1");
         projectFiscalModel.setProjectFiscalDescription("Description of Test Project Fiscal 1");
@@ -325,6 +330,7 @@ class ProjectFiscalServiceTest {
                 .fiscalYear(BigDecimal.valueOf(2021))
                 .projectPlanStatusCode("PLAN_STATUS_1")
                 .planFiscalStatusCode("FISCAL_STATUS_1")
+                .proposalTypeCode("NEW")
                 .projectFiscalName("Test Project Fiscal 1")
                 .build();
 
@@ -355,6 +361,7 @@ class ProjectFiscalServiceTest {
         projectFiscalModel.setAncillaryFundingSourceGuid("789e1234-e89b-12d3-a456-426614174002");
         projectFiscalModel.setProjectPlanStatusCode("PLAN_STATUS_1");
         projectFiscalModel.setPlanFiscalStatusCode("FISCAL_STATUS_1");
+        projectFiscalModel.setProposalTypeCode("NEW");
         projectFiscalModel.setEndorsementCode("ENDORSEMENT_CODE_1");
         projectFiscalModel.setProjectFiscalName("Test Project Fiscal 1");
         projectFiscalModel.setProjectFiscalDescription("Description of Test Project Fiscal 1");
@@ -401,6 +408,7 @@ class ProjectFiscalServiceTest {
         projectFiscalModel.setAncillaryFundingSourceGuid("789e1234-e89b-12d3-a456-426614174002");
         projectFiscalModel.setProjectPlanStatusCode("PLAN_STATUS_1");
         projectFiscalModel.setPlanFiscalStatusCode("FISCAL_STATUS_1");
+        projectFiscalModel.setProposalTypeCode("NEW");
         projectFiscalModel.setEndorsementCode("ENDORSEMENT_CODE_1");
         projectFiscalModel.setProjectFiscalName("Test Project Fiscal 1");
         projectFiscalModel.setProjectFiscalDescription("Description of Test Project Fiscal 1");
@@ -429,6 +437,7 @@ class ProjectFiscalServiceTest {
                 .fiscalYear(BigDecimal.valueOf(2021))
                 .projectPlanStatusCode("PLAN_STATUS_1")
                 .planFiscalStatusCode("FISCAL_STATUS_1")
+                .proposalTypeCode("NEW")
                 .projectFiscalName("Test Project Fiscal 1")
                 .build();
 
@@ -458,6 +467,7 @@ class ProjectFiscalServiceTest {
         projectFiscalModel.setAncillaryFundingSourceGuid("789e1234-e89b-12d3-a456-426614174002");
         projectFiscalModel.setProjectPlanStatusCode("PLAN_STATUS_1");
         projectFiscalModel.setPlanFiscalStatusCode("FISCAL_STATUS_1");
+        projectFiscalModel.setProposalTypeCode("NEW");
         projectFiscalModel.setEndorsementCode("ENDORSEMENT_CODE_1");
         projectFiscalModel.setProjectFiscalName("Test Project Fiscal 1");
         projectFiscalModel.setProjectFiscalDescription("Description of Test Project Fiscal 1");

@@ -57,6 +57,10 @@ public class ProjectFiscalEntity implements Serializable {
     @Column(name = "plan_fiscal_status_code", length = 10)
     private String planFiscalStatusCode;
 
+    @NotNull
+    @Column(name = "proposal_type_code", length = 10)
+    private String proposalTypeCode;
+
     @Column(name = "endorsement_code", length = 10)
     private String endorsementCode;
 
