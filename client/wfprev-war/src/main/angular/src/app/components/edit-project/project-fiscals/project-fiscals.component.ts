@@ -18,6 +18,7 @@ import { ConfirmationDialogComponent } from 'src/app/components/confirmation-dia
 import { CanComponentDeactivate } from 'src/app/services/util/can-deactive.guard';
 import { ActivitiesComponent } from 'src/app/components/edit-project/activities/activities.component';
 import { FiscalMapComponent } from 'src/app/components/edit-project/fiscal-map/fiscal-map.component';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-project-fiscals',
@@ -34,7 +35,8 @@ import { FiscalMapComponent } from 'src/app/components/edit-project/fiscal-map/f
     CurrencyPipe,
     MatMenuModule,
     ActivitiesComponent,
-    FiscalMapComponent
+    FiscalMapComponent,
+    MatTooltipModule
   ]
 })
 export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  {
@@ -51,6 +53,7 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  
   activityCategoryCode: any[] = [];
   planFiscalStatusCode: any[] = [];
   ancillaryFundingSourceCode: any[] = [];
+  proposalTypeCode: any[] = [];
   originalFiscalValues: any[] = []
   constructor(
     private route: ActivatedRoute,
@@ -102,6 +105,7 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  
       { name: 'activityCategoryCodes', embeddedKey: 'activityCategoryCode' },
       { name: 'planFiscalStatusCodes', embeddedKey: 'planFiscalStatusCode' },
       { name: 'ancillaryFundingSourceCodes', embeddedKey: 'ancillaryFundingSourceCode' },
+      { name: 'proposalTypeCodes', embeddedKey: 'proposalTypeCode'}
     ];
   
     codeTables.forEach((table) => {
@@ -126,6 +130,9 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  
       case 'ancillaryFundingSourceCode':
         this.ancillaryFundingSourceCode = data._embedded?.ancillaryFundingSourceCode || [];
         break;
+      case 'proposalTypeCode':
+        this.proposalTypeCode = data._embedded?.proposalTypeCode || [];
+        break;
     }
   }
 
@@ -134,6 +141,7 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  
     this.activityCategoryCode = this.sortArray(this.activityCategoryCode, 'description');
     this.planFiscalStatusCode = this.sortArray(this.planFiscalStatusCode, 'description');
     this.ancillaryFundingSourceCode = this.sortArray(this.ancillaryFundingSourceCode, 'fundingSourceName');
+    this.proposalTypeCode = this.sortArray(this.proposalTypeCode, 'description');
   }
 
   sortArray<T>(array: T[], key?: keyof T): T[] {
@@ -148,7 +156,7 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  
       fiscalYear: [fiscal?.fiscalYear || '', [Validators.required]],
       projectFiscalName: [fiscal?.projectFiscalName || '', [Validators.required]],
       activityCategoryCode: [fiscal?.activityCategoryCode || '', [Validators.required]],
-      proposalType: [fiscal?.proposalType || ''],
+      proposalTypeCode: [fiscal?.proposalTypeCode || '', [Validators.required]],
       planFiscalStatusCode: [fiscal?.planFiscalStatusCode || 'DRAFT', [Validators.required]],
       fiscalPlannedProjectSizeHa: [fiscal?.fiscalPlannedProjectSizeHa || '', [Validators.min(0)]],
       fiscalCompletedSizeHa: [fiscal?.fiscalCompletedSizeHa ?? '', [Validators.min(0)]],
@@ -306,7 +314,8 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  
         totalCostEstimateAmount: updatedData.totalCostEstimateAmount,
         cfsProjectCode: updatedData.cfsProjectCode,
         ancillaryFundingSourceGuid: updatedData.ancillaryFundingSourceGuid,
-        otherPartner: updatedData.otherPartner
+        otherPartner: updatedData.otherPartner,
+        proposalTypeCode: updatedData.proposalTypeCode,
       };
       if (isUpdate) {
         // update the existing fiscal
@@ -412,5 +421,6 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  
       this.fiscalMapComponent.getAllActivitiesBoundaries(); // refresh boundaries on map
     }
   }
+  
 }
 

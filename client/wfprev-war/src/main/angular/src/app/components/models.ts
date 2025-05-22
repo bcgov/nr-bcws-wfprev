@@ -81,7 +81,8 @@ export interface ProjectFiscal {
   totalCostEstimateAmount?: number;
   cfsProjectCode?: string;
   ancillaryFundingSourceGuid?: string;
-  otherPartner?: string
+  otherPartner?: string;
+  proposalTypeCode?: string;
 }
 
 export interface ActivityModel {
