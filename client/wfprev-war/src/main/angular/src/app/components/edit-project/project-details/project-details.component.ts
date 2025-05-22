@@ -385,7 +385,6 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
             objectiveTypeCode: secondaryObjectiveValue,
           };
         }
-        console.log(JSON.stringify(updatedProject))
         this.projectService.updateProject(this.projectGuid, updatedProject).subscribe({
           next: () => {
             this.snackbarService.open(
