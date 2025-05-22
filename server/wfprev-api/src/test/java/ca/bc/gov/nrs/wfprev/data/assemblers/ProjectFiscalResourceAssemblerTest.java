@@ -28,6 +28,7 @@ class ProjectFiscalResourceAssemblerTest {
                 .fiscalYear(new BigDecimal("2023"))
                 .projectPlanStatusCode("STATUS1")
                 .planFiscalStatusCode("FISCAL1")
+                .proposalTypeCode("NEW")
                 .projectFiscalName("Test Project Fiscal")
                 .isApprovedInd(true)
                 .isDelayedInd(false)
@@ -48,6 +49,7 @@ class ProjectFiscalResourceAssemblerTest {
         assertEquals(model.getFiscalYear(), entity.getFiscalYear().longValue());
         assertEquals(model.getProjectPlanStatusCode(), entity.getProjectPlanStatusCode());
         assertEquals(model.getPlanFiscalStatusCode(), entity.getPlanFiscalStatusCode());
+        assertEquals(model.getProposalTypeCode(), entity.getProposalTypeCode());
         assertEquals(model.getProjectFiscalName(), entity.getProjectFiscalName());
         assertEquals(model.getIsApprovedInd(), entity.getIsApprovedInd());
         assertEquals(model.getIsDelayedInd(), entity.getIsDelayedInd());
@@ -62,6 +64,7 @@ class ProjectFiscalResourceAssemblerTest {
         model.setFiscalYear(2023L);
         model.setProjectPlanStatusCode("STATUS1");
         model.setPlanFiscalStatusCode("FISCAL1");
+        model.setProposalTypeCode("NEW");
         model.setProjectFiscalName("Test Project Fiscal");
         model.setIsApprovedInd(true);
         model.setIsDelayedInd(false);
@@ -81,6 +84,7 @@ class ProjectFiscalResourceAssemblerTest {
         assertEquals(entity.getFiscalYear().longValue(), model.getFiscalYear(), "FiscalYear should match");
         assertEquals(entity.getProjectPlanStatusCode(), model.getProjectPlanStatusCode(), "ProjectPlanStatusCode should match");
         assertEquals(entity.getPlanFiscalStatusCode(), model.getPlanFiscalStatusCode(), "PlanFiscalStatusCode should match");
+        assertEquals(entity.getProposalTypeCode(), model.getProposalTypeCode(), "ProposalTypeCode should match");
         assertEquals(entity.getProjectFiscalName(), model.getProjectFiscalName(), "ProjectFiscalName should match");
         assertEquals(entity.getIsApprovedInd(), model.getIsApprovedInd(), "IsApprovedInd should match");
         assertEquals(entity.getIsDelayedInd(), model.getIsDelayedInd(), "IsDelayedInd should match");
