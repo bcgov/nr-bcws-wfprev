@@ -156,7 +156,7 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  
       fiscalYear: [fiscal?.fiscalYear || '', [Validators.required]],
       projectFiscalName: [fiscal?.projectFiscalName || '', [Validators.required]],
       activityCategoryCode: [fiscal?.activityCategoryCode || '', [Validators.required]],
-      proposalType: [fiscal?.proposalType || '', [Validators.required]],
+      proposalTypeCode: [fiscal?.proposalTypeCode || '', [Validators.required]],
       planFiscalStatusCode: [fiscal?.planFiscalStatusCode || 'DRAFT', [Validators.required]],
       fiscalPlannedProjectSizeHa: [fiscal?.fiscalPlannedProjectSizeHa || '', [Validators.min(0)]],
       fiscalCompletedSizeHa: [fiscal?.fiscalCompletedSizeHa ?? '', [Validators.min(0)]],
@@ -314,7 +314,8 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  
         totalCostEstimateAmount: updatedData.totalCostEstimateAmount,
         cfsProjectCode: updatedData.cfsProjectCode,
         ancillaryFundingSourceGuid: updatedData.ancillaryFundingSourceGuid,
-        otherPartner: updatedData.otherPartner
+        otherPartner: updatedData.otherPartner,
+        proposalTypeCode: updatedData.proposalTypeCode,
       };
       if (isUpdate) {
         // update the existing fiscal
@@ -420,5 +421,6 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  
       this.fiscalMapComponent.getAllActivitiesBoundaries(); // refresh boundaries on map
     }
   }
+  
 }
 
