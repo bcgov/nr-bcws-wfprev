@@ -18,11 +18,13 @@ import { ProjectFilesComponent } from 'src/app/components/edit-project/project-d
 import { Observable } from 'rxjs';
 import { ConfirmationDialogComponent } from 'src/app/components/confirmation-dialog/confirmation-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
+import { MatTooltip } from '@angular/material/tooltip';
+import { TextFieldModule } from '@angular/cdk/text-field';
 
 @Component({
   selector: 'app-project-details',
   standalone: true,
-  imports: [ReactiveFormsModule,MatExpansionModule,CommonModule,FormsModule,FiscalYearProjectsComponent,ProjectFilesComponent],
+  imports: [ReactiveFormsModule,MatExpansionModule,CommonModule,FormsModule,FiscalYearProjectsComponent,ProjectFilesComponent,MatTooltip,TextFieldModule],
   templateUrl: './project-details.component.html',
   styleUrl: './project-details.component.scss'
 })
@@ -90,7 +92,7 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
       fundingStream: [''],
       programAreaGuid: ['', [Validators.required]],
       projectLead: ['', [Validators.required]],
-      projectLeadEmailAddress: ['', [Validators.required,Validators.email]],
+      projectLeadEmailAddress: ['', [Validators.email]],
       siteUnitName: [''],
       closestCommunityName: ['', [Validators.required]],
       forestRegionOrgUnitId: ['', [Validators.required]],

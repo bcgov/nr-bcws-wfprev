@@ -76,11 +76,6 @@
         resize: vertical;
         height: 30px;
       }
-
-      .objective-field {
-        flex: 0 0 calc(25% - 20px) !important;
-        max-width: calc(25% - 20px) !important;
-      }
     }
 
     .full-width {
@@ -104,47 +99,59 @@
       }
     }
 
-    .secondary-rational {
-      flex: 0 0 calc(50% - 10px); // Half-width
-      max-width: 2000px;
-      min-width: 200px;
-
-      @media (max-width: 768px) {
-        flex: 1 1 calc(50% - 20px);
-      }
-      @media (max-width: 480px) {
-        flex: 1 1 100%;
-      }
-
-      textarea {
-        width: 100%;
-        height: 45px;
-        padding: 10px 16px;
-        box-sizing: border-box; 
-        font-size: 16px;
-        font-family: var(--wf-font-family-main);
-        overflow: hidden;
-        margin-top: 8px;
-      }
+    .objective-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      width: 100%;
     }
 
     .objective-field {
-      min-width: 150px;
-      max-width: 700px;
-      @media (max-width: 768px) {
-        flex: 1 1 calc(50% - 20px);
+      min-width: 100px;
+      flex: 0 0 calc(25% - 20px);
+
+      @media (max-width: 1024px) {
+        flex: 0 0 calc(33.33% - 20px);
       }
-      @media (max-width: 480px) {
-        flex: 1 1 100%;
+
+      @media (min-width: 950px) and (max-width: 1024px) {
+        flex: 0 0 calc(25% - 20px); 
       }
+
+      @media (max-width: 730px) {
+        flex: 1 1 calc(25% - 20px)
+      }
+
+      @media (max-width: 510px) {
+        flex: 0 0 100%; 
+      }
+
       select {
         margin-top: 14px;
       }
     }
 
-    .fire-centre {
-      flex: 1 1 calc(25% - 50px);
+    .secondary-rationale {
+      flex: 0 0 calc(50% - 10px); // Half-width
+      max-width: 2000px;
+      min-width: 200px;
+
+      @media (max-width: 1024px) {
+        flex: 1 1 100%; // Full width on smaller screens
+        max-width: 100%;
+      }
+
+      textarea {
+        width: 100%;
+        min-height: 45px;
+        padding: 10px 16px;
+        box-sizing: border-box;
+        font-size: 16px;
+        font-family: var(--wf-font-family-main);
+        margin-top: 8px;
+      }
     }
+
   }
 
 }
