@@ -28,6 +28,10 @@
       <label for="closestCommunityName">Closest Community<span class="required">*</span></label>
       <input type="text" id="closestCommunityName" formControlName="closestCommunityName" placeholder="Begin Typing"
         [matTooltip]="detailsForm.get('closestCommunityName')?.value" />
+      <div class="error"
+        *ngIf="detailsForm.get('closestCommunityName')?.hasError('maxlength') && detailsForm.get('closestCommunityName')?.touched">
+        {{messages.maxLengthExceeded}}
+      </div>
     </div>
 
     <div class="form-item">
@@ -86,18 +90,34 @@
       <label for="projectLead">Project Lead<span class="required">*</span></label>
       <input type="text" id="projectLead" formControlName="projectLead" placeholder="Begin Typing"
         [matTooltip]="detailsForm.get('projectLead')?.value" />
+      <div class="error"
+        *ngIf="detailsForm.get('projectLead')?.hasError('maxlength') && detailsForm.get('projectLead')?.touched">
+        {{messages.maxLengthExceeded}}
+      </div>
     </div>
 
     <div class="form-item">
       <label for="projectLeadEmailAddress">Project Lead Email</label>
       <input type="email" id="projectLeadEmailAddress" formControlName="projectLeadEmailAddress"
         placeholder="Begin Typing" [matTooltip]="detailsForm.get('projectLeadEmailAddress')?.value" />
+      <div class="error"
+        *ngIf="detailsForm.get('projectLeadEmailAddress')?.hasError('email') && detailsForm.get('projectLeadEmailAddress')?.touched">
+        {{messages.invalidEmail}}
+      </div>
+      <div class="error"
+        *ngIf="detailsForm.get('projectLeadEmailAddress')?.hasError('maxlength') && detailsForm.get('projectLeadEmailAddress')?.touched">
+        {{messages.maxLengthExceeded}}
+      </div>
     </div>
 
     <div class="form-item">
       <label for="siteUnitName">Planning Unit</label>
       <input type="text" id="siteUnitName" formControlName="siteUnitName" placeholder="Begin Typing"
         [matTooltip]="detailsForm.get('siteUnitName')?.value" />
+      <div class="error"
+        *ngIf="detailsForm.get('siteUnitName')?.hasError('maxlength') && detailsForm.get('siteUnitName')?.touched">
+        {{messages.maxLengthExceeded}}
+      </div>
     </div>
 
     <div class="objective-group">
@@ -127,6 +147,10 @@
         <textarea id="secondaryObjectiveRationale" formControlName="secondaryObjectiveRationale"
           placeholder="Begin Typing" rows="1" cdkTextareaAutosize cdkAutosizeMinRows="1" cdkAutosizeMaxRows="10"
           [matTooltip]="detailsForm.get('secondaryObjectiveRationale')?.value"></textarea>
+        <div class="error"
+          *ngIf="detailsForm.get('secondaryObjectiveRationale')?.hasError('maxlength') && detailsForm.get('secondaryObjectiveRationale')?.touched">
+          {{messages.maxLengthExceeded}}
+        </div>
       </div>
     </div>
 
