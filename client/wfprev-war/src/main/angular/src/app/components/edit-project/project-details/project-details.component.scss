@@ -362,6 +362,7 @@
       /* Vertically center-align the button */
       gap: 10px;
       /* Add space between the input and button */
+      font-family: var(--wf-font-family-main);
 
       input {
         padding: 5px;
@@ -370,6 +371,7 @@
         border-radius: 4px;
         width: 300px;
         /* Adjust input width */
+        font-family: var(--wf-font-family-main);
       }
 
       button {
