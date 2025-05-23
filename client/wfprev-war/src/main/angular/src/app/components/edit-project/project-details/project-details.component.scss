@@ -204,6 +204,7 @@
   background: #FFF;
 
   button {
+    font-family: var(--wf-font-family-main);
     border: none;
     border-radius: 4px;
     font-size: 16px;
@@ -372,11 +373,12 @@
       }
 
       button {
-        padding: 12px 32px;
+        padding: 10px 18px;
         border: none;
         border-radius: 4px;
         font-size: 16px;
         cursor: pointer;
+        font-family: var(--wf-font-family-main);
       }
 
       button.primary {
