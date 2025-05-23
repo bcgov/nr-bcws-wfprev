@@ -131,7 +131,7 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  
         this.ancillaryFundingSourceCode = data._embedded?.ancillaryFundingSourceCode || [];
         break;
       case 'proposalTypeCode':
-        this.proposalTypeCode = data._embedded?.proposalTypeCode || [];
+        this.proposalTypeCode = data._embedded?.proposalTypeCode ?? [];
         break;
     }
   }
@@ -156,7 +156,7 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  
       fiscalYear: [fiscal?.fiscalYear || '', [Validators.required]],
       projectFiscalName: [fiscal?.projectFiscalName || '', [Validators.required]],
       activityCategoryCode: [fiscal?.activityCategoryCode || '', [Validators.required]],
-      proposalTypeCode: [fiscal?.proposalTypeCode || 'NEW', [Validators.required]],
+      proposalTypeCode: [fiscal?.proposalTypeCode ?? 'NEW', [Validators.required]],
       planFiscalStatusCode: [fiscal?.planFiscalStatusCode || 'DRAFT', [Validators.required]],
       fiscalPlannedProjectSizeHa: [fiscal?.fiscalPlannedProjectSizeHa || '', [Validators.min(0)]],
       fiscalCompletedSizeHa: [fiscal?.fiscalCompletedSizeHa ?? '', [Validators.min(0)]],
