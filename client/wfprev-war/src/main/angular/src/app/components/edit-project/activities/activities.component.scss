@@ -71,7 +71,11 @@
         flex: 1 1 calc(33% - 20px) !important; // 3 items per row with a 20px gap
     }
     .form-item{
-        flex: 1 1 calc(25% - 20px); // 4 items per row with a 20px gap
+        flex: 1 1 calc(25% - 20px); // 4 items per row with a 20px gap  
+        input,
+        select{
+            text-overflow: unset !important;
+        }
     }
     .form-item.wide{
         grid-column: span 2;
@@ -155,6 +159,7 @@
         font-weight: 400;
         font-size: 16px;
         color: #282828;
+        flex: 1 1 auto !important;
     }
     
     .mat-date-range-input input {
@@ -176,6 +181,12 @@
     .date-range-container {
         display: flex;
         align-items: center;
+        width: 100%;
+    }
+
+    .date-range-container mat-form-field {
+        flex: 1 1 auto;
+        width: 100%;
     }
 
     .date-separator {
@@ -238,6 +249,7 @@
 
 :host ::ng-deep .mdc-text-field--filled:not(.mdc-text-field--disabled) {
     background-color: white;
+    padding: 8px 12px;
   }
 
 :host ::ng-deep .mat-mdc-form-field-flex{
