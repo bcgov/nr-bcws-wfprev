@@ -12,6 +12,14 @@
   
 }
 
+::ng-deep .mat-mdc-dialog-inner-container {
+  width: 1200px;
+}
+
+::ng-deep .mat-mdc-dialog-surface {
+  width: unset
+}
+
 // ::ng-deep .mat-tooltip-show {
 //   opacity: 1 !important;
 //   visibility: visible !important;
@@ -28,6 +36,7 @@
   border: 1px solid #B1B1B1;
   background: #FFF;
   box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+  width: 1200px;
 }
 
 .title-bar{
@@ -55,15 +64,16 @@
   
   .form-field {
     flex: 1;
+    width: 344px;
     .error {
-      color: red;
-      font-size: 12px;
+      color: #CE3E39;
+      font-size: 14px;
       margin-top: 4px;
     }
     label{
       font-family: var(--wf-font-family-main);
-      color: #282828;
-      font-size: 12px;
+      color: #474543;
+      font-size: 14px;
       font-style: normal;
       font-weight: 400;
       line-height: normal;
@@ -72,13 +82,14 @@
   }
   
   .required {
-    color: #EF1616;
+    font-size: 14px;
+    color: #CE3E39;
   }
   .project-input {
-    width: 90%;
+    width: 326px;
     padding: 8px 9px;
     font-size: 16px;
-    color: #333;
+    color: #2D2D2D;
     border: none;
     border-bottom: 1px solid #434343;
     outline: none;
@@ -144,7 +155,7 @@
 
 select {
   margin-top: 4px;
-  width: 90%; /* Match input field width */
+  width: 344px;
   padding: 8px 9px; /* Same padding as text inputs */
   font-size: 16px; /* Font size similar to inputs */
   color: #333; /* Text color */
