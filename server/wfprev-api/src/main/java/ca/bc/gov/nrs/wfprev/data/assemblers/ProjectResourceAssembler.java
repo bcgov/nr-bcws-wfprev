@@ -244,10 +244,8 @@ public class ProjectResourceAssembler extends RepresentationModelAssemblerSuppor
         entity.setProjectNumber(existingEntity.getProjectNumber());
         entity.setPrimaryObjectiveTypeCode(nonNullOrDefault(toObjectiveTypeCodeEntity(model.getPrimaryObjectiveTypeCode() != null ? 
             model.getPrimaryObjectiveTypeCode() : null), existingEntity.getPrimaryObjectiveTypeCode()));
-        entity.setSecondaryObjectiveTypeCode(nonNullOrDefault(toObjectiveTypeCodeEntity(model.getSecondaryObjectiveTypeCode() != null ? 
-            model.getSecondaryObjectiveTypeCode() : null), existingEntity.getSecondaryObjectiveTypeCode()));
-        entity.setTertiaryObjectiveTypeCode(nonNullOrDefault(toObjectiveTypeCodeEntity(model.getTertiaryObjectiveTypeCode() != null ? 
-            model.getTertiaryObjectiveTypeCode() : null), existingEntity.getTertiaryObjectiveTypeCode()));
+        entity.setSecondaryObjectiveTypeCode(toObjectiveTypeCodeEntity(model.getSecondaryObjectiveTypeCode()));
+        entity.setTertiaryObjectiveTypeCode(toObjectiveTypeCodeEntity(model.getTertiaryObjectiveTypeCode()));
         entity.setSecondaryObjectiveRationale(nonNullOrDefault(model.getSecondaryObjectiveRationale(), existingEntity.getSecondaryObjectiveRationale()));
         log.error("Updated entity: " + entity);
         return entity;
