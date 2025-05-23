@@ -406,11 +406,3 @@
 ::ng-deep .mat-expansion-panel-content {
   border-top: 1px solid #D9D9D9;
 }
-
-::ng-deep .fiscal-tab-wrapper .mat-mdc-tab-body-content {
-  overflow-y: auto !important;
-}
-// Since this component is a nested tab group under detail page, we would want to hide the scroll bar of outter tab group to avoid double scroll bar issue
-::ng-deep .mat-mdc-tab-body-content {
-  overflow: hidden !important; 
-}
