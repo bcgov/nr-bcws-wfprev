@@ -37,6 +37,7 @@ mat-expansion-panel {
     .fiscal-title-row{
         font-family: var(--wf-font-family-main);
         display: flex;
+        gap: 15px;
         .section-1 {
             flex: 0 0 65%;
             display: flex;
@@ -46,6 +47,9 @@ mat-expansion-panel {
             font-style: normal;
             font-weight: 700;
             line-height: normal;
+            word-break: break-word;
+            white-space: normal;
+            overflow-wrap: break-word;
         }
         .section-2{
             flex:1;
