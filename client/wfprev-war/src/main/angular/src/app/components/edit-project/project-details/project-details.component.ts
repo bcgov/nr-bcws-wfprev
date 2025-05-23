@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { AfterViewInit, Component, EventEmitter, OnInit, Output, OnDestroy, ViewChild  } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators , FormsModule } from '@angular/forms';
+import { AfterViewInit, Component, EventEmitter, OnInit, Output, OnDestroy, ViewChild } from '@angular/core';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, FormsModule } from '@angular/forms';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { ActivatedRoute } from '@angular/router';
 import L from 'leaflet';
@@ -24,11 +24,11 @@ import { TextFieldModule } from '@angular/cdk/text-field';
 @Component({
   selector: 'app-project-details',
   standalone: true,
-  imports: [ReactiveFormsModule,MatExpansionModule,CommonModule,FormsModule,FiscalYearProjectsComponent,ProjectFilesComponent,MatTooltip,TextFieldModule],
+  imports: [ReactiveFormsModule, MatExpansionModule, CommonModule, FormsModule, FiscalYearProjectsComponent, ProjectFilesComponent, MatTooltip, TextFieldModule],
   templateUrl: './project-details.component.html',
   styleUrl: './project-details.component.scss'
 })
-export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy{
+export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild(FiscalYearProjectsComponent) fiscalYearProjectsComponent!: FiscalYearProjectsComponent;
   @Output() projectNameChange = new EventEmitter<string>();
 
@@ -47,7 +47,7 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
   projectDetail: any;
   projectDescription: string = '';
   isProjectDescriptionDirty: boolean = false;
-  latLong: string = ''; 
+  latLong: string = '';
   isLatLongDirty: boolean = false;
   isLatLongValid: boolean = false;
   projectTypeCode: any[] = [];
@@ -65,8 +65,8 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
     private readonly codeTableService: CodeTableServices,
     public snackbarService: MatSnackBar,
     public dialog: MatDialog,
-    
-  ) {}
+
+  ) { }
 
   ngOnInit(): void {
     this.initializeForm();
@@ -115,7 +115,7 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
   loadProjectDetails(): void {
     this.projectGuid = this.route.snapshot?.queryParamMap?.get('projectGuid') ?? '';
     if (!this.projectGuid) return;
-  
+
     this.projectService.getProjectByProjectGuid(this.projectGuid).subscribe({
       next: (data) => {
         this.projectDetail = data;
@@ -128,7 +128,7 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
         this.populateFormWithProjectDetails(data);
         this.originalFormValues = this.detailsForm.getRawValue();
         this.projectDescription = data.projectDescription;
-        this.isProjectDescriptionDirty = false; 
+        this.isProjectDescriptionDirty = false;
         this.latLongForm.patchValue({
           latitude: data.latitude,
           longitude: data.longitude,
@@ -143,7 +143,7 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
   private callValidateLatLong(value: string) {
     return validateLatLong(value);
   }
-  
+
   onLatLongChange(newLatLong: string): void {
     this.latLong = newLatLong;
     this.isLatLongDirty = true; // Always mark as dirty regardless of validity
@@ -152,7 +152,7 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
   onFilesUpdated(): void {
     this.loadProjectDetails();
   }
-  
+
   populateFormWithProjectDetails(data: any): void {
     this.patchFormValues(data);
   }
@@ -168,7 +168,7 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
       { name: 'objectiveTypeCodes', embeddedKey: 'objectiveTypeCode' },
 
     ];
-  
+
     codeTables.forEach((table) => {
       this.codeTableService.fetchCodeTable(table.name).subscribe({
         next: (data) => {
@@ -231,7 +231,7 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
         iconAnchor: [12, 41],
       });
       this.marker = L.marker([latitude, longitude], { icon: teardropIcon }).addTo(this.map);
-      
+
       this.map.setView([latitude, longitude], 13); // Update the map view
     } else {
       // Initialize the map if it hasn't been created
@@ -240,12 +240,12 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
         zoom: 13,
         zoomControl: false,
       });
-      
+
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '© OpenStreetMap contributors',
       }).addTo(this.map);
-      
-      
+
+
       this.marker = L.marker([latitude, longitude], {
         icon: L.icon({
           iconUrl: '/assets/blue-pin-drop.svg',
@@ -260,20 +260,20 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
       this.projectService.getProjectBoundaries(this.projectGuid).subscribe({
         next: (boundaryResponse) => {
           const boundaries = boundaryResponse?._embedded?.projectBoundary;
-    
+
           // Remove old boundary layer if it exists
           if (this.boundaryLayer && this.map) {
             this.map.removeLayer(this.boundaryLayer);
             this.boundaryLayer = null;
           }
-    
+
           if (boundaries && boundaries.length > 0) {
             const latestBoundary = boundaries.sort((a: any, b: any) =>
               new Date(b.systemStartTimestamp).getTime() - new Date(a.systemStartTimestamp).getTime()
             )[0];
-    
+
             const boundaryGeometry = latestBoundary.boundaryGeometry;
-    
+
             if (boundaryGeometry && this.map) {
               // Create new GeoJSON layer
               this.boundaryLayer = L.geoJSON(boundaryGeometry, {
@@ -284,7 +284,7 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
                   fillOpacity: 0
                 }
               }).addTo(this.map);
-    
+
               // Fit the map view to the new boundary
               if (this.boundaryLayer?.getBounds()?.isValid()) {
                 this.map.fitBounds(this.boundaryLayer.getBounds());
@@ -298,8 +298,8 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
       });
     }
   }
-  
-  
+
+
   ngAfterViewInit(): void {
     setTimeout(() => {
       this.initMap();
@@ -318,16 +318,16 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
       [48.3, -139.1], // Southwest corner of BC
       [60.0, -114.0], // Northeast corner of BC
     ];
-  
+
     if (!this.map) {
       this.map = L.map('map', {
         zoomControl: false,
       });
-  
+
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '© OpenStreetMap contributors',
       }).addTo(this.map);
-  
+
       this.map.fitBounds(defaultBounds); // Default view for the BC region
     }
   }
@@ -342,73 +342,67 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
       projectDescription: data.projectDescription,
       siteUnitName: data.siteUnitName,
       closestCommunityName: data.closestCommunityName,
-      forestRegionOrgUnitId: data.forestRegionOrgUnitId ?? '',
-      forestDistrictOrgUnitId: data.forestDistrictOrgUnitId ?? '',
-      primaryObjectiveTypeCode: data.primaryObjectiveTypeCode?.objectiveTypeCode ?? null,
-      secondaryObjectiveTypeCode: data.secondaryObjectiveTypeCode?.objectiveTypeCode ?? null,
+      forestRegionOrgUnitId: data.forestRegionOrgUnitId === 0 ? '' : data.forestRegionOrgUnitId ?? '',
+      forestDistrictOrgUnitId: data.forestDistrictOrgUnitId === 0 ? '' : data.forestDistrictOrgUnitId ?? '',
+      primaryObjectiveTypeCode: data.primaryObjectiveTypeCode?.objectiveTypeCode ?? '',
+      secondaryObjectiveTypeCode: data.secondaryObjectiveTypeCode?.objectiveTypeCode ?? '',
       secondaryObjectiveRationale: data.secondaryObjectiveRationale,
-      bcParksRegionOrgUnitId: data.bcParksRegionOrgUnitId ?? '',
-      bcParksSectionOrgUnitId: data.bcParksSectionOrgUnitId ?? '',
+      bcParksRegionOrgUnitId: data.bcParksRegionOrgUnitId === 0 ? '' : data.bcParksRegionOrgUnitId ?? '',
+      bcParksSectionOrgUnitId: data.bcParksSectionOrgUnitId === 0 ? '' : data.bcParksSectionOrgUnitId ?? '',
       fireCentreId: data.fireCentreOrgUnitId,
       latitude: data.latitude,
       longitude: data.longitude,
     });
+    console.log(this.detailsForm)
   }
 
   onSave(): void {
     if (this.detailsForm.valid) {
-        const updatedProject = {
-          ...this.projectDetail,
-          ...this.detailsForm.value,
-          forestRegionOrgUnitId: Number(this.detailsForm.get('forestRegionOrgUnitId')?.value),
-          forestDistrictOrgUnitId: Number(this.detailsForm.get('forestDistrictOrgUnitId')?.value),
-          bcParksRegionOrgUnitId: Number(this.detailsForm.get('bcParksRegionOrgUnitId')?.value),
-          bcParksSectionOrgUnitId: Number(this.detailsForm.get('bcParksSectionOrgUnitId')?.value),
-          fireCentreOrgUnitId: Number(this.detailsForm.get('fireCentreId')?.value),
-          projectTypeCode: this.detailsForm.get('projectTypeCode')?.value
-          ? { projectTypeCode: this.detailsForm.get('projectTypeCode')?.value} : this.projectDetail.projectTypeCode,
-          forestAreaCode: {
-            forestAreaCode: "COAST",
-          },
-          primaryObjectiveTypeCode: {
-            objectiveTypeCode: this.detailsForm.get('primaryObjectiveTypeCode')?.value 
-                ? this.detailsForm.get('primaryObjectiveTypeCode')?.value 
-                : this.projectDetail.primaryObjectiveTypeCode?.objectiveTypeCode
-          },
-          tertiaryObjectiveTypeCode: {
-            objectiveTypeCode: 'FOR_HEALTH'
-          }      
-        };
-        const secondaryObjectiveValue = this.detailsForm.get('secondaryObjectiveTypeCode')?.value;
-        if (secondaryObjectiveValue) {
-          updatedProject.secondaryObjectiveTypeCode = {
-            objectiveTypeCode: secondaryObjectiveValue,
-          };
-        }
-        this.projectService.updateProject(this.projectGuid, updatedProject).subscribe({
-          next: () => {
-            this.snackbarService.open(
-              this.messages.projectUpdatedSuccess,
-              'OK',
-              { duration: 10000, panelClass: 'snackbar-success' }
-            );
-            this.projectService.getProjectByProjectGuid(this.projectGuid).subscribe({
-              next :(data) =>{
-                this.projectDetail = data; // Update the local projectDetail
-                this.patchFormValues(data); // Update the form with the latest data
-                this.originalFormValues = this.detailsForm.getRawValue(); // Update original form values
-                this.detailsForm.markAsPristine(); // Mark the form as pristine
-              }
-            })
-          },
-          error: (error) => {
-            this.snackbarService.open(
-              this.messages.projectUpdatedFailure,
-              'OK',
-              { duration: 5000, panelClass: 'snackbar-error' }
-            );
-          },
-        });
+      const updatedProject = {
+        ...this.projectDetail,
+        ...this.detailsForm.value,
+        forestRegionOrgUnitId: Number(this.detailsForm.get('forestRegionOrgUnitId')?.value),
+        forestDistrictOrgUnitId: Number(this.detailsForm.get('forestDistrictOrgUnitId')?.value),
+        bcParksRegionOrgUnitId: Number(this.detailsForm.get('bcParksRegionOrgUnitId')?.value),
+        bcParksSectionOrgUnitId: Number(this.detailsForm.get('bcParksSectionOrgUnitId')?.value),
+        fireCentreOrgUnitId: Number(this.detailsForm.get('fireCentreId')?.value),
+        projectTypeCode: this.detailsForm.get('projectTypeCode')?.value
+          ? { projectTypeCode: this.detailsForm.get('projectTypeCode')?.value } : this.projectDetail.projectTypeCode,
+        primaryObjectiveTypeCode: {
+          objectiveTypeCode: this.detailsForm.get('primaryObjectiveTypeCode')?.value
+            ? this.detailsForm.get('primaryObjectiveTypeCode')?.value
+            : this.projectDetail.primaryObjectiveTypeCode?.objectiveTypeCode
+        },
+      };
+      const secondaryObjectiveValue = this.detailsForm.get('secondaryObjectiveTypeCode')?.value;
+      updatedProject.secondaryObjectiveTypeCode = secondaryObjectiveValue
+        ? { objectiveTypeCode: secondaryObjectiveValue }
+        : null;
+      console.log(JSON.stringify(updatedProject))
+      this.projectService.updateProject(this.projectGuid, updatedProject).subscribe({
+        next: () => {
+          this.snackbarService.open(
+            this.messages.projectUpdatedSuccess,
+            'OK',
+            { duration: 10000, panelClass: 'snackbar-success' }
+          );
+          this.projectService.getProjectByProjectGuid(this.projectGuid).subscribe({
+            next: (data) => {
+              this.projectDetail = data; // Update the local projectDetail
+              this.patchFormValues(data); // Update the form with the latest data
+              this.originalFormValues = this.detailsForm.getRawValue(); // Update original form values
+              this.detailsForm.markAsPristine(); // Mark the form as pristine
+            }
+          })
+        },
+        error: (error) => {
+          this.snackbarService.open(
+            this.messages.projectUpdatedFailure,
+            'OK',
+            { duration: 5000, panelClass: 'snackbar-error' }
+          );
+        },
+      });
     } else {
       console.error('Form is invalid!');
     }
@@ -419,10 +413,10 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
   }
 
   onCancelProjectDescription(): void {
-    this.isProjectDescriptionDirty = false; 
+    this.isProjectDescriptionDirty = false;
     if (this.projectDetail) {
       this.projectDescription = this.projectDetail.projectDescription;
-      this.isProjectDescriptionDirty = false; 
+      this.isProjectDescriptionDirty = false;
     }
   }
 
@@ -462,7 +456,7 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
       });
     }
   }
-  
+
 
   onSaveLatLong(): void {
     const parsed = validateLatLong(this.latLong);
@@ -485,7 +479,7 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
       latitude: trimLatLong(Number(latitude)),
       longitude: trimLatLong(Number(longitude)),
     };
-  
+
     this.projectService.updateProject(this.projectGuid, updatedProject).subscribe({
       next: () => {
         this.snackbarService.open(
@@ -524,7 +518,7 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
   public isFormDirty(): boolean {
     return this.detailsForm.dirty || this.isProjectDescriptionDirty || this.isLatLongDirty;
   }
-  
+
 
   canDeactivate(): Observable<boolean> | boolean {
     if (this.isFormDirty()) {
@@ -542,49 +536,49 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
     const selected = this.projectTypeCode.find(item => item.projectTypeCode === selectedId);
     return selected ? selected.description : '';
   }
-  
+
   getSelectedProgramAreaName(): string {
     const selectedId = this.detailsForm.get('programAreaGuid')?.value;
     const selected = this.programAreaCode.find(item => item.programAreaGuid === selectedId);
     return selected ? selected.programAreaName : '';
   }
-  
+
   getSelectedForestRegionName(): string {
     const selectedId = this.detailsForm.get('forestRegionOrgUnitId')?.value;
     const selected = this.forestRegionCode.find(item => item.orgUnitId === selectedId);
     return selected ? selected.orgUnitName : '';
   }
-  
+
   getSelectedForestDistrictName(): string {
     const selectedId = this.detailsForm.get('forestDistrictOrgUnitId')?.value;
     const selected = this.forestDistrictCode.find(item => item.orgUnitId === selectedId);
     return selected ? selected.orgUnitName : '';
   }
-  
+
   getSelectedBcParksRegionName(): string {
     const selectedId = this.detailsForm.get('bcParksRegionOrgUnitId')?.value;
     const selected = this.bcParksRegionCode.find(item => item.orgUnitId === selectedId);
     return selected ? selected.orgUnitName : '';
   }
-  
+
   getSelectedBcParksSectionName(): string {
     const selectedId = this.detailsForm.get('bcParksSectionOrgUnitId')?.value;
     const selected = this.bcParksSectionCode.find(item => item.orgUnitId === selectedId);
     return selected ? selected.orgUnitName : '';
   }
-  
+
   getSelectedFireCentreName(): string {
     const selectedId = this.detailsForm.get('fireCentreId')?.value;
     const selected = this.fireCentres.find(item => item.properties.MOF_FIRE_CENTRE_ID === selectedId);
     return selected ? selected.properties.MOF_FIRE_CENTRE_NAME : '';
   }
-  
+
   getSelectedPrimaryObjectiveName(): string {
     const selectedId = this.detailsForm.get('primaryObjectiveTypeCode')?.value;
     const selected = this.objectiveTypeCode.find(item => item.objectiveTypeCode === selectedId);
     return selected ? selected.description : '';
   }
-  
+
   getSelectedSecondaryObjectiveName(): string {
     const selectedId = this.detailsForm.get('secondaryObjectiveTypeCode')?.value;
     const selected = this.objectiveTypeCode.find(item => item.objectiveTypeCode === selectedId);
@@ -604,5 +598,5 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
 
     return null;
   }
-  
+
 }
