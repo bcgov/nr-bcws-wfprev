@@ -3,7 +3,6 @@
     <div class="form-item">
       <label>Project Type<span class="required">*</span></label>
       <select id="projectTypeCode" formControlName="projectTypeCode" [matTooltip]="getSelectedProjectType()">
-        <option value="">Select</option>
         <option *ngFor="let item of projectTypeCode" [value]="item.projectTypeCode">
           {{ item.description }}
         </option>
