@@ -204,6 +204,7 @@
   background: #FFF;
 
   button {
+    font-family: var(--wf-font-family-main);
     border: none;
     border-radius: 4px;
     font-size: 16px;
@@ -361,6 +362,7 @@
       /* Vertically center-align the button */
       gap: 10px;
       /* Add space between the input and button */
+      font-family: var(--wf-font-family-main);
 
       input {
         padding: 5px;
@@ -369,14 +371,16 @@
         border-radius: 4px;
         width: 300px;
         /* Adjust input width */
+        font-family: var(--wf-font-family-main);
       }
 
       button {
-        padding: 12px 32px;
+        padding: 10px 18px;
         border: none;
         border-radius: 4px;
         font-size: 16px;
         cursor: pointer;
+        font-family: var(--wf-font-family-main);
       }
 
       button.primary {
