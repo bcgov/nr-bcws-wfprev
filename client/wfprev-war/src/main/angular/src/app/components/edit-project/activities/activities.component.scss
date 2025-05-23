@@ -8,6 +8,8 @@
 
         .mat-expansion-panel-header{
             border-bottom: 1px solid #D9D9D9;;
+            min-height: 52px !important;
+            height: auto !important;
         }
         
         .dropdown-button{
@@ -32,6 +34,9 @@
         font-style: normal;
         font-weight: 400;
         line-height: normal;
+        word-break: break-word;
+        overflow-wrap: break-word;
+        white-space: normal;
         .update-date{
             padding-top: 4px;
             font-size: 12px;

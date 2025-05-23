@@ -180,7 +180,7 @@
                     <div class="form-item">
                       <label>Original Cost Estimate</label>
                       <div class="currency-input">
-                        <span class="currency-symbol">$</span>
+                        <span class="currency-symbol" *ngIf="fiscalForms[selectedTabIndex]?.get('totalCostEstimateAmount')?.value">$</span>
                         <input type="number" id="totalCostEstimateAmount" min="0"
                           formControlName="totalCostEstimateAmount" placeholder="Begin Typing" [matTooltip]="fiscalForms[selectedTabIndex]?.get('totalCostEstimateAmount')?.value"
                         />
@@ -211,7 +211,7 @@
                     <div class="form-item">
                       <label>Ancillary Funding Amount</label>
                       <div class="currency-input">
-                        <span class="currency-symbol">$</span>
+                        <span class="currency-symbol" *ngIf="fiscalForms[selectedTabIndex]?.get('fiscalAncillaryFundAmount')?.value">$</span>
                         <input type="number" id="fiscalAncillaryFundAmount" formControlName="fiscalAncillaryFundAmount" min="0"
                           placeholder="Begin Typing" [matTooltip]="fiscalForms[selectedTabIndex]?.get('fiscalAncillaryFundAmount')?.value"
                         />
@@ -225,7 +225,7 @@
                     <div class="form-item">
                       <label>Forecast Amount</label>
                       <div class="currency-input">
-                        <span class="currency-symbol">$</span>
+                        <span class="currency-symbol" *ngIf="fiscalForms[selectedTabIndex]?.get('fiscalForecastAmount')?.value">$</span>
                         <input type="number" id="fiscalForecastAmount" min="0"
                           formControlName="fiscalForecastAmount" placeholder="Begin Typing" [matTooltip]="fiscalForms[selectedTabIndex]?.get('fiscalForecastAmount')?.value"
                           />
@@ -239,7 +239,7 @@
                     <div class="form-item">
                       <label>Final Reported Spend</label>
                       <div class="currency-input">
-                        <span class="currency-symbol">$</span>
+                        <span class="currency-symbol" *ngIf="fiscalForms[selectedTabIndex]?.get('fiscalReportedSpendAmount')?.value">$</span>
                         <input type="number" id="fiscalReportedSpendAmount" formControlName="fiscalReportedSpendAmount"
                           placeholder="Begin Typing" [matTooltip]="fiscalForms[selectedTabIndex]?.get('fiscalReportedSpendAmount')?.value"
                         />
@@ -253,7 +253,9 @@
                     <div class="form-item">
                       <label>CFS Actual Spend</label>
                       <div class="currency-input">
-                        <span class="currency-symbol">$</span>
+                          <span class="currency-symbol" *ngIf="fiscalForms[selectedTabIndex]?.get('fiscalActualAmount')?.value">
+                            $
+                          </span>
                         <input type="number" id="fiscalActualAmount" formControlName="fiscalActualAmount" min="0"
                           placeholder="Begin Typing" [matTooltip]="fiscalForms[selectedTabIndex]?.get('fiscalActualAmount')?.value"
                         />

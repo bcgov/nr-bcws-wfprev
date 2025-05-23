@@ -156,7 +156,7 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  
       fiscalYear: [fiscal?.fiscalYear || '', [Validators.required]],
       projectFiscalName: [fiscal?.projectFiscalName || '', [Validators.required]],
       activityCategoryCode: [fiscal?.activityCategoryCode || '', [Validators.required]],
-      proposalTypeCode: [fiscal?.proposalTypeCode || '', [Validators.required]],
+      proposalTypeCode: [fiscal?.proposalTypeCode || 'NEW', [Validators.required]],
       planFiscalStatusCode: [fiscal?.planFiscalStatusCode || 'DRAFT', [Validators.required]],
       fiscalPlannedProjectSizeHa: [fiscal?.fiscalPlannedProjectSizeHa || '', [Validators.min(0)]],
       fiscalCompletedSizeHa: [fiscal?.fiscalCompletedSizeHa ?? '', [Validators.min(0)]],
@@ -237,7 +237,7 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  
       // And to prevent adding another unsaved fiscal
       return; 
     }
-    const newFiscalData = { fiscalYear: '', projectFiscalName: '', projectGuid: this.projectGuid, planFiscalStatusCode: 'DRAFT'};
+    const newFiscalData = { fiscalYear: '', projectFiscalName: '', projectGuid: this.projectGuid, planFiscalStatusCode: 'DRAFT', proposalTypeCode: 'NEW'};
     this.projectFiscals.push(newFiscalData);
     this.fiscalForms.push(this.createFiscalForm(newFiscalData));
     this.selectedTabIndex = this.projectFiscals.length - 1; // Navigate to the newly added tab
