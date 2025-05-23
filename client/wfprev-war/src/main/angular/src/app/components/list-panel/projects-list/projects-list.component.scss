@@ -184,7 +184,9 @@
           flex:1;
           font-size: 20px;
           font-style: normal;
-          font-weight: 700
+          font-weight: 700;
+          word-break: break-word;
+          overflow-wrap: break-word;
         }
 
         mat-panel-title {

@@ -396,10 +396,11 @@
         position: absolute;
         font-size: 16px;
         color: #282828;
+        left:12px;
     }
 
     input {
-        padding-left: 24px;
+        padding-left: 24px !important;
     }
 }
 
