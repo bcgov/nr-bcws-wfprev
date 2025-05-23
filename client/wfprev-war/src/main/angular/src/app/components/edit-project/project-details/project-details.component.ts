@@ -598,5 +598,4 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
 
     return null;
   }
-
 }
