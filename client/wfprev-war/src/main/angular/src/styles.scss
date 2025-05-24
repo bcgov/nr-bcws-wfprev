@@ -19,10 +19,10 @@ body {
 }
 
 .cdk-overlay-container {
-    z-index: 1000;
+    z-index: 1000000 !important;
     .cdk-overlay-connected-position-bounding-box{
         position: absolute;
-        z-index: 1000;
+        z-index: 1000000 !important;
         display: flex;
         flex-direction: column;
         min-width: 1px;
