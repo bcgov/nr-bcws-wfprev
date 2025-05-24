@@ -4,20 +4,18 @@
   </div>
   <form [formGroup]="projectForm">
     <div class="dialog-content">
-      <div class="form-row">
-        <div class="form-field">
+      <div class="form-row first-row">
+        <div class="form-field project-type">
           <label>Project Type<span class="required">*</span></label>
-          <select formControlName="projectType">
+          <select formControlName="projectType" [matTooltip]="getProjectTypeCode(projectForm.get('projectType')?.value)" >
             <option value="">Select</option>
             <option *ngFor="let type of projectTypes" [value]="type.projectTypeCode">{{ type.description }}</option>
           </select>
         </div>
-        <div class="form-field">
+        <div class="form-field project-name">
           <label for="projectName">Project Name<span class="required">*</span></label>
-          <input type="text" id="projectName" formControlName="projectName" placeholder="Begin Typing" [matTooltip]="projectForm.get('projectName')?.value" 
-          [matTooltipShowDelay]="0"
-          [matTooltipHideDelay]="9999999"
-            class="project-input" />
+          <input type="text" id="projectName" formControlName="projectName" placeholder="Begin Typing"
+            class="project-input" [matTooltip]="projectForm.get('projectName')?.value">
           <div class="error"
             *ngIf="projectForm.get('projectName')?.hasError('maxlength') && projectForm.get('projectName')?.touched">
             {{messages.maxLengthExceeded}}
@@ -27,7 +25,7 @@
       <div class="form-row">
         <div class="form-field">
           <label>Business Area<span class="required">*</span></label>
-          <select formControlName="businessArea">
+          <select formControlName="businessArea" [matTooltip]="getBusinessAreaCode(projectForm.get('businessArea')?.value)">
             <option value="">Select</option>
             <option *ngFor="let area of businessAreas" [value]="area.programAreaGuid">{{ area.programAreaName }}
             </option>
@@ -35,14 +33,14 @@
         </div>
         <div class="form-field">
           <label>Forest Region<span class="required">*</span></label>
-          <select formControlName="forestRegion">
+          <select formControlName="forestRegion" [matTooltip]="getForestRegionCode(projectForm.get('forestRegion')?.value)">
             <option value="">Select</option>
             <option *ngFor="let region of forestRegions" [value]="region.orgUnitId">{{ region.orgUnitName }}</option>
           </select>
         </div>
         <div class="form-field">
           <label>Forest District</label>
-          <select formControlName="forestDistrict">
+          <select formControlName="forestDistrict" [matTooltip]="getForestDistrictCode(projectForm.get('forestDistrict')?.value)">
             <option value="">Select</option>
             <option *ngFor="let district of forestDistricts" [value]="district.orgUnitId">{{ district.orgUnitName }}
             </option>
@@ -54,14 +52,14 @@
           <label>
             BC Parks Region<span class="required" *ngIf="hasValidator('bcParksRegion', Validators.required)">*</span>
           </label>
-          <select formControlName="bcParksRegion">
+          <select formControlName="bcParksRegion" [matTooltip]="getBcParksRegionCode(projectForm.get('bcParksRegion')?.value)">
             <option value="">Select</option>
             <option *ngFor="let region of bcParksRegions" [value]="region.orgUnitId">{{ region.orgUnitName }}</option>
           </select>
         </div>
         <div class="form-field">
           <label>BC Parks Section</label>
-          <select formControlName="bcParksSection">
+          <select formControlName="bcParksSection" [matTooltip]="getBcParksSectionCode(projectForm.get('bcParksSection')?.value)">
             <option value="">Select</option>
             <option *ngFor="let section of bcParksSections" [value]="section.orgUnitId">{{ section.orgUnitName }}
             </option>
@@ -69,7 +67,7 @@
         </div>
         <div class="form-field">
           <label>BCWS Fire Centre<span class="required">*</span></label>
-          <select formControlName="fireCentre">
+          <select formControlName="fireCentre" [matTooltip]="getFireCentreCode(projectForm.get('fireCentre')?.value)">
             <option value="">Select</option>
             <option *ngFor="let item of fireCentres" [value]="item?.properties?.MOF_FIRE_CENTRE_ID">{{
               item?.properties.MOF_FIRE_CENTRE_NAME }}</option>
@@ -79,7 +77,8 @@
       <div class="form-row">
         <div class="form-field">
           <label>Closest Community<span class="required">*</span></label>
-          <input type="text" formControlName="closestCommunity" placeholder="Begin Typing" class="project-input" />
+          <input type="text" formControlName="closestCommunity" placeholder="Begin Typing" class="project-input"
+                 [matTooltip]="projectForm.get('closestCommunity')?.value">
           <div class="error"
             *ngIf="projectForm.get('closestCommunity')?.hasError('maxlength') && projectForm.get('closestCommunity')?.touched">
             {{messages.maxLengthExceeded}}
@@ -87,7 +86,8 @@
         </div>
         <div class="form-field">
           <label>Project Lead<span class="required">*</span></label>
-          <input type="text" formControlName="projectLead" placeholder="Begin Typing" class="project-input" />
+          <input type="text" formControlName="projectLead" placeholder="Begin Typing" class="project-input"
+                 [matTooltip]="projectForm.get('projectLead')?.value">
           <div class="error"
             *ngIf="projectForm.get('projectLead')?.hasError('maxlength') && projectForm.get('projectLead')?.touched">
             {{messages.maxLengthExceeded}}
@@ -95,7 +95,8 @@
         </div>
         <div class="form-field">
           <label>Project Lead Email</label>
-          <input type="email" formControlName="projectLeadEmail" placeholder="Begin Typing" class="project-input" />
+          <input type="email" formControlName="projectLeadEmail" placeholder="Begin Typing" class="project-input"
+                 [matTooltip]="projectForm.get('projectLeadEmail')?.value">
           <div class="error"
             *ngIf="projectForm.get('projectLeadEmail')?.hasError('email') && projectForm.get('projectLeadEmail')?.touched">
             {{messages.invalidEmail}}
@@ -110,7 +111,7 @@
         <div class="form-field">
           <label>Lat/Long</label>
           <input type="text" formControlName="latLong" placeholder="Enter Manually or Paste from Clipboard"
-            class="project-input" />
+            class="project-input" [matTooltip]="projectForm.get('latLong')?.value">
           <div class="error"
             *ngIf="projectForm.get('latLong')?.hasError('maxlength') && projectForm.get('latLong')?.touched">
             {{messages.maxLengthExceeded}}
@@ -118,25 +119,30 @@
         </div>
         <div class="form-field">
           <label>Primary Objective<span class="required">*</span></label>
-          <select formControlName="primaryObjective">
+          <select formControlName="primaryObjective" [matTooltip]="getObjectiveCode(projectForm.get('primaryObjective')?.value)">
             <option value="">Select</option>
             <option *ngFor="let type of objectiveTypes" [value]="type.objectiveTypeCode">{{ type.description }}</option>
           </select>
         </div>
         <div class="form-field">
           <label>Secondary Objective</label>
-          <select formControlName="secondaryObjective">
+          <select formControlName="secondaryObjective" [matTooltip]="getObjectiveCode(projectForm.get('secondaryObjective')?.value)">
             <option value="">Select</option>
             <option *ngFor="let type of objectiveTypes" [value]="type.objectiveTypeCode">{{ type.description }}</option>
           </select>
         </div>
       </div>
       <div class="form-row">
-        <div class="form-field secondary-rationale">
+        <div class="secondary-rationale">
           <label>Secondary Objective Rationale<span class="required">*</span></label>
           <textarea id="secondaryObjectiveRationale" placeholder="Begin Typing"
-            formControlName="secondaryObjectiveRationale" rows="1" cdkTextareaAutosize cdkAutosizeMinRows="1"
-            cdkAutosizeMaxRows="10" class="secondary-rationale"></textarea>
+            formControlName="secondaryObjectiveRationale" rows="2" cdkTextareaAutosize cdkAutosizeMinRows="1"
+            cdkAutosizeMaxRows="10" class="secondary-rationale"
+            [matTooltip]="projectForm.get('secondaryObjectiveRationale')?.value"></textarea>
+          <div class="error"
+            *ngIf="projectForm.get('secondaryObjectiveRationale')?.hasError('maxlength') && projectForm.get('secondaryObjectiveRationale')?.touched">
+            {{messages.maxLengthExceeded}}
+          </div>
         </div>
       </div>
     </div>

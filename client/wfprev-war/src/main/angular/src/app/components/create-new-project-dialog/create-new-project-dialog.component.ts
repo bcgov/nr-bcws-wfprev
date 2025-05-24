@@ -322,4 +322,64 @@ export class CreateNewProjectDialogComponent implements OnInit {
     const validatorFn = control.validator({} as any);
     return !!validatorFn && validatorFn.hasOwnProperty(validator.name);
   }
+
+  getProjectTypeCode(value: string): string {
+    if (!value) return '';
+    const type = this.projectTypes.find(t => t?.projectTypeCode === value);
+    return type?.description ?? value;
+  }
+  
+  getBusinessAreaCode(value: string): string {
+    if (!value) return '';
+    const area = this.businessAreas.find(a => a?.programAreaGuid === value);
+    return area?.programAreaName ?? value;
+  }
+  
+  getForestRegionCode(value: string): string {
+    if (!value) return '';
+    const region = this.forestRegions.find(
+      r => r?.orgUnitId != null && r.orgUnitId.toString() === value.toString()
+    );
+    return region?.orgUnitName ?? value;
+  }
+  
+  getForestDistrictCode(value: string): string {
+    if (!value) return '';
+    const district = this.forestDistricts.find(
+      d => d?.orgUnitId != null && d.orgUnitId.toString() === value.toString()
+    );
+    return district?.orgUnitName ?? value;
+  }
+  
+  getBcParksRegionCode(value: string): string {
+    if (!value) return '';
+    const region = this.bcParksRegions.find(
+      r => r?.orgUnitId != null && r.orgUnitId.toString() === value.toString()
+    );
+    return region?.orgUnitName ?? value;
+  }
+  
+  getBcParksSectionCode(value: string): string {
+    if (!value) return '';
+    const section = this.bcParksSections.find(
+      s => s?.orgUnitId != null && s.orgUnitId.toString() === value.toString()
+    );
+    return section?.orgUnitName ?? value;
+  }
+  
+  getFireCentreCode(value: string): string {
+    if (!value) return '';
+    const centre = this.fireCentres.find(
+      c => c?.properties?.MOF_FIRE_CENTRE_ID?.toString() === value.toString()
+    );
+    return centre?.properties?.MOF_FIRE_CENTRE_NAME ?? value;
+  }
+  
+  getObjectiveCode(value: string): string {
+    if (!value) return '';
+    const objective = this.objectiveTypes.find(o => o?.objectiveTypeCode === value);
+    return objective?.description ?? value;
+  }
+  
+ 
 }

@@ -4,31 +4,19 @@
   left: 0;
   width: 100%;
   height: 100%;
-  display: flexq;
+  display: flex;
   justify-content: center;
-  align-items: center; 
+  align-items: center;
   z-index: 99999;
   pointer-events: auto !important;
-  
-}
 
-::ng-deep .mat-mdc-dialog-inner-container {
-  width: 1200px;
 }
-
-::ng-deep .mat-mdc-dialog-surface {
-  width: unset
-}
-
-// ::ng-deep .mat-tooltip-show {
-//   opacity: 1 !important;
-//   visibility: visible !important;
-// }
 
 ::ng-deep .mat-dialog-container {
-  max-width: 90%; 
+  max-width: 90%;
   max-height: 90%;
-  overflow: auto;  /* Add scrollbars if content overflows */
+  overflow: auto;
+  /* Add scrollbars if content overflows */
   box-sizing: border-box;
 }
 
@@ -36,10 +24,18 @@
   border: 1px solid #B1B1B1;
   background: #FFF;
   box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
-  width: 1200px;
+  width: 1120px;
+
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+  max-height: 90vh;
+  overflow-y: auto;
 }
 
-.title-bar{
+.title-bar {
   display: flex;
   align-items: center;
   background: #FFF;
@@ -49,74 +45,105 @@
   font-size: 20px;
   font-style: normal;
   font-weight: 400;
-  line-height: 18px; /* 100% */
+  line-height: 18px;
+  /* 100% */
   letter-spacing: 0.18px;
   border-bottom: 1px solid #D8D8D8;
 }
 
-.dialog-content{
+.dialog-content {
   padding: 24px 24px 0px;
+
   .form-row {
     display: flex;
+    flex-wrap: wrap;
     gap: 20px;
     margin-bottom: 20px;
-  }
-  
-  .form-field {
-    flex: 1;
-    width: 344px;
+
     .error {
       color: #CE3E39;
       font-size: 14px;
-      margin-top: 4px;
+      margin: 4px 0 0 4px;
     }
-    label{
+  }
+
+  .form-field {
+    display: flex;
+    flex-direction: column;
+    width: 344px;
+
+    label {
       font-family: var(--wf-font-family-main);
       color: #474543;
       font-size: 14px;
       font-style: normal;
       font-weight: 400;
       line-height: normal;
+      margin-bottom: 4px;
+    }
 
+    .error {
+      color: #CE3E39;
+      font-size: 14px;
+      margin: 4px 0 0 4px;
     }
   }
-  
-  .required {
-    font-size: 14px;
-    color: #CE3E39;
-  }
+
   .project-input {
     width: 326px;
-    padding: 8px 9px;
+    padding: 10px;
     font-size: 16px;
     color: #2D2D2D;
     border: none;
     border-bottom: 1px solid #434343;
     outline: none;
     transition: border-color 0.3s ease;
+    
+    /* Add ellipses for text overflow */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    &::placeholder {
+      color: #aaa;
+    }
+
+    &:focus {
+      border-bottom: 1px solid black;
+    }
   }
-  
-  .project-input-input:focus {
-    border-bottom: 1px solid black; /* Change to the desired focus color */
-  }
-  
-  .project-input::placeholder {
-    color: #aaa;
+
+  .required {
+    font-size: 14px;
+    color: #CE3E39;
   }
 }
 
-.footer{
+.first-row {
+  .project-type {
+    width: 344px;
+  }
+
+  .project-name {
+    .project-input {
+      width: 690px;
+    }
+  }
+}
+
+.footer {
   border: 1px solid #D8D8D8;
   background: #FFF;
 }
 
-.button-row{
+.button-row {
   display: flex;
   height: 43px;
   padding: 14px 17px 14px 23px;
   justify-content: flex-end;
   align-items: flex-start;
   gap: 14px;
+
   button {
     padding: 12px 25px;
     border: none;
@@ -124,18 +151,18 @@
     font-size: 16px;
     cursor: pointer;
   }
-  
+
   button.primary {
     background-color: var(--wf-primary-color);
     color: #fff;
     font-family: var(--wf-font-family-main);
   }
-  
+
   button.primary:disabled {
     background-color: #c0c0c0;
     cursor: not-allowed;
   }
-  
+
   button.secondary {
     border-radius: 4px;
     background: #FFF;
@@ -143,7 +170,7 @@
     font-family: var(--wf-font-family-main);
     font-style: normal;
   }
-  
+
   button.secondary:hover {
     background-color: #f1f1f1;
   }
@@ -156,46 +183,200 @@
 select {
   margin-top: 4px;
   width: 344px;
-  padding: 8px 9px; /* Same padding as text inputs */
-  font-size: 16px; /* Font size similar to inputs */
-  color: #333; /* Text color */
+  padding: 8px 9px;
+  /* Same padding as text inputs */
+  font-size: 16px;
+  /* Font size similar to inputs */
+  color: #333;
+  /* Text color */
   outline: none;
   border-radius: 0;
   background: #FFF;
-  background-color: transparent; /* Transparent background to match input style */
+  background-color: transparent;
+  /* Transparent background to match input style */
   border: none;
   border-bottom: 1px solid #282828;
+  
+  /* Add ellipses for text overflow in dropdowns */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 
   &::placeholder {
-    color: #aaa; /* Placeholder color */
+    color: #aaa;
+    /* Placeholder color */
   }
 
   /* Style the dropdown arrow */
-  -webkit-appearance: none; /* Remove default dropdown arrow for WebKit browsers */
-  -moz-appearance: none; /* Remove default dropdown arrow for Mozilla browsers */
-  appearance: none; /* Remove default dropdown arrow for all browsers */
+  -webkit-appearance: none;
+  /* Remove default dropdown arrow for WebKit browsers */
+  -moz-appearance: none;
+  /* Remove default dropdown arrow for Mozilla browsers */
+  appearance: none;
+  /* Remove default dropdown arrow for all browsers */
   background-image: url('/assets/dropdown-icon.svg');
   background-repeat: no-repeat;
   background-position: right 10px center;
   background-size: 20px;
 }
 
+/* Add ellipses support for select options */
+select option {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
 .secondary-rationale {
-  flex: 0 0 calc(100% - 10px);
-  max-width: 2000px;
-  min-width: 200px;
+  flex: 0 0 100% !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+
+  label {
+    font-family: var(--wf-font-family-main);
+    color: #474543;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    margin-bottom: 4px;
+  }
 
   textarea {
     width: 100%;
-    min-height: 45px;
-    padding: 10px 16px;
-    box-sizing: border-box; 
+    box-sizing: border-box;
+    padding: 8px 9px;
     font-size: 16px;
+    color: #2D2D2D;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    resize: none;
+    overflow: hidden;
+    min-height: auto;
+    height: auto;
     font-family: var(--wf-font-family-main);
     margin-top: 8px;
   }
 }
 
-::ng-deep .mdc-snackbar__surface{
+::ng-deep .mdc-snackbar__surface {
   background-color: transparent !important;
+}
+
+@media (max-width: 1140px) {
+  .dialog-container {
+    width: 65vw !important;
+  }
+
+  .dialog-content {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 15px !important;
+    align-items: flex-start !important;
+  }
+
+  .form-row {
+    display: contents !important;
+    width: 100% !important;
+  }
+
+  .form-field {
+    display: flex !important;
+    flex-direction: column !important;
+    flex: 0 0 calc(50% - 7.5px) !important;
+    width: calc(50% - 7.5px) !important;
+    min-width: 0 !important;
+    max-width: calc(50% - 7.5px) !important;
+    box-sizing: border-box !important;
+
+    .project-input {
+      width: 100% !important;
+      box-sizing: border-box !important;
+      flex: none !important;
+    }
+  }
+
+  .first-row .project-type {
+    width: auto !important;
+  }
+
+  .first-row .project-name .project-input {
+    width: 100% !important;
+  }
+
+  .form-field.project-type,
+  .form-field.project-name {
+    flex: 0 0 calc(50% - 7.5px) !important;
+    width: calc(50% - 7.5px) !important;
+    min-width: 0 !important;
+    max-width: calc(50% - 7.5px) !important;
+  }
+
+  .form-field label {
+    margin-bottom: 5px !important;
+  }
+
+  .form-field .project-input,
+  .form-field select,
+  .form-field textarea,
+  .form-field input {
+    width: 100% !important;
+    box-sizing: border-box !important;
+    flex: none !important;
+    /* Ensure ellipses work in responsive mode */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  select,
+  textarea,
+  input {
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .secondary-rationale {
+    padding-bottom: 12px;
+  }
+}
+
+@media (max-width: 768px) {
+  .dialog-container {
+    width: 55vw !important;
+  }
+
+  .form-field {
+    flex: 0 0 100% !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .form-field.project-type,
+  .form-field.project-name {
+    flex: 0 0 100% !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .dialog-container {
+    width: 55vw !important;
+  }
+
+  .form-field {
+    flex: 0 0 100% !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .form-field.project-type,
+  .form-field.project-name {
+    flex: 0 0 100% !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
 }
