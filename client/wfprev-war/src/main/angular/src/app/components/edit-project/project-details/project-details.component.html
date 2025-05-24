@@ -25,8 +25,7 @@
 
     <div class="form-item">
       <label for="closestCommunityName">Closest Community<span class="required">*</span></label>
-      <input type="text" id="closestCommunityName" [matTooltipShowDelay]="0"
-      [matTooltipHideDelay]="9999999" formControlName="closestCommunityName" placeholder="Begin Typing"
+      <input type="text" id="closestCommunityName" formControlName="closestCommunityName" placeholder="Begin Typing"
         [matTooltip]="detailsForm.get('closestCommunityName')?.value" />
       <div class="error"
         *ngIf="detailsForm.get('closestCommunityName')?.hasError('maxlength') && detailsForm.get('closestCommunityName')?.touched">
