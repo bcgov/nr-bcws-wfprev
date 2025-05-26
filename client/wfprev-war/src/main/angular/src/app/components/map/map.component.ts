@@ -126,38 +126,81 @@ ngAfterViewInit(): void {
     return JSON.parse(JSON.stringify(o));
   }
 
-  updateMarkers(projects: any[]) {
-    const smk = this.mapService.getSMKInstance();
-    const map = smk?.$viewer?.map;
+updateMarkers(projects: any[]) {
+  const smk = this.mapService.getSMKInstance();
+  const map = smk?.$viewer?.map;
 
-    if (!map || !this.markersClusterGroup) {
-      console.warn('[Map] Skipping updateMarkers — map or cluster group not ready');
-      return;
-    }
-
-    try {
-      this.markersClusterGroup.clearLayers();
-    } catch (err) {
-      console.error('[Map] Error clearing markers:', err);
-    }
-
-    projects
-      .filter(p => p.latitude != null && p.longitude != null)
-      .forEach(project => {
-        try {
-          const marker = L.marker([project.latitude, project.longitude], {
-            icon: L.icon({
-              iconUrl: '/assets/blue-pin-drop.svg',
-              iconSize: [30, 50],
-              iconAnchor: [12, 41],
-              popupAnchor: [1, -34],
-            })
-          });
-
-          this.markersClusterGroup!.addLayer(marker); 
-        } catch (err) {
-          console.error('[Map] Failed to add marker:', project, err);
-        }
-      });
+  if (!map || !this.markersClusterGroup) {
+    console.warn('[Map] Skipping updateMarkers — map or cluster group not ready');
+    return;
   }
+
+  try {
+    this.markersClusterGroup.clearLayers();
+  } catch (err) {
+    console.error('[Map] Error clearing markers:', err);
+  }
+
+  projects
+    .filter(p => p.latitude != null && p.longitude != null)
+    .forEach(project => {
+      try {
+        const marker = L.marker([project.latitude, project.longitude], {
+          icon: L.icon({
+            iconUrl: '/assets/blue-pin-drop.svg',
+            iconSize: [30, 50],
+            iconAnchor: [12, 41],
+            popupAnchor: [1, -34],
+          })
+        });
+
+        // Bind a popup with project info
+        const popupContent = `
+          <b>${project.projectName}</b><br>
+          Type: ${project.projectTypeCode || 'N/A'}<br>
+          Status: ${project.planFiscalStatusCode || 'N/A'}<br>
+          Fiscal Years:  1991<br>
+          Latitude: ${project.latitude}<br>
+          Longitude: ${project.longitude}
+        `;
+        marker.bindPopup(this.getProjectPopupHTML(project));
+
+        this.markersClusterGroup!.addLayer(marker); 
+      } catch (err) {
+        console.error('[Map] Failed to add marker:', project, err);
+      }
+    });
+}
+
+private getProjectPopupHTML(project: any): string {
+  const formatCurrency = (val: number | undefined) =>
+    val != null ? `$${val.toLocaleString()}` : 'N/A';
+
+  const fiscalBlocks = (project.projectFiscals || []).map((fiscal: any) => `
+    <div style="border:1px solid #ccc; padding:8px; margin:4px 0;">
+      
+      ${fiscal.completedHectares != null ? `<strong>Completed Hectares:</strong> ${fiscal.completedHectares} Ha<br>` : ''}
+      ${fiscal.plannedHectares != null ? `<strong>Planned Hectares:</strong> ${fiscal.plannedHectares} Ha<br>` : ''}
+      ${fiscal.actualAmount != null ? `<strong>CFS Actual Spend:</strong> ${formatCurrency(fiscal.actualAmount)}<br>` : ''}
+      ${fiscal.forecastAmount != null ? `<strong>Forecast Amount:</strong> ${formatCurrency(fiscal.forecastAmount)}<br>` : ''}
+    </div>
+  `).join('');
+
+  return `
+    <div>
+      <h3>${project.projectName || 'Project Name'}</h3>
+      <div><strong>Project Type:</strong> ${project.projectTypeDescription || 'N/A'}</div>
+      <div><strong>Business Area:</strong> ${project.programAreaName || 'N/A'}</div>
+      <div><strong>Nearest Community:</strong> ${project.nearestCommunity || 'N/A'}</div>
+      <div style="margin:8px 0;"><strong>Project Description:</strong><br>${project.projectDescription || 'No description available.'}</div>
+      <div><strong>Fiscal Years:</strong></div>
+      ${fiscalBlocks || '<div>No fiscal data available.</div>'}
+      <button onclick="window.location.href='${window.location.origin}/edit-project?projectGuid=${project.projectGuid}'">
+        View Details
+      </button>
+    </div>
+  `;
+}
+
+
 }
