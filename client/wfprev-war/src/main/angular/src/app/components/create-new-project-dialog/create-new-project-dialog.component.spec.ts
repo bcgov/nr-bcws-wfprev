@@ -96,7 +96,7 @@ describe('CreateNewProjectDialogComponent', () => {
   it('should enable bcParksSection when a region is selected', () => {
     component.projectForm.get('bcParksRegion')?.setValue(1);
     fixture.detectChanges();
-
+  
     expect(component.projectForm.get('bcParksSection')?.enabled).toBeTrue();
   });
 
@@ -405,7 +405,8 @@ describe('CreateNewProjectDialogComponent', () => {
       bcParksSection: 4,
       fireCentre: 5,
       closestCommunity: 'Community 1',
-      primaryObjective: 'WRR'
+      primaryObjective: 'WRR',
+      projectLead: 'Test Lead'
     });
   
     mockProjectService.createProject.and.returnValue(of({}));
@@ -592,6 +593,73 @@ describe('CreateNewProjectDialogComponent', () => {
     fixture.detectChanges();
   
     expect(component.projectForm.get('primaryObjective')?.value).toBe('WRR');
+  });
+
+  it('should return project type description if found', () => {
+    component.projectTypes = [{ projectTypeCode: 'FUEL', description: 'Fuel Management' }];
+    expect(component.getProjectTypeCode('FUEL')).toBe('Fuel Management');
+  });
+  
+  it('should return input if project type not found', () => {
+    component.projectTypes = [];
+    expect(component.getProjectTypeCode('UNKNOWN')).toBe('UNKNOWN');
+  });
+
+  it('should return business area name if found', () => {
+    component.businessAreas = [{ programAreaGuid: '123', programAreaName: 'BC Parks (BCP)' }];
+    expect(component.getBusinessAreaCode('123')).toBe('BC Parks (BCP)');
+  });
+  
+  it('should return input if business area not found', () => {
+    component.businessAreas = [];
+    expect(component.getBusinessAreaCode('999')).toBe('999');
+  });
+
+  it('should return forest region name if found', () => {
+    component.forestRegions = [{ orgUnitId: 1, orgUnitName: 'Region A' }];
+    expect(component.getForestRegionCode('1')).toBe('Region A');
+  });
+  
+  it('should return input if forest region not found', () => {
+    component.forestRegions = [];
+    expect(component.getForestRegionCode('2')).toBe('2');
+  });
+
+  it('should return forest district name if found', () => {
+    component.forestDistricts = [{ orgUnitId: 1, orgUnitName: 'District A' }];
+    expect(component.getForestDistrictCode('1')).toBe('District A');
+  });
+  
+  it('should return input if forest district not found', () => {
+    component.forestDistricts = [];
+    expect(component.getForestDistrictCode('2')).toBe('2');
+  });
+
+  it('should return BC Parks region name if found', () => {
+    component.bcParksRegions = [{ orgUnitId: 1, orgUnitName: 'Parks Region' }];
+    expect(component.getBcParksRegionCode('1')).toBe('Parks Region');
+  });
+
+  it('should return BC Parks section name if found', () => {
+    component.bcParksSections = [{ orgUnitId: 10, orgUnitName: 'Parks Section' }];
+    expect(component.getBcParksSectionCode('10')).toBe('Parks Section');
+  });
+  
+  it('should return fire centre name if found', () => {
+    component.fireCentres = [{
+      properties: { MOF_FIRE_CENTRE_ID: 5, MOF_FIRE_CENTRE_NAME: 'Kamloops Fire Centre' }
+    }];
+    expect(component.getFireCentreCode('5')).toBe('Kamloops Fire Centre');
+  });
+  
+  it('should return input if fire centre not found', () => {
+    component.fireCentres = [];
+    expect(component.getFireCentreCode('999')).toBe('999');
+  });
+  
+  it('should return objective description if found', () => {
+    component.objectiveTypes = [{ objectiveTypeCode: 'WRR', description: 'Wildfire Risk Reduction' }];
+    expect(component.getObjectiveCode('WRR')).toBe('Wildfire Risk Reduction');
   });
   
 });
