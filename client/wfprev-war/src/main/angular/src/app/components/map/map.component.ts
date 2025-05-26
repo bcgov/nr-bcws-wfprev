@@ -175,14 +175,15 @@ updateMarkers(projects: any[]) {
 private getProjectPopupHTML(project: any): string {
   const formatCurrency = (val: number | undefined) =>
     val != null ? `$${val.toLocaleString()}` : 'N/A';
-
   const fiscalBlocks = (project.projectFiscals || []).map((fiscal: any) => `
     <div style="border:1px solid #ccc; padding:8px; margin:4px 0;">
-      
-      ${fiscal.completedHectares != null ? `<strong>Completed Hectares:</strong> ${fiscal.completedHectares} Ha<br>` : ''}
-      ${fiscal.plannedHectares != null ? `<strong>Planned Hectares:</strong> ${fiscal.plannedHectares} Ha<br>` : ''}
-      ${fiscal.actualAmount != null ? `<strong>CFS Actual Spend:</strong> ${formatCurrency(fiscal.actualAmount)}<br>` : ''}
-      ${fiscal.forecastAmount != null ? `<strong>Forecast Amount:</strong> ${formatCurrency(fiscal.forecastAmount)}<br>` : ''}
+      <strong>Fiscal Year:</strong> ${fiscal.fiscalYear || 'N/A'}<br>
+      <strong>Fiscal Name:</strong> ${fiscal.projectFiscalName || 'N/A'}<br>
+      <strong>Completed Hectares:</strong> ${fiscal.fiscalCompletedSizeHa ?? 'N/A'} Ha<br>
+      <strong>Planned Hectares:</strong> ${fiscal.fiscalPlannedProjectSizeHa ?? 'N/A'} Ha<br>
+      <strong>Actual Spend:</strong> ${formatCurrency(fiscal.fiscalActualAmount)}<br>
+      <strong>Forecast Amount:</strong> ${formatCurrency(fiscal.fiscalForecastAmount)}<br>
+      <strong>Status:</strong> ${fiscal.planFiscalStatusCode || 'N/A'}
     </div>
   `).join('');
 
