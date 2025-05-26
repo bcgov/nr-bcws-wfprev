@@ -166,7 +166,7 @@
   button.secondary {
     border-radius: 4px;
     background: #FFF;
-    color: #234075;
+    color: #2D2D2D;
     font-family: var(--wf-font-family-main);
     font-style: normal;
   }
@@ -248,7 +248,7 @@ select option {
     color: #2D2D2D;
     border: 1px solid #ccc;
     border-radius: 4px;
-    resize: none;
+    resize: vertical;
     overflow: hidden;
     min-height: auto;
     height: auto;
