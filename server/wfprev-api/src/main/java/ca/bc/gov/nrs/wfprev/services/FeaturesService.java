@@ -385,7 +385,7 @@ public class FeaturesService implements CommonService {
         props.put(PROJECT_GUID, fiscal.getProject().getProjectGuid());
         props.put(ACTIVITY_CATEGORY_CODE, fiscal.getActivityCategoryCode());
         props.put(FISCAL_YEAR, fiscal.getFiscalYear());
-        props.put("ancillaryFundingSourceGuid", fiscal.getAncillaryFundingSourceGuid());
+        props.put("ancillaryFundingProvider", fiscal.getAncillaryFundingProvider());
         props.put("projectPlanStatusCode", fiscal.getProjectPlanStatusCode());
         props.put(PLAN_FISCAL_STATUS_CODE, fiscal.getPlanFiscalStatusCode());
         props.put("endorsementCode", fiscal.getEndorsementCode());

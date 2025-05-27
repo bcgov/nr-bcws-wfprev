@@ -46,8 +46,8 @@ public class ProjectFiscalEntity implements Serializable {
     @Column(name = "fiscal_year", precision = 4)
     private BigDecimal fiscalYear;
 
-    @Column(name = "ancillary_funding_source_guid", columnDefinition = "uuid")
-    private UUID ancillaryFundingSourceGuid;
+    @Column(name = "ancillary_funding_provider", length = 100)
+    private UUID ancillaryFundingProvider;
 
     @NotNull
     @Column(name = "project_plan_status_code", length = 10)

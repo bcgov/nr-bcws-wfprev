@@ -36,8 +36,8 @@ public class ProjectFiscalResourceAssembler extends RepresentationModelAssembler
         model.setProjectGuid(entity.getProject() != null && entity.getProject().getProjectGuid() != null
                 ? entity.getProject().getProjectGuid().toString()
                 : null);
-        model.setAncillaryFundingSourceGuid(entity.getAncillaryFundingSourceGuid() != null ?
-                entity.getAncillaryFundingSourceGuid().toString() : null);
+        model.setAncillaryFundingProvider(entity.getAncillaryFundingProvider() != null ?
+                entity.getAncillaryFundingProvider().toString() : null);
         model.setActivityCategoryCode(entity.getActivityCategoryCode());
         model.setFiscalYear(entity.getFiscalYear() != null ? entity.getFiscalYear().longValue() : null);
         model.setProjectPlanStatusCode(entity.getProjectPlanStatusCode());
@@ -116,9 +116,9 @@ public class ProjectFiscalResourceAssembler extends RepresentationModelAssembler
         entity.setFiscalYear(model.getFiscalYear() != null
                 ? BigDecimal.valueOf(model.getFiscalYear())
                 : null);
-        if (model.getAncillaryFundingSourceGuid() != null && !model.getAncillaryFundingSourceGuid().trim().isEmpty()) {
-            entity.setAncillaryFundingSourceGuid(UUID.fromString(model.getAncillaryFundingSourceGuid()));
-        }else entity.setAncillaryFundingSourceGuid(null);
+        if (model.getAncillaryFundingProvider() != null && !model.getAncillaryFundingProvider().trim().isEmpty()) {
+            entity.setAncillaryFundingProvider(UUID.fromString(model.getAncillaryFundingProvider()));
+        }else entity.setAncillaryFundingProvider(null);
 
         entity.setProjectPlanStatusCode(model.getProjectPlanStatusCode());
         entity.setPlanFiscalStatusCode(model.getPlanFiscalStatusCode());
@@ -184,12 +184,12 @@ public class ProjectFiscalResourceAssembler extends RepresentationModelAssembler
                 projectFiscalModel.getFiscalYear() != null
                         ? BigDecimal.valueOf(projectFiscalModel.getFiscalYear())
                         : existingEntity.getFiscalYear());
-        existingEntity.setAncillaryFundingSourceGuid(
+        existingEntity.setAncillaryFundingProvider(
                 nonNullOrDefault(
-                        isValidUuid(projectFiscalModel.getAncillaryFundingSourceGuid())
-                                ? UUID.fromString(projectFiscalModel.getAncillaryFundingSourceGuid())
+                        isValidUuid(projectFiscalModel.getAncillaryFundingProvider())
+                                ? UUID.fromString(projectFiscalModel.getAncillaryFundingProvider())
                                 : null,
-                        existingEntity.getAncillaryFundingSourceGuid()
+                        existingEntity.getAncillaryFundingProvider()
                 )
         );
         existingEntity.setProjectPlanStatusCode(
