@@ -29,7 +29,7 @@ public class ProjectFiscalModel extends CommonModel<ProjectFiscalModel> {
     private String projectGuid;
     private String activityCategoryCode;
     private Long fiscalYear;
-    private String ancillaryFundingSourceGuid;
+    private String ancillaryFundingProvider;
     private String projectPlanStatusCode;
     private String planFiscalStatusCode;
     private String proposalTypeCode;
