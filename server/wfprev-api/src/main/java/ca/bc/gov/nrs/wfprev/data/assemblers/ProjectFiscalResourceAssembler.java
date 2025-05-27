@@ -36,8 +36,7 @@ public class ProjectFiscalResourceAssembler extends RepresentationModelAssembler
         model.setProjectGuid(entity.getProject() != null && entity.getProject().getProjectGuid() != null
                 ? entity.getProject().getProjectGuid().toString()
                 : null);
-        model.setAncillaryFundingProvider(entity.getAncillaryFundingProvider() != null ?
-                entity.getAncillaryFundingProvider().toString() : null);
+        model.setAncillaryFundingProvider(entity.getAncillaryFundingProvider());
         model.setActivityCategoryCode(entity.getActivityCategoryCode());
         model.setFiscalYear(entity.getFiscalYear() != null ? entity.getFiscalYear().longValue() : null);
         model.setProjectPlanStatusCode(entity.getProjectPlanStatusCode());
@@ -116,10 +115,7 @@ public class ProjectFiscalResourceAssembler extends RepresentationModelAssembler
         entity.setFiscalYear(model.getFiscalYear() != null
                 ? BigDecimal.valueOf(model.getFiscalYear())
                 : null);
-        if (model.getAncillaryFundingProvider() != null && !model.getAncillaryFundingProvider().trim().isEmpty()) {
-            entity.setAncillaryFundingProvider(UUID.fromString(model.getAncillaryFundingProvider()));
-        }else entity.setAncillaryFundingProvider(null);
-
+        entity.setAncillaryFundingProvider(model.getAncillaryFundingProvider());
         entity.setProjectPlanStatusCode(model.getProjectPlanStatusCode());
         entity.setPlanFiscalStatusCode(model.getPlanFiscalStatusCode());
         entity.setProposalTypeCode(model.getProposalTypeCode());
@@ -185,13 +181,7 @@ public class ProjectFiscalResourceAssembler extends RepresentationModelAssembler
                         ? BigDecimal.valueOf(projectFiscalModel.getFiscalYear())
                         : existingEntity.getFiscalYear());
         existingEntity.setAncillaryFundingProvider(
-                nonNullOrDefault(
-                        isValidUuid(projectFiscalModel.getAncillaryFundingProvider())
-                                ? UUID.fromString(projectFiscalModel.getAncillaryFundingProvider())
-                                : null,
-                        existingEntity.getAncillaryFundingProvider()
-                )
-        );
+                nonNullOrDefault(projectFiscalModel.getAncillaryFundingProvider(), existingEntity.getAncillaryFundingProvider()));
         existingEntity.setProjectPlanStatusCode(
                 nonNullOrDefault(projectFiscalModel.getProjectPlanStatusCode(), existingEntity.getProjectPlanStatusCode()));
         existingEntity.setPlanFiscalStatusCode(

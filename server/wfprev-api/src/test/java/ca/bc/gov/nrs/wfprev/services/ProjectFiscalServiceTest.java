@@ -123,7 +123,7 @@ class ProjectFiscalServiceTest {
         projectFiscalModel2.setProjectGuid("123e4567-e89b-12d3-a456-426614174001");
         projectFiscalModel2.setActivityCategoryCode("ACTIVITY_CODE_2");
         projectFiscalModel2.setFiscalYear(2022L);
-        projectFiscalModel2.setAncillaryFundingProvider("789e1234-e89b-12d3-a456-426614174003");
+        projectFiscalModel2.setAncillaryFundingProvider("Provider01");
         projectFiscalModel2.setProjectPlanStatusCode("PLAN_STATUS_2");
         projectFiscalModel2.setPlanFiscalStatusCode("FISCAL_STATUS_2");
         projectFiscalModel2.setProposalTypeCode("NEW");
