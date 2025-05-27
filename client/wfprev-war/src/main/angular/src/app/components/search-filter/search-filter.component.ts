@@ -11,6 +11,7 @@ import { CodeTableServices } from 'src/app/services/code-table-services';
 import { SharedService } from 'src/app/services/shared-service';
 import { Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
+import { MatOptionSelectionChange } from '@angular/material/core';
 @Component({
   selector: 'app-search-filter',
   standalone: true,
@@ -117,7 +118,6 @@ ngOnInit(): void {
           value: item.orgUnitId
         }))
       );
-      this.emitFilters();
       return;
     }
 
@@ -135,7 +135,6 @@ ngOnInit(): void {
     this.selectedForestDistrict = this.selectedForestDistrict.filter(id =>
       this.forestDistrictOptions.some(opt => opt.value === id)
     );
-    this.emitFilters();
   }
 
   prependAllAndSort(options: { label: string, value: any }[]): { label: string, value: any }[] {
@@ -143,14 +142,14 @@ ngOnInit(): void {
     return [{ label: 'All', value: '__ALL__' }, ...sorted];
   }
   
-  onSelectAll(event: any, model: keyof SearchFilterComponent, options: { value: any }[]) {
+  onOptionToggled(event: any, model: keyof SearchFilterComponent, options: { value: any }[]) {
     const allOptionValue = '__ALL__';
     let selected = (this[model] as any[]) || [];
     const allValues = options.map(o => o.value);
 
     if (selected.includes(allOptionValue)) {
       (this[model] as any[]) = [allOptionValue, ...allValues];
-    } else if (event && event.source && event.source.value === allOptionValue) {
+    } else if (event?.source?.value === allOptionValue) {
       (this[model] as any[]) = [];
     } else {
       selected = selected.filter(v => v !== allOptionValue);
@@ -162,7 +161,56 @@ ngOnInit(): void {
     }
     this.emitFilters();
   }
-  
+
+  syncAllWithItemToggle(
+    event: MatOptionSelectionChange,
+    value: string,
+    model: keyof SearchFilterComponent,
+    options: { value: string }[]
+  ) {
+    if (!event.isUserInput) return;
+
+    const allOptionValue = '__ALL__';
+    const allIndividualValues = options
+      .map(o => o.value)
+      .filter(v => v !== allOptionValue);
+
+    const currentSelected = [...(this[model] as string[])];
+
+    // Case 1: User deselects "All" => clear all
+    if (value === allOptionValue && !event.source.selected) {
+      setTimeout(() => {
+        (this[model] as string[]) = [];
+        this.emitFilters();
+      }, 0);
+      return;
+    }
+
+    // Case 2: User deselects individual item while "All" is selected => remove both
+    const isUncheckingIndividual = value !== allOptionValue && !event.source.selected;
+    if (isUncheckingIndividual && currentSelected.includes(allOptionValue)) {
+      setTimeout(() => {
+        (this[model] as string[]) = currentSelected.filter(v => v !== allOptionValue && v !== value);
+        this.emitFilters();
+      }, 0);
+      return;
+    }
+
+    // Case 3: If all individual items are selected, "ALL" should also be selected
+    if (value !== allOptionValue && event.source.selected) {
+      const updated = new Set([...currentSelected, value]);
+      const hasAllIndividuals = allIndividualValues.every(v => updated.has(v));
+
+      if (hasAllIndividuals && !updated.has(allOptionValue)) {
+        setTimeout(() => {
+          (this[model] as string[]) = [allOptionValue, ...allIndividualValues];
+          this.emitFilters();
+        }, 0);
+      }
+    }
+  }
+
+
   setupCodeTableSubscription(): void {
     this.sharedCodeTableService.codeTables$.subscribe((tables) => {
       if (!tables) return;
