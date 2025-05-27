@@ -5,6 +5,7 @@ import { CodeTableServices } from 'src/app/services/code-table-services';
 import { SharedService } from 'src/app/services/shared-service';
 import { of, Subject } from 'rxjs';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MatOptionSelectionChange } from '@angular/material/core';
 
 describe('SearchFilterComponent', () => {
   let component: SearchFilterComponent;
@@ -84,13 +85,13 @@ describe('SearchFilterComponent', () => {
     expect(result[1].label).toBe('A');
   });
 
-  it('should call updateFilters in onSelectAll', () => {
+  it('should call updateFilters in onOptionToggled', () => {
     const options = [
       { value: '1' },
       { value: '2' }
     ];
     component.selectedActivity = ['__ALL__'];
-    component.onSelectAll({ source: { value: '__ALL__' } }, 'selectedActivity', options);
+    component.onOptionToggled({ source: { value: '__ALL__' } }, 'selectedActivity', options);
     expect(mockSharedService.updateFilters).toHaveBeenCalled();
   });
 
@@ -124,4 +125,67 @@ describe('SearchFilterComponent', () => {
     component.loadFireCentres();
     expect(mockCodeTableService.fetchFireCentres).toHaveBeenCalled();
   });
+
+  it('should clear selection when "All" is deselected', fakeAsync(() => {
+    component.selectedBusinessArea = ['__ALL__', 'guid-a'];
+    const event = {
+      isUserInput: true,
+      source: {
+        selected: false,
+        value: '__ALL__'
+      }
+    } as MatOptionSelectionChange;
+
+    component.syncAllWithItemToggle(event, '__ALL__', 'selectedBusinessArea', [
+      { value: '__ALL__' },
+      { value: 'guid-a' }
+    ]);
+    
+    tick();
+    expect(component.selectedBusinessArea).toEqual([]);
+    expect(mockSharedService.updateFilters).toHaveBeenCalled();
+  }));
+
+  it('should remove individual and "__ALL__" when individual is deselected', fakeAsync(() => {
+    component.selectedBusinessArea = ['__ALL__', 'guid-a', 'guid-b'];
+    const event = {
+      isUserInput: true,
+      source: {
+        selected: false,
+        value: 'guid-a'
+      }
+    } as MatOptionSelectionChange;
+
+    component.syncAllWithItemToggle(event, 'guid-a', 'selectedBusinessArea', [
+      { value: '__ALL__' },
+      { value: 'guid-a' },
+      { value: 'guid-b' }
+    ]);
+    
+    tick();
+    expect(component.selectedBusinessArea).toEqual(['guid-b']);
+    expect(mockSharedService.updateFilters).toHaveBeenCalled();
+  }));
+
+  it('should add "__ALL__" when all individuals are selected', fakeAsync(() => {
+    component.selectedBusinessArea = ['guid-a'];
+    const event = {
+      isUserInput: true,
+      source: {
+        selected: true,
+        value: 'guid-b'
+      }
+    } as MatOptionSelectionChange;
+
+    component.syncAllWithItemToggle(event, 'guid-b', 'selectedBusinessArea', [
+      { value: '__ALL__' },
+      { value: 'guid-a' },
+      { value: 'guid-b' }
+    ]);
+    
+    tick();
+    expect(component.selectedBusinessArea).toEqual(['__ALL__', 'guid-a', 'guid-b']);
+    expect(mockSharedService.updateFilters).toHaveBeenCalled();
+  }));
+
 });
