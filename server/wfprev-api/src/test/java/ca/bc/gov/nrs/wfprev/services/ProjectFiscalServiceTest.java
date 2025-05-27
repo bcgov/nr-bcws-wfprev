@@ -71,7 +71,7 @@ class ProjectFiscalServiceTest {
         projectFiscalModel1.setProjectGuid("123e4567-e89b-12d3-a456-426614174000");
         projectFiscalModel1.setActivityCategoryCode("ACTIVITY_CODE_1");
         projectFiscalModel1.setFiscalYear(2021L);
-        projectFiscalModel1.setAncillaryFundingSourceGuid("789e1234-e89b-12d3-a456-426614174002");
+        projectFiscalModel1.setAncillaryFundingProvider("Provider01");
         projectFiscalModel1.setProjectPlanStatusCode("PLAN_STATUS_1");
         projectFiscalModel1.setPlanFiscalStatusCode("FISCAL_STATUS_1");
         projectFiscalModel1.setProposalTypeCode("NEW");
@@ -123,7 +123,7 @@ class ProjectFiscalServiceTest {
         projectFiscalModel2.setProjectGuid("123e4567-e89b-12d3-a456-426614174001");
         projectFiscalModel2.setActivityCategoryCode("ACTIVITY_CODE_2");
         projectFiscalModel2.setFiscalYear(2022L);
-        projectFiscalModel2.setAncillaryFundingSourceGuid("789e1234-e89b-12d3-a456-426614174003");
+        projectFiscalModel2.setAncillaryFundingProvider("Provider01");
         projectFiscalModel2.setProjectPlanStatusCode("PLAN_STATUS_2");
         projectFiscalModel2.setPlanFiscalStatusCode("FISCAL_STATUS_2");
         projectFiscalModel2.setProposalTypeCode("NEW");
@@ -226,7 +226,7 @@ class ProjectFiscalServiceTest {
         projectFiscalModel.setProjectGuid("123e4567-e89b-12d3-a456-426614174000");
         projectFiscalModel.setActivityCategoryCode("ACTIVITY_CODE_1");
         projectFiscalModel.setFiscalYear(2021L);
-        projectFiscalModel.setAncillaryFundingSourceGuid("789e1234-e89b-12d3-a456-426614174002");
+        projectFiscalModel.setAncillaryFundingProvider("Provider01");
 
         ProjectFiscalEntity projectFiscalEntity = new ProjectFiscalEntity();
         projectFiscalEntity.setProjectPlanFiscalGuid(UUID.fromString("742ae759-e984-4092-8d85-0c65102c7562"));
@@ -277,7 +277,7 @@ class ProjectFiscalServiceTest {
         projectFiscalModel.setProjectGuid("123e4567-e89b-12d3-a456-426614174000");
         projectFiscalModel.setActivityCategoryCode("ACTIVITY_CODE_1");
         projectFiscalModel.setFiscalYear(2021L);
-        projectFiscalModel.setAncillaryFundingSourceGuid("789e1234-e89b-12d3-a456-426614174002");
+        projectFiscalModel.setAncillaryFundingProvider("Provider01");
         projectFiscalModel.setProjectPlanStatusCode("PLAN_STATUS_1");
         projectFiscalModel.setPlanFiscalStatusCode("FISCAL_STATUS_1");
         projectFiscalModel.setProposalTypeCode("NEW");
@@ -358,7 +358,7 @@ class ProjectFiscalServiceTest {
         projectFiscalModel.setProjectGuid("123e4567-e89b-12d3-a456-426614174000");
         projectFiscalModel.setActivityCategoryCode("ACTIVITY_CODE_1");
         projectFiscalModel.setFiscalYear(2021L);
-        projectFiscalModel.setAncillaryFundingSourceGuid("789e1234-e89b-12d3-a456-426614174002");
+        projectFiscalModel.setAncillaryFundingProvider("Provider01");
         projectFiscalModel.setProjectPlanStatusCode("PLAN_STATUS_1");
         projectFiscalModel.setPlanFiscalStatusCode("FISCAL_STATUS_1");
         projectFiscalModel.setProposalTypeCode("NEW");
@@ -405,7 +405,7 @@ class ProjectFiscalServiceTest {
         projectFiscalModel.setProjectGuid("123e4567-e89b-12d3-a456-426614174000");
         projectFiscalModel.setActivityCategoryCode("ACTIVITY_CODE_1");
         projectFiscalModel.setFiscalYear(2021L);
-        projectFiscalModel.setAncillaryFundingSourceGuid("789e1234-e89b-12d3-a456-426614174002");
+        projectFiscalModel.setAncillaryFundingProvider("Provider01");
         projectFiscalModel.setProjectPlanStatusCode("PLAN_STATUS_1");
         projectFiscalModel.setPlanFiscalStatusCode("FISCAL_STATUS_1");
         projectFiscalModel.setProposalTypeCode("NEW");
@@ -464,7 +464,7 @@ class ProjectFiscalServiceTest {
         projectFiscalModel.setProjectGuid("123e4567-e89b-12d3-a456-426614174000");
         projectFiscalModel.setActivityCategoryCode("ACTIVITY_CODE_1");
         projectFiscalModel.setFiscalYear(2021L);
-        projectFiscalModel.setAncillaryFundingSourceGuid("789e1234-e89b-12d3-a456-426614174002");
+        projectFiscalModel.setAncillaryFundingProvider("Provider01");
         projectFiscalModel.setProjectPlanStatusCode("PLAN_STATUS_1");
         projectFiscalModel.setPlanFiscalStatusCode("FISCAL_STATUS_1");
         projectFiscalModel.setProposalTypeCode("NEW");
