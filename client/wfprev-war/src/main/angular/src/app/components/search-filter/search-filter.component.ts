@@ -164,9 +164,9 @@ ngOnInit(): void {
 
   syncAllWithItemToggle(
     event: MatOptionSelectionChange,
-    value: any,
+    value: string,
     model: keyof SearchFilterComponent,
-    options: { value: any }[]
+    options: { value: string }[]
   ) {
     if (!event.isUserInput) return;
 
@@ -175,12 +175,12 @@ ngOnInit(): void {
       .map(o => o.value)
       .filter(v => v !== allOptionValue);
 
-    const currentSelected = [...(this[model] as any[])];
+    const currentSelected = [...(this[model] as string[])];
 
     // Case 1: User deselects "All" => clear all
     if (value === allOptionValue && !event.source.selected) {
       setTimeout(() => {
-        (this[model] as any[]) = [];
+        (this[model] as string[]) = [];
         this.emitFilters();
       }, 0);
       return;
@@ -190,7 +190,7 @@ ngOnInit(): void {
     const isUncheckingIndividual = value !== allOptionValue && !event.source.selected;
     if (isUncheckingIndividual && currentSelected.includes(allOptionValue)) {
       setTimeout(() => {
-        (this[model] as any[]) = currentSelected.filter(v => v !== allOptionValue && v !== value);
+        (this[model] as string[]) = currentSelected.filter(v => v !== allOptionValue && v !== value);
         this.emitFilters();
       }, 0);
       return;
@@ -203,7 +203,7 @@ ngOnInit(): void {
 
       if (hasAllIndividuals && !updated.has(allOptionValue)) {
         setTimeout(() => {
-          (this[model] as any[]) = [allOptionValue, ...allIndividualValues];
+          (this[model] as string[]) = [allOptionValue, ...allIndividualValues];
           this.emitFilters();
         }, 0);
       }
