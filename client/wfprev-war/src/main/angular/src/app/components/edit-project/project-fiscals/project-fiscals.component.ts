@@ -415,6 +415,27 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  
       this.fiscalMapComponent.getAllActivitiesBoundaries(); // refresh boundaries on map
     }
   }
+
+  getCodeDescription(controlName: string): string | null {
+    const form = this.fiscalForms[this.selectedTabIndex];
+    if (!form) return null;
+
+    const value = form.get(controlName)?.value;
+
+    switch (controlName) {
+      case 'activityCategoryCode':
+        return this.activityCategoryCode.find(item => item.activityCategoryCode === value)?.description ?? null;
+
+      case 'planFiscalStatusCode':
+        return this.planFiscalStatusCode.find(item => item.planFiscalStatusCode === value)?.description ?? null;
+
+      case 'proposalTypeCode':
+        return this.proposalTypeCode.find(item => item.proposalTypeCode === value)?.description ?? null;
+
+      default:
+        return null;
+    }
+  }
   
 }
 
