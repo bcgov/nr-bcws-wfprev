@@ -7,7 +7,7 @@ import L from 'leaflet';
 import { ProjectService } from 'src/app/services/project-services';
 import { CodeTableServices } from 'src/app/services/code-table-services';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { Messages } from 'src/app/utils/messages';
+import { CodeTableKeys, Messages } from 'src/app/utils/constants';
 import {
   validateLatLong,
   formatLatLong,
@@ -58,6 +58,8 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
   bcParksSectionCode: any[] = [];
   objectiveTypeCode: any[] = [];
   fireCentres: any[] = [];
+  readonly CodeTableKeys = CodeTableKeys;
+  
   constructor(
     private readonly fb: FormBuilder,
     private route: ActivatedRoute,
@@ -530,59 +532,38 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
     }
     return true;
   }
+  getCodeDescription(controlName: string): string | null {
+    const value = this.detailsForm.get(controlName)?.value;
 
-  getSelectedProjectType(): string {
-    const selectedId = this.detailsForm.get('projectTypeCode')?.value;
-    const selected = this.projectTypeCode.find(item => item.projectTypeCode === selectedId);
-    return selected ? selected.description : '';
-  }
+    switch (controlName) {
+      case CodeTableKeys.PROJECT_TYPE_CODE:
+        return this.projectTypeCode.find(item => item.projectTypeCode === value)?.description ?? null;
 
-  getSelectedProgramAreaName(): string {
-    const selectedId = this.detailsForm.get('programAreaGuid')?.value;
-    const selected = this.programAreaCode.find(item => item.programAreaGuid === selectedId);
-    return selected ? selected.programAreaName : '';
-  }
+      case CodeTableKeys.PROGRAM_AREA_GUID:
+        return this.programAreaCode.find(item => item.programAreaGuid === value)?.programAreaName ?? null;
 
-  getSelectedForestRegionName(): string {
-    const selectedId = this.detailsForm.get('forestRegionOrgUnitId')?.value;
-    const selected = this.forestRegionCode.find(item => item.orgUnitId === selectedId);
-    return selected ? selected.orgUnitName : '';
-  }
+      case CodeTableKeys.FOREST_REGION_ORG_UNIT_ID:
+        return this.forestRegionCode.find(item => item.orgUnitId === value)?.orgUnitName ?? null;
 
-  getSelectedForestDistrictName(): string {
-    const selectedId = this.detailsForm.get('forestDistrictOrgUnitId')?.value;
-    const selected = this.forestDistrictCode.find(item => item.orgUnitId === selectedId);
-    return selected ? selected.orgUnitName : '';
-  }
+      case CodeTableKeys.FOREST_DISTRICT_ORG_UNIT_ID:
+        return this.forestDistrictCode.find(item => item.orgUnitId === value)?.orgUnitName ?? null;
 
-  getSelectedBcParksRegionName(): string {
-    const selectedId = this.detailsForm.get('bcParksRegionOrgUnitId')?.value;
-    const selected = this.bcParksRegionCode.find(item => item.orgUnitId === selectedId);
-    return selected ? selected.orgUnitName : '';
-  }
+      case CodeTableKeys.BC_PARKS_REGION_ORG_UNIT_ID:
+        return this.bcParksRegionCode.find(item => item.orgUnitId === value)?.orgUnitName ?? null;
 
-  getSelectedBcParksSectionName(): string {
-    const selectedId = this.detailsForm.get('bcParksSectionOrgUnitId')?.value;
-    const selected = this.bcParksSectionCode.find(item => item.orgUnitId === selectedId);
-    return selected ? selected.orgUnitName : '';
-  }
+      case CodeTableKeys.BC_PARKS_SECTION_ORG_UNIT_ID:
+        return this.bcParksSectionCode.find(item => item.orgUnitId === value)?.orgUnitName ?? null;
 
-  getSelectedFireCentreName(): string {
-    const selectedId = this.detailsForm.get('fireCentreId')?.value;
-    const selected = this.fireCentres.find(item => item.properties.MOF_FIRE_CENTRE_ID === selectedId);
-    return selected ? selected.properties.MOF_FIRE_CENTRE_NAME : '';
-  }
+      case CodeTableKeys.FIRE_CENTRE_ID:
+        return this.fireCentres.find(item => item.properties.MOF_FIRE_CENTRE_ID === value)?.properties.MOF_FIRE_CENTRE_NAME ?? null;
 
-  getSelectedPrimaryObjectiveName(): string {
-    const selectedId = this.detailsForm.get('primaryObjectiveTypeCode')?.value;
-    const selected = this.objectiveTypeCode.find(item => item.objectiveTypeCode === selectedId);
-    return selected ? selected.description : '';
-  }
+      case CodeTableKeys.PRIMARY_OBJECTIVE_TYPE_CODE:
+      case CodeTableKeys.SECONDARY_OBJECTIVE_TYPE_CODE:
+        return this.objectiveTypeCode.find(item => item.objectiveTypeCode === value)?.description ?? null;
 
-  getSelectedSecondaryObjectiveName(): string {
-    const selectedId = this.detailsForm.get('secondaryObjectiveTypeCode')?.value;
-    const selected = this.objectiveTypeCode.find(item => item.objectiveTypeCode === selectedId);
-    return selected ? selected.description : '';
+      default:
+        return null;
+    }
   }
 
   getErrorMessage(controlName: string): string | null {
