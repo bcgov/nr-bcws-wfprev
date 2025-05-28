@@ -499,5 +499,58 @@ describe('ProjectFiscalsComponent', () => {
     expect(component.selectedTabIndex).toBe(2);
     expect(updateSpy).toHaveBeenCalled();
   });
+
+  it('should return correct description from getCodeDescription()', () => {
+    component.selectedTabIndex = 0;
+
+    component.activityCategoryCode = [
+      { activityCategoryCode: 'CAT1', description: 'Activity A' }
+    ];
+    component.planFiscalStatusCode = [
+      { planFiscalStatusCode: 'PFS1', description: 'Draft' }
+    ];
+    component.proposalTypeCode = [
+      { proposalTypeCode: 'NEW', description: 'New Proposal' }
+    ];
+
+    component.fiscalForms = [
+      component.createFiscalForm({
+        activityCategoryCode: 'CAT1',
+        planFiscalStatusCode: 'PFS1',
+        proposalTypeCode: 'NEW'
+      })
+    ];
+
+    expect(component.getCodeDescription('activityCategoryCode')).toBe('Activity A');
+    expect(component.getCodeDescription('planFiscalStatusCode')).toBe('Draft');
+    expect(component.getCodeDescription('proposalTypeCode')).toBe('New Proposal');
+  });
+
+  it('should return null from getCodeDescription() if control value not matched', () => {
+    component.selectedTabIndex = 0;
+    component.activityCategoryCode = [];
+    component.planFiscalStatusCode = [];
+    component.proposalTypeCode = [];
+
+    component.fiscalForms = [
+      component.createFiscalForm({
+        activityCategoryCode: 'UNKNOWN',
+        planFiscalStatusCode: 'UNKNOWN',
+        proposalTypeCode: 'UNKNOWN'
+      })
+    ];
+
+    expect(component.getCodeDescription('activityCategoryCode')).toBeNull();
+    expect(component.getCodeDescription('planFiscalStatusCode')).toBeNull();
+    expect(component.getCodeDescription('proposalTypeCode')).toBeNull();
+  });
+
+  it('should return null from getCodeDescription() if form is missing', () => {
+    component.fiscalForms = [];
+    component.selectedTabIndex = 0;
+
+    expect(component.getCodeDescription('activityCategoryCode')).toBeNull();
+  });
+
   
 });

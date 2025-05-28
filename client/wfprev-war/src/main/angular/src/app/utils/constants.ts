@@ -23,3 +23,18 @@ export const Messages = {
   fileUploadSuccess: 'File Uploaded Successfully',
   fileUploadFailure: 'File Uploaded Failed',
 };
+
+export const CodeTableKeys = {
+  ACTIVITY_CATEGORY_CODE: 'activityCategoryCode',
+  PLAN_FISCAL_STATUS_CODE: 'planFiscalStatusCode',
+  PROPOSAL_TYPE_CODE: 'proposalTypeCode',
+  PROJECT_TYPE_CODE: 'projectTypeCode',
+  PROGRAM_AREA_GUID: 'programAreaGuid',
+  FOREST_REGION_ORG_UNIT_ID: 'forestRegionOrgUnitId',
+  FOREST_DISTRICT_ORG_UNIT_ID: 'forestDistrictOrgUnitId',
+  BC_PARKS_REGION_ORG_UNIT_ID: 'bcParksRegionOrgUnitId',
+  BC_PARKS_SECTION_ORG_UNIT_ID: 'bcParksSectionOrgUnitId',
+  FIRE_CENTRE_ID: 'fireCentreId',
+  PRIMARY_OBJECTIVE_TYPE_CODE: 'primaryObjectiveTypeCode',
+  SECONDARY_OBJECTIVE_TYPE_CODE: 'secondaryObjectiveTypeCode'
+};

@@ -10,7 +10,7 @@ import { ActivityBoundary, FileAttachment, ProjectBoundary, ProjectFile } from '
 import { AttachmentService } from 'src/app/services/attachment-service';
 import { ProjectService } from 'src/app/services/project-services';
 import { SpatialService } from 'src/app/services/spatial-services';
-import { Messages } from 'src/app/utils/messages';
+import { Messages } from 'src/app/utils/constants';
 import { Position } from 'geojson';
 import { ActivatedRoute } from '@angular/router';
 
