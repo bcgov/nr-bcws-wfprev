@@ -55,7 +55,7 @@
 
                   <div class="form-item">
                     <label>Activity Category<span class="required">*</span></label>
-                    <select id="activityCategoryCode" formControlName="activityCategoryCode">
+                    <select id="activityCategoryCode" formControlName="activityCategoryCode" [matTooltip]="getCodeDescription('activityCategoryCode')">
                       <option value="" disabled selected hidden>Select</option>
                       <option *ngFor="let item of activityCategoryCode" [value]="item.activityCategoryCode">
                         {{ item.description || 'Select Activity Category' }}
@@ -65,7 +65,7 @@
 
                   <div class="form-item">
                     <label>Fiscal Status<span class="required">*</span></label>
-                    <select id="planFiscalStatusCode" formControlName="planFiscalStatusCode" >
+                    <select id="planFiscalStatusCode" formControlName="planFiscalStatusCode" [matTooltip]="getCodeDescription('planFiscalStatusCode')">
                       <option value="" disabled selected hidden>Select</option>
                       <option *ngFor="let item of planFiscalStatusCode" [value]="item.planFiscalStatusCode">
                         {{ item.description || 'Select' }}
@@ -75,7 +75,7 @@
 
                   <div class="form-item">
                     <label>Proposal Type<span class="required">*</span></label>
-                    <select id="proposalTypeCode" formControlName="proposalTypeCode">
+                    <select id="proposalTypeCode" formControlName="proposalTypeCode" [matTooltip]="getCodeDescription('proposalTypeCode')">
                       <option value="" disabled selected hidden>Select</option>
                       <option *ngFor="let item of proposalTypeCode" [value]="item.proposalTypeCode">
                         {{ item.description || 'Select' }}
