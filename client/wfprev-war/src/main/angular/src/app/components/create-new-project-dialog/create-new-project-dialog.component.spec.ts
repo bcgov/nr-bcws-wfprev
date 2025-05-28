@@ -5,7 +5,7 @@ import { of, throwError } from 'rxjs';
 import { CreateNewProjectDialogComponent } from './create-new-project-dialog.component';
 import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { Messages } from 'src/app/utils/messages';
+import { Messages } from 'src/app/utils/constants';
 import { ProjectService } from 'src/app/services/project-services';
 import { CodeTableServices } from 'src/app/services/code-table-services';
 import { MatSnackBar } from '@angular/material/snack-bar';

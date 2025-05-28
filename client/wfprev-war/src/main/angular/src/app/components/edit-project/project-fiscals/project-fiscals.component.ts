@@ -9,7 +9,7 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { ProjectFiscal } from 'src/app/components/models';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { Messages } from 'src/app/utils/messages';
+import { Messages, CodeTableKeys } from 'src/app/utils/constants';
 import { CodeTableServices } from 'src/app/services/code-table-services';
 import { MatMenuModule } from '@angular/material/menu';
 import { Observable } from 'rxjs';
@@ -54,6 +54,7 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  
   planFiscalStatusCode: any[] = [];
   proposalTypeCode: any[] = [];
   originalFiscalValues: any[] = []
+  readonly CodeTableKeys = CodeTableKeys;
   constructor(
     private route: ActivatedRoute,
     private projectService: ProjectService,
@@ -101,9 +102,9 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  
   
   loadCodeTables(): void {
     const codeTables = [
-      { name: 'activityCategoryCodes', embeddedKey: 'activityCategoryCode' },
-      { name: 'planFiscalStatusCodes', embeddedKey: 'planFiscalStatusCode' },
-      { name: 'proposalTypeCodes', embeddedKey: 'proposalTypeCode'}
+      { name: 'activityCategoryCodes', embeddedKey: CodeTableKeys.ACTIVITY_CATEGORY_CODE },
+      { name: 'planFiscalStatusCodes', embeddedKey: CodeTableKeys.PLAN_FISCAL_STATUS_CODE },
+      { name: 'proposalTypeCodes', embeddedKey: CodeTableKeys.PROPOSAL_TYPE_CODE}
     ];
   
     codeTables.forEach((table) => {
@@ -119,13 +120,13 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  
 
   assignCodeTableData(key: string, data: any): void {
     switch (key) {
-      case 'activityCategoryCode':
+      case CodeTableKeys.ACTIVITY_CATEGORY_CODE:
         this.activityCategoryCode = data._embedded?.activityCategoryCode ?? [];
         break;
-      case 'planFiscalStatusCode':
+      case CodeTableKeys.PLAN_FISCAL_STATUS_CODE:
         this.planFiscalStatusCode = data._embedded?.planFiscalStatusCode ?? [];
         break;
-      case 'proposalTypeCode':
+      case CodeTableKeys.PROPOSAL_TYPE_CODE:
         this.proposalTypeCode = data._embedded?.proposalTypeCode ?? [];
         break;
     }
@@ -415,6 +416,27 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  
       this.fiscalMapComponent.getAllActivitiesBoundaries(); // refresh boundaries on map
     }
   }
-  
+
+  getCodeDescription(controlName: string): string | null {
+    const form = this.fiscalForms[this.selectedTabIndex];
+    if (!form) return null;
+
+    const value = form.get(controlName)?.value;
+
+    switch (controlName) {
+      case CodeTableKeys.ACTIVITY_CATEGORY_CODE:
+        return this.activityCategoryCode.find(item => item.activityCategoryCode === value)?.description ?? null;
+
+      case CodeTableKeys.PLAN_FISCAL_STATUS_CODE:
+        return this.planFiscalStatusCode.find(item => item.planFiscalStatusCode === value)?.description ?? null;
+
+      case CodeTableKeys.PROPOSAL_TYPE_CODE:
+        return this.proposalTypeCode.find(item => item.proposalTypeCode === value)?.description ?? null;
+
+      default:
+        return null;
+    }
+  }
+
 }
 
