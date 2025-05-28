@@ -196,16 +196,21 @@
                       <input type="text" id="cfsProjectCode" formControlName="cfsProjectCode"
                         placeholder="Begin Typing" [matTooltip]="fiscalForms[selectedTabIndex]?.get('cfsProjectCode')?.value"
                       />
+                      <div class="error" *ngIf="fiscalForms[i] && fiscalForms[i].get('cfsProjectCode')?.hasError('maxlength') 
+                        && fiscalForms[i].get('cfsProjectCode')?.touched">
+                        {{ messages.maxLengthExceeded }}
+                      </div>
                     </div>
 
                     <div class="form-item">
                       <label>Ancillary Funding Provider</label>
-                      <select id="ancillaryFundingSourceGuid" formControlName="ancillaryFundingSourceGuid">
-                        <option [ngValue]="''">Select</option> 
-                        <option *ngFor="let item of ancillaryFundingSourceCode"[value]="item.ancillaryFundingSourceGuid">
-                          {{ item.fundingSourceName }}
-                        </option>
-                      </select>
+                      <input type="text" id="ancillaryFundingProvider" formControlName="ancillaryFundingProvider"
+                        placeholder="Begin Typing" [matTooltip]="fiscalForms[selectedTabIndex]?.get('ancillaryFundingProvider')?.value"
+                      />
+                      <div class="error" *ngIf="fiscalForms[i] && fiscalForms[i].get('ancillaryFundingProvider')?.hasError('maxlength') 
+                        && fiscalForms[i].get('ancillaryFundingProvider')?.touched">
+                        {{ messages.maxLengthExceeded }}
+                      </div>
                     </div>
 
                     <div class="form-item">

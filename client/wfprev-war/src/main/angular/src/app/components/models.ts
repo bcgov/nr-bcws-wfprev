@@ -80,9 +80,9 @@ export interface ProjectFiscal {
   fiscalForecastAmount?: number;
   totalCostEstimateAmount?: number;
   cfsProjectCode?: string;
-  ancillaryFundingSourceGuid?: string;
   otherPartner?: string;
   proposalTypeCode?: string;
+  ancillaryFundingProvider?: string;
 }
 
 export interface ActivityModel {
