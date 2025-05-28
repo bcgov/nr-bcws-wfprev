@@ -2,7 +2,7 @@
   <form [formGroup]="detailsForm" class="form-grid" *ngIf="projectDetail">
     <div class="form-item">
       <label>Project Type<span class="required">*</span></label>
-      <select id="projectTypeCode" formControlName="projectTypeCode" [matTooltip]="getSelectedProjectType()">
+      <select id="projectTypeCode" formControlName="projectTypeCode" [matTooltip]="getCodeDescription(CodeTableKeys.PROJECT_TYPE_CODE)">
         <option *ngFor="let item of projectTypeCode" [value]="item.projectTypeCode">
           {{ item.description }}
         </option>
@@ -16,7 +16,7 @@
 
     <div class="form-item">
       <label>Business/Program Area<span class="required">*</span></label>
-      <select id="programAreaGuid" formControlName="programAreaGuid" [matTooltip]="getSelectedProgramAreaName()">
+      <select id="programAreaGuid" formControlName="programAreaGuid" [matTooltip]="getCodeDescription(CodeTableKeys.PROGRAM_AREA_GUID)">
         <option *ngFor="let item of programAreaCode" [value]="item.programAreaGuid">
           {{ item.programAreaName }}
         </option>
@@ -35,8 +35,7 @@
 
     <div class="form-item">
       <label>Forest Region<span class="required">*</span></label>
-      <select id="forestRegionOrgUnitId" formControlName="forestRegionOrgUnitId"
-        [matTooltip]="getSelectedForestRegionName()">
+      <select id="forestRegionOrgUnitId" formControlName="forestRegionOrgUnitId" [matTooltip]="getCodeDescription(CodeTableKeys.FOREST_REGION_ORG_UNIT_ID)">
         <option *ngFor="let item of forestRegionCode" [value]="item.orgUnitId">
           {{ item.orgUnitName }}
         </option>
@@ -45,8 +44,7 @@
 
     <div class="form-item">
       <label> Forest District </label>
-      <select id="forestDistrictOrgUnitId" formControlName="forestDistrictOrgUnitId"
-        [matTooltip]="getSelectedForestDistrictName()">
+      <select id="forestDistrictOrgUnitId" formControlName="forestDistrictOrgUnitId" [matTooltip]="getCodeDescription(CodeTableKeys.FOREST_DISTRICT_ORG_UNIT_ID)">
         <option value="">Select</option>
         <option *ngFor="let item of forestDistrictCode" [value]="item.orgUnitId">
           {{ item.orgUnitName }}
@@ -56,8 +54,7 @@
 
     <div class="form-item">
       <label> BC Parks Region </label>
-      <select id="bcParksRegionOrgUnitId" formControlName="bcParksRegionOrgUnitId"
-        [matTooltip]="getSelectedBcParksRegionName()">
+      <select id="bcParksRegionOrgUnitId" formControlName="bcParksRegionOrgUnitId" [matTooltip]="getCodeDescription(CodeTableKeys.BC_PARKS_REGION_ORG_UNIT_ID)">
         <option value="">Select</option>
         <option *ngFor="let item of bcParksRegionCode" [value]="item.orgUnitId">
           {{ item.orgUnitName }}
@@ -67,8 +64,7 @@
 
     <div class="form-item">
       <label>BC Parks Section</label>
-      <select id="bcParksSectionOrgUnitId" formControlName="bcParksSectionOrgUnitId"
-        [matTooltip]="getSelectedBcParksSectionName()">
+      <select id="bcParksSectionOrgUnitId" formControlName="bcParksSectionOrgUnitId" [matTooltip]="getCodeDescription(CodeTableKeys.BC_PARKS_SECTION_ORG_UNIT_ID)">
         <option value="">Select</option>
         <option *ngFor="let item of bcParksSectionCode" [value]="item.orgUnitId">
           {{ item.orgUnitName }}
@@ -78,7 +74,7 @@
 
     <div class="form-item">
       <label>BCWS Fire Centre<span class="required">*</span></label>
-      <select id="fireCentre" formControlName="fireCentreId" [matTooltip]="getSelectedFireCentreName()">
+      <select id="fireCentre" formControlName="fireCentreId" [matTooltip]="getCodeDescription(CodeTableKeys.FIRE_CENTRE_ID)">
         <option *ngFor="let item of fireCentres" [value]="item.properties.MOF_FIRE_CENTRE_ID">
           {{ item.properties.MOF_FIRE_CENTRE_NAME }}
         </option>
@@ -122,8 +118,7 @@
     <div class="objective-group">
       <div class="form-item objective-field">
         <label>Primary Objective<span class="required">*</span></label>
-        <select id="fundingStream" formControlName="primaryObjectiveTypeCode"
-          [matTooltip]="getSelectedPrimaryObjectiveName()">
+        <select id="primaryObjectiveTypeCode" formControlName="primaryObjectiveTypeCode" [matTooltip]="getCodeDescription(CodeTableKeys.PRIMARY_OBJECTIVE_TYPE_CODE)">
           <option *ngFor="let item of objectiveTypeCode" [value]="item.objectiveTypeCode">
             {{ item.description }}
           </option>
@@ -132,8 +127,7 @@
 
       <div class="form-item objective-field">
         <label>Secondary Objective</label>
-        <select id="fundingStream" formControlName="secondaryObjectiveTypeCode"
-          [matTooltip]="getSelectedSecondaryObjectiveName()">
+        <select id="secondaryObjectiveTypeCode" formControlName="secondaryObjectiveTypeCode" [matTooltip]="getCodeDescription(CodeTableKeys.SECONDARY_OBJECTIVE_TYPE_CODE)">
           <option value="">Select</option>
           <option *ngFor="let item of objectiveTypeCode" [value]="item.objectiveTypeCode">
             {{ item.description }}

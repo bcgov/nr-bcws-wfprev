@@ -501,6 +501,11 @@ describe('ProjectFiscalsComponent', () => {
   });
 
   it('should return correct description from getCodeDescription()', () => {
+    component.messages = {
+      ACTIVITY_CATEGORY_CODE: 'Activity Category',
+      PLAN_FISCAL_STATUS_CODE: 'Plan Fiscal Status',
+      PROPOSAL_TYPE_CODE: 'Proposal Type',
+    };
     component.selectedTabIndex = 0;
 
     component.activityCategoryCode = [
