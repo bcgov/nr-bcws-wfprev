@@ -1,0 +1,53 @@
+<div *ngIf="project" class="popup-wrapper">
+    <div class="popup-header">
+        {{ project.projectName || 'Project Name' }}
+        <img class="popup-close" alt="actions" src="/assets/exit-icon.svg" (click)="closePopup()">
+    </div>
+    <div class="popup-container">
+        <div class="project-content">
+            <div class="first-row">
+                <div class="info-group">
+                    <div class="label">Project Type</div>
+                    <div class="value" [title]="project.projectTypeDescription">{{ project.projectTypeCode }}</div>
+                </div>
+                <div class="info-group">
+                    <div class="label">Business Area</div>
+                    <div class="value" [title]="project.programAreaName">{{ project.programAreaGuid }}</div>
+                </div>
+                <div class="info-group">
+                    <div class="label">Nearest Community</div>
+                    <div class="value" [title]="project.nearestCommunity">{{ project.closestCommunityName }}</div>
+                </div>
+            </div>
+            <div class="second-row info-group">
+                <div class="label">Project Description</div>
+                <div class="value description-value" [title]="project.projectDescription">{{ project.projectDescription }}</div>
+            </div>
+        </div>
+        <div class="fiscal-content">
+            <div class="title">Fiscal Years</div>
+                <ng-container *ngIf="project.projectFiscals?.length > 0; else noFiscal">
+                    <div *ngFor="let fiscal of project.projectFiscals" style="border:1px solid #ccc; padding:8px; margin:4px 0;">
+                        Fiscal Year: {{ fiscal.fiscalYear || 'N/A' }}<br>
+                        Fiscal Name: {{ fiscal.projectFiscalName || 'N/A' }}<br>
+                        Completed Hectares: {{ fiscal.fiscalCompletedSizeHa ?? 'N/A' }} Ha<br>
+                        Planned Hectares: {{ fiscal.fiscalPlannedProjectSizeHa ?? 'N/A' }} Ha<br>
+                        Actual Spend: {{ formatCurrency(fiscal.fiscalActualAmount) }}<br>
+                        Forecast Amount: {{ formatCurrency(fiscal.fiscalForecastAmount) }}<br>
+                        Status: {{ fiscal.planFiscalStatusCode || 'N/A' }}
+                    </div>
+                </ng-container>
+                <ng-template #noFiscal>
+                    <div>No fiscal data available.</div>
+                </ng-template>
+            </div>
+    </div>
+    <div class="button-row">
+        <button class="view-details-button" (click)="navigateToProject()">
+            <span class="button-text">
+                <img alt="create-project" class="icon" src="/assets/view-details.svg">
+                View Details
+            </span>
+        </button>
+    </div>
+</div>

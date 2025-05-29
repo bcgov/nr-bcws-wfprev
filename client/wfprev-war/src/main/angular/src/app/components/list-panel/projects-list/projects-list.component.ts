@@ -490,6 +490,7 @@ export class ProjectsListComponent implements OnInit {
     this.displayedProjects = this.allProjects.slice(0, this.pageSize);
     this.sharedService.updateDisplayedProjects(this.displayedProjects);
     this.isLoading = false;
+    this.loadCoordinatesOnMap();
   }
 
   handleProjectError(err: any): void {
@@ -503,5 +504,23 @@ export class ProjectsListComponent implements OnInit {
     if (!project?.projectFiscals?.length) return [];
     return [...project.projectFiscals].sort((a, b) => b.fiscalYear - a.fiscalYear);
   }
-  
+  showPopupForProject(project: any) {
+    if (!project?.latitude || !project?.longitude) return;
+    const map = this.getActiveMap()?.$viewer?.map;
+    if (!map) return;
+
+    const targetMarker = [...this.markerPolygons.keys()].find((m) => {
+      const latLng = m.getLatLng();
+      return (
+        Math.abs(latLng.lat - project.latitude) < 0.0001 &&
+        Math.abs(latLng.lng - project.longitude) < 0.0001
+      );
+    });
+
+    if (targetMarker) {
+      map.panTo(targetMarker.getLatLng());
+      map.setView(targetMarker.getLatLng(), 15);
+    }
+  }
+
 }

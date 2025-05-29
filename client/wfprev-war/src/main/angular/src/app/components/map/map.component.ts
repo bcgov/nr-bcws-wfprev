@@ -7,11 +7,13 @@ import { MapService } from 'src/app/services/map.service';
 import { LeafletLegendService } from 'src/app/utils/tools';
 import { SharedService } from 'src/app/services/shared-service';
 import * as L from 'leaflet';
+import { ProjectPopupComponent } from 'src/app/components/project-popup/project-popup.component';
+import { createComponent, EnvironmentInjector, inject } from '@angular/core';
 
 @Component({
   selector: 'app-map',
   standalone: true,
-  imports: [ResizablePanelComponent, SearchFilterComponent],
+  imports: [ResizablePanelComponent, SearchFilterComponent, ProjectPopupComponent],
   templateUrl: './map.component.html',
   styleUrl: './map.component.scss'
 })
@@ -41,7 +43,8 @@ export class MapComponent implements AfterViewInit, OnDestroy  {
     private readonly mapService: MapService,
     private readonly mapConfigService: MapConfigService,
     private readonly route: ActivatedRoute,
-    private readonly sharedService: SharedService
+    private readonly sharedService: SharedService,
+    private readonly injector: EnvironmentInjector
   ) {}
 
   ngOnDestroy(): void {
@@ -126,82 +129,53 @@ ngAfterViewInit(): void {
     return JSON.parse(JSON.stringify(o));
   }
 
-updateMarkers(projects: any[]) {
-  const smk = this.mapService.getSMKInstance();
-  const map = smk?.$viewer?.map;
+  updateMarkers(projects: any[]) {
+    const smk = this.mapService.getSMKInstance();
+    const map = smk?.$viewer?.map;
 
-  if (!map || !this.markersClusterGroup) {
-    console.warn('[Map] Skipping updateMarkers — map or cluster group not ready');
-    return;
+    if (!map || !this.markersClusterGroup) {
+      console.warn('[Map] Skipping updateMarkers — map or cluster group not ready');
+      return;
+    }
+
+    try {
+      this.markersClusterGroup.clearLayers();
+    } catch (err) {
+      console.error('[Map] Error clearing markers:', err);
+    }
+
+    projects
+      .filter(p => p.latitude != null && p.longitude != null)
+      .forEach(project => {
+        try {
+          const marker = L.marker([project.latitude, project.longitude], {
+            icon: L.icon({
+              iconUrl: '/assets/blue-pin-drop.svg',
+              iconSize: [30, 50],
+              iconAnchor: [12, 41],
+              popupAnchor: [1, -34],
+            })
+          });
+
+          const popupDiv = document.createElement('div');
+          const cmpRef = createComponent(ProjectPopupComponent, {
+            environmentInjector: this.injector
+          });
+          cmpRef.instance.project = project;
+          cmpRef.instance.map = map;
+          cmpRef.hostView.detectChanges();
+          popupDiv.appendChild(cmpRef.location.nativeElement);
+
+          marker.bindPopup(popupDiv, {
+            maxWidth: 486,
+            minWidth: 0,
+            autoPan: true,
+          });
+          this.markersClusterGroup!.addLayer(marker);
+        } catch (err) {
+          console.error('Map Failed to add marker:', project, err);
+        }
+      });
   }
-
-  try {
-    this.markersClusterGroup.clearLayers();
-  } catch (err) {
-    console.error('[Map] Error clearing markers:', err);
-  }
-
-  projects
-    .filter(p => p.latitude != null && p.longitude != null)
-    .forEach(project => {
-      try {
-        const marker = L.marker([project.latitude, project.longitude], {
-          icon: L.icon({
-            iconUrl: '/assets/blue-pin-drop.svg',
-            iconSize: [30, 50],
-            iconAnchor: [12, 41],
-            popupAnchor: [1, -34],
-          })
-        });
-
-        // Bind a popup with project info
-        const popupContent = `
-          <b>${project.projectName}</b><br>
-          Type: ${project.projectTypeCode || 'N/A'}<br>
-          Status: ${project.planFiscalStatusCode || 'N/A'}<br>
-          Fiscal Years:  1991<br>
-          Latitude: ${project.latitude}<br>
-          Longitude: ${project.longitude}
-        `;
-        marker.bindPopup(this.getProjectPopupHTML(project));
-
-        this.markersClusterGroup!.addLayer(marker); 
-      } catch (err) {
-        console.error('[Map] Failed to add marker:', project, err);
-      }
-    });
-}
-
-private getProjectPopupHTML(project: any): string {
-  const formatCurrency = (val: number | undefined) =>
-    val != null ? `$${val.toLocaleString()}` : 'N/A';
-  const fiscalBlocks = (project.projectFiscals || []).map((fiscal: any) => `
-    <div style="border:1px solid #ccc; padding:8px; margin:4px 0;">
-      <strong>Fiscal Year:</strong> ${fiscal.fiscalYear || 'N/A'}<br>
-      <strong>Fiscal Name:</strong> ${fiscal.projectFiscalName || 'N/A'}<br>
-      <strong>Completed Hectares:</strong> ${fiscal.fiscalCompletedSizeHa ?? 'N/A'} Ha<br>
-      <strong>Planned Hectares:</strong> ${fiscal.fiscalPlannedProjectSizeHa ?? 'N/A'} Ha<br>
-      <strong>Actual Spend:</strong> ${formatCurrency(fiscal.fiscalActualAmount)}<br>
-      <strong>Forecast Amount:</strong> ${formatCurrency(fiscal.fiscalForecastAmount)}<br>
-      <strong>Status:</strong> ${fiscal.planFiscalStatusCode || 'N/A'}
-    </div>
-  `).join('');
-
-  return `
-    <div>
-      <h3>${project.projectName || 'Project Name'}</h3>
-      <div><strong>Project Type:</strong> ${project.projectTypeDescription || 'N/A'}</div>
-      <div><strong>Business Area:</strong> ${project.programAreaName || 'N/A'}</div>
-      <div><strong>Nearest Community:</strong> ${project.nearestCommunity || 'N/A'}</div>
-      <div style="margin:8px 0;"><strong>Project Description:</strong><br>${project.projectDescription || 'No description available.'}</div>
-      <div><strong>Fiscal Years:</strong></div>
-      ${fiscalBlocks || '<div>No fiscal data available.</div>'}
-      <button onclick="window.location.href='${window.location.origin}/edit-project?projectGuid=${project.projectGuid}'">
-        View Details
-      </button>
-    </div>
-  `;
-}
-
 
 }
