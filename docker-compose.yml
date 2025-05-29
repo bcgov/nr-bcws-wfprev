@@ -26,6 +26,32 @@ services:
     env_file:
       - .env
 
+  api-dev:
+    profiles:
+      - dev
+    build:
+      context: server/wfprev-api
+      dockerfile: Dockerfile.dev
+      args:
+        - MAVEN_SETTINGS_FILE=vivid.settings.xml
+        - REPO_LOGIN=${REPO_LOGIN}
+        - REPO_PASSWORD=${REPO_PASSWORD}
+    environment:
+      # Environment variables for the application
+      WFPREV_DATASOURCE_URL: ${WFPREV_DATASOURCE_URL}
+      WFPREV_DATASOURCE_USERNAME: ${WFPREV_DATASOURCE_USERNAME}
+      WFPREV_DATASOURCE_PASSWORD: ${WFPREV_DATASOURCE_PASSWORD}
+      WFPREV_GDB_FUNCTION_NAME: ${WFPREV_GDB_FUNCTION_NAME}
+    ports:
+      - "8080:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - wfprev-network
+    env_file:
+      - .env
+
   liquibase:
     build:
       context: db
