@@ -73,6 +73,10 @@ ngAfterViewInit(): void {
     }
   });
 
+  this.sharedService.selectedProject$.subscribe(project => {
+    this.openPopupForProject(project);
+  });
+
   this.initMap().then(() => {
     const smk = this.mapService.getSMKInstance();
     const map = smk?.$viewer?.map;
@@ -177,5 +181,30 @@ ngAfterViewInit(): void {
         }
       });
   }
+
+  openPopupForProject(project: any): void {
+    if (!project?.latitude || !project?.longitude || !this.markersClusterGroup) return;
+
+    const smk = this.mapService.getSMKInstance();
+    const map = smk?.$viewer?.map;
+    if (!map) return;
+
+    const targetMarker = this.markersClusterGroup.getLayers().find((m: any) => {
+      const latLng = m.getLatLng();
+      return (
+        Math.abs(latLng.lat - project.latitude) < 0.0001 &&
+        Math.abs(latLng.lng - project.longitude) < 0.0001
+      );
+    }) as L.Marker;
+
+    if (targetMarker) {
+      this.markersClusterGroup.zoomToShowLayer(targetMarker, () => {
+        map.panTo(targetMarker.getLatLng());
+        map.setView(targetMarker.getLatLng(), 15);
+        targetMarker.openPopup();
+      });
+    }
+  }
+
 
 }

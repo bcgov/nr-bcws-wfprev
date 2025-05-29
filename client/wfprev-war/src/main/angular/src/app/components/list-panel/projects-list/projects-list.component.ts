@@ -504,6 +504,10 @@ export class ProjectsListComponent implements OnInit {
     if (!project?.projectFiscals?.length) return [];
     return [...project.projectFiscals].sort((a, b) => b.fiscalYear - a.fiscalYear);
   }
+
+  onListItemClick(project: any): void {
+    this.sharedService.selectProject(project);
+  }
   showPopupForProject(project: any) {
     if (!project?.latitude || !project?.longitude) return;
     const map = this.getActiveMap()?.$viewer?.map;
@@ -516,11 +520,12 @@ export class ProjectsListComponent implements OnInit {
         Math.abs(latLng.lng - project.longitude) < 0.0001
       );
     });
-
     if (targetMarker) {
-      map.panTo(targetMarker.getLatLng());
-      map.setView(targetMarker.getLatLng(), 15);
+        // map.panTo(targetMarker.getLatLng());
+        // map.setView(targetMarker.getLatLng(), 15);
+        this.onListItemClick(project);
     }
   }
+
 
 }
