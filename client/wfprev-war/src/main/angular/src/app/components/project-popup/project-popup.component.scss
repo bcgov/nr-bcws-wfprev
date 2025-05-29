@@ -1,7 +1,6 @@
 .popup-wrapper {
   width: 560px;
-  height: 486px;                // Use fixed height instead of max-height to allow sticky to work reliably
-  min-height: 289px;
+  max-height: 486px;
   display: flex;
   flex-direction: column;
   overflow: hidden;

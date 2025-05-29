@@ -17,7 +17,8 @@ export class ProjectPopupComponent {
 
   navigateToProject(): void {
     if (this.project?.projectGuid) {
-      window.location.href = `${window.location.origin}/edit-project?projectGuid=${this.project.projectGuid}`;
+      const url = `${window.location.origin}/edit-project?projectGuid=${this.project.projectGuid}`;
+      window.open(url, '_blank');
     }
   }
   closePopup(): void {

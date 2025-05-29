@@ -106,7 +106,6 @@ ngAfterViewInit(): void {
   });
 }
 
-
   private async initMap(): Promise<void> {
     try {
       const baseConfig = this.clone(this.mapConfig);
