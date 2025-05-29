@@ -1142,7 +1142,57 @@
           { "sql": "UPDATE wfprev.activity_category_code SET display_order = display_order - 1  WHERE activity_category_code IN ('MNT_SURVEY','MNT_OP_TRT','OTH_ASSSRV','OTH_ADMIN')" }
         ]
       }
+    },
+    {
+      "changeSet": {
+        "id": "01_00_18_00",
+        "author": "hsaldyga",
+        "tagDatabase": { "tag" : "version_01_00_18_00" },
+        "changes": [
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_18/00/ddl/app_wf1_prev.ddl.modify_project_plan_fiscal.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_18/00/ddl/app_wf1_prev.ddl.drop_ancillary_funding_source.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": "$",
+              "path": "scripts/01_00_18/00/ddl/wfprev.ddl.create_project_plan_fiscal_trigger.sql"
+            }
+          }
+      ],
+        "rollback": [
+        ]
+      }
+    },
+    {
+      "changeSet": {
+        "id": "01_00_19_00",
+        "author": "hsaldyga",
+        "tagDatabase": { "tag": "version_01_00_19_00" },
+        "changes": [
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_00_18/00/dml/app_wf1_prev.dml.update_proposal_type_code.sql"
+            }
+          }
+        ],
+        "rollback": [
+          {
+            "sql": "UPDATE wfprev.proposal_type_code SET description = 'IN_PROG' WHERE proposal_type_code = 'IN_PROG';"
+          }
+        ]
+      }
     }
- 
+
    ] 
 }

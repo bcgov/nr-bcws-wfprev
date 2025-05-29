@@ -12,7 +12,7 @@ import { ProjectService } from 'src/app/services/project-services';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE, MatNativeDateModule} from '@angular/material/core';
 import { MatInputModule } from '@angular/material/input';
-import { Messages } from 'src/app/utils/messages';
+import { Messages } from 'src/app/utils/constants';
 import { ConfirmationDialogComponent } from 'src/app/components/confirmation-dialog/confirmation-dialog.component';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { Observable } from 'rxjs';

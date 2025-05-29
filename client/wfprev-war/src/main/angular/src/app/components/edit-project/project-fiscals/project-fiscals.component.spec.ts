@@ -95,7 +95,7 @@ describe('ProjectFiscalsComponent', () => {
   it('should load code tables successfully', () => {
     mockCodeTableServices.fetchCodeTable.calls.reset(); // ✅ Reset call count
     component.loadCodeTables();
-    expect(mockCodeTableServices.fetchCodeTable).toHaveBeenCalledTimes(4);
+    expect(mockCodeTableServices.fetchCodeTable).toHaveBeenCalledTimes(3);
   });
 
   it('should sort proposalTypeCode in loadDropdownOptions', () => {
@@ -118,7 +118,7 @@ describe('ProjectFiscalsComponent', () => {
     mockCodeTableServices.fetchCodeTable.calls.reset(); // ✅ Reset call count
     mockCodeTableServices.fetchCodeTable.and.returnValue(throwError(() => new Error('Error fetching data')));
     component.loadCodeTables();
-    expect(mockCodeTableServices.fetchCodeTable).toHaveBeenCalledTimes(4);
+    expect(mockCodeTableServices.fetchCodeTable).toHaveBeenCalledTimes(3);
   });
 
   it('should load project fiscals', fakeAsync(() => {
@@ -433,7 +433,7 @@ describe('ProjectFiscalsComponent', () => {
     expect(control?.valid).toBeTrue();
   });
 
-  it('should sort fiscalYears, activityCategoryCode, planFiscalStatusCode, and ancillaryFundingSourceCode in loadDropdownOptions', () => {
+  it('should sort fiscalYears, activityCategoryCode, planFiscalStatusCode in loadDropdownOptions', () => {
     // Mock unsorted data
     component.fiscalYears = ['2025/26', '2023/24', '2024/25'];
     component.activityCategoryCode = [
@@ -444,11 +444,6 @@ describe('ProjectFiscalsComponent', () => {
     component.planFiscalStatusCode = [
       { description: 'Status 2' },
       { description: 'Status 1' }
-    ];
-    component.ancillaryFundingSourceCode = [
-      { fundingSourceName: 'Funding Z' },
-      { fundingSourceName: 'Funding X' },
-      { fundingSourceName: 'Funding Y' }
     ];
   
     component.loadDropdownOptions();
@@ -463,37 +458,28 @@ describe('ProjectFiscalsComponent', () => {
       { description: 'Status 1' },
       { description: 'Status 2' }
     ]);
-    expect(component.ancillaryFundingSourceCode).toEqual([
-      { fundingSourceName: 'Funding X' },
-      { fundingSourceName: 'Funding Y' },
-      { fundingSourceName: 'Funding Z' }
-    ]);
   });
 
   it('should not throw error if loadDropdownOptions is called with empty arrays', () => {
     component.fiscalYears = [];
     component.activityCategoryCode = [];
     component.planFiscalStatusCode = [];
-    component.ancillaryFundingSourceCode = [];
   
     expect(() => component.loadDropdownOptions()).not.toThrow();
     expect(component.fiscalYears).toEqual([]);
     expect(component.activityCategoryCode).toEqual([]);
     expect(component.planFiscalStatusCode).toEqual([]);
-    expect(component.ancillaryFundingSourceCode).toEqual([]);
   });
 
   it('should handle null or undefined values in loadDropdownOptions without errors', () => {
     component.fiscalYears = null as any;
     component.activityCategoryCode = null as any;
     component.planFiscalStatusCode = null as any;
-    component.ancillaryFundingSourceCode = null as any;
   
     expect(() => component.loadDropdownOptions()).not.toThrow();
     expect(component.fiscalYears).toEqual([]);
     expect(component.activityCategoryCode).toEqual([]);
     expect(component.planFiscalStatusCode).toEqual([]);
-    expect(component.ancillaryFundingSourceCode).toEqual([]);
   });
 
   it('should refresh boundaries on map when onBoundariesChanged is called', () => {
@@ -513,5 +499,58 @@ describe('ProjectFiscalsComponent', () => {
     expect(component.selectedTabIndex).toBe(2);
     expect(updateSpy).toHaveBeenCalled();
   });
+
+  it('should return correct description from getCodeDescription()', () => {
+    component.selectedTabIndex = 0;
+
+    component.activityCategoryCode = [
+      { activityCategoryCode: 'CAT1', description: 'Activity A' }
+    ];
+    component.planFiscalStatusCode = [
+      { planFiscalStatusCode: 'PFS1', description: 'Draft' }
+    ];
+    component.proposalTypeCode = [
+      { proposalTypeCode: 'NEW', description: 'New Proposal' }
+    ];
+
+    component.fiscalForms = [
+      component.createFiscalForm({
+        activityCategoryCode: 'CAT1',
+        planFiscalStatusCode: 'PFS1',
+        proposalTypeCode: 'NEW'
+      })
+    ];
+
+    expect(component.getCodeDescription('activityCategoryCode')).toBe('Activity A');
+    expect(component.getCodeDescription('planFiscalStatusCode')).toBe('Draft');
+    expect(component.getCodeDescription('proposalTypeCode')).toBe('New Proposal');
+  });
+
+  it('should return null from getCodeDescription() if control value not matched', () => {
+    component.selectedTabIndex = 0;
+    component.activityCategoryCode = [];
+    component.planFiscalStatusCode = [];
+    component.proposalTypeCode = [];
+
+    component.fiscalForms = [
+      component.createFiscalForm({
+        activityCategoryCode: 'UNKNOWN',
+        planFiscalStatusCode: 'UNKNOWN',
+        proposalTypeCode: 'UNKNOWN'
+      })
+    ];
+
+    expect(component.getCodeDescription('activityCategoryCode')).toBeNull();
+    expect(component.getCodeDescription('planFiscalStatusCode')).toBeNull();
+    expect(component.getCodeDescription('proposalTypeCode')).toBeNull();
+  });
+
+  it('should return null from getCodeDescription() if form is missing', () => {
+    component.fiscalForms = [];
+    component.selectedTabIndex = 0;
+
+    expect(component.getCodeDescription('activityCategoryCode')).toBeNull();
+  });
+
   
 });

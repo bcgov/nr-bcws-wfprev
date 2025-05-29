@@ -9,7 +9,7 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { ProjectFiscal } from 'src/app/components/models';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { Messages } from 'src/app/utils/messages';
+import { Messages, CodeTableKeys } from 'src/app/utils/constants';
 import { CodeTableServices } from 'src/app/services/code-table-services';
 import { MatMenuModule } from '@angular/material/menu';
 import { Observable } from 'rxjs';
@@ -52,9 +52,9 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  
   messages = Messages;
   activityCategoryCode: any[] = [];
   planFiscalStatusCode: any[] = [];
-  ancillaryFundingSourceCode: any[] = [];
   proposalTypeCode: any[] = [];
   originalFiscalValues: any[] = []
+  readonly CodeTableKeys = CodeTableKeys;
   constructor(
     private route: ActivatedRoute,
     private projectService: ProjectService,
@@ -102,10 +102,9 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  
   
   loadCodeTables(): void {
     const codeTables = [
-      { name: 'activityCategoryCodes', embeddedKey: 'activityCategoryCode' },
-      { name: 'planFiscalStatusCodes', embeddedKey: 'planFiscalStatusCode' },
-      { name: 'ancillaryFundingSourceCodes', embeddedKey: 'ancillaryFundingSourceCode' },
-      { name: 'proposalTypeCodes', embeddedKey: 'proposalTypeCode'}
+      { name: 'activityCategoryCodes', embeddedKey: CodeTableKeys.ACTIVITY_CATEGORY_CODE },
+      { name: 'planFiscalStatusCodes', embeddedKey: CodeTableKeys.PLAN_FISCAL_STATUS_CODE },
+      { name: 'proposalTypeCodes', embeddedKey: CodeTableKeys.PROPOSAL_TYPE_CODE}
     ];
   
     codeTables.forEach((table) => {
@@ -121,16 +120,13 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  
 
   assignCodeTableData(key: string, data: any): void {
     switch (key) {
-      case 'activityCategoryCode':
-        this.activityCategoryCode = data._embedded?.activityCategoryCode || [];
+      case CodeTableKeys.ACTIVITY_CATEGORY_CODE:
+        this.activityCategoryCode = data._embedded?.activityCategoryCode ?? [];
         break;
-      case 'planFiscalStatusCode':
-        this.planFiscalStatusCode = data._embedded?.planFiscalStatusCode || [];
+      case CodeTableKeys.PLAN_FISCAL_STATUS_CODE:
+        this.planFiscalStatusCode = data._embedded?.planFiscalStatusCode ?? [];
         break;
-      case 'ancillaryFundingSourceCode':
-        this.ancillaryFundingSourceCode = data._embedded?.ancillaryFundingSourceCode || [];
-        break;
-      case 'proposalTypeCode':
+      case CodeTableKeys.PROPOSAL_TYPE_CODE:
         this.proposalTypeCode = data._embedded?.proposalTypeCode ?? [];
         break;
     }
@@ -140,7 +136,6 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  
     this.fiscalYears = this.sortArray(this.fiscalYears);
     this.activityCategoryCode = this.sortArray(this.activityCategoryCode, 'description');
     this.planFiscalStatusCode = this.sortArray(this.planFiscalStatusCode, 'description');
-    this.ancillaryFundingSourceCode = this.sortArray(this.ancillaryFundingSourceCode, 'fundingSourceName');
     this.proposalTypeCode = this.sortArray(this.proposalTypeCode, 'description');
   }
 
@@ -153,30 +148,30 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  
 
   createFiscalForm(fiscal?: any): FormGroup {
     const form = this.fb.group({
-      fiscalYear: [fiscal?.fiscalYear || '', [Validators.required]],
-      projectFiscalName: [fiscal?.projectFiscalName || '', [Validators.required]],
-      activityCategoryCode: [fiscal?.activityCategoryCode || '', [Validators.required]],
+      fiscalYear: [fiscal?.fiscalYear ?? '', [Validators.required]],
+      projectFiscalName: [fiscal?.projectFiscalName ?? '', [Validators.required]],
+      activityCategoryCode: [fiscal?.activityCategoryCode ?? '', [Validators.required]],
       proposalTypeCode: [fiscal?.proposalTypeCode ?? 'NEW', [Validators.required]],
-      planFiscalStatusCode: [fiscal?.planFiscalStatusCode || 'DRAFT', [Validators.required]],
-      fiscalPlannedProjectSizeHa: [fiscal?.fiscalPlannedProjectSizeHa || '', [Validators.min(0)]],
+      planFiscalStatusCode: [fiscal?.planFiscalStatusCode ?? 'DRAFT', [Validators.required]],
+      fiscalPlannedProjectSizeHa: [fiscal?.fiscalPlannedProjectSizeHa ?? '', [Validators.min(0)]],
       fiscalCompletedSizeHa: [fiscal?.fiscalCompletedSizeHa ?? '', [Validators.min(0)]],
-      resultsOpeningId: [fiscal?.resultsOpeningId || ''],
-      firstNationsEngagementInd: [fiscal?.firstNationsEngagementInd || false],
-      firstNationsDelivPartInd: [fiscal?.firstNationsDelivPartInd || false],
-      firstNationsPartner: [fiscal?.firstNationsPartner || ''],
-      projectFiscalDescription: [fiscal?.projectFiscalDescription || '', [Validators.required, Validators.maxLength(500)]],
-      otherPartner: [fiscal?.otherPartner || ''],
+      resultsOpeningId: [fiscal?.resultsOpeningId ?? ''],
+      firstNationsEngagementInd: [fiscal?.firstNationsEngagementInd ?? false],
+      firstNationsDelivPartInd: [fiscal?.firstNationsDelivPartInd ?? false],
+      firstNationsPartner: [fiscal?.firstNationsPartner ?? ''],
+      projectFiscalDescription: [fiscal?.projectFiscalDescription ?? '', [Validators.required, Validators.maxLength(500)]],
+      otherPartner: [fiscal?.otherPartner ?? ''],
       totalCostEstimateAmount: [fiscal?.totalCostEstimateAmount ?? '' , [Validators.min(0)]],
       forecastAmount: [fiscal?.forecastAmount ?? ''],
-      cfsProjectCode: [fiscal?.cfsProjectCode || ''],
-      ancillaryFundingSourceGuid: [fiscal?.ancillaryFundingSourceGuid || ''],
+      cfsProjectCode: [fiscal?.cfsProjectCode ?? '', [Validators.maxLength(25)]],
+      ancillaryFundingProvider: [fiscal?.ancillaryFundingProvider ?? '', [Validators.maxLength(100)]],
       fiscalAncillaryFundAmount: [fiscal?.fiscalAncillaryFundAmount ?? '' , [Validators.min(0)]],
       fiscalReportedSpendAmount: [fiscal?.fiscalReportedSpendAmount ?? '' , [Validators.min(0)]],
-      cfsActualSpend: [fiscal?.cfsActualSpend || ''],
-      fiscalForecastAmount: [fiscal?.fiscalForecastAmount || '' , [Validators.min(0)]],
-      fiscalActualAmount: [fiscal?.fiscalActualAmount || '' , [Validators.min(0)]],
-      projectPlanFiscalGuid: [fiscal?.projectPlanFiscalGuid || ''],
-      isApprovedInd: [fiscal?.isApprovedInd || false]
+      cfsActualSpend: [fiscal?.cfsActualSpend ?? ''],
+      fiscalForecastAmount: [fiscal?.fiscalForecastAmount ?? '' , [Validators.min(0)]],
+      fiscalActualAmount: [fiscal?.fiscalActualAmount ?? '' , [Validators.min(0)]],
+      projectPlanFiscalGuid: [fiscal?.projectPlanFiscalGuid ?? ''],
+      isApprovedInd: [fiscal?.isApprovedInd ?? false]
     });
     
     return form;
@@ -185,13 +180,13 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  
 
   loadProjectFiscals(markFormsPristine: boolean = false): void {
     const previousTabIndex = this.selectedTabIndex;
-    this.projectGuid = this.route.snapshot?.queryParamMap?.get('projectGuid') || '';
+    this.projectGuid = this.route.snapshot?.queryParamMap?.get('projectGuid') ?? '';
     if (!this.projectGuid) return;
   
     this.fetchData(
       this.projectService.getProjectFiscalsByProjectGuid(this.projectGuid),
       (data) => {
-        this.projectFiscals = (data._embedded?.projectFiscals || []).map((fiscal: any) => ({
+        this.projectFiscals = (data._embedded?.projectFiscals ?? []).map((fiscal: any) => ({
           ...fiscal,
           fiscalYearFormatted: `${fiscal.fiscalYear}/${(fiscal.fiscalYear + 1).toString().slice(-2)}`,
         })).sort((a: { fiscalYear: number }, b: { fiscalYear: number }) => a.fiscalYear - b.fiscalYear);
@@ -214,7 +209,7 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  
   
   updateCurrentFiscalGuid(): void {
     if (this.projectFiscals.length > 0 && this.projectFiscals[this.selectedTabIndex]) {
-      this.currentFiscalGuid = this.projectFiscals[this.selectedTabIndex].projectPlanFiscalGuid || '';
+      this.currentFiscalGuid = this.projectFiscals[this.selectedTabIndex].projectPlanFiscalGuid ?? '';
     } else {
       this.currentFiscalGuid = ''; // Reset if no fiscal is selected
     }
@@ -313,7 +308,7 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  
         fiscalForecastAmount: updatedData.fiscalForecastAmount,
         totalCostEstimateAmount: updatedData.totalCostEstimateAmount,
         cfsProjectCode: updatedData.cfsProjectCode,
-        ancillaryFundingSourceGuid: updatedData.ancillaryFundingSourceGuid,
+        ancillaryFundingProvider: updatedData.ancillaryFundingProvider,
         otherPartner: updatedData.otherPartner,
         proposalTypeCode: updatedData.proposalTypeCode,
       };
@@ -421,6 +416,27 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  
       this.fiscalMapComponent.getAllActivitiesBoundaries(); // refresh boundaries on map
     }
   }
-  
+
+  getCodeDescription(controlName: string): string | null {
+    const form = this.fiscalForms[this.selectedTabIndex];
+    if (!form) return null;
+
+    const value = form.get(controlName)?.value;
+
+    switch (controlName) {
+      case CodeTableKeys.ACTIVITY_CATEGORY_CODE:
+        return this.activityCategoryCode.find(item => item.activityCategoryCode === value)?.description ?? null;
+
+      case CodeTableKeys.PLAN_FISCAL_STATUS_CODE:
+        return this.planFiscalStatusCode.find(item => item.planFiscalStatusCode === value)?.description ?? null;
+
+      case CodeTableKeys.PROPOSAL_TYPE_CODE:
+        return this.proposalTypeCode.find(item => item.proposalTypeCode === value)?.description ?? null;
+
+      default:
+        return null;
+    }
+  }
+
 }
 
