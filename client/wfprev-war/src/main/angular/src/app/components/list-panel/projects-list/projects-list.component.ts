@@ -13,6 +13,7 @@ import 'leaflet.markercluster';
 import { SharedCodeTableService } from 'src/app/services/shared-code-table.service';
 import { SharedService } from 'src/app/services/shared-service';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { getFiscalYearDisplay } from 'src/app/utils/tools';
 
 
 @Component({
@@ -42,7 +43,7 @@ export class ProjectsListComponent implements OnInit {
   currentPage = 0;
   isLoading = false;
   private markersClusterGroup: L.MarkerClusterGroup | null = null;
-  
+  getFiscalYearDisplay = getFiscalYearDisplay
   constructor(
     private readonly router: Router,
     private readonly projectService: ProjectService,
@@ -455,12 +456,6 @@ export class ProjectsListComponent implements OnInit {
     if (element.scrollHeight - element.scrollTop <= element.clientHeight + 10) {
       this.onScroll();
     }
-  }
-
-  getFiscalYearDisplay(fiscalYear: number | null | undefined): string | null {
-    if (typeof fiscalYear !== 'number') return null;
-    const nextYear = (fiscalYear + 1) % 100;
-    return `${fiscalYear}/${nextYear.toString().padStart(2, '0')}`;
   }
 
   getProjectFiscalYearRange(project: any): string | null {

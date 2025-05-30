@@ -36,5 +36,6 @@ export const CodeTableKeys = {
   BC_PARKS_SECTION_ORG_UNIT_ID: 'bcParksSectionOrgUnitId',
   FIRE_CENTRE_ID: 'fireCentreId',
   PRIMARY_OBJECTIVE_TYPE_CODE: 'primaryObjectiveTypeCode',
-  SECONDARY_OBJECTIVE_TYPE_CODE: 'secondaryObjectiveTypeCode'
+  SECONDARY_OBJECTIVE_TYPE_CODE: 'secondaryObjectiveTypeCode',
+  PROGRAM_AREA_CODE: 'programAreaCode'
 };

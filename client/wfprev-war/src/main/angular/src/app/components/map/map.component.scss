@@ -55,6 +55,7 @@
     max-width: none !important;
     width: auto !important;
     padding: 0 !important;
+    z-index: 10000;
 }
 
 ::ng-deep .leaflet-popup-close-button {

@@ -117,3 +117,9 @@ export function trimLatLong(value: number): number {
   
   return trimmed;
 }
+
+export function getFiscalYearDisplay(fiscalYear: number | null | undefined): string | null {
+  if (typeof fiscalYear !== 'number') return null;
+  const nextYear = (fiscalYear + 1) % 100;
+  return `${fiscalYear}/${nextYear.toString().padStart(2, '0')}`;
+}
