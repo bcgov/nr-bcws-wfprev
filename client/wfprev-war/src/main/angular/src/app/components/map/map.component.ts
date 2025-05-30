@@ -9,6 +9,7 @@ import { SharedService } from 'src/app/services/shared-service';
 import * as L from 'leaflet';
 import { ProjectPopupComponent } from 'src/app/components/project-popup/project-popup.component';
 import { createComponent, EnvironmentInjector, inject } from '@angular/core';
+import { Project } from 'src/app/components/models';
 
 @Component({
   selector: 'app-map',
@@ -181,26 +182,35 @@ ngAfterViewInit(): void {
       });
   }
 
-  openPopupForProject(project: any): void {
-    if (!project?.latitude || !project?.longitude || !this.markersClusterGroup) return;
+  openPopupForProject(project: Project): void {
+    if (
+      project.latitude == null ||
+      project.longitude == null ||
+      !this.markersClusterGroup
+    ) {
+      return;
+    }
 
     const smk = this.mapService.getSMKInstance();
     const map = smk?.$viewer?.map;
     if (!map) return;
 
-    const targetMarker = this.markersClusterGroup.getLayers().find((m: any) => {
-      const latLng = m.getLatLng();
-      return (
-        Math.abs(latLng.lat - project.latitude) < 0.0001 &&
-        Math.abs(latLng.lng - project.longitude) < 0.0001
-      );
-    }) as L.Marker;
+    const targetMarker = this.markersClusterGroup
+      .getLayers()
+      .find((layer): layer is L.Marker => {
+        return (
+          layer instanceof L.Marker &&
+          Math.abs(layer.getLatLng().lat - project.latitude!) < 0.0001 &&
+          Math.abs(layer.getLatLng().lng - project.longitude!) < 0.0001
+        );
+      });
 
     if (targetMarker) {
       this.markersClusterGroup.zoomToShowLayer(targetMarker, () => {
-        map.panTo(targetMarker.getLatLng());
-        map.setView(targetMarker.getLatLng(), 15);
         targetMarker.openPopup();
+        requestAnimationFrame(() => {
+          map.invalidateSize();
+        });
       });
     }
   }

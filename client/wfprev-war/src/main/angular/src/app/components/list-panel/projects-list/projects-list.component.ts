@@ -41,6 +41,8 @@ export class ProjectsListComponent implements OnInit {
   pageSize = 25;
   currentPage = 0;
   isLoading = false;
+  private markersClusterGroup: L.MarkerClusterGroup | null = null;
+  
   constructor(
     private readonly router: Router,
     private readonly projectService: ProjectService,
@@ -508,24 +510,5 @@ export class ProjectsListComponent implements OnInit {
   onListItemClick(project: any): void {
     this.sharedService.selectProject(project);
   }
-  showPopupForProject(project: any) {
-    if (!project?.latitude || !project?.longitude) return;
-    const map = this.getActiveMap()?.$viewer?.map;
-    if (!map) return;
-
-    const targetMarker = [...this.markerPolygons.keys()].find((m) => {
-      const latLng = m.getLatLng();
-      return (
-        Math.abs(latLng.lat - project.latitude) < 0.0001 &&
-        Math.abs(latLng.lng - project.longitude) < 0.0001
-      );
-    });
-    if (targetMarker) {
-        // map.panTo(targetMarker.getLatLng());
-        // map.setView(targetMarker.getLatLng(), 15);
-        this.onListItemClick(project);
-    }
-  }
-
 
 }

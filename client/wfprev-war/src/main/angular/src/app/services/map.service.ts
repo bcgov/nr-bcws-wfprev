@@ -114,6 +114,7 @@ export class MapService {
           L.latLng(0, -90),
         ]);
         this.map.setMaxBounds(maxBounds);
+        this.map.setMaxZoom(19);
       };
   
       console.log('done patching SMK');
