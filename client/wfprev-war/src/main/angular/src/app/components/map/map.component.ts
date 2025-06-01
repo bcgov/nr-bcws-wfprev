@@ -1,4 +1,4 @@
-import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnDestroy, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnDestroy, ViewChild, EnvironmentInjector, createComponent } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { SearchFilterComponent } from 'src/app/components/search-filter/search-filter.component';
 import { MapConfigService } from 'src/app/services/map-config.service';
@@ -7,7 +7,6 @@ import { LeafletLegendService } from 'src/app/utils/tools';
 import { SharedService } from 'src/app/services/shared-service';
 import * as L from 'leaflet';
 import { ProjectPopupComponent } from 'src/app/components/project-popup/project-popup.component';
-import { createComponent, EnvironmentInjector } from '@angular/core';
 import { Project } from 'src/app/components/models';
 import { ResizablePanelComponent } from 'src/app/components/resizable-panel/resizable-panel.component';
 

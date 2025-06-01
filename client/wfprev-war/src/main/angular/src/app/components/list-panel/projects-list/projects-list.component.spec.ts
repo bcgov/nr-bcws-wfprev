@@ -787,6 +787,112 @@ describe('ProjectsListComponent', () => {
     expect(mockPolygon.setStyle).toHaveBeenCalledWith({ weight: 2 });
   }));
 
+  describe('onHeaderClick', () => {
+    it('should call onListItemClick if not clicking inside .custom-indicator', () => {
+      const mockProject = { projectGuid: 'guid-x' };
+      const event = {
+        target: document.createElement('div'),
+        stopPropagation: jasmine.createSpy()
+      } as unknown as MouseEvent;
+
+      spyOn(component, 'onListItemClick');
+
+      component.onHeaderClick(event, mockProject);
+
+      expect(event.stopPropagation).toHaveBeenCalled();
+      expect(component.onListItemClick).toHaveBeenCalledWith(mockProject);
+    });
+
+    it('should not call onListItemClick if clicking inside .custom-indicator', () => {
+      const customIndicator = document.createElement('div');
+      customIndicator.classList.add('custom-indicator');
+
+      const event = {
+        target: customIndicator,
+        stopPropagation: jasmine.createSpy()
+      } as unknown as MouseEvent;
+
+      spyOn(component, 'onListItemClick');
+
+      component.onHeaderClick(event, {});
+
+      expect(event.stopPropagation).not.toHaveBeenCalled();
+      expect(component.onListItemClick).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('togglePanel', () => {
+    it('should toggle the panel expanded state and stop event propagation', () => {
+      const guid = 'panel-guid';
+      const event = {
+        stopPropagation: jasmine.createSpy()
+      } as unknown as MouseEvent;
+
+      // Initially false
+      component.expandedPanels[guid] = false;
+      component.togglePanel(guid, event);
+      expect(component.expandedPanels[guid]).toBeTrue();
+      expect(event.stopPropagation).toHaveBeenCalled();
+
+      // Toggle again to false
+      component.togglePanel(guid, event);
+      expect(component.expandedPanels[guid]).toBeFalse();
+    });
+  });
+
+  describe('onListItemClick', () => {
+    const project = {
+      projectGuid: 'guid-y',
+      bcParksRegionOrgUnitId: 1,
+      bcParksSectionOrgUnitId: 2,
+      closestCommunityName: 'Town A',
+      fireCentreOrgUnitId: 3,
+      isMultiFiscalYearProj: false,
+      programAreaGuid: 'guid1',
+      projectDescription: 'Some description',
+      projectLead: 'John Doe',
+      projectLeadEmailAddress: 'john@example.com',
+      projectName: 'Test Project',
+      projectNumber: 123,
+      siteUnitName: 'Unit 1',
+      totalActualAmount: 100,
+      totalAllocatedAmount: 150,
+      totalFundingRequestAmount: 50,
+      totalPlannedCostPerHectare: 5,
+      totalPlannedProjectSizeHa: 10,
+      forestDistrictOrgUnitId: 4,
+      forestRegionOrgUnitId: 5,
+      projectFiscals: [],
+      latitude: 49.2827,
+      longitude: -123.1207
+    };
+
+
+    beforeEach(() => {
+      spyOn(component.sharedService, 'selectProject');
+      spyOn(component.sharedService, 'triggerMapCommand');
+    });
+
+    it('should deselect the project if it is already selected', () => {
+      component.selectedProjectGuid = 'guid-y';
+
+      component.onListItemClick(project);
+
+      expect(component.selectedProjectGuid).toBeNull();
+      expect(component.sharedService.selectProject).toHaveBeenCalledWith(undefined);
+      expect(component.sharedService.triggerMapCommand).toHaveBeenCalledWith('close', project);
+    });
+
+    it('should select the project if it is not selected', () => {
+      component.selectedProjectGuid = 'guid-z';
+
+      component.onListItemClick(project);
+
+      expect(component.selectedProjectGuid).toBe('guid-y');
+      expect(component.sharedService.selectProject).toHaveBeenCalledWith(project);
+      expect(component.sharedService.triggerMapCommand).not.toHaveBeenCalled();
+    });
+  });
 
 
 });

@@ -13,6 +13,7 @@ import { ProjectService } from 'src/app/services/project-services';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ActivatedRoute } from '@angular/router';
 import * as L from 'leaflet';
+import { EnvironmentInjector } from '@angular/core';
 
 class MockAppConfigService {
   getConfig() {
@@ -293,6 +294,100 @@ describe('MapComponent', () => {
   });
 });
 
+  describe('Marker popup behavior', () => {
+    let mapMock: any;
+    let markerSpy: jasmine.SpyObj<L.Marker>;
+    let mockProject: any;
+
+    beforeEach(() => {
+      mapContainer.nativeElement = document.createElement('div');
+      component.mapContainer = mapContainer;
+
+      markerSpy = jasmine.createSpyObj<L.Marker>('Marker', [
+        'bindPopup',
+        'on',
+        'setIcon',
+        'closePopup',
+        'openPopup',
+        'off',
+      ]);
+      markerSpy.getLatLng = jasmine.createSpy().and.returnValue({
+        lat: 50,
+        lng: -120,
+      });
+      Object.setPrototypeOf(markerSpy, L.Marker.prototype);
+      
+      mapMock = {
+        addLayer: jasmine.createSpy('addLayer'),
+        invalidateSize: jasmine.createSpy('invalidateSize'),
+      };
+
+      const mockClusterGroup = {
+        getLayers: () => [markerSpy],
+        zoomToShowLayer: (marker: L.Marker, cb: () => void) => cb(),
+        addLayer: jasmine.createSpy('addLayer'),
+        clearLayers: jasmine.createSpy('clearLayers'),
+      };
+
+      component['markersClusterGroup'] = mockClusterGroup as any;
+      component['projectMarkerMap'] = new Map();
+
+      spyOn(component['sharedService'], 'selectProject');
+
+      mapServiceMock.getSMKInstance.and.returnValue({
+        $viewer: { map: mapMock }
+      });
+
+      mockProject = {
+        projectGuid: 'abc-123',
+        latitude: 50,
+        longitude: -120,
+      };
+
+    });
+
+    it('should add marker and bind popup in updateMarkers()', () => {
+      component.updateMarkers([mockProject]);
+
+      expect(component['projectMarkerMap'].get('abc-123')).toBeDefined();
+      expect(component['markersClusterGroup']?.addLayer).toHaveBeenCalled();
+    });
+
+    it('should open popup and set active marker icon in openPopupForProject()', () => {
+      component['projectMarkerMap'].set(mockProject.projectGuid, markerSpy);
+      
+      component['activeMarker'] = null;
+
+      component.openPopupForProject(mockProject);
+
+      expect(markerSpy.setIcon).toHaveBeenCalledWith(
+        jasmine.objectContaining({
+          options: jasmine.objectContaining({
+            iconUrl: '/assets/active-pin-drop.svg',
+          }),
+        })
+      );
+      expect(markerSpy.openPopup).toHaveBeenCalled();
+      expect(component['activeMarker'] as unknown as L.Marker).toBe(markerSpy);
+    });
+
+    it('should close popup and reset icon in closePopupForProject()', () => {
+      component['projectMarkerMap'].set(mockProject.projectGuid, markerSpy);
+      component['activeMarker'] = markerSpy;
+
+      component.closePopupForProject(mockProject);
+
+      expect(markerSpy.closePopup).toHaveBeenCalled();
+      expect(markerSpy.setIcon).toHaveBeenCalledWith(
+        jasmine.objectContaining({
+          options: jasmine.objectContaining({
+            iconUrl: '/assets/blue-pin-drop.svg',
+          }),
+        })
+      );
+      expect(component['activeMarker']).toBeNull();
+    });
+  });
 
 
 });

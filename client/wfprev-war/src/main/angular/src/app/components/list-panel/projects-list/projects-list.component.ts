@@ -24,7 +24,6 @@ import { getFiscalYearDisplay } from 'src/app/utils/tools';
   styleUrls: ['./projects-list.component.scss'],
 })
 export class ProjectsListComponent implements OnInit {
-  // @ViewChild(MapComponent) mapComponent?: MapComponent;
   [key: string]: any;
   projectList: any[] = [];
   programAreaCode: any[] = [];

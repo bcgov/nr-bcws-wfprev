@@ -102,4 +102,73 @@ describe('SharedService', () => {
       done();
     });
   });
+
+  it('should emit selected project when selectProject is called', (done) => {
+    const testProject: Project = {
+      bcParksRegionOrgUnitId: 3,
+      bcParksSectionOrgUnitId: 103,
+      closestCommunityName: 'Community C',
+      fireCentreOrgUnitId: 203,
+      forestDistrictOrgUnitId: 303,
+      forestRegionOrgUnitId: 403,
+      isMultiFiscalYearProj: false,
+      programAreaGuid: 'program-guid-c',
+      projectDescription: 'Description C',
+      projectGuid: 'project-guid-c',
+      projectLead: 'Lead C',
+      projectLeadEmailAddress: 'leadc@example.com',
+      projectName: 'Project C',
+      projectNumber: 1003,
+      siteUnitName: 'Site C',
+      totalActualAmount: 30000,
+      totalAllocatedAmount: 33000,
+      totalFundingRequestAmount: 35000,
+      totalPlannedCostPerHectare: 400,
+      totalPlannedProjectSizeHa: 90,
+      latitude: 49.3,
+      longitude: -123.3
+    };
+
+    service.selectedProject$.subscribe((project) => {
+      expect(project).toEqual(testProject);
+      done();
+    });
+
+    service.selectProject(testProject);
+  });
+
+  it('should emit map command when triggerMapCommand is called', (done) => {
+    const testProject: Project = {
+      bcParksRegionOrgUnitId: 4,
+      bcParksSectionOrgUnitId: 104,
+      closestCommunityName: 'Community D',
+      fireCentreOrgUnitId: 204,
+      forestDistrictOrgUnitId: 304,
+      forestRegionOrgUnitId: 404,
+      isMultiFiscalYearProj: true,
+      programAreaGuid: 'program-guid-d',
+      projectDescription: 'Description D',
+      projectGuid: 'project-guid-d',
+      projectLead: 'Lead D',
+      projectLeadEmailAddress: 'leadd@example.com',
+      projectName: 'Project D',
+      projectNumber: 1004,
+      siteUnitName: 'Site D',
+      totalActualAmount: 40000,
+      totalAllocatedAmount: 44000,
+      totalFundingRequestAmount: 47000,
+      totalPlannedCostPerHectare: 500,
+      totalPlannedProjectSizeHa: 120,
+      latitude: 49.4,
+      longitude: -123.4
+    };
+
+    service.mapCommand$.subscribe((command) => {
+      expect(command).toEqual({ action: 'open', project: testProject });
+      done();
+    });
+
+    service.triggerMapCommand('open', testProject);
+  });
+
 });
