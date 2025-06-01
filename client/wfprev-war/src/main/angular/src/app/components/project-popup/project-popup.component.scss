@@ -12,18 +12,30 @@
   }
   .popup-header {
     display: flex;
-    height: 46px;
+    height: auto;
     border-bottom: 1px solid #D8D8D8;
+    word-break: break-word;
     background: #FFF;
     padding: 10px 10px 6px 15px;
     justify-content: space-between;
+    align-items: flex-start;
     font-size: 20px;
     font-style: normal;
     font-weight: 400;
-    align-items: center;
     position: sticky;
     top: 0;
     z-index: 2;
+    .popup-title {
+      flex: 1 1 auto;
+      word-break: break-word;
+    }
+
+    .popup-close {
+      flex: 0 0 auto;
+      width: 24px;
+      height: 24px;
+      cursor: pointer;
+    }
   }
 
   .popup-close {

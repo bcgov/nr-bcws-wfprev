@@ -1,7 +1,7 @@
 <div *ngIf="project" class="popup-wrapper">
     <div class="popup-header">
-        {{ project.projectName || 'Project Name' }}
-        <img class="popup-close" alt="actions" src="/assets/exit-icon.svg" (click)="closePopup()">
+        <div class="popup-title">{{ project.projectName || 'Project Name' }}</div>
+        <img class="popup-close" alt="Close" src="/assets/exit-icon.svg" (click)="closePopup()">
     </div>
     <div class="popup-container">
         <div class="project-content">
@@ -42,27 +42,50 @@
                         </div>
                         <div class="activity-category">{{ getCodeDescription(CodeTableKeys.ACTIVITY_CATEGORY_CODE, fiscal.activityCategoryCode)}}</div>
                         <div class="fiscal-values">
-                            <span class="sub-title">Fiscal Year:</span>
-                            <span class="sub-value">{{ getFiscalYearDisplay(fiscal.fiscalYear) }}</span>
+                        <span class="sub-title">Fiscal Year:</span>
+                        <span class="sub-value">{{ getFiscalYearDisplay(fiscal.fiscalYear) }}</span>
                         </div>
 
+                        <!-- COMPLETE status: show Completed Hectares and Actual Spend -->
+                        <ng-container *ngIf="fiscal.planFiscalStatusCode === 'COMPLETE'; else notComplete">
                         <div class="fiscal-values">
-                            <span class="sub-title">Planned Hectares:</span>
+                            <span class="sub-title">Completed Hectares:</span>
                             <span class="sub-value" *ngIf="fiscal.fiscalCompletedSizeHa">
-                                {{ (fiscal.fiscalCompletedSizeHa % 1 === 0) 
+                            {{ (fiscal.fiscalCompletedSizeHa % 1 === 0) 
                                 ? (fiscal.fiscalCompletedSizeHa | number:'1.0-0') 
                                 : (fiscal.fiscalCompletedSizeHa | number:'1.2-2') }} Ha
                             </span>
                         </div>
+                        <div class="fiscal-values">
+                            <span class="sub-title">CFS Actual Spend:</span>
+                            <span class="sub-value" *ngIf="fiscal.fiscalActualAmount">
+                            ${{ (fiscal.fiscalActualAmount % 1 === 0) 
+                                ? (fiscal.fiscalActualAmount | number:'1.0-0') 
+                                : (fiscal.fiscalActualAmount | number:'1.2-2') }}
+                            </span>
+                        </div>
+                        </ng-container>
 
+                        <!-- All other statuses: show Planned Hectares and Forecast Amount -->
+                        <ng-template #notComplete>
+                        <div class="fiscal-values">
+                            <span class="sub-title">Planned Hectares:</span>
+                            <span class="sub-value" *ngIf="fiscal.fiscalPlannedSizeHa">
+                            {{ (fiscal.fiscalPlannedSizeHa % 1 === 0) 
+                                ? (fiscal.fiscalPlannedSizeHa | number:'1.0-0') 
+                                : (fiscal.fiscalPlannedSizeHa | number:'1.2-2') }} Ha
+                            </span>
+                        </div>
                         <div class="fiscal-values">
                             <span class="sub-title">Forecast Amount:</span>
                             <span class="sub-value" *ngIf="fiscal.fiscalForecastAmount">
-                                ${{ (fiscal.fiscalForecastAmount % 1 === 0) 
+                            ${{ (fiscal.fiscalForecastAmount % 1 === 0) 
                                 ? (fiscal.fiscalForecastAmount | number:'1.0-0') 
                                 : (fiscal.fiscalForecastAmount | number:'1.2-2') }}
                             </span>
                         </div>
+                        </ng-template>
+
                     </div>
                 </div>
             </ng-container>
