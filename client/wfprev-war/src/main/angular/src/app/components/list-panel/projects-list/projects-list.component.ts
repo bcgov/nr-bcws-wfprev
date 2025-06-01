@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { Router } from '@angular/router';
@@ -13,6 +13,7 @@ import 'leaflet.markercluster';
 import { SharedCodeTableService } from 'src/app/services/shared-code-table.service';
 import { SharedService } from 'src/app/services/shared-service';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { getFiscalYearDisplay } from 'src/app/utils/tools';
 
 
 @Component({
@@ -41,18 +42,27 @@ export class ProjectsListComponent implements OnInit {
   pageSize = 25;
   currentPage = 0;
   isLoading = false;
+  selectedProjectGuid: string | null = null;
+  getFiscalYearDisplay = getFiscalYearDisplay;
+  expandedPanels: Record<string, boolean> = {};
   constructor(
     private readonly router: Router,
     private readonly projectService: ProjectService,
     private readonly codeTableService: CodeTableServices,
     private readonly dialog: MatDialog,
     private readonly sharedCodeTableService: SharedCodeTableService,
-    public readonly sharedService: SharedService
+    public readonly sharedService: SharedService,
+    private readonly cdr: ChangeDetectorRef
   ) {
   }
   ngOnInit(): void {
     this.loadCodeTables();
     this.loadProjects();
+    
+    this.sharedService.selectedProject$.subscribe(project => {
+      this.selectedProjectGuid = project?.projectGuid ?? null;
+      this.cdr.markForCheck();
+    });
 
     this.sharedService.filters$.subscribe(filters => {
       if (filters) {
@@ -455,12 +465,6 @@ export class ProjectsListComponent implements OnInit {
     }
   }
 
-  getFiscalYearDisplay(fiscalYear: number | null | undefined): string | null {
-    if (typeof fiscalYear !== 'number') return null;
-    const nextYear = (fiscalYear + 1) % 100;
-    return `${fiscalYear}/${nextYear.toString().padStart(2, '0')}`;
-  }
-
   getProjectFiscalYearRange(project: any): string | null {
     if (!project?.projectFiscals?.length) return null;
   
@@ -503,5 +507,32 @@ export class ProjectsListComponent implements OnInit {
     if (!project?.projectFiscals?.length) return [];
     return [...project.projectFiscals].sort((a, b) => b.fiscalYear - a.fiscalYear);
   }
-  
+
+  onHeaderClick(event: MouseEvent, project: any): void {
+    const clickedInsideChevron = (event.target as HTMLElement).closest('.custom-indicator');
+    if (!clickedInsideChevron) {
+      event.stopPropagation();
+      this.onListItemClick(project);
+    }
+  }
+
+
+  togglePanel(guid: string, event: MouseEvent): void {
+    event.stopPropagation();
+    this.expandedPanels[guid] = !this.expandedPanels[guid];
+  }
+
+
+  onListItemClick(project: any): void {
+    if (this.selectedProjectGuid === project.projectGuid) {
+          //deselect
+      this.selectedProjectGuid = null;
+      this.sharedService.selectProject(undefined);
+      this.sharedService.triggerMapCommand('close', project);
+    } else {
+        // select
+      this.selectedProjectGuid = project.projectGuid;
+      this.sharedService.selectProject(project);
+    }
+  }
 }

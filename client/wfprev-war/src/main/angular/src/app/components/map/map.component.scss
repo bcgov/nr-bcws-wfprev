@@ -42,3 +42,22 @@
 .content-row > * {
   height: 100%;
 }
+
+::ng-deep .leaflet-popup-content {
+    max-width: none !important;
+    width: auto !important;
+    display: inline-block;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+::ng-deep .leaflet-popup-content-wrapper {
+    max-width: none !important;
+    width: auto !important;
+    padding: 0 !important;
+    z-index: 10000;
+}
+
+::ng-deep .leaflet-popup-close-button {
+  display: none !important;
+}

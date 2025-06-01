@@ -406,3 +406,7 @@
 ::ng-deep .mat-expansion-panel-body {
   padding: 0 10px 16px !important;
 }
+
+::ng-deep mat-expansion-panel.selected-project {
+  background-color: #5595D9 !important;
+}

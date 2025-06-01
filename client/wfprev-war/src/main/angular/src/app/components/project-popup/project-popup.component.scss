@@ -1,0 +1,184 @@
+.popup-wrapper {
+  width: 560px;
+  max-height: 486px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  font-family: var(--wf-font-family-main);
+  background: white;
+
+  .popup-container{
+    overflow-y: auto;
+  }
+  .popup-header {
+    display: flex;
+    height: 46px;
+    border-bottom: 1px solid #D8D8D8;
+    background: #FFF;
+    padding: 10px 10px 6px 15px;
+    justify-content: space-between;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 400;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+  }
+
+  .popup-close {
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+  }
+
+  .popup-scrollable {
+    flex: 1;
+    overflow-y: auto;
+    scrollbar-width: thin;
+  }
+
+  .project-content {
+    padding: 5px 15px;
+  }
+
+  .first-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+    margin-bottom: 15px;
+  }
+
+  .second-row {
+    margin-bottom: 10px;
+  }
+
+  .info-group {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .label {
+    font-size: 14px;
+    font-weight: 400;
+    color: #474543;
+    margin-bottom: 2px;
+    white-space: nowrap;
+  }
+
+  .value {
+    font-size: 16px;
+    font-weight: 400;
+    color: #474543;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .description-value {
+    white-space: normal;
+    overflow: visible;
+    text-overflow: unset;
+    word-break: break-word;
+  }
+
+  .title{
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 400;
+    padding: 10px 10px 6px 15px;
+    border-bottom: 1px solid #D8D8D8;
+  }
+
+  .button-row {
+    display: flex;
+    justify-content: flex-end;  
+    padding: 10px 15px;
+    background: white;
+    border-top: 1px solid #D8D8D8;
+    position: sticky;
+    bottom: 0;
+    z-index: 2;
+    .view-details-button{
+        cursor: pointer;
+        padding: 12px !important;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        border-radius: 4px;
+        background: #013366;
+        .icon{
+            vertical-align: text-bottom;
+            padding-right: 5px;
+            width: 14px;
+            height: 14px;
+        }
+        .button-text{
+            color: #FFF;
+            font-size: 16px;
+            font-style: normal;
+            font-weight: 400;
+            line-height: normal;
+        }
+    }
+  }
+
+    .fiscal-content {
+      padding: 0 15px 10px;
+
+    .fiscal-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 8px;
+    }
+
+    .fiscal-card {
+      flex: 0 0 calc(50% - 6px);
+      max-width: calc(50% - 6px);
+      box-sizing: border-box;
+      border-radius: 12px;
+      border: 1px solid #3470B1;
+      padding: 8px 12px;
+      background-color: #FFF;
+      font-size: 14px;
+    }
+
+    .fiscal-header{
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .fiscal-title {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .activity-category {
+      margin-bottom: 8px;
+      border-bottom: 1px solid #D8D8D8;
+      margin: 0 -12px;
+      padding:0 12px;
+    }
+    
+    .fiscal-values{
+      padding-top: 4px;
+      display: flex;
+      .sub-title{
+        font-size: 14px;
+        font-weight: 400;
+      }
+      .sub-value{
+        font-size: 14px;
+        font-style: normal;
+        font-weight: 700;
+      }
+    }
+  }
+
+}

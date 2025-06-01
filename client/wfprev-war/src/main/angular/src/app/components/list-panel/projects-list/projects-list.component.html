@@ -24,10 +24,11 @@
 
   <div class="list-contents">
     <mat-accordion [multi]="true">
-      <mat-expansion-panel *ngFor="let project of displayedProjects?.length ? displayedProjects : []" (click)="highlightProjectPolygons(project)" #panel="matExpansionPanel">
-        <mat-expansion-panel-header class="expansion-panel-header">
+      <mat-expansion-panel hideToggle *ngFor="let project of displayedProjects?.length ? displayedProjects : []" [expanded]="expandedPanels[project.projectGuid]" 
+        [ngClass]="{ 'selected-project': selectedProjectGuid === project.projectGuid }" #panel="matExpansionPanel">
+        <mat-expansion-panel-header class="expansion-panel-header" (click)="onHeaderClick($event, project)">
           <mat-panel-title class="project-title">
-            <div class="custom-indicator">
+            <div class="custom-indicator" (click)="togglePanel(project.projectGuid, $event)">
               <img
                 *ngIf="!panel.expanded"
                 src="/assets/collapsed-indicator.svg"
