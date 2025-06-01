@@ -97,5 +97,18 @@ describe('ProjectPopupComponent', () => {
     expect(result).toBeNull();
   });
 
+  it('should return fiscals sorted in descending order by fiscalYear', () => {
+    component.project = {
+      projectFiscals: [
+        { fiscalYear: 2024 },
+        { fiscalYear: 2026 },
+        { fiscalYear: 2025 },
+        { fiscalYear: undefined } // should be treated as 0 and come last
+      ]
+    };
+
+    const sorted = component.sortedFiscals;
+    expect(sorted.map(f => f.fiscalYear)).toEqual([2026, 2025, 2024, undefined]);
+  });
 
 });

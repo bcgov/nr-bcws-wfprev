@@ -8,15 +8,15 @@
             <div class="first-row">
                 <div class="info-group">
                     <div class="label">Project Type</div>
-                    <div class="value" [title]="project.projectTypeDescription">{{ getCodeDescription(CodeTableKeys.PROJECT_TYPE_CODE, project.projectTypeCode)}}</div>
+                    <div class="value" [title]="getCodeDescription(CodeTableKeys.PROJECT_TYPE_CODE, project.projectTypeCode)">{{ getCodeDescription(CodeTableKeys.PROJECT_TYPE_CODE, project.projectTypeCode)}}</div>
                 </div>
                 <div class="info-group">
                     <div class="label">Business Area</div>
-                    <div class="value" [title]="project.programAreaName">{{ getCodeDescription(CodeTableKeys.PROGRAM_AREA_GUID, project.programAreaGuid)}}</div>
+                    <div class="value" [title]="getCodeDescription(CodeTableKeys.PROGRAM_AREA_GUID, project.programAreaGuid)">{{ getCodeDescription(CodeTableKeys.PROGRAM_AREA_GUID, project.programAreaGuid)}}</div>
                 </div>
                 <div class="info-group">
                     <div class="label">Nearest Community</div>
-                    <div class="value" [title]="project.nearestCommunity">{{ project.closestCommunityName }}</div>
+                    <div class="value" [title]="project.closestCommunityName">{{ project.closestCommunityName }}</div>
                 </div>
             </div>
             <div class="second-row info-group">
@@ -28,16 +28,16 @@
         <div class="fiscal-content">
             <ng-container *ngIf="project.projectFiscals?.length > 0; else noFiscal">
                 <div class="fiscal-grid">
-                    <div *ngFor="let fiscal of project.projectFiscals" class="fiscal-card">
+                    <div *ngFor="let fiscal of sortedFiscals" class="fiscal-card">
                         <div class="fiscal-header">
-                            <div class="fiscal-title">{{ fiscal.projectFiscalName }}</div>
+                            <div class="fiscal-title" [title]="fiscal.projectFiscalName">{{ fiscal.projectFiscalName }}</div>
                             <ng-container [ngSwitch]="fiscal.planFiscalStatusCode">
-                                <img *ngSwitchCase="'DRAFT'" src="/assets/draft-icon.svg" alt="draft" class="status-icon" />
-                                <img *ngSwitchCase="'PROPOSED'" src="/assets/proposed-icon.svg" alt="proposed" class="status-icon" />
-                                <img *ngSwitchCase="'IN_PROG'" src="/assets/in-progress-icon-only.svg" alt="in progress" class="status-icon" />
-                                <img *ngSwitchCase="'COMPLETE'" src="/assets/complete-icon.svg" alt="completed" class="status-icon" />
-                                <img *ngSwitchCase="'ABANDONED'" src="/assets/abandoned-icon.svg" alt="abandoned" class="status-icon" />
-                                <img *ngSwitchCase="'PREPARED'" src="/assets/prepared-icon.svg" alt="prepared" class="status-icon" />
+                                <img *ngSwitchCase="'DRAFT'" src="/assets/draft-icon.svg" alt="draft" class="status-icon" title="Draft"/>
+                                <img *ngSwitchCase="'PROPOSED'" src="/assets/proposed-icon.svg" alt="proposed" class="status-icon" title="Proposed"/>
+                                <img *ngSwitchCase="'IN_PROG'" src="/assets/in-progress-icon-only.svg" alt="in progress" class="status-icon" title="In Progress"/>
+                                <img *ngSwitchCase="'COMPLETE'" src="/assets/complete-icon.svg" alt="completed" class="status-icon" title="Complete"/>
+                                <img *ngSwitchCase="'ABANDONED'" src="/assets/abandoned-icon.svg" alt="abandoned" class="status-icon" title="Abandoned"/>
+                                <img *ngSwitchCase="'PREPARED'" src="/assets/prepared-icon.svg" alt="prepared" class="status-icon" title="Prepared"/>
                             </ng-container>
                         </div>
                         <div class="activity-category">{{ getCodeDescription(CodeTableKeys.ACTIVITY_CATEGORY_CODE, fiscal.activityCategoryCode)}}</div>
