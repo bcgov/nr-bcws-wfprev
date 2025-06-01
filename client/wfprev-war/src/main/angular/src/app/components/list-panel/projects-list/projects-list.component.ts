@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { Router } from '@angular/router';
@@ -14,8 +14,6 @@ import { SharedCodeTableService } from 'src/app/services/shared-code-table.servi
 import { SharedService } from 'src/app/services/shared-service';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { getFiscalYearDisplay } from 'src/app/utils/tools';
-import { MapComponent } from 'src/app/components/map/map.component';
-import { Project } from 'src/app/components/models';
 
 
 @Component({
@@ -26,7 +24,7 @@ import { Project } from 'src/app/components/models';
   styleUrls: ['./projects-list.component.scss'],
 })
 export class ProjectsListComponent implements OnInit {
-  @ViewChild(MapComponent) mapComponent?: MapComponent;
+  // @ViewChild(MapComponent) mapComponent?: MapComponent;
   [key: string]: any;
   projectList: any[] = [];
   programAreaCode: any[] = [];
@@ -531,7 +529,7 @@ export class ProjectsListComponent implements OnInit {
           //deselect
       this.selectedProjectGuid = null;
       this.sharedService.selectProject(undefined);
-      this.mapComponent?.closePopupForProject(project);
+      this.sharedService.triggerMapCommand('close', project);
     } else {
         // select
       this.selectedProjectGuid = project.projectGuid;

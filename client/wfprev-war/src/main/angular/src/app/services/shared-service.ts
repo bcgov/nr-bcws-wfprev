@@ -13,6 +13,9 @@ export class SharedService {
   private selectedProjectSubject = new Subject<any>();
   selectedProject$ = this.selectedProjectSubject.asObservable();
 
+  private _mapCommand$ = new Subject<{ action: 'open' | 'close', project: Project }>();
+  mapCommand$ = this._mapCommand$.asObservable();
+
   updateFilters(filters: any) {
     this.filtersSource.next(filters);
   }
@@ -23,5 +26,9 @@ export class SharedService {
 
   selectProject(project?: Project) {
     this.selectedProjectSubject.next(project);
+  }
+
+  triggerMapCommand(action: 'open' | 'close', project: Project) {
+    this._mapCommand$.next({ action, project });
   }
 }

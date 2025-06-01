@@ -76,6 +76,14 @@ ngAfterViewInit(): void {
     }
   });
 
+  this.sharedService.mapCommand$.subscribe(({ action, project }) => {
+    if (action === 'close') {
+      this.closePopupForProject(project);
+    } else if (action === 'open') {
+      this.openPopupForProject(project);
+    }
+  });
+
   this.initMap().then(() => {
     const smk = this.mapService.getSMKInstance();
     const map = smk?.$viewer?.map;
