@@ -48,19 +48,25 @@ export class ProjectPopupComponent implements OnInit {
     });
   }
 
-  assignCodeTableData(key: string, data: any): void {
-    switch (key) {
-      case CodeTableKeys.PROJECT_TYPE_CODE:
-        this.projectTypeCode = data._embedded.projectTypeCode ?? [];
-        break;
-      case CodeTableKeys.PROGRAM_AREA_CODE:
-        this.programAreaCode = data._embedded.programArea ?? [];
-        break;
-      case CodeTableKeys.ACTIVITY_CATEGORY_CODE:
-        this.activityCategoryCodes = data._embedded.activityCategoryCode ?? [];
-        break;
-    }
+assignCodeTableData(key: string, data: any): void {
+  const embedded = data?._embedded ?? {};
+
+  switch (key) {
+    case CodeTableKeys.PROJECT_TYPE_CODE:
+      this.projectTypeCode = embedded.projectTypeCode ?? [];
+      break;
+    case CodeTableKeys.PROGRAM_AREA_CODE:
+      this.programAreaCode = embedded.programArea ?? [];
+      break;
+    case CodeTableKeys.ACTIVITY_CATEGORY_CODE:
+      this.activityCategoryCodes = embedded.activityCategoryCode ?? [];
+      break;
+    case CodeTableKeys.PLAN_FISCAL_STATUS_CODE:
+      this.planFiscalStatusCode = embedded.planFiscalStatusCode ?? [];
+      break;
   }
+}
+
 
   getCodeDescription(controlKey: string, value: any): string | null {
     switch (controlKey) {

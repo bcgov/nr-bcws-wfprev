@@ -113,8 +113,8 @@ describe('MapComponent', () => {
     mapServiceMock.getSMKInstance.and.returnValue(createMockSMKInstance());
 
     TestBed.configureTestingModule({
-      declarations: [MapComponent],
       imports: [
+        MapComponent,
         HttpClientTestingModule,
         BrowserAnimationsModule,
       ],
