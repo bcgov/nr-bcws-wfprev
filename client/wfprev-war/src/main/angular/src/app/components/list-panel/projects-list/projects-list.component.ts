@@ -15,6 +15,7 @@ import { SharedService } from 'src/app/services/shared-service';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { getFiscalYearDisplay } from 'src/app/utils/tools';
 import { MapComponent } from 'src/app/components/map/map.component';
+import { Project } from 'src/app/components/models';
 
 
 @Component({
@@ -45,7 +46,8 @@ export class ProjectsListComponent implements OnInit {
   currentPage = 0;
   isLoading = false;
   selectedProjectGuid: string | null = null;
-  getFiscalYearDisplay = getFiscalYearDisplay
+  getFiscalYearDisplay = getFiscalYearDisplay;
+  expandedPanels: Record<string, boolean> = {};
   constructor(
     private readonly router: Router,
     private readonly projectService: ProjectService,
@@ -508,6 +510,21 @@ export class ProjectsListComponent implements OnInit {
     if (!project?.projectFiscals?.length) return [];
     return [...project.projectFiscals].sort((a, b) => b.fiscalYear - a.fiscalYear);
   }
+
+  onHeaderClick(event: MouseEvent, project: any): void {
+    const clickedInsideChevron = (event.target as HTMLElement).closest('.custom-indicator');
+    if (!clickedInsideChevron) {
+      event.stopPropagation();
+      this.onListItemClick(project);
+    }
+  }
+
+
+  togglePanel(guid: string, event: MouseEvent): void {
+    event.stopPropagation();
+    this.expandedPanels[guid] = !this.expandedPanels[guid];
+  }
+
 
   onListItemClick(project: any): void {
     if (this.selectedProjectGuid === project.projectGuid) {

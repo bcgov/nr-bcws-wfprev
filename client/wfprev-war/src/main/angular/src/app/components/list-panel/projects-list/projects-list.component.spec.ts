@@ -240,7 +240,8 @@ describe('ProjectsListComponent', () => {
           projectNumber: 3,
           projectName: 'Project 3',
           latitude: null,
-          longitude: -123.1207
+          longitude: -123.1207,
+          projectGuid: 'guid-z'
         }
       ];
       
@@ -546,6 +547,7 @@ describe('ProjectsListComponent', () => {
     const mockFilters = { searchText: 'fuel' };
     const mockProjects = [
       {
+        projectGuid: 'guid-z',
         projectName: 'Alpha',
         projectNumber: 1,
         bcParksRegionOrgUnitId: 10,
@@ -585,6 +587,7 @@ describe('ProjectsListComponent', () => {
   it('should load and process projects on loadProjects()', () => {
     const mockProjects = [
       {
+        projectGuid: 'guid-z',
         projectName: 'Z Project',
         bcParksRegionOrgUnitId: 1,
         bcParksSectionOrgUnitId: 2,
@@ -606,6 +609,7 @@ describe('ProjectsListComponent', () => {
         forestRegionOrgUnitId: 5
       },
       {
+        projectGuid: 'guid-z',
         projectName: 'A Project',
         bcParksRegionOrgUnitId: 1,
         bcParksSectionOrgUnitId: 2,
@@ -698,7 +702,8 @@ describe('ProjectsListComponent', () => {
     component.displayedProjects = [{
       latitude: 49.2827,
       longitude: -123.1207,
-      projectName: 'Test Project'
+      projectName: 'Test Project',
+      projectGuid: 'guid-z'
     }];
 
     component.loadCoordinatesOnMap();

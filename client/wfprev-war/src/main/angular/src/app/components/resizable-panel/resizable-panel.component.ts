@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, NgModule, Output, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatTabsModule } from '@angular/material/tabs';
 import { ProjectsListComponent } from 'src/app/components/list-panel/projects-list/projects-list.component';
@@ -9,8 +9,8 @@ import { ProjectsListComponent } from 'src/app/components/list-panel/projects-li
   imports: [CommonModule, MatTabsModule,ProjectsListComponent],
   templateUrl: './resizable-panel.component.html',
   styleUrls: ['./resizable-panel.component.scss'],
-  
 })
+
 export class ResizablePanelComponent {
   panelWidth: string = '50vw';
   breakpoints = [5, 50, 90];

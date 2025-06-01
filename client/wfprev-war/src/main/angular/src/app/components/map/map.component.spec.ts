@@ -3,7 +3,6 @@ import { ComponentFixture, TestBed, fakeAsync, flush, tick } from '@angular/core
 import { MapComponent } from './map.component';
 import { MapConfigService } from 'src/app/services/map-config.service';
 import { MapService } from 'src/app/services/map.service';
-import { ResizablePanelComponent } from 'src/app/components/resizable-panel/resizable-panel.component';
 import { of } from 'rxjs';
 import { ElementRef } from '@angular/core';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
@@ -114,9 +113,8 @@ describe('MapComponent', () => {
     mapServiceMock.getSMKInstance.and.returnValue(createMockSMKInstance());
 
     TestBed.configureTestingModule({
+      declarations: [MapComponent],
       imports: [
-        MapComponent,
-        ResizablePanelComponent,
         HttpClientTestingModule,
         BrowserAnimationsModule,
       ],
