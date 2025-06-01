@@ -82,4 +82,33 @@ describe('ProjectPopupComponent', () => {
 
     expect(closeSpy).toHaveBeenCalled();
   });
+
+  it('should return correct activity category code description', () => {
+    component.activityCategoryCodes = [
+      { activityCategoryCode: 'AC1', description: 'Fuel Management', displayOrder: 1, effectiveDate: '', expiryDate: '' }
+    ];
+
+    const result = component.getCodeDescription(CodeTableKeys.ACTIVITY_CATEGORY_CODE, 'AC1');
+    expect(result).toBe('Fuel Management');
+  });
+
+  it('should return null for unknown control key in getCodeDescription', () => {
+    const result = component.getCodeDescription('UNKNOWN_KEY', 'someValue');
+    expect(result).toBeNull();
+  });
+
+  it('should return fiscals sorted in descending order by fiscalYear', () => {
+    component.project = {
+      projectFiscals: [
+        { fiscalYear: 2024 },
+        { fiscalYear: 2026 },
+        { fiscalYear: 2025 },
+        { fiscalYear: undefined } // should be treated as 0 and come last
+      ]
+    };
+
+    const sorted = component.sortedFiscals;
+    expect(sorted.map(f => f.fiscalYear)).toEqual([2026, 2025, 2024, undefined]);
+  });
+
 });
