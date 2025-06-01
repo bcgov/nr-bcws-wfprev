@@ -108,7 +108,7 @@ describe('ProjectPopupComponent', () => {
     };
 
     const sorted = component.sortedFiscals;
-    expect(sorted.map(f => f.fiscalYear)).toEqual([2026, 2025, 2024, undefined]);
+    expect(sorted.map((f: { fiscalYear?: number }) => f.fiscalYear)).toEqual([2026, 2025, 2024, undefined]);
   });
 
 });
