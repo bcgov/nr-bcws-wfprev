@@ -82,4 +82,20 @@ describe('ProjectPopupComponent', () => {
 
     expect(closeSpy).toHaveBeenCalled();
   });
+
+  it('should return correct activity category code description', () => {
+    component.activityCategoryCodes = [
+      { activityCategoryCode: 'AC1', description: 'Fuel Management', displayOrder: 1, effectiveDate: '', expiryDate: '' }
+    ];
+
+    const result = component.getCodeDescription(CodeTableKeys.ACTIVITY_CATEGORY_CODE, 'AC1');
+    expect(result).toBe('Fuel Management');
+  });
+
+  it('should return null for unknown control key in getCodeDescription', () => {
+    const result = component.getCodeDescription('UNKNOWN_KEY', 'someValue');
+    expect(result).toBeNull();
+  });
+
+
 });
