@@ -38,7 +38,9 @@ export class MapComponent implements AfterViewInit, OnDestroy  {
   private latestProjects: any[] = [];
   private hasClusterBeenAddedToMap = false;
   private markersClusterGroup: L.MarkerClusterGroup | null = null;
-
+  private projectMarkerMap = new Map<string, L.Marker>();
+  private activeMarker: L.Marker | null = null;
+  private selectedProject: Project | undefined;
   constructor(
     protected cdr: ChangeDetectorRef,
     private readonly mapService: MapService,
@@ -74,10 +76,6 @@ ngAfterViewInit(): void {
     }
   });
 
-  this.sharedService.selectedProject$.subscribe(project => {
-    this.openPopupForProject(project);
-  });
-
   this.initMap().then(() => {
     const smk = this.mapService.getSMKInstance();
     const map = smk?.$viewer?.map;
@@ -105,6 +103,21 @@ ngAfterViewInit(): void {
     this.isMapReady = true;
     this.updateMarkers(this.latestProjects);
   });
+
+    this.sharedService.selectedProject$.subscribe(project => {
+      if (!project && this.selectedProject) {
+        const previous = this.selectedProject;
+        this.selectedProject = undefined;
+        this.closePopupForProject(previous);
+        return;
+      }
+
+      this.selectedProject = project;
+
+      if (project) {
+        this.openPopupForProject(project);
+      }
+    });
 }
 
   private async initMap(): Promise<void> {
@@ -144,6 +157,8 @@ ngAfterViewInit(): void {
 
     try {
       this.markersClusterGroup.clearLayers();
+      this.projectMarkerMap.clear();
+      this.activeMarker = null;
     } catch (err) {
       console.error('[Map] Error clearing markers:', err);
     }
@@ -160,7 +175,8 @@ ngAfterViewInit(): void {
               popupAnchor: [1, -34],
             })
           });
-
+          this.projectMarkerMap.set(project.projectGuid, marker);
+          // Create and attach popup
           const popupDiv = document.createElement('div');
           const cmpRef = createComponent(ProjectPopupComponent, {
             environmentInjector: this.injector
@@ -175,17 +191,21 @@ ngAfterViewInit(): void {
             minWidth: 0,
             autoPan: true,
           });
+          marker.on('click', () => {
+            this.sharedService.selectProject(project);
+          });
           this.markersClusterGroup!.addLayer(marker);
         } catch (err) {
           console.error('Map Failed to add marker:', project, err);
         }
       });
+      
   }
 
   openPopupForProject(project: Project): void {
     if (
-      project.latitude == null ||
-      project.longitude == null ||
+      project?.latitude == null ||
+      project?.longitude == null ||
       !this.markersClusterGroup
     ) {
       return;
@@ -206,14 +226,77 @@ ngAfterViewInit(): void {
       });
 
     if (targetMarker) {
+      // Reset previous active marker icon
+      if (this.activeMarker && this.activeMarker !== targetMarker) {
+        this.activeMarker.setIcon(
+          L.icon({
+            iconUrl: '/assets/blue-pin-drop.svg',
+            iconSize: [30, 50],
+            iconAnchor: [12, 41],
+            popupAnchor: [1, -34],
+          })
+        );
+      }
+
+      // Set active icon for selected marker
+      targetMarker.setIcon(
+        L.icon({
+          iconUrl: '/assets/active-pin-drop.svg',
+          iconSize: [50, 70],
+          iconAnchor: [20, 51],
+          popupAnchor: [1, -34],
+        })
+      );
+
+      this.activeMarker = targetMarker;
+
       this.markersClusterGroup.zoomToShowLayer(targetMarker, () => {
         targetMarker.openPopup();
+
+        targetMarker.off('popupclose'); 
+
+        targetMarker.on('popupclose', () => {
+          targetMarker.setIcon(
+            L.icon({
+              iconUrl: '/assets/blue-pin-drop.svg',
+              iconSize: [30, 50],
+              iconAnchor: [12, 41],
+              popupAnchor: [1, -34],
+            })
+          );
+
+          if (this.selectedProject?.projectGuid === project.projectGuid) {
+            this.sharedService.selectProject(undefined);
+          }
+        });
         requestAnimationFrame(() => {
           map.invalidateSize();
         });
       });
     }
   }
+
+  public closePopupForProject(project: Project): void {
+    const marker = this.projectMarkerMap.get(project.projectGuid);
+    if (marker) {
+      marker.closePopup();
+
+      marker.setIcon(
+        L.icon({
+          iconUrl: '/assets/blue-pin-drop.svg',
+          iconSize: [30, 50],
+          iconAnchor: [12, 41],
+          popupAnchor: [1, -34],
+        })
+      );
+
+      // if it's the active marker, reset reference
+      if (this.activeMarker === marker) {
+        this.activeMarker = null;
+      }
+    }
+  }
+
 
 
 }

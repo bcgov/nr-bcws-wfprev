@@ -18,7 +18,7 @@ export interface Project {
   isMultiFiscalYearProj: boolean;
   programAreaGuid: string;
   projectDescription: string;
-  projectGuid?: string;
+  projectGuid: string;
   projectLead: string;
   projectLeadEmailAddress: string;
   projectName: string;

@@ -24,8 +24,8 @@
 
   <div class="list-contents">
     <mat-accordion [multi]="true">
-      <mat-expansion-panel *ngFor="let project of displayedProjects?.length ? displayedProjects : []" (click)="highlightProjectPolygons(project); onListItemClick(project)"
-        #panel="matExpansionPanel">
+      <mat-expansion-panel *ngFor="let project of displayedProjects?.length ? displayedProjects : []" (click)="onListItemClick(project) "
+        [ngClass]="{ 'selected-project': selectedProjectGuid === project.projectGuid }" #panel="matExpansionPanel">
         <mat-expansion-panel-header class="expansion-panel-header">
           <mat-panel-title class="project-title">
             <div class="custom-indicator">

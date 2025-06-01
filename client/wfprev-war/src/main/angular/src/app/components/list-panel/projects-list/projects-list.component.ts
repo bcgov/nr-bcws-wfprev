@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { Router } from '@angular/router';
@@ -14,6 +14,7 @@ import { SharedCodeTableService } from 'src/app/services/shared-code-table.servi
 import { SharedService } from 'src/app/services/shared-service';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { getFiscalYearDisplay } from 'src/app/utils/tools';
+import { MapComponent } from 'src/app/components/map/map.component';
 
 
 @Component({
@@ -24,6 +25,7 @@ import { getFiscalYearDisplay } from 'src/app/utils/tools';
   styleUrls: ['./projects-list.component.scss'],
 })
 export class ProjectsListComponent implements OnInit {
+  @ViewChild(MapComponent) mapComponent?: MapComponent;
   [key: string]: any;
   projectList: any[] = [];
   programAreaCode: any[] = [];
@@ -42,7 +44,7 @@ export class ProjectsListComponent implements OnInit {
   pageSize = 25;
   currentPage = 0;
   isLoading = false;
-  private markersClusterGroup: L.MarkerClusterGroup | null = null;
+  selectedProjectGuid: string | null = null;
   getFiscalYearDisplay = getFiscalYearDisplay
   constructor(
     private readonly router: Router,
@@ -50,12 +52,18 @@ export class ProjectsListComponent implements OnInit {
     private readonly codeTableService: CodeTableServices,
     private readonly dialog: MatDialog,
     private readonly sharedCodeTableService: SharedCodeTableService,
-    public readonly sharedService: SharedService
+    public readonly sharedService: SharedService,
+    private readonly cdr: ChangeDetectorRef
   ) {
   }
   ngOnInit(): void {
     this.loadCodeTables();
     this.loadProjects();
+    
+    this.sharedService.selectedProject$.subscribe(project => {
+      this.selectedProjectGuid = project?.projectGuid ?? null;
+      this.cdr.markForCheck();
+    });
 
     this.sharedService.filters$.subscribe(filters => {
       if (filters) {
@@ -487,7 +495,6 @@ export class ProjectsListComponent implements OnInit {
     this.displayedProjects = this.allProjects.slice(0, this.pageSize);
     this.sharedService.updateDisplayedProjects(this.displayedProjects);
     this.isLoading = false;
-    this.loadCoordinatesOnMap();
   }
 
   handleProjectError(err: any): void {
@@ -503,7 +510,15 @@ export class ProjectsListComponent implements OnInit {
   }
 
   onListItemClick(project: any): void {
-    this.sharedService.selectProject(project);
+    if (this.selectedProjectGuid === project.projectGuid) {
+          //deselect
+      this.selectedProjectGuid = null;
+      this.sharedService.selectProject(undefined);
+      this.mapComponent?.closePopupForProject(project);
+    } else {
+        // select
+      this.selectedProjectGuid = project.projectGuid;
+      this.sharedService.selectProject(project);
+    }
   }
-
 }
