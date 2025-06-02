@@ -3,7 +3,7 @@ import { ComponentFixture, TestBed, fakeAsync, flush, tick } from '@angular/core
 import { MapComponent } from './map.component';
 import { MapConfigService } from 'src/app/services/map-config.service';
 import { MapService } from 'src/app/services/map.service';
-import { of } from 'rxjs';
+import { of, Subject } from 'rxjs';
 import { ElementRef } from '@angular/core';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
@@ -387,6 +387,78 @@ describe('MapComponent', () => {
       );
       expect(component['activeMarker']).toBeNull();
     });
+  });
+  
+  describe('selectedProject$ behavior', () => {
+    let selectedProjectSubject: Subject<any>;
+    let closeSpy: jasmine.Spy;
+    let openSpy: jasmine.Spy;
+
+    beforeEach(() => {
+      selectedProjectSubject = new Subject<any>();
+      (component as any).sharedService.selectedProject$ = selectedProjectSubject.asObservable();
+
+      closeSpy = spyOn(component, 'closePopupForProject');
+      openSpy = spyOn(component, 'openPopupForProject');
+    });
+
+    it('should call closePopupForProject when project is undefined and selectedProject is set', fakeAsync(() => {
+      const prevProject = { projectGuid: 'test-guid' };
+      component['selectedProject'] = prevProject;
+
+      component.ngAfterViewInit();
+      tick();
+
+      selectedProjectSubject.next(undefined);
+      tick();
+
+      expect(closeSpy).toHaveBeenCalledWith(prevProject);
+      expect(component['selectedProject']).toBeUndefined();
+    }));
+
+    it('should call openPopupForProject when a new project is selected', fakeAsync(() => {
+      const newProject = { projectGuid: 'new-guid' };
+      component['selectedProject'] = undefined;
+
+      component.ngAfterViewInit();
+      tick();
+
+      selectedProjectSubject.next(newProject);
+      tick();
+
+      expect(openSpy).toHaveBeenCalledWith(newProject);
+      expect(component['selectedProject']).toBe(newProject);
+    }));
+
+    it('should do nothing if both current and incoming projects are undefined', fakeAsync(() => {
+      component['selectedProject'] = undefined;
+
+      component.ngAfterViewInit();
+      tick();
+
+      selectedProjectSubject.next(undefined);
+      tick();
+
+      expect(closeSpy).not.toHaveBeenCalled();
+      expect(openSpy).not.toHaveBeenCalled();
+    }));
+    
+    it('should assign selectedProject and call openPopupForProject if project is truthy', fakeAsync(() => {
+      const testProject = { projectGuid: '123', latitude: 50, longitude: -120 };
+
+      component['selectedProject'] = undefined;
+
+      const openPopupSpy = spyOn(component, 'openPopupForProject');
+
+      component.ngAfterViewInit();
+      tick();
+
+      selectedProjectSubject.next(testProject);
+      tick();
+
+      expect(component['selectedProject']).toBe(testProject);
+      expect(openPopupSpy).toHaveBeenCalledWith(testProject);
+    }));
   });
 
 
