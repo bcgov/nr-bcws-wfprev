@@ -59,7 +59,7 @@ describe('FiscalCardComponent', () => {
 
   describe('getStatusIcon', () => {
     it('should return icon for a known status code', () => {
-      const icon = component.getStatusIcon('APPROVED');
+      const icon = component.getStatusIcon('COMPLETE');
       expect(icon).toBeTruthy();
     });
 
