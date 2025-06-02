@@ -28,19 +28,8 @@
         [ngClass]="{ 'selected-project': selectedProjectGuid === project.projectGuid }" #panel="matExpansionPanel">
         <mat-expansion-panel-header class="expansion-panel-header" (click)="onHeaderClick($event, project)">
           <mat-panel-title class="project-title">
-            <div class="custom-indicator" (click)="togglePanel(project.projectGuid, $event)">
-              <img
-                *ngIf="!panel.expanded"
-                src="/assets/collapsed-indicator.svg"
-                alt="Collapsed Icon"
-                class="indicator-icon"
-              />
-              <img
-                *ngIf="panel.expanded"
-                src="/assets/expanded-indicator.svg"
-                alt="Expanded Icon"
-                class="indicator-icon"
-              />
+            <div class="custom-indicator">
+              <wfprev-expansion-indicator [isExpanded]="panel.expanded" [iconSize]="'17px'"></wfprev-expansion-indicator>
             </div>
             <span class="project-name"> {{ project.projectName }} </span>
             <div class="fiscal-action-container">
