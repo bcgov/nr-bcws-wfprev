@@ -8,7 +8,7 @@ describe('IconButtonComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [IconButtonComponent] // standalone component
+      imports: [IconButtonComponent]
     }).compileComponents();
 
     fixture = TestBed.createComponent(IconButtonComponent);
