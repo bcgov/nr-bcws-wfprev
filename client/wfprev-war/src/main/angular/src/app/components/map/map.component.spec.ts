@@ -13,7 +13,7 @@ import { ProjectService } from 'src/app/services/project-services';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ActivatedRoute } from '@angular/router';
 import * as L from 'leaflet';
-import { EnvironmentInjector } from '@angular/core';
+import { Project } from 'src/app/components/models';
 
 class MockAppConfigService {
   getConfig() {
@@ -75,6 +75,33 @@ class MockProjectService {
     return of({ projectGuid: 'test-guid' });
   }
 }
+
+function createMockProject(overrides: Partial<Project> = {}): Project {
+  return {
+    bcParksRegionOrgUnitId: 1,
+    bcParksSectionOrgUnitId: 1,
+    closestCommunityName: 'Test Town',
+    fireCentreOrgUnitId: 1,
+    forestDistrictOrgUnitId: 1,
+    forestRegionOrgUnitId: 1,
+    isMultiFiscalYearProj: false,
+    programAreaGuid: 'program-123',
+    projectDescription: 'Test description',
+    projectGuid: 'test-guid',
+    projectLead: 'Jane Doe',
+    projectLeadEmailAddress: 'jane@example.com',
+    projectName: 'Test Project',
+    projectNumber: 12345,
+    siteUnitName: 'Site A',
+    totalActualAmount: 1000,
+    totalAllocatedAmount: 1000,
+    totalFundingRequestAmount: 500,
+    totalPlannedCostPerHectare: 100,
+    totalPlannedProjectSizeHa: 10,
+    ...overrides
+  };
+}
+
 
 describe('MapComponent', () => {
   let component: MapComponent;
@@ -403,7 +430,7 @@ describe('MapComponent', () => {
     });
 
     it('should call closePopupForProject when project is undefined and selectedProject is set', fakeAsync(() => {
-      const prevProject = { projectGuid: 'test-guid' };
+      const prevProject = createMockProject({ projectGuid: 'test-guid' });
       component['selectedProject'] = prevProject;
 
       component.ngAfterViewInit();
@@ -417,7 +444,7 @@ describe('MapComponent', () => {
     }));
 
     it('should call openPopupForProject when a new project is selected', fakeAsync(() => {
-      const newProject = { projectGuid: 'new-guid' };
+      const newProject = createMockProject({ projectGuid: 'new-guid' });
       component['selectedProject'] = undefined;
 
       component.ngAfterViewInit();
@@ -427,7 +454,7 @@ describe('MapComponent', () => {
       tick();
 
       expect(openSpy).toHaveBeenCalledWith(newProject);
-      expect(component['selectedProject']).toBe(newProject);
+      expect(component['selectedProject'] as Project | undefined).toEqual(newProject);
     }));
 
     it('should do nothing if both current and incoming projects are undefined', fakeAsync(() => {
@@ -444,11 +471,13 @@ describe('MapComponent', () => {
     }));
     
     it('should assign selectedProject and call openPopupForProject if project is truthy', fakeAsync(() => {
-      const testProject = { projectGuid: '123', latitude: 50, longitude: -120 };
+      const testProject = createMockProject({
+        projectGuid: '123',
+        latitude: 50,
+        longitude: -120,
+      });
 
       component['selectedProject'] = undefined;
-
-      const openPopupSpy = spyOn(component, 'openPopupForProject');
 
       component.ngAfterViewInit();
       tick();
@@ -456,9 +485,10 @@ describe('MapComponent', () => {
       selectedProjectSubject.next(testProject);
       tick();
 
-      expect(component['selectedProject']).toBe(testProject);
-      expect(openPopupSpy).toHaveBeenCalledWith(testProject);
+      expect(component['selectedProject'] as Project | undefined).toEqual(testProject);
+      expect(openSpy).toHaveBeenCalledWith(testProject);
     }));
+
   });
 
 
