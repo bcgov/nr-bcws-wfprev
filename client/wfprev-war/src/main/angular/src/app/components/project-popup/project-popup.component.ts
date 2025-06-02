@@ -5,11 +5,13 @@ import { CodeTableKeys } from 'src/app/utils/constants';
 import L from 'leaflet';
 import { ActivityCategoryCodeModel, PlanFiscalStatusCodeModel, ProgramAreaModel, ProjectTypeCodeModel } from 'src/app/components/models';
 import { getFiscalYearDisplay } from 'src/app/utils/tools';
+import { FiscalCardComponent } from 'src/app/components/shared/fiscal-card/fiscal-card.component';
+import { IconButtonComponent } from 'src/app/components/shared/icon-button/icon-button.component';
 
 @Component({
   selector: 'app-project-popup',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FiscalCardComponent, IconButtonComponent],
   templateUrl: './project-popup.component.html',
   styleUrls: ['./project-popup.component.scss']
 })
@@ -31,10 +33,10 @@ export class ProjectPopupComponent implements OnInit {
 
   loadCodeTables(): void {
     const codeTables = [
-      { name: 'projectTypeCodes', embeddedKey: 'projectTypeCode' },
-      { name: 'programAreaCodes', embeddedKey: 'programAreaCode' },
-      { name: 'planFiscalStatusCodes', embeddedKey: 'planFiscalStatusCode'},
-      { name: 'activityCategoryCodes', embeddedKey: 'activityCategoryCode'}
+      { name: 'projectTypeCodes', embeddedKey: CodeTableKeys.PROJECT_TYPE_CODE },
+      { name: 'programAreaCodes', embeddedKey: CodeTableKeys.PROGRAM_AREA_CODE },
+      { name: 'planFiscalStatusCodes', embeddedKey: CodeTableKeys.PLAN_FISCAL_STATUS_CODE },
+      { name: 'activityCategoryCodes', embeddedKey: CodeTableKeys.ACTIVITY_CATEGORY_CODE }
     ];
 
     codeTables.forEach(table => {

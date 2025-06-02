@@ -407,6 +407,6 @@
   padding: 0 10px 16px !important;
 }
 
-::ng-deep mat-expansion-panel.selected-project {
+:host ::ng-deep mat-expansion-panel.selected-project {
   background-color: #C1DDFC !important;
 }

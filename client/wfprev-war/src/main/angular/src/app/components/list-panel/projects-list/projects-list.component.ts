@@ -12,15 +12,16 @@ import { CodeTableServices } from 'src/app/services/code-table-services';
 import { ProjectService } from 'src/app/services/project-services';
 import { SharedCodeTableService } from 'src/app/services/shared-code-table.service';
 import { SharedService } from 'src/app/services/shared-service';
-import { getFiscalYearDisplay } from 'src/app/utils/tools';
+import { getBluePinIcon, getFiscalYearDisplay, PlanFiscalStatusIcons } from 'src/app/utils/tools';
 import { ResourcesRoutes, getActiveMap } from 'src/app/utils';
 import { ExpansionIndicatorComponent } from '../../shared/expansion-indicator/expansion-indicator.component';
+import { IconButtonComponent } from 'src/app/components/shared/icon-button/icon-button.component';
 
 
 @Component({
   selector: 'app-projects-list',
   standalone: true,
-  imports: [MatSlideToggleModule, CommonModule, MatExpansionModule, MatTooltipModule, ExpansionIndicatorComponent],
+  imports: [MatSlideToggleModule, CommonModule, MatExpansionModule, MatTooltipModule, ExpansionIndicatorComponent, IconButtonComponent],
   templateUrl: './projects-list.component.html',
   styleUrls: ['./projects-list.component.scss'],
 })
@@ -410,13 +411,7 @@ export class ProjectsListComponent implements OnInit {
     if (marker) {
       // Reset the previously active marker and polygons if any
       if (this.activeMarker) {
-        this.activeMarker.setIcon(
-          L.icon({
-            iconUrl: '/assets/blue-pin-drop.svg', // Reset to the default icon
-            iconSize: [30, 50],
-            iconAnchor: [12, 41],
-            popupAnchor: [1, -34],
-          })
+        this.activeMarker.setIcon(getBluePinIcon()
         );
   
         const associatedPolygons = this.markerPolygons.get(this.activeMarker);
@@ -510,19 +505,12 @@ export class ProjectsListComponent implements OnInit {
   }
 
   onHeaderClick(event: MouseEvent, project: any): void {
-    const clickedInsideChevron = (event.target as HTMLElement).closest('.custom-indicator');
-    if (!clickedInsideChevron) {
+    const clickedInsideExpansionIcon  = (event.target as HTMLElement).closest('.custom-indicator');
+    if (!clickedInsideExpansionIcon) {
       event.stopPropagation();
       this.onListItemClick(project);
     }
   }
-
-
-  togglePanel(guid: string, event: MouseEvent): void {
-    event.stopPropagation();
-    this.expandedPanels[guid] = !this.expandedPanels[guid];
-  }
-
 
   onListItemClick(project: any): void {
     if (this.selectedProjectGuid === project.projectGuid) {
@@ -535,5 +523,9 @@ export class ProjectsListComponent implements OnInit {
       this.selectedProjectGuid = project.projectGuid;
       this.sharedService.selectProject(project);
     }
+  }
+
+  getStatusIcon(status: string) {
+    return PlanFiscalStatusIcons[status];
   }
 }

@@ -4,10 +4,15 @@
             <div class="header-container">
                 <wfprev-expansion-indicator [isExpanded]="activitiesPanel.expanded"></wfprev-expansion-indicator>
                 <span class="project-title">Activities</span>
-                <button class="dropdown-button" mat-icon-button (click)="addActivity(); $event.stopPropagation()" *ngIf="fiscalGuid" [disabled]="isNewActivityBeingAdded">
-                    <img class="action-icon" alt="actions" src="/assets/add-button.svg">
-                    <span>Add Activity</span>
-                </button>
+                <app-icon-button
+                    *ngIf="fiscalGuid"
+                    [text]="'Add Activity'"
+                    [icon]="'/assets/add-button.svg'"
+                    [alt]="'add-activity'"
+                    [iconSize]="19"
+                    [disabled]="isNewActivityBeingAdded"
+                    (clicked)="addActivity()">
+                </app-icon-button>
             </div>
         </mat-expansion-panel-header>
         <div *ngIf="activities?.length">

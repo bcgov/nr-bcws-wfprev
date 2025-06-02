@@ -6,9 +6,13 @@
     <!-- File Upload Section -->
       <div class="file-upload">
         <input #fileInput hidden type="file" (change)="onFileSelected($event)" [accept]="getAcceptedFileTypes()"/>
-        <button class="choose-file" (click)="fileInput.click()">
-          <img alt="upload-icon" class="icon" src="/assets/upload.svg" />
-          Choose File</button>
+        <app-icon-button
+          [text]="'Choose File'"
+          [icon]="'/assets/upload.svg'"
+          [alt]="'upload-file'"
+          [iconSize]="19"
+          (clicked)="fileInput.click()">
+        </app-icon-button>
         <span>{{ getFileName() }}</span>
       </div>
      <div class="attachment-detail">
