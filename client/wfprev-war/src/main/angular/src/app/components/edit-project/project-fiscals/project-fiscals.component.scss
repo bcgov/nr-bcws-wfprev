@@ -273,6 +273,19 @@ mat-expansion-panel {
   justify-content: flex-start; /* Align tabs to the left */
 }
 
+:host ::ng-deep .mat-mdc-tab-body-wrapper {
+  overflow: visible !important;
+}
+
+:host ::ng-deep .mat-mdc-tab-body-content {
+  overflow: visible !important;
+}
+
+:host ::ng-deep .mat-mdc-tab-body.mat-mdc-tab-body-active {
+  overflow: visible !important;
+}
+
+
 .fiscal-expansion-panel {
   border-radius: 10px;
   border: 1px solid #d9d9d9;
@@ -397,3 +410,4 @@ mat-expansion-panel {
 ::ng-deep .mat-expansion-panel-content {
   border-top: 1px solid #d9d9d9;
 }
+
