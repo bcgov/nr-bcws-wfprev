@@ -10,7 +10,11 @@
 
     .form-item {
       flex: 1 1 calc(25% - 15px); // 4 items per row with a 15px gap
-      max-width: calc(25% - 15px);
+      
+      &.quarter-width-max {
+        max-width: calc(25% - 15px);
+      }
+
       min-width: 200px;
       .error {
         color: red;
