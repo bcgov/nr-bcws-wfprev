@@ -1,0 +1,13 @@
+.expansion-indicator {
+  transition: transform 0.3s ease-in-out;
+  display: inline-block; /* Ensures proper alignment and sizing */
+  vertical-align: middle; /* Aligns icon nicely with text if needed */
+}
+
+.expansion-indicator.expanded {
+  transform: rotate(180deg);
+}
+
+:host {
+  align-self: center;
+}
