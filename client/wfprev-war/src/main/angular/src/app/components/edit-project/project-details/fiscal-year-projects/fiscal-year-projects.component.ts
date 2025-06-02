@@ -1,15 +1,16 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit} from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { MatExpansionModule } from '@angular/material/expansion';
+import { MatTableModule } from '@angular/material/table';
 import { ActivatedRoute } from '@angular/router';
 import { ProjectService } from 'src/app/services/project-services';
 import { convertFiscalYear } from 'src/app/utils/tools';
-import { MatTableModule } from '@angular/material/table';
+import { ExpansionIndicatorComponent } from "../../../shared/expansion-indicator/expansion-indicator.component";
 
 @Component({
-  selector: 'app-fiscal-year-projects',
+  selector: 'wfprev-fiscal-year-projects',
   standalone: true,
-  imports: [MatExpansionModule,CommonModule, MatTableModule],
+  imports: [MatExpansionModule, CommonModule, MatTableModule, ExpansionIndicatorComponent],
   templateUrl: './fiscal-year-projects.component.html',
   styleUrl: './fiscal-year-projects.component.scss'
 })

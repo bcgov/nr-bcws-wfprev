@@ -162,12 +162,7 @@
     <mat-expansion-panel #panel="matExpansionPanel">
       <mat-expansion-panel-header class="expansion-panel-header">
         <mat-panel-title class="project-title">
-          <div class="custom-indicator">
-            <img *ngIf="!panel.expanded" src="/assets/collapsed-indicator.svg" alt="Collapsed Icon"
-              class="indicator-icon" />
-            <img *ngIf="panel.expanded" src="/assets/expanded-indicator.svg" alt="Expanded Icon"
-              class="indicator-icon" />
-          </div>
+          <wfprev-expansion-indicator [isExpanded]="panel.expanded"></wfprev-expansion-indicator>
           <span>Project Description</span>
         </mat-panel-title>
       </mat-expansion-panel-header>
@@ -190,7 +185,7 @@
 
 
     </mat-expansion-panel>
-    <app-fiscal-year-projects></app-fiscal-year-projects>
+    <wfprev-fiscal-year-projects></wfprev-fiscal-year-projects>
   </div>
 
   <div class="map-section">
@@ -207,6 +202,6 @@
         </div>
       </form>
     </div>
-    <app-project-files (filesUpdated)="onFilesUpdated()" [projectGuid]="projectGuid"></app-project-files>
+    <wfprev-project-files (filesUpdated)="onFilesUpdated()" [projectGuid]="projectGuid"></wfprev-project-files>
   </div>
 </div>

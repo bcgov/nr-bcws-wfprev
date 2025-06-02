@@ -13,33 +13,24 @@
       </div>
     </div>
     <div class="create-project-button-container">
-      <button class="create-project-button" (click)="createNewProject()">
-        <span class="button-text">
-          <img alt="create-project" class="icon" src="/assets/add-button.svg">
-          Create New Project
-        </span>
-      </button>
+      <wfprev-icon-button
+          [text]="'Create New Project'"
+          [icon]="'/assets/add-button.svg'"
+          [alt]="'create-project'"
+          [iconSize]="19"
+          (clicked)="createNewProject()">
+      </wfprev-icon-button>
     </div>
   </div>
 
   <div class="list-contents">
     <mat-accordion [multi]="true">
-      <mat-expansion-panel *ngFor="let project of displayedProjects?.length ? displayedProjects : []" (click)="highlightProjectPolygons(project)" #panel="matExpansionPanel">
-        <mat-expansion-panel-header class="expansion-panel-header">
+      <mat-expansion-panel hideToggle *ngFor="let project of displayedProjects?.length ? displayedProjects : []" [expanded]="expandedPanels[project.projectGuid]" 
+        [ngClass]="{ 'selected-project': selectedProjectGuid === project.projectGuid }" #panel="matExpansionPanel">
+        <mat-expansion-panel-header class="expansion-panel-header" (click)="onHeaderClick($event, project)">
           <mat-panel-title class="project-title">
             <div class="custom-indicator">
-              <img
-                *ngIf="!panel.expanded"
-                src="/assets/collapsed-indicator.svg"
-                alt="Collapsed Icon"
-                class="indicator-icon"
-              />
-              <img
-                *ngIf="panel.expanded"
-                src="/assets/expanded-indicator.svg"
-                alt="Expanded Icon"
-                class="indicator-icon"
-              />
+              <wfprev-expansion-indicator [isExpanded]="panel.expanded" [iconSize]="'17px'"></wfprev-expansion-indicator>
             </div>
             <span class="project-name"> {{ project.projectName }} </span>
             <div class="fiscal-action-container">
@@ -94,13 +85,8 @@
               <div class="fiscal-card-title">
                 <span matTooltip="{{ fiscal.projectFiscalName }}">{{fiscal.projectFiscalName}}</span>
                 <div class="status-container">
-                  <ng-container [ngSwitch]="fiscal.planFiscalStatusCode">
-                    <img *ngSwitchCase="'DRAFT'" src="/assets/draft-icon.svg" alt="draft" class="status-icon" />
-                    <img *ngSwitchCase="'PROPOSED'" src="/assets/proposed-icon.svg" alt="proposed" class="status-icon" />
-                    <img *ngSwitchCase="'IN_PROG'" src="/assets/in-progress-icon-only.svg" alt="in progress" class="status-icon" />
-                    <img *ngSwitchCase="'COMPLETE'" src="/assets/complete-icon.svg" alt="completed" class="status-icon" />
-                    <img *ngSwitchCase="'ABANDONED'" src="/assets/abandoned-icon.svg" alt="abandoned" class="status-icon" />
-                    <img *ngSwitchCase="'PREPARED'" src="/assets/prepared-icon.svg" alt="prepared" class="status-icon" />
+                  <ng-container *ngIf="getStatusIcon(fiscal.planFiscalStatusCode) as icon">
+                    <img [src]="icon.src" [alt]="icon.alt" [title]="icon.title" class="status-icon" />
                   </ng-container>
                   <span>{{getDescription('planFiscalStatusCode', fiscal.planFiscalStatusCode)}}</span>
                   <span class="individual-fiscal-year">{{getFiscalYearDisplay(fiscal.fiscalYear)}}</span>

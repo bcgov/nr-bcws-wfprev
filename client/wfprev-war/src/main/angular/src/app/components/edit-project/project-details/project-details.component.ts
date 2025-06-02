@@ -1,30 +1,32 @@
+import { TextFieldModule } from '@angular/cdk/text-field';
 import { CommonModule } from '@angular/common';
-import { AfterViewInit, Component, EventEmitter, OnInit, Output, OnDestroy, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, FormsModule } from '@angular/forms';
+import { AfterViewInit, Component, EventEmitter, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { MatDialog } from '@angular/material/dialog';
 import { MatExpansionModule } from '@angular/material/expansion';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatTooltip } from '@angular/material/tooltip';
 import { ActivatedRoute } from '@angular/router';
 import L from 'leaflet';
-import { ProjectService } from 'src/app/services/project-services';
-import { CodeTableServices } from 'src/app/services/code-table-services';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { CodeTableKeys, Messages } from 'src/app/utils/constants';
-import {
-  validateLatLong,
-  formatLatLong,
-  trimLatLong,
-} from 'src/app/utils/tools';
-import { FiscalYearProjectsComponent } from 'src/app/components/edit-project/project-details/fiscal-year-projects/fiscal-year-projects.component';
-import { ProjectFilesComponent } from 'src/app/components/edit-project/project-details/project-files/project-files.component';
 import { Observable } from 'rxjs';
 import { ConfirmationDialogComponent } from 'src/app/components/confirmation-dialog/confirmation-dialog.component';
-import { MatDialog } from '@angular/material/dialog';
-import { MatTooltip } from '@angular/material/tooltip';
-import { TextFieldModule } from '@angular/cdk/text-field';
+import { FiscalYearProjectsComponent } from 'src/app/components/edit-project/project-details/fiscal-year-projects/fiscal-year-projects.component';
+import { ProjectFilesComponent } from 'src/app/components/edit-project/project-details/project-files/project-files.component';
+import { CodeTableServices } from 'src/app/services/code-table-services';
+import { ProjectService } from 'src/app/services/project-services';
+import { CodeTableKeys, Messages } from 'src/app/utils/constants';
+import {
+  formatLatLong,
+  getBluePinIcon,
+  trimLatLong,
+  validateLatLong,
+} from 'src/app/utils/tools';
+import { ExpansionIndicatorComponent } from '../../shared/expansion-indicator/expansion-indicator.component';
 
 @Component({
-  selector: 'app-project-details',
+  selector: 'wfprev-project-details',
   standalone: true,
-  imports: [ReactiveFormsModule, MatExpansionModule, CommonModule, FormsModule, FiscalYearProjectsComponent, ProjectFilesComponent, MatTooltip, TextFieldModule],
+  imports: [ReactiveFormsModule, MatExpansionModule, CommonModule, FormsModule, FiscalYearProjectsComponent, ProjectFilesComponent, MatTooltip, TextFieldModule, ExpansionIndicatorComponent],
   templateUrl: './project-details.component.html',
   styleUrl: './project-details.component.scss'
 })
@@ -227,11 +229,7 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
       if (this.marker) {
         this.map.removeLayer(this.marker);
       }
-      const teardropIcon = L.icon({
-        iconUrl: '/assets/blue-pin-drop.svg',
-        iconSize: [30, 50],
-        iconAnchor: [12, 41],
-      });
+      const teardropIcon = getBluePinIcon();
       this.marker = L.marker([latitude, longitude], { icon: teardropIcon }).addTo(this.map);
 
       this.map.setView([latitude, longitude], 13); // Update the map view
@@ -249,11 +247,7 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
 
 
       this.marker = L.marker([latitude, longitude], {
-        icon: L.icon({
-          iconUrl: '/assets/blue-pin-drop.svg',
-          iconSize: [30, 50],
-          iconAnchor: [12, 41],
-        }),
+        icon: getBluePinIcon()
       }).addTo(this.map);
 
     }

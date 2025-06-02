@@ -8,7 +8,7 @@ import { CommonModule } from '@angular/common';
 import { TokenService } from 'src/app/services/token.service';
 
 @Component({
-  selector: 'app-app-header',
+  selector: 'wfprev-app-header',
   standalone: true,
   imports: [
     CommonModule, // Replace BrowserModule with CommonModule

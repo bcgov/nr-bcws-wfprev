@@ -1,0 +1,6 @@
+<button class="shared-icon-button" [disabled]="disabled" (click)="onClick($event)">
+  <span class="button-text">
+    <img *ngIf="icon" [src]="icon" [alt]="alt" class="icon" [ngStyle]="{ width: iconSize + 'px', height: iconSize + 'px' }" />
+    {{ text }}
+  </span>
+</button>

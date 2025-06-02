@@ -25,6 +25,12 @@
         }
     }
     
+    .activity-header {
+        ::ng-deep .mat-content {
+            gap: 8px;
+        }
+    }
+    
     .activity-title{
         font-family: var(--wf-font-family-main) !important;
         flex-wrap: wrap;

@@ -2,26 +2,28 @@ import { CommonModule, CurrencyPipe } from '@angular/common';
 import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
-import { MatTabsModule } from '@angular/material/tabs';
-import { ActivatedRoute } from '@angular/router';
-import { ProjectService } from 'src/app/services/project-services';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import { MatExpansionModule } from '@angular/material/expansion';
-import { ProjectFiscal } from 'src/app/components/models';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { Messages, CodeTableKeys } from 'src/app/utils/constants';
-import { CodeTableServices } from 'src/app/services/code-table-services';
-import { MatMenuModule } from '@angular/material/menu';
-import { Observable } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatTabsModule } from '@angular/material/tabs';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { ActivatedRoute } from '@angular/router';
+import { Observable } from 'rxjs';
 import { ConfirmationDialogComponent } from 'src/app/components/confirmation-dialog/confirmation-dialog.component';
-import { CanComponentDeactivate } from 'src/app/services/util/can-deactive.guard';
 import { ActivitiesComponent } from 'src/app/components/edit-project/activities/activities.component';
 import { FiscalMapComponent } from 'src/app/components/edit-project/fiscal-map/fiscal-map.component';
-import { MatTooltipModule } from '@angular/material/tooltip';
+import { ProjectFiscal } from 'src/app/components/models';
+import { CodeTableServices } from 'src/app/services/code-table-services';
+import { ProjectService } from 'src/app/services/project-services';
+import { CanComponentDeactivate } from 'src/app/services/util/can-deactive.guard';
+import { CodeTableKeys, Messages } from 'src/app/utils/constants';
+import { ExpansionIndicatorComponent } from '../../shared/expansion-indicator/expansion-indicator.component';
+import { IconButtonComponent } from 'src/app/components/shared/icon-button/icon-button.component';
 
 @Component({
-  selector: 'app-project-fiscals',
+  selector: 'wfprev-project-fiscals',
   templateUrl: './project-fiscals.component.html',
   styleUrls: ['./project-fiscals.component.scss'],
   standalone: true,
@@ -36,7 +38,9 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     MatMenuModule,
     ActivitiesComponent,
     FiscalMapComponent,
-    MatTooltipModule
+    MatTooltipModule,
+    ExpansionIndicatorComponent,
+    IconButtonComponent
   ]
 })
 export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  {

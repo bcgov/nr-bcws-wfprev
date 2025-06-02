@@ -1,0 +1,39 @@
+<div class="fiscal-card">
+  <div class="fiscal-header">
+    <div class="fiscal-title" [title]="fiscal.projectFiscalName">{{ fiscal.projectFiscalName }}</div>
+    <ng-container *ngIf="getStatusIcon(fiscal.planFiscalStatusCode) as icon">
+      <img [src]="icon.src" [alt]="icon.alt" [title]="icon.title" class="status-icon" />
+    </ng-container>
+  </div>
+
+  <div class="activity-category">
+    {{ getDescription(CodeTableKeys.ACTIVITY_CATEGORY_CODE, fiscal.activityCategoryCode) }}
+  </div>
+
+  <div class="fiscal-values">
+    <span class="sub-title">Fiscal Year:</span>
+    <span class="sub-value">{{ getFiscalYearDisplay(fiscal.fiscalYear) }}</span>
+  </div>
+
+  <ng-container *ngIf="fiscal.planFiscalStatusCode === 'COMPLETE'; else notComplete">
+    <div class="fiscal-values">
+      <span class="sub-title">Completed Hectares:</span>
+      <span class="sub-value">{{ formatValue(fiscal.fiscalCompletedSizeHa, ' Ha') }}</span>
+    </div>
+    <div class="fiscal-values">
+      <span class="sub-title">CFS Actual Spend:</span>
+      <span class="sub-value">{{ formatCurrency(fiscal.fiscalActualAmount) }}</span>
+    </div>
+  </ng-container>
+
+  <ng-template #notComplete>
+    <div class="fiscal-values">
+      <span class="sub-title">Planned Hectares:</span>
+      <span class="sub-value">{{ formatValue(fiscal.fiscalPlannedSizeHa, ' Ha') }}</span>
+    </div>
+    <div class="fiscal-values">
+      <span class="sub-title">Forecast Amount:</span>
+      <span class="sub-value">{{ formatCurrency(fiscal.fiscalForecastAmount) }}</span>
+    </div>
+  </ng-template>
+</div>

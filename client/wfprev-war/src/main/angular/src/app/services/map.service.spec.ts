@@ -21,7 +21,8 @@ describe('MapService', () => {
               mapResized: jasmine.createSpy('mapResized'),
               map: {
                 invalidateSize: jasmine.createSpy('invalidateSize'),
-                setMaxBounds: jasmine.createSpy('setMaxBounds')
+                setMaxBounds: jasmine.createSpy('setMaxBounds'),
+                setMaxZoom: jasmine.createSpy('setMaxZoom')
               }
             }
           },
@@ -205,6 +206,5 @@ describe('MapService', () => {
       expect(service.getSMKInstance()).toBeNull();
     });
   });
-
 
 });

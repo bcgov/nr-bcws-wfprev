@@ -1,24 +1,26 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, FormsModule  } from '@angular/forms';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { MomentDateAdapter } from '@angular/material-moment-adapter';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE, MatNativeDateModule } from '@angular/material/core';
+import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatDialog } from '@angular/material/dialog';
 import { MatExpansionModule } from '@angular/material/expansion';
+import { MatInputModule } from '@angular/material/input';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute } from '@angular/router';
 import moment from 'moment';
+import { Observable } from 'rxjs';
+import { ConfirmationDialogComponent } from 'src/app/components/confirmation-dialog/confirmation-dialog.component';
+import { ProjectFilesComponent } from 'src/app/components/edit-project/project-details/project-files/project-files.component';
 import { CodeTableServices } from 'src/app/services/code-table-services';
 import { ProjectService } from 'src/app/services/project-services';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE, MatNativeDateModule} from '@angular/material/core';
-import { MatInputModule } from '@angular/material/input';
-import { Messages } from 'src/app/utils/constants';
-import { ConfirmationDialogComponent } from 'src/app/components/confirmation-dialog/confirmation-dialog.component';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { Observable } from 'rxjs';
 import { CanComponentDeactivate } from 'src/app/services/util/can-deactive.guard';
-import { MomentDateAdapter } from '@angular/material-moment-adapter';
-import { ProjectFilesComponent } from 'src/app/components/edit-project/project-details/project-files/project-files.component';
+import { Messages } from 'src/app/utils/constants';
+import { ExpansionIndicatorComponent } from "../../shared/expansion-indicator/expansion-indicator.component";
+import { IconButtonComponent } from 'src/app/components/shared/icon-button/icon-button.component';
 
 
 export const CUSTOM_DATE_FORMATS = {
@@ -32,7 +34,7 @@ export const CUSTOM_DATE_FORMATS = {
 };
 
 @Component({
-  selector: 'app-activities',
+  selector: 'wfprev-activities',
   standalone: true,
   imports: [MatExpansionModule,
     ReactiveFormsModule,
@@ -43,8 +45,9 @@ export const CUSTOM_DATE_FORMATS = {
     MatInputModule,
     FormsModule,
     MatCheckboxModule,
-    ProjectFilesComponent
-  ],
+    ProjectFilesComponent,
+    ExpansionIndicatorComponent,
+    IconButtonComponent],
   templateUrl: './activities.component.html',
   styleUrl: './activities.component.scss',
   providers: [
