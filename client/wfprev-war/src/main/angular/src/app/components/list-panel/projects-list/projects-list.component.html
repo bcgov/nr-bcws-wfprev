@@ -28,18 +28,7 @@
         <mat-expansion-panel-header class="expansion-panel-header">
           <mat-panel-title class="project-title">
             <div class="custom-indicator">
-              <img
-                *ngIf="!panel.expanded"
-                src="/assets/collapsed-indicator.svg"
-                alt="Collapsed Icon"
-                class="indicator-icon"
-              />
-              <img
-                *ngIf="panel.expanded"
-                src="/assets/expanded-indicator.svg"
-                alt="Expanded Icon"
-                class="indicator-icon"
-              />
+              <wfprev-expansion-indicator [isExpanded]="panel.expanded" [iconSize]="'17px'"></wfprev-expansion-indicator>
             </div>
             <span class="project-name"> {{ project.projectName }} </span>
             <div class="fiscal-action-container">

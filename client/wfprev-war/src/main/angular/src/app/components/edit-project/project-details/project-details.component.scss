@@ -265,7 +265,6 @@
   background-color: var(--colour-white);
 
   mat-expansion-panel {
-    border-bottom: 1px solid #C6C8CB;
     margin: 0px !important;
     background-color: #FFF;
 
@@ -299,6 +298,7 @@
       font-size: 16px;
       font-weight: 400;
       border: none;
+      border-top: 1px solid #C6C8CB;
       color: #242424;
       font-family: var(--wf-font-family-main);
       height: 50px;
@@ -309,7 +309,7 @@
   }
 
   .project-description-footer {
-    border: 1px solid #C7C7C7;
+    border-top: 1px solid #C7C7C7;
     background: #F2F2F2;
   }
 
