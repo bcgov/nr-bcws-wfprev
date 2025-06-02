@@ -527,7 +527,7 @@ export class ProjectsListComponent implements OnInit {
     if (this.selectedProjectGuid === project.projectGuid) {
           //deselect
       this.selectedProjectGuid = null;
-      this.sharedService.selectProject(undefined);
+      this.sharedService.selectProject();
       this.sharedService.triggerMapCommand('close', project);
     } else {
         // select

@@ -273,7 +273,7 @@ ngAfterViewInit(): void {
           );
 
           if (this.selectedProject?.projectGuid === project.projectGuid) {
-            this.sharedService.selectProject(undefined);
+            this.sharedService.selectProject();
           }
         });
         requestAnimationFrame(() => {

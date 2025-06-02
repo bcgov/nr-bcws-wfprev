@@ -3,7 +3,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { CodeTableServices } from 'src/app/services/code-table-services';
 import { CodeTableKeys } from 'src/app/utils/constants';
 import L from 'leaflet';
-import { ActivityCategoryCodeModel, PlanFiscalStatusCodeModel, ProgramAreaModel, ProjectFiscal, ProjectTypeCodeModel } from 'src/app/components/models';
+import { ActivityCategoryCodeModel, PlanFiscalStatusCodeModel, ProgramAreaModel, ProjectTypeCodeModel } from 'src/app/components/models';
 import { getFiscalYearDisplay } from 'src/app/utils/tools';
 
 @Component({
