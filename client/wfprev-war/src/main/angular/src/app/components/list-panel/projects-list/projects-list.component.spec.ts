@@ -879,7 +879,7 @@ describe('ProjectsListComponent', () => {
       component.onListItemClick(project);
 
       expect(component.selectedProjectGuid).toBeNull();
-      expect(component.sharedService.selectProject).toHaveBeenCalledWith(undefined);
+      expect(component.sharedService.selectProject).toHaveBeenCalledWith();
       expect(component.sharedService.triggerMapCommand).toHaveBeenCalledWith('close', project);
     });
 

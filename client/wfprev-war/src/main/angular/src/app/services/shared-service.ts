@@ -10,10 +10,10 @@ export class SharedService {
   private readonly displayedProjectsSource = new BehaviorSubject<any[]>([]);
   displayedProjects$ = this.displayedProjectsSource.asObservable();
 
-  private selectedProjectSubject = new Subject<any>();
+  private readonly selectedProjectSubject = new Subject<any>();
   selectedProject$ = this.selectedProjectSubject.asObservable();
 
-  private _mapCommand$ = new Subject<{ action: 'open' | 'close', project: Project }>();
+  private readonly _mapCommand$ = new Subject<{ action: 'open' | 'close', project: Project }>();
   mapCommand$ = this._mapCommand$.asObservable();
 
   updateFilters(filters: any) {
