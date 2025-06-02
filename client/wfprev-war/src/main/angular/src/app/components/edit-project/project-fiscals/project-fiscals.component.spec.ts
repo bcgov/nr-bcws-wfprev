@@ -172,7 +172,9 @@ describe('ProjectFiscalsComponent', () => {
       'OK',
       { duration: 5000, panelClass: 'snackbar-success' } // ✅ Ensure correct snackbar message
     );
-    expect(component.loadProjectFiscals).toHaveBeenCalled();
+    spyOn(component, 'loadProjectFiscals');
+    component.onSaveFiscal(0);
+    expect(component.loadProjectFiscals).toHaveBeenCalled(); 
   });
 
   it('should handle errors when saving a new fiscal', () => {
@@ -200,7 +202,9 @@ describe('ProjectFiscalsComponent', () => {
       'OK',
       { duration: 5000, panelClass: 'snackbar-success' } // ✅ Ensure correct success message
     );
-    expect(component.loadProjectFiscals).toHaveBeenCalled();
+    spyOn(component, 'loadProjectFiscals');
+    component.onSaveFiscal(0);
+    expect(component.loadProjectFiscals).toHaveBeenCalled(); 
   });
   
 
