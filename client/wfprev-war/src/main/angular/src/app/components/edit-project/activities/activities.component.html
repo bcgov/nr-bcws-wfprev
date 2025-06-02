@@ -1,7 +1,8 @@
 <div class="fiscals-container">
-    <mat-expansion-panel [expanded] = 'true' class="expansion-panel">
+    <mat-expansion-panel [expanded] = 'true' class="expansion-panel" #activitiesPanel>
         <mat-expansion-panel-header>
             <div class="header-container">
+                <wfprev-expansion-indicator [isExpanded]="activitiesPanel.expanded"></wfprev-expansion-indicator>
                 <span class="project-title">Activities</span>
                 <button class="dropdown-button" mat-icon-button (click)="addActivity(); $event.stopPropagation()" *ngIf="fiscalGuid" [disabled]="isNewActivityBeingAdded">
                     <img class="action-icon" alt="actions" src="/assets/add-button.svg">
@@ -12,7 +13,8 @@
         <div *ngIf="activities?.length">
             <div *ngFor="let activity of activities; let i = index" [id]="'activity-' + i">
                 <mat-expansion-panel class="expansion-panel" [(expanded)]="expandedPanels[i]">
-                    <mat-expansion-panel-header>
+                    <mat-expansion-panel-header class="activity-header">
+                        <wfprev-expansion-indicator [isExpanded]="expandedPanels[i]"></wfprev-expansion-indicator>
                         <div class="activity-title">
                             <div>
                                 {{getActivityTitle(i)}}
