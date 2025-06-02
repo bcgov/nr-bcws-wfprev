@@ -1,4 +1,5 @@
 import L from "leaflet";
+import { PlanFiscalStatus } from "src/app/utils/constants";
 
 // Parse latitude/longitude string from various formats
 export function parseLatLong(latLong: string): { latitude: number; longitude: number } | null {
@@ -117,3 +118,60 @@ export function trimLatLong(value: number): number {
   
   return trimmed;
 }
+
+export function getFiscalYearDisplay(fiscalYear: number | null | undefined): string | null {
+  if (typeof fiscalYear !== 'number') return null;
+  const nextYear = (fiscalYear + 1) % 100;
+  return `${fiscalYear}/${nextYear.toString().padStart(2, '0')}`;
+}
+
+export function getBluePinIcon(): L.Icon {
+  return L.icon({
+    iconUrl: '/assets/blue-pin-drop.svg',
+    iconSize: [30, 50],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+  });
+}
+
+export function getActivePinIcon(): L.Icon {
+  return L.icon({
+    iconUrl: '/assets/active-pin-drop.svg',
+    iconSize: [50, 70],
+    iconAnchor: [20, 51],
+    popupAnchor: [1, -34],
+  });
+}
+
+export const PlanFiscalStatusIcons: Record<string, { src: string; alt: string; title: string }> = {
+  [PlanFiscalStatus.DRAFT]: {
+    src: '/assets/draft-icon.svg',
+    alt: 'draft',
+    title: 'Draft'
+  },
+  [PlanFiscalStatus.PROPOSED]: {
+    src: '/assets/proposed-icon.svg',
+    alt: 'proposed',
+    title: 'Proposed'
+  },
+  [PlanFiscalStatus.IN_PROG]: {
+    src: '/assets/in-progress-icon-only.svg',
+    alt: 'in progress',
+    title: 'In Progress'
+  },
+  [PlanFiscalStatus.COMPLETE]: {
+    src: '/assets/complete-icon.svg',
+    alt: 'complete',
+    title: 'Complete'
+  },
+  [PlanFiscalStatus.ABANDONED]: {
+    src: '/assets/abandoned-icon.svg',
+    alt: 'abandoned',
+    title: 'Abandoned'
+  },
+  [PlanFiscalStatus.PREPARED]: {
+    src: '/assets/prepared-icon.svg',
+    alt: 'prepared',
+    title: 'Prepared'
+  }
+};

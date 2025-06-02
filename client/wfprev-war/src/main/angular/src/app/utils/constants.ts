@@ -36,5 +36,15 @@ export const CodeTableKeys = {
   BC_PARKS_SECTION_ORG_UNIT_ID: 'bcParksSectionOrgUnitId',
   FIRE_CENTRE_ID: 'fireCentreId',
   PRIMARY_OBJECTIVE_TYPE_CODE: 'primaryObjectiveTypeCode',
-  SECONDARY_OBJECTIVE_TYPE_CODE: 'secondaryObjectiveTypeCode'
+  SECONDARY_OBJECTIVE_TYPE_CODE: 'secondaryObjectiveTypeCode',
+  PROGRAM_AREA_CODE: 'programAreaCode'
+};
+
+export const PlanFiscalStatus = {
+  DRAFT: 'DRAFT',
+  PROPOSED: 'PROPOSED',
+  IN_PROG: 'IN_PROG',
+  COMPLETE: 'COMPLETE',
+  ABANDONED: 'ABANDONED',
+  PREPARED: 'PREPARED'
 };

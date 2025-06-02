@@ -17,13 +17,14 @@ import { ProjectService } from 'src/app/services/project-services';
 import { CodeTableKeys, Messages } from 'src/app/utils/constants';
 import {
   formatLatLong,
+  getBluePinIcon,
   trimLatLong,
   validateLatLong,
 } from 'src/app/utils/tools';
 import { ExpansionIndicatorComponent } from '../../shared/expansion-indicator/expansion-indicator.component';
 
 @Component({
-  selector: 'app-project-details',
+  selector: 'wfprev-project-details',
   standalone: true,
   imports: [ReactiveFormsModule, MatExpansionModule, CommonModule, FormsModule, FiscalYearProjectsComponent, ProjectFilesComponent, MatTooltip, TextFieldModule, ExpansionIndicatorComponent],
   templateUrl: './project-details.component.html',
@@ -228,11 +229,7 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
       if (this.marker) {
         this.map.removeLayer(this.marker);
       }
-      const teardropIcon = L.icon({
-        iconUrl: '/assets/blue-pin-drop.svg',
-        iconSize: [30, 50],
-        iconAnchor: [12, 41],
-      });
+      const teardropIcon = getBluePinIcon();
       this.marker = L.marker([latitude, longitude], { icon: teardropIcon }).addTo(this.map);
 
       this.map.setView([latitude, longitude], 13); // Update the map view
@@ -250,11 +247,7 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
 
 
       this.marker = L.marker([latitude, longitude], {
-        icon: L.icon({
-          iconUrl: '/assets/blue-pin-drop.svg',
-          iconSize: [30, 50],
-          iconAnchor: [12, 41],
-        }),
+        icon: getBluePinIcon()
       }).addTo(this.map);
 
     }

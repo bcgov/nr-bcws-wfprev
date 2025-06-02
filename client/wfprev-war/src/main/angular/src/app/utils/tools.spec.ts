@@ -1,4 +1,4 @@
-import { parseLatLong, validateLatLong, formatLatLong, trimLatLong } from './tools';
+import { parseLatLong, validateLatLong, formatLatLong, trimLatLong, getFiscalYearDisplay } from './tools';
 
 describe('Latitude/Longitude Utilities', () => {
   describe('parseLatLong', () => {
@@ -84,4 +84,8 @@ describe('Latitude/Longitude Utilities', () => {
       expect(trimLatLong(-123.456789)).toBe(-123.456789);
     });
   });
+
+  it ('should display fiscal year in correct formate',() =>{
+    expect(getFiscalYearDisplay(2024)).toBe('2024/25');
+  })
 });

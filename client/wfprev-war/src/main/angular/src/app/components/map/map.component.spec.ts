@@ -3,8 +3,7 @@ import { ComponentFixture, TestBed, fakeAsync, flush, tick } from '@angular/core
 import { MapComponent } from './map.component';
 import { MapConfigService } from 'src/app/services/map-config.service';
 import { MapService } from 'src/app/services/map.service';
-import { ResizablePanelComponent } from 'src/app/components/resizable-panel/resizable-panel.component';
-import { of } from 'rxjs';
+import { of, Subject } from 'rxjs';
 import { ElementRef } from '@angular/core';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
@@ -14,6 +13,7 @@ import { ProjectService } from 'src/app/services/project-services';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ActivatedRoute } from '@angular/router';
 import * as L from 'leaflet';
+import { Project } from 'src/app/components/models';
 
 class MockAppConfigService {
   getConfig() {
@@ -76,6 +76,33 @@ class MockProjectService {
   }
 }
 
+function createMockProject(overrides: Partial<Project> = {}): Project {
+  return {
+    bcParksRegionOrgUnitId: 1,
+    bcParksSectionOrgUnitId: 1,
+    closestCommunityName: 'Test Town',
+    fireCentreOrgUnitId: 1,
+    forestDistrictOrgUnitId: 1,
+    forestRegionOrgUnitId: 1,
+    isMultiFiscalYearProj: false,
+    programAreaGuid: 'program-123',
+    projectDescription: 'Test description',
+    projectGuid: 'test-guid',
+    projectLead: 'Jane Doe',
+    projectLeadEmailAddress: 'jane@example.com',
+    projectName: 'Test Project',
+    projectNumber: 12345,
+    siteUnitName: 'Site A',
+    totalActualAmount: 1000,
+    totalAllocatedAmount: 1000,
+    totalFundingRequestAmount: 500,
+    totalPlannedCostPerHectare: 100,
+    totalPlannedProjectSizeHa: 10,
+    ...overrides
+  };
+}
+
+
 describe('MapComponent', () => {
   let component: MapComponent;
   let fixture: ComponentFixture<MapComponent>;
@@ -116,7 +143,6 @@ describe('MapComponent', () => {
     TestBed.configureTestingModule({
       imports: [
         MapComponent,
-        ResizablePanelComponent,
         HttpClientTestingModule,
         BrowserAnimationsModule,
       ],
@@ -295,6 +321,175 @@ describe('MapComponent', () => {
   });
 });
 
+  describe('Marker popup behavior', () => {
+    let mapMock: any;
+    let markerSpy: jasmine.SpyObj<L.Marker>;
+    let mockProject: any;
+
+    beforeEach(() => {
+      mapContainer.nativeElement = document.createElement('div');
+      component.mapContainer = mapContainer;
+
+      markerSpy = jasmine.createSpyObj<L.Marker>('Marker', [
+        'bindPopup',
+        'on',
+        'setIcon',
+        'closePopup',
+        'openPopup',
+        'off',
+      ]);
+      markerSpy.getLatLng = jasmine.createSpy().and.returnValue({
+        lat: 50,
+        lng: -120,
+      });
+      Object.setPrototypeOf(markerSpy, L.Marker.prototype);
+      
+      mapMock = {
+        addLayer: jasmine.createSpy('addLayer'),
+        invalidateSize: jasmine.createSpy('invalidateSize'),
+      };
+
+      const mockClusterGroup = {
+        getLayers: () => [markerSpy],
+        zoomToShowLayer: (marker: L.Marker, cb: () => void) => cb(),
+        addLayer: jasmine.createSpy('addLayer'),
+        clearLayers: jasmine.createSpy('clearLayers'),
+      };
+
+      component['markersClusterGroup'] = mockClusterGroup as any;
+      component['projectMarkerMap'] = new Map();
+
+      spyOn(component['sharedService'], 'selectProject');
+
+      mapServiceMock.getSMKInstance.and.returnValue({
+        $viewer: { map: mapMock }
+      });
+
+      mockProject = {
+        projectGuid: 'abc-123',
+        latitude: 50,
+        longitude: -120,
+      };
+
+    });
+
+    it('should add marker and bind popup in updateMarkers()', () => {
+      component.updateMarkers([mockProject]);
+
+      expect(component['projectMarkerMap'].get('abc-123')).toBeDefined();
+      expect(component['markersClusterGroup']?.addLayer).toHaveBeenCalled();
+    });
+
+    it('should open popup and set active marker icon in openPopupForProject()', () => {
+      component['projectMarkerMap'].set(mockProject.projectGuid, markerSpy);
+      
+      component['activeMarker'] = null;
+
+      component.openPopupForProject(mockProject);
+
+      expect(markerSpy.setIcon).toHaveBeenCalledWith(
+        jasmine.objectContaining({
+          options: jasmine.objectContaining({
+            iconUrl: '/assets/active-pin-drop.svg',
+          }),
+        })
+      );
+      expect(markerSpy.openPopup).toHaveBeenCalled();
+      expect(component['activeMarker'] as unknown as L.Marker).toBe(markerSpy);
+    });
+
+    it('should close popup and reset icon in closePopupForProject()', () => {
+      component['projectMarkerMap'].set(mockProject.projectGuid, markerSpy);
+      component['activeMarker'] = markerSpy;
+
+      component.closePopupForProject(mockProject);
+
+      expect(markerSpy.closePopup).toHaveBeenCalled();
+      expect(markerSpy.setIcon).toHaveBeenCalledWith(
+        jasmine.objectContaining({
+          options: jasmine.objectContaining({
+            iconUrl: '/assets/blue-pin-drop.svg',
+          }),
+        })
+      );
+      expect(component['activeMarker']).toBeNull();
+    });
+  });
+  
+  describe('selectedProject$ behavior', () => {
+    let selectedProjectSubject: Subject<any>;
+    let closeSpy: jasmine.Spy;
+    let openSpy: jasmine.Spy;
+
+    beforeEach(() => {
+      selectedProjectSubject = new Subject<any>();
+      (component as any).sharedService.selectedProject$ = selectedProjectSubject.asObservable();
+
+      closeSpy = spyOn(component, 'closePopupForProject');
+      openSpy = spyOn(component, 'openPopupForProject');
+    });
+
+    it('should call closePopupForProject when project is undefined and selectedProject is set', fakeAsync(() => {
+      const prevProject = createMockProject({ projectGuid: 'test-guid' });
+      component['selectedProject'] = prevProject;
+
+      component.ngAfterViewInit();
+      tick();
+
+      selectedProjectSubject.next(undefined);
+      tick();
+
+      expect(closeSpy).toHaveBeenCalledWith(prevProject);
+      expect(component['selectedProject']).toBeUndefined();
+    }));
+
+    it('should call openPopupForProject when a new project is selected', fakeAsync(() => {
+      const newProject = createMockProject({ projectGuid: 'new-guid' });
+      component['selectedProject'] = undefined;
+
+      component.ngAfterViewInit();
+      tick();
+
+      selectedProjectSubject.next(newProject);
+      tick();
+
+      expect(openSpy).toHaveBeenCalledWith(newProject);
+      expect(component['selectedProject'] as Project | undefined).toEqual(newProject);
+    }));
+
+    it('should do nothing if both current and incoming projects are undefined', fakeAsync(() => {
+      component['selectedProject'] = undefined;
+
+      component.ngAfterViewInit();
+      tick();
+
+      selectedProjectSubject.next(undefined);
+      tick();
+
+      expect(closeSpy).not.toHaveBeenCalled();
+      expect(openSpy).not.toHaveBeenCalled();
+    }));
+    
+    it('should assign selectedProject and call openPopupForProject if project is truthy', fakeAsync(() => {
+      const testProject = createMockProject({
+        projectGuid: '123',
+        latitude: 50,
+        longitude: -120,
+      });
+
+      component['selectedProject'] = undefined;
+
+      component.ngAfterViewInit();
+      tick();
+
+      selectedProjectSubject.next(testProject);
+      tick();
+
+      expect(component['selectedProject'] as Project | undefined).toEqual(testProject);
+      expect(openSpy).toHaveBeenCalledWith(testProject);
+    }));
+
+  });
 
 
 });

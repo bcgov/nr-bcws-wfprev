@@ -18,7 +18,7 @@ export interface Project {
   isMultiFiscalYearProj: boolean;
   programAreaGuid: string;
   projectDescription: string;
-  projectGuid?: string;
+  projectGuid: string;
   projectLead: string;
   projectLeadEmailAddress: string;
   projectName: string;
@@ -190,3 +190,33 @@ export interface ProjectFiscalExtended extends ProjectFiscal {
 export interface ActivityWithBoundaries extends ActivityModel {
   activityBoundaries?: ActivityBoundary[];
 }
+
+export interface ProjectTypeCodeModel {
+  projectTypeCode: string;
+  description: string;
+  displayOrder: number;
+  effectiveDate: string;
+  expiryDate: string;
+}
+
+export interface ProgramAreaModel {
+  programAreaGuid: string;
+  programAreaName: string;
+}
+
+export interface PlanFiscalStatusCodeModel {
+  planFiscalStatusCode: string;
+  description: string;
+  displayOrder: number;
+  effectiveDate: string;
+  expiryDate: string;
+}
+
+export interface ActivityCategoryCodeModel {
+  activityCategoryCode: string;
+  description: string;
+  displayOrder: number;
+  effectiveDate: string;
+  expiryDate: string;
+}
+
