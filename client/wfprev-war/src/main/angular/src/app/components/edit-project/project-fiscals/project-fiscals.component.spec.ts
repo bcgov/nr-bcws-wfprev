@@ -42,7 +42,7 @@ describe('ProjectFiscalsComponent', () => {
   let fixture: ComponentFixture<ProjectFiscalsComponent>;
 
   @Component({
-    selector: 'app-fiscal-map',
+    selector: 'wfprev-fiscal-map',
     template: '<div></div>'
   })
   class MockFiscalMapComponent {
@@ -51,7 +51,7 @@ describe('ProjectFiscalsComponent', () => {
     initMap() {}
   }
   @Component({
-    selector: 'app-activities',
+    selector: 'wfprev-activities',
     template: ''
   })
   class MockActivitiesComponent {
@@ -172,7 +172,8 @@ describe('ProjectFiscalsComponent', () => {
       'OK',
       { duration: 5000, panelClass: 'snackbar-success' } // ✅ Ensure correct snackbar message
     );
-    expect(component.loadProjectFiscals).toHaveBeenCalled();
+    component.onSaveFiscal(0);
+    expect(component.loadProjectFiscals).toHaveBeenCalled(); 
   });
 
   it('should handle errors when saving a new fiscal', () => {
@@ -200,7 +201,8 @@ describe('ProjectFiscalsComponent', () => {
       'OK',
       { duration: 5000, panelClass: 'snackbar-success' } // ✅ Ensure correct success message
     );
-    expect(component.loadProjectFiscals).toHaveBeenCalled();
+    component.onSaveFiscal(0);
+    expect(component.loadProjectFiscals).toHaveBeenCalled(); 
   });
   
 

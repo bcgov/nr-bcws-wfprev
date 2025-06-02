@@ -1,17 +1,19 @@
-import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnDestroy, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnDestroy, ViewChild, EnvironmentInjector, createComponent } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { ResizablePanelComponent } from 'src/app/components/resizable-panel/resizable-panel.component';
 import { SearchFilterComponent } from 'src/app/components/search-filter/search-filter.component';
 import { MapConfigService } from 'src/app/services/map-config.service';
 import { MapService } from 'src/app/services/map.service';
-import { LeafletLegendService } from 'src/app/utils/tools';
+import { LeafletLegendService, getBluePinIcon,  getActivePinIcon } from 'src/app/utils/tools';
 import { SharedService } from 'src/app/services/shared-service';
 import * as L from 'leaflet';
+import { ProjectPopupComponent } from 'src/app/components/project-popup/project-popup.component';
+import { Project } from 'src/app/components/models';
+import { ResizablePanelComponent } from 'src/app/components/resizable-panel/resizable-panel.component';
 
 @Component({
   selector: 'app-map',
   standalone: true,
-  imports: [ResizablePanelComponent, SearchFilterComponent],
+  imports: [ResizablePanelComponent, SearchFilterComponent, ProjectPopupComponent],
   templateUrl: './map.component.html',
   styleUrl: './map.component.scss'
 })
@@ -31,17 +33,25 @@ export class MapComponent implements AfterViewInit, OnDestroy  {
     future: '#E7298A'
   };
 
+  MAP_COMMANDS = {
+    OPEN: 'open',
+    CLOSE: 'close'
+  } as const;
+
   private isMapReady = false;
   private latestProjects: any[] = [];
   private hasClusterBeenAddedToMap = false;
   private markersClusterGroup: L.MarkerClusterGroup | null = null;
-
+  private projectMarkerMap = new Map<string, L.Marker>();
+  private activeMarker: L.Marker | null = null;
+  private selectedProject: Project | undefined;
   constructor(
     protected cdr: ChangeDetectorRef,
     private readonly mapService: MapService,
     private readonly mapConfigService: MapConfigService,
     private readonly route: ActivatedRoute,
-    private readonly sharedService: SharedService
+    private readonly sharedService: SharedService,
+    private readonly injector: EnvironmentInjector
   ) {}
 
   ngOnDestroy(): void {
@@ -67,6 +77,14 @@ ngAfterViewInit(): void {
     this.latestProjects = projects;
     if (this.isMapReady) {
       this.updateMarkers(projects);
+    }
+  });
+
+  this.sharedService.mapCommand$.subscribe(({ action, project }) => {
+    if (action === this.MAP_COMMANDS.CLOSE) {
+      this.closePopupForProject(project);
+    } else if (action === this.MAP_COMMANDS.OPEN) {
+      this.openPopupForProject(project);
     }
   });
 
@@ -97,8 +115,22 @@ ngAfterViewInit(): void {
     this.isMapReady = true;
     this.updateMarkers(this.latestProjects);
   });
-}
 
+    this.sharedService.selectedProject$.subscribe(project => {
+      if (!project && this.selectedProject) {
+        const previous = this.selectedProject;
+        this.selectedProject = undefined;
+        this.closePopupForProject(previous);
+        return;
+      }
+
+      this.selectedProject = project;
+
+      if (project) {
+        this.openPopupForProject(project);
+      }
+    });
+}
 
   private async initMap(): Promise<void> {
     try {
@@ -137,6 +169,8 @@ ngAfterViewInit(): void {
 
     try {
       this.markersClusterGroup.clearLayers();
+      this.projectMarkerMap.clear();
+      this.activeMarker = null;
     } catch (err) {
       console.error('[Map] Error clearing markers:', err);
     }
@@ -146,18 +180,100 @@ ngAfterViewInit(): void {
       .forEach(project => {
         try {
           const marker = L.marker([project.latitude, project.longitude], {
-            icon: L.icon({
-              iconUrl: '/assets/blue-pin-drop.svg',
-              iconSize: [30, 50],
-              iconAnchor: [12, 41],
-              popupAnchor: [1, -34],
-            })
+            icon: getBluePinIcon()
           });
+          this.projectMarkerMap.set(project.projectGuid, marker);
+          // Create and attach popup
+          const popupDiv = document.createElement('div');
+          const cmpRef = createComponent(ProjectPopupComponent, {
+            environmentInjector: this.injector
+          });
+          cmpRef.instance.project = project;
+          cmpRef.instance.map = map;
+          cmpRef.hostView.detectChanges();
+          popupDiv.appendChild(cmpRef.location.nativeElement);
 
-          this.markersClusterGroup!.addLayer(marker); 
+          marker.bindPopup(popupDiv, {
+            maxWidth: 486,
+            minWidth: 0,
+            autoPan: true,
+          });
+          marker.on('click', () => {
+            this.sharedService.selectProject(project);
+          });
+          this.markersClusterGroup!.addLayer(marker);
         } catch (err) {
-          console.error('[Map] Failed to add marker:', project, err);
+          console.error('Map Failed to add marker:', project, err);
         }
       });
+      
   }
+
+  openPopupForProject(project: Project): void {
+    if (
+      project?.latitude == null ||
+      project?.longitude == null ||
+      !this.markersClusterGroup
+    ) {
+      return;
+    }
+
+    const smk = this.mapService.getSMKInstance();
+    const map = smk?.$viewer?.map;
+    if (!map) return;
+
+    const targetMarker = this.markersClusterGroup
+      .getLayers()
+      .find((layer): layer is L.Marker => {
+        return (
+          layer instanceof L.Marker &&
+          Math.abs(layer.getLatLng().lat - project.latitude!) < 0.0001 &&
+          Math.abs(layer.getLatLng().lng - project.longitude!) < 0.0001
+        );
+      });
+
+    if (targetMarker) {
+      // Reset previous active marker icon
+      if (this.activeMarker && this.activeMarker !== targetMarker) {
+        this.activeMarker.setIcon(getBluePinIcon()
+        );
+      }
+
+      // Set active icon for selected marker
+      targetMarker.setIcon(getActivePinIcon());
+
+      this.activeMarker = targetMarker;
+
+      this.markersClusterGroup.zoomToShowLayer(targetMarker, () => {
+        targetMarker.openPopup();
+
+        targetMarker.off('popupclose'); 
+
+        targetMarker.on('popupclose', () => {
+          targetMarker.setIcon(getBluePinIcon());
+
+          if (this.selectedProject?.projectGuid === project.projectGuid) {
+            this.sharedService.selectProject();
+          }
+        });
+        requestAnimationFrame(() => {
+          map.invalidateSize();
+        });
+      });
+    }
+  }
+
+  public closePopupForProject(project: Project): void {
+    const marker = this.projectMarkerMap.get(project.projectGuid);
+    if (marker) {
+      marker.closePopup();
+
+      marker.setIcon(getBluePinIcon());
+      // if it's the active marker, reset reference
+      if (this.activeMarker === marker) {
+        this.activeMarker = null;
+      }
+    }
+  }
+
 }

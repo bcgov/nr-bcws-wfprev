@@ -1,0 +1,130 @@
+.popup-wrapper {
+  width: 560px;
+  max-height: 486px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  font-family: var(--wf-font-family-main);
+  background: white;
+
+  .popup-container{
+    overflow-y: auto;
+  }
+  .popup-header {
+    display: flex;
+    height: auto;
+    border-bottom: 1px solid #D8D8D8;
+    word-break: break-word;
+    background: #FFF;
+    padding: 15px;
+    justify-content: space-between;
+    align-items: flex-start;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 400;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    .popup-title {
+      flex: 1 1 auto;
+      word-break: break-word;
+    }
+
+    .popup-close {
+      flex: 0 0 auto;
+      width: 24px;
+      height: 24px;
+      cursor: pointer;
+    }
+  }
+
+  .popup-close {
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+  }
+
+  .popup-scrollable {
+    flex: 1;
+    overflow-y: auto;
+    scrollbar-width: thin;
+  }
+
+  .project-content {
+    padding: 5px 15px;
+  }
+
+  .first-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+    margin-bottom: 15px;
+  }
+
+  .second-row {
+    margin-bottom: 10px;
+  }
+
+  .info-group {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .label {
+    font-size: 14px;
+    font-weight: 400;
+    color: #474543;
+    margin-bottom: 2px;
+    white-space: nowrap;
+  }
+
+  .value {
+    font-size: 16px;
+    font-weight: 400;
+    color: #474543;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .description-value {
+    white-space: normal;
+    overflow: visible;
+    text-overflow: unset;
+    word-break: break-word;
+  }
+
+  .title{
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 400;
+    padding: 10px 10px 6px 15px;
+    border-bottom: 1px solid #D8D8D8;
+  }
+
+  .button-row {
+    display: flex;
+    justify-content: flex-end;  
+    padding: 10px 15px;
+    background: white;
+    border-top: 1px solid #D8D8D8;
+    position: sticky;
+    bottom: 0;
+    z-index: 2;
+  }
+
+    .fiscal-content {
+      padding: 0 15px 10px;
+
+      .fiscal-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 8px;
+      }
+  }
+}
+
+.no-fiscal{
+    padding-top: 10px;
+}

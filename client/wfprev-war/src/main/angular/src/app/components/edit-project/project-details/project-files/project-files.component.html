@@ -3,10 +3,13 @@
         <span class="title-text">
             Files
         </span>
-        <button class="primary" (click)="openFileUploadModal()">
-            <img class="icon" src="/assets/upload-file.svg">
-            <span>Upload File</span>
-        </button> 
+        <wfprev-icon-button
+          [text]="'Upload File'"
+          [icon]="'/assets/upload-file.svg'"
+          [alt]="'upload-file'"
+          [iconSize]="19"
+          (clicked)="openFileUploadModal()">
+        </wfprev-icon-button>
     </div>
                     
     <table mat-table [dataSource]="dataSource" class="files-table">
