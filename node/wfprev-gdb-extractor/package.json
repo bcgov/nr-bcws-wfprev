@@ -22,8 +22,7 @@
     "rimraf": "6.0.1",
     "sanitize-filename": "^1.6.3",
     "supertest": "7.1.0",
-    "tmp": "0.2.3",
-    "wfprev-gdb-extractor": "file:"
+    "tmp": "0.2.3"
   },
   "devDependencies": {
     "sinon": "20.0.0"
