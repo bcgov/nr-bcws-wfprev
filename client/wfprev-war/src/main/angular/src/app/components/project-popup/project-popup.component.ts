@@ -5,12 +5,13 @@ import { CodeTableKeys } from 'src/app/utils/constants';
 import L from 'leaflet';
 import { ActivityCategoryCodeModel, PlanFiscalStatusCodeModel, ProgramAreaModel, ProjectTypeCodeModel } from 'src/app/components/models';
 import { getFiscalYearDisplay } from 'src/app/utils/tools';
-import { FiscalCardComponent } from 'src/app/components/shared/fiscal-card/fiscal-card/fiscal-card.component';
+import { FiscalCardComponent } from 'src/app/components/shared/fiscal-card/fiscal-card.component';
+import { IconButtonComponent } from 'src/app/components/shared/icon-button/icon-button.component';
 
 @Component({
   selector: 'app-project-popup',
   standalone: true,
-  imports: [CommonModule,FiscalCardComponent],
+  imports: [CommonModule, FiscalCardComponent, IconButtonComponent],
   templateUrl: './project-popup.component.html',
   styleUrls: ['./project-popup.component.scss']
 })

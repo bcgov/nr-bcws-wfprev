@@ -20,6 +20,7 @@ import { ProjectService } from 'src/app/services/project-services';
 import { CanComponentDeactivate } from 'src/app/services/util/can-deactive.guard';
 import { Messages } from 'src/app/utils/constants';
 import { ExpansionIndicatorComponent } from "../../shared/expansion-indicator/expansion-indicator.component";
+import { IconButtonComponent } from 'src/app/components/shared/icon-button/icon-button.component';
 
 
 export const CUSTOM_DATE_FORMATS = {
@@ -44,7 +45,9 @@ export const CUSTOM_DATE_FORMATS = {
     MatInputModule,
     FormsModule,
     MatCheckboxModule,
-    ProjectFilesComponent, ExpansionIndicatorComponent],
+    ProjectFilesComponent,
+    ExpansionIndicatorComponent,
+    IconButtonComponent],
   templateUrl: './activities.component.html',
   styleUrl: './activities.component.scss',
   providers: [

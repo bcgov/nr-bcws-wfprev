@@ -15,12 +15,13 @@ import { SharedService } from 'src/app/services/shared-service';
 import { getBluePinIcon, getFiscalYearDisplay } from 'src/app/utils/tools';
 import { ResourcesRoutes, getActiveMap } from 'src/app/utils';
 import { ExpansionIndicatorComponent } from '../../shared/expansion-indicator/expansion-indicator.component';
+import { IconButtonComponent } from 'src/app/components/shared/icon-button/icon-button.component';
 
 
 @Component({
   selector: 'app-projects-list',
   standalone: true,
-  imports: [MatSlideToggleModule, CommonModule, MatExpansionModule, MatTooltipModule, ExpansionIndicatorComponent],
+  imports: [MatSlideToggleModule, CommonModule, MatExpansionModule, MatTooltipModule, ExpansionIndicatorComponent, IconButtonComponent],
   templateUrl: './projects-list.component.html',
   styleUrls: ['./projects-list.component.scss'],
 })

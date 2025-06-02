@@ -111,29 +111,6 @@
     position: sticky;
     bottom: 0;
     z-index: 2;
-    .view-details-button{
-        cursor: pointer;
-        padding: 12px !important;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 10px;
-        border-radius: 4px;
-        background: #013366;
-        .icon{
-            vertical-align: text-bottom;
-            padding-right: 5px;
-            width: 14px;
-            height: 14px;
-        }
-        .button-text{
-            color: #FFF;
-            font-size: 16px;
-            font-style: normal;
-            font-weight: 400;
-            line-height: normal;
-        }
-    }
   }
 
     .fiscal-content {

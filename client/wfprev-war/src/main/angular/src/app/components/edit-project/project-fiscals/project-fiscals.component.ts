@@ -20,6 +20,7 @@ import { ProjectService } from 'src/app/services/project-services';
 import { CanComponentDeactivate } from 'src/app/services/util/can-deactive.guard';
 import { CodeTableKeys, Messages } from 'src/app/utils/constants';
 import { ExpansionIndicatorComponent } from '../../shared/expansion-indicator/expansion-indicator.component';
+import { IconButtonComponent } from 'src/app/components/shared/icon-button/icon-button.component';
 
 @Component({
   selector: 'app-project-fiscals',
@@ -38,7 +39,8 @@ import { ExpansionIndicatorComponent } from '../../shared/expansion-indicator/ex
     ActivitiesComponent,
     FiscalMapComponent,
     MatTooltipModule,
-    ExpansionIndicatorComponent
+    ExpansionIndicatorComponent,
+    IconButtonComponent
   ]
 })
 export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  {

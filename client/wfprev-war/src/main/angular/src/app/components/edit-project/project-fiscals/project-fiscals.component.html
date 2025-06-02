@@ -1,10 +1,15 @@
 <div class="fiscals-container">
   <div>
     <div class="button-row">
-      <button mat-raised-button class="primary new-fiscal-button" (click)="addNewFiscal()" [disabled]="hasUnsavedFiscal">
-        <img alt="create-project" class="icon" src="/assets/add-button.svg" width="19" height="19">
-        Add New Fiscal
-      </button>
+      <app-icon-button
+          [text]="'Add New Fiscal'"
+          [icon]="'/assets/add-button.svg'"
+          [alt]="'add-new-fiscal'"
+          [iconSize]="19"
+          [disabled]="hasUnsavedFiscal"
+          (clicked)="addNewFiscal()">
+      </app-icon-button>
+      
     </div>
       <div class=fiscal-tab-wrapper>
         <mat-tab-group class="custom-tab-group expandable-fiscal-tabs" *ngIf="projectFiscals?.length; else noFiscals" [(selectedIndex)]="selectedTabIndex" (selectedTabChange)="onTabChange($event.index)">

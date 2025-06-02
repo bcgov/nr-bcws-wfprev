@@ -13,12 +13,13 @@
       </div>
     </div>
     <div class="create-project-button-container">
-      <button class="create-project-button" (click)="createNewProject()">
-        <span class="button-text">
-          <img alt="create-project" class="icon" src="/assets/add-button.svg">
-          Create New Project
-        </span>
-      </button>
+      <app-icon-button
+          [text]="'Create New Project'"
+          [icon]="'/assets/add-button.svg'"
+          [alt]="'create-project'"
+          [iconSize]="19"
+          (clicked)="createNewProject()">
+      </app-icon-button>
     </div>
   </div>
 

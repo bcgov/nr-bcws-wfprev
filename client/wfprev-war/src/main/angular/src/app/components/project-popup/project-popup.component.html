@@ -41,11 +41,11 @@
         </div>
     </div>
     <div class="button-row">
-        <button class="view-details-button" (click)="navigateToProject()">
-            <span class="button-text">
-                <img alt="create-project" class="icon" src="/assets/view-details.svg">
-                View Details
-            </span>
-        </button>
+        <app-icon-button
+            [text]="'View Details'"
+            [icon]="'/assets/view-details.svg'"
+            [alt]="'view-details'"
+            (clicked)="navigateToProject()">
+        </app-icon-button>
     </div>
 </div>
