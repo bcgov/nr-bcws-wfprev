@@ -8,7 +8,7 @@ import { CanComponentDeactivate } from 'src/app/services/util/can-deactive.guard
 import { ResourcesRoutes } from 'src/app/utils';
 
 @Component({
-  selector: 'app-edit-project',
+  selector: 'wfprev-edit-project',
   standalone: true,
   imports: [MatTabsModule, ProjectDetailsComponent, ProjectFiscalsComponent],
   templateUrl: './edit-project.component.html',

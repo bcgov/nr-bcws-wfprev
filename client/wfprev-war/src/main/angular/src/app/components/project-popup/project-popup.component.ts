@@ -9,7 +9,7 @@ import { FiscalCardComponent } from 'src/app/components/shared/fiscal-card/fisca
 import { IconButtonComponent } from 'src/app/components/shared/icon-button/icon-button.component';
 
 @Component({
-  selector: 'app-project-popup',
+  selector: 'wfprev-project-popup',
   standalone: true,
   imports: [CommonModule, FiscalCardComponent, IconButtonComponent],
   templateUrl: './project-popup.component.html',

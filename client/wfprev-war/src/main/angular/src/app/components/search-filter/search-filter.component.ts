@@ -13,7 +13,7 @@ import { Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 import { MatOptionSelectionChange } from '@angular/material/core';
 @Component({
-  selector: 'app-search-filter',
+  selector: 'wfprev-search-filter',
   standalone: true,
   imports: [
     FormsModule,

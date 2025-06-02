@@ -8,7 +8,7 @@ import { ResourcesRoutes } from 'src/app/utils';
 import { LeafletLegendService, createFullPageControl, getBluePinIcon } from 'src/app/utils/tools';
 
 @Component({
-  selector: 'app-fiscal-map',
+  selector: 'wfprev-fiscal-map',
   standalone: true,
   imports: [],
   templateUrl: './fiscal-map.component.html',

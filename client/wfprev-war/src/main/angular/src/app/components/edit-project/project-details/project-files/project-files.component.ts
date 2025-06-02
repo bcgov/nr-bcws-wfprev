@@ -16,7 +16,7 @@ import { ActivatedRoute } from '@angular/router';
 import { IconButtonComponent } from 'src/app/components/shared/icon-button/icon-button.component';
 
 @Component({
-  selector: 'app-project-files',
+  selector: 'wfprev-project-files',
   standalone: true,
   imports: [MatTableModule, CommonModule, IconButtonComponent],
   templateUrl: './project-files.component.html',

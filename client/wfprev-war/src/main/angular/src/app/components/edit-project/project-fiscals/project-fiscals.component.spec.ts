@@ -42,7 +42,7 @@ describe('ProjectFiscalsComponent', () => {
   let fixture: ComponentFixture<ProjectFiscalsComponent>;
 
   @Component({
-    selector: 'app-fiscal-map',
+    selector: 'wfprev-fiscal-map',
     template: '<div></div>'
   })
   class MockFiscalMapComponent {
@@ -51,7 +51,7 @@ describe('ProjectFiscalsComponent', () => {
     initMap() {}
   }
   @Component({
-    selector: 'app-activities',
+    selector: 'wfprev-activities',
     template: ''
   })
   class MockActivitiesComponent {

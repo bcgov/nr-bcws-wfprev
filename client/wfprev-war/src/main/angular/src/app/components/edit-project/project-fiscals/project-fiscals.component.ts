@@ -23,7 +23,7 @@ import { ExpansionIndicatorComponent } from '../../shared/expansion-indicator/ex
 import { IconButtonComponent } from 'src/app/components/shared/icon-button/icon-button.component';
 
 @Component({
-  selector: 'app-project-fiscals',
+  selector: 'wfprev-project-fiscals',
   templateUrl: './project-fiscals.component.html',
   styleUrls: ['./project-fiscals.component.scss'],
   standalone: true,

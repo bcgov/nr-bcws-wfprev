@@ -28,11 +28,11 @@
         <div class="fiscal-content">
             <ng-container *ngIf="project.projectFiscals?.length > 0; else noFiscal">
                 <div class="fiscal-grid">
-                    <app-fiscal-card
+                    <wfprev-fiscal-card
                         *ngFor="let fiscal of sortedFiscals"
                         [fiscal]="fiscal"
                         [getDescription]="getCodeDescription.bind(this)">
-                    </app-fiscal-card>
+                    </wfprev-fiscal-card>
                 </div>
             </ng-container>
             <ng-template #noFiscal>
@@ -41,11 +41,11 @@
         </div>
     </div>
     <div class="button-row">
-        <app-icon-button
+        <wfprev-icon-button
             [text]="'View Details'"
             [icon]="'/assets/view-details.svg'"
             [alt]="'view-details'"
             (clicked)="navigateToProject()">
-        </app-icon-button>
+        </wfprev-icon-button>
     </div>
 </div>
