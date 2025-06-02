@@ -15,6 +15,9 @@ import { CodeTableServices } from 'src/app/services/code-table-services';
 import { fakeAsync, tick } from '@angular/core/testing';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { DebugElement } from '@angular/core';
+import { IconButtonComponent } from 'src/app/components/shared/icon-button/icon-button.component';
+import { By } from '@angular/platform-browser';
 
 describe('ActivitiesComponent', () => {
   let component: ActivitiesComponent;
@@ -396,23 +399,27 @@ describe('ActivitiesComponent', () => {
   });
 
   it('should disable "Add Activity" button when isNewActivityBeingAdded is true', () => {
-    component.fiscalGuid = 'test-guid'; // Ensure button is rendered
+    component.fiscalGuid = 'test-guid';
     component.isNewActivityBeingAdded = true;
-    fixture.detectChanges(); // Update the DOM
-  
-    const button = fixture.nativeElement.querySelector('.dropdown-button');
-    expect(button).not.toBeNull(); // Ensure button exists
-    expect(button?.disabled).toBeTrue();
+    fixture.detectChanges();
+
+    const debugEl: DebugElement = fixture.debugElement.query(By.directive(IconButtonComponent));
+    expect(debugEl).withContext('IconButtonComponent should exist').not.toBeNull();
+
+    const buttonInstance = debugEl.componentInstance as IconButtonComponent;
+    expect(buttonInstance.disabled).withContext('Button should be disabled').toBeTrue();
   });
-  
+    
   it('should enable "Add Activity" button when isNewActivityBeingAdded is false', () => {
-    component.fiscalGuid = 'test-guid'; // Ensure button is rendered
+    component.fiscalGuid = 'test-guid';
     component.isNewActivityBeingAdded = false;
-    fixture.detectChanges(); // Update the DOM
-  
-    const button = fixture.nativeElement.querySelector('.dropdown-button');
-    expect(button).not.toBeNull(); // Ensure button exists
-    expect(button?.disabled).toBeFalse();
+    fixture.detectChanges();
+
+    const debugEl: DebugElement = fixture.debugElement.query(By.directive(IconButtonComponent));
+    expect(debugEl).withContext('IconButtonComponent should exist').not.toBeNull();
+
+    const buttonInstance = debugEl.componentInstance as IconButtonComponent;
+    expect(buttonInstance.disabled).withContext('Button should not be disabled').toBeFalse();
   });
 
   it('should sort an array of objects by a given key', () => {
