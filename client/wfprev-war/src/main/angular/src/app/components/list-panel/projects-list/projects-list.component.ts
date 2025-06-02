@@ -12,7 +12,7 @@ import { CodeTableServices } from 'src/app/services/code-table-services';
 import { ProjectService } from 'src/app/services/project-services';
 import { SharedCodeTableService } from 'src/app/services/shared-code-table.service';
 import { SharedService } from 'src/app/services/shared-service';
-import { getBluePinIcon, getFiscalYearDisplay } from 'src/app/utils/tools';
+import { getBluePinIcon, getFiscalYearDisplay, PlanFiscalStatusIcons } from 'src/app/utils/tools';
 import { ResourcesRoutes, getActiveMap } from 'src/app/utils';
 import { ExpansionIndicatorComponent } from '../../shared/expansion-indicator/expansion-indicator.component';
 import { IconButtonComponent } from 'src/app/components/shared/icon-button/icon-button.component';
@@ -523,5 +523,9 @@ export class ProjectsListComponent implements OnInit {
       this.selectedProjectGuid = project.projectGuid;
       this.sharedService.selectProject(project);
     }
+  }
+
+  getStatusIcon(status: string) {
+    return PlanFiscalStatusIcons[status];
   }
 }

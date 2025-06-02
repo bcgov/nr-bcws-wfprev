@@ -33,10 +33,10 @@ export class ProjectPopupComponent implements OnInit {
 
   loadCodeTables(): void {
     const codeTables = [
-      { name: 'projectTypeCodes', embeddedKey: 'projectTypeCode' },
-      { name: 'programAreaCodes', embeddedKey: 'programAreaCode' },
-      { name: 'planFiscalStatusCodes', embeddedKey: 'planFiscalStatusCode'},
-      { name: 'activityCategoryCodes', embeddedKey: 'activityCategoryCode'}
+      { name: 'projectTypeCodes', embeddedKey: CodeTableKeys.PROJECT_TYPE_CODE },
+      { name: 'programAreaCodes', embeddedKey: CodeTableKeys.PROGRAM_AREA_CODE },
+      { name: 'planFiscalStatusCodes', embeddedKey: CodeTableKeys.PLAN_FISCAL_STATUS_CODE },
+      { name: 'activityCategoryCodes', embeddedKey: CodeTableKeys.ACTIVITY_CATEGORY_CODE }
     ];
 
     codeTables.forEach(table => {

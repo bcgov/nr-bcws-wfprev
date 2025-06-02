@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input } from '@angular/core';
-import { getFiscalYearDisplay } from 'src/app/utils/tools';
+import { getFiscalYearDisplay, PlanFiscalStatusIcons } from 'src/app/utils/tools';
 import { CodeTableKeys, PlanFiscalStatus } from 'src/app/utils/constants';
 
 @Component({
@@ -28,5 +28,9 @@ export class FiscalCardComponent {
 
   formatCurrency(val: number | undefined): string {
     return val != null ? `$${this.formatValue(val)}` : '';
+  }
+
+  getStatusIcon(statusCode: string) {
+    return PlanFiscalStatusIcons[statusCode];
   }
 }
