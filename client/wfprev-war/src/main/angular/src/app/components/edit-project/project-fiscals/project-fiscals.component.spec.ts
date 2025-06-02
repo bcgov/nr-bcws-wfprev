@@ -172,7 +172,6 @@ describe('ProjectFiscalsComponent', () => {
       'OK',
       { duration: 5000, panelClass: 'snackbar-success' } // ✅ Ensure correct snackbar message
     );
-    spyOn(component, 'loadProjectFiscals');
     component.onSaveFiscal(0);
     expect(component.loadProjectFiscals).toHaveBeenCalled(); 
   });
@@ -202,7 +201,6 @@ describe('ProjectFiscalsComponent', () => {
       'OK',
       { duration: 5000, panelClass: 'snackbar-success' } // ✅ Ensure correct success message
     );
-    spyOn(component, 'loadProjectFiscals');
     component.onSaveFiscal(0);
     expect(component.loadProjectFiscals).toHaveBeenCalled(); 
   });
