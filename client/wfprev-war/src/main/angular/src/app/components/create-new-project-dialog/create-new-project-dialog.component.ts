@@ -14,7 +14,7 @@ import {
 import { TextFieldModule } from '@angular/cdk/text-field';
 import { MatTooltipModule  } from '@angular/material/tooltip';
 @Component({
-  selector: 'app-create-new-project-dialog',
+  selector: 'wfprev-create-new-project-dialog',
   standalone: true,
   imports: [
     ReactiveFormsModule,

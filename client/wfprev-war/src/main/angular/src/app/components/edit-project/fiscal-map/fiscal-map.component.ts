@@ -5,10 +5,10 @@ import { forkJoin, map } from 'rxjs';
 import { FileAttachment } from 'src/app/components/models';
 import { ProjectService } from 'src/app/services/project-services';
 import { ResourcesRoutes } from 'src/app/utils';
-import { LeafletLegendService, createFullPageControl } from 'src/app/utils/tools';
+import { LeafletLegendService, createFullPageControl, getBluePinIcon } from 'src/app/utils/tools';
 
 @Component({
-  selector: 'app-fiscal-map',
+  selector: 'wfprev-fiscal-map',
   standalone: true,
   imports: [],
   templateUrl: './fiscal-map.component.html',
@@ -70,11 +70,7 @@ export class FiscalMapComponent implements AfterViewInit, OnDestroy, OnInit {
           const lat = parseFloat(this.projectLatitude);
           const lng = parseFloat(this.projectLongitude);
   
-          const teardropIcon = L.icon({
-            iconUrl: '/assets/blue-pin-drop.svg',
-            iconSize: [30, 50],
-            iconAnchor: [12, 41],
-          });
+          const teardropIcon = getBluePinIcon()
           L.marker([lat, lng], { icon: teardropIcon }).addTo(this.map);
   
           this.map.setView([lat, lng], 14); 

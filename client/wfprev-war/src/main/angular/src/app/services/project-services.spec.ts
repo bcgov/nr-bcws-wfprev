@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { AppConfigService } from 'src/app/services/app-config.service';
 import { TokenService } from 'src/app/services/token.service';
-import { Project, ProjectBoundary } from 'src/app/components/models';
+import { FeaturesResponse, Project, ProjectBoundary } from 'src/app/components/models';
 import { ProjectService } from 'src/app/services/project-services';
 import { HttpEventType } from '@angular/common/http';
 import { of } from 'rxjs';
@@ -128,6 +128,7 @@ describe('ProjectService', () => {
   it('should update a project', () => {
     const projectGuid = '12345';
     const updatedProject: Project = {
+      projectGuid: 'project-guid-123',
       projectName: 'Updated Project',
       bcParksRegionOrgUnitId: 1,
       bcParksSectionOrgUnitId: 2,
@@ -189,6 +190,7 @@ describe('ProjectService', () => {
   it('should handle errors when updating a project', () => {
     const projectGuid = '12345';
     const updatedProject: Project = {
+      projectGuid: 'project-guid-123',
       projectName: 'Updated Project',
       bcParksRegionOrgUnitId: 1,
       bcParksSectionOrgUnitId: 2,
@@ -702,28 +704,31 @@ describe('ProjectService', () => {
   });
 
   it('should fetch features with query params', () => {
-    const mockResponse = {
+    const mockResponse: FeaturesResponse = {
       projects: [
         {
-          projectName: 'Test Project',
           bcParksRegionOrgUnitId: 1,
-          bcParksSectionOrgUnitId: 1,
-          closestCommunityName: 'Sample',
-          fireCentreOrgUnitId: 1,
+          bcParksSectionOrgUnitId: 101,
+          closestCommunityName: 'Community A',
+          fireCentreOrgUnitId: 201,
+          forestDistrictOrgUnitId: 301,
+          forestRegionOrgUnitId: 401,
           isMultiFiscalYearProj: false,
-          programAreaGuid: 'guid-1',
-          projectDescription: 'Test description',
-          projectLead: 'Lead Name',
-          projectLeadEmailAddress: 'lead@example.com',
-          projectNumber: 101,
+          programAreaGuid: 'program-guid-a',
+          projectDescription: 'Description A',
+          projectGuid: 'project-guid-a',
+          projectLead: 'Lead A',
+          projectLeadEmailAddress: 'leada@example.com',
+          projectName: 'Project A',
+          projectNumber: 1001,
           siteUnitName: 'Site A',
-          totalActualAmount: 100,
-          totalAllocatedAmount: 50,
-          totalFundingRequestAmount: 20,
-          totalPlannedCostPerHectare: 2,
-          totalPlannedProjectSizeHa: 10,
-          forestDistrictOrgUnitId: 1,
-          forestRegionOrgUnitId: 1
+          totalActualAmount: 10000,
+          totalAllocatedAmount: 12000,
+          totalFundingRequestAmount: 15000,
+          totalPlannedCostPerHectare: 200,
+          totalPlannedProjectSizeHa: 50,
+          latitude: 49.1,
+          longitude: -123.1
         }
       ]
     };
