@@ -8,7 +8,7 @@ import { convertFiscalYear } from 'src/app/utils/tools';
 import { ExpansionIndicatorComponent } from "../../../shared/expansion-indicator/expansion-indicator.component";
 
 @Component({
-  selector: 'app-fiscal-year-projects',
+  selector: 'wfprev-fiscal-year-projects',
   standalone: true,
   imports: [MatExpansionModule, CommonModule, MatTableModule, ExpansionIndicatorComponent],
   templateUrl: './fiscal-year-projects.component.html',

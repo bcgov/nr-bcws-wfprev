@@ -24,7 +24,7 @@ import {
 import { ExpansionIndicatorComponent } from '../../shared/expansion-indicator/expansion-indicator.component';
 
 @Component({
-  selector: 'app-project-details',
+  selector: 'wfprev-project-details',
   standalone: true,
   imports: [ReactiveFormsModule, MatExpansionModule, CommonModule, FormsModule, FiscalYearProjectsComponent, ProjectFilesComponent, MatTooltip, TextFieldModule, ExpansionIndicatorComponent],
   templateUrl: './project-details.component.html',

@@ -19,7 +19,7 @@ import { IconButtonComponent } from 'src/app/components/shared/icon-button/icon-
 
 
 @Component({
-  selector: 'app-projects-list',
+  selector: 'wfprev-projects-list',
   standalone: true,
   imports: [MatSlideToggleModule, CommonModule, MatExpansionModule, MatTooltipModule, ExpansionIndicatorComponent, IconButtonComponent],
   templateUrl: './projects-list.component.html',

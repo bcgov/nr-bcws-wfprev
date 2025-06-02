@@ -34,7 +34,7 @@ export const CUSTOM_DATE_FORMATS = {
 };
 
 @Component({
-  selector: 'app-activities',
+  selector: 'wfprev-activities',
   standalone: true,
   imports: [MatExpansionModule,
     ReactiveFormsModule,

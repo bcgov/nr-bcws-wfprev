@@ -46,9 +46,9 @@ class MockProjectService {
   selector: 'app-map',
   template: `
     <div class="map-container">
-      <app-resizable-panel (panelResized)="onPanelResized()">
+      <wfprev-resizable-panel (panelResized)="onPanelResized()">
         <div [innerHTML]="panelContent"></div>
-      </app-resizable-panel>
+      </wfprev-resizable-panel>
       <div class="map-content">
         <h2>Mock Map Component</h2>
         <div id="map"></div>

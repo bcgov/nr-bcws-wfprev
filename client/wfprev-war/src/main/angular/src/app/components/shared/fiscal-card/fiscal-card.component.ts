@@ -4,7 +4,7 @@ import { getFiscalYearDisplay, PlanFiscalStatusIcons } from 'src/app/utils/tools
 import { CodeTableKeys, PlanFiscalStatus } from 'src/app/utils/constants';
 
 @Component({
-  selector: 'app-fiscal-card',
+  selector: 'wfprev-fiscal-card',
   standalone: true,
   imports: [CommonModule],
   templateUrl: './fiscal-card.component.html',
