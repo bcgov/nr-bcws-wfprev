@@ -39,3 +39,12 @@ export const CodeTableKeys = {
   SECONDARY_OBJECTIVE_TYPE_CODE: 'secondaryObjectiveTypeCode',
   PROGRAM_AREA_CODE: 'programAreaCode'
 };
+
+export const PlanFiscalStatus = {
+  DRAFT: 'DRAFT',
+  PROPOSED: 'PROPOSED',
+  IN_PROG: 'IN_PROG',
+  COMPLETE: 'COMPLETE',
+  ABANDONED: 'ABANDONED',
+  PREPARED: 'PREPARED'
+};

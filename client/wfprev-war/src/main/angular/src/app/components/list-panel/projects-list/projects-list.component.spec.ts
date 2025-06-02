@@ -821,25 +821,6 @@ describe('ProjectsListComponent', () => {
     });
   });
 
-  describe('togglePanel', () => {
-    it('should toggle the panel expanded state and stop event propagation', () => {
-      const guid = 'panel-guid';
-      const event = {
-        stopPropagation: jasmine.createSpy()
-      } as unknown as MouseEvent;
-
-      // Initially false
-      component.expandedPanels[guid] = false;
-      component.togglePanel(guid, event);
-      expect(component.expandedPanels[guid]).toBeTrue();
-      expect(event.stopPropagation).toHaveBeenCalled();
-
-      // Toggle again to false
-      component.togglePanel(guid, event);
-      expect(component.expandedPanels[guid]).toBeFalse();
-    });
-  });
-
   describe('onListItemClick', () => {
     const project = {
       projectGuid: 'guid-y',

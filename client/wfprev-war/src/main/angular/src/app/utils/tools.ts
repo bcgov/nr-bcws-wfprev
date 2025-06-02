@@ -123,3 +123,21 @@ export function getFiscalYearDisplay(fiscalYear: number | null | undefined): str
   const nextYear = (fiscalYear + 1) % 100;
   return `${fiscalYear}/${nextYear.toString().padStart(2, '0')}`;
 }
+
+export function getBluePinIcon(): L.Icon {
+  return L.icon({
+    iconUrl: '/assets/blue-pin-drop.svg',
+    iconSize: [30, 50],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+  });
+}
+
+export function getActivePinIcon(): L.Icon {
+  return L.icon({
+    iconUrl: '/assets/active-pin-drop.svg',
+    iconSize: [50, 70],
+    iconAnchor: [20, 51],
+    popupAnchor: [1, -34],
+  });
+}

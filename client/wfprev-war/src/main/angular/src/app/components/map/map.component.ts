@@ -3,7 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { SearchFilterComponent } from 'src/app/components/search-filter/search-filter.component';
 import { MapConfigService } from 'src/app/services/map-config.service';
 import { MapService } from 'src/app/services/map.service';
-import { LeafletLegendService } from 'src/app/utils/tools';
+import { LeafletLegendService, getBluePinIcon,  getActivePinIcon } from 'src/app/utils/tools';
 import { SharedService } from 'src/app/services/shared-service';
 import * as L from 'leaflet';
 import { ProjectPopupComponent } from 'src/app/components/project-popup/project-popup.component';
@@ -32,6 +32,11 @@ export class MapComponent implements AfterViewInit, OnDestroy  {
     present: '#1B9E77',
     future: '#E7298A'
   };
+
+  MAP_COMMANDS = {
+    OPEN: 'open',
+    CLOSE: 'close'
+  } as const;
 
   private isMapReady = false;
   private latestProjects: any[] = [];
@@ -76,9 +81,9 @@ ngAfterViewInit(): void {
   });
 
   this.sharedService.mapCommand$.subscribe(({ action, project }) => {
-    if (action === 'close') {
+    if (action === this.MAP_COMMANDS.CLOSE) {
       this.closePopupForProject(project);
-    } else if (action === 'open') {
+    } else if (action === this.MAP_COMMANDS.OPEN) {
       this.openPopupForProject(project);
     }
   });
@@ -175,12 +180,7 @@ ngAfterViewInit(): void {
       .forEach(project => {
         try {
           const marker = L.marker([project.latitude, project.longitude], {
-            icon: L.icon({
-              iconUrl: '/assets/blue-pin-drop.svg',
-              iconSize: [30, 50],
-              iconAnchor: [12, 41],
-              popupAnchor: [1, -34],
-            })
+            icon: getBluePinIcon()
           });
           this.projectMarkerMap.set(project.projectGuid, marker);
           // Create and attach popup
@@ -235,25 +235,12 @@ ngAfterViewInit(): void {
     if (targetMarker) {
       // Reset previous active marker icon
       if (this.activeMarker && this.activeMarker !== targetMarker) {
-        this.activeMarker.setIcon(
-          L.icon({
-            iconUrl: '/assets/blue-pin-drop.svg',
-            iconSize: [30, 50],
-            iconAnchor: [12, 41],
-            popupAnchor: [1, -34],
-          })
+        this.activeMarker.setIcon(getBluePinIcon()
         );
       }
 
       // Set active icon for selected marker
-      targetMarker.setIcon(
-        L.icon({
-          iconUrl: '/assets/active-pin-drop.svg',
-          iconSize: [50, 70],
-          iconAnchor: [20, 51],
-          popupAnchor: [1, -34],
-        })
-      );
+      targetMarker.setIcon(getActivePinIcon());
 
       this.activeMarker = targetMarker;
 
@@ -263,14 +250,7 @@ ngAfterViewInit(): void {
         targetMarker.off('popupclose'); 
 
         targetMarker.on('popupclose', () => {
-          targetMarker.setIcon(
-            L.icon({
-              iconUrl: '/assets/blue-pin-drop.svg',
-              iconSize: [30, 50],
-              iconAnchor: [12, 41],
-              popupAnchor: [1, -34],
-            })
-          );
+          targetMarker.setIcon(getBluePinIcon());
 
           if (this.selectedProject?.projectGuid === project.projectGuid) {
             this.sharedService.selectProject();
@@ -288,22 +268,12 @@ ngAfterViewInit(): void {
     if (marker) {
       marker.closePopup();
 
-      marker.setIcon(
-        L.icon({
-          iconUrl: '/assets/blue-pin-drop.svg',
-          iconSize: [30, 50],
-          iconAnchor: [12, 41],
-          popupAnchor: [1, -34],
-        })
-      );
-
+      marker.setIcon(getBluePinIcon());
       // if it's the active marker, reset reference
       if (this.activeMarker === marker) {
         this.activeMarker = null;
       }
     }
   }
-
-
 
 }

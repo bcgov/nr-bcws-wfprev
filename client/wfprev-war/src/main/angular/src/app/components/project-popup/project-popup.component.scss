@@ -139,62 +139,15 @@
     .fiscal-content {
       padding: 0 15px 10px;
 
-    .fiscal-grid {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 8px;
-    }
-
-    .fiscal-card {
-      flex: 0 0 calc(50% - 6px);
-      max-width: calc(50% - 6px);
-      box-sizing: border-box;
-      border-radius: 12px;
-      border: 1px solid #3470B1;
-      padding: 8px 12px;
-      background-color: #FFF;
-      font-size: 14px;
-    }
-
-    .fiscal-header{
-      display: flex;
-      justify-content: space-between;
-    }
-
-    .fiscal-title {
-      font-size: 16px;
-      font-weight: 700;
-      margin-bottom: 4px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .activity-category {
-      margin-bottom: 8px;
-      border-bottom: 1px solid #D8D8D8;
-      margin: 0 -12px;
-      padding:0 12px;
-    }
-    
-    .fiscal-values{
-      padding-top: 4px;
-      display: flex;
-      .sub-title{
-        font-size: 14px;
-        font-weight: 400;
+      .fiscal-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 8px;
       }
-      .sub-value{
-        font-size: 14px;
-        font-style: normal;
-        font-weight: 700;
-      }
-    }
   }
+}
 
-  .no-fiscal{
+.no-fiscal{
     padding-top: 10px;
-  }
-
 }
