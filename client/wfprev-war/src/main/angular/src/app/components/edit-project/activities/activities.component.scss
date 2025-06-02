@@ -270,12 +270,3 @@
 :host ::ng-deep .mat-mdc-form-field-infix{
     padding: 0 !important;
 }
-
-.expansion-indicator {
-  margin-right: 8px; /* Adjust as needed */
-  transition: transform 0.3s ease-in-out;
-}
-
-.expansion-indicator.expanded {
-  transform: rotate(180deg);
-}

@@ -400,12 +400,3 @@
 .required {
   color: #EF1616;
 }
-
-.expansion-indicator {
-  margin-right: 8px;
-  transition: transform 0.3s ease-in-out;
-}
-
-.expansion-indicator.expanded {
-  transform: rotate(180deg);
-}
