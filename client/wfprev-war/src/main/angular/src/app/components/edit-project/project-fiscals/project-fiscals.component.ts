@@ -195,6 +195,7 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  
           fiscalYearFormatted: `${fiscal.fiscalYear}/${(fiscal.fiscalYear + 1).toString().slice(-2)}`,
         }))
         .sort((a: any, b: any) => {
+          // Sort by date then by name
           if (a.fiscalYear !== b.fiscalYear) {
             return b.fiscalYear - a.fiscalYear; 
           }
