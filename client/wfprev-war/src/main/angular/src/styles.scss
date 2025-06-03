@@ -88,6 +88,13 @@ html, body{
     overflow: hidden;
 }
 
+[class^="mat-"],
+[class*=" mat-"],
+[class^="mdc-"],
+[class*=" mdc-"] {
+  font-family: var(--wf-font-family-main) !important;
+}
+
 .mat-mdc-tab-body-wrapper {
   height: calc(100vh - 250px) !important
 }
