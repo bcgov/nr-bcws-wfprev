@@ -44,7 +44,7 @@ export function convertFiscalYear(fiscalYear: number): string {
 }
 
 export class LeafletLegendService {
-  addLegend(map: L.Map, fiscalColorMap: Record<'past' | 'present' | 'future', string>): void {
+  addLegend(map: L.Map, fiscalColorMap: Record<'past' | 'present' | 'future', string>): L.Control {
     const legend = new L.Control({ position: 'bottomleft' }) as L.Control;
     legend.onAdd = () => {
       const div = L.DomUtil.create('div', 'legend');
@@ -71,7 +71,9 @@ export class LeafletLegendService {
     };
 
     legend.addTo(map);
+    return legend;
   }
+  
 }
 
 export function createFullPageControl(callback: () => void, iconPath: string = 'assets/full-image.svg'): L.Control {

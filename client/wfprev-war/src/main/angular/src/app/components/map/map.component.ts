@@ -45,6 +45,7 @@ export class MapComponent implements AfterViewInit, OnDestroy  {
   private projectMarkerMap = new Map<string, L.Marker>();
   private activeMarker: L.Marker | null = null;
   private selectedProject: Project | undefined;
+  legendControl: L.Control | null = null;
   constructor(
     protected cdr: ChangeDetectorRef,
     private readonly mapService: MapService,
@@ -94,7 +95,7 @@ ngAfterViewInit(): void {
 
     if (map) {
       const legendHelper = new LeafletLegendService();
-      legendHelper.addLegend(map, this.fiscalColorMap);
+      this.legendControl = legendHelper.addLegend(map, this.fiscalColorMap)
 
       this.markersClusterGroup = L.markerClusterGroup({
         showCoverageOnHover: false,
@@ -210,6 +211,9 @@ ngAfterViewInit(): void {
   }
 
   openPopupForProject(project: Project): void {
+    if (this.legendControl) {
+      this.legendControl.getContainer()?.classList.add('hidden'); 
+    }
     if (
       project?.latitude == null ||
       project?.longitude == null ||
@@ -264,6 +268,9 @@ ngAfterViewInit(): void {
   }
 
   public closePopupForProject(project: Project): void {
+    if (this.legendControl) {
+      this.legendControl.getContainer()?.classList.remove('hidden');
+    }
     const marker = this.projectMarkerMap.get(project.projectGuid);
     if (marker) {
       marker.closePopup();
