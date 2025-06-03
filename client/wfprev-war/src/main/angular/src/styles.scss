@@ -1,4 +1,7 @@
 /* You can add global styles to this file, and also import other style files */
+@import 'styles/material';
+@import 'material/mat-slide-toggle';
+
 :root {
     --header-height: 72px;
     --wf-header-background-color: #003366;
