@@ -6,7 +6,7 @@
   overflow: hidden;
   font-family: var(--wf-font-family-main);
   background: white;
-
+  min-height: 289px;
   .popup-container{
     overflow-y: auto;
   }
@@ -75,7 +75,6 @@
     font-weight: 400;
     color: #474543;
     margin-bottom: 2px;
-    white-space: nowrap;
   }
 
   .value {
@@ -85,6 +84,7 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    word-break: break-word;
   }
 
   .description-value {
@@ -127,4 +127,24 @@
 
 .no-fiscal{
     padding-top: 10px;
+}
+
+@media (max-width: 1240px) {
+  .popup-wrapper {
+    width: 300px;
+  }
+}
+
+@media (max-height: 850px) {
+  .popup-wrapper {
+    max-height: 380px;
+  }
+}
+
+::ng-deep .mat-tooltip {
+  background: #333;
+  color: white;
+  font-size: 14px;
+  padding: 8px 12px;
+  border-radius: 4px;
 }
