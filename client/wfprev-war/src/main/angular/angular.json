@@ -41,8 +41,7 @@
             ],
             "styles": [
               "src/styles.scss",
-              "node_modules/leaflet/dist/leaflet.css",
-              "node_modules/@angular/material/prebuilt-themes/indigo-pink.css"
+              "node_modules/leaflet/dist/leaflet.css"
             ],
             "scripts": [
               "node_modules/@bcgov/smk/dist/smk.js"
@@ -112,8 +111,7 @@
               "src/assets"
             ],
             "styles": [
-              "src/styles.scss",
-              "node_modules/@angular/material/prebuilt-themes/azure-blue.css"
+              "src/styles.scss"
             ],
             "scripts": []
           }
