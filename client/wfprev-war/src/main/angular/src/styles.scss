@@ -1,21 +1,8 @@
 /* You can add global styles to this file, and also import other style files */
 @import 'styles/material';
 @import 'material/mat-slide-toggle';
-
-:root {
-    --header-height: 72px;
-    --wf-header-background-color: #003366;
-    --wf-header-wildfire1-logo-height: 40px;
-    --wf-header-border-color:#FCBA19;
-    --wf-font-family-main: "BCSans", "Noto Sans", Verdana, Arial, sans-serif;
-    --wf-header-environment-color: #FCBA19;
-    --wf-primary-color: #013366;
-    --colour-white:#ffffff;
-    --colour-light-grey:#FAF9F8;
-    --success-color: #42814A;
-    --error-color: #CE3E39;
-    --font-size: 15px;
-}
+@import 'material/mat-tabs';
+@import 'styles/variables';
 
 body {
     margin: 0;
@@ -37,7 +24,7 @@ body {
         align-items: flex-start;
         justify-content: flex-start;
         .cdk-overlay-pane{
-            background-color: white;
+            background-color: var(--wf-colour-white);
             border-radius: 4px;
         }
         .mat-mdc-menu-item-text{
@@ -48,38 +35,41 @@ body {
 
 .mat-mdc-snack-bar-container{
   .mdc-snackbar__label{
-    color: var(--colour-white);
+    color: var(--wf-colour-white);
     font-family: var(--wf-font-family-main) !important;
-    font-size: 15px !important;
+    font-size: var(--font-size) !important;
     word-break: break-word;
   }
   &.snackbar-success {
-    background-color: var(--success-color);
-    color: var(--colour-white);
+    background-color: var(--wf-colour-success);
+    color: var(--wf-colour-white);
     position: inherit;
     width: fit-content;
     text-align: center;
     .mat-button-wrapper {
-      color: white;
+      color: var(--wf-colour-white);
     }
     .mat-mdc-snack-bar-action {
-      color: white !important;
-      border: 1px solid white;
+      color: var(--wf-colour-white);
+      border: 1px solid var(--wf-colour-white);
       border-radius: 5px;
+      .mdc-button__label {
+        color: var(--wf-colour-white) !important;
+      }
     }
   }
   &.snackbar-error {
-    background-color: var(--error-color);
-    color: var(--colour-white);
+    background-color: var(--wf-colour-error);
+    color: var(--wf-colour-white);
     position: inherit;
     width: fit-content;
     text-align: center;
     .mat-button-wrapper {
-      color: white;
+      color: var(--wf-colour-white) !important;
     }
     .mat-mdc-snack-bar-action {
-      color: white !important;
-      border: 1px solid white;
+      color: var(--wf-colour-white) !important;
+      border: 1px solid var(--wf-colour-white);
       border-radius: 5px;
     }
   }

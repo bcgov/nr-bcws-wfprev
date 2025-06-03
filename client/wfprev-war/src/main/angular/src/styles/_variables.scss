@@ -1,0 +1,165 @@
+:root {
+  --header-height: 72px;
+  --wf-header-background-color: #003366;
+  --wf-header-wildfire1-logo-height: 40px;
+  --wf-header-border-color: #FCBA19;
+  --wf-header-environment-color: #FCBA19;
+  --wf-primary-color: #013366;
+
+  // Font
+  --wf-font-family-main: "BCSans", "Noto Sans", Verdana, Arial, sans-serif;
+  --wf-font-size-emphasis: 17px;
+  --wf-font-weight-emphasis: 400;
+  --wf-font-weight-emphasis-more: 600;
+
+  // Colours (runtime)
+  --wf-colour-white: #ffffff;
+  --wf-colour-light-grey: #c6c8cb;
+  --wf-colour-lighter-grey: #f2f2f2;
+  --wf-colour-active-tab: #ffffff;
+  --wf-colour-inactive-tab: #f2f2f2;
+  --wf-colour-blue: #003366;
+  --wf-colour-error: #CE3E39;
+  --wf-colour-success: #42814A;
+
+  // Spacing & Layout
+  --wf-border-radius: 5px;
+  --wf1-gutter-space: 16px;
+  --wf-gutter: 16px;
+
+  // Misc
+  --font-size: 15px;
+}
+
+/* Sass Variables */
+$opacity-grey: rgba(0, 0, 0, 0.6);
+$opacity-light-grey: rgba(0, 0, 0, 0.06);
+$opacity-dark-grey: rgba(0, 0, 0, 0.9);
+$colour-dark-grey: #6d6d6d;
+$colour-darker-grey: #454545;
+$colour-blue-grey: #37474f;
+$colour-medium-grey: #d7d7d7;
+$colour-light-grey: #c6c8cb;
+$colour-lighter-grey: #f2f2f2;
+$colour-toolbar-grey: #bdbdbd;
+$colour-yellow: #e69f00;
+$colour-light-yellow: #f9ca81;
+$colour-black: #000000;
+$colour-almost-black: rgba(0, 0, 0, 0.8);
+$colour-red: #B00020;
+$colour-green: #009e73;
+$colour-light-green: #4B7902;
+$colour-blue: #003366;
+$colour-white: #ffffff;
+$colour-orange: #F59A23;
+$colour-light-orange: #FFD3A0;
+$colour-dark-red: #D9001B;
+
+$colour-main-font: #131313;
+$colour-radio: #007aa2;
+$colour-card-border: #bebebe;
+$colour-selected-row: #b6d7a8;
+$colour-selected-row-header: #d6e3d0;
+
+$colour-disabled-text: rgba(0, 0, 0, 0.55);
+
+$colour-sidebar-title: $colour-white;
+$colour-sidebar-title-background: $colour-medium-grey;
+$colour-sidebar-toolbar: $colour-black;
+$colour-sidebar-toolbar-background: $colour-toolbar-grey;
+$colour-sidebar-filter: $colour-dark-grey;
+$colour-sidebar-filter-background: $colour-white;
+
+$colour-errors: #D8292F;
+$colour-warnings: #FCBA19;
+$colour-roster-warnings: #ba9ef7;
+$colour-success: #2E7940;
+
+$colour-link: #054ddb;
+$colour-toolbar-background: rgb(192, 198, 202);
+
+$colour-header-background: $colour-blue;
+
+$colour-sidenav-background: rgba(242, 242, 242, 1);
+$colour-topnav-background: rgba(85, 85, 85, 1);
+
+$colour-button: #AAAAAA;
+$colour-button-hover: rgba(206, 206, 206, 0.8);
+$colour-button-primary: $colour-blue;
+$colour-button-primary-hover: rgba(20, 74, 137, 0.8);
+$colour-intermediate-action: $colour-success;
+$colour-active-tab: $colour-white;
+$colour-inactive-tab: $colour-lighter-grey;
+
+$colour-highlight: #fcf8d9;
+$colour-highlight2: $colour-lighter-grey;
+$colour-highlight3: #eafce8;
+$colour-highlight4: #e0f8fc;
+
+/* Spacing Variables */
+$wf1-app-header-height: 96px;
+$wf1-toolbar-height: 48px;
+$wf1-sidebar-title-height: 44px;
+$wf1-filter-toolbar-content-height: 200px;
+$wf1-filter-toolbar-total-height: $wf1-toolbar-height + $wf1-filter-toolbar-content-height;
+
+$wf1-total-app-header-height: $wf1-app-header-height + $wf1-toolbar-height;
+$wf1-header-plus-toolbar-total-height: $wf1-sidebar-title-height + $wf1-toolbar-height;
+$wf1-header-plus-toolbar-and-filter-total-height: $wf1-header-plus-toolbar-total-height + $wf1-toolbar-height;
+$wf1-header-plus-toolbar-and-filter-content-total-height: $wf1-header-plus-toolbar-total-height + $wf1-toolbar-height + $wf1-filter-toolbar-content-height;
+
+$wf1-app-map-panel-height: calc(var(--vh, 1vh) * 100 - #{$wf1-total-app-header-height});
+$wf1-app-side-panel-height: calc(var(--vh, 1vh) * 100 - #{$wf1-total-app-header-height + $wf1-sidebar-title-height});
+$wf1-app-side-panel-with-toolbar-height: calc(var(--vh, 1vh) * 100 - #{$wf1-total-app-header-height + $wf1-header-plus-toolbar-total-height});
+$wf1-app-side-panel-with-toolbar-and-filter-height: calc(var(--vh, 1vh) * 100 - #{$wf1-total-app-header-height + $wf1-header-plus-toolbar-and-filter-total-height + .16px});
+$wf1-app-side-panel-with-toolbar-and-filter-content-height: calc(var(--vh, 1vh) * 100 - #{$wf1-total-app-header-height + $wf1-header-plus-toolbar-and-filter-content-total-height + .16px});
+
+$wf1-app-main-panel-container-height: calc(var(--vh, 1vh) * 100 - #{$wf1-app-header-height});
+$wf1-app-main-panel-tab-panel-height: calc(var(--vh, 1vh) * 100 - #{$wf1-app-header-height + $wf1-toolbar-height});
+$wf1-app-main-panel-table-height: calc(var(--vh, 1vh) * 100 - #{$wf1-total-app-header-height + $wf1-toolbar-height + .16px});
+$wf1-app-main-panel-table-with-filter-content-height: calc(var(--vh, 1vh) * 100 - #{$wf1-total-app-header-height + $wf1-toolbar-height + $wf1-filter-toolbar-content-height + .16px});
+
+$wf1-app-header-mobile-height: 64px;
+$wf1-app-map-mobile-height: calc(var(--vh, 1vh) * 100 - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 112px);
+$wf1-loading-screen-height: calc(var(--vh, 1vh) * 100 - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 96px);
+
+$grid-breakpoints: (
+  xs: 350px,
+  sm: 601px,
+  md: 768px,
+  lg: 992px,
+  xl: 1060px
+);
+
+$max-component-width: 65rem;
+$wf1-app-mobile-outer-padding: 10px;
+
+$wf1-public-app-header-height: 72px;
+$wf1-public-app-header-img-height: 70px;
+
+$wf1-border-radius: 5px;
+$wf1-paginator-height: 40px;
+
+/* Font Variables */
+$font-family-main: BCSans, Noto Sans, Verdana, Arial, sans-serif;
+$font-family-emphasis: BCSans, Noto Sans, Verdana, Arial, sans-serif;
+$font-weight: 200;
+$font-style: normal;
+$font-size: 15px;
+$font-size-small: 12px;
+$font-size-h3: 18px;
+$font-size-h2: 22px;
+$font-size-h1: 35px;
+
+$font-weight-emphasis: 400;
+$font-weight-emphasis-more: 600;
+$font-weight-emphasis-most: 800;
+$font-style-emphasis: normal;
+$font-size-emphasis: 17px;
+$font-size-emphasis-more: 20px;
+
+$colour-table-background-odd: $colour-lighter-grey;
+$colour-table-background-even: $colour-white;
+$colour-table-background-hover: $colour-medium-grey;
+
+$table-wrapper-max-height: 330px;
