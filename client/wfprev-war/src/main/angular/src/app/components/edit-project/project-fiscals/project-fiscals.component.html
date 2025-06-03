@@ -12,8 +12,15 @@
       
     </div>
       <div class=fiscal-tab-wrapper>
-        <mat-tab-group class="custom-tab-group expandable-fiscal-tabs" *ngIf="projectFiscals?.length; else noFiscals" [(selectedIndex)]="selectedTabIndex" (selectedTabChange)="onTabChange($event.index)">
-          <mat-tab *ngFor="let fiscal of projectFiscals; let i = index" [label]="fiscal.fiscalYearFormatted || 'New Fiscal'">
+        <mat-tab-group class="wf-sub-tab" mat-stretch-tabs="false" animationDuration="0ms" disableRipple="true"
+          *ngIf="projectFiscals?.length; else noFiscals" [(selectedIndex)]="selectedTabIndex" (selectedTabChange)="onTabChange($event.index)">
+          <mat-tab *ngFor="let fiscal of projectFiscals; let i = index">
+          <ng-template mat-tab-label>
+            <div class="custom-tab-label">
+              <div class="label-title" [matTooltip]="fiscal.projectFiscalName">{{fiscal.projectFiscalName || 'New Fiscal'}}</div>
+              <div class="label-subtitle">{{ fiscal.fiscalYearFormatted || 'YYYY/YY' }}</div>
+            </div>
+          </ng-template>
             <mat-accordion [multi]="true">
               <mat-expansion-panel [expanded]="true" class="fiscal-expansion-panel" #panel="matExpansionPanel">
                 <mat-expansion-panel-header>

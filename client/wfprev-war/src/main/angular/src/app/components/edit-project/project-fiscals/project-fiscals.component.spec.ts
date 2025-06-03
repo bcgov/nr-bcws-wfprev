@@ -553,6 +553,34 @@ describe('ProjectFiscalsComponent', () => {
 
     expect(component.getCodeDescription('activityCategoryCode')).toBeNull();
   });
+  
+  it('should sort project fiscals by fiscalYear descending and then by projectFiscalName ascending', fakeAsync(() => {
+    const unsortedFiscals = [
+      { fiscalYear: 2025, projectFiscalName: 'B Plan' },
+      { fiscalYear: 2024, projectFiscalName: 'X Plan' },
+      { fiscalYear: 2025, projectFiscalName: 'A Plan' },
+      { fiscalYear: 2023, projectFiscalName: 'Z Plan' }
+    ];
+
+    const expectedSorted = [
+      { fiscalYear: 2025, projectFiscalName: 'A Plan' },
+      { fiscalYear: 2025, projectFiscalName: 'B Plan' },
+      { fiscalYear: 2024, projectFiscalName: 'X Plan' },
+      { fiscalYear: 2023, projectFiscalName: 'Z Plan' }
+    ];
+
+    mockProjectService.getProjectFiscalsByProjectGuid.and.returnValue(
+      of({
+        _embedded: { projectFiscals: unsortedFiscals }
+      })
+    );
+
+    component.loadProjectFiscals();
+    tick();
+
+    const sortedNames = component.projectFiscals.map(f => f.projectFiscalName);
+    expect(sortedNames).toEqual(expectedSorted.map(f => f.projectFiscalName));
+  }));
 
   
 });

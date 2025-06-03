@@ -193,8 +193,15 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  
         this.projectFiscals = (data._embedded?.projectFiscals ?? []).map((fiscal: any) => ({
           ...fiscal,
           fiscalYearFormatted: `${fiscal.fiscalYear}/${(fiscal.fiscalYear + 1).toString().slice(-2)}`,
-        })).sort((a: { fiscalYear: number }, b: { fiscalYear: number }) => a.fiscalYear - b.fiscalYear);
-        
+        }))
+        .sort((a: any, b: any) => {
+          // Sort by date then by name
+          if (a.fiscalYear !== b.fiscalYear) {
+            return b.fiscalYear - a.fiscalYear; 
+          }
+          return (a.projectFiscalName ?? '').localeCompare(b.projectFiscalName ?? '', undefined);
+        });
+                
         this.originalFiscalValues = JSON.parse(JSON.stringify(this.projectFiscals));
         
         this.fiscalForms = this.projectFiscals.map((fiscal) => {

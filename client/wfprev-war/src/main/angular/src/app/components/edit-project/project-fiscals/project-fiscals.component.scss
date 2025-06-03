@@ -267,14 +267,6 @@ mat-expansion-panel {
 
 :host ::ng-deep .mat-mdc-tab-header {
   padding-left: 0 !important;
-  border-radius: 6px 6px 0px 0px !important;
-  border-top: 1px solid #c6c8cb !important;
-  border-right: 1px solid #c6c8cb !important;
-  border-left: 1px solid #c6c8cb !important;
-  background: #fff !important;
-  width: fit-content !important;
-  display: flex;
-  justify-content: flex-start; /* Align tabs to the left */
 }
 
 :host ::ng-deep .mat-mdc-tab-body-wrapper {
@@ -415,3 +407,34 @@ mat-expansion-panel {
   border-top: 1px solid #d9d9d9;
 }
 
+.custom-tab-label {
+  // to display two items in one tab header, increase the height to leave enough room.
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 500px !important;
+  padding: 5px 10px !important;
+  line-height: normal;
+
+  .label-title {
+    font-size: 18px;
+    font-style: normal;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .label-subtitle {
+    font-size: 16px;
+    color: #000;
+    font-style: normal;
+    font-weight: 300 !important;
+  }
+}
+
+  :host ::ng-deep .mat-mdc-tab{
+    min-height: 58px !important;
+  }
