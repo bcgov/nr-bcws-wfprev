@@ -1,0 +1,43 @@
+$_color-selected-handle: #779fdb;
+$_color-unselected-handle: #fafafa;
+
+$_color-unselected-track: #00000061;
+$_color-selected-track: #38598A;
+
+.mat-mdc-slide-toggle {
+    .mdc-switch {
+        //handle color
+        --mdc-switch-disabled-selected-handle-color: #{ $_color-selected-handle };
+        --mdc-switch-disabled-unselected-handle-color: #{ $_color-unselected-handle };
+
+        --mdc-switch-selected-handle-color: #{ $_color-selected-handle };
+        --mdc-switch-selected-focus-handle-color: #{ $_color-selected-handle };
+        --mdc-switch-selected-hover-handle-color: #{ $_color-selected-handle };
+        --mdc-switch-selected-pressed-handle-color: #{ $_color-selected-handle };
+
+        --mdc-switch-unselected-handle-color: #{ $_color-unselected-handle };
+        --mdc-switch-unselected-focus-handle-color: #{ $_color-unselected-handle };
+        --mdc-switch-unselected-hover-handle-color: #{ $_color-unselected-handle };
+        --mdc-switch-unselected-pressed-handle-color: #{ $_color-unselected-handle };
+
+        //tracks color
+        --mdc-switch-disabled-selected-track-color: #{ $_color-selected-track };
+        --mdc-switch-disabled-unselected-track-color: #{ $_color-unselected-track };
+
+        --mdc-switch-selected-track-color: #{ $_color-selected-track };
+        --mdc-switch-selected-focus-track-color: #{ $_color-selected-track };
+        --mdc-switch-selected-hover-track-color: #{ $_color-selected-track };
+        --mdc-switch-selected-pressed-track-color: #{ $_color-selected-track };
+
+        --mdc-switch-unselected-track-color: #{ $_color-unselected-track };
+        --mdc-switch-unselected-focus-track-color: #{ $_color-unselected-track };
+        --mdc-switch-unselected-hover-track-color: #{ $_color-unselected-track };
+        --mdc-switch-unselected-pressed-track-color: #{ $_color-unselected-track };
+
+        // icon colors
+        --mdc-switch-disabled-selected-icon-color: #{ $_color-selected-handle };
+        --mdc-switch-disabled-unselected-icon-color: #{ $_color-unselected-handle };
+        --mdc-switch-selected-icon-color: #{ $_color-selected-handle };
+        --mdc-switch-unselected-icon-color: #{ $_color-unselected-handle };
+    }
+}
