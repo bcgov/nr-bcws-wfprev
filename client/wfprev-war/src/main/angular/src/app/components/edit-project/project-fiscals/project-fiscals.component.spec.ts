@@ -582,5 +582,32 @@ describe('ProjectFiscalsComponent', () => {
     expect(sortedNames).toEqual(expectedSorted.map(f => f.projectFiscalName));
   }));
 
-  
+  it('should handle null or undefined projectFiscalName values when sorting', fakeAsync(() => {
+    const unsortedFiscals = [
+      { fiscalYear: 2025, projectFiscalName: null },
+      { fiscalYear: 2025, projectFiscalName: undefined },
+      { fiscalYear: 2025, projectFiscalName: 'Alpha' },
+      { fiscalYear: 2025, projectFiscalName: 'Beta' }
+    ];
+
+    const expectedSorted = [
+      { fiscalYear: 2025, projectFiscalName: '' },
+      { fiscalYear: 2025, projectFiscalName: '' },
+      { fiscalYear: 2025, projectFiscalName: 'Alpha' },
+      { fiscalYear: 2025, projectFiscalName: 'Beta' }
+    ];
+
+    mockProjectService.getProjectFiscalsByProjectGuid.and.returnValue(
+      of({
+        _embedded: { projectFiscals: unsortedFiscals }
+      })
+    );
+
+    component.loadProjectFiscals();
+    tick();
+
+    const sortedNames = component.projectFiscals.map(f => f.projectFiscalName ?? '');
+    expect(sortedNames).toEqual(expectedSorted.map(f => f.projectFiscalName));
+  }));
+
 });
