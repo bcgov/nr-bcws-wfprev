@@ -61,3 +61,7 @@
 .map-container ::ng-deep .leaflet-popup-close-button {
   display: none !important;
 }
+
+.map-container ::ng-deep .legend.leaflet-control.hidden {
+  display: none !important;
+}
