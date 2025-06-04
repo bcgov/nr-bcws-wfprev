@@ -8,7 +8,10 @@
     <div class="project-title">
         <span>{{projectName}}</span>
     </div>
-    <mat-tab-group class="custom-tab-group" (selectedTabChange)="onTabChange($event)">
+    <mat-tab-group class="wf-basic-tab" 
+                mat-stretch-tabs="false"
+                animationDuration="0ms" 
+                disableRipple="true"  (selectedTabChange)="onTabChange($event)">
         <!-- Details Tab -->
         <mat-tab label="Details">
             <div class="details-tab">
@@ -17,7 +20,7 @@
         </mat-tab>
     
         <!-- Fiscals Tab -->
-        <mat-tab label="Fiscal Years">
+        <mat-tab label="Fiscal Activity">
             <div class="fiscals-tab">
                 <ng-container #fiscalsContainer></ng-container>
             </div>
