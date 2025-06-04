@@ -199,6 +199,7 @@
   display: flex;
   justify-content: flex-end;
   align-items: center;
+  height: 20px;
   button {
     &.primary {
       @extend .button-primary;
@@ -267,6 +268,7 @@ mat-expansion-panel {
 
 :host ::ng-deep .mat-mdc-tab-header {
   padding-left: 0 !important;
+  padding-right: 200px;
 }
 
 :host ::ng-deep .mat-mdc-tab-body-wrapper {
@@ -437,4 +439,13 @@ mat-expansion-panel {
 
   :host ::ng-deep .mat-mdc-tab{
     min-height: 58px !important;
+  }
+
+  .add-new-fiscal{
+    position: relative;
+    top: 50px;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    z-index: 10;
   }

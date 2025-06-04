@@ -409,7 +409,7 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  
           this.snackbarService.open(
             this.messages.projectFiscalDeletedSuccess,
             "OK",
-            { duration: 5000, panelClass: "snackbar-warning" }
+            { duration: 5000, panelClass: "snackbar-success" }
           );
   
           this.selectedTabIndex = Math.max(0, this.selectedTabIndex - 1);

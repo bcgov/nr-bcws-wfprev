@@ -609,5 +609,28 @@ describe('ProjectFiscalsComponent', () => {
     const sortedNames = component.projectFiscals.map(f => f.projectFiscalName ?? '');
     expect(sortedNames).toEqual(expectedSorted.map(f => f.projectFiscalName));
   }));
+  
+  it('should remove unsaved draft fiscal after confirmation', () => {
+    spyOn(component.dialog, 'open').and.returnValue({
+      afterClosed: () => of(true) // Simulate user clicking "Confirm"
+    } as any);
 
+    component.projectFiscals = [{
+      fiscalYear: 2025,
+      projectFiscalName: 'Unsaved Draft' // No projectPlanFiscalGuid = unsaved
+    }];
+    component.fiscalForms = [component.createFiscalForm(component.projectFiscals[0])];
+    component.selectedTabIndex = 0;
+
+    component.deleteFiscalYear({ value: component.projectFiscals[0] }, 0);
+
+    expect(component.projectFiscals.length).toBe(0);
+    expect(component.fiscalForms.length).toBe(0);
+    expect(component.selectedTabIndex).toBe(0);
+    expect(mockSnackBar.open).toHaveBeenCalledWith(
+      component.messages.projectFiscalDeletedSuccess,
+      'OK',
+      { duration: 5000, panelClass: 'snackbar-success' }
+    );
+  });
 });

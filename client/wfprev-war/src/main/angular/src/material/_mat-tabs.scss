@@ -7,7 +7,6 @@ mat-tab-group.wf-sub-tab {
     & > .mat-mdc-tab-header {
         border-bottom: none;
         .mat-mdc-tab-labels {
-            border-bottom: 1px solid var(--wf-colour-light-grey);
             max-width: 100%;
             overflow-x: auto;
             white-space: nowrap;
@@ -47,7 +46,7 @@ mat-tab-group.wf-sub-tab {
                 background-color: var(--wf-colour-active-tab);
                 font-weight: var(--wf-font-weight-emphasis-more);
                 position: relative;
-
+                border-bottom: none;
                 &:after {
                     position: absolute;
                     left: 0;
@@ -111,7 +110,7 @@ mat-tab-group.wf-basic-tab {
     font-family: var(--wf-font-family-main);
 
     & > .mat-mdc-tab-header {
-        border-bottom: 1px solid #c6c8cb;
+        border-bottom: none;
         margin-left: var(--wf-gutter);
         margin-right: var(--wf-gutter);
 
@@ -120,7 +119,7 @@ mat-tab-group.wf-basic-tab {
 
             & > .mat-mdc-tab {
                 padding: 0;
-                font-size: var(--wf-font-size-emphasis);
+                font-size: var(--wf-font-size-emphasis-enlarge);
                 font-family: var(--wf-font-family-main);
                 font-weight: var(--wf-font-weight-emphasis);
                 opacity: 1;
