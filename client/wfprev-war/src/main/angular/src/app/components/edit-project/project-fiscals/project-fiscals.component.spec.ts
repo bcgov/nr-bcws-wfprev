@@ -553,6 +553,84 @@ describe('ProjectFiscalsComponent', () => {
 
     expect(component.getCodeDescription('activityCategoryCode')).toBeNull();
   });
-
   
+  it('should sort project fiscals by fiscalYear descending and then by projectFiscalName ascending', fakeAsync(() => {
+    const unsortedFiscals = [
+      { fiscalYear: 2025, projectFiscalName: 'B Plan' },
+      { fiscalYear: 2024, projectFiscalName: 'X Plan' },
+      { fiscalYear: 2025, projectFiscalName: 'A Plan' },
+      { fiscalYear: 2023, projectFiscalName: 'Z Plan' }
+    ];
+
+    const expectedSorted = [
+      { fiscalYear: 2025, projectFiscalName: 'A Plan' },
+      { fiscalYear: 2025, projectFiscalName: 'B Plan' },
+      { fiscalYear: 2024, projectFiscalName: 'X Plan' },
+      { fiscalYear: 2023, projectFiscalName: 'Z Plan' }
+    ];
+
+    mockProjectService.getProjectFiscalsByProjectGuid.and.returnValue(
+      of({
+        _embedded: { projectFiscals: unsortedFiscals }
+      })
+    );
+
+    component.loadProjectFiscals();
+    tick();
+
+    const sortedNames = component.projectFiscals.map(f => f.projectFiscalName);
+    expect(sortedNames).toEqual(expectedSorted.map(f => f.projectFiscalName));
+  }));
+
+  it('should handle null or undefined projectFiscalName values when sorting', fakeAsync(() => {
+    const unsortedFiscals = [
+      { fiscalYear: 2025, projectFiscalName: null },
+      { fiscalYear: 2025, projectFiscalName: undefined },
+      { fiscalYear: 2025, projectFiscalName: 'Alpha' },
+      { fiscalYear: 2025, projectFiscalName: 'Beta' }
+    ];
+
+    const expectedSorted = [
+      { fiscalYear: 2025, projectFiscalName: '' },
+      { fiscalYear: 2025, projectFiscalName: '' },
+      { fiscalYear: 2025, projectFiscalName: 'Alpha' },
+      { fiscalYear: 2025, projectFiscalName: 'Beta' }
+    ];
+
+    mockProjectService.getProjectFiscalsByProjectGuid.and.returnValue(
+      of({
+        _embedded: { projectFiscals: unsortedFiscals }
+      })
+    );
+
+    component.loadProjectFiscals();
+    tick();
+
+    const sortedNames = component.projectFiscals.map(f => f.projectFiscalName ?? '');
+    expect(sortedNames).toEqual(expectedSorted.map(f => f.projectFiscalName));
+  }));
+  
+  it('should remove unsaved draft fiscal after confirmation', () => {
+    spyOn(component.dialog, 'open').and.returnValue({
+      afterClosed: () => of(true) // Simulate user clicking "Confirm"
+    } as any);
+
+    component.projectFiscals = [{
+      fiscalYear: 2025,
+      projectFiscalName: 'Unsaved Draft' // No projectPlanFiscalGuid = unsaved
+    }];
+    component.fiscalForms = [component.createFiscalForm(component.projectFiscals[0])];
+    component.selectedTabIndex = 0;
+
+    component.deleteFiscalYear({ value: component.projectFiscals[0] }, 0);
+
+    expect(component.projectFiscals.length).toBe(0);
+    expect(component.fiscalForms.length).toBe(0);
+    expect(component.selectedTabIndex).toBe(0);
+    expect(mockSnackBar.open).toHaveBeenCalledWith(
+      component.messages.projectFiscalDeletedSuccess,
+      'OK',
+      { duration: 5000, panelClass: 'snackbar-success' }
+    );
+  });
 });

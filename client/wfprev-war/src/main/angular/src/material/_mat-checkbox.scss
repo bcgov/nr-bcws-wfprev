@@ -1,0 +1,44 @@
+@import '../styles/variables';
+
+mat-checkbox.mat-mdc-checkbox.mat-accent, 
+mat-selection-list .mat-mdc-list-option {
+    font-family: $font-family-main;
+    font-size: $font-size;
+
+    .mdc-checkbox {
+        padding-left: 0;
+        padding-right: 0;
+
+        .mdc-checkbox__native-control:enabled {
+            &:checked, 
+            &:not(:checked) {
+                &~.mdc-checkbox__background {
+                    left: 0;
+                    background-color: $colour-white;
+                    border: 1px solid $colour-light-grey;
+                } 
+            }
+        }   
+
+        &:hover .mdc-checkbox__native-control:not([disabled])~.mdc-checkbox__ripple,
+        .mat-mdc-checkbox-ripple, 
+        .mdc-checkbox__ripple {
+            position: absolute;
+            top: 50%;
+            height: 48px;
+            left: 50%;
+            width: 48px;
+            transform: translate(-50%, -50%);            
+        }
+    }
+}
+
+.table-search-header {
+    .search-and-filters {
+        .field.filter-checkbox-group {
+            .checkbox-group {
+                gap: 15px;
+            }
+        }
+    }
+}
