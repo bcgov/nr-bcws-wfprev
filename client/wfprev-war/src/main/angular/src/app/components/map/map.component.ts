@@ -10,6 +10,7 @@ import { ProjectPopupComponent } from 'src/app/components/project-popup/project-
 import { Project } from 'src/app/components/models';
 import { ResizablePanelComponent } from 'src/app/components/resizable-panel/resizable-panel.component';
 import { MapColors } from 'src/app/utils/constants';
+import { Geometry, GeometryCollection } from 'geojson';
 @Component({
   selector: 'app-map',
   standalone: true,
@@ -310,23 +311,24 @@ addGeoJsonToLayer(geometry: any, layerGroup: L.LayerGroup, options: L.GeoJSONOpt
   if (!geometry?.type || !geometry?.coordinates) return;
 
   try {
-    const addToMap = (geom: any) => {
-      const layer = L.geoJSON(geom, options);
-      if (layer && typeof layer.addTo === 'function') {
-        layer.addTo(layerGroup);
-      }
-    };
+    const geometries: Geometry[] = geometry.type === 'GeometryCollection'
+      ? (geometry as GeometryCollection).geometries
+      : [geometry as Geometry];
 
-    if (geometry.type === 'GeometryCollection') {
-      geometry.geometries?.forEach(addToMap);
-    } else {
-      addToMap(geometry);
-    }
+    geometries.forEach((geom: Geometry) => this.addGeometryToLayerGroup(geom, layerGroup, options));
   } catch (err) {
     console.warn('[Map] Invalid GeoJSON geometry skipped:', geometry, err);
   }
 }
 
+addGeometryToLayerGroup(geom: any, layerGroup: L.LayerGroup, options: L.GeoJSONOptions): void {
+  const layer = L.geoJSON(geom, options);
+  if (layer && typeof layer.addTo === 'function') {
+    layer.addTo(layerGroup);
+  } else {
+    console.warn('[Map] Failed to add layer. Possibly invalid geometry:', geom);
+  }
+}
 
 plotProjectBoundary(project: any): void {
   project.projectBoundaries?.forEach((boundary: any) => {
