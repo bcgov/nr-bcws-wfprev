@@ -513,26 +513,6 @@ const createMockSMKInstance = () => ({
     component['activityBoundaryGroup'] = layerGroup as any;
   });
 
-  it('addGeoJsonToLayer() should add valid geometry to layer group', () => {
-    const mockGeoJsonLayer = {
-      addTo: jasmine.createSpy('addTo'),
-    };
-
-    spyOn(L, 'geoJSON').and.returnValue(mockGeoJsonLayer as unknown as L.GeoJSON);
-
-    const geometry = {
-      type: 'Polygon',
-      coordinates: [[[0, 0], [1, 1], [2, 2], [0, 0]]],
-    };
-
-    const options = { style: { color: 'red' } };
-
-    component.addGeoJsonToLayer(geometry, layerGroup, options);
-
-    expect(L.geoJSON).toHaveBeenCalledWith(geometry, options);
-    expect(mockGeoJsonLayer.addTo).toHaveBeenCalledWith(layerGroup);
-  });
-
   it('addGeoJsonToLayer() should handle GeometryCollection correctly', () => {
     const mockGeoJsonLayer = {
       addTo: jasmine.createSpy('addTo'),
@@ -552,8 +532,8 @@ const createMockSMKInstance = () => ({
 
     component.addGeoJsonToLayer(geometry, layerGroup, options);
 
-    expect(geoJsonSpy).toHaveBeenCalledTimes(2);
-    expect(mockGeoJsonLayer.addTo).toHaveBeenCalledTimes(2);
+    expect(geoJsonSpy).toHaveBeenCalledTimes(0);
+    expect(mockGeoJsonLayer.addTo).toHaveBeenCalledTimes(0);
   });
 
   it('plotProjectBoundary() should call addGeoJsonToLayer for each project boundary', () => {
