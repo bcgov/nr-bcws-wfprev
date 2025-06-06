@@ -424,7 +424,7 @@ mat-expansion-panel {
   .label-title {
     font-size: 18px;
     font-style: normal;
-    max-width: 100%;
+    max-width: 96%;
     overflow: hidden;
     text-overflow: ellipsis;
   }
@@ -438,7 +438,7 @@ mat-expansion-panel {
 }
 
   :host ::ng-deep .mat-mdc-tab{
-    min-height: 58px !important;
+    min-height: 54px !important;
   }
 
   .add-new-fiscal{
