@@ -1208,7 +1208,13 @@
            {
             "sqlFile": {
               "dbms": "postgresql", "endDelimiter": "$",
-              "path": "scripts/01_00_18/00/ddl/wfprev.ddl.create_project_plan_fiscal_trigger.sql"
+              "path": "scripts/01_00_20/00/ddl/wfprev.ddl.create_project_plan_fiscal_trigger.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_20/00/dml/app_wf1_prev.dml.update_bc_parks_org_unit.sql"
             }
           }
        ],
