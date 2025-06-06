@@ -1192,7 +1192,35 @@
           }
         ]
       }
+    },
+   {
+      "changeSet": {
+        "id": "01_00_20_00",
+        "author": "hsaldyga",
+        "tagDatabase": { "tag": "version_01_00_20_00" },
+        "changes": [
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_20/00/ddl/app_wf1_prev.ddl.modify_project.sql"
+            }
+          },
+           {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": "$",
+              "path": "scripts/01_00_20/00/ddl/app_wf1_prev.ddl.create_project_trigger.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_20/00/dml/app_wf1_prev.dml.update_bc_parks_org_unit.sql"
+            }
+          }
+       ],
+        "rollback": [
+        ]
+      }
     }
-
    ] 
 }
