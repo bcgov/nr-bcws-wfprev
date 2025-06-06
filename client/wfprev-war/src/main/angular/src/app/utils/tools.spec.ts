@@ -1,4 +1,5 @@
-import { parseLatLong, validateLatLong, formatLatLong, trimLatLong, getFiscalYearDisplay } from './tools';
+import { FiscalYearColors } from 'src/app/utils/constants';
+import { parseLatLong, validateLatLong, formatLatLong, trimLatLong, getFiscalYearDisplay, getFiscalYearColor } from './tools';
 
 describe('Latitude/Longitude Utilities', () => {
   describe('parseLatLong', () => {
@@ -88,4 +89,21 @@ describe('Latitude/Longitude Utilities', () => {
   it ('should display fiscal year in correct formate',() =>{
     expect(getFiscalYearDisplay(2024)).toBe('2024/25');
   })
+
+  
+  describe('getFiscalYearColor', () => {
+    const currentYear = 2024;
+
+    it('should return past color for fiscal year less than current year', () => {
+      expect(getFiscalYearColor(2022, currentYear)).toBe(FiscalYearColors.past);
+    });
+
+    it('should return present color for fiscal year equal to current year', () => {
+      expect(getFiscalYearColor(2024, currentYear)).toBe(FiscalYearColors.present);
+    });
+
+    it('should return future color for fiscal year greater than current year', () => {
+      expect(getFiscalYearColor(2025, currentYear)).toBe(FiscalYearColors.future);
+    });
+  });
 });

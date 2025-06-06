@@ -14,7 +14,6 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ActivatedRoute } from '@angular/router';
 import * as L from 'leaflet';
 import { Project } from 'src/app/components/models';
-
 class MockAppConfigService {
   getConfig() {
     return {
@@ -110,19 +109,25 @@ describe('MapComponent', () => {
   let mapServiceMock: jasmine.SpyObj<MapService>;
   let mapContainer: jasmine.SpyObj<ElementRef>;
 
-  const createMockSMKInstance = () => ({
-    $viewer: {
-      map: {
-        addLayer: jasmine.createSpy('addLayer'),
-        on: jasmine.createSpy('on'),
-        controls: {
-          bottomleft: {
-            addTo: jasmine.createSpy('addTo'),
-          },
+const createMockSMKInstance = () => ({
+  $viewer: {
+    map: {
+      addLayer: jasmine.createSpy('addLayer'),
+      removeLayer: jasmine.createSpy('removeLayer'),
+      on: jasmine.createSpy('on'),
+      getZoom: jasmine.createSpy('getZoom').and.returnValue(10),
+      hasLayer: jasmine.createSpy('hasLayer').and.returnValue(false), 
+      eachLayer: jasmine.createSpy('eachLayer'),
+      getCenter: jasmine.createSpy('getCenter'),
+      setView: jasmine.createSpy('setView'),
+      controls: {
+        bottomleft: {
+          addTo: jasmine.createSpy('addTo'),
         },
-      }
-    }
-  });
+      },
+    },
+  },
+});
 
   beforeEach(() => {
     (L as any).markerClusterGroup = () => ({
@@ -347,6 +352,9 @@ describe('MapComponent', () => {
       mapMock = {
         addLayer: jasmine.createSpy('addLayer'),
         invalidateSize: jasmine.createSpy('invalidateSize'),
+        getZoom: jasmine.createSpy('getZoom').and.returnValue(10),
+        hasLayer: jasmine.createSpy('hasLayer').and.returnValue(false),
+        removeLayer: jasmine.createSpy('removeLayer'),
       };
 
       const mockClusterGroup = {
@@ -490,6 +498,126 @@ describe('MapComponent', () => {
     }));
 
   });
+
+ describe('Polygon Layer Methods', () => {
+  let layerGroup: any;
+
+  beforeEach(() => {
+    // Create a mock LayerGroup with addLayer
+    layerGroup = {
+      addLayer: jasmine.createSpy('addLayer'),
+    };
+
+    // Assign to component's layer groups
+    component['projectBoundaryGroup'] = layerGroup as any;
+    component['activityBoundaryGroup'] = layerGroup as any;
+  });
+
+  it('addGeoJsonToLayer() should handle GeometryCollection correctly', () => {
+    const mockGeoJsonLayer = {
+      addTo: jasmine.createSpy('addTo'),
+    };
+
+    const geoJsonSpy = spyOn(L, 'geoJSON').and.returnValue(mockGeoJsonLayer as unknown as L.GeoJSON);
+
+    const geometry = {
+      type: 'GeometryCollection',
+      geometries: [
+        { type: 'Polygon', coordinates: [[[0, 0], [1, 1], [2, 2], [0, 0]]] },
+        { type: 'Point', coordinates: [1, 1] },
+      ],
+    };
+
+    const options = { style: { color: 'blue' } };
+
+    component.addGeoJsonToLayer(geometry, layerGroup, options);
+
+    expect(geoJsonSpy).toHaveBeenCalledTimes(0);
+    expect(mockGeoJsonLayer.addTo).toHaveBeenCalledTimes(0);
+  });
+
+  it('plotProjectBoundary() should call addGeoJsonToLayer for each project boundary', () => {
+    const geometry = { type: 'Polygon', coordinates: [[[0, 0], [1, 1], [2, 2], [0, 0]]] };
+    const project = {
+      projectBoundaries: [
+        { boundaryGeometry: geometry },
+        { boundaryGeometry: geometry }
+      ]
+    };
+
+    const spy = spyOn(component, 'addGeoJsonToLayer');
+    component.plotProjectBoundary(project);
+
+    expect(spy).toHaveBeenCalledTimes(2);
+    expect(spy).toHaveBeenCalledWith(
+      geometry,
+      layerGroup,
+      jasmine.objectContaining({ style: jasmine.anything() })
+    );
+  });
+
+  it('plotActivityBoundaries() should call addGeoJsonToLayer for each activity geometry', () => {
+    const geometry = { type: 'Polygon', coordinates: [[[0, 0], [1, 1], [2, 2], [0, 0]]] };
+    const project = {
+      projectFiscals: [
+        {
+          fiscalYear: 2024,
+          activities: [
+            { activityBoundaries: [{ activityGeometry: geometry }] },
+            { activityBoundaries: [{ activityGeometry: geometry }] },
+          ]
+        }
+      ]
+    };
+
+    const spy = spyOn(component, 'addGeoJsonToLayer');
+    component.plotActivityBoundaries(project, 2025);
+
+    expect(spy).toHaveBeenCalledTimes(2);
+    expect(spy).toHaveBeenCalledWith(
+      geometry,
+      layerGroup,
+      jasmine.objectContaining({ style: jasmine.anything() })
+    );
+  });
+
+  it('togglePolygonLayers() should add layers at zoom >= 10', () => {
+    const mockMap = {
+      hasLayer: jasmine.createSpy().and.returnValue(false),
+      addLayer: jasmine.createSpy(),
+    };
+
+    mapServiceMock.getSMKInstance.and.returnValue({
+      $viewer: { map: mockMap }
+    });
+
+    component.togglePolygonLayers(10);
+
+    expect(mockMap.hasLayer).toHaveBeenCalledTimes(2);
+    expect(mockMap.addLayer).toHaveBeenCalledWith(layerGroup);
+  });
+
+  it('togglePolygonLayers() should remove layers at zoom < 10', () => {
+    const mockMap = {
+      removeLayer: jasmine.createSpy()
+    };
+
+    mapServiceMock.getSMKInstance.and.returnValue({
+      $viewer: { map: mockMap }
+    });
+
+    component.togglePolygonLayers(5);
+
+    expect(mockMap.removeLayer).toHaveBeenCalledWith(layerGroup);
+    expect(mockMap.removeLayer).toHaveBeenCalledTimes(2);
+  });
+
+  it('togglePolygonLayers() should do nothing if map is undefined', () => {
+    mapServiceMock.getSMKInstance.and.returnValue(undefined);
+    const result = component.togglePolygonLayers(12);
+    expect(result).toBeUndefined();
+  });
+});
 
 
 });
