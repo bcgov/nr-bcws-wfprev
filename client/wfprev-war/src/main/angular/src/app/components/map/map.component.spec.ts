@@ -353,7 +353,7 @@ const createMockSMKInstance = () => ({
         addLayer: jasmine.createSpy('addLayer'),
         invalidateSize: jasmine.createSpy('invalidateSize'),
         getZoom: jasmine.createSpy('getZoom').and.returnValue(10),
-        hasLayer: jasmine.createSpy('hasLayer').and.returnValue(false),  // ADD THIS
+        hasLayer: jasmine.createSpy('hasLayer').and.returnValue(false),
         removeLayer: jasmine.createSpy('removeLayer'),
       };
 
