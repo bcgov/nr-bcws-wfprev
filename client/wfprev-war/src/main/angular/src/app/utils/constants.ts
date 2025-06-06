@@ -48,3 +48,13 @@ export const PlanFiscalStatus = {
   ABANDONED: 'ABANDONED',
   PREPARED: 'PREPARED'
 };
+
+export const FiscalYearColors: Record<'past' | 'present' | 'future', string> = {
+  past: '#7570B3',
+  present: '#1B9E77',
+  future: '#E7298A'
+};
+
+export const MapColors = {
+  PROJECT_BOUNDARY: '#3f3f3f',
+};

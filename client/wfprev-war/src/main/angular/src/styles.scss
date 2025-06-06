@@ -96,6 +96,11 @@ html, body{
   font-family: var(--wf-font-family-main) !important;
 }
 
+mat-icon,
+.mat-icon {
+  font-family: 'Material Icons' !important;
+}
+
 .mat-mdc-tab-body-wrapper {
   height: calc(100vh - 250px) !important
 }

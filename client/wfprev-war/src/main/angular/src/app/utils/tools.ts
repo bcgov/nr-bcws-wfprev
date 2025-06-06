@@ -1,5 +1,5 @@
 import L from "leaflet";
-import { PlanFiscalStatus } from "src/app/utils/constants";
+import { FiscalYearColors, PlanFiscalStatus } from "src/app/utils/constants";
 
 // Parse latitude/longitude string from various formats
 export function parseLatLong(latLong: string): { latitude: number; longitude: number } | null {
@@ -177,3 +177,9 @@ export const PlanFiscalStatusIcons: Record<string, { src: string; alt: string; t
     title: 'Prepared'
   }
 };
+
+export function getFiscalYearColor(fiscalYear: number, currentFiscalYear: number): string {
+  if (fiscalYear < currentFiscalYear) return FiscalYearColors.past;
+  if (fiscalYear === currentFiscalYear) return FiscalYearColors.present;
+  return FiscalYearColors.future;
+}
