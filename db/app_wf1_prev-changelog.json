@@ -1208,7 +1208,7 @@
            {
             "sqlFile": {
               "dbms": "postgresql", "endDelimiter": "$",
-              "path": "scripts/01_00_20/00/ddl/wfprev.ddl.create_project_plan_fiscal_trigger.sql"
+              "path": "scripts/01_00_20/00/ddl/app_wf1_prev.ddl.create_project_trigger.sql"
             }
           },
           {
