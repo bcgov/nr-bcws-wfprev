@@ -145,7 +145,15 @@ export class CreateNewProjectDialogComponent implements OnInit {
     codeTables.forEach((table) => {
       this.codeTableService.fetchCodeTable(table.name).subscribe({
         next: (data) => {
-          this[table.property] = data?._embedded?.[table.embeddedKey] || [];
+          let loadedData = data?._embedded?.[table.embeddedKey] ?? [];
+
+          loadedData = loadedData.sort((a: any, b: any) => {
+            const nameA = (a.orgUnitName ?? a.programAreaName ?? a.description ?? '').toLowerCase();
+            const nameB = (b.orgUnitName ?? b.programAreaName ?? b.description ?? '').toLowerCase();
+            return nameA.localeCompare(nameB);
+          });
+
+          this[table.property] = loadedData;
 
           if (table.name === 'forestDistrictCodes') {
             this.forestDistrictsBackup = this[table.property];
