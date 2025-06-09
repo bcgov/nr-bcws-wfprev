@@ -8,7 +8,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTooltip } from '@angular/material/tooltip';
 import { ActivatedRoute } from '@angular/router';
 import L from 'leaflet';
-import { Observable } from 'rxjs';
+import { forkJoin, map, Observable } from 'rxjs';
 import { ConfirmationDialogComponent } from 'src/app/components/confirmation-dialog/confirmation-dialog.component';
 import { FiscalYearProjectsComponent } from 'src/app/components/edit-project/project-details/fiscal-year-projects/fiscal-year-projects.component';
 import { ProjectFilesComponent } from 'src/app/components/edit-project/project-details/project-files/project-files.component';
@@ -22,7 +22,7 @@ import {
   validateLatLong,
 } from 'src/app/utils/tools';
 import { ExpansionIndicatorComponent } from '../../shared/expansion-indicator/expansion-indicator.component';
-
+import { FiscalYearColors } from 'src/app/utils/constants';
 @Component({
   selector: 'wfprev-project-details',
   standalone: true,
@@ -35,7 +35,9 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
   @Output() projectNameChange = new EventEmitter<string>();
 
   private map: L.Map | undefined;
+  private activityBoundaryGroup: L.LayerGroup = L.layerGroup();
   private marker: L.Marker | undefined;
+  private isMapReady = false;
   boundaryLayer: L.GeoJSON | null = null;
   projectGuid = '';
   messages = Messages;
@@ -61,6 +63,9 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
   objectiveTypeCode: any[] = [];
   fireCentres: any[] = [];
   readonly CodeTableKeys = CodeTableKeys;
+  projectFiscals: any[] = [];
+  allActivities: any[] = [];
+  allActivityBoundaries: any[] = [];
   
   constructor(
     private readonly fb: FormBuilder,
@@ -299,6 +304,7 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
   ngAfterViewInit(): void {
     setTimeout(() => {
       this.initMap();
+      this.getAllActivitiesBoundaries();
     });
   }
 
@@ -323,8 +329,12 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '© OpenStreetMap contributors',
       }).addTo(this.map);
-
+      this.activityBoundaryGroup.addTo(this.map);
       this.map.fitBounds(defaultBounds); // Default view for the BC region
+    }
+    this.isMapReady = true;
+    if (this.allActivityBoundaries.length > 0) {
+      this.renderActivityBoundaries();
     }
   }
 
@@ -349,7 +359,6 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
       latitude: data.latitude,
       longitude: data.longitude,
     });
-    console.log(this.detailsForm)
   }
 
   onSave(): void {
@@ -573,4 +582,142 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
 
     return null;
   }
+
+  getAllActivitiesBoundaries(): void {
+    if (!this.projectGuid) return;
+
+    this.projectService.getProjectFiscalsByProjectGuid(this.projectGuid).subscribe(data =>
+      this.handleFiscalsResponse(data)
+    );
+  }
+
+  private handleFiscalsResponse(data: any): void {
+    this.projectFiscals = (data._embedded?.projectFiscals ?? []).sort(
+      (a: { fiscalYear: number }, b: { fiscalYear: number }) => a.fiscalYear - b.fiscalYear
+    );
+
+    const activityRequests = this.projectFiscals.map(fiscal =>
+      this.projectService.getFiscalActivities(this.projectGuid, fiscal.projectPlanFiscalGuid).pipe(
+        map(response => this.mapFiscalActivities(response, fiscal))
+      )
+    );
+
+    forkJoin(activityRequests).subscribe(allActivityArrays =>
+      this.handleActivitiesResponse(allActivityArrays.flat())
+    );
+  }
+
+  private mapFiscalActivities(response: any, fiscal: any): any[] {
+    const activities = response?._embedded?.activities ?? [];
+    return activities.map((activity: any) => ({
+      ...activity,
+      fiscalYear: fiscal.fiscalYear,
+      projectPlanFiscalGuid: fiscal.projectPlanFiscalGuid
+    }));
+  }
+
+  private handleActivitiesResponse(allActivities: any[]): void {
+    if (allActivities.length === 0) return;
+
+    const boundaryRequests = allActivities.map(activity =>
+      this.projectService
+        .getActivityBoundaries(this.projectGuid, activity.projectPlanFiscalGuid, activity.activityGuid)
+        .pipe(map(boundary => this.mapActivityBoundary(boundary, activity)))
+    );
+
+    forkJoin(boundaryRequests).subscribe(allResults =>
+      this.handleBoundariesResponse(allResults)
+    );
+  }
+
+  private mapActivityBoundary(boundary: any, activity: any): any {
+    return boundary ? {
+      activityGuid: activity.activityGuid,
+      fiscalYear: activity.fiscalYear,
+      boundary: boundary?._embedded?.activityBoundary
+    } : null;
+  }
+
+  private handleBoundariesResponse(results: any[]): void {
+    const validResults = results.filter(r => r?.boundary && r.boundary.length > 0);
+    const dedupedResults: any[] = [];
+    const seenActivityGuids = new Set<string>();
+
+    for (const result of validResults) {
+      const { activityGuid, fiscalYear, boundary } = result;
+
+      if (seenActivityGuids.has(activityGuid)) continue;
+      seenActivityGuids.add(activityGuid);
+
+      const latestBoundary = boundary.reduce(
+        (latest: { systemStartTimestamp?: string }, current: { systemStartTimestamp?: string }) =>
+          new Date(current.systemStartTimestamp ?? 0) > new Date(latest.systemStartTimestamp ?? 0)
+            ? current
+            : latest
+      );
+
+      dedupedResults.push({
+        activityGuid,
+        fiscalYear,
+        boundary: [latestBoundary],
+      });
+    }
+
+    this.allActivityBoundaries = dedupedResults;
+    if (this.isMapReady) {
+      this.renderActivityBoundaries();
+    }
+  }
+
+  renderActivityBoundaries(): void {
+    if (!this.isMapReady || !this.map) return;
+
+    this.activityBoundaryGroup.clearLayers();
+
+    const currentFiscalYear = new Date().getFullYear();
+    const allBounds: L.LatLngBounds[] = [];
+
+    this.allActivityBoundaries.forEach(entry => {
+      const fiscalYear = entry.fiscalYear;
+      const color = this.getFiscalYearColor(fiscalYear, currentFiscalYear);
+
+      entry.boundary.forEach((ab: any) => {
+        const geometry = ab.geometry;
+        if (!geometry?.type || !geometry?.coordinates) return;
+
+        const geometries = geometry.type === 'GeometryCollection'
+          ? geometry.geometries
+          : [geometry];
+
+        geometries.forEach((geom: any) => {
+          const layer = L.geoJSON(geom, {
+            style: {
+              color,
+              weight: 2,
+              fillOpacity: 0.1,
+            }
+          });
+
+          layer.addTo(this.activityBoundaryGroup);
+
+          const bounds = layer.getBounds();
+          if (bounds?.isValid()) {
+            allBounds.push(bounds);
+          }
+        });
+      });
+    });
+
+    if (allBounds.length > 0) {
+      const combinedBounds = allBounds.reduce((acc, b) => acc.extend(b), allBounds[0]);
+      this.map.fitBounds(combinedBounds);
+    }
+  }
+
+  private getFiscalYearColor(fiscalYear: number, currentFiscalYear: number): string {
+    if (fiscalYear < currentFiscalYear) return FiscalYearColors.past;
+    if (fiscalYear === currentFiscalYear) return FiscalYearColors.present;
+    return FiscalYearColors.future;
+  }
+
 }
