@@ -220,3 +220,20 @@ export interface ActivityCategoryCodeModel {
   expiryDate: string;
 }
 
+export interface BcParksSectionCodeModel {
+  bcParksOrgUnitTypeCode?: string;
+  effectiveDate?: string;
+  expiryDate?: string;
+  orgUnitId?: number;
+  orgUnitName?: string;
+  parentOrgUnitId?: string;
+}
+
+export interface ForestDistrictCodeModel {
+  forestOrgUnitTypeCode?: string;
+  effectiveDate?: string;
+  expiryDate?: string;
+  orgUnitId?: number;
+  orgUnitName?: string;
+  parentOrgUnitId?: string;
+}
