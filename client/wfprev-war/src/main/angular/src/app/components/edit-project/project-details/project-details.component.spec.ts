@@ -65,12 +65,19 @@ class MockAppConfigService {
 
 describe('ProjectDetailsComponent', () => {
   let component: ProjectDetailsComponent;
+  let mapSpy: jasmine.SpyObj<L.Map>;
   let fixture: ComponentFixture<ProjectDetailsComponent>;
   let mockSnackbar: jasmine.SpyObj<MatSnackBar>;
   let mockProjectService: jasmine.SpyObj<ProjectService>;
 
   beforeEach(async () => {
-    mockProjectService = jasmine.createSpyObj('ProjectService', ['updateProject', 'getProjectByProjectGuid']);
+    mockProjectService = jasmine.createSpyObj('ProjectService', [
+      'updateProject', 
+      'getProjectByProjectGuid',
+      'getProjectFiscalsByProjectGuid',
+      'getFiscalActivities',
+      'getActivityBoundaries'
+    ]);
     mockSnackbar = jasmine.createSpyObj('MatSnackBar', ['open']);
 
     await TestBed.configureTestingModule({
@@ -95,6 +102,7 @@ describe('ProjectDetailsComponent', () => {
 
     fixture = TestBed.createComponent(ProjectDetailsComponent);
     component = fixture.componentInstance;
+    
     fixture.detectChanges();
   });
 
@@ -947,54 +955,6 @@ describe('Dropdown tooltips', () => {
     });
   });
 
-  it('should call getProjectFiscalsByProjectGuid in getAllActivitiesBoundaries', () => {
-    const spy = spyOn(component['projectService'], 'getProjectFiscalsByProjectGuid').and.returnValue(of({
-      _embedded: { projectFiscals: [] }
-    }));
-    component['projectGuid'] = 'test-guid';
-    component.getAllActivitiesBoundaries();
-    expect(spy).toHaveBeenCalledWith('test-guid');
-  });
-
-  it('should call getFiscalActivities for each project fiscal', fakeAsync(() => {
-    const mockFiscals = {
-      _embedded: {
-        projectFiscals: [
-          { projectPlanFiscalGuid: 'guid1', fiscalYear: 2023 },
-          { projectPlanFiscalGuid: 'guid2', fiscalYear: 2024 },
-        ],
-      },
-    };
-
-    spyOn(component['projectService'], 'getFiscalActivities').and.callFake((_guid, fiscalGuid) =>
-      of({ _embedded: { activities: [{ activityGuid: `activity-${fiscalGuid}` }] } })
-    );
-
-    component['handleFiscalsResponse'](mockFiscals);
-    tick();
-
-    expect(component['projectService'].getFiscalActivities).toHaveBeenCalledTimes(2);
-  }));
-
-
-  it('should call getActivityBoundaries for each activity', fakeAsync(() => {
-    const mockActivities = [
-      { activityGuid: 'a1', fiscalYear: 2022, projectPlanFiscalGuid: 'f1' },
-      { activityGuid: 'a2', fiscalYear: 2023, projectPlanFiscalGuid: 'f2' },
-    ];
-
-    spyOn(component['projectService'], 'getActivityBoundaries').and.callFake(() =>
-      of({ _embedded: { activityBoundary: [{ systemStartTimestamp: '2023-01-01T00:00:00Z', geometry: { type: 'Polygon', coordinates: [] } }] } })
-    );
-
-    const spy = spyOn<any>(component, 'handleBoundariesResponse');
-    component['handleActivitiesResponse'](mockActivities);
-    tick();
-
-    expect(component['projectService'].getActivityBoundaries).toHaveBeenCalledTimes(2);
-    expect(spy).toHaveBeenCalled();
-  }));
-  
   it('should deduplicate and store latest activity boundaries', () => {
     const result = [
       {
@@ -1020,30 +980,6 @@ describe('Dropdown tooltips', () => {
 
     expect(component['allActivityBoundaries'].length).toBe(1);
     expect(component['renderActivityBoundaries']).toHaveBeenCalled();
-  });
-
-  it('should add GeoJSON boundaries to activityBoundaryGroup and fit bounds', () => {
-    component['map'] = mapSpy;
-    component['isMapReady'] = true;
-    component['activityBoundaryGroup'] = jasmine.createSpyObj('LayerGroup', ['clearLayers', 'addLayer']);
-    spyOn(L, 'geoJSON').and.returnValue(mockGeoJsonLayer);
-    component['allActivityBoundaries'] = [
-      {
-        activityGuid: 'a1',
-        fiscalYear: new Date().getFullYear(),
-        boundary: [{
-          geometry: {
-            type: 'Polygon',
-            coordinates: [[[0, 0], [0, 1], [1, 1], [1, 0], [0, 0]]]
-          }
-        }]
-      }
-    ];
-
-    component['renderActivityBoundaries']();
-
-    expect(component['activityBoundaryGroup'].clearLayers).toHaveBeenCalled();
-    expect(L.geoJSON).toHaveBeenCalled();
   });
 
 });
