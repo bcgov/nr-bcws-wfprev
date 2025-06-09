@@ -21,7 +21,6 @@ export class SharedService {
   }
 
   updateDisplayedProjects(projects: Project[]) {
-    debugger
     this.displayedProjectsSource.next(projects);
   }
 

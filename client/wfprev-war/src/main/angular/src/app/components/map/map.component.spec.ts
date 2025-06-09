@@ -619,5 +619,40 @@ const createMockSMKInstance = () => ({
   });
 });
 
+  describe('safelyClearLayerGroup()', () => {
+    it('should remove valid layers from the group and skip invalid ones', () => {
+      const validLayer1 = jasmine.createSpyObj('Layer', ['remove', 'on']);
+      const validLayer2 = jasmine.createSpyObj('Layer', ['remove', 'on']);
+      const invalidLayer = {};
+
+      const mockGroup = {
+        _layers: {
+          '1': validLayer1,
+          '2': validLayer2,
+          '3': invalidLayer
+        },
+        removeLayer: jasmine.createSpy('removeLayer')
+      } as unknown as L.LayerGroup;
+
+      const consoleWarnSpy = spyOn(console, 'warn');
+
+      component['safelyClearLayerGroup'](mockGroup, 'testGroup');
+
+      expect(mockGroup.removeLayer).toHaveBeenCalledWith(validLayer1);
+      expect(mockGroup.removeLayer).toHaveBeenCalledWith(validLayer2);
+
+      expect(consoleWarnSpy).toHaveBeenCalledWith('[Map] Skipping invalid layer inside testGroup', invalidLayer);
+    });
+
+    it('should handle group with undefined _layers gracefully', () => {
+      const mockGroup = {} as unknown as L.LayerGroup;
+
+      expect(() => {
+        component['safelyClearLayerGroup'](mockGroup, 'emptyGroup');
+      }).not.toThrow();
+    });
+  });
+
+
 
 });
