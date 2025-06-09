@@ -20,6 +20,7 @@ import {
   getBluePinIcon,
   trimLatLong,
   validateLatLong,
+  LeafletLegendService
 } from 'src/app/utils/tools';
 import { ExpansionIndicatorComponent } from '../../shared/expansion-indicator/expansion-indicator.component';
 import { FiscalYearColors } from 'src/app/utils/constants';
@@ -47,7 +48,7 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
     latitude: [''],
     longitude: [''],
   });
-
+  fiscalColorMap = FiscalYearColors;
   projectDetail: any;
   projectDescription: string = '';
   isProjectDescriptionDirty: boolean = false;
@@ -338,6 +339,8 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
       }).addTo(this.map);
       this.activityBoundaryGroup.addTo(this.map);
       this.map.fitBounds(defaultBounds); // Default view for the BC region
+      const legendHelper = new LeafletLegendService();
+      legendHelper.addLegend(this.map, this.fiscalColorMap);
     }
     this.isMapReady = true;
     if (this.allActivityBoundaries.length > 0) {
