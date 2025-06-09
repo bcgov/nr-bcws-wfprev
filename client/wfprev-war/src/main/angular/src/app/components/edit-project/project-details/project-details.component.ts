@@ -204,27 +204,34 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
     });
   }
   assignCodeTableData(key: string, data: any): void {
+
+    const sortByName = (arr: any[]) =>
+      arr.sort((a, b) =>
+        (a.orgUnitName ?? a.programAreaName ?? a.description ?? '').toLowerCase()
+          .localeCompare((b.orgUnitName ?? b.programAreaName ?? b.description ?? '').toLowerCase())
+    );
+
     switch (key) {
       case 'projectTypeCode':
-        this.projectTypeCode = data._embedded.projectTypeCode ?? [];
+        this.projectTypeCode = sortByName(data._embedded.projectTypeCode ?? []);
         break;
       case 'programAreaCode':
-        this.programAreaCode = data._embedded.programArea ?? [];
+        this.programAreaCode = sortByName(data._embedded.programArea ?? []);
         break;
       case 'forestRegionCode':
-        this.forestRegionCode = data._embedded.forestRegionCode ?? [];
+        this.forestRegionCode = sortByName(data._embedded.forestRegionCode ?? []);
         break;
       case 'forestDistrictCode':
-        this.forestDistrictCode = data._embedded.forestDistrictCode ?? [];
+        this.forestDistrictCode = sortByName(data._embedded.forestDistrictCode ?? []);
         break;
       case 'bcParksRegionCode':
-        this.bcParksRegionCode = data._embedded.bcParksRegionCode ?? [];
+        this.bcParksRegionCode = sortByName(data._embedded.bcParksRegionCode ?? []);
         break;
       case 'bcParksSectionCode':
-        this.bcParksSectionCode = data._embedded.bcParksSectionCode ?? [];
+        this.bcParksSectionCode = sortByName(data._embedded.bcParksSectionCode ?? []);
         break;
       case 'objectiveTypeCode':
-        this.objectiveTypeCode = data._embedded.objectiveTypeCode ?? [];
+        this.objectiveTypeCode = sortByName(data._embedded.objectiveTypeCode ?? []);
         break;
     }
   }
