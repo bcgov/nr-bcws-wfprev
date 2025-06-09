@@ -13,7 +13,7 @@ import { ProjectService } from 'src/app/services/project-services';
 import { ActivatedRoute } from '@angular/router';
 import { formatLatLong } from 'src/app/utils/tools';
 import { CodeTableKeys } from 'src/app/utils/constants';
-
+import * as toolUtils from 'src/app/utils/tools'
 const mockApplicationConfig = {
   application: {
     baseUrl: 'http://test.com',
@@ -96,7 +96,11 @@ describe('ProjectDetailsComponent', () => {
 
       ],
     }).compileComponents();
-
+    
+    spyOn(toolUtils.LeafletLegendService.prototype, 'addLegend')
+      .and.callFake(() => ({
+        addTo: () => {}
+      } as unknown as L.Control));
     const appConfigService = TestBed.inject(AppConfigService);
     await appConfigService.loadAppConfig(); // Ensure the config is loaded before running tests
 
@@ -980,6 +984,68 @@ describe('Dropdown tooltips', () => {
 
     expect(component['allActivityBoundaries'].length).toBe(1);
     expect(component['renderActivityBoundaries']).toHaveBeenCalled();
+  });
+
+  describe('Dropdown dependencies', () => {
+    beforeEach(() => {
+      component['allForestDistricts'] = [
+        { orgUnitId: 1, parentOrgUnitId: '100', orgUnitName: 'District A' },
+        { orgUnitId: 2, parentOrgUnitId: '200', orgUnitName: 'District B' }
+      ];
+
+      component['allBcParksSections'] = [
+        { orgUnitId: 10, parentOrgUnitId: '500', orgUnitName: 'Section X' },
+        { orgUnitId: 11, parentOrgUnitId: '600', orgUnitName: 'Section Y' }
+      ];
+
+      component.detailsForm.patchValue({
+        forestRegionOrgUnitId: 100,
+        forestDistrictOrgUnitId: 1,
+        bcParksRegionOrgUnitId: '',
+        bcParksSectionOrgUnitId: ''
+      });
+
+      component.ngOnInit();
+    });
+
+    it('should filter forestDistrictCode based on selected forestRegionOrgUnitId', () => {
+      component.detailsForm.get('forestRegionOrgUnitId')?.setValue(200);
+
+      expect(component.forestDistrictCode).toEqual([
+        { orgUnitId: 2, parentOrgUnitId: '200', orgUnitName: 'District B' }
+      ]);
+    });
+
+    it('should clear forestDistrictOrgUnitId if it is not valid after filtering', () => {
+      component.detailsForm.patchValue({
+        forestRegionOrgUnitId: 200,
+        forestDistrictOrgUnitId: 1
+      });
+
+      component.detailsForm.get('forestRegionOrgUnitId')?.setValue(200);
+
+      expect(component.detailsForm.get('forestDistrictOrgUnitId')?.value).toBe('');
+    });
+
+    it('should filter bcParksSectionCode based on selected bcParksRegionOrgUnitId and enable the section control', () => {
+      const bcParksSectionControl = component.detailsForm.get('bcParksSectionOrgUnitId');
+      expect(bcParksSectionControl?.disabled).toBeFalse();
+
+      component.detailsForm.get('bcParksRegionOrgUnitId')?.setValue(600);
+
+      expect(component.bcParksSectionCode).toEqual([
+        { orgUnitId: 11, parentOrgUnitId: '600', orgUnitName: 'Section Y' }
+      ]);
+      expect(bcParksSectionControl?.enabled).toBeTrue();
+    });
+
+    it('should reset and disable bcParksSectionOrgUnitId when region is unset', () => {
+      component.detailsForm.get('bcParksRegionOrgUnitId')?.setValue('');
+
+      const control = component.detailsForm.get('bcParksSectionOrgUnitId');
+      expect(control?.value).toBeNull();
+      expect(control?.disabled).toBeTrue();
+    });
   });
 
 });

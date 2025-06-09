@@ -7,7 +7,7 @@
 
 .list-header {
     display: flex;
-    align-items: center;
+    align-items: baseline;
     justify-content: space-between;
     padding: 14px;
     border-bottom: 1px solid #ccc;
@@ -20,8 +20,18 @@
 }
   
 .sort-dropdown {
+  label{
+    font-size: 15px;
+    font-weight: 400;
+  }
+  .sort-dropdown-select{
+    width: 150px;
+    flex: 0 0 auto;
+    height: 65px;
+  }
+    align-items: baseline !important;
+    font-family: var(--wf-font-family-main);
     display: flex;
-    align-items: center;
     gap:5px;
     .default-option{
       color: #6A6A6A;
@@ -40,7 +50,7 @@
       border: 1px solid #DFE0E2;
       background: #FFF;
       background-color: transparent; /* Transparent background to match input style */
-    
+      font-family: var(--wf-font-family-main);
       &::placeholder {
         color: #aaa; /* Placeholder color */
       }
@@ -118,7 +128,7 @@
   }
   
   .result-count {
-    font-weight: bold;
+    font-weight: 700;
     font-size: 14px;
   }
   
