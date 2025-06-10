@@ -209,6 +209,75 @@ resource "aws_iam_role_policy_attachment" "attach_invoke_lambda" {
   policy_arn = aws_iam_policy.invoke_lambda.arn
 }
 
+resource "aws_iam_role" "github_actions_tools_role" {
+  provider = aws.tools
+  name     = "github-actions-role" 
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Principal = {
+          Federated = data.aws_iam_openid_connect_provider.github_openid_connect_provider.arn
+        }
+        Action = "sts:AssumeRoleWithWebIdentity"
+        Condition = {
+          StringEquals = {
+            "${data.aws_iam_openid_connect_provider.github_openid_connect_provider.url}:aud" : "sts.amazonaws.com"
+          },
+          StringLike = {
+            "${data.aws_iam_openid_connect_provider.github_openid_connect_provider.url}:sub" : "repo:bcgov/nr-bcws-wfprev:*"
+          }
+        }
+      }
+    ]
+  })
+}
+
+
+resource "aws_iam_policy" "github_actions_s3_admin" {
+  provider = aws.tools
+  name        = "github-actions-s3-admin"
+  description = "Allow GitHub Actions to manage the wfprev site bucket"
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Sid    = "BucketLevelPermissions",
+        Effect = "Allow",
+        Action = [
+          "s3:CreateBucket",
+          "s3:DeleteBucket",
+          "s3:ListBucket",
+          "s3:GetBucketLocation",
+          "s3:PutBucketPolicy",
+          "s3:PutEncryptionConfiguration",
+          "s3:PutBucketTagging"
+        ],
+        Resource = "arn:aws:s3:::wfprev-${var.TARGET_ENV}-site"
+      },
+      {
+        Sid    = "ObjectLevelPermissions",
+        Effect = "Allow",
+        Action = [
+          "s3:GetObject",
+          "s3:PutObject",
+          "s3:DeleteObject"
+        ],
+        Resource = "arn:aws:s3:::wfprev-${var.TARGET_ENV}-site/*"
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "github_actions_s3_admin_attach" {
+  provider    = aws.tools
+  role       = aws_iam_role.github_actions_role.name
+  policy_arn = aws_iam_policy.github_actions_s3_admin.arn
+}
+
 # Output for the AWS Account ID
 output "github_actions_account_id" {
   value       = regex("^arn:aws:iam::([0-9]+):", aws_iam_role.github_actions_role.arn)[0]
@@ -219,4 +288,9 @@ output "github_actions_account_id" {
 output "github_actions_role_name" {
   value       = regex(":role/([^:]+)$", aws_iam_role.github_actions_role.arn)[0]
   description = "Name of the GitHub Actions role."
+}
+
+output "tools_account_github_actions_role_arn" {
+  value       = regex("^arn:aws:iam::([0-9]+):", aws_iam_role.github_actions_tools_role.arn.arn)[0]
+  description = "GitHub Actions role ARN in the tools account"
 }
