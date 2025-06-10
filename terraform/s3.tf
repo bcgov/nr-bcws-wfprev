@@ -1,6 +1,6 @@
 # Bucket create. Public-read or private?
 resource "aws_s3_bucket" "wfprev_site_bucket" {
-  bucket        = "wfprev-${var.TARGET_ENV}-site"
+  bucket = "wfprev-${var.TARGET_ENV}-site-${var.TARGET_AWS_ACCOUNT_ID}"
   force_destroy = true
 
   website {
