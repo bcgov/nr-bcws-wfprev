@@ -24,6 +24,7 @@ import {
 } from 'src/app/utils/tools';
 import { ExpansionIndicatorComponent } from '../../shared/expansion-indicator/expansion-indicator.component';
 import { FiscalYearColors } from 'src/app/utils/constants';
+import { BcParksSectionCodeModel, ForestDistrictCodeModel } from 'src/app/components/models';
 @Component({
   selector: 'wfprev-project-details',
   standalone: true,
@@ -53,6 +54,8 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
   projectDescription: string = '';
   isProjectDescriptionDirty: boolean = false;
   latLong: string = '';
+  allBcParksSections: BcParksSectionCodeModel[] = [];
+  allForestDistricts: ForestDistrictCodeModel[] = [];
   isLatLongDirty: boolean = false;
   isLatLongValid: boolean = false;
   projectTypeCode: any[] = [];
@@ -82,6 +85,7 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
     this.initializeForm();
     this.loadCodeTables();
     this.loadProjectDetails();
+    this.setupDropdownDependencies();
   }
 
   ngOnDestroy(): void {
@@ -223,13 +227,15 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
         this.forestRegionCode = sortByName(data._embedded.forestRegionCode ?? []);
         break;
       case 'forestDistrictCode':
-        this.forestDistrictCode = sortByName(data._embedded.forestDistrictCode ?? []);
+        this.allForestDistricts = sortByName(data._embedded.forestDistrictCode ?? []);
+        this.forestDistrictCode = [...this.allForestDistricts];
         break;
       case 'bcParksRegionCode':
         this.bcParksRegionCode = sortByName(data._embedded.bcParksRegionCode ?? []);
         break;
       case 'bcParksSectionCode':
-        this.bcParksSectionCode = sortByName(data._embedded.bcParksSectionCode ?? []);
+        this.allBcParksSections = sortByName(data._embedded.bcParksSectionCode ?? []);
+        this.bcParksSectionCode = [...this.allBcParksSections];
         break;
       case 'objectiveTypeCode':
         this.objectiveTypeCode = sortByName(data._embedded.objectiveTypeCode ?? []);
@@ -728,6 +734,29 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
     if (fiscalYear < currentFiscalYear) return FiscalYearColors.past;
     if (fiscalYear === currentFiscalYear) return FiscalYearColors.present;
     return FiscalYearColors.future;
+  }
+
+  private setupDropdownDependencies(): void {
+    this.detailsForm.get('forestRegionOrgUnitId')?.valueChanges.subscribe(regionId => {
+      this.forestDistrictCode = this.allForestDistricts.filter(d => d.parentOrgUnitId == regionId);
+
+      const selected = this.detailsForm.get('forestDistrictOrgUnitId')?.value;
+      const validIds = this.forestDistrictCode.map(d => d.orgUnitId);
+      if (!validIds.includes(selected)) {
+        this.detailsForm.get('forestDistrictOrgUnitId')?.setValue('');
+      }
+    });
+
+    this.detailsForm.get('bcParksRegionOrgUnitId')?.valueChanges.subscribe(regionId => {
+      this.bcParksSectionCode = this.allBcParksSections.filter(d => d.parentOrgUnitId == regionId);
+
+      if (regionId) {
+        this.detailsForm.get('bcParksSectionOrgUnitId')?.enable();
+      } else {
+        this.detailsForm.get('bcParksSectionOrgUnitId')?.reset();
+        this.detailsForm.get('bcParksSectionOrgUnitId')?.disable();
+      }
+    });
   }
 
 }

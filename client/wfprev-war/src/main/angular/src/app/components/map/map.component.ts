@@ -189,8 +189,8 @@ ngAfterViewInit(): void {
       console.error('[Map] Error clearing markers:', err);
     }
 
-    this.projectBoundaryGroup.clearLayers();
-    this.activityBoundaryGroup.clearLayers();
+  this.safelyClearLayerGroup(this.projectBoundaryGroup, 'projectBoundaryGroup');
+  this.safelyClearLayerGroup(this.activityBoundaryGroup, 'activityBoundaryGroup');
 
     projects
       .filter(p => p.latitude != null && p.longitude != null)
@@ -361,6 +361,24 @@ plotActivityBoundaries(project: any, currentFiscalYear: number): void {
       });
     });
   });
+}
+
+safelyClearLayerGroup(group: L.LayerGroup, label: string): void {
+  try {
+    const rawLayers = (group as L.LayerGroup & { _layers?: Record<string, L.Layer> })._layers;
+    if (!rawLayers) return;
+
+    // remove only valid layers
+    Object.values(rawLayers).forEach((layer) => {
+      if (layer && typeof layer.remove === 'function' && typeof layer.on === 'function') {
+        group.removeLayer(layer);
+      } else {
+        console.warn(`[Map] Skipping invalid layer inside ${label}`, layer);
+      }
+    });
+  } catch (err) {
+    console.error(`[Map] Failed to safely clear ${label}:`, err);
+  }
 }
 
 togglePolygonLayers(zoomLevel: number): void {

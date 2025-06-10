@@ -199,7 +199,7 @@ describe('ProjectsListComponent', () => {
   });
 
   it('should handle sort change correctly', () => {
-    const mockEvent = { target: { value: 'ascending' } };
+    const mockEvent = { value: 'ascending' };
     component.onSortChange(mockEvent);
     expect(component.selectedSort).toBe('ascending');
   });
@@ -441,9 +441,9 @@ describe('ProjectsListComponent', () => {
       { projectName: 'B' },
       { projectName: 'A' }
     ];
-    component.onSortChange({ target: { value: 'ascending' } });
+    component.onSortChange({ value: 'ascending' });
     expect(component.allProjects[0].projectName).toBe('A');
-    component.onSortChange({ target: { value: 'descending' } });
+    component.onSortChange({ value: 'descending' });
     expect(component.allProjects[0].projectName).toBe('B');
   });
 
