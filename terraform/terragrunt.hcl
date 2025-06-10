@@ -48,6 +48,7 @@ OPENMAPS_URL = "${get_env("OPENMAPS_URL")}"
 server_count = "${get_env("server_count")}"
 
 TARGET_AWS_ACCOUNT_ID = "${get_env("TARGET_AWS_ACCOUNT_ID")}"
+ECR_TARGET_ACCOUNT_ID = "${get_env("ECR_TARGET_ACCOUNT_ID")}"
 
 # client
 WEBADE_OAUTH2_WFPREV_UI_CLIENT_SECRET = "${get_env("WEBADE_OAUTH2_WFPREV_UI_CLIENT_SECRET")}"

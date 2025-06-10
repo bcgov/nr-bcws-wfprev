@@ -249,6 +249,11 @@ variable "TARGET_AWS_ACCOUNT_ID" {
   description = "Numerical AWS account ID"
 }
 
+variable "ECR_TARGET_ACCOUNT_ID" {
+  type = string
+  description = "Numerical AWS account ID"
+}
+
 variable "DB_POSTGRES_VERSION" {
   description = "Which version of Postgres to use"
   default     = "17.4"

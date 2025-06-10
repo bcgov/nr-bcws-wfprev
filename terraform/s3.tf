@@ -37,7 +37,7 @@ resource "aws_s3_bucket_policy" "wfprev_site_bucket_policy" {
       {
         Effect = "Allow",
         Principal = {
-          "AWS" : "arn:aws:iam::${var.TARGET_AWS_ACCOUNT_ID}:role/github-actions-role"
+          "AWS" : "arn:aws:iam::${var.ECR_TARGET_ACCOUNT_ID}:role/github-actions-role"
         },
         Action = [
           "s3:ListBucket",
