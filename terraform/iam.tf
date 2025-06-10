@@ -291,6 +291,6 @@ output "github_actions_role_name" {
 }
 
 output "tools_account_github_actions_role_arn" {
-  value       = regex("^arn:aws:iam::([0-9]+):", aws_iam_role.github_actions_tools_role.arn.arn)[0]
+  value       = regex(":role/([^:]+)$", aws_iam_role.github_actions_tools_role.arn)[0]
   description = "GitHub Actions role ARN in the tools account"
 }
