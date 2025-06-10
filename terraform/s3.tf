@@ -1,5 +1,16 @@
+provider "aws" {
+  alias  = "tools"
+  region = "ca-central-1"
+
+  assume_role {
+    role_arn     = "arn:aws:iam::${var.ECR_TARGET_ACCOUNT_ID}:role/github-actions-role"
+    session_name = "terraform-tools-session"
+  }
+}
+
 # Bucket create. Public-read or private?
 resource "aws_s3_bucket" "wfprev_site_bucket" {
+  provider      = aws.tools
   bucket        = "wfprev-${var.TARGET_ENV}-site"
   force_destroy = true
 
