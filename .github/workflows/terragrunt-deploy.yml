@@ -127,24 +127,31 @@ jobs:
       #       echo "SHORTENED_ENV=prd" >> $GITHUB_OUTPUT
       #     fi
 
-      - name: Configure AWS Credentials
+      - name: Configure AWS Credentials for ECR target (Tools namespace)
         uses: aws-actions/configure-aws-credentials@v2
         with:
-          role-to-assume: ${{ secrets.AWS_TERRAFORM_ROLE_TO_ASSUME }}
+          role-to-assume:  arn:aws:iam::${{ secrets.ECR_TARGET_ACCOUNT_ID }}:role/github-actions-role
           role-session-name: wfprev-terraform-s3
           aws-region: ca-central-1
 
       - name: Authenticate Docker to AWS ECR
         run: |
           aws ecr get-login-password --region ca-central-1 | \
-          docker login --username AWS --password-stdin ${{ secrets.TARGET_AWS_ACCOUNT_ID }}.dkr.ecr.ca-central-1.amazonaws.com     
+          docker login --username AWS --password-stdin ${{ secrets.ECR_TARGET_ACCOUNT_ID }}.dkr.ecr.ca-central-1.amazonaws.com     
 
       - name: Get digest of GDB extractor docker image
         id: getDigestGDB
         run: |
-          IMAGE="${{ secrets.TARGET_AWS_ACCOUNT_ID }}.dkr.ecr.ca-central-1.amazonaws.com/nr-bcws-wfprev-wfprev-gdb-extractor:latest"
+          IMAGE="${{ secrets.ECR_TARGET_ACCOUNT_ID }}.dkr.ecr.ca-central-1.amazonaws.com/nr-bcws-wfprev-wfprev-gdb-extractor:latest"
           docker pull $IMAGE
           echo "GDB_EXTRACTOR_IMAGE=$(docker inspect --format='{{index .RepoDigests 0}}' $IMAGE)" >> $GITHUB_OUTPUT
+
+      - name: Configure AWS credentials for Terraform account (DEV/TEST/PROD)
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+            role-to-assume:  ${{ secrets.AWS_TERRAFORM_ROLE_TO_ASSUME }}
+            role-session-name: wfprev-terraform-s3
+            aws-region: ca-central-1    
 
       - uses: hashicorp/setup-terraform@v2
         with:
