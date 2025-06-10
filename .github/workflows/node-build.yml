@@ -4,7 +4,7 @@ on:
       DEFAULT_APPLICATION_ENVIRONMENT:
         required: true
         type: string
-        default: dev
+        default: tools
   workflow_call:
     inputs:
       COMPONENT_NAME:
@@ -61,7 +61,7 @@ jobs:
     - name: Configure AWS credentials (OIDC)
       uses: aws-actions/configure-aws-credentials@v4
       with:
-        role-to-assume: arn:aws:iam::${{ secrets.TARGET_AWS_ACCOUNT_ID }}:role/github-actions-role
+        role-to-assume: arn:aws:iam::${{ secrets.ECR_TARGET_ACCOUNT_ID }}:role/github-actions-role
         aws-region: ${{ env.AWS_REGION }}
         role-session-name: GitHubActions
 
@@ -113,7 +113,7 @@ jobs:
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v2
       with:
-        role-to-assume: ${{ secrets.AWS_TERRAFORM_ROLE_TO_ASSUME }}
+        role-to-assume: arn:aws:iam::${{ secrets.ECR_TARGET_ACCOUNT_ID }}:role/github-actions-role
         role-session-name: wfprev-terraform-s3
         aws-region: ca-central-1
   
