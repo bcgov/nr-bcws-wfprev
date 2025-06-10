@@ -149,7 +149,7 @@ jobs:
       - name: Configure AWS credentials for Terraform account (DEV/TEST/PROD)
         uses: aws-actions/configure-aws-credentials@v2
         with:
-            role-to-assume:  arn:aws:iam::${{ secrets.TARGET_AWS_ACCOUNT_ID }}:role/github-actions-role
+            role-to-assume:  ${{ secrets.AWS_TERRAFORM_ROLE_TO_ASSUME }}
             role-session-name: wfprev-terraform-s3
             aws-region: ca-central-1    
 
