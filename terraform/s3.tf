@@ -36,7 +36,7 @@ resource "aws_s3_bucket_policy" "wfprev_site_bucket_policy" {
           "AWS" : "${aws_cloudfront_origin_access_identity.oai.iam_arn}"
         },
         Action   = "s3:GetObject",
-        Resource = "arn:aws:s3:::wfprev-${var.TARGET_ENV}-site/*"
+        Resource = "arn:aws:s3:::wfprev-${var.TARGET_ENV}-site-${var.TARGET_AWS_ACCOUNT_ID}/*"
       },
       {
         Effect = "Allow",
@@ -50,8 +50,8 @@ resource "aws_s3_bucket_policy" "wfprev_site_bucket_policy" {
           "s3:DeleteObject"
         ],
         Resource = [
-          "arn:aws:s3:::wfprev-${var.TARGET_ENV}-site",
-          "arn:aws:s3:::wfprev-${var.TARGET_ENV}-site/*"
+          "arn:aws:s3:::wfprev-${var.TARGET_ENV}-site-${var.TARGET_AWS_ACCOUNT_ID}",
+          "arn:aws:s3:::wfprev-${var.TARGET_ENV}-site-${var.TARGET_AWS_ACCOUNT_ID}/*"
         ]
       }
     ]
