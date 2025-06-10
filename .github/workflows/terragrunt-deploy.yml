@@ -197,8 +197,9 @@ jobs:
           DB_PASS: ${{secrets.DB_PASS}}
           DB_INSTANCE_TYPE: ${{vars.DB_INSTANCE_TYPE}}
 
-          # GDB Extractor Lambda Image
+          # GDB Extractor
           WFPREV_GDB_EXTRACTOR_DIGEST: ${{ steps.getDigestGDB.outputs.GDB_EXTRACTOR_IMAGE }}
+          ECR_TARGET_ACCOUNT_ID: ${{secrets.ECR_TARGET_ACCOUNT_ID}}
 
           #liquibase
           COMMAND: ${{ steps.liquibaseCommand.outputs.LIQUIBASE_COMMAND }}
