@@ -3,10 +3,14 @@
     <!-- Sort Dropdown -->
     <div class="sort-dropdown">
       <label>Sort:</label>
-      <select id="sort" (change)="onSortChange($event)">
-        <option class="default-option" value="">select</option>
-        <option *ngFor="let option of sortOptions" [value]="option.value">{{ option.label }}</option>
-      </select>
+      <mat-form-field appearance="fill" class="sort-dropdown-select">
+        <mat-select [(value)]="selectedSort" (selectionChange)="onSortChange($event)">
+          <mat-option value="">Select</mat-option>
+          <mat-option *ngFor="let option of sortOptions" [value]="option.value">
+            {{ option.label }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
       <div class="result-count">
             <!-- Result Count -->
         <span>{{ allProjects.length }} Results</span>
