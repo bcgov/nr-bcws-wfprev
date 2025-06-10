@@ -16,12 +16,13 @@ import { getBluePinIcon, getFiscalYearDisplay, PlanFiscalStatusIcons } from 'src
 import { ResourcesRoutes, getActiveMap } from 'src/app/utils';
 import { ExpansionIndicatorComponent } from '../../shared/expansion-indicator/expansion-indicator.component';
 import { IconButtonComponent } from 'src/app/components/shared/icon-button/icon-button.component';
+import { MatSelectModule } from '@angular/material/select';
 
 
 @Component({
   selector: 'wfprev-projects-list',
   standalone: true,
-  imports: [MatSlideToggleModule, CommonModule, MatExpansionModule, MatTooltipModule, ExpansionIndicatorComponent, IconButtonComponent],
+  imports: [MatSlideToggleModule, CommonModule, MatExpansionModule, MatTooltipModule, ExpansionIndicatorComponent, IconButtonComponent, MatSelectModule ],
   templateUrl: './projects-list.component.html',
   styleUrls: ['./projects-list.component.scss'],
 })
@@ -179,7 +180,7 @@ export class ProjectsListComponent implements OnInit {
   }
 
   onSortChange(event: any): void {
-    this.selectedSort = event.target.value;
+    this.selectedSort = event.value;
   
     if (this.selectedSort === 'ascending') {
       this.allProjects.sort((a, b) => a.projectName.localeCompare(b.projectName));
