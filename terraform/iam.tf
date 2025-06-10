@@ -174,8 +174,6 @@ resource "aws_iam_policy" "github_actions_policy" {
           "arn:aws:s3:::wfprev-${var.TARGET_ENV}-site",        # Bucket-level actions like s3:ListBucket
           "arn:aws:s3:::wfprev-${var.TARGET_ENV}-site/*",      # Object-level actions
           "arn:aws:cloudfront::${var.TARGET_AWS_ACCOUNT_ID}:distribution/*", # CloudFront distrbution
-          "arn:aws:s3:::terraform-remote-state-${var.TFC_PROJECT}-${var.TARGET_ENV}",
-          "arn:aws:s3:::terraform-remote-state-${var.TFC_PROJECT}-${var.TARGET_ENV}/*"
         ]
       }
     ]
