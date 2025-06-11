@@ -633,4 +633,11 @@ describe('ProjectFiscalsComponent', () => {
       { duration: 5000, panelClass: 'snackbar-success' }
     );
   });
+
+  it('should get FormControl from fiscalForms', () => {
+    const form = component['fb'].group({ testField: [] });
+    component.fiscalForms = [form];
+    const control = component.getFiscalControl(0, 'testField');
+    expect(control).toBeTruthy();
+  });
 });

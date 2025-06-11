@@ -1,0 +1,64 @@
+.required {
+  color: #EF1616;
+}
+
+    .form-item {
+      font-family: "BCSans", "Noto Sans", Verdana, Arial, sans-serif !important;
+      flex: 1 1 calc(25% - 20px); // 4 items per row with a 20px gap
+      min-width: 200px;
+      max-width: 700px;
+
+      .error {
+        color: red;
+        font-size: 12px;
+        margin: 4px 0 0 8px;
+      }
+
+      label {
+        padding: 9px;
+        color: #474543;
+        font-size: 14px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: normal;
+      }
+
+      input {
+        font-family: var(--wf-font-family-main) !important;
+        color: #282828;
+        font-style: normal;
+        font-weight: 400;
+        width: 100%;
+        margin: 8px 0px;
+        font-size: 16px;
+        border: none;
+        border-bottom: 1px solid #282828;
+        outline: none;
+        padding: 8px 12px;
+        box-sizing: border-box;
+
+        // Add overflow control
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+      }
+
+    }
+
+    
+.currency-input {
+  position: relative;
+  display: flex;
+  align-items: center;
+
+  .currency-symbol {
+    position: absolute;
+    font-size: 16px;
+    color: #282828;
+    left: 12px;
+  }
+
+  input {
+    padding-left: 24px !important;
+  }
+}

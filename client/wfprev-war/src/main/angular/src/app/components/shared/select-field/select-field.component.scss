@@ -1,0 +1,67 @@
+.required {
+  color: #EF1616;
+}
+
+.form-item{
+    select {
+        font-family: var(--wf-font-family-main) !important;
+        color: #282828;
+        font-style: normal;
+        font-weight: 400;
+        width: 100%;
+        margin: 8px 0px;
+        font-size: 16px;
+        border: none;
+        border-bottom: 1px solid #282828;
+        outline: none;
+        padding: 8px 12px;
+        box-sizing: border-box;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+        -webkit-appearance: none;
+        background-image: url('/assets/dropdown-icon.svg');
+        background-repeat: no-repeat;
+        background-position: right 10px center;
+        background-size: 20px 20px;
+        padding-right: 30px;
+    }
+
+    option {
+        font-family: var(--wf-font-family-main) !important;
+    }
+
+    label {
+        padding: 9px;
+        color: #474543;
+        font-size: 14px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: normal;
+    }
+}
+
+    .objective-field {
+      min-width: 100px;
+      flex: 1 1 calc(25% - 20px);
+
+      @media (max-width: 1024px) {
+        flex: 0 0 calc(33.33% - 15px);
+      }
+
+      @media (min-width: 950px) and (max-width: 1024px) {
+        flex: 0 0 calc(25% - 15px); 
+      }
+
+      @media (max-width: 730px) {
+        flex: 1 1 calc(25% - 20px)
+      }
+
+      @media (max-width: 510px) {
+        flex: 0 0 100%; 
+      }
+
+      select {
+        margin-top: 14px;
+      }
+    }
