@@ -101,17 +101,8 @@ jobs:
           docker pull $IMAGE
           echo "IMAGE_API_BY_DIGEST=$(docker inspect --format='{{index .RepoDigests 0}}' $IMAGE)" >> $GITHUB_OUTPUT
         
-      # No image for UI components anymore
-      # - name: Get digest of UI docker image
-      #   id: getDigestUI
-      #   run: |
-      #     export IMAGE='${{vars.REPOSITORY_HOST}}/${{ github.repository }}-wfprev-war:${{ inputs.IMAGE_TAG }}'
-      #     docker pull $IMAGE
-      #     echo "IMAGE_UI_BY_DIGEST=$(docker inspect --format='{{index .RepoDigests 0}}' $IMAGE)" >> $GITHUB_OUTPUT
-
-      # For future environment configurtion enhancement
-      - id: mapEnvironments
-        name: Check if deploy is pr-based and which namespace it deploys to
+      - name: Check if deploy is pr-based and which namespace it deploys to
+        id: mapEnvironments
         run: |
            if [ "${{ inputs.DEFAULT_APPLICATION_ENVIRONMENT }}" == "dev" ]; then
              echo "TARGET_ENV=dev" >> $GITHUB_OUTPUT
@@ -157,18 +148,7 @@ jobs:
 
       - uses: peter-murray/terragrunt-github-action@v1.0.0
         with:
-          terragrunt_version: ${{ env.TG_VERSION }}  
-
-      - name: Print liquibase image
-        run: |
-          echo "Liquibase image:"
-          echo "${{ vars.REPOSITORY_HOST }}/${{ github.repository_owner }}/${{ vars.LIQUIBASE_IMAGE }}:${{ inputs.IMAGE_TAG }}" 
-          
-      - name: Print Liquibase flags
-        run: |
-          echo "RUN_LIQUIBASE: ${{ inputs.RUN_LIQUIBASE }}"
-          echo "COMMAND: ${{ steps.liquibaseCommand.outputs.LIQUIBASE_COMMAND }}"
-          echo "TARGET_LIQUIBASE_TAG: ${{ steps.liquibaseCommand.outputs.TARGET_LIQUIBASE_TAG }}"    
+          terragrunt_version: ${{ env.TG_VERSION }}     
 
       - name: Terragrunt Apply
         working-directory: ${{env.TG_SRC_PATH}}
