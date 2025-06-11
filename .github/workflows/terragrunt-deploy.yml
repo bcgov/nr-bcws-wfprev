@@ -114,13 +114,13 @@ jobs:
         name: Check if deploy is pr-based and which namespace it deploys to
         run: |
            if [ "${{ inputs.DEFAULT_APPLICATION_ENVIRONMENT }}" == "dev" ]; then
-             echo "NAMESPACE_ENV=dev" >> $GITHUB_OUTPUT
+             echo "TARGET_ENV=dev" >> $GITHUB_OUTPUT
              echo "SHORTENED_ENV=dev" >> $GITHUB_OUTPUT
            elif [ "${{ inputs.DEFAULT_APPLICATION_ENVIRONMENT }}" == "test" ]; then
-             echo "NAMESPACE_ENV=test" >> $GITHUB_OUTPUT
+             echo "TARGET_ENV=test" >> $GITHUB_OUTPUT
              echo "SHORTENED_ENV=tst" >> $GITHUB_OUTPUT
            elif [ "${{ inputs.DEFAULT_APPLICATION_ENVIRONMENT }}" == "prd" ]; then
-             echo "NAMESPACE_ENV=prod" >> $GITHUB_OUTPUT
+             echo "TARGET_ENV=prod" >> $GITHUB_OUTPUT
              echo "SHORTENED_ENV=prd" >> $GITHUB_OUTPUT
            fi
 
