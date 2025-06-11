@@ -7,6 +7,10 @@ resource "aws_s3_bucket" "wfprev_site_bucket" {
     index_document = "index.html"
     error_document = "index.html"
   }
+
+  lifecycle {
+    ignore_changes = [bucket]
+  }
 }
 
 # Uploading assets. This shouldn't be needed because we'll push them up from the 

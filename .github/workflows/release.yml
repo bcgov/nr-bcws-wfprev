@@ -8,7 +8,8 @@ jobs:
     strategy:
       matrix:
         component-name: [
-          wfprev-api
+          wfprev-api,
+          liquibase
         ]
     steps:
       - uses: actions/checkout@v3
@@ -36,6 +37,7 @@ jobs:
       IMAGE_TAG: ${{ github.event.release.tag_name }}
       COMMAND: apply
       RUN_LIQUIBASE: 'true'
+      GDB_EXTRACTOR_IMAGE: ${{ needs.node-build.outputs.gdb_digest }}
 
   wfprev-ui:
     uses: ./.github/workflows/client-build.yml
