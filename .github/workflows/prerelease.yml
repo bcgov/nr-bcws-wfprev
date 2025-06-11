@@ -9,7 +9,8 @@ jobs:
     strategy:
       matrix:
         component-name: [
-          wfprev-api
+          wfprev-api,
+          liquibase
         ]
     steps:
       - uses: actions/checkout@v3
