@@ -194,6 +194,13 @@ variable "TARGET_ENV" {
   default = ""
 }
 
+
+variable "SHORTENED_ENV" {
+  description = "Shortened environment name (e.g. dev, tst, prd)"
+  type        = string
+  default = ""
+}
+
 variable "WFPREV_API_PORT" {
   description = "Port exposed by the docker image to redirect traffic to"
   type = number

@@ -110,22 +110,19 @@ jobs:
       #     echo "IMAGE_UI_BY_DIGEST=$(docker inspect --format='{{index .RepoDigests 0}}' $IMAGE)" >> $GITHUB_OUTPUT
 
       # For future environment configurtion enhancement
-      # - id: mapEnvironments
-      #   name: Check if deploy is pr-based and which namespace it deploys to
-      #   run: |
-      #     if [ "${{ inputs.DEFAULT_APPLICATION_ENVIRONMENT }}" == "wfint" ]; then
-      #       echo "NAMESPACE_ENV=dev" >> $GITHUB_OUTPUT
-      #       echo "SHORTENED_ENV=int" >> $GITHUB_OUTPUT
-      #     elif [ "${{ inputs.DEFAULT_APPLICATION_ENVIRONMENT }}" == "wfdlv" ]; then
-      #       echo "NAMESPACE_ENV=tools" >> $GITHUB_OUTPUT
-      #       echo "SHORTENED_ENV=dlv" >> $GITHUB_OUTPUT
-      #     elif [ "${{ inputs.DEFAULT_APPLICATION_ENVIRONMENT }}" == "wftst" ]; then
-      #       echo "NAMESPACE_ENV=test" >> $GITHUB_OUTPUT
-      #       echo "SHORTENED_ENV=tst" >> $GITHUB_OUTPUT
-      #     elif [ "${{ inputs.DEFAULT_APPLICATION_ENVIRONMENT }}" == "wfprd" ]; then
-      #       echo "NAMESPACE_ENV=prod" >> $GITHUB_OUTPUT
-      #       echo "SHORTENED_ENV=prd" >> $GITHUB_OUTPUT
-      #     fi
+      - id: mapEnvironments
+        name: Check if deploy is pr-based and which namespace it deploys to
+        run: |
+           if [ "${{ inputs.DEFAULT_APPLICATION_ENVIRONMENT }}" == "dev" ]; then
+             echo "NAMESPACE_ENV=dev" >> $GITHUB_OUTPUT
+             echo "SHORTENED_ENV=dev" >> $GITHUB_OUTPUT
+           elif [ "${{ inputs.DEFAULT_APPLICATION_ENVIRONMENT }}" == "test" ]; then
+             echo "NAMESPACE_ENV=test" >> $GITHUB_OUTPUT
+             echo "SHORTENED_ENV=tst" >> $GITHUB_OUTPUT
+           elif [ "${{ inputs.DEFAULT_APPLICATION_ENVIRONMENT }}" == "prd" ]; then
+             echo "NAMESPACE_ENV=prod" >> $GITHUB_OUTPUT
+             echo "SHORTENED_ENV=prd" >> $GITHUB_OUTPUT
+           fi
 
       - name: Configure AWS Credentials for ECR target (Tools namespace)
         uses: aws-actions/configure-aws-credentials@v2
@@ -161,6 +158,17 @@ jobs:
       - uses: peter-murray/terragrunt-github-action@v1.0.0
         with:
           terragrunt_version: ${{ env.TG_VERSION }}  
+
+      - name: Print liquibase image
+        run: |
+          echo "Liquibase image:"
+          echo "${{ vars.REPOSITORY_HOST }}/${{ github.repository_owner }}/${{ vars.LIQUIBASE_IMAGE }}:${{ inputs.IMAGE_TAG }}" 
+          
+      - name: Print Liquibase flags
+        run: |
+          echo "RUN_LIQUIBASE: ${{ inputs.RUN_LIQUIBASE }}"
+          echo "COMMAND: ${{ steps.liquibaseCommand.outputs.LIQUIBASE_COMMAND }}"
+          echo "TARGET_LIQUIBASE_TAG: ${{ steps.liquibaseCommand.outputs.TARGET_LIQUIBASE_TAG }}"    
 
       - name: Terragrunt Apply
         working-directory: ${{env.TG_SRC_PATH}}
