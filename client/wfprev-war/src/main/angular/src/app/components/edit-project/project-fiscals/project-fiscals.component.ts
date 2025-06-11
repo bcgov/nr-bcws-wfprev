@@ -1,6 +1,6 @@
 import { CommonModule, CurrencyPipe } from '@angular/common';
 import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { MatExpansionModule } from '@angular/material/expansion';
@@ -8,7 +8,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTabsModule } from '@angular/material/tabs';
-import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatTooltip, MatTooltipModule } from '@angular/material/tooltip';
 import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
 import { ConfirmationDialogComponent } from 'src/app/components/confirmation-dialog/confirmation-dialog.component';
@@ -21,6 +21,8 @@ import { CanComponentDeactivate } from 'src/app/services/util/can-deactive.guard
 import { CodeTableKeys, Messages } from 'src/app/utils/constants';
 import { ExpansionIndicatorComponent } from '../../shared/expansion-indicator/expansion-indicator.component';
 import { IconButtonComponent } from 'src/app/components/shared/icon-button/icon-button.component';
+import { SelectFieldComponent } from 'src/app/components/shared/select-field/select-field.component';
+import { InputFieldComponent } from 'src/app/components/shared/input-field/input-field.component';
 
 @Component({
   selector: 'wfprev-project-fiscals',
@@ -40,7 +42,10 @@ import { IconButtonComponent } from 'src/app/components/shared/icon-button/icon-
     FiscalMapComponent,
     MatTooltipModule,
     ExpansionIndicatorComponent,
-    IconButtonComponent
+    IconButtonComponent,
+    SelectFieldComponent,
+    MatTooltip,
+    InputFieldComponent
   ]
 })
 export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  {
@@ -447,6 +452,10 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  
       default:
         return null;
     }
+  }
+
+  getFiscalControl(i: number, controlName: string): FormControl {
+    return this.fiscalForms[i].get(controlName) as FormControl;
   }
 
 }

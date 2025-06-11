@@ -1,0 +1,19 @@
+<div class="form-item">
+  <label [for]="id">
+    {{ label }}<span *ngIf="required" class="required">*</span>
+  </label>
+  <select
+    [formControl]="control"
+    [attr.id]="id"
+    [matTooltip]="tooltip"
+    [disabled]="disabled"
+  >
+    <option *ngIf="!required" [value]="''">{{ placeholder }}</option>
+    <option *ngFor="let item of options" [value]="item[optionValueField]">
+      {{ item[optionLabelField] }}
+    </option>
+  </select>
+  <div class="error" *ngIf="control.hasError('required') && control.touched">
+    This field is required.
+  </div>
+</div>
