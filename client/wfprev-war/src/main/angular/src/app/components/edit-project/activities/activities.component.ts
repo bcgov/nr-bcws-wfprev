@@ -456,7 +456,7 @@ export class ActivitiesComponent implements OnChanges, OnInit, CanComponentDeact
     const activity = this.activities[index];
     if (!activity) return ''; // Handle missing data
     
-    return moment(activity.updateDate).format('YYYY-MM-DD');
+    return moment.utc(activity.updateDate).format('YYYY-MM-DD');
   }
 
   toggleActivityStatus(index: number) {
