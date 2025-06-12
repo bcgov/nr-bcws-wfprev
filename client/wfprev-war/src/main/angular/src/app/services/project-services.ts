@@ -6,7 +6,7 @@ import { ActivityBoundary, FeaturesResponse, Project, ProjectBoundary, ProjectFi
 import { AppConfigService } from "src/app/services/app-config.service";
 import { TokenService } from "src/app/services/token.service";
 
-export const UPLOAD_DIRECTORY = '/WFPREV_TEMP/uploads';
+export const UPLOAD_DIRECTORY = '/WFPREV/uploads';
 
 @Injectable({
     providedIn: 'root',
