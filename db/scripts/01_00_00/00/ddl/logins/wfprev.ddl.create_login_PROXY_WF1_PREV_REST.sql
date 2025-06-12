@@ -8,6 +8,6 @@ CREATE ROLE "proxy_wf1_prev_rest" WITH
   NOCREATEDB
   NOCREATEROLE
   NOREPLICATION
-  PASSWORD "${PROXY_WF1_PREV_REST_SECRET}";
+  PASSWORD "${PROXY_WF1_PREV_REST_PASSWORD}";
 
 COMMENT ON ROLE "proxy_wf1_prev_rest" IS 'Proxy account for Wildfire Prevention System.';
