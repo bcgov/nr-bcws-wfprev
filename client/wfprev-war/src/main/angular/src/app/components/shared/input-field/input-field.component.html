@@ -1,0 +1,39 @@
+<div class="input-field">
+  <div class="form-item">
+    <label [for]="id">
+      {{ label }}
+      <span *ngIf="required" class="required">*</span>
+    </label>
+
+    <div class="currency-input" *ngIf="prefix; else plainInput">
+      <span class="currency-symbol">{{ prefix }}</span>
+      <input
+        [id]="id"
+        [type]="type"
+        [formControl]="control"
+        [placeholder]="placeholder"
+        [matTooltip]="tooltip || control?.value"
+      />
+    </div>
+
+    <ng-template #plainInput>
+      <input
+        [id]="id"
+        [type]="type"
+        [formControl]="control"
+        [placeholder]="placeholder"
+        [matTooltip]="tooltip || control?.value"
+      />
+    </ng-template>
+
+    <div class="error" *ngIf="control?.hasError('maxlength') && control?.touched">
+      {{ errorMessages?.['maxlength'] }}
+    </div>
+    <div class="error" *ngIf="control?.hasError('email') && control?.touched">
+      {{ errorMessages?.['email'] }}
+    </div>
+    <div class="error" *ngIf="control?.hasError('min') && control?.touched">
+      {{ errorMessages?.['min'] }}
+    </div>
+  </div>
+</div>
