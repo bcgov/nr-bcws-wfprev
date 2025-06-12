@@ -100,19 +100,11 @@ resource "aws_ecs_task_definition" "wfprev_server" {
       },
       {
         name  = "WFPREV_DATASOURCE_USERNAME"
-        value = var.WFPREV_DATASOURCE_USERNAME
+        value = var.PROXY_WF1_PREV_REST_USER
       },
       {
         name  = "WFPREV_DATASOURCE_PASSWORD"
-        value = var.WFPREV_DATASOURCE_PASSWORD
-      },
-      {
-        name  = "WFPREV_USERNAME"
-        value = var.WFPREV_USERNAME
-      },
-      {
-        name  = "DB_PASS"
-        value = var.DB_PASS
+        value = var.PROXY_WF1_PREV_REST_PASSWORD
       },
       {
         name  = "API_KEY"
@@ -179,19 +171,19 @@ resource "aws_ecs_task_definition" "wfprev-liquibase" {
         },
         {
           name = "LIQUIBASE_COMMAND_USERNAME"
-          value = var.LIQUIBASE_COMMAND_USERNAME
+          value = var.WFPREV_USERNAME
         },
         {
           name = "LIQUIBASE_COMMAND_PASSWORD"
-          value = var.LIQUIBASE_COMMAND_PASSWORD
+          value = var.DB_PASS
         },
         {
-          name = "APP_WF1_PREV_LIQUIBASE_COMMAND_PASSWORD"
-          value = var.APP_WF1_PREV_LIQUIBASE_COMMAND_PASSWORD
+          name = "APP_WF1_PREV_PASSWORD"
+          value = var.APP_WF1_PREV_PASSWORD
         },
         {
-          name = "WFPREV_LIQUIBASE_COMMAND_PASSWORD"
-          value = var.WFPREV_LIQUIBASE_COMMAND_PASSWORD
+          name = "PROXY_WF1_PREV_REST_PASSWORD"
+          value = var.PROXY_WF1_PREV_REST_PASSWORD
         },
         {
           name = "TARGET_LIQUIBASE_TAG"
