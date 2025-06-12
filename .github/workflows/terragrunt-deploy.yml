@@ -31,7 +31,7 @@ on:
         options:
         - dev
         - test
-        - prd
+        - prod
       IMAGE_TAG:
         required: true
         type: string
@@ -100,32 +100,6 @@ jobs:
           export IMAGE='${{vars.REPOSITORY_HOST}}/${{ github.repository }}-wfprev-api:${{ inputs.IMAGE_TAG }}'
           docker pull $IMAGE
           echo "IMAGE_API_BY_DIGEST=$(docker inspect --format='{{index .RepoDigests 0}}' $IMAGE)" >> $GITHUB_OUTPUT
-        
-      # No image for UI components anymore
-      # - name: Get digest of UI docker image
-      #   id: getDigestUI
-      #   run: |
-      #     export IMAGE='${{vars.REPOSITORY_HOST}}/${{ github.repository }}-wfprev-war:${{ inputs.IMAGE_TAG }}'
-      #     docker pull $IMAGE
-      #     echo "IMAGE_UI_BY_DIGEST=$(docker inspect --format='{{index .RepoDigests 0}}' $IMAGE)" >> $GITHUB_OUTPUT
-
-      # For future environment configurtion enhancement
-      # - id: mapEnvironments
-      #   name: Check if deploy is pr-based and which namespace it deploys to
-      #   run: |
-      #     if [ "${{ inputs.DEFAULT_APPLICATION_ENVIRONMENT }}" == "wfint" ]; then
-      #       echo "NAMESPACE_ENV=dev" >> $GITHUB_OUTPUT
-      #       echo "SHORTENED_ENV=int" >> $GITHUB_OUTPUT
-      #     elif [ "${{ inputs.DEFAULT_APPLICATION_ENVIRONMENT }}" == "wfdlv" ]; then
-      #       echo "NAMESPACE_ENV=tools" >> $GITHUB_OUTPUT
-      #       echo "SHORTENED_ENV=dlv" >> $GITHUB_OUTPUT
-      #     elif [ "${{ inputs.DEFAULT_APPLICATION_ENVIRONMENT }}" == "wftst" ]; then
-      #       echo "NAMESPACE_ENV=test" >> $GITHUB_OUTPUT
-      #       echo "SHORTENED_ENV=tst" >> $GITHUB_OUTPUT
-      #     elif [ "${{ inputs.DEFAULT_APPLICATION_ENVIRONMENT }}" == "wfprd" ]; then
-      #       echo "NAMESPACE_ENV=prod" >> $GITHUB_OUTPUT
-      #       echo "SHORTENED_ENV=prd" >> $GITHUB_OUTPUT
-      #     fi
 
       - name: Configure AWS Credentials for ECR target (Tools namespace)
         uses: aws-actions/configure-aws-credentials@v2
@@ -185,8 +159,6 @@ jobs:
           WFPREV_BASE_URL: ${{vars.WFPREV_BASE_URL}}
           WFPREV_GDB_FUNCTION_NAME: ${{vars.WFPREV_GDB_FUNCTION_NAME}}
           WFPREV_DATASOURCE_URL: ${{vars.WFPREV_DATASOURCE_URL}}
-          WFPREV_DATASOURCE_USERNAME: ${{secrets.WFPREV_USERNAME}}
-          WFPREV_DATASOURCE_PASSWORD: ${{secrets.DB_PASS}}
           server_count: ${{vars.WFPREV_SERVER_INSTANCE_COUNT}}
           # WFDM API
           WFDM_BASE_URL: ${{vars.WFDM_BASE_URL}}
@@ -212,10 +184,8 @@ jobs:
           PROXY_COUNT: ${{ steps.changeLogCount.outputs.PROXY_COUNT }}
           NONPROXY_COUNT: ${{ steps.changeLogCount.outputs.NONPROXY_COUNT }}
           LIQUIBASE_IMAGE: ${{vars.REPOSITORY_HOST}}/${{ github.repository_owner }}/${{ vars.LIQUIBASE_IMAGE }}:${{ inputs.IMAGE_TAG }}
-          LIQUIBASE_COMMAND_USERNAME: ${{ vars.LIQUIBASE_COMMAND_USERNAME }}
-          LIQUIBASE_COMMAND_PASSWORD: ${{ secrets.LIQUIBASE_COMMAND_PASSWORD }}
-          APP_WF1_PREV_LIQUIBASE_COMMAND_PASSWORD: ${{ secrets.APP_WF1_PREV_LIQUIBASE_COMMAND_PASSWORD }}
-          WFPREV_LIQUIBASE_COMMAND_PASSWORD: ${{ secrets.WFPREV_LIQUIBASE_COMMAND_PASSWORD }}
+          APP_WF1_PREV_PASSWORD: ${{ secrets.APP_WF1_PREV_PASSWORD }}
+          PROXY_WF1_PREV_REST_PASSWORD: ${{ secrets.PROXY_WF1_PREV_REST_PASSWORD }}
           TARGET_LIQUIBASE_TAG: ${{ steps.liquibaseCommand.outputs.TARGET_LIQUIBASE_TAG }}
 
         run: terragrunt apply --terragrunt-non-interactive -auto-approve

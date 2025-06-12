@@ -869,7 +869,7 @@ describe('Dropdown tooltips', () => {
     ];
 
     component.fireCentres = [
-      { properties: { MOF_FIRE_CENTRE_ID: 50, MOF_FIRE_CENTRE_NAME: 'Kamloops Fire Centre' } }
+      { id: 50, label: 'Kamloops Fire Centre' }
     ];
 
     component.objectiveTypeCode = [
@@ -1047,5 +1047,15 @@ describe('Dropdown tooltips', () => {
       expect(control?.disabled).toBeTrue();
     });
   });
+
+  it('should return the correct FormControl from detailsForm', () => {
+    component.detailsForm = new FormGroup({
+      projectLead: new FormControl('Alice')
+    });
+
+    const control = component.getControl('projectLead');
+    expect(control.value).toBe('Alice');
+  });
+
 
 });
