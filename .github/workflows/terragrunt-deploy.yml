@@ -31,7 +31,7 @@ on:
         options:
         - dev
         - test
-        - prd
+        - prod
       IMAGE_TAG:
         required: true
         type: string
@@ -100,32 +100,6 @@ jobs:
           export IMAGE='${{vars.REPOSITORY_HOST}}/${{ github.repository }}-wfprev-api:${{ inputs.IMAGE_TAG }}'
           docker pull $IMAGE
           echo "IMAGE_API_BY_DIGEST=$(docker inspect --format='{{index .RepoDigests 0}}' $IMAGE)" >> $GITHUB_OUTPUT
-        
-      # No image for UI components anymore
-      # - name: Get digest of UI docker image
-      #   id: getDigestUI
-      #   run: |
-      #     export IMAGE='${{vars.REPOSITORY_HOST}}/${{ github.repository }}-wfprev-war:${{ inputs.IMAGE_TAG }}'
-      #     docker pull $IMAGE
-      #     echo "IMAGE_UI_BY_DIGEST=$(docker inspect --format='{{index .RepoDigests 0}}' $IMAGE)" >> $GITHUB_OUTPUT
-
-      # For future environment configurtion enhancement
-      # - id: mapEnvironments
-      #   name: Check if deploy is pr-based and which namespace it deploys to
-      #   run: |
-      #     if [ "${{ inputs.DEFAULT_APPLICATION_ENVIRONMENT }}" == "wfint" ]; then
-      #       echo "NAMESPACE_ENV=dev" >> $GITHUB_OUTPUT
-      #       echo "SHORTENED_ENV=int" >> $GITHUB_OUTPUT
-      #     elif [ "${{ inputs.DEFAULT_APPLICATION_ENVIRONMENT }}" == "wfdlv" ]; then
-      #       echo "NAMESPACE_ENV=tools" >> $GITHUB_OUTPUT
-      #       echo "SHORTENED_ENV=dlv" >> $GITHUB_OUTPUT
-      #     elif [ "${{ inputs.DEFAULT_APPLICATION_ENVIRONMENT }}" == "wftst" ]; then
-      #       echo "NAMESPACE_ENV=test" >> $GITHUB_OUTPUT
-      #       echo "SHORTENED_ENV=tst" >> $GITHUB_OUTPUT
-      #     elif [ "${{ inputs.DEFAULT_APPLICATION_ENVIRONMENT }}" == "wfprd" ]; then
-      #       echo "NAMESPACE_ENV=prod" >> $GITHUB_OUTPUT
-      #       echo "SHORTENED_ENV=prd" >> $GITHUB_OUTPUT
-      #     fi
 
       - name: Configure AWS Credentials for ECR target (Tools namespace)
         uses: aws-actions/configure-aws-credentials@v2

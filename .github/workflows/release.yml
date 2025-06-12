@@ -27,13 +27,13 @@ jobs:
           docker tag ${{vars.REGISTRY}}/${{ github.repository }}-${{ matrix.component-name }}:latest ${{vars.REGISTRY}}/${{ github.repository }}-${{ matrix.component-name }}:${{ github.event.release.tag_name }}
           docker push ${{vars.REGISTRY}}/${{ github.repository }}-${{ matrix.component-name }}:${{ github.event.release.tag_name }}
 
-  deploy-prd:
+  deploy-prod:
     needs: tag-builds
     if: ${{ contains(github.event.release.tag_name, '-release') }}
     uses: ./.github/workflows/terragrunt-deploy.yml
     secrets: inherit
     with:
-      DEFAULT_APPLICATION_ENVIRONMENT: prd
+      DEFAULT_APPLICATION_ENVIRONMENT: prod
       IMAGE_TAG: ${{ github.event.release.tag_name }}
       COMMAND: apply
       RUN_LIQUIBASE: 'true'
@@ -41,7 +41,7 @@ jobs:
 
   wfprev-ui:
     uses: ./.github/workflows/client-build.yml
-    needs: [deploy-prd]
+    needs: [deploy-prod]
     with:
-      DEFAULT_APPLICATION_ENVIRONMENT: prd
+      DEFAULT_APPLICATION_ENVIRONMENT: prod
     secrets: inherit
