@@ -100,23 +100,6 @@ jobs:
           export IMAGE='${{vars.REPOSITORY_HOST}}/${{ github.repository }}-wfprev-api:${{ inputs.IMAGE_TAG }}'
           docker pull $IMAGE
           echo "IMAGE_API_BY_DIGEST=$(docker inspect --format='{{index .RepoDigests 0}}' $IMAGE)" >> $GITHUB_OUTPUT
-<<<<<<< HEAD
-        
-      - name: Check if deploy is pr-based and which namespace it deploys to
-        id: mapEnvironments
-        run: |
-           if [ "${{ inputs.DEFAULT_APPLICATION_ENVIRONMENT }}" == "dev" ]; then
-             echo "TARGET_ENV=dev" >> $GITHUB_OUTPUT
-             echo "SHORTENED_ENV=dev" >> $GITHUB_OUTPUT
-           elif [ "${{ inputs.DEFAULT_APPLICATION_ENVIRONMENT }}" == "test" ]; then
-             echo "TARGET_ENV=test" >> $GITHUB_OUTPUT
-             echo "SHORTENED_ENV=tst" >> $GITHUB_OUTPUT
-           elif [ "${{ inputs.DEFAULT_APPLICATION_ENVIRONMENT }}" == "prd" ]; then
-             echo "TARGET_ENV=prod" >> $GITHUB_OUTPUT
-             echo "SHORTENED_ENV=prd" >> $GITHUB_OUTPUT
-           fi
-=======
->>>>>>> 96d8dc3fb1d945f30c911f358321c669cf8cce71
 
       - name: Configure AWS Credentials for ECR target (Tools namespace)
         uses: aws-actions/configure-aws-credentials@v2
@@ -151,7 +134,7 @@ jobs:
 
       - uses: peter-murray/terragrunt-github-action@v1.0.0
         with:
-          terragrunt_version: ${{ env.TG_VERSION }}     
+          terragrunt_version: ${{ env.TG_VERSION }}  
 
       - name: Terragrunt Apply
         working-directory: ${{env.TG_SRC_PATH}}
