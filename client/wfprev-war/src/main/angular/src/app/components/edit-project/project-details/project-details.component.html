@@ -1,12 +1,17 @@
 <div class="details-container">
   <form [formGroup]="detailsForm" class="form-grid" *ngIf="projectDetail">
     <div class="form-item">
-      <label>Project Type<span class="required">*</span></label>
-      <select id="projectTypeCode" formControlName="projectTypeCode" [matTooltip]="getCodeDescription(CodeTableKeys.PROJECT_TYPE_CODE)">
-        <option *ngFor="let item of projectTypeCode" [value]="item.projectTypeCode">
-          {{ item.description }}
-        </option>
-      </select>
+      <wfprev-select-field
+        [label]="'Project Type'"
+        [required]="true"
+        [control]="getControl('projectTypeCode')"
+        [options]="projectTypeCode"
+        [optionValueField]="'projectTypeCode'"
+        [optionLabelField]="'description'"
+        [tooltip]="getCodeDescription(CodeTableKeys.PROJECT_TYPE_CODE)"
+        id="projectTypeCode"
+        placeholder="Select"
+      />
     </div>
 
     <div class="form-item funding-stream">
@@ -15,124 +20,163 @@
     </div>
 
     <div class="form-item">
-      <label>Business/Program Area<span class="required">*</span></label>
-      <select id="programAreaGuid" formControlName="programAreaGuid" [matTooltip]="getCodeDescription(CodeTableKeys.PROGRAM_AREA_GUID)">
-        <option *ngFor="let item of programAreaCode" [value]="item.programAreaGuid">
-          {{ item.programAreaName }}
-        </option>
-      </select>
+      <wfprev-select-field
+        [label]="'Business/Program Area'"
+        [required]="true"
+        [control]="getControl('programAreaGuid')"
+        [options]="programAreaCode"
+        [optionValueField]="'programAreaGuid'"
+        [optionLabelField]="'programAreaName'"
+        [tooltip]="getCodeDescription(CodeTableKeys.PROGRAM_AREA_GUID)"
+        id="programAreaGuid"
+      />
     </div>
 
     <div class="form-item">
-      <label for="closestCommunityName">Closest Community<span class="required">*</span></label>
-      <input type="text" id="closestCommunityName" formControlName="closestCommunityName" placeholder="Begin Typing"
-        [matTooltip]="detailsForm.get('closestCommunityName')?.value" />
-      <div class="error"
-        *ngIf="detailsForm.get('closestCommunityName')?.hasError('maxlength') && detailsForm.get('closestCommunityName')?.touched">
-        {{messages.maxLengthExceeded}}
-      </div>
+      <wfprev-input-field
+        [id]="'closestCommunityName'"
+        [label]="'Closest Community'"
+        [placeholder]="'Begin Typing'"
+        [control]="getControl('closestCommunityName')"
+        [tooltip]="getControl('closestCommunityName')?.value"
+        [required]="true"
+        [errorMessages]="{ maxlength: messages.maxLengthExceeded }"
+      ></wfprev-input-field>
+
     </div>
 
     <div class="form-item">
-      <label>Forest Region<span class="required">*</span></label>
-      <select id="forestRegionOrgUnitId" formControlName="forestRegionOrgUnitId" [matTooltip]="getCodeDescription(CodeTableKeys.FOREST_REGION_ORG_UNIT_ID)">
-        <option *ngFor="let item of forestRegionCode" [value]="item.orgUnitId">
-          {{ item.orgUnitName }}
-        </option>
-      </select>
+      <wfprev-select-field
+        [label]="'Forest Region'"
+        [required]="true"
+        [control]="getControl('forestRegionOrgUnitId')"
+        [options]="forestRegionCode"
+        [optionValueField]="'orgUnitId'"
+        [optionLabelField]="'orgUnitName'"
+        [tooltip]="getCodeDescription(CodeTableKeys.FOREST_REGION_ORG_UNIT_ID)"
+        id="forestRegionOrgUnitId"
+      />
     </div>
 
     <div class="form-item">
-      <label> Forest District </label>
-      <select id="forestDistrictOrgUnitId" formControlName="forestDistrictOrgUnitId" [matTooltip]="getCodeDescription(CodeTableKeys.FOREST_DISTRICT_ORG_UNIT_ID)">
-        <option value="">Select</option>
-        <option *ngFor="let item of forestDistrictCode" [value]="item.orgUnitId">
-          {{ item.orgUnitName }}
-        </option>
-      </select>
+      <wfprev-select-field
+        [label]="'Forest District'"
+        [required]="false"
+        [control]="getControl('forestDistrictOrgUnitId')"
+        [options]="forestDistrictCode"
+        [optionValueField]="'orgUnitId'"
+        [optionLabelField]="'orgUnitName'"
+        [tooltip]="getCodeDescription(CodeTableKeys.FOREST_DISTRICT_ORG_UNIT_ID)"
+        [placeholder]="'Select'"
+        id="forestDistrictOrgUnitId"
+      />
     </div>
 
     <div class="form-item">
-      <label> BC Parks Region </label>
-      <select id="bcParksRegionOrgUnitId" formControlName="bcParksRegionOrgUnitId" [matTooltip]="getCodeDescription(CodeTableKeys.BC_PARKS_REGION_ORG_UNIT_ID)">
-        <option value="">Select</option>
-        <option *ngFor="let item of bcParksRegionCode" [value]="item.orgUnitId">
-          {{ item.orgUnitName }}
-        </option>
-      </select>
+      <wfprev-select-field
+        [label]="'BC Parks Region'"
+        [required]="false"
+        [control]="getControl('bcParksRegionOrgUnitId')"
+        [options]="bcParksRegionCode"
+        [optionValueField]="'orgUnitId'"
+        [optionLabelField]="'orgUnitName'"
+        [tooltip]="getCodeDescription(CodeTableKeys.BC_PARKS_REGION_ORG_UNIT_ID)"
+        [placeholder]="'Select'"
+        id="bcParksRegionOrgUnitId"
+      />
     </div>
 
     <div class="form-item">
-      <label>BC Parks Section</label>
-      <select id="bcParksSectionOrgUnitId" formControlName="bcParksSectionOrgUnitId" [matTooltip]="getCodeDescription(CodeTableKeys.BC_PARKS_SECTION_ORG_UNIT_ID)">
-        <option value="">Select</option>
-        <option *ngFor="let item of bcParksSectionCode" [value]="item.orgUnitId">
-          {{ item.orgUnitName }}
-        </option>
-      </select>
+      <wfprev-select-field
+        [label]="'BC Parks Section'"
+        [required]="false"
+        [control]="getControl('bcParksSectionOrgUnitId')"
+        [options]="bcParksSectionCode"
+        [optionValueField]="'orgUnitId'"
+        [optionLabelField]="'orgUnitName'"
+        [tooltip]="getCodeDescription(CodeTableKeys.BC_PARKS_SECTION_ORG_UNIT_ID)"
+        [placeholder]="'Select'"
+        id="bcParksSectionOrgUnitId"
+      />
     </div>
 
     <div class="form-item">
-      <label>BCWS Fire Centre<span class="required">*</span></label>
-      <select id="fireCentre" formControlName="fireCentreId" [matTooltip]="getCodeDescription(CodeTableKeys.FIRE_CENTRE_ID)">
-        <option *ngFor="let item of fireCentres" [value]="item.properties.MOF_FIRE_CENTRE_ID">
-          {{ item.properties.MOF_FIRE_CENTRE_NAME }}
-        </option>
-      </select>
+      <wfprev-select-field
+        [label]="'BCWS Fire Centre'"
+        [required]="true"
+        [control]="getControl('fireCentreId')"
+        [options]="fireCentres"
+        [optionValueField]="'id'"
+        [optionLabelField]="'label'"
+        [tooltip]="getCodeDescription(CodeTableKeys.FIRE_CENTRE_ID)"
+        id="fireCentreId"
+      />
     </div>
 
     <div class="form-item">
-      <label for="projectLead">Project Lead<span class="required">*</span></label>
-      <input type="text" id="projectLead" formControlName="projectLead" placeholder="Begin Typing"
-        [matTooltip]="detailsForm.get('projectLead')?.value" />
-      <div class="error"
-        *ngIf="detailsForm.get('projectLead')?.hasError('maxlength') && detailsForm.get('projectLead')?.touched">
-        {{messages.maxLengthExceeded}}
-      </div>
+      <wfprev-input-field
+        [id]="'projectLead'"
+        [label]="'Project Lead'"
+        [placeholder]="'Begin Typing'"
+        [control]="getControl('projectLead')"
+        [tooltip]="getControl('projectLead')?.value"
+        [required]="true"
+        [errorMessages]="{ maxlength: messages.maxLengthExceeded }"
+      />
     </div>
 
     <div class="form-item">
-      <label for="projectLeadEmailAddress">Project Lead Email</label>
-      <input type="email" id="projectLeadEmailAddress" formControlName="projectLeadEmailAddress"
-        placeholder="Begin Typing" [matTooltip]="detailsForm.get('projectLeadEmailAddress')?.value" />
-      <div class="error"
-        *ngIf="detailsForm.get('projectLeadEmailAddress')?.hasError('email') && detailsForm.get('projectLeadEmailAddress')?.touched">
-        {{messages.invalidEmail}}
-      </div>
-      <div class="error"
-        *ngIf="detailsForm.get('projectLeadEmailAddress')?.hasError('maxlength') && detailsForm.get('projectLeadEmailAddress')?.touched">
-        {{messages.maxLengthExceeded}}
-      </div>
+      <wfprev-input-field
+        [id]="'projectLeadEmailAddress'"
+        [label]="'Project Lead Email'"
+        [placeholder]="'Begin Typing'"
+        [control]="getControl('projectLeadEmailAddress')"
+        [tooltip]="getControl('projectLeadEmailAddress')?.value"
+        [type]="'email'"
+        [errorMessages]="{
+          email: messages.invalidEmail,
+          maxlength: messages.maxLengthExceeded
+        }"
+      />
     </div>
 
     <div class="form-item">
-      <label for="siteUnitName">Planning Unit</label>
-      <input type="text" id="siteUnitName" formControlName="siteUnitName" placeholder="Begin Typing"
-        [matTooltip]="detailsForm.get('siteUnitName')?.value" />
-      <div class="error"
-        *ngIf="detailsForm.get('siteUnitName')?.hasError('maxlength') && detailsForm.get('siteUnitName')?.touched">
-        {{messages.maxLengthExceeded}}
-      </div>
+      <wfprev-input-field
+        [id]="'siteUnitName'"
+        [label]="'Planning Unit'"
+        [placeholder]="'Begin Typing'"
+        [control]="getControl('siteUnitName')"
+        [tooltip]="getControl('siteUnitName')?.value"
+        [errorMessages]="{ maxlength: messages.maxLengthExceeded }"
+      />
     </div>
 
     <div class="objective-group">
       <div class="form-item objective-field">
-        <label>Primary Objective<span class="required">*</span></label>
-        <select id="primaryObjectiveTypeCode" formControlName="primaryObjectiveTypeCode" [matTooltip]="getCodeDescription(CodeTableKeys.PRIMARY_OBJECTIVE_TYPE_CODE)">
-          <option *ngFor="let item of objectiveTypeCode" [value]="item.objectiveTypeCode">
-            {{ item.description }}
-          </option>
-        </select>
+        <wfprev-select-field
+          [label]="'Primary Objective'"
+          [required]="true"
+          [control]="getControl('primaryObjectiveTypeCode')"
+          [options]="objectiveTypeCode"
+          [optionValueField]="'objectiveTypeCode'"
+          [optionLabelField]="'description'"
+          [tooltip]="getCodeDescription(CodeTableKeys.PRIMARY_OBJECTIVE_TYPE_CODE)"
+          id="primaryObjectiveTypeCode"
+        />
       </div>
 
       <div class="form-item objective-field">
-        <label>Secondary Objective</label>
-        <select id="secondaryObjectiveTypeCode" formControlName="secondaryObjectiveTypeCode" [matTooltip]="getCodeDescription(CodeTableKeys.SECONDARY_OBJECTIVE_TYPE_CODE)">
-          <option value="">Select</option>
-          <option *ngFor="let item of objectiveTypeCode" [value]="item.objectiveTypeCode">
-            {{ item.description }}
-          </option>
-        </select>
+        <wfprev-select-field
+          [label]="'Secondary Objective'"
+          [required]="false"
+          [control]="getControl('secondaryObjectiveTypeCode')"
+          [options]="objectiveTypeCode"
+          [optionValueField]="'objectiveTypeCode'"
+          [optionLabelField]="'description'"
+          [tooltip]="getCodeDescription(CodeTableKeys.SECONDARY_OBJECTIVE_TYPE_CODE)"
+          id="secondaryObjectiveTypeCode"
+          [placeholder]="'Select'"
+        />
       </div>
 
       <div class="form-item secondary-rationale">
