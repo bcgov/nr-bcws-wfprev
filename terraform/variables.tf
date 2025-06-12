@@ -141,18 +141,6 @@ variable "WFPREV_CHECK_TOKEN_URL" {
   type    = string
   default = ""
 }
-
-variable "WFPREV_DATASOURCE_USERNAME" {
-  type    = string
-  default = ""
-}
-
-variable "WFPREV_DATASOURCE_PASSWORD" {
-  description = "db password, passed in as env variable at runtime"
-  type        = string
-  default = ""
-}
-
 variable "WFPREV_USERNAME" {
   type        = string
   default = ""
@@ -345,21 +333,18 @@ variable "NONPROXY_COUNT" {
   type = number
   default = 1
 }
-
-variable "LIQUIBASE_COMMAND_USERNAME" {
+variable "APP_WF1_PREV_PASSWORD" {
   type = string
 }
 
-variable "LIQUIBASE_COMMAND_PASSWORD" {
-  type = string
-}
 
-variable "WFPREV_LIQUIBASE_COMMAND_PASSWORD" {
+variable "PROXY_WF1_PREV_REST_USER" {
   type = string
+  default = "PROXY_WF1_PREV_REST"
 }
-
-variable "APP_WF1_PREV_LIQUIBASE_COMMAND_PASSWORD" {
+variable "PROXY_WF1_PREV_REST_PASSWORD" {
   type = string
+  description = "Password for proxy_wf1_prev_rest DB user"
 }
 
 variable "TARGET_LIQUIBASE_TAG" {

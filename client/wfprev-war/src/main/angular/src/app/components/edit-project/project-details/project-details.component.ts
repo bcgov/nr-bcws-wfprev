@@ -1,7 +1,7 @@
 import { TextFieldModule } from '@angular/cdk/text-field';
 import { CommonModule } from '@angular/common';
 import { AfterViewInit, Component, EventEmitter, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -14,7 +14,7 @@ import { FiscalYearProjectsComponent } from 'src/app/components/edit-project/pro
 import { ProjectFilesComponent } from 'src/app/components/edit-project/project-details/project-files/project-files.component';
 import { CodeTableServices } from 'src/app/services/code-table-services';
 import { ProjectService } from 'src/app/services/project-services';
-import { CodeTableKeys, Messages } from 'src/app/utils/constants';
+import { CodeTableKeys, Messages, FiscalYearColors } from 'src/app/utils/constants';
 import {
   formatLatLong,
   getBluePinIcon,
@@ -23,12 +23,14 @@ import {
   LeafletLegendService
 } from 'src/app/utils/tools';
 import { ExpansionIndicatorComponent } from '../../shared/expansion-indicator/expansion-indicator.component';
-import { FiscalYearColors } from 'src/app/utils/constants';
 import { BcParksSectionCodeModel, ForestDistrictCodeModel } from 'src/app/components/models';
+import { SelectFieldComponent } from 'src/app/components/shared/select-field/select-field.component';
+import { InputFieldComponent } from 'src/app/components/shared/input-field/input-field.component';
 @Component({
   selector: 'wfprev-project-details',
   standalone: true,
-  imports: [ReactiveFormsModule, MatExpansionModule, CommonModule, FormsModule, FiscalYearProjectsComponent, ProjectFilesComponent, MatTooltip, TextFieldModule, ExpansionIndicatorComponent],
+  imports: [ReactiveFormsModule, MatExpansionModule, CommonModule, FormsModule, FiscalYearProjectsComponent,
+     ProjectFilesComponent, MatTooltip, TextFieldModule, ExpansionIndicatorComponent, SelectFieldComponent, InputFieldComponent],
   templateUrl: './project-details.component.html',
   styleUrl: './project-details.component.scss'
 })
@@ -201,7 +203,10 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
   loadFireCentres(): void {
     this.codeTableService.fetchFireCentres().subscribe({
       next: (response) => {
-        this.fireCentres = response?.features ?? [];
+        this.fireCentres = (response?.features ?? []).map((feature: any) => ({
+          id: feature.properties.MOF_FIRE_CENTRE_ID,
+          label: feature.properties.MOF_FIRE_CENTRE_NAME,
+        }));
       },
       error: (error) => {
         console.error('Failed to load fire centres', error);
@@ -574,7 +579,7 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
         return this.bcParksSectionCode.find(item => item.orgUnitId === value)?.orgUnitName ?? null;
 
       case CodeTableKeys.FIRE_CENTRE_ID:
-        return this.fireCentres.find(item => item.properties.MOF_FIRE_CENTRE_ID === value)?.properties.MOF_FIRE_CENTRE_NAME ?? null;
+        return this.fireCentres.find(item => item.id === value)?.label ?? null;
 
       case CodeTableKeys.PRIMARY_OBJECTIVE_TYPE_CODE:
       case CodeTableKeys.SECONDARY_OBJECTIVE_TYPE_CODE:
@@ -759,4 +764,7 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
     });
   }
 
+  getControl(controlName: keyof typeof CodeTableKeys | string): FormControl {
+    return this.detailsForm.get(controlName) as FormControl;
+  }
 }
