@@ -333,7 +333,7 @@ variable "APP_WF1_PREV_PASSWORD" {
 
 variable "PROXY_WF1_PREV_REST_USER" {
   type = string
-  default = "PROXY_WF1_PREV_REST"
+  default = "proxy_wf1_prev_rest"
 }
 variable "PROXY_WF1_PREV_REST_PASSWORD" {
   type = string
