@@ -91,6 +91,22 @@
          }
        ]
       }
+    },
+    {
+      "changeSet": {
+        "id": "01_00_13_02",
+        "author": "hsaldyga",
+        "tagDatabase": { "tag" : "version_01_00_13_02" },
+        "changes": [
+          {
+            "sqlFile": {
+             "dbms": "postgresql",
+             "endDelimiter": ";",
+             "path": "scripts/01_00_13/02/grants/proxy.grants.search_path.sql"
+           }
+         }
+       ]
+      }
     }
  ] 
 }
