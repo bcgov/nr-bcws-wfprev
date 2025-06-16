@@ -41,7 +41,7 @@ resource "aws_lb_listener" "wfprev_main_https" {
   port              = "443"
   protocol          = "HTTPS"
   ssl_policy        = "ELBSecurityPolicy-2016-08"
-  certificate_arn   = aws_acm_certificate.wfprev_domain_certificate.arn
+  certificate_arn   = aws_acm_certificate_validation.domain_certificate_validation_ca.certificate_arn
 
   default_action {
     type = "fixed-response"
