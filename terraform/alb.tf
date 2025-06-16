@@ -36,6 +36,24 @@ resource "aws_lb" "wfprev_main" {
 
 }
 
+//////////////////////////
+/// LISTENER RESOURCES ///
+//////////////////////////
+resource "aws_lb_listener" "wfprev_main" {
+  load_balancer_arn = "${aws_lb.wfprev_main.arn}"
+  port              = "80"
+  protocol          = "HTTP"
+
+  default_action {
+    type = "redirect"
+    redirect {
+      port        = "443"
+      protocol    = "HTTPS"
+      status_code = "HTTP_301" // Any HTTP request gets a 301 redirect to HTTPS
+    }
+  }
+}
+
 resource "aws_lb_listener" "wfprev_main_https" {
   load_balancer_arn = aws_lb.wfprev_main.arn
   port              = "443"
@@ -48,23 +66,6 @@ resource "aws_lb_listener" "wfprev_main_https" {
     fixed_response {
       content_type = "text/plain"
       status_code  = 404
-    }
-  }
-}
-
-//////////////////////////
-/// LISTENER RESOURCES ///
-//////////////////////////
-resource "aws_lb_listener" "wfprev_main" {
-  load_balancer_arn = "${aws_lb.wfprev_main.arn}"
-  port              = "80"
-  protocol          = "HTTP"
-
-  default_action {
-    type             = "fixed-response"
-    fixed_response {
-      content_type = "text/plain"
-      status_code = 404
     }
   }
 }
@@ -99,10 +100,10 @@ resource "aws_alb_target_group" "wfprev_api" {
 
   health_check {
     healthy_threshold   = "2"
-    interval            = "300"
+    interval            = "30"
     protocol            = "HTTP"
     matcher             = "200"
-    timeout             = "3"
+    timeout             = "5"
     path                = "/${aws_apigatewayv2_stage.wfprev_stage.name}/actuator/health"
     unhealthy_threshold = "2"
   }
