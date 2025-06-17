@@ -34,11 +34,11 @@ resource "aws_lb" "wfprev_main" {
     Environment = "${var.TARGET_ENV}"
   }
 
-  access_logs {
-    bucket  = aws_s3_bucket.alb_logs.bucket
-    prefix  = "wfprev-${var.TARGET_ENV}"
-    enabled = true
-  }
+  # access_logs {
+  #   bucket  = aws_s3_bucket.alb_logs.bucket
+  #   prefix  = "wfprev-${var.TARGET_ENV}"
+  #   enabled = true
+  # }
 
 }
 
