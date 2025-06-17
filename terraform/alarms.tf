@@ -13,7 +13,6 @@ resource "aws_cloudwatch_metric_alarm" "high_latency" {
   }
 
   alarm_description = "ALB target response time is high"
-  alarm_actions     = [aws_sns_topic.alerts.arn]
 }
 
 resource "aws_cloudwatch_metric_alarm" "unhealthy_targets" {
@@ -32,7 +31,6 @@ resource "aws_cloudwatch_metric_alarm" "unhealthy_targets" {
   }
 
   alarm_description = "ALB has unhealthy targets"
-  alarm_actions     = [aws_sns_topic.alerts.arn]
 }
 
 resource "aws_config_config_rule" "acm_cert_expiration" {
