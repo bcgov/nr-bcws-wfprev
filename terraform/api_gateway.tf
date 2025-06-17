@@ -42,10 +42,30 @@ resource "aws_apigatewayv2_integration" "wfprev_vpc_integration" {
 
 }
 
+resource "aws_cloudwatch_log_group" "api_logs" {
+  name              = "/aws/apigateway/wfprev"
+  retention_in_days = 14
+}
+
+
 resource "aws_apigatewayv2_stage" "wfprev_stage" {
   api_id = aws_apigatewayv2_api.wfprev_api_gateway.id
-  name   = "wfprev-api"
+  name = "wfprev-api"
+  auto_deploy = true
+
+  access_log_settings {
+    destination_arn = aws_cloudwatch_log_group.api_logs.arn
+    format = "$context.requestId $context.identity.sourceIp $context.httpMethod $context.path $context.status"
+  }
+
+  default_route_settings {
+    logging_level           = "INFO"
+    data_trace_enabled      = true
+    throttling_burst_limit  = 100
+    throttling_rate_limit   = 50
+  }
 }
+
 resource "aws_apigatewayv2_deployment" "wfprev_deployment" {
   
   api_id = aws_apigatewayv2_api.wfprev_api_gateway.id
@@ -62,4 +82,36 @@ resource "aws_apigatewayv2_deployment" "wfprev_deployment" {
   lifecycle {
     create_before_destroy = true
   }
+}
+
+resource "aws_apigatewayv2_route" "api_route" {
+  api_id = aws_apigatewayv2_api.wfprev_api_gateway.id
+  route_key = "ANY /api/{proxy+}"
+  target    = "integrations/${aws_apigatewayv2_integration.wfprev_vpc_integration.id}"
+}
+
+resource "aws_apigatewayv2_api_key" "wfprev_api_key" {
+  name      = "wfprev-api-key"
+  enabled   = true
+  value     = var.API_KEY
+}
+
+resource "aws_apigatewayv2_usage_plan" "wfprev_usage_plan" {
+  name = "wfprev-usage-plan"
+
+  api_stages {
+    api_id = aws_apigatewayv2_api.wfprev_api_gateway.id
+    stage  = aws_apigatewayv2_stage.wfprev_stage.name
+  }
+
+  throttle_settings {
+    burst_limit = 100
+    rate_limit  = 50
+  }
+}
+
+resource "aws_apigatewayv2_usage_plan_key" "wfprev_key_attachment" {
+  key_id        = aws_apigatewayv2_api_key.wfprev_api_key.id
+  key_type      = "API_KEY"
+  usage_plan_id = aws_apigatewayv2_usage_plan.wfprev_usage_plan.id
 }
