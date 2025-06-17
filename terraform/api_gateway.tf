@@ -63,3 +63,11 @@ resource "aws_apigatewayv2_deployment" "wfprev_deployment" {
     create_before_destroy = true
   }
 }
+
+resource "aws_cloudwatch_log_group" "aws_log_group" {
+  name = "/aws/apigateway/${var.TARGET_ENV}-wfprev"
+
+   lifecycle {
+    prevent_destroy = true
+  }
+}
