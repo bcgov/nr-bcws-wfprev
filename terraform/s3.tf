@@ -82,18 +82,10 @@ resource "aws_s3_bucket_policy" "alb_logs_policy" {
           Service = "elasticloadbalancing.amazonaws.com"
         }
         Action = "s3:PutObject"
-        Resource = "${aws_s3_bucket.alb_logs.arn}/*"
+        Resource = "${aws_s3_bucket.alb_logs.arn}/wfprev-${var.TARGET_ENV}/*"
       }
     ]
   })
-}
-
-resource "aws_s3_bucket_public_access_block" "alb_logs" {
-  bucket                  = aws_s3_bucket.alb_logs.id
-  block_public_acls        = true
-  block_public_policy      = true
-  ignore_public_acls       = true
-  restrict_public_buckets  = true
 }
 
 output "s3_bucket_name" {
