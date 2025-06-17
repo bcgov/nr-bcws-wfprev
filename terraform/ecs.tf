@@ -108,7 +108,7 @@ resource "aws_ecs_task_definition" "wfprev_server" {
       },
       {
         name  = "API_KEY"
-        value = var.api_key
+        value = var.API_KEY
       }
     ]
     logConfiguration = {
