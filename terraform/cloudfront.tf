@@ -131,6 +131,14 @@ EOF
 
 resource "aws_s3_bucket" "cloudfront_logs" {
   bucket = "wfprev-cloudfront-logs-${var.TARGET_ENV}"
+  tags = {
+    Name = "CloudFront logs bucket"
+  }
+}
+
+resource "aws_s3_bucket_acl" "cloudfront_logs_acl" {
+  bucket = aws_s3_bucket.cloudfront_logs.id
+  acl    = "log-delivery-write"
 }
 
 output "cloudfront_distribution_id" {
