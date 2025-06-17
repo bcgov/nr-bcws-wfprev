@@ -90,28 +90,28 @@ resource "aws_apigatewayv2_route" "api_route" {
   target    = "integrations/${aws_apigatewayv2_integration.wfprev_vpc_integration.id}"
 }
 
-resource "aws_api_gateway_api_key" "wfprev_api_key" {
-  name      = "wfprev-api-key"
-  enabled   = true
-  value     = var.API_KEY
-}
+# resource "aws_api_gateway_api_key" "wfprev_api_key" {
+#   name      = "wfprev-api-key"
+#   enabled   = true
+#   value     = var.API_KEY
+# }
 
-resource "aws_api_gateway_usage_plan" "wfprev_usage_plan" {
-  name = "wfprev-usage-plan"
+# resource "aws_api_gateway_usage_plan" "wfprev_usage_plan" {
+#   name = "wfprev-usage-plan"
 
-  api_stages {
-    api_id = aws_apigatewayv2_api.wfprev_api_gateway.id
-    stage  = aws_apigatewayv2_stage.wfprev_stage.name
-  }
+#   api_stages {
+#     api_id = aws_apigatewayv2_api.wfprev_api_gateway.id
+#     stage  = aws_apigatewayv2_stage.wfprev_stage.name
+#   }
 
-  throttle_settings {
-    burst_limit = 100
-    rate_limit  = 50
-  }
-}
+#   throttle_settings {
+#     burst_limit = 100
+#     rate_limit  = 50
+#   }
+# }
 
-resource "aws_api_gateway_usage_plan_key" "wfprev_key_attachment" {
-  key_id        = aws_apigatewayv2_api_key.wfprev_api_key.id
-  key_type      = "API_KEY"
-  usage_plan_id = aws_apigatewayv2_usage_plan.wfprev_usage_plan.id
-}
+# resource "aws_api_gateway_usage_plan_key" "wfprev_key_attachment" {
+#   key_id        = aws_apigatewayv2_api_key.wfprev_api_key.id
+#   key_type      = "API_KEY"
+#   usage_plan_id = aws_apigatewayv2_usage_plan.wfprev_usage_plan.id
+# }
