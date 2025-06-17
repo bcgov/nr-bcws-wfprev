@@ -1,5 +1,16 @@
 // access externally
 
+data "aws_security_group" "web" {
+  filter {
+    name   = "group-name"
+    values = ["Web_sg"]
+  }
+  filter {
+    name   = "vpc-id"
+    values = ["vpc-018906cab60cf165b"]
+  }
+}
+
 resource "aws_apigatewayv2_api" "wfprev_api_gateway" {
   name          = "wfprev-api-gateway-${var.TARGET_ENV}"
   protocol_type = "HTTP"
@@ -45,6 +56,18 @@ resource "aws_apigatewayv2_integration" "wfprev_vpc_integration" {
 resource "aws_apigatewayv2_stage" "wfprev_stage" {
   api_id = aws_apigatewayv2_api.wfprev_api_gateway.id
   name   = "wfprev-api"
+  access_log_settings {
+    destination_arn = aws_cloudwatch_log_group.api_gw_logs.arn
+    format = jsonencode({
+      requestId       = "$context.requestId"
+      sourceIp        = "$context.identity.sourceIp"
+      requestTime     = "$context.requestTime"
+      httpMethod      = "$context.httpMethod"
+      path            = "$context.path"
+      status          = "$context.status"
+      protocol        = "$context.protocol"
+    })
+  }
 }
 resource "aws_apigatewayv2_deployment" "wfprev_deployment" {
   
@@ -55,11 +78,15 @@ resource "aws_apigatewayv2_deployment" "wfprev_deployment" {
       jsonencode(aws_apigatewayv2_stage.wfprev_stage),
       jsonencode(aws_apigatewayv2_integration.wfprev_vpc_integration),
       jsonencode(aws_apigatewayv2_route.base_route),
-      jsonencode(aws_apigatewayv2_integration.wfprev_vpc_integration),
       jsonencode(aws_apigatewayv2_vpc_link.wfprev_vpc_link)
     ])))
   }
   lifecycle {
     create_before_destroy = true
   }
+}
+
+resource "aws_cloudwatch_log_group" "api_gw_logs" {
+  name = "/aws/apigateway/${var.TARGET_ENV}-wfprev"
+  retention_in_days = 14
 }
