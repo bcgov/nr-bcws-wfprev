@@ -34,6 +34,12 @@ resource "aws_lb" "wfprev_main" {
     Environment = "${var.TARGET_ENV}"
   }
 
+  access_logs {
+    bucket  = aws_s3_bucket.alb_logs.bucket
+    prefix  = "wfprev"
+    enabled = true
+  }
+
 }
 
 //////////////////////////
@@ -49,7 +55,7 @@ resource "aws_lb_listener" "wfprev_main" {
     redirect {
       port        = "443"
       protocol    = "HTTPS"
-      status_code = "HTTP_301" // Any HTTP request gets a 301 redirect to HTTPS
+      status_code = "HTTP_301" # Any HTTP request gets a 301 redirect to HTTPS
     }
   }
 }
@@ -98,6 +104,12 @@ resource "aws_alb_target_group" "wfprev_api" {
   target_type          = "ip"
   deregistration_delay = 30
 
+  stickiness {
+    enabled         = true
+    type            = "lb_cookie"
+    cookie_duration = 3600  # 1 hour session persistence
+  }
+
   health_check {
     healthy_threshold   = "2"
     interval            = "30"
@@ -108,4 +120,28 @@ resource "aws_alb_target_group" "wfprev_api" {
     unhealthy_threshold = "2"
   }
 }
+
+resource "aws_s3_bucket" "alb_logs" {
+  bucket = "wfprev-alb-logs-${var.TARGET_ENV}"
+}
+
+resource "aws_s3_bucket_policy" "alb_logs_policy" {
+  bucket = aws_s3_bucket.alb_logs.id
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Sid       = "AWSALBLoggingPermissions"
+        Effect    = "Allow"
+        Principal = {
+          Service = "elasticloadbalancing.amazonaws.com"
+        }
+        Action    = "s3:PutObject"
+        Resource  = "${aws_s3_bucket.alb_logs.arn}/*"
+      }
+    ]
+  })
+}
+
 
