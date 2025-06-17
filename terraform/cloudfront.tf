@@ -130,7 +130,7 @@ EOF
 }
 
 resource "aws_s3_bucket" "cloudfront_logs" {
-  bucket = "wfprev-cloudfront-logs-${var.TARGET_ENV}"
+  bucket = "wfprev-${var.TARGET_ENV}-cloudfront-logs"
   tags = {
     Name = "CloudFront logs bucket"
   }
