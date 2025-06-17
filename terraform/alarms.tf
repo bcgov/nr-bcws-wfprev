@@ -33,14 +33,14 @@ resource "aws_cloudwatch_metric_alarm" "unhealthy_targets" {
   alarm_description = "ALB has unhealthy targets"
 }
 
-resource "aws_config_config_rule" "acm_cert_expiration" {
-  name = "acm-certificate-expiration-check"
-  source {
-    owner             = "AWS"
-    source_identifier = "ACM_CERTIFICATE_EXPIRATION_CHECK"
-  }
+# resource "aws_config_config_rule" "acm_cert_expiration" {
+#   name = "acm-certificate-expiration-check"
+#   source {
+#     owner             = "AWS"
+#     source_identifier = "ACM_CERTIFICATE_EXPIRATION_CHECK"
+#   }
 
-  input_parameters = jsonencode({
-    daysToExpiration = 30  # Alarm if cert expires within 30 days
-  })
-}
+#   input_parameters = jsonencode({
+#     daysToExpiration = 30  # Alarm if cert expires within 30 days
+#   })
+# }

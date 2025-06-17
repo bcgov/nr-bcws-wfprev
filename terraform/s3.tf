@@ -68,7 +68,6 @@ resource "aws_s3_bucket_policy" "wfprev_site_bucket_policy" {
   })
 }
 
-
 resource "aws_s3_bucket_policy" "alb_logs_policy" {
   bucket = aws_s3_bucket.alb_logs.id
 
@@ -82,11 +81,13 @@ resource "aws_s3_bucket_policy" "alb_logs_policy" {
           Service = "elasticloadbalancing.amazonaws.com"
         }
         Action = "s3:PutObject"
-        Resource = "${aws_s3_bucket.alb_logs.arn}/*"
+        Resource = "${aws_s3_bucket.alb_logs.arn}/AWSLogs/${data.aws_caller_identity.current.account_id}/*"
       }
     ]
   })
 }
+
+data "aws_caller_identity" "current" {}
 
 output "s3_bucket_name" {
   value = aws_s3_bucket.wfprev_site_bucket.bucket
