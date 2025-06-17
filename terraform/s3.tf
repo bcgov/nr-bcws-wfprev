@@ -82,7 +82,7 @@ resource "aws_s3_bucket_policy" "alb_logs_policy" {
           Service = "elasticloadbalancing.amazonaws.com"
         }
         Action = "s3:PutObject"
-        Resource = "${aws_s3_bucket.alb_logs.arn}/wfprev-${var.TARGET_ENV}/*"
+        Resource = "${aws_s3_bucket.alb_logs.arn}/*"
       }
     ]
   })
