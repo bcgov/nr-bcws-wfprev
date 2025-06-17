@@ -26,7 +26,7 @@ resource "aws_apigatewayv2_integration" "wfprev_vpc_integration" {
   api_id           = aws_apigatewayv2_api.wfprev_api_gateway.id
   description      = "WFPREV API integration"
   integration_type = "HTTP_PROXY"
-  integration_uri  = aws_lb_listener.wfprev_main.arn
+  integration_uri  = var.INTEGRATION_URI
 
   integration_method = "ANY"
   connection_type    = "VPC_LINK"
@@ -43,8 +43,22 @@ resource "aws_apigatewayv2_integration" "wfprev_vpc_integration" {
 }
 
 resource "aws_apigatewayv2_stage" "wfprev_stage" {
-  api_id = aws_apigatewayv2_api.wfprev_api_gateway.id
-  name   = "wfprev-api"
+  api_id        = aws_apigatewayv2_api.wfprev_api_gateway.id
+  name          = "wfprev-api"
+  deployment_id = aws_apigatewayv2_deployment.wfprev_deployment.id
+  auto_deploy   = false
+
+  access_log_settings {
+    destination_arn = aws_cloudwatch_log_group.api_logs.arn
+    format          = "$context.requestId $context.identity.sourceIp $context.httpMethod $context.path $context.status"
+  }
+
+  default_route_settings {
+    logging_level          = "INFO"
+    data_trace_enabled     = true
+    throttling_burst_limit = 100
+    throttling_rate_limit  = 50
+  }
 }
 resource "aws_apigatewayv2_deployment" "wfprev_deployment" {
   
@@ -62,4 +76,9 @@ resource "aws_apigatewayv2_deployment" "wfprev_deployment" {
   lifecycle {
     create_before_destroy = true
   }
+}
+
+resource "aws_cloudwatch_log_group" "api_logs" {
+  name              = "/aws/apigateway/wfprev"
+  retention_in_days = 14
 }

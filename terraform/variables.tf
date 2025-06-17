@@ -348,3 +348,8 @@ variable "COMMAND" {
   type = string
   default = "update"
 }
+
+variable "INTEGRATION_URI" {
+  description = "ARN of the ALB listener to forward API Gateway traffic to"
+  type        = string
+}

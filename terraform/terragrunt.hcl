@@ -47,6 +47,8 @@ server_count = "${get_env("server_count")}"
 
 TARGET_AWS_ACCOUNT_ID = "${get_env("TARGET_AWS_ACCOUNT_ID")}"
 
+INTEGRATION_URL = "arn:aws:elasticloadbalancing:ca-central-1:183631341627:listener/app/default/0e76b2f476f83a8d/27c9e756107f568a"
+
 # client
 WEBADE_OAUTH2_WFPREV_UI_CLIENT_SECRET = "${get_env("WEBADE_OAUTH2_WFPREV_UI_CLIENT_SECRET")}"
 CLIENT_IMAGE = "${get_env("CLIENT_IMAGE")}"
