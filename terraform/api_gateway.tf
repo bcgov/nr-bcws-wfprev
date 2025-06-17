@@ -77,5 +77,4 @@ resource "aws_apigatewayv2_deployment" "wfprev_deployment" {
 
 resource "aws_cloudwatch_log_group" "api_gw_logs" {
   name = "/aws/apigateway/${var.TARGET_ENV}-wfprev"
-  retention_in_days = 14
 }
