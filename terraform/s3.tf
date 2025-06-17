@@ -82,13 +82,11 @@ resource "aws_s3_bucket_policy" "alb_logs_policy" {
           Service = "elasticloadbalancing.amazonaws.com"
         }
         Action = "s3:PutObject"
-        Resource = "${aws_s3_bucket.alb_logs.arn}/wfprev-${var.TARGET_ENV}/AWSLogs/${data.aws_caller_identity.current.account_id}/*"
+        Resource = "${aws_s3_bucket.alb_logs.arn}/*"
       }
     ]
   })
 }
-
-data "aws_caller_identity" "current" {}
 
 resource "aws_s3_bucket_public_access_block" "alb_logs" {
   bucket                  = aws_s3_bucket.alb_logs.id
