@@ -13,6 +13,16 @@ resource "aws_s3_bucket" "wfprev_site_bucket" {
   }
 }
 
+resource "aws_s3_bucket" "alb_logs" {
+  bucket = "wfprev-${var.TARGET_ENV}-alb-logs-bucket"
+
+  force_destroy = true
+
+  tags = {
+    Environment = var.TARGET_ENV
+  }
+}
+
 # Uploading assets. This shouldn't be needed because we'll push them up from the 
 # github action, vs having terraform fetch them
 #resource "aws_s3_object" "upload-assets" {
@@ -57,6 +67,28 @@ resource "aws_s3_bucket_policy" "wfprev_site_bucket_policy" {
     ]
   })
 }
+
+
+resource "aws_s3_bucket_policy" "alb_logs_policy" {
+  bucket = aws_s3_bucket.alb_logs.id
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Sid    = "AWSALBLoggingPermissions"
+        Effect = "Allow"
+        Principal = {
+          Service = "elasticloadbalancing.amazonaws.com"
+        }
+        Action = "s3:PutObject"
+        Resource = "${aws_s3_bucket.alb_logs.arn}/wfprev-${var.TARGET_ENV}/AWSLogs/${data.aws_caller_identity.current.account_id}/*"
+      }
+    ]
+  })
+}
+
+data "aws_caller_identity" "current" {}
 
 output "s3_bucket_name" {
   value = aws_s3_bucket.wfprev_site_bucket.bucket
