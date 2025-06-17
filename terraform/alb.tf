@@ -121,10 +121,6 @@ resource "aws_alb_target_group" "wfprev_api" {
   }
 }
 
-resource "aws_s3_bucket" "alb_logs" {
-  bucket = "wfprev-alb-logs-${var.TARGET_ENV}"
-}
-
 resource "aws_s3_bucket_policy" "alb_logs_policy" {
   bucket = aws_s3_bucket.alb_logs.id
 
@@ -132,16 +128,18 @@ resource "aws_s3_bucket_policy" "alb_logs_policy" {
     Version = "2012-10-17",
     Statement = [
       {
-        Sid       = "AWSALBLoggingPermissions"
-        Effect    = "Allow"
+        Sid    = "AWSALBLoggingPermissions"
+        Effect = "Allow"
         Principal = {
           Service = "elasticloadbalancing.amazonaws.com"
         }
-        Action    = "s3:PutObject"
-        Resource  = "${aws_s3_bucket.alb_logs.arn}/*"
+        Action = "s3:PutObject"
+        Resource = "${aws_s3_bucket.alb_logs.arn}/wfprev-${var.TARGET_ENV}/AWSLogs/${data.aws_caller_identity.current.account_id}/*"
       }
     ]
   })
 }
+
+data "aws_caller_identity" "current" {}
 
 
