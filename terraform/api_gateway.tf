@@ -74,7 +74,3 @@ resource "aws_apigatewayv2_deployment" "wfprev_deployment" {
     create_before_destroy = true
   }
 }
-
-resource "aws_cloudwatch_log_group" "api_gw_logs" {
-  name = "/aws/apigateway/${var.TARGET_ENV}-wfprev"
-}
