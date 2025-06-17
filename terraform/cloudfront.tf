@@ -107,6 +107,12 @@ resource "aws_cloudfront_distribution" "wfprev_app_distribution" {
       restriction_type = "none"
     }
   }
+
+  logging_config {
+    bucket = aws_s3_bucket.cloudfront_logs.bucket_domain_name
+    include_cookies = false
+    prefix = "cloudfront-logs/"
+}
 }
 
 resource "aws_cloudfront_function" "rewrite_uri" {
@@ -121,6 +127,10 @@ resource "aws_cloudfront_function" "rewrite_uri" {
     return request;
   }
 EOF
+}
+
+resource "aws_s3_bucket" "cloudfront_logs" {
+  bucket = "wfprev-cloudfront-logs-${var.TARGET_ENV}"
 }
 
 output "cloudfront_distribution_id" {
