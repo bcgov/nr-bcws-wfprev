@@ -49,20 +49,21 @@ resource "aws_cloudwatch_log_group" "api_logs" {
 
 
 resource "aws_apigatewayv2_stage" "wfprev_stage" {
-  api_id = aws_apigatewayv2_api.wfprev_api_gateway.id
-  name = "wfprev-api"
-  auto_deploy = true
+  api_id        = aws_apigatewayv2_api.wfprev_api_gateway.id
+  name          = "wfprev-api"
+  auto_deploy   = false
+  deployment_id = aws_apigatewayv2_deployment.wfprev_deployment.id 
 
   access_log_settings {
     destination_arn = aws_cloudwatch_log_group.api_logs.arn
-    format = "$context.requestId $context.identity.sourceIp $context.httpMethod $context.path $context.status"
+    format          = "$context.requestId $context.identity.sourceIp $context.httpMethod $context.path $context.status"
   }
 
   default_route_settings {
-    logging_level           = "INFO"
-    data_trace_enabled      = true
-    throttling_burst_limit  = 100
-    throttling_rate_limit   = 50
+    logging_level          = "INFO"
+    data_trace_enabled     = true
+    throttling_burst_limit = 100
+    throttling_rate_limit  = 50
   }
 }
 
