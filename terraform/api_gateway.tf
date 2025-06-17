@@ -1,16 +1,5 @@
 // access externally
 
-data "aws_security_group" "web" {
-  filter {
-    name   = "group-name"
-    values = ["Web_sg"]
-  }
-  filter {
-    name   = "vpc-id"
-    values = ["vpc-018906cab60cf165b"]
-  }
-}
-
 resource "aws_apigatewayv2_api" "wfprev_api_gateway" {
   name          = "wfprev-api-gateway-${var.TARGET_ENV}"
   protocol_type = "HTTP"
