@@ -36,7 +36,7 @@ resource "aws_lb" "wfprev_main" {
 
   access_logs {
     bucket  = aws_s3_bucket.alb_logs.bucket
-    prefix  = "wfprev"
+    prefix  = "wfprev-${var.TARGET_ENV}/AWSLogs/${data.aws_caller_identity.current.account_id}"
     enabled = true
   }
 
