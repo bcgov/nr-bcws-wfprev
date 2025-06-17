@@ -10,6 +10,8 @@ resource "aws_apigatewayv2_route" "base_route" {
   route_key = "$default"
 
   target = "integrations/${aws_apigatewayv2_integration.wfprev_vpc_integration.id}"
+  authorization_type = "NONE"
+  api_key_required   = true
 }
 
 resource "aws_apigatewayv2_vpc_link" "wfprev_vpc_link" {
@@ -62,4 +64,36 @@ resource "aws_apigatewayv2_deployment" "wfprev_deployment" {
   lifecycle {
     create_before_destroy = true
   }
+}
+// API Key
+resource "aws_apigatewayv2_api_key" "wfprev_api_key" {
+  name      = "wfprev-api-key-${var.TARGET_ENV}"
+  enabled   = true
+  value     = var.API_KEY
+}
+// Usage Plan (Throttling & Quotas)
+resource "aws_apigatewayv2_usage_plan" "wfprev_usage_plan" {
+  name = "wfprev-usage-plan-${var.TARGET_ENV}"
+
+  api_stages {
+    api_id = aws_apigatewayv2_api.wfprev_api_gateway.id
+    stage  = aws_apigatewayv2_stage.wfprev_stage.name
+  }
+
+  throttle {
+    rate_limit  = 100   # requests per second
+    burst_limit = 200   # max burst capacity
+  }
+
+  quota {
+    limit  = 10000      # total requests allowed per period
+    period = "MONTH"
+  }
+}
+
+ //Attach API Key to Usage Plan
+resource "aws_apigatewayv2_usage_plan_key" "wfprev_api_key_attachment" {
+  key_id        = aws_apigatewayv2_api_key.wfprev_api_key.id
+  key_type      = "API_KEY"
+  usage_plan_id = aws_apigatewayv2_usage_plan.wfprev_usage_plan.id
 }

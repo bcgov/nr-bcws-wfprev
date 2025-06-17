@@ -152,7 +152,7 @@ variable "DB_PASS" {
   default = ""
 }
 
-variable "api_key" {
+variable "API_KEY" {
   description = "value for api key"
   type        = string
   default = ""

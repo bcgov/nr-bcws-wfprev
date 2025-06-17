@@ -160,6 +160,7 @@ jobs:
           WFPREV_GDB_FUNCTION_NAME: ${{vars.WFPREV_GDB_FUNCTION_NAME}}
           WFPREV_DATASOURCE_URL: ${{vars.WFPREV_DATASOURCE_URL}}
           server_count: ${{vars.WFPREV_SERVER_INSTANCE_COUNT}}
+          API_KEY: ${{ secrets.API_KEY }}
           # WFDM API
           WFDM_BASE_URL: ${{vars.WFDM_BASE_URL}}
           # OPENMAPS
