@@ -187,7 +187,7 @@ jobs:
           APP_WF1_PREV_PASSWORD: ${{ secrets.APP_WF1_PREV_PASSWORD }}
           PROXY_WF1_PREV_REST_PASSWORD: ${{ secrets.PROXY_WF1_PREV_REST_PASSWORD }}
           TARGET_LIQUIBASE_TAG: ${{ steps.liquibaseCommand.outputs.TARGET_LIQUIBASE_TAG }}
-        run: terragrunt state list    
+        run: terragrunt state rm aws_cloudwatch_log_group.api_gw_logs  
 
       - name: Terragrunt Apply
         working-directory: ${{env.TG_SRC_PATH}}
