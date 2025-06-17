@@ -144,7 +144,8 @@ jobs:
           TARGET_ENV: ${{ inputs.DEFAULT_APPLICATION_ENVIRONMENT }}
           APP_COUNT: ${{vars.APP_COUNT}}
           LOGGING_LEVEL: ${{vars.LOGGING_LEVEL}}
-
+          # API Key required by terragrunt.hcl
+          API_KEY: ${{ secrets.API_KEY }}
           # Necessary for WFPREV API
           WFPREV_API_NAME: wfprev-api
           WFPREV_API_IMAGE: ${{ steps.getDigestAPI.outputs.IMAGE_API_BY_DIGEST }}
