@@ -26,8 +26,12 @@ resource "aws_apigatewayv2_integration" "wfprev_vpc_integration" {
   api_id           = aws_apigatewayv2_api.wfprev_api_gateway.id
   description      = "WFPREV API integration"
   integration_type = "HTTP_PROXY"
-  integration_uri  = aws_lb_listener.wfprev_main.arn
+  data "aws_lb_listener" "existing_listener" {
+    load_balancer_arn = aws_lb.wfprev.arn
+    port              = 443
+  }
 
+  integration_uri = data.aws_lb_listener.existing_listener.arn
   integration_method = "ANY"
   connection_type    = "VPC_LINK"
   connection_id      = aws_apigatewayv2_vpc_link.wfprev_vpc_link.id
