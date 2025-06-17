@@ -78,10 +78,14 @@ resource "aws_s3_bucket_policy" "alb_logs_policy" {
         Sid    = "AWSALBLoggingPermissions"
         Effect = "Allow"
         Principal = {
-          Service = "elasticloadbalancing.amazonaws.com"
+          Service = [
+            "logdelivery.elasticloadbalancing.amazonaws.com",
+            "elasticloadbalancing.amazonaws.com"
+          ],
+          AWS = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"
         }
         Action = "s3:PutObject"
-        Resource = "${aws_s3_bucket.alb_logs.arn}/AWSLogs/${data.aws_caller_identity.current.account_id}/*"
+        Resource = "${aws_s3_bucket.alb_logs.arn}/*"
       }
     ]
   })
