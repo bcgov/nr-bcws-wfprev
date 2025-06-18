@@ -59,5 +59,5 @@ public class ProjectModel extends CommonModel<ProjectModel> {
 	private ObjectiveTypeCodeModel secondaryObjectiveTypeCode;
 	private ObjectiveTypeCodeModel tertiaryObjectiveTypeCode;
 	private String secondaryObjectiveRationale;
-
+	private String resultsProjectCode;
 }
