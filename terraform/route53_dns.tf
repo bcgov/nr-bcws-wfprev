@@ -18,6 +18,24 @@ resource "aws_route53_record" "cert_validation_record" {
   ttl = 300
 }
 
+// ca-central-1 cert validation for ALB listener
+resource "aws_route53_record" "cert_validation_record_ca" {
+  for_each = {
+    for dvo in aws_acm_certificate.wfprev_domain_certificate_ca.domain_validation_options : dvo.domain_name => {
+      name   = dvo.resource_record_name
+      record = dvo.resource_record_value
+      type   = dvo.resource_record_type
+    }
+  }
+
+  name    = each.value.name
+  type    = each.value.type
+  records = [each.value.record]
+  ttl     = 300
+  zone_id = data.aws_route53_zone.wfprev_route53_zone.zone_id
+  allow_overwrite = true
+}
+
 resource "aws_route53_record" "wfprev_vanity_url" {
   zone_id = data.aws_route53_zone.wfprev_route53_zone.id
   name    = "wfprev-${var.TARGET_ENV}.${var.gov_domain}"

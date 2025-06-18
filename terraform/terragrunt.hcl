@@ -45,7 +45,9 @@ WFPREV_GDB_FUNCTION_NAME = "${get_env("WFPREV_GDB_FUNCTION_NAME")}"
 OPENMAPS_URL = "${get_env("OPENMAPS_URL")}"
 server_count = "${get_env("server_count")}"
 
+# AWS
 TARGET_AWS_ACCOUNT_ID = "${get_env("TARGET_AWS_ACCOUNT_ID")}"
+AWS_ALERT_EMAIL_LIST = "${get_env("AWS_ALERT_EMAIL_LIST")}"
 
 # client
 WEBADE_OAUTH2_WFPREV_UI_CLIENT_SECRET = "${get_env("WEBADE_OAUTH2_WFPREV_UI_CLIENT_SECRET")}"
@@ -59,7 +61,6 @@ WFPREV_GDB_EXTRACTOR_DIGEST = "${get_env("WFPREV_GDB_EXTRACTOR_DIGEST")}"
 WFPREV_USERNAME = "${get_env("WFPREV_USERNAME")}"
 DB_PASS = "${get_env("DB_PASS")}"
 DB_INSTANCE_TYPE = "${get_env("DB_INSTANCE_TYPE")}"
-
 
 # liquibase
 COMMAND = "${get_env("COMMAND")}"

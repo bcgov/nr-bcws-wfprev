@@ -134,7 +134,7 @@ jobs:
 
       - uses: peter-murray/terragrunt-github-action@v1.0.0
         with:
-          terragrunt_version: ${{ env.TG_VERSION }}  
+          terragrunt_version: ${{ env.TG_VERSION }}
 
       - name: Terragrunt Apply
         working-directory: ${{env.TG_SRC_PATH}}
@@ -178,6 +178,9 @@ jobs:
 
           # GDB Extractor Lambda Image
           WFPREV_GDB_EXTRACTOR_DIGEST: ${{ steps.getDigestGDB.outputs.GDB_EXTRACTOR_IMAGE }}
+
+          # AWS
+          AWS_ALERT_EMAIL_LIST: ${{ vars.AWS_ALERT_EMAIL_LIST }}
 
           #liquibase
           COMMAND: ${{ steps.liquibaseCommand.outputs.LIQUIBASE_COMMAND }}
