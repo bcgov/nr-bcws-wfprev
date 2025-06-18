@@ -190,4 +190,7 @@ public class ProjectEntity implements Serializable {
 
     @Column(name = "secondary_objective_rationale", length = 300)
     private String secondaryObjectiveRationale;
+
+    @Column(name = "results_project_code", length = 25)
+    private String resultsProjectCode;
 }

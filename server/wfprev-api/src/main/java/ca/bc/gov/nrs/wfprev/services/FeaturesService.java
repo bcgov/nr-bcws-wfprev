@@ -250,7 +250,7 @@ public class FeaturesService implements CommonService {
             searchPredicates.add(cb.like(cb.lower(project.get("closestCommunityName")), likeParam));
             searchPredicates.add(cb.like(cb.lower(project.get("siteUnitName")), likeParam));
             searchPredicates.add(cb.like(cb.lower(project.get("projectNumber").as(String.class)), likeParam));
-
+            searchPredicates.add(cb.like(cb.lower(project.get("resultsProjectCode")), likeParam));
             // Join with fiscal for additional search filters
             Join<ProjectEntity, ProjectFiscalEntity> fiscal = project.join(PROJECT_FISCALS, JoinType.LEFT);
             searchPredicates.add(cb.like(cb.lower(fiscal.get("projectFiscalName")), likeParam));
@@ -375,7 +375,7 @@ public class FeaturesService implements CommonService {
         properties.put("secondaryObjectiveTypeCode", project.getSecondaryObjectiveTypeCode() != null ? project.getSecondaryObjectiveTypeCode().getObjectiveTypeCode() : null);
         properties.put("tertiaryObjectiveTypeCode", project.getTertiaryObjectiveTypeCode() != null ? project.getTertiaryObjectiveTypeCode().getObjectiveTypeCode() : null);
         properties.put("secondaryObjectiveRationale", project.getSecondaryObjectiveRationale());
-
+        properties.put("resultsProjectCode", project.getResultsProjectCode());
         return properties;
     }
 

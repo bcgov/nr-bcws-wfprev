@@ -566,7 +566,7 @@ class FeaturesServiceTest {
 
         // Assert
         assertEquals(1, predicates.size(), "Expected one top-level predicate to be added.");
-        verify(cb, times(9)).like(any(), eq("%test%"));
+        verify(cb, times(10)).like(any(), eq("%test%"));
     }
 
     @Test
