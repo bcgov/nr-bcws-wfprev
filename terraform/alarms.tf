@@ -50,5 +50,5 @@ resource "aws_sns_topic_subscription" "alb_alerts_emails" {
 
   topic_arn = aws_sns_topic.alb_alerts.arn
   protocol  = "email"
-  endpoint  = trim(each.key) 
+  endpoint  = trim(each.key, " ") 
 }
