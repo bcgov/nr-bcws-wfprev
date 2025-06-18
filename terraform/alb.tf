@@ -34,6 +34,12 @@ resource "aws_lb" "wfprev_main" {
     Environment = "${var.TARGET_ENV}"
   }
 
+  access_logs {
+    bucket  = aws_s3_bucket.alb_logs.bucket
+    prefix  = "wfprev-${var.TARGET_ENV}"
+    enabled = true
+  }
+
 }
 
 //////////////////////////
@@ -45,10 +51,27 @@ resource "aws_lb_listener" "wfprev_main" {
   protocol          = "HTTP"
 
   default_action {
-    type             = "fixed-response"
+    type = "redirect"
+    redirect {
+      port        = "443"
+      protocol    = "HTTPS"
+      status_code = "HTTP_301" # Any HTTP request gets a 301 redirect to HTTPS
+    }
+  }
+}
+
+resource "aws_lb_listener" "wfprev_main_https" {
+  load_balancer_arn = aws_lb.wfprev_main.arn
+  port              = "443"
+  protocol          = "HTTPS"
+  ssl_policy        = "ELBSecurityPolicy-2016-08"
+  certificate_arn   = aws_acm_certificate_validation.domain_certificate_validation_ca.certificate_arn
+
+  default_action {
+    type = "fixed-response"
     fixed_response {
       content_type = "text/plain"
-      status_code = 404
+      status_code  = 404
     }
   }
 }
@@ -81,14 +104,22 @@ resource "aws_alb_target_group" "wfprev_api" {
   target_type          = "ip"
   deregistration_delay = 30
 
+  stickiness {
+    enabled         = true
+    type            = "lb_cookie"
+    cookie_duration = 3600  # 1 hour session persistence
+  }
+
   health_check {
     healthy_threshold   = "2"
-    interval            = "300"
+    interval            = "30"
     protocol            = "HTTP"
     matcher             = "200"
-    timeout             = "3"
+    timeout             = "5"
     path                = "/${aws_apigatewayv2_stage.wfprev_stage.name}/actuator/health"
     unhealthy_threshold = "2"
   }
 }
+
+
 
