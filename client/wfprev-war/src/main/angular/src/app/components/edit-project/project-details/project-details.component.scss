@@ -15,7 +15,6 @@
       font-family: "BCSans", "Noto Sans", Verdana, Arial, sans-serif !important;
       flex: 1 1 calc(25% - 20px); // 4 items per row with a 20px gap
       min-width: 200px;
-      max-width: 700px;
 
       .error {
         color: red;
@@ -108,9 +107,30 @@
 
     .objective-group {
       display: flex;
-      flex-wrap: wrap;
+      flex-direction: row;
       gap: 20px;
       width: 100%;
+      align-items: stretch;
+    }
+
+    .left-fields {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: auto auto;
+      gap: 20px;
+      flex: 1 1 50%;
+    }
+
+    .left-fields .form-item {
+      min-width: 200px;
+    }
+
+    .left-fields .planning-unit {
+      grid-column: span 2;
+    }
+
+    .left-fields .form-item:nth-child(3) { 
+      grid-column: span 2;
     }
 
     .objective-field {
@@ -138,6 +158,10 @@
       }
     }
 
+    .planning-unit{
+      flex: 1 1 50%;
+    }
+
     .secondary-rationale {
       flex: 0 0 calc(50% - 10px); // Half-width
       max-width: 2000px;
@@ -150,7 +174,7 @@
 
       textarea {
         width: 100%;
-        min-height: 45px;
+        min-height: 130px;
         padding: 10px 16px;
         box-sizing: border-box;
         font-size: 16px;
@@ -168,6 +192,12 @@
     .form-item {
       flex: 1 1 calc(33.33% - 20px); // 3 items per row on medium screens
     }
+  }
+  .objective-group{
+    display: inline-grid !important;
+  }
+  .left-fields{
+    display: inline-grid !important;
   }
 }
 
