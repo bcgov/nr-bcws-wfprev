@@ -115,7 +115,7 @@ jobs:
           -DWFPREV_DATASOURCE_USERNAME=${{ secrets.PROXY_WF1_PREV_USER }} \
           -DWFPREV_DATASOURCE_PASSWORD=${{ secrets.PROXY_WF1_PREV_PASSWORD }} \
           -DWFPREV_BASE_URL=${{ vars.WFPREV_BASE_URL }} \
-          -DWFPREV_GDB_FUNCTION_NAME=${{ vars.WFPREV_GDB_FUNCTION_NAME }}
+          -DWFPREV_GDB_FUNCTION_NAME=${{ vars.WFPREV_GDB_FUNCTION_NAME }} \
       - name: SonarCloud Scan Action
         uses: SonarSource/sonarcloud-github-action@master
 
