@@ -115,12 +115,13 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
       forestDistrictOrgUnitId: [''],
       primaryObjectiveTypeCode: ['', [Validators.required]],
       secondaryObjectiveTypeCode: [''],
-      secondaryObjectiveRationale: ['', [Validators.maxLength(50)]],
+      secondaryObjectiveRationale: ['', [Validators.maxLength(300)]],
       bcParksRegionOrgUnitId: [''],
       bcParksSectionOrgUnitId: [''],
       fireCentreId: ['', [Validators.required]],
       latitude: [''],
       longitude: [''],
+      resultsProjectCode: ['', [Validators.maxLength(25)]]
     });
     this.latLongForm = this.fb.group({
       latitude: ['', Validators.required],
@@ -379,6 +380,7 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
       fireCentreId: data.fireCentreOrgUnitId,
       latitude: data.latitude,
       longitude: data.longitude,
+      resultsProjectCode: data.resultsProjectCode
     });
   }
 
