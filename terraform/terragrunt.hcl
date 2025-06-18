@@ -60,7 +60,6 @@ WFPREV_USERNAME = "${get_env("WFPREV_USERNAME")}"
 DB_PASS = "${get_env("DB_PASS")}"
 DB_INSTANCE_TYPE = "${get_env("DB_INSTANCE_TYPE")}"
 
-
 # liquibase
 COMMAND = "${get_env("COMMAND")}"
 LIQUIBASE_IMAGE = "${get_env("LIQUIBASE_IMAGE")}"
