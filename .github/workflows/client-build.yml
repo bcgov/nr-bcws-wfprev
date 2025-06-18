@@ -25,7 +25,6 @@ env:
   TFC_PROJECT: ${{ secrets.TFC_PROJECT }} 
   TARGET_ENV: ${{ inputs.DEFAULT_APPLICATION_ENVIRONMENT }}
   NPMRC: ${{ secrets.NPMRC }}
-  AWS_ALERT_EMAIL_LIST: ${{ vars.AWS_ALERT_EMAIL_LIST }}
 
 jobs:
   build-and-deploy:
