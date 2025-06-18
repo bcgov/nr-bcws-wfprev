@@ -45,6 +45,9 @@ export class AppHeaderComponent implements OnInit {
     // Case sensitive checking, set the variable as upper case 
     const env = (this.appConfigService.getConfig()?.application?.environment || '').toUpperCase();
     this.environment = env === 'PROD' ? '' : env;
+
+    console.log('AppConfig environment:', JSON.stringify(this.appConfigService.getConfig(), null, 2));
+    console.log('Computed environment:', this.environment);
   }
 
 
