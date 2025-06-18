@@ -179,6 +179,9 @@ jobs:
           # GDB Extractor Lambda Image
           WFPREV_GDB_EXTRACTOR_DIGEST: ${{ steps.getDigestGDB.outputs.GDB_EXTRACTOR_IMAGE }}
 
+          # AWS
+          AWS_ALERT_EMAIL_LIST: ${{ vars.AWS_ALERT_EMAIL_LIST }}
+
           #liquibase
           COMMAND: ${{ steps.liquibaseCommand.outputs.LIQUIBASE_COMMAND }}
           PROXY_COUNT: ${{ steps.changeLogCount.outputs.PROXY_COUNT }}

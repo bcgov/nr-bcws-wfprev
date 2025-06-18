@@ -13,6 +13,7 @@ resource "aws_cloudwatch_metric_alarm" "high_latency" {
   }
 
   alarm_description = "ALB target response time is high"
+  alarm_actions     = [aws_sns_topic.alb_alerts.arn]
 }
 
 resource "aws_cloudwatch_metric_alarm" "unhealthy_targets" {
@@ -31,4 +32,23 @@ resource "aws_cloudwatch_metric_alarm" "unhealthy_targets" {
   }
 
   alarm_description = "ALB has unhealthy targets"
+  alarm_actions     = [aws_sns_topic.alb_alerts.arn]
+}
+
+resource "aws_sns_topic" "alb_alerts" {
+  name = "wfprev-alb-alerts"
+}
+
+# List of emails
+locals {
+  alert_emails = split(",", var.AWS_ALERT_EMAIL_LIST)
+}
+
+# Create subscriptions for each email
+resource "aws_sns_topic_subscription" "alb_alerts_emails" {
+  for_each = toset(local.alert_emails)
+
+  topic_arn = aws_sns_topic.alb_alerts.arn
+  protocol  = "email"
+  endpoint  = trim(each.key) 
 }
