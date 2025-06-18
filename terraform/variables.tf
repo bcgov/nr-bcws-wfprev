@@ -146,6 +146,7 @@ variable "WFPREV_CHECK_TOKEN_URL" {
   type    = string
   default = ""
 }
+
 variable "WFPREV_USERNAME" {
   type        = string
   default = ""
