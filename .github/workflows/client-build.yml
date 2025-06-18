@@ -25,6 +25,7 @@ env:
   TFC_PROJECT: ${{ secrets.TFC_PROJECT }} 
   TARGET_ENV: ${{ inputs.DEFAULT_APPLICATION_ENVIRONMENT }}
   NPMRC: ${{ secrets.NPMRC }}
+  AWS_ALERT_EMAIL_LIST: ${{ vars.AWS_ALERT_EMAIL_LIST }}
 
 jobs:
   build-and-deploy:
@@ -135,6 +136,8 @@ jobs:
         NONPROXY_COUNT: 1
         CHANGELOG_NAME: ${{ inputs.CHANGELOG_NAME }}
         LIQUIBASE_IMAGE: ${{vars.REPOSITORY_HOST}}/${{ github.repository_owner }}/${{ vars.LIQUIBASE_IMAGE }}:${{ inputs.IMAGE_TAG }}
+        # AWS
+        AWS_ALERT_EMAIL_LIST: ${{ vars.AWS_ALERT_EMAIL_LIST }}
         
         APP_WF1_PREV_PASSWORD: ${{ secrets.APP_WF1_PREV_PASSWORD }}
         PROXY_WF1_PREV_REST_PASSWORD: ${{secrets.PROXY_WF1_PREV_REST_PASSWORD}}
