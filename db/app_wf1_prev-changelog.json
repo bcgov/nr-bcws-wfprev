@@ -1226,6 +1226,7 @@
       "changeSet": {
         "id": "01_00_21_00",
         "author": "luli",
+        "tagDatabase": { "tag": "version_01_00_21_00" },
         "changes": [
           {
             "sqlFile": {
