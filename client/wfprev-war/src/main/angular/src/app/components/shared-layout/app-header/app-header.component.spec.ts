@@ -21,7 +21,8 @@ describe('AppHeaderComponent', () => {
       enableLocalStorageToken: true,
       localStorageTokenKey: 'test-oauth',
       allowLocalExpiredToken: false,
-      baseUrl: 'http://test.com'
+      baseUrl: 'http://test.com',
+      environment: 'DEV'
     },
     webade: {
       oauth2Url: 'http://oauth.test',

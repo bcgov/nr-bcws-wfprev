@@ -82,6 +82,11 @@ variable "AWS_REGION" {
   default     = "ca-central-1"
 }
 
+variable "AWS_ALERT_EMAIL_LIST" {
+  type = string
+  description = "Comma-separated list of email addresses for AWS alerts"
+}
+
 variable "WEBADE_OAUTH2_REST_CLIENT_ID" {
   type    = string
   default = ""
@@ -141,6 +146,7 @@ variable "WFPREV_CHECK_TOKEN_URL" {
   type    = string
   default = ""
 }
+
 variable "WFPREV_USERNAME" {
   type        = string
   default = ""
