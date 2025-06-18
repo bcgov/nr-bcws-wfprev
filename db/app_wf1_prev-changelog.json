@@ -1236,6 +1236,71 @@
           }
         ]
       }
+    },
+   {
+      "changeSet": {
+        "id": "01_00_22_00",
+        "author": "hsaldyga",
+        "tagDatabase": { "tag": "version_01_00_22_00" },
+        "changes": [
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_22/00/ddl/app_wf1_prev.ddl.drop_deprecated_tables.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_22/00/ddl/WFPREV.objective_filter_level_code.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_22/00/ddl/WFPREV.project_objective.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_22/00/ddl/WFPREV.wui_risk_class_rank.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_22/00/ddl/WFPREV.project_obj_filter_summ.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_22/00/ddl/WFPREV.project_obj_selected.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_22/00/dml/app_wf1_prev.dml.load_objective_filter_level_code.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_22/00/dml/app_wf1_prev.dml.load_project_objectives.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_22/00/dml/app_wf1_prev.dml.load_wui_risk_class_rank.sql"
+            }
+          }
+       ],
+        "rollback": [
+        ]
+      }
     }
    ] 
 }
