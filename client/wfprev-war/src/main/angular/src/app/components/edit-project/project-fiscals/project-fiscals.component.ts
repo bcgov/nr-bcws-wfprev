@@ -242,6 +242,7 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  
   }
 
   addNewFiscal(): void {
+    this.currentFiscalGuid = '';
       // Check if there is already an unsaved fiscal year
     const hasUnsavedFiscal = this.projectFiscals.some(fiscal => !fiscal.projectPlanFiscalGuid);
     if (hasUnsavedFiscal) {
