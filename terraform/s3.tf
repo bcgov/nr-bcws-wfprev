@@ -13,6 +13,35 @@ resource "aws_s3_bucket" "wfprev_site_bucket" {
   }
 }
 
+resource "aws_s3_bucket" "alb_logs" {
+  bucket = "wfprev-${var.TARGET_ENV}-alb-logs-bucket"
+
+  force_destroy = true
+
+  tags = {
+    Environment = var.TARGET_ENV
+  }
+}
+
+resource "aws_s3_bucket_lifecycle_configuration" "alb_logs_lifecycle" {
+  bucket = aws_s3_bucket.alb_logs.id
+
+  rule {
+    id     = "expire-alb-logs"
+    status = "Enabled"
+
+    filter {}  # Empty filter means apply to all objects
+
+    expiration {
+      days = 90
+    }
+
+    noncurrent_version_expiration {
+      noncurrent_days = 30
+    }
+  }
+}
+
 # Uploading assets. This shouldn't be needed because we'll push them up from the 
 # github action, vs having terraform fetch them
 #resource "aws_s3_object" "upload-assets" {
@@ -57,6 +86,31 @@ resource "aws_s3_bucket_policy" "wfprev_site_bucket_policy" {
     ]
   })
 }
+
+resource "aws_s3_bucket_policy" "alb_logs_policy" {
+  bucket = aws_s3_bucket.alb_logs.id
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Sid    = "AWSALBLoggingPermissions"
+        Effect = "Allow"
+        Principal = {
+          Service = [
+            "logdelivery.elasticloadbalancing.amazonaws.com",
+            "elasticloadbalancing.amazonaws.com"
+          ],
+          AWS = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"
+        }
+        Action = "s3:PutObject"
+        Resource = "${aws_s3_bucket.alb_logs.arn}/*"
+      }
+    ]
+  })
+}
+
+data "aws_caller_identity" "current" {}
 
 output "s3_bucket_name" {
   value = aws_s3_bucket.wfprev_site_bucket.bucket
