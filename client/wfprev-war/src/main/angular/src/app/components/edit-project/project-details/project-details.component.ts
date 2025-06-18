@@ -39,7 +39,7 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
   @Output() projectNameChange = new EventEmitter<string>();
 
   private map: L.Map | undefined;
-  private activityBoundaryGroup: L.LayerGroup = L.layerGroup();
+  private readonly activityBoundaryGroup: L.LayerGroup = L.layerGroup();
   private marker: L.Marker | undefined;
   private isMapReady = false;
   boundaryLayer: L.GeoJSON | null = null;
@@ -115,12 +115,13 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
       forestDistrictOrgUnitId: [''],
       primaryObjectiveTypeCode: ['', [Validators.required]],
       secondaryObjectiveTypeCode: [''],
-      secondaryObjectiveRationale: ['', [Validators.maxLength(50)]],
+      secondaryObjectiveRationale: ['', [Validators.maxLength(300)]],
       bcParksRegionOrgUnitId: [''],
       bcParksSectionOrgUnitId: [''],
       fireCentreId: ['', [Validators.required]],
       latitude: [''],
       longitude: [''],
+      resultsProjectCode: ['', [Validators.maxLength(25)]]
     });
     this.latLongForm = this.fb.group({
       latitude: ['', Validators.required],
@@ -216,10 +217,10 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
   assignCodeTableData(key: string, data: any): void {
 
     const sortByName = (arr: any[]) =>
-      arr.sort((a, b) =>
+      [...arr].sort((a, b) =>
         (a.orgUnitName ?? a.programAreaName ?? a.description ?? '').toLowerCase()
           .localeCompare((b.orgUnitName ?? b.programAreaName ?? b.description ?? '').toLowerCase())
-    );
+      );
 
     switch (key) {
       case 'projectTypeCode':
@@ -379,6 +380,7 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
       fireCentreId: data.fireCentreOrgUnitId,
       latitude: data.latitude,
       longitude: data.longitude,
+      resultsProjectCode: data.resultsProjectCode
     });
   }
 

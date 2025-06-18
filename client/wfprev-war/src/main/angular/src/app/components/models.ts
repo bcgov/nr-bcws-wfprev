@@ -45,6 +45,7 @@ export interface Project {
   }
   secondaryObjectiveRationale?: string;
   projectFiscals?: ProjectFiscalExtended[];
+  resultsProjectCode?: string;
 }
 
 export interface ProjectFiscal {
