@@ -6,6 +6,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
 import { TokenService } from 'src/app/services/token.service';
+import { AppConfigService } from 'src/app/services/app-config.service';
 
 @Component({
   selector: 'wfprev-app-header',
@@ -19,17 +20,17 @@ import { TokenService } from 'src/app/services/token.service';
   templateUrl: './app-header.component.html',
   styleUrls: ['./app-header.component.scss']
 })
-export class AppHeaderComponent implements OnInit{
+export class AppHeaderComponent implements OnInit {
 
   constructor(
     protected router: Router,
-    private readonly tokenService: TokenService
+    private readonly tokenService: TokenService,
+    private readonly appConfigService: AppConfigService
   ) {
   }
 
-
-  environment:string = 'DEV'
-  title:string = 'PREVENTION'
+  environment: string = ''
+  title: string = 'PREVENTION'
   currentUser: string = 'User_1'
 
   ngOnInit(): void {
@@ -39,11 +40,15 @@ export class AppHeaderComponent implements OnInit{
         this.currentUser = name;
       }
     });
+
+    // Display no environment indicator in prod
+    this.environment = this.appConfigService.getConfig()?.application?.environment === 'PROD' ? ''
+      : this.appConfigService.getConfig().application.environment;
   }
 
 
-  onBCLogoClick(){
-      this.router.navigate([ResourcesRoutes.LANDING]); // Navigate back to the home page
+  onBCLogoClick() {
+    this.router.navigate([ResourcesRoutes.LANDING]); // Navigate back to the home page
   }
 
   onSupportLinkClick() {

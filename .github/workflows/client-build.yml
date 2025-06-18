@@ -62,6 +62,7 @@ jobs:
         OPENMAPS_URL: ${{ vars.OPENMAPS_URL }}
         WEBADE_OAUTH2_CHECK_AUTHORIZE_URL: ${{ vars.WEBADE_OAUTH2_CHECK_AUTHORIZE_URL }}
         WFPREV_CHECK_TOKEN_URL: ${{ vars.WFPREV_CHECK_TOKEN_URL }}
+        WFPREV_TARGET_ENV: ${{ vars.WFPREV_TARGET_ENV }}
 
     - name: Set up Node.js
       uses: actions/setup-node@v4
@@ -124,6 +125,7 @@ jobs:
         CLIENT_IMAGE: ${{ steps.getDigestUI.outputs.IMAGE_UI_BY_DIGEST }}
         WEBADE_OAUTH2_WFPREV_UI_CLIENT_SECRET: ${{ secrets.WEBADE_OAUTH2_WFPREV_UI_CLIENT_SECRET }}
         WFPREV_CHECK_TOKEN_URL: ${{vars.WFPREV_CHECK_TOKEN_URL}}
+        WFPREV_TARGET_ENV: ${{vars.WFPREV_TARGET_ENV}}
         # DB
         WFPREV_USERNAME: ${{secrets.WFPREV_USERNAME}}
         DB_PASS: ${{secrets.DB_PASS}}

@@ -94,6 +94,10 @@ resource "aws_ecs_task_definition" "wfprev_server" {
         name  = "WFPREV_CHECK_TOKEN_URL",
         value = var.WFPREV_CHECK_TOKEN_URL
       },
+       {
+        name  = "WFPREV_TARGET_ENV",
+        value = var.WFPREV_TARGET_ENV
+      },
       {
         name = "WFPREV_DATASOURCE_URL"
         value = "jdbc:postgresql://${aws_db_instance.wfprev_pgsqlDB.endpoint}/${aws_db_instance.wfprev_pgsqlDB.db_name}"
