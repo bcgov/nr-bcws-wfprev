@@ -62,7 +62,7 @@ jobs:
         OPENMAPS_URL: ${{ vars.OPENMAPS_URL }}
         WEBADE_OAUTH2_CHECK_AUTHORIZE_URL: ${{ vars.WEBADE_OAUTH2_CHECK_AUTHORIZE_URL }}
         WFPREV_CHECK_TOKEN_URL: ${{ vars.WFPREV_CHECK_TOKEN_URL }}
-        TARGET_ENV: ${{ github.event.inputs.DEFAULT_APPLICATION_ENVIRONMENT }}
+        TARGET_ENV: ${{ env.TARGET_ENV }}
 
     - name: Debug appConfig.json after token replacement
       run: cat ./client/wfprev-war/src/main/angular/src/assets/data/appConfig.json    
