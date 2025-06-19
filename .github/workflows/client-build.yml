@@ -64,12 +64,6 @@ jobs:
         WFPREV_CHECK_TOKEN_URL: ${{ vars.WFPREV_CHECK_TOKEN_URL }}
         TARGET_ENV: ${{ env.TARGET_ENV }}
 
-    - name: Debug appConfig.json after token replacement
-      run: cat ./client/wfprev-war/src/main/angular/src/assets/data/appConfig.json    
-
-    - name: Show appConfig.json after token replacement
-      run: cat ${{ env.APP_CONFIG_FILE }}  
-
     - name: Set up Node.js
       uses: actions/setup-node@v4
       with:
