@@ -242,13 +242,14 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  
   }
 
   addNewFiscal(): void {
+    this.currentFiscalGuid = '';
       // Check if there is already an unsaved fiscal year
     const hasUnsavedFiscal = this.projectFiscals.some(fiscal => !fiscal.projectPlanFiscalGuid);
     if (hasUnsavedFiscal) {
       // And to prevent adding another unsaved fiscal
       return; 
     }
-    const newFiscalData = { fiscalYear: '', projectFiscalName: '', projectGuid: this.projectGuid, planFiscalStatusCode: 'DRAFT', proposalTypeCode: 'NEW'};
+    const newFiscalData = this.getDefaultFiscalData();
     this.projectFiscals.push(newFiscalData);
     this.fiscalForms.push(this.createFiscalForm(newFiscalData));
     this.selectedTabIndex = this.projectFiscals.length - 1; // Navigate to the newly added tab
@@ -261,8 +262,9 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  
   
     if (isNewEntry) {
       // Case 1: New entry → Clear all fields
-      this.fiscalForms[index].reset();
-    } else {
+      this.fiscalForms[index].reset(this.getDefaultFiscalData());
+    }
+    else {
       // Case 2: Existing entry → Revert to original API values
       const originalData = this.originalFiscalValues[index];
       this.fiscalForms[index].patchValue(originalData);
@@ -295,7 +297,7 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  
         projectGuid: updatedData.projectGuid,
         projectPlanFiscalGuid: updatedData.projectPlanFiscalGuid,
         activityCategoryCode: updatedData.activityCategoryCode,
-        fiscalYear: updatedData.fiscalYear ? parseInt(updatedData.fiscalYear, 10) : undefined,
+        fiscalYear: updatedData.fiscalYear ? parseInt(updatedData.fiscalYear, 10) : 0,
         projectPlanStatusCode: isUpdate ? updatedData.projectPlanStatusCode : "ACTIVE",
         planFiscalStatusCode: updatedData.planFiscalStatusCode,
         projectFiscalName: updatedData.projectFiscalName,
@@ -456,6 +458,28 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  
 
   getFiscalControl(i: number, controlName: string): FormControl {
     return this.fiscalForms[i].get(controlName) as FormControl;
+  }
+
+  getDefaultFiscalData(): ProjectFiscal {
+    return {
+      fiscalYear: 0,
+      projectFiscalName: '',
+      projectGuid: this.projectGuid,
+      planFiscalStatusCode: 'DRAFT',
+      proposalTypeCode: 'NEW',
+      projectPlanStatusCode: 'ACTIVE',
+      activityCategoryCode: '',
+      fiscalPlannedProjectSizeHa: 0,
+      fiscalPlannedCostPerHaAmt: 0,
+      fiscalReportedSpendAmount: 0,
+      fiscalActualAmount: 0,
+      fiscalActualCostPerHaAmt: 0,
+      firstNationsEngagementInd: false,
+      firstNationsDelivPartInd: false,
+      isApprovedInd: false,
+      isDelayedInd: false,
+      totalCostEstimateAmount: 0
+    };
   }
 
 }

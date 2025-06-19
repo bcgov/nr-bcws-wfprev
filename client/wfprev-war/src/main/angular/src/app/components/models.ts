@@ -49,25 +49,29 @@ export interface Project {
 }
 
 export interface ProjectFiscal {
-  projectGuid?: string;
+  projectGuid: string;
+  activityCategoryCode: string;
+  fiscalYear: number;
+  projectPlanStatusCode: string;
+  planFiscalStatusCode: string;
+  projectFiscalName: string;
+  isApprovedInd: boolean;
+  isDelayedInd: boolean;
+  totalCostEstimateAmount: number;
+  fiscalPlannedProjectSizeHa: number;
+  fiscalPlannedCostPerHaAmt: number;
+  fiscalReportedSpendAmount: number;
+  fiscalActualAmount: number;
+  fiscalActualCostPerHaAmt: number;
+  firstNationsDelivPartInd: boolean;
+  firstNationsEngagementInd: boolean;
+
   projectPlanFiscalGuid?: string;
-  activityCategoryCode?: string;
-  fiscalYear?: number;
-  projectPlanStatusCode?: string;
-  planFiscalStatusCode?: string;
-  projectFiscalName?: string;
   projectFiscalDescription?: string;
   businessAreaComment?: string;
   estimatedClwrrAllocAmount?: number;
   fiscalAncillaryFundAmount?: number;
-  fiscalPlannedProjectSizeHa?: number;
-  fiscalPlannedCostPerHaAmt?: number;
-  fiscalReportedSpendAmount?: number;
-  fiscalActualAmount?: number;
   fiscalCompletedSizeHa?: number;
-  fiscalActualCostPerHaAmt?: number;
-  firstNationsDelivPartInd?: boolean;
-  firstNationsEngagementInd?: boolean;
   firstNationsPartner?: string;
   resultsNumber?: string;
   resultsOpeningId?: string;
@@ -76,15 +80,13 @@ export interface ProjectFiscal {
   submittedByUserGuid?: string;
   submittedByUserUserid?: string;
   submissionTimestamp?: string;
-  isApprovedInd?: boolean;
-  isDelayedInd?: boolean;
   fiscalForecastAmount?: number;
-  totalCostEstimateAmount?: number;
   cfsProjectCode?: string;
   otherPartner?: string;
   proposalTypeCode?: string;
   ancillaryFundingProvider?: string;
 }
+
 
 export interface ActivityModel {
   activityGuid?: string;
