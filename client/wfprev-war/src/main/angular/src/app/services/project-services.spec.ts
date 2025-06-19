@@ -293,7 +293,7 @@ describe('ProjectService', () => {
     service.createProjectFiscal(projectGuid, updatedFiscal).subscribe({
       next: () => fail('Should have failed with an error'),
       error: (error) => {
-        expect(error.message).toBe('Failed to create project fiscal'); // ✅ Now correctly matches the service error
+        expect(error.message).toBe('Failed to create project fiscal');
       }
     });
 
