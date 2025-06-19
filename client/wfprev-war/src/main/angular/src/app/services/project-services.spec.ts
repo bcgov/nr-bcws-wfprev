@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { AppConfigService } from 'src/app/services/app-config.service';
 import { TokenService } from 'src/app/services/token.service';
-import { FeaturesResponse, Project, ProjectBoundary } from 'src/app/components/models';
+import { FeaturesResponse, Project, ProjectBoundary, ProjectFiscal } from 'src/app/components/models';
 import { ProjectService } from 'src/app/services/project-services';
 import { HttpEventType } from '@angular/common/http';
 import { of } from 'rxjs';
@@ -60,7 +60,29 @@ describe('ProjectService', () => {
     },
     locationGeometry: [-124, 49],
   };
+    const projectGuid = '12345';
+    const projectPlanFiscalGuid = 'fiscal-6789';
 
+    const updatedFiscal: ProjectFiscal = {
+      projectGuid,
+      projectPlanFiscalGuid,
+      fiscalYear: 2024,
+      projectFiscalName: 'Updated Fiscal',
+      activityCategoryCode: 'RX_DEV',
+      planFiscalStatusCode: 'COMPLETE',
+      projectPlanStatusCode: 'ACTIVE',
+      proposalTypeCode: 'NEW',
+      isApprovedInd: false,
+      isDelayedInd: false,
+      totalCostEstimateAmount: 0,
+      fiscalPlannedProjectSizeHa: 0,
+      fiscalPlannedCostPerHaAmt: 0,
+      fiscalReportedSpendAmount: 0,
+      fiscalActualAmount: 0,
+      fiscalActualCostPerHaAmt: 0,
+      firstNationsDelivPartInd: false,
+      firstNationsEngagementInd: false
+    };
 
 
   beforeEach(() => {
@@ -253,27 +275,25 @@ describe('ProjectService', () => {
 
   it('should create a project fiscal', () => {
     const projectGuid = '12345';
-    const mockFiscal = { fiscalYear: 2023, projectFiscalName: 'New Fiscal' };
 
-    service.createProjectFiscal(projectGuid, mockFiscal).subscribe((response) => {
-      expect(response).toEqual(mockFiscal);
+    service.createProjectFiscal(projectGuid, updatedFiscal).subscribe((response) => {
+      expect(response).toEqual(updatedFiscal);
     });
 
     const req = httpMock.expectOne(`http://mock-api.com/wfprev-api/projects/${projectGuid}/projectFiscals`);
     expect(req.request.method).toBe('POST');
     expect(req.request.headers.get('Authorization')).toBe('Bearer mock-token');
-    expect(req.request.body).toEqual(mockFiscal);
-    req.flush(mockFiscal);
+    expect(req.request.body).toEqual(updatedFiscal);
+    req.flush(updatedFiscal);
   });
 
   it('should handle errors when creating a project fiscal', () => {
     const projectGuid = '12345';
-    const mockFiscal = { fiscalYear: 2023, projectFiscalName: 'New Fiscal' };
 
-    service.createProjectFiscal(projectGuid, mockFiscal).subscribe({
+    service.createProjectFiscal(projectGuid, updatedFiscal).subscribe({
       next: () => fail('Should have failed with an error'),
       error: (error) => {
-        expect(error.message).toBe('Failed to create project fiscal'); // ✅ Now correctly matches the service error
+        expect(error.message).toBe('Failed to create project fiscal');
       }
     });
 
@@ -284,7 +304,6 @@ describe('ProjectService', () => {
   it('should update a project fiscal', () => {
     const projectGuid = '12345';
     const projectPlanFiscalGuid = 'fiscal-6789';
-    const updatedFiscal = { fiscalYear: 2024, projectFiscalName: 'Updated Fiscal' };
 
     service.updateProjectFiscal(projectGuid, projectPlanFiscalGuid, updatedFiscal).subscribe((response) => {
       expect(response).toEqual(updatedFiscal);
@@ -300,7 +319,6 @@ describe('ProjectService', () => {
   it('should handle errors when updating a project fiscal', () => {
     const projectGuid = '12345';
     const projectPlanFiscalGuid = 'fiscal-6789';
-    const updatedFiscal = { fiscalYear: 2024, projectFiscalName: 'Updated Fiscal' };
 
     service.updateProjectFiscal(projectGuid, projectPlanFiscalGuid, updatedFiscal).subscribe({
       next: () => fail('Should have failed with an error'),
