@@ -640,4 +640,31 @@ describe('ProjectFiscalsComponent', () => {
     const control = component.getFiscalControl(0, 'testField');
     expect(control).toBeTruthy();
   });
+
+  it('should return default fiscal data with expected values', () => {
+    component.projectGuid = 'test-guid';
+
+    const result = component.getDefaultFiscalData();
+
+    expect(result).toEqual({
+      fiscalYear: 0,
+      projectFiscalName: '',
+      projectGuid: 'test-guid',
+      planFiscalStatusCode: 'DRAFT',
+      proposalTypeCode: 'NEW',
+      projectPlanStatusCode: 'ACTIVE',
+      activityCategoryCode: '',
+      fiscalPlannedProjectSizeHa: 0,
+      fiscalPlannedCostPerHaAmt: 0,
+      fiscalReportedSpendAmount: 0,
+      fiscalActualAmount: 0,
+      fiscalActualCostPerHaAmt: 0,
+      firstNationsEngagementInd: false,
+      firstNationsDelivPartInd: false,
+      isApprovedInd: false,
+      isDelayedInd: false,
+      totalCostEstimateAmount: 0
+    });
+  });
+
 });
