@@ -183,7 +183,7 @@ variable "ALB_NAME" {
 }
 
 variable "TARGET_ENV" {
-  description = "AWS workload account env (e.g. dev, test, prod, sandbox, unclass)"
+  description = "AWS workload account env (e.g. dev, test, prod, tools)"
   type        = string
   default = ""
 }
