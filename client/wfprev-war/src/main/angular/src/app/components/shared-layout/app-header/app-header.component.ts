@@ -7,6 +7,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
 import { TokenService } from 'src/app/services/token.service';
 import { AppConfigService } from 'src/app/services/app-config.service';
+import { EnvironmentIndicators } from 'src/app/utils/constants';
 
 @Component({
   selector: 'wfprev-app-header',
@@ -32,6 +33,7 @@ export class AppHeaderComponent implements OnInit {
   environment: string = ''
   title: string = 'PREVENTION'
   currentUser: string = 'User_1'
+  readonly EnvironmentIndicators = EnvironmentIndicators;
 
   ngOnInit(): void {
     this.tokenService.credentialsEmitter.subscribe(() => {
@@ -44,7 +46,7 @@ export class AppHeaderComponent implements OnInit {
     // Display no environment indicator in prod
     // Case sensitive checking, set the variable as upper case 
     const env = (this.appConfigService.getConfig()?.application?.environment || '').toUpperCase();
-    this.environment = env === 'PROD' ? '' : env;
+    this.environment = EnvironmentIndicators[env] || '';
   }
 
 
