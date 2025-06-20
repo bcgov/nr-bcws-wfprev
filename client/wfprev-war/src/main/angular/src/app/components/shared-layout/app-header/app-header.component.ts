@@ -7,6 +7,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
 import { TokenService } from 'src/app/services/token.service';
 import { AppConfigService } from 'src/app/services/app-config.service';
+import { EnvironmentIndicators } from 'src/app/utils/constants';
 
 @Component({
   selector: 'wfprev-app-header',
@@ -32,6 +33,7 @@ export class AppHeaderComponent implements OnInit {
   environment: string = ''
   title: string = 'PREVENTION'
   currentUser: string = 'User_1'
+  readonly EnvironmentIndicators = EnvironmentIndicators;
 
   ngOnInit(): void {
     this.tokenService.credentialsEmitter.subscribe(() => {
@@ -45,16 +47,16 @@ export class AppHeaderComponent implements OnInit {
     // Case sensitive checking, set the variable as upper case 
     const env = (this.appConfigService.getConfig()?.application?.environment || '').toUpperCase();
     switch (env) {
-      case 'LOCAL':
-        this.environment = 'WFLOCAL';
+      case EnvironmentIndicators.LOCAL_ENV:
+        this.environment = EnvironmentIndicators.LOCAL_ENV_DISPLAY_IND;
         break;
-      case 'DEV':
-        this.environment = 'WFDEV';
+      case EnvironmentIndicators.DEV_ENV:
+        this.environment = EnvironmentIndicators.DEV_ENV_DISPLAY_IND;
         break;
-      case 'TEST':
-        this.environment = 'WFTST';
+      case EnvironmentIndicators.TEST_ENV:
+        this.environment = EnvironmentIndicators.TEST_ENV_DISPLAY_IND;
         break;
-     // set no value for PROD
+      // set no value for PROD
       default:
         this.environment = '';
         break;
