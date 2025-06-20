@@ -46,21 +46,7 @@ export class AppHeaderComponent implements OnInit {
     // Display no environment indicator in prod
     // Case sensitive checking, set the variable as upper case 
     const env = (this.appConfigService.getConfig()?.application?.environment || '').toUpperCase();
-    switch (env) {
-      case EnvironmentIndicators.LOCAL_ENV:
-        this.environment = EnvironmentIndicators.LOCAL_ENV_DISPLAY_IND;
-        break;
-      case EnvironmentIndicators.DEV_ENV:
-        this.environment = EnvironmentIndicators.DEV_ENV_DISPLAY_IND;
-        break;
-      case EnvironmentIndicators.TEST_ENV:
-        this.environment = EnvironmentIndicators.TEST_ENV_DISPLAY_IND;
-        break;
-      // set no value for PROD
-      default:
-        this.environment = '';
-        break;
-    }
+    this.environment = EnvironmentIndicators[env] || '';
   }
 
 

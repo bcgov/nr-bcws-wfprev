@@ -59,11 +59,8 @@ export const MapColors = {
   PROJECT_BOUNDARY: '#3f3f3f',
 };
 
-export const EnvironmentIndicators = {
-  LOCAL_ENV: 'LOCAL',
-  DEV_ENV: 'DEV',
-  TEST_ENV: 'TEST',
-  LOCAL_ENV_DISPLAY_IND: 'WFLOCAL',
-  DEV_ENV_DISPLAY_IND: 'WFDEV',
-  TEST_ENV_DISPLAY_IND: 'WFTST'
-}
+export const EnvironmentIndicators: { [key: string]: string } = {
+  LOCAL: 'WFLOCAL',
+  DEV: 'WFDEV',
+  TEST: 'WFTST'
+};
