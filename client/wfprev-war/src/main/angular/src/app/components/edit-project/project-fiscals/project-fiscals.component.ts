@@ -164,7 +164,7 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  
       planFiscalStatusCode: [fiscal?.planFiscalStatusCode ?? 'DRAFT', [Validators.required]],
       fiscalPlannedProjectSizeHa: [fiscal?.fiscalPlannedProjectSizeHa ?? '', [Validators.min(0)]],
       fiscalCompletedSizeHa: [fiscal?.fiscalCompletedSizeHa ?? '', [Validators.min(0)]],
-      resultsOpeningId: [fiscal?.resultsOpeningId ?? ''],
+      resultsOpeningId: [fiscal?.resultsOpeningId ?? '', [Validators.maxLength(11)]],
       firstNationsEngagementInd: [fiscal?.firstNationsEngagementInd ?? false],
       firstNationsDelivPartInd: [fiscal?.firstNationsDelivPartInd ?? false],
       firstNationsPartner: [fiscal?.firstNationsPartner ?? ''],
