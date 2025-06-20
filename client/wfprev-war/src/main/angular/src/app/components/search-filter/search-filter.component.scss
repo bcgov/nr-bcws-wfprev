@@ -1,3 +1,17 @@
+
+::ng-deep .mat-pseudo-checkbox {
+  margin-top: 16px !important; 
+}
+
+::ng-deep .mat-mdc-option {
+  align-items: flex-start !important; 
+}
+
+::ng-deep .mdc-list-item__primary-text {
+  margin-top: 13px !important;
+  white-space: normal !important; 
+}
+
 .search-filter-bar {
   padding: 5px;
   background-color: white;
