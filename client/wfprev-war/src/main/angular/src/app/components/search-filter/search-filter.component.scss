@@ -1,3 +1,17 @@
+::ng-deep .filter-dropdown .mat-pseudo-checkbox {
+  margin-top: 1.1rem;
+  align-self: baseline; 
+}
+
+::ng-deep .filter-dropdown .mat-mdc-option {
+  align-items: flex-start !important; 
+}
+
+::ng-deep .filter-dropdown .mdc-list-item__primary-text {
+  margin-top: 1rem !important;
+  white-space: normal !important; 
+}
+
 .search-filter-bar {
   padding: 5px;
   background-color: white;
