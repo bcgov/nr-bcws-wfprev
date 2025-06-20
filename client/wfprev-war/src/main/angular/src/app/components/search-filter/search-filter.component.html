@@ -20,7 +20,7 @@
     <div class="field search-input filter-search-input">
       <mat-label class="label">Business Area</mat-label>
       <mat-form-field appearance="fill" class="filter-item">
-        <mat-select [(ngModel)]="selectedBusinessArea" placeholder="Select"
+        <mat-select [(ngModel)]="selectedBusinessArea" placeholder="Select" [panelClass]="'filter-dropdown'"
           (selectionChange)="onOptionToggled($event,'selectedBusinessArea', businessAreaOptions)"
           multiple>
         <mat-option *ngFor="let option of businessAreaOptions" [value]="option.value" (onSelectionChange)="syncAllWithItemToggle($event, option.value, 'selectedBusinessArea', businessAreaOptions)">
@@ -33,7 +33,7 @@
     <div class="field search-input filter-search-input">
       <mat-label class="label">Fiscal Year(s)</mat-label>
       <mat-form-field appearance="fill" class="filter-item">
-        <mat-select [(ngModel)]="selectedFiscalYears" placeholder="Select"
+        <mat-select [(ngModel)]="selectedFiscalYears" placeholder="Select" [panelClass]="'filter-dropdown'"
                     (selectionChange)="onOptionToggled($event,'selectedFiscalYears', fiscalYearOptions)"
                     multiple>
           <mat-option *ngFor="let option of fiscalYearOptions" [value]="option.value" (onSelectionChange)="syncAllWithItemToggle($event, option.value, 'selectedFiscalYears', fiscalYearOptions)">
@@ -46,7 +46,7 @@
     <div class="field search-input filter-search-input">
       <mat-label class="label">Activity Category</mat-label>
       <mat-form-field appearance="fill" class="filter-item">
-        <mat-select [(ngModel)]="selectedActivity" placeholder="Select"
+        <mat-select [(ngModel)]="selectedActivity" placeholder="Select" [panelClass]="'filter-dropdown'"
                     (selectionChange)="onOptionToggled($event,'selectedActivity', activityOptions)"
                     multiple>
           <mat-option *ngFor="let option of activityOptions" [value]="option.value" (onSelectionChange)="syncAllWithItemToggle($event, option.value, 'selectedActivity', activityOptions)">
@@ -59,7 +59,7 @@
     <div class="field search-input filter-search-input">
       <mat-label class="label">Forest Region</mat-label>
       <mat-form-field appearance="fill" class="filter-item">
-        <mat-select [(ngModel)]="selectedForestRegion" placeholder="Select"
+        <mat-select [(ngModel)]="selectedForestRegion" placeholder="Select" [panelClass]="'filter-dropdown'"
                     (ngModelChange)="onForestRegionChange()"
                     (selectionChange)="onOptionToggled($event,'selectedForestRegion', forestRegionOptions)"
                     multiple>
@@ -73,7 +73,7 @@
     <div class="field search-input filter-search-input">
       <mat-label class="label">Forest District</mat-label>
       <mat-form-field appearance="fill" class="filter-item">
-        <mat-select [(ngModel)]="selectedForestDistrict" placeholder="Select"
+        <mat-select [(ngModel)]="selectedForestDistrict" placeholder="Select" [panelClass]="'filter-dropdown'"
                     (selectionChange)="onOptionToggled($event,'selectedForestDistrict', forestDistrictOptions)"
                     multiple>
           <mat-option *ngFor="let option of forestDistrictOptions" [value]="option.value" (onSelectionChange)="syncAllWithItemToggle($event, option.value, 'selectedForestDistrict', forestDistrictOptions)">
@@ -86,7 +86,7 @@
     <div class="field search-input filter-search-input">
       <mat-label class="label">Fire Centre</mat-label>
       <mat-form-field appearance="fill" class="filter-item">
-        <mat-select [(ngModel)]="selectedFireCentre" placeholder="Select"
+        <mat-select [(ngModel)]="selectedFireCentre" placeholder="Select" [panelClass]="'filter-dropdown'"
                     (selectionChange)="onOptionToggled($event,'selectedFireCentre', fireCentreOptions)"
                     multiple>
           <mat-option *ngFor="let option of fireCentreOptions" [value]="option.value" (onSelectionChange)="syncAllWithItemToggle($event, option.value, 'selectedFireCentre', fireCentreOptions)">
@@ -99,7 +99,7 @@
     <div class="field search-input filter-search-input">
       <mat-label class="label">Fiscal Status</mat-label>
       <mat-form-field appearance="fill" class="filter-item">
-        <mat-select [(ngModel)]="selectedFiscalStatus" placeholder="Select"
+        <mat-select [(ngModel)]="selectedFiscalStatus" placeholder="Select" [panelClass]="'filter-dropdown'"
                     (selectionChange)="onOptionToggled($event,'selectedFiscalStatus', fiscalStatusOptions)"
                     multiple>
           <mat-option *ngFor="let option of fiscalStatusOptions" [value]="option.value" (onSelectionChange)="syncAllWithItemToggle($event, option.value, 'selectedFiscalStatus', fiscalStatusOptions)">
