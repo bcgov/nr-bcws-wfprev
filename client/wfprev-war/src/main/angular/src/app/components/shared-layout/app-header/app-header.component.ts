@@ -44,7 +44,21 @@ export class AppHeaderComponent implements OnInit {
     // Display no environment indicator in prod
     // Case sensitive checking, set the variable as upper case 
     const env = (this.appConfigService.getConfig()?.application?.environment || '').toUpperCase();
-    this.environment = env === 'PROD' ? '' : env;
+    switch (env) {
+      case 'LOCAL':
+        this.environment = 'WFLOCAL';
+        break;
+      case 'DEV':
+        this.environment = 'WFDEV';
+        break;
+      case 'TEST':
+        this.environment = 'WFTST';
+        break;
+     // set no value for PROD
+      default:
+        this.environment = '';
+        break;
+    }
   }
 
 
