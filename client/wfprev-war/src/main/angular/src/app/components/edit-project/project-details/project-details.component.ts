@@ -121,7 +121,7 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
       fireCentreId: ['', [Validators.required]],
       latitude: [''],
       longitude: [''],
-      resultsProjectCode: ['', [Validators.maxLength(25)]]
+      resultsProjectCode: ['', [Validators.maxLength(8)]]
     });
     this.latLongForm = this.fb.group({
       latitude: ['', Validators.required],

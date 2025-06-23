@@ -9,31 +9,6 @@ body {
     margin: 0;
 }
 
-.cdk-overlay-container {
-    z-index: 1000000 !important;
-    .cdk-overlay-connected-position-bounding-box{
-        position: absolute;
-        z-index: 1000000 !important;
-        display: flex;
-        flex-direction: column;
-        min-width: 1px;
-        min-height: 1px;
-        top: 46px;
-        left: 1374.73px;
-        height: 1267px;
-        width: 146.266px;
-        align-items: flex-start;
-        justify-content: flex-start;
-        .cdk-overlay-pane{
-            background-color: var(--wf-colour-white);
-            border-radius: 4px;
-        }
-        .mat-mdc-menu-item-text{
-            text-align: center;
-        }
-    }
-}
-
 .mat-mdc-snack-bar-container{
   .mdc-snackbar__label{
     color: var(--wf-colour-white);
