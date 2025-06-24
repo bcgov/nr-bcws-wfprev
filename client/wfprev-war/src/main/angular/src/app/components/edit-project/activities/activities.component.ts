@@ -312,16 +312,42 @@ export class ActivitiesComponent implements OnChanges, OnInit, CanComponentDeact
   
     const filteredTechniques = this.silvicultureTechniqueCode.filter(t => t.silvicultureBaseGuid === baseGuid);
   
+    const currentTechnique = form.get('silvicultureTechniqueGuid')?.value;
+    const currentMethod = form.get('silvicultureMethodGuid')?.value;
+    const validTechnique = filteredTechniques.find(t => t.silvicultureTechniqueGuid === currentTechnique);
+
     form.patchValue({
-      silvicultureTechniqueGuid: null,
-      silvicultureMethodGuid: null,
       filteredTechniqueCode: filteredTechniques,
-      filteredMethodCode: []
-    });
+      filteredMethodCode: validTechnique
+        ? this.silvicultureMethodCode.filter(m => m.silvicultureTechniqueGuid === currentTechnique)
+        : []
+    }, { emitEvent: false });
+
+    if (!validTechnique) {
+      form.patchValue({
+        silvicultureTechniqueGuid: null,
+        silvicultureMethodGuid: null
+      }, { emitEvent: false });
+
+      form.get('silvicultureTechniqueGuid')?.disable();
+      form.get('silvicultureMethodGuid')?.disable();
+    } else {
+      form.get('silvicultureTechniqueGuid')?.enable();
+
+      const validMethod = this.silvicultureMethodCode.find(
+        m => m.silvicultureTechniqueGuid === currentTechnique && m.silvicultureMethodGuid === currentMethod
+      );
+
+      if (!validMethod) {
+        form.patchValue({ silvicultureMethodGuid: null }, { emitEvent: false });
+        form.get('silvicultureMethodGuid')?.disable();
+      } else {
+        form.get('silvicultureMethodGuid')?.enable();
+      }
+    }
+
   
-    form.get('silvicultureTechniqueGuid')?.enable();
-    form.get('silvicultureMethodGuid')?.disable();
-  
+    form.get('silvicultureTechniqueGuid')?.enable();  
     this.updateActivityName(form);
   }
 
@@ -371,27 +397,43 @@ export class ActivitiesComponent implements OnChanges, OnInit, CanComponentDeact
   
 
   onTechniqueChange(techniqueGuid: string, form: FormGroup) {
+    const methodControl = form.get('silvicultureMethodGuid');
+    
     if (!techniqueGuid) {
       form.patchValue({
         silvicultureMethodGuid: null,
         filteredMethodCode: []
-      });
-      form.get('silvicultureMethodGuid')?.disable();
+      }, { emitEvent: false });
+      
+      methodControl?.disable();
       return;
     }
-  
-    const filteredMethods = this.silvicultureMethodCode.filter(m => m.silvicultureTechniqueGuid === techniqueGuid);
-  
+
+    const filteredMethods = this.silvicultureMethodCode.filter(
+      m => m.silvicultureTechniqueGuid === techniqueGuid
+    );
+
+    const currentMethod = methodControl?.value;
+    const validMethod = filteredMethods.find(
+      m => m.silvicultureMethodGuid === currentMethod
+    );
+
     form.patchValue({
-      silvicultureMethodGuid: null,
       filteredMethodCode: filteredMethods
-    });
-  
-    form.get('silvicultureMethodGuid')?.enable();
-  
+    }, { emitEvent: false });
+
+    if (filteredMethods.length > 0) {
+      methodControl?.enable();
+    } else {
+      methodControl?.disable();
+    }
+
+    if (!validMethod) {
+      form.patchValue({ silvicultureMethodGuid: null }, { emitEvent: false });
+    }
+
     this.updateActivityName(form);
   }
-  
 
   onMethodChange(methodGuid: string, form: FormGroup) {  
     if (methodGuid){
