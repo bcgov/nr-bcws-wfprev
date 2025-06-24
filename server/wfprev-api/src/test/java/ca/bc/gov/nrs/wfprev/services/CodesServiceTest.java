@@ -1984,7 +1984,7 @@ class CodesServiceTest {
     void testGetWUIRiskClassCodeById_Success() throws ServiceException {
         UUID exampleId = UUID.randomUUID();
         WUIRiskClassCodeEntity entity = new WUIRiskClassCodeEntity();
-        when(wuiRiskClassCodeRepository.findById(String.valueOf(exampleId)))
+        when(wuiRiskClassCodeRepository.findById(exampleId))
                 .thenReturn(Optional.of(entity));
         when(wuiRiskClassCodeResourceAssembler.toModel(entity))
                 .thenReturn(new WUIRiskClassCodeModel());
@@ -1997,7 +1997,7 @@ class CodesServiceTest {
     @Test
     void testGetWUIRiskClassCodeById_NotFound() throws ServiceException {
         UUID nonExistentId = UUID.randomUUID();
-        when(wuiRiskClassCodeRepository.findById(String.valueOf(nonExistentId)))
+        when(wuiRiskClassCodeRepository.findById(nonExistentId))
                 .thenReturn(Optional.empty());
 
         WUIRiskClassCodeModel result = codesService.getWuiRiskClassCodeById(String.valueOf(nonExistentId));
@@ -2008,7 +2008,7 @@ class CodesServiceTest {
     @Test
     void testGetWUIRiskClassCodeById_Exception() {
         UUID exampleId = UUID.randomUUID();
-        when(wuiRiskClassCodeRepository.findById(String.valueOf(exampleId)))
+        when(wuiRiskClassCodeRepository.findById(exampleId))
                 .thenThrow(new RuntimeException("Error fetching silviculture technique name code"));
 
         ServiceException exception = assertThrows(
