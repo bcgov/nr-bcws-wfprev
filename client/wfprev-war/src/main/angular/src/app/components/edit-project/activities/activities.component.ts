@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MomentDateAdapter } from '@angular/material-moment-adapter';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -57,7 +57,7 @@ export const CUSTOM_DATE_FORMATS = {
     ],
 })
 
-export class ActivitiesComponent implements OnChanges, OnInit, CanComponentDeactivate{
+export class ActivitiesComponent implements OnChanges, CanComponentDeactivate{
   @Input() fiscalGuid: string = '';
   @Output() boundariesUpdated = new EventEmitter<void>();
 
@@ -90,8 +90,6 @@ export class ActivitiesComponent implements OnChanges, OnInit, CanComponentDeact
       public cd: ChangeDetectorRef
     ) {}
 
-  ngOnInit(): void {
-  }
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['fiscalGuid'] && changes['fiscalGuid'].currentValue) {
       // Clear previous state before loading new fiscal data
@@ -735,5 +733,7 @@ export class ActivitiesComponent implements OnChanges, OnInit, CanComponentDeact
 
   onFilesChanged() {
     this.boundariesUpdated.emit(); // Notify ProjectFiscalsComponent
+    this.getActivities();
   }
+
 }

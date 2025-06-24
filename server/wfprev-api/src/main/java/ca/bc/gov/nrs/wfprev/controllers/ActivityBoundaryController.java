@@ -4,7 +4,9 @@ import ca.bc.gov.nrs.common.wfone.rest.resource.HeaderConstants;
 import ca.bc.gov.nrs.common.wfone.rest.resource.MessageListRsrc;
 import ca.bc.gov.nrs.wfprev.common.controllers.CommonController;
 import ca.bc.gov.nrs.wfprev.data.models.ActivityBoundaryModel;
+import ca.bc.gov.nrs.wfprev.data.models.ActivityModel;
 import ca.bc.gov.nrs.wfprev.services.ActivityBoundaryService;
+import ca.bc.gov.nrs.wfprev.services.ActivityService;
 import ca.bc.gov.nrs.wfprev.services.CoordinatesService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -37,13 +39,15 @@ import java.util.Date;
 @Slf4j
 @RequestMapping(value = "/projects/{projectGuid}/projectFiscals/{projectPlanFiscalGuid}/activities/{activityGuid}/activityBoundary")
 public class ActivityBoundaryController extends CommonController {
+    private final ActivityService activityService;
     private final ActivityBoundaryService activityBoundaryService;
     private final CoordinatesService coordinatesService;
 
-    public ActivityBoundaryController(ActivityBoundaryService activityBoundaryService, CoordinatesService coordinatesService) {
+    public ActivityBoundaryController(ActivityBoundaryService activityBoundaryService, CoordinatesService coordinatesService, ActivityService activityService) {
         super(ActivityBoundaryController.class.getName());
         this.activityBoundaryService = activityBoundaryService;
         this.coordinatesService = coordinatesService;
+        this.activityService = activityService;
     }
 
     @GetMapping
@@ -142,6 +146,11 @@ public class ActivityBoundaryController extends CommonController {
                     projectGuid, projectPlanFiscalGuid, activityGuid, resource);
             coordinatesService.updateProjectCoordinates(projectGuid);
 
+            // Update activity spatial indicator
+            ActivityModel activity = activityService.getActivity(projectGuid, projectPlanFiscalGuid, activityGuid);
+            activity.setIsSpatialAddedInd(true);
+            activityService.updateActivity(projectGuid, projectPlanFiscalGuid, activity);
+
             return ResponseEntity.status(201).body(newResource);
         } catch (DataIntegrityViolationException e) {
             log.error(" ### DataIntegrityViolationException while creating Activity Boundary", e);
@@ -182,6 +191,11 @@ public class ActivityBoundaryController extends CommonController {
                     projectGuid, projectPlanFiscalGuid, activityGuid, resource);
             coordinatesService.updateProjectCoordinates(projectGuid);
 
+            // Update activity spatial indicator
+            ActivityModel activity = activityService.getActivity(projectGuid, projectPlanFiscalGuid, activityGuid);
+            activity.setIsSpatialAddedInd(true);
+            activityService.updateActivity(projectGuid, projectPlanFiscalGuid, activity);
+
             return updatedResource == null ? notFound() : ok(updatedResource);
         } catch (DataIntegrityViolationException e) {
             log.error(" ### DataIntegrityViolationException while updating Activity Boundary", e);
@@ -219,6 +233,13 @@ public class ActivityBoundaryController extends CommonController {
         try {
             activityBoundaryService.deleteActivityBoundary(projectGuid, projectPlanFiscalGuid, activityGuid, id);
             coordinatesService.updateProjectCoordinates(projectGuid);
+
+            // Update activity spatial indicator
+            ActivityModel activity = activityService.getActivity(projectGuid, projectPlanFiscalGuid, activityGuid);
+            CollectionModel<ActivityBoundaryModel> boundaries = activityBoundaryService.getAllActivityBoundaries(projectGuid, projectPlanFiscalGuid, activityGuid);
+            activity.setIsSpatialAddedInd(!boundaries.getContent().isEmpty());
+            activityService.updateActivity(projectGuid, projectPlanFiscalGuid, activity);
+
             return ResponseEntity.noContent().build();
         } catch (EntityNotFoundException e) {
             log.warn(" ### Activity Boundary for deletion not found: {}", id, e);
