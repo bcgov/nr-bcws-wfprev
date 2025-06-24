@@ -685,7 +685,111 @@ describe('ActivitiesComponent', () => {
       { duration: 5000, panelClass: 'snackbar-error' }
     );
   });
-  
+
+  it('should reset technique and method if baseGuid is empty', () => {
+    const form = component.createActivityForm({
+      silvicultureTechniqueGuid: 'tech1',
+      silvicultureMethodGuid: 'method1'
+    });
+
+    component.activityForms.push(form);
+    form.get('silvicultureTechniqueGuid')?.enable();
+    form.get('silvicultureMethodGuid')?.enable();
+
+    component.onBaseChange('', form);
+
+    expect(form.get('silvicultureTechniqueGuid')?.disabled).toBeTrue();
+    expect(form.get('silvicultureMethodGuid')?.disabled).toBeTrue();
+    expect(form.get('silvicultureTechniqueGuid')?.value).toBeNull();
+    expect(form.get('silvicultureMethodGuid')?.value).toBeNull();
+  });
+
+  it('should reset technique and method if current technique is invalid for base', () => {
+    component.silvicultureTechniqueCode = [{ silvicultureBaseGuid: 'base1', silvicultureTechniqueGuid: 'techA' }];
+    const form = component.createActivityForm({
+      silvicultureTechniqueGuid: 'invalid-tech',
+      silvicultureMethodGuid: 'method1'
+    });
+
+    component.activityForms.push(form);
+    component.onBaseChange('base1', form);
+
+    expect(form.get('silvicultureTechniqueGuid')?.value).toBeNull();
+    expect(form.get('silvicultureMethodGuid')?.value).toBeNull();
+    expect(form.get('silvicultureTechniqueGuid')?.disabled).toBeFalse();
+    expect(form.get('silvicultureMethodGuid')?.disabled).toBeTrue();
+  });
+
+  it('should reset method only if current method is invalid for valid technique', () => {
+    component.silvicultureTechniqueCode = [{ silvicultureBaseGuid: 'base1', silvicultureTechniqueGuid: 'tech1' }];
+    component.silvicultureMethodCode = [
+      { silvicultureTechniqueGuid: 'tech1', silvicultureMethodGuid: 'methodA' }
+    ];
+
+    const form = component.createActivityForm({
+      silvicultureBaseGuid: 'base1',
+      silvicultureTechniqueGuid: 'tech1',
+      silvicultureMethodGuid: 'invalid-method'
+    });
+
+    component.activityForms.push(form);
+    component.onBaseChange('base1', form);
+
+    expect(form.get('silvicultureTechniqueGuid')?.enabled).toBeTrue();
+    expect(form.get('silvicultureMethodGuid')?.disabled).toBeFalse();
+    expect(form.get('silvicultureMethodGuid')?.value).toBeNull();
+  });
+
+  it('should retain technique and method if both are valid', () => {
+    component.silvicultureTechniqueCode = [{ silvicultureBaseGuid: 'base1', silvicultureTechniqueGuid: 'tech1' }];
+    component.silvicultureMethodCode = [
+      { silvicultureTechniqueGuid: 'tech1', silvicultureMethodGuid: 'method1' }
+    ];
+
+    const form = component.createActivityForm({
+      silvicultureBaseGuid: 'base1',
+      silvicultureTechniqueGuid: 'tech1',
+      silvicultureMethodGuid: 'method1'
+    });
+
+    component.activityForms.push(form);
+    component.onBaseChange('base1', form);
+
+    expect(form.get('silvicultureTechniqueGuid')?.enabled).toBeTrue();
+    expect(form.get('silvicultureMethodGuid')?.enabled).toBeTrue();
+    expect(form.get('silvicultureTechniqueGuid')?.value).toBe('tech1');
+    expect(form.get('silvicultureMethodGuid')?.value).toBe('method1');
+  });
+
+  // technique changes
+  it('should reset method and disable it if techniqueGuid is empty', () => {
+    const form = component.createActivityForm({ silvicultureMethodGuid: 'method1' });
+    component.activityForms.push(form);
+    form.get('silvicultureMethodGuid')?.enable();
+
+    component.onTechniqueChange('', form);
+
+    expect(form.get('silvicultureMethodGuid')?.value).toBeNull();
+    expect(form.get('silvicultureMethodGuid')?.disabled).toBeTrue();
+    expect(form.get('filteredMethodCode')?.value).toEqual([]);
+  });
+
+  it('should reset method if current method does not belong to selected technique', () => {
+    component.silvicultureMethodCode = [
+      { silvicultureTechniqueGuid: 'tech1', silvicultureMethodGuid: 'methodA' }
+    ];
+
+    const form = component.createActivityForm({ silvicultureMethodGuid: 'invalid-method' });
+    component.activityForms.push(form);
+
+    component.onTechniqueChange('tech1', form);
+
+    expect(form.get('filteredMethodCode')?.value).toEqual([
+      { silvicultureTechniqueGuid: 'tech1', silvicultureMethodGuid: 'methodA' }
+    ]);
+    expect(form.get('silvicultureMethodGuid')?.value).toBeNull();
+  });
+
 });
 
 
