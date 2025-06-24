@@ -22,6 +22,7 @@ import ca.bc.gov.nrs.wfprev.data.models.SilvicultureMethodCodeModel;
 import ca.bc.gov.nrs.wfprev.data.models.SilvicultureTechniqueCodeModel;
 import ca.bc.gov.nrs.wfprev.data.models.SourceObjectNameCodeModel;
 import ca.bc.gov.nrs.wfprev.data.models.ProposalTypeCodeModel;
+import ca.bc.gov.nrs.wfprev.data.models.WUIRiskClassCodeModel;
 import ca.bc.gov.nrs.wfprev.services.CodesService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -377,6 +378,28 @@ class CodesControllerTest {
         when(codesService.getAllSilvicultureTechniqueCodes()).thenReturn(stcModel);
 
         mockMvc.perform(get("/codes/" + CodeTables.SILVICULTURE_TECHNIQUE_CODE)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @WithMockUser
+    void testGetWuiRiskClassCodes() throws Exception {
+        String exampleId1 = UUID.randomUUID().toString();
+        String exampleId2 = UUID.randomUUID().toString();
+
+        WUIRiskClassCodeModel wui1 = new WUIRiskClassCodeModel();
+        wui1.setWuiRiskClassCode(exampleId1);
+
+        WUIRiskClassCodeModel wui2 = new WUIRiskClassCodeModel();
+        wui2.setWuiRiskClassCode(exampleId2);
+
+        List<WUIRiskClassCodeModel> wuiList = Arrays.asList(wui1, wui2);
+        CollectionModel<WUIRiskClassCodeModel> wuiModel = CollectionModel.of(wuiList);
+
+        when(codesService.getAllWuiRiskClassCodes()).thenReturn(wuiModel);
+
+        mockMvc.perform(get("/codes/" + CodeTables.WUI_RISK_CLASS_CODE)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }

@@ -66,6 +66,8 @@ class CodesServiceTest {
     private SilvicultureTechniqueCodeResourceAssembler silvicultureTechniqueCodeResourceAssembler;
     private ProposalTypeCodeRepository proposalTypeCodeRepository;
     private ProposalTypeCodeResourceAssembler proposalTypeCodeResourceAssembler;
+    private WUIRiskClassCodeRepository wuiRiskClassCodeRepository;
+    private WUIRiskClassCodeResourceAssembler wuiRiskClassCodeResourceAssembler;
 
     @BeforeEach
     void setup() {
@@ -113,6 +115,8 @@ class CodesServiceTest {
         silvicultureMethodCodeResourceAssembler = mock(SilvicultureMethodCodeResourceAssembler.class);
         silvicultureTechniqueCodeRepository = mock(SilvicultureTechniqueCodeRepository.class);
         silvicultureTechniqueCodeResourceAssembler = mock(SilvicultureTechniqueCodeResourceAssembler.class);
+        wuiRiskClassCodeRepository = mock(WUIRiskClassCodeRepository.class);
+        wuiRiskClassCodeResourceAssembler = mock(WUIRiskClassCodeResourceAssembler.class);
 
         codesService = new CodesService(forestAreaCodeRepository, forestAreaCodeResourceAssembler,
                 generalScopeCodeRepository, generalScopeCodeResourceAssembler,
@@ -123,7 +127,7 @@ class CodesServiceTest {
                 activityCategoryCodeResourceAssembler, activityCategoryCodeRepository, planFiscalStatusCodeResourceAssembler, planFiscalStatusCodeRepository, ancillaryFundingSourceCodeResourceAssembler, ancillaryFundingSourceCodeRepository,
                 fundingSourceCodeResourceAssembler, fundingSourceCodeRepository, sourceObjectNameCodeResourceAssembler, sourceObjectNameCodeRepository, attachmentContentTypeCodeResourceAssembler, attachmentContentTypeCodeRepository,
                 silvicultureBaseCodeResourceAssembler, silvicultureBaseCodeRepository, silvicultureMethodCodeResourceAssembler, silvicultureMethodCodeRepository, silvicultureTechniqueCodeResourceAssembler, silvicultureTechniqueCodeRepository,
-                proposalTypeCodeRepository, proposalTypeCodeResourceAssembler);
+                proposalTypeCodeRepository, proposalTypeCodeResourceAssembler, wuiRiskClassCodeRepository, wuiRiskClassCodeResourceAssembler);
     }
 
     @Test
@@ -1947,6 +1951,69 @@ class CodesServiceTest {
         ServiceException exception = assertThrows(
                 ServiceException.class,
                 () -> codesService.getSilvicultureTechniqueCodeById(String.valueOf(exampleId))
+        );
+        assertTrue(exception.getMessage().contains("Error fetching silviculture technique name code"));
+    }
+
+    @Test
+    void testGetAllWUIRiskClassCodes_Success() throws ServiceException {
+        List<WUIRiskClassCodeEntity> entities = new ArrayList<>();
+        entities.add(new WUIRiskClassCodeEntity());
+        entities.add(new WUIRiskClassCodeEntity());
+        when(wuiRiskClassCodeRepository.findAll()).thenReturn(entities);
+        when(wuiRiskClassCodeResourceAssembler.toCollectionModel(entities))
+                .thenReturn(CollectionModel.of(new ArrayList<>()));
+
+        CollectionModel<WUIRiskClassCodeModel> result = codesService.getAllWuiRiskClassCodes();
+
+        assertNotNull(result);
+    }
+
+    @Test
+    void testGetAllWUIRiskClassCodes_Exception() {
+        when(wuiRiskClassCodeRepository.findAll()).thenThrow(new RuntimeException("Error fetching wild urban interface risk class codes"));
+
+        ServiceException exception = assertThrows(
+                ServiceException.class,
+                () -> codesService.getAllWuiRiskClassCodes()
+        );
+        assertEquals("Error fetching wild urban interface risk class codes", exception.getMessage());
+    }
+
+    @Test
+    void testGetWUIRiskClassCodeById_Success() throws ServiceException {
+        UUID exampleId = UUID.randomUUID();
+        WUIRiskClassCodeEntity entity = new WUIRiskClassCodeEntity();
+        when(wuiRiskClassCodeRepository.findById(exampleId))
+                .thenReturn(Optional.of(entity));
+        when(wuiRiskClassCodeResourceAssembler.toModel(entity))
+                .thenReturn(new WUIRiskClassCodeModel());
+
+        WUIRiskClassCodeModel result = codesService.getWuiRiskClassCodeById(String.valueOf(exampleId));
+
+        assertNotNull(result);
+    }
+
+    @Test
+    void testGetWUIRiskClassCodeById_NotFound() throws ServiceException {
+        UUID nonExistentId = UUID.randomUUID();
+        when(wuiRiskClassCodeRepository.findById(nonExistentId))
+                .thenReturn(Optional.empty());
+
+        WUIRiskClassCodeModel result = codesService.getWuiRiskClassCodeById(String.valueOf(nonExistentId));
+
+        assertNull(result);
+    }
+
+    @Test
+    void testGetWUIRiskClassCodeById_Exception() {
+        UUID exampleId = UUID.randomUUID();
+        when(wuiRiskClassCodeRepository.findById(exampleId))
+                .thenThrow(new RuntimeException("Error fetching silviculture technique name code"));
+
+        ServiceException exception = assertThrows(
+                ServiceException.class,
+                () -> codesService.getWuiRiskClassCodeById(String.valueOf(exampleId))
         );
         assertTrue(exception.getMessage().contains("Error fetching silviculture technique name code"));
     }
