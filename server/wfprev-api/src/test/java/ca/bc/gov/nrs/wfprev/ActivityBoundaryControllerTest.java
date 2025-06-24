@@ -47,6 +47,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.never;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -268,6 +269,35 @@ class ActivityBoundaryControllerTest {
 
     @Test
     @WithMockUser
+    void testCreateActivityBoundary_NoActivityFound() throws Exception {
+        ActivityBoundaryModel requestModel = buildActivityBoundaryRequestModel();
+
+        when(activityBoundaryService.createActivityBoundary(anyString(), anyString(), anyString(), any(ActivityBoundaryModel.class)))
+                .thenReturn(requestModel);
+
+        when(activityService.getActivity(anyString(), anyString(), anyString()))
+                .thenReturn(null);
+
+        String requestJson = activityBoundaryJson.formatted(
+                requestModel.getActivityBoundaryGuid(),
+                requestModel.getActivityGuid(),
+                requestModel.getSystemStartTimestamp().getTime(),
+                requestModel.getSystemEndTimestamp().getTime() + 1000,
+                requestModel.getCollectionDate().getTime()
+        );
+
+        mockMvc.perform(post("/projects/{projectId}/projectFiscals/{projectFiscalId}/activities/{activityId}/activityBoundary",
+                        UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJson))
+                .andExpect(status().isCreated());
+
+        verify(activityService).getActivity(anyString(), anyString(), anyString());
+        verify(activityService, org.mockito.Mockito.never()).updateActivity(anyString(), anyString(), any(ActivityModel.class));
+    }
+
+    @Test
+    @WithMockUser
     void testCreateActivityBoundary_Exception() throws Exception {
         ActivityBoundaryModel requestModel = buildActivityBoundaryRequestModel();
 
@@ -346,6 +376,35 @@ class ActivityBoundaryControllerTest {
         verify(activityService).updateActivity(anyString(), anyString(), activityCaptor.capture());
 
         assertTrue(activityCaptor.getValue().getIsSpatialAddedInd(), "isSpatialAddedInd should be true after update");
+    }
+
+    @Test
+    @WithMockUser
+    void testUpdateActivityBoundary_NoActivityFound() throws Exception {
+        ActivityBoundaryModel requestModel = buildActivityBoundaryRequestModel();
+
+        when(activityBoundaryService.updateActivityBoundary(anyString(), anyString(), anyString(), any(ActivityBoundaryModel.class)))
+                .thenReturn(requestModel);
+
+        when(activityService.getActivity(anyString(), anyString(), anyString()))
+                .thenReturn(null);
+
+        String requestJson = activityBoundaryJson.formatted(
+                requestModel.getActivityBoundaryGuid(),
+                requestModel.getActivityGuid(),
+                requestModel.getSystemStartTimestamp().getTime(),
+                requestModel.getSystemEndTimestamp().getTime() + 1000,
+                requestModel.getCollectionDate().getTime()
+        );
+
+        mockMvc.perform(put("/projects/{projectId}/projectFiscals/{projectFiscalId}/activities/{activityId}/activityBoundary/{id}",
+                        UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), requestModel.getActivityBoundaryGuid())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJson))
+                .andExpect(status().isOk());
+
+        verify(activityService).getActivity(anyString(), anyString(), anyString());
+        verify(activityService, never()).updateActivity(anyString(), anyString(), any(ActivityModel.class));
     }
 
     @Test
@@ -483,6 +542,31 @@ class ActivityBoundaryControllerTest {
         verify(activityService).updateActivity(eq(projectId.toString()), eq(fiscalId.toString()), activityCaptor.capture());
 
         assertFalse(activityCaptor.getValue().getIsSpatialAddedInd(), "isSpatialAddedInd should be false after deleting last boundary");
+    }
+
+    @Test
+    @WithMockUser
+    void testDeleteActivityBoundary_NoActivityFound() throws Exception {
+        UUID boundaryId = UUID.randomUUID();
+        UUID projectId = UUID.randomUUID();
+        UUID fiscalId = UUID.randomUUID();
+        UUID activityId = UUID.randomUUID();
+
+        doNothing().when(activityBoundaryService).deleteActivityBoundary(
+                eq(projectId.toString()), eq(fiscalId.toString()), eq(activityId.toString()), eq(boundaryId.toString()));
+        doNothing().when(coordinatesService).updateProjectCoordinates(eq(projectId.toString()));
+        when(activityService.getActivity(eq(projectId.toString()), eq(fiscalId.toString()), eq(activityId.toString())))
+                .thenReturn(null);
+
+        mockMvc.perform(delete("/projects/{projectId}/projectFiscals/{projectFiscalId}/activities/{activityId}/activityBoundary/{id}",
+                        projectId, fiscalId, activityId, boundaryId)
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer test-token"))
+                .andExpect(status().isNoContent());
+
+        verify(activityBoundaryService).deleteActivityBoundary(eq(projectId.toString()), eq(fiscalId.toString()), eq(activityId.toString()), eq(boundaryId.toString()));
+        verify(coordinatesService).updateProjectCoordinates(eq(projectId.toString()));
+        verify(activityService).getActivity(eq(projectId.toString()), eq(fiscalId.toString()), eq(activityId.toString()));
+        verify(activityService, org.mockito.Mockito.never()).updateActivity(anyString(), anyString(), any(ActivityModel.class));
     }
 
     ActivityBoundaryModel buildActivityBoundaryRequestModel() {
