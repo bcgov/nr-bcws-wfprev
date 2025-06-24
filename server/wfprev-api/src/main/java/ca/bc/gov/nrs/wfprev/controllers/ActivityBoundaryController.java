@@ -148,8 +148,11 @@ public class ActivityBoundaryController extends CommonController {
 
             // Update activity spatial indicator
             ActivityModel activity = activityService.getActivity(projectGuid, projectPlanFiscalGuid, activityGuid);
-            activity.setIsSpatialAddedInd(true);
-            activityService.updateActivity(projectGuid, projectPlanFiscalGuid, activity);
+            if(activity != null) {
+                activity.setIsSpatialAddedInd(true);
+                activityService.updateActivity(projectGuid, projectPlanFiscalGuid, activity);
+
+            }
 
             return ResponseEntity.status(201).body(newResource);
         } catch (DataIntegrityViolationException e) {
@@ -193,8 +196,10 @@ public class ActivityBoundaryController extends CommonController {
 
             // Update activity spatial indicator
             ActivityModel activity = activityService.getActivity(projectGuid, projectPlanFiscalGuid, activityGuid);
-            activity.setIsSpatialAddedInd(true);
-            activityService.updateActivity(projectGuid, projectPlanFiscalGuid, activity);
+            if (activity != null) {
+                activity.setIsSpatialAddedInd(true);
+                activityService.updateActivity(projectGuid, projectPlanFiscalGuid, activity);
+            }
 
             return updatedResource == null ? notFound() : ok(updatedResource);
         } catch (DataIntegrityViolationException e) {
@@ -236,9 +241,11 @@ public class ActivityBoundaryController extends CommonController {
 
             // Update activity spatial indicator
             ActivityModel activity = activityService.getActivity(projectGuid, projectPlanFiscalGuid, activityGuid);
-            CollectionModel<ActivityBoundaryModel> boundaries = activityBoundaryService.getAllActivityBoundaries(projectGuid, projectPlanFiscalGuid, activityGuid);
-            activity.setIsSpatialAddedInd(!boundaries.getContent().isEmpty());
-            activityService.updateActivity(projectGuid, projectPlanFiscalGuid, activity);
+            if(activity != null) {
+                CollectionModel<ActivityBoundaryModel> boundaries = activityBoundaryService.getAllActivityBoundaries(projectGuid, projectPlanFiscalGuid, activityGuid);
+                activity.setIsSpatialAddedInd(!boundaries.getContent().isEmpty());
+                activityService.updateActivity(projectGuid, projectPlanFiscalGuid, activity);
+            }
 
             return ResponseEntity.noContent().build();
         } catch (EntityNotFoundException e) {
