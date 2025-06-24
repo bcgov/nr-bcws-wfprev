@@ -58,3 +58,9 @@ export const FiscalYearColors: Record<'past' | 'present' | 'future', string> = {
 export const MapColors = {
   PROJECT_BOUNDARY: '#3f3f3f',
 };
+
+export const EnvironmentIndicators: { [key: string]: string } = {
+  LOCAL: 'WFLOCAL',
+  DEV: 'WFDEV',
+  TEST: 'WFTST'
+};
