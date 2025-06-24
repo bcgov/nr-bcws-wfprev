@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MomentDateAdapter } from '@angular/material-moment-adapter';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -57,7 +57,7 @@ export const CUSTOM_DATE_FORMATS = {
     ],
 })
 
-export class ActivitiesComponent implements OnChanges, OnInit, CanComponentDeactivate{
+export class ActivitiesComponent implements OnChanges, CanComponentDeactivate{
   @Input() fiscalGuid: string = '';
   @Output() boundariesUpdated = new EventEmitter<void>();
 
@@ -90,8 +90,6 @@ export class ActivitiesComponent implements OnChanges, OnInit, CanComponentDeact
       public cd: ChangeDetectorRef
     ) {}
 
-  ngOnInit(): void {
-  }
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['fiscalGuid'] && changes['fiscalGuid'].currentValue) {
       // Clear previous state before loading new fiscal data
@@ -298,6 +296,8 @@ export class ActivitiesComponent implements OnChanges, OnInit, CanComponentDeact
   
 
   onBaseChange(baseGuid: string, form: FormGroup) {
+    const techniqueControl = form.get('silvicultureTechniqueGuid');
+    const methodControl = form.get('silvicultureMethodGuid');
     if (!baseGuid) {
       form.patchValue({
         silvicultureTechniqueGuid: null,
@@ -305,23 +305,49 @@ export class ActivitiesComponent implements OnChanges, OnInit, CanComponentDeact
         filteredTechniqueCode: [],
         filteredMethodCode: []
       });
-      form.get('silvicultureTechniqueGuid')?.disable();
-      form.get('silvicultureMethodGuid')?.disable();
+      techniqueControl?.disable();
+      methodControl?.disable();
       return;
     }
   
     const filteredTechniques = this.silvicultureTechniqueCode.filter(t => t.silvicultureBaseGuid === baseGuid);
   
+    const currentTechnique = form.get('silvicultureTechniqueGuid')?.value;
+    const currentMethod = form.get('silvicultureMethodGuid')?.value;
+    const validTechnique = filteredTechniques.find(t => t.silvicultureTechniqueGuid === currentTechnique);
+
     form.patchValue({
-      silvicultureTechniqueGuid: null,
-      silvicultureMethodGuid: null,
       filteredTechniqueCode: filteredTechniques,
-      filteredMethodCode: []
-    });
+      filteredMethodCode: validTechnique
+        ? this.silvicultureMethodCode.filter(m => m.silvicultureTechniqueGuid === currentTechnique)
+        : []
+    }, { emitEvent: false });
+
+    if (!validTechnique) {
+      form.patchValue({
+        silvicultureTechniqueGuid: null,
+        silvicultureMethodGuid: null
+      }, { emitEvent: false });
+
+      techniqueControl?.disable();
+      methodControl?.disable();
+    } else {
+      techniqueControl?.enable();
+
+      const validMethod = this.silvicultureMethodCode.find(
+        m => m.silvicultureTechniqueGuid === currentTechnique && m.silvicultureMethodGuid === currentMethod
+      );
+
+      if (!validMethod) {
+        form.patchValue({ silvicultureMethodGuid: null }, { emitEvent: false });
+        form.get('silvicultureMethodGuid')?.disable();
+      } else {
+        form.get('silvicultureMethodGuid')?.enable();
+      }
+    }
+
   
-    form.get('silvicultureTechniqueGuid')?.enable();
-    form.get('silvicultureMethodGuid')?.disable();
-  
+    techniqueControl?.enable();  
     this.updateActivityName(form);
   }
 
@@ -371,27 +397,43 @@ export class ActivitiesComponent implements OnChanges, OnInit, CanComponentDeact
   
 
   onTechniqueChange(techniqueGuid: string, form: FormGroup) {
+    const methodControl = form.get('silvicultureMethodGuid');
+    
     if (!techniqueGuid) {
       form.patchValue({
         silvicultureMethodGuid: null,
         filteredMethodCode: []
-      });
-      form.get('silvicultureMethodGuid')?.disable();
+      }, { emitEvent: false });
+      
+      methodControl?.disable();
       return;
     }
-  
-    const filteredMethods = this.silvicultureMethodCode.filter(m => m.silvicultureTechniqueGuid === techniqueGuid);
-  
+
+    const filteredMethods = this.silvicultureMethodCode.filter(
+      m => m.silvicultureTechniqueGuid === techniqueGuid
+    );
+
+    const currentMethod = methodControl?.value;
+    const validMethod = filteredMethods.find(
+      m => m.silvicultureMethodGuid === currentMethod
+    );
+
     form.patchValue({
-      silvicultureMethodGuid: null,
       filteredMethodCode: filteredMethods
-    });
-  
-    form.get('silvicultureMethodGuid')?.enable();
-  
+    }, { emitEvent: false });
+
+    if (filteredMethods.length > 0) {
+      methodControl?.enable();
+    } else {
+      methodControl?.disable();
+    }
+
+    if (!validMethod) {
+      form.patchValue({ silvicultureMethodGuid: null }, { emitEvent: false });
+    }
+
     this.updateActivityName(form);
   }
-  
 
   onMethodChange(methodGuid: string, form: FormGroup) {  
     if (methodGuid){
@@ -735,5 +777,7 @@ export class ActivitiesComponent implements OnChanges, OnInit, CanComponentDeact
 
   onFilesChanged() {
     this.boundariesUpdated.emit(); // Notify ProjectFiscalsComponent
+    this.getActivities();
   }
+
 }
