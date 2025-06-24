@@ -7,6 +7,4 @@ import ca.bc.gov.nrs.wfprev.data.entities.WUIRiskClassCodeEntity;
 import java.util.UUID;
 
 @RepositoryRestResource(exported = false)
-public interface WUIRiskClassCodeRepository extends CommonRepository<WUIRiskClassCodeEntity, UUID> {
-
-}
+public interface WUIRiskClassCodeRepository extends CommonRepository<WUIRiskClassCodeEntity, UUID> {}
