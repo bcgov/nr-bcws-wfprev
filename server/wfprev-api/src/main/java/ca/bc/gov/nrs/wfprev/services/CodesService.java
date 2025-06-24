@@ -61,8 +61,10 @@ public class CodesService implements CommonService {
     private final SilvicultureMethodCodeRepository silvicultureMethodCodeRepository;
     private final SilvicultureTechniqueCodeResourceAssembler silvicultureTechniqueCodeResourceAssembler;
     private final SilvicultureTechniqueCodeRepository silvicultureTechniqueCodeRepository;
-    private ProposalTypeCodeRepository proposalTypeCodeRepository;
-    private ProposalTypeCodeResourceAssembler proposalTypeCodeResourceAssembler;
+    private final ProposalTypeCodeRepository proposalTypeCodeRepository;
+    private final ProposalTypeCodeResourceAssembler proposalTypeCodeResourceAssembler;
+    private final WUIRiskClassCodeRepository wuiRiskClassCodeRepository;
+    private final WUIRiskClassCodeResourceAssembler wuiRiskClassCodeResourceAssembler;
 
     public CodesService(ForestAreaCodeRepository forestAreaCodeRepository, ForestAreaCodeResourceAssembler forestAreaCodeResourceAssembler,
                         GeneralScopeCodeRepository generalScopeCodeRepository, GeneralScopeCodeResourceAssembler generalScopeCodeResourceAssembler,
@@ -78,7 +80,7 @@ public class CodesService implements CommonService {
                         FundingSourceCodeResourceAssembler fundingSourceCodeResourceAssembler, FundingSourceCodeRepository fundingSourceCodeRepository, SourceObjectNameCodeResourceAssembler sourceObjectNameCodeResourceAssembler, SourceObjectNameCodeRepository sourceObjectNameCodeRepository,
                         AttachmentContentTypeCodeResourceAssembler attachmentContentTypeCodeResourceAssembler, AttachmentContentTypeCodeRepository attachmentContentTypeCodeRepository, SilvicultureBaseCodeResourceAssembler silvicultureBaseCodeResourceAssembler, SilvicultureBaseCodeRepository silvicultureBaseCodeRepository,
                         SilvicultureMethodCodeResourceAssembler silvicultureMethodCodeResourceAssembler, SilvicultureMethodCodeRepository silvicultureMethodCodeRepository, SilvicultureTechniqueCodeResourceAssembler silvicultureTechniqueCodeResourceAssembler, SilvicultureTechniqueCodeRepository silvicultureTechniqueCodeRepository, 
-                        ProposalTypeCodeRepository proposalTypeCodeRepository, ProposalTypeCodeResourceAssembler proposalTypeCodeResourceAssembler) {
+                        ProposalTypeCodeRepository proposalTypeCodeRepository, ProposalTypeCodeResourceAssembler proposalTypeCodeResourceAssembler, WUIRiskClassCodeRepository wuiRiskClassCodeRepository, WUIRiskClassCodeResourceAssembler wuiRiskClassCodeResourceAssembler) {
         this.forestAreaCodeRepository = forestAreaCodeRepository;
         this.forestAreaCodeResourceAssembler = forestAreaCodeResourceAssembler;
         this.generalScopeCodeRepository = generalScopeCodeRepository;
@@ -123,6 +125,8 @@ public class CodesService implements CommonService {
         this.silvicultureTechniqueCodeRepository = silvicultureTechniqueCodeRepository;
         this.proposalTypeCodeResourceAssembler = proposalTypeCodeResourceAssembler;
         this.proposalTypeCodeRepository = proposalTypeCodeRepository;
+        this.wuiRiskClassCodeResourceAssembler = wuiRiskClassCodeResourceAssembler;
+        this.wuiRiskClassCodeRepository = wuiRiskClassCodeRepository;
     }
 
     /**
@@ -549,6 +553,23 @@ public class CodesService implements CommonService {
     public ProposalTypeCodeModel getProposalTypeCodeById(String id) throws ServiceException {
         try {
             return proposalTypeCodeRepository.findById(id).map(proposalTypeCodeResourceAssembler::toModel).orElse(null);
+        } catch (Exception e) {
+            throw new ServiceException(e.getLocalizedMessage(), e);
+        }
+    }
+
+    public CollectionModel<WUIRiskClassCodeModel> getAllWuiRiskClassCodes() throws ServiceException {
+        try {
+            List<WUIRiskClassCodeEntity> entities = wuiRiskClassCodeRepository.findAll();
+            return wuiRiskClassCodeResourceAssembler.toCollectionModel(entities);
+        } catch (Exception e) {
+            throw new ServiceException(e.getLocalizedMessage(), e);
+        }
+    }
+
+    public WUIRiskClassCodeModel getWuiRiskClassCodeById(String id) throws ServiceException {
+        try {
+            return wuiRiskClassCodeRepository.findById(id).map(wuiRiskClassCodeResourceAssembler::toModel).orElse(null);
         } catch (Exception e) {
             throw new ServiceException(e.getLocalizedMessage(), e);
         }
