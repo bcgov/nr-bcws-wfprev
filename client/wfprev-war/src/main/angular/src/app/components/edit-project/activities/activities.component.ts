@@ -298,6 +298,8 @@ export class ActivitiesComponent implements OnChanges, OnInit, CanComponentDeact
   
 
   onBaseChange(baseGuid: string, form: FormGroup) {
+    const techniqueControl = form.get('silvicultureTechniqueGuid');
+    const methodControl = form.get('silvicultureMethodGuid');
     if (!baseGuid) {
       form.patchValue({
         silvicultureTechniqueGuid: null,
@@ -305,8 +307,8 @@ export class ActivitiesComponent implements OnChanges, OnInit, CanComponentDeact
         filteredTechniqueCode: [],
         filteredMethodCode: []
       });
-      form.get('silvicultureTechniqueGuid')?.disable();
-      form.get('silvicultureMethodGuid')?.disable();
+      techniqueControl?.disable();
+      methodControl?.disable();
       return;
     }
   
@@ -329,10 +331,10 @@ export class ActivitiesComponent implements OnChanges, OnInit, CanComponentDeact
         silvicultureMethodGuid: null
       }, { emitEvent: false });
 
-      form.get('silvicultureTechniqueGuid')?.disable();
-      form.get('silvicultureMethodGuid')?.disable();
+      techniqueControl?.disable();
+      methodControl?.disable();
     } else {
-      form.get('silvicultureTechniqueGuid')?.enable();
+      techniqueControl?.enable();
 
       const validMethod = this.silvicultureMethodCode.find(
         m => m.silvicultureTechniqueGuid === currentTechnique && m.silvicultureMethodGuid === currentMethod
@@ -347,7 +349,7 @@ export class ActivitiesComponent implements OnChanges, OnInit, CanComponentDeact
     }
 
   
-    form.get('silvicultureTechniqueGuid')?.enable();  
+    techniqueControl?.enable();  
     this.updateActivityName(form);
   }
 
