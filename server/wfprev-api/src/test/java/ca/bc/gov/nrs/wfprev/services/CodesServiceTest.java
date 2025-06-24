@@ -1957,7 +1957,6 @@ class CodesServiceTest {
 
     @Test
     void testGetAllWUIRiskClassCodes_Success() throws ServiceException {
-        // Arrange
         List<WUIRiskClassCodeEntity> entities = new ArrayList<>();
         entities.add(new WUIRiskClassCodeEntity());
         entities.add(new WUIRiskClassCodeEntity());
@@ -1965,10 +1964,8 @@ class CodesServiceTest {
         when(wuiRiskClassCodeResourceAssembler.toCollectionModel(entities))
                 .thenReturn(CollectionModel.of(new ArrayList<>()));
 
-        // Act
         CollectionModel<WUIRiskClassCodeModel> result = codesService.getAllWuiRiskClassCodes();
 
-        // Assert
         assertNotNull(result);
     }
 
