@@ -20,6 +20,7 @@
   { "name": "ca.bc.gov.nrs.wfprev.data.models.SilvicultureMethodCodeModel" },
   { "name": "ca.bc.gov.nrs.wfprev.data.models.SilvicultureTechniqueCodeModel" },
   { "name": "ca.bc.gov.nrs.wfprev.data.models.FileAttachmentModel" },
+  { "name": "ca.bc.gov.nrs.wfprev.data.models.WUIRiskClassCodeModel" },
 
   { "name": "ca.bc.gov.nrs.wfprev.data.entities.ForestAreaCodeEntity" },
   { "name": "ca.bc.gov.nrs.wfprev.data.entities.GeneralScopeCodeEntity" },
@@ -38,6 +39,7 @@
   { "name": "ca.bc.gov.nrs.wfprev.data.entities.SilvicultureBaseCodeEntity" },
   { "name": "ca.bc.gov.nrs.wfprev.data.entities.SilvicultureBaseCodeEntity" },
   { "name": "ca.bc.gov.nrs.wfprev.data.entities.SilvicultureBaseCodeEntity" },
+  { "name": "ca.bc.gov.nrs.wfprev.data.entities.WUIRiskClassCodeEntity" },
   { "name": "ca.bc.gov.nrs.wfprev.data.entities.FileAttachmentEntity" },
   { "name": "org.springframework.hateoas.RepresentationModel"},
   { "name": "org.springframework.hateoas.Link"},

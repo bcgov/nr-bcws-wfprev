@@ -25,4 +25,5 @@ public class CodeTables {
   public static final String SILVICULTURE_METHOD_CODE = "silvicultureMethodCodes";
   public static final String SILVICULTURE_TECHNIQUE_CODE = "silvicultureTechniqueCodes";
   public static final String PROPOSAL_TYPE_CODE = "proposalTypeCodes";
+  public static final String WUI_RISK_CLASS_CODE = "wuiRiskClassCodes";
 }
