@@ -1286,6 +1286,21 @@
         "rollback": [
         ]
       }
+    },
+    {
+      "changeSet": {
+        "id": "01_00_23_01",
+        "author": "luli",
+        "changes": [
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_00_23/01/dml/WFPREV.grant_all_table_privileges_to_app_user"
+            }
+          }
+        ]
+      }
     }
    ] 
 }
