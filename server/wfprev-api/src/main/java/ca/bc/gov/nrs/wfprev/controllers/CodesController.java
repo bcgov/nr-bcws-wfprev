@@ -70,6 +70,7 @@ public class CodesController extends CommonController {
                 case CodeTables.SILVICULTURE_TECHNIQUE_CODE -> result = codesService.getAllSilvicultureTechniqueCodes();
                 case CodeTables.PROPOSAL_TYPE_CODE -> result = codesService.getAllProposalTypeCodes();
                 case CodeTables.WUI_RISK_CLASS_CODE -> result = codesService.getAllWuiRiskClassCodes();
+                case CodeTables.FUEL_MANAGEMENT_OBJECTIVE_CODE -> result = codesService.getAllFuelManagementObjectiveCodes();
 
                 default -> {
                     log.error("Invalid code table: {}", codeTable);
@@ -160,6 +161,7 @@ public class CodesController extends CommonController {
             case CodeTables.SILVICULTURE_TECHNIQUE_CODE -> codesService.getSilvicultureTechniqueCodeById(id);
             case CodeTables.PROPOSAL_TYPE_CODE -> codesService.getProposalTypeCodeById(id);
             case CodeTables.WUI_RISK_CLASS_CODE -> codesService.getWuiRiskClassCodeById(id);
+            case CodeTables.FUEL_MANAGEMENT_OBJECTIVE_CODE -> codesService.getFuelManagementObjectiveCodeById(id);
             default -> null;
         };
     }
