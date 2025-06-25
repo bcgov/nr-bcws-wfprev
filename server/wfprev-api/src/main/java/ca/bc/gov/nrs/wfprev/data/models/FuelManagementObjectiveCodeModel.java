@@ -27,5 +27,6 @@ public class FuelManagementObjectiveCodeModel extends CommonModel<FuelManagement
     private String fuelManagementObjectiveGuid;
     private String fuelManagementObjectiveTypeCode;
     private String objectiveLabel;
+    private String objectiveFilterLevelCode;
     private BigDecimal weightedRank;
 }

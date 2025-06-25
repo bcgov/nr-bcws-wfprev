@@ -22,7 +22,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "fuel_management_objective")
+@Table(name = "project_objective")
 @JsonIgnoreProperties(ignoreUnknown = false)
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -33,15 +33,18 @@ public class FuelManagementObjectiveCodeEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @Column(name = "fuel_management_objective_guid", nullable = false)
+    @Column(name = "project_objective_guid", nullable = false)
     @NotNull
     private String fuelManagementObjectiveGuid;
 
-    @Column(name = "fuel_mgmt_obj_type_code", length = 10)
+    @Column(name = "project_type_code", length = 10)
     private String fuelManagementObjectiveTypeCode;
 
     @Column(name = "objective_label", length = 300)
     private String objectiveLabel;
+
+    @Column(name = "objective_filter_level_code", length = 10)
+    private String objectiveFilterLevelCode;
 
     @Column(name = "weighted_rank")
     private BigDecimal weightedRank;
