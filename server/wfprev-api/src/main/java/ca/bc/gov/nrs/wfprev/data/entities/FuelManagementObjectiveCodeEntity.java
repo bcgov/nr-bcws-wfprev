@@ -44,7 +44,7 @@ public class FuelManagementObjectiveCodeEntity implements Serializable {
     private String objectiveLabel;
 
     @Column(name = "objective_filter_level_code", length = 10)
-    private BigDecimal objectiveFilterLevelCode;
+    private String objectiveFilterLevelCode;
 
     @Column(name = "weighted_rank")
     private BigDecimal weightedRank;
