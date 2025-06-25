@@ -65,6 +65,9 @@ public class CodesService implements CommonService {
     private final ProposalTypeCodeResourceAssembler proposalTypeCodeResourceAssembler;
     private final WUIRiskClassCodeRepository wuiRiskClassCodeRepository;
     private final WUIRiskClassCodeResourceAssembler wuiRiskClassCodeResourceAssembler;
+    private final FuelManagementObjectiveCodeRepository fuelManagementObjectiveCodeRepository;
+    private final FuelManagementObjectiveCodeResourceAssembler fuelManagementObjectiveCodeResourceAssembler;
+
 
     public CodesService(ForestAreaCodeRepository forestAreaCodeRepository, ForestAreaCodeResourceAssembler forestAreaCodeResourceAssembler,
                         GeneralScopeCodeRepository generalScopeCodeRepository, GeneralScopeCodeResourceAssembler generalScopeCodeResourceAssembler,
@@ -80,7 +83,8 @@ public class CodesService implements CommonService {
                         FundingSourceCodeResourceAssembler fundingSourceCodeResourceAssembler, FundingSourceCodeRepository fundingSourceCodeRepository, SourceObjectNameCodeResourceAssembler sourceObjectNameCodeResourceAssembler, SourceObjectNameCodeRepository sourceObjectNameCodeRepository,
                         AttachmentContentTypeCodeResourceAssembler attachmentContentTypeCodeResourceAssembler, AttachmentContentTypeCodeRepository attachmentContentTypeCodeRepository, SilvicultureBaseCodeResourceAssembler silvicultureBaseCodeResourceAssembler, SilvicultureBaseCodeRepository silvicultureBaseCodeRepository,
                         SilvicultureMethodCodeResourceAssembler silvicultureMethodCodeResourceAssembler, SilvicultureMethodCodeRepository silvicultureMethodCodeRepository, SilvicultureTechniqueCodeResourceAssembler silvicultureTechniqueCodeResourceAssembler, SilvicultureTechniqueCodeRepository silvicultureTechniqueCodeRepository, 
-                        ProposalTypeCodeRepository proposalTypeCodeRepository, ProposalTypeCodeResourceAssembler proposalTypeCodeResourceAssembler, WUIRiskClassCodeRepository wuiRiskClassCodeRepository, WUIRiskClassCodeResourceAssembler wuiRiskClassCodeResourceAssembler) {
+                        ProposalTypeCodeRepository proposalTypeCodeRepository, ProposalTypeCodeResourceAssembler proposalTypeCodeResourceAssembler, WUIRiskClassCodeRepository wuiRiskClassCodeRepository, WUIRiskClassCodeResourceAssembler wuiRiskClassCodeResourceAssembler,
+                        FuelManagementObjectiveCodeRepository fuelManagementObjectiveCodeRepository, FuelManagementObjectiveCodeResourceAssembler fuelManagementObjectiveCodeResourceAssembler) {
         this.forestAreaCodeRepository = forestAreaCodeRepository;
         this.forestAreaCodeResourceAssembler = forestAreaCodeResourceAssembler;
         this.generalScopeCodeRepository = generalScopeCodeRepository;
@@ -127,6 +131,8 @@ public class CodesService implements CommonService {
         this.proposalTypeCodeRepository = proposalTypeCodeRepository;
         this.wuiRiskClassCodeResourceAssembler = wuiRiskClassCodeResourceAssembler;
         this.wuiRiskClassCodeRepository = wuiRiskClassCodeRepository;
+        this.fuelManagementObjectiveCodeResourceAssembler = fuelManagementObjectiveCodeResourceAssembler;
+        this.fuelManagementObjectiveCodeRepository = fuelManagementObjectiveCodeRepository;
     }
 
     /**
@@ -574,5 +580,25 @@ public class CodesService implements CommonService {
             throw new ServiceException(e.getLocalizedMessage(), e);
         }
     }
+
+    public CollectionModel<FuelManagementObjectiveCodeModel> getAllFuelManagementObjectiveCodes() throws ServiceException {
+        try {
+            List<FuelManagementObjectiveCodeEntity> entities = fuelManagementObjectiveCodeRepository.findAll();
+            return fuelManagementObjectiveCodeResourceAssembler.toCollectionModel(entities);
+        } catch (Exception e) {
+            throw new ServiceException(e.getLocalizedMessage(), e);
+        }
+    }
+
+    public FuelManagementObjectiveCodeModel getFuelManagementObjectiveCodeById(String id) throws ServiceException {
+        try {
+            return fuelManagementObjectiveCodeRepository.findById(UUID.fromString(id))
+                .map(fuelManagementObjectiveCodeResourceAssembler::toModel)
+                .orElse(null);
+        } catch (Exception e) {
+            throw new ServiceException(e.getLocalizedMessage(), e);
+        }
+    }
+
 
 }

@@ -1222,22 +1222,6 @@
         ]
       }
     },
-    {
-      "changeSet": {
-        "id": "01_00_21_00",
-        "author": "luli",
-        "tagDatabase": { "tag": "version_01_00_21_00" },
-        "changes": [
-          {
-            "sqlFile": {
-              "dbms": "postgresql",
-              "endDelimiter": ";",
-              "path": "scripts/01_00_21/00/ddl/app_wf1_prev.ddl.alter_role_password.sql"
-            }
-          }
-        ]
-      }
-    },
    {
       "changeSet": {
         "id": "01_00_22_00",
@@ -1302,6 +1286,21 @@
         "rollback": [
         ]
       }
+    },
+    {
+      "changeSet": {
+        "id": "01_00_23_00",
+        "author": "luli",
+        "changes": [
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_23/00/dml/update_fuel_management_objective_weighted_rank.sql"
+            }
+          }
+        ]
+      }
     }
+
    ] 
 }
