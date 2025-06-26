@@ -1286,6 +1286,77 @@
         "rollback": [
         ]
       }
+    },
+   {
+      "changeSet": {
+        "id": "01_00_23_00",
+        "author": "hsaldyga",
+        "tagDatabase": { "tag": "version_01_00_23_00" },
+        "changes": [
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_23/00/dml/app_wf1_rm.dml.update_project_plan_fiscal_code.sql"
+            }
+          },
+           {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_23/00/ddl/WFPREV.eval_criteria_sect_code.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_23/00/ddl/WFPREV.evaluation_criteria.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_23/00/ddl/WFPREV.eval_criteria_summary.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_23/00/ddl/WFPREV.eval_criteria_sect_summ.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_23/00/ddl/WFPREV.eval_criteria_selected.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_23/00/ddl/app_wf1_prev.ddl.apply_grants.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_23/00/ddl/app_wf1_prev.ddl.drop_deprecated_tables.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_23/00/dml/app_wf1_prev.dml.load_eval_criteria_sect_code.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_23/00/dml/app_wf1_prev.dml.load_project_objectives.sql"
+            }
+          }
+        ],
+        "rollback": [
+        ]
+      }
     }
    ] 
 }
