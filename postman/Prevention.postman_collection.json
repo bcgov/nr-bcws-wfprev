@@ -209,7 +209,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n  \"projectGuid\": \"{{projectGuid}}\",\n  \"activityCategoryCode\": \"TACT_PLAN\",\n  \"fiscalYear\": 2023,\n  \"projectPlanStatusCode\": \"ACTIVE\",\n  \"planFiscalStatusCode\": \"DRAFT\",\n  \"projectFiscalName\": \"Fiscal Project 1\",\n  \"projectFiscalDescription\": \"This is a test project fiscal description.\",\n  \"businessAreaComment\": \"Test comment\",\n  \"estimatedClwrrAllocAmount\": 1000.00,\n  \"fiscalAncillaryFundAmount\": 300.00,\n  \"fiscalPlannedProjectSizeHa\": 10.5,\n  \"fiscalPlannedCostPerHaAmt\": 500.00,\n  \"fiscalReportedSpendAmount\": 0.00,\n  \"fiscalActualAmount\": 0.00,\n  \"fiscalCompletedSizeHa\": 0.0,\n  \"fiscalActualCostPerHaAmt\": 0.0,\n  \"firstNationsDelivPartInd\": true,\n  \"firstNationsEngagementInd\": false,\n  \"firstNationsPartner\": \"Test Partner\",\n  \"resultsNumber\": \"RN123456\",\n  \"resultsOpeningId\": \"RO12345\",\n  \"resultsContactEmail\": \"contact@example.com\",\n  \"submittedByName\": \"Test User\",\n  \"submittedByUserGuid\": \"123e4567-e89\",\n  \"submittedByUserUserid\": \"testuser\",\n  \"submissionTimestamp\": \"2024-01-01T12:00:00Z\",\n  \"isApprovedInd\": true,\n  \"isDelayedInd\": false,\n  \"fiscalForecastAmount\": 1800.00,\n  \"ancillaryFundingProvider\": \"Provider01\" \n}",
+					"raw": "{\n  \"projectGuid\": \"{{projectGuid}}\",\n  \"proposalTypeCode\": \"NEW\", \n  \"activityCategoryCode\": \"PLN_DEV\", \n  \"fiscalYear\": 2023,\n  \"projectPlanStatusCode\": \"ACTIVE\",\n  \"planFiscalStatusCode\": \"DRAFT\",\n  \"projectFiscalName\": \"Fiscal Project 1\",\n  \"projectFiscalDescription\": \"This is a test project fiscal description.\",\n  \"businessAreaComment\": \"Test comment\",\n  \"estimatedClwrrAllocAmount\": 1000.00,\n  \"fiscalAncillaryFundAmount\": 300.00,\n  \"fiscalPlannedProjectSizeHa\": 10.5,\n  \"fiscalPlannedCostPerHaAmt\": 500.00,\n  \"fiscalReportedSpendAmount\": 0.00,\n  \"fiscalActualAmount\": 0.00,\n  \"fiscalCompletedSizeHa\": 0.0,\n  \"fiscalActualCostPerHaAmt\": 0.0,\n  \"firstNationsDelivPartInd\": true,\n  \"firstNationsEngagementInd\": false,\n  \"firstNationsPartner\": \"Test Partner\",\n  \"resultsNumber\": \"RN123456\",\n  \"resultsOpeningId\": \"RO12345\",\n  \"resultsContactEmail\": \"contact@example.com\",\n  \"submittedByName\": \"Test User\",\n  \"submittedByUserGuid\": \"123e4567-e89\",\n  \"submittedByUserUserid\": \"testuser\",\n  \"submissionTimestamp\": \"2024-01-01T12:00:00Z\",\n  \"isApprovedInd\": true,\n  \"isDelayedInd\": false,\n  \"fiscalForecastAmount\": 1800.00,\n  \"ancillaryFundingProvider\": \"Provider01\" \n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -702,7 +702,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n  \"projectPlanFiscalGuid\": \"{{projectPlanFiscalGuid}}\",\n  \"projectGuid\": \"{{projectGuid}}\",\n  \"activityCategoryCode\": \"RX_DEV\",\n  \"fiscalYear\": 2024,\n  \"projectPlanStatusCode\": \"ACTIVE\",\n  \"planFiscalStatusCode\": \"PROPOSED\",\n  \"projectFiscalName\": \"Fiscal Project 1\",\n  \"projectFiscalDescription\": \"This is a test project fiscal description.\",\n  \"businessAreaComment\": \"Test comment\",\n  \"estimatedClwrrAllocAmount\": 1000.00,\n  \"fiscalForecastAmount\": 300.00,\n  \"fiscalAncillaryFundAmount\": 300.00,\n  \"fiscalPlannedProjectSizeHa\": 10.5,\n  \"fiscalPlannedCostPerHaAmt\": 500.00,\n  \"fiscalReportedSpendAmount\": 0.00,\n  \"fiscalActualAmount\": 0.00,\n  \"fiscalCompletedSizeHa\": 0.0,\n  \"fiscalActualCostPerHaAmt\": 0.0,\n  \"firstNationsDelivPartInd\": true,\n  \"firstNationsEngagementInd\": false,\n  \"firstNationsPartner\": \"Test Partner\",\n  \"resultsNumber\": \"RN123456\",\n  \"resultsOpeningId\": \"RO12345\",\n  \"resultsContactEmail\": \"contact@example.com\",\n  \"submittedByName\": \"Test User\",\n  \"submittedByUserGuid\": \"123e4567-e89\",\n  \"submittedByUserUserid\": \"testuser\",\n  \"submissionTimestamp\": \"2024-01-01T12:00:00Z\",\n  \"isApprovedInd\": true,\n  \"isDelayedInd\": false,\n  \"ancillaryFundingProvider\": \"Provider01\" \n}",
+					"raw": "{\n  \"projectPlanFiscalGuid\": \"{{projectPlanFiscalGuid}}\",\n  \"projectGuid\": \"{{projectGuid}}\",\n  \"proposalTypeCode\": \"CARRYOVER\",\n  \"activityCategoryCode\": \"RX_DEV\",\n  \"fiscalYear\": 2024,\n  \"projectPlanStatusCode\": \"ACTIVE\",\n  \"planFiscalStatusCode\": \"PROPOSED\",\n  \"projectFiscalName\": \"Fiscal Project 1\",\n  \"projectFiscalDescription\": \"This is a test project fiscal description.\",\n  \"businessAreaComment\": \"Test comment\",\n  \"estimatedClwrrAllocAmount\": 1000.00,\n  \"fiscalForecastAmount\": 300.00,\n  \"fiscalAncillaryFundAmount\": 300.00,\n  \"fiscalPlannedProjectSizeHa\": 10.5,\n  \"fiscalPlannedCostPerHaAmt\": 500.00,\n  \"fiscalReportedSpendAmount\": 0.00,\n  \"fiscalActualAmount\": 0.00,\n  \"fiscalCompletedSizeHa\": 0.0,\n  \"fiscalActualCostPerHaAmt\": 0.0,\n  \"firstNationsDelivPartInd\": true,\n  \"firstNationsEngagementInd\": false,\n  \"firstNationsPartner\": \"Test Partner\",\n  \"resultsNumber\": \"RN123456\",\n  \"resultsOpeningId\": \"RO12345\",\n  \"resultsContactEmail\": \"contact@example.com\",\n  \"submittedByName\": \"Test User\",\n  \"submittedByUserGuid\": \"123e4567-e89\",\n  \"submittedByUserUserid\": \"testuser\",\n  \"submissionTimestamp\": \"2024-01-01T12:00:00Z\",\n  \"isApprovedInd\": true,\n  \"isDelayedInd\": false,\n  \"ancillaryFundingProvider\": \"Provider01\" \n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -1810,54 +1810,6 @@
 			"response": []
 		},
 		{
-			"name": "GET Ancillary Funding Source Codes",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Status code is 200\", function() {",
-							"    pm.response.to.have.status(200);",
-							"})"
-						],
-						"type": "text/javascript",
-						"packages": {}
-					}
-				}
-			],
-			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "{{accessToken}}",
-							"type": "string"
-						}
-					]
-				},
-				"method": "GET",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json",
-						"type": "text"
-					}
-				],
-				"url": {
-					"raw": "{{LOCAL_API_URL}}/codes/ancillaryFundingSourceCodes",
-					"host": [
-						"{{LOCAL_API_URL}}"
-					],
-					"path": [
-						"codes",
-						"ancillaryFundingSourceCodes"
-					]
-				}
-			},
-			"response": []
-		},
-		{
 			"name": "GET Source Object Name Codes",
 			"event": [
 				{
@@ -2140,53 +2092,6 @@
 					"codes",
 					"proposalTypeCodes"
 				]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "GET Fuel Management Objective Codes",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Status code is 200\", function() {",
-							"    pm.response.to.have.status(200);",
-							"})"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "{{accessToken}}",
-							"type": "string"
-						}
-					]
-				},
-				"method": "GET",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json",
-						"type": "text"
-					}
-				],
-				"url": {
-					"raw": "{{LOCAL_API_URL}}/codes/fuleManagementObjectiveCodes",
-					"host": [
-						"{{LOCAL_API_URL}}"
-					],
-					"path": [
-						"codes",
-						"fuleManagementObjectiveCodes"
-					]
 				}
 			},
 			"response": []
