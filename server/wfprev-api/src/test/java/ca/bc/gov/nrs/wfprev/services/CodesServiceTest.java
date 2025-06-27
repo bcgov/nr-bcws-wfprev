@@ -68,8 +68,8 @@ class CodesServiceTest {
     private ProposalTypeCodeResourceAssembler proposalTypeCodeResourceAssembler;
     private WUIRiskClassCodeRepository wuiRiskClassCodeRepository;
     private WUIRiskClassCodeResourceAssembler wuiRiskClassCodeResourceAssembler;
-    private FuelManagementObjectiveCodeRepository fuelManagementObjectiveCodeRepository;
-    private FuelManagementObjectiveCodeResourceAssembler fuelManagementObjectiveCodeResourceAssembler;
+    private EvaluationCriteriaCodeRepository evaluationCriteriaCodeRepository;
+    private EvaluationCriteriaCodeResourceAssembler evaluationCriteriaCodeResourceAssembler;
 
     @BeforeEach
     void setup() {
@@ -119,8 +119,8 @@ class CodesServiceTest {
         silvicultureTechniqueCodeResourceAssembler = mock(SilvicultureTechniqueCodeResourceAssembler.class);
         wuiRiskClassCodeRepository = mock(WUIRiskClassCodeRepository.class);
         wuiRiskClassCodeResourceAssembler = mock(WUIRiskClassCodeResourceAssembler.class);
-        fuelManagementObjectiveCodeRepository = mock(FuelManagementObjectiveCodeRepository.class);
-        fuelManagementObjectiveCodeResourceAssembler = mock(FuelManagementObjectiveCodeResourceAssembler.class);
+        evaluationCriteriaCodeRepository = mock(EvaluationCriteriaCodeRepository.class);
+        evaluationCriteriaCodeResourceAssembler = mock(EvaluationCriteriaCodeResourceAssembler.class);
 
         codesService = new CodesService(forestAreaCodeRepository, forestAreaCodeResourceAssembler,
                 generalScopeCodeRepository, generalScopeCodeResourceAssembler,
@@ -131,7 +131,7 @@ class CodesServiceTest {
                 activityCategoryCodeResourceAssembler, activityCategoryCodeRepository, planFiscalStatusCodeResourceAssembler, planFiscalStatusCodeRepository, ancillaryFundingSourceCodeResourceAssembler, ancillaryFundingSourceCodeRepository,
                 fundingSourceCodeResourceAssembler, fundingSourceCodeRepository, sourceObjectNameCodeResourceAssembler, sourceObjectNameCodeRepository, attachmentContentTypeCodeResourceAssembler, attachmentContentTypeCodeRepository,
                 silvicultureBaseCodeResourceAssembler, silvicultureBaseCodeRepository, silvicultureMethodCodeResourceAssembler, silvicultureMethodCodeRepository, silvicultureTechniqueCodeResourceAssembler, silvicultureTechniqueCodeRepository,
-                proposalTypeCodeRepository, proposalTypeCodeResourceAssembler, wuiRiskClassCodeRepository, wuiRiskClassCodeResourceAssembler,fuelManagementObjectiveCodeRepository,fuelManagementObjectiveCodeResourceAssembler);
+                proposalTypeCodeRepository, proposalTypeCodeResourceAssembler, wuiRiskClassCodeRepository, wuiRiskClassCodeResourceAssembler,evaluationCriteriaCodeRepository,evaluationCriteriaCodeResourceAssembler);
     }
 
     @Test
@@ -2023,67 +2023,67 @@ class CodesServiceTest {
         }
 
         @Test
-        void testGetAllFuelManagementObjectiveCodes_Success() throws ServiceException {
-                List<FuelManagementObjectiveCodeEntity> entities = new ArrayList<>();
-                entities.add(new FuelManagementObjectiveCodeEntity());
-                entities.add(new FuelManagementObjectiveCodeEntity());
+        void testGetAllEvaluationCriteriaCodes_Success() throws ServiceException {
+                List<EvaluationCriteriaCodeEntity> entities = new ArrayList<>();
+                entities.add(new EvaluationCriteriaCodeEntity());
+                entities.add(new EvaluationCriteriaCodeEntity());
 
-                when(fuelManagementObjectiveCodeRepository.findAll()).thenReturn(entities);
-                when(fuelManagementObjectiveCodeResourceAssembler.toCollectionModel(entities))
+                when(evaluationCriteriaCodeRepository.findAll()).thenReturn(entities);
+                when(evaluationCriteriaCodeResourceAssembler.toCollectionModel(entities))
                         .thenReturn(CollectionModel.of(new ArrayList<>()));
 
-                CollectionModel<FuelManagementObjectiveCodeModel> result = codesService.getAllFuelManagementObjectiveCodes();
+                CollectionModel<EvaluationCriteriaCodeModel> result = codesService.getAllEvaluationCriteriaCodes();
 
                 assertNotNull(result);
         }
 
         @Test
-        void testGetAllFuelManagementObjectiveCodes_Exception() {
-                when(fuelManagementObjectiveCodeRepository.findAll())
+        void testGetAllEvaluationCriteriaCodes_Exception() {
+                when(evaluationCriteriaCodeRepository.findAll())
                         .thenThrow(new RuntimeException("Error fetching fuel management objective codes"));
 
                 ServiceException exception = assertThrows(
                         ServiceException.class,
-                        () -> codesService.getAllFuelManagementObjectiveCodes()
+                        () -> codesService.getAllEvaluationCriteriaCodes()
                 );
                 assertEquals("Error fetching fuel management objective codes", exception.getMessage());
         }
 
         @Test
-        void testGetFuelManagementObjectiveCodeById_Success() throws ServiceException {
+        void testGetEvaluationCriteriaCodeById_Success() throws ServiceException {
                 UUID exampleId = UUID.randomUUID();
-                FuelManagementObjectiveCodeEntity entity = new FuelManagementObjectiveCodeEntity();
+                EvaluationCriteriaCodeEntity entity = new EvaluationCriteriaCodeEntity();
 
-                when(fuelManagementObjectiveCodeRepository.findById(exampleId))
+                when(evaluationCriteriaCodeRepository.findById(exampleId))
                         .thenReturn(Optional.of(entity));
-                when(fuelManagementObjectiveCodeResourceAssembler.toModel(entity))
-                        .thenReturn(new FuelManagementObjectiveCodeModel());
+                when(evaluationCriteriaCodeResourceAssembler.toModel(entity))
+                        .thenReturn(new EvaluationCriteriaCodeModel());
 
-                FuelManagementObjectiveCodeModel result = codesService.getFuelManagementObjectiveCodeById(String.valueOf(exampleId));
+                EvaluationCriteriaCodeModel result = codesService.getEvaluationCriteriaCodeById(String.valueOf(exampleId));
 
                 assertNotNull(result);
         }
 
         @Test
-        void testGetFuelManagementObjectiveCodeById_NotFound() throws ServiceException {
+        void testGetEvaluationCriteriaCodeById_NotFound() throws ServiceException {
                 UUID nonExistentId = UUID.randomUUID();
-                when(fuelManagementObjectiveCodeRepository.findById(nonExistentId))
+                when(evaluationCriteriaCodeRepository.findById(nonExistentId))
                         .thenReturn(Optional.empty());
 
-                FuelManagementObjectiveCodeModel result = codesService.getFuelManagementObjectiveCodeById(String.valueOf(nonExistentId));
+                EvaluationCriteriaCodeModel result = codesService.getEvaluationCriteriaCodeById(String.valueOf(nonExistentId));
 
                 assertNull(result);
         }
 
         @Test
-        void testGetFuelManagementObjectiveCodeById_Exception() {
+        void testGetEvaluationCriteriaCodeById_Exception() {
                 UUID exampleId = UUID.randomUUID();
-                when(fuelManagementObjectiveCodeRepository.findById(exampleId))
+                when(evaluationCriteriaCodeRepository.findById(exampleId))
                         .thenThrow(new RuntimeException("Error fetching fuel management objective code"));
 
                 ServiceException exception = assertThrows(
                         ServiceException.class,
-                        () -> codesService.getFuelManagementObjectiveCodeById(String.valueOf(exampleId))
+                        () -> codesService.getEvaluationCriteriaCodeById(String.valueOf(exampleId))
                 );
                 assertTrue(exception.getMessage().contains("Error fetching fuel management objective code"));
         }

@@ -17,16 +17,16 @@ import lombok.NoArgsConstructor;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
-@JsonRootName(value = "fuelManagementObjectiveCode")
-@Relation(collectionRelation = "fuelManagementObjectiveCode")
+@JsonRootName(value = "evaluationCriteriaCode")
+@Relation(collectionRelation = "evaluationCriteriaCode")
 @JsonInclude(Include.NON_NULL)
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class FuelManagementObjectiveCodeModel extends CommonModel<FuelManagementObjectiveCodeModel> {
-    private String fuelManagementObjectiveGuid;
-    private String fuelManagementObjectiveTypeCode;
-    private String objectiveLabel;
-    private String objectiveFilterLevelCode;
+public class EvaluationCriteriaCodeModel extends CommonModel<EvaluationCriteriaCodeModel> {
+    private String evaluationCriteriaGuid;
+    private String projectTypeCode;
+    private String criteriaLabel;
+    private String evalCriteriaSectCode;
     private BigDecimal weightedRank;
 }
