@@ -26,5 +26,5 @@ public class CodeTables {
   public static final String SILVICULTURE_TECHNIQUE_CODE = "silvicultureTechniqueCodes";
   public static final String PROPOSAL_TYPE_CODE = "proposalTypeCodes";
   public static final String WUI_RISK_CLASS_CODE = "wuiRiskClassCodes";
-  public static final String FUEL_MANAGEMENT_OBJECTIVE_CODE = "fuelManagementObjectiveCodes";
+  public static final String EVALUATION_CRITERIA_CODE = "evaluationCriteriaCodes";
 }
