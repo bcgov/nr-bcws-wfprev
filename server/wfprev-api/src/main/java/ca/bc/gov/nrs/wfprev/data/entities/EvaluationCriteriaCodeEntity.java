@@ -22,29 +22,29 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "project_objective")
+@Table(name = "evaluation_criteria")
 @JsonIgnoreProperties(ignoreUnknown = false)
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class FuelManagementObjectiveCodeEntity implements Serializable {
+public class EvaluationCriteriaCodeEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @Column(name = "project_objective_guid", nullable = false)
+    @Column(name = "evaluation_criteria_guid", nullable = false)
     @NotNull
-    private String fuelManagementObjectiveGuid;
+    private String evaluationCriteriaGuid;
 
     @Column(name = "project_type_code", length = 10)
-    private String fuelManagementObjectiveTypeCode;
+    private String projectTypeCode;
 
-    @Column(name = "objective_label", length = 300)
-    private String objectiveLabel;
+    @Column(name = "criteria_label", length = 300)
+    private String criteriaLabel;
 
-    @Column(name = "objective_filter_level_code", length = 10)
-    private String objectiveFilterLevelCode;
+    @Column(name = "eval_criteria_sect_code", length = 10)
+    private String evalCriteriaSectCode;
 
     @Column(name = "weighted_rank")
     private BigDecimal weightedRank;
