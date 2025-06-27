@@ -11,7 +11,7 @@ import ca.bc.gov.nrs.wfprev.data.models.BCParksRegionCodeModel;
 import ca.bc.gov.nrs.wfprev.data.models.BCParksSectionCodeModel;
 import ca.bc.gov.nrs.wfprev.data.models.ContractPhaseCodeModel;
 import ca.bc.gov.nrs.wfprev.data.models.ForestAreaCodeModel;
-import ca.bc.gov.nrs.wfprev.data.models.FuelManagementObjectiveCodeModel;
+import ca.bc.gov.nrs.wfprev.data.models.EvaluationCriteriaCodeModel;
 import ca.bc.gov.nrs.wfprev.data.models.FundingSourceCodeModel;
 import ca.bc.gov.nrs.wfprev.data.models.GeneralScopeCodeModel;
 import ca.bc.gov.nrs.wfprev.data.models.ObjectiveTypeCodeModel;
@@ -407,24 +407,24 @@ class CodesControllerTest {
 
     @Test
     @WithMockUser
-    void testGetFuelManagementObjectiveCodes() throws Exception {
+    void testGetEvaluationCriteriaCodes() throws Exception {
         String exampleId1 = UUID.randomUUID().toString();
         String exampleId2 = UUID.randomUUID().toString();
 
-        FuelManagementObjectiveCodeModel obj1 = new FuelManagementObjectiveCodeModel();
-        obj1.setFuelManagementObjectiveGuid(exampleId1);
-        obj1.setObjectiveLabel("Objective A");
+        EvaluationCriteriaCodeModel obj1 = new EvaluationCriteriaCodeModel();
+        obj1.setEvaluationCriteriaGuid(exampleId1);
+        obj1.setCriteriaLabel("Objective A");
 
-        FuelManagementObjectiveCodeModel obj2 = new FuelManagementObjectiveCodeModel();
-        obj2.setFuelManagementObjectiveGuid(exampleId2);
-        obj2.setObjectiveLabel("Objective B");
+        EvaluationCriteriaCodeModel obj2 = new EvaluationCriteriaCodeModel();
+        obj2.setEvaluationCriteriaGuid(exampleId2);
+        obj2.setCriteriaLabel("Objective B");
 
-        List<FuelManagementObjectiveCodeModel> objList = Arrays.asList(obj1, obj2);
-        CollectionModel<FuelManagementObjectiveCodeModel> objModel = CollectionModel.of(objList);
+        List<EvaluationCriteriaCodeModel> objList = Arrays.asList(obj1, obj2);
+        CollectionModel<EvaluationCriteriaCodeModel> objModel = CollectionModel.of(objList);
 
-        when(codesService.getAllFuelManagementObjectiveCodes()).thenReturn(objModel);
+        when(codesService.getAllEvaluationCriteriaCodes()).thenReturn(objModel);
 
-        mockMvc.perform(get("/codes/" + CodeTables.FUEL_MANAGEMENT_OBJECTIVE_CODE)
+        mockMvc.perform(get("/codes/" + CodeTables.EVALUATION_CRITERIA_CODE)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
         }
