@@ -2145,7 +2145,7 @@
 			"response": []
 		},
 		{
-			"name": "GET Fuel Management Objective Codes",
+			"name": "GET Evaluation Criteria Codes",
 			"event": [
 				{
 					"listen": "test",
@@ -2179,13 +2179,13 @@
 					}
 				],
 				"url": {
-					"raw": "{{LOCAL_API_URL}}/codes/fuleManagementObjectiveCodes",
+					"raw": "{{LOCAL_API_URL}}/codes/evaluationCriteriaCodes",
 					"host": [
 						"{{LOCAL_API_URL}}"
 					],
 					"path": [
 						"codes",
-						"fuleManagementObjectiveCodes"
+						"evaluationCriteriaCodes"
 					]
 				}
 			},
