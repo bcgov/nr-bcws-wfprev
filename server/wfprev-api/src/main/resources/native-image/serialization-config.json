@@ -21,7 +21,7 @@
   { "name": "ca.bc.gov.nrs.wfprev.data.models.SilvicultureTechniqueCodeModel" },
   { "name": "ca.bc.gov.nrs.wfprev.data.models.FileAttachmentModel" },
   { "name": "ca.bc.gov.nrs.wfprev.data.models.WUIRiskClassCodeModel" },
-  { "name": "ca.bc.gov.nrs.wfprev.data.models.FuelManagementObjectiveCodeModel" },
+  { "name": "ca.bc.gov.nrs.wfprev.data.models.EvaluationCriteriaCodeModel" },
 
   { "name": "ca.bc.gov.nrs.wfprev.data.entities.ForestAreaCodeEntity" },
   { "name": "ca.bc.gov.nrs.wfprev.data.entities.GeneralScopeCodeEntity" },
@@ -41,7 +41,7 @@
   { "name": "ca.bc.gov.nrs.wfprev.data.entities.SilvicultureTechniqueCodeEntity" },
   { "name": "ca.bc.gov.nrs.wfprev.data.entities.SilvicultureMethodCodeEntity" },
   { "name": "ca.bc.gov.nrs.wfprev.data.entities.WUIRiskClassCodeEntity" },
-  { "name": "ca.bc.gov.nrs.wfprev.data.entities.FuelManagementObjectiveCodeEntity" },
+  { "name": "ca.bc.gov.nrs.wfprev.data.entities.EvaluationCriteriaCodeEntity" },
   { "name": "ca.bc.gov.nrs.wfprev.data.entities.FileAttachmentEntity" },
   { "name": "org.springframework.hateoas.RepresentationModel"},
   { "name": "org.springframework.hateoas.Link"},
