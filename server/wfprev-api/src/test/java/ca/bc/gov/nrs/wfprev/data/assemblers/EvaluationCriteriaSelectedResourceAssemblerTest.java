@@ -24,7 +24,6 @@ class EvaluationCriteriaSelectedResourceAssemblerTest {
 
     @Test
     void testToEntity_MapsModelToEntity() {
-        // Arrange
         EvaluationCriteriaSelectedModel model = new EvaluationCriteriaSelectedModel();
         UUID selectedGuid = UUID.randomUUID();
         UUID criteriaGuid = UUID.randomUUID();
@@ -40,10 +39,8 @@ class EvaluationCriteriaSelectedResourceAssemblerTest {
         model.setUpdateUser("updater");
         model.setUpdateDate(new Date());
 
-        // Act
         EvaluationCriteriaSelectedEntity entity = assembler.toEntity(model);
 
-        // Assert
         assertNotNull(entity);
         assertEquals(criteriaGuid, entity.getEvaluationCriteriaGuid());
         assertEquals(sectionSummaryGuid, entity.getEvaluationCriteriaSectionSummaryGuid());
@@ -55,7 +52,6 @@ class EvaluationCriteriaSelectedResourceAssemblerTest {
 
     @Test
     void testToModel_MapsEntityToModel() {
-        // Arrange
         EvaluationCriteriaSelectedEntity entity = new EvaluationCriteriaSelectedEntity();
         UUID selectedGuid = UUID.randomUUID();
         UUID criteriaGuid = UUID.randomUUID();
@@ -71,10 +67,8 @@ class EvaluationCriteriaSelectedResourceAssemblerTest {
         entity.setUpdateUser("updater");
         entity.setUpdateDate(new Date());
 
-        // Act
         EvaluationCriteriaSelectedModel model = assembler.toModel(entity);
 
-        // Assert
         assertNotNull(model);
         assertEquals(selectedGuid.toString(), model.getEvaluationCriteriaSelectedGuid());
         assertEquals(criteriaGuid.toString(), model.getEvaluationCriteriaGuid());
@@ -87,7 +81,6 @@ class EvaluationCriteriaSelectedResourceAssemblerTest {
 
     @Test
     void testUpdateEntity_UpdatesExistingEntityFields() {
-        // Arrange
         EvaluationCriteriaSelectedModel model = new EvaluationCriteriaSelectedModel();
         UUID criteriaGuid = UUID.randomUUID();
         UUID sectionSummaryGuid = UUID.randomUUID();
@@ -104,15 +97,13 @@ class EvaluationCriteriaSelectedResourceAssemblerTest {
         existingEntity.setCreateUser("creator");
         existingEntity.setCreateDate(new Date());
 
-        // Act
         EvaluationCriteriaSelectedEntity updated = assembler.updateEntity(model, existingEntity);
 
-        // Assert
         assertEquals(criteriaGuid, updated.getEvaluationCriteriaGuid());
         assertEquals(sectionSummaryGuid, updated.getEvaluationCriteriaSectionSummaryGuid());
         assertTrue(updated.getIsEvaluationCriteriaSelectedInd());
         assertEquals(3, updated.getRevisionCount());
-        assertEquals("creator", updated.getCreateUser()); // should remain unchanged
+        assertEquals("creator", updated.getCreateUser());
         assertEquals("updater", updated.getUpdateUser());
     }
 }

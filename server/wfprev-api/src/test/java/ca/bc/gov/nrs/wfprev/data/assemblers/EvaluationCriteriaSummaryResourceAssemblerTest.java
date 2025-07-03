@@ -36,7 +36,6 @@ class EvaluationCriteriaSummaryResourceAssemblerTest {
 
     @Test
     void testToModel_MapsEntityToModel() {
-        // Arrange
         EvaluationCriteriaSummaryEntity entity = new EvaluationCriteriaSummaryEntity();
         UUID summaryGuid = UUID.randomUUID();
         entity.setEvaluationCriteriaSummaryGuid(summaryGuid);
@@ -60,10 +59,8 @@ class EvaluationCriteriaSummaryResourceAssemblerTest {
         section.setEvaluationCriteriaSelected(List.of(selected));
         entity.setEvaluationCriteriaSectionSummaries(List.of(section));
 
-        // Act
         EvaluationCriteriaSummaryModel model = assembler.toModel(entity);
 
-        // Assert
         assertNotNull(model);
         assertEquals(summaryGuid.toString(), model.getEvaluationCriteriaSummaryGuid());
         assertEquals(1, model.getEvaluationCriteriaSectionSummaries().size());
@@ -72,7 +69,6 @@ class EvaluationCriteriaSummaryResourceAssemblerTest {
 
     @Test
     void testToEntity_MapsModelToEntity() {
-        // Arrange
         EvaluationCriteriaSummaryModel model = new EvaluationCriteriaSummaryModel();
         UUID summaryGuid = UUID.randomUUID();
         model.setEvaluationCriteriaSummaryGuid(summaryGuid.toString());
@@ -100,10 +96,8 @@ class EvaluationCriteriaSummaryResourceAssemblerTest {
 
         model.setEvaluationCriteriaSectionSummaries(List.of(sectionModel));
 
-        // Act
         EvaluationCriteriaSummaryEntity entity = assembler.toEntity(model);
 
-        // Assert
         assertNotNull(entity);
         assertEquals(1, entity.getEvaluationCriteriaSectionSummaries().size());
         assertEquals(1, entity.getEvaluationCriteriaSectionSummaries().get(0).getEvaluationCriteriaSelected().size());
@@ -111,7 +105,6 @@ class EvaluationCriteriaSummaryResourceAssemblerTest {
 
     @Test
     void testUpdateEntity_UpdatesOnlyAllowedFields() {
-        // Arrange
         EvaluationCriteriaSummaryEntity existingEntity = new EvaluationCriteriaSummaryEntity();
         existingEntity.setEvaluationCriteriaSectionSummaries(new ArrayList<>());
 
@@ -143,10 +136,8 @@ class EvaluationCriteriaSummaryResourceAssemblerTest {
         EvaluationCriteriaSummaryModel model = new EvaluationCriteriaSummaryModel();
         model.setEvaluationCriteriaSectionSummaries(List.of(sectionModel));
 
-        // Act
         assembler.updateEntity(model, existingEntity);
 
-        // Assert
         assertTrue(existingEntity.getEvaluationCriteriaSectionSummaries()
                 .get(0).getEvaluationCriteriaSelected()
                 .get(0).getIsEvaluationCriteriaSelectedInd());

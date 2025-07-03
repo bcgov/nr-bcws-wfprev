@@ -22,7 +22,6 @@ class EvaluationCriteriaSectionCodeResourceAssemblerTest {
 
     @Test
     void testToEntity_MapsModelToEntity() {
-        // Arrange
         EvaluationCriteriaSectionCodeModel model = new EvaluationCriteriaSectionCodeModel();
         model.setEvaluationCriteriaSectionCode("FINE_FLT");
         model.setDescription("Fine Filter");
@@ -35,10 +34,8 @@ class EvaluationCriteriaSectionCodeResourceAssemblerTest {
         model.setUpdateUser("updater");
         model.setUpdateDate(new Date());
 
-        // Act
         EvaluationCriteriaSectionCodeEntity entity = assembler.toEntity(model);
 
-        // Assert
         assertNotNull(entity);
         assertEquals("FINE_FLT", entity.getEvaluationCriteriaSectionCode());
         assertEquals("Fine Filter", entity.getDescription());
@@ -52,7 +49,6 @@ class EvaluationCriteriaSectionCodeResourceAssemblerTest {
 
     @Test
     void testToModel_MapsEntityToModel() {
-        // Arrange
         EvaluationCriteriaSectionCodeEntity entity = new EvaluationCriteriaSectionCodeEntity();
         entity.setEvaluationCriteriaSectionCode("COARSE_FLT");
         entity.setDescription("Coarse Filter");
@@ -65,10 +61,8 @@ class EvaluationCriteriaSectionCodeResourceAssemblerTest {
         entity.setUpdateUser("updater2");
         entity.setUpdateDate(new Date());
 
-        // Act
         EvaluationCriteriaSectionCodeModel model = assembler.toModel(entity);
 
-        // Assert
         assertNotNull(model);
         assertEquals("COARSE_FLT", model.getEvaluationCriteriaSectionCode());
         assertEquals("Coarse Filter", model.getDescription());

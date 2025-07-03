@@ -12,7 +12,6 @@ public class EvaluationCriteriaSectionCodeEntityTest {
 
     @Test
     public void test_create_entity_with_all_fields() {
-        // Given
         String evaluationCriteriaSectionCode = "ECS123";
         String description = "Sample Description";
         Integer displayOrder = 1;
@@ -24,7 +23,6 @@ public class EvaluationCriteriaSectionCodeEntityTest {
         String updateUser = "updater";
         Date updateDate = new Date();
 
-        // When
         EvaluationCriteriaSectionCodeEntity entity = EvaluationCriteriaSectionCodeEntity.builder()
                 .evaluationCriteriaSectionCode(evaluationCriteriaSectionCode)
                 .description(description)
@@ -38,7 +36,6 @@ public class EvaluationCriteriaSectionCodeEntityTest {
                 .updateDate(updateDate)
                 .build();
 
-        // Then
         assertNotNull(entity);
         assertEquals(evaluationCriteriaSectionCode, entity.getEvaluationCriteriaSectionCode());
         assertEquals(description, entity.getDescription());
@@ -54,7 +51,6 @@ public class EvaluationCriteriaSectionCodeEntityTest {
 
     @Test
     public void test_date_fields_timezone_conversion() {
-        // Given
         EvaluationCriteriaSectionCodeEntity entity = EvaluationCriteriaSectionCodeEntity.builder()
                 .evaluationCriteriaSectionCode("ECS123")
                 .description("Test Description")
@@ -67,13 +63,11 @@ public class EvaluationCriteriaSectionCodeEntityTest {
                 .revisionCount(1)
                 .build();
 
-        // When
         Date effectiveDate = entity.getEffectiveDate();
         Date expiryDate = entity.getExpiryDate();
         Date createDate = entity.getCreateDate();
         Date updateDate = entity.getUpdateDate();
 
-        // Then
         assertNotNull(effectiveDate);
         assertNotNull(expiryDate);
         assertNotNull(createDate);
@@ -82,7 +76,6 @@ public class EvaluationCriteriaSectionCodeEntityTest {
 
     @Test
     public void test_equals_and_hashcode() {
-        // Given
         EvaluationCriteriaSectionCodeEntity entity1 = EvaluationCriteriaSectionCodeEntity.builder()
                 .evaluationCriteriaSectionCode("ECS123")
                 .description("Evaluation Criteria Section 123")
@@ -109,27 +102,23 @@ public class EvaluationCriteriaSectionCodeEntityTest {
                 .updateDate(entity1.getUpdateDate())
                 .build();
 
-        // When & Then
         assertEquals(entity1, entity2);
         assertEquals(entity1.hashCode(), entity2.hashCode());
     }
 
     @Test
     public void test_audit_fields_population() {
-        // Given
         EvaluationCriteriaSectionCodeEntity entity = new EvaluationCriteriaSectionCodeEntity();
         String expectedCreateUser = "system";
         Date expectedCreateDate = new Date();
         String expectedUpdateUser = "system";
         Date expectedUpdateDate = new Date();
 
-        // When
         entity.setCreateUser(expectedCreateUser);
         entity.setCreateDate(expectedCreateDate);
         entity.setUpdateUser(expectedUpdateUser);
         entity.setUpdateDate(expectedUpdateDate);
 
-        // Then
         assertEquals(expectedCreateUser, entity.getCreateUser());
         assertEquals(expectedCreateDate, entity.getCreateDate());
         assertEquals(expectedUpdateUser, entity.getUpdateUser());
