@@ -575,7 +575,7 @@ public class CodesService implements CommonService {
 
     public WUIRiskClassCodeModel getWuiRiskClassCodeById(String id) throws ServiceException {
         try {
-            return wuiRiskClassCodeRepository.findById(UUID.fromString(id)).map(wuiRiskClassCodeResourceAssembler::toModel).orElse(null);
+            return wuiRiskClassCodeRepository.findById(id).map(wuiRiskClassCodeResourceAssembler::toModel).orElse(null);
         } catch (Exception e) {
             throw new ServiceException(e.getLocalizedMessage(), e);
         }

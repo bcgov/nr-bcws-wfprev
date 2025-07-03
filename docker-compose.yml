@@ -63,6 +63,7 @@ services:
       "
     volumes:
       - ./db:/liquibase/db
+      - ./db/scripts:/liquibase/scripts
     depends_on:
       db:
         condition: service_healthy
