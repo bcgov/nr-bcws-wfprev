@@ -240,3 +240,16 @@ export interface ForestDistrictCodeModel {
   orgUnitName?: string;
   parentOrgUnitId?: string;
 }
+
+export interface EvaluationCriteriaCodeModel {
+  evaluationCriteriaGuid?: string;
+  projectTypeCode?: string;
+  criteriaLabel?: string;
+  weightedRank?: number;
+}
+
+export interface WuiRiskClassCodeModel {
+  wuiRiskClassRankGuid?: string;
+  wuiRiskClassCode?: string;
+  weightedRank?: number;
+}

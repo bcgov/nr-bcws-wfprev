@@ -26,10 +26,8 @@ public class WUIRiskClassCodeResourceAssembler extends RepresentationModelAssemb
         WUIRiskClassCodeEntity entity = new WUIRiskClassCodeEntity();
 
         entity.setWuiRiskClassCode(model.getWuiRiskClassCode());
-        entity.setDescription(model.getDescription());
-        entity.setDisplayOrder(model.getDisplayOrder());
-        entity.setEffectiveDate(model.getEffectiveDate());
-        entity.setExpiryDate(model.getExpiryDate());
+        entity.setWuiRiskClassRankGuid(model.getWuiRiskClassRankGuid());
+        entity.setWeightedRank(model.getWeightedRank());
         entity.setRevisionCount(model.getRevisionCount());
         entity.setCreateUser(model.getCreateUser());
         entity.setCreateDate(model.getCreateDate());
@@ -49,10 +47,8 @@ public class WUIRiskClassCodeResourceAssembler extends RepresentationModelAssemb
                 .withSelfRel());
 
         model.setWuiRiskClassCode(entity.getWuiRiskClassCode());
-        model.setDescription(entity.getDescription());
-        model.setDisplayOrder(entity.getDisplayOrder());
-        model.setEffectiveDate(entity.getEffectiveDate());
-        model.setExpiryDate(entity.getExpiryDate());
+        model.setWuiRiskClassRankGuid(entity.getWuiRiskClassRankGuid());
+        model.setWeightedRank(entity.getWeightedRank());
         model.setRevisionCount(entity.getRevisionCount());
         model.setCreateUser(entity.getCreateUser());
         model.setCreateDate(entity.getCreateDate());

@@ -1,7 +1,7 @@
 package ca.bc.gov.nrs.wfprev.data.entities;
 
 import java.io.Serializable;
-
+import java.math.BigDecimal;
 import java.util.Date;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
@@ -23,7 +23,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "wui_risk_class_code")
+@Table(name = "wui_risk_class_rank")
 @JsonIgnoreProperties(ignoreUnknown = false)
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -34,24 +34,16 @@ public class WUIRiskClassCodeEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @Column(name = "wui_risk_class_code")
+    @Column(name = "wui_risk_class_rank_guid")
     @NotNull
+    private String wuiRiskClassRankGuid;
+
+    @NotNull
+    @Column(name = "wui_risk_class_code", length = 200)
     private String wuiRiskClassCode;
 
-    @NotNull
-    @Column(name = "description", length = 200)
-    private String description;
-
-    @Column(name = "display_order", length = 3)
-    private Integer displayOrder;
-
-    @NotNull
-    @Column(name = "effective_date")
-    private Date effectiveDate;
-
-    @NotNull
-    @Column(name = "expiry_date")
-    private Date expiryDate;
+    @Column(name = "weighted_rank")
+    private BigDecimal weightedRank;
 
     @Column(name = "revision_count", columnDefinition="Decimal(10) default '0'")
     @NotNull
