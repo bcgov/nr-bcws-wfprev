@@ -412,11 +412,11 @@ class CodesControllerTest {
         String exampleId2 = UUID.randomUUID().toString();
 
         EvaluationCriteriaCodeModel obj1 = new EvaluationCriteriaCodeModel();
-        obj1.setEvaluationCriteriaGuid(exampleId1);
+        obj1.setEvaluationCriteriaGuid(UUID.fromString(exampleId1));
         obj1.setCriteriaLabel("Objective A");
 
         EvaluationCriteriaCodeModel obj2 = new EvaluationCriteriaCodeModel();
-        obj2.setEvaluationCriteriaGuid(exampleId2);
+        obj2.setEvaluationCriteriaGuid(UUID.fromString(exampleId2));
         obj2.setCriteriaLabel("Objective B");
 
         List<EvaluationCriteriaCodeModel> objList = Arrays.asList(obj1, obj2);

@@ -39,7 +39,7 @@ public class EvaluationCriteriaCodeResourceAssembler extends RepresentationModel
 
         model.add(linkTo(
                 methodOn(CodesController.class)
-                        .getCodeById(CodeTables.EVALUATION_CRITERIA_CODE, entity.getEvaluationCriteriaGuid()))
+                        .getCodeById(CodeTables.EVALUATION_CRITERIA_CODE, entity.getEvaluationCriteriaGuid() != null ? entity.getEvaluationCriteriaGuid().toString() : null))
                 .withSelfRel());
 
         model.setEvaluationCriteriaGuid(entity.getEvaluationCriteriaGuid());

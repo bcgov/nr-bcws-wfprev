@@ -3,6 +3,8 @@ package ca.bc.gov.nrs.wfprev.data.entities;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.UUID;
+
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
@@ -36,7 +38,7 @@ public class WUIRiskClassCodeEntity implements Serializable {
     @Id
     @Column(name = "wui_risk_class_rank_guid")
     @NotNull
-    private String wuiRiskClassRankGuid;
+    private UUID wuiRiskClassRankGuid;
 
     @NotNull
     @Column(name = "wui_risk_class_code", length = 200)

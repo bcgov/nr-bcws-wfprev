@@ -57,11 +57,17 @@ public class EvaluationCriteriaSummaryEntity implements Serializable {
     private UUID projectGuid;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "wui_risk_class_code")
+    @JoinColumn(
+        name = "wui_risk_class_code",
+        referencedColumnName = "wui_risk_class_code"
+    )
     private WUIRiskClassCodeEntity wuiRiskClassCode;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "local_wui_risk_class_code")
+    @JoinColumn(
+        name = "local_wui_risk_class_code",
+        referencedColumnName = "wui_risk_class_code"
+    )
     private WUIRiskClassCodeEntity localWuiRiskClassCode;
 
     @Column(name = "wui_risk_class_comment", length = 4000)
