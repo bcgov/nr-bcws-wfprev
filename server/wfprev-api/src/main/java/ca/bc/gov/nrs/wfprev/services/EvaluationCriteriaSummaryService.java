@@ -184,7 +184,7 @@ public class EvaluationCriteriaSummaryService implements CommonService {
         }
     }
 
-    private void linkChildSummariesToParent(EvaluationCriteriaSummaryEntity parentEntity, EvaluationCriteriaSummaryModel resource) {
+    public void linkChildSummariesToParent(EvaluationCriteriaSummaryEntity parentEntity, EvaluationCriteriaSummaryModel resource) {
         if (parentEntity.getEvaluationCriteriaSectionSummaries() != null &&
                 resource.getEvaluationCriteriaSectionSummaries() != null) {
 

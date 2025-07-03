@@ -2,7 +2,12 @@ package ca.bc.gov.nrs.wfprev.services;
 
 import ca.bc.gov.nrs.wfprev.data.assemblers.EvaluationCriteriaSelectedResourceAssembler;
 import ca.bc.gov.nrs.wfprev.data.assemblers.EvaluationCriteriaSummaryResourceAssembler;
+import ca.bc.gov.nrs.wfprev.data.entities.EvaluationCriteriaSectionSummaryEntity;
+import ca.bc.gov.nrs.wfprev.data.entities.EvaluationCriteriaSelectedEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.EvaluationCriteriaSummaryEntity;
+import ca.bc.gov.nrs.wfprev.data.entities.WUIRiskClassCodeEntity;
+import ca.bc.gov.nrs.wfprev.data.models.EvaluationCriteriaSectionSummaryModel;
+import ca.bc.gov.nrs.wfprev.data.models.EvaluationCriteriaSelectedModel;
 import ca.bc.gov.nrs.wfprev.data.models.EvaluationCriteriaSummaryModel;
 import ca.bc.gov.nrs.wfprev.data.repositories.EvaluationCriteriaSummaryRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.WUIRiskClassCodeRepository;
@@ -11,6 +16,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.hateoas.CollectionModel;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -60,19 +66,73 @@ class EvaluationCriteriaSummaryServiceTest {
     }
 
     @Test
-    void testGetEvaluationCriteriaSummary_success() {
-        UUID guid = UUID.randomUUID();
+    void testCreateEvaluationCriteriaSummary_success() {
+        // Setup GUIDs
+        UUID summaryGuid = UUID.randomUUID();
+        UUID projectGuid = UUID.randomUUID();
+        String wuiCode = "WUI1";
+        String localWuiCode = "WUI2";
+        UUID sectionGuid = UUID.randomUUID();
+        UUID selectedGuid = UUID.randomUUID();
+
+        // Setup model
+        EvaluationCriteriaSelectedModel selectedModel = new EvaluationCriteriaSelectedModel();
+        selectedModel.setEvaluationCriteriaGuid(selectedGuid.toString());
+        selectedModel.setIsEvaluationCriteriaSelectedInd(true);
+
+        EvaluationCriteriaSectionSummaryModel sectionModel = new EvaluationCriteriaSectionSummaryModel();
+        sectionModel.setEvaluationCriteriaSelected(List.of(selectedModel));
+        sectionModel.setEvaluationCriteriaSectionCode(new ca.bc.gov.nrs.wfprev.data.models.EvaluationCriteriaSectionCodeModel());
+        sectionModel.getEvaluationCriteriaSectionCode().setEvaluationCriteriaSectionCode("SEC1");
+
+        EvaluationCriteriaSummaryModel summaryModel = new EvaluationCriteriaSummaryModel();
+        summaryModel.setProjectGuid(projectGuid.toString());
+        summaryModel.setWuiRiskClassCode(new ca.bc.gov.nrs.wfprev.data.models.WUIRiskClassCodeModel());
+        summaryModel.getWuiRiskClassCode().setWuiRiskClassCode(wuiCode);
+        summaryModel.setLocalWuiRiskClassCode(new ca.bc.gov.nrs.wfprev.data.models.WUIRiskClassCodeModel());
+        summaryModel.getLocalWuiRiskClassCode().setWuiRiskClassCode(localWuiCode);
+        summaryModel.setEvaluationCriteriaSectionSummaries(List.of(sectionModel));
+
+        // Setup entity
         EvaluationCriteriaSummaryEntity entity = new EvaluationCriteriaSummaryEntity();
-        entity.setEvaluationCriteriaSummaryGuid(guid);
-        EvaluationCriteriaSummaryModel model = new EvaluationCriteriaSummaryModel();
-        model.setEvaluationCriteriaSummaryGuid(guid.toString());
+        entity.setEvaluationCriteriaSectionSummaries(new ArrayList<>());
+        entity.setEvaluationCriteriaSummaryGuid(summaryGuid);
+        entity.setProjectGuid(projectGuid);
 
-        when(summaryRepository.findById(guid)).thenReturn(Optional.of(entity));
-        when(summaryAssembler.toModel(entity)).thenReturn(model);
+        EvaluationCriteriaSummaryEntity savedParent = new EvaluationCriteriaSummaryEntity();
+        savedParent.setEvaluationCriteriaSummaryGuid(summaryGuid);
+        savedParent.setEvaluationCriteriaSectionSummaries(new ArrayList<>());
 
-        EvaluationCriteriaSummaryModel result = service.getEvaluationCriteriaSummary(guid.toString());
+        EvaluationCriteriaSummaryEntity savedWithChildren = new EvaluationCriteriaSummaryEntity();
+        savedWithChildren.setEvaluationCriteriaSummaryGuid(summaryGuid);
 
-        assertEquals(guid.toString(), result.getEvaluationCriteriaSummaryGuid());
+        // Setup mocks
+        when(summaryAssembler.toEntity(any())).thenReturn(entity);
+        when(summaryRepository.saveAndFlush(any())).thenReturn(savedParent);
+        when(summaryRepository.save(any())).thenReturn(savedWithChildren);
+        when(summaryAssembler.toModel(savedWithChildren)).thenReturn(summaryModel);
+
+        WUIRiskClassCodeEntity wuiEntity = new WUIRiskClassCodeEntity();
+        WUIRiskClassCodeEntity localWuiEntity = new WUIRiskClassCodeEntity();
+        when(wuiRepo.findById(wuiCode)).thenReturn(Optional.of(wuiEntity));
+        when(wuiRepo.findById(localWuiCode)).thenReturn(Optional.of(localWuiEntity));
+
+        when(selectedAssembler.toEntity(any())).thenAnswer(invocation -> {
+            EvaluationCriteriaSelectedModel m = invocation.getArgument(0);
+            EvaluationCriteriaSelectedEntity e = new EvaluationCriteriaSelectedEntity();
+            e.setEvaluationCriteriaGuid(UUID.fromString(m.getEvaluationCriteriaGuid()));
+            return e;
+        });
+
+        // Call service
+        EvaluationCriteriaSummaryModel result = service.createEvaluationCriteriaSummary(summaryModel);
+
+        // Assert and verify
+        assertNotNull(result);
+        verify(summaryAssembler).toEntity(any());
+        verify(wuiRepo, times(2)).findById(any());
+        verify(summaryRepository, times(1)).save(any());
+        verify(summaryAssembler).toModel(savedWithChildren);
     }
 
     @Test
@@ -133,5 +193,41 @@ class EvaluationCriteriaSummaryServiceTest {
 
         assertNotNull(result);
         verify(summaryRepository).saveAndFlush(updated);
+    }
+
+    @Test
+    void testLinkChildSummariesToParent_setsParentAndSelectedInd() {
+        EvaluationCriteriaSelectedEntity selectedEntity = new EvaluationCriteriaSelectedEntity();
+        UUID selectedGuid = UUID.randomUUID();
+        selectedEntity.setEvaluationCriteriaGuid(selectedGuid);
+
+        EvaluationCriteriaSectionSummaryEntity sectionEntity = new EvaluationCriteriaSectionSummaryEntity();
+        sectionEntity.setEvaluationCriteriaSelected(List.of(selectedEntity));
+        sectionEntity.setEvaluationCriteriaSectionCode(new ca.bc.gov.nrs.wfprev.data.entities.EvaluationCriteriaSectionCodeEntity());
+        sectionEntity.getEvaluationCriteriaSectionCode().setEvaluationCriteriaSectionCode("SEC1");
+
+        EvaluationCriteriaSummaryEntity parent = new EvaluationCriteriaSummaryEntity();
+        parent.setEvaluationCriteriaSummaryGuid(UUID.randomUUID());
+        parent.setEvaluationCriteriaSectionSummaries(List.of(sectionEntity));
+
+        EvaluationCriteriaSelectedModel selectedModel = new EvaluationCriteriaSelectedModel();
+        selectedModel.setEvaluationCriteriaGuid(selectedGuid.toString());
+        selectedModel.setIsEvaluationCriteriaSelectedInd(true);
+
+        EvaluationCriteriaSectionSummaryModel sectionModel = new EvaluationCriteriaSectionSummaryModel();
+        sectionModel.setEvaluationCriteriaSectionCode(new ca.bc.gov.nrs.wfprev.data.models.EvaluationCriteriaSectionCodeModel());
+        sectionModel.getEvaluationCriteriaSectionCode().setEvaluationCriteriaSectionCode("SEC1");
+        sectionModel.setEvaluationCriteriaSelected(List.of(selectedModel));
+
+        EvaluationCriteriaSummaryModel model = new EvaluationCriteriaSummaryModel();
+        model.setEvaluationCriteriaSectionSummaries(List.of(sectionModel));
+
+        // Call method
+        service.linkChildSummariesToParent(parent, model);
+
+        // Verify link was made
+        assertEquals(parent, sectionEntity.getEvaluationCriteriaSummary());
+        assertEquals(parent.getEvaluationCriteriaSummaryGuid(), sectionEntity.getEvaluationCriteriaSummaryGuid());
+        assertTrue(sectionEntity.getEvaluationCriteriaSelected().get(0).getIsEvaluationCriteriaSelectedInd());
     }
 }
