@@ -6,6 +6,7 @@ import ca.bc.gov.nrs.wfprev.data.entities.EvaluationCriteriaSummaryEntity;
 import ca.bc.gov.nrs.wfprev.data.models.EvaluationCriteriaSummaryModel;
 import ca.bc.gov.nrs.wfprev.data.repositories.EvaluationCriteriaSummaryRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.WUIRiskClassCodeRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.hateoas.CollectionModel;
@@ -14,16 +15,15 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 class EvaluationCriteriaSummaryServiceTest {
 
     private EvaluationCriteriaSummaryRepository summaryRepository;
     private EvaluationCriteriaSummaryResourceAssembler summaryAssembler;
+    private EvaluationCriteriaSelectedResourceAssembler selectedAssembler;
+    private WUIRiskClassCodeRepository wuiRepo;
 
     private EvaluationCriteriaSummaryService service;
 
@@ -31,16 +31,15 @@ class EvaluationCriteriaSummaryServiceTest {
     void setup() {
         summaryRepository = mock(EvaluationCriteriaSummaryRepository.class);
         summaryAssembler = mock(EvaluationCriteriaSummaryResourceAssembler.class);
-        EvaluationCriteriaSelectedResourceAssembler selectedAssembler = mock(EvaluationCriteriaSelectedResourceAssembler.class);
-        WUIRiskClassCodeRepository wuiRiskCodeRepo = mock(WUIRiskClassCodeRepository.class);
+        selectedAssembler = mock(EvaluationCriteriaSelectedResourceAssembler.class);
+        wuiRepo = mock(WUIRiskClassCodeRepository.class);
 
-        service = new EvaluationCriteriaSummaryService(summaryRepository, summaryAssembler, wuiRiskCodeRepo, selectedAssembler);
+        service = new EvaluationCriteriaSummaryService(summaryRepository, summaryAssembler, wuiRepo, selectedAssembler);
     }
 
     @Test
     void testGetAllEvaluationCriteriaSummaries() {
-        UUID projectGuid = UUID.fromString("123e4567-e89b-12d3-a456-426614174000");
-
+        UUID projectGuid = UUID.randomUUID();
         EvaluationCriteriaSummaryEntity entity = new EvaluationCriteriaSummaryEntity();
         entity.setProjectGuid(projectGuid);
         List<EvaluationCriteriaSummaryEntity> entities = List.of(entity);
@@ -55,11 +54,16 @@ class EvaluationCriteriaSummaryServiceTest {
     }
 
     @Test
-    void testGetEvaluationCriteriaSummary() {
+    void testGetAllEvaluationCriteriaSummaries_invalidUUID() {
+        assertThrows(EntityNotFoundException.class, () ->
+                service.getAllEvaluationCriteriaSummaries("invalid-uuid"));
+    }
+
+    @Test
+    void testGetEvaluationCriteriaSummary_success() {
         UUID guid = UUID.randomUUID();
         EvaluationCriteriaSummaryEntity entity = new EvaluationCriteriaSummaryEntity();
         entity.setEvaluationCriteriaSummaryGuid(guid);
-
         EvaluationCriteriaSummaryModel model = new EvaluationCriteriaSummaryModel();
         model.setEvaluationCriteriaSummaryGuid(guid.toString());
 
@@ -72,7 +76,15 @@ class EvaluationCriteriaSummaryServiceTest {
     }
 
     @Test
-    void testDeleteEvaluationCriteriaSummary() {
+    void testGetEvaluationCriteriaSummary_notFound() {
+        UUID guid = UUID.randomUUID();
+        when(summaryRepository.findById(guid)).thenReturn(Optional.empty());
+
+        assertThrows(EntityNotFoundException.class, () -> service.getEvaluationCriteriaSummary(guid.toString()));
+    }
+
+    @Test
+    void testDeleteEvaluationCriteriaSummary_success() {
         UUID guid = UUID.randomUUID();
         EvaluationCriteriaSummaryEntity entity = new EvaluationCriteriaSummaryEntity();
         when(summaryRepository.findById(guid)).thenReturn(Optional.of(entity));
@@ -83,7 +95,28 @@ class EvaluationCriteriaSummaryServiceTest {
     }
 
     @Test
-    void testUpdateEvaluationCriteriaSummary() {
+    void testDeleteEvaluationCriteriaSummary_notFound() {
+        UUID guid = UUID.randomUUID();
+        when(summaryRepository.findById(guid)).thenReturn(Optional.empty());
+
+        assertThrows(EntityNotFoundException.class, () -> service.deleteEvaluationCriteriaSummary(guid.toString()));
+    }
+
+    @Test
+    void testUpdateEvaluationCriteriaSummary_notFound() {
+        UUID guid = UUID.randomUUID();
+        EvaluationCriteriaSummaryModel model = new EvaluationCriteriaSummaryModel();
+        model.setEvaluationCriteriaSummaryGuid(guid.toString());
+
+        when(summaryRepository.findById(guid)).thenReturn(Optional.empty());
+
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () ->
+                service.updateEvaluationCriteriaSummary(model));
+        assertTrue(ex.getCause() instanceof EntityNotFoundException);
+    }
+
+    @Test
+    void testUpdateEvaluationCriteriaSummary_success() {
         UUID guid = UUID.randomUUID();
         EvaluationCriteriaSummaryModel model = new EvaluationCriteriaSummaryModel();
         model.setEvaluationCriteriaSummaryGuid(guid.toString());
