@@ -379,6 +379,80 @@
 			"response": []
 		},
 		{
+			"name": "Create Project Evaluation Criteria Summary",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Parse the response JSON",
+							"const response = pm.response.json();",
+							"",
+							"// Save evaluationCriteriaSummaryGuid if present",
+							"if (response.evaluationCriteriaSummaryGuid) {",
+							"    pm.environment.set(\"evaluationCriteriaSummaryGuid\", response.evaluationCriteriaSummaryGuid);",
+							"    console.log(\"evaluationCriteriaSummaryGuid saved successfully!\");",
+							"} else {",
+							"    console.error(\"Failed to find evaluationCriteriaSummaryGuid in response:\", response);",
+							"}",
+							"",
+							"pm.test(\"Status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"projectGuid\": \"{{projectGuid}}\",\n  \"wuiRiskClassCode\": {\n    \"wuiRiskClassCode\": \"WUI_RC_1\"\n  },\n  \"localWuiRiskClassCode\": {\n    \"wuiRiskClassCode\": \"WUI_RC_5\"\n  },\n  \"wuiRiskClassComment\": \"High risk due to interface proximity\",\n  \"localWuiRiskClassRationale\": \"Locally assessed as WUI RC 2 due to vegetation type and slope.\",\n  \"isOutsideWuiInd\": false,\n  \"totalFilterScore\": 7,\n  \"evaluationCriteriaSectionSummaries\": [\n    {\n      \"evaluationCriteriaSectionCode\": {\n        \"evaluationCriteriaSectionCode\": \"COARSE_FLT\"\n      },\n      \"filterSectionScore\": 3,\n      \"filterSectionComment\": \"Large fuel break present\"\n    },\n    {\n      \"evaluationCriteriaSectionCode\": {\n        \"evaluationCriteriaSectionCode\": \"MEDIUM_FLT\"\n      },\n      \"filterSectionScore\": 2,\n      \"filterSectionComment\": \"Moderate surface fuel load\",\n      \"evaluationCriteriaSelected\": [\n        {\n          \"evaluationCriteriaGuid\": \"5f5a7c4e-d200-4b14-b0db-37c199847b0b\",\n          \"isEvaluationCriteriaSelectedInd\": true\n        }\n      ]\n    },\n    {\n      \"evaluationCriteriaSectionCode\": {\n        \"evaluationCriteriaSectionCode\": \"FINE_FLT\"\n      },\n      \"filterSectionScore\": 3,\n      \"filterSectionComment\": \"Dry grasses near interface\",\n      \"evaluationCriteriaSelected\": [\n        {\n          \"evaluationCriteriaGuid\": \"6af3f526-a68f-4213-bd83-6981aa52c1bc\",\n          \"isEvaluationCriteriaSelectedInd\": true\n        }\n      ]\n    }\n  ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{LOCAL_API_URL}}/projects/{{projectGuid}}/evaluationCriteriaSummary",
+					"host": [
+						"{{LOCAL_API_URL}}"
+					],
+					"path": [
+						"projects",
+						"{{projectGuid}}",
+						"evaluationCriteriaSummary"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "Create Activity",
 			"event": [
 				{
@@ -845,6 +919,74 @@
 						"{{projectGuid}}",
 						"projectBoundary",
 						"{{projectBoundaryGuid}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Project Evaluation Criteria Summary",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function() {",
+							"    pm.response.to.have.status(200);",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"evaluationCriteriaSummaryGuid\": \"{{evaluationCriteriaSummaryGuid}}\",\n    \"projectGuid\": \"{{projectGuid}}\",\n    \"wuiRiskClassCode\": {\n        \"wuiRiskClassCode\": \"WUI_RC_2\"\n    },\n    \"localWuiRiskClassCode\": {\n        \"wuiRiskClassCode\": \"WUI_RC_3\"\n    },\n    \"wuiRiskClassComment\": \"High risk due to interface proximity changed\",\n    \"localWuiRiskClassRationale\": \"Locally assessed as WUI RC 2 due to vegetation type and slope changed.\",\n    \"isOutsideWuiInd\": false,\n    \"totalFilterScore\": 4,\n    \"evaluationCriteriaSectionSummaries\": [\n        {\n            \"evaluationCriteriaSectionSummaryGuid\": \"10b5ea31-7613-4880-a48c-277e97ccb287\",\n            \"evaluationCriteriaSectionCode\": {\n                \"evaluationCriteriaSectionCode\": \"COARSE_FLT\",\n                \"description\": \"Coarse Filter\"\n            },\n            \"evaluationCriteriaSummaryGuid\": \"{{evaluationCriteriaSummaryGuid}}\",\n            \"filterSectionScore\": 3,\n            \"filterSectionComment\": \"Large fuel break present changed\"\n        },\n        {\n            \"revisionCount\": 0,\n            \"createUser\": \"WFNEWS-REST\",\n            \"createDate\": \"2025-07-03T02:09:24.625+00:00\",\n            \"updateUser\": \"WFNEWS-REST\",\n            \"updateDate\": \"2025-07-03T02:09:24.625+00:00\",\n            \"evaluationCriteriaSectionSummaryGuid\": \"d388d6ac-2934-4134-a5c3-b83bd2a3fe5b\",\n            \"evaluationCriteriaSectionCode\": {\n                \"evaluationCriteriaSectionCode\": \"MEDIUM_FLT\"\n            },\n            \"evaluationCriteriaSummaryGuid\": \"{{evaluationCriteriaSummaryGuid}}\",\n            \"filterSectionScore\": 2,\n            \"filterSectionComment\": \"Moderate surface fuel load changed\",\n            \"evaluationCriteriaSelected\": [\n                {\n                    \"evaluationCriteriaSelectedGuid\": \"f537146b-fc02-4ccc-a965-deec45da4368\",\n                    \"evaluationCriteriaGuid\": \"5f5a7c4e-d200-4b14-b0db-37c199847b0b\",\n                    \"evaluationCriteriaSectionSummaryGuid\": \"d388d6ac-2934-4134-a5c3-b83bd2a3fe5b\",\n                    \"isEvaluationCriteriaSelectedInd\": true\n                }\n            ]\n        },\n        {\n            \"evaluationCriteriaSectionSummaryGuid\": \"2e42adc0-cb25-4efb-a337-f346a151cb83\",\n            \"evaluationCriteriaSectionCode\": {\n                \"evaluationCriteriaSectionCode\": \"FINE_FLT\"\n            },\n            \"evaluationCriteriaSummaryGuid\": \"{{evaluationCriteriaSummaryGuid}}\",\n            \"filterSectionScore\": 3,\n            \"filterSectionComment\": \"Dry grasses near interface\",\n            \"evaluationCriteriaSelected\": [\n                {\n                    \"evaluationCriteriaSelectedGuid\": \"e32b9a2d-7351-4d57-b57b-b7e65d448d44\",\n                    \"evaluationCriteriaGuid\": \"6af3f526-a68f-4213-bd83-6981aa52c1bc\",\n                    \"evaluationCriteriaSectionSummaryGuid\": \"2e42adc0-cb25-4efb-a337-f346a151cb83\",\n                    \"isEvaluationCriteriaSelectedInd\": true\n                }\n            ]\n        }\n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{LOCAL_API_URL}}/projects/{{projectGuid}}/evaluationCriteriaSummary/{{evaluationCriteriaSummaryGuid}}",
+					"host": [
+						"{{LOCAL_API_URL}}"
+					],
+					"path": [
+						"projects",
+						"{{projectGuid}}",
+						"evaluationCriteriaSummary",
+						"{{evaluationCriteriaSummaryGuid}}"
 					]
 				}
 			},
@@ -2948,6 +3090,50 @@
 						"{{projectGuid}}",
 						"projectBoundary",
 						"{{projectBoundaryGuid}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Project Evaluation Criteria Summary",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 204\", function() {",
+							"    pm.response.to.have.status(204);",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{LOCAL_API_URL}}/projects/{{projectGuid}}/evaluationCriteriaSummary/{{evaluationCriteriaSummaryGuid}}",
+					"host": [
+						"{{LOCAL_API_URL}}"
+					],
+					"path": [
+						"projects",
+						"{{projectGuid}}",
+						"evaluationCriteriaSummary",
+						"{{evaluationCriteriaSummaryGuid}}"
 					]
 				}
 			},
