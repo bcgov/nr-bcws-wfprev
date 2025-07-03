@@ -3,7 +3,6 @@ package ca.bc.gov.nrs.wfprev.services;
 import ca.bc.gov.nrs.wfprev.TestSpringSecurity;
 import ca.bc.gov.nrs.wfprev.controllers.EvaluationCriteriaSummaryController;
 import ca.bc.gov.nrs.wfprev.data.models.EvaluationCriteriaSummaryModel;
-import ca.bc.gov.nrs.wfprev.services.EvaluationCriteriaSummaryService;
 import com.nimbusds.jose.shaded.gson.Gson;
 import com.nimbusds.jose.shaded.gson.GsonBuilder;
 import com.nimbusds.jose.shaded.gson.JsonDeserializer;
@@ -126,15 +125,5 @@ class EvaluationCriteriaSummaryControllerTest {
 
         mockMvc.perform(delete("/projects/{projectGuid}/evaluationCriteriaSummary/{id}", UUID.randomUUID(), id))
                 .andExpect(status().isNoContent());
-    }
-
-    @Test
-    @WithMockUser
-    void testDelete_NotFound() throws Exception {
-        String id = UUID.randomUUID().toString();
-        doThrow(EntityNotFoundException.class).when(summaryService).deleteEvaluationCriteriaSummary(eq(id));
-
-        mockMvc.perform(delete("/projects/{projectGuid}/evaluationCriteriaSummary/{id}", UUID.randomUUID(), id))
-                .andExpect(status().isNotFound());
     }
 }

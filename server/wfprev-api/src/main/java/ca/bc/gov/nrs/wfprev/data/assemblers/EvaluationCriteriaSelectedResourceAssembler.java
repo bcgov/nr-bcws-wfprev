@@ -23,7 +23,7 @@ public class EvaluationCriteriaSelectedResourceAssembler extends RepresentationM
         }
 
         EvaluationCriteriaSelectedEntity entity = new EvaluationCriteriaSelectedEntity();
-        entity.setEvaluationCriteriaGuid(UUID.fromString(resource.getEvaluationCriteriaGuid()));
+        entity.setEvaluationCriteriaGuid(resource.getEvaluationCriteriaGuid() != null ? UUID.fromString(resource.getEvaluationCriteriaGuid()) : null);
         entity.setEvaluationCriteriaSectionSummaryGuid(resource.getEvaluationCriteriaSectionSummaryGuid() != null ? UUID.fromString(resource.getEvaluationCriteriaSectionSummaryGuid()) : null);
         entity.setIsEvaluationCriteriaSelectedInd(resource.getIsEvaluationCriteriaSelectedInd());
         entity.setRevisionCount(resource.getRevisionCount());
@@ -39,9 +39,9 @@ public class EvaluationCriteriaSelectedResourceAssembler extends RepresentationM
     public EvaluationCriteriaSelectedModel toModel(EvaluationCriteriaSelectedEntity entity) {
         EvaluationCriteriaSelectedModel resource = instantiateModel(entity);
 
-        resource.setEvaluationCriteriaSelectedGuid(String.valueOf(entity.getEvaluationCriteriaSelectedGuid()));
-        resource.setEvaluationCriteriaGuid(String.valueOf(entity.getEvaluationCriteriaGuid()));
-        resource.setEvaluationCriteriaSectionSummaryGuid(String.valueOf(entity.getEvaluationCriteriaSectionSummaryGuid()));
+        resource.setEvaluationCriteriaSelectedGuid(entity.getEvaluationCriteriaSelectedGuid() != null ? String.valueOf(entity.getEvaluationCriteriaSelectedGuid()) : null);
+        resource.setEvaluationCriteriaGuid(entity.getEvaluationCriteriaGuid() != null ? String.valueOf(entity.getEvaluationCriteriaGuid()) : null);
+        resource.setEvaluationCriteriaSectionSummaryGuid(entity.getEvaluationCriteriaSectionSummaryGuid() != null ? String.valueOf(entity.getEvaluationCriteriaSectionSummaryGuid()): null);
         resource.setIsEvaluationCriteriaSelectedInd(entity.getIsEvaluationCriteriaSelectedInd());
         resource.setRevisionCount(entity.getRevisionCount());
         resource.setCreateUser(entity.getCreateUser());
@@ -55,8 +55,8 @@ public class EvaluationCriteriaSelectedResourceAssembler extends RepresentationM
         log.debug(">> updateEntity");
 
         existingEntity.setEvaluationCriteriaSelectedGuid(existingEntity.getEvaluationCriteriaSelectedGuid());
-        existingEntity.setEvaluationCriteriaGuid(UUID.fromString(model.getEvaluationCriteriaGuid()));
-        existingEntity.setEvaluationCriteriaSectionSummaryGuid(UUID.fromString(model.getEvaluationCriteriaSectionSummaryGuid()));
+        existingEntity.setEvaluationCriteriaGuid(model.getEvaluationCriteriaGuid() != null ? UUID.fromString(model.getEvaluationCriteriaGuid()) : null);
+        existingEntity.setEvaluationCriteriaSectionSummaryGuid(model.getEvaluationCriteriaSectionSummaryGuid() != null ? UUID.fromString(model.getEvaluationCriteriaSectionSummaryGuid()) : null);
         existingEntity.setIsEvaluationCriteriaSelectedInd(model.getIsEvaluationCriteriaSelectedInd());
         existingEntity.setRevisionCount(model.getRevisionCount());
         existingEntity.setCreateUser(existingEntity.getCreateUser());

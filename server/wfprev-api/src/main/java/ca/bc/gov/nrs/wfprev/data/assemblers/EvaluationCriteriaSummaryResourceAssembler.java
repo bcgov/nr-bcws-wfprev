@@ -41,8 +41,8 @@ public class EvaluationCriteriaSummaryResourceAssembler extends RepresentationMo
         }
 
         EvaluationCriteriaSummaryEntity entity = new EvaluationCriteriaSummaryEntity();
-        entity.setEvaluationCriteriaSummaryGuid(UUID.fromString(resource.getEvaluationCriteriaSummaryGuid()));
-        entity.setProjectGuid(UUID.fromString(resource.getProjectGuid()));
+        entity.setEvaluationCriteriaSummaryGuid(resource.getEvaluationCriteriaSummaryGuid() != null ? UUID.fromString(resource.getEvaluationCriteriaSummaryGuid()) : null);
+        entity.setProjectGuid(resource.getProjectGuid() != null ? UUID.fromString(resource.getProjectGuid()) : null);
 
         if (resource.getWuiRiskClassCode() != null) {
             entity.setWuiRiskClassCode(toWuiRiskClassCodeEntity(resource.getWuiRiskClassCode()));
@@ -55,10 +55,11 @@ public class EvaluationCriteriaSummaryResourceAssembler extends RepresentationMo
         if (resource.getEvaluationCriteriaSectionSummaries() != null && !resource.getEvaluationCriteriaSectionSummaries().isEmpty()) {
             List<EvaluationCriteriaSectionSummaryEntity> sectionSummaryEntities = new ArrayList<>();
 
+            // handle evaluationCriteriaSectionSummaries
             for (EvaluationCriteriaSectionSummaryModel childModel : resource.getEvaluationCriteriaSectionSummaries()) {
                 EvaluationCriteriaSectionSummaryEntity childEntity = new EvaluationCriteriaSectionSummaryEntity();
 
-                childEntity.setEvaluationCriteriaSummaryGuid(UUID.fromString(resource.getEvaluationCriteriaSummaryGuid()));
+                childEntity.setEvaluationCriteriaSummaryGuid(resource.getEvaluationCriteriaSummaryGuid() != null ? UUID.fromString(resource.getEvaluationCriteriaSummaryGuid()) : null);
                 childEntity.setEvaluationCriteriaSectionCode(toEvaluationCriteriaSectionCodeEntity(childModel.getEvaluationCriteriaSectionCode()));
                 childEntity.setFilterSectionScore(childModel.getFilterSectionScore());
                 childEntity.setFilterSectionComment(childModel.getFilterSectionComment());
@@ -74,10 +75,9 @@ public class EvaluationCriteriaSummaryResourceAssembler extends RepresentationMo
                     List<EvaluationCriteriaSelectedEntity> selectedEntities = childModel.getEvaluationCriteriaSelected().stream()
                             .map(selectedModel -> {
                                 EvaluationCriteriaSelectedEntity selectedEntity = new EvaluationCriteriaSelectedEntity();
-                                if (selectedModel.getEvaluationCriteriaSelectedGuid() != null) {
-                                    selectedEntity.setEvaluationCriteriaSelectedGuid(UUID.fromString(selectedModel.getEvaluationCriteriaSelectedGuid()));
-                                }
-                                selectedEntity.setEvaluationCriteriaGuid(UUID.fromString(selectedModel.getEvaluationCriteriaGuid()));
+
+                                selectedEntity.setEvaluationCriteriaSelectedGuid(selectedModel.getEvaluationCriteriaSelectedGuid() != null ? UUID.fromString(selectedModel.getEvaluationCriteriaSelectedGuid()) : null);
+                                selectedEntity.setEvaluationCriteriaGuid(selectedModel.getEvaluationCriteriaGuid() != null ? UUID.fromString(selectedModel.getEvaluationCriteriaGuid()) : null);
                                 selectedEntity.setIsEvaluationCriteriaSelectedInd(selectedModel.getIsEvaluationCriteriaSelectedInd());
                                 selectedEntity.setRevisionCount(selectedModel.getRevisionCount());
                                 selectedEntity.setCreateUser(selectedModel.getCreateUser());
@@ -115,8 +115,8 @@ public class EvaluationCriteriaSummaryResourceAssembler extends RepresentationMo
     public EvaluationCriteriaSummaryModel toModel(EvaluationCriteriaSummaryEntity entity) {
         EvaluationCriteriaSummaryModel resource = instantiateModel(entity);
 
-        resource.setEvaluationCriteriaSummaryGuid(entity.getEvaluationCriteriaSummaryGuid().toString());
-        resource.setProjectGuid(entity.getProjectGuid().toString());
+        resource.setEvaluationCriteriaSummaryGuid(entity.getEvaluationCriteriaSummaryGuid() != null ? entity.getEvaluationCriteriaSummaryGuid().toString() : null);
+        resource.setProjectGuid(entity.getProjectGuid() != null ? entity.getProjectGuid().toString() : null);
 
         if (entity.getWuiRiskClassCode() != null) {
             resource.setWuiRiskClassCode(toWuiRiskClassCodeModel(entity.getWuiRiskClassCode()));
@@ -131,8 +131,8 @@ public class EvaluationCriteriaSummaryResourceAssembler extends RepresentationMo
             for (EvaluationCriteriaSectionSummaryEntity child : entity.getEvaluationCriteriaSectionSummaries()) {
                 EvaluationCriteriaSectionSummaryModel model = new EvaluationCriteriaSectionSummaryModel();
 
-                model.setEvaluationCriteriaSectionSummaryGuid(child.getEvaluationCriteriaSectionSummaryGuid().toString());
-                model.setEvaluationCriteriaSummaryGuid(entity.getEvaluationCriteriaSummaryGuid().toString()); // ADD THIS
+                model.setEvaluationCriteriaSectionSummaryGuid(child.getEvaluationCriteriaSectionSummaryGuid() != null ? child.getEvaluationCriteriaSectionSummaryGuid().toString() : null);
+                model.setEvaluationCriteriaSummaryGuid(entity.getEvaluationCriteriaSummaryGuid() != null ? entity.getEvaluationCriteriaSummaryGuid().toString() : null);
                 model.setEvaluationCriteriaSectionCode(
                         toEvaluationCriteriaSectionCodeModel(child.getEvaluationCriteriaSectionCode())
                 );
@@ -148,11 +148,11 @@ public class EvaluationCriteriaSummaryResourceAssembler extends RepresentationMo
                     List<EvaluationCriteriaSelectedModel> selectedModels = child.getEvaluationCriteriaSelected().stream()
                             .map(selected -> {
                                 EvaluationCriteriaSelectedModel selectedModel = new EvaluationCriteriaSelectedModel();
-                                selectedModel.setEvaluationCriteriaSelectedGuid(selected.getEvaluationCriteriaSelectedGuid().toString());
-                                selectedModel.setEvaluationCriteriaGuid(selected.getEvaluationCriteriaGuid().toString());
+                                selectedModel.setEvaluationCriteriaSelectedGuid(selected.getEvaluationCriteriaSelectedGuid() != null ? selected.getEvaluationCriteriaSelectedGuid().toString() : null);
+                                selectedModel.setEvaluationCriteriaGuid(selected.getEvaluationCriteriaGuid() != null ? selected.getEvaluationCriteriaGuid().toString() : null);
                                 selectedModel.setEvaluationCriteriaSectionSummaryGuid(
-                                        child.getEvaluationCriteriaSectionSummaryGuid().toString()
-                                ); // ADD THIS
+                                        child.getEvaluationCriteriaSectionSummaryGuid() != null ? child.getEvaluationCriteriaSectionSummaryGuid().toString() : null
+                                );
                                 selectedModel.setIsEvaluationCriteriaSelectedInd(selected.getIsEvaluationCriteriaSelectedInd());
                                 selectedModel.setRevisionCount(selected.getRevisionCount());
                                 selectedModel.setCreateUser(selected.getCreateUser());
@@ -168,7 +168,6 @@ public class EvaluationCriteriaSummaryResourceAssembler extends RepresentationMo
 
                 summaryModels.add(model);
             }
-
 
             resource.setEvaluationCriteriaSectionSummaries(summaryModels);
         }
@@ -189,7 +188,7 @@ public class EvaluationCriteriaSummaryResourceAssembler extends RepresentationMo
     public EvaluationCriteriaSummaryEntity updateEntity(EvaluationCriteriaSummaryModel model, EvaluationCriteriaSummaryEntity entity) {
         if (model == null || entity == null) return null;
 
-        // === Update scalar fields ===
+        // Update parent fields
         entity.setWuiRiskClassCode(toWuiRiskClassCodeEntity(model.getWuiRiskClassCode()));
         entity.setLocalWuiRiskClassCode(toWuiRiskClassCodeEntity(model.getLocalWuiRiskClassCode()));
         entity.setWuiRiskClassComment(model.getWuiRiskClassComment());
@@ -209,13 +208,13 @@ public class EvaluationCriteriaSummaryResourceAssembler extends RepresentationMo
                 if (sectionCodeModel == null) continue;
 
                 EvaluationCriteriaSectionSummaryEntity sectionEntity = existingSections.get(sectionCodeModel.getEvaluationCriteriaSectionCode());
-                if (sectionEntity == null) continue; // skip unknown
+                if (sectionEntity == null) continue;
 
-                // Update allowed fields
+                // Update allowed fields for section summary
                 sectionEntity.setFilterSectionComment(sectionModel.getFilterSectionComment());
                 sectionEntity.setFilterSectionScore(sectionModel.getFilterSectionScore());
 
-                // === Update selected entries ===
+                // Update allowed fields for selected
                 if (sectionModel.getEvaluationCriteriaSelected() != null) {
                     Map<UUID, EvaluationCriteriaSelectedEntity> existingSelected = sectionEntity.getEvaluationCriteriaSelected().stream()
                             .collect(Collectors.toMap(
@@ -230,7 +229,6 @@ public class EvaluationCriteriaSummaryResourceAssembler extends RepresentationMo
                         if (selectedEntity != null) {
                             selectedEntity.setIsEvaluationCriteriaSelectedInd(selectedModel.getIsEvaluationCriteriaSelectedInd());
                         } else {
-                            // Log or ignore unknown entries; do NOT create new ones
                             log.warn("Skipping update for non-existent selected criteria: {}", criteriaGuid);
                         }
                     }

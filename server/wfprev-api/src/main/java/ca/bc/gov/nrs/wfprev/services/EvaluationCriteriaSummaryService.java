@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.IllformedLocaleException;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -48,64 +49,68 @@ public class EvaluationCriteriaSummaryService implements CommonService {
     }
 
     public CollectionModel<EvaluationCriteriaSummaryModel> getAllEvaluationCriteriaSummaries(String projectId) throws ServiceException {
-        UUID projectGuid = UUID.fromString(projectId);
-        List<EvaluationCriteriaSummaryEntity> evaluationCriteriaSummaries = evaluationCriteriaSummaryRepository.findAllByProjectGuid(projectGuid);
-        return evaluationCriteriaSummaryResourceAssembler.toCollectionModel(evaluationCriteriaSummaries);
+        try {
+            UUID projectGuid = UUID.fromString(projectId);
+            List<EvaluationCriteriaSummaryEntity> evaluationCriteriaSummaries = evaluationCriteriaSummaryRepository.findAllByProjectGuid(projectGuid);
+            return evaluationCriteriaSummaryResourceAssembler.toCollectionModel(evaluationCriteriaSummaries);
+        } catch (Exception e) {
+            throw new EntityNotFoundException("Evaluation criteria summaries not found for project" + projectId, e);
+        }
     }
 
     @Transactional(rollbackFor = Exception.class)
     public EvaluationCriteriaSummaryModel createEvaluationCriteriaSummary(EvaluationCriteriaSummaryModel resource) {
         try {
-        initializeNewEvaluationCriteriaSummary(resource);
+            initializeNewEvaluationCriteriaSummary(resource);
 
-        EvaluationCriteriaSummaryEntity entity = evaluationCriteriaSummaryResourceAssembler.toEntity(resource);
+            EvaluationCriteriaSummaryEntity entity = evaluationCriteriaSummaryResourceAssembler.toEntity(resource);
 
-        // Remove children temporarily before saving parent in order set correct guid in children
-        List<EvaluationCriteriaSectionSummaryEntity> sectionSummaries = entity.getEvaluationCriteriaSectionSummaries();
-        entity.setEvaluationCriteriaSectionSummaries(null);
-        assignAssociatedEntities(resource, entity);
+            // Remove children temporarily before saving parent in order set correct guid in children
+            List<EvaluationCriteriaSectionSummaryEntity> sectionSummaries = entity.getEvaluationCriteriaSectionSummaries();
+            entity.setEvaluationCriteriaSectionSummaries(null);
+            assignAssociatedEntities(resource, entity);
 
-        // Save the summary parent
-        EvaluationCriteriaSummaryEntity savedParent = evaluationCriteriaSummaryRepository.saveAndFlush(entity);
+            // Save the summary parent
+            EvaluationCriteriaSummaryEntity savedParent = evaluationCriteriaSummaryRepository.saveAndFlush(entity);
 
-        // Reattach section summaries, populate new GUIDs, link to parent
-        if (sectionSummaries != null) {
-            for (int i = 0; i < sectionSummaries.size(); i++) {
-                EvaluationCriteriaSectionSummaryEntity section = sectionSummaries.get(i);
+            // Reattach section summaries, populate new GUIDs, link to parent
+            if (sectionSummaries != null) {
+                for (int i = 0; i < sectionSummaries.size(); i++) {
+                    EvaluationCriteriaSectionSummaryEntity section = sectionSummaries.get(i);
 
-                section.setEvaluationCriteriaSummary(savedParent);
-                section.setEvaluationCriteriaSummaryGuid(savedParent.getEvaluationCriteriaSummaryGuid());
-                section.setEvaluationCriteriaSectionSummaryGuid(UUID.randomUUID());
-                section.setRevisionCount(0);
+                    section.setEvaluationCriteriaSummary(savedParent);
+                    section.setEvaluationCriteriaSummaryGuid(savedParent.getEvaluationCriteriaSummaryGuid());
+                    section.setEvaluationCriteriaSectionSummaryGuid(UUID.randomUUID());
+                    section.setRevisionCount(0);
 
-                EvaluationCriteriaSectionSummaryModel sectionModel =
-                        resource.getEvaluationCriteriaSectionSummaries().get(i);
+                    EvaluationCriteriaSectionSummaryModel sectionModel =
+                            resource.getEvaluationCriteriaSectionSummaries().get(i);
 
-                if (sectionModel.getEvaluationCriteriaSelected() != null) {
-                    List<EvaluationCriteriaSelectedEntity> selectedEntities = new ArrayList<>();
+                    if (sectionModel.getEvaluationCriteriaSelected() != null) {
+                        List<EvaluationCriteriaSelectedEntity> selectedEntities = new ArrayList<>();
 
-                    for (EvaluationCriteriaSelectedModel selectedModel : sectionModel.getEvaluationCriteriaSelected()) {
-                        EvaluationCriteriaSelectedEntity selectedEntity = evaluationCriteriaSelectedResourceAssembler.toEntity(selectedModel);
-                        selectedEntity.setEvaluationCriteriaSectionSummary(section);
-                        selectedEntity.setEvaluationCriteriaSectionSummaryGuid(section.getEvaluationCriteriaSectionSummaryGuid());
-                        selectedEntity.setRevisionCount(0);
-                        selectedEntities.add(selectedEntity);
+                        for (EvaluationCriteriaSelectedModel selectedModel : sectionModel.getEvaluationCriteriaSelected()) {
+                            EvaluationCriteriaSelectedEntity selectedEntity = evaluationCriteriaSelectedResourceAssembler.toEntity(selectedModel);
+                            selectedEntity.setEvaluationCriteriaSectionSummary(section);
+                            selectedEntity.setEvaluationCriteriaSectionSummaryGuid(section.getEvaluationCriteriaSectionSummaryGuid());
+                            selectedEntity.setRevisionCount(0);
+                            selectedEntities.add(selectedEntity);
+                        }
+
+                        section.setEvaluationCriteriaSelected(selectedEntities);
                     }
-
-                    section.setEvaluationCriteriaSelected(selectedEntities);
                 }
+
+                savedParent.setEvaluationCriteriaSectionSummaries(sectionSummaries);
             }
 
-            savedParent.setEvaluationCriteriaSectionSummaries(sectionSummaries);
-        }
+            // Save parent again (cascades to children)
+            EvaluationCriteriaSummaryEntity savedWithChildren = evaluationCriteriaSummaryRepository.save(savedParent);
 
-        // Save parent again (cascades to children)
-        EvaluationCriteriaSummaryEntity savedWithChildren = evaluationCriteriaSummaryRepository.save(savedParent);
-
-        return evaluationCriteriaSummaryResourceAssembler.toModel(savedWithChildren);
-        } catch (Exception ex) {
-            log.error("Failed to create evaluation criteria summary. Rolling back.", ex);
-            throw ex;
+            return evaluationCriteriaSummaryResourceAssembler.toModel(savedWithChildren);
+        } catch (Exception e) {
+            log.error("Failed to create evaluation criteria summary. Rolling back.", e);
+            throw new IllegalArgumentException("Failed to create evaluation criteria summary", e);
         }
     }
 
@@ -117,14 +122,19 @@ public class EvaluationCriteriaSummaryService implements CommonService {
     }
 
     public EvaluationCriteriaSummaryModel updateEvaluationCriteriaSummary(EvaluationCriteriaSummaryModel resource) {
-        UUID guid = UUID.fromString(resource.getEvaluationCriteriaSummaryGuid());
-        EvaluationCriteriaSummaryEntity existingEntity = evaluationCriteriaSummaryRepository.findById(guid)
-                .orElseThrow(() -> new EntityNotFoundException("evaluationCriteriaSummary not found: " + resource.getEvaluationCriteriaSummaryGuid()));
+        try {
+            UUID guid = UUID.fromString(resource.getEvaluationCriteriaSummaryGuid());
+            EvaluationCriteriaSummaryEntity existingEntity = evaluationCriteriaSummaryRepository.findById(guid)
+                    .orElseThrow(() -> new EntityNotFoundException("Evaluation criteria Summary not found: " + resource.getEvaluationCriteriaSummaryGuid()));
 
-        EvaluationCriteriaSummaryEntity entity = evaluationCriteriaSummaryResourceAssembler.updateEntity(resource, existingEntity);
-        assignAssociatedEntities(resource, entity);
-        linkChildSummariesToParent(entity, resource);
-        return saveEvaluationCriteriaSummary(entity);
+            EvaluationCriteriaSummaryEntity entity = evaluationCriteriaSummaryResourceAssembler.updateEntity(resource, existingEntity);
+            assignAssociatedEntities(resource, entity);
+            linkChildSummariesToParent(entity, resource);
+            return saveEvaluationCriteriaSummary(entity);
+        } catch (Exception e) {
+            log.error("Failed to update evaluation criteria summary", e);
+            throw new IllegalArgumentException("Failed to update evaluation criteria summary", e);
+        }
     }
 
     private EvaluationCriteriaSummaryModel saveEvaluationCriteriaSummary(EvaluationCriteriaSummaryEntity entity) {

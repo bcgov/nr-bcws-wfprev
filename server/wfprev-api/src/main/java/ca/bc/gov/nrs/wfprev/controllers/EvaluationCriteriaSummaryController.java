@@ -2,7 +2,6 @@ package ca.bc.gov.nrs.wfprev.controllers;
 
 import ca.bc.gov.nrs.common.wfone.rest.resource.HeaderConstants;
 import ca.bc.gov.nrs.common.wfone.rest.resource.MessageListRsrc;
-import ca.bc.gov.nrs.wfone.common.service.api.ServiceException;
 import ca.bc.gov.nrs.wfprev.common.controllers.CommonController;
 import ca.bc.gov.nrs.wfprev.data.models.EvaluationCriteriaSummaryModel;
 import ca.bc.gov.nrs.wfprev.services.EvaluationCriteriaSummaryService;
@@ -17,10 +16,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -44,8 +41,8 @@ public class EvaluationCriteriaSummaryController extends CommonController {
     }
 
     @GetMapping
-    @Operation(summary = "Fetch all Fuel Management Project Resources",
-            description = "Fetch all Fuel Management Project Resources",
+    @Operation(summary = "Fetch all Evaluation Criteria Summary Resources",
+            description = "Fetch all Evaluation Criteria Summary Resources",
             security = @SecurityRequirement(name = "Webade-OAUTH2",
                     scopes = {"WFPREV"}),
             extensions = {@Extension(properties = {@ExtensionProperty(name = "auth-type", value = "#{wso2.x-auth-type.app_and_app_user}"), @ExtensionProperty(name = "throttling-tier", value = "Unlimited")})})
@@ -56,23 +53,15 @@ public class EvaluationCriteriaSummaryController extends CommonController {
         log.debug(" >> getAllEvaluationCriteriaSummaries");
         ResponseEntity<CollectionModel<EvaluationCriteriaSummaryModel>> response;
 
-        try {
-            response = ok(evaluationCriteriaSummaryService.getAllEvaluationCriteriaSummaries(projectGuid));
-        } catch (ServiceException e) {
-            response = internalServerError();
-            log.error(" ### ServiceException while fetching Fuel Management Projects", e);
-        } catch (RuntimeException e) {
-            response = internalServerError();
-            log.error(" ### Error while fetching Fuel Management Projects", e);
-        }
+        response = ok(evaluationCriteriaSummaryService.getAllEvaluationCriteriaSummaries(projectGuid));
 
         log.debug(" << getAllEvaluationCriteriaSummaries");
         return response;
     }
 
     @PostMapping
-    @Operation(summary = "Create a Fuel Management Project Resource",
-            description = "Create a new Fuel Management Project Resource",
+    @Operation(summary = "Create a Evaluation Criteria Summary Resource",
+            description = "Create a new Evaluation Criteria Summary Resource",
             security = @SecurityRequirement(name = "Webade-OAUTH2",
                     scopes = {"WFPREV"}))
     @ApiResponses(value = {
@@ -85,27 +74,16 @@ public class EvaluationCriteriaSummaryController extends CommonController {
         log.debug(" >> createEvaluationCriteriaSummary");
         ResponseEntity<EvaluationCriteriaSummaryModel> response;
 
-        try {
-            EvaluationCriteriaSummaryModel createdModel = evaluationCriteriaSummaryService.createEvaluationCriteriaSummary(evaluationCriteriaSummaryModel);
-            response = ResponseEntity.status(201).body(createdModel);
-        } catch (DataIntegrityViolationException e) {
-            response = badRequest();
-            log.error(" ### DataIntegrityViolationException while creating Fuel Management Project", e);
-        } catch (ServiceException e) {
-            response = internalServerError();
-            log.error(" ### Service Exception while creating Fuel Management Project", e);
-        } catch (Exception e) {
-            response = internalServerError();
-            log.error(" ### Error while creating Fuel Management Project", e);
-        }
+        EvaluationCriteriaSummaryModel createdModel = evaluationCriteriaSummaryService.createEvaluationCriteriaSummary(evaluationCriteriaSummaryModel);
+        response = ResponseEntity.status(201).body(createdModel);
 
         log.debug(" << createEvaluationCriteriaSummary");
         return response;
     }
 
     @PutMapping("/{evaluationCriteriaSummaryGuid}")
-    @Operation(summary = "Update Fuel Management Project Resource",
-            description = "Update Fuel Management Project Resource",
+    @Operation(summary = "Update Evaluation Criteria Summary Resource",
+            description = "Update Evaluation Criteria Summary Resource",
             security = @SecurityRequirement(name = "Webade-OAUTH2",
                     scopes = {"WFPREV"}),
             extensions = {@Extension(properties = {@ExtensionProperty(name = "auth-type", value = "#{wso2.x-auth-type.app_and_app_user}"), @ExtensionProperty(name = "throttling-tier", value = "Unlimited")})})
@@ -116,19 +94,11 @@ public class EvaluationCriteriaSummaryController extends CommonController {
         log.debug(" >> updateProject");
         ResponseEntity<EvaluationCriteriaSummaryModel> response;
 
-        try {
-            if (evaluationCriteriaSummaryGuid.equalsIgnoreCase(resource.getEvaluationCriteriaSummaryGuid())) {
-                EvaluationCriteriaSummaryModel updatedResource = evaluationCriteriaSummaryService.updateEvaluationCriteriaSummary(resource);
-                response = updatedResource == null ? notFound() : ok(updatedResource);
-            } else {
-                response = badRequest();
-            }
-        } catch (EntityNotFoundException e) {
-            response = notFound();
-            log.warn(" ### Fuel Management Project not found with id: {}", evaluationCriteriaSummaryGuid, e);
-        } catch (Exception e) {
-            response = internalServerError();
-            log.error(" ### Error while updating Project", e);
+        if (evaluationCriteriaSummaryGuid.equalsIgnoreCase(resource.getEvaluationCriteriaSummaryGuid())) {
+            EvaluationCriteriaSummaryModel updatedResource = evaluationCriteriaSummaryService.updateEvaluationCriteriaSummary(resource);
+            response = updatedResource == null ? notFound() : ok(updatedResource);
+        } else {
+            response = badRequest();
         }
 
         log.debug(" << updateProject");
@@ -136,8 +106,8 @@ public class EvaluationCriteriaSummaryController extends CommonController {
     }
 
     @GetMapping("/{evaluationCriteriaSummaryGuid}")
-    @Operation(summary = "Fetch a Fuel Management Project Resource",
-            description = "Fetch a Fuel Management Project Resource",
+    @Operation(summary = "Fetch a Evaluation Criteria Summary Resource",
+            description = "Fetch a Evaluation Criteria Summary Resource",
             security = @SecurityRequirement(name = "Webade-OAUTH2",
                     scopes = {"WFPREV"}),
             extensions = {@Extension(properties = {@ExtensionProperty(name = "auth-type", value = "#{wso2.x-auth-type.app_and_app_user}"), @ExtensionProperty(name = "throttling-tier", value = "Unlimited")})})
@@ -148,21 +118,16 @@ public class EvaluationCriteriaSummaryController extends CommonController {
         log.debug(" >> getEvaluationCriteriaSummary");
         ResponseEntity<EvaluationCriteriaSummaryModel> response;
 
-        try {
-            EvaluationCriteriaSummaryModel evaluationCriteriaSummaryModel = evaluationCriteriaSummaryService.getEvaluationCriteriaSummary(evaluationCriteriaSummaryGuid);
-            response = evaluationCriteriaSummaryModel == null ? notFound() : ok(evaluationCriteriaSummaryModel);
-        } catch (Exception e) {
-            response = internalServerError();
-            log.error(" ### Error while fetching Fuel Management Project", e);
-        }
+        EvaluationCriteriaSummaryModel evaluationCriteriaSummaryModel = evaluationCriteriaSummaryService.getEvaluationCriteriaSummary(evaluationCriteriaSummaryGuid);
+        response = evaluationCriteriaSummaryModel == null ? notFound() : ok(evaluationCriteriaSummaryModel);
 
         log.debug(" << getEvaluationCriteriaSummary");
         return response;
     }
 
     @DeleteMapping("/{evaluationCriteriaSummaryGuid}")
-    @Operation(summary = "Delete a Fuel Management Project Resource",
-            description = "Delete a specific Fuel Management Project Resource by its ID",
+    @Operation(summary = "Delete a Evaluation Criteria Summary Resource",
+            description = "Delete a specific Evaluation Criteria Summary Resource by its ID",
             security = @SecurityRequirement(name = "Webade-OAUTH2",
                     scopes = {"WFPREV"}))
     @ApiResponses(value = {
@@ -174,19 +139,8 @@ public class EvaluationCriteriaSummaryController extends CommonController {
     public ResponseEntity<Void> deleteEvaluationCriteriaSummary(@PathVariable("evaluationCriteriaSummaryGuid") String evaluationCriteriaSummaryGuid) {
         log.debug(" >> deleteEvaluationCriteriaSummary with id: {}", evaluationCriteriaSummaryGuid);
 
-        try {
-            evaluationCriteriaSummaryService.deleteEvaluationCriteriaSummary(evaluationCriteriaSummaryGuid);
-            log.debug(" << deleteEvaluationCriteriaSummary success");
-            return ResponseEntity.noContent().build();
-        } catch (EntityNotFoundException e) {
-            log.warn(" ### Fuel Management Project not found with id: {}", evaluationCriteriaSummaryGuid, e);
-            return ResponseEntity.notFound().build();
-        } catch (IllegalArgumentException e) {
-            log.warn(" ### Invalid ID provided: {}", evaluationCriteriaSummaryGuid, e);
-            return ResponseEntity.badRequest().build();
-        } catch (Exception e) {
-            log.error(" ### Error while deleting Fuel Management Project with id: {}", evaluationCriteriaSummaryGuid, e);
-            return internalServerError();
-        }
+        evaluationCriteriaSummaryService.deleteEvaluationCriteriaSummary(evaluationCriteriaSummaryGuid);
+        log.debug(" << deleteEvaluationCriteriaSummary success");
+        return ResponseEntity.noContent().build();
     }
 }
