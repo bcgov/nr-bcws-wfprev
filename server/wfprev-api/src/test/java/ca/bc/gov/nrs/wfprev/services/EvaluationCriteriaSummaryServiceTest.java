@@ -2,13 +2,16 @@ package ca.bc.gov.nrs.wfprev.services;
 
 import ca.bc.gov.nrs.wfprev.data.assemblers.EvaluationCriteriaSelectedResourceAssembler;
 import ca.bc.gov.nrs.wfprev.data.assemblers.EvaluationCriteriaSummaryResourceAssembler;
+import ca.bc.gov.nrs.wfprev.data.entities.EvaluationCriteriaSectionCodeEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.EvaluationCriteriaSectionSummaryEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.EvaluationCriteriaSelectedEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.EvaluationCriteriaSummaryEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.WUIRiskClassCodeEntity;
+import ca.bc.gov.nrs.wfprev.data.models.EvaluationCriteriaSectionCodeModel;
 import ca.bc.gov.nrs.wfprev.data.models.EvaluationCriteriaSectionSummaryModel;
 import ca.bc.gov.nrs.wfprev.data.models.EvaluationCriteriaSelectedModel;
 import ca.bc.gov.nrs.wfprev.data.models.EvaluationCriteriaSummaryModel;
+import ca.bc.gov.nrs.wfprev.data.models.WUIRiskClassCodeModel;
 import ca.bc.gov.nrs.wfprev.data.repositories.EvaluationCriteriaSummaryRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.WUIRiskClassCodeRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -72,39 +75,53 @@ class EvaluationCriteriaSummaryServiceTest {
     void testCreateEvaluationCriteriaSummary_success() {
         UUID summaryGuid = UUID.randomUUID();
         UUID projectGuid = UUID.randomUUID();
+        UUID sectionGuid = UUID.randomUUID();
+        UUID selectedGuid = UUID.randomUUID();
         String wuiCode = "WUI1";
         String localWuiCode = "WUI2";
-        UUID selectedGuid = UUID.randomUUID();
 
+        // Build model
         EvaluationCriteriaSelectedModel selectedModel = new EvaluationCriteriaSelectedModel();
         selectedModel.setEvaluationCriteriaGuid(selectedGuid.toString());
         selectedModel.setIsEvaluationCriteriaSelectedInd(true);
 
+        EvaluationCriteriaSectionCodeModel sectionCodeModel = new EvaluationCriteriaSectionCodeModel();
+        sectionCodeModel.setEvaluationCriteriaSectionCode("SEC1");
+
         EvaluationCriteriaSectionSummaryModel sectionModel = new EvaluationCriteriaSectionSummaryModel();
         sectionModel.setEvaluationCriteriaSelected(List.of(selectedModel));
-        sectionModel.setEvaluationCriteriaSectionCode(new ca.bc.gov.nrs.wfprev.data.models.EvaluationCriteriaSectionCodeModel());
-        sectionModel.getEvaluationCriteriaSectionCode().setEvaluationCriteriaSectionCode("SEC1");
+        sectionModel.setEvaluationCriteriaSectionCode(sectionCodeModel);
 
         EvaluationCriteriaSummaryModel summaryModel = new EvaluationCriteriaSummaryModel();
         summaryModel.setProjectGuid(projectGuid.toString());
-        summaryModel.setWuiRiskClassCode(new ca.bc.gov.nrs.wfprev.data.models.WUIRiskClassCodeModel());
+        summaryModel.setWuiRiskClassCode(new WUIRiskClassCodeModel());
         summaryModel.getWuiRiskClassCode().setWuiRiskClassCode(wuiCode);
-        summaryModel.setLocalWuiRiskClassCode(new ca.bc.gov.nrs.wfprev.data.models.WUIRiskClassCodeModel());
+        summaryModel.setLocalWuiRiskClassCode(new WUIRiskClassCodeModel());
         summaryModel.getLocalWuiRiskClassCode().setWuiRiskClassCode(localWuiCode);
         summaryModel.setEvaluationCriteriaSectionSummaries(List.of(sectionModel));
 
-        EvaluationCriteriaSummaryEntity entity = new EvaluationCriteriaSummaryEntity();
-        entity.setEvaluationCriteriaSectionSummaries(new ArrayList<>());
-        entity.setEvaluationCriteriaSummaryGuid(summaryGuid);
-        entity.setProjectGuid(projectGuid);
+        // Build entity to return from toEntity()
+        EvaluationCriteriaSectionCodeEntity sectionCodeEntity = new EvaluationCriteriaSectionCodeEntity();
+        sectionCodeEntity.setEvaluationCriteriaSectionCode("SEC1");
 
+        EvaluationCriteriaSectionSummaryEntity sectionEntity = new EvaluationCriteriaSectionSummaryEntity();
+        sectionEntity.setEvaluationCriteriaSectionCode(sectionCodeEntity);
+        sectionEntity.setEvaluationCriteriaSelected(new ArrayList<>());
+
+        EvaluationCriteriaSummaryEntity entity = new EvaluationCriteriaSummaryEntity();
+        entity.setProjectGuid(projectGuid);
+        entity.setEvaluationCriteriaSummaryGuid(summaryGuid);
+        entity.setEvaluationCriteriaSectionSummaries(new ArrayList<>(List.of(sectionEntity)));
+
+        // Simulate parent saved initially
         EvaluationCriteriaSummaryEntity savedParent = new EvaluationCriteriaSummaryEntity();
         savedParent.setEvaluationCriteriaSummaryGuid(summaryGuid);
-        savedParent.setEvaluationCriteriaSectionSummaries(new ArrayList<>());
 
+        // Simulate final saved entity with children
         EvaluationCriteriaSummaryEntity savedWithChildren = new EvaluationCriteriaSummaryEntity();
         savedWithChildren.setEvaluationCriteriaSummaryGuid(summaryGuid);
 
+        // Setup mocks
         when(summaryAssembler.toEntity(any())).thenReturn(entity);
         when(summaryRepository.saveAndFlush(any())).thenReturn(savedParent);
         when(summaryRepository.save(any())).thenReturn(savedWithChildren);
@@ -127,7 +144,9 @@ class EvaluationCriteriaSummaryServiceTest {
         assertNotNull(result);
         verify(summaryAssembler).toEntity(any());
         verify(wuiRepo, times(2)).findById(any());
-        verify(summaryRepository, times(1)).save(any());
+        verify(selectedAssembler).toEntity(any());
+        verify(summaryRepository).saveAndFlush(any());
+        verify(summaryRepository).save(any());
         verify(summaryAssembler).toModel(savedWithChildren);
     }
 
