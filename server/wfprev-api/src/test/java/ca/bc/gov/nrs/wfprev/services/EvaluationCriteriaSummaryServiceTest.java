@@ -21,8 +21,15 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 class EvaluationCriteriaSummaryServiceTest {
 
@@ -39,7 +46,6 @@ class EvaluationCriteriaSummaryServiceTest {
         summaryAssembler = mock(EvaluationCriteriaSummaryResourceAssembler.class);
         selectedAssembler = mock(EvaluationCriteriaSelectedResourceAssembler.class);
         wuiRepo = mock(WUIRiskClassCodeRepository.class);
-
         service = new EvaluationCriteriaSummaryService(summaryRepository, summaryAssembler, wuiRepo, selectedAssembler);
     }
 
@@ -49,12 +55,9 @@ class EvaluationCriteriaSummaryServiceTest {
         EvaluationCriteriaSummaryEntity entity = new EvaluationCriteriaSummaryEntity();
         entity.setProjectGuid(projectGuid);
         List<EvaluationCriteriaSummaryEntity> entities = List.of(entity);
-
         when(summaryRepository.findAllByProjectGuid(projectGuid)).thenReturn(entities);
         when(summaryAssembler.toCollectionModel(entities)).thenReturn(CollectionModel.empty());
-
         CollectionModel<EvaluationCriteriaSummaryModel> result = service.getAllEvaluationCriteriaSummaries(projectGuid.toString());
-
         assertNotNull(result);
         verify(summaryRepository).findAllByProjectGuid(projectGuid);
     }
@@ -67,15 +70,12 @@ class EvaluationCriteriaSummaryServiceTest {
 
     @Test
     void testCreateEvaluationCriteriaSummary_success() {
-        // Setup GUIDs
         UUID summaryGuid = UUID.randomUUID();
         UUID projectGuid = UUID.randomUUID();
         String wuiCode = "WUI1";
         String localWuiCode = "WUI2";
-        UUID sectionGuid = UUID.randomUUID();
         UUID selectedGuid = UUID.randomUUID();
 
-        // Setup model
         EvaluationCriteriaSelectedModel selectedModel = new EvaluationCriteriaSelectedModel();
         selectedModel.setEvaluationCriteriaGuid(selectedGuid.toString());
         selectedModel.setIsEvaluationCriteriaSelectedInd(true);
@@ -93,7 +93,6 @@ class EvaluationCriteriaSummaryServiceTest {
         summaryModel.getLocalWuiRiskClassCode().setWuiRiskClassCode(localWuiCode);
         summaryModel.setEvaluationCriteriaSectionSummaries(List.of(sectionModel));
 
-        // Setup entity
         EvaluationCriteriaSummaryEntity entity = new EvaluationCriteriaSummaryEntity();
         entity.setEvaluationCriteriaSectionSummaries(new ArrayList<>());
         entity.setEvaluationCriteriaSummaryGuid(summaryGuid);
@@ -106,7 +105,6 @@ class EvaluationCriteriaSummaryServiceTest {
         EvaluationCriteriaSummaryEntity savedWithChildren = new EvaluationCriteriaSummaryEntity();
         savedWithChildren.setEvaluationCriteriaSummaryGuid(summaryGuid);
 
-        // Setup mocks
         when(summaryAssembler.toEntity(any())).thenReturn(entity);
         when(summaryRepository.saveAndFlush(any())).thenReturn(savedParent);
         when(summaryRepository.save(any())).thenReturn(savedWithChildren);
@@ -124,10 +122,8 @@ class EvaluationCriteriaSummaryServiceTest {
             return e;
         });
 
-        // Call service
         EvaluationCriteriaSummaryModel result = service.createEvaluationCriteriaSummary(summaryModel);
 
-        // Assert and verify
         assertNotNull(result);
         verify(summaryAssembler).toEntity(any());
         verify(wuiRepo, times(2)).findById(any());
@@ -139,7 +135,6 @@ class EvaluationCriteriaSummaryServiceTest {
     void testGetEvaluationCriteriaSummary_notFound() {
         UUID guid = UUID.randomUUID();
         when(summaryRepository.findById(guid)).thenReturn(Optional.empty());
-
         assertThrows(EntityNotFoundException.class, () -> service.getEvaluationCriteriaSummary(guid.toString()));
     }
 
@@ -148,9 +143,7 @@ class EvaluationCriteriaSummaryServiceTest {
         UUID guid = UUID.randomUUID();
         EvaluationCriteriaSummaryEntity entity = new EvaluationCriteriaSummaryEntity();
         when(summaryRepository.findById(guid)).thenReturn(Optional.of(entity));
-
         service.deleteEvaluationCriteriaSummary(guid.toString());
-
         verify(summaryRepository).deleteById(guid);
     }
 
@@ -158,7 +151,6 @@ class EvaluationCriteriaSummaryServiceTest {
     void testDeleteEvaluationCriteriaSummary_notFound() {
         UUID guid = UUID.randomUUID();
         when(summaryRepository.findById(guid)).thenReturn(Optional.empty());
-
         assertThrows(EntityNotFoundException.class, () -> service.deleteEvaluationCriteriaSummary(guid.toString()));
     }
 
@@ -167,9 +159,7 @@ class EvaluationCriteriaSummaryServiceTest {
         UUID guid = UUID.randomUUID();
         EvaluationCriteriaSummaryModel model = new EvaluationCriteriaSummaryModel();
         model.setEvaluationCriteriaSummaryGuid(guid.toString());
-
         when(summaryRepository.findById(guid)).thenReturn(Optional.empty());
-
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () ->
                 service.updateEvaluationCriteriaSummary(model));
         assertTrue(ex.getCause() instanceof EntityNotFoundException);
@@ -180,17 +170,13 @@ class EvaluationCriteriaSummaryServiceTest {
         UUID guid = UUID.randomUUID();
         EvaluationCriteriaSummaryModel model = new EvaluationCriteriaSummaryModel();
         model.setEvaluationCriteriaSummaryGuid(guid.toString());
-
         EvaluationCriteriaSummaryEntity existing = new EvaluationCriteriaSummaryEntity();
         EvaluationCriteriaSummaryEntity updated = new EvaluationCriteriaSummaryEntity();
-
         when(summaryRepository.findById(guid)).thenReturn(Optional.of(existing));
         when(summaryAssembler.updateEntity(model, existing)).thenReturn(updated);
         when(summaryRepository.saveAndFlush(updated)).thenReturn(updated);
         when(summaryAssembler.toModel(updated)).thenReturn(model);
-
         EvaluationCriteriaSummaryModel result = service.updateEvaluationCriteriaSummary(model);
-
         assertNotNull(result);
         verify(summaryRepository).saveAndFlush(updated);
     }
@@ -200,32 +186,23 @@ class EvaluationCriteriaSummaryServiceTest {
         EvaluationCriteriaSelectedEntity selectedEntity = new EvaluationCriteriaSelectedEntity();
         UUID selectedGuid = UUID.randomUUID();
         selectedEntity.setEvaluationCriteriaGuid(selectedGuid);
-
         EvaluationCriteriaSectionSummaryEntity sectionEntity = new EvaluationCriteriaSectionSummaryEntity();
         sectionEntity.setEvaluationCriteriaSelected(List.of(selectedEntity));
         sectionEntity.setEvaluationCriteriaSectionCode(new ca.bc.gov.nrs.wfprev.data.entities.EvaluationCriteriaSectionCodeEntity());
         sectionEntity.getEvaluationCriteriaSectionCode().setEvaluationCriteriaSectionCode("SEC1");
-
         EvaluationCriteriaSummaryEntity parent = new EvaluationCriteriaSummaryEntity();
         parent.setEvaluationCriteriaSummaryGuid(UUID.randomUUID());
         parent.setEvaluationCriteriaSectionSummaries(List.of(sectionEntity));
-
         EvaluationCriteriaSelectedModel selectedModel = new EvaluationCriteriaSelectedModel();
         selectedModel.setEvaluationCriteriaGuid(selectedGuid.toString());
         selectedModel.setIsEvaluationCriteriaSelectedInd(true);
-
         EvaluationCriteriaSectionSummaryModel sectionModel = new EvaluationCriteriaSectionSummaryModel();
         sectionModel.setEvaluationCriteriaSectionCode(new ca.bc.gov.nrs.wfprev.data.models.EvaluationCriteriaSectionCodeModel());
         sectionModel.getEvaluationCriteriaSectionCode().setEvaluationCriteriaSectionCode("SEC1");
         sectionModel.setEvaluationCriteriaSelected(List.of(selectedModel));
-
         EvaluationCriteriaSummaryModel model = new EvaluationCriteriaSummaryModel();
         model.setEvaluationCriteriaSectionSummaries(List.of(sectionModel));
-
-        // Call method
         service.linkChildSummariesToParent(parent, model);
-
-        // Verify link was made
         assertEquals(parent, sectionEntity.getEvaluationCriteriaSummary());
         assertEquals(parent.getEvaluationCriteriaSummaryGuid(), sectionEntity.getEvaluationCriteriaSummaryGuid());
         assertTrue(sectionEntity.getEvaluationCriteriaSelected().get(0).getIsEvaluationCriteriaSelectedInd());
