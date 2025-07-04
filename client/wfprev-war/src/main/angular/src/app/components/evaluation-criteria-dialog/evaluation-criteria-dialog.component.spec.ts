@@ -169,4 +169,159 @@ describe('EvaluationCriteriaDialogComponent', () => {
     component.loadCodeTablesAndPrefill();
     expect(console.error).toHaveBeenCalled();
   });
+
+  it('should build evaluation criteria summary model for create mode (isCreate=true)', () => {
+    component.fineFilters = [
+      { evaluationCriteriaGuid: 'fine-guid-1', weightedRank: 1 } as any
+    ];
+    component.mediumFilters = [
+      { evaluationCriteriaGuid: 'medium-guid-1', weightedRank: 2 } as any
+    ];
+
+    component.selectedFine.add('fine-guid-1');
+    component.selectedMedium.add('medium-guid-1');
+
+    component.initializeForm();
+    const model = component.buildEvaluationCriteriaSummaryModel(undefined, true);
+
+    const fine = model.evaluationCriteriaSectionSummaries!.find(
+      s => s!.evaluationCriteriaSectionCode!.evaluationCriteriaSectionCode === 'FINE_FLT'
+    )!;
+    const medium = model.evaluationCriteriaSectionSummaries!.find(
+      s => s!.evaluationCriteriaSectionCode!.evaluationCriteriaSectionCode === 'MEDIUM_FLT'
+    )!;
+
+    expect(fine).toBeDefined();
+    expect(fine!.evaluationCriteriaSelected).toBeDefined();
+    expect(fine!.evaluationCriteriaSelected![0].evaluationCriteriaSelectedGuid).toBeUndefined();
+    expect(fine!.evaluationCriteriaSelected![0].evaluationCriteriaGuid).toBe('fine-guid-1');
+    expect(fine!.evaluationCriteriaSelected![0].isEvaluationCriteriaSelectedInd).toBeTrue();
+
+    expect(medium).toBeDefined();
+    expect(medium!.evaluationCriteriaSelected).toBeDefined();
+    expect(medium!.evaluationCriteriaSelected![0].evaluationCriteriaSelectedGuid).toBeUndefined();
+    expect(medium!.evaluationCriteriaSelected![0].evaluationCriteriaGuid).toBe('medium-guid-1');
+    expect(medium!.evaluationCriteriaSelected![0].isEvaluationCriteriaSelectedInd).toBeTrue();
+
+  });
+
+  it('should build evaluation criteria summary model for update mode with existing selections', () => {
+    component.fineFilters = [
+      { evaluationCriteriaGuid: 'fine-guid-2', weightedRank: 1 } as any
+    ];
+    component.mediumFilters = [
+      { evaluationCriteriaGuid: 'medium-guid-2', weightedRank: 2 } as any
+    ];
+
+    const existingSummary = {
+      evaluationCriteriaSummaryGuid: 'summary-guid',
+      evaluationCriteriaSectionSummaries: [
+        {
+          evaluationCriteriaSectionCode: { evaluationCriteriaSectionCode: 'FINE_FLT' },
+          evaluationCriteriaSectionSummaryGuid: 'fine-section-guid',
+          evaluationCriteriaSelected: [
+            { evaluationCriteriaGuid: 'fine-guid-2', evaluationCriteriaSelectedGuid: 'fine-selection-guid' }
+          ]
+        },
+        {
+          evaluationCriteriaSectionCode: { evaluationCriteriaSectionCode: 'MEDIUM_FLT' },
+          evaluationCriteriaSectionSummaryGuid: 'medium-section-guid',
+          evaluationCriteriaSelected: [
+            { evaluationCriteriaGuid: 'medium-guid-2', evaluationCriteriaSelectedGuid: 'medium-selection-guid' }
+          ]
+        }
+      ]
+    } as any;
+
+    component.selectedFine.add('fine-guid-2');
+    component.selectedMedium.add('medium-guid-2');
+
+    component.initializeForm();
+    const model = component.buildEvaluationCriteriaSummaryModel(existingSummary, false);
+
+    const fine = model.evaluationCriteriaSectionSummaries!.find(
+      s => s!.evaluationCriteriaSectionCode!.evaluationCriteriaSectionCode === 'FINE_FLT'
+    )!;
+    const medium = model.evaluationCriteriaSectionSummaries!.find(
+      s => s!.evaluationCriteriaSectionCode!.evaluationCriteriaSectionCode === 'MEDIUM_FLT'
+    )!;
+
+    expect(fine).toBeDefined();
+    expect(fine!.evaluationCriteriaSelected).toBeDefined();
+    expect(fine!.evaluationCriteriaSelected![0].evaluationCriteriaSelectedGuid).toBe('fine-selection-guid');
+    expect(fine!.evaluationCriteriaSelected![0].evaluationCriteriaSectionSummaryGuid).toBe('fine-section-guid');
+    expect(fine!.evaluationCriteriaSelected![0].isEvaluationCriteriaSelectedInd).toBeTrue();
+
+    expect(medium).toBeDefined();
+    expect(medium!.evaluationCriteriaSelected).toBeDefined();
+    expect(medium!.evaluationCriteriaSelected![0].evaluationCriteriaSelectedGuid).toBe('medium-selection-guid');
+    expect(medium!.evaluationCriteriaSelected![0].evaluationCriteriaSectionSummaryGuid).toBe('medium-section-guid');
+    expect(medium!.evaluationCriteriaSelected![0].isEvaluationCriteriaSelectedInd).toBeTrue();
+
+  });
+
+  it('should build evaluation criteria summary model for update mode with no existing selections', () => {
+    component.fineFilters = [
+      { evaluationCriteriaGuid: 'fine-guid-3', weightedRank: 1 } as any
+    ];
+    component.mediumFilters = [
+      { evaluationCriteriaGuid: 'medium-guid-3', weightedRank: 2 } as any
+    ];
+
+    const existingSummary = {
+      evaluationCriteriaSummaryGuid: 'summary-guid',
+      evaluationCriteriaSectionSummaries: []
+    } as any;
+
+    component.selectedFine.add('fine-guid-3');
+    component.selectedMedium.add('medium-guid-3');
+
+    component.initializeForm();
+    const model = component.buildEvaluationCriteriaSummaryModel(existingSummary, false);
+
+    const fine = model.evaluationCriteriaSectionSummaries!.find(
+      s => s!.evaluationCriteriaSectionCode!.evaluationCriteriaSectionCode === 'FINE_FLT'
+    )!;
+    const medium = model.evaluationCriteriaSectionSummaries!.find(
+      s => s!.evaluationCriteriaSectionCode!.evaluationCriteriaSectionCode === 'MEDIUM_FLT'
+    )!;
+
+    expect(fine).toBeDefined();
+    expect(fine!.evaluationCriteriaSelected).toBeDefined();
+    expect(fine!.evaluationCriteriaSelected![0].evaluationCriteriaSelectedGuid).toBeUndefined();
+    expect(fine!.evaluationCriteriaSelected![0].isEvaluationCriteriaSelectedInd).toBeTrue();
+
+    expect(medium).toBeDefined();
+    expect(medium.evaluationCriteriaSelected).toBeDefined();
+    expect(medium.evaluationCriteriaSelected![0].evaluationCriteriaSelectedGuid).toBeUndefined();
+    expect(medium.evaluationCriteriaSelected![0].isEvaluationCriteriaSelectedInd).toBeTrue();
+  });
+
+  it('should prefill fine filters from evaluation criteria summary', () => {
+    component.wuiRiskClassCode = [{ wuiRiskClassCode: 'WUI', weightedRank: 1 }];
+
+    component.data.evaluationCriteriaSummary = {
+      wuiRiskClassCode: { wuiRiskClassCode: 'WUI' },
+      localWuiRiskClassCode: { wuiRiskClassCode: 'WUI' },
+      evaluationCriteriaSectionSummaries: [
+        {
+          evaluationCriteriaSectionCode: { evaluationCriteriaSectionCode: 'FINE_FLT' },
+          filterSectionComment: 'Fine filter comment',
+          filterSectionScore: 5,
+          evaluationCriteriaSelected: [
+            { evaluationCriteriaGuid: 'fine-guid', isEvaluationCriteriaSelectedInd: true }
+          ]
+        }
+      ]
+    } as any;
+
+    component.initializeForm();
+    component.prefillFromEvaluationCriteriaSummary();
+
+    expect(component.selectedFine.has('fine-guid')).toBeTrue();
+    expect(component.fineTotal).toBe(5);
+    expect(component.criteriaForm.get('fineFilterComments')?.value).toBe('Fine filter comment');
+  });
+
+
 });

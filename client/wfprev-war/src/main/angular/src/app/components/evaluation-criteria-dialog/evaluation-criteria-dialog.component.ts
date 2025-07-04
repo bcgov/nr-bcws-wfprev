@@ -26,8 +26,8 @@ export class EvaluationCriteriaDialogComponent {
   criteriaForm!: FormGroup;
   evaluationCriteriaCode: EvaluationCriteriaCodeModel[] = [];
   wuiRiskClassCode: WuiRiskClassCodeModel[] = [];
-  mediumFilters: any[] = [];
-  fineFilters: any[] = [];
+  mediumFilters: EvaluationCriteriaCodeModel[] = [];
+  fineFilters: EvaluationCriteriaCodeModel[] = [];
   selectedMedium: Set<string> = new Set();
   selectedFine: Set<string> = new Set();
 
@@ -137,13 +137,13 @@ export class EvaluationCriteriaDialogComponent {
 
   calculateMediumTotal() {
     this.mediumTotal = this.mediumFilters
-      .filter(f => this.selectedMedium.has(f.evaluationCriteriaGuid))
+      .filter(f => this.selectedMedium.has(f.evaluationCriteriaGuid ?? ''))
       .reduce((sum, f) => sum + (f.weightedRank ?? 0), 0);
   }
 
   calculateFineTotal() {
     this.fineTotal = this.fineFilters
-      .filter(f => this.selectedFine.has(f.evaluationCriteriaGuid))
+      .filter(f => this.selectedFine.has(f.evaluationCriteriaGuid ?? ''))
       .reduce((sum, f) => sum + (f.weightedRank ?? 0), 0);
   }
 
@@ -270,7 +270,7 @@ export class EvaluationCriteriaDialogComponent {
               evaluationCriteriaSelectedGuid: isCreate ? undefined : existing?.evaluationCriteriaSelectedGuid,
               evaluationCriteriaGuid: f.evaluationCriteriaGuid,
               evaluationCriteriaSectionSummaryGuid: isCreate ? undefined : mediumSection?.evaluationCriteriaSectionSummaryGuid,
-              isEvaluationCriteriaSelectedInd: this.selectedMedium.has(f.evaluationCriteriaGuid)
+              isEvaluationCriteriaSelectedInd: this.selectedMedium.has(f.evaluationCriteriaGuid ?? '')
             };
           })
         },
@@ -281,12 +281,14 @@ export class EvaluationCriteriaDialogComponent {
           filterSectionScore: this.fineTotal,
           filterSectionComment: this.criteriaForm.get('fineFilterComments')?.value,
           evaluationCriteriaSelected: this.fineFilters.map(f => {
-            const existing = fineSection?.evaluationCriteriaSelected?.find(s => s.evaluationCriteriaGuid === f.evaluationCriteriaGuid);
+            const existing = fineSection?.evaluationCriteriaSelected?.find(
+              s => s.evaluationCriteriaGuid === f.evaluationCriteriaGuid
+            );
             return {
               evaluationCriteriaSelectedGuid: isCreate ? undefined : existing?.evaluationCriteriaSelectedGuid,
               evaluationCriteriaGuid: f.evaluationCriteriaGuid,
               evaluationCriteriaSectionSummaryGuid: isCreate ? undefined : fineSection?.evaluationCriteriaSectionSummaryGuid,
-              isEvaluationCriteriaSelectedInd: this.selectedFine.has(f.evaluationCriteriaGuid)
+              isEvaluationCriteriaSelectedInd: this.selectedFine.has(f.evaluationCriteriaGuid ?? '')
             };
           })
         }
