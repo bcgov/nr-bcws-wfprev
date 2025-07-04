@@ -1,0 +1,14 @@
+<mat-expansion-panel #panel="matExpansionPanel">
+  <mat-expansion-panel-header class="project-title">
+    <mat-panel-title>
+      <ng-container *ngIf="headerTemplate; else defaultTitle">
+        <ng-container *ngTemplateOutlet="headerTemplate; context: {$implicit: panel}"></ng-container>
+      </ng-container>
+      <ng-template #defaultTitle>
+        {{ title }}
+      </ng-template>
+    </mat-panel-title>
+  </mat-expansion-panel-header>
+
+  <ng-content></ng-content>
+</mat-expansion-panel>

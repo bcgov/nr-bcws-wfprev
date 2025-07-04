@@ -1,0 +1,28 @@
+mat-expansion-panel {
+    border-bottom: 1px solid #C6C8CB;
+    margin: 0px !important;
+    background-color: #FFF;
+
+    ::ng-deep .mat-expansion-panel-body{
+        padding: 0;
+    }
+
+    ::ng-deep .mat-expansion-indicator {
+        display: none;
+    }
+
+    ::ng-deep .mat-expansion-panel-header-title {
+        gap: 10px;
+    }
+    .mat-expansion-panel-header-title{
+        font-family: var(--wf-font-family-main) !important;
+        background-color: inherit;
+        display: flex;
+        color: #000;
+        font-size: 20px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: normal;
+        gap:10px;
+    }
+}

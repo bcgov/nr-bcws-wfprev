@@ -6,12 +6,12 @@ import ca.bc.gov.nrs.wfprev.data.entities.EvaluationCriteriaSectionCodeEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.EvaluationCriteriaSectionSummaryEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.EvaluationCriteriaSelectedEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.EvaluationCriteriaSummaryEntity;
-import ca.bc.gov.nrs.wfprev.data.entities.WUIRiskClassCodeEntity;
+import ca.bc.gov.nrs.wfprev.data.entities.WUIRiskClassRankEntity;
 import ca.bc.gov.nrs.wfprev.data.models.EvaluationCriteriaSectionCodeModel;
 import ca.bc.gov.nrs.wfprev.data.models.EvaluationCriteriaSectionSummaryModel;
 import ca.bc.gov.nrs.wfprev.data.models.EvaluationCriteriaSelectedModel;
 import ca.bc.gov.nrs.wfprev.data.models.EvaluationCriteriaSummaryModel;
-import ca.bc.gov.nrs.wfprev.data.models.WUIRiskClassCodeModel;
+import ca.bc.gov.nrs.wfprev.data.models.WUIRiskClassRankModel;
 import ca.bc.gov.nrs.wfprev.data.repositories.EvaluationCriteriaSummaryRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.WUIRiskClassCodeRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -28,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -94,9 +94,9 @@ class EvaluationCriteriaSummaryServiceTest {
 
         EvaluationCriteriaSummaryModel summaryModel = new EvaluationCriteriaSummaryModel();
         summaryModel.setProjectGuid(projectGuid.toString());
-        summaryModel.setWuiRiskClassCode(new WUIRiskClassCodeModel());
+        summaryModel.setWuiRiskClassCode(new WUIRiskClassRankModel());
         summaryModel.getWuiRiskClassCode().setWuiRiskClassCode(wuiCode);
-        summaryModel.setLocalWuiRiskClassCode(new WUIRiskClassCodeModel());
+        summaryModel.setLocalWuiRiskClassCode(new WUIRiskClassRankModel());
         summaryModel.getLocalWuiRiskClassCode().setWuiRiskClassCode(localWuiCode);
         summaryModel.setEvaluationCriteriaSectionSummaries(List.of(sectionModel));
 
@@ -127,10 +127,10 @@ class EvaluationCriteriaSummaryServiceTest {
         when(summaryRepository.save(any())).thenReturn(savedWithChildren);
         when(summaryAssembler.toModel(savedWithChildren)).thenReturn(summaryModel);
 
-        WUIRiskClassCodeEntity wuiEntity = new WUIRiskClassCodeEntity();
-        WUIRiskClassCodeEntity localWuiEntity = new WUIRiskClassCodeEntity();
-        when(wuiRepo.findById(wuiCode)).thenReturn(Optional.of(wuiEntity));
-        when(wuiRepo.findById(localWuiCode)).thenReturn(Optional.of(localWuiEntity));
+        WUIRiskClassRankEntity wuiEntity = new WUIRiskClassRankEntity();
+        WUIRiskClassRankEntity localWuiEntity = new WUIRiskClassRankEntity();
+        when(wuiRepo.findByWuiRiskClassCode(wuiCode)).thenReturn(Optional.of(wuiEntity));
+        when(wuiRepo.findByWuiRiskClassCode(localWuiCode)).thenReturn(Optional.of(localWuiEntity));
 
         when(selectedAssembler.toEntity(any())).thenAnswer(invocation -> {
             EvaluationCriteriaSelectedModel m = invocation.getArgument(0);
@@ -143,7 +143,8 @@ class EvaluationCriteriaSummaryServiceTest {
 
         assertNotNull(result);
         verify(summaryAssembler).toEntity(any());
-        verify(wuiRepo, times(2)).findById(any());
+        verify(wuiRepo).findByWuiRiskClassCode("WUI1");
+        verify(wuiRepo).findByWuiRiskClassCode("WUI2");
         verify(selectedAssembler).toEntity(any());
         verify(summaryRepository).saveAndFlush(any());
         verify(summaryRepository).save(any());
