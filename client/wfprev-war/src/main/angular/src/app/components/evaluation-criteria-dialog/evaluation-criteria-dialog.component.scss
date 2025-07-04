@@ -1,12 +1,17 @@
 @import '../create-new-project-dialog/create-new-project-dialog.component.scss';
 
+:host {
+  font-family: var(--wf-font-family-main) !important;
+}
 
+.dialog-container{
+  width: 776px !important;
+}
 .section-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-bottom: 0.5rem;
-  margin-bottom: 1rem;
+  margin-bottom: 16px;
 
   .section-header-title{
     font-family: var(--wf-font-family-main);
@@ -28,7 +33,7 @@
   font-size: 14px;
   display: flex;
   align-items: center;
-  padding: 0.5rem 0;
+  padding: 8px 0;
 
   .filter-checkbox {
     flex: 0 0 24px;
@@ -40,14 +45,14 @@
 
   .filter-label {
     flex: 1;
-    padding-right: 1rem;
+    padding-right: 16px;
   }
 
   .filter-weight {
-    width: 3rem;
+    font-size: 16px;
     text-align: right;
     font-weight: bold;
-    color: var(--wf-colour-light-grey); // default grey
+    color: var(--wf-colour-light-grey);
   }
 }
 
@@ -61,7 +66,9 @@
   justify-content: end;
   padding-top: 10px;
   gap: 26px;
+  align-items: end;
   .total-value{
+    font-size: 16px;
     font-weight: 700;
     border-top: 1px solid #9F9D9C;
     width: 40px;
@@ -77,7 +84,7 @@
   label {
     display: block;
     font-weight: 400;
-    margin-bottom: 0.5rem;
+    margin-bottom: 8px;
   }
 
   textarea {
@@ -87,12 +94,26 @@
   }
 }
 
-.form-row{
-  flex-wrap: inherit !important;
+.error {
+  color: #CE3E39;
+  font-size: 14px;
+  margin: 4px 0 0 4px;
+}
+
+.dialog-content 
+  .form-row{
+    flex-wrap: inherit !important;
+    width: 100% !important;
+    select{
+      width: 200px;
+    }
 }
 
 .coarse-total-value {
-  text-align: end;
+  display: flex;
+  align-items: end;
+  justify-content: flex-end;
+  height: 100%;
   font-weight: 700;
 }
 
@@ -100,4 +121,12 @@
   border: none;
   border-bottom: 1px solid #D9D9D9;
   margin: 12px -24px;
+}
+
+textarea {
+  font-family: var(--wf-font-family-main) !important;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 6px;
 }

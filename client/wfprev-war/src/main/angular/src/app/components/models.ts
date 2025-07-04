@@ -253,3 +253,39 @@ export interface WuiRiskClassCodeModel {
   wuiRiskClassCode?: string;
   weightedRank?: number;
 }
+
+export interface EvaluationCriteriaSummaryModel {
+  evaluationCriteriaSummaryGuid?: string;
+  projectGuid?: string;
+  wuiRiskClassCode?: WuiRiskClassCodeModel;
+  localWuiRiskClassCode?: WuiRiskClassCodeModel;
+  wuiRiskClassComment?: string;
+  localWuiRiskClassRationale?: string;
+  isOutsideWuiInd?: boolean;
+  totalFilterScore?: number;
+  evaluationCriteriaSectionSummaries?: EvaluationCriteriaSectionSummaryModel[];
+}
+
+export interface EvaluationCriteriaSectionSummaryModel {
+  evaluationCriteriaSectionSummaryGuid?: string;
+  evaluationCriteriaSectionCode?: EvaluationCriteriaSectionCodeModel;
+  evaluationCriteriaSummaryGuid?: string;
+  filterSectionScore?: number;
+  filterSectionComment?: string;
+  evaluationCriteriaSelected?: EvaluationCriteriaSelectedModel[];
+}
+
+export interface EvaluationCriteriaSectionCodeModel {
+  evaluationCriteriaSectionCode?: string;
+  description?: string;
+  displayOrder?: number;
+  effectiveDate?: string;
+  expiryDate?: string;
+}
+
+export interface EvaluationCriteriaSelectedModel {
+  evaluationCriteriaSelectedGuid?: string;
+  evaluationCriteriaGuid?: string;
+  evaluationCriteriaSectionSummaryGuid?: string;
+  isEvaluationCriteriaSelectedInd?: boolean;
+}

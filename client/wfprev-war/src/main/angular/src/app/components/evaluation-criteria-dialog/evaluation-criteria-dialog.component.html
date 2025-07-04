@@ -37,7 +37,11 @@
 
           <div class="notes-row">
             <label>Local WUI Risk Class Rationale</label>
-            <textarea rows="2" cdkTextareaAutosize #autosize="cdkTextareaAutosize" formControlName="localWuiRiskClassRationale"></textarea>
+            <textarea rows="2" cdkTextareaAutosize #autosize="cdkTextareaAutosize" placeholder="Autosize based on content lines" formControlName="localWuiRiskClassRationale"></textarea>
+            <div class="error"
+                *ngIf="criteriaForm.get('localWuiRiskClassRationale')?.hasError('maxlength') && criteriaForm.get('localWuiRiskClassRationale')?.touched">
+              {{ messages.maxLengthExceeded }}
+            </div>
           </div>
 
           <div class="section-divider"></div>
@@ -67,7 +71,11 @@
           </div>
           <div class="notes-row">
             <label>Additional Comments/Notes on Medium Filters</label>
-            <textarea rows="2" cdkTextareaAutosize #autosize="cdkTextareaAutosize" formControlName="mediumFilterComments"></textarea>
+            <textarea rows="2" cdkTextareaAutosize #autosize="cdkTextareaAutosize" placeholder="Autosize based on content lines" formControlName="mediumFilterComments"></textarea>
+            <div class="error"
+                *ngIf="criteriaForm.get('mediumFilterComments')?.hasError('maxlength') && criteriaForm.get('mediumFilterComments')?.touched">
+              {{ messages.maxLengthExceeded }}
+            </div>
           </div>
           <div class="section-divider"></div>
         </section>
@@ -95,7 +103,11 @@
           </div>
           <div class="notes-row">
             <label>Additional Comments/Notes on Fine Filters</label>
-            <textarea rows="2" cdkTextareaAutosize #autosize="cdkTextareaAutosize" formControlName="fineFilterComments"></textarea>
+            <textarea rows="2" cdkTextareaAutosize #autosize="cdkTextareaAutosize" placeholder="Autosize based on content lines" formControlName="fineFilterComments"></textarea>
+            <div class="error"
+                *ngIf="criteriaForm.get('fineFilterComments')?.hasError('maxlength') && criteriaForm.get('fineFilterComments')?.touched">
+              {{ messages.maxLengthExceeded }}
+            </div>
           </div>
           <div class="section-divider"></div>
         </section>
@@ -107,7 +119,10 @@
   <div class="footer">
     <div class="button-row">
       <button class="secondary" (click)="onCancel()">Cancel</button>
-      <button class="primary" (click)="onSave()">
+      <button
+        class="primary"
+        (click)="onSave()"
+        [disabled]="!criteriaForm.valid || criteriaForm.pristine">
         Save
       </button>
     </div>
