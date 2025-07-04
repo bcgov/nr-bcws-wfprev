@@ -63,6 +63,7 @@ public class ProjectResourceAssembler extends RepresentationModelAssemblerSuppor
         entity.setProjectLead(resource.getProjectLead());
         entity.setProjectLeadEmailAddress(resource.getProjectLeadEmailAddress());
         entity.setProjectDescription(resource.getProjectDescription());
+        entity.setProjectStatusCode(toProjectStatusCodeEntity(resource.getProjectStatusCode()));
         entity.setClosestCommunityName(resource.getClosestCommunityName());
         entity.setTotalEstimatedCostAmount(resource.getTotalEstimatedCostAmount());
         entity.setTotalForecastAmount(resource.getTotalForecastAmount());
@@ -125,6 +126,7 @@ public class ProjectResourceAssembler extends RepresentationModelAssemblerSuppor
         resource.setProjectLead(entity.getProjectLead());
         resource.setProjectLeadEmailAddress(entity.getProjectLeadEmailAddress());
         resource.setProjectDescription(entity.getProjectDescription());
+        resource.setProjectStatusCode(toProjectStatusCodeModel(entity.getProjectStatusCode()));
         resource.setClosestCommunityName(entity.getClosestCommunityName());
         resource.setTotalEstimatedCostAmount(entity.getTotalEstimatedCostAmount());
         resource.setTotalForecastAmount(entity.getTotalForecastAmount());
@@ -182,6 +184,11 @@ public class ProjectResourceAssembler extends RepresentationModelAssemblerSuppor
     private GeneralScopeCodeEntity toGeneralScopeCodeEntity(GeneralScopeCodeModel code) {
         GeneralScopeCodeResourceAssembler ra = new GeneralScopeCodeResourceAssembler();
         return ra.toEntity(code);
+    }
+
+    private ProjectStatusCodeModel toProjectStatusCodeModel(ProjectStatusCodeEntity code) {
+        ProjectStatusCodeResourceAssembler ra = new ProjectStatusCodeResourceAssembler();
+        return ra.toModel(code);
     }
 
     private ProjectStatusCodeEntity toProjectStatusCodeEntity(ProjectStatusCodeModel code) {

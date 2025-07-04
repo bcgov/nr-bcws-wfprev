@@ -71,6 +71,8 @@ public class CodesController extends CommonController {
                 case CodeTables.PROPOSAL_TYPE_CODE -> result = codesService.getAllProposalTypeCodes();
                 case CodeTables.WUI_RISK_CLASS_CODE -> result = codesService.getAllWuiRiskClassCodes();
                 case CodeTables.EVALUATION_CRITERIA_CODE -> result = codesService.getAllEvaluationCriteriaCodes();
+                case CodeTables.PROJECT_STATUS_CODE -> result = codesService.getAllProjectStatusCodes();
+
 
                 default -> {
                     log.error("Invalid code table: {}", codeTable);
@@ -162,6 +164,7 @@ public class CodesController extends CommonController {
             case CodeTables.PROPOSAL_TYPE_CODE -> codesService.getProposalTypeCodeById(id);
             case CodeTables.WUI_RISK_CLASS_CODE -> codesService.getWuiRiskClassCodeById(id);
             case CodeTables.EVALUATION_CRITERIA_CODE -> codesService.getEvaluationCriteriaCodeById(id);
+            case CodeTables.PROJECT_STATUS_CODE -> codesService.getProjectStatusCodeById(id);
             default -> null;
         };
     }

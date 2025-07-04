@@ -16,6 +16,7 @@ import ca.bc.gov.nrs.wfprev.data.models.FundingSourceCodeModel;
 import ca.bc.gov.nrs.wfprev.data.models.GeneralScopeCodeModel;
 import ca.bc.gov.nrs.wfprev.data.models.ObjectiveTypeCodeModel;
 import ca.bc.gov.nrs.wfprev.data.models.PlanFiscalStatusCodeModel;
+import ca.bc.gov.nrs.wfprev.data.models.ProjectStatusCodeModel;
 import ca.bc.gov.nrs.wfprev.data.models.ProjectTypeCodeModel;
 import ca.bc.gov.nrs.wfprev.data.models.RiskRatingCodeModel;
 import ca.bc.gov.nrs.wfprev.data.models.SilvicultureBaseCodeModel;
@@ -80,6 +81,7 @@ class CodesControllerTest {
         testGetSilvicultureBaseCodes();
         testGetSilvicultureMethodCodes();
         testGetSilvicultureTechniqueCodes();
+        testGetProjectStatusCodes();
     }
 
     void testGetForestAreaCodes() throws Exception {
@@ -383,6 +385,26 @@ class CodesControllerTest {
                 .andExpect(status().isOk());
     }
 
+    void testGetProjectStatusCodes() throws Exception {
+        String exampleId1 = UUID.randomUUID().toString();
+        String exampleId2 = UUID.randomUUID().toString();
+
+        ProjectStatusCodeModel psc1 = new ProjectStatusCodeModel();
+        psc1.setProjectStatusCode(exampleId1);
+
+        ProjectStatusCodeModel psc2 = new ProjectStatusCodeModel();
+        psc1.setProjectStatusCode(exampleId2);
+
+        List<ProjectStatusCodeModel> ascList = Arrays.asList(psc1, psc2);
+        CollectionModel<ProjectStatusCodeModel> pscModel = CollectionModel.of(ascList);
+
+        when(codesService.getAllProjectStatusCodes()).thenReturn(pscModel);
+
+        mockMvc.perform(get("/codes/" + CodeTables.PROJECT_STATUS_CODE)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
+
     @Test
     @WithMockUser
     void testGetWuiRiskClassCodes() throws Exception {
@@ -602,6 +624,16 @@ class CodesControllerTest {
         mockMvc.perform(get("/codes/{codeTable}/{id}", CodeTables.PROPOSAL_TYPE_CODE, propID)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
+
+        String psID = UUID.randomUUID().toString();
+        ProjectStatusCodeModel projectStatusCode = new ProjectStatusCodeModel();
+        projectStatusCode.setProjectStatusCode(psID);
+
+        when(codesService.getProjectStatusCodeById(psID)).thenReturn(projectStatusCode);
+
+        mockMvc.perform(get("/codes/{codeTable}/{id}", CodeTables.PROJECT_STATUS_CODE, psID)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
     }
 
     @Test
@@ -624,6 +656,7 @@ class CodesControllerTest {
         when(codesService.getSilvicultureBaseCodeById(nonExistentId)).thenReturn(null);
         when(codesService.getSilvicultureMethodCodeById(nonExistentId)).thenReturn(null);
         when(codesService.getSilvicultureTechniqueCodeById(nonExistentId)).thenReturn(null);
+        when(codesService.getProjectStatusCodeById(nonExistentId)).thenReturn(null);
 
         // Test valid code tables with non-existent ID
         mockMvc.perform(get("/codes/{codeTable}/{id}", "forestAreaCodes", nonExistentId)
@@ -692,6 +725,11 @@ class CodesControllerTest {
                 .andExpect(status().isNotFound());
 
         mockMvc.perform(get("/codes/{codeTable}/{id}", "silvicultureTechniqueCodes", nonExistentId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("If-Match", "\"1\""))
+                .andExpect(status().isNotFound());
+
+        mockMvc.perform(get("/codes/{codeTable}/{id}", "activityStatusCodes", nonExistentId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("If-Match", "\"1\""))
                 .andExpect(status().isNotFound());
