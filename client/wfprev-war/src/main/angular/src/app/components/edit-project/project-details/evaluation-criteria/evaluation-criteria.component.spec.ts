@@ -4,6 +4,7 @@ import { of, throwError } from 'rxjs';
 import { EvaluationCriteriaComponent } from './evaluation-criteria.component';
 import { ProjectService } from 'src/app/services/project-services';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { EvaluationCriteriaSummaryModel } from 'src/app/components/models';
 
 describe('EvaluationCriteriaComponent', () => {
   let component: EvaluationCriteriaComponent;
@@ -33,9 +34,17 @@ describe('EvaluationCriteriaComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should load evaluation criteria summaries on ngOnChanges', () => {
-    const response = { _embedded: { eval_criteria_summary: [{ id: 1 }] } };
-    mockProjectService.getEvaluationCriteriaSummaries.and.returnValue(of(response));
+  it('should load evaluation criteria summary on ngOnChanges', () => {
+    const mockSummary: EvaluationCriteriaSummaryModel = {
+      evaluationCriteriaSummaryGuid: '1'
+    } as any;
+    mockProjectService.getEvaluationCriteriaSummaries.and.returnValue(
+      of({
+        _embedded: {
+          eval_criteria_summary: [mockSummary]
+        }
+      })
+    );
 
     component.ngOnChanges({
       project: {
@@ -47,21 +56,22 @@ describe('EvaluationCriteriaComponent', () => {
     });
 
     expect(mockProjectService.getEvaluationCriteriaSummaries).toHaveBeenCalledWith('test-guid');
-    expect(component.evaluationCriteriaSummaries.length).toBe(1);
+    expect(component.evaluationCriteriaSummary).toEqual(mockSummary);
   });
 
-  it('should handle error when loading evaluation criteria summaries', () => {
+  it('should handle error when loading evaluation criteria summary', () => {
     mockProjectService.getEvaluationCriteriaSummaries.and.returnValue(throwError(() => new Error()));
     component.loadEvaluationCriteriaSummaries();
     expect(mockProjectService.getEvaluationCriteriaSummaries).toHaveBeenCalled();
   });
 
-  it('should open dialog with first summary when available', () => {
+  it('should open dialog with summary when available', () => {
     const mockAfterClosed = of(true);
     const dialogRef = { afterClosed: () => mockAfterClosed };
     mockDialog.open.and.returnValue(dialogRef as any);
-    component.evaluationCriteriaSummaries = [{ id: 1 }];
-    component.loadEvaluationCriteriaSummaries = jasmine.createSpy();
+
+    component.evaluationCriteriaSummary = { evaluationCriteriaSummaryGuid: '1' } as any;
+    spyOn(component, 'loadEvaluationCriteriaSummaries');
 
     component.openEvaluationCriteriaPopUp();
 
@@ -73,7 +83,8 @@ describe('EvaluationCriteriaComponent', () => {
     const mockAfterClosed = of(false);
     const dialogRef = { afterClosed: () => mockAfterClosed };
     mockDialog.open.and.returnValue(dialogRef as any);
-    component.evaluationCriteriaSummaries = [];
+
+    component.evaluationCriteriaSummary = null;
 
     component.openEvaluationCriteriaPopUp();
 

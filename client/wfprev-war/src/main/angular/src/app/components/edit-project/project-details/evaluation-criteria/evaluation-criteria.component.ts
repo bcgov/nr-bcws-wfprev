@@ -4,7 +4,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatIconModule } from '@angular/material/icon';
 import { EvaluationCriteriaDialogComponent } from 'src/app/components/evaluation-criteria-dialog/evaluation-criteria-dialog.component';
-import { Project } from 'src/app/components/models';
+import { EvaluationCriteriaSummaryModel, Project } from 'src/app/components/models';
 import { ExpansionIndicatorComponent } from 'src/app/components/shared/expansion-indicator/expansion-indicator.component';
 import { ProjectService } from 'src/app/services/project-services';
 
@@ -18,7 +18,7 @@ import { ProjectService } from 'src/app/services/project-services';
 export class EvaluationCriteriaComponent implements OnChanges {
   @Input() project!: Project;
 
-  evaluationCriteriaSummaries: any[] = [];
+  evaluationCriteriaSummary: EvaluationCriteriaSummaryModel | null = null;
 
   constructor(
     private readonly dialog: MatDialog,
@@ -37,7 +37,7 @@ export class EvaluationCriteriaComponent implements OnChanges {
       .subscribe({
         next: (response) => {
           console.log('Fetched evaluation criteria summaries:', response);
-          this.evaluationCriteriaSummaries = response?._embedded?.eval_criteria_summary ?? [];
+          this.evaluationCriteriaSummary = response?._embedded?.eval_criteria_summary[0] ?? null;
         },
         error: (err) => {
           console.error('Failed to fetch evaluation criteria summaries', err);
@@ -46,9 +46,7 @@ export class EvaluationCriteriaComponent implements OnChanges {
   }
 
   openEvaluationCriteriaPopUp(): void {
-    const firstSummary = this.evaluationCriteriaSummaries.length > 0
-      ? this.evaluationCriteriaSummaries[0]
-      : null;
+
 
     const dialogRef = this.dialog.open(EvaluationCriteriaDialogComponent, {
       width: '776px',
@@ -56,7 +54,7 @@ export class EvaluationCriteriaComponent implements OnChanges {
       hasBackdrop: true,
       data: {
         project: this.project,
-        evaluationCriteriaSummary: firstSummary
+        evaluationCriteriaSummary: this.evaluationCriteriaSummary
       }
     });
 

@@ -15,13 +15,13 @@
           </mat-panel-description>
         </mat-expansion-panel-header>
         <!-- Fuel Management -->
-        <div *ngIf="project?.projectTypeCode?.projectTypeCode === 'FUEL_MGMT' && evaluationCriteriaSummaries.length">
+        <div *ngIf="project?.projectTypeCode?.projectTypeCode === 'FUEL_MGMT' && evaluationCriteriaSummary">
           <div class="criteria-section">
             <div class="section-label">
               <span>Coarse Filter Total:</span>
               <span>
-                {{ evaluationCriteriaSummaries[0]?.localWuiRiskClassCode?.weightedRank
-                    ?? evaluationCriteriaSummaries[0]?.wuiRiskClassCode?.weightedRank
+                {{ evaluationCriteriaSummary?.localWuiRiskClassCode?.weightedRank
+                    ?? evaluationCriteriaSummary?.wuiRiskClassCode?.weightedRank
                     ?? 0
                 }}
               </span>
@@ -30,43 +30,43 @@
             <div class="criteria-details">
               <div class="criteria-item criteria-item-narrow">
                 <span>WUI Risk Class</span>
-                <span>{{ formatCodeLabel(evaluationCriteriaSummaries[0]?.wuiRiskClassCode?.wuiRiskClassCode) || '' }}</span>
+                <span>{{ formatCodeLabel(evaluationCriteriaSummary?.wuiRiskClassCode?.wuiRiskClassCode) || '' }}</span>
               </div>
               <div class="criteria-item criteria-item-narrow">
                 <span>Local Risk Class</span>
-                <span>{{ formatCodeLabel(evaluationCriteriaSummaries[0]?.localWuiRiskClassCode?.wuiRiskClassCode) || '' }}</span>
+                <span>{{ formatCodeLabel(evaluationCriteriaSummary?.localWuiRiskClassCode?.wuiRiskClassCode) || '' }}</span>
               </div>
               <div class="criteria-item">
                 <span>Local WUI Risk Class Rationale:</span>
-                <span>{{ evaluationCriteriaSummaries[0]?.localWuiRiskClassRationale || 'None' }}</span>
+                <span>{{ evaluationCriteriaSummary?.localWuiRiskClassRationale || 'None' }}</span>
               </div>
             </div>
 
             <span class="section-label">
               Medium Filter Total:
-              <span>{{ getSectionTotal(evaluationCriteriaSummaries[0], 'MEDIUM_FLT') }}</span>
+              <span>{{ getSectionTotal(evaluationCriteriaSummary, 'MEDIUM_FLT') }}</span>
             </span>
             <div class="criteria-details">
               <div class="criteria-item">
                 <span>Medium Filter Comments:</span>
-                <span>{{ getSectionComment(evaluationCriteriaSummaries[0], 'MEDIUM_FLT') || 'None' }}</span>
+                <span>{{ getSectionComment(evaluationCriteriaSummary, 'MEDIUM_FLT') || 'None' }}</span>
               </div>
             </div>
 
             <span class="section-label">
               Fine Filter Total:
-              <span>{{ getSectionTotal(evaluationCriteriaSummaries[0], 'FINE_FLT') }}</span>
+              <span>{{ getSectionTotal(evaluationCriteriaSummary, 'FINE_FLT') }}</span>
             </span>
             <div class="criteria-details">
               <div class="criteria-item">
               <span>Fine Filter Comments:</span>
-              <span>{{ getSectionComment(evaluationCriteriaSummaries[0], 'FINE_FLT') || 'None' }}</span>
+              <span>{{ getSectionComment(evaluationCriteriaSummary, 'FINE_FLT') || 'None' }}</span>
               </div>
             </div>
             <div class="full-width-divider"></div>
             <div class="section-label ">
               <span>Calculated Total</span>
-              <span>{{ getCalculatedTotal(evaluationCriteriaSummaries[0]) }}</span>
+              <span>{{ getCalculatedTotal(evaluationCriteriaSummary) }}</span>
             </div>
           </div>
         </div>

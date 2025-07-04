@@ -54,12 +54,12 @@
             <span class="section-header-title">Medium Filters</span>
             <span class="section-total-label">Total</span>
           </div>
-          <div *ngFor="let filter of mediumFilters" class="filter-row selected" [ngClass]="{'selected': selectedMedium.has(filter.evaluationCriteriaGuid)}">
+          <div *ngFor="let filter of mediumFilters" class="filter-row selected" [ngClass]="{'selected': selectedMedium.has(filter.evaluationCriteriaGuid!)}">
             <div class="filter-checkbox">
               <input
                 type="checkbox"
-                [checked]="selectedMedium.has(filter.evaluationCriteriaGuid)"
-                (change)="toggleMedium(filter.evaluationCriteriaGuid, $event)"
+                [checked]="selectedMedium.has(filter.evaluationCriteriaGuid!)"
+                (change)="toggleMedium(filter.evaluationCriteriaGuid!, $event)"
               />
             </div>
             <div class="filter-label">{{ filter.criteriaLabel }}</div>
@@ -86,12 +86,12 @@
             <span class="section-header-title">Fine Filters</span>
             <span class="section-total-label">Total</span>
           </div>
-          <div *ngFor="let filter of fineFilters" class="filter-row selected" [ngClass]="{'selected': selectedFine.has(filter.evaluationCriteriaGuid)}">
+          <div *ngFor="let filter of fineFilters" class="filter-row selected" [ngClass]="{'selected': selectedFine.has(filter.evaluationCriteriaGuid!)}">
             <div class="filter-checkbox">
               <input
                 type="checkbox"
-                [checked]="selectedFine.has(filter.evaluationCriteriaGuid)"
-                (change)="toggleFine(filter.evaluationCriteriaGuid, $event)"
+                [checked]="selectedFine.has(filter.evaluationCriteriaGuid!)"
+                (change)="toggleFine(filter.evaluationCriteriaGuid!, $event)"
               />
             </div>
             <div class="filter-label">{{ filter.criteriaLabel }}</div>
