@@ -32,7 +32,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class WUIRiskClassCodeEntity implements Serializable {
+public class WUIRiskClassRankEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id

@@ -31,7 +31,7 @@ export class EvaluationCriteriaComponent implements OnChanges {
     }
   }
 
-  private loadEvaluationCriteriaSummaries(): void {
+  loadEvaluationCriteriaSummaries(): void {
     this.projectService
       .getEvaluationCriteriaSummaries(this.project.projectGuid)
       .subscribe({

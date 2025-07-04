@@ -24,7 +24,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class WUIRiskClassCodeModel extends CommonModel<WUIRiskClassCodeModel> {
+public class WUIRiskClassRankModel extends CommonModel<WUIRiskClassRankModel> {
     private String wuiRiskClassRankGuid;
     private String wuiRiskClassCode;
     private BigDecimal weightedRank;
