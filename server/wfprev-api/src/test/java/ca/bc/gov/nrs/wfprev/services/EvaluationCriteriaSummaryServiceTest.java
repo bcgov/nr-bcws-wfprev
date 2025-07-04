@@ -143,7 +143,8 @@ class EvaluationCriteriaSummaryServiceTest {
 
         assertNotNull(result);
         verify(summaryAssembler).toEntity(any());
-        verify(wuiRepo, times(2)).findById(any());
+        verify(wuiRepo).findByWuiRiskClassCode("WUI1");
+        verify(wuiRepo).findByWuiRiskClassCode("WUI2");
         verify(selectedAssembler).toEntity(any());
         verify(summaryRepository).saveAndFlush(any());
         verify(summaryRepository).save(any());
