@@ -19,16 +19,16 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 public class CodesService implements CommonService {
     public static final String BC_PARKS_REGION_ORG_UNIT_TYPE_CODE = "REGION";
-    private ForestAreaCodeRepository forestAreaCodeRepository;
-    private ForestAreaCodeResourceAssembler forestAreaCodeResourceAssembler;
-    private GeneralScopeCodeRepository generalScopeCodeRepository;
-    private GeneralScopeCodeResourceAssembler generalScopeCodeResourceAssembler;
-    private ProjectTypeCodeRepository projectTypeCodeRepository;
-    private ProjectTypeCodeResourceAssembler projectTypeCodeResourceAssembler;
+    private final ForestAreaCodeRepository forestAreaCodeRepository;
+    private final ForestAreaCodeResourceAssembler forestAreaCodeResourceAssembler;
+    private final GeneralScopeCodeRepository generalScopeCodeRepository;
+    private final GeneralScopeCodeResourceAssembler generalScopeCodeResourceAssembler;
+    private final ProjectTypeCodeRepository projectTypeCodeRepository;
+    private final ProjectTypeCodeResourceAssembler projectTypeCodeResourceAssembler;
     private final ProgramAreaRepository programAreaRepository;
-    private ProgramAreaResourceAssembler programAreaResourceAssembler;
-    private ForestOrgUnitCodeRepository forestOrgUnitCodeRepository;
-    private ForestRegionUnitCodeResourceAssembler forestRegionCodeResourceAssembler;
+    private final ProgramAreaResourceAssembler programAreaResourceAssembler;
+    private final ForestOrgUnitCodeRepository forestOrgUnitCodeRepository;
+    private final ForestRegionUnitCodeResourceAssembler forestRegionCodeResourceAssembler;
     private final ForestDistrictUnitCodeResourceAssembler forestDistrictCodeResourceAssembler;
     private final BCParksRegionCodeResourceAssembler bcParksRegionCodeResourceAssembler;
     private final BCParksSectionCodeResourceAssembler bcParksSectionCodeResourceAssembler;
@@ -67,6 +67,8 @@ public class CodesService implements CommonService {
     private final WUIRiskClassCodeResourceAssembler wuiRiskClassCodeResourceAssembler;
     private final EvaluationCriteriaCodeRepository evaluationCriteriaCodeRepository;
     private final EvaluationCriteriaCodeResourceAssembler evaluationCriteriaCodeResourceAssembler;
+    private final ProjectStatusCodeRepository projectStatusCodeRepository;
+    private final ProjectStatusCodeResourceAssembler projectStatusCodeResourceAssembler;
 
 
     public CodesService(ForestAreaCodeRepository forestAreaCodeRepository, ForestAreaCodeResourceAssembler forestAreaCodeResourceAssembler,
@@ -84,7 +86,7 @@ public class CodesService implements CommonService {
                         AttachmentContentTypeCodeResourceAssembler attachmentContentTypeCodeResourceAssembler, AttachmentContentTypeCodeRepository attachmentContentTypeCodeRepository, SilvicultureBaseCodeResourceAssembler silvicultureBaseCodeResourceAssembler, SilvicultureBaseCodeRepository silvicultureBaseCodeRepository,
                         SilvicultureMethodCodeResourceAssembler silvicultureMethodCodeResourceAssembler, SilvicultureMethodCodeRepository silvicultureMethodCodeRepository, SilvicultureTechniqueCodeResourceAssembler silvicultureTechniqueCodeResourceAssembler, SilvicultureTechniqueCodeRepository silvicultureTechniqueCodeRepository, 
                         ProposalTypeCodeRepository proposalTypeCodeRepository, ProposalTypeCodeResourceAssembler proposalTypeCodeResourceAssembler, WUIRiskClassCodeRepository wuiRiskClassCodeRepository, WUIRiskClassCodeResourceAssembler wuiRiskClassCodeResourceAssembler,
-                        EvaluationCriteriaCodeRepository evaluationCriteriaCodeRepository, EvaluationCriteriaCodeResourceAssembler evaluationCriteriaCodeResourceAssembler) {
+                        EvaluationCriteriaCodeRepository evaluationCriteriaCodeRepository, EvaluationCriteriaCodeResourceAssembler evaluationCriteriaCodeResourceAssembler, ProjectStatusCodeRepository projectStatusCodeRepository, ProjectStatusCodeResourceAssembler projectStatusCodeResourceAssembler) {
         this.forestAreaCodeRepository = forestAreaCodeRepository;
         this.forestAreaCodeResourceAssembler = forestAreaCodeResourceAssembler;
         this.generalScopeCodeRepository = generalScopeCodeRepository;
@@ -133,6 +135,8 @@ public class CodesService implements CommonService {
         this.wuiRiskClassCodeRepository = wuiRiskClassCodeRepository;
         this.evaluationCriteriaCodeResourceAssembler = evaluationCriteriaCodeResourceAssembler;
         this.evaluationCriteriaCodeRepository = evaluationCriteriaCodeRepository;
+        this.projectStatusCodeRepository = projectStatusCodeRepository;
+        this.projectStatusCodeResourceAssembler = projectStatusCodeResourceAssembler;
     }
 
     /**
@@ -595,6 +599,23 @@ public class CodesService implements CommonService {
             return evaluationCriteriaCodeRepository.findById(UUID.fromString(id))
                 .map(evaluationCriteriaCodeResourceAssembler::toModel)
                 .orElse(null);
+        } catch (Exception e) {
+            throw new ServiceException(e.getLocalizedMessage(), e);
+        }
+    }
+
+    public CollectionModel<ProjectStatusCodeModel> getAllProjectStatusCodes() throws ServiceException {
+        try {
+            List<ProjectStatusCodeEntity> entities = projectStatusCodeRepository.findAll();
+            return projectStatusCodeResourceAssembler.toCollectionModel(entities);
+        } catch (Exception e) {
+            throw new ServiceException(e.getLocalizedMessage(), e);
+        }
+    }
+
+    public ProjectStatusCodeModel getProjectStatusCodeById(String id) throws ServiceException {
+        try {
+            return projectStatusCodeRepository.findById(id).map(projectStatusCodeResourceAssembler::toModel).orElse(null);
         } catch (Exception e) {
             throw new ServiceException(e.getLocalizedMessage(), e);
         }

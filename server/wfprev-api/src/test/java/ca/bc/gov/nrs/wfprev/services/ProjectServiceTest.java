@@ -221,7 +221,7 @@ class ProjectServiceTest {
 
         // When I submit a project and the ACTIVE status doesn't exist
         // Then an EntityNotFoundException should be thrown
-        assertThrows(ServiceException.class, () -> projectService.createProject(inputModel));
+        assertThrows(EntityNotFoundException.class, () -> projectService.createProject(inputModel));
         verify(projectStatusCodeRepository, times(1)).findById("ACTIVE");
         verify(projectRepository, never()).saveAndFlush(any(ProjectEntity.class));
     }
