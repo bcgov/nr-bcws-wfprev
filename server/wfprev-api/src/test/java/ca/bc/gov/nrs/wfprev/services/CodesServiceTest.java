@@ -70,6 +70,8 @@ class CodesServiceTest {
     private WUIRiskClassCodeResourceAssembler wuiRiskClassCodeResourceAssembler;
     private EvaluationCriteriaCodeRepository evaluationCriteriaCodeRepository;
     private EvaluationCriteriaCodeResourceAssembler evaluationCriteriaCodeResourceAssembler;
+    private ProjectStatusCodeRepository projectStatusCodeRepository;
+    private ProjectStatusCodeResourceAssembler projectStatusCodeResourceAssembler;
 
     @BeforeEach
     void setup() {
@@ -121,6 +123,8 @@ class CodesServiceTest {
         wuiRiskClassCodeResourceAssembler = mock(WUIRiskClassCodeResourceAssembler.class);
         evaluationCriteriaCodeRepository = mock(EvaluationCriteriaCodeRepository.class);
         evaluationCriteriaCodeResourceAssembler = mock(EvaluationCriteriaCodeResourceAssembler.class);
+        projectStatusCodeRepository = mock(ProjectStatusCodeRepository.class);
+        projectStatusCodeResourceAssembler = mock(ProjectStatusCodeResourceAssembler.class);
 
         codesService = new CodesService(forestAreaCodeRepository, forestAreaCodeResourceAssembler,
                 generalScopeCodeRepository, generalScopeCodeResourceAssembler,
@@ -131,7 +135,8 @@ class CodesServiceTest {
                 activityCategoryCodeResourceAssembler, activityCategoryCodeRepository, planFiscalStatusCodeResourceAssembler, planFiscalStatusCodeRepository, ancillaryFundingSourceCodeResourceAssembler, ancillaryFundingSourceCodeRepository,
                 fundingSourceCodeResourceAssembler, fundingSourceCodeRepository, sourceObjectNameCodeResourceAssembler, sourceObjectNameCodeRepository, attachmentContentTypeCodeResourceAssembler, attachmentContentTypeCodeRepository,
                 silvicultureBaseCodeResourceAssembler, silvicultureBaseCodeRepository, silvicultureMethodCodeResourceAssembler, silvicultureMethodCodeRepository, silvicultureTechniqueCodeResourceAssembler, silvicultureTechniqueCodeRepository,
-                proposalTypeCodeRepository, proposalTypeCodeResourceAssembler, wuiRiskClassCodeRepository, wuiRiskClassCodeResourceAssembler,evaluationCriteriaCodeRepository,evaluationCriteriaCodeResourceAssembler);
+                proposalTypeCodeRepository, proposalTypeCodeResourceAssembler, wuiRiskClassCodeRepository, wuiRiskClassCodeResourceAssembler,evaluationCriteriaCodeRepository,evaluationCriteriaCodeResourceAssembler,
+                projectStatusCodeRepository, projectStatusCodeResourceAssembler);
     }
 
     @Test
@@ -2087,5 +2092,69 @@ class CodesServiceTest {
                 );
                 assertTrue(exception.getMessage().contains("Error fetching fuel management objective code"));
         }
+
+    @Test
+    void testGetAllProjectStatusCodes_Success() throws ServiceException {
+        List<ProjectStatusCodeEntity> entities = new ArrayList<>();
+        entities.add(new ProjectStatusCodeEntity());
+        entities.add(new ProjectStatusCodeEntity());
+
+        when(projectStatusCodeRepository.findAll()).thenReturn(entities);
+        when(projectStatusCodeResourceAssembler.toCollectionModel(entities))
+                .thenReturn(CollectionModel.of(new ArrayList<>()));
+
+        CollectionModel<ProjectStatusCodeModel> result = codesService.getAllProjectStatusCodes();
+
+        assertNotNull(result);
+    }
+
+    @Test
+    void testGetAllProjectStatusCodes_Exception() {
+        when(projectStatusCodeRepository.findAll()).thenThrow(new RuntimeException("Error fetching project status codes"));
+
+        ServiceException exception = assertThrows(
+                ServiceException.class,
+                () -> codesService.getAllProjectStatusCodes()
+        );
+        assertEquals("Error fetching project status codes", exception.getMessage());
+    }
+
+    @Test
+    void testGetProjectStatusCodeById_Success() throws ServiceException {
+        String exampleId = UUID.randomUUID().toString();
+        ProjectStatusCodeEntity entity = new ProjectStatusCodeEntity();
+        when(projectStatusCodeRepository.findById(exampleId))
+                .thenReturn(Optional.of(entity));
+        when(projectStatusCodeResourceAssembler.toModel(entity))
+                .thenReturn(new ProjectStatusCodeModel());
+
+        ProjectStatusCodeModel result = codesService.getProjectStatusCodeById(exampleId);
+
+        assertNotNull(result);
+    }
+
+    @Test
+    void testGetProjectStatusCodeById_NotFound() throws ServiceException {
+        String nonExistentId = UUID.randomUUID().toString();
+        when(projectStatusCodeRepository.findById(nonExistentId))
+                .thenReturn(Optional.empty());
+
+        ProjectStatusCodeModel result = codesService.getProjectStatusCodeById(nonExistentId);
+
+        assertNull(result);
+    }
+
+    @Test
+    void testGetProjectStatusCodeById_Exception() {
+        String exampleId = UUID.randomUUID().toString();
+        when(projectStatusCodeRepository.findById(exampleId))
+                .thenThrow(new RuntimeException("Error fetching project status code"));
+
+        ServiceException exception = assertThrows(
+                ServiceException.class,
+                () -> codesService.getProjectStatusCodeById(exampleId)
+        );
+        assertTrue(exception.getMessage().contains("Error fetching project status code"));
+    }
 
 }

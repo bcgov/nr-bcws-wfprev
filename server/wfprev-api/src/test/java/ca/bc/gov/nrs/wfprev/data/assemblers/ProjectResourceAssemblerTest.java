@@ -88,6 +88,7 @@ public class ProjectResourceAssemblerTest {
         projectEntity.setIsMultiFiscalYearProj(false);
         projectEntity.setForestAreaCode(new ForestAreaCodeEntity());
         projectEntity.setGeneralScopeCode(new GeneralScopeCodeEntity());
+        projectEntity.setProjectStatusCode(new ProjectStatusCodeEntity());
 
         // Perform the conversion
         ProjectModel projectModel = assembler.toModel(projectEntity);
@@ -106,6 +107,7 @@ public class ProjectResourceAssemblerTest {
                 .isMultiFiscalYearProj(false)
                 .forestAreaCode(new ForestAreaCodeModel())
                 .generalScopeCode(new GeneralScopeCodeModel())
+                .projectStatusCode(new ProjectStatusCodeModel())
                 .build();
 
         // Assert that the actual and expected models match
