@@ -1,7 +1,7 @@
 package ca.bc.gov.nrs.wfprev.entities;
 
 import ca.bc.gov.nrs.wfprev.data.entities.EvaluationCriteriaSummaryEntity;
-import ca.bc.gov.nrs.wfprev.data.entities.WUIRiskClassCodeEntity;
+import ca.bc.gov.nrs.wfprev.data.entities.WUIRiskClassRankEntity;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
@@ -26,7 +26,7 @@ class EvaluationCriteriaSummaryEntityTest {
     }
 
     private EvaluationCriteriaSummaryEntity createValidEntity() {
-        WUIRiskClassCodeEntity riskClassCode = new WUIRiskClassCodeEntity();
+        WUIRiskClassRankEntity riskClassCode = new WUIRiskClassRankEntity();
         riskClassCode.setWuiRiskClassCode("WUI_RC_1");
 
         return EvaluationCriteriaSummaryEntity.builder()

@@ -28,6 +28,7 @@ public class EvaluationCriteriaCodeResourceAssembler extends RepresentationModel
         entity.setEvaluationCriteriaGuid(model.getEvaluationCriteriaGuid());
         entity.setProjectTypeCode(model.getProjectTypeCode());
         entity.setCriteriaLabel(model.getCriteriaLabel());
+        entity.setEvalCriteriaSectCode(model.getEvalCriteriaSectCode());
         entity.setWeightedRank(model.getWeightedRank());
         return entity;
     }
@@ -38,12 +39,13 @@ public class EvaluationCriteriaCodeResourceAssembler extends RepresentationModel
 
         model.add(linkTo(
                 methodOn(CodesController.class)
-                        .getCodeById(CodeTables.EVALUATION_CRITERIA_CODE, entity.getEvaluationCriteriaGuid()))
+                        .getCodeById(CodeTables.EVALUATION_CRITERIA_CODE, entity.getEvaluationCriteriaGuid() != null ? entity.getEvaluationCriteriaGuid().toString() : null))
                 .withSelfRel());
 
         model.setEvaluationCriteriaGuid(entity.getEvaluationCriteriaGuid());
         model.setProjectTypeCode(entity.getProjectTypeCode());
         model.setCriteriaLabel(entity.getCriteriaLabel());
+        model.setEvalCriteriaSectCode(entity.getEvalCriteriaSectCode());
         model.setWeightedRank(entity.getWeightedRank());
 
         return model;
