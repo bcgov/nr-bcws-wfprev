@@ -388,14 +388,38 @@
 							"// Parse the response JSON",
 							"const response = pm.response.json();",
 							"",
-							"// Save evaluationCriteriaSummaryGuid if present",
+							"// 1. Save the top-level evaluation summary GUID",
 							"if (response.evaluationCriteriaSummaryGuid) {",
 							"    pm.environment.set(\"evaluationCriteriaSummaryGuid\", response.evaluationCriteriaSummaryGuid);",
-							"    console.log(\"evaluationCriteriaSummaryGuid saved successfully!\");",
+							"    console.log(\"Saved evaluationCriteriaSummaryGuid:\", response.evaluationCriteriaSummaryGuid);",
 							"} else {",
-							"    console.error(\"Failed to find evaluationCriteriaSummaryGuid in response:\", response);",
+							"    console.error(\"evaluationCriteriaSummaryGuid not found in response:\", response);",
 							"}",
 							"",
+							"// 2. Save section summary and selected criteria GUIDs",
+							"const sectionSummaries = response.evaluationCriteriaSectionSummaries || [];",
+							"sectionSummaries.forEach(section => {",
+							"    const sectionCode = section.evaluationCriteriaSectionCode?.evaluationCriteriaSectionCode;",
+							"    const sectionGuid = section.evaluationCriteriaSectionSummaryGuid;",
+							"",
+							"    if (sectionCode && sectionGuid) {",
+							"        const sectionKey = `evaluationCriteriaSectionSummaryGuid_${sectionCode}`;",
+							"        pm.environment.set(sectionKey, sectionGuid);",
+							"        console.log(`Saved ${sectionKey}: ${sectionGuid}`);",
+							"    }",
+							"",
+							"    const selectedList = section.evaluationCriteriaSelected || [];",
+							"    selectedList.forEach((selected, index) => {",
+							"        const selectedGuid = selected.evaluationCriteriaSelectedGuid;",
+							"        if (selectedGuid && sectionCode) {",
+							"            const selectedKey = `evaluationCriteriaSelectedGuid_${sectionCode}_${index}`;",
+							"            pm.environment.set(selectedKey, selectedGuid);",
+							"            console.log(`Saved ${selectedKey}: ${selectedGuid}`);",
+							"        }",
+							"    });",
+							"});",
+							"",
+							"// 3. Status code test",
 							"pm.test(\"Status code is 201\", function () {",
 							"    pm.response.to.have.status(201);",
 							"});"
@@ -431,7 +455,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n  \"projectGuid\": \"{{projectGuid}}\",\n  \"wuiRiskClassCode\": {\n    \"wuiRiskClassCode\": \"WUI_RC_1\"\n  },\n  \"localWuiRiskClassCode\": {\n    \"wuiRiskClassCode\": \"WUI_RC_5\"\n  },\n  \"wuiRiskClassComment\": \"High risk due to interface proximity\",\n  \"localWuiRiskClassRationale\": \"Locally assessed as WUI RC 2 due to vegetation type and slope.\",\n  \"isOutsideWuiInd\": false,\n  \"totalFilterScore\": 7,\n  \"evaluationCriteriaSectionSummaries\": [\n    {\n      \"evaluationCriteriaSectionCode\": {\n        \"evaluationCriteriaSectionCode\": \"COARSE_FLT\"\n      },\n      \"filterSectionScore\": 3,\n      \"filterSectionComment\": \"Large fuel break present\"\n    },\n    {\n      \"evaluationCriteriaSectionCode\": {\n        \"evaluationCriteriaSectionCode\": \"MEDIUM_FLT\"\n      },\n      \"filterSectionScore\": 2,\n      \"filterSectionComment\": \"Moderate surface fuel load\",\n      \"evaluationCriteriaSelected\": [\n        {\n          \"evaluationCriteriaGuid\": \"5f5a7c4e-d200-4b14-b0db-37c199847b0b\",\n          \"isEvaluationCriteriaSelectedInd\": true\n        }\n      ]\n    },\n    {\n      \"evaluationCriteriaSectionCode\": {\n        \"evaluationCriteriaSectionCode\": \"FINE_FLT\"\n      },\n      \"filterSectionScore\": 3,\n      \"filterSectionComment\": \"Dry grasses near interface\",\n      \"evaluationCriteriaSelected\": [\n        {\n          \"evaluationCriteriaGuid\": \"6af3f526-a68f-4213-bd83-6981aa52c1bc\",\n          \"isEvaluationCriteriaSelectedInd\": true\n        }\n      ]\n    }\n  ]\n}",
+					"raw": "{\n  \"projectGuid\": \"{{projectGuid}}\",\n  \"wuiRiskClassCode\": {\n    \"wuiRiskClassCode\": \"WUI_RC_1\"\n  },\n  \"localWuiRiskClassCode\": {\n    \"wuiRiskClassCode\": \"WUI_RC_3\"\n  },\n  \"wuiRiskClassComment\": \"High risk due to interface proximity\",\n  \"localWuiRiskClassRationale\": \"Locally assessed as WUI RC 3 due to vegetation type and slope.\",\n  \"isOutsideWuiInd\": false,\n  \"totalFilterScore\": 7,\n  \"evaluationCriteriaSectionSummaries\": [\n    {\n      \"evaluationCriteriaSectionCode\": {\n        \"evaluationCriteriaSectionCode\": \"COARSE_FLT\"\n      },\n      \"filterSectionScore\": 6,\n      \"filterSectionComment\": \"Large fuel break present\"\n    },\n    {\n      \"evaluationCriteriaSectionCode\": {\n        \"evaluationCriteriaSectionCode\": \"MEDIUM_FLT\"\n      },\n      \"filterSectionScore\": 21,\n      \"filterSectionComment\": \"Moderate surface fuel load changed\",\n      \"evaluationCriteriaSelected\": [\n        {\n          \"evaluationCriteriaGuid\": \"daa765c8-1905-40d1-a94a-c91d0bd476f2\",\n          \"isEvaluationCriteriaSelectedInd\": true\n        },\n        {\n          \"evaluationCriteriaGuid\": \"eec68da8-809c-48d3-a1d2-53af176ddafa\",\n          \"isEvaluationCriteriaSelectedInd\": false\n        },\n        {\n          \"evaluationCriteriaGuid\": \"69e48af3-f77a-4767-b377-13952dcf0b11\",\n          \"isEvaluationCriteriaSelectedInd\": false\n        },\n        {\n          \"evaluationCriteriaGuid\": \"31ec7389-b25f-4a0f-b6b5-f8e95d3f9736\",\n          \"isEvaluationCriteriaSelectedInd\": true\n        },\n        {\n          \"evaluationCriteriaGuid\": \"7d8b4cda-c349-433d-a356-0662acb6476b\",\n          \"isEvaluationCriteriaSelectedInd\": false\n        },\n        {\n          \"evaluationCriteriaGuid\": \"6060336c-322c-4e41-bc6c-7bc666970f1e\",\n          \"isEvaluationCriteriaSelectedInd\": false\n        },\n        {\n          \"evaluationCriteriaGuid\": \"3e71df16-11e9-4c1d-aced-8f07c4ecbf70\",\n          \"isEvaluationCriteriaSelectedInd\": false\n        },\n        {\n          \"evaluationCriteriaGuid\": \"bfd21320-3fcf-4943-adca-122a6a610892\",\n          \"isEvaluationCriteriaSelectedInd\": false\n        }\n      ]\n    },\n    {\n      \"evaluationCriteriaSectionCode\": {\n        \"evaluationCriteriaSectionCode\": \"FINE_FLT\"\n      },\n      \"filterSectionScore\": 3,\n      \"filterSectionComment\": \"Dry grasses near interface changed\",\n      \"evaluationCriteriaSelected\": [\n        {\n          \"evaluationCriteriaGuid\": \"fb3f8f6f-c649-4026-9b01-b73ceb1d0a89\",\n          \"isEvaluationCriteriaSelectedInd\": false\n        },\n        {\n          \"evaluationCriteriaGuid\": \"ae0c2f78-a2ff-4acb-a1b2-e2d334ec9cae\",\n          \"isEvaluationCriteriaSelectedInd\": true\n        },\n        {\n          \"evaluationCriteriaGuid\": \"e569f9a7-5e87-4b8d-969b-fc38350b6877\",\n          \"isEvaluationCriteriaSelectedInd\": true\n        },\n        {\n          \"evaluationCriteriaGuid\": \"2c86d28f-5869-4409-932d-4af4b1820b34\",\n          \"isEvaluationCriteriaSelectedInd\": false\n        }\n      ]\n    }\n  ]\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -933,7 +957,7 @@
 						"exec": [
 							"pm.test(\"Status code is 200\", function() {",
 							"    pm.response.to.have.status(200);",
-							"})"
+							"});"
 						],
 						"type": "text/javascript",
 						"packages": {}
@@ -942,9 +966,7 @@
 				{
 					"listen": "prerequest",
 					"script": {
-						"exec": [
-							""
-						],
+						"exec": [""],
 						"type": "text/javascript",
 						"packages": {}
 					}
@@ -970,7 +992,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"evaluationCriteriaSummaryGuid\": \"{{evaluationCriteriaSummaryGuid}}\",\n    \"projectGuid\": \"{{projectGuid}}\",\n    \"wuiRiskClassCode\": {\n        \"wuiRiskClassCode\": \"WUI_RC_2\"\n    },\n    \"localWuiRiskClassCode\": {\n        \"wuiRiskClassCode\": \"WUI_RC_3\"\n    },\n    \"wuiRiskClassComment\": \"High risk due to interface proximity changed\",\n    \"localWuiRiskClassRationale\": \"Locally assessed as WUI RC 2 due to vegetation type and slope changed.\",\n    \"isOutsideWuiInd\": false,\n    \"totalFilterScore\": 4,\n    \"evaluationCriteriaSectionSummaries\": [\n        {\n            \"evaluationCriteriaSectionSummaryGuid\": \"10b5ea31-7613-4880-a48c-277e97ccb287\",\n            \"evaluationCriteriaSectionCode\": {\n                \"evaluationCriteriaSectionCode\": \"COARSE_FLT\",\n                \"description\": \"Coarse Filter\"\n            },\n            \"evaluationCriteriaSummaryGuid\": \"{{evaluationCriteriaSummaryGuid}}\",\n            \"filterSectionScore\": 3,\n            \"filterSectionComment\": \"Large fuel break present changed\"\n        },\n        {\n            \"revisionCount\": 0,\n            \"createUser\": \"WFNEWS-REST\",\n            \"createDate\": \"2025-07-03T02:09:24.625+00:00\",\n            \"updateUser\": \"WFNEWS-REST\",\n            \"updateDate\": \"2025-07-03T02:09:24.625+00:00\",\n            \"evaluationCriteriaSectionSummaryGuid\": \"d388d6ac-2934-4134-a5c3-b83bd2a3fe5b\",\n            \"evaluationCriteriaSectionCode\": {\n                \"evaluationCriteriaSectionCode\": \"MEDIUM_FLT\"\n            },\n            \"evaluationCriteriaSummaryGuid\": \"{{evaluationCriteriaSummaryGuid}}\",\n            \"filterSectionScore\": 2,\n            \"filterSectionComment\": \"Moderate surface fuel load changed\",\n            \"evaluationCriteriaSelected\": [\n                {\n                    \"evaluationCriteriaSelectedGuid\": \"f537146b-fc02-4ccc-a965-deec45da4368\",\n                    \"evaluationCriteriaGuid\": \"5f5a7c4e-d200-4b14-b0db-37c199847b0b\",\n                    \"evaluationCriteriaSectionSummaryGuid\": \"d388d6ac-2934-4134-a5c3-b83bd2a3fe5b\",\n                    \"isEvaluationCriteriaSelectedInd\": true\n                }\n            ]\n        },\n        {\n            \"evaluationCriteriaSectionSummaryGuid\": \"2e42adc0-cb25-4efb-a337-f346a151cb83\",\n            \"evaluationCriteriaSectionCode\": {\n                \"evaluationCriteriaSectionCode\": \"FINE_FLT\"\n            },\n            \"evaluationCriteriaSummaryGuid\": \"{{evaluationCriteriaSummaryGuid}}\",\n            \"filterSectionScore\": 3,\n            \"filterSectionComment\": \"Dry grasses near interface\",\n            \"evaluationCriteriaSelected\": [\n                {\n                    \"evaluationCriteriaSelectedGuid\": \"e32b9a2d-7351-4d57-b57b-b7e65d448d44\",\n                    \"evaluationCriteriaGuid\": \"6af3f526-a68f-4213-bd83-6981aa52c1bc\",\n                    \"evaluationCriteriaSectionSummaryGuid\": \"2e42adc0-cb25-4efb-a337-f346a151cb83\",\n                    \"isEvaluationCriteriaSelectedInd\": true\n                }\n            ]\n        }\n    ]\n}",
+					"raw": "{\n  \"evaluationCriteriaSummaryGuid\": \"{{evaluationCriteriaSummaryGuid}}\",\n  \"projectGuid\": \"{{projectGuid}}\",\n  \"wuiRiskClassCode\": {\n    \"wuiRiskClassCode\": \"WUI_RC_2\"\n  },\n  \"localWuiRiskClassCode\": {\n    \"wuiRiskClassCode\": \"WUI_RC_4\"\n  },\n  \"wuiRiskClassComment\": \"Updated comment: new risk observed near development\",\n  \"localWuiRiskClassRationale\": \"Updated rationale: slope and exposure increased\",\n  \"isOutsideWuiInd\": true,\n  \"totalFilterScore\": 10,\n  \"evaluationCriteriaSectionSummaries\": [\n    {\n      \"evaluationCriteriaSectionSummaryGuid\": \"{{evaluationCriteriaSectionSummaryGuid_COARSE_FLT}}\",\n      \"evaluationCriteriaSectionCode\": {\n        \"evaluationCriteriaSectionCode\": \"COARSE_FLT\"\n      },\n      \"evaluationCriteriaSummaryGuid\": \"{{evaluationCriteriaSummaryGuid}}\",\n      \"filterSectionScore\": 6,\n      \"filterSectionComment\": \"Large fuel break present - UPDATED\"\n    },\n    {\n      \"evaluationCriteriaSectionSummaryGuid\": \"{{evaluationCriteriaSectionSummaryGuid_MEDIUM_FLT}}\",\n      \"evaluationCriteriaSectionCode\": {\n        \"evaluationCriteriaSectionCode\": \"MEDIUM_FLT\"\n      },\n      \"evaluationCriteriaSummaryGuid\": \"{{evaluationCriteriaSummaryGuid}}\",\n      \"filterSectionScore\": 21,\n      \"filterSectionComment\": \"Moderate surface fuel load changed - UPDATED\",\n      \"evaluationCriteriaSelected\": [\n        {\n          \"evaluationCriteriaSelectedGuid\": \"{{evaluationCriteriaSelectedGuid_MEDIUM_FLT_0}}\",\n          \"evaluationCriteriaGuid\": \"daa765c8-1905-40d1-a94a-c91d0bd476f2\",\n          \"evaluationCriteriaSectionSummaryGuid\": \"{{evaluationCriteriaSectionSummaryGuid_MEDIUM_FLT}}\",\n          \"isEvaluationCriteriaSelectedInd\": true\n        },\n        {\n          \"evaluationCriteriaSelectedGuid\": \"{{evaluationCriteriaSelectedGuid_MEDIUM_FLT_1}}\",\n          \"evaluationCriteriaGuid\": \"eec68da8-809c-48d3-a1d2-53af176ddafa\",\n          \"evaluationCriteriaSectionSummaryGuid\": \"{{evaluationCriteriaSectionSummaryGuid_MEDIUM_FLT}}\",\n          \"isEvaluationCriteriaSelectedInd\": false\n        },\n        {\n          \"evaluationCriteriaSelectedGuid\": \"{{evaluationCriteriaSelectedGuid_MEDIUM_FLT_2}}\",\n          \"evaluationCriteriaGuid\": \"69e48af3-f77a-4767-b377-13952dcf0b11\",\n          \"evaluationCriteriaSectionSummaryGuid\": \"{{evaluationCriteriaSectionSummaryGuid_MEDIUM_FLT}}\",\n          \"isEvaluationCriteriaSelectedInd\": false\n        },\n        {\n          \"evaluationCriteriaSelectedGuid\": \"{{evaluationCriteriaSelectedGuid_MEDIUM_FLT_3}}\",\n          \"evaluationCriteriaGuid\": \"31ec7389-b25f-4a0f-b6b5-f8e95d3f9736\",\n          \"evaluationCriteriaSectionSummaryGuid\": \"{{evaluationCriteriaSectionSummaryGuid_MEDIUM_FLT}}\",\n          \"isEvaluationCriteriaSelectedInd\": true\n        },\n        {\n          \"evaluationCriteriaSelectedGuid\": \"{{evaluationCriteriaSelectedGuid_MEDIUM_FLT_4}}\",\n          \"evaluationCriteriaGuid\": \"7d8b4cda-c349-433d-a356-0662acb6476b\",\n          \"evaluationCriteriaSectionSummaryGuid\": \"{{evaluationCriteriaSectionSummaryGuid_MEDIUM_FLT}}\",\n          \"isEvaluationCriteriaSelectedInd\": false\n        },\n        {\n          \"evaluationCriteriaSelectedGuid\": \"{{evaluationCriteriaSelectedGuid_MEDIUM_FLT_5}}\",\n          \"evaluationCriteriaGuid\": \"6060336c-322c-4e41-bc6c-7bc666970f1e\",\n          \"evaluationCriteriaSectionSummaryGuid\": \"{{evaluationCriteriaSectionSummaryGuid_MEDIUM_FLT}}\",\n          \"isEvaluationCriteriaSelectedInd\": false\n        },\n        {\n          \"evaluationCriteriaSelectedGuid\": \"{{evaluationCriteriaSelectedGuid_MEDIUM_FLT_6}}\",\n          \"evaluationCriteriaGuid\": \"3e71df16-11e9-4c1d-aced-8f07c4ecbf70\",\n          \"evaluationCriteriaSectionSummaryGuid\": \"{{evaluationCriteriaSectionSummaryGuid_MEDIUM_FLT}}\",\n          \"isEvaluationCriteriaSelectedInd\": false\n        },\n        {\n          \"evaluationCriteriaSelectedGuid\": \"{{evaluationCriteriaSelectedGuid_MEDIUM_FLT_7}}\",\n          \"evaluationCriteriaGuid\": \"bfd21320-3fcf-4943-adca-122a6a610892\",\n          \"evaluationCriteriaSectionSummaryGuid\": \"{{evaluationCriteriaSectionSummaryGuid_MEDIUM_FLT}}\",\n          \"isEvaluationCriteriaSelectedInd\": false\n        }\n      ]\n    },\n    {\n      \"evaluationCriteriaSectionSummaryGuid\": \"{{evaluationCriteriaSectionSummaryGuid_FINE_FLT}}\",\n      \"evaluationCriteriaSectionCode\": {\n        \"evaluationCriteriaSectionCode\": \"FINE_FLT\"\n      },\n      \"evaluationCriteriaSummaryGuid\": \"{{evaluationCriteriaSummaryGuid}}\",\n      \"filterSectionScore\": 3,\n      \"filterSectionComment\": \"Dry grasses near interface changed - UPDATED\",\n      \"evaluationCriteriaSelected\": [\n        {\n          \"evaluationCriteriaSelectedGuid\": \"{{evaluationCriteriaSelectedGuid_FINE_FLT_0}}\",\n          \"evaluationCriteriaGuid\": \"fb3f8f6f-c649-4026-9b01-b73ceb1d0a89\",\n          \"evaluationCriteriaSectionSummaryGuid\": \"{{evaluationCriteriaSectionSummaryGuid_FINE_FLT}}\",\n          \"isEvaluationCriteriaSelectedInd\": false\n        },\n        {\n          \"evaluationCriteriaSelectedGuid\": \"{{evaluationCriteriaSelectedGuid_FINE_FLT_1}}\",\n          \"evaluationCriteriaGuid\": \"ae0c2f78-a2ff-4acb-a1b2-e2d334ec9cae\",\n          \"evaluationCriteriaSectionSummaryGuid\": \"{{evaluationCriteriaSectionSummaryGuid_FINE_FLT}}\",\n          \"isEvaluationCriteriaSelectedInd\": true\n        },\n        {\n          \"evaluationCriteriaSelectedGuid\": \"{{evaluationCriteriaSelectedGuid_FINE_FLT_2}}\",\n          \"evaluationCriteriaGuid\": \"e569f9a7-5e87-4b8d-969b-fc38350b6877\",\n          \"evaluationCriteriaSectionSummaryGuid\": \"{{evaluationCriteriaSectionSummaryGuid_FINE_FLT}}\",\n          \"isEvaluationCriteriaSelectedInd\": true\n        },\n        {\n          \"evaluationCriteriaSelectedGuid\": \"{{evaluationCriteriaSelectedGuid_FINE_FLT_3}}\",\n          \"evaluationCriteriaGuid\": \"2c86d28f-5869-4409-932d-4af4b1820b34\",\n          \"evaluationCriteriaSectionSummaryGuid\": \"{{evaluationCriteriaSectionSummaryGuid_FINE_FLT}}\",\n          \"isEvaluationCriteriaSelectedInd\": false\n        }\n      ]\n    }\n  ]\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -2588,6 +2610,93 @@
 						"projects",
 						"{{projectGuid}}",
 						"projectBoundary"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Evaluation Criteria Summary",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function() {",
+							"    pm.response.to.have.status(200);",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{LOCAL_API_URL}}/projects/{{projectGuid}}/evaluationCriteriaSummary/{{evaluationCriteriaSummaryGuid}}",
+					"host": [
+						"{{LOCAL_API_URL}}"
+					],
+					"path": [
+						"projects",
+						"{{projectGuid}}",
+						"evaluationCriteriaSummary",
+						"{{evaluationCriteriaSummaryGuid}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Evaluation Criteria Summaries",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function() {",
+							"    pm.response.to.have.status(200);",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{LOCAL_API_URL}}/projects/{{projectGuid}}/evaluationCriteriaSummary",
+					"host": [
+						"{{LOCAL_API_URL}}"
+					],
+					"path": [
+						"projects",
+						"{{projectGuid}}",
+						"evaluationCriteriaSummary"
 					]
 				}
 			},
