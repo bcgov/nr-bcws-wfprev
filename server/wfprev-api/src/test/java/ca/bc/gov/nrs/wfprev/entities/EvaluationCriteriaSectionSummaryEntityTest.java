@@ -10,6 +10,7 @@ import jakarta.validation.ValidatorFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Set;
 import java.util.UUID;
@@ -39,7 +40,7 @@ class EvaluationCriteriaSectionSummaryEntityTest {
                 .evaluationCriteriaSectionCode(sectionCode)
                 .evaluationCriteriaSummaryGuid(summaryGuid)
                 .evaluationCriteriaSummary(summary)
-                .filterSectionScore(3)
+                .filterSectionScore(BigDecimal.valueOf(3))
                 .filterSectionComment("Comment about risk assessment")
                 .revisionCount(0)
                 .createUser("tester")

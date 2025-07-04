@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { AppConfigService } from 'src/app/services/app-config.service';
 import { TokenService } from 'src/app/services/token.service';
-import { FeaturesResponse, Project, ProjectBoundary, ProjectFiscal } from 'src/app/components/models';
+import { EvaluationCriteriaSummaryModel, FeaturesResponse, Project, ProjectBoundary, ProjectFiscal } from 'src/app/components/models';
 import { ProjectService } from 'src/app/services/project-services';
 import { HttpEventType } from '@angular/common/http';
 import { of } from 'rxjs';
@@ -784,6 +784,100 @@ describe('ProjectService', () => {
     const req = httpMock.expectOne((request) =>
       request.url === 'http://mock-api.com/wfprev-api/features'
     );
+    req.flush('Error', { status: 500, statusText: 'Server Error' });
+  });
+
+    it('should fetch evaluation criteria summaries', () => {
+    const projectGuid = 'project-1';
+    const mockResponse = { summaries: [] };
+
+    service.getEvaluationCriteriaSummaries(projectGuid).subscribe((result) => {
+      expect(result).toEqual(mockResponse);
+    });
+
+    const req = httpMock.expectOne(`http://mock-api.com/wfprev-api/projects/${projectGuid}/evaluationCriteriaSummary`);
+    expect(req.request.method).toBe('GET');
+    expect(req.request.headers.get('Authorization')).toBe('Bearer mock-token');
+    req.flush(mockResponse);
+  });
+
+  it('should handle error when fetching evaluation criteria summaries', () => {
+    const projectGuid = 'project-1';
+
+    service.getEvaluationCriteriaSummaries(projectGuid).subscribe({
+      next: () => fail('Should have failed'),
+      error: (err) => {
+        expect(err.message).toBe('Failed to fetch evaluation criteria summaries');
+      }
+    });
+
+    const req = httpMock.expectOne(`http://mock-api.com/wfprev-api/projects/${projectGuid}/evaluationCriteriaSummary`);
+    req.flush('Error', { status: 500, statusText: 'Server Error' });
+  });
+
+  it('should create evaluation criteria summary', () => {
+    const projectGuid = 'project-1';
+    const criteriaSummary = { criteria: 'data' } as any;
+    const mockResponse = {} as EvaluationCriteriaSummaryModel;
+
+    service.createEvaluationCriteriaSummary(projectGuid, criteriaSummary).subscribe((result) => {
+      expect(result).toEqual(mockResponse);
+    });
+
+    const req = httpMock.expectOne(`http://mock-api.com/wfprev-api/projects/${projectGuid}/evaluationCriteriaSummary`);
+    expect(req.request.method).toBe('POST');
+    expect(req.request.headers.get('Authorization')).toBe('Bearer mock-token');
+    expect(req.request.body).toEqual(criteriaSummary);
+    req.flush(mockResponse);
+  });
+
+  it('should handle error when creating evaluation criteria summary', () => {
+    const projectGuid = 'project-1';
+    const criteriaSummary = { criteria: 'data' } as any;
+
+    service.createEvaluationCriteriaSummary(projectGuid, criteriaSummary).subscribe({
+      next: () => fail('Should have failed'),
+      error: (err) => {
+        expect(err.message).toBe('Failed to create evaluation criteria summary');
+      }
+    });
+
+    const req = httpMock.expectOne(`http://mock-api.com/wfprev-api/projects/${projectGuid}/evaluationCriteriaSummary`);
+    req.flush('Error', { status: 500, statusText: 'Server Error' });
+  });
+
+  it('should update evaluation criteria summary', () => {
+    const projectGuid = 'project-1';
+    const summaryGuid = 'summary-1';
+    const criteriaSummary = { criteria: 'updated' } as any;
+    const mockResponse = {} as EvaluationCriteriaSummaryModel;
+
+
+    service.updateEvaluationCriteriaSummary(projectGuid, summaryGuid, criteriaSummary).subscribe((result) => {
+      expect(result).toEqual(mockResponse);
+    });
+
+    const req = httpMock.expectOne(`http://mock-api.com/wfprev-api/projects/${projectGuid}/evaluationCriteriaSummary/${summaryGuid}`);
+    expect(req.request.method).toBe('PUT');
+    expect(req.request.headers.get('Authorization')).toBe('Bearer mock-token');
+    expect(req.request.body).toEqual(criteriaSummary);
+    req.flush(mockResponse);
+  });
+
+
+  it('should handle error when updating evaluation criteria summary', () => {
+    const projectGuid = 'project-1';
+    const summaryGuid = 'summary-1';
+    const criteriaSummary = { criteria: 'updated' } as any;
+
+    service.updateEvaluationCriteriaSummary(projectGuid, summaryGuid, criteriaSummary).subscribe({
+      next: () => fail('Should have failed'),
+      error: (err) => {
+        expect(err.message).toBe('Failed to update evaluation criteria summary');
+      }
+    });
+
+    const req = httpMock.expectOne(`http://mock-api.com/wfprev-api/projects/${projectGuid}/evaluationCriteriaSummary/${summaryGuid}`);
     req.flush('Error', { status: 500, statusText: 'Server Error' });
   });
 

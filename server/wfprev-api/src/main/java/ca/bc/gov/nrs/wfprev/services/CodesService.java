@@ -568,16 +568,16 @@ public class CodesService implements CommonService {
         }
     }
 
-    public CollectionModel<WUIRiskClassCodeModel> getAllWuiRiskClassCodes() throws ServiceException {
+    public CollectionModel<WUIRiskClassRankModel> getAllWuiRiskClassCodes() throws ServiceException {
         try {
-            List<WUIRiskClassCodeEntity> entities = wuiRiskClassCodeRepository.findAll();
+            List<WUIRiskClassRankEntity> entities = wuiRiskClassCodeRepository.findAll();
             return wuiRiskClassCodeResourceAssembler.toCollectionModel(entities);
         } catch (Exception e) {
             throw new ServiceException(e.getLocalizedMessage(), e);
         }
     }
 
-    public WUIRiskClassCodeModel getWuiRiskClassCodeById(String id) throws ServiceException {
+    public WUIRiskClassRankModel getWuiRiskClassCodeById(String id) throws ServiceException {
         try {
             return wuiRiskClassCodeRepository.findById(id).map(wuiRiskClassCodeResourceAssembler::toModel).orElse(null);
         } catch (Exception e) {

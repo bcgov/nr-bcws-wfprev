@@ -7,7 +7,7 @@ import ca.bc.gov.nrs.wfprev.data.assemblers.EvaluationCriteriaSummaryResourceAss
 import ca.bc.gov.nrs.wfprev.data.entities.EvaluationCriteriaSectionSummaryEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.EvaluationCriteriaSelectedEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.EvaluationCriteriaSummaryEntity;
-import ca.bc.gov.nrs.wfprev.data.entities.WUIRiskClassCodeEntity;
+import ca.bc.gov.nrs.wfprev.data.entities.WUIRiskClassRankEntity;
 import ca.bc.gov.nrs.wfprev.data.models.EvaluationCriteriaSectionSummaryModel;
 import ca.bc.gov.nrs.wfprev.data.models.EvaluationCriteriaSelectedModel;
 import ca.bc.gov.nrs.wfprev.data.models.EvaluationCriteriaSummaryModel;
@@ -169,17 +169,17 @@ public class EvaluationCriteriaSummaryService implements CommonService {
     public void assignAssociatedEntities(EvaluationCriteriaSummaryModel resource, EvaluationCriteriaSummaryEntity entity) {
         if (resource.getWuiRiskClassCode() != null) {
             String wuiRiskClassCode = resource.getWuiRiskClassCode().getWuiRiskClassCode();
-            WUIRiskClassCodeEntity wuiRiskClassCodeEntity = wuiRiskClassCodeRepository
-                    .findById(wuiRiskClassCode)
-                    .orElseThrow(() -> new IllegalArgumentException("WUIRiskClassCode not found: " + wuiRiskClassCode));
+            WUIRiskClassRankEntity wuiRiskClassCodeEntity = wuiRiskClassCodeRepository
+                .findByWuiRiskClassCode(wuiRiskClassCode)
+                .orElseThrow(() -> new IllegalArgumentException("WUIRiskClassCode not found: " + wuiRiskClassCode));
             entity.setWuiRiskClassCode(wuiRiskClassCodeEntity);
         }
 
         if (resource.getLocalWuiRiskClassCode() != null) {
             String localWuiRiskClassCode = resource.getLocalWuiRiskClassCode().getWuiRiskClassCode();
-            WUIRiskClassCodeEntity localWuiRiskClassCodeEntity = wuiRiskClassCodeRepository
-                    .findById(localWuiRiskClassCode)
-                    .orElseThrow(() -> new IllegalArgumentException("Local WUIRiskClassCode not found: " + localWuiRiskClassCode));
+            WUIRiskClassRankEntity localWuiRiskClassCodeEntity = wuiRiskClassCodeRepository
+                .findByWuiRiskClassCode(localWuiRiskClassCode)
+                .orElseThrow(() -> new IllegalArgumentException("Local WUIRiskClassCode not found: " + localWuiRiskClassCode));
             entity.setLocalWuiRiskClassCode(localWuiRiskClassCodeEntity);
         }
     }
