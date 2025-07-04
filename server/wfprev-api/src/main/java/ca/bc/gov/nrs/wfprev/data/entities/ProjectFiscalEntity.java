@@ -173,8 +173,8 @@ public class ProjectFiscalEntity implements Serializable {
     @Column(name = "approver_user_userid", length = 100)
     private String approverUserUserid;
 
-    @Column(name = "approver_comment", length = 4000)
-    private String approverComment;
+    @Column(name = "approved_comment", length = 4000)
+    private String approvedComment;
 
     @Column(name = "approved_timestamp")
     private Date approvedTimestamp;

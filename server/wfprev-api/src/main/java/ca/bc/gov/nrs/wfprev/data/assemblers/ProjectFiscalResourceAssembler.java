@@ -79,7 +79,7 @@ public class ProjectFiscalResourceAssembler extends RepresentationModelAssembler
         model.setApproverUserGuid(entity.getApproverUserGuid());
         model.setApproverUserUserid(entity.getApproverUserUserid());
         model.setApprovedTimestamp(entity.getApprovedTimestamp());
-        model.setApproverComment(entity.getApproverComment());
+        model.setApprovedComment(entity.getApprovedComment());
         model.setAccomplishmentsComment(entity.getAccomplishmentsComment());
         model.setIsDelayedInd(entity.getIsDelayedInd());
         model.setDelayRationale(entity.getDelayRationale());
@@ -157,7 +157,7 @@ public class ProjectFiscalResourceAssembler extends RepresentationModelAssembler
         entity.setApproverUserGuid(model.getApproverUserGuid());
         entity.setApproverUserUserid(model.getApproverUserUserid());
         entity.setApprovedTimestamp(model.getApprovedTimestamp());
-        entity.setApproverComment(model.getApproverComment());
+        entity.setApprovedComment(model.getApprovedComment());
         entity.setAccomplishmentsComment(model.getAccomplishmentsComment());
         entity.setIsDelayedInd(model.getIsDelayedInd());
         entity.setDelayRationale(model.getDelayRationale());
@@ -264,8 +264,8 @@ public class ProjectFiscalResourceAssembler extends RepresentationModelAssembler
                 nonNullOrDefault(projectFiscalModel.getApproverUserUserid(), existingEntity.getApproverUserUserid()));
         existingEntity.setApprovedTimestamp(
                 nonNullOrDefault(projectFiscalModel.getApprovedTimestamp(), existingEntity.getApprovedTimestamp()));
-        existingEntity.setApproverComment(
-                nonNullOrDefault(projectFiscalModel.getApproverComment(), existingEntity.getApproverComment()));
+        existingEntity.setApprovedComment(
+                nonNullOrDefault(projectFiscalModel.getApprovedComment(), existingEntity.getApprovedComment()));
         existingEntity.setAccomplishmentsComment(
                 nonNullOrDefault(projectFiscalModel.getAccomplishmentsComment(), existingEntity.getAccomplishmentsComment()));
         existingEntity.setIsDelayedInd(

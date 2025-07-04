@@ -69,7 +69,7 @@ public class ProjectFiscalModel extends CommonModel<ProjectFiscalModel> {
     private String approverName;
     private String approverUserGuid;
     private String approverUserUserid;
-    private String approverComment;
+    private String approvedComment;
     private Date approvedTimestamp;
     private String accomplishmentsComment;
     private Boolean isDelayedInd;
