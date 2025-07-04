@@ -22,6 +22,10 @@ export const Messages = {
   activityDeletedFailure: 'Activity Deleted Failed',
   fileUploadSuccess: 'File Uploaded Successfully',
   fileUploadFailure: 'File Uploaded Failed',
+  evaluationCriteriaCreatedSuccess: 'Evaluation Criteria Created Successfully.',
+  evaluationCriteriaCreatedFailure: 'Evaluation Criteria Created Failed.',
+  evaluationCriteriaUpdatedSuccess: 'Evaluation Criteria Updated Successfully.',
+  evaluationCriteriaUpdatedFailure: 'Evaluation Criteria Updated Failed.',
 };
 
 export const CodeTableKeys = {

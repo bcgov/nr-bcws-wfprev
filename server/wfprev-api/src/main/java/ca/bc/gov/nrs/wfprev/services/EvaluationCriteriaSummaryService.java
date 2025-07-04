@@ -170,16 +170,16 @@ public class EvaluationCriteriaSummaryService implements CommonService {
         if (resource.getWuiRiskClassCode() != null) {
             String wuiRiskClassCode = resource.getWuiRiskClassCode().getWuiRiskClassCode();
             WUIRiskClassCodeEntity wuiRiskClassCodeEntity = wuiRiskClassCodeRepository
-                    .findById(wuiRiskClassCode)
-                    .orElseThrow(() -> new IllegalArgumentException("WUIRiskClassCode not found: " + wuiRiskClassCode));
+                .findByWuiRiskClassCode(wuiRiskClassCode)
+                .orElseThrow(() -> new IllegalArgumentException("WUIRiskClassCode not found: " + wuiRiskClassCode));
             entity.setWuiRiskClassCode(wuiRiskClassCodeEntity);
         }
 
         if (resource.getLocalWuiRiskClassCode() != null) {
             String localWuiRiskClassCode = resource.getLocalWuiRiskClassCode().getWuiRiskClassCode();
             WUIRiskClassCodeEntity localWuiRiskClassCodeEntity = wuiRiskClassCodeRepository
-                    .findById(localWuiRiskClassCode)
-                    .orElseThrow(() -> new IllegalArgumentException("Local WUIRiskClassCode not found: " + localWuiRiskClassCode));
+                .findByWuiRiskClassCode(localWuiRiskClassCode)
+                .orElseThrow(() -> new IllegalArgumentException("Local WUIRiskClassCode not found: " + localWuiRiskClassCode));
             entity.setLocalWuiRiskClassCode(localWuiRiskClassCodeEntity);
         }
     }

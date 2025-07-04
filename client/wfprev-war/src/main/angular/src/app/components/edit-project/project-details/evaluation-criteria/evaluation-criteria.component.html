@@ -1,0 +1,75 @@
+<div>
+    <mat-expansion-panel #panel="matExpansionPanel">
+        <mat-expansion-panel-header class="expansion-panel-header">
+          <mat-panel-title class="project-title">
+            <div class="custom-indicator">
+                <wfprev-expansion-indicator [isExpanded]="panel.expanded"></wfprev-expansion-indicator>
+            </div>
+            <span>Evaluation Criteria</span>
+          </mat-panel-title>
+          <mat-panel-description class="edit-evaluation-criteria">
+            <div (click)="openEvaluationCriteriaPopUp(); $event.stopPropagation()">
+              <img alt="edit-icon" class="icon" src="/assets/edit-icon.svg" />
+              <span>Edit</span>
+            </div>
+          </mat-panel-description>
+        </mat-expansion-panel-header>
+        <!-- Fuel Management -->
+        <div *ngIf="project?.projectTypeCode?.projectTypeCode === 'FUEL_MGMT' && evaluationCriteriaSummaries.length">
+          <div class="criteria-section">
+            <div class="section-label">
+              <span>Coarse Filter Total:</span>
+              <span>
+                {{ evaluationCriteriaSummaries[0]?.localWuiRiskClassCode?.weightedRank
+                    ?? evaluationCriteriaSummaries[0]?.wuiRiskClassCode?.weightedRank
+                    ?? 0
+                }}
+              </span>
+            </div>
+
+            <div class="criteria-details">
+              <div class="criteria-item criteria-item-narrow">
+                <span>WUI Risk Class</span>
+                <span>{{ formatCodeLabel(evaluationCriteriaSummaries[0]?.wuiRiskClassCode?.wuiRiskClassCode) || '' }}</span>
+              </div>
+              <div class="criteria-item criteria-item-narrow">
+                <span>Local Risk Class</span>
+                <span>{{ formatCodeLabel(evaluationCriteriaSummaries[0]?.localWuiRiskClassCode?.wuiRiskClassCode) || '' }}</span>
+              </div>
+              <div class="criteria-item">
+                <span>Local WUI Risk Class Rationale:</span>
+                <span>{{ evaluationCriteriaSummaries[0]?.localWuiRiskClassRationale || 'None' }}</span>
+              </div>
+            </div>
+
+            <span class="section-label">
+              Medium Filter Total:
+              <span>{{ getSectionTotal(evaluationCriteriaSummaries[0], 'MEDIUM_FLT') }}</span>
+            </span>
+            <div class="criteria-details">
+              <div class="criteria-item">
+                <span>Medium Filter Comments:</span>
+                <span>{{ getSectionComment(evaluationCriteriaSummaries[0], 'MEDIUM_FLT') || 'None' }}</span>
+              </div>
+            </div>
+
+            <span class="section-label">
+              Fine Filter Total:
+              <span>{{ getSectionTotal(evaluationCriteriaSummaries[0], 'FINE_FLT') }}</span>
+            </span>
+            <div class="criteria-details">
+              <div class="criteria-item">
+              <span>Fine Filter Comments:</span>
+              <span>{{ getSectionComment(evaluationCriteriaSummaries[0], 'FINE_FLT') || 'None' }}</span>
+              </div>
+            </div>
+            <div class="full-width-divider"></div>
+            <div class="section-label ">
+              <span>Calculated Total</span>
+              <span>{{ getCalculatedTotal(evaluationCriteriaSummaries[0]) }}</span>
+            </div>
+          </div>
+        </div>
+
+    </mat-expansion-panel>
+</div>
