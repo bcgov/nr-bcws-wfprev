@@ -20,6 +20,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.hateoas.CollectionModel;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -28,6 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -129,8 +131,8 @@ class EvaluationCriteriaSummaryServiceTest {
 
         WUIRiskClassCodeEntity wuiEntity = new WUIRiskClassCodeEntity();
         WUIRiskClassCodeEntity localWuiEntity = new WUIRiskClassCodeEntity();
-        when(wuiRepo.findById(wuiCode)).thenReturn(Optional.of(wuiEntity));
-        when(wuiRepo.findById(localWuiCode)).thenReturn(Optional.of(localWuiEntity));
+        when(wuiRepo.findByWuiRiskClassCode(wuiCode)).thenReturn(Optional.of(wuiEntity));
+        when(wuiRepo.findByWuiRiskClassCode(localWuiCode)).thenReturn(Optional.of(localWuiEntity));
 
         when(selectedAssembler.toEntity(any())).thenAnswer(invocation -> {
             EvaluationCriteriaSelectedModel m = invocation.getArgument(0);
