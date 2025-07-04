@@ -1961,14 +1961,14 @@ class CodesServiceTest {
 
     @Test
     void testGetAllWUIRiskClassCodes_Success() throws ServiceException {
-        List<WUIRiskClassCodeEntity> entities = new ArrayList<>();
-        entities.add(new WUIRiskClassCodeEntity());
-        entities.add(new WUIRiskClassCodeEntity());
+        List<WUIRiskClassRankEntity> entities = new ArrayList<>();
+        entities.add(new WUIRiskClassRankEntity());
+        entities.add(new WUIRiskClassRankEntity());
         when(wuiRiskClassCodeRepository.findAll()).thenReturn(entities);
         when(wuiRiskClassCodeResourceAssembler.toCollectionModel(entities))
                 .thenReturn(CollectionModel.of(new ArrayList<>()));
 
-        CollectionModel<WUIRiskClassCodeModel> result = codesService.getAllWuiRiskClassCodes();
+        CollectionModel<WUIRiskClassRankModel> result = codesService.getAllWuiRiskClassCodes();
 
         assertNotNull(result);
     }
@@ -1987,13 +1987,13 @@ class CodesServiceTest {
     @Test
     void testGetWUIRiskClassCodeById_Success() throws ServiceException {
         UUID exampleId = UUID.randomUUID();
-        WUIRiskClassCodeEntity entity = new WUIRiskClassCodeEntity();
+        WUIRiskClassRankEntity entity = new WUIRiskClassRankEntity();
         when(wuiRiskClassCodeRepository.findById(String.valueOf(exampleId)))
                 .thenReturn(Optional.of(entity));
         when(wuiRiskClassCodeResourceAssembler.toModel(entity))
-                .thenReturn(new WUIRiskClassCodeModel());
+                .thenReturn(new WUIRiskClassRankModel());
 
-        WUIRiskClassCodeModel result = codesService.getWuiRiskClassCodeById(String.valueOf(exampleId));
+        WUIRiskClassRankModel result = codesService.getWuiRiskClassCodeById(String.valueOf(exampleId));
 
         assertNotNull(result);
     }
@@ -2004,7 +2004,7 @@ class CodesServiceTest {
         when(wuiRiskClassCodeRepository.findById(String.valueOf(nonExistentId)))
                 .thenReturn(Optional.empty());
 
-        WUIRiskClassCodeModel result = codesService.getWuiRiskClassCodeById(String.valueOf(nonExistentId));
+        WUIRiskClassRankModel result = codesService.getWuiRiskClassCodeById(String.valueOf(nonExistentId));
 
         assertNull(result);
     }

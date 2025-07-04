@@ -6,12 +6,12 @@ import ca.bc.gov.nrs.wfprev.data.entities.EvaluationCriteriaSectionCodeEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.EvaluationCriteriaSectionSummaryEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.EvaluationCriteriaSelectedEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.EvaluationCriteriaSummaryEntity;
-import ca.bc.gov.nrs.wfprev.data.entities.WUIRiskClassCodeEntity;
+import ca.bc.gov.nrs.wfprev.data.entities.WUIRiskClassRankEntity;
 import ca.bc.gov.nrs.wfprev.data.models.EvaluationCriteriaSectionCodeModel;
 import ca.bc.gov.nrs.wfprev.data.models.EvaluationCriteriaSectionSummaryModel;
 import ca.bc.gov.nrs.wfprev.data.models.EvaluationCriteriaSelectedModel;
 import ca.bc.gov.nrs.wfprev.data.models.EvaluationCriteriaSummaryModel;
-import ca.bc.gov.nrs.wfprev.data.models.WUIRiskClassCodeModel;
+import ca.bc.gov.nrs.wfprev.data.models.WUIRiskClassRankModel;
 import ca.bc.gov.nrs.wfprev.data.repositories.EvaluationCriteriaSummaryRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.WUIRiskClassCodeRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -94,9 +94,9 @@ class EvaluationCriteriaSummaryServiceTest {
 
         EvaluationCriteriaSummaryModel summaryModel = new EvaluationCriteriaSummaryModel();
         summaryModel.setProjectGuid(projectGuid.toString());
-        summaryModel.setWuiRiskClassCode(new WUIRiskClassCodeModel());
+        summaryModel.setWuiRiskClassCode(new WUIRiskClassRankModel());
         summaryModel.getWuiRiskClassCode().setWuiRiskClassCode(wuiCode);
-        summaryModel.setLocalWuiRiskClassCode(new WUIRiskClassCodeModel());
+        summaryModel.setLocalWuiRiskClassCode(new WUIRiskClassRankModel());
         summaryModel.getLocalWuiRiskClassCode().setWuiRiskClassCode(localWuiCode);
         summaryModel.setEvaluationCriteriaSectionSummaries(List.of(sectionModel));
 
@@ -127,8 +127,8 @@ class EvaluationCriteriaSummaryServiceTest {
         when(summaryRepository.save(any())).thenReturn(savedWithChildren);
         when(summaryAssembler.toModel(savedWithChildren)).thenReturn(summaryModel);
 
-        WUIRiskClassCodeEntity wuiEntity = new WUIRiskClassCodeEntity();
-        WUIRiskClassCodeEntity localWuiEntity = new WUIRiskClassCodeEntity();
+        WUIRiskClassRankEntity wuiEntity = new WUIRiskClassRankEntity();
+        WUIRiskClassRankEntity localWuiEntity = new WUIRiskClassRankEntity();
         when(wuiRepo.findByWuiRiskClassCode(wuiCode)).thenReturn(Optional.of(wuiEntity));
         when(wuiRepo.findByWuiRiskClassCode(localWuiCode)).thenReturn(Optional.of(localWuiEntity));
 

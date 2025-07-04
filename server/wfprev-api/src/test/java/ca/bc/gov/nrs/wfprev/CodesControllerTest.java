@@ -23,7 +23,7 @@ import ca.bc.gov.nrs.wfprev.data.models.SilvicultureMethodCodeModel;
 import ca.bc.gov.nrs.wfprev.data.models.SilvicultureTechniqueCodeModel;
 import ca.bc.gov.nrs.wfprev.data.models.SourceObjectNameCodeModel;
 import ca.bc.gov.nrs.wfprev.data.models.ProposalTypeCodeModel;
-import ca.bc.gov.nrs.wfprev.data.models.WUIRiskClassCodeModel;
+import ca.bc.gov.nrs.wfprev.data.models.WUIRiskClassRankModel;
 import ca.bc.gov.nrs.wfprev.services.CodesService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -389,14 +389,14 @@ class CodesControllerTest {
         String exampleId1 = UUID.randomUUID().toString();
         String exampleId2 = UUID.randomUUID().toString();
 
-        WUIRiskClassCodeModel wui1 = new WUIRiskClassCodeModel();
+        WUIRiskClassRankModel wui1 = new WUIRiskClassRankModel();
         wui1.setWuiRiskClassCode(exampleId1);
 
-        WUIRiskClassCodeModel wui2 = new WUIRiskClassCodeModel();
+        WUIRiskClassRankModel wui2 = new WUIRiskClassRankModel();
         wui2.setWuiRiskClassCode(exampleId2);
 
-        List<WUIRiskClassCodeModel> wuiList = Arrays.asList(wui1, wui2);
-        CollectionModel<WUIRiskClassCodeModel> wuiModel = CollectionModel.of(wuiList);
+        List<WUIRiskClassRankModel> wuiList = Arrays.asList(wui1, wui2);
+        CollectionModel<WUIRiskClassRankModel> wuiModel = CollectionModel.of(wuiList);
 
         when(codesService.getAllWuiRiskClassCodes()).thenReturn(wuiModel);
 

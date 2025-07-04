@@ -11,21 +11,21 @@ import org.springframework.stereotype.Component;
 
 import ca.bc.gov.nrs.wfprev.common.enums.CodeTables;
 import ca.bc.gov.nrs.wfprev.controllers.CodesController;
-import ca.bc.gov.nrs.wfprev.data.entities.WUIRiskClassCodeEntity;
-import ca.bc.gov.nrs.wfprev.data.models.WUIRiskClassCodeModel;
+import ca.bc.gov.nrs.wfprev.data.entities.WUIRiskClassRankEntity;
+import ca.bc.gov.nrs.wfprev.data.models.WUIRiskClassRankModel;
 
 @Component
-public class WUIRiskClassCodeResourceAssembler extends RepresentationModelAssemblerSupport<WUIRiskClassCodeEntity, WUIRiskClassCodeModel> {
+public class WUIRiskClassCodeResourceAssembler extends RepresentationModelAssemblerSupport<WUIRiskClassRankEntity, WUIRiskClassRankModel> {
 
     public WUIRiskClassCodeResourceAssembler() {
-        super(CodesController.class, WUIRiskClassCodeModel.class);
+        super(CodesController.class, WUIRiskClassRankModel.class);
     }
 
-    public WUIRiskClassCodeEntity toEntity(WUIRiskClassCodeModel model) {
+    public WUIRiskClassRankEntity toEntity(WUIRiskClassRankModel model) {
         if(model == null) {
             return null;
         }
-        WUIRiskClassCodeEntity entity = new WUIRiskClassCodeEntity();
+        WUIRiskClassRankEntity entity = new WUIRiskClassRankEntity();
 
         entity.setWuiRiskClassCode(model.getWuiRiskClassCode());
         if (model.getWuiRiskClassRankGuid() != null) {
@@ -44,8 +44,8 @@ public class WUIRiskClassCodeResourceAssembler extends RepresentationModelAssemb
     }
 
     @Override
-    public WUIRiskClassCodeModel toModel(WUIRiskClassCodeEntity entity) {
-        WUIRiskClassCodeModel model = instantiateModel(entity);
+    public WUIRiskClassRankModel toModel(WUIRiskClassRankEntity entity) {
+        WUIRiskClassRankModel model = instantiateModel(entity);
 
         model.add(linkTo(
                 methodOn(CodesController.class)
@@ -69,9 +69,9 @@ public class WUIRiskClassCodeResourceAssembler extends RepresentationModelAssemb
     }
 
     @Override
-    public CollectionModel<WUIRiskClassCodeModel> toCollectionModel(Iterable<? extends WUIRiskClassCodeEntity> entities)
+    public CollectionModel<WUIRiskClassRankModel> toCollectionModel(Iterable<? extends WUIRiskClassRankEntity> entities)
     {
-        CollectionModel<WUIRiskClassCodeModel> resources = super.toCollectionModel(entities);
+        CollectionModel<WUIRiskClassRankModel> resources = super.toCollectionModel(entities);
 
         resources.add(linkTo(methodOn(CodesController.class).getCodes(CodeTables.WUI_RISK_CLASS_CODE)).withSelfRel());
 

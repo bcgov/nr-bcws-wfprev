@@ -23,9 +23,9 @@ export const Messages = {
   fileUploadSuccess: 'File Uploaded Successfully',
   fileUploadFailure: 'File Uploaded Failed',
   evaluationCriteriaCreatedSuccess: 'Evaluation Criteria Created Successfully.',
-  evaluationCriteriaCreatedFailure: 'Evaluation Criteria Created Failed.',
+  evaluationCriteriaCreatedFailure: 'Failed to Create Evaluation Criteria.',
   evaluationCriteriaUpdatedSuccess: 'Evaluation Criteria Updated Successfully.',
-  evaluationCriteriaUpdatedFailure: 'Evaluation Criteria Updated Failed.',
+  evaluationCriteriaUpdatedFailure: 'Failed to Update Evaluation Criteria.',
 };
 
 export const CodeTableKeys = {
