@@ -6,6 +6,8 @@ import ca.bc.gov.nrs.wfprev.common.services.CommonService;
 import ca.bc.gov.nrs.wfprev.data.assemblers.ProjectResourceAssembler;
 import ca.bc.gov.nrs.wfprev.data.entities.*;
 import ca.bc.gov.nrs.wfprev.data.models.ProjectModel;
+import ca.bc.gov.nrs.wfprev.data.models.ProjectStatusCodeModel;
+import ca.bc.gov.nrs.wfprev.data.models.ProjectTypeCodeModel;
 import ca.bc.gov.nrs.wfprev.data.repositories.*;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
@@ -118,6 +120,8 @@ public class ProjectService implements CommonService {
 
     private void initializeNewProject(ProjectModel resource) {
         resource.setProjectGuid(UUID.randomUUID().toString());
+        // always set status to active on create
+        resource.setProjectStatusCode(toProjectStatusCodeModel(loadOrSetDefaultProjectStatusCode("ACTIVE")));
         resource.setRevisionCount(0);
     }
 
@@ -189,6 +193,14 @@ public class ProjectService implements CommonService {
         return projectStatusCodeRepository
                 .findById(projectStatusCode)
                 .orElseThrow(() -> new EntityNotFoundException("Project Status Code not found: " + projectStatusCode));
+    }
+
+    private ProjectStatusCodeModel toProjectStatusCodeModel(ProjectStatusCodeEntity entity) {
+        if (entity == null) return null;
+        ProjectStatusCodeModel model = new ProjectStatusCodeModel();
+        model.setProjectStatusCode(entity.getProjectStatusCode());
+        model.setDescription(entity.getDescription());
+        return model;
     }
 
     @Transactional
