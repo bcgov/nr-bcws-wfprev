@@ -12,6 +12,7 @@ import ca.bc.gov.nrs.wfprev.data.repositories.EvaluationCriteriaSectionCodeRepos
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -48,7 +49,7 @@ class EvaluationCriteriaSummaryResourceAssemblerTest {
         EvaluationCriteriaSectionSummaryEntity section = new EvaluationCriteriaSectionSummaryEntity();
         section.setEvaluationCriteriaSectionSummaryGuid(UUID.randomUUID());
         section.setEvaluationCriteriaSummaryGuid(summaryGuid);
-        section.setFilterSectionScore(10);
+        section.setFilterSectionScore(BigDecimal.valueOf(3));
         section.setFilterSectionComment("Section Comment");
 
         EvaluationCriteriaSelectedEntity selected = new EvaluationCriteriaSelectedEntity();
@@ -91,7 +92,7 @@ class EvaluationCriteriaSummaryResourceAssemblerTest {
 
         EvaluationCriteriaSectionSummaryModel sectionModel = new EvaluationCriteriaSectionSummaryModel();
         sectionModel.setEvaluationCriteriaSectionCode(codeModel);
-        sectionModel.setFilterSectionScore(5);
+        sectionModel.setFilterSectionScore(BigDecimal.valueOf(5));
         sectionModel.setEvaluationCriteriaSelected(List.of(selectedModel));
 
         model.setEvaluationCriteriaSectionSummaries(List.of(sectionModel));

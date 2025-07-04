@@ -3,6 +3,7 @@ package ca.bc.gov.nrs.wfprev.data.entities;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.UUID;
 
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -35,7 +36,7 @@ public class EvaluationCriteriaCodeEntity implements Serializable {
     @Id
     @Column(name = "evaluation_criteria_guid", nullable = false)
     @NotNull
-    private String evaluationCriteriaGuid;
+    private UUID evaluationCriteriaGuid;
 
     @Column(name = "project_type_code", length = 10)
     private String projectTypeCode;

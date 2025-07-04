@@ -10,6 +10,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.springframework.hateoas.server.core.Relation;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Data
@@ -24,7 +25,7 @@ public class EvaluationCriteriaSectionSummaryModel extends CommonModel<Evaluatio
     private String evaluationCriteriaSectionSummaryGuid;
     private EvaluationCriteriaSectionCodeModel evaluationCriteriaSectionCode;
     private String evaluationCriteriaSummaryGuid;
-    private Integer filterSectionScore;
+    private BigDecimal  filterSectionScore;
     private String filterSectionComment;
     private List<EvaluationCriteriaSelectedModel> evaluationCriteriaSelected;
 }
