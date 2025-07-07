@@ -123,6 +123,7 @@ export class EvaluationCriteriaDialogComponent {
       this.selectedMedium.delete(guid);
     }
     this.calculateMediumTotal();
+    this.criteriaForm.markAsDirty();
   }
 
   toggleFine(guid: string, event: Event) {
@@ -133,6 +134,7 @@ export class EvaluationCriteriaDialogComponent {
       this.selectedFine.delete(guid);
     }
     this.calculateFineTotal();
+    this.criteriaForm.markAsDirty();
   }
 
   calculateMediumTotal() {
