@@ -73,6 +73,9 @@
       }
     }
 
+    .fiscal-activity-name {
+      flex: 1 1 calc(50% - 15px) !important;
+    }
     .toggle-width {
       max-width: 220px !important;
       min-width: none !important;

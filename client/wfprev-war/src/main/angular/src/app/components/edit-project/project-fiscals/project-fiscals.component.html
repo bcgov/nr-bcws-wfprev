@@ -47,7 +47,7 @@
                 </mat-menu>
                 <form class="form-grid" *ngIf="fiscalForms[i]" [formGroup]="fiscalForms[i]">
 
-                  <div class="form-item">
+                  <div class="form-item fiscal-activity-name">
                     <wfprev-input-field
                       [id]="'projectFiscalName'"
                       [label]="'Fiscal Activity Name'"
@@ -56,14 +56,6 @@
                       [tooltip]="getFiscalControl(selectedTabIndex, 'projectFiscalName')?.value"
                       [required]="true"
                     />
-                  </div>
-
-                  <div class="form-item">
-                    <label>Fiscal Year<span class="required">*</span></label>
-                    <select id="fiscalYear" formControlName="fiscalYear">
-                      <option value="" disabled selected hidden>Select</option>
-                      <option *ngFor="let year of fiscalYears" [value]="year.split('/')[0]">{{ year }}</option>
-                    </select>
                   </div>
 
                   <div class="form-item">
@@ -81,19 +73,13 @@
                   </div>
 
                   <div class="form-item">
-                    <wfprev-select-field
-                      class="form-item"
-                      [label]="'Fiscal Status'"
-                      [required]="true"
-                      [control]="getFiscalControl(i, 'planFiscalStatusCode')"
-                      [options]="planFiscalStatusCode"
-                      [optionValueField]="'planFiscalStatusCode'"
-                      [optionLabelField]="'description'"
-                      [tooltip]="getCodeDescription(CodeTableKeys.PLAN_FISCAL_STATUS_CODE)"
-                      id="planFiscalStatusCode"
-                      placeholder="Select"
-                    />
+                    <label>Fiscal Year<span class="required">*</span></label>
+                    <select id="fiscalYear" formControlName="fiscalYear">
+                      <option value="" disabled selected hidden>Select</option>
+                      <option *ngFor="let year of fiscalYears" [value]="year.split('/')[0]">{{ year }}</option>
+                    </select>
                   </div>
+
 
                   <div class="form-item">
                     <wfprev-select-field
