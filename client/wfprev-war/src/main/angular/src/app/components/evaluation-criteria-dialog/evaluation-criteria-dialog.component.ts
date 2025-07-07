@@ -50,8 +50,8 @@ export class EvaluationCriteriaDialogComponent {
     }
 
   ngOnInit(): void {
+    this.initializeForm();
     if (this.data.project.projectTypeCode?.projectTypeCode === this.fuelManagement) {
-      this.initializeForm();
       this.setupValueChangeHandlers();
       this.loadCodeTablesAndPrefill();
     }
