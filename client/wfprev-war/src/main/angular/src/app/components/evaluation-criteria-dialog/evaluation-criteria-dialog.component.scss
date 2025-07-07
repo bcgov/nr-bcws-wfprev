@@ -111,8 +111,12 @@
   .form-row{
     flex-wrap: inherit !important;
     width: 100% !important;
-    select{
+    select {
       width: 200px;
+      font-family: var(--wf-font-family-main) !important; 
+      option {
+        font-family: var(--wf-font-family-main) !important;
+      }
     }
 }
 
