@@ -1,6 +1,7 @@
 package ca.bc.gov.nrs.wfprev.data.models;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
 import org.springframework.hateoas.server.core.Relation;
 
@@ -24,7 +25,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class EvaluationCriteriaCodeModel extends CommonModel<EvaluationCriteriaCodeModel> {
-    private String evaluationCriteriaGuid;
+    private UUID  evaluationCriteriaGuid;
     private String projectTypeCode;
     private String criteriaLabel;
     private String evalCriteriaSectCode;

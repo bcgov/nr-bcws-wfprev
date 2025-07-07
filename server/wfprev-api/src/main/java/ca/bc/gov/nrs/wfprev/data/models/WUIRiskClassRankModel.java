@@ -1,5 +1,6 @@
 package ca.bc.gov.nrs.wfprev.data.models;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 import org.springframework.hateoas.server.core.Relation;
@@ -17,16 +18,16 @@ import lombok.NoArgsConstructor;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
-@JsonRootName(value = "wuiRiskClassCode")
-@Relation(collectionRelation = "wuiRiskClassCode")
+@JsonRootName(value = "wuiRiskClassRank")
+@Relation(collectionRelation = "wuiRiskClassRank")
 @JsonInclude(Include.NON_NULL)
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class WUIRiskClassCodeModel extends CommonModel<WUIRiskClassCodeModel> {
+public class WUIRiskClassRankModel extends CommonModel<WUIRiskClassRankModel> {
+    private String wuiRiskClassRankGuid;
     private String wuiRiskClassCode;
-    private String description;
-    private Integer displayOrder;
+    private BigDecimal weightedRank;
     private Date effectiveDate;
     private Date expiryDate;
 }

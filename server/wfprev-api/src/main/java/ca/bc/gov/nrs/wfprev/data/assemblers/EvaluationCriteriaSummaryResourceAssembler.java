@@ -5,12 +5,12 @@ import ca.bc.gov.nrs.wfprev.data.entities.EvaluationCriteriaSectionCodeEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.EvaluationCriteriaSectionSummaryEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.EvaluationCriteriaSelectedEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.EvaluationCriteriaSummaryEntity;
-import ca.bc.gov.nrs.wfprev.data.entities.WUIRiskClassCodeEntity;
+import ca.bc.gov.nrs.wfprev.data.entities.WUIRiskClassRankEntity;
 import ca.bc.gov.nrs.wfprev.data.models.EvaluationCriteriaSectionCodeModel;
 import ca.bc.gov.nrs.wfprev.data.models.EvaluationCriteriaSectionSummaryModel;
 import ca.bc.gov.nrs.wfprev.data.models.EvaluationCriteriaSelectedModel;
 import ca.bc.gov.nrs.wfprev.data.models.EvaluationCriteriaSummaryModel;
-import ca.bc.gov.nrs.wfprev.data.models.WUIRiskClassCodeModel;
+import ca.bc.gov.nrs.wfprev.data.models.WUIRiskClassRankModel;
 import ca.bc.gov.nrs.wfprev.data.repositories.EvaluationCriteriaSectionCodeRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
@@ -240,12 +240,12 @@ public class EvaluationCriteriaSummaryResourceAssembler extends RepresentationMo
     }
 
 
-    private WUIRiskClassCodeModel toWuiRiskClassCodeModel(WUIRiskClassCodeEntity code) {
+    private WUIRiskClassRankModel toWuiRiskClassCodeModel(WUIRiskClassRankEntity code) {
         WUIRiskClassCodeResourceAssembler ra = new WUIRiskClassCodeResourceAssembler();
         return ra.toModel(code);
     }
 
-    private WUIRiskClassCodeEntity toWuiRiskClassCodeEntity(WUIRiskClassCodeModel code) {
+    private WUIRiskClassRankEntity toWuiRiskClassCodeEntity(WUIRiskClassRankModel code) {
         if (code == null) return null;
         WUIRiskClassCodeResourceAssembler ra = new WUIRiskClassCodeResourceAssembler();
         return ra.toEntity(code);

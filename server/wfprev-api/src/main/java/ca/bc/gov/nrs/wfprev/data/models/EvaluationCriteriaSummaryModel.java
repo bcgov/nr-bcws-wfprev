@@ -24,8 +24,8 @@ import java.util.List;
 public class EvaluationCriteriaSummaryModel extends CommonModel<EvaluationCriteriaSummaryModel> {
     private String evaluationCriteriaSummaryGuid;
     private String projectGuid;
-    private WUIRiskClassCodeModel wuiRiskClassCode;
-    private WUIRiskClassCodeModel localWuiRiskClassCode;
+    private WUIRiskClassRankModel wuiRiskClassCode;
+    private WUIRiskClassRankModel localWuiRiskClassCode;
     private String wuiRiskClassComment;
     private String localWuiRiskClassRationale;
     private Boolean isOutsideWuiInd;

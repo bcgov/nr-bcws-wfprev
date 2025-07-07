@@ -26,11 +26,13 @@ import { ExpansionIndicatorComponent } from '../../shared/expansion-indicator/ex
 import { BcParksSectionCodeModel, ForestDistrictCodeModel } from 'src/app/components/models';
 import { SelectFieldComponent } from 'src/app/components/shared/select-field/select-field.component';
 import { InputFieldComponent } from 'src/app/components/shared/input-field/input-field.component';
+import { EvaluationCriteriaComponent } from 'src/app/components/edit-project/project-details/evaluation-criteria/evaluation-criteria.component';
 @Component({
   selector: 'wfprev-project-details',
   standalone: true,
   imports: [ReactiveFormsModule, MatExpansionModule, CommonModule, FormsModule, FiscalYearProjectsComponent,
-     ProjectFilesComponent, MatTooltip, TextFieldModule, ExpansionIndicatorComponent, SelectFieldComponent, InputFieldComponent],
+     ProjectFilesComponent, MatTooltip, TextFieldModule, ExpansionIndicatorComponent, SelectFieldComponent, InputFieldComponent,
+    EvaluationCriteriaComponent],
   templateUrl: './project-details.component.html',
   styleUrl: './project-details.component.scss'
 })
