@@ -808,13 +808,13 @@
 					}
 				},
 				"url": {
-					"raw": "{{LOCAL_API_URL}}/projects/{{projectGuid}}}/projectFiscals/{{projectPlanFiscalGuid}}",
+					"raw": "{{LOCAL_API_URL}}/projects/{{projectGuid}}/projectFiscals/{{projectPlanFiscalGuid}}",
 					"host": [
 						"{{LOCAL_API_URL}}"
 					],
 					"path": [
 						"projects",
-						"{{projectGuid}}}",
+						"{{projectGuid}}",
 						"projectFiscals",
 						"{{projectPlanFiscalGuid}}"
 					]

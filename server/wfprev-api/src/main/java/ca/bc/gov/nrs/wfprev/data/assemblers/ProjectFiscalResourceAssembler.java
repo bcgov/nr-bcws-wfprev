@@ -242,30 +242,24 @@ public class ProjectFiscalResourceAssembler extends RepresentationModelAssembler
                 nonNullOrDefault(projectFiscalModel.getSubmittedByUserUserid(), existingEntity.getSubmittedByUserUserid()));
         existingEntity.setSubmissionTimestamp(
                 nonNullOrDefault(projectFiscalModel.getSubmissionTimestamp(), existingEntity.getSubmissionTimestamp()));
-        existingEntity.setEndorsementEvalTimestamp(
-                nonNullOrDefault(projectFiscalModel.getEndorsementEvalTimestamp(), existingEntity.getEndorsementEvalTimestamp()));
-        existingEntity.setEndorserName(
-                nonNullOrDefault(projectFiscalModel.getEndorserName(), existingEntity.getEndorserName()));
+        existingEntity.setEndorsementEvalTimestamp(projectFiscalModel.getEndorsementEvalTimestamp());
+        existingEntity.setEndorserName(projectFiscalModel.getEndorserName());
         existingEntity.setEndorserUserGuid(
                 nonNullOrDefault(projectFiscalModel.getEndorserUserGuid(), existingEntity.getEndorserUserGuid()));
         existingEntity.setEndorserUserUserid(
                 nonNullOrDefault(projectFiscalModel.getEndorserUserUserid(), existingEntity.getEndorserUserUserid()));
         existingEntity.setEndorsementTimestamp(
                 nonNullOrDefault(projectFiscalModel.getEndorsementTimestamp(), existingEntity.getEndorsementTimestamp()));
-        existingEntity.setEndorsementComment(
-                nonNullOrDefault(projectFiscalModel.getEndorsementComment(), existingEntity.getEndorsementComment()));
+        existingEntity.setEndorsementComment(projectFiscalModel.getEndorsementComment());
         existingEntity.setIsApprovedInd(
                 nonNullOrDefault(projectFiscalModel.getIsApprovedInd(), existingEntity.getIsApprovedInd()));
-        existingEntity.setApproverName(
-                nonNullOrDefault(projectFiscalModel.getApproverName(), existingEntity.getApproverName()));
+        existingEntity.setApproverName(projectFiscalModel.getApproverName());
         existingEntity.setApproverUserGuid(
                 nonNullOrDefault(projectFiscalModel.getApproverUserGuid(), existingEntity.getApproverUserGuid()));
         existingEntity.setApproverUserUserid(
                 nonNullOrDefault(projectFiscalModel.getApproverUserUserid(), existingEntity.getApproverUserUserid()));
-        existingEntity.setApprovedTimestamp(
-                nonNullOrDefault(projectFiscalModel.getApprovedTimestamp(), existingEntity.getApprovedTimestamp()));
-        existingEntity.setApprovedComment(
-                nonNullOrDefault(projectFiscalModel.getApprovedComment(), existingEntity.getApprovedComment()));
+        existingEntity.setApprovedTimestamp(projectFiscalModel.getApprovedTimestamp());
+        existingEntity.setApprovedComment(projectFiscalModel.getApprovedComment());
         existingEntity.setAccomplishmentsComment(
                 nonNullOrDefault(projectFiscalModel.getAccomplishmentsComment(), existingEntity.getAccomplishmentsComment()));
         existingEntity.setIsDelayedInd(
