@@ -1357,6 +1357,29 @@
         "rollback": [
         ]
       }
+    },
+    {
+      "changeSet": {
+        "id": "01_00_24_00",
+        "author": "hsaldyga",
+        "tagDatabase": { "tag" : "version_01_00_24_00" },
+        "changes": [
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_24/00/ddl/app_wf1_prev.ddl.modify_project_plan_fiscal.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": "$",
+              "path": "scripts/01_00_24/00/ddl/wfprev.ddl.create_project_plan_fiscal_trigger.sql"
+            }
+          }
+      ],
+        "rollback": [
+        ]
+      }
     }
    ] 
 }

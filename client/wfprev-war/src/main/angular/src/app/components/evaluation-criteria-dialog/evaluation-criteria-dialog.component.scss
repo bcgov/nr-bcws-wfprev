@@ -6,6 +6,8 @@
 
 .dialog-container{
   width: 776px !important;
+  display: flex;
+  flex-direction: column;
 }
 .section-header {
   display: flex;
@@ -100,12 +102,21 @@
   margin: 4px 0 0 4px;
 }
 
+.dialog-content {
+  flex: 1 1 auto;
+  overflow-y: auto;
+}
+
 .dialog-content 
   .form-row{
     flex-wrap: inherit !important;
     width: 100% !important;
-    select{
+    select {
       width: 200px;
+      font-family: var(--wf-font-family-main) !important; 
+      option {
+        font-family: var(--wf-font-family-main) !important;
+      }
     }
 }
 
