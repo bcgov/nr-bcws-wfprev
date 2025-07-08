@@ -104,25 +104,40 @@ public class ProjectFiscalService implements CommonService {
         ProjectFiscalEntity existingEntity = projectFiscalRepository.findById(guid)
                 .orElseThrow(() -> new EntityNotFoundException("Project fiscal not found: " + projectFiscalModel.getProjectPlanFiscalGuid()));
 
-        String currentStatus = existingEntity.getPlanFiscalStatusCode().getPlanFiscalStatusCode();
-        String newStatus = projectFiscalModel.getPlanFiscalStatusCode().getPlanFiscalStatusCode();
-        validateStatusTransition(currentStatus, newStatus);
+        // Check current (existing) values
+        String existingStatus = existingEntity.getPlanFiscalStatusCode().getPlanFiscalStatusCode();
+        boolean shouldSetPrepared = isShouldSetPrepared(projectFiscalModel, existingEntity, existingStatus);
 
-        // only allow PROPOSED → PREPARED if endorsed and approved
-        if (PROPOSED.equals(currentStatus) && PREPARED.equals(newStatus)) {
-            boolean isApproved = Boolean.TRUE.equals(existingEntity.getIsApprovedInd());
-            boolean isEndorsed = existingEntity.getEndorsementCode() != null &&
-                    ENDORSED.equalsIgnoreCase(existingEntity.getEndorsementCode().getEndorsementCode());
-
-            if (!isApproved || !isEndorsed) {
-                throw new IllegalStateException("Cannot transition to PREPARED without both approval and endorsement.");
-            }
+        if (shouldSetPrepared) {
+            projectFiscalModel.getPlanFiscalStatusCode().setPlanFiscalStatusCode(PREPARED);
         }
+
+        // Validate final transition
+        validateStatusTransition(existingStatus, projectFiscalModel.getPlanFiscalStatusCode().getPlanFiscalStatusCode());
 
         ProjectFiscalEntity entity = projectFiscalResourceAssembler.updateEntity(projectFiscalModel, existingEntity);
         assignAssociatedEntities(projectFiscalModel, entity);
         return saveProjectFiscal(entity);
     }
+
+    private boolean isShouldSetPrepared(ProjectFiscalModel projectFiscalModel, ProjectFiscalEntity existingEntity, String existingStatus) {
+        boolean existingApproved = Boolean.TRUE.equals(existingEntity.getIsApprovedInd());
+        boolean existingEndorsed = existingEntity.getEndorsementCode() != null &&
+                ENDORSED.equalsIgnoreCase(existingEntity.getEndorsementCode().getEndorsementCode());
+
+        // Check incoming values
+        String incomingStatus = projectFiscalModel.getPlanFiscalStatusCode() != null
+                ? projectFiscalModel.getPlanFiscalStatusCode().getPlanFiscalStatusCode()
+                : null;
+        boolean incomingApproved = Boolean.TRUE.equals(projectFiscalModel.getIsApprovedInd());
+        boolean incomingEndorsed = projectFiscalModel.getEndorsementCode() != null &&
+                ENDORSED.equalsIgnoreCase(projectFiscalModel.getEndorsementCode().getEndorsementCode());
+
+        // Set to PREPARED if either existing or incoming state meets all conditions
+        return (PROPOSED.equals(existingStatus) && existingApproved && existingEndorsed)
+                        || (PROPOSED.equals(incomingStatus) && incomingApproved && incomingEndorsed);
+    }
+
 
     private ProjectFiscalModel saveProjectFiscal(ProjectFiscalEntity entity) {
         try {
