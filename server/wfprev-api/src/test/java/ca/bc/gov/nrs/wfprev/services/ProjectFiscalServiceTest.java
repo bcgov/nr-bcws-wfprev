@@ -655,7 +655,6 @@ class ProjectFiscalServiceTest {
         model.setEndorsementCode(new EndorsementCodeModel());
         model.getEndorsementCode().setEndorsementCode(endorsementCode);
 
-        ProjectEntity projectEntity = new ProjectEntity();
         ProjectFiscalEntity entityToSave = new ProjectFiscalEntity();
         ProjectFiscalEntity savedEntity = new ProjectFiscalEntity();
 
@@ -840,7 +839,7 @@ class ProjectFiscalServiceTest {
         when(planFiscalStatusCodeRepository.findById("PREPARED")).thenReturn(Optional.of(preparedStatus));
         when(endorsementCodeRepository.findById("NOT_ENDORSED")).thenReturn(Optional.of(notEndorsedEntity));
 
-        ProjectFiscalModel result = projectFiscalService.updateProjectFiscal(model);
+        projectFiscalService.updateProjectFiscal(model);
 
         assertEquals("PREPARED", model.getPlanFiscalStatusCode().getPlanFiscalStatusCode());
     }
@@ -879,7 +878,7 @@ class ProjectFiscalServiceTest {
         when(planFiscalStatusCodeRepository.findById("PREPARED")).thenReturn(Optional.of(preparedStatus));
         when(endorsementCodeRepository.findById("ENDORSED")).thenReturn(Optional.of(endorsedEntity));
 
-        ProjectFiscalModel result = projectFiscalService.updateProjectFiscal(model);
+        projectFiscalService.updateProjectFiscal(model);
 
         assertEquals("PREPARED", model.getPlanFiscalStatusCode().getPlanFiscalStatusCode());
     }
@@ -918,7 +917,7 @@ class ProjectFiscalServiceTest {
         when(planFiscalStatusCodeRepository.findById("PROPOSED")).thenReturn(Optional.of(proposedStatus));
         when(endorsementCodeRepository.findById("NOT_ENDORSED")).thenReturn(Optional.of(notEndorsedEntity));
 
-        ProjectFiscalModel result = projectFiscalService.updateProjectFiscal(model);
+        projectFiscalService.updateProjectFiscal(model);
 
         assertEquals("PROPOSED", model.getPlanFiscalStatusCode().getPlanFiscalStatusCode());
     }
