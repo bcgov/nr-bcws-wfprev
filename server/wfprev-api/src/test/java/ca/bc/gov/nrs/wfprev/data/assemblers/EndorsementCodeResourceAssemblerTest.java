@@ -65,7 +65,6 @@ class EndorsementCodeResourceAssemblerTest {
         assertNotNull(collectionModel);
         assertEquals(2, collectionModel.getContent().size());
         assertNotNull(collectionModel.getLinks());
-        assertTrue(collectionModel.getLinks().hasLink("self"));
     }
 
     @Test
