@@ -871,7 +871,7 @@
 					}
 				},
 				"url": {
-					"raw": "{{LOCAL_API_URL}}/projects/{{projectGuid}}}/attachments/{{projectFileAttachmentGuid}}",
+					"raw": "{{LOCAL_API_URL}}/projects/{{projectGuid}}/attachments/{{projectFileAttachmentGuid}}",
 					"host": [
 						"{{LOCAL_API_URL}}"
 					],
@@ -1129,7 +1129,7 @@
 					}
 				},
 				"url": {
-					"raw": "{{LOCAL_API_URL}}/projects/{{projectGuid}}}/projectFiscals/{{projectPlanFiscalGuid}}/activities/{{activityGuid}}/attachments/{{activityFileAttachmentGuid}}",
+					"raw": "{{LOCAL_API_URL}}/projects/{{projectGuid}}/projectFiscals/{{projectPlanFiscalGuid}}/activities/{{activityGuid}}/attachments/{{activityFileAttachmentGuid}}",
 					"host": [
 						"{{LOCAL_API_URL}}"
 					],

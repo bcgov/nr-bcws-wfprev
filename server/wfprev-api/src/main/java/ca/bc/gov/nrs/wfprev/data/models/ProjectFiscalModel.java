@@ -31,9 +31,9 @@ public class ProjectFiscalModel extends CommonModel<ProjectFiscalModel> {
     private Long fiscalYear;
     private String ancillaryFundingProvider;
     private String projectPlanStatusCode;
-    private String planFiscalStatusCode;
+    private PlanFiscalStatusCodeModel planFiscalStatusCode;
     private String proposalTypeCode;
-    private String endorsementCode;
+    private EndorsementCodeModel endorsementCode;
     private String projectFiscalName;
     private String projectFiscalDescription;
     private String businessAreaComment;

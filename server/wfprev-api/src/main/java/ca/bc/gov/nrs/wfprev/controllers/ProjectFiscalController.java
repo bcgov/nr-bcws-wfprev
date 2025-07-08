@@ -132,12 +132,6 @@ public class ProjectFiscalController extends CommonController {
         } catch (EntityNotFoundException e) {
             response = notFound();
             log.warn(" ### Project Fiscal not found with id: {}", id, e);
-        } catch (Exception e) {
-            // most responses here will actually be Bad Requests, not Internal Server Errors
-            // This would be an ideal place to expand the "Catch" and return sensible
-            // HTTP status codes
-            response = internalServerError();
-            log.error(" ### Error while updating Project", e);
         }
 
         log.debug(" << updateProject");
