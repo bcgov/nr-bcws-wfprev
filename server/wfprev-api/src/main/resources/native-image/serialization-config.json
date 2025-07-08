@@ -26,6 +26,8 @@
   { "name": "ca.bc.gov.nrs.wfprev.data.models.EvaluationCriteriaSectionSummaryModel" },
   { "name": "ca.bc.gov.nrs.wfprev.data.models.EvaluationCriteriaSelectedModel" },
   { "name": "ca.bc.gov.nrs.wfprev.data.models.ProjectStatusCodeModel" },
+  { "name": "ca.bc.gov.nrs.wfprev.data.models.PlanFiscalStatusCodeModel" },
+  { "name": "ca.bc.gov.nrs.wfprev.data.models.EndorsementCodeModel" },
 
   { "name": "ca.bc.gov.nrs.wfprev.data.entities.ForestAreaCodeEntity" },
   { "name": "ca.bc.gov.nrs.wfprev.data.entities.GeneralScopeCodeEntity" },
@@ -52,6 +54,8 @@
   { "name": "ca.bc.gov.nrs.wfprev.data.entities.EvaluationCriteriaSectionSummaryEntity" },
   { "name": "ca.bc.gov.nrs.wfprev.data.entities.EvaluationCriteriaSelectedEntity" },
   { "name": "ca.bc.gov.nrs.wfprev.data.entities.ProjectStatusCodeEntity" },
+  { "name": "ca.bc.gov.nrs.wfprev.data.entities.PlanFiscalStatusCodeEntity" },
+  { "name": "ca.bc.gov.nrs.wfprev.data.entities.EndorsementCodeEntity" },
   { "name": "org.springframework.hateoas.RepresentationModel"},
   { "name": "org.springframework.hateoas.Link"},
   { "name": "org.springframework.hateoas.Links"},

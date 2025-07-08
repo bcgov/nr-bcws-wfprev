@@ -1,5 +1,6 @@
 package ca.bc.gov.nrs.wfprev.entities;
 
+import ca.bc.gov.nrs.wfprev.data.entities.PlanFiscalStatusCodeEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ProjectEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ProjectFiscalEntity;
 import jakarta.validation.ConstraintViolation;
@@ -33,7 +34,7 @@ class ProjectFiscalEntityTest {
                 .activityCategoryCode("CATEGORY")
                 .fiscalYear(BigDecimal.valueOf(2024))
                 .projectPlanStatusCode("STATUS")
-                .planFiscalStatusCode("FISCAL")
+                .planFiscalStatusCode(new PlanFiscalStatusCodeEntity())
                 .proposalTypeCode("NEW")
                 .projectFiscalName("Valid Fiscal Name")
                 .firstNationsDelivPartInd(true)
