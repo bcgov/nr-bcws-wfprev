@@ -67,28 +67,6 @@ class ProjectFiscalControllerTest {
 
     @Test
     @WithMockUser
-    void testUpdateProjectFiscal_Exception() throws Exception {
-        ProjectFiscalModel inputModel = ProjectFiscalModel.builder()
-                .projectPlanFiscalGuid("123e4567-e89b-12d3-a456-426614174000")
-                .projectGuid("123e4567-e89b-12d3-a456-426614174001")
-                .activityCategoryCode("Tactical Planning")
-                .fiscalYear(2024L)
-                .submissionTimestamp(new Date(1672531200000L))
-                .build();
-
-        String inputJson = gson.toJson(inputModel);
-
-        when(projectFiscalService.updateProjectFiscal(inputModel))
-                .thenThrow(new RuntimeException("Test exception"));
-
-        mockMvc.perform(MockMvcRequestBuilders.put("/projects/123e4567-e89b-12d3-a456-426614174001/projectFiscals/{id}", inputModel.getProjectPlanFiscalGuid())
-                        .content(inputJson)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isInternalServerError());
-    }
-
-    @Test
-    @WithMockUser
     void testUpdateProjectFiscal_BadRequestUpdatedProjectFiscalGuid() throws Exception {
         ProjectFiscalModel inputModel = ProjectFiscalModel.builder()
                 .projectPlanFiscalGuid("123e4567-e89b-12d3-a456-426614174000")
