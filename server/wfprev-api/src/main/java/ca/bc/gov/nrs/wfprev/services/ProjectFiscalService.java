@@ -45,6 +45,7 @@ public class ProjectFiscalService implements CommonService {
     private static final String IN_PROG = "IN_PROG";
     private static final String COMPLETE = "COMPLETE";
     private static final String CANCELLED = "CANCELLED";
+    private static final String ENDORSED = "ENDORSED";
 
     private static final Map<String, Set<String>> VALID_TRANSITIONS = Map.of(
             DRAFT, Set.of(PROPOSED, CANCELLED),
@@ -108,10 +109,10 @@ public class ProjectFiscalService implements CommonService {
         validateStatusTransition(currentStatus, newStatus);
 
         // only allow PROPOSED → PREPARED if endorsed and approved
-        if ("PROPOSED".equals(currentStatus) && "PREPARED".equals(newStatus)) {
+        if (PROPOSED.equals(currentStatus) && PREPARED.equals(newStatus)) {
             boolean isApproved = Boolean.TRUE.equals(existingEntity.getIsApprovedInd());
             boolean isEndorsed = existingEntity.getEndorsementCode() != null &&
-                    "ENDORSED".equalsIgnoreCase(existingEntity.getEndorsementCode().getEndorsementCode());
+                    ENDORSED.equalsIgnoreCase(existingEntity.getEndorsementCode().getEndorsementCode());
 
             if (!isApproved || !isEndorsed) {
                 throw new IllegalStateException("Cannot transition to PREPARED without both approval and endorsement.");
