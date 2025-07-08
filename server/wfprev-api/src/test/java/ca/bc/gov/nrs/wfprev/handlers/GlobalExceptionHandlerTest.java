@@ -358,4 +358,23 @@ class GlobalExceptionHandlerTest {
         assertEquals(1, errors.size());
         assertEquals("Unable to serialize response", errors.get("error"));
     }
+
+    @Test
+    void testHandleIllegalStateException() {
+        // Given
+        String errorMessage = "Invalid state transition";
+        IllegalStateException ex = new IllegalStateException(errorMessage);
+
+        // When
+        ResponseEntity<Object> response = handler.handleIllegalStateException(ex);
+
+        // Then
+        assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
+        assertTrue(response.getBody() instanceof Map);
+
+        @SuppressWarnings("unchecked")
+        Map<String, String> errors = (Map<String, String>) response.getBody();
+        assertEquals(1, errors.size());
+        assertEquals(errorMessage, errors.get("error"));
+    }
 }

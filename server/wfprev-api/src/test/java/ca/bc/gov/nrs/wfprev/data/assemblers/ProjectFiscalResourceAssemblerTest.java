@@ -1,7 +1,9 @@
 package ca.bc.gov.nrs.wfprev.data.assemblers;
 
+import ca.bc.gov.nrs.wfprev.data.entities.PlanFiscalStatusCodeEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ProjectEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ProjectFiscalEntity;
+import ca.bc.gov.nrs.wfprev.data.models.PlanFiscalStatusCodeModel;
 import ca.bc.gov.nrs.wfprev.data.models.ProjectFiscalModel;
 import org.junit.jupiter.api.Test;
 
@@ -27,7 +29,7 @@ class ProjectFiscalResourceAssemblerTest {
                 .activityCategoryCode("ACT001")
                 .fiscalYear(new BigDecimal("2023"))
                 .projectPlanStatusCode("STATUS1")
-                .planFiscalStatusCode("FISCAL1")
+                .planFiscalStatusCode(new PlanFiscalStatusCodeEntity())
                 .proposalTypeCode("NEW")
                 .projectFiscalName("Test Project Fiscal")
                 .isApprovedInd(true)
@@ -48,7 +50,7 @@ class ProjectFiscalResourceAssemblerTest {
         assertEquals(model.getActivityCategoryCode(), entity.getActivityCategoryCode());
         assertEquals(model.getFiscalYear(), entity.getFiscalYear().longValue());
         assertEquals(model.getProjectPlanStatusCode(), entity.getProjectPlanStatusCode());
-        assertEquals(model.getPlanFiscalStatusCode(), entity.getPlanFiscalStatusCode());
+        assertEquals(model.getPlanFiscalStatusCode().getPlanFiscalStatusCode(), entity.getPlanFiscalStatusCode().getPlanFiscalStatusCode());
         assertEquals(model.getProposalTypeCode(), entity.getProposalTypeCode());
         assertEquals(model.getProjectFiscalName(), entity.getProjectFiscalName());
         assertEquals(model.getIsApprovedInd(), entity.getIsApprovedInd());
@@ -63,7 +65,7 @@ class ProjectFiscalResourceAssemblerTest {
         model.setActivityCategoryCode("ACT001");
         model.setFiscalYear(2023L);
         model.setProjectPlanStatusCode("STATUS1");
-        model.setPlanFiscalStatusCode("FISCAL1");
+        model.setPlanFiscalStatusCode(new PlanFiscalStatusCodeModel());
         model.setProposalTypeCode("NEW");
         model.setProjectFiscalName("Test Project Fiscal");
         model.setIsApprovedInd(true);
@@ -83,7 +85,7 @@ class ProjectFiscalResourceAssemblerTest {
         assertEquals(entity.getActivityCategoryCode(), model.getActivityCategoryCode(), "ActivityCategoryCode should match");
         assertEquals(entity.getFiscalYear().longValue(), model.getFiscalYear(), "FiscalYear should match");
         assertEquals(entity.getProjectPlanStatusCode(), model.getProjectPlanStatusCode(), "ProjectPlanStatusCode should match");
-        assertEquals(entity.getPlanFiscalStatusCode(), model.getPlanFiscalStatusCode(), "PlanFiscalStatusCode should match");
+        assertEquals(entity.getPlanFiscalStatusCode().getPlanFiscalStatusCode(), model.getPlanFiscalStatusCode().getPlanFiscalStatusCode(), "PlanFiscalStatusCode should match");
         assertEquals(entity.getProposalTypeCode(), model.getProposalTypeCode(), "ProposalTypeCode should match");
         assertEquals(entity.getProjectFiscalName(), model.getProjectFiscalName(), "ProjectFiscalName should match");
         assertEquals(entity.getIsApprovedInd(), model.getIsApprovedInd(), "IsApprovedInd should match");
