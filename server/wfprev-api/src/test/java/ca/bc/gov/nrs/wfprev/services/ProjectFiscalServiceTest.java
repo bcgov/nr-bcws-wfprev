@@ -2,9 +2,16 @@ package ca.bc.gov.nrs.wfprev.services;
 
 import ca.bc.gov.nrs.wfprev.data.assemblers.ProjectFiscalResourceAssembler;
 import ca.bc.gov.nrs.wfprev.data.assemblers.ProjectResourceAssembler;
+import ca.bc.gov.nrs.wfprev.data.entities.EndorsementCodeEntity;
+import ca.bc.gov.nrs.wfprev.data.entities.PlanFiscalStatusCodeEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ProjectEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ProjectFiscalEntity;
+import ca.bc.gov.nrs.wfprev.data.models.EndorsementCodeModel;
+import ca.bc.gov.nrs.wfprev.data.models.PlanFiscalStatusCodeModel;
 import ca.bc.gov.nrs.wfprev.data.models.ProjectFiscalModel;
+import ca.bc.gov.nrs.wfprev.data.models.ProjectModel;
+import ca.bc.gov.nrs.wfprev.data.repositories.EndorsementCodeRepository;
+import ca.bc.gov.nrs.wfprev.data.repositories.PlanFiscalStatusCodeRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.ProjectFiscalRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Assertions;
@@ -22,6 +29,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -34,6 +42,8 @@ class ProjectFiscalServiceTest {
     private ProjectService projectService;
     private ProjectResourceAssembler projectResourceAssembler;
     private ProjectEntity projectEntity;
+    private PlanFiscalStatusCodeRepository planFiscalStatusCodeRepository;
+    private EndorsementCodeRepository endorsementCodeRepository;
 
     @BeforeEach
     void setup() {
@@ -42,7 +52,9 @@ class ProjectFiscalServiceTest {
         projectService = mock(ProjectService.class);
         projectResourceAssembler = mock(ProjectResourceAssembler.class);
         projectEntity = mock(ProjectEntity.class);
-        projectFiscalService = new ProjectFiscalService(projectFiscalRepository, projectFiscalResourceAssembler, projectService, projectResourceAssembler);
+        planFiscalStatusCodeRepository = mock(PlanFiscalStatusCodeRepository.class);
+        endorsementCodeRepository = mock(EndorsementCodeRepository.class);
+        projectFiscalService = new ProjectFiscalService(projectFiscalRepository, projectFiscalResourceAssembler, projectService, projectResourceAssembler, planFiscalStatusCodeRepository, endorsementCodeRepository);
     }
     @Test
     void testGetAllProjectFiscals_Empty() {
@@ -73,9 +85,9 @@ class ProjectFiscalServiceTest {
         projectFiscalModel1.setFiscalYear(2021L);
         projectFiscalModel1.setAncillaryFundingProvider("Provider01");
         projectFiscalModel1.setProjectPlanStatusCode("PLAN_STATUS_1");
-        projectFiscalModel1.setPlanFiscalStatusCode("FISCAL_STATUS_1");
+        projectFiscalModel1.setPlanFiscalStatusCode(new PlanFiscalStatusCodeModel());
         projectFiscalModel1.setProposalTypeCode("NEW");
-        projectFiscalModel1.setEndorsementCode("ENDORSEMENT_CODE_1");
+        projectFiscalModel1.setEndorsementCode(new EndorsementCodeModel());
         projectFiscalModel1.setProjectFiscalName("Test Project Fiscal 1");
         projectFiscalModel1.setProjectFiscalDescription("Description of Test Project Fiscal 1");
         projectFiscalModel1.setBusinessAreaComment("Business area comment example 1");
@@ -125,9 +137,9 @@ class ProjectFiscalServiceTest {
         projectFiscalModel2.setFiscalYear(2022L);
         projectFiscalModel2.setAncillaryFundingProvider("Provider01");
         projectFiscalModel2.setProjectPlanStatusCode("PLAN_STATUS_2");
-        projectFiscalModel2.setPlanFiscalStatusCode("FISCAL_STATUS_2");
+        projectFiscalModel2.setPlanFiscalStatusCode(new PlanFiscalStatusCodeModel());
         projectFiscalModel2.setProposalTypeCode("NEW");
-        projectFiscalModel2.setEndorsementCode("ENDORSEMENT_CODE_2");
+        projectFiscalModel2.setEndorsementCode(new EndorsementCodeModel());
         projectFiscalModel2.setProjectFiscalName("Test Project Fiscal 2");
         projectFiscalModel2.setProjectFiscalDescription("Description of Test Project Fiscal 2");
         projectFiscalModel2.setBusinessAreaComment("Business area comment example 2");
@@ -179,7 +191,7 @@ class ProjectFiscalServiceTest {
                         .activityCategoryCode("ACTIVITY_1")
                         .fiscalYear(BigDecimal.valueOf(2023))
                         .projectPlanStatusCode("ACTIVE")
-                        .planFiscalStatusCode("DRAFT")
+                        .planFiscalStatusCode(new PlanFiscalStatusCodeEntity())
                         .proposalTypeCode("NEW")
                         .projectFiscalName("Fiscal Plan 1")
                         .totalCostEstimateAmount(BigDecimal.valueOf(100000))
@@ -194,7 +206,7 @@ class ProjectFiscalServiceTest {
                         .activityCategoryCode("ACTIVITY_2")
                         .fiscalYear(BigDecimal.valueOf(2024))
                         .projectPlanStatusCode("DRAFT")
-                        .planFiscalStatusCode("PROPOSED")
+                        .planFiscalStatusCode(new PlanFiscalStatusCodeEntity())
                         .proposalTypeCode("NEW")
                         .projectFiscalName("Fiscal Plan 2")
                         .totalCostEstimateAmount(BigDecimal.valueOf(200000))
@@ -279,9 +291,9 @@ class ProjectFiscalServiceTest {
         projectFiscalModel.setFiscalYear(2021L);
         projectFiscalModel.setAncillaryFundingProvider("Provider01");
         projectFiscalModel.setProjectPlanStatusCode("PLAN_STATUS_1");
-        projectFiscalModel.setPlanFiscalStatusCode("FISCAL_STATUS_1");
+        projectFiscalModel.setPlanFiscalStatusCode(new PlanFiscalStatusCodeModel());
         projectFiscalModel.setProposalTypeCode("NEW");
-        projectFiscalModel.setEndorsementCode("ENDORSEMENT_CODE_1");
+        projectFiscalModel.setEndorsementCode(new EndorsementCodeModel());
         projectFiscalModel.setProjectFiscalName("Test Project Fiscal 1");
         projectFiscalModel.setProjectFiscalDescription("Description of Test Project Fiscal 1");
         projectFiscalModel.setBusinessAreaComment("Business area comment example 1");
@@ -329,7 +341,7 @@ class ProjectFiscalServiceTest {
                 .activityCategoryCode("ACTIVITY_CODE_1")
                 .fiscalYear(BigDecimal.valueOf(2021))
                 .projectPlanStatusCode("PLAN_STATUS_1")
-                .planFiscalStatusCode("FISCAL_STATUS_1")
+                .planFiscalStatusCode(new PlanFiscalStatusCodeEntity())
                 .proposalTypeCode("NEW")
                 .projectFiscalName("Test Project Fiscal 1")
                 .build();
@@ -360,9 +372,9 @@ class ProjectFiscalServiceTest {
         projectFiscalModel.setFiscalYear(2021L);
         projectFiscalModel.setAncillaryFundingProvider("Provider01");
         projectFiscalModel.setProjectPlanStatusCode("PLAN_STATUS_1");
-        projectFiscalModel.setPlanFiscalStatusCode("FISCAL_STATUS_1");
+        projectFiscalModel.setPlanFiscalStatusCode(new PlanFiscalStatusCodeModel());
         projectFiscalModel.setProposalTypeCode("NEW");
-        projectFiscalModel.setEndorsementCode("ENDORSEMENT_CODE_1");
+        projectFiscalModel.setEndorsementCode(new EndorsementCodeModel());
         projectFiscalModel.setProjectFiscalName("Test Project Fiscal 1");
         projectFiscalModel.setProjectFiscalDescription("Description of Test Project Fiscal 1");
         projectFiscalModel.setBusinessAreaComment("Business area comment example 1");
@@ -407,9 +419,9 @@ class ProjectFiscalServiceTest {
         projectFiscalModel.setFiscalYear(2021L);
         projectFiscalModel.setAncillaryFundingProvider("Provider01");
         projectFiscalModel.setProjectPlanStatusCode("PLAN_STATUS_1");
-        projectFiscalModel.setPlanFiscalStatusCode("FISCAL_STATUS_1");
+        projectFiscalModel.setPlanFiscalStatusCode(new PlanFiscalStatusCodeModel());
         projectFiscalModel.setProposalTypeCode("NEW");
-        projectFiscalModel.setEndorsementCode("ENDORSEMENT_CODE_1");
+        projectFiscalModel.setEndorsementCode(new EndorsementCodeModel());
         projectFiscalModel.setProjectFiscalName("Test Project Fiscal 1");
         projectFiscalModel.setProjectFiscalDescription("Description of Test Project Fiscal 1");
         projectFiscalModel.setBusinessAreaComment("Business area comment example 1");
@@ -436,7 +448,7 @@ class ProjectFiscalServiceTest {
                 .activityCategoryCode("ACTIVITY_CODE_1")
                 .fiscalYear(BigDecimal.valueOf(2021))
                 .projectPlanStatusCode("PLAN_STATUS_1")
-                .planFiscalStatusCode("FISCAL_STATUS_1")
+                .planFiscalStatusCode(new PlanFiscalStatusCodeEntity())
                 .proposalTypeCode("NEW")
                 .projectFiscalName("Test Project Fiscal 1")
                 .build();
@@ -466,9 +478,9 @@ class ProjectFiscalServiceTest {
         projectFiscalModel.setFiscalYear(2021L);
         projectFiscalModel.setAncillaryFundingProvider("Provider01");
         projectFiscalModel.setProjectPlanStatusCode("PLAN_STATUS_1");
-        projectFiscalModel.setPlanFiscalStatusCode("FISCAL_STATUS_1");
+        projectFiscalModel.setPlanFiscalStatusCode(new PlanFiscalStatusCodeModel());
         projectFiscalModel.setProposalTypeCode("NEW");
-        projectFiscalModel.setEndorsementCode("ENDORSEMENT_CODE_1");
+        projectFiscalModel.setEndorsementCode(new EndorsementCodeModel());
         projectFiscalModel.setProjectFiscalName("Test Project Fiscal 1");
         projectFiscalModel.setProjectFiscalDescription("Description of Test Project Fiscal 1");
         projectFiscalModel.setBusinessAreaComment("Business area comment example 1");
@@ -519,6 +531,16 @@ class ProjectFiscalServiceTest {
         when(projectFiscalRepository.findById(any(UUID.class))).thenReturn(java.util.Optional.of(new ProjectFiscalEntity()));
         when(projectFiscalResourceAssembler.updateEntity(any(ProjectFiscalModel.class), any(ProjectFiscalEntity.class))).thenReturn(new ProjectFiscalEntity());
         when(projectFiscalRepository.saveAndFlush(any(ProjectFiscalEntity.class))).thenThrow(new DataIntegrityViolationException("Data integrity violation"));
+
+        ProjectFiscalEntity existingEntity = new ProjectFiscalEntity();
+        PlanFiscalStatusCodeEntity statusEntity = new PlanFiscalStatusCodeEntity();
+        statusEntity.setPlanFiscalStatusCode("PROPOSED");
+        existingEntity.setPlanFiscalStatusCode(statusEntity);
+
+        when(projectFiscalRepository.findById(any(UUID.class))).thenReturn(Optional.of(existingEntity));
+        when(projectFiscalResourceAssembler.updateEntity(any(ProjectFiscalModel.class), any(ProjectFiscalEntity.class))).thenReturn(existingEntity);
+        when(projectFiscalRepository.saveAndFlush(any(ProjectFiscalEntity.class)))
+                .thenThrow(new DataIntegrityViolationException("Data integrity violation"));
 
         // THEN I should get a DataIntegrityViolationException
         assertThrows(DataIntegrityViolationException.class,
@@ -618,4 +640,171 @@ class ProjectFiscalServiceTest {
         verify(projectFiscalRepository).findById(projectFiscalGuid);
         verify(projectFiscalRepository).deleteById(projectFiscalGuid);
     }
+
+    @Test
+    void testAssignAssociatedEntities_LoadsStatusAndEndorsementCodes() {
+        // Given
+        String projectGuid = "123e4567-e89b-12d3-a456-426614174000";
+        String planFiscalStatusCode = "DRAFT";
+        String endorsementCode = "ENDORSED";
+
+        ProjectFiscalModel model = new ProjectFiscalModel();
+        model.setProjectGuid(projectGuid);
+        model.setPlanFiscalStatusCode(new PlanFiscalStatusCodeModel());
+        model.getPlanFiscalStatusCode().setPlanFiscalStatusCode(planFiscalStatusCode);
+        model.setEndorsementCode(new EndorsementCodeModel());
+        model.getEndorsementCode().setEndorsementCode(endorsementCode);
+
+        ProjectEntity projectEntity = new ProjectEntity();
+        ProjectFiscalEntity entityToSave = new ProjectFiscalEntity();
+        ProjectFiscalEntity savedEntity = new ProjectFiscalEntity();
+
+        UUID generatedGuid = UUID.randomUUID();
+        savedEntity.setProjectPlanFiscalGuid(generatedGuid);
+
+        PlanFiscalStatusCodeEntity statusEntity = new PlanFiscalStatusCodeEntity();
+        statusEntity.setPlanFiscalStatusCode(planFiscalStatusCode);
+
+        EndorsementCodeEntity endorsementEntity = new EndorsementCodeEntity();
+        endorsementEntity.setEndorsementCode(endorsementCode);
+
+        ProjectFiscalModel expectedModel = new ProjectFiscalModel();
+        expectedModel.setProjectPlanFiscalGuid(generatedGuid.toString());
+
+        // When
+        when(projectService.getProjectById(projectGuid)).thenReturn(new ProjectModel());
+        when(projectResourceAssembler.toEntity(any())).thenReturn(projectEntity);
+        when(projectFiscalResourceAssembler.toEntity(eq(model), eq(projectEntity))).thenReturn(entityToSave);
+        when(projectFiscalRepository.save(entityToSave)).thenReturn(savedEntity);
+        when(projectFiscalResourceAssembler.toModel(savedEntity)).thenReturn(expectedModel);
+        when(planFiscalStatusCodeRepository.findById(planFiscalStatusCode)).thenReturn(Optional.of(statusEntity));
+        when(endorsementCodeRepository.findById(endorsementCode)).thenReturn(Optional.of(endorsementEntity));
+
+        // Then
+        ProjectFiscalModel result = projectFiscalService.createProjectFiscal(model);
+
+        assertNotNull(result);
+        assertEquals(generatedGuid.toString(), result.getProjectPlanFiscalGuid());
+
+        verify(planFiscalStatusCodeRepository).findById(planFiscalStatusCode);
+        verify(endorsementCodeRepository).findById(endorsementCode);
+        verify(projectService).getProjectById(projectGuid);
+        verify(projectFiscalRepository).save(entityToSave);
+        verify(projectFiscalResourceAssembler).toModel(savedEntity);
+    }
+
+    @Test
+    void testAssignAssociatedEntities_StatusCodeNotFound() {
+        ProjectFiscalModel model = new ProjectFiscalModel();
+        model.setProjectPlanFiscalGuid(UUID.randomUUID().toString());
+        model.setProjectGuid(UUID.randomUUID().toString());
+        model.setPlanFiscalStatusCode(new PlanFiscalStatusCodeModel());
+        model.getPlanFiscalStatusCode().setPlanFiscalStatusCode("INVALID_CODE");
+
+        when(planFiscalStatusCodeRepository.findById("INVALID_CODE")).thenReturn(Optional.empty());
+
+        assertThrows(IllegalArgumentException.class, () -> projectFiscalService.createProjectFiscal(model));
+    }
+
+    @Test
+    void testAssignAssociatedEntities_EndorsementCodeNotFound() {
+        ProjectFiscalModel model = new ProjectFiscalModel();
+        model.setProjectPlanFiscalGuid(UUID.randomUUID().toString());
+        model.setProjectGuid(UUID.randomUUID().toString());
+        model.setEndorsementCode(new EndorsementCodeModel());
+        model.getEndorsementCode().setEndorsementCode("INVALID_ENDORSEMENT");
+
+        when(planFiscalStatusCodeRepository.findById(any())).thenReturn(Optional.of(new PlanFiscalStatusCodeEntity()));
+        when(endorsementCodeRepository.findById("INVALID_ENDORSEMENT")).thenReturn(Optional.empty());
+
+        assertThrows(IllegalArgumentException.class, () -> projectFiscalService.createProjectFiscal(model));
+    }
+
+    @Test
+    void testUpdateProjectFiscal_InvalidStatusTransition_ThrowsException() {
+        ProjectFiscalModel model = new ProjectFiscalModel();
+        model.setProjectPlanFiscalGuid(UUID.randomUUID().toString());
+        PlanFiscalStatusCodeModel fiscalStatus = new PlanFiscalStatusCodeModel();
+        fiscalStatus.setPlanFiscalStatusCode("IN_PROG");
+        model.setPlanFiscalStatusCode(fiscalStatus);
+
+        ProjectFiscalEntity existingEntity = new ProjectFiscalEntity();
+        PlanFiscalStatusCodeEntity currentStatus = new PlanFiscalStatusCodeEntity();
+        currentStatus.setPlanFiscalStatusCode("DRAFT");
+        existingEntity.setPlanFiscalStatusCode(currentStatus);
+
+        when(projectFiscalRepository.findById(any(UUID.class))).thenReturn(Optional.of(existingEntity));
+
+        IllegalStateException ex = assertThrows(IllegalStateException.class, () ->
+                projectFiscalService.updateProjectFiscal(model)
+        );
+        assertEquals("Invalid fiscal status transition from DRAFT to IN_PROG", ex.getMessage());
+    }
+
+    @Test
+    void testUpdateProjectFiscal_PreparedWithoutEndorsementOrApproval_ThrowsException() {
+        ProjectFiscalModel model = new ProjectFiscalModel();
+        model.setProjectPlanFiscalGuid(UUID.randomUUID().toString());
+        PlanFiscalStatusCodeModel fiscalStatus = new PlanFiscalStatusCodeModel();
+        fiscalStatus.setPlanFiscalStatusCode("IN_PROG");
+        model.setPlanFiscalStatusCode(fiscalStatus);
+
+        ProjectFiscalEntity existingEntity = new ProjectFiscalEntity();
+        PlanFiscalStatusCodeEntity currentStatus = new PlanFiscalStatusCodeEntity();
+        currentStatus.setPlanFiscalStatusCode("PROPOSED");
+        existingEntity.setPlanFiscalStatusCode(currentStatus);
+        existingEntity.setIsApprovedInd(false);
+        existingEntity.setEndorsementCode(null);
+
+        when(projectFiscalRepository.findById(any(UUID.class))).thenReturn(Optional.of(existingEntity));
+
+        IllegalStateException ex = assertThrows(IllegalStateException.class, () ->
+                projectFiscalService.updateProjectFiscal(model)
+        );
+        assertEquals("Invalid fiscal status transition from PROPOSED to IN_PROG", ex.getMessage());
+    }
+
+    @Test
+    void testUpdateProjectFiscal_PreparedWithEndorsementAndApproval_Success() {
+        UUID guid = UUID.randomUUID();
+
+        ProjectFiscalModel model = new ProjectFiscalModel();
+        model.setProjectPlanFiscalGuid(guid.toString());
+
+        PlanFiscalStatusCodeModel fiscalStatus = new PlanFiscalStatusCodeModel();
+        fiscalStatus.setPlanFiscalStatusCode("PREPARED");
+        model.setPlanFiscalStatusCode(fiscalStatus);
+
+        EndorsementCodeModel endorsementModel = new EndorsementCodeModel();
+        endorsementModel.setEndorsementCode("ENDORSED");
+        model.setEndorsementCode(endorsementModel);
+
+        ProjectFiscalEntity existingEntity = new ProjectFiscalEntity();
+        PlanFiscalStatusCodeEntity currentStatus = new PlanFiscalStatusCodeEntity();
+        currentStatus.setPlanFiscalStatusCode("PROPOSED");
+        existingEntity.setPlanFiscalStatusCode(currentStatus);
+        existingEntity.setIsApprovedInd(true);
+
+        EndorsementCodeEntity endorsementCode = new EndorsementCodeEntity();
+        endorsementCode.setEndorsementCode("ENDORSED");
+        existingEntity.setEndorsementCode(endorsementCode);
+
+        PlanFiscalStatusCodeEntity preparedStatusEntity = new PlanFiscalStatusCodeEntity();
+        preparedStatusEntity.setPlanFiscalStatusCode("PREPARED");
+
+        EndorsementCodeEntity mockedEndorsementEntity = new EndorsementCodeEntity();
+        mockedEndorsementEntity.setEndorsementCode("ENDORSED");
+
+        when(projectFiscalRepository.findById(guid)).thenReturn(Optional.of(existingEntity));
+        when(planFiscalStatusCodeRepository.findById("PREPARED")).thenReturn(Optional.of(preparedStatusEntity));
+        when(endorsementCodeRepository.findById("ENDORSED")).thenReturn(Optional.of(mockedEndorsementEntity));
+        when(projectFiscalResourceAssembler.updateEntity(any(), any())).thenReturn(existingEntity);
+        when(projectFiscalRepository.saveAndFlush(any())).thenReturn(existingEntity);
+        when(projectFiscalResourceAssembler.toModel(any())).thenReturn(new ProjectFiscalModel());
+
+        ProjectFiscalModel result = projectFiscalService.updateProjectFiscal(model);
+
+        assertNotNull(result);
+    }
+
 }

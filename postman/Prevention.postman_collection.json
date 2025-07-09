@@ -209,7 +209,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n  \"projectGuid\": \"{{projectGuid}}\",\n  \"proposalTypeCode\": \"NEW\", \n  \"activityCategoryCode\": \"PLN_DEV\", \n  \"fiscalYear\": 2023,\n  \"projectPlanStatusCode\": \"ACTIVE\",\n  \"planFiscalStatusCode\": \"DRAFT\",\n  \"projectFiscalName\": \"Fiscal Project 1\",\n  \"projectFiscalDescription\": \"This is a test project fiscal description.\",\n  \"businessAreaComment\": \"Test comment\",\n  \"estimatedClwrrAllocAmount\": 1000.00,\n  \"fiscalAncillaryFundAmount\": 300.00,\n  \"fiscalPlannedProjectSizeHa\": 10.5,\n  \"fiscalPlannedCostPerHaAmt\": 500.00,\n  \"fiscalReportedSpendAmount\": 0.00,\n  \"fiscalActualAmount\": 0.00,\n  \"fiscalCompletedSizeHa\": 0.0,\n  \"fiscalActualCostPerHaAmt\": 0.0,\n  \"firstNationsDelivPartInd\": true,\n  \"firstNationsEngagementInd\": false,\n  \"firstNationsPartner\": \"Test Partner\",\n  \"resultsNumber\": \"RN123456\",\n  \"resultsOpeningId\": \"RO12345\",\n  \"resultsContactEmail\": \"contact@example.com\",\n  \"submittedByName\": \"Test User\",\n  \"submittedByUserGuid\": \"123e4567-e89\",\n  \"submittedByUserUserid\": \"testuser\",\n  \"submissionTimestamp\": \"2024-01-01T12:00:00Z\",\n  \"isApprovedInd\": false,\n  \"isDelayedInd\": false,\n  \"fiscalForecastAmount\": 1800.00,\n  \"ancillaryFundingProvider\": \"Provider01\",\n  \"endorsementEvalTimestamp\": \"2024-07-03T12:00:00Z\",\n  \"endorserName\": \"John Francis\",\n  \"endorsementComment\": \"This project has been not been endorsed\",\n  \"approvalDate\": \"2024-07-03\",\n  \"approverName\": \"Samantha Lavine\",\n  \"approvedComment\": \"This project has been reviewed and approved by Samantha\",\n  \"approvedTimestamp\": \"2024-07-03T12:00:00Z\" \n}",
+					"raw": "{\n  \"projectGuid\": \"{{projectGuid}}\",\n  \"proposalTypeCode\": \"NEW\", \n  \"activityCategoryCode\": \"PLN_DEV\", \n  \"fiscalYear\": 2023,\n  \"projectPlanStatusCode\": \"ACTIVE\",\n  \"planFiscalStatusCode\": {\n    \"planFiscalStatusCode\": \"DRAFT\"\n  },\n  \"endorsementCode\": {\n    \"endorsementCode\": \"NOT_ENDORS\"\n  },\n  \"projectFiscalName\": \"Fiscal Project 1\",\n  \"projectFiscalDescription\": \"This is a test project fiscal description.\",\n  \"businessAreaComment\": \"Test comment\",\n  \"estimatedClwrrAllocAmount\": 1000.00,\n  \"fiscalAncillaryFundAmount\": 300.00,\n  \"fiscalPlannedProjectSizeHa\": 10.5,\n  \"fiscalPlannedCostPerHaAmt\": 500.00,\n  \"fiscalReportedSpendAmount\": 0.00,\n  \"fiscalActualAmount\": 0.00,\n  \"fiscalCompletedSizeHa\": 0.0,\n  \"fiscalActualCostPerHaAmt\": 0.0,\n  \"firstNationsDelivPartInd\": true,\n  \"firstNationsEngagementInd\": false,\n  \"firstNationsPartner\": \"Test Partner\",\n  \"resultsNumber\": \"RN123456\",\n  \"resultsOpeningId\": \"RO12345\",\n  \"resultsContactEmail\": \"contact@example.com\",\n  \"submittedByName\": \"Test User\",\n  \"submittedByUserGuid\": \"123e4567-e89\",\n  \"submittedByUserUserid\": \"testuser\",\n  \"submissionTimestamp\": \"2024-01-01T12:00:00Z\",\n  \"isApprovedInd\": false,\n  \"isDelayedInd\": false,\n  \"fiscalForecastAmount\": 1800.00,\n  \"ancillaryFundingProvider\": \"Provider01\",\n  \"endorsementEvalTimestamp\": \"2024-07-03T12:00:00Z\",\n  \"endorserName\": \"John Francis\",\n  \"endorsementComment\": \"This project has been not been endorsed\",\n  \"approvalDate\": \"2024-07-03\",\n  \"approverName\": \"Samantha Lavine\",\n  \"approvedComment\": \"This project has been reviewed and approved by Samantha\",\n  \"approvedTimestamp\": \"2024-07-03T12:00:00Z\" \n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -800,7 +800,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n  \"projectPlanFiscalGuid\": \"{{projectPlanFiscalGuid}}\",\n  \"projectGuid\": \"{{projectGuid}}\",\n  \"proposalTypeCode\": \"CARRYOVER\",\n  \"activityCategoryCode\": \"RX_DEV\",\n  \"fiscalYear\": 2024,\n  \"projectPlanStatusCode\": \"ACTIVE\",\n  \"planFiscalStatusCode\": \"PROPOSED\",\n  \"projectFiscalName\": \"Fiscal Project 1\",\n  \"projectFiscalDescription\": \"This is a test project fiscal description.\",\n  \"businessAreaComment\": \"Test comment\",\n  \"estimatedClwrrAllocAmount\": 1000.00,\n  \"fiscalForecastAmount\": 300.00,\n  \"fiscalAncillaryFundAmount\": 300.00,\n  \"fiscalPlannedProjectSizeHa\": 10.5,\n  \"fiscalPlannedCostPerHaAmt\": 500.00,\n  \"fiscalReportedSpendAmount\": 0.00,\n  \"fiscalActualAmount\": 0.00,\n  \"fiscalCompletedSizeHa\": 0.0,\n  \"fiscalActualCostPerHaAmt\": 0.0,\n  \"firstNationsDelivPartInd\": true,\n  \"firstNationsEngagementInd\": false,\n  \"firstNationsPartner\": \"Test Partner\",\n  \"resultsNumber\": \"RN123456\",\n  \"resultsOpeningId\": \"RO12345\",\n  \"resultsContactEmail\": \"contact@example.com\",\n  \"submittedByName\": \"Test User\",\n  \"submittedByUserGuid\": \"123e4567-e89\",\n  \"submittedByUserUserid\": \"testuser\",\n  \"submissionTimestamp\": \"2024-01-01T12:00:00Z\",\n  \"isApprovedInd\": true,\n  \"isDelayedInd\": false,\n  \"ancillaryFundingProvider\": \"Provider01\",\n  \"endorsementEvalTimestamp\": \"2024-07-04T12:00:00Z\",\n  \"endorserName\": \"Jimmy Brooke\",\n  \"endorsementComment\": \"This project has been now very much been endorsed\",\n  \"approvalDate\": \"2024-07-04\",\n  \"approverName\": \"April Muamba\",\n  \"approvedComment\": \"This project has been reviewed and approved by April\",\n  \"approvedTimestamp\": \"2024-07-03T12:00:00Z\" \n}",
+					"raw": "{\n  \"projectPlanFiscalGuid\": \"{{projectPlanFiscalGuid}}\",\n  \"projectGuid\": \"{{projectGuid}}\",\n  \"proposalTypeCode\": \"CARRYOVER\",\n  \"activityCategoryCode\": \"RX_DEV\",\n  \"fiscalYear\": 2024,\n  \"projectPlanStatusCode\": \"ACTIVE\",\n  \"planFiscalStatusCode\": {\n    \"planFiscalStatusCode\": \"PROPOSED\"\n  },\n  \"endorsementCode\": {\n    \"endorsementCode\": \"ENDORSED\"\n  },\n  \"projectFiscalName\": \"Fiscal Project 1\",\n  \"projectFiscalDescription\": \"This is a test project fiscal description.\",\n  \"businessAreaComment\": \"Test comment\",\n  \"estimatedClwrrAllocAmount\": 1000.00,\n  \"fiscalForecastAmount\": 300.00,\n  \"fiscalAncillaryFundAmount\": 300.00,\n  \"fiscalPlannedProjectSizeHa\": 10.5,\n  \"fiscalPlannedCostPerHaAmt\": 500.00,\n  \"fiscalReportedSpendAmount\": 0.00,\n  \"fiscalActualAmount\": 0.00,\n  \"fiscalCompletedSizeHa\": 0.0,\n  \"fiscalActualCostPerHaAmt\": 0.0,\n  \"firstNationsDelivPartInd\": true,\n  \"firstNationsEngagementInd\": false,\n  \"firstNationsPartner\": \"Test Partner\",\n  \"resultsNumber\": \"RN123456\",\n  \"resultsOpeningId\": \"RO12345\",\n  \"resultsContactEmail\": \"contact@example.com\",\n  \"submittedByName\": \"Test User\",\n  \"submittedByUserGuid\": \"123e4567-e89\",\n  \"submittedByUserUserid\": \"testuser\",\n  \"submissionTimestamp\": \"2024-01-01T12:00:00Z\",\n  \"isApprovedInd\": true,\n  \"isDelayedInd\": false,\n  \"ancillaryFundingProvider\": \"Provider01\",\n  \"endorsementEvalTimestamp\": \"2024-07-04T12:00:00Z\",\n  \"endorserName\": \"Jimmy Brooke\",\n  \"endorsementComment\": \"This project has been now very much been endorsed\",\n  \"approvalDate\": \"2024-07-04\",\n  \"approverName\": \"April Muamba\",\n  \"approvedComment\": \"This project has been reviewed and approved by April\",\n  \"approvedTimestamp\": \"2024-07-03T12:00:00Z\" \n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -808,13 +808,13 @@
 					}
 				},
 				"url": {
-					"raw": "{{LOCAL_API_URL}}/projects/{{projectGuid}}}/projectFiscals/{{projectPlanFiscalGuid}}",
+					"raw": "{{LOCAL_API_URL}}/projects/{{projectGuid}}/projectFiscals/{{projectPlanFiscalGuid}}",
 					"host": [
 						"{{LOCAL_API_URL}}"
 					],
 					"path": [
 						"projects",
-						"{{projectGuid}}}",
+						"{{projectGuid}}",
 						"projectFiscals",
 						"{{projectPlanFiscalGuid}}"
 					]
@@ -871,7 +871,7 @@
 					}
 				},
 				"url": {
-					"raw": "{{LOCAL_API_URL}}/projects/{{projectGuid}}}/attachments/{{projectFileAttachmentGuid}}",
+					"raw": "{{LOCAL_API_URL}}/projects/{{projectGuid}}/attachments/{{projectFileAttachmentGuid}}",
 					"host": [
 						"{{LOCAL_API_URL}}"
 					],
@@ -1129,7 +1129,7 @@
 					}
 				},
 				"url": {
-					"raw": "{{LOCAL_API_URL}}/projects/{{projectGuid}}}/projectFiscals/{{projectPlanFiscalGuid}}/activities/{{activityGuid}}/attachments/{{activityFileAttachmentGuid}}",
+					"raw": "{{LOCAL_API_URL}}/projects/{{projectGuid}}/projectFiscals/{{projectPlanFiscalGuid}}/activities/{{activityGuid}}/attachments/{{activityFileAttachmentGuid}}",
 					"host": [
 						"{{LOCAL_API_URL}}"
 					],

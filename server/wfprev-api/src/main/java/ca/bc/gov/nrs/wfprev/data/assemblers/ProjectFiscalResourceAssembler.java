@@ -2,9 +2,15 @@ package ca.bc.gov.nrs.wfprev.data.assemblers;
 
 import ca.bc.gov.nrs.wfprev.controllers.ProjectController;
 import ca.bc.gov.nrs.wfprev.controllers.ProjectFiscalController;
+import ca.bc.gov.nrs.wfprev.data.entities.EndorsementCodeEntity;
+import ca.bc.gov.nrs.wfprev.data.entities.PlanFiscalStatusCodeEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ProjectEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ProjectFiscalEntity;
+import ca.bc.gov.nrs.wfprev.data.entities.RiskRatingCodeEntity;
+import ca.bc.gov.nrs.wfprev.data.models.EndorsementCodeModel;
+import ca.bc.gov.nrs.wfprev.data.models.PlanFiscalStatusCodeModel;
 import ca.bc.gov.nrs.wfprev.data.models.ProjectFiscalModel;
+import ca.bc.gov.nrs.wfprev.data.models.RiskRatingCodeModel;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
@@ -40,9 +46,13 @@ public class ProjectFiscalResourceAssembler extends RepresentationModelAssembler
         model.setActivityCategoryCode(entity.getActivityCategoryCode());
         model.setFiscalYear(entity.getFiscalYear() != null ? entity.getFiscalYear().longValue() : null);
         model.setProjectPlanStatusCode(entity.getProjectPlanStatusCode());
-        model.setPlanFiscalStatusCode(entity.getPlanFiscalStatusCode());
+        if (entity.getPlanFiscalStatusCode() != null) {
+            model.setPlanFiscalStatusCode(toPlanFiscalStatusCodeModel(entity.getPlanFiscalStatusCode()));
+        }
         model.setProposalTypeCode(entity.getProposalTypeCode());
-        model.setEndorsementCode(entity.getEndorsementCode());
+        if (entity.getEndorsementCode() != null) {
+            model.setEndorsementCode(toEndorsementCodeModel(entity.getEndorsementCode()));
+        }
         model.setProjectFiscalName(entity.getProjectFiscalName());
         model.setProjectFiscalDescription(entity.getProjectFiscalDescription());
         model.setBusinessAreaComment(entity.getBusinessAreaComment());
@@ -118,9 +128,13 @@ public class ProjectFiscalResourceAssembler extends RepresentationModelAssembler
                 : null);
         entity.setAncillaryFundingProvider(model.getAncillaryFundingProvider());
         entity.setProjectPlanStatusCode(model.getProjectPlanStatusCode());
-        entity.setPlanFiscalStatusCode(model.getPlanFiscalStatusCode());
+        if (model.getPlanFiscalStatusCode() != null) {
+            entity.setPlanFiscalStatusCode(toPlanFiscalStatusCodeEntity(model.getPlanFiscalStatusCode()));
+        }
         entity.setProposalTypeCode(model.getProposalTypeCode());
-        entity.setEndorsementCode(model.getEndorsementCode());
+        if (model.getEndorsementCode() != null) {
+            entity.setEndorsementCode(toEndorsementCodeEntity(model.getEndorsementCode()));
+        }
         entity.setProjectFiscalName(model.getProjectFiscalName());
         entity.setProjectFiscalDescription(model.getProjectFiscalDescription());
         entity.setBusinessAreaComment(model.getBusinessAreaComment());
@@ -186,12 +200,16 @@ public class ProjectFiscalResourceAssembler extends RepresentationModelAssembler
                 nonNullOrDefault(projectFiscalModel.getAncillaryFundingProvider(), existingEntity.getAncillaryFundingProvider()));
         existingEntity.setProjectPlanStatusCode(
                 nonNullOrDefault(projectFiscalModel.getProjectPlanStatusCode(), existingEntity.getProjectPlanStatusCode()));
-        existingEntity.setPlanFiscalStatusCode(
-                nonNullOrDefault(projectFiscalModel.getPlanFiscalStatusCode(), existingEntity.getPlanFiscalStatusCode()));
+        existingEntity.setPlanFiscalStatusCode(nonNullOrDefault(
+                toPlanFiscalStatusCodeEntity(projectFiscalModel.getPlanFiscalStatusCode()),
+                existingEntity.getPlanFiscalStatusCode()
+        ));
         existingEntity.setProposalTypeCode(
                 nonNullOrDefault(projectFiscalModel.getProposalTypeCode(), existingEntity.getProposalTypeCode()));
-        existingEntity.setEndorsementCode(
-                nonNullOrDefault(projectFiscalModel.getEndorsementCode(), existingEntity.getEndorsementCode()));
+        existingEntity.setEndorsementCode(nonNullOrDefault(
+                toEndorsementCodeEntity(projectFiscalModel.getEndorsementCode()),
+                existingEntity.getEndorsementCode()
+        ));
         existingEntity.setProjectFiscalName(
                 nonNullOrDefault(projectFiscalModel.getProjectFiscalName(), existingEntity.getProjectFiscalName()));
         existingEntity.setProjectFiscalDescription(
@@ -242,30 +260,24 @@ public class ProjectFiscalResourceAssembler extends RepresentationModelAssembler
                 nonNullOrDefault(projectFiscalModel.getSubmittedByUserUserid(), existingEntity.getSubmittedByUserUserid()));
         existingEntity.setSubmissionTimestamp(
                 nonNullOrDefault(projectFiscalModel.getSubmissionTimestamp(), existingEntity.getSubmissionTimestamp()));
-        existingEntity.setEndorsementEvalTimestamp(
-                nonNullOrDefault(projectFiscalModel.getEndorsementEvalTimestamp(), existingEntity.getEndorsementEvalTimestamp()));
-        existingEntity.setEndorserName(
-                nonNullOrDefault(projectFiscalModel.getEndorserName(), existingEntity.getEndorserName()));
+        existingEntity.setEndorsementEvalTimestamp(projectFiscalModel.getEndorsementEvalTimestamp());
+        existingEntity.setEndorserName(projectFiscalModel.getEndorserName());
         existingEntity.setEndorserUserGuid(
                 nonNullOrDefault(projectFiscalModel.getEndorserUserGuid(), existingEntity.getEndorserUserGuid()));
         existingEntity.setEndorserUserUserid(
                 nonNullOrDefault(projectFiscalModel.getEndorserUserUserid(), existingEntity.getEndorserUserUserid()));
         existingEntity.setEndorsementTimestamp(
                 nonNullOrDefault(projectFiscalModel.getEndorsementTimestamp(), existingEntity.getEndorsementTimestamp()));
-        existingEntity.setEndorsementComment(
-                nonNullOrDefault(projectFiscalModel.getEndorsementComment(), existingEntity.getEndorsementComment()));
+        existingEntity.setEndorsementComment(projectFiscalModel.getEndorsementComment());
         existingEntity.setIsApprovedInd(
                 nonNullOrDefault(projectFiscalModel.getIsApprovedInd(), existingEntity.getIsApprovedInd()));
-        existingEntity.setApproverName(
-                nonNullOrDefault(projectFiscalModel.getApproverName(), existingEntity.getApproverName()));
+        existingEntity.setApproverName(projectFiscalModel.getApproverName());
         existingEntity.setApproverUserGuid(
                 nonNullOrDefault(projectFiscalModel.getApproverUserGuid(), existingEntity.getApproverUserGuid()));
         existingEntity.setApproverUserUserid(
                 nonNullOrDefault(projectFiscalModel.getApproverUserUserid(), existingEntity.getApproverUserUserid()));
-        existingEntity.setApprovedTimestamp(
-                nonNullOrDefault(projectFiscalModel.getApprovedTimestamp(), existingEntity.getApprovedTimestamp()));
-        existingEntity.setApprovedComment(
-                nonNullOrDefault(projectFiscalModel.getApprovedComment(), existingEntity.getApprovedComment()));
+        existingEntity.setApprovedTimestamp(projectFiscalModel.getApprovedTimestamp());
+        existingEntity.setApprovedComment(projectFiscalModel.getApprovedComment());
         existingEntity.setAccomplishmentsComment(
                 nonNullOrDefault(projectFiscalModel.getAccomplishmentsComment(), existingEntity.getAccomplishmentsComment()));
         existingEntity.setIsDelayedInd(
@@ -284,7 +296,26 @@ public class ProjectFiscalResourceAssembler extends RepresentationModelAssembler
         return newValue != null ? newValue : existingValue;
     }
 
-    private boolean isValidUuid(String uuid) {
-        return uuid != null && !uuid.trim().isEmpty();
+    private PlanFiscalStatusCodeModel toPlanFiscalStatusCodeModel(PlanFiscalStatusCodeEntity code) {
+        PlanFiscalStatusCodeResourceAssembler ra = new PlanFiscalStatusCodeResourceAssembler();
+        return ra.toModel(code);
     }
+
+    private PlanFiscalStatusCodeEntity toPlanFiscalStatusCodeEntity(PlanFiscalStatusCodeModel code) {
+        if (code == null) return null;
+        PlanFiscalStatusCodeResourceAssembler ra = new PlanFiscalStatusCodeResourceAssembler();
+        return ra.toEntity(code);
+    }
+
+    private EndorsementCodeModel toEndorsementCodeModel(EndorsementCodeEntity code) {
+        EndorsementCodeResourceAssembler ra = new EndorsementCodeResourceAssembler();
+        return ra.toModel(code);
+    }
+
+    private EndorsementCodeEntity toEndorsementCodeEntity(EndorsementCodeModel code) {
+        if (code == null) return null;
+        EndorsementCodeResourceAssembler ra = new EndorsementCodeResourceAssembler();
+        return ra.toEntity(code);
+    }
+
 }

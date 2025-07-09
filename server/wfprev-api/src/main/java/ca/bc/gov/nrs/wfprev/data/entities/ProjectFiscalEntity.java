@@ -53,16 +53,17 @@ public class ProjectFiscalEntity implements Serializable {
     @Column(name = "project_plan_status_code", length = 10)
     private String projectPlanStatusCode;
 
-    @NotNull
-    @Column(name = "plan_fiscal_status_code", length = 10)
-    private String planFiscalStatusCode;
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @JoinColumn(name = "plan_fiscal_status_code")
+    private PlanFiscalStatusCodeEntity planFiscalStatusCode;
 
     @NotNull
     @Column(name = "proposal_type_code", length = 10)
     private String proposalTypeCode;
 
-    @Column(name = "endorsement_code", length = 10)
-    private String endorsementCode;
+    @ManyToOne(fetch = FetchType.EAGER, optional = true)
+    @JoinColumn(name = "endorsement_code")
+    private EndorsementCodeEntity endorsementCode;
 
     @NotNull
     @Column(name = "project_fiscal_name", length = 300)
