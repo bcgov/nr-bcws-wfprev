@@ -173,10 +173,9 @@ public class ProjectFiscalService implements CommonService {
         String currentStatus = existingEntity.getPlanFiscalStatusCode().getPlanFiscalStatusCode();
         String newStatus = model.getPlanFiscalStatusCode().getPlanFiscalStatusCode();
 
-        // Skip validation only if status is unchanged AND NOT PREPARED or IN PROGRESS
+        // Skip validation only if status is unchanged AND NOT PREPARED
         boolean isPrepared = PREPARED.equalsIgnoreCase(currentStatus) && PREPARED.equalsIgnoreCase(newStatus);
-        boolean isInProgress = IN_PROG.equalsIgnoreCase(currentStatus) && IN_PROG.equalsIgnoreCase(newStatus);
-        if ((currentStatus == null || newStatus == null) || (currentStatus.equals(newStatus) && (!isPrepared && !isInProgress))) {
+        if ((currentStatus == null || newStatus == null) || (currentStatus.equals(newStatus) && !isPrepared)) {
             return;
         }
 
@@ -186,8 +185,8 @@ public class ProjectFiscalService implements CommonService {
             throw new IllegalStateException("Invalid fiscal status transition from " + currentStatus + " to " + newStatus);
         }
 
-        // If status is PREPARED or IN_PROG, prevent endorsement/approval from being unset
-        if (PREPARED.equalsIgnoreCase(currentStatus) || IN_PROG.equalsIgnoreCase(currentStatus)) {
+        // If status is PREPARED, prevent endorsement/approval from being unset
+        if (PREPARED.equalsIgnoreCase(currentStatus)) {
             boolean becomingUnapproved = Boolean.FALSE.equals(model.getIsApprovedInd());
 
             String incomingEndorsement = model.getEndorsementCode() != null
