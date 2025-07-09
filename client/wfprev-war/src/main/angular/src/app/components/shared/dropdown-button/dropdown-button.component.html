@@ -1,0 +1,79 @@
+<button
+  class="dropdown-button"
+  mat-icon-button
+  [matMenuTriggerFor]="menu"
+  (click)="$event.stopPropagation()"
+  [disabled]="isDisabled()">
+  <span>Actions</span>
+  <img class="action-icon" alt="actions" src="/assets/dropdown-icon-white.svg" />
+</button>
+
+<mat-menu #menu="matMenu" xPosition="before">
+  <!-- DRAFT -->
+  <button
+    mat-menu-item
+    *ngIf="status === FiscalStatuses.DRAFT"
+    (click)="emitAction(FiscalStatuses.PROPOSED)">
+    {{ FiscalActionLabels.SUBMIT }}
+  </button>
+  <button
+    mat-menu-item
+    *ngIf="status === FiscalStatuses.DRAFT"
+    (click)="emitAction('DELETE')">
+    {{ FiscalActionLabels.DELETE }}
+  </button>
+
+  <!-- PROPOSED -->
+  <button
+    mat-menu-item
+    *ngIf="status === FiscalStatuses.PROPOSED"
+    (click)="emitAction(FiscalStatuses.DRAFT)">
+    {{ FiscalActionLabels.REVERT_TO_DRAFT }}
+  </button>
+  <button
+    mat-menu-item
+    *ngIf="status === FiscalStatuses.PROPOSED"
+    (click)="emitAction(FiscalStatuses.CANCELLED)">
+    {{ FiscalActionLabels.CANCEL_FISCAL }}
+  </button>
+  <button
+    mat-menu-item
+    *ngIf="status === FiscalStatuses.PROPOSED && isApproved"
+    (click)="emitAction(FiscalStatuses.PREPARED)">
+    Submit Approval
+  </button>
+
+  <!-- PREPARED -->
+  <button
+    mat-menu-item
+    *ngIf="status === FiscalStatuses.PREPARED"
+    (click)="emitAction(FiscalStatuses.DRAFT)">
+    {{ FiscalActionLabels.REVERT_TO_DRAFT }}
+  </button>
+  <button
+    mat-menu-item
+    *ngIf="status === FiscalStatuses.PREPARED"
+    (click)="emitAction(FiscalStatuses.IN_PROGRESS)">
+    {{ FiscalActionLabels.SET_IN_PROGRESS }}
+  </button>
+  <button
+    mat-menu-item
+    *ngIf="status === FiscalStatuses.PREPARED"
+    (click)="emitAction(FiscalStatuses.CANCELLED)">
+    {{ FiscalActionLabels.CANCEL_FISCAL }}
+  </button>
+
+  <!-- IN_PROGRESS -->
+  <button
+    mat-menu-item
+    *ngIf="status === FiscalStatuses.IN_PROGRESS"
+    (click)="emitAction(FiscalStatuses.COMPLETE)">
+    {{ FiscalActionLabels.SET_COMPLETE }}
+  </button>
+  <button
+    mat-menu-item
+    *ngIf="status === FiscalStatuses.IN_PROGRESS"
+    (click)="emitAction(FiscalStatuses.CANCELLED)">
+    {{ FiscalActionLabels.CANCEL_FISCAL }}
+  </button>
+</mat-menu>

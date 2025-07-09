@@ -314,45 +314,6 @@ mat-expansion-panel {
   }
 }
 
-.header-container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  gap: 10px;
-
-  .dropdown-button {
-    font-family: var(--wf-font-family-main) !important;
-    padding: 12px;
-    display: flex;
-    align-items: center;
-    color: #fff;
-    font-size: 16px;
-    font-style: normal;
-    font-weight: 400;
-    line-height: normal;
-    background-color: var(--wf-primary-color);
-    border-radius: 0;
-    width: auto;
-    border-radius: 4px;
-    height: 35px;
-    span {
-      font-family: var(--wf-font-family-main) !important;
-      padding-right: 10px;
-      vertical-align: top;
-    }
-  }
-  .dropdown-button:disabled,
-  .dropdown-button[disabled] {
-    background-color: #c0c0c0 !important; 
-  }
-  .action-icon {
-    width: 20px;
-    height: 20px;
-    color: white;
-  }
-}
-
 .new-fiscal-button {
   padding: 12px !important;
   display: flex;
@@ -460,13 +421,13 @@ mat-expansion-panel {
   .status-actions{
     display: flex;
     align-items: baseline;
-    .status-label{
+    .status-wrapper{
       text-align: right;
       font-size: 20px;
       font-style: normal;
       font-weight: 400;
       line-height: normal;
-      padding-right: 25px;
+      padding-right: 45px;
       display: flex;
       align-items: center;
       gap: 5px;
@@ -482,4 +443,12 @@ mat-expansion-panel {
       font-style: normal;
       font-weight: 400;
     }
+  }
+
+  .header-container{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    gap: 10px;
   }
