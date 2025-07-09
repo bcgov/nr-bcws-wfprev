@@ -107,6 +107,7 @@ describe('EvaluationCriteriaDialogComponent', () => {
   it('should call onSave and create evaluation criteria summary', () => {
     component.initializeForm();
     component.criteriaForm.patchValue({ wuiRiskClassCode: 1 });
+    component.data.evaluationCriteriaSummary = undefined;
     mockProjectService.createEvaluationCriteriaSummary.and.returnValue(of({}));
     component.onSave();
     expect(mockProjectService.createEvaluationCriteriaSummary).toHaveBeenCalled();
