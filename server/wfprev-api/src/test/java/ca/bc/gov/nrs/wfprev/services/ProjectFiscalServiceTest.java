@@ -654,8 +654,7 @@ class ProjectFiscalServiceTest {
         model.getPlanFiscalStatusCode().setPlanFiscalStatusCode(planFiscalStatusCode);
         model.setEndorsementCode(new EndorsementCodeModel());
         model.getEndorsementCode().setEndorsementCode(endorsementCode);
-
-        ProjectEntity projectEntity = new ProjectEntity();
+        
         ProjectFiscalEntity entityToSave = new ProjectFiscalEntity();
         ProjectFiscalEntity savedEntity = new ProjectFiscalEntity();
 
@@ -806,5 +805,108 @@ class ProjectFiscalServiceTest {
 
         assertNotNull(result);
     }
+
+    @Test
+    void testUpdateProjectFiscal_PreparedToPrepared_InvalidApprovalOrEndorsement_ThrowsException() {
+        UUID guid = UUID.randomUUID();
+
+        ProjectFiscalModel model = new ProjectFiscalModel();
+        model.setProjectPlanFiscalGuid(guid.toString());
+        PlanFiscalStatusCodeModel statusModel = new PlanFiscalStatusCodeModel();
+        statusModel.setPlanFiscalStatusCode("PREPARED");
+        model.setPlanFiscalStatusCode(statusModel);
+
+        model.setIsApprovedInd(false);
+        model.setEndorsementCode(null);
+
+        ProjectFiscalEntity existingEntity = new ProjectFiscalEntity();
+        PlanFiscalStatusCodeEntity currentStatus = new PlanFiscalStatusCodeEntity();
+        currentStatus.setPlanFiscalStatusCode("PREPARED");
+        existingEntity.setPlanFiscalStatusCode(currentStatus);
+        existingEntity.setIsApprovedInd(true);
+        EndorsementCodeEntity endorsement = new EndorsementCodeEntity();
+        endorsement.setEndorsementCode("ENDORSED");
+        existingEntity.setEndorsementCode(endorsement);
+
+        when(projectFiscalRepository.findById(guid)).thenReturn(Optional.of(existingEntity));
+
+        IllegalStateException ex = assertThrows(IllegalStateException.class, () -> {
+            projectFiscalService.updateProjectFiscal(model);
+        });
+
+        assertEquals("Cannot unset endorsement or approval when status is PREPARED", ex.getMessage());
+    }
+
+    @Test
+    void testUpdateProjectFiscal_InProgressToInProgress_InvalidApprovalOrEndorsement_ThrowsException() {
+        UUID guid = UUID.randomUUID();
+
+        ProjectFiscalModel model = new ProjectFiscalModel();
+        model.setProjectPlanFiscalGuid(guid.toString());
+        PlanFiscalStatusCodeModel statusModel = new PlanFiscalStatusCodeModel();
+        statusModel.setPlanFiscalStatusCode("IN_PROG");
+        model.setPlanFiscalStatusCode(statusModel);
+
+        model.setIsApprovedInd(false);
+        model.setEndorsementCode(null);
+
+        ProjectFiscalEntity existingEntity = new ProjectFiscalEntity();
+        PlanFiscalStatusCodeEntity currentStatus = new PlanFiscalStatusCodeEntity();
+        currentStatus.setPlanFiscalStatusCode("IN_PROG");
+        existingEntity.setPlanFiscalStatusCode(currentStatus);
+        existingEntity.setIsApprovedInd(true);
+        EndorsementCodeEntity endorsement = new EndorsementCodeEntity();
+        endorsement.setEndorsementCode("IN_PROG");
+        existingEntity.setEndorsementCode(endorsement);
+
+        when(projectFiscalRepository.findById(guid)).thenReturn(Optional.of(existingEntity));
+
+        IllegalStateException ex = assertThrows(IllegalStateException.class, () -> {
+            projectFiscalService.updateProjectFiscal(model);
+        });
+
+        assertEquals("Cannot unset endorsement or approval when status is IN_PROG", ex.getMessage());
+    }
+
+    @Test
+    void testUpdateProjectFiscal_ProposedWithApprovalAndEndorsement_TransitionsToPrepared() {
+        UUID guid = UUID.randomUUID();
+
+        ProjectFiscalModel model = new ProjectFiscalModel();
+        model.setProjectPlanFiscalGuid(guid.toString());
+        model.setIsApprovedInd(true);
+
+        PlanFiscalStatusCodeModel statusModel = new PlanFiscalStatusCodeModel();
+        statusModel.setPlanFiscalStatusCode("PROPOSED");
+        model.setPlanFiscalStatusCode(statusModel);
+
+        EndorsementCodeModel endorsementModel = new EndorsementCodeModel();
+        endorsementModel.setEndorsementCode("ENDORSED");
+        model.setEndorsementCode(endorsementModel);
+
+        ProjectFiscalEntity existingEntity = new ProjectFiscalEntity();
+        PlanFiscalStatusCodeEntity currentStatus = new PlanFiscalStatusCodeEntity();
+        currentStatus.setPlanFiscalStatusCode("PROPOSED");
+        existingEntity.setPlanFiscalStatusCode(currentStatus);
+
+        PlanFiscalStatusCodeEntity preparedStatusEntity = new PlanFiscalStatusCodeEntity();
+        preparedStatusEntity.setPlanFiscalStatusCode("PREPARED");
+        when(planFiscalStatusCodeRepository.findById("PREPARED")).thenReturn(Optional.of(preparedStatusEntity));
+
+        EndorsementCodeEntity endorsementEntity = new EndorsementCodeEntity();
+        endorsementEntity.setEndorsementCode("ENDORSED");
+        when(endorsementCodeRepository.findById("ENDORSED")).thenReturn(Optional.of(endorsementEntity));
+
+        when(projectFiscalRepository.findById(guid)).thenReturn(Optional.of(existingEntity));
+        when(projectFiscalResourceAssembler.updateEntity(any(), any())).thenReturn(existingEntity);
+        when(projectFiscalRepository.saveAndFlush(any())).thenReturn(existingEntity);
+        when(projectFiscalResourceAssembler.toModel(any())).thenReturn(new ProjectFiscalModel());
+
+        ProjectFiscalModel result = projectFiscalService.updateProjectFiscal(model);
+        assertNotNull(result);
+
+        assertEquals("PREPARED", model.getPlanFiscalStatusCode().getPlanFiscalStatusCode());
+    }
+
 
 }
