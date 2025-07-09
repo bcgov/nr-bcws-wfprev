@@ -807,4 +807,35 @@ class ProjectFiscalServiceTest {
         assertNotNull(result);
     }
 
+    @Test
+    void testUpdateProjectFiscal_PreparedToPrepared_InvalidApprovalOrEndorsement_ThrowsException() {
+        UUID guid = UUID.randomUUID();
+
+        ProjectFiscalModel model = new ProjectFiscalModel();
+        model.setProjectPlanFiscalGuid(guid.toString());
+        PlanFiscalStatusCodeModel statusModel = new PlanFiscalStatusCodeModel();
+        statusModel.setPlanFiscalStatusCode("PREPARED");
+        model.setPlanFiscalStatusCode(statusModel);
+
+        model.setIsApprovedInd(false);
+        model.setEndorsementCode(null);
+
+        ProjectFiscalEntity existingEntity = new ProjectFiscalEntity();
+        PlanFiscalStatusCodeEntity currentStatus = new PlanFiscalStatusCodeEntity();
+        currentStatus.setPlanFiscalStatusCode("PREPARED");
+        existingEntity.setPlanFiscalStatusCode(currentStatus);
+        existingEntity.setIsApprovedInd(true);
+        EndorsementCodeEntity endorsement = new EndorsementCodeEntity();
+        endorsement.setEndorsementCode("ENDORSED");
+        existingEntity.setEndorsementCode(endorsement);
+
+        when(projectFiscalRepository.findById(guid)).thenReturn(Optional.of(existingEntity));
+
+        IllegalStateException ex = assertThrows(IllegalStateException.class, () -> {
+            projectFiscalService.updateProjectFiscal(model);
+        });
+
+        assertEquals("Cannot unset endorsement or approval when status is PREPARED.", ex.getMessage());
+    }
+
 }
