@@ -654,8 +654,7 @@ class ProjectFiscalServiceTest {
         model.getPlanFiscalStatusCode().setPlanFiscalStatusCode(planFiscalStatusCode);
         model.setEndorsementCode(new EndorsementCodeModel());
         model.getEndorsementCode().setEndorsementCode(endorsementCode);
-
-        ProjectEntity projectEntity = new ProjectEntity();
+        
         ProjectFiscalEntity entityToSave = new ProjectFiscalEntity();
         ProjectFiscalEntity savedEntity = new ProjectFiscalEntity();
 
