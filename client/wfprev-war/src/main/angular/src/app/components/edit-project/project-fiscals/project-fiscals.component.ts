@@ -18,12 +18,14 @@ import { ProjectFiscal } from 'src/app/components/models';
 import { CodeTableServices } from 'src/app/services/code-table-services';
 import { ProjectService } from 'src/app/services/project-services';
 import { CanComponentDeactivate } from 'src/app/services/util/can-deactive.guard';
-import { CodeTableKeys, FiscalActionLabels, FiscalStatuses, Messages } from 'src/app/utils/constants';
+import { CodeTableKeys, FiscalStatuses, Messages } from 'src/app/utils/constants';
 import { ExpansionIndicatorComponent } from '../../shared/expansion-indicator/expansion-indicator.component';
 import { IconButtonComponent } from 'src/app/components/shared/icon-button/icon-button.component';
 import { SelectFieldComponent } from 'src/app/components/shared/select-field/select-field.component';
 import { InputFieldComponent } from 'src/app/components/shared/input-field/input-field.component';
 import { PlanFiscalStatusIcons } from 'src/app/utils/tools';
+import { DropdownButtonComponent } from 'src/app/components/shared/dropdown-button/dropdown-button.component';
+import { StatusBadgeComponent } from 'src/app/components/shared/status-badge/status-badge.component';
 
 @Component({
   selector: 'wfprev-project-fiscals',
@@ -46,7 +48,9 @@ import { PlanFiscalStatusIcons } from 'src/app/utils/tools';
     IconButtonComponent,
     SelectFieldComponent,
     MatTooltip,
-    InputFieldComponent
+    InputFieldComponent,
+    DropdownButtonComponent,
+    StatusBadgeComponent
   ]
 })
 export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  {
@@ -66,7 +70,6 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  
   originalFiscalValues: any[] = []
   readonly CodeTableKeys = CodeTableKeys;
   readonly FiscalStatuses = FiscalStatuses;
-  readonly FiscalActionLabels = FiscalActionLabels;
 
   constructor(
     private route: ActivatedRoute,
@@ -521,6 +524,16 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  
     form.markAsDirty();
     form.markAsTouched();
     this.onSaveFiscal(index);
+  }
+
+  onFiscalAction(event: { action: string; index: number }) {
+    const { action, index } = event;
+
+    if (action === 'DELETE') {
+      this.deleteFiscalYear(this.fiscalForms[index], index);
+    } else {
+      this.updateFiscalStatus(index, action);
+    }
   }
 
 }
