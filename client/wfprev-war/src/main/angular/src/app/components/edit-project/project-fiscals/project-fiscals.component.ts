@@ -18,11 +18,12 @@ import { ProjectFiscal } from 'src/app/components/models';
 import { CodeTableServices } from 'src/app/services/code-table-services';
 import { ProjectService } from 'src/app/services/project-services';
 import { CanComponentDeactivate } from 'src/app/services/util/can-deactive.guard';
-import { CodeTableKeys, Messages } from 'src/app/utils/constants';
+import { CodeTableKeys, FiscalActionLabels, FiscalStatuses, Messages } from 'src/app/utils/constants';
 import { ExpansionIndicatorComponent } from '../../shared/expansion-indicator/expansion-indicator.component';
 import { IconButtonComponent } from 'src/app/components/shared/icon-button/icon-button.component';
 import { SelectFieldComponent } from 'src/app/components/shared/select-field/select-field.component';
 import { InputFieldComponent } from 'src/app/components/shared/input-field/input-field.component';
+import { PlanFiscalStatusIcons } from 'src/app/utils/tools';
 
 @Component({
   selector: 'wfprev-project-fiscals',
@@ -64,6 +65,9 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  
   proposalTypeCode: any[] = [];
   originalFiscalValues: any[] = []
   readonly CodeTableKeys = CodeTableKeys;
+  readonly FiscalStatuses = FiscalStatuses;
+  readonly FiscalActionLabels = FiscalActionLabels;
+
   constructor(
     private route: ActivatedRoute,
     private projectService: ProjectService,
@@ -211,11 +215,26 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  
         
         this.fiscalForms = this.projectFiscals.map((fiscal) => {
           const form = this.createFiscalForm(fiscal);
+
+          // Disable the entire form if status is COMPLETE or CANCELLED
+          if (
+            [this.FiscalStatuses.COMPLETE, this.FiscalStatuses.CANCELLED].includes(
+              fiscal.planFiscalStatusCode
+            )
+          ) {
+            form.disable();
+          }
+          // Specifically disable the "Original Cost Estimate" field if status is not DRAFT
+          if (fiscal.planFiscalStatusCode !== this.FiscalStatuses.DRAFT) {
+            form.get('totalCostEstimateAmount')?.disable();
+          }
+          // Mark form as pristine if requested
           if (markFormsPristine) {
             form.markAsPristine();
           }
           return form;
         });
+
         this.updateCurrentFiscalGuid();
         this.selectedTabIndex = previousTabIndex < this.projectFiscals.length ? previousTabIndex : 0;
       },
@@ -480,6 +499,28 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  
       isDelayedInd: false,
       totalCostEstimateAmount: 0
     };
+  }
+
+  getStatusDescription(i: number): string | null {
+    const form = this.fiscalForms[i];
+    if (!form) return null;
+    const code = form.get('planFiscalStatusCode')?.value;
+    return (
+      this.planFiscalStatusCode.find((item) => item.planFiscalStatusCode === code)?.description ?? null
+    );
+  }
+
+  getStatusIcon(status: string) {
+    return PlanFiscalStatusIcons[status];
+  }
+
+  updateFiscalStatus(index: number, newStatus: string): void {
+    const form = this.fiscalForms[index];
+    if (!form) return;
+    form.get('planFiscalStatusCode')?.setValue(newStatus);
+    form.markAsDirty();
+    form.markAsTouched();
+    this.onSaveFiscal(index);
   }
 
 }

@@ -85,6 +85,21 @@ export interface ProjectFiscal {
   otherPartner?: string;
   proposalTypeCode?: string;
   ancillaryFundingProvider?: string;
+  endorsementCode?: string;
+  endorsementComment?: string;
+  endorsementTimestamp?: string;
+  endorsementEvalTimestamp?: string;
+  endorserName?: string;
+  endorserUserGuid?: string;
+  endorserUserUserid?: string;
+  approverName?: string;
+  approverUserGuid?: string;
+  approverUserUserid?: string;
+  approvedTimestamp?: string;
+  accomplishmentsComment?: string;
+  delayRationale?: string;
+  abandonedRationale?: string;
+  lastProgressUpdateTimestamp?: string;
 }
 
 
