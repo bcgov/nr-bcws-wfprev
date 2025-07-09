@@ -1380,6 +1380,47 @@
         "rollback": [
         ]
       }
+    },
+    {
+      "changeSet": {
+        "id": "01_00_25_00",
+        "author": "hsaldyga",
+        "tagDatabase": { "tag" : "version_01_00_25_00" },
+        "changes": [
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_25/00/dml/app_wf1_prev.dml.update_evaluation_criteria.sql"
+            }
+          },
+    {
+      "changeSet": {
+        "id": "01_00_25_00",
+        "author": "hsaldyga",
+        "tagDatabase": { "tag" : "version_01_00_25_00" },
+        "changes": [
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_25/00/dml/app_wf1_prev.dml.update_evaluation_criteria.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_25/00/ddl/WFPREV.ddl.create.project_fuel_management_vw.sql"
+            }
+          },   
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_25/00/ddl/WFPREV.ddl.create.project_crx_vw.sql"
+            }
+          }
+      ],
+        "rollback": [
+        ]
+      }
     }
    ] 
 }
