@@ -29,96 +29,24 @@
                     <span class="project-title">Details</span>
 
                     <div class="status-actions">
-                      <span class="status-label">
-                        Status:
-                        <ng-container *ngIf="getStatusIcon(fiscal.planFiscalStatusCode) as icon">
-                          <img [src]="icon.src" [alt]="icon.alt" [title]="icon.title" class="status-icon" />
-                        </ng-container>
-                        <span class="status-value">
-                          {{ getStatusDescription(i) }}
-                        </span>
-                      </span>
-                      <button
-                        class="dropdown-button"
-                        mat-icon-button
-                        [matMenuTriggerFor]="menu"
-                        (click)="$event.stopPropagation()"
-                        [disabled]="['COMPLETE', 'CANCELLED'].includes(fiscal.planFiscalStatusCode)">
-                        <span>Actions</span>
-                        <img class="action-icon" alt="actions" src="/assets/dropdown-icon-white.svg" />
-                      </button>
+                      <div class="status-wrapper">
+                        <span>Status:</span>
+                        <wfprev-status-badge
+                          [icon]="getStatusIcon(fiscal.planFiscalStatusCode)"
+                          [label]="getStatusDescription(i) || ''">
+                        </wfprev-status-badge>
+                      </div>
+
+
+                      <wfprev-dropdown-button
+                        [status]="fiscal.planFiscalStatusCode"
+                        [isApproved]="!fiscalForms[i].get('isApprovedInd')?.value"
+                        [index]="i"
+                        (actionSelected)="onFiscalAction($event)">
+                      </wfprev-dropdown-button>
                     </div>
                   </div>
                 </mat-expansion-panel-header>
-                <mat-menu #menu="matMenu" xPosition="before">
-                  <!-- Draft State -->
-                  <button
-                    mat-menu-item
-                    *ngIf="fiscal.planFiscalStatusCode === FiscalStatuses.DRAFT"
-                    (click)="updateFiscalStatus(i, FiscalStatuses.PROPOSED)">
-                    {{ FiscalActionLabels.SUBMIT }}
-                  </button>
-                  <button
-                    mat-menu-item
-                    *ngIf="fiscal.planFiscalStatusCode === FiscalStatuses.DRAFT"
-                    (click)="deleteFiscalYear(fiscalForms[i], i)">
-                    {{ FiscalActionLabels.DELETE }}
-                  </button>
-
-                  <!-- Proposed State -->
-                  <button
-                    mat-menu-item
-                    *ngIf="fiscal.planFiscalStatusCode === FiscalStatuses.PROPOSED"
-                    (click)="updateFiscalStatus(i, FiscalStatuses.DRAFT)">
-                    {{ FiscalActionLabels.REVERT_TO_DRAFT }}
-                  </button>
-                  <button
-                    mat-menu-item
-                    *ngIf="fiscal.planFiscalStatusCode === FiscalStatuses.PROPOSED"
-                    (click)="updateFiscalStatus(i, FiscalStatuses.CANCELLED)">
-                    {{ FiscalActionLabels.CANCEL_FISCAL }}
-                  </button>
-                  <button
-                    mat-menu-item
-                    *ngIf="fiscal.planFiscalStatusCode === FiscalStatuses.PROPOSED && !fiscalForms[i].get('isApprovedInd')?.value"
-                    (click)="updateFiscalStatus(i, FiscalStatuses.PREPARED)">
-                    Submit Approval
-                  </button>
-
-                  <!-- Prepared State -->
-                  <button
-                    mat-menu-item
-                    *ngIf="fiscal.planFiscalStatusCode === FiscalStatuses.PREPARED"
-                    (click)="updateFiscalStatus(i, FiscalStatuses.DRAFT)">
-                    {{ FiscalActionLabels.REVERT_TO_DRAFT }}
-                  </button>
-                  <button
-                    mat-menu-item
-                    *ngIf="fiscal.planFiscalStatusCode === FiscalStatuses.PREPARED"
-                    (click)="updateFiscalStatus(i, FiscalStatuses.IN_PROGRESS)">
-                    {{ FiscalActionLabels.SET_IN_PROGRESS }}
-                  </button>
-                  <button
-                    mat-menu-item
-                    *ngIf="fiscal.planFiscalStatusCode === FiscalStatuses.PREPARED"
-                    (click)="updateFiscalStatus(i, FiscalStatuses.CANCELLED)">
-                    {{ FiscalActionLabels.CANCEL_FISCAL }}
-                  </button>
-
-                  <!-- In Progress State -->
-                  <button
-                    mat-menu-item
-                    *ngIf="fiscal.planFiscalStatusCode === FiscalStatuses.IN_PROGRESS"
-                    (click)="updateFiscalStatus(i, FiscalStatuses.COMPLETE)">
-                    {{ FiscalActionLabels.SET_COMPLETE }}
-                  </button>
-                  <button
-                    mat-menu-item
-                    *ngIf="fiscal.planFiscalStatusCode === FiscalStatuses.IN_PROGRESS"
-                    (click)="updateFiscalStatus(i, FiscalStatuses.CANCELLED)">
-                    {{ FiscalActionLabels.CANCEL_FISCAL }}
-                  </button>
-                </mat-menu>
                 <form class="form-grid" *ngIf="fiscalForms[i]" [formGroup]="fiscalForms[i]">
 
                   <div class="form-item fiscal-activity-name">

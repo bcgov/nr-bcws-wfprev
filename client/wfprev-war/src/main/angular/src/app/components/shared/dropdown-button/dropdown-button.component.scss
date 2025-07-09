@@ -1,0 +1,32 @@
+.dropdown-button {
+  font-family: var(--wf-font-family-main) !important;
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  color: #fff;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  background-color: var(--wf-primary-color);
+  border-radius: 0;
+  width: auto;
+  border-radius: 4px;
+  height: 35px;
+  span {
+    font-family: var(--wf-font-family-main) !important;
+    padding-right: 10px;
+    vertical-align: top;
+  }
+}
+.dropdown-button:disabled,
+.dropdown-button[disabled] {
+  background-color: #c0c0c0 !important;
+  color: white !important;
+}
+.action-icon {
+  width: 20px;
+  height: 20px;
+  color: white;
+}
+

@@ -1,0 +1,17 @@
+.status-badge {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+
+  .badge-icon img {
+    width: 24px;
+    height: 24px;
+  }
+
+  .badge-label {
+      color: #474543;
+      font-size: 16px;
+      font-style: normal;
+      font-weight: 400;
+  }
+}
