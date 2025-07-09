@@ -835,7 +835,38 @@ class ProjectFiscalServiceTest {
             projectFiscalService.updateProjectFiscal(model);
         });
 
-        assertEquals("Cannot unset endorsement or approval when status is PREPARED.", ex.getMessage());
+        assertEquals("Cannot unset endorsement or approval when status is PREPARED", ex.getMessage());
+    }
+
+    @Test
+    void testUpdateProjectFiscal_InProgressToInProgress_InvalidApprovalOrEndorsement_ThrowsException() {
+        UUID guid = UUID.randomUUID();
+
+        ProjectFiscalModel model = new ProjectFiscalModel();
+        model.setProjectPlanFiscalGuid(guid.toString());
+        PlanFiscalStatusCodeModel statusModel = new PlanFiscalStatusCodeModel();
+        statusModel.setPlanFiscalStatusCode("IN_PROG");
+        model.setPlanFiscalStatusCode(statusModel);
+
+        model.setIsApprovedInd(false);
+        model.setEndorsementCode(null);
+
+        ProjectFiscalEntity existingEntity = new ProjectFiscalEntity();
+        PlanFiscalStatusCodeEntity currentStatus = new PlanFiscalStatusCodeEntity();
+        currentStatus.setPlanFiscalStatusCode("IN_PROG");
+        existingEntity.setPlanFiscalStatusCode(currentStatus);
+        existingEntity.setIsApprovedInd(true);
+        EndorsementCodeEntity endorsement = new EndorsementCodeEntity();
+        endorsement.setEndorsementCode("IN_PROG");
+        existingEntity.setEndorsementCode(endorsement);
+
+        when(projectFiscalRepository.findById(guid)).thenReturn(Optional.of(existingEntity));
+
+        IllegalStateException ex = assertThrows(IllegalStateException.class, () -> {
+            projectFiscalService.updateProjectFiscal(model);
+        });
+
+        assertEquals("Cannot unset endorsement or approval when status is IN_PROG", ex.getMessage());
     }
 
     @Test
@@ -874,7 +905,7 @@ class ProjectFiscalServiceTest {
 
         ProjectFiscalModel result = projectFiscalService.updateProjectFiscal(model);
         assertNotNull(result);
-        
+
         assertEquals("PREPARED", model.getPlanFiscalStatusCode().getPlanFiscalStatusCode());
     }
 
