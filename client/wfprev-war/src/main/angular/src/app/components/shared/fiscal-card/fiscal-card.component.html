@@ -1,9 +1,10 @@
 <div class="fiscal-card">
   <div class="fiscal-header">
     <div class="fiscal-title" [title]="fiscal.projectFiscalName">{{ fiscal.projectFiscalName }}</div>
-    <ng-container *ngIf="getStatusIcon(fiscal.planFiscalStatusCode) as icon">
-      <img [src]="icon.src" [alt]="icon.alt" [title]="icon.title" class="status-icon" />
-    </ng-container>
+    <wfprev-status-badge
+      [icon]="getStatusIcon(fiscal?.planFiscalStatusCode?.planFiscalStatusCode)"
+      [label]="getDescription('planFiscalStatusCode', fiscal?.planFiscalStatusCode?.planFiscalStatusCode) || ''">
+    </wfprev-status-badge>
   </div>
 
   <div class="activity-category">

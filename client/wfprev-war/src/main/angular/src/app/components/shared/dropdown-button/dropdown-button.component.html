@@ -36,12 +36,6 @@
     (click)="emitAction(FiscalStatuses.CANCELLED)">
     {{ FiscalActionLabels.CANCEL_FISCAL }}
   </button>
-  <button
-    mat-menu-item
-    *ngIf="status === FiscalStatuses.PROPOSED && isApproved"
-    (click)="emitAction(FiscalStatuses.PREPARED)">
-    Submit Approval
-  </button>
 
   <!-- PREPARED -->
   <button

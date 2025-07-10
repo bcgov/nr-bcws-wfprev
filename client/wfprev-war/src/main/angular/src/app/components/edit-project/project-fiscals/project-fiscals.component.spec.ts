@@ -519,7 +519,7 @@ describe('ProjectFiscalsComponent', () => {
     component.fiscalForms = [
       component.createFiscalForm({
         activityCategoryCode: 'CAT1',
-        planFiscalStatusCode: 'PFS1',
+        planFiscalStatusCode: { planFiscalStatusCode: 'PFS1' },
         proposalTypeCode: 'NEW'
       })
     ];
@@ -651,7 +651,10 @@ describe('ProjectFiscalsComponent', () => {
       fiscalYear: 0,
       projectFiscalName: '',
       projectGuid: 'test-guid',
-      planFiscalStatusCode: 'DRAFT',
+      planFiscalStatusCode: {
+        planFiscalStatusCode: 'DRAFT',
+        description: 'Draft'
+      },
       proposalTypeCode: 'NEW',
       projectPlanStatusCode: 'ACTIVE',
       activityCategoryCode: '',
@@ -673,7 +676,10 @@ describe('ProjectFiscalsComponent', () => {
       { planFiscalStatusCode: 'DRAFT', description: 'Draft Description' }
     ];
 
-    const form = component.createFiscalForm({ planFiscalStatusCode: 'DRAFT' });
+    const form = component.createFiscalForm({
+      planFiscalStatusCode: 'DRAFT' 
+    });
+
     component.fiscalForms = [form];
 
     const result = component.getStatusDescription(0);

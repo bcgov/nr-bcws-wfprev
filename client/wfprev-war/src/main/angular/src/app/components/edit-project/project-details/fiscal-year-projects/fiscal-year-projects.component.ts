@@ -6,11 +6,12 @@ import { ActivatedRoute } from '@angular/router';
 import { ProjectService } from 'src/app/services/project-services';
 import { convertFiscalYear } from 'src/app/utils/tools';
 import { ExpansionIndicatorComponent } from "../../../shared/expansion-indicator/expansion-indicator.component";
+import { StatusBadgeComponent } from 'src/app/components/shared/status-badge/status-badge.component';
 
 @Component({
   selector: 'wfprev-fiscal-year-projects',
   standalone: true,
-  imports: [MatExpansionModule, CommonModule, MatTableModule, ExpansionIndicatorComponent],
+  imports: [MatExpansionModule, CommonModule, MatTableModule, ExpansionIndicatorComponent, StatusBadgeComponent],
   templateUrl: './fiscal-year-projects.component.html',
   styleUrl: './fiscal-year-projects.component.scss'
 })
