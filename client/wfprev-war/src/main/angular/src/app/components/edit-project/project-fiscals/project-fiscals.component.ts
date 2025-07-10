@@ -26,6 +26,8 @@ import { InputFieldComponent } from 'src/app/components/shared/input-field/input
 import { PlanFiscalStatusIcons } from 'src/app/utils/tools';
 import { DropdownButtonComponent } from 'src/app/components/shared/dropdown-button/dropdown-button.component';
 import { StatusBadgeComponent } from 'src/app/components/shared/status-badge/status-badge.component';
+import { EndorsementComponent } from 'src/app/components/edit-project/endorsement/endorsement.component';
+import { ApprovalComponent } from 'src/app/components/edit-project/approval/approval.component';
 
 @Component({
   selector: 'wfprev-project-fiscals',
@@ -50,7 +52,9 @@ import { StatusBadgeComponent } from 'src/app/components/shared/status-badge/sta
     MatTooltip,
     InputFieldComponent,
     DropdownButtonComponent,
-    StatusBadgeComponent
+    StatusBadgeComponent,
+    EndorsementComponent,
+    ApprovalComponent
   ]
 })
 export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  {
