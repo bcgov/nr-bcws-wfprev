@@ -49,7 +49,7 @@ export const PlanFiscalStatus = {
   PROPOSED: 'PROPOSED',
   IN_PROG: 'IN_PROG',
   COMPLETE: 'COMPLETE',
-  ABANDONED: 'ABANDONED',
+  CANCELLED: 'CANCELLED',
   PREPARED: 'PREPARED'
 };
 
@@ -67,4 +67,22 @@ export const EnvironmentIndicators: { [key: string]: string } = {
   LOCAL: 'WFLOCAL',
   DEV: 'WFDEV',
   TEST: 'WFTST'
+};
+
+export const FiscalActionLabels = {
+  SUBMIT: 'Submit',
+  REVERT_TO_DRAFT: 'Revert to Draft',
+  SET_IN_PROGRESS: 'Set to In Progress',
+  SET_COMPLETE: 'Set to Complete',
+  CANCEL_FISCAL: 'Cancel Fiscal',
+  DELETE: 'Delete Fiscal Year',
+};
+
+export const FiscalStatuses = {
+  DRAFT: 'DRAFT',
+  PROPOSED: 'PROPOSED',
+  PREPARED: 'PREPARED',
+  IN_PROGRESS: 'IN_PROG',
+  COMPLETE: 'COMPLETE',
+  CANCELLED: 'CANCELLED',
 };

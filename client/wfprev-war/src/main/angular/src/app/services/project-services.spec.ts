@@ -69,7 +69,7 @@ describe('ProjectService', () => {
       fiscalYear: 2024,
       projectFiscalName: 'Updated Fiscal',
       activityCategoryCode: 'RX_DEV',
-      planFiscalStatusCode: 'COMPLETE',
+      planFiscalStatusCode: {planFiscalStatusCode:'COMPLETE'},
       projectPlanStatusCode: 'ACTIVE',
       proposalTypeCode: 'NEW',
       isApprovedInd: false,
