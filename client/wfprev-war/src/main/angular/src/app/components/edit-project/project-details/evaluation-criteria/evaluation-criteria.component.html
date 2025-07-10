@@ -20,9 +20,9 @@
             <div class="section-label">
               <span>Coarse Filter Total:</span>
               <span>
-                {{ evaluationCriteriaSummary?.localWuiRiskClassCode?.weightedRank
+                {{ (evaluationCriteriaSummary?.localWuiRiskClassCode?.weightedRank
                     ?? evaluationCriteriaSummary?.wuiRiskClassCode?.weightedRank
-                    ?? 0
+                    ?? 0) | number:'1.2-2'
                 }}
               </span>
             </div>
@@ -38,35 +38,35 @@
               </div>
               <div class="criteria-item">
                 <span>Local WUI Risk Class Rationale:</span>
-                <span>{{ evaluationCriteriaSummary?.localWuiRiskClassRationale || 'None' }}</span>
+                <span class="comments-text">{{ evaluationCriteriaSummary?.localWuiRiskClassRationale || 'None' }}</span>
               </div>
             </div>
 
             <span class="section-label">
               Medium Filter Total:
-              <span>{{ getSectionTotal(evaluationCriteriaSummary, 'MEDIUM_FLT') }}</span>
+              <span>{{ getSectionTotal(evaluationCriteriaSummary, 'MEDIUM_FLT') | number:'1.2-2' }}</span>
             </span>
             <div class="criteria-details">
               <div class="criteria-item">
                 <span>Medium Filter Comments:</span>
-                <span>{{ getSectionComment(evaluationCriteriaSummary, 'MEDIUM_FLT') || 'None' }}</span>
+                <span class="comments-text">{{ getSectionComment(evaluationCriteriaSummary, 'MEDIUM_FLT') || 'None' }}</span>
               </div>
             </div>
 
             <span class="section-label">
               Fine Filter Total:
-              <span>{{ getSectionTotal(evaluationCriteriaSummary, 'FINE_FLT') }}</span>
+              <span>{{ getSectionTotal(evaluationCriteriaSummary, 'FINE_FLT') | number:'1.2-2' }}</span>
             </span>
             <div class="criteria-details">
               <div class="criteria-item">
               <span>Fine Filter Comments:</span>
-              <span>{{ getSectionComment(evaluationCriteriaSummary, 'FINE_FLT') || 'None' }}</span>
+              <span class="comments-text">{{ getSectionComment(evaluationCriteriaSummary, 'FINE_FLT') || 'None' }}</span>
               </div>
             </div>
             <div class="full-width-divider"></div>
             <div class="section-label ">
               <span>Calculated Total</span>
-              <span>{{ getCalculatedTotal(evaluationCriteriaSummary) }}</span>
+              <span>{{ getCalculatedTotal(evaluationCriteriaSummary) | number:'1.2-2' }}</span>
             </div>
           </div>
         </div>
