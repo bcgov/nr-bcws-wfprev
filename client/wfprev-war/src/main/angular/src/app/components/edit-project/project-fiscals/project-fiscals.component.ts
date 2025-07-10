@@ -168,7 +168,10 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  
       projectFiscalName: [fiscal?.projectFiscalName ?? '', [Validators.required]],
       activityCategoryCode: [fiscal?.activityCategoryCode ?? '', [Validators.required]],
       proposalTypeCode: [fiscal?.proposalTypeCode ?? 'NEW', [Validators.required]],
-      planFiscalStatusCode: [fiscal?.planFiscalStatusCode ?? 'DRAFT', [Validators.required]],
+      planFiscalStatusCode: [
+        fiscal?.planFiscalStatusCode?.planFiscalStatusCode ?? 'DRAFT',
+        [Validators.required]
+      ],
       fiscalPlannedProjectSizeHa: [fiscal?.fiscalPlannedProjectSizeHa ?? '', [Validators.min(0)]],
       fiscalCompletedSizeHa: [fiscal?.fiscalCompletedSizeHa ?? '', [Validators.min(0)]],
       resultsOpeningId: [fiscal?.resultsOpeningId ?? '', [Validators.maxLength(11)]],
@@ -222,13 +225,13 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  
           // Disable the entire form if status is COMPLETE or CANCELLED
           if (
             [this.FiscalStatuses.COMPLETE, this.FiscalStatuses.CANCELLED].includes(
-              fiscal.planFiscalStatusCode
+              fiscal?.planFiscalStatusCode?.planFiscalStatusCode
             )
           ) {
             form.disable();
           }
           // Specifically disable the "Original Cost Estimate" field if status is not DRAFT
-          if (fiscal.planFiscalStatusCode !== this.FiscalStatuses.DRAFT) {
+          if (fiscal?.planFiscalStatusCode?.planFiscalStatusCode !== this.FiscalStatuses.DRAFT) {
             form.get('totalCostEstimateAmount')?.disable();
           }
           // Mark form as pristine if requested
@@ -321,7 +324,9 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  
         activityCategoryCode: updatedData.activityCategoryCode,
         fiscalYear: updatedData.fiscalYear ? parseInt(updatedData.fiscalYear, 10) : 0,
         projectPlanStatusCode: isUpdate ? updatedData.projectPlanStatusCode : "ACTIVE",
-        planFiscalStatusCode: updatedData.planFiscalStatusCode,
+        planFiscalStatusCode: {
+          planFiscalStatusCode : updatedData.planFiscalStatusCode
+        },
         projectFiscalName: updatedData.projectFiscalName,
         projectFiscalDescription: updatedData.projectFiscalDescription,
         businessAreaComment: updatedData.businessAreaComment,
@@ -487,7 +492,10 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  
       fiscalYear: 0,
       projectFiscalName: '',
       projectGuid: this.projectGuid,
-      planFiscalStatusCode: 'DRAFT',
+      planFiscalStatusCode: {
+        planFiscalStatusCode: 'DRAFT',
+        description: 'Draft',
+      },
       proposalTypeCode: 'NEW',
       projectPlanStatusCode: 'ACTIVE',
       activityCategoryCode: '',
@@ -503,6 +511,7 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  
       totalCostEstimateAmount: 0
     };
   }
+
 
   getStatusDescription(i: number): string | null {
     const form = this.fiscalForms[i];

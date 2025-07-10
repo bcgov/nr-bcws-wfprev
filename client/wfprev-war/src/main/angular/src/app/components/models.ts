@@ -53,7 +53,7 @@ export interface ProjectFiscal {
   activityCategoryCode: string;
   fiscalYear: number;
   projectPlanStatusCode: string;
-  planFiscalStatusCode: string;
+  planFiscalStatusCode: PlanFiscalStatusCodeModel;
   projectFiscalName: string;
   isApprovedInd: boolean;
   isDelayedInd: boolean;
@@ -85,7 +85,7 @@ export interface ProjectFiscal {
   otherPartner?: string;
   proposalTypeCode?: string;
   ancillaryFundingProvider?: string;
-  endorsementCode?: string;
+  endorsementCode?: EndorsementCodeModel;
   endorsementComment?: string;
   endorsementTimestamp?: string;
   endorsementEvalTimestamp?: string;
@@ -223,11 +223,11 @@ export interface ProgramAreaModel {
 }
 
 export interface PlanFiscalStatusCodeModel {
-  planFiscalStatusCode: string;
-  description: string;
-  displayOrder: number;
-  effectiveDate: string;
-  expiryDate: string;
+  planFiscalStatusCode?: string;
+  description?: string;
+  displayOrder?: number;
+  effectiveDate?: string;
+  expiryDate?: string;
 }
 
 export interface ActivityCategoryCodeModel {
@@ -303,4 +303,12 @@ export interface EvaluationCriteriaSelectedModel {
   evaluationCriteriaGuid?: string;
   evaluationCriteriaSectionSummaryGuid?: string;
   isEvaluationCriteriaSelectedInd?: boolean;
+}
+
+export interface EndorsementCodeModel {
+  endorsementCode?: string;
+  description?: string;
+  displayOrder?: number;
+  effectiveDate?: string;
+  expiryDate?: string;
 }
