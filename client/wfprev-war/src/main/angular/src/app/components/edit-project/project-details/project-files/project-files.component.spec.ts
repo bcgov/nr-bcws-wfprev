@@ -619,7 +619,7 @@ describe('ProjectFilesComponent', () => {
         ConfirmationDialogComponent,
         jasmine.objectContaining({
           data: { indicator: 'delete-attachment' },
-          width: '500px'
+          width: '600px'
         })
       );
   

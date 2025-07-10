@@ -298,14 +298,12 @@ export class EvaluationCriteriaDialogComponent {
     };
   }
 
-
-
   onCancel(): void {
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       data: {
         indicator: 'confirm-cancel',
       },
-      width: '500px',
+      width: '600px',
     });
 
     dialogRef.afterClosed().subscribe((result: any) => {

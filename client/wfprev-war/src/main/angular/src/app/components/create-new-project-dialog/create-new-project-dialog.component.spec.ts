@@ -199,7 +199,7 @@ describe('CreateNewProjectDialogComponent', () => {
 
     expect(mockDialog.open).toHaveBeenCalledWith(ConfirmationDialogComponent, {
       data: { indicator: 'confirm-cancel' },
-      width: '500px',
+      width: '600px',
     });
 
     mockAfterClosed.subscribe(() => {

@@ -702,7 +702,7 @@ export class ActivitiesComponent implements OnChanges, CanComponentDeactivate{
     const activityName = data.activityName;
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       data: { indicator: 'delete-activity', name:activityName},
-      width: '500px',
+      width: '600px',
     });
   
     dialogRef.afterClosed().subscribe((confirmed: boolean) => {
@@ -768,7 +768,7 @@ export class ActivitiesComponent implements OnChanges, CanComponentDeactivate{
     if (this.isFormDirty()) {
       const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
         data: { indicator: 'confirm-unsave' },
-        width: '500px',
+        width: '600px',
       });
       return dialogRef.afterClosed();
     }
