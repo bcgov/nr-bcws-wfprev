@@ -53,7 +53,9 @@ export interface ProjectFiscal {
   activityCategoryCode: string;
   fiscalYear: number;
   projectPlanStatusCode: string;
-  planFiscalStatusCode: string;
+  planFiscalStatusCode?: {
+    planFiscalStatusCode: string;
+  };
   projectFiscalName: string;
   isApprovedInd: boolean;
   isDelayedInd: boolean;
@@ -85,7 +87,9 @@ export interface ProjectFiscal {
   otherPartner?: string;
   proposalTypeCode?: string;
   ancillaryFundingProvider?: string;
-  endorsementCode?: string;
+  endorsementCode?: {
+    endorsementCode: string;
+  };
   endorsementComment?: string;
   endorsementTimestamp?: string;
   endorsementEvalTimestamp?: string;

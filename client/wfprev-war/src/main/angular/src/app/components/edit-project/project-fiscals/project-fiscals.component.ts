@@ -14,7 +14,7 @@ import { Observable } from 'rxjs';
 import { ConfirmationDialogComponent } from 'src/app/components/confirmation-dialog/confirmation-dialog.component';
 import { ActivitiesComponent } from 'src/app/components/edit-project/activities/activities.component';
 import { FiscalMapComponent } from 'src/app/components/edit-project/fiscal-map/fiscal-map.component';
-import { ProjectFiscal } from 'src/app/components/models';
+import { PlanFiscalStatusCodeModel, ProjectFiscal } from 'src/app/components/models';
 import { CodeTableServices } from 'src/app/services/code-table-services';
 import { ProjectService } from 'src/app/services/project-services';
 import { CanComponentDeactivate } from 'src/app/services/util/can-deactive.guard';
@@ -487,7 +487,9 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  
       fiscalYear: 0,
       projectFiscalName: '',
       projectGuid: this.projectGuid,
-      planFiscalStatusCode: 'DRAFT',
+      planFiscalStatusCode: {
+        planFiscalStatusCode: 'DRAFT'
+      }, 
       proposalTypeCode: 'NEW',
       projectPlanStatusCode: 'ACTIVE',
       activityCategoryCode: '',
@@ -518,13 +520,26 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  
   }
 
   updateFiscalStatus(index: number, newStatus: string): void {
-    const form = this.fiscalForms[index];
-    if (!form) return;
-    form.get('planFiscalStatusCode')?.setValue(newStatus);
-    form.markAsDirty();
-    form.markAsTouched();
-    this.onSaveFiscal(index);
-  }
+  const form = this.fiscalForms[index];
+  if (!form) return;
+
+  console.log('new status', newStatus);
+
+  // Manually construct a minimal PlanFiscalStatusCodeModel
+  const newStatusModel: PlanFiscalStatusCodeModel = {
+    planFiscalStatusCode: newStatus,
+    description: '',       
+    displayOrder: 0,       
+    effectiveDate: '',     
+    expiryDate: ''         
+  };
+
+  form.get('planFiscalStatusCode')?.setValue(newStatusModel);
+  form.markAsDirty();
+  form.markAsTouched();
+
+  this.onSaveFiscal(index);
+}
 
   onFiscalAction(event: { action: string; index: number }) {
     const { action, index } = event;

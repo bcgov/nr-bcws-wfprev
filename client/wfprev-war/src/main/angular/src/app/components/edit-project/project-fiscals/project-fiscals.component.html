@@ -32,14 +32,14 @@
                       <div class="status-wrapper">
                         <span>Status:</span>
                         <wfprev-status-badge
-                          [icon]="getStatusIcon(fiscal.planFiscalStatusCode)"
+                          [icon]="getStatusIcon(fiscal.planFiscalStatusCode?.planFiscalStatusCode)"
                           [label]="getStatusDescription(i) || ''">
                         </wfprev-status-badge>
                       </div>
 
 
                       <wfprev-dropdown-button
-                        [status]="fiscal.planFiscalStatusCode"
+                        [status]="fiscal.planFiscalStatusCode?.planFiscalStatusCode"
                         [isApproved]="!fiscalForms[i].get('isApprovedInd')?.value"
                         [index]="i"
                         (actionSelected)="onFiscalAction($event)">
