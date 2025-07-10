@@ -38,7 +38,7 @@
               </div>
               <div class="criteria-item">
                 <span>Local WUI Risk Class Rationale:</span>
-                <span>{{ evaluationCriteriaSummary?.localWuiRiskClassRationale || 'None' }}</span>
+                <span class="comments-text">{{ evaluationCriteriaSummary?.localWuiRiskClassRationale || 'None' }}</span>
               </div>
             </div>
 
@@ -49,7 +49,7 @@
             <div class="criteria-details">
               <div class="criteria-item">
                 <span>Medium Filter Comments:</span>
-                <span>{{ getSectionComment(evaluationCriteriaSummary, 'MEDIUM_FLT') || 'None' }}</span>
+                <span class="comments-text">{{ getSectionComment(evaluationCriteriaSummary, 'MEDIUM_FLT') || 'None' }}</span>
               </div>
             </div>
 
@@ -60,7 +60,7 @@
             <div class="criteria-details">
               <div class="criteria-item">
               <span>Fine Filter Comments:</span>
-              <span>{{ getSectionComment(evaluationCriteriaSummary, 'FINE_FLT') || 'None' }}</span>
+              <span class="comments-text">{{ getSectionComment(evaluationCriteriaSummary, 'FINE_FLT') || 'None' }}</span>
               </div>
             </div>
             <div class="full-width-divider"></div>
