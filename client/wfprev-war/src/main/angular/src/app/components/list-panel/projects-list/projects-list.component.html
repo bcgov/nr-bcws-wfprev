@@ -89,11 +89,11 @@
               <div class="fiscal-card-title">
                 <span matTooltip="{{ fiscal.projectFiscalName }}">{{fiscal.projectFiscalName}}</span>
                 <div class="status-container">
-                  <ng-container *ngIf="getStatusIcon(fiscal.planFiscalStatusCode) as icon">
-                    <img [src]="icon.src" [alt]="icon.alt" [title]="icon.title" class="status-icon" />
-                  </ng-container>
-                  <span>{{getDescription('planFiscalStatusCode', fiscal.planFiscalStatusCode)}}</span>
-                  <span class="individual-fiscal-year">{{getFiscalYearDisplay(fiscal.fiscalYear)}}</span>
+                  <wfprev-status-badge
+                    [icon]="getStatusIcon(fiscal?.planFiscalStatusCode?.planFiscalStatusCode)"
+                    [label]="getDescription('planFiscalStatusCode', fiscal?.planFiscalStatusCode?.planFiscalStatusCode)">
+                  </wfprev-status-badge>
+                  <span class="individual-fiscal-year">{{ getFiscalYearDisplay(fiscal.fiscalYear) }}</span>
                 </div>
               </div>
               <div class="fiscal-card-body">

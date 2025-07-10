@@ -26,28 +26,30 @@
                 <mat-expansion-panel-header>
                   <div class="header-container">
                     <wfprev-expansion-indicator [isExpanded]="panel.expanded"></wfprev-expansion-indicator>
-                    <span class="project-title">Fiscal Detail</span>
-                    <button class="dropdown-button" mat-icon-button [matMenuTriggerFor]="menu" (click)="$event.stopPropagation()">
-                      <!-- Three-dot menu icon -->
-                      <span>Actions</span>
-                      <img class="action-icon" alt="actions" src="/assets/dropdown-icon-white.svg">
-                    </button>
+                    <span class="project-title">Details</span>
+
+                    <div class="status-actions">
+                      <div class="status-wrapper">
+                        <span>Status:</span>
+                        <wfprev-status-badge
+                          [icon]="getStatusIcon(fiscal.planFiscalStatusCode?.planFiscalStatusCode)"
+                          [label]="getStatusDescription(i) || ''">
+                        </wfprev-status-badge>
+                      </div>
+
+
+                      <wfprev-dropdown-button
+                        [status]="fiscal.planFiscalStatusCode?.planFiscalStatusCode"
+                        [isApproved]="!fiscalForms[i].get('isApprovedInd')?.value"
+                        [index]="i"
+                        (actionSelected)="onFiscalAction($event)">
+                      </wfprev-dropdown-button>
+                    </div>
                   </div>
                 </mat-expansion-panel-header>
-                <mat-menu #menu="matMenu" xPosition="before">
-                  <button mat-menu-item (click)="deleteFiscalYear(fiscalForms[i],i)" [disabled]="isUndeletable(fiscalForms[i])">
-                    Delete Fiscal Year
-                  </button>
-                  <button mat-menu-item >
-                    Add Performance Update
-                  </button>
-                  <button mat-menu-item >
-                    Closeout Fiscal
-                </button>
-                </mat-menu>
                 <form class="form-grid" *ngIf="fiscalForms[i]" [formGroup]="fiscalForms[i]">
 
-                  <div class="form-item">
+                  <div class="form-item fiscal-activity-name">
                     <wfprev-input-field
                       [id]="'projectFiscalName'"
                       [label]="'Fiscal Activity Name'"
@@ -56,14 +58,6 @@
                       [tooltip]="getFiscalControl(selectedTabIndex, 'projectFiscalName')?.value"
                       [required]="true"
                     />
-                  </div>
-
-                  <div class="form-item">
-                    <label>Fiscal Year<span class="required">*</span></label>
-                    <select id="fiscalYear" formControlName="fiscalYear">
-                      <option value="" disabled selected hidden>Select</option>
-                      <option *ngFor="let year of fiscalYears" [value]="year.split('/')[0]">{{ year }}</option>
-                    </select>
                   </div>
 
                   <div class="form-item">
@@ -81,19 +75,13 @@
                   </div>
 
                   <div class="form-item">
-                    <wfprev-select-field
-                      class="form-item"
-                      [label]="'Fiscal Status'"
-                      [required]="true"
-                      [control]="getFiscalControl(i, 'planFiscalStatusCode')"
-                      [options]="planFiscalStatusCode"
-                      [optionValueField]="'planFiscalStatusCode'"
-                      [optionLabelField]="'description'"
-                      [tooltip]="getCodeDescription(CodeTableKeys.PLAN_FISCAL_STATUS_CODE)"
-                      id="planFiscalStatusCode"
-                      placeholder="Select"
-                    />
+                    <label>Fiscal Year<span class="required">*</span></label>
+                    <select id="fiscalYear" formControlName="fiscalYear">
+                      <option value="" disabled selected hidden>Select</option>
+                      <option *ngFor="let year of fiscalYears" [value]="year.split('/')[0]">{{ year }}</option>
+                    </select>
                   </div>
+
 
                   <div class="form-item">
                     <wfprev-select-field

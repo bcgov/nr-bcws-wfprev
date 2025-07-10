@@ -12,7 +12,7 @@
       flex: 1 1 calc(25% - 15px); // 4 items per row with a 15px gap
       
       &.quarter-width-max {
-        max-width: calc(25% - 15px);
+        max-width: calc(25% - 10px);
       }
 
       min-width: 200px;
@@ -73,6 +73,9 @@
       }
     }
 
+    .fiscal-activity-name {
+      flex: 1 1 calc(50% - 15px) !important;
+    }
     .toggle-width {
       max-width: 220px !important;
       min-width: none !important;
@@ -231,10 +234,9 @@
   }
 
   .separator {
-    width: 100%;
     height: 1px;
     background-color: #c6c8cb; /* Grey color */
-    margin: 10px 0 10px -18px;
+    margin: 10px -18px;
   }
 }
 
@@ -308,41 +310,6 @@ mat-expansion-panel {
         @extend .button-secondary;
       }
     }
-  }
-}
-
-.header-container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  gap: 10px;
-
-  .dropdown-button {
-    font-family: var(--wf-font-family-main) !important;
-    padding: 12px;
-    display: flex;
-    align-items: center;
-    color: #fff;
-    font-size: 16px;
-    font-style: normal;
-    font-weight: 400;
-    line-height: normal;
-    background-color: var(--wf-primary-color);
-    border-radius: 0;
-    width: auto;
-    border-radius: 4px;
-    height: 35px;
-    span {
-      font-family: var(--wf-font-family-main) !important;
-      padding-right: 10px;
-      vertical-align: top;
-    }
-  }
-  .action-icon {
-    width: 20px;
-    height: 20px;
-    color: white;
   }
 }
 
@@ -448,4 +415,39 @@ mat-expansion-panel {
     justify-content: flex-end;
     align-items: center;
     z-index: 10;
+  }
+
+  .status-actions{
+    display: flex;
+    align-items: baseline;
+    .status-wrapper{
+      text-align: right;
+      font-size: 20px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: normal;
+      padding-right: 45px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    
+    .status-icon{
+      width: 24px;
+      height: 24px;
+    }
+    .status-value{
+      color: #474543;
+      font-size: 16px;
+      font-style: normal;
+      font-weight: 400;
+    }
+  }
+
+  .header-container{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    gap: 10px;
   }

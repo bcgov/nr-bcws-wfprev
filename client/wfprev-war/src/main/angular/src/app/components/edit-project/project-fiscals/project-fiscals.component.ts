@@ -18,11 +18,14 @@ import { ProjectFiscal } from 'src/app/components/models';
 import { CodeTableServices } from 'src/app/services/code-table-services';
 import { ProjectService } from 'src/app/services/project-services';
 import { CanComponentDeactivate } from 'src/app/services/util/can-deactive.guard';
-import { CodeTableKeys, Messages } from 'src/app/utils/constants';
+import { CodeTableKeys, FiscalStatuses, Messages } from 'src/app/utils/constants';
 import { ExpansionIndicatorComponent } from '../../shared/expansion-indicator/expansion-indicator.component';
 import { IconButtonComponent } from 'src/app/components/shared/icon-button/icon-button.component';
 import { SelectFieldComponent } from 'src/app/components/shared/select-field/select-field.component';
 import { InputFieldComponent } from 'src/app/components/shared/input-field/input-field.component';
+import { PlanFiscalStatusIcons } from 'src/app/utils/tools';
+import { DropdownButtonComponent } from 'src/app/components/shared/dropdown-button/dropdown-button.component';
+import { StatusBadgeComponent } from 'src/app/components/shared/status-badge/status-badge.component';
 
 @Component({
   selector: 'wfprev-project-fiscals',
@@ -45,7 +48,9 @@ import { InputFieldComponent } from 'src/app/components/shared/input-field/input
     IconButtonComponent,
     SelectFieldComponent,
     MatTooltip,
-    InputFieldComponent
+    InputFieldComponent,
+    DropdownButtonComponent,
+    StatusBadgeComponent
   ]
 })
 export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  {
@@ -64,6 +69,8 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  
   proposalTypeCode: any[] = [];
   originalFiscalValues: any[] = []
   readonly CodeTableKeys = CodeTableKeys;
+  readonly FiscalStatuses = FiscalStatuses;
+
   constructor(
     private route: ActivatedRoute,
     private projectService: ProjectService,
@@ -161,7 +168,10 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  
       projectFiscalName: [fiscal?.projectFiscalName ?? '', [Validators.required]],
       activityCategoryCode: [fiscal?.activityCategoryCode ?? '', [Validators.required]],
       proposalTypeCode: [fiscal?.proposalTypeCode ?? 'NEW', [Validators.required]],
-      planFiscalStatusCode: [fiscal?.planFiscalStatusCode ?? 'DRAFT', [Validators.required]],
+      planFiscalStatusCode: [
+        fiscal?.planFiscalStatusCode?.planFiscalStatusCode ?? 'DRAFT',
+        [Validators.required]
+      ],
       fiscalPlannedProjectSizeHa: [fiscal?.fiscalPlannedProjectSizeHa ?? '', [Validators.min(0)]],
       fiscalCompletedSizeHa: [fiscal?.fiscalCompletedSizeHa ?? '', [Validators.min(0)]],
       resultsOpeningId: [fiscal?.resultsOpeningId ?? '', [Validators.maxLength(11)]],
@@ -211,11 +221,26 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  
         
         this.fiscalForms = this.projectFiscals.map((fiscal) => {
           const form = this.createFiscalForm(fiscal);
+
+          // Disable the entire form if status is COMPLETE or CANCELLED
+          if (
+            [this.FiscalStatuses.COMPLETE, this.FiscalStatuses.CANCELLED].includes(
+              fiscal?.planFiscalStatusCode?.planFiscalStatusCode
+            )
+          ) {
+            form.disable();
+          }
+          // Specifically disable the "Original Cost Estimate" field if status is not DRAFT
+          if (fiscal?.planFiscalStatusCode?.planFiscalStatusCode !== this.FiscalStatuses.DRAFT) {
+            form.get('totalCostEstimateAmount')?.disable();
+          }
+          // Mark form as pristine if requested
           if (markFormsPristine) {
             form.markAsPristine();
           }
           return form;
         });
+
         this.updateCurrentFiscalGuid();
         this.selectedTabIndex = previousTabIndex < this.projectFiscals.length ? previousTabIndex : 0;
       },
@@ -299,7 +324,9 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  
         activityCategoryCode: updatedData.activityCategoryCode,
         fiscalYear: updatedData.fiscalYear ? parseInt(updatedData.fiscalYear, 10) : 0,
         projectPlanStatusCode: isUpdate ? updatedData.projectPlanStatusCode : "ACTIVE",
-        planFiscalStatusCode: updatedData.planFiscalStatusCode,
+        planFiscalStatusCode: {
+          planFiscalStatusCode : updatedData.planFiscalStatusCode
+        },
         projectFiscalName: updatedData.projectFiscalName,
         projectFiscalDescription: updatedData.projectFiscalDescription,
         businessAreaComment: updatedData.businessAreaComment,
@@ -465,7 +492,10 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  
       fiscalYear: 0,
       projectFiscalName: '',
       projectGuid: this.projectGuid,
-      planFiscalStatusCode: 'DRAFT',
+      planFiscalStatusCode: {
+        planFiscalStatusCode: 'DRAFT',
+        description: 'Draft',
+      },
       proposalTypeCode: 'NEW',
       projectPlanStatusCode: 'ACTIVE',
       activityCategoryCode: '',
@@ -480,6 +510,39 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  
       isDelayedInd: false,
       totalCostEstimateAmount: 0
     };
+  }
+
+
+  getStatusDescription(i: number): string | null {
+    const form = this.fiscalForms[i];
+    if (!form) return null;
+    const code = form.get('planFiscalStatusCode')?.value;
+    return (
+      this.planFiscalStatusCode.find((item) => item.planFiscalStatusCode === code)?.description ?? null
+    );
+  }
+
+  getStatusIcon(status: string) {
+    return PlanFiscalStatusIcons[status];
+  }
+
+  updateFiscalStatus(index: number, newStatus: string): void {
+    const form = this.fiscalForms[index];
+    if (!form) return;
+    form.get('planFiscalStatusCode')?.setValue(newStatus);
+    form.markAsDirty();
+    form.markAsTouched();
+    this.onSaveFiscal(index);
+  }
+
+  onFiscalAction(event: { action: string; index: number }) {
+    const { action, index } = event;
+
+    if (action === 'DELETE') {
+      this.deleteFiscalYear(this.fiscalForms[index], index);
+    } else {
+      this.updateFiscalStatus(index, action);
+    }
   }
 
 }
