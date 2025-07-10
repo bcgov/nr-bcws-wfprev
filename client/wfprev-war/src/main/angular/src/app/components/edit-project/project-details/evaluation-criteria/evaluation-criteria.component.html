@@ -20,9 +20,9 @@
             <div class="section-label">
               <span>Coarse Filter Total:</span>
               <span>
-                {{ evaluationCriteriaSummary?.localWuiRiskClassCode?.weightedRank
+                {{ (evaluationCriteriaSummary?.localWuiRiskClassCode?.weightedRank
                     ?? evaluationCriteriaSummary?.wuiRiskClassCode?.weightedRank
-                    ?? 0
+                    ?? 0) | number:'1.2-2'
                 }}
               </span>
             </div>
@@ -44,7 +44,7 @@
 
             <span class="section-label">
               Medium Filter Total:
-              <span>{{ getSectionTotal(evaluationCriteriaSummary, 'MEDIUM_FLT') }}</span>
+              <span>{{ getSectionTotal(evaluationCriteriaSummary, 'MEDIUM_FLT') | number:'1.2-2' }}</span>
             </span>
             <div class="criteria-details">
               <div class="criteria-item">
@@ -55,7 +55,7 @@
 
             <span class="section-label">
               Fine Filter Total:
-              <span>{{ getSectionTotal(evaluationCriteriaSummary, 'FINE_FLT') }}</span>
+              <span>{{ getSectionTotal(evaluationCriteriaSummary, 'FINE_FLT') | number:'1.2-2' }}</span>
             </span>
             <div class="criteria-details">
               <div class="criteria-item">
@@ -66,7 +66,7 @@
             <div class="full-width-divider"></div>
             <div class="section-label ">
               <span>Calculated Total</span>
-              <span>{{ getCalculatedTotal(evaluationCriteriaSummary) }}</span>
+              <span>{{ getCalculatedTotal(evaluationCriteriaSummary) | number:'1.2-2' }}</span>
             </div>
           </div>
         </div>
