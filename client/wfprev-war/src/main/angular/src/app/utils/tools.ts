@@ -166,7 +166,7 @@ export const PlanFiscalStatusIcons: Record<string, { src: string; alt: string; t
     alt: 'complete',
     title: 'Complete'
   },
-  [PlanFiscalStatus.ABANDONED]: {
+  [PlanFiscalStatus.CANCELLED]: {
     src: '/assets/abandoned-icon.svg',
     alt: 'abandoned',
     title: 'Abandoned'
