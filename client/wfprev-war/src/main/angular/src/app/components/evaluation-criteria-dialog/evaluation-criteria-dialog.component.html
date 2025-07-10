@@ -37,7 +37,7 @@
 
           <div class="notes-row">
             <label>Local WUI Risk Class Rationale</label>
-            <textarea rows="2" cdkTextareaAutosize #autosize="cdkTextareaAutosize" placeholder="Autosize based on content lines" formControlName="localWuiRiskClassRationale"></textarea>
+            <textarea rows="2" cdkTextareaAutosize #autosize="cdkTextareaAutosize" placeholder="Begin Typing" formControlName="localWuiRiskClassRationale"></textarea>
             <div class="error"
                 *ngIf="criteriaForm.get('localWuiRiskClassRationale')?.hasError('maxlength') && criteriaForm.get('localWuiRiskClassRationale')?.touched">
               {{ messages.maxLengthExceeded }}
@@ -71,7 +71,7 @@
           </div>
           <div class="notes-row">
             <label>Additional Comments/Notes on Medium Filters</label>
-            <textarea rows="2" cdkTextareaAutosize #autosize="cdkTextareaAutosize" placeholder="Autosize based on content lines" formControlName="mediumFilterComments"></textarea>
+            <textarea rows="2" cdkTextareaAutosize #autosize="cdkTextareaAutosize" placeholder="Begin Typing" formControlName="mediumFilterComments"></textarea>
             <div class="error"
                 *ngIf="criteriaForm.get('mediumFilterComments')?.hasError('maxlength') && criteriaForm.get('mediumFilterComments')?.touched">
               {{ messages.maxLengthExceeded }}
@@ -103,7 +103,7 @@
           </div>
           <div class="notes-row">
             <label>Additional Comments/Notes on Fine Filters</label>
-            <textarea rows="2" cdkTextareaAutosize #autosize="cdkTextareaAutosize" placeholder="Autosize based on content lines" formControlName="fineFilterComments"></textarea>
+            <textarea rows="2" cdkTextareaAutosize #autosize="cdkTextareaAutosize" placeholder="Begin Typing" formControlName="fineFilterComments"></textarea>
             <div class="error"
                 *ngIf="criteriaForm.get('fineFilterComments')?.hasError('maxlength') && criteriaForm.get('fineFilterComments')?.touched">
               {{ messages.maxLengthExceeded }}
