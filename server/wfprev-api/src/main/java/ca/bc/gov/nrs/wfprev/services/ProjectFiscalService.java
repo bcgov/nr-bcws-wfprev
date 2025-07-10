@@ -5,11 +5,9 @@ import ca.bc.gov.nrs.wfprev.common.services.CommonService;
 import ca.bc.gov.nrs.wfprev.data.assemblers.ProjectFiscalResourceAssembler;
 import ca.bc.gov.nrs.wfprev.data.assemblers.ProjectResourceAssembler;
 import ca.bc.gov.nrs.wfprev.data.entities.EndorsementCodeEntity;
-import ca.bc.gov.nrs.wfprev.data.entities.ForestAreaCodeEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.PlanFiscalStatusCodeEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ProjectEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ProjectFiscalEntity;
-import ca.bc.gov.nrs.wfprev.data.entities.ProjectStatusCodeEntity;
 import ca.bc.gov.nrs.wfprev.data.models.ProjectFiscalModel;
 import ca.bc.gov.nrs.wfprev.data.models.ProjectModel;
 import ca.bc.gov.nrs.wfprev.data.repositories.EndorsementCodeRepository;
@@ -48,23 +46,13 @@ public class ProjectFiscalService implements CommonService {
     private static final String ENDORSED = "ENDORSED";
 
     private static final Map<String, Set<String>> VALID_TRANSITIONS = Map.of(
-            DRAFT, Set.of(PROPOSED, CANCELLED),
-            PROPOSED, Set.of(DRAFT, PREPARED, CANCELLED),
-            PREPARED, Set.of(DRAFT, IN_PROG, CANCELLED),
-            IN_PROG, Set.of(COMPLETE, CANCELLED),
-            COMPLETE, Set.of(),
-            CANCELLED, Set.of()
+            DRAFT, Set.of(DRAFT, PROPOSED, PREPARED, CANCELLED),
+            PROPOSED, Set.of(DRAFT, PROPOSED, PREPARED, CANCELLED),
+            PREPARED, Set.of(DRAFT, PREPARED, IN_PROG, CANCELLED),
+            IN_PROG, Set.of(COMPLETE, CANCELLED, IN_PROG),
+            COMPLETE, Set.of(COMPLETE),
+            CANCELLED, Set.of(CANCELLED)
     );
-
-    private void validateStatusTransition(String currentStatus, String newStatus) {
-        if (currentStatus == null || newStatus == null || currentStatus.equals(newStatus)) return;
-
-        Set<String> allowedTransitions = VALID_TRANSITIONS.getOrDefault(currentStatus, Set.of());
-
-        if (!allowedTransitions.contains(newStatus)) {
-            throw new IllegalStateException("Invalid fiscal status transition from " + currentStatus + " to " + newStatus);
-        }
-    }
 
     public ProjectFiscalService(ProjectFiscalRepository projectFiscalRepository, ProjectFiscalResourceAssembler projectFiscalResourceAssembler,
                                 ProjectService projectService, ProjectResourceAssembler projectResourceAssembler, PlanFiscalStatusCodeRepository planFiscalStatusCodeRepository,
@@ -104,20 +92,20 @@ public class ProjectFiscalService implements CommonService {
         ProjectFiscalEntity existingEntity = projectFiscalRepository.findById(guid)
                 .orElseThrow(() -> new EntityNotFoundException("Project fiscal not found: " + projectFiscalModel.getProjectPlanFiscalGuid()));
 
-        String currentStatus = existingEntity.getPlanFiscalStatusCode().getPlanFiscalStatusCode();
-        String newStatus = projectFiscalModel.getPlanFiscalStatusCode().getPlanFiscalStatusCode();
-        validateStatusTransition(currentStatus, newStatus);
+        String incomingStatus = projectFiscalModel.getPlanFiscalStatusCode().getPlanFiscalStatusCode();
 
-        // only allow PROPOSED → PREPARED if endorsed and approved
-        if (PROPOSED.equals(currentStatus) && PREPARED.equals(newStatus)) {
-            boolean isApproved = Boolean.TRUE.equals(existingEntity.getIsApprovedInd());
-            boolean isEndorsed = existingEntity.getEndorsementCode() != null &&
-                    ENDORSED.equalsIgnoreCase(existingEntity.getEndorsementCode().getEndorsementCode());
+        // Check if incoming status is PROPOSED and both approved & endorsed
+        boolean isProposed = PROPOSED.equalsIgnoreCase(incomingStatus);
+        boolean isApproved = Boolean.TRUE.equals(projectFiscalModel.getIsApprovedInd());
+        boolean isEndorsed = projectFiscalModel.getEndorsementCode() != null &&
+                ENDORSED.equalsIgnoreCase(projectFiscalModel.getEndorsementCode().getEndorsementCode());
 
-            if (!isApproved || !isEndorsed) {
-                throw new IllegalStateException("Cannot transition to PREPARED without both approval and endorsement.");
-            }
+        if (isProposed && isApproved && isEndorsed) {
+            projectFiscalModel.getPlanFiscalStatusCode().setPlanFiscalStatusCode(PREPARED);
         }
+
+        // Validate transition between existing and (potentially updated) new status
+        validateStatusTransition(projectFiscalModel, existingEntity);
 
         ProjectFiscalEntity entity = projectFiscalResourceAssembler.updateEntity(projectFiscalModel, existingEntity);
         assignAssociatedEntities(projectFiscalModel, entity);
@@ -180,4 +168,36 @@ public class ProjectFiscalService implements CommonService {
                 .findById(endorsementCode)
                 .orElseThrow(() -> new IllegalArgumentException("EndorsementCode not found: " + endorsementCode));
     }
+
+    private void validateStatusTransition(ProjectFiscalModel model, ProjectFiscalEntity existingEntity) {
+        String currentStatus = existingEntity.getPlanFiscalStatusCode().getPlanFiscalStatusCode();
+        String newStatus = model.getPlanFiscalStatusCode().getPlanFiscalStatusCode();
+
+        // Skip validation only if status is unchanged AND NOT PREPARED
+        boolean isPrepared = PREPARED.equalsIgnoreCase(currentStatus) && PREPARED.equalsIgnoreCase(newStatus);
+        if ((currentStatus == null || newStatus == null) || (currentStatus.equals(newStatus) && !isPrepared)) {
+            return;
+        }
+
+        // Validate allowed status transitions
+        Set<String> allowedTransitions = VALID_TRANSITIONS.getOrDefault(currentStatus, Set.of());
+        if (!allowedTransitions.contains(newStatus)) {
+            throw new IllegalStateException("Invalid fiscal status transition from " + currentStatus + " to " + newStatus);
+        }
+
+        // If status is PREPARED, prevent endorsement/approval from being unset
+        if (PREPARED.equalsIgnoreCase(currentStatus)) {
+            boolean becomingUnapproved = Boolean.FALSE.equals(model.getIsApprovedInd());
+
+            String incomingEndorsement = model.getEndorsementCode() != null
+                    ? model.getEndorsementCode().getEndorsementCode()
+                    : null;
+            boolean becomingUnendorsed = incomingEndorsement != null && !ENDORSED.equalsIgnoreCase(incomingEndorsement);
+
+            if (becomingUnapproved || becomingUnendorsed) {
+                throw new IllegalStateException("Cannot unset endorsement or approval when status is " + currentStatus);
+            }
+        }
+    }
+
 }
