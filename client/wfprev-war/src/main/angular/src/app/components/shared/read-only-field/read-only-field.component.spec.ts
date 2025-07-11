@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { EndorsementComponent } from './endorsement.component';
+import { ReadOnlyFieldComponent } from './read-only-field.component';
 
-describe('EndorsementComponent', () => {
-  let component: EndorsementComponent;
-  let fixture: ComponentFixture<EndorsementComponent>;
+describe('ReadOnlyFieldComponent', () => {
+  let component: ReadOnlyFieldComponent;
+  let fixture: ComponentFixture<ReadOnlyFieldComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [EndorsementComponent]
+      imports: [ReadOnlyFieldComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(EndorsementComponent);
+    fixture = TestBed.createComponent(ReadOnlyFieldComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

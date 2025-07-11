@@ -26,8 +26,8 @@ import { InputFieldComponent } from 'src/app/components/shared/input-field/input
 import { PlanFiscalStatusIcons } from 'src/app/utils/tools';
 import { DropdownButtonComponent } from 'src/app/components/shared/dropdown-button/dropdown-button.component';
 import { StatusBadgeComponent } from 'src/app/components/shared/status-badge/status-badge.component';
-import { EndorsementComponent } from 'src/app/components/edit-project/endorsement/endorsement.component';
-import { ApprovalComponent } from 'src/app/components/edit-project/approval/approval.component';
+import { EndorsementApprovalComponent } from 'src/app/components/edit-project/endorsement-approval/endorsement-approval.component';
+import { TokenService } from 'src/app/services/token.service';
 
 @Component({
   selector: 'wfprev-project-fiscals',
@@ -53,14 +53,13 @@ import { ApprovalComponent } from 'src/app/components/edit-project/approval/appr
     InputFieldComponent,
     DropdownButtonComponent,
     StatusBadgeComponent,
-    EndorsementComponent,
-    ApprovalComponent
+    EndorsementApprovalComponent,
   ]
 })
 export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  {
   @ViewChild(ActivitiesComponent) activitiesComponent!: ActivitiesComponent;
   @ViewChild('fiscalMapRef') fiscalMapComponent!: FiscalMapComponent;
-
+  currentUser: string = '';
   projectGuid = '';
   projectFiscals: any[] = [];
   fiscalForms: FormGroup[] = [];
@@ -82,13 +81,18 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  
     private readonly fb: FormBuilder,
     private readonly snackbarService: MatSnackBar,
     public readonly dialog: MatDialog,
-    public cd: ChangeDetectorRef
+    public cd: ChangeDetectorRef,
+    private tokenService: TokenService
   ) {}
 
   ngOnInit(): void {
     this.loadCodeTables();
     this.generateFiscalYears();
     this.loadProjectFiscals();
+    const formattedName = this.tokenService.getUserFullNameLastFirst();
+    if (formattedName) {
+      this.currentUser = formattedName;
+    }
   }
   
 
@@ -548,6 +552,60 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  
       this.updateFiscalStatus(index, action);
     }
   }
+
+  onSaveEndorsement(updatedFiscal: ProjectFiscal): void {
+    const index = this.selectedTabIndex;
+
+    // Defensive: make sure we have a fiscal at that index
+    if (!this.projectFiscals[index]) return;
+
+    // Merge the updated fields into the existing fiscal
+    this.projectFiscals[index] = {
+      ...this.projectFiscals[index],
+      ...updatedFiscal
+    };
+
+    // Optionally also patch the form so it's updated visually
+    this.fiscalForms[index].patchValue({
+      isApprovedInd: updatedFiscal.isApprovedInd ?? false,
+      endorsementComment: updatedFiscal.endorsementComment ?? '',
+      endorsementDate: updatedFiscal.endorsementTimestamp
+        ? new Date(updatedFiscal.endorsementTimestamp)
+        : null
+    });
+
+    // Mark form as pristine since we just saved it
+    this.fiscalForms[index].markAsPristine();
+
+    // Immediately call API to persist changes
+    const fiscalGuid = this.projectFiscals[index]?.projectPlanFiscalGuid;
+
+    if (fiscalGuid) {
+      this.projectService.updateProjectFiscal(
+        this.projectGuid,
+        fiscalGuid,
+        this.projectFiscals[index]
+      ).subscribe({
+        next: () => {
+          this.snackbarService.open(
+            this.messages.projectFiscalUpdatedSuccess,
+            'OK',
+            { duration: 5000, panelClass: 'snackbar-success' },
+          );
+          // Optionally refresh all data to stay in sync
+          this.loadProjectFiscals(true);
+        },
+        error: () => {
+          this.snackbarService.open(
+            this.messages.projectFiscalUpdatedFailure,
+            'OK',
+            { duration: 5000, panelClass: 'snackbar-error' }
+          );
+        }
+      });
+    }
+  }
+
 
 }
 

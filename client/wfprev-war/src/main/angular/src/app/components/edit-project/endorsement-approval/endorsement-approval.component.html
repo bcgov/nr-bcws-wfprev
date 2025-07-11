@@ -1,0 +1,73 @@
+<ng-container *ngIf="fiscal?.projectPlanFiscalGuid">
+  <wfprev-details-container
+    [title]="'Endorsement and Approval'"
+    [saveDisabled]="!endorsementApprovalForm.valid"
+    (save)="onSave()"
+    (cancel)="onCancel()">
+
+    <form [formGroup]="endorsementApprovalForm">
+      <!-- Endorsement Section -->
+      <div class="sub-header">
+        BCWS Endorsement
+      </div>
+      <div class="form-grid">
+        <div class="form-item">
+          <wfprev-checkbox formControlName="endorseFiscalYear">
+            Endorse Fiscal Year
+          </wfprev-checkbox>
+        </div>
+
+        <div class="form-item">
+          <wfprev-date-picker
+            [control]="endorsementDateControl"
+            [label]="'Endorsement Date'">
+          </wfprev-date-picker>
+        </div>
+
+        <div class="form-item">
+          <wfprev-read-only-field
+            [label]="'Endorsed By'"
+            [value]="'name'">
+          </wfprev-read-only-field>
+        </div>
+
+        <div class="form-item full-width">
+          <wfprev-textarea
+            [label]="'Endorser\'s Comments'"
+            [placeholder]="'Begin Typing'"
+            [control]="endorsementCommentControl"
+            [rows]="4">
+          </wfprev-textarea>
+        </div>
+      </div>
+      
+      <!-- Approval Section -->
+      <div class="sub-header">
+        Business Area Approval
+      </div>
+      <div class="form-grid">
+        <div class="form-item">
+          <wfprev-checkbox formControlName="approveFiscalYear">
+            Approve Fiscal Year
+          </wfprev-checkbox>
+        </div>
+
+        <div class="form-item">
+          <wfprev-date-picker
+            [control]="approvalDateControl"
+            [label]="'Approval Date'">
+          </wfprev-date-picker>
+        </div>
+
+        <div class="form-item full-width">
+          <wfprev-textarea
+            [label]="'Approver\'s Comments'"
+            [placeholder]="'Begin Typing'"
+            [control]="approvalCommentControl"
+            [rows]="2">
+          </wfprev-textarea>
+        </div>
+      </div>
+    </form>
+  </wfprev-details-container>
+</ng-container>

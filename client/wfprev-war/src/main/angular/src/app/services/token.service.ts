@@ -222,6 +222,18 @@ export class TokenService {
     return fullName || null;
   }
 
+  public getUserFullNameLastFirst(): string | null {
+    const name = this.getUserFullName();
+    if (!name) return null;
+
+    const parts = name.split(' ').filter(p => p.trim());
+    if (parts.length === 2) {
+      return `${parts[1]}, ${parts[0]}`;
+    }
+    return name;
+  }
+    
+
   public doesUserHaveApplicationPermissions(scopes?: string[]): boolean {
     if (this.tokenDetails?.scope?.length > 0 && scopes?.length) {
       return scopes.every(scope => this.tokenDetails.scope.includes(scope));

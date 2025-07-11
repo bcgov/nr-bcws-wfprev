@@ -1,0 +1,29 @@
+.sub-header{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    flex-shrink: 0;
+    color: #000;
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 400;
+    padding: 15px;
+    border-bottom: 1px solid #D9D9D9;
+}
+
+.form-grid {
+  padding: 18px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: space-between;
+}
+
+.form-item {
+  font-family: "BCSans", "Noto Sans", Verdana, Arial, sans-serif !important;
+  flex: 0 0 calc(33% - 20px);
+}
+
+.form-item.full-width {
+  flex: 0 0 100%;
+}
