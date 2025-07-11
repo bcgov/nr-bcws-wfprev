@@ -529,10 +529,9 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
   updateFiscalStatus(index: number, newStatus: string): void {
     const form = this.fiscalForms[index];
     if (!form) return;
-
-    console.log(form.value?.planFiscalStatusCode)
-    console.log(form.value?.planFiscalStatusCode?.planFiscalStatusCode)
     
+    // Parse status to plain english if it is IN_PROG
+    // The remaining status do not require such parsing
     const currentStatus = form.value?.planFiscalStatusCode === 'IN_PROG' ? "In Progress" : form.value.planFiscalStatusCode
     const requestedStatus = newStatus === 'IN_PROG' ? "In Progress" : newStatus
 
