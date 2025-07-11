@@ -447,7 +447,7 @@ export class ProjectFilesComponent implements OnInit {
     // Open the confirmation dialog
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       data: { indicator: 'delete-attachment' },
-      width: '500px',
+      width: '600px',
     });
 
     dialogRef.afterClosed().subscribe((confirmed: boolean) => {

@@ -171,4 +171,40 @@ describe('ConfirmationDialogComponent', () => {
       expect(component.onConfirm).toHaveBeenCalled();
     });
   });
+
+  describe('capitalizeFirstLetter()', () => {
+    beforeEach(async () => {
+      await setupComponentWithData({ indicator: 'confirm-fiscal-status-update', currentStatus: 'IN_PROG', newStatus: 'COMPLETE' });
+    });
+
+    it('should capitalize each word', () => {
+      const result = component.capitalizeFirstLetter('in progress');
+      expect(result).toBe('In Progress');
+    });
+
+    it('should return empty string if input is empty', () => {
+      const result = component.capitalizeFirstLetter('');
+      expect(result).toBe('');
+    });
+  });
+
+  describe('confirm-fiscal-status-update', () => {
+    beforeEach(async () => {
+      await setupComponentWithData({
+        indicator: 'confirm-fiscal-status-update',
+        currentStatus: 'in progress',
+        newStatus: 'complete'
+      });
+    });
+
+    it('should generate the correct status update confirmation message', () => {
+      const message = component.dialogMessage;
+      expect(message).toContain('You are about the change the status of this Project from In Progress to Complete');
+    });
+
+    it('should generate the correct title', () => {
+      const titleElement = fixture.nativeElement.querySelector('.title-bar');
+      expect(titleElement.textContent.trim()).toBe('Confirm Change to Complete');
+    });
+  });
 });

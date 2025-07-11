@@ -10,7 +10,7 @@ import { MatIconModule } from '@angular/material/icon';
   standalone: true,
   imports: [
     CommonModule,
-    MatIconModule 
+    MatIconModule
   ],
 })
 export class ConfirmationDialogComponent {
@@ -30,15 +30,21 @@ export class ConfirmationDialogComponent {
     if (this.dialogUsage === 'delete-activity') {
       return this.getDeleteActivityMessage();
     }
+    if (this.dialogUsage === 'confirm-fiscal-status-update') {
+      return this.getConfirmFiscalStatusUpdateMessage();
+    }
     return this.dialogMessages[this.dialogUsage] || '';
   }
 
   get dialogTitle(): string {
+    const newStatus = this.capitalizeFirstLetter(this.data?.newStatus);
     switch (this.dialogUsage) {
       case 'confirm-cancel':
         return 'Confirm Cancel';
       case 'confirm-unsave':
         return 'Confirm Unsave'
+      case 'confirm-fiscal-status-update':
+        return `Confirm Change to ${newStatus}`
       case 'delete-attachment':
         return 'Delete Attachment';
       case 'delete-fiscal-year':
@@ -57,13 +63,20 @@ export class ConfirmationDialogComponent {
     return 'Continue';
   }
 
+  get confirmationIcon(): string {
+    if (this.dialogUsage.startsWith('delete-')) {
+      return '/assets/warning-red.svg';
+    }
+    return '/assets/warning-yellow.svg';
+  }
+
   get isDeleteDialog(): boolean {
     return this.dialogUsage.startsWith('delete-');
   }
 
   constructor(
     private readonly dialogRef: MatDialogRef<ConfirmationDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: { indicator: string, name: string }
+    @Inject(MAT_DIALOG_DATA) public data: { indicator: string, name: string, currentStatus: string, newStatus: string }
   ) {
     this.dialogUsage = this.data?.indicator
   }
@@ -75,6 +88,18 @@ export class ConfirmationDialogComponent {
   getDeleteFiscalYearMessage(): string {
     return `Are you sure you want to delete ${this.data?.name || 'this fiscal year'}? This action cannot be reversed and will immediately remove the Fiscal Year from the Project scope.`;
   }
+
+  getConfirmFiscalStatusUpdateMessage(): string {
+    const currentStatus = this.capitalizeFirstLetter(this.data?.currentStatus);
+    const newStatus = this.capitalizeFirstLetter(this.data?.newStatus);
+    return `You are about the change the status of this Project from ${currentStatus} to ${newStatus}. Do you wish to continue?`
+  }
+
+  capitalizeFirstLetter(status: string): string {
+    if (!status) return '';
+    return status.toLowerCase().split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+  }
+
   onGoBack(): void {
     this.dialogRef.close(false);
   }

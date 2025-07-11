@@ -554,7 +554,7 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
     if (this.isFormDirty()) {
       const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
         data: { indicator: 'confirm-unsave' },
-        width: '500px',
+        width: '600px',
       });
       return dialogRef.afterClosed();
     }

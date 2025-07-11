@@ -39,12 +39,12 @@
   display: flex;
   align-items: center;
   background: #FFF;
-  padding: 16px 24px;
+  padding: 20px 24px;
   color: #2D2D2D;
   font-family: var(--wf-font-family-main);
   font-size: 20px;
   font-style: normal;
-  font-weight: 400;
+  font-weight: 700;
   line-height: 18px;
   /* 100% */
   letter-spacing: 0.18px;
@@ -52,7 +52,7 @@
 }
 
 .dialog-content {
-  padding: 24px 24px 0px;
+  padding: 8px 24px;
 
   .form-row {
     display: flex;
@@ -139,7 +139,7 @@
 .button-row {
   display: flex;
   height: 43px;
-  padding: 14px 17px 14px 23px;
+  padding: 14px 24px 14px 23px;
   justify-content: flex-end;
   align-items: flex-start;
   gap: 14px;
@@ -153,9 +153,10 @@
   }
 
   button.primary {
-    background-color: var(--wf-primary-color);
-    color: #fff;
+    background-color: #fff;
+    color: #2D2D2D;
     font-family: var(--wf-font-family-main);
+    border: 1px solid #353433;
   }
 
   button.primary:disabled {
