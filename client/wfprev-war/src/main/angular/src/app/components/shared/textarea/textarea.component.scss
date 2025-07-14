@@ -1,0 +1,30 @@
+:host {
+  font-family: var(--wf-font-family-main) !important;
+}
+
+.form-item {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  
+  label {
+    color: #282828;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+  }
+
+  textarea {
+    width: 100%;
+    padding: 8px;
+    font-family: inherit;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+
+  .error {
+    color: red;
+    font-size: 12px;
+    margin-top: 4px;
+  }
+}

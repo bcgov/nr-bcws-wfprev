@@ -1,0 +1,8 @@
+.date-picker {
+  padding-top: 8px;
+  max-width: 180px !important;
+}
+
+:host ::ng-deep .mat-input-element {
+  text-align: center;
+}

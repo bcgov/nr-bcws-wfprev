@@ -347,6 +347,12 @@ mat-expansion-panel {
   width: 100%;
 }
 
+.fiscal-and-endorsement {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
 .activities-panel {
   flex: 0 0 69%;
 }

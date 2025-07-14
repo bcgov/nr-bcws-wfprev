@@ -143,3 +143,8 @@ mat-icon,
   margin-right: 8px;
   border-radius: 2px;
 }
+
+::ng-deep .mdc-text-field--filled:not(.mdc-text-field--disabled) {
+  background-color: white !important;
+  padding: 8px 12px;
+}

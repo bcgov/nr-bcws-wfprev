@@ -1,0 +1,16 @@
+<div class="form-item full-width">
+  <label>
+    {{ label }}
+  </label>
+  <textarea
+    [formControl]="control"
+    [rows]="rows"
+    [placeholder]="placeholder"
+  ></textarea>
+  <div
+    class="error"
+    *ngIf="control?.hasError('maxlength') && control?.touched"
+  >
+    Max length exceeded.
+  </div>
+</div>
