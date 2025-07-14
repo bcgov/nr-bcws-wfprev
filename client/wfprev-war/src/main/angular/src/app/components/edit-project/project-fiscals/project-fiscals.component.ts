@@ -18,7 +18,7 @@ import { ProjectFiscal } from 'src/app/components/models';
 import { CodeTableServices } from 'src/app/services/code-table-services';
 import { ProjectService } from 'src/app/services/project-services';
 import { CanComponentDeactivate } from 'src/app/services/util/can-deactive.guard';
-import { CodeTableKeys, FiscalStatuses, Messages } from 'src/app/utils/constants';
+import { CodeTableKeys, FiscalStatuses, Messages, ModalMessages, ModalTitles } from 'src/app/utils/constants';
 import { ExpansionIndicatorComponent } from '../../shared/expansion-indicator/expansion-indicator.component';
 import { IconButtonComponent } from 'src/app/components/shared/icon-button/icon-button.component';
 import { SelectFieldComponent } from 'src/app/components/shared/select-field/select-field.component';
@@ -91,7 +91,11 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
   canDeactivate(): Observable<boolean> | boolean {
     if (this.isFormDirty()) {
       const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-        data: { indicator: 'confirm-unsave' },
+        data: {
+          indicator: 'confirm-unsave',
+          title: ModalTitles.CONFIRM_UNSAVE_TITLE,
+          message: ModalMessages.CONFIRM_UNSAVE_MESSAGE
+        },
         width: '600px',
       });
       return dialogRef.afterClosed();
@@ -404,11 +408,13 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
     const fiscalName = this.projectFiscals[this.selectedTabIndex]?.projectFiscalName;
     const fiscalYear = this.projectFiscals[this.selectedTabIndex]?.fiscalYear;
     const formattedYear = fiscalYear ? `${fiscalYear}/${(fiscalYear + 1).toString().slice(-2)}` : null;
+    const yearName = (fiscalName && fiscalYear) ? `${fiscalName}:${formattedYear}` : 'this fiscal year'
 
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       data: {
         indicator: 'delete-fiscal-year',
-        name: (fiscalName && fiscalYear) ? `${fiscalName}:${formattedYear}` : null
+        title: ModalTitles.DELETE_FISCAL_YEAR_TITLE,
+        message: `Are you sure you want to delete ${yearName}? This action cannot be reversed and will immediately remove the Fiscal Year from the Project scope.`
       },
       width: '600px',
     });
@@ -529,17 +535,18 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
   updateFiscalStatus(index: number, newStatus: string): void {
     const form = this.fiscalForms[index];
     if (!form) return;
-    
+
     // Parse status to plain English if it is IN_PROG
     // The remaining status do not require such parsing
-    const currentStatus = form.value?.planFiscalStatusCode === 'IN_PROG' ? "In Progress" : form.value.planFiscalStatusCode
-    const requestedStatus = newStatus === 'IN_PROG' ? "In Progress" : newStatus
+    const currentStatus = form.value?.planFiscalStatusCode === 'IN_PROG' ? "In Progress" : this.capitalizeFirstLetter(form.value.planFiscalStatusCode)
+    const requestedStatus = newStatus === 'IN_PROG' ? "In Progress" : this.capitalizeFirstLetter(newStatus)
+    const message = `You are about the change the status of this Project from ${currentStatus} to ${requestedStatus}. Do you wish to continue?`
 
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       data: {
         indicator: 'confirm-fiscal-status-update',
-        currentStatus: currentStatus,
-        newStatus: requestedStatus
+        title: `Confirm Change to ${requestedStatus}`,
+        message: message
       },
       width: '600px',
     });
@@ -563,6 +570,11 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
     } else {
       this.updateFiscalStatus(index, action);
     }
+  }
+
+  capitalizeFirstLetter(status: string): string {
+    if (!status) return '';
+    return status.toLowerCase().split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
   }
 
 }

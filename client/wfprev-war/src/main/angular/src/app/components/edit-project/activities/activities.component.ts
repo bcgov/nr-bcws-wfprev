@@ -18,7 +18,7 @@ import { ProjectFilesComponent } from 'src/app/components/edit-project/project-d
 import { CodeTableServices } from 'src/app/services/code-table-services';
 import { ProjectService } from 'src/app/services/project-services';
 import { CanComponentDeactivate } from 'src/app/services/util/can-deactive.guard';
-import { Messages } from 'src/app/utils/constants';
+import { Messages, ModalMessages, ModalTitles } from 'src/app/utils/constants';
 import { ExpansionIndicatorComponent } from "../../shared/expansion-indicator/expansion-indicator.component";
 import { IconButtonComponent } from 'src/app/components/shared/icon-button/icon-button.component';
 
@@ -54,16 +54,16 @@ export const CUSTOM_DATE_FORMATS = {
     { provide: MAT_DATE_FORMATS, useValue: CUSTOM_DATE_FORMATS },
     { provide: MAT_DATE_LOCALE, useValue: 'en-CA' }, // Change locale to Canada (YYYY/MM/DD format)
     { provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE] }
-    ],
+  ],
 })
 
-export class ActivitiesComponent implements OnChanges, CanComponentDeactivate{
+export class ActivitiesComponent implements OnChanges, CanComponentDeactivate {
   @Input() fiscalGuid: string = '';
   @Output() boundariesUpdated = new EventEmitter<void>();
 
   messages = Messages;
   isNewActivityBeingAdded = false;
-  
+
   projectGuid = '';
   activities: any[] = [];
   originalActivitiesValues: any[] = [];
@@ -80,15 +80,15 @@ export class ActivitiesComponent implements OnChanges, CanComponentDeactivate{
   projectTypeCode = '';
   isActivityDirty: boolean[] = [];
   expandedPanels: boolean[] = [];
-    constructor(
-      private route: ActivatedRoute,
-      private projectService: ProjectService,
-      private codeTableService: CodeTableServices,
-      private readonly fb: FormBuilder,
-      private readonly snackbarService: MatSnackBar,
-      public readonly dialog: MatDialog,
-      public cd: ChangeDetectorRef
-    ) {}
+  constructor(
+    private route: ActivatedRoute,
+    private projectService: ProjectService,
+    private codeTableService: CodeTableServices,
+    private readonly fb: FormBuilder,
+    private readonly snackbarService: MatSnackBar,
+    public readonly dialog: MatDialog,
+    public cd: ChangeDetectorRef
+  ) { }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['fiscalGuid'] && changes['fiscalGuid'].currentValue) {
@@ -105,11 +105,11 @@ export class ActivitiesComponent implements OnChanges, CanComponentDeactivate{
     const codeTables = [
       { name: 'contractPhaseCodes', embeddedKey: 'contractPhaseCode' },
       { name: 'fundingSourceCodes', embeddedKey: 'fundingSourceCode' },
-      { name: 'silvicultureBaseCodes', embeddedKey: 'silvicultureBaseCode'},
-      { name: 'silvicultureTechniqueCodes', embeddedKey: 'silvicultureTechniqueCode'},
-      { name: 'silvicultureMethodCodes', embeddedKey: 'silvicultureMethodCode'}
+      { name: 'silvicultureBaseCodes', embeddedKey: 'silvicultureBaseCode' },
+      { name: 'silvicultureTechniqueCodes', embeddedKey: 'silvicultureTechniqueCode' },
+      { name: 'silvicultureMethodCodes', embeddedKey: 'silvicultureMethodCode' }
     ];
-  
+
     codeTables.forEach((table) => {
       this.codeTableService.fetchCodeTable(table.name).subscribe({
         next: (data) => {
@@ -153,13 +153,13 @@ export class ActivitiesComponent implements OnChanges, CanComponentDeactivate{
 
   getActivities(callback?: () => void): void {
     if (!this.fiscalGuid) return;
-  
+
     this.projectGuid = this.route.snapshot?.queryParamMap?.get('projectGuid') || '';
-    
-    if (this.projectGuid){
+
+    if (this.projectGuid) {
 
       this.getProjectType(this.projectGuid);
-    
+
       this.projectService.getFiscalActivities(this.projectGuid, this.fiscalGuid).subscribe({
         next: (data) => {
           if (data && data._embedded?.activities) {
@@ -174,9 +174,9 @@ export class ActivitiesComponent implements OnChanges, CanComponentDeactivate{
           } else {
             this.activities = [];
           }
-    
+
           this.originalActivitiesValues = JSON.parse(JSON.stringify(this.activities));
-    
+
           this.activityForms = this.activities.map((activity) => this.createActivityForm(activity));
           this.expandedPanels = this.activities.map((_, i) => this.expandedPanels[i] || false);
 
@@ -199,20 +199,20 @@ export class ActivitiesComponent implements OnChanges, CanComponentDeactivate{
   }
 
   getProjectType(projectGuid: string) {
-        this.projectService.getProjectByProjectGuid(this.projectGuid).subscribe({
-          next: (data) => {
-            this.projectTypeCode = data.projectTypeCode?.projectTypeCode
-          },
-          error: (err) => {
-            console.error('Error fetching project:', err);
-          },
-        });
+    this.projectService.getProjectByProjectGuid(this.projectGuid).subscribe({
+      next: (data) => {
+        this.projectTypeCode = data.projectTypeCode?.projectTypeCode
+      },
+      error: (err) => {
+        console.error('Error fetching project:', err);
+      },
+    });
   }
 
   getFormattedDate(date: string | null): string {
     return date ? moment.utc(date).format('YYYY-MM-DD') : '';
   }
-  
+
 
   createActivityForm(activity?: any): FormGroup {
     const form = this.fb.group({
@@ -220,9 +220,9 @@ export class ActivitiesComponent implements OnChanges, CanComponentDeactivate{
       projectPlanFiscalGuid: [activity?.projectPlanFiscalGuid || ''],
       activityStatusCode: [activity?.activityStatusCode?.activityStatusCode || 'ACTIVE'],
       silvicultureBaseGuid: [activity?.silvicultureBaseGuid || ''],
-      silvicultureTechniqueGuid: [activity?.silvicultureTechniqueGuid || {value: '', disabled: true}],
-      silvicultureMethodGuid: [activity?.silvicultureMethodGuid || {value: '', disabled: true }],
-      riskRatingCode: [activity?.riskRatingCode || {'riskRatingCode':'LOW_RISK'}],
+      silvicultureTechniqueGuid: [activity?.silvicultureTechniqueGuid || { value: '', disabled: true }],
+      silvicultureMethodGuid: [activity?.silvicultureMethodGuid || { value: '', disabled: true }],
+      riskRatingCode: [activity?.riskRatingCode || { 'riskRatingCode': 'LOW_RISK' }],
       contractPhaseCode: [activity?.contractPhaseCode?.contractPhaseCode || ''],
       activityFundingSourceGuid: [activity?.activityFundingSourceGuid || ''],
       activityName: [activity?.activityName || '', [Validators.required]],
@@ -232,7 +232,7 @@ export class ActivitiesComponent implements OnChanges, CanComponentDeactivate{
         activityEndDate: [activity?.activityEndDate ? moment.utc(activity.activityEndDate).format('YYYY-MM-DD') : '', Validators.required]
       }),
       plannedSpendAmount: [activity?.plannedSpendAmount ?? '', [Validators.min(0)]],
-      plannedTreatmentAreaHa: [activity?.plannedTreatmentAreaHa ?? '', [Validators.required,Validators.min(0)]],
+      plannedTreatmentAreaHa: [activity?.plannedTreatmentAreaHa ?? '', [Validators.required, Validators.min(0)]],
       reportedSpendAmount: [activity?.reportedSpendAmount ?? '', [Validators.min(0)]],
       completedAreaHa: [activity?.completedAreaHa ?? '', [Validators.min(0)]],
       isResultsReportableInd: [activity?.isResultsReportableInd || false],
@@ -245,7 +245,7 @@ export class ActivitiesComponent implements OnChanges, CanComponentDeactivate{
     });
     if (activity?.silvicultureBaseGuid) {
       this.filteredTechniqueCode = this.silvicultureTechniqueCode.filter(t => t.silvicultureBaseGuid === activity.silvicultureBaseGuid);
-    }  
+    }
     if (activity?.silvicultureTechniqueGuid) {
       this.filteredMethodCode = this.silvicultureMethodCode.filter(m => m.silvicultureTechniqueGuid === activity.silvicultureTechniqueGuid);
     }
@@ -270,30 +270,30 @@ export class ActivitiesComponent implements OnChanges, CanComponentDeactivate{
   updateTechniqueAndMethodOptions(form: FormGroup, activity?: any) {
     const baseGuid = activity?.silvicultureBaseGuid;
     const techniqueGuid = activity?.silvicultureTechniqueGuid;
-  
+
     const filteredTechniques = baseGuid ? this.silvicultureTechniqueCode.filter(t => t.silvicultureBaseGuid === baseGuid) : [];
     const filteredMethods = techniqueGuid ? this.silvicultureMethodCode.filter(m => m.silvicultureTechniqueGuid === techniqueGuid) : [];
-  
+
     form.patchValue({
       filteredTechniqueCode: filteredTechniques,
       filteredMethodCode: filteredMethods
     });
-  
+
     if (filteredTechniques.length > 0) {
       form.get('silvicultureTechniqueGuid')?.enable();
     } else {
       form.get('silvicultureTechniqueGuid')?.disable();
     }
-  
+
     if (filteredMethods.length > 0) {
       form.get('silvicultureMethodGuid')?.enable();
     } else {
       form.get('silvicultureMethodGuid')?.disable();
     }
-  
+
     this.cd.detectChanges();
   }
-  
+
 
   onBaseChange(baseGuid: string, form: FormGroup) {
     const techniqueControl = form.get('silvicultureTechniqueGuid');
@@ -309,9 +309,9 @@ export class ActivitiesComponent implements OnChanges, CanComponentDeactivate{
       methodControl?.disable();
       return;
     }
-  
+
     const filteredTechniques = this.silvicultureTechniqueCode.filter(t => t.silvicultureBaseGuid === baseGuid);
-  
+
     const currentTechnique = form.get('silvicultureTechniqueGuid')?.value;
     const currentMethod = form.get('silvicultureMethodGuid')?.value;
     const validTechnique = filteredTechniques.find(t => t.silvicultureTechniqueGuid === currentTechnique);
@@ -346,38 +346,38 @@ export class ActivitiesComponent implements OnChanges, CanComponentDeactivate{
       }
     }
 
-  
-    techniqueControl?.enable();  
+
+    techniqueControl?.enable();
     this.updateActivityName(form);
   }
 
   toggleResultsReportableInd(index: number): void {
     const form = this.activityForms[index];
-  
+
     if (!form) return;
-  
+
     const isReportable = form.get('isResultsReportableInd')?.value;
-  
+
     const baseField = form.get('silvicultureBaseGuid');
     const nameField = form.get('activityName');
-  
+
     if (isReportable) {
       baseField?.setValidators([Validators.required]);
       nameField?.disable();
       nameField?.setValue(this.getActivityTitle(index)); // Set name initially
-  
+
       form.get('silvicultureBaseGuid')?.valueChanges.subscribe(() => {
         if (form.get('isResultsReportableInd')?.value) {
           nameField?.setValue(this.getActivityTitle(index));
         }
       });
-  
+
       form.get('silvicultureTechniqueGuid')?.valueChanges.subscribe(() => {
         if (form.get('isResultsReportableInd')?.value) {
           nameField?.setValue(this.getActivityTitle(index));
         }
       });
-  
+
       form.get('silvicultureMethodGuid')?.valueChanges.subscribe(() => {
         if (form.get('isResultsReportableInd')?.value) {
           nameField?.setValue(this.getActivityTitle(index));
@@ -388,23 +388,23 @@ export class ActivitiesComponent implements OnChanges, CanComponentDeactivate{
       nameField?.enable();
       nameField?.setValue(''); // Clear name when toggle is OFF
     }
-  
+
     baseField?.updateValueAndValidity();
     nameField?.updateValueAndValidity();
     this.cd.detectChanges();
   }
-  
-  
+
+
 
   onTechniqueChange(techniqueGuid: string, form: FormGroup) {
     const methodControl = form.get('silvicultureMethodGuid');
-    
+
     if (!techniqueGuid) {
       form.patchValue({
         silvicultureMethodGuid: null,
         filteredMethodCode: []
       }, { emitEvent: false });
-      
+
       methodControl?.disable();
       return;
     }
@@ -435,8 +435,8 @@ export class ActivitiesComponent implements OnChanges, CanComponentDeactivate{
     this.updateActivityName(form);
   }
 
-  onMethodChange(methodGuid: string, form: FormGroup) {  
-    if (methodGuid){
+  onMethodChange(methodGuid: string, form: FormGroup) {
+    if (methodGuid) {
       this.updateActivityName(form);
     }
   }
@@ -446,10 +446,10 @@ export class ActivitiesComponent implements OnChanges, CanComponentDeactivate{
       const baseGuid = form.get('silvicultureBaseGuid')?.value;
       const techniqueGuid = form.get('silvicultureTechniqueGuid')?.value;
       const methodGuid = form.get('silvicultureMethodGuid')?.value;
-  
+
       const baseDesc = this.silvicultureBaseCode.find(b => b.silvicultureBaseGuid === baseGuid)?.description;
       const techniqueDesc = this.silvicultureTechniqueCode.find(t => t.silvicultureTechniqueGuid === techniqueGuid && t.silvicultureBaseGuid === baseGuid)?.description;
-      const methodDesc = this.silvicultureMethodCode.find(m => m.silvicultureMethodGuid === methodGuid && m.silvicultureTechniqueGuid === techniqueGuid)?.description;  
+      const methodDesc = this.silvicultureMethodCode.find(m => m.silvicultureMethodGuid === methodGuid && m.silvicultureTechniqueGuid === techniqueGuid)?.description;
       //  reset technique/method if no longer valid
       if (!techniqueDesc) {
         form.get('silvicultureTechniqueGuid')?.setValue(null, { emitEvent: false });
@@ -458,53 +458,53 @@ export class ActivitiesComponent implements OnChanges, CanComponentDeactivate{
       if (!methodDesc) {
         form.get('silvicultureMethodGuid')?.setValue(null, { emitEvent: false });
       }
-  
+
       //  Generate new activity name
       const newName = [baseDesc, techniqueDesc, methodDesc].filter(Boolean).join(' - ');
-  
+
       form.get('activityName')?.setValue(newName, { emitEvent: false });
-      
+
       this.cd.detectChanges();
     }
   }
 
   getActivityTitle(index: number): string {
     const activity = this.activityForms[index]?.value;
-    
+
     if (!activity) return '';
-  
+
     // If Results Reportable is ON, construct Base - Technique - Method dynamically
     if (activity.isResultsReportableInd) {
       const parts: string[] = [];
-  
+
       const base = this.silvicultureBaseCode.find(b => b.silvicultureBaseGuid === activity.silvicultureBaseGuid)?.description;
       const technique = this.silvicultureTechniqueCode.find(t => t.silvicultureTechniqueGuid === activity.silvicultureTechniqueGuid)?.description;
       const method = this.silvicultureMethodCode.find(m => m.silvicultureMethodGuid === activity.silvicultureMethodGuid)?.description;
-  
+
       if (base) parts.push(base);
       if (technique) parts.push(technique);
       if (method) parts.push(method);
-  
+
       return parts.length ? parts.join(' - ') : '';
-    } 
-  
+    }
+
     // If Results Reportable is OFF, use the Activity Name (if available)
     return activity.activityName?.trim() || '';
   }
-  
-  
-  
+
+
+
   getLastUpdated(index: number) {
     const activity = this.activities[index];
     if (!activity) return ''; // Handle missing data
-    
+
     return moment.utc(activity.updateDate).format('YYYY-MM-DD');
   }
 
   toggleActivityStatus(index: number) {
     const currentStatus = this.activityForms[index].value?.activityStatusCode;
     const newStatus = currentStatus === 'COMPLETED' ? 'ACTIVE' : 'COMPLETED';
-  
+
     this.activityForms[index].patchValue({
       activityStatusCode: newStatus
     });
@@ -516,20 +516,20 @@ export class ActivitiesComponent implements OnChanges, CanComponentDeactivate{
 
     this.isNewActivityBeingAdded = true;
     const newActivity = {};
-    
+
     this.activities.unshift(newActivity);
     this.activityForms.unshift(this.createActivityForm(newActivity));
     this.expandedPanels = [true, ...this.expandedPanels]; // Ensure the new activity is expanded
-  
+
     this.cd.detectChanges();
 
     setTimeout(() => {
-        const newActivityElement = document.getElementById('activity-0');
-        if (newActivityElement) {
-            newActivityElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
+      const newActivityElement = document.getElementById('activity-0');
+      if (newActivityElement) {
+        newActivityElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
     }, 100);
-}
+  }
 
   getRiskIcon(riskCode: string): string {
     const riskMap: { [key: string]: string } = {
@@ -537,10 +537,10 @@ export class ActivitiesComponent implements OnChanges, CanComponentDeactivate{
       'MODRT_RISK': 'medium-risk',
       'HIGH_RISK': 'high-risk'
     };
-  
+
     return riskMap[riskCode] || 'none-risk';
   }
-  
+
   getRiskDescription(description: string | null | undefined): string {
     return description || 'None'; // Default to "None" if description is empty or null
   }
@@ -550,7 +550,7 @@ export class ActivitiesComponent implements OnChanges, CanComponentDeactivate{
     const form = this.activityForms[index];
     if (!form) return;
     let formData = { ...form.getRawValue() };
-  
+
     //extract start and end dates separetely
     const activityStartDate = formData.activityDateRange?.activityStartDate
       ? moment.utc(formData.activityDateRange.activityStartDate, 'YYYY-MM-DD').toISOString()
@@ -559,18 +559,18 @@ export class ActivitiesComponent implements OnChanges, CanComponentDeactivate{
     const activityEndDate = formData.activityDateRange?.activityEndDate
       ? moment.utc(formData.activityDateRange.activityEndDate, 'YYYY-MM-DD').toISOString()
       : null;
-    let updatedData:any = {
+    let updatedData: any = {
       ...originalData, // Include all original data and overwrite with form data
       ...formData,
       activityStartDate,
       activityEndDate,
-      contractPhaseCode: typeof formData.contractPhaseCode === 'string' 
-        ? { contractPhaseCode: formData.contractPhaseCode}
+      contractPhaseCode: typeof formData.contractPhaseCode === 'string'
+        ? { contractPhaseCode: formData.contractPhaseCode }
         : formData.contractPhaseCode,
-      activityStatusCode: typeof formData.activityStatusCode === 'string' 
-        ? { activityStatusCode: formData.activityStatusCode } 
+      activityStatusCode: typeof formData.activityStatusCode === 'string'
+        ? { activityStatusCode: formData.activityStatusCode }
         : formData.activityStatusCode,
-      
+
     };
     delete updatedData.activityDateRange;
 
@@ -584,9 +584,9 @@ export class ActivitiesComponent implements OnChanges, CanComponentDeactivate{
       'activityEndDate',
       'activityName'
     ]);
-  
+
     const isUpdate = !!this.activities[index]?.activityGuid;
-  
+
     if (isUpdate) {
       // Update existing activity
       this.projectService.updateFiscalActivities(this.projectGuid, this.fiscalGuid, updatedData.activityGuid, updatedData).subscribe({
@@ -638,11 +638,11 @@ export class ActivitiesComponent implements OnChanges, CanComponentDeactivate{
   expandAndScrollToActivity(activityGuid: string): void {
     // Find the index of the newly saved activity
     const index = this.activities.findIndex(activity => activity.activityGuid === activityGuid);
-  
+
     if (index !== -1) {
       // Expand only the newly saved activity
       this.expandedPanels = this.activities.map((_, i) => i === index);
-  
+
       // Scroll to the newly saved activity
       setTimeout(() => {
         const savedActivityElement = document.getElementById(`activity-${index}`);
@@ -667,10 +667,10 @@ export class ActivitiesComponent implements OnChanges, CanComponentDeactivate{
     );
   }
 
-  
+
   onCancelActivity(index: number): void {
     if (!this.activityForms[index]) return;
-  
+
     const isNewEntry = !this.activities[index]?.activityGuid;
     const originalData = this.originalActivitiesValues[index];
 
@@ -687,62 +687,66 @@ export class ActivitiesComponent implements OnChanges, CanComponentDeactivate{
         activityStartDate: originalData.activityStartDate ? moment.utc(originalData.activityStartDate).format('YYYY-MM-DD') : '',
         activityEndDate: originalData.activityEndDate ? moment.utc(originalData.activityEndDate).format('YYYY-MM-DD') : '',
       }, { emitEvent: false });
-  
+
       this.activityForms[index].markAsPristine();
       this.activityForms[index].markAsUntouched();
       this.isActivityDirty[index] = false;
-  
+
       this.cd.detectChanges();
     }
   }
 
-  onDeleteActivity(index:number): void{
+  onDeleteActivity(index: number): void {
     const data = this.activityForms[index]?.value;
     const activityGuid = data.activityGuid;
-    const activityName = data.activityName;
+    const activityName = data?.activityName || 'this activity';
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-      data: { indicator: 'delete-activity', name:activityName},
+      data: {
+        indicator: 'delete-activity', name: activityName,
+        title: ModalTitles.DELETE_ACTIVITY_TITLE,
+        message: `Are you sure you want to delete ${activityName}? This action cannot be reversed and will immediately remove the activity from the Fiscal scope.`
+      },
       width: '600px',
     });
-  
+
     dialogRef.afterClosed().subscribe((confirmed: boolean) => {
       if (confirmed) {
-          if (!activityGuid) {
-            // If no activityGuid, simply remove it from the local list
-            this.activities.splice(index, 1);
-            this.activityForms.splice(index, 1);
-            this.isNewActivityBeingAdded = false;
-            return;
-          }
-          // Delete from the service call if it's a saved fiscal year
-          this.projectService.deleteActivity(this.projectGuid, this.fiscalGuid, activityGuid)
-            .subscribe({
-              next: () => {
-                this.snackbarService.open(
-                  this.messages.activityDeletedSuccess,
-                  'OK',
-                  { duration: 5000, panelClass: 'snackbar-success' }
-                );
-                this.getActivities()
-              },
-              error: () => {
-                this.snackbarService.open(
-                  this.messages.activityDeletedFailure,
-                  'OK',
-                  { duration: 5000, panelClass: 'snackbar-error' }
-                );
-              }
-            });
+        if (!activityGuid) {
+          // If no activityGuid, simply remove it from the local list
+          this.activities.splice(index, 1);
+          this.activityForms.splice(index, 1);
+          this.isNewActivityBeingAdded = false;
+          return;
         }
+        // Delete from the service call if it's a saved fiscal year
+        this.projectService.deleteActivity(this.projectGuid, this.fiscalGuid, activityGuid)
+          .subscribe({
+            next: () => {
+              this.snackbarService.open(
+                this.messages.activityDeletedSuccess,
+                'OK',
+                { duration: 5000, panelClass: 'snackbar-success' }
+              );
+              this.getActivities()
+            },
+            error: () => {
+              this.snackbarService.open(
+                this.messages.activityDeletedFailure,
+                'OK',
+                { duration: 5000, panelClass: 'snackbar-error' }
+              );
+            }
+          });
       }
+    }
     )
-      
+
   }
 
   canDeleteActivity(index: number): boolean {
     const activity = this.activityForms[index]?.value;
     if (!activity) return false;
-  
+
     // Delete is available when:
     // Activity is not set to Complete
     // Does not have a Performance update on the Fiscal
@@ -751,11 +755,11 @@ export class ActivitiesComponent implements OnChanges, CanComponentDeactivate{
     // The Activity has been started ie. there is a Performance Update on the Fiscal
     // The Activity has polygon files associated to it
     // The activity is marked as Complete
-  
+
     // We dont have permissions and performance implemneted yet. Check single condition that prevent deletion
-    return activity.activityStatusCode !== 'COMPLETED'; 
+    return activity.activityStatusCode !== 'COMPLETED';
   }
-  
+
   getDeleteIcon(index: number): string {
     return this.canDeleteActivity(index) ? '/assets/delete-icon.svg' : '/assets/delete-disabled-icon.svg';
   }
@@ -767,7 +771,11 @@ export class ActivitiesComponent implements OnChanges, CanComponentDeactivate{
   canDeactivate(): Observable<boolean> | boolean {
     if (this.isFormDirty()) {
       const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-        data: { indicator: 'confirm-unsave' },
+        data: {
+          indicator: 'confirm-unsave',
+          title: ModalTitles.CONFIRM_UNSAVE_TITLE,
+          message: ModalMessages.CONFIRM_UNSAVE_MESSAGE
+        },
         width: '600px',
       });
       return dialogRef.afterClosed();

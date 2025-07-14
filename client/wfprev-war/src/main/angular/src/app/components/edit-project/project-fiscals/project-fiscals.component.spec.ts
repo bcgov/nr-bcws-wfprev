@@ -10,6 +10,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ConfirmationDialogComponent } from 'src/app/components/confirmation-dialog/confirmation-dialog.component';
 import { Component } from '@angular/core';
 import { PlanFiscalStatusIcons } from 'src/app/utils/tools';
+import { ModalMessages, ModalTitles } from 'src/app/utils/constants';
 
 const mockProjectService = {
   getProjectFiscalsByProjectGuid: jasmine.createSpy('getProjectFiscalsByProjectGuid').and.returnValue(
@@ -273,7 +274,8 @@ describe('ProjectFiscalsComponent', () => {
     expect(component.dialog.open).toHaveBeenCalledWith(ConfirmationDialogComponent, {
       data: {
         indicator: 'delete-fiscal-year',
-        name: 'My Plan:2025/26'
+        title: ModalTitles.DELETE_FISCAL_YEAR_TITLE,
+        message: `Are you sure you want to delete My Plan:2025/26? This action cannot be reversed and will immediately remove the Fiscal Year from the Project scope.`
       },
       width: '600px',
     });
@@ -371,7 +373,11 @@ describe('ProjectFiscalsComponent', () => {
     if (result instanceof Observable) {
       result.subscribe((value: boolean) => {
         expect(component.dialog.open).toHaveBeenCalledWith(ConfirmationDialogComponent, {
-          data: { indicator: 'confirm-unsave' },
+          data: {
+            indicator: 'confirm-unsave', 
+            title: ModalTitles.CONFIRM_UNSAVE_TITLE,
+            message: ModalMessages.CONFIRM_UNSAVE_MESSAGE
+          },
           width: '600px',
         });
         expect(value).toBe(false);

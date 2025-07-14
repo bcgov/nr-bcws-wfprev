@@ -4,7 +4,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { MatDialog , MatDialogRef } from '@angular/material/dialog';
 import { ConfirmationDialogComponent } from 'src/app/components/confirmation-dialog/confirmation-dialog.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { Messages } from 'src/app/utils/constants';
+import { Messages, ModalMessages, ModalTitles } from 'src/app/utils/constants';
 import { ProjectService } from 'src/app/services/project-services';
 import { CodeTableServices } from 'src/app/services/code-table-services';
 import { Project } from 'src/app/components/models';
@@ -313,6 +313,8 @@ export class CreateNewProjectDialogComponent implements OnInit {
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       data: {
         indicator: 'confirm-cancel',
+        title: ModalTitles.CONFIRM_CANCEL_TITLE,
+        message: ModalMessages.CONFIRM_CANCEL_MESSAGE
       },
       width: '600px',
     });
