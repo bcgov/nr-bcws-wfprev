@@ -33,13 +33,6 @@ export class ConfirmationDialogComponent {
     return 'Continue';
   }
 
-  get confirmationIcon(): string {
-    if (this.dialogUsage.startsWith('delete-')) {
-      return '/assets/warning-red.svg';
-    }
-    return '/assets/warning-yellow.svg';
-  }
-
   get isDeleteDialog(): boolean {
     return this.dialogUsage.startsWith('delete-');
   }
