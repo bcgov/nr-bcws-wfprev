@@ -18,7 +18,7 @@ import { ProjectFiscal } from 'src/app/components/models';
 import { CodeTableServices } from 'src/app/services/code-table-services';
 import { ProjectService } from 'src/app/services/project-services';
 import { CanComponentDeactivate } from 'src/app/services/util/can-deactive.guard';
-import { CodeTableKeys, FiscalStatuses, Messages } from 'src/app/utils/constants';
+import { CodeTableKeys, FiscalStatuses, Messages, ModalMessages, ModalTitles } from 'src/app/utils/constants';
 import { ExpansionIndicatorComponent } from '../../shared/expansion-indicator/expansion-indicator.component';
 import { IconButtonComponent } from 'src/app/components/shared/icon-button/icon-button.component';
 import { SelectFieldComponent } from 'src/app/components/shared/select-field/select-field.component';
@@ -56,7 +56,7 @@ import { TokenService } from 'src/app/services/token.service';
     EndorsementApprovalComponent,
   ]
 })
-export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  {
+export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
   @ViewChild(ActivitiesComponent) activitiesComponent!: ActivitiesComponent;
   @ViewChild('fiscalMapRef') fiscalMapComponent!: FiscalMapComponent;
   currentUser: string = '';
@@ -70,7 +70,7 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  
   activityCategoryCode: any[] = [];
   planFiscalStatusCode: any[] = [];
   proposalTypeCode: any[] = [];
-  originalFiscalValues: any[] = []
+  originalFiscalValues: any[] = [];
   readonly CodeTableKeys = CodeTableKeys;
   readonly FiscalStatuses = FiscalStatuses;
 
@@ -94,13 +94,16 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  
       this.currentUser = formattedName;
     }
   }
-  
 
   canDeactivate(): Observable<boolean> | boolean {
     if (this.isFormDirty()) {
       const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-        data: { indicator: 'confirm-unsave' },
-        width: '500px',
+        data: {
+          indicator: 'confirm-unsave',
+          title: ModalTitles.CONFIRM_UNSAVE_TITLE,
+          message: ModalMessages.CONFIRM_UNSAVE_MESSAGE
+        },
+        width: '600px',
       });
       return dialogRef.afterClosed();
     }
@@ -110,27 +113,26 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  
   isFormDirty(): boolean {
     const fiscalDirty = this.fiscalForms.some(form => form.dirty);
     const activitiesDirty = this.activitiesComponent?.isFormDirty?.() ?? false;
-
     return fiscalDirty || activitiesDirty;
   }
 
   generateFiscalYears(): void {
     const currentYear = new Date().getFullYear();
-    const startYear = currentYear - 5; // 5 years in the past
-    const endYear = currentYear + 5;  // 5 years in the future
+    const startYear = currentYear - 5;
+    const endYear = currentYear + 5;
     this.fiscalYears = Array.from({ length: endYear - startYear + 1 }, (_, i) => {
       const year = startYear + i;
       return `${year}/${(year + 1).toString().slice(-2)}`;
     });
   }
-  
+
   loadCodeTables(): void {
     const codeTables = [
       { name: 'activityCategoryCodes', embeddedKey: CodeTableKeys.ACTIVITY_CATEGORY_CODE },
       { name: 'planFiscalStatusCodes', embeddedKey: CodeTableKeys.PLAN_FISCAL_STATUS_CODE },
-      { name: 'proposalTypeCodes', embeddedKey: CodeTableKeys.PROPOSAL_TYPE_CODE}
+      { name: 'proposalTypeCodes', embeddedKey: CodeTableKeys.PROPOSAL_TYPE_CODE }
     ];
-  
+
     codeTables.forEach((table) => {
       this.fetchData(
         this.codeTableService.fetchCodeTable(table.name),
@@ -165,8 +167,8 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  
 
   sortArray<T>(array: T[], key?: keyof T): T[] {
     if (!array) return [];
-    return key 
-      ? array.sort((a, b) => String(a[key]).localeCompare(String(b[key]))) 
+    return key
+      ? array.sort((a, b) => String(a[key]).localeCompare(String(b[key])))
       : array.sort((a, b) => String(a).localeCompare(String(b)));
   }
 
@@ -188,22 +190,21 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  
       firstNationsPartner: [fiscal?.firstNationsPartner ?? ''],
       projectFiscalDescription: [fiscal?.projectFiscalDescription ?? '', [Validators.required, Validators.maxLength(500)]],
       otherPartner: [fiscal?.otherPartner ?? ''],
-      totalCostEstimateAmount: [fiscal?.totalCostEstimateAmount ?? '' , [Validators.min(0)]],
+      totalCostEstimateAmount: [fiscal?.totalCostEstimateAmount ?? '', [Validators.min(0)]],
       forecastAmount: [fiscal?.forecastAmount ?? ''],
       cfsProjectCode: [fiscal?.cfsProjectCode ?? '', [Validators.maxLength(25)]],
       ancillaryFundingProvider: [fiscal?.ancillaryFundingProvider ?? '', [Validators.maxLength(100)]],
-      fiscalAncillaryFundAmount: [fiscal?.fiscalAncillaryFundAmount ?? '' , [Validators.min(0)]],
-      fiscalReportedSpendAmount: [fiscal?.fiscalReportedSpendAmount ?? '' , [Validators.min(0)]],
+      fiscalAncillaryFundAmount: [fiscal?.fiscalAncillaryFundAmount ?? '', [Validators.min(0)]],
+      fiscalReportedSpendAmount: [fiscal?.fiscalReportedSpendAmount ?? '', [Validators.min(0)]],
       cfsActualSpend: [fiscal?.cfsActualSpend ?? ''],
-      fiscalForecastAmount: [fiscal?.fiscalForecastAmount ?? '' , [Validators.min(0)]],
-      fiscalActualAmount: [fiscal?.fiscalActualAmount ?? '' , [Validators.min(0)]],
+      fiscalForecastAmount: [fiscal?.fiscalForecastAmount ?? '', [Validators.min(0)]],
+      fiscalActualAmount: [fiscal?.fiscalActualAmount ?? '', [Validators.min(0)]],
       projectPlanFiscalGuid: [fiscal?.projectPlanFiscalGuid ?? ''],
       isApprovedInd: [fiscal?.isApprovedInd ?? false]
     });
-    
     return form;
-    
   }
+
 
   loadProjectFiscals(markFormsPristine: boolean = false): void {
     const previousTabIndex = this.selectedTabIndex;
