@@ -42,6 +42,7 @@
                         [status]="fiscal.planFiscalStatusCode?.planFiscalStatusCode"
                         [isApproved]="!fiscalForms[i].get('isApprovedInd')?.value"
                         [index]="i"
+                        [fiscal]="fiscal"
                         (actionSelected)="onFiscalAction($event)">
                       </wfprev-dropdown-button>
                     </div>

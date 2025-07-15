@@ -27,3 +27,15 @@
 .form-item.full-width {
   flex: 0 0 100%;
 }
+
+.inline-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  width: 100%;
+}
+
+.inline-grid .form-item {
+  flex: 0 0 calc(33% - 16px);
+  max-width: 200px;
+}

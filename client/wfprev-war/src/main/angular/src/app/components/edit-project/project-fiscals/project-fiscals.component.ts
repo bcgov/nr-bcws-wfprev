@@ -356,7 +356,6 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  
         submittedByUserGuid: updatedData.submittedByUserGuid,
         submittedByUserUserid: updatedData.submittedByUserUserid,
         submissionTimestamp: updatedData.submissionTimestamp,
-        isApprovedInd: isUpdate ? updatedData.isApprovedInd : false,
         isDelayedInd: isUpdate ? updatedData.isDelayedInd : false,
         fiscalForecastAmount: updatedData.fiscalForecastAmount,
         totalCostEstimateAmount: updatedData.totalCostEstimateAmount,
@@ -364,7 +363,15 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  
         ancillaryFundingProvider: updatedData.ancillaryFundingProvider,
         otherPartner: updatedData.otherPartner,
         proposalTypeCode: updatedData.proposalTypeCode,
+        endorserName: originalData.endorserName,
+        endorsementTimestamp: originalData.endorsementTimestamp,
+        endorsementCode: originalData.endorsementCode,
+        endorsementComment: originalData.endorsementComment,
+        approverName: originalData.approverName,
+        approvedTimestamp: originalData.approvedTimestamp,
+        isApprovedInd: originalData.isApprovedInd,
       };
+
       if (isUpdate) {
         // update the existing fiscal
         this.projectService.updateProjectFiscal(this.projectGuid, updatedData.projectPlanFiscalGuid, projectFiscal).subscribe({
@@ -556,54 +563,73 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  
   onSaveEndorsement(updatedFiscal: ProjectFiscal): void {
     const index = this.selectedTabIndex;
 
-    // Defensive: make sure we have a fiscal at that index
     if (!this.projectFiscals[index]) return;
 
-    // Merge the updated fields into the existing fiscal
+    // Merge updated fields into the existing fiscal
     this.projectFiscals[index] = {
       ...this.projectFiscals[index],
       ...updatedFiscal
     };
 
-    // Optionally also patch the form so it's updated visually
-    this.fiscalForms[index].patchValue({
-      isApprovedInd: updatedFiscal.isApprovedInd ?? false,
-      endorsementComment: updatedFiscal.endorsementComment ?? '',
-      endorsementDate: updatedFiscal.endorsementTimestamp
-        ? new Date(updatedFiscal.endorsementTimestamp)
-        : null
-    });
-
-    // Mark form as pristine since we just saved it
-    this.fiscalForms[index].markAsPristine();
-
-    // Immediately call API to persist changes
     const fiscalGuid = this.projectFiscals[index]?.projectPlanFiscalGuid;
 
-    if (fiscalGuid) {
-      this.projectService.updateProjectFiscal(
-        this.projectGuid,
-        fiscalGuid,
-        this.projectFiscals[index]
-      ).subscribe({
-        next: () => {
+    if (!fiscalGuid) return;
+
+    this.projectService.updateProjectFiscal(
+      this.projectGuid,
+      fiscalGuid,
+      this.projectFiscals[index]
+    ).subscribe({
+      next: () => {
+        const isApproved = updatedFiscal.isApprovedInd === true;
+        const isEndorsed = updatedFiscal.endorsementCode?.endorsementCode === 'ENDORSED';
+        const currentStatus = updatedFiscal.planFiscalStatusCode?.planFiscalStatusCode
+
+        if (isApproved && isEndorsed && currentStatus === FiscalStatuses.PROPOSED) {
+          const promotionPayload: ProjectFiscal = {
+            ...this.projectFiscals[index],
+            planFiscalStatusCode: { planFiscalStatusCode: 'PREPARED' }
+          };
+
+
+          this.projectService.updateProjectFiscal(
+            this.projectGuid,
+            fiscalGuid,
+            promotionPayload
+          ).subscribe({
+            next: () => {
+              this.snackbarService.open(
+                this.messages.projectFiscalUpdatedSuccess,
+                'OK',
+                { duration: 5000, panelClass: 'snackbar-success' }
+              );
+              this.loadProjectFiscals(true);
+            },
+            error: () => {
+              this.snackbarService.open(
+                this.messages.projectFiscalUpdatedFailure,
+                'OK',
+                { duration: 5000, panelClass: 'snackbar-error' }
+              );
+            }
+          });
+        } else {
           this.snackbarService.open(
             this.messages.projectFiscalUpdatedSuccess,
             'OK',
-            { duration: 5000, panelClass: 'snackbar-success' },
+            { duration: 5000, panelClass: 'snackbar-success' }
           );
-          // Optionally refresh all data to stay in sync
           this.loadProjectFiscals(true);
-        },
-        error: () => {
-          this.snackbarService.open(
-            this.messages.projectFiscalUpdatedFailure,
-            'OK',
-            { duration: 5000, panelClass: 'snackbar-error' }
-          );
         }
-      });
-    }
+      },
+      error: () => {
+        this.snackbarService.open(
+          this.messages.projectFiscalUpdatedFailure,
+          'OK',
+          { duration: 5000, panelClass: 'snackbar-error' }
+        );
+      }
+    });
   }
 
 

@@ -1,8 +1,22 @@
 .date-picker {
-  padding-top: 8px;
-  max-width: 180px !important;
+  max-width: 180px ;
+  color: #282828;
+  font-size: 14px;
 }
 
 :host ::ng-deep .mat-input-element {
   text-align: center;
+}
+
+:host ::ng-deep .mat-mdc-form-field .mdc-text-field--filled {
+  background-color: transparent;
+  max-width: 160px;
+  width: 160px;
+  padding-left: 4px;
+}
+
+:host ::ng-deep .mat-mdc-form-field-infix {
+  padding-top: 12px !important;
+  padding-bottom: 0px !important;
+  min-height: 0 !important;
 }

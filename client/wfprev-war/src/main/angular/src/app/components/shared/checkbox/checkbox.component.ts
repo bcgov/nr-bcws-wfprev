@@ -6,7 +6,8 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
   selector: 'wfprev-checkbox',
   standalone: true,
   imports: [ReactiveFormsModule, MatCheckboxModule],
-  templateUrl: './checkbox.component.html'
+  templateUrl: './checkbox.component.html',
+  styleUrl: './checkbox.component.scss'
 })
 export class CheckboxComponent {
   @Input() formControlName!: string;
