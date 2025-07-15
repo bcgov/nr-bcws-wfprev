@@ -12,6 +12,7 @@ import { DatePickerComponent } from 'src/app/components/shared/date-picker/date-
 import { DetailsContainerComponent } from 'src/app/components/shared/details-container/details-container.component';
 import { ReadOnlyFieldComponent } from 'src/app/components/shared/read-only-field/read-only-field.component';
 import { TextareaComponent } from 'src/app/components/shared/textarea/textarea.component';
+import { EndorsementCode, FiscalStatuses } from 'src/app/utils/constants';
 
 @Component({
   selector: 'wfprev-endorsement-approval',
@@ -107,8 +108,8 @@ export class EndorsementApprovalComponent implements OnChanges {
     const currentStatusCode = this.fiscal?.planFiscalStatusCode?.planFiscalStatusCode;
     const shouldResetToPrepared =
       (endorsementRemoved || approvalRemoved) &&
-      currentStatusCode !== 'DRAFT' &&
-      currentStatusCode !== 'PROPOSED';
+      currentStatusCode !== FiscalStatuses.DRAFT &&
+      currentStatusCode !== FiscalStatuses.PROPOSED;
 
     const updatedFiscal: ProjectFiscal = {
       ...this.fiscal,
@@ -119,7 +120,7 @@ export class EndorsementApprovalComponent implements OnChanges {
         ? new Date(formValue.endorsementDate).toISOString()
         : undefined,
       endorsementCode: formValue.endorseFiscalYear
-        ? { endorsementCode: 'ENDORSED' }
+        ? { endorsementCode: EndorsementCode.ENDORSED }
         : undefined,
       endorsementComment: formValue.endorsementComment ?? undefined,
 
@@ -133,7 +134,7 @@ export class EndorsementApprovalComponent implements OnChanges {
 
        // Status logic: (return to PREPARED if removed and not DRAFT/PROPOSED)
       planFiscalStatusCode: shouldResetToPrepared
-        ? { planFiscalStatusCode: 'PREPARED' }
+        ? { planFiscalStatusCode: FiscalStatuses.PREPARED }
         : this.fiscal.planFiscalStatusCode,
     };
 

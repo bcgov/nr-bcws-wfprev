@@ -111,3 +111,9 @@ export const ModalMessages = {
   CONFIRM_UNSAVE_MESSAGE: 'Are you sure you want to leave this page? The changes you made will not be saved.',
   DELETE_ATTACHMENT_MESSAGE: 'Are you sure you want to delete this file? ',
 }
+
+export const EndorsementCode = {
+  NOT_ENDORS: 'NOT_ENDORS',
+  ENDORSED: 'ENDORSED',
+  FOLLOW_UP: 'FOLLOW_UP'
+}

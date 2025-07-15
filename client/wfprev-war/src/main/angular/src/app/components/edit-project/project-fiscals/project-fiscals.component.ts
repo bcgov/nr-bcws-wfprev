@@ -14,11 +14,11 @@ import { Observable } from 'rxjs';
 import { ConfirmationDialogComponent } from 'src/app/components/confirmation-dialog/confirmation-dialog.component';
 import { ActivitiesComponent } from 'src/app/components/edit-project/activities/activities.component';
 import { FiscalMapComponent } from 'src/app/components/edit-project/fiscal-map/fiscal-map.component';
-import { ProjectFiscal } from 'src/app/components/models';
+import { ActivityCategoryCodeModel, ProjectFiscal } from 'src/app/components/models';
 import { CodeTableServices } from 'src/app/services/code-table-services';
 import { ProjectService } from 'src/app/services/project-services';
 import { CanComponentDeactivate } from 'src/app/services/util/can-deactive.guard';
-import { CodeTableKeys, FiscalStatuses, Messages, ModalMessages, ModalTitles } from 'src/app/utils/constants';
+import { CodeTableKeys, EndorsementCode, FiscalStatuses, Messages, ModalMessages, ModalTitles } from 'src/app/utils/constants';
 import { ExpansionIndicatorComponent } from '../../shared/expansion-indicator/expansion-indicator.component';
 import { IconButtonComponent } from 'src/app/components/shared/icon-button/icon-button.component';
 import { SelectFieldComponent } from 'src/app/components/shared/select-field/select-field.component';
@@ -67,7 +67,7 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
   selectedTabIndex = 0;
   currentFiscalGuid = '';
   messages = Messages;
-  activityCategoryCode: any[] = [];
+  activityCategoryCode: ActivityCategoryCodeModel[] = [];
   planFiscalStatusCode: any[] = [];
   proposalTypeCode: any[] = [];
   originalFiscalValues: any[] = [];
@@ -89,7 +89,7 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
     this.loadCodeTables();
     this.generateFiscalYears();
     this.loadProjectFiscals();
-    const formattedName = this.tokenService.getUserFullNameLastFirst();
+    const formattedName = this.tokenService.getUserFullName(true);
     if (formattedName) {
       this.currentUser = formattedName;
     }
@@ -586,17 +586,12 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
 
   onSaveEndorsement(updatedFiscal: ProjectFiscal): void {
     const index = this.selectedTabIndex;
-
     if (!this.projectFiscals[index]) return;
 
-    // Merge updated fields into the existing fiscal
-    this.projectFiscals[index] = {
-      ...this.projectFiscals[index],
-      ...updatedFiscal
-    };
+    // Merge updated fields
+    this.mergeFiscalUpdates(index, updatedFiscal);
 
     const fiscalGuid = this.projectFiscals[index]?.projectPlanFiscalGuid;
-
     if (!fiscalGuid) return;
 
     this.projectService.updateProjectFiscal(
@@ -604,56 +599,59 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
       fiscalGuid,
       this.projectFiscals[index]
     ).subscribe({
-      next: () => {
-        const isApproved = updatedFiscal.isApprovedInd === true;
-        const isEndorsed = updatedFiscal.endorsementCode?.endorsementCode === 'ENDORSED';
-        const currentStatus = updatedFiscal.planFiscalStatusCode?.planFiscalStatusCode
-
-        if (isApproved && isEndorsed && currentStatus === FiscalStatuses.PROPOSED) {
-          const promotionPayload: ProjectFiscal = {
-            ...this.projectFiscals[index],
-            planFiscalStatusCode: { planFiscalStatusCode: 'PREPARED' }
-          };
-
-
-          this.projectService.updateProjectFiscal(
-            this.projectGuid,
-            fiscalGuid,
-            promotionPayload
-          ).subscribe({
-            next: () => {
-              this.snackbarService.open(
-                this.messages.projectFiscalUpdatedSuccess,
-                'OK',
-                { duration: 5000, panelClass: 'snackbar-success' }
-              );
-              this.loadProjectFiscals(true);
-            },
-            error: () => {
-              this.snackbarService.open(
-                this.messages.projectFiscalUpdatedFailure,
-                'OK',
-                { duration: 5000, panelClass: 'snackbar-error' }
-              );
-            }
-          });
-        } else {
-          this.snackbarService.open(
-            this.messages.projectFiscalUpdatedSuccess,
-            'OK',
-            { duration: 5000, panelClass: 'snackbar-success' }
-          );
-          this.loadProjectFiscals(true);
-        }
-      },
-      error: () => {
-        this.snackbarService.open(
-          this.messages.projectFiscalUpdatedFailure,
-          'OK',
-          { duration: 5000, panelClass: 'snackbar-error' }
-        );
-      }
+      next: () => this.handleEndorsementUpdateSuccess(index, updatedFiscal),
+      error: () => this.showSnackbar(this.messages.projectFiscalUpdatedFailure, false)
     });
+  }
+
+  mergeFiscalUpdates(index: number, updatedFiscal: ProjectFiscal): void {
+    this.projectFiscals[index] = {
+      ...this.projectFiscals[index],
+      ...updatedFiscal
+    };
+  }
+
+  handleEndorsementUpdateSuccess(index: number, updatedFiscal: ProjectFiscal): void {
+    const isApproved = updatedFiscal.isApprovedInd === true;
+    const isEndorsed = updatedFiscal.endorsementCode?.endorsementCode === EndorsementCode.ENDORSED;
+    const isProposed = updatedFiscal.planFiscalStatusCode?.planFiscalStatusCode === FiscalStatuses.PROPOSED;
+
+    if (isApproved && isEndorsed && isProposed) {
+      this.promoteFiscalStatus(index);
+    } else {
+      this.showSnackbar(this.messages.projectFiscalUpdatedSuccess);
+      this.loadProjectFiscals(true);
+    }
+  }
+
+  promoteFiscalStatus(index: number): void {
+    const fiscalGuid = this.projectFiscals[index]?.projectPlanFiscalGuid;
+    if (!fiscalGuid) return;
+
+    const promotionPayload: ProjectFiscal = {
+      ...this.projectFiscals[index],
+      planFiscalStatusCode: { planFiscalStatusCode: FiscalStatuses.PREPARED }
+    };
+
+    this.projectService.updateProjectFiscal(
+      this.projectGuid,
+      fiscalGuid,
+      promotionPayload
+    ).subscribe({
+      next: () => {
+        this.showSnackbar(this.messages.projectFiscalUpdatedSuccess);
+        this.loadProjectFiscals(true);
+      },
+      error: () => this.showSnackbar(this.messages.projectFiscalUpdatedFailure, false)
+    });
+  }
+
+  showSnackbar(message: string, isSuccess: boolean = true): void {
+    this.snackbarService.open(
+      message,
+      'OK',
+      { duration: 5000, panelClass: isSuccess ? 'snackbar-success' : 'snackbar-error' }
+    );
   }
 
 

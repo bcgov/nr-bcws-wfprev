@@ -231,11 +231,11 @@ export interface PlanFiscalStatusCodeModel {
 }
 
 export interface ActivityCategoryCodeModel {
-  activityCategoryCode: string;
-  description: string;
-  displayOrder: number;
-  effectiveDate: string;
-  expiryDate: string;
+  activityCategoryCode?: string;
+  description?: string;
+  displayOrder?: number;
+  effectiveDate?: string;
+  expiryDate?: string;
 }
 
 export interface BcParksSectionCodeModel {
