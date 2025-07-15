@@ -327,4 +327,38 @@ describe('getUserFullName', () => {
   });
 });
 
+  describe('getUserFullName with reverseNameOrder flag', () => {
+    it('should return "Last, First" format when both names are present', () => {
+      service['tokenDetails'] = { given_name: 'John', family_name: 'Doe' };
+      expect(service.getUserFullName(true)).toBe('Doe, John');
+    });
+
+    it('should return "Last, First" when using fallback keys', () => {
+      service['tokenDetails'] = { givenName: 'Alice', familyName: 'Smith' };
+      expect(service.getUserFullName(true)).toBe('Smith, Alice');
+    });
+
+    it('should return only the last name if first is missing', () => {
+      service['tokenDetails'] = { family_name: 'Solo' };
+      expect(service.getUserFullName(true)).toBe('Solo');
+    });
+
+    it('should return only the first name if last is missing', () => {
+      service['tokenDetails'] = { given_name: 'Solo' };
+      expect(service.getUserFullName(true)).toBe('Solo');
+    });
+
+    it('should return null if both names are missing', () => {
+      service['tokenDetails'] = {};
+      expect(service.getUserFullName(true)).toBeNull();
+    });
+
+    it('should handle names with extra spaces gracefully', () => {
+      service['tokenDetails'] = { given_name: 'John', family_name: 'Doe' };
+      expect(service.getUserFullName(true)).toBe('Doe, John');
+    });
+  });
+
+
+
 });

@@ -87,6 +87,15 @@ export const FiscalStatuses = {
   CANCELLED: 'CANCELLED',
 };
 
+export const CUSTOM_DATE_FORMATS = {
+  parse: { dateInput: 'YYYY-MM-DD' },
+  display: {
+    dateInput: 'YYYY-MM-DD',
+    monthYearLabel: 'YYYY MMM',
+    dateA11yLabel: 'LL',
+    monthYearA11yLabel: 'YYYY MMMM',
+  },
+};
 export const ModalTitles = {
   CONFIRM_CANCEL_TITLE: 'Confirm Cancel',
   CONFIRM_UNSAVE_TITLE: 'Confirm Unsave',
@@ -101,4 +110,10 @@ export const ModalMessages = {
   DUPLICATE_FOUND_MESSAGE: 'This Project already exists: ',
   CONFIRM_UNSAVE_MESSAGE: 'Are you sure you want to leave this page? The changes you made will not be saved.',
   DELETE_ATTACHMENT_MESSAGE: 'Are you sure you want to delete this file? ',
+}
+
+export const EndorsementCode = {
+  NOT_ENDORS: 'NOT_ENDORS',
+  ENDORSED: 'ENDORSED',
+  FOLLOW_UP: 'FOLLOW_UP'
 }
