@@ -23,20 +23,16 @@ on:
       GDB_EXTRACTOR_IMAGE:
         required: true
         type: string
-        default: ""
-      RESTORE_DOWNSCALED_CLUSTER:
-        required: false
-        type: string
-        default: 'false'
   workflow_dispatch:
     inputs:
       DEFAULT_APPLICATION_ENVIRONMENT:
         required: true
         type: choice
         options:
-        - dev
-        - test
-        - prod
+        - wfint
+        - wfldv
+        - wftst
+        - wfprd
       IMAGE_TAG:
         required: true
         type: string
@@ -53,12 +49,10 @@ on:
         required: true
         type: string
         default: apply
-      RESTORE_DOWNSCALED_CLUSTER:
-        required: false
-        type: choice
-        options:
-          - 'false'
-          - 'true'
+      # IS_HOTFIX:
+      #   required: true
+      #   type: string
+      #   default: 'false'
 
 env:
   TF_VERSION: 1.8.5
@@ -77,6 +71,23 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
+
+      - id: mapEnvironments
+        name: Determine namespaces for deploy
+        run: |
+          if [ "${{ inputs.DEFAULT_APPLICATION_ENVIRONMENT }}" == "wfint" ]; then
+            echo "NAMESPACE_ENV=dev" >> $GITHUB_OUTPUT
+            echo "SHORTENED_ENV=int" >> $GITHUB_OUTPUT
+          elif [ "${{ inputs.DEFAULT_APPLICATION_ENVIRONMENT }}" == "wfdlv" ]; then
+            echo "NAMESPACE_ENV=tools" >> $GITHUB_OUTPUT
+            echo "SHORTENED_ENV=dlv" >> $GITHUB_OUTPUT
+          elif [ "${{ inputs.DEFAULT_APPLICATION_ENVIRONMENT }}" == "wftst" ]; then
+            echo "NAMESPACE_ENV=test" >> $GITHUB_OUTPUT
+            echo "SHORTENED_ENV=tst" >> $GITHUB_OUTPUT
+          elif [ "${{ inputs.DEFAULT_APPLICATION_ENVIRONMENT }}" == "wfprd" ]; then
+            echo "NAMESPACE_ENV=prod" >> $GITHUB_OUTPUT
+            echo "SHORTENED_ENV=prd" >> $GITHUB_OUTPUT
+          fi
 
       - id: changeLogCount
         name: Determine changelog to execute
@@ -123,13 +134,9 @@ jobs:
       - name: Get digest of GDB extractor docker image
         id: getDigestGDB
         run: |
-          if [[ ${{inputs.RESTORE_DOWNSCALED_CLUSTER}} == 'false' ]]; then
-            IMAGE="${{ secrets.ECR_TARGET_ACCOUNT_ID }}.dkr.ecr.ca-central-1.amazonaws.com/nr-bcws-wfprev-wfprev-gdb-extractor:latest"
-            docker pull $IMAGE
-            echo "GDB_EXTRACTOR_IMAGE=$(docker inspect --format='{{index .RepoDigests 0}}' $IMAGE)" >> $GITHUB_OUTPUT
-          else
-            echo "GDB_EXTRACTOR_IMAGE=${{inputs.GDB_EXTRACTOR_IMAGE}}" >> $GITHUB_OUTPUT
-          fi
+          IMAGE="${{ secrets.ECR_TARGET_ACCOUNT_ID }}.dkr.ecr.ca-central-1.amazonaws.com/nr-bcws-wfprev-wfprev-gdb-extractor:latest"
+          docker pull $IMAGE
+          echo "GDB_EXTRACTOR_IMAGE=$(docker inspect --format='{{index .RepoDigests 0}}' $IMAGE)" >> $GITHUB_OUTPUT
 
       - name: Configure AWS credentials for Terraform account (DEV/TEST/PROD)
         uses: aws-actions/configure-aws-credentials@v2
@@ -153,9 +160,10 @@ jobs:
           # Necessary for all components
           TFC_PROJECT: ${{ secrets.TFC_PROJECT }}
           TARGET_ENV: ${{ inputs.DEFAULT_APPLICATION_ENVIRONMENT }}
+          SHORTENED_ENV: ${{ steps.mapEnvironments.outputs.SHORTENED_ENV }}
+          NAMESPACE_ENV: ${{ steps.mapEnvironments.outputs.NAMESPACE_ENV }}
           APP_COUNT: ${{vars.APP_COUNT}}
           LOGGING_LEVEL: ${{vars.LOGGING_LEVEL}}
-          RESTORE_DOWNSCALED_CLUSTER: ${{ inputs.RESTORE_DOWNSCALED_CLUSTER || 'false' }}
 
           # Necessary for WFPREV API
           WFPREV_API_NAME: wfprev-api
@@ -203,4 +211,4 @@ jobs:
           PROXY_WF1_PREV_REST_PASSWORD: ${{ secrets.PROXY_WF1_PREV_REST_PASSWORD }}
           TARGET_LIQUIBASE_TAG: ${{ steps.liquibaseCommand.outputs.TARGET_LIQUIBASE_TAG }}
 
-        run: terragrunt apply --terragrunt-non-interactive -auto-approve
+        run: terragrunt ${inputs.COMMAND} --terragrunt-non-interactive -auto-approve

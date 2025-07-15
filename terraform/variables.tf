@@ -8,6 +8,15 @@ variable "common_tags" {
 variable "RESTORE_DOWNSCALED_CLUSTER" {
   description = "Whether we restore a downscaled RDS instance or create a new one"
   default = "false"
+
+variable "NAMESPACE_ENV" {
+  description = "Name of AWS Workspace"
+  type = string
+}
+
+variable "SHORTENED_ENV" {
+  description = "Shortform of environment name"
+  type = string
 }
 
 variable "WFPREV_CLIENT_CPU_UNITS" {
