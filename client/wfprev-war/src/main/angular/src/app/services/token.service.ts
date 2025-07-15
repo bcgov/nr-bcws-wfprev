@@ -215,12 +215,24 @@ export class TokenService {
     return this.oauth?.access_token ?? null;
   }
 
-  public getUserFullName(): string | null {
+  public getUserFullName(reverseNameOrder: boolean = false): string | null {
     const first = (this.tokenDetails?.given_name ?? this.tokenDetails?.givenName) ?? '';
     const last = (this.tokenDetails?.family_name ?? this.tokenDetails?.familyName) ?? '';
-    const fullName = `${first} ${last}`.trim();
-    return fullName || null;
+
+    if (!first && !last) {
+      return null;
+    }
+
+    if (reverseNameOrder) {
+      if (last && first) {
+        return `${last}, ${first}`;
+      }
+      return last || first;
+    }
+
+    return `${first} ${last}`.trim();
   }
+
 
   public doesUserHaveApplicationPermissions(scopes?: string[]): boolean {
     if (this.tokenDetails?.scope?.length > 0 && scopes?.length) {

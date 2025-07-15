@@ -1,0 +1,24 @@
+<div class="details-container">
+    <div class="header">
+        <span>Endorsement and Approval</span>
+    </div>
+    <ng-content></ng-content>
+    <div class="footer">
+    <div class="button-row">
+        <button
+            type="button"
+            class="secondary"
+            (click)="cancel.emit()"
+            [disabled]="cancelDisabled">
+            {{ cancelText }}
+        </button>
+        <button
+            type="button"
+            class="primary"
+            (click)="save.emit()"
+            [disabled]="saveDisabled">
+            {{ saveText }}
+        </button>
+    </div>
+    </div>
+</div>

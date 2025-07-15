@@ -10,7 +10,9 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ConfirmationDialogComponent } from 'src/app/components/confirmation-dialog/confirmation-dialog.component';
 import { Component } from '@angular/core';
 import { PlanFiscalStatusIcons } from 'src/app/utils/tools';
-import { ModalMessages, ModalTitles } from 'src/app/utils/constants';
+import { EndorsementCode, ModalMessages, ModalTitles } from 'src/app/utils/constants';
+import { TokenService } from 'src/app/services/token.service';
+import { ProjectFiscal } from 'src/app/components/models';
 
 const mockProjectService = {
   getProjectFiscalsByProjectGuid: jasmine.createSpy('getProjectFiscalsByProjectGuid').and.returnValue(
@@ -65,6 +67,7 @@ describe('ProjectFiscalsComponent', () => {
       imports: [BrowserAnimationsModule],
       declarations: [MockFiscalMapComponent, MockActivitiesComponent],
       providers: [
+        { provide: TokenService,  useValue: { getUserFullName: jasmine.createSpy('getUserFullName').and.returnValue('Test User')}},
         { provide: ActivatedRoute, useValue: { snapshot: { queryParamMap: { get: () => 'test-guid' } } } },
         { provide: ProjectService, useValue: mockProjectService },
         { provide: CodeTableServices, useValue: mockCodeTableServices },
@@ -180,11 +183,29 @@ describe('ProjectFiscalsComponent', () => {
 
   it('should handle errors when saving a new fiscal', () => {
     mockProjectService.createProjectFiscal.and.returnValue(throwError(() => new Error('API Error')));
+    
+    // ✅ Make sure there is at least one fiscal object with required properties
+    component.projectFiscals = [
+      {
+        projectGuid: 'test-guid',
+        projectFiscalName: 'Test Fiscal',
+        fiscalYear: 2023,
+        planFiscalStatusCode: { planFiscalStatusCode: 'DRAFT' }
+      }
+    ];
+    
+    component.fiscalForms = [component.createFiscalForm(component.projectFiscals[0])];
+
     component.onSaveFiscal(0);
-    expect(mockSnackBar.open).toHaveBeenCalledWith(component.messages.projectFiscalCreatedFailure, 'OK', {
-      duration: 5000,
-      panelClass: 'snackbar-error',
-    });
+
+    expect(mockSnackBar.open).toHaveBeenCalledWith(
+      component.messages.projectFiscalCreatedFailure,
+      'OK',
+      {
+        duration: 5000,
+        panelClass: 'snackbar-error',
+      }
+    );
   });
 
   it('should update an existing fiscal', () => {
@@ -746,4 +767,48 @@ describe('ProjectFiscalsComponent', () => {
     expect(() => component.updateFiscalStatus(0, 'PROPOSED')).not.toThrow();
   });
 
+    it('should update fiscal without promotion if not endorsed and approved', () => {
+    spyOn(component, 'loadProjectFiscals');
+    component.projectFiscals = [{
+      projectPlanFiscalGuid: 'guid-1'
+    }];
+    component.selectedTabIndex = 0;
+    const updatedFiscal = {
+      isApprovedInd: false,
+      endorsementCode: { endorsementCode: EndorsementCode.NOT_ENDORS },
+      planFiscalStatusCode: { planFiscalStatusCode: 'DRAFT' }
+    } as ProjectFiscal;
+    mockProjectService.updateProjectFiscal.and.returnValue(of({}));
+    component.onSaveEndorsement(updatedFiscal);
+    expect(mockProjectService.updateProjectFiscal).toHaveBeenCalledWith(
+      'test-guid',
+      'guid-1',
+      jasmine.objectContaining({ isApprovedInd: false })
+    );
+    expect(mockSnackBar.open).toHaveBeenCalledWith(
+      component.messages.projectFiscalUpdatedSuccess,
+      'OK',
+      { duration: 5000, panelClass: 'snackbar-success' }
+    );
+    expect(component.loadProjectFiscals).toHaveBeenCalledWith(true);
+  });
+
+  it('should show error snackbar if updateProjectFiscal fails', () => {
+    component.projectFiscals = [{
+      projectPlanFiscalGuid: 'guid-1'
+    }];
+    component.selectedTabIndex = 0;
+    const updatedFiscal = {
+      isApprovedInd: false
+    } as ProjectFiscal;
+    mockProjectService.updateProjectFiscal.and.returnValue(
+      throwError(() => new Error('API Error'))
+    );
+    component.onSaveEndorsement(updatedFiscal);
+    expect(mockSnackBar.open).toHaveBeenCalledWith(
+      component.messages.projectFiscalUpdatedFailure,
+      'OK',
+      { duration: 5000, panelClass: 'snackbar-error' }
+    );
+  });
 });
