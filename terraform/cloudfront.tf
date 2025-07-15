@@ -11,8 +11,8 @@ resource "aws_cloudfront_origin_access_identity" "oai" {
 # CloudFront Distribution
 resource "aws_cloudfront_distribution" "wfprev_app_distribution" {
   origin {
-    domain_name = aws_s3_bucket.wfprev_site_bucket.bucket_regional_domain_name
-    origin_id   = "S3-${aws_s3_bucket.wfprev_site_bucket.id}"
+    domain_name = module.s3_secure_bucket.bucket_regional_domain_name
+    origin_id   = "S3-${module.s3_secure_bucket.id}"
 
     s3_origin_config {
       origin_access_identity = aws_cloudfront_origin_access_identity.oai.cloudfront_access_identity_path
@@ -20,7 +20,7 @@ resource "aws_cloudfront_distribution" "wfprev_app_distribution" {
   }
 
   origin {
-    domain_name = trimprefix(aws_apigatewayv2_api.wfprev_api_gateway.api_endpoint, "https://")
+    domain_name = trimprefix(module.api_gateway.api_endpoint, "https://")
     origin_id = "wfprev-api-origin"
 
     custom_origin_config {
@@ -35,13 +35,13 @@ resource "aws_cloudfront_distribution" "wfprev_app_distribution" {
   enabled             = true
   is_ipv6_enabled     = true
 
-  aliases = [ "wfprev-${var.TARGET_ENV}.${var.gov_domain}" ]
+  aliases = [ "wfprev-${var.SHORTENED_ENV}.${var.gov_domain}" ]
 
   # Configure cache behaviors
   default_cache_behavior {
     allowed_methods        = ["GET", "HEAD", "OPTIONS"]
     cached_methods         = ["GET", "HEAD"]
-    target_origin_id       = "S3-${aws_s3_bucket.wfprev_site_bucket.id}"
+    target_origin_id       = "S3-${module.s3_secure_bucket.id}"
     viewer_protocol_policy = "redirect-to-https"
 
     //Rewrite requests to always hit /index.html
@@ -66,7 +66,7 @@ resource "aws_cloudfront_distribution" "wfprev_app_distribution" {
 
 
     ordered_cache_behavior {
-    path_pattern     = "/${aws_apigatewayv2_stage.wfprev_stage.name}*"
+    path_pattern     = "/${module.api_gateway.stage.name}*"
     allowed_methods = [
       "DELETE",
       "GET",
@@ -116,7 +116,7 @@ resource "aws_cloudfront_distribution" "wfprev_app_distribution" {
 }
 
 resource "aws_cloudfront_function" "rewrite_uri" {
-	name    = "rewrite-request-wfprev-${var.TARGET_ENV}"
+	name    = "rewrite-request-wfprev-${var.SHORTENED_ENV}"
 	runtime = "cloudfront-js-1.0"
 	code    = <<EOF
   function handler(event) {
@@ -130,7 +130,7 @@ EOF
 }
 
 data "aws_s3_bucket" "cloudfront_logs" {
-  bucket = "wfprev-${var.TARGET_ENV}-cloudfront-logs"
+  bucket = "wfprev-${var.SHORTENED_ENV}-cloudfront-logs"
 }
 
 output "cloudfront_distribution_id" {

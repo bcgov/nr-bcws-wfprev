@@ -11,8 +11,8 @@ data "aws_ami" "amzn-linux-2023-ami" {
 resource "aws_instance" "jumphost" {
   ami           = data.aws_ami.amzn-linux-2023-ami.id
   instance_type = "t2.micro"
-  subnet_id = module.network.aws_subnet_ids.app.ids[0]
-  vpc_security_group_ids = [data.aws_security_group.app.id, aws_security_group.jumphost.id]
+  subnet_id = module.networking.subnets.app.ids[0]
+  vpc_security_group_ids = [module.networking.security_groups.app.id, aws_security_group.jumphost.id]
   ebs_optimized = false
   ebs_block_device {
     device_name = "/dev/xvda"
@@ -21,6 +21,6 @@ resource "aws_instance" "jumphost" {
   }
 
   tags = {
-    Name = "jumphost-${var.TARGET_ENV}"
+    Name = "jumphost-${var.SHORTENED_ENV}"
   }
 }

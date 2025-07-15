@@ -24,7 +24,7 @@ resource "aws_ecs_cluster_capacity_providers" "wfprev_main_providers" {
 
 # WFPrev Server Task Definition
 resource "aws_ecs_task_definition" "wfprev_server" {
-  family                   = "wfprev-server-task-${var.TARGET_ENV}"
+  family                   = "wfprev-server-task-${var.SHORTENED_ENV}"
   execution_role_arn       = aws_iam_role.wfprev_ecs_task_execution_role.arn
   task_role_arn            = aws_iam_role.wfprev_app_container_role.arn
   network_mode             = "awsvpc"
@@ -141,7 +141,7 @@ resource "null_resource" "always_run" {
 
 resource "aws_ecs_task_definition" "wfprev-liquibase" {
   count = var.NONPROXY_COUNT
-  family = "wfprev-liquibase-${var.TARGET_ENV}"
+  family = "wfprev-liquibase-${var.SHORTENED_ENV}"
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
   cpu = 256
@@ -159,7 +159,7 @@ resource "aws_ecs_task_definition" "wfprev-liquibase" {
         logDriver = "awslogs"
         options = {
           awslogs-create-group  = "true"
-          awslogs-group         = "/ecs/wfprev-liquibase-nonproxy-${var.TARGET_ENV}"
+          awslogs-group         = "/ecs/wfprev-liquibase-nonproxy-${var.SHORTENED_ENV}"
           awslogs-region        = var.AWS_REGION
           awslogs-stream-prefix = "ecs"
         }
@@ -205,10 +205,10 @@ resource "aws_ecs_task_definition" "wfprev-liquibase" {
   provisioner "local-exec" {
     command = <<-EOF
     aws ecs run-task \
-      --task-definition wfprev-liquibase-${var.TARGET_ENV} \
+      --task-definition wfprev-liquibase-${var.SHORTENED_ENV} \
       --cluster ${aws_ecs_cluster.wfprev_main.id} \
       --count 1 \
-      --network-configuration awsvpcConfiguration={securityGroups=[${data.aws_security_group.app.id}],subnets=${module.network.aws_subnet_ids.app.ids[0]},assignPublicIp=DISABLED}
+      --network-configuration awsvpcConfiguration={securityGroups=[${module.networking.security_groups.app.id}],subnets=${module.networking.subnets.app.ids[0]},assignPublicIp=DISABLED}
 EOF
   }
 }
@@ -222,7 +222,7 @@ EOF
 
 # ECS Service for WFPrev Server
 resource "aws_ecs_service" "wfprev_server" {
-  name                              = "wfprev-server-service-${var.TARGET_ENV}"
+  name                              = "wfprev-server-service-${var.SHORTENED_ENV}"
   cluster                           = aws_ecs_cluster.wfprev_main.id
   task_definition                   = aws_ecs_task_definition.wfprev_server.arn
   desired_count                     = var.server_count
@@ -242,8 +242,8 @@ resource "aws_ecs_service" "wfprev_server" {
   }
 
   network_configuration {
-    security_groups  = [data.aws_security_group.app.id, aws_security_group.wfprev_tomcat_access.id]
-    subnets          = module.network.aws_subnet_ids.app.ids
+    security_groups  = [module.networking.security_groups.app.id, aws_security_group.wfprev_tomcat_access.id]
+    subnets          = module.networking.subnets.app.ids
     assign_public_ip = true
   }
 
