@@ -43,6 +43,24 @@
   border: 1px solid #CE3E39 !important;
   color: #CE3E39;
   background: transparent;
-  font-weight: 400;
-  border-radius: 4px !important;
+  font-weight: 400; 
+}
+
+.mask-icon {
+  width: 20px;
+  height: 20px;
+  background-color: #CE3E39; 
+  -webkit-mask-image: url('/assets/warning-red.svg');
+  mask-image: url('/assets/warning-red.svg');
+  mask-size: contain;
+  mask-repeat: no-repeat;
+  mask-position: center;
+
+  &.delete {
+    background-color: #CE3E39; 
+  }
+
+  &.warning {
+    background-color: #F8BB47; 
+  }
 }

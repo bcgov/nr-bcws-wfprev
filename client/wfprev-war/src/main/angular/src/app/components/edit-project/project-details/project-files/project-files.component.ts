@@ -10,7 +10,7 @@ import { ActivityBoundary, FileAttachment, ProjectBoundary, ProjectFile } from '
 import { AttachmentService } from 'src/app/services/attachment-service';
 import { ProjectService } from 'src/app/services/project-services';
 import { SpatialService } from 'src/app/services/spatial-services';
-import { Messages } from 'src/app/utils/constants';
+import { Messages, ModalMessages, ModalTitles } from 'src/app/utils/constants';
 import { Position } from 'geojson';
 import { ActivatedRoute } from '@angular/router';
 import { IconButtonComponent } from 'src/app/components/shared/icon-button/icon-button.component';
@@ -446,8 +446,11 @@ export class ProjectFilesComponent implements OnInit {
   deleteFile(fileToDelete: ProjectFile): void {
     // Open the confirmation dialog
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-      data: { indicator: 'delete-attachment' },
-      width: '500px',
+      data: { indicator: 'delete-attachment',
+              title: ModalTitles.DELETE_ATTACHMENT_TITLE,
+              message: ModalMessages.DELETE_ATTACHMENT_MESSAGE
+       },
+      width: '600px',
     });
 
     dialogRef.afterClosed().subscribe((confirmed: boolean) => {
