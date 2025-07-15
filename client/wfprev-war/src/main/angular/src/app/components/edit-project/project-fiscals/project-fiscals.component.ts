@@ -118,8 +118,8 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
 
   generateFiscalYears(): void {
     const currentYear = new Date().getFullYear();
-    const startYear = currentYear - 5;
-    const endYear = currentYear + 5;
+    const startYear = currentYear - 5; // 5 years in the past
+    const endYear = currentYear + 5;  // 5 years in the future
     this.fiscalYears = Array.from({ length: endYear - startYear + 1 }, (_, i) => {
       const year = startYear + i;
       return `${year}/${(year + 1).toString().slice(-2)}`;
@@ -357,7 +357,6 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
       submittedByUserGuid: updatedData.submittedByUserGuid,
       submittedByUserUserid: updatedData.submittedByUserUserid,
       submissionTimestamp: updatedData.submissionTimestamp,
-      isApprovedInd: isUpdate ? updatedData.isApprovedInd : false,
       isDelayedInd: isUpdate ? updatedData.isDelayedInd : false,
       fiscalForecastAmount: updatedData.fiscalForecastAmount,
       totalCostEstimateAmount: updatedData.totalCostEstimateAmount,
@@ -365,6 +364,13 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
       ancillaryFundingProvider: updatedData.ancillaryFundingProvider,
       otherPartner: updatedData.otherPartner,
       proposalTypeCode: updatedData.proposalTypeCode,
+      endorserName: originalData.endorserName,
+      endorsementTimestamp: originalData.endorsementTimestamp,
+      endorsementCode: originalData.endorsementCode,
+      endorsementComment: originalData.endorsementComment,
+      approverName: originalData.approverName,
+      approvedTimestamp: originalData.approvedTimestamp,
+      isApprovedInd: originalData.isApprovedInd,
     };
     if (isUpdate) {
       // update the existing fiscal
@@ -373,7 +379,7 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
           this.snackbarService.open(
             this.messages.projectFiscalUpdatedSuccess,
             'OK',
-            { duration: 5000, panelClass: 'snackbar-success' }
+            { duration: 5000, panelClass: 'snackbar-success' },
           );
           this.loadProjectFiscals(true);
         },
@@ -384,7 +390,7 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
             { duration: 5000, panelClass: 'snackbar-error' }
           );
         }
-      });
+      })
     }
     else {
       // create new fiscal
@@ -398,12 +404,12 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
           this.loadProjectFiscals(true);
         },
         error: () =>{
-            this.snackbarService.open(
-              this.messages.projectFiscalCreatedFailure,
-              'OK',
-              { duration: 5000, panelClass: 'snackbar-error' }
-            );
-          }
+          this.snackbarService.open(
+            this.messages.projectFiscalCreatedFailure,
+            'OK',
+            { duration: 5000, panelClass: 'snackbar-error' }
+          );
+        }
       });
     }
     

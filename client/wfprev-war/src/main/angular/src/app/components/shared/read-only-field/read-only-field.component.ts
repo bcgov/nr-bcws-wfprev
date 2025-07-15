@@ -8,6 +8,6 @@ import { Component, Input } from '@angular/core';
   styleUrl: './read-only-field.component.scss'
 })
 export class ReadOnlyFieldComponent {
-    @Input() label = '312';
-    @Input() value = '123';
+    @Input() label = '';
+    @Input() value = '';
 }
