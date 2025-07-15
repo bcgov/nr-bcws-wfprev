@@ -640,7 +640,7 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
           this.loadProjectFiscals(true);
         }
       },
-      error: () => {
+      error: () => 
         this.snackbarService.open(
           this.messages.projectFiscalUpdatedFailure,
           'OK',
@@ -657,4 +657,3 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
   }
 
 }
-
