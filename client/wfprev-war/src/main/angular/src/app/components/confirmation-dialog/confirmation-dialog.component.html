@@ -1,28 +1,23 @@
 <div class="dialog-container-confirm">
-    <div class="title-bar">
-      <img alt="warning-icon" class="icon" src="/assets/warning-red.svg" width="24" height="24"/>
-      {{dialogTitle}}
+  <div class="title-bar">
+    <div class="mask-icon" [ngClass]="{ 'delete': isDeleteDialog, 'warning': !isDeleteDialog }" aria-hidden="true">
     </div>
-    <div class="dialog-content">
-      <div class="icon-and-text">
-        <p *ngIf="dialogMessage" [innerHTML]="dialogMessage"></p>
-      </div>
-    </div>
-    <div class="footer">
-      <div class="button-row">
-        <button 
-          [ngClass]="isDeleteDialog ? 'cancel-button' : 'secondary'" 
-          (click)="onGoBack()">
-          Cancel
-        </button>
-      
-        <button 
-          [ngClass]="isDeleteDialog ? 'delete-button' : 'primary'" 
-          (click)="onConfirm()">
-          {{ confirmButtonText }}
-        </button>
-      </div>
-      
+    {{ dialogTitle }}
+  </div>
+  <div class="dialog-content">
+    <div class="icon-and-text">
+      <p *ngIf="dialogMessage" [innerHTML]="dialogMessage"></p>
     </div>
   </div>
-  
+  <div class="footer">
+    <div class="button-row">
+      <button [ngClass]="isDeleteDialog ? 'cancel-button' : 'secondary'" (click)="onGoBack()">
+        Cancel
+      </button>
+
+      <button [ngClass]="isDeleteDialog ? 'delete-button' : 'primary'" (click)="onConfirm()">
+        {{ confirmButtonText }}
+      </button>
+    </div>
+  </div>
+</div>

@@ -10,6 +10,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ConfirmationDialogComponent } from 'src/app/components/confirmation-dialog/confirmation-dialog.component';
 import { Component } from '@angular/core';
 import { PlanFiscalStatusIcons } from 'src/app/utils/tools';
+import { ModalMessages, ModalTitles } from 'src/app/utils/constants';
 
 const mockProjectService = {
   getProjectFiscalsByProjectGuid: jasmine.createSpy('getProjectFiscalsByProjectGuid').and.returnValue(
@@ -47,9 +48,9 @@ describe('ProjectFiscalsComponent', () => {
     template: '<div></div>'
   })
   class MockFiscalMapComponent {
-    ngOnInit() {}
-    ngAfterViewInit() {}
-    initMap() {}
+    ngOnInit() { }
+    ngAfterViewInit() { }
+    initMap() { }
   }
   @Component({
     selector: 'wfprev-activities',
@@ -58,7 +59,7 @@ describe('ProjectFiscalsComponent', () => {
   class MockActivitiesComponent {
     isFormDirty = () => false;
   }
-  
+
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [BrowserAnimationsModule],
@@ -71,13 +72,13 @@ describe('ProjectFiscalsComponent', () => {
         FormBuilder,
       ],
     })
-    .overrideComponent(ProjectFiscalsComponent, {
-      set: {
-        imports: []  // Remove the real FiscalMapComponent and ActivitiesComponent
-      }
-    })
-    .compileComponents();
-    
+      .overrideComponent(ProjectFiscalsComponent, {
+        set: {
+          imports: []  // Remove the real FiscalMapComponent and ActivitiesComponent
+        }
+      })
+      .compileComponents();
+
     fixture = TestBed.createComponent(ProjectFiscalsComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
@@ -133,15 +134,15 @@ describe('ProjectFiscalsComponent', () => {
         }
       })
     );
-  
+
     component.loadProjectFiscals();
     tick();
-  
+
     expect(mockProjectService.getProjectFiscalsByProjectGuid).toHaveBeenCalledWith('test-guid');
     expect(component.projectFiscals.length).toBeGreaterThan(0); // ✅ Should now have at least one fiscal
     expect(component.fiscalForms.length).toBe(component.projectFiscals.length); // ✅ Forms should match project fiscals count
   }));
-  
+
 
   it('should handle errors in loading project fiscals', () => {
     mockProjectService.getProjectFiscalsByProjectGuid.and.returnValue(throwError(() => new Error('API Error')));
@@ -152,21 +153,21 @@ describe('ProjectFiscalsComponent', () => {
   it('should add a new fiscal', () => {
     component.projectFiscals = []; // ✅ Ensure projectFiscals starts empty
     component.projectGuid = 'test-guid'; // ✅ Ensure projectGuid is set before calling the method
-  
+
     component.addNewFiscal();
-  
+
     expect(component.projectFiscals.length).toBe(1); // ✅ Should increase from 0 to 1
     expect(component.selectedTabIndex).toBe(0); // ✅ Should select the first added fiscal
   });
 
   it('should save a new fiscal', () => {
     spyOn(component, 'loadProjectFiscals');
-  
+
     // Ensure mock `createProjectFiscal` returns success
     mockProjectService.createProjectFiscal.and.returnValue(of({})); // ✅ Fix: Return success response
-  
+
     component.onSaveFiscal(0);
-  
+
     expect(mockProjectService.createProjectFiscal).toHaveBeenCalled();
     expect(mockSnackBar.open).toHaveBeenCalledWith(
       component.messages.projectFiscalCreatedSuccess,
@@ -174,7 +175,7 @@ describe('ProjectFiscalsComponent', () => {
       { duration: 5000, panelClass: 'snackbar-success' } // ✅ Ensure correct snackbar message
     );
     component.onSaveFiscal(0);
-    expect(component.loadProjectFiscals).toHaveBeenCalled(); 
+    expect(component.loadProjectFiscals).toHaveBeenCalled();
   });
 
   it('should handle errors when saving a new fiscal', () => {
@@ -188,14 +189,14 @@ describe('ProjectFiscalsComponent', () => {
 
   it('should update an existing fiscal', () => {
     spyOn(component, 'loadProjectFiscals');
-  
+
     // ✅ Ensure updateProjectFiscal returns success
-    mockProjectService.updateProjectFiscal.and.returnValue(of({})); 
-  
+    mockProjectService.updateProjectFiscal.and.returnValue(of({}));
+
     component.projectFiscals = [{ projectPlanFiscalGuid: 'existing-guid' }]; // ✅ Ensure a valid fiscal object exists
-  
+
     component.onSaveFiscal(0);
-  
+
     expect(mockProjectService.updateProjectFiscal).toHaveBeenCalled();
     expect(mockSnackBar.open).toHaveBeenCalledWith(
       component.messages.projectFiscalUpdatedSuccess,
@@ -203,18 +204,18 @@ describe('ProjectFiscalsComponent', () => {
       { duration: 5000, panelClass: 'snackbar-success' } // ✅ Ensure correct success message
     );
     component.onSaveFiscal(0);
-    expect(component.loadProjectFiscals).toHaveBeenCalled(); 
+    expect(component.loadProjectFiscals).toHaveBeenCalled();
   });
-  
+
 
   it('should handle errors when updating an existing fiscal', fakeAsync(() => {
     // ✅ Ensure projectFiscals is initialized before setting properties
     component.projectFiscals = [{ projectPlanFiscalGuid: 'existing-guid' }];
-  
+
     mockProjectService.updateProjectFiscal.and.returnValue(throwError(() => new Error('API Error')));
-  
+
     component.onSaveFiscal(0);
-  
+
     expect(mockSnackBar.open).toHaveBeenCalledWith(
       component.messages.projectFiscalUpdatedFailure,
       'OK',
@@ -260,37 +261,38 @@ describe('ProjectFiscalsComponent', () => {
     spyOn(component.dialog, 'open').and.returnValue({
       afterClosed: () => of(true) // Simulate user clicking "Confirm"
     } as any);
-  
+
     component.projectFiscals = [{
       projectPlanFiscalGuid: 'test-guid',
       fiscalYear: 2025,
       projectFiscalName: 'My Plan'
     }];
     component.selectedTabIndex = 0;
-  
+
     component.deleteFiscalYear({ value: component.projectFiscals[0] }, 0);
-  
+
     expect(component.dialog.open).toHaveBeenCalledWith(ConfirmationDialogComponent, {
       data: {
         indicator: 'delete-fiscal-year',
-        name: 'My Plan:2025/26'
+        title: ModalTitles.DELETE_FISCAL_YEAR_TITLE,
+        message: `Are you sure you want to delete My Plan:2025/26? This action cannot be reversed and will immediately remove the Fiscal Year from the Project scope.`
       },
       width: '600px',
     });
   });
-  
-  
+
+
   it('should delete a fiscal year after confirmation', () => {
     spyOn(component.dialog, 'open').and.returnValue({
       afterClosed: () => of(true) // Simulate user clicking "Confirm"
     } as any);
     spyOn(component, 'loadProjectFiscals');
-  
+
     mockProjectService.deleteProjectFiscalByProjectPlanFiscalGuid = jasmine.createSpy().and.returnValue(of({}));
-  
+
     component.projectFiscals = [{ projectPlanFiscalGuid: 'test-guid' }];
-    component.deleteFiscalYear({ value: component.projectFiscals[0]},0);
-  
+    component.deleteFiscalYear({ value: component.projectFiscals[0] }, 0);
+
     expect(mockProjectService.deleteProjectFiscalByProjectPlanFiscalGuid).toHaveBeenCalledWith('test-guid', 'test-guid');
     expect(mockSnackBar.open).toHaveBeenCalledWith(
       component.messages.projectFiscalDeletedSuccess,
@@ -299,41 +301,41 @@ describe('ProjectFiscalsComponent', () => {
     );
     expect(component.loadProjectFiscals).toHaveBeenCalledWith(true);
   });
-  
+
   it('should show error snackbar if deletion fails', () => {
     spyOn(component.dialog, 'open').and.returnValue({
       afterClosed: () => of(true) // Simulate user clicking "Confirm"
     } as any);
-  
+
     mockProjectService.deleteProjectFiscalByProjectPlanFiscalGuid = jasmine.createSpy().and.returnValue(
       throwError(() => new Error('API Error'))
     );
-  
+
     component.projectFiscals = [{ projectPlanFiscalGuid: 'test-guid' }];
-    component.deleteFiscalYear({ value: component.projectFiscals[0] },0);
-  
+    component.deleteFiscalYear({ value: component.projectFiscals[0] }, 0);
+
     expect(mockSnackBar.open).toHaveBeenCalledWith(
       component.messages.projectFiscalDeletedFailure,
       'OK',
       { duration: 5000, panelClass: 'snackbar-error' }
     );
   });
-  
+
   it('should return true for isUndeletable if isApprovedInd is true', () => {
     const form = { value: { isApprovedInd: true } };
     expect(component.isUndeletable(form)).toBe(true);
   });
-  
+
   it('should return false for isUndeletable if isApprovedInd is false', () => {
     const form = { value: { isApprovedInd: false } };
     expect(component.isUndeletable(form)).toBe(false);
   });
-  
+
   it('should return false for isUndeletable if isApprovedInd is undefined', () => {
     const form = { value: {} };
     expect(component.isUndeletable(form)).toBe(false);
   });
-  
+
   it('should return false for isUndeletable if form is null', () => {
     expect(component.isUndeletable(null)).toBe(false);
   });
@@ -346,12 +348,12 @@ describe('ProjectFiscalsComponent', () => {
   it('should return true if at least one form is dirty', () => {
     const form1 = new FormGroup({});
     spyOnProperty(form1, 'dirty', 'get').and.returnValue(true);
-  
+
     const form2 = new FormGroup({});
     spyOnProperty(form2, 'dirty', 'get').and.returnValue(false);
-  
+
     component.fiscalForms = [form1, form2];
-  
+
     expect(component.isFormDirty()).toBe(true);
   });
 
@@ -359,20 +361,24 @@ describe('ProjectFiscalsComponent', () => {
     spyOn(component, 'isFormDirty').and.returnValue(false);
     expect(component.canDeactivate()).toBe(true);
   });
-  
+
   it('should open a confirmation dialog if forms are dirty and return false when user cancels', (done) => {
     spyOn(component, 'isFormDirty').and.returnValue(true);
-    
+
     const mockDialogRef = { afterClosed: () => of(false) };
     spyOn(component.dialog, 'open').and.returnValue(mockDialogRef as any);
-  
+
     const result = component.canDeactivate();
-    
+
     if (result instanceof Observable) {
       result.subscribe((value: boolean) => {
         expect(component.dialog.open).toHaveBeenCalledWith(ConfirmationDialogComponent, {
-          data: { indicator: 'confirm-unsave' },
-          width: '500px',
+          data: {
+            indicator: 'confirm-unsave', 
+            title: ModalTitles.CONFIRM_UNSAVE_TITLE,
+            message: ModalMessages.CONFIRM_UNSAVE_MESSAGE
+          },
+          width: '600px',
         });
         expect(value).toBe(false);
         done();
@@ -381,15 +387,15 @@ describe('ProjectFiscalsComponent', () => {
       fail('Expected an Observable but received something else');
     }
   });
-  
+
   it('should allow navigation if user confirms in the dialog', (done) => {
     spyOn(component, 'isFormDirty').and.returnValue(true);
-    
+
     const mockDialogRef = { afterClosed: () => of(true) };
     spyOn(component.dialog, 'open').and.returnValue(mockDialogRef as any);
-  
+
     const result = component.canDeactivate();
-    
+
     if (result instanceof Observable) {
       result.subscribe((value: boolean) => {
         expect(value).toBe(true);
@@ -403,23 +409,23 @@ describe('ProjectFiscalsComponent', () => {
   it('should not allow negative values for fiscalPlannedProjectSizeHa', () => {
     component.fiscalForms[0] = component.createFiscalForm();
     const control = component.fiscalForms[0].get('fiscalPlannedProjectSizeHa');
-  
+
     control?.setValue(-10);
     expect(control?.valid).toBeFalse();
     expect(control?.hasError('min')).toBeTrue();
-  
+
     control?.setValue(10);
-    expect(control?.valid).toBeTrue(); 
+    expect(control?.valid).toBeTrue();
   });
 
   it('should not allow negative values for totalCostEstimateAmount', () => {
     component.fiscalForms[0] = component.createFiscalForm();
     const control = component.fiscalForms[0].get('totalCostEstimateAmount');
-  
+
     control?.setValue(-100);
     expect(control?.valid).toBeFalse();
     expect(control?.hasError('min')).toBeTrue();
-  
+
     control?.setValue(100);
     expect(control?.valid).toBeTrue();
   });
@@ -427,11 +433,11 @@ describe('ProjectFiscalsComponent', () => {
   it('should not allow negative values for fiscalForecastAmount', () => {
     component.fiscalForms[0] = component.createFiscalForm();
     const control = component.fiscalForms[0].get('fiscalForecastAmount');
-  
+
     control?.setValue(-500);
     expect(control?.valid).toBeFalse();
     expect(control?.hasError('min')).toBeTrue();
-  
+
     control?.setValue(500);
     expect(control?.valid).toBeTrue();
   });
@@ -448,9 +454,9 @@ describe('ProjectFiscalsComponent', () => {
       { description: 'Status 2' },
       { description: 'Status 1' }
     ];
-  
+
     component.loadDropdownOptions();
-  
+
     expect(component.fiscalYears).toEqual(['2023/24', '2024/25', '2025/26']);
     expect(component.activityCategoryCode).toEqual([
       { description: 'Category A' },
@@ -467,7 +473,7 @@ describe('ProjectFiscalsComponent', () => {
     component.fiscalYears = [];
     component.activityCategoryCode = [];
     component.planFiscalStatusCode = [];
-  
+
     expect(() => component.loadDropdownOptions()).not.toThrow();
     expect(component.fiscalYears).toEqual([]);
     expect(component.activityCategoryCode).toEqual([]);
@@ -478,7 +484,7 @@ describe('ProjectFiscalsComponent', () => {
     component.fiscalYears = null as any;
     component.activityCategoryCode = null as any;
     component.planFiscalStatusCode = null as any;
-  
+
     expect(() => component.loadDropdownOptions()).not.toThrow();
     expect(component.fiscalYears).toEqual([]);
     expect(component.activityCategoryCode).toEqual([]);
@@ -489,16 +495,16 @@ describe('ProjectFiscalsComponent', () => {
     component.fiscalMapComponent = {
       getAllActivitiesBoundaries: jasmine.createSpy('getAllActivitiesBoundaries')
     } as any;
-  
+
     component.onBoundariesChanged();
-  
+
     expect(component.fiscalMapComponent.getAllActivitiesBoundaries).toHaveBeenCalled();
   });
 
   it('should update selectedTabIndex and currentFiscalGuid on tab change', () => {
     const updateSpy = spyOn(component, 'updateCurrentFiscalGuid');
     component.onTabChange(2);
-  
+
     expect(component.selectedTabIndex).toBe(2);
     expect(updateSpy).toHaveBeenCalled();
   });
@@ -554,7 +560,7 @@ describe('ProjectFiscalsComponent', () => {
 
     expect(component.getCodeDescription('activityCategoryCode')).toBeNull();
   });
-  
+
   it('should sort project fiscals by fiscalYear descending and then by projectFiscalName ascending', fakeAsync(() => {
     const unsortedFiscals = [
       { fiscalYear: 2025, projectFiscalName: 'B Plan' },
@@ -610,7 +616,7 @@ describe('ProjectFiscalsComponent', () => {
     const sortedNames = component.projectFiscals.map(f => f.projectFiscalName ?? '');
     expect(sortedNames).toEqual(expectedSorted.map(f => f.projectFiscalName));
   }));
-  
+
   it('should remove unsaved draft fiscal after confirmation', () => {
     spyOn(component.dialog, 'open').and.returnValue({
       afterClosed: () => of(true) // Simulate user clicking "Confirm"
@@ -677,7 +683,7 @@ describe('ProjectFiscalsComponent', () => {
     ];
 
     const form = component.createFiscalForm({
-      planFiscalStatusCode: 'DRAFT' 
+      planFiscalStatusCode: 'DRAFT'
     });
 
     component.fiscalForms = [form];
@@ -705,7 +711,7 @@ describe('ProjectFiscalsComponent', () => {
 
     expect(result).toBeNull();
   });
-  
+
   it('should return the correct status icon', () => {
     const result = component.getStatusIcon('DRAFT');
     expect(result).toBe(PlanFiscalStatusIcons['DRAFT']);
@@ -719,6 +725,12 @@ describe('ProjectFiscalsComponent', () => {
   it('should update fiscal status and call onSaveFiscal()', () => {
     const form = component.createFiscalForm();
     component.fiscalForms = [form];
+
+    const dialogRefSpy = jasmine.createSpyObj('MatDialogRef', ['afterClosed']);
+    dialogRefSpy.afterClosed.and.returnValue(of(true));
+
+    spyOn(component.dialog, 'open').and.returnValue(dialogRefSpy);
+
     spyOn(component, 'onSaveFiscal');
 
     component.updateFiscalStatus(0, 'PROPOSED');
@@ -734,5 +746,4 @@ describe('ProjectFiscalsComponent', () => {
     expect(() => component.updateFiscalStatus(0, 'PROPOSED')).not.toThrow();
   });
 
-
-  });
+});

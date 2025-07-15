@@ -9,7 +9,7 @@ import { ConfirmationDialogComponent } from 'src/app/components/confirmation-dia
 import { EvaluationCriteriaCodeModel, EvaluationCriteriaSummaryModel, Project, WuiRiskClassCodeModel } from 'src/app/components/models';
 import { CodeTableServices } from 'src/app/services/code-table-services';
 import { ProjectService } from 'src/app/services/project-services';
-import { Messages } from 'src/app/utils/constants';
+import { Messages, ModalMessages, ModalTitles } from 'src/app/utils/constants';
 @Component({
   selector: 'wfprev-evaluation-criteria-dialog',
   standalone: true,
@@ -298,14 +298,14 @@ export class EvaluationCriteriaDialogComponent {
     };
   }
 
-
-
   onCancel(): void {
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       data: {
         indicator: 'confirm-cancel',
+        title: ModalTitles.CONFIRM_CANCEL_TITLE,
+         message: ModalMessages.CONFIRM_CANCEL_MESSAGE
       },
-      width: '500px',
+      width: '600px',
     });
 
     dialogRef.afterClosed().subscribe((result: any) => {

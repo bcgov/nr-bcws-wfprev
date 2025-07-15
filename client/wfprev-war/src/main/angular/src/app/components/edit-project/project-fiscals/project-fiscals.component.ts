@@ -18,7 +18,7 @@ import { ProjectFiscal } from 'src/app/components/models';
 import { CodeTableServices } from 'src/app/services/code-table-services';
 import { ProjectService } from 'src/app/services/project-services';
 import { CanComponentDeactivate } from 'src/app/services/util/can-deactive.guard';
-import { CodeTableKeys, FiscalStatuses, Messages } from 'src/app/utils/constants';
+import { CodeTableKeys, FiscalStatuses, Messages, ModalMessages, ModalTitles } from 'src/app/utils/constants';
 import { ExpansionIndicatorComponent } from '../../shared/expansion-indicator/expansion-indicator.component';
 import { IconButtonComponent } from 'src/app/components/shared/icon-button/icon-button.component';
 import { SelectFieldComponent } from 'src/app/components/shared/select-field/select-field.component';
@@ -53,7 +53,7 @@ import { StatusBadgeComponent } from 'src/app/components/shared/status-badge/sta
     StatusBadgeComponent
   ]
 })
-export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  {
+export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
   @ViewChild(ActivitiesComponent) activitiesComponent!: ActivitiesComponent;
   @ViewChild('fiscalMapRef') fiscalMapComponent!: FiscalMapComponent;
 
@@ -79,20 +79,24 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  
     private readonly snackbarService: MatSnackBar,
     public readonly dialog: MatDialog,
     public cd: ChangeDetectorRef
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.loadCodeTables();
     this.generateFiscalYears();
     this.loadProjectFiscals();
   }
-  
+
 
   canDeactivate(): Observable<boolean> | boolean {
     if (this.isFormDirty()) {
       const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-        data: { indicator: 'confirm-unsave' },
-        width: '500px',
+        data: {
+          indicator: 'confirm-unsave',
+          title: ModalTitles.CONFIRM_UNSAVE_TITLE,
+          message: ModalMessages.CONFIRM_UNSAVE_MESSAGE
+        },
+        width: '600px',
       });
       return dialogRef.afterClosed();
     }
@@ -115,14 +119,14 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  
       return `${year}/${(year + 1).toString().slice(-2)}`;
     });
   }
-  
+
   loadCodeTables(): void {
     const codeTables = [
       { name: 'activityCategoryCodes', embeddedKey: CodeTableKeys.ACTIVITY_CATEGORY_CODE },
       { name: 'planFiscalStatusCodes', embeddedKey: CodeTableKeys.PLAN_FISCAL_STATUS_CODE },
-      { name: 'proposalTypeCodes', embeddedKey: CodeTableKeys.PROPOSAL_TYPE_CODE}
+      { name: 'proposalTypeCodes', embeddedKey: CodeTableKeys.PROPOSAL_TYPE_CODE }
     ];
-  
+
     codeTables.forEach((table) => {
       this.fetchData(
         this.codeTableService.fetchCodeTable(table.name),
@@ -157,8 +161,8 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  
 
   sortArray<T>(array: T[], key?: keyof T): T[] {
     if (!array) return [];
-    return key 
-      ? array.sort((a, b) => String(a[key]).localeCompare(String(b[key]))) 
+    return key
+      ? array.sort((a, b) => String(a[key]).localeCompare(String(b[key])))
       : array.sort((a, b) => String(a).localeCompare(String(b)));
   }
 
@@ -180,28 +184,28 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  
       firstNationsPartner: [fiscal?.firstNationsPartner ?? ''],
       projectFiscalDescription: [fiscal?.projectFiscalDescription ?? '', [Validators.required, Validators.maxLength(500)]],
       otherPartner: [fiscal?.otherPartner ?? ''],
-      totalCostEstimateAmount: [fiscal?.totalCostEstimateAmount ?? '' , [Validators.min(0)]],
+      totalCostEstimateAmount: [fiscal?.totalCostEstimateAmount ?? '', [Validators.min(0)]],
       forecastAmount: [fiscal?.forecastAmount ?? ''],
       cfsProjectCode: [fiscal?.cfsProjectCode ?? '', [Validators.maxLength(25)]],
       ancillaryFundingProvider: [fiscal?.ancillaryFundingProvider ?? '', [Validators.maxLength(100)]],
-      fiscalAncillaryFundAmount: [fiscal?.fiscalAncillaryFundAmount ?? '' , [Validators.min(0)]],
-      fiscalReportedSpendAmount: [fiscal?.fiscalReportedSpendAmount ?? '' , [Validators.min(0)]],
+      fiscalAncillaryFundAmount: [fiscal?.fiscalAncillaryFundAmount ?? '', [Validators.min(0)]],
+      fiscalReportedSpendAmount: [fiscal?.fiscalReportedSpendAmount ?? '', [Validators.min(0)]],
       cfsActualSpend: [fiscal?.cfsActualSpend ?? ''],
-      fiscalForecastAmount: [fiscal?.fiscalForecastAmount ?? '' , [Validators.min(0)]],
-      fiscalActualAmount: [fiscal?.fiscalActualAmount ?? '' , [Validators.min(0)]],
+      fiscalForecastAmount: [fiscal?.fiscalForecastAmount ?? '', [Validators.min(0)]],
+      fiscalActualAmount: [fiscal?.fiscalActualAmount ?? '', [Validators.min(0)]],
       projectPlanFiscalGuid: [fiscal?.projectPlanFiscalGuid ?? ''],
       isApprovedInd: [fiscal?.isApprovedInd ?? false]
     });
-    
+
     return form;
-    
+
   }
 
   loadProjectFiscals(markFormsPristine: boolean = false): void {
     const previousTabIndex = this.selectedTabIndex;
     this.projectGuid = this.route.snapshot?.queryParamMap?.get('projectGuid') ?? '';
     if (!this.projectGuid) return;
-  
+
     this.fetchData(
       this.projectService.getProjectFiscalsByProjectGuid(this.projectGuid),
       (data) => {
@@ -209,16 +213,16 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  
           ...fiscal,
           fiscalYearFormatted: `${fiscal.fiscalYear}/${(fiscal.fiscalYear + 1).toString().slice(-2)}`,
         }))
-        .sort((a: any, b: any) => {
-          // Sort by date then by name
-          if (a.fiscalYear !== b.fiscalYear) {
-            return b.fiscalYear - a.fiscalYear; 
-          }
-          return (a.projectFiscalName ?? '').localeCompare(b.projectFiscalName ?? '', undefined);
-        });
-                
+          .sort((a: any, b: any) => {
+            // Sort by date then by name
+            if (a.fiscalYear !== b.fiscalYear) {
+              return b.fiscalYear - a.fiscalYear;
+            }
+            return (a.projectFiscalName ?? '').localeCompare(b.projectFiscalName ?? '', undefined);
+          });
+
         this.originalFiscalValues = JSON.parse(JSON.stringify(this.projectFiscals));
-        
+
         this.fiscalForms = this.projectFiscals.map((fiscal) => {
           const form = this.createFiscalForm(fiscal);
 
@@ -247,7 +251,7 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  
       'Error fetching project details'
     );
   }
-  
+
   updateCurrentFiscalGuid(): void {
     if (this.projectFiscals.length > 0 && this.projectFiscals[this.selectedTabIndex]) {
       this.currentFiscalGuid = this.projectFiscals[this.selectedTabIndex].projectPlanFiscalGuid ?? '';
@@ -261,18 +265,18 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  
     this.selectedTabIndex = index;
     this.updateCurrentFiscalGuid();
   }
-  
+
   get hasUnsavedFiscal(): boolean {
     return this.projectFiscals.some(fiscal => !fiscal.projectPlanFiscalGuid);
   }
 
   addNewFiscal(): void {
     this.currentFiscalGuid = '';
-      // Check if there is already an unsaved fiscal year
+    // Check if there is already an unsaved fiscal year
     const hasUnsavedFiscal = this.projectFiscals.some(fiscal => !fiscal.projectPlanFiscalGuid);
     if (hasUnsavedFiscal) {
       // And to prevent adding another unsaved fiscal
-      return; 
+      return;
     }
     const newFiscalData = this.getDefaultFiscalData();
     this.projectFiscals.push(newFiscalData);
@@ -282,9 +286,9 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  
 
   onCancelFiscal(index: number): void {
     if (!this.fiscalForms[index]) return; // Ensure form exists
-  
+
     const isNewEntry = !this.projectFiscals[index]?.projectPlanFiscalGuid;
-  
+
     if (isNewEntry) {
       // Case 1: New entry → Clear all fields
       this.fiscalForms[index].reset(this.getDefaultFiscalData());
@@ -293,7 +297,7 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  
       // Case 2: Existing entry → Revert to original API values
       const originalData = this.originalFiscalValues[index];
       this.fiscalForms[index].patchValue(originalData);
-  
+
       // Mark form as pristine (not dirty)
       this.fiscalForms[index].markAsPristine();
       this.fiscalForms[index].markAsUntouched();
@@ -311,92 +315,92 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  
   }
 
   onSaveFiscal(index: number): void {
-      const originalData = this.projectFiscals[index];
-      const formData = this.fiscalForms[index]?.value;
-      const updatedData = {
-        ...originalData, // Include all original data and overwrite with form data
-        ...formData,
-      };
-      const isUpdate = this.projectFiscals[index]?.projectPlanFiscalGuid;
-      const projectFiscal: ProjectFiscal = {
-        projectGuid: updatedData.projectGuid,
-        projectPlanFiscalGuid: updatedData.projectPlanFiscalGuid,
-        activityCategoryCode: updatedData.activityCategoryCode,
-        fiscalYear: updatedData.fiscalYear ? parseInt(updatedData.fiscalYear, 10) : 0,
-        projectPlanStatusCode: isUpdate ? updatedData.projectPlanStatusCode : "ACTIVE",
-        planFiscalStatusCode: {
-          planFiscalStatusCode : updatedData.planFiscalStatusCode
+    const originalData = this.projectFiscals[index];
+    const formData = this.fiscalForms[index]?.value;
+    const updatedData = {
+      ...originalData, // Include all original data and overwrite with form data
+      ...formData,
+    };
+    const isUpdate = this.projectFiscals[index]?.projectPlanFiscalGuid;
+    const projectFiscal: ProjectFiscal = {
+      projectGuid: updatedData.projectGuid,
+      projectPlanFiscalGuid: updatedData.projectPlanFiscalGuid,
+      activityCategoryCode: updatedData.activityCategoryCode,
+      fiscalYear: updatedData.fiscalYear ? parseInt(updatedData.fiscalYear, 10) : 0,
+      projectPlanStatusCode: isUpdate ? updatedData.projectPlanStatusCode : "ACTIVE",
+      planFiscalStatusCode: {
+        planFiscalStatusCode: updatedData.planFiscalStatusCode
+      },
+      projectFiscalName: updatedData.projectFiscalName,
+      projectFiscalDescription: updatedData.projectFiscalDescription,
+      businessAreaComment: updatedData.businessAreaComment,
+      estimatedClwrrAllocAmount: updatedData.estimatedClwrrAllocAmount,
+      fiscalAncillaryFundAmount: updatedData.fiscalAncillaryFundAmount,
+      fiscalPlannedProjectSizeHa: updatedData.fiscalPlannedProjectSizeHa,
+      fiscalPlannedCostPerHaAmt: updatedData.fiscalPlannedCostPerHaAmt,
+      fiscalReportedSpendAmount: updatedData.fiscalReportedSpendAmount,
+      fiscalActualAmount: updatedData.fiscalActualAmount,
+      fiscalCompletedSizeHa: updatedData.fiscalCompletedSizeHa,
+      fiscalActualCostPerHaAmt: updatedData.fiscalActualCostPerHaAmt,
+      firstNationsDelivPartInd: updatedData.firstNationsDelivPartInd,
+      firstNationsEngagementInd: updatedData.firstNationsEngagementInd,
+      firstNationsPartner: updatedData.firstNationsPartner,
+      resultsNumber: updatedData.resultsNumber,
+      resultsOpeningId: updatedData.resultsOpeningId,
+      resultsContactEmail: updatedData.resultsContactEmail,
+      submittedByName: updatedData.submittedByName,
+      submittedByUserGuid: updatedData.submittedByUserGuid,
+      submittedByUserUserid: updatedData.submittedByUserUserid,
+      submissionTimestamp: updatedData.submissionTimestamp,
+      isApprovedInd: isUpdate ? updatedData.isApprovedInd : false,
+      isDelayedInd: isUpdate ? updatedData.isDelayedInd : false,
+      fiscalForecastAmount: updatedData.fiscalForecastAmount,
+      totalCostEstimateAmount: updatedData.totalCostEstimateAmount,
+      cfsProjectCode: updatedData.cfsProjectCode,
+      ancillaryFundingProvider: updatedData.ancillaryFundingProvider,
+      otherPartner: updatedData.otherPartner,
+      proposalTypeCode: updatedData.proposalTypeCode,
+    };
+    if (isUpdate) {
+      // update the existing fiscal
+      this.projectService.updateProjectFiscal(this.projectGuid, updatedData.projectPlanFiscalGuid, projectFiscal).subscribe({
+        next: (response) => {
+          this.snackbarService.open(
+            this.messages.projectFiscalUpdatedSuccess,
+            'OK',
+            { duration: 5000, panelClass: 'snackbar-success' },
+          );
+          this.loadProjectFiscals(true);
         },
-        projectFiscalName: updatedData.projectFiscalName,
-        projectFiscalDescription: updatedData.projectFiscalDescription,
-        businessAreaComment: updatedData.businessAreaComment,
-        estimatedClwrrAllocAmount: updatedData.estimatedClwrrAllocAmount,
-        fiscalAncillaryFundAmount: updatedData.fiscalAncillaryFundAmount,
-        fiscalPlannedProjectSizeHa: updatedData.fiscalPlannedProjectSizeHa,
-        fiscalPlannedCostPerHaAmt: updatedData.fiscalPlannedCostPerHaAmt,
-        fiscalReportedSpendAmount: updatedData.fiscalReportedSpendAmount,
-        fiscalActualAmount: updatedData.fiscalActualAmount,
-        fiscalCompletedSizeHa: updatedData.fiscalCompletedSizeHa,
-        fiscalActualCostPerHaAmt: updatedData.fiscalActualCostPerHaAmt,
-        firstNationsDelivPartInd: updatedData.firstNationsDelivPartInd,
-        firstNationsEngagementInd: updatedData.firstNationsEngagementInd,
-        firstNationsPartner: updatedData.firstNationsPartner,
-        resultsNumber: updatedData.resultsNumber,
-        resultsOpeningId: updatedData.resultsOpeningId,
-        resultsContactEmail: updatedData.resultsContactEmail,
-        submittedByName: updatedData.submittedByName,
-        submittedByUserGuid: updatedData.submittedByUserGuid,
-        submittedByUserUserid: updatedData.submittedByUserUserid,
-        submissionTimestamp: updatedData.submissionTimestamp,
-        isApprovedInd: isUpdate ? updatedData.isApprovedInd : false,
-        isDelayedInd: isUpdate ? updatedData.isDelayedInd : false,
-        fiscalForecastAmount: updatedData.fiscalForecastAmount,
-        totalCostEstimateAmount: updatedData.totalCostEstimateAmount,
-        cfsProjectCode: updatedData.cfsProjectCode,
-        ancillaryFundingProvider: updatedData.ancillaryFundingProvider,
-        otherPartner: updatedData.otherPartner,
-        proposalTypeCode: updatedData.proposalTypeCode,
-      };
-      if (isUpdate) {
-        // update the existing fiscal
-        this.projectService.updateProjectFiscal(this.projectGuid, updatedData.projectPlanFiscalGuid, projectFiscal).subscribe({
-          next: (response) => {
-            this.snackbarService.open(
-              this.messages.projectFiscalUpdatedSuccess,
-              'OK',
-              { duration: 5000, panelClass: 'snackbar-success' },
-            );
-            this.loadProjectFiscals(true);
-          },
-          error: () => {
-            this.snackbarService.open(
-              this.messages.projectFiscalUpdatedFailure,
-              'OK',
-              { duration: 5000, panelClass: 'snackbar-error' }
-            );
-          }
-        })
-      }
-      else {
-        // create new fiscal
-        this.projectService.createProjectFiscal(this.projectGuid, projectFiscal).subscribe({
-          next: (response) => {
-            this.snackbarService.open(
-              this.messages.projectFiscalCreatedSuccess,
-              'OK',
-              { duration: 5000, panelClass: 'snackbar-success' },
-            );
-            this.loadProjectFiscals(true);
-          },
-          error: () =>{
-              this.snackbarService.open(
-                this.messages.projectFiscalCreatedFailure,
-                'OK',
-                { duration: 5000, panelClass: 'snackbar-error' }
-              );
-            }
-        });
-      }
+        error: () => {
+          this.snackbarService.open(
+            this.messages.projectFiscalUpdatedFailure,
+            'OK',
+            { duration: 5000, panelClass: 'snackbar-error' }
+          );
+        }
+      })
+    }
+    else {
+      // create new fiscal
+      this.projectService.createProjectFiscal(this.projectGuid, projectFiscal).subscribe({
+        next: (response) => {
+          this.snackbarService.open(
+            this.messages.projectFiscalCreatedSuccess,
+            'OK',
+            { duration: 5000, panelClass: 'snackbar-success' },
+          );
+          this.loadProjectFiscals(true);
+        },
+        error: () => {
+          this.snackbarService.open(
+            this.messages.projectFiscalCreatedFailure,
+            'OK',
+            { duration: 5000, panelClass: 'snackbar-error' }
+          );
+        }
+      });
+    }
   }
 
   deleteFiscalYear(form: any, index: number): void {
@@ -404,11 +408,13 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  
     const fiscalName = this.projectFiscals[this.selectedTabIndex]?.projectFiscalName;
     const fiscalYear = this.projectFiscals[this.selectedTabIndex]?.fiscalYear;
     const formattedYear = fiscalYear ? `${fiscalYear}/${(fiscalYear + 1).toString().slice(-2)}` : null;
+    const yearName = (fiscalName && fiscalYear) ? `${fiscalName}:${formattedYear}` : 'this fiscal year'
 
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-      data: { 
-        indicator: 'delete-fiscal-year', 
-        name: (fiscalName && fiscalYear) ? `${fiscalName}:${formattedYear}` : null
+      data: {
+        indicator: 'delete-fiscal-year',
+        title: ModalTitles.DELETE_FISCAL_YEAR_TITLE,
+        message: `Are you sure you want to delete ${yearName}? This action cannot be reversed and will immediately remove the Fiscal Year from the Project scope.`
       },
       width: '600px',
     });
@@ -439,19 +445,19 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  
           // If it's an unsaved draft, just remove it from the list
           this.projectFiscals.splice(index, 1);
           this.fiscalForms.splice(index, 1);
-  
+
           this.snackbarService.open(
             this.messages.projectFiscalDeletedSuccess,
             "OK",
             { duration: 5000, panelClass: "snackbar-success" }
           );
-  
+
           this.selectedTabIndex = Math.max(0, this.selectedTabIndex - 1);
         }
       }
     });
   }
-  
+
   isUndeletable(form: any): boolean {
     return !!form?.value?.isApprovedInd;
   }
@@ -529,10 +535,31 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  
   updateFiscalStatus(index: number, newStatus: string): void {
     const form = this.fiscalForms[index];
     if (!form) return;
-    form.get('planFiscalStatusCode')?.setValue(newStatus);
-    form.markAsDirty();
-    form.markAsTouched();
-    this.onSaveFiscal(index);
+
+    // Parse status to plain English if it is IN_PROG
+    // The remaining status do not require such parsing
+    const currentStatus = form.value?.planFiscalStatusCode === 'IN_PROG' ? "In Progress" : this.capitalizeFirstLetter(form.value.planFiscalStatusCode)
+    const requestedStatus = newStatus === 'IN_PROG' ? "In Progress" : this.capitalizeFirstLetter(newStatus)
+    const message = `You are about the change the status of this Project from ${currentStatus} to ${requestedStatus}. Do you wish to continue?`
+
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      data: {
+        indicator: 'confirm-fiscal-status-update',
+        title: `Confirm Change to ${requestedStatus}`,
+        message: message
+      },
+      width: '600px',
+    });
+
+    dialogRef.afterClosed().subscribe(confirmed => {
+      if (confirmed) {
+        form.get('planFiscalStatusCode')?.setValue(newStatus);
+        form.markAsDirty();
+        form.markAsTouched();
+        this.onSaveFiscal(index);
+      }
+    });
+
   }
 
   onFiscalAction(event: { action: string; index: number }) {
@@ -543,6 +570,11 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate  
     } else {
       this.updateFiscalStatus(index, action);
     }
+  }
+
+  capitalizeFirstLetter(status: string): string {
+    if (!status) return '';
+    return status.toLowerCase().split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
   }
 
 }
