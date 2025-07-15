@@ -1,4 +1,5 @@
-module "network" {
-  source      = "git::https://github.com/BCDevOps/terraform-octk-aws-sea-network-info.git//?ref=master"
-  environment = var.TARGET_ENV
+module "networking" {
+  source = "git::https://github.com/bcgov/quickstart-aws-helpers.git//terraform/modules/networking?ref=v0.0.5"
+  
+  target_env = var.NAMESPACE_ENV
 }
