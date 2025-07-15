@@ -10,7 +10,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ConfirmationDialogComponent } from 'src/app/components/confirmation-dialog/confirmation-dialog.component';
 import { Component } from '@angular/core';
 import { PlanFiscalStatusIcons } from 'src/app/utils/tools';
-import { ModalMessages, ModalTitles } from 'src/app/utils/constants';
+import { EndorsementCode, ModalMessages, ModalTitles } from 'src/app/utils/constants';
 import { TokenService } from 'src/app/services/token.service';
 import { ProjectFiscal } from 'src/app/components/models';
 
@@ -67,7 +67,7 @@ describe('ProjectFiscalsComponent', () => {
       imports: [BrowserAnimationsModule],
       declarations: [MockFiscalMapComponent, MockActivitiesComponent],
       providers: [
-        { provide: TokenService,  useValue: { getUserFullNameLastFirst: jasmine.createSpy('getUserFullNameLastFirst').and.returnValue('Test User')}},
+        { provide: TokenService,  useValue: { getUserFullName: jasmine.createSpy('getUserFullName').and.returnValue('Test User')}},
         { provide: ActivatedRoute, useValue: { snapshot: { queryParamMap: { get: () => 'test-guid' } } } },
         { provide: ProjectService, useValue: mockProjectService },
         { provide: CodeTableServices, useValue: mockCodeTableServices },
@@ -775,7 +775,7 @@ describe('ProjectFiscalsComponent', () => {
     component.selectedTabIndex = 0;
     const updatedFiscal = {
       isApprovedInd: false,
-      endorsementCode: { endorsementCode: 'NOT_ENDORSED' },
+      endorsementCode: { endorsementCode: EndorsementCode.NOT_ENDORS },
       planFiscalStatusCode: { planFiscalStatusCode: 'DRAFT' }
     } as ProjectFiscal;
     mockProjectService.updateProjectFiscal.and.returnValue(of({}));
@@ -811,5 +811,4 @@ describe('ProjectFiscalsComponent', () => {
       { duration: 5000, panelClass: 'snackbar-error' }
     );
   });
-
 });

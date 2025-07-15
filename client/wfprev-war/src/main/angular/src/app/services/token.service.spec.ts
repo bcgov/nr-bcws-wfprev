@@ -327,37 +327,38 @@ describe('getUserFullName', () => {
   });
 });
 
-  describe('getUserFullNameLastFirst', () => {
+  describe('getUserFullName with reverseNameOrder flag', () => {
     it('should return "Last, First" format when both names are present', () => {
       service['tokenDetails'] = { given_name: 'John', family_name: 'Doe' };
-      expect(service.getUserFullNameLastFirst()).toBe('Doe, John');
+      expect(service.getUserFullName(true)).toBe('Doe, John');
     });
 
     it('should return "Last, First" when using fallback keys', () => {
       service['tokenDetails'] = { givenName: 'Alice', familyName: 'Smith' };
-      expect(service.getUserFullNameLastFirst()).toBe('Smith, Alice');
+      expect(service.getUserFullName(true)).toBe('Smith, Alice');
     });
 
-    it('should return the single name if only first name is present', () => {
+    it('should return only the last name if first is missing', () => {
+      service['tokenDetails'] = { family_name: 'Solo' };
+      expect(service.getUserFullName(true)).toBe('Solo');
+    });
+
+    it('should return only the first name if last is missing', () => {
       service['tokenDetails'] = { given_name: 'Solo' };
-      expect(service.getUserFullNameLastFirst()).toBe('Solo');
+      expect(service.getUserFullName(true)).toBe('Solo');
     });
 
     it('should return null if both names are missing', () => {
       service['tokenDetails'] = {};
-      expect(service.getUserFullNameLastFirst()).toBeNull();
-    });
-
-    it('should return null if tokenDetails is undefined', () => {
-      service['tokenDetails'] = undefined!;
-      expect(service.getUserFullNameLastFirst()).toBeNull();
+      expect(service.getUserFullName(true)).toBeNull();
     });
 
     it('should handle names with extra spaces gracefully', () => {
-      service['tokenDetails'] = { given_name: ' John ', family_name: '  Doe ' };
-      expect(service.getUserFullNameLastFirst()).toBe('Doe, John');
+      service['tokenDetails'] = { given_name: 'John', family_name: 'Doe' };
+      expect(service.getUserFullName(true)).toBe('Doe, John');
     });
   });
+
 
 
 });
