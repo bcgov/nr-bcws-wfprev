@@ -13,10 +13,12 @@ on:
       - closed
     branches:
       - 'main'
+      - 'feature/lza-migration'
     paths:
       - ".github/workflows/**"
       - "client/**"
       - "server/**"
+      - "terraform/**"
       - "!**/README.md"
   workflow_dispatch:
     inputs:
@@ -46,11 +48,11 @@ jobs:
     with:
       TAG: latest
       
-  terragrunt-deploy-dev:
+  terragrunt-deploy-wfint:
     uses: ./.github/workflows/terragrunt-deploy.yml
     needs: [node-build, wfprev-api, liquibase-build]
     with:
-      DEFAULT_APPLICATION_ENVIRONMENT: dev
+      DEFAULT_APPLICATION_ENVIRONMENT: wfint
       IMAGE_TAG: latest
       RUN_LIQUIBASE: true
       COMMAND: apply
@@ -59,8 +61,8 @@ jobs:
 
   wfprev-ui:
     uses: ./.github/workflows/client-build.yml
-    needs: [terragrunt-deploy-dev]
+    needs: [terragrunt-deploy-wfint]
     with:
-      DEFAULT_APPLICATION_ENVIRONMENT: dev
+      DEFAULT_APPLICATION_ENVIRONMENT: wfint
     secrets: inherit
     
