@@ -25,6 +25,8 @@ generate "tfvars" {
   disable_signature = true
   contents          = <<-EOF
 TARGET_ENV = "${get_env("TARGET_ENV")}"
+NAMESPACE_ENV = "${get_env("NAMESPACE_ENV")}"
+SHORTENED_ENV = "${get_env("SHORTENED_ENV")}"
 APP_COUNT = "${get_env("APP_COUNT")}"
 LOGGING_LEVEL = "${get_env("LOGGING_LEVEL")}"
 RESTORE_DOWNSCALED_CLUSTER = "${get_env("RESTORE_DOWNSCALED_CLUSTER")}"

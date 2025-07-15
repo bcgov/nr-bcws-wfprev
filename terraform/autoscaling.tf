@@ -91,7 +91,7 @@ resource "aws_cloudwatch_metric_alarm" "wfprev_service_cpu_low" {
    alarm_actions = [aws_appautoscaling_policy.wfprev_down.arn]
 
    tags = {
-     Environment = "${var.TARGET_ENV}"
+     Environment = "${var.SHORTENED_ENV}"
    }
 }
 

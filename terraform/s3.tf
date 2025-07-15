@@ -1,20 +1,44 @@
-# Bucket create. Public-read or private?
-resource "aws_s3_bucket" "wfprev_site_bucket" {
-  bucket        = "wfprev-${var.TARGET_ENV}-site"
+
+module "s3_secure_bucket" {
+  source = "git::https://github.com/bcgov/quickstart-aws-helpers.git//terraform/modules/s3-secure-bucket?ref=v0.0.5"
+  
+  bucket_name = "wfprev-${var.SHORTENED_ENV}-site"
   force_destroy = true
 
-  website {
-    index_document = "index.html"
-    error_document = "index.html"
-  }
-
-  lifecycle {
-    ignore_changes = [bucket]
-  }
+  # S3 Bucket Policy for public access
+  bucket_policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Principal = {
+          "AWS" : "${aws_cloudfront_origin_access_identity.oai.iam_arn}"
+        },
+        Action   = "s3:GetObject",
+        Resource = "arn:aws:s3:::wfprev-${var.SHORTENED_ENV}-site/*"
+      },
+      {
+        Effect = "Allow",
+        Principal = {
+          "AWS" : "arn:aws:iam::${var.TARGET_AWS_ACCOUNT_ID}:role/github-actions-role"
+        },
+        Action = [
+          "s3:ListBucket",
+          "s3:GetObject",
+          "s3:PutObject",
+          "s3:DeleteObject"
+        ],
+        Resource = [
+          "arn:aws:s3:::wfprev-${var.SHORTENED_ENV}-site",
+          "arn:aws:s3:::wfprev-${var.SHORTENED_ENV}-site/*"
+        ]
+      }
+    ]
+  })
 }
 
 resource "aws_s3_bucket" "alb_logs" {
-  bucket = "wfprev-${var.TARGET_ENV}-alb-logs-bucket"
+  bucket = "wfprev-${var.SHORTENED_ENV}-alb-logs-bucket"
 
   force_destroy = true
 
@@ -46,46 +70,11 @@ resource "aws_s3_bucket_lifecycle_configuration" "alb_logs_lifecycle" {
 # github action, vs having terraform fetch them
 #resource "aws_s3_object" "upload-assets" {
 #  for_each = fileset("${var.web-assets-path}", "**/*")
-#  bucket = aws_s3_bucket.wfprev_site_bucket.bucket
+#  bucket = module.s3_secure_bucket.bucket
 #  key = each.value
 #  source = "${var.web-assets-path}/${each.value}"
 #  content_type = lookup(var.mime_types, regex("\\.[^.]+$", each.value), "application/octet-stream")
 #}
-
-# S3 Bucket Policy for public access
-resource "aws_s3_bucket_policy" "wfprev_site_bucket_policy" {
-  bucket = aws_s3_bucket.wfprev_site_bucket.id
-
-  policy = jsonencode({
-    Version = "2012-10-17",
-    Statement = [
-      {
-        Effect = "Allow",
-        Principal = {
-          "AWS" : "${aws_cloudfront_origin_access_identity.oai.iam_arn}"
-        },
-        Action   = "s3:GetObject",
-        Resource = "arn:aws:s3:::wfprev-${var.TARGET_ENV}-site/*"
-      },
-      {
-        Effect = "Allow",
-        Principal = {
-          "AWS" : "arn:aws:iam::${var.TARGET_AWS_ACCOUNT_ID}:role/github-actions-role"
-        },
-        Action = [
-          "s3:ListBucket",
-          "s3:GetObject",
-          "s3:PutObject",
-          "s3:DeleteObject"
-        ],
-        Resource = [
-          "arn:aws:s3:::wfprev-${var.TARGET_ENV}-site",
-          "arn:aws:s3:::wfprev-${var.TARGET_ENV}-site/*"
-        ]
-      }
-    ]
-  })
-}
 
 resource "aws_s3_bucket_policy" "alb_logs_policy" {
   bucket = aws_s3_bucket.alb_logs.id
@@ -113,5 +102,5 @@ resource "aws_s3_bucket_policy" "alb_logs_policy" {
 data "aws_caller_identity" "current" {}
 
 output "s3_bucket_name" {
-  value = aws_s3_bucket.wfprev_site_bucket.bucket
+  value = module.s3_secure_bucket.bucket_name
 }

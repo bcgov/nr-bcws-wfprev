@@ -108,7 +108,7 @@ resource "aws_iam_user_policy" "github_actions_policy" {
       {
         Effect   = "Allow",
         Action   = ["s3:PutObject", "s3:DeleteObject"],
-        Resource = "${aws_s3_bucket.wfprev_site_bucket.arn}/*"
+        Resource = "${module.s3_secure_bucket.arn}/*"
       },
       {
         Effect   = "Allow",
@@ -171,8 +171,8 @@ resource "aws_iam_policy" "github_actions_policy" {
           "cloudfront:CreateInvalidation" # Invalidate cache
         ],
         Resource = [
-          "arn:aws:s3:::wfprev-${var.TARGET_ENV}-site",        # Bucket-level actions like s3:ListBucket
-          "arn:aws:s3:::wfprev-${var.TARGET_ENV}-site/*",      # Object-level actions
+          "arn:aws:s3:::wfprev-${var.SHORTENED_ENV}-site",        # Bucket-level actions like s3:ListBucket
+          "arn:aws:s3:::wfprev-${var.SHORTENED_ENV}-site/*",      # Object-level actions
           "arn:aws:cloudfront::${var.TARGET_AWS_ACCOUNT_ID}:distribution/*" # CloudFront distrbution
         ]
       }
