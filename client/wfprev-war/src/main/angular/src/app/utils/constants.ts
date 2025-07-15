@@ -86,3 +86,13 @@ export const FiscalStatuses = {
   COMPLETE: 'COMPLETE',
   CANCELLED: 'CANCELLED',
 };
+
+export const CUSTOM_DATE_FORMATS = {
+  parse: { dateInput: 'YYYY-MM-DD' },
+  display: {
+    dateInput: 'YYYY-MM-DD',
+    monthYearLabel: 'YYYY MMM',
+    dateA11yLabel: 'LL',
+    monthYearA11yLabel: 'YYYY MMMM',
+  },
+};

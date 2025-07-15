@@ -44,21 +44,44 @@ export class EndorsementApprovalComponent implements OnChanges {
     endorseFiscalYear: new FormControl<boolean | null>(false),
     endorsementDate: new FormControl<Date | null>(null),
     endorsementComment: new FormControl<string | null>(''),
+    approveFiscalYear: new FormControl<boolean | null>(false),
     approvalDate: new FormControl<Date | null>(null),
     approvalComment: new FormControl<string | null>(''),
   });
 
+  ngOnInit(): void {
+    this.endorsementApprovalForm.get('endorseFiscalYear')?.valueChanges.subscribe((checked) => {
+      if (checked) {
+        this.endorsementDateControl.setValue(new Date());
+      } else {
+        this.endorsementDateControl.setValue(null);
+      }
+    });
+
+    this.endorsementApprovalForm.get('approveFiscalYear')?.valueChanges.subscribe((checked) => {
+      if (checked) {
+        this.approvalDateControl.setValue(new Date());
+      } else {
+        this.approvalDateControl.setValue(null);
+      }
+    });
+  }
+
+
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['fiscal'] && changes['fiscal'].currentValue) {
+    if (changes['fiscal']?.currentValue) {
       const fiscal = changes['fiscal'].currentValue as ProjectFiscal;
+      const endorseChecked = !!fiscal.endorserName;
+      const approveChecked = !!fiscal.isApprovedInd;
 
       this.endorsementApprovalForm.patchValue({
-        endorseFiscalYear: !!fiscal.isApprovedInd,
-        endorsementDate: fiscal.endorsementTimestamp
+        endorseFiscalYear: endorseChecked,
+        endorsementDate: endorseChecked && fiscal.endorsementTimestamp
           ? new Date(fiscal.endorsementTimestamp)
           : null,
         endorsementComment: fiscal.endorsementComment ?? '',
-        approvalDate: fiscal.approvedTimestamp
+        approveFiscalYear: approveChecked,
+        approvalDate: approveChecked && fiscal.approvedTimestamp
           ? new Date(fiscal.approvedTimestamp)
           : null,
         approvalComment: fiscal.businessAreaComment ?? ''
@@ -69,32 +92,56 @@ export class EndorsementApprovalComponent implements OnChanges {
   }
 
 
+
+  get effectiveEndorserName(): string {
+    const checked = this.endorsementApprovalForm.get('endorseFiscalYear')?.value;
+    return checked ? this.currentUser : (this.fiscal?.endorserName || '');
+  }
+
+
   onSave() {
     const formValue = this.endorsementApprovalForm.value;
+
+    const endorsementRemoved = !formValue.endorseFiscalYear;
+    const approvalRemoved = !formValue.approveFiscalYear;
+    const currentStatusCode = this.fiscal?.planFiscalStatusCode?.planFiscalStatusCode;
+    const shouldResetToPrepared =
+      (endorsementRemoved || approvalRemoved) &&
+      currentStatusCode !== 'DRAFT' &&
+      currentStatusCode !== 'PROPOSED';
 
     const updatedFiscal: ProjectFiscal = {
       ...this.fiscal,
 
-      // Update endorsement
-      isApprovedInd: !!formValue.endorseFiscalYear,
-      endorsementComment: formValue.endorsementComment ?? undefined,
-      endorsementTimestamp: formValue.endorsementDate
+      // Endorsement logic
+      endorserName: formValue.endorseFiscalYear ? this.currentUser : undefined,
+      endorsementTimestamp: formValue.endorseFiscalYear && formValue.endorsementDate
         ? new Date(formValue.endorsementDate).toISOString()
         : undefined,
-      endorserName: formValue.endorsementDate ? this.currentUser : undefined,
+      endorsementCode: formValue.endorseFiscalYear
+        ? { endorsementCode: 'ENDORSED' }
+        : undefined,
+      endorsementComment: formValue.endorsementComment ?? undefined,
 
-      // Update approval
-      businessAreaComment: formValue.approvalComment ?? undefined,
-      approvedTimestamp: formValue.approvalDate
+      // Approval logic
+      isApprovedInd: !!formValue.approveFiscalYear,
+      approvedTimestamp: formValue.approveFiscalYear && formValue.approvalDate
         ? new Date(formValue.approvalDate).toISOString()
         : undefined,
-      approverName: formValue.approvalDate ? this.currentUser : undefined,
+      approverName: formValue.approveFiscalYear ? this.currentUser : undefined,
+      businessAreaComment: formValue.approvalComment ?? undefined,
+
+       // Status logic: (return to PREPARED if removed and not DRAFT/PROPOSED)
+      planFiscalStatusCode: shouldResetToPrepared
+        ? { planFiscalStatusCode: 'PREPARED' }
+        : this.fiscal.planFiscalStatusCode,
     };
 
     this.saveEndorsement.emit(updatedFiscal);
-
     this.endorsementApprovalForm.markAsPristine();
   }
+
+
 
 
   onCancel() {

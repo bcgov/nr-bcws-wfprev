@@ -30,23 +30,19 @@ EXPOSE 8080
 EXPOSE 5005
 
 # Create start script with debug options
-COPY <<EOF /app/start.sh
-#!/bin/sh
-echo "==== Environment Variables ===="
-echo "WFPREV_DATASOURCE_URL: \${WFPREV_DATASOURCE_URL}"
-echo "WFPREV_DATASOURCE_USERNAME: \${WFPREV_DATASOURCE_USERNAME}"
-echo "Database connection test:"
-
-until pg_isready -h db -U \${WFPREV_DATASOURCE_USERNAME}; do
-    echo "Waiting for database connection..."
-    sleep 2
-done
-
-echo "Starting application in debug mode..."
-exec ./mvnw spring-boot:run \
-    -Dspring-boot.run.jvmArguments="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"
-EOF
+RUN echo '#!/bin/sh' > /app/start.sh && \
+    echo 'echo "==== Environment Variables ===="' >> /app/start.sh && \
+    echo 'echo "WFPREV_DATASOURCE_URL: ${WFPREV_DATASOURCE_URL}"' >> /app/start.sh && \
+    echo 'echo "WFPREV_DATASOURCE_USERNAME: ${WFPREV_DATASOURCE_USERNAME}"' >> /app/start.sh && \
+    echo 'echo "Database connection test:"' >> /app/start.sh && \
+    echo 'until pg_isready -h db -U ${WFPREV_DATASOURCE_USERNAME}; do' >> /app/start.sh && \
+    echo '  echo "Waiting for database connection..."' >> /app/start.sh && \
+    echo '  sleep 2' >> /app/start.sh && \
+    echo 'done' >> /app/start.sh && \
+    echo 'echo "Starting application in debug mode..."' >> /app/start.sh && \
+    echo 'exec ./mvnw spring-boot:run -Dspring-boot.run.jvmArguments="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"' >> /app/start.sh
 
 RUN chmod +x /app/start.sh
 
+# Use start script as entrypoint
 ENTRYPOINT ["/app/start.sh"]
