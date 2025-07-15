@@ -5,7 +5,7 @@ import { of, throwError } from 'rxjs';
 import { CreateNewProjectDialogComponent } from './create-new-project-dialog.component';
 import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { Messages } from 'src/app/utils/constants';
+import { Messages, ModalMessages, ModalTitles } from 'src/app/utils/constants';
 import { ProjectService } from 'src/app/services/project-services';
 import { CodeTableServices } from 'src/app/services/code-table-services';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -82,7 +82,7 @@ describe('CreateNewProjectDialogComponent', () => {
       projectLeadEmail: '',
       siteUnitName: '',
       closestCommunity: '',
-      primaryObjective : '',
+      primaryObjective: '',
       secondaryObjective: '',
       secondaryObjectiveRationale: '',
     });
@@ -96,7 +96,7 @@ describe('CreateNewProjectDialogComponent', () => {
   it('should enable bcParksSection when a region is selected', () => {
     component.projectForm.get('bcParksRegion')?.setValue(1);
     fixture.detectChanges();
-  
+
     expect(component.projectForm.get('bcParksSection')?.enabled).toBeTrue();
   });
 
@@ -120,20 +120,20 @@ describe('CreateNewProjectDialogComponent', () => {
           return of({ _embedded: [] });
       }
     });
-  
+
     // Trigger the loadCodeTables method
     component.loadCodeTables();
     fixture.detectChanges();
-  
+
     // Verify that the service was called with correct table names
     expect(mockCodeTableService.fetchCodeTable).toHaveBeenCalledWith('programAreaCodes');
     expect(mockCodeTableService.fetchCodeTable).toHaveBeenCalledWith('forestRegionCodes');
-  
+
     // Verify the component's state is updated correctly
     expect(component.businessAreas).toEqual([{ name: 'Program Area 1' }]);
     expect(component.forestRegions).toEqual([{ name: 'Forest Region 1' }]);
   });
-  
+
 
   it('should display correct error messages', () => {
     component.projectForm.get('projectName')?.setErrors({ required: true });
@@ -146,7 +146,7 @@ describe('CreateNewProjectDialogComponent', () => {
   it('should create a new project and close dialog on success', () => {
     // Mock createProject to simulate a successful API response
     mockProjectService.createProject.and.returnValue(of({ projectGuid: '999999' }));
-  
+
     // Populate the form with valid values
     component.projectForm.patchValue({
       projectType: 'FUEL_MGMT', // Required field
@@ -163,10 +163,10 @@ describe('CreateNewProjectDialogComponent', () => {
       closestCommunity: 'Community 1', // Required field
       primaryObjective: 'WRR' // Required field
     });
-  
+
     // Call the function to create a project
     component.onCreate();
-  
+
     // Assertions
     expect(mockProjectService.createProject).toHaveBeenCalled(); // Ensure createProject was called
     expect(mockSnackbarService.open).toHaveBeenCalledWith(
@@ -176,7 +176,7 @@ describe('CreateNewProjectDialogComponent', () => {
     ); // Ensure snackbar was called
     expect(mockDialogRef.close).toHaveBeenCalledWith({ success: true, projectGuid: '999999' });
   });
-  
+
   // Future task
   // it('should handle duplicate project error during creation', () => {
   //   mockProjectService.createProject.and.returnValue(
@@ -198,8 +198,12 @@ describe('CreateNewProjectDialogComponent', () => {
     component.onCancel();
 
     expect(mockDialog.open).toHaveBeenCalledWith(ConfirmationDialogComponent, {
-      data: { indicator: 'confirm-cancel' },
-      width: '500px',
+      data: {
+        indicator: 'confirm-cancel', 
+        title: ModalTitles.CONFIRM_CANCEL_TITLE,
+        message: ModalMessages.CONFIRM_CANCEL_MESSAGE,
+      },
+      width: '600px',
     });
 
     mockAfterClosed.subscribe(() => {
@@ -221,9 +225,9 @@ describe('CreateNewProjectDialogComponent', () => {
 
   it('should not create a new project if the form is invalid', () => {
     component.projectForm.get('projectName')?.setValue(''); // Invalid since it's required
-  
+
     component.onCreate();
-  
+
     expect(mockProjectService.createProject).not.toHaveBeenCalled();
     expect(mockSnackbarService.open).not.toHaveBeenCalled();
     expect(mockDialogRef.close).not.toHaveBeenCalled();
@@ -235,18 +239,18 @@ describe('CreateNewProjectDialogComponent', () => {
       { parentOrgUnitId: '1', name: 'Section 1' },
       { parentOrgUnitId: '2', name: 'Section 2' },
     ];
-  
+
     // Set bcParksRegion value to 1
     component.projectForm.get('bcParksRegion')?.setValue('1');
     fixture.detectChanges();
-  
+
     // Check if bcParksSections is updated correctly
     expect(component.bcParksSections).toEqual([{ parentOrgUnitId: '1', name: 'Section 1' }]);
-  
+
     // Set bcParksRegion value to 2
     component.projectForm.get('bcParksRegion')?.setValue('2');
     fixture.detectChanges();
-  
+
     // Check if bcParksSections is updated correctly
     expect(component.bcParksSections).toEqual([{ parentOrgUnitId: '2', name: 'Section 2' }]);
   });
@@ -268,11 +272,11 @@ describe('CreateNewProjectDialogComponent', () => {
       closestCommunity: 'Community 1',
       primaryObjective: 'WRR'
     });
-  
+
     mockProjectService.createProject.and.returnValue(of({}));
-  
+
     component.onCreate();
-  
+
     expect(mockProjectService.createProject).toHaveBeenCalledWith(
       jasmine.objectContaining({
         latitude: 48.484245,
@@ -280,7 +284,7 @@ describe('CreateNewProjectDialogComponent', () => {
       })
     );
   });
-  
+
   it('should show an error when latLong is outside BC boundaries', () => {
     component.projectForm.patchValue({
       projectType: 'FUEL_MGMT',
@@ -298,18 +302,18 @@ describe('CreateNewProjectDialogComponent', () => {
       latLong: '70.123456, -123.332177', // Invalid latitude
       primaryObjective: 'WRR'
     });
-  
+
     component.onCreate();
-  
+
     expect(mockSnackbarService.open).toHaveBeenCalledWith(
       'Invalid latitude and longitude. Please ensure it is in the correct format and within BC boundaries.',
       'OK',
       { duration: 5000, panelClass: 'snackbar-error' }
     );
-  
+
     expect(mockProjectService.createProject).not.toHaveBeenCalled();
   });
-  
+
 
   it('should handle latLong with boundary values correctly', () => {
     component.projectForm.patchValue({
@@ -328,14 +332,14 @@ describe('CreateNewProjectDialogComponent', () => {
       latLong: '48.3, -139', // Boundary value for BC
       primaryObjective: 'WRR'
     });
-  
+
     mockProjectService.createProject.and.returnValue(of({}));
-  
+
     component.onCreate();
-  
+
     const expectedLatitude = 48.3;
     const expectedLongitude = -139;
-  
+
     expect(mockProjectService.createProject).toHaveBeenCalledWith(
       jasmine.objectContaining({
         latitude: expectedLatitude,
@@ -361,34 +365,34 @@ describe('CreateNewProjectDialogComponent', () => {
       latLong: 'invalid, format', // Invalid latLong format
       primaryObjective: 'WRR'
     });
-  
+
     component.onCreate();
-  
+
     expect(mockSnackbarService.open).toHaveBeenCalledWith(
       'Invalid latitude and longitude. Please ensure it is in the correct format and within BC boundaries.',
       'OK',
       { duration: 5000, panelClass: 'snackbar-error' }
     );
-  
+
     expect(mockProjectService.createProject).not.toHaveBeenCalled();
   });
-  
+
   it('should handle error while fetching code tables', () => {
     mockCodeTableService.fetchCodeTable.and.returnValue(throwError(() => new Error('Network error')));
-  
+
     component.loadCodeTables();
-  
+
     expect(mockCodeTableService.fetchCodeTable).toHaveBeenCalledWith('programAreaCodes');
     expect(mockCodeTableService.fetchCodeTable).toHaveBeenCalledWith('forestRegionCodes');
     // Add assertions for console.error or fallback logic
   });
-  
+
   it('should close dialog on cancel confirmation', () => {
     const mockAfterClosed = of(true); // User confirmed
     mockDialog.open.and.returnValue({ afterClosed: () => mockAfterClosed } as any);
-  
+
     component.onCancel();
-  
+
     mockAfterClosed.subscribe(() => {
       expect(mockDialogRef.close).toHaveBeenCalled();
     });
@@ -408,11 +412,11 @@ describe('CreateNewProjectDialogComponent', () => {
       primaryObjective: 'WRR',
       projectLead: 'Test Lead'
     });
-  
+
     mockProjectService.createProject.and.returnValue(of({}));
-  
+
     component.onCreate();
-  
+
     expect(mockProjectService.createProject).toHaveBeenCalledWith(
       jasmine.objectContaining({
         projectName: 'Required Project',
@@ -422,46 +426,46 @@ describe('CreateNewProjectDialogComponent', () => {
 
   it('should return null if there are no errors', () => {
     component.projectForm.get('projectName')?.setErrors(null);
-  
+
     const errorMessage = component.getErrorMessage('projectName');
-  
+
     expect(errorMessage).toBeNull();
   });
 
   it('should return null if there are no errors on the form control', () => {
     // Arrange: Ensure no errors are set for the 'projectName' control
     component.projectForm.get('projectName')?.setErrors(null); // Clear errors
-    
+
     // Act: Call the getErrorMessage method
     const errorMessage = component.getErrorMessage('projectName');
-    
+
     // Assert: Expect the method to return null
     expect(errorMessage).toBeNull();
   });
-  
+
   it('should return required field message when "required" error exists', () => {
     component.projectForm.get('projectName')?.setErrors({ required: true });
-  
+
     const errorMessage = component.getErrorMessage('projectName');
-  
+
     expect(errorMessage).toBe(Messages.requiredField);
   });
-  
+
   it('should return max length exceeded message when "maxlength" error exists', () => {
     component.projectForm.get('projectName')?.setErrors({ maxlength: true });
-  
+
     const errorMessage = component.getErrorMessage('projectName');
-  
+
     expect(errorMessage).toBe(Messages.maxLengthExceeded);
   });
-  
+
   it('should return invalid email message when "email" error exists', () => {
     // Arrange: Set 'email' error on the control
     component.projectForm.get('projectLeadEmail')?.setErrors({ email: true });
-  
+
     // Act: Call the getErrorMessage method
     const errorMessage = component.getErrorMessage('projectLeadEmail');
-  
+
     // Assert: Expect the invalid email error message
     expect(errorMessage).toBe(Messages.invalidEmail);
   });
@@ -469,7 +473,7 @@ describe('CreateNewProjectDialogComponent', () => {
   it('should show an error snackbar if creating a project fails', () => {
     // Arrange: Simulate the createProject API call failing
     mockProjectService.createProject.and.returnValue(throwError(() => new Error('Failed to create project')));
-  
+
     // Populate the form with valid values
     component.projectForm.patchValue({
       projectType: 'FUEL_MGMT',
@@ -486,10 +490,10 @@ describe('CreateNewProjectDialogComponent', () => {
       closestCommunity: 'Community 1',
       primaryObjective: 'WRR'
     });
-  
+
     // Act: Call the method to create a project
     component.onCreate();
-  
+
     // Assert
     expect(mockProjectService.createProject).toHaveBeenCalled(); // Ensure createProject was called
     expect(mockSnackbarService.open).toHaveBeenCalledWith(
@@ -504,37 +508,37 @@ describe('CreateNewProjectDialogComponent', () => {
       { programAreaGuid: 'bcp-guid', programAreaName: 'BC Parks (BCP)' },
       { programAreaGuid: 'other-guid', programAreaName: 'Other Area' }
     ];
-  
+
     component.projectForm.get('businessArea')?.setValue('bcp-guid');
     fixture.detectChanges();
-  
+
     const bcParksRegionControl = component.projectForm.get('bcParksRegion');
     bcParksRegionControl?.setValue('some-region');
     bcParksRegionControl?.markAsTouched();
-  
+
     expect(bcParksRegionControl?.hasError('required')).toBeFalse();
     bcParksRegionControl?.setValue('');
     fixture.detectChanges();
     expect(bcParksRegionControl?.hasError('required')).toBeTrue();
   });
-  
+
   it('should clear bcParksRegion required validator when a non-BC Parks business area is selected', () => {
     component.businessAreas = [
       { programAreaGuid: 'bcp-guid', programAreaName: 'BC Parks (BCP)' },
       { programAreaGuid: 'non-bcp-guid', programAreaName: 'Other Area' }
     ];
-  
+
     // Initially select BC Parks to trigger required
     component.projectForm.get('businessArea')?.setValue('bcp-guid');
     fixture.detectChanges();
-  
+
     const bcParksRegionControl = component.projectForm.get('bcParksRegion');
     expect(bcParksRegionControl?.validator).toBeTruthy();
-  
+
     // Switch to a non-BCP area
     component.projectForm.get('businessArea')?.setValue('non-bcp-guid');
     fixture.detectChanges();
-  
+
     // Assert required validator is gone
     expect(bcParksRegionControl?.hasValidator?.(Validators.required)).toBeFalse();
     expect(bcParksRegionControl?.validator).toBeFalsy();
@@ -545,7 +549,7 @@ describe('CreateNewProjectDialogComponent', () => {
     control?.setValue('');
     control?.markAsTouched();
     control?.updateValueAndValidity();
-  
+
     expect(control?.hasError('required')).toBeTrue();
   });
 
@@ -558,17 +562,17 @@ describe('CreateNewProjectDialogComponent', () => {
         ]
       }
     };
-  
+
     mockCodeTableService.fetchCodeTable.and.callFake((name: string) => {
       if (name === 'projectTypeCodes') {
         return of(mockProjectTypeResponse);
       }
       return of({ _embedded: [] });
     });
-  
+
     component.loadCodeTables();
     fixture.detectChanges();
-  
+
     expect(component.projectForm.get('projectType')?.value).toBe('FUEL_MGMT');
   });
 
@@ -581,17 +585,17 @@ describe('CreateNewProjectDialogComponent', () => {
         ]
       }
     };
-  
+
     mockCodeTableService.fetchCodeTable.and.callFake((name: string) => {
       if (name === 'objectiveTypeCodes') {
         return of(mockObjectiveTypeResponse);
       }
       return of({ _embedded: [] });
     });
-  
+
     component.loadCodeTables();
     fixture.detectChanges();
-  
+
     expect(component.projectForm.get('primaryObjective')?.value).toBe('WRR');
   });
 
@@ -599,7 +603,7 @@ describe('CreateNewProjectDialogComponent', () => {
     component.projectTypes = [{ projectTypeCode: 'FUEL', description: 'Fuel Management' }];
     expect(component.getProjectTypeCode('FUEL')).toBe('Fuel Management');
   });
-  
+
   it('should return input if project type not found', () => {
     component.projectTypes = [];
     expect(component.getProjectTypeCode('UNKNOWN')).toBe('UNKNOWN');
@@ -609,7 +613,7 @@ describe('CreateNewProjectDialogComponent', () => {
     component.businessAreas = [{ programAreaGuid: '123', programAreaName: 'BC Parks (BCP)' }];
     expect(component.getBusinessAreaCode('123')).toBe('BC Parks (BCP)');
   });
-  
+
   it('should return input if business area not found', () => {
     component.businessAreas = [];
     expect(component.getBusinessAreaCode('999')).toBe('999');
@@ -619,7 +623,7 @@ describe('CreateNewProjectDialogComponent', () => {
     component.forestRegions = [{ orgUnitId: 1, orgUnitName: 'Region A' }];
     expect(component.getForestRegionCode('1')).toBe('Region A');
   });
-  
+
   it('should return input if forest region not found', () => {
     component.forestRegions = [];
     expect(component.getForestRegionCode('2')).toBe('2');
@@ -629,7 +633,7 @@ describe('CreateNewProjectDialogComponent', () => {
     component.forestDistricts = [{ orgUnitId: 1, orgUnitName: 'District A' }];
     expect(component.getForestDistrictCode('1')).toBe('District A');
   });
-  
+
   it('should return input if forest district not found', () => {
     component.forestDistricts = [];
     expect(component.getForestDistrictCode('2')).toBe('2');
@@ -644,22 +648,22 @@ describe('CreateNewProjectDialogComponent', () => {
     component.bcParksSections = [{ orgUnitId: 10, orgUnitName: 'Parks Section' }];
     expect(component.getBcParksSectionCode('10')).toBe('Parks Section');
   });
-  
+
   it('should return fire centre name if found', () => {
     component.fireCentres = [{
       properties: { MOF_FIRE_CENTRE_ID: 5, MOF_FIRE_CENTRE_NAME: 'Kamloops Fire Centre' }
     }];
     expect(component.getFireCentreCode('5')).toBe('Kamloops Fire Centre');
   });
-  
+
   it('should return input if fire centre not found', () => {
     component.fireCentres = [];
     expect(component.getFireCentreCode('999')).toBe('999');
   });
-  
+
   it('should return objective description if found', () => {
     component.objectiveTypes = [{ objectiveTypeCode: 'WRR', description: 'Wildfire Risk Reduction' }];
     expect(component.getObjectiveCode('WRR')).toBe('Wildfire Risk Reduction');
   });
-  
+
 });

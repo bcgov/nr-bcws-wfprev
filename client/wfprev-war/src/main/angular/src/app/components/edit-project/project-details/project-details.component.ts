@@ -14,7 +14,7 @@ import { FiscalYearProjectsComponent } from 'src/app/components/edit-project/pro
 import { ProjectFilesComponent } from 'src/app/components/edit-project/project-details/project-files/project-files.component';
 import { CodeTableServices } from 'src/app/services/code-table-services';
 import { ProjectService } from 'src/app/services/project-services';
-import { CodeTableKeys, Messages, FiscalYearColors } from 'src/app/utils/constants';
+import { CodeTableKeys, Messages, FiscalYearColors, ModalTitles, ModalMessages } from 'src/app/utils/constants';
 import {
   formatLatLong,
   getBluePinIcon,
@@ -31,7 +31,7 @@ import { EvaluationCriteriaComponent } from 'src/app/components/edit-project/pro
   selector: 'wfprev-project-details',
   standalone: true,
   imports: [ReactiveFormsModule, MatExpansionModule, CommonModule, FormsModule, FiscalYearProjectsComponent,
-     ProjectFilesComponent, MatTooltip, TextFieldModule, ExpansionIndicatorComponent, SelectFieldComponent, InputFieldComponent,
+    ProjectFilesComponent, MatTooltip, TextFieldModule, ExpansionIndicatorComponent, SelectFieldComponent, InputFieldComponent,
     EvaluationCriteriaComponent],
   templateUrl: './project-details.component.html',
   styleUrl: './project-details.component.scss'
@@ -74,7 +74,7 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
   projectFiscals: any[] = [];
   allActivities: any[] = [];
   allActivityBoundaries: any[] = [];
-  
+
   constructor(
     private readonly fb: FormBuilder,
     private route: ActivatedRoute,
@@ -553,8 +553,12 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
   canDeactivate(): Observable<boolean> | boolean {
     if (this.isFormDirty()) {
       const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-        data: { indicator: 'confirm-unsave' },
-        width: '500px',
+        data: {
+          indicator: 'confirm-unsave',
+          title: ModalTitles.CONFIRM_UNSAVE_TITLE,
+          message: ModalMessages.CONFIRM_UNSAVE_MESSAGE
+        },
+        width: '600px',
       });
       return dialogRef.afterClosed();
     }
