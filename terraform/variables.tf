@@ -19,18 +19,6 @@ variable "SHORTENED_ENV" {
   type = string
 }
 
-variable "WFPREV_CLIENT_CPU_UNITS" {
-  description = "client instance CPU units to provision (1 vCPU = 1024 CPU units)"
-  type        = number
-  default = 512
-}
-
-variable "WFPREV_CLIENT_MEMORY" {
-  description = "client instance memory to provision (in MiB)"
-  type        = number
-  default = 1024
-}
-
 variable "WFPREV_API_CPU_UNITS" {
   description = "server CPU units to provision (1 vCPU = 1024 CPU units)"
   type        = number
