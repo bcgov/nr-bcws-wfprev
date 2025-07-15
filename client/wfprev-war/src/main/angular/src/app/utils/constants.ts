@@ -96,3 +96,18 @@ export const CUSTOM_DATE_FORMATS = {
     monthYearA11yLabel: 'YYYY MMMM',
   },
 };
+export const ModalTitles = {
+  CONFIRM_CANCEL_TITLE: 'Confirm Cancel',
+  CONFIRM_UNSAVE_TITLE: 'Confirm Unsave',
+  DELETE_ATTACHMENT_TITLE: 'Delete Attachment',
+  DELETE_FISCAL_YEAR_TITLE: 'Delete Fiscal Year',
+  DELETE_ACTIVITY_TITLE: 'Delete Activity',
+  DUPLICATE_FOUND_TITLE: 'Duplicate Found'
+};
+
+export const ModalMessages = {
+  CONFIRM_CANCEL_MESSAGE: 'Are you sure you want to cancel? This information will not be saved.',
+  DUPLICATE_FOUND_MESSAGE: 'This Project already exists: ',
+  CONFIRM_UNSAVE_MESSAGE: 'Are you sure you want to leave this page? The changes you made will not be saved.',
+  DELETE_ATTACHMENT_MESSAGE: 'Are you sure you want to delete this file? ',
+}
