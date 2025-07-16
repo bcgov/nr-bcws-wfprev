@@ -49,7 +49,7 @@ public class ProjectFiscalService implements CommonService {
             DRAFT, Set.of(DRAFT, PROPOSED, PREPARED, CANCELLED),
             PROPOSED, Set.of(DRAFT, PROPOSED, PREPARED, CANCELLED),
             PREPARED, Set.of(DRAFT, PREPARED, IN_PROG, CANCELLED),
-            IN_PROG, Set.of(COMPLETE, CANCELLED, IN_PROG),
+            IN_PROG, Set.of(DRAFT, COMPLETE, CANCELLED, IN_PROG),
             COMPLETE, Set.of(COMPLETE),
             CANCELLED, Set.of(CANCELLED)
     );
@@ -183,20 +183,6 @@ public class ProjectFiscalService implements CommonService {
         Set<String> allowedTransitions = VALID_TRANSITIONS.getOrDefault(currentStatus, Set.of());
         if (!allowedTransitions.contains(newStatus)) {
             throw new IllegalStateException("Invalid fiscal status transition from " + currentStatus + " to " + newStatus);
-        }
-
-        // If status is PREPARED, prevent endorsement/approval from being unset
-        if (PREPARED.equalsIgnoreCase(currentStatus)) {
-            boolean becomingUnapproved = Boolean.FALSE.equals(model.getIsApprovedInd());
-
-            String incomingEndorsement = model.getEndorsementCode() != null
-                    ? model.getEndorsementCode().getEndorsementCode()
-                    : null;
-            boolean becomingUnendorsed = incomingEndorsement != null && !ENDORSED.equalsIgnoreCase(incomingEndorsement);
-
-            if (becomingUnapproved || becomingUnendorsed) {
-                throw new IllegalStateException("Cannot unset endorsement or approval when status is " + currentStatus);
-            }
         }
     }
 

@@ -1,0 +1,13 @@
+.checkbox{
+    padding-top: 8px;
+}
+
+:host ::ng-deep .mdc-checkbox__background {
+    border: 1px solid #c6c8cb !important;
+}
+
+:host ::ng-deep .mat-mdc-checkbox .mat-internal-form-field {
+    gap: 12px;
+    font-size: 14px;
+    color: #282828;
+}

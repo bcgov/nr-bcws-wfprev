@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
+import { ProjectFiscal } from 'src/app/components/models';
 import { FiscalActionLabels, FiscalStatuses } from 'src/app/utils/constants';
 
 @Component({
@@ -19,6 +20,8 @@ export class DropdownButtonComponent {
   @Input() status!: string;
   @Input() isApproved = false;
   @Input() index!: number;
+  @Input() fiscal!: ProjectFiscal;
+  @Input() isDirty: boolean | undefined;
 
   @Output() actionSelected = new EventEmitter<{ action: string; index: number }>();
 

@@ -14,11 +14,11 @@ import { Observable } from 'rxjs';
 import { ConfirmationDialogComponent } from 'src/app/components/confirmation-dialog/confirmation-dialog.component';
 import { ActivitiesComponent } from 'src/app/components/edit-project/activities/activities.component';
 import { FiscalMapComponent } from 'src/app/components/edit-project/fiscal-map/fiscal-map.component';
-import { ProjectFiscal } from 'src/app/components/models';
+import { ActivityCategoryCodeModel, ProjectFiscal } from 'src/app/components/models';
 import { CodeTableServices } from 'src/app/services/code-table-services';
 import { ProjectService } from 'src/app/services/project-services';
 import { CanComponentDeactivate } from 'src/app/services/util/can-deactive.guard';
-import { CodeTableKeys, FiscalStatuses, Messages, ModalMessages, ModalTitles } from 'src/app/utils/constants';
+import { CodeTableKeys, EndorsementCode, FiscalStatuses, Messages, ModalMessages, ModalTitles } from 'src/app/utils/constants';
 import { ExpansionIndicatorComponent } from '../../shared/expansion-indicator/expansion-indicator.component';
 import { IconButtonComponent } from 'src/app/components/shared/icon-button/icon-button.component';
 import { SelectFieldComponent } from 'src/app/components/shared/select-field/select-field.component';
@@ -26,6 +26,8 @@ import { InputFieldComponent } from 'src/app/components/shared/input-field/input
 import { PlanFiscalStatusIcons } from 'src/app/utils/tools';
 import { DropdownButtonComponent } from 'src/app/components/shared/dropdown-button/dropdown-button.component';
 import { StatusBadgeComponent } from 'src/app/components/shared/status-badge/status-badge.component';
+import { EndorsementApprovalComponent } from 'src/app/components/edit-project/endorsement-approval/endorsement-approval.component';
+import { TokenService } from 'src/app/services/token.service';
 
 @Component({
   selector: 'wfprev-project-fiscals',
@@ -50,13 +52,14 @@ import { StatusBadgeComponent } from 'src/app/components/shared/status-badge/sta
     MatTooltip,
     InputFieldComponent,
     DropdownButtonComponent,
-    StatusBadgeComponent
+    StatusBadgeComponent,
+    EndorsementApprovalComponent,
   ]
 })
 export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
   @ViewChild(ActivitiesComponent) activitiesComponent!: ActivitiesComponent;
   @ViewChild('fiscalMapRef') fiscalMapComponent!: FiscalMapComponent;
-
+  currentUser: string = '';
   projectGuid = '';
   projectFiscals: any[] = [];
   fiscalForms: FormGroup[] = [];
@@ -64,10 +67,10 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
   selectedTabIndex = 0;
   currentFiscalGuid = '';
   messages = Messages;
-  activityCategoryCode: any[] = [];
+  activityCategoryCode: ActivityCategoryCodeModel[] = [];
   planFiscalStatusCode: any[] = [];
   proposalTypeCode: any[] = [];
-  originalFiscalValues: any[] = []
+  originalFiscalValues: any[] = [];
   readonly CodeTableKeys = CodeTableKeys;
   readonly FiscalStatuses = FiscalStatuses;
 
@@ -78,15 +81,19 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
     private readonly fb: FormBuilder,
     private readonly snackbarService: MatSnackBar,
     public readonly dialog: MatDialog,
-    public cd: ChangeDetectorRef
-  ) { }
+    public cd: ChangeDetectorRef,
+    private readonly tokenService: TokenService
+  ) {}
 
   ngOnInit(): void {
     this.loadCodeTables();
     this.generateFiscalYears();
     this.loadProjectFiscals();
+    const formattedName = this.tokenService.getUserFullName(true);
+    if (formattedName) {
+      this.currentUser = formattedName;
+    }
   }
-
 
   canDeactivate(): Observable<boolean> | boolean {
     if (this.isFormDirty()) {
@@ -106,7 +113,6 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
   isFormDirty(): boolean {
     const fiscalDirty = this.fiscalForms.some(form => form.dirty);
     const activitiesDirty = this.activitiesComponent?.isFormDirty?.() ?? false;
-
     return fiscalDirty || activitiesDirty;
   }
 
@@ -196,10 +202,9 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
       projectPlanFiscalGuid: [fiscal?.projectPlanFiscalGuid ?? ''],
       isApprovedInd: [fiscal?.isApprovedInd ?? false]
     });
-
     return form;
-
   }
+
 
   loadProjectFiscals(markFormsPristine: boolean = false): void {
     const previousTabIndex = this.selectedTabIndex;
@@ -352,7 +357,6 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
       submittedByUserGuid: updatedData.submittedByUserGuid,
       submittedByUserUserid: updatedData.submittedByUserUserid,
       submissionTimestamp: updatedData.submissionTimestamp,
-      isApprovedInd: isUpdate ? updatedData.isApprovedInd : false,
       isDelayedInd: isUpdate ? updatedData.isDelayedInd : false,
       fiscalForecastAmount: updatedData.fiscalForecastAmount,
       totalCostEstimateAmount: updatedData.totalCostEstimateAmount,
@@ -360,6 +364,13 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
       ancillaryFundingProvider: updatedData.ancillaryFundingProvider,
       otherPartner: updatedData.otherPartner,
       proposalTypeCode: updatedData.proposalTypeCode,
+      endorserName: originalData.endorserName,
+      endorsementTimestamp: originalData.endorsementTimestamp,
+      endorsementCode: originalData.endorsementCode,
+      endorsementComment: originalData.endorsementComment,
+      approverName: originalData.approverName,
+      approvedTimestamp: originalData.approvedTimestamp,
+      isApprovedInd: originalData.isApprovedInd,
     };
     if (isUpdate) {
       // update the existing fiscal
@@ -392,7 +403,7 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
           );
           this.loadProjectFiscals(true);
         },
-        error: () => {
+        error: () =>{
           this.snackbarService.open(
             this.messages.projectFiscalCreatedFailure,
             'OK',
@@ -401,6 +412,7 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
         }
       });
     }
+    
   }
 
   deleteFiscalYear(form: any, index: number): void {
@@ -540,7 +552,7 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
     // The remaining status do not require such parsing
     const currentStatus = form.value?.planFiscalStatusCode === 'IN_PROG' ? "In Progress" : this.capitalizeFirstLetter(form.value.planFiscalStatusCode)
     const requestedStatus = newStatus === 'IN_PROG' ? "In Progress" : this.capitalizeFirstLetter(newStatus)
-    const message = `You are about the change the status of this Project from ${currentStatus} to ${requestedStatus}. Do you wish to continue?`
+    const message = `You are about the change the status of this Fiscal Activity from ${currentStatus} to ${requestedStatus}. Do you wish to continue?`
 
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       data: {
@@ -571,6 +583,77 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
       this.updateFiscalStatus(index, action);
     }
   }
+
+  onSaveEndorsement(updatedFiscal: ProjectFiscal): void {
+    const index = this.selectedTabIndex;
+    if (!this.projectFiscals[index]) return;
+
+    // Merge updated fields
+    this.mergeFiscalUpdates(index, updatedFiscal);
+
+    const fiscalGuid = this.projectFiscals[index]?.projectPlanFiscalGuid;
+    if (!fiscalGuid) return;
+
+    this.projectService.updateProjectFiscal(
+      this.projectGuid,
+      fiscalGuid,
+      this.projectFiscals[index]
+    ).subscribe({
+      next: () => this.handleEndorsementUpdateSuccess(index, updatedFiscal),
+      error: () => this.showSnackbar(this.messages.projectFiscalUpdatedFailure, false)
+    });
+  }
+
+  mergeFiscalUpdates(index: number, updatedFiscal: ProjectFiscal): void {
+    this.projectFiscals[index] = {
+      ...this.projectFiscals[index],
+      ...updatedFiscal
+    };
+  }
+
+  handleEndorsementUpdateSuccess(index: number, updatedFiscal: ProjectFiscal): void {
+    const isApproved = updatedFiscal.isApprovedInd === true;
+    const isEndorsed = updatedFiscal.endorsementCode?.endorsementCode === EndorsementCode.ENDORSED;
+    const isProposed = updatedFiscal.planFiscalStatusCode?.planFiscalStatusCode === FiscalStatuses.PROPOSED;
+
+    if (isApproved && isEndorsed && isProposed) {
+      this.promoteFiscalStatus(index);
+    } else {
+      this.showSnackbar(this.messages.projectFiscalUpdatedSuccess);
+      this.loadProjectFiscals(true);
+    }
+  }
+
+  promoteFiscalStatus(index: number): void {
+    const fiscalGuid = this.projectFiscals[index]?.projectPlanFiscalGuid;
+    if (!fiscalGuid) return;
+
+    const promotionPayload: ProjectFiscal = {
+      ...this.projectFiscals[index],
+      planFiscalStatusCode: { planFiscalStatusCode: FiscalStatuses.PREPARED }
+    };
+
+    this.projectService.updateProjectFiscal(
+      this.projectGuid,
+      fiscalGuid,
+      promotionPayload
+    ).subscribe({
+      next: () => {
+        this.showSnackbar(this.messages.projectFiscalUpdatedSuccess);
+        this.loadProjectFiscals(true);
+      },
+      error: () => this.showSnackbar(this.messages.projectFiscalUpdatedFailure, false)
+    });
+  }
+
+  showSnackbar(message: string, isSuccess: boolean = true): void {
+    this.snackbarService.open(
+      message,
+      'OK',
+      { duration: 5000, panelClass: isSuccess ? 'snackbar-success' : 'snackbar-error' }
+    );
+  }
+
 
   capitalizeFirstLetter(status: string): string {
     if (!status) return '';
