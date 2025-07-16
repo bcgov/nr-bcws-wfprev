@@ -132,9 +132,9 @@ export class EndorsementApprovalComponent implements OnChanges {
       approverName: formValue.approveFiscalYear ? this.currentUser : undefined,
       businessAreaComment: formValue.approvalComment ?? undefined,
 
-       // Status logic: (return to PREPARED if removed and not DRAFT/PROPOSED)
+       // Status logic: (return to DRAFT if removed and not DRAFT/PROPOSED)
       planFiscalStatusCode: shouldResetToPrepared
-        ? { planFiscalStatusCode: FiscalStatuses.PREPARED }
+        ? { planFiscalStatusCode: FiscalStatuses.DRAFT }
         : this.fiscal.planFiscalStatusCode,
     };
 

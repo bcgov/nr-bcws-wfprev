@@ -43,6 +43,7 @@
                         [isApproved]="!fiscalForms[i].get('isApprovedInd')?.value"
                         [index]="i"
                         [fiscal]="fiscal"
+                        [isDirty]="fiscalForms[i]?.dirty"
                         (actionSelected)="onFiscalAction($event)">
                       </wfprev-dropdown-button>
                     </div>
