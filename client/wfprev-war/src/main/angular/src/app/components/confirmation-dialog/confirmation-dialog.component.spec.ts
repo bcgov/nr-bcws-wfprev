@@ -214,7 +214,7 @@ describe('ConfirmationDialogComponent', () => {
       await setupComponentWithData({
         indicator: 'confirm-fiscal-status-update',
         title: 'Confirm Change to Complete',
-        message: 'You are about the change the status of this Project from In Progress to Complete. Do you wish to continue?'
+        message: 'You are about the change the status of this Fiscal Activity from In Progress to Complete. Do you wish to continue?'
       });
     });
 
@@ -225,7 +225,7 @@ describe('ConfirmationDialogComponent', () => {
 
     it('should display the correct message for "confirm-fiscal-status-update"', () => {
       const messageElement = fixture.nativeElement.querySelector('.dialog-content p');
-      expect(messageElement.textContent.trim()).toContain('You are about the change the status of this Project from In Progress to Complete.');
+      expect(messageElement.textContent.trim()).toContain('You are about the change the status of this Fiscal Activity from In Progress to Complete.');
       expect(messageElement.textContent.trim()).toContain('Do you wish to continue?');
     });
   });
