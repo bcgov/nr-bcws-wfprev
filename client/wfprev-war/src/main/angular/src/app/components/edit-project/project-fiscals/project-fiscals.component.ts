@@ -82,7 +82,7 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
     private readonly snackbarService: MatSnackBar,
     public readonly dialog: MatDialog,
     public cd: ChangeDetectorRef,
-    private tokenService: TokenService
+    private readonly tokenService: TokenService
   ) {}
 
   ngOnInit(): void {
@@ -552,7 +552,7 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
     // The remaining status do not require such parsing
     const currentStatus = form.value?.planFiscalStatusCode === 'IN_PROG' ? "In Progress" : this.capitalizeFirstLetter(form.value.planFiscalStatusCode)
     const requestedStatus = newStatus === 'IN_PROG' ? "In Progress" : this.capitalizeFirstLetter(newStatus)
-    const message = `You are about the change the status of this Project from ${currentStatus} to ${requestedStatus}. Do you wish to continue?`
+    const message = `You are about the change the status of this Fiscal Activity from ${currentStatus} to ${requestedStatus}. Do you wish to continue?`
 
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       data: {
