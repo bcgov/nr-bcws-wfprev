@@ -20,7 +20,8 @@ export class DropdownButtonComponent {
   @Input() status!: string;
   @Input() isApproved = false;
   @Input() index!: number;
-  @Input() fiscal!: ProjectFiscal
+  @Input() fiscal!: ProjectFiscal;
+  @Input() isDirty: boolean | undefined;
 
   @Output() actionSelected = new EventEmitter<{ action: string; index: number }>();
 

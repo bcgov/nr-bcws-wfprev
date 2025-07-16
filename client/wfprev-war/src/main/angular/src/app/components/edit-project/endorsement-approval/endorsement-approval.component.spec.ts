@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { EndorsementApprovalComponent } from './endorsement-approval.component';
 import { ProjectFiscal } from 'src/app/components/models';
+import { FiscalStatuses } from 'src/app/utils/constants';
 
 describe('EndorsementApprovalComponent', () => {
   let component: EndorsementApprovalComponent;
@@ -96,7 +97,7 @@ const mockFiscal: ProjectFiscal = {
     expect(emittedFiscal!.businessAreaComment).toBe('New approval');
   });
 
-  it('should set planFiscalStatusCode to PREPARED if endorsement removed', () => {
+  it('should set planFiscalStatusCode to DRAFT if endorsement removed', () => {
     const emitSpy = spyOn(component.saveEndorsement, 'emit');
     component.fiscal = {
       ...mockFiscal,
@@ -110,7 +111,7 @@ const mockFiscal: ProjectFiscal = {
     component.onSave();
 
     const emittedFiscal = emitSpy.calls.mostRecent()!.args[0];
-    expect(emittedFiscal!.planFiscalStatusCode?.planFiscalStatusCode).toBe('PREPARED');
+    expect(emittedFiscal!.planFiscalStatusCode?.planFiscalStatusCode).toBe(FiscalStatuses.DRAFT);
   });
 
   it('should reset form values on cancel', () => {
