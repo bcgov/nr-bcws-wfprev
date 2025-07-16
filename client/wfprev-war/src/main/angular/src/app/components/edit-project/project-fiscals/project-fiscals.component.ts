@@ -82,7 +82,7 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
     private readonly snackbarService: MatSnackBar,
     public readonly dialog: MatDialog,
     public cd: ChangeDetectorRef,
-    private tokenService: TokenService
+    private readonly tokenService: TokenService
   ) {}
 
   ngOnInit(): void {
