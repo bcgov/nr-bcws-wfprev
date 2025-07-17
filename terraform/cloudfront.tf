@@ -109,7 +109,7 @@ resource "aws_cloudfront_distribution" "wfprev_app_distribution" {
   }
 
   logging_config {
-    bucket = data.aws_s3_bucket.cloudfront_logs.bucket_domain_name
+    bucket = module.s3_cloudfront_logs.bucket_domain_name
     include_cookies = false
     prefix = "cloudfront-logs/"
   }
@@ -127,10 +127,6 @@ resource "aws_cloudfront_function" "rewrite_uri" {
     return request;
   }
 EOF
-}
-
-data "aws_s3_bucket" "cloudfront_logs" {
-  bucket = "wfprev-${var.SHORTENED_ENV}-cloudfront-logs"
 }
 
 output "cloudfront_distribution_id" {
