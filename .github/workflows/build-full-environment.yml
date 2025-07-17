@@ -17,10 +17,6 @@ on:
       - "terraform/**"
       - "!**/README.md"
   workflow_dispatch:
-    inputs:
-      TAG:
-        type: string
-        description: Additional tag to add to built images
 
 jobs: 
   node-build:
