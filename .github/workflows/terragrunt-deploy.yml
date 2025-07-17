@@ -144,7 +144,6 @@ jobs:
           fi
           docker pull $IMAGE
           echo "GDB_EXTRACTOR_IMAGE=$(docker inspect --format='{{index .RepoDigests 0}}' $IMAGE)" >> $GITHUB_OUTPUT
-          aws s3 ls
 
       - name: Configure AWS credentials for Terraform account (DEV/TEST/PROD)
         uses: aws-actions/configure-aws-credentials@v3
