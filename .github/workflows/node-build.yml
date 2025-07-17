@@ -1,20 +1,7 @@
 on:
   workflow_dispatch:
-    inputs:
-      COMPONENT_NAME:
-        type: string
-        required: true
-      TAG:
-        required: false
-        type: string
   workflow_call:
-    inputs:
-      COMPONENT_NAME:
-        type: string
-        required: true
-      TAG:
-        required: false
-        type: string
+
 permissions:
   id-token: write   
   contents: read  
