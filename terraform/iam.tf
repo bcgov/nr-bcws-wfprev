@@ -108,7 +108,7 @@ resource "aws_iam_user_policy" "github_actions_policy" {
       {
         Effect   = "Allow",
         Action   = ["s3:PutObject", "s3:DeleteObject"],
-        Resource = "${module.s3_secure_bucket.arn}/*"
+        Resource = "${module.s3_secure_bucket.bucket_arn}/*"
       },
       {
         Effect   = "Allow",

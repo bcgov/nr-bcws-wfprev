@@ -12,7 +12,7 @@ resource "aws_cloudfront_origin_access_identity" "oai" {
 resource "aws_cloudfront_distribution" "wfprev_app_distribution" {
   origin {
     domain_name = module.s3_secure_bucket.bucket_regional_domain_name
-    origin_id   = "S3-${module.s3_secure_bucket.id}"
+    origin_id   = "S3-${module.s3_secure_bucket.bucket_id}"
 
     s3_origin_config {
       origin_access_identity = aws_cloudfront_origin_access_identity.oai.cloudfront_access_identity_path
@@ -41,7 +41,7 @@ resource "aws_cloudfront_distribution" "wfprev_app_distribution" {
   default_cache_behavior {
     allowed_methods        = ["GET", "HEAD", "OPTIONS"]
     cached_methods         = ["GET", "HEAD"]
-    target_origin_id       = "S3-${module.s3_secure_bucket.id}"
+    target_origin_id       = "S3-${module.s3_secure_bucket.bucket_id}"
     viewer_protocol_policy = "redirect-to-https"
 
     //Rewrite requests to always hit /index.html
