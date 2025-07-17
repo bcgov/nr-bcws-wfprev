@@ -25,6 +25,7 @@ import ca.bc.gov.nrs.wfprev.data.models.SilvicultureTechniqueCodeModel;
 import ca.bc.gov.nrs.wfprev.data.models.SourceObjectNameCodeModel;
 import ca.bc.gov.nrs.wfprev.data.models.ProposalTypeCodeModel;
 import ca.bc.gov.nrs.wfprev.data.models.WUIRiskClassRankModel;
+import ca.bc.gov.nrs.wfprev.data.models.WildfireOrgUnitModel;
 import ca.bc.gov.nrs.wfprev.services.CodesService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -82,6 +83,9 @@ class CodesControllerTest {
         testGetSilvicultureMethodCodes();
         testGetSilvicultureTechniqueCodes();
         testGetProjectStatusCodes();
+        testGetWuiRiskClassCodes();
+        testGetEvaluationCriteriaCodes();
+        testGetWildfireOrgUnits();
     }
 
     void testGetForestAreaCodes() throws Exception {
@@ -405,8 +409,6 @@ class CodesControllerTest {
                 .andExpect(status().isOk());
     }
 
-    @Test
-    @WithMockUser
     void testGetWuiRiskClassCodes() throws Exception {
         String exampleId1 = UUID.randomUUID().toString();
         String exampleId2 = UUID.randomUUID().toString();
@@ -427,8 +429,6 @@ class CodesControllerTest {
                 .andExpect(status().isOk());
     }
 
-    @Test
-    @WithMockUser
     void testGetEvaluationCriteriaCodes() throws Exception {
         String exampleId1 = UUID.randomUUID().toString();
         String exampleId2 = UUID.randomUUID().toString();
@@ -449,8 +449,29 @@ class CodesControllerTest {
         mockMvc.perform(get("/codes/" + CodeTables.EVALUATION_CRITERIA_CODE)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
-        }
+    }
 
+    void testGetWildfireOrgUnits() throws Exception {
+        Integer exampleId1 = 1001;
+        Integer exampleId2 = 2001;
+
+        WildfireOrgUnitModel obj1 = new WildfireOrgUnitModel();
+        obj1.setOrgUnitIdentifier(exampleId1);
+        obj1.setOrgUnitName("Coastal Fire Centre");
+
+        WildfireOrgUnitModel obj2 = new WildfireOrgUnitModel();
+        obj2.setOrgUnitIdentifier(exampleId2);
+        obj2.setOrgUnitName("Kamloops Fire Centre");
+
+        List<WildfireOrgUnitModel> objList = Arrays.asList(obj1, obj2);
+        CollectionModel<WildfireOrgUnitModel> objModel = CollectionModel.of(objList);
+
+        when(codesService.getAllWildfireOrgUnits()).thenReturn(objModel);
+
+        mockMvc.perform(get("/codes/" + CodeTables.WILDFIRE_ORG_UNIT)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
 
     @Test
     @WithMockUser
@@ -634,6 +655,16 @@ class CodesControllerTest {
         mockMvc.perform(get("/codes/{codeTable}/{id}", CodeTables.PROJECT_STATUS_CODE, psID)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
+
+        Integer wouID = 1001;
+        WildfireOrgUnitModel wildfireOrgUnit = new WildfireOrgUnitModel();
+        wildfireOrgUnit.setOrgUnitIdentifier(wouID);
+
+        when(codesService.getWildfireOrgUnitById(String.valueOf(wouID))).thenReturn(wildfireOrgUnit);
+
+        mockMvc.perform(get("/codes/{codeTable}/{id}", CodeTables.WILDFIRE_ORG_UNIT, wouID)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
     }
 
     @Test
@@ -657,6 +688,7 @@ class CodesControllerTest {
         when(codesService.getSilvicultureMethodCodeById(nonExistentId)).thenReturn(null);
         when(codesService.getSilvicultureTechniqueCodeById(nonExistentId)).thenReturn(null);
         when(codesService.getProjectStatusCodeById(nonExistentId)).thenReturn(null);
+        when(codesService.getWildfireOrgUnitById(nonExistentId)).thenReturn(null);
 
         // Test valid code tables with non-existent ID
         mockMvc.perform(get("/codes/{codeTable}/{id}", "forestAreaCodes", nonExistentId)
@@ -730,6 +762,11 @@ class CodesControllerTest {
                 .andExpect(status().isNotFound());
 
         mockMvc.perform(get("/codes/{codeTable}/{id}", "activityStatusCodes", nonExistentId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("If-Match", "\"1\""))
+                .andExpect(status().isNotFound());
+
+        mockMvc.perform(get("/codes/{codeTable}/{id}", "wildfireOrgUnits", nonExistentId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("If-Match", "\"1\""))
                 .andExpect(status().isNotFound());

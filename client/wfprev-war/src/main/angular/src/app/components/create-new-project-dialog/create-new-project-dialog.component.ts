@@ -1,10 +1,10 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MatDialog , MatDialogRef } from '@angular/material/dialog';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { ConfirmationDialogComponent } from 'src/app/components/confirmation-dialog/confirmation-dialog.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { Messages, ModalMessages, ModalTitles } from 'src/app/utils/constants';
+import { CodeTableNames, Messages, ModalMessages, ModalTitles, ObjectiveTypeCodes, ProjectTypeCodes, WildfireOrgUnitTypeCodes } from 'src/app/utils/constants';
 import { ProjectService } from 'src/app/services/project-services';
 import { CodeTableServices } from 'src/app/services/code-table-services';
 import { Project } from 'src/app/components/models';
@@ -12,7 +12,7 @@ import {
   validateLatLong, trimLatLong
 } from 'src/app/utils/tools';
 import { TextFieldModule } from '@angular/cdk/text-field';
-import { MatTooltipModule  } from '@angular/material/tooltip';
+import { MatTooltipModule } from '@angular/material/tooltip';
 @Component({
   selector: 'wfprev-create-new-project-dialog',
   standalone: true,
@@ -20,7 +20,7 @@ import { MatTooltipModule  } from '@angular/material/tooltip';
     ReactiveFormsModule,
     CommonModule,
     TextFieldModule,
-    MatTooltipModule 
+    MatTooltipModule
   ],
   templateUrl: './create-new-project-dialog.component.html',
   styleUrls: ['./create-new-project-dialog.component.scss']
@@ -39,16 +39,17 @@ export class CreateNewProjectDialogComponent implements OnInit {
     'West Coast': ['Central Coast/North Island', 'Haida Gwaii/South Island']
   };
 
-  businessAreas : any[] = [];
-  forestRegions : any[] = [];
-  forestDistricts : any[] = [];
-  bcParksRegions : any[] = [];
+  businessAreas: any[] = [];
+  forestRegions: any[] = [];
+  forestDistricts: any[] = [];
+  bcParksRegions: any[] = [];
   bcParksSections: any[] = [];
   allBcParksSections: any[] = []; // To hold all sections initially
   objectiveTypes: any[] = [];
   projectTypes: any[] = [];
   fireCentres: any[] = [];
   forestDistrictsBackup: any[] = [];
+
   constructor(
     private readonly fb: FormBuilder,
     private readonly dialog: MatDialog,
@@ -73,46 +74,46 @@ export class CreateNewProjectDialogComponent implements OnInit {
       closestCommunity: ['', [Validators.required, Validators.maxLength(50)]],
       primaryObjective: ['', [Validators.required]],
       secondaryObjective: [''],
-      secondaryObjectiveRationale: ['',[Validators.maxLength(50)]],
-  });
+      secondaryObjectiveRationale: ['', [Validators.maxLength(50)]],
+    });
 
-  // Watch for business area changes
-  this.projectForm.get('businessArea')?.valueChanges.subscribe((businessAreaId: string) => {
-    const bcParksRegionControl = this.projectForm.get('bcParksRegion');
+    // Watch for business area changes
+    this.projectForm.get('businessArea')?.valueChanges.subscribe((businessAreaId: string) => {
+      const bcParksRegionControl = this.projectForm.get('bcParksRegion');
 
-    const isBcParks = this.businessAreas.find(
-      area => area.programAreaGuid === businessAreaId && area.programAreaName === 'BC Parks (BCP)'
-    );
-
-    if (isBcParks) {
-      bcParksRegionControl?.setValidators([Validators.required]);
-    } else {
-      bcParksRegionControl?.clearValidators();
-      this.projectForm.get('bcParksSection')?.disable(); // Reset section
-    }
-    bcParksRegionControl?.updateValueAndValidity();
-  });
-
-  this.projectForm.get('forestRegion')?.valueChanges.subscribe((regionId: number) => {
-    if (regionId) {
-      // Filter districts where parentOrgUnitId === selected forestRegion
-      this.forestDistricts = this.forestDistrictsBackup.filter(
-        (district) => String(district.parentOrgUnitId) === String(regionId)
+      const isBcParks = this.businessAreas.find(
+        area => area.programAreaGuid === businessAreaId && area.programAreaName === 'BC Parks (BCP)'
       );
-      
-      // If current forestDistrict is invalid, clear it
-      const currentDistrict = this.projectForm.get('forestDistrict')?.value;
-      const validDistrictIds = this.forestDistricts.map(d => d.orgUnitId);
-      if (!validDistrictIds.includes(currentDistrict)) {
-        this.projectForm.get('forestDistrict')?.setValue('');
+
+      if (isBcParks) {
+        bcParksRegionControl?.setValidators([Validators.required]);
+      } else {
+        bcParksRegionControl?.clearValidators();
+        this.projectForm.get('bcParksSection')?.disable(); // Reset section
       }
+      bcParksRegionControl?.updateValueAndValidity();
+    });
 
-    } else {
-      this.forestDistricts = [...this.forestDistrictsBackup];
-    }
-  });
+    this.projectForm.get('forestRegion')?.valueChanges.subscribe((regionId: number) => {
+      if (regionId) {
+        // Filter districts where parentOrgUnitId === selected forestRegion
+        this.forestDistricts = this.forestDistrictsBackup.filter(
+          (district) => String(district.parentOrgUnitId) === String(regionId)
+        );
 
-  // Dynamically enable/disable bcParksSection based on bcParksRegion selection
+        // If current forestDistrict is invalid, clear it
+        const currentDistrict = this.projectForm.get('forestDistrict')?.value;
+        const validDistrictIds = this.forestDistricts.map(d => d.orgUnitId);
+        if (!validDistrictIds.includes(currentDistrict)) {
+          this.projectForm.get('forestDistrict')?.setValue('');
+        }
+
+      } else {
+        this.forestDistricts = [...this.forestDistrictsBackup];
+      }
+    });
+
+    // Dynamically enable/disable bcParksSection based on bcParksRegion selection
     this.projectForm.get('bcParksRegion')?.valueChanges.subscribe((regionId: number) => {
       if (regionId) {
         this.projectForm.get('bcParksSection')?.enable();
@@ -139,9 +140,9 @@ export class CreateNewProjectDialogComponent implements OnInit {
       { name: 'bcParksSectionCodes', property: 'allBcParksSections', embeddedKey: 'bcParksSectionCode' },
       { name: 'objectiveTypeCodes', property: 'objectiveTypes', embeddedKey: 'objectiveTypeCode' },
       { name: 'projectTypeCodes', property: 'projectTypes', embeddedKey: 'projectTypeCode' },
-
+      { name: 'wildfireOrgUnits', property: 'wildfireOrgUnits', embeddedKey: 'wildfireOrgUnit' },
     ];
-  
+
     codeTables.forEach((table) => {
       this.codeTableService.fetchCodeTable(table.name).subscribe({
         next: (data) => {
@@ -155,29 +156,37 @@ export class CreateNewProjectDialogComponent implements OnInit {
 
           this[table.property] = loadedData;
 
-          if (table.name === 'forestDistrictCodes') {
+          if (table.name === CodeTableNames.FOREST_DISTRICT_CODE) {
             this.forestDistrictsBackup = this[table.property];
             this.forestDistricts = [...this.forestDistrictsBackup]; // default to full list
           }
-          
-          if (table.name === 'objectiveTypeCodes') {
+
+          if (table.name === CodeTableNames.OBJECTIVE_TYPE_CODE) {
             const defaultObjective = this.objectiveTypes.find(
-              (type) => type.objectiveTypeCode === 'WRR'
+              (type) => type.objectiveTypeCode === ObjectiveTypeCodes.WRR
             );
-      
+
             if (defaultObjective) {
-              this.projectForm.get('primaryObjective')?.setValue('WRR');
+              this.projectForm.get('primaryObjective')?.setValue(ObjectiveTypeCodes.WRR);
             }
           }
 
-          if (table.name === 'projectTypeCodes') {
+          if (table.name === CodeTableNames.PROJECT_TYPE_CODE) {
             const defaultProjectType = this.projectTypes.find(
-              (type) => type.projectTypeCode === 'FUEL_MGMT'
+              (type) => type.projectTypeCode === ProjectTypeCodes.FUEL_MANAGEMENT
             );
-      
+
             if (defaultProjectType) {
-              this.projectForm.get('projectType')?.setValue('FUEL_MGMT');
+              this.projectForm.get('projectType')?.setValue(ProjectTypeCodes.FUEL_MANAGEMENT);
             }
+          }
+          if (table.name === CodeTableNames.WILDFIRE_ORG_UNIT) {
+            // filter org units to only return fire centres
+            const filteredFireCentres = this[table.property].filter(
+              (unit: any) => unit.wildfireOrgUnitTypeCode?.wildfireOrgUnitTypeCode === WildfireOrgUnitTypeCodes.FIRE_CENTRE
+            );
+
+            this.fireCentres = filteredFireCentres;
           }
         },
         error: (err) => {
@@ -185,21 +194,8 @@ export class CreateNewProjectDialogComponent implements OnInit {
         },
       });
     });
-
-    this.loadFireCentres();
-
   }
 
-  loadFireCentres(): void {
-    this.codeTableService.fetchFireCentres().subscribe({
-      next: (response) => {
-        this.fireCentres = response?.features ?? [];
-      },
-      error: (error) => {
-        console.error('Failed to load fire centres', error);
-      }
-    });
-  }
   getErrorMessage(controlName: string): string | null {
     const control = this.projectForm.get(controlName);
     if (!control?.errors) return null;
@@ -221,7 +217,7 @@ export class CreateNewProjectDialogComponent implements OnInit {
     if (this.projectForm.valid) {
       const latLong = this.projectForm.get('latLong')?.value ?? '';
       let validatedLatLong;
-    
+
       if (latLong) {
         validatedLatLong = validateLatLong(latLong);
         if (!validatedLatLong) {
@@ -233,7 +229,7 @@ export class CreateNewProjectDialogComponent implements OnInit {
           );
           return; // Exit the method if latLong is invalid
         }
-      }    
+      }
 
       const newProject: Project = {
         projectName: this.projectForm.get('projectName')?.value ?? '',
@@ -275,14 +271,14 @@ export class CreateNewProjectDialogComponent implements OnInit {
           }
         }),
         secondaryObjectiveRationale: this.projectForm.get('secondaryObjectiveRationale')?.value,
-        
+
         isMultiFiscalYearProj: false,
         ...(validatedLatLong && {
           latitude: trimLatLong(Number(validatedLatLong.latitude)),
           longitude: trimLatLong(Number(validatedLatLong.longitude)),
         }), // Conditionally include latitude and longitude
       };
-      
+
       this.projectService.createProject(newProject).subscribe({
         next: (response) => {
           this.snackbarService.open(
@@ -298,7 +294,7 @@ export class CreateNewProjectDialogComponent implements OnInit {
             err?.status === 409 && err?.error?.error
               ? err.error.error
               : this.messages.projectCreatedFailure;
-        
+
           this.snackbarService.open(
             errorMessage,
             'OK',
@@ -338,13 +334,13 @@ export class CreateNewProjectDialogComponent implements OnInit {
     const type = this.projectTypes.find(t => t?.projectTypeCode === value);
     return type?.description ?? value;
   }
-  
+
   getBusinessAreaCode(value: string): string {
     if (!value) return '';
     const area = this.businessAreas.find(a => a?.programAreaGuid === value);
     return area?.programAreaName ?? value;
   }
-  
+
   getForestRegionCode(value: string): string {
     if (!value) return '';
     const region = this.forestRegions.find(
@@ -352,7 +348,7 @@ export class CreateNewProjectDialogComponent implements OnInit {
     );
     return region?.orgUnitName ?? value;
   }
-  
+
   getForestDistrictCode(value: string): string {
     if (!value) return '';
     const district = this.forestDistricts.find(
@@ -360,7 +356,7 @@ export class CreateNewProjectDialogComponent implements OnInit {
     );
     return district?.orgUnitName ?? value;
   }
-  
+
   getBcParksRegionCode(value: string): string {
     if (!value) return '';
     const region = this.bcParksRegions.find(
@@ -368,7 +364,7 @@ export class CreateNewProjectDialogComponent implements OnInit {
     );
     return region?.orgUnitName ?? value;
   }
-  
+
   getBcParksSectionCode(value: string): string {
     if (!value) return '';
     const section = this.bcParksSections.find(
@@ -376,20 +372,20 @@ export class CreateNewProjectDialogComponent implements OnInit {
     );
     return section?.orgUnitName ?? value;
   }
-  
+
   getFireCentreCode(value: string): string {
     if (!value) return '';
     const centre = this.fireCentres.find(
-      c => c?.properties?.MOF_FIRE_CENTRE_ID?.toString() === value.toString()
+      c => c?.orgUnitIdentifier != null && c.orgUnitIdentifier.toString() === value.toString()
     );
-    return centre?.properties?.MOF_FIRE_CENTRE_NAME ?? value;
+    return centre?.orgUnitName ?? value;
   }
-  
+
   getObjectiveCode(value: string): string {
     if (!value) return '';
     const objective = this.objectiveTypes.find(o => o?.objectiveTypeCode === value);
     return objective?.description ?? value;
   }
-  
- 
+
+
 }

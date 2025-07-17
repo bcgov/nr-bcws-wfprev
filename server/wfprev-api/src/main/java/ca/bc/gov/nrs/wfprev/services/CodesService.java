@@ -69,6 +69,8 @@ public class CodesService implements CommonService {
     private final EvaluationCriteriaCodeResourceAssembler evaluationCriteriaCodeResourceAssembler;
     private final ProjectStatusCodeRepository projectStatusCodeRepository;
     private final ProjectStatusCodeResourceAssembler projectStatusCodeResourceAssembler;
+    private final WildfireOrgUnitRepository wildfireOrgUnitRepository;
+    private final WildfireOrgUnitResourceAssembler wildfireOrgUnitResourceAssembler;
 
 
     public CodesService(ForestAreaCodeRepository forestAreaCodeRepository, ForestAreaCodeResourceAssembler forestAreaCodeResourceAssembler,
@@ -86,7 +88,8 @@ public class CodesService implements CommonService {
                         AttachmentContentTypeCodeResourceAssembler attachmentContentTypeCodeResourceAssembler, AttachmentContentTypeCodeRepository attachmentContentTypeCodeRepository, SilvicultureBaseCodeResourceAssembler silvicultureBaseCodeResourceAssembler, SilvicultureBaseCodeRepository silvicultureBaseCodeRepository,
                         SilvicultureMethodCodeResourceAssembler silvicultureMethodCodeResourceAssembler, SilvicultureMethodCodeRepository silvicultureMethodCodeRepository, SilvicultureTechniqueCodeResourceAssembler silvicultureTechniqueCodeResourceAssembler, SilvicultureTechniqueCodeRepository silvicultureTechniqueCodeRepository, 
                         ProposalTypeCodeRepository proposalTypeCodeRepository, ProposalTypeCodeResourceAssembler proposalTypeCodeResourceAssembler, WUIRiskClassCodeRepository wuiRiskClassCodeRepository, WUIRiskClassCodeResourceAssembler wuiRiskClassCodeResourceAssembler,
-                        EvaluationCriteriaCodeRepository evaluationCriteriaCodeRepository, EvaluationCriteriaCodeResourceAssembler evaluationCriteriaCodeResourceAssembler, ProjectStatusCodeRepository projectStatusCodeRepository, ProjectStatusCodeResourceAssembler projectStatusCodeResourceAssembler) {
+                        EvaluationCriteriaCodeRepository evaluationCriteriaCodeRepository, EvaluationCriteriaCodeResourceAssembler evaluationCriteriaCodeResourceAssembler, ProjectStatusCodeRepository projectStatusCodeRepository, ProjectStatusCodeResourceAssembler projectStatusCodeResourceAssembler,
+                        WildfireOrgUnitRepository wildfireOrgUnitRepository, WildfireOrgUnitResourceAssembler wildfireOrgUnitResourceAssembler) {
         this.forestAreaCodeRepository = forestAreaCodeRepository;
         this.forestAreaCodeResourceAssembler = forestAreaCodeResourceAssembler;
         this.generalScopeCodeRepository = generalScopeCodeRepository;
@@ -137,6 +140,8 @@ public class CodesService implements CommonService {
         this.evaluationCriteriaCodeRepository = evaluationCriteriaCodeRepository;
         this.projectStatusCodeRepository = projectStatusCodeRepository;
         this.projectStatusCodeResourceAssembler = projectStatusCodeResourceAssembler;
+        this.wildfireOrgUnitRepository = wildfireOrgUnitRepository;
+        this.wildfireOrgUnitResourceAssembler = wildfireOrgUnitResourceAssembler;
     }
 
     /**
@@ -616,6 +621,25 @@ public class CodesService implements CommonService {
     public ProjectStatusCodeModel getProjectStatusCodeById(String id) throws ServiceException {
         try {
             return projectStatusCodeRepository.findById(id).map(projectStatusCodeResourceAssembler::toModel).orElse(null);
+        } catch (Exception e) {
+            throw new ServiceException(e.getLocalizedMessage(), e);
+        }
+    }
+
+    public CollectionModel<WildfireOrgUnitModel> getAllWildfireOrgUnits() throws ServiceException {
+        try {
+            List<WildfireOrgUnitEntity> entities = wildfireOrgUnitRepository.findAll();
+            return wildfireOrgUnitResourceAssembler.toCollectionModel(entities);
+        } catch (Exception e) {
+            throw new ServiceException(e.getLocalizedMessage(), e);
+        }
+    }
+
+    public WildfireOrgUnitModel getWildfireOrgUnitById(String id) throws ServiceException {
+        try {
+            return wildfireOrgUnitRepository.findById(id)
+                    .map(wildfireOrgUnitResourceAssembler::toModel)
+                    .orElse(null);
         } catch (Exception e) {
             throw new ServiceException(e.getLocalizedMessage(), e);
         }
