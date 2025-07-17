@@ -234,14 +234,16 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
       case 'objectiveTypeCode':
         this.objectiveTypeCode = sortByName(data._embedded.objectiveTypeCode ?? []);
         break;
-      case 'wildfireOrgUnit':
+      case 'wildfireOrgUnit': {
+        // filter out org units that are not fire centres
         const orgUnits = data._embedded.wildfireOrgUnit ?? [];
-        // Filter out the org units that are not fire centres
         const fireCentres = orgUnits.filter(
-          (unit: { wildfireOrgUnitTypeCode: { wildfireOrgUnitTypeCode: string; }; }) => unit.wildfireOrgUnitTypeCode?.wildfireOrgUnitTypeCode === 'FRC'
+          (unit: { wildfireOrgUnitTypeCode: { wildfireOrgUnitTypeCode: string } }) =>
+            unit.wildfireOrgUnitTypeCode?.wildfireOrgUnitTypeCode === 'FRC'
         );
         this.fireCentres = sortByName(fireCentres);
         break;
+      }
     }
   }
 

@@ -9,7 +9,6 @@ import { TokenService } from "src/app/services/token.service";
 })
 export class CodeTableServices {
   private codeTableCache: { [key: string]: any } = {}; // Cache for code tables
-  private fireCentresCache: any | null = null;
   constructor(
     private readonly appConfigService: AppConfigService,
     private readonly httpClient: HttpClient,
