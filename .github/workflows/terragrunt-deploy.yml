@@ -20,14 +20,9 @@ on:
         required: true
         type: string
         default: apply
-      RESTORE_DOWNSCALED_CLUSTER:
-        required: false
+      GDB_EXTRACTOR_IMAGE:
+        required: true
         type: string
-        default: 'false'
-      GDB_EXTRACTOR_DIGEST:
-        required: false
-        type: string
-        default: 'false'
   workflow_dispatch:
     inputs:
       DEFAULT_APPLICATION_ENVIRONMENT:
@@ -54,13 +49,10 @@ on:
         required: true
         type: string
         default: apply
-      RESTORE_DOWNSCALED_CLUSTER:
-        required: false
-        type: choice
-        options:
-          - 'false'
-          - 'true'
-      
+      # IS_HOTFIX:
+      #   required: true
+      #   type: string
+      #   default: 'false'
 
 env:
   TF_VERSION: 1.8.5
@@ -142,21 +134,12 @@ jobs:
       - name: Get digest of GDB extractor docker image
         id: getDigestGDB
         run: |
-          if [[ "${{inputs.RESTORE_DOWNSCALED_CLUSTER}}" == 'false' ]]; then
-            if [[ "${{inputs.GDB_EXTRACTOR_DIGEST }}" == '' ]]; then
-              IMAGE="${{ secrets.ECR_TARGET_ACCOUNT_ID }}.dkr.ecr.ca-central-1.amazonaws.com/nr-bcws-wfprev-wfprev-gdb-extractor:latest"
-              docker pull $IMAGE
-              echo "GDB_EXTRACTOR_IMAGE=$(docker inspect --format='{{index .RepoDigests 0}}' $IMAGE)" >> $GITHUB_OUTPUT
-            else
-              echo "GDB_EXTRACTOR_IMAGE=${{ secrets.ECR_TARGET_ACCOUNT_ID }}.dkr.ecr.ca-central-1.amazonaws.com/nr-bcws-wfprev-wfprev-gdb-extractor@${{ inputs.GDB_EXTRACTOR_DIGEST }}" >> $GITHUB_OUTPUT
-            fi
-          else
-            export GDB_EXTRACTOR_IMAGE="$(aws ssm get-parameter --name 'gdb-extractor-image' --query 'Parameter.Value' | sed 's/\"//g')" 
-            echo "GDB_EXTRACTOR_IMAGE=$GDB_EXTRACTOR_IMAGE" >> "$GITHUB_OUTPUT"
-          fi
+          IMAGE="${{ secrets.ECR_TARGET_ACCOUNT_ID }}.dkr.ecr.ca-central-1.amazonaws.com/nr-bcws-wfprev-wfprev-gdb-extractor:latest"
+          docker pull $IMAGE
+          echo "GDB_EXTRACTOR_IMAGE=$(docker inspect --format='{{index .RepoDigests 0}}' $IMAGE)" >> $GITHUB_OUTPUT
 
       - name: Configure AWS credentials for Terraform account (DEV/TEST/PROD)
-        uses: aws-actions/configure-aws-credentials@v3
+        uses: aws-actions/configure-aws-credentials@v2
         with:
             role-to-assume:  ${{ secrets.AWS_TERRAFORM_ROLE_TO_ASSUME }}
             role-session-name: wfprev-terraform-s3
@@ -225,8 +208,4 @@ jobs:
           PROXY_WF1_PREV_REST_PASSWORD: ${{ secrets.PROXY_WF1_PREV_REST_PASSWORD }}
           TARGET_LIQUIBASE_TAG: ${{ steps.liquibaseCommand.outputs.TARGET_LIQUIBASE_TAG }}
 
-        run: |
-          if [ "${{ inputs.COMMAND }}" = "apply" ] || [ "${{ inputs.COMMAND }}" = "apply -destroy" ]; then
-            export RUNTIME_ARG="-auto-approve"
-          fi
-          terragrunt ${{inputs.COMMAND}} --terragrunt-non-interactive $RUNTIME_ARG
+        run: terragrunt ${{inputs.COMMAND}} --terragrunt-non-interactive -auto-approve
