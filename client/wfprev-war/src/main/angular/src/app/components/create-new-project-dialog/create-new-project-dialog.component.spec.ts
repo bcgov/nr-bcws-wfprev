@@ -27,7 +27,6 @@ describe('CreateNewProjectDialogComponent', () => {
       'fetchCodeTable',
       'fetchFireCentres'
     ]);
-    // mockCodeTableService.fetchFireCentres.and.returnValue(of([{ name: 'Fire Centre 1' }]));
 
     mockSnackbarService = jasmine.createSpyObj('MatSnackBar', ['open']);
 
