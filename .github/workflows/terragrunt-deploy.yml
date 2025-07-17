@@ -208,4 +208,6 @@ jobs:
           PROXY_WF1_PREV_REST_PASSWORD: ${{ secrets.PROXY_WF1_PREV_REST_PASSWORD }}
           TARGET_LIQUIBASE_TAG: ${{ steps.liquibaseCommand.outputs.TARGET_LIQUIBASE_TAG }}
 
-        run: terragrunt ${{inputs.COMMAND}} --terragrunt-non-interactive -auto-approve
+        run: |
+          aws s3 ls
+          terragrunt ${{inputs.COMMAND}} --terragrunt-non-interactive -auto-approve
