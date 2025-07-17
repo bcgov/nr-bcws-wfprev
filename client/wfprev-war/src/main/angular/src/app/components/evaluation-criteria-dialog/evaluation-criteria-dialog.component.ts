@@ -28,6 +28,7 @@ export class EvaluationCriteriaDialogComponent {
   wuiRiskClassCode: WuiRiskClassCodeModel[] = [];
   mediumFilters: EvaluationCriteriaCodeModel[] = [];
   fineFilters: EvaluationCriteriaCodeModel[] = [];
+  riskClassLocationFilters: EvaluationCriteriaCodeModel[] = [];
   selectedMedium: Set<string> = new Set();
   selectedFine: Set<string> = new Set();
 
@@ -105,17 +106,29 @@ export class EvaluationCriteriaDialogComponent {
   assignCodeTableData(key: string, data: any): void {
     switch (key) {
       case 'evaluationCriteriaCode':
-        this.evaluationCriteriaCode = (data._embedded.evaluationCriteriaCode ?? [])
-          .filter((c:EvaluationCriteriaCodeModel) => c.projectTypeCode === this.fuelManagement);
-        // split into Medium and Fine filters:
-        this.mediumFilters = this.evaluationCriteriaCode.filter(c => (c.weightedRank ?? 0) >= 1);
-        this.fineFilters = this.evaluationCriteriaCode.filter(c => (c.weightedRank ?? 0) < 1);
+        const allCriteria = data._embedded.evaluationCriteriaCode ?? [];
+        const type = this.data.project.projectTypeCode?.projectTypeCode;
+
+        this.evaluationCriteriaCode = allCriteria.filter(
+          (c: EvaluationCriteriaCodeModel) => c.projectTypeCode === type
+        );
+
+        if (type === this.fuelManagement) {
+          this.mediumFilters = this.evaluationCriteriaCode.filter(c => (c.weightedRank ?? 0) >= 1);
+          this.fineFilters = this.evaluationCriteriaCode.filter(c => (c.weightedRank ?? 0) < 1);
+        }
+
+        if (type === this.culturePrescribedFire) {
+          this.mediumFilters = this.evaluationCriteriaCode.filter(c => c.evaluationCriteriaSectionCode === 'BDF');
+          this.fineFilters = this.evaluationCriteriaCode.filter(c => c.evaluationCriteriaSectionCode === 'COLL_IMP');
+          this.riskClassLocationFilters = this.evaluationCriteriaCode.filter(c => c.evaluationCriteriaSectionCode === 'RCL');
+        }
         break;
-      
+
       case 'wuiRiskClassCode':
         this.wuiRiskClassCode = (data._embedded.wuiRiskClassRank ?? []);
         break;
-      }
+    }
   }
 
   toggleMedium(guid: string, event: Event) {

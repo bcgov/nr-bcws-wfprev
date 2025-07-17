@@ -30,6 +30,20 @@
               <div class="coarse-total-value">{{ coarseTotal }}</div>
             </div>
           </div>
+          <div *ngIf="data.project.projectTypeCode?.projectTypeCode === culturePrescribedFire">
+            <div *ngFor="let filter of riskClassLocationFilters"
+                class="filter-row selected"
+                [ngClass]="{'selected': selectedCoarse.has(filter.evaluationCriteriaGuid!)}">
+              <div class="filter-checkbox">
+                <input
+                  type="checkbox"
+                  [checked]="selectedCoarse.has(filter.evaluationCriteriaGuid!)"
+                  (change)="toggleCoarse(filter.evaluationCriteriaGuid!, $event)" />
+              </div>
+              <div class="filter-label">{{ filter.criteriaLabel }}</div>
+              <div class="filter-weight">{{ filter.weightedRank }}</div>
+            </div>
+          </div>
           <div class="total-row">
             <label>{{ sectionTitles.totalLabel('section1') }}</label>
             <span class="total-value">{{ coarseTotal }}</span>

@@ -260,6 +260,7 @@ export interface EvaluationCriteriaCodeModel {
   evaluationCriteriaGuid?: string;
   projectTypeCode?: string;
   criteriaLabel?: string;
+  evaluationCriteriaSectionCode?: string;
   weightedRank?: number;
 }
 

@@ -324,5 +324,25 @@ describe('EvaluationCriteriaDialogComponent', () => {
     expect(component.criteriaForm.get('fineFilterComments')?.value).toBe('Fine filter comment');
   });
 
+  it('should assign medium, fine, and riskClassLocation filters when projectType is CULT_RX_FR', () => {
+    component.data.project.projectTypeCode!.projectTypeCode = 'CULT_RX_FR';
+
+    const data = {
+      _embedded: {
+        evaluationCriteriaCode: [
+          { projectTypeCode: 'CULT_RX_FR', evaluationCriteriaSectionCode: 'BDF', evaluationCriteriaGuid: 'guid1' },
+          { projectTypeCode: 'CULT_RX_FR', evaluationCriteriaSectionCode: 'COLL_IMP', evaluationCriteriaGuid: 'guid2' },
+          { projectTypeCode: 'CULT_RX_FR', evaluationCriteriaSectionCode: 'RCL', evaluationCriteriaGuid: 'guid3' }
+        ]
+      }
+    };
+
+    component.assignCodeTableData('evaluationCriteriaCode', data);
+
+    expect(component.mediumFilters.length).toBe(1);
+    expect(component.fineFilters.length).toBe(1);
+    expect(component.riskClassLocationFilters.length).toBe(1);
+  });
+
 
 });
