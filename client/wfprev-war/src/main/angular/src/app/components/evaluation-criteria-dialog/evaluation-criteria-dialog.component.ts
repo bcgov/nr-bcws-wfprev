@@ -28,6 +28,7 @@ export class EvaluationCriteriaDialogComponent {
   wuiRiskClassCode: WuiRiskClassCodeModel[] = [];
   mediumFilters: EvaluationCriteriaCodeModel[] = [];
   fineFilters: EvaluationCriteriaCodeModel[] = [];
+  riskClassLocationFilters: EvaluationCriteriaCodeModel[] = [];
   selectedMedium: Set<string> = new Set();
   selectedFine: Set<string> = new Set();
 
@@ -36,6 +37,7 @@ export class EvaluationCriteriaDialogComponent {
   fineTotal = 0;
 
   fuelManagement = 'FUEL_MGMT'
+  culturePrescribedFire = 'CULT_RX_FR'
   constructor(
     private readonly fb: FormBuilder,
     private readonly dialog: MatDialog,
@@ -54,6 +56,8 @@ export class EvaluationCriteriaDialogComponent {
     if (this.data.project.projectTypeCode?.projectTypeCode === this.fuelManagement) {
       this.setupValueChangeHandlers();
       this.loadCodeTablesAndPrefill();
+    } else if (this.data.project.projectTypeCode?.projectTypeCode === this.culturePrescribedFire) {
+
     }
   }
 
@@ -102,17 +106,29 @@ export class EvaluationCriteriaDialogComponent {
   assignCodeTableData(key: string, data: any): void {
     switch (key) {
       case 'evaluationCriteriaCode':
-        this.evaluationCriteriaCode = (data._embedded.evaluationCriteriaCode ?? [])
-          .filter((c:EvaluationCriteriaCodeModel) => c.projectTypeCode === this.fuelManagement);
-        // split into Medium and Fine filters:
-        this.mediumFilters = this.evaluationCriteriaCode.filter(c => (c.weightedRank ?? 0) >= 1);
-        this.fineFilters = this.evaluationCriteriaCode.filter(c => (c.weightedRank ?? 0) < 1);
+        const allCriteria = data._embedded.evaluationCriteriaCode ?? [];
+        const type = this.data.project.projectTypeCode?.projectTypeCode;
+
+        this.evaluationCriteriaCode = allCriteria.filter(
+          (c: EvaluationCriteriaCodeModel) => c.projectTypeCode === type
+        );
+
+        if (type === this.fuelManagement) {
+          this.mediumFilters = this.evaluationCriteriaCode.filter(c => (c.weightedRank ?? 0) >= 1);
+          this.fineFilters = this.evaluationCriteriaCode.filter(c => (c.weightedRank ?? 0) < 1);
+        }
+
+        if (type === this.culturePrescribedFire) {
+          this.mediumFilters = this.evaluationCriteriaCode.filter(c => c.evaluationCriteriaSectionCode === 'BDF');
+          this.fineFilters = this.evaluationCriteriaCode.filter(c => c.evaluationCriteriaSectionCode === 'COLL_IMP');
+          this.riskClassLocationFilters = this.evaluationCriteriaCode.filter(c => c.evaluationCriteriaSectionCode === 'RCL');
+        }
         break;
-      
+
       case 'wuiRiskClassCode':
         this.wuiRiskClassCode = (data._embedded.wuiRiskClassRank ?? []);
         break;
-      }
+    }
   }
 
   toggleMedium(guid: string, event: Event) {
@@ -382,5 +398,30 @@ export class EvaluationCriteriaDialogComponent {
     this.updateCoarseTotal();
   }
 
+  get sectionTitles() {
+    const type = this.data.project.projectTypeCode?.projectTypeCode;
+    const isFuel = type === this.fuelManagement;
 
+    const titles = {
+      section1: isFuel ? 'Coarse Filters' : 'Risk Class & Location',
+      section2: isFuel ? 'Medium Filters' : 'Burn Development and Feasibility',
+      section3: isFuel ? 'Fine Filters' : 'Collective Impact',
+    };
+
+    return {
+      ...titles,
+
+      totalLabel: (section: keyof typeof titles) =>
+        isFuel ? `Total Point Value for ${titles[section]}:` : 'Total Point Value:',
+
+      commentLabel: (section: keyof typeof titles) => {
+        if (section === 'section1') {
+          return isFuel
+            ? 'Local WUI Risk Class Rationale'
+            : 'Additional Comments/Notes on risk class or outside of WUI rationale:';
+        }
+        return `Additional Comments/Notes on ${titles[section]}`;
+      }
+    };
+  }
 }
