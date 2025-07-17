@@ -49,7 +49,6 @@ export class CreateNewProjectDialogComponent implements OnInit {
   projectTypes: any[] = [];
   fireCentres: any[] = [];
   forestDistrictsBackup: any[] = [];
-  fireCentresBackup: any[] = [];
 
   constructor(
     private readonly fb: FormBuilder,
@@ -183,12 +182,11 @@ export class CreateNewProjectDialogComponent implements OnInit {
           }
           if (table.name === 'wildfireOrgUnits') {
             // filter org units to only return fire centres
-            const fireCentresOnly = this[table.property].filter(
+            const filteredFireCentres = this[table.property].filter(
               (unit: any) => unit.wildfireOrgUnitTypeCode?.wildfireOrgUnitTypeCode === 'FRC'
             );
 
-            this.fireCentresBackup = fireCentresOnly;
-            this.fireCentres = [...this.fireCentresBackup];
+            this.fireCentres = filteredFireCentres;
           }
         },
         error: (err) => {

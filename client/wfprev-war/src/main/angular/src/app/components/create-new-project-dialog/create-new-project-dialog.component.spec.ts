@@ -199,7 +199,7 @@ describe('CreateNewProjectDialogComponent', () => {
 
     expect(mockDialog.open).toHaveBeenCalledWith(ConfirmationDialogComponent, {
       data: {
-        indicator: 'confirm-cancel', 
+        indicator: 'confirm-cancel',
         title: ModalTitles.CONFIRM_CANCEL_TITLE,
         message: ModalMessages.CONFIRM_CANCEL_MESSAGE,
       },
@@ -649,17 +649,37 @@ describe('CreateNewProjectDialogComponent', () => {
     expect(component.getBcParksSectionCode('10')).toBe('Parks Section');
   });
 
-  // it('should return fire centre name if found', () => {
-  //   component.fireCentres = [{
-  //     properties: { MOF_FIRE_CENTRE_ID: 5, MOF_FIRE_CENTRE_NAME: 'Kamloops Fire Centre' }
-  //   }];
-  //   expect(component.getFireCentreCode('5')).toBe('Kamloops Fire Centre');
-  // });
+  it('should filter wildfire org units to only include fire centres (FRC)', () => {
+    const mockWildfireOrgUnitsResponse = {
+      _embedded: {
+        wildfireOrgUnit: [
+          {
+            orgUnitName: 'Kamloops Fire Centre',
+            orgUnitIdentifier: 1,
+            wildfireOrgUnitTypeCode: { wildfireOrgUnitTypeCode: 'FRC' }
+          },
+          {
+            orgUnitName: 'Non-Fire Centre',
+            orgUnitIdentifier: 2,
+            wildfireOrgUnitTypeCode: { wildfireOrgUnitTypeCode: 'OTHER' }
+          }
+        ]
+      }
+    };
 
-  // it('should return input if fire centre not found', () => {
-  //   component.fireCentres = [];
-  //   expect(component.getFireCentreCode('999')).toBe('999');
-  // });
+    mockCodeTableService.fetchCodeTable.and.callFake((name: string) => {
+      if (name === 'wildfireOrgUnits') {
+        return of(mockWildfireOrgUnitsResponse);
+      }
+      return of({ _embedded: [] });
+    });
+
+    component.loadCodeTables();
+    fixture.detectChanges();
+
+    expect(component.fireCentres.length).toBe(1);
+    expect(component.fireCentres[0].orgUnitName).toBe('Kamloops Fire Centre');
+  });
 
   it('should return objective description if found', () => {
     component.objectiveTypes = [{ objectiveTypeCode: 'WRR', description: 'Wildfire Risk Reduction' }];

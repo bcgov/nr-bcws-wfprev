@@ -13,30 +13,19 @@ describe('SearchFilterComponent', () => {
   let mockSharedService: jasmine.SpyObj<SharedService>;
   let mockCodeTableService: jasmine.SpyObj<CodeTableServices>;
   let mockSharedCodeTableService: jasmine.SpyObj<SharedCodeTableService>;
+  let mockCodeTablesSubject: Subject<any>;
 
   beforeEach(async () => {
     mockSharedService = jasmine.createSpyObj('SharedService', ['updateFilters']);
     mockCodeTableService = jasmine.createSpyObj('CodeTableServices', ['fetchFireCentres']);
-    mockSharedCodeTableService = jasmine.createSpyObj('SharedCodeTableService', [], {
-      codeTables$: of({
-        businessAreas: [{ programAreaName: 'Area A', programAreaGuid: 'guid-a' }],
-        forestRegions: [{ orgUnitName: 'Region 1', orgUnitId: 'r1' }],
-        forestDistricts: [{ orgUnitName: 'District 1', orgUnitId: 'd1', parentOrgUnitId: 'r1' }],
-        activityCategoryCode: [{ description: 'Activity A', activityCategoryCode: 'a1' }],
-        planFiscalStatusCode: [{ description: 'Approved', planFiscalStatusCode: 'P' }]
-      })
-    });
 
-    // mockCodeTableService.fetchFireCentres.and.returnValue(of({
-    //   features: [
-    //     {
-    //       properties: {
-    //         MOF_FIRE_CENTRE_NAME: 'Centre 1',
-    //         MOF_FIRE_CENTRE_ID: 'fc1'
-    //       }
-    //     }
-    //   ]
-    // }));
+    mockCodeTablesSubject = new Subject<any>();
+
+    mockSharedCodeTableService = {
+      get codeTables$() {
+        return mockCodeTablesSubject.asObservable();
+      }
+    } as any;
 
     await TestBed.configureTestingModule({
       imports: [SearchFilterComponent, BrowserAnimationsModule],
@@ -49,6 +38,16 @@ describe('SearchFilterComponent', () => {
 
     fixture = TestBed.createComponent(SearchFilterComponent);
     component = fixture.componentInstance;
+
+    mockCodeTablesSubject.next({
+      businessAreas: [{ programAreaName: 'Area A', programAreaGuid: 'guid-a' }],
+      forestRegions: [{ orgUnitName: 'Region 1', orgUnitId: 'r1' }],
+      forestDistricts: [{ orgUnitName: 'District 1', orgUnitId: 'd1', parentOrgUnitId: 'r1' }],
+      activityCategoryCode: [{ description: 'Activity A', activityCategoryCode: 'a1' }],
+      planFiscalStatusCode: [{ description: 'Approved', planFiscalStatusCode: 'P' }],
+      wildfireOrgUnit: []
+    });
+
     fixture.detectChanges();
   });
 
@@ -135,7 +134,7 @@ describe('SearchFilterComponent', () => {
       { value: '__ALL__' },
       { value: 'guid-a' }
     ]);
-    
+
     tick();
     expect(component.selectedBusinessArea).toEqual([]);
     expect(mockSharedService.updateFilters).toHaveBeenCalled();
@@ -156,7 +155,7 @@ describe('SearchFilterComponent', () => {
       { value: 'guid-a' },
       { value: 'guid-b' }
     ]);
-    
+
     tick();
     expect(component.selectedBusinessArea).toEqual(['guid-b']);
     expect(mockSharedService.updateFilters).toHaveBeenCalled();
@@ -177,10 +176,33 @@ describe('SearchFilterComponent', () => {
       { value: 'guid-a' },
       { value: 'guid-b' }
     ]);
-    
+
     tick();
     expect(component.selectedBusinessArea).toEqual(['__ALL__', 'guid-a', 'guid-b']);
     expect(mockSharedService.updateFilters).toHaveBeenCalled();
   }));
+
+  it('should filter wildfireOrgUnit for only fire centres (FRC)', () => {
+    mockCodeTablesSubject.next({
+      wildfireOrgUnit: [
+        {
+          orgUnitName: 'Kamloops Fire Centre',
+          orgUnitIdentifier: 'fc1',
+          wildfireOrgUnitTypeCode: { wildfireOrgUnitTypeCode: 'FRC' }
+        },
+        {
+          orgUnitName: 'Non-Fire Centre',
+          orgUnitIdentifier: 'fc2',
+          wildfireOrgUnitTypeCode: { wildfireOrgUnitTypeCode: 'OTHER' }
+        }
+      ]
+    });
+
+    fixture.detectChanges();
+
+    const fireCentreLabels = component.fireCentreOptions.map(opt => opt.label);
+    expect(fireCentreLabels).toContain('Kamloops Fire Centre');
+    expect(fireCentreLabels).not.toContain('Non-Fire Centre');
+  });
 
 });

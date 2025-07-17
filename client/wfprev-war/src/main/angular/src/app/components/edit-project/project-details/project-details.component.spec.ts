@@ -642,6 +642,35 @@ describe('ProjectDetailsComponent', () => {
 
         expect(component.bcParksSectionCode).toEqual(['Section1', 'Section2']);
       });
+
+      it('should filter and assign only FRC wildfireOrgUnits to fireCentres', () => {
+        const mockData = {
+          _embedded: {
+            wildfireOrgUnit: [
+              {
+                orgUnitName: 'Kamloops Fire Centre',
+                orgUnitIdentifier: 1,
+                wildfireOrgUnitTypeCode: { wildfireOrgUnitTypeCode: 'FRC' }
+              },
+              {
+                orgUnitName: 'Non-Fire Centre',
+                orgUnitIdentifier: 2,
+                wildfireOrgUnitTypeCode: { wildfireOrgUnitTypeCode: 'OTHER' }
+              },
+              {
+                orgUnitName: 'No Type Code',
+                orgUnitIdentifier: 3,
+                wildfireOrgUnitTypeCode: null
+              }
+            ]
+          }
+        };
+
+        component.assignCodeTableData('wildfireOrgUnit', mockData);
+
+        expect(component.fireCentres.length).toBe(1);
+        expect(component.fireCentres[0].orgUnitName).toBe('Kamloops Fire Centre');
+      });
     });
 
     describe('onSaveProjectDescription Method', () => {
