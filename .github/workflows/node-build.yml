@@ -1,7 +1,20 @@
 on:
   workflow_dispatch:
+    inputs:
+      COMPONENT_NAME:
+        type: string
+        required: true
+      TAG:
+        required: false
+        type: string
   workflow_call:
-
+    inputs:
+      COMPONENT_NAME:
+        type: string
+        required: true
+      TAG:
+        required: false
+        type: string
 permissions:
   id-token: write   
   contents: read  
@@ -12,7 +25,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       NPMRC: ${{ secrets.NPMRC }}
-      IMAGE_NAME: ${{ github.repository_owner }}/nr-bcws-wfprev-wfprev-gdb-extractor
+      IMAGE_NAME: ${{ github.repository_owner }}/nr-bcws-wfprev-${{ inputs.COMPONENT_NAME }}
       AWS_REGION: ca-central-1 
 
     steps:
@@ -25,22 +38,22 @@ jobs:
         node-version: '20'
     
     - name: Add .npmrc file
-      run: echo -e "$NPMRC" > ./node/wfprev-gdb-extractor/.npmrc  # Ensure it's in the right directory
+      run: echo -e "$NPMRC" > ./node/${{ inputs.COMPONENT_NAME }}/.npmrc  # Ensure it's in the right directory
     
     - name: Clear cache
-      working-directory: ./node/wfprev-gdb-extractor
+      working-directory: ./node/${{ inputs.COMPONENT_NAME }}
       run: |
         rm -f package-lock.json
         rm -rf node_modules
         npm cache clean --force
     
     - name: Install dependencies
-      working-directory: ./node/wfprev-gdb-extractor
+      working-directory: ./node/${{ inputs.COMPONENT_NAME }}
       run: npm install
     
     # Package Lambda function code
     - name: Create Lambda deployment package
-      working-directory: ./node/wfprev-gdb-extractor
+      working-directory: ./node/${{ inputs.COMPONENT_NAME }}
       run: |
         npm prune --production
         zip -r ../../lambda-deployment.zip . -x "*.git*" "*.github*" "tests/*" "*.zip"
@@ -79,24 +92,24 @@ jobs:
           type=ref,event=tag
           type=raw,value=${{ github.sha }}
 
-    - name: List files in ./node/wfprev-gdb-extractor
-      run: ls -al ./node/wfprev-gdb-extractor
+    - name: List files in ./node/${{ inputs.COMPONENT_NAME }}
+      run: ls -al ./node/${{ inputs.COMPONENT_NAME }}
     
     - name: Build and push Docker image
       uses: docker/build-push-action@v6
       with:
-        context: ./node/wfprev-gdb-extractor
-        file: ./node/wfprev-gdb-extractor/Dockerfile
+        context: ./node/${{ inputs.COMPONENT_NAME }}
+        file: ./node/${{ inputs.COMPONENT_NAME }}/Dockerfile
         push: true
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
 
     - name: Tag and push latest image
       run: |
-          IMAGE=${{ vars.REGISTRY }}/${{ github.repository_owner }}/nr-bcws-wfprev-wfprev-gdb-extractor
+          IMAGE=${{ vars.REGISTRY }}/${{ github.repository_owner }}/nr-bcws-wfprev-${{ inputs.COMPONENT_NAME }}
           docker pull $IMAGE:${{ github.sha }}
-          docker tag $IMAGE:${{ github.sha }} $IMAGE:latest
-          docker push $IMAGE:latest
+          docker tag $IMAGE:${{ github.sha }} $IMAGE:${{ inputs.TAG }}
+          docker push $IMAGE:${{ inputs.TAG }}
 
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v3
@@ -107,8 +120,8 @@ jobs:
   
     - name: Create ECR Repository for GDB Extractor (if not exists)
       run: |
-        aws ecr describe-repositories --repository-names nr-bcws-wfprev-wfprev-gdb-extractor --region ca-central-1 || \
-        aws ecr create-repository --repository-name nr-bcws-wfprev-wfprev-gdb-extractor --region ca-central-1
+        aws ecr describe-repositories --repository-names nr-bcws-wfprev-${{ inputs.COMPONENT_NAME }} --region ca-central-1 || \
+        aws ecr create-repository --repository-name nr-bcws-wfprev-${{ inputs.COMPONENT_NAME }} --region ca-central-1
 
     - name: Login to Amazon ECR
       run: |
@@ -117,20 +130,20 @@ jobs:
     - name: Pull, Tag, and Push GDB Extractor Docker image to ECR
       id: pushGdbExtractorImage
       run: |
-        docker pull ${{vars.REPOSITORY_HOST}}/${{ github.repository_owner }}/nr-bcws-wfprev-wfprev-gdb-extractor:latest
-        docker tag ${{vars.REPOSITORY_HOST}}/${{ github.repository_owner }}/nr-bcws-wfprev-wfprev-gdb-extractor:latest ${{ secrets.LZA_ECR_AWS_ACCOUNT_ID }}.dkr.ecr.ca-central-1.amazonaws.com/nr-bcws-wfprev-wfprev-gdb-extractor:latest
-        docker push ${{ secrets.LZA_ECR_AWS_ACCOUNT_ID }}.dkr.ecr.ca-central-1.amazonaws.com/nr-bcws-wfprev-wfprev-gdb-extractor:latest
-        echo "GDB_EXTRACTOR_IMAGE=${{ secrets.LZA_ECR_AWS_ACCOUNT_ID }}.dkr.ecr.ca-central-1.amazonaws.com/nr-bcws-wfprev-wfprev-gdb-extractor:latest" >> $GITHUB_ENV
+        docker pull ${{vars.REPOSITORY_HOST}}/${{ github.repository_owner }}/nr-bcws-wfprev-${{ inputs.COMPONENT_NAME }}:${{ inputs.TAG }}
+        docker tag ${{vars.REPOSITORY_HOST}}/${{ github.repository_owner }}/nr-bcws-wfprev-${{ inputs.COMPONENT_NAME }}:${{ inputs.TAG }} ${{ secrets.LZA_ECR_AWS_ACCOUNT_ID }}.dkr.ecr.ca-central-1.amazonaws.com/nr-bcws-wfprev-${{ inputs.COMPONENT_NAME }}:${{ inputs.TAG }}
+        docker push ${{ secrets.LZA_ECR_AWS_ACCOUNT_ID }}.dkr.ecr.ca-central-1.amazonaws.com/nr-bcws-wfprev-${{ inputs.COMPONENT_NAME }}:${{ inputs.TAG }}
+        echo "GDB_EXTRACTOR_IMAGE=${{ secrets.LZA_ECR_AWS_ACCOUNT_ID }}.dkr.ecr.ca-central-1.amazonaws.com/nr-bcws-wfprev-${{ inputs.COMPONENT_NAME }}:${{ inputs.TAG }}" >> $GITHUB_ENV
 
     - name: Get Digest of GDB Extractor ECR image
       id: getGdbDigest
       run: |
         DIGEST=$(aws ecr describe-images \
-          --repository-name nr-bcws-wfprev-wfprev-gdb-extractor \
+          --repository-name nr-bcws-wfprev-${{ inputs.COMPONENT_NAME }} \
           --image-ids imageTag=latest \
           --query 'imageDetails[0].imageDigest' \
           --output text)
-        echo "GDB_EXTRACTOR_IMAGE=${{ secrets.LZA_ECR_AWS_ACCOUNT_ID }}.dkr.ecr.ca-central-1.amazonaws.com/nr-bcws-wfprev-wfprev-gdb-extractor@${DIGEST}" >> $GITHUB_ENV
+        echo "GDB_EXTRACTOR_IMAGE=${{ secrets.LZA_ECR_AWS_ACCOUNT_ID }}.dkr.ecr.ca-central-1.amazonaws.com/nr-bcws-wfprev-${{ inputs.COMPONENT_NAME }}@${DIGEST}" >> $GITHUB_ENV
         echo "digest_output=${{ env.GDB_EXTRACTOR_IMAGE }}" >> $GITHUB_OUTPUT
         
     outputs:
