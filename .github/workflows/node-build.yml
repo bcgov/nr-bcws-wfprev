@@ -99,7 +99,7 @@ jobs:
           docker push $IMAGE:latest
 
     - name: Configure AWS Credentials
-      uses: aws-actions/configure-aws-credentials@v2
+      uses: aws-actions/configure-aws-credentials@v3
       with:
         role-to-assume: arn:aws:iam::${{ secrets.LZA_ECR_AWS_ACCOUNT_ID }}:role/github-actions-role
         role-session-name: wfprev-terraform-s3
@@ -110,22 +110,17 @@ jobs:
         aws ecr describe-repositories --repository-names nr-bcws-wfprev-wfprev-gdb-extractor --region ca-central-1 || \
         aws ecr create-repository --repository-name nr-bcws-wfprev-wfprev-gdb-extractor --region ca-central-1
 
-    - name: Get AWS Account ID
-      id: getAwsAccount
-      run: |
-        echo "AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)" >> $GITHUB_ENV
-
     - name: Login to Amazon ECR
       run: |
-        aws ecr get-login-password --region ca-central-1 | docker login --username AWS --password-stdin ${{ env.LZA_ECR_AWS_ACCOUNT_ID }}.dkr.ecr.ca-central-1.amazonaws.com
+        aws ecr get-login-password --region ca-central-1 | docker login --username AWS --password-stdin ${{ secrets.LZA_ECR_AWS_ACCOUNT_ID }}.dkr.ecr.ca-central-1.amazonaws.com
 
     - name: Pull, Tag, and Push GDB Extractor Docker image to ECR
       id: pushGdbExtractorImage
       run: |
         docker pull ${{vars.REPOSITORY_HOST}}/${{ github.repository_owner }}/nr-bcws-wfprev-wfprev-gdb-extractor:latest
-        docker tag ${{vars.REPOSITORY_HOST}}/${{ github.repository_owner }}/nr-bcws-wfprev-wfprev-gdb-extractor:latest ${{ env.LZA_ECR_AWS_ACCOUNT_ID }}.dkr.ecr.ca-central-1.amazonaws.com/nr-bcws-wfprev-wfprev-gdb-extractor:latest
-        docker push ${{ env.LZA_ECR_AWS_ACCOUNT_ID }}.dkr.ecr.ca-central-1.amazonaws.com/nr-bcws-wfprev-wfprev-gdb-extractor:latest
-        echo "GDB_EXTRACTOR_IMAGE=${{ env.LZA_ECR_AWS_ACCOUNT_ID }}.dkr.ecr.ca-central-1.amazonaws.com/nr-bcws-wfprev-wfprev-gdb-extractor:latest" >> $GITHUB_ENV
+        docker tag ${{vars.REPOSITORY_HOST}}/${{ github.repository_owner }}/nr-bcws-wfprev-wfprev-gdb-extractor:latest ${{ secrets.LZA_ECR_AWS_ACCOUNT_ID }}.dkr.ecr.ca-central-1.amazonaws.com/nr-bcws-wfprev-wfprev-gdb-extractor:latest
+        docker push ${{ secrets.LZA_ECR_AWS_ACCOUNT_ID }}.dkr.ecr.ca-central-1.amazonaws.com/nr-bcws-wfprev-wfprev-gdb-extractor:latest
+        echo "GDB_EXTRACTOR_IMAGE=${{ secrets.LZA_ECR_AWS_ACCOUNT_ID }}.dkr.ecr.ca-central-1.amazonaws.com/nr-bcws-wfprev-wfprev-gdb-extractor:latest" >> $GITHUB_ENV
 
     - name: Get Digest of GDB Extractor ECR image
       id: getGdbDigest
@@ -135,7 +130,7 @@ jobs:
           --image-ids imageTag=latest \
           --query 'imageDetails[0].imageDigest' \
           --output text)
-        echo "GDB_EXTRACTOR_IMAGE=${{ env.LZA_ECR_AWS_ACCOUNT_ID }}.dkr.ecr.ca-central-1.amazonaws.com/nr-bcws-wfprev-wfprev-gdb-extractor@${DIGEST}" >> $GITHUB_ENV
+        echo "GDB_EXTRACTOR_IMAGE=${{ secrets.LZA_ECR_AWS_ACCOUNT_ID }}.dkr.ecr.ca-central-1.amazonaws.com/nr-bcws-wfprev-wfprev-gdb-extractor@${DIGEST}" >> $GITHUB_ENV
         echo "digest_output=${{ env.GDB_EXTRACTOR_IMAGE }}" >> $GITHUB_OUTPUT
         
     outputs:
