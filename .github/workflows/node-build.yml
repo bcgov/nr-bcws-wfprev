@@ -115,6 +115,7 @@ jobs:
       uses: aws-actions/configure-aws-credentials@v3
       with:
         role-to-assume: arn:aws:iam::${{ secrets.LZA_ECR_AWS_ACCOUNT_ID }}:role/Terraform-deploy
+        role-session-name: wfprev-terraform-s3
         aws-region: ca-central-1
   
     - name: Create ECR Repository for GDB Extractor (if not exists)
