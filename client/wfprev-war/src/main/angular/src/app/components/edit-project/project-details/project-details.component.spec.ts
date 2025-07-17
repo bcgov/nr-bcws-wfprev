@@ -72,7 +72,7 @@ describe('ProjectDetailsComponent', () => {
 
   beforeEach(async () => {
     mockProjectService = jasmine.createSpyObj('ProjectService', [
-      'updateProject', 
+      'updateProject',
       'getProjectByProjectGuid',
       'getProjectFiscalsByProjectGuid',
       'getFiscalActivities',
@@ -96,17 +96,17 @@ describe('ProjectDetailsComponent', () => {
 
       ],
     }).compileComponents();
-    
+
     spyOn(toolUtils.LeafletLegendService.prototype, 'addLegend')
       .and.callFake(() => ({
-        addTo: () => {}
+        addTo: () => { }
       } as unknown as L.Control));
     const appConfigService = TestBed.inject(AppConfigService);
     await appConfigService.loadAppConfig(); // Ensure the config is loaded before running tests
 
     fixture = TestBed.createComponent(ProjectDetailsComponent);
     component = fixture.componentInstance;
-    
+
     fixture.detectChanges();
   });
 
@@ -140,8 +140,8 @@ describe('ProjectDetailsComponent', () => {
       expect(component.latLongForm.valid).toBeTrue();
     });
 
-    it('should include fireCentreId as required in the form', () => {
-      const control = component.detailsForm.get('fireCentreId');
+    it('should include wildfireOrgUnitId as required in the form', () => {
+      const control = component.detailsForm.get('wildfireOrgUnitId');
       expect(control).toBeTruthy();
       control?.setValue('');
       control?.markAsTouched();
@@ -575,10 +575,10 @@ describe('ProjectDetailsComponent', () => {
         expect(component.patchFormValues).toHaveBeenCalledWith(mockData);
       });
 
-      it('should patch fireCentreId from fireCentreOrgUnitId in projectDetail', () => {
+      it('should patch wildfireOrgUnitId from fireCentreOrgUnitId in projectDetail', () => {
         const mockData = { fireCentreOrgUnitId: 456 };
         component.patchFormValues(mockData);
-        expect(component.detailsForm.get('fireCentreId')?.value).toBe(456);
+        expect(component.detailsForm.get('wildfireOrgUnitId')?.value).toBe(456);
       });
     });
 
@@ -755,7 +755,7 @@ describe('ProjectDetailsComponent', () => {
         programAreaGuid: new FormControl('area-guid'),
         closestCommunityName: new FormControl('Test City'),
         primaryObjectiveTypeCode: new FormControl('WRR'),
-        fireCentreId: new FormControl(123)
+        wildfireOrgUnitId: new FormControl(123)
       });
 
       spyOnProperty(component.detailsForm, 'valid', 'get').and.returnValue(true);
@@ -841,88 +841,88 @@ describe('ProjectDetailsComponent', () => {
 
   });
 
-describe('Dropdown tooltips', () => {
-  beforeEach(() => {
-    component.projectTypeCode = [
-      { projectTypeCode: 'REST', description: 'Restoration' },
-      { projectTypeCode: 'MIT', description: 'Mitigation' }
-    ];
+  describe('Dropdown tooltips', () => {
+    beforeEach(() => {
+      component.projectTypeCode = [
+        { projectTypeCode: 'REST', description: 'Restoration' },
+        { projectTypeCode: 'MIT', description: 'Mitigation' }
+      ];
 
-    component.programAreaCode = [
-      { programAreaGuid: 'guid123', programAreaName: 'Wildfire Services' }
-    ];
+      component.programAreaCode = [
+        { programAreaGuid: 'guid123', programAreaName: 'Wildfire Services' }
+      ];
 
-    component.forestRegionCode = [
-      { orgUnitId: 10, orgUnitName: 'Coastal' }
-    ];
+      component.forestRegionCode = [
+        { orgUnitId: 10, orgUnitName: 'Coastal' }
+      ];
 
-    component.forestDistrictCode = [
-      { orgUnitId: 20, orgUnitName: 'Chilliwack' }
-    ];
+      component.forestDistrictCode = [
+        { orgUnitId: 20, orgUnitName: 'Chilliwack' }
+      ];
 
-    component.bcParksRegionCode = [
-      { orgUnitId: 30, orgUnitName: 'Thompson-Okanagan' }
-    ];
+      component.bcParksRegionCode = [
+        { orgUnitId: 30, orgUnitName: 'Thompson-Okanagan' }
+      ];
 
-    component.bcParksSectionCode = [
-      { orgUnitId: 40, orgUnitName: 'Shuswap Section' }
-    ];
+      component.bcParksSectionCode = [
+        { orgUnitId: 40, orgUnitName: 'Shuswap Section' }
+      ];
 
-    component.fireCentres = [
-      { id: 50, label: 'Kamloops Fire Centre' }
-    ];
+      component.fireCentres = [
+        { orgUnitIdentifier: 50, orgUnitName: 'Kamloops Fire Centre' }
+      ];
 
-    component.objectiveTypeCode = [
-      { objectiveTypeCode: 'OBJ1', description: 'Reduce Fire Risk' },
-      { objectiveTypeCode: 'OBJ2', description: 'Ecosystem Restoration' }
-    ];
+      component.objectiveTypeCode = [
+        { objectiveTypeCode: 'OBJ1', description: 'Reduce Fire Risk' },
+        { objectiveTypeCode: 'OBJ2', description: 'Ecosystem Restoration' }
+      ];
+    });
+
+    it('should return the selected project type description', () => {
+      component.detailsForm.patchValue({ projectTypeCode: 'REST' });
+      expect(component.getCodeDescription(CodeTableKeys.PROJECT_TYPE_CODE)).toBe('Restoration');
+    });
+
+    it('should return the selected program area name', () => {
+      component.detailsForm.patchValue({ programAreaGuid: 'guid123' });
+      expect(component.getCodeDescription(CodeTableKeys.PROGRAM_AREA_GUID)).toBe('Wildfire Services');
+    });
+
+    it('should return the selected forest region name', () => {
+      component.detailsForm.patchValue({ forestRegionOrgUnitId: 10 });
+      expect(component.getCodeDescription(CodeTableKeys.FOREST_REGION_ORG_UNIT_ID)).toBe('Coastal');
+    });
+
+    it('should return the selected forest district name', () => {
+      component.detailsForm.patchValue({ forestDistrictOrgUnitId: 20 });
+      expect(component.getCodeDescription(CodeTableKeys.FOREST_DISTRICT_ORG_UNIT_ID)).toBe('Chilliwack');
+    });
+
+    it('should return the selected BC Parks region name', () => {
+      component.detailsForm.patchValue({ bcParksRegionOrgUnitId: 30 });
+      expect(component.getCodeDescription(CodeTableKeys.BC_PARKS_REGION_ORG_UNIT_ID)).toBe('Thompson-Okanagan');
+    });
+
+    it('should return the selected BC Parks section name', () => {
+      component.detailsForm.patchValue({ bcParksSectionOrgUnitId: 40 });
+      expect(component.getCodeDescription(CodeTableKeys.BC_PARKS_SECTION_ORG_UNIT_ID)).toBe('Shuswap Section');
+    });
+
+    it('should return the selected fire centre name', () => {
+      component.detailsForm.patchValue({ wildfireOrgUnitId: 50 });
+      expect(component.getCodeDescription(CodeTableKeys.WILDFIRE_ORG_UNIT_ID)).toBe('Kamloops Fire Centre');
+    });
+
+    it('should return the selected primary objective name', () => {
+      component.detailsForm.patchValue({ primaryObjectiveTypeCode: 'OBJ1' });
+      expect(component.getCodeDescription(CodeTableKeys.PRIMARY_OBJECTIVE_TYPE_CODE)).toBe('Reduce Fire Risk');
+    });
+
+    it('should return the selected secondary objective name', () => {
+      component.detailsForm.patchValue({ secondaryObjectiveTypeCode: 'OBJ2' });
+      expect(component.getCodeDescription(CodeTableKeys.SECONDARY_OBJECTIVE_TYPE_CODE)).toBe('Ecosystem Restoration');
+    });
   });
-
-  it('should return the selected project type description', () => {
-    component.detailsForm.patchValue({ projectTypeCode: 'REST' });
-    expect(component.getCodeDescription(CodeTableKeys.PROJECT_TYPE_CODE)).toBe('Restoration');
-  });
-
-  it('should return the selected program area name', () => {
-    component.detailsForm.patchValue({ programAreaGuid: 'guid123' });
-    expect(component.getCodeDescription(CodeTableKeys.PROGRAM_AREA_GUID)).toBe('Wildfire Services');
-  });
-
-  it('should return the selected forest region name', () => {
-    component.detailsForm.patchValue({ forestRegionOrgUnitId: 10 });
-    expect(component.getCodeDescription(CodeTableKeys.FOREST_REGION_ORG_UNIT_ID)).toBe('Coastal');
-  });
-
-  it('should return the selected forest district name', () => {
-    component.detailsForm.patchValue({ forestDistrictOrgUnitId: 20 });
-    expect(component.getCodeDescription(CodeTableKeys.FOREST_DISTRICT_ORG_UNIT_ID)).toBe('Chilliwack');
-  });
-
-  it('should return the selected BC Parks region name', () => {
-    component.detailsForm.patchValue({ bcParksRegionOrgUnitId: 30 });
-    expect(component.getCodeDescription(CodeTableKeys.BC_PARKS_REGION_ORG_UNIT_ID)).toBe('Thompson-Okanagan');
-  });
-
-  it('should return the selected BC Parks section name', () => {
-    component.detailsForm.patchValue({ bcParksSectionOrgUnitId: 40 });
-    expect(component.getCodeDescription(CodeTableKeys.BC_PARKS_SECTION_ORG_UNIT_ID)).toBe('Shuswap Section');
-  });
-
-  it('should return the selected fire centre name', () => {
-    component.detailsForm.patchValue({ fireCentreId: 50 });
-    expect(component.getCodeDescription(CodeTableKeys.FIRE_CENTRE_ID)).toBe('Kamloops Fire Centre');
-  });
-
-  it('should return the selected primary objective name', () => {
-    component.detailsForm.patchValue({ primaryObjectiveTypeCode: 'OBJ1' });
-    expect(component.getCodeDescription(CodeTableKeys.PRIMARY_OBJECTIVE_TYPE_CODE)).toBe('Reduce Fire Risk');
-  });
-
-  it('should return the selected secondary objective name', () => {
-    component.detailsForm.patchValue({ secondaryObjectiveTypeCode: 'OBJ2' });
-    expect(component.getCodeDescription(CodeTableKeys.SECONDARY_OBJECTIVE_TYPE_CODE)).toBe('Ecosystem Restoration');
-  });
-});
 
 
   describe('Error messages', () => {
@@ -937,7 +937,7 @@ describe('Dropdown tooltips', () => {
       const nameControl = component.detailsForm.get('name');
       nameControl?.setValue('TooLongName');
       nameControl?.markAsTouched();
-      nameControl?.updateValueAndValidity(); 
+      nameControl?.updateValueAndValidity();
 
       expect(component.getErrorMessage('name')).toBe('Exceeds number of allowed characters.');
     });
@@ -946,7 +946,7 @@ describe('Dropdown tooltips', () => {
       const emailControl = component.detailsForm.get('email');
       emailControl?.setValue('invalid-email');
       emailControl?.markAsTouched();
-      emailControl?.updateValueAndValidity(); 
+      emailControl?.updateValueAndValidity();
 
       expect(component.getErrorMessage('email')).toBe('Please enter a valid email address.');
     });

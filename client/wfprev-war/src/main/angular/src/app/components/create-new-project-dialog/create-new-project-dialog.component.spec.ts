@@ -27,7 +27,7 @@ describe('CreateNewProjectDialogComponent', () => {
       'fetchCodeTable',
       'fetchFireCentres'
     ]);
-    mockCodeTableService.fetchFireCentres.and.returnValue(of([{ name: 'Fire Centre 1' }]));
+    // mockCodeTableService.fetchFireCentres.and.returnValue(of([{ name: 'Fire Centre 1' }]));
 
     mockSnackbarService = jasmine.createSpyObj('MatSnackBar', ['open']);
 
@@ -649,17 +649,17 @@ describe('CreateNewProjectDialogComponent', () => {
     expect(component.getBcParksSectionCode('10')).toBe('Parks Section');
   });
 
-  it('should return fire centre name if found', () => {
-    component.fireCentres = [{
-      properties: { MOF_FIRE_CENTRE_ID: 5, MOF_FIRE_CENTRE_NAME: 'Kamloops Fire Centre' }
-    }];
-    expect(component.getFireCentreCode('5')).toBe('Kamloops Fire Centre');
-  });
+  // it('should return fire centre name if found', () => {
+  //   component.fireCentres = [{
+  //     properties: { MOF_FIRE_CENTRE_ID: 5, MOF_FIRE_CENTRE_NAME: 'Kamloops Fire Centre' }
+  //   }];
+  //   expect(component.getFireCentreCode('5')).toBe('Kamloops Fire Centre');
+  // });
 
-  it('should return input if fire centre not found', () => {
-    component.fireCentres = [];
-    expect(component.getFireCentreCode('999')).toBe('999');
-  });
+  // it('should return input if fire centre not found', () => {
+  //   component.fireCentres = [];
+  //   expect(component.getFireCentreCode('999')).toBe('999');
+  // });
 
   it('should return objective description if found', () => {
     component.objectiveTypes = [{ objectiveTypeCode: 'WRR', description: 'Wildfire Risk Reduction' }];

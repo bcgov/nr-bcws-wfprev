@@ -27,16 +27,16 @@ describe('SearchFilterComponent', () => {
       })
     });
 
-    mockCodeTableService.fetchFireCentres.and.returnValue(of({
-      features: [
-        {
-          properties: {
-            MOF_FIRE_CENTRE_NAME: 'Centre 1',
-            MOF_FIRE_CENTRE_ID: 'fc1'
-          }
-        }
-      ]
-    }));
+    // mockCodeTableService.fetchFireCentres.and.returnValue(of({
+    //   features: [
+    //     {
+    //       properties: {
+    //         MOF_FIRE_CENTRE_NAME: 'Centre 1',
+    //         MOF_FIRE_CENTRE_ID: 'fc1'
+    //       }
+    //     }
+    //   ]
+    // }));
 
     await TestBed.configureTestingModule({
       imports: [SearchFilterComponent, BrowserAnimationsModule],
@@ -119,11 +119,6 @@ describe('SearchFilterComponent', () => {
     component.selectedForestRegion = [];
     component.onForestRegionChange();
     expect(component.forestDistrictOptions.length).toBeGreaterThan(0);
-  });
-
-  it('should load fire centres', () => {
-    component.loadFireCentres();
-    expect(mockCodeTableService.fetchFireCentres).toHaveBeenCalled();
   });
 
   it('should clear selection when "All" is deselected', fakeAsync(() => {

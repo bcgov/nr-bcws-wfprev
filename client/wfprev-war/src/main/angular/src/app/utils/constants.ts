@@ -38,10 +38,10 @@ export const CodeTableKeys = {
   FOREST_DISTRICT_ORG_UNIT_ID: 'forestDistrictOrgUnitId',
   BC_PARKS_REGION_ORG_UNIT_ID: 'bcParksRegionOrgUnitId',
   BC_PARKS_SECTION_ORG_UNIT_ID: 'bcParksSectionOrgUnitId',
-  FIRE_CENTRE_ID: 'fireCentreId',
   PRIMARY_OBJECTIVE_TYPE_CODE: 'primaryObjectiveTypeCode',
   SECONDARY_OBJECTIVE_TYPE_CODE: 'secondaryObjectiveTypeCode',
-  PROGRAM_AREA_CODE: 'programAreaCode'
+  PROGRAM_AREA_CODE: 'programAreaCode',
+  WILDFIRE_ORG_UNIT_ID: 'wildfireOrgUnitId'
 };
 
 export const PlanFiscalStatus = {

@@ -23,7 +23,7 @@ import { StatusBadgeComponent } from 'src/app/components/shared/status-badge/sta
 @Component({
   selector: 'wfprev-projects-list',
   standalone: true,
-  imports: [MatSlideToggleModule, CommonModule, MatExpansionModule, MatTooltipModule, ExpansionIndicatorComponent, IconButtonComponent, MatSelectModule, StatusBadgeComponent ],
+  imports: [MatSlideToggleModule, CommonModule, MatExpansionModule, MatTooltipModule, ExpansionIndicatorComponent, IconButtonComponent, MatSelectModule, StatusBadgeComponent],
   templateUrl: './projects-list.component.html',
   styleUrls: ['./projects-list.component.scss'],
 })
@@ -38,6 +38,7 @@ export class ProjectsListComponent implements OnInit {
   planFiscalStatusCode: any[] = [];
   activityCategoryCode: any[] = [];
   projectTypeCode: any[] = [];
+  fireCentreCodes: any[] = [];
   markerPolygons: Map<L.Marker, L.Polygon[]> = new Map();
   activeMarker: L.Marker | null = null;
   getActiveMap = getActiveMap
@@ -62,7 +63,7 @@ export class ProjectsListComponent implements OnInit {
   ngOnInit(): void {
     this.loadCodeTables();
     this.loadProjects();
-    
+
     this.sharedService.selectedProject$.subscribe(project => {
       this.selectedProjectGuid = project?.projectGuid ?? null;
       this.cdr.markForCheck();
@@ -88,13 +89,14 @@ export class ProjectsListComponent implements OnInit {
       { name: 'bcParksSectionCodes', property: 'bcParksSections', embeddedKey: 'bcParksSectionCode' },
       { name: 'planFiscalStatusCodes', property: 'planFiscalStatusCode', embeddedKey: 'planFiscalStatusCode' },
       { name: 'activityCategoryCodes', property: 'activityCategoryCode', embeddedKey: 'activityCategoryCode' },
-      { name: 'projectTypeCodes', property: 'projectTypeCode', embeddedKey: 'projectTypeCode' }
+      { name: 'projectTypeCodes', property: 'projectTypeCode', embeddedKey: 'projectTypeCode' },
+      { name: 'wildfireOrgUnits', property: 'wildfireOrgUnit', embeddedKey: 'wildfireOrgUnit' }
 
     ];
     const loaded: any = {};
     let loadedCount = 0;
     const totalTables = codeTables.length;
-  
+
 
     codeTables.forEach((table) => {
       this.codeTableService.fetchCodeTable(table.name).subscribe({
@@ -115,12 +117,18 @@ export class ProjectsListComponent implements OnInit {
             this.activityCategoryCode = data._embedded.activityCategoryCode;
           } else if (table.name === 'projectTypeCodes') {
             this.projectTypeCode = data._embedded.projectTypeCode;
+          } else if (table.name === 'wildfireOrgUnits') {
+            const orgUnits = data._embedded.wildfireOrgUnit ?? [];
+            const fireCentres = orgUnits.filter(
+              (unit: any) => unit.wildfireOrgUnitTypeCode?.wildfireOrgUnitTypeCode === 'FRC'
+            );
+            this.fireCentreCodes = fireCentres;
           }
 
           const items = data._embedded?.[table.embeddedKey] ?? [];
           this[table.property] = items;
           loaded[table.property] = items;
-  
+
           loadedCount++;
           if (loadedCount === totalTables) {
             this.sharedCodeTableService.updateCodeTables(loaded);
@@ -147,11 +155,13 @@ export class ProjectsListComponent implements OnInit {
             this.activityCategoryCode = [];
           } else if (table.name === 'projectTypeCodes') {
             this.activityCategoryCode = [];
+          } else if (table.name === 'wildfireOrgUnits') {
+            this.fireCentreCodes = [];
           }
 
           this[table.property] = [];
           loaded[table.property] = [];
-  
+
           loadedCount++;
           if (loadedCount === totalTables) {
             this.sharedCodeTableService.updateCodeTables(loaded);
@@ -182,18 +192,18 @@ export class ProjectsListComponent implements OnInit {
 
   onSortChange(event: any): void {
     this.selectedSort = event.value;
-  
+
     if (this.selectedSort === 'ascending') {
       this.allProjects.sort((a, b) => a.projectName.localeCompare(b.projectName));
     } else if (this.selectedSort === 'descending') {
       this.allProjects.sort((a, b) => b.projectName.localeCompare(a.projectName));
     }
-  
+
     const totalVisible = (this.currentPage + 1) * this.pageSize;
     this.displayedProjects = this.allProjects.slice(0, totalVisible);
     this.sharedService.updateDisplayedProjects(this.displayedProjects);
   }
-  
+
 
   editProject(project: any, event: Event) {
     event.stopPropagation();
@@ -205,9 +215,9 @@ export class ProjectsListComponent implements OnInit {
   getDescription(codeTable: string, code: number | string): string {
     const table = this[codeTable];
     if (!table || !code) return '';
-  
+
     let entry;
-  
+
     switch (codeTable) {
       case 'programAreaCode':
         entry = table.find((item: any) => item.programAreaGuid === code);
@@ -218,23 +228,23 @@ export class ProjectsListComponent implements OnInit {
       case 'bcParksSectionCode':
         entry = table.find((item: any) => item.orgUnitId === code);
         return entry ? entry.orgUnitName : '';
-  
+
       case 'planFiscalStatusCode':
         entry = table.find((item: any) => item.planFiscalStatusCode === code);
         return entry ? entry.description : '';
-  
+
       case 'activityCategoryCode':
         entry = table.find((item: any) => item.activityCategoryCode === code);
         return entry ? entry.description : '';
 
       case 'projectTypeCode':
-          entry = table.find((item: any) => item.projectTypeCode === code);
-          return entry ? entry.description : '';
+        entry = table.find((item: any) => item.projectTypeCode === code);
+        return entry ? entry.description : '';
       default:
         return '';
     }
   }
-  
+
 
   createNewProject(): void {
     const dialogRef = this.dialog.open(CreateNewProjectDialogComponent, {
@@ -402,24 +412,24 @@ export class ProjectsListComponent implements OnInit {
   // Temporary function, to be replaced with SMK layer config when /features endpoint exists in the API
   highlightProjectPolygons(project: any) {
     const coord = { latitude: project.latitude, longitude: project.longitude };
-  
+
     // Convert markerPolygons keys (MapIterator) into an array and find the marker
     const marker = [...this.markerPolygons.keys()].find(
       (m) =>
         Math.abs(m.getLatLng().lat - coord.latitude) < 0.0001 && // Use tolerance for comparison
         Math.abs(m.getLatLng().lng - coord.longitude) < 0.0001
     );
-  
+
     if (marker) {
       // Reset the previously active marker and polygons if any
       if (this.activeMarker) {
         this.activeMarker.setIcon(getBluePinIcon()
         );
-  
+
         const associatedPolygons = this.markerPolygons.get(this.activeMarker);
         associatedPolygons?.forEach((polygon) => polygon.setStyle({ weight: 2 }));
       }
-  
+
       // Highlight the new marker and polygons
       marker.setIcon(
         L.icon({
@@ -429,10 +439,10 @@ export class ProjectsListComponent implements OnInit {
           popupAnchor: [1, -34],
         })
       );
-  
+
       const associatedPolygons = this.markerPolygons.get(marker);
       associatedPolygons?.forEach((polygon) => polygon.setStyle({ weight: 5 }));
-  
+
       // Update the active marker
       this.activeMarker = marker;
     }
@@ -465,18 +475,18 @@ export class ProjectsListComponent implements OnInit {
 
   getProjectFiscalYearRange(project: any): string | null {
     if (!project?.projectFiscals?.length) return null;
-  
+
     const uniqueYears = Array.from(
       new Set(project.projectFiscals.map((f: any) => f.fiscalYear))
     ).filter((y): y is number => typeof y === 'number').sort((a, b) => a - b);
-  
+
     if (uniqueYears.length === 0) return null;
-  
+
     const formatYear = (year: number): string => {
       const next = (year + 1) % 100;
       return `${year}/${next.toString().padStart(2, '0')}`;
     };
-  
+
     if (uniqueYears.length === 1) {
       return formatYear(uniqueYears[0]);
     } else {
@@ -507,7 +517,7 @@ export class ProjectsListComponent implements OnInit {
   }
 
   onHeaderClick(event: MouseEvent, project: any): void {
-    const clickedInsideExpansionIcon  = (event.target as HTMLElement).closest('.custom-indicator');
+    const clickedInsideExpansionIcon = (event.target as HTMLElement).closest('.custom-indicator');
     if (!clickedInsideExpansionIcon) {
       event.stopPropagation();
       this.onListItemClick(project);
@@ -516,12 +526,12 @@ export class ProjectsListComponent implements OnInit {
 
   onListItemClick(project: any): void {
     if (this.selectedProjectGuid === project.projectGuid) {
-          //deselect
+      //deselect
       this.selectedProjectGuid = null;
       this.sharedService.selectProject();
       this.sharedService.triggerMapCommand('close', project);
     } else {
-        // select
+      // select
       this.selectedProjectGuid = project.projectGuid;
       this.sharedService.selectProject(project);
     }

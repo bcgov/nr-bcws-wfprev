@@ -42,30 +42,4 @@ export class CodeTableServices {
       })
     );
   }
-
-  fetchFireCentres(): Observable<any> {
-    if (this.fireCentresCache) {
-      return of(this.fireCentresCache);
-    }
-
-    const url = `${this.appConfigService.getConfig().rest['openmaps'] 
-    }/geo/pub/WHSE_LEGAL_ADMIN_BOUNDARIES.DRP_MOF_FIRE_CENTRES_SP/ows?service=WFS&version=1.1.0&request=GetFeature&srsName=EPSG:4326&typename=pub:WHSE_LEGAL_ADMIN_BOUNDARIES.DRP_MOF_FIRE_CENTRES_SP&outputformat=application/json&propertyName=(MOF_FIRE_CENTRE_ID,MOF_FIRE_CENTRE_NAME)`;
-
-    return this.httpClient.get(
-      url, {
-        headers: {
-          Authorization: `Bearer ${this.tokenService.getOauthToken()}`,
-        }
-      }
-    ).pipe(
-      map((response: any) => {
-      this.fireCentresCache = response;
-      return response;
-      }),
-      catchError((error) => {
-        console.error("Error fetching fire centres from openmaps", error);
-        return throwError(() => new Error("Failed to get fire centres"));
-      })
-    )
-  }
 }

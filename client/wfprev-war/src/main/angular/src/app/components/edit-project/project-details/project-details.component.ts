@@ -120,7 +120,7 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
       secondaryObjectiveRationale: ['', [Validators.maxLength(300)]],
       bcParksRegionOrgUnitId: [''],
       bcParksSectionOrgUnitId: [''],
-      fireCentreId: ['', [Validators.required]],
+      wildfireOrgUnitId: ['', [Validators.required]],
       latitude: [''],
       longitude: [''],
       resultsProjectCode: ['', [Validators.maxLength(8)]]
@@ -185,7 +185,7 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
       { name: 'bcParksRegionCodes', embeddedKey: 'bcParksRegionCode' },
       { name: 'bcParksSectionCodes', embeddedKey: 'bcParksSectionCode' },
       { name: 'objectiveTypeCodes', embeddedKey: 'objectiveTypeCode' },
-
+      { name: 'wildfireOrgUnits', property: 'wildfireOrgUnits', embeddedKey: 'wildfireOrgUnit' },
     ];
 
     codeTables.forEach((table) => {
@@ -200,22 +200,8 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
       });
     });
 
-    this.loadFireCentres();
   }
 
-  loadFireCentres(): void {
-    this.codeTableService.fetchFireCentres().subscribe({
-      next: (response) => {
-        this.fireCentres = (response?.features ?? []).map((feature: any) => ({
-          id: feature.properties.MOF_FIRE_CENTRE_ID,
-          label: feature.properties.MOF_FIRE_CENTRE_NAME,
-        }));
-      },
-      error: (error) => {
-        console.error('Failed to load fire centres', error);
-      }
-    });
-  }
   assignCodeTableData(key: string, data: any): void {
 
     const sortByName = (arr: any[]) =>
@@ -247,6 +233,14 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
         break;
       case 'objectiveTypeCode':
         this.objectiveTypeCode = sortByName(data._embedded.objectiveTypeCode ?? []);
+        break;
+      case 'wildfireOrgUnit':
+        const orgUnits = data._embedded.wildfireOrgUnit ?? [];
+        // Filter out the org units that are not fire centres
+        const fireCentres = orgUnits.filter(
+          (unit: { wildfireOrgUnitTypeCode: { wildfireOrgUnitTypeCode: string; }; }) => unit.wildfireOrgUnitTypeCode?.wildfireOrgUnitTypeCode === 'FRC'
+        );
+        this.fireCentres = sortByName(fireCentres);
         break;
     }
   }
@@ -379,7 +373,7 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
       secondaryObjectiveRationale: data.secondaryObjectiveRationale,
       bcParksRegionOrgUnitId: data.bcParksRegionOrgUnitId === 0 ? '' : data.bcParksRegionOrgUnitId ?? '',
       bcParksSectionOrgUnitId: data.bcParksSectionOrgUnitId === 0 ? '' : data.bcParksSectionOrgUnitId ?? '',
-      fireCentreId: data.fireCentreOrgUnitId,
+      wildfireOrgUnitId: data.fireCentreOrgUnitId,
       latitude: data.latitude,
       longitude: data.longitude,
       resultsProjectCode: data.resultsProjectCode
@@ -395,7 +389,7 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
         forestDistrictOrgUnitId: Number(this.detailsForm.get('forestDistrictOrgUnitId')?.value),
         bcParksRegionOrgUnitId: Number(this.detailsForm.get('bcParksRegionOrgUnitId')?.value),
         bcParksSectionOrgUnitId: Number(this.detailsForm.get('bcParksSectionOrgUnitId')?.value),
-        fireCentreOrgUnitId: Number(this.detailsForm.get('fireCentreId')?.value),
+        fireCentreOrgUnitId: Number(this.detailsForm.get('wildfireOrgUnitId')?.value),
         projectTypeCode: this.detailsForm.get('projectTypeCode')?.value
           ? { projectTypeCode: this.detailsForm.get('projectTypeCode')?.value } : this.projectDetail.projectTypeCode,
         primaryObjectiveTypeCode: {
@@ -408,7 +402,6 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
       updatedProject.secondaryObjectiveTypeCode = secondaryObjectiveValue
         ? { objectiveTypeCode: secondaryObjectiveValue }
         : null;
-      console.log(JSON.stringify(updatedProject))
       this.projectService.updateProject(this.projectGuid, updatedProject).subscribe({
         next: () => {
           this.snackbarService.open(
@@ -586,8 +579,10 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
       case CodeTableKeys.BC_PARKS_SECTION_ORG_UNIT_ID:
         return this.bcParksSectionCode.find(item => item.orgUnitId === value)?.orgUnitName ?? null;
 
-      case CodeTableKeys.FIRE_CENTRE_ID:
-        return this.fireCentres.find(item => item.id === value)?.label ?? null;
+      case CodeTableKeys.WILDFIRE_ORG_UNIT_ID:
+        console.log('Looking for:', value, typeof value);
+        console.log('Options:', this.fireCentres.map(f => [f.orgUnitIdentifier, typeof f.orgUnitIdentifier]));
+        return this.fireCentres.find(item => item.orgUnitIdentifier == value)?.orgUnitName ?? null
 
       case CodeTableKeys.PRIMARY_OBJECTIVE_TYPE_CODE:
       case CodeTableKeys.SECONDARY_OBJECTIVE_TYPE_CODE:
