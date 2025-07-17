@@ -209,5 +209,7 @@ jobs:
           TARGET_LIQUIBASE_TAG: ${{ steps.liquibaseCommand.outputs.TARGET_LIQUIBASE_TAG }}
 
         run: |
-          aws s3 ls
-          terragrunt ${{inputs.COMMAND}} --terragrunt-non-interactive -auto-approve
+          if [ "${{ inputs.COMMAND }}" == "apply" ]; then
+            export RUNTIME_ARG="-auto-approve"
+          fi
+          terragrunt ${{inputs.COMMAND}} --terragrunt-non-interactive $RUNTIME_ARG
