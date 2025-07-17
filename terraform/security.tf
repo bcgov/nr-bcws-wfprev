@@ -1,14 +1,3 @@
-data "aws_security_group" "web" {
-  name = "Web_sg"
-}
-
-data "aws_security_group" "app" {
-  name = "App_sg"
-}
-
-data "aws_security_group" "data" {
-  name = "Data_sg"
-}
 resource "aws_security_group" "wfprev_tomcat_access" {
   name = "wfprev-ecs-tasks-allow-access"
   description = "Explicitly allow traffic on ports used by WFPREV"
