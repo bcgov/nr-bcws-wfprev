@@ -580,8 +580,6 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
         return this.bcParksSectionCode.find(item => item.orgUnitId === value)?.orgUnitName ?? null;
 
       case CodeTableKeys.WILDFIRE_ORG_UNIT_ID:
-        console.log('Looking for:', value, typeof value);
-        console.log('Options:', this.fireCentres.map(f => [f.orgUnitIdentifier, typeof f.orgUnitIdentifier]));
         return this.fireCentres.find(item => item.orgUnitIdentifier == value)?.orgUnitName ?? null
 
       case CodeTableKeys.PRIMARY_OBJECTIVE_TYPE_CODE:
