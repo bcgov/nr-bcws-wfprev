@@ -49,6 +49,9 @@ on:
         required: true
         type: string
         default: apply
+      GDB_EXTRACTOR_IMAGE:
+        required: false
+        type: string
       # IS_HOTFIX:
       #   required: true
       #   type: string
@@ -134,7 +137,11 @@ jobs:
       - name: Get digest of GDB extractor docker image
         id: getDigestGDB
         run: |
-          IMAGE="${{ secrets.ECR_TARGET_ACCOUNT_ID }}.dkr.ecr.ca-central-1.amazonaws.com/nr-bcws-wfprev-wfprev-gdb-extractor:latest"
+          if [ "${{ inputs.GDB_EXTRACTOR_IMAGE }}" == "" ]; then
+            IMAGE="${{ secrets.ECR_TARGET_ACCOUNT_ID }}.dkr.ecr.ca-central-1.amazonaws.com/nr-bcws-wfprev-wfprev-gdb-extractor:latest"
+          else
+            IMAGE="${{ inputs.GDP_EXTRACTOR_IMAGE }}"
+          fi
           docker pull $IMAGE
           echo "GDB_EXTRACTOR_IMAGE=$(docker inspect --format='{{index .RepoDigests 0}}' $IMAGE)" >> $GITHUB_OUTPUT
 
