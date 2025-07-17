@@ -79,6 +79,7 @@ describe('ProjectsListComponent', () => {
         planFiscalStatusCodes: { _embedded: { planFiscalStatusCode: [] } },
         activityCategoryCodes: { _embedded: { activityCategoryCode: [] } },
         projectTypeCodes: { _embedded: { projectTypeCode: [] } },
+        wildfireOrgUnits: { _embedded: { wildfireOrgUnit: [] } },
       };
       return of(mockData[name]);
     });

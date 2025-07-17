@@ -102,12 +102,12 @@
       <wfprev-select-field
         [label]="'BCWS Fire Centre'"
         [required]="true"
-        [control]="getControl('fireCentreId')"
+        [control]="getControl('wildfireOrgUnitId')"
         [options]="fireCentres"
-        [optionValueField]="'id'"
-        [optionLabelField]="'label'"
-        [tooltip]="getCodeDescription(CodeTableKeys.FIRE_CENTRE_ID)"
-        id="fireCentreId"
+        [optionValueField]="'orgUnitIdentifier'"
+        [optionLabelField]="'orgUnitName'"
+        [tooltip]="getCodeDescription(CodeTableKeys.WILDFIRE_ORG_UNIT_ID)"
+        id="wildfireOrgUnitId"
       />
     </div>
 
