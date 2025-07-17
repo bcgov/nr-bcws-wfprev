@@ -101,6 +101,13 @@ resource "aws_s3_bucket_policy" "alb_logs_policy" {
 
 data "aws_caller_identity" "current" {}
 
+module s3_cloudfront_logs {
+  source = "git::https://github.com/bcgov/quickstart-aws-helpers.git//terraform/modules/s3-cloudfront-logs?ref=v0.0.5"
+
+  bucket_name = "wfprev-${var.SHORTENED_ENV}-cloudfront-logs"
+  account_id = data.aws_caller_identity.current.account_id
+}
+
 output "s3_bucket_name" {
   value = module.s3_secure_bucket.bucket_name
 }
