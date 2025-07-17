@@ -22,6 +22,9 @@ jobs:
   node-build:
     uses: ./.github/workflows/node-build.yml
     secrets: inherit
+    with:
+      COMPONENT_NAME: wfprev-gdb-extractor
+      TAG: latest
 
   wfprev-api:
     uses: ./.github/workflows/mvn-build.yml
