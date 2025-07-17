@@ -125,7 +125,7 @@ jobs:
       - name: Configure AWS Credentials for ECR target (Tools namespace)
         uses: aws-actions/configure-aws-credentials@v2
         with:
-          role-to-assume:  arn:aws:iam::${{ secrets.ECR_TARGET_ACCOUNT_ID }}:role/github-actions-role
+          role-to-assume:  arn:aws:iam::${{ secrets.ECR_TARGET_ACCOUNT_ID }}:role/Terraform-deploy
           role-session-name: wfprev-terraform-s3
           aws-region: ca-central-1
 
