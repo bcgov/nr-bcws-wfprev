@@ -12,6 +12,7 @@ import { SharedService } from 'src/app/services/shared-service';
 import { Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 import { MatOptionSelectionChange } from '@angular/material/core';
+import { WildfireOrgUnitTypeCodes } from 'src/app/utils/constants';
 @Component({
   selector: 'wfprev-search-filter',
   standalone: true,
@@ -253,7 +254,7 @@ export class SearchFilterComponent implements OnInit {
 
       this.fireCentreOptions = this.prependAllAndSort(
         (tables.wildfireOrgUnit ?? [])
-          .filter((item: any) => item.wildfireOrgUnitTypeCode?.wildfireOrgUnitTypeCode === 'FRC')
+          .filter((item: any) => item.wildfireOrgUnitTypeCode?.wildfireOrgUnitTypeCode === WildfireOrgUnitTypeCodes.FIRE_CENTRE)
           .map((item: any) => ({
             label: item.orgUnitName,
             value: item.orgUnitIdentifier

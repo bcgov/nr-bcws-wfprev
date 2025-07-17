@@ -14,7 +14,7 @@ import { FiscalYearProjectsComponent } from 'src/app/components/edit-project/pro
 import { ProjectFilesComponent } from 'src/app/components/edit-project/project-details/project-files/project-files.component';
 import { CodeTableServices } from 'src/app/services/code-table-services';
 import { ProjectService } from 'src/app/services/project-services';
-import { CodeTableKeys, Messages, FiscalYearColors, ModalTitles, ModalMessages } from 'src/app/utils/constants';
+import { CodeTableKeys, Messages, FiscalYearColors, ModalTitles, ModalMessages, WildfireOrgUnitTypeCodes, CodeTableNames } from 'src/app/utils/constants';
 import {
   formatLatLong,
   getBluePinIcon,
@@ -178,14 +178,14 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
 
   loadCodeTables(): void {
     const codeTables = [
-      { name: 'projectTypeCodes', embeddedKey: 'projectTypeCode' },
-      { name: 'programAreaCodes', embeddedKey: 'programAreaCode' },
-      { name: 'forestRegionCodes', embeddedKey: 'forestRegionCode' },
-      { name: 'forestDistrictCodes', embeddedKey: 'forestDistrictCode' },
-      { name: 'bcParksRegionCodes', embeddedKey: 'bcParksRegionCode' },
-      { name: 'bcParksSectionCodes', embeddedKey: 'bcParksSectionCode' },
-      { name: 'objectiveTypeCodes', embeddedKey: 'objectiveTypeCode' },
-      { name: 'wildfireOrgUnits', property: 'wildfireOrgUnits', embeddedKey: 'wildfireOrgUnit' },
+      { name: CodeTableNames.PROJECT_TYPE_CODE, embeddedKey: CodeTableKeys.PROJECT_TYPE_CODE },
+      { name: CodeTableNames.PROGRAM_AREA_CODE, embeddedKey: CodeTableKeys.PROGRAM_AREA_CODE },
+      { name: CodeTableNames.FOREST_REGION_CODE, embeddedKey: CodeTableKeys.FOREST_REGION_CODE },
+      { name: CodeTableNames.FOREST_DISTRICT_CODE, embeddedKey: CodeTableKeys.FOREST_DISTRICT_CODE },
+      { name: CodeTableNames.BC_PARKS_REGION_CODE, embeddedKey: CodeTableKeys.BC_PARKS_REGION_CODE },
+      { name: CodeTableNames.BC_PARKS_SECTION_CODE, embeddedKey: CodeTableKeys.BC_PARKS_SECTION_CODE },
+      { name: CodeTableNames.OBJECTIVE_TYPE_CODE, embeddedKey: CodeTableKeys.OBJECTIVE_TYPE_CODE },
+      { name: CodeTableNames.WILDFIRE_ORG_UNIT, embeddedKey: CodeTableKeys.WILDFIRE_ORG_UNIT },
     ];
 
     codeTables.forEach((table) => {
@@ -211,35 +211,35 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
       );
 
     switch (key) {
-      case 'projectTypeCode':
+      case CodeTableKeys.PROJECT_TYPE_CODE:
         this.projectTypeCode = sortByName(data._embedded.projectTypeCode ?? []);
         break;
-      case 'programAreaCode':
+      case CodeTableKeys.PROGRAM_AREA_CODE:
         this.programAreaCode = sortByName(data._embedded.programArea ?? []);
         break;
-      case 'forestRegionCode':
+      case CodeTableKeys.FOREST_REGION_CODE:
         this.forestRegionCode = sortByName(data._embedded.forestRegionCode ?? []);
         break;
-      case 'forestDistrictCode':
+      case CodeTableKeys.FOREST_DISTRICT_CODE:
         this.allForestDistricts = sortByName(data._embedded.forestDistrictCode ?? []);
         this.forestDistrictCode = [...this.allForestDistricts];
         break;
-      case 'bcParksRegionCode':
+      case CodeTableKeys.BC_PARKS_REGION_CODE:
         this.bcParksRegionCode = sortByName(data._embedded.bcParksRegionCode ?? []);
         break;
-      case 'bcParksSectionCode':
+      case CodeTableKeys.BC_PARKS_SECTION_CODE:
         this.allBcParksSections = sortByName(data._embedded.bcParksSectionCode ?? []);
         this.bcParksSectionCode = [...this.allBcParksSections];
         break;
-      case 'objectiveTypeCode':
+      case CodeTableKeys.OBJECTIVE_TYPE_CODE:
         this.objectiveTypeCode = sortByName(data._embedded.objectiveTypeCode ?? []);
         break;
-      case 'wildfireOrgUnit': {
+      case CodeTableKeys.WILDFIRE_ORG_UNIT: {
         // filter out org units that are not fire centres
         const orgUnits = data._embedded.wildfireOrgUnit ?? [];
         const fireCentres = orgUnits.filter(
           (unit: { wildfireOrgUnitTypeCode: { wildfireOrgUnitTypeCode: string } }) =>
-            unit.wildfireOrgUnitTypeCode?.wildfireOrgUnitTypeCode === 'FRC'
+            unit.wildfireOrgUnitTypeCode?.wildfireOrgUnitTypeCode === WildfireOrgUnitTypeCodes.FIRE_CENTRE
         );
         this.fireCentres = sortByName(fireCentres);
         break;

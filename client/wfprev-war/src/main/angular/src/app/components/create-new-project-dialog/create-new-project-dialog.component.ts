@@ -4,7 +4,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { ConfirmationDialogComponent } from 'src/app/components/confirmation-dialog/confirmation-dialog.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { Messages, ModalMessages, ModalTitles } from 'src/app/utils/constants';
+import { CodeTableNames, Messages, ModalMessages, ModalTitles, ObjectiveTypeCodes, ProjectTypeCodes, WildfireOrgUnitTypeCodes } from 'src/app/utils/constants';
 import { ProjectService } from 'src/app/services/project-services';
 import { CodeTableServices } from 'src/app/services/code-table-services';
 import { Project } from 'src/app/components/models';
@@ -156,34 +156,34 @@ export class CreateNewProjectDialogComponent implements OnInit {
 
           this[table.property] = loadedData;
 
-          if (table.name === 'forestDistrictCodes') {
+          if (table.name === CodeTableNames.FOREST_DISTRICT_CODE) {
             this.forestDistrictsBackup = this[table.property];
             this.forestDistricts = [...this.forestDistrictsBackup]; // default to full list
           }
 
-          if (table.name === 'objectiveTypeCodes') {
+          if (table.name === CodeTableNames.OBJECTIVE_TYPE_CODE) {
             const defaultObjective = this.objectiveTypes.find(
-              (type) => type.objectiveTypeCode === 'WRR'
+              (type) => type.objectiveTypeCode === ObjectiveTypeCodes.WRR
             );
 
             if (defaultObjective) {
-              this.projectForm.get('primaryObjective')?.setValue('WRR');
+              this.projectForm.get('primaryObjective')?.setValue(ObjectiveTypeCodes.WRR);
             }
           }
 
-          if (table.name === 'projectTypeCodes') {
+          if (table.name === CodeTableNames.PROJECT_TYPE_CODE) {
             const defaultProjectType = this.projectTypes.find(
-              (type) => type.projectTypeCode === 'FUEL_MGMT'
+              (type) => type.projectTypeCode === ProjectTypeCodes.FUEL_MANAGEMENT
             );
 
             if (defaultProjectType) {
-              this.projectForm.get('projectType')?.setValue('FUEL_MGMT');
+              this.projectForm.get('projectType')?.setValue(ProjectTypeCodes.FUEL_MANAGEMENT);
             }
           }
-          if (table.name === 'wildfireOrgUnits') {
+          if (table.name === CodeTableNames.WILDFIRE_ORG_UNIT) {
             // filter org units to only return fire centres
             const filteredFireCentres = this[table.property].filter(
-              (unit: any) => unit.wildfireOrgUnitTypeCode?.wildfireOrgUnitTypeCode === 'FRC'
+              (unit: any) => unit.wildfireOrgUnitTypeCode?.wildfireOrgUnitTypeCode === WildfireOrgUnitTypeCodes.FIRE_CENTRE
             );
 
             this.fireCentres = filteredFireCentres;

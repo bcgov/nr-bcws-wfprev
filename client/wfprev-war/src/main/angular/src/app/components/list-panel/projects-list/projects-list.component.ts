@@ -18,6 +18,7 @@ import { ExpansionIndicatorComponent } from '../../shared/expansion-indicator/ex
 import { IconButtonComponent } from 'src/app/components/shared/icon-button/icon-button.component';
 import { MatSelectModule } from '@angular/material/select';
 import { StatusBadgeComponent } from 'src/app/components/shared/status-badge/status-badge.component';
+import { CodeTableKeys, CodeTableNames, WildfireOrgUnitTypeCodes } from 'src/app/utils/constants';
 
 
 @Component({
@@ -82,15 +83,15 @@ export class ProjectsListComponent implements OnInit {
 
   loadCodeTables(): void {
     const codeTables = [
-      { name: 'programAreaCodes', property: 'businessAreas', embeddedKey: 'programArea' },
-      { name: 'forestRegionCodes', property: 'forestRegions', embeddedKey: 'forestRegionCode' },
-      { name: 'forestDistrictCodes', property: 'forestDistricts', embeddedKey: 'forestDistrictCode' },
-      { name: 'bcParksRegionCodes', property: 'bcParksRegions', embeddedKey: 'bcParksRegionCode' },
-      { name: 'bcParksSectionCodes', property: 'bcParksSections', embeddedKey: 'bcParksSectionCode' },
-      { name: 'planFiscalStatusCodes', property: 'planFiscalStatusCode', embeddedKey: 'planFiscalStatusCode' },
-      { name: 'activityCategoryCodes', property: 'activityCategoryCode', embeddedKey: 'activityCategoryCode' },
-      { name: 'projectTypeCodes', property: 'projectTypeCode', embeddedKey: 'projectTypeCode' },
-      { name: 'wildfireOrgUnits', property: 'wildfireOrgUnit', embeddedKey: 'wildfireOrgUnit' }
+      { name: CodeTableNames.PROGRAM_AREA_CODE, property: CodeTableKeys.BUSINESS_AREAS, embeddedKey: CodeTableKeys.PROGRAM_AREA },
+      { name: CodeTableNames.FOREST_REGION_CODE, property: CodeTableKeys.FOREST_REGIONS, embeddedKey: CodeTableKeys.FOREST_REGION_CODE},
+      { name: CodeTableNames.FOREST_DISTRICT_CODE, property: CodeTableKeys.FOREST_DISTRICTS, embeddedKey: CodeTableKeys.FOREST_DISTRICT_CODE },
+      { name: CodeTableNames.BC_PARKS_REGION_CODE, property: CodeTableKeys.BC_PARKS_REGIONS, embeddedKey: CodeTableKeys.BC_PARKS_REGION_CODE },
+      { name: CodeTableNames.BC_PARKS_SECTION_CODE, property: CodeTableKeys.BC_PARKS_SECTIONS, embeddedKey: CodeTableKeys.BC_PARKS_SECTION_CODE },
+      { name: CodeTableNames.PLAN_FISCAL_STATUS_CODE, property: CodeTableKeys.PLAN_FISCAL_STATUS_CODE, embeddedKey: CodeTableKeys.PLAN_FISCAL_STATUS_CODE },
+      { name: CodeTableNames.ACTIVITY_CATEGORY_CODE, property: CodeTableKeys.ACTIVITY_CATEGORY_CODE, embeddedKey: CodeTableKeys.ACTIVITY_CATEGORY_CODE },
+      { name: CodeTableNames.PROJECT_TYPE_CODE, property: CodeTableKeys.PROJECT_TYPE_CODE, embeddedKey: CodeTableKeys.PROJECT_TYPE_CODE },
+      { name: CodeTableNames.WILDFIRE_ORG_UNIT, property: CodeTableKeys.WILDFIRE_ORG_UNIT, embeddedKey: CodeTableKeys.WILDFIRE_ORG_UNIT }
 
     ];
     const loaded: any = {};
@@ -101,26 +102,26 @@ export class ProjectsListComponent implements OnInit {
     codeTables.forEach((table) => {
       this.codeTableService.fetchCodeTable(table.name).subscribe({
         next: (data) => {
-          if (table.name === 'programAreaCodes') {
+          if (table.name === CodeTableNames.PROGRAM_AREA_CODE) {
             this.programAreaCode = data._embedded.programArea;
-          } else if (table.name === 'forestRegionCodes') {
+          } else if (table.name === CodeTableNames.FOREST_REGION_CODE) {
             this.forestRegionCode = data._embedded.forestRegionCode;
-          } else if (table.name === 'forestDistrictCodes') {
+          } else if (table.name === CodeTableNames.FOREST_DISTRICT_CODE) {
             this.forestDistrictCode = data._embedded.forestDistrictCode;
-          } else if (table.name === 'bcParksRegionCodes') {
+          } else if (table.name === CodeTableNames.BC_PARKS_REGION_CODE) {
             this.bcParksRegionCode = data._embedded.bcParksRegionCode;
-          } else if (table.name === 'bcParksSectionCodes') {
+          } else if (table.name === CodeTableNames.BC_PARKS_SECTION_CODE) {
             this.bcParksSectionCode = data._embedded.bcParksSectionCode;
-          } else if (table.name === 'planFiscalStatusCodes') {
+          } else if (table.name === CodeTableNames.PLAN_FISCAL_STATUS_CODE) {
             this.planFiscalStatusCode = data._embedded.planFiscalStatusCode;
-          } else if (table.name === 'activityCategoryCodes') {
+          } else if (table.name === CodeTableNames.ACTIVITY_CATEGORY_CODE) {
             this.activityCategoryCode = data._embedded.activityCategoryCode;
-          } else if (table.name === 'projectTypeCodes') {
+          } else if (table.name === CodeTableNames.PROJECT_TYPE_CODE) {
             this.projectTypeCode = data._embedded.projectTypeCode;
-          } else if (table.name === 'wildfireOrgUnits') {
+          } else if (table.name === CodeTableNames.WILDFIRE_ORG_UNIT) {
             const orgUnits = data._embedded.wildfireOrgUnit ?? [];
             const fireCentres = orgUnits.filter(
-              (unit: any) => unit.wildfireOrgUnitTypeCode?.wildfireOrgUnitTypeCode === 'FRC'
+              (unit: any) => unit.wildfireOrgUnitTypeCode?.wildfireOrgUnitTypeCode === WildfireOrgUnitTypeCodes.FIRE_CENTRE
             );
             this.fireCentreCodes = fireCentres;
           }
@@ -139,23 +140,23 @@ export class ProjectsListComponent implements OnInit {
           console.error(`Error fetching ${table.name}`, err);
 
           // Explicitly set the property to an empty array on error
-          if (table.name === 'programAreaCodes') {
+          if (table.name === CodeTableNames.PROGRAM_AREA_CODE) {
             this.programAreaCode = [];
-          } else if (table.name === 'forestRegionCodes') {
+          } else if (table.name === CodeTableNames.FOREST_REGION_CODE) {
             this.forestRegionCode = [];
-          } else if (table.name === 'forestDistrictCodes') {
+          } else if (table.name === CodeTableNames.FOREST_DISTRICT_CODE) {
             this.forestDistrictCode = [];
-          } else if (table.name === 'bcParksRegionCodes') {
+          } else if (table.name === CodeTableNames.BC_PARKS_REGION_CODE) {
             this.bcParksRegionCode = [];
-          } else if (table.name === 'bcParksSectionCodes') {
+          } else if (table.name === CodeTableNames.BC_PARKS_SECTION_CODE) {
             this.bcParksSectionCode = [];
-          } else if (table.name === 'planFiscalStatusCodes') {
+          } else if (table.name === CodeTableNames.PLAN_FISCAL_STATUS_CODE) {
             this.planFiscalStatusCode = [];
-          } else if (table.name === 'activityCategoryCodes') {
+          } else if (table.name === CodeTableNames.ACTIVITY_CATEGORY_CODE) {
             this.activityCategoryCode = [];
-          } else if (table.name === 'projectTypeCodes') {
+          } else if (table.name === CodeTableNames.PROJECT_TYPE_CODE) {
             this.activityCategoryCode = [];
-          } else if (table.name === 'wildfireOrgUnits') {
+          } else if (table.name === CodeTableNames.WILDFIRE_ORG_UNIT) {
             this.fireCentreCodes = [];
           }
 
@@ -219,25 +220,25 @@ export class ProjectsListComponent implements OnInit {
     let entry;
 
     switch (codeTable) {
-      case 'programAreaCode':
+      case CodeTableKeys.PROGRAM_AREA_CODE:
         entry = table.find((item: any) => item.programAreaGuid === code);
         return entry ? entry.programAreaName : '';
-      case 'forestRegionCode':
-      case 'forestDistrictCode':
-      case 'bcParksRegionCode':
-      case 'bcParksSectionCode':
+      case CodeTableKeys.FOREST_REGION_CODE:
+      case CodeTableKeys.FOREST_DISTRICT_CODE:
+      case CodeTableKeys.BC_PARKS_REGION_CODE:
+      case CodeTableKeys.BC_PARKS_SECTION_CODE:
         entry = table.find((item: any) => item.orgUnitId === code);
         return entry ? entry.orgUnitName : '';
 
-      case 'planFiscalStatusCode':
+      case CodeTableKeys.PLAN_FISCAL_STATUS_CODE:
         entry = table.find((item: any) => item.planFiscalStatusCode === code);
         return entry ? entry.description : '';
 
-      case 'activityCategoryCode':
+      case CodeTableKeys.ACTIVITY_CATEGORY_CODE:
         entry = table.find((item: any) => item.activityCategoryCode === code);
         return entry ? entry.description : '';
 
-      case 'projectTypeCode':
+      case CodeTableKeys.PROJECT_TYPE_CODE:
         entry = table.find((item: any) => item.projectTypeCode === code);
         return entry ? entry.description : '';
       default:

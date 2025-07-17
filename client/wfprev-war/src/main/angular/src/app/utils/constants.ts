@@ -34,14 +34,64 @@ export const CodeTableKeys = {
   PROPOSAL_TYPE_CODE: 'proposalTypeCode',
   PROJECT_TYPE_CODE: 'projectTypeCode',
   PROGRAM_AREA_GUID: 'programAreaGuid',
+  PROGRAM_AREA: 'programArea',
+  PROGRAM_AREA_CODE: 'programAreaCode',
+  BUSINESS_AREAS: 'businessAreas',
+  FOREST_REGION_CODE: 'forestRegionCode',
   FOREST_REGION_ORG_UNIT_ID: 'forestRegionOrgUnitId',
+  FOREST_REGIONS: 'forestRegions',
+  FOREST_DISTRICT_CODE: 'forestDistrictCode',
   FOREST_DISTRICT_ORG_UNIT_ID: 'forestDistrictOrgUnitId',
+  FOREST_DISTRICTS: 'forestDistricts',
+  BC_PARKS_REGION_CODE: 'bcParksRegionCode',
   BC_PARKS_REGION_ORG_UNIT_ID: 'bcParksRegionOrgUnitId',
+  BC_PARKS_REGIONS: 'bcParksRegions',
+  BC_PARKS_SECTION_CODE: 'bcParksSectionCode',
   BC_PARKS_SECTION_ORG_UNIT_ID: 'bcParksSectionOrgUnitId',
+  BC_PARKS_SECTIONS: 'bcParksSections',
+  OBJECTIVE_TYPE_CODE: 'objectiveTypeCode',
   PRIMARY_OBJECTIVE_TYPE_CODE: 'primaryObjectiveTypeCode',
   SECONDARY_OBJECTIVE_TYPE_CODE: 'secondaryObjectiveTypeCode',
-  PROGRAM_AREA_CODE: 'programAreaCode',
-  WILDFIRE_ORG_UNIT_ID: 'wildfireOrgUnitId'
+  WILDFIRE_ORG_UNIT: 'wildfireOrgUnit',
+  WILDFIRE_ORG_UNIT_ID: 'wildfireOrgUnitId',
+};
+
+export const CodeTableNames = {
+  ACTIVITY_CATEGORY_CODE: 'activityCategoryCodes',
+  PLAN_FISCAL_STATUS_CODE: 'planFiscalStatusCodes',
+  PROPOSAL_TYPE_CODE: 'proposalTypeCodes',
+  PROJECT_TYPE_CODE: 'projectTypeCodes',
+  PROGRAM_AREA_CODE: 'programAreaCodes',
+  FOREST_REGION_CODE: 'forestRegionCodes',
+  FOREST_DISTRICT_CODE: 'forestDistrictCodes',
+  BC_PARKS_REGION_CODE: 'bcParksRegionCodes',
+  BC_PARKS_SECTION_CODE: 'bcParksSectionCodes',
+  OBJECTIVE_TYPE_CODE: 'objectiveTypeCodes',
+  WILDFIRE_ORG_UNIT: 'wildfireOrgUnits'
+}
+
+export const ProjectTypeCodes = {
+  FUEL_MANAGEMENT: 'FUEL_MGMT',
+  CULTURAL_PRESCRIBED_FIRE: 'CULT_RX_FR'
+}
+
+export const WildfireOrgUnitTypeCodes = {
+  HEADQUARTERS: 'HDQ',
+  FIRE_CENTRE: 'FRC',
+  ZONE: 'ZNE'
+}
+
+export const ObjectiveTypeCodes = {
+  WRR: 'WRR',
+  CRIT_INFRA: 'CRIT_INFRA',
+  ECO_REST: 'ECO_REST',
+  EGRSS_EVAC: 'EGRSS_EVAC',
+  FOR_HEALTH: 'FOR_HEALTH',
+  HAZ_ABATE: 'HAZ_ABATE',
+  RNG_HAB_MG: 'RNG_HAB_MG',
+  RECONCIL: 'RECONCIL',
+  WLD_HAB_MG: 'WLD_HAB_MG',
+  OTHER: 'OTHER'
 };
 
 export const PlanFiscalStatus = {
