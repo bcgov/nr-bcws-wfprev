@@ -1,18 +1,6 @@
 on:
   workflow_dispatch:
-    inputs:
-      DEFAULT_APPLICATION_ENVIRONMENT:
-        required: true
-        type: string
-        default: tools
   workflow_call:
-    inputs:
-      COMPONENT_NAME:
-        type: string
-        required: true
-      TAG:
-        required: false
-        type: string
 
 permissions:
   id-token: write   
