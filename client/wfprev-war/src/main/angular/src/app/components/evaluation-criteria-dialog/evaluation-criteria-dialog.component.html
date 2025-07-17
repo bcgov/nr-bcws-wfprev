@@ -8,7 +8,7 @@
       <div *ngIf="evaluationCriteriaCode.length">
         <section class="filter-section">
           <div class="section-header">
-            <span class="section-header-title">Coarse Filters</span>
+            <span class="section-header-title">{{ sectionTitles.section1 }}</span>
             <span class="section-total-label">Total</span>
           </div>
           <div class="form-row first-row">
@@ -31,12 +31,12 @@
             </div>
           </div>
           <div class="total-row">
-            <label>Total Point Value for Coarse Filters:</label>
+            <label>{{ sectionTitles.totalLabel('section1') }}</label>
             <span class="total-value">{{ coarseTotal }}</span>
           </div>
 
           <div class="notes-row">
-            <label>Local WUI Risk Class Rationale</label>
+            <label>{{ sectionTitles.commentLabel('section1') }}</label>
             <textarea rows="2" cdkTextareaAutosize #autosize="cdkTextareaAutosize" placeholder="Begin Typing" formControlName="localWuiRiskClassRationale"></textarea>
             <div class="error"
                 *ngIf="criteriaForm.get('localWuiRiskClassRationale')?.hasError('maxlength') && criteriaForm.get('localWuiRiskClassRationale')?.touched">
@@ -51,7 +51,7 @@
         <!-- Medium Filters -->
         <section class="filter-section">
           <div class="section-header">
-            <span class="section-header-title">Medium Filters</span>
+            <span class="section-header-title">{{ sectionTitles.section2 }}</span>
             <span class="section-total-label">Total</span>
           </div>
           <div *ngFor="let filter of mediumFilters" class="filter-row selected" [ngClass]="{'selected': selectedMedium.has(filter.evaluationCriteriaGuid!)}">
@@ -66,11 +66,11 @@
             <div class="filter-weight">{{ filter.weightedRank }}</div>
           </div>
           <div class="total-row">
-            <label>Total Point Value for Medium Filters:</label>
+            <label>{{ sectionTitles.totalLabel('section2') }}</label>
             <span class="total-value">{{ mediumTotal }}</span>
           </div>
           <div class="notes-row">
-            <label>Additional Comments/Notes on Medium Filters</label>
+            <label>{{ sectionTitles.commentLabel('section2') }}</label>
             <textarea rows="2" cdkTextareaAutosize #autosize="cdkTextareaAutosize" placeholder="Begin Typing" formControlName="mediumFilterComments"></textarea>
             <div class="error"
                 *ngIf="criteriaForm.get('mediumFilterComments')?.hasError('maxlength') && criteriaForm.get('mediumFilterComments')?.touched">
@@ -83,7 +83,7 @@
         <!-- Fine Filters -->
         <section class="filter-section">
           <div class="section-header">
-            <span class="section-header-title">Fine Filters</span>
+            <span class="section-header-title">{{ sectionTitles.section3 }}</span>
             <span class="section-total-label">Total</span>
           </div>
           <div *ngFor="let filter of fineFilters" class="filter-row selected" [ngClass]="{'selected': selectedFine.has(filter.evaluationCriteriaGuid!)}">
@@ -98,11 +98,11 @@
             <div class="filter-weight">{{ filter.weightedRank | number:'1.2-2' }}</div>
           </div>
           <div class="total-row">
-            <label>Total Point Value for Fine Filters:</label>
+            <label>{{ sectionTitles.totalLabel('section3') }}</label>
             <span class="total-value">{{ fineTotal | number:'1.2-2' }}</span>
           </div>
           <div class="notes-row">
-            <label>Additional Comments/Notes on Fine Filters</label>
+            <label>{{ sectionTitles.commentLabel('section3') }}</label>
             <textarea rows="2" cdkTextareaAutosize #autosize="cdkTextareaAutosize" placeholder="Begin Typing" formControlName="fineFilterComments"></textarea>
             <div class="error"
                 *ngIf="criteriaForm.get('fineFilterComments')?.hasError('maxlength') && criteriaForm.get('fineFilterComments')?.touched">

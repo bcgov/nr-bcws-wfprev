@@ -36,6 +36,7 @@ export class EvaluationCriteriaDialogComponent {
   fineTotal = 0;
 
   fuelManagement = 'FUEL_MGMT'
+  culturePrescribedFire = 'CULT_RX_FR'
   constructor(
     private readonly fb: FormBuilder,
     private readonly dialog: MatDialog,
@@ -54,6 +55,8 @@ export class EvaluationCriteriaDialogComponent {
     if (this.data.project.projectTypeCode?.projectTypeCode === this.fuelManagement) {
       this.setupValueChangeHandlers();
       this.loadCodeTablesAndPrefill();
+    } else if (this.data.project.projectTypeCode?.projectTypeCode === this.culturePrescribedFire) {
+
     }
   }
 
@@ -382,5 +385,30 @@ export class EvaluationCriteriaDialogComponent {
     this.updateCoarseTotal();
   }
 
+  get sectionTitles() {
+    const type = this.data.project.projectTypeCode?.projectTypeCode;
+    const isFuel = type === this.fuelManagement;
 
+    const titles = {
+      section1: isFuel ? 'Coarse Filters' : 'Risk Class & Location',
+      section2: isFuel ? 'Medium Filters' : 'Burn Development and Feasibility',
+      section3: isFuel ? 'Fine Filters' : 'Collective Impact',
+    };
+
+    return {
+      ...titles,
+
+      totalLabel: (section: keyof typeof titles) =>
+        isFuel ? `Total Point Value for ${titles[section]}:` : 'Total Point Value:',
+
+      commentLabel: (section: keyof typeof titles) => {
+        if (section === 'section1') {
+          return isFuel
+            ? 'Local WUI Risk Class Rationale'
+            : 'Additional Comments/Notes on risk class or outside of WUI rationale:';
+        }
+        return `Additional Comments/Notes on ${titles[section]}`;
+      }
+    };
+  }
 }
