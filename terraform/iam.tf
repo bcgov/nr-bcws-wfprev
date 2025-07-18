@@ -141,16 +141,16 @@ resource "aws_iam_role" "github_actions_role" {
           }
         }
       },
-      {
-        Sid = "AllowIAMRoleAssume",
-        Effect = "Allow",
-        Principal = {
-          AWS = [
-            "arn:aws:iam::${var.TARGET_AWS_ACCOUNT_ID}:role/client_s3_push"
-          ]
-        },
-        Action = "sts:AssumeRole"
-      }
+      # {
+      #   Sid = "AllowIAMRoleAssume",
+      #   Effect = "Allow",
+      #   Principal = {
+      #     AWS = [
+      #       "arn:aws:iam::${var.TARGET_AWS_ACCOUNT_ID}:role/client_s3_push"
+      #     ]
+      #   },
+      #   Action = "sts:AssumeRole"
+      # }
     ]
   })
 }
