@@ -67,7 +67,7 @@ describe('ProjectFiscalsComponent', () => {
       imports: [BrowserAnimationsModule],
       declarations: [MockFiscalMapComponent, MockActivitiesComponent],
       providers: [
-        { provide: TokenService,  useValue: { getUserFullName: jasmine.createSpy('getUserFullName').and.returnValue('Test User')}},
+        { provide: TokenService, useValue: { getUserFullName: jasmine.createSpy('getUserFullName').and.returnValue('Test User') } },
         { provide: ActivatedRoute, useValue: { snapshot: { queryParamMap: { get: () => 'test-guid' } } } },
         { provide: ProjectService, useValue: mockProjectService },
         { provide: CodeTableServices, useValue: mockCodeTableServices },
@@ -166,8 +166,17 @@ describe('ProjectFiscalsComponent', () => {
   it('should save a new fiscal', () => {
     spyOn(component, 'loadProjectFiscals');
 
-    // Ensure mock `createProjectFiscal` returns success
-    mockProjectService.createProjectFiscal.and.returnValue(of({})); // ✅ Fix: Return success response
+    const mockFiscal = {
+      projectGuid: 'test-guid',
+      projectFiscalName: 'Test Fiscal',
+      fiscalYear: 2023,
+      planFiscalStatusCode: { planFiscalStatusCode: 'DRAFT' },
+      endorserName: 'Test User'
+    };
+    component.projectFiscals = [mockFiscal];
+    component.fiscalForms = [component.createFiscalForm(mockFiscal)];
+
+    mockProjectService.createProjectFiscal.and.returnValue(of({}));
 
     component.onSaveFiscal(0);
 
@@ -175,15 +184,14 @@ describe('ProjectFiscalsComponent', () => {
     expect(mockSnackBar.open).toHaveBeenCalledWith(
       component.messages.projectFiscalCreatedSuccess,
       'OK',
-      { duration: 5000, panelClass: 'snackbar-success' } // ✅ Ensure correct snackbar message
+      { duration: 5000, panelClass: 'snackbar-success' }
     );
-    component.onSaveFiscal(0);
     expect(component.loadProjectFiscals).toHaveBeenCalled();
   });
 
   it('should handle errors when saving a new fiscal', () => {
     mockProjectService.createProjectFiscal.and.returnValue(throwError(() => new Error('API Error')));
-    
+
     // ✅ Make sure there is at least one fiscal object with required properties
     component.projectFiscals = [
       {
@@ -193,7 +201,7 @@ describe('ProjectFiscalsComponent', () => {
         planFiscalStatusCode: { planFiscalStatusCode: 'DRAFT' }
       }
     ];
-    
+
     component.fiscalForms = [component.createFiscalForm(component.projectFiscals[0])];
 
     component.onSaveFiscal(0);
@@ -395,7 +403,7 @@ describe('ProjectFiscalsComponent', () => {
       result.subscribe((value: boolean) => {
         expect(component.dialog.open).toHaveBeenCalledWith(ConfirmationDialogComponent, {
           data: {
-            indicator: 'confirm-unsave', 
+            indicator: 'confirm-unsave',
             title: ModalTitles.CONFIRM_UNSAVE_TITLE,
             message: ModalMessages.CONFIRM_UNSAVE_MESSAGE
           },
@@ -767,7 +775,7 @@ describe('ProjectFiscalsComponent', () => {
     expect(() => component.updateFiscalStatus(0, 'PROPOSED')).not.toThrow();
   });
 
-    it('should update fiscal without promotion if not endorsed and approved', () => {
+  it('should update fiscal without promotion if not endorsed and approved', () => {
     spyOn(component, 'loadProjectFiscals');
     component.projectFiscals = [{
       projectPlanFiscalGuid: 'guid-1'

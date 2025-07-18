@@ -72,6 +72,8 @@ class CodesServiceTest {
     private EvaluationCriteriaCodeResourceAssembler evaluationCriteriaCodeResourceAssembler;
     private ProjectStatusCodeRepository projectStatusCodeRepository;
     private ProjectStatusCodeResourceAssembler projectStatusCodeResourceAssembler;
+    private WildfireOrgUnitRepository wildfireOrgUnitRepository;
+    private WildfireOrgUnitResourceAssembler wildfireOrgUnitResourceAssembler;
 
     @BeforeEach
     void setup() {
@@ -125,6 +127,8 @@ class CodesServiceTest {
         evaluationCriteriaCodeResourceAssembler = mock(EvaluationCriteriaCodeResourceAssembler.class);
         projectStatusCodeRepository = mock(ProjectStatusCodeRepository.class);
         projectStatusCodeResourceAssembler = mock(ProjectStatusCodeResourceAssembler.class);
+        wildfireOrgUnitRepository = mock(WildfireOrgUnitRepository.class);
+        wildfireOrgUnitResourceAssembler = mock(WildfireOrgUnitResourceAssembler.class);
 
         codesService = new CodesService(forestAreaCodeRepository, forestAreaCodeResourceAssembler,
                 generalScopeCodeRepository, generalScopeCodeResourceAssembler,
@@ -136,7 +140,7 @@ class CodesServiceTest {
                 fundingSourceCodeResourceAssembler, fundingSourceCodeRepository, sourceObjectNameCodeResourceAssembler, sourceObjectNameCodeRepository, attachmentContentTypeCodeResourceAssembler, attachmentContentTypeCodeRepository,
                 silvicultureBaseCodeResourceAssembler, silvicultureBaseCodeRepository, silvicultureMethodCodeResourceAssembler, silvicultureMethodCodeRepository, silvicultureTechniqueCodeResourceAssembler, silvicultureTechniqueCodeRepository,
                 proposalTypeCodeRepository, proposalTypeCodeResourceAssembler, wuiRiskClassCodeRepository, wuiRiskClassCodeResourceAssembler,evaluationCriteriaCodeRepository,evaluationCriteriaCodeResourceAssembler,
-                projectStatusCodeRepository, projectStatusCodeResourceAssembler);
+                projectStatusCodeRepository, projectStatusCodeResourceAssembler, wildfireOrgUnitRepository, wildfireOrgUnitResourceAssembler);
     }
 
     @Test
@@ -2155,6 +2159,70 @@ class CodesServiceTest {
                 () -> codesService.getProjectStatusCodeById(exampleId)
         );
         assertTrue(exception.getMessage().contains("Error fetching project status code"));
+    }
+
+    @Test
+    void testGetAllWildfireOrgUnits_Success() throws ServiceException {
+        List<WildfireOrgUnitEntity> entities = new ArrayList<>();
+        entities.add(new WildfireOrgUnitEntity());
+        entities.add(new WildfireOrgUnitEntity());
+
+        when(wildfireOrgUnitRepository.findAll()).thenReturn(entities);
+        when(wildfireOrgUnitResourceAssembler.toCollectionModel(entities))
+                .thenReturn(CollectionModel.of(new ArrayList<>()));
+
+        CollectionModel<WildfireOrgUnitModel> result = codesService.getAllWildfireOrgUnits();
+
+        assertNotNull(result);
+    }
+
+    @Test
+    void testGetAllWildfireOrgUnits_Exception() {
+        when(wildfireOrgUnitRepository.findAll()).thenThrow(new RuntimeException("Error fetching wildfire org units"));
+
+        ServiceException exception = assertThrows(
+                ServiceException.class,
+                () -> codesService.getAllWildfireOrgUnits()
+        );
+        assertEquals("Error fetching wildfire org units", exception.getMessage());
+    }
+
+    @Test
+    void testGetWildfireOrgUnitById_Success() throws ServiceException {
+        String exampleId = UUID.randomUUID().toString();
+        WildfireOrgUnitEntity entity = new WildfireOrgUnitEntity();
+        when(wildfireOrgUnitRepository.findById(exampleId))
+                .thenReturn(Optional.of(entity));
+        when(wildfireOrgUnitResourceAssembler.toModel(entity))
+                .thenReturn(new WildfireOrgUnitModel());
+
+        WildfireOrgUnitModel result = codesService.getWildfireOrgUnitById(exampleId);
+
+        assertNotNull(result);
+    }
+
+    @Test
+    void testGetWildfireOrgUnitById_NotFound() throws ServiceException {
+        String nonExistentId = UUID.randomUUID().toString();
+        when(wildfireOrgUnitRepository.findById(nonExistentId))
+                .thenReturn(Optional.empty());
+
+        WildfireOrgUnitModel result = codesService.getWildfireOrgUnitById(nonExistentId);
+
+        assertNull(result);
+    }
+
+    @Test
+    void testGetWildfireOrgUnitById_Exception() {
+        String exampleId = UUID.randomUUID().toString();
+        when(wildfireOrgUnitRepository.findById(exampleId))
+                .thenThrow(new RuntimeException("Error fetching wildfire org unit"));
+
+        ServiceException exception = assertThrows(
+                ServiceException.class,
+                () -> codesService.getWildfireOrgUnitById(exampleId)
+        );
+        assertTrue(exception.getMessage().contains("Error fetching wildfire org unit"));
     }
 
 }

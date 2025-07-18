@@ -12,6 +12,7 @@ import { SharedService } from 'src/app/services/shared-service';
 import { Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 import { MatOptionSelectionChange } from '@angular/material/core';
+import { WildfireOrgUnitTypeCodes } from 'src/app/utils/constants';
 @Component({
   selector: 'wfprev-search-filter',
   standalone: true,
@@ -34,7 +35,7 @@ export class SearchFilterComponent implements OnInit {
     private readonly sharedCodeTableService: SharedCodeTableService,
     private readonly codeTableService: CodeTableServices,
     private sharedService: SharedService
-  ) {}
+  ) { }
 
   searchText: string = '';
   searchTextChanged: Subject<string> = new Subject<string>();
@@ -55,12 +56,11 @@ export class SearchFilterComponent implements OnInit {
   selectedFireCentre: string[] = [];
   selectedFiscalStatus: string[] = [];
 
-ngOnInit(): void {
-  this.generateFiscalYearOptions();
-  this.setupCodeTableSubscription();
-  this.loadFireCentres();
-  this.setupSearchDebounce();
-}
+  ngOnInit(): void {
+    this.generateFiscalYearOptions();
+    this.setupCodeTableSubscription();
+    this.setupSearchDebounce();
+  }
 
   emitFilters() {
     const sanitize = (arr: any[]) => arr.filter(v => v !== '__ALL__');
@@ -141,7 +141,7 @@ ngOnInit(): void {
     const sorted = [...options].sort((a, b) => a.label.localeCompare(b.label));
     return [{ label: 'All', value: '__ALL__' }, ...sorted];
   }
-  
+
   onOptionToggled(event: any, model: keyof SearchFilterComponent, options: { value: any }[]) {
     const allOptionValue = '__ALL__';
     let selected = (this[model] as any[]) || [];
@@ -251,23 +251,15 @@ ngOnInit(): void {
           value: item.planFiscalStatusCode
         }))
       );
-    });
-  }
 
-  loadFireCentres(): void {
-    this.codeTableService.fetchFireCentres().subscribe({
-      next: (data) => {
-        const features = data?.features ?? [];
-        this.fireCentreOptions = this.prependAllAndSort(
-          features.map((f: any) => ({
-            label: f.properties.MOF_FIRE_CENTRE_NAME,
-            value: f.properties.MOF_FIRE_CENTRE_ID
+      this.fireCentreOptions = this.prependAllAndSort(
+        (tables.wildfireOrgUnit ?? [])
+          .filter((item: any) => item.wildfireOrgUnitTypeCode?.wildfireOrgUnitTypeCode === WildfireOrgUnitTypeCodes.FIRE_CENTRE)
+          .map((item: any) => ({
+            label: item.orgUnitName,
+            value: item.orgUnitIdentifier
           }))
-        );
-      },
-      error: () => {
-        this.fireCentreOptions = [];
-      }
+      );
     });
   }
 
@@ -280,9 +272,9 @@ ngOnInit(): void {
       });
   }
 
-  clearSearch(): void{
+  clearSearch(): void {
     this.searchText = '';
     this.emitFilters();
   }
-  
+
 }
