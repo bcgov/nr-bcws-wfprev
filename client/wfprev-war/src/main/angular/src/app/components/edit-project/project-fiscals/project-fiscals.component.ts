@@ -77,7 +77,7 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
 
   constructor(
     private route: ActivatedRoute,
-    private router: Router,
+    private readonly router: Router,
     private projectService: ProjectService,
     private codeTableService: CodeTableServices,
     private readonly fb: FormBuilder,

@@ -26,7 +26,7 @@ export class EditProjectComponent implements CanComponentDeactivate, AfterViewIn
 
   constructor(
     protected router: Router,
-    private route: ActivatedRoute
+    private readonly route: ActivatedRoute
   ) { }
 
   ngAfterViewInit(): void {
