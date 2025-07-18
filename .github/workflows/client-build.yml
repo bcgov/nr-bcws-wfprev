@@ -35,6 +35,23 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
+    - id: mapEnvironments
+      name: Determine namespaces for deploy
+      run: |
+        if [ "${{ inputs.DEFAULT_APPLICATION_ENVIRONMENT }}" == "wfint" ]; then
+          echo "NAMESPACE_ENV=dev" >> $GITHUB_OUTPUT
+          echo "SHORTENED_ENV=int" >> $GITHUB_OUTPUT
+        elif [ "${{ inputs.DEFAULT_APPLICATION_ENVIRONMENT }}" == "wfdlv" ]; then
+          echo "NAMESPACE_ENV=tools" >> $GITHUB_OUTPUT
+          echo "SHORTENED_ENV=dlv" >> $GITHUB_OUTPUT
+        elif [ "${{ inputs.DEFAULT_APPLICATION_ENVIRONMENT }}" == "wftst" ]; then
+          echo "NAMESPACE_ENV=test" >> $GITHUB_OUTPUT
+          echo "SHORTENED_ENV=tst" >> $GITHUB_OUTPUT
+        elif [ "${{ inputs.DEFAULT_APPLICATION_ENVIRONMENT }}" == "wfprd" ]; then
+          echo "NAMESPACE_ENV=prod" >> $GITHUB_OUTPUT
+          echo "SHORTENED_ENV=prd" >> $GITHUB_OUTPUT
+        fi
+
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v4
       with:
