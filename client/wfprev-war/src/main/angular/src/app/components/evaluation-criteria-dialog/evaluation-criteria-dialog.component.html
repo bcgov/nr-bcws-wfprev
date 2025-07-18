@@ -11,33 +11,48 @@
             <span class="section-header-title">{{ sectionTitles.section1 }}</span>
             <span class="section-total-label">Total</span>
           </div>
+          <div *ngIf="isCulturalPrescribedFire" class="form-row">
+            <wfprev-slide-toggle
+              [label]="'Outside of WUI'"
+              [checked]="isOutsideOfWuiOn"
+              (checkedChange)="toggleOutsideOfWui($event)"
+            ></wfprev-slide-toggle>
+          </div>
           <div class="form-row first-row">
             <div class="form-field project-type">
               <label>WUI Risk Class</label>
-              <select formControlName="wuiRiskClassCode" >
+              <select formControlName="wuiRiskClassCode" [disabled]="isOutsideOfWuiOn">
                 <option value="">Select</option>
                 <option *ngFor="let code of wuiRiskClassCode" [value]="code.weightedRank">{{ formatCodeLabel(code.wuiRiskClassCode) }}</option>
               </select>
             </div>
             <div class="form-field project-type">
               <label>Local WUI Risk Class</label>
-              <select formControlName="localWuiRiskClassCode" >
+              <select formControlName="localWuiRiskClassCode" [disabled]="isOutsideOfWuiOn">
                 <option value="">Select</option>
                 <option *ngFor="let code of wuiRiskClassCode" [value]="code.weightedRank">{{ formatCodeLabel(code.wuiRiskClassCode) }}</option>
               </select>
             </div>
             <div class="form-field coarse-total">
-              <div class="coarse-total-value">{{ coarseTotal }}</div>
+              <div class="coarse-total-value" [ngClass]="{ 'disabled-total': isOutsideOfWuiOn }">
+                <span>{{ isOutsideOfWuiOn ? 0 : coarseTotal }}</span>
+              </div>
             </div>
           </div>
-          <div *ngIf="data.project.projectTypeCode?.projectTypeCode === culturePrescribedFire">
-            <div *ngFor="let filter of riskClassLocationFilters"
-                class="filter-row selected"
-                [ngClass]="{'selected': selectedCoarse.has(filter.evaluationCriteriaGuid!)}">
+          <div *ngIf="isCulturalPrescribedFire">
+            <div
+              *ngFor="let filter of riskClassLocationFilters"
+              class="filter-row"
+              [ngClass]="{
+                'selected': selectedCoarse.has(filter.evaluationCriteriaGuid!),
+                'disabled-row': !isOutsideOfWuiOn
+              }"
+            >
               <div class="filter-checkbox">
                 <input
                   type="checkbox"
                   [checked]="selectedCoarse.has(filter.evaluationCriteriaGuid!)"
+                  [disabled]="!isOutsideOfWuiOn"
                   (change)="toggleCoarse(filter.evaluationCriteriaGuid!, $event)" />
               </div>
               <div class="filter-label">{{ filter.criteriaLabel }}</div>
@@ -46,7 +61,11 @@
           </div>
           <div class="total-row">
             <label>{{ sectionTitles.totalLabel('section1') }}</label>
-            <span class="total-value">{{ coarseTotal }}</span>
+            <span
+              class="total-value"
+              [ngClass]="{ 'disabled-total': isOutsideOfWuiOn && !selectedCoarse.size }">
+              {{ coarseTotal }}
+            </span>
           </div>
 
           <div class="notes-row">
@@ -77,11 +96,11 @@
               />
             </div>
             <div class="filter-label">{{ filter.criteriaLabel }}</div>
-            <div class="filter-weight">{{ filter.weightedRank }}</div>
+            <div class="filter-weight">{{ isCulturalPrescribedFire ? (filter.weightedRank | number:'1.2-2') : filter.weightedRank }}</div>
           </div>
           <div class="total-row">
             <label>{{ sectionTitles.totalLabel('section2') }}</label>
-            <span class="total-value">{{ mediumTotal }}</span>
+            <span class="total-value">{{ isCulturalPrescribedFire ? (mediumTotal | number:'1.2-2') : mediumTotal }}</span>
           </div>
           <div class="notes-row">
             <label>{{ sectionTitles.commentLabel('section2') }}</label>

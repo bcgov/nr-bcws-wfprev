@@ -117,3 +117,17 @@ export const EndorsementCode = {
   ENDORSED: 'ENDORSED',
   FOLLOW_UP: 'FOLLOW_UP'
 }
+
+export const ProjectTypes = {
+  FUEL_MANAGEMENT: 'FUEL_MGMT',
+  CULTURAL_PRESCRIBED_FIRE: 'CULT_RX_FR'
+};
+
+export const EvaluationCriteriaSectionCodes = {
+  COARSE_FILTER: 'COARSE_FLT',
+  MEDIUM_FILTER: 'MEDIUM_FLT',
+  FINE_FILTER: 'FINE_FLT',
+  RISK_CLASS_LOCATION: 'RCL',
+  BURN_DEVELOPMENT_FEASIBILITY: 'BDF',
+  COLLECTIVE_IMPACT: 'COLL_IMP'
+};
