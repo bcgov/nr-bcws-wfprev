@@ -34,7 +34,7 @@
 .filter-row {
   font-size: 14px;
   display: flex;
-  align-items: center;
+  align-items: start;
   padding: 8px 0;
 
   .filter-checkbox {
@@ -55,6 +55,14 @@
     text-align: right;
     font-weight: bold;
     color: var(--wf-colour-light-grey);
+  }
+
+  .filter-row.selected .filter-weight {
+    color: black;
+  }
+
+  .filter-row.disabled-row .filter-weight {
+    color: var(--wf-colour-light-grey) !important;
   }
 }
 
@@ -140,4 +148,13 @@ textarea {
   border: 1px solid #ccc;
   border-radius: 4px;
   padding: 6px;
+}
+
+.disabled-total {
+  color: var(--wf-colour-light-grey);
+}
+
+.disabled-row {
+  color: var(--wf-colour-light-grey);
+  pointer-events: none;
 }

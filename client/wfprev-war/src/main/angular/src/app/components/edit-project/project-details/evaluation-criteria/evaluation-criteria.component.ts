@@ -7,6 +7,7 @@ import { EvaluationCriteriaDialogComponent } from 'src/app/components/evaluation
 import { EvaluationCriteriaSummaryModel, Project } from 'src/app/components/models';
 import { ExpansionIndicatorComponent } from 'src/app/components/shared/expansion-indicator/expansion-indicator.component';
 import { ProjectService } from 'src/app/services/project-services';
+import { EvaluationCriteriaSectionCodes, ProjectTypes } from 'src/app/utils/constants';
 
 @Component({
   selector: 'wfprev-evaluation-criteria',
@@ -85,18 +86,53 @@ export class EvaluationCriteriaComponent implements OnChanges {
   getCalculatedTotal(summary: any): number {
     if (!summary) return 0;
 
-    const coarse =
-      summary.localWuiRiskClassCode?.weightedRank ??
-      summary.wuiRiskClassCode?.weightedRank ??
-      0;
-
-    const medium = this.getSectionTotal(summary, 'MEDIUM_FLT');
-    const fine = this.getSectionTotal(summary, 'FINE_FLT');
+    const coarse = this.getCoarseTotal(summary);
+    const medium = this.getSectionTotal(summary, EvaluationCriteriaSectionCodes.MEDIUM_FILTER);
+    const fine = this.getSectionTotal(summary, EvaluationCriteriaSectionCodes.FINE_FILTER);
 
     return coarse + medium + fine;
   }
+getCoarseTotal(summary: any): number {
+  const isRx = this.isPrescribedFire;
+  const isOutside = summary?.isOutsideWuiInd;
+
+  if (isRx && isOutside) {
+    // Prescribed fire Outside of WUI → use RCL checkboxes total
+    return this.getSectionTotal(summary, EvaluationCriteriaSectionCodes.RISK_CLASS_LOCATION);
+  }
+
+  // Otherwise use dropdowns
+  return (
+    summary?.localWuiRiskClassCode?.weightedRank ??
+    summary?.wuiRiskClassCode?.weightedRank ??
+    0
+  );
+}
 
   formatCodeLabel(code: string | undefined): string {
     return code ? code.replace(/_/g, ' ') : '';
+  }
+
+  get isPrescribedFire(): boolean {
+    return this.project?.projectTypeCode?.projectTypeCode === ProjectTypes.CULTURAL_PRESCRIBED_FIRE;
+  }
+
+  get isFuelManagement(): boolean {
+    return this.project?.projectTypeCode?.projectTypeCode === ProjectTypes.FUEL_MANAGEMENT;
+  }
+
+  get evaluationLabels() {
+    const isRx = this.isPrescribedFire;
+
+    return {
+      coarse: isRx ? 'Risk Class and Location' : 'Coarse Filter Total',
+      medium: isRx ? 'Burn Development and Feasibility' : 'Medium Filter Total',
+      fine: isRx ? 'Collective Impact' : 'Fine Filter Total',
+      comments: {
+        medium: isRx ? 'Comments' : 'Medium Filter Comments',
+        fine: isRx ? 'Comments' : 'Fine Filter Comments',
+        rationale: isRx ? 'Comments' : 'Local WUI Risk Class Rationale'
+      }
+    };
   }
 }
