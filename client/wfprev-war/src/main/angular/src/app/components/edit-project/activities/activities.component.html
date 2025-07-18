@@ -159,8 +159,8 @@
                             <div class="date-range-container">
                                 <mat-form-field>
                                     <mat-date-range-input [rangePicker]="picker" formGroupName="activityDateRange">
-                                        <input matStartDate [value]="getFormattedDate(activityForms[i].value.activityDateRange.activityStartDate)" formControlName="activityStartDate" placeholder="YYYY/MM/DD">
-                                        <input matEndDate [value]="getFormattedDate(activityForms[i].value.activityDateRange.activityEndDate)" formControlName="activityEndDate" placeholder="YYYY/MM/DD">                                        
+                                        <input matStartDate [value]="getFormattedDate(activityForms[i].value.activityDateRange.activityStartDate)" formControlName="activityStartDate" placeholder="YYYY-MM-DD">
+                                        <input matEndDate [value]="getFormattedDate(activityForms[i].value.activityDateRange.activityEndDate)" formControlName="activityEndDate" placeholder="YYYY-MM-DD">                                        
                                     </mat-date-range-input>
                                     <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
                                     <mat-date-range-picker #picker panelClass="custom-overlay"></mat-date-range-picker>
