@@ -8,6 +8,7 @@ import { ProjectDetailsComponent } from 'src/app/components/edit-project/project
 import { HttpClientModule } from '@angular/common/http';
 import { AppConfigService } from 'src/app/services/app-config.service';
 import { Router } from '@angular/router';
+import { ProjectFiscalsComponent } from './project-fiscals/project-fiscals.component';
 
 const mockApplicationConfig = {
   application: {
@@ -64,7 +65,7 @@ describe('EditProjectComponent', () => {
 
   beforeEach(async () => {
     const mockParamMap: ParamMap = {
-      has: (key: string) => key === 'name',
+      has: (key: string) => ['tab', 'fiscalGuid', 'name'].includes(key),
       get: (key: string) => (key === 'name' ? 'Test Project' : null),
       getAll: () => [],
       keys: [],
@@ -72,6 +73,9 @@ describe('EditProjectComponent', () => {
 
     mockActivatedRoute = {
       queryParamMap: of(mockParamMap),
+      snapshot: {
+        queryParamMap: mockParamMap
+      } as any
     };
 
     await TestBed.configureTestingModule({
@@ -80,6 +84,7 @@ describe('EditProjectComponent', () => {
         { provide: ActivatedRoute, useValue: mockActivatedRoute },
         { provide: AppConfigService, useClass: MockAppConfigService },
         { provide: MockProjectService, useClass: MockProjectService },
+        { provide: Router, useValue: { navigate: jasmine.createSpy('navigate') } }
       ],
     }).compileComponents();
 
@@ -92,6 +97,24 @@ describe('EditProjectComponent', () => {
     expect(component).toBeTruthy();
   });
 
+  it('should activate Fiscal tab and call loadFiscalComponent if tab=fiscal in query params', () => {
+    const spy = spyOn(component, 'loadFiscalComponent');
+    component.focusedFiscalId = null;
+    component.selectedTabIndex = 0;
+
+    (component as any).route.snapshot.queryParamMap.get = (key: string) => {
+      if (key === 'tab') return 'fiscal';
+      if (key === 'fiscalGuid') return 'abc-123';
+      return null;
+    };
+
+    component.ngAfterViewInit();
+
+    expect(component.focusedFiscalId as any).toBe('abc-123');
+    expect(component.selectedTabIndex).toBe(1);
+    expect(spy).toHaveBeenCalled();
+  });
+
   it('should render the Details tab', () => {
     const detailsTab = fixture.debugElement.query(By.css('.details-tab'));
     expect(detailsTab).toBeTruthy();
@@ -101,11 +124,11 @@ describe('EditProjectComponent', () => {
     const projectDetailsComponent = fixture.debugElement.query(By.directive(ProjectDetailsComponent));
     expect(projectDetailsComponent).toBeTruthy();
   });
-  
+
   it('should not reload ProjectFiscalsComponent if it is already loaded', () => {
     component.projectFiscalsComponentRef = {} as any;
     component.onTabChange({ index: 1 });
-  
+
     expect(component.fiscalsContainer).toBeTruthy();
   });
 
@@ -115,31 +138,96 @@ describe('EditProjectComponent', () => {
         isFormDirty: () => false,
       },
     } as any;
-  
+
     expect(component.canDeactivate()).toBe(true);
   });
 
   it('should call canDeactivate of ProjectFiscalsComponent if forms are dirty', () => {
     const mockCanDeactivate = jasmine.createSpy().and.returnValue(true);
-  
+
     component.projectFiscalsComponentRef = {
       instance: {
         isFormDirty: () => true,
         canDeactivate: mockCanDeactivate,
       },
     } as any;
-  
+
     expect(component.canDeactivate()).toBe(true);
     expect(mockCanDeactivate).toHaveBeenCalled();
   });
-  
+
   it('should call refreshFiscalData when switching back to Details tab', () => {
     component.projectDetailsComponent = jasmine.createSpyObj<ProjectDetailsComponent>('ProjectDetailsComponent', ['refreshFiscalData']);
     component.onTabChange({ index: 0 });
-  
+
     expect(component.projectDetailsComponent.refreshFiscalData).toHaveBeenCalled();
   });
-  
+
+  it('should load ProjectFiscalsComponent and assign focusedFiscalId in loadFiscalsTab', () => {
+    const mockComponentRef = {
+      instance: {}
+    } as any;
+
+    const mockContainer = {
+      clear: jasmine.createSpy('clear'),
+      createComponent: jasmine.createSpy('createComponent').and.returnValue(mockComponentRef)
+    };
+
+    component.fiscalsContainer = mockContainer as any;
+    component.focusedFiscalId = 'abc-123';
+
+    component.loadFiscalsTab();
+
+    expect(mockContainer.clear).toHaveBeenCalled();
+    expect(mockContainer.createComponent).toHaveBeenCalledWith(ProjectFiscalsComponent);
+    expect(mockComponentRef.instance.focusedFiscalId).toBe('abc-123');
+  });
+
+  it('should update URL with fiscal tab and fiscalGuid when switching to fiscal tab', () => {
+    const navigateSpy = component['router'].navigate as jasmine.Spy;
+
+    component.projectFiscalsComponentRef = {
+      instance: {
+        currentFiscalGuid: 'abc-123'
+      }
+    } as any;
+
+    component.onTabChange({ index: 1 });
+
+    expect(component.selectedTabIndex).toBe(1);
+    expect(navigateSpy).toHaveBeenCalledWith([], {
+      relativeTo: component['route'],
+      queryParams: jasmine.objectContaining({
+        tab: 'fiscal',
+        fiscalGuid: 'abc-123'
+      }),
+      queryParamsHandling: 'merge',
+      replaceUrl: true
+    });
+  });
+
+  it('should update URL and remove fiscalGuid when switching to details tab', () => {
+    const navigateSpy = component['router'].navigate as jasmine.Spy;
+
+    component.projectFiscalsComponentRef = {
+      instance: {
+        currentFiscalGuid: 'abc-123'
+      }
+    } as any;
+
+    component.onTabChange({ index: 0 });
+
+    expect(component.selectedTabIndex).toBe(0);
+    expect(navigateSpy).toHaveBeenCalledWith([], {
+      relativeTo: component['route'],
+      queryParams: jasmine.objectContaining({
+        tab: 'details',
+        fiscalGuid: null
+      }),
+      queryParamsHandling: 'merge',
+      replaceUrl: true
+    });
+  });
 });
 
 describe('EditProjectComponent (extended coverage)', () => {
@@ -160,12 +248,20 @@ describe('EditProjectComponent (extended coverage)', () => {
               get: () => null,
               getAll: () => [],
               keys: []
-            })
+            }),
+            snapshot: {
+              queryParamMap: {
+                has: () => false,
+                get: () => null,
+                getAll: () => [],
+                keys: []
+              }
+            }
           }
         },
         { provide: AppConfigService, useClass: MockAppConfigService },
       ]
-      
+
     }).compileComponents();
 
     fixture = TestBed.createComponent(EditProjectComponent);
@@ -226,5 +322,33 @@ describe('EditProjectComponent (extended coverage)', () => {
     } as any;
     expect(component.canDeactivate()).toBe(true);
     expect(mockCanDeactivate).toHaveBeenCalled();
+  });
+
+  it('should initialize ProjectFiscalsComponent in loadFiscalComponent', async () => {
+    const mockInstance = {
+      focusedFiscalId: null,
+      loadProjectFiscals: jasmine.createSpy('loadProjectFiscals')
+    };
+
+    const mockComponentRef = { instance: mockInstance };
+    const mockContainer = {
+      clear: jasmine.createSpy('clear'),
+      createComponent: jasmine.createSpy('createComponent').and.returnValue(mockComponentRef)
+    };
+
+    component.fiscalsContainer = mockContainer as any;
+    component.projectFiscalsComponentRef = null;
+    component.focusedFiscalId = 'abc-123';
+
+    spyOn(component, 'getProjectFiscalsComponent').and.returnValue(
+      Promise.resolve({ ProjectFiscalsComponent })
+    );
+
+    await component.loadFiscalComponent();
+
+    expect(mockContainer.clear).toHaveBeenCalled();
+    expect(mockContainer.createComponent).toHaveBeenCalledWith(ProjectFiscalsComponent);
+    expect(mockInstance.focusedFiscalId as any).toBe('abc-123');
+    expect(mockInstance.loadProjectFiscals).toHaveBeenCalled();
   });
 });

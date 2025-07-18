@@ -9,6 +9,7 @@
         <span>{{projectName}}</span>
     </div>
     <mat-tab-group class="wf-basic-tab" 
+                [(selectedIndex)]="selectedTabIndex"
                 mat-stretch-tabs="false"
                 animationDuration="0ms" 
                 disableRipple="true"  (selectedTabChange)="onTabChange($event)">

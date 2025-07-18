@@ -1,5 +1,5 @@
 import { CommonModule, CurrencyPipe } from '@angular/common';
-import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
@@ -9,7 +9,7 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltip, MatTooltipModule } from '@angular/material/tooltip';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { ConfirmationDialogComponent } from 'src/app/components/confirmation-dialog/confirmation-dialog.component';
 import { ActivitiesComponent } from 'src/app/components/edit-project/activities/activities.component';
@@ -57,6 +57,7 @@ import { TokenService } from 'src/app/services/token.service';
   ]
 })
 export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
+  @Input() focusedFiscalId: string | null = null;
   @ViewChild(ActivitiesComponent) activitiesComponent!: ActivitiesComponent;
   @ViewChild('fiscalMapRef') fiscalMapComponent!: FiscalMapComponent;
   currentUser: string = '';
@@ -76,6 +77,7 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
 
   constructor(
     private route: ActivatedRoute,
+    private router: Router,
     private projectService: ProjectService,
     private codeTableService: CodeTableServices,
     private readonly fb: FormBuilder,
@@ -83,7 +85,7 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
     public readonly dialog: MatDialog,
     public cd: ChangeDetectorRef,
     private readonly tokenService: TokenService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.loadCodeTables();
@@ -250,8 +252,16 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
           return form;
         });
 
+        // Find fiscal's index if it exists and set it as the active tab
+        if (this.focusedFiscalId) {
+          const index = this.projectFiscals.findIndex(f => f.projectPlanFiscalGuid === this.focusedFiscalId);
+          if (index !== -1) {
+            this.selectedTabIndex = index;
+          }
+         // if no fiscal default to first tab or direct to previous index 
+        } else this.selectedTabIndex = previousTabIndex < this.projectFiscals.length ? previousTabIndex : 0;
+
         this.updateCurrentFiscalGuid();
-        this.selectedTabIndex = previousTabIndex < this.projectFiscals.length ? previousTabIndex : 0;
       },
       'Error fetching project details'
     );
@@ -269,6 +279,16 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
   onTabChange(index: number): void {
     this.selectedTabIndex = index;
     this.updateCurrentFiscalGuid();
+
+    const fiscalGuid = this.projectFiscals[index]?.projectPlanFiscalGuid;
+    if (fiscalGuid) {
+      this.router.navigate([], {
+        relativeTo: this.route,
+        queryParams: { ...this.route.snapshot.queryParams, fiscalGuid },
+        queryParamsHandling: 'merge',
+        replaceUrl: true
+      });
+    }
   }
 
   get hasUnsavedFiscal(): boolean {
@@ -403,7 +423,7 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
           );
           this.loadProjectFiscals(true);
         },
-        error: () =>{
+        error: () => {
           this.snackbarService.open(
             this.messages.projectFiscalCreatedFailure,
             'OK',
@@ -412,7 +432,7 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
         }
       });
     }
-    
+
   }
 
   deleteFiscalYear(form: any, index: number): void {
