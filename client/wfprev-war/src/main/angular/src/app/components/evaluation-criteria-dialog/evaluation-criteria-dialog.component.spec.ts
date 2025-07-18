@@ -324,20 +324,37 @@ describe('EvaluationCriteriaDialogComponent', () => {
     expect(component.criteriaForm.get('fineFilterComments')?.value).toBe('Fine filter comment');
   });
 
-  it('should assign medium, fine, and riskClassLocation filters when projectType is CULT_RX_FR', () => {
-    component.data.project.projectTypeCode!.projectTypeCode = 'CULT_RX_FR';
-
-    const data = {
-      _embedded: {
-        evaluationCriteriaCode: [
-          { projectTypeCode: 'CULT_RX_FR', evaluationCriteriaSectionCode: 'BDF', evaluationCriteriaGuid: 'guid1' },
-          { projectTypeCode: 'CULT_RX_FR', evaluationCriteriaSectionCode: 'COLL_IMP', evaluationCriteriaGuid: 'guid2' },
-          { projectTypeCode: 'CULT_RX_FR', evaluationCriteriaSectionCode: 'RCL', evaluationCriteriaGuid: 'guid3' }
-        ]
+  it('should assign medium, fine, and riskClassLocation filters when projectType is CULT_RX_FR', async () => {
+    component.data = {
+      project: {
+        projectTypeCode: { projectTypeCode: 'CULT_RX_FR' }
       }
-    };
+    } as any;
 
-    component.assignCodeTableData('evaluationCriteriaCode', data);
+    component.evaluationCriteriaCode = [
+      {
+        evaluationCriteriaGuid: 'guid-1',
+        evalCriteriaSectCode: 'BDF',
+        weightedRank: 2
+      },
+      {
+        evaluationCriteriaGuid: 'guid-2',
+        evalCriteriaSectCode: 'CI',
+        weightedRank: 0.5
+      },
+      {
+        evaluationCriteriaGuid: 'guid-3',
+        evalCriteriaSectCode: 'RCL',
+        weightedRank: 3
+      }
+    ] as any;
+
+    component.assignCodeTableData('evaluationCriteriaCode', {
+      _embedded: { evaluationCriteriaCode: component.evaluationCriteriaCode }
+    });
+
+    fixture.detectChanges();
+    await fixture.whenStable();
 
     expect(component.mediumFilters.length).toBe(1);
     expect(component.fineFilters.length).toBe(1);

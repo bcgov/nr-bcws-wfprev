@@ -70,9 +70,13 @@ mat-expansion-panel {
 
 .criteria-details {
     padding: 12px 6px 24px 6px;
-    display: grid;
     grid-template-columns: auto auto 1fr;
     gap: 15px;
+
+    .risk-class-row{
+        display: flex;
+        padding-bottom: 12px;
+    }
 }
 
 .criteria-details .criteria-item:nth-child(3) {

@@ -7,13 +7,14 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { forkJoin } from 'rxjs';
 import { ConfirmationDialogComponent } from 'src/app/components/confirmation-dialog/confirmation-dialog.component';
 import { EvaluationCriteriaCodeModel, EvaluationCriteriaSummaryModel, Project, WuiRiskClassCodeModel } from 'src/app/components/models';
+import { SlideToggleComponent } from 'src/app/components/shared/slide-toggle/slide-toggle.component';
 import { CodeTableServices } from 'src/app/services/code-table-services';
 import { ProjectService } from 'src/app/services/project-services';
-import { Messages, ModalMessages, ModalTitles } from 'src/app/utils/constants';
+import { EvaluationCriteriaSectionCodes, Messages, ModalMessages, ModalTitles, ProjectTypes } from 'src/app/utils/constants';
 @Component({
   selector: 'wfprev-evaluation-criteria-dialog',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, TextFieldModule],
+  imports: [CommonModule, ReactiveFormsModule, TextFieldModule, SlideToggleComponent],
   templateUrl: './evaluation-criteria-dialog.component.html',
   styleUrl: './evaluation-criteria-dialog.component.scss'
 })
@@ -31,13 +32,13 @@ export class EvaluationCriteriaDialogComponent {
   riskClassLocationFilters: EvaluationCriteriaCodeModel[] = [];
   selectedMedium: Set<string> = new Set();
   selectedFine: Set<string> = new Set();
-
+  selectedCoarse: Set<string> = new Set();
+  isCulturalPrescribedFire = false;
+  isOutsideOfWuiOn = false;
   coarseTotal = 0;
   mediumTotal = 0;
   fineTotal = 0;
 
-  fuelManagement = 'FUEL_MGMT'
-  culturePrescribedFire = 'CULT_RX_FR'
   constructor(
     private readonly fb: FormBuilder,
     private readonly dialog: MatDialog,
@@ -53,11 +54,16 @@ export class EvaluationCriteriaDialogComponent {
 
   ngOnInit(): void {
     this.initializeForm();
-    if (this.data.project.projectTypeCode?.projectTypeCode === this.fuelManagement) {
+    const type = this.data.project.projectTypeCode?.projectTypeCode;
+    this.isCulturalPrescribedFire = (type === ProjectTypes.CULTURAL_PRESCRIBED_FIRE);
+    if (type) {
       this.setupValueChangeHandlers();
       this.loadCodeTablesAndPrefill();
-    } else if (this.data.project.projectTypeCode?.projectTypeCode === this.culturePrescribedFire) {
+    }
 
+    if (this.isOutsideOfWuiOn) {
+      this.criteriaForm.get('wuiRiskClassCode')?.disable();
+      this.criteriaForm.get('localWuiRiskClassCode')?.disable();
     }
   }
 
@@ -96,6 +102,12 @@ export class EvaluationCriteriaDialogComponent {
         this.assignCodeTableData('wuiRiskClassCode', wuiRiskClasses);
 
         this.prefillFromEvaluationCriteriaSummary();
+
+        if (this.isOutsideOfWuiOn) {
+          this.updateCoarseTotalFromCheckboxes();
+        } else {
+          this.updateCoarseTotal();
+        }
       },
       error: (err) => {
         console.error('Error loading code tables', err);
@@ -113,15 +125,15 @@ export class EvaluationCriteriaDialogComponent {
           (c: EvaluationCriteriaCodeModel) => c.projectTypeCode === type
         );
 
-        if (type === this.fuelManagement) {
+        if (type === ProjectTypes.FUEL_MANAGEMENT) {
           this.mediumFilters = this.evaluationCriteriaCode.filter(c => (c.weightedRank ?? 0) >= 1);
           this.fineFilters = this.evaluationCriteriaCode.filter(c => (c.weightedRank ?? 0) < 1);
         }
 
-        if (type === this.culturePrescribedFire) {
-          this.mediumFilters = this.evaluationCriteriaCode.filter(c => c.evaluationCriteriaSectionCode === 'BDF');
-          this.fineFilters = this.evaluationCriteriaCode.filter(c => c.evaluationCriteriaSectionCode === 'COLL_IMP');
-          this.riskClassLocationFilters = this.evaluationCriteriaCode.filter(c => c.evaluationCriteriaSectionCode === 'RCL');
+        if (type === ProjectTypes.CULTURAL_PRESCRIBED_FIRE) {
+          this.mediumFilters = this.evaluationCriteriaCode.filter(c => c.evalCriteriaSectCode === EvaluationCriteriaSectionCodes.BURN_DEVELOPMENT_FEASIBILITY);
+          this.fineFilters = this.evaluationCriteriaCode.filter(c => c.evalCriteriaSectCode === EvaluationCriteriaSectionCodes.COLLECTIVE_IMPACT);
+          this.riskClassLocationFilters = this.evaluationCriteriaCode.filter(c => c.evalCriteriaSectCode === EvaluationCriteriaSectionCodes.RISK_CLASS_LOCATION);
         }
         break;
 
@@ -153,6 +165,20 @@ export class EvaluationCriteriaDialogComponent {
     this.criteriaForm.markAsDirty();
   }
 
+  toggleCoarse(guid: string, event: Event): void {
+    const checked = (event.target as HTMLInputElement).checked;
+
+    if (checked) {
+      this.selectedCoarse.add(guid);
+    } else {
+      this.selectedCoarse.delete(guid);
+    }
+
+    this.updateCoarseTotalFromCheckboxes();
+    this.criteriaForm.markAsDirty();
+  }
+
+
   calculateMediumTotal() {
     this.mediumTotal = this.mediumFilters
       .filter(f => this.selectedMedium.has(f.evaluationCriteriaGuid ?? ''))
@@ -162,6 +188,12 @@ export class EvaluationCriteriaDialogComponent {
   calculateFineTotal() {
     this.fineTotal = this.fineFilters
       .filter(f => this.selectedFine.has(f.evaluationCriteriaGuid ?? ''))
+      .reduce((sum, f) => sum + (f.weightedRank ?? 0), 0);
+  }
+
+  calculateCoarseTotal(): void {
+    this.coarseTotal = this.riskClassLocationFilters
+      .filter(f => this.selectedCoarse.has(f.evaluationCriteriaGuid ?? ''))
       .reduce((sum, f) => sum + (f.weightedRank ?? 0), 0);
   }
 
@@ -252,10 +284,10 @@ export class EvaluationCriteriaDialogComponent {
     const localWuiRiskClassCodeValue = this.criteriaForm.get('localWuiRiskClassCode')?.value;
 
     const mediumSection = existingSummary?.evaluationCriteriaSectionSummaries?.find(
-      s => s.evaluationCriteriaSectionCode?.evaluationCriteriaSectionCode === 'MEDIUM_FLT'
+      s => s.evaluationCriteriaSectionCode?.evaluationCriteriaSectionCode === EvaluationCriteriaSectionCodes.MEDIUM_FILTER
     );
     const fineSection = existingSummary?.evaluationCriteriaSectionSummaries?.find(
-      s => s.evaluationCriteriaSectionCode?.evaluationCriteriaSectionCode === 'FINE_FLT'
+      s => s.evaluationCriteriaSectionCode?.evaluationCriteriaSectionCode === EvaluationCriteriaSectionCodes.FINE_FILTER
     );
 
     return {
@@ -273,12 +305,12 @@ export class EvaluationCriteriaDialogComponent {
         : undefined,
       wuiRiskClassComment: '',
       localWuiRiskClassRationale: this.criteriaForm.get('localWuiRiskClassRationale')?.value,
-      isOutsideWuiInd: false,
+      isOutsideWuiInd: this.isOutsideOfWuiOn,
       totalFilterScore: this.coarseTotal + this.mediumTotal + this.fineTotal,
       evaluationCriteriaSectionSummaries: [
         {
           evaluationCriteriaSectionSummaryGuid: isCreate ? undefined : mediumSection?.evaluationCriteriaSectionSummaryGuid,
-          evaluationCriteriaSectionCode: { evaluationCriteriaSectionCode: 'MEDIUM_FLT' },
+          evaluationCriteriaSectionCode: { evaluationCriteriaSectionCode: EvaluationCriteriaSectionCodes.MEDIUM_FILTER },
           evaluationCriteriaSummaryGuid: existingSummary?.evaluationCriteriaSummaryGuid,
           filterSectionScore: this.mediumTotal,
           filterSectionComment: this.criteriaForm.get('mediumFilterComments')?.value,
@@ -294,7 +326,7 @@ export class EvaluationCriteriaDialogComponent {
         },
         {
           evaluationCriteriaSectionSummaryGuid: isCreate ? undefined : fineSection?.evaluationCriteriaSectionSummaryGuid,
-          evaluationCriteriaSectionCode: { evaluationCriteriaSectionCode: 'FINE_FLT' },
+          evaluationCriteriaSectionCode: { evaluationCriteriaSectionCode: EvaluationCriteriaSectionCodes.FINE_FILTER },
           evaluationCriteriaSummaryGuid: existingSummary?.evaluationCriteriaSummaryGuid,
           filterSectionScore: this.fineTotal,
           filterSectionComment: this.criteriaForm.get('fineFilterComments')?.value,
@@ -309,7 +341,30 @@ export class EvaluationCriteriaDialogComponent {
               isEvaluationCriteriaSelectedInd: this.selectedFine.has(f.evaluationCriteriaGuid ?? '')
             };
           })
-        }
+        },
+          ...(this.isOutsideOfWuiOn ? (() => {
+            const rclSection = existingSummary?.evaluationCriteriaSectionSummaries?.find(
+              s => s.evaluationCriteriaSectionCode?.evaluationCriteriaSectionCode === 'RCL'
+            );
+            return [{
+              evaluationCriteriaSectionSummaryGuid: isCreate ? undefined : rclSection?.evaluationCriteriaSectionSummaryGuid,
+              evaluationCriteriaSectionCode: { evaluationCriteriaSectionCode: 'RCL' },
+              evaluationCriteriaSummaryGuid: existingSummary?.evaluationCriteriaSummaryGuid,
+              filterSectionScore: this.coarseTotal,
+              filterSectionComment: this.criteriaForm.get('localWuiRiskClassRationale')?.value,
+              evaluationCriteriaSelected: this.riskClassLocationFilters.map(f => {
+                const existing = rclSection?.evaluationCriteriaSelected?.find(
+                  s => s.evaluationCriteriaGuid === f.evaluationCriteriaGuid
+                );
+                return {
+                  evaluationCriteriaSelectedGuid: existing?.evaluationCriteriaSelectedGuid ?? undefined,
+                  evaluationCriteriaGuid: f.evaluationCriteriaGuid,
+                  evaluationCriteriaSectionSummaryGuid: rclSection?.evaluationCriteriaSectionSummaryGuid,
+                  isEvaluationCriteriaSelectedInd: this.selectedCoarse.has(f.evaluationCriteriaGuid ?? '')
+                };
+              })
+            }];
+          })() : [])
       ]
     };
   }
@@ -340,6 +395,11 @@ export class EvaluationCriteriaDialogComponent {
     if (!summary) {
       return;
     }
+    this.isOutsideOfWuiOn = summary.isOutsideWuiInd ?? false;
+    if (this.isOutsideOfWuiOn) {
+      this.criteriaForm.get('wuiRiskClassCode')?.disable();
+      this.criteriaForm.get('localWuiRiskClassCode')?.disable();
+    }
 
     // WUI Risk Class
     if (summary.wuiRiskClassCode?.wuiRiskClassCode) {
@@ -368,7 +428,7 @@ export class EvaluationCriteriaDialogComponent {
     for (const section of summary.evaluationCriteriaSectionSummaries ?? []) {
       const code = section.evaluationCriteriaSectionCode?.evaluationCriteriaSectionCode;
 
-      if (code === 'MEDIUM_FLT') {
+      if (code === EvaluationCriteriaSectionCodes.MEDIUM_FILTER) {
         // Check all selected criteria
         for (const selected of section.evaluationCriteriaSelected ?? []) {
           if (selected.isEvaluationCriteriaSelectedInd) {
@@ -381,7 +441,7 @@ export class EvaluationCriteriaDialogComponent {
         this.mediumTotal = section.filterSectionScore ?? 0;
       }
 
-      if (code === 'FINE_FLT') {
+      if (code === EvaluationCriteriaSectionCodes.FINE_FILTER) {
         for (const selected of section.evaluationCriteriaSelected ?? []) {
           if (selected.isEvaluationCriteriaSelectedInd) {
             this.selectedFine.add(selected.evaluationCriteriaGuid!);
@@ -394,13 +454,23 @@ export class EvaluationCriteriaDialogComponent {
       }
     }
 
+    const rclSection = summary.evaluationCriteriaSectionSummaries?.find(
+      s => s.evaluationCriteriaSectionCode?.evaluationCriteriaSectionCode === 'RCL'
+    );
+
+    this.selectedCoarse = new Set(
+      rclSection?.evaluationCriteriaSelected
+        ?.filter(sel => sel.isEvaluationCriteriaSelectedInd && sel.evaluationCriteriaGuid !== undefined)
+        .map(sel => sel.evaluationCriteriaGuid as string)
+    );
+
     // Update the coarse total at the end
     this.updateCoarseTotal();
   }
 
   get sectionTitles() {
     const type = this.data.project.projectTypeCode?.projectTypeCode;
-    const isFuel = type === this.fuelManagement;
+    const isFuel = type === ProjectTypes.FUEL_MANAGEMENT;
 
     const titles = {
       section1: isFuel ? 'Coarse Filters' : 'Risk Class & Location',
@@ -423,5 +493,42 @@ export class EvaluationCriteriaDialogComponent {
         return `Additional Comments/Notes on ${titles[section]}`;
       }
     };
+  }
+
+  toggleOutsideOfWui(isOutside: boolean): void {
+    this.isOutsideOfWuiOn = isOutside;
+
+    const wuiControl = this.criteriaForm.get('wuiRiskClassCode');
+    const localWuiControl = this.criteriaForm.get('localWuiRiskClassCode');
+
+    if (isOutside) {
+      wuiControl?.disable();
+      localWuiControl?.disable();
+      wuiControl?.setValue('');
+      localWuiControl?.setValue('');
+      this.coarseTotal = 0;
+    } else {
+      wuiControl?.enable();
+      localWuiControl?.enable();
+      this.updateCoarseTotal(); // recalculate from dropdowns
+    }
+
+    this.selectedCoarse.clear(); // always clear coarse checkboxes
+    this.updateCoarseTotalFromCheckboxes();
+    this.criteriaForm.markAsDirty(); // optional: flag the form as dirty
+  }
+
+
+
+  updateCoarseTotalFromDropdowns(): void {
+    const wui = this.criteriaForm.get('wuiRiskClassCode')?.value || 0;
+    const local = this.criteriaForm.get('localWuiRiskClassCode')?.value || 0;
+    this.coarseTotal = wui + local;
+  }
+
+  updateCoarseTotalFromCheckboxes(): void {
+    this.coarseTotal = this.riskClassLocationFilters
+      .filter(f => this.selectedCoarse.has(f.evaluationCriteriaGuid ?? ''))
+      .reduce((sum, f) => sum + (f.weightedRank ?? 0), 0);
   }
 }
