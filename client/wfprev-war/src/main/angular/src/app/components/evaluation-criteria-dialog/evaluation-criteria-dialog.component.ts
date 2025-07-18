@@ -126,8 +126,13 @@ export class EvaluationCriteriaDialogComponent {
         );
 
         if (type === ProjectTypes.FUEL_MANAGEMENT) {
-          this.mediumFilters = this.evaluationCriteriaCode.filter(c => (c.weightedRank ?? 0) >= 1);
-          this.fineFilters = this.evaluationCriteriaCode.filter(c => (c.weightedRank ?? 0) < 1);
+          this.mediumFilters = this.evaluationCriteriaCode
+            .filter(c => (c.weightedRank ?? 0) >= 1)
+            .sort((a, b) => (b.weightedRank ?? 0) - (a.weightedRank ?? 0));
+
+          this.fineFilters = this.evaluationCriteriaCode
+            .filter(c => (c.weightedRank ?? 0) < 1)
+            .sort((a, b) => (b.weightedRank ?? 0) - (a.weightedRank ?? 0));
         }
 
         if (type === ProjectTypes.CULTURAL_PRESCRIBED_FIRE) {
