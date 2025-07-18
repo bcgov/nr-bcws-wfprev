@@ -142,9 +142,6 @@ export class EndorsementApprovalComponent implements OnChanges {
     this.endorsementApprovalForm.markAsPristine();
   }
 
-
-
-
   onCancel() {
     this.ngOnChanges({
       fiscal: {
