@@ -1,7 +1,7 @@
 <ng-container *ngIf="fiscal?.projectPlanFiscalGuid">
   <wfprev-details-container
     [title]="'Endorsement and Approval'"
-    [saveDisabled]="!endorsementApprovalForm.valid"
+    [saveDisabled]="!endorsementApprovalForm.valid || !endorsementApprovalForm.dirty"
     (save)="onSave()"
     (cancel)="onCancel()">
 
