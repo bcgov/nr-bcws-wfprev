@@ -28,4 +28,5 @@ public class CodeTables {
   public static final String WUI_RISK_CLASS_CODE = "wuiRiskClassCodes";
   public static final String EVALUATION_CRITERIA_CODE = "evaluationCriteriaCodes";
   public static final String PROJECT_STATUS_CODE = "projectStatusCodes";
+  public static final String WILDFIRE_ORG_UNIT = "wildfireOrgUnits";
 }

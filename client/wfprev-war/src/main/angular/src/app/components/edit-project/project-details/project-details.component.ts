@@ -14,7 +14,7 @@ import { FiscalYearProjectsComponent } from 'src/app/components/edit-project/pro
 import { ProjectFilesComponent } from 'src/app/components/edit-project/project-details/project-files/project-files.component';
 import { CodeTableServices } from 'src/app/services/code-table-services';
 import { ProjectService } from 'src/app/services/project-services';
-import { CodeTableKeys, Messages, FiscalYearColors, ModalTitles, ModalMessages } from 'src/app/utils/constants';
+import { CodeTableKeys, Messages, FiscalYearColors, ModalTitles, ModalMessages, WildfireOrgUnitTypeCodes, CodeTableNames } from 'src/app/utils/constants';
 import {
   formatLatLong,
   getBluePinIcon,
@@ -120,7 +120,7 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
       secondaryObjectiveRationale: ['', [Validators.maxLength(300)]],
       bcParksRegionOrgUnitId: [''],
       bcParksSectionOrgUnitId: [''],
-      fireCentreId: ['', [Validators.required]],
+      wildfireOrgUnitId: ['', [Validators.required]],
       latitude: [''],
       longitude: [''],
       resultsProjectCode: ['', [Validators.maxLength(8)]]
@@ -178,14 +178,14 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
 
   loadCodeTables(): void {
     const codeTables = [
-      { name: 'projectTypeCodes', embeddedKey: 'projectTypeCode' },
-      { name: 'programAreaCodes', embeddedKey: 'programAreaCode' },
-      { name: 'forestRegionCodes', embeddedKey: 'forestRegionCode' },
-      { name: 'forestDistrictCodes', embeddedKey: 'forestDistrictCode' },
-      { name: 'bcParksRegionCodes', embeddedKey: 'bcParksRegionCode' },
-      { name: 'bcParksSectionCodes', embeddedKey: 'bcParksSectionCode' },
-      { name: 'objectiveTypeCodes', embeddedKey: 'objectiveTypeCode' },
-
+      { name: CodeTableNames.PROJECT_TYPE_CODE, embeddedKey: CodeTableKeys.PROJECT_TYPE_CODE },
+      { name: CodeTableNames.PROGRAM_AREA_CODE, embeddedKey: CodeTableKeys.PROGRAM_AREA_CODE },
+      { name: CodeTableNames.FOREST_REGION_CODE, embeddedKey: CodeTableKeys.FOREST_REGION_CODE },
+      { name: CodeTableNames.FOREST_DISTRICT_CODE, embeddedKey: CodeTableKeys.FOREST_DISTRICT_CODE },
+      { name: CodeTableNames.BC_PARKS_REGION_CODE, embeddedKey: CodeTableKeys.BC_PARKS_REGION_CODE },
+      { name: CodeTableNames.BC_PARKS_SECTION_CODE, embeddedKey: CodeTableKeys.BC_PARKS_SECTION_CODE },
+      { name: CodeTableNames.OBJECTIVE_TYPE_CODE, embeddedKey: CodeTableKeys.OBJECTIVE_TYPE_CODE },
+      { name: CodeTableNames.WILDFIRE_ORG_UNIT, embeddedKey: CodeTableKeys.WILDFIRE_ORG_UNIT },
     ];
 
     codeTables.forEach((table) => {
@@ -200,22 +200,8 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
       });
     });
 
-    this.loadFireCentres();
   }
 
-  loadFireCentres(): void {
-    this.codeTableService.fetchFireCentres().subscribe({
-      next: (response) => {
-        this.fireCentres = (response?.features ?? []).map((feature: any) => ({
-          id: feature.properties.MOF_FIRE_CENTRE_ID,
-          label: feature.properties.MOF_FIRE_CENTRE_NAME,
-        }));
-      },
-      error: (error) => {
-        console.error('Failed to load fire centres', error);
-      }
-    });
-  }
   assignCodeTableData(key: string, data: any): void {
 
     const sortByName = (arr: any[]) =>
@@ -225,29 +211,39 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
       );
 
     switch (key) {
-      case 'projectTypeCode':
+      case CodeTableKeys.PROJECT_TYPE_CODE:
         this.projectTypeCode = sortByName(data._embedded.projectTypeCode ?? []);
         break;
-      case 'programAreaCode':
+      case CodeTableKeys.PROGRAM_AREA_CODE:
         this.programAreaCode = sortByName(data._embedded.programArea ?? []);
         break;
-      case 'forestRegionCode':
+      case CodeTableKeys.FOREST_REGION_CODE:
         this.forestRegionCode = sortByName(data._embedded.forestRegionCode ?? []);
         break;
-      case 'forestDistrictCode':
+      case CodeTableKeys.FOREST_DISTRICT_CODE:
         this.allForestDistricts = sortByName(data._embedded.forestDistrictCode ?? []);
         this.forestDistrictCode = [...this.allForestDistricts];
         break;
-      case 'bcParksRegionCode':
+      case CodeTableKeys.BC_PARKS_REGION_CODE:
         this.bcParksRegionCode = sortByName(data._embedded.bcParksRegionCode ?? []);
         break;
-      case 'bcParksSectionCode':
+      case CodeTableKeys.BC_PARKS_SECTION_CODE:
         this.allBcParksSections = sortByName(data._embedded.bcParksSectionCode ?? []);
         this.bcParksSectionCode = [...this.allBcParksSections];
         break;
-      case 'objectiveTypeCode':
+      case CodeTableKeys.OBJECTIVE_TYPE_CODE:
         this.objectiveTypeCode = sortByName(data._embedded.objectiveTypeCode ?? []);
         break;
+      case CodeTableKeys.WILDFIRE_ORG_UNIT: {
+        // filter out org units that are not fire centres
+        const orgUnits = data._embedded.wildfireOrgUnit ?? [];
+        const fireCentres = orgUnits.filter(
+          (unit: { wildfireOrgUnitTypeCode: { wildfireOrgUnitTypeCode: string } }) =>
+            unit.wildfireOrgUnitTypeCode?.wildfireOrgUnitTypeCode === WildfireOrgUnitTypeCodes.FIRE_CENTRE
+        );
+        this.fireCentres = sortByName(fireCentres);
+        break;
+      }
     }
   }
 
@@ -379,7 +375,7 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
       secondaryObjectiveRationale: data.secondaryObjectiveRationale,
       bcParksRegionOrgUnitId: data.bcParksRegionOrgUnitId === 0 ? '' : data.bcParksRegionOrgUnitId ?? '',
       bcParksSectionOrgUnitId: data.bcParksSectionOrgUnitId === 0 ? '' : data.bcParksSectionOrgUnitId ?? '',
-      fireCentreId: data.fireCentreOrgUnitId,
+      wildfireOrgUnitId: data.fireCentreOrgUnitId,
       latitude: data.latitude,
       longitude: data.longitude,
       resultsProjectCode: data.resultsProjectCode
@@ -395,7 +391,7 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
         forestDistrictOrgUnitId: Number(this.detailsForm.get('forestDistrictOrgUnitId')?.value),
         bcParksRegionOrgUnitId: Number(this.detailsForm.get('bcParksRegionOrgUnitId')?.value),
         bcParksSectionOrgUnitId: Number(this.detailsForm.get('bcParksSectionOrgUnitId')?.value),
-        fireCentreOrgUnitId: Number(this.detailsForm.get('fireCentreId')?.value),
+        fireCentreOrgUnitId: Number(this.detailsForm.get('wildfireOrgUnitId')?.value),
         projectTypeCode: this.detailsForm.get('projectTypeCode')?.value
           ? { projectTypeCode: this.detailsForm.get('projectTypeCode')?.value } : this.projectDetail.projectTypeCode,
         primaryObjectiveTypeCode: {
@@ -408,7 +404,6 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
       updatedProject.secondaryObjectiveTypeCode = secondaryObjectiveValue
         ? { objectiveTypeCode: secondaryObjectiveValue }
         : null;
-      console.log(JSON.stringify(updatedProject))
       this.projectService.updateProject(this.projectGuid, updatedProject).subscribe({
         next: () => {
           this.snackbarService.open(
@@ -586,8 +581,8 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
       case CodeTableKeys.BC_PARKS_SECTION_ORG_UNIT_ID:
         return this.bcParksSectionCode.find(item => item.orgUnitId === value)?.orgUnitName ?? null;
 
-      case CodeTableKeys.FIRE_CENTRE_ID:
-        return this.fireCentres.find(item => item.id === value)?.label ?? null;
+      case CodeTableKeys.WILDFIRE_ORG_UNIT_ID:
+        return this.fireCentres.find(item => item.orgUnitIdentifier == value)?.orgUnitName ?? null
 
       case CodeTableKeys.PRIMARY_OBJECTIVE_TYPE_CODE:
       case CodeTableKeys.SECONDARY_OBJECTIVE_TYPE_CODE:

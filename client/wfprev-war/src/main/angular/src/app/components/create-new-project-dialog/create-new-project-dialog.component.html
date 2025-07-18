@@ -69,8 +69,7 @@
           <label>BCWS Fire Centre<span class="required">*</span></label>
           <select formControlName="fireCentre" [matTooltip]="getFireCentreCode(projectForm.get('fireCentre')?.value)">
             <option value="">Select</option>
-            <option *ngFor="let item of fireCentres" [value]="item?.properties?.MOF_FIRE_CENTRE_ID">{{
-              item?.properties.MOF_FIRE_CENTRE_NAME }}</option>
+            <option *ngFor="let item of fireCentres" [value]="item.orgUnitIdentifier">{{ item.orgUnitName }}</option>
           </select>
         </div>
       </div>
