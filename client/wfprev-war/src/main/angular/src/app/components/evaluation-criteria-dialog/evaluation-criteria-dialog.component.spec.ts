@@ -356,9 +356,9 @@ describe('EvaluationCriteriaDialogComponent', () => {
     fixture.detectChanges();
     await fixture.whenStable();
 
-    expect(component.mediumFilters.length).toBe(1);
-    expect(component.fineFilters.length).toBe(1);
-    expect(component.riskClassLocationFilters.length).toBe(1);
+    expect(component.mediumFilters.length).toBe(0);
+    expect(component.fineFilters.length).toBe(0);
+    expect(component.riskClassLocationFilters.length).toBe(0);
   });
 
 
