@@ -5,6 +5,7 @@ import { EvaluationCriteriaComponent } from './evaluation-criteria.component';
 import { ProjectService } from 'src/app/services/project-services';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { EvaluationCriteriaSummaryModel } from 'src/app/components/models';
+import { EvaluationCriteriaSectionCodes, ProjectTypes } from 'src/app/utils/constants';
 
 describe('EvaluationCriteriaComponent', () => {
   let component: EvaluationCriteriaComponent;
@@ -149,4 +150,100 @@ describe('EvaluationCriteriaComponent', () => {
     expect(component.formatCodeLabel('A_B')).toBe('A B');
     expect(component.formatCodeLabel(undefined)).toBe('');
   });
+
+  it('should get coarse total from RCL section if prescribed fire and isOutsideWuiInd is true', () => {
+    component.project = {
+      projectGuid: 'test-guid',
+      projectTypeCode: { projectTypeCode: ProjectTypes.CULTURAL_PRESCRIBED_FIRE }
+    } as any;
+
+    const summary = {
+      isOutsideWuiInd: true,
+      evaluationCriteriaSectionSummaries: [
+        { 
+          evaluationCriteriaSectionCode: { evaluationCriteriaSectionCode: EvaluationCriteriaSectionCodes.RISK_CLASS_LOCATION }, 
+          filterSectionScore: 8 
+        }
+      ]
+    };
+
+    const result = component.getCoarseTotal(summary);
+    expect(result).toBe(8);
+  });
+
+  it('should get coarse total from dropdown if prescribed fire and isOutsideWuiInd is false', () => {
+    component.project = {
+      projectGuid: 'test-guid',
+      projectTypeCode: { projectTypeCode: ProjectTypes.CULTURAL_PRESCRIBED_FIRE }
+    } as any;
+
+    const summary = {
+      isOutsideWuiInd: false,
+      localWuiRiskClassCode: { weightedRank: 2 },
+      wuiRiskClassCode: { weightedRank: 3 },
+      evaluationCriteriaSectionSummaries: [
+        { 
+          evaluationCriteriaSectionCode: { evaluationCriteriaSectionCode: EvaluationCriteriaSectionCodes.RISK_CLASS_LOCATION }, 
+          filterSectionScore: 10 
+        }
+      ]
+    };
+
+    const result = component.getCoarseTotal(summary);
+    expect(result).toBe(2);
+  });
+
+  it('should get coarse total from dropdown if not prescribed fire', () => {
+    component.project = {
+      projectGuid: 'test-guid',
+      projectTypeCode: { projectTypeCode: ProjectTypes.FUEL_MANAGEMENT }
+    } as any;
+
+    const summary = {
+      localWuiRiskClassCode: { weightedRank: 1.5 },
+      wuiRiskClassCode: { weightedRank: 2 }
+    };
+
+    const result = component.getCoarseTotal(summary);
+    expect(result).toBe(1.5);
+  });
+
+  it('should return true for isFuelManagement when projectType is FUEL_MANAGEMENT', () => {
+    component.project = {
+      projectTypeCode: { projectTypeCode: ProjectTypes.FUEL_MANAGEMENT }
+    } as any;
+
+    expect(component.isFuelManagement).toBeTrue();
+  });
+
+  it('should return correct evaluationLabels for prescribed fire project', () => {
+    component.project = {
+      projectTypeCode: { projectTypeCode: ProjectTypes.CULTURAL_PRESCRIBED_FIRE }
+    } as any;
+
+    const labels = component.evaluationLabels;
+
+    expect(labels.coarse).toBe('Risk Class and Location');
+    expect(labels.medium).toBe('Burn Development and Feasibility');
+    expect(labels.fine).toBe('Collective Impact');
+    expect(labels.comments.medium).toBe('Comments');
+    expect(labels.comments.fine).toBe('Comments');
+    expect(labels.comments.rationale).toBe('Comments');
+  });
+
+  it('should return correct evaluationLabels for fuel management project', () => {
+    component.project = {
+      projectTypeCode: { projectTypeCode: ProjectTypes.FUEL_MANAGEMENT }
+    } as any;
+
+    const labels = component.evaluationLabels;
+
+    expect(labels.coarse).toBe('Coarse Filter Total');
+    expect(labels.medium).toBe('Medium Filter Total');
+    expect(labels.fine).toBe('Fine Filter Total');
+    expect(labels.comments.medium).toBe('Medium Filter Comments');
+    expect(labels.comments.fine).toBe('Fine Filter Comments');
+    expect(labels.comments.rationale).toBe('Local WUI Risk Class Rationale');
+  });
+
 });

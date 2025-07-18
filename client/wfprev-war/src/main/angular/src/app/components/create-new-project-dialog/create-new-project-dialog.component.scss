@@ -162,6 +162,8 @@
   button.primary:disabled {
     background-color: #c0c0c0;
     cursor: not-allowed;
+    color:white;
+    border: none;
   }
 
   button.secondary {
