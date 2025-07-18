@@ -361,5 +361,101 @@ describe('EvaluationCriteriaDialogComponent', () => {
     expect(component.riskClassLocationFilters.length).toBe(0);
   });
 
+  it('should toggleCoarse and updateCoarseTotalFromCheckboxes', () => {
+    component.riskClassLocationFilters = [{ evaluationCriteriaGuid: 'coarse1', weightedRank: 2 } as any];
+    const event = { target: { checked: true } } as any;
+    component.toggleCoarse('coarse1', event);
+    expect(component.selectedCoarse.has('coarse1')).toBeTrue();
+    expect(component.coarseTotal).toBe(2);
+
+    const eventOff = { target: { checked: false } } as any;
+    component.toggleCoarse('coarse1', eventOff);
+    expect(component.selectedCoarse.has('coarse1')).toBeFalse();
+  });
+
+  it('should calculateCoarseTotal correctly', () => {
+    component.riskClassLocationFilters = [
+      { evaluationCriteriaGuid: 'c1', weightedRank: 1 },
+      { evaluationCriteriaGuid: 'c2', weightedRank: 2 }
+    ] as any;
+    component.selectedCoarse = new Set(['c1', 'c2']);
+    component.calculateCoarseTotal();
+    expect(component.coarseTotal).toBe(3);
+  });
+
+  it('should build RCL section when isOutsideOfWuiOn is true', () => {
+    component.isOutsideOfWuiOn = true;
+    component.initializeForm();
+    component.criteriaForm.patchValue({ localWuiRiskClassRationale: 'Some rationale' });
+    component.riskClassLocationFilters = [
+      { evaluationCriteriaGuid: 'rcl1', weightedRank: 2 } as any
+    ];
+    component.selectedCoarse.add('rcl1');
+    const existingSummary = {
+      evaluationCriteriaSummaryGuid: 'summary-guid',
+      evaluationCriteriaSectionSummaries: [
+        {
+          evaluationCriteriaSectionCode: { evaluationCriteriaSectionCode: 'RCL' },
+          evaluationCriteriaSectionSummaryGuid: 'rcl-section-guid',
+          evaluationCriteriaSelected: [
+            { evaluationCriteriaGuid: 'rcl1', evaluationCriteriaSelectedGuid: 'existing-guid' }
+          ]
+        }
+      ]
+    } as any;
+
+    const result = component.buildEvaluationCriteriaSummaryModel(existingSummary);
+    const rcl = result.evaluationCriteriaSectionSummaries?.find(
+      s => s.evaluationCriteriaSectionCode?.evaluationCriteriaSectionCode === 'RCL'
+    );
+    expect(rcl).toBeDefined();
+    expect(rcl?.evaluationCriteriaSelected?.[0].isEvaluationCriteriaSelectedInd).toBeTrue();
+  });
+
+  it('should disable WUI controls if isOutsideWuiInd is true in summary', () => {
+    component.wuiRiskClassCode = [{ wuiRiskClassCode: 'WUI', weightedRank: 1 }];
+    component.initializeForm();
+    component.data.evaluationCriteriaSummary = {
+      isOutsideWuiInd: true
+    } as any;
+    component.prefillFromEvaluationCriteriaSummary();
+    expect(component.criteriaForm.get('wuiRiskClassCode')?.disabled).toBeTrue();
+    expect(component.criteriaForm.get('localWuiRiskClassCode')?.disabled).toBeTrue();
+  });
+
+  it('should return correct sectionTitles for FUEL_MGMT', () => {
+    component.data.project.projectTypeCode = { projectTypeCode: 'FUEL_MGMT' };
+    const titles = component.sectionTitles;
+    expect(titles.section1).toBe('Coarse Filters');
+    expect(titles.totalLabel('section1')).toContain('Coarse Filters');
+    expect(titles.commentLabel('section1')).toContain('Local WUI Risk Class Rationale');
+  });
+
+  it('should toggleOutsideOfWui on and off', () => {
+    component.initializeForm();
+    component.riskClassLocationFilters = [{ evaluationCriteriaGuid: 'rcl-guid', weightedRank: 1 }];
+    component.selectedCoarse.add('rcl-guid');
+
+    component.toggleOutsideOfWui(true);
+    expect(component.isOutsideOfWuiOn).toBeTrue();
+    expect(component.criteriaForm.get('wuiRiskClassCode')?.disabled).toBeTrue();
+    expect(component.selectedCoarse.size).toBe(0);
+
+    component.toggleOutsideOfWui(false);
+    expect(component.isOutsideOfWuiOn).toBeFalse();
+    expect(component.criteriaForm.get('wuiRiskClassCode')?.enabled).toBeTrue();
+  });
+
+  it('should updateCoarseTotalFromDropdowns correctly', () => {
+    component.initializeForm();
+    component.criteriaForm.patchValue({
+      wuiRiskClassCode: 2,
+      localWuiRiskClassCode: 3
+    });
+
+    component.updateCoarseTotalFromDropdowns();
+    expect(component.coarseTotal).toBe(5);
+  });
+
 
 });

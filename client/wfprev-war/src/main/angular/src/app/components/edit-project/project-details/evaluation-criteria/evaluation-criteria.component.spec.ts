@@ -208,5 +208,42 @@ describe('EvaluationCriteriaComponent', () => {
     expect(result).toBe(1.5);
   });
 
+  it('should return true for isFuelManagement when projectType is FUEL_MANAGEMENT', () => {
+    component.project = {
+      projectTypeCode: { projectTypeCode: ProjectTypes.FUEL_MANAGEMENT }
+    } as any;
+
+    expect(component.isFuelManagement).toBeTrue();
+  });
+
+  it('should return correct evaluationLabels for prescribed fire project', () => {
+    component.project = {
+      projectTypeCode: { projectTypeCode: ProjectTypes.CULTURAL_PRESCRIBED_FIRE }
+    } as any;
+
+    const labels = component.evaluationLabels;
+
+    expect(labels.coarse).toBe('Risk Class and Location');
+    expect(labels.medium).toBe('Burn Development and Feasibility');
+    expect(labels.fine).toBe('Collective Impact');
+    expect(labels.comments.medium).toBe('Comments');
+    expect(labels.comments.fine).toBe('Comments');
+    expect(labels.comments.rationale).toBe('Comments');
+  });
+
+  it('should return correct evaluationLabels for fuel management project', () => {
+    component.project = {
+      projectTypeCode: { projectTypeCode: ProjectTypes.FUEL_MANAGEMENT }
+    } as any;
+
+    const labels = component.evaluationLabels;
+
+    expect(labels.coarse).toBe('Coarse Filter Total');
+    expect(labels.medium).toBe('Medium Filter Total');
+    expect(labels.fine).toBe('Fine Filter Total');
+    expect(labels.comments.medium).toBe('Medium Filter Comments');
+    expect(labels.comments.fine).toBe('Fine Filter Comments');
+    expect(labels.comments.rationale).toBe('Local WUI Risk Class Rationale');
+  });
 
 });
