@@ -1,11 +1,11 @@
-import { AfterViewInit, Component, ComponentRef, ViewChild, ViewContainerRef } from '@angular/core';
+import { Component, ComponentRef, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
 import { MatTabsModule } from '@angular/material/tabs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { ProjectDetailsComponent } from 'src/app/components/edit-project/project-details/project-details.component';
 import { ProjectFiscalsComponent } from 'src/app/components/edit-project/project-fiscals/project-fiscals.component';
 import { CanComponentDeactivate } from 'src/app/services/util/can-deactive.guard';
-import { ResourcesRoutes } from 'src/app/utils';
+import { EditProjectTabIndexes, ResourcesRoutes } from 'src/app/utils';
 
 @Component({
   selector: 'wfprev-edit-project',
@@ -14,14 +14,15 @@ import { ResourcesRoutes } from 'src/app/utils';
   templateUrl: './edit-project.component.html',
   styleUrl: './edit-project.component.scss'
 })
-export class EditProjectComponent implements CanComponentDeactivate, AfterViewInit {
-  projectName: string | null = null;
+export class EditProjectComponent implements CanComponentDeactivate, OnInit {
   @ViewChild('fiscalsContainer', { read: ViewContainerRef }) fiscalsContainer!: ViewContainerRef;
   @ViewChild(ProjectDetailsComponent) projectDetailsComponent!: ProjectDetailsComponent;
 
+  projectName: string | null = null;
   projectFiscalsComponentRef: ComponentRef<any> | null = null;
   activeRoute = '';
-  selectedTabIndex = 0;
+  // default to details tab
+  selectedTabIndex = EditProjectTabIndexes.Details;
   focusedFiscalId: string | null = null;
 
   constructor(
@@ -29,23 +30,26 @@ export class EditProjectComponent implements CanComponentDeactivate, AfterViewIn
     private readonly route: ActivatedRoute
   ) { }
 
-  ngAfterViewInit(): void {
-    // Check if the URL includes a tab parameter (e.g. ?tab=fiscal)
-    // If 'fiscal' is specified, activate the Fiscal Activity tab
-    // Extract fiscalGuid query param to direct towards a specific fiscal
-    const tab = this.route.snapshot.queryParamMap.get('tab');
-    this.focusedFiscalId = this.route.snapshot.queryParamMap.get('fiscalGuid');
+  ngOnInit(): void {
+    this.route.queryParamMap.subscribe((params) => {
+      const tab = params.get('tab');
+      this.focusedFiscalId = params.get('fiscalGuid');
 
-    if (tab === 'fiscal') {
-      this.selectedTabIndex = 1;
-      this.loadFiscalComponent();
-    }
+      // If the tab is 'fiscal', set the tab index and load the fiscal component
+      if (tab === 'fiscal') {
+        this.selectedTabIndex = EditProjectTabIndexes.Fiscal;
+        this.loadFiscalComponent();
+      } else {
+        // default to details tab
+        this.selectedTabIndex = EditProjectTabIndexes.Details;
+      }
+    });
   }
 
   onTabChange(event: any): void {
     this.selectedTabIndex = event.index;
 
-    const isFiscalTab = event.index === 1;
+    const isFiscalTab = event.index === EditProjectTabIndexes.Fiscal;
     const tab = isFiscalTab ? 'fiscal' : 'details';
 
     // Fetch current query params
@@ -65,8 +69,7 @@ export class EditProjectComponent implements CanComponentDeactivate, AfterViewIn
     this.router.navigate([], {
       relativeTo: this.route,
       queryParams,
-      queryParamsHandling: 'merge',
-      replaceUrl: true
+      queryParamsHandling: 'merge'
     });
 
     // Check if "Fiscal Years" tab is selected

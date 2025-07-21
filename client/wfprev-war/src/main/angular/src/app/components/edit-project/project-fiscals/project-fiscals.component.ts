@@ -90,6 +90,20 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
   ngOnInit(): void {
     this.loadCodeTables();
     this.generateFiscalYears();
+
+    // listen for changes to query params from user clicking browser back/forward button
+    this.route.queryParamMap.subscribe(params => {
+      const newGuid = params.get('fiscalGuid');
+       // if a new fiscalGuid is present and differs from the current one, pdate the selected tab to route towards it
+      if (newGuid && newGuid !== this.currentFiscalGuid) {
+        const index = this.projectFiscals.findIndex(f => f.projectPlanFiscalGuid === newGuid);
+        if (index >= 0) {
+          this.selectedTabIndex = index;
+          this.updateCurrentFiscalGuid();
+        }
+      }
+    });
+
     this.loadProjectFiscals();
     const formattedName = this.tokenService.getUserFullName(true);
     if (formattedName) {
@@ -258,7 +272,7 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
           if (index !== -1) {
             this.selectedTabIndex = index;
           }
-         // if no fiscal default to first tab or direct to previous index 
+          // if no fiscal default to first tab or direct to previous index 
         } else this.selectedTabIndex = previousTabIndex < this.projectFiscals.length ? previousTabIndex : 0;
 
         this.updateCurrentFiscalGuid();
@@ -285,8 +299,7 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
       this.router.navigate([], {
         relativeTo: this.route,
         queryParams: { ...this.route.snapshot.queryParams, fiscalGuid },
-        queryParamsHandling: 'merge',
-        replaceUrl: true
+        queryParamsHandling: 'merge'
       });
     }
   }
