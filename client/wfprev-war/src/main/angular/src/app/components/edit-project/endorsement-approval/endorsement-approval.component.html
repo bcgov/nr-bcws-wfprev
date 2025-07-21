@@ -2,6 +2,7 @@
   <wfprev-details-container
     [title]="'Endorsement and Approval'"
     [saveDisabled]="!endorsementApprovalForm.valid || !endorsementApprovalForm.dirty"
+    [cancelDisabled]="!endorsementApprovalForm.dirty"
     (save)="onSave()"
     (cancel)="onCancel()">
 
