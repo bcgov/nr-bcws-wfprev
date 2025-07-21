@@ -59,7 +59,7 @@ class MockProjectService {
 
 }
 
-describe('EditProjectComponent', () => {
+fdescribe('EditProjectComponent', () => {
   let component: EditProjectComponent;
   let fixture: ComponentFixture<EditProjectComponent>;
   let mockActivatedRoute: Partial<ActivatedRoute>;
@@ -112,32 +112,6 @@ describe('EditProjectComponent', () => {
     expect(component.selectedTabIndex).toEqual(EditProjectTabIndexes.Fiscal);
     expect(spy).toHaveBeenCalled();
   });
-
-//   fdescribe('EditProjectComponent', () => {
-//   it('should render the Details tab', async () => {
-//     component.selectedTabIndex = EditProjectTabIndexes.Details;
-//     fixture.detectChanges();
-
-//     await fixture.whenStable();  // ✅ wait for tabs to render
-//     fixture.detectChanges();     // ✅ render the tab contents
-
-//     const detailsTab = fixture.debugElement.query(By.css('.details-tab'));
-//     expect(detailsTab).toBeTruthy();
-//   });
-// });
-
-  // fdescribe('EditProjectComponent', () => {
-  //   it('should display ProjectDetailsComponent inside the Details tab', async () => {
-  //     component.selectedTabIndex = EditProjectTabIndexes.Details;
-  //     fixture.detectChanges();
-
-  //     await fixture.whenStable();
-  //     fixture.detectChanges(); // run again after stabilization
-
-  //     const projectDetailsComponent = fixture.debugElement.query(By.directive(ProjectDetailsComponent));
-  //     expect(projectDetailsComponent).toBeTruthy();
-  //   });
-  // });
 
   it('should not reload ProjectFiscalsComponent if it is already loaded', () => {
     component.projectFiscalsComponentRef = {} as any;
