@@ -407,17 +407,7 @@ create_iam_role() {
                     "token.actions.githubusercontent.com:iss": "https://token.actions.githubusercontent.com"
                 }
             }
-        },
-		{
-			"Effect": "Allow",
-			"Principal": {
-				"AWS": [
-					"arn:aws:iam::${account_number}:role/${role_name}",
-					"arn:aws:sts::${account_number}:assumed-role/${role_name}/wfprev-terraform-s3"
-				]
-			},
-			"Action": "sts:AssumeRole"
-		}
+        }
     ]
 }
 EOF
