@@ -331,6 +331,30 @@ create_iam_policy() {
       "Effect": "Allow",
       "Action": ["application-autoscaling:*"],
       "Resource": "*"
+    },
+    {
+      "Sid": "SNS",
+      "Effect": "Allow",
+      "Action": ["sns:*"],
+      "Resource": "*"
+    },
+    {
+      "Sid": "Lambda",
+      "Effect": "Allow",
+      "Action": ["lambda:*"],
+      "Resource": "*"
+    },
+    {
+      "Sid": "Route53",
+      "Effect": "Allow",
+      "Action": ["route53:*"],
+      "Resource": "*"
+    },
+    {
+      "Sid": "ACM",
+      "Effect": "Allow",
+      "Action": ["acm:*"],
+      "Resource": "*"
     }
   ]
 }
