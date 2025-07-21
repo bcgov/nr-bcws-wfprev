@@ -153,8 +153,8 @@
   }
 
   button.primary {
-    background-color: #fff;
-    color: #2D2D2D;
+    background-color: var(--wf-primary-color);
+    color: #fff;
     font-family: var(--wf-font-family-main);
     border: 1px solid #353433;
   }
