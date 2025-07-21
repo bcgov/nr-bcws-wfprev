@@ -31,6 +31,6 @@ jobs:
       IMAGE_TAG: latest
       RUN_LIQUIBASE: true
       COMMAND: plan
-      GDB_EXTRACTOR_IMAGE: whatever
+      GDB_EXTRACTOR_IMAGE: 
     secrets: inherit
     
