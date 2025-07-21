@@ -1457,6 +1457,23 @@
         ],
         "rollback": []
       }
+    },
+    {
+      "changeSet": {
+        "id": "01_00_28_00",
+        "author": "luli",
+        "tagDatabase": { "tag": "version_01_00_28_00" },
+        "changes": [
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_00_28/00/dml/app_wf1_prev.dml.update_evaluation_criteria_4_wfprev-651.sql"
+            }
+          }
+        ],
+        "rollback": []
+      }
     }
    ] 
 }
