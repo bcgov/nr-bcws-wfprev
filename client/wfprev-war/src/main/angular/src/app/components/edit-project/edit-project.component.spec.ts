@@ -59,7 +59,7 @@ class MockProjectService {
 
 }
 
-fdescribe('EditProjectComponent', () => {
+describe('EditProjectComponent', () => {
   let component: EditProjectComponent;
   let fixture: ComponentFixture<EditProjectComponent>;
   let mockActivatedRoute: Partial<ActivatedRoute>;
