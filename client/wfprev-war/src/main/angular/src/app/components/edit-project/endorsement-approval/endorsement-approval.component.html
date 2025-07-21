@@ -2,6 +2,7 @@
   <wfprev-details-container
     [title]="'Endorsement and Approval'"
     [saveDisabled]="!endorsementApprovalForm.valid || !endorsementApprovalForm.dirty"
+    [cancelDisabled]="!endorsementApprovalForm.dirty"
     (save)="onSave()"
     (cancel)="onCancel()">
 
@@ -15,7 +16,7 @@
         <div class="inline-grid">
           <div class="form-item">
             <wfprev-checkbox formControlName="endorseFiscalYear">
-              <span>Endorse Fiscal Year</span>
+              <span>Endorse Fiscal Activity</span>
             </wfprev-checkbox>
           </div>
 
@@ -52,7 +53,7 @@
         <div class="inline-grid">
           <div class="form-item">
             <wfprev-checkbox formControlName="approveFiscalYear">
-              Approve Fiscal Year
+              Approve Fiscal Activity
             </wfprev-checkbox>
           </div>
 
