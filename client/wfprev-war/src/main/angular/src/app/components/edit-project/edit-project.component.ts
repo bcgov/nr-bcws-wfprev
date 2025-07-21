@@ -73,7 +73,7 @@ export class EditProjectComponent implements CanComponentDeactivate, OnInit {
     });
 
     // Check if "Fiscal Years" tab is selected
-    if (event.index === 1 && !this.projectFiscalsComponentRef) {
+    if (event.index === EditProjectTabIndexes.Fiscal && !this.projectFiscalsComponentRef) {
       import('./project-fiscals/project-fiscals.component').then(
         ({ ProjectFiscalsComponent }) => {
           this.fiscalsContainer.clear();
