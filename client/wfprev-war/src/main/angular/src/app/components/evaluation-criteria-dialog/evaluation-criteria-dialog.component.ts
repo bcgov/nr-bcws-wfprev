@@ -132,13 +132,15 @@ export class EvaluationCriteriaDialogComponent {
 
           this.fineFilters = this.evaluationCriteriaCode
             .filter(c => (c.weightedRank ?? 0) < 1)
-            .sort((a, b) => (b.weightedRank ?? 0) - (a.weightedRank ?? 0));
+            .sort((a, b) => (a.criteriaLabel ?? '').localeCompare(b.criteriaLabel ?? ''))
         }
 
         if (type === ProjectTypes.CULTURAL_PRESCRIBED_FIRE) {
           this.mediumFilters = this.evaluationCriteriaCode.filter(c => c.evalCriteriaSectCode === EvaluationCriteriaSectionCodes.BURN_DEVELOPMENT_FEASIBILITY);
           this.fineFilters = this.evaluationCriteriaCode.filter(c => c.evalCriteriaSectCode === EvaluationCriteriaSectionCodes.COLLECTIVE_IMPACT);
-          this.riskClassLocationFilters = this.evaluationCriteriaCode.filter(c => c.evalCriteriaSectCode === EvaluationCriteriaSectionCodes.RISK_CLASS_LOCATION);
+          this.riskClassLocationFilters = this.evaluationCriteriaCode
+            .filter(c => c.evalCriteriaSectCode === EvaluationCriteriaSectionCodes.RISK_CLASS_LOCATION)
+            .sort((a, b) => a.criteriaLabel.localeCompare(b.criteriaLabel));
         }
         break;
 
