@@ -140,7 +140,7 @@ export class EvaluationCriteriaDialogComponent {
           this.fineFilters = this.evaluationCriteriaCode.filter(c => c.evalCriteriaSectCode === EvaluationCriteriaSectionCodes.COLLECTIVE_IMPACT);
           this.riskClassLocationFilters = this.evaluationCriteriaCode
             .filter(c => c.evalCriteriaSectCode === EvaluationCriteriaSectionCodes.RISK_CLASS_LOCATION)
-            .sort((a, b) => a.criteriaLabel.localeCompare(b.criteriaLabel));
+            .sort((a, b) => (a.criteriaLabel ?? '').localeCompare(b.criteriaLabel ?? ''))
         }
         break;
 
