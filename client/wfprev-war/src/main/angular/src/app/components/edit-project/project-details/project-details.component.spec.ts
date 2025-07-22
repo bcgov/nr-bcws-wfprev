@@ -550,6 +550,8 @@ describe('ProjectDetailsComponent', () => {
 
     describe('populateFormWithProjectDetails Method', () => {
       it('should call patchFormValues with the correct data', () => {
+        spyOn(component, 'patchFormValues');
+
         const mockData = {
           projectTypeCode: { projectTypeCode: 'Code1' },
           fundingStream: 'Stream1',
@@ -569,7 +571,6 @@ describe('ProjectDetailsComponent', () => {
           longitude: -123.1207,
         };
 
-        spyOn(component, 'patchFormValues');
         component.populateFormWithProjectDetails(mockData);
 
         expect(component.patchFormValues).toHaveBeenCalledWith(mockData);
