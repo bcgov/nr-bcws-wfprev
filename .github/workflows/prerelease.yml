@@ -30,21 +30,40 @@ jobs:
 
   # include additional steps for DLV, PRD
   # rename to deploy-wftst, rename environment to tst
-  deploy-test:
+  deploy-wfdlv:
     needs: tag-builds
-    if: ${{ contains(github.event.release.tag_name, '-rc') }}
+    if: ${{ contains(github.event.release.tag_name, '-beta') }}
     uses: ./.github/workflows/terragrunt-deploy.yml
     secrets: inherit
     with:
-      DEFAULT_APPLICATION_ENVIRONMENT: test
+      DEFAULT_APPLICATION_ENVIRONMENT: wfdlv
       IMAGE_TAG: ${{ github.event.release.tag_name }}
       COMMAND: apply
       RUN_LIQUIBASE: 'true'
       GDB_EXTRACTOR_IMAGE: ${{ needs.node-build.outputs.gdb_digest }}
 
-  wfprev-ui:
+  wfprev-ui-dlv:
     uses: ./.github/workflows/client-build.yml
-    needs: [deploy-test]
+    needs: [deploy-wfdlv]
     with:
-      DEFAULT_APPLICATION_ENVIRONMENT: test
+      DEFAULT_APPLICATION_ENVIRONMENT: wfdlv
+    secrets: inherit
+
+  deploy-wftst:
+    needs: tag-builds
+    if: ${{ contains(github.event.release.tag_name, '-rc') }}
+    uses: ./.github/workflows/terragrunt-deploy.yml
+    secrets: inherit
+    with:
+      DEFAULT_APPLICATION_ENVIRONMENT: wftst
+      IMAGE_TAG: ${{ github.event.release.tag_name }}
+      COMMAND: apply
+      RUN_LIQUIBASE: 'true'
+      GDB_EXTRACTOR_IMAGE: ${{ needs.node-build.outputs.gdb_digest }}
+
+  wfprev-ui-tst:
+    uses: ./.github/workflows/client-build.yml
+    needs: [deploy-wftst]
+    with:
+      DEFAULT_APPLICATION_ENVIRONMENT: wftst
     secrets: inherit
