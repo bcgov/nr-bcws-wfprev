@@ -39,7 +39,7 @@ export class EndorsementApprovalComponent implements OnChanges {
 
   @Input() fiscal!: ProjectFiscal;
   @Input() currentUser!: string;
-  @Output() saveEndorsement = new EventEmitter<ProjectFiscal>(); 
+  @Output() saveEndorsement = new EventEmitter<ProjectFiscal>();
 
   endorsementApprovalForm = new FormGroup({
     endorseFiscalYear: new FormControl<boolean | null>(false),
@@ -54,16 +54,21 @@ export class EndorsementApprovalComponent implements OnChanges {
     this.endorsementApprovalForm.get('endorseFiscalYear')?.valueChanges.subscribe((checked) => {
       if (checked) {
         this.endorsementDateControl.setValue(new Date());
+        this.endorsementDateControl.enable();
       } else {
         this.endorsementDateControl.setValue(null);
+        this.endorsementDateControl.disable();
+        this.fiscal.endorserName = undefined;
       }
     });
 
     this.endorsementApprovalForm.get('approveFiscalYear')?.valueChanges.subscribe((checked) => {
       if (checked) {
         this.approvalDateControl.setValue(new Date());
+        this.approvalDateControl.enable();
       } else {
         this.approvalDateControl.setValue(null);
+        this.approvalDateControl.disable();
       }
     });
   }
@@ -87,6 +92,9 @@ export class EndorsementApprovalComponent implements OnChanges {
           : null,
         approvalComment: fiscal.businessAreaComment ?? ''
       });
+
+      this.endorsementDateControl[endorseChecked ? 'enable' : 'disable']();
+      this.approvalDateControl[approveChecked ? 'enable' : 'disable']();
 
       this.endorsementApprovalForm.markAsPristine();
     }
@@ -132,7 +140,7 @@ export class EndorsementApprovalComponent implements OnChanges {
       approverName: formValue.approveFiscalYear ? this.currentUser : undefined,
       businessAreaComment: formValue.approvalComment ?? undefined,
 
-       // Status logic: (return to DRAFT if removed and not DRAFT/PROPOSED)
+      // Status logic: (return to DRAFT if removed and not DRAFT/PROPOSED)
       planFiscalStatusCode: shouldResetToPrepared
         ? { planFiscalStatusCode: FiscalStatuses.DRAFT }
         : this.fiscal.planFiscalStatusCode,
@@ -169,7 +177,7 @@ export class EndorsementApprovalComponent implements OnChanges {
   get approvalDateControl(): FormControl {
     return this.endorsementApprovalForm.get('approvalDate') as FormControl;
   }
-  
+
   get approvalCommentControl(): FormControl {
     return this.endorsementApprovalForm.get('approvalComment') as FormControl;
   }
