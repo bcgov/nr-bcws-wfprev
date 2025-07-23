@@ -310,7 +310,7 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
 
   addNewFiscal(): void {
     this.currentFiscalGuid = '';
-    // Check if there is already an unsaved fiscal year
+    // Check if there is already an unsaved fiscal activity
     const hasUnsavedFiscal = this.projectFiscals.some(fiscal => !fiscal.projectPlanFiscalGuid);
     if (hasUnsavedFiscal) {
       // And to prevent adding another unsaved fiscal
@@ -453,13 +453,13 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
     const fiscalName = this.projectFiscals[this.selectedTabIndex]?.projectFiscalName;
     const fiscalYear = this.projectFiscals[this.selectedTabIndex]?.fiscalYear;
     const formattedYear = fiscalYear ? `${fiscalYear}/${(fiscalYear + 1).toString().slice(-2)}` : null;
-    const yearName = (fiscalName && fiscalYear) ? `${fiscalName}:${formattedYear}` : 'this fiscal year'
+    const yearName = (fiscalName && fiscalYear) ? `${fiscalName}:${formattedYear}` : 'this fiscal activity'
 
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       data: {
         indicator: 'delete-fiscal-year',
         title: ModalTitles.DELETE_FISCAL_YEAR_TITLE,
-        message: `Are you sure you want to delete ${yearName}? This action cannot be reversed and will immediately remove the Fiscal Year from the Project scope.`
+        message: `Are you sure you want to delete ${yearName}? This action cannot be reversed and will immediately remove the Fiscal Activity from the Project scope.`
       },
       width: '600px',
     });
@@ -467,7 +467,7 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
     dialogRef.afterClosed().subscribe((confirmed: boolean) => {
       if (confirmed) {
         if (formData.projectPlanFiscalGuid) {
-          // Delete from the service call if it's a saved fiscal year
+          // Delete from the service call if it's a saved fiscal activity
           this.projectService.deleteProjectFiscalByProjectPlanFiscalGuid(this.projectGuid, formData.projectPlanFiscalGuid)
             .subscribe({
               next: () => {

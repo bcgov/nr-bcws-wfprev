@@ -12,7 +12,7 @@
             <div *ngFor="let fiscal of projectFiscals" class="fiscal-item">
                 <div class="fiscal-title-row">
                     <span class="section-1">{{fiscal.projectFiscalName}}</span>
-                    <span class="section-2"> Fiscal Year: 
+                    <span class="section-2"> Fiscal Activity:
                         <span class="fiscal-year">{{convertFiscalYear(fiscal.fiscalYear)}}</span>
                     </span>
                     <span class="section-3">
@@ -123,7 +123,7 @@
         </div>
         <ng-template #emptyContent>
             <div class="fiscal-empty-content">
-                No Fiscal Years have been added. 
+                No Fiscal Activities have been added. 
             </div>
         </ng-template>
     </mat-expansion-panel>    

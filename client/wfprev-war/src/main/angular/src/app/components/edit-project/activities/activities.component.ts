@@ -718,7 +718,7 @@ export class ActivitiesComponent implements OnChanges, CanComponentDeactivate {
           this.isNewActivityBeingAdded = false;
           return;
         }
-        // Delete from the service call if it's a saved fiscal year
+        // Delete from the service call if it's a saved fiscal activity
         this.projectService.deleteActivity(this.projectGuid, this.fiscalGuid, activityGuid)
           .subscribe({
             next: () => {

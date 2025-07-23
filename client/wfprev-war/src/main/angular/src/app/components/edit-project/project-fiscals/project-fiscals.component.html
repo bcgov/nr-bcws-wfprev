@@ -77,7 +77,7 @@
                   </div>
 
                   <div class="form-item">
-                    <label>Fiscal Year<span class="required">*</span></label>
+                    <label>Fiscal Activity<span class="required">*</span></label>
                     <select id="fiscalYear" formControlName="fiscalYear">
                       <option value="" disabled selected hidden>Select</option>
                       <option *ngFor="let year of fiscalYears" [value]="year.split('/')[0]">{{ year }}</option>
@@ -127,7 +127,7 @@
                   <div class="form-item">
                     <wfprev-input-field
                       [id]="'resultsOpeningId'"
-                      [label]="'Results ID'"
+                      [label]="'RESULTS ID'"
                       [placeholder]="'Begin Typing'"
                       [control]="getFiscalControl(selectedTabIndex, 'resultsOpeningId')"
                       [tooltip]="getFiscalControl(selectedTabIndex, 'resultsOpeningId')?.value"
@@ -318,7 +318,7 @@
       </div>
       <ng-template #noFiscals>
         <div class="no-fiscals">
-          No Fiscal Years have been added. 
+          No Fiscal Activities have been added. 
         </div>
       </ng-template>
   </div>

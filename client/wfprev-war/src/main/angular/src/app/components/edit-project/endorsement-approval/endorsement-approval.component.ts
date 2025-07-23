@@ -42,37 +42,41 @@ export class EndorsementApprovalComponent implements OnChanges {
   @Output() saveEndorsement = new EventEmitter<ProjectFiscal>();
 
   endorsementApprovalForm = new FormGroup({
-    endorseFiscalYear: new FormControl<boolean | null>(false),
+    endorseFiscalActivity: new FormControl<boolean | null>(false),
     endorsementDate: new FormControl<Date | null>(null),
     endorsementComment: new FormControl<string | null>(''),
-    approveFiscalYear: new FormControl<boolean | null>(false),
+    approveFiscalActivity: new FormControl<boolean | null>(false),
     approvalDate: new FormControl<Date | null>(null),
     approvalComment: new FormControl<string | null>(''),
   });
 
   ngOnInit(): void {
-    this.endorsementApprovalForm.get('endorseFiscalYear')?.valueChanges.subscribe((checked) => {
-      if (checked) {
+    this.endorsementApprovalForm.get('endorseFiscalActivity')?.valueChanges.subscribe((checked) => {
+      const isChecked = !!checked;
+
+      if (isChecked) {
         this.endorsementDateControl.setValue(new Date());
-        this.endorsementDateControl.enable();
-      } else {
-        this.endorsementDateControl.setValue(null);
-        this.endorsementDateControl.disable();
+      }
+
+      this.toggleControl(this.endorsementDateControl, isChecked);
+      this.toggleControl(this.endorsementCommentControl, isChecked);
+
+      if (!isChecked && this.fiscal) {
         this.fiscal.endorserName = undefined;
       }
     });
 
-    this.endorsementApprovalForm.get('approveFiscalYear')?.valueChanges.subscribe((checked) => {
-      if (checked) {
+    this.endorsementApprovalForm.get('approveFiscalActivity')?.valueChanges.subscribe((checked) => {
+      const isChecked = !!checked;
+
+      if (isChecked) {
         this.approvalDateControl.setValue(new Date());
-        this.approvalDateControl.enable();
-      } else {
-        this.approvalDateControl.setValue(null);
-        this.approvalDateControl.disable();
       }
+
+      this.toggleControl(this.approvalDateControl, isChecked);
+      this.toggleControl(this.approvalCommentControl, isChecked);
     });
   }
-
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['fiscal']?.currentValue) {
@@ -81,20 +85,22 @@ export class EndorsementApprovalComponent implements OnChanges {
       const approveChecked = !!fiscal.isApprovedInd;
 
       this.endorsementApprovalForm.patchValue({
-        endorseFiscalYear: endorseChecked,
+        endorseFiscalActivity: endorseChecked,
         endorsementDate: endorseChecked && fiscal.endorsementTimestamp
           ? new Date(fiscal.endorsementTimestamp)
           : null,
         endorsementComment: fiscal.endorsementComment ?? '',
-        approveFiscalYear: approveChecked,
+        approveFiscalActivity: approveChecked,
         approvalDate: approveChecked && fiscal.approvedTimestamp
           ? new Date(fiscal.approvedTimestamp)
           : null,
         approvalComment: fiscal.businessAreaComment ?? ''
       });
 
-      this.endorsementDateControl[endorseChecked ? 'enable' : 'disable']();
-      this.approvalDateControl[approveChecked ? 'enable' : 'disable']();
+      this.toggleControl(this.endorsementDateControl, endorseChecked);
+      this.toggleControl(this.endorsementCommentControl, endorseChecked);
+      this.toggleControl(this.approvalDateControl, approveChecked);
+      this.toggleControl(this.approvalCommentControl, approveChecked);
 
       this.endorsementApprovalForm.markAsPristine();
     }
@@ -103,7 +109,7 @@ export class EndorsementApprovalComponent implements OnChanges {
 
 
   get effectiveEndorserName(): string {
-    const checked = this.endorsementApprovalForm.get('endorseFiscalYear')?.value;
+    const checked = this.endorsementApprovalForm.get('endorseFiscalActivity')?.value;
     return checked ? this.currentUser : (this.fiscal?.endorserName || '');
   }
 
@@ -111,8 +117,8 @@ export class EndorsementApprovalComponent implements OnChanges {
   onSave() {
     const formValue = this.endorsementApprovalForm.value;
 
-    const endorsementRemoved = !formValue.endorseFiscalYear;
-    const approvalRemoved = !formValue.approveFiscalYear;
+    const endorsementRemoved = !formValue.endorseFiscalActivity;
+    const approvalRemoved = !formValue.approveFiscalActivity;
     const currentStatusCode = this.fiscal?.planFiscalStatusCode?.planFiscalStatusCode;
     const shouldResetToPrepared =
       (endorsementRemoved || approvalRemoved) &&
@@ -123,21 +129,21 @@ export class EndorsementApprovalComponent implements OnChanges {
       ...this.fiscal,
 
       // Endorsement logic
-      endorserName: formValue.endorseFiscalYear ? this.currentUser : undefined,
-      endorsementTimestamp: formValue.endorseFiscalYear && formValue.endorsementDate
+      endorserName: formValue.endorseFiscalActivity ? this.currentUser : undefined,
+      endorsementTimestamp: formValue.endorseFiscalActivity && formValue.endorsementDate
         ? new Date(formValue.endorsementDate).toISOString()
         : undefined,
-      endorsementCode: formValue.endorseFiscalYear
+      endorsementCode: formValue.endorseFiscalActivity
         ? { endorsementCode: EndorsementCode.ENDORSED }
         : undefined,
       endorsementComment: formValue.endorsementComment ?? undefined,
 
       // Approval logic
-      isApprovedInd: !!formValue.approveFiscalYear,
-      approvedTimestamp: formValue.approveFiscalYear && formValue.approvalDate
+      isApprovedInd: !!formValue.approveFiscalActivity,
+      approvedTimestamp: formValue.approveFiscalActivity && formValue.approvalDate
         ? new Date(formValue.approvalDate).toISOString()
         : undefined,
-      approverName: formValue.approveFiscalYear ? this.currentUser : undefined,
+      approverName: formValue.approveFiscalActivity ? this.currentUser : undefined,
       businessAreaComment: formValue.approvalComment ?? undefined,
 
       // Status logic: (return to DRAFT if removed and not DRAFT/PROPOSED)
@@ -181,4 +187,16 @@ export class EndorsementApprovalComponent implements OnChanges {
   get approvalCommentControl(): FormControl {
     return this.endorsementApprovalForm.get('approvalComment') as FormControl;
   }
+
+  toggleControl(control: FormControl | null, shouldEnable: boolean): void {
+    if (!control) return;
+
+    if (shouldEnable) {
+      control.enable();
+    } else {
+      control.setValue(null);
+      control.disable();
+    }
+  }
+
 }
