@@ -94,7 +94,7 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
     // listen for changes to query params from user clicking browser back/forward button
     this.route.queryParamMap.subscribe(params => {
       const newGuid = params.get('fiscalGuid');
-       // if a new fiscalGuid is present and differs from the current one, pdate the selected tab to route towards it
+      // if a new fiscalGuid is present and differs from the current one, pdate the selected tab to route towards it
       if (newGuid && newGuid !== this.currentFiscalGuid) {
         const index = this.projectFiscals.findIndex(f => f.projectPlanFiscalGuid === newGuid);
         if (index >= 0) {
@@ -687,10 +687,13 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
     );
   }
 
-
   capitalizeFirstLetter(status: string): string {
     if (!status) return '';
     return status.toLowerCase().split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+  }
+
+  getFirstFiscalGuid(): string | null {
+    return this.projectFiscals.length > 0 ? this.projectFiscals[0].projectPlanFiscalGuid ?? null : null;
   }
 
 }

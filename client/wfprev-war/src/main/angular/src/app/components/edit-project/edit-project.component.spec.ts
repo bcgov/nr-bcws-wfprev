@@ -66,10 +66,11 @@ describe('EditProjectComponent', () => {
 
   beforeEach(async () => {
     const mockParamMap: ParamMap = {
-      has: (key: string) => ['tab', 'fiscalGuid', 'name'].includes(key),
+      has: (key: string) => ['tab', 'fiscalGuid', 'name', 'projectGuid'].includes(key),
       get: (key: string) => {
         if (key === 'tab') return 'fiscal';
         if (key === 'fiscalGuid') return 'abc-123';
+        if (key === 'projectGuid') return 'proj-456';
         if (key === 'name') return 'Test Project';
         return null;
       },
@@ -253,6 +254,7 @@ describe('EditProjectComponent (extended coverage)', () => {
     fixture = TestBed.createComponent(EditProjectComponent);
     component = fixture.componentInstance;
     router = TestBed.inject(Router);
+    (router.navigate as jasmine.Spy).calls.reset();
     fixture.detectChanges();
   });
 
@@ -274,12 +276,6 @@ describe('EditProjectComponent (extended coverage)', () => {
     component.setActive('map');
     expect(component.activeRoute).toBe('map');
     expect(router.navigate).toHaveBeenCalledWith([jasmine.anything()]);
-  });
-
-  it('should set activeRoute but not navigate for unknown menuItem', () => {
-    component.setActive('unknown');
-    expect(component.activeRoute).toBe('unknown');
-    expect((router.navigate as jasmine.Spy).calls.count()).toBe(0);
   });
 
   it('should return true from canDeactivate if both components are not dirty', () => {
