@@ -386,7 +386,7 @@ describe('ProjectsListComponent', () => {
     expect(component.allProjects[0].projectName).toBe('B');
   });
 
-  it('should format fiscal year display correctly', () => {
+  it('should format fiscal activity display correctly', () => {
     expect(component.getFiscalYearDisplay(2023)).toBe('2023/24');
     expect(component.getFiscalYearDisplay(1999)).toBe('1999/00');
     expect(component.getFiscalYearDisplay(undefined)).toBeNull();
@@ -512,26 +512,26 @@ describe('ProjectsListComponent', () => {
   });
 
 
-  it('should return null fiscal year range for missing data', () => {
+  it('should return null fiscal activity  range for missing data', () => {
     const result = component.getProjectFiscalYearRange(null);
     expect(result).toBeNull();
   });
 
-  it('should return correct single fiscal year display', () => {
+  it('should return correct single fiscal activity  display', () => {
     const result = component.getProjectFiscalYearRange({
       projectFiscals: [{ fiscalYear: 2021 }]
     });
     expect(result).toBe('2021/22');
   });
 
-  it('should return correct fiscal year range display', () => {
+  it('should return correct fiscal activity  range display', () => {
     const result = component.getProjectFiscalYearRange({
       projectFiscals: [{ fiscalYear: 2019 }, { fiscalYear: 2021 }]
     });
     expect(result).toBe('2019/20 - 2021/22');
   });
 
-  it('should handle empty fiscal year array', () => {
+  it('should handle empty fiscal activity array', () => {
     const result = component.getProjectFiscalYearRange({ projectFiscals: [] });
     expect(result).toBeNull();
   });

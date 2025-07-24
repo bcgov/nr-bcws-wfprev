@@ -134,7 +134,7 @@ describe('FiscalYearProjectsComponent', () => {
     expect(formattedDate).toBe('');
   });
 
-  it('should load activities for each fiscal year', () => {
+  it('should load activities for each fiscal activity', () => {
     const spy = spyOn(projectService, 'getFiscalActivities').and.callThrough();
     component.loadProjectFiscals();
     
@@ -179,7 +179,7 @@ describe('FiscalYearProjectsComponent', () => {
     expect(component.activitiesMap['guid1']).toEqual([]);
   });
 
-  it('should format fiscal year correctly', () => {
+  it('should format fiscal activity correctly', () => {
     component.loadProjectFiscals();
     expect(component.projectFiscals[0].fiscalYearFormatted).toBe('2023/24');
     expect(component.projectFiscals[1].fiscalYearFormatted).toBe('2022/23');

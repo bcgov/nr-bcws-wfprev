@@ -72,7 +72,7 @@ export class EditProjectComponent implements CanComponentDeactivate, OnInit {
       queryParamsHandling: 'merge'
     });
 
-    // Check if "Fiscal Years" tab is selected
+    // Check if "Fiscal Activities" tab is selected
     if (event.index === EditProjectTabIndexes.Fiscal && !this.projectFiscalsComponentRef) {
       import('./project-fiscals/project-fiscals.component').then(
         ({ ProjectFiscalsComponent }) => {
