@@ -133,19 +133,19 @@ describe('ConfirmationDialogComponent', () => {
       await setupComponentWithData({
         indicator: 'delete-fiscal-year', name: '2024',
         title: ModalTitles.DELETE_FISCAL_YEAR_TITLE,
-        message: `Are you sure you want to delete 2024? This action cannot be reversed and will immediately remove the Fiscal Year from the Project scope.`
+        message: `Are you sure you want to delete 2024? This action cannot be reversed and will immediately remove the Fiscal Activity from the Project scope.`
       });
     });
 
     it('should show the correct title', () => {
       const titleElement = fixture.nativeElement.querySelector('.title-bar');
-      expect(titleElement.textContent.trim()).toBe('Delete Fiscal Year');
+      expect(titleElement.textContent.trim()).toBe('Delete Fiscal Activity');
     });
 
     it('should display the correct message for "delete-fiscal-year', () => {
       const messageElement = fixture.nativeElement.querySelector('.dialog-content p');
       expect(messageElement.textContent.trim()).toContain('Are you sure you want to delete 2024?');
-      expect(messageElement.textContent.trim()).toContain('This action cannot be reversed and will immediately remove the Fiscal Year from the Project scope.');
+      expect(messageElement.textContent.trim()).toContain('This action cannot be reversed and will immediately remove the Fiscal Activity from the Project scope.');
     });
   });
 

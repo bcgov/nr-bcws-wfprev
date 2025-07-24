@@ -21,7 +21,7 @@ export const Default: Story = {
   args: {
     projectFiscals: [
       {
-        projectFiscalName: 'Fiscal Year 2024',
+        projectFiscalName: 'Fiscal Activity 2024',
         fiscalYear: 2024,
         planFiscalStatusCode: 'PLANNED',
         fiscalPlannedProjectSizeHa: 150,
@@ -36,7 +36,7 @@ export const WithCompletedFiscal: Story = {
   args: {
     projectFiscals: [
       {
-        projectFiscalName: 'Fiscal Year 2023',
+        projectFiscalName: 'Fiscal Activity 2023',
         fiscalYear: 2023,
         planFiscalStatusCode: 'COMPLETE',
         fiscalPlannedProjectSizeHa: 120,

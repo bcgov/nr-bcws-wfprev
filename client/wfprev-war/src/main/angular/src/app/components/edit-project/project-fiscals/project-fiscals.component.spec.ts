@@ -111,7 +111,7 @@ describe('ProjectFiscalsComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should generate fiscal years correctly', () => {
+  it('should generate fiscal activities correctly', () => {
     component.generateFiscalYears();
     expect(component.fiscalYears.length).toBe(11);
     expect(component.fiscalYears[0]).toBe(`${new Date().getFullYear() - 5}/${(new Date().getFullYear() - 4).toString().slice(-2)}`);
@@ -306,7 +306,7 @@ describe('ProjectFiscalsComponent', () => {
     expect(() => component.onCancelFiscal(0)).not.toThrow();
   });
 
-  it('should open confirmation dialog when deleting a fiscal year', () => {
+  it('should open confirmation dialog when deleting a fiscal activity', () => {
     spyOn(component.dialog, 'open').and.returnValue({
       afterClosed: () => of(true) // Simulate user clicking "Confirm"
     } as any);
@@ -324,14 +324,14 @@ describe('ProjectFiscalsComponent', () => {
       data: {
         indicator: 'delete-fiscal-year',
         title: ModalTitles.DELETE_FISCAL_YEAR_TITLE,
-        message: `Are you sure you want to delete My Plan:2025/26? This action cannot be reversed and will immediately remove the Fiscal Year from the Project scope.`
+        message: `Are you sure you want to delete My Plan:2025/26? This action cannot be reversed and will immediately remove the Fiscal Activity from the Project scope.`
       },
       width: '600px',
     });
   });
 
 
-  it('should delete a fiscal year after confirmation', () => {
+  it('should delete a fiscal activity after confirmation', () => {
     spyOn(component.dialog, 'open').and.returnValue({
       afterClosed: () => of(true) // Simulate user clicking "Confirm"
     } as any);

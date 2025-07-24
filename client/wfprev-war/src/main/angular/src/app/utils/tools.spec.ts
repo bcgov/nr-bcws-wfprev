@@ -86,7 +86,7 @@ describe('Latitude/Longitude Utilities', () => {
     });
   });
 
-  it ('should display fiscal year in correct formate',() =>{
+  it ('should display fiscal activity in correct format',() =>{
     expect(getFiscalYearDisplay(2024)).toBe('2024/25');
   })
 
@@ -94,15 +94,15 @@ describe('Latitude/Longitude Utilities', () => {
   describe('getFiscalYearColor', () => {
     const currentYear = 2024;
 
-    it('should return past color for fiscal year less than current year', () => {
+    it('should return past color for fiscal activity less than current year', () => {
       expect(getFiscalYearColor(2022, currentYear)).toBe(FiscalYearColors.past);
     });
 
-    it('should return present color for fiscal year equal to current year', () => {
+    it('should return present color for fiscal activity equal to current year', () => {
       expect(getFiscalYearColor(2024, currentYear)).toBe(FiscalYearColors.present);
     });
 
-    it('should return future color for fiscal year greater than current year', () => {
+    it('should return future color for fiscal activity greater than current year', () => {
       expect(getFiscalYearColor(2025, currentYear)).toBe(FiscalYearColors.future);
     });
   });

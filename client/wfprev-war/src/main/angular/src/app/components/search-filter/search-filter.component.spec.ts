@@ -55,7 +55,7 @@ describe('SearchFilterComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should generate fiscal year options', () => {
+  it('should generate fiscal activity options', () => {
     component.generateFiscalYearOptions();
     expect(component.fiscalYearOptions.length).toBeGreaterThan(0);
     expect(component.fiscalYearOptions[0].label).toBe('All');

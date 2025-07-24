@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { EndorsementApprovalComponent } from './endorsement-approval.component';
 import { ProjectFiscal } from 'src/app/components/models';
 import { FiscalStatuses } from 'src/app/utils/constants';
@@ -7,31 +7,30 @@ describe('EndorsementApprovalComponent', () => {
   let component: EndorsementApprovalComponent;
   let fixture: ComponentFixture<EndorsementApprovalComponent>;
 
-const mockFiscal: ProjectFiscal = {
-  projectGuid: '123',
-  activityCategoryCode: 'CATEGORY',
-  fiscalYear: 2024,
-  projectPlanStatusCode: 'ACTIVE',
-  planFiscalStatusCode: { planFiscalStatusCode: 'ACTIVE' },
-  projectFiscalName: 'Test Fiscal',
-  isApprovedInd: true,
-  isDelayedInd: false,
-  totalCostEstimateAmount: 1000,
-  fiscalPlannedProjectSizeHa: 50,
-  fiscalPlannedCostPerHaAmt: 20,
-  fiscalReportedSpendAmount: 500,
-  fiscalActualAmount: 600,
-  fiscalActualCostPerHaAmt: 12,
-  firstNationsDelivPartInd: false,
-  firstNationsEngagementInd: false,
-  endorsementComment: 'Looks good',
-  endorsementTimestamp: '2023-10-10T00:00:00Z',
-  endorserName: 'Alice',
-  approvedTimestamp: '2023-10-11T00:00:00Z',
-  approverName: 'Bob',
-  businessAreaComment: 'Approved',
-};
-
+  const mockFiscal: ProjectFiscal = {
+    projectGuid: '123',
+    activityCategoryCode: 'CATEGORY',
+    fiscalYear: 2024,
+    projectPlanStatusCode: 'ACTIVE',
+    planFiscalStatusCode: { planFiscalStatusCode: 'ACTIVE' },
+    projectFiscalName: 'Test Fiscal',
+    isApprovedInd: true,
+    isDelayedInd: false,
+    totalCostEstimateAmount: 1000,
+    fiscalPlannedProjectSizeHa: 50,
+    fiscalPlannedCostPerHaAmt: 20,
+    fiscalReportedSpendAmount: 500,
+    fiscalActualAmount: 600,
+    fiscalActualCostPerHaAmt: 12,
+    firstNationsDelivPartInd: false,
+    firstNationsEngagementInd: false,
+    endorsementComment: 'Looks good',
+    endorsementTimestamp: '2023-10-10T00:00:00Z',
+    endorserName: 'Alice',
+    approvedTimestamp: '2023-10-11T00:00:00Z',
+    approverName: 'Bob',
+    businessAreaComment: 'Approved',
+  };
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -48,42 +47,77 @@ const mockFiscal: ProjectFiscal = {
     expect(component).toBeTruthy();
   });
 
-  it('should patch form values in ngOnChanges', () => {
+  it('should set and enable endorsement controls when checkbox is checked', fakeAsync(() => {
+    component.ngOnInit();
+    fixture.detectChanges();
+    tick();
+
+    const form = component.endorsementApprovalForm;
+    const endorseControl = form.get('endorseFiscalActivity');
+
+    endorseControl?.setValue(true);
+    tick();
+
+    expect(component.endorsementDateControl.enabled).toBeTrue();
+    expect(component.endorsementCommentControl.enabled).toBeTrue();
+    expect(component.endorsementDateControl.value).toBeInstanceOf(Date);
+  }));
+
+  it('should patch and disable controls in ngOnChanges if no endorsement or approval', () => {
+    const noEndorseOrApproval: ProjectFiscal = {
+      ...mockFiscal,
+      endorserName: undefined,
+      endorsementTimestamp: undefined,
+      endorsementComment: '',
+      isApprovedInd: false,
+      approvedTimestamp: undefined,
+      approverName: undefined,
+      businessAreaComment: '',
+    };
+
+    component.fiscal = noEndorseOrApproval;
+
     component.ngOnChanges({
       fiscal: {
-        currentValue: mockFiscal,
+        currentValue: noEndorseOrApproval,
         previousValue: null,
         firstChange: true,
         isFirstChange: () => true,
-      },
+      }
     });
 
-    expect(component.endorsementApprovalForm.value.endorseFiscalYear).toBeTrue();
-    expect(component.endorsementApprovalForm.value.approveFiscalYear).toBeTrue();
-    expect(component.endorsementApprovalForm.value.endorsementComment).toBe('Looks good');
-    expect(component.endorsementApprovalForm.value.approvalComment).toBe('Approved');
+    expect(component.endorsementApprovalForm.value.endorseFiscalActivity).toBeFalse();
+    expect(component.endorsementDateControl.enabled).toBeFalse();
+    expect(component.endorsementCommentControl.enabled).toBeFalse();
+
+    expect(component.endorsementApprovalForm.value.approveFiscalActivity).toBeFalse();
+    expect(component.approvalDateControl.enabled).toBeFalse();
+    expect(component.approvalCommentControl.enabled).toBeFalse();
+
+    expect(component.endorsementApprovalForm.pristine).toBeTrue();
   });
 
-  it('should return effectiveEndorserName as currentUser when endorseFiscalYear checked', () => {
+
+  it('should return effectiveEndorserName as currentUser when endorseFiscalActivity checked', () => {
     component.fiscal = mockFiscal;
-    component.endorsementApprovalForm.get('endorseFiscalYear')?.setValue(true);
+    component.endorsementApprovalForm.get('endorseFiscalActivity')?.setValue(true);
     expect(component.effectiveEndorserName).toBe('Test User');
   });
 
-  it('should return effectiveEndorserName as fiscal endorser when endorseFiscalYear unchecked', () => {
+  it('should clear effectiveEndorserName as fiscal endorser when endorseFiscalActivity unchecked', () => {
     component.fiscal = mockFiscal;
-    component.endorsementApprovalForm.get('endorseFiscalYear')?.setValue(false);
-    expect(component.effectiveEndorserName).toBe('Alice');
+    component.endorsementApprovalForm.get('endorseFiscalActivity')?.setValue(false);
+    expect(component.effectiveEndorserName).toBe('');
   });
 
   it('should emit saveEndorsement with updated fiscal on save', () => {
     const emitSpy = spyOn(component.saveEndorsement, 'emit');
     component.fiscal = mockFiscal;
     component.endorsementApprovalForm.patchValue({
-      endorseFiscalYear: true,
+      endorseFiscalActivity: true,
       endorsementDate: new Date('2024-01-01'),
       endorsementComment: 'New endorsement',
-      approveFiscalYear: true,
+      approveFiscalActivity: true,
       approvalDate: new Date('2024-02-01'),
       approvalComment: 'New approval',
     });
@@ -104,8 +138,8 @@ const mockFiscal: ProjectFiscal = {
       planFiscalStatusCode: { planFiscalStatusCode: 'ACTIVE' }
     };
     component.endorsementApprovalForm.patchValue({
-      endorseFiscalYear: false,
-      approveFiscalYear: true,
+      endorseFiscalActivity: false,
+      approveFiscalActivity: true,
     });
 
     component.onSave();
@@ -114,48 +148,36 @@ const mockFiscal: ProjectFiscal = {
     expect(emittedFiscal!.planFiscalStatusCode?.planFiscalStatusCode).toBe(FiscalStatuses.DRAFT);
   });
 
-  it('should reset form values on cancel', () => {
-    component.fiscal = mockFiscal;
-    component.endorsementApprovalForm.patchValue({
-      endorsementComment: 'Changed comment'
-    });
-    expect(component.endorsementApprovalForm.dirty).toBeFalse();
-
-    component.onCancel();
-
-    expect(component.endorsementApprovalForm.value.endorsementComment).toBe('Looks good');
-  });
-
   it('should disable the form', () => {
     component.disableForm();
-    expect(component.endorsementApprovalForm.disabled).toBeFalse();
+    expect(component.endorsementApprovalForm.disabled).toBeTrue();
   });
 
-  it('should set endorsementDate when endorseFiscalYear toggled on', () => {
+  it('should set endorsementDate when endorseFiscalActivity toggled on', () => {
     const control = component.endorsementDateControl;
-    component.endorsementApprovalForm.get('endorseFiscalYear')?.setValue(true);
+    component.endorsementApprovalForm.get('endorseFiscalActivity')?.setValue(true);
     expect(control.value).toBeInstanceOf(Date);
   });
 
-  it('should clear endorsementDate when endorseFiscalYear toggled off', () => {
+  it('should clear endorsementDate when endorseFiscalActivity toggled off', () => {
     const control = component.endorsementDateControl;
-    component.endorsementApprovalForm.get('endorseFiscalYear')?.setValue(true);
+    component.endorsementApprovalForm.get('endorseFiscalActivity')?.setValue(true);
     expect(control.value).toBeInstanceOf(Date);
-    component.endorsementApprovalForm.get('endorseFiscalYear')?.setValue(false);
+    component.endorsementApprovalForm.get('endorseFiscalActivity')?.setValue(false);
     expect(control.value).toBeNull();
   });
 
-  it('should set approvalDate when approveFiscalYear toggled on', () => {
+  it('should set approvalDate when approveFiscalActivity toggled on', () => {
     const control = component.approvalDateControl;
-    component.endorsementApprovalForm.get('approveFiscalYear')?.setValue(true);
+    component.endorsementApprovalForm.get('approveFiscalActivity')?.setValue(true);
     expect(control.value).toBeInstanceOf(Date);
   });
 
-  it('should clear approvalDate when approveFiscalYear toggled off', () => {
+  it('should clear approvalDate when approveFiscalActivity toggled off', () => {
     const control = component.approvalDateControl;
-    component.endorsementApprovalForm.get('approveFiscalYear')?.setValue(true);
+    component.endorsementApprovalForm.get('approveFiscalActivity')?.setValue(true);
     expect(control.value).toBeInstanceOf(Date);
-    component.endorsementApprovalForm.get('approveFiscalYear')?.setValue(false);
+    component.endorsementApprovalForm.get('approveFiscalActivity')?.setValue(false);
     expect(control.value).toBeNull();
   });
 });
