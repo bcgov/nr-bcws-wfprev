@@ -137,7 +137,7 @@ BEGIN
       create_user,
       create_date,
       update_user,
-      update_date,
+      update_date
     ) 
     VALUES ( 
       nextval('wfprev.prev_audit_table_seq'),
