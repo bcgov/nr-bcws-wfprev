@@ -68,7 +68,27 @@ describe('ProjectFiscalsComponent', () => {
       declarations: [MockFiscalMapComponent, MockActivitiesComponent],
       providers: [
         { provide: TokenService, useValue: { getUserFullName: jasmine.createSpy('getUserFullName').and.returnValue('Test User') } },
-        { provide: ActivatedRoute, useValue: { snapshot: { queryParamMap: { get: () => 'test-guid' } } } },
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: {
+              queryParamMap: {
+                get: (key: string) => {
+                  if (key === 'projectGuid') return 'test-guid';
+                  if (key === 'fiscalGuid') return 'fiscal-guid-123';
+                  return null;
+                }
+              }
+            },
+            queryParamMap: of({
+              get: (key: string) => {
+                if (key === 'projectGuid') return 'test-guid';
+                if (key === 'fiscalGuid') return 'fiscal-guid-123';
+                return null;
+              }
+            })
+          }
+        },
         { provide: ProjectService, useValue: mockProjectService },
         { provide: CodeTableServices, useValue: mockCodeTableServices },
         { provide: MatSnackBar, useValue: mockSnackBar },

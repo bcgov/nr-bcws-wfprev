@@ -103,7 +103,7 @@ describe('FiscalYearProjectsComponent', () => {
     expect(component.getStatusIcon('PROPOSED')).toBe('proposed-icon.svg');
     expect(component.getStatusIcon('IN_PROG')).toBe('in-progress-icon-only.svg');
     expect(component.getStatusIcon('COMPLETE')).toBe('complete-icon.svg');
-    expect(component.getStatusIcon('ABANDONED')).toBe('abandoned-icon.svg');
+    expect(component.getStatusIcon('CANCELLED')).toBe('cancelled-icon.svg');
     expect(component.getStatusIcon('PREPARED')).toBe('prepared-icon.svg');
     expect(component.getStatusIcon('UNKNOWN')).toBeUndefined();
   });
@@ -113,7 +113,7 @@ describe('FiscalYearProjectsComponent', () => {
     expect(component.getPlanFiscalStatus('PROPOSED')).toBe('Proposed');
     expect(component.getPlanFiscalStatus('IN_PROG')).toBe('In Progress');
     expect(component.getPlanFiscalStatus('COMPLETE')).toBe('Complete');
-    expect(component.getPlanFiscalStatus('ABANDONED')).toBe('Abandoned');
+    expect(component.getPlanFiscalStatus('CANCELLED')).toBe('Cancelled');
     expect(component.getPlanFiscalStatus('PREPARED')).toBe('Prepared');
     expect(component.getPlanFiscalStatus('UNKNOWN')).toBe('Unknown');
   });

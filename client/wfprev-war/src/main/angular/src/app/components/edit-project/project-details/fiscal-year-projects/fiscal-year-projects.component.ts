@@ -30,7 +30,7 @@ export class FiscalYearProjectsComponent implements OnInit{
     "PROPOSED": "Proposed",
     "IN_PROG": "In Progress",
     "COMPLETE": "Complete",
-    "ABANDONED": "Abandoned",
+    "CANCELLED": "Cancelled",
     "PREPARED": "Prepared"
   };
 
@@ -103,7 +103,7 @@ export class FiscalYearProjectsComponent implements OnInit{
       "PROPOSED": "proposed-icon.svg",
       "IN_PROG": "in-progress-icon-only.svg",
       "COMPLETE": "complete-icon.svg",
-      "ABANDONED": "abandoned-icon.svg",
+      "CANCELLED": "cancelled-icon.svg",
       "PREPARED": "prepared-icon.svg"
     };
     return iconMap[statusCode]

@@ -17,14 +17,14 @@
                     </span>
                     <span class="section-3">
                         <img
-                            [src]="'/assets/' + getStatusIcon(fiscal.planFiscalStatusCode)"
-                            [alt]="getPlanFiscalStatus(fiscal.planFiscalStatusCode)"
+                            [src]="'/assets/' + getStatusIcon(fiscal.planFiscalStatusCode?.planFiscalStatusCode)"
+                            [alt]="getPlanFiscalStatus(fiscal.planFiscalStatusCode?.planFiscalStatusCode)"
                             class="status-icon"
                         />
-                        {{getPlanFiscalStatus(fiscal.planFiscalStatusCode)}}
+                        {{getPlanFiscalStatus(fiscal.planFiscalStatusCode?.planFiscalStatusCode)}}
                     </span>
                 </div>
-                <div class="fiscal-data" *ngIf="fiscal.planFiscalStatusCode != 'COMPLETE'; else completeFiscal">
+                <div class="fiscal-data" *ngIf="fiscal.planFiscalStatusCode?.planFiscalStatusCode != 'COMPLETE'; else completeFiscal">
                     <span class="data-title">Planned Ha: 
                         <span class="data-value">{{ fiscal.fiscalPlannedProjectSizeHa | number }}</span>
                     </span>
@@ -61,7 +61,7 @@
                     <div class="title">Activities</div>
                 
                     <!--  Show Table 1 when status is COMPLETE -->
-                    <table mat-table [dataSource]="activitiesMap[fiscal.projectPlanFiscalGuid] || []" class="activities-table" *ngIf="fiscal.planFiscalStatusCode === 'COMPLETE'">
+                    <table mat-table [dataSource]="activitiesMap[fiscal.projectPlanFiscalGuid] || []" class="activities-table" *ngIf="fiscal.planFiscalStatusCode?.planFiscalStatusCode === 'COMPLETE'">
                         <ng-container matColumnDef="name">
                             <th mat-header-cell *matHeaderCellDef> Name </th>
                             <td mat-cell *matCellDef="let activity"> {{ activity.name }} </td>
@@ -87,7 +87,7 @@
                     </table>
                 
                     <!--  Show Table 2 when status is NOT COMPLETE -->
-                    <table mat-table [dataSource]="activitiesMap[fiscal.projectPlanFiscalGuid] || []" class="activities-table" *ngIf="fiscal.planFiscalStatusCode !== 'COMPLETE'">
+                    <table mat-table [dataSource]="activitiesMap[fiscal.projectPlanFiscalGuid] || []" class="activities-table" *ngIf="fiscal.planFiscalStatusCode?.planFiscalStatusCode !== 'COMPLETE'">
                         <ng-container matColumnDef="name">
                             <th mat-header-cell *matHeaderCellDef> Name </th>
                             <td mat-cell *matCellDef="let activity"> {{ activity.name }} </td>

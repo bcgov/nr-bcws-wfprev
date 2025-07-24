@@ -11,6 +11,11 @@ export enum ResourcesRoutes {
   EDIT_PROJECT = 'edit-project'
 }
 
+export enum EditProjectTabIndexes {
+  Details = 0,
+  Fiscal = 1
+}
+
 export function appInitializerFactory(injector: Injector) {
   const appConfig = injector.get(AppConfigService);
   appConfig.configEmitter.subscribe(config => {
