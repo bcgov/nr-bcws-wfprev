@@ -60,10 +60,6 @@ export class EndorsementApprovalComponent implements OnChanges {
 
       this.toggleControl(this.endorsementDateControl, isChecked);
       this.toggleControl(this.endorsementCommentControl, isChecked);
-
-      if (!isChecked && this.fiscal) {
-        this.fiscal.endorserName = undefined;
-      }
     });
 
     this.endorsementApprovalForm.get('approveFiscalActivity')?.valueChanges.subscribe((checked) => {
@@ -106,13 +102,10 @@ export class EndorsementApprovalComponent implements OnChanges {
     }
   }
 
-
-
   get effectiveEndorserName(): string {
     const checked = this.endorsementApprovalForm.get('endorseFiscalActivity')?.value;
-    return checked ? this.currentUser : (this.fiscal?.endorserName || '');
+    return checked ? this.currentUser : '';
   }
-
 
   onSave() {
     const formValue = this.endorsementApprovalForm.value;
