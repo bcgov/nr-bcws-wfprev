@@ -1503,6 +1503,41 @@
         "rollback": [
         ]
       }
+    },
+    {
+      "changeSet": {
+        "id": "01_00_30_00",
+        "author": "hsaldyga",
+        "tagDatabase": { "tag" : "version_01_00_30_00" },
+        "changes": [
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_30/00/dml/app_wf1_prev.dml.update_program_area_wfpref-598.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_30/00/ddl/app_wf1_prev.ddl.modify_project_wfprev-492.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": "$",
+              "path": "scripts/01_00_30/00/ddl/wfprev.ddl.create_project_plan_fiscal_trigger.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": "$",
+              "path": "scripts/01_00_30/00/ddl/app_wf1_prev.ddl.project_trigger.sql"
+            }
+          }
+        ],
+        "rollback": [
+        ]
+      }
     }
    ] 
 }
