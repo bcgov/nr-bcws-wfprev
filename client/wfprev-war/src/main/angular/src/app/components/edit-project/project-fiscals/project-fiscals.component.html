@@ -77,7 +77,7 @@
                   </div>
 
                   <div class="form-item">
-                    <label>Fiscal Activity<span class="required">*</span></label>
+                    <label>Fiscal Year<span class="required">*</span></label>
                     <select id="fiscalYear" formControlName="fiscalYear">
                       <option value="" disabled selected hidden>Select</option>
                       <option *ngFor="let year of fiscalYears" [value]="year.split('/')[0]">{{ year }}</option>
