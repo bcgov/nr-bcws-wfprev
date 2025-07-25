@@ -9,6 +9,7 @@ import { EditProjectTabIndexes } from 'src/app/utils';
 import { EditProjectComponent } from './edit-project.component';
 import { ProjectFiscalsComponent } from './project-fiscals/project-fiscals.component';
 import { OAuthService } from 'angular-oauth2-oidc';
+import L from 'leaflet';
 
 const mockApplicationConfig = {
   application: {
@@ -142,6 +143,13 @@ describe('EditProjectComponent', () => {
       keys: [],
     };
 
+    spyOn(L, 'map').and.returnValue({
+      setView: () => { },
+      addLayer: () => { },
+      addTo: () => { },
+      remove: () => { }
+    } as any);
+
     mockActivatedRoute = {
       queryParamMap: of(mockParamMap),
       snapshot: {
@@ -156,6 +164,7 @@ describe('EditProjectComponent', () => {
         { provide: AppConfigService, useClass: MockAppConfigService },
         { provide: MockProjectService, useClass: MockProjectService },
         { provide: Router, useValue: { navigate: jasmine.createSpy('navigate') } },
+        { provide: OAuthService, useClass: MockOAuthService },
       ],
     }).compileComponents();
 
@@ -167,6 +176,60 @@ describe('EditProjectComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('should load fiscal component and route to first fiscal if fiscalGuid is missing and tab=fiscal', fakeAsync(async () => {
+    const mockParamMap: ParamMap = {
+      has: (key: string) => ['tab', 'projectGuid'].includes(key),
+      get: (key: string) => {
+        if (key === 'tab') return 'fiscal';
+        if (key === 'projectGuid') return 'proj-guid';
+        return null;
+      },
+      getAll: () => [],
+      keys: ['tab', 'projectGuid']
+    };
+
+    const route = TestBed.inject(ActivatedRoute) as any;
+    route.queryParamMap = of(mockParamMap);
+    route.snapshot.queryParamMap = mockParamMap;
+
+    const mockInstance = {
+      focusedFiscalId: null,
+      loadProjectFiscals: jasmine.createSpy('loadProjectFiscals'),
+      getFirstFiscalGuid: jasmine.createSpy('getFirstFiscalGuid').and.returnValue('guid-123')
+    };
+
+    const mockComponentRef = { instance: mockInstance } as any;
+
+    const clearSpy = jasmine.createSpy('clear');
+    const createComponentSpy = jasmine.createSpy('createComponent').and.returnValue(mockComponentRef);
+
+    component.fiscalsContainer = {
+      clear: clearSpy,
+      createComponent: createComponentSpy
+    } as any;
+
+    spyOn(component, 'getProjectFiscalsComponent').and.returnValue(
+      Promise.resolve({ ProjectFiscalsComponent })
+    );
+
+    await component.ngOnInit();
+
+    tick();
+
+    expect(clearSpy).toHaveBeenCalled();
+    expect(createComponentSpy).toHaveBeenCalledWith(ProjectFiscalsComponent);
+    expect(mockInstance.loadProjectFiscals).toHaveBeenCalled();
+    expect(mockInstance.getFirstFiscalGuid).toHaveBeenCalled();
+    expect((component as any).router.navigate).toHaveBeenCalledWith([], {
+      relativeTo: component['route'],
+      queryParams: {
+        tab: 'fiscal',
+        fiscalGuid: 'guid-123'
+      },
+      queryParamsHandling: 'merge'
+    });
+  }));
 
   it('should activate Fiscal tab and call loadFiscalComponent if tab=fiscal in query params', () => {
     const spy = spyOn(component, 'loadFiscalComponent');
