@@ -1,15 +1,13 @@
-import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
-import { EditProjectComponent } from './edit-project.component';
-import { ActivatedRoute, ParamMap } from '@angular/router';
-import { of } from 'rxjs';
-import { By } from '@angular/platform-browser';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { ProjectDetailsComponent } from 'src/app/components/edit-project/project-details/project-details.component';
 import { HttpClientModule } from '@angular/common/http';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { ActivatedRoute, ParamMap, Router } from '@angular/router';
+import { of } from 'rxjs';
+import { ProjectDetailsComponent } from 'src/app/components/edit-project/project-details/project-details.component';
 import { AppConfigService } from 'src/app/services/app-config.service';
-import { Router } from '@angular/router';
-import { ProjectFiscalsComponent } from './project-fiscals/project-fiscals.component';
 import { EditProjectTabIndexes } from 'src/app/utils';
+import { EditProjectComponent } from './edit-project.component';
+import { ProjectFiscalsComponent } from './project-fiscals/project-fiscals.component';
 import { OAuthService } from 'angular-oauth2-oidc';
 
 const mockApplicationConfig = {
@@ -180,7 +178,6 @@ describe('EditProjectComponent', () => {
     expect(spy).toHaveBeenCalled();
   });
 
-
   it('should not reload ProjectFiscalsComponent if it is already loaded', () => {
     component.projectFiscalsComponentRef = {} as any;
     component.onTabChange({ index: 1 });
@@ -279,6 +276,55 @@ describe('EditProjectComponent', () => {
         tab: 'details',
         fiscalGuid: null
       }),
+      queryParamsHandling: 'merge'
+    });
+  });
+});
+
+describe('EditProjectComponent (fallback test)', () => {
+  let fixture: ComponentFixture<EditProjectComponent>;
+  let component: EditProjectComponent;
+  let routerSpy: jasmine.SpyObj<Router>;
+
+  beforeEach(async () => {
+    const mockParamMap: ParamMap = {
+      has: (key: string) => ['tab', 'fiscalGuid', 'projectGuid'].includes(key),
+      get: (key: string) => {
+        if (key === 'tab') return 'invalid';
+        if (key === 'fiscalGuid') return 'abc-123';
+        if (key === 'projectGuid') return 'proj-guid';
+        return null;
+      },
+      getAll: () => [],
+      keys: ['tab', 'fiscalGuid', 'projectGuid']
+    };
+
+    const mockActivatedRoute = {
+      queryParamMap: of(mockParamMap),
+      snapshot: { queryParamMap: mockParamMap }
+    };
+
+    routerSpy = jasmine.createSpyObj('Router', ['navigate']);
+
+    await TestBed.configureTestingModule({
+      imports: [EditProjectComponent, BrowserAnimationsModule, HttpClientModule],
+      providers: [
+        { provide: ActivatedRoute, useValue: mockActivatedRoute },
+        { provide: Router, useValue: routerSpy },
+        { provide: AppConfigService, useClass: MockAppConfigService },
+      ]
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(EditProjectComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
+
+  it('should fallback to Details tab and remove fiscalGuid when tab is invalid and fiscalGuid is present', () => {
+    expect(component.selectedTabIndex).toBe(EditProjectTabIndexes.Details);
+    expect(routerSpy.navigate).toHaveBeenCalledWith([], {
+      relativeTo: jasmine.anything(),
+      queryParams: { fiscalGuid: null },
       queryParamsHandling: 'merge'
     });
   });
