@@ -219,7 +219,7 @@ describe('FiscalMapComponent', () => {
     expect(spy).toHaveBeenCalled();
   }));
 
-  it('should plot activity boundaries for different fiscal years', () => {
+  it('should plot activity boundaries for different fiscal activities', () => {
     const mockFitBounds = jasmine.createSpy('fitBounds');
     const mockRemove = jasmine.createSpy('remove');
     (component as any).map = { fitBounds: mockFitBounds, remove: mockRemove };

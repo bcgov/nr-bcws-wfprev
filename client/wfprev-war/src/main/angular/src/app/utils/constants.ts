@@ -125,7 +125,7 @@ export const FiscalActionLabels = {
   SET_IN_PROGRESS: 'Set to In Progress',
   SET_COMPLETE: 'Set to Complete',
   CANCEL_FISCAL: 'Cancel Fiscal',
-  DELETE: 'Delete Fiscal Year',
+  DELETE: 'Delete Fiscal Activity',
 };
 
 export const FiscalStatuses = {
@@ -150,7 +150,7 @@ export const ModalTitles = {
   CONFIRM_CANCEL_TITLE: 'Confirm Cancel',
   CONFIRM_UNSAVE_TITLE: 'Confirm Unsave',
   DELETE_ATTACHMENT_TITLE: 'Delete Attachment',
-  DELETE_FISCAL_YEAR_TITLE: 'Delete Fiscal Year',
+  DELETE_FISCAL_YEAR_TITLE: 'Delete Fiscal Activity',
   DELETE_ACTIVITY_TITLE: 'Delete Activity',
   DUPLICATE_FOUND_TITLE: 'Duplicate Found'
 };
