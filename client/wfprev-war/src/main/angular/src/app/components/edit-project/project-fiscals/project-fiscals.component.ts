@@ -693,7 +693,7 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
   }
 
   getFirstFiscalGuid(): string | null {
-    return this.projectFiscals.length > 0 ? this.projectFiscals[0].projectPlanFiscalGuid ?? null : null;
+    return this.projectFiscals[0]?.projectPlanFiscalGuid ?? null;
   }
 
 }

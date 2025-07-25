@@ -1079,6 +1079,8 @@ describe('ProjectDetailsComponent', () => {
   });
 
   it('should return the correct FormControl from detailsForm', () => {
+    spyOn(component.detailsForm, 'get').and.callThrough();
+
     component.detailsForm = new FormGroup({
       projectLead: new FormControl('Alice')
     });
