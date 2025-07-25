@@ -1538,6 +1538,23 @@
         "rollback": [
         ]
       }
+    },
+    {
+      "changeSet": {
+        "id": "01_00_31_00",
+        "author": "hsaldyga",
+        "tagDatabase": { "tag" : "version_01_00_31_00" },
+        "changes": [
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_31/00/dml/app_wf1_prev.dml.update_program_area_wfpref-598.sql"
+            }
+          }
+        ],
+        "rollback": [
+        ]
+      }
     }
    ] 
 }
