@@ -1,6 +1,6 @@
 import { Component, ComponentRef, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
 import { MatTabsModule } from '@angular/material/tabs';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { filter, Observable } from 'rxjs';
 import { ProjectDetailsComponent } from 'src/app/components/edit-project/project-details/project-details.component';
 import { ProjectFiscalsComponent } from 'src/app/components/edit-project/project-fiscals/project-fiscals.component';
@@ -32,69 +32,80 @@ export class EditProjectComponent implements CanComponentDeactivate, OnInit {
 
 
   ngOnInit(): void {
+    // wait until projectGuid is present to handle params
     this.route.queryParamMap
-      .pipe(
-        filter(params => !!params.get('projectGuid')) // wait until projectGuid is present
-      )
-      .subscribe(params => {
-        const tab = params.get('tab');
-        const fiscalGuid = params.get('fiscalGuid');
+      .pipe(filter(params => !!params.get('projectGuid')))
+      .subscribe(params => this.handleQueryParams(params));
 
-        this.focusedFiscalId = fiscalGuid;
-
-        if (!tab) {
-          // if no tab provided, default to Details tab
-          this.selectedTabIndex = EditProjectTabIndexes.Details;
-          this.router.navigate([], {
-            relativeTo: this.route,
-            queryParams: { tab: 'details' },
-            queryParamsHandling: 'merge' 
-          });
-          return;
-        }
-
-        if (tab === 'fiscal') {
-          this.selectedTabIndex = EditProjectTabIndexes.Fiscal;
-
-          if (!fiscalGuid) {
-            // if no fiscalGuid and tab=fiscal, load the component and route to the first fiscal
-            this.loadFiscalComponent().then(() => {
-              const firstFiscalGuid = this.projectFiscalsComponentRef?.instance?.getFirstFiscalGuid?.();
-              if (firstFiscalGuid) {
-                this.router.navigate([], {
-                  relativeTo: this.route,
-                  queryParams: {
-                    tab: 'fiscal',
-                    fiscalGuid: firstFiscalGuid
-                  },
-                  queryParamsHandling: 'merge' 
-                });
-              }
-            });
-          } else {
-            this.loadFiscalComponent();
-          }
-        } else {
-          // Details tab (or invalid tab, fallback to details)
-          this.selectedTabIndex = EditProjectTabIndexes.Details;
-
-          if (fiscalGuid) {
-            // Clean up fiscalGuid if it's present in Details view
-            this.router.navigate([], {
-              relativeTo: this.route,
-              queryParams: { fiscalGuid: null },
-              queryParamsHandling: 'merge'
-            });
-          }
-        }
-      });
-
-    // Fallback to map page when projectGuid is missing
+    // fallback to map page when projectGuid is missing
     this.route.queryParamMap
       .pipe(filter(params => !params.get('projectGuid')))
-      .subscribe(() => {
-        this.router.navigate([ResourcesRoutes.MAP]);
+      .subscribe(() => this.redirectToMapPage());
+  }
+
+  private handleQueryParams(params: ParamMap): void {
+    const tab = params.get('tab');
+    const fiscalGuid = params.get('fiscalGuid');
+    this.focusedFiscalId = fiscalGuid;
+
+    // if no tab provided, default to Details tab
+    if (!tab) {
+      this.setDefaultToDetailsTab();
+      return;
+    }
+
+    if (tab === 'fiscal') {
+      // if tab=fiscal, load the component and route to the first fiscal
+      this.handleFiscalTabRouting(fiscalGuid);
+    } else {
+      // else fallback to details tab
+      this.handleInvalidOrDetailsTab(fiscalGuid);
+    }
+  }
+
+  private setDefaultToDetailsTab(): void {
+    this.selectedTabIndex = EditProjectTabIndexes.Details;
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { tab: 'details' },
+      queryParamsHandling: 'merge'
+    });
+  }
+
+  private async handleFiscalTabRouting(fiscalGuid: string | null): Promise<void> {
+    this.selectedTabIndex = EditProjectTabIndexes.Fiscal;
+
+    await this.loadFiscalComponent();
+
+    if (!fiscalGuid) {
+      const firstFiscalGuid = this.projectFiscalsComponentRef?.instance?.getFirstFiscalGuid?.();
+      if (firstFiscalGuid) {
+        this.router.navigate([], {
+          relativeTo: this.route,
+          queryParams: {
+            tab: 'fiscal',
+            fiscalGuid: firstFiscalGuid
+          },
+          queryParamsHandling: 'merge'
+        });
+      }
+    }
+  }
+
+  private handleInvalidOrDetailsTab(fiscalGuid: string | null): void {
+    this.selectedTabIndex = EditProjectTabIndexes.Details;
+
+    if (fiscalGuid) {
+      this.router.navigate([], {
+        relativeTo: this.route,
+        queryParams: { fiscalGuid: null },
+        queryParamsHandling: 'merge'
       });
+    }
+  }
+
+  private redirectToMapPage(): void {
+    this.router.navigate([ResourcesRoutes.MAP]);
   }
 
   onTabChange(event: any): void {
