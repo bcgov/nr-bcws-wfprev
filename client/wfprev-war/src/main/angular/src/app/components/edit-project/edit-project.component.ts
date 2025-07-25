@@ -1,7 +1,7 @@
 import { Component, ComponentRef, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
 import { MatTabsModule } from '@angular/material/tabs';
-import { ActivatedRoute, Router } from '@angular/router';
-import { Observable } from 'rxjs';
+import { ActivatedRoute, ParamMap, Router } from '@angular/router';
+import { filter, Observable } from 'rxjs';
 import { ProjectDetailsComponent } from 'src/app/components/edit-project/project-details/project-details.component';
 import { ProjectFiscalsComponent } from 'src/app/components/edit-project/project-fiscals/project-fiscals.component';
 import { CanComponentDeactivate } from 'src/app/services/util/can-deactive.guard';
@@ -30,20 +30,82 @@ export class EditProjectComponent implements CanComponentDeactivate, OnInit {
     private readonly route: ActivatedRoute
   ) { }
 
-  ngOnInit(): void {
-    this.route.queryParamMap.subscribe((params) => {
-      const tab = params.get('tab');
-      this.focusedFiscalId = params.get('fiscalGuid');
 
-      // If the tab is 'fiscal', set the tab index and load the fiscal component
-      if (tab === 'fiscal') {
-        this.selectedTabIndex = EditProjectTabIndexes.Fiscal;
-        this.loadFiscalComponent();
-      } else {
-        // default to details tab
-        this.selectedTabIndex = EditProjectTabIndexes.Details;
-      }
+  ngOnInit(): void {
+    // wait until projectGuid is present to handle params
+    this.route.queryParamMap
+      .pipe(filter(params => !!params.get('projectGuid')))
+      .subscribe(params => this.handleQueryParams(params));
+
+    // fallback to map page when projectGuid is missing
+    this.route.queryParamMap
+      .pipe(filter(params => !params.get('projectGuid')))
+      .subscribe(() => this.redirectToMapPage());
+  }
+
+  private handleQueryParams(params: ParamMap): void {
+    const tab = params.get('tab');
+    const fiscalGuid = params.get('fiscalGuid');
+    this.focusedFiscalId = fiscalGuid;
+
+    // if no tab provided, default to Details tab
+    if (!tab) {
+      this.setDefaultToDetailsTab();
+      return;
+    }
+
+    if (tab === 'fiscal') {
+      // if tab=fiscal, load the component and route to the first fiscal
+      this.handleFiscalTabRouting(fiscalGuid);
+    } else {
+      // else fallback to details tab
+      this.handleInvalidOrDetailsTab(fiscalGuid);
+    }
+  }
+
+  private setDefaultToDetailsTab(): void {
+    this.selectedTabIndex = EditProjectTabIndexes.Details;
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { tab: 'details' },
+      queryParamsHandling: 'merge'
     });
+  }
+
+  private async handleFiscalTabRouting(fiscalGuid: string | null): Promise<void> {
+    this.selectedTabIndex = EditProjectTabIndexes.Fiscal;
+
+    await this.loadFiscalComponent();
+
+    if (!fiscalGuid) {
+      const firstFiscalGuid = this.projectFiscalsComponentRef?.instance?.getFirstFiscalGuid?.();
+      if (firstFiscalGuid) {
+        this.router.navigate([], {
+          relativeTo: this.route,
+          queryParams: {
+            tab: 'fiscal',
+            fiscalGuid: firstFiscalGuid
+          },
+          queryParamsHandling: 'merge'
+        });
+      }
+    }
+  }
+
+  private handleInvalidOrDetailsTab(fiscalGuid: string | null): void {
+    this.selectedTabIndex = EditProjectTabIndexes.Details;
+
+    if (fiscalGuid) {
+      this.router.navigate([], {
+        relativeTo: this.route,
+        queryParams: { fiscalGuid: null },
+        queryParamsHandling: 'merge'
+      });
+    }
+  }
+
+  private redirectToMapPage(): void {
+    this.router.navigate([ResourcesRoutes.MAP]);
   }
 
   onTabChange(event: any): void {
@@ -117,15 +179,16 @@ export class EditProjectComponent implements CanComponentDeactivate, OnInit {
     componentRef.instance.focusedFiscalId = this.focusedFiscalId;
   }
 
-  loadFiscalComponent(): void {
+  loadFiscalComponent(): Promise<void> {
     if (!this.projectFiscalsComponentRef) {
-      this.getProjectFiscalsComponent().then(({ ProjectFiscalsComponent }) => {
+      return this.getProjectFiscalsComponent().then(({ ProjectFiscalsComponent }) => {
         this.fiscalsContainer.clear();
         this.projectFiscalsComponentRef = this.fiscalsContainer.createComponent(ProjectFiscalsComponent);
         this.projectFiscalsComponentRef.instance.focusedFiscalId = this.focusedFiscalId;
         this.projectFiscalsComponentRef.instance.loadProjectFiscals();
       });
     }
+    return Promise.resolve();
   }
 
   getProjectFiscalsComponent(): Promise<any> {
