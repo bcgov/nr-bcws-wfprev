@@ -32,6 +32,7 @@ export class ProjectFilesComponent implements OnInit {
 
   projectFiles: ProjectFile[] = [];
   dataSource = new MatTableDataSource<ProjectFile>(this.projectFiles);
+  downloadingFileId: string | null = null;
 
   constructor(
     public projectService: ProjectService,
@@ -568,6 +569,7 @@ export class ProjectFilesComponent implements OnInit {
 
   downloadFile(file: FileAttachment): void {
     if (file.fileIdentifier) {
+      this.downloadingFileId = file.fileIdentifier;
       const snackRef = this.snackbarService.open(Messages.fileDownloadInProgress, 'Close', {
         duration: undefined,
         panelClass: 'snackbar-info'
@@ -575,6 +577,7 @@ export class ProjectFilesComponent implements OnInit {
       this.projectService.downloadDocument(file.fileIdentifier).subscribe({
         next: (blob: Blob) => {
           snackRef.dismiss();
+          this.downloadingFileId = null;
           const url = window.URL.createObjectURL(blob);
           const link = document.createElement('a');
           link.href = url;
@@ -590,6 +593,7 @@ export class ProjectFilesComponent implements OnInit {
         },
         error: (err) => {
           snackRef.dismiss();
+          this.downloadingFileId = null;
           console.error('Download failed', err);
           this.snackbarService.open(Messages.fileDownloadFailure, 'Close', {
             duration: 5000,
@@ -604,6 +608,10 @@ export class ProjectFilesComponent implements OnInit {
         panelClass: 'snackbar-error',
       });
     }
+  }
+
+  isDownloading(file: FileAttachment): boolean {
+    return this.downloadingFileId === file.fileIdentifier;
   }
 
   translateAttachmentType(description: string): string {
