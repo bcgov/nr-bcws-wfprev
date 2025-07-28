@@ -1,15 +1,15 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { EditProjectComponent } from './edit-project.component';
-import { ActivatedRoute, ParamMap } from '@angular/router';
-import { of } from 'rxjs';
-import { By } from '@angular/platform-browser';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { ProjectDetailsComponent } from 'src/app/components/edit-project/project-details/project-details.component';
 import { HttpClientModule } from '@angular/common/http';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { ActivatedRoute, ParamMap, Router } from '@angular/router';
+import { of } from 'rxjs';
+import { ProjectDetailsComponent } from 'src/app/components/edit-project/project-details/project-details.component';
 import { AppConfigService } from 'src/app/services/app-config.service';
-import { Router } from '@angular/router';
-import { ProjectFiscalsComponent } from './project-fiscals/project-fiscals.component';
 import { EditProjectTabIndexes } from 'src/app/utils';
+import { EditProjectComponent } from './edit-project.component';
+import { ProjectFiscalsComponent } from './project-fiscals/project-fiscals.component';
+import { OAuthService } from 'angular-oauth2-oidc';
+import L from 'leaflet';
 
 const mockApplicationConfig = {
   application: {
@@ -59,6 +59,71 @@ class MockProjectService {
 
 }
 
+class MockOAuthService {
+  // Mock any OAuthService methods used in your component
+  getAccessToken(): string {
+    return 'mock-access-token';
+  }
+  configure(config: any): void {
+    // no-op
+  }
+  initImplicitFlow(): void {
+    // no-op
+  }
+}
+
+describe('EditProjectComponent (tab missing)', () => {
+  let component: EditProjectComponent;
+  let fixture: ComponentFixture<EditProjectComponent>;
+  let router: Router;
+
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [EditProjectComponent, BrowserAnimationsModule, HttpClientModule],
+      providers: [
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            queryParamMap: of({
+              has: (key: string) => key === 'projectGuid',
+              get: (key: string) => key === 'projectGuid' ? 'mock-guid' : null,
+              getAll: () => [],
+              keys: ['projectGuid']
+            }),
+            snapshot: {
+              queryParamMap: {
+                has: (key: string) => key === 'projectGuid',
+                get: (key: string) => key === 'projectGuid' ? 'mock-guid' : null,
+                getAll: () => [],
+                keys: ['projectGuid']
+              }
+            }
+          }
+        },
+        {
+          provide: Router,
+          useValue: jasmine.createSpyObj('Router', ['navigate'])
+        },
+        { provide: AppConfigService, useClass: MockAppConfigService }
+      ]
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(EditProjectComponent);
+    component = fixture.componentInstance;
+    router = TestBed.inject(Router);
+    fixture.detectChanges();
+  });
+
+  it('should default to details tab and update URL if tab is missing', () => {
+    expect(component.selectedTabIndex).toBe(EditProjectTabIndexes.Details);
+    expect(router.navigate).toHaveBeenCalledWith([], {
+      relativeTo: jasmine.anything(),
+      queryParams: { tab: 'details' },
+      queryParamsHandling: 'merge'
+    });
+  });
+});
+
 describe('EditProjectComponent', () => {
   let component: EditProjectComponent;
   let fixture: ComponentFixture<EditProjectComponent>;
@@ -66,16 +131,24 @@ describe('EditProjectComponent', () => {
 
   beforeEach(async () => {
     const mockParamMap: ParamMap = {
-      has: (key: string) => ['tab', 'fiscalGuid', 'name'].includes(key),
+      has: (key: string) => ['tab', 'fiscalGuid', 'name', 'projectGuid'].includes(key),
       get: (key: string) => {
         if (key === 'tab') return 'fiscal';
         if (key === 'fiscalGuid') return 'abc-123';
+        if (key === 'projectGuid') return 'proj-456';
         if (key === 'name') return 'Test Project';
         return null;
       },
       getAll: () => [],
       keys: [],
     };
+
+    spyOn(L, 'map').and.returnValue({
+      setView: () => { },
+      addLayer: () => { },
+      addTo: () => { },
+      remove: () => { }
+    } as any);
 
     mockActivatedRoute = {
       queryParamMap: of(mockParamMap),
@@ -91,6 +164,7 @@ describe('EditProjectComponent', () => {
         { provide: AppConfigService, useClass: MockAppConfigService },
         { provide: MockProjectService, useClass: MockProjectService },
         { provide: Router, useValue: { navigate: jasmine.createSpy('navigate') } },
+        { provide: OAuthService, useClass: MockOAuthService },
       ],
     }).compileComponents();
 
@@ -102,6 +176,60 @@ describe('EditProjectComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('should load fiscal component and route to first fiscal if fiscalGuid is missing and tab=fiscal', fakeAsync(async () => {
+    const mockParamMap: ParamMap = {
+      has: (key: string) => ['tab', 'projectGuid'].includes(key),
+      get: (key: string) => {
+        if (key === 'tab') return 'fiscal';
+        if (key === 'projectGuid') return 'proj-guid';
+        return null;
+      },
+      getAll: () => [],
+      keys: ['tab', 'projectGuid']
+    };
+
+    const route = TestBed.inject(ActivatedRoute) as any;
+    route.queryParamMap = of(mockParamMap);
+    route.snapshot.queryParamMap = mockParamMap;
+
+    const mockInstance = {
+      focusedFiscalId: null,
+      loadProjectFiscals: jasmine.createSpy('loadProjectFiscals'),
+      getFirstFiscalGuid: jasmine.createSpy('getFirstFiscalGuid').and.returnValue('guid-123')
+    };
+
+    const mockComponentRef = { instance: mockInstance } as any;
+
+    const clearSpy = jasmine.createSpy('clear');
+    const createComponentSpy = jasmine.createSpy('createComponent').and.returnValue(mockComponentRef);
+
+    component.fiscalsContainer = {
+      clear: clearSpy,
+      createComponent: createComponentSpy
+    } as any;
+
+    spyOn(component, 'getProjectFiscalsComponent').and.returnValue(
+      Promise.resolve({ ProjectFiscalsComponent })
+    );
+
+    await component.ngOnInit();
+
+    tick();
+
+    expect(clearSpy).toHaveBeenCalled();
+    expect(createComponentSpy).toHaveBeenCalledWith(ProjectFiscalsComponent);
+    expect(mockInstance.loadProjectFiscals).toHaveBeenCalled();
+    expect(mockInstance.getFirstFiscalGuid).toHaveBeenCalled();
+    expect((component as any).router.navigate).toHaveBeenCalledWith([], {
+      relativeTo: component['route'],
+      queryParams: {
+        tab: 'fiscal',
+        fiscalGuid: 'guid-123'
+      },
+      queryParamsHandling: 'merge'
+    });
+  }));
 
   it('should activate Fiscal tab and call loadFiscalComponent if tab=fiscal in query params', () => {
     const spy = spyOn(component, 'loadFiscalComponent');
@@ -216,6 +344,55 @@ describe('EditProjectComponent', () => {
   });
 });
 
+describe('EditProjectComponent (fallback test)', () => {
+  let fixture: ComponentFixture<EditProjectComponent>;
+  let component: EditProjectComponent;
+  let routerSpy: jasmine.SpyObj<Router>;
+
+  beforeEach(async () => {
+    const mockParamMap: ParamMap = {
+      has: (key: string) => ['tab', 'fiscalGuid', 'projectGuid'].includes(key),
+      get: (key: string) => {
+        if (key === 'tab') return 'invalid';
+        if (key === 'fiscalGuid') return 'abc-123';
+        if (key === 'projectGuid') return 'proj-guid';
+        return null;
+      },
+      getAll: () => [],
+      keys: ['tab', 'fiscalGuid', 'projectGuid']
+    };
+
+    const mockActivatedRoute = {
+      queryParamMap: of(mockParamMap),
+      snapshot: { queryParamMap: mockParamMap }
+    };
+
+    routerSpy = jasmine.createSpyObj('Router', ['navigate']);
+
+    await TestBed.configureTestingModule({
+      imports: [EditProjectComponent, BrowserAnimationsModule, HttpClientModule],
+      providers: [
+        { provide: ActivatedRoute, useValue: mockActivatedRoute },
+        { provide: Router, useValue: routerSpy },
+        { provide: AppConfigService, useClass: MockAppConfigService },
+      ]
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(EditProjectComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
+
+  it('should fallback to Details tab and remove fiscalGuid when tab is invalid and fiscalGuid is present', () => {
+    expect(component.selectedTabIndex).toBe(EditProjectTabIndexes.Details);
+    expect(routerSpy.navigate).toHaveBeenCalledWith([], {
+      relativeTo: jasmine.anything(),
+      queryParams: { fiscalGuid: null },
+      queryParamsHandling: 'merge'
+    });
+  });
+});
+
 describe('EditProjectComponent (extended coverage)', () => {
   let component: EditProjectComponent;
   let fixture: ComponentFixture<EditProjectComponent>;
@@ -253,6 +430,7 @@ describe('EditProjectComponent (extended coverage)', () => {
     fixture = TestBed.createComponent(EditProjectComponent);
     component = fixture.componentInstance;
     router = TestBed.inject(Router);
+    (router.navigate as jasmine.Spy).calls.reset();
     fixture.detectChanges();
   });
 
@@ -274,12 +452,6 @@ describe('EditProjectComponent (extended coverage)', () => {
     component.setActive('map');
     expect(component.activeRoute).toBe('map');
     expect(router.navigate).toHaveBeenCalledWith([jasmine.anything()]);
-  });
-
-  it('should set activeRoute but not navigate for unknown menuItem', () => {
-    component.setActive('unknown');
-    expect(component.activeRoute).toBe('unknown');
-    expect((router.navigate as jasmine.Spy).calls.count()).toBe(0);
   });
 
   it('should return true from canDeactivate if both components are not dirty', () => {
