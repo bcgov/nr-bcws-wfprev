@@ -22,10 +22,20 @@ export const Messages = {
   activityDeletedFailure: 'Activity Deleted Failed',
   fileUploadSuccess: 'File Uploaded Successfully',
   fileUploadFailure: 'File Uploaded Failed',
+  fileUploadInProgress: 'File upload in progress, Please wait',
   evaluationCriteriaCreatedSuccess: 'Evaluation Criteria Created Successfully.',
   evaluationCriteriaCreatedFailure: 'Failed to Create Evaluation Criteria.',
   evaluationCriteriaUpdatedSuccess: 'Evaluation Criteria Updated Successfully.',
   evaluationCriteriaUpdatedFailure: 'Failed to Update Evaluation Criteria.',
+  fileDownloadFailure: 'Error: File download unsuccessful',
+  fileDownloadSuccess: 'File downloaded successfully.',
+  fileDownloadInProgress: 'File download in progress. Please wait',
+  csvFileDownloadFailure: 'Error: CSV File download unsuccessful',
+  excelFileDownloadFailure: 'Error: Excel File download unsuccessful',
+  csvFileDownloadInProgress: 'CSV File download in progress. Please wait',
+  csvFileDownloadSuccess: 'CSV File downloaded successfully',
+  excelFileDownloadInProgress: 'Excel File download in progress. Please wait',
+  excelFileDownloadSuccess: 'Excel File downloaded successfully',
 };
 
 export const CodeTableKeys = {
