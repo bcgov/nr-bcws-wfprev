@@ -1,7 +1,7 @@
 import { ChangeDetectorRef } from '@angular/core';
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { MatDialog } from '@angular/material/dialog';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatSnackBar, MatSnackBarRef, SimpleSnackBar } from '@angular/material/snack-bar';
 import { of, throwError } from 'rxjs';
 import { AddAttachmentComponent } from 'src/app/components/add-attachment/add-attachment.component';
 import { ConfirmationDialogComponent } from 'src/app/components/confirmation-dialog/confirmation-dialog.component';
@@ -12,7 +12,7 @@ import { SpatialService } from 'src/app/services/spatial-services';
 import { ProjectFilesComponent } from './project-files.component';
 import { Position } from 'geojson';
 import { ActivatedRoute } from '@angular/router';
-import { ModalMessages, ModalTitles } from 'src/app/utils/constants';
+import { Messages, ModalMessages, ModalTitles } from 'src/app/utils/constants';
 
 describe('ProjectFilesComponent', () => {
   let component: ProjectFilesComponent;
@@ -23,7 +23,7 @@ describe('ProjectFilesComponent', () => {
   let mockAttachmentService: jasmine.SpyObj<AttachmentService>;
   let mockSpatialService: jasmine.SpyObj<SpatialService>;
   let mockCdr: jasmine.SpyObj<ChangeDetectorRef>;
-
+  let mockSnackRef: MatSnackBarRef<SimpleSnackBar>;
   const mockProjectGuid = 'test-project-guid';
 
   beforeEach(async () => {
@@ -58,7 +58,8 @@ describe('ProjectFilesComponent', () => {
     mockAttachmentService.deleteProjectAttachment.and.returnValue(of({}));
     mockProjectService.createProjectBoundary.and.returnValue(of({}));
     mockProjectService.uploadDocument.and.returnValue(of({}));
-
+    mockSnackRef = { dismiss: jasmine.createSpy('dismiss') } as any;
+    mockSnackbar.open.and.returnValue(mockSnackRef);
     await TestBed.configureTestingModule({
       imports: [],
       providers: [
@@ -394,7 +395,7 @@ describe('ProjectFilesComponent', () => {
       component.uploadFile(mockFile, 'Activity Polygon');
 
       expect(mockProjectService.uploadDocument).toHaveBeenCalledWith({ file: mockFile });
-      expect(component.uploadAttachment).toHaveBeenCalledWith(mockFile, response, 'Activity Polygon');
+      expect(component.uploadAttachment).toHaveBeenCalledWith(mockFile, response, 'Activity Polygon',mockSnackRef);
     });
 
     it('should handle file upload error', () => {
@@ -429,7 +430,7 @@ describe('ProjectFilesComponent', () => {
       component.uploadedBy = 'test-user';
       component.attachmentDescription = 'Test spatial file';
 
-      component.uploadAttachment(mockFile, mockFileUploadResp, 'kml');
+      component.uploadAttachment(mockFile, mockFileUploadResp, 'kml', mockSnackRef);
 
       tick();
       fixture.detectChanges();
@@ -462,7 +463,7 @@ describe('ProjectFilesComponent', () => {
       const mockFile = new File([''], 'test.txt', { type: 'text/plain' });
       spyOn(component, 'finishWithoutGeometry');
 
-      component.uploadAttachment(mockFile, {}, 'OTHER');
+      component.uploadAttachment(mockFile, {}, 'OTHER', mockSnackRef);
 
       expect(component.finishWithoutGeometry).toHaveBeenCalled();
     });
@@ -488,7 +489,7 @@ describe('ProjectFilesComponent', () => {
       component.activityGuid = 'mock-activity-guid';
       component.uploadedBy = 'test-user';
       component.attachmentDescription = 'Test spatial file';
-      component.uploadAttachment(mockFile, mockFileUploadResp, 'kml');
+      component.uploadAttachment(mockFile, mockFileUploadResp, 'kml', mockSnackRef);
 
       tick();
       fixture.detectChanges();
@@ -554,7 +555,7 @@ describe('ProjectFilesComponent', () => {
       );
 
       expect(mockSnackbar.open).toHaveBeenCalledWith(
-        'File uploaded successfully.',
+        Messages.fileUploadSuccess,
         'Close',
         jasmine.any(Object)
       );
@@ -739,7 +740,7 @@ describe('ProjectFilesComponent', () => {
 
       expect(console.error).toHaveBeenCalledWith('Download failed', mockError);
       expect(mockSnackbar.open).toHaveBeenCalledWith(
-        'Failed to download the file.',
+        Messages.fileDownloadFailure,
         'Close',
         jasmine.any(Object)
       );
@@ -749,7 +750,7 @@ describe('ProjectFilesComponent', () => {
   it('should show error if uploaded file has no extension', () => {
     const mockFile = new File(['content'], 'file.', { type: 'text/plain' });
 
-    component.uploadAttachment(mockFile, { fileId: 'some-id' }, 'Activity Polygon');
+    component.uploadAttachment(mockFile, { fileId: 'some-id' }, 'Activity Polygon', mockSnackRef);
 
     expect(mockSnackbar.open).toHaveBeenCalledWith(
       'The spatial file was not uploaded because the file format is not accepted.',
@@ -826,7 +827,7 @@ describe('ProjectFilesComponent', () => {
       );
 
       expect(mockSnackbar.open).toHaveBeenCalledWith(
-        'File uploaded successfully.',
+        Messages.fileUploadSuccess,
         'Close',
         jasmine.any(Object)
       );
@@ -959,7 +960,7 @@ describe('ProjectFilesComponent', () => {
       component.finishWithoutGeometry(mockFile, mockUploadResp, mockType);
 
       expect(mockSnackbar.open).toHaveBeenCalledWith(
-        'File uploaded successfully.',
+        Messages.fileUploadSuccess,
         'Close',
         jasmine.objectContaining({ duration: 5000, panelClass: 'snackbar-success' })
       );
@@ -982,7 +983,7 @@ describe('ProjectFilesComponent', () => {
       component.finishWithoutGeometry(mockFile, mockUploadResp, mockType);
 
       expect(mockSnackbar.open).toHaveBeenCalledWith(
-        'File uploaded successfully.',
+        Messages.fileUploadSuccess,
         'Close',
         jasmine.objectContaining({ duration: 5000, panelClass: 'snackbar-success' })
       );
@@ -1047,11 +1048,72 @@ describe('ProjectFilesComponent', () => {
       );
 
       expect(mockSnackbar.open).toHaveBeenCalledWith(
-        'File uploaded successfully.', 'Close', jasmine.any(Object)
+        Messages.fileUploadSuccess, 'Close', jasmine.any(Object)
       );
 
       expect(component.loadActivityAttachments).toHaveBeenCalled();
       expect(component.filesUpdated.emit).toHaveBeenCalled();
+    });
+
+    it('should show progress and success snackbars on successful download', () => {
+      const mockFile: FileAttachment = {
+        fileIdentifier: '123',
+        documentPath: 'test.txt',
+        attachmentReadOnlyInd: false
+      };
+
+      const mockBlob = new Blob(['test'], { type: 'text/plain' });
+
+      const mockSnackRef = { dismiss: jasmine.createSpy('dismiss') } as any;
+      mockSnackbar.open.and.returnValues(mockSnackRef, mockSnackRef);
+
+      mockProjectService.downloadDocument.and.returnValue(of(mockBlob));
+
+      component.downloadFile(mockFile);
+
+      expect(mockSnackbar.open).toHaveBeenCalledWith(
+        Messages.fileDownloadInProgress,
+        'Close',
+        jasmine.objectContaining({ duration: undefined, panelClass: 'snackbar-info' })
+      );
+
+      expect(mockSnackRef.dismiss).toHaveBeenCalled();
+      expect(mockSnackbar.open).toHaveBeenCalledWith(
+        Messages.fileDownloadSuccess,
+        'Close',
+        jasmine.objectContaining({ duration: 5000, panelClass: 'snackbar-success' })
+      );
+    });
+
+    it('should show progress and error snackbars on download failure', () => {
+      const mockFile: FileAttachment = {
+        fileIdentifier: '123',
+        documentPath: 'test.txt',
+        attachmentReadOnlyInd: false
+      };
+
+      const mockError = new Error('download failed');
+      const mockSnackRef = { dismiss: jasmine.createSpy('dismiss') } as any;
+      mockSnackbar.open.and.returnValues(mockSnackRef, mockSnackRef);
+
+      mockProjectService.downloadDocument.and.returnValue(throwError(() => mockError));
+      spyOn(console, 'error');
+
+      component.downloadFile(mockFile);
+
+      expect(mockSnackbar.open).toHaveBeenCalledWith(
+        Messages.fileDownloadInProgress,
+        'Close',
+        jasmine.any(Object)
+      );
+
+      expect(mockSnackRef.dismiss).toHaveBeenCalled();
+      expect(mockSnackbar.open).toHaveBeenCalledWith(
+        Messages.fileDownloadFailure,
+        'Close',
+        jasmine.any(Object)
+      );
+      expect(console.error).toHaveBeenCalledWith('Download failed', mockError);
     });
 
   });
