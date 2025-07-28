@@ -1083,9 +1083,11 @@ describe('ProjectDetailsComponent', () => {
       projectLead: new FormControl('Alice')
     });
 
+    const spy = spyOn(component.detailsForm, 'get').and.callThrough();
+
     const control = component.getControl('projectLead');
     expect(control.value).toBe('Alice');
+    expect(spy).toHaveBeenCalledWith('projectLead');
   });
-
 
 });
