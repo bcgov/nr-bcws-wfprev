@@ -50,6 +50,31 @@ body {
     }
   }
 
+  &.snackbar-info {
+    background-color: var(--wf-colour-info);
+    color: black; 
+    position: inherit;
+    width: fit-content;
+    text-align: center;
+
+    .mat-button-wrapper {
+      color: black;
+    }
+
+    .mat-mdc-snack-bar-action {
+      color: black;
+      border: 1px solid black;
+      border-radius: 5px;
+
+      .mdc-button__label {
+        color: black !important;
+      }
+    }
+    .mdc-snackbar__label{
+      color: black !important; 
+    }
+  }
+
   .mat-mdc-snackbar-surface {
     background-color: inherit !important;
     color: inherit !important;
