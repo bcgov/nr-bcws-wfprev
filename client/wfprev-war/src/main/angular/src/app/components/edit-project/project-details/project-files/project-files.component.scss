@@ -45,7 +45,6 @@ button.primary {
 }
 
 .files-table {
-  
     th, td {
       padding: 8px;
       border-bottom: 1px solid #ddd;
@@ -70,4 +69,14 @@ button.primary {
         border: 1px solid #D9D9D9;
         background-color: var(--colour-white);
     }
-  }
+}
+
+.table-button[disabled] {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: auto; 
+}
+
+.table-button[disabled]:hover {
+    background-color: transparent;
+}
