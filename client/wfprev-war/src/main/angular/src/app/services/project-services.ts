@@ -540,5 +540,26 @@ export class ProjectService {
             })
         );
     }
-    
+
+    downloadProjects(projectGuids: string[], type: string): Observable<Blob> {
+        // this will need to update after api is done
+        const url = `${this.appConfigService.getConfig().rest['wfprev']}/wfprev-api/reports`;
+        const payload = {
+            projectGuids,
+            type
+        };
+
+        return this.httpClient.post(url, payload, {
+            headers: {
+            Authorization: `Bearer ${this.tokenService.getOauthToken()}`,
+            'Content-Type': 'application/json',
+            },
+            responseType: 'blob',
+        }).pipe(
+            catchError((error) => {
+            console.error("Error downloading projects", error);
+            return throwError(() => new Error("Failed to download projects"));
+            })
+        );
+    }
 }
