@@ -1,0 +1,23 @@
+<button
+    class="download-button"
+    mat-icon-button
+    [matMenuTriggerFor]="menu"
+    (click)="$event.stopPropagation()"
+    [disabled]="isDisabled()">
+    <img class="action-icon" alt="actions" src="/assets/arrow-down.svg" />
+    <span>Download</span>
+    <img class="action-icon" alt="actions" src="/assets/dropdown-icon.svg" />
+</button>
+
+<mat-menu #menu="matMenu" xPosition="before">
+    <button
+    mat-menu-item
+    (click)="onDownload('csv')">
+    CSV
+    </button>
+    <button
+    mat-menu-item
+    (click)="onDownload('excel')">
+    Excel
+    </button>
+</mat-menu>

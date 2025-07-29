@@ -18,13 +18,15 @@ import { ExpansionIndicatorComponent } from '../../shared/expansion-indicator/ex
 import { IconButtonComponent } from 'src/app/components/shared/icon-button/icon-button.component';
 import { MatSelectModule } from '@angular/material/select';
 import { StatusBadgeComponent } from 'src/app/components/shared/status-badge/status-badge.component';
-import { CodeTableKeys, CodeTableNames, WildfireOrgUnitTypeCodes } from 'src/app/utils/constants';
+import { CodeTableKeys, CodeTableNames, Messages, WildfireOrgUnitTypeCodes } from 'src/app/utils/constants';
+import { DownloadButtonComponent } from 'src/app/components/shared/download-button/download-button.component';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 
 @Component({
   selector: 'wfprev-projects-list',
   standalone: true,
-  imports: [MatSlideToggleModule, CommonModule, MatExpansionModule, MatTooltipModule, ExpansionIndicatorComponent, IconButtonComponent, MatSelectModule, StatusBadgeComponent],
+  imports: [MatSlideToggleModule, CommonModule, MatExpansionModule, MatTooltipModule, ExpansionIndicatorComponent, IconButtonComponent, MatSelectModule, StatusBadgeComponent, DownloadButtonComponent],
   templateUrl: './projects-list.component.html',
   styleUrls: ['./projects-list.component.scss'],
 })
@@ -58,7 +60,8 @@ export class ProjectsListComponent implements OnInit {
     private readonly dialog: MatDialog,
     private readonly sharedCodeTableService: SharedCodeTableService,
     public readonly sharedService: SharedService,
-    private readonly cdr: ChangeDetectorRef
+    private readonly cdr: ChangeDetectorRef,
+    private readonly snackbarService: MatSnackBar
   ) {
   }
   ngOnInit(): void {
@@ -541,4 +544,56 @@ export class ProjectsListComponent implements OnInit {
   getStatusIcon(status: string) {
     return PlanFiscalStatusIcons[status];
   }
+
+  onDownload(type: 'csv' | 'excel'): void {
+    const projectGuids = this.displayedProjects.map(p => p.projectGuid);
+    this.downloadProjects(projectGuids, type);
+  }
+
+  downloadProjects(projectGuids: string[], type: string): void {
+    const inProgressMsg =
+      type === 'excel'
+        ? Messages.excelFileDownloadInProgress
+        : Messages.csvFileDownloadInProgress;
+    const successMsg =
+      type === 'excel'
+        ? Messages.excelFileDownloadSuccess
+        : Messages.csvFileDownloadSuccess;
+    const failureMsg =
+      type === 'excel'
+        ? Messages.excelFileDownloadFailure
+        : Messages.csvFileDownloadFailure;
+
+    const snackRef = this.snackbarService.open(inProgressMsg, 'Close', {
+      duration: undefined,
+      panelClass: 'snackbar-info'
+    });
+
+    this.projectService.downloadProjects(projectGuids, type).subscribe({
+      next: (blob) => {
+        snackRef.dismiss();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        const extension = type === 'excel' ? 'xlsx' : 'csv';
+        a.download = `projects.${extension}`;
+        a.href = url;
+        a.click();
+        window.URL.revokeObjectURL(url);
+
+        this.snackbarService.open(successMsg, 'Close', {
+          duration: 5000,
+          panelClass: 'snackbar-success'
+        });
+      },
+      error: (err) => {
+        snackRef.dismiss();
+        console.error('Download failed', err);
+        this.snackbarService.open(failureMsg, 'Close', {
+          duration: 5000,
+          panelClass: 'snackbar-error'
+        });
+      }
+    });
+  }
+
 }
