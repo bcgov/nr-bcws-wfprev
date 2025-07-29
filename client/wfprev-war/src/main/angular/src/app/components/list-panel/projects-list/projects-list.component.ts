@@ -18,7 +18,7 @@ import { ExpansionIndicatorComponent } from '../../shared/expansion-indicator/ex
 import { IconButtonComponent } from 'src/app/components/shared/icon-button/icon-button.component';
 import { MatSelectModule } from '@angular/material/select';
 import { StatusBadgeComponent } from 'src/app/components/shared/status-badge/status-badge.component';
-import { CodeTableKeys, CodeTableNames, Messages, WildfireOrgUnitTypeCodes } from 'src/app/utils/constants';
+import { CodeTableKeys, CodeTableNames, DownloadFileExtensions, DownloadTypes, Messages, WildfireOrgUnitTypeCodes } from 'src/app/utils/constants';
 import { DownloadButtonComponent } from 'src/app/components/shared/download-button/download-button.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
@@ -53,6 +53,7 @@ export class ProjectsListComponent implements OnInit {
   selectedProjectGuid: string | null = null;
   getFiscalYearDisplay = getFiscalYearDisplay;
   expandedPanels: Record<string, boolean> = {};
+  formats = [DownloadTypes.CSV, DownloadTypes.EXCEL];
   constructor(
     private readonly router: Router,
     private readonly projectService: ProjectService,
@@ -545,22 +546,22 @@ export class ProjectsListComponent implements OnInit {
     return PlanFiscalStatusIcons[status];
   }
 
-  onDownload(type: 'csv' | 'excel'): void {
+  onDownload(type: string): void {
     const projectGuids = this.displayedProjects.map(p => p.projectGuid);
     this.downloadProjects(projectGuids, type);
   }
 
   downloadProjects(projectGuids: string[], type: string): void {
     const inProgressMsg =
-      type === 'excel'
+      type === DownloadTypes.EXCEL
         ? Messages.excelFileDownloadInProgress
         : Messages.csvFileDownloadInProgress;
     const successMsg =
-      type === 'excel'
+      type === DownloadTypes.EXCEL
         ? Messages.excelFileDownloadSuccess
         : Messages.csvFileDownloadSuccess;
     const failureMsg =
-      type === 'excel'
+      type === DownloadTypes.EXCEL
         ? Messages.excelFileDownloadFailure
         : Messages.csvFileDownloadFailure;
 
@@ -574,7 +575,9 @@ export class ProjectsListComponent implements OnInit {
         snackRef.dismiss();
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
-        const extension = type === 'excel' ? 'xlsx' : 'csv';
+        const extension = type === DownloadTypes.EXCEL
+          ? DownloadFileExtensions.EXCEL
+          : DownloadFileExtensions.CSV;
         a.download = `projects.${extension}`;
         a.href = url;
         a.click();
