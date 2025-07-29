@@ -4,20 +4,16 @@
     [matMenuTriggerFor]="menu"
     (click)="$event.stopPropagation()"
     [disabled]="isDisabled()">
-    <img class="action-icon" alt="actions" src="/assets/arrow-down.svg" />
+    <img class="action-icon" alt="actions" src="/assets/download.svg" />
     <span>Download</span>
     <img class="action-icon" alt="actions" src="/assets/dropdown-icon.svg" />
 </button>
 
 <mat-menu #menu="matMenu" xPosition="before">
-    <button
+  <button
     mat-menu-item
-    (click)="onDownload('csv')">
-    CSV
-    </button>
-    <button
-    mat-menu-item
-    (click)="onDownload('excel')">
-    Excel
-    </button>
+    *ngFor="let format of formats"
+    (click)="onDownload(format)">
+    {{ format.toUpperCase() }}
+  </button>
 </mat-menu>

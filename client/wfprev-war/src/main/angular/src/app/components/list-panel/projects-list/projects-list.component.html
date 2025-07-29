@@ -15,6 +15,7 @@
       </div>
       <div class="create-project-download-button-container">
         <wfprev-download-button
+          [formats]="formats"
           (download)="onDownload($event)"
           [disabled]="!displayedProjects?.length">
         </wfprev-download-button>
