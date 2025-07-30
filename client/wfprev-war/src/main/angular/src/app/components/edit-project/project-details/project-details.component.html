@@ -7,7 +7,7 @@
         [required]="true"
         [placeholder]="'Begin Typing'"
         [control]="getControl('projectName')"
-        [tooltip]="''"
+        [tooltip]="getControl('projectName')?.value"
         [errorMessages]="{ maxlength: messages.maxLengthExceeded }"
       ></wfprev-input-field>
     </div>
