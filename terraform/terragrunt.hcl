@@ -27,6 +27,7 @@ generate "tfvars" {
 TARGET_ENV = "${get_env("TARGET_ENV")}"
 APP_COUNT = "${get_env("APP_COUNT")}"
 LOGGING_LEVEL = "${get_env("LOGGING_LEVEL")}"
+RESTORE_DOWNSCALED_CLUSTER = "${get_env("RESTORE_DOWNSCALED_CLUSTER")}"
 
 # server
 WFPREV_API_NAME = "${get_env("WFPREV_API_NAME")}"
