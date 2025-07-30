@@ -118,7 +118,7 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
       forestDistrictOrgUnitId: [''],
       primaryObjectiveTypeCode: ['', [Validators.required]],
       secondaryObjectiveTypeCode: [''],
-      secondaryObjectiveRationale: ['', [Validators.maxLength(300)]],
+      secondaryObjectiveRationale: ['', [Validators.maxLength(500)]],
       bcParksRegionOrgUnitId: [''],
       bcParksSectionOrgUnitId: [''],
       wildfireOrgUnitId: ['', [Validators.required]],
