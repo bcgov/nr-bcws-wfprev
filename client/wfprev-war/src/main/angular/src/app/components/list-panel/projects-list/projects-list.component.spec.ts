@@ -14,6 +14,7 @@ import { of, throwError } from 'rxjs';
 import L from 'leaflet';
 import { CreateNewProjectDialogComponent } from 'src/app/components/create-new-project-dialog/create-new-project-dialog.component';
 import { FeaturesResponse } from 'src/app/components/models';
+import { Messages } from 'src/app/utils/constants';
 
 describe('ProjectsListComponent', () => {
   let component: ProjectsListComponent;
@@ -876,5 +877,80 @@ describe('ProjectsListComponent', () => {
     });
   });
 
+  describe('downloadProjects', () => {
+    let mockSnackBar: jasmine.SpyObj<any>;
+
+    beforeEach(() => {
+      mockSnackBar = jasmine.createSpyObj('MatSnackBar', ['open']);
+      mockSnackBar.open.and.returnValue({ dismiss: jasmine.createSpy('dismiss') });
+      (component as any).snackbarService = mockSnackBar;
+    });
+
+    it('should show progress, trigger download, and show success message', fakeAsync(() => {
+      const mockBlob = new Blob(['test data'], { type: 'text/csv' });
+      spyOn(window.URL, 'createObjectURL').and.returnValue('blob:url');
+      spyOn(document, 'createElement').and.callThrough();
+
+      const projectGuids = ['guid1', 'guid2'];
+      mockProjectService.downloadProjects = jasmine
+        .createSpy()
+        .and.returnValue(of(mockBlob));
+
+      component.downloadProjects(projectGuids, 'csv');
+      tick();
+
+      expect(mockSnackBar.open).toHaveBeenCalledWith(
+        Messages.csvFileDownloadInProgress,
+        'Close',
+        jasmine.any(Object)
+      );
+
+      expect(mockSnackBar.open).toHaveBeenCalledWith(
+        Messages.csvFileDownloadSuccess,
+        'Close',
+        jasmine.any(Object)
+      );
+
+      expect(window.URL.createObjectURL).toHaveBeenCalledWith(mockBlob);
+    }));
+
+    it('should show failure message when download fails', fakeAsync(() => {
+      mockProjectService.downloadProjects = jasmine
+        .createSpy()
+        .and.returnValue(throwError(() => new Error('Download failed')));
+
+      component.downloadProjects(['guid1'], 'excel');
+
+      tick();
+
+      expect(mockSnackBar.open).toHaveBeenCalledWith(
+        Messages.excelFileDownloadInProgress,
+        'Close',
+        jasmine.any(Object)
+      );
+
+      expect(mockSnackBar.open).toHaveBeenCalledWith(
+        Messages.excelFileDownloadFailure,
+        'Close',
+        jasmine.any(Object)
+      );
+    }));
+
+
+    it('onDownload should call downloadProjects with correct params', () => {
+      spyOn(component, 'downloadProjects');
+      component.displayedProjects = [
+        { projectGuid: 'guid1' },
+        { projectGuid: 'guid2' }
+      ];
+
+      component.onDownload('csv');
+
+      expect(component.downloadProjects).toHaveBeenCalledWith(
+        ['guid1', 'guid2'],
+        'csv'
+      );
+    });
+  });
 
 });

@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatSnackBar, MatSnackBarRef, SimpleSnackBar } from '@angular/material/snack-bar';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { catchError, map, throwError } from 'rxjs';
 import { AddAttachmentComponent } from 'src/app/components/add-attachment/add-attachment.component';
@@ -32,6 +32,7 @@ export class ProjectFilesComponent implements OnInit {
 
   projectFiles: ProjectFile[] = [];
   dataSource = new MatTableDataSource<ProjectFile>(this.projectFiles);
+  downloadingFileId: string | null = null;
 
   constructor(
     public projectService: ProjectService,
@@ -193,10 +194,14 @@ export class ProjectFilesComponent implements OnInit {
   }
 
   uploadFile(file: File, type: string): void {
+    const snackRef = this.snackbarService.open(Messages.fileUploadInProgress, 'Close', {
+      duration: undefined,
+      panelClass: 'snackbar-info',
+    });
     this.projectService.uploadDocument({ file }).subscribe({
       next: (response) => {
         if (response) {
-          this.uploadAttachment(file, response, type);
+          this.uploadAttachment(file, response, type, snackRef);
         }
       },
       error: () => {
@@ -208,7 +213,7 @@ export class ProjectFilesComponent implements OnInit {
     });
   }
 
-  uploadAttachment(file: File, fileUploadResp: any, type: string): void {
+  uploadAttachment(file: File, fileUploadResp: any, type: string, snackRef: MatSnackBarRef<SimpleSnackBar>): void {
     const fileExtension = file.name.split('.').pop()?.toLowerCase();
     if (!fileExtension) {
       this.snackbarService.open('The spatial file was not uploaded because the file format is not accepted.', 'Close', {
@@ -225,6 +230,7 @@ export class ProjectFilesComponent implements OnInit {
   
     this.spatialService.extractCoordinates(file).then((geometry) => {
       if (!geometry) {
+        snackRef.dismiss();
         this.snackbarService.open('Could not extract geometry from spatial file.', 'Close', {
           duration: 5000,
           panelClass: ['snackbar-error'],
@@ -267,7 +273,8 @@ export class ProjectFilesComponent implements OnInit {
   
             this.attachmentService.createActivityAttachment(this.projectGuid, this.fiscalGuid, this.activityGuid, attachment).subscribe({
               next: () => {
-                this.snackbarService.open('File uploaded successfully.', 'Close', {
+                snackRef.dismiss();
+                this.snackbarService.open(Messages.fileUploadSuccess, 'Close', {
                   duration: 5000,
                   panelClass: 'snackbar-success',
                 });
@@ -310,7 +317,8 @@ export class ProjectFilesComponent implements OnInit {
   
             this.attachmentService.createProjectAttachment(this.projectGuid, attachment).subscribe({
               next: () => {
-                this.snackbarService.open('File uploaded successfully.', 'Close', {
+                snackRef.dismiss();
+                this.snackbarService.open(Messages.fileUploadSuccess, 'Close', {
                   duration: 5000,
                   panelClass: 'snackbar-success',
                 });
@@ -347,7 +355,7 @@ export class ProjectFilesComponent implements OnInit {
 
     create$.subscribe({
       next: () => {
-        this.snackbarService.open('File uploaded successfully.', 'Close', {
+        this.snackbarService.open(Messages.fileUploadSuccess, 'Close', {
           duration: 5000,
           panelClass: 'snackbar-success',
         });
@@ -390,7 +398,7 @@ export class ProjectFilesComponent implements OnInit {
       })
     ).subscribe({
       next: () => {
-        this.snackbarService.open('File uploaded successfully.', 'Close', {
+        this.snackbarService.open(Messages.fileUploadSuccess, 'Close', {
           duration: 5000,
           panelClass: 'snackbar-success',
         });
@@ -430,7 +438,7 @@ export class ProjectFilesComponent implements OnInit {
       })
     ).subscribe({
       next: () => {
-        this.snackbarService.open('File uploaded successfully.', 'Close', {
+        this.snackbarService.open(Messages.fileUploadSuccess, 'Close', {
           duration: 5000,
           panelClass: 'snackbar-success',
         });
@@ -561,8 +569,15 @@ export class ProjectFilesComponent implements OnInit {
 
   downloadFile(file: FileAttachment): void {
     if (file.fileIdentifier) {
+      this.downloadingFileId = file.fileIdentifier;
+      const snackRef = this.snackbarService.open(Messages.fileDownloadInProgress, 'Close', {
+        duration: undefined,
+        panelClass: 'snackbar-info'
+      });
       this.projectService.downloadDocument(file.fileIdentifier).subscribe({
         next: (blob: Blob) => {
+          snackRef.dismiss();
+          this.downloadingFileId = null;
           const url = window.URL.createObjectURL(blob);
           const link = document.createElement('a');
           link.href = url;
@@ -571,10 +586,16 @@ export class ProjectFilesComponent implements OnInit {
           link.click();
           document.body.removeChild(link);
           window.URL.revokeObjectURL(url);
+          this.snackbarService.open(Messages.fileDownloadSuccess, 'Close', {
+            duration: 5000,
+            panelClass: 'snackbar-success',
+          });
         },
         error: (err) => {
+          snackRef.dismiss();
+          this.downloadingFileId = null;
           console.error('Download failed', err);
-          this.snackbarService.open('Failed to download the file.', 'Close', {
+          this.snackbarService.open(Messages.fileDownloadFailure, 'Close', {
             duration: 5000,
             panelClass: 'snackbar-error',
           });
@@ -582,11 +603,15 @@ export class ProjectFilesComponent implements OnInit {
       });
     } else {
       console.error('The file has no file Id');
-      this.snackbarService.open('Failed to download the file.', 'Close', {
+      this.snackbarService.open(Messages.fileDownloadFailure, 'Close', {
         duration: 5000,
         panelClass: 'snackbar-error',
       });
     }
+  }
+
+  isDownloading(file: FileAttachment): boolean {
+    return this.downloadingFileId === file.fileIdentifier;
   }
 
   translateAttachmentType(description: string): string {
