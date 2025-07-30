@@ -1090,4 +1090,67 @@ describe('ProjectDetailsComponent', () => {
     expect(spy).toHaveBeenCalledWith('projectLead');
   });
 
+  it('should show duplicate name error when updateProject returns 409', () => {
+    component.projectGuid = 'test-guid';
+    component.projectDetail = {
+      projectTypeCode: { projectTypeCode: 'TEST' },
+      primaryObjectiveTypeCode: {}
+    };
+
+    component.detailsForm = new FormGroup({
+      projectTypeCode: new FormControl('FUEL_MGMT'),
+      programAreaGuid: new FormControl('area-guid'),
+      closestCommunityName: new FormControl('Test City'),
+      primaryObjectiveTypeCode: new FormControl('WRR'),
+      wildfireOrgUnitId: new FormControl(123)
+    });
+    spyOnProperty(component.detailsForm, 'valid', 'get').and.returnValue(true);
+
+    mockProjectService.updateProject.and.returnValue(
+      throwError(() => ({
+        status: 409,
+        error: { error: 'Duplicate project name' }
+      }))
+    );
+
+    component.onSave();
+
+    expect(mockSnackbar.open).toHaveBeenCalledWith(
+      'Duplicate project name',
+      'OK',
+      jasmine.objectContaining({ panelClass: 'snackbar-error' })
+    );
+  });
+
+  it('should show default failure message when updateProject returns other error', () => {
+    component.projectGuid = 'test-guid';
+    component.projectDetail = {
+      projectTypeCode: { projectTypeCode: 'TEST' },
+      primaryObjectiveTypeCode: {}
+    };
+
+    component.detailsForm = new FormGroup({
+      projectTypeCode: new FormControl('FUEL_MGMT'),
+      programAreaGuid: new FormControl('area-guid'),
+      closestCommunityName: new FormControl('Test City'),
+      primaryObjectiveTypeCode: new FormControl('WRR'),
+      wildfireOrgUnitId: new FormControl(123)
+    });
+    spyOnProperty(component.detailsForm, 'valid', 'get').and.returnValue(true);
+
+    mockProjectService.updateProject.and.returnValue(
+      throwError(() => ({ status: 500 }))
+    );
+
+    component.onSave();
+
+    expect(mockSnackbar.open).toHaveBeenCalledWith(
+      component.messages.projectCreatedFailure,
+      'OK',
+      jasmine.objectContaining({ panelClass: 'snackbar-error' })
+    );
+  });
+
+
+
 });
