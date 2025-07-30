@@ -130,7 +130,7 @@ jobs:
       DEFAULT_APPLICATION_ENVIRONMENT: ${{ inputs.DEFAULT_APPLICATION_ENVIRONMENT }}
       IMAGE_TAG: latest
       RUN_LIQUIBASE: true
-      COMMAND: destroy
-      GDB_EXTRACTOR_IMAGE: "${{ secrets.ECR_TARGET_ACCOUNT_ID }}.dkr.ecr.ca-central-1.amazonaws.com/nr-bcws-wfprev-wfprev-gdb-extractor:latest"
+      COMMAND: apply -destroy
+      GDB_EXTRACTOR_IMAGE: "111111111111.dkr.ecr.ca-central-1.amazonaws.com/nr-bcws-wfprev-wfprev-gdb-extractor:latest"
     secrets: inherit
 
