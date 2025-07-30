@@ -23,6 +23,11 @@ on:
       GDB_EXTRACTOR_IMAGE:
         required: true
         type: string
+        default: ""
+      RESTORE_DOWNSCALED_CLUSTER:
+        required: false
+        type: string
+        default: 'false'
   workflow_dispatch:
     inputs:
       DEFAULT_APPLICATION_ENVIRONMENT:
@@ -48,10 +53,12 @@ on:
         required: true
         type: string
         default: apply
-      # IS_HOTFIX:
-      #   required: true
-      #   type: string
-      #   default: 'false'
+      RESTORE_DOWNSCALED_CLUSTER:
+        required: false
+        type: choice
+        options:
+          - 'false'
+          - 'true'
 
 env:
   TF_VERSION: 1.8.5
@@ -116,9 +123,13 @@ jobs:
       - name: Get digest of GDB extractor docker image
         id: getDigestGDB
         run: |
-          IMAGE="${{ secrets.ECR_TARGET_ACCOUNT_ID }}.dkr.ecr.ca-central-1.amazonaws.com/nr-bcws-wfprev-wfprev-gdb-extractor:latest"
-          docker pull $IMAGE
-          echo "GDB_EXTRACTOR_IMAGE=$(docker inspect --format='{{index .RepoDigests 0}}' $IMAGE)" >> $GITHUB_OUTPUT
+          if [[ ${{inputs.RESTORE_DOWNSCALED_CLUSTER}} == 'false' ]]; then
+            IMAGE="${{ secrets.ECR_TARGET_ACCOUNT_ID }}.dkr.ecr.ca-central-1.amazonaws.com/nr-bcws-wfprev-wfprev-gdb-extractor:latest"
+            docker pull $IMAGE
+            echo "GDB_EXTRACTOR_IMAGE=$(docker inspect --format='{{index .RepoDigests 0}}' $IMAGE)" >> $GITHUB_OUTPUT
+          else
+            echo "GDB_EXTRACTOR_IMAGE=${{inputs.GDB_EXTRACTOR_IMAGE}}" >> $GITHUB_OUTPUT
+          fi
 
       - name: Configure AWS credentials for Terraform account (DEV/TEST/PROD)
         uses: aws-actions/configure-aws-credentials@v2
@@ -144,6 +155,7 @@ jobs:
           TARGET_ENV: ${{ inputs.DEFAULT_APPLICATION_ENVIRONMENT }}
           APP_COUNT: ${{vars.APP_COUNT}}
           LOGGING_LEVEL: ${{vars.LOGGING_LEVEL}}
+          RESTORE_DOWNSCALED_CLUSTER: ${{ inputs.RESTORE_DOWNSCALED_CLUSTER }}
 
           # Necessary for WFPREV API
           WFPREV_API_NAME: wfprev-api
