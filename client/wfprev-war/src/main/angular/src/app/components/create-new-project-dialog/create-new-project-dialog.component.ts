@@ -74,7 +74,7 @@ export class CreateNewProjectDialogComponent implements OnInit {
       closestCommunity: ['', [Validators.required, Validators.maxLength(50)]],
       primaryObjective: ['', [Validators.required]],
       secondaryObjective: [''],
-      secondaryObjectiveRationale: ['', [Validators.maxLength(50)]],
+      secondaryObjectiveRationale: ['', [Validators.maxLength(500)]],
     });
 
     // Watch for business area changes

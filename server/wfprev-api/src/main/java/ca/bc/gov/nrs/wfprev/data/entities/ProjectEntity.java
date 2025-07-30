@@ -188,7 +188,7 @@ public class ProjectEntity implements Serializable {
     @JoinColumn(name = "tertiary_objective_type_code")
     private ObjectiveTypeCodeEntity tertiaryObjectiveTypeCode;
 
-    @Column(name = "secondary_objective_rationale", length = 300)
+    @Column(name = "secondary_objective_rationale", length = 500)
     private String secondaryObjectiveRationale;
 
     @Column(name = "results_project_code", length = 25)
