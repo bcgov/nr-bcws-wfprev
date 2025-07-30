@@ -422,13 +422,19 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
             }
           })
         },
-        error: (error) => {
+        error: (err) => {
+          // 409 is duplicate project name error
+          const errorMessage =
+            err?.status === 409 && err?.error?.error
+              ? err.error.error
+              : this.messages.projectCreatedFailure;
+
           this.snackbarService.open(
-            this.messages.projectUpdatedFailure,
+            errorMessage,
             'OK',
             { duration: 5000, panelClass: 'snackbar-error' }
           );
-        },
+        }
       });
     } else {
       console.error('Form is invalid!');

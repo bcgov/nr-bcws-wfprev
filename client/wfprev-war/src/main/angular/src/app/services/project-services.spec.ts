@@ -237,7 +237,8 @@ describe('ProjectService', () => {
     service.updateProject(projectGuid, updatedProject).subscribe({
       next: () => fail('Should have failed with an error'),
       error: (error) => {
-        expect(error.message).toBe('Failed to update project');
+        expect(error.status).toBe(500);
+        expect(error.message).toContain('500 Server Error');
       }
     });
 

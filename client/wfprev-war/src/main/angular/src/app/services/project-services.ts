@@ -85,7 +85,7 @@ export class ProjectService {
             map((response: any) => response),
             catchError((error) => {
                 console.error("Error update project", error);
-                return throwError(() => new Error("Failed to update project"));
+                return throwError(() => error);
             })
         );
     }
