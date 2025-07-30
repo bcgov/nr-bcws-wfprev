@@ -16,7 +16,7 @@ resource "aws_db_instance" "wfprev_pgsqlDB" {
   skip_final_snapshot             = true
   storage_encrypted               = true
   vpc_security_group_ids          = [module.networking.security_groups.data.id]
-  # tags                            = local.common_tags
+  snapshot_identifier             = var.RESTORE_DOWNSCALED_CLUSTER ? "wfprev${var.TARGET_ENV}-scaling-snapshot" : null
   enabled_cloudwatch_logs_exports = ["postgresql"]
   lifecycle {
     prevent_destroy = false
