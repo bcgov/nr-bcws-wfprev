@@ -28,6 +28,7 @@ on:
 jobs:
   get-image-tag:
     runs-on: ubuntu-22.04
+    if: ${{ contains(inputs.TYPE_OF_CHANGE, 'SPIN_UP') }}
     outputs:
       TAG_TO_USE: steps.mapEnvironments.outputs.TAG_TO_USE
       GDB_EXTRACTOR_IMAGE: steps.getGdbImage.outputs.GDB_EXTRACTOR_IMAGE
@@ -60,7 +61,6 @@ jobs:
         id: getGdbImage
         run: |
           export GDB_EXTRACTOR_IMAGE="$(aws ssm get-parameter --name 'gdb-extractor-image' --query 'Parameter.Value' | sed 's/\"//g')" 
-          
           echo "GDB_EXTRACTOR_IMAGE=$GDB_EXTRACTOR_IMAGE" >> "$GITHUB_OUTPUT"
       
 
@@ -86,6 +86,8 @@ jobs:
 
   save-vars-on-spin-down:
     runs-on: ubuntu-22.04
+    if: ${{ contains(inputs.TYPE_OF_CHANGE, 'SPIN_DOWN') }}
+
     steps:
       - name: Configure AWS credentials for Terraform account (DEV/TEST/PROD)
         uses: aws-actions/configure-aws-credentials@v2
