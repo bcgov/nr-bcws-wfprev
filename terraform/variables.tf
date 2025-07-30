@@ -5,6 +5,11 @@ variable "common_tags" {
   }
 }
 
+variable "RESTORE_DOWNSCALED_CLUSTER" {
+  description = "Whether we restore a downscaled RDS instance or create a new one"
+  default = "false"
+}
+
 variable "WFPREV_CLIENT_CPU_UNITS" {
   description = "client instance CPU units to provision (1 vCPU = 1024 CPU units)"
   type        = number
