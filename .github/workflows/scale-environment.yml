@@ -25,6 +25,10 @@ on:
         description: Confirm name of environment (only needed if targeting PROD/WFPRD)
         type: string
 
+permissions:
+  contents: read
+  id-token: write
+
 jobs:
   get-image-tag:
     runs-on: ubuntu-22.04
@@ -47,6 +51,10 @@ jobs:
           elif [ "${{ inputs.DEFAULT_APPLICATION_ENVIRONMENT }}" == "prod" ]; || [ "${{ inputs.DEFAULT_APPLICATION_ENVIRONMENT }}" == "wfprd" ]; then
             TAG_TO_SEARCH='[0-9\.]+(?=\")'
             TAG_TO_USE = $(curl https://api.github.com/repos/${{vars.REPOSITORY_HOST}}/${{ github.repository }}/releases | grep -P $TAG_TO_USE -o | head -n 1)
+            if [[ ${{ inputs.DEFAULT_APPLICATION_ENVIRONMENT }} != ${{ inputs.CONFIRM_ENVIRONMENT }}]]; then
+              echo "Please confirm environment when scaling prod/wfprd"
+              exit 1
+            fi
           fi
           echo "TAG_TO_USE=$TAG_TO_USE" >> "$GITHUB_OUTPUT"
           
