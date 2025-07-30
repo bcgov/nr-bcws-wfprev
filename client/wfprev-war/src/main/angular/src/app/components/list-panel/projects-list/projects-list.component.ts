@@ -552,20 +552,7 @@ export class ProjectsListComponent implements OnInit {
   }
 
   downloadProjects(projectGuids: string[], type: string): void {
-    const inProgressMsg =
-      type === DownloadTypes.EXCEL
-        ? Messages.excelFileDownloadInProgress
-        : Messages.csvFileDownloadInProgress;
-    const successMsg =
-      type === DownloadTypes.EXCEL
-        ? Messages.excelFileDownloadSuccess
-        : Messages.csvFileDownloadSuccess;
-    const failureMsg =
-      type === DownloadTypes.EXCEL
-        ? Messages.excelFileDownloadFailure
-        : Messages.csvFileDownloadFailure;
-
-    const snackRef = this.snackbarService.open(inProgressMsg, 'Close', {
+    const snackRef = this.snackbarService.open(Messages.fileDownloadInProgress, 'Close', {
       duration: undefined,
       panelClass: 'snackbar-info'
     });
@@ -583,7 +570,7 @@ export class ProjectsListComponent implements OnInit {
         a.click();
         window.URL.revokeObjectURL(url);
 
-        this.snackbarService.open(successMsg, 'Close', {
+        this.snackbarService.open(Messages.fileDownloadSuccess, 'Close', {
           duration: 5000,
           panelClass: 'snackbar-success'
         });
@@ -591,7 +578,7 @@ export class ProjectsListComponent implements OnInit {
       error: (err) => {
         snackRef.dismiss();
         console.error('Download failed', err);
-        this.snackbarService.open(failureMsg, 'Close', {
+        this.snackbarService.open(Messages.fileDownloadFailure, 'Close', {
           duration: 5000,
           panelClass: 'snackbar-error'
         });
