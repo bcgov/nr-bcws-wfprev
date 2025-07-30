@@ -6,9 +6,7 @@
 }
 
 .list-header {
-    display: flex;
     align-items: baseline;
-    justify-content: space-between;
     padding: 14px;
     border-bottom: 1px solid #ccc;
     font-family: var(--wf-font-family-main);
@@ -17,6 +15,11 @@
     position: relative;
     background: #fff;
     flex-wrap: wrap;
+    .first-row{
+      display: flex;
+      justify-content: space-between;
+      height: 50px;
+    }
 }
   
 .sort-dropdown {
@@ -128,6 +131,8 @@
   }
   
   .result-count {
+    display: flex;
+    justify-content: flex-end;
     font-weight: 700;
     font-size: 14px;
   }
@@ -360,7 +365,9 @@
   padding: 10px;
 }
 
-.create-project-button-container{
+.create-project-download-button-container{
+  display: flex;
+  gap: 12px;
   .create-project-button{
     cursor: pointer;
     padding: 12px !important;

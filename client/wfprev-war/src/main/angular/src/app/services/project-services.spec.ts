@@ -881,5 +881,35 @@ describe('ProjectService', () => {
     req.flush('Error', { status: 500, statusText: 'Server Error' });
   });
 
+  it('should download projects and return blob', () => {
+    const projectGuids = ['guid1', 'guid2'];
+    const type = 'csv';
+    const mockBlob = new Blob(['test data'], { type: 'text/csv' });
+
+    service.downloadProjects(projectGuids, type).subscribe((result) => {
+      expect(result).toEqual(mockBlob);
+    });
+
+    const req = httpMock.expectOne('http://mock-api.com/wfprev-api/reports');
+    expect(req.request.method).toBe('POST');
+    expect(req.request.responseType).toBe('blob');
+    req.flush(mockBlob);
+  });
+
+  it('should handle error when downloading projects', () => {
+    const projectGuids = ['guid1', 'guid2'];
+    const type = 'csv';
+
+    service.downloadProjects(projectGuids, type).subscribe({
+      next: () => fail('Should have failed'),
+      error: (err) => {
+        expect(err.message).toBe('Failed to download projects');
+      }
+    });
+
+    const req = httpMock.expectOne('http://mock-api.com/wfprev-api/reports');
+    const errorBlob = new Blob(['Error'], { type: 'text/plain' });
+    req.flush(errorBlob, { status: 500, statusText: 'Server Error' });
+  });
 
 });
