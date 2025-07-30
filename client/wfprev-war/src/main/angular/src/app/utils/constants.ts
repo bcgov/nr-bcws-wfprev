@@ -30,12 +30,6 @@ export const Messages = {
   fileDownloadFailure: 'Error: File download unsuccessful',
   fileDownloadSuccess: 'File downloaded successfully.',
   fileDownloadInProgress: 'File download in progress. Please wait',
-  csvFileDownloadFailure: 'Error: CSV File download unsuccessful',
-  excelFileDownloadFailure: 'Error: Excel File download unsuccessful',
-  csvFileDownloadInProgress: 'CSV File download in progress. Please wait',
-  csvFileDownloadSuccess: 'CSV File downloaded successfully',
-  excelFileDownloadInProgress: 'Excel File download in progress. Please wait',
-  excelFileDownloadSuccess: 'Excel File downloaded successfully',
 };
 
 export const CodeTableKeys = {
