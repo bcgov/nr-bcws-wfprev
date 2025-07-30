@@ -1,29 +1,36 @@
 <div>
   <div class="list-header">
-    <!-- Sort Dropdown -->
-    <div class="sort-dropdown">
-      <label>Sort:</label>
-      <mat-form-field appearance="fill" class="sort-dropdown-select">
-        <mat-select [(value)]="selectedSort" (selectionChange)="onSortChange($event)">
-          <mat-option value="">Select</mat-option>
-          <mat-option *ngFor="let option of sortOptions" [value]="option.value">
-            {{ option.label }}
-          </mat-option>
-        </mat-select>
-      </mat-form-field>
-      <div class="result-count">
-            <!-- Result Count -->
-        <span>{{ allProjects.length }} Results</span>
+    <div class="first-row">
+      <!-- Sort Dropdown -->
+      <div class="sort-dropdown">
+        <label>Sort:</label>
+        <mat-form-field appearance="fill" class="sort-dropdown-select">
+          <mat-select [(value)]="selectedSort" (selectionChange)="onSortChange($event)">
+            <mat-option value="">Select</mat-option>
+            <mat-option *ngFor="let option of sortOptions" [value]="option.value">
+              {{ option.label }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="create-project-download-button-container">
+        <wfprev-download-button
+          [formats]="formats"
+          (download)="onDownload($event)"
+          [disabled]="!displayedProjects?.length">
+        </wfprev-download-button>
+        <wfprev-icon-button
+            [text]="'Create Project'"
+            [icon]="'/assets/add-button.svg'"
+            [alt]="'create-project'"
+            [iconSize]="19"
+            (clicked)="createNewProject()">
+        </wfprev-icon-button>
       </div>
     </div>
-    <div class="create-project-button-container">
-      <wfprev-icon-button
-          [text]="'Create New Project'"
-          [icon]="'/assets/add-button.svg'"
-          [alt]="'create-project'"
-          [iconSize]="19"
-          (clicked)="createNewProject()">
-      </wfprev-icon-button>
+    <div class="result-count">
+      <!-- Result Count -->
+      <span>{{ allProjects.length }} Results</span>
     </div>
   </div>
 

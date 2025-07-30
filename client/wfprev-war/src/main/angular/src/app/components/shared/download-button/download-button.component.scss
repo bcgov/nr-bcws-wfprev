@@ -1,0 +1,36 @@
+.download-button {
+    font-family: var(--wf-font-family-main) !important;
+    padding: 12px;
+    display: flex;
+    align-items: center;
+    color: #2D2D2DD2;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    background-color: var(--wf-colour-white);
+    border-radius: 4px;
+    border: 1px solid #2D2D2D;
+    width: auto;
+    border-radius: 4px;
+    height: 45px;
+    span {
+        font-family: var(--wf-font-family-main) !important;
+        padding: 0px 8px;
+        vertical-align: top;
+    }
+}
+.download-button:disabled,
+.download-button[disabled] {
+    background-color: #c0c0c0 !important;
+    color: white !important;
+}
+.action-icon {
+    width: 20px;
+    height: 20px;
+    color: white;
+}
+
+::ng-deep .mat-mdc-menu-panel {
+    width: 164px !important;
+}

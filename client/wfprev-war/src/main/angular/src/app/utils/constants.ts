@@ -191,3 +191,13 @@ export const EvaluationCriteriaSectionCodes = {
   BURN_DEVELOPMENT_FEASIBILITY: 'BDF',
   COLLECTIVE_IMPACT: 'COLL_IMP'
 };
+
+export const DownloadTypes = {
+  EXCEL: 'excel',
+  CSV: 'csv',
+};
+
+export const DownloadFileExtensions = {
+  EXCEL: 'xlsx',
+  CSV: 'csv',
+};
