@@ -114,12 +114,12 @@ jobs:
           else
             echo "wfprev$TARGET_ENV DB exists"
           fi
-          export GDB_EXTRACTOR_IMAGE="$(aws lambda get-function --function-name wfprev-gdb-$TARGET_ENV --query 'Code.ImageUri' | sed 's/"//g')"
+          export GDB_EXTRACTOR_IMAGE="$(aws lambda get-function --function-name wfprev-gdb-$TARGET_ENV --query 'Code.ImageUri' | sed 's/\"//g')"
           aws ssm put-parameter --name 'gdb-extractor-image' --value $GDB_EXTRACTOR_IMAGE --type "String" --data-type "text" --overwrite
           if [[ $(aws rds describe-db-snapshots --snapshot-type=manual) == *"wfprev$TARGET_ENV-scaling-snapshot"* ]]; then 
-            aws rds delete-db-snapshot --db-snapshot-identifier wfprev$TARGET_ENV"; 
+            aws rds delete-db-snapshot --db-snapshot-identifier wfprev$TARGET_ENV-scaling-snapshot; 
           fi
-          aws rds create-db-snapshot --db-snapshot-identifier wfprev$TARGET_ENV
+          aws rds create-db-snapshot --db-snapshot-identifier wfprev$TARGET_ENV-scaling-snapshot --db-instance-identifier wfprev$TARGET_ENV
 
 
   spin-down:

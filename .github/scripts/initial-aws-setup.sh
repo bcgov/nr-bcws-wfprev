@@ -355,6 +355,12 @@ create_iam_policy() {
       "Effect": "Allow",
       "Action": ["acm:*"],
       "Resource": "*"
+    },
+    {
+      "Sid": "SSM",
+      "Effect": "Allow",
+      "Action": ["ssm:*Parameter"],
+      "Resource": "*"
     }
   ]
 }
