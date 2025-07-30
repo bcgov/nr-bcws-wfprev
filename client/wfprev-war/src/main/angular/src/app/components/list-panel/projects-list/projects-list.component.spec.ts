@@ -900,13 +900,13 @@ describe('ProjectsListComponent', () => {
       tick();
 
       expect(mockSnackBar.open).toHaveBeenCalledWith(
-        Messages.csvFileDownloadInProgress,
+        Messages.fileDownloadInProgress,
         'Close',
         jasmine.any(Object)
       );
 
       expect(mockSnackBar.open).toHaveBeenCalledWith(
-        Messages.csvFileDownloadSuccess,
+        Messages.fileDownloadSuccess,
         'Close',
         jasmine.any(Object)
       );
@@ -924,13 +924,13 @@ describe('ProjectsListComponent', () => {
       tick();
 
       expect(mockSnackBar.open).toHaveBeenCalledWith(
-        Messages.excelFileDownloadInProgress,
+        Messages.fileDownloadInProgress,
         'Close',
         jasmine.any(Object)
       );
 
       expect(mockSnackBar.open).toHaveBeenCalledWith(
-        Messages.excelFileDownloadFailure,
+        Messages.fileDownloadFailure,
         'Close',
         jasmine.any(Object)
       );

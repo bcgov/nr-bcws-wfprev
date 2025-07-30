@@ -106,6 +106,7 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
 
   private initializeForm(): void {
     this.detailsForm = this.fb.group({
+      projectName: ['', [Validators.required, Validators.maxLength(50)]],
       projectTypeCode: ['', [Validators.required]],
       fundingStream: [''],
       programAreaGuid: ['', [Validators.required]],
@@ -360,6 +361,7 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
 
   patchFormValues(data: any): void {
     this.detailsForm.patchValue({
+      projectName: data.projectName ?? '',
       projectTypeCode: data.projectTypeCode?.projectTypeCode ?? '',
       fundingStream: data.fundingStream,
       programAreaGuid: data.programAreaGuid ?? '',
