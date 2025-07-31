@@ -20,10 +20,6 @@ on:
         required: true
         type: string
         default: apply
-      GDB_EXTRACTOR_IMAGE:
-        required: true
-        type: string
-        default: ""
       RESTORE_DOWNSCALED_CLUSTER:
         required: false
         type: string
@@ -128,7 +124,8 @@ jobs:
             docker pull $IMAGE
             echo "GDB_EXTRACTOR_IMAGE=$(docker inspect --format='{{index .RepoDigests 0}}' $IMAGE)" >> $GITHUB_OUTPUT
           else
-            echo "GDB_EXTRACTOR_IMAGE=${{inputs.GDB_EXTRACTOR_IMAGE}}" >> $GITHUB_OUTPUT
+            export GDB_EXTRACTOR_IMAGE="$(aws ssm get-parameter --name 'gdb-extractor-image' --query 'Parameter.Value' | sed 's/\"//g')" 
+            echo "GDB_EXTRACTOR_IMAGE=$GDB_EXTRACTOR_IMAGE" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Configure AWS credentials for Terraform account (DEV/TEST/PROD)

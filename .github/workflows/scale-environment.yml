@@ -64,12 +64,6 @@ jobs:
             role-to-assume:  ${{ secrets.AWS_TERRAFORM_ROLE_TO_ASSUME }}
             role-session-name: wfprev-terraform-s3
             aws-region: ca-central-1    
-
-      - name: Get GDB Image for environment
-        id: getGdbImage
-        run: |
-          export GDB_EXTRACTOR_IMAGE="$(aws ssm get-parameter --name 'gdb-extractor-image' --query 'Parameter.Value' | sed 's/\"//g')" 
-          echo "GDB_EXTRACTOR_IMAGE=$GDB_EXTRACTOR_IMAGE" >> "$GITHUB_OUTPUT"
       
 
   spin-up:
@@ -81,7 +75,6 @@ jobs:
       IMAGE_TAG: ${{ needs.get-image-tag.outputs.TAG_TO_USE }}
       RUN_LIQUIBASE: true
       COMMAND: apply
-      GDB_EXTRACTOR_IMAGE: ${{ needs.get-image-tag.outputs.GDB_EXTRACTOR_IMAGE }}
       RESTORE_DOWNSCALED_CLUSTER: true
     secrets: inherit
   
@@ -130,7 +123,6 @@ jobs:
       DEFAULT_APPLICATION_ENVIRONMENT: ${{ inputs.DEFAULT_APPLICATION_ENVIRONMENT }}
       IMAGE_TAG: latest
       RUN_LIQUIBASE: true
-      COMMAND: destroy
-      GDB_EXTRACTOR_IMAGE: "${{ secrets.ECR_TARGET_ACCOUNT_ID }}.dkr.ecr.ca-central-1.amazonaws.com/nr-bcws-wfprev-wfprev-gdb-extractor:latest"
+      COMMAND: apply -destroy
     secrets: inherit
 
