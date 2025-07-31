@@ -20,9 +20,10 @@ on:
         required: true
         type: string
         default: apply
-      GDB_EXTRACTOR_IMAGE:
-        required: true
+      RESTORE_DOWNSCALED_CLUSTER:
+        required: false
         type: string
+        default: 'false'
   workflow_dispatch:
     inputs:
       DEFAULT_APPLICATION_ENVIRONMENT:
@@ -137,10 +138,11 @@ jobs:
       - name: Get digest of GDB extractor docker image
         id: getDigestGDB
         run: |
-          if [ "${{ inputs.GDB_EXTRACTOR_IMAGE }}" == "" ]; then
+          if [[ ${{inputs.RESTORE_DOWNSCALED_CLUSTER}} == 'false' ]]; then
             IMAGE="${{ secrets.ECR_TARGET_ACCOUNT_ID }}.dkr.ecr.ca-central-1.amazonaws.com/nr-bcws-wfprev-wfprev-gdb-extractor:latest"
           else
-            IMAGE="${{ inputs.GDP_EXTRACTOR_IMAGE }}"
+            export GDB_EXTRACTOR_IMAGE="$(aws ssm get-parameter --name 'gdb-extractor-image' --query 'Parameter.Value' | sed 's/\"//g')" 
+            echo "GDB_EXTRACTOR_IMAGE=$GDB_EXTRACTOR_IMAGE" >> "$GITHUB_OUTPUT"
           fi
           docker pull $IMAGE
           echo "GDB_EXTRACTOR_IMAGE=$(docker inspect --format='{{index .RepoDigests 0}}' $IMAGE)" >> $GITHUB_OUTPUT
