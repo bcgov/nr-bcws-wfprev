@@ -147,8 +147,8 @@ jobs:
           --image-ids imageTag=latest \
           --query 'imageDetails[0].imageDigest' \
           --output text)
-        echo "GDB_EXTRACTOR_IMAGE=${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.ca-central-1.amazonaws.com/nr-bcws-wfprev-wfprev-gdb-extractor@${DIGEST}" >> $GITHUB_ENV
-        echo "digest_output=${{ env.GDB_EXTRACTOR_IMAGE }}" >> $GITHUB_OUTPUT
+        echo "GDB_EXTRACTOR_DIGEST=${DIGEST}" >> $GITHUB_ENV
+        echo "digest_output=${{ env.GDB_EXTRACTOR_DIGEST }}" >> $GITHUB_OUTPUT
         
     outputs:
           gdb_digest: ${{ steps.getGdbDigest.outputs.digest_output }}
