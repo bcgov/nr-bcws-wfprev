@@ -203,4 +203,8 @@ jobs:
           PROXY_WF1_PREV_REST_PASSWORD: ${{ secrets.PROXY_WF1_PREV_REST_PASSWORD }}
           TARGET_LIQUIBASE_TAG: ${{ steps.liquibaseCommand.outputs.TARGET_LIQUIBASE_TAG }}
 
-        run: terragrunt apply --terragrunt-non-interactive -auto-approve
+        run: |
+          if [ "${{ inputs.COMMAND }}" = "apply" ] || [ "${{ inputs.COMMAND }}" = "apply -destroy" ]; then
+            export RUNTIME_ARG="-auto-approve"
+          fi
+          terragrunt ${{inputs.COMMAND}} --terragrunt-non-interactive $RUNTIME_ARG
