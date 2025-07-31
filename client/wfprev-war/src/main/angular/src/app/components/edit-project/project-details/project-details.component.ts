@@ -106,6 +106,7 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
 
   private initializeForm(): void {
     this.detailsForm = this.fb.group({
+      projectName: ['', [Validators.required, Validators.maxLength(50)]],
       projectTypeCode: ['', [Validators.required]],
       fundingStream: [''],
       programAreaGuid: ['', [Validators.required]],
@@ -117,7 +118,7 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
       forestDistrictOrgUnitId: [''],
       primaryObjectiveTypeCode: ['', [Validators.required]],
       secondaryObjectiveTypeCode: [''],
-      secondaryObjectiveRationale: ['', [Validators.maxLength(300)]],
+      secondaryObjectiveRationale: ['', [Validators.maxLength(500)]],
       bcParksRegionOrgUnitId: [''],
       bcParksSectionOrgUnitId: [''],
       wildfireOrgUnitId: ['', [Validators.required]],
@@ -360,6 +361,7 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
 
   patchFormValues(data: any): void {
     this.detailsForm.patchValue({
+      projectName: data.projectName ?? '',
       projectTypeCode: data.projectTypeCode?.projectTypeCode ?? '',
       fundingStream: data.fundingStream,
       programAreaGuid: data.programAreaGuid ?? '',
@@ -420,13 +422,19 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
             }
           })
         },
-        error: (error) => {
+        error: (err) => {
+          // 409 is duplicate project name error
+          const errorMessage =
+            err?.status === 409 && err?.error?.error
+              ? err.error.error
+              : this.messages.projectCreatedFailure;
+
           this.snackbarService.open(
-            this.messages.projectUpdatedFailure,
+            errorMessage,
             'OK',
             { duration: 5000, panelClass: 'snackbar-error' }
           );
-        },
+        }
       });
     } else {
       console.error('Form is invalid!');

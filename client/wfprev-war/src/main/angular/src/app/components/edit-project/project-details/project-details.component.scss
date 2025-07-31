@@ -163,8 +163,7 @@
     }
 
     .secondary-rationale {
-      flex: 0 0 calc(50% - 10px); // Half-width
-      max-width: 2000px;
+      width: 100%;
       min-width: 200px;
 
       @media (max-width: 1024px) {
@@ -174,7 +173,7 @@
 
       textarea {
         width: 100%;
-        min-height: 130px;
+        min-height: 50px;
         padding: 10px 16px;
         box-sizing: border-box;
         font-size: 16px;

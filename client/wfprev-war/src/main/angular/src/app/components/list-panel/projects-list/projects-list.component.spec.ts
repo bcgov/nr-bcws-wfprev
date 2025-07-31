@@ -343,15 +343,6 @@ describe('ProjectsListComponent', () => {
   
     expect(component.loadProjects).toHaveBeenCalled();
   });
-  
-  it('should call handleScroll and load more projects on scroll', () => {
-    component.allProjects = Array.from({length: 50}, (_, i) => ({ projectName: `Project ${i}` }));
-    component.displayedProjects = component.allProjects.slice(0, 25);
-    component.currentPage = 0;
-    const event = { target: { scrollTop: 100, scrollHeight: 200, clientHeight: 100 } };
-    component.handleScroll(event);
-    expect(component.displayedProjects.length).toBeGreaterThan(25);
-  });
 
   it('should highlight project polygons', () => {
     const mockMarkerWithLatLng = { getLatLng: () => ({ lat: 1, lng: 2 }), setIcon: jasmine.createSpy('setIcon') };
@@ -449,21 +440,6 @@ describe('ProjectsListComponent', () => {
     expect(component.allProjects[0].projectName).toBe('B');
   });
 
-  it('should call onScroll and load more projects', () => {
-    component.allProjects = Array.from({length: 50}, (_, i) => ({ projectName: `Project ${i}` }));
-    component.displayedProjects = component.allProjects.slice(0, 25);
-    component.currentPage = 0;
-    component.onScroll();
-    expect(component.displayedProjects.length).toBeGreaterThan(25);
-  });
-
-  it('should call handleScroll and trigger onScroll at bottom', () => {
-    spyOn(component, 'onScroll');
-    const event = { target: { scrollTop: 100, scrollHeight: 200, clientHeight: 100 } };
-    component.handleScroll(event);
-    expect(component.onScroll).toHaveBeenCalled();
-  });
-
   it('should call createNewProject and open dialog', () => {
     spyOn(component, 'loadProjects');
     component.createNewProject();
@@ -486,14 +462,13 @@ describe('ProjectsListComponent', () => {
       ]
     };
 
-    component.pageSize = 1;
     spyOn(component.sharedService, 'updateDisplayedProjects');
 
     component.processProjectsResponse(mockData);
 
     expect(component.allProjects.length).toBe(2);
     expect(component.allProjects[0].projectName).toBe('A Project');
-    expect(component.displayedProjects.length).toBe(1); 
+    expect(component.displayedProjects.length).toBe(2); 
     expect(component.displayedProjects[0].projectName).toBe('A Project');
     expect(component.isLoading).toBeFalse();
     expect(component.sharedService.updateDisplayedProjects).toHaveBeenCalledWith(component.displayedProjects);
@@ -641,13 +616,12 @@ describe('ProjectsListComponent', () => {
     mockProjectService.getFeatures.and.returnValue(of(mockResponse));
     spyOn(component.sharedService, 'updateDisplayedProjects');
 
-    component.pageSize = 1;
     component.loadProjects();
 
     expect(component.isLoading).toBeFalse();
     expect(component.allProjects.length).toBe(2);
     expect(component.allProjects[0].projectName).toBe('A Project');
-    expect(component.displayedProjects.length).toBe(1);
+    expect(component.displayedProjects.length).toBe(2);
     expect(component.sharedService.updateDisplayedProjects).toHaveBeenCalledWith(component.displayedProjects);
   });
 
@@ -900,13 +874,13 @@ describe('ProjectsListComponent', () => {
       tick();
 
       expect(mockSnackBar.open).toHaveBeenCalledWith(
-        Messages.csvFileDownloadInProgress,
+        Messages.fileDownloadInProgress,
         'Close',
         jasmine.any(Object)
       );
 
       expect(mockSnackBar.open).toHaveBeenCalledWith(
-        Messages.csvFileDownloadSuccess,
+        Messages.fileDownloadSuccess,
         'Close',
         jasmine.any(Object)
       );
@@ -924,13 +898,13 @@ describe('ProjectsListComponent', () => {
       tick();
 
       expect(mockSnackBar.open).toHaveBeenCalledWith(
-        Messages.excelFileDownloadInProgress,
+        Messages.fileDownloadInProgress,
         'Close',
         jasmine.any(Object)
       );
 
       expect(mockSnackBar.open).toHaveBeenCalledWith(
-        Messages.excelFileDownloadFailure,
+        Messages.fileDownloadFailure,
         'Close',
         jasmine.any(Object)
       );

@@ -34,24 +34,24 @@ jobs:
     runs-on: ubuntu-22.04
     if: ${{ contains(inputs.TYPE_OF_CHANGE, 'SPIN_UP') }}
     outputs:
-      TAG_TO_USE: steps.mapEnvironments.outputs.TAG_TO_USE
-      GDB_EXTRACTOR_IMAGE: steps.getGdbImage.outputs.GDB_EXTRACTOR_IMAGE
+      TAG_TO_USE: ${{ steps.mapEnvironments.outputs.TAG_TO_USE }}
+      GDB_EXTRACTOR_IMAGE: ${{ steps.getGdbImage.outputs.GDB_EXTRACTOR_IMAGE }}
     steps:
       - id: mapEnvironments
         name: Determine namespaces for deploy
         run: |
           if [ "${{ inputs.DEFAULT_APPLICATION_ENVIRONMENT }}" == "dev" ] || [ "${{ inputs.DEFAULT_APPLICATION_ENVIRONMENT }}" == "wfint" ]; then
-            echo "TAG_TO_USE=latest" >> $GITHUB_OUTPUT
+            TAG_TO_USE="latest"
           elif [ "${{ inputs.DEFAULT_APPLICATION_ENVIRONMENT }}" == "wfdlv" ]; then
             TAG_TO_SEARCH='[0-9\.]+-beta(?=\")'
-            TAG_TO_USE = $(curl https://api.github.com/repos/${{vars.REPOSITORY_HOST}}/${{ github.repository }}/releases | grep -P $TAG_TO_USE -o | head -n 1)
+            TAG_TO_USE = "$(curl https://api.github.com/repos/${{vars.REPOSITORY_HOST}}/${{ github.repository }}/releases | grep -P $TAG_TO_SEARCH -o | head -n 1)"
           elif [ "${{ inputs.DEFAULT_APPLICATION_ENVIRONMENT }}" == "test" ] || [ "${{ inputs.DEFAULT_APPLICATION_ENVIRONMENT }}" == "wftst" ]; then
             TAG_TO_SEARCH='[0-9\.]+-rc(?=\")'
-            TAG_TO_USE = $(curl https://api.github.com/repos/${{vars.REPOSITORY_HOST}}/${{ github.repository }}/releases | grep -P $TAG_TO_USE -o | head -n 1)
-          elif [ "${{ inputs.DEFAULT_APPLICATION_ENVIRONMENT }}" == "prod" ]; || [ "${{ inputs.DEFAULT_APPLICATION_ENVIRONMENT }}" == "wfprd" ]; then
+            TAG_TO_USE = "$(curl https://api.github.com/repos/${{vars.REPOSITORY_HOST}}/${{ github.repository }}/releases | grep -P $TAG_TO_SEARCH -o | head -n 1)"
+          elif [ "${{ inputs.DEFAULT_APPLICATION_ENVIRONMENT }}" == "prod" ] || [ "${{ inputs.DEFAULT_APPLICATION_ENVIRONMENT }}" == "wfprd" ]; then
             TAG_TO_SEARCH='[0-9\.]+(?=\")'
-            TAG_TO_USE = $(curl https://api.github.com/repos/${{vars.REPOSITORY_HOST}}/${{ github.repository }}/releases | grep -P $TAG_TO_USE -o | head -n 1)
-            if [[ ${{ inputs.DEFAULT_APPLICATION_ENVIRONMENT }} != ${{ inputs.CONFIRM_ENVIRONMENT }}]]; then
+            TAG_TO_USE = "$(curl https://api.github.com/repos/${{vars.REPOSITORY_HOST}}/${{ github.repository }}/releases | grep -P $TAG_TO_SEARCH -o | head -n 1)"
+            if [[ "${{ inputs.DEFAULT_APPLICATION_ENVIRONMENT }}" != "${{ inputs.CONFIRM_ENVIRONMENT }}" ]]; then
               echo "Please confirm environment when scaling prod/wfprd"
               exit 1
             fi
@@ -64,12 +64,6 @@ jobs:
             role-to-assume:  ${{ secrets.AWS_TERRAFORM_ROLE_TO_ASSUME }}
             role-session-name: wfprev-terraform-s3
             aws-region: ca-central-1    
-
-      - name: Get GDB Image for environment
-        id: getGdbImage
-        run: |
-          export GDB_EXTRACTOR_IMAGE="$(aws ssm get-parameter --name 'gdb-extractor-image' --query 'Parameter.Value' | sed 's/\"//g')" 
-          echo "GDB_EXTRACTOR_IMAGE=$GDB_EXTRACTOR_IMAGE" >> "$GITHUB_OUTPUT"
       
 
   spin-up:
@@ -81,7 +75,6 @@ jobs:
       IMAGE_TAG: ${{ needs.get-image-tag.outputs.TAG_TO_USE }}
       RUN_LIQUIBASE: true
       COMMAND: apply
-      GDB_EXTRACTOR_IMAGE: ${{ needs.get-image-tag.outputs.GDB_EXTRACTOR_IMAGE }}
       RESTORE_DOWNSCALED_CLUSTER: true
     secrets: inherit
   
@@ -106,7 +99,7 @@ jobs:
 
       - name: Safety check so we won't overwrite snapshot when DB is already down, then save current GDB image and snapshot
         run: |
-          DEFAULT_APPLICATION_ENVIRONMENT=${{DEFAULT_APPLICATION_ENVIRONMENT}}
+          DEFAULT_APPLICATION_ENVIRONMENT=${{ inputs.DEFAULT_APPLICATION_ENVIRONMENT }}
           TARGET_ENV="${DEFAULT_APPLICATION_ENVIRONMENT#wf}"
           if [[ $(aws rds describe-db-instances --query "DBInstances[?DBInstanceIdentifier== 'wfprev$TARGET_ENV'].DBInstanceIdentifier") != *"\"wfprev$TARGET_ENV\""* ]]; then 
             echo "wfprev$TARGET_ENV DB does not exist! Cannot create snapshot!"
@@ -130,7 +123,6 @@ jobs:
       DEFAULT_APPLICATION_ENVIRONMENT: ${{ inputs.DEFAULT_APPLICATION_ENVIRONMENT }}
       IMAGE_TAG: latest
       RUN_LIQUIBASE: true
-      COMMAND: destroy
-      GDB_EXTRACTOR_IMAGE: "${{ secrets.ECR_TARGET_ACCOUNT_ID }}.dkr.ecr.ca-central-1.amazonaws.com/nr-bcws-wfprev-wfprev-gdb-extractor:latest"
+      COMMAND: apply -destroy
     secrets: inherit
 

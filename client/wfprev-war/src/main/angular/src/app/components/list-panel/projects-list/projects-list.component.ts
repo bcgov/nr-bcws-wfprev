@@ -47,8 +47,6 @@ export class ProjectsListComponent implements OnInit {
   getActiveMap = getActiveMap
   allProjects: any[] = [];
   displayedProjects: any[] = [];
-  pageSize = 25;
-  currentPage = 0;
   isLoading = false;
   selectedProjectGuid: string | null = null;
   getFiscalYearDisplay = getFiscalYearDisplay;
@@ -203,9 +201,7 @@ export class ProjectsListComponent implements OnInit {
     } else if (this.selectedSort === 'descending') {
       this.allProjects.sort((a, b) => b.projectName.localeCompare(a.projectName));
     }
-
-    const totalVisible = (this.currentPage + 1) * this.pageSize;
-    this.displayedProjects = this.allProjects.slice(0, totalVisible);
+    this.displayedProjects = this.allProjects;
     this.sharedService.updateDisplayedProjects(this.displayedProjects);
   }
 
@@ -459,25 +455,6 @@ export class ProjectsListComponent implements OnInit {
     return value.endsWith(suffix) ? value.slice(0, -suffix.length).trim() : value;
   }
 
-  onScroll() {
-    if (this.isLoading) return;
-    const nextPage = this.currentPage + 1;
-    const start = nextPage * this.pageSize;
-    const end = start + this.pageSize;
-    if (start < this.allProjects.length) {
-      this.displayedProjects = this.displayedProjects.concat(this.allProjects.slice(start, end));
-      this.currentPage = nextPage;
-      this.sharedService.updateDisplayedProjects(this.displayedProjects);
-    }
-  }
-
-  handleScroll(event: any) {
-    const element = event.target;
-    if (element.scrollHeight - element.scrollTop <= element.clientHeight + 10) {
-      this.onScroll();
-    }
-  }
-
   getProjectFiscalYearRange(project: any): string | null {
     if (!project?.projectFiscals?.length) return null;
 
@@ -503,8 +480,7 @@ export class ProjectsListComponent implements OnInit {
     this.allProjects = (data.projects ?? []).sort((a: any, b: any) =>
       a.projectName.localeCompare(b.projectName)
     );
-    this.currentPage = 0;
-    this.displayedProjects = this.allProjects.slice(0, this.pageSize);
+    this.displayedProjects = this.allProjects;
     this.sharedService.updateDisplayedProjects(this.displayedProjects);
     this.isLoading = false;
   }
@@ -552,20 +528,7 @@ export class ProjectsListComponent implements OnInit {
   }
 
   downloadProjects(projectGuids: string[], type: string): void {
-    const inProgressMsg =
-      type === DownloadTypes.EXCEL
-        ? Messages.excelFileDownloadInProgress
-        : Messages.csvFileDownloadInProgress;
-    const successMsg =
-      type === DownloadTypes.EXCEL
-        ? Messages.excelFileDownloadSuccess
-        : Messages.csvFileDownloadSuccess;
-    const failureMsg =
-      type === DownloadTypes.EXCEL
-        ? Messages.excelFileDownloadFailure
-        : Messages.csvFileDownloadFailure;
-
-    const snackRef = this.snackbarService.open(inProgressMsg, 'Close', {
+    const snackRef = this.snackbarService.open(Messages.fileDownloadInProgress, 'Close', {
       duration: undefined,
       panelClass: 'snackbar-info'
     });
@@ -583,7 +546,7 @@ export class ProjectsListComponent implements OnInit {
         a.click();
         window.URL.revokeObjectURL(url);
 
-        this.snackbarService.open(successMsg, 'Close', {
+        this.snackbarService.open(Messages.fileDownloadSuccess, 'Close', {
           duration: 5000,
           panelClass: 'snackbar-success'
         });
@@ -591,7 +554,7 @@ export class ProjectsListComponent implements OnInit {
       error: (err) => {
         snackRef.dismiss();
         console.error('Download failed', err);
-        this.snackbarService.open(failureMsg, 'Close', {
+        this.snackbarService.open(Messages.fileDownloadFailure, 'Close', {
           duration: 5000,
           panelClass: 'snackbar-error'
         });
