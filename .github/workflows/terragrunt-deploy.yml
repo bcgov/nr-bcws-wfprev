@@ -216,7 +216,7 @@ jobs:
           TARGET_LIQUIBASE_TAG: ${{ steps.liquibaseCommand.outputs.TARGET_LIQUIBASE_TAG }}
 
         run: |
-          if [ "${{ inputs.COMMAND }}" == "apply" ] || ["${{ inputs.COMMAND }}" == "apply -destroy"]; then
+          if [ "${{ inputs.COMMAND }}" = "apply" ] || [ "${{ inputs.COMMAND }}" = "apply -destroy" ]; then
             export RUNTIME_ARG="-auto-approve"
           fi
           terragrunt ${{inputs.COMMAND}} --terragrunt-non-interactive $RUNTIME_ARG
