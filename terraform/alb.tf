@@ -28,8 +28,6 @@ resource "aws_lb" "wfprev_main" {
   security_groups    = [data.aws_security_group.web.id]
   subnets            = module.network.aws_subnet_ids.web.ids
 
-  enable_deletion_protection = true
-
   tags = {
     Environment = "${var.TARGET_ENV}"
   }
