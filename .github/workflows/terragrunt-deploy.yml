@@ -155,7 +155,7 @@ jobs:
           TARGET_ENV: ${{ inputs.DEFAULT_APPLICATION_ENVIRONMENT }}
           APP_COUNT: ${{vars.APP_COUNT}}
           LOGGING_LEVEL: ${{vars.LOGGING_LEVEL}}
-          RESTORE_DOWNSCALED_CLUSTER: ${{ inputs.RESTORE_DOWNSCALED_CLUSTER }}
+          RESTORE_DOWNSCALED_CLUSTER: ${{ inputs.RESTORE_DOWNSCALED_CLUSTER || 'false' }}
 
           # Necessary for WFPREV API
           WFPREV_API_NAME: wfprev-api
