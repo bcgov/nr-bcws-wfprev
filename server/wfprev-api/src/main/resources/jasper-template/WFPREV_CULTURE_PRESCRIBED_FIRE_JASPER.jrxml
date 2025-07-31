@@ -50,16 +50,16 @@
 			<![CDATA[]]>
 		</queryString>
 	</subDataset>
-	<parameter name="linkToProject" class="java.lang.String"/>
+<!--	<parameter name="linkToProject" class="java.lang.String"/>-->
 	<queryString>
 		<![CDATA[]]>
 	</queryString>
-	<field name="linkToFiscalActivity" class="java.lang.String"/>
-	<field name="proposalType" class="java.lang.String"/>
+<!--	<field name="linkToFiscalActivity" class="java.lang.String"/>-->
+	<field name="proposalTypeDescription" class="java.lang.String"/>
 	<field name="projectFiscalName" class="java.lang.String"/>
 	<field name="projectFiscalDescription" class="java.lang.String"/>
 	<field name="fiscalYear" class="java.lang.String"/>
-	<field name="activityCategoryDesciption" class="java.lang.String"/>
+	<field name="activityCategoryDescription" class="java.lang.String"/>
 	<field name="planFiscalStatusDescription" class="java.lang.String"/>
 	<field name="totalEstimatedCostAmount" class="java.math.BigDecimal"/>
 	<field name="fiscalAncillaryFundAmount" class="java.math.BigDecimal"/>
@@ -79,15 +79,15 @@
 	<field name="outsideWuiInd" class="java.lang.String"/>
 	<field name="totalRclFilterSectionScore" class="java.math.BigDecimal"/>
 	<field name="bdfFilterSectionComment" class="java.lang.String"/>
-	<field name="totalBdfFilterSectionScore " class="java.math.BigDecimal"/>
+	<field name="totalBdfFilterSectionScore" class="java.math.BigDecimal"/>
 	<field name="rclFilterSectionComment" class="java.lang.String"/>
 	<field name="totalCollimpFilterSectionScore" class="java.math.BigDecimal"/>
 	<field name="collimpFilterSectionComment" class="java.lang.String"/>
 	<field name="totalFilterSectionScore" class="java.math.BigDecimal"/>
-	<field name="projectTypeCode" class="java.lang.String"/>
+	<field name="projectTypeDescription" class="java.lang.String"/>
 	<field name="projectName" class="java.lang.String"/>
 	<field name="forestRegionOrgUnitName" class="java.lang.String"/>
-	<field name="linkToProject" class="java.lang.String"/>
+<!--	<field name="linkToProject" class="java.lang.String"/>-->
 	<field name="forestDistrictOrgUnitName" class="java.lang.String"/>
 	<field name="bcParksRegionOrgUnitName" class="java.lang.String"/>
 	<field name="bcParksSectionOrgUnitName" class="java.lang.String"/>
@@ -96,13 +96,13 @@
 	<field name="grossProjectAreaHa" class="java.math.BigDecimal"/>
 	<field name="closestCommunityName" class="java.lang.String"/>
 	<field name="projectLead" class="java.lang.String"/>
-	<field name="proposalTypeDescription" class="java.lang.String"/>
+<!--	<field name="proposalTypeCode" class="java.lang.String"/>-->
 	<field name="resultsProjectCode" class="java.lang.String"/>
 	<field name="primaryObjectiveTypeDescription" class="java.lang.String"/>
 	<field name="secondaryObjectiveTypeDescription" class="java.lang.String"/>
 	<field name="wuiRiskClassDescription" class="java.lang.String"/>
 	<field name="localWuiRiskClassDescription" class="java.lang.String"/>
-	<field name="businessArea" class="java.lang.String"/>
+<!--	<field name="businessArea" class="java.lang.String"/>-->
 	<group name="CRx XLS Download">
 		<groupHeader>
 			<band height="50">
@@ -361,25 +361,25 @@ Notes on Collective Impact]]></text>
 			<textField isBlankWhenNull="true">
 				<reportElement x="324" y="59" width="170" height="80" uuid="fdc79c41-10dd-4ceb-983d-0093301b7cf7"/>
 				<textElement verticalAlignment="Bottom"/>
-				<textFieldExpression><![CDATA[$F{projectTypeCode}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{projectTypeDescription}]]></textFieldExpression>
 			</textField>
-			<textField isBlankWhenNull="true" hyperlinkType="Reference">
-				<reportElement x="4" y="59" width="160" height="80" forecolor="#3366FF" uuid="0bfb0f57-a9f5-404f-8ce5-021087864eee">
-					<printWhenExpression><![CDATA[$P{linkToProject} != null && !$P{linkToProject}.trim().isEmpty()]]></printWhenExpression>
-				</reportElement>
-				<box padding="1">
-					<pen lineWidth="1.0"/>
-					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-				</box>
-				<textElement verticalAlignment="Bottom">
-					<font fontName="Calibri" size="11" isUnderline="true"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{linkToFiscalActivity}]]></textFieldExpression>
-				<hyperlinkReferenceExpression><![CDATA[$F{linkToProject}]]></hyperlinkReferenceExpression>
-			</textField>
+<!--			<textField isBlankWhenNull="true" hyperlinkType="Reference">-->
+<!--				<reportElement x="4" y="59" width="160" height="80" forecolor="#3366FF" uuid="0bfb0f57-a9f5-404f-8ce5-021087864eee">-->
+<!--					<printWhenExpression><![CDATA[$P{linkToProject} != null && !$P{linkToProject}.trim().isEmpty()]]></printWhenExpression>-->
+<!--				</reportElement>-->
+<!--				<box padding="1">-->
+<!--					<pen lineWidth="1.0"/>-->
+<!--					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>-->
+<!--					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>-->
+<!--					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>-->
+<!--					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>-->
+<!--				</box>-->
+<!--				<textElement verticalAlignment="Bottom">-->
+<!--					<font fontName="Calibri" size="11" isUnderline="true"/>-->
+<!--				</textElement>-->
+<!--				<textFieldExpression><![CDATA[$F{linkToFiscalActivity}]]></textFieldExpression>-->
+<!--				<hyperlinkReferenceExpression><![CDATA[$F{linkToProject}]]></hyperlinkReferenceExpression>-->
+<!--			</textField>-->
 			<textField isBlankWhenNull="true">
 				<reportElement x="4934" y="59" width="94" height="80" uuid="60ad253b-3363-46b7-9a02-ed038500d26e"/>
 				<box>
@@ -394,20 +394,20 @@ Notes on Collective Impact]]></text>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{firstNationsEngagement}]]></textFieldExpression>
 			</textField>
-			<textField isBlankWhenNull="true">
-				<reportElement x="1844" y="59" width="216" height="80" uuid="ff8a0029-ef8d-4afb-9ff1-155fcf35342f"/>
-				<box padding="1">
-					<pen lineWidth="1.0"/>
-					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-				</box>
-				<textElement verticalAlignment="Bottom">
-					<font fontName="Calibri" size="11"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{businessArea}]]></textFieldExpression>
-			</textField>
+<!--			<textField isBlankWhenNull="true">-->
+<!--				<reportElement x="1844" y="59" width="216" height="80" uuid="ff8a0029-ef8d-4afb-9ff1-155fcf35342f"/>-->
+<!--				<box padding="1">-->
+<!--					<pen lineWidth="1.0"/>-->
+<!--					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>-->
+<!--					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>-->
+<!--					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>-->
+<!--					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>-->
+<!--				</box>-->
+<!--				<textElement verticalAlignment="Bottom">-->
+<!--					<font fontName="Calibri" size="11"/>-->
+<!--				</textElement>-->
+<!--				<textFieldExpression><![CDATA[$F{businessArea}]]></textFieldExpression>-->
+<!--			</textField>-->
 			<textField isBlankWhenNull="true">
 				<reportElement x="6425" y="59" width="175" height="80" uuid="ad806b18-f5ca-49dd-bc57-8ddcf40bfc43"/>
 				<box>
@@ -542,26 +542,26 @@ Notes on Collective Impact]]></text>
 				<textElement verticalAlignment="Bottom">
 					<font fontName="Calibri" size="11"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{activityCategoryDesciption}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{activityCategoryDescription}]]></textFieldExpression>
 			</textField>
-			<textField isBlankWhenNull="true">
-				<reportElement x="164" y="59" width="160" height="80" forecolor="#3366FF" uuid="24bc5acf-afa1-4866-b3be-b5ddc1ce152f">
-					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="3b9eee59-6b5d-4866-ae9c-14cf6e3a4526"/>
-					<printWhenExpression><![CDATA[$F{linkToFiscalActivity} != null && !$F{linkToFiscalActivity}.trim().isEmpty()]]></printWhenExpression>
-				</reportElement>
-				<box padding="1">
-					<pen lineWidth="1.0"/>
-					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-				</box>
-				<textElement verticalAlignment="Bottom">
-					<font fontName="Calibri" size="11" isUnderline="true"/>
-				</textElement>
-				<textFieldExpression><![CDATA["Fiscal Activity Link"]]></textFieldExpression>
-				<hyperlinkWhenExpression><![CDATA[$F{linkToFiscalActivity}]]></hyperlinkWhenExpression>
-			</textField>
+<!--			<textField isBlankWhenNull="true">-->
+<!--				<reportElement x="164" y="59" width="160" height="80" forecolor="#3366FF" uuid="24bc5acf-afa1-4866-b3be-b5ddc1ce152f">-->
+<!--					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="3b9eee59-6b5d-4866-ae9c-14cf6e3a4526"/>-->
+<!--					<printWhenExpression><![CDATA[$F{linkToFiscalActivity} != null && !$F{linkToFiscalActivity}.trim().isEmpty()]]></printWhenExpression>-->
+<!--				</reportElement>-->
+<!--				<box padding="1">-->
+<!--					<pen lineWidth="1.0"/>-->
+<!--					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>-->
+<!--					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>-->
+<!--					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>-->
+<!--					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>-->
+<!--				</box>-->
+<!--				<textElement verticalAlignment="Bottom">-->
+<!--					<font fontName="Calibri" size="11" isUnderline="true"/>-->
+<!--				</textElement>-->
+<!--				<textFieldExpression><![CDATA["Fiscal Activity Link"]]></textFieldExpression>-->
+<!--				<hyperlinkWhenExpression><![CDATA[$F{linkToFiscalActivity}]]></hyperlinkWhenExpression>-->
+<!--			</textField>-->
 			<textField isBlankWhenNull="true">
 				<reportElement x="3589" y="59" width="173" height="80" uuid="1d63b79a-c84e-4a06-a713-6bf3fa6fe0d6"/>
 				<box>
@@ -1256,7 +1256,7 @@ Notes on Collective Impact]]></text>
 			<textField isBlankWhenNull="true">
 				<reportElement x="7374" y="-282" width="80" height="80" uuid="56bb9a2b-3945-4874-8b9d-9d4a09d164b2"/>
 				<textElement verticalAlignment="Bottom"/>
-				<textFieldExpression><![CDATA[$F{totalBdfFilterSectionScore }]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{totalBdfFilterSectionScore}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement x="7454" y="-282" width="180" height="80" uuid="34009942-c03a-4c15-8f27-a3a163da50a3"/>

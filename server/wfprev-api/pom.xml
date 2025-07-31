@@ -233,9 +233,23 @@
             <version>2.31.26</version>
             <type>pom</type>
         </dependency>
+        <dependency>
+            <groupId>net.sf.jasperreports</groupId>
+            <artifactId>jasperreports</artifactId>
+            <version>6.20.6</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.github.librepdf</groupId>
+                    <artifactId>openpdf</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml</artifactId>
+            <version>5.2.4</version>
+        </dependency>
     </dependencies>
-
-
     <build>
         <pluginManagement>
             <plugins>
@@ -339,6 +353,21 @@
                 <configuration>
                     <source>14</source>
                     <target>14</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.1.0</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>java</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <mainClass>ca.bc.gov.nrs.wfprev.util.JasperCompiler</mainClass>
                 </configuration>
             </plugin>
         </plugins>
