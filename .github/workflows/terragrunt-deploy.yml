@@ -50,13 +50,12 @@ on:
         required: true
         type: string
         default: apply
-      GDB_EXTRACTOR_IMAGE:
+      RESTORE_DOWNSCALED_CLUSTER:
         required: false
-        type: string
-      # IS_HOTFIX:
-      #   required: true
-      #   type: string
-      #   default: 'false'
+        type: choice
+        options:
+          - 'false'
+          - 'true'
 
 env:
   TF_VERSION: 1.8.5
@@ -140,12 +139,12 @@ jobs:
         run: |
           if [[ ${{inputs.RESTORE_DOWNSCALED_CLUSTER}} == 'false' ]]; then
             IMAGE="${{ secrets.ECR_TARGET_ACCOUNT_ID }}.dkr.ecr.ca-central-1.amazonaws.com/nr-bcws-wfprev-wfprev-gdb-extractor:latest"
+            docker pull $IMAGE
+            echo "GDB_EXTRACTOR_IMAGE=$(docker inspect --format='{{index .RepoDigests 0}}' $IMAGE)" >> $GITHUB_OUTPUT
           else
             export GDB_EXTRACTOR_IMAGE="$(aws ssm get-parameter --name 'gdb-extractor-image' --query 'Parameter.Value' | sed 's/\"//g')" 
             echo "GDB_EXTRACTOR_IMAGE=$GDB_EXTRACTOR_IMAGE" >> "$GITHUB_OUTPUT"
           fi
-          docker pull $IMAGE
-          echo "GDB_EXTRACTOR_IMAGE=$(docker inspect --format='{{index .RepoDigests 0}}' $IMAGE)" >> $GITHUB_OUTPUT
 
       - name: Configure AWS credentials for Terraform account (DEV/TEST/PROD)
         uses: aws-actions/configure-aws-credentials@v3
@@ -173,6 +172,7 @@ jobs:
           NAMESPACE_ENV: ${{ steps.mapEnvironments.outputs.NAMESPACE_ENV }}
           APP_COUNT: ${{vars.APP_COUNT}}
           LOGGING_LEVEL: ${{vars.LOGGING_LEVEL}}
+          RESTORE_DOWNSCALED_CLUSTER: ${{ inputs.RESTORE_DOWNSCALED_CLUSTER || 'false' }}
 
           # Necessary for WFPREV API
           WFPREV_API_NAME: wfprev-api

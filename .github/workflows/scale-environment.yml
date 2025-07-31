@@ -28,11 +28,13 @@ on:
 permissions:
   contents: read
   id-token: write
+  packages: write
 
 jobs:
   get-image-tag:
     runs-on: ubuntu-22.04
     if: ${{ contains(inputs.TYPE_OF_CHANGE, 'SPIN_UP') }}
+    environment: ${{ inputs.DEFAULT_APPLICATION_ENVIRONMENT }}
     outputs:
       TAG_TO_USE: ${{ steps.mapEnvironments.outputs.TAG_TO_USE }}
       GDB_EXTRACTOR_IMAGE: ${{ steps.getGdbImage.outputs.GDB_EXTRACTOR_IMAGE }}
@@ -88,6 +90,7 @@ jobs:
   save-vars-on-spin-down:
     runs-on: ubuntu-22.04
     if: ${{ contains(inputs.TYPE_OF_CHANGE, 'SPIN_DOWN') }}
+    environment: ${{ inputs.DEFAULT_APPLICATION_ENVIRONMENT }}
 
     steps:
       - name: Configure AWS credentials for Terraform account (DEV/TEST/PROD)
@@ -99,7 +102,7 @@ jobs:
 
       - name: Safety check so we won't overwrite snapshot when DB is already down, then save current GDB image and snapshot
         run: |
-          DEFAULT_APPLICATION_ENVIRONMENT=${{DEFAULT_APPLICATION_ENVIRONMENT}}
+          DEFAULT_APPLICATION_ENVIRONMENT=${{inputs.DEFAULT_APPLICATION_ENVIRONMENT}}
           TARGET_ENV="${DEFAULT_APPLICATION_ENVIRONMENT#wf}"
           if [[ $(aws rds describe-db-instances --query "DBInstances[?DBInstanceIdentifier== 'wfprev$TARGET_ENV'].DBInstanceIdentifier") != *"\"wfprev$TARGET_ENV\""* ]]; then 
             echo "wfprev$TARGET_ENV DB does not exist! Cannot create snapshot!"
