@@ -2,7 +2,7 @@ drop view if exists wfprev.project_crx_vw;
 
 CREATE or REPLACE VIEW wfprev.project_crx_vw AS 
 select p.project_guid, p.project_type_code, ptc.description as project_type_description,
-       p.project_name, p.program_area_guid, ppf.project_plan_fiscal_guid,
+       p.project_name, p.program_area_guid, 
 	   p.forest_region_org_unit_id, frou.org_unit_name as forest_region_org_unit_name,
 	   p.forest_district_org_unit_id, fdou.org_unit_name as forest_district_org_unit_name,
 	   p.bc_parks_region_org_unit_id, bcpr.org_unit_name as bc_parks_region_org_unit_name,
