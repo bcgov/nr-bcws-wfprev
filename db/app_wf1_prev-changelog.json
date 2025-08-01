@@ -1578,6 +1578,29 @@
         "rollback": [
         ]
       }
+    },
+    {
+      "changeSet": {
+        "id": "01_00_33_00",
+        "author": "kcguise",
+        "tagDatabase": { "tag" : "version_01_00_33_00" },
+        "changes": [
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_33/00/ddl/WFPREV.ddl.create.project_fuel_management_vw.sql"
+            }
+          },   
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_33/00/ddl/WFPREV.ddl.create.project_crx_vw.sql"
+            }
+          }
+      ],
+        "rollback": [
+        ]
+      }
     }
    ] 
 }
