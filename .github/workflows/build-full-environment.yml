@@ -17,6 +17,7 @@ on:
       - ".github/workflows/**"
       - "client/**"
       - "server/**"
+      - "db/**"
       - "!**/README.md"
   workflow_dispatch:
     inputs:
