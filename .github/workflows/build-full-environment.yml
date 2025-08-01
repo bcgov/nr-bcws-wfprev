@@ -15,6 +15,7 @@ on:
       - "client/**"
       - "server/**"
       - "terraform/**"
+      - "db/**"
       - "!**/README.md"
   workflow_dispatch:
 
@@ -48,7 +49,7 @@ jobs:
       IMAGE_TAG: latest
       RUN_LIQUIBASE: true
       COMMAND: apply
-      GDB_EXTRACTOR_IMAGE: ${{ needs.node-build.outputs.gdb_digest }}
+      GDB_EXTRACTOR_DIGEST: ${{ needs.node-build.outputs.gdb_digest }}
     secrets: inherit
 
   wfprev-ui:
