@@ -14,5 +14,6 @@ public class FeatureQueryParams {
     private List<String> fireCentreOrgUnitIds;
     private List<String> activityCategoryCodes;
     private List<String> planFiscalStatusCodes;
+    private List<String> projectTypeCodes;
     private String searchText;
 }

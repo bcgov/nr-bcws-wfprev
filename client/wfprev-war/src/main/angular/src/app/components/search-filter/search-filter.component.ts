@@ -39,7 +39,7 @@ export class SearchFilterComponent implements OnInit {
 
   searchText: string = '';
   searchTextChanged: Subject<string> = new Subject<string>();
-
+  projectTypeOptions: { label: string, value: any }[] = [];
   businessAreaOptions: { label: string, value: any }[] = [];
   fiscalYearOptions: { label: string, value: string }[] = [];
   activityOptions: { label: string, value: any }[] = [];
@@ -48,6 +48,7 @@ export class SearchFilterComponent implements OnInit {
   fireCentreOptions: { label: string, value: string }[] = [];
   fiscalStatusOptions: { label: string, value: string }[] = [];
 
+  selectedProjectType: string[] = [];
   selectedBusinessArea: string[] = [];
   selectedFiscalYears: string[] = [];
   selectedActivity: string[] = [];
@@ -66,6 +67,7 @@ export class SearchFilterComponent implements OnInit {
     const sanitize = (arr: any[]) => arr.filter(v => v !== '__ALL__');
     this.sharedService.updateFilters({
       searchText: this.searchText,
+      projectTypeCode: sanitize(this.selectedProjectType),
       programAreaGuid: sanitize(this.selectedBusinessArea),
       fiscalYear: sanitize(this.selectedFiscalYears),
       activityCategoryCode: sanitize(this.selectedActivity),
@@ -83,6 +85,7 @@ export class SearchFilterComponent implements OnInit {
 
   onReset() {
     this.searchText = '';
+    this.selectedProjectType = [];
     this.selectedBusinessArea = [];
     this.selectedFiscalYears = [];
     this.selectedActivity = [];
@@ -214,6 +217,12 @@ export class SearchFilterComponent implements OnInit {
   setupCodeTableSubscription(): void {
     this.sharedCodeTableService.codeTables$.subscribe((tables) => {
       if (!tables) return;
+      this.projectTypeOptions = this.prependAllAndSort(
+        (tables.projectTypeCode ?? []).map((item: any) => ({
+          label: item.description,
+          value: item.projectTypeCode
+        }))
+      );
 
       this.businessAreaOptions = this.prependAllAndSort(
         (tables.businessAreas ?? []).map((item: any) => ({

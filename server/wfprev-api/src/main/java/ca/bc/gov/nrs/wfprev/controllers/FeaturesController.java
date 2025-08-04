@@ -68,6 +68,7 @@ public class FeaturesController extends CommonController {
             @RequestParam(required = false) List<String> forestRegionOrgUnitId,
             @RequestParam(required = false) List<String> forestDistrictOrgUnitId,
             @RequestParam(required = false) List<String> fireCentreOrgUnitId,
+            @RequestParam(required = false) List<String> projectTypeCode,
             @RequestParam(required = false) String searchText
     ) {
         try {
@@ -79,6 +80,7 @@ public class FeaturesController extends CommonController {
             queryParams.setForestRegionOrgUnitIds(forestRegionOrgUnitId);
             queryParams.setForestDistrictOrgUnitIds(forestDistrictOrgUnitId);
             queryParams.setFireCentreOrgUnitIds(fireCentreOrgUnitId);
+            queryParams.setProjectTypeCodes(projectTypeCode);
             queryParams.setSearchText(searchText);
 
             Map<String, Object> result = featuresService.getAllFeatures(queryParams);
