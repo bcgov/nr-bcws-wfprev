@@ -89,6 +89,7 @@ class FeaturesServiceTest {
         params.setFiscalYears(Collections.singletonList("2022"));
         params.setActivityCategoryCodes(Collections.singletonList("CATEGORY"));
         params.setPlanFiscalStatusCodes(Collections.singletonList("STATUS"));
+        params.setProjectTypeCodes(Collections.singletonList("Type1"));
         params.setSearchText("searchText");
 
         ProjectEntity mockProject = new ProjectEntity();
@@ -340,6 +341,7 @@ class FeaturesServiceTest {
         params.setForestRegionOrgUnitIds(List.of("Region1"));
         params.setForestDistrictOrgUnitIds(List.of("District1"));
         params.setFireCentreOrgUnitIds(List.of("Centre1"));
+        params.setProjectTypeCodes(List.of("Type1"));
         List<Predicate> predicates = new ArrayList<>();
 
         // Mocking the paths
@@ -347,6 +349,7 @@ class FeaturesServiceTest {
         when(projectRoot.get("forestRegionOrgUnitId")).thenReturn(path);
         when(projectRoot.get("forestDistrictOrgUnitId")).thenReturn(path);
         when(projectRoot.get("fireCentreOrgUnitId")).thenReturn(path);
+        when(projectRoot.get("projectTypeCode")).thenReturn(path);
 
         // Act
         featuresService.addProjectLevelFilters(projectRoot, predicates, params);
@@ -357,6 +360,7 @@ class FeaturesServiceTest {
         verify(projectRoot, times(1)).get("forestRegionOrgUnitId");
         verify(projectRoot, times(1)).get("forestDistrictOrgUnitId");
         verify(projectRoot, times(1)).get("fireCentreOrgUnitId");
+        verify(projectRoot, times(1)).get("projectTypeCode");
     }
 
     @Test
