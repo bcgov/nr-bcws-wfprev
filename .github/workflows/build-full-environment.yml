@@ -17,6 +17,7 @@ on:
       - ".github/workflows/**"
       - "client/**"
       - "server/**"
+      - "db/**"
       - "!**/README.md"
   workflow_dispatch:
     inputs:
@@ -54,7 +55,7 @@ jobs:
       IMAGE_TAG: latest
       RUN_LIQUIBASE: true
       COMMAND: apply
-      GDB_EXTRACTOR_IMAGE: ${{ needs.node-build.outputs.gdb_digest }}
+      GDB_EXTRACTOR_DIGEST: ${{ needs.node-build.outputs.gdb_digest }}
     secrets: inherit
 
   wfprev-ui:
