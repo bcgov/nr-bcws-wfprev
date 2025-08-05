@@ -2,9 +2,14 @@ package ca.bc.gov.nrs.wfprev.services;
 
 import ca.bc.gov.nrs.wfprev.data.entities.CulturalPrescribedFireReportEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.FuelManagementReportEntity;
+import ca.bc.gov.nrs.wfprev.data.entities.ProjectEntity;
+import ca.bc.gov.nrs.wfprev.data.entities.ProjectFiscalEntity;
 import ca.bc.gov.nrs.wfprev.data.repositories.CulturalPrescribedFireReportRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.FuelManagementReportRepository;
 
+import ca.bc.gov.nrs.wfprev.data.repositories.ProgramAreaRepository;
+import ca.bc.gov.nrs.wfprev.data.repositories.ProjectFiscalRepository;
+import ca.bc.gov.nrs.wfprev.data.repositories.ProjectRepository;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperFillManager;
@@ -35,27 +40,55 @@ public class ReportService {
     @Value("${spring.application.baseUrl}")
     private String baseUrl;
 
-    private String projectUrl = baseUrl + "/edit-project?projectGuid=";
+    private final String projectUrlPrefix = "/edit-project?projectGuid=";
+
+    private final String fiscalQueryString = "&tab=fiscal&fiscalGuid=";
 
     private final FuelManagementReportRepository fuelManagementRepository;
     private final CulturalPrescribedFireReportRepository culturalPrescribedFireReportRepository;
+    private final ProjectRepository projectRepository;
+    private final ProgramAreaRepository programAreaRepository;
 
-    public ReportService(FuelManagementReportRepository fuelManagementRepository, CulturalPrescribedFireReportRepository culturalPrescribedFireReportRepository) {
+    public ReportService(FuelManagementReportRepository fuelManagementRepository, CulturalPrescribedFireReportRepository culturalPrescribedFireReportRepository,
+                         ProjectRepository projectRepository, ProgramAreaRepository programAreaRepository) {
         this.fuelManagementRepository = fuelManagementRepository;
         this.culturalPrescribedFireReportRepository = culturalPrescribedFireReportRepository;
+        this.projectRepository = projectRepository;
+        this.programAreaRepository = programAreaRepository;
     }
 
     public void exportXlsx(List<UUID> projectGuids, OutputStream outputStream) {
         try {
-            // 1. Fetch data
-            List<FuelManagementReportEntity> fuelData = fuelManagementRepository.findByProjectGuidIn(projectGuids);
-            List<CulturalPrescribedFireReportEntity> crxData = culturalPrescribedFireReportRepository.findByProjectGuidIn(projectGuids);
+            // 1. Fetch projectPlanFiscalGuids
+            List<ProjectEntity> projects = projectRepository.findByProjectGuidIn(projectGuids);
+            List<UUID> projectPlanFiscalGuids = projects.stream()
+                    .flatMap(project -> project.getProjectFiscals().stream())
+                    .map(ProjectFiscalEntity::getProjectPlanFiscalGuid)
+                    .distinct()
+                    .toList();
+
+            log.info("Project Plan Fiscal GUIDs: {}", projectPlanFiscalGuids);
+
+            // 2. Fetch both datasets
+            List<FuelManagementReportEntity> fuelData = fuelManagementRepository.findByProjectPlanFiscalGuidIn(projectPlanFiscalGuids);
+            List<CulturalPrescribedFireReportEntity> crxData = culturalPrescribedFireReportRepository.findByProjectPlanFiscalGuidIn(projectPlanFiscalGuids);
+
+            log.info("Fuel rows: {}", fuelData.size());
+            log.info("CRX rows: {}", crxData.size());
 
             if (fuelData.isEmpty() && crxData.isEmpty()) {
                 throw new IllegalArgumentException("No data found for the provided projectGuids.");
             }
 
-            // 2. Compile templates
+            for (FuelManagementReportEntity entities: fuelData) {
+                setFuelManagementFields(entities);
+            }
+
+            for (CulturalPrescribedFireReportEntity entities : crxData) {
+                setCrxFields(entities);
+            }
+
+            // 3. Compile templates
             JasperReport fuelReport = JasperCompileManager.compileReport(
                     getClass().getResourceAsStream("/jasper-template/WFPREV_FUEL_MANAGEMENT_JASPER.jrxml")
             );
@@ -63,24 +96,21 @@ public class ReportService {
                     getClass().getResourceAsStream("/jasper-template/WFPREV_CULTURE_PRESCRIBED_FIRE_JASPER.jrxml")
             );
 
-            // 3. Params
+            // 4. Fill both reports
             Map<String, Object> params = new HashMap<>();
-            params.put("PROJECT_GUID_LIST", projectGuids);
-
-            // 4. Fill each report
             JasperPrint fuelPrint = JasperFillManager.fillReport(fuelReport, params, new JRBeanCollectionDataSource(fuelData));
             JasperPrint crxPrint = JasperFillManager.fillReport(crxReport, params, new JRBeanCollectionDataSource(crxData));
 
-            // 5. Export both prints into the same XLSX
+            // 5. Export both into same XLSX
             JRXlsxExporter exporter = new JRXlsxExporter();
             exporter.setExporterInput(SimpleExporterInput.getInstance(List.of(fuelPrint, crxPrint)));
             exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(outputStream));
 
             SimpleXlsxReportConfiguration config = new SimpleXlsxReportConfiguration();
-            config.setDetectCellType(true);
+            config.setRemoveEmptySpaceBetweenRows(false);
             config.setWhitePageBackground(false);
+            config.setDetectCellType(true);
             config.setCollapseRowSpan(false);
-            config.setRemoveEmptySpaceBetweenRows(true);
             config.setSheetNames(new String[]{"FM XLS Download", "CRx XLS Download"});
             exporter.setConfiguration(config);
 
@@ -96,13 +126,20 @@ public class ReportService {
     public void writeCsvFromEntity(List<UUID> projectGuids, OutputStream out) {
         List<FuelManagementReportEntity> fuelRecords = fuelManagementRepository.findByProjectGuidIn(projectGuids);
         List<CulturalPrescribedFireReportEntity> crxRecords = culturalPrescribedFireReportRepository.findByProjectGuidIn(projectGuids);
+        for (FuelManagementReportEntity entities: fuelRecords) {
+            setFuelManagementFields(entities);
+        }
+
+        for (CulturalPrescribedFireReportEntity entities : crxRecords) {
+            setCrxFields(entities);
+        }
 
         try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(out))) {
 
             writer.write("Fuel Management Projects");
             writer.newLine();
             writer.write(String.join(",", List.of(
-                    "Link to Fiscal Activity (within Prevention application)",
+                    "Link to Project (within Prevention application)", "Link to Fiscal Activity (within Prevention application)",
                     "Project Type", "Project Name", "FOR Region",
                     "FOR District", "BC Parks Region",
                     "BC Parks Section", "Fire Centre", "Business Area", "Planning Unit",
@@ -121,11 +158,10 @@ public class ReportService {
             writer.newLine();
 
             for (FuelManagementReportEntity e : fuelRecords) {
-                String projectEditUrl = projectUrl + e.getProjectGuid();
                 List<String> fields = List.of(
-                        safe(projectEditUrl), safe(e.getProjectTypeDescription()),
+                        safe(e.getLinkToProject()), safe(e.getLinkToFiscalActivity()), safe(e.getProjectTypeDescription()),
                         safe(e.getProjectName()), safe(e.getForestRegionOrgUnitName()), safe(e.getForestDistrictOrgUnitName()),
-                        safe(e.getBcParksRegionOrgUnitName()), "BC Parks Section", safe(e.getFireCentreOrgUnitName()), "Business Area",
+                        safe(e.getBcParksRegionOrgUnitName()), safe(e.getBcParksSectionOrgUnitName()), safe(e.getFireCentreOrgUnitName()),  safe(e.getBusinessArea()),
                         safe(e.getPlanningUnitName()), safe(e.getGrossProjectAreaHa()), safe(e.getClosestCommunityName()),
                         safe(e.getProjectLead()), safe(e.getProposalTypeDescription()), safe(e.getProjectFiscalName()),
                         safe(e.getProjectFiscalDescription()), safe(e.getFiscalYear()), safe(e.getActivityCategoryDescription()),
@@ -171,12 +207,11 @@ public class ReportService {
             writer.newLine();
 
             for (CulturalPrescribedFireReportEntity c : crxRecords) {
-                String projectEditUrl = projectUrl + c.getProjectGuid();
                 List<String> fields = List.of(
-                        safe(projectEditUrl), safe(projectEditUrl),  safe(c.getProjectTypeDescription()),
+                        safe(c.getLinkToProject()), safe(c.getLinkToFiscalActivity()),  safe(c.getProjectTypeDescription()),
                         safe(c.getProjectName()), safe(c.getForestRegionOrgUnitName()), safe(c.getForestDistrictOrgUnitName()),
                         safe(c.getBcParksRegionOrgUnitName()), safe(c.getBcParksSectionOrgUnitName()),
-                        safe(c.getFireCentreOrgUnitName()), "Business Area", safe(c.getPlanningUnitName()), safe(c.getGrossProjectAreaHa()),
+                        safe(c.getFireCentreOrgUnitName()), safe(c.getBusinessArea()), safe(c.getPlanningUnitName()), safe(c.getGrossProjectAreaHa()),
                         safe(c.getClosestCommunityName()), safe(c.getProjectLead()), safe(c.getProposalTypeDescription()),
                         safe(c.getProjectFiscalName()), safe(c.getProjectFiscalDescription()), safe(c.getFiscalYear()),
                         safe(c.getActivityCategoryDescription()), safe(c.getPlanFiscalStatusDescription()), safe(c.getFundingStream()),
@@ -208,6 +243,40 @@ public class ReportService {
         if (value == null) return "";
         String str = value.toString().replace("\"", "\"\"");
         return "\"" + str + "\"";
+    }
+
+    private void setFuelManagementFields(FuelManagementReportEntity entity) {
+        String urlPrefix = baseUrl + projectUrlPrefix;
+        if (entity.getProjectGuid() != null) {
+            entity.setLinkToProject(urlPrefix + entity.getProjectGuid());
+            if (entity.getProjectPlanFiscalGuid() != null) {
+                entity.setLinkToFiscalActivity(urlPrefix  + entity.getProjectGuid() + fiscalQueryString + entity.getProjectPlanFiscalGuid());
+
+            }
+
+            if (entity.getProgramAreaGuid() != null) {
+                programAreaRepository.findById(entity.getProgramAreaGuid()).ifPresent(programArea ->
+                        entity.setBusinessArea(programArea.getProgramAreaName())
+                );
+            }
+        }
+    }
+
+    private void setCrxFields(CulturalPrescribedFireReportEntity entity) {
+        String urlPrefix = baseUrl + projectUrlPrefix;
+            if (entity.getProjectGuid() != null) {
+                entity.setLinkToProject(urlPrefix + entity.getProjectGuid());
+                if (entity.getProjectPlanFiscalGuid() != null) {
+                    entity.setLinkToFiscalActivity(urlPrefix + entity.getProjectGuid() + fiscalQueryString + entity.getProjectPlanFiscalGuid());
+
+                }
+                }
+
+        if (entity.getProgramAreaGuid() != null) {
+            programAreaRepository.findById(entity.getProgramAreaGuid()).ifPresent(programArea ->
+                    entity.setBusinessArea(programArea.getProgramAreaName())
+            );
+        }
     }
 
 }

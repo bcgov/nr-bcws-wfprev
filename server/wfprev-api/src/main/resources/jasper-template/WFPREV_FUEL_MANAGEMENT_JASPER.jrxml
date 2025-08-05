@@ -59,7 +59,7 @@
 	<field name="projectFiscalName" class="java.lang.String"/>
 	<field name="projectFiscalDescription" class="java.lang.String"/>
 	<field name="fiscalYear" class="java.lang.String"/>
-<!--	<field name="activityCategoryDesciption" class="java.lang.String"/>-->
+	<field name="activityCategoryDescription" class="java.lang.String"/>
 	<field name="planFiscalStatusDescription" class="java.lang.String"/>
 	<field name="totalEstimatedCostAmount" class="java.math.BigDecimal"/>
 	<field name="fiscalAncillaryFundAmount" class="java.math.BigDecimal"/>
@@ -73,7 +73,6 @@
 	<field name="firstNationsPartner" class="java.lang.String"/>
 	<field name="otherPartner" class="java.lang.String"/>
 	<field name="cfsProjectCode" class="java.lang.String"/>
-	<field name="activityCategoryDescription" class="java.lang.String"/>
 	<field name="resultsOpeningId" class="java.lang.String"/>
 	<field name="endorsementTimestamp" class="java.util.Date"/>
 	<field name="approvedTimestamp" class="java.util.Date"/>

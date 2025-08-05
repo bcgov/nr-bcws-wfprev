@@ -55,7 +55,7 @@ public class WfprevApiApplication {
 	@Bean
 	@ConditionalOnMissingFilterBean(ForwardedHeaderFilter.class)
 	@ConditionalOnProperty(value = "server.forward-headers-strategy", havingValue = "framework")
-	public static FilterRegistrationBean<ForwardedHeaderFilter> forwardedHeaderFilter() {
+	public FilterRegistrationBean<ForwardedHeaderFilter> forwardedHeaderFilter() {
 		ForwardedHeaderFilter filter = new ForwardedHeaderFilter();
 		FilterRegistrationBean<ForwardedHeaderFilter> registration = new FilterRegistrationBean<>(filter);
 		registration.setDispatcherTypes(DispatcherType.REQUEST, DispatcherType.ASYNC, DispatcherType.ERROR);

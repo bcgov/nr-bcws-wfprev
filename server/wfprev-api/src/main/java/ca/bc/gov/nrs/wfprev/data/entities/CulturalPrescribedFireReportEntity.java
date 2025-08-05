@@ -4,12 +4,14 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import lombok.Data;
 import org.hibernate.annotations.Immutable;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
+import java.util.Date;
 import java.util.UUID;
 
 @Data
@@ -20,6 +22,15 @@ public class CulturalPrescribedFireReportEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
+    @Column(name = "project_plan_fiscal_guid")
+    private UUID projectPlanFiscalGuid;
+
+    @Transient
+    private String linkToProject;
+
+    @Transient
+    private String linkToFiscalActivity;
+
     @Column(name = "project_guid")
     private UUID projectGuid;
 
@@ -44,10 +55,16 @@ public class CulturalPrescribedFireReportEntity implements Serializable {
     @Column(name = "fire_centre_org_unit_name")
     private String fireCentreOrgUnitName;
 
+    @Transient
+    private String businessArea;
+
+    @Column(name = "program_area_guid")
+    private UUID programAreaGuid;
+
     @Column(name = "planning_unit_name")
     private String planningUnitName;
 
-    @Column(name = "groos_project_area_ha")
+    @Column(name = "gross_project_area_ha")
     private BigDecimal grossProjectAreaHa;
 
     @Column(name = "closest_community_name")
@@ -126,10 +143,10 @@ public class CulturalPrescribedFireReportEntity implements Serializable {
     private String secondaryObjectiveTypeDescription;
 
     @Column(name = "endorsement_timestamp")
-    private OffsetDateTime endorsementTimestamp;
+    private Date endorsementTimestamp;
 
     @Column(name = "approved_timestamp")
-    private OffsetDateTime approvedTimestamp;
+    private Date approvedTimestamp;
 
     @Column(name = "outside_wui_ind")
     private String outsideWuiInd;
