@@ -66,6 +66,25 @@ describe('SearchFilterComponent', () => {
     expect(mockSharedService.updateFilters).toHaveBeenCalled();
   });
 
+  it('should include "null" in fiscalYear when "__ALL__" is selected', () => {
+    component.fiscalYearOptions = [
+      { label: 'All', value: '__ALL__' },
+      { label: '2025/26', value: '2025' },
+      { label: '2024/25', value: '2024' },
+      { label: '2023/24', value: '2023' }
+    ];
+
+    component.selectedFiscalYears = ['__ALL__'];
+
+    component.emitFilters();
+
+    expect(mockSharedService.updateFilters).toHaveBeenCalledWith(
+      jasmine.objectContaining({
+        fiscalYear: ['2025', '2024', '2023', 'null']
+      })
+    );
+  });
+
   it('should handle onReset correctly', () => {
     component.selectedBusinessArea = ['x'];
     component.searchText = 'test';

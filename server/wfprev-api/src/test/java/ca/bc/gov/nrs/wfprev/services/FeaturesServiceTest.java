@@ -686,4 +686,28 @@ class FeaturesServiceTest {
         assertEquals(now, result.get("updateDate"));
     }
 
+    @Test
+    void testAddFiscalYearFilters_WithNullYearString() {
+        CriteriaBuilder cb = mock(CriteriaBuilder.class);
+
+        @SuppressWarnings("unchecked")
+        Join<ProjectEntity, ProjectFiscalEntity> fiscal = mock(Join.class);
+
+        @SuppressWarnings("unchecked")
+        Path<Object> fiscalYearPath = (Path<Object>) mock(Path.class);
+
+        Predicate isNullPredicate = mock(Predicate.class);
+
+        when(fiscal.get("fiscalYear")).thenReturn(fiscalYearPath);
+        when(cb.isNull(fiscalYearPath)).thenReturn(isNullPredicate);
+
+        List<String> fiscalYears = List.of("null");
+        List<Predicate> predicates = new ArrayList<>();
+
+        featuresService.addFiscalYearFilters(cb, fiscal, predicates, fiscalYears);
+        
+        verify(cb, times(1)).isNull(fiscalYearPath);
+        assertEquals(1, predicates.size());
+    }
+
 }
