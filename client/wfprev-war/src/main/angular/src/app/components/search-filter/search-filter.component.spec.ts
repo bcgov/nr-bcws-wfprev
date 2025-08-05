@@ -66,7 +66,7 @@ describe('SearchFilterComponent', () => {
     expect(mockSharedService.updateFilters).toHaveBeenCalled();
   });
 
-  it('should include "null" in fiscalYear when "__ALL__" is selected', () => {
+  it('should include "null" in fiscalYear query param when "All" is selected', () => {
     component.fiscalYearOptions = [
       { label: 'All', value: '__ALL__' },
       { label: '2025/26', value: '2025' },
