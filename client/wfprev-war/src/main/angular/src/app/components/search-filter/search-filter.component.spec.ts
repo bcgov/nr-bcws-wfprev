@@ -7,7 +7,7 @@ import { of, Subject } from 'rxjs';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatOptionSelectionChange } from '@angular/material/core';
 
-fdescribe('SearchFilterComponent', () => {
+describe('SearchFilterComponent', () => {
   let component: SearchFilterComponent;
   let fixture: ComponentFixture<SearchFilterComponent>;
   let mockSharedService: jasmine.SpyObj<SharedService>;
