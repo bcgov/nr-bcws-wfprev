@@ -7,7 +7,7 @@ import { of, Subject } from 'rxjs';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatOptionSelectionChange } from '@angular/material/core';
 
-describe('SearchFilterComponent', () => {
+fdescribe('SearchFilterComponent', () => {
   let component: SearchFilterComponent;
   let fixture: ComponentFixture<SearchFilterComponent>;
   let mockSharedService: jasmine.SpyObj<SharedService>;
@@ -222,6 +222,28 @@ describe('SearchFilterComponent', () => {
     const fireCentreLabels = component.fireCentreOptions.map(opt => opt.label);
     expect(fireCentreLabels).toContain('Kamloops Fire Centre');
     expect(fireCentreLabels).not.toContain('Non-Fire Centre');
+  });
+
+  it('should select current fiscal year and "No Year Assigned" on load', () => {
+    // Simulate today’s date before or after April 1st
+    const today = new Date();
+    const expectedFiscalYearStart =
+      today.getMonth() >= 3 ? today.getFullYear() : today.getFullYear() - 1;
+    const expectedFiscalYearValue = expectedFiscalYearStart.toString();
+
+    component.fiscalYearOptions = [
+      { label: 'All', value: '__ALL__' },
+      { label: `${expectedFiscalYearStart}/${(expectedFiscalYearStart + 1).toString().slice(-2)}`, value: expectedFiscalYearValue },
+      { label: 'No Year Assigned', value: 'null' }
+    ];
+
+    spyOn(component, 'emitFilters');
+
+    component.assignDefaultFiscalYearSelection();
+
+    expect(component.selectedFiscalYears).toContain(expectedFiscalYearValue);
+    expect(component.selectedFiscalYears).toContain('null');
+    expect(component.emitFilters).toHaveBeenCalled();
   });
 
 });

@@ -55,16 +55,17 @@ export class SearchFilterComponent implements OnInit {
   selectedForestDistrict: string[] = [];
   selectedFireCentre: string[] = [];
   selectedFiscalStatus: string[] = [];
+  noYearAssigned: string = 'No Year Assigned'
 
   ngOnInit(): void {
     this.generateFiscalYearOptions();
     this.setupCodeTableSubscription();
     this.setupSearchDebounce();
+    this.assignDefaultFiscalYearSelection();
   }
 
   emitFilters() {
     const sanitize = (arr: any[]) => arr.filter(v => v !== '__ALL__');
-
 
     // include 'null' in query param for 'ALL' in order to return projects with no fiscals attached
     const resolveFiscalYears = () => {
@@ -121,7 +122,7 @@ export class SearchFilterComponent implements OnInit {
       });
     }
 
-    this.fiscalYearOptions = this.prependAllAndSort(list);
+    this.fiscalYearOptions = this.prependAllAndSortFiscalYears(list);
   }
 
   onForestRegionChange(): void {
@@ -156,10 +157,18 @@ export class SearchFilterComponent implements OnInit {
     return [{ label: 'All', value: '__ALL__' }, ...sorted];
   }
 
+  prependAllAndSortFiscalYears(options: { label: string, value: any }[]): { label: string, value: any }[] {
+    const sorted = [...options].sort((a, b) => a.label.localeCompare(b.label));
+    return [{ label: 'All', value: '__ALL__' }, { label: this.noYearAssigned, value: 'null' }, ...sorted];
+  }
+
   onOptionToggled(event: any, model: keyof SearchFilterComponent, options: { value: any }[]) {
     const allOptionValue = '__ALL__';
     let selected = (this[model] as any[]) || [];
-    const allValues = options.map(o => o.value);
+
+    const allValues = options
+      .map(o => o.value)
+      .filter(v => v !== allOptionValue);
 
     if (selected.includes(allOptionValue)) {
       (this[model] as any[]) = [allOptionValue, ...allValues];
@@ -291,4 +300,21 @@ export class SearchFilterComponent implements OnInit {
     this.emitFilters();
   }
 
+  // Determine current fiscal year based on April 1st turnover
+  assignDefaultFiscalYearSelection(): void {
+    const today = new Date();
+    // April has an index of 3
+    const fiscalYearStart = today.getMonth() >= 3 ? today.getFullYear() : today.getFullYear() - 1;
+    const fiscalYearValue = fiscalYearStart.toString();
+
+    const currentFiscalExists = this.fiscalYearOptions.some(opt => opt.value === fiscalYearValue);
+    const noYearAssignedExists = this.fiscalYearOptions.some(opt => opt.value === 'null');
+
+    // automatically assign current fiscal year and 'No Year Assigned'
+    this.selectedFiscalYears = [
+      ...(currentFiscalExists ? [fiscalYearValue] : []),
+      ...(noYearAssignedExists ? ['null'] : [])
+    ];
+    this.emitFilters();
+  }
 }
