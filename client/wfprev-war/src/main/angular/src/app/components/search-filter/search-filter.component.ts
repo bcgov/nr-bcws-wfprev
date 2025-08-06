@@ -61,7 +61,6 @@ export class SearchFilterComponent implements OnInit {
     this.generateFiscalYearOptions();
     this.setupCodeTableSubscription();
     this.setupSearchDebounce();
-    this.assignDefaultFiscalYearSelection();
   }
 
   emitFilters() {
@@ -283,6 +282,8 @@ export class SearchFilterComponent implements OnInit {
             value: item.orgUnitIdentifier
           }))
       );
+
+      this.assignDefaultFiscalYearSelection();
     });
   }
 
