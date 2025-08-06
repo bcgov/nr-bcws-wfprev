@@ -15,6 +15,7 @@ import java.util.UUID;
 
 import static org.junit.Assert.assertNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -42,6 +43,7 @@ class FeaturesControllerTest {
         List<String> forestRegionOrgUnitIds = List.of("FR1");
         List<String> forestDistrictOrgUnitIds = List.of("FD1");
         List<String> fireCentreOrgUnitIds = List.of("FC1");
+        List<String> projectTypeCodes = List.of("PT1");
         String searchText = "some text";
 
         // Expected result from service
@@ -59,6 +61,7 @@ class FeaturesControllerTest {
                 forestRegionOrgUnitIds,
                 forestDistrictOrgUnitIds,
                 fireCentreOrgUnitIds,
+                projectTypeCodes,
                 searchText
         );
 
@@ -76,7 +79,7 @@ class FeaturesControllerTest {
         when(featuresService.getAllFeatures(any(FeatureQueryParams.class))).thenReturn(expected);
 
         ResponseEntity<Map<String, Object>> result = featuresController.getAllFeatures(
-                null, null, null, null, null, null, null, null
+                null, null, null, null, null, null, null, null, null
         );
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
@@ -90,7 +93,7 @@ class FeaturesControllerTest {
         when(featuresService.getAllFeatures(any(FeatureQueryParams.class))).thenThrow(new ServiceException("Service failed"));
 
         ResponseEntity<Map<String, Object>> result = featuresController.getAllFeatures(
-                null, null, null, null, null, null, null, null
+                null, null, null, null, null, null, null, null, null
         );
 
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, result.getStatusCode());
