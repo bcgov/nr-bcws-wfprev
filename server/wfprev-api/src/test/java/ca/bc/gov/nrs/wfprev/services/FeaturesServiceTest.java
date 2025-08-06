@@ -43,6 +43,8 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyCollection;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -93,6 +95,7 @@ class FeaturesServiceTest {
         params.setFiscalYears(Collections.singletonList("2022"));
         params.setActivityCategoryCodes(Collections.singletonList("CATEGORY"));
         params.setPlanFiscalStatusCodes(Collections.singletonList("STATUS"));
+        params.setProjectTypeCodes(Collections.singletonList("Type1"));
         params.setSearchText("searchText");
 
         ProjectEntity mockProject = new ProjectEntity();
@@ -344,6 +347,7 @@ class FeaturesServiceTest {
         params.setForestRegionOrgUnitIds(List.of("Region1"));
         params.setForestDistrictOrgUnitIds(List.of("District1"));
         params.setFireCentreOrgUnitIds(List.of("Centre1"));
+        params.setProjectTypeCodes(List.of("Type1"));
         List<Predicate> predicates = new ArrayList<>();
 
         // Mocking the paths
@@ -351,16 +355,20 @@ class FeaturesServiceTest {
         when(projectRoot.get("forestRegionOrgUnitId")).thenReturn(path);
         when(projectRoot.get("forestDistrictOrgUnitId")).thenReturn(path);
         when(projectRoot.get("fireCentreOrgUnitId")).thenReturn(path);
+        when(projectRoot.get("projectTypeCode")).thenReturn(path);
+        when(path.get("projectTypeCode")).thenReturn(path);
+        when(path.in(anyCollection())).thenReturn(mockPredicate);
 
         // Act
         featuresService.addProjectLevelFilters(projectRoot, predicates, params);
 
         // Assert
-        assertEquals(4, predicates.size(), "Expected four predicates for all conditions");
+        assertEquals(5, predicates.size(), "Expected four predicates for all conditions");
         verify(projectRoot, times(1)).get("programAreaGuid");
         verify(projectRoot, times(1)).get("forestRegionOrgUnitId");
         verify(projectRoot, times(1)).get("forestDistrictOrgUnitId");
         verify(projectRoot, times(1)).get("fireCentreOrgUnitId");
+        verify(projectRoot, times(1)).get("projectTypeCode");
     }
 
     @Test
