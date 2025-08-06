@@ -41,6 +41,8 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyCollection;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.any;
@@ -350,6 +352,8 @@ class FeaturesServiceTest {
         when(projectRoot.get("forestDistrictOrgUnitId")).thenReturn(path);
         when(projectRoot.get("fireCentreOrgUnitId")).thenReturn(path);
         when(projectRoot.get("projectTypeCode")).thenReturn(path);
+        when(path.get("projectTypeCode")).thenReturn(path);
+        when(path.in(anyCollection())).thenReturn(mockPredicate);
 
         // Act
         featuresService.addProjectLevelFilters(projectRoot, predicates, params);
