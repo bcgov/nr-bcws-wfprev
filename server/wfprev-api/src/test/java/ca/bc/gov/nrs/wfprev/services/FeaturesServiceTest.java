@@ -11,6 +11,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Path;
@@ -25,6 +26,7 @@ import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Point;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -41,10 +43,12 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -686,4 +690,105 @@ class FeaturesServiceTest {
         assertEquals(now, result.get("updateDate"));
     }
 
+    @Test
+    void testAddFiscalYearFilters_WithNullYearString() {
+        CriteriaBuilder cb = mock(CriteriaBuilder.class);
+
+        @SuppressWarnings("unchecked")
+        Join<ProjectEntity, ProjectFiscalEntity> fiscal = mock(Join.class);
+
+        @SuppressWarnings("unchecked")
+        Path<Object> fiscalYearPath = (Path<Object>) mock(Path.class);
+
+        Predicate isNullPredicate = mock(Predicate.class);
+
+        when(fiscal.get("fiscalYear")).thenReturn(fiscalYearPath);
+        when(cb.isNull(fiscalYearPath)).thenReturn(isNullPredicate);
+
+        List<String> fiscalYears = List.of("null");
+        List<Predicate> predicates = new ArrayList<>();
+
+        featuresService.addFiscalYearFilters(cb, fiscal, predicates, fiscalYears);
+        
+        verify(cb, times(1)).isNull(fiscalYearPath);
+        assertEquals(1, predicates.size());
+    }
+
+    @Test
+    void testAddFiscalYearFilters_WithNonNullYear() {
+        CriteriaBuilder cb = mock(CriteriaBuilder.class);
+
+        @SuppressWarnings("unchecked")
+        Join<ProjectEntity, ProjectFiscalEntity> fiscal = mock(Join.class);
+        @SuppressWarnings("unchecked")
+        Path<Object> fiscalYearPath = (Path<Object>) mock(Path.class);
+        @SuppressWarnings("unchecked")
+        Expression<String> yearAsString = (Expression<String>) mock(Expression.class);
+
+        Predicate likePredicate = mock(Predicate.class);
+        Predicate orPredicate = mock(Predicate.class);
+
+        when(fiscal.get("fiscalYear")).thenReturn(fiscalYearPath);
+        when(fiscalYearPath.as(String.class)).thenReturn(yearAsString);
+        when(cb.like(yearAsString, "2024%")).thenReturn(likePredicate);
+        when(cb.or(likePredicate)).thenReturn(orPredicate);
+
+        List<Predicate> predicates = new ArrayList<>();
+        List<String> fiscalYears = List.of("2024");
+
+        featuresService.addFiscalYearFilters(cb, fiscal, predicates, fiscalYears);
+
+        verify(cb).like(yearAsString, "2024%");
+        verify(cb).or(likePredicate);
+        assertEquals(1, predicates.size());
+    }
+
+    @Test
+    void shouldHandleNullAndStringNullFiscalYears() {
+        UUID projectGuid = UUID.randomUUID();
+        List<String> fiscalYears = new ArrayList<>();
+        fiscalYears.add(null);
+        fiscalYears.add("null");
+
+        when(entityManager.getCriteriaBuilder()).thenReturn(criteriaBuilder);
+        when(criteriaBuilder.createQuery(ProjectFiscalEntity.class)).thenReturn(fiscalQuery);
+        when(fiscalQuery.from(ProjectFiscalEntity.class)).thenReturn(fiscalRoot);
+
+        Path<Object> projectPath = mock(Path.class);
+        Path<Object> guidPath = mock(Path.class);
+        when(fiscalRoot.get("project")).thenReturn(projectPath);
+        when(projectPath.get("projectGuid")).thenReturn(guidPath);
+
+        Predicate projectGuidPredicate = mock(Predicate.class);
+        when(criteriaBuilder.equal(guidPath, projectGuid)).thenReturn(projectGuidPredicate);
+
+        Path<Object> fiscalYearPath = mock(Path.class);
+        when(fiscalRoot.get("fiscalYear")).thenReturn(fiscalYearPath);
+
+        Predicate isNullPredicate1 = mock(Predicate.class);
+        Predicate isNullPredicate2 = mock(Predicate.class);
+        Predicate orPredicate = mock(Predicate.class);
+        Predicate finalPredicate = mock(Predicate.class);
+
+        when(criteriaBuilder.isNull(fiscalYearPath)).thenReturn(isNullPredicate1, isNullPredicate2);
+        when(criteriaBuilder.or(any(Predicate[].class))).thenReturn(orPredicate);
+        when(criteriaBuilder.and(any(Predicate[].class))).thenReturn(finalPredicate);
+        when(fiscalQuery.where(finalPredicate)).thenReturn(fiscalQuery);
+
+        TypedQuery<ProjectFiscalEntity> mockTypedQuery = mock(TypedQuery.class);
+        when(entityManager.createQuery(fiscalQuery)).thenReturn(mockTypedQuery);
+        when(mockTypedQuery.getResultList()).thenReturn(List.of(new ProjectFiscalEntity()));
+
+        List<ProjectFiscalEntity> results = featuresService.findFilteredProjectFiscals(
+                projectGuid,
+                fiscalYears,
+                List.of(),
+                List.of()
+        );
+
+        assertNotNull(results);
+        assertEquals(1, results.size());
+        verify(criteriaBuilder, times(2)).isNull(fiscalYearPath);
+        verify(criteriaBuilder).or(any(Predicate[].class));
+    }
 }
