@@ -359,7 +359,7 @@ class FeaturesServiceTest {
         featuresService.addProjectLevelFilters(projectRoot, predicates, params);
 
         // Assert
-        assertEquals(4, predicates.size(), "Expected four predicates for all conditions");
+        assertEquals(5, predicates.size(), "Expected four predicates for all conditions");
         verify(projectRoot, times(1)).get("programAreaGuid");
         verify(projectRoot, times(1)).get("forestRegionOrgUnitId");
         verify(projectRoot, times(1)).get("forestDistrictOrgUnitId");
