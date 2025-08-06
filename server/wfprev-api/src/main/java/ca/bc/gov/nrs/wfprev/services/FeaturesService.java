@@ -187,6 +187,7 @@ public class FeaturesService implements CommonService {
     }
 
     void addProjectLevelFilters(Root<ProjectEntity> project, List<Predicate> predicates, FeatureQueryParams params) {
+        log.info("Filtering by projectTypeCodes: {}", params.getProjectTypeCodes());
         if (params.getProgramAreaGuids() != null && !params.getProgramAreaGuids().isEmpty()) {
             predicates.add(project.get("programAreaGuid").in(params.getProgramAreaGuids()));
         }
@@ -201,6 +202,12 @@ public class FeaturesService implements CommonService {
 
         if (params.getFireCentreOrgUnitIds() != null && !params.getFireCentreOrgUnitIds().isEmpty()) {
             predicates.add(project.get("fireCentreOrgUnitId").in(params.getFireCentreOrgUnitIds()));
+        }
+
+        if (params.getProjectTypeCodes() != null && !params.getProjectTypeCodes().isEmpty()) {
+            predicates.add(
+                project.get("projectTypeCode").get("projectTypeCode").in(params.getProjectTypeCodes())
+            );
         }
     }
 

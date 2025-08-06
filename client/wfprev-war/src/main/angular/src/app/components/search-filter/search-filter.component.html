@@ -18,6 +18,19 @@
 
     <!-- Filters -->
     <div class="field search-input filter-search-input">
+      <mat-label class="label">Project Type</mat-label>
+      <mat-form-field appearance="fill" class="filter-item">
+        <mat-select [(ngModel)]="selectedProjectType" placeholder="Select" [panelClass]="'filter-dropdown'"
+          (selectionChange)="onOptionToggled($event,'selectedProjectType', projectTypeOptions)"
+          multiple>
+        <mat-option *ngFor="let option of projectTypeOptions" [value]="option.value" (onSelectionChange)="syncAllWithItemToggle($event, option.value, 'selectedProjectType', projectTypeOptions)">
+          {{ option.label }}
+        </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <div class="field search-input filter-search-input">
       <mat-label class="label">Business Area</mat-label>
       <mat-form-field appearance="fill" class="filter-item">
         <mat-select [(ngModel)]="selectedBusinessArea" placeholder="Select" [panelClass]="'filter-dropdown'"
