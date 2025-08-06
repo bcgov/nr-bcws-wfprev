@@ -11,6 +11,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Path;
@@ -710,4 +711,32 @@ class FeaturesServiceTest {
         assertEquals(1, predicates.size());
     }
 
+    @Test
+    void testAddFiscalYearFilters_WithNonNullYear() {
+        CriteriaBuilder cb = mock(CriteriaBuilder.class);
+
+        @SuppressWarnings("unchecked")
+        Join<ProjectEntity, ProjectFiscalEntity> fiscal = mock(Join.class);
+        @SuppressWarnings("unchecked")
+        Path<Object> fiscalYearPath = (Path<Object>) mock(Path.class);
+        @SuppressWarnings("unchecked")
+        Expression<String> yearAsString = (Expression<String>) mock(Expression.class);
+
+        Predicate likePredicate = mock(Predicate.class);
+        Predicate orPredicate = mock(Predicate.class);
+
+        when(fiscal.get("fiscalYear")).thenReturn(fiscalYearPath);
+        when(fiscalYearPath.as(String.class)).thenReturn(yearAsString);
+        when(cb.like(yearAsString, "2024%")).thenReturn(likePredicate);
+        when(cb.or(likePredicate)).thenReturn(orPredicate);
+
+        List<Predicate> predicates = new ArrayList<>();
+        List<String> fiscalYears = List.of("2024");
+
+        featuresService.addFiscalYearFilters(cb, fiscal, predicates, fiscalYears);
+
+        verify(cb).like(yearAsString, "2024%");
+        verify(cb).or(likePredicate);
+        assertEquals(1, predicates.size());
+    }
 }
