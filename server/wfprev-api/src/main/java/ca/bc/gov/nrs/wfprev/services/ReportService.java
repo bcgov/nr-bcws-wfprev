@@ -37,8 +37,8 @@ import java.util.UUID;
 @Component
 public class ReportService {
 
-    @Value("${spring.application.baseUrl}")
-    private String baseUrl;
+//    @Value("${spring.application.baseUrl}")
+    private String baseUrl = "http://localhost:4200";
 
     private final String projectUrlPrefix = "/edit-project?projectGuid=";
 
