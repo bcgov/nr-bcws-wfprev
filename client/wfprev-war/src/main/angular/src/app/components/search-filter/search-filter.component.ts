@@ -65,11 +65,25 @@ export class SearchFilterComponent implements OnInit {
 
   emitFilters() {
     const sanitize = (arr: any[]) => arr.filter(v => v !== '__ALL__');
+
+
+    // include 'null' in query param for 'ALL' in order to return projects with no fiscals attached
+    const resolveFiscalYears = () => {
+      if (this.selectedFiscalYears.includes('__ALL__')) {
+        const allValues = this.fiscalYearOptions
+          .map(opt => opt.value)
+          .filter(v => v !== '__ALL__');
+
+        return [...allValues, 'null'];
+      }
+      return sanitize(this.selectedFiscalYears);
+    };
+
     this.sharedService.updateFilters({
       searchText: this.searchText,
       projectTypeCode: sanitize(this.selectedProjectType),
       programAreaGuid: sanitize(this.selectedBusinessArea),
-      fiscalYear: sanitize(this.selectedFiscalYears),
+      fiscalYear: resolveFiscalYears(),
       activityCategoryCode: sanitize(this.selectedActivity),
       forestRegionOrgUnitId: sanitize(this.selectedForestRegion),
       forestDistrictOrgUnitId: sanitize(this.selectedForestDistrict),
