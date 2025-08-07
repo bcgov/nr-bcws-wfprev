@@ -6,13 +6,14 @@ import { MatIconModule } from '@angular/material/icon';
 import { EvaluationCriteriaDialogComponent } from 'src/app/components/evaluation-criteria-dialog/evaluation-criteria-dialog.component';
 import { EvaluationCriteriaSummaryModel, Project } from 'src/app/components/models';
 import { ExpansionIndicatorComponent } from 'src/app/components/shared/expansion-indicator/expansion-indicator.component';
+import { TimestampComponent } from 'src/app/components/shared/timestamp/timestamp.component';
 import { ProjectService } from 'src/app/services/project-services';
 import { EvaluationCriteriaSectionCodes, ProjectTypes } from 'src/app/utils/constants';
 
 @Component({
   selector: 'wfprev-evaluation-criteria',
   standalone: true,
-  imports: [ExpansionIndicatorComponent, MatExpansionModule, MatIconModule, CommonModule],
+  imports: [ExpansionIndicatorComponent, MatExpansionModule, MatIconModule, CommonModule, TimestampComponent],
   templateUrl: './evaluation-criteria.component.html',
   styleUrl: './evaluation-criteria.component.scss'
 })
