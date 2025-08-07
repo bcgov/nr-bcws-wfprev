@@ -10,20 +10,35 @@ import java.util.Optional;
 
 @Component
 public class SpringSecurityAuditorAware implements AuditorAware<String> {
-
+    // Provides the current authenticated user's identifier for Spring Data auditing.
+    // Checks OAuth2 principal attributes (userId > sub > clientId) in order and falling back to Authentication.getName() if not an OAuth2 principal.
     @Override
     public Optional<String> getCurrentAuditor() {
-        return Optional.ofNullable(SecurityContextHolder.getContext())
-                .map(context -> context.getAuthentication())
-                .filter(Authentication::isAuthenticated)
-                .map(authentication -> {
-                    Object principal = authentication.getPrincipal();
-                    if (principal instanceof DefaultOAuth2AuthenticatedPrincipal) {
-                        // Extract username or preferred identifier
-                        DefaultOAuth2AuthenticatedPrincipal oauthPrincipal = (DefaultOAuth2AuthenticatedPrincipal) principal;
-                        return (String) oauthPrincipal.getAttribute("client_id"); // Adjust key to match your provider
-                    }
-                    throw new IllegalStateException("Principal is not of type DefaultOAuth2AuthenticatedPrincipal");
-                });
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || !auth.isAuthenticated()) {
+            return Optional.empty();
+        }
+
+        Object principal = auth.getPrincipal();
+        if (principal instanceof DefaultOAuth2AuthenticatedPrincipal p) {
+            String auditor =
+                firstNonBlank(
+                    (String) p.getAttribute("userId"),
+                    (String) p.getAttribute("sub"),
+                    (String) p.getAttribute("clientId")
+                );
+
+            return Optional.ofNullable(auditor);
+        }
+
+        return Optional.ofNullable(auth.getName());
+    }
+
+    private static String firstNonBlank(String... vals) {
+        if (vals == null) return null;
+        for (String v : vals) {
+            if (v != null && !v.isBlank()) return v;
+        }
+        return null;
     }
 }

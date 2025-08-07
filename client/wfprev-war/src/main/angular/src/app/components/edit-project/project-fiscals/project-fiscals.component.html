@@ -293,6 +293,10 @@
                   </div>
 
                 </form>
+                <wfprev-timestamp
+                  [updateDate]="projectFiscals[i]?.updateDate"
+                  [updateUser]="projectFiscals[i]?.updateUser">
+                </wfprev-timestamp>
                 <div class="fiscal-footer">
                   <div class="footer-button-row">
                     <button class="secondary" (click)="onCancelFiscal(i)" *ngIf="fiscalForms[i]" [disabled]="!fiscalForms[i].dirty">
