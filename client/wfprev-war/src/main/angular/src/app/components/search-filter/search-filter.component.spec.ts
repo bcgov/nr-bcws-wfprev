@@ -66,6 +66,25 @@ describe('SearchFilterComponent', () => {
     expect(mockSharedService.updateFilters).toHaveBeenCalled();
   });
 
+  it('should include "null" in fiscalYear query param when "All" is selected', () => {
+    component.fiscalYearOptions = [
+      { label: 'All', value: '__ALL__' },
+      { label: '2025/26', value: '2025' },
+      { label: '2024/25', value: '2024' },
+      { label: '2023/24', value: '2023' }
+    ];
+
+    component.selectedFiscalYears = ['__ALL__'];
+
+    component.emitFilters();
+
+    expect(mockSharedService.updateFilters).toHaveBeenCalledWith(
+      jasmine.objectContaining({
+        fiscalYear: ['2025', '2024', '2023', 'null']
+      })
+    );
+  });
+
   it('should handle onReset correctly', () => {
     component.selectedBusinessArea = ['x'];
     component.searchText = 'test';
@@ -203,6 +222,28 @@ describe('SearchFilterComponent', () => {
     const fireCentreLabels = component.fireCentreOptions.map(opt => opt.label);
     expect(fireCentreLabels).toContain('Kamloops Fire Centre');
     expect(fireCentreLabels).not.toContain('Non-Fire Centre');
+  });
+
+  it('should select current fiscal year and "No Year Assigned" on load', () => {
+    // Simulate today’s date before or after April 1st
+    const today = new Date();
+    const expectedFiscalYearStart =
+      today.getMonth() >= 3 ? today.getFullYear() : today.getFullYear() - 1;
+    const expectedFiscalYearValue = expectedFiscalYearStart.toString();
+
+    component.fiscalYearOptions = [
+      { label: 'All', value: '__ALL__' },
+      { label: `${expectedFiscalYearStart}/${(expectedFiscalYearStart + 1).toString().slice(-2)}`, value: expectedFiscalYearValue },
+      { label: 'No Year Assigned', value: 'null' }
+    ];
+
+    spyOn(component, 'emitFilters');
+
+    component.assignDefaultFiscalYearSelection();
+
+    expect(component.selectedFiscalYears).toContain(expectedFiscalYearValue);
+    expect(component.selectedFiscalYears).toContain('null');
+    expect(component.emitFilters).toHaveBeenCalled();
   });
 
 });
