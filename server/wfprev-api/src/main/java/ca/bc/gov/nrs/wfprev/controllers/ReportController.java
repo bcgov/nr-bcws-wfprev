@@ -58,14 +58,15 @@ public class ReportController {
                     .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=project-report.xlsx")
                     .contentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
                     .body(stream);
-        }  else if ("CSV".equalsIgnoreCase(type)) {
-        StreamingResponseBody stream = outputStream ->
-                reportService.writeCsvFromEntity(request.getProjectGuids(), outputStream);
+        } else if ("CSV".equalsIgnoreCase(type)) {
+            StreamingResponseBody stream = outputStream ->
+                    reportService.writeCsvZipFromEntities(request.getProjectGuids(), outputStream);
 
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=project-report.csv")
-                .contentType(MediaType.parseMediaType("text/csv"))
-                .body(stream);
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=project-report.zip")
+                    .contentType(MediaType.parseMediaType("application/zip"))
+                    .body(stream);
+
         } else {
             log.warn("Unsupported report type requested: {}", type);
             return ResponseEntity.badRequest()

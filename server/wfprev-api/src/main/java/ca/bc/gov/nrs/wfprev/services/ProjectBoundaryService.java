@@ -23,6 +23,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.MessageFormat;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -104,6 +105,11 @@ public class ProjectBoundaryService implements CommonService {
       entity.setProjectGuid(projectEntity.getProjectGuid());
 
       ProjectBoundaryEntity savedEntity = projectBoundaryRepository.save(entity);
+
+      if (savedEntity.getProjectGuid() != null && savedEntity.getBoundarySizeHa() != null) {
+        updateProjectActualSizeHa(savedEntity.getProjectGuid(), savedEntity.getBoundarySizeHa());
+      }
+
       return projectBoundaryResourceAssembler.toModel(savedEntity);
     } else throw new IllegalArgumentException("ProjectBoundaryModel resource to be created cannot be null");
   }
@@ -134,6 +140,11 @@ public class ProjectBoundaryService implements CommonService {
 
       updateFieldsFromBoundaryGeometry(resource);
       ProjectBoundaryEntity entity = projectBoundaryResourceAssembler.updateEntity(resource, existingEntity);
+
+      if(entity.getProjectGuid() != null && entity.getBoundarySizeHa() != null) {
+        updateProjectActualSizeHa(entity.getProjectGuid(), entity.getBoundarySizeHa());
+      }
+
       return saveProjectBoundary(entity);
     } else throw new IllegalArgumentException("ProjectBoundaryModel resource to be updated cannot be null");
   }
@@ -258,5 +269,13 @@ public class ProjectBoundaryService implements CommonService {
     // Round to 4 decimal places
     return BigDecimal.valueOf(totalAreaHectares)
             .setScale(4, RoundingMode.HALF_UP);
+  }
+
+  private void updateProjectActualSizeHa(UUID projectGuid, BigDecimal boundarySizeHa) {
+    ProjectEntity project = projectRepository.findById(projectGuid)
+            .orElseThrow(() -> new EntityNotFoundException("Project not found: " + projectGuid));
+
+    project.setTotalActualProjectSizeHa(boundarySizeHa);
+    projectRepository.save(project);
   }
 }

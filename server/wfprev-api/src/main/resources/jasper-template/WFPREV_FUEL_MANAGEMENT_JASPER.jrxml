@@ -50,16 +50,15 @@
 			<![CDATA[]]>
 		</queryString>
 	</subDataset>
-	<parameter name="linkToProject" class="java.lang.String"/>
 	<queryString>
 		<![CDATA[]]>
 	</queryString>
 	<field name="linkToFiscalActivity" class="java.lang.String"/>
-	<field name="proposalType" class="java.lang.String"/>
+	<!--	<field name="proposalType" class="java.lang.String"/>-->
 	<field name="projectFiscalName" class="java.lang.String"/>
 	<field name="projectFiscalDescription" class="java.lang.String"/>
 	<field name="fiscalYear" class="java.lang.String"/>
-	<field name="activityCategoryDesciption" class="java.lang.String"/>
+	<field name="activityCategoryDescription" class="java.lang.String"/>
 	<field name="planFiscalStatusDescription" class="java.lang.String"/>
 	<field name="totalEstimatedCostAmount" class="java.math.BigDecimal"/>
 	<field name="fiscalAncillaryFundAmount" class="java.math.BigDecimal"/>
@@ -76,15 +75,15 @@
 	<field name="resultsOpeningId" class="java.lang.String"/>
 	<field name="endorsementTimestamp" class="java.util.Date"/>
 	<field name="approvedTimestamp" class="java.util.Date"/>
-	<field name="outsideWuiInd" class="java.lang.String"/>
-	<field name="totalRclFilterSectionScore" class="java.math.BigDecimal"/>
-	<field name="bdfFilterSectionComment" class="java.lang.String"/>
-	<field name="totalBdfFilterSectionScore " class="java.math.BigDecimal"/>
-	<field name="rclFilterSectionComment" class="java.lang.String"/>
-	<field name="totalCollimpFilterSectionScore" class="java.math.BigDecimal"/>
-	<field name="collimpFilterSectionComment" class="java.lang.String"/>
+	<!--	<field name="outsideWuiInd" class="java.lang.String"/>-->
+	<!--	<field name="totalRclFilterSectionScore" class="java.math.BigDecimal"/>-->
+	<!--	<field name="bdfFilterSectionComment" class="java.lang.String"/>-->
+	<!--	<field name="totalBdfFilterSectionScore" class="java.math.BigDecimal"/>-->
+	<!--	<field name="rclFilterSectionComment" class="java.lang.String"/>-->
+	<!--	<field name="totalCollimpFilterSectionScore" class="java.math.BigDecimal"/>-->
+	<!--	<field name="collimpFilterSectionComment" class="java.lang.String"/>-->
 	<field name="totalFilterSectionScore" class="java.math.BigDecimal"/>
-	<field name="projectTypeCode" class="java.lang.String"/>
+	<field name="projectTypeDescription" class="java.lang.String"/>
 	<field name="projectName" class="java.lang.String"/>
 	<field name="forestRegionOrgUnitName" class="java.lang.String"/>
 	<field name="linkToProject" class="java.lang.String"/>
@@ -124,9 +123,12 @@
 		<band height="79" splitType="Stretch"/>
 	</title>
 	<pageHeader>
-		<band height="1122" splitType="Stretch">
+		<band height="1122" splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="150" splitType="Stretch">
 			<staticText>
-				<reportElement mode="Opaque" x="7220" y="462" width="90" height="108" forecolor="#000000" backcolor="#FFD900" uuid="afbc3200-5b14-4e0b-8e22-5869a370ab4b"/>
+				<reportElement mode="Opaque" x="7220" y="42" width="90" height="108" forecolor="#000000" backcolor="#FFD900" uuid="afbc3200-5b14-4e0b-8e22-5869a370ab4b"/>
 				<box padding="4">
 					<pen lineWidth="1.0"/>
 					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -140,7 +142,7 @@
 				<text><![CDATA[Total Point Value for Coarse Filter]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Opaque" x="6302" y="462" width="175" height="108" forecolor="#000000" backcolor="#FFC000" uuid="35793c4c-42ac-4063-b7cc-c47035ceb89a"/>
+				<reportElement mode="Opaque" x="6302" y="42" width="175" height="108" forecolor="#000000" backcolor="#FFC000" uuid="35793c4c-42ac-4063-b7cc-c47035ceb89a"/>
 				<box padding="4">
 					<pen lineWidth="1.0"/>
 					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -153,13 +155,8 @@
 				</textElement>
 				<text><![CDATA[Endorsement Date]]></text>
 			</staticText>
-			<textField isBlankWhenNull="true">
-				<reportElement x="1680" y="570" width="216" height="120" uuid="9ce7e282-5ae0-43af-8726-d55ef34f0ecf"/>
-				<textElement verticalAlignment="Bottom"/>
-				<textFieldExpression><![CDATA[$F{fireCentreOrgUnitName}]]></textFieldExpression>
-			</textField>
 			<staticText>
-				<reportElement mode="Opaque" x="7082" y="462" width="138" height="108" forecolor="#000000" backcolor="#FFD900" uuid="433b2a64-c24d-4d4b-be29-97c822f8058f"/>
+				<reportElement mode="Opaque" x="7082" y="42" width="138" height="108" forecolor="#000000" backcolor="#FFD900" uuid="433b2a64-c24d-4d4b-be29-97c822f8058f"/>
 				<box padding="4">
 					<pen lineWidth="1.0"/>
 					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -173,7 +170,7 @@
 				<text><![CDATA[Local WUI Risk Class Rationale]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Opaque" x="3379" y="462" width="262" height="108" forecolor="#FFFFFF" backcolor="#7030A0" uuid="da05e1cd-ce3b-4875-b086-e58c5e60bda8"/>
+				<reportElement mode="Opaque" x="3379" y="42" width="262" height="108" forecolor="#FFFFFF" backcolor="#7030A0" uuid="da05e1cd-ce3b-4875-b086-e58c5e60bda8"/>
 				<box padding="4">
 					<pen lineWidth="1.0"/>
 					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -186,18 +183,8 @@
 				</textElement>
 				<text><![CDATA[Fiscal Activity Description]]></text>
 			</staticText>
-			<textField isBlankWhenNull="true">
-				<reportElement x="2425" y="570" width="173" height="120" uuid="a359aab6-809e-46c5-978b-ee35f36736c2"/>
-				<textElement verticalAlignment="Bottom"/>
-				<textFieldExpression><![CDATA[$F{grossProjectAreaHa}]]></textFieldExpression>
-			</textField>
-			<textField isBlankWhenNull="true">
-				<reportElement x="2598" y="570" width="173" height="120" uuid="3dae2dd2-c238-4641-b485-4545e55a68e5"/>
-				<textElement verticalAlignment="Bottom"/>
-				<textFieldExpression><![CDATA[$F{closestCommunityName}]]></textFieldExpression>
-			</textField>
 			<staticText>
-				<reportElement mode="Opaque" x="816" y="462" width="216" height="108" forecolor="#FFFFFF" backcolor="#757171" uuid="73f87cd6-efa8-4a2d-b0b3-3b526240c00e"/>
+				<reportElement mode="Opaque" x="816" y="42" width="216" height="108" forecolor="#FFFFFF" backcolor="#757171" uuid="73f87cd6-efa8-4a2d-b0b3-3b526240c00e"/>
 				<box padding="4">
 					<pen lineWidth="1.0"/>
 					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -211,7 +198,7 @@
 				<text><![CDATA[FOR Region]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Opaque" x="5434" y="462" width="260" height="108" forecolor="#FFFFFF" backcolor="#ED7D31" uuid="07288c46-f8eb-4532-bb2a-f2c6e686fd1f"/>
+				<reportElement mode="Opaque" x="5434" y="42" width="260" height="108" forecolor="#FFFFFF" backcolor="#ED7D31" uuid="07288c46-f8eb-4532-bb2a-f2c6e686fd1f"/>
 				<box padding="4">
 					<pen lineWidth="1.0"/>
 					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -224,22 +211,8 @@
 				</textElement>
 				<text><![CDATA[Other Partners]]></text>
 			</staticText>
-			<textField isBlankWhenNull="true">
-				<reportElement x="4868" y="570" width="118" height="120" uuid="0abb196e-d5ac-4c65-90c7-afe151c981ec"/>
-				<box>
-					<pen lineWidth="1.0"/>
-					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-				</box>
-				<textElement verticalAlignment="Bottom">
-					<font fontName="Calibri" size="11"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{spatialSubmitted}]]></textFieldExpression>
-			</textField>
 			<staticText>
-				<reportElement mode="Opaque" x="6477" y="462" width="175" height="108" forecolor="#000000" backcolor="#FFC000" uuid="862bee70-d921-4335-8df6-3ed5f52f59fe"/>
+				<reportElement mode="Opaque" x="6477" y="42" width="175" height="108" forecolor="#000000" backcolor="#FFC000" uuid="862bee70-d921-4335-8df6-3ed5f52f59fe"/>
 				<box padding="4">
 					<pen lineWidth="1.0"/>
 					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -252,18 +225,8 @@
 				</textElement>
 				<text><![CDATA[Approval Date]]></text>
 			</staticText>
-			<textField isBlankWhenNull="true">
-				<reportElement x="2944" y="570" width="173" height="120" uuid="c57345a1-e30f-46e2-a46d-9ac87dc345d5"/>
-				<textElement verticalAlignment="Bottom"/>
-				<textFieldExpression><![CDATA[$F{proposalTypeDescription}]]></textFieldExpression>
-			</textField>
-			<textField isBlankWhenNull="true">
-				<reportElement x="7620" y="570" width="98" height="120" uuid="59e8f1be-1b43-494b-8190-2d170debff16"/>
-				<textElement verticalAlignment="Bottom"/>
-				<textFieldExpression><![CDATA[$F{totalFilterSectionScore}]]></textFieldExpression>
-			</textField>
 			<staticText>
-				<reportElement mode="Opaque" x="1680" y="462" width="216" height="108" forecolor="#FFFFFF" backcolor="#757171" uuid="2d84d9dd-e9c0-434b-97e2-36e1cf89d011"/>
+				<reportElement mode="Opaque" x="1680" y="42" width="216" height="108" forecolor="#FFFFFF" backcolor="#757171" uuid="2d84d9dd-e9c0-434b-97e2-36e1cf89d011"/>
 				<box padding="4">
 					<pen lineWidth="1.0"/>
 					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -276,18 +239,8 @@
 				</textElement>
 				<text><![CDATA[Fire Centre]]></text>
 			</staticText>
-			<textField isBlankWhenNull="true">
-				<reportElement x="7309" y="570" width="91" height="120" uuid="dea67809-9cc0-493e-9ab6-3078fe9b45b8"/>
-				<textElement verticalAlignment="Bottom"/>
-				<textFieldExpression><![CDATA[$F{totalMediumFilterSectionScore}]]></textFieldExpression>
-			</textField>
-			<textField isBlankWhenNull="true">
-				<reportElement x="7400" y="570" width="140" height="120" uuid="e4b15b54-d30f-4f55-af9c-0fbb3f28a99a"/>
-				<textElement verticalAlignment="Bottom"/>
-				<textFieldExpression><![CDATA[$F{mediumFilterSectionComment}]]></textFieldExpression>
-			</textField>
 			<staticText>
-				<reportElement mode="Opaque" x="6867" y="462" width="215" height="108" forecolor="#000000" backcolor="#FFD900" uuid="7085b5c1-0850-432c-aa44-77913f2455b6"/>
+				<reportElement mode="Opaque" x="6867" y="42" width="215" height="108" forecolor="#000000" backcolor="#FFD900" uuid="7085b5c1-0850-432c-aa44-77913f2455b6"/>
 				<box padding="4">
 					<pen lineWidth="1.0"/>
 					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -300,36 +253,8 @@
 				</textElement>
 				<text><![CDATA[Local WUI Risk Class]]></text>
 			</staticText>
-			<textField isBlankWhenNull="true">
-				<reportElement x="5434" y="570" width="260" height="120" uuid="f6fe5dba-46b7-4d79-8078-12a28375d2b8"/>
-				<box>
-					<pen lineWidth="1.0"/>
-					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-				</box>
-				<textElement verticalAlignment="Bottom">
-					<font fontName="Calibri" size="11"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{otherPartner}]]></textFieldExpression>
-			</textField>
-			<textField isBlankWhenNull="true">
-				<reportElement x="5866" y="570" width="86" height="120" uuid="382c2e06-9eeb-4abe-8222-176dae088a62"/>
-				<box>
-					<pen lineWidth="1.0"/>
-					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-				</box>
-				<textElement verticalAlignment="Bottom">
-					<font fontName="Calibri" size="11"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{resultsOpeningId}]]></textFieldExpression>
-			</textField>
 			<staticText>
-				<reportElement mode="Opaque" x="546" y="462" width="270" height="108" forecolor="#FFFFFF" backcolor="#757171" uuid="e90275eb-d6ba-41a5-9288-b47c977627f1"/>
+				<reportElement mode="Opaque" x="546" y="42" width="270" height="108" forecolor="#FFFFFF" backcolor="#757171" uuid="e90275eb-d6ba-41a5-9288-b47c977627f1"/>
 				<box padding="4">
 					<pen lineWidth="1.0"/>
 					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -342,36 +267,8 @@
 				</textElement>
 				<text><![CDATA[Project Name]]></text>
 			</staticText>
-			<textField isBlankWhenNull="true">
-				<reportElement x="1896" y="570" width="216" height="120" uuid="ff8a0029-ef8d-4afb-9ff1-155fcf35342f"/>
-				<box padding="1">
-					<pen lineWidth="1.0"/>
-					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-				</box>
-				<textElement verticalAlignment="Bottom">
-					<font fontName="Calibri" size="11"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{businessArea}]]></textFieldExpression>
-			</textField>
-			<textField isBlankWhenNull="true">
-				<reportElement x="4396" y="570" width="118" height="120" uuid="f5a87843-c1fe-4740-9069-35ea627dc74e"/>
-				<box>
-					<pen lineWidth="1.0"/>
-					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-				</box>
-				<textElement verticalAlignment="Bottom">
-					<font fontName="Calibri" size="11"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{fiscalReportedSpendAmount}]]></textFieldExpression>
-			</textField>
 			<staticText>
-				<reportElement mode="Opaque" x="5694" y="462" width="86" height="108" forecolor="#FFFFFF" backcolor="#757171" uuid="cae65d82-a563-4bb7-b3d4-b879449baa23"/>
+				<reportElement mode="Opaque" x="5694" y="42" width="86" height="108" forecolor="#FFFFFF" backcolor="#757171" uuid="cae65d82-a563-4bb7-b3d4-b879449baa23"/>
 				<box padding="4">
 					<pen lineWidth="1.0"/>
 					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -384,22 +281,8 @@
 				</textElement>
 				<text><![CDATA[CFS Code]]></text>
 			</staticText>
-			<textField isBlankWhenNull="true">
-				<reportElement x="6477" y="570" width="175" height="120" uuid="ad806b18-f5ca-49dd-bc57-8ddcf40bfc43"/>
-				<box>
-					<pen lineWidth="1.0"/>
-					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-				</box>
-				<textElement verticalAlignment="Bottom">
-					<font fontName="Calibri" size="11"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{approvedTimestamp}]]></textFieldExpression>
-			</textField>
 			<staticText>
-				<reportElement mode="Opaque" x="6127" y="462" width="175" height="108" forecolor="#000000" backcolor="#FFC000" uuid="d5c233dc-dcb3-4ae4-bd2b-f030d2dad181"/>
+				<reportElement mode="Opaque" x="6127" y="42" width="175" height="108" forecolor="#000000" backcolor="#FFC000" uuid="d5c233dc-dcb3-4ae4-bd2b-f030d2dad181"/>
 				<box padding="4">
 					<pen lineWidth="1.0"/>
 					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -413,7 +296,7 @@
 				<text><![CDATA[Secondary  Objective (Optional)]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Opaque" x="2944" y="462" width="173" height="108" forecolor="#FFFFFF" backcolor="#7030A0" uuid="447d2d26-0705-4a89-ad1c-3fb25e2a5514"/>
+				<reportElement mode="Opaque" x="2944" y="42" width="173" height="108" forecolor="#FFFFFF" backcolor="#7030A0" uuid="447d2d26-0705-4a89-ad1c-3fb25e2a5514"/>
 				<box padding="4">
 					<pen lineWidth="1.0"/>
 					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -427,7 +310,7 @@
 				<text><![CDATA[Proposal Type]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Opaque" x="376" y="462" width="170" height="108" forecolor="#FFFFFF" backcolor="#757171" uuid="eba534c4-dfb7-4694-b672-d180b2a29ab8"/>
+				<reportElement mode="Opaque" x="376" y="42" width="170" height="108" forecolor="#FFFFFF" backcolor="#757171" uuid="eba534c4-dfb7-4694-b672-d180b2a29ab8"/>
 				<box padding="4">
 					<pen lineWidth="1.0"/>
 					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -440,27 +323,8 @@
 				</textElement>
 				<text><![CDATA[Project Type]]></text>
 			</staticText>
-			<textField isBlankWhenNull="true">
-				<reportElement x="5174" y="570" width="260" height="120" uuid="858b1963-3dbe-4122-8212-69f78d71284f"/>
-				<box>
-					<pen lineWidth="1.0"/>
-					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-				</box>
-				<textElement verticalAlignment="Bottom">
-					<font fontName="Calibri" size="11"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{firstNationsPartner}]]></textFieldExpression>
-			</textField>
-			<textField isBlankWhenNull="true">
-				<reportElement x="2112" y="570" width="313" height="120" uuid="601a2fbf-f320-4d2d-9db5-65f5484f5ec4"/>
-				<textElement verticalAlignment="Bottom"/>
-				<textFieldExpression><![CDATA[$F{planningUnitName}]]></textFieldExpression>
-			</textField>
 			<staticText>
-				<reportElement mode="Opaque" x="7310" y="462" width="90" height="108" forecolor="#000000" backcolor="#FFD900" uuid="9add1802-fa2e-472d-9249-a0a2dd757974"/>
+				<reportElement mode="Opaque" x="7310" y="42" width="90" height="108" forecolor="#000000" backcolor="#FFD900" uuid="9add1802-fa2e-472d-9249-a0a2dd757974"/>
 				<box padding="4">
 					<pen lineWidth="1.0"/>
 					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -474,7 +338,7 @@
 				<text><![CDATA[Total Point Value for Medium Filters]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Opaque" x="7540" y="462" width="80" height="108" forecolor="#000000" backcolor="#FFD900" uuid="07e746a8-3ba1-4b64-9c56-be254898cdc0"/>
+				<reportElement mode="Opaque" x="7540" y="42" width="80" height="108" forecolor="#000000" backcolor="#FFD900" uuid="07e746a8-3ba1-4b64-9c56-be254898cdc0"/>
 				<box padding="4">
 					<pen lineWidth="1.0"/>
 					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -487,13 +351,8 @@
 				</textElement>
 				<text><![CDATA[Total Point Value of Fine Filters]]></text>
 			</staticText>
-			<textField isBlankWhenNull="true">
-				<reportElement x="816" y="570" width="216" height="120" uuid="092220ea-126c-4494-a7e4-071d1d67aa58"/>
-				<textElement verticalAlignment="Bottom"/>
-				<textFieldExpression><![CDATA[$F{forestRegionOrgUnitName}]]></textFieldExpression>
-			</textField>
 			<staticText>
-				<reportElement mode="Opaque" x="2771" y="462" width="173" height="108" forecolor="#FFFFFF" backcolor="#757171" uuid="2ca33efa-8ca3-49bc-8fe8-7cba9a13d031"/>
+				<reportElement mode="Opaque" x="2771" y="42" width="173" height="108" forecolor="#FFFFFF" backcolor="#757171" uuid="2ca33efa-8ca3-49bc-8fe8-7cba9a13d031"/>
 				<box padding="4">
 					<pen lineWidth="1.0"/>
 					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -506,39 +365,8 @@
 				</textElement>
 				<text><![CDATA[Project Lead]]></text>
 			</staticText>
-			<textField isBlankWhenNull="true">
-				<reportElement x="3987" y="570" width="173" height="120" uuid="ee61efa2-e41f-4c4a-b9ff-d3f842f7142c"/>
-				<box>
-					<pen lineWidth="1.0"/>
-					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-				</box>
-				<textElement verticalAlignment="Bottom">
-					<font fontName="Calibri" size="11"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{planFiscalStatusDescription}]]></textFieldExpression>
-			</textField>
-			<textField isBlankWhenNull="true" hyperlinkType="Reference">
-				<reportElement x="56" y="570" width="160" height="120" forecolor="#3366FF" uuid="0bfb0f57-a9f5-404f-8ce5-021087864eee">
-					<printWhenExpression><![CDATA[$P{linkToProject} != null && !$P{linkToProject}.trim().isEmpty()]]></printWhenExpression>
-				</reportElement>
-				<box padding="1">
-					<pen lineWidth="1.0"/>
-					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-				</box>
-				<textElement verticalAlignment="Bottom">
-					<font fontName="Calibri" size="11" isUnderline="true"/>
-				</textElement>
-				<textFieldExpression><![CDATA["Project Link"]]></textFieldExpression>
-				<hyperlinkReferenceExpression><![CDATA[$F{linkToProject}]]></hyperlinkReferenceExpression>
-			</textField>
 			<staticText>
-				<reportElement mode="Opaque" x="4278" y="462" width="118" height="108" forecolor="#FFFFFF" backcolor="#305496" uuid="224c1ade-6ae0-4e65-95a9-36f4386e91be"/>
+				<reportElement mode="Opaque" x="4278" y="42" width="118" height="108" forecolor="#FFFFFF" backcolor="#305496" uuid="224c1ade-6ae0-4e65-95a9-36f4386e91be"/>
 				<box padding="4">
 					<pen lineWidth="1.0"/>
 					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -552,7 +380,7 @@
 				<text><![CDATA[Ancillary Funding Amount]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Opaque" x="4514" y="462" width="118" height="108" forecolor="#FFFFFF" backcolor="#305496" uuid="211d9e90-001f-40d9-8b97-0a34def26d1a"/>
+				<reportElement mode="Opaque" x="4514" y="42" width="118" height="108" forecolor="#FFFFFF" backcolor="#305496" uuid="211d9e90-001f-40d9-8b97-0a34def26d1a"/>
 				<box padding="4">
 					<pen lineWidth="1.0"/>
 					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -566,7 +394,7 @@
 				<text><![CDATA[CFS Actual Spend]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Opaque" x="5952" y="462" width="175" height="108" forecolor="#000000" backcolor="#FFC000" uuid="5ca00969-4246-4cd5-a210-351c9c7187f4"/>
+				<reportElement mode="Opaque" x="5952" y="42" width="175" height="108" forecolor="#000000" backcolor="#FFC000" uuid="5ca00969-4246-4cd5-a210-351c9c7187f4"/>
 				<box padding="4">
 					<pen lineWidth="1.0"/>
 					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -580,7 +408,7 @@
 				<text><![CDATA[Primary Objective]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Opaque" x="4868" y="462" width="118" height="108" forecolor="#FFFFFF" backcolor="#70AD47" uuid="09c2446f-834f-4794-b746-1ba32080910b"/>
+				<reportElement mode="Opaque" x="4868" y="42" width="118" height="108" forecolor="#FFFFFF" backcolor="#70AD47" uuid="09c2446f-834f-4794-b746-1ba32080910b"/>
 				<box padding="4">
 					<pen lineWidth="1.0"/>
 					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -594,7 +422,7 @@
 				<text><![CDATA[Spatial Submitted]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Opaque" x="4396" y="462" width="118" height="108" forecolor="#FFFFFF" backcolor="#305496" uuid="4515c76b-0fc2-49e8-87cd-c6b7cb58bbd2"/>
+				<reportElement mode="Opaque" x="4396" y="42" width="118" height="108" forecolor="#FFFFFF" backcolor="#305496" uuid="4515c76b-0fc2-49e8-87cd-c6b7cb58bbd2"/>
 				<box padding="4">
 					<pen lineWidth="1.0"/>
 					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -608,7 +436,7 @@
 				<text><![CDATA[Final Reported Spend]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Opaque" x="1248" y="462" width="216" height="108" forecolor="#FFFFFF" backcolor="#757171" uuid="a25a9d3f-e79c-4a36-bc90-879a0074bead"/>
+				<reportElement mode="Opaque" x="1248" y="42" width="216" height="108" forecolor="#FFFFFF" backcolor="#757171" uuid="a25a9d3f-e79c-4a36-bc90-879a0074bead"/>
 				<box padding="4">
 					<pen lineWidth="1.0"/>
 					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -621,22 +449,8 @@
 				</textElement>
 				<text><![CDATA[BC Parks Region]]></text>
 			</staticText>
-			<textField isBlankWhenNull="true">
-				<reportElement x="5952" y="570" width="175" height="120" uuid="def371ef-ac0a-4d81-8b39-c6d70effd6f6"/>
-				<box>
-					<pen lineWidth="1.0"/>
-					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-				</box>
-				<textElement verticalAlignment="Bottom">
-					<font fontName="Calibri" size="11"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{primaryObjectiveTypeDescription}]]></textFieldExpression>
-			</textField>
 			<staticText>
-				<reportElement mode="Opaque" x="2598" y="462" width="173" height="108" forecolor="#FFFFFF" backcolor="#757171" uuid="14abd3c3-5e29-4177-936e-fe8d02b18045"/>
+				<reportElement mode="Opaque" x="2598" y="42" width="173" height="108" forecolor="#FFFFFF" backcolor="#757171" uuid="14abd3c3-5e29-4177-936e-fe8d02b18045"/>
 				<box padding="4">
 					<pen lineWidth="1.0"/>
 					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -649,22 +463,8 @@
 				</textElement>
 				<text><![CDATA[Closest Community]]></text>
 			</staticText>
-			<textField isBlankWhenNull="true">
-				<reportElement x="6652" y="570" width="215" height="120" uuid="1e2453a4-0244-4b6a-9421-7ecde3d3179b"/>
-				<box>
-					<pen lineWidth="1.0"/>
-					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-				</box>
-				<textElement verticalAlignment="Bottom">
-					<font fontName="Calibri" size="11"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{wuiRiskClassDescription}]]></textFieldExpression>
-			</textField>
 			<staticText>
-				<reportElement mode="Opaque" x="4750" y="462" width="118" height="108" forecolor="#FFFFFF" backcolor="#70AD47" uuid="b596d482-d148-478d-8a04-eae2a8f33823"/>
+				<reportElement mode="Opaque" x="4750" y="42" width="118" height="108" forecolor="#FFFFFF" backcolor="#70AD47" uuid="b596d482-d148-478d-8a04-eae2a8f33823"/>
 				<box padding="4">
 					<pen lineWidth="1.0"/>
 					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -677,32 +477,8 @@
 				</textElement>
 				<text><![CDATA[Completed Hectares]]></text>
 			</staticText>
-			<textField isBlankWhenNull="true">
-				<reportElement x="7082" y="570" width="138" height="120" uuid="b652d47d-31d6-484b-a3d2-b37440f9e957"/>
-				<textElement verticalAlignment="Bottom"/>
-				<textFieldExpression><![CDATA[$F{localWuiRiskClassRationale}]]></textFieldExpression>
-			</textField>
-			<textField isBlankWhenNull="true">
-				<reportElement x="2771" y="570" width="173" height="120" uuid="523fbafe-30c9-4dff-8c62-85a67eac6233"/>
-				<textElement verticalAlignment="Bottom"/>
-				<textFieldExpression><![CDATA[$F{projectLead}]]></textFieldExpression>
-			</textField>
-			<textField isBlankWhenNull="true">
-				<reportElement x="6302" y="570" width="175" height="120" uuid="065fd304-89e0-45b3-8dcb-5d37d781be0f"/>
-				<box>
-					<pen lineWidth="1.0"/>
-					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-				</box>
-				<textElement verticalAlignment="Bottom">
-					<font fontName="Calibri" size="11"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{endorsementTimestamp}]]></textFieldExpression>
-			</textField>
 			<staticText>
-				<reportElement mode="Opaque" x="4986" y="462" width="94" height="108" forecolor="#FFFFFF" backcolor="#ED7D31" uuid="cc62db09-d7c3-4dbc-a0f4-6eac55d4b58d"/>
+				<reportElement mode="Opaque" x="4986" y="42" width="94" height="108" forecolor="#FFFFFF" backcolor="#ED7D31" uuid="cc62db09-d7c3-4dbc-a0f4-6eac55d4b58d"/>
 				<box padding="4">
 					<pen lineWidth="1.0"/>
 					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -715,22 +491,8 @@
 				</textElement>
 				<text><![CDATA[First Nation Engagement (Y/N)]]></text>
 			</staticText>
-			<textField isBlankWhenNull="true">
-				<reportElement x="4632" y="570" width="118" height="120" uuid="868ab4bf-6043-4242-a14f-fac4a0e90cab"/>
-				<box>
-					<pen lineWidth="1.0"/>
-					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-				</box>
-				<textElement verticalAlignment="Bottom">
-					<font fontName="Calibri" size="11"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{fiscalPlannedProjectSizeHa}]]></textFieldExpression>
-			</textField>
 			<staticText>
-				<reportElement mode="Opaque" x="5174" y="462" width="260" height="108" forecolor="#FFFFFF" backcolor="#ED7D31" uuid="b59e8b64-d65c-40e0-8889-046ee15e7890"/>
+				<reportElement mode="Opaque" x="5174" y="42" width="260" height="108" forecolor="#FFFFFF" backcolor="#ED7D31" uuid="b59e8b64-d65c-40e0-8889-046ee15e7890"/>
 				<box padding="4">
 					<pen lineWidth="1.0"/>
 					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -743,27 +505,8 @@
 				</textElement>
 				<text><![CDATA[First Nation Co-Delivery Partners]]></text>
 			</staticText>
-			<textField isBlankWhenNull="true">
-				<reportElement positionType="Float" x="7540" y="570" width="80" height="120" uuid="3d0aa9e4-b013-4100-8f21-c72312030800"/>
-				<textElement verticalAlignment="Bottom"/>
-				<textFieldExpression><![CDATA[$F{totalFilterSectionScore}]]></textFieldExpression>
-			</textField>
-			<textField isBlankWhenNull="true">
-				<reportElement x="4986" y="570" width="94" height="120" uuid="60ad253b-3363-46b7-9a02-ed038500d26e"/>
-				<box>
-					<pen lineWidth="1.0"/>
-					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-				</box>
-				<textElement verticalAlignment="Bottom">
-					<font fontName="Calibri" size="11"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{firstNationsEngagement}]]></textFieldExpression>
-			</textField>
 			<staticText>
-				<reportElement mode="Opaque" x="4160" y="462" width="118" height="108" forecolor="#FFFFFF" backcolor="#305496" uuid="abc05066-a87f-4c78-94ba-34d57b18dcdf"/>
+				<reportElement mode="Opaque" x="4160" y="42" width="118" height="108" forecolor="#FFFFFF" backcolor="#305496" uuid="abc05066-a87f-4c78-94ba-34d57b18dcdf"/>
 				<box padding="4">
 					<pen lineWidth="1.0"/>
 					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -776,13 +519,8 @@
 				</textElement>
 				<text><![CDATA[Original Cost Estimate]]></text>
 			</staticText>
-			<textField isBlankWhenNull="true">
-				<reportElement x="546" y="570" width="270" height="120" uuid="aa41e798-4d9c-4b9d-ade6-f342025c011e"/>
-				<textElement verticalAlignment="Bottom"/>
-				<textFieldExpression><![CDATA[$F{projectName}]]></textFieldExpression>
-			</textField>
 			<staticText>
-				<reportElement mode="Opaque" x="1896" y="462" width="216" height="108" forecolor="#FFFFFF" backcolor="#757171" uuid="f2fd0c4c-625f-4e0e-ba4f-4d5fad695f91"/>
+				<reportElement mode="Opaque" x="1896" y="42" width="216" height="108" forecolor="#FFFFFF" backcolor="#757171" uuid="f2fd0c4c-625f-4e0e-ba4f-4d5fad695f91"/>
 				<box padding="4">
 					<pen lineWidth="1.0"/>
 					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -796,7 +534,7 @@
 				<text><![CDATA[Business Area]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Opaque" x="6652" y="462" width="215" height="108" forecolor="#000000" backcolor="#FFD900" uuid="37ffdb93-8f9f-4bce-8553-ce303f53a21a"/>
+				<reportElement mode="Opaque" x="6652" y="42" width="215" height="108" forecolor="#000000" backcolor="#FFD900" uuid="37ffdb93-8f9f-4bce-8553-ce303f53a21a"/>
 				<box padding="4">
 					<pen lineWidth="1.0"/>
 					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -809,22 +547,8 @@
 				</textElement>
 				<text><![CDATA[WUI Risk Class]]></text>
 			</staticText>
-			<textField isBlankWhenNull="true">
-				<reportElement x="3641" y="570" width="173" height="120" uuid="1d63b79a-c84e-4a06-a713-6bf3fa6fe0d6"/>
-				<box>
-					<pen lineWidth="1.0"/>
-					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-				</box>
-				<textElement verticalAlignment="Bottom">
-					<font fontName="Calibri" size="11"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{fiscalYear}]]></textFieldExpression>
-			</textField>
 			<staticText>
-				<reportElement mode="Opaque" x="56" y="462" width="160" height="108" backcolor="#E7E6E6" uuid="d574fb22-6044-416d-a16f-49e46c4afd48"/>
+				<reportElement mode="Opaque" x="56" y="42" width="160" height="108" backcolor="#E7E6E6" uuid="d574fb22-6044-416d-a16f-49e46c4afd48"/>
 				<box padding="4">
 					<pen lineWidth="1.0"/>
 					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
@@ -837,83 +561,8 @@
 				</textElement>
 				<text><![CDATA[Link to Project (within Prevention application)]]></text>
 			</staticText>
-			<textField isBlankWhenNull="true">
-				<reportElement x="3379" y="570" width="262" height="120" uuid="054260a1-f963-43e5-aef9-8e2af81b6d7c"/>
-				<box>
-					<pen lineWidth="1.0"/>
-					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-				</box>
-				<textElement verticalAlignment="Bottom">
-					<font fontName="Calibri" size="11"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{projectFiscalDescription}]]></textFieldExpression>
-			</textField>
-			<textField isBlankWhenNull="true">
-				<reportElement x="5780" y="570" width="86" height="120" uuid="d32378a7-f5d1-4653-b758-a72930b042e4"/>
-				<textElement verticalAlignment="Bottom"/>
-				<textFieldExpression><![CDATA[$F{resultsProjectCode}]]></textFieldExpression>
-			</textField>
-			<textField isBlankWhenNull="true">
-				<reportElement x="3814" y="570" width="173" height="120" uuid="020e2a64-bacc-489b-870d-944b30e2520b"/>
-				<box>
-					<pen lineWidth="1.0"/>
-					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-				</box>
-				<textElement verticalAlignment="Bottom">
-					<font fontName="Calibri" size="11"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{activityCategoryDesciption}]]></textFieldExpression>
-			</textField>
-			<textField isBlankWhenNull="true">
-				<reportElement x="6867" y="570" width="215" height="120" uuid="95e7f276-ef48-40b4-ab95-0d66511513c9"/>
-				<box>
-					<pen lineWidth="1.0"/>
-					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-				</box>
-				<textElement verticalAlignment="Bottom">
-					<font fontName="Calibri" size="11"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{localWuiRiskClassDescription}]]></textFieldExpression>
-			</textField>
-			<textField isBlankWhenNull="true">
-				<reportElement x="4514" y="570" width="118" height="120" uuid="9de65e6f-265f-45f8-8b40-fd2dab2d1c20"/>
-				<box>
-					<pen lineWidth="1.0"/>
-					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-				</box>
-				<textElement verticalAlignment="Bottom">
-					<font fontName="Calibri" size="11"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{fiscalActualAmount}]]></textFieldExpression>
-			</textField>
-			<textField isBlankWhenNull="true">
-				<reportElement x="5080" y="570" width="94" height="120" uuid="b9604f74-9820-4a7d-a827-6b0acc056e60"/>
-				<box>
-					<pen lineWidth="1.0"/>
-					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-				</box>
-				<textElement verticalAlignment="Bottom">
-					<font fontName="Calibri" size="11"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{firstNationsDelivPartners}]]></textFieldExpression>
-			</textField>
 			<staticText>
-				<reportElement mode="Opaque" x="3117" y="462" width="262" height="108" forecolor="#FFFFFF" backcolor="#7030A0" uuid="879f09be-e9a2-4a0a-b981-cc500eb3fd77"/>
+				<reportElement mode="Opaque" x="3117" y="42" width="262" height="108" forecolor="#FFFFFF" backcolor="#7030A0" uuid="879f09be-e9a2-4a0a-b981-cc500eb3fd77"/>
 				<box padding="4">
 					<pen lineWidth="1.0"/>
 					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -926,22 +575,8 @@
 				</textElement>
 				<text><![CDATA[Fiscal Activity Name]]></text>
 			</staticText>
-			<textField isBlankWhenNull="true">
-				<reportElement x="5694" y="570" width="86" height="120" uuid="64330fda-9eb8-429c-9925-3b9969f74aaa"/>
-				<box>
-					<pen lineWidth="1.0"/>
-					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-				</box>
-				<textElement verticalAlignment="Bottom">
-					<font fontName="Calibri" size="11"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{cfsProjectCode}]]></textFieldExpression>
-			</textField>
 			<staticText>
-				<reportElement mode="Opaque" x="1464" y="462" width="216" height="108" forecolor="#FFFFFF" backcolor="#757171" uuid="2167dd7f-99dd-409e-89dd-217aa1751ba9"/>
+				<reportElement mode="Opaque" x="1464" y="42" width="216" height="108" forecolor="#FFFFFF" backcolor="#757171" uuid="2167dd7f-99dd-409e-89dd-217aa1751ba9"/>
 				<box padding="4">
 					<pen lineWidth="1.0"/>
 					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -955,7 +590,7 @@
 				<text><![CDATA[BC Parks Section]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Opaque" x="2112" y="462" width="313" height="108" forecolor="#FFFFFF" backcolor="#757171" uuid="a68342ca-44af-4475-92aa-4600aabd1643"/>
+				<reportElement mode="Opaque" x="2112" y="42" width="313" height="108" forecolor="#FFFFFF" backcolor="#757171" uuid="a68342ca-44af-4475-92aa-4600aabd1643"/>
 				<box padding="4">
 					<pen lineWidth="1.0"/>
 					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -969,7 +604,7 @@
 				<text><![CDATA[Planning Unit]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Opaque" x="3987" y="462" width="173" height="108" forecolor="#FFFFFF" backcolor="#7030A0" uuid="617e8269-ef29-4dc0-97c7-f3ac0f53a246"/>
+				<reportElement mode="Opaque" x="3987" y="42" width="173" height="108" forecolor="#FFFFFF" backcolor="#7030A0" uuid="617e8269-ef29-4dc0-97c7-f3ac0f53a246"/>
 				<box padding="4">
 					<pen lineWidth="1.0"/>
 					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -982,22 +617,8 @@
 				</textElement>
 				<text><![CDATA[Fiscal Status]]></text>
 			</staticText>
-			<textField isBlankWhenNull="true">
-				<reportElement x="4278" y="570" width="118" height="120" uuid="1ba98ea4-9d8d-4cc8-821e-413682113c44"/>
-				<box>
-					<pen lineWidth="1.0"/>
-					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-				</box>
-				<textElement verticalAlignment="Bottom">
-					<font fontName="Calibri" size="11"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{fiscalAncillaryFundAmount}]]></textFieldExpression>
-			</textField>
 			<staticText>
-				<reportElement mode="Opaque" x="5866" y="462" width="86" height="108" forecolor="#FFFFFF" backcolor="#757171" uuid="17280251-424e-43e1-a664-b6de79464f24"/>
+				<reportElement mode="Opaque" x="5866" y="42" width="86" height="108" forecolor="#FFFFFF" backcolor="#757171" uuid="17280251-424e-43e1-a664-b6de79464f24"/>
 				<box padding="4">
 					<pen lineWidth="1.0"/>
 					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -1010,22 +631,8 @@
 				</textElement>
 				<text><![CDATA[RESULTS Opening ID]]></text>
 			</staticText>
-			<textField isBlankWhenNull="true">
-				<reportElement x="6127" y="570" width="175" height="120" uuid="691122bc-fd40-475a-8942-99fd2c4ab09e"/>
-				<box>
-					<pen lineWidth="1.0"/>
-					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-				</box>
-				<textElement verticalAlignment="Bottom">
-					<font fontName="Calibri" size="11"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{secondaryObjectiveTypeDescription}]]></textFieldExpression>
-			</textField>
 			<staticText>
-				<reportElement mode="Opaque" x="7400" y="462" width="140" height="108" forecolor="#000000" backcolor="#FFD900" uuid="7f615a1f-2905-4421-ace9-7aef38d41cd8"/>
+				<reportElement mode="Opaque" x="7400" y="42" width="140" height="108" forecolor="#000000" backcolor="#FFD900" uuid="7f615a1f-2905-4421-ace9-7aef38d41cd8"/>
 				<box padding="4">
 					<pen lineWidth="1.0"/>
 					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -1038,27 +645,8 @@
 				</textElement>
 				<text><![CDATA[Additional Comments/Notes on Medium Filters]]></text>
 			</staticText>
-			<textField isBlankWhenNull="true">
-				<reportElement x="7220" y="570" width="90" height="120" uuid="42a2737d-eef0-4009-9d38-f1f869c3d603"/>
-				<textElement verticalAlignment="Bottom"/>
-				<textFieldExpression><![CDATA[$F{totalCoarseFilterSectionScore}]]></textFieldExpression>
-			</textField>
-			<textField isBlankWhenNull="true">
-				<reportElement x="3117" y="570" width="262" height="120" uuid="5ddfc2d3-5413-4264-a51c-c4815d8214a8"/>
-				<box>
-					<pen lineWidth="1.0"/>
-					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-				</box>
-				<textElement verticalAlignment="Bottom">
-					<font fontName="Calibri" size="11"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{projectFiscalName}]]></textFieldExpression>
-			</textField>
 			<staticText>
-				<reportElement mode="Opaque" x="2425" y="462" width="173" height="108" forecolor="#FFFFFF" backcolor="#757171" uuid="6c5f8f7c-ac36-41a4-b907-b2fa4257ba01"/>
+				<reportElement mode="Opaque" x="2425" y="42" width="173" height="108" forecolor="#FFFFFF" backcolor="#757171" uuid="6c5f8f7c-ac36-41a4-b907-b2fa4257ba01"/>
 				<box padding="4">
 					<pen lineWidth="1.0"/>
 					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -1072,13 +660,8 @@
 				<text><![CDATA[Gross Project Area (Ha calculated from spatial file)
 ]]></text>
 			</staticText>
-			<textField isBlankWhenNull="true">
-				<reportElement x="376" y="570" width="170" height="120" uuid="fdc79c41-10dd-4ceb-983d-0093301b7cf7"/>
-				<textElement verticalAlignment="Bottom"/>
-				<textFieldExpression><![CDATA[$F{projectTypeCode}]]></textFieldExpression>
-			</textField>
 			<staticText>
-				<reportElement mode="Opaque" x="5080" y="462" width="94" height="108" forecolor="#FFFFFF" backcolor="#ED7D31" uuid="936fcbe9-90c9-47ef-abb8-fcfd74fb6d01"/>
+				<reportElement mode="Opaque" x="5080" y="42" width="94" height="108" forecolor="#FFFFFF" backcolor="#ED7D31" uuid="936fcbe9-90c9-47ef-abb8-fcfd74fb6d01"/>
 				<box padding="4">
 					<pen lineWidth="1.0"/>
 					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -1091,22 +674,8 @@
 				</textElement>
 				<text><![CDATA[First Nation Co-Delivery (Y/N)]]></text>
 			</staticText>
-			<textField isBlankWhenNull="true">
-				<reportElement x="4160" y="570" width="118" height="120" uuid="a49e857a-6d03-48f2-a35b-672768f011df"/>
-				<box>
-					<pen lineWidth="1.0"/>
-					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-				</box>
-				<textElement verticalAlignment="Bottom">
-					<font fontName="Calibri" size="11"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{totalEstimatedCostAmount}]]></textFieldExpression>
-			</textField>
 			<staticText>
-				<reportElement mode="Opaque" x="1032" y="462" width="216" height="108" forecolor="#FFFFFF" backcolor="#757171" uuid="7c448875-27c2-4306-b786-10c53f68ad5f"/>
+				<reportElement mode="Opaque" x="1032" y="42" width="216" height="108" forecolor="#FFFFFF" backcolor="#757171" uuid="7c448875-27c2-4306-b786-10c53f68ad5f"/>
 				<box padding="4">
 					<pen lineWidth="1.0"/>
 					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -1119,26 +688,8 @@
 				</textElement>
 				<text><![CDATA[FOR District]]></text>
 			</staticText>
-			<textField isBlankWhenNull="true">
-				<reportElement x="216" y="570" width="160" height="120" forecolor="#3366FF" uuid="24bc5acf-afa1-4866-b3be-b5ddc1ce152f">
-					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="3b9eee59-6b5d-4866-ae9c-14cf6e3a4526"/>
-					<printWhenExpression><![CDATA[$F{linkToFiscalActivity} != null && !$F{linkToFiscalActivity}.trim().isEmpty()]]></printWhenExpression>
-				</reportElement>
-				<box padding="1">
-					<pen lineWidth="1.0"/>
-					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-				</box>
-				<textElement verticalAlignment="Bottom">
-					<font fontName="Calibri" size="11" isUnderline="true"/>
-				</textElement>
-				<textFieldExpression><![CDATA["Fiscal Activity Link"]]></textFieldExpression>
-				<hyperlinkWhenExpression><![CDATA[$F{linkToFiscalActivity}]]></hyperlinkWhenExpression>
-			</textField>
 			<staticText>
-				<reportElement mode="Opaque" x="3814" y="462" width="173" height="108" forecolor="#FFFFFF" backcolor="#7030A0" uuid="c6d0a32b-b4d8-4495-ae6f-0f5456d0e444"/>
+				<reportElement mode="Opaque" x="3814" y="42" width="173" height="108" forecolor="#FFFFFF" backcolor="#7030A0" uuid="c6d0a32b-b4d8-4495-ae6f-0f5456d0e444"/>
 				<box padding="4">
 					<pen lineWidth="1.0"/>
 					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -1151,22 +702,8 @@
 				</textElement>
 				<text><![CDATA[Activity Category]]></text>
 			</staticText>
-			<textField isBlankWhenNull="true">
-				<reportElement x="4750" y="570" width="118" height="120" uuid="f0ed5454-b045-496e-991b-c631c42296ca"/>
-				<box>
-					<pen lineWidth="1.0"/>
-					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-				</box>
-				<textElement verticalAlignment="Bottom">
-					<font fontName="Calibri" size="11"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{fiscalCompletedSizeHa}]]></textFieldExpression>
-			</textField>
 			<staticText>
-				<reportElement mode="Opaque" x="216" y="462" width="160" height="108" backcolor="#E7E6E6" uuid="c6a5fa22-e631-463e-9a20-47618f407ecc"/>
+				<reportElement mode="Opaque" x="216" y="42" width="160" height="108" backcolor="#E7E6E6" uuid="c6a5fa22-e631-463e-9a20-47618f407ecc"/>
 				<box padding="4">
 					<pen lineWidth="1.0"/>
 					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
@@ -1180,7 +717,7 @@
 				<text><![CDATA[Link to Fiscal Activity (within Prevention application)]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Opaque" x="4632" y="462" width="118" height="108" forecolor="#FFFFFF" backcolor="#70AD47" uuid="b722bf8c-4250-4774-9468-6899614c0cb4"/>
+				<reportElement mode="Opaque" x="4632" y="42" width="118" height="108" forecolor="#FFFFFF" backcolor="#70AD47" uuid="b722bf8c-4250-4774-9468-6899614c0cb4"/>
 				<box padding="4">
 					<pen lineWidth="1.0"/>
 					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -1194,7 +731,7 @@
 				<text><![CDATA[Planned Hectares]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Opaque" x="5780" y="462" width="86" height="108" forecolor="#FFFFFF" backcolor="#757171" uuid="79c2efdb-287a-4341-a48e-ec67749a1db7"/>
+				<reportElement mode="Opaque" x="5780" y="42" width="86" height="108" forecolor="#FFFFFF" backcolor="#757171" uuid="79c2efdb-287a-4341-a48e-ec67749a1db7"/>
 				<box padding="4">
 					<pen lineWidth="1.0"/>
 					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -1208,7 +745,7 @@
 				<text><![CDATA[RESULTS Project Code]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Opaque" x="3641" y="462" width="173" height="108" forecolor="#FFFFFF" backcolor="#7030A0" uuid="5e5d91f7-6ee9-488c-a1dc-a58e71f97b85"/>
+				<reportElement mode="Opaque" x="3641" y="42" width="173" height="108" forecolor="#FFFFFF" backcolor="#7030A0" uuid="5e5d91f7-6ee9-488c-a1dc-a58e71f97b85"/>
 				<box padding="4">
 					<pen lineWidth="1.0"/>
 					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -1222,7 +759,7 @@
 				<text><![CDATA[Fiscal Year]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Opaque" x="7718" y="462" width="88" height="108" forecolor="#000000" backcolor="#FFD900" uuid="99c82bec-c7b8-4895-9ddc-4740562714e0"/>
+				<reportElement mode="Opaque" x="7718" y="42" width="88" height="108" forecolor="#000000" backcolor="#FFD900" uuid="99c82bec-c7b8-4895-9ddc-4740562714e0"/>
 				<box padding="4">
 					<pen lineWidth="1.0"/>
 					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -1235,23 +772,8 @@
 				</textElement>
 				<text><![CDATA[Total Filter Value]]></text>
 			</staticText>
-			<textField isBlankWhenNull="true">
-				<reportElement x="1464" y="570" width="216" height="120" uuid="1dea7f79-c800-4dd1-bc9d-eb81ee65f913"/>
-				<textElement verticalAlignment="Bottom"/>
-				<textFieldExpression><![CDATA[$F{bcParksSectionOrgUnitName}]]></textFieldExpression>
-			</textField>
-			<textField isBlankWhenNull="true">
-				<reportElement x="1032" y="570" width="216" height="120" uuid="5d230f17-4fb6-41d7-9af9-78e4e99144f0"/>
-				<textElement verticalAlignment="Bottom"/>
-				<textFieldExpression><![CDATA[$F{forestDistrictOrgUnitName}]]></textFieldExpression>
-			</textField>
-			<textField isBlankWhenNull="true">
-				<reportElement x="1248" y="570" width="216" height="120" uuid="46128657-10cf-4415-a278-3b94b2fc93aa"/>
-				<textElement verticalAlignment="Bottom"/>
-				<textFieldExpression><![CDATA[$F{bcParksRegionOrgUnitName}]]></textFieldExpression>
-			</textField>
 			<staticText>
-				<reportElement mode="Opaque" x="7620" y="462" width="98" height="108" forecolor="#000000" backcolor="#FFD900" uuid="3749987b-aee0-43d8-8a63-087d45d96c60"/>
+				<reportElement mode="Opaque" x="7620" y="42" width="98" height="108" forecolor="#000000" backcolor="#FFD900" uuid="3749987b-aee0-43d8-8a63-087d45d96c60"/>
 				<box padding="4">
 					<pen lineWidth="1.0"/>
 					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -1265,16 +787,497 @@
 				<text><![CDATA[Additional Comments/
 Notes on Fine Filters]]></text>
 			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="129" splitType="Stretch">
 			<textField isBlankWhenNull="true">
-				<reportElement x="7718" y="570" width="88" height="120" uuid="74df65fe-5723-4be3-8a26-5f0831972e98"/>
+				<reportElement x="1680" y="9" width="216" height="120" uuid="9ce7e282-5ae0-43af-8726-d55ef34f0ecf"/>
+				<textElement verticalAlignment="Bottom"/>
+				<textFieldExpression><![CDATA[$F{fireCentreOrgUnitName}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="2425" y="9" width="173" height="120" uuid="a359aab6-809e-46c5-978b-ee35f36736c2"/>
+				<textElement verticalAlignment="Bottom"/>
+				<textFieldExpression><![CDATA[$F{grossProjectAreaHa}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="2598" y="9" width="173" height="120" uuid="3dae2dd2-c238-4641-b485-4545e55a68e5"/>
+				<textElement verticalAlignment="Bottom"/>
+				<textFieldExpression><![CDATA[$F{closestCommunityName}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="4868" y="9" width="118" height="120" uuid="0abb196e-d5ac-4c65-90c7-afe151c981ec"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement verticalAlignment="Bottom">
+					<font fontName="Calibri" size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{spatialSubmitted}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="2944" y="9" width="173" height="120" uuid="c57345a1-e30f-46e2-a46d-9ac87dc345d5"/>
+				<textElement verticalAlignment="Bottom"/>
+				<textFieldExpression><![CDATA[$F{proposalTypeDescription}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="7620" y="9" width="98" height="120" uuid="59e8f1be-1b43-494b-8190-2d170debff16"/>
+				<textElement verticalAlignment="Bottom"/>
+				<textFieldExpression><![CDATA[$F{totalFilterSectionScore}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="7309" y="9" width="91" height="120" uuid="dea67809-9cc0-493e-9ab6-3078fe9b45b8"/>
+				<textElement verticalAlignment="Bottom"/>
+				<textFieldExpression><![CDATA[$F{totalMediumFilterSectionScore}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="7400" y="9" width="140" height="120" uuid="e4b15b54-d30f-4f55-af9c-0fbb3f28a99a"/>
+				<textElement verticalAlignment="Bottom"/>
+				<textFieldExpression><![CDATA[$F{mediumFilterSectionComment}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="5434" y="9" width="260" height="120" uuid="f6fe5dba-46b7-4d79-8078-12a28375d2b8"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement verticalAlignment="Bottom">
+					<font fontName="Calibri" size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{otherPartner}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="5866" y="9" width="86" height="120" uuid="382c2e06-9eeb-4abe-8222-176dae088a62"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement verticalAlignment="Bottom">
+					<font fontName="Calibri" size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{resultsOpeningId}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="1896" y="9" width="216" height="120" uuid="ff8a0029-ef8d-4afb-9ff1-155fcf35342f"/>
+				<box padding="1">
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement verticalAlignment="Bottom">
+					<font fontName="Calibri" size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{businessArea}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="4396" y="9" width="118" height="120" uuid="f5a87843-c1fe-4740-9069-35ea627dc74e"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement verticalAlignment="Bottom">
+					<font fontName="Calibri" size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{fiscalReportedSpendAmount}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="6477" y="9" width="175" height="120" uuid="ad806b18-f5ca-49dd-bc57-8ddcf40bfc43"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement verticalAlignment="Bottom">
+					<font fontName="Calibri" size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{approvedTimestamp}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="5174" y="9" width="260" height="120" uuid="858b1963-3dbe-4122-8212-69f78d71284f"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement verticalAlignment="Bottom">
+					<font fontName="Calibri" size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{firstNationsPartner}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="2112" y="9" width="313" height="120" uuid="601a2fbf-f320-4d2d-9db5-65f5484f5ec4"/>
+				<textElement verticalAlignment="Bottom"/>
+				<textFieldExpression><![CDATA[$F{planningUnitName}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="816" y="9" width="216" height="120" uuid="092220ea-126c-4494-a7e4-071d1d67aa58"/>
+				<textElement verticalAlignment="Bottom"/>
+				<textFieldExpression><![CDATA[$F{forestRegionOrgUnitName}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="3987" y="9" width="173" height="120" uuid="ee61efa2-e41f-4c4a-b9ff-d3f842f7142c"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement verticalAlignment="Bottom">
+					<font fontName="Calibri" size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{planFiscalStatusDescription}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true" hyperlinkType="Reference">
+				<reportElement x="56" y="9" width="160" height="120" forecolor="#3366FF" uuid="0bfb0f57-a9f5-404f-8ce5-021087864eee">
+					<printWhenExpression><![CDATA[$F{linkToProject} != null && !$F{linkToProject}.trim().isEmpty()]]></printWhenExpression>
+				</reportElement>
+				<box padding="1">
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement verticalAlignment="Bottom">
+					<font fontName="Calibri" size="11" isUnderline="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{linkToProject}]]></textFieldExpression>
+				<hyperlinkReferenceExpression><![CDATA[$F{linkToProject}]]></hyperlinkReferenceExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="5952" y="9" width="175" height="120" uuid="def371ef-ac0a-4d81-8b39-c6d70effd6f6"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement verticalAlignment="Bottom">
+					<font fontName="Calibri" size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{primaryObjectiveTypeDescription}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="6652" y="9" width="215" height="120" uuid="1e2453a4-0244-4b6a-9421-7ecde3d3179b"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement verticalAlignment="Bottom">
+					<font fontName="Calibri" size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{wuiRiskClassDescription}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="7082" y="9" width="138" height="120" uuid="b652d47d-31d6-484b-a3d2-b37440f9e957"/>
+				<textElement verticalAlignment="Bottom"/>
+				<textFieldExpression><![CDATA[$F{localWuiRiskClassRationale}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="2771" y="9" width="173" height="120" uuid="523fbafe-30c9-4dff-8c62-85a67eac6233"/>
+				<textElement verticalAlignment="Bottom"/>
+				<textFieldExpression><![CDATA[$F{projectLead}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="6302" y="9" width="175" height="120" uuid="065fd304-89e0-45b3-8dcb-5d37d781be0f"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement verticalAlignment="Bottom">
+					<font fontName="Calibri" size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{endorsementTimestamp}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="4632" y="9" width="118" height="120" uuid="868ab4bf-6043-4242-a14f-fac4a0e90cab"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement verticalAlignment="Bottom">
+					<font fontName="Calibri" size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{fiscalPlannedProjectSizeHa}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement positionType="Float" x="7540" y="9" width="80" height="120" uuid="3d0aa9e4-b013-4100-8f21-c72312030800"/>
+				<textElement verticalAlignment="Bottom"/>
+				<textFieldExpression><![CDATA[$F{totalFilterSectionScore}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="4986" y="9" width="94" height="120" uuid="60ad253b-3363-46b7-9a02-ed038500d26e"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement verticalAlignment="Bottom">
+					<font fontName="Calibri" size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{firstNationsEngagement}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="546" y="9" width="270" height="120" uuid="aa41e798-4d9c-4b9d-ade6-f342025c011e"/>
+				<textElement verticalAlignment="Bottom"/>
+				<textFieldExpression><![CDATA[$F{projectName}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="3641" y="9" width="173" height="120" uuid="1d63b79a-c84e-4a06-a713-6bf3fa6fe0d6"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement verticalAlignment="Bottom">
+					<font fontName="Calibri" size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{fiscalYear}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="3379" y="9" width="262" height="120" uuid="054260a1-f963-43e5-aef9-8e2af81b6d7c"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement verticalAlignment="Bottom">
+					<font fontName="Calibri" size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{projectFiscalDescription}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="5780" y="9" width="86" height="120" uuid="d32378a7-f5d1-4653-b758-a72930b042e4"/>
+				<textElement verticalAlignment="Bottom"/>
+				<textFieldExpression><![CDATA[$F{resultsProjectCode}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="3814" y="9" width="173" height="120" uuid="020e2a64-bacc-489b-870d-944b30e2520b"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement verticalAlignment="Bottom">
+					<font fontName="Calibri" size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{activityCategoryDescription}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="6867" y="9" width="215" height="120" uuid="95e7f276-ef48-40b4-ab95-0d66511513c9"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement verticalAlignment="Bottom">
+					<font fontName="Calibri" size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{localWuiRiskClassDescription}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="4514" y="9" width="118" height="120" uuid="9de65e6f-265f-45f8-8b40-fd2dab2d1c20"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement verticalAlignment="Bottom">
+					<font fontName="Calibri" size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{fiscalActualAmount}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="5080" y="9" width="94" height="120" uuid="b9604f74-9820-4a7d-a827-6b0acc056e60"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement verticalAlignment="Bottom">
+					<font fontName="Calibri" size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{firstNationsDelivPartners}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="5694" y="9" width="86" height="120" uuid="64330fda-9eb8-429c-9925-3b9969f74aaa"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement verticalAlignment="Bottom">
+					<font fontName="Calibri" size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{cfsProjectCode}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="4278" y="9" width="118" height="120" uuid="1ba98ea4-9d8d-4cc8-821e-413682113c44"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement verticalAlignment="Bottom">
+					<font fontName="Calibri" size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{fiscalAncillaryFundAmount}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="6127" y="9" width="175" height="120" uuid="691122bc-fd40-475a-8942-99fd2c4ab09e"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement verticalAlignment="Bottom">
+					<font fontName="Calibri" size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{secondaryObjectiveTypeDescription}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="7220" y="9" width="90" height="120" uuid="42a2737d-eef0-4009-9d38-f1f869c3d603"/>
+				<textElement verticalAlignment="Bottom"/>
+				<textFieldExpression><![CDATA[$F{totalCoarseFilterSectionScore}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="3117" y="9" width="262" height="120" uuid="5ddfc2d3-5413-4264-a51c-c4815d8214a8"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement verticalAlignment="Bottom">
+					<font fontName="Calibri" size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{projectFiscalName}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="376" y="9" width="170" height="120" uuid="fdc79c41-10dd-4ceb-983d-0093301b7cf7"/>
+				<textElement verticalAlignment="Bottom"/>
+				<textFieldExpression><![CDATA[$F{projectTypeDescription}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="4160" y="9" width="118" height="120" uuid="a49e857a-6d03-48f2-a35b-672768f011df"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement verticalAlignment="Bottom">
+					<font fontName="Calibri" size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{totalEstimatedCostAmount}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true" hyperlinkType="Reference">
+				<reportElement x="216" y="9" width="160" height="120" forecolor="#3366FF" uuid="24bc5acf-afa1-4866-b3be-b5ddc1ce152f">
+					<printWhenExpression><![CDATA[$F{linkToFiscalActivity} != null && !$F{linkToFiscalActivity}.trim().isEmpty()]]></printWhenExpression>
+				</reportElement>
+				<box padding="1">
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement verticalAlignment="Bottom">
+					<font fontName="Calibri" size="11" isUnderline="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{linkToFiscalActivity}]]></textFieldExpression>
+				<hyperlinkReferenceExpression><![CDATA[$F{linkToFiscalActivity}]]></hyperlinkReferenceExpression>
+				<hyperlinkWhenExpression><![CDATA[$F{linkToFiscalActivity} != null && !$F{linkToFiscalActivity}.trim().isEmpty()]]></hyperlinkWhenExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="4750" y="9" width="118" height="120" uuid="f0ed5454-b045-496e-991b-c631c42296ca"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement verticalAlignment="Bottom">
+					<font fontName="Calibri" size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{fiscalCompletedSizeHa}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="1464" y="9" width="216" height="120" uuid="1dea7f79-c800-4dd1-bc9d-eb81ee65f913"/>
+				<textElement verticalAlignment="Bottom"/>
+				<textFieldExpression><![CDATA[$F{bcParksSectionOrgUnitName}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="1032" y="9" width="216" height="120" uuid="5d230f17-4fb6-41d7-9af9-78e4e99144f0"/>
+				<textElement verticalAlignment="Bottom"/>
+				<textFieldExpression><![CDATA[$F{forestDistrictOrgUnitName}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="1248" y="9" width="216" height="120" uuid="46128657-10cf-4415-a278-3b94b2fc93aa"/>
+				<textElement verticalAlignment="Bottom"/>
+				<textFieldExpression><![CDATA[$F{bcParksRegionOrgUnitName}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="7718" y="9" width="88" height="120" uuid="74df65fe-5723-4be3-8a26-5f0831972e98"/>
 				<textElement verticalAlignment="Bottom"/>
 				<textFieldExpression><![CDATA[$F{fineFilterSectionComment}]]></textFieldExpression>
 			</textField>
 		</band>
-	</pageHeader>
-	<columnHeader>
-		<band height="150" splitType="Stretch"/>
-	</columnHeader>
+	</detail>
 	<columnFooter>
 		<band height="45" splitType="Stretch"/>
 	</columnFooter>

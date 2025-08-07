@@ -244,11 +244,6 @@
                 </exclusion>
             </exclusions>
         </dependency>
-        <dependency>
-            <groupId>org.apache.poi</groupId>
-            <artifactId>poi-ooxml</artifactId>
-            <version>5.2.4</version>
-        </dependency>
     </dependencies>
     <build>
         <pluginManagement>
@@ -353,21 +348,6 @@
                 <configuration>
                     <source>14</source>
                     <target>14</target>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>exec-maven-plugin</artifactId>
-                <version>3.1.0</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>java</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <mainClass>ca.bc.gov.nrs.wfprev.util.JasperCompiler</mainClass>
                 </configuration>
             </plugin>
         </plugins>
