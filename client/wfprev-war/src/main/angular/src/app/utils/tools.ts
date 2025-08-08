@@ -1,6 +1,5 @@
 import L from "leaflet";
 import { FiscalYearColors, PlanFiscalStatus } from "src/app/utils/constants";
-import * as Tools from 'src/app/utils/tools';
 
 // Parse latitude/longitude string from various formats
 export function parseLatLong(latLong: string): { latitude: number; longitude: number } | null {
@@ -204,24 +203,3 @@ export function getLocalIsoTimestamp(date?: Date): string {
     .replace(',', '')
     .replace(' ', 'T');
 }
-
-describe('LOCAL_ISO_FORMAT and getLocalIsoTimestamp', () => {
-  it('should format a given date in the expected en-CA local ISO format', () => {
-    const date = new Date('2025-08-08T11:20:30Z');
-    const formatted = Tools.LOCAL_ISO_FORMAT.format(date);
-    expect(formatted).toMatch(/^\d{4}-\d{2}-\d{2}, \d{2}:\d{2}:\d{2}$/);
-  });
-
-  it('should return a timestamp string with "T" separator for given date', () => {
-    const date = new Date('2025-08-08T11:20:30Z');
-    const ts = Tools.getLocalIsoTimestamp(date);
-    expect(ts).toContain('T');
-    expect(ts).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$/);
-  });
-
-  it('should default to current date/time when no date is provided', () => {
-    const ts = Tools.getLocalIsoTimestamp();
-    expect(typeof ts).toBe('string');
-    expect(ts).toMatch(/T\d{2}:\d{2}:\d{2}$/);
-  });
-});

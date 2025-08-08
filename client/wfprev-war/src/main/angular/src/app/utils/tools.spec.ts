@@ -1,5 +1,5 @@
 import { FiscalYearColors } from 'src/app/utils/constants';
-import { parseLatLong, validateLatLong, formatLatLong, trimLatLong, getFiscalYearDisplay, getFiscalYearColor } from './tools';
+import { parseLatLong, validateLatLong, formatLatLong, trimLatLong, getFiscalYearDisplay, getFiscalYearColor, LOCAL_ISO_FORMAT, getLocalIsoTimestamp } from './tools';
 
 describe('Latitude/Longitude Utilities', () => {
   describe('parseLatLong', () => {
@@ -104,6 +104,29 @@ describe('Latitude/Longitude Utilities', () => {
 
     it('should return future color for fiscal activity greater than current year', () => {
       expect(getFiscalYearColor(2025, currentYear)).toBe(FiscalYearColors.future);
+    });
+  });
+
+    
+  describe('LOCAL_ISO_FORMAT and getLocalIsoTimestamp', () => {
+
+    it('should format a given date in the expected en-CA local ISO format', () => {
+      const date = new Date('2025-08-08T11:20:30Z');
+      const formatted = LOCAL_ISO_FORMAT.format(date);
+      expect(formatted).toMatch(/^\d{4}-\d{2}-\d{2}, \d{2}:\d{2}:\d{2}$/);
+    });
+
+    it('should return a timestamp string with "T" separator for given date', () => {
+      const date = new Date('2025-08-08T11:20:30Z');
+      const ts = getLocalIsoTimestamp(date);
+      expect(ts).toContain('T');
+      expect(ts).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$/);
+    });
+
+    it('should default to current date/time when no date is provided', () => {
+      const ts = getLocalIsoTimestamp();
+      expect(typeof ts).toBe('string');
+      expect(ts).toMatch(/T\d{2}:\d{2}:\d{2}$/);
     });
   });
 });
