@@ -234,7 +234,7 @@ export class TokenService {
   }
 
   public getIdir(): string {
-    const idir = this.tokenDetails.userId;
+    const idir = (this.tokenDetails?.user_id ?? this.tokenDetails?.userId) ?? '';
     return idir;
   }
 
