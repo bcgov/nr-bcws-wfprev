@@ -12,7 +12,9 @@ import { DatePickerComponent } from 'src/app/components/shared/date-picker/date-
 import { DetailsContainerComponent } from 'src/app/components/shared/details-container/details-container.component';
 import { ReadOnlyFieldComponent } from 'src/app/components/shared/read-only-field/read-only-field.component';
 import { TextareaComponent } from 'src/app/components/shared/textarea/textarea.component';
+import { TimestampComponent } from 'src/app/components/shared/timestamp/timestamp.component';
 import { EndorsementCode, FiscalStatuses } from 'src/app/utils/constants';
+import { getLocalIsoTimestamp } from 'src/app/utils/tools';
 
 @Component({
   selector: 'wfprev-endorsement-approval',
@@ -30,7 +32,8 @@ import { EndorsementCode, FiscalStatuses } from 'src/app/utils/constants';
     CheckboxComponent,
     DatePickerComponent,
     ReadOnlyFieldComponent,
-    TextareaComponent
+    TextareaComponent,
+    TimestampComponent
   ],
   templateUrl: './endorsement-approval.component.html',
   styleUrl: './endorsement-approval.component.scss'
@@ -39,6 +42,7 @@ export class EndorsementApprovalComponent implements OnChanges {
 
   @Input() fiscal!: ProjectFiscal;
   @Input() currentUser!: string;
+  @Input() currentIdir!: string;
   @Output() saveEndorsement = new EventEmitter<ProjectFiscal>();
 
   endorsementApprovalForm = new FormGroup({
@@ -118,13 +122,14 @@ export class EndorsementApprovalComponent implements OnChanges {
       currentStatusCode !== FiscalStatuses.DRAFT &&
       currentStatusCode !== FiscalStatuses.PROPOSED;
 
+    const currentIso = getLocalIsoTimestamp();
     const updatedFiscal: ProjectFiscal = {
       ...this.fiscal,
 
       // Endorsement logic
       endorserName: formValue.endorseFiscalActivity ? this.currentUser : undefined,
       endorsementTimestamp: formValue.endorseFiscalActivity && formValue.endorsementDate
-        ? new Date(formValue.endorsementDate).toISOString()
+        ? getLocalIsoTimestamp(formValue.endorsementDate)
         : undefined,
       endorsementCode: formValue.endorseFiscalActivity
         ? { endorsementCode: EndorsementCode.ENDORSED }
@@ -143,6 +148,8 @@ export class EndorsementApprovalComponent implements OnChanges {
       planFiscalStatusCode: shouldResetToPrepared
         ? { planFiscalStatusCode: FiscalStatuses.DRAFT }
         : this.fiscal.planFiscalStatusCode,
+      endorseApprUpdateUserid: this.currentIdir,
+      endorseApprUpdatedTimestamp: currentIso,
     };
 
     this.saveEndorsement.emit(updatedFiscal);

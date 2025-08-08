@@ -76,4 +76,8 @@ public class ProjectFiscalModel extends CommonModel<ProjectFiscalModel> {
     private String delayRationale;
     private String abandonedRationale;
     private Date lastProgressUpdateTimestamp;
+    private String endorseApprUpdateName;
+    private String endorseApprUpdateUserGuid;
+    private String endorseApprUpdateUserid;
+    private Date endorseApprUpdatedTimestamp;
 }
