@@ -21,6 +21,7 @@ import { CanComponentDeactivate } from 'src/app/services/util/can-deactive.guard
 import { Messages, ModalMessages, ModalTitles } from 'src/app/utils/constants';
 import { ExpansionIndicatorComponent } from "../../shared/expansion-indicator/expansion-indicator.component";
 import { IconButtonComponent } from 'src/app/components/shared/icon-button/icon-button.component';
+import { TimestampComponent } from 'src/app/components/shared/timestamp/timestamp.component';
 
 
 export const CUSTOM_DATE_FORMATS = {
@@ -47,7 +48,8 @@ export const CUSTOM_DATE_FORMATS = {
     MatCheckboxModule,
     ProjectFilesComponent,
     ExpansionIndicatorComponent,
-    IconButtonComponent],
+    IconButtonComponent,
+    TimestampComponent],
   templateUrl: './activities.component.html',
   styleUrl: './activities.component.scss',
   providers: [

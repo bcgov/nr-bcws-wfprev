@@ -1,0 +1,18 @@
+.header-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+}
+
+.timestamp{
+    font-family: var(--wf-font-family-main);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-left: auto;
+    color: #9F9D9C;
+    font-size: 12px;
+    font-style: italic;
+    font-weight: 400;
+}
