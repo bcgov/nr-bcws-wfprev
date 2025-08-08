@@ -32,6 +32,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -379,6 +380,73 @@ class ProjectBoundaryServiceTest {
 
         assertEquals(expected, result, "Area in hectares should match expected conversion");
     }
+
+    @Test
+    void testUpdateProjectActualSizeHa_IsCalledInCreateProjectBoundary() {
+        String projectGuid = UUID.randomUUID().toString();
+        BigDecimal boundarySizeHa = new BigDecimal("99.99");
+
+        ProjectBoundaryModel resource = new ProjectBoundaryModel();
+        resource.setProjectGuid(projectGuid);
+        resource.setProjectBoundaryGuid(UUID.randomUUID().toString());
+        resource.setBoundarySizeHa(boundarySizeHa);
+
+        ProjectBoundaryEntity entity = new ProjectBoundaryEntity();
+        entity.setProjectGuid(UUID.fromString(projectGuid));
+        entity.setBoundarySizeHa(boundarySizeHa);
+
+        ProjectEntity projectEntity = new ProjectEntity();
+        projectEntity.setProjectGuid(UUID.fromString(projectGuid));
+
+        when(validator.validate(resource)).thenReturn(Collections.emptySet());
+        when(projectRepository.findById(UUID.fromString(projectGuid))).thenReturn(Optional.of(projectEntity));
+        when(projectBoundaryResourceAssembler.toEntity(resource)).thenReturn(entity);
+        when(projectBoundaryRepository.save(any())).thenReturn(entity);
+        when(projectBoundaryResourceAssembler.toModel(entity)).thenReturn(resource);
+
+        projectBoundaryService.createProjectBoundary(projectGuid, resource);
+
+        verify(projectRepository, times(1)).save(argThat(saved ->
+                saved.getProjectGuid().equals(UUID.fromString(projectGuid)) &&
+                        boundarySizeHa.compareTo(saved.getTotalActualProjectSizeHa()) == 0
+        ));
+    }
+
+    @Test
+    void testUpdateProjectActualSizeHa_IsCalledInUpdateProjectBoundary() {
+        String projectGuid = UUID.randomUUID().toString();
+        String boundaryGuid = UUID.randomUUID().toString();
+        BigDecimal boundarySizeHa = new BigDecimal("88.88");
+
+        ProjectBoundaryModel resource = new ProjectBoundaryModel();
+        resource.setProjectGuid(projectGuid);
+        resource.setProjectBoundaryGuid(boundaryGuid);
+
+        ProjectBoundaryEntity existingEntity = new ProjectBoundaryEntity();
+        existingEntity.setProjectGuid(UUID.fromString(projectGuid));
+
+        ProjectBoundaryEntity updatedEntity = new ProjectBoundaryEntity();
+        updatedEntity.setProjectGuid(UUID.fromString(projectGuid));
+        updatedEntity.setBoundarySizeHa(boundarySizeHa);
+
+        ProjectEntity projectEntity = new ProjectEntity();
+        projectEntity.setProjectGuid(UUID.fromString(projectGuid));
+
+        when(validator.validate(resource)).thenReturn(Collections.emptySet());
+        when(projectRepository.findById(UUID.fromString(projectGuid))).thenReturn(Optional.of(projectEntity));
+        when(projectBoundaryRepository.findByProjectBoundaryGuid(UUID.fromString(boundaryGuid))).thenReturn(Optional.of(existingEntity));
+        when(projectBoundaryResourceAssembler.updateEntity(resource, existingEntity)).thenReturn(updatedEntity);
+        when(projectBoundaryRepository.saveAndFlush(any())).thenReturn(updatedEntity);
+        when(projectBoundaryResourceAssembler.toModel(updatedEntity)).thenReturn(resource);
+
+        projectBoundaryService.updateProjectBoundary(projectGuid, resource);
+
+        verify(projectRepository, times(1)).save(argThat(saved ->
+                saved.getProjectGuid().equals(UUID.fromString(projectGuid)) &&
+                        boundarySizeHa.compareTo(saved.getTotalActualProjectSizeHa()) == 0
+        ));
+    }
+
 
 
 }

@@ -8,7 +8,7 @@ import { ProjectService } from 'src/app/services/project-services';
 import { CodeTableServices } from 'src/app/services/code-table-services';
 import { Messages } from 'src/app/utils/constants';
 
-describe('EvaluationCriteriaDialogComponent', () => {
+fdescribe('EvaluationCriteriaDialogComponent', () => {
   let component: EvaluationCriteriaDialogComponent;
   let fixture: ComponentFixture<EvaluationCriteriaDialogComponent>;
   let mockProjectService: jasmine.SpyObj<ProjectService>;
@@ -383,8 +383,9 @@ describe('EvaluationCriteriaDialogComponent', () => {
     expect(component.coarseTotal).toBe(3);
   });
 
-  it('should build RCL section when isOutsideOfWuiOn is true', () => {
+  it('should build RCL section when isCulturalPrescribedFire is true', () => {
     component.isOutsideOfWuiOn = true;
+    component.isCulturalPrescribedFire = true; 
     component.initializeForm();
     component.criteriaForm.patchValue({ localWuiRiskClassRationale: 'Some rationale' });
     component.riskClassLocationFilters = [

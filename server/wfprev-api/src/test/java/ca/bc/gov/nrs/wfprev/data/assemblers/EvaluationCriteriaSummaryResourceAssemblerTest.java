@@ -112,6 +112,9 @@ class EvaluationCriteriaSummaryResourceAssemblerTest {
         EvaluationCriteriaSectionCodeEntity codeEntity = new EvaluationCriteriaSectionCodeEntity();
         codeEntity.setEvaluationCriteriaSectionCode("RISK");
 
+        when(sectionCodeRepository.findById("RISK"))
+                .thenReturn(Optional.of(codeEntity));
+
         EvaluationCriteriaSectionSummaryEntity sectionEntity = new EvaluationCriteriaSectionSummaryEntity();
         sectionEntity.setEvaluationCriteriaSectionCode(codeEntity);
         sectionEntity.setEvaluationCriteriaSelected(new ArrayList<>());
@@ -119,7 +122,7 @@ class EvaluationCriteriaSummaryResourceAssemblerTest {
         UUID criteriaGuid = UUID.randomUUID();
         selectedEntity.setEvaluationCriteriaGuid(criteriaGuid);
         selectedEntity.setIsEvaluationCriteriaSelectedInd(false);
-        sectionEntity.setEvaluationCriteriaSelected(List.of(selectedEntity));
+        sectionEntity.setEvaluationCriteriaSelected(new ArrayList<>(List.of(selectedEntity)));
 
         existingEntity.getEvaluationCriteriaSectionSummaries().add(sectionEntity);
 
@@ -132,7 +135,7 @@ class EvaluationCriteriaSummaryResourceAssemblerTest {
 
         EvaluationCriteriaSectionSummaryModel sectionModel = new EvaluationCriteriaSectionSummaryModel();
         sectionModel.setEvaluationCriteriaSectionCode(codeModel);
-        sectionModel.setEvaluationCriteriaSelected(List.of(selectedModel));
+        sectionModel.setEvaluationCriteriaSelected(new ArrayList<>(List.of(selectedModel)));
 
         EvaluationCriteriaSummaryModel model = new EvaluationCriteriaSummaryModel();
         model.setEvaluationCriteriaSectionSummaries(List.of(sectionModel));

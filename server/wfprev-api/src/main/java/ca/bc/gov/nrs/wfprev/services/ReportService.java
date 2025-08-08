@@ -6,9 +6,7 @@ import ca.bc.gov.nrs.wfprev.data.entities.ProjectEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ProjectFiscalEntity;
 import ca.bc.gov.nrs.wfprev.data.repositories.CulturalPrescribedFireReportRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.FuelManagementReportRepository;
-
 import ca.bc.gov.nrs.wfprev.data.repositories.ProgramAreaRepository;
-import ca.bc.gov.nrs.wfprev.data.repositories.ProjectFiscalRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.ProjectRepository;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.jasperreports.engine.JasperCompileManager;
@@ -40,12 +38,12 @@ import java.util.zip.ZipOutputStream;
 @Component
 public class ReportService {
 
-//    @Value("${spring.application.baseUrl}")
-    private String baseUrl = "http://localhost:4200";
+    @Value("${spring.application.baseUrl}")
+    private String baseUrl;
 
-    private final String projectUrlPrefix = "/edit-project?projectGuid=";
+    private static final String PROJECT_URL_PREFIX = "/edit-project?projectGuid=";
 
-    private final String fiscalQueryString = "&tab=fiscal&fiscalGuid=";
+    private static final String FISCAL_QUERY_STRING = "&tab=fiscal&fiscalGuid=";
 
     private final FuelManagementReportRepository fuelManagementRepository;
     private final CulturalPrescribedFireReportRepository culturalPrescribedFireReportRepository;
@@ -139,11 +137,8 @@ public class ReportService {
 
         try (ZipOutputStream zipOut = new ZipOutputStream(zipOutStream)) {
 
-            // Write Fuel CSV
             ByteArrayOutputStream fuelCsvOut = new ByteArrayOutputStream();
             try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(fuelCsvOut))) {
-                writer.write("Fuel Management Projects");
-                writer.newLine();
                 writer.write(getFuelCsvHeader());
                 writer.newLine();
 
@@ -152,13 +147,10 @@ public class ReportService {
                     writer.newLine();
                 }
             }
-            addToZip(zipOut, "fuel-management.csv", fuelCsvOut.toByteArray());
+            addToZip(zipOut, "fuel-management-projects.csv", fuelCsvOut.toByteArray());
 
-            // Write CRX CSV
             ByteArrayOutputStream crxCsvOut = new ByteArrayOutputStream();
             try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(crxCsvOut))) {
-                writer.write("Cultural Prescribed Fire Projects");
-                writer.newLine();
                 writer.write(getCrxCsvHeader());
                 writer.newLine();
 
@@ -167,7 +159,7 @@ public class ReportService {
                     writer.newLine();
                 }
             }
-            addToZip(zipOut, "cultural-prescribed-fire.csv", crxCsvOut.toByteArray());
+            addToZip(zipOut, "cultural-prescribed-fire-projects.csv", crxCsvOut.toByteArray());
 
         } catch (IOException ex) {
             log.error("Error writing ZIP CSV", ex);
@@ -182,11 +174,11 @@ public class ReportService {
     }
 
     private void setFuelManagementFields(FuelManagementReportEntity entity) {
-        String urlPrefix = baseUrl + projectUrlPrefix;
+        String urlPrefix = baseUrl + PROJECT_URL_PREFIX;
         if (entity.getProjectGuid() != null) {
             entity.setLinkToProject(urlPrefix + entity.getProjectGuid());
             if (entity.getProjectPlanFiscalGuid() != null) {
-                entity.setLinkToFiscalActivity(urlPrefix  + entity.getProjectGuid() + fiscalQueryString + entity.getProjectPlanFiscalGuid());
+                entity.setLinkToFiscalActivity(urlPrefix  + entity.getProjectGuid() + FISCAL_QUERY_STRING + entity.getProjectPlanFiscalGuid());
 
             }
 
@@ -199,11 +191,11 @@ public class ReportService {
     }
 
     private void setCrxFields(CulturalPrescribedFireReportEntity entity) {
-        String urlPrefix = baseUrl + projectUrlPrefix;
+        String urlPrefix = baseUrl + PROJECT_URL_PREFIX;
             if (entity.getProjectGuid() != null) {
                 entity.setLinkToProject(urlPrefix + entity.getProjectGuid());
                 if (entity.getProjectPlanFiscalGuid() != null) {
-                    entity.setLinkToFiscalActivity(urlPrefix + entity.getProjectGuid() + fiscalQueryString + entity.getProjectPlanFiscalGuid());
+                    entity.setLinkToFiscalActivity(urlPrefix + entity.getProjectGuid() + FISCAL_QUERY_STRING + entity.getProjectPlanFiscalGuid());
 
                 }
                 }

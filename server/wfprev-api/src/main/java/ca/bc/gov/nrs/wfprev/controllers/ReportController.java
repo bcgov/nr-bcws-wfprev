@@ -1,6 +1,7 @@
 package ca.bc.gov.nrs.wfprev.controllers;
 
 import ca.bc.gov.nrs.common.wfone.rest.resource.MessageListRsrc;
+import ca.bc.gov.nrs.wfprev.common.exceptions.ServiceException;
 import ca.bc.gov.nrs.wfprev.data.models.ReportRequestModel;
 import ca.bc.gov.nrs.wfprev.services.ReportService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -22,6 +23,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
+
+import java.rmi.server.ServerCloneException;
 
 @RestController
 @RequestMapping("/reports")
@@ -46,7 +49,7 @@ public class ReportController {
             @ApiResponse(responseCode = "400", description = "Invalid report request", content = @Content(schema = @Schema(implementation = MessageListRsrc.class))),
             @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(schema = @Schema(implementation = MessageListRsrc.class)))
     })
-    public ResponseEntity<StreamingResponseBody> generateReport(@Valid @RequestBody ReportRequestModel request) {
+    public ResponseEntity<StreamingResponseBody> generateReport(@Valid @RequestBody ReportRequestModel request) throws ServiceException {
         String type = request.getReportType();
         log.debug(" >> generateReport with type: {}", type);
 

@@ -291,14 +291,9 @@ export class EvaluationCriteriaDialogComponent {
     const wuiRiskClassCodeValue = this.criteriaForm.get('wuiRiskClassCode')?.value;
     const localWuiRiskClassCodeValue = this.criteriaForm.get('localWuiRiskClassCode')?.value;
 
-    console.log('isCulturalPrescribedFire: ', this.isCulturalPrescribedFire)
-
     const coarseSectionCode = this.isCulturalPrescribedFire ? EvaluationCriteriaSectionCodes.RISK_CLASS_LOCATION : EvaluationCriteriaSectionCodes.COARSE_FILTER;
     const mediumSectionCode = this.isCulturalPrescribedFire ? EvaluationCriteriaSectionCodes.BURN_DEVELOPMENT_FEASIBILITY : EvaluationCriteriaSectionCodes.MEDIUM_FILTER;
     const fineSectionCode = this.isCulturalPrescribedFire ? EvaluationCriteriaSectionCodes.COLLECTIVE_IMPACT : EvaluationCriteriaSectionCodes.FINE_FILTER;
-
-    console.log('mediumSectionCode:', mediumSectionCode);
-    console.log('fineSectionCode:', fineSectionCode);
 
     const coarseSection = existingSummary?.evaluationCriteriaSectionSummaries?.find(
       s => s.evaluationCriteriaSectionCode?.evaluationCriteriaSectionCode ===  coarseSectionCode
