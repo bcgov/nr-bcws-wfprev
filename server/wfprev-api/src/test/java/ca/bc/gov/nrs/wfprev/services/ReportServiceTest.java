@@ -1,5 +1,6 @@
 package ca.bc.gov.nrs.wfprev.services;
 
+import ca.bc.gov.nrs.wfprev.common.exceptions.ServiceException;
 import ca.bc.gov.nrs.wfprev.data.entities.CulturalPrescribedFireReportEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.FuelManagementReportEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ProgramAreaEntity;
@@ -123,7 +124,7 @@ class ReportServiceTest {
     }
 
     @Test
-    void testWriteCsvZipFromEntities_Success()  {
+    void testWriteCsvZipFromEntities_Success() throws ServiceException {
         UUID projectGuid = UUID.randomUUID();
         UUID fiscalGuid = UUID.randomUUID();
 
