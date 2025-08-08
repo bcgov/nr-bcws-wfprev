@@ -385,7 +385,7 @@ class GlobalExceptionHandlerTest {
         IllegalArgumentException ex = new IllegalArgumentException(errorMessage);
 
         ResponseEntity<Object> response = handler.handleIllegalArgumentException(ex);
-        
+
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertTrue(response.getBody() instanceof Map);
 
