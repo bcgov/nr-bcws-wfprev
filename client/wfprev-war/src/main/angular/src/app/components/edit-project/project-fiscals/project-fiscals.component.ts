@@ -23,7 +23,7 @@ import { ExpansionIndicatorComponent } from '../../shared/expansion-indicator/ex
 import { IconButtonComponent } from 'src/app/components/shared/icon-button/icon-button.component';
 import { SelectFieldComponent } from 'src/app/components/shared/select-field/select-field.component';
 import { InputFieldComponent } from 'src/app/components/shared/input-field/input-field.component';
-import { PlanFiscalStatusIcons } from 'src/app/utils/tools';
+import { getLocalIsoTimestamp, PlanFiscalStatusIcons } from 'src/app/utils/tools';
 import { DropdownButtonComponent } from 'src/app/components/shared/dropdown-button/dropdown-button.component';
 import { StatusBadgeComponent } from 'src/app/components/shared/status-badge/status-badge.component';
 import { EndorsementApprovalComponent } from 'src/app/components/edit-project/endorsement-approval/endorsement-approval.component';
@@ -63,6 +63,7 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
   @ViewChild(ActivitiesComponent) activitiesComponent!: ActivitiesComponent;
   @ViewChild('fiscalMapRef') fiscalMapComponent!: FiscalMapComponent;
   currentUser: string = '';
+  currentIdir: string = '';
   projectGuid = '';
   projectFiscals: any[] = [];
   fiscalForms: FormGroup[] = [];
@@ -110,6 +111,10 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
     const formattedName = this.tokenService.getUserFullName(true);
     if (formattedName) {
       this.currentUser = formattedName;
+    }
+    const idir = this.tokenService.getIdir();
+    if (idir) {
+      this.currentIdir = idir
     }
   }
 
@@ -388,10 +393,6 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
       resultsNumber: updatedData.resultsNumber,
       resultsOpeningId: updatedData.resultsOpeningId,
       resultsContactEmail: updatedData.resultsContactEmail,
-      submittedByName: updatedData.submittedByName,
-      submittedByUserGuid: updatedData.submittedByUserGuid,
-      submittedByUserUserid: updatedData.submittedByUserUserid,
-      submissionTimestamp: updatedData.submissionTimestamp,
       isDelayedInd: isUpdate ? updatedData.isDelayedInd : false,
       fiscalForecastAmount: updatedData.fiscalForecastAmount,
       totalCostEstimateAmount: updatedData.totalCostEstimateAmount,
@@ -406,6 +407,7 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
       approverName: originalData.approverName,
       approvedTimestamp: originalData.approvedTimestamp,
       isApprovedInd: originalData.isApprovedInd,
+      ...this.buildSubmissionFields()
     };
     if (isUpdate) {
       // update the existing fiscal
@@ -629,10 +631,15 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
     const fiscalGuid = this.projectFiscals[index]?.projectPlanFiscalGuid;
     if (!fiscalGuid) return;
 
+    // Dont update the timstamp of fiscal detail shows above.
+    const payload: Partial<ProjectFiscal> = { ...this.projectFiscals[index] };
+    delete payload.submittedByUserUserid;
+    delete payload.submissionTimestamp;
+
     this.projectService.updateProjectFiscal(
       this.projectGuid,
       fiscalGuid,
-      this.projectFiscals[index]
+      payload as ProjectFiscal
     ).subscribe({
       next: () => this.handleEndorsementUpdateSuccess(index, updatedFiscal),
       error: () => this.showSnackbar(this.messages.projectFiscalUpdatedFailure, false)
@@ -696,6 +703,13 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
 
   getFirstFiscalGuid(): string | null {
     return this.projectFiscals[0]?.projectPlanFiscalGuid ?? null;
+  }
+
+  buildSubmissionFields() {
+    return {
+      submittedByUserUserid: this.currentIdir,
+      submissionTimestamp: getLocalIsoTimestamp()
+    }
   }
 
 }

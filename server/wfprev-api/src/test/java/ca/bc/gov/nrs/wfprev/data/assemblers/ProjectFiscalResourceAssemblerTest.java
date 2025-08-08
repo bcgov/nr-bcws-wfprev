@@ -39,6 +39,10 @@ class ProjectFiscalResourceAssemblerTest {
                 .createDate(new Date())
                 .updateUser("tester2")
                 .updateDate(new Date())
+                .endorseApprUpdateName("endorser name")
+                .endorseApprUpdateUserGuid("user-guid-123")
+                .endorseApprUpdateUserid("idir123")
+                .endorseApprUpdatedTimestamp(new Date())
                 .build();
 
         // Act
@@ -55,6 +59,10 @@ class ProjectFiscalResourceAssemblerTest {
         assertEquals(model.getProjectFiscalName(), entity.getProjectFiscalName());
         assertEquals(model.getIsApprovedInd(), entity.getIsApprovedInd());
         assertEquals(model.getIsDelayedInd(), entity.getIsDelayedInd());
+        assertEquals(model.getEndorseApprUpdateName(), entity.getEndorseApprUpdateName());
+        assertEquals(model.getEndorseApprUpdateUserGuid(), entity.getEndorseApprUpdateUserGuid());
+        assertEquals(model.getEndorseApprUpdateUserid(), entity.getEndorseApprUpdateUserid());
+        assertEquals(model.getEndorseApprUpdatedTimestamp(), entity.getEndorseApprUpdatedTimestamp());
     }
 
     @Test
@@ -90,6 +98,10 @@ class ProjectFiscalResourceAssemblerTest {
         assertEquals(entity.getProjectFiscalName(), model.getProjectFiscalName(), "ProjectFiscalName should match");
         assertEquals(entity.getIsApprovedInd(), model.getIsApprovedInd(), "IsApprovedInd should match");
         assertEquals(entity.getIsDelayedInd(), model.getIsDelayedInd(), "IsDelayedInd should match");
+        assertEquals(entity.getEndorseApprUpdateName(), model.getEndorseApprUpdateName());
+        assertEquals(entity.getEndorseApprUpdateUserGuid(), model.getEndorseApprUpdateUserGuid());
+        assertEquals(entity.getEndorseApprUpdateUserid(), model.getEndorseApprUpdateUserid());
+        assertEquals(entity.getEndorseApprUpdatedTimestamp(), model.getEndorseApprUpdatedTimestamp());
     }
 
     @Test
