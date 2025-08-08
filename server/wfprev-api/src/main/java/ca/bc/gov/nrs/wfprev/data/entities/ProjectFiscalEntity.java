@@ -220,4 +220,16 @@ public class ProjectFiscalEntity implements Serializable {
     @NotNull
     @Column(name = "update_date", nullable = false)
     private Date updateDate;
+
+    @Column(name = "endorse_appr_update_name", length = 100)
+    private String endorseApprUpdateName;
+
+    @Column(name = "endorse_appr_update_user_guid", length = 100)
+    private String endorseApprUpdateUserGuid;
+
+    @Column(name = "endorse_appr_update_userid", length = 100)
+    private String endorseApprUpdateUserid;
+
+    @Column(name = "endorse_appr_updated_timestamp")
+    private Date endorseApprUpdatedTimestamp;
 }
