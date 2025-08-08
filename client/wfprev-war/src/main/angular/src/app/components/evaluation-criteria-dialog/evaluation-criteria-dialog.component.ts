@@ -199,12 +199,6 @@ export class EvaluationCriteriaDialogComponent {
       .reduce((sum, f) => sum + (f.weightedRank ?? 0), 0);
   }
 
-  calculateCoarseTotal(): void {
-    this.coarseTotal = this.riskClassLocationFilters
-      .filter(f => this.selectedCoarse.has(f.evaluationCriteriaGuid ?? ''))
-      .reduce((sum, f) => sum + (f.weightedRank ?? 0), 0);
-  }
-
   updateCoarseTotal() {
     const wuiValue = this.criteriaForm.get('wuiRiskClassCode')?.value;
     const localValue = this.criteriaForm.get('localWuiRiskClassCode')?.value;
