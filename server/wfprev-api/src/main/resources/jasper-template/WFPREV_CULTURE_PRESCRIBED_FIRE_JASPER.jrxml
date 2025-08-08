@@ -75,13 +75,13 @@
 	<field name="resultsOpeningId" class="java.lang.String"/>
 	<field name="endorsementTimestamp" class="java.util.Date"/>
 	<field name="approvedTimestamp" class="java.util.Date"/>
-<!--	<field name="outsideWuiInd" class="java.lang.String"/>-->
-<!--	<field name="totalRclFilterSectionScore" class="java.math.BigDecimal"/>-->
-<!--	<field name="bdfFilterSectionComment" class="java.lang.String"/>-->
-<!--	<field name="totalBdfFilterSectionScore" class="java.math.BigDecimal"/>-->
-<!--	<field name="rclFilterSectionComment" class="java.lang.String"/>-->
-<!--	<field name="totalCollimpFilterSectionScore" class="java.math.BigDecimal"/>-->
-<!--	<field name="collimpFilterSectionComment" class="java.lang.String"/>-->
+	<field name="outsideWuiInd" class="java.lang.String"/>
+	<field name="totalRclFilterSectionScore" class="java.math.BigDecimal"/>
+	<field name="bdfFilterSectionComment" class="java.lang.String"/>
+	<field name="totalBdfFilterSectionScore" class="java.math.BigDecimal"/>
+	<field name="rclFilterSectionComment" class="java.lang.String"/>
+	<field name="totalCollimpFilterSectionScore" class="java.math.BigDecimal"/>
+	<field name="collimpFilterSectionComment" class="java.lang.String"/>
 	<field name="totalFilterSectionScore" class="java.math.BigDecimal"/>
 	<field name="projectTypeDescription" class="java.lang.String"/>
 	<field name="projectName" class="java.lang.String"/>
@@ -786,33 +786,33 @@ Notes on Collective Impact]]></text>
 	</columnHeader>
 	<detail>
 		<band height="82" splitType="Stretch">
-<!--			<textField isBlankWhenNull="true">-->
-<!--				<reportElement x="7104" y="0" width="90" height="80" uuid="dea67809-9cc0-493e-9ab6-3078fe9b45b8"/>-->
-<!--				<textElement verticalAlignment="Bottom"/>-->
-<!--				<textFieldExpression><![CDATA[$F{totalRclFilterSectionScore}]]></textFieldExpression>-->
-<!--			</textField>-->
-<!--			<textField isBlankWhenNull="true">-->
-<!--				<reportElement x="7374" y="0" width="80" height="80" uuid="56bb9a2b-3945-4874-8b9d-9d4a09d164b2"/>-->
-<!--				<textElement verticalAlignment="Bottom"/>-->
-<!--				<textFieldExpression><![CDATA[$F{totalBdfFilterSectionScore}]]></textFieldExpression>-->
-<!--			</textField>-->
-<!--			<textField isBlankWhenNull="true">-->
-<!--				<reportElement x="7454" y="0" width="180" height="80" uuid="34009942-c03a-4c15-8f27-a3a163da50a3"/>-->
-<!--				<textElement verticalAlignment="Bottom"/>-->
-<!--				<textFieldExpression><![CDATA[$F{bdfFilterSectionComment}]]></textFieldExpression>-->
-<!--			</textField>-->
-<!--			<textField isBlankWhenNull="true">-->
-<!--				<reportElement x="7194" y="0" width="180" height="80" uuid="10b22422-d4b3-4d7f-8181-ea4bd0371975">-->
-<!--					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="cfab6c4a-d5a5-4d41-b21a-cf2a759cf2f7"/>-->
-<!--				</reportElement>-->
-<!--				<textElement verticalAlignment="Bottom"/>-->
-<!--				<textFieldExpression><![CDATA[$F{rclFilterSectionComment}]]></textFieldExpression>-->
-<!--			</textField>-->
-<!--			<textField isBlankWhenNull="true">-->
-<!--				<reportElement x="7634" y="0" width="60" height="80" uuid="59e8f1be-1b43-494b-8190-2d170debff16"/>-->
-<!--				<textElement verticalAlignment="Bottom"/>-->
-<!--				<textFieldExpression><![CDATA[$F{totalCollimpFilterSectionScore}]]></textFieldExpression>-->
-<!--			</textField>-->
+			<textField isBlankWhenNull="true">
+				<reportElement x="7104" y="0" width="90" height="80" uuid="dea67809-9cc0-493e-9ab6-3078fe9b45b8"/>
+				<textElement verticalAlignment="Bottom"/>
+				<textFieldExpression><![CDATA[$F{totalRclFilterSectionScore}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="7374" y="0" width="80" height="80" uuid="56bb9a2b-3945-4874-8b9d-9d4a09d164b2"/>
+				<textElement verticalAlignment="Bottom"/>
+				<textFieldExpression><![CDATA[$F{totalBdfFilterSectionScore}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="7454" y="0" width="180" height="80" uuid="34009942-c03a-4c15-8f27-a3a163da50a3"/>
+				<textElement verticalAlignment="Bottom"/>
+				<textFieldExpression><![CDATA[$F{bdfFilterSectionComment}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="7194" y="0" width="180" height="80" uuid="10b22422-d4b3-4d7f-8181-ea4bd0371975">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="cfab6c4a-d5a5-4d41-b21a-cf2a759cf2f7"/>
+				</reportElement>
+				<textElement verticalAlignment="Bottom"/>
+				<textFieldExpression><![CDATA[$F{rclFilterSectionComment}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="7634" y="0" width="60" height="80" uuid="59e8f1be-1b43-494b-8190-2d170debff16"/>
+				<textElement verticalAlignment="Bottom"/>
+				<textFieldExpression><![CDATA[$F{totalCollimpFilterSectionScore}]]></textFieldExpression>
+			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement x="7914" y="0" width="80" height="80" uuid="34bf52a9-e048-41c2-b4f2-3df35bfa15d3"/>
 				<textElement verticalAlignment="Bottom"/>
@@ -842,11 +842,11 @@ Notes on Collective Impact]]></text>
 				<textElement verticalAlignment="Bottom"/>
 				<textFieldExpression><![CDATA[$F{bcParksSectionOrgUnitName}]]></textFieldExpression>
 			</textField>
-<!--			<textField isBlankWhenNull="true">-->
-<!--				<reportElement x="6600" y="0" width="74" height="80" uuid="dd65dfe7-feb9-447c-a4ef-3fc9283e9d52"/>-->
-<!--				<textElement verticalAlignment="Bottom"/>-->
-<!--				<textFieldExpression><![CDATA[$F{outsideWuiInd}]]></textFieldExpression>-->
-<!--			</textField>-->
+			<textField isBlankWhenNull="true">
+				<reportElement x="6600" y="0" width="74" height="80" uuid="dd65dfe7-feb9-447c-a4ef-3fc9283e9d52"/>
+				<textElement verticalAlignment="Bottom"/>
+				<textFieldExpression><![CDATA[$F{outsideWuiInd}]]></textFieldExpression>
+			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement x="2373" y="0" width="173" height="80" uuid="a359aab6-809e-46c5-978b-ee35f36736c2"/>
 				<textElement verticalAlignment="Bottom"/>
@@ -1288,11 +1288,11 @@ Notes on Collective Impact]]></text>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{localWuiRiskClassDescription}]]></textFieldExpression>
 			</textField>
-<!--			<textField isBlankWhenNull="true">-->
-<!--				<reportElement x="7694" y="0" width="220" height="80" uuid="d9afefc7-b353-4b35-902d-21d5155c9639"/>-->
-<!--				<textElement verticalAlignment="Bottom"/>-->
-<!--				<textFieldExpression><![CDATA[$F{collimpFilterSectionComment}]]></textFieldExpression>-->
-<!--			</textField>-->
+			<textField isBlankWhenNull="true">
+				<reportElement x="7694" y="0" width="220" height="80" uuid="d9afefc7-b353-4b35-902d-21d5155c9639"/>
+				<textElement verticalAlignment="Bottom"/>
+				<textFieldExpression><![CDATA[$F{collimpFilterSectionComment}]]></textFieldExpression>
+			</textField>
 		</band>
 	</detail>
 	<columnFooter>

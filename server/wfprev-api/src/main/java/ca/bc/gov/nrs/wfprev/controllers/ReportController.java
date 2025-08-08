@@ -37,7 +37,7 @@ public class ReportController {
     @PostMapping
     @Operation(
             summary = "Generate Fuel Management Report",
-            description = "Generate and download a fuel management report as an XLSX file",
+            description = "Generate and download a fuel management report as an XLSX or CSV file",
             security = @SecurityRequirement(name = "Webade-OAUTH2", scopes = {"WFPREV"}),
             extensions = @Extension(properties = {
                     @ExtensionProperty(name = "auth-type", value = "#{wso2.x-auth-type.app_and_app_user}"),

@@ -75,13 +75,6 @@
 	<field name="resultsOpeningId" class="java.lang.String"/>
 	<field name="endorsementTimestamp" class="java.util.Date"/>
 	<field name="approvedTimestamp" class="java.util.Date"/>
-	<!--	<field name="outsideWuiInd" class="java.lang.String"/>-->
-	<!--	<field name="totalRclFilterSectionScore" class="java.math.BigDecimal"/>-->
-	<!--	<field name="bdfFilterSectionComment" class="java.lang.String"/>-->
-	<!--	<field name="totalBdfFilterSectionScore" class="java.math.BigDecimal"/>-->
-	<!--	<field name="rclFilterSectionComment" class="java.lang.String"/>-->
-	<!--	<field name="totalCollimpFilterSectionScore" class="java.math.BigDecimal"/>-->
-	<!--	<field name="collimpFilterSectionComment" class="java.lang.String"/>-->
 	<field name="totalFilterSectionScore" class="java.math.BigDecimal"/>
 	<field name="projectTypeDescription" class="java.lang.String"/>
 	<field name="projectName" class="java.lang.String"/>

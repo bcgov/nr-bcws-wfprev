@@ -60,7 +60,6 @@ public class ReportService {
 
     public void exportXlsx(List<UUID> projectGuids, OutputStream outputStream) {
         try {
-            // 1. Fetch projectPlanFiscalGuids
             List<ProjectEntity> projects = projectRepository.findByProjectGuidIn(projectGuids);
             List<UUID> projectPlanFiscalGuids = projects.stream()
                     .flatMap(project -> project.getProjectFiscals().stream())
@@ -68,14 +67,9 @@ public class ReportService {
                     .distinct()
                     .toList();
 
-            log.info("Project Plan Fiscal GUIDs: {}", projectPlanFiscalGuids);
-
             // 2. Fetch both datasets
             List<FuelManagementReportEntity> fuelData = fuelManagementRepository.findByProjectPlanFiscalGuidIn(projectPlanFiscalGuids);
             List<CulturalPrescribedFireReportEntity> crxData = culturalPrescribedFireReportRepository.findByProjectPlanFiscalGuidIn(projectPlanFiscalGuids);
-
-            log.info("Fuel rows: {}", fuelData.size());
-            log.info("CRX rows: {}", crxData.size());
 
             if (fuelData.isEmpty() && crxData.isEmpty()) {
                 throw new IllegalArgumentException("No data found for the provided projectGuids.");
@@ -89,7 +83,6 @@ public class ReportService {
                 setCrxFields(entities);
             }
 
-            // 3. Compile templates
             JasperReport fuelReport = JasperCompileManager.compileReport(
                     getClass().getResourceAsStream("/jasper-template/WFPREV_FUEL_MANAGEMENT_JASPER.jrxml")
             );
@@ -97,12 +90,10 @@ public class ReportService {
                     getClass().getResourceAsStream("/jasper-template/WFPREV_CULTURE_PRESCRIBED_FIRE_JASPER.jrxml")
             );
 
-            // 4. Fill both reports
             Map<String, Object> params = new HashMap<>();
             JasperPrint fuelPrint = JasperFillManager.fillReport(fuelReport, params, new JRBeanCollectionDataSource(fuelData));
             JasperPrint crxPrint = JasperFillManager.fillReport(crxReport, params, new JRBeanCollectionDataSource(crxData));
 
-            // 5. Export both into same XLSX
             JRXlsxExporter exporter = new JRXlsxExporter();
             exporter.setExporterInput(SimpleExporterInput.getInstance(List.of(fuelPrint, crxPrint)));
             exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(outputStream));
