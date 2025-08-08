@@ -49,21 +49,32 @@ public class ReportController {
             @ApiResponse(responseCode = "400", description = "Invalid report request", content = @Content(schema = @Schema(implementation = MessageListRsrc.class))),
             @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(schema = @Schema(implementation = MessageListRsrc.class)))
     })
-    public ResponseEntity<StreamingResponseBody> generateReport(@Valid @RequestBody ReportRequestModel request) throws ServiceException {
+    public ResponseEntity<StreamingResponseBody> generateReport(@Valid @RequestBody ReportRequestModel request) {
         String type = request.getReportType();
         log.debug(" >> generateReport with type: {}", type);
 
         if ("XLSX".equalsIgnoreCase(type)) {
-            StreamingResponseBody stream = outputStream ->
+            StreamingResponseBody stream = outputStream -> {
+                try {
                     reportService.exportXlsx(request.getProjectGuids(), outputStream);
+                } catch (Exception e) {
+                    throw new RuntimeException("Failed to stream XLSX report", e);
+                }
+            };
 
             return ResponseEntity.ok()
                     .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=project-report.xlsx")
                     .contentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
                     .body(stream);
+
         } else if ("CSV".equalsIgnoreCase(type)) {
-            StreamingResponseBody stream = outputStream ->
+            StreamingResponseBody stream = outputStream -> {
+                try {
                     reportService.writeCsvZipFromEntities(request.getProjectGuids(), outputStream);
+                } catch (Exception e) {
+                    throw new RuntimeException("Failed to stream CSV report", e);
+                }
+            };
 
             return ResponseEntity.ok()
                     .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=project-report.zip")

@@ -118,7 +118,7 @@ export class EvaluationCriteriaDialogComponent {
 
   assignCodeTableData(key: string, data: any): void {
     switch (key) {
-      case 'evaluationCriteriaCode':
+      case 'evaluationCriteriaCode': {
         const allCriteria = data._embedded.evaluationCriteriaCode ?? [];
         const type = this.data.project.projectTypeCode?.projectTypeCode;
 
@@ -144,7 +144,7 @@ export class EvaluationCriteriaDialogComponent {
             .sort((a, b) => (a.criteriaLabel ?? '').localeCompare(b.criteriaLabel ?? ''))
         }
         break;
-
+      }
       case 'wuiRiskClassCode':
         this.wuiRiskClassCode = (data._embedded.wuiRiskClassRank ?? []);
         break;

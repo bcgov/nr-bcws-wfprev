@@ -1,5 +1,6 @@
 package ca.bc.gov.nrs.wfprev.services;
 
+import ca.bc.gov.nrs.wfprev.common.exceptions.ServiceException;
 import ca.bc.gov.nrs.wfprev.data.entities.CulturalPrescribedFireReportEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.FuelManagementReportEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ProjectEntity;
@@ -58,7 +59,7 @@ public class ReportService {
         this.programAreaRepository = programAreaRepository;
     }
 
-    public void exportXlsx(List<UUID> projectGuids, OutputStream outputStream) {
+    public void exportXlsx(List<UUID> projectGuids, OutputStream outputStream) throws ServiceException {
         try {
             List<ProjectEntity> projects = projectRepository.findByProjectGuidIn(projectGuids);
             List<UUID> projectPlanFiscalGuids = projects.stream()
@@ -111,11 +112,11 @@ public class ReportService {
 
         } catch (Exception e) {
             log.error("Failed to generate XLSX report: {}", e.getMessage(), e);
-            throw new RuntimeException("Failed to generate XLSX report", e);
+            throw new ServiceException("Failed to generate XLSX report", e);
         }
     }
 
-    public void writeCsvZipFromEntities(List<UUID> projectGuids, OutputStream zipOutStream) {
+    public void writeCsvZipFromEntities(List<UUID> projectGuids, OutputStream zipOutStream) throws ServiceException {
         List<FuelManagementReportEntity> fuelRecords = fuelManagementRepository.findByProjectGuidIn(projectGuids);
         List<CulturalPrescribedFireReportEntity> crxRecords = culturalPrescribedFireReportRepository.findByProjectGuidIn(projectGuids);
 
@@ -152,9 +153,9 @@ public class ReportService {
             }
             addToZip(zipOut, "cultural-prescribed-fire-projects.csv", crxCsvOut.toByteArray());
 
-        } catch (IOException ex) {
-            log.error("Error writing ZIP CSV", ex);
-            throw new UncheckedIOException(ex);
+        } catch (Exception e) {
+            log.error("Failed to generate CSV report: {}", e.getMessage(), e);
+            throw new ServiceException("Failed to generate CSV report", e);
         }
     }
 
