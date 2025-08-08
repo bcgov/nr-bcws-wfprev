@@ -183,3 +183,23 @@ export function getFiscalYearColor(fiscalYear: number, currentFiscalYear: number
   if (fiscalYear === currentFiscalYear) return FiscalYearColors.present;
   return FiscalYearColors.future;
 }
+
+
+export const LOCAL_ISO_FORMAT = Intl.DateTimeFormat('en-CA', {
+  timeZone: undefined,
+  hour12: false,
+  year: 'numeric',
+  month: '2-digit',
+  day: '2-digit',
+  hour: '2-digit',
+  minute: '2-digit',
+  second: '2-digit'
+});
+
+export function getLocalIsoTimestamp(date?: Date): string {
+  // Example: 2025-08-08T11:20:30
+  const targetDate = date ?? new Date();
+  return LOCAL_ISO_FORMAT.format(targetDate)
+    .replace(',', '')
+    .replace(' ', 'T');
+}

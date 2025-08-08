@@ -13,6 +13,7 @@ import { PlanFiscalStatusIcons } from 'src/app/utils/tools';
 import { EndorsementCode, ModalMessages, ModalTitles } from 'src/app/utils/constants';
 import { TokenService } from 'src/app/services/token.service';
 import { ProjectFiscal } from 'src/app/components/models';
+import * as Tools from 'src/app/utils/tools';
 
 const mockProjectService = {
   getProjectFiscalsByProjectGuid: jasmine.createSpy('getProjectFiscalsByProjectGuid').and.returnValue(
@@ -67,7 +68,9 @@ describe('ProjectFiscalsComponent', () => {
       imports: [BrowserAnimationsModule],
       declarations: [MockFiscalMapComponent, MockActivitiesComponent],
       providers: [
-        { provide: TokenService, useValue: { getUserFullName: jasmine.createSpy('getUserFullName').and.returnValue('Test User') } },
+        { provide: TokenService, useValue: { getUserFullName: jasmine.createSpy('getUserFullName').and.returnValue('Test User'),
+          getIdir: jasmine.createSpy('getIdir').and.returnValue('IDIR123')
+         } },
         {
           provide: ActivatedRoute,
           useValue: {
@@ -839,4 +842,25 @@ describe('ProjectFiscalsComponent', () => {
       { duration: 5000, panelClass: 'snackbar-error' }
     );
   });
+
+  afterEach(() => {
+    try { jasmine.clock().uninstall(); } catch {}
+  });
+  it('should build submission fields with currentIdir and local ISO timestamp', () => {
+    jasmine.clock().install();
+    jasmine.clock().mockDate(new Date('2025-08-08T19:34:56.000Z'));
+
+    component.currentIdir = 'IDIR123';
+
+    const expectedTs = Tools.getLocalIsoTimestamp();
+    const result = component.buildSubmissionFields();
+
+    expect(result).toEqual({
+      submittedByUserUserid: 'IDIR123',
+      submissionTimestamp: expectedTs,
+    });
+
+    jasmine.clock().uninstall();
+  });
+
 });
