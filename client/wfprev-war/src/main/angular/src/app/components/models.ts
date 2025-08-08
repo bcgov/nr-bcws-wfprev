@@ -280,6 +280,8 @@ export interface EvaluationCriteriaSummaryModel {
   isOutsideWuiInd?: boolean;
   totalFilterScore?: number;
   evaluationCriteriaSectionSummaries?: EvaluationCriteriaSectionSummaryModel[];
+  updateDate?: string;
+  updateUser?: string;
 }
 
 export interface EvaluationCriteriaSectionSummaryModel {
