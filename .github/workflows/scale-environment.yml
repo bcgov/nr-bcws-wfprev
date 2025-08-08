@@ -102,7 +102,7 @@ jobs:
 
       - name: Safety check so we won't overwrite snapshot when DB is already down, then save current GDB image and snapshot
         run: |
-          DEFAULT_APPLICATION_ENVIRONMENT=${{inputs.DEFAULT_APPLICATION_ENVIRONMENT}}
+          DEFAULT_APPLICATION_ENVIRONMENT=${{ inputs.DEFAULT_APPLICATION_ENVIRONMENT }}
           TARGET_ENV="${DEFAULT_APPLICATION_ENVIRONMENT#wf}"
           if [[ $(aws rds describe-db-instances --query "DBInstances[?DBInstanceIdentifier== 'wfprev$TARGET_ENV'].DBInstanceIdentifier") != *"\"wfprev$TARGET_ENV\""* ]]; then 
             echo "wfprev$TARGET_ENV DB does not exist! Cannot create snapshot!"
