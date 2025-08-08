@@ -187,6 +187,7 @@ public class FeaturesService implements CommonService {
     }
 
     void addProjectLevelFilters(Root<ProjectEntity> project, List<Predicate> predicates, FeatureQueryParams params) {
+        log.info("Filtering by projectTypeCodes: {}", params.getProjectTypeCodes());
         if (params.getProgramAreaGuids() != null && !params.getProgramAreaGuids().isEmpty()) {
             predicates.add(project.get("programAreaGuid").in(params.getProgramAreaGuids()));
         }
@@ -202,6 +203,12 @@ public class FeaturesService implements CommonService {
         if (params.getFireCentreOrgUnitIds() != null && !params.getFireCentreOrgUnitIds().isEmpty()) {
             predicates.add(project.get("fireCentreOrgUnitId").in(params.getFireCentreOrgUnitIds()));
         }
+
+        if (params.getProjectTypeCodes() != null && !params.getProjectTypeCodes().isEmpty()) {
+            predicates.add(
+                project.get("projectTypeCode").get("projectTypeCode").in(params.getProjectTypeCodes())
+            );
+        }
     }
 
     void addFiscalAttributeFilters(CriteriaBuilder cb, Root<ProjectEntity> project, List<Predicate> predicates, FeatureQueryParams params) {
@@ -209,7 +216,7 @@ public class FeaturesService implements CommonService {
                 (params.getActivityCategoryCodes() != null && !params.getActivityCategoryCodes().isEmpty()) ||
                 (params.getPlanFiscalStatusCodes() != null && !params.getPlanFiscalStatusCodes().isEmpty())) {
 
-            Join<ProjectEntity, ProjectFiscalEntity> fiscal = project.join(PROJECT_FISCALS, JoinType.INNER);
+            Join<ProjectEntity, ProjectFiscalEntity> fiscal = project.join(PROJECT_FISCALS, JoinType.LEFT);
 
             addFiscalYearFilters(cb, fiscal, predicates, params.getFiscalYears());
             addActivityCategoryCodeFilters(fiscal, predicates, params.getActivityCategoryCodes());
@@ -221,7 +228,11 @@ public class FeaturesService implements CommonService {
         if (fiscalYears != null && !fiscalYears.isEmpty()) {
             List<Predicate> fiscalYearPredicates = new ArrayList<>();
             for (String year : fiscalYears) {
-                fiscalYearPredicates.add(cb.like(fiscal.get(FISCAL_YEAR).as(String.class), year + "%"));
+                if (year == null|| year.equals("null")) {
+                    fiscalYearPredicates.add(cb.isNull(fiscal.get(FISCAL_YEAR)));
+                } else {
+                    fiscalYearPredicates.add(cb.like(fiscal.get(FISCAL_YEAR).as(String.class), year + "%"));
+                }
             }
             predicates.add(cb.or(fiscalYearPredicates.toArray(new Predicate[0])));
         }
@@ -280,7 +291,11 @@ public class FeaturesService implements CommonService {
         if (fiscalYears != null && !fiscalYears.isEmpty()) {
             List<Predicate> fiscalYearPredicates = new ArrayList<>();
             for (String year : fiscalYears) {
-                fiscalYearPredicates.add(cb.like(fiscal.get(FISCAL_YEAR).as(String.class), year + "%"));
+                if (year == null || year.equals("null")) {
+                    fiscalYearPredicates.add(cb.isNull(fiscal.get(FISCAL_YEAR)));
+                } else {
+                    fiscalYearPredicates.add(cb.like(fiscal.get(FISCAL_YEAR).as(String.class), year + "%"));
+                }
             }
             predicates.add(cb.or(fiscalYearPredicates.toArray(new Predicate[0])));
         }
