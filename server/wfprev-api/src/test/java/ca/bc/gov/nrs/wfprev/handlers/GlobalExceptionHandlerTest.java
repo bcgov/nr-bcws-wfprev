@@ -1,5 +1,6 @@
 package ca.bc.gov.nrs.wfprev.handlers;
 
+import ca.bc.gov.nrs.wfprev.common.exceptions.ServiceException;
 import com.fasterxml.jackson.core.JsonParseException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolation;
@@ -376,5 +377,53 @@ class GlobalExceptionHandlerTest {
         Map<String, String> errors = (Map<String, String>) response.getBody();
         assertEquals(1, errors.size());
         assertEquals(errorMessage, errors.get("error"));
+    }
+
+    @Test
+    void testHandleIllegalArgumentException() {
+        String errorMessage = "Invalid input provided";
+        IllegalArgumentException ex = new IllegalArgumentException(errorMessage);
+
+        ResponseEntity<Object> response = handler.handleIllegalArgumentException(ex);
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertTrue(response.getBody() instanceof Map);
+
+        @SuppressWarnings("unchecked")
+        Map<String, String> error = (Map<String, String>) response.getBody();
+        assertEquals(1, error.size());
+        assertEquals(errorMessage, error.get("error"));
+    }
+
+    @Test
+    void testHandleRuntimeException() {
+        String errorMessage = "Something unexpected happened";
+        RuntimeException ex = new RuntimeException(errorMessage);
+
+        ResponseEntity<Object> response = handler.handleRuntimeException(ex);
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertTrue(response.getBody() instanceof Map);
+
+        @SuppressWarnings("unchecked")
+        Map<String, String> error = (Map<String, String>) response.getBody();
+        assertEquals(1, error.size());
+        assertEquals("Unexpected error occurred: " + errorMessage, error.get("error"));
+    }
+
+    @Test
+    void testHandleServiceException() {
+        String errorMessage = "Report generation failed";
+        ServiceException ex = new ServiceException(errorMessage);
+
+        ResponseEntity<Object> response = handler.handleServiceException(ex);
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertTrue(response.getBody() instanceof Map);
+
+        @SuppressWarnings("unchecked")
+        Map<String, String> error = (Map<String, String>) response.getBody();
+        assertEquals(1, error.size());
+        assertEquals(errorMessage, error.get("error"));
     }
 }

@@ -188,7 +188,7 @@ public class EvaluationCriteriaSummaryResourceAssembler extends RepresentationMo
     public EvaluationCriteriaSummaryEntity updateEntity(EvaluationCriteriaSummaryModel model, EvaluationCriteriaSummaryEntity entity) {
         if (model == null || entity == null) return null;
 
-        // Update parent fields
+        // Update top-level fields
         entity.setWuiRiskClassCode(toWuiRiskClassCodeEntity(model.getWuiRiskClassCode()));
         entity.setLocalWuiRiskClassCode(toWuiRiskClassCodeEntity(model.getLocalWuiRiskClassCode()));
         entity.setWuiRiskClassComment(model.getWuiRiskClassComment());
@@ -197,48 +197,78 @@ public class EvaluationCriteriaSummaryResourceAssembler extends RepresentationMo
         entity.setIsOutsideWuiInd(model.getIsOutsideWuiInd());
 
         if (model.getEvaluationCriteriaSectionSummaries() != null) {
+            // Map existing section summaries by section code
             Map<String, EvaluationCriteriaSectionSummaryEntity> existingSections = entity.getEvaluationCriteriaSectionSummaries().stream()
                     .collect(Collectors.toMap(
                             s -> s.getEvaluationCriteriaSectionCode().getEvaluationCriteriaSectionCode(),
                             Function.identity()
                     ));
 
+            List<EvaluationCriteriaSectionSummaryEntity> updatedSections = new ArrayList<>();
+
             for (EvaluationCriteriaSectionSummaryModel sectionModel : model.getEvaluationCriteriaSectionSummaries()) {
-                EvaluationCriteriaSectionCodeModel sectionCodeModel = sectionModel.getEvaluationCriteriaSectionCode();
-                if (sectionCodeModel == null) continue;
+                if (sectionModel.getEvaluationCriteriaSectionCode() == null) continue;
 
-                EvaluationCriteriaSectionSummaryEntity sectionEntity = existingSections.get(sectionCodeModel.getEvaluationCriteriaSectionCode());
-                if (sectionEntity == null) continue;
+                String sectionCode = sectionModel.getEvaluationCriteriaSectionCode().getEvaluationCriteriaSectionCode();
+                EvaluationCriteriaSectionSummaryEntity sectionEntity = existingSections.get(sectionCode);
 
-                // Update allowed fields for section summary
-                sectionEntity.setFilterSectionComment(sectionModel.getFilterSectionComment());
+                if (sectionEntity == null) {
+                    // Create new section
+                    sectionEntity = new EvaluationCriteriaSectionSummaryEntity();
+                    sectionEntity.setEvaluationCriteriaSummary(entity);
+                    sectionEntity.setEvaluationCriteriaSummaryGuid(entity.getEvaluationCriteriaSummaryGuid());
+                    sectionEntity.setEvaluationCriteriaSectionCode(
+                            toEvaluationCriteriaSectionCodeEntity(sectionModel.getEvaluationCriteriaSectionCode())
+                    );
+                } else {
+                    // Always update code, even if already exists
+                    sectionEntity.setEvaluationCriteriaSectionCode(
+                            toEvaluationCriteriaSectionCodeEntity(sectionModel.getEvaluationCriteriaSectionCode())
+                    );
+                }
+
                 sectionEntity.setFilterSectionScore(sectionModel.getFilterSectionScore());
+                sectionEntity.setFilterSectionComment(sectionModel.getFilterSectionComment());
 
-                // Update allowed fields for selected
+                // Update selected criteria safely
+                Map<UUID, EvaluationCriteriaSelectedEntity> existingSelectedMap =
+                        sectionEntity.getEvaluationCriteriaSelected().stream()
+                                .collect(Collectors.toMap(EvaluationCriteriaSelectedEntity::getEvaluationCriteriaGuid, Function.identity()));
+
+                List<EvaluationCriteriaSelectedEntity> updatedSelected = new ArrayList<>();
+
                 if (sectionModel.getEvaluationCriteriaSelected() != null) {
-                    Map<UUID, EvaluationCriteriaSelectedEntity> existingSelected = sectionEntity.getEvaluationCriteriaSelected().stream()
-                            .collect(Collectors.toMap(
-                                    EvaluationCriteriaSelectedEntity::getEvaluationCriteriaGuid,
-                                    Function.identity()
-                            ));
-
                     for (EvaluationCriteriaSelectedModel selectedModel : sectionModel.getEvaluationCriteriaSelected()) {
                         UUID criteriaGuid = UUID.fromString(selectedModel.getEvaluationCriteriaGuid());
-                        EvaluationCriteriaSelectedEntity selectedEntity = existingSelected.get(criteriaGuid);
+                        EvaluationCriteriaSelectedEntity selectedEntity = existingSelectedMap.get(criteriaGuid);
 
-                        if (selectedEntity != null) {
-                            selectedEntity.setIsEvaluationCriteriaSelectedInd(selectedModel.getIsEvaluationCriteriaSelectedInd());
+                        if (selectedEntity == null) {
+                            selectedEntity = EvaluationCriteriaSelectedEntity.builder()
+                                    .evaluationCriteriaGuid(criteriaGuid)
+                                    .evaluationCriteriaSectionSummary(sectionEntity)
+                                    .isEvaluationCriteriaSelectedInd(selectedModel.getIsEvaluationCriteriaSelectedInd())
+                                    .build();
                         } else {
-                            log.warn("Skipping update for non-existent selected criteria: {}", criteriaGuid);
+                            selectedEntity.setIsEvaluationCriteriaSelectedInd(selectedModel.getIsEvaluationCriteriaSelectedInd());
                         }
+
+                        updatedSelected.add(selectedEntity);
                     }
                 }
+
+                sectionEntity.getEvaluationCriteriaSelected().clear();
+                sectionEntity.getEvaluationCriteriaSelected().addAll(updatedSelected);
+
+                updatedSections.add(sectionEntity);
             }
+
+            // Replace section summaries with updated ones
+            entity.getEvaluationCriteriaSectionSummaries().clear();
+            entity.getEvaluationCriteriaSectionSummaries().addAll(updatedSections);
         }
 
         return entity;
     }
-
 
     private WUIRiskClassRankModel toWuiRiskClassCodeModel(WUIRiskClassRankEntity code) {
         WUIRiskClassCodeResourceAssembler ra = new WUIRiskClassCodeResourceAssembler();

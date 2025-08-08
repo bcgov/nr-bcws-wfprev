@@ -14,5 +14,7 @@ public interface ProjectRepository extends CommonRepository<ProjectEntity, UUID>
     List<ProjectEntity> findByProjectName(String projectName);
 
     boolean existsByProjectName(String projectName);
+
+    List<ProjectEntity> findByProjectGuidIn(List<UUID> projectGuids);
   
 }

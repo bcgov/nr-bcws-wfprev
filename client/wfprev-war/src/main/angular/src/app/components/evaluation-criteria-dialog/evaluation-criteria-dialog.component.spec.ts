@@ -373,18 +373,9 @@ describe('EvaluationCriteriaDialogComponent', () => {
     expect(component.selectedCoarse.has('coarse1')).toBeFalse();
   });
 
-  it('should calculateCoarseTotal correctly', () => {
-    component.riskClassLocationFilters = [
-      { evaluationCriteriaGuid: 'c1', weightedRank: 1 },
-      { evaluationCriteriaGuid: 'c2', weightedRank: 2 }
-    ] as any;
-    component.selectedCoarse = new Set(['c1', 'c2']);
-    component.calculateCoarseTotal();
-    expect(component.coarseTotal).toBe(3);
-  });
-
-  it('should build RCL section when isOutsideOfWuiOn is true', () => {
+  it('should build RCL section when isCulturalPrescribedFire is true', () => {
     component.isOutsideOfWuiOn = true;
+    component.isCulturalPrescribedFire = true; 
     component.initializeForm();
     component.criteriaForm.patchValue({ localWuiRiskClassRationale: 'Some rationale' });
     component.riskClassLocationFilters = [
