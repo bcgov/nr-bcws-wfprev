@@ -56,8 +56,9 @@ services:
     build:
       context: db
       dockerfile: Dockerfile.liquibase.local
-    command: > 
+    command: >
       /bin/sh -c "
+      liquibase --url=jdbc:postgresql://wfprev-postgres:5432/wfprev --changelog-file=db/wfprev-changelog.json --username=wfprev --password=${WFPREV_DB_PASSWORD} clearCheckSums &&
       liquibase --url=jdbc:postgresql://wfprev-postgres:5432/wfprev --changelog-file=db/wfprev-changelog.json --username=wfprev --password=${WFPREV_DB_PASSWORD} update &&
       liquibase --url=jdbc:postgresql://wfprev-postgres:5432/wfprev --changelog-file=db/app_wf1_prev-changelog.json --username=app_wf1_prev --password=${APP_WF1_PREV_PASSWORD} update
       "

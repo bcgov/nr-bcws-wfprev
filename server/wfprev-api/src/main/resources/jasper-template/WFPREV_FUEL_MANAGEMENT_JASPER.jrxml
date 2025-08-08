@@ -50,16 +50,15 @@
 			<![CDATA[]]>
 		</queryString>
 	</subDataset>
-	<parameter name="linkToProject" class="java.lang.String"/>
 	<queryString>
 		<![CDATA[]]>
 	</queryString>
 	<field name="linkToFiscalActivity" class="java.lang.String"/>
-	<field name="proposalType" class="java.lang.String"/>
+	<!--	<field name="proposalType" class="java.lang.String"/>-->
 	<field name="projectFiscalName" class="java.lang.String"/>
 	<field name="projectFiscalDescription" class="java.lang.String"/>
 	<field name="fiscalYear" class="java.lang.String"/>
-	<field name="activityCategoryDesciption" class="java.lang.String"/>
+	<field name="activityCategoryDescription" class="java.lang.String"/>
 	<field name="planFiscalStatusDescription" class="java.lang.String"/>
 	<field name="totalEstimatedCostAmount" class="java.math.BigDecimal"/>
 	<field name="fiscalAncillaryFundAmount" class="java.math.BigDecimal"/>
@@ -76,15 +75,8 @@
 	<field name="resultsOpeningId" class="java.lang.String"/>
 	<field name="endorsementTimestamp" class="java.util.Date"/>
 	<field name="approvedTimestamp" class="java.util.Date"/>
-	<field name="outsideWuiInd" class="java.lang.String"/>
-	<field name="totalRclFilterSectionScore" class="java.math.BigDecimal"/>
-	<field name="bdfFilterSectionComment" class="java.lang.String"/>
-	<field name="totalBdfFilterSectionScore" class="java.math.BigDecimal"/>
-	<field name="rclFilterSectionComment" class="java.lang.String"/>
-	<field name="totalCollimpFilterSectionScore" class="java.math.BigDecimal"/>
-	<field name="collimpFilterSectionComment" class="java.lang.String"/>
 	<field name="totalFilterSectionScore" class="java.math.BigDecimal"/>
-	<field name="projectTypeCode" class="java.lang.String"/>
+	<field name="projectTypeDescription" class="java.lang.String"/>
 	<field name="projectName" class="java.lang.String"/>
 	<field name="forestRegionOrgUnitName" class="java.lang.String"/>
 	<field name="linkToProject" class="java.lang.String"/>
@@ -951,7 +943,7 @@ Notes on Fine Filters]]></text>
 			</textField>
 			<textField isBlankWhenNull="true" hyperlinkType="Reference">
 				<reportElement x="56" y="9" width="160" height="120" forecolor="#3366FF" uuid="0bfb0f57-a9f5-404f-8ce5-021087864eee">
-					<printWhenExpression><![CDATA[$P{linkToProject} != null && !$P{linkToProject}.trim().isEmpty()]]></printWhenExpression>
+					<printWhenExpression><![CDATA[$F{linkToProject} != null && !$F{linkToProject}.trim().isEmpty()]]></printWhenExpression>
 				</reportElement>
 				<box padding="1">
 					<pen lineWidth="1.0"/>
@@ -963,7 +955,7 @@ Notes on Fine Filters]]></text>
 				<textElement verticalAlignment="Bottom">
 					<font fontName="Calibri" size="11" isUnderline="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA["Project Link"]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{linkToProject}]]></textFieldExpression>
 				<hyperlinkReferenceExpression><![CDATA[$F{linkToProject}]]></hyperlinkReferenceExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
@@ -1101,7 +1093,7 @@ Notes on Fine Filters]]></text>
 				<textElement verticalAlignment="Bottom">
 					<font fontName="Calibri" size="11"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{activityCategoryDesciption}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{activityCategoryDescription}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement x="6867" y="9" width="215" height="120" uuid="95e7f276-ef48-40b4-ab95-0d66511513c9"/>
@@ -1209,7 +1201,7 @@ Notes on Fine Filters]]></text>
 			<textField isBlankWhenNull="true">
 				<reportElement x="376" y="9" width="170" height="120" uuid="fdc79c41-10dd-4ceb-983d-0093301b7cf7"/>
 				<textElement verticalAlignment="Bottom"/>
-				<textFieldExpression><![CDATA[$F{projectTypeCode}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{projectTypeDescription}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement x="4160" y="9" width="118" height="120" uuid="a49e857a-6d03-48f2-a35b-672768f011df"/>
@@ -1225,9 +1217,8 @@ Notes on Fine Filters]]></text>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{totalEstimatedCostAmount}]]></textFieldExpression>
 			</textField>
-			<textField isBlankWhenNull="true">
+			<textField isBlankWhenNull="true" hyperlinkType="Reference">
 				<reportElement x="216" y="9" width="160" height="120" forecolor="#3366FF" uuid="24bc5acf-afa1-4866-b3be-b5ddc1ce152f">
-					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="3b9eee59-6b5d-4866-ae9c-14cf6e3a4526"/>
 					<printWhenExpression><![CDATA[$F{linkToFiscalActivity} != null && !$F{linkToFiscalActivity}.trim().isEmpty()]]></printWhenExpression>
 				</reportElement>
 				<box padding="1">
@@ -1240,8 +1231,9 @@ Notes on Fine Filters]]></text>
 				<textElement verticalAlignment="Bottom">
 					<font fontName="Calibri" size="11" isUnderline="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA["Fiscal Activity Link"]]></textFieldExpression>
-				<hyperlinkWhenExpression><![CDATA[$F{linkToFiscalActivity}]]></hyperlinkWhenExpression>
+				<textFieldExpression><![CDATA[$F{linkToFiscalActivity}]]></textFieldExpression>
+				<hyperlinkReferenceExpression><![CDATA[$F{linkToFiscalActivity}]]></hyperlinkReferenceExpression>
+				<hyperlinkWhenExpression><![CDATA[$F{linkToFiscalActivity} != null && !$F{linkToFiscalActivity}.trim().isEmpty()]]></hyperlinkWhenExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement x="4750" y="9" width="118" height="120" uuid="f0ed5454-b045-496e-991b-c631c42296ca"/>
