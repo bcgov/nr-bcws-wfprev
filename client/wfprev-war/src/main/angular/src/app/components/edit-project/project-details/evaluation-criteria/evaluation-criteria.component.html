@@ -74,6 +74,10 @@
               <span>{{ getCalculatedTotal(evaluationCriteriaSummary) | number:'1.2-2' }}</span>
             </div>
           </div>
+          <wfprev-timestamp
+            [updateDate]="evaluationCriteriaSummary?.updateDate"
+            [updateUser]="evaluationCriteriaSummary?.updateUser">
+          </wfprev-timestamp>
         </div>
 
     </mat-expansion-panel>

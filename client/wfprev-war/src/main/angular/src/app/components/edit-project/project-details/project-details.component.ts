@@ -27,12 +27,14 @@ import { BcParksSectionCodeModel, ForestDistrictCodeModel } from 'src/app/compon
 import { SelectFieldComponent } from 'src/app/components/shared/select-field/select-field.component';
 import { InputFieldComponent } from 'src/app/components/shared/input-field/input-field.component';
 import { EvaluationCriteriaComponent } from 'src/app/components/edit-project/project-details/evaluation-criteria/evaluation-criteria.component';
+import { TimestampComponent } from 'src/app/components/shared/timestamp/timestamp.component';
+import { TokenService } from 'src/app/services/token.service';
 @Component({
   selector: 'wfprev-project-details',
   standalone: true,
   imports: [ReactiveFormsModule, MatExpansionModule, CommonModule, FormsModule, FiscalYearProjectsComponent,
     ProjectFilesComponent, MatTooltip, TextFieldModule, ExpansionIndicatorComponent, SelectFieldComponent, InputFieldComponent,
-    EvaluationCriteriaComponent],
+    EvaluationCriteriaComponent, TimestampComponent],
   templateUrl: './project-details.component.html',
   styleUrl: './project-details.component.scss'
 })
@@ -82,7 +84,7 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
     private readonly codeTableService: CodeTableServices,
     public snackbarService: MatSnackBar,
     public dialog: MatDialog,
-
+    public tokenService: TokenService, 
   ) { }
 
   ngOnInit(): void {
@@ -389,6 +391,7 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
       const updatedProject = {
         ...this.projectDetail,
         ...this.detailsForm.value,
+        // updateUser: this.tokenService.getUserId(),
         forestRegionOrgUnitId: Number(this.detailsForm.get('forestRegionOrgUnitId')?.value),
         forestDistrictOrgUnitId: Number(this.detailsForm.get('forestDistrictOrgUnitId')?.value),
         bcParksRegionOrgUnitId: Number(this.detailsForm.get('bcParksRegionOrgUnitId')?.value),

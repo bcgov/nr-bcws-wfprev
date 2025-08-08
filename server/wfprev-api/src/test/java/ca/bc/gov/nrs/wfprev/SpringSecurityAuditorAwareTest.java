@@ -43,7 +43,9 @@ class SpringSecurityAuditorAwareTest {
         when(mockSecurityContext.getAuthentication()).thenReturn(mockAuthentication);
         when(mockAuthentication.isAuthenticated()).thenReturn(true);
         when(mockAuthentication.getPrincipal()).thenReturn(mockPrincipal);
-        when(mockPrincipal.getAttribute("client_id")).thenReturn("test_user");
+        when(mockPrincipal.getAttribute("userId")).thenReturn("test_user");
+        when(mockPrincipal.getAttribute("sub")).thenReturn(null);
+        when(mockPrincipal.getAttribute("clientId")).thenReturn(null);
 
         // When: getCurrentAuditor is called
         Optional<String> result = auditorAware.getCurrentAuditor();
@@ -70,31 +72,17 @@ class SpringSecurityAuditorAwareTest {
     }
 
     @Test
-    void getCurrentAuditor_invalidPrincipalType_throwsIllegalStateException() {
-        // Given: A valid SecurityContext with an invalid principal type
-        SecurityContext mockSecurityContext = mock(SecurityContext.class);
-        Authentication mockAuthentication = mock(Authentication.class);
+    void getCurrentAuditor_invalidPrincipalType_fallsBackToAuthName() {
+        SecurityContext ctx = mock(SecurityContext.class);
+        Authentication auth = mock(Authentication.class);
 
-        when(SecurityContextHolder.getContext()).thenReturn(mockSecurityContext);
-        when(mockSecurityContext.getAuthentication()).thenReturn(mockAuthentication);
-        when(mockAuthentication.isAuthenticated()).thenReturn(true);
-        when(mockAuthentication.getPrincipal()).thenReturn("InvalidPrincipal");
+        when(SecurityContextHolder.getContext()).thenReturn(ctx);
+        when(ctx.getAuthentication()).thenReturn(auth);
+        when(auth.isAuthenticated()).thenReturn(true);
+        when(auth.getPrincipal()).thenReturn("InvalidPrincipal");
+        when(auth.getName()).thenReturn("fallbackUser");
 
-        // When & Then: getCurrentAuditor throws an IllegalStateException
-        IllegalStateException exception = assertThrows(IllegalStateException.class, auditorAware::getCurrentAuditor);
-        assertEquals("Principal is not of type DefaultOAuth2AuthenticatedPrincipal", exception.getMessage());
-    }
-
-    @Test
-    void getCurrentAuditor_nullSecurityContext_returnsEmptyOptional() {
-        // Given: A null SecurityContext
-        when(SecurityContextHolder.getContext()).thenReturn(null);
-
-        // When: getCurrentAuditor is called
-        Optional<String> result = auditorAware.getCurrentAuditor();
-
-        // Then: An empty Optional is returned
-        assertEquals(Optional.empty(), result);
+        assertEquals(Optional.of("fallbackUser"), auditorAware.getCurrentAuditor());
     }
 
     @Test
@@ -111,4 +99,50 @@ class SpringSecurityAuditorAwareTest {
         // Then: An empty Optional is returned
         assertEquals(Optional.empty(), result);
     }
+
+    @Test
+    void getCurrentAuditor_claimFallbackOrder_userId_then_sub_then_clientId() {
+        SecurityContext ctx = mock(SecurityContext.class);
+        Authentication auth = mock(Authentication.class);
+        DefaultOAuth2AuthenticatedPrincipal p = mock(DefaultOAuth2AuthenticatedPrincipal.class);
+
+        when(SecurityContextHolder.getContext()).thenReturn(ctx);
+        when(ctx.getAuthentication()).thenReturn(auth);
+        when(auth.isAuthenticated()).thenReturn(true);
+        when(auth.getPrincipal()).thenReturn(p);
+
+        when(p.getAttribute("userId")).thenReturn("UID");
+        when(p.getAttribute("sub")).thenReturn("SUB");
+        when(p.getAttribute("clientId")).thenReturn("CID");
+        assertEquals(Optional.of("UID"), auditorAware.getCurrentAuditor());
+
+        when(p.getAttribute("userId")).thenReturn(null);
+        when(p.getAttribute("sub")).thenReturn("SUB");
+        when(p.getAttribute("clientId")).thenReturn("CID");
+        assertEquals(Optional.of("SUB"), auditorAware.getCurrentAuditor());
+
+        when(p.getAttribute("userId")).thenReturn(null);
+        when(p.getAttribute("sub")).thenReturn(null);
+        when(p.getAttribute("clientId")).thenReturn("CID");
+        assertEquals(Optional.of("CID"), auditorAware.getCurrentAuditor());
+    }
+
+    @Test
+    void getCurrentAuditor_ignoresBlankValues_returnsEmptyWhenAllBlankOrNull() {
+        SecurityContext ctx = mock(SecurityContext.class);
+        Authentication auth = mock(Authentication.class);
+        DefaultOAuth2AuthenticatedPrincipal p = mock(DefaultOAuth2AuthenticatedPrincipal.class);
+
+        when(SecurityContextHolder.getContext()).thenReturn(ctx);
+        when(ctx.getAuthentication()).thenReturn(auth);
+        when(auth.isAuthenticated()).thenReturn(true);
+        when(auth.getPrincipal()).thenReturn(p);
+
+        when(p.getAttribute("userId")).thenReturn("   ");
+        when(p.getAttribute("sub")).thenReturn("");
+        when(p.getAttribute("clientId")).thenReturn(null);
+
+        assertEquals(Optional.empty(), auditorAware.getCurrentAuditor());
+    }
+
 }
