@@ -8,7 +8,7 @@ import { ProjectService } from 'src/app/services/project-services';
 import { CodeTableServices } from 'src/app/services/code-table-services';
 import { Messages } from 'src/app/utils/constants';
 
-fdescribe('EvaluationCriteriaDialogComponent', () => {
+describe('EvaluationCriteriaDialogComponent', () => {
   let component: EvaluationCriteriaDialogComponent;
   let fixture: ComponentFixture<EvaluationCriteriaDialogComponent>;
   let mockProjectService: jasmine.SpyObj<ProjectService>;
