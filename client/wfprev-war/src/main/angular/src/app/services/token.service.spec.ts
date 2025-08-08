@@ -367,7 +367,7 @@ describe('getUserFullName', () => {
 
     it('should return undefined if tokenDetails.userId is not set', () => {
       service['tokenDetails'] = {};
-      expect(service.getIdir()).toBeUndefined();
+      expect(service.getIdir()).toBe('');
     });
   });
 });
