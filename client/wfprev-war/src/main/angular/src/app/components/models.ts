@@ -65,7 +65,6 @@ export interface ProjectFiscal {
   fiscalActualCostPerHaAmt: number;
   firstNationsDelivPartInd: boolean;
   firstNationsEngagementInd: boolean;
-
   projectPlanFiscalGuid?: string;
   projectFiscalDescription?: string;
   businessAreaComment?: string;
@@ -100,6 +99,10 @@ export interface ProjectFiscal {
   delayRationale?: string;
   abandonedRationale?: string;
   lastProgressUpdateTimestamp?: string;
+  endorseApprUpdateName?: string;
+  endorseApprUpdateUserGuid?: string;
+  endorseApprUpdateUserid?: string;
+  endorseApprUpdatedTimestamp?: string;
 }
 
 
@@ -280,6 +283,8 @@ export interface EvaluationCriteriaSummaryModel {
   isOutsideWuiInd?: boolean;
   totalFilterScore?: number;
   evaluationCriteriaSectionSummaries?: EvaluationCriteriaSectionSummaryModel[];
+  updateDate?: string;
+  updateUser?: string;
 }
 
 export interface EvaluationCriteriaSectionSummaryModel {
