@@ -75,7 +75,7 @@
 	<field name="resultsOpeningId" class="java.lang.String"/>
 	<field name="endorsementTimestamp" class="java.util.Date"/>
 	<field name="approvedTimestamp" class="java.util.Date"/>
-	<field name="outsideWuiInd" class="java.lang.String"/>
+	<field name="outsideWuiInd" class="java.lang.Boolean"/>
 	<field name="totalRclFilterSectionScore" class="java.math.BigDecimal"/>
 	<field name="bdfFilterSectionComment" class="java.lang.String"/>
 	<field name="totalBdfFilterSectionScore" class="java.math.BigDecimal"/>
@@ -845,7 +845,7 @@ Notes on Collective Impact]]></text>
 			<textField isBlankWhenNull="true">
 				<reportElement x="6600" y="0" width="74" height="80" uuid="dd65dfe7-feb9-447c-a4ef-3fc9283e9d52"/>
 				<textElement verticalAlignment="Bottom"/>
-				<textFieldExpression><![CDATA[$F{outsideWuiInd}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[($F{outsideWuiInd} != null && $F{outsideWuiInd}) ? "Y" : "N"]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement x="2373" y="0" width="173" height="80" uuid="a359aab6-809e-46c5-978b-ee35f36736c2"/>
@@ -1077,7 +1077,7 @@ Notes on Collective Impact]]></text>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{businessArea}]]></textFieldExpression>
 			</textField>
-			<textField isBlankWhenNull="true">
+			<textField isBlankWhenNull="true" pattern="yyyy-MM-dd">
 				<reportElement x="6425" y="0" width="175" height="80" uuid="ad806b18-f5ca-49dd-bc57-8ddcf40bfc43"/>
 				<box>
 					<pen lineWidth="1.0"/>
@@ -1185,7 +1185,7 @@ Notes on Collective Impact]]></text>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{firstNationsDelivPartners}]]></textFieldExpression>
 			</textField>
-			<textField isBlankWhenNull="true">
+			<textField isBlankWhenNull="true" pattern="yyyy-MM-dd">
 				<reportElement x="6250" y="0" width="175" height="80" uuid="065fd304-89e0-45b3-8dcb-5d37d781be0f"/>
 				<box>
 					<pen lineWidth="1.0"/>

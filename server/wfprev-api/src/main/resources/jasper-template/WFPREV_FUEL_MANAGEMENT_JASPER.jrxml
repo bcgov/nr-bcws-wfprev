@@ -821,10 +821,10 @@ Notes on Fine Filters]]></text>
 			<textField isBlankWhenNull="true">
 				<reportElement x="7620" y="9" width="98" height="120" uuid="59e8f1be-1b43-494b-8190-2d170debff16"/>
 				<textElement verticalAlignment="Bottom"/>
-				<textFieldExpression><![CDATA[$F{totalFilterSectionScore}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{fineFilterSectionComment}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="7309" y="9" width="91" height="120" uuid="dea67809-9cc0-493e-9ab6-3078fe9b45b8"/>
+				<reportElement x="7310" y="9" width="90" height="120" uuid="dea67809-9cc0-493e-9ab6-3078fe9b45b8"/>
 				<textElement verticalAlignment="Bottom"/>
 				<textFieldExpression><![CDATA[$F{totalMediumFilterSectionScore}]]></textFieldExpression>
 			</textField>
@@ -889,7 +889,7 @@ Notes on Fine Filters]]></text>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{fiscalReportedSpendAmount}]]></textFieldExpression>
 			</textField>
-			<textField isBlankWhenNull="true">
+			<textField isBlankWhenNull="true" pattern="yyyy-MM-dd">
 				<reportElement x="6477" y="9" width="175" height="120" uuid="ad806b18-f5ca-49dd-bc57-8ddcf40bfc43"/>
 				<box>
 					<pen lineWidth="1.0"/>
@@ -996,7 +996,7 @@ Notes on Fine Filters]]></text>
 				<textElement verticalAlignment="Bottom"/>
 				<textFieldExpression><![CDATA[$F{projectLead}]]></textFieldExpression>
 			</textField>
-			<textField isBlankWhenNull="true">
+			<textField isBlankWhenNull="true" pattern="yyyy-MM-dd">
 				<reportElement x="6302" y="9" width="175" height="120" uuid="065fd304-89e0-45b3-8dcb-5d37d781be0f"/>
 				<box>
 					<pen lineWidth="1.0"/>
@@ -1027,7 +1027,7 @@ Notes on Fine Filters]]></text>
 			<textField isBlankWhenNull="true">
 				<reportElement positionType="Float" x="7540" y="9" width="80" height="120" uuid="3d0aa9e4-b013-4100-8f21-c72312030800"/>
 				<textElement verticalAlignment="Bottom"/>
-				<textFieldExpression><![CDATA[$F{totalFilterSectionScore}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{totalFineFilterSectionScore}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement x="4986" y="9" width="94" height="120" uuid="60ad253b-3363-46b7-9a02-ed038500d26e"/>
@@ -1267,7 +1267,7 @@ Notes on Fine Filters]]></text>
 			<textField isBlankWhenNull="true">
 				<reportElement x="7718" y="9" width="88" height="120" uuid="74df65fe-5723-4be3-8a26-5f0831972e98"/>
 				<textElement verticalAlignment="Bottom"/>
-				<textFieldExpression><![CDATA[$F{fineFilterSectionComment}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{totalFilterSectionScore}]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>
