@@ -286,7 +286,7 @@
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Arial" size="9" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Secondary  Objective (Optional)]]></text>
+				<text><![CDATA[Secondary Objective (Optional)]]></text>
 			</staticText>
 			<staticText>
 				<reportElement mode="Opaque" x="2944" y="42" width="173" height="108" forecolor="#FFFFFF" backcolor="#7030A0" uuid="447d2d26-0705-4a89-ad1c-3fb25e2a5514"/>

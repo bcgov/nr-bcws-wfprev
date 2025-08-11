@@ -668,7 +668,7 @@ Notes on Collective Impact]]></text>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Arial" size="9" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Secondary  Objective (Optional)]]></text>
+				<text><![CDATA[Secondary Objective (Optional)]]></text>
 			</staticText>
 			<staticText>
 				<reportElement mode="Opaque" x="6250" y="-200" width="175" height="108" forecolor="#000000" backcolor="#FFC000" uuid="35793c4c-42ac-4063-b7cc-c47035ceb89a"/>

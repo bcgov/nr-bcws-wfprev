@@ -218,7 +218,7 @@ public class ReportService {
                 "Planned Hectares", "Completed Hectares", "Spatial Submitted",
                 "First Nation Engagement (Y/N)", "First Nation Co-Delivery (Y/N)", "First Nation Co-Delivery Partners",
                 "Other Partners", "CFS Code", "RESULTS Project Code", "RESULTS Opening ID",
-                "Primary Objective", "Secondary  Objective (Optional)", "Endorsement Date",
+                "Primary Objective", "Secondary Objective (Optional)", "Endorsement Date",
                 "Approval Date", "WUI Risk Class", "Local WUI Risk Class Rationale",
                 "Total Point Value for Coarse Filter", "Total Point Value for Medium Filters", "Additional Comments/Notes on Medium Filters",
                 "Total Point Value of Fine Filters", "Additional Comments/Notes on Fine Filters", "Total Filter Value"
@@ -258,7 +258,7 @@ public class ReportService {
                 "Planned Hectares", "Completed Hectares", "Spatial Submitted",
                 "First Nation Engagement (Y/N)", "First Nation Co-Delivery (Y/N)", "First Nation Co-Delivery Partners",
                 "Other Partners", "CFS Code", "RESULTS Project Code", "RESULTS Opening ID",
-                "Primary Objective", "Secondary  Objective (Optional)", "Endorsement Date",
+                "Primary Objective", "Secondary Objective (Optional)", "Endorsement Date",
                 "Approval Date", "Outside WUI (Y/N)", "WUI Risk Class", "Local WUI Risk Class",
                 "Risk Class & Location Total Point Value", "Additional Comments/Notes on risk class or outside WUI rationale",
                 "Burn Development and Feasibility Total Point Value", "Additional Comments/Notes on Burn Development and Feasibility",
