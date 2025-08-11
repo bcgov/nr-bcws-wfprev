@@ -31,7 +31,7 @@ type Story = StoryObj<AppHeaderComponent>;
 export const Default: Story = {
   args: {
     environment: 'DEV',
-    title: 'PREVENTION',
+    title: 'ReMi PLANNER',
     currentUser: 'User_1',
   },
 };
@@ -40,7 +40,7 @@ export const Default: Story = {
 export const ProductionEnvironment: Story = {
   args: {
     environment: 'PRODUCTION',
-    title: 'PREVENTION',
+    title: 'ReMi PLANNER',
     currentUser: 'Admin_User',
   },
 };
@@ -49,7 +49,7 @@ export const ProductionEnvironment: Story = {
 export const CustomUser: Story = {
   args: {
     environment: 'STAGING',
-    title: 'PREVENTION',
+    title: 'ReMi PLANNER',
     currentUser: 'Custom_User',
   },
 };
