@@ -246,7 +246,11 @@ public class FeaturesService implements CommonService {
 
     void addPlanFiscalStatusCodeFilters(Join<ProjectEntity, ProjectFiscalEntity> fiscal, List<Predicate> predicates, List<String> planFiscalStatusCodes) {
         if (planFiscalStatusCodes != null && !planFiscalStatusCodes.isEmpty()) {
-            predicates.add(fiscal.get(PLAN_FISCAL_STATUS_CODE).in(planFiscalStatusCodes));
+            predicates.add(
+                fiscal.get("planFiscalStatusCode")
+                    .get("planFiscalStatusCode")
+                    .in(planFiscalStatusCodes)
+            );
         }
     }
 
@@ -307,7 +311,11 @@ public class FeaturesService implements CommonService {
 
         // Plan fiscal status filter
         if (planFiscalStatusCodes != null && !planFiscalStatusCodes.isEmpty()) {
-            predicates.add(fiscal.get(PLAN_FISCAL_STATUS_CODE).in(planFiscalStatusCodes));
+            predicates.add(
+                fiscal.get("planFiscalStatusCode")
+                    .get("planFiscalStatusCode")
+                    .in(planFiscalStatusCodes)
+            );
         }
 
         query.where(cb.and(predicates.toArray(new Predicate[0])));
