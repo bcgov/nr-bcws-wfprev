@@ -246,11 +246,11 @@ class FeaturesServiceTest {
         when(fiscalRoot.get("planFiscalStatusCode")).thenReturn(statusOuterPath);
         when(statusOuterPath.get("planFiscalStatusCode")).thenReturn(statusInnerPath);
         when(fiscalRoot.get("fiscalYear")).thenReturn(fiscalYearPath);
-
+        // Mock query behavior
         TypedQuery<ProjectFiscalEntity> mockQuery = mock(TypedQuery.class);
         when(entityManager.createQuery(fiscalQuery)).thenReturn(mockQuery);
         when(mockQuery.getResultList()).thenReturn(Collections.singletonList(new ProjectFiscalEntity()));
-
+        // Call method under test
         List<ProjectFiscalEntity> result = featuresService.findFilteredProjectFiscals(
                 projectGuid,
                 params.getFiscalYears(),
@@ -460,7 +460,7 @@ class FeaturesServiceTest {
         Path<Object> innerPath = (Path<Object>) mock(Path.class);
         Predicate mockPredicate = mock(Predicate.class);
 
-        // Match service: .get("planFiscalStatusCode").get("planFiscalStatusCode").in(...)
+        // to match service get("planFiscalStatusCode").get("planFiscalStatusCode")
         when(fiscal.get("planFiscalStatusCode")).thenReturn(outerPath);
         when(outerPath.get("planFiscalStatusCode")).thenReturn(innerPath);
         when(innerPath.in(planFiscalStatusCodes)).thenReturn(mockPredicate);
