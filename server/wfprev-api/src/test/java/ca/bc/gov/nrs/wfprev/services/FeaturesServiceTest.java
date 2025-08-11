@@ -233,20 +233,23 @@ class FeaturesServiceTest {
         Path projectPath = mock(Path.class);
         Path guidPath = mock(Path.class);
         Path categoryPath = mock(Path.class);
-        Path statusPath = mock(Path.class);
         Path fiscalYearPath = mock(Path.class);
+
+        @SuppressWarnings("unchecked")
+        Path<Object> statusOuterPath = (Path<Object>) mock(Path.class);
+        @SuppressWarnings("unchecked")
+        Path<Object> statusInnerPath = (Path<Object>) mock(Path.class);
 
         when(fiscalRoot.get("project")).thenReturn(projectPath);
         when(projectPath.get("projectGuid")).thenReturn(guidPath);
         when(fiscalRoot.get("activityCategoryCode")).thenReturn(categoryPath);
-        when(fiscalRoot.get("planFiscalStatusCode")).thenReturn(statusPath);
+        when(fiscalRoot.get("planFiscalStatusCode")).thenReturn(statusOuterPath);
+        when(statusOuterPath.get("planFiscalStatusCode")).thenReturn(statusInnerPath);
         when(fiscalRoot.get("fiscalYear")).thenReturn(fiscalYearPath);
-
         // Mock query behavior
         TypedQuery<ProjectFiscalEntity> mockQuery = mock(TypedQuery.class);
         when(entityManager.createQuery(fiscalQuery)).thenReturn(mockQuery);
         when(mockQuery.getResultList()).thenReturn(Collections.singletonList(new ProjectFiscalEntity()));
-
         // Call method under test
         List<ProjectFiscalEntity> result = featuresService.findFilteredProjectFiscals(
                 projectGuid,
@@ -452,21 +455,23 @@ class FeaturesServiceTest {
         Join<ProjectEntity, ProjectFiscalEntity> fiscal = (Join<ProjectEntity, ProjectFiscalEntity>) mock(Join.class);
 
         @SuppressWarnings("unchecked")
-        Path<Object> mockPath = (Path<Object>) mock(Path.class);
+        Path<Object> outerPath = (Path<Object>) mock(Path.class);
+        @SuppressWarnings("unchecked")
+        Path<Object> innerPath = (Path<Object>) mock(Path.class);
         Predicate mockPredicate = mock(Predicate.class);
 
-        // Mock the behavior of fiscal.get()
-        when(fiscal.get("planFiscalStatusCode")).thenReturn(mockPath);
-        when(mockPath.in(planFiscalStatusCodes)).thenReturn(mockPredicate);
+        // to match service get("planFiscalStatusCode").get("planFiscalStatusCode")
+        when(fiscal.get("planFiscalStatusCode")).thenReturn(outerPath);
+        when(outerPath.get("planFiscalStatusCode")).thenReturn(innerPath);
+        when(innerPath.in(planFiscalStatusCodes)).thenReturn(mockPredicate);
 
-        // Act
         featuresService.addPlanFiscalStatusCodeFilters(fiscal, predicates, planFiscalStatusCodes);
 
-        // Assert
-        verify(fiscal, times(1)).get("planFiscalStatusCode");
-        verify(mockPath, times(1)).in(planFiscalStatusCodes);
-        assertEquals(1, predicates.size(), "Expected one predicate to be added.");
-        assertTrue(predicates.contains(mockPredicate), "Expected the predicate to be added to the list.");
+        verify(fiscal).get("planFiscalStatusCode");
+        verify(outerPath).get("planFiscalStatusCode");
+        verify(innerPath).in(planFiscalStatusCodes);
+        assertEquals(1, predicates.size());
+        assertTrue(predicates.contains(mockPredicate));
     }
 
     @Test
