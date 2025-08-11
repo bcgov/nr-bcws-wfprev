@@ -247,8 +247,8 @@ public class FeaturesService implements CommonService {
     void addPlanFiscalStatusCodeFilters(Join<ProjectEntity, ProjectFiscalEntity> fiscal, List<Predicate> predicates, List<String> planFiscalStatusCodes) {
         if (planFiscalStatusCodes != null && !planFiscalStatusCodes.isEmpty()) {
             predicates.add(
-                fiscal.get("planFiscalStatusCode")
-                    .get("planFiscalStatusCode")
+                fiscal.get(PLAN_FISCAL_STATUS_CODE)
+                    .get(PLAN_FISCAL_STATUS_CODE)
                     .in(planFiscalStatusCodes)
             );
         }
@@ -312,8 +312,8 @@ public class FeaturesService implements CommonService {
         // Plan fiscal status filter
         if (planFiscalStatusCodes != null && !planFiscalStatusCodes.isEmpty()) {
             predicates.add(
-                fiscal.get("planFiscalStatusCode")
-                    .get("planFiscalStatusCode")
+                fiscal.get(PLAN_FISCAL_STATUS_CODE)
+                    .get(PLAN_FISCAL_STATUS_CODE)
                     .in(planFiscalStatusCodes)
             );
         }
