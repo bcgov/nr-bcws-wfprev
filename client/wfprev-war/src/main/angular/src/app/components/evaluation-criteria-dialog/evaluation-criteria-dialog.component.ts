@@ -21,7 +21,7 @@ import { EvaluationCriteriaSectionCodes, Messages, ModalMessages, ModalTitles, P
 export class EvaluationCriteriaDialogComponent {
   codeTables = [
     { name: 'evaluationCriteriaCodes', embeddedKey: 'evaluationCriteriaCode' },
-    { name: 'wuiRiskClassCodes', embeddedKey: 'wuiRiskClassCode'}
+    { name: 'wuiRiskClassCodes', embeddedKey: 'wuiRiskClassCode' }
   ];
   messages = Messages;
   criteriaForm!: FormGroup;
@@ -46,11 +46,12 @@ export class EvaluationCriteriaDialogComponent {
     private readonly codeTableServices: CodeTableServices,
     private readonly projectService: ProjectService,
     private readonly snackbarService: MatSnackBar,
-    @Inject(MAT_DIALOG_DATA) public data: { 
+    @Inject(MAT_DIALOG_DATA) public data: {
       project: Project,
-      evaluationCriteriaSummary?: EvaluationCriteriaSummaryModel;}
-    ){
+      evaluationCriteriaSummary?: EvaluationCriteriaSummaryModel;
     }
+  ) {
+  }
 
   ngOnInit(): void {
     this.initializeForm();
@@ -117,7 +118,7 @@ export class EvaluationCriteriaDialogComponent {
 
   assignCodeTableData(key: string, data: any): void {
     switch (key) {
-      case 'evaluationCriteriaCode':
+      case 'evaluationCriteriaCode': {
         const allCriteria = data._embedded.evaluationCriteriaCode ?? [];
         const type = this.data.project.projectTypeCode?.projectTypeCode;
 
@@ -143,7 +144,7 @@ export class EvaluationCriteriaDialogComponent {
             .sort((a, b) => (a.criteriaLabel ?? '').localeCompare(b.criteriaLabel ?? ''))
         }
         break;
-
+      }
       case 'wuiRiskClassCode':
         this.wuiRiskClassCode = (data._embedded.wuiRiskClassRank ?? []);
         break;
@@ -198,12 +199,6 @@ export class EvaluationCriteriaDialogComponent {
       .reduce((sum, f) => sum + (f.weightedRank ?? 0), 0);
   }
 
-  calculateCoarseTotal(): void {
-    this.coarseTotal = this.riskClassLocationFilters
-      .filter(f => this.selectedCoarse.has(f.evaluationCriteriaGuid ?? ''))
-      .reduce((sum, f) => sum + (f.weightedRank ?? 0), 0);
-  }
-
   updateCoarseTotal() {
     const wuiValue = this.criteriaForm.get('wuiRiskClassCode')?.value;
     const localValue = this.criteriaForm.get('localWuiRiskClassCode')?.value;
@@ -242,12 +237,12 @@ export class EvaluationCriteriaDialogComponent {
     ).subscribe({
       next: (result) => {
         this.snackbarService.open(
-          Messages.evaluationCriteriaCreatedSuccess, 
+          Messages.evaluationCriteriaCreatedSuccess,
           'OK',
           { duration: 5000, panelClass: 'snackbar-success' }
         );
         this.dialogRef.close(result);
-        },
+      },
       error: (err) => {
         console.error("Failed to create Evaluation Criteria Summary", err);
         this.snackbarService.open(
@@ -269,7 +264,7 @@ export class EvaluationCriteriaDialogComponent {
     ).subscribe({
       next: (result) => {
         this.snackbarService.open(
-          Messages.evaluationCriteriaUpdatedSuccess, 
+          Messages.evaluationCriteriaUpdatedSuccess,
           'OK',
           { duration: 5000, panelClass: 'snackbar-success' }
         );
@@ -290,11 +285,19 @@ export class EvaluationCriteriaDialogComponent {
     const wuiRiskClassCodeValue = this.criteriaForm.get('wuiRiskClassCode')?.value;
     const localWuiRiskClassCodeValue = this.criteriaForm.get('localWuiRiskClassCode')?.value;
 
+    const coarseSectionCode = this.isCulturalPrescribedFire ? EvaluationCriteriaSectionCodes.RISK_CLASS_LOCATION : EvaluationCriteriaSectionCodes.COARSE_FILTER;
+    const mediumSectionCode = this.isCulturalPrescribedFire ? EvaluationCriteriaSectionCodes.BURN_DEVELOPMENT_FEASIBILITY : EvaluationCriteriaSectionCodes.MEDIUM_FILTER;
+    const fineSectionCode = this.isCulturalPrescribedFire ? EvaluationCriteriaSectionCodes.COLLECTIVE_IMPACT : EvaluationCriteriaSectionCodes.FINE_FILTER;
+
+    const coarseSection = existingSummary?.evaluationCriteriaSectionSummaries?.find(
+      s => s.evaluationCriteriaSectionCode?.evaluationCriteriaSectionCode ===  coarseSectionCode
+    );
+
     const mediumSection = existingSummary?.evaluationCriteriaSectionSummaries?.find(
-      s => s.evaluationCriteriaSectionCode?.evaluationCriteriaSectionCode === EvaluationCriteriaSectionCodes.MEDIUM_FILTER
+      s => s.evaluationCriteriaSectionCode?.evaluationCriteriaSectionCode === mediumSectionCode
     );
     const fineSection = existingSummary?.evaluationCriteriaSectionSummaries?.find(
-      s => s.evaluationCriteriaSectionCode?.evaluationCriteriaSectionCode === EvaluationCriteriaSectionCodes.FINE_FILTER
+      s => s.evaluationCriteriaSectionCode?.evaluationCriteriaSectionCode === fineSectionCode
     );
 
     return {
@@ -302,13 +305,13 @@ export class EvaluationCriteriaDialogComponent {
       projectGuid: this.data.project.projectGuid,
       wuiRiskClassCode: wuiRiskClassCodeValue
         ? {
-            wuiRiskClassCode: this.wuiRiskClassCode.find(c => c.weightedRank == wuiRiskClassCodeValue)?.wuiRiskClassCode
-          }
+          wuiRiskClassCode: this.wuiRiskClassCode.find(c => c.weightedRank == wuiRiskClassCodeValue)?.wuiRiskClassCode
+        }
         : undefined,
       localWuiRiskClassCode: localWuiRiskClassCodeValue
         ? {
-            wuiRiskClassCode: this.wuiRiskClassCode.find(c => c.weightedRank == localWuiRiskClassCodeValue)?.wuiRiskClassCode
-          }
+          wuiRiskClassCode: this.wuiRiskClassCode.find(c => c.weightedRank == localWuiRiskClassCodeValue)?.wuiRiskClassCode
+        }
         : undefined,
       wuiRiskClassComment: '',
       localWuiRiskClassRationale: this.criteriaForm.get('localWuiRiskClassRationale')?.value,
@@ -316,8 +319,24 @@ export class EvaluationCriteriaDialogComponent {
       totalFilterScore: this.coarseTotal + this.mediumTotal + this.fineTotal,
       evaluationCriteriaSectionSummaries: [
         {
+          evaluationCriteriaSectionSummaryGuid: isCreate ? undefined : coarseSection?.evaluationCriteriaSectionSummaryGuid,
+          evaluationCriteriaSectionCode: { evaluationCriteriaSectionCode: coarseSectionCode },
+          evaluationCriteriaSummaryGuid: existingSummary?.evaluationCriteriaSummaryGuid,
+          filterSectionScore: this.coarseTotal,
+          filterSectionComment: this.criteriaForm.get('localWuiRiskClassRationale')?.value,
+          evaluationCriteriaSelected: this.riskClassLocationFilters.map(f => {
+            const existing = coarseSection?.evaluationCriteriaSelected?.find(s => s.evaluationCriteriaGuid === f.evaluationCriteriaGuid);
+            return {
+              evaluationCriteriaSelectedGuid: isCreate ? undefined : existing?.evaluationCriteriaSelectedGuid,
+              evaluationCriteriaGuid: f.evaluationCriteriaGuid,
+              evaluationCriteriaSectionSummaryGuid: isCreate ? undefined : coarseSection?.evaluationCriteriaSectionSummaryGuid,
+              isEvaluationCriteriaSelectedInd: this.selectedCoarse.has(f.evaluationCriteriaGuid ?? '')
+            };
+          })
+        },
+        {
           evaluationCriteriaSectionSummaryGuid: isCreate ? undefined : mediumSection?.evaluationCriteriaSectionSummaryGuid,
-          evaluationCriteriaSectionCode: { evaluationCriteriaSectionCode: EvaluationCriteriaSectionCodes.MEDIUM_FILTER },
+          evaluationCriteriaSectionCode: { evaluationCriteriaSectionCode: mediumSectionCode },
           evaluationCriteriaSummaryGuid: existingSummary?.evaluationCriteriaSummaryGuid,
           filterSectionScore: this.mediumTotal,
           filterSectionComment: this.criteriaForm.get('mediumFilterComments')?.value,
@@ -333,7 +352,7 @@ export class EvaluationCriteriaDialogComponent {
         },
         {
           evaluationCriteriaSectionSummaryGuid: isCreate ? undefined : fineSection?.evaluationCriteriaSectionSummaryGuid,
-          evaluationCriteriaSectionCode: { evaluationCriteriaSectionCode: EvaluationCriteriaSectionCodes.FINE_FILTER },
+          evaluationCriteriaSectionCode: { evaluationCriteriaSectionCode: fineSectionCode },
           evaluationCriteriaSummaryGuid: existingSummary?.evaluationCriteriaSummaryGuid,
           filterSectionScore: this.fineTotal,
           filterSectionComment: this.criteriaForm.get('fineFilterComments')?.value,
@@ -348,30 +367,7 @@ export class EvaluationCriteriaDialogComponent {
               isEvaluationCriteriaSelectedInd: this.selectedFine.has(f.evaluationCriteriaGuid ?? '')
             };
           })
-        },
-          ...(this.isOutsideOfWuiOn ? (() => {
-            const rclSection = existingSummary?.evaluationCriteriaSectionSummaries?.find(
-              s => s.evaluationCriteriaSectionCode?.evaluationCriteriaSectionCode === 'RCL'
-            );
-            return [{
-              evaluationCriteriaSectionSummaryGuid: isCreate ? undefined : rclSection?.evaluationCriteriaSectionSummaryGuid,
-              evaluationCriteriaSectionCode: { evaluationCriteriaSectionCode: 'RCL' },
-              evaluationCriteriaSummaryGuid: existingSummary?.evaluationCriteriaSummaryGuid,
-              filterSectionScore: this.coarseTotal,
-              filterSectionComment: this.criteriaForm.get('localWuiRiskClassRationale')?.value,
-              evaluationCriteriaSelected: this.riskClassLocationFilters.map(f => {
-                const existing = rclSection?.evaluationCriteriaSelected?.find(
-                  s => s.evaluationCriteriaGuid === f.evaluationCriteriaGuid
-                );
-                return {
-                  evaluationCriteriaSelectedGuid: existing?.evaluationCriteriaSelectedGuid ?? undefined,
-                  evaluationCriteriaGuid: f.evaluationCriteriaGuid,
-                  evaluationCriteriaSectionSummaryGuid: rclSection?.evaluationCriteriaSectionSummaryGuid,
-                  isEvaluationCriteriaSelectedInd: this.selectedCoarse.has(f.evaluationCriteriaGuid ?? '')
-                };
-              })
-            }];
-          })() : [])
+        }
       ]
     };
   }
@@ -381,7 +377,7 @@ export class EvaluationCriteriaDialogComponent {
       data: {
         indicator: 'confirm-cancel',
         title: ModalTitles.CONFIRM_CANCEL_TITLE,
-         message: ModalMessages.CONFIRM_CANCEL_MESSAGE
+        message: ModalMessages.CONFIRM_CANCEL_MESSAGE
       },
       width: '600px',
     });
@@ -435,7 +431,7 @@ export class EvaluationCriteriaDialogComponent {
     for (const section of summary.evaluationCriteriaSectionSummaries ?? []) {
       const code = section.evaluationCriteriaSectionCode?.evaluationCriteriaSectionCode;
 
-      if (code === EvaluationCriteriaSectionCodes.MEDIUM_FILTER) {
+      if (code === EvaluationCriteriaSectionCodes.MEDIUM_FILTER || code === EvaluationCriteriaSectionCodes.BURN_DEVELOPMENT_FEASIBILITY) {
         // Check all selected criteria
         for (const selected of section.evaluationCriteriaSelected ?? []) {
           if (selected.isEvaluationCriteriaSelectedInd) {
@@ -448,7 +444,7 @@ export class EvaluationCriteriaDialogComponent {
         this.mediumTotal = section.filterSectionScore ?? 0;
       }
 
-      if (code === EvaluationCriteriaSectionCodes.FINE_FILTER) {
+      if (code === EvaluationCriteriaSectionCodes.FINE_FILTER || code === EvaluationCriteriaSectionCodes.COLLECTIVE_IMPACT) {
         for (const selected of section.evaluationCriteriaSelected ?? []) {
           if (selected.isEvaluationCriteriaSelectedInd) {
             this.selectedFine.add(selected.evaluationCriteriaGuid!);

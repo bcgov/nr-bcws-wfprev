@@ -233,6 +233,11 @@ export class TokenService {
     return `${first} ${last}`.trim();
   }
 
+  public getIdir(): string {
+    const idir = (this.tokenDetails?.user_id ?? this.tokenDetails?.userId) ?? '';
+    return idir;
+  }
+
 
   public doesUserHaveApplicationPermissions(scopes?: string[]): boolean {
     if (this.tokenDetails?.scope?.length > 0 && scopes?.length) {

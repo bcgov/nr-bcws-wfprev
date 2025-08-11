@@ -100,6 +100,10 @@ public class ProjectFiscalResourceAssembler extends RepresentationModelAssembler
         model.setUpdateUser(entity.getUpdateUser());
         model.setCreateDate(entity.getCreateDate());
         model.setUpdateDate(entity.getUpdateDate());
+        model.setEndorseApprUpdateName(entity.getEndorseApprUpdateName());
+        model.setEndorseApprUpdateUserGuid(entity.getEndorseApprUpdateUserGuid());
+        model.setEndorseApprUpdateUserid(entity.getEndorseApprUpdateUserid());
+        model.setEndorseApprUpdatedTimestamp(entity.getEndorseApprUpdatedTimestamp());
 
         return model;
     }
@@ -182,6 +186,10 @@ public class ProjectFiscalResourceAssembler extends RepresentationModelAssembler
         entity.setCreateDate(model.getCreateDate());
         entity.setUpdateUser(model.getUpdateUser());
         entity.setUpdateDate(model.getUpdateDate());
+        entity.setEndorseApprUpdateName(model.getEndorseApprUpdateName());
+        entity.setEndorseApprUpdateUserGuid(model.getEndorseApprUpdateUserGuid());
+        entity.setEndorseApprUpdateUserid(model.getEndorseApprUpdateUserid());
+        entity.setEndorseApprUpdatedTimestamp(model.getEndorseApprUpdatedTimestamp());
         return entity;
     }
 
@@ -288,6 +296,14 @@ public class ProjectFiscalResourceAssembler extends RepresentationModelAssembler
                 nonNullOrDefault(projectFiscalModel.getAbandonedRationale(), existingEntity.getAbandonedRationale()));
         existingEntity.setLastProgressUpdateTimestamp(
                 nonNullOrDefault(projectFiscalModel.getLastProgressUpdateTimestamp(), existingEntity.getLastProgressUpdateTimestamp()));
+        existingEntity.setEndorseApprUpdateName(
+                nonNullOrDefault(projectFiscalModel.getEndorseApprUpdateName(), existingEntity.getEndorseApprUpdateName()));
+        existingEntity.setEndorseApprUpdateUserGuid(
+                nonNullOrDefault(projectFiscalModel.getEndorseApprUpdateUserGuid(), existingEntity.getEndorseApprUpdateUserGuid()));
+        existingEntity.setEndorseApprUpdateUserid(
+                nonNullOrDefault(projectFiscalModel.getEndorseApprUpdateUserid(), existingEntity.getEndorseApprUpdateUserid()));
+        existingEntity.setEndorseApprUpdatedTimestamp(
+                nonNullOrDefault(projectFiscalModel.getEndorseApprUpdatedTimestamp(), existingEntity.getEndorseApprUpdatedTimestamp()));
 
         return existingEntity;
     }
