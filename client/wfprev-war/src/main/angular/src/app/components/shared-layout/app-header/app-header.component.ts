@@ -31,7 +31,7 @@ export class AppHeaderComponent implements OnInit {
   }
 
   environment: string = ''
-  title: string = 'PREVENTION'
+  title: string = 'ReMi PLANNER'
   currentUser: string = 'User_1'
   readonly EnvironmentIndicators = EnvironmentIndicators;
 
