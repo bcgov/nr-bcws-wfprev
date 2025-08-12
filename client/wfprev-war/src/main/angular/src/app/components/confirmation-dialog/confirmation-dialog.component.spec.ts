@@ -160,7 +160,7 @@ describe('ConfirmationDialogComponent', () => {
 
     it('should show the correct title', () => {
       const titleElement = fixture.nativeElement.querySelector('.title-bar');
-      expect(titleElement.textContent.trim()).toBe('Confirm Unsave');
+      expect(titleElement.textContent.trim()).toBe('Unsaved Changes');
     });
 
     it('should display the correct message for "confirm-unsave"', () => {
