@@ -180,4 +180,58 @@ describe('EndorsementApprovalComponent', () => {
     component.endorsementApprovalForm.get('approveFiscalActivity')?.setValue(false);
     expect(control.value).toBeNull();
   });
+
+  it('statusCode returns the nested planFiscalStatusCode value', () => {
+    component.fiscal = { ...mockFiscal, planFiscalStatusCode: { planFiscalStatusCode: FiscalStatuses.PREPARED } };
+    expect(component.statusCode).toBe(FiscalStatuses.PREPARED);
+  });
+
+  it('statusCode returns undefined when fiscal or status is missing', () => {
+    component.fiscal = { ...mockFiscal, planFiscalStatusCode: undefined as any };
+    expect(component.statusCode).toBeUndefined();
+
+    component.fiscal = undefined as any;
+    expect(component.statusCode).toBeUndefined();
+  });
+
+  it('isDraft is true only when status is DRAFT', () => {
+    component.fiscal = { ...mockFiscal, planFiscalStatusCode: { planFiscalStatusCode: FiscalStatuses.DRAFT } };
+    expect(component.isDraft).toBeTrue();
+
+    component.fiscal = { ...mockFiscal, planFiscalStatusCode: { planFiscalStatusCode: FiscalStatuses.PREPARED } };
+    expect(component.isDraft).toBeFalse();
+  });
+
+  it('isCardDisabled is true in DRAFT, COMPLETE, and CANCELLED', () => {
+    component.fiscal = { ...mockFiscal, planFiscalStatusCode: { planFiscalStatusCode: FiscalStatuses.DRAFT } };
+    expect(component.isCardDisabled).toBeTrue();
+
+    component.fiscal = { ...mockFiscal, planFiscalStatusCode: { planFiscalStatusCode: FiscalStatuses.COMPLETE } };
+    expect(component.isCardDisabled).toBeTrue();
+
+    component.fiscal = { ...mockFiscal, planFiscalStatusCode: { planFiscalStatusCode: FiscalStatuses.CANCELLED } };
+    expect(component.isCardDisabled).toBeTrue();
+  });
+
+  it('isCardDisabled is false in PROPOSED, PREPARED, and IN_PROGRESS', () => {
+    component.fiscal = { ...mockFiscal, planFiscalStatusCode: { planFiscalStatusCode: FiscalStatuses.PROPOSED } };
+    expect(component.isCardDisabled).toBeFalse();
+
+    component.fiscal = { ...mockFiscal, planFiscalStatusCode: { planFiscalStatusCode: FiscalStatuses.PREPARED } };
+    expect(component.isCardDisabled).toBeFalse();
+
+    component.fiscal = { ...mockFiscal, planFiscalStatusCode: { planFiscalStatusCode: FiscalStatuses.IN_PROGRESS } };
+    expect(component.isCardDisabled).toBeFalse();
+  });
+
+  it('showDraftTooltip mirrors isDraft (true only in DRAFT)', () => {
+    component.fiscal = { ...mockFiscal, planFiscalStatusCode: { planFiscalStatusCode: FiscalStatuses.DRAFT } };
+    expect(component.showDraftTooltip).toBeTrue();
+
+    component.fiscal = { ...mockFiscal, planFiscalStatusCode: { planFiscalStatusCode: FiscalStatuses.COMPLETE } };
+    expect(component.showDraftTooltip).toBeFalse();
+
+    component.fiscal = { ...mockFiscal, planFiscalStatusCode: { planFiscalStatusCode: FiscalStatuses.PREPARED } };
+    expect(component.showDraftTooltip).toBeFalse();
+  });
 });
