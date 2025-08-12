@@ -94,7 +94,7 @@ public class FuelManagementReportEntity implements Serializable {
     @Column(name = "funding_stream")
     private String fundingStream;
 
-    @Column(name = "total_estimated_cost_amount")
+    @Column(name = "total_cost_estimate_amount")
     private BigDecimal totalEstimatedCostAmount;
 
     @Column(name = "fiscal_ancillary_fund_amount")
