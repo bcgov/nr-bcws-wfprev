@@ -25,7 +25,7 @@ export class EvaluationCriteriaComponent implements OnChanges {
   constructor(
     private readonly dialog: MatDialog,
     private readonly projectService: ProjectService
-  ) {}
+  ) { }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['project'] && this.project?.projectGuid) {
@@ -85,33 +85,44 @@ export class EvaluationCriteriaComponent implements OnChanges {
   }
 
   getCalculatedTotal(summary: any): number {
+    const isRx = this.isPrescribedFire;
     if (!summary) return 0;
 
     const coarse = this.getCoarseTotal(summary);
-    const medium = this.getSectionTotal(summary, EvaluationCriteriaSectionCodes.MEDIUM_FILTER);
-    const fine = this.getSectionTotal(summary, EvaluationCriteriaSectionCodes.FINE_FILTER);
+    const medium = this.getSectionTotal(summary, isRx ? EvaluationCriteriaSectionCodes.BURN_DEVELOPMENT_FEASIBILITY : EvaluationCriteriaSectionCodes.MEDIUM_FILTER);
+    const fine = this.getSectionTotal(summary, isRx ? EvaluationCriteriaSectionCodes.COLLECTIVE_IMPACT : EvaluationCriteriaSectionCodes.FINE_FILTER);
 
     return coarse + medium + fine;
   }
-getCoarseTotal(summary: any): number {
-  const isRx = this.isPrescribedFire;
-  const isOutside = summary?.isOutsideWuiInd;
+  getCoarseTotal(summary: any): number {
+    const isRx = this.isPrescribedFire;
 
-  if (isRx && isOutside) {
-    // Prescribed fire Outside of WUI → use RCL checkboxes total
-    return this.getSectionTotal(summary, EvaluationCriteriaSectionCodes.RISK_CLASS_LOCATION);
+    if (isRx) {
+      // Prescribed fire Outside of WUI → use RCL checkboxes total
+      return this.getSectionTotal(summary, EvaluationCriteriaSectionCodes.RISK_CLASS_LOCATION);
+    }
+
+    // Otherwise use dropdowns
+    return (
+      summary?.localWuiRiskClassCode?.weightedRank ??
+      summary?.wuiRiskClassCode?.weightedRank ??
+      0
+    );
   }
-
-  // Otherwise use dropdowns
-  return (
-    summary?.localWuiRiskClassCode?.weightedRank ??
-    summary?.wuiRiskClassCode?.weightedRank ??
-    0
-  );
-}
-
   formatCodeLabel(code: string | undefined): string {
     return code ? code.replace(/_/g, ' ') : '';
+  }
+
+  get mediumSectionCode(): string {
+    return this.isPrescribedFire
+      ? EvaluationCriteriaSectionCodes.BURN_DEVELOPMENT_FEASIBILITY
+      : EvaluationCriteriaSectionCodes.MEDIUM_FILTER;
+  }
+
+  get fineSectionCode(): string {
+    return this.isPrescribedFire
+      ? EvaluationCriteriaSectionCodes.COLLECTIVE_IMPACT
+      : EvaluationCriteriaSectionCodes.FINE_FILTER;
   }
 
   get isPrescribedFire(): boolean {
