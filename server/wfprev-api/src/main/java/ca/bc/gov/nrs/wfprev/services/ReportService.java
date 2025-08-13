@@ -27,7 +27,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.io.UncheckedIOException;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
@@ -186,6 +185,7 @@ public class ReportService {
                 );
             }
 
+            // 2025 -> 2025/26 format
             if (entity.getFiscalYear() != null) {
                 try {
                     int year = Integer.parseInt(entity.getFiscalYear().toString());
@@ -213,6 +213,7 @@ public class ReportService {
             );
         }
 
+        // 2025 -> 2025/26 format
         if (entity.getFiscalYear() != null) {
             try {
                 int year = Integer.parseInt(entity.getFiscalYear().toString());
