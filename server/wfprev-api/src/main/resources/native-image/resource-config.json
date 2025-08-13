@@ -11,7 +11,9 @@
       { "pattern": "net/sf/jasperreports/engine/dtds/.*\\.xsd$" },
       { "pattern": "net/sf/jasperreports/engine/dtds/.*\\.dtd$" },
       { "pattern": "jasper-template/.*\\.(png|jpg|jpeg|svg)$" },
-      { "pattern": "net/sf/jasperreports/fonts/.*" }
+      { "pattern": "net/sf/jasperreports/fonts/.*" },
+      { "pattern": ".*\\.(png|jpg|jpeg|gif)$" },
+      { "pattern": ".*\\.(ttf|otf)$" }
     ]
   }
 }

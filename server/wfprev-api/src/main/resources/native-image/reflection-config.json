@@ -1550,5 +1550,29 @@
   { "name": "net.sf.jasperreports.engine.export.JRCsvExporter", "allDeclaredConstructors": true, "allPublicMethods": true },
   { "name": "net.sf.jasperreports.data.json.JsonDataAdapterImpl", "allDeclaredConstructors": true, "allPublicMethods": true },
   { "name": "net.sf.jasperreports.data.xml.XmlDataAdapterImpl", "allDeclaredConstructors": true, "allPublicMethods": true },
-  { "name": "net.sf.jasperreports.data.csv.CsvDataAdapterImpl", "allDeclaredConstructors": true, "allPublicMethods": true }
+  { "name": "net.sf.jasperreports.data.csv.CsvDataAdapterImpl", "allDeclaredConstructors": true, "allPublicMethods": true },
+  {
+    "name": "net.sf.jasperreports.engine.export.ooxml.JRXlsxExporter",
+    "allPublicConstructors": true,
+    "allPublicMethods": true
+  },
+  {
+    "name": "net.sf.jasperreports.export.SimpleXlsxReportConfiguration",
+    "allPublicConstructors": true,
+    "allPublicMethods": true
+  },
+  {
+    "name": "net.sf.jasperreports.export.SimpleExporterInput",
+    "allPublicConstructors": true,
+    "allPublicMethods": true
+  },
+  {
+    "name": "net.sf.jasperreports.export.SimpleOutputStreamExporterOutput",
+    "allPublicConstructors": true,
+    "allPublicMethods": true
+  },
+  {
+    "name": "net.sf.jasperreports.engine.util.JRPropertiesUtil",
+    "allPublicMethods": true
+  }
 ]
