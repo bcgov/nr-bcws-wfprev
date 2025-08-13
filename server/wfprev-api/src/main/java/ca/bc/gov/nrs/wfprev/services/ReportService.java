@@ -28,6 +28,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.UncheckedIOException;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,6 +47,9 @@ public class ReportService {
     private static final String PROJECT_URL_PREFIX = "/edit-project?projectGuid=";
 
     private static final String FISCAL_QUERY_STRING = "&tab=fiscal&fiscalGuid=";
+
+    DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("MM/dd/yyyy")
+            .withZone(ZoneId.systemDefault());
 
     private final FuelManagementReportRepository fuelManagementRepository;
     private final CulturalPrescribedFireReportRepository culturalPrescribedFireReportRepository;
@@ -67,8 +72,7 @@ public class ReportService {
                     .map(ProjectFiscalEntity::getProjectPlanFiscalGuid)
                     .distinct()
                     .toList();
-
-            // 2. Fetch both datasets
+            
             List<FuelManagementReportEntity> fuelData = fuelManagementRepository.findByProjectPlanFiscalGuidIn(projectPlanFiscalGuids);
             List<CulturalPrescribedFireReportEntity> crxData = culturalPrescribedFireReportRepository.findByProjectPlanFiscalGuidIn(projectPlanFiscalGuids);
 
@@ -103,7 +107,9 @@ public class ReportService {
             config.setRemoveEmptySpaceBetweenRows(false);
             config.setWhitePageBackground(false);
             config.setDetectCellType(true);
-            config.setCollapseRowSpan(false);
+            config.setRemoveEmptySpaceBetweenRows(true);
+            config.setRemoveEmptySpaceBetweenColumns(true);
+            config.setCollapseRowSpan(true);
             config.setSheetNames(new String[]{"FM XLS Download", "CRx XLS Download"});
             exporter.setConfiguration(config);
 
@@ -179,6 +185,15 @@ public class ReportService {
                         entity.setBusinessArea(programArea.getProgramAreaName())
                 );
             }
+
+            if (entity.getFiscalYear() != null) {
+                try {
+                    int year = Integer.parseInt(entity.getFiscalYear().toString());
+                    entity.setFiscalYear(year + "/" + String.format("%02d", (year + 1) % 100));
+                } catch (NumberFormatException e) {
+                    // Leave as-is if not a valid number
+                }
+            }
         }
     }
 
@@ -197,6 +212,15 @@ public class ReportService {
                     entity.setBusinessArea(programArea.getProgramAreaName())
             );
         }
+
+        if (entity.getFiscalYear() != null) {
+            try {
+                int year = Integer.parseInt(entity.getFiscalYear().toString());
+                entity.setFiscalYear(year + "/" + String.format("%02d", (year + 1) % 100));
+            } catch (NumberFormatException e) {
+                // Leave as-is if not a valid number
+            }
+        }
     }
 
     private void addToZip(ZipOutputStream zipOut, String fileName, byte[] content) throws IOException {
@@ -213,7 +237,7 @@ public class ReportService {
                 "BC Parks Section", "Fire Centre", "Business Area", "Planning Unit",
                 "Gross Project Area (Ha calculated from spatial file)", "Closest Community", "Project Lead", "Proposal Type",
                 "Fiscal Activity Name", "Fiscal Activity Description", "Fiscal Year", "Activity Category",
-                "Fiscal Status", "Funding Stream", "Original Cost Estimate",
+                "Fiscal Status", "Original Cost Estimate",
                 "Ancillary Funding Amount", "Final Reported Spend", "CFS Actual Spend",
                 "Planned Hectares", "Completed Hectares", "Spatial Submitted",
                 "First Nation Engagement (Y/N)", "First Nation Co-Delivery (Y/N)", "First Nation Co-Delivery Partners",
@@ -227,19 +251,37 @@ public class ReportService {
 
     private List<String> getFuelCsvRow(FuelManagementReportEntity e) {
         return List.of(
-                safe(e.getLinkToProject()), safe(e.getLinkToFiscalActivity()), safe(e.getProjectTypeDescription()),
+                safe(String.format("=HYPERLINK(\"%s\", \"%s Project Link\")",
+                        e.getLinkToProject(), e.getProjectName())
+                ),
+                safe(String.format("=HYPERLINK(\"%s\", \"%s Fiscal Activity Link\")",
+                        e.getLinkToFiscalActivity(), e.getProjectFiscalName())
+                ), safe(e.getProjectTypeDescription()),
                 safe(e.getProjectName()), safe(e.getForestRegionOrgUnitName()), safe(e.getForestDistrictOrgUnitName()),
                 safe(e.getBcParksRegionOrgUnitName()), safe(e.getBcParksSectionOrgUnitName()), safe(e.getFireCentreOrgUnitName()),
-                safe(e.getBusinessArea()), safe(e.getPlanningUnitName()), safe(e.getGrossProjectAreaHa()), safe(e.getClosestCommunityName()),
+                safe(e.getBusinessArea()), safe(e.getPlanningUnitName()), safe(e.getGrossProjectAreaHa() != null
+                        ? String.format("%,d ha", e.getGrossProjectAreaHa().intValue())
+                        : ""), safe(e.getClosestCommunityName()),
                 safe(e.getProjectLead()), safe(e.getProposalTypeDescription()), safe(e.getProjectFiscalName()),
                 safe(e.getProjectFiscalDescription()), safe(e.getFiscalYear()), safe(e.getActivityCategoryDescription()),
-                safe(e.getPlanFiscalStatusDescription()), safe(e.getFundingStream()), safe(e.getTotalEstimatedCostAmount()),
-                safe(e.getFiscalAncillaryFundAmount()), safe(e.getFiscalReportedSpendAmount()), safe(e.getFiscalActualAmount()),
-                safe(e.getFiscalPlannedProjectSizeHa()), safe(e.getFiscalCompletedSizeHa()), safe(e.getSpatialSubmitted()),
+                safe(e.getPlanFiscalStatusDescription()), safe(formatMonetaryFields(e.getTotalEstimatedCostAmount())),
+                safe(formatMonetaryFields(e.getFiscalAncillaryFundAmount())), safe(formatMonetaryFields(e.getFiscalReportedSpendAmount())), safe(formatMonetaryFields(e.getFiscalActualAmount())),
+                safe(e.getFiscalPlannedProjectSizeHa() != null
+                                ? String.format("%,d ha", e.getFiscalPlannedProjectSizeHa().intValue())
+                                : ""),
+                safe(e.getFiscalCompletedSizeHa() != null
+                        ? String.format("%,d ha", e.getFiscalCompletedSizeHa().intValue())
+                        : ""),
+                safe(String.format("=\"%s\"", e.getSpatialSubmitted())),
                 safe(e.getFirstNationsEngagement()), safe(e.getFirstNationsDelivPartners()), safe(e.getFirstNationsPartner()),
                 safe(e.getOtherPartner()), safe(e.getCfsProjectCode()), safe(e.getResultsProjectCode()), safe(e.getResultsOpeningId()),
                 safe(e.getPrimaryObjectiveTypeDescription()), safe(e.getSecondaryObjectiveTypeDescription()),
-                safe(e.getEndorsementTimestamp()), safe(e.getApprovedTimestamp()), safe(e.getWuiRiskClassDescription()),
+                safe(e.getEndorsementTimestamp() != null
+                        ? DATE_FORMAT.format(e.getEndorsementTimestamp().toInstant())
+                        : ""),
+                safe(e.getApprovedTimestamp() != null
+                        ? DATE_FORMAT.format(e.getApprovedTimestamp().toInstant())
+                        : ""),
                 safe(e.getLocalWuiRiskClassRationale()), safe(e.getLocalWuiRiskClassRationale()),
                 safe(e.getTotalCoarseFilterSectionScore()), safe(e.getTotalMediumFilterSectionScore()), safe(e.getMediumFilterSectionComment()),
                 safe(e.getTotalFineFilterSectionScore()), safe(e.getFineFilterSectionComment()), safe(e.getTotalFilterSectionScore())
@@ -253,7 +295,7 @@ public class ReportService {
                 "BC Parks Section", "Fire Centre", "Business Area", "Planning Unit",
                 "Gross Project Area (Ha calculated from spatial file)", "Closest Community", "Project Lead", "Proposal Type",
                 "Fiscal Activity Name", "Fiscal Activity Description", "Fiscal Year", "Activity Category",
-                "Fiscal Status", "Funding Stream", "Original Cost Estimate",
+                "Fiscal Status", "Original Cost Estimate",
                 "Ancillary Funding Amount", "Final Reported Spend", "CFS Actual Spend",
                 "Planned Hectares", "Completed Hectares", "Spatial Submitted",
                 "First Nation Engagement (Y/N)", "First Nation Co-Delivery (Y/N)", "First Nation Co-Delivery Partners",
@@ -268,23 +310,45 @@ public class ReportService {
 
     private List<String> getCrxCsvRow(CulturalPrescribedFireReportEntity c) {
         return List.of(
-                safe(c.getLinkToProject()), safe(c.getLinkToFiscalActivity()), safe(c.getProjectTypeDescription()),
+                safe(String.format("=HYPERLINK(\"%s\", \"%s Project Link\")",
+                        c.getLinkToProject(), c.getProjectName())
+                ),
+                safe(String.format("=HYPERLINK(\"%s\", \"%s Fiscal Activity Link\")",
+                        c.getLinkToFiscalActivity(), c.getProjectFiscalName())
+                ), safe(c.getProjectTypeDescription()),
                 safe(c.getProjectName()), safe(c.getForestRegionOrgUnitName()), safe(c.getForestDistrictOrgUnitName()),
                 safe(c.getBcParksRegionOrgUnitName()), safe(c.getBcParksSectionOrgUnitName()), safe(c.getFireCentreOrgUnitName()),
-                safe(c.getBusinessArea()), safe(c.getPlanningUnitName()), safe(c.getGrossProjectAreaHa()), safe(c.getClosestCommunityName()),
+                safe(c.getBusinessArea()), safe(c.getPlanningUnitName()), safe(c.getGrossProjectAreaHa() != null
+                        ? String.format("%,d ha", c.getGrossProjectAreaHa().intValue())
+                        : ""), safe(c.getClosestCommunityName()),
                 safe(c.getProjectLead()), safe(c.getProposalTypeDescription()), safe(c.getProjectFiscalName()),
                 safe(c.getProjectFiscalDescription()), safe(c.getFiscalYear()), safe(c.getActivityCategoryDescription()),
-                safe(c.getPlanFiscalStatusDescription()), safe(c.getFundingStream()), safe(c.getTotalEstimatedCostAmount()),
-                safe(c.getFiscalAncillaryFundAmount()), safe(c.getFiscalReportedSpendAmount()), safe(c.getFiscalActualAmount()),
-                safe(c.getFiscalPlannedProjectSizeHa()), safe(c.getFiscalCompletedSizeHa()), safe(c.getSpatialSubmitted()),
+                safe(c.getPlanFiscalStatusDescription()), safe(formatMonetaryFields(c.getTotalEstimatedCostAmount())),
+                safe(formatMonetaryFields(c.getFiscalAncillaryFundAmount())), safe(formatMonetaryFields(c.getFiscalReportedSpendAmount())), safe(formatMonetaryFields(c.getFiscalActualAmount())),
+                safe(c.getFiscalPlannedProjectSizeHa() != null
+                        ? String.format("%,d ha", c.getFiscalPlannedProjectSizeHa().intValue())
+                        : ""),
+                safe(c.getFiscalCompletedSizeHa() != null
+                        ? String.format("%,d ha", c.getFiscalCompletedSizeHa().intValue())
+                        : ""), safe(String.format("=\"%s\"", c.getSpatialSubmitted())),
                 safe(c.getFirstNationsEngagement()), safe(c.getFirstNationsDelivPartners()), safe(c.getFirstNationsPartner()),
                 safe(c.getOtherPartner()), safe(c.getCfsProjectCode()), safe(c.getResultsProjectCode()), safe(c.getResultsOpeningId()),
                 safe(c.getPrimaryObjectiveTypeDescription()), safe(c.getSecondaryObjectiveTypeDescription()),
-                safe(c.getEndorsementTimestamp()), safe(c.getApprovedTimestamp()), safe(c.getOutsideWuiInd()),
+                safe(c.getEndorsementTimestamp() != null
+                        ? DATE_FORMAT.format(c.getEndorsementTimestamp().toInstant())
+                        : ""),
+                safe(c.getApprovedTimestamp() != null
+                        ? DATE_FORMAT.format(c.getApprovedTimestamp().toInstant())
+                        : ""), safe(c.getOutsideWuiInd() ? "Y" : "N"),
                 safe(c.getWuiRiskClassDescription()), safe(c.getLocalWuiRiskClassDescription()), safe(c.getTotalRclFilterSectionScore()),
                 safe(c.getRclFilterSectionComment()), safe(c.getTotalBdfFilterSectionScore()), safe(c.getBdfFilterSectionComment()),
                 safe(c.getTotalCollimpFilterSectionScore()), safe(c.getCollimpFilterSectionComment()), safe(c.getTotalFilterSectionScore())
         );
+    }
+
+    private static String formatMonetaryFields(Number n) {
+        if (n == null) return "";
+        return new java.text.DecimalFormat("$#,##0").format(n);
     }
 
 }
