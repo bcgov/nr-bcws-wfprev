@@ -94,28 +94,15 @@ public class ReportService {
             Map<String, Object> params = new HashMap<>();
 
             JasperPrint fuelPrint;
-            try {
-                fuelPrint = JasperFillManager.fillReport(
-                        getFuelReport(), params, new JRBeanCollectionDataSource(fuelData)
-                );
-                log.debug("Filled FUEL report with {} records", fuelData.size());
-            } catch (JRException e) {
-                log.error("JRException filling FUEL report. Records: {}. First item: {}",
-                        fuelData.size(), fuelData.isEmpty() ? "<none>" : fuelData.get(0), e);
-                throw new ServiceException("Failed to fill FUEL report", e);
-            }
-
             JasperPrint crxPrint;
-            try {
-                crxPrint = JasperFillManager.fillReport(
-                        getCrxReport(), params, new JRBeanCollectionDataSource(crxData)
-                );
-                log.debug("Filled CRX report with {} records", crxData.size());
-            } catch (JRException e) {
-                log.error("JRException filling CRX report. Records: {}. First item: {}",
-                        crxData.size(), crxData.isEmpty() ? "<none>" : crxData.get(0), e);
-                throw new ServiceException("Failed to fill CRX report", e);
-            }
+
+            fuelPrint = JasperFillManager.fillReport(
+                    getFuelReport(), params, new JRBeanCollectionDataSource(fuelData)
+            );
+
+            crxPrint = JasperFillManager.fillReport(
+                    getCrxReport(), params, new JRBeanCollectionDataSource(crxData)
+            );
 
             JRXlsxExporter exporter = new JRXlsxExporter();
             exporter.setExporterInput(SimpleExporterInput.getInstance(List.of(fuelPrint, crxPrint)));
@@ -139,7 +126,6 @@ public class ReportService {
                 throw new ServiceException("Failed exporting XLSX", e);
             }
         } catch (ServiceException e) {
-            // already logged above with details
             throw e;
         } catch (Exception e) {
             log.error("Failed to generate XLSX report (unexpected): {}", e.getMessage(), e);
@@ -383,10 +369,7 @@ public class ReportService {
     private JasperReport loadOrCompile(String jasperPath, String jrxmlPath) {
         ClassLoader cl = Thread.currentThread().getContextClassLoader();
 
-        log.info("JR runtime version = {}",
-                net.sf.jasperreports.engine.util.JRLoader.class.getPackage().getImplementationVersion());
-
-        // 1) Try precompiled .jasper
+        // Try precompiled .jasper
         try (InputStream in = cl.getResourceAsStream(jasperPath)) {
             if (in != null) {
                 Object obj = JRLoader.loadObject(in); // may throw JRException
@@ -406,7 +389,7 @@ public class ReportService {
             log.warn("Unexpected error loading precompiled report {}: {}", jasperPath, e.getMessage(), e);
         }
 
-        // 2) Fall back to compiling .jrxml
+        // Fall back to compiling .jrxml
         try (InputStream in = cl.getResourceAsStream(jrxmlPath)) {
             if (in == null) {
                 throw new IllegalStateException("JRXML not found on classpath: " + jrxmlPath);
@@ -455,7 +438,5 @@ public class ReportService {
         }
         return report;
     }
-
-
 
 }
