@@ -148,6 +148,11 @@
   { "name":"net.sf.jasperreports.engine.fill.JRTemplateFrame" },
   { "name":"net.sf.jasperreports.engine.fill.JRTemplateLine" },
   { "name":"net.sf.jasperreports.engine.fill.JRTemplateRectangle" },
-  { "name":"net.sf.jasperreports.engine.fill.JRTemplateElement" }
-
+  { "name":"net.sf.jasperreports.engine.fill.JRTemplateElement" },
+  { "name":"net.sf.jasperreports.engine.base.JRBaseElementGroup" },
+  { "name":"net.sf.jasperreports.engine.JRElementGroup" },
+  { "name":"net.sf.jasperreports.engine.base.JRBaseFrame" },
+  { "name":"net.sf.jasperreports.engine.base.JRBaseSubreport" },
+  { "name":"net.sf.jasperreports.engine.base.JRBaseComponentElement" },
+  { "name":"net.sf.jasperreports.engine.base.JRBaseGenericElement" }
 ]
