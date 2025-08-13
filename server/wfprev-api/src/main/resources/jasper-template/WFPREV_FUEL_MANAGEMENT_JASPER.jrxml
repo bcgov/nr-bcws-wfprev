@@ -170,7 +170,11 @@ Notes on Fine Filters]]></text></staticText>
 	<detail>
 		<band height="120" splitType="Stretch">
 			<textField isBlankWhenNull="true"><reportElement x="1680" y="0" width="216" height="120" uuid="9ce7e282-5ae0-43af-8726-d55ef34f0ecf"/><textElement verticalAlignment="Bottom"><font fontName="Calibri" size="11"/></textElement><textFieldExpression><![CDATA[$F{fireCentreOrgUnitName}]]></textFieldExpression></textField>
-			<textField isBlankWhenNull="true"><reportElement x="2425" y="0" width="173" height="120" uuid="a359aab6-809e-46c5-978b-ee35f36736c2"/><textElement verticalAlignment="Bottom"><font fontName="Calibri" size="11"/></textElement><textFieldExpression><![CDATA[String.format("%,d ha", $F{grossProjectAreaHa}.intValue())]]></textFieldExpression></textField>
+			<textField isBlankWhenNull="true"><reportElement x="2425" y="0" width="173" height="120" uuid="a359aab6-809e-46c5-978b-ee35f36736c2"/><textElement verticalAlignment="Bottom"><font fontName="Calibri" size="11"/></textElement><textFieldExpression><![CDATA[
+  $F{grossProjectAreaHa} == null
+    ? ""
+    : String.format("%,d ha", $F{grossProjectAreaHa}.intValue())
+]]></textFieldExpression></textField>
 			<textField isBlankWhenNull="true"><reportElement x="2598" y="0" width="173" height="120" uuid="3dae2dd2-c238-4641-b485-4545e55a68e5"/><textElement verticalAlignment="Bottom"><font fontName="Calibri" size="11"/></textElement><textFieldExpression><![CDATA[$F{closestCommunityName}]]></textFieldExpression></textField>
 			<textField isBlankWhenNull="true"><reportElement x="4868" y="0" width="118" height="120" uuid="0abb196e-d5ac-4c65-90c7-afe151c981ec"/><textElement verticalAlignment="Bottom"><font fontName="Calibri" size="11"/></textElement><textFieldExpression><![CDATA[$F{spatialSubmitted}]]></textFieldExpression></textField>
 			<textField isBlankWhenNull="true"><reportElement x="2944" y="0" width="173" height="120" uuid="c57345a1-e30f-46e2-a46d-9ac87dc345d5"/><textElement verticalAlignment="Bottom"><font fontName="Calibri" size="11"/></textElement><textFieldExpression><![CDATA[$F{proposalTypeDescription}]]></textFieldExpression></textField>
@@ -199,7 +203,11 @@ Notes on Fine Filters]]></text></staticText>
 			<textField isBlankWhenNull="true"><reportElement x="7082" y="0" width="138" height="120" uuid="b652d47d-31d6-484b-a3d2-b37440f9e957"/><textElement verticalAlignment="Bottom"><font fontName="Calibri" size="11"/></textElement><textFieldExpression><![CDATA[$F{localWuiRiskClassRationale}]]></textFieldExpression></textField>
 			<textField isBlankWhenNull="true"><reportElement x="2771" y="0" width="173" height="120" uuid="523fbafe-30c9-4dff-8c62-85a67eac6233"/><textElement verticalAlignment="Bottom"><font fontName="Calibri" size="11"/></textElement><textFieldExpression><![CDATA[$F{projectLead}]]></textFieldExpression></textField>
 			<textField isBlankWhenNull="true" pattern="yyyy-MM-dd"><reportElement x="6302" y="0" width="175" height="120" uuid="065fd304-89e0-45b3-8dcb-5d37d781be0f"/><textElement verticalAlignment="Bottom"><font fontName="Calibri" size="11"/></textElement><textFieldExpression><![CDATA[$F{endorsementTimestamp}]]></textFieldExpression></textField>
-			<textField isBlankWhenNull="true"><reportElement x="4632" y="0" width="118" height="120" uuid="868ab4bf-6043-4242-a14f-fac4a0e90cab"/><textElement verticalAlignment="Bottom"><font fontName="Calibri" size="11"/></textElement><textFieldExpression><![CDATA[String.format("%,d ha", $F{fiscalPlannedProjectSizeHa}.intValue())]]></textFieldExpression></textField>
+			<textField isBlankWhenNull="true"><reportElement x="4632" y="0" width="118" height="120" uuid="868ab4bf-6043-4242-a14f-fac4a0e90cab"/><textElement verticalAlignment="Bottom"><font fontName="Calibri" size="11"/></textElement><textFieldExpression><![CDATA[
+  $F{fiscalPlannedProjectSizeHa} == null
+    ? ""
+    : String.format("%,d ha", $F{fiscalPlannedProjectSizeHa}.intValue())
+]]></textFieldExpression></textField>
 			<textField isBlankWhenNull="true"><reportElement positionType="Float" x="7540" y="0" width="80" height="120" uuid="3d0aa9e4-b013-4100-8f21-c72312030800"/><textElement verticalAlignment="Bottom"><font fontName="Calibri" size="11"/></textElement><textFieldExpression><![CDATA[$F{totalFineFilterSectionScore}]]></textFieldExpression></textField>
 			<textField isBlankWhenNull="true"><reportElement x="4986" y="0" width="94" height="120" uuid="60ad253b-3363-46b7-9a02-ed038500d26e"/><textElement verticalAlignment="Bottom"><font fontName="Calibri" size="11"/></textElement><textFieldExpression><![CDATA[$F{firstNationsEngagement}]]></textFieldExpression></textField>
 			<textField isBlankWhenNull="true"><reportElement x="546" y="0" width="270" height="120" uuid="aa41e798-4d9c-4b9d-ade6-f342025c011e"/><textElement verticalAlignment="Bottom"><font fontName="Calibri" size="11"/></textElement><textFieldExpression><![CDATA[$F{projectName}]]></textFieldExpression></textField>
@@ -223,9 +231,14 @@ Notes on Fine Filters]]></text></staticText>
 				</reportElement>
 				<textElement verticalAlignment="Bottom"><font fontName="Calibri" size="11" isUnderline="true"/></textElement>
 				<textFieldExpression><![CDATA[$F{projectFiscalName} + " Fiscal Activity Link"]]></textFieldExpression>
+				<hyperlinkReferenceExpression><![CDATA[$F{linkToFiscalActivity}]]></hyperlinkReferenceExpression>
 				<hyperlinkWhenExpression><![CDATA[$F{linkToFiscalActivity} != null && !$F{linkToFiscalActivity}.trim().isEmpty()]]></hyperlinkWhenExpression>
 			</textField>
-			<textField isBlankWhenNull="true"><reportElement x="4750" y="0" width="118" height="120" uuid="f0ed5454-b045-496e-991b-c631c42296ca"/><textElement verticalAlignment="Bottom"><font fontName="Calibri" size="11"/></textElement><textFieldExpression><![CDATA[String.format("%,d ha", $F{fiscalCompletedSizeHa}.intValue())]]></textFieldExpression></textField>
+			<textField isBlankWhenNull="true"><reportElement x="4750" y="0" width="118" height="120" uuid="f0ed5454-b045-496e-991b-c631c42296ca"/><textElement verticalAlignment="Bottom"><font fontName="Calibri" size="11"/></textElement><textFieldExpression><![CDATA[
+  $F{fiscalCompletedSizeHa} == null
+    ? ""
+    : String.format("%,d ha", $F{fiscalCompletedSizeHa}.intValue())
+]]></textFieldExpression></textField>
 			<textField isBlankWhenNull="true"><reportElement x="1464" y="0" width="216" height="120" uuid="1dea7f79-c800-4dd1-bc9d-eb81ee65f913"/><textElement verticalAlignment="Bottom"><font fontName="Calibri" size="11"/></textElement><textFieldExpression><![CDATA[$F{bcParksSectionOrgUnitName}]]></textFieldExpression></textField>
 			<textField isBlankWhenNull="true"><reportElement x="1032" y="0" width="216" height="120" uuid="5d230f17-4fb6-41d7-9af9-78e4e99144f0"/><textElement verticalAlignment="Bottom"><font fontName="Calibri" size="11"/></textElement><textFieldExpression><![CDATA[$F{forestDistrictOrgUnitName}]]></textFieldExpression></textField>
 			<textField isBlankWhenNull="true"><reportElement x="1248" y="0" width="216" height="120" uuid="46128657-10cf-4415-a278-3b94b2fc93aa"/><textElement verticalAlignment="Bottom"><font fontName="Calibri" size="11"/></textElement><textFieldExpression><![CDATA[$F{bcParksRegionOrgUnitName}]]></textFieldExpression></textField>

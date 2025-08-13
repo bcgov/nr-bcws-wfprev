@@ -181,7 +181,11 @@
 			<textField isBlankWhenNull="true"><reportElement x="1844" y="0" width="216" height="120" uuid="2367a273-2a93-4808-be8d-190b46adf6a4"/><textElement verticalAlignment="Bottom"><font fontName="Calibri" size="11"/></textElement><textFieldExpression><![CDATA[$F{businessArea}]]></textFieldExpression></textField>
 			<textField isBlankWhenNull="true"><reportElement x="2060" y="0" width="313" height="120" uuid="2367a273-2a93-4808-be8d-190b46adf6a5"/><textElement verticalAlignment="Bottom"><font fontName="Calibri" size="11"/></textElement><textFieldExpression><![CDATA[$F{planningUnitName}]]></textFieldExpression></textField>
 
-			<textField isBlankWhenNull="true"><reportElement x="2373" y="0" width="173" height="120" uuid="2367a273-2a93-4808-be8d-190b46adf6a6"/><textElement verticalAlignment="Bottom"><font fontName="Calibri" size="11"/></textElement><textFieldExpression><![CDATA[String.format("%,d ha", $F{grossProjectAreaHa}.intValue())]]></textFieldExpression></textField>
+			<textField isBlankWhenNull="true"><reportElement x="2373" y="0" width="173" height="120" uuid="2367a273-2a93-4808-be8d-190b46adf6a6"/><textElement verticalAlignment="Bottom"><font fontName="Calibri" size="11"/></textElement><textFieldExpression><![CDATA[
+  $F{grossProjectAreaHa} == null
+    ? ""
+    : String.format("%,d ha", $F{grossProjectAreaHa}.intValue())
+]]></textFieldExpression></textField>
 			<textField isBlankWhenNull="true"><reportElement x="2546" y="0" width="173" height="120" uuid="2367a273-2a93-4808-be8d-190b46adf6a7"/><textElement verticalAlignment="Bottom"><font fontName="Calibri" size="11"/></textElement><textFieldExpression><![CDATA[$F{closestCommunityName}]]></textFieldExpression></textField>
 			<textField isBlankWhenNull="true"><reportElement x="2719" y="0" width="173" height="120" uuid="2367a273-2a93-4808-be8d-190b46adf6a8"/><textElement verticalAlignment="Bottom"><font fontName="Calibri" size="11"/></textElement><textFieldExpression><![CDATA[$F{projectLead}]]></textFieldExpression></textField>
 			<textField isBlankWhenNull="true"><reportElement x="2892" y="0" width="173" height="120" uuid="2367a273-2a93-4808-be8d-190b46adf6a9"/><textElement verticalAlignment="Bottom"><font fontName="Calibri" size="11"/></textElement><textFieldExpression><![CDATA[$F{proposalTypeDescription}]]></textFieldExpression></textField>
@@ -197,8 +201,16 @@
 			<textField isBlankWhenNull="true" pattern="$#,##0"><reportElement x="4344" y="0" width="118" height="120" uuid="2367a273-2a93-4808-be8d-190b46adf6b8"/><textElement verticalAlignment="Bottom"><font fontName="Calibri" size="11"/></textElement><textFieldExpression><![CDATA[$F{fiscalReportedSpendAmount}]]></textFieldExpression></textField>
 			<textField isBlankWhenNull="true" pattern="$#,##0"><reportElement x="4462" y="0" width="118" height="120" uuid="2367a273-2a93-4808-be8d-190b46adf6b9"/><textElement verticalAlignment="Bottom"><font fontName="Calibri" size="11"/></textElement><textFieldExpression><![CDATA[$F{fiscalActualAmount}]]></textFieldExpression></textField>
 
-			<textField isBlankWhenNull="true"><reportElement x="4580" y="0" width="118" height="120" uuid="2367a273-2a93-4808-be8d-190b46adf6c1"/><textElement verticalAlignment="Bottom"><font fontName="Calibri" size="11"/></textElement><textFieldExpression><![CDATA[String.format("%,d ha", $F{fiscalPlannedProjectSizeHa}.intValue())]]></textFieldExpression></textField>
-			<textField isBlankWhenNull="true"><reportElement x="4698" y="0" width="118" height="120" uuid="2367a273-2a93-4808-be8d-190b46adf6c2"/><textElement verticalAlignment="Bottom"><font fontName="Calibri" size="11"/></textElement><textFieldExpression><![CDATA[String.format("%,d ha", $F{fiscalCompletedSizeHa}.intValue())]]></textFieldExpression></textField>
+			<textField isBlankWhenNull="true"><reportElement x="4580" y="0" width="118" height="120" uuid="2367a273-2a93-4808-be8d-190b46adf6c1"/><textElement verticalAlignment="Bottom"><font fontName="Calibri" size="11"/></textElement><textFieldExpression><![CDATA[
+  $F{fiscalPlannedProjectSizeHa} == null
+    ? ""
+    : String.format("%,d ha", $F{fiscalPlannedProjectSizeHa}.intValue())
+]]></textFieldExpression></textField>
+			<textField isBlankWhenNull="true"><reportElement x="4698" y="0" width="118" height="120" uuid="2367a273-2a93-4808-be8d-190b46adf6c2"/><textElement verticalAlignment="Bottom"><font fontName="Calibri" size="11"/></textElement><textFieldExpression><![CDATA[
+  $F{fiscalCompletedSizeHa} == null
+    ? ""
+    : String.format("%,d ha", $F{fiscalCompletedSizeHa}.intValue())
+]]></textFieldExpression></textField>
 			<textField isBlankWhenNull="true"><reportElement x="4816" y="0" width="118" height="120" uuid="2367a273-2a93-4808-be8d-190b46adf6c3"/><textElement verticalAlignment="Bottom"><font fontName="Calibri" size="11"/></textElement><textFieldExpression><![CDATA[$F{spatialSubmitted}]]></textFieldExpression></textField>
 
 			<textField isBlankWhenNull="true"><reportElement x="4934" y="0" width="94" height="120" uuid="2367a273-2a93-4808-be8d-190b46adf6c4"/><textElement verticalAlignment="Bottom"><font fontName="Calibri" size="11"/></textElement><textFieldExpression><![CDATA[$F{firstNationsEngagement}]]></textFieldExpression></textField>

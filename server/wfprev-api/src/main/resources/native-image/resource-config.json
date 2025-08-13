@@ -1,8 +1,17 @@
 {
   "resources": {
     "includes": [
-      {"pattern": "org/geolatte/geom/crs/spatial_ref_sys.csv"},
-      {"pattern": "org/geolatte/geom/crs/epsg.properties"}
+      { "pattern": "org/geolatte/geom/crs/spatial_ref_sys.csv" },
+      { "pattern": "org/geolatte/geom/crs/epsg.properties" },
+      { "pattern": ".*\\.jrxml$" },
+      { "pattern": ".*\\.jasper$" },
+      { "pattern": "jasperreports\\.properties$" },
+      { "pattern": "jasperreports_extension\\.properties$" },
+      { "pattern": "META-INF/services/.*" },
+      { "pattern": "net/sf/jasperreports/engine/dtds/.*\\.xsd$" },
+      { "pattern": "net/sf/jasperreports/engine/dtds/.*\\.dtd$" },
+      { "pattern": "jasper-template/.*\\.(png|jpg|jpeg|svg)$" },
+      { "pattern": "net/sf/jasperreports/fonts/.*" }
     ]
   }
 }

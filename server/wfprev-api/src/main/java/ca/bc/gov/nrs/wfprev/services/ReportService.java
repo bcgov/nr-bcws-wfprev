@@ -9,13 +9,16 @@ import ca.bc.gov.nrs.wfprev.data.repositories.CulturalPrescribedFireReportReposi
 import ca.bc.gov.nrs.wfprev.data.repositories.FuelManagementReportRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.ProgramAreaRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.ProjectRepository;
+import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
+import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import net.sf.jasperreports.engine.export.ooxml.JRXlsxExporter;
+import net.sf.jasperreports.engine.util.JRLoader;
 import net.sf.jasperreports.export.SimpleExporterInput;
 import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
 import net.sf.jasperreports.export.SimpleXlsxReportConfiguration;
@@ -25,6 +28,7 @@ import org.springframework.stereotype.Component;
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.time.ZoneId;
@@ -40,6 +44,9 @@ import java.util.zip.ZipOutputStream;
 @Component
 public class ReportService {
 
+    private volatile JasperReport fuelReport;
+    private volatile JasperReport crxReport;
+
     @Value("${spring.application.baseUrl}")
     private String baseUrl;
 
@@ -47,7 +54,7 @@ public class ReportService {
 
     private static final String FISCAL_QUERY_STRING = "&tab=fiscal&fiscalGuid=";
 
-    DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("MM/dd/yyyy")
+    DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd")
             .withZone(ZoneId.systemDefault());
 
     private final FuelManagementReportRepository fuelManagementRepository;
@@ -67,56 +74,75 @@ public class ReportService {
         try {
             List<ProjectEntity> projects = projectRepository.findByProjectGuidIn(projectGuids);
             List<UUID> projectPlanFiscalGuids = projects.stream()
-                    .flatMap(project -> project.getProjectFiscals().stream())
+                    .flatMap(p -> p.getProjectFiscals().stream())
                     .map(ProjectFiscalEntity::getProjectPlanFiscalGuid)
                     .distinct()
                     .toList();
 
-            List<FuelManagementReportEntity> fuelData = fuelManagementRepository.findByProjectPlanFiscalGuidIn(projectPlanFiscalGuids);
-            List<CulturalPrescribedFireReportEntity> crxData = culturalPrescribedFireReportRepository.findByProjectPlanFiscalGuidIn(projectPlanFiscalGuids);
+            List<FuelManagementReportEntity> fuelData =
+                    fuelManagementRepository.findByProjectPlanFiscalGuidIn(projectPlanFiscalGuids);
+            List<CulturalPrescribedFireReportEntity> crxData =
+                    culturalPrescribedFireReportRepository.findByProjectPlanFiscalGuidIn(projectPlanFiscalGuids);
 
             if (fuelData.isEmpty() && crxData.isEmpty()) {
                 throw new IllegalArgumentException("No data found for the provided projectGuids.");
             }
 
-            for (FuelManagementReportEntity entities: fuelData) {
-                setFuelManagementFields(entities);
-            }
-
-            for (CulturalPrescribedFireReportEntity entities : crxData) {
-                setCrxFields(entities);
-            }
-
-            JasperReport fuelReport = JasperCompileManager.compileReport(
-                    getClass().getResourceAsStream("/jasper-template/WFPREV_FUEL_MANAGEMENT_JASPER.jrxml")
-            );
-            JasperReport crxReport = JasperCompileManager.compileReport(
-                    getClass().getResourceAsStream("/jasper-template/WFPREV_CULTURE_PRESCRIBED_FIRE_JASPER.jrxml")
-            );
+            fuelData.forEach(this::setFuelManagementFields);
+            crxData.forEach(this::setCrxFields);
 
             Map<String, Object> params = new HashMap<>();
-            JasperPrint fuelPrint = JasperFillManager.fillReport(fuelReport, params, new JRBeanCollectionDataSource(fuelData));
-            JasperPrint crxPrint = JasperFillManager.fillReport(crxReport, params, new JRBeanCollectionDataSource(crxData));
+
+            JasperPrint fuelPrint;
+            try {
+                fuelPrint = JasperFillManager.fillReport(
+                        getFuelReport(), params, new JRBeanCollectionDataSource(fuelData)
+                );
+                log.debug("Filled FUEL report with {} records", fuelData.size());
+            } catch (JRException e) {
+                log.error("JRException filling FUEL report. Records: {}. First item: {}",
+                        fuelData.size(), fuelData.isEmpty() ? "<none>" : fuelData.get(0), e);
+                throw new ServiceException("Failed to fill FUEL report", e);
+            }
+
+            JasperPrint crxPrint;
+            try {
+                crxPrint = JasperFillManager.fillReport(
+                        getCrxReport(), params, new JRBeanCollectionDataSource(crxData)
+                );
+                log.debug("Filled CRX report with {} records", crxData.size());
+            } catch (JRException e) {
+                log.error("JRException filling CRX report. Records: {}. First item: {}",
+                        crxData.size(), crxData.isEmpty() ? "<none>" : crxData.get(0), e);
+                throw new ServiceException("Failed to fill CRX report", e);
+            }
 
             JRXlsxExporter exporter = new JRXlsxExporter();
             exporter.setExporterInput(SimpleExporterInput.getInstance(List.of(fuelPrint, crxPrint)));
             exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(outputStream));
 
             SimpleXlsxReportConfiguration config = new SimpleXlsxReportConfiguration();
-            config.setRemoveEmptySpaceBetweenRows(false);
-            config.setWhitePageBackground(false);
             config.setDetectCellType(true);
             config.setRemoveEmptySpaceBetweenRows(true);
             config.setRemoveEmptySpaceBetweenColumns(true);
             config.setCollapseRowSpan(true);
+            config.setWhitePageBackground(false);
             config.setSheetNames(new String[]{"FM XLS Download", "CRx XLS Download"});
             exporter.setConfiguration(config);
 
-            exporter.exportReport();
-            log.info("XLSX export completed successfully with two sheets.");
-
+            try {
+                exporter.exportReport(); // may throw JRException
+                outputStream.flush();
+                log.info("XLSX export completed successfully with two sheets.");
+            } catch (JRException e) {
+                log.error("JRException during XLSX export: {}", e.getMessage(), e);
+                throw new ServiceException("Failed exporting XLSX", e);
+            }
+        } catch (ServiceException e) {
+            // already logged above with details
+            throw e;
         } catch (Exception e) {
-            log.error("Failed to generate XLSX report: {}", e.getMessage(), e);
+            log.error("Failed to generate XLSX report (unexpected): {}", e.getMessage(), e);
             throw new ServiceException("Failed to generate XLSX report", e);
         }
     }
@@ -236,7 +262,7 @@ public class ReportService {
                 "First Nation Engagement (Y/N)", "First Nation Co-Delivery (Y/N)", "First Nation Co-Delivery Partners",
                 "Other Partners", "CFS Code", "RESULTS Project Code", "RESULTS Opening ID",
                 "Primary Objective", "Secondary Objective (Optional)", "Endorsement Date",
-                "Approval Date", "WUI Risk Class", "Local WUI Risk Class Rationale",
+                "Approval Date", "WUI Risk Class", "Local WUI Risk Class", "Local WUI Risk Class Rationale",
                 "Total Point Value for Coarse Filter", "Total Point Value for Medium Filters", "Additional Comments/Notes on Medium Filters",
                 "Total Point Value of Fine Filters", "Additional Comments/Notes on Fine Filters", "Total Filter Value"
         ));
@@ -275,7 +301,7 @@ public class ReportService {
                 safe(e.getApprovedTimestamp() != null
                         ? DATE_FORMAT.format(e.getApprovedTimestamp().toInstant())
                         : ""),
-                safe(e.getLocalWuiRiskClassRationale()), safe(e.getLocalWuiRiskClassRationale()),
+                safe(e.getWuiRiskClassDescription()), safe(e.getLocalWuiRiskClassDescription()), safe(e.getLocalWuiRiskClassRationale()),
                 safe(e.getTotalCoarseFilterSectionScore()), safe(e.getTotalMediumFilterSectionScore()), safe(e.getMediumFilterSectionComment()),
                 safe(e.getTotalFineFilterSectionScore()), safe(e.getFineFilterSectionComment()), safe(e.getTotalFilterSectionScore())
         );
@@ -353,5 +379,83 @@ public class ReportService {
             return null; // keep original value unchanged
         }
     }
+
+    private JasperReport loadOrCompile(String jasperPath, String jrxmlPath) {
+        ClassLoader cl = Thread.currentThread().getContextClassLoader();
+
+        log.info("JR runtime version = {}",
+                net.sf.jasperreports.engine.util.JRLoader.class.getPackage().getImplementationVersion());
+
+        // 1) Try precompiled .jasper
+        try (InputStream in = cl.getResourceAsStream(jasperPath)) {
+            if (in != null) {
+                Object obj = JRLoader.loadObject(in); // may throw JRException
+                if (obj instanceof JasperReport jr) {
+                    log.debug("Loaded precompiled Jasper report: {}", jasperPath);
+                    return jr;
+                } else {
+                    log.warn("Object at {} is not a JasperReport: {}", jasperPath, obj);
+                }
+            } else {
+                log.debug("Precompiled report not found on classpath: {}", jasperPath);
+            }
+        } catch (JRException e) {
+            log.error("JRException while loading precompiled report {}: {}", jasperPath, e.getMessage(), e);
+            throw new RuntimeException("Failed loading precompiled report: " + jasperPath, e);
+        } catch (Exception e) {
+            log.warn("Unexpected error loading precompiled report {}: {}", jasperPath, e.getMessage(), e);
+        }
+
+        // 2) Fall back to compiling .jrxml
+        try (InputStream in = cl.getResourceAsStream(jrxmlPath)) {
+            if (in == null) {
+                throw new IllegalStateException("JRXML not found on classpath: " + jrxmlPath);
+            }
+            JasperReport compiled = JasperCompileManager.compileReport(in); // throws JRException
+            log.debug("Compiled JRXML successfully: {}", jrxmlPath);
+            return compiled;
+        } catch (JRException e) {
+            log.error("JRException compiling JRXML {}: {}", jrxmlPath, e.getMessage(), e);
+            throw new RuntimeException("Failed to compile JRXML: " + jrxmlPath, e);
+        } catch (Exception e) {
+            log.error("Unexpected error compiling JRXML {}: {}", jrxmlPath, e.getMessage(), e);
+            throw new RuntimeException("Failed to initialize Jasper report: " + jrxmlPath, e);
+        }
+    }
+
+
+    private JasperReport getFuelReport() {
+        JasperReport report = fuelReport;
+        if (report == null) {
+            synchronized (this) {
+                report = fuelReport;
+                if (report == null) {
+                    fuelReport = report = loadOrCompile(
+                            "jasper-template/WFPREV_FUEL_MANAGEMENT_JASPER.jasper",
+                            "jasper-template/WFPREV_FUEL_MANAGEMENT_JASPER.jrxml"
+                    );
+                }
+            }
+        }
+        return report;
+    }
+
+    private JasperReport getCrxReport() {
+        JasperReport report = crxReport;
+        if (report == null) {
+            synchronized (this) {
+                report = crxReport;
+                if (report == null) {
+                    crxReport = report = loadOrCompile(
+                            "jasper-template/WFPREV_CULTURE_PRESCRIBED_FIRE_JASPER.jasper",
+                            "jasper-template/WFPREV_CULTURE_PRESCRIBED_FIRE_JASPER.jrxml"
+                    );
+                }
+            }
+        }
+        return report;
+    }
+
+
 
 }
