@@ -10,7 +10,6 @@ import ca.bc.gov.nrs.wfprev.data.repositories.FuelManagementReportRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.ProgramAreaRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.ProjectRepository;
 import net.sf.jasperreports.engine.JRDataSource;
-import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
@@ -27,8 +26,8 @@ import org.springframework.test.util.ReflectionTestUtils;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
@@ -110,33 +109,36 @@ class ReportServiceTest {
         JasperReport mockJasperReport = mock(JasperReport.class);
         JasperPrint mockJasperPrint = mock(JasperPrint.class);
 
-        try (
-                MockedStatic<JasperCompileManager> compileManager = mockStatic(JasperCompileManager.class);
-                MockedStatic<JasperFillManager> fillManager = mockStatic(JasperFillManager.class);
-                MockedConstruction<JRXlsxExporter> exporterConstruction = mockConstruction(JRXlsxExporter.class,
-                        (exporter, context) -> {
-                            doNothing().when(exporter).exportReport();
-                        });
-        ) {
-            compileManager.when(() ->
-                    JasperCompileManager.compileReport(any(InputStream.class))
-            ).thenReturn(mockJasperReport);
+        // Ensure baseUrl is set for link building
+        Field baseUrlF = ReportService.class.getDeclaredField("baseUrl");
+        baseUrlF.setAccessible(true);
+        baseUrlF.set(reportService, "http://localhost:4200");
+
+        // Bypass loadOrCompile to avoid classpath resources in CI
+        Field fuelF = ReportService.class.getDeclaredField("fuelReport");
+        fuelF.setAccessible(true);
+        fuelF.set(reportService, mockJasperReport);
+        Field crxF = ReportService.class.getDeclaredField("crxReport");
+        crxF.setAccessible(true);
+        crxF.set(reportService, mockJasperReport);
+
+        try (MockedStatic<JasperFillManager> fillManager = mockStatic(JasperFillManager.class);
+             MockedConstruction<JRXlsxExporter> exporterConstruction = mockConstruction(JRXlsxExporter.class,
+                     (exporter, ctx) -> doNothing().when(exporter).exportReport())) {
 
             fillManager.when(() ->
                     JasperFillManager.fillReport(any(JasperReport.class), anyMap(), any(JRDataSource.class))
             ).thenReturn(mockJasperPrint);
 
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            reportService.exportXlsx(List.of(projectGuid), out);
 
-            reportService.exportXlsx(List.of(projectGuid), outputStream);
-
-            JRXlsxExporter createdExporter = exporterConstruction.constructed().get(0);
-            verify(createdExporter).setExporterInput(any(ExporterInput.class));
-            verify(createdExporter).setExporterOutput(any(OutputStreamExporterOutput.class));
-            verify(createdExporter).setConfiguration(any(XlsxReportConfiguration.class));
-            verify(createdExporter).exportReport();
-
-            assertTrue(outputStream.size() >= 0);
+            JRXlsxExporter created = exporterConstruction.constructed().get(0);
+            verify(created).setExporterInput(any(ExporterInput.class));
+            verify(created).setExporterOutput(any(OutputStreamExporterOutput.class));
+            verify(created).setConfiguration(any(XlsxReportConfiguration.class));
+            verify(created).exportReport();
+            assertTrue(out.size() >= 0);
         }
     }
 
