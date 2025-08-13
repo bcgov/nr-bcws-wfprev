@@ -72,7 +72,7 @@ public class ReportService {
                     .map(ProjectFiscalEntity::getProjectPlanFiscalGuid)
                     .distinct()
                     .toList();
-            
+
             List<FuelManagementReportEntity> fuelData = fuelManagementRepository.findByProjectPlanFiscalGuidIn(projectPlanFiscalGuids);
             List<CulturalPrescribedFireReportEntity> crxData = culturalPrescribedFireReportRepository.findByProjectPlanFiscalGuidIn(projectPlanFiscalGuids);
 
