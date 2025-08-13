@@ -10,13 +10,17 @@ import ca.bc.gov.nrs.wfprev.data.repositories.FuelManagementReportRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.ProgramAreaRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.ProjectRepository;
 import net.sf.jasperreports.engine.JRDataSource;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.export.ooxml.JRXlsxExporter;
+import net.sf.jasperreports.engine.util.JRLoader;
 import net.sf.jasperreports.export.ExporterInput;
 import net.sf.jasperreports.export.OutputStreamExporterOutput;
 import net.sf.jasperreports.export.XlsxReportConfiguration;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;
@@ -26,6 +30,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
@@ -34,6 +39,7 @@ import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -45,6 +51,7 @@ import java.util.zip.ZipInputStream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
@@ -63,6 +70,21 @@ class ReportServiceTest {
     private CulturalPrescribedFireReportRepository crxRepo;
     private ProjectRepository projectRepo;
     private ProgramAreaRepository programAreaRepo;
+    private static final String JASPER = "jasper-template/WFPREV_FUEL_MANAGEMENT_JASPER.jasper";
+    private static final String JRXML  = "jasper-template/WFPREV_FUEL_MANAGEMENT_JASPER.jrxml";
+    private ClassLoader originalCl;
+
+    static class MapBackedClassLoader extends ClassLoader {
+        private final Map<String, byte[]> resources;
+        MapBackedClassLoader(Map<String, byte[]> resources, ClassLoader parent) {
+            super(parent);
+            this.resources = resources;
+        }
+        @Override public InputStream getResourceAsStream(String name) {
+            byte[] bytes = resources.get(name);
+            return bytes == null ? null : new ByteArrayInputStream(bytes);
+        }
+    }
 
     @BeforeEach
     void setup() {
@@ -73,6 +95,30 @@ class ReportServiceTest {
 
         reportService = new ReportService(fuelRepo, crxRepo, projectRepo, programAreaRepo);
         ReflectionTestUtils.setField(reportService, "baseUrl", "http://localhost");
+        originalCl = Thread.currentThread().getContextClassLoader();
+        ReflectionTestUtils.setField(reportService, "fuelReport", null);
+        ReflectionTestUtils.setField(reportService, "crxReport", null);
+    }
+
+    @AfterEach
+    void restoreCl() {
+        Thread.currentThread().setContextClassLoader(originalCl);
+    }
+
+    private void setCL(Map<String, byte[]> resources) {
+        Thread.currentThread().setContextClassLoader(new MapBackedClassLoader(resources, originalCl));
+    }
+
+    private JasperReport invokeLoad(String jasper, String jrxml) {
+        return (JasperReport) ReflectionTestUtils.invokeMethod(reportService, "loadOrCompile", jasper, jrxml);
+    }
+
+    private JasperReport invokeGetFuel() {
+        return (JasperReport) ReflectionTestUtils.invokeMethod(reportService, "getFuelReport");
+    }
+
+    private JasperReport invokeGetCrx() {
+        return (JasperReport) ReflectionTestUtils.invokeMethod(reportService, "getCrxReport");
     }
 
     @Test
@@ -345,5 +391,95 @@ class ReportServiceTest {
         }
         return s.replace("\"\"", "\"");
     }
+
+    @Test
+    void loadOrCompile_precompiledPresent_validJasper() {
+        JasperReport jr = mock(JasperReport.class);
+        setCL(Map.of(JASPER, new byte[]{1,2,3}));
+        try (MockedStatic<JRLoader> jrLoader = mockStatic(JRLoader.class)) {
+            jrLoader.when(() -> JRLoader.loadObject(any(InputStream.class))).thenReturn(jr);
+            JasperReport out = invokeLoad(JASPER, JRXML);
+            assertSame(jr, out);
+        }
+    }
+
+    @Test
+    void loadOrCompile_precompiledPresent_notAJasper_fallsBackToCompile() throws Exception {
+        JasperReport compiled = mock(JasperReport.class);
+        setCL(Map.of(JASPER, new byte[]{9}, JRXML, "<xml/>".getBytes()));
+        try (MockedStatic<JRLoader> jrLoader = mockStatic(JRLoader.class);
+             MockedStatic<JasperCompileManager> compile = mockStatic(JasperCompileManager.class)) {
+            jrLoader.when(() -> JRLoader.loadObject(any(InputStream.class))).thenReturn(new Object());
+            compile.when(() -> JasperCompileManager.compileReport(any(InputStream.class))).thenReturn(compiled);
+            assertSame(compiled, invokeLoad(JASPER, JRXML));
+        }
+    }
+
+    @Test
+    void loadOrCompile_precompiled_JRException_wraps() {
+        setCL(Map.of(JASPER, new byte[]{9}));
+        try (MockedStatic<JRLoader> jrLoader = mockStatic(JRLoader.class)) {
+            jrLoader.when(() -> JRLoader.loadObject(any(InputStream.class)))
+                    .thenThrow(new JRException("boom"));
+            RuntimeException ex = org.junit.jupiter.api.Assertions.assertThrows(RuntimeException.class,
+                    () -> invokeLoad(JASPER, JRXML));
+            assertTrue(ex.getMessage().contains("Failed loading precompiled report"));
+        }
+    }
+
+    @Test
+    void loadOrCompile_precompiled_otherException_fallsBackToCompile() throws Exception {
+        JasperReport compiled = mock(JasperReport.class);
+        setCL(Map.of(JASPER, new byte[]{1}, JRXML, "<xml/>".getBytes()));
+        try (MockedStatic<JRLoader> jrLoader = mockStatic(JRLoader.class);
+             MockedStatic<JasperCompileManager> compile = mockStatic(JasperCompileManager.class)) {
+            jrLoader.when(() -> JRLoader.loadObject(any(InputStream.class))).thenThrow(new RuntimeException("weird"));
+            compile.when(() -> JasperCompileManager.compileReport(any(InputStream.class))).thenReturn(compiled);
+            assertSame(compiled, invokeLoad(JASPER, JRXML));
+        }
+    }
+
+    @Test
+    void loadOrCompile_noPrecompiled_compilesOk() throws Exception {
+        JasperReport compiled = mock(JasperReport.class);
+        setCL(Map.of(JRXML, "<xml/>".getBytes()));
+        try (MockedStatic<JasperCompileManager> compile = mockStatic(JasperCompileManager.class)) {
+            compile.when(() -> JasperCompileManager.compileReport(any(InputStream.class))).thenReturn(compiled);
+            assertSame(compiled, invokeLoad(JASPER, JRXML));
+        }
+    }
+
+    @Test
+    void loadOrCompile_jrxmlMissing_throws() {
+        setCL(Collections.emptyMap());
+        RuntimeException ex = org.junit.jupiter.api.Assertions.assertThrows(RuntimeException.class,
+                () -> invokeLoad(JASPER, JRXML));
+        assertTrue(ex.getMessage().contains("Failed to initialize Jasper report: " + JRXML));
+    }
+
+    @Test
+    void loadOrCompile_compileJRException_wraps() {
+        setCL(Map.of(JRXML, "<xml/>".getBytes()));
+        try (MockedStatic<JasperCompileManager> compile = mockStatic(JasperCompileManager.class)) {
+            compile.when(() -> JasperCompileManager.compileReport(any(InputStream.class)))
+                    .thenThrow(new JRException("bad jrxml"));
+            RuntimeException ex = org.junit.jupiter.api.Assertions.assertThrows(RuntimeException.class,
+                    () -> invokeLoad(JASPER, JRXML));
+            assertTrue(ex.getMessage().contains("Failed to compile JRXML: " + JRXML));
+        }
+    }
+
+    @Test
+    void loadOrCompile_compileOtherException_wraps() {
+        setCL(Map.of(JRXML, "<xml/>".getBytes()));
+        try (MockedStatic<JasperCompileManager> compile = mockStatic(JasperCompileManager.class)) {
+            compile.when(() -> JasperCompileManager.compileReport(any(InputStream.class)))
+                    .thenThrow(new RuntimeException("weird"));
+            RuntimeException ex = org.junit.jupiter.api.Assertions.assertThrows(RuntimeException.class,
+                    () -> invokeLoad(JASPER, JRXML));
+            assertTrue(ex.getMessage().contains("Failed to initialize Jasper report: " + JRXML));
+        }
+    }
+
 
 }

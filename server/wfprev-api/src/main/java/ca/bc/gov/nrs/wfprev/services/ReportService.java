@@ -366,7 +366,7 @@ public class ReportService {
         }
     }
 
-    private JasperReport loadOrCompile(String jasperPath, String jrxmlPath) {
+    public JasperReport loadOrCompile(String jasperPath, String jrxmlPath) {
         ClassLoader cl = Thread.currentThread().getContextClassLoader();
 
         // Try precompiled .jasper
