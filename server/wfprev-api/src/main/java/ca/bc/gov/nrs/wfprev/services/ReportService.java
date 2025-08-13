@@ -186,13 +186,9 @@ public class ReportService {
             }
 
             // 2025 -> 2025/26 format
-            if (entity.getFiscalYear() != null) {
-                try {
-                    int year = Integer.parseInt(entity.getFiscalYear().toString());
-                    entity.setFiscalYear(year + "/" + String.format("%02d", (year + 1) % 100));
-                } catch (NumberFormatException e) {
-                    // Leave as-is if not a valid number
-                }
+            String fiscalYear = formatFiscalYearIfNumeric(entity.getFiscalYear());
+            if (fiscalYear != null) {
+                entity.setFiscalYear(fiscalYear);
             }
         }
     }
@@ -214,13 +210,9 @@ public class ReportService {
         }
 
         // 2025 -> 2025/26 format
-        if (entity.getFiscalYear() != null) {
-            try {
-                int year = Integer.parseInt(entity.getFiscalYear().toString());
-                entity.setFiscalYear(year + "/" + String.format("%02d", (year + 1) % 100));
-            } catch (NumberFormatException e) {
-                // Leave as-is if not a valid number
-            }
+        String fiscalYear = formatFiscalYearIfNumeric(entity.getFiscalYear());
+        if (fiscalYear != null) {
+            entity.setFiscalYear(fiscalYear);
         }
     }
 
@@ -350,6 +342,16 @@ public class ReportService {
     private static String formatMonetaryFields(Number n) {
         if (n == null) return "";
         return new java.text.DecimalFormat("$#,##0").format(n);
+    }
+
+    private String formatFiscalYearIfNumeric(Object fiscalYear) {
+        if (fiscalYear == null) return null;
+        try {
+            int year = Integer.parseInt(fiscalYear.toString());
+            return year + "/" + String.format("%02d", (year + 1) % 100);
+        } catch (NumberFormatException e) {
+            return null; // keep original value unchanged
+        }
     }
 
 }
