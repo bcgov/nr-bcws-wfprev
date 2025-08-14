@@ -6,13 +6,16 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { ProjectFiscal } from 'src/app/components/models';
 import { CheckboxComponent } from 'src/app/components/shared/checkbox/checkbox.component';
 import { DatePickerComponent } from 'src/app/components/shared/date-picker/date-picker.component';
 import { DetailsContainerComponent } from 'src/app/components/shared/details-container/details-container.component';
 import { ReadOnlyFieldComponent } from 'src/app/components/shared/read-only-field/read-only-field.component';
 import { TextareaComponent } from 'src/app/components/shared/textarea/textarea.component';
+import { TimestampComponent } from 'src/app/components/shared/timestamp/timestamp.component';
 import { EndorsementCode, FiscalStatuses } from 'src/app/utils/constants';
+import { getLocalIsoTimestamp } from 'src/app/utils/tools';
 
 @Component({
   selector: 'wfprev-endorsement-approval',
@@ -30,7 +33,9 @@ import { EndorsementCode, FiscalStatuses } from 'src/app/utils/constants';
     CheckboxComponent,
     DatePickerComponent,
     ReadOnlyFieldComponent,
-    TextareaComponent
+    TextareaComponent,
+    TimestampComponent,
+    MatTooltipModule,
   ],
   templateUrl: './endorsement-approval.component.html',
   styleUrl: './endorsement-approval.component.scss'
@@ -39,7 +44,10 @@ export class EndorsementApprovalComponent implements OnChanges {
 
   @Input() fiscal!: ProjectFiscal;
   @Input() currentUser!: string;
+  @Input() currentIdir!: string;
   @Output() saveEndorsement = new EventEmitter<ProjectFiscal>();
+
+  readonly draftTooltip = 'Submit your Draft Fiscal Activity using the Actions button to enable Endorsements and Approvals.';
 
   endorsementApprovalForm = new FormGroup({
     endorseFiscalActivity: new FormControl<boolean | null>(false),
@@ -92,7 +100,12 @@ export class EndorsementApprovalComponent implements OnChanges {
           : null,
         approvalComment: fiscal.businessAreaComment ?? ''
       });
-
+      
+      if (this.isCardDisabled) {
+        this.endorsementApprovalForm.disable({ emitEvent: false });
+      } else {
+        this.endorsementApprovalForm.enable({ emitEvent: false });
+      }
       this.toggleControl(this.endorsementDateControl, endorseChecked);
       this.toggleControl(this.endorsementCommentControl, endorseChecked);
       this.toggleControl(this.approvalDateControl, approveChecked);
@@ -118,13 +131,14 @@ export class EndorsementApprovalComponent implements OnChanges {
       currentStatusCode !== FiscalStatuses.DRAFT &&
       currentStatusCode !== FiscalStatuses.PROPOSED;
 
+    const currentIso = getLocalIsoTimestamp();
     const updatedFiscal: ProjectFiscal = {
       ...this.fiscal,
 
       // Endorsement logic
       endorserName: formValue.endorseFiscalActivity ? this.currentUser : undefined,
       endorsementTimestamp: formValue.endorseFiscalActivity && formValue.endorsementDate
-        ? new Date(formValue.endorsementDate).toISOString()
+        ? getLocalIsoTimestamp(formValue.endorsementDate)
         : undefined,
       endorsementCode: formValue.endorseFiscalActivity
         ? { endorsementCode: EndorsementCode.ENDORSED }
@@ -143,6 +157,8 @@ export class EndorsementApprovalComponent implements OnChanges {
       planFiscalStatusCode: shouldResetToPrepared
         ? { planFiscalStatusCode: FiscalStatuses.DRAFT }
         : this.fiscal.planFiscalStatusCode,
+      endorseApprUpdateUserid: this.currentIdir,
+      endorseApprUpdatedTimestamp: currentIso,
     };
 
     this.saveEndorsement.emit(updatedFiscal);
@@ -181,6 +197,25 @@ export class EndorsementApprovalComponent implements OnChanges {
     return this.endorsementApprovalForm.get('approvalComment') as FormControl;
   }
 
+  get statusCode(): string | undefined {
+    return this.fiscal?.planFiscalStatusCode?.planFiscalStatusCode;
+  }
+
+  get isDraft(): boolean {
+    return this.statusCode === FiscalStatuses.DRAFT;
+  }
+
+  get isCardDisabled(): boolean {
+    // disabled in Draft, Complete, Cancelled
+    return this.isDraft
+      || this.statusCode === FiscalStatuses.COMPLETE
+      || this.statusCode === FiscalStatuses.CANCELLED;
+  }
+
+  get showDraftTooltip(): boolean {
+    // tooltip only in draft
+    return this.isDraft;
+  }
   toggleControl(control: FormControl | null, shouldEnable: boolean): void {
     if (!control) return;
 

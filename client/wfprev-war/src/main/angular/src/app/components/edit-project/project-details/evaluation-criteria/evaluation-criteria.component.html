@@ -49,23 +49,23 @@
 
             <span class="section-label">
               <span>{{ evaluationLabels.medium }}:</span>
-              <span>{{ getSectionTotal(evaluationCriteriaSummary, 'MEDIUM_FLT') | number:'1.2-2' }}</span>
+              <span>{{ getSectionTotal(evaluationCriteriaSummary, mediumSectionCode) | number:'1.2-2' }}</span>
             </span>
             <div class="criteria-details">
               <div class="criteria-item">
                 <span>{{ evaluationLabels.comments.medium }}</span>
-                <span class="comments-text">{{ getSectionComment(evaluationCriteriaSummary, 'MEDIUM_FLT') || 'None' }}</span>
+                <span class="comments-text">{{ getSectionComment(evaluationCriteriaSummary, mediumSectionCode) || 'None' }}</span>
               </div>
             </div>
 
             <span class="section-label">
               <span>{{ evaluationLabels.fine }}:</span>
-              <span>{{ getSectionTotal(evaluationCriteriaSummary, 'FINE_FLT') | number:'1.2-2' }}</span>
+              <span>{{ getSectionTotal(evaluationCriteriaSummary, fineSectionCode) | number:'1.2-2' }}</span>
             </span>
             <div class="criteria-details">
               <div class="criteria-item">
               <span>{{ evaluationLabels.comments.fine }}</span>
-              <span class="comments-text">{{ getSectionComment(evaluationCriteriaSummary, 'FINE_FLT') || 'None' }}</span>
+              <span class="comments-text">{{ getSectionComment(evaluationCriteriaSummary, fineSectionCode) || 'None' }}</span>
               </div>
             </div>
             <div class="full-width-divider"></div>

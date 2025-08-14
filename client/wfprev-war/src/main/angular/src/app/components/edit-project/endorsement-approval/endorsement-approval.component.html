@@ -4,7 +4,9 @@
     [saveDisabled]="!endorsementApprovalForm.valid || !endorsementApprovalForm.dirty"
     [cancelDisabled]="!endorsementApprovalForm.dirty"
     (save)="onSave()"
-    (cancel)="onCancel()">
+    (cancel)="onCancel()"
+    matTooltip="{{ showDraftTooltip ? draftTooltip : '' }}"
+    [matTooltipDisabled]="!showDraftTooltip">
 
     <form [formGroup]="endorsementApprovalForm">
       <!-- Endorsement Section -->
@@ -73,6 +75,10 @@
           </wfprev-textarea>
         </div>
       </div>
+      <wfprev-timestamp
+        [updateDate]="fiscal?.endorseApprUpdatedTimestamp"
+        [updateUser]="fiscal?.endorseApprUpdateUserid">
+      </wfprev-timestamp>
     </form>
   </wfprev-details-container>
 </ng-container>

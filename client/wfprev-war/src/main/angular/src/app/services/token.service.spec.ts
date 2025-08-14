@@ -359,6 +359,15 @@ describe('getUserFullName', () => {
     });
   });
 
+  describe('getIdir', () => {
+    it('should return the userId from tokenDetails', () => {
+      service['tokenDetails'] = { userId: 'IDIR123' };
+      expect(service.getIdir()).toBe('IDIR123');
+    });
 
-
+    it('should return undefined if tokenDetails.userId is not set', () => {
+      service['tokenDetails'] = {};
+      expect(service.getIdir()).toBe('');
+    });
+  });
 });
