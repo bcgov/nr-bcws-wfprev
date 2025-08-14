@@ -133,15 +133,13 @@
       </div>
       <div class="form-row">
         <div class="secondary-rationale">
-          <label>Secondary Objective Rationale</label>
-          <textarea id="secondaryObjectiveRationale" placeholder="Begin Typing"
-            formControlName="secondaryObjectiveRationale" rows="2" cdkTextareaAutosize cdkAutosizeMinRows="1"
-            cdkAutosizeMaxRows="10" class="secondary-rationale"
-            [matTooltip]="projectForm.get('secondaryObjectiveRationale')?.value"></textarea>
-          <div class="error"
-            *ngIf="projectForm.get('secondaryObjectiveRationale')?.hasError('maxlength') && projectForm.get('secondaryObjectiveRationale')?.touched">
-            {{messages.maxLengthExceeded}}
-          </div>
+          <wfprev-textarea
+            label="Secondary Objective Rationale"
+            placeholder="Begin Typing"
+            [control]="secondaryObjectiveRationaleCtrl"
+            [maxLength]="500"
+            [rows]="2">
+          </wfprev-textarea>
         </div>
       </div>
     </div>

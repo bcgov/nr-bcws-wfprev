@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { ConfirmationDialogComponent } from 'src/app/components/confirmation-dialog/confirmation-dialog.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -13,6 +13,7 @@ import {
 } from 'src/app/utils/tools';
 import { TextFieldModule } from '@angular/cdk/text-field';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { TextareaComponent } from 'src/app/components/shared/textarea/textarea.component';
 @Component({
   selector: 'wfprev-create-new-project-dialog',
   standalone: true,
@@ -20,7 +21,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     ReactiveFormsModule,
     CommonModule,
     TextFieldModule,
-    MatTooltipModule
+    MatTooltipModule,
+    TextareaComponent
   ],
   templateUrl: './create-new-project-dialog.component.html',
   styleUrls: ['./create-new-project-dialog.component.scss']
@@ -385,6 +387,10 @@ export class CreateNewProjectDialogComponent implements OnInit {
     if (!value) return '';
     const objective = this.objectiveTypes.find(o => o?.objectiveTypeCode === value);
     return objective?.description ?? value;
+  }
+
+  get secondaryObjectiveRationaleCtrl(): FormControl {
+    return this.projectForm.get('secondaryObjectiveRationale') as FormControl;
   }
 
 

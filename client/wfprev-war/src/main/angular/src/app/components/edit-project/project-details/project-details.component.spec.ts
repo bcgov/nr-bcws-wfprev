@@ -969,7 +969,7 @@ describe('ProjectDetailsComponent', () => {
       nameControl?.markAsTouched();
       nameControl?.updateValueAndValidity();
 
-      expect(component.getErrorMessage('name')).toBe('Exceeds number of allowed characters.');
+      expect(component.getErrorMessage('name')).toBe('Maximum character limit has been reached.');
     });
 
     it('should return invalidEmail message for email error', () => {
