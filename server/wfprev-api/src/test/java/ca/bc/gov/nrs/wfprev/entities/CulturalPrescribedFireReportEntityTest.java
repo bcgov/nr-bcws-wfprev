@@ -62,7 +62,7 @@ class CulturalPrescribedFireReportEntityTest {
         entity.setSecondaryObjectiveTypeDescription("Secondary Obj");
         entity.setEndorsementTimestamp(now);
         entity.setApprovedTimestamp(now);
-        entity.setOutsideWuiInd("Y");
+        entity.setOutsideWuiInd(true);
         entity.setWuiRiskClassDescription("High");
         entity.setLocalWuiRiskClassDescription("Very High");
         entity.setTotalRclFilterSectionScore(decimal);
@@ -115,7 +115,7 @@ class CulturalPrescribedFireReportEntityTest {
         assertThat(entity.getSecondaryObjectiveTypeDescription()).isEqualTo("Secondary Obj");
         assertThat(entity.getEndorsementTimestamp()).isEqualTo(now);
         assertThat(entity.getApprovedTimestamp()).isEqualTo(now);
-        assertThat(entity.getOutsideWuiInd()).isEqualTo("Y");
+        assertThat(entity.getOutsideWuiInd()).isEqualTo(true);
         assertThat(entity.getWuiRiskClassDescription()).isEqualTo("High");
         assertThat(entity.getLocalWuiRiskClassDescription()).isEqualTo("Very High");
         assertThat(entity.getTotalRclFilterSectionScore()).isEqualTo(decimal);

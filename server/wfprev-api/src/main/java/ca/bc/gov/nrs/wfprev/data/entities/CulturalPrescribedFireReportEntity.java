@@ -94,7 +94,7 @@ public class CulturalPrescribedFireReportEntity implements Serializable {
     @Column(name = "funding_stream")
     private String fundingStream;
 
-    @Column(name = "total_estimated_cost_amount")
+    @Column(name = "total_cost_estimate_amount")
     private BigDecimal totalEstimatedCostAmount;
 
     @Column(name = "fiscal_ancillary_fund_amount")
@@ -149,7 +149,7 @@ public class CulturalPrescribedFireReportEntity implements Serializable {
     private Date approvedTimestamp;
 
     @Column(name = "outside_wui_ind")
-    private String outsideWuiInd;
+    private Boolean outsideWuiInd;
 
     @Column(name = "wui_risk_class_description")
     private String wuiRiskClassDescription;

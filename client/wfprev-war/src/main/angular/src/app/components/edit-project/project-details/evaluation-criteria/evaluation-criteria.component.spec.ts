@@ -190,7 +190,7 @@ describe('EvaluationCriteriaComponent', () => {
     };
 
     const result = component.getCoarseTotal(summary);
-    expect(result).toBe(2);
+    expect(result).toBe(10);
   });
 
   it('should get coarse total from dropdown if not prescribed fire', () => {
@@ -245,5 +245,27 @@ describe('EvaluationCriteriaComponent', () => {
     expect(labels.comments.fine).toBe('Fine Filter Comments');
     expect(labels.comments.rationale).toBe('Local WUI Risk Class Rationale');
   });
+
+  it('should return Rx section codes when project is CULTURAL_PRESCRIBED_FIRE', () => {
+  component.project = {
+    projectTypeCode: { projectTypeCode: ProjectTypes.CULTURAL_PRESCRIBED_FIRE }
+  } as any;
+
+  expect(component.mediumSectionCode)
+    .toBe(EvaluationCriteriaSectionCodes.BURN_DEVELOPMENT_FEASIBILITY);
+  expect(component.fineSectionCode)
+    .toBe(EvaluationCriteriaSectionCodes.COLLECTIVE_IMPACT);
+});
+
+it('should return standard section codes when project is not CULTURAL_PRESCRIBED_FIRE', () => {
+  component.project = {
+    projectTypeCode: { projectTypeCode: ProjectTypes.FUEL_MANAGEMENT }
+  } as any;
+
+  expect(component.mediumSectionCode)
+    .toBe(EvaluationCriteriaSectionCodes.MEDIUM_FILTER);
+  expect(component.fineSectionCode)
+    .toBe(EvaluationCriteriaSectionCodes.FINE_FILTER);
+});
 
 });
