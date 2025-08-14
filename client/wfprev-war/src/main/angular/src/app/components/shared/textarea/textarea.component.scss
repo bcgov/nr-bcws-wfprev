@@ -23,6 +23,13 @@
     border-radius: 4px;
     resize: vertical;
     padding: 6px;
+    &.over-limit {
+      border-color: #ef1616;
+      &:focus {
+        outline: none;
+        border-color: #ef1616;
+      }
+    }
   }
 
   .feedback-row {
