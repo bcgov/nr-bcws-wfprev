@@ -136,18 +136,14 @@
                   </div>
 
                   <div class="form-item full-width">
-                    <label>Description<span class="required">*</span></label>
-                    <textarea 
-                      id="projectFiscalDescription" 
-                      formControlName="projectFiscalDescription" 
-                      rows="4" cols="50"
-                      placeholder="Begin Typing"
-                    >
-                    </textarea>
-                    <div class="error" *ngIf="fiscalForms[i] && fiscalForms[i].get('projectFiscalDescription')?.hasError('maxlength') 
-                      && fiscalForms[i].get('projectFiscalDescription')?.touched">
-                      {{ messages.maxLengthExceeded }}
-                    </div>
+                    <wfprev-textarea
+                      [label]="'Description'"
+                      [placeholder]="'Begin Typing'"
+                      [rows]="4"
+                      [maxLength]="500"
+                      [control]="getFiscalControl(i, 'projectFiscalDescription')"
+                      [required]="true">
+                    </wfprev-textarea>
                   </div>
                   <!-- Delivery Partners Section -->
                   <div class="sub-section">

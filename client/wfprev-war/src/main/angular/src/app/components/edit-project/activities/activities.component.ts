@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
-import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MomentDateAdapter } from '@angular/material-moment-adapter';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE, MatNativeDateModule } from '@angular/material/core';
@@ -22,6 +22,7 @@ import { Messages, ModalMessages, ModalTitles } from 'src/app/utils/constants';
 import { ExpansionIndicatorComponent } from "../../shared/expansion-indicator/expansion-indicator.component";
 import { IconButtonComponent } from 'src/app/components/shared/icon-button/icon-button.component';
 import { TimestampComponent } from 'src/app/components/shared/timestamp/timestamp.component';
+import { TextareaComponent } from 'src/app/components/shared/textarea/textarea.component';
 
 
 export const CUSTOM_DATE_FORMATS = {
@@ -49,7 +50,8 @@ export const CUSTOM_DATE_FORMATS = {
     ProjectFilesComponent,
     ExpansionIndicatorComponent,
     IconButtonComponent,
-    TimestampComponent],
+    TimestampComponent,
+    TextareaComponent],
   templateUrl: './activities.component.html',
   styleUrl: './activities.component.scss',
   providers: [
@@ -788,6 +790,10 @@ export class ActivitiesComponent implements OnChanges, CanComponentDeactivate {
   onFilesChanged() {
     this.boundariesUpdated.emit(); // Notify ProjectFiscalsComponent
     this.getActivities();
+  }
+
+  getControl(formIndex: number, controlName: string): FormControl {
+    return this.activityForms[formIndex].get(controlName) as FormControl;
   }
 
 }
