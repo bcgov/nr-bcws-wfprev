@@ -35,7 +35,7 @@ resource "aws_cloudfront_distribution" "wfprev_app_distribution" {
   enabled             = true
   is_ipv6_enabled     = true
 
-  aliases = [ "wfprev-${var.SHORTENED_ENV}.${var.gov_domain}" ]
+  aliases = [ "${var.client_name}.${var.SHORTENED_ENV}.${var.gov_domain}" ]
 
   # Configure cache behaviors
   default_cache_behavior {
