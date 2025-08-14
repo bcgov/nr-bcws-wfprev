@@ -29,6 +29,7 @@ import { StatusBadgeComponent } from 'src/app/components/shared/status-badge/sta
 import { EndorsementApprovalComponent } from 'src/app/components/edit-project/endorsement-approval/endorsement-approval.component';
 import { TokenService } from 'src/app/services/token.service';
 import { TimestampComponent } from 'src/app/components/shared/timestamp/timestamp.component';
+import { TextareaComponent } from 'src/app/components/shared/textarea/textarea.component';
 
 @Component({
   selector: 'wfprev-project-fiscals',
@@ -55,7 +56,8 @@ import { TimestampComponent } from 'src/app/components/shared/timestamp/timestam
     DropdownButtonComponent,
     StatusBadgeComponent,
     EndorsementApprovalComponent,
-    TimestampComponent
+    TimestampComponent,
+    TextareaComponent
   ]
 })
 export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
