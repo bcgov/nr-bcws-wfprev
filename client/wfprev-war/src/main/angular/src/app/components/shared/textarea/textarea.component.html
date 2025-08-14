@@ -11,6 +11,7 @@
     #autosize="cdkTextareaAutosize"
     (input)="onInput($event)"
     (paste)="onPaste($event)"
+    [ngClass]="{ 'over-limit': isOverLimit }"
   ></textarea>
 
   <div class="feedback-row" *ngIf="maxLength as limit">
