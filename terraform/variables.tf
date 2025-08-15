@@ -210,7 +210,7 @@ variable "WEBADE_OAUTH2_WFPREV_UI_CLIENT_SECRET" {
 variable "client_name" {
   description = "Name of the client"
   type        = string
-  default     = "wfprev-client-app"
+  default     = "remiplanner"
 }
 
 variable "gov_client_url" {
