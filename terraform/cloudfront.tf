@@ -37,7 +37,7 @@ resource "aws_cloudfront_distribution" "wfprev_app_distribution" {
 
   # Omit environment name in Production environment
   aliases = [ 
-      var.SHORTENED_ENV == "prd" ? "${var.client_name}.${var.gov_domain}" : "${var.client_name}.${var.SHORTENED_ENV}.${var.gov_domain}" 
+      var.SHORTENED_ENV == "prd" ? "${var.client_name}.${var.gov_domain}" : "${var.client_name}-${var.SHORTENED_ENV}.${var.gov_domain}" 
   ]
 
   # Configure cache behaviors

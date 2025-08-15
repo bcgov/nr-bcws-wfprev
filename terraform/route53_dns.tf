@@ -1,5 +1,5 @@
 data "aws_route53_zone" "wfprev_route53_zone" {
-  name         = var.SHORTENED_ENV == "prd" ? "${var.client_name}.${var.gov_domain}" : "${var.client_name}.${var.SHORTENED_ENV}.${var.gov_domain}" 
+  name         = var.SHORTENED_ENV == "prd" ? "${var.client_name}.${var.gov_domain}" : "${var.client_name}-${var.SHORTENED_ENV}.${var.gov_domain}" 
 }
 
 resource "aws_route53_record" "cert_validation_record" {
