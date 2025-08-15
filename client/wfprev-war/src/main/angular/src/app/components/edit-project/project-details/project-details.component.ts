@@ -77,6 +77,7 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
   projectFiscals: any[] = [];
   allActivities: any[] = [];
   allActivityBoundaries: any[] = [];
+  readonly PROJECT_DESC_MAX = 4000;
 
   constructor(
     private readonly fb: FormBuilder,
@@ -785,5 +786,28 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
 
   get secondaryObjectiveRationaleCtrl(): FormControl {
     return this.detailsForm.get('secondaryObjectiveRationale') as FormControl;
+  }
+  
+  onProjectInput(event: Event) {
+    const el = event.target as HTMLTextAreaElement;
+    if (!el) return;
+
+    if (el.value.length > this.PROJECT_DESC_MAX) {
+      const trimmed = el.value.slice(0, this.PROJECT_DESC_MAX);
+      el.value = trimmed;
+      this.projectDescription = trimmed;
+    }
+  }
+
+  onProjectPaste(event: ClipboardEvent) {
+    event.preventDefault();
+    const paste = event.clipboardData?.getData('text') ?? '';
+    const current = this.projectDescription ?? '';
+    const remaining = Math.max(0, this.PROJECT_DESC_MAX - current.length);
+    const next = current + paste.slice(0, remaining);
+    this.projectDescription = next;
+    this.isProjectDescriptionDirty = this.projectDescription !== (this.projectDetail?.projectDescription ?? '');
+    const el = event.target as HTMLTextAreaElement | null;
+    if (el) el.value = next;
   }
 }
