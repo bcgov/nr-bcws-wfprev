@@ -236,14 +236,35 @@
       </mat-expansion-panel-header>
       <div class="project-form">
         <form class="project-description">
-          <textarea [(ngModel)]="projectDescription" name="projectDescription" rows="1" class="editable-description"
-            cdkTextareaAutosize cdkAutosizeMinRows="1" cdkAutosizeMaxRows="10" placeholder="Begin Typing"
-            (ngModelChange)="onProjectDescriptionChange($event)"></textarea>
+          <textarea
+            [(ngModel)]="projectDescription"
+            name="projectDescription"
+            rows="1"
+            class="editable-description"
+            cdkTextareaAutosize 
+            #autosize="cdkTextareaAutosize"
+            placeholder="Begin Typing"
+            (ngModelChange)="onProjectDescriptionChange($event)"
+            (input)="onProjectInput($event)"
+            (paste)="onProjectPaste($event)"
+            [ngClass]="{ 'over-limit': (projectDescription?.length ?? 0) >= 4000 }"
+          ></textarea>
+
+          <div class="feedback-row">
+            <div class="error" [class.invisible]="!((projectDescription?.length ?? 0) >= 4000)">
+              <img class="warning-icon" alt="warning" src="/assets/warning-red.svg" />
+              {{ messages.maxLengthExceeded }}
+            </div>
+            <div class="counter" [ngClass]="{ 'over': (projectDescription?.length ?? 0) >= 4000 }">
+              {{ projectDescription?.length || 0 }} / 4000
+            </div>
+          </div>
+
           <div class="project-description-footer">
             <div class="button-row">
               <button class="secondary" (click)="onCancelProjectDescription()"
                 [disabled]="!isProjectDescriptionDirty">Cancel</button>
-              <button class="primary" [disabled]="!isProjectDescriptionDirty" (click)="onSaveProjectDescription()">
+              <button class="primary" [disabled]="!isProjectDescriptionDirty || ((projectDescription?.length ?? 0) > 4000)" (click)="onSaveProjectDescription()">
                 Save
               </button>
             </div>
