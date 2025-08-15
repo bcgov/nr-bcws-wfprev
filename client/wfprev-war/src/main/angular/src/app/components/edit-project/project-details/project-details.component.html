@@ -205,14 +205,14 @@
     </div>
 
     <div class="form-item secondary-rationale">
-      <label for="secondaryObjectiveRationale">Secondary Objective Rationale</label>
-      <textarea id="secondaryObjectiveRationale" formControlName="secondaryObjectiveRationale"
-        placeholder="Begin Typing" rows="1" cdkTextareaAutosize cdkAutosizeMinRows="1" cdkAutosizeMaxRows="10"
-        [matTooltip]="detailsForm.get('secondaryObjectiveRationale')?.value"></textarea>
-      <div class="error"
-        *ngIf="detailsForm.get('secondaryObjectiveRationale')?.hasError('maxlength') && detailsForm.get('secondaryObjectiveRationale')?.touched">
-        {{messages.maxLengthExceeded}}
-      </div>
+      <wfprev-textarea
+        label="Secondary Objective Rationale"
+        inputId="secondaryObjectiveRationale"
+        placeholder="Begin Typing"
+        [control]="secondaryObjectiveRationaleCtrl"
+        [maxLength]="500"
+        [rows]="2">
+      </wfprev-textarea>
     </div>
 
     <div class="footer">

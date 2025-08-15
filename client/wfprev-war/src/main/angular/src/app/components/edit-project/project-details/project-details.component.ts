@@ -29,12 +29,13 @@ import { InputFieldComponent } from 'src/app/components/shared/input-field/input
 import { EvaluationCriteriaComponent } from 'src/app/components/edit-project/project-details/evaluation-criteria/evaluation-criteria.component';
 import { TimestampComponent } from 'src/app/components/shared/timestamp/timestamp.component';
 import { TokenService } from 'src/app/services/token.service';
+import { TextareaComponent } from 'src/app/components/shared/textarea/textarea.component';
 @Component({
   selector: 'wfprev-project-details',
   standalone: true,
   imports: [ReactiveFormsModule, MatExpansionModule, CommonModule, FormsModule, FiscalYearProjectsComponent,
     ProjectFilesComponent, MatTooltip, TextFieldModule, ExpansionIndicatorComponent, SelectFieldComponent, InputFieldComponent,
-    EvaluationCriteriaComponent, TimestampComponent],
+    EvaluationCriteriaComponent, TimestampComponent, TextareaComponent],
   templateUrl: './project-details.component.html',
   styleUrl: './project-details.component.scss'
 })
@@ -780,5 +781,9 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
 
   getControl(controlName: keyof typeof CodeTableKeys | string): FormControl {
     return this.detailsForm.get(controlName) as FormControl;
+  }
+
+  get secondaryObjectiveRationaleCtrl(): FormControl {
+    return this.detailsForm.get('secondaryObjectiveRationale') as FormControl;
   }
 }

@@ -1,6 +1,6 @@
 export const Messages = {
   requiredField: 'This field is required.',
-  maxLengthExceeded: 'Exceeds number of allowed characters.',
+  maxLengthExceeded: 'Maximum character limit has been reached.',
   invalidEmail: 'Please enter a valid email address.',
   positiveNumber: 'Please enter positive amounts',
   projectCreatedSuccess: 'Project Created Successfully',

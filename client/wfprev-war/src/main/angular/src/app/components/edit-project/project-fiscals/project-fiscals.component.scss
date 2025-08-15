@@ -457,3 +457,7 @@ mat-expansion-panel {
     width: 100%;
     gap: 10px;
   }
+
+:host ::ng-deep wfprev-textarea .textarea-label {
+  padding-left: 10px;
+}
