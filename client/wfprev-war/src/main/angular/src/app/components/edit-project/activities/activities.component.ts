@@ -18,7 +18,7 @@ import { ProjectFilesComponent } from 'src/app/components/edit-project/project-d
 import { CodeTableServices } from 'src/app/services/code-table-services';
 import { ProjectService } from 'src/app/services/project-services';
 import { CanComponentDeactivate } from 'src/app/services/util/can-deactive.guard';
-import { Messages, ModalMessages, ModalTitles } from 'src/app/utils/constants';
+import { Messages, ModalMessages, ModalTitles, NumericLimits } from 'src/app/utils/constants';
 import { ExpansionIndicatorComponent } from "../../shared/expansion-indicator/expansion-indicator.component";
 import { IconButtonComponent } from 'src/app/components/shared/icon-button/icon-button.component';
 import { TimestampComponent } from 'src/app/components/shared/timestamp/timestamp.component';
@@ -229,16 +229,16 @@ export class ActivitiesComponent implements OnChanges, CanComponentDeactivate {
       riskRatingCode: [activity?.riskRatingCode || { 'riskRatingCode': 'LOW_RISK' }],
       contractPhaseCode: [activity?.contractPhaseCode?.contractPhaseCode || ''],
       activityFundingSourceGuid: [activity?.activityFundingSourceGuid || ''],
-      activityName: [activity?.activityName || '', [Validators.required]],
+      activityName: [activity?.activityName || '', [Validators.required, Validators.maxLength(4000)]],
       activityDescription: [activity?.activityDescription || '', [Validators.required, Validators.maxLength(500)]],
       activityDateRange: this.fb.group({
         activityStartDate: [activity?.activityStartDate ? moment.utc(activity.activityStartDate).format('YYYY-MM-DD') : '', Validators.required],
         activityEndDate: [activity?.activityEndDate ? moment.utc(activity.activityEndDate).format('YYYY-MM-DD') : '', Validators.required]
       }),
-      plannedSpendAmount: [activity?.plannedSpendAmount ?? '', [Validators.min(0)]],
-      plannedTreatmentAreaHa: [activity?.plannedTreatmentAreaHa ?? '', [Validators.required, Validators.min(0)]],
-      reportedSpendAmount: [activity?.reportedSpendAmount ?? '', [Validators.min(0)]],
-      completedAreaHa: [activity?.completedAreaHa ?? '', [Validators.min(0)]],
+      plannedSpendAmount: [activity?.plannedSpendAmount ?? '', [Validators.min(0), Validators.max(NumericLimits.MAX_NUMBER)]],
+      plannedTreatmentAreaHa: [activity?.plannedTreatmentAreaHa ?? '', [Validators.required, Validators.min(0), Validators.max(NumericLimits.MAX_NUMBER)]],
+      reportedSpendAmount: [activity?.reportedSpendAmount ?? '', [Validators.min(0), Validators.max(NumericLimits.MAX_NUMBER)]],
+      completedAreaHa: [activity?.completedAreaHa ?? '', [Validators.min(0), Validators.max(NumericLimits.MAX_NUMBER)]],
       isResultsReportableInd: [activity?.isResultsReportableInd || false],
       outstandingObligationsInd: [activity?.outstandingObligationsInd || false],
       activityComment: [activity?.activityComment || '', [Validators.maxLength(500)]],
