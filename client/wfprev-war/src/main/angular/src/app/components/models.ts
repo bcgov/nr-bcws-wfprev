@@ -46,6 +46,7 @@ export interface Project {
   secondaryObjectiveRationale?: string;
   projectFiscals?: ProjectFiscalExtended[];
   resultsProjectCode?: string;
+  lastUpdatedTimestamp?: string;
 }
 
 export interface ProjectFiscal {
@@ -129,6 +130,7 @@ export interface ActivityModel {
   activityComment?: string;
   isSpatialAddedInd?: boolean;
   createDate?: string; // ISO 8601 format, e.g., "2025-02-06T23:56:53.663+00:00"
+  lastUpdatedTimestamp?: string;
 }
 
 export interface FileAttachment {
@@ -285,6 +287,7 @@ export interface EvaluationCriteriaSummaryModel {
   evaluationCriteriaSectionSummaries?: EvaluationCriteriaSectionSummaryModel[];
   updateDate?: string;
   updateUser?: string;
+  lastUpdatedTimestamp?: string;
 }
 
 export interface EvaluationCriteriaSectionSummaryModel {

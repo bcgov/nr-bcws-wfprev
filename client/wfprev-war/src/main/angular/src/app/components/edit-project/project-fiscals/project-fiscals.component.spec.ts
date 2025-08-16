@@ -852,7 +852,7 @@ describe('ProjectFiscalsComponent', () => {
 
     component.currentIdir = 'IDIR123';
 
-    const expectedTs = Tools.getLocalIsoTimestamp();
+    const expectedTs = Tools.getUtcIsoTimestamp();
     const result = component.buildSubmissionFields();
 
     expect(result).toEqual({

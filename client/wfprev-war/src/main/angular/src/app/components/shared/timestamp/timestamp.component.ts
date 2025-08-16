@@ -9,6 +9,6 @@ import { Component, Input } from '@angular/core';
   styleUrl: './timestamp.component.scss'
 })
 export class TimestampComponent {
-  @Input() updateDate?: string;
+  @Input() updateDate?: Date | string;
   @Input() updateUser?: string;
 }

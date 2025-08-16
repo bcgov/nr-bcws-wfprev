@@ -143,4 +143,7 @@ public class ActivityEntity implements Serializable {
     @Column(name = "update_date")
     private Date updateDate;
 
+    @NotNull
+    @Column(name = "last_updated_timestamp", nullable = false)
+    private Date lastUpdatedTimestamp;
 }

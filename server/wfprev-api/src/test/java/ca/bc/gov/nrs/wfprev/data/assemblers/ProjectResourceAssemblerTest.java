@@ -6,6 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -36,6 +37,9 @@ public class ProjectResourceAssemblerTest {
         projectModel.setForestAreaCode(new ForestAreaCodeModel());
         projectModel.setGeneralScopeCode(new GeneralScopeCodeModel());
         projectModel.setProjectTypeCode(new ProjectTypeCodeModel());
+
+        Date now = new Date();
+        projectModel.setLastUpdatedTimestamp(now);
 
         // when it is submitted to the toEntity method
         ProjectEntity projectEntity = assembler.toEntity(projectModel);
@@ -129,13 +133,16 @@ public class ProjectResourceAssemblerTest {
         ProjectEntity existingEntity = new ProjectEntity();
         existingEntity.setProjectGuid(UUID.randomUUID());
         existingEntity.setProjectName("Old Project");
-
+        existingEntity.setLastUpdatedTimestamp(new Date(0));
+        Date newDate = new Date();
+        model.setLastUpdatedTimestamp(newDate);
         ProjectEntity updatedEntity = assembler.updateEntity(model, existingEntity);
 
         assertNotNull(updatedEntity);
         assertEquals("Updated Project", updatedEntity.getProjectName());
         assertEquals(existingEntity.getProjectGuid(), updatedEntity.getProjectGuid());
         assertEquals(BigDecimal.valueOf(50.123), updatedEntity.getLatitude());
+        assertEquals(newDate, updatedEntity.getLastUpdatedTimestamp());
     }
 
 }

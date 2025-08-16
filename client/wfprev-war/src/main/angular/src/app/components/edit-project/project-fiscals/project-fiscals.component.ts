@@ -23,7 +23,7 @@ import { ExpansionIndicatorComponent } from '../../shared/expansion-indicator/ex
 import { IconButtonComponent } from 'src/app/components/shared/icon-button/icon-button.component';
 import { SelectFieldComponent } from 'src/app/components/shared/select-field/select-field.component';
 import { InputFieldComponent } from 'src/app/components/shared/input-field/input-field.component';
-import { getLocalIsoTimestamp, PlanFiscalStatusIcons } from 'src/app/utils/tools';
+import { getUtcIsoTimestamp, PlanFiscalStatusIcons } from 'src/app/utils/tools';
 import { DropdownButtonComponent } from 'src/app/components/shared/dropdown-button/dropdown-button.component';
 import { StatusBadgeComponent } from 'src/app/components/shared/status-badge/status-badge.component';
 import { EndorsementApprovalComponent } from 'src/app/components/edit-project/endorsement-approval/endorsement-approval.component';
@@ -710,7 +710,7 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
   buildSubmissionFields() {
     return {
       submittedByUserUserid: this.currentIdir,
-      submissionTimestamp: getLocalIsoTimestamp()
+      submissionTimestamp: getUtcIsoTimestamp()
     }
   }
 

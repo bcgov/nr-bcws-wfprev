@@ -15,7 +15,7 @@ import { ReadOnlyFieldComponent } from 'src/app/components/shared/read-only-fiel
 import { TextareaComponent } from 'src/app/components/shared/textarea/textarea.component';
 import { TimestampComponent } from 'src/app/components/shared/timestamp/timestamp.component';
 import { EndorsementCode, FiscalStatuses } from 'src/app/utils/constants';
-import { getLocalIsoTimestamp } from 'src/app/utils/tools';
+import { getLocalIsoTimestamp, getUtcIsoTimestamp } from 'src/app/utils/tools';
 
 @Component({
   selector: 'wfprev-endorsement-approval',
@@ -131,7 +131,7 @@ export class EndorsementApprovalComponent implements OnChanges {
       currentStatusCode !== FiscalStatuses.DRAFT &&
       currentStatusCode !== FiscalStatuses.PROPOSED;
 
-    const currentIso = getLocalIsoTimestamp();
+    const currentUtc = getUtcIsoTimestamp();
     const updatedFiscal: ProjectFiscal = {
       ...this.fiscal,
 
@@ -158,7 +158,7 @@ export class EndorsementApprovalComponent implements OnChanges {
         ? { planFiscalStatusCode: FiscalStatuses.DRAFT }
         : this.fiscal.planFiscalStatusCode,
       endorseApprUpdateUserid: this.currentIdir,
-      endorseApprUpdatedTimestamp: currentIso,
+      endorseApprUpdatedTimestamp: currentUtc,
     };
 
     this.saveEndorsement.emit(updatedFiscal);

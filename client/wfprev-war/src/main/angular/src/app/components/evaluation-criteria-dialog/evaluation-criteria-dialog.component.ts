@@ -318,6 +318,7 @@ export class EvaluationCriteriaDialogComponent {
       localWuiRiskClassRationale: this.criteriaForm.get('localWuiRiskClassRationale')?.value,
       isOutsideWuiInd: this.isOutsideOfWuiOn,
       totalFilterScore: this.coarseTotal + this.mediumTotal + this.fineTotal,
+      lastUpdatedTimestamp: new Date().toISOString(),
       evaluationCriteriaSectionSummaries: [
         {
           evaluationCriteriaSectionSummaryGuid: isCreate ? undefined : coarseSection?.evaluationCriteriaSectionSummaryGuid,

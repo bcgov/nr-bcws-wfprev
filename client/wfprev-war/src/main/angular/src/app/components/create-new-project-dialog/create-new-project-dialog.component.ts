@@ -279,6 +279,8 @@ export class CreateNewProjectDialogComponent implements OnInit {
           latitude: trimLatLong(Number(validatedLatLong.latitude)),
           longitude: trimLatLong(Number(validatedLatLong.longitude)),
         }), // Conditionally include latitude and longitude
+
+        lastUpdatedTimestamp: new Date().toISOString(),
       };
 
       this.projectService.createProject(newProject).subscribe({

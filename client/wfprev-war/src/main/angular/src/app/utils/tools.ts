@@ -203,3 +203,8 @@ export function getLocalIsoTimestamp(date?: Date): string {
     .replace(',', '')
     .replace(' ', 'T');
 }
+
+export function getUtcIsoTimestamp(date?: Date): string {
+  // Example: 2025-08-08T18:20:30.000Z (always UTC)
+  return (date ?? new Date()).toISOString();
+}

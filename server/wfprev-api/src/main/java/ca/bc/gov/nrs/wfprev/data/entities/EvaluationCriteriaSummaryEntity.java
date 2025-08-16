@@ -113,6 +113,9 @@ public class EvaluationCriteriaSummaryEntity implements Serializable {
     @NotNull
     @Column(name = "update_date", nullable = false)
     private Date updateDate;
-
+    
+    @NotNull
+    @Column(name = "last_updated_timestamp", nullable = false)
+    private Date lastUpdatedTimestamp;
 
 }
