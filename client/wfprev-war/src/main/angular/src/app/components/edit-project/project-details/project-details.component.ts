@@ -20,7 +20,8 @@ import {
   getBluePinIcon,
   trimLatLong,
   validateLatLong,
-  LeafletLegendService
+  LeafletLegendService,
+  getUtcIsoTimestamp
 } from 'src/app/utils/tools';
 import { ExpansionIndicatorComponent } from '../../shared/expansion-indicator/expansion-indicator.component';
 import { BcParksSectionCodeModel, ForestDistrictCodeModel } from 'src/app/components/models';
@@ -393,6 +394,7 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
       const updatedProject = {
         ...this.projectDetail,
         ...this.detailsForm.value,
+        lastUpdatedTimestamp: getUtcIsoTimestamp(),
         // updateUser: this.tokenService.getUserId(),
         forestRegionOrgUnitId: Number(this.detailsForm.get('forestRegionOrgUnitId')?.value),
         forestDistrictOrgUnitId: Number(this.detailsForm.get('forestDistrictOrgUnitId')?.value),
@@ -463,6 +465,7 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
       const updatedProject = {
         ...this.projectDetail,
         projectDescription: this.projectDescription,
+        lastUpdatedTimestamp: getUtcIsoTimestamp()
       };
 
       this.projectService.updateProject(this.projectGuid, updatedProject).subscribe({
@@ -516,6 +519,7 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
       ...this.projectDetail,
       latitude: trimLatLong(Number(latitude)),
       longitude: trimLatLong(Number(longitude)),
+      lastUpdatedTimestamp: getUtcIsoTimestamp()
     };
 
     this.projectService.updateProject(this.projectGuid, updatedProject).subscribe({

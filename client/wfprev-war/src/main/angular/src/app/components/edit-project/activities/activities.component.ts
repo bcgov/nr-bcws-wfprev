@@ -23,6 +23,7 @@ import { ExpansionIndicatorComponent } from "../../shared/expansion-indicator/ex
 import { IconButtonComponent } from 'src/app/components/shared/icon-button/icon-button.component';
 import { TimestampComponent } from 'src/app/components/shared/timestamp/timestamp.component';
 import { TextareaComponent } from 'src/app/components/shared/textarea/textarea.component';
+import { getUtcIsoTimestamp } from 'src/app/utils/tools';
 
 
 export const CUSTOM_DATE_FORMATS = {
@@ -576,6 +577,7 @@ export class ActivitiesComponent implements OnChanges, CanComponentDeactivate {
         : formData.activityStatusCode,
 
     };
+    updatedData.lastUpdatedTimestamp = getUtcIsoTimestamp();
     delete updatedData.activityDateRange;
 
     if (!updatedData.projectPlanFiscalGuid) {
@@ -797,3 +799,4 @@ export class ActivitiesComponent implements OnChanges, CanComponentDeactivate {
   }
 
 }
+
