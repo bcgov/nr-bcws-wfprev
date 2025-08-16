@@ -193,4 +193,8 @@ public class ProjectEntity implements Serializable {
 
     @Column(name = "results_project_code", length = 25)
     private String resultsProjectCode;
+    
+    @NotNull
+    @Column(name = "last_updated_timestamp", nullable = false)
+    private Date lastUpdatedTimestamp;
 }

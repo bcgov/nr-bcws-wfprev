@@ -11,6 +11,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.springframework.hateoas.server.core.Relation;
 
+import java.util.Date;
 import java.util.List;
 
 @Data
@@ -31,4 +32,5 @@ public class EvaluationCriteriaSummaryModel extends CommonModel<EvaluationCriter
     private Boolean isOutsideWuiInd;
     private Integer totalFilterScore;
     private List<EvaluationCriteriaSectionSummaryModel> evaluationCriteriaSectionSummaries;
+    private Date lastUpdatedTimestamp;
 }

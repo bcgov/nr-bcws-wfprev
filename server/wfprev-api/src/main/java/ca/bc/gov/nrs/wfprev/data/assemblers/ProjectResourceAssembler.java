@@ -81,7 +81,7 @@ public class ProjectResourceAssembler extends RepresentationModelAssemblerSuppor
         entity.setCreateDate(resource.getCreateDate());
         entity.setUpdateUser(resource.getUpdateUser());
         entity.setUpdateDate(resource.getUpdateDate());
-
+        entity.setLastUpdatedTimestamp(resource.getLastUpdatedTimestamp());
         return entity;
     }
 
@@ -145,6 +145,7 @@ public class ProjectResourceAssembler extends RepresentationModelAssemblerSuppor
         resource.setUpdateUser(entity.getUpdateUser());
         resource.setUpdateDate(entity.getUpdateDate());
         resource.setResultsProjectCode(entity.getResultsProjectCode());
+        resource.setLastUpdatedTimestamp(entity.getLastUpdatedTimestamp());
         return resource;
     }
 
@@ -255,6 +256,9 @@ public class ProjectResourceAssembler extends RepresentationModelAssemblerSuppor
         entity.setTertiaryObjectiveTypeCode(toObjectiveTypeCodeEntity(model.getTertiaryObjectiveTypeCode()));
         entity.setSecondaryObjectiveRationale(nonNullOrDefault(model.getSecondaryObjectiveRationale(), existingEntity.getSecondaryObjectiveRationale()));
         entity.setResultsProjectCode(nonNullOrDefault(model.getResultsProjectCode(), existingEntity.getResultsProjectCode()));
+        entity.setLastUpdatedTimestamp(
+            nonNullOrDefault(model.getLastUpdatedTimestamp(), existingEntity.getLastUpdatedTimestamp())
+        );
 
         log.error("Updated entity: " + entity);
         return entity;

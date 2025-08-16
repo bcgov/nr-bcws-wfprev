@@ -1688,6 +1688,45 @@
         "rollback": [
         ]
       }
+    },
+    {
+      "changeSet": {
+        "id": "01_00_37_00",
+        "author": "luli",
+        "tagDatabase": { "tag": "version_01_00_37_00" },
+        "changes": [
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_00_37/00/ddl/app_wf1_prev.ddl.modify_tables_wfprev-744.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": "$",
+              "path": "scripts/01_00_37/00/ddl/app_wf1_prev.ddl.activity_trigger_wfprev-744.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": "$",
+              "path": "scripts/01_00_37/00/ddl/app_wf1_prev.ddl.project_trigger_wfprev-744.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_00_37/00/dml/app_wf1_prev.dml.update_last_updated_timestamp_wfprev-744.sql"
+            }
+          }
+        ],
+        "rollback": []
+      }
     }
+
    ] 
 }
