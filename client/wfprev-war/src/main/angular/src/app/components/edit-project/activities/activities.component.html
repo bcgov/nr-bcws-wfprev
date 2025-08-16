@@ -60,12 +60,22 @@
                             <div class="form-item narrow-width">
                                 <label>Completed Hectares (Ha)</label>
                                 <input type="number" id="completedAreaHa" formControlName="completedAreaHa"/>
+                                <div class="error"
+                                    *ngIf="getControl(i, 'completedAreaHa')?.errors && (getControl(i, 'completedAreaHa')?.dirty || getControl(i, 'completedAreaHa')?.touched)">
+                                    <span *ngIf="getControl(i, 'completedAreaHa')?.hasError('min')">{{ messages.positiveNumber }}</span>
+                                    <span *ngIf="getControl(i, 'completedAreaHa')?.hasError('max')">{{ messages.maxLengthExceeded }}</span>
+                                </div>
                             </div>
                             <div class="form-item narrow-width">
                                 <label>Reported Spend</label>
                                 <div class="currency-input">
                                     <span class="currency-symbol">$</span>
                                     <input type="number" id="reportedSpendAmount" formControlName="reportedSpendAmount" placeholder="0.00" min="0"/>
+                                </div>
+                                <div class="error"
+                                    *ngIf="getControl(i, 'reportedSpendAmount')?.errors && (getControl(i, 'reportedSpendAmount')?.dirty || getControl(i, 'reportedSpendAmount')?.touched)">
+                                    <span *ngIf="getControl(i, 'reportedSpendAmount')?.hasError('min')">{{ messages.positiveNumber }}</span>
+                                    <span *ngIf="getControl(i, 'reportedSpendAmount')?.hasError('max')">{{ messages.maxLengthExceeded }}</span>
                                 </div>
                             </div>
                             <div class="form-item narrow-width">
@@ -138,6 +148,10 @@
                                 formControlName="activityName"
                                 [readonly]="activityForms[i]?.value?.isResultsReportableInd"
                             />
+                            <div class="error"
+                                *ngIf="getControl(i, 'activityName')?.errors && (getControl(i, 'activityName')?.dirty || getControl(i, 'activityName')?.touched)">
+                                <span *ngIf="getControl(i, 'activityName')?.hasError('maxlength')">{{ messages.maxLengthExceeded }}</span>
+                            </div>
                         </div>
 
                         
@@ -168,6 +182,11 @@
                         <div class="form-item">
                             <label>Planned Hectares (Ha)<span class="required">*</span></label>
                             <input type="number" id="plannedTreatmentAreaHa" formControlName="plannedTreatmentAreaHa" min="0"/>
+                            <div class="error"
+                                *ngIf="getControl(i, 'plannedTreatmentAreaHa')?.errors && (getControl(i, 'plannedTreatmentAreaHa')?.dirty || getControl(i, 'plannedTreatmentAreaHa')?.touched)">
+                                <span *ngIf="getControl(i, 'plannedTreatmentAreaHa')?.hasError('max')">{{ messages.maxLengthExceeded }}</span>
+                                <span *ngIf="getControl(i, 'plannedTreatmentAreaHa')?.hasError('min')">{{ messages.positiveNumber }}</span>
+                            </div>
                         </div>
 
                         <div class="form-item">
@@ -175,6 +194,11 @@
                             <div class="currency-input">
                                 <span class="currency-symbol">$</span>
                                 <input type="number" id="plannedSpendAmount" formControlName="plannedSpendAmount" placeholder="0.00" min="0"/>
+                                <div class="error"
+                                    *ngIf="getControl(i, 'plannedSpendAmount')?.errors && (getControl(i, 'plannedSpendAmount')?.dirty || getControl(i, 'plannedSpendAmount')?.touched)">
+                                    <span *ngIf="getControl(i, 'plannedSpendAmount')?.hasError('max')">{{ messages.maxLengthExceeded }}</span>
+                                    <span *ngIf="getControl(i, 'plannedSpendAmount')?.hasError('min')">{{ messages.positiveNumber }}</span>
+                                </div>
                             </div>
                         </div>
                         
