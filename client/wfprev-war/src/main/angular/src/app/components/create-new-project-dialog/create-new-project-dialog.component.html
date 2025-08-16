@@ -17,7 +17,7 @@
           <input type="text" id="projectName" formControlName="projectName" placeholder="Begin Typing"
             class="project-input" [matTooltip]="projectForm.get('projectName')?.value">
           <div class="error"
-            *ngIf="projectForm.get('projectName')?.hasError('maxlength') && projectForm.get('projectName')?.touched">
+            *ngIf="projectForm.get('projectName')?.hasError('maxlength') && (projectForm.get('projectName')?.dirty || projectForm.get('projectName')?.touched)">
             {{messages.maxLengthExceeded}}
           </div>
         </div>
@@ -79,7 +79,7 @@
           <input type="text" formControlName="closestCommunity" placeholder="Begin Typing" class="project-input"
                  [matTooltip]="projectForm.get('closestCommunity')?.value">
           <div class="error"
-            *ngIf="projectForm.get('closestCommunity')?.hasError('maxlength') && projectForm.get('closestCommunity')?.touched">
+            *ngIf="projectForm.get('closestCommunity')?.hasError('maxlength') && (projectForm.get('closestCommunity')?.dirty || projectForm.get('closestCommunity')?.touched)">
             {{messages.maxLengthExceeded}}
           </div>
         </div>
@@ -88,7 +88,7 @@
           <input type="text" formControlName="projectLead" placeholder="Begin Typing" class="project-input"
                  [matTooltip]="projectForm.get('projectLead')?.value">
           <div class="error"
-            *ngIf="projectForm.get('projectLead')?.hasError('maxlength') && projectForm.get('projectLead')?.touched">
+            *ngIf="projectForm.get('projectLead')?.hasError('maxlength') && (projectForm.get('projectLead')?.dirty || projectForm.get('projectLead')?.touched)">
             {{messages.maxLengthExceeded}}
           </div>
         </div>
@@ -101,7 +101,7 @@
             {{messages.invalidEmail}}
           </div>
           <div class="error"
-            *ngIf="projectForm.get('projectLeadEmail')?.hasError('maxlength') && projectForm.get('projectLeadEmail')?.touched">
+            *ngIf="projectForm.get('projectLeadEmail')?.hasError('maxlength') && ( projectForm.get('projectLeadEmail')?.dirty || projectForm.get('projectLeadEmail')?.touched)">
             {{messages.maxLengthExceeded}}
           </div>
         </div>

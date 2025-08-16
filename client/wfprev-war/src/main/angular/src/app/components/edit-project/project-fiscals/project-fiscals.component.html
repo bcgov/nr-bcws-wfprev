@@ -59,6 +59,7 @@
                       [control]="getFiscalControl(selectedTabIndex, 'projectFiscalName')"
                       [tooltip]="getFiscalControl(selectedTabIndex, 'projectFiscalName')?.value"
                       [required]="true"
+                      [errorMessages]="{ maxlength: messages.maxLengthExceeded }"
                     />
                   </div>
 
@@ -108,7 +109,7 @@
                       [type]="'number'"
                       [control]="getFiscalControl(selectedTabIndex, 'fiscalPlannedProjectSizeHa')"
                       [tooltip]="getFiscalControl(selectedTabIndex, 'fiscalPlannedProjectSizeHa')?.value"
-                      [errorMessages]="{ min: messages.positiveNumber }"
+                      [errorMessages]="{ min: messages.positiveNumber, maxlength: messages.maxLengthExceeded }"
                     />
                   </div>
 
@@ -120,7 +121,7 @@
                       [type]="'number'"
                       [control]="getFiscalControl(selectedTabIndex, 'fiscalCompletedSizeHa')"
                       [tooltip]="getFiscalControl(selectedTabIndex, 'fiscalCompletedSizeHa')?.value"
-                      [errorMessages]="{ min: messages.positiveNumber }"
+                      [errorMessages]="{ min: messages.positiveNumber, maxlength: messages.maxLengthExceeded  }"
                     />
                   </div>
 
@@ -183,6 +184,7 @@
                       [placeholder]="'Begin Typing'"
                       [control]="getFiscalControl(selectedTabIndex, 'firstNationsPartner')"
                       [tooltip]="getFiscalControl(selectedTabIndex, 'firstNationsPartner')?.value"
+                      [errorMessages]="{ maxlength: messages.maxLengthExceeded }"
                     />
                   </div>
                   
@@ -193,6 +195,7 @@
                       [placeholder]="'Begin Typing'"
                       [control]="getFiscalControl(selectedTabIndex, 'otherPartner')"
                       [tooltip]="getFiscalControl(selectedTabIndex, 'otherPartner')?.value"
+                      [errorMessages]="{ maxlength: messages.maxLengthExceeded }"
                     />
                   </div>
                   <!-- Budget Section -->
@@ -210,7 +213,7 @@
                       [control]="getFiscalControl(selectedTabIndex, 'totalCostEstimateAmount')"
                       [tooltip]="getFiscalControl(selectedTabIndex, 'totalCostEstimateAmount')?.value"
                       [prefix]="'$'"
-                      [errorMessages]="{ min: messages.positiveNumber }"
+                      [errorMessages]="{ min: messages.positiveNumber, maxlength: messages.maxLengthExceeded }"
                     />
                   </div>
  
@@ -245,7 +248,7 @@
                       [control]="getFiscalControl(selectedTabIndex, 'fiscalAncillaryFundAmount')"
                       [tooltip]="getFiscalControl(selectedTabIndex, 'fiscalAncillaryFundAmount')?.value"
                       [prefix]="'$'"
-                      [errorMessages]="{ min: messages.positiveNumber }"
+                      [errorMessages]="{ min: messages.positiveNumber, maxlength: messages.maxLengthExceeded }"
                     />
                   </div>
 
@@ -257,7 +260,7 @@
                       [type]="'number'"
                       [control]="getFiscalControl(selectedTabIndex, 'fiscalForecastAmount')"
                       [tooltip]="getFiscalControl(selectedTabIndex, 'fiscalForecastAmount')?.value"
-                      [errorMessages]="{ min: messages.positiveNumber }"
+                      [errorMessages]="{ min: messages.positiveNumber, maxlength: messages.maxLengthExceeded }"
                       [prefix]="'$'"
                     />
                   </div>
@@ -270,7 +273,7 @@
                       [type]="'number'"
                       [control]="getFiscalControl(selectedTabIndex, 'fiscalReportedSpendAmount')"
                       [tooltip]="getFiscalControl(selectedTabIndex, 'fiscalReportedSpendAmount')?.value"
-                      [errorMessages]="{ min: messages.positiveNumber }"
+                      [errorMessages]="{ min: messages.positiveNumber, maxlength: messages.maxLengthExceeded }"
                       [prefix]="'$'"
                     />
                   </div>
@@ -283,7 +286,7 @@
                       [type]="'number'"
                       [control]="getFiscalControl(selectedTabIndex, 'fiscalActualAmount')"
                       [tooltip]="getFiscalControl(selectedTabIndex, 'fiscalActualAmount')?.value"
-                      [errorMessages]="{ min: messages.positiveNumber }"
+                      [errorMessages]="{ min: messages.positiveNumber, maxlength: messages.maxLengthExceeded }"
                       [prefix]="'$'"
                     />
                   </div>

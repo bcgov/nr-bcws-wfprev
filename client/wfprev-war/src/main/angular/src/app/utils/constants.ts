@@ -195,3 +195,7 @@ export const DownloadFileExtensions = {
   EXCEL: 'xlsx',
   CSV: 'csv',
 };
+
+export const NumericLimits = {
+  MAX_NUMBER: 99999999999.9999
+};
