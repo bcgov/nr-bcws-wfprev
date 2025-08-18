@@ -50,13 +50,19 @@ public class ProjectResourceAssemblerTest {
         ForestAreaCodeEntity forestAreaCodeEntity = new ForestAreaCodeEntity();
         ProjectTypeCodeEntity projectTypeCodeEntity = new ProjectTypeCodeEntity();
 
-        ProjectEntity expectedProjectEntity = ProjectEntity.builder().projectGuid(UUID.fromString(projectGuid))
+        ProjectEntity expectedProjectEntity = ProjectEntity.builder()
+                .projectGuid(UUID.fromString(projectGuid))
                 .primaryObjectiveTypeCode(objectiveTypeCodeEntity)
                 .secondaryObjectiveTypeCode(objectiveTypeCodeEntity)
-                .tertiaryObjectiveTypeCode(objectiveTypeCodeEntity).projectNumber(1000).programAreaGuid(UUID.fromString(programAreaGuid))
+                .tertiaryObjectiveTypeCode(objectiveTypeCodeEntity)
+                .projectNumber(1000)
+                .programAreaGuid(UUID.fromString(programAreaGuid))
                 .forestAreaCode(forestAreaCodeEntity)
                 .generalScopeCode(generalScopeCodeEntity)
-                .projectTypeCode(projectTypeCodeEntity).build();
+                .projectTypeCode(projectTypeCodeEntity)
+                .build();
+
+        expectedProjectEntity.setLastUpdatedTimestamp(now);
         assertEquals(expectedProjectEntity, projectEntity);
     }
 

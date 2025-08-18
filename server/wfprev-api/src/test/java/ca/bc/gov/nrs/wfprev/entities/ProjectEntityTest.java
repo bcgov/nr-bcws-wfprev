@@ -43,6 +43,7 @@ class ProjectEntityTest {
                 .createDate(new Date())
                 .updateUser("tester")
                 .updateDate(new Date())
+                .lastUpdatedTimestamp(new Date())
                 .build();
     }
 
