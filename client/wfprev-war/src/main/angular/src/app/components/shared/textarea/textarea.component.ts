@@ -45,10 +45,35 @@ export class TextareaComponent {
   }
 
   onPaste(event: ClipboardEvent) {
+    // selection-aware paste handle
+    const textArea = event.target as HTMLTextAreaElement;
+    const existingText = this.control.value ?? '';
+    const pastedText = event.clipboardData?.getData('text') ?? '';
+
+    // figure out which part of the text is currently selected
+    const selectionStart = textArea.selectionStart ?? existingText.length;
+    const selectionEnd = textArea.selectionEnd ?? selectionStart;
+    const selectionLength = selectionEnd - selectionStart;
+    const availableSpace = this.maxLength
+      ? Math.max(0, this.maxLength - (existingText.length - selectionLength))
+      : Infinity;
+    const textToInsert =
+      availableSpace === Infinity ? pastedText : pastedText.slice(0, availableSpace);
+
+    const newValue =
+      existingText.slice(0, selectionStart) +
+      textToInsert +
+      existingText.slice(selectionEnd);
+
     event.preventDefault();
-    const pasteData = (event.clipboardData?.getData('text') || '').slice(0, this.maxLength);
-    const currentValue = this.control.value || '';
-    const newValue = (currentValue + pasteData).slice(0, this.maxLength);
     this.control.setValue(newValue);
+    this.control.markAsDirty();
+    this.control.markAsTouched();
+
+    queueMicrotask(() => {
+      const cursorPosition = selectionStart + textToInsert.length;
+      textArea.selectionStart = textArea.selectionEnd = cursorPosition;
+    });
   }
+
 }

@@ -103,6 +103,7 @@ export class EndorsementApprovalComponent implements OnChanges {
       
       if (this.isCardDisabled) {
         this.endorsementApprovalForm.disable({ emitEvent: false });
+        return;
       } else {
         this.endorsementApprovalForm.enable({ emitEvent: false });
       }

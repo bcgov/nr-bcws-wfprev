@@ -11,6 +11,7 @@
     #autosize="cdkTextareaAutosize"
     (input)="onInput($event)"
     (paste)="onPaste($event)"
+    [attr.maxlength]="maxLength"
     [ngClass]="{ 'over-limit': isOverLimit }"
   ></textarea>
 
