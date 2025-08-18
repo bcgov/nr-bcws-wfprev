@@ -107,9 +107,14 @@ describe('TextareaComponent', () => {
     expect(component.control.value).toBe('short');
   });
 
-  it('onPaste should prevent default and append trimmed clipboard text up to maxLength', () => {
+  it('onPaste should replace selected text with clipboard text, respecting maxLength', () => {
     component.maxLength = 8;
     component.control.setValue('abc');
+
+    const textarea = document.createElement('textarea');
+    textarea.value = 'abc';
+    textarea.selectionStart = 3;
+    textarea.selectionEnd = 3;
 
     const preventDefault = jasmine.createSpy('preventDefault');
     const clipboardData = { getData: (_: string) => 'LONGPASTE' };
@@ -117,6 +122,7 @@ describe('TextareaComponent', () => {
     const pasteEvent = {
       preventDefault,
       clipboardData,
+      target: textarea,
     } as unknown as ClipboardEvent;
 
     const setValueSpy = spyOn(component.control, 'setValue').and.callThrough();
@@ -127,5 +133,4 @@ describe('TextareaComponent', () => {
     expect(setValueSpy).toHaveBeenCalledOnceWith('abcLONGP');
     expect(component.control.value).toBe('abcLONGP');
   });
-
 });
