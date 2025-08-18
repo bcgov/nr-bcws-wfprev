@@ -55,7 +55,7 @@ describe('TextareaComponent', () => {
 
     const errorEl = fixture.debugElement.query(By.css('.error'));
     expect(errorEl).toBeTruthy();
-    expect(errorEl.nativeElement.textContent).toContain('Max length exceeded.');
+    expect(errorEl.nativeElement.textContent).toContain('Maximum character');
   });
 
   it('should not show error when control is untouched', () => {
@@ -63,6 +63,69 @@ describe('TextareaComponent', () => {
     fixture.detectChanges();
 
     const errorEl = fixture.debugElement.query(By.css('.error'));
-    expect(errorEl).toBeNull();
+    expect(errorEl).toBeTruthy();
+    expect(errorEl.nativeElement.classList.contains('invisible')).toBeTrue();
   });
+
+  it('onInput should truncate value to maxLength and not emit valueChanges', () => {
+    component.maxLength = 5;
+    const longValue = '123456789';
+
+    const valueChangesSpy = jasmine.createSpy('valueChanges');
+    const sub = component.control.valueChanges.subscribe(valueChangesSpy);
+
+    const setValueSpy = spyOn(component.control, 'setValue').and.callThrough();
+
+    const textarea = document.createElement('textarea');
+    textarea.value = longValue;
+    const inputEvent = new Event('input');
+    Object.defineProperty(inputEvent, 'target', { value: textarea });
+
+    component.onInput(inputEvent);
+
+    expect(setValueSpy).toHaveBeenCalledOnceWith('12345', { emitEvent: false });
+    expect(component.control.value).toBe('12345');
+    expect(valueChangesSpy).not.toHaveBeenCalled();
+
+    sub.unsubscribe();
+  });
+
+  it('onInput should do nothing when value is within limit', () => {
+    component.maxLength = 10;
+    component.control.setValue('short');
+
+    const setValueSpy = spyOn(component.control, 'setValue').and.callThrough();
+
+    const textarea = document.createElement('textarea');
+    textarea.value = 'short';
+    const inputEvent = new Event('input');
+    Object.defineProperty(inputEvent, 'target', { value: textarea });
+
+    component.onInput(inputEvent);
+
+    expect(setValueSpy).not.toHaveBeenCalled();
+    expect(component.control.value).toBe('short');
+  });
+
+  it('onPaste should prevent default and append trimmed clipboard text up to maxLength', () => {
+    component.maxLength = 8;
+    component.control.setValue('abc');
+
+    const preventDefault = jasmine.createSpy('preventDefault');
+    const clipboardData = { getData: (_: string) => 'LONGPASTE' };
+
+    const pasteEvent = {
+      preventDefault,
+      clipboardData,
+    } as unknown as ClipboardEvent;
+
+    const setValueSpy = spyOn(component.control, 'setValue').and.callThrough();
+
+    component.onPaste(pasteEvent);
+
+    expect(preventDefault).toHaveBeenCalled();
+    expect(setValueSpy).toHaveBeenCalledOnceWith('abcLONGP');
+    expect(component.control.value).toBe('abcLONGP');
+  });
+
 });

@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { of, throwError } from 'rxjs';
 import { CreateNewProjectDialogComponent } from './create-new-project-dialog.component';
@@ -685,4 +685,13 @@ describe('CreateNewProjectDialogComponent', () => {
     expect(component.getObjectiveCode('WRR')).toBe('Wildfire Risk Reduction');
   });
 
+  it('should return secondaryObjectiveRationale form control via getter', () => {
+    const ctrlFromGetter = component.secondaryObjectiveRationaleCtrl;
+    const ctrlDirect = component.projectForm.get('secondaryObjectiveRationale');
+
+    expect(ctrlFromGetter).toBe(ctrlDirect as FormControl);
+    expect(ctrlFromGetter.value).toBe('');
+    ctrlFromGetter.setValue('Test rationale');
+    expect(component.projectForm.get('secondaryObjectiveRationale')?.value).toBe('Test rationale');
+  });
 });

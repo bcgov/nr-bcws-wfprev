@@ -29,6 +29,7 @@ import { StatusBadgeComponent } from 'src/app/components/shared/status-badge/sta
 import { EndorsementApprovalComponent } from 'src/app/components/edit-project/endorsement-approval/endorsement-approval.component';
 import { TokenService } from 'src/app/services/token.service';
 import { TimestampComponent } from 'src/app/components/shared/timestamp/timestamp.component';
+import { TextareaComponent } from 'src/app/components/shared/textarea/textarea.component';
 
 @Component({
   selector: 'wfprev-project-fiscals',
@@ -55,7 +56,8 @@ import { TimestampComponent } from 'src/app/components/shared/timestamp/timestam
     DropdownButtonComponent,
     StatusBadgeComponent,
     EndorsementApprovalComponent,
-    TimestampComponent
+    TimestampComponent,
+    TextareaComponent
   ]
 })
 export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
@@ -198,30 +200,30 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
   createFiscalForm(fiscal?: any): FormGroup {
     const form = this.fb.group({
       fiscalYear: [fiscal?.fiscalYear ?? '', [Validators.required]],
-      projectFiscalName: [fiscal?.projectFiscalName ?? '', [Validators.required]],
+      projectFiscalName: [fiscal?.projectFiscalName ?? '', [Validators.required, Validators.maxLength(300)]],
       activityCategoryCode: [fiscal?.activityCategoryCode ?? '', [Validators.required]],
       proposalTypeCode: [fiscal?.proposalTypeCode ?? 'NEW', [Validators.required]],
       planFiscalStatusCode: [
         fiscal?.planFiscalStatusCode?.planFiscalStatusCode ?? 'DRAFT',
         [Validators.required]
       ],
-      fiscalPlannedProjectSizeHa: [fiscal?.fiscalPlannedProjectSizeHa ?? '', [Validators.min(0)]],
-      fiscalCompletedSizeHa: [fiscal?.fiscalCompletedSizeHa ?? '', [Validators.min(0)]],
+      fiscalPlannedProjectSizeHa: [fiscal?.fiscalPlannedProjectSizeHa ?? '', [Validators.min(0), Validators.maxLength(16)]],
+      fiscalCompletedSizeHa: [fiscal?.fiscalCompletedSizeHa ?? '', [Validators.min(0), Validators.maxLength(16)]],
       resultsOpeningId: [fiscal?.resultsOpeningId ?? '', [Validators.maxLength(11)]],
       firstNationsEngagementInd: [fiscal?.firstNationsEngagementInd ?? false],
       firstNationsDelivPartInd: [fiscal?.firstNationsDelivPartInd ?? false],
-      firstNationsPartner: [fiscal?.firstNationsPartner ?? ''],
+      firstNationsPartner: [fiscal?.firstNationsPartner ?? '',[Validators.maxLength(4000)]],
       projectFiscalDescription: [fiscal?.projectFiscalDescription ?? '', [Validators.required, Validators.maxLength(500)]],
-      otherPartner: [fiscal?.otherPartner ?? ''],
-      totalCostEstimateAmount: [fiscal?.totalCostEstimateAmount ?? '', [Validators.min(0)]],
+      otherPartner: [fiscal?.otherPartner ?? '',[Validators.maxLength(4000)]],
+      totalCostEstimateAmount: [fiscal?.totalCostEstimateAmount ?? '', [Validators.min(0), Validators.maxLength(16)]],
       forecastAmount: [fiscal?.forecastAmount ?? ''],
       cfsProjectCode: [fiscal?.cfsProjectCode ?? '', [Validators.maxLength(25)]],
       ancillaryFundingProvider: [fiscal?.ancillaryFundingProvider ?? '', [Validators.maxLength(100)]],
-      fiscalAncillaryFundAmount: [fiscal?.fiscalAncillaryFundAmount ?? '', [Validators.min(0)]],
-      fiscalReportedSpendAmount: [fiscal?.fiscalReportedSpendAmount ?? '', [Validators.min(0)]],
+      fiscalAncillaryFundAmount: [fiscal?.fiscalAncillaryFundAmount ?? '', [Validators.min(0), Validators.maxLength(16)]],
+      fiscalReportedSpendAmount: [fiscal?.fiscalReportedSpendAmount ?? '', [Validators.min(0), Validators.maxLength(16)]],
       cfsActualSpend: [fiscal?.cfsActualSpend ?? ''],
-      fiscalForecastAmount: [fiscal?.fiscalForecastAmount ?? '', [Validators.min(0)]],
-      fiscalActualAmount: [fiscal?.fiscalActualAmount ?? '', [Validators.min(0)]],
+      fiscalForecastAmount: [fiscal?.fiscalForecastAmount ?? '', [Validators.min(0), Validators.maxLength(16)]],
+      fiscalActualAmount: [fiscal?.fiscalActualAmount ?? '', [Validators.min(0), Validators.maxLength(16)]],
       projectPlanFiscalGuid: [fiscal?.projectPlanFiscalGuid ?? ''],
       isApprovedInd: [fiscal?.isApprovedInd ?? false]
     });

@@ -12,19 +12,59 @@
     font-size: 14px;
     font-style: normal;
     font-weight: 400;
+    margin-bottom: 8px;
   }
 
   textarea {
     padding: 8px;
     font-family: inherit;
+    font-size: 16px;
     border: 1px solid #D9D9D9;
     border-radius: 4px;
     resize: vertical;
+    padding: 6px;
+    &.over-limit {
+      border-color: #ef1616;
+      &:focus {
+        outline: none;
+        border-color: #ef1616;
+      }
+    }
+  }
+
+  .feedback-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 4px;
+    font-size: 14px;
+  }
+
+  .warning-icon{
+    vertical-align: bottom;
   }
   
   .error {
-    color: red;
-    font-size: 12px;
+    color: #ef1616;
+    font-size: 14px;
     margin-top: 4px;
+    &.invisible {
+      visibility: hidden;
+    }
   }
+
+  .counter {
+    margin-top: 4px;
+    font-size: 14px;
+    color: #9F9D9C;
+    text-align: right;
+    font-weight: 400;
+    &.over {
+      color: #ef1616;
+    }
+  }
+}
+
+.required {
+  color: #ef1616;
 }

@@ -55,10 +55,11 @@
                     <wfprev-input-field
                       [id]="'projectFiscalName'"
                       [label]="'Fiscal Activity Name'"
-                      [placeholder]="'Begin Typing'"
+                      [placeholder]="'Descriptor including site and activity category'"
                       [control]="getFiscalControl(selectedTabIndex, 'projectFiscalName')"
                       [tooltip]="getFiscalControl(selectedTabIndex, 'projectFiscalName')?.value"
                       [required]="true"
+                      [errorMessages]="{ maxlength: messages.maxLengthExceeded }"
                     />
                   </div>
 
@@ -104,11 +105,11 @@
                     <wfprev-input-field
                       [id]="'fiscalPlannedProjectSizeHa'"
                       [label]="'Planned Hectares (Ha)'"
-                      [placeholder]="'Begin Typing'"
+                      [placeholder]="'0'"
                       [type]="'number'"
                       [control]="getFiscalControl(selectedTabIndex, 'fiscalPlannedProjectSizeHa')"
                       [tooltip]="getFiscalControl(selectedTabIndex, 'fiscalPlannedProjectSizeHa')?.value"
-                      [errorMessages]="{ min: messages.positiveNumber }"
+                      [errorMessages]="{ min: messages.positiveNumber, maxlength: messages.maxLengthExceeded }"
                     />
                   </div>
 
@@ -116,11 +117,11 @@
                     <wfprev-input-field
                       [id]="'fiscalCompletedSizeHa'"
                       [label]="'Completed Hectares (Ha)'"
-                      [placeholder]="'Begin Typing'"
+                      [placeholder]="'0'"
                       [type]="'number'"
                       [control]="getFiscalControl(selectedTabIndex, 'fiscalCompletedSizeHa')"
                       [tooltip]="getFiscalControl(selectedTabIndex, 'fiscalCompletedSizeHa')?.value"
-                      [errorMessages]="{ min: messages.positiveNumber }"
+                      [errorMessages]="{ min: messages.positiveNumber, maxlength: messages.maxLengthExceeded  }"
                     />
                   </div>
 
@@ -128,7 +129,7 @@
                     <wfprev-input-field
                       [id]="'resultsOpeningId'"
                       [label]="'RESULTS ID'"
-                      [placeholder]="'Begin Typing'"
+                      [placeholder]="'e.g., 98734702882'"
                       [control]="getFiscalControl(selectedTabIndex, 'resultsOpeningId')"
                       [tooltip]="getFiscalControl(selectedTabIndex, 'resultsOpeningId')?.value"
                       [errorMessages]="{ maxlength: messages.maxLengthExceeded }"
@@ -136,18 +137,14 @@
                   </div>
 
                   <div class="form-item full-width">
-                    <label>Description<span class="required">*</span></label>
-                    <textarea 
-                      id="projectFiscalDescription" 
-                      formControlName="projectFiscalDescription" 
-                      rows="4" cols="50"
-                      placeholder="Begin Typing"
-                    >
-                    </textarea>
-                    <div class="error" *ngIf="fiscalForms[i] && fiscalForms[i].get('projectFiscalDescription')?.hasError('maxlength') 
-                      && fiscalForms[i].get('projectFiscalDescription')?.touched">
-                      {{ messages.maxLengthExceeded }}
-                    </div>
+                    <wfprev-textarea
+                      [label]="'Description'"
+                      [placeholder]="'Describe the activities planned for this fiscal year and how funding is being used.'"
+                      [rows]="4"
+                      [maxLength]="500"
+                      [control]="getFiscalControl(i, 'projectFiscalDescription')"
+                      [required]="true">
+                    </wfprev-textarea>
                   </div>
                   <!-- Delivery Partners Section -->
                   <div class="sub-section">
@@ -184,9 +181,10 @@
                     <wfprev-input-field
                       [id]="'firstNationsPartner'"
                       [label]="'First Nation Co-Delivery Partners'"
-                      [placeholder]="'Begin Typing'"
+                      [placeholder]="'e.g., St\'at\'imc Nation'"
                       [control]="getFiscalControl(selectedTabIndex, 'firstNationsPartner')"
                       [tooltip]="getFiscalControl(selectedTabIndex, 'firstNationsPartner')?.value"
+                      [errorMessages]="{ maxlength: messages.maxLengthExceeded }"
                     />
                   </div>
                   
@@ -194,9 +192,10 @@
                     <wfprev-input-field
                       [id]="'otherPartner'"
                       [label]="'Other Partners'"
-                      [placeholder]="'Begin Typing'"
+                      [placeholder]="'e.g., BC Parks'"
                       [control]="getFiscalControl(selectedTabIndex, 'otherPartner')"
                       [tooltip]="getFiscalControl(selectedTabIndex, 'otherPartner')?.value"
+                      [errorMessages]="{ maxlength: messages.maxLengthExceeded }"
                     />
                   </div>
                   <!-- Budget Section -->
@@ -214,7 +213,7 @@
                       [control]="getFiscalControl(selectedTabIndex, 'totalCostEstimateAmount')"
                       [tooltip]="getFiscalControl(selectedTabIndex, 'totalCostEstimateAmount')?.value"
                       [prefix]="'$'"
-                      [errorMessages]="{ min: messages.positiveNumber }"
+                      [errorMessages]="{ min: messages.positiveNumber, maxlength: messages.maxLengthExceeded }"
                     />
                   </div>
  
@@ -222,7 +221,7 @@
                     <wfprev-input-field
                       [id]="'cfsProjectCode'"
                       [label]="'CFS Code'"
-                      [placeholder]="'Begin Typing'"
+                      [placeholder]="'e.g., 719C792'"
                       [control]="getFiscalControl(selectedTabIndex, 'cfsProjectCode')"
                       [tooltip]="getFiscalControl(selectedTabIndex, 'cfsProjectCode')?.value"
                       [errorMessages]="{ maxlength: messages.maxLengthExceeded }"
@@ -233,7 +232,7 @@
                     <wfprev-input-field
                       [id]="'ancillaryFundingProvider'"
                       [label]="'Ancillary Funding Provider'"
-                      [placeholder]="'Begin Typing'"
+                      [placeholder]="'Additional funding beyond WRR.'"
                       [control]="getFiscalControl(selectedTabIndex, 'ancillaryFundingProvider')"
                       [tooltip]="getFiscalControl(selectedTabIndex, 'ancillaryFundingProvider')?.value"
                       [errorMessages]="{ maxlength: messages.maxLengthExceeded }"
@@ -249,7 +248,7 @@
                       [control]="getFiscalControl(selectedTabIndex, 'fiscalAncillaryFundAmount')"
                       [tooltip]="getFiscalControl(selectedTabIndex, 'fiscalAncillaryFundAmount')?.value"
                       [prefix]="'$'"
-                      [errorMessages]="{ min: messages.positiveNumber }"
+                      [errorMessages]="{ min: messages.positiveNumber, maxlength: messages.maxLengthExceeded }"
                     />
                   </div>
 
@@ -261,7 +260,7 @@
                       [type]="'number'"
                       [control]="getFiscalControl(selectedTabIndex, 'fiscalForecastAmount')"
                       [tooltip]="getFiscalControl(selectedTabIndex, 'fiscalForecastAmount')?.value"
-                      [errorMessages]="{ min: messages.positiveNumber }"
+                      [errorMessages]="{ min: messages.positiveNumber, maxlength: messages.maxLengthExceeded }"
                       [prefix]="'$'"
                     />
                   </div>
@@ -274,7 +273,7 @@
                       [type]="'number'"
                       [control]="getFiscalControl(selectedTabIndex, 'fiscalReportedSpendAmount')"
                       [tooltip]="getFiscalControl(selectedTabIndex, 'fiscalReportedSpendAmount')?.value"
-                      [errorMessages]="{ min: messages.positiveNumber }"
+                      [errorMessages]="{ min: messages.positiveNumber, maxlength: messages.maxLengthExceeded }"
                       [prefix]="'$'"
                     />
                   </div>
@@ -287,7 +286,7 @@
                       [type]="'number'"
                       [control]="getFiscalControl(selectedTabIndex, 'fiscalActualAmount')"
                       [tooltip]="getFiscalControl(selectedTabIndex, 'fiscalActualAmount')?.value"
-                      [errorMessages]="{ min: messages.positiveNumber }"
+                      [errorMessages]="{ min: messages.positiveNumber, maxlength: messages.maxLengthExceeded }"
                       [prefix]="'$'"
                     />
                   </div>

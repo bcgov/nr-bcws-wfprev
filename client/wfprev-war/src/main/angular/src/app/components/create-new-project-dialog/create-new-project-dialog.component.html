@@ -14,10 +14,10 @@
         </div>
         <div class="form-field project-name">
           <label for="projectName">Project Name<span class="required">*</span></label>
-          <input type="text" id="projectName" formControlName="projectName" placeholder="Begin Typing"
+          <input type="text" id="projectName" formControlName="projectName" placeholder="Concisely describe project's goal and/or area"
             class="project-input" [matTooltip]="projectForm.get('projectName')?.value">
           <div class="error"
-            *ngIf="projectForm.get('projectName')?.hasError('maxlength') && projectForm.get('projectName')?.touched">
+            *ngIf="projectForm.get('projectName')?.hasError('maxlength') && (projectForm.get('projectName')?.dirty || projectForm.get('projectName')?.touched)">
             {{messages.maxLengthExceeded}}
           </div>
         </div>
@@ -76,32 +76,32 @@
       <div class="form-row">
         <div class="form-field">
           <label>Closest Community<span class="required">*</span></label>
-          <input type="text" formControlName="closestCommunity" placeholder="Begin Typing" class="project-input"
+          <input type="text" formControlName="closestCommunity" placeholder="Name of closest community to the project" class="project-input"
                  [matTooltip]="projectForm.get('closestCommunity')?.value">
           <div class="error"
-            *ngIf="projectForm.get('closestCommunity')?.hasError('maxlength') && projectForm.get('closestCommunity')?.touched">
+            *ngIf="projectForm.get('closestCommunity')?.hasError('maxlength') && (projectForm.get('closestCommunity')?.dirty || projectForm.get('closestCommunity')?.touched)">
             {{messages.maxLengthExceeded}}
           </div>
         </div>
         <div class="form-field">
           <label>Project Lead<span class="required">*</span></label>
-          <input type="text" formControlName="projectLead" placeholder="Begin Typing" class="project-input"
+          <input type="text" formControlName="projectLead" placeholder="First and Last Name" class="project-input"
                  [matTooltip]="projectForm.get('projectLead')?.value">
           <div class="error"
-            *ngIf="projectForm.get('projectLead')?.hasError('maxlength') && projectForm.get('projectLead')?.touched">
+            *ngIf="projectForm.get('projectLead')?.hasError('maxlength') && (projectForm.get('projectLead')?.dirty || projectForm.get('projectLead')?.touched)">
             {{messages.maxLengthExceeded}}
           </div>
         </div>
         <div class="form-field">
           <label>Project Lead Email</label>
-          <input type="email" formControlName="projectLeadEmail" placeholder="Begin Typing" class="project-input"
+          <input type="email" formControlName="projectLeadEmail" placeholder="example@bc.gov.ca" class="project-input"
                  [matTooltip]="projectForm.get('projectLeadEmail')?.value">
           <div class="error"
             *ngIf="projectForm.get('projectLeadEmail')?.hasError('email') && projectForm.get('projectLeadEmail')?.touched">
             {{messages.invalidEmail}}
           </div>
           <div class="error"
-            *ngIf="projectForm.get('projectLeadEmail')?.hasError('maxlength') && projectForm.get('projectLeadEmail')?.touched">
+            *ngIf="projectForm.get('projectLeadEmail')?.hasError('maxlength') && ( projectForm.get('projectLeadEmail')?.dirty || projectForm.get('projectLeadEmail')?.touched)">
             {{messages.maxLengthExceeded}}
           </div>
         </div>
@@ -109,7 +109,7 @@
       <div class="form-row">
         <div class="form-field">
           <label>Lat/Long</label>
-          <input type="text" formControlName="latLong" placeholder="Enter Manually or Paste from Clipboard"
+          <input type="text" formControlName="latLong" placeholder="e.g., 50.5343° N, -120.6408° W"
             class="project-input" [matTooltip]="projectForm.get('latLong')?.value">
           <div class="error"
             *ngIf="projectForm.get('latLong')?.hasError('maxlength') && projectForm.get('latLong')?.touched">
@@ -133,15 +133,13 @@
       </div>
       <div class="form-row">
         <div class="secondary-rationale">
-          <label>Secondary Objective Rationale</label>
-          <textarea id="secondaryObjectiveRationale" placeholder="Begin Typing"
-            formControlName="secondaryObjectiveRationale" rows="2" cdkTextareaAutosize cdkAutosizeMinRows="1"
-            cdkAutosizeMaxRows="10" class="secondary-rationale"
-            [matTooltip]="projectForm.get('secondaryObjectiveRationale')?.value"></textarea>
-          <div class="error"
-            *ngIf="projectForm.get('secondaryObjectiveRationale')?.hasError('maxlength') && projectForm.get('secondaryObjectiveRationale')?.touched">
-            {{messages.maxLengthExceeded}}
-          </div>
+          <wfprev-textarea
+            label="Secondary Objective Rationale"
+            placeholder="Describe any additional objectives beyond wildfire risk reduction."
+            [control]="secondaryObjectiveRationaleCtrl"
+            [maxLength]="500"
+            [rows]="2">
+          </wfprev-textarea>
         </div>
       </div>
     </div>
