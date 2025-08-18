@@ -55,7 +55,7 @@
                     <wfprev-input-field
                       [id]="'projectFiscalName'"
                       [label]="'Fiscal Activity Name'"
-                      [placeholder]="'Begin Typing'"
+                      [placeholder]="'Descriptor including site and activity category'"
                       [control]="getFiscalControl(selectedTabIndex, 'projectFiscalName')"
                       [tooltip]="getFiscalControl(selectedTabIndex, 'projectFiscalName')?.value"
                       [required]="true"
@@ -105,7 +105,7 @@
                     <wfprev-input-field
                       [id]="'fiscalPlannedProjectSizeHa'"
                       [label]="'Planned Hectares (Ha)'"
-                      [placeholder]="'Begin Typing'"
+                      [placeholder]="'0'"
                       [type]="'number'"
                       [control]="getFiscalControl(selectedTabIndex, 'fiscalPlannedProjectSizeHa')"
                       [tooltip]="getFiscalControl(selectedTabIndex, 'fiscalPlannedProjectSizeHa')?.value"
@@ -117,7 +117,7 @@
                     <wfprev-input-field
                       [id]="'fiscalCompletedSizeHa'"
                       [label]="'Completed Hectares (Ha)'"
-                      [placeholder]="'Begin Typing'"
+                      [placeholder]="'0'"
                       [type]="'number'"
                       [control]="getFiscalControl(selectedTabIndex, 'fiscalCompletedSizeHa')"
                       [tooltip]="getFiscalControl(selectedTabIndex, 'fiscalCompletedSizeHa')?.value"
@@ -129,7 +129,7 @@
                     <wfprev-input-field
                       [id]="'resultsOpeningId'"
                       [label]="'RESULTS ID'"
-                      [placeholder]="'Begin Typing'"
+                      [placeholder]="'e.g., 98734702882'"
                       [control]="getFiscalControl(selectedTabIndex, 'resultsOpeningId')"
                       [tooltip]="getFiscalControl(selectedTabIndex, 'resultsOpeningId')?.value"
                       [errorMessages]="{ maxlength: messages.maxLengthExceeded }"
@@ -139,7 +139,7 @@
                   <div class="form-item full-width">
                     <wfprev-textarea
                       [label]="'Description'"
-                      [placeholder]="'Begin Typing'"
+                      [placeholder]="'Describe the activities planned for this fiscal year and how funding is being used.'"
                       [rows]="4"
                       [maxLength]="500"
                       [control]="getFiscalControl(i, 'projectFiscalDescription')"
@@ -181,7 +181,7 @@
                     <wfprev-input-field
                       [id]="'firstNationsPartner'"
                       [label]="'First Nation Co-Delivery Partners'"
-                      [placeholder]="'Begin Typing'"
+                      [placeholder]="'e.g., St\'at\'imc Nation'"
                       [control]="getFiscalControl(selectedTabIndex, 'firstNationsPartner')"
                       [tooltip]="getFiscalControl(selectedTabIndex, 'firstNationsPartner')?.value"
                       [errorMessages]="{ maxlength: messages.maxLengthExceeded }"
@@ -192,7 +192,7 @@
                     <wfprev-input-field
                       [id]="'otherPartner'"
                       [label]="'Other Partners'"
-                      [placeholder]="'Begin Typing'"
+                      [placeholder]="'e.g., BC Parks'"
                       [control]="getFiscalControl(selectedTabIndex, 'otherPartner')"
                       [tooltip]="getFiscalControl(selectedTabIndex, 'otherPartner')?.value"
                       [errorMessages]="{ maxlength: messages.maxLengthExceeded }"
@@ -221,7 +221,7 @@
                     <wfprev-input-field
                       [id]="'cfsProjectCode'"
                       [label]="'CFS Code'"
-                      [placeholder]="'Begin Typing'"
+                      [placeholder]="'e.g., 719C792'"
                       [control]="getFiscalControl(selectedTabIndex, 'cfsProjectCode')"
                       [tooltip]="getFiscalControl(selectedTabIndex, 'cfsProjectCode')?.value"
                       [errorMessages]="{ maxlength: messages.maxLengthExceeded }"
@@ -232,7 +232,7 @@
                     <wfprev-input-field
                       [id]="'ancillaryFundingProvider'"
                       [label]="'Ancillary Funding Provider'"
-                      [placeholder]="'Begin Typing'"
+                      [placeholder]="'Additional funding beyond WRR.'"
                       [control]="getFiscalControl(selectedTabIndex, 'ancillaryFundingProvider')"
                       [tooltip]="getFiscalControl(selectedTabIndex, 'ancillaryFundingProvider')?.value"
                       [errorMessages]="{ maxlength: messages.maxLengthExceeded }"

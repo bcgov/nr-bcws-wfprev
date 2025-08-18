@@ -147,6 +147,7 @@
                                 id="activityName" 
                                 formControlName="activityName"
                                 [readonly]="activityForms[i]?.value?.isResultsReportableInd"
+                                  [placeholder]="!activityForms[i]?.value?.isResultsReportableInd ? 'Provide a name for non-RESULTS reportable activities' : ''"
                             />
                             <div class="error"
                                 *ngIf="getControl(i, 'activityName')?.errors && (getControl(i, 'activityName')?.dirty || getControl(i, 'activityName')?.touched)">
@@ -218,7 +219,8 @@
                                 [label]="'Activity Description'"
                                 [rows]="1"
                                 [control]="getControl(i, 'activityDescription')"
-                                [required]="true">
+                                [required]="true"
+                                placeholder="Describe the specific activity being carried out as part of the Fiscal Activity. The information within this activity will be used to support RESULTS at the end of the year.">
                             </wfprev-textarea>
                         </div>
 
@@ -233,6 +235,7 @@
                                     [rows]="2"
                                     [maxLength]="500"
                                     [control]="getControl(i, 'activityComment')"
+                                    placeholder="List any remaining obligations or deliverables required to complete the activity. (e.g., pile burns, legal obligations, specific remaining tasks)"
                                     >
                                 </wfprev-textarea>
                             </div>
