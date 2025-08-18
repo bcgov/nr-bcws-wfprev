@@ -6,6 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -37,6 +38,9 @@ public class ProjectResourceAssemblerTest {
         projectModel.setGeneralScopeCode(new GeneralScopeCodeModel());
         projectModel.setProjectTypeCode(new ProjectTypeCodeModel());
 
+        Date now = new Date();
+        projectModel.setLastUpdatedTimestamp(now);
+
         // when it is submitted to the toEntity method
         ProjectEntity projectEntity = assembler.toEntity(projectModel);
 
@@ -46,13 +50,19 @@ public class ProjectResourceAssemblerTest {
         ForestAreaCodeEntity forestAreaCodeEntity = new ForestAreaCodeEntity();
         ProjectTypeCodeEntity projectTypeCodeEntity = new ProjectTypeCodeEntity();
 
-        ProjectEntity expectedProjectEntity = ProjectEntity.builder().projectGuid(UUID.fromString(projectGuid))
+        ProjectEntity expectedProjectEntity = ProjectEntity.builder()
+                .projectGuid(UUID.fromString(projectGuid))
                 .primaryObjectiveTypeCode(objectiveTypeCodeEntity)
                 .secondaryObjectiveTypeCode(objectiveTypeCodeEntity)
-                .tertiaryObjectiveTypeCode(objectiveTypeCodeEntity).projectNumber(1000).programAreaGuid(UUID.fromString(programAreaGuid))
+                .tertiaryObjectiveTypeCode(objectiveTypeCodeEntity)
+                .projectNumber(1000)
+                .programAreaGuid(UUID.fromString(programAreaGuid))
                 .forestAreaCode(forestAreaCodeEntity)
                 .generalScopeCode(generalScopeCodeEntity)
-                .projectTypeCode(projectTypeCodeEntity).build();
+                .projectTypeCode(projectTypeCodeEntity)
+                .build();
+
+        expectedProjectEntity.setLastUpdatedTimestamp(now);
         assertEquals(expectedProjectEntity, projectEntity);
     }
 
@@ -129,13 +139,16 @@ public class ProjectResourceAssemblerTest {
         ProjectEntity existingEntity = new ProjectEntity();
         existingEntity.setProjectGuid(UUID.randomUUID());
         existingEntity.setProjectName("Old Project");
-
+        existingEntity.setLastUpdatedTimestamp(new Date(0));
+        Date newDate = new Date();
+        model.setLastUpdatedTimestamp(newDate);
         ProjectEntity updatedEntity = assembler.updateEntity(model, existingEntity);
 
         assertNotNull(updatedEntity);
         assertEquals("Updated Project", updatedEntity.getProjectName());
         assertEquals(existingEntity.getProjectGuid(), updatedEntity.getProjectGuid());
         assertEquals(BigDecimal.valueOf(50.123), updatedEntity.getLatitude());
+        assertEquals(newDate, updatedEntity.getLastUpdatedTimestamp());
     }
 
 }
