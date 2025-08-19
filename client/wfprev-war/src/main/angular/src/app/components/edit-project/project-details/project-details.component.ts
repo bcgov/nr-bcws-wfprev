@@ -805,13 +805,39 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
 
   onProjectPaste(event: ClipboardEvent) {
     event.preventDefault();
-    const paste = event.clipboardData?.getData('text') ?? '';
-    const current = this.projectDescription ?? '';
-    const remaining = Math.max(0, this.PROJECT_DESC_MAX - current.length);
-    const next = current + paste.slice(0, remaining);
-    this.projectDescription = next;
-    this.isProjectDescriptionDirty = this.projectDescription !== (this.projectDetail?.projectDescription ?? '');
-    const el = event.target as HTMLTextAreaElement | null;
-    if (el) el.value = next;
+
+    const textArea = event.target as HTMLTextAreaElement | null;
+    if (!textArea) return;
+
+    const existingText = this.projectDescription ?? '';
+    const pastedText = event.clipboardData?.getData('text') ?? '';
+
+    const selectionStart = textArea.selectionStart ?? existingText.length;
+    const selectionEnd = textArea.selectionEnd ?? selectionStart;
+    const selectionLength = selectionEnd - selectionStart;
+
+    const availableSpace = this.PROJECT_DESC_MAX
+      ? Math.max(0, this.PROJECT_DESC_MAX - (existingText.length - selectionLength))
+      : Infinity;
+
+    const textToInsert =
+      availableSpace === Infinity ? pastedText : pastedText.slice(0, availableSpace);
+
+    const newValue =
+      existingText.slice(0, selectionStart) +
+      textToInsert +
+      existingText.slice(selectionEnd);
+
+    this.projectDescription = newValue;
+    this.isProjectDescriptionDirty =
+      this.projectDescription !== (this.projectDetail?.projectDescription ?? '');
+
+    textArea.value = newValue;
+
+    queueMicrotask(() => {
+      const cursorPosition = selectionStart + textToInsert.length;
+      textArea.selectionStart = textArea.selectionEnd = cursorPosition;
+    });
   }
+
 }

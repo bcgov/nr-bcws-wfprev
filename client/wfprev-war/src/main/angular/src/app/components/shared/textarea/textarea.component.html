@@ -17,7 +17,6 @@
 
   <div class="feedback-row" *ngIf="maxLength as limit">
     <div class="error" [class.invisible]="!isOverLimit">
-      <img class="warning-icon" alt="warning" src="/assets/warning-red.svg" />
       {{message.maxLengthExceeded}}
     </div>
     <div class="counter" [ngClass]="{ 'over': isOverLimit }">

@@ -23,6 +23,7 @@
     border-radius: 4px;
     resize: vertical;
     padding: 6px;
+    padding-bottom: 16px;
     &.over-limit {
       border-color: var(--wf-colour-error);
       &:focus {
