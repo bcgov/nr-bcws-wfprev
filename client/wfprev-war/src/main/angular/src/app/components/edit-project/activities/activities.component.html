@@ -195,11 +195,11 @@
                             <div class="currency-input">
                                 <span class="currency-symbol">$</span>
                                 <input type="number" id="plannedSpendAmount" formControlName="plannedSpendAmount" placeholder="0.00" min="0"/>
-                                <div class="error"
-                                    *ngIf="getControl(i, 'plannedSpendAmount')?.errors && (getControl(i, 'plannedSpendAmount')?.dirty || getControl(i, 'plannedSpendAmount')?.touched)">
-                                    <span *ngIf="getControl(i, 'plannedSpendAmount')?.hasError('max')">{{ messages.maxLengthExceeded }}</span>
-                                    <span *ngIf="getControl(i, 'plannedSpendAmount')?.hasError('min')">{{ messages.positiveNumber }}</span>
-                                </div>
+                            </div>
+                            <div class="error"
+                                *ngIf="getControl(i, 'plannedSpendAmount')?.errors && (getControl(i, 'plannedSpendAmount')?.dirty || getControl(i, 'plannedSpendAmount')?.touched)">
+                                <span *ngIf="getControl(i, 'plannedSpendAmount')?.hasError('max')">{{ messages.maxLengthExceeded }}</span>
+                                <span *ngIf="getControl(i, 'plannedSpendAmount')?.hasError('min')">{{ messages.positiveNumber }}</span>
                             </div>
                         </div>
                         

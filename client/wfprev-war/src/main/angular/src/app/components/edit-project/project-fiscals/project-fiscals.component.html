@@ -109,7 +109,11 @@
                       [type]="'number'"
                       [control]="getFiscalControl(selectedTabIndex, 'fiscalPlannedProjectSizeHa')"
                       [tooltip]="getFiscalControl(selectedTabIndex, 'fiscalPlannedProjectSizeHa')?.value"
-                      [errorMessages]="{ min: messages.positiveNumber, maxlength: messages.maxLengthExceeded }"
+                      [errorMessages]="{
+                        min: messages.positiveNumber,
+                        max: messages.maxLengthExceeded,
+                        maxlength: messages.maxLengthExceeded
+                      }"
                     />
                   </div>
 
