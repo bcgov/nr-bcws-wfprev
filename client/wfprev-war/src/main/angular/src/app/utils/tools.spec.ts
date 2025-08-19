@@ -1,5 +1,5 @@
 import { FiscalYearColors } from 'src/app/utils/constants';
-import { parseLatLong, validateLatLong, formatLatLong, trimLatLong, getFiscalYearDisplay, getFiscalYearColor, LOCAL_ISO_FORMAT, getLocalIsoTimestamp } from './tools';
+import { parseLatLong, validateLatLong, formatLatLong, trimLatLong, getFiscalYearDisplay, getFiscalYearColor, LOCAL_ISO_FORMAT, getLocalIsoTimestamp, getUtcIsoTimestamp } from './tools';
 
 describe('Latitude/Longitude Utilities', () => {
   describe('parseLatLong', () => {
@@ -127,6 +127,14 @@ describe('Latitude/Longitude Utilities', () => {
       const ts = getLocalIsoTimestamp();
       expect(typeof ts).toBe('string');
       expect(ts).toMatch(/T\d{2}:\d{2}:\d{2}$/);
+    });
+  });
+
+  describe('getUtcIsoTimestamp', () => {
+    it('should return an ISO UTC string ending with Z', () => {
+      const date = new Date('2025-08-08T18:20:30Z');
+      const ts = getUtcIsoTimestamp(date);
+      expect(ts).toBe('2025-08-08T18:20:30.000Z');
     });
   });
 });

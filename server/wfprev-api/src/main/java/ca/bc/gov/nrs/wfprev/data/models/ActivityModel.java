@@ -57,4 +57,5 @@ public class ActivityModel extends CommonModel<ActivityModel> {
     private String activityComment;
     @NotNull(message = "Activity isSpatialAddedInd must not be null")
     private Boolean isSpatialAddedInd;
+    private Date lastUpdatedTimestamp;
 }

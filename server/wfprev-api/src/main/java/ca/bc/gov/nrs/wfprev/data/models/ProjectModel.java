@@ -60,4 +60,5 @@ public class ProjectModel extends CommonModel<ProjectModel> {
 	private ObjectiveTypeCodeModel tertiaryObjectiveTypeCode;
 	private String secondaryObjectiveRationale;
 	private String resultsProjectCode;
+	private Date lastUpdatedTimestamp;
 }

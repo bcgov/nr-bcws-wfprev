@@ -107,7 +107,7 @@ public class EvaluationCriteriaSummaryResourceAssembler extends RepresentationMo
         entity.setCreateDate(resource.getCreateDate());
         entity.setUpdateUser(resource.getUpdateUser());
         entity.setUpdateDate(resource.getUpdateDate());
-
+        entity.setLastUpdatedTimestamp(resource.getLastUpdatedTimestamp());
         return entity;
     }
 
@@ -181,7 +181,7 @@ public class EvaluationCriteriaSummaryResourceAssembler extends RepresentationMo
         resource.setCreateDate(entity.getCreateDate());
         resource.setUpdateUser(entity.getUpdateUser());
         resource.setUpdateDate(entity.getUpdateDate());
-
+        resource.setLastUpdatedTimestamp(entity.getLastUpdatedTimestamp());
         return resource;
     }
 
@@ -265,6 +265,9 @@ public class EvaluationCriteriaSummaryResourceAssembler extends RepresentationMo
             // Replace section summaries with updated ones
             entity.getEvaluationCriteriaSectionSummaries().clear();
             entity.getEvaluationCriteriaSectionSummaries().addAll(updatedSections);
+            entity.setLastUpdatedTimestamp(
+                nonNullOrDefault(model.getLastUpdatedTimestamp(), entity.getLastUpdatedTimestamp())
+            );
         }
 
         return entity;
@@ -302,5 +305,9 @@ public class EvaluationCriteriaSummaryResourceAssembler extends RepresentationMo
         model.setUpdateDate(entity.getUpdateDate());
         model.setUpdateUser(entity.getUpdateUser());
         return model;
+    }
+
+    private <T> T nonNullOrDefault(T newValue, T existingValue) {
+        return newValue != null ? newValue : existingValue;
     }
 }
