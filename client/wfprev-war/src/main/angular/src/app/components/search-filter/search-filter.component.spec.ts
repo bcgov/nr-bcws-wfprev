@@ -239,11 +239,94 @@ describe('SearchFilterComponent', () => {
 
     spyOn(component, 'emitFilters');
 
-    component.assignDefaultFiscalYearSelection();
+    component.assignDefaultFiscalYear();
 
     expect(component.selectedFiscalYears).toContain(expectedFiscalYearValue);
     expect(component.selectedFiscalYears).toContain('null');
     expect(component.emitFilters).toHaveBeenCalled();
   });
+
+  it('assignDefaultFiscalYear: selects current fiscal year and "No Year Assigned" when both exist and emits', () => {
+    const today = new Date();
+    const fyStart = today.getMonth() >= 3 ? today.getFullYear() : today.getFullYear() - 1;
+    const fyValue = fyStart.toString();
+
+    component.fiscalYearOptions = [
+      { label: 'All', value: '__ALL__' },
+      { label: `${fyStart}/${(fyStart + 1).toString().slice(-2)}`, value: fyValue },
+      { label: 'No Year Assigned', value: 'null' }
+    ];
+
+    spyOn(component, 'emitFilters');
+
+    component.assignDefaultFiscalYear(); 
+
+    expect(component.selectedFiscalYears).toContain(fyValue);
+    expect(component.selectedFiscalYears).toContain('null');
+    expect(component.emitFilters).toHaveBeenCalled();
+  });
+
+  it('assignDefaultFiscalYear: selects only current fiscal year when "No Year Assigned" is missing', () => {
+    const today = new Date();
+    const fyStart = today.getMonth() >= 3 ? today.getFullYear() : today.getFullYear() - 1;
+    const fyValue = fyStart.toString();
+
+    component.fiscalYearOptions = [
+      { label: `${fyStart}/${(fyStart + 1).toString().slice(-2)}`, value: fyValue }
+    ];
+
+    spyOn(component, 'emitFilters');
+
+    component.assignDefaultFiscalYear();
+
+    expect(component.selectedFiscalYears).toEqual([fyValue]);
+    expect(component.emitFilters).toHaveBeenCalled();
+  });
+
+  it('assignDefaultFiscalYear: selects only "No Year Assigned" when current fiscal year is missing', () => {
+    component.fiscalYearOptions = [
+      { label: 'No Year Assigned', value: 'null' },
+      { label: 'Some Other FY', value: '1999' }
+    ];
+
+    spyOn(component, 'emitFilters');
+
+    component.assignDefaultFiscalYear();
+
+    expect(component.selectedFiscalYears).toEqual(['null']);
+    expect(component.emitFilters).toHaveBeenCalled();
+  });
+
+  it('assignDefaultFiscalYear: selects nothing when neither option exists and still emits', () => {
+    component.fiscalYearOptions = [
+      { label: 'Random FY', value: '1999' }
+    ];
+
+    spyOn(component, 'emitFilters');
+
+    component.assignDefaultFiscalYear();
+
+    expect(component.selectedFiscalYears).toEqual([]);
+    expect(component.emitFilters).toHaveBeenCalled();
+  });
+
+  it('assignDefaultFiscalYear: does not emit when emit=false', () => {
+    const today = new Date();
+    const fyStart = today.getMonth() >= 3 ? today.getFullYear() : today.getFullYear() - 1;
+    const fyValue = fyStart.toString();
+
+    component.fiscalYearOptions = [
+      { label: `${fyStart}/${(fyStart + 1).toString().slice(-2)}`, value: fyValue },
+      { label: 'No Year Assigned', value: 'null' }
+    ];
+
+    spyOn(component, 'emitFilters');
+
+    component.assignDefaultFiscalYear(false);
+
+    expect(component.selectedFiscalYears).toEqual([fyValue, 'null']);
+    expect(component.emitFilters).not.toHaveBeenCalled();
+  });
+
 
 });
