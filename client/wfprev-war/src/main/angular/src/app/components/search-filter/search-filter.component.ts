@@ -107,6 +107,7 @@ export class SearchFilterComponent implements OnInit {
     this.selectedForestDistrict = [];
     this.selectedFireCentre = [];
     this.selectedFiscalStatus = [];
+    this.assignDefaultFiscalYear(false);
     this.emitFilters();
   }
 
@@ -292,7 +293,7 @@ export class SearchFilterComponent implements OnInit {
           }))
       );
 
-      this.assignDefaultFiscalYearSelection();
+      this.assignDefaultFiscalYear();
     });
   }
 
@@ -310,8 +311,7 @@ export class SearchFilterComponent implements OnInit {
     this.emitFilters();
   }
 
-  // Determine current fiscal year based on April 1st turnover
-  assignDefaultFiscalYearSelection(): void {
+  assignDefaultFiscalYear(emit: boolean = true): void {
     const today = new Date();
     // April has an index of 3
     const fiscalYearStart = today.getMonth() >= 3 ? today.getFullYear() : today.getFullYear() - 1;
@@ -325,6 +325,7 @@ export class SearchFilterComponent implements OnInit {
       ...(currentFiscalExists ? [fiscalYearValue] : []),
       ...(noYearAssignedExists ? ['null'] : [])
     ];
-    this.emitFilters();
+
+    if (emit) this.emitFilters();
   }
 }
