@@ -313,13 +313,14 @@ export class SearchFilterComponent implements OnInit {
 
   assignDefaultFiscalYear(emit: boolean = true): void {
     const today = new Date();
+    // April has an index of 3
     const fiscalYearStart = today.getMonth() >= 3 ? today.getFullYear() : today.getFullYear() - 1;
     const fiscalYearValue = fiscalYearStart.toString();
 
     const currentFiscalExists = this.fiscalYearOptions.some(opt => opt.value === fiscalYearValue);
     const noYearAssignedExists = this.fiscalYearOptions.some(opt => opt.value === 'null');
 
-    // default assign current fiscal year and 'No Year Assigned'
+    // automatically assign current fiscal year and 'No Year Assigned'
     this.selectedFiscalYears = [
       ...(currentFiscalExists ? [fiscalYearValue] : []),
       ...(noYearAssignedExists ? ['null'] : [])
