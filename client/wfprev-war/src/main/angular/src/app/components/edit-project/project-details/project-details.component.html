@@ -242,6 +242,7 @@
             rows="1"
             class="editable-description"
             cdkTextareaAutosize 
+            [attr.maxlength]="PROJECT_DESC_MAX"
             #autosize="cdkTextareaAutosize"
             placeholder="Describe the project purpose, location, and key activities involved in wildfire risk reduction."
             (ngModelChange)="onProjectDescriptionChange($event)"
@@ -252,7 +253,6 @@
 
           <div class="feedback-row">
             <div class="error" [class.invisible]="!((projectDescription?.length ?? 0) >= 4000)">
-              <img class="warning-icon" alt="warning" src="/assets/warning-red.svg" />
               {{ messages.maxLengthExceeded }}
             </div>
             <div class="counter" [ngClass]="{ 'over': (projectDescription?.length ?? 0) >= 4000 }">

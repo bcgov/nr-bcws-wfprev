@@ -18,7 +18,7 @@ import { ActivityCategoryCodeModel, ProjectFiscal } from 'src/app/components/mod
 import { CodeTableServices } from 'src/app/services/code-table-services';
 import { ProjectService } from 'src/app/services/project-services';
 import { CanComponentDeactivate } from 'src/app/services/util/can-deactive.guard';
-import { CodeTableKeys, EndorsementCode, FiscalStatuses, Messages, ModalMessages, ModalTitles } from 'src/app/utils/constants';
+import { CodeTableKeys, EndorsementCode, FiscalStatuses, Messages, ModalMessages, ModalTitles, NumericLimits } from 'src/app/utils/constants';
 import { ExpansionIndicatorComponent } from '../../shared/expansion-indicator/expansion-indicator.component';
 import { IconButtonComponent } from 'src/app/components/shared/icon-button/icon-button.component';
 import { SelectFieldComponent } from 'src/app/components/shared/select-field/select-field.component';
@@ -207,7 +207,7 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
         fiscal?.planFiscalStatusCode?.planFiscalStatusCode ?? 'DRAFT',
         [Validators.required]
       ],
-      fiscalPlannedProjectSizeHa: [fiscal?.fiscalPlannedProjectSizeHa ?? '', [Validators.min(0), Validators.maxLength(16)]],
+      fiscalPlannedProjectSizeHa: [fiscal?.fiscalPlannedProjectSizeHa ?? '', [Validators.min(0), Validators.max(NumericLimits.MAX_NUMBER)]],
       fiscalCompletedSizeHa: [fiscal?.fiscalCompletedSizeHa ?? '', [Validators.min(0), Validators.maxLength(16)]],
       resultsOpeningId: [fiscal?.resultsOpeningId ?? '', [Validators.maxLength(11)]],
       firstNationsEngagementInd: [fiscal?.firstNationsEngagementInd ?? false],
