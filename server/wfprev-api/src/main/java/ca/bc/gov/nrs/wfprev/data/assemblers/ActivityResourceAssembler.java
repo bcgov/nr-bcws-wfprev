@@ -69,7 +69,7 @@ public class ActivityResourceAssembler extends RepresentationModelAssemblerSuppo
         entity.setCreateDate(resource.getCreateDate());
         entity.setUpdateUser(resource.getUpdateUser());
         entity.setUpdateDate(resource.getUpdateDate());
-
+        entity.setLastUpdatedTimestamp(resource.getLastUpdatedTimestamp());
         return entity;
     }
 
@@ -114,6 +114,7 @@ public class ActivityResourceAssembler extends RepresentationModelAssemblerSuppo
         resource.setCreateDate(entity.getCreateDate());
         resource.setUpdateUser(entity.getUpdateUser());
         resource.setUpdateDate(entity.getUpdateDate());
+        resource.setLastUpdatedTimestamp(entity.getLastUpdatedTimestamp());
 
         return resource;
     }
@@ -201,7 +202,9 @@ public class ActivityResourceAssembler extends RepresentationModelAssemblerSuppo
         entity.setCreateDate(existingEntity.getCreateDate());
         entity.setUpdateUser(model.getUpdateUser());
         entity.setUpdateDate(model.getUpdateDate());
-
+        entity.setLastUpdatedTimestamp(
+            nonNullOrDefault(model.getLastUpdatedTimestamp(), existingEntity.getLastUpdatedTimestamp())
+        );
         return entity;
     }
 

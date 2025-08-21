@@ -18,17 +18,18 @@ import { ActivityCategoryCodeModel, ProjectFiscal } from 'src/app/components/mod
 import { CodeTableServices } from 'src/app/services/code-table-services';
 import { ProjectService } from 'src/app/services/project-services';
 import { CanComponentDeactivate } from 'src/app/services/util/can-deactive.guard';
-import { CodeTableKeys, EndorsementCode, FiscalStatuses, Messages, ModalMessages, ModalTitles } from 'src/app/utils/constants';
+import { CodeTableKeys, EndorsementCode, FiscalStatuses, Messages, ModalMessages, ModalTitles, NumericLimits } from 'src/app/utils/constants';
 import { ExpansionIndicatorComponent } from '../../shared/expansion-indicator/expansion-indicator.component';
 import { IconButtonComponent } from 'src/app/components/shared/icon-button/icon-button.component';
 import { SelectFieldComponent } from 'src/app/components/shared/select-field/select-field.component';
 import { InputFieldComponent } from 'src/app/components/shared/input-field/input-field.component';
-import { getLocalIsoTimestamp, PlanFiscalStatusIcons } from 'src/app/utils/tools';
+import { getUtcIsoTimestamp, PlanFiscalStatusIcons } from 'src/app/utils/tools';
 import { DropdownButtonComponent } from 'src/app/components/shared/dropdown-button/dropdown-button.component';
 import { StatusBadgeComponent } from 'src/app/components/shared/status-badge/status-badge.component';
 import { EndorsementApprovalComponent } from 'src/app/components/edit-project/endorsement-approval/endorsement-approval.component';
 import { TokenService } from 'src/app/services/token.service';
 import { TimestampComponent } from 'src/app/components/shared/timestamp/timestamp.component';
+import { TextareaComponent } from 'src/app/components/shared/textarea/textarea.component';
 
 @Component({
   selector: 'wfprev-project-fiscals',
@@ -55,7 +56,8 @@ import { TimestampComponent } from 'src/app/components/shared/timestamp/timestam
     DropdownButtonComponent,
     StatusBadgeComponent,
     EndorsementApprovalComponent,
-    TimestampComponent
+    TimestampComponent,
+    TextareaComponent
   ]
 })
 export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
@@ -198,30 +200,30 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
   createFiscalForm(fiscal?: any): FormGroup {
     const form = this.fb.group({
       fiscalYear: [fiscal?.fiscalYear ?? '', [Validators.required]],
-      projectFiscalName: [fiscal?.projectFiscalName ?? '', [Validators.required]],
+      projectFiscalName: [fiscal?.projectFiscalName ?? '', [Validators.required, Validators.maxLength(300)]],
       activityCategoryCode: [fiscal?.activityCategoryCode ?? '', [Validators.required]],
       proposalTypeCode: [fiscal?.proposalTypeCode ?? 'NEW', [Validators.required]],
       planFiscalStatusCode: [
         fiscal?.planFiscalStatusCode?.planFiscalStatusCode ?? 'DRAFT',
         [Validators.required]
       ],
-      fiscalPlannedProjectSizeHa: [fiscal?.fiscalPlannedProjectSizeHa ?? '', [Validators.min(0)]],
-      fiscalCompletedSizeHa: [fiscal?.fiscalCompletedSizeHa ?? '', [Validators.min(0)]],
+      fiscalPlannedProjectSizeHa: [fiscal?.fiscalPlannedProjectSizeHa ?? '', [Validators.min(0), Validators.max(NumericLimits.MAX_NUMBER)]],
+      fiscalCompletedSizeHa: [fiscal?.fiscalCompletedSizeHa ?? '', [Validators.min(0), Validators.max(NumericLimits.MAX_NUMBER)]],
       resultsOpeningId: [fiscal?.resultsOpeningId ?? '', [Validators.maxLength(11)]],
       firstNationsEngagementInd: [fiscal?.firstNationsEngagementInd ?? false],
       firstNationsDelivPartInd: [fiscal?.firstNationsDelivPartInd ?? false],
-      firstNationsPartner: [fiscal?.firstNationsPartner ?? ''],
+      firstNationsPartner: [fiscal?.firstNationsPartner ?? '',[Validators.maxLength(4000)]],
       projectFiscalDescription: [fiscal?.projectFiscalDescription ?? '', [Validators.required, Validators.maxLength(500)]],
-      otherPartner: [fiscal?.otherPartner ?? ''],
-      totalCostEstimateAmount: [fiscal?.totalCostEstimateAmount ?? '', [Validators.min(0)]],
+      otherPartner: [fiscal?.otherPartner ?? '',[Validators.maxLength(4000)]],
+      totalCostEstimateAmount: [fiscal?.totalCostEstimateAmount ?? '', [Validators.min(0), Validators.max(NumericLimits.MAX_NUMBER)]],
       forecastAmount: [fiscal?.forecastAmount ?? ''],
       cfsProjectCode: [fiscal?.cfsProjectCode ?? '', [Validators.maxLength(25)]],
       ancillaryFundingProvider: [fiscal?.ancillaryFundingProvider ?? '', [Validators.maxLength(100)]],
-      fiscalAncillaryFundAmount: [fiscal?.fiscalAncillaryFundAmount ?? '', [Validators.min(0)]],
-      fiscalReportedSpendAmount: [fiscal?.fiscalReportedSpendAmount ?? '', [Validators.min(0)]],
+      fiscalAncillaryFundAmount: [fiscal?.fiscalAncillaryFundAmount ?? '', [Validators.min(0), Validators.max(NumericLimits.MAX_NUMBER)]],
+      fiscalReportedSpendAmount: [fiscal?.fiscalReportedSpendAmount ?? '', [Validators.min(0), Validators.max(NumericLimits.MAX_NUMBER)]],
       cfsActualSpend: [fiscal?.cfsActualSpend ?? ''],
-      fiscalForecastAmount: [fiscal?.fiscalForecastAmount ?? '', [Validators.min(0)]],
-      fiscalActualAmount: [fiscal?.fiscalActualAmount ?? '', [Validators.min(0)]],
+      fiscalForecastAmount: [fiscal?.fiscalForecastAmount ?? '', [Validators.min(0), Validators.max(NumericLimits.MAX_NUMBER)]],
+      fiscalActualAmount: [fiscal?.fiscalActualAmount ?? '', [Validators.min(0), Validators.max(NumericLimits.MAX_NUMBER)]],
       projectPlanFiscalGuid: [fiscal?.projectPlanFiscalGuid ?? ''],
       isApprovedInd: [fiscal?.isApprovedInd ?? false]
     });
@@ -708,7 +710,7 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
   buildSubmissionFields() {
     return {
       submittedByUserUserid: this.currentIdir,
-      submissionTimestamp: getLocalIsoTimestamp()
+      submissionTimestamp: getUtcIsoTimestamp()
     }
   }
 

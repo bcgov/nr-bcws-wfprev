@@ -1,20 +1,21 @@
 import { TextFieldModule } from '@angular/cdk/text-field';
 import { CommonModule } from '@angular/common';
 import { Component, Inject } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { forkJoin } from 'rxjs';
 import { ConfirmationDialogComponent } from 'src/app/components/confirmation-dialog/confirmation-dialog.component';
 import { EvaluationCriteriaCodeModel, EvaluationCriteriaSummaryModel, Project, WuiRiskClassCodeModel } from 'src/app/components/models';
 import { SlideToggleComponent } from 'src/app/components/shared/slide-toggle/slide-toggle.component';
+import { TextareaComponent } from 'src/app/components/shared/textarea/textarea.component';
 import { CodeTableServices } from 'src/app/services/code-table-services';
 import { ProjectService } from 'src/app/services/project-services';
 import { EvaluationCriteriaSectionCodes, Messages, ModalMessages, ModalTitles, ProjectTypes } from 'src/app/utils/constants';
 @Component({
   selector: 'wfprev-evaluation-criteria-dialog',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, TextFieldModule, SlideToggleComponent],
+  imports: [CommonModule, ReactiveFormsModule, TextFieldModule, SlideToggleComponent, TextareaComponent],
   templateUrl: './evaluation-criteria-dialog.component.html',
   styleUrl: './evaluation-criteria-dialog.component.scss'
 })
@@ -317,6 +318,7 @@ export class EvaluationCriteriaDialogComponent {
       localWuiRiskClassRationale: this.criteriaForm.get('localWuiRiskClassRationale')?.value,
       isOutsideWuiInd: this.isOutsideOfWuiOn,
       totalFilterScore: this.coarseTotal + this.mediumTotal + this.fineTotal,
+      lastUpdatedTimestamp: new Date().toISOString(),
       evaluationCriteriaSectionSummaries: [
         {
           evaluationCriteriaSectionSummaryGuid: isCreate ? undefined : coarseSection?.evaluationCriteriaSectionSummaryGuid,
@@ -533,5 +535,9 @@ export class EvaluationCriteriaDialogComponent {
     this.coarseTotal = this.riskClassLocationFilters
       .filter(f => this.selectedCoarse.has(f.evaluationCriteriaGuid ?? ''))
       .reduce((sum, f) => sum + (f.weightedRank ?? 0), 0);
+  }
+
+  getControl(name: string): FormControl {
+    return this.criteriaForm.get(name) as FormControl;
   }
 }

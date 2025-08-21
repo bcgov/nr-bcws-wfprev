@@ -26,5 +26,8 @@
   },
   "devDependencies": {
     "sinon": "20.0.0"
+  },
+  "overrides": {
+    "form-data": "4.0.4"
   }
 }

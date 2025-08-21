@@ -1,18 +1,26 @@
 <div class="form-item full-width">
-  <label>
+  <label class="textarea-label">
     {{ label }}
+    <span *ngIf="required" class="required">*</span>
   </label>
   <textarea
     [formControl]="control"
     [rows]="rows"
     [placeholder]="placeholder"
     cdkTextareaAutosize 
-    #autosize="cdkTextareaAutosize" 
+    #autosize="cdkTextareaAutosize"
+    (input)="onInput($event)"
+    (paste)="onPaste($event)"
+    [attr.maxlength]="maxLength"
+    [ngClass]="{ 'over-limit': isOverLimit }"
   ></textarea>
-  <div
-    class="error"
-    *ngIf="control?.hasError('maxlength') && control?.touched"
-  >
-    Max length exceeded.
+
+  <div class="feedback-row" *ngIf="maxLength as limit">
+    <div class="error" [class.invisible]="!isOverLimit">
+      {{message.maxLengthExceeded}}
+    </div>
+    <div class="counter" [ngClass]="{ 'over': isOverLimit }">
+      {{ charCount }} / {{ limit }}
+    </div>
   </div>
 </div>

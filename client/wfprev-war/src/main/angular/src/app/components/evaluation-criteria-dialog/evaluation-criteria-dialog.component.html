@@ -69,12 +69,12 @@
           </div>
 
           <div class="notes-row">
-            <label>{{ sectionTitles.commentLabel('section1') }}</label>
-            <textarea rows="2" cdkTextareaAutosize #autosize="cdkTextareaAutosize" placeholder="Begin Typing" formControlName="localWuiRiskClassRationale"></textarea>
-            <div class="error"
-                *ngIf="criteriaForm.get('localWuiRiskClassRationale')?.hasError('maxlength') && criteriaForm.get('localWuiRiskClassRationale')?.touched">
-              {{ messages.maxLengthExceeded }}
-            </div>
+            <wfprev-textarea
+              [label]="sectionTitles.commentLabel('section1')"
+              [rows]="2"
+              placeholder="Begin Typing"
+              [control]="getControl('localWuiRiskClassRationale')">
+            </wfprev-textarea>
           </div>
 
           <div class="section-divider"></div>
@@ -103,12 +103,12 @@
             <span class="total-value">{{ isCulturalPrescribedFire ? (mediumTotal | number:'1.2-2') : mediumTotal }}</span>
           </div>
           <div class="notes-row">
-            <label>{{ sectionTitles.commentLabel('section2') }}</label>
-            <textarea rows="2" cdkTextareaAutosize #autosize="cdkTextareaAutosize" placeholder="Begin Typing" formControlName="mediumFilterComments"></textarea>
-            <div class="error"
-                *ngIf="criteriaForm.get('mediumFilterComments')?.hasError('maxlength') && criteriaForm.get('mediumFilterComments')?.touched">
-              {{ messages.maxLengthExceeded }}
-            </div>
+            <wfprev-textarea
+              [label]="sectionTitles.commentLabel('section2')"
+              [rows]="2"
+              placeholder="Begin Typing"
+              [control]="getControl('mediumFilterComments')">
+            </wfprev-textarea>
           </div>
           <div class="section-divider"></div>
         </section>
@@ -135,12 +135,12 @@
             <span class="total-value">{{ fineTotal | number:'1.2-2' }}</span>
           </div>
           <div class="notes-row">
-            <label>{{ sectionTitles.commentLabel('section3') }}</label>
-            <textarea rows="2" cdkTextareaAutosize #autosize="cdkTextareaAutosize" placeholder="Begin Typing" formControlName="fineFilterComments"></textarea>
-            <div class="error"
-                *ngIf="criteriaForm.get('fineFilterComments')?.hasError('maxlength') && criteriaForm.get('fineFilterComments')?.touched">
-              {{ messages.maxLengthExceeded }}
-            </div>
+            <wfprev-textarea
+              [label]="sectionTitles.commentLabel('section3')"
+              [rows]="2"
+              placeholder="Begin Typing"
+              [control]="getControl('fineFilterComments')">
+            </wfprev-textarea>
           </div>
         </section>
               

@@ -26,13 +26,14 @@
       />
     </ng-template>
 
-    <div class="error" *ngIf="control?.hasError('maxlength') && control?.touched">
+    <div class="error" *ngIf="(control?.hasError('maxlength') || control?.hasError('max')) && (control?.dirty || control?.touched)">
       {{ errorMessages?.['maxlength'] }}
     </div>
-    <div class="error" *ngIf="control?.hasError('email') && control?.touched">
+    
+    <div class="error" *ngIf="control?.hasError('email') && (control?.dirty || control?.touched)">
       {{ errorMessages?.['email'] }}
     </div>
-    <div class="error" *ngIf="control?.hasError('min') && control?.touched">
+    <div class="error" *ngIf="control?.hasError('min') && (control?.dirty || control?.touched)">
       {{ errorMessages?.['min'] }}
     </div>
   </div>

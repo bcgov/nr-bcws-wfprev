@@ -969,7 +969,7 @@ describe('ProjectDetailsComponent', () => {
       nameControl?.markAsTouched();
       nameControl?.updateValueAndValidity();
 
-      expect(component.getErrorMessage('name')).toBe('Exceeds number of allowed characters.');
+      expect(component.getErrorMessage('name')).toBe('Maximum character limit has been reached.');
     });
 
     it('should return invalidEmail message for email error', () => {
@@ -1151,6 +1151,37 @@ describe('ProjectDetailsComponent', () => {
     );
   });
 
+  describe('project description input/paste', () => {
+    beforeEach(() => {
+      (component as any).PROJECT_DESC_MAX = 10;
+      component.projectDescription = '';
+    });
 
+    it('onProjectInput should trim value over max and update model', () => {
+      const textarea = document.createElement('textarea');
+      textarea.value = 'abcdefghijk';
+
+      component.onProjectInput({ target: textarea } as any);
+
+      expect(textarea.value.length).toBe(10);
+      expect(component.projectDescription.length).toBe(10);
+    });
+
+    it('onProjectPaste should clamp pasted text and update model', () => {
+      const textarea = document.createElement('textarea');
+      component.projectDescription = 'abc';
+      const evt = {
+        preventDefault: jasmine.createSpy(),
+        clipboardData: { getData: () => '1234567890' },
+        target: textarea
+      } as any;
+
+      component.onProjectPaste(evt);
+
+      expect(component.projectDescription.length).toBe(10); // max
+      expect(textarea.value.length).toBe(10);
+      expect(evt.preventDefault).toHaveBeenCalled();
+    });
+  });
 
 });

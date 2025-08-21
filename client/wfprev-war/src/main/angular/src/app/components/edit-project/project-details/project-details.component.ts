@@ -20,7 +20,8 @@ import {
   getBluePinIcon,
   trimLatLong,
   validateLatLong,
-  LeafletLegendService
+  LeafletLegendService,
+  getUtcIsoTimestamp
 } from 'src/app/utils/tools';
 import { ExpansionIndicatorComponent } from '../../shared/expansion-indicator/expansion-indicator.component';
 import { BcParksSectionCodeModel, ForestDistrictCodeModel } from 'src/app/components/models';
@@ -29,12 +30,13 @@ import { InputFieldComponent } from 'src/app/components/shared/input-field/input
 import { EvaluationCriteriaComponent } from 'src/app/components/edit-project/project-details/evaluation-criteria/evaluation-criteria.component';
 import { TimestampComponent } from 'src/app/components/shared/timestamp/timestamp.component';
 import { TokenService } from 'src/app/services/token.service';
+import { TextareaComponent } from 'src/app/components/shared/textarea/textarea.component';
 @Component({
   selector: 'wfprev-project-details',
   standalone: true,
   imports: [ReactiveFormsModule, MatExpansionModule, CommonModule, FormsModule, FiscalYearProjectsComponent,
     ProjectFilesComponent, MatTooltip, TextFieldModule, ExpansionIndicatorComponent, SelectFieldComponent, InputFieldComponent,
-    EvaluationCriteriaComponent, TimestampComponent],
+    EvaluationCriteriaComponent, TimestampComponent, TextareaComponent],
   templateUrl: './project-details.component.html',
   styleUrl: './project-details.component.scss'
 })
@@ -76,6 +78,7 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
   projectFiscals: any[] = [];
   allActivities: any[] = [];
   allActivityBoundaries: any[] = [];
+  readonly PROJECT_DESC_MAX = 4000;
 
   constructor(
     private readonly fb: FormBuilder,
@@ -391,6 +394,7 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
       const updatedProject = {
         ...this.projectDetail,
         ...this.detailsForm.value,
+        lastUpdatedTimestamp: getUtcIsoTimestamp(),
         // updateUser: this.tokenService.getUserId(),
         forestRegionOrgUnitId: Number(this.detailsForm.get('forestRegionOrgUnitId')?.value),
         forestDistrictOrgUnitId: Number(this.detailsForm.get('forestDistrictOrgUnitId')?.value),
@@ -461,6 +465,7 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
       const updatedProject = {
         ...this.projectDetail,
         projectDescription: this.projectDescription,
+        lastUpdatedTimestamp: getUtcIsoTimestamp()
       };
 
       this.projectService.updateProject(this.projectGuid, updatedProject).subscribe({
@@ -514,6 +519,7 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
       ...this.projectDetail,
       latitude: trimLatLong(Number(latitude)),
       longitude: trimLatLong(Number(longitude)),
+      lastUpdatedTimestamp: getUtcIsoTimestamp()
     };
 
     this.projectService.updateProject(this.projectGuid, updatedProject).subscribe({
@@ -781,4 +787,57 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
   getControl(controlName: keyof typeof CodeTableKeys | string): FormControl {
     return this.detailsForm.get(controlName) as FormControl;
   }
+
+  get secondaryObjectiveRationaleCtrl(): FormControl {
+    return this.detailsForm.get('secondaryObjectiveRationale') as FormControl;
+  }
+  
+  onProjectInput(event: Event) {
+    const el = event.target as HTMLTextAreaElement;
+    if (!el) return;
+
+    if (el.value.length > this.PROJECT_DESC_MAX) {
+      const trimmed = el.value.slice(0, this.PROJECT_DESC_MAX);
+      el.value = trimmed;
+      this.projectDescription = trimmed;
+    }
+  }
+
+  onProjectPaste(event: ClipboardEvent) {
+    event.preventDefault();
+
+    const textArea = event.target as HTMLTextAreaElement | null;
+    if (!textArea) return;
+
+    const existingText = this.projectDescription ?? '';
+    const pastedText = event.clipboardData?.getData('text') ?? '';
+
+    const selectionStart = textArea.selectionStart ?? existingText.length;
+    const selectionEnd = textArea.selectionEnd ?? selectionStart;
+    const selectionLength = selectionEnd - selectionStart;
+
+    const availableSpace = this.PROJECT_DESC_MAX
+      ? Math.max(0, this.PROJECT_DESC_MAX - (existingText.length - selectionLength))
+      : Infinity;
+
+    const textToInsert =
+      availableSpace === Infinity ? pastedText : pastedText.slice(0, availableSpace);
+
+    const newValue =
+      existingText.slice(0, selectionStart) +
+      textToInsert +
+      existingText.slice(selectionEnd);
+
+    this.projectDescription = newValue;
+    this.isProjectDescriptionDirty =
+      this.projectDescription !== (this.projectDetail?.projectDescription ?? '');
+
+    textArea.value = newValue;
+
+    queueMicrotask(() => {
+      const cursorPosition = selectionStart + textToInsert.length;
+      textArea.selectionStart = textArea.selectionEnd = cursorPosition;
+    });
+  }
+
 }

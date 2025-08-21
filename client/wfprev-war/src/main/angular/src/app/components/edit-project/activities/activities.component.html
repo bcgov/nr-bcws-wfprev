@@ -60,12 +60,22 @@
                             <div class="form-item narrow-width">
                                 <label>Completed Hectares (Ha)</label>
                                 <input type="number" id="completedAreaHa" formControlName="completedAreaHa"/>
+                                <div class="error"
+                                    *ngIf="getControl(i, 'completedAreaHa')?.errors && (getControl(i, 'completedAreaHa')?.dirty || getControl(i, 'completedAreaHa')?.touched)">
+                                    <span *ngIf="getControl(i, 'completedAreaHa')?.hasError('min')">{{ messages.positiveNumber }}</span>
+                                    <span *ngIf="getControl(i, 'completedAreaHa')?.hasError('max')">{{ messages.maxLengthExceeded }}</span>
+                                </div>
                             </div>
                             <div class="form-item narrow-width">
                                 <label>Reported Spend</label>
                                 <div class="currency-input">
                                     <span class="currency-symbol">$</span>
                                     <input type="number" id="reportedSpendAmount" formControlName="reportedSpendAmount" placeholder="0.00" min="0"/>
+                                </div>
+                                <div class="error"
+                                    *ngIf="getControl(i, 'reportedSpendAmount')?.errors && (getControl(i, 'reportedSpendAmount')?.dirty || getControl(i, 'reportedSpendAmount')?.touched)">
+                                    <span *ngIf="getControl(i, 'reportedSpendAmount')?.hasError('min')">{{ messages.positiveNumber }}</span>
+                                    <span *ngIf="getControl(i, 'reportedSpendAmount')?.hasError('max')">{{ messages.maxLengthExceeded }}</span>
                                 </div>
                             </div>
                             <div class="form-item narrow-width">
@@ -137,7 +147,12 @@
                                 id="activityName" 
                                 formControlName="activityName"
                                 [readonly]="activityForms[i]?.value?.isResultsReportableInd"
+                                  [placeholder]="!activityForms[i]?.value?.isResultsReportableInd ? 'Provide a name for non-RESULTS reportable activities' : ''"
                             />
+                            <div class="error"
+                                *ngIf="getControl(i, 'activityName')?.errors && (getControl(i, 'activityName')?.dirty || getControl(i, 'activityName')?.touched)">
+                                <span *ngIf="getControl(i, 'activityName')?.hasError('maxlength')">{{ messages.maxLengthExceeded }}</span>
+                            </div>
                         </div>
 
                         
@@ -168,6 +183,11 @@
                         <div class="form-item">
                             <label>Planned Hectares (Ha)<span class="required">*</span></label>
                             <input type="number" id="plannedTreatmentAreaHa" formControlName="plannedTreatmentAreaHa" min="0"/>
+                            <div class="error"
+                                *ngIf="getControl(i, 'plannedTreatmentAreaHa')?.errors && (getControl(i, 'plannedTreatmentAreaHa')?.dirty || getControl(i, 'plannedTreatmentAreaHa')?.touched)">
+                                <span *ngIf="getControl(i, 'plannedTreatmentAreaHa')?.hasError('max')">{{ messages.maxLengthExceeded }}</span>
+                                <span *ngIf="getControl(i, 'plannedTreatmentAreaHa')?.hasError('min')">{{ messages.positiveNumber }}</span>
+                            </div>
                         </div>
 
                         <div class="form-item">
@@ -175,6 +195,11 @@
                             <div class="currency-input">
                                 <span class="currency-symbol">$</span>
                                 <input type="number" id="plannedSpendAmount" formControlName="plannedSpendAmount" placeholder="0.00" min="0"/>
+                            </div>
+                            <div class="error"
+                                *ngIf="getControl(i, 'plannedSpendAmount')?.errors && (getControl(i, 'plannedSpendAmount')?.dirty || getControl(i, 'plannedSpendAmount')?.touched)">
+                                <span *ngIf="getControl(i, 'plannedSpendAmount')?.hasError('max')">{{ messages.maxLengthExceeded }}</span>
+                                <span *ngIf="getControl(i, 'plannedSpendAmount')?.hasError('min')">{{ messages.positiveNumber }}</span>
                             </div>
                         </div>
                         
@@ -190,13 +215,13 @@
 
 
                         <div class="form-item full-width">
-                            <label>Activity Description<span class="required">*</span></label>
-                            <textarea 
-                              id="activityDescription" 
-                              formControlName="activityDescription" 
-                              rows="1" cols="30"
-                            >
-                            </textarea>
+                            <wfprev-textarea
+                                [label]="'Activity Description'"
+                                [rows]="1"
+                                [control]="getControl(i, 'activityDescription')"
+                                [required]="true"
+                                placeholder="Describe the specific activity being carried out as part of the Fiscal Activity. The information within this activity will be used to support RESULTS at the end of the year.">
+                            </wfprev-textarea>
                         </div>
 
                         <div class="form-item full-width comment-container">
@@ -205,13 +230,14 @@
                                 <mat-checkbox formControlName="outstandingObligationsInd">Yes</mat-checkbox>
                             </div>
                             <div class="textarea-container">
-                                <label>Activity outcomes and comments (Include approach for Outstanding Obligations if they remain):</label>
-                                <textarea 
-                                    id="activityComment" 
-                                    formControlName="activityComment" 
-                                    rows="2" 
-                                    cols="50">
-                                </textarea>
+                                <wfprev-textarea
+                                    [label]="'Activity outcomes and comments (Include approach for Outstanding Obligations if they remain):'"
+                                    [rows]="2"
+                                    [maxLength]="500"
+                                    [control]="getControl(i, 'activityComment')"
+                                    placeholder="List any remaining obligations or deliverables required to complete the activity. (e.g., pile burns, legal obligations, specific remaining tasks)"
+                                    >
+                                </wfprev-textarea>
                             </div>
                         </div>
                     </form>
@@ -221,7 +247,7 @@
                         </wfprev-project-files>
                     </div>
                     <wfprev-timestamp
-                        [updateDate]="activities[i]?.updateDate"
+                        [updateDate]="activities[i]?.lastUpdatedTimestamp"
                         [updateUser]="activities[i]?.updateUser">
                     </wfprev-timestamp>
                     <div class="project-activity-footer">
