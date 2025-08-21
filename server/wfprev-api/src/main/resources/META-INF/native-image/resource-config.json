@@ -43,8 +43,6 @@
   }, {
     "pattern":"\\QMETA-INF/services/java.util.spi.ResourceBundleControlProvider\\E"
   }, {
-    "pattern":"\\QMETA-INF/services/javax.xml.parsers.DocumentBuilderFactory\\E"
-  }, {
     "pattern":"\\QMETA-INF/services/javax.xml.stream.XMLEventFactory\\E"
   }, {
     "pattern":"\\QMETA-INF/services/javax.xml.stream.XMLInputFactory\\E"
@@ -505,8 +503,6 @@
   }, {
     "pattern":"\\Qdata.sql\\E"
   }, {
-    "pattern":"\\Qdefault.jasperreports.properties\\E"
-  }, {
     "pattern":"\\Qgit.properties\\E"
   }, {
     "pattern":"\\Qhibernate.properties\\E"
@@ -584,14 +580,6 @@
     "pattern":"\\Qjakarta/servlet/http/HttpServlet.class\\E"
   }, {
     "pattern":"\\Qjakarta/validation/ConstraintValidator.class\\E"
-  }, {
-    "pattern":"\\Qjasper-template/WFPREV_CULTURE_PRESCRIBED_FIRE_JASPER.jasper\\E"
-  }, {
-    "pattern":"\\Qjasper-template/WFPREV_FUEL_MANAGEMENT_JASPER.jasper\\E"
-  }, {
-    "pattern":"\\Qjasperreports.properties\\E"
-  }, {
-    "pattern":"\\Qjasperreports_extension.properties\\E"
   }, {
     "pattern":"\\Qjava/lang/Iterable.class\\E"
   }, {
@@ -726,12 +714,6 @@
     "pattern":"\\Qmessages.properties\\E"
   }, {
     "pattern":"\\Qmozilla/public-suffix-list.txt\\E"
-  }, {
-    "pattern":"\\Qnet/sf/jasperreports/engine/export/ooxml/xlsx/_rels/xml.rels\\E"
-  }, {
-    "pattern":"\\Qnet/sf/jasperreports/fonts/icons/icons.ttf\\E"
-  }, {
-    "pattern":"\\Qnet/sf/jasperreports/fonts/icons/jasperreports-fonts.xml\\E"
   }, {
     "pattern":"\\Qorg/apache/catalina/core/RestrictedFilters.properties\\E"
   }, {
@@ -1043,7 +1025,7 @@
   }, {
     "pattern":"\\Qorg/springframework/beans/factory/support/NullBean.class\\E"
   }, {
-    "pattern":"\\Qorg/springframework/boot/LazyInitializationExcludeFilter$$Lambda/0x000001a145cf13c8.class\\E"
+    "pattern":"\\Qorg/springframework/boot/LazyInitializationExcludeFilter$$Lambda/0x000001a5b3ceec70.class\\E"
   }, {
     "pattern":"\\Qorg/springframework/boot/LazyInitializationExcludeFilter.class\\E"
   }, {
@@ -1075,7 +1057,7 @@
   }, {
     "pattern":"\\Qorg/springframework/boot/actuate/autoconfigure/endpoint/expose/IncludeExcludeEndpointFilter.class\\E"
   }, {
-    "pattern":"\\Qorg/springframework/boot/actuate/autoconfigure/endpoint/jackson/JacksonEndpointAutoConfiguration$$Lambda/0x000001a145bea588.class\\E"
+    "pattern":"\\Qorg/springframework/boot/actuate/autoconfigure/endpoint/jackson/JacksonEndpointAutoConfiguration$$Lambda/0x000001a5b3beb000.class\\E"
   }, {
     "pattern":"\\Qorg/springframework/boot/actuate/autoconfigure/endpoint/jackson/JacksonEndpointAutoConfiguration.class\\E"
   }, {
@@ -1363,7 +1345,7 @@
   }, {
     "pattern":"\\Qorg/springframework/boot/actuate/autoconfigure/web/servlet/ServletManagementChildContextConfiguration.class\\E"
   }, {
-    "pattern":"\\Qorg/springframework/boot/actuate/autoconfigure/web/servlet/ServletManagementContextAutoConfiguration$$Lambda/0x000001a145ce7578.class\\E"
+    "pattern":"\\Qorg/springframework/boot/actuate/autoconfigure/web/servlet/ServletManagementContextAutoConfiguration$$Lambda/0x000001a5b3ce2488.class\\E"
   }, {
     "pattern":"\\Qorg/springframework/boot/actuate/autoconfigure/web/servlet/ServletManagementContextAutoConfiguration$ApplicationContextFilterConfiguration.class\\E"
   }, {
@@ -1591,11 +1573,11 @@
   }, {
     "pattern":"\\Qorg/springframework/boot/autoconfigure/http/JsonbHttpMessageConvertersConfiguration.class\\E"
   }, {
-    "pattern":"\\Qorg/springframework/boot/autoconfigure/http/codec/CodecsAutoConfiguration$DefaultCodecsConfiguration$$Lambda/0x000001a145c9a8f0.class\\E"
+    "pattern":"\\Qorg/springframework/boot/autoconfigure/http/codec/CodecsAutoConfiguration$DefaultCodecsConfiguration$$Lambda/0x000001a5b3c9b180.class\\E"
   }, {
     "pattern":"\\Qorg/springframework/boot/autoconfigure/http/codec/CodecsAutoConfiguration$DefaultCodecsConfiguration.class\\E"
   }, {
-    "pattern":"\\Qorg/springframework/boot/autoconfigure/http/codec/CodecsAutoConfiguration$JacksonCodecConfiguration$$Lambda/0x000001a145c9ab08.class\\E"
+    "pattern":"\\Qorg/springframework/boot/autoconfigure/http/codec/CodecsAutoConfiguration$JacksonCodecConfiguration$$Lambda/0x000001a5b3c9b398.class\\E"
   }, {
     "pattern":"\\Qorg/springframework/boot/autoconfigure/http/codec/CodecsAutoConfiguration$JacksonCodecConfiguration.class\\E"
   }, {
@@ -1683,7 +1665,7 @@
   }, {
     "pattern":"\\Qorg/springframework/boot/autoconfigure/jdbc/metadata/DataSourcePoolMetadataProvidersConfiguration$CommonsDbcp2PoolDataSourceMetadataProviderConfiguration.class\\E"
   }, {
-    "pattern":"\\Qorg/springframework/boot/autoconfigure/jdbc/metadata/DataSourcePoolMetadataProvidersConfiguration$HikariPoolDataSourceMetadataProviderConfiguration$$Lambda/0x000001a1455fe628.class\\E"
+    "pattern":"\\Qorg/springframework/boot/autoconfigure/jdbc/metadata/DataSourcePoolMetadataProvidersConfiguration$HikariPoolDataSourceMetadataProviderConfiguration$$Lambda/0x000001a5b3605630.class\\E"
   }, {
     "pattern":"\\Qorg/springframework/boot/autoconfigure/jdbc/metadata/DataSourcePoolMetadataProvidersConfiguration$HikariPoolDataSourceMetadataProviderConfiguration.class\\E"
   }, {
@@ -2873,14 +2855,6 @@
   }, {
     "pattern":"java.base:\\Qjdk/internal/icu/impl/data/icudt72b/nfkc.nrm\\E"
   }, {
-    "pattern":"java.base:\\Qjdk/internal/icu/impl/data/icudt72b/ubidi.icu\\E"
-  }, {
-    "pattern":"java.base:\\Qjdk/internal/icu/impl/data/icudt72b/uprops.icu\\E"
-  }, {
-    "pattern":"java.base:\\Qsun/net/idn/uidna.spp\\E"
-  }, {
-    "pattern":"java.base:\\Qsun/text/resources/LineBreakIteratorData\\E"
-  }, {
     "pattern":"java.naming:\\Qjavax/naming/Referenceable.class\\E"
   }, {
     "pattern":"java.sql:\\Qjavax/sql/CommonDataSource.class\\E"
@@ -2988,5 +2962,8 @@
   }, {
     "name":"org.apache.tomcat.websocket.server.LocalStrings",
     "locales":[""]
+  }, {
+    "name":"org.springframework.security.messages",
+    "locales":["", "en"]
   }]
 }

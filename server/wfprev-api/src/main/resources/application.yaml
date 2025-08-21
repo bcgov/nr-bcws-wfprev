@@ -30,13 +30,36 @@ spring:
 
 logging:
   level:
+    root: INFO
+
+    ca:
+      bc:
+        gov:
+          nrs:
+            wfprev: DEBUG
+            wfprev.services.ReportService: TRACE
+            wfprev.controllers.ReportController: DEBUG
+
+    net:
+      sf:
+        jasperreports: DEBUG
+        jasperreports.engine.fill: TRACE
+        jasperreports.engine.export.ooxml: TRACE
+        jasperreports.engine.util.JRLoader: TRACE
+        jasperreports.engine.JasperCompileManager: TRACE
+        jasperreports.extensions: DEBUG
+
     org:
-      hibernate:
-        SQL: DEBUG
-      type:
-        descriptor:
-          sql:
-            BasicBinder: TRACE
+      springframework.web.servlet.mvc.method.annotation.StreamingResponseBodyReturnValueHandler: DEBUG
+      hibernate.SQL: DEBUG
+      hibernate.type.descriptor.sql.BasicBinder: TRACE
+      apache.poi: WARN
+
+  pattern:
+    console: "%d{yyyy-MM-dd'T'HH:mm:ss.SSSXXX} %-5level [%thread] %logger{40} - %msg%n%wEx"
+
+  file:
+    name: logs/wfprev-api.log
 
 management:
   endpoints:

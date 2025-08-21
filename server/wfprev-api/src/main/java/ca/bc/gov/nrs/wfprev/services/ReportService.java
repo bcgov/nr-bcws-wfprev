@@ -10,28 +10,37 @@ import ca.bc.gov.nrs.wfprev.data.repositories.FuelManagementReportRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.ProgramAreaRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.ProjectRepository;
 import lombok.extern.slf4j.Slf4j;
-import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import net.sf.jasperreports.engine.export.ooxml.JRXlsxExporter;
+import net.sf.jasperreports.engine.util.JRLoader;
 import net.sf.jasperreports.export.SimpleExporterInput;
 import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
 import net.sf.jasperreports.export.SimpleXlsxReportConfiguration;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.awt.*;
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.io.UncheckedIOException;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -39,12 +48,15 @@ import java.util.zip.ZipOutputStream;
 @Component
 public class ReportService {
 
-    @Value("${spring.application.baseUrl}")
-    private String baseUrl;
+//    @Value("${spring.application.baseUrl}")
+    private String baseUrl = "http://localhost:4200";
 
     private static final String PROJECT_URL_PREFIX = "/edit-project?projectGuid=";
 
     private static final String FISCAL_QUERY_STRING = "&tab=fiscal&fiscalGuid=";
+
+    DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+            .withZone(ZoneId.systemDefault());
 
     private final FuelManagementReportRepository fuelManagementRepository;
     private final CulturalPrescribedFireReportRepository culturalPrescribedFireReportRepository;
@@ -59,61 +71,119 @@ public class ReportService {
         this.programAreaRepository = programAreaRepository;
     }
 
-    public void exportXlsx(List<UUID> projectGuids, OutputStream outputStream) throws ServiceException {
+    public void exportXlsx(List<UUID> projectGuids, OutputStream outputStream, String rid) throws ServiceException, JRException, IOException {
+        long tStart = System.currentTimeMillis();
+        log.info("[{}] [xlsx] start projectGuids={}", rid, projectGuids.size());
+
         try {
+            // --- JPA: fetch projects -> fiscal GUIDs
+            long t0 = System.currentTimeMillis();
+            log.info("[{}] [xlsx] fetch projects -> begin", rid);
             List<ProjectEntity> projects = projectRepository.findByProjectGuidIn(projectGuids);
+            log.info("[{}] [xlsx] fetch projects -> end ({} rows, {} ms)", rid, projects.size(), (System.currentTimeMillis() - t0));
+
+            long tGuids0 = System.currentTimeMillis();
             List<UUID> projectPlanFiscalGuids = projects.stream()
-                    .flatMap(project -> project.getProjectFiscals().stream())
+                    .flatMap(p -> p.getProjectFiscals().stream())
                     .map(ProjectFiscalEntity::getProjectPlanFiscalGuid)
                     .distinct()
                     .toList();
+            log.info("[{}] [xlsx] derive fiscal GUIDs -> {} ({} ms)", rid, projectPlanFiscalGuids.size(), (System.currentTimeMillis() - tGuids0));
 
-            // 2. Fetch both datasets
-            List<FuelManagementReportEntity> fuelData = fuelManagementRepository.findByProjectPlanFiscalGuidIn(projectPlanFiscalGuids);
-            List<CulturalPrescribedFireReportEntity> crxData = culturalPrescribedFireReportRepository.findByProjectPlanFiscalGuidIn(projectPlanFiscalGuids);
+            // --- JPA: fetch report rows (fuel + crx)
+            long tFuel0 = System.currentTimeMillis();
+            log.info("[{}] [xlsx] fetch fuel -> begin", rid);
+            List<FuelManagementReportEntity> fuelData =
+                    fuelManagementRepository.findByProjectPlanFiscalGuidIn(projectPlanFiscalGuids);
+            log.info("[{}] [xlsx] fetch fuel -> end ({} rows, {} ms)", rid, fuelData.size(), (System.currentTimeMillis() - tFuel0));
+
+            long tCrx0 = System.currentTimeMillis();
+            log.info("[{}] [xlsx] fetch crx -> begin", rid);
+            List<CulturalPrescribedFireReportEntity> crxData =
+                    culturalPrescribedFireReportRepository.findByProjectPlanFiscalGuidIn(projectPlanFiscalGuids);
+            log.info("[{}] [xlsx] fetch crx -> end ({} rows, {} ms)", rid, crxData.size(), (System.currentTimeMillis() - tCrx0));
 
             if (fuelData.isEmpty() && crxData.isEmpty()) {
+                log.info("[{}] [xlsx] no data for given projectGuids", rid);
                 throw new IllegalArgumentException("No data found for the provided projectGuids.");
             }
 
-            for (FuelManagementReportEntity entities: fuelData) {
-                setFuelManagementFields(entities);
+            // --- Set transient/computed fields (make it explicit & timed)
+            long tSet0 = System.currentTimeMillis();
+            fuelData.forEach(this::setFuelManagementFields);
+            crxData.forEach(this::setCrxFields);
+            log.info("[{}] [xlsx] set fields -> done ({} ms)", rid, (System.currentTimeMillis() - tSet0));
+            String[] entries = System.getProperty("java.class.path")
+                    .split(File.pathSeparator);
+            for (String entry : entries) {
+                log.info("Classpath entry: {}", entry);
             }
 
-            for (CulturalPrescribedFireReportEntity entities : crxData) {
-                setCrxFields(entities);
+            String[] libPaths = System.getProperty("java.library.path")
+                    .split(System.getProperty("path.separator"));
+
+            for (String path : libPaths) {
+                log.info("Librarypath entry: {}", path);
             }
 
-            JasperReport fuelReport = JasperCompileManager.compileReport(
-                    getClass().getResourceAsStream("/jasper-template/WFPREV_FUEL_MANAGEMENT_JASPER.jrxml")
-            );
-            JasperReport crxReport = JasperCompileManager.compileReport(
-                    getClass().getResourceAsStream("/jasper-template/WFPREV_CULTURE_PRESCRIBED_FIRE_JASPER.jrxml")
-            );
+            // --- Load precompiled .jasper (guard against missing resource)
+            long tTpl0 = System.currentTimeMillis();
+            log.info("[{}] [xlsx] load templates -> begin", rid);
+            log.info("[{}] Attempting to load CRX report template", rid);
+            JasperReport crxReport  = loadJasper("jasper-template/WFPREV_CULTURE_PRESCRIBED_FIRE_JASPER.jasper");
+            log.info("[{}] Attempting to load FM report template", rid);
+            JasperReport fuelReport = loadJasper("jasper-template/WFPREV_FUEL_MANAGEMENT_JASPER.jasper");
 
+            if (fuelReport == null) throw new IllegalStateException("Fuel .jasper not found/loaded");
+            if (crxReport  == null) throw new IllegalStateException("CRx .jasper not found/loaded");
+            log.info("[{}] [xlsx] load templates -> end ({} ms)", rid, (System.currentTimeMillis() - tTpl0));
+
+            // --- Fill
             Map<String, Object> params = new HashMap<>();
-            JasperPrint fuelPrint = JasperFillManager.fillReport(fuelReport, params, new JRBeanCollectionDataSource(fuelData));
-            JasperPrint crxPrint = JasperFillManager.fillReport(crxReport, params, new JRBeanCollectionDataSource(crxData));
+            long tFillFuel0 = System.currentTimeMillis();
+            log.info("[{}] [xlsx] fill fuel -> begin", rid);
+            JasperPrint fuelPrint = JasperFillManager.fillReport(
+                    fuelReport, params, new JRBeanCollectionDataSource(fuelData));
+            log.info("[{}] [xlsx] fill fuel -> end (pages={},{} ms)", rid, fuelPrint.getPages().size(), (System.currentTimeMillis() - tFillFuel0));
 
+            long tFillCrx0 = System.currentTimeMillis();
+            log.info("[{}] [xlsx] fill crx -> begin", rid);
+            JasperPrint crxPrint = JasperFillManager.fillReport(
+                    crxReport, params, new JRBeanCollectionDataSource(crxData));
+            log.info("[{}] [xlsx] fill crx -> end (pages={},{} ms)", rid, crxPrint.getPages().size(), (System.currentTimeMillis() - tFillCrx0));
+
+            // --- Export
+            long tExp0 = System.currentTimeMillis();
+            log.info("[{}] [xlsx] export -> begin", rid);
             JRXlsxExporter exporter = new JRXlsxExporter();
-            exporter.setExporterInput(SimpleExporterInput.getInstance(List.of(fuelPrint, crxPrint)));
+            exporter.setExporterInput(SimpleExporterInput.getInstance(java.util.List.of(fuelPrint, crxPrint)));
             exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(outputStream));
 
             SimpleXlsxReportConfiguration config = new SimpleXlsxReportConfiguration();
-            config.setRemoveEmptySpaceBetweenRows(false);
-            config.setWhitePageBackground(false);
             config.setDetectCellType(true);
-            config.setCollapseRowSpan(false);
+            config.setRemoveEmptySpaceBetweenRows(true);
+            config.setRemoveEmptySpaceBetweenColumns(true);
+            config.setCollapseRowSpan(true);
+            config.setWhitePageBackground(false);
             config.setSheetNames(new String[]{"FM XLS Download", "CRx XLS Download"});
             exporter.setConfiguration(config);
 
-            exporter.exportReport();
-            log.info("XLSX export completed successfully with two sheets.");
-
-        } catch (Exception e) {
-            log.error("Failed to generate XLSX report: {}", e.getMessage(), e);
-            throw new ServiceException("Failed to generate XLSX report", e);
+//            try {
+                exporter.exportReport();
+                outputStream.flush();
+                log.info("[{}] [xlsx] export -> end ({} ms)", rid, (System.currentTimeMillis() - tExp0));
+                log.info("[{}] [xlsx] success (total {} ms)", rid, (System.currentTimeMillis() - tStart));
+//            } catch (JRException e) {
+//                log.info("[{}] JRException during XLSX export: {}", rid, e.getMessage(), e);
+//                throw new ServiceException("Failed exporting XLSX", e);
+//            }
+        } catch (Throwable t) {
+            throw t;
         }
+//        } catch (Exception e) {
+//            log.info("[{}] Failed to generate XLSX report (unexpected): {}", rid, e.getMessage(), e);
+//            throw new ServiceException("Failed to generate XLSX report", e);
+//        }
     }
 
     public void writeCsvZipFromEntities(List<UUID> projectGuids, OutputStream zipOutStream) throws ServiceException {
@@ -154,7 +224,7 @@ public class ReportService {
             addToZip(zipOut, "cultural-prescribed-fire-projects.csv", crxCsvOut.toByteArray());
 
         } catch (Exception e) {
-            log.error("Failed to generate CSV report: {}", e.getMessage(), e);
+            log.info("Failed to generate CSV report: {}", e.getMessage(), e);
             throw new ServiceException("Failed to generate CSV report", e);
         }
     }
@@ -179,6 +249,12 @@ public class ReportService {
                         entity.setBusinessArea(programArea.getProgramAreaName())
                 );
             }
+
+            // 2025 -> 2025/26 format
+            String fiscalYear = formatFiscalYearIfNumeric(entity.getFiscalYear());
+            if (fiscalYear != null) {
+                entity.setFiscalYear(fiscalYear);
+            }
         }
     }
 
@@ -197,6 +273,12 @@ public class ReportService {
                     entity.setBusinessArea(programArea.getProgramAreaName())
             );
         }
+
+        // 2025 -> 2025/26 format
+        String fiscalYear = formatFiscalYearIfNumeric(entity.getFiscalYear());
+        if (fiscalYear != null) {
+            entity.setFiscalYear(fiscalYear);
+        }
     }
 
     private void addToZip(ZipOutputStream zipOut, String fileName, byte[] content) throws IOException {
@@ -213,13 +295,13 @@ public class ReportService {
                 "BC Parks Section", "Fire Centre", "Business Area", "Planning Unit",
                 "Gross Project Area (Ha calculated from spatial file)", "Closest Community", "Project Lead", "Proposal Type",
                 "Fiscal Activity Name", "Fiscal Activity Description", "Fiscal Year", "Activity Category",
-                "Fiscal Status", "Funding Stream", "Original Cost Estimate",
+                "Fiscal Status", "Original Cost Estimate",
                 "Ancillary Funding Amount", "Final Reported Spend", "CFS Actual Spend",
                 "Planned Hectares", "Completed Hectares", "Spatial Submitted",
                 "First Nation Engagement (Y/N)", "First Nation Co-Delivery (Y/N)", "First Nation Co-Delivery Partners",
                 "Other Partners", "CFS Code", "RESULTS Project Code", "RESULTS Opening ID",
                 "Primary Objective", "Secondary Objective (Optional)", "Endorsement Date",
-                "Approval Date", "WUI Risk Class", "Local WUI Risk Class Rationale",
+                "Approval Date", "WUI Risk Class", "Local WUI Risk Class", "Local WUI Risk Class Rationale",
                 "Total Point Value for Coarse Filter", "Total Point Value for Medium Filters", "Additional Comments/Notes on Medium Filters",
                 "Total Point Value of Fine Filters", "Additional Comments/Notes on Fine Filters", "Total Filter Value"
         ));
@@ -227,20 +309,38 @@ public class ReportService {
 
     private List<String> getFuelCsvRow(FuelManagementReportEntity e) {
         return List.of(
-                safe(e.getLinkToProject()), safe(e.getLinkToFiscalActivity()), safe(e.getProjectTypeDescription()),
+                safe(String.format("=HYPERLINK(\"%s\", \"%s Project Link\")",
+                        e.getLinkToProject(), e.getProjectName())
+                ),
+                safe(String.format("=HYPERLINK(\"%s\", \"%s Fiscal Activity Link\")",
+                        e.getLinkToFiscalActivity(), e.getProjectFiscalName())
+                ), safe(e.getProjectTypeDescription()),
                 safe(e.getProjectName()), safe(e.getForestRegionOrgUnitName()), safe(e.getForestDistrictOrgUnitName()),
                 safe(e.getBcParksRegionOrgUnitName()), safe(e.getBcParksSectionOrgUnitName()), safe(e.getFireCentreOrgUnitName()),
-                safe(e.getBusinessArea()), safe(e.getPlanningUnitName()), safe(e.getGrossProjectAreaHa()), safe(e.getClosestCommunityName()),
+                safe(e.getBusinessArea()), safe(e.getPlanningUnitName()), safe(e.getGrossProjectAreaHa() != null
+                        ? String.format("%,d ha", e.getGrossProjectAreaHa().intValue())
+                        : ""), safe(e.getClosestCommunityName()),
                 safe(e.getProjectLead()), safe(e.getProposalTypeDescription()), safe(e.getProjectFiscalName()),
                 safe(e.getProjectFiscalDescription()), safe(e.getFiscalYear()), safe(e.getActivityCategoryDescription()),
-                safe(e.getPlanFiscalStatusDescription()), safe(e.getFundingStream()), safe(e.getTotalEstimatedCostAmount()),
-                safe(e.getFiscalAncillaryFundAmount()), safe(e.getFiscalReportedSpendAmount()), safe(e.getFiscalActualAmount()),
-                safe(e.getFiscalPlannedProjectSizeHa()), safe(e.getFiscalCompletedSizeHa()), safe(e.getSpatialSubmitted()),
+                safe(e.getPlanFiscalStatusDescription()), safe(formatMonetaryFields(e.getTotalEstimatedCostAmount())),
+                safe(formatMonetaryFields(e.getFiscalAncillaryFundAmount())), safe(formatMonetaryFields(e.getFiscalReportedSpendAmount())), safe(formatMonetaryFields(e.getFiscalActualAmount())),
+                safe(e.getFiscalPlannedProjectSizeHa() != null
+                                ? String.format("%,d ha", e.getFiscalPlannedProjectSizeHa().intValue())
+                                : ""),
+                safe(e.getFiscalCompletedSizeHa() != null
+                        ? String.format("%,d ha", e.getFiscalCompletedSizeHa().intValue())
+                        : ""),
+                safe(String.format("=\"%s\"", e.getSpatialSubmitted())),
                 safe(e.getFirstNationsEngagement()), safe(e.getFirstNationsDelivPartners()), safe(e.getFirstNationsPartner()),
                 safe(e.getOtherPartner()), safe(e.getCfsProjectCode()), safe(e.getResultsProjectCode()), safe(e.getResultsOpeningId()),
                 safe(e.getPrimaryObjectiveTypeDescription()), safe(e.getSecondaryObjectiveTypeDescription()),
-                safe(e.getEndorsementTimestamp()), safe(e.getApprovedTimestamp()), safe(e.getWuiRiskClassDescription()),
-                safe(e.getLocalWuiRiskClassRationale()), safe(e.getLocalWuiRiskClassRationale()),
+                safe(e.getEndorsementTimestamp() != null
+                        ? DATE_FORMAT.format(e.getEndorsementTimestamp().toInstant())
+                        : ""),
+                safe(e.getApprovedTimestamp() != null
+                        ? DATE_FORMAT.format(e.getApprovedTimestamp().toInstant())
+                        : ""),
+                safe(e.getWuiRiskClassDescription()), safe(e.getLocalWuiRiskClassDescription()), safe(e.getLocalWuiRiskClassRationale()),
                 safe(e.getTotalCoarseFilterSectionScore()), safe(e.getTotalMediumFilterSectionScore()), safe(e.getMediumFilterSectionComment()),
                 safe(e.getTotalFineFilterSectionScore()), safe(e.getFineFilterSectionComment()), safe(e.getTotalFilterSectionScore())
         );
@@ -253,7 +353,7 @@ public class ReportService {
                 "BC Parks Section", "Fire Centre", "Business Area", "Planning Unit",
                 "Gross Project Area (Ha calculated from spatial file)", "Closest Community", "Project Lead", "Proposal Type",
                 "Fiscal Activity Name", "Fiscal Activity Description", "Fiscal Year", "Activity Category",
-                "Fiscal Status", "Funding Stream", "Original Cost Estimate",
+                "Fiscal Status", "Original Cost Estimate",
                 "Ancillary Funding Amount", "Final Reported Spend", "CFS Actual Spend",
                 "Planned Hectares", "Completed Hectares", "Spatial Submitted",
                 "First Nation Engagement (Y/N)", "First Nation Co-Delivery (Y/N)", "First Nation Co-Delivery Partners",
@@ -268,23 +368,140 @@ public class ReportService {
 
     private List<String> getCrxCsvRow(CulturalPrescribedFireReportEntity c) {
         return List.of(
-                safe(c.getLinkToProject()), safe(c.getLinkToFiscalActivity()), safe(c.getProjectTypeDescription()),
+                safe(String.format("=HYPERLINK(\"%s\", \"%s Project Link\")",
+                        c.getLinkToProject(), c.getProjectName())
+                ),
+                safe(String.format("=HYPERLINK(\"%s\", \"%s Fiscal Activity Link\")",
+                        c.getLinkToFiscalActivity(), c.getProjectFiscalName())
+                ), safe(c.getProjectTypeDescription()),
                 safe(c.getProjectName()), safe(c.getForestRegionOrgUnitName()), safe(c.getForestDistrictOrgUnitName()),
                 safe(c.getBcParksRegionOrgUnitName()), safe(c.getBcParksSectionOrgUnitName()), safe(c.getFireCentreOrgUnitName()),
-                safe(c.getBusinessArea()), safe(c.getPlanningUnitName()), safe(c.getGrossProjectAreaHa()), safe(c.getClosestCommunityName()),
+                safe(c.getBusinessArea()), safe(c.getPlanningUnitName()), safe(c.getGrossProjectAreaHa() != null
+                        ? String.format("%,d ha", c.getGrossProjectAreaHa().intValue())
+                        : ""), safe(c.getClosestCommunityName()),
                 safe(c.getProjectLead()), safe(c.getProposalTypeDescription()), safe(c.getProjectFiscalName()),
                 safe(c.getProjectFiscalDescription()), safe(c.getFiscalYear()), safe(c.getActivityCategoryDescription()),
-                safe(c.getPlanFiscalStatusDescription()), safe(c.getFundingStream()), safe(c.getTotalEstimatedCostAmount()),
-                safe(c.getFiscalAncillaryFundAmount()), safe(c.getFiscalReportedSpendAmount()), safe(c.getFiscalActualAmount()),
-                safe(c.getFiscalPlannedProjectSizeHa()), safe(c.getFiscalCompletedSizeHa()), safe(c.getSpatialSubmitted()),
+                safe(c.getPlanFiscalStatusDescription()), safe(formatMonetaryFields(c.getTotalEstimatedCostAmount())),
+                safe(formatMonetaryFields(c.getFiscalAncillaryFundAmount())), safe(formatMonetaryFields(c.getFiscalReportedSpendAmount())), safe(formatMonetaryFields(c.getFiscalActualAmount())),
+                safe(c.getFiscalPlannedProjectSizeHa() != null
+                        ? String.format("%,d ha", c.getFiscalPlannedProjectSizeHa().intValue())
+                        : ""),
+                safe(c.getFiscalCompletedSizeHa() != null
+                        ? String.format("%,d ha", c.getFiscalCompletedSizeHa().intValue())
+                        : ""), safe(String.format("=\"%s\"", c.getSpatialSubmitted())),
                 safe(c.getFirstNationsEngagement()), safe(c.getFirstNationsDelivPartners()), safe(c.getFirstNationsPartner()),
                 safe(c.getOtherPartner()), safe(c.getCfsProjectCode()), safe(c.getResultsProjectCode()), safe(c.getResultsOpeningId()),
                 safe(c.getPrimaryObjectiveTypeDescription()), safe(c.getSecondaryObjectiveTypeDescription()),
-                safe(c.getEndorsementTimestamp()), safe(c.getApprovedTimestamp()), safe(c.getOutsideWuiInd()),
+                safe(c.getEndorsementTimestamp() != null
+                        ? DATE_FORMAT.format(c.getEndorsementTimestamp().toInstant())
+                        : ""),
+                safe(c.getApprovedTimestamp() != null
+                        ? DATE_FORMAT.format(c.getApprovedTimestamp().toInstant())
+                        : ""), safe(c.getOutsideWuiInd() ? "Y" : "N"),
                 safe(c.getWuiRiskClassDescription()), safe(c.getLocalWuiRiskClassDescription()), safe(c.getTotalRclFilterSectionScore()),
                 safe(c.getRclFilterSectionComment()), safe(c.getTotalBdfFilterSectionScore()), safe(c.getBdfFilterSectionComment()),
                 safe(c.getTotalCollimpFilterSectionScore()), safe(c.getCollimpFilterSectionComment()), safe(c.getTotalFilterSectionScore())
         );
     }
+
+    private static String formatMonetaryFields(Number n) {
+        if (n == null) return "";
+        return new java.text.DecimalFormat("$#,##0").format(n);
+    }
+
+    private String formatFiscalYearIfNumeric(Object fiscalYear) {
+        if (fiscalYear == null) return null;
+        try {
+            int year = Integer.parseInt(fiscalYear.toString());
+            return year + "/" + String.format("%02d", (year + 1) % 100);
+        } catch (NumberFormatException e) {
+            return null; // keep original value unchanged
+        }
+    }
+
+
+    public JasperReport loadJasper(String jasperPath) throws IOException {
+        ClassLoader cl = Thread.currentThread().getContextClassLoader();
+        log.info("isHeadless: " + GraphicsEnvironment.isHeadless());
+        log.info("PATH entries: {}", Arrays.toString(System.getenv("PATH").split(Pattern.quote(File.pathSeparator))));
+        log.info("java.library.path entries: {}", Arrays.toString(System.getProperty("java.library.path","").split(Pattern.quote(File.pathSeparator))));
+        log.info("java.class.path entries: {}", Arrays.toString(System.getProperty("java.class.path","").split(Pattern.quote(File.pathSeparator))));
+
+        // Try precompiled .jasper
+        try (InputStream in = cl.getResourceAsStream(jasperPath)) {
+            log.info("Trying to load precompiled Jasper report: {}", jasperPath);
+            if (in != null) {
+                try {
+                    log.info("Loading precompiled Jasper report: {}", jasperPath);
+//                    return (JasperReport) JRLoader.loadObjectFromFile("/" + jasperPath);
+                    Object obj = JRLoader.loadObject(in);
+                    if (obj instanceof JasperReport jr) {
+                        log.info("Loaded precompiled Jasper report: {}", jasperPath);
+                        return jr;
+                    } else {
+                        log.info("Object at {} is not a JasperReport: {}", jasperPath, obj.getClass().getName());
+                    }
+                } catch (Throwable t) {
+                    log.info("Precompiled load failed for {}. Cause: {}",
+                            jasperPath, t.toString(), t);
+                }
+            } else {
+                log.info("Precompiled report not found on classpath: {}", jasperPath);
+            }
+        } catch (Throwable t) {
+            // Even resource open can throw in native images
+            log.info("Error opening {}. Cause: {}", jasperPath, t.toString(), t);
+            throw t;
+        }
+
+
+        return null;
+    }
+
+//    private JasperReport loadPrecompiledOrThrow(String jasperPath) {
+//        ClassLoader cl = Thread.currentThread().getContextClassLoader();
+//        try (InputStream in = cl.getResourceAsStream(jasperPath)) {
+//            if (in == null) {
+//                throw new IllegalStateException("Precompiled .jasper not found on classpath: " + jasperPath);
+//            }
+//            Object obj = JRLoader.loadObject(in);
+//            if (!(obj instanceof JasperReport jr)) {
+//                throw new IllegalStateException("Resource is not a JasperReport: " + jasperPath);
+//            }
+//            log.info("Loaded precompiled Jasper report: {}", jasperPath);
+//            return jr;
+//        } catch (Exception e) {
+//            throw new RuntimeException("Failed loading precompiled report: " + jasperPath, e);
+//        }
+//    }
+
+
+    private JasperReport loadCompiled(String path, String rid) {
+        long t0 = System.currentTimeMillis();
+        try (InputStream in = getClass().getResourceAsStream(path)) {
+            if (in == null) {
+                log.info("[{}] [xlsx] MISSING template {}", rid, path);
+                throw new IllegalStateException("Template not found: " + path);
+            }
+            byte[] buf = in.readAllBytes();
+            int size = buf.length;
+            log.info("[{}] [xlsx] template {} read ({} bytes)", rid, path, size);
+
+            Object o = net.sf.jasperreports.engine.util.JRLoader
+                    .loadObject(new java.io.ByteArrayInputStream(buf));
+            if (!(o instanceof net.sf.jasperreports.engine.JasperReport jr)) {
+                throw new IllegalStateException("Not a JasperReport: " + path + " (" + o.getClass().getName() + ")");
+            }
+
+            log.info("[{}] [xlsx] template {} loaded ({} bytes, {} ms)",
+                    rid, path, size, System.currentTimeMillis() - t0);
+            return jr;
+        } catch (Exception e) {
+            log.info("[{}] [xlsx] failed loading {}", rid, path, e);
+            throw new RuntimeException(e);
+        }
+    }
+
+
 
 }

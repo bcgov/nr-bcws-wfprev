@@ -541,12 +541,12 @@ export class ProjectService {
         );
     }
 
-    downloadProjects(projectGuids: string[], type: string): Observable<Blob> {
+    downloadProjects(projectGuids: string[], reportType: string): Observable<Blob> {
         // this will need to update after api is done
         const url = `${this.appConfigService.getConfig().rest['wfprev']}/wfprev-api/reports`;
         const payload = {
             projectGuids,
-            type
+            reportType
         };
 
         return this.httpClient.post(url, payload, {
