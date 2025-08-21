@@ -15,6 +15,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.sf.jasperreports.engine.JRException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +24,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
+
+import java.io.IOException;
 
 @RestController
 @RequestMapping("/reports")
@@ -42,47 +45,73 @@ public class ReportController {
                     @ExtensionProperty(name = "throttling-tier", value = "Unlimited")
             })
     )
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Report generated successfully"),
-            @ApiResponse(responseCode = "400", description = "Invalid report request", content = @Content(schema = @Schema(implementation = MessageListRsrc.class))),
-            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(schema = @Schema(implementation = MessageListRsrc.class)))
-    })
-    public ResponseEntity<StreamingResponseBody> generateReport(@Valid @RequestBody ReportRequestModel request) {
-        String type = request.getReportType();
-        log.debug(" >> generateReport with type: {}", type);
+    public ResponseEntity<StreamingResponseBody> generateReport(@Valid @RequestBody ReportRequestModel request) throws ServiceException, IOException, JRException {
+        final String type = request.getReportType();
+        final String rid = java.util.UUID.randomUUID().toString().substring(0, 8);
+        log.info("[{}] /reports start (type={})", rid, type);
 
-        if ("XLSX".equalsIgnoreCase(type)) {
-            StreamingResponseBody stream = outputStream -> {
-                try {
-                    reportService.exportXlsx(request.getProjectGuids(), outputStream);
-                } catch (Exception e) {
-                    throw new RuntimeException("Failed to stream XLSX report", e);
+        try {
+            if ("XLSX".equalsIgnoreCase(type)) {
+                byte[] bytes;
+                long t0 = System.currentTimeMillis();
+
+                log.info("[{}] exportXlsx -> begin", rid);
+                try (var baos = new java.io.ByteArrayOutputStream(1 << 20)) { // 1MB initial cap
+                    reportService.exportXlsx(request.getProjectGuids(), baos, rid); // pass rid through
+                    bytes = baos.toByteArray();
                 }
-            };
+                long t1 = System.currentTimeMillis();
+                log.info("[{}] exportXlsx -> end ({} ms, {} bytes)", rid, (t1 - t0), bytes.length);
 
-            return ResponseEntity.ok()
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=project-report.xlsx")
-                    .contentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
-                    .body(stream);
+                StreamingResponseBody stream = out -> {
+                    log.info("[{}] stream -> write begin", rid);
+                    out.write(bytes);
+                    out.flush();
+                    log.info("[{}] stream -> write end", rid);
+                };
 
-        } else if ("CSV".equalsIgnoreCase(type)) {
-            StreamingResponseBody stream = outputStream -> {
-                try {
-                    reportService.writeCsvZipFromEntities(request.getProjectGuids(), outputStream);
-                } catch (Exception e) {
-                    throw new RuntimeException("Failed to stream CSV report", e);
+                return ResponseEntity.ok()
+                        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=project-report.xlsx")
+                        .contentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+                        .contentLength(bytes.length)
+                        .body(stream);
+
+            } else if ("CSV".equalsIgnoreCase(type)) {
+                byte[] bytes;
+                long t0 = System.currentTimeMillis();
+
+                log.info("[{}] writeCsvZipFromEntities -> begin", rid);
+                try (var baos = new java.io.ByteArrayOutputStream(1 << 20)) {
+                    reportService.writeCsvZipFromEntities(request.getProjectGuids(), baos); // pass rid through
+                    bytes = baos.toByteArray();
                 }
-            };
+                long t1 = System.currentTimeMillis();
+                log.info("[{}] writeCsvZipFromEntities -> end ({} ms, {} bytes)", rid, (t1 - t0), bytes.length);
 
-            return ResponseEntity.ok()
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=project-report.zip")
-                    .contentType(MediaType.parseMediaType("application/zip"))
-                    .body(stream);
+                StreamingResponseBody stream = out -> {
+                    log.info("[{}] stream(zip) -> write begin", rid);
+                    out.write(bytes);
+                    out.flush();
+                    log.info("[{}] stream(zip) -> write end", rid);
+                };
 
-        } else {
-            log.warn("Unsupported report type requested: {}", type);
-            return ResponseEntity.badRequest()
-                    .body(out -> out.write("Only reportType=XLSX or CSV is supported.".getBytes()));
+                return ResponseEntity.ok()
+                        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=project-report.zip")
+                        .contentType(MediaType.parseMediaType("application/zip"))
+                        .contentLength(bytes.length)
+                        .body(stream);
+
+            } else {
+                log.warn("[{}] bad report type: {}", rid, type);
+                return ResponseEntity.badRequest()
+                        .contentType(MediaType.TEXT_PLAIN)
+                        .body(out -> out.write("Only reportType=XLSX or CSV is supported.".getBytes()));
+            }
+        } catch (Throwable t) {
+            throw t;
+        } finally {
+            log.info("[{}] /reports end", rid);
         }
     }
+
 }

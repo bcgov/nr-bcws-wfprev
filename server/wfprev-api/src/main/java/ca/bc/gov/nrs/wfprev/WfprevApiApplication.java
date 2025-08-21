@@ -13,6 +13,7 @@ import ca.bc.gov.nrs.wfprev.common.serializers.PointSerializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import jakarta.servlet.DispatcherType;
+import lombok.extern.slf4j.Slf4j;
 import org.locationtech.jts.geom.Point;
 import org.postgresql.geometric.PGpoint;
 import org.postgresql.geometric.PGpolygon;
@@ -27,6 +28,9 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.web.filter.ForwardedHeaderFilter;
 import org.n52.jackson.datatype.jts.JtsModule;
 
+import java.awt.*;
+
+@Slf4j
 @SpringBootApplication
 @EnableJpaAuditing(auditorAwareRef = "springSecurityAuditorAware")
 public class WfprevApiApplication {
@@ -34,6 +38,7 @@ public class WfprevApiApplication {
 	 * Run the application as a JAR
 	 */
 	public static void main(String[] args) {
+//		log.info("AWT color smoke test = {}", new java.awt.Color(0,0,0));
 		SpringApplication.run(WfprevApiApplication.class, args);
 	}
 

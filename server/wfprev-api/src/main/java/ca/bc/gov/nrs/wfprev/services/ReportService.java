@@ -9,10 +9,8 @@ import ca.bc.gov.nrs.wfprev.data.repositories.CulturalPrescribedFireReportReposi
 import ca.bc.gov.nrs.wfprev.data.repositories.FuelManagementReportRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.ProgramAreaRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.ProjectRepository;
-import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
@@ -24,19 +22,25 @@ import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
 import net.sf.jasperreports.export.SimpleXlsxReportConfiguration;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.awt.*;
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -44,11 +48,8 @@ import java.util.zip.ZipOutputStream;
 @Component
 public class ReportService {
 
-    private volatile JasperReport fuelReport;
-    private volatile JasperReport crxReport;
-
-    @Value("${spring.application.baseUrl}")
-    private String baseUrl;
+//    @Value("${spring.application.baseUrl}")
+    private String baseUrl = "http://localhost:4200";
 
     private static final String PROJECT_URL_PREFIX = "/edit-project?projectGuid=";
 
@@ -70,42 +71,92 @@ public class ReportService {
         this.programAreaRepository = programAreaRepository;
     }
 
-    public void exportXlsx(List<UUID> projectGuids, OutputStream outputStream) throws ServiceException {
+    public void exportXlsx(List<UUID> projectGuids, OutputStream outputStream, String rid) throws ServiceException, JRException, IOException {
+        long tStart = System.currentTimeMillis();
+        log.info("[{}] [xlsx] start projectGuids={}", rid, projectGuids.size());
+
         try {
+            // --- JPA: fetch projects -> fiscal GUIDs
+            long t0 = System.currentTimeMillis();
+            log.info("[{}] [xlsx] fetch projects -> begin", rid);
             List<ProjectEntity> projects = projectRepository.findByProjectGuidIn(projectGuids);
+            log.info("[{}] [xlsx] fetch projects -> end ({} rows, {} ms)", rid, projects.size(), (System.currentTimeMillis() - t0));
+
+            long tGuids0 = System.currentTimeMillis();
             List<UUID> projectPlanFiscalGuids = projects.stream()
                     .flatMap(p -> p.getProjectFiscals().stream())
                     .map(ProjectFiscalEntity::getProjectPlanFiscalGuid)
                     .distinct()
                     .toList();
+            log.info("[{}] [xlsx] derive fiscal GUIDs -> {} ({} ms)", rid, projectPlanFiscalGuids.size(), (System.currentTimeMillis() - tGuids0));
 
+            // --- JPA: fetch report rows (fuel + crx)
+            long tFuel0 = System.currentTimeMillis();
+            log.info("[{}] [xlsx] fetch fuel -> begin", rid);
             List<FuelManagementReportEntity> fuelData =
                     fuelManagementRepository.findByProjectPlanFiscalGuidIn(projectPlanFiscalGuids);
+            log.info("[{}] [xlsx] fetch fuel -> end ({} rows, {} ms)", rid, fuelData.size(), (System.currentTimeMillis() - tFuel0));
+
+            long tCrx0 = System.currentTimeMillis();
+            log.info("[{}] [xlsx] fetch crx -> begin", rid);
             List<CulturalPrescribedFireReportEntity> crxData =
                     culturalPrescribedFireReportRepository.findByProjectPlanFiscalGuidIn(projectPlanFiscalGuids);
+            log.info("[{}] [xlsx] fetch crx -> end ({} rows, {} ms)", rid, crxData.size(), (System.currentTimeMillis() - tCrx0));
 
             if (fuelData.isEmpty() && crxData.isEmpty()) {
+                log.info("[{}] [xlsx] no data for given projectGuids", rid);
                 throw new IllegalArgumentException("No data found for the provided projectGuids.");
             }
 
+            // --- Set transient/computed fields (make it explicit & timed)
+            long tSet0 = System.currentTimeMillis();
             fuelData.forEach(this::setFuelManagementFields);
             crxData.forEach(this::setCrxFields);
+            log.info("[{}] [xlsx] set fields -> done ({} ms)", rid, (System.currentTimeMillis() - tSet0));
+            String[] entries = System.getProperty("java.class.path")
+                    .split(File.pathSeparator);
+            for (String entry : entries) {
+                log.info("Classpath entry: {}", entry);
+            }
 
+            String[] libPaths = System.getProperty("java.library.path")
+                    .split(System.getProperty("path.separator"));
+
+            for (String path : libPaths) {
+                log.info("Librarypath entry: {}", path);
+            }
+
+            // --- Load precompiled .jasper (guard against missing resource)
+            long tTpl0 = System.currentTimeMillis();
+            log.info("[{}] [xlsx] load templates -> begin", rid);
+            log.info("[{}] Attempting to load CRX report template", rid);
+            JasperReport crxReport  = loadJasper("jasper-template/WFPREV_CULTURE_PRESCRIBED_FIRE_JASPER.jasper");
+            log.info("[{}] Attempting to load FM report template", rid);
+            JasperReport fuelReport = loadJasper("jasper-template/WFPREV_FUEL_MANAGEMENT_JASPER.jasper");
+
+            if (fuelReport == null) throw new IllegalStateException("Fuel .jasper not found/loaded");
+            if (crxReport  == null) throw new IllegalStateException("CRx .jasper not found/loaded");
+            log.info("[{}] [xlsx] load templates -> end ({} ms)", rid, (System.currentTimeMillis() - tTpl0));
+
+            // --- Fill
             Map<String, Object> params = new HashMap<>();
+            long tFillFuel0 = System.currentTimeMillis();
+            log.info("[{}] [xlsx] fill fuel -> begin", rid);
+            JasperPrint fuelPrint = JasperFillManager.fillReport(
+                    fuelReport, params, new JRBeanCollectionDataSource(fuelData));
+            log.info("[{}] [xlsx] fill fuel -> end (pages={},{} ms)", rid, fuelPrint.getPages().size(), (System.currentTimeMillis() - tFillFuel0));
 
-            JasperPrint fuelPrint;
-            JasperPrint crxPrint;
+            long tFillCrx0 = System.currentTimeMillis();
+            log.info("[{}] [xlsx] fill crx -> begin", rid);
+            JasperPrint crxPrint = JasperFillManager.fillReport(
+                    crxReport, params, new JRBeanCollectionDataSource(crxData));
+            log.info("[{}] [xlsx] fill crx -> end (pages={},{} ms)", rid, crxPrint.getPages().size(), (System.currentTimeMillis() - tFillCrx0));
 
-            fuelPrint = JasperFillManager.fillReport(
-                    getFuelReport(), params, new JRBeanCollectionDataSource(fuelData)
-            );
-
-            crxPrint = JasperFillManager.fillReport(
-                    getCrxReport(), params, new JRBeanCollectionDataSource(crxData)
-            );
-
+            // --- Export
+            long tExp0 = System.currentTimeMillis();
+            log.info("[{}] [xlsx] export -> begin", rid);
             JRXlsxExporter exporter = new JRXlsxExporter();
-            exporter.setExporterInput(SimpleExporterInput.getInstance(List.of(fuelPrint, crxPrint)));
+            exporter.setExporterInput(SimpleExporterInput.getInstance(java.util.List.of(fuelPrint, crxPrint)));
             exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(outputStream));
 
             SimpleXlsxReportConfiguration config = new SimpleXlsxReportConfiguration();
@@ -117,20 +168,22 @@ public class ReportService {
             config.setSheetNames(new String[]{"FM XLS Download", "CRx XLS Download"});
             exporter.setConfiguration(config);
 
-            try {
-                exporter.exportReport(); // may throw JRException
+//            try {
+                exporter.exportReport();
                 outputStream.flush();
-                log.info("XLSX export completed successfully with two sheets.");
-            } catch (JRException e) {
-                log.error("JRException during XLSX export: {}", e.getMessage(), e);
-                throw new ServiceException("Failed exporting XLSX", e);
-            }
-        } catch (ServiceException e) {
-            throw e;
-        } catch (Exception e) {
-            log.error("Failed to generate XLSX report (unexpected): {}", e.getMessage(), e);
-            throw new ServiceException("Failed to generate XLSX report", e);
+                log.info("[{}] [xlsx] export -> end ({} ms)", rid, (System.currentTimeMillis() - tExp0));
+                log.info("[{}] [xlsx] success (total {} ms)", rid, (System.currentTimeMillis() - tStart));
+//            } catch (JRException e) {
+//                log.info("[{}] JRException during XLSX export: {}", rid, e.getMessage(), e);
+//                throw new ServiceException("Failed exporting XLSX", e);
+//            }
+        } catch (Throwable t) {
+            throw t;
         }
+//        } catch (Exception e) {
+//            log.info("[{}] Failed to generate XLSX report (unexpected): {}", rid, e.getMessage(), e);
+//            throw new ServiceException("Failed to generate XLSX report", e);
+//        }
     }
 
     public void writeCsvZipFromEntities(List<UUID> projectGuids, OutputStream zipOutStream) throws ServiceException {
@@ -171,7 +224,7 @@ public class ReportService {
             addToZip(zipOut, "cultural-prescribed-fire-projects.csv", crxCsvOut.toByteArray());
 
         } catch (Exception e) {
-            log.error("Failed to generate CSV report: {}", e.getMessage(), e);
+            log.info("Failed to generate CSV report: {}", e.getMessage(), e);
             throw new ServiceException("Failed to generate CSV report", e);
         }
     }
@@ -366,77 +419,89 @@ public class ReportService {
         }
     }
 
-    public JasperReport loadOrCompile(String jasperPath, String jrxmlPath) {
+
+    public JasperReport loadJasper(String jasperPath) throws IOException {
         ClassLoader cl = Thread.currentThread().getContextClassLoader();
+        log.info("isHeadless: " + GraphicsEnvironment.isHeadless());
+        log.info("PATH entries: {}", Arrays.toString(System.getenv("PATH").split(Pattern.quote(File.pathSeparator))));
+        log.info("java.library.path entries: {}", Arrays.toString(System.getProperty("java.library.path","").split(Pattern.quote(File.pathSeparator))));
+        log.info("java.class.path entries: {}", Arrays.toString(System.getProperty("java.class.path","").split(Pattern.quote(File.pathSeparator))));
 
         // Try precompiled .jasper
         try (InputStream in = cl.getResourceAsStream(jasperPath)) {
+            log.info("Trying to load precompiled Jasper report: {}", jasperPath);
             if (in != null) {
-                Object obj = JRLoader.loadObject(in); // may throw JRException
-                if (obj instanceof JasperReport jr) {
-                    log.debug("Loaded precompiled Jasper report: {}", jasperPath);
-                    return jr;
-                } else {
-                    log.warn("Object at {} is not a JasperReport: {}", jasperPath, obj);
+                try {
+                    log.info("Loading precompiled Jasper report: {}", jasperPath);
+//                    return (JasperReport) JRLoader.loadObjectFromFile("/" + jasperPath);
+                    Object obj = JRLoader.loadObject(in);
+                    if (obj instanceof JasperReport jr) {
+                        log.info("Loaded precompiled Jasper report: {}", jasperPath);
+                        return jr;
+                    } else {
+                        log.info("Object at {} is not a JasperReport: {}", jasperPath, obj.getClass().getName());
+                    }
+                } catch (Throwable t) {
+                    log.info("Precompiled load failed for {}. Cause: {}",
+                            jasperPath, t.toString(), t);
                 }
             } else {
-                log.debug("Precompiled report not found on classpath: {}", jasperPath);
+                log.info("Precompiled report not found on classpath: {}", jasperPath);
             }
-        } catch (JRException e) {
-            log.error("JRException while loading precompiled report {}: {}", jasperPath, e.getMessage(), e);
-            throw new RuntimeException("Failed loading precompiled report: " + jasperPath, e);
-        } catch (Exception e) {
-            log.warn("Unexpected error loading precompiled report {}: {}", jasperPath, e.getMessage(), e);
+        } catch (Throwable t) {
+            // Even resource open can throw in native images
+            log.info("Error opening {}. Cause: {}", jasperPath, t.toString(), t);
+            throw t;
         }
 
-        // Fall back to compiling .jrxml
-        try (InputStream in = cl.getResourceAsStream(jrxmlPath)) {
+
+        return null;
+    }
+
+//    private JasperReport loadPrecompiledOrThrow(String jasperPath) {
+//        ClassLoader cl = Thread.currentThread().getContextClassLoader();
+//        try (InputStream in = cl.getResourceAsStream(jasperPath)) {
+//            if (in == null) {
+//                throw new IllegalStateException("Precompiled .jasper not found on classpath: " + jasperPath);
+//            }
+//            Object obj = JRLoader.loadObject(in);
+//            if (!(obj instanceof JasperReport jr)) {
+//                throw new IllegalStateException("Resource is not a JasperReport: " + jasperPath);
+//            }
+//            log.info("Loaded precompiled Jasper report: {}", jasperPath);
+//            return jr;
+//        } catch (Exception e) {
+//            throw new RuntimeException("Failed loading precompiled report: " + jasperPath, e);
+//        }
+//    }
+
+
+    private JasperReport loadCompiled(String path, String rid) {
+        long t0 = System.currentTimeMillis();
+        try (InputStream in = getClass().getResourceAsStream(path)) {
             if (in == null) {
-                throw new IllegalStateException("JRXML not found on classpath: " + jrxmlPath);
+                log.info("[{}] [xlsx] MISSING template {}", rid, path);
+                throw new IllegalStateException("Template not found: " + path);
             }
-            JasperReport compiled = JasperCompileManager.compileReport(in); // throws JRException
-            log.debug("Compiled JRXML successfully: {}", jrxmlPath);
-            return compiled;
-        } catch (JRException e) {
-            log.error("JRException compiling JRXML {}: {}", jrxmlPath, e.getMessage(), e);
-            throw new RuntimeException("Failed to compile JRXML: " + jrxmlPath, e);
+            byte[] buf = in.readAllBytes();
+            int size = buf.length;
+            log.info("[{}] [xlsx] template {} read ({} bytes)", rid, path, size);
+
+            Object o = net.sf.jasperreports.engine.util.JRLoader
+                    .loadObject(new java.io.ByteArrayInputStream(buf));
+            if (!(o instanceof net.sf.jasperreports.engine.JasperReport jr)) {
+                throw new IllegalStateException("Not a JasperReport: " + path + " (" + o.getClass().getName() + ")");
+            }
+
+            log.info("[{}] [xlsx] template {} loaded ({} bytes, {} ms)",
+                    rid, path, size, System.currentTimeMillis() - t0);
+            return jr;
         } catch (Exception e) {
-            log.error("Unexpected error compiling JRXML {}: {}", jrxmlPath, e.getMessage(), e);
-            throw new RuntimeException("Failed to initialize Jasper report: " + jrxmlPath, e);
+            log.info("[{}] [xlsx] failed loading {}", rid, path, e);
+            throw new RuntimeException(e);
         }
     }
 
 
-    private JasperReport getFuelReport() {
-        JasperReport report = fuelReport;
-        if (report == null) {
-            synchronized (this) {
-                report = fuelReport;
-                if (report == null) {
-                    fuelReport = report = loadOrCompile(
-                            "jasper-template/WFPREV_FUEL_MANAGEMENT_JASPER.jasper",
-                            "jasper-template/WFPREV_FUEL_MANAGEMENT_JASPER.jrxml"
-                    );
-                }
-            }
-        }
-        return report;
-    }
-
-    private JasperReport getCrxReport() {
-        JasperReport report = crxReport;
-        if (report == null) {
-            synchronized (this) {
-                report = crxReport;
-                if (report == null) {
-                    crxReport = report = loadOrCompile(
-                            "jasper-template/WFPREV_CULTURE_PRESCRIBED_FIRE_JASPER.jasper",
-                            "jasper-template/WFPREV_CULTURE_PRESCRIBED_FIRE_JASPER.jrxml"
-                    );
-                }
-            }
-        }
-        return report;
-    }
 
 }

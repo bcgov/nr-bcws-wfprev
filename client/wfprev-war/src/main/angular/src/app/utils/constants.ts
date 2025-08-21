@@ -187,11 +187,11 @@ export const EvaluationCriteriaSectionCodes = {
 };
 
 export const DownloadTypes = {
-  EXCEL: 'excel',
-  CSV: 'csv',
+  EXCEL: 'xlsx',
+  CSV: 'csv'
 };
 
 export const DownloadFileExtensions = {
   EXCEL: 'xlsx',
-  CSV: 'csv',
+  CSV: 'zip',
 };

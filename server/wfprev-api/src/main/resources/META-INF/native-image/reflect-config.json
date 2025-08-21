@@ -1,13 +1,5 @@
 [
 {
-  "name":"WFPREV_CULTURE_PRESCRIBED_FIRE_JASPER_b76802c82675afffc05b59a0779102ed49ff2cf3e59d12107625f82b1ebc82c1",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"WFPREV_FUEL_MANAGAMENT_JASPER_04bf583052fc3d656b792832003b313a3c94778a36f07734ec64d62d1f869beb",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
   "name":"[B"
 },
 {
@@ -44,37 +36,13 @@
   "name":"[Lcom.fasterxml.jackson.databind.ser.Serializers;"
 },
 {
-  "name":"[Ljava.io.File;"
-},
-{
-  "name":"[Ljava.lang.Boolean;"
-},
-{
-  "name":"[Ljava.lang.Byte;"
-},
-{
-  "name":"[Ljava.lang.Character;"
-},
-{
   "name":"[Ljava.lang.Class;"
-},
-{
-  "name":"[Ljava.lang.Double;"
-},
-{
-  "name":"[Ljava.lang.Float;"
 },
 {
   "name":"[Ljava.lang.Integer;"
 },
 {
-  "name":"[Ljava.lang.Long;"
-},
-{
   "name":"[Ljava.lang.Object;"
-},
-{
-  "name":"[Ljava.lang.Short;"
 },
 {
   "name":"[Ljava.lang.String;"
@@ -83,40 +51,10 @@
   "name":"[Ljava.lang.annotation.Annotation;"
 },
 {
-  "name":"[Ljava.math.BigDecimal;"
-},
-{
-  "name":"[Ljava.math.BigInteger;"
-},
-{
-  "name":"[Ljava.net.URL;"
-},
-{
-  "name":"[Ljava.sql.Date;"
-},
-{
   "name":"[Ljava.sql.Statement;"
 },
 {
-  "name":"[Ljava.sql.Time;"
-},
-{
-  "name":"[Ljava.sql.Timestamp;"
-},
-{
-  "name":"[Ljava.util.Calendar;"
-},
-{
-  "name":"[Ljava.util.Date;"
-},
-{
-  "name":"[Ljava.util.List;"
-},
-{
   "name":"[Ljava.util.UUID;"
-},
-{
-  "name":"[Ljava.util.function.Supplier;"
 },
 {
   "name":"[Ljavax.management.openmbean.CompositeData;"
@@ -194,22 +132,13 @@
   "name":"[Lorg.hibernate.jpa.event.spi.Callback;"
 },
 {
-  "name":"[Lorg.hibernate.query.sqm.sql.FromClauseIndex;"
-},
-{
   "name":"[Lorg.hibernate.sql.ast.Clause;"
-},
-{
-  "name":"[Lorg.hibernate.sql.ast.spi.SqlAstProcessingState;"
 },
 {
   "name":"[Lorg.hibernate.sql.ast.tree.Statement;"
 },
 {
   "name":"[Lorg.hibernate.sql.ast.tree.select.QueryPart;"
-},
-{
-  "name":"[Lorg.hibernate.sql.results.jdbc.spi.JdbcValuesSourceProcessingState;"
 },
 {
   "name":"[Lorg.springframework.boot.actuate.autoconfigure.endpoint.expose.EndpointExposure;"
@@ -230,9 +159,6 @@
 },
 {
   "name":"[Lorg.springframework.web.bind.annotation.RequestMethod;"
-},
-{
-  "name":"[Lsun.security.pkcs.SignerInfo;"
 },
 {
   "name":"[S"
@@ -275,11 +201,7 @@
   "name":"ca.bc.gov.nrs.wfone.common.webade.oauth2.token.client.resource.AccessToken"
 },
 {
-  "name":"ca.bc.gov.nrs.wfone.common.webade.oauth2.token.client.resource.CheckedToken",
-  "allDeclaredFields":true,
-  "queryAllDeclaredMethods":true,
-  "queryAllDeclaredConstructors":true,
-  "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"getAud","parameterTypes":[] }, {"name":"getAuthorities","parameterTypes":[] }, {"name":"getBusinessGuid","parameterTypes":[] }, {"name":"getBusinessNumber","parameterTypes":[] }, {"name":"getCid","parameterTypes":[] }, {"name":"getClientAppCode","parameterTypes":[] }, {"name":"getClientId","parameterTypes":[] }, {"name":"getEmail","parameterTypes":[] }, {"name":"getExp","parameterTypes":[] }, {"name":"getFamilyName","parameterTypes":[] }, {"name":"getGivenName","parameterTypes":[] }, {"name":"getGrantType","parameterTypes":[] }, {"name":"getIat","parameterTypes":[] }, {"name":"getIss","parameterTypes":[] }, {"name":"getJti","parameterTypes":[] }, {"name":"getOnBehalfOfOrganizationAdditionalInfo","parameterTypes":[] }, {"name":"getOnBehalfOfOrganizationCode","parameterTypes":[] }, {"name":"getOnBehalfOfOrganizationId","parameterTypes":[] }, {"name":"getOnBehalfOfOrganizationName","parameterTypes":[] }, {"name":"getResourceIds","parameterTypes":[] }, {"name":"getScope","parameterTypes":[] }, {"name":"getSub","parameterTypes":[] }, {"name":"getUserGuid","parameterTypes":[] }, {"name":"getUserId","parameterTypes":[] }, {"name":"getUserName","parameterTypes":[] }, {"name":"getUserType","parameterTypes":[] }, {"name":"setAud","parameterTypes":["java.lang.String[]"] }, {"name":"setAuthorities","parameterTypes":["java.lang.String[]"] }, {"name":"setCid","parameterTypes":["java.lang.String"] }, {"name":"setClientAppCode","parameterTypes":["java.lang.String"] }, {"name":"setClientId","parameterTypes":["java.lang.String"] }, {"name":"setExp","parameterTypes":["java.lang.Long"] }, {"name":"setGrantType","parameterTypes":["java.lang.String"] }, {"name":"setIat","parameterTypes":["java.lang.Long"] }, {"name":"setIss","parameterTypes":["java.lang.String"] }, {"name":"setJti","parameterTypes":["java.lang.String"] }, {"name":"setScope","parameterTypes":["java.lang.String[]"] }, {"name":"setSub","parameterTypes":["java.lang.String"] }, {"name":"setUserGuid","parameterTypes":["java.lang.String"] }, {"name":"setUserId","parameterTypes":["java.lang.String"] }, {"name":"setUserName","parameterTypes":["java.lang.String"] }, {"name":"setUserType","parameterTypes":["java.lang.String"] }]
+  "name":"ca.bc.gov.nrs.wfone.common.webade.oauth2.token.client.resource.CheckedToken"
 },
 {
   "name":"ca.bc.gov.nrs.wfprev.SecurityConfig",
@@ -519,7 +441,7 @@
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
   "queryAllDeclaredConstructors":true,
-  "methods":[{"name":"<init>","parameterTypes":["ca.bc.gov.nrs.wfprev.services.ReportService"] }, {"name":"generateReport","parameterTypes":["ca.bc.gov.nrs.wfprev.data.models.ReportRequestModel"] }]
+  "methods":[{"name":"<init>","parameterTypes":["ca.bc.gov.nrs.wfprev.services.ReportService"] }]
 },
 {
   "name":"ca.bc.gov.nrs.wfprev.data.assemblers.ActivityBoundaryResourceAssembler",
@@ -881,13 +803,7 @@
   "queryAllDeclaredMethods":true,
   "queryAllPublicMethods":true,
   "queryAllDeclaredConstructors":true,
-  "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"equals","parameterTypes":["java.lang.Object"] }, {"name":"getActivityCategoryDescription","parameterTypes":[] }, {"name":"getApprovedTimestamp","parameterTypes":[] }, {"name":"getBcParksRegionOrgUnitName","parameterTypes":[] }, {"name":"getBcParksSectionOrgUnitName","parameterTypes":[] }, {"name":"getBdfFilterSectionComment","parameterTypes":[] }, {"name":"getBusinessArea","parameterTypes":[] }, {"name":"getCfsProjectCode","parameterTypes":[] }, {"name":"getClosestCommunityName","parameterTypes":[] }, {"name":"getCollimpFilterSectionComment","parameterTypes":[] }, {"name":"getEndorsementTimestamp","parameterTypes":[] }, {"name":"getFireCentreOrgUnitName","parameterTypes":[] }, {"name":"getFirstNationsDelivPartners","parameterTypes":[] }, {"name":"getFirstNationsEngagement","parameterTypes":[] }, {"name":"getFirstNationsPartner","parameterTypes":[] }, {"name":"getFiscalActualAmount","parameterTypes":[] }, {"name":"getFiscalAncillaryFundAmount","parameterTypes":[] }, {"name":"getFiscalCompletedSizeHa","parameterTypes":[] }, {"name":"getFiscalPlannedProjectSizeHa","parameterTypes":[] }, {"name":"getFiscalReportedSpendAmount","parameterTypes":[] }, {"name":"getFiscalYear","parameterTypes":[] }, {"name":"getForestDistrictOrgUnitName","parameterTypes":[] }, {"name":"getForestRegionOrgUnitName","parameterTypes":[] }, {"name":"getGrossProjectAreaHa","parameterTypes":[] }, {"name":"getLinkToFiscalActivity","parameterTypes":[] }, {"name":"getLinkToProject","parameterTypes":[] }, {"name":"getLocalWuiRiskClassDescription","parameterTypes":[] }, {"name":"getOtherPartner","parameterTypes":[] }, {"name":"getOutsideWuiInd","parameterTypes":[] }, {"name":"getPlanFiscalStatusDescription","parameterTypes":[] }, {"name":"getPlanningUnitName","parameterTypes":[] }, {"name":"getPrimaryObjectiveTypeDescription","parameterTypes":[] }, {"name":"getProjectFiscalDescription","parameterTypes":[] }, {"name":"getProjectFiscalName","parameterTypes":[] }, {"name":"getProjectLead","parameterTypes":[] }, {"name":"getProjectName","parameterTypes":[] }, {"name":"getProjectPlanFiscalGuid","parameterTypes":[] }, {"name":"getProjectTypeDescription","parameterTypes":[] }, {"name":"getProposalTypeDescription","parameterTypes":[] }, {"name":"getRclFilterSectionComment","parameterTypes":[] }, {"name":"getResultsOpeningId","parameterTypes":[] }, {"name":"getResultsProjectCode","parameterTypes":[] }, {"name":"getSecondaryObjectiveTypeDescription","parameterTypes":[] }, {"name":"getSpatialSubmitted","parameterTypes":[] }, {"name":"getTotalBdfFilterSectionScore","parameterTypes":[] }, {"name":"getTotalCollimpFilterSectionScore","parameterTypes":[] }, {"name":"getTotalEstimatedCostAmount","parameterTypes":[] }, {"name":"getTotalFilterSectionScore","parameterTypes":[] }, {"name":"getTotalRclFilterSectionScore","parameterTypes":[] }, {"name":"getWuiRiskClassDescription","parameterTypes":[] }, {"name":"setProjectPlanFiscalGuid","parameterTypes":["java.util.UUID"] }]
-},
-{
-  "name":"ca.bc.gov.nrs.wfprev.data.entities.CulturalPrescribedFireReportEntityBeanInfo"
-},
-{
-  "name":"ca.bc.gov.nrs.wfprev.data.entities.CulturalPrescribedFireReportEntityCustomizer"
+  "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"equals","parameterTypes":["java.lang.Object"] }, {"name":"getProjectPlanFiscalGuid","parameterTypes":[] }, {"name":"setProjectPlanFiscalGuid","parameterTypes":["java.util.UUID"] }]
 },
 {
   "name":"ca.bc.gov.nrs.wfprev.data.entities.CulturalPrescribedFireReportEntity_"
@@ -997,13 +913,7 @@
   "queryAllDeclaredMethods":true,
   "queryAllPublicMethods":true,
   "queryAllDeclaredConstructors":true,
-  "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"equals","parameterTypes":["java.lang.Object"] }, {"name":"getActivityCategoryDescription","parameterTypes":[] }, {"name":"getApprovedTimestamp","parameterTypes":[] }, {"name":"getBcParksRegionOrgUnitName","parameterTypes":[] }, {"name":"getBcParksSectionOrgUnitName","parameterTypes":[] }, {"name":"getBusinessArea","parameterTypes":[] }, {"name":"getCfsProjectCode","parameterTypes":[] }, {"name":"getClosestCommunityName","parameterTypes":[] }, {"name":"getEndorsementTimestamp","parameterTypes":[] }, {"name":"getFineFilterSectionComment","parameterTypes":[] }, {"name":"getFireCentreOrgUnitName","parameterTypes":[] }, {"name":"getFirstNationsDelivPartners","parameterTypes":[] }, {"name":"getFirstNationsEngagement","parameterTypes":[] }, {"name":"getFirstNationsPartner","parameterTypes":[] }, {"name":"getFiscalActualAmount","parameterTypes":[] }, {"name":"getFiscalAncillaryFundAmount","parameterTypes":[] }, {"name":"getFiscalCompletedSizeHa","parameterTypes":[] }, {"name":"getFiscalPlannedProjectSizeHa","parameterTypes":[] }, {"name":"getFiscalReportedSpendAmount","parameterTypes":[] }, {"name":"getFiscalYear","parameterTypes":[] }, {"name":"getForestDistrictOrgUnitName","parameterTypes":[] }, {"name":"getForestRegionOrgUnitName","parameterTypes":[] }, {"name":"getGrossProjectAreaHa","parameterTypes":[] }, {"name":"getLinkToFiscalActivity","parameterTypes":[] }, {"name":"getLinkToProject","parameterTypes":[] }, {"name":"getLocalWuiRiskClassDescription","parameterTypes":[] }, {"name":"getLocalWuiRiskClassRationale","parameterTypes":[] }, {"name":"getMediumFilterSectionComment","parameterTypes":[] }, {"name":"getOtherPartner","parameterTypes":[] }, {"name":"getPlanFiscalStatusDescription","parameterTypes":[] }, {"name":"getPlanningUnitName","parameterTypes":[] }, {"name":"getPrimaryObjectiveTypeDescription","parameterTypes":[] }, {"name":"getProjectFiscalDescription","parameterTypes":[] }, {"name":"getProjectFiscalName","parameterTypes":[] }, {"name":"getProjectLead","parameterTypes":[] }, {"name":"getProjectName","parameterTypes":[] }, {"name":"getProjectPlanFiscalGuid","parameterTypes":[] }, {"name":"getProjectTypeDescription","parameterTypes":[] }, {"name":"getProposalTypeDescription","parameterTypes":[] }, {"name":"getResultsOpeningId","parameterTypes":[] }, {"name":"getResultsProjectCode","parameterTypes":[] }, {"name":"getSecondaryObjectiveTypeDescription","parameterTypes":[] }, {"name":"getSpatialSubmitted","parameterTypes":[] }, {"name":"getTotalCoarseFilterSectionScore","parameterTypes":[] }, {"name":"getTotalEstimatedCostAmount","parameterTypes":[] }, {"name":"getTotalFilterSectionScore","parameterTypes":[] }, {"name":"getTotalFineFilterSectionScore","parameterTypes":[] }, {"name":"getTotalMediumFilterSectionScore","parameterTypes":[] }, {"name":"getWuiRiskClassDescription","parameterTypes":[] }, {"name":"setProjectPlanFiscalGuid","parameterTypes":["java.util.UUID"] }]
-},
-{
-  "name":"ca.bc.gov.nrs.wfprev.data.entities.FuelManagementReportEntityBeanInfo"
-},
-{
-  "name":"ca.bc.gov.nrs.wfprev.data.entities.FuelManagementReportEntityCustomizer"
+  "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"equals","parameterTypes":["java.lang.Object"] }, {"name":"getProjectPlanFiscalGuid","parameterTypes":[] }, {"name":"setProjectPlanFiscalGuid","parameterTypes":["java.util.UUID"] }]
 },
 {
   "name":"ca.bc.gov.nrs.wfprev.data.entities.FuelManagementReportEntity_"
@@ -1322,11 +1232,7 @@
   "name":"ca.bc.gov.nrs.wfprev.data.models.ProposalTypeCodeModel"
 },
 {
-  "name":"ca.bc.gov.nrs.wfprev.data.models.ReportRequestModel",
-  "allDeclaredFields":true,
-  "queryAllDeclaredMethods":true,
-  "queryAllDeclaredConstructors":true,
-  "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"setProjectGuids","parameterTypes":["java.util.List"] }, {"name":"setReportType","parameterTypes":["java.lang.String"] }]
+  "name":"ca.bc.gov.nrs.wfprev.data.models.ReportRequestModel"
 },
 {
   "name":"ca.bc.gov.nrs.wfprev.data.models.RiskRatingCodeModel"
@@ -1657,12 +1563,7 @@
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
   "queryAllDeclaredConstructors":true,
-  "methods":[{"name":"<init>","parameterTypes":["ca.bc.gov.nrs.wfprev.data.repositories.FuelManagementReportRepository","ca.bc.gov.nrs.wfprev.data.repositories.CulturalPrescribedFireReportRepository","ca.bc.gov.nrs.wfprev.data.repositories.ProjectRepository","ca.bc.gov.nrs.wfprev.data.repositories.ProgramAreaRepository"] }, {"name":"exportXlsx","parameterTypes":["java.util.List","java.io.OutputStream","java.lang.String"] }]
-},
-{
-  "name":"ca.bc.gov.nrs.wfprev.services.ReportService$$SpringCGLIB$$0",
-  "fields":[{"name":"CGLIB$CALLBACK_FILTER"}, {"name":"CGLIB$FACTORY_DATA"}],
-  "methods":[{"name":"CGLIB$SET_THREAD_CALLBACKS","parameterTypes":["org.springframework.cglib.proxy.Callback[]"] }]
+  "methods":[{"name":"<init>","parameterTypes":["ca.bc.gov.nrs.wfprev.data.repositories.FuelManagementReportRepository","ca.bc.gov.nrs.wfprev.data.repositories.CulturalPrescribedFireReportRepository","ca.bc.gov.nrs.wfprev.data.repositories.ProjectRepository","ca.bc.gov.nrs.wfprev.data.repositories.ProgramAreaRepository"] }]
 },
 {
   "name":"ch.qos.logback.classic.BasicConfigurator",
@@ -1819,7 +1720,7 @@
   "name":"com.fasterxml.jackson.core.ObjectCodec",
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
-  "methods":[{"name":"getJsonFactory","parameterTypes":[] }, {"name":"readValues","parameterTypes":["com.fasterxml.jackson.core.JsonParser","com.fasterxml.jackson.core.type.ResolvedType"] }, {"name":"readValues","parameterTypes":["com.fasterxml.jackson.core.JsonParser","com.fasterxml.jackson.core.type.TypeReference"] }, {"name":"readValues","parameterTypes":["com.fasterxml.jackson.core.JsonParser","java.lang.Class"] }]
+  "methods":[{"name":"getJsonFactory","parameterTypes":[] }, {"name":"readValues","parameterTypes":["com.fasterxml.jackson.core.JsonParser","com.fasterxml.jackson.core.type.TypeReference"] }, {"name":"readValues","parameterTypes":["com.fasterxml.jackson.core.JsonParser","java.lang.Class"] }]
 },
 {
   "name":"com.fasterxml.jackson.core.PrettyPrinter"
@@ -2262,10 +2163,6 @@
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
-  "name":"com.sun.crypto.provider.DHParameters",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
   "name":"com.sun.crypto.provider.GaloisCounterMode$AESGCM",
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
@@ -2275,18 +2172,6 @@
 },
 {
   "name":"com.sun.crypto.provider.PBKDF2Core$HmacSHA256",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"com.sun.crypto.provider.TlsKeyMaterialGenerator",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"com.sun.crypto.provider.TlsMasterSecretGenerator",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"com.sun.crypto.provider.TlsPrfGenerator$V12",
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
@@ -2337,10 +2222,6 @@
 {
   "name":"com.sun.management.internal.OperatingSystemImpl",
   "queryAllPublicConstructors":true
-},
-{
-  "name":"com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
   "name":"com.unboundid.ldap.listener.InMemoryDirectoryServer"
@@ -3490,13 +3371,6 @@
   "name":"jakarta.xml.ws.WebServiceRef"
 },
 {
-  "name":"java.awt.Font",
-  "methods":[{"name":"textRequiresLayout","parameterTypes":["char[]","int","int"] }]
-},
-{
-  "name":"java.beans.PropertyVetoException"
-},
-{
   "name":"java.io.Closeable",
   "queryAllDeclaredMethods":true,
   "queryAllPublicMethods":true
@@ -3655,15 +3529,8 @@
   "allDeclaredFields":true,
   "allDeclaredClasses":true,
   "queryAllDeclaredMethods":true,
-  "queryAllPublicMethods":true,
   "queryAllDeclaredConstructors":true,
   "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"equals","parameterTypes":["java.lang.Object"] }, {"name":"hashCode","parameterTypes":[] }, {"name":"toString","parameterTypes":[] }]
-},
-{
-  "name":"java.lang.ObjectBeanInfo"
-},
-{
-  "name":"java.lang.ObjectCustomizer"
 },
 {
   "name":"java.lang.Package"
@@ -3732,8 +3599,7 @@
 },
 {
   "name":"java.lang.Throwable",
-  "allDeclaredFields":true,
-  "methods":[{"name":"initCause","parameterTypes":["java.lang.Throwable"] }]
+  "allDeclaredFields":true
 },
 {
   "name":"java.lang.Void",
@@ -4004,12 +3870,6 @@
   "name":"java.security.SecurityPermission"
 },
 {
-  "name":"java.security.interfaces.RSAPrivateKey"
-},
-{
-  "name":"java.security.interfaces.RSAPublicKey"
-},
-{
   "name":"java.sql.CallableStatement"
 },
 {
@@ -4180,8 +4040,7 @@
   "name":"java.util.concurrent.BlockingQueue"
 },
 {
-  "name":"java.util.concurrent.Callable",
-  "methods":[{"name":"call","parameterTypes":[] }]
+  "name":"java.util.concurrent.Callable"
 },
 {
   "name":"java.util.concurrent.CompletableFuture"
@@ -4652,112 +4511,10 @@
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
-  "name":"net.sf.jasperreports.components.ComponentsExtensionsRegistryFactory",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
   "name":"net.sf.jasperreports.engine.JRException"
 },
 {
   "name":"net.sf.jasperreports.engine.JasperReport"
-},
-{
-  "name":"net.sf.jasperreports.engine.design.JRJavacCompiler",
-  "methods":[{"name":"<init>","parameterTypes":["net.sf.jasperreports.engine.JasperReportsContext"] }]
-},
-{
-  "name":"net.sf.jasperreports.engine.export.DefaultExporterFilterFactory",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"net.sf.jasperreports.engine.export.ElementKeyExporterFilterFactory",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"net.sf.jasperreports.engine.export.ElementPropertyExporterFilterFactory",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"net.sf.jasperreports.engine.export.JROriginExporterFilterFactory",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"net.sf.jasperreports.engine.export.MatcherExportFilterMappingExtensionsRegistryFactory",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"net.sf.jasperreports.engine.export.MatcherExporterFilterFactory",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"net.sf.jasperreports.engine.export.type.ImageAnchorTypeEnum",
-  "methods":[{"name":"getByName","parameterTypes":["java.lang.String"] }]
-},
-{
-  "name":"net.sf.jasperreports.engine.fill.JREvaluator"
-},
-{
-  "name":"net.sf.jasperreports.engine.fill.JRFillField"
-},
-{
-  "name":"net.sf.jasperreports.engine.fill.TextMeasurerFactory",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"net.sf.jasperreports.engine.fonts.SimpleFontExtensionsRegistryFactory",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"net.sf.jasperreports.engine.query.SQLQueryClauseFunctionsExtensions",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"net.sf.jasperreports.engine.style.PropertyStyleProviderExtensionFactory",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"net.sf.jasperreports.export.ReportExportConfiguration",
-  "methods":[{"name":"getEndPageIndex","parameterTypes":[] }, {"name":"getExporterFilter","parameterTypes":[] }, {"name":"getHyperlinkProducerFactory","parameterTypes":[] }, {"name":"getOffsetX","parameterTypes":[] }, {"name":"getOffsetY","parameterTypes":[] }, {"name":"getPageIndex","parameterTypes":[] }, {"name":"getProgressMonitor","parameterTypes":[] }, {"name":"getStartPageIndex","parameterTypes":[] }]
-},
-{
-  "name":"net.sf.jasperreports.export.XlsExporterConfiguration",
-  "methods":[{"name":"getEncryptionPassword","parameterTypes":[] }, {"name":"getMetadataApplication","parameterTypes":[] }, {"name":"getMetadataAuthor","parameterTypes":[] }, {"name":"getMetadataKeywords","parameterTypes":[] }, {"name":"getMetadataSubject","parameterTypes":[] }, {"name":"getMetadataTitle","parameterTypes":[] }]
-},
-{
-  "name":"net.sf.jasperreports.export.XlsReportConfiguration",
-  "methods":[{"name":"getColumnWidthRatio","parameterTypes":[] }, {"name":"getDefinedNames","parameterTypes":[] }, {"name":"getFirstPageNumber","parameterTypes":[] }, {"name":"getFitHeight","parameterTypes":[] }, {"name":"getFitWidth","parameterTypes":[] }, {"name":"getFormatPatternsMap","parameterTypes":[] }, {"name":"getFreezeColumn","parameterTypes":[] }, {"name":"getFreezeRow","parameterTypes":[] }, {"name":"getImageAnchorType","parameterTypes":[] }, {"name":"getMaxRowsPerSheet","parameterTypes":[] }, {"name":"getPageScale","parameterTypes":[] }, {"name":"getPassword","parameterTypes":[] }, {"name":"getPrintFooterMargin","parameterTypes":[] }, {"name":"getPrintHeaderMargin","parameterTypes":[] }, {"name":"getPrintPageBottomMargin","parameterTypes":[] }, {"name":"getPrintPageHeight","parameterTypes":[] }, {"name":"getPrintPageLeftMargin","parameterTypes":[] }, {"name":"getPrintPageRightMargin","parameterTypes":[] }, {"name":"getPrintPageTopMargin","parameterTypes":[] }, {"name":"getPrintPageWidth","parameterTypes":[] }, {"name":"getSheetFooterCenter","parameterTypes":[] }, {"name":"getSheetFooterLeft","parameterTypes":[] }, {"name":"getSheetFooterRight","parameterTypes":[] }, {"name":"getSheetHeaderCenter","parameterTypes":[] }, {"name":"getSheetHeaderLeft","parameterTypes":[] }, {"name":"getSheetHeaderRight","parameterTypes":[] }, {"name":"getSheetNames","parameterTypes":[] }, {"name":"getSheetTabColor","parameterTypes":[] }, {"name":"getSingleSheetName","parameterTypes":[] }, {"name":"isAutoFitPageHeight","parameterTypes":[] }, {"name":"isAutoFitRow","parameterTypes":[] }, {"name":"isCellHidden","parameterTypes":[] }, {"name":"isCellLocked","parameterTypes":[] }, {"name":"isCollapseRowSpan","parameterTypes":[] }, {"name":"isDetectCellType","parameterTypes":[] }, {"name":"isFontSizeFixEnabled","parameterTypes":[] }, {"name":"isForcePageBreaks","parameterTypes":[] }, {"name":"isIgnoreAnchors","parameterTypes":[] }, {"name":"isIgnoreCellBackground","parameterTypes":[] }, {"name":"isIgnoreCellBorder","parameterTypes":[] }, {"name":"isIgnoreGraphics","parameterTypes":[] }, {"name":"isIgnoreHyperlink","parameterTypes":[] }, {"name":"isIgnorePageMargins","parameterTypes":[] }, {"name":"isIgnoreTextFormatting","parameterTypes":[] }, {"name":"isImageBorderFixEnabled","parameterTypes":[] }, {"name":"isOnePagePerSheet","parameterTypes":[] }, {"name":"isRemoveEmptySpaceBetweenColumns","parameterTypes":[] }, {"name":"isRemoveEmptySpaceBetweenRows","parameterTypes":[] }, {"name":"isShowGridLines","parameterTypes":[] }, {"name":"isShrinkToFit","parameterTypes":[] }, {"name":"isUseTimeZone","parameterTypes":[] }, {"name":"isWhitePageBackground","parameterTypes":[] }, {"name":"isWrapText","parameterTypes":[] }]
-},
-{
-  "name":"net.sf.jasperreports.export.XlsxExporterConfiguration",
-  "methods":[{"name":"getMacroTemplate","parameterTypes":[] }]
-},
-{
-  "name":"net.sf.jasperreports.extensions.DefaultExtensionsRegistry",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"net.sf.jasperreports.extensions.DefaultExtensionsRegistryFactory",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"net.sf.jasperreports.governors.GovernorExtensionsRegistryFactory",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"net.sf.jasperreports.parts.PartComponentsExtensionsRegistryFactory",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"net.sf.jasperreports.repo.DefaultRepositoryExtensionsRegistryFactory",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"net.sf.jasperreports.types.date.DateRangeQueryClauseExtensions",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"net.sf.jasperreports.web.util.ContentTypeMappingExtensionsRegistryFactory",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
   "name":"oracle.jdbc.OracleConnection"
@@ -6200,36 +5957,6 @@
 },
 {
   "name":"org.hibernate.sql.ast.tree.SqlAstTreeLogger_$logger_en_US"
-},
-{
-  "name":"org.hibernate.sql.exec.SqlExecLogger_$logger",
-  "methods":[{"name":"<init>","parameterTypes":["org.jboss.logging.Logger"] }]
-},
-{
-  "name":"org.hibernate.sql.exec.SqlExecLogger_$logger_en"
-},
-{
-  "name":"org.hibernate.sql.exec.SqlExecLogger_$logger_en_US"
-},
-{
-  "name":"org.hibernate.sql.results.LoadingLogger_$logger",
-  "methods":[{"name":"<init>","parameterTypes":["org.jboss.logging.Logger"] }]
-},
-{
-  "name":"org.hibernate.sql.results.LoadingLogger_$logger_en"
-},
-{
-  "name":"org.hibernate.sql.results.LoadingLogger_$logger_en_US"
-},
-{
-  "name":"org.hibernate.sql.results.ResultsLogger_$logger",
-  "methods":[{"name":"<init>","parameterTypes":["org.jboss.logging.Logger"] }]
-},
-{
-  "name":"org.hibernate.sql.results.ResultsLogger_$logger_en"
-},
-{
-  "name":"org.hibernate.sql.results.ResultsLogger_$logger_en_US"
 },
 {
   "name":"org.hibernate.sql.results.jdbc.internal.JdbcValuesMappingProducerProviderStandard",
@@ -12007,8 +11734,7 @@
 },
 {
   "name":"org.springframework.data.jpa.repository.support.CrudMethodMetadata",
-  "queryAllDeclaredMethods":true,
-  "methods":[{"name":"getComment","parameterTypes":[] }, {"name":"getEntityGraph","parameterTypes":[] }, {"name":"getLockModeType","parameterTypes":[] }, {"name":"getQueryHints","parameterTypes":[] }]
+  "queryAllDeclaredMethods":true
 },
 {
   "name":"org.springframework.data.jpa.repository.support.DefaultJpaContext",
@@ -12034,15 +11760,10 @@
   "methods":[{"name":"<init>","parameterTypes":["java.lang.Class"] }, {"name":"afterPropertiesSet","parameterTypes":[] }, {"name":"setEntityManager","parameterTypes":["jakarta.persistence.EntityManager"] }, {"name":"setEntityPathResolver","parameterTypes":["org.springframework.beans.factory.ObjectProvider"] }, {"name":"setEscapeCharacter","parameterTypes":["char"] }, {"name":"setMappingContext","parameterTypes":["org.springframework.data.mapping.context.MappingContext"] }, {"name":"setQueryMethodFactory","parameterTypes":["org.springframework.data.jpa.repository.query.JpaQueryMethodFactory"] }]
 },
 {
-  "name":"org.springframework.data.jpa.repository.support.JpaRepositoryImplementation",
-  "queryAllPublicMethods":true
-},
-{
   "name":"org.springframework.data.jpa.repository.support.SimpleJpaRepository",
-  "queryAllDeclaredMethods":true,
   "queryAllPublicMethods":true,
   "queryAllDeclaredConstructors":true,
-  "methods":[{"name":"<init>","parameterTypes":["org.springframework.data.jpa.repository.support.JpaEntityInformation","jakarta.persistence.EntityManager"] }, {"name":"findById","parameterTypes":["java.lang.Object"] }, {"name":"findByProjectGuidIn","parameterTypes":["java.util.List"] }, {"name":"findByProjectPlanFiscalGuidIn","parameterTypes":["java.util.List"] }]
+  "methods":[{"name":"<init>","parameterTypes":["org.springframework.data.jpa.repository.support.JpaEntityInformation","jakarta.persistence.EntityManager"] }]
 },
 {
   "name":"org.springframework.data.jpa.util.HibernateProxyDetector",
@@ -12093,7 +11814,7 @@
   "name":"org.springframework.data.mapping.context.MappingContext",
   "queryAllDeclaredMethods":true,
   "queryAllPublicMethods":true,
-  "methods":[{"name":"<init>","parameterTypes":["org.springframework.data.jpa.mapping.JpaMetamodelMappingContext"] }, {"name":"from","parameterTypes":["org.springframework.data.jpa.mapping.JpaMetamodelMappingContext"] }, {"name":"getPersistentEntity","parameterTypes":["java.lang.Class"] }, {"name":"getPersistentEntity","parameterTypes":["org.springframework.data.util.TypeInformation"] }, {"name":"getRequiredPersistentEntity","parameterTypes":["java.lang.Class"] }, {"name":"getRequiredPersistentEntity","parameterTypes":["org.springframework.data.mapping.PersistentProperty"] }, {"name":"getRequiredPersistentEntity","parameterTypes":["org.springframework.data.util.TypeInformation"] }, {"name":"of","parameterTypes":["org.springframework.data.jpa.mapping.JpaMetamodelMappingContext"] }, {"name":"valueOf","parameterTypes":["org.springframework.data.jpa.mapping.JpaMetamodelMappingContext"] }]
+  "methods":[{"name":"<init>","parameterTypes":["org.springframework.data.jpa.mapping.JpaMetamodelMappingContext"] }, {"name":"from","parameterTypes":["org.springframework.data.jpa.mapping.JpaMetamodelMappingContext"] }, {"name":"getPersistentEntity","parameterTypes":["org.springframework.data.mapping.PersistentProperty"] }, {"name":"getPersistentEntity","parameterTypes":["org.springframework.data.util.TypeInformation"] }, {"name":"getRequiredPersistentEntity","parameterTypes":["java.lang.Class"] }, {"name":"getRequiredPersistentEntity","parameterTypes":["org.springframework.data.mapping.PersistentProperty"] }, {"name":"getRequiredPersistentEntity","parameterTypes":["org.springframework.data.util.TypeInformation"] }, {"name":"of","parameterTypes":["org.springframework.data.jpa.mapping.JpaMetamodelMappingContext"] }, {"name":"valueOf","parameterTypes":["org.springframework.data.jpa.mapping.JpaMetamodelMappingContext"] }]
 },
 {
   "name":"org.springframework.data.mapping.context.PersistentEntities",
@@ -13745,7 +13466,7 @@
   "name":"org.springframework.orm.jpa.EntityManagerFactoryInfo",
   "queryAllDeclaredMethods":true,
   "queryAllPublicMethods":true,
-  "methods":[{"name":"createNativeEntityManager","parameterTypes":["java.util.Map"] }, {"name":"getBeanClassLoader","parameterTypes":[] }, {"name":"getDataSource","parameterTypes":[] }, {"name":"getEntityManagerInterface","parameterTypes":[] }, {"name":"getJpaDialect","parameterTypes":[] }]
+  "methods":[{"name":"getBeanClassLoader","parameterTypes":[] }, {"name":"getDataSource","parameterTypes":[] }, {"name":"getEntityManagerInterface","parameterTypes":[] }, {"name":"getJpaDialect","parameterTypes":[] }]
 },
 {
   "name":"org.springframework.orm.jpa.EntityManagerProxy",
@@ -14754,9 +14475,6 @@
 {
   "name":"org.springframework.transaction.annotation.EnableTransactionManagement",
   "queryAllDeclaredMethods":true
-},
-{
-  "name":"org.springframework.transaction.annotation.Propagation"
 },
 {
   "name":"org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration",
@@ -15802,10 +15520,6 @@
   "name":"scala.util.Properties"
 },
 {
-  "name":"sun.java2d.marlin.DMarlinRenderingEngine",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
   "name":"sun.management.ClassLoadingImpl",
   "queryAllPublicConstructors":true
 },
@@ -15859,22 +15573,6 @@
   "methods":[{"name":"<init>","parameterTypes":["java.security.SecureRandomParameters"] }]
 },
 {
-  "name":"sun.security.provider.DSA$SHA224withDSA",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"sun.security.provider.DSA$SHA256withDSA",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"sun.security.provider.JavaKeyStore$DualFormatJKS",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"sun.security.provider.JavaKeyStore$JKS",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
   "name":"sun.security.provider.MD5",
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
@@ -15883,55 +15581,19 @@
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
-  "name":"sun.security.provider.SHA2$SHA224",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
   "name":"sun.security.provider.SHA2$SHA256",
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
-  "name":"sun.security.provider.SHA5$SHA384",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"sun.security.provider.SHA5$SHA512",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
+  "name":"sun.security.provider.SecureRandom",
+  "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"<init>","parameterTypes":["java.security.SecureRandomParameters"] }]
 },
 {
   "name":"sun.security.provider.X509Factory",
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
-  "name":"sun.security.provider.certpath.PKIXCertPathValidator",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"sun.security.rsa.PSSParameters",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
   "name":"sun.security.rsa.RSAKeyFactory$Legacy",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"sun.security.rsa.RSAPSSSignature",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"sun.security.rsa.RSASignature$SHA224withRSA",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"sun.security.rsa.RSASignature$SHA256withRSA",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"sun.security.ssl.KeyManagerFactoryImpl$SunX509",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"sun.security.ssl.SSLContextImpl$DefaultSSLContext",
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
@@ -15941,9 +15603,6 @@
 {
   "name":"sun.security.ssl.TrustManagerFactoryImpl$PKIXFactory",
   "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"sun.security.util.ObjectIdentifier"
 },
 {
   "name":"sun.security.x509.AuthorityInfoAccessExtension",
@@ -15960,9 +15619,6 @@
 {
   "name":"sun.security.x509.CRLDistributionPointsExtension",
   "methods":[{"name":"<init>","parameterTypes":["java.lang.Boolean","java.lang.Object"] }]
-},
-{
-  "name":"sun.security.x509.CertificateExtensions"
 },
 {
   "name":"sun.security.x509.CertificatePoliciesExtension",
