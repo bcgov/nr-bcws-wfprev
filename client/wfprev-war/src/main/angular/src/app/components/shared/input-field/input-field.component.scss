@@ -1,6 +1,6 @@
 .input-field {
   .required {
-    color: #EF1616;
+    color: var(--wf-colour-error);
   }
 
   .form-item {
@@ -9,7 +9,7 @@
     min-width: 200px;
 
     .error {
-      color: red;
+      color: var(--wf-colour-error);
       font-size: 12px;
       margin: 4px 0 0 8px;
     }

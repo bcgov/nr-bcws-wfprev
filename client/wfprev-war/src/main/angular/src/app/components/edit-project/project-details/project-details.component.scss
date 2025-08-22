@@ -334,6 +334,7 @@
       border-top: 1px solid #C6C8CB;
       resize: vertical;
       padding: 6px;
+      padding-bottom: 16px;
       width: -webkit-fill-available;
     }
   }
@@ -450,6 +451,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding: 0 6px;
   margin-top: 4px;
   font-size: 14px;
 

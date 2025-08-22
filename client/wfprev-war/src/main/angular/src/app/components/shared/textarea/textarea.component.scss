@@ -23,11 +23,12 @@
     border-radius: 4px;
     resize: vertical;
     padding: 6px;
+    padding-bottom: 16px;
     &.over-limit {
-      border-color: #ef1616;
+      border-color: var(--wf-colour-error);
       &:focus {
         outline: none;
-        border-color: #ef1616;
+        border-color: var(--wf-colour-error);
       }
     }
   }
@@ -45,7 +46,7 @@
   }
   
   .error {
-    color: #ef1616;
+    color: var(--wf-colour-error);
     font-size: 14px;
     margin-top: 4px;
     &.invisible {
@@ -60,11 +61,11 @@
     text-align: right;
     font-weight: 400;
     &.over {
-      color: #ef1616;
+      color: var(--wf-colour-error);
     }
   }
 }
 
 .required {
-  color: #ef1616;
+  color: var(--wf-colour-error);
 }
