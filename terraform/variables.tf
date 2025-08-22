@@ -20,6 +20,11 @@ variable "SHORTENED_ENV" {
   type = string
 }
 
+variable "TFC_PROJECT" {
+  description = "License Plate number of project"
+  type = string
+}
+
 variable "WFPREV_API_CPU_UNITS" {
   description = "server CPU units to provision (1 vCPU = 1024 CPU units)"
   type        = number
