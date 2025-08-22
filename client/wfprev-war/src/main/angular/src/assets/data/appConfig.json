@@ -1,7 +1,7 @@
 {
     "application": {
       "baseUrl": "#{WFPREV_BASE_URL}#",
-      "environment": "#{TARGET_ENV}#",
+      "environment": "#{TARGET_ENV}#"
     },
   
     "webade": {
