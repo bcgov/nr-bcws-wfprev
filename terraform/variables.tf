@@ -359,3 +359,8 @@ variable "COMMAND" {
   type = string
   default = "update"
 }
+
+variable "TRAINING_AND_SUPPORT_LINK" {
+  type    = string
+  default = ""
+}
