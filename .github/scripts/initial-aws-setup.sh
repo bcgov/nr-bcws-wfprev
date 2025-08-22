@@ -635,6 +635,16 @@ EOF
     echo "  - Repository is mutable (tags can be overwritten)"
 }
 
+create_dynamodb_table () {
+    
+    if aws dynamodb describe-table --table-name "$1" --region "$2" &> /dev/null; then
+        print_warning "DynamoDB Table $1 already exists."
+    else
+        aws dynamodb create-table --table-name "$1" --region "$2" --attribute-definitions AttributeName=LockID,AttributeType=S --key-schema AttributeName=LockID,KeyType=HASH --billing-mode PAY_PER_REQUEST
+
+    fi
+}
+
 # Function to check if GitHub CLI is installed and authenticated
 check_github_cli() {
     if ! command -v gh &> /dev/null; then
@@ -829,6 +839,9 @@ main() {
     
     # Create ECR repository
     create_ecr_repository "$ECR_REPO_NAME" "$AWS_REGION"
+    echo
+
+    create_dynamodb_table "terraform-remote-state-lock-${AWS_LICENSE_PLATE}" "$AWS_REGION"
     echo
     
     # Handle GitHub secrets setup based on flag or interactive prompt
