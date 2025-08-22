@@ -15,6 +15,7 @@
     "rest": {
       "wfprev":"#{WFPREV_BASE_URL}#",
       "wfdm":"#{WFDM_BASE_URL}#",
-      "openmaps":"https://openmaps.gov.bc.ca"
+      "openmaps":"https://openmaps.gov.bc.ca",
+      "trainingAndSupportLink": "#{TRAINING_AND_SUPPORT_LINK}#"
     }
   }
