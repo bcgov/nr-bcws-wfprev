@@ -2,7 +2,7 @@
 module "s3_secure_bucket" {
   source = "git::https://github.com/bcgov/quickstart-aws-helpers.git//terraform/modules/s3-secure-bucket?ref=v0.0.5"
   
-  bucket_name = "wfprev-${var.SHORTENED_ENV}-site"
+  bucket_name = "wfprev-${var.TFC_PROJECT}-${var.SHORTENED_ENV}-site"
   force_destroy = true
 
   # S3 Bucket Policy for public access
@@ -15,7 +15,7 @@ module "s3_secure_bucket" {
           "AWS" : "${aws_cloudfront_origin_access_identity.oai.iam_arn}"
         },
         Action   = "s3:GetObject",
-        Resource = "arn:aws:s3:::wfprev-${var.SHORTENED_ENV}-site/*"
+        Resource = "arn:aws:s3:::wfprev-${var.TFC_PROJECT}-${var.SHORTENED_ENV}-site/*"
       },
       {
         Effect = "Allow",
@@ -29,8 +29,8 @@ module "s3_secure_bucket" {
           "s3:DeleteObject"
         ],
         Resource = [
-          "arn:aws:s3:::wfprev-${var.SHORTENED_ENV}-site",
-          "arn:aws:s3:::wfprev-${var.SHORTENED_ENV}-site/*"
+          "arn:aws:s3:::wfprev-${var.TFC_PROJECT}-${var.SHORTENED_ENV}-site",
+          "arn:aws:s3:::wfprev-${var.TFC_PROJECT}-${var.SHORTENED_ENV}-site/*"
         ]
       }
     ]
