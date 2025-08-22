@@ -106,11 +106,11 @@ jobs:
       env:
           TARGET_ENV: ${{ env.TARGET_ENV }}
       run: |
-        aws s3 sync client/wfprev-war/src/main/angular/dist/wfprev s3://wfprev-${{ steps.mapEnvironments.outputs.SHORTENED_ENV }}-site \
+        aws s3 sync client/wfprev-war/src/main/angular/dist/wfprev s3://wfprev-${{vars.TFC_PROJECT}}-${{ steps.mapEnvironments.outputs.SHORTENED_ENV }}-site \
           --delete \
           --cache-control max-age=31536000,public \
           --exclude index.html
-        aws s3 cp client/wfprev-war/src/main/angular/dist/wfprev/index.html s3://wfprev-${{ steps.mapEnvironments.outputs.SHORTENED_ENV }}-site/index.html \
+        aws s3 cp client/wfprev-war/src/main/angular/dist/wfprev/index.html s3://wfprev-${{vars.TFC_PROJECT}}-${{ steps.mapEnvironments.outputs.SHORTENED_ENV }}-site/index.html \
           --cache-control max-age=0,no-cache,no-store,must-revalidate
 
     - name: Invalidate CloudFront Cache
