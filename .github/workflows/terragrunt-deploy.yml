@@ -188,7 +188,7 @@ jobs:
           WFPREV_CLIENT_MEMORY: ${{vars.WFPREV_CLIENT_MEMORY}}
           WFPREV_CLIENT_CPU_UNITS : ${{vars.WFPREV_CLIENT_CPU_UNITS}}
           WFPREV_CHECK_TOKEN_URL: ${{vars.WFPREV_CHECK_TOKEN_URL}}
-
+          TRAINING_AND_SUPPORT_LINK: ${{ vars.TRAINING_AND_SUPPORT_LINK }}
           # DB
           WFPREV_USERNAME: ${{secrets.WFPREV_USERNAME}}
           DB_PASS: ${{secrets.DB_PASS}}
