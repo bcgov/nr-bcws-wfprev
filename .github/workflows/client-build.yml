@@ -53,6 +53,7 @@ jobs:
         WEBADE_OAUTH2_CHECK_AUTHORIZE_URL: ${{ vars.WEBADE_OAUTH2_CHECK_AUTHORIZE_URL }}
         WFPREV_CHECK_TOKEN_URL: ${{ vars.WFPREV_CHECK_TOKEN_URL }}
         TARGET_ENV: ${{ env.TARGET_ENV }}
+        TRAINING_AND_SUPPORT_LINK: ${{ vars.TRAINING_AND_SUPPORT_LINK }}
 
     - name: Set up Node.js
       uses: actions/setup-node@v4
