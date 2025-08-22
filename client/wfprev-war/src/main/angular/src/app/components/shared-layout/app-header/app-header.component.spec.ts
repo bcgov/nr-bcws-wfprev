@@ -99,7 +99,7 @@ describe('AppHeaderComponent', () => {
   it('should open the trainingAndSupportLink from config in a new tab with noopener', () => {
     const mockUrl = 'https://intranet.gov.bc.ca/bcws/corporate-governance/strategic-initiatives-and-innovation/wildfire-one/wildfire-one-training';
     appConfigService.getConfig.and.returnValue({
-      application: { trainingAndSupportLink: mockUrl }
+      rest: { trainingAndSupportLink: mockUrl }
     } as any);
     spyOn(window, 'open');
     component.onSupportLinkClick();
