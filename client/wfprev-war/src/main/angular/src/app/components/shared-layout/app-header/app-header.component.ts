@@ -56,7 +56,7 @@ export class AppHeaderComponent implements OnInit {
 
   onSupportLinkClick() {
     //navigate to a support link page, upon decide which url would that be.
-    const url = this.appConfigService.getConfig()?.application?.trainingAndSupportLink;
+    const url = this.appConfigService.getConfig()?.rest['trainingAndSupportLink'];
     if (url) {
       window.open(url, '_blank', 'noopener');
     } else {

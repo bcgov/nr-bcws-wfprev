@@ -2,7 +2,6 @@
     "application": {
       "baseUrl": "#{WFPREV_BASE_URL}#",
       "environment": "#{TARGET_ENV}#",
-      "trainingAndSupportLink": "#{TRAINING_AND_SUPPORT_LINK}#"
     },
   
     "webade": {
@@ -16,6 +15,7 @@
     "rest": {
       "wfprev":"#{WFPREV_BASE_URL}#",
       "wfdm":"#{WFDM_BASE_URL}#",
-      "openmaps":"https://openmaps.gov.bc.ca"
+      "openmaps":"https://openmaps.gov.bc.ca",
+      "trainingAndSupportLink": "#{TRAINING_AND_SUPPORT_LINK}#"
     }
   }
