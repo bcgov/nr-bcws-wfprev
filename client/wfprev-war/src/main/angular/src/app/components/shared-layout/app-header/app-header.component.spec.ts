@@ -14,6 +14,7 @@ describe('AppHeaderComponent', () => {
   let fixture: ComponentFixture<AppHeaderComponent>;
   let mockTokenService: any;
   let credentialsSubject: Subject<void>;
+  let appConfigService: jasmine.SpyObj<AppConfigService>;
 
   const mockConfig = {
     application: {
@@ -61,6 +62,7 @@ describe('AppHeaderComponent', () => {
   
     fixture = TestBed.createComponent(AppHeaderComponent);
     component = fixture.componentInstance;
+    appConfigService = TestBed.inject(AppConfigService) as jasmine.SpyObj<AppConfigService>;
     fixture.detectChanges();
   });
   
@@ -94,14 +96,14 @@ describe('AppHeaderComponent', () => {
     expect(component.onSupportLinkClick).toHaveBeenCalled();
   });
 
-  it('should open the correct URL in a new tab with noopener when onSupportLinkClick() is called', () => {
+  it('should open the trainingAndSupportLink from config in a new tab with noopener', () => {
+    const mockUrl = 'https://intranet.gov.bc.ca/bcws/corporate-governance/strategic-initiatives-and-innovation/wildfire-one/wildfire-one-training';
+    appConfigService.getConfig.and.returnValue({
+      rest: { trainingAndSupportLink: mockUrl }
+    } as any);
     spyOn(window, 'open');
     component.onSupportLinkClick();
-    expect(window.open).toHaveBeenCalledWith(
-      'https://intranet.gov.bc.ca/bcws/corporate-governance/strategic-initiatives-and-innovation/wildfire-one/wildfire-one-training',
-      '_blank',
-      'noopener'
-    );
+    expect(window.open).toHaveBeenCalledWith(mockUrl, '_blank', 'noopener');
   });
 
   it('should render the username', () => {
