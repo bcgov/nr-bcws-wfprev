@@ -10,16 +10,19 @@ variable "RESTORE_DOWNSCALED_CLUSTER" {
   default = "false"
 }
 
-variable "WFPREV_CLIENT_CPU_UNITS" {
-  description = "client instance CPU units to provision (1 vCPU = 1024 CPU units)"
-  type        = number
-  default = 512
+variable "NAMESPACE_ENV" {
+  description = "Name of AWS Workspace"
+  type = string
 }
 
-variable "WFPREV_CLIENT_MEMORY" {
-  description = "client instance memory to provision (in MiB)"
-  type        = number
-  default = 1024
+variable "SHORTENED_ENV" {
+  description = "Shortform of environment name"
+  type = string
+}
+
+variable "TFC_PROJECT" {
+  description = "License Plate number of project"
+  type = string
 }
 
 variable "WFPREV_API_CPU_UNITS" {
@@ -212,7 +215,7 @@ variable "WEBADE_OAUTH2_WFPREV_UI_CLIENT_SECRET" {
 variable "client_name" {
   description = "Name of the client"
   type        = string
-  default     = "wfprev-client-app"
+  default     = "remiplanner"
 }
 
 variable "gov_client_url" {

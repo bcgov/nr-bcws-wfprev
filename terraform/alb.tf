@@ -25,8 +25,8 @@ resource "aws_lb" "wfprev_main" {
   name               = var.ALB_NAME
   internal           = true
   load_balancer_type = "application"
-  security_groups    = [data.aws_security_group.web.id]
-  subnets            = module.network.aws_subnet_ids.web.ids
+  security_groups    = [module.networking.security_groups.web.id]
+  subnets            = module.networking.subnets.web.ids
 
   tags = {
     Environment = "${var.TARGET_ENV}"
@@ -34,7 +34,7 @@ resource "aws_lb" "wfprev_main" {
 
   access_logs {
     bucket  = aws_s3_bucket.alb_logs.bucket
-    prefix  = "wfprev-${var.TARGET_ENV}"
+    prefix  = "wfprev-${var.SHORTENED_ENV}"
     enabled = true
   }
 
@@ -86,7 +86,7 @@ resource "aws_lb_listener_rule" "wfprev-api" {
 
   condition {
     path_pattern  {
-      values = ["/${aws_apigatewayv2_stage.wfprev_stage.name}", "/${aws_apigatewayv2_stage.wfprev_stage.name}/*"]
+      values = ["/${module.api_gateway.stage.name}", "/${module.api_gateway.stage.name}/*"]
     }
   }
 }
@@ -95,10 +95,10 @@ resource "aws_lb_listener_rule" "wfprev-api" {
 /// TARGET GROUP RESOURCES ///
 //////////////////////////////
 resource "aws_alb_target_group" "wfprev_api" {
-  name                 = "wfprev-api-${var.TARGET_ENV}"
+  name                 = "wfprev-api-${var.SHORTENED_ENV}"
   port                 = var.WFPREV_API_PORT
   protocol             = "HTTP"
-  vpc_id               = module.network.aws_vpc.id
+  vpc_id               = module.networking.vpc.id
   target_type          = "ip"
   deregistration_delay = 30
 
@@ -114,7 +114,7 @@ resource "aws_alb_target_group" "wfprev_api" {
     protocol            = "HTTP"
     matcher             = "200"
     timeout             = "5"
-    path                = "/${aws_apigatewayv2_stage.wfprev_stage.name}/actuator/health"
+    path                = "/${module.api_gateway.stage.name}/actuator/health"
     unhealthy_threshold = "2"
   }
 }

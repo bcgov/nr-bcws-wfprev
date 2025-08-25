@@ -34,9 +34,10 @@ on:
         required: true
         type: choice
         options:
-        - dev
-        - test
-        - prod
+        - wfint
+        - wfldv
+        - wftst
+        - wfprd
       IMAGE_TAG:
         required: true
         type: string
@@ -79,6 +80,23 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - id: mapEnvironments
+        name: Determine namespaces for deploy
+        run: |
+          if [ "${{ inputs.DEFAULT_APPLICATION_ENVIRONMENT }}" == "wfint" ]; then
+            echo "NAMESPACE_ENV=dev" >> $GITHUB_OUTPUT
+            echo "SHORTENED_ENV=int" >> $GITHUB_OUTPUT
+          elif [ "${{ inputs.DEFAULT_APPLICATION_ENVIRONMENT }}" == "wfdlv" ]; then
+            echo "NAMESPACE_ENV=tools" >> $GITHUB_OUTPUT
+            echo "SHORTENED_ENV=dlv" >> $GITHUB_OUTPUT
+          elif [ "${{ inputs.DEFAULT_APPLICATION_ENVIRONMENT }}" == "wftst" ]; then
+            echo "NAMESPACE_ENV=test" >> $GITHUB_OUTPUT
+            echo "SHORTENED_ENV=tst" >> $GITHUB_OUTPUT
+          elif [ "${{ inputs.DEFAULT_APPLICATION_ENVIRONMENT }}" == "wfprd" ]; then
+            echo "NAMESPACE_ENV=prod" >> $GITHUB_OUTPUT
+            echo "SHORTENED_ENV=prd" >> $GITHUB_OUTPUT
+          fi
+
       - id: changeLogCount
         name: Determine changelog to execute
         run: |
@@ -112,7 +130,7 @@ jobs:
       - name: Configure AWS Credentials for ECR target (Tools namespace)
         uses: aws-actions/configure-aws-credentials@v2
         with:
-          role-to-assume:  arn:aws:iam::${{ secrets.ECR_TARGET_ACCOUNT_ID }}:role/github-actions-role
+          role-to-assume:  arn:aws:iam::${{ secrets.ECR_TARGET_ACCOUNT_ID }}:role/Terraform-deploy
           role-session-name: wfprev-terraform-s3
           aws-region: ca-central-1
 
@@ -159,6 +177,8 @@ jobs:
           # Necessary for all components
           TFC_PROJECT: ${{ secrets.TFC_PROJECT }}
           TARGET_ENV: ${{ inputs.DEFAULT_APPLICATION_ENVIRONMENT }}
+          SHORTENED_ENV: ${{ steps.mapEnvironments.outputs.SHORTENED_ENV }}
+          NAMESPACE_ENV: ${{ steps.mapEnvironments.outputs.NAMESPACE_ENV }}
           APP_COUNT: ${{vars.APP_COUNT}}
           LOGGING_LEVEL: ${{vars.LOGGING_LEVEL}}
           RESTORE_DOWNSCALED_CLUSTER: ${{ inputs.RESTORE_DOWNSCALED_CLUSTER || 'false' }}
@@ -176,7 +196,6 @@ jobs:
           WEBADE_OAUTH2_CHECK_AUTHORIZE_URL: ${{vars.WEBADE_OAUTH2_CHECK_AUTHORIZE_URL}}
           WFPREV_BASE_URL: ${{vars.WFPREV_BASE_URL}}
           WFPREV_GDB_FUNCTION_NAME: ${{vars.WFPREV_GDB_FUNCTION_NAME}}
-          WFPREV_DATASOURCE_URL: ${{vars.WFPREV_DATASOURCE_URL}}
           server_count: ${{vars.WFPREV_SERVER_INSTANCE_COUNT}}
           # WFDM API
           WFDM_BASE_URL: ${{vars.WFDM_BASE_URL}}
@@ -185,8 +204,6 @@ jobs:
           # WFPREV UI
           CLIENT_IMAGE: ${{ steps.getDigestUI.outputs.IMAGE_UI_BY_DIGEST }}
           WEBADE_OAUTH2_WFPREV_UI_CLIENT_SECRET: ${{ secrets.WEBADE_OAUTH2_WFPREV_UI_CLIENT_SECRET }}
-          WFPREV_CLIENT_MEMORY: ${{vars.WFPREV_CLIENT_MEMORY}}
-          WFPREV_CLIENT_CPU_UNITS : ${{vars.WFPREV_CLIENT_CPU_UNITS}}
           WFPREV_CHECK_TOKEN_URL: ${{vars.WFPREV_CHECK_TOKEN_URL}}
           TRAINING_AND_SUPPORT_LINK: ${{ vars.TRAINING_AND_SUPPORT_LINK }}
           # DB
