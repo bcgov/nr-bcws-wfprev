@@ -65,59 +65,59 @@ resource "aws_iam_role_policy" "wfprev_ecs_task_execution_cwlogs" {
 EOF
 }
 
-# Define an IAM policy to allow access to the SSM parameter
-# This policy grants permissions to retrieve the specified SecureString parameter.
-resource "aws_iam_policy" "ssm_parameter_access" {
-  name        = "SSMParameterAccess"
-  description = "Allows access to SecureString parameters in SSM Parameter Store"
+# # Define an IAM policy to allow access to the SSM parameter
+# # This policy grants permissions to retrieve the specified SecureString parameter.
+# resource "aws_iam_policy" "ssm_parameter_access" {
+#   name        = "SSMParameterAccess"
+#   description = "Allows access to SecureString parameters in SSM Parameter Store"
 
-  policy = jsonencode({
-    Version = "2012-10-17",
-    Statement = [
-      {
-        Effect = "Allow",
-        Action = [
-          "ssm:GetParameter",
-          "ssm:GetParameters",
-          "ssm:DescribeParameters"
-        ],
-        Resource = "arn:aws:ssm:ca-central-1:${var.TARGET_AWS_ACCOUNT_ID}:parameter/iam_users/wfprev_github_actions_user_keys"
-      }
-    ]
-  })
-}
+#   policy = jsonencode({
+#     Version = "2012-10-17",
+#     Statement = [
+#       {
+#         Effect = "Allow",
+#         Action = [
+#           "ssm:GetParameter",
+#           "ssm:GetParameters",
+#           "ssm:DescribeParameters"
+#         ],
+#         Resource = "arn:aws:ssm:ca-central-1:${var.TARGET_AWS_ACCOUNT_ID}:parameter/iam_users/wfprev_github_actions_user_keys"
+#       }
+#     ]
+#   })
+# }
 
-# Attach the SSM parameter access policy to the GitHub Actions IAM user
-# This links the user with the necessary permissions to read the SSM parameter securely.
-resource "aws_iam_user_policy_attachment" "ssm_parameter_access_attachment" {
-  user       = "wfprev_github_actions_user"
-  policy_arn = aws_iam_policy.ssm_parameter_access.arn
-}
+# # Attach the SSM parameter access policy to the GitHub Actions IAM user
+# # This links the user with the necessary permissions to read the SSM parameter securely.
+# resource "aws_iam_user_policy_attachment" "ssm_parameter_access_attachment" {
+#   user       = "wfprev_github_actions_user"
+#   policy_arn = aws_iam_policy.ssm_parameter_access.arn
+# }
 
-# Define an IAM policy for GitHub Actions user to perform specific operations
-# This policy grants permissions to:
-# - Upload/delete objects in an S3 bucket
-# - Invalidate cached content in CloudFront
-resource "aws_iam_user_policy" "github_actions_policy" {
-  name = "github-actions-policy"
-  user = "wfprev_github_actions_user"
+# # Define an IAM policy for GitHub Actions user to perform specific operations
+# # This policy grants permissions to:
+# # - Upload/delete objects in an S3 bucket
+# # - Invalidate cached content in CloudFront
+# resource "aws_iam_user_policy" "github_actions_policy" {
+#   name = "github-actions-policy"
+#   user = "wfprev_github_actions_user"
 
-  policy = jsonencode({
-    Version = "2012-10-17",
-    Statement = [
-      {
-        Effect   = "Allow",
-        Action   = ["s3:PutObject", "s3:DeleteObject"],
-        Resource = "${aws_s3_bucket.wfprev_site_bucket.arn}/*"
-      },
-      {
-        Effect   = "Allow",
-        Action   = "cloudfront:CreateInvalidation",
-        Resource = "*"
-      }
-    ]
-  })
-}
+#   policy = jsonencode({
+#     Version = "2012-10-17",
+#     Statement = [
+#       {
+#         Effect   = "Allow",
+#         Action   = ["s3:PutObject", "s3:DeleteObject"],
+#         Resource = "${module.s3_secure_bucket.bucket_arn}/*"
+#       },
+#       {
+#         Effect   = "Allow",
+#         Action   = "cloudfront:CreateInvalidation",
+#         Resource = "*"
+#       }
+#     ]
+#   })
+# }
 
 # Create an IAM role for GitHub Actions to assume
 resource "aws_iam_role" "github_actions_role" {
@@ -141,16 +141,16 @@ resource "aws_iam_role" "github_actions_role" {
           }
         }
       },
-      {
-        Sid = "AllowIAMRoleAssume",
-        Effect = "Allow",
-        Principal = {
-          AWS = [
-            "arn:aws:iam::${var.TARGET_AWS_ACCOUNT_ID}:role/client_s3_push"
-          ]
-        },
-        Action = "sts:AssumeRole"
-      }
+      # {
+      #   Sid = "AllowIAMRoleAssume",
+      #   Effect = "Allow",
+      #   Principal = {
+      #     AWS = [
+      #       "arn:aws:iam::${var.TARGET_AWS_ACCOUNT_ID}:role/client_s3_push"
+      #     ]
+      #   },
+      #   Action = "sts:AssumeRole"
+      # }
     ]
   })
 }
@@ -171,8 +171,8 @@ resource "aws_iam_policy" "github_actions_policy" {
           "cloudfront:CreateInvalidation" # Invalidate cache
         ],
         Resource = [
-          "arn:aws:s3:::wfprev-${var.TARGET_ENV}-site",        # Bucket-level actions like s3:ListBucket
-          "arn:aws:s3:::wfprev-${var.TARGET_ENV}-site/*",      # Object-level actions
+          "arn:aws:s3:::wfprev-${var.SHORTENED_ENV}-site",        # Bucket-level actions like s3:ListBucket
+          "arn:aws:s3:::wfprev-${var.SHORTENED_ENV}-site/*",      # Object-level actions
           "arn:aws:cloudfront::${var.TARGET_AWS_ACCOUNT_ID}:distribution/*" # CloudFront distrbution
         ]
       }
