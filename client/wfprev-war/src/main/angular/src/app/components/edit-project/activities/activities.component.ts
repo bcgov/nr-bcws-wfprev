@@ -1,12 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MomentDateAdapter } from '@angular/material-moment-adapter';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE, MatNativeDateModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatDialog } from '@angular/material/dialog';
-import { MatExpansionModule } from '@angular/material/expansion';
+import { MatExpansionModule, MatExpansionPanel } from '@angular/material/expansion';
 import { MatInputModule } from '@angular/material/input';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -65,7 +65,7 @@ export const CUSTOM_DATE_FORMATS = {
 export class ActivitiesComponent implements OnChanges, CanComponentDeactivate {
   @Input() fiscalGuid: string = '';
   @Output() boundariesUpdated = new EventEmitter<void>();
-
+  @ViewChild('activitiesPanel') activitiesPanel!: MatExpansionPanel;
   messages = Messages;
   isNewActivityBeingAdded = false;
 
@@ -516,25 +516,39 @@ export class ActivitiesComponent implements OnChanges, CanComponentDeactivate {
     this.isActivityDirty[index] = true;
   }
 
-  addActivity(): void {
-    if (this.isNewActivityBeingAdded) return;
+addActivity(): void {
+  if (this.isNewActivityBeingAdded) return;
 
+  const createAndFocusNewActivity  = () => {
     this.isNewActivityBeingAdded = true;
-    const newActivity = {};
+    const newActivity: any = {};
 
     this.activities.unshift(newActivity);
     this.activityForms.unshift(this.createActivityForm(newActivity));
-    this.expandedPanels = [true, ...this.expandedPanels]; // Ensure the new activity is expanded
+    this.expandedPanels.unshift(false);
 
     this.cd.detectChanges();
 
     setTimeout(() => {
-      const newActivityElement = document.getElementById('activity-0');
-      if (newActivityElement) {
-        newActivityElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
-    }, 100);
+      const panelEl = document.getElementById('activity-0');
+      this.expandedPanels[0] = true;
+      this.cd.detectChanges();
+
+      panelEl?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 0);
+  };
+
+  if (!this.activitiesPanel?.expanded) {
+    const sub = this.activitiesPanel.opened.subscribe(() => {
+      sub.unsubscribe();
+      createAndFocusNewActivity ();
+    });
+    this.activitiesPanel.open();
+  } else {
+    createAndFocusNewActivity ();
   }
+}
+
 
   getRiskIcon(riskCode: string): string {
     const riskMap: { [key: string]: string } = {
