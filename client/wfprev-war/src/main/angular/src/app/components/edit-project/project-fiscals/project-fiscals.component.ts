@@ -332,23 +332,44 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
   }
 
   onCancelFiscal(index: number): void {
-    if (!this.fiscalForms[index]) return; // Ensure form exists
+    const form = this.fiscalForms[index];
+    if (!form) return;
 
     const isNewEntry = !this.projectFiscals[index]?.projectPlanFiscalGuid;
 
     if (isNewEntry) {
-      // Case 1: New entry → Clear all fields
-      this.fiscalForms[index].reset(this.getDefaultFiscalData());
-    }
-    else {
-      // Case 2: Existing entry → Revert to original API values
-      const originalData = this.originalFiscalValues[index];
-      this.fiscalForms[index].patchValue(originalData);
+      // Case 1: New entry, Clear all fields
+      form.reset({
+        ...this.getDefaultFiscalData(),
+        planFiscalStatusCode: 'DRAFT',
+        fiscalYear: ''
+      }, 
+      { emitEvent: false });
+    } else {
+      // Case 2: Existing entry, Revert to original API values
+      const original = this.originalFiscalValues[index];
 
-      // Mark form as pristine (not dirty)
-      this.fiscalForms[index].markAsPristine();
-      this.fiscalForms[index].markAsUntouched();
+      form.patchValue({
+        ...original,
+        planFiscalStatusCode: this.patchStatusCode(original?.planFiscalStatusCode)
+      }, 
+      { emitEvent: false });
+
+      const statusCode = this.patchStatusCode(original?.planFiscalStatusCode);
+      const isLocked = [this.FiscalStatuses.COMPLETE, this.FiscalStatuses.CANCELLED].includes(statusCode as any);
+      if (isLocked) {
+        form.disable({ emitEvent: false });
+      } else {
+        form.enable({ emitEvent: false });
+        if (statusCode !== this.FiscalStatuses.DRAFT) {
+          form.get('totalCostEstimateAmount')?.disable({ emitEvent: false });
+        }
+      }
     }
+
+    form.markAsPristine();
+    form.markAsUntouched();
+    form.updateValueAndValidity({ emitEvent: false });
   }
 
   fetchData<T>(fetchFn: Observable<T>, assignFn: (data: T) => void, errorMessage: string): void {
@@ -712,6 +733,10 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
       submittedByUserUserid: this.currentIdir,
       submissionTimestamp: getUtcIsoTimestamp()
     }
+  }
+
+  patchStatusCode(val: any): string {
+    return typeof val === 'string' ? val : val?.planFiscalStatusCode ?? '';
   }
 
 }
