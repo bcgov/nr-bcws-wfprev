@@ -1,18 +1,18 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MomentDateAdapter } from '@angular/material-moment-adapter';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE, MatNativeDateModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatDialog } from '@angular/material/dialog';
-import { MatExpansionModule } from '@angular/material/expansion';
+import { MatExpansionModule, MatExpansionPanel } from '@angular/material/expansion';
 import { MatInputModule } from '@angular/material/input';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute } from '@angular/router';
 import moment from 'moment';
-import { Observable } from 'rxjs';
+import { Observable, take } from 'rxjs';
 import { ConfirmationDialogComponent } from 'src/app/components/confirmation-dialog/confirmation-dialog.component';
 import { ProjectFilesComponent } from 'src/app/components/edit-project/project-details/project-files/project-files.component';
 import { CodeTableServices } from 'src/app/services/code-table-services';
@@ -24,6 +24,7 @@ import { IconButtonComponent } from 'src/app/components/shared/icon-button/icon-
 import { TimestampComponent } from 'src/app/components/shared/timestamp/timestamp.component';
 import { TextareaComponent } from 'src/app/components/shared/textarea/textarea.component';
 import { getUtcIsoTimestamp } from 'src/app/utils/tools';
+import { ActivityModel } from 'src/app/components/models';
 
 
 export const CUSTOM_DATE_FORMATS = {
@@ -65,7 +66,7 @@ export const CUSTOM_DATE_FORMATS = {
 export class ActivitiesComponent implements OnChanges, CanComponentDeactivate {
   @Input() fiscalGuid: string = '';
   @Output() boundariesUpdated = new EventEmitter<void>();
-
+  @ViewChild('activitiesPanel') activitiesPanel?: MatExpansionPanel;
   messages = Messages;
   isNewActivityBeingAdded = false;
 
@@ -519,22 +520,36 @@ export class ActivitiesComponent implements OnChanges, CanComponentDeactivate {
   addActivity(): void {
     if (this.isNewActivityBeingAdded) return;
 
-    this.isNewActivityBeingAdded = true;
-    const newActivity = {};
+    const createAndFocusNewActivity  = () => {
+      this.isNewActivityBeingAdded = true;
+      const newActivity: ActivityModel = {};
 
-    this.activities.unshift(newActivity);
-    this.activityForms.unshift(this.createActivityForm(newActivity));
-    this.expandedPanels = [true, ...this.expandedPanels]; // Ensure the new activity is expanded
+      this.activities.unshift(newActivity);
+      this.activityForms.unshift(this.createActivityForm(newActivity));
+      this.expandedPanels.unshift(false);
 
-    this.cd.detectChanges();
+      this.cd.detectChanges();
 
-    setTimeout(() => {
-      const newActivityElement = document.getElementById('activity-0');
-      if (newActivityElement) {
-        newActivityElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
-    }, 100);
+      setTimeout(() => {
+        const panelEl = document.getElementById('activity-0');
+        this.expandedPanels[0] = true;
+        this.cd.detectChanges();
+
+        panelEl?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 0);
+    };
+
+    if (this.activitiesPanel && !this.activitiesPanel.expanded) {
+      const sub = this.activitiesPanel.opened.pipe(take(1)).subscribe(() => {
+        sub.unsubscribe();
+        createAndFocusNewActivity ();
+      });
+      this.activitiesPanel.open();
+    } else {
+      createAndFocusNewActivity ();
+    }
   }
+
 
   getRiskIcon(riskCode: string): string {
     const riskMap: { [key: string]: string } = {
