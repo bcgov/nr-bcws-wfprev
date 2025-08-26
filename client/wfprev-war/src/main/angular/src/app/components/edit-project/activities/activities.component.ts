@@ -12,7 +12,7 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute } from '@angular/router';
 import moment from 'moment';
-import { Observable } from 'rxjs';
+import { Observable, take } from 'rxjs';
 import { ConfirmationDialogComponent } from 'src/app/components/confirmation-dialog/confirmation-dialog.component';
 import { ProjectFilesComponent } from 'src/app/components/edit-project/project-details/project-files/project-files.component';
 import { CodeTableServices } from 'src/app/services/code-table-services';
@@ -24,6 +24,7 @@ import { IconButtonComponent } from 'src/app/components/shared/icon-button/icon-
 import { TimestampComponent } from 'src/app/components/shared/timestamp/timestamp.component';
 import { TextareaComponent } from 'src/app/components/shared/textarea/textarea.component';
 import { getUtcIsoTimestamp } from 'src/app/utils/tools';
+import { ActivityModel } from 'src/app/components/models';
 
 
 export const CUSTOM_DATE_FORMATS = {
@@ -65,7 +66,7 @@ export const CUSTOM_DATE_FORMATS = {
 export class ActivitiesComponent implements OnChanges, CanComponentDeactivate {
   @Input() fiscalGuid: string = '';
   @Output() boundariesUpdated = new EventEmitter<void>();
-  @ViewChild('activitiesPanel') activitiesPanel!: MatExpansionPanel;
+  @ViewChild('activitiesPanel') activitiesPanel?: MatExpansionPanel;
   messages = Messages;
   isNewActivityBeingAdded = false;
 
@@ -516,38 +517,38 @@ export class ActivitiesComponent implements OnChanges, CanComponentDeactivate {
     this.isActivityDirty[index] = true;
   }
 
-addActivity(): void {
-  if (this.isNewActivityBeingAdded) return;
+  addActivity(): void {
+    if (this.isNewActivityBeingAdded) return;
 
-  const createAndFocusNewActivity  = () => {
-    this.isNewActivityBeingAdded = true;
-    const newActivity: any = {};
+    const createAndFocusNewActivity  = () => {
+      this.isNewActivityBeingAdded = true;
+      const newActivity: ActivityModel = {};
 
-    this.activities.unshift(newActivity);
-    this.activityForms.unshift(this.createActivityForm(newActivity));
-    this.expandedPanels.unshift(false);
+      this.activities.unshift(newActivity);
+      this.activityForms.unshift(this.createActivityForm(newActivity));
+      this.expandedPanels.unshift(false);
 
-    this.cd.detectChanges();
-
-    setTimeout(() => {
-      const panelEl = document.getElementById('activity-0');
-      this.expandedPanels[0] = true;
       this.cd.detectChanges();
 
-      panelEl?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, 0);
-  };
+      setTimeout(() => {
+        const panelEl = document.getElementById('activity-0');
+        this.expandedPanels[0] = true;
+        this.cd.detectChanges();
 
-  if (!this.activitiesPanel?.expanded) {
-    const sub = this.activitiesPanel.opened.subscribe(() => {
-      sub.unsubscribe();
+        panelEl?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 0);
+    };
+
+    if (this.activitiesPanel && !this.activitiesPanel.expanded) {
+      const sub = this.activitiesPanel.opened.pipe(take(1)).subscribe(() => {
+        sub.unsubscribe();
+        createAndFocusNewActivity ();
+      });
+      this.activitiesPanel.open();
+    } else {
       createAndFocusNewActivity ();
-    });
-    this.activitiesPanel.open();
-  } else {
-    createAndFocusNewActivity ();
+    }
   }
-}
 
 
   getRiskIcon(riskCode: string): string {
