@@ -9,7 +9,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
-import { Observable, of, throwError } from 'rxjs';
+import { Observable, of, Subject, throwError } from 'rxjs';
 import { ProjectService } from 'src/app/services/project-services';
 import { CodeTableServices } from 'src/app/services/code-table-services';
 import { fakeAsync, tick } from '@angular/core/testing';
@@ -122,6 +122,39 @@ describe('ActivitiesComponent', () => {
     expect(component.activities.length).toBe(initialLength + 1);
     expect(component.activityForms.length).toBe(initialLength + 1);
   });
+
+  it('should not add when a new activity is already being added', () => {
+    component.isNewActivityBeingAdded = true;
+    const lenghA = component.activities.length;
+    const lenghF = component.activityForms.length;
+
+    component.addActivity();
+
+    expect(component.activities.length).toBe(lenghA);
+    expect(component.activityForms.length).toBe(lenghF);
+  });
+
+  it('should create only after panel opens when collapsed', fakeAsync(() => {
+    const opened$ = new Subject<void>();
+    (component as any).activitiesPanel = {
+      expanded: false,
+      open: jasmine.createSpy('open'),
+      opened: opened$
+    } as any;
+
+    const before = component.activities.length;
+
+    component.addActivity();
+    expect((component as any).activitiesPanel.open).toHaveBeenCalledTimes(1);
+    expect(component.activities.length).toBe(before);
+
+    opened$.next();
+    opened$.complete();
+    tick(0);
+
+    expect(component.activities.length).toBe(before + 1);
+    expect(component.activityForms.length).toBe(before + 1);
+  }));
 
   it('should mark an activity as dirty on value change', () => {
     const form = component.createActivityForm({}); 
