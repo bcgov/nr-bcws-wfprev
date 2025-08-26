@@ -765,7 +765,7 @@ export class ActivitiesComponent implements OnChanges, CanComponentDeactivate {
   }
 
   canDeleteActivity(index: number): boolean {
-    const activity = this.activityForms[index]?.value;
+    const activity = this.activities[index];
     if (!activity) return false;
 
     // Delete is available when:
@@ -778,7 +778,7 @@ export class ActivitiesComponent implements OnChanges, CanComponentDeactivate {
     // The activity is marked as Complete
 
     // We dont have permissions and performance implemneted yet. Check single condition that prevent deletion
-    return activity.activityStatusCode !== 'COMPLETED';
+    return activity.activityStatusCode?.activityStatusCode !== 'COMPLETED';
   }
 
   getDeleteIcon(index: number): string {
