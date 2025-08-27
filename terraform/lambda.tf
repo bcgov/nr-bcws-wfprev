@@ -38,6 +38,23 @@ resource "aws_lambda_function" "gdb_processor" {
   }
 }
 
+resource "aws_lambda_function" "report_generator" {
+  function_name = "report-generator-${var.TARGET_ENV}"
+  role          = aws_iam_role.lambda_exec.arn
+  package_type  = "Image"
+
+  image_uri     = "${aws_ecr_repository.report_generator.repository_url}:latest"
+  
+  memory_size   = var.WFPREV_LAMBDA_MEMORY
+  timeout       = var.WFPREV_LAMBDA_TIMEOUT
+
+  environment {
+    variables = {
+      # Add any required environment variables here
+    }
+  }
+}
+
 # # API Gateway
 # resource "aws_apigatewayv2_api" "http_api" {
 #   name          = "wfprev-${var.TARGET_ENV}-gdb-api"
