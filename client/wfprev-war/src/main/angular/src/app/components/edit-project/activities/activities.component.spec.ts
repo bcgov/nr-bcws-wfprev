@@ -223,7 +223,9 @@ describe('ActivitiesComponent', () => {
   });
   
   it('should enable delete button for active activity', () => {
-    const form = component.createActivityForm({ activityStatusCode: 'ACTIVE' });
+    const activity = { activityStatusCode: 'ACTIVE' };
+    component.activities.push(activity);
+    const form = component.createActivityForm(activity);
     component.activityForms.push(form);
     expect(component.canDeleteActivity(0)).toBeTrue();
   });
