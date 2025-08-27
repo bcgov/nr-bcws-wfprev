@@ -1,4 +1,11 @@
-export const mapConfig = () => ({
+import { MapServices } from ".";
+import { LayerDisplayConfig } from "./layer-display.config";
+import { LayerConfig } from "./layers";
+
+export const mapConfig = (
+  mapServices: MapServices,
+  token?: string
+) => ({
   viewer: {
     type: 'leaflet',
     location: {
@@ -25,8 +32,34 @@ export const mapConfig = () => ({
       type: 'search',
       enabled: false,
     },
-
-  ]
+    {
+      type: 'location',
+      enabled: false
+    },
+    {
+      type: 'identify',
+      enabled: false
+    },
+    {
+      type: 'layers',
+      enabled: true,
+      showTitle: true,
+      position: 'shortcut-menu',
+      glyph: {
+        visible: 'check_box',
+        hidden: 'check_box_outline_blank',
+      },
+      command: {
+        allVisibility: true,
+        filter: false,
+        legend: true,
+      },
+      legend: true,
+      order: 2,
+      display: LayerDisplayConfig(mapServices),
+    },
+  ],
+  layers: LayerConfig(mapServices, token)
 });
 
 

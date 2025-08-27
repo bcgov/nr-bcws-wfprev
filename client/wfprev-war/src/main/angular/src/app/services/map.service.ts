@@ -19,55 +19,58 @@ export class MapService {
     this.smkInstance = null;
   }
 
-  createSMK(option: any) {
+  async createSMK(option: any): Promise<any> {
     const SMK = (window as any)['SMK'];
     const mapService = this;
 
-    return this.patch()
-      .then(() => {
-        try {
-          // Ensure option.config exists and is an array
-          if (!option.config) {
-            option.config = [];
-          } else if (!Array.isArray(option.config)) {
-            throw new Error('option.config is not an array');
-          }
+    await this.patch();
 
-          // Push the configuration
-          option.config.push({
-            tools: [
-              {
-                type: 'baseMaps',
-              }
-            ],
-          });
+    try {
+      // Ensure option.config exists and is an array
+      if (!option.config) {
+        option.config = [];
+      } else if (!Array.isArray(option.config)) {
+        throw new Error('option.config is not an array');
+      }
 
-          // Initialize SMK
-          return SMK.INIT({
-            baseUrl: mapService.smkBaseUrl,
-            ...option,
-          }).then((smk: any) =>{
-            this.smkInstance = smk;
-            return smk;
-          });
-        } catch (error) {
-          console.error('Error occurred during SMK initialization:', error);
-          throw error;
-        }
-      })
-      .catch((error: any) => {
-        console.error('Error occurred during patching:', error);
-        throw error; // Re-throw the error to propagate it to the caller
+      // Push the configuration
+      option.config.push({
+        tools: [{ type: 'baseMaps' }],
       });
+
+      // Initialize SMK
+      const smk = await SMK.INIT({
+        baseUrl: mapService.smkBaseUrl,
+        ...option,
+      });
+
+      // only show Ministry of Forests Regions layer by default
+      smk.$viewer.displayContext.layers.setItemVisible('ministry-of-forests-regions', true);
+      smk.$viewer.displayContext.layers.setItemVisible('ministry-of-forests-districts', false);
+      smk.$viewer.displayContext.layers.setItemVisible('wildfire-org-unit-fire-centre', false);
+      smk.$viewer.displayContext.layers.setItemVisible('fire-perimeters', false); 
+      smk.$viewer.displayContext.layers.setItemVisible('active-wildfires-out-of-control', false);
+      smk.$viewer.displayContext.layers.setItemVisible('active-wildfires-holding', false); 
+      smk.$viewer.displayContext.layers.setItemVisible('active-wildfires-under-control', false); 
+      smk.$viewer.displayContext.layers.setItemVisible('active-wildfires-out', false); 
+      await smk.$viewer.updateLayersVisible();
+
+      this.smkInstance = smk;
+    
+      return smk;
+    } catch (error) {
+      console.error('Error occurred during SMK initialization:', error);
+      throw error;
+    }
   }
 
   public async patch(): Promise<any> {
     try {
       const mapService = this;
       const SMK = (window as any)['SMK'];
-  
+
       console.log('start patching SMK');
-  
+
       // Create a DIV for a temporary map.
       // This map is used to ensure that SMK is completely loaded before monkey-patching
       const temp = document.createElement('div');
@@ -79,9 +82,9 @@ export class MapService {
       temp.style.right = '-4000px';
       temp.style.bottom = '-4000px';
       document.body.appendChild(temp);
-  
+
       console.log('patching');
-  
+
       // Await the initialization of SMK
       const smk = await SMK.INIT({
         id: 999,
@@ -89,11 +92,11 @@ export class MapService {
         baseUrl: mapService.smkBaseUrl,
         config: 'show-tool=bespoke',
       });
-  
+
       this.defineOpenStreetMapLayer();
       smk.destroy();
       temp?.parentElement?.removeChild(temp);
-  
+
       // Patch the SMK Viewer functionality
       SMK.TYPE.Viewer.leaflet.prototype.mapResized = () => {
         const prototype = SMK.TYPE.Viewer.leaflet.prototype;
@@ -101,12 +104,12 @@ export class MapService {
           prototype.map.invalidateSize({ animate: false });
         }, 500);
       };
-  
+
       const oldInit = SMK.TYPE.Viewer.leaflet.prototype.initialize;
       SMK.TYPE.Viewer.leaflet.prototype.initialize = function (smk: any) {
         // Call the existing initializer
         oldInit.apply(this, arguments);
-  
+
         // Set the maximum bounds that can be panned to.
         const L = window['L'];
         const maxBounds = L.latLngBounds([
@@ -116,9 +119,9 @@ export class MapService {
         this.map.setMaxBounds(maxBounds);
         this.map.setMaxZoom(19);
       };
-  
+
       console.log('done patching SMK');
-  
+
       // Return a resolved promise explicitly for compatibility
       return Promise.resolve();
     } catch (error) {
@@ -131,7 +134,7 @@ export class MapService {
     return JSON.parse(JSON.stringify(o));
   }
 
-  defineOpenStreetMapLayer(){
+  defineOpenStreetMapLayer() {
     const osmUrl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
     const L = window['L'];
     const osm = L.tileLayer(osmUrl, {
@@ -145,7 +148,7 @@ export class MapService {
       }
     };
   }
-  
+
   getSMKInstance() {
     return this.smkInstance;
   }

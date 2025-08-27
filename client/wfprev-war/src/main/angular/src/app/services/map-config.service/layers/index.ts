@@ -1,0 +1,35 @@
+import { MapServices } from "..";
+import { OutOfControlWildfiresLayerConfig } from "./wildfires/out-of-control-wildfires.config";
+import { FirePerimetersLayerConfig } from "./fire-perimeters.config";
+import { MinistryOfForestsDistrictsLayerConfig } from "./ministry-of-forests-districts.config";
+import { MinistryOfForestsRegionsLayerConfig } from "./ministry-of-forests-regions.config";
+import { WildfireOrgUnitFireCentreLayerConfig } from "./wildfire-org-unit-fire-centre";
+import { BeingHeldWildfiresLayerConfig } from "./wildfires/being-held-wildfires.config";
+import { UnderControlWildfiresLayerConfig } from "./wildfires/under-control-wildfires.config";
+import { OutWildfiresLayerConfig } from "./wildfires/out-wildfires.config";
+
+export interface layerSettings {
+  geoserverBaseUrl: string;
+  services6BaseUrl: string;
+  wfnewsUrl: string;
+}
+export function LayerConfig(mapServices: MapServices, token?: string) {
+  const ls: layerSettings = {
+    geoserverBaseUrl: mapServices['geoserverBaseUrl'],
+    services6BaseUrl: mapServices['services6BaseUrl'],
+    wfnewsUrl: mapServices['wfnewsBaseUrl'],
+  };
+
+  return [
+    MinistryOfForestsRegionsLayerConfig(ls, token),
+    MinistryOfForestsDistrictsLayerConfig(ls, token), 
+    WildfireOrgUnitFireCentreLayerConfig(ls, token),
+    FirePerimetersLayerConfig(ls, token),
+    OutOfControlWildfiresLayerConfig(ls, token),
+    BeingHeldWildfiresLayerConfig(ls, token),
+    UnderControlWildfiresLayerConfig(ls, token),
+    OutWildfiresLayerConfig(ls, token),
+  ];
+
+
+}

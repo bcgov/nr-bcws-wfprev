@@ -22,8 +22,15 @@ export interface WebADE {
   checkTokenUrl?: string;
 }
 
+export interface MapServicesConfig {
+  geoserverBaseUrl: string;
+  services6BaseUrl: string;
+  wfnewsBaseUrl: string;
+}
+
 export interface ApplicationConfig {
   application: Application
   rest: RestConfig;
   webade: WebADE;
+  mapServices: MapServicesConfig;
 }

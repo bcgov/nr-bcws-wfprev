@@ -65,3 +65,17 @@
 .map-container ::ng-deep .legend.leaflet-control.hidden {
   display: none !important;
 }
+
+::ng-deep .smk-tool-LayersTool span {
+  display: none; 
+}
+
+::ng-deep .smk-tool-LayersTool::after {
+  content: "All Layers";
+  display: inline-block;  
+  vertical-align: middle; 
+  margin: 0 2px 0 4px;    
+  font-size: inherit;     
+  font-weight: inherit;   
+  color: inherit;         
+}
