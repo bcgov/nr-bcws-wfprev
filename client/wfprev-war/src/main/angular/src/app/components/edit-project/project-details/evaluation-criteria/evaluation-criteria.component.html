@@ -32,17 +32,17 @@
                 </div>
                 <div class="criteria-item criteria-item-narrow">
                   <span>WUI Risk Class</span>
-                  <span>{{ formatCodeLabel(evaluationCriteriaSummary?.wuiRiskClassCode?.wuiRiskClassCode) || '' }}</span>
+                  <span>{{ formatCodeLabel(evaluationCriteriaSummary.wuiRiskClassCode?.wuiRiskClassCode) || '' }}</span>
                 </div>
                 <div class="criteria-item criteria-item-narrow">
                   <span>Local Risk Class</span>
-                  <span>{{ formatCodeLabel(evaluationCriteriaSummary?.localWuiRiskClassCode?.wuiRiskClassCode) || '' }}</span>
+                  <span>{{ formatCodeLabel(evaluationCriteriaSummary.localWuiRiskClassCode?.wuiRiskClassCode) || '' }}</span>
                 </div>
               </div>
               <div>
                 <div class="criteria-item">
                   <span>{{ evaluationLabels.comments.rationale }}:</span>
-                  <span class="comments-text">{{ evaluationCriteriaSummary?.localWuiRiskClassRationale || 'None' }}</span>
+                  <span class="comments-text">{{ evaluationCriteriaSummary.localWuiRiskClassRationale || 'None' }}</span>
                 </div>
               </div>
             </div>
@@ -75,8 +75,8 @@
             </div>
           </div>
           <wfprev-timestamp
-            [updateDate]="evaluationCriteriaSummary?.lastUpdatedTimestamp"
-            [updateUser]="evaluationCriteriaSummary?.updateUser">
+            [updateDate]="evaluationCriteriaSummary.lastUpdatedTimestamp"
+            [updateUser]="evaluationCriteriaSummary.updateUser">
           </wfprev-timestamp>
         </div>
 
