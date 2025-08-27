@@ -56,7 +56,11 @@ export class AppHeaderComponent implements OnInit {
 
   onSupportLinkClick() {
     //navigate to a support link page, upon decide which url would that be.
-    const url = 'https://intranet.gov.bc.ca/bcws/corporate-governance/strategic-initiatives-and-innovation/wildfire-one/wildfire-one-training'
-    window.open(url, '_blank', 'noopener');
+    const url = this.appConfigService.getConfig()?.rest['trainingAndSupportLink'];
+    if (url) {
+      window.open(url, '_blank', 'noopener');
+    } else {
+      console.warn('Support link is not configured');
+    }
   }
 }

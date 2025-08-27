@@ -7,7 +7,6 @@ export interface Application {
   enableLocalStorageToken?: boolean;
   allowLocalExpiredToken?: boolean;
   localStorageTokenKey?: string;
-
 }
 
 export interface RestConfig {

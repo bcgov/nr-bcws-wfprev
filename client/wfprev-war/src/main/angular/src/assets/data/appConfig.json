@@ -12,10 +12,11 @@
     "checkTokenUrl": "#{WFPREV_CHECK_TOKEN_URL}#"
   },
 
-  "rest": {
-    "wfprev": "#{WFPREV_BASE_URL}#",
-    "wfdm": "#{WFDM_BASE_URL}#",
-    "openmaps": "https://openmaps.gov.bc.ca"
+   "rest": {
+      "wfprev":"#{WFPREV_BASE_URL}#",
+      "wfdm":"#{WFDM_BASE_URL}#",
+      "openmaps":"https://openmaps.gov.bc.ca",
+      "trainingAndSupportLink": "#{TRAINING_AND_SUPPORT_LINK}#"
   },
 
   "mapServices": {

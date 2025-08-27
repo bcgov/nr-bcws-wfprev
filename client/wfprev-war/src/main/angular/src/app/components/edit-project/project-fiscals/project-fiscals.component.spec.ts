@@ -287,8 +287,17 @@ describe('ProjectFiscalsComponent', () => {
   });
 
   it('should revert to original values for an existing fiscal entry on cancel', () => {
-    component.projectFiscals = [{ projectPlanFiscalGuid: 'existing-guid', fiscalYear: 2023, projectFiscalName: 'Test Fiscal' }];
-    component.originalFiscalValues = [{ projectPlanFiscalGuid: 'existing-guid', fiscalYear: 2023, projectFiscalName: 'Test Fiscal (Original)' }];
+    component.projectFiscals = [
+      { projectPlanFiscalGuid: 'existing-guid', fiscalYear: 2023, projectFiscalName: 'Test Fiscal' }
+    ];
+    component.originalFiscalValues = [
+      {
+        projectPlanFiscalGuid: 'existing-guid',
+        fiscalYear: 2023,
+        projectFiscalName: 'Test Fiscal (Original)',
+        planFiscalStatusCode: { planFiscalStatusCode: 'DRAFT', description: 'Draft' }
+      }
+    ];
     component.fiscalForms = [component.createFiscalForm(component.projectFiscals[0])];
 
     spyOn(component.fiscalForms[0], 'patchValue');
@@ -297,10 +306,19 @@ describe('ProjectFiscalsComponent', () => {
 
     component.onCancelFiscal(0);
 
-    expect(component.fiscalForms[0].patchValue).toHaveBeenCalledWith(component.originalFiscalValues[0]);
+    expect(component.fiscalForms[0].patchValue).toHaveBeenCalledWith(
+      jasmine.objectContaining({
+        projectPlanFiscalGuid: 'existing-guid',
+        fiscalYear: 2023,
+        projectFiscalName: 'Test Fiscal (Original)',
+        planFiscalStatusCode: 'DRAFT',
+      }),
+      { emitEvent: false }
+    );
     expect(component.fiscalForms[0].markAsPristine).toHaveBeenCalled();
     expect(component.fiscalForms[0].markAsUntouched).toHaveBeenCalled();
   });
+
 
   it('should not fail if onCancelFiscal() is called with an invalid index', () => {
     component.projectFiscals = [];
@@ -862,5 +880,57 @@ describe('ProjectFiscalsComponent', () => {
 
     jasmine.clock().uninstall();
   });
+
+  describe('patchStatusCode()', () => {
+    const call = (val: any) => (component as any).patchStatusCode(val);
+
+    it('returns the string code as is', () => {
+      expect(call('DRAFT')).toBe('DRAFT');
+    });
+
+    it('extracts code from object', () => {
+      expect(call({ planFiscalStatusCode: 'CANCELLED' })).toBe('CANCELLED');
+    });
+
+    it('returns empty string for null or undefined', () => {
+      expect(call(null)).toBe('');
+      expect(call(undefined)).toBe('');
+    });
+  });
+
+  it('selects tab by newFiscalGuid when provided', fakeAsync(() => {
+    mockProjectService.getProjectFiscalsByProjectGuid.and.returnValue(of({
+      _embedded: { projectFiscals: [
+        { projectPlanFiscalGuid: 'A', fiscalYear: 2024, projectFiscalName: 'A Plan' },
+        { projectPlanFiscalGuid: 'B', fiscalYear: 2025, projectFiscalName: 'B Plan' },
+      ]}
+    }));
+    component.loadProjectFiscals(false, 'B');
+    tick();
+    expect(component.selectedTabIndex).toBe(0);
+  }));
+
+  it('selects tab by focusedFiscalId when no newFiscalGuid', fakeAsync(() => {
+    mockProjectService.getProjectFiscalsByProjectGuid.and.returnValue(of({
+      _embedded: { projectFiscals: [
+        { projectPlanFiscalGuid: 'X1', fiscalYear: 2025 },
+        { projectPlanFiscalGuid: 'X2', fiscalYear: 2024 },
+      ]}
+    }));
+    component.focusedFiscalId = 'X2';
+    component.loadProjectFiscals();
+    tick();
+    expect(component.selectedTabIndex).toBe(1);
+  }));
+
+  it('falls back to previousTabIndex or jump to 0', fakeAsync(() => {
+    mockProjectService.getProjectFiscalsByProjectGuid.and.returnValue(of({
+      _embedded: { projectFiscals: [{ projectPlanFiscalGuid: 'Y1', fiscalYear: 2025 }] }
+    }));
+    component.selectedTabIndex = 5;
+    component.loadProjectFiscals();
+    tick();
+    expect(component.selectedTabIndex).toBe(0);
+  }));
 
 });

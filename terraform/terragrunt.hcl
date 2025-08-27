@@ -9,8 +9,8 @@ generate "remote_state" {
   contents  = <<EOF
 terraform {
   backend "s3" {
-    bucket         = "terraform-remote-state-${get_env("TFC_PROJECT")}-${get_env("TARGET_ENV")}"    # Replace with either generated or custom bucket name
-    key            = "terraform.${get_env("TFC_PROJECT")}-${get_env("TARGET_ENV")}-state"           # Path and name of the state file within the bucket
+    bucket         = "terraform-remote-state-${get_env("TFC_PROJECT")}-${get_env("NAMESPACE_ENV")}"    # Replace with either generated or custom bucket name
+    key            = "terraform.${get_env("TFC_PROJECT")}-${get_env("NAMESPACE_ENV")}-state"           # Path and name of the state file within the bucket
     region         = "ca-central-1"                   # AWS region where the bucket is located
     dynamodb_table = "terraform-remote-state-lock-${get_env("TFC_PROJECT")}"  # Replace with either generated or custom DynamoDB table name
     encrypt        = true                              # Enable encryption for the state file
@@ -25,6 +25,9 @@ generate "tfvars" {
   disable_signature = true
   contents          = <<-EOF
 TARGET_ENV = "${get_env("TARGET_ENV")}"
+NAMESPACE_ENV = "${get_env("NAMESPACE_ENV")}"
+SHORTENED_ENV = "${get_env("SHORTENED_ENV")}"
+TFC_PROJECT = "${get_env("TFC_PROJECT")}"
 APP_COUNT = "${get_env("APP_COUNT")}"
 LOGGING_LEVEL = "${get_env("LOGGING_LEVEL")}"
 RESTORE_DOWNSCALED_CLUSTER = "${get_env("RESTORE_DOWNSCALED_CLUSTER")}"
@@ -39,7 +42,6 @@ WFPREV_CLIENT_ID = "${get_env("WFPREV_CLIENT_ID")}"
 WFPREV_CLIENT_SECRET = "${get_env("WFPREV_CLIENT_SECRET")}"
 WEBADE_OAUTH2_CHECK_TOKEN_URL = "${get_env("WEBADE_OAUTH2_CHECK_TOKEN_URL")}"
 WEBADE_OAUTH2_CHECK_AUTHORIZE_URL = "${get_env("WEBADE_OAUTH2_CHECK_AUTHORIZE_URL")}"
-WFPREV_DATASOURCE_URL = "${get_env("WFPREV_DATASOURCE_URL")}"
 WFPREV_BASE_URL = "${get_env("WFPREV_BASE_URL")}"
 WFDM_BASE_URL = "${get_env("WFDM_BASE_URL")}"
 WFPREV_GDB_FUNCTION_NAME = "${get_env("WFPREV_GDB_FUNCTION_NAME")}"
@@ -54,6 +56,7 @@ AWS_ALERT_EMAIL_LIST = "${get_env("AWS_ALERT_EMAIL_LIST")}"
 WEBADE_OAUTH2_WFPREV_UI_CLIENT_SECRET = "${get_env("WEBADE_OAUTH2_WFPREV_UI_CLIENT_SECRET")}"
 CLIENT_IMAGE = "${get_env("CLIENT_IMAGE")}"
 WFPREV_CHECK_TOKEN_URL = "${get_env("WFPREV_CHECK_TOKEN_URL")}"
+TRAINING_AND_SUPPORT_LINK = "${get_env("TRAINING_AND_SUPPORT_LINK")}"
 
 # node
 WFPREV_GDB_EXTRACTOR_DIGEST = "${get_env("WFPREV_GDB_EXTRACTOR_DIGEST")}"
@@ -82,7 +85,7 @@ generate "provider" {
 provider "aws" {
   region  = "ca-central-1"
   assume_role {
-    role_arn = "arn:aws:iam::$${var.TARGET_AWS_ACCOUNT_ID}:role/Terraform-deploy"
+    role_arn = "arn:aws:iam::$${var.TARGET_AWS_ACCOUNT_ID}:role/GHA_CI_CD"
   }
 }
 
@@ -90,7 +93,7 @@ provider "aws" {
   alias = "aws-us"
   region  = "us-east-1"
   assume_role {
-    role_arn = "arn:aws:iam::$${var.TARGET_AWS_ACCOUNT_ID}:role/Terraform-deploy"
+    role_arn = "arn:aws:iam::$${var.TARGET_AWS_ACCOUNT_ID}:role/GHA_CI_CD"
   }
 }
 EOF

@@ -28,11 +28,13 @@ on:
 permissions:
   contents: read
   id-token: write
+  packages: write
 
 jobs:
   get-image-tag:
     runs-on: ubuntu-22.04
     if: ${{ contains(inputs.TYPE_OF_CHANGE, 'SPIN_UP') }}
+    environment: ${{ inputs.DEFAULT_APPLICATION_ENVIRONMENT }}
     outputs:
       TAG_TO_USE: ${{ steps.mapEnvironments.outputs.TAG_TO_USE }}
       GDB_EXTRACTOR_IMAGE: ${{ steps.getGdbImage.outputs.GDB_EXTRACTOR_IMAGE }}
@@ -88,6 +90,7 @@ jobs:
   save-vars-on-spin-down:
     runs-on: ubuntu-22.04
     if: ${{ contains(inputs.TYPE_OF_CHANGE, 'SPIN_DOWN') }}
+    environment: ${{ inputs.DEFAULT_APPLICATION_ENVIRONMENT }}
 
     steps:
       - name: Configure AWS credentials for Terraform account (DEV/TEST/PROD)
@@ -107,12 +110,12 @@ jobs:
           else
             echo "wfprev$TARGET_ENV DB exists"
           fi
-          export GDB_EXTRACTOR_IMAGE="$(aws lambda get-function --function-name wfprev-gdb-$TARGET_ENV --query 'Code.ImageUri' | sed 's/"//g')"
+          export GDB_EXTRACTOR_IMAGE="$(aws lambda get-function --function-name wfprev-gdb-$TARGET_ENV --query 'Code.ImageUri' | sed 's/\"//g')"
           aws ssm put-parameter --name 'gdb-extractor-image' --value $GDB_EXTRACTOR_IMAGE --type "String" --data-type "text" --overwrite
           if [[ $(aws rds describe-db-snapshots --snapshot-type=manual) == *"wfprev$TARGET_ENV-scaling-snapshot"* ]]; then 
-            aws rds delete-db-snapshot --db-snapshot-identifier wfprev$TARGET_ENV"; 
+            aws rds delete-db-snapshot --db-snapshot-identifier wfprev$TARGET_ENV-scaling-snapshot; 
           fi
-          aws rds create-db-snapshot --db-snapshot-identifier wfprev$TARGET_ENV
+          aws rds create-db-snapshot --db-snapshot-identifier wfprev$TARGET_ENV-scaling-snapshot --db-instance-identifier wfprev$TARGET_ENV
 
 
   spin-down:
