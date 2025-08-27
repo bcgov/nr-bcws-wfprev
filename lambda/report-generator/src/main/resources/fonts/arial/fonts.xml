@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<fontFamilies>
+
+    <fontFamily name="Arial">
+        <normal>
+              <ttf>fonts/arial/ARIAL.TTF</ttf>
+              <pdf>fonts/arial/ARIAL.TTF</pdf>
+        </normal>
+        <bold>
+              <ttf>fonts/arial/ARIALBD.TTF</ttf>
+              <pdf>fonts/arial/ARIALBD.TTF</pdf>
+        </bold>
+        <italic>
+              <ttf>fonts/arial/ARIALI.TTF</ttf>
+              <pdf>fonts/arial/ARIALI.TTF</pdf>
+        </italic>
+        <boldItalic>
+              <ttf>fonts/arial/ARIALBI.TTF</ttf>
+              <pdf>fonts/arial/ARIALBI.TTF</pdf>
+        </boldItalic>
+        <narrow>
+              <ttf>fonts/arial/ARIALN.TTF</ttf>
+              <pdf>fonts/arial/ARIALN.TTF</pdf>
+        </narrow>
+        <narrowBold>
+              <ttf>fonts/arial/ARIALNB.TTF</ttf>
+              <pdf>fonts/arial/ARIALNB.TTF</pdf>
+        </narrowBold>
+        <narrowItalic>
+              <ttf>fonts/arial/ARIALNI.TTF</ttf>
+              <pdf>fonts/arial/ARIALNI.TTF</pdf>
+        </narrowItalic>
+        <narrowBoldItalic>
+              <ttf>fonts/arial/ARIALNBI.TTF</ttf>
+              <pdf>fonts/arial/ARIALNBI.TTF</pdf>
+        </narrowBoldItalic>
+        <black>
+              <ttf>fonts/arial/ARIBLK.TTF</ttf>
+              <pdf>fonts/arial/ARIBLK.TTF</pdf>
+        </black>
+        <pdfEncoding>Cp1252</pdfEncoding>
+        <pdfEmbedded>true</pdfEmbedded>
+    </fontFamily>
+
+</fontFamilies>
