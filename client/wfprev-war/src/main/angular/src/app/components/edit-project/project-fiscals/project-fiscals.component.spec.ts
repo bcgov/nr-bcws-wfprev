@@ -897,4 +897,40 @@ describe('ProjectFiscalsComponent', () => {
       expect(call(undefined)).toBe('');
     });
   });
+
+  it('selects tab by newFiscalGuid when provided', fakeAsync(() => {
+    mockProjectService.getProjectFiscalsByProjectGuid.and.returnValue(of({
+      _embedded: { projectFiscals: [
+        { projectPlanFiscalGuid: 'A', fiscalYear: 2024, projectFiscalName: 'A Plan' },
+        { projectPlanFiscalGuid: 'B', fiscalYear: 2025, projectFiscalName: 'B Plan' },
+      ]}
+    }));
+    component.loadProjectFiscals(false, 'B');
+    tick();
+    expect(component.selectedTabIndex).toBe(0);
+  }));
+
+  it('selects tab by focusedFiscalId when no newFiscalGuid', fakeAsync(() => {
+    mockProjectService.getProjectFiscalsByProjectGuid.and.returnValue(of({
+      _embedded: { projectFiscals: [
+        { projectPlanFiscalGuid: 'X1', fiscalYear: 2025 },
+        { projectPlanFiscalGuid: 'X2', fiscalYear: 2024 },
+      ]}
+    }));
+    component.focusedFiscalId = 'X2';
+    component.loadProjectFiscals();
+    tick();
+    expect(component.selectedTabIndex).toBe(1);
+  }));
+
+  it('falls back to previousTabIndex or jump to 0', fakeAsync(() => {
+    mockProjectService.getProjectFiscalsByProjectGuid.and.returnValue(of({
+      _embedded: { projectFiscals: [{ projectPlanFiscalGuid: 'Y1', fiscalYear: 2025 }] }
+    }));
+    component.selectedTabIndex = 5;
+    component.loadProjectFiscals();
+    tick();
+    expect(component.selectedTabIndex).toBe(0);
+  }));
+
 });
