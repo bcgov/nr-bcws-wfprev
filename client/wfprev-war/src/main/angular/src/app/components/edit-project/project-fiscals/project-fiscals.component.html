@@ -56,8 +56,8 @@
                       [id]="'projectFiscalName'"
                       [label]="'Fiscal Activity Name'"
                       [placeholder]="'Descriptor including site and activity category'"
-                      [control]="getFiscalControl(selectedTabIndex, 'projectFiscalName')"
-                      [tooltip]="getFiscalControl(selectedTabIndex, 'projectFiscalName')?.value"
+                      [control]="getFiscalControl(i, 'projectFiscalName')"
+                      [tooltip]="getFiscalControl(i, 'projectFiscalName')?.value"
                       [required]="true"
                       [errorMessages]="{ maxlength: messages.maxLengthExceeded }"
                     />
@@ -107,8 +107,8 @@
                       [label]="'Planned Hectares (Ha)'"
                       [placeholder]="'0'"
                       [type]="'number'"
-                      [control]="getFiscalControl(selectedTabIndex, 'fiscalPlannedProjectSizeHa')"
-                      [tooltip]="getFiscalControl(selectedTabIndex, 'fiscalPlannedProjectSizeHa')?.value"
+                      [control]="getFiscalControl(i, 'fiscalPlannedProjectSizeHa')"
+                      [tooltip]="getFiscalControl(i, 'fiscalPlannedProjectSizeHa')?.value"
                       [errorMessages]="{
                         min: messages.positiveNumber,
                         max: messages.maxLengthExceeded,
@@ -123,8 +123,8 @@
                       [label]="'Completed Hectares (Ha)'"
                       [placeholder]="'0'"
                       [type]="'number'"
-                      [control]="getFiscalControl(selectedTabIndex, 'fiscalCompletedSizeHa')"
-                      [tooltip]="getFiscalControl(selectedTabIndex, 'fiscalCompletedSizeHa')?.value"
+                      [control]="getFiscalControl(i, 'fiscalCompletedSizeHa')"
+                      [tooltip]="getFiscalControl(i, 'fiscalCompletedSizeHa')?.value"
                       [errorMessages]="{ min: messages.positiveNumber, maxlength: messages.maxLengthExceeded, max: messages.maxLengthExceeded }"
                     />
                   </div>
@@ -134,8 +134,8 @@
                       [id]="'resultsOpeningId'"
                       [label]="'RESULTS ID'"
                       [placeholder]="'e.g., 98734702882'"
-                      [control]="getFiscalControl(selectedTabIndex, 'resultsOpeningId')"
-                      [tooltip]="getFiscalControl(selectedTabIndex, 'resultsOpeningId')?.value"
+                      [control]="getFiscalControl(i, 'resultsOpeningId')"
+                      [tooltip]="getFiscalControl(i, 'resultsOpeningId')?.value"
                       [errorMessages]="{ maxlength: messages.maxLengthExceeded }"
                     />
                   </div>
@@ -186,8 +186,8 @@
                       [id]="'firstNationsPartner'"
                       [label]="'First Nation Co-Delivery Partners'"
                       [placeholder]="'e.g., St\'at\'imc Nation'"
-                      [control]="getFiscalControl(selectedTabIndex, 'firstNationsPartner')"
-                      [tooltip]="getFiscalControl(selectedTabIndex, 'firstNationsPartner')?.value"
+                      [control]="getFiscalControl(i, 'firstNationsPartner')"
+                      [tooltip]="getFiscalControl(i, 'firstNationsPartner')?.value"
                       [errorMessages]="{ maxlength: messages.maxLengthExceeded }"
                     />
                   </div>
@@ -197,8 +197,8 @@
                       [id]="'otherPartner'"
                       [label]="'Other Partners'"
                       [placeholder]="'e.g., BC Parks'"
-                      [control]="getFiscalControl(selectedTabIndex, 'otherPartner')"
-                      [tooltip]="getFiscalControl(selectedTabIndex, 'otherPartner')?.value"
+                      [control]="getFiscalControl(i, 'otherPartner')"
+                      [tooltip]="getFiscalControl(i, 'otherPartner')?.value"
                       [errorMessages]="{ maxlength: messages.maxLengthExceeded }"
                     />
                   </div>
@@ -214,8 +214,8 @@
                       [label]="'Original Cost Estimate'"
                       [type]="'number'"
                       [placeholder]="'0.00'"
-                      [control]="getFiscalControl(selectedTabIndex, 'totalCostEstimateAmount')"
-                      [tooltip]="getFiscalControl(selectedTabIndex, 'totalCostEstimateAmount')?.value"
+                      [control]="getFiscalControl(i, 'totalCostEstimateAmount')"
+                      [tooltip]="getFiscalControl(i, 'totalCostEstimateAmount')?.value"
                       [prefix]="'$'"
                       [errorMessages]="{ min: messages.positiveNumber, maxlength: messages.maxLengthExceeded, max: messages.maxLengthExceeded }"
                     />
@@ -226,8 +226,8 @@
                       [id]="'cfsProjectCode'"
                       [label]="'CFS Code'"
                       [placeholder]="'e.g., 719C792'"
-                      [control]="getFiscalControl(selectedTabIndex, 'cfsProjectCode')"
-                      [tooltip]="getFiscalControl(selectedTabIndex, 'cfsProjectCode')?.value"
+                      [control]="getFiscalControl(i, 'cfsProjectCode')"
+                      [tooltip]="getFiscalControl(i, 'cfsProjectCode')?.value"
                       [errorMessages]="{ maxlength: messages.maxLengthExceeded }"
                     />
                   </div>
@@ -237,8 +237,8 @@
                       [id]="'ancillaryFundingProvider'"
                       [label]="'Ancillary Funding Provider'"
                       [placeholder]="'Additional funding beyond WRR.'"
-                      [control]="getFiscalControl(selectedTabIndex, 'ancillaryFundingProvider')"
-                      [tooltip]="getFiscalControl(selectedTabIndex, 'ancillaryFundingProvider')?.value"
+                      [control]="getFiscalControl(i, 'ancillaryFundingProvider')"
+                      [tooltip]="getFiscalControl(i, 'ancillaryFundingProvider')?.value"
                       [errorMessages]="{ maxlength: messages.maxLengthExceeded }"
                     />
                   </div>
@@ -249,8 +249,8 @@
                       [label]="'Ancillary Funding Amount'"
                       [type]="'number'"
                       [placeholder]="'0.00'"
-                      [control]="getFiscalControl(selectedTabIndex, 'fiscalAncillaryFundAmount')"
-                      [tooltip]="getFiscalControl(selectedTabIndex, 'fiscalAncillaryFundAmount')?.value"
+                      [control]="getFiscalControl(i, 'fiscalAncillaryFundAmount')"
+                      [tooltip]="getFiscalControl(i, 'fiscalAncillaryFundAmount')?.value"
                       [prefix]="'$'"
                       [errorMessages]="{ min: messages.positiveNumber, maxlength: messages.maxLengthExceeded, max: messages.maxLengthExceeded }"
                     />
@@ -262,8 +262,8 @@
                       [label]="'Forecast Amount'"
                       [placeholder]="'0.00'"
                       [type]="'number'"
-                      [control]="getFiscalControl(selectedTabIndex, 'fiscalForecastAmount')"
-                      [tooltip]="getFiscalControl(selectedTabIndex, 'fiscalForecastAmount')?.value"
+                      [control]="getFiscalControl(i, 'fiscalForecastAmount')"
+                      [tooltip]="getFiscalControl(i, 'fiscalForecastAmount')?.value"
                       [errorMessages]="{ min: messages.positiveNumber, maxlength: messages.maxLengthExceeded, max: messages.maxLengthExceeded }"
                       [prefix]="'$'"
                     />
@@ -275,8 +275,8 @@
                       [label]="'Final Reported Spend'"
                       [placeholder]="'0.00'"
                       [type]="'number'"
-                      [control]="getFiscalControl(selectedTabIndex, 'fiscalReportedSpendAmount')"
-                      [tooltip]="getFiscalControl(selectedTabIndex, 'fiscalReportedSpendAmount')?.value"
+                      [control]="getFiscalControl(i, 'fiscalReportedSpendAmount')"
+                      [tooltip]="getFiscalControl(i, 'fiscalReportedSpendAmount')?.value"
                       [errorMessages]="{ min: messages.positiveNumber, maxlength: messages.maxLengthExceeded, max: messages.maxLengthExceeded }"
                       [prefix]="'$'"
                     />
@@ -288,8 +288,8 @@
                       [label]="'CFS Actual Spend'"
                       [placeholder]="'0.00'"
                       [type]="'number'"
-                      [control]="getFiscalControl(selectedTabIndex, 'fiscalActualAmount')"
-                      [tooltip]="getFiscalControl(selectedTabIndex, 'fiscalActualAmount')?.value"
+                      [control]="getFiscalControl(i, 'fiscalActualAmount')"
+                      [tooltip]="getFiscalControl(i, 'fiscalActualAmount')?.value"
                       [errorMessages]="{ min: messages.positiveNumber, maxlength: messages.maxLengthExceeded, max: messages.maxLengthExceeded }"
                       [prefix]="'$'"
                     />

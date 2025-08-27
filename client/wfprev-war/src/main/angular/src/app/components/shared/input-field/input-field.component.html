@@ -12,7 +12,7 @@
         [type]="type"
         [formControl]="control"
         [placeholder]="placeholder"
-        [matTooltip]="tooltip || control?.value"
+        [matTooltip]="tooltip || control.value"
       />
     </div>
 
@@ -22,19 +22,19 @@
         [type]="type"
         [formControl]="control"
         [placeholder]="placeholder"
-        [matTooltip]="tooltip || control?.value"
+        [matTooltip]="tooltip || control.value"
       />
     </ng-template>
 
     <div class="error" *ngIf="(control?.hasError('maxlength') || control?.hasError('max')) && (control?.dirty || control?.touched)">
-      {{ errorMessages?.['maxlength'] }}
+      {{ errorMessages['maxlength'] }}
     </div>
     
     <div class="error" *ngIf="control?.hasError('email') && (control?.dirty || control?.touched)">
-      {{ errorMessages?.['email'] }}
+      {{ errorMessages['email'] }}
     </div>
     <div class="error" *ngIf="control?.hasError('min') && (control?.dirty || control?.touched)">
-      {{ errorMessages?.['min'] }}
+      {{ errorMessages['min'] }}
     </div>
   </div>
 </div>

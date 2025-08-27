@@ -1,6 +1,6 @@
 import { TextFieldModule } from '@angular/cdk/text-field';
 import { CommonModule } from '@angular/common';
-import { AfterViewInit, Component, EventEmitter, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, EventEmitter, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatExpansionModule } from '@angular/material/expansion';
@@ -43,6 +43,7 @@ import { TextareaComponent } from 'src/app/components/shared/textarea/textarea.c
 export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild(FiscalYearProjectsComponent) fiscalYearProjectsComponent!: FiscalYearProjectsComponent;
   @Output() projectNameChange = new EventEmitter<string>();
+  @ViewChild('mapHost') mapHost!: ElementRef<HTMLDivElement>;
 
   private map: L.Map | undefined;
   private readonly activityBoundaryGroup: L.LayerGroup = L.layerGroup();
