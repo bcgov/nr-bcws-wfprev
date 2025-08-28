@@ -11,7 +11,7 @@
         [required]="true"
         [placeholder]="'Concisely describe project\'s goal and/or area'"
         [control]="getControl('projectName')"
-        [tooltip]="getControl('projectName')?.value"
+        [tooltip]="getControl('projectName').value"
         [errorMessages]="{ maxlength: messages.maxLengthExceeded }"
       ></wfprev-input-field>
     </div>
@@ -133,7 +133,7 @@
         [label]="'Project Lead'"
         [placeholder]="'First and Last Name'"
         [control]="getControl('projectLead')"
-        [tooltip]="getControl('projectLead')?.value"
+        [tooltip]="getControl('projectLead').value"
         [required]="true"
         [errorMessages]="{ maxlength: messages.maxLengthExceeded }"
       />
@@ -145,7 +145,7 @@
         [label]="'Project Lead Email'"
         [placeholder]="'example@bc.gov.ca'"
         [control]="getControl('projectLeadEmailAddress')"
-        [tooltip]="getControl('projectLeadEmailAddress')?.value"
+        [tooltip]="getControl('projectLeadEmailAddress').value"
         [type]="'email'"
         [errorMessages]="{
           email: messages.invalidEmail,
@@ -160,7 +160,7 @@
         [label]="'Closest Community'"
         [placeholder]="'Name of closest community to the project'"
         [control]="getControl('closestCommunityName')"
-        [tooltip]="getControl('closestCommunityName')?.value"
+        [tooltip]="getControl('closestCommunityName').value"
         [required]="true"
         [errorMessages]="{ maxlength: messages.maxLengthExceeded }"
       ></wfprev-input-field>
@@ -172,7 +172,7 @@
         [label]="'Planning Unit'"
         [placeholder]="'e.g., 2025WUI-WRR- Nelson to Playmor- NE-C1-01'"
         [control]="getControl('siteUnitName')"
-        [tooltip]="getControl('siteUnitName')?.value"
+        [tooltip]="getControl('siteUnitName').value"
         [errorMessages]="{ maxlength: messages.maxLengthExceeded }"
       />
     </div>
