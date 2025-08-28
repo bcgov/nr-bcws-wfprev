@@ -32,6 +32,10 @@ describe('CodeTableServices', () => {
       authScopes: 'mock-scope',
       checkTokenUrl: 'http://mock-check-token-url.com',
       enableCheckToken: false,
+    },
+    mapServices: {
+      geoserverBaseUrl: 'http://geoserver.test',
+      wfnewsBaseUrl: 'http://wfnews.test'
     }
   };
 

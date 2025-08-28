@@ -27,6 +27,10 @@ describe('AppConfigService', () => {
       authScopes: 'TEST.*',
     },
     rest: {},
+    mapServices: {
+      geoserverBaseUrl: 'http://geoserver.test',
+      wfnewsBaseUrl: 'http://wfnews.test'
+    }
   };
 
   beforeEach(() => {

@@ -20,7 +20,6 @@
 
   "mapServices": {
     "geoserverBaseUrl": "https://i1bcwsapi.nrs.gov.bc.ca/wfss-geoserver-api",
-    "services6BaseUrl": "https://services6.dev.bcwildfireservices.com",
     "wfnewsBaseUrl": "https://wfnews-api.dev.bcwildfireservices.com"
   }
 }

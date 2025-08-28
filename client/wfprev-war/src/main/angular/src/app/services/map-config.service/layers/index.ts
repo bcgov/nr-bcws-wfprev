@@ -10,13 +10,11 @@ import { OutWildfiresLayerConfig } from "./wildfires/out-wildfires.config";
 
 export interface layerSettings {
   geoserverBaseUrl: string;
-  services6BaseUrl: string;
   wfnewsUrl: string;
 }
 export function LayerConfig(mapServices: MapServices, token?: string) {
   const ls: layerSettings = {
     geoserverBaseUrl: mapServices['geoserverBaseUrl'],
-    services6BaseUrl: mapServices['services6BaseUrl'],
     wfnewsUrl: mapServices['wfnewsBaseUrl'],
   };
 

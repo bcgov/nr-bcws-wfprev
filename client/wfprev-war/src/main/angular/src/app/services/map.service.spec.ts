@@ -122,6 +122,41 @@ describe('MapService', () => {
 
       await expectAsync(service.createSMK(option)).toBeRejected();
     });
+
+    it('should toggle layer visibilities and call updateLayersVisible when $viewer exists', async () => {
+      const setItemVisible = jasmine.createSpy('setItemVisible');
+      const updateLayersVisible = jasmine.createSpy('updateLayersVisible').and.returnValue(Promise.resolve());
+
+      const smkInstanceMock = {
+        destroy: jasmine.createSpy('destroy'),
+        $viewer: {
+          displayContext: {
+            layers: { setItemVisible },
+          },
+          updateLayersVisible,
+        },
+      };
+
+      mockSMK.INIT.and.returnValue(Promise.resolve(smkInstanceMock));
+
+      const option: any = {};
+
+      await service.createSMK(option);
+
+      expect(setItemVisible.calls.count()).toBe(8);
+      expect(setItemVisible).toHaveBeenCalledWith('ministry-of-forests-regions', true);
+      expect(setItemVisible).toHaveBeenCalledWith('ministry-of-forests-districts', false);
+      expect(setItemVisible).toHaveBeenCalledWith('wildfire-org-unit-fire-centre', false);
+      expect(setItemVisible).toHaveBeenCalledWith('fire-perimeters', false);
+      expect(setItemVisible).toHaveBeenCalledWith('active-wildfires-out-of-control', false);
+      expect(setItemVisible).toHaveBeenCalledWith('active-wildfires-holding', false);
+      expect(setItemVisible).toHaveBeenCalledWith('active-wildfires-under-control', false);
+      expect(setItemVisible).toHaveBeenCalledWith('active-wildfires-out', false);
+
+      expect(updateLayersVisible).toHaveBeenCalled();
+
+      expect(service.getSMKInstance()).toBe(smkInstanceMock);
+    });
   });
 
   describe('patch', () => {
@@ -161,7 +196,7 @@ describe('MapService', () => {
 
     it('should define OpenStreetMap layer', async () => {
       await service.patch();
-      
+
       expect(mockL.tileLayer).toHaveBeenCalledWith(
         'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
         { maxZoom: 19 }
@@ -172,13 +207,13 @@ describe('MapService', () => {
 
   describe('clone', () => {
     it('should create deep copy of object', () => {
-      const original = { 
-        nested: { 
-          value: 42 
-        } 
+      const original = {
+        nested: {
+          value: 42
+        }
       };
       const cloned = service.clone(original);
-      
+
       expect(cloned).toEqual(original);
       expect(cloned).not.toBe(original);
       expect(cloned.nested).not.toBe(original.nested);
@@ -188,7 +223,7 @@ describe('MapService', () => {
   describe('defineOpenStreetMapLayer', () => {
     it('should define OpenStreetMap layer correctly', () => {
       service.defineOpenStreetMapLayer();
-      
+
       expect(mockL.tileLayer).toHaveBeenCalledWith(
         'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
         { maxZoom: 19 }

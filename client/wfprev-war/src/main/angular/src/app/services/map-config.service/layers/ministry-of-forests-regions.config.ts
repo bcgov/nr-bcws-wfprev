@@ -5,7 +5,7 @@ export function MinistryOfForestsRegionsLayerConfig(ls: layerSettings, token?: s
     serviceUrl: ls.geoserverBaseUrl + "/ows",
     id: "ministry-of-forests-regions",
     title: "Ministry of Forests Regions",
-    visible: false,
+    visible: true,
     type: "wms",
     isQueryable: false,
     combiningClass: "wfBoundary",

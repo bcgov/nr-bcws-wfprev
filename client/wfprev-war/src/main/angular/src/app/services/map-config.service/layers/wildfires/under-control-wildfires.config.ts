@@ -14,7 +14,7 @@ export function UnderControlWildfiresLayerConfig(ls: layerSettings, key?: string
         '/publicPublishedIncident/features?stageOfControl=UNDR_CNTRL',
       titleAttribute: 'incident_name',
       popupTemplate: '@wf-incident-feature',
-      header: { apiKey: 'fake-api-key' },
+      header: { apiKey: key },
       attributes: [
         {
           name: 'incident_name',

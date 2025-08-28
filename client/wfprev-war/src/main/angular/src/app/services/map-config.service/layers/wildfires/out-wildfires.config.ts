@@ -6,7 +6,7 @@ export function OutWildfiresLayerConfig(ls: layerSettings, key?: string) {
       type: 'vector',
       id: 'active-wildfires-out',
       title: 'Declared Out Wildfires',
-      isQueryable: true,
+      isQueryable: false,
       useClustering: false,
       useHeatmap: false,
       visible: false,
@@ -15,7 +15,7 @@ export function OutWildfiresLayerConfig(ls: layerSettings, key?: string) {
         '/publicPublishedIncident/features?stageOfControl=OUT',
       titleAttribute: 'incident_name',
       popupTemplate: '@wf-incident-feature',
-      header: { apiKey: 'fake-api-key' },
+      header: { apiKey: key },
       attributes: [
         {
           name: 'incident_name',

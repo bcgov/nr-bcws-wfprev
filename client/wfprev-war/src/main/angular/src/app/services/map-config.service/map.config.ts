@@ -56,7 +56,7 @@ export const mapConfig = (
       },
       legend: true,
       order: 2,
-      display: LayerDisplayConfig(mapServices),
+      display: LayerDisplayConfig(),
     },
   ],
   layers: LayerConfig(mapServices, token)

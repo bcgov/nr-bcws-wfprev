@@ -1,23 +1,19 @@
-import { MapServicesConfig } from "src/app/interfaces/application-config";
-import { MapConfigService, MapServices } from ".";
-
-
-export function LayerDisplayConfig(mapServices: MapServices) {
+export function LayerDisplayConfig() {
     return [
         {
             id: 'ministry-of-forests-districts',
             isVisible: false,
-            alwaysShowLegend: false,
+            alwaysShowLegend: true,
         },
         {
             id: 'ministry-of-forests-regions',
-            isVisible: false,
-            alwaysShowLegend: false,
+            isVisible: true,
+            alwaysShowLegend: true,
         },
         {
             id: 'wildfire-org-unit-fire-centre',
             isVisible: false,
-            alwaysShowLegend: false,
+            alwaysShowLegend: true,
         },
         {
             id: 'fire-perimeters',
@@ -27,22 +23,22 @@ export function LayerDisplayConfig(mapServices: MapServices) {
         {
             id: 'active-wildfires-out-of-control',
             isVisible: false,
-            alwaysShowLegend: false,
+            alwaysShowLegend: true,
         },
         {
             id: 'active-wildfires-holding',
             isVisible: false,
-            alwaysShowLegend: false,
+            alwaysShowLegend: true,
         },
         {
             id: 'active-wildfires-under-control',
             isVisible: false,
-            alwaysShowLegend: false,
+            alwaysShowLegend: true,
         },
         {
             id: 'active-wildfires-out',
             isVisible: false,
-            alwaysShowLegend: false,
+            alwaysShowLegend: true,
         },
 
     ];

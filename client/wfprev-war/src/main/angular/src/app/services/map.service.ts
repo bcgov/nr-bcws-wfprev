@@ -45,18 +45,23 @@ export class MapService {
       });
 
       // only show Ministry of Forests Regions layer by default
-      smk.$viewer.displayContext.layers.setItemVisible('ministry-of-forests-regions', true);
-      smk.$viewer.displayContext.layers.setItemVisible('ministry-of-forests-districts', false);
-      smk.$viewer.displayContext.layers.setItemVisible('wildfire-org-unit-fire-centre', false);
-      smk.$viewer.displayContext.layers.setItemVisible('fire-perimeters', false); 
-      smk.$viewer.displayContext.layers.setItemVisible('active-wildfires-out-of-control', false);
-      smk.$viewer.displayContext.layers.setItemVisible('active-wildfires-holding', false); 
-      smk.$viewer.displayContext.layers.setItemVisible('active-wildfires-under-control', false); 
-      smk.$viewer.displayContext.layers.setItemVisible('active-wildfires-out', false); 
-      await smk.$viewer.updateLayersVisible();
+      const viewer = smk?.$viewer;
+      const layers = viewer?.displayContext?.layers;
+
+      if (layers) {
+        layers.setItemVisible('ministry-of-forests-regions', true);
+        layers.setItemVisible('ministry-of-forests-districts', false);
+        layers.setItemVisible('wildfire-org-unit-fire-centre', false);
+        layers.setItemVisible('fire-perimeters', false);
+        layers.setItemVisible('active-wildfires-out-of-control', false);
+        layers.setItemVisible('active-wildfires-holding', false);
+        layers.setItemVisible('active-wildfires-under-control', false);
+        layers.setItemVisible('active-wildfires-out', false);
+        await viewer.updateLayersVisible?.();
+      }
 
       this.smkInstance = smk;
-    
+
       return smk;
     } catch (error) {
       console.error('Error occurred during SMK initialization:', error);

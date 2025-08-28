@@ -23,7 +23,6 @@ export interface WebADE {
 
 export interface MapServicesConfig {
   geoserverBaseUrl: string;
-  services6BaseUrl: string;
   wfnewsBaseUrl: string;
 }
 
