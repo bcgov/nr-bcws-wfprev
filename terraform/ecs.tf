@@ -109,6 +109,10 @@ resource "aws_ecs_task_definition" "wfprev_server" {
       {
         name  = "API_KEY"
         value = var.api_key
+      },
+      {
+        name = "REPORT_GENERATOR_LAMBDA_URL"
+        value = var.REPORT_GENERATOR_LAMBDA_URL
       }
     ]
     logConfiguration = {

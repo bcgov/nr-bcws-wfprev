@@ -16,6 +16,7 @@ import java.util.UUID;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -34,6 +35,9 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Component
 public class ReportService {
+
+    @Value("${REPORT_GENERATOR_LAMBDA_URL}")
+    private String reportGeneratorLambdaUrl;
 
     // @Value("${spring.application.baseUrl}")
     private String baseUrl = "http://localhost:4200";
@@ -99,8 +103,7 @@ public class ReportService {
         lambdaRequest.setReports(java.util.List.of(report));
 
         // Call Lambda
-        String lambdaUrl = System.getenv("REPORT_GENERATOR_LAMBDA_URL");
-        if (lambdaUrl == null || lambdaUrl.isBlank()) {
+        if (reportGeneratorLambdaUrl == null || reportGeneratorLambdaUrl.isBlank()) {
             throw new ServiceException("REPORT_GENERATOR_LAMBDA_URL environment variable is not set");
         }
 
@@ -109,7 +112,7 @@ public class ReportService {
 
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest httpRequest = HttpRequest.newBuilder()
-                .uri(URI.create(lambdaUrl))
+                .uri(URI.create(reportGeneratorLambdaUrl))
                 .header("Content-Type", "application/json")
                 .POST(HttpRequest.BodyPublishers.ofString(requestJson))
                 .build();

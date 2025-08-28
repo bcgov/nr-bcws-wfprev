@@ -224,6 +224,8 @@ jobs:
           PROXY_WF1_PREV_REST_PASSWORD: ${{ secrets.PROXY_WF1_PREV_REST_PASSWORD }}
           TARGET_LIQUIBASE_TAG: ${{ steps.liquibaseCommand.outputs.TARGET_LIQUIBASE_TAG }}
 
+          REPORT_GENERATOR_LAMBDA_URL: ${{ vars.REPORT_GENERATOR_LAMBDA_URL }}
+
         run: |
           if [ "${{ inputs.COMMAND }}" = "apply" ] || [ "${{ inputs.COMMAND }}" = "apply -destroy" ]; then
             export RUNTIME_ARG="-auto-approve"

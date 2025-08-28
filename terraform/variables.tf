@@ -365,3 +365,8 @@ variable "COMMAND" {
   type = string
   default = "update"
 }
+
+variable "REPORT_GENERATOR_LAMBDA_URL" {
+  type = string
+  default = ""
+}
