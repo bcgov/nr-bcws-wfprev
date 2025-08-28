@@ -43,14 +43,14 @@ resource "aws_lambda_function" "report_generator" {
   role          = aws_iam_role.lambda_exec.arn
   package_type  = "Image"
 
-  image_uri     = "${aws_ecr_repository.report_generator.repository_url}:latest"
+  image_uri     = var.WFPREV_REPORT_GENERATOR_DIGEST
   
   memory_size   = var.WFPREV_LAMBDA_MEMORY
   timeout       = var.WFPREV_LAMBDA_TIMEOUT
 
   environment {
     variables = {
-      # Add any required environment variables here
+      NODE_ENV = var.TARGET_ENV
     }
   }
 }

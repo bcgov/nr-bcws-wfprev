@@ -28,6 +28,10 @@ on:
         required: false
         type: string
         default: 'false'
+      REPORT_GENERATOR_DIGEST:
+        required: false
+        type: string
+        default: 'false'
   workflow_dispatch:
     inputs:
       DEFAULT_APPLICATION_ENVIRONMENT:
@@ -137,6 +141,22 @@ jobs:
             echo "GDB_EXTRACTOR_IMAGE=$GDB_EXTRACTOR_IMAGE" >> "$GITHUB_OUTPUT"
           fi
 
+      - name: Get digest of Report Generator docker image
+        id: getDigestReportGenerator
+        run: |
+          if [[ "${{inputs.RESTORE_DOWNSCALED_CLUSTER}}" == 'false' ]]; then
+            if [[ "${{inputs.REPORT_GENERATOR_DIGEST }}" == '' ]]; then
+              IMAGE="${{ secrets.ECR_TARGET_ACCOUNT_ID }}.dkr.ecr.ca-central-1.amazonaws.com/nr-bcws-wfprev-report-generator:latest"
+              docker pull $IMAGE
+              echo "REPORT_GENERATOR_IMAGE=$(docker inspect --format='{{index .RepoDigests 0}}' $IMAGE)" >> $GITHUB_OUTPUT
+            else
+              echo "REPORT_GENERATOR_IMAGE=${{ secrets.ECR_TARGET_ACCOUNT_ID }}.dkr.ecr.ca-central-1.amazonaws.com/nr-bcws-wfprev-report-generator@${{ inputs.REPORT_GENERATOR_DIGEST }}" >> $GITHUB_OUTPUT
+            fi
+          else
+            export REPORT_GENERATOR_IMAGE="$(aws ssm get-parameter --name 'report-generator-image' --query 'Parameter.Value' | sed 's/\"//g')" 
+            echo "REPORT_GENERATOR_IMAGE=$REPORT_GENERATOR_IMAGE" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Configure AWS credentials for Terraform account (DEV/TEST/PROD)
         uses: aws-actions/configure-aws-credentials@v3
         with:
@@ -196,6 +216,9 @@ jobs:
 
           # GDB Extractor Lambda Image
           WFPREV_GDB_EXTRACTOR_DIGEST: ${{ steps.getDigestGDB.outputs.GDB_EXTRACTOR_IMAGE }}
+
+          # Report Generator Lambda Image
+          WFPREV_REPORT_GENERATOR_DIGEST: ${{ steps.getDigestReportGenerator.outputs.REPORT_GENERATOR_IMAGE }}
 
           # AWS
           AWS_ALERT_EMAIL_LIST: ${{ vars.AWS_ALERT_EMAIL_LIST }}
