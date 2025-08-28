@@ -5,23 +5,12 @@ import java.util.List;
 
 @RegisterForReflection
 public class LambdaEvent {
-  private List<CulturePrescribedFireReportData> culturePrescribedFireReportData;
-  private List<FuelManagementReportData> fuelManagementReportData;
+    private List<Report> reports;
 
-  // Getters and setters
-  public List<CulturePrescribedFireReportData> getCulturePrescribedFireReportData() {
-      return culturePrescribedFireReportData;
-  }
-
-  public void setCulturePrescribedFireReportData(List<CulturePrescribedFireReportData> culturePrescribedFireReportData) {
-      this.culturePrescribedFireReportData = culturePrescribedFireReportData;
-  }
-
-  public List<FuelManagementReportData> getFuelManagementReportData() {
-      return fuelManagementReportData;
-  }
-
-  public void setFuelManagementReportData(List<FuelManagementReportData> fuelManagementReportData) {
-      this.fuelManagementReportData = fuelManagementReportData;
-  }
+    public List<Report> getReports() {
+        return reports;
+    }
+    public void setReports(List<Report> reports) {
+        this.reports = reports;
+    }
 }

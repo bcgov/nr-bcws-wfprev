@@ -1,5 +1,26 @@
 package ca.bc.gov.nrs.wfprev.services;
 
+import java.awt.GraphicsEnvironment;
+import java.io.BufferedWriter;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.regex.Pattern;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
+
+import org.springframework.stereotype.Component;
+
 import ca.bc.gov.nrs.wfprev.common.exceptions.ServiceException;
 import ca.bc.gov.nrs.wfprev.data.entities.CulturalPrescribedFireReportEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.FuelManagementReportEntity;
@@ -20,29 +41,6 @@ import net.sf.jasperreports.engine.util.JRLoader;
 import net.sf.jasperreports.export.SimpleExporterInput;
 import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
 import net.sf.jasperreports.export.SimpleXlsxReportConfiguration;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.awt.*;
-import java.io.BufferedWriter;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import java.util.regex.Pattern;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
 @Slf4j
 @Component
@@ -72,118 +70,62 @@ public class ReportService {
     }
 
     public void exportXlsx(List<UUID> projectGuids, OutputStream outputStream, String rid) throws ServiceException, JRException, IOException {
-        long tStart = System.currentTimeMillis();
-        log.info("[{}] [xlsx] start projectGuids={}", rid, projectGuids.size());
+    long tStart = System.currentTimeMillis();
+    log.info("[{}] [xlsx] start projectGuids={}", rid, projectGuids.size());
 
-        try {
-            // --- JPA: fetch projects -> fiscal GUIDs
-            long t0 = System.currentTimeMillis();
-            log.info("[{}] [xlsx] fetch projects -> begin", rid);
-            List<ProjectEntity> projects = projectRepository.findByProjectGuidIn(projectGuids);
-            log.info("[{}] [xlsx] fetch projects -> end ({} rows, {} ms)", rid, projects.size(), (System.currentTimeMillis() - t0));
+    try {
+        // Fetch projects and fiscal GUIDs
+        List<ProjectEntity> projects = projectRepository.findByProjectGuidIn(projectGuids);
+        List<UUID> projectPlanFiscalGuids = projects.stream()
+            .flatMap(p -> p.getProjectFiscals().stream())
+            .map(ProjectFiscalEntity::getProjectPlanFiscalGuid)
+            .distinct()
+            .toList();
 
-            long tGuids0 = System.currentTimeMillis();
-            List<UUID> projectPlanFiscalGuids = projects.stream()
-                    .flatMap(p -> p.getProjectFiscals().stream())
-                    .map(ProjectFiscalEntity::getProjectPlanFiscalGuid)
-                    .distinct()
-                    .toList();
-            log.info("[{}] [xlsx] derive fiscal GUIDs -> {} ({} ms)", rid, projectPlanFiscalGuids.size(), (System.currentTimeMillis() - tGuids0));
+        // Fetch report rows
+        List<FuelManagementReportEntity> fuelData = fuelManagementRepository.findByProjectPlanFiscalGuidIn(projectPlanFiscalGuids);
+        List<CulturalPrescribedFireReportEntity> crxData = culturalPrescribedFireReportRepository.findByProjectPlanFiscalGuidIn(projectPlanFiscalGuids);
 
-            // --- JPA: fetch report rows (fuel + crx)
-            long tFuel0 = System.currentTimeMillis();
-            log.info("[{}] [xlsx] fetch fuel -> begin", rid);
-            List<FuelManagementReportEntity> fuelData =
-                    fuelManagementRepository.findByProjectPlanFiscalGuidIn(projectPlanFiscalGuids);
-            log.info("[{}] [xlsx] fetch fuel -> end ({} rows, {} ms)", rid, fuelData.size(), (System.currentTimeMillis() - tFuel0));
-
-            long tCrx0 = System.currentTimeMillis();
-            log.info("[{}] [xlsx] fetch crx -> begin", rid);
-            List<CulturalPrescribedFireReportEntity> crxData =
-                    culturalPrescribedFireReportRepository.findByProjectPlanFiscalGuidIn(projectPlanFiscalGuids);
-            log.info("[{}] [xlsx] fetch crx -> end ({} rows, {} ms)", rid, crxData.size(), (System.currentTimeMillis() - tCrx0));
-
-            if (fuelData.isEmpty() && crxData.isEmpty()) {
-                log.info("[{}] [xlsx] no data for given projectGuids", rid);
-                throw new IllegalArgumentException("No data found for the provided projectGuids.");
-            }
-
-            // --- Set transient/computed fields (make it explicit & timed)
-            long tSet0 = System.currentTimeMillis();
-            fuelData.forEach(this::setFuelManagementFields);
-            crxData.forEach(this::setCrxFields);
-            log.info("[{}] [xlsx] set fields -> done ({} ms)", rid, (System.currentTimeMillis() - tSet0));
-            String[] entries = System.getProperty("java.class.path")
-                    .split(File.pathSeparator);
-            for (String entry : entries) {
-                log.info("Classpath entry: {}", entry);
-            }
-
-            String[] libPaths = System.getProperty("java.library.path")
-                    .split(System.getProperty("path.separator"));
-
-            for (String path : libPaths) {
-                log.info("Librarypath entry: {}", path);
-            }
-
-            // --- Load precompiled .jasper (guard against missing resource)
-            long tTpl0 = System.currentTimeMillis();
-            log.info("[{}] [xlsx] load templates -> begin", rid);
-            log.info("[{}] Attempting to load CRX report template", rid);
-            JasperReport crxReport  = loadJasper("jasper-template/WFPREV_CULTURE_PRESCRIBED_FIRE_JASPER.jasper");
-            log.info("[{}] Attempting to load FM report template", rid);
-            JasperReport fuelReport = loadJasper("jasper-template/WFPREV_FUEL_MANAGEMENT_JASPER.jasper");
-
-            if (fuelReport == null) throw new IllegalStateException("Fuel .jasper not found/loaded");
-            if (crxReport  == null) throw new IllegalStateException("CRx .jasper not found/loaded");
-            log.info("[{}] [xlsx] load templates -> end ({} ms)", rid, (System.currentTimeMillis() - tTpl0));
-
-            // --- Fill
-            Map<String, Object> params = new HashMap<>();
-            long tFillFuel0 = System.currentTimeMillis();
-            log.info("[{}] [xlsx] fill fuel -> begin", rid);
-            JasperPrint fuelPrint = JasperFillManager.fillReport(
-                    fuelReport, params, new JRBeanCollectionDataSource(fuelData));
-            log.info("[{}] [xlsx] fill fuel -> end (pages={},{} ms)", rid, fuelPrint.getPages().size(), (System.currentTimeMillis() - tFillFuel0));
-
-            long tFillCrx0 = System.currentTimeMillis();
-            log.info("[{}] [xlsx] fill crx -> begin", rid);
-            JasperPrint crxPrint = JasperFillManager.fillReport(
-                    crxReport, params, new JRBeanCollectionDataSource(crxData));
-            log.info("[{}] [xlsx] fill crx -> end (pages={},{} ms)", rid, crxPrint.getPages().size(), (System.currentTimeMillis() - tFillCrx0));
-
-            // --- Export
-            long tExp0 = System.currentTimeMillis();
-            log.info("[{}] [xlsx] export -> begin", rid);
-            JRXlsxExporter exporter = new JRXlsxExporter();
-            exporter.setExporterInput(SimpleExporterInput.getInstance(java.util.List.of(fuelPrint, crxPrint)));
-            exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(outputStream));
-
-            SimpleXlsxReportConfiguration config = new SimpleXlsxReportConfiguration();
-            config.setDetectCellType(true);
-            config.setRemoveEmptySpaceBetweenRows(true);
-            config.setRemoveEmptySpaceBetweenColumns(true);
-            config.setCollapseRowSpan(true);
-            config.setWhitePageBackground(false);
-            config.setSheetNames(new String[]{"FM XLS Download", "CRx XLS Download"});
-            exporter.setConfiguration(config);
-
-//            try {
-                exporter.exportReport();
-                outputStream.flush();
-                log.info("[{}] [xlsx] export -> end ({} ms)", rid, (System.currentTimeMillis() - tExp0));
-                log.info("[{}] [xlsx] success (total {} ms)", rid, (System.currentTimeMillis() - tStart));
-//            } catch (JRException e) {
-//                log.info("[{}] JRException during XLSX export: {}", rid, e.getMessage(), e);
-//                throw new ServiceException("Failed exporting XLSX", e);
-//            }
-        } catch (Throwable t) {
-            throw t;
+        if (fuelData.isEmpty() && crxData.isEmpty()) {
+        log.info("[{}] [xlsx] no data for given projectGuids", rid);
+        throw new IllegalArgumentException("No data found for the provided projectGuids.");
         }
-//        } catch (Exception e) {
-//            log.info("[{}] Failed to generate XLSX report (unexpected): {}", rid, e.getMessage(), e);
-//            throw new ServiceException("Failed to generate XLSX report", e);
-//        }
+
+        // Set computed fields
+        fuelData.forEach(this::setFuelManagementFields);
+        crxData.forEach(this::setCrxFields);
+
+        // Load Jasper templates
+        JasperReport crxReport  = loadJasper("jasper-template/WFPREV_CULTURE_PRESCRIBED_FIRE_JASPER.jasper");
+        JasperReport fuelReport = loadJasper("jasper-template/WFPREV_FUEL_MANAGEMENT_JASPER.jasper");
+        if (fuelReport == null) throw new IllegalStateException("Fuel .jasper not found/loaded");
+        if (crxReport  == null) throw new IllegalStateException("CRx .jasper not found/loaded");
+
+        // Fill reports
+        Map<String, Object> params = new HashMap<>();
+        JasperPrint fuelPrint = JasperFillManager.fillReport(fuelReport, params, new JRBeanCollectionDataSource(fuelData));
+        JasperPrint crxPrint = JasperFillManager.fillReport(crxReport, params, new JRBeanCollectionDataSource(crxData));
+
+        // Export XLSX
+        JRXlsxExporter exporter = new JRXlsxExporter();
+        exporter.setExporterInput(SimpleExporterInput.getInstance(java.util.List.of(fuelPrint, crxPrint)));
+        exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(outputStream));
+
+        SimpleXlsxReportConfiguration config = new SimpleXlsxReportConfiguration();
+        config.setDetectCellType(true);
+        config.setRemoveEmptySpaceBetweenRows(true);
+        config.setRemoveEmptySpaceBetweenColumns(true);
+        config.setCollapseRowSpan(true);
+        config.setWhitePageBackground(false);
+        config.setSheetNames(new String[]{"FM XLS Download", "CRx XLS Download"});
+        exporter.setConfiguration(config);
+
+        exporter.exportReport();
+        outputStream.flush();
+        log.info("[{}] [xlsx] export complete ({} ms)", rid, (System.currentTimeMillis() - tStart));
+    } catch (Throwable t) {
+        throw t;
+    }
     }
 
     public void writeCsvZipFromEntities(List<UUID> projectGuids, OutputStream zipOutStream) throws ServiceException {

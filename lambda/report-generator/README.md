@@ -13,7 +13,49 @@ This application is designed to generate PDF and other report formats for wildfi
 
 ## AWS Lambda Usage
 
-The Lambda handler supports event-driven XLSX report generation. See `LambdaHandler.java` and unit tests for example payloads. Build with `Dockerfile.lambda` for AWS Lambda deployment.
+
+### Lambda Input Model
+
+The Lambda handler expects an input JSON payload structured as follows:
+
+```
+{
+	"reports": [
+		{
+			"reportType": "XLSX",
+			"reportName": "culture-prescribed-fire-report",
+			"xlsxReportData": {
+				"culturePrescribedFireReportData": [
+					{ /* fields for CulturePrescribedFireReportData */ }
+				],
+				"fuelManagementReportData": [
+					{ /* fields for FuelManagementReportData */ }
+				]
+			}
+		},
+		{
+			"reportType": "XLSX",
+			"reportName": "fuel-management-report",
+			"xlsxReportData": {
+				"fuelManagementReportData": [
+					{ /* fields for FuelManagementReportData */ }
+				]
+			}
+		}
+	]
+}
+```
+
+- `reports`: Array of report objects to generate. Each report produces a separate XLSX file in the output.
+- `reportType`: Type of report (currently only `XLSX` is supported).
+- `reportName`: Used as the output filename (e.g., `culture-prescribed-fire-report.xlsx`).
+- `xlsxReportData`: Contains lists of report data objects for each supported sheet type.
+	- `culturePrescribedFireReportData`: List of objects for the "Culture Prescribed Fire" sheet.
+	- `fuelManagementReportData`: List of objects for the "Fuel Management" sheet.
+
+See the model classes in `src/main/java/ca/bc/gov/nrs/reportgenerator/model/` for all available fields.
+
+Build with `Dockerfile.lambda` for AWS Lambda deployment.
 
 This project uses [Quarkus](https://quarkus.io/), the Supersonic Subatomic Java Framework, and JasperReports for report generation.
 

@@ -1,22 +1,32 @@
+
+
 package ca.bc.gov.nrs.reportgenerator;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestStreamHandler;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.io.*;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.IOException;
+import java.io.ByteArrayOutputStream;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
-import ca.bc.gov.nrs.reportgenerator.model.CulturePrescribedFireReportData;
-import ca.bc.gov.nrs.reportgenerator.model.FuelManagementReportData;
+import java.util.ArrayList;
 import org.jboss.logging.Logger;
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.export.ooxml.JRXlsxExporter;
+import net.sf.jasperreports.export.SimpleExporterInput;
+import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
+import net.sf.jasperreports.export.SimpleXlsxReportConfiguration;
 import ca.bc.gov.nrs.reportgenerator.service.JasperReportService;
 import ca.bc.gov.nrs.reportgenerator.model.LambdaEvent;
+import ca.bc.gov.nrs.reportgenerator.model.Report;
+import ca.bc.gov.nrs.reportgenerator.model.XlsxReportData;
 import io.quarkiverse.jasperreports.repository.ReadOnlyStreamingService;
 
 import jakarta.inject.Inject;
@@ -44,38 +54,83 @@ public class LambdaHandler implements RequestStreamHandler {
         }
 
         // Input validation
-        boolean hasCulture = event.getCulturePrescribedFireReportData() != null && !event.getCulturePrescribedFireReportData().isEmpty();
-        boolean hasFuel = event.getFuelManagementReportData() != null && !event.getFuelManagementReportData().isEmpty();
-        if (!hasCulture && !hasFuel) {
-            LOG.warn("No valid report data provided");
-            writeErrorResponse(output, "No valid report data provided");
+        if (event.getReports() == null || event.getReports().isEmpty()) {
+            LOG.warn("No reports provided");
+            writeErrorResponse(output, "No reports provided");
             return;
         }
 
-        List<Map<String, String>> files = new java.util.ArrayList<>();
+        // Generate XLSX files for each report
+        List<Map<String, String>> files = new ArrayList<>();
+        for (Report report : event.getReports()) {
+            XlsxReportData data = report.getXlsxReportData();
+            if (data == null) continue;
+            List<JasperPrint> prints = new ArrayList<>();
+            List<String> sheetNames = new ArrayList<>();
+            if (data.getFuelManagementReportData() != null && !data.getFuelManagementReportData().isEmpty()) {
+                try {
+                    JRDataSource fuelDataSource = new JRBeanCollectionDataSource(data.getFuelManagementReportData());
+                    JasperPrint fuelPrint = JasperFillManager.getInstance(repo.getContext())
+                        .fillFromRepo("WFPREV_FUEL_MANAGEMENT_JASPER.jasper", new HashMap<>(), fuelDataSource);
+                    prints.add(fuelPrint);
+                    sheetNames.add("FM XLS Download");
+                } catch (net.sf.jasperreports.engine.JRException e) {
+                    LOG.error("Error filling Fuel Management Jasper report", e);
+                }
+            }
+            if (data.getCulturePrescribedFireReportData() != null && !data.getCulturePrescribedFireReportData().isEmpty()) {
+                try {
+                    JRDataSource cultureDataSource = new JRBeanCollectionDataSource(data.getCulturePrescribedFireReportData());
+                    JasperPrint culturePrint = JasperFillManager.getInstance(repo.getContext())
+                        .fillFromRepo("WFPREV_CULTURE_PRESCRIBED_FIRE_JASPER.jasper", new HashMap<>(), cultureDataSource);
+                    prints.add(culturePrint);
+                    sheetNames.add("CRx XLS Download");
+                } catch (net.sf.jasperreports.engine.JRException e) {
+                    LOG.error("Error filling Culture Prescribed Fire Jasper report", e);
+                }
+            }
+            if (prints.isEmpty()) continue;
 
-        if (hasCulture) {
-            byte[] xlsxBytes = generateCulturePrescribedFireReport(event.getCulturePrescribedFireReportData());
-            if (xlsxBytes != null && xlsxBytes.length > 0) {
-                files.add(Map.of(
-                    "filename", "culture-prescribed-fire-report.xlsx",
-                    "content", Base64.getEncoder().encodeToString(xlsxBytes)
-                ));
+            ByteArrayOutputStream xlsxOut = new ByteArrayOutputStream();
+            JRXlsxExporter exporter = new JRXlsxExporter();
+            exporter.setExporterInput(SimpleExporterInput.getInstance(prints));
+            exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(xlsxOut));
+
+            SimpleXlsxReportConfiguration config = new SimpleXlsxReportConfiguration();
+            config.setDetectCellType(true);
+            config.setRemoveEmptySpaceBetweenRows(true);
+            config.setRemoveEmptySpaceBetweenColumns(true);
+            config.setCollapseRowSpan(true);
+            config.setWhitePageBackground(false);
+            config.setSheetNames(sheetNames.toArray(new String[0]));
+            exporter.setConfiguration(config);
+
+            try {
+                exporter.exportReport();
+                xlsxOut.flush();
+            } catch (Exception e) {
+                LOG.error("Error exporting XLSX for report", e);
+                continue;
             }
-        }
-        if (hasFuel) {
-            byte[] xlsxBytes = generateFuelManagementReport(event.getFuelManagementReportData());
-            if (xlsxBytes != null && xlsxBytes.length > 0) {
-                files.add(Map.of(
-                    "filename", "fuel-management-report.xlsx",
-                    "content", Base64.getEncoder().encodeToString(xlsxBytes)
-                ));
+
+            byte[] xlsxBytes = xlsxOut.toByteArray();
+            if (xlsxBytes == null || xlsxBytes.length == 0) continue;
+
+            String filename;
+            if (report.getReportName() != null && !report.getReportName().isBlank()) {
+                filename = report.getReportName() + ".xlsx";
+            } else {
+                filename = "report-" + report.getReportType().name().toLowerCase() + ".xlsx";
             }
+            files.add(Map.of(
+                "filename", filename,
+                "content", Base64.getEncoder().encodeToString(xlsxBytes)
+            ));
         }
 
         if (files.isEmpty()) {
-            LOG.error("Report generation failed or returned empty XLSX");
-            writeErrorResponse(output, "Report generation failed or returned empty XLSX");
+            LOG.error("No valid XLSX files generated");
+            writeErrorResponse(output, "No valid XLSX files generated");
             return;
         }
 
@@ -96,31 +151,5 @@ public class LambdaHandler implements RequestStreamHandler {
         response.put("headers", Map.of("Content-Type", "text/plain"));
         response.put("isBase64Encoded", false);
         mapper.writeValue(output, response);
-    }
-
-    // XLSX generation using JasperReportService
-
-    private byte[] generateCulturePrescribedFireReport(List<CulturePrescribedFireReportData> reportData) {
-        try {
-            JRDataSource dataSource = new JRBeanCollectionDataSource(reportData);
-            JasperPrint jasperPrint = JasperFillManager.getInstance(repo.getContext())
-                .fillFromRepo("WFPREV_CULTURE_PRESCRIBED_FIRE_JASPER.jasper", new HashMap<>(), dataSource);
-            return jasperReportService.exportXlsx(jasperPrint).toByteArray();
-        } catch (Exception e) {
-            LOG.error("Error generating culture prescribed fire report", e);
-            return new byte[0];
-        }
-    }
-
-    private byte[] generateFuelManagementReport(List<FuelManagementReportData> reportData) {
-        try {
-            JRDataSource dataSource = new JRBeanCollectionDataSource(reportData);
-            JasperPrint jasperPrint = JasperFillManager.getInstance(repo.getContext())
-                .fillFromRepo("WFPREV_FUEL_MANAGEMENT_JASPER.jasper", new HashMap<>(), dataSource);
-            return jasperReportService.exportXlsx(jasperPrint).toByteArray();
-        } catch (Exception e) {
-            LOG.error("Error generating fuel management report", e);
-            return new byte[0];
-        }
     }
 }
