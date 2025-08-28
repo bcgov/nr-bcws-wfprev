@@ -44,25 +44,36 @@ public class LambdaHandler implements RequestStreamHandler {
         }
 
         // Input validation
-        if ((event.getCulturePrescribedFireReportData() == null || event.getCulturePrescribedFireReportData().isEmpty()) &&
-            (event.getFuelManagementReportData() == null || event.getFuelManagementReportData().isEmpty())) {
+        boolean hasCulture = event.getCulturePrescribedFireReportData() != null && !event.getCulturePrescribedFireReportData().isEmpty();
+        boolean hasFuel = event.getFuelManagementReportData() != null && !event.getFuelManagementReportData().isEmpty();
+        if (!hasCulture && !hasFuel) {
             LOG.warn("No valid report data provided");
             writeErrorResponse(output, "No valid report data provided");
             return;
         }
 
-        byte[] xlsxBytes = null;
-        String filename = "report.xlsx";
+        List<Map<String, String>> files = new java.util.ArrayList<>();
 
-        if (event.getCulturePrescribedFireReportData() != null && !event.getCulturePrescribedFireReportData().isEmpty()) {
-            xlsxBytes = generateCulturePrescribedFireReport(event.getCulturePrescribedFireReportData());
-            filename = "culture-prescribed-fire-report.xlsx";
-        } else if (event.getFuelManagementReportData() != null && !event.getFuelManagementReportData().isEmpty()) {
-            xlsxBytes = generateFuelManagementReport(event.getFuelManagementReportData());
-            filename = "fuel-management-report.xlsx";
+        if (hasCulture) {
+            byte[] xlsxBytes = generateCulturePrescribedFireReport(event.getCulturePrescribedFireReportData());
+            if (xlsxBytes != null && xlsxBytes.length > 0) {
+                files.add(Map.of(
+                    "filename", "culture-prescribed-fire-report.xlsx",
+                    "content", Base64.getEncoder().encodeToString(xlsxBytes)
+                ));
+            }
+        }
+        if (hasFuel) {
+            byte[] xlsxBytes = generateFuelManagementReport(event.getFuelManagementReportData());
+            if (xlsxBytes != null && xlsxBytes.length > 0) {
+                files.add(Map.of(
+                    "filename", "fuel-management-report.xlsx",
+                    "content", Base64.getEncoder().encodeToString(xlsxBytes)
+                ));
+            }
         }
 
-        if (xlsxBytes == null || xlsxBytes.length == 0) {
+        if (files.isEmpty()) {
             LOG.error("Report generation failed or returned empty XLSX");
             writeErrorResponse(output, "Report generation failed or returned empty XLSX");
             return;
@@ -70,11 +81,8 @@ public class LambdaHandler implements RequestStreamHandler {
 
         Map<String, Object> response = new HashMap<>();
         response.put("statusCode", 200);
-        response.put("headers", Map.of(
-            "Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-            "Content-Disposition", "attachment; filename=\"" + filename + "\""
-        ));
-        response.put("body", Base64.getEncoder().encodeToString(xlsxBytes));
+        response.put("headers", Map.of("Content-Type", "application/json"));
+        response.put("files", files);
         response.put("isBase64Encoded", true);
 
         mapper.writeValue(output, response);

@@ -115,3 +115,50 @@ Unit tests for Lambda and REST endpoints are in `src/test/java/ca/bc/gov/nrs/rep
 ```shell
 ./mvnw test
 ```
+
+## Troubleshooting: Downloading XLSX from Lambda Response
+When invoking the Lambda handler (e.g., via Postman, AWS Console, or API Gateway), the response is a JSON object with the following structure (for multiple files):
+
+```
+{
+	"headers": { ... },
+	"isBase64Encoded": true,
+	"files": [
+		{
+			"filename": "culture-prescribed-fire-report.xlsx",
+			"content": "<base64-encoded-xlsx>"
+		},
+		{
+			"filename": "fuel-management-report.xlsx",
+			"content": "<base64-encoded-xlsx>"
+		}
+	],
+	"statusCode": 200
+}
+```
+
+**Note:** Postman 'Send and Download' will save this JSON as a text file, not as XLSX files.
+
+To extract the actual XLSX files:
+
+1. For each object in the `files` array, copy the value of the `content` field (the base64 string).
+2. Save it to a file (e.g., `output1.b64`, `output2.b64`).
+3. Decode each to binary and save as `.xlsx` using the corresponding `filename`:
+
+### PowerShell
+```powershell
+$b64 = Get-Content output1.b64
+[System.IO.File]::WriteAllBytes('culture-prescribed-fire-report.xlsx', [Convert]::FromBase64String($b64))
+# Repeat for output2.b64 and fuel-management-report.xlsx
+```
+
+### Linux/macOS
+```sh
+cat output1.b64 | base64 -d > culture-prescribed-fire-report.xlsx
+cat output2.b64 | base64 -d > fuel-management-report.xlsx
+```
+
+You can now open the `.xlsx` files in Excel or other spreadsheet tools.
+
+**Tip:** For automated testing, use a script to extract and decode all files from the Lambda JSON response.
+

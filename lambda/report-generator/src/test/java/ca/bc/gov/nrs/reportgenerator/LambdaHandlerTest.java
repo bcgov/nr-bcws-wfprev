@@ -12,9 +12,10 @@ import ca.bc.gov.nrs.reportgenerator.LambdaHandler;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+
 class LambdaHandlerTest {
     @Test
-    void testHandleRequestWithValidCulturePrescribedFireReportData() throws Exception {
+    void testHandleRequestWithCultureOnly() throws Exception {
         LambdaHandler handler = new LambdaHandler();
         LambdaEvent event = new LambdaEvent();
         event.setCulturePrescribedFireReportData(List.of(new CulturePrescribedFireReportData()));
@@ -23,8 +24,40 @@ class LambdaHandlerTest {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         handler.handleRequest(input, output, null);
         String response = output.toString();
-        assertTrue(response.contains("base64"));
-        assertTrue(response.contains("statusCode"));
+        assertTrue(response.contains("files"));
+        assertTrue(response.contains("culture-prescribed-fire-report.xlsx"));
+        assertFalse(response.contains("fuel-management-report.xlsx"));
+    }
+
+    @Test
+    void testHandleRequestWithFuelOnly() throws Exception {
+        LambdaHandler handler = new LambdaHandler();
+        LambdaEvent event = new LambdaEvent();
+        event.setFuelManagementReportData(List.of(new FuelManagementReportData()));
+        ObjectMapper mapper = new ObjectMapper();
+        ByteArrayInputStream input = new ByteArrayInputStream(mapper.writeValueAsBytes(event));
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        handler.handleRequest(input, output, null);
+        String response = output.toString();
+        assertTrue(response.contains("files"));
+        assertTrue(response.contains("fuel-management-report.xlsx"));
+        assertFalse(response.contains("culture-prescribed-fire-report.xlsx"));
+    }
+
+    @Test
+    void testHandleRequestWithBothReports() throws Exception {
+        LambdaHandler handler = new LambdaHandler();
+        LambdaEvent event = new LambdaEvent();
+        event.setCulturePrescribedFireReportData(List.of(new CulturePrescribedFireReportData()));
+        event.setFuelManagementReportData(List.of(new FuelManagementReportData()));
+        ObjectMapper mapper = new ObjectMapper();
+        ByteArrayInputStream input = new ByteArrayInputStream(mapper.writeValueAsBytes(event));
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        handler.handleRequest(input, output, null);
+        String response = output.toString();
+        assertTrue(response.contains("files"));
+        assertTrue(response.contains("culture-prescribed-fire-report.xlsx"));
+        assertTrue(response.contains("fuel-management-report.xlsx"));
     }
 
     @Test
