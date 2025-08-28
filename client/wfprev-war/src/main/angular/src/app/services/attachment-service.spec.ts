@@ -23,8 +23,8 @@ const mockApplicationConfig = {
         wfprev: 'http://test.com/api',
     },
     mapServices: {
-      geoserverBaseUrl: 'http://geoserver.test',
-      wfnewsBaseUrl: 'http://wfnews.test'
+      geoserverApiBaseUrl: 'http://geoserver.test',
+      wfnewsApiBaseUrl: 'http://wfnews.test'
     }
 };
 

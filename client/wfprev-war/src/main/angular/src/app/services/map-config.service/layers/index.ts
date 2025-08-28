@@ -9,13 +9,13 @@ import { UnderControlWildfiresLayerConfig } from "./wildfires/under-control-wild
 import { OutWildfiresLayerConfig } from "./wildfires/out-wildfires.config";
 
 export interface layerSettings {
-  geoserverBaseUrl: string;
+  geoserverApiBaseUrl: string;
   wfnewsUrl: string;
 }
 export function LayerConfig(mapServices: MapServices, token?: string) {
   const ls: layerSettings = {
-    geoserverBaseUrl: mapServices['geoserverBaseUrl'],
-    wfnewsUrl: mapServices['wfnewsBaseUrl'],
+    geoserverApiBaseUrl: mapServices['geoserverApiBaseUrl'],
+    wfnewsUrl: mapServices['wfnewsApiBaseUrl']
   };
 
   return [
@@ -23,11 +23,10 @@ export function LayerConfig(mapServices: MapServices, token?: string) {
     MinistryOfForestsDistrictsLayerConfig(ls, token), 
     WildfireOrgUnitFireCentreLayerConfig(ls, token),
     FirePerimetersLayerConfig(ls, token),
-    OutOfControlWildfiresLayerConfig(ls, token),
-    BeingHeldWildfiresLayerConfig(ls, token),
-    UnderControlWildfiresLayerConfig(ls, token),
-    OutWildfiresLayerConfig(ls, token),
+    OutOfControlWildfiresLayerConfig(ls),
+    BeingHeldWildfiresLayerConfig(ls),
+    UnderControlWildfiresLayerConfig(ls),
+    OutWildfiresLayerConfig(ls),
   ];
-
-
+  
 }

@@ -87,6 +87,14 @@ resource "aws_ecs_task_definition" "wfprev_server" {
         value = var.WFDM_BASE_URL
       },
       {
+        name  = "GEOSERVER_API_BASE_URL",
+        value = var.GEOSERVER_API_BASE_URL
+      },
+      {
+        name  = "WFNEWS_API_BASE_URL",
+        value = var.WFNEWS_API_BASE_URL
+      },
+      {
         name  = "OPENMAPS_URL",
         value = var.OPENMAPS_URL
       },

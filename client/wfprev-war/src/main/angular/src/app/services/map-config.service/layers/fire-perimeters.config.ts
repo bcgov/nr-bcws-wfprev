@@ -3,7 +3,7 @@ import { layerSettings } from '.';
 export function FirePerimetersLayerConfig(ls: layerSettings, token?: string) {
 
   return {
-    serviceUrl: ls.geoserverBaseUrl + "/ows",
+    serviceUrl: ls.geoserverApiBaseUrl + "/ows",
     id: "fire-perimeters",
     title: "Fire Perimeters",
     visible: false,

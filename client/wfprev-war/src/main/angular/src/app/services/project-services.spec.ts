@@ -37,8 +37,8 @@ describe('ProjectService', () => {
       enableCheckToken: false,
     },
     mapServices: {
-      geoserverBaseUrl: 'http://geoserver.test',
-      wfnewsBaseUrl: 'http://wfnews.test'
+      geoserverApiBaseUrl: 'http://geoserver.test',
+      wfnewsApiBaseUrl: 'http://wfnews.test'
     }
   };
 

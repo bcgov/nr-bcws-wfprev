@@ -2,7 +2,7 @@ import { layerSettings } from ".";
 
 export function WildfireOrgUnitFireCentreLayerConfig(ls: layerSettings, token?: string) {
     return {
-    serviceUrl: ls.geoserverBaseUrl + "/ows",
+    serviceUrl: ls.geoserverApiBaseUrl + "/ows",
     id: "wildfire-org-unit-fire-centre",
     title: "BCWS Fire Centres",
     visible: false,

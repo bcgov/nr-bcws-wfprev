@@ -2,7 +2,7 @@ import { layerSettings } from ".";
 
 export function MinistryOfForestsRegionsLayerConfig(ls: layerSettings, token?: string) {
     return {
-    serviceUrl: ls.geoserverBaseUrl + "/ows",
+    serviceUrl: ls.geoserverApiBaseUrl + "/ows",
     id: "ministry-of-forests-regions",
     title: "Ministry of Forests Regions",
     visible: true,

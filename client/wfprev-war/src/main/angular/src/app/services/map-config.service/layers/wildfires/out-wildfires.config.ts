@@ -1,6 +1,6 @@
 import { layerSettings } from '..';
 
-export function OutWildfiresLayerConfig(ls: layerSettings, key?: string) {
+export function OutWildfiresLayerConfig(ls: layerSettings) {
     
   return {
       type: 'vector',
@@ -15,7 +15,6 @@ export function OutWildfiresLayerConfig(ls: layerSettings, key?: string) {
         '/publicPublishedIncident/features?stageOfControl=OUT',
       titleAttribute: 'incident_name',
       popupTemplate: '@wf-incident-feature',
-      header: { apiKey: key },
       attributes: [
         {
           name: 'incident_name',

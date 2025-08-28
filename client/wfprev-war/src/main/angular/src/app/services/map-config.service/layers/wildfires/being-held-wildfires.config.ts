@@ -1,6 +1,6 @@
 import { layerSettings } from '..';
 
-export function BeingHeldWildfiresLayerConfig(ls: layerSettings, key?: string) {
+export function BeingHeldWildfiresLayerConfig(ls: layerSettings) {
      return {
       type: 'vector',
       id: 'active-wildfires-holding',
@@ -13,7 +13,6 @@ export function BeingHeldWildfiresLayerConfig(ls: layerSettings, key?: string) {
         '/publicPublishedIncident/features?stageOfControl=HOLDING',
       titleAttribute: 'incident_name',
       popupTemplate: '@wf-incident-feature',
-      header: { apiKey: key },
       attributes: [
         {
           name: 'incident_name',

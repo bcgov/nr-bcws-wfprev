@@ -145,6 +145,16 @@ variable "WFDM_BASE_URL" {
   default = ""
 }
 
+variable "GEOSERVER_API_BASE_URL" {
+  type    = string
+  default = ""
+}
+
+variable "WFNEWS_API_BASE_URL" {
+  type    = string
+  default = ""
+}
+
 variable "OPENMAPS_URL" {
   type    = string
   default = ""
