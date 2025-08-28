@@ -1,4 +1,4 @@
-package ca.bc.gov.nrs.reportgenerator;
+package ca.bc.gov.nrs.reportgenerator.api;
 
 import org.jboss.logging.Logger;
 
@@ -17,6 +17,8 @@ import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import ca.bc.gov.nrs.reportgenerator.service.JasperReportService;
+import ca.bc.gov.nrs.reportgenerator.ExtendedMediaType;
 
 @Path("/fuel-management")
 public class FuelManagementResource {

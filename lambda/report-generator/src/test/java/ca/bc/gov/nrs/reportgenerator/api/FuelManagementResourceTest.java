@@ -1,4 +1,4 @@
-package ca.bc.gov.nrs.reportgenerator;
+package ca.bc.gov.nrs.reportgenerator.api;
 
 import ca.bc.gov.nrs.reportgenerator.model.FuelManagementReportData;
 import io.quarkus.test.junit.QuarkusTest;
@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import java.util.Collections;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.*;
+import ca.bc.gov.nrs.reportgenerator.ExtendedMediaType;
 
 @QuarkusTest
 public class FuelManagementResourceTest {

@@ -6,9 +6,14 @@
 
 This application is designed to generate PDF and other report formats for wildfire prevention and fuel management, using JasperReports templates. It exposes a REST API for report generation and is intended to be used as a sidecar or microservice in larger workflows.
 
+
 ## JasperReports
 
 [JasperReports](https://community.jaspersoft.com/project/jasperreports-library) is an open-source Java reporting library that enables the creation of rich, pixel-perfect documents (PDF, HTML, Excel, etc.) from Java applications. This project uses JasperReports via the Quarkus JasperReports extension to render wildfire-related reports from pre-defined `.jrxml` templates.
+
+## AWS Lambda Usage
+
+The Lambda handler supports event-driven XLSX report generation. See `LambdaHandler.java` and unit tests for example payloads. Build with `Dockerfile.lambda` for AWS Lambda deployment.
 
 This project uses [Quarkus](https://quarkus.io/), the Supersonic Subatomic Java Framework, and JasperReports for report generation.
 
@@ -46,6 +51,14 @@ Or using Maven wrapper:
 ```shell
 ./mvnw quarkus:dev
 ```
+
+## Building and Running for AWS Lambda
+
+1. Build the native Lambda binary in a container:
+	```shell
+	docker build -f src/main/docker/Dockerfile.lambda -t report-generator-lambda .
+	```
+2. Deploy the resulting image to AWS Lambda (see AWS docs for container deployment).
 
 ## Packaging the Application
 
@@ -95,3 +108,10 @@ java -jar target/quarkus-app/quarkus-run.jar
 - For development, the Quarkus Dev UI is available at [http://localhost:8080/q/dev/](http://localhost:8080/q/dev/).
 - For more information on Quarkus CLI, see [Quarkus CLI Guide](https://quarkus.io/guides/cli-tooling).
 - For JasperReports usage, see [Quarkus JasperReports Guide](https://docs.quarkiverse.io/quarkus-jasperreports/dev/index.html).
+
+## Testing
+
+Unit tests for Lambda and REST endpoints are in `src/test/java/ca/bc/gov/nrs/reportgenerator/`. Run tests with:
+```shell
+./mvnw test
+```
