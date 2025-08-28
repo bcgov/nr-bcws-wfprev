@@ -11,7 +11,7 @@ export function OutWildfiresLayerConfig(ls: layerSettings) {
       useHeatmap: false,
       visible: false,
       dataUrl:
-        ls.wfnewsUrl +
+        ls.wfnewsApiBaseUrl +
         '/publicPublishedIncident/features?stageOfControl=OUT',
       titleAttribute: 'incident_name',
       popupTemplate: '@wf-incident-feature',

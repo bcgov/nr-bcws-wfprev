@@ -9,7 +9,7 @@ export function OutOfControlWildfiresLayerConfig(ls: layerSettings) {
       useClustering: false,
       visible: false,
       dataUrl:
-        ls.wfnewsUrl +
+        ls.wfnewsApiBaseUrl +
         '/publicPublishedIncident/features?stageOfControl=OUT_CNTRL',
       titleAttribute: 'incident_name',
       popupTemplate: '@wf-incident-feature',
