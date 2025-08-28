@@ -31,24 +31,6 @@ spring:
 logging:
   level:
     root: INFO
-
-    ca:
-      bc:
-        gov:
-          nrs:
-            wfprev: DEBUG
-            wfprev.services.ReportService: TRACE
-            wfprev.controllers.ReportController: DEBUG
-
-    net:
-      sf:
-        jasperreports: DEBUG
-        jasperreports.engine.fill: TRACE
-        jasperreports.engine.export.ooxml: TRACE
-        jasperreports.engine.util.JRLoader: TRACE
-        jasperreports.engine.JasperCompileManager: TRACE
-        jasperreports.extensions: DEBUG
-
     org:
       springframework.web.servlet.mvc.method.annotation.StreamingResponseBodyReturnValueHandler: DEBUG
       hibernate.SQL: DEBUG

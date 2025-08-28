@@ -1,40 +1,54 @@
-FROM ghcr.io/graalvm/graalvm-community:21-ol9
+# Build stage
+FROM ghcr.io/graalvm/graalvm-community:21 AS builder
 
-# Install system-level RUNTIME libraries that the SVM AWT libs depend on.
-RUN microdnf install -y \
-    fontconfig-devel freetype-devel libX11-devel libXext-devel \
-    libXtst-devel libXi-devel libXrender-devel zlib-devel \
- && microdnf clean all
-
-# --- Build the Native Image ---
-ARG MAVEN_SETTINGS_FILE=vivid.settings.xml
+# Define build argument and set it as environment variable
+ARG MAVEN_SETTINGS_FILE=settings.xml
 ARG REPO_LOGIN
 ARG REPO_PASSWORD
-ENV REPO_LOGIN=${REPO_LOGIN} REPO_PASSWORD=${REPO_PASSWORD}
+
+ENV MAVEN_SETTINGS_FILE=${MAVEN_SETTINGS_FILE}
+
+ENV REPO_LOGIN=${REPO_LOGIN}
+ENV REPO_PASSWORD=${REPO_PASSWORD}
+
+# The environment variables from .env are automatically available here
+# We don't need the ARG declarations anymore since we're using the env file
+
+
+# Copy maven settings first
+COPY mvn_settings/${MAVEN_SETTINGS_FILE} /root/.m2/settings.xml
+
+# Copy rest of the application
+COPY . /app
+
+RUN ls -la /app
 
 WORKDIR /app
-COPY mvn_settings/${MAVEN_SETTINGS_FILE} /root/.m2/settings.xml
-COPY . .
 
+# Make mvnw executable
 RUN chmod +x mvnw
-# Run the native compilation. If this step fails, the error is in the build process.
-RUN ./mvnw -Pnative native:compile -DskipTests \
-    -Dgraalvm.native.optimizations.quick-build=true \
-    -Drepo.login=${REPO_LOGIN} -Drepo.password=${REPO_PASSWORD}
 
+RUN pwd
 
-ARG APP_NAME=wfprev-api
-# Verify the native executable exists after the build.
-RUN test -f "/app/target/${APP_NAME}" || (echo "ERROR: Native executable not found after build!" && exit 1)
+RUN ls -la
 
-# Set the final working directory (keeping it consistent)
-WORKDIR /app/target
+# Build the native image using settings.xml
+RUN ./mvnw -Pnative native:compile -DskipTests  -Drepo.login=${REPO_LOGIN} -Drepo.password=${REPO_PASSWORD}
 
-# Use ldd to verify the dependencies are present
-RUN ldd wfprev-api
+# Runtime stage
+FROM ubuntu:22.04
 
-#ENV LD_DEBUG=all
+# Install curl for healthcheck and debugging
+RUN apt-get update && apt-get install -y \
+    libc6 \
+    libstdc++6 \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
 
-# Set the entrypoint to run the application
+# Copy the native executable from builder stage
+COPY --from=builder /app/target/wfprev-api /
+
+# Expose the port your application uses
 EXPOSE 8080
-ENTRYPOINT ["./wfprev-api", "-Djava.awt.headless=true", "-Dsun.java2d.cmm=sun.java2d.cmm.lcms.LCMS"]
+
+ENTRYPOINT ["/wfprev-api"]

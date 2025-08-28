@@ -10,20 +10,9 @@ services:
         - MAVEN_SETTINGS_FILE=vivid.settings.xml
         - REPO_LOGIN=${REPO_LOGIN}
         - REPO_PASSWORD=${REPO_PASSWORD}
-#    deploy:
-#      resources:
-#        limits:
-#          memory: 2GB
-    command:
-      - "-Djava.awt.headless=true"
-      - "--debug"
-      - "--spring.main.log-startup-info=true"
-      - "--logging.level.root=DEBUG"
-      - "--logging.level.org.springframework=DEBUG"
-      - "--logging.level.org.hibernate=INFO"
     environment:
       # Environment variables for the application
-      WFPREV_DATASOURCE_URL: jdbc:postgresql://wfprev-postgres:5432/wfprev
+      WFPREV_DATASOURCE_URL: ${WFPREV_DATASOURCE_URL}
       WFPREV_DATASOURCE_USERNAME: ${WFPREV_DATASOURCE_USERNAME}
       WFPREV_DATASOURCE_PASSWORD: ${WFPREV_DATASOURCE_PASSWORD}
       WFPREV_GDB_FUNCTION_NAME: ${WFPREV_GDB_FUNCTION_NAME}

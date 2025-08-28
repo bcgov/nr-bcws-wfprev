@@ -1,21 +1,15 @@
 package ca.bc.gov.nrs.wfprev.controllers;
 
-import ca.bc.gov.nrs.common.wfone.rest.resource.MessageListRsrc;
 import ca.bc.gov.nrs.wfprev.common.exceptions.ServiceException;
 import ca.bc.gov.nrs.wfprev.data.models.ReportRequestModel;
 import ca.bc.gov.nrs.wfprev.services.ReportService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.extensions.Extension;
 import io.swagger.v3.oas.annotations.extensions.ExtensionProperty;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import net.sf.jasperreports.engine.JRException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -45,7 +39,7 @@ public class ReportController {
                     @ExtensionProperty(name = "throttling-tier", value = "Unlimited")
             })
     )
-    public ResponseEntity<StreamingResponseBody> generateReport(@Valid @RequestBody ReportRequestModel request) throws ServiceException, IOException, JRException {
+    public ResponseEntity<StreamingResponseBody> generateReport(@Valid @RequestBody ReportRequestModel request) throws ServiceException, IOException, InterruptedException {
         final String type = request.getReportType();
         final String rid = java.util.UUID.randomUUID().toString().substring(0, 8);
         log.info("[{}] /reports start (type={})", rid, type);

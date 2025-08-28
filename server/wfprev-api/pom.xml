@@ -234,11 +234,6 @@
             <type>pom</type>
         </dependency>
         <dependency>
-            <groupId>net.sf.jasperreports</groupId>
-            <artifactId>jasperreports</artifactId>
-            <version>7.0.3</version>
-        </dependency>
-        <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
             <version>2.5.0</version>
@@ -311,30 +306,24 @@
         </pluginManagement>
         <plugins>
             <plugin>
-                <groupId>org.graalvm.buildtools</groupId>
-                <artifactId>native-maven-plugin</artifactId>
-                <version>0.11.0</version>
-                <configuration>
-                    <mainClass>ca.bc.gov.nrs.wfprev.WfprevApiApplication</mainClass>
-                    <buildArgs>
-                        <buildArg>-H:+JNI</buildArg>
-<!--                        <buildArg>-H:ReflectionConfigurationFiles=${project.basedir}/src/main/resources/native-image/reflection-config.json</buildArg>-->
-<!--                        <buildArg>-H:SerializationConfigurationFiles=${project.basedir}/src/main/resources/native-image/serialization-config.json</buildArg>-->
-<!--                        <buildArg>-H:ResourceConfigurationFiles=${project.basedir}/src/main/resources/native-image/resource-config.json</buildArg>-->
-<!--                        <buildArg>-H:JNIConfigurationFiles=${project.basedir}/src/main/resources/native-image/jni-config.json</buildArg>-->
-                        <buildArg>-H:ConfigurationFileDirectories=src/main/resources/META-INF/native-image</buildArg>
-                        <buildArg>-H:+AllowVMInspection</buildArg>
-                        <buildArg>-H:+ReportUnsupportedElementsAtRuntime</buildArg>
-                        <buildArg>-H:+ReportExceptionStackTraces</buildArg>
-                        <buildArg>-H:IncludeResources=jasper-template/.*</buildArg>
-                        <buildArg>-Djava.awt.headless=true</buildArg>
-                        <buildArg>--verbose</buildArg>
-                        <buildArg>--initialize-at-build-time=org.geolatte.geom,ch.qos.logback,org.slf4j,org.apache.logging.log4j,com.fasterxml.jackson.databind,com.fasterxml.jackson.core,com.fasterxml.jackson.annotation,org.apache.logging.slf4j</buildArg>
-<!--                        <buildArg>&#45;&#45;initialize-at-run-time=java.awt.Toolkit,java.awt.GraphicsEnvironment,java.awt.Color,java.awt.color,java.awt.font,sun.java2d.cmm,sun.java2d.cmm.lcms</buildArg>-->
-<!--                        <buildArg>&#45;&#45;add-modules=java.desktop</buildArg>-->
-                    </buildArgs>
-                </configuration>
-            </plugin>
+                    <groupId>org.graalvm.buildtools</groupId>
+                    <artifactId>native-maven-plugin</artifactId>
+                    <configuration>
+                        <mainClass>ca.bc.gov.nrs.wfprev.WfprevApiApplication</mainClass>
+                        <buildArgs>
+                            <buildArg>
+                                -H:ReflectionConfigurationFiles=${project.basedir}/src/main/resources/native-image/reflection-config.json
+                            </buildArg>
+                            <buildArg>
+                                -H:SerializationConfigurationFiles=${project.basedir}/src/main/resources/native-image/serialization-config.json
+                            </buildArg>
+                            <buildArg>
+                                -H:ResourceConfigurationFiles=${project.basedir}/src/main/resources/native-image/resource-config.json
+                            </buildArg>
+                            <buildArg>--initialize-at-build-time=org.geolatte.geom,ch.qos.logback,org.slf4j,org.apache.logging.log4j,com.fasterxml.jackson.databind,com.fasterxml.jackson.core,com.fasterxml.jackson.annotation,org.apache.logging.slf4j</buildArg>
+                        </buildArgs>
+                    </configuration>
+                </plugin>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>

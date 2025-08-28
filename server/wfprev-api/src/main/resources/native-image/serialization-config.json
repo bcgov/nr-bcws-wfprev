@@ -1,5 +1,5 @@
 [
-  { "name": "ca.bc.gov.nrs.wfprev.common.entities.CommonModel" },
+  {"name": "ca.bc.gov.nrs.wfprev.common.entities.CommonModel"},
 
   { "name": "ca.bc.gov.nrs.wfprev.data.models.ForestAreaCodeModel" },
   { "name": "ca.bc.gov.nrs.wfprev.data.models.GeneralScopeCodeModel" },
@@ -11,7 +11,7 @@
   { "name": "ca.bc.gov.nrs.wfprev.data.models.ActivityStatusCodeModel" },
   { "name": "ca.bc.gov.nrs.wfprev.data.models.RiskRatingCodeModel" },
   { "name": "ca.bc.gov.nrs.wfprev.data.models.ContractPhaseCodeModel" },
-  { "name": "ca.bc.gov.nrs.wfprev.data.models.ProjectFiscalModel" },
+  { "name": "ca.bc.gov.nrs.wfprev.data.models.ProjectFiscalModel"},
   { "name": "ca.bc.gov.nrs.wfprev.data.models.ActivityModel" },
   { "name": "ca.bc.gov.nrs.wfprev.data.models.ActivityBoundaryModel" },
   { "name": "ca.bc.gov.nrs.wfprev.data.models.SourceObjectNameCodeModel" },
@@ -63,14 +63,14 @@
   { "name": "ca.bc.gov.nrs.wfprev.data.entities.WildfireOrgUnitTypeCodeEntity" },
   { "name": "ca.bc.gov.nrs.wfprev.data.entities.FuelManagementReportEntity" },
   { "name": "ca.bc.gov.nrs.wfprev.data.entities.CulturalPrescribedFireReportEntity" },
-  { "name": "org.springframework.hateoas.RepresentationModel" },
-  { "name": "org.springframework.hateoas.Link" },
-  { "name": "org.springframework.hateoas.Links" },
+  { "name": "org.springframework.hateoas.RepresentationModel"},
+  { "name": "org.springframework.hateoas.Link"},
+  { "name": "org.springframework.hateoas.Links"},
   { "name": "java.util.Date" },
   { "name": "java.sql.Timestamp" },
   { "name": "java.lang.Number" },
   { "name": "java.lang.Integer" },
-  { "name": "java.lang.Long" },
+  { "name": "java.lang.Long"},
   { "name": "java.lang.Boolean" },
   { "name": "java.math.BigDecimal" },
   { "name": "java.math.BigInteger" },
@@ -100,232 +100,5 @@
   { "name":"org.locationtech.jts.geom.CoordinateSequence" },
   { "name":"org.locationtech.jts.geom.PrecisionModel" },
   { "name":"software.amazon.awssdk.services.lambda.model.InvokeResponse" },
-  { "name":"software.amazon.awssdk.services.lambda.model.InvokeRequest" },
-  { "name":"net.sf.jasperreports.engine.base.JRBaseReport" },
-  { "name":"net.sf.jasperreports.engine.base.JRBaseBand" },
-  { "name":"net.sf.jasperreports.engine.base.JRBaseSection" },
-  { "name":"net.sf.jasperreports.engine.base.JRBaseStyle" },
-  { "name":"net.sf.jasperreports.engine.base.JRBaseFont" },
-  { "name":"net.sf.jasperreports.engine.base.JRBaseDataset" },
-  { "name":"net.sf.jasperreports.engine.base.JRBaseDatasetRun" },
-  { "name":"net.sf.jasperreports.engine.base.JRBaseParameter" },
-  { "name":"net.sf.jasperreports.engine.base.JRBaseField" },
-  { "name":"net.sf.jasperreports.engine.base.JRBaseVariable" },
-  { "name":"net.sf.jasperreports.engine.base.JRBaseGroup" },
-  { "name":"net.sf.jasperreports.engine.base.JRBaseQuery" },
-  { "name":"net.sf.jasperreports.engine.base.JRBaseBox" },
-  { "name":"net.sf.jasperreports.engine.base.JRBaseLineBox" },
-  { "name":"net.sf.jasperreports.engine.base.JRBaseParagraph" },
-  { "name":"net.sf.jasperreports.engine.base.JRBasePropertyExpression" },
-  { "name":"net.sf.jasperreports.engine.base.JRBaseExpression" },
-  { "name":"net.sf.jasperreports.engine.base.JRBaseSortField" },
-  { "name":"net.sf.jasperreports.components.sort.JRSortField" },
-  { "name":"net.sf.jasperreports.engine.base.JRBasePrintPage" },
-  { "name":"net.sf.jasperreports.engine.base.JRBasePrintElement" },
-  { "name":"net.sf.jasperreports.engine.JasperReport" },
-  { "name":"net.sf.jasperreports.engine.JasperPrint" },
-  { "name":"net.sf.jasperreports.engine.base.JRBasePrintText" },
-  { "name":"net.sf.jasperreports.engine.base.JRBasePrintImage" },
-  { "name":"net.sf.jasperreports.engine.base.JRBasePrintLine" },
-  { "name":"net.sf.jasperreports.engine.base.JRBasePrintRectangle" },
-  { "name":"net.sf.jasperreports.engine.base.JRBasePrintFrame" },
-  { "name":"net.sf.jasperreports.engine.base.JRBaseStyle" },
-  { "name":"net.sf.jasperreports.engine.base.JRBasePen" },
-  { "name":"net.sf.jasperreports.engine.base.JRBaseElement" },
-  { "name":"net.sf.jasperreports.engine.base.JRBaseGraphicElement" },
-  { "name":"net.sf.jasperreports.engine.base.JRBaseTextElement" },
-  { "name":"net.sf.jasperreports.engine.base.JRBaseLineBox" },
-  { "name":"net.sf.jasperreports.engine.base.JRBaseBox" },
-  { "name":"net.sf.jasperreports.engine.base.JRBaseBreak" },
-  { "name":"net.sf.jasperreports.engine.base.JRBaseReportFont" },
-  { "name":"net.sf.jasperreports.engine.base.JRBasePropertyExpression" },
-  { "name":"net.sf.jasperreports.engine.base.JRBasePrintAnchorIndex" },
-  { "name":"net.sf.jasperreports.engine.base.JRBasePrintHyperlink" },
-  { "name":"net.sf.jasperreports.engine.base.JRBasePrintImageArea" },
-  { "name":"net.sf.jasperreports.engine.base.JRBasePrintImageAreaHyperlink" },
-  { "name":"net.sf.jasperreports.engine.fill.JRTemplateText" },
-  { "name":"net.sf.jasperreports.engine.fill.JRTemplateImage" },
-  { "name":"net.sf.jasperreports.engine.fill.JRTemplateFrame" },
-  { "name":"net.sf.jasperreports.engine.fill.JRTemplateLine" },
-  { "name":"net.sf.jasperreports.engine.fill.JRTemplateRectangle" },
-  { "name":"net.sf.jasperreports.engine.fill.JRTemplateElement" },
-  { "name":"net.sf.jasperreports.engine.base.JRBaseElementGroup" },
-  { "name":"net.sf.jasperreports.engine.JRElementGroup" },
-  { "name":"net.sf.jasperreports.engine.base.JRBaseFrame" },
-  { "name":"net.sf.jasperreports.engine.base.JRBaseSubreport" },
-  { "name":"net.sf.jasperreports.engine.base.JRBaseComponentElement" },
-  { "name":"net.sf.jasperreports.engine.base.JRBaseGenericElement" },
-  { "name":"net.sf.jasperreports.engine.util.JRLoader" },
-  {
-    "name":"byte[]"
-  },
-  {
-    "name":"java.awt.Color"
-  },
-  {
-    "name":"java.lang.Boolean"
-  },
-  {
-    "name":"java.lang.Enum"
-  },
-  {
-    "name":"java.lang.Float"
-  },
-  {
-    "name":"java.lang.Integer"
-  },
-  {
-    "name":"java.lang.Number"
-  },
-  {
-    "name":"java.util.ArrayList"
-  },
-  {
-    "name":"java.util.HashMap"
-  },
-  {
-    "name":"java.util.UUID"
-  },
-  {
-    "name":"net.sf.jasperreports.compilers.ConstantExpressionEvaluation"
-  },
-  {
-    "name":"net.sf.jasperreports.compilers.FieldEvaluation"
-  },
-  {
-    "name":"net.sf.jasperreports.compilers.ReportExpressionEvaluationData"
-  },
-  {
-    "name":"net.sf.jasperreports.engine.JRBand[]"
-  },
-  {
-    "name":"net.sf.jasperreports.engine.JRDataset[]"
-  },
-  {
-    "name":"net.sf.jasperreports.engine.JRExpressionChunk[]"
-  },
-  {
-    "name":"net.sf.jasperreports.engine.JRField[]"
-  },
-  {
-    "name":"net.sf.jasperreports.engine.JRGroup[]"
-  },
-  {
-    "name":"net.sf.jasperreports.engine.JRParameter[]"
-  },
-  {
-    "name":"net.sf.jasperreports.engine.JRPropertiesMap"
-  },
-  {
-    "name":"net.sf.jasperreports.engine.JRStyle[]"
-  },
-  {
-    "name":"net.sf.jasperreports.engine.JRVariable[]"
-  },
-  {
-    "name":"net.sf.jasperreports.engine.JasperReport"
-  },
-  {
-    "name":"net.sf.jasperreports.engine.base.JRBaseBand"
-  },
-  {
-    "name":"net.sf.jasperreports.engine.base.JRBaseBoxBottomPen"
-  },
-  {
-    "name":"net.sf.jasperreports.engine.base.JRBaseBoxLeftPen"
-  },
-  {
-    "name":"net.sf.jasperreports.engine.base.JRBaseBoxPen"
-  },
-  {
-    "name":"net.sf.jasperreports.engine.base.JRBaseBoxRightPen"
-  },
-  {
-    "name":"net.sf.jasperreports.engine.base.JRBaseBoxTopPen"
-  },
-  {
-    "name":"net.sf.jasperreports.engine.base.JRBaseDataset"
-  },
-  {
-    "name":"net.sf.jasperreports.engine.base.JRBaseElement"
-  },
-  {
-    "name":"net.sf.jasperreports.engine.base.JRBaseElementGroup"
-  },
-  {
-    "name":"net.sf.jasperreports.engine.base.JRBaseExpression"
-  },
-  {
-    "name":"net.sf.jasperreports.engine.base.JRBaseExpressionChunk"
-  },
-  {
-    "name":"net.sf.jasperreports.engine.base.JRBaseField"
-  },
-  {
-    "name":"net.sf.jasperreports.engine.base.JRBaseGroup"
-  },
-  {
-    "name":"net.sf.jasperreports.engine.base.JRBaseLineBox"
-  },
-  {
-    "name":"net.sf.jasperreports.engine.base.JRBaseParagraph"
-  },
-  {
-    "name":"net.sf.jasperreports.engine.base.JRBaseParameter"
-  },
-  {
-    "name":"net.sf.jasperreports.engine.base.JRBasePen"
-  },
-  {
-    "name":"net.sf.jasperreports.engine.base.JRBaseQuery"
-  },
-  {
-    "name":"net.sf.jasperreports.engine.base.JRBaseReport"
-  },
-  {
-    "name":"net.sf.jasperreports.engine.base.JRBaseSection"
-  },
-  {
-    "name":"net.sf.jasperreports.engine.base.JRBaseStaticText"
-  },
-  {
-    "name":"net.sf.jasperreports.engine.base.JRBaseStyle"
-  },
-  {
-    "name":"net.sf.jasperreports.engine.base.JRBaseTextElement"
-  },
-  {
-    "name":"net.sf.jasperreports.engine.base.JRBaseTextField"
-  },
-  {
-    "name":"net.sf.jasperreports.engine.base.JRBaseVariable"
-  },
-  {
-    "name":"net.sf.jasperreports.engine.design.JRReportCompileData"
-  },
-  {
-    "name":"net.sf.jasperreports.engine.type.CalculationEnum"
-  },
-  {
-    "name":"net.sf.jasperreports.engine.type.HorizontalTextAlignEnum"
-  },
-  {
-    "name":"net.sf.jasperreports.engine.type.ModeEnum"
-  },
-  {
-    "name":"net.sf.jasperreports.engine.type.OrientationEnum"
-  },
-  {
-    "name":"net.sf.jasperreports.engine.type.PositionTypeEnum"
-  },
-  {
-    "name":"net.sf.jasperreports.engine.type.ResetTypeEnum"
-  },
-  {
-    "name":"net.sf.jasperreports.engine.type.SplitTypeEnum"
-  },
-  {
-    "name":"net.sf.jasperreports.engine.type.VerticalTextAlignEnum"
-  }
-  
+  { "name":"software.amazon.awssdk.services.lambda.model.InvokeRequest" }
 ]

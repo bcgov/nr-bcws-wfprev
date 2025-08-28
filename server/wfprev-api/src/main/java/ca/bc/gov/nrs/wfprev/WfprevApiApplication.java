@@ -1,20 +1,7 @@
 package ca.bc.gov.nrs.wfprev;
 
-import ca.bc.gov.nrs.wfprev.common.serializers.PGLineStringDeserializer;
-import ca.bc.gov.nrs.wfprev.common.serializers.PGLineStringSerializer;
-import ca.bc.gov.nrs.wfprev.common.serializers.PGMultiPolygonDeserializer;
-import ca.bc.gov.nrs.wfprev.common.serializers.PGMultiPolygonSerializer;
-import ca.bc.gov.nrs.wfprev.common.serializers.PGPointDeserializer;
-import ca.bc.gov.nrs.wfprev.common.serializers.PGPointSerializer;
-import ca.bc.gov.nrs.wfprev.common.serializers.PGPolygonDeserializer;
-import ca.bc.gov.nrs.wfprev.common.serializers.PGPolygonSerializer;
-import ca.bc.gov.nrs.wfprev.common.serializers.PointDeserializer;
-import ca.bc.gov.nrs.wfprev.common.serializers.PointSerializer;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.module.SimpleModule;
-import jakarta.servlet.DispatcherType;
-import lombok.extern.slf4j.Slf4j;
 import org.locationtech.jts.geom.Point;
+import org.n52.jackson.datatype.jts.JtsModule;
 import org.postgresql.geometric.PGpoint;
 import org.postgresql.geometric.PGpolygon;
 import org.springframework.boot.SpringApplication;
@@ -26,11 +13,22 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.core.Ordered;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.web.filter.ForwardedHeaderFilter;
-import org.n52.jackson.datatype.jts.JtsModule;
 
-import java.awt.*;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 
-@Slf4j
+import ca.bc.gov.nrs.wfprev.common.serializers.PGLineStringDeserializer;
+import ca.bc.gov.nrs.wfprev.common.serializers.PGLineStringSerializer;
+import ca.bc.gov.nrs.wfprev.common.serializers.PGMultiPolygonDeserializer;
+import ca.bc.gov.nrs.wfprev.common.serializers.PGMultiPolygonSerializer;
+import ca.bc.gov.nrs.wfprev.common.serializers.PGPointDeserializer;
+import ca.bc.gov.nrs.wfprev.common.serializers.PGPointSerializer;
+import ca.bc.gov.nrs.wfprev.common.serializers.PGPolygonDeserializer;
+import ca.bc.gov.nrs.wfprev.common.serializers.PGPolygonSerializer;
+import ca.bc.gov.nrs.wfprev.common.serializers.PointDeserializer;
+import ca.bc.gov.nrs.wfprev.common.serializers.PointSerializer;
+import jakarta.servlet.DispatcherType;
+
 @SpringBootApplication
 @EnableJpaAuditing(auditorAwareRef = "springSecurityAuditorAware")
 public class WfprevApiApplication {
@@ -38,7 +36,6 @@ public class WfprevApiApplication {
 	 * Run the application as a JAR
 	 */
 	public static void main(String[] args) {
-//		log.info("AWT color smoke test = {}", new java.awt.Color(0,0,0));
 		SpringApplication.run(WfprevApiApplication.class, args);
 	}
 
