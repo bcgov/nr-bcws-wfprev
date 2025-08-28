@@ -43,7 +43,7 @@ resource "aws_lambda_function" "report_generator" {
   role          = aws_iam_role.lambda_exec.arn
   package_type  = "Image"
 
-  image_uri     = var.WFPREV_REPORT_GENERATOR_DIGEST
+  image_uri     = var.WFPREV_REPORT_GENERATOR_IMAGE
   
   memory_size   = var.WFPREV_LAMBDA_MEMORY
   timeout       = var.WFPREV_LAMBDA_TIMEOUT

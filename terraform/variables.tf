@@ -50,7 +50,7 @@ variable "WFPREV_GDB_EXTRACTOR_DIGEST" {
   default     = ""
 }
 
-variable "WFPREV_REPORT_GENERATOR_DIGEST" {
+variable "WFPREV_REPORT_GENERATOR_IMAGE" {
   description = "Digest-based URI for the Report Generator Lambda image"
   type        = string
   default     = ""

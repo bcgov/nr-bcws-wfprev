@@ -79,18 +79,3 @@ jobs:
           docker pull ${{vars.REPOSITORY_HOST}}/${{ github.repository_owner }}/nr-bcws-wfprev-report-generator:latest
           docker tag ${{vars.REPOSITORY_HOST}}/${{ github.repository_owner }}/nr-bcws-wfprev-report-generator:latest ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.ca-central-1.amazonaws.com/nr-bcws-wfprev-report-generator:latest
           docker push ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.ca-central-1.amazonaws.com/nr-bcws-wfprev-report-generator:latest
-          echo "REPORT_GENERATOR_IMAGE=${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.ca-central-1.amazonaws.com/nr-bcws-wfprev-report-generator:latest" >> $GITHUB_ENV
-
-      - name: Get Digest of Report Generator ECR image
-        id: getReportGeneratorDigest
-        run: |
-          DIGEST=$(aws ecr describe-images \
-            --repository-name nr-bcws-wfprev-report-generator \
-            --image-ids imageTag=latest \
-            --query 'imageDetails[0].imageDigest' \
-            --output text)
-          export REPORT_GENERATOR_DIGEST=${DIGEST}
-          echo "digest_output=$REPORT_GENERATOR_DIGEST" >> $GITHUB_OUTPUT
-
-          outputs:
-            report_generator_digest: ${{ steps.getReportGeneratorDigest.outputs.digest_output }}
