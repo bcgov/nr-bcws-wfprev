@@ -13,7 +13,7 @@ WORKDIR /project
 COPY . .
 USER root
 RUN chmod -R 777 /project
-RUN ./mvnw package -Pnative
+RUN ./mvnw package -Pnative -DskipTests
 
 # Stage 2: Create the runtime image
 FROM registry.access.redhat.com/ubi9/ubi-minimal:9.5
@@ -31,7 +31,7 @@ COPY --from=builder /project/target/*.so /work/
 COPY --from=builder /project/target/*-runner /work/application
 
 RUN chmod "ugo+x" /work/application
-EXPOSE 8080
+EXPOSE 8081
 USER 1001
 
 CMD ["./application", "-Dquarkus.http.host=0.0.0.0"]

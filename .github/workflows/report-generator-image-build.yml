@@ -47,7 +47,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: ./lambda/report-generator
-          file: ./lambda/report-generator/src/main/docker/Dockerfile.native
+          file: ./lambda/report-generator/src/main/docker/Dockerfile.lambda
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
