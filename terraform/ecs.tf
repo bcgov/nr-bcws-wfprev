@@ -112,7 +112,7 @@ resource "aws_ecs_task_definition" "wfprev_server" {
       },
       {
         name = "REPORT_GENERATOR_LAMBDA_URL"
-        value = aws_lambda_function_url.report_generator.function_url
+        value = aws_lambda_function_url.report_generator_url.function_url
       },
       {
         name  = "TRAINING_AND_SUPPORT_LINK"
