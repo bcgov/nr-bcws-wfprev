@@ -3,8 +3,8 @@ services:
     profiles:
       - api
     build:
-      context: .
-      dockerfile: server/wfprev-api/Dockerfile.graalvm
+      context: server/wfprev-api
+      dockerfile: Dockerfile.graalvm
       # Pass the maven settings file and repo credentials as build args
       args:
         - MAVEN_SETTINGS_FILE=vivid.settings.xml

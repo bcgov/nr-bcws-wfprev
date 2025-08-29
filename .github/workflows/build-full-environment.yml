@@ -17,6 +17,7 @@ on:
       - "terraform/**"
       - "db/**"
       - "!**/README.md"
+      - 'lambda/report-generator/**'
   workflow_dispatch:
 
 jobs: 
@@ -40,16 +41,19 @@ jobs:
     secrets: inherit
     with:
       TAG: latest
+
+  report-generator-lambda:
+    uses: ./.github/workflows/lambda-build.yml
+    secrets: inherit
       
   terragrunt-deploy-wfint:
     uses: ./.github/workflows/terragrunt-deploy.yml
-    needs: [node-build, wfprev-api, liquibase-build]
+    needs: [node-build, wfprev-api, liquibase-build, report-generator-lambda]
     with:
       DEFAULT_APPLICATION_ENVIRONMENT: wfint
       IMAGE_TAG: latest
       RUN_LIQUIBASE: true
       COMMAND: apply
-      GDB_EXTRACTOR_DIGEST: ${{ needs.node-build.outputs.gdb_digest }}
     secrets: inherit
 
   wfprev-ui:

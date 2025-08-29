@@ -47,7 +47,6 @@ jobs:
       IMAGE_TAG: ${{ github.event.release.tag_name }}
       COMMAND: apply
       RUN_LIQUIBASE: 'true'
-      GDB_EXTRACTOR_DIGEST: ${{ needs.node-build.outputs.gdb_digest }}
 
   wfprev-ui-dlv:
     uses: ./.github/workflows/client-build.yml
@@ -66,7 +65,6 @@ jobs:
       IMAGE_TAG: ${{ github.event.release.tag_name }}
       COMMAND: apply
       RUN_LIQUIBASE: 'true'
-      GDB_EXTRACTOR_DIGEST: ${{ needs.node-build.outputs.gdb_digest }}
 
   wfprev-ui-tst:
     uses: ./.github/workflows/client-build.yml

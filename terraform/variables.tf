@@ -47,8 +47,14 @@ variable "WFPREV_LAMBDA_TIMEOUT" {
   default     = 300
 }
 
-variable "WFPREV_GDB_EXTRACTOR_DIGEST" {
+variable "WFPREV_GDB_EXTRACTOR_IMAGE" {
   description = "Digest-based URI for the Lambda image"
+  type        = string
+  default     = ""
+}
+
+variable "WFPREV_REPORT_GENERATOR_IMAGE" {
+  description = "Digest-based URI for the Report Generator Lambda image"
   type        = string
   default     = ""
 }
@@ -376,6 +382,11 @@ variable "TARGET_LIQUIBASE_TAG" {
 variable "COMMAND" {
   type = string
   default = "update"
+}
+
+variable "REPORT_GENERATOR_LAMBDA_URL" {
+  type = string
+  default = ""
 }
 
 variable "TRAINING_AND_SUPPORT_LINK" {
