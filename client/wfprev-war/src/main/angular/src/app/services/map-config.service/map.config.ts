@@ -38,7 +38,7 @@ export const mapConfig = (
     },
     {
       type: 'identify',
-      enabled: false
+      enabled: true
     },
     {
       type: 'layers',
@@ -51,7 +51,7 @@ export const mapConfig = (
       },
       command: {
         allVisibility: true,
-        filter: false,
+        filter: true,
         legend: true,
       },
       legend: true,

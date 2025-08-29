@@ -18,7 +18,7 @@ export function LayerDisplayConfig() {
         {
             id: 'fire-perimeters',
             isVisible: false,
-            class: 'smk-inline-legend',
+            alwaysShowLegend: true,
         },
         {
             id: 'active-wildfires-out-of-control',
@@ -39,7 +39,7 @@ export function LayerDisplayConfig() {
             id: 'active-wildfires-out',
             isVisible: false,
             alwaysShowLegend: true,
-        },
+        }
 
     ];
 }

@@ -155,6 +155,11 @@ variable "WFNEWS_API_BASE_URL" {
   default = ""
 }
 
+variable "WFNEWS_API_KEY" {
+  type    = string
+  default = ""
+}
+
 variable "OPENMAPS_URL" {
   type    = string
   default = ""

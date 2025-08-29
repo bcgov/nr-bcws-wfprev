@@ -24,6 +24,7 @@ export interface WebADE {
 export interface MapServicesConfig {
   geoserverApiBaseUrl: string;
   wfnewsApiBaseUrl: string;
+  wfnewsApiKey: string;
 }
 
 export interface ApplicationConfig {

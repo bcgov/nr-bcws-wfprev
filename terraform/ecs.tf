@@ -94,6 +94,10 @@ resource "aws_ecs_task_definition" "wfprev_server" {
         name  = "WFNEWS_API_BASE_URL",
         value = var.WFNEWS_API_BASE_URL
       },
+       {
+        name  = "WFNEWS_API_KEY",
+        value = var.WFNEWS_API_KEY
+      },
       {
         name  = "OPENMAPS_URL",
         value = var.OPENMAPS_URL

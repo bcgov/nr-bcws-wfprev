@@ -6,7 +6,7 @@ export function OutWildfiresLayerConfig(ls: layerSettings) {
       type: 'vector',
       id: 'active-wildfires-out',
       title: 'Declared Out Wildfires',
-      isQueryable: false,
+      isQueryable: true,
       useClustering: false,
       useHeatmap: false,
       visible: false,
@@ -19,7 +19,12 @@ export function OutWildfiresLayerConfig(ls: layerSettings) {
         {
           name: 'incident_name',
           title: 'Fire Name',
-          visible: false,
+          visible: true,
+        },
+        {
+          name: 'fire_year',
+          title: 'Fire Year',
+          visible: true,
         },
       ],
       style: {
@@ -31,6 +36,9 @@ export function OutWildfiresLayerConfig(ls: layerSettings) {
         fillOpacity: '1',
         fill: true,
       },
+      header: {
+        apikey: ls.wfnewsApiKey
+      }
     }
 }
   

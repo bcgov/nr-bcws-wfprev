@@ -1,7 +1,7 @@
 import { layerSettings } from '.';
 
-export function FirePerimetersLayerConfig(ls: layerSettings, token?: string) {
-
+export function FirePerimetersLayerConfig(ls: layerSettings, authHeader?: Record<string, string>) {
+  
   return {
     serviceUrl: ls.geoserverApiBaseUrl + "/ows",
     id: "fire-perimeters",
@@ -11,8 +11,6 @@ export function FirePerimetersLayerConfig(ls: layerSettings, token?: string) {
     isQueryable: false,
     combiningClass: "wfBoundary",
     layerName: "IN_CURRENT_FIRE_POLYGONS_SVW",
-    header: {
-      Authorization: `Bearer ${token}`
-    }
+    header: authHeader
   }
 }

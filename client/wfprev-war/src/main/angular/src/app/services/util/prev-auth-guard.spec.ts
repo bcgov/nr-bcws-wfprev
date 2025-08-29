@@ -66,7 +66,8 @@ describe('PrevAuthGuard', () => {
       rest: {},
       mapServices: {
         geoserverApiBaseUrl: 'http://geoserver.test',
-        wfnewsApiBaseUrl: 'http://wfnews.test'
+        wfnewsApiBaseUrl: 'http://wfnews.test',
+        wfnewsApiKey: 'fake-api-key'
       }
     });
 
@@ -290,7 +291,8 @@ describe('PrevAuthGuard', () => {
         rest: {},
         mapServices: {
           geoserverApiBaseUrl: 'http://geoserver.test',
-          wfnewsApiBaseUrl: 'http://wfnews.test'
+          wfnewsApiBaseUrl: 'http://wfnews.test',
+          wfnewsApiKey: 'fake-api-key'
         }
       });
 

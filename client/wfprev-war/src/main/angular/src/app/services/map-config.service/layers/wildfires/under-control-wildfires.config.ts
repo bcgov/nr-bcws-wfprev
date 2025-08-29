@@ -6,7 +6,7 @@ export function UnderControlWildfiresLayerConfig(ls: layerSettings) {
       type: 'vector',
       id: 'active-wildfires-under-control',
       title: 'Under Control Wildfires',
-      isQueryable: false,
+      isQueryable: true,
       useClustering: false,
       visible: false,
       dataUrl:
@@ -18,7 +18,12 @@ export function UnderControlWildfiresLayerConfig(ls: layerSettings) {
         {
           name: 'incident_name',
           title: 'Fire Name',
-          visible: false,
+          visible: true,
+        },
+        {
+          name: 'fire_year',
+          title: 'Fire Year',
+          visible: true,
         },
       ],
       style: {
@@ -30,6 +35,9 @@ export function UnderControlWildfiresLayerConfig(ls: layerSettings) {
         fillOpacity: '1',
         fill: true,
       },
+      header: {
+        apikey: ls.wfnewsApiKey
+      }
     }
 }
     

@@ -5,7 +5,7 @@ export function OutOfControlWildfiresLayerConfig(ls: layerSettings) {
       type: 'vector',
       id: 'active-wildfires-out-of-control',
       title: 'Out of Control Wildfires',
-      isQueryable: false,
+      isQueryable: true,
       useClustering: false,
       visible: false,
       dataUrl:
@@ -17,7 +17,12 @@ export function OutOfControlWildfiresLayerConfig(ls: layerSettings) {
         {
           name: 'incident_name',
           title: 'Fire Name',
-          visible: false,
+          visible: true,
+        },
+        {
+          name: 'fire_year',
+          title: 'Fire Year',
+          visible: true,
         },
       ],
       style: {
@@ -29,5 +34,9 @@ export function OutOfControlWildfiresLayerConfig(ls: layerSettings) {
         fillOpacity: '1',
         fill: true,
       },
+      header: {
+        apikey: ls.wfnewsApiKey
+      }
+     
     }
 }

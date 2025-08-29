@@ -1,4 +1,4 @@
-import { TestBed } from '@angular/core/testing';
+import { TestBed, waitForAsync } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { AppConfigService } from 'src/app/services/app-config.service';
 import { TokenService } from 'src/app/services/token.service';
@@ -35,7 +35,8 @@ describe('CodeTableServices', () => {
     },
     mapServices: {
       geoserverApiBaseUrl: 'http://geoserver.test',
-      wfnewsApiBaseUrl: 'http://wfnews.test'
+      wfnewsApiBaseUrl: 'http://wfnews.test',
+      wfnewsApiKey: 'fake-api-key'
     }
   };
 

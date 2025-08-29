@@ -21,6 +21,7 @@
 
   "mapServices": {
     "geoserverApiBaseUrl": "#{GEOSERVER_API_BASE_URL}#",
-    "wfnewsApiBaseUrl": "#{WFNEWS_API_BASE_URL}#"
+    "wfnewsApiBaseUrl": "#{WFNEWS_API_BASE_URL}#",
+    "wfnewsApiKey": "#{WFNEWS_API_KEY}#"
   }
 }

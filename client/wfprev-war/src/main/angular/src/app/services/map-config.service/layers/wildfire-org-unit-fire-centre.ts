@@ -1,6 +1,6 @@
 import { layerSettings } from ".";
 
-export function WildfireOrgUnitFireCentreLayerConfig(ls: layerSettings, token?: string) {
+export function WildfireOrgUnitFireCentreLayerConfig(ls: layerSettings, authHeader?: Record<string, string>) {
     return {
     serviceUrl: ls.geoserverApiBaseUrl + "/ows",
     id: "wildfire-org-unit-fire-centre",
@@ -10,9 +10,7 @@ export function WildfireOrgUnitFireCentreLayerConfig(ls: layerSettings, token?: 
     isQueryable: false,
     combiningClass: "wfBoundary",
     layerName: "WILDFIRE_ORG_UNIT_FIRE_CENTRE",
-    header: {
-      Authorization: `Bearer ${token}`
-    } 
+    header: authHeader
   }
 
 }

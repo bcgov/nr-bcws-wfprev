@@ -38,7 +38,8 @@ describe('ProjectService', () => {
     },
     mapServices: {
       geoserverApiBaseUrl: 'http://geoserver.test',
-      wfnewsApiBaseUrl: 'http://wfnews.test'
+      wfnewsApiBaseUrl: 'http://wfnews.test',
+      wfnewsApiKey: 'fake-api-key'
     }
   };
 
