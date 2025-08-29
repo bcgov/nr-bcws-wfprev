@@ -111,6 +111,10 @@ resource "aws_ecs_task_definition" "wfprev_server" {
         value = var.api_key
       },
       {
+        name = "REPORT_GENERATOR_LAMBDA_URL"
+        value = var.REPORT_GENERATOR_LAMBDA_URL
+      },
+      {
         name  = "TRAINING_AND_SUPPORT_LINK"
         value = var.TRAINING_AND_SUPPORT_LINK
       }

@@ -30,13 +30,18 @@ spring:
 
 logging:
   level:
+    root: INFO
     org:
-      hibernate:
-        SQL: DEBUG
-      type:
-        descriptor:
-          sql:
-            BasicBinder: TRACE
+      springframework.web.servlet.mvc.method.annotation.StreamingResponseBodyReturnValueHandler: DEBUG
+      hibernate.SQL: DEBUG
+      hibernate.type.descriptor.sql.BasicBinder: TRACE
+      apache.poi: WARN
+
+  pattern:
+    console: "%d{yyyy-MM-dd'T'HH:mm:ss.SSSXXX} %-5level [%thread] %logger{40} - %msg%n%wEx"
+
+  file:
+    name: logs/wfprev-api.log
 
 management:
   endpoints:
