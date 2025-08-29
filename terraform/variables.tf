@@ -369,11 +369,6 @@ variable "COMMAND" {
   default = "update"
 }
 
-variable "REPORT_GENERATOR_LAMBDA_URL" {
-  type = string
-  default = ""
-}
-
 variable "TRAINING_AND_SUPPORT_LINK" {
   type    = string
   default = ""
