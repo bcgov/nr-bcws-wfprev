@@ -80,6 +80,10 @@
   color: inherit;
 }
 
+:host ::ng-deep .smk-panel .smk-display-layer .smk-item[title^="id: IdentifyListTool--"] {
+  display: none !important;
+}
+
 :host ::ng-deep .smk-panel .smk-display-layer .smk-item {
   flex-wrap: wrap;
   max-height: 50px;
