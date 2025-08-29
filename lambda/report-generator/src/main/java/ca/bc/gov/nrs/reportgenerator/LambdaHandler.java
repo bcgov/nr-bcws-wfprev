@@ -44,8 +44,8 @@ public class LambdaHandler implements RequestStreamHandler {
     @Override
     public void handleRequest(InputStream input, OutputStream output, Context context) throws IOException {
         LambdaEvent event;
-        LOG.info("Received request to generate reports", input);
         String inputJson = new String(input.readAllBytes());
+        LOG.info("Received request to generate reports", inputJson);
         try {
             // Try to parse as wrapper object first
             JsonNode root = mapper.readTree(inputJson);
