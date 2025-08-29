@@ -40,8 +40,8 @@ public class ReportService {
     @Value("${REPORT_GENERATOR_LAMBDA_URL}")
     private String reportGeneratorLambdaUrl;
 
-    // @Value("${spring.application.baseUrl}")
-    private String baseUrl = "http://localhost:4200";
+     @Value("${spring.application.baseUrl}")
+    private String baseUrl;
 
     private static final String PROJECT_URL_PREFIX = "/edit-project?projectGuid=";
 
