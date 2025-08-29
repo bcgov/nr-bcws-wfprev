@@ -7,6 +7,8 @@ import { BeingHeldWildfiresLayerConfig } from "./wildfires/being-held-wildfires.
 import { UnderControlWildfiresLayerConfig } from "./wildfires/under-control-wildfires.config";
 import { OutWildfiresLayerConfig } from "./wildfires/out-wildfires.config";
 import { MapServices } from "..";
+import { LegacyFuelTreatmentsLayerConfig } from "./legacy-fuel-treatments.config";
+import { ResultsActivityTreatmentLayerConfig } from "./risk-reduction-projects-activities.config";
 
 export interface LayerSettings {
   geoserverApiBaseUrl: string;
@@ -34,6 +36,8 @@ export function LayerConfig(mapServices: MapServices, token?: string) {
     BeingHeldWildfiresLayerConfig(ls),
     UnderControlWildfiresLayerConfig(ls),
     OutWildfiresLayerConfig(ls),
+    LegacyFuelTreatmentsLayerConfig(ls, authHeader),
+    ResultsActivityTreatmentLayerConfig(ls)
   ];
   
 }
