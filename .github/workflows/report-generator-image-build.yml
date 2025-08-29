@@ -5,10 +5,6 @@ on:
   workflow_dispatch:
   workflow_call:
     inputs:
-      COMPONENT_NAME:
-        type: string
-        required: false
-        default: report-generator
       TAG:
         required: false
         type: string
@@ -20,6 +16,7 @@ jobs:
 
     env:
       AWS_REGION: ca-central-1
+      COMPONENT_NAME: report-generator
       IMAGE_NAME: ${{ github.repository_owner }}/report-generator
 
     steps:
@@ -50,6 +47,7 @@ jobs:
             type=ref,event=pr
             type=ref,event=tag
             type=raw,value=${{ github.sha }}
+
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
