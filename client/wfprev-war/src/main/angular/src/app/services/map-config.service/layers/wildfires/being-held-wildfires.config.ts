@@ -1,6 +1,6 @@
-import { layerSettings } from '..';
+import { LayerSettings } from "src/app/components/models";
 
-export function BeingHeldWildfiresLayerConfig(ls: layerSettings) {
+export function BeingHeldWildfiresLayerConfig(ls: LayerSettings) {
      return {
       type: 'vector',
       id: 'active-wildfires-holding',

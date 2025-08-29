@@ -1,6 +1,6 @@
-import { layerSettings } from ".";
+import { LayerSettings } from "src/app/components/models";
 
-export function MinistryOfForestsDistrictsLayerConfig(ls: layerSettings, authHeader?: Record<string, string>) {
+export function MinistryOfForestsDistrictsLayerConfig(ls: LayerSettings, authHeader?: Record<string, string>) {
   return {
     serviceUrl: ls.geoserverApiBaseUrl + "/ows",
     id: "ministry-of-forests-districts",

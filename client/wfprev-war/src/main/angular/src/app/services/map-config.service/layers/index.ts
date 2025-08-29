@@ -1,4 +1,3 @@
-import { MapServices } from "..";
 import { OutOfControlWildfiresLayerConfig } from "./wildfires/out-of-control-wildfires.config";
 import { FirePerimetersLayerConfig } from "./fire-perimeters.config";
 import { MinistryOfForestsDistrictsLayerConfig } from "./ministry-of-forests-districts.config";
@@ -7,14 +6,15 @@ import { WildfireOrgUnitFireCentreLayerConfig } from "./wildfire-org-unit-fire-c
 import { BeingHeldWildfiresLayerConfig } from "./wildfires/being-held-wildfires.config";
 import { UnderControlWildfiresLayerConfig } from "./wildfires/under-control-wildfires.config";
 import { OutWildfiresLayerConfig } from "./wildfires/out-wildfires.config";
+import { MapServices } from "..";
 
-export interface layerSettings {
+export interface LayerSettings {
   geoserverApiBaseUrl: string;
   wfnewsApiBaseUrl: string;
   wfnewsApiKey: string;
 }
 export function LayerConfig(mapServices: MapServices, token?: string) {
-  const ls: layerSettings = {
+  const ls: LayerSettings = {
     geoserverApiBaseUrl: mapServices['geoserverApiBaseUrl'],
     wfnewsApiBaseUrl: mapServices['wfnewsApiBaseUrl'],
     wfnewsApiKey: mapServices['wfnewsApiKey']

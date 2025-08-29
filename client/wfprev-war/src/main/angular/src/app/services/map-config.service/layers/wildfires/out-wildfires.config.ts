@@ -1,6 +1,6 @@
-import { layerSettings } from '..';
+import { LayerSettings } from "src/app/components/models";
 
-export function OutWildfiresLayerConfig(ls: layerSettings) {
+export function OutWildfiresLayerConfig(ls: LayerSettings) {
     
   return {
       type: 'vector',

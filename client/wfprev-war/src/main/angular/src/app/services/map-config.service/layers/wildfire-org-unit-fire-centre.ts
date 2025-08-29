@@ -1,6 +1,6 @@
-import { layerSettings } from ".";
+import { LayerSettings } from "src/app/components/models";
 
-export function WildfireOrgUnitFireCentreLayerConfig(ls: layerSettings, authHeader?: Record<string, string>) {
+export function WildfireOrgUnitFireCentreLayerConfig(ls: LayerSettings, authHeader?: Record<string, string>) {
     return {
     serviceUrl: ls.geoserverApiBaseUrl + "/ows",
     id: "wildfire-org-unit-fire-centre",

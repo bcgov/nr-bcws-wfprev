@@ -1,6 +1,7 @@
-import { layerSettings } from '..';
+import { LayerSettings } from "src/app/components/models";
 
-export function OutOfControlWildfiresLayerConfig(ls: layerSettings) {
+
+export function OutOfControlWildfiresLayerConfig(ls: LayerSettings) {
   return {
       type: 'vector',
       id: 'active-wildfires-out-of-control',

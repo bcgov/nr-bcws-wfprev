@@ -236,8 +236,8 @@ export class MapService {
     if (!WmsLeaflet?.prototype) return;
 
     // Ensure we only patch once
-    if ((WmsLeaflet.prototype as any).__authLegendPatched) return;
-    (WmsLeaflet.prototype as any).__authLegendPatched = true;
+    if (WmsLeaflet.prototype["__authLegendPatched"]) return;
+    WmsLeaflet.prototype["__authLegendPatched"] = true;
 
     // Keep a reference to SMK’s original legend initializer
     const originalInitLegends = WmsLeaflet.prototype.initLegends;
@@ -294,10 +294,10 @@ export class MapService {
               try {
                 const reader = new FileReader();
                 reader.onload = () => resolve(reader.result as string);
-                reader.onerror = reject;
+                reader.onerror = () => reject(new Error('Failed to read legend blob'));
                 reader.readAsDataURL(blob);
-              } catch (e) {
-                reject(e);
+              } catch (e: any) {
+                reject(new Error(e?.message || 'Unknown error while reading blob'));
               }
             })
         )
@@ -316,10 +316,10 @@ export class MapService {
                       ...(this.config.legend || {}),
                     },
                   ]);
-                img.onerror = reject;
+                img.onerror = () => reject(new Error('Failed to load legend image'));
                 img.src = dataUrl;
-              } catch (e) {
-                reject(e);
+              } catch (e: any) {
+                reject(new Error(e?.message || 'Unknown error while loading image'));
               }
             })
         )
@@ -340,48 +340,48 @@ export class MapService {
   }
 
   makeOnlyRegionsVisible(option: any) {
-  // IDs of layers that should remain visible
-  const visibleLayerIds = new Set(['ministry-of-forests-regions']);
+    // IDs of layers that should remain visible
+    const visibleLayerIds = new Set(['ministry-of-forests-regions']);
 
 
-  // Recursive helper to apply visibility rules
-  const applyVisibility = (node: any) => {
-    if (!node) return;
+    // Recursive helper to apply visibility rules
+    const applyVisibility = (node: any) => {
+      if (!node) return;
 
-    // If this node is an array, process each element
-    if (Array.isArray(node)) {
-      node.forEach(applyVisibility);
-      return;
+      // If this node is an array, process each element
+      if (Array.isArray(node)) {
+        node.forEach(applyVisibility);
+        return;
+      }
+
+      // If this node is a group/folder with children
+      const children = node.layers ?? node.entries;
+      if (Array.isArray(children)) {
+        // Hide the group itself and recurse into children
+        node.visible = false;
+        node.isVisible = false; // some configs use this for UI
+        children.forEach(applyVisibility);
+        return;
+      }
+
+      // If this node is a leaf layer
+      if (node.id) {
+        const shouldBeVisible = visibleLayerIds.has(node.id);
+        node.visible = shouldBeVisible;   // drives the map engine
+        node.isVisible = shouldBeVisible; // keeps UI in sync
+      }
+    };
+
+    // SMK configs can put layers in different places
+    if (Array.isArray(option.layers)) {
+      applyVisibility(option.layers);
     }
-
-    // If this node is a group/folder with children
-    const children = node.layers ?? node.entries;
-    if (Array.isArray(children)) {
-      // Hide the group itself and recurse into children
-      node.visible = false;
-      node.isVisible = false; // some configs use this for UI
-      children.forEach(applyVisibility);
-      return;
+    if (Array.isArray(option.config)) {
+      option.config.forEach((block: any) => {
+        if (Array.isArray(block?.layers)) applyVisibility(block.layers);
+        if (Array.isArray(block?.entries)) applyVisibility(block.entries);
+      });
     }
-
-    // If this node is a leaf layer
-    if (node.id) {
-      const shouldBeVisible = visibleLayerIds.has(node.id);
-      node.visible = shouldBeVisible;   // drives the map engine
-      node.isVisible = shouldBeVisible; // keeps UI in sync
-    }
-  };
-
-  // SMK configs can put layers in different places
-  if (Array.isArray(option.layers)) {
-    applyVisibility(option.layers);
   }
-  if (Array.isArray(option.config)) {
-    option.config.forEach((block: any) => {
-      if (Array.isArray(block?.layers)) applyVisibility(block.layers);
-      if (Array.isArray(block?.entries)) applyVisibility(block.entries);
-    });
-  }
-}
 
 }
