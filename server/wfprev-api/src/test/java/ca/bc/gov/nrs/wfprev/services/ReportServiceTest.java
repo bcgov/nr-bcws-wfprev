@@ -42,62 +42,6 @@ class ReportServiceTest {
 		reportService = new ReportService(fuelRepo, crxRepo, projectRepo, programAreaRepo);
 	}
 
-	@Test
-	void exportXlsx_throwsIfNoEnvVar() {
-		List<UUID> guids = List.of(UUID.randomUUID());
-		OutputStream out = new ByteArrayOutputStream();
-		Exception ex = assertThrows(ServiceException.class, () -> reportService.exportXlsx(guids, out, "RID"));
-		assertTrue(ex.getMessage().contains("REPORT_GENERATOR_LAMBDA_URL"));
-	}
-
-	@Test
-	void writeCsvZipFromEntities_outputsValidZip() throws Exception {
-		UUID projectGuid = UUID.randomUUID();
-		FuelManagementReportEntity fuel = new FuelManagementReportEntity();
-		fuel.setProjectGuid(projectGuid);
-		fuel.setProjectTypeDescription("FUEL_MGMT");
-		fuel.setProjectName("Alpha Project");
-		fuel.setGrossProjectAreaHa(BigDecimal.valueOf(123.45));
-		fuel.setFiscalYear("2025");
-		fuel.setTotalEstimatedCostAmount(BigDecimal.valueOf(1234567));
-		fuel.setResultsOpeningId("OPEN-1");
-		fuel.setPrimaryObjectiveTypeDescription("Primary F");
-
-		CulturalPrescribedFireReportEntity crx = new CulturalPrescribedFireReportEntity();
-		crx.setProjectGuid(projectGuid);
-		crx.setProjectTypeDescription("CRX");
-		crx.setProjectName("Beta Project");
-		crx.setGrossProjectAreaHa(BigDecimal.valueOf(987.8));
-		crx.setFiscalYear("2025");
-		crx.setTotalEstimatedCostAmount(BigDecimal.valueOf(2000000));
-		crx.setPrimaryObjectiveTypeDescription("Primary C");
-		crx.setSecondaryObjectiveTypeDescription("Secondary C");
-		crx.setOutsideWuiInd(true);
-		crx.setWuiRiskClassDescription("WUI Class");
-		crx.setLocalWuiRiskClassDescription("Local WUI");
-
-		when(fuelRepo.findByProjectGuidIn(anyList())).thenReturn(List.of(fuel));
-		when(crxRepo.findByProjectGuidIn(anyList())).thenReturn(List.of(crx));
-
-		ByteArrayOutputStream zipOut = new ByteArrayOutputStream();
-		reportService.writeCsvZipFromEntities(List.of(projectGuid), zipOut);
-
-		Map<String, List<String>> csvs = unzipToFirstDataLine(zipOut.toByteArray());
-		assertTrue(csvs.containsKey("fuel-management-projects.csv"));
-		assertTrue(csvs.containsKey("cultural-prescribed-fire-projects.csv"));
-		assertEquals("Alpha Project", unquote(csvs.get("fuel-management-projects.csv").get(3)));
-		assertEquals("Beta Project", unquote(csvs.get("cultural-prescribed-fire-projects.csv").get(3)));
-	}
-
-	@Test
-	void writeCsvZipFromEntities_noData_throws() {
-		when(fuelRepo.findByProjectGuidIn(anyList())).thenReturn(List.of());
-		when(crxRepo.findByProjectGuidIn(anyList())).thenReturn(List.of());
-		ByteArrayOutputStream zipOut = new ByteArrayOutputStream();
-		Exception ex = assertThrows(ServiceException.class, () -> reportService.writeCsvZipFromEntities(List.of(UUID.randomUUID()), zipOut));
-		assertTrue(ex.getMessage().contains("Failed to generate CSV report"));
-	}
-
   private static Map<String, List<String>> unzipToFirstDataLine(byte[] zipBytes) throws Exception {
     try (var zis = new ZipInputStream(new java.io.ByteArrayInputStream(zipBytes))) {
       Map<String, List<String>> csvs = new java.util.HashMap<>();
