@@ -147,6 +147,18 @@ jobs:
             echo "GDB_EXTRACTOR_IMAGE=$GDB_EXTRACTOR_IMAGE" >> "$GITHUB_OUTPUT"
           fi
 
+      - name: Get digest of Report Generator docker image
+        id: getReportGeneratorURI
+        run: |
+          if [[ "${{inputs.RESTORE_DOWNSCALED_CLUSTER}}" == 'false' ]]; then
+            IMAGE="${{ secrets.ECR_TARGET_ACCOUNT_ID }}.dkr.ecr.ca-central-1.amazonaws.com/nr-bcws-wfprev-report-generator:${{ inputs.IMAGE_TAG }}"
+            docker pull $IMAGE
+            echo "REPORT_GENERATOR_IMAGE=$(docker inspect --format='{{index .RepoDigests 0}}' $IMAGE)" >> $GITHUB_OUTPUT
+          else
+            export REPORT_GENERATOR_IMAGE="$(aws ssm get-parameter --name 'report-generator-image' --query 'Parameter.Value' | sed 's/\"//g')" 
+            echo "REPORT_GENERATOR_IMAGE=$REPORT_GENERATOR_IMAGE" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Configure AWS credentials for Terraform account (DEV/TEST/PROD)
         uses: aws-actions/configure-aws-credentials@v3
         with:
@@ -206,6 +218,9 @@ jobs:
           # GDB Extractor Lambda Image
           WFPREV_GDB_EXTRACTOR_IMAGE: ${{ steps.getDigestURI.outputs.GDB_EXTRACTOR_IMAGE }}
 
+          # Report Generator Lambda Image
+          WFPREV_REPORT_GENERATOR_IMAGE: ${{ steps.getReportGeneratorURI.outputs.REPORT_GENERATOR_IMAGE }}
+
           # AWS
           AWS_ALERT_EMAIL_LIST: ${{ vars.AWS_ALERT_EMAIL_LIST }}
 
@@ -217,6 +232,8 @@ jobs:
           APP_WF1_PREV_PASSWORD: ${{ secrets.APP_WF1_PREV_PASSWORD }}
           PROXY_WF1_PREV_REST_PASSWORD: ${{ secrets.PROXY_WF1_PREV_REST_PASSWORD }}
           TARGET_LIQUIBASE_TAG: ${{ steps.liquibaseCommand.outputs.TARGET_LIQUIBASE_TAG }}
+
+          REPORT_GENERATOR_LAMBDA_URL: ${{ vars.REPORT_GENERATOR_LAMBDA_URL }}
 
         run: |
           if [ "${{ inputs.COMMAND }}" = "apply" ] || [ "${{ inputs.COMMAND }}" = "apply -destroy" ]; then
