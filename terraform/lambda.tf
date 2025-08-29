@@ -55,6 +55,12 @@ resource "aws_lambda_function" "report_generator" {
   }
 }
 
+resource "aws_lambda_function_url" "report_generator_url" {
+  function_name = aws_lambda_function.report_generator.function_name
+  authorization_type = "NONE"
+  
+}
+
 # # API Gateway
 # resource "aws_apigatewayv2_api" "http_api" {
 #   name          = "wfprev-${var.SHORTENED_ENV}-gdb-api"
