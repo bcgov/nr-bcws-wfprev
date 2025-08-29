@@ -3,6 +3,12 @@ name: Build and Push Lambda Report Generator
 
 on:
   workflow_dispatch:
+    inputs:
+      TAG:
+        required: false
+        type: string
+        description: Tag to apply to built image
+        default: latest
   workflow_call:
     inputs:
       TAG:
@@ -47,7 +53,6 @@ jobs:
             type=ref,event=pr
             type=ref,event=tag
             type=raw,value=${{ github.sha }}
-
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
