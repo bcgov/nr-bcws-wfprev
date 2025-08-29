@@ -2,11 +2,16 @@ package ca.bc.gov.nrs.reportgenerator.model;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.UUID;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 @RegisterForReflection
 public class FuelManagementReportData {
+
+    private UUID projectPlanFiscalGuid;
     private String linkToFiscalActivity;
     private String projectFiscalName;
     private String projectFiscalDescription;
@@ -54,6 +59,10 @@ public class FuelManagementReportData {
     private String mediumFilterSectionComment;
     private BigDecimal totalFineFilterSectionScore;
     private String fineFilterSectionComment;
+    private UUID projectGuid;
+    private UUID programAreaGuid;
+    private String fundingStream;
+
 
     // Getters and setters
     public BigDecimal getTotalFilterSectionScore() { return totalFilterSectionScore; }
@@ -150,4 +159,36 @@ public class FuelManagementReportData {
     public void setEndorsementTimestamp(Date endorsementTimestamp) { this.endorsementTimestamp = endorsementTimestamp; }
     public Date getApprovedTimestamp() { return approvedTimestamp; }
     public void setApprovedTimestamp(Date approvedTimestamp) { this.approvedTimestamp = approvedTimestamp; }
+
+    public UUID getProjectPlanFiscalGuid() {
+        return projectPlanFiscalGuid;
+    }
+
+    public void setProjectPlanFiscalGuid(UUID projectPlanFiscalGuid) {
+        this.projectPlanFiscalGuid = projectPlanFiscalGuid;
+    }
+
+    public UUID getProjectGuid() {
+        return projectGuid;
+    }
+
+    public void setProjectGuid(UUID projectGuid) {
+        this.projectGuid = projectGuid;
+    }
+
+    public UUID getProgramAreaGuid() {
+        return programAreaGuid;
+    }
+
+    public void setProgramAreaGuid(UUID programAreaGuid) {
+        this.programAreaGuid = programAreaGuid;
+    }
+
+    public String getFundingStream() {
+        return fundingStream;
+    }
+
+    public void setFundingStream(String fundingStream) {
+        this.fundingStream = fundingStream;
+    }
 }

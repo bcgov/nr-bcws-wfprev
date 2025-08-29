@@ -19,6 +19,7 @@ import java.util.zip.ZipOutputStream;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import ca.bc.gov.nrs.wfprev.common.exceptions.ServiceException;
@@ -124,7 +125,21 @@ public class ReportService {
         }
 
         // Parse Lambda response and write first file to outputStream
-        LambdaReportResponse lambdaResponse = mapper.readValue(response.body(), LambdaReportResponse.class);
+        String responseJson = response.body();
+        LambdaReportResponse lambdaResponse;
+        try {
+            JsonNode root = mapper.readTree(responseJson);
+            if (root.has("body")) {
+                // API Gateway or Lambda Function URL wrapper
+                String bodyJson = root.get("body").asText();
+                lambdaResponse = mapper.readValue(bodyJson, LambdaReportResponse.class);
+            } else {
+                lambdaResponse = mapper.readValue(responseJson, LambdaReportResponse.class);
+            }
+        } catch (Exception e) {
+            throw new ServiceException("Failed to parse Lambda response: " + e.getMessage(), e);
+        }
+
         if (lambdaResponse.getFiles() == null || lambdaResponse.getFiles().isEmpty()) {
             throw new ServiceException("No files returned from Lambda");
         }
