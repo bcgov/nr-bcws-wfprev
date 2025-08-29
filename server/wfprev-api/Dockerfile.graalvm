@@ -16,14 +16,14 @@ ENV REPO_PASSWORD=${REPO_PASSWORD}
 
 
 # Copy maven settings first
-COPY mvn_settings/${MAVEN_SETTINGS_FILE} /root/.m2/settings.xml
+COPY server/wfprev-api/mvn_settings/${MAVEN_SETTINGS_FILE} /root/.m2/settings.xml
 
 # Copy rest of the application
 COPY . /app
 
 RUN ls -la /app
 
-WORKDIR /app
+WORKDIR /app/server/wfprev-api
 
 # Make mvnw executable
 RUN chmod +x mvnw
@@ -46,7 +46,7 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy the native executable from builder stage
-COPY --from=builder /app/target/wfprev-api /
+COPY --from=builder /app/server/wfprev-api/target/wfprev-api /
 
 # Expose the port your application uses
 EXPOSE 8080
