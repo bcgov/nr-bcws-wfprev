@@ -4,7 +4,9 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 @RegisterForReflection
 public class CulturePrescribedFireReportData {
     private String linkToFiscalActivity;
@@ -55,6 +57,11 @@ public class CulturePrescribedFireReportData {
     private String wuiRiskClassDescription;
     private String localWuiRiskClassDescription;
     private String businessArea;
+
+    private UUID projectPlanFiscalGuid;
+    private UUID programAreaGuid;
+    private UUID projectGuid;
+    private String fundingStream;
 
     // Getters and setters
     public String getLinkToFiscalActivity() { return linkToFiscalActivity; }
@@ -153,4 +160,36 @@ public class CulturePrescribedFireReportData {
     public void setLocalWuiRiskClassDescription(String localWuiRiskClassDescription) { this.localWuiRiskClassDescription = localWuiRiskClassDescription; }
     public String getBusinessArea() { return businessArea; }
     public void setBusinessArea(String businessArea) { this.businessArea = businessArea; }
+
+    public UUID getProjectGuid() {
+        return projectGuid;
+    }
+
+    public void setProjectGuid(UUID projectGuid) {
+        this.projectGuid = projectGuid;
+    }
+
+    public UUID getProjectPlanFiscalGuid() {
+        return projectPlanFiscalGuid;
+    }
+
+    public void setProjectPlanFiscalGuid(UUID projectPlanFiscalGuid) {
+        this.projectPlanFiscalGuid = projectPlanFiscalGuid;
+    }
+
+    public UUID getProgramAreaGuid() {
+        return programAreaGuid;
+    }
+
+    public void setProgramAreaGuid(UUID programAreaGuid) {
+        this.programAreaGuid = programAreaGuid;
+    }
+
+    public String getFundingStream() {
+        return fundingStream;
+    }
+
+    public void setFundingStream(String fundingStream) {
+        this.fundingStream = fundingStream;
+    }
 }
