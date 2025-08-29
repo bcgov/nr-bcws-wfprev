@@ -1500,5 +1500,23 @@
     "allDeclaredConstructors": true,
     "allDeclaredMethods": true,
     "allDeclaredFields": true
+  },
+  { 
+    "name": "ca.bc.gov.nrs.wfprev.services.ReportService$LambdaReportRequest" ,
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  { 
+    "name": "ca.bc.gov.nrs.wfprev.services.ReportService$LambdaReportRequest$Report" ,
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  { 
+    "name": "ca.bc.gov.nrs.wfprev.services.ReportService$LambdaReportRequest$XlsxReportData",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
   }
 ]
