@@ -162,7 +162,11 @@ export class SearchFilterComponent implements OnInit {
 
   prependAllAndSortFiscalYears(options: { label: string, value: any }[]): { label: string, value: any }[] {
     const sorted = [...options].sort((a, b) => a.label.localeCompare(b.label));
-    return [{ label: 'All', value: '__ALL__' }, { label: this.noYearAssigned, value: 'null' }, ...sorted];
+    return [
+      { label: 'All', value: '__ALL__' },
+      ...sorted,
+      { label: this.noYearAssigned, value: 'null' }
+    ];
   }
 
   onOptionToggled(event: any, model: keyof SearchFilterComponent, options: { value: any }[]) {
