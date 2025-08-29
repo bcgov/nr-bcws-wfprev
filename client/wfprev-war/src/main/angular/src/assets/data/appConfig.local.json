@@ -16,6 +16,11 @@
     "wfprev":"http://localhost:8080",
     "wfdm":"https://i1bcwsapi.nrs.gov.bc.ca/wfdm-document-management-api",
     "openmaps":"https://openmaps.gov.bc.ca"
+  },
 
+  "mapServices": {
+    "geoserverApiBaseUrl": "https://i1bcwsapi.nrs.gov.bc.ca/wfss-geoserver-api",
+    "wfnewsApiBaseUrl": "https://wfnews-api.dev.bcwildfireservices.com",
+    "wfnewsApiKey": "fake-api-key"
   }
 }

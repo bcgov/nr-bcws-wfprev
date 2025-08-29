@@ -321,3 +321,15 @@ export interface EndorsementCodeModel {
   effectiveDate?: string;
   expiryDate?: string;
 }
+
+export interface MapServices {
+  geoserverApiBaseUrl: string;
+  wfnewsApiBaseUrl: string;
+  wfnewsApiKey: string;
+}
+
+export interface LayerSettings {
+  geoserverApiBaseUrl: string;
+  wfnewsApiBaseUrl: string;
+  wfnewsApiKey: string;
+}

@@ -63,7 +63,12 @@ describe('PrevAuthGuard', () => {
         clientId: 'test-client',
         authScopes: 'WFPREV.*'
       },
-      rest: {}
+      rest: {},
+      mapServices: {
+        geoserverApiBaseUrl: 'http://geoserver.test',
+        wfnewsApiBaseUrl: 'http://wfnews.test',
+        wfnewsApiKey: 'fake-api-key'
+      }
     });
 
     TestBed.configureTestingModule({
@@ -283,7 +288,12 @@ describe('PrevAuthGuard', () => {
           clientId: 'test-client',
           authScopes: 'WFPREV.*'
         },
-        rest: {}
+        rest: {},
+        mapServices: {
+          geoserverApiBaseUrl: 'http://geoserver.test',
+          wfnewsApiBaseUrl: 'http://wfnews.test',
+          wfnewsApiKey: 'fake-api-key'
+        }
       });
 
       // Mock checkForToken

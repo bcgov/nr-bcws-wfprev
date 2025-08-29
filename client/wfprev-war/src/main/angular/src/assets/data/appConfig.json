@@ -1,21 +1,27 @@
 {
-    "application": {
-      "baseUrl": "#{WFPREV_BASE_URL}#",
-      "environment": "#{TARGET_ENV}#"
-    },
-  
-    "webade": {
-        "oauth2Url": "#{WEBADE_OAUTH2_CHECK_AUTHORIZE_URL}#",
-        "clientId": "WFPREV-UI",
-        "authScopes": "WFPREV.* WFDM.*",
-        "enableCheckToken": true, 
-        "checkTokenUrl": "#{WFPREV_CHECK_TOKEN_URL}#"
-      },
+  "application": {
+    "baseUrl": "#{WFPREV_BASE_URL}#",
+    "environment": "#{TARGET_ENV}#"
+  },
 
-    "rest": {
+  "webade": {
+    "oauth2Url": "#{WEBADE_OAUTH2_CHECK_AUTHORIZE_URL}#",
+    "clientId": "WFPREV-UI",
+    "authScopes": "WFPREV.* WFDM.*",
+    "enableCheckToken": true,
+    "checkTokenUrl": "#{WFPREV_CHECK_TOKEN_URL}#"
+  },
+
+   "rest": {
       "wfprev":"#{WFPREV_BASE_URL}#",
       "wfdm":"#{WFDM_BASE_URL}#",
       "openmaps":"https://openmaps.gov.bc.ca",
       "trainingAndSupportLink": "#{TRAINING_AND_SUPPORT_LINK}#"
-    }
+  },
+
+  "mapServices": {
+    "geoserverApiBaseUrl": "#{GEOSERVER_API_BASE_URL}#",
+    "wfnewsApiBaseUrl": "#{WFNEWS_API_BASE_URL}#",
+    "wfnewsApiKey": "#{WFNEWS_API_KEY}#"
   }
+}
