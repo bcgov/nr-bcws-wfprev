@@ -52,15 +52,15 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
         with:
-          context: ./lambda/${{ inputs.COMPONENT_NAME }}
-          file: ./lambda/${{ inputs.COMPONENT_NAME }}/src/main/docker/Dockerfile.lambda
+          context: ./lambda/${{ env.COMPONENT_NAME }}
+          file: ./lambda/${{ env.COMPONENT_NAME }}/src/main/docker/Dockerfile.lambda
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
       - name: Tag and push latest image
         run: |
-            IMAGE=${{ vars.REGISTRY }}/${{ github.repository_owner }}/nr-bcws-wfprev-${{ inputs.COMPONENT_NAME }}
+            IMAGE=${{ vars.REGISTRY }}/${{ github.repository_owner }}/nr-bcws-wfprev-${{ env.COMPONENT_NAME }}
             docker pull $IMAGE:${{ github.sha }}
             docker tag $IMAGE:${{ github.sha }} $IMAGE:${{ inputs.TAG }}
             docker push $IMAGE:${{ inputs.TAG }}
@@ -74,8 +74,8 @@ jobs:
 
       - name: Create ECR Repository for Report Generator (if not exists)
         run: |
-          aws ecr describe-repositories --repository-names nr-bcws-wfprev-${{ inputs.COMPONENT_NAME }} --region ${{ env.AWS_REGION }} || \
-          aws ecr create-repository --repository-name nr-bcws-wfprev-${{ inputs.COMPONENT_NAME }} --region ${{ env.AWS_REGION }}
+          aws ecr describe-repositories --repository-names nr-bcws-wfprev-${{ env.COMPONENT_NAME }} --region ${{ env.AWS_REGION }} || \
+          aws ecr create-repository --repository-name nr-bcws-wfprev-${{ env.COMPONENT_NAME }} --region ${{ env.AWS_REGION }}
 
       - name: Login to Amazon ECR
         run: |
@@ -83,6 +83,6 @@ jobs:
       - name: Pull, Tag, and Push GDB Extractor Docker image to ECR
         id: pushGdbExtractorImage
         run: |
-          docker pull ${{vars.REPOSITORY_HOST}}/${{ github.repository_owner }}/nr-bcws-wfprev-${{ inputs.COMPONENT_NAME }}:${{ inputs.TAG }}
-          docker tag ${{vars.REPOSITORY_HOST}}/${{ github.repository_owner }}/nr-bcws-wfprev-${{ inputs.COMPONENT_NAME }}:${{ inputs.TAG }} ${{ secrets.LZA_ECR_AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/nr-bcws-wfprev-${{ inputs.COMPONENT_NAME }}:${{ inputs.TAG }}
-          docker push ${{ secrets.LZA_ECR_AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/nr-bcws-wfprev-${{ inputs.COMPONENT_NAME }}:${{ inputs.TAG }}
+          docker pull ${{vars.REPOSITORY_HOST}}/${{ github.repository_owner }}/nr-bcws-wfprev-${{ env.COMPONENT_NAME }}:${{ inputs.TAG }}
+          docker tag ${{vars.REPOSITORY_HOST}}/${{ github.repository_owner }}/nr-bcws-wfprev-${{ env.COMPONENT_NAME }}:${{ inputs.TAG }} ${{ secrets.LZA_ECR_AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/nr-bcws-wfprev-${{ env.COMPONENT_NAME }}:${{ inputs.TAG }}
+          docker push ${{ secrets.LZA_ECR_AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/nr-bcws-wfprev-${{ env.COMPONENT_NAME }}:${{ inputs.TAG }}
