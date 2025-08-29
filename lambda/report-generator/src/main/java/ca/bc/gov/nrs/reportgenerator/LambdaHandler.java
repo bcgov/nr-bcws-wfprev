@@ -1,10 +1,9 @@
-
-
 package ca.bc.gov.nrs.reportgenerator;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestStreamHandler;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.JsonNode;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.IOException;
@@ -45,8 +44,17 @@ public class LambdaHandler implements RequestStreamHandler {
     @Override
     public void handleRequest(InputStream input, OutputStream output, Context context) throws IOException {
         LambdaEvent event;
+        LOG.info("Received request to generate reports", input);
+        String inputJson = new String(input.readAllBytes());
         try {
-            event = mapper.readValue(input, LambdaEvent.class);
+            // Try to parse as wrapper object first
+            JsonNode root = mapper.readTree(inputJson);
+            if (root.has("body")) {
+                String bodyJson = root.get("body").asText();
+                event = mapper.readValue(bodyJson, LambdaEvent.class);
+            } else {
+                event = mapper.readValue(inputJson, LambdaEvent.class);
+            }
         } catch (Exception e) {
             LOG.error("Failed to deserialize input", e);
             writeErrorResponse(output, "Invalid input: " + e.getMessage());
