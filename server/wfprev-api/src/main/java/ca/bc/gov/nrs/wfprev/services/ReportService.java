@@ -400,13 +400,13 @@ public class ReportService {
 
     // POJO for Lambda response
     public static class LambdaReportResponse {
-        private java.util.List<File> files;
+        private List<File> files;
 
-        public java.util.List<File> getFiles() {
+        public List<File> getFiles() {
             return files;
         }
 
-        public void setFiles(java.util.List<File> files) {
+        public void setFiles(List<File> files) {
             this.files = files;
         }
 
@@ -434,13 +434,13 @@ public class ReportService {
 
     // POJO for Lambda request
     public static class LambdaReportRequest {
-        private java.util.List<Report> reports;
+        private List<Report> reports;
 
-        public java.util.List<Report> getReports() {
+        public List<Report> getReports() {
             return reports;
         }
 
-        public void setReports(java.util.List<Report> reports) {
+        public void setReports(List<Report> reports) {
             this.reports = reports;
         }
 
@@ -475,22 +475,22 @@ public class ReportService {
         }
 
         public static class XlsxReportData {
-            private java.util.List<?> culturePrescribedFireReportData;
-            private java.util.List<?> fuelManagementReportData;
+            private List<CulturalPrescribedFireReportEntity> culturePrescribedFireReportData;
+            private List<FuelManagementReportEntity> fuelManagementReportData;
 
-            public java.util.List<?> getCulturePrescribedFireReportData() {
+            public List<CulturalPrescribedFireReportEntity> getCulturePrescribedFireReportData() {
                 return culturePrescribedFireReportData;
             }
 
-            public void setCulturePrescribedFireReportData(java.util.List<?> data) {
+            public void setCulturePrescribedFireReportData(List<CulturalPrescribedFireReportEntity> data) {
                 this.culturePrescribedFireReportData = data;
             }
 
-            public java.util.List<?> getFuelManagementReportData() {
+            public List<FuelManagementReportEntity> getFuelManagementReportData() {
                 return fuelManagementReportData;
             }
 
-            public void setFuelManagementReportData(java.util.List<?> data) {
+            public void setFuelManagementReportData(List<FuelManagementReportEntity> data) {
                 this.fuelManagementReportData = data;
             }
         }
