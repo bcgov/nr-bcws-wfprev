@@ -43,7 +43,7 @@ jobs:
       TAG: latest
 
   report-generator-lambda:
-    uses: ./.github/workflows/lambda-build.yml
+    uses: ./.github/workflows/report-generator-image-build.yml
     secrets: inherit
       
   terragrunt-deploy-wfint:
