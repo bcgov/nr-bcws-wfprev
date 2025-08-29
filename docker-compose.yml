@@ -3,7 +3,6 @@ services:
     profiles:
       - api
     build:
-      context: server/wfprev-api
       dockerfile: Dockerfile.graalvm
       # Pass the maven settings file and repo credentials as build args
       args:
