@@ -16,6 +16,11 @@ on:
         type: string
         default: latest
 
+permissions:
+  id-token: write   
+  contents: read  
+  packages: write
+
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
