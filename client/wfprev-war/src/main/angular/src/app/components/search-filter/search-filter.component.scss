@@ -21,7 +21,7 @@
   display: flex;
   flex-wrap: wrap;
   align-items: flex-end;
-  gap: 12px;
+  gap: 15px;
 }
 
 .filter-item {
@@ -31,8 +31,8 @@
 }
 
 .field.search-input {
-  width: 300px;
-  flex-basis: 285px;
+  width: 160px;
+  flex-basis: 160px;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
@@ -88,8 +88,8 @@
 }
 
 .textsearch{
-  width: 400px !important;
-  flex-basis: 585px !important;
+  width: 335px !important;
+  flex-basis: 335px !important;
 }
 
 .filter-search-input{
@@ -105,4 +105,8 @@
 ::ng-deep .mdc-text-field--outlined .mat-mdc-form-field-infix,
 ::ng-deep .mdc-text-field--no-label .mat-mdc-form-field-infix {
   padding-top: 10px !important;
+}
+
+::ng-deep .cdk-overlay-pane .filter-dropdown {
+  min-width: max-content;
 }
