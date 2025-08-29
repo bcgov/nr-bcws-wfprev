@@ -146,7 +146,7 @@ public class LambdaHandler implements RequestStreamHandler {
         response.put("statusCode", 200);
         response.put("headers", Map.of("Content-Type", "application/json"));
         response.put("body", mapper.writeValueAsString(Map.of("files", files)));
-        response.put("isBase64Encoded", true);
+        response.put("isBase64Encoded", false);
 
         mapper.writeValue(output, response);
     }
