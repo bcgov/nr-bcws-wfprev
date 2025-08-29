@@ -1,5 +1,5 @@
 resource "aws_iam_role" "lambda_role" {
-  name = "wfprev-${var.TARGET_ENV}-lambda-role"
+  name = "wfprev-${var.SHORTENED_ENV}-lambda-role"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -22,11 +22,11 @@ resource "aws_iam_role_policy_attachment" "lambda_basic" {
 }
 
 resource "aws_lambda_function" "gdb_processor" {
-  function_name = "wfprev-gdb-${var.TARGET_ENV}"
+  function_name = "wfprev-gdb-${var.SHORTENED_ENV}"
   role          = aws_iam_role.lambda_role.arn
   package_type  = "Image"
 
-  image_uri = var.WFPREV_GDB_EXTRACTOR_DIGEST
+  image_uri = var.WFPREV_GDB_EXTRACTOR_IMAGE
 
   memory_size   = var.WFPREV_LAMBDA_MEMORY
   timeout       = var.WFPREV_LAMBDA_TIMEOUT
@@ -57,7 +57,7 @@ resource "aws_lambda_function" "report_generator" {
 
 # # API Gateway
 # resource "aws_apigatewayv2_api" "http_api" {
-#   name          = "wfprev-${var.TARGET_ENV}-gdb-api"
+#   name          = "wfprev-${var.SHORTENED_ENV}-gdb-api"
 #   protocol_type = "HTTP"
 # }
 

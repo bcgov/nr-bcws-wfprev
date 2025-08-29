@@ -1,17 +1,10 @@
-resource "aws_db_subnet_group" "wfprev_db_subnet_group" {
-  name       = "wfprev_${var.TARGET_ENV}_db_subnet_group"
-  subnet_ids = module.network.aws_subnet_ids.app.ids
-  # tags       = local.common_tags
-}
-
-/*TODO: adapt to be accessible externally*/
 resource "aws_db_instance" "wfprev_pgsqlDB" {
-  identifier                      = "wfprev${var.TARGET_ENV}"
+  identifier                      = "wfprev${var.SHORTENED_ENV}"
   engine                          = "postgres"
   engine_version                  = var.DB_POSTGRES_VERSION
   auto_minor_version_upgrade      = false
   allow_major_version_upgrade     = true
-  db_name                         = "wfprev${var.TARGET_ENV}"
+  db_name                         = "wfprev${var.SHORTENED_ENV}"
   instance_class                  = var.DB_INSTANCE_TYPE
   multi_az                        = var.DB_MULTI_AZ
   backup_retention_period         = 7
@@ -22,9 +15,8 @@ resource "aws_db_instance" "wfprev_pgsqlDB" {
   publicly_accessible             = false
   skip_final_snapshot             = true
   storage_encrypted               = true
-  vpc_security_group_ids          = [data.aws_security_group.data.id]
-  snapshot_identifier             = var.RESTORE_DOWNSCALED_CLUSTER ? "wfprev${var.TARGET_ENV}-scaling-snapshot" : null
-  # tags                            = local.common_tags
+  vpc_security_group_ids          = [module.networking.security_groups.data.id]
+  snapshot_identifier             = var.RESTORE_DOWNSCALED_CLUSTER ? "wfprev${var.SHORTENED_ENV}-scaling-snapshot" : null
   enabled_cloudwatch_logs_exports = ["postgresql"]
   lifecycle {
     prevent_destroy = false
@@ -33,7 +25,7 @@ resource "aws_db_instance" "wfprev_pgsqlDB" {
 
 resource "aws_db_subnet_group" "wfprev_db_subnet" {
   name       = "main"
-  subnet_ids = module.network.aws_subnet_ids.data.ids
+  subnet_ids = module.networking.subnets.data.ids
 }
 
 /*
@@ -52,7 +44,7 @@ resource "aws_db_instance" "wfone_pgsqlDB" {
   publicly_accessible             = false
   skip_final_snapshot             = true
   storage_encrypted               = true
-  vpc_security_group_ids          = [data.aws_security_group.app.id, aws_security_group.wfone_ecs_tasks.id]
+  vpc_security_group_ids          = [module.networking.security_groups.app.id, aws_security_group.wfone_ecs_tasks.id]
   tags                            = local.common_tags
   db_subnet_group_name            = aws_db_subnet_group.wfone_db_subnet_group.name
   enabled_cloudwatch_logs_exports = ["postgresql"]
@@ -78,7 +70,7 @@ resource "aws_db_proxy" "wfnews_db_proxy" {
   idle_client_timeout    = 1800
   require_tls            = true
   role_arn               = data.aws_iam_role.wfnews_automation_role.arn
-  vpc_security_group_ids = [data.aws_security_group.web.id, aws_security_group.wfnews_ecs_tasks.id]
+  vpc_security_group_ids = [module.networking.security_groups.web.id, aws_security_group.wfnews_ecs_tasks.id]
   vpc_subnet_ids         = module.network.aws_subnet_ids.app.ids
 
   auth {

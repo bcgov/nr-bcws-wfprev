@@ -120,7 +120,10 @@ export const MapColors = {
 export const EnvironmentIndicators: { [key: string]: string } = {
   LOCAL: 'WFLOCAL',
   DEV: 'WFDEV',
-  TEST: 'WFTST'
+  WFINT: 'WFINT',
+  WFDLV: 'WFDLV',
+  TEST: 'WFTST',
+  WFTST: 'WFTST'
 };
 
 export const FiscalActionLabels = {

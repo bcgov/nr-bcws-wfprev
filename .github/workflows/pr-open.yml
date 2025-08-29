@@ -1,0 +1,36 @@
+env:
+  IMAGE_NAME: "${{ github.repository }}-${{inputs.PROJECT_NAME}}"
+  NPMRC: ${{ secrets.NPMRC }}
+
+permissions:
+  contents: read
+  packages: write
+  id-token: write
+
+on:
+  pull_request_target:
+    types:
+      - opened
+      - edited
+    branches:
+      - 'feature/lza-migration'
+    paths:
+      - ".github/workflows/**"
+      - "client/**"
+      - "server/**"
+      - "terraform/**"
+      - "!**/README.md"
+  workflow_dispatch:
+    
+
+jobs: 
+  terragrunt-plan-wfint:
+    uses: ./.github/workflows/terragrunt-deploy.yml
+    with:
+      DEFAULT_APPLICATION_ENVIRONMENT: wfint
+      IMAGE_TAG: latest
+      RUN_LIQUIBASE: true
+      COMMAND: plan
+      GDB_EXTRACTOR_IMAGE: 
+    secrets: inherit
+    

@@ -198,8 +198,11 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
   }
 
   createFiscalForm(fiscal?: any): FormGroup {
+    const fiscalYear = (typeof fiscal?.fiscalYear === 'number' && fiscal.fiscalYear > 0)
+      ? fiscal.fiscalYear
+      : null;
     const form = this.fb.group({
-      fiscalYear: [fiscal?.fiscalYear ?? '', [Validators.required]],
+      fiscalYear: [fiscalYear, [Validators.required]],
       projectFiscalName: [fiscal?.projectFiscalName ?? '', [Validators.required, Validators.maxLength(300)]],
       activityCategoryCode: [fiscal?.activityCategoryCode ?? '', [Validators.required]],
       proposalTypeCode: [fiscal?.proposalTypeCode ?? 'NEW', [Validators.required]],
@@ -231,7 +234,7 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
   }
 
 
-  loadProjectFiscals(markFormsPristine: boolean = false): void {
+  loadProjectFiscals(markFormsPristine: boolean = false, newFiscalGuid?: string): void {
     const previousTabIndex = this.selectedTabIndex;
     this.projectGuid = this.route.snapshot?.queryParamMap?.get('projectGuid') ?? '';
     if (!this.projectGuid) return;
@@ -275,15 +278,21 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
           return form;
         });
 
+        if (newFiscalGuid) {
+          const index = this.projectFiscals.findIndex(f => f.projectPlanFiscalGuid === newFiscalGuid);
+          if (index >= 0) this.selectedTabIndex = index;
+        }
+
         // Find fiscal's index if it exists and set it as the active tab
-        if (this.focusedFiscalId) {
+        else if (this.focusedFiscalId) {
           const index = this.projectFiscals.findIndex(f => f.projectPlanFiscalGuid === this.focusedFiscalId);
           if (index !== -1) {
             this.selectedTabIndex = index;
           }
           // if no fiscal default to first tab or direct to previous index 
-        } else this.selectedTabIndex = previousTabIndex < this.projectFiscals.length ? previousTabIndex : 0;
-
+        } else {
+          this.selectedTabIndex = previousTabIndex < this.projectFiscals.length ? previousTabIndex : 0;
+        }
         this.updateCurrentFiscalGuid();
       },
       'Error fetching project details'
@@ -332,23 +341,44 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
   }
 
   onCancelFiscal(index: number): void {
-    if (!this.fiscalForms[index]) return; // Ensure form exists
+    const form = this.fiscalForms[index];
+    if (!form) return;
 
     const isNewEntry = !this.projectFiscals[index]?.projectPlanFiscalGuid;
 
     if (isNewEntry) {
-      // Case 1: New entry → Clear all fields
-      this.fiscalForms[index].reset(this.getDefaultFiscalData());
-    }
-    else {
-      // Case 2: Existing entry → Revert to original API values
-      const originalData = this.originalFiscalValues[index];
-      this.fiscalForms[index].patchValue(originalData);
+      // Case 1: New entry, Clear all fields
+      form.reset({
+        ...this.getDefaultFiscalData(),
+        planFiscalStatusCode: 'DRAFT',
+        fiscalYear: ''
+      }, 
+      { emitEvent: false });
+    } else {
+      // Case 2: Existing entry, Revert to original API values
+      const original = this.originalFiscalValues[index];
 
-      // Mark form as pristine (not dirty)
-      this.fiscalForms[index].markAsPristine();
-      this.fiscalForms[index].markAsUntouched();
+      form.patchValue({
+        ...original,
+        planFiscalStatusCode: this.patchStatusCode(original?.planFiscalStatusCode)
+      }, 
+      { emitEvent: false });
+
+      const statusCode = this.patchStatusCode(original?.planFiscalStatusCode);
+      const isLocked = [this.FiscalStatuses.COMPLETE, this.FiscalStatuses.CANCELLED].includes(statusCode as any);
+      if (isLocked) {
+        form.disable({ emitEvent: false });
+      } else {
+        form.enable({ emitEvent: false });
+        if (statusCode !== this.FiscalStatuses.DRAFT) {
+          form.get('totalCostEstimateAmount')?.disable({ emitEvent: false });
+        }
+      }
     }
+
+    form.markAsPristine();
+    form.markAsUntouched();
+    form.updateValueAndValidity({ emitEvent: false });
   }
 
   fetchData<T>(fetchFn: Observable<T>, assignFn: (data: T) => void, errorMessage: string): void {
@@ -435,12 +465,13 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
       // create new fiscal
       this.projectService.createProjectFiscal(this.projectGuid, projectFiscal).subscribe({
         next: (response) => {
+          const newFiscalGuid = response?.projectPlanFiscalGuid;
           this.snackbarService.open(
             this.messages.projectFiscalCreatedSuccess,
             'OK',
             { duration: 5000, panelClass: 'snackbar-success' },
           );
-          this.loadProjectFiscals(true);
+          this.loadProjectFiscals(true,newFiscalGuid);
         },
         error: () => {
           this.snackbarService.open(
@@ -541,7 +572,7 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
   }
 
   getFiscalControl(i: number, controlName: string): FormControl {
-    return this.fiscalForms[i].get(controlName) as FormControl;
+    return this.fiscalForms[i]?.get(controlName) as FormControl;
   }
 
   getDefaultFiscalData(): ProjectFiscal {
@@ -712,6 +743,10 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
       submittedByUserUserid: this.currentIdir,
       submissionTimestamp: getUtcIsoTimestamp()
     }
+  }
+
+  patchStatusCode(val: any): string {
+    return typeof val === 'string' ? val : val?.planFiscalStatusCode ?? '';
   }
 
 }

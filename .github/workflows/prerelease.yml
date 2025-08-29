@@ -28,23 +28,47 @@ jobs:
           docker tag ${{vars.REGISTRY}}/${{ github.repository }}-${{ matrix.component-name }}:latest ${{vars.REGISTRY}}/${{ github.repository }}-${{ matrix.component-name }}:${{ github.event.release.tag_name }}
           docker push ${{vars.REGISTRY}}/${{ github.repository }}-${{ matrix.component-name }}:${{ github.event.release.tag_name }}
 
+  node-build:
+    uses: ./.github/workflows/node-build.yml
+    secrets: inherit
+    with:
+      COMPONENT_NAME: wfprev-gdb-extractor
+      TAG: ${{ github.event.release.tag_name }}
+
   # include additional steps for DLV, PRD
   # rename to deploy-wftst, rename environment to tst
-  deploy-test:
-    needs: tag-builds
+  deploy-wfdlv:
+    needs: [tag-builds, node-build]
+    if: ${{ contains(github.event.release.tag_name, '-beta') }}
+    uses: ./.github/workflows/terragrunt-deploy.yml
+    secrets: inherit
+    with:
+      DEFAULT_APPLICATION_ENVIRONMENT: wfdlv
+      IMAGE_TAG: ${{ github.event.release.tag_name }}
+      COMMAND: apply
+      RUN_LIQUIBASE: 'true'
+
+  wfprev-ui-dlv:
+    uses: ./.github/workflows/client-build.yml
+    needs: [deploy-wfdlv]
+    with:
+      DEFAULT_APPLICATION_ENVIRONMENT: wfdlv
+    secrets: inherit
+
+  deploy-wftst:
+    needs: [tag-builds, node-build]
     if: ${{ contains(github.event.release.tag_name, '-rc') }}
     uses: ./.github/workflows/terragrunt-deploy.yml
     secrets: inherit
     with:
-      DEFAULT_APPLICATION_ENVIRONMENT: test
+      DEFAULT_APPLICATION_ENVIRONMENT: wftst
       IMAGE_TAG: ${{ github.event.release.tag_name }}
       COMMAND: apply
       RUN_LIQUIBASE: 'true'
-      GDB_EXTRACTOR_IMAGE: ${{ needs.node-build.outputs.gdb_digest }}
 
-  wfprev-ui:
+  wfprev-ui-tst:
     uses: ./.github/workflows/client-build.yml
-    needs: [deploy-test]
+    needs: [deploy-wftst]
     with:
-      DEFAULT_APPLICATION_ENVIRONMENT: test
+      DEFAULT_APPLICATION_ENVIRONMENT: wftst
     secrets: inherit

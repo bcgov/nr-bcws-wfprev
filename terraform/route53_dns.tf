@@ -1,5 +1,5 @@
 data "aws_route53_zone" "wfprev_route53_zone" {
-  name         = "wfprev-${var.TARGET_ENV}.${var.gov_domain}"
+  name         = var.SHORTENED_ENV == "prd" ? "${var.client_name}.${var.gov_domain}" : "${var.client_name}-${var.SHORTENED_ENV}.${var.gov_domain}" 
 }
 
 resource "aws_route53_record" "cert_validation_record" {
@@ -38,7 +38,7 @@ resource "aws_route53_record" "cert_validation_record_ca" {
 
 resource "aws_route53_record" "wfprev_vanity_url" {
   zone_id = data.aws_route53_zone.wfprev_route53_zone.id
-  name    = "wfprev-${var.TARGET_ENV}.${var.gov_domain}"
+  name    = data.aws_route53_zone.wfprev_route53_zone.name
   type    = "A"
   alias {
     name                   = aws_cloudfront_distribution.wfprev_app_distribution.domain_name

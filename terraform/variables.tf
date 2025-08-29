@@ -10,16 +10,19 @@ variable "RESTORE_DOWNSCALED_CLUSTER" {
   default = "false"
 }
 
-variable "WFPREV_CLIENT_CPU_UNITS" {
-  description = "client instance CPU units to provision (1 vCPU = 1024 CPU units)"
-  type        = number
-  default = 512
+variable "NAMESPACE_ENV" {
+  description = "Name of AWS Workspace"
+  type = string
 }
 
-variable "WFPREV_CLIENT_MEMORY" {
-  description = "client instance memory to provision (in MiB)"
-  type        = number
-  default = 1024
+variable "SHORTENED_ENV" {
+  description = "Shortform of environment name"
+  type = string
+}
+
+variable "TFC_PROJECT" {
+  description = "License Plate number of project"
+  type = string
 }
 
 variable "WFPREV_API_CPU_UNITS" {
@@ -44,7 +47,7 @@ variable "WFPREV_LAMBDA_TIMEOUT" {
   default     = 300
 }
 
-variable "WFPREV_GDB_EXTRACTOR_DIGEST" {
+variable "WFPREV_GDB_EXTRACTOR_IMAGE" {
   description = "Digest-based URI for the Lambda image"
   type        = string
   default     = ""
@@ -218,7 +221,7 @@ variable "WEBADE_OAUTH2_WFPREV_UI_CLIENT_SECRET" {
 variable "client_name" {
   description = "Name of the client"
   type        = string
-  default     = "wfprev-client-app"
+  default     = "remiplanner"
 }
 
 variable "gov_client_url" {
@@ -368,5 +371,10 @@ variable "COMMAND" {
 
 variable "REPORT_GENERATOR_LAMBDA_URL" {
   type = string
+  default = ""
+}
+
+variable "TRAINING_AND_SUPPORT_LINK" {
+  type    = string
   default = ""
 }
