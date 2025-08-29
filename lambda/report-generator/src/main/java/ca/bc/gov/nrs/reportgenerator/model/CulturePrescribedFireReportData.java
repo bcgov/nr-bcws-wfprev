@@ -2,6 +2,7 @@ package ca.bc.gov.nrs.reportgenerator.model;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.UUID;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
