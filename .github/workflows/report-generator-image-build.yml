@@ -90,8 +90,9 @@ jobs:
       - name: Login to Amazon ECR
         run: |
           aws ecr get-login-password --region ${{ env.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.LZA_ECR_AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com
-      - name: Pull, Tag, and Push GDB Extractor Docker image to ECR
-        id: pushGdbExtractorImage
+
+      - name: Pull, Tag, and Push Report Generator Docker image to ECR
+        id: pushReportGeneratorImage
         run: |
           docker pull ${{vars.REPOSITORY_HOST}}/${{ github.repository_owner }}/nr-bcws-wfprev-${{ env.COMPONENT_NAME }}:${{ inputs.TAG }}
           docker tag ${{vars.REPOSITORY_HOST}}/${{ github.repository_owner }}/nr-bcws-wfprev-${{ env.COMPONENT_NAME }}:${{ inputs.TAG }} ${{ secrets.LZA_ECR_AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/nr-bcws-wfprev-${{ env.COMPONENT_NAME }}:${{ inputs.TAG }}
