@@ -100,5 +100,8 @@
   { "name":"org.locationtech.jts.geom.CoordinateSequence" },
   { "name":"org.locationtech.jts.geom.PrecisionModel" },
   { "name":"software.amazon.awssdk.services.lambda.model.InvokeResponse" },
-  { "name":"software.amazon.awssdk.services.lambda.model.InvokeRequest" }
+  { "name":"software.amazon.awssdk.services.lambda.model.InvokeRequest" },
+  { "name": "ca.bc.gov.nrs.wfprev.services.ReportService$LambdaReportRequest" },
+  { "name": "ca.bc.gov.nrs.wfprev.services.ReportService$LambdaReportRequest$Report" },
+  { "name": "ca.bc.gov.nrs.wfprev.services.ReportService$LambdaReportRequest$XlsxReportData" }
 ]
