@@ -4,8 +4,10 @@ import ca.bc.gov.nrs.reportgenerator.model.ReportType;
 import ca.bc.gov.nrs.reportgenerator.model.XlsxReportData;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @RegisterForReflection
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Report {
   private ReportType reportType;
   private String reportName;
