@@ -35,7 +35,7 @@
               "src/assets/data",
               {
                 "glob": "**/*",
-                "input": "node_modules/@bcgov/smk/dist/assets",
+                "input": "node_modules/@qqnluaq/smk/dist/assets",
                 "output": "assets/smk/assets"
               }
             ],
@@ -44,7 +44,7 @@
               "node_modules/leaflet/dist/leaflet.css"
             ],
             "scripts": [
-              "node_modules/@bcgov/smk/dist/smk.js"
+              "node_modules/@qqnluaq/smk/dist/smk.js"
             ]
           },
           "configurations": {

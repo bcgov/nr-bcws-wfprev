@@ -35,6 +35,11 @@ describe('ProjectService', () => {
       authScopes: 'mock-scope',
       checkTokenUrl: 'http://mock-check-token-url.com',
       enableCheckToken: false,
+    },
+    mapServices: {
+      geoserverApiBaseUrl: 'http://geoserver.test',
+      wfnewsApiBaseUrl: 'http://wfnews.test',
+      wfnewsApiKey: 'fake-api-key'
     }
   };
 

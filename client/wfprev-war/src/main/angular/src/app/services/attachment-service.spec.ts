@@ -22,6 +22,11 @@ const mockApplicationConfig = {
     rest: {
         wfprev: 'http://test.com/api',
     },
+    mapServices: {
+      geoserverApiBaseUrl: 'http://geoserver.test',
+      wfnewsApiBaseUrl: 'http://wfnews.test',
+      wfnewsApiKey: 'fake-api-key'
+    }
 };
 
 const attachment: FileAttachment = {
