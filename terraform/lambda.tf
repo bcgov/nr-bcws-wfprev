@@ -40,7 +40,7 @@ resource "aws_lambda_function" "gdb_processor" {
 
 resource "aws_lambda_function" "report_generator" {
   function_name = "report-generator-${var.TARGET_ENV}"
-  role          = aws_iam_role.lambda_exec.arn
+  role          = aws_iam_role.lambda_role.arn
   package_type  = "Image"
 
   image_uri     = var.WFPREV_REPORT_GENERATOR_IMAGE
