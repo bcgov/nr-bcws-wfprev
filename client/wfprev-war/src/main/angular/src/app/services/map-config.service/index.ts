@@ -14,11 +14,15 @@ export class MapConfigService {
   ) {}
 
   async getMapConfig(): Promise<any> {
-  await this.appConfig.loadAppConfig();
-  const cfg = this.appConfig.getConfig();
+    await this.appConfig.loadAppConfig();
+    const cfg = this.appConfig.getConfig();
+    const token = await firstValueFrom(this.tokenService.authTokenEmitter);
 
-  const token = await firstValueFrom(this.tokenService.authTokenEmitter);
+    const mergedServices = {
+      ...cfg.mapServices,
+      openmaps: cfg.rest['openmaps'],
+    };
 
-  return mapConfig(cfg.mapServices as unknown as MapServices, token);
+    return mapConfig(mergedServices, token);
   }
 }

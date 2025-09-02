@@ -332,4 +332,5 @@ export interface LayerSettings {
   geoserverApiBaseUrl: string;
   wfnewsApiBaseUrl: string;
   wfnewsApiKey: string;
+  openmaps:string;
 }

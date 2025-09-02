@@ -39,7 +39,18 @@ export function LayerDisplayConfig() {
             id: 'active-wildfires-out',
             isVisible: false,
             alwaysShowLegend: true,
-        }
+        },
+        {
+            id: 'legacy-fuel-treatments',
+            isVisible: false,
+            alwaysShowLegend: true,
+        },
+        {
+            id: 'risk-reduction-projects-activities',
+            isVisible: false,
+            alwaysShowLegend: true,
+        },
+
 
     ];
 }

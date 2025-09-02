@@ -4,7 +4,7 @@ export function MinistryOfForestsDistrictsLayerConfig(ls: LayerSettings, authHea
   return {
     serviceUrl: ls.geoserverApiBaseUrl + "/ows",
     id: "ministry-of-forests-districts",
-    title: "Ministry of Forests Districts",
+    title: "Natural Resource Districts",
     visible: false,
     type: "wms",
     isQueryable: false,
