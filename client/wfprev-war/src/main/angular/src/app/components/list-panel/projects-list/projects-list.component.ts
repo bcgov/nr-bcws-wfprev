@@ -21,6 +21,7 @@ import { StatusBadgeComponent } from 'src/app/components/shared/status-badge/sta
 import { CodeTableKeys, CodeTableNames, DownloadFileExtensions, DownloadTypes, Messages, WildfireOrgUnitTypeCodes } from 'src/app/utils/constants';
 import { DownloadButtonComponent } from 'src/app/components/shared/download-button/download-button.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { ReportRequest } from '../../models';
 
 
 @Component({
@@ -522,44 +523,76 @@ export class ProjectsListComponent implements OnInit {
     return PlanFiscalStatusIcons[status];
   }
 
-  onDownload(type: string): void {
-    const projectGuids = this.displayedProjects.map(p => p.projectGuid);
-    this.downloadProjects(projectGuids, type);
+  /** 1) Which fiscal rows are visible for this project card? */
+getDisplayedFiscalYears(project: any): number[] {
+  const fiscalsDesc = this.getSortedProjectFiscalsDesc(project); // you already have this
+  // mirror your template: if you only show top N, slice the same here
+  const shown = fiscalsDesc.slice(0, this.resultCount);
+  return shown
+    .map((f: any) => f?.fiscalYear)
+    .filter((y: any): y is number => typeof y === 'number');
+}
+
+/** 2) Visible years -> their projectPlanFiscalGuid values */
+getDisplayedProjectFiscalGuids(project: any): string[] {
+  const wantedYears = new Set(this.getDisplayedFiscalYears(project));
+  return (project?.projectFiscals ?? [])
+    .filter((f: any) => wantedYears.has(f.fiscalYear) && !!f.projectPlanFiscalGuid)
+    .map((f: any) => f.projectPlanFiscalGuid as string);
+}
+
+/** 3) Build request.projects from displayedProjects, coalescing by projectGuid */
+buildProjectsPayloadFromDisplayed(): { projectGuid: string; projectFiscalGuids?: string[] }[] {
+  const byProject = new Map<string, Set<string>>();
+
+  for (const p of this.displayedProjects) {
+    const guid = p.projectGuid as string;
+    if (!guid) continue;
+
+    const fiscals = this.getDisplayedProjectFiscalGuids(p);
+    if (!byProject.has(guid)) byProject.set(guid, new Set<string>());
+
+    // If there are displayed fiscals, union them; if not, we’ll send just the projectGuid later.
+    for (const fg of fiscals) byProject.get(guid)!.add(fg);
   }
 
-  downloadProjects(projectGuids: string[], type: string): void {
-    const snackRef = this.snackbarService.open(Messages.fileDownloadInProgress, 'Close', {
-      duration: undefined,
-      panelClass: 'snackbar-info'
-    });
-
-    this.projectService.downloadProjects(projectGuids, type).subscribe({
-      next: (blob) => {
-        snackRef.dismiss();
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        const extension = type === DownloadTypes.EXCEL
-          ? DownloadFileExtensions.EXCEL
-          : DownloadFileExtensions.CSV;
-        a.download = `projects.${extension}`;
-        a.href = url;
-        a.click();
-        window.URL.revokeObjectURL(url);
-
-        this.snackbarService.open(Messages.fileDownloadSuccess, 'Close', {
-          duration: 5000,
-          panelClass: 'snackbar-success'
-        });
-      },
-      error: (err) => {
-        snackRef.dismiss();
-        console.error('Download failed', err);
-        this.snackbarService.open(Messages.fileDownloadFailure, 'Close', {
-          duration: 5000,
-          panelClass: 'snackbar-error'
-        });
-      }
-    });
+  // Convert to payload list: include projectFiscalGuids only when we actually have some
+  const payload: { projectGuid: string; projectFiscalGuids?: string[] }[] = [];
+  for (const [guid, set] of byProject.entries()) {
+    const list = Array.from(set);
+    payload.push(list.length > 0 ? { projectGuid: guid, projectFiscalGuids: list } : { projectGuid: guid });
   }
+  return payload;
+}
 
+onDownload(type: string): void {
+  const body: ReportRequest = {
+    reportType: type === DownloadTypes.EXCEL ? 'xlsx' : 'csv',
+    projects: this.buildProjectsPayloadFromDisplayed()
+  };
+
+  const snackRef = this.snackbarService.open(Messages.fileDownloadInProgress, 'Close', {
+    duration: undefined,
+    panelClass: 'snackbar-info'
+  });
+
+  this.projectService.downloadProjects(body).subscribe({
+    next: (blob) => {
+      snackRef.dismiss();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      const ext = body.reportType === 'xlsx' ? DownloadFileExtensions.EXCEL : DownloadFileExtensions.CSV;
+      a.download = `projects.${ext}`;
+      a.href = url;
+      a.click();
+      window.URL.revokeObjectURL(url);
+      this.snackbarService.open(Messages.fileDownloadSuccess, 'Close', { duration: 5000, panelClass: 'snackbar-success' });
+    },
+    error: (err) => {
+      snackRef.dismiss();
+      console.error('Download failed', err);
+      this.snackbarService.open(Messages.fileDownloadFailure, 'Close', { duration: 5000, panelClass: 'snackbar-error' });
+    }
+  });
+}
 }

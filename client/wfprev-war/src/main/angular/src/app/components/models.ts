@@ -333,3 +333,15 @@ export interface LayerSettings {
   wfnewsApiBaseUrl: string;
   wfnewsApiKey: string;
 }
+
+export type ReportType = 'csv' | 'xlsx';
+
+export interface ReportProject {
+  projectGuid: string;
+  projectFiscalGuids?: string[];
+}
+
+export interface ReportRequest {
+  reportType: ReportType;
+  projects: ReportProject[];
+}

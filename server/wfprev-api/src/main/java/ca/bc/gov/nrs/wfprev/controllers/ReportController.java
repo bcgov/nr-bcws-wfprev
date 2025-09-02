@@ -51,7 +51,7 @@ public class ReportController {
 
                 log.info("[{}] exportXlsx -> begin", rid);
                 try (var baos = new java.io.ByteArrayOutputStream(1 << 20)) { // 1MB initial cap
-                    reportService.exportXlsx(request.getProjectGuids(), baos, rid); // pass rid through
+                    reportService.exportXlsx(request, baos, rid); // pass rid through
                     bytes = baos.toByteArray();
                 }
                 long t1 = System.currentTimeMillis();
@@ -76,7 +76,7 @@ public class ReportController {
 
                 log.info("[{}] writeCsvZipFromEntities -> begin", rid);
                 try (var baos = new java.io.ByteArrayOutputStream(1 << 20)) {
-                    reportService.writeCsvZipFromEntities(request.getProjectGuids(), baos); // pass rid through
+                    reportService.writeCsvZipFromEntities(request, baos); // pass rid through
                     bytes = baos.toByteArray();
                 }
                 long t1 = System.currentTimeMillis();

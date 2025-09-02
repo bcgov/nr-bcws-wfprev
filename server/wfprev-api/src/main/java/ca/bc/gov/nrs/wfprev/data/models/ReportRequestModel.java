@@ -7,6 +7,12 @@ import java.util.UUID;
 
 @Data
 public class ReportRequestModel {
-    private List<UUID> projectGuids;
     private String reportType;
+    private List<Project> projects;
+
+    @Data
+    public static class Project {
+        private UUID projectGuid;
+        private List<UUID> projectFiscalGuids;
+    }
 }

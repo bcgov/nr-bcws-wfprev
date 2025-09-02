@@ -1,5 +1,18 @@
 package ca.bc.gov.nrs.wfprev.services;
 
+import ca.bc.gov.nrs.wfprev.common.exceptions.ServiceException;
+import ca.bc.gov.nrs.wfprev.data.entities.CulturalPrescribedFireReportEntity;
+import ca.bc.gov.nrs.wfprev.data.entities.FuelManagementReportEntity;
+import ca.bc.gov.nrs.wfprev.data.models.ReportRequestModel;
+import ca.bc.gov.nrs.wfprev.data.repositories.CulturalPrescribedFireReportRepository;
+import ca.bc.gov.nrs.wfprev.data.repositories.FuelManagementReportRepository;
+import ca.bc.gov.nrs.wfprev.data.repositories.ProgramAreaRepository;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -17,23 +30,6 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
-
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
-
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import ca.bc.gov.nrs.wfprev.common.exceptions.ServiceException;
-import ca.bc.gov.nrs.wfprev.data.entities.CulturalPrescribedFireReportEntity;
-import ca.bc.gov.nrs.wfprev.data.entities.FuelManagementReportEntity;
-import ca.bc.gov.nrs.wfprev.data.entities.ProjectEntity;
-import ca.bc.gov.nrs.wfprev.data.entities.ProjectFiscalEntity;
-import ca.bc.gov.nrs.wfprev.data.repositories.CulturalPrescribedFireReportRepository;
-import ca.bc.gov.nrs.wfprev.data.repositories.FuelManagementReportRepository;
-import ca.bc.gov.nrs.wfprev.data.repositories.ProgramAreaRepository;
-import ca.bc.gov.nrs.wfprev.data.repositories.ProjectRepository;
-import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
@@ -54,45 +50,87 @@ public class ReportService {
 
     private final FuelManagementReportRepository fuelManagementRepository;
     private final CulturalPrescribedFireReportRepository culturalPrescribedFireReportRepository;
-    private final ProjectRepository projectRepository;
     private final ProgramAreaRepository programAreaRepository;
 
     public ReportService(FuelManagementReportRepository fuelManagementRepository,
-            CulturalPrescribedFireReportRepository culturalPrescribedFireReportRepository,
-            ProjectRepository projectRepository, ProgramAreaRepository programAreaRepository) {
+            CulturalPrescribedFireReportRepository culturalPrescribedFireReportRepository, ProgramAreaRepository programAreaRepository) {
         this.fuelManagementRepository = fuelManagementRepository;
         this.culturalPrescribedFireReportRepository = culturalPrescribedFireReportRepository;
-        this.projectRepository = projectRepository;
         this.programAreaRepository = programAreaRepository;
     }
 
-    public void exportXlsx(List<UUID> projectGuids, OutputStream outputStream, String rid)
-            throws ServiceException, IOException, InterruptedException {
-        long tStart = System.currentTimeMillis();
-        log.info("[{}] [xlsx] start projectGuids={}", rid, projectGuids.size());
+    private static class ReportDataBundle {
+        List<FuelManagementReportEntity> fuel;
+        List<CulturalPrescribedFireReportEntity> crx;
 
-        // Fetch projects and fiscal GUIDs
-        List<ProjectEntity> projects = projectRepository.findByProjectGuidIn(projectGuids);
-        List<UUID> projectPlanFiscalGuids = projects.stream()
-                .flatMap(p -> p.getProjectFiscals().stream())
-                .map(ProjectFiscalEntity::getProjectPlanFiscalGuid)
-                .distinct()
-                .toList();
+        ReportDataBundle(List<FuelManagementReportEntity> fuel,
+                         List<CulturalPrescribedFireReportEntity> crx) {
+            this.fuel = fuel;
+            this.crx = crx;
+        }
+    }
 
-        // Fetch report rows
-        List<FuelManagementReportEntity> fuelData = fuelManagementRepository
-                .findByProjectPlanFiscalGuidIn(projectPlanFiscalGuids);
-        List<CulturalPrescribedFireReportEntity> crxData = culturalPrescribedFireReportRepository
-                .findByProjectPlanFiscalGuidIn(projectPlanFiscalGuids);
+    private ReportDataBundle resolveReportData(ReportRequestModel request) {
+        List<FuelManagementReportEntity> fuel = new ArrayList<FuelManagementReportEntity>();
+        List<CulturalPrescribedFireReportEntity> crx = new ArrayList<CulturalPrescribedFireReportEntity>();
 
-        if (fuelData.isEmpty() && crxData.isEmpty()) {
-            log.info("[{}] [xlsx] no data for given projectGuids", rid);
-            throw new IllegalArgumentException("No fiscal data found for the provided projects.");
+        if (request == null || request.getProjects() == null || request.getProjects().isEmpty()) {
+            throw new IllegalArgumentException("At least one project is required");
         }
 
-        // Set computed fields
-        fuelData.forEach(this::setFuelManagementFields);
-        crxData.forEach(this::setCrxFields);
+        for (ReportRequestModel.Project p : request.getProjects()) {
+            UUID projectGuid = Objects.requireNonNull(p.getProjectGuid(), "projectGuid is required");
+            List<UUID> fiscals = p.getProjectFiscalGuids();
+
+            if (fiscals != null && !fiscals.isEmpty()) {
+                List<CulturalPrescribedFireReportRepository.CulturalPrescribedFireReportRow> rows =
+                        culturalPrescribedFireReportRepository.findCrxByProjectGuidAndFiscalInNative(projectGuid, fiscals);
+                for (CulturalPrescribedFireReportRepository.CulturalPrescribedFireReportRow r : rows) {
+                    crx.add(toCrxEntity(r));
+                }
+            } else {
+                List<CulturalPrescribedFireReportRepository.CulturalPrescribedFireReportRow> rows =
+                        culturalPrescribedFireReportRepository.findCrxByProjectGuidNative(projectGuid);
+                for (CulturalPrescribedFireReportRepository.CulturalPrescribedFireReportRow r : rows) {
+                    crx.add(toCrxEntity(r));
+                }
+            }
+
+            if (fiscals != null && !fiscals.isEmpty()) {
+                List<FuelManagementReportRepository.FuelManagementReportRow> rows =
+                        fuelManagementRepository.findFuelByProjectGuidAndFiscalInNative(projectGuid, fiscals);
+                for (FuelManagementReportRepository.FuelManagementReportRow r : rows) {
+                    fuel.add(toFuelManagementEntity(r));
+                }
+            } else {
+                List<FuelManagementReportRepository.FuelManagementReportRow> rows =
+                        fuelManagementRepository.findFuelByProjectGuidNative(projectGuid);
+                for (FuelManagementReportRepository.FuelManagementReportRow r : rows) {
+                    fuel.add(toFuelManagementEntity(r));
+                }
+            }
+        }
+
+        return new ReportDataBundle(fuel, crx);
+    }
+
+
+    public void exportXlsx(ReportRequestModel request, OutputStream outputStream, String rid)
+            throws ServiceException, IOException, InterruptedException {
+        ReportDataBundle data = resolveReportData(request);
+
+        // Remove nulls up front (defensive)
+        data.fuel.removeIf(Objects::isNull);
+        data.crx.removeIf(Objects::isNull);
+
+        // Pre-process
+        data.fuel.forEach(this::setFuelManagementFields);
+        data.crx.forEach(this::setCrxFields);
+
+        // If absolutely nothing to write, fail early
+        if (data.fuel.isEmpty() && data.crx.isEmpty()) {
+            throw new IllegalArgumentException("No fiscal data found for the provided projects");
+        }
 
         // Build Lambda request model
         LambdaReportRequest lambdaRequest = new LambdaReportRequest();
@@ -100,8 +138,8 @@ public class ReportService {
         report.setReportType("XLSX");
         report.setReportName("project-report");
         LambdaReportRequest.XlsxReportData xlsxData = new LambdaReportRequest.XlsxReportData();
-        xlsxData.setFuelManagementReportData(fuelData);
-        xlsxData.setCulturePrescribedFireReportData(crxData);
+        xlsxData.setFuelManagementReportData(data.fuel);
+        xlsxData.setCulturePrescribedFireReportData(data.crx);
         report.setXlsxReportData(xlsxData);
         lambdaRequest.setReports(java.util.List.of(report));
 
@@ -149,38 +187,33 @@ public class ReportService {
         byte[] xlsxBytes = java.util.Base64.getDecoder().decode(file.getContent());
         outputStream.write(xlsxBytes);
         outputStream.flush();
-        log.info("[{}] [xlsx] export complete ({} ms)", rid, (System.currentTimeMillis() - tStart));
-
     }
 
-    public void writeCsvZipFromEntities(List<UUID> projectGuids, OutputStream zipOutStream) throws ServiceException {
-        List<FuelManagementReportEntity> fuelRecords =
-                new ArrayList<>(fuelManagementRepository.findByProjectGuidIn(projectGuids));
-        List<CulturalPrescribedFireReportEntity> crxRecords =
-                new ArrayList<>(culturalPrescribedFireReportRepository.findByProjectGuidIn(projectGuids));
+    public void writeCsvZipFromEntities(ReportRequestModel request, OutputStream zipOutStream) throws ServiceException {
+        ReportDataBundle data = resolveReportData(request);
 
         // Remove nulls up front
-        fuelRecords.removeIf(Objects::isNull);
-        crxRecords.removeIf(Objects::isNull);
+        data.fuel.removeIf(Objects::isNull);
+        data.crx.removeIf(Objects::isNull);
 
-        // (Optional) pre-process
-        for (FuelManagementReportEntity f : fuelRecords) setFuelManagementFields(f);
-        for (CulturalPrescribedFireReportEntity c : crxRecords) setCrxFields(c);
+        // Pre-process
+        data.fuel.forEach(this::setFuelManagementFields);
+        data.crx.forEach(this::setCrxFields);
 
-        // If absolutely nothing to write, fail early (or return silently — your call)
-        if (fuelRecords.isEmpty() && crxRecords.isEmpty()) {
+        // If absolutely nothing to write, fail early
+        if (data.fuel.isEmpty() && data.crx.isEmpty()) {
             throw new IllegalArgumentException("No fiscal data found for the provided projects");
         }
 
         try (ZipOutputStream zipOut = new ZipOutputStream(zipOutStream)) {
 
             // Only write Fuel CSV if there are rows
-            if (!fuelRecords.isEmpty()) {
+            if (!data.fuel.isEmpty()) {
                 ByteArrayOutputStream fuelCsvOut = new ByteArrayOutputStream();
                 try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(fuelCsvOut))) {
                     writer.write(getFuelCsvHeader());
                     writer.newLine();
-                    for (FuelManagementReportEntity e : fuelRecords) {
+                    for (FuelManagementReportEntity e : data.fuel) {
                         writer.write(String.join(",", getFuelCsvRow(e)));
                         writer.newLine();
                     }
@@ -189,12 +222,12 @@ public class ReportService {
             }
 
             // Only write Cultural Prescribed CSV if there are rows
-            if (!crxRecords.isEmpty()) {
+            if (!data.crx.isEmpty()) {
                 ByteArrayOutputStream crxCsvOut = new ByteArrayOutputStream();
                 try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(crxCsvOut))) {
                     writer.write(getCrxCsvHeader());
                     writer.newLine();
-                    for (CulturalPrescribedFireReportEntity c : crxRecords) {
+                    for (CulturalPrescribedFireReportEntity c : data.crx) {
                         writer.write(String.join(",", getCrxCsvRow(c)));
                         writer.newLine();
                     }
@@ -234,10 +267,7 @@ public class ReportService {
             }
 
             // 2025 -> 2025/26 format
-            String fiscalYear = formatFiscalYearIfNumeric(entity.getFiscalYear());
-            if (fiscalYear != null) {
-                entity.setFiscalYear(fiscalYear);
-            }
+            entity.setFiscalYear(formatFiscalYearIfNumeric(entity.getFiscalYear()));
         }
     }
 
@@ -259,10 +289,7 @@ public class ReportService {
             }
 
             // 2025 -> 2025/26 format
-            String fiscalYear = formatFiscalYearIfNumeric(entity.getFiscalYear());
-            if (fiscalYear != null) {
-                entity.setFiscalYear(fiscalYear);
-            }
+            entity.setFiscalYear(formatFiscalYearIfNumeric(entity.getFiscalYear()));
         }
     }
 
@@ -297,10 +324,10 @@ public class ReportService {
 
     private List<String> getFuelCsvRow(FuelManagementReportEntity e) {
         return List.of(
-                safe(String.format("=HYPERLINK(\"%s\", \"%s Project Link\")",
-                        e.getLinkToProject(), e.getProjectName())),
-                safe(String.format("=HYPERLINK(\"%s\", \"%s Fiscal Activity Link\")",
-                        e.getLinkToFiscalActivity(), e.getProjectFiscalName())),
+                safe(e.getProjectName() != null ? String.format("=HYPERLINK(\"%s\", \"%s Project Link\")",
+                        e.getLinkToProject(), e.getProjectName()) : ""),
+                safe(e.getProjectFiscalName() != null ? String.format("=HYPERLINK(\"%s\", \"%s Fiscal Activity Link\")",
+                        e.getLinkToFiscalActivity(), e.getProjectFiscalName()) : ""),
                 safe(e.getProjectTypeDescription()),
                 safe(e.getProjectName()), safe(e.getForestRegionOrgUnitName()), safe(e.getForestDistrictOrgUnitName()),
                 safe(e.getBcParksRegionOrgUnitName()), safe(e.getBcParksSectionOrgUnitName()),
@@ -368,10 +395,10 @@ public class ReportService {
 
     private List<String> getCrxCsvRow(CulturalPrescribedFireReportEntity c) {
         return List.of(
-                safe(String.format("=HYPERLINK(\"%s\", \"%s Project Link\")",
-                        c.getLinkToProject(), c.getProjectName())),
-                safe(String.format("=HYPERLINK(\"%s\", \"%s Fiscal Activity Link\")",
-                        c.getLinkToFiscalActivity(), c.getProjectFiscalName())),
+                safe(c.getProjectName() != null ? String.format("=HYPERLINK(\"%s\", \"%s Project Link\")",
+                        c.getLinkToProject(), c.getProjectName()) : ""),
+                safe(c.getProjectFiscalName() != null ? String.format("=HYPERLINK(\"%s\", \"%s Fiscal Activity Link\")",
+                        c.getLinkToFiscalActivity(), c.getProjectFiscalName()) : ""),
                 safe(c.getProjectTypeDescription()),
                 safe(c.getProjectName()), safe(c.getForestRegionOrgUnitName()), safe(c.getForestDistrictOrgUnitName()),
                 safe(c.getBcParksRegionOrgUnitName()), safe(c.getBcParksSectionOrgUnitName()),
@@ -420,14 +447,14 @@ public class ReportService {
         return new java.text.DecimalFormat("$#,##0").format(n);
     }
 
-    private String formatFiscalYearIfNumeric(Object fiscalYear) {
+    private String formatFiscalYearIfNumeric(String fiscalYear) {
         if (fiscalYear == null)
-            return null;
+            return "";
         try {
-            int year = Integer.parseInt(fiscalYear.toString());
+            int year = Integer.parseInt(fiscalYear);
             return year + "/" + String.format("%02d", (year + 1) % 100);
         } catch (NumberFormatException e) {
-            return null; // keep original value unchanged
+            return "";
         }
     }
 
@@ -528,4 +555,115 @@ public class ReportService {
             }
         }
     }
+
+    private CulturalPrescribedFireReportEntity toCrxEntity(
+            CulturalPrescribedFireReportRepository.CulturalPrescribedFireReportRow r) {
+        CulturalPrescribedFireReportEntity e = new CulturalPrescribedFireReportEntity();
+        e.setProjectGuid(r.getProjectGuid());
+        e.setProjectPlanFiscalGuid(r.getProjectPlanFiscalGuid());
+        e.setProjectTypeDescription(r.getProjectTypeDescription());
+        e.setProjectName(r.getProjectName());
+        e.setForestRegionOrgUnitName(r.getForestRegionOrgUnitName());
+        e.setForestDistrictOrgUnitName(r.getForestDistrictOrgUnitName());
+        e.setBcParksRegionOrgUnitName(r.getBcParksRegionOrgUnitName());
+        e.setBcParksSectionOrgUnitName(r.getBcParksSectionOrgUnitName());
+        e.setFireCentreOrgUnitName(r.getFireCentreOrgUnitName());
+        e.setProgramAreaGuid(r.getProgramAreaGuid());
+        e.setPlanningUnitName(r.getPlanningUnitName());
+        e.setGrossProjectAreaHa(r.getGrossProjectAreaHa());
+        e.setClosestCommunityName(r.getClosestCommunityName());
+        e.setProjectLead(r.getProjectLead());
+        e.setProposalTypeDescription(r.getProposalTypeDescription());
+        e.setProjectFiscalName(r.getProjectFiscalName());
+        e.setProjectFiscalDescription(r.getProjectFiscalDescription());
+        e.setFiscalYear(r.getFiscalYear());
+        e.setActivityCategoryDescription(r.getActivityCategoryDescription());
+        e.setPlanFiscalStatusDescription(r.getPlanFiscalStatusDescription());
+        e.setTotalEstimatedCostAmount(r.getTotalEstimatedCostAmount());
+        e.setFiscalAncillaryFundAmount(r.getFiscalAncillaryFundAmount());
+        e.setFiscalReportedSpendAmount(r.getFiscalReportedSpendAmount());
+        e.setFiscalActualAmount(r.getFiscalActualAmount());
+        e.setFiscalPlannedProjectSizeHa(r.getFiscalPlannedProjectSizeHa());
+        e.setFiscalCompletedSizeHa(r.getFiscalCompletedSizeHa());
+        e.setSpatialSubmitted(r.getSpatialSubmitted());
+        e.setFirstNationsEngagement(r.getFirstNationsEngagement());
+        e.setFirstNationsDelivPartners(r.getFirstNationsDelivPartners());
+        e.setFirstNationsPartner(r.getFirstNationsPartner());
+        e.setOtherPartner(r.getOtherPartner());
+        e.setCfsProjectCode(r.getCfsProjectCode());
+        e.setResultsProjectCode(r.getResultsProjectCode());
+        e.setResultsOpeningId(r.getResultsOpeningId());
+        e.setPrimaryObjectiveTypeDescription(r.getPrimaryObjectiveTypeDescription());
+        e.setSecondaryObjectiveTypeDescription(r.getSecondaryObjectiveTypeDescription());
+        e.setEndorsementTimestamp(r.getEndorsementTimestamp());
+        e.setApprovedTimestamp(r.getApprovedTimestamp());
+        e.setOutsideWuiInd(r.getOutsideWuiInd());
+        e.setWuiRiskClassDescription(r.getWuiRiskClassDescription());
+        e.setLocalWuiRiskClassDescription(r.getLocalWuiRiskClassDescription());
+        e.setTotalRclFilterSectionScore(r.getTotalRclFilterSectionScore());
+        e.setRclFilterSectionComment(r.getRclFilterSectionComment());
+        e.setTotalBdfFilterSectionScore(r.getTotalBdfFilterSectionScore());
+        e.setBdfFilterSectionComment(r.getBdfFilterSectionComment());
+        e.setTotalCollimpFilterSectionScore(r.getTotalCollimpFilterSectionScore());
+        e.setCollimpFilterSectionComment(r.getCollimpFilterSectionComment());
+        e.setTotalFilterSectionScore(r.getTotalFilterSectionScore());
+        return e;
+    }
+
+    private FuelManagementReportEntity toFuelManagementEntity(
+            FuelManagementReportRepository.FuelManagementReportRow r) {
+        FuelManagementReportEntity e = new FuelManagementReportEntity();
+        e.setLinkToProject(null);
+        e.setLinkToFiscalActivity(null);
+        e.setProjectGuid(r.getProjectGuid());
+        e.setProjectPlanFiscalGuid(r.getProjectPlanFiscalGuid());
+        e.setProjectTypeDescription(r.getProjectTypeDescription());
+        e.setProjectName(r.getProjectName());
+        e.setForestRegionOrgUnitName(r.getForestRegionOrgUnitName());
+        e.setForestDistrictOrgUnitName(r.getForestDistrictOrgUnitName());
+        e.setBcParksSectionOrgUnitName(r.getBcParksSectionOrgUnitName());
+        e.setBcParksRegionOrgUnitName(r.getBcParksRegionOrgUnitName());
+        e.setFireCentreOrgUnitName(r.getFireCentreOrgUnitName());
+        e.setProgramAreaGuid(r.getProgramAreaGuid());
+        e.setPlanningUnitName(r.getPlanningUnitName());
+        e.setGrossProjectAreaHa(r.getGrossProjectAreaHa());
+        e.setClosestCommunityName(r.getClosestCommunityName());
+        e.setProjectLead(r.getProjectLead());
+        e.setProposalTypeDescription(r.getProposalTypeDescription());
+        e.setProjectFiscalName(r.getProjectFiscalName());
+        e.setProjectFiscalDescription(r.getProjectFiscalDescription());
+        e.setFiscalYear(r.getFiscalYear());
+        e.setActivityCategoryDescription(r.getActivityCategoryDescription());
+        e.setPlanFiscalStatusDescription(r.getPlanFiscalStatusDescription());
+        e.setFundingStream(r.getFundingStream());
+        e.setTotalEstimatedCostAmount(r.getTotalEstimatedCostAmount());
+        e.setFiscalAncillaryFundAmount(r.getFiscalAncillaryFundAmount());
+        e.setFiscalReportedSpendAmount(r.getFiscalReportedSpendAmount());
+        e.setFiscalActualAmount(r.getFiscalActualAmount());
+        e.setFiscalPlannedProjectSizeHa(r.getFiscalPlannedProjectSizeHa());
+        e.setFiscalCompletedSizeHa(r.getFiscalCompletedSizeHa());
+        e.setSpatialSubmitted(r.getSpatialSubmitted());
+        e.setFirstNationsEngagement(r.getFirstNationsEngagement());
+        e.setFirstNationsDelivPartners(r.getFirstNationsDelivPartners());
+        e.setFirstNationsPartner(r.getFirstNationsPartner());
+        e.setOtherPartner(r.getOtherPartner());
+        e.setCfsProjectCode(r.getCfsProjectCode());
+        e.setResultsProjectCode(r.getResultsProjectCode());
+        e.setResultsOpeningId(r.getResultsOpeningId());
+        e.setPrimaryObjectiveTypeDescription(r.getPrimaryObjectiveTypeDescription());
+        e.setSecondaryObjectiveTypeDescription(r.getSecondaryObjectiveTypeDescription());
+        e.setEndorsementTimestamp(r.getEndorsementTimestamp());
+        e.setApprovedTimestamp(r.getApprovedTimestamp());
+        e.setWuiRiskClassDescription(r.getWuiRiskClassDescription());
+        e.setLocalWuiRiskClassDescription(r.getLocalWuiRiskClassDescription());
+        e.setLocalWuiRiskClassRationale(r.getLocalWuiRiskClassRationale());
+        e.setTotalCoarseFilterSectionScore(r.getTotalCoarseFilterSectionScore());
+        e.setTotalMediumFilterSectionScore(r.getTotalMediumFilterSectionScore());
+        e.setMediumFilterSectionComment(r.getMediumFilterSectionComment());
+        e.setTotalFineFilterSectionScore(r.getTotalFineFilterSectionScore());
+        e.setFineFilterSectionComment(r.getFineFilterSectionComment());
+        e.setTotalFilterSectionScore(r.getTotalFilterSectionScore());
+        return e;
+    }
+
 }
