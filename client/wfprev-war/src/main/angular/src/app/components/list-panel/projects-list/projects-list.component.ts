@@ -523,17 +523,15 @@ export class ProjectsListComponent implements OnInit {
     return PlanFiscalStatusIcons[status];
   }
 
-  /** 1) Which fiscal rows are visible for this project card? */
+
 getDisplayedFiscalYears(project: any): number[] {
-  const fiscalsDesc = this.getSortedProjectFiscalsDesc(project); // you already have this
-  // mirror your template: if you only show top N, slice the same here
+  const fiscalsDesc = this.getSortedProjectFiscalsDesc(project); 
   const shown = fiscalsDesc.slice(0, this.resultCount);
   return shown
     .map((f: any) => f?.fiscalYear)
     .filter((y: any): y is number => typeof y === 'number');
 }
 
-/** 2) Visible years -> their projectPlanFiscalGuid values */
 getDisplayedProjectFiscalGuids(project: any): string[] {
   const wantedYears = new Set(this.getDisplayedFiscalYears(project));
   return (project?.projectFiscals ?? [])
@@ -541,7 +539,7 @@ getDisplayedProjectFiscalGuids(project: any): string[] {
     .map((f: any) => f.projectPlanFiscalGuid as string);
 }
 
-/** 3) Build request.projects from displayedProjects, coalescing by projectGuid */
+// Build request.projects from displayedProjects, coalescing by projectGuid 
 buildProjectsPayloadFromDisplayed(): { projectGuid: string; projectFiscalGuids?: string[] }[] {
   const byProject = new Map<string, Set<string>>();
 

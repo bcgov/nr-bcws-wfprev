@@ -550,7 +550,7 @@ export class ProjectService {
                 'Content-Type': 'application/json',
                 'Accept': 'application/octet-stream'
             },
-            responseType: 'blob' as 'json'  // Angular typing quirk
+            responseType: 'blob' as 'json' 
         }).pipe(
             catchError((error) => {
                 console.error('Error downloading projects', error);
