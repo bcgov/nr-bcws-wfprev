@@ -11,7 +11,9 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -85,7 +87,7 @@ public class ReportService {
 
         if (fuelData.isEmpty() && crxData.isEmpty()) {
             log.info("[{}] [xlsx] no data for given projectGuids", rid);
-            throw new IllegalArgumentException("No data found for the provided projectGuids.");
+            throw new IllegalArgumentException("No fiscal data found for the provided projects.");
         }
 
         // Set computed fields
@@ -152,44 +154,56 @@ public class ReportService {
     }
 
     public void writeCsvZipFromEntities(List<UUID> projectGuids, OutputStream zipOutStream) throws ServiceException {
-        List<FuelManagementReportEntity> fuelRecords = fuelManagementRepository.findByProjectGuidIn(projectGuids);
-        List<CulturalPrescribedFireReportEntity> crxRecords = culturalPrescribedFireReportRepository
-                .findByProjectGuidIn(projectGuids);
+        List<FuelManagementReportEntity> fuelRecords =
+                new ArrayList<>(fuelManagementRepository.findByProjectGuidIn(projectGuids));
+        List<CulturalPrescribedFireReportEntity> crxRecords =
+                new ArrayList<>(culturalPrescribedFireReportRepository.findByProjectGuidIn(projectGuids));
 
-        for (FuelManagementReportEntity f : fuelRecords) {
-            setFuelManagementFields(f);
-        }
-        for (CulturalPrescribedFireReportEntity c : crxRecords) {
-            setCrxFields(c);
+        // Remove nulls up front
+        fuelRecords.removeIf(Objects::isNull);
+        crxRecords.removeIf(Objects::isNull);
+
+        // (Optional) pre-process
+        for (FuelManagementReportEntity f : fuelRecords) setFuelManagementFields(f);
+        for (CulturalPrescribedFireReportEntity c : crxRecords) setCrxFields(c);
+
+        // If absolutely nothing to write, fail early (or return silently — your call)
+        if (fuelRecords.isEmpty() && crxRecords.isEmpty()) {
+            throw new IllegalArgumentException("No fiscal data found for the provided projects");
         }
 
         try (ZipOutputStream zipOut = new ZipOutputStream(zipOutStream)) {
 
-            ByteArrayOutputStream fuelCsvOut = new ByteArrayOutputStream();
-            try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(fuelCsvOut))) {
-                writer.write(getFuelCsvHeader());
-                writer.newLine();
-
-                for (FuelManagementReportEntity e : fuelRecords) {
-                    writer.write(String.join(",", getFuelCsvRow(e)));
+            // Only write Fuel CSV if there are rows
+            if (!fuelRecords.isEmpty()) {
+                ByteArrayOutputStream fuelCsvOut = new ByteArrayOutputStream();
+                try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(fuelCsvOut))) {
+                    writer.write(getFuelCsvHeader());
                     writer.newLine();
+                    for (FuelManagementReportEntity e : fuelRecords) {
+                        writer.write(String.join(",", getFuelCsvRow(e)));
+                        writer.newLine();
+                    }
                 }
+                addToZip(zipOut, "fuel-management-projects.csv", fuelCsvOut.toByteArray());
             }
-            addToZip(zipOut, "fuel-management-projects.csv", fuelCsvOut.toByteArray());
 
-            ByteArrayOutputStream crxCsvOut = new ByteArrayOutputStream();
-            try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(crxCsvOut))) {
-                writer.write(getCrxCsvHeader());
-                writer.newLine();
-
-                for (CulturalPrescribedFireReportEntity c : crxRecords) {
-                    writer.write(String.join(",", getCrxCsvRow(c)));
+            // Only write Cultural Prescribed CSV if there are rows
+            if (!crxRecords.isEmpty()) {
+                ByteArrayOutputStream crxCsvOut = new ByteArrayOutputStream();
+                try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(crxCsvOut))) {
+                    writer.write(getCrxCsvHeader());
                     writer.newLine();
+                    for (CulturalPrescribedFireReportEntity c : crxRecords) {
+                        writer.write(String.join(",", getCrxCsvRow(c)));
+                        writer.newLine();
+                    }
                 }
+                addToZip(zipOut, "cultural-prescribed-fire-projects.csv", crxCsvOut.toByteArray());
             }
-            addToZip(zipOut, "cultural-prescribed-fire-projects.csv", crxCsvOut.toByteArray());
-
-        } catch (Exception e) {
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("No fiscal data found for the provided projects.");
+        } catch (IOException e) {
             log.info("Failed to generate CSV report: {}", e.getMessage(), e);
             throw new ServiceException("Failed to generate CSV report", e);
         }
@@ -204,12 +218,14 @@ public class ReportService {
 
     private void setFuelManagementFields(FuelManagementReportEntity entity) {
         String urlPrefix = baseUrl + PROJECT_URL_PREFIX;
-        if (entity.getProjectGuid() != null) {
-            entity.setLinkToProject(urlPrefix + entity.getProjectGuid());
+        if (entity != null) {
+            if (entity.getProjectGuid() != null) {
+                entity.setLinkToProject(urlPrefix + entity.getProjectGuid());
+            }
+
             if (entity.getProjectPlanFiscalGuid() != null) {
                 entity.setLinkToFiscalActivity(
                         urlPrefix + entity.getProjectGuid() + FISCAL_QUERY_STRING + entity.getProjectPlanFiscalGuid());
-
             }
 
             if (entity.getProgramAreaGuid() != null) {
@@ -227,24 +243,26 @@ public class ReportService {
 
     private void setCrxFields(CulturalPrescribedFireReportEntity entity) {
         String urlPrefix = baseUrl + PROJECT_URL_PREFIX;
-        if (entity.getProjectGuid() != null) {
-            entity.setLinkToProject(urlPrefix + entity.getProjectGuid());
-            if (entity.getProjectPlanFiscalGuid() != null) {
-                entity.setLinkToFiscalActivity(
-                        urlPrefix + entity.getProjectGuid() + FISCAL_QUERY_STRING + entity.getProjectPlanFiscalGuid());
+        if (entity != null) {
+            if(entity.getProjectGuid() != null) {
+                entity.setLinkToProject(urlPrefix + entity.getProjectGuid());
+                if (entity.getProjectPlanFiscalGuid() != null) {
+                    entity.setLinkToFiscalActivity(
+                            urlPrefix + entity.getProjectGuid() + FISCAL_QUERY_STRING + entity.getProjectPlanFiscalGuid());
 
+                }
             }
-        }
 
-        if (entity.getProgramAreaGuid() != null) {
-            programAreaRepository.findById(entity.getProgramAreaGuid())
-                    .ifPresent(programArea -> entity.setBusinessArea(programArea.getProgramAreaName()));
-        }
+            if (entity.getProgramAreaGuid() != null) {
+                programAreaRepository.findById(entity.getProgramAreaGuid())
+                        .ifPresent(programArea -> entity.setBusinessArea(programArea.getProgramAreaName()));
+            }
 
-        // 2025 -> 2025/26 format
-        String fiscalYear = formatFiscalYearIfNumeric(entity.getFiscalYear());
-        if (fiscalYear != null) {
-            entity.setFiscalYear(fiscalYear);
+            // 2025 -> 2025/26 format
+            String fiscalYear = formatFiscalYearIfNumeric(entity.getFiscalYear());
+            if (fiscalYear != null) {
+                entity.setFiscalYear(fiscalYear);
+            }
         }
     }
 
@@ -387,7 +405,7 @@ public class ReportService {
                 safe(c.getApprovedTimestamp() != null
                         ? DATE_FORMAT.format(c.getApprovedTimestamp().toInstant())
                         : ""),
-                safe(c.getOutsideWuiInd() ? "Y" : "N"),
+                safe((c.getOutsideWuiInd() != null && c.getOutsideWuiInd()) ? "Y" : "N"),
                 safe(c.getWuiRiskClassDescription()), safe(c.getLocalWuiRiskClassDescription()),
                 safe(c.getTotalRclFilterSectionScore()),
                 safe(c.getRclFilterSectionComment()), safe(c.getTotalBdfFilterSectionScore()),
