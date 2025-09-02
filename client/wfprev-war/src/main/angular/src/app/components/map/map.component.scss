@@ -94,3 +94,20 @@
   width: 100%;
   margin-left: 2px;
 }
+
+:host ::ng-deep .smk-layer-title {
+  display: flex !important;
+  align-items: center !important;
+  white-space: normal !important;
+  word-break: break-word !important;
+  flex: 1 !important;
+}
+
+:host ::ng-deep .smk-sidepanel {
+  min-width: calc(var(--panel-width) + 8px);
+  width: min-content !important;
+}
+
+:host ::ng-deep .smk-item {
+  max-height: unset !important;
+}

@@ -14,12 +14,14 @@ export interface LayerSettings {
   geoserverApiBaseUrl: string;
   wfnewsApiBaseUrl: string;
   wfnewsApiKey: string;
+  openmaps: string;
 }
 export function LayerConfig(mapServices: MapServices, token?: string) {
   const ls: LayerSettings = {
     geoserverApiBaseUrl: mapServices['geoserverApiBaseUrl'],
     wfnewsApiBaseUrl: mapServices['wfnewsApiBaseUrl'],
-    wfnewsApiKey: mapServices['wfnewsApiKey']
+    wfnewsApiKey: mapServices['wfnewsApiKey'],
+    openmaps: mapServices['openmaps'], 
   };
 
   const authHeader: Record<string, string> = {};
