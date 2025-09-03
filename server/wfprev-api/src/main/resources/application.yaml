@@ -33,7 +33,7 @@ logging:
     root: INFO
     org:
       springframework.web.servlet.mvc.method.annotation.StreamingResponseBodyReturnValueHandler: DEBUG
-      hibernate.SQL: DEBUG
+      hibernate.SQL: WARN
       hibernate.type.descriptor.sql.BasicBinder: TRACE
       apache.poi: WARN
 
