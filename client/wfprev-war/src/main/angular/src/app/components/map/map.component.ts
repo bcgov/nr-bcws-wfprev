@@ -9,7 +9,7 @@ import * as L from 'leaflet';
 import { ProjectPopupComponent } from 'src/app/components/project-popup/project-popup.component';
 import { Project } from 'src/app/components/models';
 import { ResizablePanelComponent } from 'src/app/components/resizable-panel/resizable-panel.component';
-import { MapColors } from 'src/app/utils/constants';
+import { BC_BOUNDS, MapColors } from 'src/app/utils/constants';
 import { Geometry, GeometryCollection } from 'geojson';
 @Component({
   selector: 'app-map',
@@ -96,6 +96,29 @@ ngAfterViewInit(): void {
   this.initMap().then(() => {
     const smk = this.mapService.getSMKInstance();
     const map = smk?.$viewer?.map;
+    // On zoom, force all WMS layers to request fresh tiles
+    map.on('zoomend', () => {
+      const layers = smk.$viewer.layerId || {};
+      Object.values(layers).forEach((ly: any) => {
+        const ml = ly?.mapLayer;
+        if (ml?.redraw) {
+          ml.redraw(); // leaflet WMS layer
+        } else if (ml?.setParams) {
+          ml.setParams({ _ts: Date.now() }, false);
+        }
+      });
+
+      const currentZoom = map.getZoom();
+      this.togglePolygonLayers(currentZoom);
+    });
+
+    const bcBounds: L.LatLngBoundsExpression = BC_BOUNDS;
+
+    if (map && typeof (map).fitBounds === 'function') {
+      (map as L.Map).fitBounds(bcBounds);
+    } else {
+      console.warn('Map fitBounds not available on map; skipping initial bounds.');
+    }
     map.addLayer(this.activityBoundaryGroup);
     map.addLayer(this.projectBoundaryGroup);
 

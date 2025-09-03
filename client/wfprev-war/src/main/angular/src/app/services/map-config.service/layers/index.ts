@@ -7,17 +7,21 @@ import { BeingHeldWildfiresLayerConfig } from "./wildfires/being-held-wildfires.
 import { UnderControlWildfiresLayerConfig } from "./wildfires/under-control-wildfires.config";
 import { OutWildfiresLayerConfig } from "./wildfires/out-wildfires.config";
 import { MapServices } from "..";
+import { LegacyFuelTreatmentsLayerConfig } from "./legacy-fuel-treatments.config";
+import { ResultsActivityTreatmentLayerConfig } from "./risk-reduction-projects-activities.config";
 
 export interface LayerSettings {
   geoserverApiBaseUrl: string;
   wfnewsApiBaseUrl: string;
   wfnewsApiKey: string;
+  openmaps: string;
 }
 export function LayerConfig(mapServices: MapServices, token?: string) {
   const ls: LayerSettings = {
     geoserverApiBaseUrl: mapServices['geoserverApiBaseUrl'],
     wfnewsApiBaseUrl: mapServices['wfnewsApiBaseUrl'],
-    wfnewsApiKey: mapServices['wfnewsApiKey']
+    wfnewsApiKey: mapServices['wfnewsApiKey'],
+    openmaps: mapServices['openmaps'], 
   };
 
   const authHeader: Record<string, string> = {};
@@ -34,6 +38,8 @@ export function LayerConfig(mapServices: MapServices, token?: string) {
     BeingHeldWildfiresLayerConfig(ls),
     UnderControlWildfiresLayerConfig(ls),
     OutWildfiresLayerConfig(ls),
+    LegacyFuelTreatmentsLayerConfig(ls, authHeader),
+    ResultsActivityTreatmentLayerConfig(ls)
   ];
   
 }
