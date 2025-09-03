@@ -44,7 +44,7 @@ jobs:
   # include additional steps for DLV, PRD
   # rename to deploy-wftst, rename environment to tst
   deploy-wfdlv:
-    needs: [tag-builds, node-build]
+    needs: [tag-builds, node-build, reports-generator-build]
     if: ${{ contains(github.event.release.tag_name, '-beta') }}
     uses: ./.github/workflows/terragrunt-deploy.yml
     secrets: inherit
