@@ -110,25 +110,28 @@ describe('MapComponent', () => {
   let mapServiceMock: jasmine.SpyObj<MapService>;
   let mapContainer: jasmine.SpyObj<ElementRef>;
 
-const createMockSMKInstance = () => ({
-  $viewer: {
-    map: {
-      addLayer: jasmine.createSpy('addLayer'),
-      removeLayer: jasmine.createSpy('removeLayer'),
-      on: jasmine.createSpy('on'),
-      getZoom: jasmine.createSpy('getZoom').and.returnValue(10),
-      hasLayer: jasmine.createSpy('hasLayer').and.returnValue(false), 
-      eachLayer: jasmine.createSpy('eachLayer'),
-      getCenter: jasmine.createSpy('getCenter'),
-      setView: jasmine.createSpy('setView'),
-      controls: {
-        bottomleft: {
-          addTo: jasmine.createSpy('addTo'),
-        },
+  const createMockSMKInstance = () => ({
+    $viewer: {
+      map: {
+        addLayer: jasmine.createSpy('addLayer'),
+        removeLayer: jasmine.createSpy('removeLayer'),
+        on: jasmine.createSpy('on'),
+        getZoom: jasmine.createSpy('getZoom').and.returnValue(10),
+        hasLayer: jasmine.createSpy('hasLayer').and.returnValue(false),
+        eachLayer: jasmine.createSpy('eachLayer'),
+        getCenter: jasmine.createSpy('getCenter'),
+        setView: jasmine.createSpy('setView'),
+        controls: { bottomleft: { addTo: jasmine.createSpy('addTo') } },
       },
-    },
-  },
-});
+      layerIds: ['a', 'b'],
+      isDisplayContextItemVisible: jasmine.createSpy('isVis').and.returnValue(true),
+      layerIdPromise: { 'a@foo': {}, 'b@foo': {} },
+      updateLayersVisible: jasmine.createSpy('updateLayersVisible')
+        .and.returnValue(Promise.resolve()),
+      refreshLayers: jasmine.createSpy('refreshLayers')
+    }
+  });
+
 
   beforeEach(() => {
     (L as any).markerClusterGroup = () => ({
@@ -655,17 +658,11 @@ const createMockSMKInstance = () => ({
   });
 
   describe('zoom + fitBounds', () => {
-    it('refreshes WMS layers and toggles polygons on zoomend', fakeAsync(() => {
+    it('refreshes visible layers via SMK and toggles polygons on zoomend', fakeAsync(() => {
       mapContainer.nativeElement = document.createElement('div');
       component.mapContainer = mapContainer;
 
       const smk = createMockSMKInstance();
-      const redrawSpy = jasmine.createSpy('redraw');
-      const setParamsSpy = jasmine.createSpy('setParams');
-      (smk as any).$viewer.layerId = {
-        a: { mapLayer: { redraw: redrawSpy } },
-        b: { mapLayer: { setParams: setParamsSpy } },
-      };
       smk.$viewer.map.getZoom.and.returnValue(12);
 
       mapServiceMock.getSMKInstance.and.returnValue(smk);
@@ -676,11 +673,12 @@ const createMockSMKInstance = () => ({
       tick();
 
       const zoomCalls = smk.$viewer.map.on.calls.allArgs().filter(a => a[0] === 'zoomend');
-      const primaryZoomHandler = zoomCalls[0][1];
-      primaryZoomHandler();
+      expect(zoomCalls.length).toBeGreaterThan(0);
+      const zoomendHandler = zoomCalls[0][1];
 
-      expect(redrawSpy).toHaveBeenCalled();
-      expect(setParamsSpy).toHaveBeenCalled();
+      zoomendHandler();
+      tick();
+      expect(smk.$viewer.updateLayersVisible).toHaveBeenCalled();
       expect(toggleSpy).toHaveBeenCalledWith(12);
     }));
 
