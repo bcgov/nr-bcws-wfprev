@@ -33,8 +33,12 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class ReportServiceTest {
@@ -53,9 +57,74 @@ class ReportServiceTest {
 
         service = new ReportService(fuelRepo, crxRepo, programAreaRepo);
 
-        // Inject @Value fields
         setField(service, "baseUrl", "https://example.gov.bc.ca");
         setField(service, "reportGeneratorLambdaUrl", "http://invalid/override-me-in-test");
+    }
+
+    @Test
+    void resolveReportData_nullRequest_throwsIllegalArgument() {
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> service.writeCsvZipFromEntities(null, new ByteArrayOutputStream())
+        );
+        assertTrue(ex.getMessage().contains("At least one project is required"));
+    }
+
+    @Test
+    void resolveReportData_emptyProjects_throwsIllegalArgument() {
+        ReportRequestModel req = new ReportRequestModel();
+        IllegalArgumentException ex1 = assertThrows(
+                IllegalArgumentException.class,
+                () -> service.writeCsvZipFromEntities(req, new ByteArrayOutputStream())
+        );
+        assertTrue(ex1.getMessage().contains("At least one project is required"));
+
+        req.setProjects(Collections.emptyList());
+        IllegalArgumentException ex2 = assertThrows(
+                IllegalArgumentException.class,
+                () -> service.writeCsvZipFromEntities(req, new ByteArrayOutputStream())
+        );
+        assertTrue(ex2.getMessage().contains("At least one project is required"));
+    }
+
+    @Test
+    void resolveReportData_noFiscalGuids_usesFindByProjectGuid() throws Exception {
+        UUID proj = UUID.randomUUID();
+
+        when(fuelRepo.findByProjectGuid(proj))
+                .thenReturn(List.of(fuel(proj,null, "Fuel N")));
+        when(crxRepo.findByProjectGuid(proj))
+                .thenReturn(List.of(crx(proj,null, "CRX N")));
+
+        ReportRequestModel req = requestWithProjects(List.of(project(proj, /*fiscals*/ null)));
+
+        service.writeCsvZipFromEntities(req, new ByteArrayOutputStream());
+
+        verify(fuelRepo, times(1)).findByProjectGuid(proj);
+        verify(crxRepo,  times(1)).findByProjectGuid(proj);
+        verify(fuelRepo, never()).findByProjectGuidAndProjectPlanFiscalGuidIn(any(), any());
+        verify(crxRepo,  never()).findByProjectGuidAndProjectPlanFiscalGuidIn(any(), any());
+    }
+
+    @Test
+    void resolveReportData_withFiscalGuids_usesFindByProjectGuidAndFiscal() throws Exception {
+        UUID proj = UUID.randomUUID();
+        UUID fiscal = UUID.randomUUID();
+        List<UUID> fiscals = List.of(fiscal);
+
+        when(fuelRepo.findByProjectGuidAndProjectPlanFiscalGuidIn(eq(proj), eq(fiscals)))
+                .thenReturn(List.of(fuel(proj, fiscal, "Fuel F")));
+        when(crxRepo.findByProjectGuidAndProjectPlanFiscalGuidIn(eq(proj), eq(fiscals)))
+                .thenReturn(List.of(crx(proj, fiscal, "CRX F")));
+
+        ReportRequestModel req = requestWithProjects(List.of(project(proj, fiscals)));
+
+        service.writeCsvZipFromEntities(req, new ByteArrayOutputStream());
+
+        verify(fuelRepo, times(1)).findByProjectGuidAndProjectPlanFiscalGuidIn(eq(proj), eq(fiscals));
+        verify(crxRepo,  times(1)).findByProjectGuidAndProjectPlanFiscalGuidIn(eq(proj), eq(fiscals));
+        verify(fuelRepo, never()).findByProjectGuid(proj);
+        verify(crxRepo,  never()).findByProjectGuid(proj);
     }
     
 
@@ -151,11 +220,6 @@ class ReportServiceTest {
                         "Should write exactly the XLSX bytes returned by Lambda");
             }
         }
-    }
-
-    private static AutoCloseable start(HttpServer server) {
-        server.start();
-        return () -> server.stop(0);
     }
 
     @Test
@@ -310,6 +374,11 @@ class ReportServiceTest {
         return e;
     }
 
+    private static AutoCloseable start(HttpServer server) {
+        server.start();
+        return () -> server.stop(0);
+    }
+
     private static String lambdaResponseWithSingleFile(String filename, String base64) {
         return "{\n" +
                 "  \"files\": [\n" +
@@ -320,4 +389,5 @@ class ReportServiceTest {
                 "  ]\n" +
                 "}";
     }
+
 }

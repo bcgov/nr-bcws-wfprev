@@ -75,7 +75,7 @@ public class ReportController {
 
                 log.info("writeCsvZipFromEntities -> begin");
                 try (var baos = new java.io.ByteArrayOutputStream(1 << 20)) {
-                    reportService.writeCsvZipFromEntities(request, baos); 
+                    reportService.writeCsvZipFromEntities(request, baos);
                     bytes = baos.toByteArray();
                 }
                 long t1 = System.currentTimeMillis();
@@ -100,9 +100,14 @@ public class ReportController {
                         .contentType(MediaType.TEXT_PLAIN)
                         .body(out -> out.write("Only reportType=XLSX or CSV is supported.".getBytes()));
             }
-        } catch (Exception e) {
-            throw new ServiceException("Project Download failed: ", e);
-        } finally {
+        }catch (InterruptedException ie) {
+            Thread.currentThread().interrupt();
+            throw ie;
+        }catch (ServiceException | IOException e) {
+            throw e;
+        }catch (Exception e) {
+            throw new ServiceException("Project Download failed: " + e.getMessage(), e);
+        }finally {
             log.info("/reports end");
         }
     }
