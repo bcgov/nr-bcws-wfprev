@@ -2,6 +2,8 @@ DROP VIEW IF EXISTS wfprev.project_fuel_management_vw;
 
 CREATE or REPLACE VIEW wfprev.project_fuel_management_vw AS 
 SELECT
+  -- unique_row_guid is transient and only used to satisfy repository methods.
+  -- It cannot be used to look up records in code; we don’t query by this field.
 uuid_generate_v5(
     wfprev.uuid_namespace(),
     concat_ws('|',
