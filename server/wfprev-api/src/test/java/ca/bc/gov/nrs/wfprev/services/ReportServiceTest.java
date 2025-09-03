@@ -117,8 +117,11 @@ class ReportServiceTest {
 
     @Test
     void exportXlsx_success_writesReturnedBytes() throws Exception {
-        byte[] xlsxBytes = "fake-xlsx-contents".getBytes(StandardCharsets.UTF_8);
-        String payload = lambdaResponseWithSingleFile("project-report.xlsx", Base64.getEncoder().encodeToString(xlsxBytes));
+        byte[] xlsxBytes = "test-xlsx-contents".getBytes(StandardCharsets.UTF_8);
+        String payload = lambdaResponseWithSingleFile(
+                "project-report.xlsx",
+                Base64.getEncoder().encodeToString(xlsxBytes)
+        );
 
         HttpServer server = HttpServer.create(new InetSocketAddress(0), 0);
         server.createContext("/lambda", (HttpExchange ex) -> {
@@ -129,8 +132,8 @@ class ReportServiceTest {
                 os.write(response);
             }
         });
-        server.start();
-        try {
+
+        try (var ignored = start(server)) {
             String url = "http://localhost:" + server.getAddress().getPort() + "/lambda";
             setField(service, "reportGeneratorLambdaUrl", url);
 
@@ -142,14 +145,17 @@ class ReportServiceTest {
 
             ReportRequestModel req = requestWithProjects(List.of(project(projectGuid, null)));
 
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-
-            service.exportXlsx(req, out, "RID-123");
-
-            assertArrayEquals(xlsxBytes, out.toByteArray(), "Should write exactly the XLSX bytes returned by Lambda");
-        } finally {
-            server.stop(0);
+            try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+                service.exportXlsx(req, out);
+                assertArrayEquals(xlsxBytes, out.toByteArray(),
+                        "Should write exactly the XLSX bytes returned by Lambda");
+            }
         }
+    }
+
+    private static AutoCloseable start(HttpServer server) {
+        server.start();
+        return () -> server.stop(0);
     }
 
     @Test
@@ -176,13 +182,79 @@ class ReportServiceTest {
 
             ServiceException ex = assertThrows(
                     ServiceException.class,
-                    () -> service.exportXlsx(req, new ByteArrayOutputStream(), "RID-500")
+                    () -> service.exportXlsx(req, new ByteArrayOutputStream())
             );
             assertTrue(ex.getMessage().contains("Lambda returned error"));
         } finally {
             server.stop(0);
         }
     }
+
+    @Test
+    void exportXlsx_lambdaReturnsNoFiles_throwsServiceException() throws Exception {
+        String payload = "{\"files\":[]}";
+
+        com.sun.net.httpserver.HttpServer server = com.sun.net.httpserver.HttpServer.create(new InetSocketAddress(0), 0);
+        server.createContext("/lambda", ex -> {
+            byte[] resp = payload.getBytes(StandardCharsets.UTF_8);
+            ex.getResponseHeaders().add("Content-Type", "application/json");
+            ex.sendResponseHeaders(200, resp.length);
+            try (OutputStream os = ex.getResponseBody()) { os.write(resp); }
+        });
+
+        try (var ignored = start(server)) {
+            String url = "http://localhost:" + server.getAddress().getPort() + "/lambda";
+            setField(service, "reportGeneratorLambdaUrl", url);
+
+            UUID proj = UUID.randomUUID();
+            when(fuelRepo.findByProjectGuid(proj)).thenReturn(List.of(fuel(proj, null, "Fuel Q")));
+            when(crxRepo.findByProjectGuid(proj)).thenReturn(Collections.emptyList());
+
+            ReportRequestModel req = requestWithProjects(List.of(project(proj, null)));
+
+            ServiceException ex = assertThrows(
+                    ServiceException.class,
+                    () -> service.exportXlsx(req, new ByteArrayOutputStream())
+            );
+            assertTrue(ex.getMessage().contains("No files returned"));
+        }
+    }
+
+    @Test
+    void exportXlsx_noData_throwsIllegalArgument() throws Exception {
+        UUID proj = UUID.randomUUID();
+        when(fuelRepo.findByProjectGuid(proj)).thenReturn(Collections.emptyList());
+        when(crxRepo.findByProjectGuid(proj)).thenReturn(Collections.emptyList());
+
+        ReportRequestModel req = requestWithProjects(List.of(project(proj, null)));
+
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> service.exportXlsx(req, new ByteArrayOutputStream())
+        );
+        assertTrue(ex.getMessage().toLowerCase().contains("no fiscal data"));
+    }
+
+    @Test
+    void exportXlsx_missingLambdaUrl_throwsServiceException() throws Exception {
+        UUID proj = UUID.randomUUID();
+        UUID fiscal = UUID.randomUUID();
+
+        when(fuelRepo.findByProjectGuid(proj)).thenReturn(List.of(fuel(proj, fiscal, "Fuel Z")));
+        when(crxRepo.findByProjectGuid(proj)).thenReturn(List.of(crx(proj, fiscal, "CRX Z")));
+
+        // Blank URL triggers the ServiceException
+        setField(service, "reportGeneratorLambdaUrl", "");
+
+        ReportRequestModel req = requestWithProjects(List.of(project(proj, null)));
+
+        ServiceException ex = assertThrows(
+                ServiceException.class,
+                () -> service.exportXlsx(req, new ByteArrayOutputStream())
+        );
+        assertTrue(ex.getMessage().contains("REPORT_GENERATOR_LAMBDA_URL"));
+    }
+
 
     private static void setField(Object target, String fieldName, Object value) throws Exception {
         Field f = target.getClass().getDeclaredField(fieldName);

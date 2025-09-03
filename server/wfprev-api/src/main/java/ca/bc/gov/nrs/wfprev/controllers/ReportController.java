@@ -41,27 +41,26 @@ public class ReportController {
     )
     public ResponseEntity<StreamingResponseBody> generateReport(@Valid @RequestBody ReportRequestModel request) throws ServiceException, IOException, InterruptedException {
         final String type = request.getReportType();
-        final String rid = java.util.UUID.randomUUID().toString().substring(0, 8);
-        log.info("[{}] /reports start (type={})", rid, type);
+        log.info("/reports start (type={})", type);
 
         try {
             if ("XLSX".equalsIgnoreCase(type)) {
                 byte[] bytes;
                 long t0 = System.currentTimeMillis();
 
-                log.info("[{}] exportXlsx -> begin", rid);
+                log.info("exportXlsx -> begin");
                 try (var baos = new java.io.ByteArrayOutputStream(1 << 20)) { // 1MB initial cap
-                    reportService.exportXlsx(request, baos, rid);
+                    reportService.exportXlsx(request, baos);
                     bytes = baos.toByteArray();
                 }
                 long t1 = System.currentTimeMillis();
-                log.info("[{}] exportXlsx -> end ({} ms, {} bytes)", rid, (t1 - t0), bytes.length);
+                log.info("exportXlsx -> end ({} ms, {} bytes)", (t1 - t0), bytes.length);
 
                 StreamingResponseBody stream = out -> {
-                    log.info("[{}] stream -> write begin", rid);
+                    log.info("stream -> write begin");
                     out.write(bytes);
                     out.flush();
-                    log.info("[{}] stream -> write end", rid);
+                    log.info("stream -> write end");
                 };
 
                 return ResponseEntity.ok()
@@ -74,19 +73,19 @@ public class ReportController {
                 byte[] bytes;
                 long t0 = System.currentTimeMillis();
 
-                log.info("[{}] writeCsvZipFromEntities -> begin", rid);
+                log.info("writeCsvZipFromEntities -> begin");
                 try (var baos = new java.io.ByteArrayOutputStream(1 << 20)) {
                     reportService.writeCsvZipFromEntities(request, baos); 
                     bytes = baos.toByteArray();
                 }
                 long t1 = System.currentTimeMillis();
-                log.info("[{}] writeCsvZipFromEntities -> end ({} ms, {} bytes)", rid, (t1 - t0), bytes.length);
+                log.info("writeCsvZipFromEntities -> end ({} ms, {} bytes)", (t1 - t0), bytes.length);
 
                 StreamingResponseBody stream = out -> {
-                    log.info("[{}] stream(zip) -> write begin", rid);
+                    log.info("stream(zip) -> write begin");
                     out.write(bytes);
                     out.flush();
-                    log.info("[{}] stream(zip) -> write end", rid);
+                    log.info("stream(zip) -> write end");
                 };
 
                 return ResponseEntity.ok()
@@ -96,15 +95,15 @@ public class ReportController {
                         .body(stream);
 
             } else {
-                log.warn("[{}] bad report type: {}", rid, type);
+                log.warn("Bad report type: {}", type);
                 return ResponseEntity.badRequest()
                         .contentType(MediaType.TEXT_PLAIN)
                         .body(out -> out.write("Only reportType=XLSX or CSV is supported.".getBytes()));
             }
-        } catch (Throwable t) {
-            throw t;
+        } catch (Exception e) {
+            throw new ServiceException("Project Download failed: ", e);
         } finally {
-            log.info("[{}] /reports end", rid);
+            log.info("/reports end");
         }
     }
 

@@ -45,8 +45,10 @@ public class ReportService {
 
     private static final String FISCAL_QUERY_STRING = "&tab=fiscal&fiscalGuid=";
 
-    DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+    private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd")
             .withZone(ZoneId.systemDefault());
+
+    private static final String HECTARE_FORMAT = "%,d ha";
 
     private final FuelManagementReportRepository fuelManagementRepository;
     private final CulturalPrescribedFireReportRepository culturalPrescribedFireReportRepository;
@@ -71,8 +73,8 @@ public class ReportService {
     }
 
     private ReportDataBundle resolveReportData(ReportRequestModel request) {
-        List<FuelManagementReportEntity> fuel = new ArrayList<FuelManagementReportEntity>();
-        List<CulturalPrescribedFireReportEntity> crx = new ArrayList<CulturalPrescribedFireReportEntity>();
+        List<FuelManagementReportEntity> fuel = new ArrayList<>();
+        List<CulturalPrescribedFireReportEntity> crx = new ArrayList<>();
 
         if (request == null || request.getProjects() == null || request.getProjects().isEmpty()) {
             throw new IllegalArgumentException("At least one project is required");
@@ -98,7 +100,7 @@ public class ReportService {
     }
 
 
-    public void exportXlsx(ReportRequestModel request, OutputStream outputStream, String rid)
+    public void exportXlsx(ReportRequestModel request, OutputStream outputStream)
             throws ServiceException, IOException, InterruptedException {
         ReportDataBundle data = resolveReportData(request);
 
@@ -316,7 +318,7 @@ public class ReportService {
                 safe(e.getBcParksRegionOrgUnitName()), safe(e.getBcParksSectionOrgUnitName()),
                 safe(e.getFireCentreOrgUnitName()),
                 safe(e.getBusinessArea()), safe(e.getPlanningUnitName()), safe(e.getGrossProjectAreaHa() != null
-                        ? String.format("%,d ha", e.getGrossProjectAreaHa().intValue())
+                        ? String.format(HECTARE_FORMAT, e.getGrossProjectAreaHa().intValue())
                         : ""),
                 safe(e.getClosestCommunityName()),
                 safe(e.getProjectLead()), safe(e.getProposalTypeDescription()), safe(e.getProjectFiscalName()),
@@ -327,10 +329,10 @@ public class ReportService {
                 safe(formatMonetaryFields(e.getFiscalReportedSpendAmount())),
                 safe(formatMonetaryFields(e.getFiscalActualAmount())),
                 safe(e.getFiscalPlannedProjectSizeHa() != null
-                        ? String.format("%,d ha", e.getFiscalPlannedProjectSizeHa().intValue())
+                        ? String.format(HECTARE_FORMAT, e.getFiscalPlannedProjectSizeHa().intValue())
                         : ""),
                 safe(e.getFiscalCompletedSizeHa() != null
-                        ? String.format("%,d ha", e.getFiscalCompletedSizeHa().intValue())
+                        ? String.format(HECTARE_FORMAT, e.getFiscalCompletedSizeHa().intValue())
                         : ""),
                 safe(String.format("=\"%s\"", e.getSpatialSubmitted())),
                 safe(e.getFirstNationsEngagement()), safe(e.getFirstNationsDelivPartners()),
@@ -387,7 +389,7 @@ public class ReportService {
                 safe(c.getBcParksRegionOrgUnitName()), safe(c.getBcParksSectionOrgUnitName()),
                 safe(c.getFireCentreOrgUnitName()),
                 safe(c.getBusinessArea()), safe(c.getPlanningUnitName()), safe(c.getGrossProjectAreaHa() != null
-                        ? String.format("%,d ha", c.getGrossProjectAreaHa().intValue())
+                        ? String.format(HECTARE_FORMAT, c.getGrossProjectAreaHa().intValue())
                         : ""),
                 safe(c.getClosestCommunityName()),
                 safe(c.getProjectLead()), safe(c.getProposalTypeDescription()), safe(c.getProjectFiscalName()),
@@ -398,10 +400,10 @@ public class ReportService {
                 safe(formatMonetaryFields(c.getFiscalReportedSpendAmount())),
                 safe(formatMonetaryFields(c.getFiscalActualAmount())),
                 safe(c.getFiscalPlannedProjectSizeHa() != null
-                        ? String.format("%,d ha", c.getFiscalPlannedProjectSizeHa().intValue())
+                        ? String.format(HECTARE_FORMAT, c.getFiscalPlannedProjectSizeHa().intValue())
                         : ""),
                 safe(c.getFiscalCompletedSizeHa() != null
-                        ? String.format("%,d ha", c.getFiscalCompletedSizeHa().intValue())
+                        ? String.format(HECTARE_FORMAT, c.getFiscalCompletedSizeHa().intValue())
                         : ""),
                 safe(String.format("=\"%s\"", c.getSpatialSubmitted())),
                 safe(c.getFirstNationsEngagement()), safe(c.getFirstNationsDelivPartners()),

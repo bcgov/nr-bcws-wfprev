@@ -70,7 +70,7 @@ class ReportControllerTest {
             OutputStream os = inv.getArgument(1);
             os.write("test-xlsx".getBytes(StandardCharsets.UTF_8)); // simulate XLSX bytes
             return null;
-        }).when(reportService).exportXlsx(any(ReportRequestModel.class), any(OutputStream.class), anyString());
+        }).when(reportService).exportXlsx(any(ReportRequestModel.class), any(OutputStream.class));
         
         ReportRequestModel.Project p = new ReportRequestModel.Project();
         p.setProjectGuid(guid);
@@ -91,7 +91,7 @@ class ReportControllerTest {
                 .andExpect(content().contentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
 
         verify(reportService, times(1))
-                .exportXlsx(any(ReportRequestModel.class), any(OutputStream.class), anyString());
+                .exportXlsx(any(ReportRequestModel.class), any(OutputStream.class));
     }
 
     @Test
