@@ -62,7 +62,7 @@ jobs:
     secrets: inherit
 
   deploy-wftst:
-    needs: [tag-builds, node-build]
+    needs: [tag-builds, node-build, reports-generator-build]
     if: ${{ contains(github.event.release.tag_name, '-rc') }}
     uses: ./.github/workflows/terragrunt-deploy.yml
     secrets: inherit
