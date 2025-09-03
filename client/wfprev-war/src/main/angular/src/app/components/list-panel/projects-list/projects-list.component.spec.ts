@@ -35,19 +35,19 @@ describe('ProjectsListComponent', () => {
   };
 
   const mockProjectList = [
-    { 
-      projectNumber: 1, 
-      projectName: 'Project 1', 
-      forestRegionOrgUnitId: 101, 
+    {
+      projectNumber: 1,
+      projectName: 'Project 1',
+      forestRegionOrgUnitId: 101,
       totalPlannedProjectSizeHa: 100,
       latitude: 49.2827,
       longitude: -123.1207,
       projectGuid: 'guid1'
     },
-    { 
-      projectNumber: 2, 
-      projectName: 'Project 2', 
-      forestRegionOrgUnitId: 102, 
+    {
+      projectNumber: 2,
+      projectName: 'Project 2',
+      forestRegionOrgUnitId: 102,
       totalPlannedProjectSizeHa: 200,
       latitude: 49.2849,
       longitude: -123.1217,
@@ -61,7 +61,7 @@ describe('ProjectsListComponent', () => {
   let mockRouter: jasmine.SpyObj<Router>;
 
   beforeEach(async () => {
-    mockProjectService = jasmine.createSpyObj('ProjectService', ['fetchProjects', 'getFeatures']);
+    mockProjectService = jasmine.createSpyObj('ProjectService', ['fetchProjects', 'getFeatures', 'downloadProjects']);
     mockProjectService.fetchProjects.and.returnValue(of({
       _embedded: {
         project: mockProjectList,
@@ -109,7 +109,7 @@ describe('ProjectsListComponent', () => {
     spyOn(L, 'markerClusterGroup').and.returnValue(mockMarkerClusterGroup);
     spyOn(L, 'marker').and.returnValue(mockMarker);
     spyOn(L, 'polygon').and.returnValue(mockPolygon);
-  
+
     await TestBed.configureTestingModule({
       imports: [
         ProjectsListComponent,
@@ -137,15 +137,15 @@ describe('ProjectsListComponent', () => {
     expect(component).toBeTruthy();
   });
 
- it('should render the correct number of projects', () => {
-  component.displayedProjects = mockProjectList;
-  fixture.detectChanges();
+  it('should render the correct number of projects', () => {
+    component.displayedProjects = mockProjectList;
+    fixture.detectChanges();
 
-  const projectItems = fixture.debugElement.queryAll(By.css('.project-name'));
-  expect(projectItems.length).toBe(2);
-  expect(projectItems[0].nativeElement.textContent).toContain('Project 1');
-  expect(projectItems[1].nativeElement.textContent).toContain('Project 2');
-});
+    const projectItems = fixture.debugElement.queryAll(By.css('.project-name'));
+    expect(projectItems.length).toBe(2);
+    expect(projectItems[0].nativeElement.textContent).toContain('Project 1');
+    expect(projectItems[1].nativeElement.textContent).toContain('Project 2');
+  });
 
 
   it('should load code tables on init', () => {
@@ -167,14 +167,14 @@ describe('ProjectsListComponent', () => {
     mockProjectService.fetchProjects.and.returnValue(throwError(() => new Error('Error fetching projects')));
     component.loadProjects();
     fixture.detectChanges();
-    expect(component.displayedProjects ).toEqual([]);
+    expect(component.displayedProjects).toEqual([]);
   });
 
   it('should open the dialog to create a new project and reload projects if successful', () => {
     spyOn(component, 'loadProjects');
-    
+
     component.createNewProject();
-    
+
     expect(mockDialog.open).toHaveBeenCalledWith(
       CreateNewProjectDialogComponent,
       {
@@ -222,7 +222,7 @@ describe('ProjectsListComponent', () => {
   // Map Function Tests
   describe('loadCoordinatesOnMap', () => {
     beforeEach(() => {
-      component.displayedProjects  = mockProjectList;
+      component.displayedProjects = mockProjectList;
       mockMarker.getLatLng.and.returnValue({ lat: 49.2827, lng: -123.1207 });
     });
 
@@ -236,9 +236,9 @@ describe('ProjectsListComponent', () => {
     }));
 
     it('should filter out projects with null coordinates', fakeAsync(() => {
-      component.displayedProjects  = [
+      component.displayedProjects = [
         ...mockProjectList,
-        { 
+        {
           projectNumber: 3,
           projectName: 'Project 3',
           latitude: null,
@@ -246,7 +246,7 @@ describe('ProjectsListComponent', () => {
           projectGuid: 'guid-z'
         }
       ];
-      
+
       component.loadCoordinatesOnMap();
       tick();
 
@@ -254,7 +254,7 @@ describe('ProjectsListComponent', () => {
     }));
 
     it('should not create markers when projectList is empty', fakeAsync(() => {
-      component.displayedProjects  = [];
+      component.displayedProjects = [];
       component.loadCoordinatesOnMap();
       tick();
 
@@ -281,7 +281,7 @@ describe('ProjectsListComponent', () => {
     it('should reset previously active marker', () => {
       const oldMarker = jasmine.createSpyObj('marker', ['setIcon']);
       component.activeMarker = oldMarker;
-      
+
       const project = { latitude: 49.2827, longitude: -123.1207 };
       component.highlightProjectPolygons(project);
 
@@ -315,9 +315,9 @@ describe('ProjectsListComponent', () => {
     mockDialog.open.and.returnValue({
       afterClosed: () => of({ success: true, projectGuid: 'new-guid' })
     } as any);
-  
+
     component.createNewProject();
-  
+
     expect(mockDialog.open).toHaveBeenCalledWith(
       CreateNewProjectDialogComponent,
       {
@@ -326,21 +326,21 @@ describe('ProjectsListComponent', () => {
         hasBackdrop: true,
       }
     );
-  
+
     expect(mockRouter.navigate).toHaveBeenCalledWith(
       [ResourcesRoutes.EDIT_PROJECT],
       { queryParams: { projectGuid: 'new-guid' } }
     );
   });
-  
+
   it('should reload projects if no projectGuid is returned after project creation', () => {
     spyOn(component, 'loadProjects');
     mockDialog.open.and.returnValue({
       afterClosed: () => of({ success: true })
     } as any);
-  
+
     component.createNewProject();
-  
+
     expect(component.loadProjects).toHaveBeenCalled();
   });
 
@@ -390,7 +390,7 @@ describe('ProjectsListComponent', () => {
     const result = component.getDescription('planFiscalStatusCode', 'PS1');
     expect(result).toBe('Planned');
   });
-  
+
   it('should return activity category description from code table', () => {
     component.activityCategoryCode = [{ activityCategoryCode: 'AC1', description: 'Clearing' }];
     const result = component.getDescription('activityCategoryCode', 'AC1');
@@ -468,7 +468,7 @@ describe('ProjectsListComponent', () => {
 
     expect(component.allProjects.length).toBe(2);
     expect(component.allProjects[0].projectName).toBe('A Project');
-    expect(component.displayedProjects.length).toBe(2); 
+    expect(component.displayedProjects.length).toBe(2);
     expect(component.displayedProjects[0].projectName).toBe('A Project');
     expect(component.isLoading).toBeFalse();
     expect(component.sharedService.updateDisplayedProjects).toHaveBeenCalledWith(component.displayedProjects);
@@ -670,7 +670,7 @@ describe('ProjectsListComponent', () => {
     mockClickedMarker.getLatLng.and.returnValue({ lat: 49.2827, lng: -123.1207 });
 
     (L.marker as jasmine.Spy).and.returnValue(mockClickedMarker);
-    
+
     (L.polygon as jasmine.Spy).and.callFake(() => {
       return [mockPolygon1, mockPolygon2][(L.polygon as jasmine.Spy).calls.count() - 1] || mockPolygon1;
     });
@@ -722,7 +722,7 @@ describe('ProjectsListComponent', () => {
               cb(); // simulate map click
             }
           },
-          addLayer: () => {}
+          addLayer: () => { }
         }
       }
     });
@@ -861,17 +861,27 @@ describe('ProjectsListComponent', () => {
     });
 
     it('should show progress, trigger download, and show success message', fakeAsync(() => {
+      component.displayedProjects = [
+        {
+          projectGuid: 'guid1',
+          projectFiscals: [
+            { fiscalYear: 2023, projectPlanFiscalGuid: 'pf-1a' },
+            { fiscalYear: 2022, projectPlanFiscalGuid: 'pf-1b' },
+          ],
+        },
+        {
+          projectGuid: 'guid2',
+          projectFiscals: [],
+        },
+      ] as any;
+
       const mockBlob = new Blob(['test data'], { type: 'text/csv' });
       spyOn(window.URL, 'createObjectURL').and.returnValue('blob:url');
       spyOn(document, 'createElement').and.callThrough();
 
-      const projectGuids = ['guid1', 'guid2'];
-      const projectGuids = ['guid1', 'guid2'];
-      mockProjectService.downloadProjects = jasmine
-        .createSpy()
-        .and.returnValue(of(mockBlob));
+      mockProjectService.downloadProjects.and.returnValue(of(mockBlob));
 
-      component.onDownload(projectGuids, 'csv');
+      component.onDownload('csv');
       tick();
 
       expect(mockSnackBar.open).toHaveBeenCalledWith(
@@ -879,23 +889,32 @@ describe('ProjectsListComponent', () => {
         'Close',
         jasmine.any(Object)
       );
-
       expect(mockSnackBar.open).toHaveBeenCalledWith(
         Messages.fileDownloadSuccess,
         'Close',
         jasmine.any(Object)
       );
 
+      const bodyArg = mockProjectService.downloadProjects.calls.mostRecent().args[0] as any;
+      expect(bodyArg.reportType).toBe('csv');
+      expect(bodyArg.projects).toEqual(jasmine.arrayContaining([
+        { projectGuid: 'guid1', projectFiscalGuids: ['pf-1a', 'pf-1b'] },
+        { projectGuid: 'guid2' }
+      ]));
+
       expect(window.URL.createObjectURL).toHaveBeenCalledWith(mockBlob);
     }));
 
     it('should show failure message when download fails', fakeAsync(() => {
-      mockProjectService.downloadProjects = jasmine
-        .createSpy()
-        .and.returnValue(throwError(() => new Error('Download failed')));
+      component.displayedProjects = [
+        { projectGuid: 'guid1', projectFiscals: [] }
+      ] as any;
 
-      component.downloadProjects(['guid1'], 'excel');
+      mockProjectService.downloadProjects.and.returnValue(
+        throwError(() => new Error('Download failed'))
+      );
 
+      component.onDownload('csv');
       tick();
 
       expect(mockSnackBar.open).toHaveBeenCalledWith(
@@ -903,28 +922,184 @@ describe('ProjectsListComponent', () => {
         'Close',
         jasmine.any(Object)
       );
-
       expect(mockSnackBar.open).toHaveBeenCalledWith(
         Messages.fileDownloadFailure,
         'Close',
         jasmine.any(Object)
       );
+
+      const bodyArg = mockProjectService.downloadProjects.calls.mostRecent().args[0] as any;
+      expect(bodyArg.reportType).toBe('csv');
+      expect(bodyArg.projects).toEqual([{ projectGuid: 'guid1' }]);
     }));
 
 
     it('onDownload should call downloadProjects with correct params', () => {
-      spyOn(component, 'downloadProjects');
       component.displayedProjects = [
-        { projectGuid: 'guid1' },
-        { projectGuid: 'guid2' }
+        { projectGuid: 'guid1', projectFiscals: [] },
+        { projectGuid: 'guid2', projectFiscals: [] }
       ];
+
+      mockProjectService.downloadProjects.and.returnValue(of(new Blob()));
 
       component.onDownload('csv');
 
-      expect(component.downloadProjects).toHaveBeenCalledWith(
-        ['guid1', 'guid2'],
-        'csv'
-      );
+      const bodyArg = mockProjectService.downloadProjects.calls.mostRecent().args[0] as any;
+
+      expect(bodyArg.reportType).toBe('csv');
+      expect(bodyArg.projects).toEqual([
+        { projectGuid: 'guid1' },
+        { projectGuid: 'guid2' }
+      ]);
+    });
+  });
+
+  describe('getDisplayedFiscalYears', () => {
+    beforeEach(() => {
+      component.resultCount = 2;
+    });
+
+    it('returns the top N fiscal years in descending order (numbers only)', () => {
+      const project = {
+        projectFiscals: [
+          { fiscalYear: 2021 },
+          { fiscalYear: 2023 },
+          { fiscalYear: 2022 },
+          { fiscalYear: 'not-a-number' },
+          { fiscalYear: null },
+        ],
+      };
+
+      const years = component.getDisplayedFiscalYears(project);
+      expect(years).toEqual([2023, 2022]);
+    });
+
+    it('returns empty array when there are no valid fiscal years', () => {
+      const project = {
+        projectFiscals: [{ fiscalYear: undefined }, { fiscalYear: 'x' }],
+      };
+      expect(component.getDisplayedFiscalYears(project)).toEqual([]);
+    });
+
+    it('handles missing projectFiscals gracefully', () => {
+      expect(component.getDisplayedFiscalYears({} as any)).toEqual([]);
+      expect(component.getDisplayedFiscalYears(null as any)).toEqual([]);
+    });
+  });
+
+  describe('getDisplayedProjectFiscalGuids', () => {
+    beforeEach(() => {
+      component.resultCount = 2;
+    });
+
+    it('returns guids only for displayed years and only when guid exists', () => {
+      const project = {
+        projectFiscals: [
+          { fiscalYear: 2023, projectPlanFiscalGuid: 'pf-a' }, // included (top 2)
+          { fiscalYear: 2022, projectPlanFiscalGuid: 'pf-b' }, // included (top 2)
+          { fiscalYear: 2021, projectPlanFiscalGuid: 'pf-c' }, // NOT included (not in top 2)
+          { fiscalYear: 2020 },                                // no guid -> ignored
+        ],
+      };
+
+      const guids = component.getDisplayedProjectFiscalGuids(project);
+      expect(guids).toEqual(['pf-a', 'pf-b']);
+    });
+
+    it('returns empty array when there are no matching displayed years', () => {
+      component.resultCount = 0; // show 0 years
+      const project = {
+        projectFiscals: [
+          { fiscalYear: 2023, projectPlanFiscalGuid: 'pf-a' },
+        ],
+      };
+      expect(component.getDisplayedProjectFiscalGuids(project)).toEqual([]);
+    });
+
+    it('handles missing projectFiscals', () => {
+      expect(component.getDisplayedProjectFiscalGuids({} as any)).toEqual([]);
+      expect(component.getDisplayedProjectFiscalGuids(null as any)).toEqual([]);
+    });
+  });
+
+  describe('buildProjectsPayloadFromDisplayed', () => {
+    beforeEach(() => {
+      component.resultCount = 3;
+    });
+
+    it('coalesces by projectGuid and unions displayed fiscal guids', () => {
+      component.displayedProjects = [
+        {
+          projectGuid: 'guid1',
+          projectFiscals: [
+            { fiscalYear: 2023, projectPlanFiscalGuid: 'pf-1a' },
+            { fiscalYear: 2022, projectPlanFiscalGuid: 'pf-1b' },
+          ],
+        },
+        {
+          projectGuid: 'guid1',
+          projectFiscals: [
+            { fiscalYear: 2022, projectPlanFiscalGuid: 'pf-1b' }, 
+            { fiscalYear: 2021, projectPlanFiscalGuid: 'pf-1c' },
+          ],
+        },
+        {
+          projectGuid: 'guid2',
+          projectFiscals: [], 
+        },
+        {
+          projectFiscals: [{ fiscalYear: 2024, projectPlanFiscalGuid: 'pf-x' }],
+        },
+      ] as any;
+
+      const payload = component.buildProjectsPayloadFromDisplayed();
+
+      expect(payload).toEqual(jasmine.arrayContaining([
+        {
+          projectGuid: 'guid1',
+          projectFiscalGuids: jasmine.arrayContaining(['pf-1a', 'pf-1b', 'pf-1c']),
+        },
+        { projectGuid: 'guid2' },
+      ]));
+
+      const guid1 = payload.find(p => p.projectGuid === 'guid1')!;
+      const unique = new Set(guid1.projectFiscalGuids);
+      expect(unique.size).toBe(guid1.projectFiscalGuids!.length);
+    });
+
+    it('omits projectFiscalGuids key when none are displayed for that project', () => {
+      component.displayedProjects = [
+        { projectGuid: 'g1', projectFiscals: [] },
+        { projectGuid: 'g2' },
+      ] as any;
+
+      const payload = component.buildProjectsPayloadFromDisplayed();
+
+      expect(payload).toEqual(jasmine.arrayContaining([
+        { projectGuid: 'g1' },
+        { projectGuid: 'g2' },
+      ]));
+
+      expect((payload.find(p => p.projectGuid === 'g1') as any).projectFiscalGuids).toBeUndefined();
+      expect((payload.find(p => p.projectGuid === 'g2') as any).projectFiscalGuids).toBeUndefined();
+    });
+
+    it('respects resultCount when deciding which fiscals are included', () => {
+      component.resultCount = 1; 
+      component.displayedProjects = [
+        {
+          projectGuid: 'g1',
+          projectFiscals: [
+            { fiscalYear: 2023, projectPlanFiscalGuid: 'top' }, 
+            { fiscalYear: 2022, projectPlanFiscalGuid: 'lower' },
+          ],
+        },
+      ] as any;
+
+      const payload = component.buildProjectsPayloadFromDisplayed();
+      expect(payload).toEqual([
+        { projectGuid: 'g1', projectFiscalGuids: ['top'] },
+      ]);
     });
   });
 

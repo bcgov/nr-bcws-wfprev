@@ -3515,7 +3515,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n  \"reportType\": \"csv\",\n  \"projectGuids\": [\"{{projectGuid}}\"]\n}",
+					"raw": "{\n  \"reportType\": \"csv\",\n  \"projects\": [\n    {\n      \"projectGuid\": \"{{projectGuid}}\",\n      \"projectFiscalGuids\": [\"{{projectPlanFiscalGuid}}\"]\n    }\n  ]\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -3564,7 +3564,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n  \"reportType\": \"xlsx\",\n  \"projectGuids\": [\"{{projectGuid}}\"]\n}",
+					"raw": "{\n  \"reportType\": \"xlsx\",\n  \"projects\": [\n    {\n      \"projectGuid\": \"{{projectGuid}}\",\n      \"projectFiscalGuids\": [\"{{projectPlanFiscalGuid}}\"]\n    }\n  ]\n}",
 					"options": {
 						"raw": {
 							"language": "json"
