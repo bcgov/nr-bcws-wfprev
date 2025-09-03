@@ -866,11 +866,12 @@ describe('ProjectsListComponent', () => {
       spyOn(document, 'createElement').and.callThrough();
 
       const projectGuids = ['guid1', 'guid2'];
+      const projectGuids = ['guid1', 'guid2'];
       mockProjectService.downloadProjects = jasmine
         .createSpy()
         .and.returnValue(of(mockBlob));
 
-      component.downloadProjects(projectGuids, 'csv');
+      component.onDownload(projectGuids, 'csv');
       tick();
 
       expect(mockSnackBar.open).toHaveBeenCalledWith(

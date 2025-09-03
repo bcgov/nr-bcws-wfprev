@@ -83,31 +83,14 @@ public class ReportService {
             List<UUID> fiscals = p.getProjectFiscalGuids();
 
             if (fiscals != null && !fiscals.isEmpty()) {
-                List<CulturalPrescribedFireReportRepository.CulturalPrescribedFireReportRow> rows =
-                        culturalPrescribedFireReportRepository.findCrxByProjectGuidAndFiscalInNative(projectGuid, fiscals);
-                for (CulturalPrescribedFireReportRepository.CulturalPrescribedFireReportRow r : rows) {
-                    crx.add(toCrxEntity(r));
-                }
+                crx.addAll(culturalPrescribedFireReportRepository
+                        .findByProjectGuidAndProjectPlanFiscalGuidIn(projectGuid, fiscals));
+                fuel.addAll(fuelManagementRepository
+                        .findByProjectGuidAndProjectPlanFiscalGuidIn(projectGuid, fiscals));
             } else {
-                List<CulturalPrescribedFireReportRepository.CulturalPrescribedFireReportRow> rows =
-                        culturalPrescribedFireReportRepository.findCrxByProjectGuidNative(projectGuid);
-                for (CulturalPrescribedFireReportRepository.CulturalPrescribedFireReportRow r : rows) {
-                    crx.add(toCrxEntity(r));
-                }
-            }
-
-            if (fiscals != null && !fiscals.isEmpty()) {
-                List<FuelManagementReportRepository.FuelManagementReportRow> rows =
-                        fuelManagementRepository.findFuelByProjectGuidAndFiscalInNative(projectGuid, fiscals);
-                for (FuelManagementReportRepository.FuelManagementReportRow r : rows) {
-                    fuel.add(toFuelManagementEntity(r));
-                }
-            } else {
-                List<FuelManagementReportRepository.FuelManagementReportRow> rows =
-                        fuelManagementRepository.findFuelByProjectGuidNative(projectGuid);
-                for (FuelManagementReportRepository.FuelManagementReportRow r : rows) {
-                    fuel.add(toFuelManagementEntity(r));
-                }
+                // Now includes rows where project_plan_fiscal_guid IS NULL
+                crx.addAll(culturalPrescribedFireReportRepository.findByProjectGuid(projectGuid));
+                fuel.addAll(fuelManagementRepository.findByProjectGuid(projectGuid));
             }
         }
 
@@ -554,116 +537,6 @@ public class ReportService {
                 this.fuelManagementReportData = data;
             }
         }
-    }
-
-    private CulturalPrescribedFireReportEntity toCrxEntity(
-            CulturalPrescribedFireReportRepository.CulturalPrescribedFireReportRow r) {
-        CulturalPrescribedFireReportEntity e = new CulturalPrescribedFireReportEntity();
-        e.setProjectGuid(r.getProjectGuid());
-        e.setProjectPlanFiscalGuid(r.getProjectPlanFiscalGuid());
-        e.setProjectTypeDescription(r.getProjectTypeDescription());
-        e.setProjectName(r.getProjectName());
-        e.setForestRegionOrgUnitName(r.getForestRegionOrgUnitName());
-        e.setForestDistrictOrgUnitName(r.getForestDistrictOrgUnitName());
-        e.setBcParksRegionOrgUnitName(r.getBcParksRegionOrgUnitName());
-        e.setBcParksSectionOrgUnitName(r.getBcParksSectionOrgUnitName());
-        e.setFireCentreOrgUnitName(r.getFireCentreOrgUnitName());
-        e.setProgramAreaGuid(r.getProgramAreaGuid());
-        e.setPlanningUnitName(r.getPlanningUnitName());
-        e.setGrossProjectAreaHa(r.getGrossProjectAreaHa());
-        e.setClosestCommunityName(r.getClosestCommunityName());
-        e.setProjectLead(r.getProjectLead());
-        e.setProposalTypeDescription(r.getProposalTypeDescription());
-        e.setProjectFiscalName(r.getProjectFiscalName());
-        e.setProjectFiscalDescription(r.getProjectFiscalDescription());
-        e.setFiscalYear(r.getFiscalYear());
-        e.setActivityCategoryDescription(r.getActivityCategoryDescription());
-        e.setPlanFiscalStatusDescription(r.getPlanFiscalStatusDescription());
-        e.setTotalEstimatedCostAmount(r.getTotalEstimatedCostAmount());
-        e.setFiscalAncillaryFundAmount(r.getFiscalAncillaryFundAmount());
-        e.setFiscalReportedSpendAmount(r.getFiscalReportedSpendAmount());
-        e.setFiscalActualAmount(r.getFiscalActualAmount());
-        e.setFiscalPlannedProjectSizeHa(r.getFiscalPlannedProjectSizeHa());
-        e.setFiscalCompletedSizeHa(r.getFiscalCompletedSizeHa());
-        e.setSpatialSubmitted(r.getSpatialSubmitted());
-        e.setFirstNationsEngagement(r.getFirstNationsEngagement());
-        e.setFirstNationsDelivPartners(r.getFirstNationsDelivPartners());
-        e.setFirstNationsPartner(r.getFirstNationsPartner());
-        e.setOtherPartner(r.getOtherPartner());
-        e.setCfsProjectCode(r.getCfsProjectCode());
-        e.setResultsProjectCode(r.getResultsProjectCode());
-        e.setResultsOpeningId(r.getResultsOpeningId());
-        e.setPrimaryObjectiveTypeDescription(r.getPrimaryObjectiveTypeDescription());
-        e.setSecondaryObjectiveTypeDescription(r.getSecondaryObjectiveTypeDescription());
-        e.setEndorsementTimestamp(r.getEndorsementTimestamp());
-        e.setApprovedTimestamp(r.getApprovedTimestamp());
-        e.setOutsideWuiInd(r.getOutsideWuiInd());
-        e.setWuiRiskClassDescription(r.getWuiRiskClassDescription());
-        e.setLocalWuiRiskClassDescription(r.getLocalWuiRiskClassDescription());
-        e.setTotalRclFilterSectionScore(r.getTotalRclFilterSectionScore());
-        e.setRclFilterSectionComment(r.getRclFilterSectionComment());
-        e.setTotalBdfFilterSectionScore(r.getTotalBdfFilterSectionScore());
-        e.setBdfFilterSectionComment(r.getBdfFilterSectionComment());
-        e.setTotalCollimpFilterSectionScore(r.getTotalCollimpFilterSectionScore());
-        e.setCollimpFilterSectionComment(r.getCollimpFilterSectionComment());
-        e.setTotalFilterSectionScore(r.getTotalFilterSectionScore());
-        return e;
-    }
-
-    private FuelManagementReportEntity toFuelManagementEntity(
-            FuelManagementReportRepository.FuelManagementReportRow r) {
-        FuelManagementReportEntity e = new FuelManagementReportEntity();
-        e.setLinkToProject(null);
-        e.setLinkToFiscalActivity(null);
-        e.setProjectGuid(r.getProjectGuid());
-        e.setProjectPlanFiscalGuid(r.getProjectPlanFiscalGuid());
-        e.setProjectTypeDescription(r.getProjectTypeDescription());
-        e.setProjectName(r.getProjectName());
-        e.setForestRegionOrgUnitName(r.getForestRegionOrgUnitName());
-        e.setForestDistrictOrgUnitName(r.getForestDistrictOrgUnitName());
-        e.setBcParksSectionOrgUnitName(r.getBcParksSectionOrgUnitName());
-        e.setBcParksRegionOrgUnitName(r.getBcParksRegionOrgUnitName());
-        e.setFireCentreOrgUnitName(r.getFireCentreOrgUnitName());
-        e.setProgramAreaGuid(r.getProgramAreaGuid());
-        e.setPlanningUnitName(r.getPlanningUnitName());
-        e.setGrossProjectAreaHa(r.getGrossProjectAreaHa());
-        e.setClosestCommunityName(r.getClosestCommunityName());
-        e.setProjectLead(r.getProjectLead());
-        e.setProposalTypeDescription(r.getProposalTypeDescription());
-        e.setProjectFiscalName(r.getProjectFiscalName());
-        e.setProjectFiscalDescription(r.getProjectFiscalDescription());
-        e.setFiscalYear(r.getFiscalYear());
-        e.setActivityCategoryDescription(r.getActivityCategoryDescription());
-        e.setPlanFiscalStatusDescription(r.getPlanFiscalStatusDescription());
-        e.setFundingStream(r.getFundingStream());
-        e.setTotalEstimatedCostAmount(r.getTotalEstimatedCostAmount());
-        e.setFiscalAncillaryFundAmount(r.getFiscalAncillaryFundAmount());
-        e.setFiscalReportedSpendAmount(r.getFiscalReportedSpendAmount());
-        e.setFiscalActualAmount(r.getFiscalActualAmount());
-        e.setFiscalPlannedProjectSizeHa(r.getFiscalPlannedProjectSizeHa());
-        e.setFiscalCompletedSizeHa(r.getFiscalCompletedSizeHa());
-        e.setSpatialSubmitted(r.getSpatialSubmitted());
-        e.setFirstNationsEngagement(r.getFirstNationsEngagement());
-        e.setFirstNationsDelivPartners(r.getFirstNationsDelivPartners());
-        e.setFirstNationsPartner(r.getFirstNationsPartner());
-        e.setOtherPartner(r.getOtherPartner());
-        e.setCfsProjectCode(r.getCfsProjectCode());
-        e.setResultsProjectCode(r.getResultsProjectCode());
-        e.setResultsOpeningId(r.getResultsOpeningId());
-        e.setPrimaryObjectiveTypeDescription(r.getPrimaryObjectiveTypeDescription());
-        e.setSecondaryObjectiveTypeDescription(r.getSecondaryObjectiveTypeDescription());
-        e.setEndorsementTimestamp(r.getEndorsementTimestamp());
-        e.setApprovedTimestamp(r.getApprovedTimestamp());
-        e.setWuiRiskClassDescription(r.getWuiRiskClassDescription());
-        e.setLocalWuiRiskClassDescription(r.getLocalWuiRiskClassDescription());
-        e.setLocalWuiRiskClassRationale(r.getLocalWuiRiskClassRationale());
-        e.setTotalCoarseFilterSectionScore(r.getTotalCoarseFilterSectionScore());
-        e.setTotalMediumFilterSectionScore(r.getTotalMediumFilterSectionScore());
-        e.setMediumFilterSectionComment(r.getMediumFilterSectionComment());
-        e.setTotalFineFilterSectionScore(r.getTotalFineFilterSectionScore());
-        e.setFineFilterSectionComment(r.getFineFilterSectionComment());
-        e.setTotalFilterSectionScore(r.getTotalFilterSectionScore());
-        return e;
     }
 
 }
