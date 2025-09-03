@@ -4,7 +4,7 @@ export function WildfireOrgUnitFireCentreLayerConfig(ls: LayerSettings, authHead
     return {
     serviceUrl: ls.geoserverApiBaseUrl + "/ows",
     id: "wildfire-org-unit-fire-centre",
-    title: "BCWS Fire Centres",
+    title: "BC Wildfire Service Fire Centre Boundaries",
     visible: false,
     type: "wms",
     isQueryable: false,
