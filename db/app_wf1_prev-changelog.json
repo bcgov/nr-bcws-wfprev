@@ -1759,7 +1759,7 @@
       "changeSet": {
         "id": "01_00_39_00",
         "author": "ssylver",
-        "tagDatabase": { "tag" : "version_01_00_36_00" },
+        "tagDatabase": { "tag" : "version_01_00_39_00" },
         "changes": [
           {
             "sqlFile": {
