@@ -14,6 +14,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ActivatedRoute } from '@angular/router';
 import * as L from 'leaflet';
 import { Project } from 'src/app/components/models';
+import { BC_BOUNDS } from 'src/app/utils/constants';
 class MockAppConfigService {
   getConfig() {
     return {
@@ -651,6 +652,72 @@ const createMockSMKInstance = () => ({
         component['safelyClearLayerGroup'](mockGroup, 'emptyGroup');
       }).not.toThrow();
     });
+  });
+
+  describe('zoom + fitBounds', () => {
+    it('refreshes WMS layers and toggles polygons on zoomend', fakeAsync(() => {
+      mapContainer.nativeElement = document.createElement('div');
+      component.mapContainer = mapContainer;
+
+      const smk = createMockSMKInstance();
+      const redrawSpy = jasmine.createSpy('redraw');
+      const setParamsSpy = jasmine.createSpy('setParams');
+      (smk as any).$viewer.layerId = {
+        a: { mapLayer: { redraw: redrawSpy } },
+        b: { mapLayer: { setParams: setParamsSpy } },
+      };
+      smk.$viewer.map.getZoom.and.returnValue(12);
+
+      mapServiceMock.getSMKInstance.and.returnValue(smk);
+      mapConfigServiceMock.getMapConfig.and.returnValue(Promise.resolve({}));
+      const toggleSpy = spyOn(component, 'togglePolygonLayers');
+
+      component.ngAfterViewInit();
+      tick();
+
+      const zoomCalls = smk.$viewer.map.on.calls.allArgs().filter(a => a[0] === 'zoomend');
+      const primaryZoomHandler = zoomCalls[0][1];
+      primaryZoomHandler();
+
+      expect(redrawSpy).toHaveBeenCalled();
+      expect(setParamsSpy).toHaveBeenCalled();
+      expect(toggleSpy).toHaveBeenCalledWith(12);
+    }));
+
+    it('calls fitBounds when available', fakeAsync(() => {
+      mapContainer.nativeElement = document.createElement('div');
+      component.mapContainer = mapContainer;
+
+      const smk = createMockSMKInstance();
+      (smk.$viewer.map as any).fitBounds = jasmine.createSpy('fitBounds');
+
+      mapServiceMock.getSMKInstance.and.returnValue(smk);
+      mapConfigServiceMock.getMapConfig.and.returnValue(Promise.resolve({}));
+
+      component.ngAfterViewInit();
+      tick();
+
+      expect((smk.$viewer.map as any).fitBounds).toHaveBeenCalledWith(BC_BOUNDS);
+    }));
+
+    it('warns if fitBounds missing', fakeAsync(() => {
+      mapContainer.nativeElement = document.createElement('div');
+      component.mapContainer = mapContainer;
+
+      const smk = createMockSMKInstance();
+      delete (smk.$viewer.map as any).fitBounds;
+
+      mapServiceMock.getSMKInstance.and.returnValue(smk);
+      mapConfigServiceMock.getMapConfig.and.returnValue(Promise.resolve({}));
+      const warnSpy = spyOn(console, 'warn');
+
+      component.ngAfterViewInit();
+      tick();
+
+      expect(warnSpy).toHaveBeenCalledWith(
+        'Map fitBounds not available on map; skipping initial bounds.'
+      );
+    }));
   });
 
 

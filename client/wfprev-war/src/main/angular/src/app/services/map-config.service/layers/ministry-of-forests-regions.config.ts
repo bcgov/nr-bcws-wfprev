@@ -4,7 +4,7 @@ export function MinistryOfForestsRegionsLayerConfig(ls: LayerSettings, authHeade
   return {
     serviceUrl: ls.geoserverApiBaseUrl + "/ows",
     id: "ministry-of-forests-regions",
-    title: "Ministry of Forests Regions",
+    title: "Natural Resource Regions",
     visible: true,
     type: "wms",
     isQueryable: false,

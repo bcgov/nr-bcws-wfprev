@@ -5,7 +5,7 @@ export function FirePerimetersLayerConfig(ls: LayerSettings, authHeader?: Record
   return {
     serviceUrl: ls.geoserverApiBaseUrl + "/ows",
     id: "fire-perimeters",
-    title: "Fire Perimeters",
+    title: "Current Wildfire Perimeters",
     visible: false,
     type: "wms",
     isQueryable: false,

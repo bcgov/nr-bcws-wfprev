@@ -332,6 +332,7 @@ export interface LayerSettings {
   geoserverApiBaseUrl: string;
   wfnewsApiBaseUrl: string;
   wfnewsApiKey: string;
+  openmaps:string;
 }
 
 export type ReportType = 'csv' | 'xlsx';
