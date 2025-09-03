@@ -16,7 +16,7 @@ export function ResultsActivityTreatmentLayerConfig(
   return {
     serviceUrl: `${ls.openmaps}/geo/pub/WHSE_FOREST_VEGETATION.RSLT_ACTIVITY_TREATMENT_SVW/ows`,
     id: "risk-reduction-projects-activities",
-    title: "RESULTS – Activity Treatment Units (filtered)",
+    title: "RESULTS - Wildfire Risk Reduction Project Activities",
     type: "wms",
     visible: true,
     isQueryable: true,
