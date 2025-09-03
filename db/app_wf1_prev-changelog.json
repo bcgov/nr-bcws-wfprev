@@ -1754,6 +1754,29 @@
         ],
         "rollback": []
       }
+    },
+    {
+      "changeSet": {
+        "id": "01_00_39_00",
+        "author": "ssylver",
+        "tagDatabase": { "tag" : "version_01_00_36_00" },
+        "changes": [
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_39/00/grants/proxy.grants.project_download_views.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_39/00/grants/app_wf1_prev.grants.project_download_views.sql"
+            }
+          }
+        ],
+        "rollback": [
+        ]
+      }
     }
   ]
 }
