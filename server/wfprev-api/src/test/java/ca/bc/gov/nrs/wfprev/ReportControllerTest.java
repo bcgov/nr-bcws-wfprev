@@ -1,15 +1,10 @@
 package ca.bc.gov.nrs.wfprev;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
-
+import ca.bc.gov.nrs.wfprev.controllers.ReportController;
+import ca.bc.gov.nrs.wfprev.data.models.ReportRequestModel;
+import ca.bc.gov.nrs.wfprev.services.ReportService;
+import com.nimbusds.jose.shaded.gson.Gson;
+import com.nimbusds.jose.shaded.gson.GsonBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,12 +19,22 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
-import com.nimbusds.jose.shaded.gson.Gson;
-import com.nimbusds.jose.shaded.gson.GsonBuilder;
+import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.UUID;
 
-import ca.bc.gov.nrs.wfprev.controllers.ReportController;
-import ca.bc.gov.nrs.wfprev.data.models.ReportRequestModel;
-import ca.bc.gov.nrs.wfprev.services.ReportService;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(ReportController.class)
 @Import({TestSpringSecurity.class, TestcontainersConfiguration.class})
@@ -56,61 +61,86 @@ class ReportControllerTest {
                .create();
    }
 
-   @Test
-   @WithMockUser
-   void testGenerateXlsxReport() throws Exception {
-       UUID guid = UUID.randomUUID();
+    @Test
+    @WithMockUser
+    void testGenerateXlsxReport() throws Exception {
+        UUID guid = UUID.randomUUID();
+        
+        doAnswer(inv -> {
+            OutputStream os = inv.getArgument(1);
+            os.write("test-xlsx".getBytes(StandardCharsets.UTF_8)); // simulate XLSX bytes
+            return null;
+        }).when(reportService).exportXlsx(any(ReportRequestModel.class), any(OutputStream.class));
+        
+        ReportRequestModel.Project p = new ReportRequestModel.Project();
+        p.setProjectGuid(guid);
+        p.setProjectFiscalGuids(List.of()); 
 
-       doAnswer(invocation -> null).when(reportService).exportXlsx(any(), any(), anyString());
+        ReportRequestModel request = new ReportRequestModel();
+        request.setReportType("XLSX");
+        request.setProjects(List.of(p));
 
-       ReportRequestModel request = new ReportRequestModel();
-       request.setReportType("XLSX");
-       request.setProjectGuids(List.of(guid));
+        String json = gson.toJson(request);
 
-       String json = gson.toJson(request);
+        mockMvc.perform(post("/reports")
+                        .content(json)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer test-token"))
+                .andExpect(status().isOk())
+                .andExpect(header().string(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=project-report.xlsx"))
+                .andExpect(content().contentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
 
-       mockMvc.perform(post("/reports")
-                       .content(json)
-                       .contentType(MediaType.APPLICATION_JSON)
-                       .header(HttpHeaders.AUTHORIZATION, "Bearer test-token"))
-               .andExpect(status().isOk());
-   }
+        verify(reportService, times(1))
+                .exportXlsx(any(ReportRequestModel.class), any(OutputStream.class));
+    }
 
-   @Test
-   @WithMockUser
-   void testGenerateCsvReport() throws Exception {
-       UUID guid = UUID.randomUUID();
+    @Test
+    @WithMockUser
+    void testGenerateCsvReport() throws Exception {
+        UUID guid = UUID.randomUUID();
+        
+        doAnswer(inv -> {
+            OutputStream os = inv.getArgument(1);
+            os.write("test-zip".getBytes(StandardCharsets.UTF_8)); 
+            return null;
+        }).when(reportService).writeCsvZipFromEntities(any(ReportRequestModel.class), any(OutputStream.class));
 
-       doAnswer(invocation -> null).when(reportService).writeCsvZipFromEntities(any(), any());
+        ReportRequestModel.Project p = new ReportRequestModel.Project();
+        p.setProjectGuid(guid);
+        p.setProjectFiscalGuids(List.of());
 
-       ReportRequestModel request = new ReportRequestModel();
-       request.setReportType("CSV");
-       request.setProjectGuids(List.of(guid));
+        ReportRequestModel request = new ReportRequestModel();
+        request.setReportType("CSV");
+        request.setProjects(List.of(p));
 
-       String json = gson.toJson(request);
+        String json = gson.toJson(request);
 
-       mockMvc.perform(post("/reports")
-                       .content(json)
-                       .contentType(MediaType.APPLICATION_JSON)
-                       .header(HttpHeaders.AUTHORIZATION, "Bearer test-token"))
-               .andExpect(status().isOk());
-   }
+        mockMvc.perform(post("/reports")
+                        .content(json)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer test-token"))
+                .andExpect(status().isOk())
+                .andExpect(header().string(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=project-report.zip"))
+                .andExpect(content().contentType("application/zip"));
 
-   @Test
-   @WithMockUser
-   void testGenerateReport_InvalidType() throws Exception {
-       ReportRequestModel request = new ReportRequestModel();
-       request.setReportType("TXT");
-       request.setProjectGuids(Collections.singletonList(UUID.randomUUID()));
+        verify(reportService, times(1))
+                .writeCsvZipFromEntities(any(ReportRequestModel.class), any(OutputStream.class));
+    }
 
-       String json = gson.toJson(request);
+    @Test
+    @WithMockUser
+    void testGenerateReport_InvalidType() throws Exception {
+        ReportRequestModel request = new ReportRequestModel();
+        request.setReportType("TXT");
 
-       ResultActions result = mockMvc.perform(post("/reports")
-                       .contentType(MediaType.APPLICATION_JSON)
-                       .content(json))
-               .andExpect(status().isBadRequest());
+        String json = gson.toJson(request);
 
-       assertEquals(400, result.andReturn().getResponse().getStatus());
-       verifyNoInteractions(reportService);
-   }
+        ResultActions result = mockMvc.perform(post("/reports")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andExpect(status().isBadRequest());
+
+        assertEquals(400, result.andReturn().getResponse().getStatus());
+        verifyNoInteractions(reportService);
+    }
 }

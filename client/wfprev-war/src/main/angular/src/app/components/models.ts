@@ -334,3 +334,15 @@ export interface LayerSettings {
   wfnewsApiKey: string;
   openmaps:string;
 }
+
+export type ReportType = 'csv' | 'xlsx';
+
+export interface ReportProject {
+  projectGuid: string;
+  projectFiscalGuids?: string[];
+}
+
+export interface ReportRequest {
+  reportType: ReportType;
+  projects: ReportProject[];
+}
