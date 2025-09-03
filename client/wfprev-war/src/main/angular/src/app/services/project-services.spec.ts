@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { AppConfigService } from 'src/app/services/app-config.service';
 import { TokenService } from 'src/app/services/token.service';
-import { EvaluationCriteriaSummaryModel, FeaturesResponse, Project, ProjectBoundary, ProjectFiscal } from 'src/app/components/models';
+import { EvaluationCriteriaSummaryModel, FeaturesResponse, Project, ProjectBoundary, ProjectFiscal, ReportRequest } from 'src/app/components/models';
 import { ProjectService } from 'src/app/services/project-services';
 import { HttpEventType } from '@angular/common/http';
 import { of } from 'rxjs';
@@ -25,9 +25,9 @@ describe('ProjectService', () => {
       localStorageTokenKey: 'oauth',
       allowLocalExpiredToken: false,
       baseUrl: 'http://mock-base-url.com',
-      acronym: 'TEST', 
-      version: '1.0.0', 
-      environment: 'test', 
+      acronym: 'TEST',
+      version: '1.0.0',
+      environment: 'test',
     },
     webade: {
       oauth2Url: 'http://mock-oauth-url.com',
@@ -53,41 +53,41 @@ describe('ProjectService', () => {
     boundaryGeometry: {
       type: "MultiPolygon",
       coordinates: [
-        [ 
-          [ 
+        [
+          [
             [-124, 49],
             [-125, 50],
             [-126, 49],
-            [-124, 49], 
+            [-124, 49],
           ]
         ]
-      ] as Position[][][]   
+      ] as Position[][][]
     },
     locationGeometry: [-124, 49],
   };
-    const projectGuid = '12345';
-    const projectPlanFiscalGuid = 'fiscal-6789';
+  const projectGuid = '12345';
+  const projectPlanFiscalGuid = 'fiscal-6789';
 
-    const updatedFiscal: ProjectFiscal = {
-      projectGuid,
-      projectPlanFiscalGuid,
-      fiscalYear: 2024,
-      projectFiscalName: 'Updated Fiscal',
-      activityCategoryCode: 'RX_DEV',
-      planFiscalStatusCode: {planFiscalStatusCode:'COMPLETE'},
-      projectPlanStatusCode: 'ACTIVE',
-      proposalTypeCode: 'NEW',
-      isApprovedInd: false,
-      isDelayedInd: false,
-      totalCostEstimateAmount: 0,
-      fiscalPlannedProjectSizeHa: 0,
-      fiscalPlannedCostPerHaAmt: 0,
-      fiscalReportedSpendAmount: 0,
-      fiscalActualAmount: 0,
-      fiscalActualCostPerHaAmt: 0,
-      firstNationsDelivPartInd: false,
-      firstNationsEngagementInd: false
-    };
+  const updatedFiscal: ProjectFiscal = {
+    projectGuid,
+    projectPlanFiscalGuid,
+    fiscalYear: 2024,
+    projectFiscalName: 'Updated Fiscal',
+    activityCategoryCode: 'RX_DEV',
+    planFiscalStatusCode: { planFiscalStatusCode: 'COMPLETE' },
+    projectPlanStatusCode: 'ACTIVE',
+    proposalTypeCode: 'NEW',
+    isApprovedInd: false,
+    isDelayedInd: false,
+    totalCostEstimateAmount: 0,
+    fiscalPlannedProjectSizeHa: 0,
+    fiscalPlannedCostPerHaAmt: 0,
+    fiscalReportedSpendAmount: 0,
+    fiscalActualAmount: 0,
+    fiscalActualCostPerHaAmt: 0,
+    firstNationsDelivPartInd: false,
+    firstNationsEngagementInd: false
+  };
 
 
   beforeEach(() => {
@@ -585,28 +585,28 @@ describe('ProjectService', () => {
   it('should delete a project boundary', () => {
     const projectGuid = 'project-123';
     const projectBoundaryGuid = 'boundary-456';
-  
+
     service.deleteProjectBoundary(projectGuid, projectBoundaryGuid).subscribe((response) => {
-      expect(response).toBeTruthy(); 
+      expect(response).toBeTruthy();
     });
-  
+
     const req = httpMock.expectOne(`http://mock-api.com/wfprev-api/projects/${projectGuid}/projectBoundary/${projectBoundaryGuid}`);
     expect(req.request.method).toBe('DELETE');
     expect(req.request.headers.get('Authorization')).toBe('Bearer mock-token');
-    req.flush({}); 
+    req.flush({});
   });
-  
+
   it('should handle errors when deleting a project boundary', () => {
     const projectGuid = 'project-123';
     const projectBoundaryGuid = 'boundary-456';
-  
+
     service.deleteProjectBoundary(projectGuid, projectBoundaryGuid).subscribe({
       next: () => fail('Should have failed with an error'),
       error: (error) => {
         expect(error.message).toBe('Failed to delete project boundary');
       }
     });
-  
+
     const req = httpMock.expectOne(`http://mock-api.com/wfprev-api/projects/${projectGuid}/projectBoundary/${projectBoundaryGuid}`);
     req.flush('Error', { status: 500, statusText: 'Server Error' });
   });
@@ -616,11 +616,11 @@ describe('ProjectService', () => {
     const projectPlanFiscalGuid = 'fiscal-6789';
     const activityGuid = 'activity-001';
     const mockBoundaries = { _embedded: { activityBoundary: [{ id: 'abc' }] } };
-  
+
     service.getActivityBoundaries(projectGuid, projectPlanFiscalGuid, activityGuid).subscribe((boundaries) => {
       expect(boundaries).toEqual(mockBoundaries);
     });
-  
+
     const req = httpMock.expectOne(
       `http://mock-api.com/wfprev-api/projects/${projectGuid}/projectFiscals/${projectPlanFiscalGuid}/activities/${activityGuid}/activityBoundary`
     );
@@ -633,14 +633,14 @@ describe('ProjectService', () => {
     const projectGuid = '12345';
     const projectPlanFiscalGuid = 'fiscal-6789';
     const activityGuid = 'activity-001';
-  
+
     service.getActivityBoundaries(projectGuid, projectPlanFiscalGuid, activityGuid).subscribe({
       next: () => fail('Should have failed with an error'),
       error: (error) => {
         expect(error.message).toBe('Failed to fetch activity boundaries');
       }
     });
-  
+
     const req = httpMock.expectOne(
       `http://mock-api.com/wfprev-api/projects/${projectGuid}/projectFiscals/${projectPlanFiscalGuid}/activities/${activityGuid}/activityBoundary`
     );
@@ -652,11 +652,11 @@ describe('ProjectService', () => {
     const fiscalGuid = 'fiscal-1';
     const activityGuid = 'activity-1';
     const mockBoundary = { boundarySizeHa: 12 };
-  
+
     service.createActivityBoundary(projectGuid, fiscalGuid, activityGuid, mockBoundary).subscribe(response => {
       expect(response).toEqual(mockBoundary);
     });
-  
+
     const req = httpMock.expectOne(`http://mock-api.com/wfprev-api/projects/${projectGuid}/projectFiscals/${fiscalGuid}/activities/${activityGuid}/activityBoundary`);
     expect(req.request.method).toBe('POST');
     expect(req.request.body).toEqual(mockBoundary);
@@ -668,14 +668,14 @@ describe('ProjectService', () => {
     const fiscalGuid = 'fiscal-1';
     const activityGuid = 'activity-1';
     const mockBoundary = { boundarySizeHa: 12 };
-  
+
     service.createActivityBoundary(projectGuid, fiscalGuid, activityGuid, mockBoundary).subscribe({
       next: () => fail('Should have failed'),
       error: (err) => {
         expect(err.message).toBe('Failed to create activity boundary');
       }
     });
-  
+
     const req = httpMock.expectOne(`http://mock-api.com/wfprev-api/projects/${projectGuid}/projectFiscals/${fiscalGuid}/activities/${activityGuid}/activityBoundary`);
     req.flush('Error', { status: 500, statusText: 'Server Error' });
   });
@@ -685,11 +685,11 @@ describe('ProjectService', () => {
     const fiscalGuid = 'fiscal-1';
     const activityGuid = 'activity-1';
     const boundaryGuid = 'boundary-1';
-  
+
     service.deleteActivityBoundary(projectGuid, fiscalGuid, activityGuid, boundaryGuid).subscribe(response => {
       expect(response).toBeTruthy();
     });
-  
+
     const req = httpMock.expectOne(`http://mock-api.com/wfprev-api/projects/${projectGuid}/projectFiscals/${fiscalGuid}/activities/${activityGuid}/activityBoundary/${boundaryGuid}`);
     expect(req.request.method).toBe('DELETE');
     req.flush({});
@@ -700,14 +700,14 @@ describe('ProjectService', () => {
     const fiscalGuid = 'fiscal-1';
     const activityGuid = 'activity-1';
     const boundaryGuid = 'boundary-1';
-  
+
     service.deleteActivityBoundary(projectGuid, fiscalGuid, activityGuid, boundaryGuid).subscribe({
       next: () => fail('Should have failed'),
       error: (err) => {
         expect(err.message).toBe('Failed to delete activity boundary');
       }
     });
-  
+
     const req = httpMock.expectOne(`http://mock-api.com/wfprev-api/projects/${projectGuid}/projectFiscals/${fiscalGuid}/activities/${activityGuid}/activityBoundary/${boundaryGuid}`);
     req.flush('Error', { status: 500, statusText: 'Server Error' });
   });
@@ -715,11 +715,11 @@ describe('ProjectService', () => {
   it('should download a document by file ID', () => {
     const fileId = 'file-123';
     const mockBlob = new Blob(['test content'], { type: 'application/pdf' });
-  
+
     service.downloadDocument(fileId).subscribe(response => {
       expect(response).toEqual(mockBlob);
     });
-  
+
     const req = httpMock.expectOne(`http://mock-wfdm-api.com/documents/${fileId}/bytes`);
     expect(req.request.method).toBe('GET');
     expect(req.request.headers.get('Authorization')).toBe('Bearer mock-token');
@@ -769,9 +769,9 @@ describe('ProjectService', () => {
 
     const req = httpMock.expectOne((request) => {
       return request.url === 'http://mock-api.com/wfprev-api/features' &&
-            request.params.has('programAreaGuid') &&
-            request.params.has('fiscalYear') &&
-            request.params.get('searchText') === 'fuel';
+        request.params.has('programAreaGuid') &&
+        request.params.has('fiscalYear') &&
+        request.params.get('searchText') === 'fuel';
     });
 
     expect(req.request.method).toBe('GET');
@@ -793,7 +793,7 @@ describe('ProjectService', () => {
     req.flush('Error', { status: 500, statusText: 'Server Error' });
   });
 
-    it('should fetch evaluation criteria summaries', () => {
+  it('should fetch evaluation criteria summaries', () => {
     const projectGuid = 'project-1';
     const mockResponse = { summaries: [] };
 
@@ -888,32 +888,51 @@ describe('ProjectService', () => {
   });
 
   it('should download projects and return blob', () => {
-    const projectGuids = ['guid1', 'guid2'];
-    const type = 'csv';
+    const body: ReportRequest = {
+      reportType: 'csv',
+      projects: [
+        { projectGuid: 'guid1' },
+        { projectGuid: 'guid2' }
+      ]
+    };
+
     const mockBlob = new Blob(['test data'], { type: 'text/csv' });
 
-    service.downloadProjects(projectGuids, type).subscribe((result) => {
+    service.downloadProjects(body).subscribe((result) => {
       expect(result).toEqual(mockBlob);
     });
 
     const req = httpMock.expectOne('http://mock-api.com/wfprev-api/reports');
     expect(req.request.method).toBe('POST');
     expect(req.request.responseType).toBe('blob');
+    expect(req.request.body).toEqual(body);
     req.flush(mockBlob);
   });
 
   it('should handle error when downloading projects', () => {
-    const projectGuids = ['guid1', 'guid2'];
-    const type = 'csv';
+    const body: ReportRequest = {
+      reportType: 'csv',
+      projects: [
+        { projectGuid: 'guid1' },
+        { projectGuid: 'guid2' }
+      ]
+    };
 
-    service.downloadProjects(projectGuids, type).subscribe({
+    service.downloadProjects(body).subscribe({
       next: () => fail('Should have failed'),
       error: (err) => {
+        expect(err).toBeTruthy();
         expect(err.message).toBe('Failed to download projects');
       }
     });
 
     const req = httpMock.expectOne('http://mock-api.com/wfprev-api/reports');
+    expect(req.request.method).toBe('POST');
+    expect(req.request.responseType).toBe('blob'); 
+    expect(req.request.body).toEqual(body);
+    expect(req.request.headers.get('Accept')).toBe('application/octet-stream');
+    expect(req.request.headers.get('Content-Type')).toBe('application/json');
+
     const errorBlob = new Blob(['Error'], { type: 'text/plain' });
     req.flush(errorBlob, { status: 500, statusText: 'Server Error' });
   });

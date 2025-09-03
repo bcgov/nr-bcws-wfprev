@@ -1536,5 +1536,14 @@
     "allPublicFields": true,
     "allDeclaredMethods": true,
     "allPublicMethods": true
+  },
+  {
+    "name": "ca.bc.gov.nrs.wfprev.services.ReportService$ReportDataBundle",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true
   }
 ]

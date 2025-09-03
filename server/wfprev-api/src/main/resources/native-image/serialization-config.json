@@ -105,5 +105,6 @@
   { "name": "ca.bc.gov.nrs.wfprev.services.ReportService$LambdaReportRequest$Report" },
   { "name": "ca.bc.gov.nrs.wfprev.services.ReportService$LambdaReportRequest$XlsxReportData" },
   { "name": "ca.bc.gov.nrs.wfprev.services.ReportService$LambdaReportResponse" },
-  { "name": "ca.bc.gov.nrs.wfprev.services.ReportService$LambdaReportResponse$File" }
+  { "name": "ca.bc.gov.nrs.wfprev.services.ReportService$LambdaReportResponse$File" },
+  { "name": "ca.bc.gov.nrs.wfprev.services.ReportService$ReportDataBundle" }
 ]
