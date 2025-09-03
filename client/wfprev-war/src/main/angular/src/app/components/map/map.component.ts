@@ -96,21 +96,35 @@ ngAfterViewInit(): void {
   this.initMap().then(() => {
     const smk = this.mapService.getSMKInstance();
     const map = smk?.$viewer?.map;
-    // On zoom, force all WMS layers to request fresh tiles
-    map.on('zoomend', () => {
-      const layers = smk.$viewer.layerId || {};
-      Object.values(layers).forEach((ly: any) => {
-        const ml = ly?.mapLayer;
-        if (ml?.redraw) {
-          ml.redraw(); // leaflet WMS layer
-        } else if (ml?.setParams) {
-          ml.setParams({ _ts: Date.now() }, false);
-        }
-      });
 
-      const currentZoom = map.getZoom();
-      this.togglePolygonLayers(currentZoom);
+      // Use SMK's own refresh mechanism
+    const bustSmkLayerPromises = () => {
+      const visibleIds = smk.$viewer.layerIds
+        .filter((id: any) => smk.$viewer.isDisplayContextItemVisible(id));
+
+      const cacheKeys = Object.keys(smk.$viewer.layerIdPromise || {});
+      visibleIds.forEach((id: string) => {
+        const k = cacheKeys.find(k => k.includes(id));
+        if (k) smk.$viewer.layerIdPromise[k] = null;
+      });
+    };
+
+    map.on('zoomstart', () => {
+      bustSmkLayerPromises();
     });
+    map.on('movestart', () => {
+      bustSmkLayerPromises();
+    });
+
+    map.on('zoomend', async () => {
+      await smk.$viewer.updateLayersVisible();
+      this.togglePolygonLayers(map.getZoom());
+    });
+    map.on('moveend', async () => {
+      await smk.$viewer.updateLayersVisible();
+      this.togglePolygonLayers(map.getZoom());
+    });
+
 
     const bcBounds: L.LatLngBoundsExpression = BC_BOUNDS;
 
@@ -122,11 +136,6 @@ ngAfterViewInit(): void {
     map.addLayer(this.activityBoundaryGroup);
     map.addLayer(this.projectBoundaryGroup);
 
-    map.on('zoomend', () => {
-      const currentZoom = map.getZoom();
-      this.togglePolygonLayers(currentZoom);
-    });
-    
     if (map) {
       const legendHelper = new LeafletLegendService();
       this.legendControl = legendHelper.addLegend(map, this.fiscalColorMap)
