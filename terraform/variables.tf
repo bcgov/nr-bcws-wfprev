@@ -47,8 +47,14 @@ variable "WFPREV_LAMBDA_TIMEOUT" {
   default     = 300
 }
 
-variable "WFPREV_GDB_EXTRACTOR_DIGEST" {
+variable "WFPREV_GDB_EXTRACTOR_IMAGE" {
   description = "Digest-based URI for the Lambda image"
+  type        = string
+  default     = ""
+}
+
+variable "WFPREV_REPORT_GENERATOR_IMAGE" {
+  description = "Digest-based URI for the Report Generator Lambda image"
   type        = string
   default     = ""
 }
@@ -141,6 +147,21 @@ variable "WFPREV_GDB_FUNCTION_NAME" {
 }
 
 variable "WFDM_BASE_URL" {
+  type    = string
+  default = ""
+}
+
+variable "GEOSERVER_API_BASE_URL" {
+  type    = string
+  default = ""
+}
+
+variable "WFNEWS_API_BASE_URL" {
+  type    = string
+  default = ""
+}
+
+variable "WFNEWS_API_KEY" {
   type    = string
   default = ""
 }

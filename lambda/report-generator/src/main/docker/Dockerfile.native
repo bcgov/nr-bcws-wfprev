@@ -1,0 +1,37 @@
+####
+# Multi-stage Dockerfile for building and running Quarkus native application
+#
+# Usage:
+# docker build -f src/main/docker/Dockerfile.native -t  report-generator .
+# docker run -i --rm -p 8080:8080 report-generator
+###
+
+# Stage 1: Build the native binary
+FROM quay.io/quarkus/ubi-quarkus-graalvmce-builder-image:jdk-21 AS builder
+
+WORKDIR /project
+COPY . .
+USER root
+RUN chmod -R 777 /project
+RUN ./mvnw package -Pnative -DskipTests
+
+# Stage 2: Create the runtime image
+FROM registry.access.redhat.com/ubi9/ubi-minimal:9.5
+
+RUN microdnf update -y && microdnf install -y freetype fontconfig && microdnf clean all
+
+WORKDIR /work/
+RUN chown 1001 /work \
+    && chmod "g+rwX" /work \
+    && chown 1001:root /work
+
+# Copy from builder
+COPY --from=builder /project/target/*.properties /work/
+COPY --from=builder /project/target/*.so /work/
+COPY --from=builder /project/target/*-runner /work/application
+
+RUN chmod "ugo+x" /work/application
+EXPOSE 8081
+USER 1001
+
+CMD ["./application", "-Dquarkus.http.host=0.0.0.0"]

@@ -136,18 +136,3 @@ jobs:
         docker pull ${{vars.REPOSITORY_HOST}}/${{ github.repository_owner }}/nr-bcws-wfprev-${{ inputs.COMPONENT_NAME }}:${{ inputs.TAG }}
         docker tag ${{vars.REPOSITORY_HOST}}/${{ github.repository_owner }}/nr-bcws-wfprev-${{ inputs.COMPONENT_NAME }}:${{ inputs.TAG }} ${{ secrets.LZA_ECR_AWS_ACCOUNT_ID }}.dkr.ecr.ca-central-1.amazonaws.com/nr-bcws-wfprev-${{ inputs.COMPONENT_NAME }}:${{ inputs.TAG }}
         docker push ${{ secrets.LZA_ECR_AWS_ACCOUNT_ID }}.dkr.ecr.ca-central-1.amazonaws.com/nr-bcws-wfprev-${{ inputs.COMPONENT_NAME }}:${{ inputs.TAG }}
-        echo "GDB_EXTRACTOR_IMAGE=${{ secrets.LZA_ECR_AWS_ACCOUNT_ID }}.dkr.ecr.ca-central-1.amazonaws.com/nr-bcws-wfprev-${{ inputs.COMPONENT_NAME }}:${{ inputs.TAG }}" >> $GITHUB_ENV
-
-    - name: Get Digest of GDB Extractor ECR image
-      id: getGdbDigest
-      run: |
-        DIGEST=$(aws ecr describe-images \
-          --repository-name nr-bcws-wfprev-${{ inputs.COMPONENT_NAME }} \
-          --image-ids imageTag=latest \
-          --query 'imageDetails[0].imageDigest' \
-          --output text)
-        export GDB_EXTRACTOR_DIGEST=${DIGEST}
-        echo "digest_output=$GDB_EXTRACTOR_DIGEST" >> $GITHUB_OUTPUT
-        
-    outputs:
-          gdb_digest: ${{ steps.getGdbDigest.outputs.digest_output }}

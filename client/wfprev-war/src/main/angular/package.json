@@ -24,7 +24,7 @@
     "@angular/platform-browser": "18.2.3",
     "@angular/platform-browser-dynamic": "18.2.3",
     "@angular/router": "18.2.3",
-    "@bcgov/smk": "1.2.3",
+    "@qqnluaq/smk": "1.0.35",
     "@tmcw/togeojson": "7.0.0",
     "@turf/turf": "7.2.0",
     "@types/leaflet": "1.9.12",

@@ -1501,28 +1501,40 @@
     "allDeclaredMethods": true,
     "allDeclaredFields": true
   },
-  {
-    "name": "ca.bc.gov.nrs.wfprev.data.models.ReportRequestModel",
+  { 
+    "name": "ca.bc.gov.nrs.wfprev.services.ReportService$LambdaReportRequest" ,
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  { 
+    "name": "ca.bc.gov.nrs.wfprev.services.ReportService$LambdaReportRequest$Report" ,
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  { 
+    "name": "ca.bc.gov.nrs.wfprev.services.ReportService$LambdaReportRequest$XlsxReportData",
     "allDeclaredConstructors": true,
     "allDeclaredMethods": true,
     "allDeclaredFields": true
   },
   {
-    "name": "ca.bc.gov.nrs.wfprev.data.entities.FuelManagementReportEntity",
+    "name": "ca.bc.gov.nrs.wfprev.services.ReportService$LambdaReportResponse",
     "allDeclaredConstructors": true,
     "allPublicConstructors": true,
-    "allDeclaredMethods": true,
-    "allPublicMethods": true,
     "allDeclaredFields": true,
-    "allPublicFields": true
+    "allPublicFields": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true
   },
   {
-    "name": "ca.bc.gov.nrs.wfprev.data.entities.CulturalPrescribedFireReportEntity",
+    "name": "ca.bc.gov.nrs.wfprev.services.ReportService$LambdaReportResponse$File",
     "allDeclaredConstructors": true,
     "allPublicConstructors": true,
-    "allDeclaredMethods": true,
-    "allPublicMethods": true,
     "allDeclaredFields": true,
-    "allPublicFields": true
+    "allPublicFields": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true
   }
 ]

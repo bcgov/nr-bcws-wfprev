@@ -26,7 +26,7 @@ resource "aws_lambda_function" "gdb_processor" {
   role          = aws_iam_role.lambda_role.arn
   package_type  = "Image"
 
-  image_uri = var.WFPREV_GDB_EXTRACTOR_DIGEST
+  image_uri = var.WFPREV_GDB_EXTRACTOR_IMAGE
 
   memory_size   = var.WFPREV_LAMBDA_MEMORY
   timeout       = var.WFPREV_LAMBDA_TIMEOUT
@@ -36,6 +36,29 @@ resource "aws_lambda_function" "gdb_processor" {
       NODE_ENV = var.TARGET_ENV
     }
   }
+}
+
+resource "aws_lambda_function" "report_generator" {
+  function_name = "report-generator-${var.TARGET_ENV}"
+  role          = aws_iam_role.lambda_role.arn
+  package_type  = "Image"
+
+  image_uri     = var.WFPREV_REPORT_GENERATOR_IMAGE
+  
+  memory_size   = var.WFPREV_LAMBDA_MEMORY
+  timeout       = var.WFPREV_LAMBDA_TIMEOUT
+
+  environment {
+    variables = {
+      NODE_ENV = var.TARGET_ENV
+    }
+  }
+}
+
+resource "aws_lambda_function_url" "report_generator_url" {
+  function_name = aws_lambda_function.report_generator.function_name
+  authorization_type = "NONE"
+  
 }
 
 # # API Gateway

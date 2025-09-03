@@ -87,6 +87,18 @@ resource "aws_ecs_task_definition" "wfprev_server" {
         value = var.WFDM_BASE_URL
       },
       {
+        name  = "GEOSERVER_API_BASE_URL",
+        value = var.GEOSERVER_API_BASE_URL
+      },
+      {
+        name  = "WFNEWS_API_BASE_URL",
+        value = var.WFNEWS_API_BASE_URL
+      },
+       {
+        name  = "WFNEWS_API_KEY",
+        value = var.WFNEWS_API_KEY
+      },
+      {
         name  = "OPENMAPS_URL",
         value = var.OPENMAPS_URL
       },
@@ -109,6 +121,10 @@ resource "aws_ecs_task_definition" "wfprev_server" {
       {
         name  = "API_KEY"
         value = var.api_key
+      },
+      {
+        name = "REPORT_GENERATOR_LAMBDA_URL"
+        value = aws_lambda_function_url.report_generator_url.function_url
       },
       {
         name  = "TRAINING_AND_SUPPORT_LINK"

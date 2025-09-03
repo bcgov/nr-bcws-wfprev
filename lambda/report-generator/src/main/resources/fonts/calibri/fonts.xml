@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<fontFamilies>
+
+      <fontFamily name="Calibri">
+            <normal>
+                  <ttf>fonts/calibri/CALIBRI.TTF</ttf>
+                  <pdf>fonts/calibri/CALIBRI.TTF</pdf>
+            </normal>
+            <bold>
+                  <ttf>fonts/calibri/CALIBRIB.TTF</ttf>
+                  <pdf>fonts/calibri/CALIBRIB.TTF</pdf>
+            </bold>
+            <italic>
+                  <ttf>fonts/calibri/CALIBRII.TTF</ttf>
+                  <pdf>fonts/calibri/CALIBRII.TTF</pdf>
+            </italic>
+            <boldItalic>
+                  <ttf>fonts/calibri/CALIBRIZ.TTF</ttf>
+                  <pdf>fonts/calibri/CALIBRIZ.TTF</pdf>
+            </boldItalic>
+            <light>
+                  <ttf>fonts/calibri/CALIBRIL.TTF</ttf>
+                  <pdf>fonts/calibri/CALIBRIL.TTF</pdf>
+            </light>
+            <lightItalic>
+                  <ttf>fonts/calibri/CALIBRILI.TTF</ttf>
+                  <pdf>fonts/calibri/CALIBRILI.TTF</pdf>
+            </lightItalic>
+            <pdfEncoding>Cp1252</pdfEncoding>
+            <pdfEmbedded>true</pdfEmbedded>
+      </fontFamily>
+
+</fontFamilies>

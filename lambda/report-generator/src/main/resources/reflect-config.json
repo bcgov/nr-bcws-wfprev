@@ -1,0 +1,17 @@
+[
+  { "name": "java.util.Date", "unsafeAllocated": true, "allDeclaredFields": true, "allPublicConstructors": true, "allPublicFields": true, "allDeclaredMethods": true, "allPublicMethods": true },
+  { "name": "java.util.Date[]", "unsafeAllocated": true, "allDeclaredFields": true, "allPublicConstructors": true, "allPublicFields": true, "allDeclaredMethods": true, "allPublicMethods": true },
+  { "name": "java.sql.Date", "unsafeAllocated": true, "allDeclaredFields": true, "allPublicConstructors": true, "allPublicFields": true, "allDeclaredMethods": true, "allPublicMethods": true },
+  { "name": "java.sql.Date[]", "unsafeAllocated": true, "allDeclaredFields": true, "allPublicConstructors": true, "allPublicFields": true, "allDeclaredMethods": true, "allPublicMethods": true },
+  { "name": "java.lang.String", "unsafeAllocated": true, "allDeclaredFields": true, "allPublicConstructors": true, "allPublicFields": true, "allDeclaredMethods": true, "allPublicMethods": true },
+  { "name": "java.lang.String[]", "unsafeAllocated": true, "allDeclaredFields": true, "allPublicConstructors": true, "allPublicFields": true, "allDeclaredMethods": true, "allPublicMethods": true },
+  { "name": "java.lang.Boolean", "unsafeAllocated": true, "allDeclaredFields": true, "allPublicConstructors": true, "allPublicFields": true, "allDeclaredMethods": true, "allPublicMethods": true },
+  { "name": "java.lang.Boolean[]", "unsafeAllocated": true, "allDeclaredFields": true, "allPublicConstructors": true, "allPublicFields": true, "allDeclaredMethods": true, "allPublicMethods": true },
+  { "name": "java.math.BigDecimal", "unsafeAllocated": true, "allDeclaredFields": true, "allPublicConstructors": true, "allPublicFields": true, "allDeclaredMethods": true, "allPublicMethods": true },
+  { "name": "java.math.BigDecimal[]", "unsafeAllocated": true, "allDeclaredFields": true, "allPublicConstructors": true, "allPublicFields": true, "allDeclaredMethods": true, "allPublicMethods": true },
+  { "name": "java.sql.Time[]", "unsafeAllocated": true, "allDeclaredFields": true, "allPublicConstructors": true, "allPublicFields": true, "allDeclaredMethods": true, "allPublicMethods": true },
+  { "name": "java.sql.Time", "unsafeAllocated": true, "allDeclaredFields": true, "allPublicConstructors": true, "allPublicFields": true, "allDeclaredMethods": true, "allPublicMethods": true },
+  { "name": "java.sql.Timestamp", "unsafeAllocated": true, "allDeclaredFields": true, "allPublicConstructors": true, "allPublicFields": true, "allDeclaredMethods": true, "allPublicMethods": true },
+  { "name": "java.sql.Timestamp[]", "unsafeAllocated": true, "allDeclaredFields": true, "allPublicConstructors": true, "allPublicFields": true, "allDeclaredMethods": true, "allPublicMethods": true },
+  { "name": "java.util.UUID", "unsafeAllocated": true, "allDeclaredFields": true, "allPublicConstructors": true, "allPublicFields": true, "allDeclaredMethods": true, "allPublicMethods": true }
+]

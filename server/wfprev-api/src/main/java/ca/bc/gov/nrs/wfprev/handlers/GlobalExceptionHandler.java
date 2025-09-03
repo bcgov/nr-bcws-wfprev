@@ -1,9 +1,8 @@
 package ca.bc.gov.nrs.wfprev.handlers;
 
-import ca.bc.gov.nrs.wfprev.common.exceptions.ServiceException;
-import jakarta.persistence.EntityNotFoundException;
-import jakarta.validation.ConstraintViolationException;
-import jakarta.validation.ValidationException;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,126 +12,128 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import java.util.HashMap;
-import java.util.Map;
+import ca.bc.gov.nrs.wfprev.common.exceptions.ServiceException;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.ValidationException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    private static final String ERROR = "error";
+   private static final String ERROR = "error";
 
-    @ExceptionHandler({ConstraintViolationException.class, DataIntegrityViolationException.class})
-    public ResponseEntity<Object> handleValidationExceptions(Exception ex) {
-        Map<String, String> errors = new HashMap<>();
+   @ExceptionHandler({ConstraintViolationException.class, DataIntegrityViolationException.class})
+   public ResponseEntity<Object> handleValidationExceptions(Exception ex) {
+       Map<String, String> errors = new HashMap<>();
 
-        if (ex instanceof ConstraintViolationException) {
-            ConstraintViolationException cve = (ConstraintViolationException) ex;
-            cve.getConstraintViolations().forEach(violation -> {
-                String fieldName = violation.getPropertyPath() != null ?
-                        violation.getPropertyPath().toString() :
-                        "unknown_field";
-                String errorMessage = violation.getMessage() != null ?
-                        violation.getMessage() :
-                        "unknown error";
-                errors.put(fieldName, errorMessage);
-            });
-        } else {
-            // DataIntegrityViolationException
-            errors.put(ERROR, "Data integrity violation: " + ex.getMessage());
-        }
+       if (ex instanceof ConstraintViolationException) {
+           ConstraintViolationException cve = (ConstraintViolationException) ex;
+           cve.getConstraintViolations().forEach(violation -> {
+               String fieldName = violation.getPropertyPath() != null ?
+                       violation.getPropertyPath().toString() :
+                       "unknown_field";
+               String errorMessage = violation.getMessage() != null ?
+                       violation.getMessage() :
+                       "unknown error";
+               errors.put(fieldName, errorMessage);
+           });
+       } else {
+           // DataIntegrityViolationException
+           errors.put(ERROR, "Data integrity violation: " + ex.getMessage());
+       }
 
-        return ResponseEntity
-                .status(HttpStatus.UNPROCESSABLE_ENTITY)
-                .body(errors);
-    }
+       return ResponseEntity
+               .status(HttpStatus.UNPROCESSABLE_ENTITY)
+               .body(errors);
+   }
 
-    @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex) {
-        Map<String, String> errors = new HashMap<>();
-        errors.put(ERROR, "Invalid JSON format");
+   @ExceptionHandler(HttpMessageNotReadableException.class)
+   public ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex) {
+       Map<String, String> errors = new HashMap<>();
+       errors.put(ERROR, "Invalid JSON format");
 
-        return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
-                .body(errors);
-    }
+       return ResponseEntity
+               .status(HttpStatus.BAD_REQUEST)
+               .body(errors);
+   }
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex) {
-        Map<String, String> errors = new HashMap<>();
+   @ExceptionHandler(MethodArgumentNotValidException.class)
+   public ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex) {
+       Map<String, String> errors = new HashMap<>();
 
-        // Field-level errors
-        ex.getBindingResult().getFieldErrors().forEach(error -> {
-            String fieldName = error.getField();
-            String errorMessage = error.getDefaultMessage();
-            errors.put(fieldName, errorMessage);
-        });
+       // Field-level errors
+       ex.getBindingResult().getFieldErrors().forEach(error -> {
+           String fieldName = error.getField();
+           String errorMessage = error.getDefaultMessage();
+           errors.put(fieldName, errorMessage);
+       });
 
-        // Class-level (global) errors
-        ex.getBindingResult().getGlobalErrors().forEach(error -> {
-            String objectName = error.getObjectName();
-            String errorMessage = error.getDefaultMessage();
-            errors.put(objectName, errorMessage);
-        });
+       // Class-level (global) errors
+       ex.getBindingResult().getGlobalErrors().forEach(error -> {
+           String objectName = error.getObjectName();
+           String errorMessage = error.getDefaultMessage();
+           errors.put(objectName, errorMessage);
+       });
 
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
-    }
+       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
+   }
 
-    @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<Object> handleEntityNotFoundException(EntityNotFoundException ex) {
-        Map<String, String> error = new HashMap<>();
-        error.put(ERROR, ex.getMessage());
+   @ExceptionHandler(EntityNotFoundException.class)
+   public ResponseEntity<Object> handleEntityNotFoundException(EntityNotFoundException ex) {
+       Map<String, String> error = new HashMap<>();
+       error.put(ERROR, ex.getMessage());
 
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
-    }
+       return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+   }
 
-    @ExceptionHandler(ValidationException.class)
-    public ResponseEntity<Object> handleValidationException(ValidationException ex) {
-        Map<String, String> error = new HashMap<>();
-        error.put(ERROR, ex.getMessage());
+   @ExceptionHandler(ValidationException.class)
+   public ResponseEntity<Object> handleValidationException(ValidationException ex) {
+       Map<String, String> error = new HashMap<>();
+       error.put(ERROR, ex.getMessage());
 
-        return ResponseEntity
-                .status(HttpStatus.CONFLICT)
-                .body(error);
-    }
+       return ResponseEntity
+               .status(HttpStatus.CONFLICT)
+               .body(error);
+   }
 
-    @ExceptionHandler(HttpMessageNotWritableException.class)
-    public ResponseEntity<Object> handleHttpMessageNotWritable(HttpMessageNotWritableException ex) {
-        Map<String, String> errors = new HashMap<>();
-        errors.put(ERROR, "Unable to serialize response");
+   @ExceptionHandler(HttpMessageNotWritableException.class)
+   public ResponseEntity<Object> handleHttpMessageNotWritable(HttpMessageNotWritableException ex) {
+       Map<String, String> errors = new HashMap<>();
+       errors.put(ERROR, "Unable to serialize response");
 
-        return ResponseEntity
-                .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(errors);
-    }
+       return ResponseEntity
+               .status(HttpStatus.INTERNAL_SERVER_ERROR)
+               .body(errors);
+   }
 
-    @ExceptionHandler(IllegalStateException.class)
-    public ResponseEntity<Object> handleIllegalStateException(IllegalStateException ex) {
-        Map<String, String> errors = new HashMap<>();
-        errors.put(ERROR, ex.getMessage());
+   @ExceptionHandler(IllegalStateException.class)
+   public ResponseEntity<Object> handleIllegalStateException(IllegalStateException ex) {
+       Map<String, String> errors = new HashMap<>();
+       errors.put(ERROR, ex.getMessage());
 
-        return ResponseEntity
-                .status(HttpStatus.CONFLICT)
-                .body(errors);
-    }
+       return ResponseEntity
+               .status(HttpStatus.CONFLICT)
+               .body(errors);
+   }
 
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<Object> handleIllegalArgumentException(IllegalArgumentException ex) {
-        Map<String, String> error = new HashMap<>();
-        error.put(ERROR, ex.getMessage());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
-    }
+   @ExceptionHandler(IllegalArgumentException.class)
+   public ResponseEntity<Object> handleIllegalArgumentException(IllegalArgumentException ex) {
+       Map<String, String> error = new HashMap<>();
+       error.put(ERROR, ex.getMessage());
+       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+   }
 
-    @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<Object> handleRuntimeException(RuntimeException ex) {
-        Map<String, String> error = new HashMap<>();
-        error.put(ERROR, "Unexpected error occurred: " + ex.getMessage());
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
-    }
+   @ExceptionHandler(RuntimeException.class)
+   public ResponseEntity<Object> handleRuntimeException(RuntimeException ex) {
+       Map<String, String> error = new HashMap<>();
+       error.put(ERROR, "Unexpected error occurred: " + ex.getMessage());
+       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+   }
 
-    @ExceptionHandler(ServiceException.class)
-    public ResponseEntity<Object> handleServiceException(ServiceException ex) {
-        Map<String, String> error = new HashMap<>();
-        error.put(ERROR, ex.getMessage());
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
-    }
+   @ExceptionHandler(ServiceException.class)
+   public ResponseEntity<Object> handleServiceException(ServiceException ex) {
+       Map<String, String> error = new HashMap<>();
+       error.put(ERROR, ex.getMessage());
+       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+   }
 }

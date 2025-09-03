@@ -190,15 +190,20 @@ export const EvaluationCriteriaSectionCodes = {
 };
 
 export const DownloadTypes = {
-  EXCEL: 'excel',
-  CSV: 'csv',
+  EXCEL: 'xlsx',
+  CSV: 'csv'
 };
 
 export const DownloadFileExtensions = {
   EXCEL: 'xlsx',
-  CSV: 'csv',
+  CSV: 'zip',
 };
 
 export const NumericLimits = {
   MAX_NUMBER: 99999999999
 };
+
+export const BC_BOUNDS: L.LatLngBoundsLiteral  = [
+  [47.60393449638617, -139.1782824917356], // south, west
+  [60.593907018763396, -110.35337939457779] // north, east
+];

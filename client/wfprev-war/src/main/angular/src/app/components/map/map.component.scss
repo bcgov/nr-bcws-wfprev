@@ -1,61 +1,61 @@
 .map-container {
-    display: flex;
-    flex-direction: column;
-    flex:1;
-    height: calc(100vh - var(--header-height));
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  height: calc(100vh - var(--header-height));
 }
 
 .search-filter {
-    background-color: #fff;
-    padding: 10px 20px;
-    display: flex;
-    align-items: center;
-    border-bottom: 1px solid #A5A4A4;
-     flex-shrink: 0;
+  background-color: #fff;
+  padding: 10px 20px;
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid #A5A4A4;
+  flex-shrink: 0;
 }
 
 .content-row {
-    display: flex;
-    flex-grow: 1;
-    height: 100%;
-    overflow-y: hidden;
+  display: flex;
+  flex-grow: 1;
+  height: 100%;
+  overflow-y: hidden;
 }
-  
-  
+
+
 .map-content {
-    height: 100vh;
-    flex-grow: 1;
-    background-color: #f1f1f1;
-    position: relative;
+  height: 100vh;
+  flex-grow: 1;
+  background-color: #f1f1f1;
+  position: relative;
 }
 
 #map {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    width: 100%;
-    height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
 }
 
-.content-row > * {
+.content-row>* {
   height: 100%;
 }
 
 .map-container ::ng-deep .leaflet-popup-content {
-    max-width: none !important;
-    width: auto !important;
-    display: inline-block;
-    padding: 0 !important;
-    margin: 0 !important;
+  max-width: none !important;
+  width: auto !important;
+  display: inline-block;
+  padding: 0 !important;
+  margin: 0 !important;
 }
 
 .map-container ::ng-deep .leaflet-popup-content-wrapper {
-    max-width: none !important;
-    width: auto !important;
-    padding: 0 !important;
-    z-index: 10000;
+  max-width: none !important;
+  width: auto !important;
+  padding: 0 !important;
+  z-index: 10000;
 }
 
 .map-container ::ng-deep .leaflet-popup-close-button {
@@ -64,4 +64,50 @@
 
 .map-container ::ng-deep .legend.leaflet-control.hidden {
   display: none !important;
+}
+
+::ng-deep .smk-tool-LayersTool span {
+  display: none;
+}
+
+::ng-deep .smk-tool-LayersTool::after {
+  content: "All Layers";
+  display: inline-block;
+  vertical-align: middle;
+  margin: 0 2px 0 4px;
+  font-size: inherit;
+  font-weight: inherit;
+  color: inherit;
+}
+
+:host ::ng-deep .smk-panel .smk-display-layer .smk-item[title^="id: IdentifyListTool--"] {
+  display: none !important;
+}
+
+:host ::ng-deep .smk-panel .smk-display-layer .smk-item {
+  flex-wrap: wrap;
+  max-height: 50px;
+}
+
+:host ::ng-deep .smk-panel .smk-display-layer .smk-item .smk-legend {
+  flex-basis: 100%;
+  width: 100%;
+  margin-left: 2px;
+}
+
+:host ::ng-deep .smk-layer-title {
+  display: flex !important;
+  align-items: center !important;
+  white-space: normal !important;
+  word-break: break-word !important;
+  flex: 1 !important;
+}
+
+:host ::ng-deep .smk-sidepanel {
+  min-width: calc(var(--panel-width) + 8px);
+  width: min-content !important;
+}
+
+:host ::ng-deep .smk-item {
+  max-height: unset !important;
 }
