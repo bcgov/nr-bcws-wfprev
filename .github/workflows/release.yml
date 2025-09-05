@@ -27,21 +27,27 @@ jobs:
           docker tag ${{vars.REGISTRY}}/${{ github.repository }}-${{ matrix.component-name }}:latest ${{vars.REGISTRY}}/${{ github.repository }}-${{ matrix.component-name }}:${{ github.event.release.tag_name }}
           docker push ${{vars.REGISTRY}}/${{ github.repository }}-${{ matrix.component-name }}:${{ github.event.release.tag_name }}
 
+  node-build:
+    uses: ./.github/workflows/node-build.yml
+    secrets: inherit
+    with:
+      COMPONENT_NAME: wfprev-gdb-extractor
+      TAG: ${{ github.event.release.tag_name }}
+  
   deploy-prod:
-    needs: tag-builds
+    needs: [tag-builds, node-build]
     if: ${{ contains(github.event.release.tag_name, '-release') }}
     uses: ./.github/workflows/terragrunt-deploy.yml
     secrets: inherit
     with:
-      DEFAULT_APPLICATION_ENVIRONMENT: prod
+      DEFAULT_APPLICATION_ENVIRONMENT: wfprd
       IMAGE_TAG: ${{ github.event.release.tag_name }}
       COMMAND: apply
       RUN_LIQUIBASE: 'true'
-      GDB_EXTRACTOR_IMAGE: ${{ needs.node-build.outputs.gdb_digest }}
 
   wfprev-ui:
     uses: ./.github/workflows/client-build.yml
     needs: [deploy-prod]
     with:
-      DEFAULT_APPLICATION_ENVIRONMENT: prod
+      DEFAULT_APPLICATION_ENVIRONMENT: wfprd
     secrets: inherit
