@@ -3,7 +3,7 @@ resource "aws_appautoscaling_target" "wfprev_target" {
    resource_id        = "service/${aws_ecs_cluster.wfprev_main.name}/${aws_ecs_service.wfprev_server.name}"
    scalable_dimension = "ecs:service:DesiredCount"
    min_capacity       = 1
-   max_capacity       = 10
+   max_capacity       = var.WFPREV_MAX_SCALING_CAPACITY
 }
 
 # Automatically scale capacity up by one
