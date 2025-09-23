@@ -35,10 +35,16 @@ jobs:
       COMPONENT_NAME: wfprev-gdb-extractor
       TAG: ${{ github.event.release.tag_name }}
 
+  reports-generator-build:
+    uses: ./.github/workflows/report-generator-image-build.yml
+    secrets: inherit
+    with:
+      TAG: ${{ github.event.release.tag_name }}
+
   # include additional steps for DLV, PRD
   # rename to deploy-wftst, rename environment to tst
   deploy-wfdlv:
-    needs: [tag-builds, node-build]
+    needs: [tag-builds, node-build, reports-generator-build]
     if: ${{ contains(github.event.release.tag_name, '-beta') }}
     uses: ./.github/workflows/terragrunt-deploy.yml
     secrets: inherit
@@ -56,7 +62,7 @@ jobs:
     secrets: inherit
 
   deploy-wftst:
-    needs: [tag-builds, node-build]
+    needs: [tag-builds, node-build, reports-generator-build]
     if: ${{ contains(github.event.release.tag_name, '-rc') }}
     uses: ./.github/workflows/terragrunt-deploy.yml
     secrets: inherit

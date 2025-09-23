@@ -35,6 +35,11 @@ variable "WFPREV_API_MEMORY" {
   type        = number
 }
 
+variable "WFPREV_MAX_SCALING_CAPACITY" {
+  description = "Maximum number of pods to scale to"
+  type = number
+}
+
 variable "WFPREV_LAMBDA_MEMORY" {
   description = "lambda memory to provision (in MiB)"
   type        = number

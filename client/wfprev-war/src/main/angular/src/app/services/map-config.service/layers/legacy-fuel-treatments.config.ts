@@ -5,9 +5,9 @@ export function LegacyFuelTreatmentsLayerConfig(ls: LayerSettings, authHeader?: 
     serviceUrl: ls.geoserverApiBaseUrl + "/ows",
     id: "legacy-fuel-treatments",
     title: "FireSmart Community Funding and Supports - Legacy Fuel Treatments",
-    visible: false,
+    visible: true,
     type: "wms",
-    isQueryable: false,
+    isQueryable: true,
     combiningClass: "wfBoundary",
     layerName: "PROT_FUEL_TREATMENTS_SP",
     header: authHeader

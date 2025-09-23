@@ -10,7 +10,6 @@ import org.hibernate.annotations.Immutable;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.time.OffsetDateTime;
 import java.util.Date;
 import java.util.UUID;
 
@@ -22,6 +21,9 @@ public class FuelManagementReportEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
+    @Column(name = "unique_row_guid")
+    private UUID uniqueRowGuid;
+
     @Column(name = "project_plan_fiscal_guid")
     private UUID projectPlanFiscalGuid;
 

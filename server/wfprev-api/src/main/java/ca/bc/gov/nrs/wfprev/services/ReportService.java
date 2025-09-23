@@ -1,5 +1,18 @@
 package ca.bc.gov.nrs.wfprev.services;
 
+import ca.bc.gov.nrs.wfprev.common.exceptions.ServiceException;
+import ca.bc.gov.nrs.wfprev.data.entities.CulturalPrescribedFireReportEntity;
+import ca.bc.gov.nrs.wfprev.data.entities.FuelManagementReportEntity;
+import ca.bc.gov.nrs.wfprev.data.models.ReportRequestModel;
+import ca.bc.gov.nrs.wfprev.data.repositories.CulturalPrescribedFireReportRepository;
+import ca.bc.gov.nrs.wfprev.data.repositories.FuelManagementReportRepository;
+import ca.bc.gov.nrs.wfprev.data.repositories.ProgramAreaRepository;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -11,27 +24,12 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
-
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
-
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import ca.bc.gov.nrs.wfprev.common.exceptions.ServiceException;
-import ca.bc.gov.nrs.wfprev.data.entities.CulturalPrescribedFireReportEntity;
-import ca.bc.gov.nrs.wfprev.data.entities.FuelManagementReportEntity;
-import ca.bc.gov.nrs.wfprev.data.entities.ProjectEntity;
-import ca.bc.gov.nrs.wfprev.data.entities.ProjectFiscalEntity;
-import ca.bc.gov.nrs.wfprev.data.repositories.CulturalPrescribedFireReportRepository;
-import ca.bc.gov.nrs.wfprev.data.repositories.FuelManagementReportRepository;
-import ca.bc.gov.nrs.wfprev.data.repositories.ProgramAreaRepository;
-import ca.bc.gov.nrs.wfprev.data.repositories.ProjectRepository;
-import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
@@ -47,50 +45,77 @@ public class ReportService {
 
     private static final String FISCAL_QUERY_STRING = "&tab=fiscal&fiscalGuid=";
 
-    DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+    private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd")
             .withZone(ZoneId.systemDefault());
+
+    private static final String HECTARE_FORMAT = "%,d ha";
 
     private final FuelManagementReportRepository fuelManagementRepository;
     private final CulturalPrescribedFireReportRepository culturalPrescribedFireReportRepository;
-    private final ProjectRepository projectRepository;
     private final ProgramAreaRepository programAreaRepository;
 
     public ReportService(FuelManagementReportRepository fuelManagementRepository,
-            CulturalPrescribedFireReportRepository culturalPrescribedFireReportRepository,
-            ProjectRepository projectRepository, ProgramAreaRepository programAreaRepository) {
+            CulturalPrescribedFireReportRepository culturalPrescribedFireReportRepository, ProgramAreaRepository programAreaRepository) {
         this.fuelManagementRepository = fuelManagementRepository;
         this.culturalPrescribedFireReportRepository = culturalPrescribedFireReportRepository;
-        this.projectRepository = projectRepository;
         this.programAreaRepository = programAreaRepository;
     }
 
-    public void exportXlsx(List<UUID> projectGuids, OutputStream outputStream, String rid)
-            throws ServiceException, IOException, InterruptedException {
-        long tStart = System.currentTimeMillis();
-        log.info("[{}] [xlsx] start projectGuids={}", rid, projectGuids.size());
+    private static class ReportDataBundle {
+        List<FuelManagementReportEntity> fuel;
+        List<CulturalPrescribedFireReportEntity> crx;
 
-        // Fetch projects and fiscal GUIDs
-        List<ProjectEntity> projects = projectRepository.findByProjectGuidIn(projectGuids);
-        List<UUID> projectPlanFiscalGuids = projects.stream()
-                .flatMap(p -> p.getProjectFiscals().stream())
-                .map(ProjectFiscalEntity::getProjectPlanFiscalGuid)
-                .distinct()
-                .toList();
+        ReportDataBundle(List<FuelManagementReportEntity> fuel,
+                         List<CulturalPrescribedFireReportEntity> crx) {
+            this.fuel = fuel;
+            this.crx = crx;
+        }
+    }
 
-        // Fetch report rows
-        List<FuelManagementReportEntity> fuelData = fuelManagementRepository
-                .findByProjectPlanFiscalGuidIn(projectPlanFiscalGuids);
-        List<CulturalPrescribedFireReportEntity> crxData = culturalPrescribedFireReportRepository
-                .findByProjectPlanFiscalGuidIn(projectPlanFiscalGuids);
+    private ReportDataBundle resolveReportData(ReportRequestModel request) {
+        List<FuelManagementReportEntity> fuel = new ArrayList<>();
+        List<CulturalPrescribedFireReportEntity> crx = new ArrayList<>();
 
-        if (fuelData.isEmpty() && crxData.isEmpty()) {
-            log.info("[{}] [xlsx] no data for given projectGuids", rid);
-            throw new IllegalArgumentException("No data found for the provided projectGuids.");
+        if (request == null || request.getProjects() == null || request.getProjects().isEmpty()) {
+            throw new IllegalArgumentException("At least one project is required");
         }
 
-        // Set computed fields
-        fuelData.forEach(this::setFuelManagementFields);
-        crxData.forEach(this::setCrxFields);
+        for (ReportRequestModel.Project p : request.getProjects()) {
+            UUID projectGuid = Objects.requireNonNull(p.getProjectGuid(), "projectGuid is required");
+            List<UUID> fiscals = p.getProjectFiscalGuids();
+
+            if (fiscals != null && !fiscals.isEmpty()) {
+                crx.addAll(culturalPrescribedFireReportRepository
+                        .findByProjectGuidAndProjectPlanFiscalGuidIn(projectGuid, fiscals));
+                fuel.addAll(fuelManagementRepository
+                        .findByProjectGuidAndProjectPlanFiscalGuidIn(projectGuid, fiscals));
+            } else {
+                // Now includes rows where project_plan_fiscal_guid IS NULL
+                crx.addAll(culturalPrescribedFireReportRepository.findByProjectGuid(projectGuid));
+                fuel.addAll(fuelManagementRepository.findByProjectGuid(projectGuid));
+            }
+        }
+
+        return new ReportDataBundle(fuel, crx);
+    }
+
+
+    public void exportXlsx(ReportRequestModel request, OutputStream outputStream)
+            throws ServiceException, IOException, InterruptedException {
+        ReportDataBundle data = resolveReportData(request);
+
+        // Remove nulls up front (defensive)
+        data.fuel.removeIf(Objects::isNull);
+        data.crx.removeIf(Objects::isNull);
+
+        // Pre-process
+        data.fuel.forEach(this::setFuelManagementFields);
+        data.crx.forEach(this::setCrxFields);
+
+        // If absolutely nothing to write, fail early
+        if (data.fuel.isEmpty() && data.crx.isEmpty()) {
+            throw new IllegalArgumentException("No fiscal data found for the provided projects");
+        }
 
         // Build Lambda request model
         LambdaReportRequest lambdaRequest = new LambdaReportRequest();
@@ -98,8 +123,8 @@ public class ReportService {
         report.setReportType("XLSX");
         report.setReportName("project-report");
         LambdaReportRequest.XlsxReportData xlsxData = new LambdaReportRequest.XlsxReportData();
-        xlsxData.setFuelManagementReportData(fuelData);
-        xlsxData.setCulturePrescribedFireReportData(crxData);
+        xlsxData.setFuelManagementReportData(data.fuel);
+        xlsxData.setCulturePrescribedFireReportData(data.crx);
         report.setXlsxReportData(xlsxData);
         lambdaRequest.setReports(java.util.List.of(report));
 
@@ -147,49 +172,56 @@ public class ReportService {
         byte[] xlsxBytes = java.util.Base64.getDecoder().decode(file.getContent());
         outputStream.write(xlsxBytes);
         outputStream.flush();
-        log.info("[{}] [xlsx] export complete ({} ms)", rid, (System.currentTimeMillis() - tStart));
-
     }
 
-    public void writeCsvZipFromEntities(List<UUID> projectGuids, OutputStream zipOutStream) throws ServiceException {
-        List<FuelManagementReportEntity> fuelRecords = fuelManagementRepository.findByProjectGuidIn(projectGuids);
-        List<CulturalPrescribedFireReportEntity> crxRecords = culturalPrescribedFireReportRepository
-                .findByProjectGuidIn(projectGuids);
+    public void writeCsvZipFromEntities(ReportRequestModel request, OutputStream zipOutStream) throws ServiceException {
+        ReportDataBundle data = resolveReportData(request);
 
-        for (FuelManagementReportEntity f : fuelRecords) {
-            setFuelManagementFields(f);
-        }
-        for (CulturalPrescribedFireReportEntity c : crxRecords) {
-            setCrxFields(c);
+        // Remove nulls up front
+        data.fuel.removeIf(Objects::isNull);
+        data.crx.removeIf(Objects::isNull);
+
+        // Pre-process
+        data.fuel.forEach(this::setFuelManagementFields);
+        data.crx.forEach(this::setCrxFields);
+
+        // If absolutely nothing to write, fail early
+        if (data.fuel.isEmpty() && data.crx.isEmpty()) {
+            throw new IllegalArgumentException("No fiscal data found for the provided projects");
         }
 
         try (ZipOutputStream zipOut = new ZipOutputStream(zipOutStream)) {
 
-            ByteArrayOutputStream fuelCsvOut = new ByteArrayOutputStream();
-            try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(fuelCsvOut))) {
-                writer.write(getFuelCsvHeader());
-                writer.newLine();
-
-                for (FuelManagementReportEntity e : fuelRecords) {
-                    writer.write(String.join(",", getFuelCsvRow(e)));
+            // Only write Fuel CSV if there are rows
+            if (!data.fuel.isEmpty()) {
+                ByteArrayOutputStream fuelCsvOut = new ByteArrayOutputStream();
+                try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(fuelCsvOut))) {
+                    writer.write(getFuelCsvHeader());
                     writer.newLine();
+                    for (FuelManagementReportEntity e : data.fuel) {
+                        writer.write(String.join(",", getFuelCsvRow(e)));
+                        writer.newLine();
+                    }
                 }
+                addToZip(zipOut, "fuel-management-projects.csv", fuelCsvOut.toByteArray());
             }
-            addToZip(zipOut, "fuel-management-projects.csv", fuelCsvOut.toByteArray());
 
-            ByteArrayOutputStream crxCsvOut = new ByteArrayOutputStream();
-            try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(crxCsvOut))) {
-                writer.write(getCrxCsvHeader());
-                writer.newLine();
-
-                for (CulturalPrescribedFireReportEntity c : crxRecords) {
-                    writer.write(String.join(",", getCrxCsvRow(c)));
+            // Only write Cultural Prescribed CSV if there are rows
+            if (!data.crx.isEmpty()) {
+                ByteArrayOutputStream crxCsvOut = new ByteArrayOutputStream();
+                try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(crxCsvOut))) {
+                    writer.write(getCrxCsvHeader());
                     writer.newLine();
+                    for (CulturalPrescribedFireReportEntity c : data.crx) {
+                        writer.write(String.join(",", getCrxCsvRow(c)));
+                        writer.newLine();
+                    }
                 }
+                addToZip(zipOut, "cultural-prescribed-fire-projects.csv", crxCsvOut.toByteArray());
             }
-            addToZip(zipOut, "cultural-prescribed-fire-projects.csv", crxCsvOut.toByteArray());
-
-        } catch (Exception e) {
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("No fiscal data found for the provided projects.");
+        } catch (IOException e) {
             log.info("Failed to generate CSV report: {}", e.getMessage(), e);
             throw new ServiceException("Failed to generate CSV report", e);
         }
@@ -204,12 +236,14 @@ public class ReportService {
 
     private void setFuelManagementFields(FuelManagementReportEntity entity) {
         String urlPrefix = baseUrl + PROJECT_URL_PREFIX;
-        if (entity.getProjectGuid() != null) {
-            entity.setLinkToProject(urlPrefix + entity.getProjectGuid());
+        if (entity != null) {
+            if (entity.getProjectGuid() != null) {
+                entity.setLinkToProject(urlPrefix + entity.getProjectGuid());
+            }
+
             if (entity.getProjectPlanFiscalGuid() != null) {
                 entity.setLinkToFiscalActivity(
                         urlPrefix + entity.getProjectGuid() + FISCAL_QUERY_STRING + entity.getProjectPlanFiscalGuid());
-
             }
 
             if (entity.getProgramAreaGuid() != null) {
@@ -218,33 +252,29 @@ public class ReportService {
             }
 
             // 2025 -> 2025/26 format
-            String fiscalYear = formatFiscalYearIfNumeric(entity.getFiscalYear());
-            if (fiscalYear != null) {
-                entity.setFiscalYear(fiscalYear);
-            }
+            entity.setFiscalYear(formatFiscalYearIfNumeric(entity.getFiscalYear()));
         }
     }
 
     private void setCrxFields(CulturalPrescribedFireReportEntity entity) {
         String urlPrefix = baseUrl + PROJECT_URL_PREFIX;
-        if (entity.getProjectGuid() != null) {
-            entity.setLinkToProject(urlPrefix + entity.getProjectGuid());
-            if (entity.getProjectPlanFiscalGuid() != null) {
-                entity.setLinkToFiscalActivity(
-                        urlPrefix + entity.getProjectGuid() + FISCAL_QUERY_STRING + entity.getProjectPlanFiscalGuid());
+        if (entity != null) {
+            if(entity.getProjectGuid() != null) {
+                entity.setLinkToProject(urlPrefix + entity.getProjectGuid());
+                if (entity.getProjectPlanFiscalGuid() != null) {
+                    entity.setLinkToFiscalActivity(
+                            urlPrefix + entity.getProjectGuid() + FISCAL_QUERY_STRING + entity.getProjectPlanFiscalGuid());
 
+                }
             }
-        }
 
-        if (entity.getProgramAreaGuid() != null) {
-            programAreaRepository.findById(entity.getProgramAreaGuid())
-                    .ifPresent(programArea -> entity.setBusinessArea(programArea.getProgramAreaName()));
-        }
+            if (entity.getProgramAreaGuid() != null) {
+                programAreaRepository.findById(entity.getProgramAreaGuid())
+                        .ifPresent(programArea -> entity.setBusinessArea(programArea.getProgramAreaName()));
+            }
 
-        // 2025 -> 2025/26 format
-        String fiscalYear = formatFiscalYearIfNumeric(entity.getFiscalYear());
-        if (fiscalYear != null) {
-            entity.setFiscalYear(fiscalYear);
+            // 2025 -> 2025/26 format
+            entity.setFiscalYear(formatFiscalYearIfNumeric(entity.getFiscalYear()));
         }
     }
 
@@ -279,16 +309,16 @@ public class ReportService {
 
     private List<String> getFuelCsvRow(FuelManagementReportEntity e) {
         return List.of(
-                safe(String.format("=HYPERLINK(\"%s\", \"%s Project Link\")",
-                        e.getLinkToProject(), e.getProjectName())),
-                safe(String.format("=HYPERLINK(\"%s\", \"%s Fiscal Activity Link\")",
-                        e.getLinkToFiscalActivity(), e.getProjectFiscalName())),
+                safe(e.getProjectName() != null ? String.format("=HYPERLINK(\"%s\", \"%s Project Link\")",
+                        e.getLinkToProject(), e.getProjectName()) : ""),
+                safe(e.getProjectFiscalName() != null ? String.format("=HYPERLINK(\"%s\", \"%s Fiscal Activity Link\")",
+                        e.getLinkToFiscalActivity(), e.getProjectFiscalName()) : ""),
                 safe(e.getProjectTypeDescription()),
                 safe(e.getProjectName()), safe(e.getForestRegionOrgUnitName()), safe(e.getForestDistrictOrgUnitName()),
                 safe(e.getBcParksRegionOrgUnitName()), safe(e.getBcParksSectionOrgUnitName()),
                 safe(e.getFireCentreOrgUnitName()),
                 safe(e.getBusinessArea()), safe(e.getPlanningUnitName()), safe(e.getGrossProjectAreaHa() != null
-                        ? String.format("%,d ha", e.getGrossProjectAreaHa().intValue())
+                        ? String.format(HECTARE_FORMAT, e.getGrossProjectAreaHa().intValue())
                         : ""),
                 safe(e.getClosestCommunityName()),
                 safe(e.getProjectLead()), safe(e.getProposalTypeDescription()), safe(e.getProjectFiscalName()),
@@ -299,10 +329,10 @@ public class ReportService {
                 safe(formatMonetaryFields(e.getFiscalReportedSpendAmount())),
                 safe(formatMonetaryFields(e.getFiscalActualAmount())),
                 safe(e.getFiscalPlannedProjectSizeHa() != null
-                        ? String.format("%,d ha", e.getFiscalPlannedProjectSizeHa().intValue())
+                        ? String.format(HECTARE_FORMAT, e.getFiscalPlannedProjectSizeHa().intValue())
                         : ""),
                 safe(e.getFiscalCompletedSizeHa() != null
-                        ? String.format("%,d ha", e.getFiscalCompletedSizeHa().intValue())
+                        ? String.format(HECTARE_FORMAT, e.getFiscalCompletedSizeHa().intValue())
                         : ""),
                 safe(String.format("=\"%s\"", e.getSpatialSubmitted())),
                 safe(e.getFirstNationsEngagement()), safe(e.getFirstNationsDelivPartners()),
@@ -350,16 +380,16 @@ public class ReportService {
 
     private List<String> getCrxCsvRow(CulturalPrescribedFireReportEntity c) {
         return List.of(
-                safe(String.format("=HYPERLINK(\"%s\", \"%s Project Link\")",
-                        c.getLinkToProject(), c.getProjectName())),
-                safe(String.format("=HYPERLINK(\"%s\", \"%s Fiscal Activity Link\")",
-                        c.getLinkToFiscalActivity(), c.getProjectFiscalName())),
+                safe(c.getProjectName() != null ? String.format("=HYPERLINK(\"%s\", \"%s Project Link\")",
+                        c.getLinkToProject(), c.getProjectName()) : ""),
+                safe(c.getProjectFiscalName() != null ? String.format("=HYPERLINK(\"%s\", \"%s Fiscal Activity Link\")",
+                        c.getLinkToFiscalActivity(), c.getProjectFiscalName()) : ""),
                 safe(c.getProjectTypeDescription()),
                 safe(c.getProjectName()), safe(c.getForestRegionOrgUnitName()), safe(c.getForestDistrictOrgUnitName()),
                 safe(c.getBcParksRegionOrgUnitName()), safe(c.getBcParksSectionOrgUnitName()),
                 safe(c.getFireCentreOrgUnitName()),
                 safe(c.getBusinessArea()), safe(c.getPlanningUnitName()), safe(c.getGrossProjectAreaHa() != null
-                        ? String.format("%,d ha", c.getGrossProjectAreaHa().intValue())
+                        ? String.format(HECTARE_FORMAT, c.getGrossProjectAreaHa().intValue())
                         : ""),
                 safe(c.getClosestCommunityName()),
                 safe(c.getProjectLead()), safe(c.getProposalTypeDescription()), safe(c.getProjectFiscalName()),
@@ -370,10 +400,10 @@ public class ReportService {
                 safe(formatMonetaryFields(c.getFiscalReportedSpendAmount())),
                 safe(formatMonetaryFields(c.getFiscalActualAmount())),
                 safe(c.getFiscalPlannedProjectSizeHa() != null
-                        ? String.format("%,d ha", c.getFiscalPlannedProjectSizeHa().intValue())
+                        ? String.format(HECTARE_FORMAT, c.getFiscalPlannedProjectSizeHa().intValue())
                         : ""),
                 safe(c.getFiscalCompletedSizeHa() != null
-                        ? String.format("%,d ha", c.getFiscalCompletedSizeHa().intValue())
+                        ? String.format(HECTARE_FORMAT, c.getFiscalCompletedSizeHa().intValue())
                         : ""),
                 safe(String.format("=\"%s\"", c.getSpatialSubmitted())),
                 safe(c.getFirstNationsEngagement()), safe(c.getFirstNationsDelivPartners()),
@@ -387,7 +417,7 @@ public class ReportService {
                 safe(c.getApprovedTimestamp() != null
                         ? DATE_FORMAT.format(c.getApprovedTimestamp().toInstant())
                         : ""),
-                safe(c.getOutsideWuiInd() ? "Y" : "N"),
+                safe((c.getOutsideWuiInd() != null && c.getOutsideWuiInd()) ? "Y" : "N"),
                 safe(c.getWuiRiskClassDescription()), safe(c.getLocalWuiRiskClassDescription()),
                 safe(c.getTotalRclFilterSectionScore()),
                 safe(c.getRclFilterSectionComment()), safe(c.getTotalBdfFilterSectionScore()),
@@ -402,14 +432,14 @@ public class ReportService {
         return new java.text.DecimalFormat("$#,##0").format(n);
     }
 
-    private String formatFiscalYearIfNumeric(Object fiscalYear) {
+    private String formatFiscalYearIfNumeric(String fiscalYear) {
         if (fiscalYear == null)
-            return null;
+            return "";
         try {
-            int year = Integer.parseInt(fiscalYear.toString());
+            int year = Integer.parseInt(fiscalYear);
             return year + "/" + String.format("%02d", (year + 1) % 100);
         } catch (NumberFormatException e) {
-            return null; // keep original value unchanged
+            return "";
         }
     }
 
@@ -510,4 +540,5 @@ public class ReportService {
             }
         }
     }
+
 }
