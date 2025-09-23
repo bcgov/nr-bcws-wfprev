@@ -1777,6 +1777,23 @@
         "rollback": [
         ]
       }
+    },
+    {
+      "changeSet": {
+        "id": "01_00_40_00",
+        "author": "luli",
+        "tagDatabase": { "tag": "version_01_00_40_00" },
+        "changes": [
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_40/00/dml/app_wf1_prev.dm.remove_medium_filter_eval_criteria_and_selected.sql"
+            }
+          }
+        ],
+        "rollback": [
+        ]
+      }
     }
   ]
 }
