@@ -195,7 +195,10 @@ export interface ProjectFile {
   polygonHectares?: string,
   description?: string,
   fileIdentifier?: string,
-  documentPath?: string
+  documentPath?: string,
+  attachmentContentTypeCode?: {
+    attachmentContentTypeCode?: string;
+  }
 }
 
 export interface FeaturesResponse {
