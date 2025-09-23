@@ -472,7 +472,10 @@ export class ProjectFilesComponent implements OnInit {
                 this.projectFiles = this.projectFiles.filter(file => file !== fileToDelete);
                 this.dataSource.data = [...this.projectFiles];
 
-                this.projectService.getActivityBoundaries(this.projectGuid, this.fiscalGuid, this.activityGuid).subscribe(response => {
+                const typeCode = fileToDelete.attachmentContentTypeCode?.attachmentContentTypeCode;
+                if (typeCode === 'MAP') {
+                  // only run boundary deletion logic for MAP files
+                  this.projectService.getActivityBoundaries(this.projectGuid, this.fiscalGuid, this.activityGuid).subscribe(response => {
                   const boundaries = response?._embedded?.activityBoundary;
                   if (boundaries && boundaries.length > 0) {
                     const latest = boundaries.sort((a: ActivityBoundary, b: ActivityBoundary) =>
@@ -492,11 +495,18 @@ export class ProjectFilesComponent implements OnInit {
                       }
                     })
 
-                  } else {
-                    console.log('No boundaries found');
-                  }
-
-                })
+                    } else {
+                      console.log('No boundaries found');
+                    }
+                  })
+                } else{
+                  this.filesUpdated.emit();
+                  this.snackbarService.open('File has been deleted successfully.', 'Close', {
+                    duration: 5000,
+                    panelClass: 'snackbar-success',
+                  });
+                  this.loadActivityAttachments();
+                }
               },
               error: (error) => {
                 // Handle any error during the deletion process
