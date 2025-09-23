@@ -850,13 +850,42 @@ describe('ProjectFilesComponent', () => {
     });
   });
 
+  it('should skip boundary deletion when file is not MAP type', () => {
+    component.activityGuid = 'activity-guid';
+    component.fiscalGuid = 'fiscal-guid';
+    component.projectGuid = 'project-guid';
+
+    const mockFile = {
+      fileAttachmentGuid: 'test-guid',
+      attachmentContentTypeCode: { attachmentContentTypeCode: 'DOCUMENT' }
+    } as ProjectFile;
+
+    mockDialog.open.and.returnValue({ afterClosed: () => of(true) } as any);
+    mockAttachmentService.deleteActivityAttachments.and.returnValue(of({}));
+
+    spyOn(component.filesUpdated, 'emit');
+    spyOn(component, 'loadActivityAttachments');
+
+    mockProjectService.getActivityBoundaries.calls.reset();
+
+    component.projectFiles = [mockFile];
+    component.dataSource.data = [mockFile];
+
+    component.deleteFile(mockFile);
+
+    expect(mockAttachmentService.deleteActivityAttachments).toHaveBeenCalled();
+    expect(mockProjectService.getActivityBoundaries).not.toHaveBeenCalled(); // ✅ safe
+    expect(component.filesUpdated.emit).toHaveBeenCalled();
+    expect(component.loadActivityAttachments).toHaveBeenCalled();
+  });
+
 
   it('should delete activity attachment and latest boundary successfully when confirmed', (done) => {
     component.activityGuid = 'activity-guid';
     component.fiscalGuid = 'fiscal-guid';
     component.projectGuid = 'project-guid';
 
-    const mockFile = { fileAttachmentGuid: 'test-guid' } as ProjectFile;
+    const mockFile = { fileAttachmentGuid: 'test-guid', attachmentContentTypeCode: { attachmentContentTypeCode: 'MAP' } } as ProjectFile;
     const mockBoundary = {
       activityBoundaryGuid: 'boundary-guid',
       systemStartTimestamp: new Date().toISOString()
@@ -923,8 +952,10 @@ describe('ProjectFilesComponent', () => {
     component.activityGuid = 'activity-guid';
     component.fiscalGuid = 'fiscal-guid';
     component.projectGuid = 'project-guid';
-
-    const mockFile = { fileAttachmentGuid: 'test-guid' } as ProjectFile;
+    const mockFile = { 
+      fileAttachmentGuid: 'test-guid',
+      attachmentContentTypeCode: { attachmentContentTypeCode: 'MAP' }
+    } as ProjectFile;
 
     mockDialog.open.and.returnValue({ afterClosed: () => of(true) } as any);
     mockAttachmentService.deleteActivityAttachments = jasmine.createSpy().and.returnValue(of({}));
