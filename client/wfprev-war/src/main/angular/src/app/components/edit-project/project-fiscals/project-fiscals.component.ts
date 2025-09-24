@@ -491,6 +491,7 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
     const fiscalYear = this.projectFiscals[this.selectedTabIndex]?.fiscalYear;
     const formattedYear = fiscalYear ? `${fiscalYear}/${(fiscalYear + 1).toString().slice(-2)}` : null;
     const yearName = (fiscalName && fiscalYear) ? `${fiscalName}:${formattedYear}` : 'this fiscal activity'
+    const fiscalGuid = formData.projectPlanFiscalGuid ?? '';
 
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       data: {
@@ -503,6 +504,18 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
 
     dialogRef.afterClosed().subscribe((confirmed: boolean) => {
       if (confirmed) {
+
+        const hasActivities = this.activitiesComponent?.activities?.some(a => a.projectPlanFiscalGuid === fiscalGuid) ?? false;
+
+        if (hasActivities) {
+          this.snackbarService.open(
+            this.messages.fiscalActivityDeletedFailure,
+            'OK',
+            { duration: 5000, panelClass: 'snackbar-error' }
+          );
+          return;
+        }
+
         if (formData.projectPlanFiscalGuid) {
           // Delete from the service call if it's a saved fiscal activity
           this.projectService.deleteProjectFiscalByProjectPlanFiscalGuid(this.projectGuid, formData.projectPlanFiscalGuid)
@@ -545,6 +558,7 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
   }
 
   onBoundariesChanged(): void {
+    
     if (this.fiscalMapComponent) {
       this.fiscalMapComponent.getAllActivitiesBoundaries(); // refresh boundaries on map
     }
@@ -653,6 +667,7 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
       this.updateFiscalStatus(index, action);
     }
   }
+  
 
   onSaveEndorsement(updatedFiscal: ProjectFiscal): void {
     const index = this.selectedTabIndex;

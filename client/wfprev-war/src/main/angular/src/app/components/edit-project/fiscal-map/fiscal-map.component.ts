@@ -164,7 +164,7 @@ export class FiscalMapComponent implements AfterViewInit, OnDestroy, OnInit {
   private handleBoundariesResponse(results: any[]): void {
     // Filter out nulls or empty boundary arrays
     const validResults = results.filter(r => r?.boundary && r.boundary.length > 0);
-  
+    this.activityBoundaryGroup.clearLayers(); // clears old activity polygons at first place
     // For each activity, keep only the latest boundary
     const dedupedResults: any[] = [];
     const seenActivityGuids = new Set<string>();
@@ -203,7 +203,6 @@ export class FiscalMapComponent implements AfterViewInit, OnDestroy, OnInit {
   }
   
   plotActivityBoundariesOnMap(boundaries: any[]): void {
-    this.activityBoundaryGroup.clearLayers(); // clears old activity polygons
     const allFiscalPolygons: L.Layer[] = [];
   
     boundaries.forEach(boundaryEntry => {
