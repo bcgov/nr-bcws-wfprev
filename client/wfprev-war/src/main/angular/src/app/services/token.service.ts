@@ -5,6 +5,8 @@ import { OAuthService } from "angular-oauth2-oidc";
 import momentInstance from "moment";
 import { AsyncSubject, Observable, catchError, firstValueFrom, map, of } from "rxjs";
 import { AppConfigService } from "./app-config.service";
+import { ResourcesRoutes } from "../utils";
+import { Router } from "@angular/router";
 
 const moment = momentInstance;
 const OAUTH_LOCAL_STORAGE_KEY = 'oauth';
@@ -23,7 +25,10 @@ export class TokenService {
   public credentialsEmitter: Observable<any> = this.credentials.asObservable();
   public authTokenEmitter: Observable<string> = this.authToken.asObservable();
 
-  constructor(private readonly injector: Injector, protected appConfigService: AppConfigService, protected snackbarService: MatSnackBar) {
+  constructor(private readonly injector: Injector,
+    protected appConfigService: AppConfigService,
+    protected snackbarService: MatSnackBar,
+    private readonly router: Router) {
     const config = this.appConfigService.getConfig().application;
 
     const lazyAuthenticate: boolean = config.lazyAuthenticate ?? false;
@@ -43,7 +48,7 @@ export class TokenService {
   }
 
   public async checkForToken(redirectUri?: string, lazyAuth = false, allowLocalExpiredToken = false): Promise<void> {
-    const hash = window.location.hash;
+    const hash = globalThis.location?.hash;
 
     if (hash?.includes('access_token')) {
       this.parseToken(hash);
@@ -67,12 +72,7 @@ export class TokenService {
         this.initIDIRLogin(redirectUri);
       }
     } else if (hash?.includes('error')) {
-      this.snackbarService.open(
-        'Error occurred during authentication',
-        'OK',
-        { duration: 10000, panelClass: 'snackbar-error' },
-      );
-      return;
+      this.router.navigate(['/' + ResourcesRoutes.ERROR_PAGE]);
     } else if (!lazyAuth) {
       this.initIDIRLogin(redirectUri);
     }
@@ -91,9 +91,9 @@ export class TokenService {
     const params = new URLSearchParams(hash);
     const paramMap: { [key: string]: string } = {};
 
-    params.forEach((value, key) => {
+    for (const [key, value] of params) {
       paramMap[key] = value;
-    });
+    }
 
     if (paramMap['access_token']) {
       location.hash = '';
@@ -107,7 +107,7 @@ export class TokenService {
       oidc: false,
       issuer: configuration.application.baseUrl,
       loginUrl: configuration.webade.oauth2Url,
-      redirectUri: redirectUri ?? window.location.href,
+      redirectUri: redirectUri ?? globalThis.location?.href,
       clientId: configuration.webade.clientId,
       scope: configuration.webade.authScopes
     };
@@ -158,7 +158,7 @@ export class TokenService {
     const headers = new HttpHeaders({
       'Authorization': 'Bearer ' + `${token}`,
     });
-    
+
     return http.get(
       checkTokenUrl,
       {
