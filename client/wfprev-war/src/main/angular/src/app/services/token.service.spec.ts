@@ -447,4 +447,81 @@ describe('TokenService', () => {
   });
 });
 
+describe('checkForToken — scope gate on access_token hash', () => {
+  const makeCfg = (authScopes: string[]) => ({
+    application: {
+      lazyAuthenticate: true,            
+      enableLocalStorageToken: false,   
+      allowLocalExpiredToken: false,
+      baseUrl: 'http://test.com',
+      localStorageTokenKey: 'test-oauth'
+    },
+    webade: {
+      oauth2Url: 'http://oauth.test',
+      clientId: 'test-client',
+      authScopes,
+      enableCheckToken: false
+    }
+  });
+
+  afterEach(() => {
+    window.history.pushState({}, '', '/');
+  });
+
+  it('redirects to error page when required scopes are missing', async () => {
+    window.history.pushState({}, '', '/');
+
+    const cfg = makeCfg(['WFPREV.GET_TOPLEVEL', 'WFDM.*']);
+    (mockAppConfigService.getConfig as jasmine.Spy).and.returnValue(cfg);
+
+    const service = new TokenService(mockInjector, mockAppConfigService, mockSnackbarService, mockRouter);
+    window.history.pushState({}, '', '/#access_token=tok&scope=WFPREV.GET_TOPLEVEL');
+    const parseSpy = spyOn(service as any, 'parseToken');
+
+    await service.checkForToken();
+    expect(mockRouter.navigate).toHaveBeenCalledWith(['/' + ResourcesRoutes.ERROR_PAGE]);
+    expect(parseSpy).not.toHaveBeenCalled();
+  });
+
+  it('parses token when all required scopes are present (including wildcard match)', async () => {
+    window.history.pushState({}, '', '/');
+
+    const cfg = makeCfg(['WFPREV.GET_TOPLEVEL', 'WFDM.*']);
+    (mockAppConfigService.getConfig as jasmine.Spy).and.returnValue(cfg);
+
+    const svc = new TokenService(mockInjector, mockAppConfigService, mockSnackbarService, mockRouter);
+
+    window.history.pushState(
+      {}, '',
+      '/#access_token=tok&scope=WFPREV.GET_TOPLEVEL%20WFDM.UPDATE_FILE'
+    );
+
+    const parseSpy = spyOn(svc as any, 'parseToken');
+
+    await svc.checkForToken();
+
+    expect(parseSpy).toHaveBeenCalledWith(globalThis.location.hash);
+    expect(mockRouter.navigate).not.toHaveBeenCalled();
+  });
+
+  it('accepts "+"-separated scopes as space (IdP encoding quirk)', async () => {
+    window.history.pushState({}, '', '/');
+
+    const cfg = makeCfg(['FOO', 'BAR']);
+    (mockAppConfigService.getConfig as jasmine.Spy).and.returnValue(cfg);
+
+    const svc = new TokenService(mockInjector, mockAppConfigService, mockSnackbarService, mockRouter);
+
+    window.history.pushState({}, '', '/#access_token=tok&scope=FOO+BAR');
+
+    const parseSpy = spyOn(svc as any, 'parseToken');
+
+    await svc.checkForToken();
+
+    expect(parseSpy).toHaveBeenCalled();
+    expect(mockRouter.navigate).not.toHaveBeenCalled();
+  });
+});
+
+
 });
