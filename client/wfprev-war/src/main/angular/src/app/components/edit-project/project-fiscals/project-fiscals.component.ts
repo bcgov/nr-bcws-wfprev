@@ -403,7 +403,7 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
       projectGuid: updatedData.projectGuid,
       projectPlanFiscalGuid: updatedData.projectPlanFiscalGuid,
       activityCategoryCode: updatedData.activityCategoryCode,
-      fiscalYear: updatedData.fiscalYear ? parseInt(updatedData.fiscalYear, 10) : 0,
+      fiscalYear: updatedData.fiscalYear ? Number.parseInt(updatedData.fiscalYear, 10) : 0,
       projectPlanStatusCode: isUpdate ? updatedData.projectPlanStatusCode : "ACTIVE",
       planFiscalStatusCode: {
         planFiscalStatusCode: updatedData.planFiscalStatusCode

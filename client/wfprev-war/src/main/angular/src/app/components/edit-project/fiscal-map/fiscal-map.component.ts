@@ -67,8 +67,8 @@ export class FiscalMapComponent implements AfterViewInit, OnDestroy, OnInit {
         this.projectLatitude = project.latitude;
         this.projectLongitude = project.longitude;
         if (this.map) {
-          const lat = parseFloat(this.projectLatitude);
-          const lng = parseFloat(this.projectLongitude);
+          const lat = Number.parseFloat(this.projectLatitude);
+          const lng = Number.parseFloat(this.projectLongitude);
   
           const teardropIcon = getBluePinIcon()
           L.marker([lat, lng], { icon: teardropIcon }).addTo(this.map);
@@ -370,8 +370,8 @@ export class FiscalMapComponent implements AfterViewInit, OnDestroy, OnInit {
   
     } else if (this.projectLatitude && this.projectLongitude) {
       // 4. No polygons, but project has coordinates → zoom to small area around point
-      const lat = parseFloat(this.projectLatitude);
-      const lng = parseFloat(this.projectLongitude);
+      const lat = Number.parseFloat(this.projectLatitude);
+      const lng = Number.parseFloat(this.projectLongitude);
       const delta = 0.01;
   
       const bbox = [
