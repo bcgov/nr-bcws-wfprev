@@ -49,8 +49,13 @@ export class TokenService {
 
   public async checkForToken(redirectUri?: string, lazyAuth = false, allowLocalExpiredToken = false): Promise<void> {
     const hash = globalThis.location?.hash;
+    const authScopes: string[] = this.appConfigService?.getConfig()?.webade?.authScopes as unknown as string[];
 
     if (hash?.includes('access_token')) {
+      if (!this.hasAllScopesFromHash(hash, authScopes)) {
+        this.router.navigate(['/' + ResourcesRoutes.ERROR_PAGE]);
+        return; 
+      }
       this.parseToken(hash);
     } else if (this.useLocalStore && !navigator.onLine) {
       let tokenStore = localStorage.getItem(this.LOCAL_STORAGE_KEY);
@@ -77,6 +82,37 @@ export class TokenService {
       this.initIDIRLogin(redirectUri);
     }
   }
+
+  private hasAllScopesFromHash(hash: string | undefined, required: string[] = []): boolean {
+  if (!hash || required.length === 0) return false;
+
+  const params = new URLSearchParams(hash.replace(/^#/, ''));
+  let scopeParam = params.get('scope') || '';
+
+  scopeParam = scopeParam.replace(/\+/g, ' ');
+
+  const grantedList = scopeParam.split(/\s+/).filter(Boolean);
+  const grantedSet = new Set(grantedList);
+
+  const missing: string[] = [];
+
+  for (const req of required) {
+    // handle wildcard pattern like "WFDM.*"
+    if (req.endsWith('.*')) {
+      const prefix = req.slice(0, -1);
+      const hasAny = grantedList.some(g => g.startsWith(prefix));
+      if (!hasAny) missing.push(req);
+    } else {
+      if (!grantedSet.has(req)) missing.push(req);
+    }
+  }
+
+  if (missing.length > 0) {
+    return false;
+  }
+  return true;
+}
+
 
   public isTokenExpired(token: any): boolean {
     if (token?.exp) {

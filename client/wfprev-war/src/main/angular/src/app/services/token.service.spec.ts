@@ -406,4 +406,45 @@ describe('TokenService', () => {
       expect(service.getIdir()).toBe('');
     });
   });
+
+  describe('hasAllScopesFromHash (scope validation)', () => {
+  const call = (hash: string, required: string[]) =>
+    (service as any).hasAllScopesFromHash(hash, required);
+
+  afterEach(() => {
+    // clean up hash after each test
+    window.history.pushState({}, '', '/');
+  });
+
+  it('returns true when all explicit scopes are present (space encoded as %20)', () => {
+    const hash = '#access_token=t&scope=FOO%20BAR%20BAZ';
+    expect(call(hash, ['FOO', 'BAR'])).toBeTrue();
+  });
+
+  it('returns true when scopes are + separated (IdPs may encode spaces as +)', () => {
+    const hash = '#access_token=t&scope=FOO+BAR+BAZ';
+    expect(call(hash, ['FOO', 'BAR'])).toBeTrue();
+  });
+
+  it('supports wildcard prefix (WFDM.*) when at least one WFDM scope is present', () => {
+    const hash = '#access_token=t&scope=WFDM.CREATE_FILE%20WFPREV.GET_TOPLEVEL';
+    expect(call(hash, ['WFDM.*'])).toBeTrue();
+  });
+
+  it('fails wildcard check when no scope matches the prefix', () => {
+    const hash = '#access_token=t&scope=WFPREV.GET_TOPLEVEL';
+    expect(call(hash, ['WFDM.*'])).toBeFalse();
+  });
+
+  it('returns false if an explicit required scope is missing', () => {
+    const hash = '#access_token=t&scope=FOO%20BAR';
+    expect(call(hash, ['FOO', 'MISSING'])).toBeFalse();
+  });
+
+  it('treats empty required list as true (noop)', () => {
+    const hash = '#access_token=t&scope=ANY';
+    expect(call(hash, [])).toBeFalse();
+  });
+});
+
 });
