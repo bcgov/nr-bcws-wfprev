@@ -7,6 +7,8 @@ import { Injector } from '@angular/core';
 import { HttpHandler } from '@angular/common/http';
 import { UUID } from 'angular2-uuid';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { Router } from '@angular/router';
+import { ResourcesRoutes } from '../utils';
 
 describe('TokenService', () => {
   let service: TokenService;
@@ -15,6 +17,7 @@ describe('TokenService', () => {
   let mockOAuthService: any;
   let mockInjector: any;
   let mockSnackbarService: any;
+  let mockRouter: Router;
 
   // Mock configuration
   const mockConfig = {
@@ -56,7 +59,9 @@ describe('TokenService', () => {
 
     mockSnackbarService = {
       open: jasmine.createSpy('open'),
-    };  
+    };
+
+    mockRouter = jasmine.createSpyObj<Router>('Router', ['navigate']);
 
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
@@ -65,6 +70,7 @@ describe('TokenService', () => {
         { provide: AppConfigService, useValue: mockAppConfigService },
         { provide: Injector, useValue: mockInjector },
         { provide: MatSnackBar, useValue: mockSnackbarService },
+        { provide: Router, useValue: mockRouter },
       ]
     });
 
@@ -86,28 +92,28 @@ describe('TokenService', () => {
           authScopes: ['GET_PROJECT']
         }
       };
-      
+
       mockAppConfigService.getConfig.and.returnValue(minimalConfig);
-      const newService = new TokenService(mockInjector, mockAppConfigService, mockSnackbarService);
-      
+      const newService = new TokenService(mockInjector, mockAppConfigService, mockSnackbarService, mockRouter);
+
       expect(newService['LOCAL_STORAGE_KEY']).toBe('oauth');
       expect(newService['useLocalStore']).toBe(false);
     });
   });
 
   describe('checkForToken', () => {
-  
+
     it('should reinitialize flow if no token is in localStorage', async () => {
       // Mock `navigator.onLine` to return `false`
       Object.defineProperty(navigator, 'onLine', {
         value: false,
         configurable: true,
       });
-  
+
       spyOn(service as any, 'initIDIRLogin').and.callThrough();
-  
+
       await service.checkForToken();
-  
+
       expect((service as any).initIDIRLogin).toHaveBeenCalled();
     });
 
@@ -141,6 +147,36 @@ describe('TokenService', () => {
       service.clearLocalStorageToken();
       expect(localStorage.getItem('test-oauth')).toBeNull();
     });
+
+    it('navigates to the error page when the URL hash contains "error"', async () => {
+      Object.defineProperty(navigator, 'onLine', { value: true, configurable: true });
+      window.history.pushState({}, '', '/#error=access_denied&error_description=The+user+denied+access');
+
+      const cfg = {
+        ...mockConfig,
+        application: {
+          ...mockConfig.application,
+          lazyAuthenticate: true,         
+          enableLocalStorageToken: false, 
+        },
+      };
+
+      const localAppConfigService = {
+        getConfig: () => cfg,
+        loadConfig: mockAppConfigService.loadConfig,
+      };
+
+      const tokenService = new TokenService(
+        mockInjector,
+        localAppConfigService as any,
+        mockSnackbarService,
+        mockRouter
+      );
+
+      await tokenService.checkForToken();
+      expect(mockRouter.navigate).toHaveBeenCalledWith(['/' + ResourcesRoutes.ERROR_PAGE]);
+      window.history.pushState({}, '', '/');
+    });
   });
 
   describe('Token Validation', () => {
@@ -151,7 +187,7 @@ describe('TokenService', () => {
 
     it('should validate token successfully', (done) => {
       const testToken = 'test-token';
-      
+
       service.validateToken(testToken).subscribe(result => {
         expect(result).toEqual({});
         done();
@@ -160,7 +196,7 @@ describe('TokenService', () => {
       const req = httpMock.expectOne(mockConfig.webade.checkTokenUrl);
       expect(req.request.method).toBe('GET');
       expect(req.request.headers.get('Authorization')).toBe('Bearer test-token');
-      
+
       req.flush({}, { status: 200, statusText: 'OK' });
     });
 
@@ -187,8 +223,8 @@ describe('TokenService', () => {
 
   describe('Permission Checking', () => {
     it('should check user permissions correctly', () => {
-      service['tokenDetails'] = { 
-        scope: ['GET_PROJECT', 'CREATE_PROJECT', 'execute'] 
+      service['tokenDetails'] = {
+        scope: ['GET_PROJECT', 'CREATE_PROJECT', 'execute']
       };
 
       expect(service.doesUserHaveApplicationPermissions(['GET_PROJECT', 'CREATE_PROJECT']))
@@ -214,118 +250,118 @@ describe('TokenService', () => {
   });
 
 
-describe('parseToken', () => {
-  it('should parse and initialize token from hash', () => {
-    const hash = '#access_token=test-token&expires_in=3600';
-    spyOn(service, 'initAuth');
+  describe('parseToken', () => {
+    it('should parse and initialize token from hash', () => {
+      const hash = '#access_token=test-token&expires_in=3600';
+      spyOn(service, 'initAuth');
 
-    (service as any).parseToken(hash);
+      (service as any).parseToken(hash);
 
-    expect(service.initAuth).toHaveBeenCalledWith({
-      access_token: 'test-token',
-      expires_in: '3600',
+      expect(service.initAuth).toHaveBeenCalledWith({
+        access_token: 'test-token',
+        expires_in: '3600',
+      });
+    });
+
+    it('should handle invalid hash gracefully', () => {
+      const invalidHash = '#invalid_token';
+      spyOn(service, 'initAuth');
+
+      (service as any).parseToken(invalidHash);
+
+      expect(service.initAuth).not.toHaveBeenCalled();
     });
   });
 
-  it('should handle invalid hash gracefully', () => {
-    const invalidHash = '#invalid_token';
-    spyOn(service, 'initAuth');
 
-    (service as any).parseToken(invalidHash);
+  describe('getOauthToken', () => {
+    it('should return the current OAuth token', () => {
+      service['oauth'] = { access_token: 'test-token' };
 
-    expect(service.initAuth).not.toHaveBeenCalled();
-  });
-});
+      expect(service.getOauthToken()).toBe('test-token');
+    });
 
+    it('should return null if no token is present', () => {
+      service['oauth'] = null;
 
-describe('getOauthToken', () => {
-  it('should return the current OAuth token', () => {
-    service['oauth'] = { access_token: 'test-token' };
-
-    expect(service.getOauthToken()).toBe('test-token');
+      expect(service.getOauthToken()).toBeNull();
+    });
   });
 
-  it('should return null if no token is present', () => {
-    service['oauth'] = null;
+  describe('handleError', () => {
+    it('should log the error, show a snackbar, and rethrow the error', () => {
+      const testError = new Error('Test error');
+      const testMessage = 'Custom error message';
 
-    expect(service.getOauthToken()).toBeNull();
-  });
-});
+      spyOn(console, 'error');
 
-describe('handleError', () => {
-  it('should log the error, show a snackbar, and rethrow the error', () => {
-    const testError = new Error('Test error');
-    const testMessage = 'Custom error message';
+      expect(() => (service as any).handleError(testError, testMessage)).toThrow(testError);
 
-    spyOn(console, 'error');
+      // Verify console.error was called
+      expect(console.error).toHaveBeenCalledWith('Unexpected error', testError);
 
-    expect(() => (service as any).handleError(testError, testMessage)).toThrow(testError);
+      // Verify snackbarService.open was called
+      expect(mockSnackbarService.open).toHaveBeenCalledWith(
+        'Unexpected error occurred: Custom error message',
+        'OK',
+        { duration: 10000, panelClass: 'snackbar-error' },
+      );
+    });
 
-    // Verify console.error was called
-    expect(console.error).toHaveBeenCalledWith('Unexpected error', testError);
+    it('should handle errors without a custom message', () => {
+      const testError = new Error('Test error');
 
-    // Verify snackbarService.open was called
-    expect(mockSnackbarService.open).toHaveBeenCalledWith(
-      'Unexpected error occurred: Custom error message',
-      'OK',
-      { duration: 10000, panelClass: 'snackbar-error' },
-    );
-  });
+      spyOn(console, 'error');
 
-  it('should handle errors without a custom message', () => {
-    const testError = new Error('Test error');
+      expect(() => (service as any).handleError(testError)).toThrow(testError);
 
-    spyOn(console, 'error');
+      // Verify console.error was called
+      expect(console.error).toHaveBeenCalledWith('Unexpected error', testError);
 
-    expect(() => (service as any).handleError(testError)).toThrow(testError);
+      // Verify snackbarService.open was called with the error's message
+      expect(mockSnackbarService.open).toHaveBeenCalledWith(
+        `Unexpected error occurred: ${testError}`,
+        'OK',
+        { duration: 10000, panelClass: 'snackbar-error' },
+      );
+    });
+  });;
 
-    // Verify console.error was called
-    expect(console.error).toHaveBeenCalledWith('Unexpected error', testError);
+  describe('emitTokens', () => {
+    it('should emit tokens and complete subjects', () => {
+      service['oauth'] = { access_token: 'test-token' };
+      service['tokenDetails'] = { scope: ['test-scope'] };
 
-    // Verify snackbarService.open was called with the error's message
-    expect(mockSnackbarService.open).toHaveBeenCalledWith(
-      `Unexpected error occurred: ${testError}`,
-      'OK',
-      { duration: 10000, panelClass: 'snackbar-error' },
-    );
-  });
-});;
+      spyOn(service['authToken'], 'next');
+      spyOn(service['authToken'], 'complete');
+      spyOn(service['credentials'], 'next');
+      spyOn(service['credentials'], 'complete');
 
-describe('emitTokens', () => {
-  it('should emit tokens and complete subjects', () => {
-    service['oauth'] = { access_token: 'test-token' };
-    service['tokenDetails'] = { scope: ['test-scope'] };
-    
-    spyOn(service['authToken'], 'next');
-    spyOn(service['authToken'], 'complete');
-    spyOn(service['credentials'], 'next');
-    spyOn(service['credentials'], 'complete');
-    
-    service['emitTokens']();
-    
-    expect(service['authToken'].next).toHaveBeenCalledWith('test-token');
-    expect(service['authToken'].complete).toHaveBeenCalled();
-    expect(service['credentials'].next).toHaveBeenCalledWith({ scope: ['test-scope'] });
-    expect(service['credentials'].complete).toHaveBeenCalled();
-  });
-});
+      service['emitTokens']();
 
-describe('getUserFullName', () => {
-  it('should return full name when both first and last names are present', () => {
-    service['tokenDetails'] = { given_name: 'John', family_name: 'Doe' };
-    expect(service.getUserFullName()).toBe('John Doe');
+      expect(service['authToken'].next).toHaveBeenCalledWith('test-token');
+      expect(service['authToken'].complete).toHaveBeenCalled();
+      expect(service['credentials'].next).toHaveBeenCalledWith({ scope: ['test-scope'] });
+      expect(service['credentials'].complete).toHaveBeenCalled();
+    });
   });
 
-  it('should return null if both names are missing', () => {
-    service['tokenDetails'] = {};
-    expect(service.getUserFullName()).toBeNull();
-  });
+  describe('getUserFullName', () => {
+    it('should return full name when both first and last names are present', () => {
+      service['tokenDetails'] = { given_name: 'John', family_name: 'Doe' };
+      expect(service.getUserFullName()).toBe('John Doe');
+    });
 
-  it('should return null if tokenDetails is undefined', () => {
-    service['tokenDetails'] = undefined!;
-    expect(service.getUserFullName()).toBeNull();
+    it('should return null if both names are missing', () => {
+      service['tokenDetails'] = {};
+      expect(service.getUserFullName()).toBeNull();
+    });
+
+    it('should return null if tokenDetails is undefined', () => {
+      service['tokenDetails'] = undefined!;
+      expect(service.getUserFullName()).toBeNull();
+    });
   });
-});
 
   describe('getUserFullName with reverseNameOrder flag', () => {
     it('should return "Last, First" format when both names are present', () => {
