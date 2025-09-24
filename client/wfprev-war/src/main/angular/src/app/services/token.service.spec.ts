@@ -407,7 +407,7 @@ describe('TokenService', () => {
     });
   });
 
-  describe('hasAllScopesFromHash (scope validation)', () => {
+  describe('hasAllScopesFromHash', () => {
   const call = (hash: string, required: string[]) =>
     (service as any).hasAllScopesFromHash(hash, required);
 
@@ -441,7 +441,7 @@ describe('TokenService', () => {
     expect(call(hash, ['FOO', 'MISSING'])).toBeFalse();
   });
 
-  it('treats empty required list as true (noop)', () => {
+  it('treats empty required list as false', () => {
     const hash = '#access_token=t&scope=ANY';
     expect(call(hash, [])).toBeFalse();
   });
