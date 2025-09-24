@@ -69,7 +69,7 @@ export class TokenService {
       }
       this.parseToken(hash!);
       return;
-    }
+    } 
 
     // 3) Offline path using local storage
     if (this.shouldUseOfflineLocal()) {
