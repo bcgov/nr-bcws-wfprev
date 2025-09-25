@@ -90,7 +90,7 @@ export class ActivitiesComponent implements OnChanges, CanComponentDeactivate {
   constructor(
     private route: ActivatedRoute,
     private projectService: ProjectService,
-    private attachmentService: AttachmentService,
+    private readonly attachmentService: AttachmentService,
     private codeTableService: CodeTableServices,
     private readonly fb: FormBuilder,
     private readonly snackbarService: MatSnackBar,
