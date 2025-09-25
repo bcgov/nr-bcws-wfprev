@@ -634,4 +634,8 @@ export class ProjectFilesComponent implements OnInit {
         return description;
     }
   }
+
+  public get hasAttachments(): boolean {
+    return Array.isArray(this.projectFiles) && this.projectFiles.length > 0;
+  }
 }

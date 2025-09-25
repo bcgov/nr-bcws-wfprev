@@ -20,6 +20,7 @@ export const Messages = {
   activityCreatedFailure: 'Activity Created Failed',
   activityUpdatedFailure: 'Activity Update Failed',
   activityDeletedFailure: 'Activity Deleted Failed',
+  activityWithAttachmentDeleteFailure: 'Delete Failed. Remove Uploaded Files to Delete Activity.',
   fileUploadSuccess: 'File Uploaded Successfully',
   fileUploadFailure: 'File Uploaded Failed',
   fileUploadInProgress: 'File upload in progress, Please wait',
