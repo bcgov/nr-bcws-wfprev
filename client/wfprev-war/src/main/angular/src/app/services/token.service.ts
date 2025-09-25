@@ -67,7 +67,7 @@ export class TokenService {
         this.router.navigate(['/' + ResourcesRoutes.ERROR_PAGE]);
         return;
       }
-      this.parseToken(hash!);
+      this.parseToken(hash);
       return;
     } 
 
