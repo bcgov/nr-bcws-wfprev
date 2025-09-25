@@ -158,13 +158,13 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
       { name: 'proposalTypeCodes', embeddedKey: CodeTableKeys.PROPOSAL_TYPE_CODE }
     ];
 
-    codeTables.forEach((table) => {
+    for (const table of codeTables) {
       this.fetchData(
         this.codeTableService.fetchCodeTable(table.name),
         (data) => this.assignCodeTableData(table.embeddedKey, data),
         `Error fetching ${table.name}`
       );
-    });
+    }
 
     this.loadDropdownOptions();
   }
@@ -254,7 +254,7 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
             return (a.projectFiscalName ?? '').localeCompare(b.projectFiscalName ?? '', undefined);
           });
 
-        this.originalFiscalValues = JSON.parse(JSON.stringify(this.projectFiscals));
+        this.originalFiscalValues = structuredClone(this.projectFiscals);
 
         this.fiscalForms = this.projectFiscals.map((fiscal) => {
           const form = this.createFiscalForm(fiscal);
@@ -403,7 +403,7 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
       projectGuid: updatedData.projectGuid,
       projectPlanFiscalGuid: updatedData.projectPlanFiscalGuid,
       activityCategoryCode: updatedData.activityCategoryCode,
-      fiscalYear: updatedData.fiscalYear ? parseInt(updatedData.fiscalYear, 10) : 0,
+      fiscalYear: updatedData.fiscalYear ? Number.parseInt(updatedData.fiscalYear, 10) : 0,
       projectPlanStatusCode: isUpdate ? updatedData.projectPlanStatusCode : "ACTIVE",
       planFiscalStatusCode: {
         planFiscalStatusCode: updatedData.planFiscalStatusCode
@@ -491,6 +491,7 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
     const fiscalYear = this.projectFiscals[this.selectedTabIndex]?.fiscalYear;
     const formattedYear = fiscalYear ? `${fiscalYear}/${(fiscalYear + 1).toString().slice(-2)}` : null;
     const yearName = (fiscalName && fiscalYear) ? `${fiscalName}:${formattedYear}` : 'this fiscal activity'
+    const fiscalGuid = formData.projectPlanFiscalGuid ?? '';
 
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       data: {
@@ -503,6 +504,18 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
 
     dialogRef.afterClosed().subscribe((confirmed: boolean) => {
       if (confirmed) {
+
+        const hasActivities = this.activitiesComponent?.activities?.some(a => a.projectPlanFiscalGuid === fiscalGuid) ?? false;
+
+        if (hasActivities) {
+          this.snackbarService.open(
+            this.messages.fiscalActivityDeletedFailure,
+            'OK',
+            { duration: 5000, panelClass: 'snackbar-error' }
+          );
+          return;
+        }
+
         if (formData.projectPlanFiscalGuid) {
           // Delete from the service call if it's a saved fiscal activity
           this.projectService.deleteProjectFiscalByProjectPlanFiscalGuid(this.projectGuid, formData.projectPlanFiscalGuid)
@@ -545,6 +558,7 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
   }
 
   onBoundariesChanged(): void {
+    
     if (this.fiscalMapComponent) {
       this.fiscalMapComponent.getAllActivitiesBoundaries(); // refresh boundaries on map
     }
@@ -653,6 +667,7 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
       this.updateFiscalStatus(index, action);
     }
   }
+  
 
   onSaveEndorsement(updatedFiscal: ProjectFiscal): void {
     const index = this.selectedTabIndex;
