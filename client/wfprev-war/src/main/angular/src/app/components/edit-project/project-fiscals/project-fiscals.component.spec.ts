@@ -933,4 +933,59 @@ describe('ProjectFiscalsComponent', () => {
     expect(component.selectedTabIndex).toBe(0);
   }));
 
+  it('should block deletion and show snackbar if activities exist', () => {
+    mockSnackBar.open.calls.reset();
+    mockProjectService.deleteProjectFiscalByProjectPlanFiscalGuid.calls.reset();
+
+    // ✅ Mock dialog.open to auto-confirm
+    spyOn(component.dialog, 'open').and.returnValue({
+      afterClosed: () => of(true) // Simulates user clicking "Confirm"
+    } as any);
+
+    // ✅ Provide activities that match the fiscalGuid
+    (component as any).activitiesComponent = {
+      activities: [{ projectPlanFiscalGuid: 'test-guid' }]
+    };
+
+    component.projectFiscals = [{ projectPlanFiscalGuid: 'test-guid' }];
+    component.selectedTabIndex = 0;
+
+    fixture.detectChanges();
+
+    component.deleteFiscalYear({ value: component.projectFiscals[0] }, 0);
+
+    expect(mockSnackBar.open).toHaveBeenCalledOnceWith(
+      component.messages.fiscalActivityDeletedFailure,
+      'OK',
+      { duration: 5000, panelClass: 'snackbar-error' }
+    );
+
+    expect(mockProjectService.deleteProjectFiscalByProjectPlanFiscalGuid)
+      .not.toHaveBeenCalled();
+  });
+
+
+  it('should proceed with deletion if there are no activities', () => {
+    spyOn(component.dialog, 'open').and.returnValue({
+      afterClosed: () => of(true)
+    } as any);
+    spyOn(component, 'loadProjectFiscals');
+
+    component.activitiesComponent = {
+      activities: []
+    } as any;
+
+    mockProjectService.deleteProjectFiscalByProjectPlanFiscalGuid = jasmine.createSpy().and.returnValue(of({}));
+
+    component.projectFiscals = [{ projectPlanFiscalGuid: 'test-guid' }];
+    component.deleteFiscalYear({ value: component.projectFiscals[0] }, 0);
+
+    expect(mockProjectService.deleteProjectFiscalByProjectPlanFiscalGuid).toHaveBeenCalledWith('test-guid', 'test-guid');
+    expect(mockSnackBar.open).toHaveBeenCalledWith(
+      component.messages.projectFiscalDeletedSuccess,
+      'OK',
+      { duration: 5000, panelClass: 'snackbar-success' }
+    );
+  });
+
 });

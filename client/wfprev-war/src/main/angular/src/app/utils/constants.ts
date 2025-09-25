@@ -30,6 +30,7 @@ export const Messages = {
   fileDownloadFailure: 'Error: File download unsuccessful',
   fileDownloadSuccess: 'File downloaded successfully.',
   fileDownloadInProgress: 'File download in progress. Please wait',
+  fiscalActivityDeletedFailure: 'Delete Failed. Remove Activities to Delete Fiscal Activity'
 };
 
 export const CodeTableKeys = {
