@@ -206,7 +206,7 @@ export class FiscalMapComponent implements AfterViewInit, OnDestroy, OnInit {
     this.activityBoundaryGroup.clearLayers(); // clears old activity polygons
     const allFiscalPolygons: L.Layer[] = [];
   
-    boundaries.forEach(boundaryEntry => {
+    for (const boundaryEntry of boundaries) {
       const fiscalYear = boundaryEntry.fiscalYear;
       let color = '';
   
@@ -243,11 +243,11 @@ export class FiscalMapComponent implements AfterViewInit, OnDestroy, OnInit {
           addToMap(geometry);
         }
       }
-    });
+    };
   
     const allLayers: L.Layer[] = [...allFiscalPolygons];
     // Add project boundary as well
-    this.projectBoundary.forEach((item: any) => {
+    for (const item of this.projectBoundary) {
       const geometry = item.boundaryGeometry;
       if (!geometry) return;
     
@@ -259,7 +259,7 @@ export class FiscalMapComponent implements AfterViewInit, OnDestroy, OnInit {
         }
       });
       allLayers.push(layer);
-    });
+    };
     
     if (allLayers.length > 0) {
       const group = L.featureGroup(allLayers);
@@ -271,7 +271,7 @@ export class FiscalMapComponent implements AfterViewInit, OnDestroy, OnInit {
     this.projectBoundaryGroup.clearLayers();
     const layers: L.Layer[] = [];
   
-    boundary.forEach((item: any) => {
+    for (const item of boundary) {
       const geometry = item.boundaryGeometry;
       if (!geometry) return;
   
@@ -289,11 +289,13 @@ export class FiscalMapComponent implements AfterViewInit, OnDestroy, OnInit {
       };
   
       if (geometry.type === 'GeometryCollection') {
-        geometry.geometries.forEach((subGeom: any) => addToMap(subGeom));
+        for (const subGeom of geometry.geometries) {
+          addToMap(subGeom);
+        }
       } else {
         addToMap(geometry);
       }
-    });
+    };
   
     if (layers.length > 0 && this.map) {
       const group = L.featureGroup(layers);
@@ -325,7 +327,7 @@ export class FiscalMapComponent implements AfterViewInit, OnDestroy, OnInit {
 
     const legendHelper = new LeafletLegendService();
     legendHelper.addLegend(this.map, this.fiscalColorMap);
-    const bcBounds = L.latLngBounds([48.3, -139.1], [60.0, -114.0]);
+    const bcBounds = L.latLngBounds([48.3, -139.1], [60, -114]);
     this.map.fitBounds(bcBounds, { padding: [20, 20] });
     createFullPageControl(() => this.openFullMap()).addTo(this.map);
   }
@@ -334,24 +336,28 @@ export class FiscalMapComponent implements AfterViewInit, OnDestroy, OnInit {
     const latLngs: L.LatLng[] = [];
     // handle this based on following steps and scenarios.
     // 1. Add activity boundaries
-    this.allActivityBoundaries?.forEach(entry => {
-      entry.boundary?.forEach((item: any) => {
-        const geometry = item.geometry;
-        const layer = L.geoJSON(geometry);
-        const layerBounds = layer.getBounds();
-        latLngs.push(layerBounds.getSouthWest());
-        latLngs.push(layerBounds.getNorthEast());
-      });
-    });
+    if (this.allActivityBoundaries) {
+      for (const entry of this.allActivityBoundaries) {
+        if (!entry.boundary) continue;
+
+        for (const item of entry.boundary) {
+          const geometry = item.geometry;
+          const layer = L.geoJSON(geometry);
+          const layerBounds = layer.getBounds();
+          latLngs.push(layerBounds.getSouthWest(), layerBounds.getNorthEast());
+        }
+      }
+    }
   
     // 2. Add project boundaries
-    this.projectBoundary?.forEach((item: any) => {
-      const geometry = item.boundaryGeometry;
-      const layer = L.geoJSON(geometry);
-      const layerBounds = layer.getBounds();
-      latLngs.push(layerBounds.getSouthWest());
-      latLngs.push(layerBounds.getNorthEast());
-    });
+    if (this.projectBoundary) {
+      for (const item of this.projectBoundary) {
+        const geometry = item.boundaryGeometry;
+        const layer = L.geoJSON(geometry);
+        const layerBounds = layer.getBounds();
+        latLngs.push(layerBounds.getSouthWest(), layerBounds.getNorthEast());
+      }
+    }
   
     let urlTree: UrlTree;
   
