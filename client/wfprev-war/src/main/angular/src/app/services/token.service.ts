@@ -135,6 +135,8 @@ export class TokenService {
     const params = new URLSearchParams(hash.replace(/^#/, ''));
     let scopeParam = params.get('scope') || '';
 
+    if (!scopeParam) return false;
+
     scopeParam = scopeParam.replaceAll(/\+/g, ' ');
 
     const grantedList = scopeParam.split(/\s+/).filter(Boolean);
