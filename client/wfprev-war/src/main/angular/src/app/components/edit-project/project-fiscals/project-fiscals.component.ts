@@ -158,13 +158,13 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
       { name: 'proposalTypeCodes', embeddedKey: CodeTableKeys.PROPOSAL_TYPE_CODE }
     ];
 
-    codeTables.forEach((table) => {
+    for (const table of codeTables) {
       this.fetchData(
         this.codeTableService.fetchCodeTable(table.name),
         (data) => this.assignCodeTableData(table.embeddedKey, data),
         `Error fetching ${table.name}`
       );
-    });
+    }
 
     this.loadDropdownOptions();
   }
@@ -254,7 +254,7 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
             return (a.projectFiscalName ?? '').localeCompare(b.projectFiscalName ?? '', undefined);
           });
 
-        this.originalFiscalValues = JSON.parse(JSON.stringify(this.projectFiscals));
+        this.originalFiscalValues = structuredClone(this.projectFiscals);
 
         this.fiscalForms = this.projectFiscals.map((fiscal) => {
           const form = this.createFiscalForm(fiscal);
