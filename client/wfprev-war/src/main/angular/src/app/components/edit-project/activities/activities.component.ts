@@ -25,6 +25,7 @@ import { TimestampComponent } from 'src/app/components/shared/timestamp/timestam
 import { TextareaComponent } from 'src/app/components/shared/textarea/textarea.component';
 import { getUtcIsoTimestamp } from 'src/app/utils/tools';
 import { ActivityModel } from 'src/app/components/models';
+import { AttachmentService } from 'src/app/services/attachment-service';
 
 
 export const CUSTOM_DATE_FORMATS = {
@@ -89,6 +90,7 @@ export class ActivitiesComponent implements OnChanges, CanComponentDeactivate {
   constructor(
     private route: ActivatedRoute,
     private projectService: ProjectService,
+    private attachmentService: AttachmentService,
     private codeTableService: CodeTableServices,
     private readonly fb: FormBuilder,
     private readonly snackbarService: MatSnackBar,
@@ -739,18 +741,41 @@ export class ActivitiesComponent implements OnChanges, CanComponentDeactivate {
           this.isNewActivityBeingAdded = false;
           return;
         }
-        // Delete from the service call if it's a saved fiscal activity
-        this.projectService.deleteActivity(this.projectGuid, this.fiscalGuid, activityGuid)
+        this.attachmentService.getActivityAttachments(this.projectGuid, this.fiscalGuid, activityGuid)
           .subscribe({
-            next: () => {
-              this.snackbarService.open(
-                this.messages.activityDeletedSuccess,
-                'OK',
-                { duration: 5000, panelClass: 'snackbar-success' }
-              );
-              this.getActivities()
+            next: (attachments) => {
+              if (attachments?._embedded?.fileAttachment?.length > 0) {
+                // Block delete if attachments exist
+                this.snackbarService.open(
+                  this.messages.activityWithAttachmentDeleteFailure,
+                  'OK',
+                  { duration: 5000, panelClass: 'snackbar-error' }
+                );
+                return;
+              }
+
+              // Delete from the service call if it's a saved fiscal activity and has no attachments
+              this.projectService.deleteActivity(this.projectGuid, this.fiscalGuid, activityGuid)
+                .subscribe({
+                  next: () => {
+                    this.snackbarService.open(
+                      this.messages.activityDeletedSuccess,
+                      'OK',
+                      { duration: 5000, panelClass: 'snackbar-success' }
+                    );
+                    this.getActivities();
+                  },
+                  error: () => {
+                    this.snackbarService.open(
+                      this.messages.activityDeletedFailure,
+                      'OK',
+                      { duration: 5000, panelClass: 'snackbar-error' }
+                    );
+                  }
+                });
             },
             error: () => {
+              // If the attachment lookup itself fails
               this.snackbarService.open(
                 this.messages.activityDeletedFailure,
                 'OK',
@@ -759,9 +784,7 @@ export class ActivitiesComponent implements OnChanges, CanComponentDeactivate {
             }
           });
       }
-    }
-    )
-
+    });
   }
 
   canDeleteActivity(index: number): boolean {

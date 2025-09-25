@@ -18,11 +18,13 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { DebugElement } from '@angular/core';
 import { IconButtonComponent } from 'src/app/components/shared/icon-button/icon-button.component';
 import { By } from '@angular/platform-browser';
+import { AttachmentService } from 'src/app/services/attachment-service';
 
 describe('ActivitiesComponent', () => {
   let component: ActivitiesComponent;
   let fixture: ComponentFixture<ActivitiesComponent>;
   let mockProjectService: jasmine.SpyObj<ProjectService>;
+  let mockAttachmentService: jasmine.SpyObj<AttachmentService>;
   let mockCodeTableService: jasmine.SpyObj<CodeTableServices>;
   let mockSnackbarService: jasmine.SpyObj<MatSnackBar>;
   let mockDialog: jasmine.SpyObj<MatDialog>;
@@ -34,14 +36,19 @@ describe('ActivitiesComponent', () => {
       'createFiscalActivity',
       'getProjectByProjectGuid'
     ]);
-  
+
+    mockAttachmentService = jasmine.createSpyObj('AttachmentService', [
+      'getActivityAttachments'
+    ]);
+
     mockProjectService.getProjectByProjectGuid.and.returnValue(of({ projectTypeCode: { projectTypeCode: 'STANDARD' } }));
-  
+
     mockCodeTableService = jasmine.createSpyObj('CodeTableServices', ['fetchCodeTable']);
     mockSnackbarService = jasmine.createSpyObj('MatSnackBar', ['open']);
     mockDialog = jasmine.createSpyObj('MatDialog', ['open']);
     mockCodeTableService.fetchCodeTable.and.returnValue(of({ _embedded: { contractPhaseCode: [] } }));
     mockProjectService.getFiscalActivities.and.returnValue(of({ _embedded: { activities: [] } }));
+    mockAttachmentService.getActivityAttachments.and.returnValue(of({ _embedded: { attachments: [] } }));
 
     await TestBed.configureTestingModule({
       imports: [
@@ -58,6 +65,7 @@ describe('ActivitiesComponent', () => {
       providers: [
         FormBuilder,
         { provide: ProjectService, useValue: mockProjectService },
+        { provide: AttachmentService, useValue: mockAttachmentService },
         { provide: CodeTableServices, useValue: mockCodeTableService },
         { provide: MatSnackBar, useValue: mockSnackbarService },
         { provide: MatDialog, useValue: mockDialog },
@@ -87,20 +95,20 @@ describe('ActivitiesComponent', () => {
   it('should call getActivities on component initialization', () => {
     spyOn(component, 'getActivities').and.callThrough(); // Spy on getActivities
     spyOn(component, 'loadCodeTables').and.callThrough(); // Spy on loadCodeTables
-  
+
     component.ngOnChanges({
-      fiscalGuid: { 
-        currentValue: 'test-guid', 
-        previousValue: '', 
-        firstChange: true, 
-        isFirstChange: () => true 
-      } 
+      fiscalGuid: {
+        currentValue: 'test-guid',
+        previousValue: '',
+        firstChange: true,
+        isFirstChange: () => true
+      }
     });
-  
+
     expect(component.getActivities).toHaveBeenCalled();
     expect(component.loadCodeTables).toHaveBeenCalled();
   });
-  
+
   it('should create an activity form with correct values', () => {
     const testActivity = {
       activityGuid: 'test-guid',
@@ -157,22 +165,22 @@ describe('ActivitiesComponent', () => {
   }));
 
   it('should mark an activity as dirty on value change', () => {
-    const form = component.createActivityForm({}); 
+    const form = component.createActivityForm({});
     component.activityForms.push(form);
     component.isActivityDirty.push(false);
-  
+
     form.get('activityName')?.setValue('Updated Name');
-  
+
     form.markAsDirty();
-    
+
     form.updateValueAndValidity();
-  
+
     fixture.detectChanges();
-  
-    expect(component.isActivityDirty[0]).toBeTrue(); 
+
+    expect(component.isActivityDirty[0]).toBeTrue();
   });
-  
-  
+
+
   it('should save an activity and trigger API update', () => {
     const form = component.createActivityForm({
       activityGuid: 'test-guid',
@@ -221,7 +229,76 @@ describe('ActivitiesComponent', () => {
       { duration: 5000, panelClass: 'snackbar-success' }
     );
   });
-  
+
+  it('should block delete and show error when attachments exist', () => {
+    const form = component.createActivityForm({ activityGuid: 'guid-1', activityName: 'With Files' });
+    component.activityForms.push(form);
+    component.activities.push({ activityGuid: 'guid-1', activityName: 'With Files' });
+
+    mockDialog.open.and.returnValue({ afterClosed: () => of(true) } as any);
+
+    mockAttachmentService.getActivityAttachments.and.returnValue(
+      of({ _embedded: { fileAttachment: [{ id: 'f1' }] } })
+    );
+
+    const deleteSpy = mockProjectService.deleteActivity = jasmine.createSpy();
+
+    component.onDeleteActivity(0);
+
+    expect(mockDialog.open).toHaveBeenCalled();
+    expect(mockAttachmentService.getActivityAttachments).toHaveBeenCalledWith(
+      component.projectGuid, component.fiscalGuid, 'guid-1'
+    );
+    expect(deleteSpy).not.toHaveBeenCalled();
+    expect(mockSnackbarService.open).toHaveBeenCalledWith(
+      component.messages.activityWithAttachmentDeleteFailure,
+      'OK',
+      { duration: 5000, panelClass: 'snackbar-error' }
+    );
+  });
+
+  it('should show error and not delete when attachment lookup fails', () => {
+    const form = component.createActivityForm({ activityGuid: 'guid-3', activityName: 'Err Attach' });
+    component.activityForms.push(form);
+    component.activities.push({ activityGuid: 'guid-3', activityName: 'Err Attach' });
+
+    mockDialog.open.and.returnValue({ afterClosed: () => of(true) } as any);
+    mockAttachmentService.getActivityAttachments.and.returnValue(
+      throwError(() => new Error('attachment api boom'))
+    );
+    const deleteSpy = mockProjectService.deleteActivity = jasmine.createSpy();
+
+    component.onDeleteActivity(0);
+
+    expect(deleteSpy).not.toHaveBeenCalled();
+    expect(mockSnackbarService.open).toHaveBeenCalledWith(
+      component.messages.activityDeletedFailure,
+      'OK',
+      { duration: 5000, panelClass: 'snackbar-error' }
+    );
+  });
+
+  it('should show error when deleteActivity fails', () => {
+    const form = component.createActivityForm({ activityGuid: 'guid-4', activityName: 'Delete Err' });
+    component.activityForms.push(form);
+    component.activities.push({ activityGuid: 'guid-4', activityName: 'Delete Err' });
+
+    mockDialog.open.and.returnValue({ afterClosed: () => of(true) } as any);
+    mockAttachmentService.getActivityAttachments.and.returnValue(of({ _embedded: { fileAttachment: [] } }));
+    mockProjectService.deleteActivity = jasmine.createSpy().and.returnValue(
+      throwError(() => new Error('delete failed'))
+    );
+
+    component.onDeleteActivity(0);
+
+    expect(mockProjectService.deleteActivity).toHaveBeenCalled();
+    expect(mockSnackbarService.open).toHaveBeenCalledWith(
+      component.messages.activityDeletedFailure,
+      'OK',
+      { duration: 5000, panelClass: 'snackbar-error' }
+    );
+  });
+
   it('should enable delete button for active activity', () => {
     const activity = { activityStatusCode: 'ACTIVE' };
     component.activities.push(activity);
@@ -240,8 +317,8 @@ describe('ActivitiesComponent', () => {
   });
 
   it('should set form control to pristine on cancel', () => {
-    const testActivity = { 
-      activityGuid: 'test-guid', 
+    const testActivity = {
+      activityGuid: 'test-guid',
       activityName: 'Original Name',
       activityStartDate: '2025-03-10T00:00:00.000+00:00',
       activityEndDate: '2025-03-20T00:00:00.000+00:00',
@@ -268,52 +345,52 @@ describe('ActivitiesComponent', () => {
   it('should disable and clear method field if techniqueGuid is null', () => {
     const form = component.createActivityForm({});
     component.activityForms.push(form);
-  
+
     // Set a default value to method field before calling function
     form.get('silvicultureMethodGuid')?.setValue('some-value');
     form.get('silvicultureMethodGuid')?.enable();
-  
+
     component.onTechniqueChange(null as any, form);
-  
+
     expect(form.get('silvicultureMethodGuid')?.value).toBeNull();
     expect(form.get('silvicultureMethodGuid')?.disabled).toBeTrue();
     expect(component.filteredMethodCode.length).toBe(0);
   });
-  
+
   it('should filter and enable method field when techniqueGuid is provided', () => {
     const form = component.createActivityForm({});
     component.activityForms.push(form);
-  
+
     // Mock silvicultureMethodCode data
     component.silvicultureMethodCode = [
       { silvicultureTechniqueGuid: 'technique1', silvicultureMethodGuid: 'method1' },
       { silvicultureTechniqueGuid: 'technique2', silvicultureMethodGuid: 'method2' }
     ];
-  
+
     component.onTechniqueChange('technique1', form);
-  
+
     expect(form.get('filteredMethodCode')?.value).toEqual([
       { silvicultureTechniqueGuid: 'technique1', silvicultureMethodGuid: 'method1' }
     ]);
     expect(form.get('silvicultureMethodGuid')?.enabled).toBeTrue();
     expect(form.get('silvicultureMethodGuid')?.value).toBeNull();
   });
-  
+
 
   it('should return "" if activity is missing', () => {
     expect(component.getActivityTitle(0)).toBe('');
   });
-  
+
   it('should return activity name if Results Reportable is OFF', () => {
     const form = component.createActivityForm({
       activityName: 'Manual Activity',
       isResultsReportableInd: false
     });
     component.activityForms.push(form);
-  
+
     expect(component.getActivityTitle(0)).toBe('Manual Activity');
   });
-  
+
   it('should return "" if Results Reportable is ON but no base, technique, or method is set', () => {
     const form = component.createActivityForm({
       isResultsReportableInd: true,
@@ -322,15 +399,15 @@ describe('ActivitiesComponent', () => {
       silvicultureMethodGuid: null
     });
     component.activityForms.push(form);
-  
+
     expect(component.getActivityTitle(0)).toBe('');
   });
-  
+
   it('should construct title with missing elements when Results Reportable is ON', () => {
     component.silvicultureBaseCode = [{ silvicultureBaseGuid: 'base1', description: 'Base A' }];
     component.silvicultureTechniqueCode = [{ silvicultureTechniqueGuid: 'tech1', description: 'Technique B', silvicultureBaseGuid: 'base1' }];
     component.silvicultureMethodCode = [{ silvicultureMethodGuid: 'method1', description: 'Method C' }];
-  
+
     const form = component.createActivityForm({
       isResultsReportableInd: true,
       silvicultureBaseGuid: 'base1',
@@ -338,16 +415,16 @@ describe('ActivitiesComponent', () => {
       silvicultureMethodGuid: null
     });
     component.activityForms.push(form);
-  
+
     expect(component.getActivityTitle(0)).toBe('Base A - Technique B');
   });
-  
-  
+
+
   it('should construct title with missing elements when Results Reportable is ON', () => {
     component.silvicultureBaseCode = [{ silvicultureBaseGuid: 'base1', description: 'Base A' }];
     component.silvicultureTechniqueCode = [{ silvicultureTechniqueGuid: 'tech1', description: 'Technique B', silvicultureBaseGuid: 'base1' }];
     component.silvicultureMethodCode = [{ silvicultureMethodGuid: 'method1', description: 'Method C' }];
-  
+
     // Only Base and Technique set
     const form1 = component.createActivityForm({
       isResultsReportableInd: true,
@@ -355,81 +432,81 @@ describe('ActivitiesComponent', () => {
       silvicultureTechniqueGuid: 'tech1',
       silvicultureMethodGuid: null
     });
-  
+
     component.activityForms.push(form1);
-    component.cd.detectChanges(); 
-  
-    expect(component.getActivityTitle(0)).toBe('Base A - Technique B'); 
-  
+    component.cd.detectChanges();
+
+    expect(component.getActivityTitle(0)).toBe('Base A - Technique B');
+
     const form2 = component.createActivityForm({
       isResultsReportableInd: true,
       silvicultureBaseGuid: 'base1',
       silvicultureTechniqueGuid: null,
       silvicultureMethodGuid: null
     });
-  
+
     component.activityForms.push(form2);
     component.cd.detectChanges();
-  
+
     expect(component.getActivityTitle(1)).toBe('Base A');
   });
-  
+
 
   it('should enable required validator and disable activityName when Results Reportable is ON', () => {
     const form = component.createActivityForm({
       isResultsReportableInd: true,
       activityName: 'Original Name'
     });
-  
+
     component.activityForms.push(form);
     spyOn(component, 'getActivityTitle').and.returnValue('Generated Title');
-  
+
     component.toggleResultsReportableInd(0);
-  
+
     expect(form.get('silvicultureBaseGuid')?.validator).toBeTruthy(); // Validator should be set
     expect(form.get('activityName')?.disabled).toBeTrue();
     expect(form.get('activityName')?.value).toBe('Generated Title');
   });
-  
+
   it('should clear validators and enable activityName when Results Reportable is OFF', () => {
     const form = component.createActivityForm({
       isResultsReportableInd: false,
       activityName: 'Original Name'
     });
-  
+
     component.activityForms.push(form);
     spyOn(component, 'getActivityTitle').and.returnValue('Generated Title');
-  
+
     component.toggleResultsReportableInd(0);
-  
+
     expect(form.get('silvicultureBaseGuid')?.validator).toBeNull(); // Validator should be cleared
     expect(form.get('activityName')?.enabled).toBeTrue();
     expect(form.get('activityName')?.value).toBe('');
   });
-  
+
   it('should update activityName dynamically when base, technique, or method changes', () => {
     component.silvicultureBaseCode = [{ silvicultureBaseGuid: 'base1', description: 'Base A' }];
     component.silvicultureTechniqueCode = [{ silvicultureTechniqueGuid: 'tech1', description: 'Technique B' }];
     component.silvicultureMethodCode = [{ silvicultureMethodGuid: 'method1', description: 'Method C' }];
-  
+
     const form = component.createActivityForm({
       isResultsReportableInd: true,
       silvicultureBaseGuid: '',
       silvicultureTechniqueGuid: '',
       silvicultureMethodGuid: ''
     });
-  
+
     component.activityForms.push(form);
     spyOn(component, 'getActivityTitle').and.returnValue('Updated Title');
-  
+
     component.toggleResultsReportableInd(0);
-  
+
     form.get('silvicultureBaseGuid')?.setValue('base1');
     form.get('silvicultureTechniqueGuid')?.setValue('tech1');
     form.get('silvicultureMethodGuid')?.setValue('method1');
-  
+
     component.cd.detectChanges();
-  
+
     expect(form.get('activityName')?.value).toBe('Updated Title');
   });
 
@@ -444,7 +521,7 @@ describe('ActivitiesComponent', () => {
     const buttonInstance = debugEl.componentInstance as IconButtonComponent;
     expect(buttonInstance.disabled).withContext('Button should be disabled').toBeTrue();
   });
-    
+
   it('should enable "Add Activity" button when isNewActivityBeingAdded is false', () => {
     component.fiscalGuid = 'test-guid';
     component.isNewActivityBeingAdded = false;
@@ -463,7 +540,7 @@ describe('ActivitiesComponent', () => {
       { name: 'Alice' },
       { name: 'Bob' }
     ];
-  
+
     const sortedArray = component.sortArray(testArray, 'name');
     expect(sortedArray).toEqual([
       { name: 'Alice' },
@@ -471,22 +548,22 @@ describe('ActivitiesComponent', () => {
       { name: 'Charlie' }
     ]);
   });
-  
+
   it('should sort an array of strings when no key is provided', () => {
     const testArray = ['Charlie', 'Alice', 'Bob'];
-    
+
     const sortedArray = component.sortArray(testArray);
     expect(sortedArray).toEqual(['Alice', 'Bob', 'Charlie']);
   });
-  
+
   it('should return an empty array when input is null or undefined', () => {
     expect(component.sortArray(null as any)).toEqual([]);
     expect(component.sortArray(undefined as any)).toEqual([]);
   });
-  
+
   it('should return the original array if there is no key and all elements are equal', () => {
     const testArray = ['same', 'same', 'same'];
-    
+
     const sortedArray = component.sortArray(testArray);
     expect(sortedArray).toEqual(['same', 'same', 'same']);
   });
@@ -494,39 +571,39 @@ describe('ActivitiesComponent', () => {
   it('should detect if any form is dirty', () => {
     const form1 = component.createActivityForm({});
     const form2 = component.createActivityForm({});
-  
+
     form1.markAsPristine();
     form2.markAsDirty();
-    
+
     component.activityForms.push(form1, form2);
-  
+
     expect(component.isFormDirty()).toBeTrue();
   });
-  
+
   it('should return false if no forms are dirty', () => {
     const form1 = component.createActivityForm({});
     const form2 = component.createActivityForm({});
-    
+
     form1.markAsPristine();
     form2.markAsPristine();
-    
+
     component.activityForms.push(form1, form2);
-    
+
     expect(component.isFormDirty()).toBeFalse();
   });
 
   it('should return an observable from canDeactivate when a form is dirty', () => {
     const form = component.createActivityForm({});
     component.activityForms.push(form);
-    
+
     form.markAsDirty();
-    
+
     mockDialog.open.and.returnValue({
       afterClosed: () => of(true)
     } as any);
-  
+
     const result = component.canDeactivate();
-  
+
     expect(mockDialog.open).toHaveBeenCalledWith(jasmine.any(Function), jasmine.any(Object));
     expect(result).toBeInstanceOf(Observable);
   });
@@ -534,12 +611,12 @@ describe('ActivitiesComponent', () => {
   it('should return true from canDeactivate when no forms are dirty', () => {
     const form = component.createActivityForm({});
     component.activityForms.push(form);
-    
+
     form.markAsPristine();
-    
+
     expect(component.canDeactivate()).toBeTrue();
   });
-  
+
   it('should toggle activity status correctly', () => {
     const form = component.createActivityForm({ activityStatusCode: 'ACTIVE' });
     component.activityForms.push(form);
@@ -603,21 +680,21 @@ describe('ActivitiesComponent', () => {
       ];
       component.expandedPanels = [false, false, false];
     });
-  
+
     it('should expand only the specified activity and scroll to it', fakeAsync(() => {
       const scrollSpy = jasmine.createSpy('scrollIntoView');
-  
+
       spyOn(document, 'getElementById').and.callFake((id) => {
         if (id === 'activity-1') {
           return { scrollIntoView: scrollSpy } as any;
         }
         return null;
       });
-  
+
       component.expandAndScrollToActivity('456');
-  
+
       tick(100);
-  
+
       expect(component.expandedPanels).toEqual([false, true, false]);
       expect(document.getElementById).toHaveBeenCalledWith('activity-1');
       expect(scrollSpy).toHaveBeenCalledWith({
@@ -625,15 +702,15 @@ describe('ActivitiesComponent', () => {
         block: 'start',
       });
     }));
-  
+
     it('should do nothing if activityGuid is not found', fakeAsync(() => {
       spyOn(document, 'getElementById');
-  
+
       component.expandAndScrollToActivity('999');
-  
+
       tick(100);
-  
-      expect(component.expandedPanels).toEqual([false, false, false]); 
+
+      expect(component.expandedPanels).toEqual([false, false, false]);
       expect(document.getElementById).not.toHaveBeenCalled();
     }));
   });
@@ -643,30 +720,30 @@ describe('ActivitiesComponent', () => {
     component.activities.push(newActivity);
     component.activityForms.push(component.createActivityForm(newActivity));
     component.isNewActivityBeingAdded = true;
-  
+
     const initialLength = component.activities.length;
-  
+
     component.onCancelActivity(0);
-  
+
     expect(component.activities.length).toBe(initialLength - 1);
     expect(component.activityForms.length).toBe(initialLength - 1);
     expect(component.isNewActivityBeingAdded).toBeFalse();
   });
-  
+
   it('should remove an unsaved activity when onDeleteActivity is called', () => {
     const unsavedActivity = { activityGuid: null, activityName: 'Unsaved Activity' };
     component.activities.push(unsavedActivity);
     component.activityForms.push(component.createActivityForm(unsavedActivity));
     component.isNewActivityBeingAdded = true;
-  
+
     const initialLength = component.activities.length;
-  
+
     mockDialog.open.and.returnValue({
-      afterClosed: () => of(true) 
+      afterClosed: () => of(true)
     } as any);
-  
+
     component.onDeleteActivity(0);
-  
+
     expect(component.activities.length).toBe(initialLength - 1);
     expect(component.activityForms.length).toBe(initialLength - 1);
     expect(component.isNewActivityBeingAdded).toBeFalse();
@@ -678,7 +755,7 @@ describe('ActivitiesComponent', () => {
     component.getActivities();
     expect(mockProjectService.getFiscalActivities).not.toHaveBeenCalled();
   });
-  
+
   it('should exit early in getActivities if projectGuid is missing', () => {
     component.fiscalGuid = 'test-fiscal-guid';
     const route = TestBed.inject(ActivatedRoute);
@@ -686,7 +763,7 @@ describe('ActivitiesComponent', () => {
     component.getActivities();
     expect(mockProjectService.getFiscalActivities).not.toHaveBeenCalled();
   });
-  
+
   it('should handle empty activities array gracefully', () => {
     component.fiscalGuid = 'test-fiscal-guid';
     spyOn(TestBed.inject(ActivatedRoute).snapshot.queryParamMap, 'get').and.returnValue('project-guid');
@@ -694,7 +771,7 @@ describe('ActivitiesComponent', () => {
     component.getActivities();
     expect(component.activities).toEqual([]);
   });
-  
+
   it('should call callback after fetching activities', () => {
     component.fiscalGuid = 'test-fiscal-guid';
     spyOn(TestBed.inject(ActivatedRoute).snapshot.queryParamMap, 'get').and.returnValue('project-guid');
@@ -706,7 +783,7 @@ describe('ActivitiesComponent', () => {
     expect(callback).toHaveBeenCalled();
     expect(component.activities[0].activityName).toBe('A');
   });
-  
+
   it('should handle error and show snackbar when getFiscalActivities fails', () => {
     component.fiscalGuid = 'test-fiscal-guid';
     spyOn(TestBed.inject(ActivatedRoute).snapshot.queryParamMap, 'get').and.returnValue('project-guid');
