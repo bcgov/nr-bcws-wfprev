@@ -523,5 +523,118 @@ describe('checkForToken — scope gate on access_token hash', () => {
   });
 });
 
+describe('checkForToken — offline local storage branch', () => {
+  const makeJwt = (expSecondsFromNow: number) => {
+    const now = Math.floor(Date.now() / 1000);
+    const payload = { exp: now + expSecondsFromNow };
+    const b64 = btoa(JSON.stringify(payload));
+    return `h.${b64}.s`;
+  };
+
+  const setNavigatorOnline = (val: boolean) => {
+    Object.defineProperty(navigator, 'onLine', { value: val, configurable: true });
+  };
+
+  afterEach(() => {
+    window.history.pushState({}, '', '/');
+    setNavigatorOnline(true);
+    localStorage.clear();
+  });
+
+  it('offline: expired local token ⇒ clearLocalToken + initLogin are called', async () => {
+    const cfg = {
+      application: {
+        lazyAuthenticate: true,
+        enableLocalStorageToken: false,
+        allowLocalExpiredToken: false,
+        baseUrl: 'http://test.com',
+        localStorageTokenKey: 'test-oauth',
+      },
+      webade: { oauth2Url: 'http://oauth.test', clientId: 'test-client', authScopes: [], enableCheckToken: false }
+    };
+    (mockAppConfigService.getConfig as jasmine.Spy).and.returnValue(cfg);
+
+    const svc = new TokenService(mockInjector, mockAppConfigService, mockSnackbarService, mockRouter);
+
+    (svc as any).useLocalStore = true;
+
+    // seed an EXPIRED token in localStorage (exp = now - 60s)
+    const expiredJwt = makeJwt(-60);
+    localStorage.setItem('test-oauth', JSON.stringify({ access_token: expiredJwt, expires_in: 3600 }));
+
+    // go offline so we enter the offline/local branch
+    setNavigatorOnline(false);
+
+    const clearSpy = spyOn(svc as any, 'clearLocalToken').and.callThrough();
+    const initLoginSpy = spyOn(svc as any, 'initLogin').and.callThrough();
+
+    await svc.checkForToken('http://redir', true, false);
+
+    expect(clearSpy).toHaveBeenCalled(); 
+    expect(initLoginSpy).toHaveBeenCalledWith('http://redir'); 
+  });
+
+  it('offline: non-expired local token ⇒ does NOT clear or login', async () => {
+    const cfg = {
+      application: {
+        lazyAuthenticate: true,
+        enableLocalStorageToken: false,
+        allowLocalExpiredToken: false,
+        baseUrl: 'http://test.com',
+        localStorageTokenKey: 'test-oauth',
+      },
+      webade: { oauth2Url: 'http://oauth.test', clientId: 'test-client', authScopes: [], enableCheckToken: false }
+    };
+    (mockAppConfigService.getConfig as jasmine.Spy).and.returnValue(cfg);
+
+    const svc = new TokenService(mockInjector, mockAppConfigService, mockSnackbarService, mockRouter);
+    (svc as any).useLocalStore = true;
+
+    // seed a VALID token (exp = now + 1h)
+    const validJwt = makeJwt(3600);
+    localStorage.setItem('test-oauth', JSON.stringify({ access_token: validJwt, expires_in: 3600 }));
+
+    setNavigatorOnline(false);
+
+    const clearSpy = spyOn(svc as any, 'clearLocalToken');
+    const initLoginSpy = spyOn(svc as any, 'initLogin');
+
+    await svc.checkForToken(undefined, true, false);
+
+    expect(clearSpy).not.toHaveBeenCalled();
+    expect(initLoginSpy).not.toHaveBeenCalled();
+  });
+
+  it('offline: expired but allowed (allowLocalExpiredToken=true) ⇒ no clear/login', async () => {
+    const cfg = {
+      application: {
+        lazyAuthenticate: true,
+        enableLocalStorageToken: false,
+        allowLocalExpiredToken: false,
+        baseUrl: 'http://test.com',
+        localStorageTokenKey: 'test-oauth',
+      },
+      webade: { oauth2Url: 'http://oauth.test', clientId: 'test-client', authScopes: [], enableCheckToken: false }
+    };
+    (mockAppConfigService.getConfig as jasmine.Spy).and.returnValue(cfg);
+
+    const svc = new TokenService(mockInjector, mockAppConfigService, mockSnackbarService, mockRouter);
+    (svc as any).useLocalStore = true;
+
+    const expiredJwt = makeJwt(-60);
+    localStorage.setItem('test-oauth', JSON.stringify({ access_token: expiredJwt, expires_in: 3600 }));
+
+    setNavigatorOnline(false);
+
+    const clearSpy = spyOn(svc as any, 'clearLocalToken');
+    const initLoginSpy = spyOn(svc as any, 'initLogin');
+
+    await svc.checkForToken(undefined, true, true);
+
+    expect(clearSpy).not.toHaveBeenCalled();
+    expect(initLoginSpy).not.toHaveBeenCalled();
+  });
+});
+
 
 });
