@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, Output, QueryList, SimpleChanges, ViewChild, ViewChildren } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MomentDateAdapter } from '@angular/material-moment-adapter';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -25,7 +25,6 @@ import { TimestampComponent } from 'src/app/components/shared/timestamp/timestam
 import { TextareaComponent } from 'src/app/components/shared/textarea/textarea.component';
 import { getUtcIsoTimestamp } from 'src/app/utils/tools';
 import { ActivityModel } from 'src/app/components/models';
-import { AttachmentService } from 'src/app/services/attachment-service';
 
 
 export const CUSTOM_DATE_FORMATS = {
@@ -68,6 +67,7 @@ export class ActivitiesComponent implements OnChanges, CanComponentDeactivate {
   @Input() fiscalGuid: string = '';
   @Output() boundariesUpdated = new EventEmitter<void>();
   @ViewChild('activitiesPanel') activitiesPanel?: MatExpansionPanel;
+  @ViewChildren(ProjectFilesComponent) private attachmentFiles!: QueryList<ProjectFilesComponent>;
   messages = Messages;
   isNewActivityBeingAdded = false;
 
@@ -90,7 +90,6 @@ export class ActivitiesComponent implements OnChanges, CanComponentDeactivate {
   constructor(
     private route: ActivatedRoute,
     private projectService: ProjectService,
-    private readonly attachmentService: AttachmentService,
     private codeTableService: CodeTableServices,
     private readonly fb: FormBuilder,
     private readonly snackbarService: MatSnackBar,
@@ -522,7 +521,7 @@ export class ActivitiesComponent implements OnChanges, CanComponentDeactivate {
   addActivity(): void {
     if (this.isNewActivityBeingAdded) return;
 
-    const createAndFocusNewActivity  = () => {
+    const createAndFocusNewActivity = () => {
       this.isNewActivityBeingAdded = true;
       const newActivity: ActivityModel = {};
 
@@ -544,11 +543,11 @@ export class ActivitiesComponent implements OnChanges, CanComponentDeactivate {
     if (this.activitiesPanel && !this.activitiesPanel.expanded) {
       const sub = this.activitiesPanel.opened.pipe(take(1)).subscribe(() => {
         sub.unsubscribe();
-        createAndFocusNewActivity ();
+        createAndFocusNewActivity();
       });
       this.activitiesPanel.open();
     } else {
-      createAndFocusNewActivity ();
+      createAndFocusNewActivity();
     }
   }
 
@@ -741,41 +740,30 @@ export class ActivitiesComponent implements OnChanges, CanComponentDeactivate {
           this.isNewActivityBeingAdded = false;
           return;
         }
-        this.attachmentService.getActivityAttachments(this.projectGuid, this.fiscalGuid, activityGuid)
-          .subscribe({
-            next: (attachments) => {
-              if (attachments?._embedded?.fileAttachment?.length > 0) {
-                // Block delete if attachments exist
-                this.snackbarService.open(
-                  this.messages.activityWithAttachmentDeleteFailure,
-                  'OK',
-                  { duration: 5000, panelClass: 'snackbar-error' }
-                );
-                return;
-              }
 
-              // Delete from the service call if it's a saved fiscal activity and has no attachments
-              this.projectService.deleteActivity(this.projectGuid, this.fiscalGuid, activityGuid)
-                .subscribe({
-                  next: () => {
-                    this.snackbarService.open(
-                      this.messages.activityDeletedSuccess,
-                      'OK',
-                      { duration: 5000, panelClass: 'snackbar-success' }
-                    );
-                    this.getActivities();
-                  },
-                  error: () => {
-                    this.snackbarService.open(
-                      this.messages.activityDeletedFailure,
-                      'OK',
-                      { duration: 5000, panelClass: 'snackbar-error' }
-                    );
-                  }
-                });
+        // Block deletion if there are attachments
+        const activityAttachments = this.attachmentFiles?.toArray?.()[index];
+        if (activityAttachments?.hasAttachments) {
+          this.snackbarService.open(
+            this.messages.activityWithAttachmentDeleteFailure,
+            'OK',
+            { duration: 5000, panelClass: 'snackbar-error' }
+          );
+          return;
+        }
+
+        // Delete from the service call if it's a saved fiscal activity
+        this.projectService.deleteActivity(this.projectGuid, this.fiscalGuid, activityGuid)
+          .subscribe({
+            next: () => {
+              this.snackbarService.open(
+                this.messages.activityDeletedSuccess,
+                'OK',
+                { duration: 5000, panelClass: 'snackbar-success' }
+              );
+              this.getActivities()
             },
             error: () => {
-              // If the attachment lookup itself fails
               this.snackbarService.open(
                 this.messages.activityDeletedFailure,
                 'OK',
@@ -784,7 +772,9 @@ export class ActivitiesComponent implements OnChanges, CanComponentDeactivate {
             }
           });
       }
-    });
+    }
+    )
+
   }
 
   canDeleteActivity(index: number): boolean {
@@ -837,4 +827,3 @@ export class ActivitiesComponent implements OnChanges, CanComponentDeactivate {
   }
 
 }
-

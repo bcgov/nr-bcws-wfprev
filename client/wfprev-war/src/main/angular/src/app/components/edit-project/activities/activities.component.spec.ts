@@ -18,13 +18,11 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { DebugElement } from '@angular/core';
 import { IconButtonComponent } from 'src/app/components/shared/icon-button/icon-button.component';
 import { By } from '@angular/platform-browser';
-import { AttachmentService } from 'src/app/services/attachment-service';
 
 describe('ActivitiesComponent', () => {
   let component: ActivitiesComponent;
   let fixture: ComponentFixture<ActivitiesComponent>;
   let mockProjectService: jasmine.SpyObj<ProjectService>;
-  let mockAttachmentService: jasmine.SpyObj<AttachmentService>;
   let mockCodeTableService: jasmine.SpyObj<CodeTableServices>;
   let mockSnackbarService: jasmine.SpyObj<MatSnackBar>;
   let mockDialog: jasmine.SpyObj<MatDialog>;
@@ -37,10 +35,6 @@ describe('ActivitiesComponent', () => {
       'getProjectByProjectGuid'
     ]);
 
-    mockAttachmentService = jasmine.createSpyObj('AttachmentService', [
-      'getActivityAttachments'
-    ]);
-
     mockProjectService.getProjectByProjectGuid.and.returnValue(of({ projectTypeCode: { projectTypeCode: 'STANDARD' } }));
 
     mockCodeTableService = jasmine.createSpyObj('CodeTableServices', ['fetchCodeTable']);
@@ -48,7 +42,6 @@ describe('ActivitiesComponent', () => {
     mockDialog = jasmine.createSpyObj('MatDialog', ['open']);
     mockCodeTableService.fetchCodeTable.and.returnValue(of({ _embedded: { contractPhaseCode: [] } }));
     mockProjectService.getFiscalActivities.and.returnValue(of({ _embedded: { activities: [] } }));
-    mockAttachmentService.getActivityAttachments.and.returnValue(of({ _embedded: { attachments: [] } }));
 
     await TestBed.configureTestingModule({
       imports: [
@@ -65,7 +58,6 @@ describe('ActivitiesComponent', () => {
       providers: [
         FormBuilder,
         { provide: ProjectService, useValue: mockProjectService },
-        { provide: AttachmentService, useValue: mockAttachmentService },
         { provide: CodeTableServices, useValue: mockCodeTableService },
         { provide: MatSnackBar, useValue: mockSnackbarService },
         { provide: MatDialog, useValue: mockDialog },
@@ -227,75 +219,6 @@ describe('ActivitiesComponent', () => {
       component.messages.activityDeletedSuccess,
       'OK',
       { duration: 5000, panelClass: 'snackbar-success' }
-    );
-  });
-
-  it('should block delete and show error when attachments exist', () => {
-    const form = component.createActivityForm({ activityGuid: 'guid-1', activityName: 'With Files' });
-    component.activityForms.push(form);
-    component.activities.push({ activityGuid: 'guid-1', activityName: 'With Files' });
-
-    mockDialog.open.and.returnValue({ afterClosed: () => of(true) } as any);
-
-    mockAttachmentService.getActivityAttachments.and.returnValue(
-      of({ _embedded: { fileAttachment: [{ id: 'f1' }] } })
-    );
-
-    const deleteSpy = mockProjectService.deleteActivity = jasmine.createSpy();
-
-    component.onDeleteActivity(0);
-
-    expect(mockDialog.open).toHaveBeenCalled();
-    expect(mockAttachmentService.getActivityAttachments).toHaveBeenCalledWith(
-      component.projectGuid, component.fiscalGuid, 'guid-1'
-    );
-    expect(deleteSpy).not.toHaveBeenCalled();
-    expect(mockSnackbarService.open).toHaveBeenCalledWith(
-      component.messages.activityWithAttachmentDeleteFailure,
-      'OK',
-      { duration: 5000, panelClass: 'snackbar-error' }
-    );
-  });
-
-  it('should show error and not delete when attachment lookup fails', () => {
-    const form = component.createActivityForm({ activityGuid: 'guid-3', activityName: 'Err Attach' });
-    component.activityForms.push(form);
-    component.activities.push({ activityGuid: 'guid-3', activityName: 'Err Attach' });
-
-    mockDialog.open.and.returnValue({ afterClosed: () => of(true) } as any);
-    mockAttachmentService.getActivityAttachments.and.returnValue(
-      throwError(() => new Error('attachment api boom'))
-    );
-    const deleteSpy = mockProjectService.deleteActivity = jasmine.createSpy();
-
-    component.onDeleteActivity(0);
-
-    expect(deleteSpy).not.toHaveBeenCalled();
-    expect(mockSnackbarService.open).toHaveBeenCalledWith(
-      component.messages.activityDeletedFailure,
-      'OK',
-      { duration: 5000, panelClass: 'snackbar-error' }
-    );
-  });
-
-  it('should show error when deleteActivity fails', () => {
-    const form = component.createActivityForm({ activityGuid: 'guid-4', activityName: 'Delete Err' });
-    component.activityForms.push(form);
-    component.activities.push({ activityGuid: 'guid-4', activityName: 'Delete Err' });
-
-    mockDialog.open.and.returnValue({ afterClosed: () => of(true) } as any);
-    mockAttachmentService.getActivityAttachments.and.returnValue(of({ _embedded: { fileAttachment: [] } }));
-    mockProjectService.deleteActivity = jasmine.createSpy().and.returnValue(
-      throwError(() => new Error('delete failed'))
-    );
-
-    component.onDeleteActivity(0);
-
-    expect(mockProjectService.deleteActivity).toHaveBeenCalled();
-    expect(mockSnackbarService.open).toHaveBeenCalledWith(
-      component.messages.activityDeletedFailure,
-      'OK',
-      { duration: 5000, panelClass: 'snackbar-error' }
     );
   });
 
@@ -916,7 +839,69 @@ describe('ActivitiesComponent', () => {
     expect(controlDirect.value).toBe('Updated Activity');
   });
 
+  describe('onDeleteActivity blocks when attachments exist', () => {
+    beforeEach(() => {
+      const form = component.createActivityForm({ activityGuid: 'act-1', activityName: 'A1' });
+      component.activityForms.push(form);
+      component.activities.push({ activityGuid: 'act-1' });
+
+      mockDialog.open.and.returnValue({ afterClosed: () => of(true) } as any);
+
+      const filesChildStub = { hasAttachments: true } as any;
+      (component as any).attachmentFiles = { toArray: () => [filesChildStub] } as any;
+
+      (mockProjectService as any).deleteActivity = jasmine.createSpy('deleteActivity');
+    });
+
+    it('shows attachment-delete failure and does NOT call delete', () => {
+      component.onDeleteActivity(0);
+
+      expect(mockDialog.open).toHaveBeenCalled(); // confirmation shown
+      expect(mockSnackbarService.open).toHaveBeenCalledWith(
+        component.messages.activityWithAttachmentDeleteFailure,
+        'OK',
+        { duration: 5000, panelClass: 'snackbar-error' }
+      );
+      expect((mockProjectService as any).deleteActivity).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('onDeleteActivity proceeds when no attachments', () => {
+    beforeEach(() => {
+      const form = component.createActivityForm({ activityGuid: 'act-2', activityName: 'A2' });
+      component.activityForms = [form];
+      component.activities = [{ activityGuid: 'act-2' }];
+
+      component.fiscalGuid = 'fg-1';
+      (component as any).projectGuid = 'test-project-guid';
+
+      mockDialog.open.and.returnValue({ afterClosed: () => of(true) } as any);
+
+      const filesChildStub = { hasAttachments: false } as any;
+      (component as any).attachmentFiles = { toArray: () => [filesChildStub] } as any;
+
+      (mockProjectService as any).deleteActivity = jasmine.createSpy('deleteActivity')
+        .and.returnValue(of({}));
+    });
+
+    it('calls delete service and shows success snackbar', () => {
+      spyOn(component, 'getActivities');
+
+      component.onDeleteActivity(0);
+
+      expect((mockProjectService as any).deleteActivity).toHaveBeenCalledWith(
+        'test-project-guid', 
+        'fg-1',              
+        'act-2'
+      );
+      expect(mockSnackbarService.open).toHaveBeenCalledWith(
+        component.messages.activityDeletedSuccess,
+        'OK',
+        { duration: 5000, panelClass: 'snackbar-success' }
+      );
+      expect(component.getActivities).toHaveBeenCalled();
+    });
+  });
+
 
 });
-
-
