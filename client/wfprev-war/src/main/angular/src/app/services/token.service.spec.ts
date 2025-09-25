@@ -406,4 +406,235 @@ describe('TokenService', () => {
       expect(service.getIdir()).toBe('');
     });
   });
+
+  describe('hasAllScopesFromHash', () => {
+  const call = (hash: string, required: string[]) =>
+    (service as any).hasAllScopesFromHash(hash, required);
+
+  afterEach(() => {
+    // clean up hash after each test
+    window.history.pushState({}, '', '/');
+  });
+
+  it('returns true when all explicit scopes are present (space encoded as %20)', () => {
+    const hash = '#access_token=t&scope=FOO%20BAR%20BAZ';
+    expect(call(hash, ['FOO', 'BAR'])).toBeTrue();
+  });
+
+  it('returns true when scopes are + separated (IdPs may encode spaces as +)', () => {
+    const hash = '#access_token=t&scope=FOO+BAR+BAZ';
+    expect(call(hash, ['FOO', 'BAR'])).toBeTrue();
+  });
+
+  it('supports wildcard prefix (WFDM.*) when at least one WFDM scope is present', () => {
+    const hash = '#access_token=t&scope=WFDM.CREATE_FILE%20WFPREV.GET_TOPLEVEL';
+    expect(call(hash, ['WFDM.*'])).toBeTrue();
+  });
+
+  it('fails wildcard check when no scope matches the prefix', () => {
+    const hash = '#access_token=t&scope=WFPREV.GET_TOPLEVEL';
+    expect(call(hash, ['WFDM.*'])).toBeFalse();
+  });
+
+  it('returns false if an explicit required scope is missing', () => {
+    const hash = '#access_token=t&scope=FOO%20BAR';
+    expect(call(hash, ['FOO', 'MISSING'])).toBeFalse();
+  });
+
+  it('treats empty required list as false', () => {
+    const hash = '#access_token=t&scope=ANY';
+    expect(call(hash, [])).toBeFalse();
+  });
+});
+
+describe('checkForToken — scope gate on access_token hash', () => {
+  const makeCfg = (authScopes: string[]) => ({
+    application: {
+      lazyAuthenticate: true,            
+      enableLocalStorageToken: false,   
+      allowLocalExpiredToken: false,
+      baseUrl: 'http://test.com',
+      localStorageTokenKey: 'test-oauth'
+    },
+    webade: {
+      oauth2Url: 'http://oauth.test',
+      clientId: 'test-client',
+      authScopes,
+      enableCheckToken: false
+    }
+  });
+
+  afterEach(() => {
+    window.history.pushState({}, '', '/');
+  });
+
+  it('redirects to error page when required scopes are missing', async () => {
+    window.history.pushState({}, '', '/');
+
+    const cfg = makeCfg(['WFPREV.GET_TOPLEVEL', 'WFDM.*']);
+    (mockAppConfigService.getConfig as jasmine.Spy).and.returnValue(cfg);
+
+    const service = new TokenService(mockInjector, mockAppConfigService, mockSnackbarService, mockRouter);
+    window.history.pushState({}, '', '/#access_token=tok&scope=WFPREV.GET_TOPLEVEL');
+    const parseSpy = spyOn(service as any, 'parseToken');
+
+    await service.checkForToken();
+    expect(mockRouter.navigate).toHaveBeenCalledWith(['/' + ResourcesRoutes.ERROR_PAGE]);
+    expect(parseSpy).not.toHaveBeenCalled();
+  });
+
+  it('parses token when all required scopes are present (including wildcard match)', async () => {
+    window.history.pushState({}, '', '/');
+
+    const cfg = makeCfg(['WFPREV.GET_TOPLEVEL', 'WFDM.*']);
+    (mockAppConfigService.getConfig as jasmine.Spy).and.returnValue(cfg);
+
+    const svc = new TokenService(mockInjector, mockAppConfigService, mockSnackbarService, mockRouter);
+
+    window.history.pushState(
+      {}, '',
+      '/#access_token=tok&scope=WFPREV.GET_TOPLEVEL%20WFDM.UPDATE_FILE'
+    );
+
+    const parseSpy = spyOn(svc as any, 'parseToken');
+
+    await svc.checkForToken();
+
+    expect(parseSpy).toHaveBeenCalledWith(globalThis.location.hash);
+    expect(mockRouter.navigate).not.toHaveBeenCalled();
+  });
+
+  it('accepts "+"-separated scopes as space (IdP encoding quirk)', async () => {
+    window.history.pushState({}, '', '/');
+
+    const cfg = makeCfg(['FOO', 'BAR']);
+    (mockAppConfigService.getConfig as jasmine.Spy).and.returnValue(cfg);
+
+    const svc = new TokenService(mockInjector, mockAppConfigService, mockSnackbarService, mockRouter);
+
+    window.history.pushState({}, '', '/#access_token=tok&scope=FOO+BAR');
+
+    const parseSpy = spyOn(svc as any, 'parseToken');
+
+    await svc.checkForToken();
+
+    expect(parseSpy).toHaveBeenCalled();
+    expect(mockRouter.navigate).not.toHaveBeenCalled();
+  });
+});
+
+describe('checkForToken — offline local storage branch', () => {
+  const makeJwt = (expSecondsFromNow: number) => {
+    const now = Math.floor(Date.now() / 1000);
+    const payload = { exp: now + expSecondsFromNow };
+    const b64 = btoa(JSON.stringify(payload));
+    return `h.${b64}.s`;
+  };
+
+  const setNavigatorOnline = (val: boolean) => {
+    Object.defineProperty(navigator, 'onLine', { value: val, configurable: true });
+  };
+
+  afterEach(() => {
+    window.history.pushState({}, '', '/');
+    setNavigatorOnline(true);
+    localStorage.clear();
+  });
+
+  it('offline: expired local token ⇒ clearLocalToken + initLogin are called', async () => {
+    const cfg = {
+      application: {
+        lazyAuthenticate: true,
+        enableLocalStorageToken: false,
+        allowLocalExpiredToken: false,
+        baseUrl: 'http://test.com',
+        localStorageTokenKey: 'test-oauth',
+      },
+      webade: { oauth2Url: 'http://oauth.test', clientId: 'test-client', authScopes: [], enableCheckToken: false }
+    };
+    (mockAppConfigService.getConfig as jasmine.Spy).and.returnValue(cfg);
+
+    const svc = new TokenService(mockInjector, mockAppConfigService, mockSnackbarService, mockRouter);
+
+    (svc as any).useLocalStore = true;
+
+    // seed an EXPIRED token in localStorage (exp = now - 60s)
+    const expiredJwt = makeJwt(-60);
+    localStorage.setItem('test-oauth', JSON.stringify({ access_token: expiredJwt, expires_in: 3600 }));
+
+    // go offline so we enter the offline/local branch
+    setNavigatorOnline(false);
+
+    const clearSpy = spyOn(svc as any, 'clearLocalToken').and.callThrough();
+    const initLoginSpy = spyOn(svc as any, 'initLogin').and.callThrough();
+
+    await svc.checkForToken('http://redir', true, false);
+
+    expect(clearSpy).toHaveBeenCalled(); 
+    expect(initLoginSpy).toHaveBeenCalledWith('http://redir'); 
+  });
+
+  it('offline: non-expired local token ⇒ does NOT clear or login', async () => {
+    const cfg = {
+      application: {
+        lazyAuthenticate: true,
+        enableLocalStorageToken: false,
+        allowLocalExpiredToken: false,
+        baseUrl: 'http://test.com',
+        localStorageTokenKey: 'test-oauth',
+      },
+      webade: { oauth2Url: 'http://oauth.test', clientId: 'test-client', authScopes: [], enableCheckToken: false }
+    };
+    (mockAppConfigService.getConfig as jasmine.Spy).and.returnValue(cfg);
+
+    const svc = new TokenService(mockInjector, mockAppConfigService, mockSnackbarService, mockRouter);
+    (svc as any).useLocalStore = true;
+
+    // seed a VALID token (exp = now + 1h)
+    const validJwt = makeJwt(3600);
+    localStorage.setItem('test-oauth', JSON.stringify({ access_token: validJwt, expires_in: 3600 }));
+
+    setNavigatorOnline(false);
+
+    const clearSpy = spyOn(svc as any, 'clearLocalToken');
+    const initLoginSpy = spyOn(svc as any, 'initLogin');
+
+    await svc.checkForToken(undefined, true, false);
+
+    expect(clearSpy).not.toHaveBeenCalled();
+    expect(initLoginSpy).not.toHaveBeenCalled();
+  });
+
+  it('offline: expired but allowed (allowLocalExpiredToken=true) ⇒ no clear/login', async () => {
+    const cfg = {
+      application: {
+        lazyAuthenticate: true,
+        enableLocalStorageToken: false,
+        allowLocalExpiredToken: false,
+        baseUrl: 'http://test.com',
+        localStorageTokenKey: 'test-oauth',
+      },
+      webade: { oauth2Url: 'http://oauth.test', clientId: 'test-client', authScopes: [], enableCheckToken: false }
+    };
+    (mockAppConfigService.getConfig as jasmine.Spy).and.returnValue(cfg);
+
+    const svc = new TokenService(mockInjector, mockAppConfigService, mockSnackbarService, mockRouter);
+    (svc as any).useLocalStore = true;
+
+    const expiredJwt = makeJwt(-60);
+    localStorage.setItem('test-oauth', JSON.stringify({ access_token: expiredJwt, expires_in: 3600 }));
+
+    setNavigatorOnline(false);
+
+    const clearSpy = spyOn(svc as any, 'clearLocalToken');
+    const initLoginSpy = spyOn(svc as any, 'initLogin');
+
+    await svc.checkForToken(undefined, true, true);
+
+    expect(clearSpy).not.toHaveBeenCalled();
+    expect(initLoginSpy).not.toHaveBeenCalled();
+  });
+});
+
+
 });

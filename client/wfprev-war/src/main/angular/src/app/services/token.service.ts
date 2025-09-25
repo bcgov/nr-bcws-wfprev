@@ -47,36 +47,118 @@ export class TokenService {
     this.checkForToken(undefined, lazyAuthenticate, allowLocalExpiredToken);
   }
 
-  public async checkForToken(redirectUri?: string, lazyAuth = false, allowLocalExpiredToken = false): Promise<void> {
+  public async checkForToken(
+    redirectUri?: string,
+    lazyAuth = false,
+    allowLocalExpiredToken = false
+  ): Promise<void> {
     const hash = globalThis.location?.hash;
+    const authScopes = this.appConfigService?.getConfig()?.webade?.authScopes as unknown as string[] || [];
 
-    if (hash?.includes('access_token')) {
-      this.parseToken(hash);
-    } else if (this.useLocalStore && !navigator.onLine) {
-      let tokenStore = localStorage.getItem(this.LOCAL_STORAGE_KEY);
-
-      if (tokenStore) {
-        try {
-          await this.initAuthFromSession();
-        } catch (err) {
-          this.tokenDetails = undefined;
-          localStorage.removeItem(this.LOCAL_STORAGE_KEY);
-          this.initIDIRLogin(redirectUri);
-        }
-      } else {
-        this.initIDIRLogin(redirectUri);
-      }
-
-      if (!allowLocalExpiredToken && this.isTokenExpired(this.tokenDetails)) {
-        localStorage.removeItem(this.LOCAL_STORAGE_KEY);
-        this.initIDIRLogin(redirectUri);
-      }
-    } else if (hash?.includes('error')) {
+    // 1) URL contained an OAuth error → redirect to error page
+    if (this.hasAuthErrorInHash(hash)) {
       this.router.navigate(['/' + ResourcesRoutes.ERROR_PAGE]);
-    } else if (!lazyAuth) {
-      this.initIDIRLogin(redirectUri);
+      return;
+    }
+
+    // 2) URL has access token → validate scopes then parse
+    if (this.hasAccessTokenFromHash(hash)) {
+      if (!this.hasAllScopesFromHash(hash, authScopes)) {
+        this.router.navigate(['/' + ResourcesRoutes.ERROR_PAGE]);
+        return;
+      }
+      this.parseToken(hash);
+      return;
+    } 
+
+    // 3) Offline path using local storage
+    if (this.shouldUseOfflineLocal()) {
+      const tokenStore = localStorage.getItem(this.LOCAL_STORAGE_KEY);
+
+      if (!tokenStore) {
+        this.initLogin(redirectUri);
+        return;
+      }
+
+      await this.tryInitFromSessionOrLogin(redirectUri);
+
+      if (this.isLocalExpired(!allowLocalExpiredToken)) {
+        this.clearLocalToken();
+        this.initLogin(redirectUri);
+      }
+      return;
+    }
+
+    // 4) Default: if not lazy, start login
+    if (!lazyAuth) {
+      this.initLogin(redirectUri);
     }
   }
+
+  private hasAccessTokenFromHash(hash?: string): boolean {
+    return !!hash && hash.includes('access_token');
+  }
+
+  private hasAuthErrorInHash(hash?: string): boolean {
+    return !!hash && hash.includes('error');
+  }
+
+  private shouldUseOfflineLocal(): boolean {
+    return this.useLocalStore && !navigator.onLine;
+  }
+
+  private initLogin(redirectUri?: string): void {
+    this.initIDIRLogin(redirectUri);
+  }
+
+  private clearLocalToken(): void {
+    this.tokenDetails = undefined;
+    localStorage.removeItem(this.LOCAL_STORAGE_KEY);
+  }
+
+  private async tryInitFromSessionOrLogin(redirectUri?: string): Promise<void> {
+    try {
+      await this.initAuthFromSession();
+    } catch {
+      this.clearLocalToken();
+      this.initLogin(redirectUri);
+    }
+  }
+
+  private isLocalExpired(disallowExpired: boolean): boolean {
+    return disallowExpired && this.isTokenExpired(this.tokenDetails);
+  }
+
+  private hasAllScopesFromHash(hash: string | undefined, required: string[] = []): boolean {
+    if (!hash || required.length === 0) return false;
+
+    const params = new URLSearchParams(hash.replace(/^#/, ''));
+    let scopeParam = params.get('scope') || '';
+
+    if (!scopeParam) return false;
+
+    scopeParam = scopeParam.replaceAll(/\+/g, ' ');
+
+    const grantedList = scopeParam.split(/\s+/).filter(Boolean);
+    const grantedSet = new Set(grantedList);
+
+    const missing: string[] = [];
+
+    for (const req of required) {
+      // handle wildcard pattern like "WFDM.*"
+      if (req.endsWith('.*')) {
+        const prefix = req.slice(0, -1);
+        const hasAny = grantedList.some(g => g.startsWith(prefix));
+        if (!hasAny) missing.push(req);
+      } else if (!grantedSet.has(req)) missing.push(req);
+    }
+
+    if (missing.length > 0) {
+      return false;
+    }
+    return true;
+  }
+
 
   public isTokenExpired(token: any): boolean {
     if (token?.exp) {
