@@ -25,7 +25,7 @@
         [optionValueField]="'projectTypeCode'"
         [optionLabelField]="'description'"
         [tooltip]="projectTypeLocked 
-          ? 'Project Type cannot be changed after any Fiscal Activity has been Endorsed and Approved'
+          ? messages.projectTypeCannotUpdateAfterEndorsed
           : getCodeDescription(CodeTableKeys.PROJECT_TYPE_CODE)"
         [disabled]="projectTypeLocked"
         id="projectTypeCode"

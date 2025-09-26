@@ -116,15 +116,15 @@ describe('ConfirmationDialogComponent', () => {
     });
   });
 
-  describe('isDeleteDialog', () => {
+  describe('isDeleteOrChangeDialog ', () => {
     it('should return true if dialogUsage starts with "delete-"', async () => {
       await setupComponentWithData({ indicator: 'delete-fiscal-year' });
-      expect(component.isDeleteDialog).toBeTrue();
+      expect(component.isDeleteOrChangeDialog ).toBeTrue();
     });
 
     it('should return false if dialogUsage does not start with "delete-"', async () => {
       await setupComponentWithData({ indicator: 'confirm-cancel' });
-      expect(component.isDeleteDialog).toBeFalse();
+      expect(component.isDeleteOrChangeDialog ).toBeFalse();
     });
   });
 

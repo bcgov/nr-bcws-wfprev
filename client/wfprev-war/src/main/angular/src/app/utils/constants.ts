@@ -31,7 +31,8 @@ export const Messages = {
   fileDownloadFailure: 'Error: File download unsuccessful',
   fileDownloadSuccess: 'File downloaded successfully.',
   fileDownloadInProgress: 'File download in progress. Please wait',
-  fiscalActivityDeletedFailure: 'Delete Failed. Remove Activities to Delete Fiscal Activity'
+  fiscalActivityDeletedFailure: 'Delete Failed. Remove Activities to Delete Fiscal Activity',
+  projectTypeCannotUpdateAfterEndorsed: 'Project Type cannot be changed after any Fiscal Activity has been Endorsed and Approved'
 };
 
 export const CodeTableKeys = {
