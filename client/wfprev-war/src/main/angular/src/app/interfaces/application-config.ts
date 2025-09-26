@@ -3,7 +3,7 @@ export interface Application {
   version: string;
   baseUrl: string;
   environment: string;
-  remiPlannerEmailAddress: string;
+  remiPlannerEmailAddress?: string;
   lazyAuthenticate?: boolean;
   enableLocalStorageToken?: boolean;
   allowLocalExpiredToken?: boolean;

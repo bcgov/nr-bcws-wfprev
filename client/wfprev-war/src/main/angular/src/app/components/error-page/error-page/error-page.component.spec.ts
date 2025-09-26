@@ -8,11 +8,11 @@ describe('ErrorPageComponent', () => {
   let fixture: ComponentFixture<ErrorPageComponent>;
   let mockAppConfigService: jasmine.SpyObj<AppConfigService>;
 
-   const mockConfig = {
+  const mockConfig = {
     rest: {
       wfprev: 'http://mock-api.com',
       openmaps: 'http://mock-api.com'
-      
+
     },
     application: {
       lazyAuthenticate: true,
@@ -48,7 +48,7 @@ describe('ErrorPageComponent', () => {
         { provide: AppConfigService, useValue: mockAppConfigService }
       ]
     })
-    .compileComponents();
+      .compileComponents();
 
     fixture = TestBed.createComponent(ErrorPageComponent);
     component = fixture.componentInstance;
@@ -63,4 +63,22 @@ describe('ErrorPageComponent', () => {
     expect(component.remiPlannerEmailAddress).toBe('test@example.com');
     expect(mockAppConfigService.getConfig).toHaveBeenCalled();
   });
+
+  it('should default remiPlannerEmailAddress to empty string if not in config', () => {
+    mockAppConfigService.getConfig.and.returnValue({
+      ...mockConfig,
+      application: {
+        ...mockConfig.application,
+        remiPlannerEmailAddress: undefined
+      }
+    });
+
+    const localFixture = TestBed.createComponent(ErrorPageComponent);
+    const localComponent = localFixture.componentInstance;
+    localFixture.detectChanges();
+
+    expect(localComponent.remiPlannerEmailAddress).toBe('');
+    expect(mockAppConfigService.getConfig).toHaveBeenCalled();
+  });
+
 });
