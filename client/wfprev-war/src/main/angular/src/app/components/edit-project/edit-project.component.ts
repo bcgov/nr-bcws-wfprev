@@ -142,6 +142,9 @@ export class EditProjectComponent implements CanComponentDeactivate, OnInit {
           this.projectFiscalsComponentRef = this.fiscalsContainer.createComponent(ProjectFiscalsComponent);
           this.projectFiscalsComponentRef.instance.focusedFiscalId = this.focusedFiscalId;
           this.projectFiscalsComponentRef.instance.loadProjectFiscals();
+          this.projectFiscalsComponentRef.instance.fiscalsUpdated.subscribe(() => {
+            this.projectDetailsComponent.reloadFiscals();
+          });
         }
       );
     } else if (event.index === 0) {
@@ -186,6 +189,9 @@ export class EditProjectComponent implements CanComponentDeactivate, OnInit {
         this.projectFiscalsComponentRef = this.fiscalsContainer.createComponent(ProjectFiscalsComponent);
         this.projectFiscalsComponentRef.instance.focusedFiscalId = this.focusedFiscalId;
         this.projectFiscalsComponentRef.instance.loadProjectFiscals();
+        this.projectFiscalsComponentRef.instance.fiscalsUpdated.subscribe(() => {
+          this.projectDetailsComponent.reloadFiscals();
+        });
       });
     }
     return Promise.resolve();

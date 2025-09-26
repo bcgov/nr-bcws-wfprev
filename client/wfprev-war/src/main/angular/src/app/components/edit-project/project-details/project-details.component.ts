@@ -1,6 +1,6 @@
 import { TextFieldModule } from '@angular/cdk/text-field';
 import { CommonModule } from '@angular/common';
-import { AfterViewInit, Component, ElementRef, EventEmitter, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, EventEmitter, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatExpansionModule } from '@angular/material/expansion';
@@ -14,7 +14,7 @@ import { FiscalYearProjectsComponent } from 'src/app/components/edit-project/pro
 import { ProjectFilesComponent } from 'src/app/components/edit-project/project-details/project-files/project-files.component';
 import { CodeTableServices } from 'src/app/services/code-table-services';
 import { ProjectService } from 'src/app/services/project-services';
-import { CodeTableKeys, Messages, FiscalYearColors, ModalTitles, ModalMessages, WildfireOrgUnitTypeCodes, CodeTableNames } from 'src/app/utils/constants';
+import { CodeTableKeys, Messages, FiscalYearColors, ModalTitles, ModalMessages, WildfireOrgUnitTypeCodes, CodeTableNames, FiscalStatuses } from 'src/app/utils/constants';
 import {
   formatLatLong,
   getBluePinIcon,
@@ -24,7 +24,7 @@ import {
   getUtcIsoTimestamp
 } from 'src/app/utils/tools';
 import { ExpansionIndicatorComponent } from '../../shared/expansion-indicator/expansion-indicator.component';
-import { BcParksSectionCodeModel, ForestDistrictCodeModel } from 'src/app/components/models';
+import { BcParksSectionCodeModel, ForestDistrictCodeModel, ProjectFiscal } from 'src/app/components/models';
 import { SelectFieldComponent } from 'src/app/components/shared/select-field/select-field.component';
 import { InputFieldComponent } from 'src/app/components/shared/input-field/input-field.component';
 import { EvaluationCriteriaComponent } from 'src/app/components/edit-project/project-details/evaluation-criteria/evaluation-criteria.component';
@@ -42,8 +42,9 @@ import { TextareaComponent } from 'src/app/components/shared/textarea/textarea.c
 })
 export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild(FiscalYearProjectsComponent) fiscalYearProjectsComponent!: FiscalYearProjectsComponent;
-  @Output() projectNameChange = new EventEmitter<string>();
+  @ViewChild(EvaluationCriteriaComponent) evaluationCriteriaComponent!: EvaluationCriteriaComponent;
   @ViewChild('mapHost') mapHost!: ElementRef<HTMLDivElement>;
+  @Output() projectNameChange = new EventEmitter<string>();
 
   private map: L.Map | undefined;
   private readonly activityBoundaryGroup: L.LayerGroup = L.layerGroup();
@@ -80,6 +81,7 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
   allActivities: any[] = [];
   allActivityBoundaries: any[] = [];
   readonly PROJECT_DESC_MAX = 4000;
+  projectTypeLocked = false;
 
   constructor(
     private readonly fb: FormBuilder,
@@ -88,7 +90,8 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
     private readonly codeTableService: CodeTableServices,
     public snackbarService: MatSnackBar,
     public dialog: MatDialog,
-    public tokenService: TokenService, 
+    public tokenService: TokenService,
+    public cd: ChangeDetectorRef
   ) { }
 
   ngOnInit(): void {
@@ -391,6 +394,52 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
   }
 
   onSave(): void {
+    const projectTypeOriginalCode = this.originalFormValues.projectTypeCode?.projectTypeCode ?? this.originalFormValues.projectTypeCode;
+    const projectTypeCurrentCode = this.detailsForm.get('projectTypeCode')?.value?.projectTypeCode ?? this.detailsForm.get('projectTypeCode')?.value;
+    if ((projectTypeOriginalCode !== projectTypeCurrentCode) &&
+      this.evaluationCriteriaComponent?.evaluationCriteriaSummary) {
+      // evaluation criteria attached to this project
+      const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+        data: {
+          indicator: 'change-project-type',
+          title: ModalTitles.CHANGE_PROJECT_TYPE,
+          message: ModalMessages.CONFIRM_DELETE_EVALUACTION_CRITERIA
+        },
+        width: '600px',
+      });
+
+      dialogRef.afterClosed().subscribe(result => {
+        if (result) {
+          const summaryGuid =
+            this.evaluationCriteriaComponent?.evaluationCriteriaSummary?.evaluationCriteriaSummaryGuid;
+
+          if (!summaryGuid) {
+            console.warn('No evaluationCriteriaSummaryGuid found, skipping delete.');
+            return;
+          }
+
+          this.projectService.deleteEvaluationCriteriaSummary(this.projectGuid, summaryGuid)
+            .subscribe({
+              next: () => {
+                console.log('Evaluation criteria deleted successfully');
+                if (this.evaluationCriteriaComponent) {
+                  this.evaluationCriteriaComponent.evaluationCriteriaSummary = null;
+                }
+                this.onSave();
+              },
+              error: (err) => {
+                console.error('Failed to delete evaluation criteria summary', err);
+              }
+            });
+        } else {
+          console.log('User canceled project type change, save aborted.');
+        }
+      });
+
+      return;
+    }
+
+
     if (this.detailsForm.valid) {
       const updatedProject = {
         ...this.projectDetail,
@@ -410,6 +459,7 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
             : this.projectDetail.primaryObjectiveTypeCode?.objectiveTypeCode
         },
       };
+
       const secondaryObjectiveValue = this.detailsForm.get('secondaryObjectiveTypeCode')?.value;
       updatedProject.secondaryObjectiveTypeCode = secondaryObjectiveValue
         ? { objectiveTypeCode: secondaryObjectiveValue }
@@ -627,7 +677,6 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
 
   getAllActivitiesBoundaries(): void {
     if (!this.projectGuid) return;
-
     this.projectService.getProjectFiscalsByProjectGuid(this.projectGuid).subscribe(data =>
       this.handleFiscalsResponse(data)
     );
@@ -637,6 +686,16 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
     this.projectFiscals = (data._embedded?.projectFiscals ?? []).sort(
       (a: { fiscalYear: number }, b: { fiscalYear: number }) => a.fiscalYear - b.fiscalYear
     );
+
+    this.projectTypeLocked = this.hasApprovedFiscals(this.projectFiscals);
+    const projectTypeControl = this.detailsForm.get('projectTypeCode');
+    if (this.projectTypeLocked) {
+      projectTypeControl?.disable({ emitEvent: false });
+    } else {
+      projectTypeControl?.enable({ emitEvent: false });
+    }
+
+    this.cd.detectChanges();
 
     const activityRequests = this.projectFiscals.map(fiscal =>
       this.projectService.getFiscalActivities(this.projectGuid, fiscal.projectPlanFiscalGuid).pipe(
@@ -648,6 +707,7 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
       this.handleActivitiesResponse(allActivityArrays.flat())
     );
   }
+
 
   private mapFiscalActivities(response: any, fiscal: any): any[] {
     const activities = response?._embedded?.activities ?? [];
@@ -841,4 +901,21 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
     });
   }
 
+  hasApprovedFiscals(fiscals: ProjectFiscal[]): boolean {
+    const LOCKED_STATUSES = ['PREPARED', 'IN_PROGRESS', 'COMPLETE', 'CANCELLED', 'IN_PROG', 'ACTIVE']; 
+    // include all statuses that should lock type change
+    return fiscals?.some(fiscal =>
+      LOCKED_STATUSES.includes(fiscal.planFiscalStatusCode?.planFiscalStatusCode ?? '')
+    );
+  }
+
+  reloadFiscals(): void {
+    if (!this.projectGuid) return;
+    this.projectService.getProjectFiscalsByProjectGuid(this.projectGuid).subscribe({
+      next: (data) => {
+        this.handleFiscalsResponse(data);
+      },
+      error: (err) => console.error('Error reloading fiscals:', err)
+    });
+  }
 }
