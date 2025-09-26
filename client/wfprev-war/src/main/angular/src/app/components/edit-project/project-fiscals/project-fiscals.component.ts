@@ -1,5 +1,5 @@
 import { CommonModule, CurrencyPipe } from '@angular/common';
-import { ChangeDetectorRef, Component, Input, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
@@ -64,6 +64,7 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
   @Input() focusedFiscalId: string | null = null;
   @ViewChild(ActivitiesComponent) activitiesComponent!: ActivitiesComponent;
   @ViewChild('fiscalMapRef') fiscalMapComponent!: FiscalMapComponent;
+  @Output() fiscalsUpdated = new EventEmitter<void>();
   currentUser: string = '';
   currentIdir: string = '';
   projectGuid = '';
@@ -451,6 +452,7 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
             { duration: 5000, panelClass: 'snackbar-success' },
           );
           this.loadProjectFiscals(true);
+          this.fiscalsUpdated.emit();
         },
         error: () => {
           this.snackbarService.open(
@@ -527,6 +529,7 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
                   { duration: 5000, panelClass: 'snackbar-success' }
                 );
                 this.loadProjectFiscals(true);
+                this.fiscalsUpdated.emit();
               },
               error: () => {
                 this.snackbarService.open(
@@ -711,6 +714,7 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
     } else {
       this.showSnackbar(this.messages.projectFiscalUpdatedSuccess);
       this.loadProjectFiscals(true);
+      this.fiscalsUpdated.emit();
     }
   }
 
@@ -731,6 +735,7 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
       next: () => {
         this.showSnackbar(this.messages.projectFiscalUpdatedSuccess);
         this.loadProjectFiscals(true);
+        this.fiscalsUpdated.emit();
       },
       error: () => this.showSnackbar(this.messages.projectFiscalUpdatedFailure, false)
     });

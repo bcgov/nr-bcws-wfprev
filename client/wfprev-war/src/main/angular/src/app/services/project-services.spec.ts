@@ -938,4 +938,37 @@ describe('ProjectService', () => {
     req.flush(errorBlob, { status: 500, statusText: 'Server Error' });
   });
 
+   it('should delete evaluation criteria summary', () => {
+    const projectGuid = 'project-1';
+    const summaryGuid = 'summary-1';
+
+    service.deleteEvaluationCriteriaSummary(projectGuid, summaryGuid).subscribe((result) => {
+      expect(result).toBeTruthy();
+    });
+
+    const req = httpMock.expectOne(
+      `http://mock-api.com/wfprev-api/projects/${projectGuid}/evaluationCriteriaSummary/${summaryGuid}`
+    );
+    expect(req.request.method).toBe('DELETE');
+    expect(req.request.headers.get('Authorization')).toBe('Bearer mock-token');
+    req.flush({});
+  });
+
+  it('should handle error when deleting evaluation criteria summary', () => {
+    const projectGuid = 'project-1';
+    const summaryGuid = 'summary-1';
+
+    service.deleteEvaluationCriteriaSummary(projectGuid, summaryGuid).subscribe({
+      next: () => fail('Should have failed'),
+      error: (err) => {
+        expect(err.message).toBe('Failed to delete evaluation criteria');
+      }
+    });
+
+    const req = httpMock.expectOne(
+      `http://mock-api.com/wfprev-api/projects/${projectGuid}/evaluationCriteriaSummary/${summaryGuid}`
+    );
+    req.flush('Error', { status: 500, statusText: 'Server Error' });
+  });
+
 });

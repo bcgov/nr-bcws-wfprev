@@ -196,7 +196,8 @@ describe('EditProjectComponent', () => {
     const mockInstance = {
       focusedFiscalId: null,
       loadProjectFiscals: jasmine.createSpy('loadProjectFiscals'),
-      getFirstFiscalGuid: jasmine.createSpy('getFirstFiscalGuid').and.returnValue('guid-123')
+      getFirstFiscalGuid: jasmine.createSpy('getFirstFiscalGuid').and.returnValue('guid-123'),
+      fiscalsUpdated: { subscribe: jasmine.createSpy('subscribe') } 
     };
 
     const mockComponentRef = { instance: mockInstance } as any;
@@ -485,7 +486,8 @@ describe('EditProjectComponent (extended coverage)', () => {
   it('should initialize ProjectFiscalsComponent in loadFiscalComponent', async () => {
     const mockInstance = {
       focusedFiscalId: null,
-      loadProjectFiscals: jasmine.createSpy('loadProjectFiscals')
+      loadProjectFiscals: jasmine.createSpy('loadProjectFiscals'),
+      fiscalsUpdated: { subscribe: jasmine.createSpy('subscribe') }
     };
 
     const mockComponentRef = { instance: mockInstance };
