@@ -20,6 +20,10 @@
             *ngIf="projectForm.get('projectName')?.hasError('maxlength') && (projectForm.get('projectName')?.dirty || projectForm.get('projectName')?.touched)">
             {{messages.maxLengthExceeded}}
           </div>
+          <div class="error"
+            *ngIf="projectForm.get('projectName')?.hasError('duplicate') && (projectForm.get('projectName')?.dirty || projectForm.get('projectName')?.touched)">
+            {{messages.projectNameDuplicate}}
+          </div>
         </div>
       </div>
       <div class="form-row">

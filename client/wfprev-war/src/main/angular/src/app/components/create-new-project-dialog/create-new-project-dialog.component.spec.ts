@@ -176,19 +176,38 @@ describe('CreateNewProjectDialogComponent', () => {
     expect(mockDialogRef.close).toHaveBeenCalledWith({ success: true, projectGuid: '999999' });
   });
 
-  // Future task
-  // it('should handle duplicate project error during creation', () => {
-  //   mockProjectService.createProject.and.returnValue(
-  //     throwError({ status: 500, error: { message: 'duplicate' } })
-  //   );
+  it('should set duplicate error on projectName when API returns 409 conflict', () => {
+    component.projectForm.patchValue({
+      projectType: 'FUEL_MGMT',
+      projectName: 'Duplicate Project',
+      businessArea: 'Area 1',
+      forestRegion: 1,
+      forestDistrict: 2,
+      bcParksRegion: 3,
+      bcParksSection: 4,
+      fireCentre: 5,
+      closestCommunity: 'Community 1',
+      primaryObjective: 'WRR',
+      projectLead: 'John Doe'
+    });
 
-  //   component.onCreate();
+    const duplicateError = { status: 409, error: { error: 'Project name already exists' } };
 
-  //   expect(mockDialog.open).toHaveBeenCalledWith(ConfirmationDialogComponent, {
-  //     data: { indicator: 'duplicate-project', projectName: '' },
-  //     width: '500px',
-  //   });
-  // });
+    mockProjectService.createProject.and.returnValue(throwError(() => duplicateError));
+
+    component.onCreate();
+    const projectNameControl = component.projectForm.get('projectName');
+    expect(projectNameControl?.hasError('duplicate')).toBeTrue();
+    expect(projectNameControl?.touched).toBeTrue();
+
+    expect(mockSnackbarService.open).toHaveBeenCalledWith(
+      'Project name already exists',
+      'OK',
+      { duration: 5000, panelClass: 'snackbar-error' }
+    );
+
+    expect(mockDialogRef.close).not.toHaveBeenCalled();
+  });
 
   it('should open confirmation dialog on cancel', () => {
     const mockAfterClosed = of(true);
