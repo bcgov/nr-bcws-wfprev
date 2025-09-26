@@ -74,6 +74,7 @@ jobs:
         WFPREV_CHECK_TOKEN_URL: ${{ vars.WFPREV_CHECK_TOKEN_URL }}
         TARGET_ENV: ${{ env.TARGET_ENV }}
         TRAINING_AND_SUPPORT_LINK: ${{ vars.TRAINING_AND_SUPPORT_LINK }}
+        REMI_PLANNER_EMAIL_ADDRESS: ${{ vars.REMI_PLANNER_EMAIL_ADDRESS }}
 
     - name: Set up Node.js
       uses: actions/setup-node@v4
