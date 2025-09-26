@@ -96,6 +96,12 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
     this.loadCodeTables();
     this.loadProjectDetails();
     this.setupDropdownDependencies();
+    this.detailsForm.get('projectName')?.valueChanges.subscribe(() => {
+      const control = this.detailsForm.get('projectName');
+      if (control?.hasError('duplicate')) {
+        control.setErrors(null);
+      }
+    });
   }
 
   ngOnDestroy(): void {
@@ -431,7 +437,12 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
           })
         },
         error: (err) => {
-          // 409 is duplicate project name error
+          if (err?.status === 409 && err?.error?.error) {
+            const projectNameControl = this.detailsForm.get('projectName');
+            projectNameControl?.setErrors({ duplicate: true });
+            projectNameControl?.markAsTouched();
+          }
+
           const errorMessage =
             err?.status === 409 && err?.error?.error
               ? err.error.error

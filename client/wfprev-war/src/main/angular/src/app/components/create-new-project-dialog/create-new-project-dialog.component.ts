@@ -293,7 +293,12 @@ export class CreateNewProjectDialogComponent implements OnInit {
           this.dialogRef.close({ success: true, projectGuid: response.projectGuid });
         },
         error: (err) => {
-          // 409 is duplicate project name error
+          if (err?.status === 409 && err?.error?.error) {
+            const control = this.projectForm.get('projectName');
+            control?.setErrors({ duplicate: true });
+            control?.markAsTouched();
+          }
+
           const errorMessage =
             err?.status === 409 && err?.error?.error
               ? err.error.error
