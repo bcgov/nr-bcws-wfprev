@@ -395,7 +395,7 @@ describe('ProjectFilesComponent', () => {
       component.uploadFile(mockFile, 'Activity Polygon');
 
       expect(mockProjectService.uploadDocument).toHaveBeenCalledWith({ file: mockFile });
-      expect(component.uploadAttachment).toHaveBeenCalledWith(mockFile, response, 'Activity Polygon',mockSnackRef);
+      expect(component.uploadAttachment).toHaveBeenCalledWith(mockFile, response, 'Activity Polygon', mockSnackRef);
     });
 
     it('should handle file upload error', () => {
@@ -952,7 +952,7 @@ describe('ProjectFilesComponent', () => {
     component.activityGuid = 'activity-guid';
     component.fiscalGuid = 'fiscal-guid';
     component.projectGuid = 'project-guid';
-    const mockFile = { 
+    const mockFile = {
       fileAttachmentGuid: 'test-guid',
       attachmentContentTypeCode: { attachmentContentTypeCode: 'MAP' }
     } as ProjectFile;
@@ -1147,6 +1147,34 @@ describe('ProjectFilesComponent', () => {
       expect(console.error).toHaveBeenCalledWith('Download failed', mockError);
     });
 
+  });
+
+  describe('hasAttachments', () => {
+    it('returns false when projectFiles is an empty array', () => {
+      component.projectFiles = [];
+      expect(component.hasAttachments).toBeFalse();
+    });
+
+    it('returns true when projectFiles has items', () => {
+      component.projectFiles = [{ fileName: 'a.txt' } as ProjectFile];
+      expect(component.hasAttachments).toBeTrue();
+    });
+
+    it('returns false when projectFiles is undefined/null', () => {
+      (component as any).projectFiles = undefined;
+      expect(component.hasAttachments).toBeFalse();
+
+      (component as any).projectFiles = null;
+      expect(component.hasAttachments).toBeFalse();
+    });
+
+    it('reflects changes if the same array reference is mutated', () => {
+      component.projectFiles = [];
+      expect(component.hasAttachments).toBeFalse();
+
+      component.projectFiles.push({ fileName: 'b.txt' } as ProjectFile);
+      expect(component.hasAttachments).toBeTrue();
+    });
   });
 
 
