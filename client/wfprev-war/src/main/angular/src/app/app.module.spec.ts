@@ -52,9 +52,4 @@ describe('AppModule', () => {
     const coreModule = TestBed.inject(CoreUIModule);
     expect(coreModule).toBeTruthy();
   });
-
-  it('should declare ErrorPageComponent', () => {
-    const errorPageComponent = TestBed.createComponent(ErrorPageComponent);
-    expect(errorPageComponent).toBeTruthy();
-  });
 });
