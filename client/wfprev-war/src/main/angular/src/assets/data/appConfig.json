@@ -1,7 +1,8 @@
 {
   "application": {
     "baseUrl": "#{WFPREV_BASE_URL}#",
-    "environment": "#{TARGET_ENV}#"
+    "environment": "#{TARGET_ENV}#",
+    "remiPlannerEmailAddress": "#{REMI_PLANNER_EMAIL_ADDRESS}#"
   },
 
   "webade": {

@@ -40,7 +40,8 @@ describe('MapConfigService', () => {
         enableLocalStorageToken: true,
         acronym: 'WFPREV',
         environment: 'DEV',
-        version: '0.0.0'
+        version: '0.0.0',
+        remiPlannerEmailAddress: 'test@example.com'
       },
       webade: {
         oauth2Url: 'http://oauth.test',
@@ -68,7 +69,8 @@ describe('MapConfigService', () => {
           enableLocalStorageToken: true,
           acronym: 'WFPREV',
           environment: 'DEV',
-          version: '0.0.0'
+          version: '0.0.0',
+          remiPlannerEmailAddress: 'test@example.com'
         },
         webade: {
           oauth2Url: 'http://oauth.test',

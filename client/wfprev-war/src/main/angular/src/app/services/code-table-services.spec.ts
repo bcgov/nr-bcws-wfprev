@@ -25,6 +25,7 @@ describe('CodeTableServices', () => {
       acronym: 'TEST',
       version: '1.0.0',
       environment: 'test',
+      remiPlannerEmailAddress: 'test@example.com'
     },
     webade: {
       oauth2Url: 'http://mock-oauth-url.com',
