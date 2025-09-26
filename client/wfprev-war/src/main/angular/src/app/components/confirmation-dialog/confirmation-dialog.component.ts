@@ -33,7 +33,7 @@ export class ConfirmationDialogComponent {
     return 'Continue';
   }
 
-  get isDeleteDialog(): boolean {
+  get isDeleteOrChangeDialog (): boolean {
     return this.dialogUsage.startsWith('delete-') || this.dialogUsage.startsWith('change-');
   }
 
