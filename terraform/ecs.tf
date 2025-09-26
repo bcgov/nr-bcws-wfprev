@@ -129,6 +129,10 @@ resource "aws_ecs_task_definition" "wfprev_server" {
       {
         name  = "TRAINING_AND_SUPPORT_LINK"
         value = var.TRAINING_AND_SUPPORT_LINK
+      },
+      {
+        name  = "REMI_PLANNER_EMAIL_ADDRESS"
+        value = var.REMI_PLANNER_EMAIL_ADDRESS
       }
     ]
     logConfiguration = {

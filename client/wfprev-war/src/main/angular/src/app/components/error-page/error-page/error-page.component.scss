@@ -1,3 +1,38 @@
-h2 {
-    color:red
+.unauthorized-page {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  min-height: 80vh;
+  padding: 4rem 2rem 2rem;
+  font-family: var(--wf-font-family-main) !important;
+
+  .content {
+    text-align: left;
+    max-width: 600px;
+    width: 100%;
+  }
+
+  h1 {
+    font-size: 35px;
+    font-weight: 200;
+    margin-bottom: 1rem;
+  }
+
+  h2 {
+    font-size: 16px;
+    font-weight: 200;
+    margin-bottom: 1rem;
+  }
+
+  .error-message {
+    font-size: 18px;
+    color: #CE3E39;
+    font-weight: 200;
+
+    a {
+      color: inherit;
+      text-decoration: underline;
+    }
+  }
 }

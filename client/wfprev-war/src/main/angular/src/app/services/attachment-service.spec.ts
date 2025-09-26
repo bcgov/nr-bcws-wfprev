@@ -13,6 +13,7 @@ const mockApplicationConfig = {
         acronym: 'TEST',
         environment: 'DEV',
         version: '1.0.0',
+        remiPlannerEmailAddress: 'test@example.com'
     },
     webade: {
         oauth2Url: 'http://oauth.test',
