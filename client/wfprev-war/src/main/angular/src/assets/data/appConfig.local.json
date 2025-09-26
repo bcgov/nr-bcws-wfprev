@@ -1,7 +1,8 @@
 {
   "application": {
     "baseUrl": "http://localhost:4200/",
-    "environment": "local"
+    "environment": "local",
+    "remiPlannerEmailAddress": "BCWS.ReMiPlanner@gov.bc.ca"
   },
 
   "webade": {

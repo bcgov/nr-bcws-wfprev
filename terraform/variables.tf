@@ -393,3 +393,8 @@ variable "TRAINING_AND_SUPPORT_LINK" {
   type    = string
   default = ""
 }
+
+variable "REMI_PLANNER_EMAIL_ADDRESS" {
+  type    = string
+  default = ""
+}

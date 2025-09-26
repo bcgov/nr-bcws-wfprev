@@ -1,3 +1,29 @@
-h2 {
-    color:red
+.unauthorized-page {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  min-height: 80vh; 
+  padding: 2rem;
+  font-family: var(--wf-font-family-main) !important;
+
+  h1 {
+    font-size: 35px;
+    font-weight: 200;
+    margin-bottom: 1rem;
+  }
+
+  h2 {
+    font-size: 16px;
+    font-weight: 200;
+    margin-bottom: 1rem;
+  }
+
+  .error-message {
+    font-size: 22px;
+    color: #CE3E39;
+    font-weight: 200;
+    max-width: 600px; 
+  }
 }
