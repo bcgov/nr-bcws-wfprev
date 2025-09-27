@@ -92,24 +92,27 @@ public class ProjectService implements CommonService {
     public ProjectModel saveProject(ProjectModel resource, ProjectEntity entity) {
         try {
             assignAssociatedEntities(resource, entity);
-            // Check for duplicate name, accounting for updates
+            String incomingName = entity.getProjectName();
+
             if (entity.getProjectGuid() != null) {
-                // For updates, check if another project has this name
-                boolean duplicateExists = projectRepository.findByProjectName(entity.getProjectName())
+                // For updates, check if another project has this name (case-insensitive)
+                boolean duplicateExists = projectRepository.findByProjectNameIgnoreCase(incomingName)
                         .stream()
                         .anyMatch(existing -> !existing.getProjectGuid().equals(entity.getProjectGuid()));
 
                 if (duplicateExists) {
-                    throw new ValidationException("Project name already exists: " + entity.getProjectName());
+                    throw new ValidationException("Project name already exists: " + incomingName);
                 }
             } else {
-                // For new projects, simple check is fine
-                if (projectRepository.existsByProjectName(entity.getProjectName())) {
-                    throw new ValidationException("Project name already exists: " + entity.getProjectName());
+                // For new projects, case-insensitive exists check
+                if (projectRepository.existsByProjectNameIgnoreCase(incomingName)) {
+                    throw new ValidationException("Project name already exists: " + incomingName);
                 }
             }
+
             ProjectEntity savedEntity = projectRepository.saveAndFlush(entity);
             return projectResourceAssembler.toModel(savedEntity);
+
         } catch (EntityNotFoundException e) {
             throw new ServiceException("Invalid reference data: " + e.getMessage(), e);
         } catch (DataIntegrityViolationException | ConstraintViolationException e) {
