@@ -32,7 +32,8 @@ export const Messages = {
   fileDownloadFailure: 'Error: File download unsuccessful',
   fileDownloadSuccess: 'File downloaded successfully.',
   fileDownloadInProgress: 'File download in progress. Please wait',
-  fiscalActivityDeletedFailure: 'Delete Failed. Remove Activities to Delete Fiscal Activity'
+  fiscalActivityDeletedFailure: 'Delete Failed. Remove Activities to Delete Fiscal Activity',
+  projectTypeCannotUpdateAfterEndorsed: 'Project Type cannot be changed after any Fiscal Activity has been Endorsed and Approved'
 };
 
 export const CodeTableKeys = {
@@ -162,7 +163,8 @@ export const ModalTitles = {
   DELETE_ATTACHMENT_TITLE: 'Delete Attachment',
   DELETE_FISCAL_YEAR_TITLE: 'Delete Fiscal Activity',
   DELETE_ACTIVITY_TITLE: 'Delete Activity',
-  DUPLICATE_FOUND_TITLE: 'Duplicate Found'
+  DUPLICATE_FOUND_TITLE: 'Duplicate Found',
+  CHANGE_PROJECT_TYPE: 'Change Project Type'
 };
 
 export const ModalMessages = {
@@ -170,6 +172,7 @@ export const ModalMessages = {
   DUPLICATE_FOUND_MESSAGE: 'This Project already exists: ',
   CONFIRM_UNSAVE_MESSAGE: 'Are you sure you want to leave this page? The changes you made will not be saved.',
   DELETE_ATTACHMENT_MESSAGE: 'Are you sure you want to delete this file? ',
+  CONFIRM_DELETE_EVALUACTION_CRITERIA: 'Are you sure you want to change the Project Type? This action cannot be reversed and will immediately delete any existing Evaluation Criteria values.'
 }
 
 export const EndorsementCode = {

@@ -27,7 +27,10 @@
         [options]="projectTypeCode"
         [optionValueField]="'projectTypeCode'"
         [optionLabelField]="'description'"
-        [tooltip]="getCodeDescription(CodeTableKeys.PROJECT_TYPE_CODE)"
+        [tooltip]="projectTypeLocked 
+          ? messages.projectTypeCannotUpdateAfterEndorsed
+          : getCodeDescription(CodeTableKeys.PROJECT_TYPE_CODE)"
+        [disabled]="projectTypeLocked"
         id="projectTypeCode"
         placeholder="Select"
       />
