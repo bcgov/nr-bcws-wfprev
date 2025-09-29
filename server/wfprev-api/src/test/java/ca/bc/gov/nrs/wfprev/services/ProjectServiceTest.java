@@ -946,7 +946,7 @@ class ProjectServiceTest {
                 .projectName("Duplicate Project")
                 .build();
 
-        when(projectRepository.existsByProjectName("Duplicate Project")).thenReturn(true);
+        when(projectRepository.existsByProjectNameIgnoreCase("Duplicate Project")).thenReturn(true);
 
         // When/Then
         ValidationException exception = assertThrows(ValidationException.class, () -> {
@@ -974,7 +974,7 @@ class ProjectServiceTest {
                 .projectName("Duplicate Project")
                 .build();
 
-        when(projectRepository.findByProjectName("Duplicate Project"))
+        when(projectRepository.findByProjectNameIgnoreCase("Duplicate Project"))
                 .thenReturn(Collections.singletonList(otherEntityWithSameName));
 
         // When/Then
@@ -995,7 +995,7 @@ class ProjectServiceTest {
                 .projectName("Unique Project")
                 .build();
 
-        when(projectRepository.existsByProjectName("Unique Project")).thenReturn(false);
+        when(projectRepository.existsByProjectNameIgnoreCase("Unique Project")).thenReturn(false);
         when(projectRepository.saveAndFlush(any(ProjectEntity.class))).thenReturn(entity);
         when(projectResourceAssembler.toModel(any(ProjectEntity.class))).thenReturn(inputModel);
 
@@ -1007,6 +1007,33 @@ class ProjectServiceTest {
         verify(projectRepository).saveAndFlush(entity);
         verify(projectResourceAssembler).toModel(entity);
     }
+
+    @Test
+        void test_save_project_should_throw_validation_exception_for_duplicate_name_case_insensitive() {
+        ProjectEntity otherEntityWithSameName = ProjectEntity.builder()
+                .projectGuid(UUID.randomUUID())
+                .projectName("duplicate project")
+                .build();
+
+        UUID existingGuid = UUID.randomUUID();
+        ProjectModel inputModel = ProjectModel.builder()
+                .projectGuid(existingGuid.toString())
+                .projectName("DUPLICATE PROJECT")
+                .build();
+        ProjectEntity entity = ProjectEntity.builder()
+                .projectGuid(existingGuid)
+                .projectName("DUPLICATE PROJECT")
+                .build();
+
+        when(projectRepository.findByProjectNameIgnoreCase("DUPLICATE PROJECT"))
+                .thenReturn(Collections.singletonList(otherEntityWithSameName));
+
+        ValidationException exception = assertThrows(ValidationException.class, () -> {
+                projectService.saveProject(inputModel, entity);
+        });
+
+        assertTrue(exception.getMessage().contains("Project name already exists"));
+        }
 
     private void setField(Object target, String fieldName, Object value) {
         try {

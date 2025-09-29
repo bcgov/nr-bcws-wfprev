@@ -7,6 +7,7 @@ export const Messages = {
   projectCreatedFailure: 'Create Project Failed',
   projectUpdatedSuccess: 'Project Updated Successfully',
   projectUpdatedFailure: 'Project Update Failed',
+  projectNameDuplicate: 'Project Name already exists',
   confirmCancel: 'Are you sure you want to cancel?',
   projectFiscalCreatedSuccess: 'Project Fiscal Created Successfully',
   projectFiscalCreatedFailure: 'Create Project Fiscal Failed',
