@@ -11,9 +11,9 @@ import java.util.UUID;
 @RepositoryRestResource(exported = false)
 public interface ProjectRepository extends CommonRepository<ProjectEntity, UUID> {
 
-    List<ProjectEntity> findByProjectName(String projectName);
+    List<ProjectEntity> findByProjectNameIgnoreCase(String projectName);
 
-    boolean existsByProjectName(String projectName);
+    boolean existsByProjectNameIgnoreCase(String projectName);
 
     List<ProjectEntity> findByProjectGuidIn(List<UUID> projectGuids);
   
