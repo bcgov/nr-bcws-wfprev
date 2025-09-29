@@ -541,6 +541,25 @@ export class ProjectService {
         );
     }
 
+    
+    deleteEvaluationCriteriaSummary(projectGuid: string, EvaluationCriteriaSummaryGuid: string): Observable<any> {
+        const baseUrl = `${this.appConfigService.getConfig().rest['wfprev']}/wfprev-api/projects`;
+        const url = `${baseUrl}/${projectGuid}/evaluationCriteriaSummary/${EvaluationCriteriaSummaryGuid}`;
+
+        return this.httpClient.delete(url, {
+            headers: {
+                Authorization: `Bearer ${this.tokenService.getOauthToken()}`,
+            }
+        }).pipe(
+            map((response: any) => response),
+            catchError((error) => {
+                console.error("Error delete evaluation criteria", error);
+                return throwError(() => new Error("Failed to delete evaluation criteria"));
+            })
+        );
+    }
+
+
     downloadProjects(body: ReportRequest): Observable<Blob> {
         const url = `${this.appConfigService.getConfig().rest['wfprev']}/wfprev-api/reports`;
 

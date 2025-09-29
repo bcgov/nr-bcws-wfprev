@@ -1,6 +1,6 @@
 <div class="dialog-container-confirm">
   <div class="title-bar">
-    <div class="mask-icon" [ngClass]="{ 'delete': isDeleteDialog, 'warning': !isDeleteDialog }" aria-hidden="true">
+    <div class="mask-icon" [ngClass]="{ 'delete': isDeleteOrChangeDialog , 'warning': !isDeleteOrChangeDialog  }" aria-hidden="true">
     </div>
     {{ dialogTitle }}
   </div>
@@ -11,11 +11,11 @@
   </div>
   <div class="footer">
     <div class="button-row">
-      <button [ngClass]="isDeleteDialog ? 'cancel-button' : 'secondary'" (click)="onGoBack()">
+      <button [ngClass]="isDeleteOrChangeDialog  ? 'cancel-button' : 'secondary'" (click)="onGoBack()">
         Cancel
       </button>
 
-      <button [ngClass]="isDeleteDialog ? 'delete-button' : 'primary'" (click)="onConfirm()">
+      <button [ngClass]="isDeleteOrChangeDialog  ? 'delete-button' : 'primary'" (click)="onConfirm()">
         {{ confirmButtonText }}
       </button>
     </div>
