@@ -1,9 +1,6 @@
 import { LayerSettings } from "src/app/components/models";
 
-export function ResultsActivityTreatmentLayerConfig(
-  ls: LayerSettings,
-  authHeader?: Record<string, string>
-) {
+export function ResultsActivityTreatmentLayerConfig(ls: LayerSettings) {
   const where =
     "GEOMETRY_EXIST_IND = 'Y' AND RESULTS_IND = 'Y' AND " +
     "(SILV_FUND_SOURCE_CODE IN ('CF','FEP','WRR') " +
@@ -23,7 +20,6 @@ export function ResultsActivityTreatmentLayerConfig(
     layerName: "pub:WHSE_FOREST_VEGETATION.RSLT_ACTIVITY_TREATMENT_SVW",
     version: "1.1.1",
     where,
-    transparent: true,
-    header: authHeader
+    transparent: true
   };
 }
