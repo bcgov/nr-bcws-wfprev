@@ -67,7 +67,7 @@ export class ActivitiesComponent implements OnChanges, CanComponentDeactivate {
   @Input() fiscalGuid: string = '';
   @Output() boundariesUpdated = new EventEmitter<void>();
   @ViewChild('activitiesPanel') activitiesPanel?: MatExpansionPanel;
-  @ViewChildren(ProjectFilesComponent) private attachmentFiles!: QueryList<ProjectFilesComponent>;
+  @ViewChildren(ProjectFilesComponent) private readonly attachmentFiles!: QueryList<ProjectFilesComponent>;
   messages = Messages;
   isNewActivityBeingAdded = false;
 
@@ -89,9 +89,9 @@ export class ActivitiesComponent implements OnChanges, CanComponentDeactivate {
   expandedPanels: boolean[] = [];
   isActivitySaving: boolean[] = [];
   constructor(
-    private route: ActivatedRoute,
-    private projectService: ProjectService,
-    private codeTableService: CodeTableServices,
+    private readonly route: ActivatedRoute,
+    private readonly projectService: ProjectService,
+    private readonly codeTableService: CodeTableServices,
     private readonly fb: FormBuilder,
     private readonly snackbarService: MatSnackBar,
     public readonly dialog: MatDialog,
