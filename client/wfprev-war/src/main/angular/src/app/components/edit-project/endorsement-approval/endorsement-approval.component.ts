@@ -117,6 +117,11 @@ export class EndorsementApprovalComponent implements OnChanges {
   }
 
   get effectiveEndorserName(): string {
+    // use the endorserName if set
+    if (this.fiscal?.endorserName) {
+      return this.fiscal.endorserName;
+    }
+    // or fall back to currentUser if the form is checked
     const checked = this.endorsementApprovalForm.get('endorseFiscalActivity')?.value;
     return checked ? this.currentUser : '';
   }

@@ -98,18 +98,26 @@ describe('EndorsementApprovalComponent', () => {
   });
 
 
-  it('should return effectiveEndorserName as currentUser when endorseFiscalActivity checked', () => {
+  it('should return effectiveEndorserName as fiscal endorser when present', () => {
     component.fiscal = mockFiscal;
+    component.endorsementApprovalForm.get('endorseFiscalActivity')?.setValue(true);
+    expect(component.effectiveEndorserName).toBe('Alice');
+  });
+
+  it('should return currentUser when no fiscal endorser and endorseFiscalActivity checked', () => {
+    const noEndorserFiscal: ProjectFiscal = { ...mockFiscal, endorserName: undefined };
+    component.fiscal = noEndorserFiscal;
     component.endorsementApprovalForm.get('endorseFiscalActivity')?.setValue(true);
     expect(component.effectiveEndorserName).toBe('Test User');
   });
 
-  it('should clear effectiveEndorserName as fiscal endorser when endorseFiscalActivity unchecked', () => {
-    component.fiscal = mockFiscal;
+  it('should return empty string when no fiscal endorser and endorseFiscalActivity unchecked', () => {
+    const noEndorserFiscal: ProjectFiscal = { ...mockFiscal, endorserName: undefined };
+    component.fiscal = noEndorserFiscal;
     component.endorsementApprovalForm.get('endorseFiscalActivity')?.setValue(false);
     expect(component.effectiveEndorserName).toBe('');
   });
-
+  
   it('should emit saveEndorsement with updated fiscal on save', () => {
     const emitSpy = spyOn(component.saveEndorsement, 'emit');
     component.fiscal = mockFiscal;
