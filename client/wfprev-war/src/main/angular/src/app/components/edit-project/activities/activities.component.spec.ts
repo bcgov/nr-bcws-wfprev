@@ -903,5 +903,27 @@ describe('ActivitiesComponent', () => {
     });
   });
 
+  describe('onSaveActivity early exit cases', () => {
+    it('should exit early if activity is already being saved', () => {
+      component.activities = [{ activityGuid: 'test-guid' }];
+      component.activityForms = [component.createActivityForm({ activityGuid: 'test-guid' })];
+      component.isActivitySaving[0] = true;
+      component.onSaveActivity(0);
+
+      expect(mockProjectService.updateFiscalActivities).not.toHaveBeenCalled();
+      expect(component.isActivitySaving[0]).toBeTrue();
+    });
+
+    it('should reset isActivitySaving to false and return if form does not exist', () => {
+      component.activities = [{}];
+      component.activityForms = [];
+      component.isActivitySaving[0] = false;
+
+      component.onSaveActivity(0);
+
+      expect(component.isActivitySaving[0]).toBeFalse();
+    });
+  });
+
 
 });

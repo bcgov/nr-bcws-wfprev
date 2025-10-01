@@ -80,6 +80,7 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
   originalFiscalValues: any[] = [];
   readonly CodeTableKeys = CodeTableKeys;
   readonly FiscalStatuses = FiscalStatuses;
+  isSavingFiscal: boolean[] = [];
 
   constructor(
     private route: ActivatedRoute,
@@ -393,6 +394,8 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
   }
 
   onSaveFiscal(index: number): void {
+    if (this.isSavingFiscal[index]) return;
+    this.isSavingFiscal[index] = true;
     const originalData = this.projectFiscals[index];
     const formData = this.fiscalForms[index]?.value;
     const updatedData = {
@@ -456,6 +459,7 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
           );
           this.loadProjectFiscals(true);
           this.fiscalsUpdated.emit();
+          this.isSavingFiscal[index] = false;
         },
         error: () => {
           this.snackbarService.open(
@@ -463,6 +467,7 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
             'OK',
             { duration: 5000, panelClass: 'snackbar-error' }
           );
+          this.isSavingFiscal[index] = false;
         }
       })
     }
@@ -477,6 +482,7 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
             { duration: 5000, panelClass: 'snackbar-success' },
           );
           this.loadProjectFiscals(true,newFiscalGuid);
+          this.isSavingFiscal[index] = false;
         },
         error: () => {
           this.snackbarService.open(
@@ -484,6 +490,7 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
             'OK',
             { duration: 5000, panelClass: 'snackbar-error' }
           );
+          this.isSavingFiscal[index] = false;
         }
       });
     }
@@ -678,6 +685,7 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
   onSaveEndorsement(updatedFiscal: ProjectFiscal): void {
     const index = this.selectedTabIndex;
     if (!this.projectFiscals[index]) return;
+    this.isSavingFiscal[index] = true;
 
     // Merge updated fields
     this.mergeFiscalUpdates(index, updatedFiscal);
@@ -695,8 +703,14 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
       fiscalGuid,
       payload as ProjectFiscal
     ).subscribe({
-      next: () => this.handleEndorsementUpdateSuccess(index, updatedFiscal),
-      error: () => this.showSnackbar(this.messages.projectFiscalUpdatedFailure, false)
+      next: () => {
+        this.handleEndorsementUpdateSuccess(index, updatedFiscal);
+        this.isSavingFiscal[index] = false;
+      },
+      error: () => {
+        this.showSnackbar(this.messages.projectFiscalUpdatedFailure, false);
+        this.isSavingFiscal[index] = false;
+      }
     });
   }
 
