@@ -704,6 +704,17 @@ describe('ProjectDetailsComponent', () => {
         expect(mockProjectService.getProjectByProjectGuid).not.toHaveBeenCalled();
       });
 
+      it('should reset isSaving after updateProject success', () => {
+        component.onSaveProjectDescription();
+        expect(component.isSaving).toBeFalse();
+      });
+
+      it('should reset isSaving after updateProject error', () => {
+        mockProjectService.updateProject.and.returnValue(throwError(() => new Error('fail')));
+        component.onSaveProjectDescription();
+        expect(component.isSaving).toBeFalse();
+      });
+
     });
 
     describe('onSaveLatLong Method', () => {
@@ -721,6 +732,7 @@ describe('ProjectDetailsComponent', () => {
 
         expect(component.isLatLongDirty).toBeFalse();
         expect(component.projectDetail.latitude).toBeGreaterThan(0);
+        expect(component.isSaving).toBeFalse();
       });
     });
 
@@ -803,6 +815,7 @@ describe('ProjectDetailsComponent', () => {
           fireCentreOrgUnitId: 123,
         })
       );
+      expect(component.isSaving).toBeFalse();
     });
 
     describe('refreshFiscalData Method', () => {
@@ -1151,6 +1164,7 @@ describe('ProjectDetailsComponent', () => {
       'OK',
       jasmine.objectContaining({ panelClass: 'snackbar-error' })
     );
+    expect(component.isSaving).toBeFalse();
   });
 
   describe('project description input/paste', () => {

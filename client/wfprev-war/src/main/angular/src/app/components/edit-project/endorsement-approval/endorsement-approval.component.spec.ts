@@ -234,4 +234,18 @@ describe('EndorsementApprovalComponent', () => {
     component.fiscal = { ...mockFiscal, planFiscalStatusCode: { planFiscalStatusCode: FiscalStatuses.PREPARED } };
     expect(component.showDraftTooltip).toBeFalse();
   });
+
+  it('should reset isSaving when isSaving change goes from true to false', () => {
+    component.isSaving = true;
+    component.ngOnChanges({
+      isSaving: {
+        currentValue: false,
+        previousValue: true,
+        firstChange: false,
+        isFirstChange: () => false,
+      }
+    });
+
+    expect(component.isSaving).toBeFalse();
+  });
 });
