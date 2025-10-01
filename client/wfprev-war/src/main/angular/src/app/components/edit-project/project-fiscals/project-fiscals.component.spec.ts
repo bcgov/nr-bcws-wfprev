@@ -68,9 +68,12 @@ describe('ProjectFiscalsComponent', () => {
       imports: [BrowserAnimationsModule],
       declarations: [MockFiscalMapComponent, MockActivitiesComponent],
       providers: [
-        { provide: TokenService, useValue: { getUserFullName: jasmine.createSpy('getUserFullName').and.returnValue('Test User'),
-          getIdir: jasmine.createSpy('getIdir').and.returnValue('IDIR123')
-         } },
+        {
+          provide: TokenService, useValue: {
+            getUserFullName: jasmine.createSpy('getUserFullName').and.returnValue('Test User'),
+            getIdir: jasmine.createSpy('getIdir').and.returnValue('IDIR123')
+          }
+        },
         {
           provide: ActivatedRoute,
           useValue: {
@@ -862,7 +865,7 @@ describe('ProjectFiscalsComponent', () => {
   });
 
   afterEach(() => {
-    try { jasmine.clock().uninstall(); } catch {}
+    try { jasmine.clock().uninstall(); } catch { }
   });
   it('should build submission fields with currentIdir and local ISO timestamp', () => {
     jasmine.clock().install();
@@ -900,10 +903,12 @@ describe('ProjectFiscalsComponent', () => {
 
   it('selects tab by newFiscalGuid when provided', fakeAsync(() => {
     mockProjectService.getProjectFiscalsByProjectGuid.and.returnValue(of({
-      _embedded: { projectFiscals: [
-        { projectPlanFiscalGuid: 'A', fiscalYear: 2024, projectFiscalName: 'A Plan' },
-        { projectPlanFiscalGuid: 'B', fiscalYear: 2025, projectFiscalName: 'B Plan' },
-      ]}
+      _embedded: {
+        projectFiscals: [
+          { projectPlanFiscalGuid: 'A', fiscalYear: 2024, projectFiscalName: 'A Plan' },
+          { projectPlanFiscalGuid: 'B', fiscalYear: 2025, projectFiscalName: 'B Plan' },
+        ]
+      }
     }));
     component.loadProjectFiscals(false, 'B');
     tick();
@@ -912,10 +917,12 @@ describe('ProjectFiscalsComponent', () => {
 
   it('selects tab by focusedFiscalId when no newFiscalGuid', fakeAsync(() => {
     mockProjectService.getProjectFiscalsByProjectGuid.and.returnValue(of({
-      _embedded: { projectFiscals: [
-        { projectPlanFiscalGuid: 'X1', fiscalYear: 2025 },
-        { projectPlanFiscalGuid: 'X2', fiscalYear: 2024 },
-      ]}
+      _embedded: {
+        projectFiscals: [
+          { projectPlanFiscalGuid: 'X1', fiscalYear: 2025 },
+          { projectPlanFiscalGuid: 'X2', fiscalYear: 2024 },
+        ]
+      }
     }));
     component.focusedFiscalId = 'X2';
     component.loadProjectFiscals();
@@ -986,6 +993,101 @@ describe('ProjectFiscalsComponent', () => {
       'OK',
       { duration: 5000, panelClass: 'snackbar-success' }
     );
+  });
+
+  it('updates existing fiscal TO DRAFT and resets endorsement/approval fields', () => {
+    jasmine.clock().install();
+    jasmine.clock().mockDate(new Date('2025-08-08T19:34:56.000Z'));
+
+    const existing = {
+      projectGuid: 'test-guid',
+      projectPlanFiscalGuid: 'existing-guid',
+      projectFiscalName: 'Existing Plan',
+      fiscalYear: 2025,
+      endorserName: 'Endorser X',
+      endorsementTimestamp: '2025-08-01T10:00:00Z',
+      endorsementCode: { endorsementCode: EndorsementCode.ENDORSED },
+      endorsementComment: 'Looks good',
+      approverName: 'Approver Y',
+      approvedTimestamp: '2025-08-02T09:00:00Z',
+      isApprovedInd: true,
+      businessAreaComment: 'Original BAC',
+      planFiscalStatusCode: { planFiscalStatusCode: 'PROPOSED' },
+      activityCategoryCode: 'CAT1',
+    };
+
+    component.projectFiscals = [existing];
+    const form = component.createFiscalForm(existing);
+    form.get('planFiscalStatusCode')!.setValue('DRAFT'); // trigger isUpdateToDraft
+    component.fiscalForms = [form];
+
+    mockProjectService.updateProjectFiscal.and.returnValue(of({}));
+
+    component.onSaveFiscal(0);
+
+    const [, , payload] = mockProjectService.updateProjectFiscal.calls.mostRecent()
+      .args as [string, string, ProjectFiscal];
+
+    expect(payload.planFiscalStatusCode).toEqual({ planFiscalStatusCode: 'DRAFT' });
+    expect(payload.businessAreaComment).toBeNull();
+    expect(payload.endorserName).toBeNull();
+    expect(payload.endorsementTimestamp).toBeNull();
+    expect(payload.endorsementCode).toEqual({ endorsementCode: EndorsementCode.NOT_ENDORS });
+    expect(payload.endorsementComment).toBeNull();
+    expect(payload.approverName).toBeNull();
+    expect(payload.approvedTimestamp).toBeNull();
+    expect(payload.isApprovedInd).toBeFalse();
+    expect(payload.submissionTimestamp).toBe('2025-08-08T19:34:56.000Z');
+
+    jasmine.clock().uninstall();
+  });
+
+  it('updates an existing fiscal to NON-DRAFT and preserves endorsement/approval fields', () => {
+    jasmine.clock().install();
+    jasmine.clock().mockDate(new Date('2025-08-08T19:34:56.000Z'));
+
+    const existing = {
+      projectGuid: 'test-guid',
+      projectPlanFiscalGuid: 'existing-guid', 
+      projectFiscalName: 'Existing Plan',
+      fiscalYear: 2025,
+      activityCategoryCode: 'CAT1',
+      endorserName: 'Endorser X',
+      endorsementTimestamp: '2025-08-01T10:00:00Z',
+      endorsementCode: { endorsementCode: EndorsementCode.ENDORSED },
+      endorsementComment: 'Looks good',
+      approverName: 'Approver Y',
+      approvedTimestamp: '2025-08-02T09:00:00Z',
+      isApprovedInd: true,
+      businessAreaComment: 'Original BAC',
+      planFiscalStatusCode: { planFiscalStatusCode: 'DRAFT' },
+    };
+
+    component.projectFiscals = [existing];
+
+    const form = component.createFiscalForm(existing);
+    form.get('planFiscalStatusCode')!.setValue('PROPOSED'); // triggers isUpdateToDraft = false
+    component.fiscalForms = [form];
+
+    mockProjectService.updateProjectFiscal.and.returnValue(of({}));
+
+    component.onSaveFiscal(0);
+
+    const [, , payload] = mockProjectService.updateProjectFiscal.calls.mostRecent()
+      .args as [string, string, ProjectFiscal];
+
+    expect(payload.planFiscalStatusCode).toEqual({ planFiscalStatusCode: 'PROPOSED' });
+    expect(payload.businessAreaComment).toBe('Original BAC'); 
+    expect(payload.endorserName).toBe('Endorser X');
+    expect(payload.endorsementTimestamp).toBe('2025-08-01T10:00:00Z');
+    expect(payload.endorsementCode).toEqual({ endorsementCode: EndorsementCode.ENDORSED });
+    expect(payload.endorsementComment).toBe('Looks good');
+    expect(payload.approverName).toBe('Approver Y');
+    expect(payload.approvedTimestamp).toBe('2025-08-02T09:00:00Z');
+    expect(payload.isApprovedInd).toBeTrue();
+    expect(payload.submissionTimestamp).toBe('2025-08-08T19:34:56.000Z');
+
+    jasmine.clock().uninstall();
   });
 
 });
