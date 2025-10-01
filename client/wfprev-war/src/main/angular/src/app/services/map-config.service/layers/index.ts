@@ -38,7 +38,7 @@ export function LayerConfig(mapServices: MapServices, token?: string) {
     BeingHeldWildfiresLayerConfig(ls),
     UnderControlWildfiresLayerConfig(ls),
     OutWildfiresLayerConfig(ls),
-    LegacyFuelTreatmentsLayerConfig(ls, authHeader),
+    LegacyFuelTreatmentsLayerConfig(ls),
     ResultsActivityTreatmentLayerConfig(ls)
   ];
   
