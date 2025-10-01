@@ -36,5 +36,8 @@
     <div class="error" *ngIf="control?.hasError('min') && (control?.dirty || control?.touched)">
       {{ errorMessages['min'] }}
     </div>
+    <div class="error" *ngIf="control?.hasError('duplicate') && (control?.dirty || control?.touched)">
+      {{ errorMessages['duplicate'] }}
+    </div>
   </div>
 </div>

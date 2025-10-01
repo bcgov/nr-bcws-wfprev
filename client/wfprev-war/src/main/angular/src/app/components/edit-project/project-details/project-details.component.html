@@ -12,7 +12,10 @@
         [placeholder]="'Concisely describe project\'s goal and/or area'"
         [control]="getControl('projectName')"
         [tooltip]="getControl('projectName').value"
-        [errorMessages]="{ maxlength: messages.maxLengthExceeded }"
+        [errorMessages]="{
+          maxlength: messages.maxLengthExceeded,
+          duplicate: messages.projectNameDuplicate
+        }"
       ></wfprev-input-field>
     </div>
 
@@ -24,7 +27,10 @@
         [options]="projectTypeCode"
         [optionValueField]="'projectTypeCode'"
         [optionLabelField]="'description'"
-        [tooltip]="getCodeDescription(CodeTableKeys.PROJECT_TYPE_CODE)"
+        [tooltip]="projectTypeLocked 
+          ? messages.projectTypeCannotUpdateAfterEndorsed
+          : getCodeDescription(CodeTableKeys.PROJECT_TYPE_CODE)"
+        [disabled]="projectTypeLocked"
         id="projectTypeCode"
         placeholder="Select"
       />

@@ -14,6 +14,7 @@ import { ActivatedRoute } from '@angular/router';
 import { formatLatLong } from 'src/app/utils/tools';
 import { CodeTableKeys } from 'src/app/utils/constants';
 import * as toolUtils from 'src/app/utils/tools'
+import { EvaluationCriteriaSummaryModel, ProjectFiscal } from 'src/app/components/models';
 const mockApplicationConfig = {
   application: {
     baseUrl: 'http://test.com',
@@ -76,7 +77,8 @@ describe('ProjectDetailsComponent', () => {
       'getProjectByProjectGuid',
       'getProjectFiscalsByProjectGuid',
       'getFiscalActivities',
-      'getActivityBoundaries'
+      'getActivityBoundaries',
+      'deleteEvaluationCriteriaSummary'
     ]);
     mockSnackbar = jasmine.createSpyObj('MatSnackBar', ['open']);
 
@@ -1182,6 +1184,186 @@ describe('ProjectDetailsComponent', () => {
       expect(textarea.value.length).toBe(10);
       expect(evt.preventDefault).toHaveBeenCalled();
     });
+  });
+
+  describe('onSave projectType change confirmation', () => {
+    let dialogSpy: jasmine.SpyObj<any>;
+
+    beforeEach(() => {
+      dialogSpy = jasmine.createSpyObj('MatDialog', ['open']);
+      component['dialog'] = dialogSpy;
+
+      component.originalFormValues = { projectTypeCode: 'OLD_TYPE' };
+      component.detailsForm.patchValue({ projectTypeCode: 'NEW_TYPE' });
+
+      component.evaluationCriteriaComponent = {
+        evaluationCriteriaSummary: {
+          evaluationCriteriaSummaryGuid: 'guid-123'
+        }
+      } as any;
+
+      mockProjectService.deleteEvaluationCriteriaSummary.and.returnValue(of({}));
+    });
+
+    it('should open confirmation dialog when projectType changes and evaluationCriteriaSummary exists', fakeAsync(() => {
+      const afterClosedSpy = jasmine.createSpy().and.returnValue(of(true));
+      dialogSpy.open.and.returnValue({ afterClosed: afterClosedSpy });
+
+      spyOn(component, 'onSave').and.callThrough();
+
+      component.onSave();
+      tick();
+
+      expect(dialogSpy.open).toHaveBeenCalledWith(jasmine.any(Function), jasmine.objectContaining({
+        data: jasmine.objectContaining({ indicator: 'change-project-type' })
+      }));
+      expect(afterClosedSpy).toHaveBeenCalled();
+      expect(mockProjectService.deleteEvaluationCriteriaSummary)
+        .toHaveBeenCalledWith(component.projectGuid, 'guid-123');
+      expect(component.onSave).toHaveBeenCalledTimes(2); // recursive call after delete
+    }));
+
+    it('should log warning and skip delete if summaryGuid is missing', fakeAsync(() => {
+      component.evaluationCriteriaComponent = {
+        evaluationCriteriaSummary: {} as EvaluationCriteriaSummaryModel
+      } as any;
+      const afterClosedSpy = jasmine.createSpy().and.returnValue(of(true));
+      dialogSpy.open.and.returnValue({ afterClosed: afterClosedSpy });
+
+      const consoleSpy = spyOn(console, 'warn');
+
+      component.onSave();
+      tick();
+
+      expect(consoleSpy).toHaveBeenCalledWith('No evaluationCriteriaSummaryGuid found, skipping delete.');
+      expect(mockProjectService.deleteEvaluationCriteriaSummary).not.toHaveBeenCalled();
+    }));
+
+    it('should log when user cancels the dialog', fakeAsync(() => {
+      const afterClosedSpy = jasmine.createSpy().and.returnValue(of(false));
+      dialogSpy.open.and.returnValue({ afterClosed: afterClosedSpy });
+
+      const consoleSpy = spyOn(console, 'log');
+
+      component.onSave();
+      tick();
+
+      expect(consoleSpy).toHaveBeenCalledWith('User canceled project type change, save aborted.');
+      expect(mockProjectService.deleteEvaluationCriteriaSummary).not.toHaveBeenCalled();
+    }));
+
+    it('should log error if deleteEvaluationCriteriaSummary fails', fakeAsync(() => {
+      const afterClosedSpy = jasmine.createSpy().and.returnValue(of(true));
+      dialogSpy.open.and.returnValue({ afterClosed: afterClosedSpy });
+      mockProjectService.deleteEvaluationCriteriaSummary.and.returnValue(
+        throwError(() => new Error('delete failed'))
+      );
+
+      const consoleErrorSpy = spyOn(console, 'error');
+
+      component.onSave();
+      tick();
+
+      expect(consoleErrorSpy).toHaveBeenCalledWith(
+        'Failed to delete evaluation criteria summary',
+        jasmine.any(Error)
+      );
+    }));
+  });
+
+  describe('hasApprovedFiscals Method', () => {
+    it('should return true if any fiscal has a locked status', () => {
+      const fiscals = [
+        { planFiscalStatusCode: { planFiscalStatusCode: 'PREPARED' } },
+        { planFiscalStatusCode: { planFiscalStatusCode: 'DRAFT' } }
+      ] as ProjectFiscal[];
+
+      expect(component.hasApprovedFiscals(fiscals)).toBeTrue();
+    });
+
+    it('should return false if no fiscals have a locked status', () => {
+      const fiscals = [
+        { planFiscalStatusCode: { planFiscalStatusCode: 'DRAFT' } },
+        { planFiscalStatusCode: { planFiscalStatusCode: '' } }
+      ] as ProjectFiscal[];
+
+      expect(component.hasApprovedFiscals(fiscals)).toBeFalse();
+    });
+
+  });
+
+  describe('reloadFiscals Method', () => {
+    it('should call getProjectFiscalsByProjectGuid and pass response to handleFiscalsResponse', () => {
+      const mockData = { _embedded: { projectFiscals: [] } };
+      spyOn(component as any, 'handleFiscalsResponse');
+      mockProjectService.getProjectFiscalsByProjectGuid.and.returnValue(of(mockData));
+
+      component.projectGuid = 'test-guid';
+      component.reloadFiscals();
+
+      expect(mockProjectService.getProjectFiscalsByProjectGuid).toHaveBeenCalledWith('test-guid');
+      expect((component as any).handleFiscalsResponse).toHaveBeenCalledWith(mockData);
+    });
+
+    it('should not call service if projectGuid is empty', () => {
+      component.projectGuid = '';
+      component.reloadFiscals();
+
+      expect(mockProjectService.getProjectFiscalsByProjectGuid).not.toHaveBeenCalled();
+    });
+
+    it('should log error when service call fails', () => {
+      spyOn(console, 'error');
+      mockProjectService.getProjectFiscalsByProjectGuid.and.returnValue(
+        throwError(() => new Error('Service error'))
+      );
+
+      component.projectGuid = 'test-guid';
+      component.reloadFiscals();
+
+      expect(console.error).toHaveBeenCalledWith('Error reloading fiscals:', jasmine.any(Error));
+    });
+  });
+  
+  it('should set duplicate error and show snackbar when updateProject returns 409', () => {
+    component.projectGuid = 'test-guid';
+    component.projectDetail = {
+      projectTypeCode: { projectTypeCode: 'TEST' },
+      primaryObjectiveTypeCode: {}
+    };
+
+    component.detailsForm = new FormGroup({
+      projectName: new FormControl('My Project'),
+      projectTypeCode: new FormControl('FUEL_MGMT'),
+      programAreaGuid: new FormControl('area-guid'),
+      closestCommunityName: new FormControl('Test City'),
+      primaryObjectiveTypeCode: new FormControl('WRR'),
+      wildfireOrgUnitId: new FormControl(123)
+    });
+    spyOnProperty(component.detailsForm, 'valid', 'get').and.returnValue(true);
+
+    mockProjectService.updateProject.and.returnValue(
+      throwError(() => ({
+        status: 409,
+        error: { error: 'Duplicate project name' }
+      }))
+    );
+
+    const projectNameControl = component.detailsForm.get('projectName')!;
+    spyOn(projectNameControl, 'setErrors').and.callThrough();
+    spyOn(projectNameControl, 'markAsTouched').and.callThrough();
+
+    component.onSave();
+
+    expect(projectNameControl.setErrors).toHaveBeenCalledWith({ duplicate: true });
+    expect(projectNameControl.markAsTouched).toHaveBeenCalled();
+    expect(projectNameControl.hasError('duplicate')).toBeTrue();
+
+    expect(mockSnackbar.open).toHaveBeenCalledWith(
+      'Duplicate project name',
+      'OK',
+      jasmine.objectContaining({ panelClass: 'snackbar-error' })
+    );
   });
 
 });
