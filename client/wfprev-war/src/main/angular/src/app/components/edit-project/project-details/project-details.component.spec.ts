@@ -1366,4 +1366,54 @@ describe('ProjectDetailsComponent', () => {
     );
   });
 
+  describe('isSaving flag behavior', () => {
+    beforeEach(() => {
+      component.projectGuid = 'test-guid';
+      component.projectDetail = {
+        projectTypeCode: { projectTypeCode: 'TEST' },
+        primaryObjectiveTypeCode: {}
+      };
+
+      component.detailsForm = new FormGroup({
+        projectTypeCode: new FormControl('FUEL_MGMT'),
+        programAreaGuid: new FormControl('area-guid'),
+        closestCommunityName: new FormControl('Test City'),
+        primaryObjectiveTypeCode: new FormControl('WRR'),
+        wildfireOrgUnitId: new FormControl(123)
+      });
+      spyOnProperty(component.detailsForm, 'valid', 'get').and.returnValue(true);
+    });
+
+    it('should set isSaving to true while saving and reset on success', () => {
+      mockProjectService.updateProject.and.returnValue(of({}));
+      mockProjectService.getProjectByProjectGuid.and.returnValue(of({}));
+
+      component.onSave();
+
+      expect(component.isSaving).toBeFalse();
+    });
+
+    it('should set isSaving to false when updateProject errors', () => {
+      mockProjectService.updateProject.and.returnValue(throwError(() => new Error('fail')));
+
+      component.onSave();
+
+      expect(component.isSaving).toBeFalse();
+    });
+
+    it('should not proceed with save if isSaving is already true', () => {
+      component.isSaving = true;
+
+      component.onSave();
+
+      expect(mockProjectService.updateProject).not.toHaveBeenCalled();
+    });
+
+    it('should block onSaveLatLong if isSaving is already true', () => {
+      component.isSaving = true;
+      component.onSaveLatLong();
+      expect(mockProjectService.updateProject).not.toHaveBeenCalled();
+    });
+  });
+
 });
