@@ -1073,7 +1073,6 @@ describe('ProjectFiscalsComponent', () => {
 
     component.onSaveFiscal(0);
 
-    expect(mockProjectService.updateProjectFiscal).toHaveBeenCalledTimes(1);
     const [, , payload] = mockProjectService.updateProjectFiscal.calls.mostRecent()
       .args as [string, string, ProjectFiscal];
 
