@@ -934,10 +934,17 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
   }
 
   hasApprovedFiscals(fiscals: ProjectFiscal[]): boolean {
-    const LOCKED_STATUSES = ['PREPARED', 'IN_PROGRESS', 'COMPLETE', 'CANCELLED', 'IN_PROG', 'ACTIVE']; 
-    // include all statuses that should lock type change
-    return fiscals?.some(fiscal =>
-      LOCKED_STATUSES.includes(fiscal.planFiscalStatusCode?.planFiscalStatusCode ?? '')
+    const LOCKED_STATUSES = new Set([
+      'PREPARED',
+      'IN_PROGRESS',
+      'COMPLETE',
+      'CANCELLED',
+      'IN_PROG',
+      'ACTIVE'
+    ]);
+
+    return fiscals?.some(
+      fiscal => LOCKED_STATUSES.has(fiscal.planFiscalStatusCode?.planFiscalStatusCode ?? '')
     );
   }
 
