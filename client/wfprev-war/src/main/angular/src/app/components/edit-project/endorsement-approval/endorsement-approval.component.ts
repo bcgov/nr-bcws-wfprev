@@ -45,6 +45,7 @@ export class EndorsementApprovalComponent implements OnChanges {
   @Input() fiscal!: ProjectFiscal;
   @Input() currentUser!: string;
   @Input() currentIdir!: string;
+  @Input() isSaving = false;
   @Output() saveEndorsement = new EventEmitter<ProjectFiscal>();
 
   readonly draftTooltip = 'Submit your Draft Fiscal Activity using the Actions button to enable Endorsements and Approvals.';
@@ -114,6 +115,9 @@ export class EndorsementApprovalComponent implements OnChanges {
 
       this.endorsementApprovalForm.markAsPristine();
     }
+    if (changes['isSaving'] && changes['isSaving'].currentValue === false) {
+      this.isSaving = false;
+    }
   }
 
   get effectiveEndorserName(): string {
@@ -122,6 +126,7 @@ export class EndorsementApprovalComponent implements OnChanges {
   }
 
   onSave() {
+    if (this.isSaving) return;
     const formValue = this.endorsementApprovalForm.value;
 
     const endorsementRemoved = !formValue.endorseFiscalActivity;
