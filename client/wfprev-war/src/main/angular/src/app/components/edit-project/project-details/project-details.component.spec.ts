@@ -704,6 +704,17 @@ describe('ProjectDetailsComponent', () => {
         expect(mockProjectService.getProjectByProjectGuid).not.toHaveBeenCalled();
       });
 
+      it('should reset isSaving after updateProject success', () => {
+        component.onSaveProjectDescription();
+        expect(component.isSaving).toBeFalse();
+      });
+
+      it('should reset isSaving after updateProject error', () => {
+        mockProjectService.updateProject.and.returnValue(throwError(() => new Error('fail')));
+        component.onSaveProjectDescription();
+        expect(component.isSaving).toBeFalse();
+      });
+
     });
 
     describe('onSaveLatLong Method', () => {
@@ -721,6 +732,7 @@ describe('ProjectDetailsComponent', () => {
 
         expect(component.isLatLongDirty).toBeFalse();
         expect(component.projectDetail.latitude).toBeGreaterThan(0);
+        expect(component.isSaving).toBeFalse();
       });
     });
 
@@ -803,6 +815,7 @@ describe('ProjectDetailsComponent', () => {
           fireCentreOrgUnitId: 123,
         })
       );
+      expect(component.isSaving).toBeFalse();
     });
 
     describe('refreshFiscalData Method', () => {
@@ -1151,6 +1164,7 @@ describe('ProjectDetailsComponent', () => {
       'OK',
       jasmine.objectContaining({ panelClass: 'snackbar-error' })
     );
+    expect(component.isSaving).toBeFalse();
   });
 
   describe('project description input/paste', () => {
@@ -1364,6 +1378,56 @@ describe('ProjectDetailsComponent', () => {
       'OK',
       jasmine.objectContaining({ panelClass: 'snackbar-error' })
     );
+  });
+
+  describe('isSaving flag behavior', () => {
+    beforeEach(() => {
+      component.projectGuid = 'test-guid';
+      component.projectDetail = {
+        projectTypeCode: { projectTypeCode: 'TEST' },
+        primaryObjectiveTypeCode: {}
+      };
+
+      component.detailsForm = new FormGroup({
+        projectTypeCode: new FormControl('FUEL_MGMT'),
+        programAreaGuid: new FormControl('area-guid'),
+        closestCommunityName: new FormControl('Test City'),
+        primaryObjectiveTypeCode: new FormControl('WRR'),
+        wildfireOrgUnitId: new FormControl(123)
+      });
+      spyOnProperty(component.detailsForm, 'valid', 'get').and.returnValue(true);
+    });
+
+    it('should set isSaving to true while saving and reset on success', () => {
+      mockProjectService.updateProject.and.returnValue(of({}));
+      mockProjectService.getProjectByProjectGuid.and.returnValue(of({}));
+
+      component.onSave();
+
+      expect(component.isSaving).toBeFalse();
+    });
+
+    it('should set isSaving to false when updateProject errors', () => {
+      mockProjectService.updateProject.and.returnValue(throwError(() => new Error('fail')));
+
+      component.onSave();
+
+      expect(component.isSaving).toBeFalse();
+    });
+
+    it('should not proceed with save if isSaving is already true', () => {
+      component.isSaving = true;
+
+      component.onSave();
+
+      expect(mockProjectService.updateProject).not.toHaveBeenCalled();
+    });
+
+    it('should block onSaveLatLong if isSaving is already true', () => {
+      component.isSaving = true;
+      component.onSaveLatLong();
+      expect(mockProjectService.updateProject).not.toHaveBeenCalled();
+    });
   });
 
 });

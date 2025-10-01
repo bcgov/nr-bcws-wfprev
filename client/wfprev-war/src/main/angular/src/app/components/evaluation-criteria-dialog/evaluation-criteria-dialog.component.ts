@@ -1,6 +1,6 @@
 import { TextFieldModule } from '@angular/cdk/text-field';
 import { CommonModule } from '@angular/common';
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -19,7 +19,7 @@ import { EvaluationCriteriaSectionCodes, Messages, ModalMessages, ModalTitles, P
   templateUrl: './evaluation-criteria-dialog.component.html',
   styleUrl: './evaluation-criteria-dialog.component.scss'
 })
-export class EvaluationCriteriaDialogComponent {
+export class EvaluationCriteriaDialogComponent implements OnInit {
   codeTables = [
     { name: 'evaluationCriteriaCodes', embeddedKey: 'evaluationCriteriaCode' },
     { name: 'wuiRiskClassCodes', embeddedKey: 'wuiRiskClassCode' }
@@ -39,6 +39,7 @@ export class EvaluationCriteriaDialogComponent {
   coarseTotal = 0;
   mediumTotal = 0;
   fineTotal = 0;
+  isSaving = false;
 
   constructor(
     private readonly fb: FormBuilder,
@@ -215,11 +216,12 @@ export class EvaluationCriteriaDialogComponent {
   }
 
   onSave(): void {
+    if (this.isSaving) return;
     if (!this.criteriaForm.valid) {
       console.warn("Form is invalid, not saving.");
       return;
     }
-
+    this.isSaving = true;
     const summaryGuid = this.data.evaluationCriteriaSummary?.evaluationCriteriaSummaryGuid;
 
     if (summaryGuid) {
@@ -242,6 +244,7 @@ export class EvaluationCriteriaDialogComponent {
           'OK',
           { duration: 5000, panelClass: 'snackbar-success' }
         );
+        this.isSaving = false;
         this.dialogRef.close(result);
       },
       error: (err) => {
@@ -251,6 +254,7 @@ export class EvaluationCriteriaDialogComponent {
           'OK',
           { duration: 5000, panelClass: 'snackbar-error' }
         );
+        this.isSaving = false;
       }
     });
   }
@@ -269,6 +273,7 @@ export class EvaluationCriteriaDialogComponent {
           'OK',
           { duration: 5000, panelClass: 'snackbar-success' }
         );
+        this.isSaving = false;
         this.dialogRef.close(result);
       },
       error: (err) => {
@@ -278,6 +283,7 @@ export class EvaluationCriteriaDialogComponent {
           'OK',
           { duration: 5000, panelClass: 'snackbar-error' }
         );
+        this.isSaving = false;
       }
     });
   }
@@ -397,64 +403,32 @@ export class EvaluationCriteriaDialogComponent {
 
   prefillFromEvaluationCriteriaSummary(): void {
     const summary = this.data.evaluationCriteriaSummary;
-    if (!summary) {
-      return;
-    }
+    if (!summary) return;
+
     this.isOutsideOfWuiOn = summary.isOutsideWuiInd ?? false;
     if (this.isOutsideOfWuiOn) {
       this.criteriaForm.get('wuiRiskClassCode')?.disable();
       this.criteriaForm.get('localWuiRiskClassCode')?.disable();
     }
 
-    // WUI Risk Class
-    if (summary.wuiRiskClassCode?.wuiRiskClassCode) {
-      const matching = this.wuiRiskClassCode.find(
-        c => c.wuiRiskClassCode === summary.wuiRiskClassCode?.wuiRiskClassCode
-      );
-      this.criteriaForm.patchValue({
-        wuiRiskClassCode: matching?.weightedRank
-      });
-    }
-
-    if (summary.localWuiRiskClassCode?.wuiRiskClassCode) {
-      const matching = this.wuiRiskClassCode.find(
-        c => c.wuiRiskClassCode === summary.localWuiRiskClassCode?.wuiRiskClassCode
-      );
-      this.criteriaForm.patchValue({
-        localWuiRiskClassCode: matching?.weightedRank
-      });
-    }
+    this.setRiskClass('wuiRiskClassCode', summary.wuiRiskClassCode?.wuiRiskClassCode);
+    this.setRiskClass('localWuiRiskClassCode', summary.localWuiRiskClassCode?.wuiRiskClassCode);
 
     this.criteriaForm.patchValue({
       localWuiRiskClassRationale: summary.localWuiRiskClassRationale ?? ''
     });
 
-    // Section Summaries
     for (const section of summary.evaluationCriteriaSectionSummaries ?? []) {
       const code = section.evaluationCriteriaSectionCode?.evaluationCriteriaSectionCode;
+      if (!code) continue;
 
       if (code === EvaluationCriteriaSectionCodes.MEDIUM_FILTER || code === EvaluationCriteriaSectionCodes.BURN_DEVELOPMENT_FEASIBILITY) {
-        // Check all selected criteria
-        for (const selected of section.evaluationCriteriaSelected ?? []) {
-          if (selected.isEvaluationCriteriaSelectedInd) {
-            this.selectedMedium.add(selected.evaluationCriteriaGuid!);
-          }
-        }
-        this.criteriaForm.patchValue({
-          mediumFilterComments: section.filterSectionComment ?? ''
-        });
+        this.handleSection(section, this.selectedMedium, 'mediumFilterComments');
         this.mediumTotal = section.filterSectionScore ?? 0;
       }
 
       if (code === EvaluationCriteriaSectionCodes.FINE_FILTER || code === EvaluationCriteriaSectionCodes.COLLECTIVE_IMPACT) {
-        for (const selected of section.evaluationCriteriaSelected ?? []) {
-          if (selected.isEvaluationCriteriaSelectedInd) {
-            this.selectedFine.add(selected.evaluationCriteriaGuid!);
-          }
-        }
-        this.criteriaForm.patchValue({
-          fineFilterComments: section.filterSectionComment ?? ''
-        });
+        this.handleSection(section, this.selectedFine, 'fineFilterComments');
         this.fineTotal = section.filterSectionScore ?? 0;
       }
     }
@@ -469,8 +443,24 @@ export class EvaluationCriteriaDialogComponent {
         .map(sel => sel.evaluationCriteriaGuid as string)
     );
 
-    // Update the coarse total at the end
     this.updateCoarseTotal();
+  }
+
+  setRiskClass(controlName: string, code?: string): void {
+    if (!code) return;
+    const matching = this.wuiRiskClassCode.find(c => c.wuiRiskClassCode === code);
+    this.criteriaForm.patchValue({ [controlName]: matching?.weightedRank });
+  }
+
+  handleSection(section: any, targetSet: Set<string>, commentControl: string): void {
+    for (const selected of section.evaluationCriteriaSelected ?? []) {
+      if (selected.isEvaluationCriteriaSelectedInd && selected.evaluationCriteriaGuid) {
+        targetSet.add(selected.evaluationCriteriaGuid);
+      }
+    }
+    this.criteriaForm.patchValue({
+      [commentControl]: section.filterSectionComment ?? ''
+    });
   }
 
   get sectionTitles() {

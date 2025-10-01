@@ -51,6 +51,7 @@ export class CreateNewProjectDialogComponent implements OnInit {
   projectTypes: any[] = [];
   fireCentres: any[] = [];
   forestDistrictsBackup: any[] = [];
+  isSaving = false;
 
   constructor(
     private readonly fb: FormBuilder,
@@ -216,6 +217,7 @@ export class CreateNewProjectDialogComponent implements OnInit {
   }
 
   onCreate(): void {
+    if (this.isSaving) return;
     if (this.projectForm.valid) {
       const latLong = this.projectForm.get('latLong')?.value ?? '';
       let validatedLatLong;
@@ -282,6 +284,7 @@ export class CreateNewProjectDialogComponent implements OnInit {
 
         lastUpdatedTimestamp: new Date().toISOString(),
       };
+      this.isSaving = true;
 
       this.projectService.createProject(newProject).subscribe({
         next: (response) => {
@@ -290,9 +293,11 @@ export class CreateNewProjectDialogComponent implements OnInit {
             'OK',
             { duration: 5000, panelClass: 'snackbar-success' },
           );
+          this.isSaving = false;
           this.dialogRef.close({ success: true, projectGuid: response.projectGuid });
         },
         error: (err) => {
+          this.isSaving = false;
           if (err?.status === 409 && err?.error?.error) {
             const control = this.projectForm.get('projectName');
             control?.setErrors({ duplicate: true });
