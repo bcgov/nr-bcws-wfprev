@@ -111,6 +111,7 @@ describe('EvaluationCriteriaDialogComponent', () => {
     mockProjectService.createEvaluationCriteriaSummary.and.returnValue(of({}));
     component.onSave();
     expect(mockProjectService.createEvaluationCriteriaSummary).toHaveBeenCalled();
+    expect(component.isSaving).toBeFalse();
   });
 
   it('should call onSave and update evaluation criteria summary', () => {
@@ -120,6 +121,7 @@ describe('EvaluationCriteriaDialogComponent', () => {
     mockProjectService.updateEvaluationCriteriaSummary.and.returnValue(of({}));
     component.onSave();
     expect(mockProjectService.updateEvaluationCriteriaSummary).toHaveBeenCalled();
+    expect(component.isSaving).toBeFalse();
   });
 
   it('should handle invalid form onSave', () => {
@@ -127,6 +129,18 @@ describe('EvaluationCriteriaDialogComponent', () => {
     spyOn(console, 'warn');
     component.onSave();
     expect(console.warn).toHaveBeenCalledWith('Form is invalid, not saving.');
+    expect(component.isSaving).toBeFalse();
+  });
+
+  it('should block onSave if already saving', () => {
+    component.initializeForm();
+    component.criteriaForm.patchValue({ wuiRiskClassCode: 1 });
+    component.isSaving = true;
+
+    component.onSave();
+
+    expect(mockProjectService.createEvaluationCriteriaSummary).not.toHaveBeenCalled();
+    expect(mockProjectService.updateEvaluationCriteriaSummary).not.toHaveBeenCalled();
   });
 
   it('should call onCancel and close dialog if confirmed', () => {
