@@ -39,6 +39,7 @@ export class EvaluationCriteriaDialogComponent {
   coarseTotal = 0;
   mediumTotal = 0;
   fineTotal = 0;
+  isSaving = false;
 
   constructor(
     private readonly fb: FormBuilder,
@@ -215,11 +216,12 @@ export class EvaluationCriteriaDialogComponent {
   }
 
   onSave(): void {
+    if (this.isSaving) return;
     if (!this.criteriaForm.valid) {
       console.warn("Form is invalid, not saving.");
       return;
     }
-
+    this.isSaving = true;
     const summaryGuid = this.data.evaluationCriteriaSummary?.evaluationCriteriaSummaryGuid;
 
     if (summaryGuid) {
@@ -242,6 +244,7 @@ export class EvaluationCriteriaDialogComponent {
           'OK',
           { duration: 5000, panelClass: 'snackbar-success' }
         );
+        this.isSaving = false;
         this.dialogRef.close(result);
       },
       error: (err) => {
@@ -251,6 +254,7 @@ export class EvaluationCriteriaDialogComponent {
           'OK',
           { duration: 5000, panelClass: 'snackbar-error' }
         );
+        this.isSaving = false;
       }
     });
   }
@@ -269,6 +273,7 @@ export class EvaluationCriteriaDialogComponent {
           'OK',
           { duration: 5000, panelClass: 'snackbar-success' }
         );
+        this.isSaving = false;
         this.dialogRef.close(result);
       },
       error: (err) => {
@@ -278,6 +283,7 @@ export class EvaluationCriteriaDialogComponent {
           'OK',
           { duration: 5000, panelClass: 'snackbar-error' }
         );
+        this.isSaving = false;
       }
     });
   }

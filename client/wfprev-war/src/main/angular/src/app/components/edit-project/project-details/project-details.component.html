@@ -224,7 +224,7 @@
     <div class="footer">
       <div class="button-row">
         <button class="secondary" (click)="onCancel()" [disabled]="!detailsForm.dirty">Cancel</button>
-        <button type="button" (click)="onSave()" [disabled]="!detailsForm.valid || !detailsForm.dirty"
+        <button type="button" (click)="onSave()" [disabled]="!detailsForm.valid || !detailsForm.dirty || isSaving "
           class="primary">Save
         </button>
       </div>
@@ -272,7 +272,7 @@
             <div class="button-row">
               <button class="secondary" (click)="onCancelProjectDescription()"
                 [disabled]="!isProjectDescriptionDirty">Cancel</button>
-              <button class="primary" [disabled]="!isProjectDescriptionDirty || ((projectDescription?.length ?? 0) > 4000)" (click)="onSaveProjectDescription()">
+              <button class="primary" [disabled]="isSaving || !isProjectDescriptionDirty || ((projectDescription?.length ?? 0) > 4000)" (click)="onSaveProjectDescription()">
                 Save
               </button>
             </div>
@@ -295,7 +295,7 @@
           <input type="text" id="coordinates" [(ngModel)]="latLong" name="latLong"
             placeholder="e.g., 50.5343° N, -120.6408° W"
             (ngModelChange)="onLatLongChange($event)" />
-          <button type="button" (click)="onSaveLatLong()" [disabled]="!isLatLongDirty" class="primary">Save
+          <button type="button" (click)="onSaveLatLong()" [disabled]="isSaving || !isLatLongDirty" class="primary">Save
           </button>
         </div>
       </form>

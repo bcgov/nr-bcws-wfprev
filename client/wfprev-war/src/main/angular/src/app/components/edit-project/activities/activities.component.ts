@@ -87,6 +87,7 @@ export class ActivitiesComponent implements OnChanges, CanComponentDeactivate {
   projectTypeCode = '';
   isActivityDirty: boolean[] = [];
   expandedPanels: boolean[] = [];
+  isActivitySaving: boolean[] = [];
   constructor(
     private route: ActivatedRoute,
     private projectService: ProjectService,
@@ -567,9 +568,14 @@ export class ActivitiesComponent implements OnChanges, CanComponentDeactivate {
   }
 
   onSaveActivity(index: number): void {
+    if (this.isActivitySaving[index]) return;
+    this.isActivitySaving[index] = true;
     const originalData = this.activities[index];
     const form = this.activityForms[index];
-    if (!form) return;
+    if (!form) {
+      this.isActivitySaving[index] = false;
+      return;
+    }
     let formData = { ...form.getRawValue() };
 
     //extract start and end dates separetely
@@ -622,6 +628,7 @@ export class ActivitiesComponent implements OnChanges, CanComponentDeactivate {
           this.activityForms[index].markAsPristine(); // reset dirty tracking
           this.expandedPanels = this.activities.map((_, i) => i === index);
           this.getActivities(() => this.expandAndScrollToActivity(updatedData.activityGuid));
+          this.isActivitySaving[index] = false;
         },
         error: () => {
           this.snackbarService.open(
@@ -629,6 +636,7 @@ export class ActivitiesComponent implements OnChanges, CanComponentDeactivate {
             'OK',
             { duration: 5000, panelClass: 'snackbar-error' }
           );
+          this.isActivitySaving[index] = false;
         }
       });
     } else {
@@ -644,6 +652,7 @@ export class ActivitiesComponent implements OnChanges, CanComponentDeactivate {
           this.activityForms[index].markAsPristine(); // Reset dirty tracking
           this.expandedPanels.push(true);
           this.getActivities(() => this.expandAndScrollToActivity(response.activityGuid));
+          this.isActivitySaving[index] = false;
         },
         error: () => {
           this.snackbarService.open(
@@ -651,6 +660,7 @@ export class ActivitiesComponent implements OnChanges, CanComponentDeactivate {
             'OK',
             { duration: 5000, panelClass: 'snackbar-error' }
           );
+          this.isActivitySaving[index] = false;
         }
       });
     }
