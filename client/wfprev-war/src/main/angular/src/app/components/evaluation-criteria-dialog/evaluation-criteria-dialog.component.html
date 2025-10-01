@@ -154,7 +154,7 @@
       <button
         class="primary"
         (click)="onSave()"
-        [disabled]="!criteriaForm.valid || criteriaForm.pristine">
+        [disabled]="!criteriaForm.valid || criteriaForm.pristine || isSaving">
         Save
       </button>
     </div>

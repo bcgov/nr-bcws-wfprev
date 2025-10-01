@@ -82,6 +82,7 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
   allActivityBoundaries: any[] = [];
   readonly PROJECT_DESC_MAX = 4000;
   projectTypeLocked = false;
+  isSaving = false;
 
   constructor(
     private readonly fb: FormBuilder,
@@ -400,6 +401,9 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
   }
 
   onSave(): void {
+    if (this.isSaving) return;
+    this.isSaving = true;
+
     const projectTypeOriginalCode = this.originalFormValues.projectTypeCode?.projectTypeCode ?? this.originalFormValues.projectTypeCode;
     const projectTypeCurrentCode = this.detailsForm.get('projectTypeCode')?.value?.projectTypeCode ?? this.detailsForm.get('projectTypeCode')?.value;
     if ((projectTypeOriginalCode !== projectTypeCurrentCode) &&
@@ -421,6 +425,7 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
 
           if (!summaryGuid) {
             console.warn('No evaluationCriteriaSummaryGuid found, skipping delete.');
+            this.isSaving = false;
             return;
           }
 
@@ -431,14 +436,17 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
                 if (this.evaluationCriteriaComponent) {
                   this.evaluationCriteriaComponent.evaluationCriteriaSummary = null;
                 }
+                this.isSaving = false;
                 this.onSave();
               },
               error: (err) => {
                 console.error('Failed to delete evaluation criteria summary', err);
+                this.isSaving = false;
               }
             });
         } else {
           console.log('User canceled project type change, save aborted.');
+          this.isSaving = false;
         }
       });
 
@@ -483,10 +491,12 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
               this.patchFormValues(data); // Update the form with the latest data
               this.originalFormValues = this.detailsForm.getRawValue(); // Update original form values
               this.detailsForm.markAsPristine(); // Mark the form as pristine
+              this.isSaving = false;
             }
           })
         },
         error: (err) => {
+          this.isSaving = false;
           if (err?.status === 409 && err?.error?.error) {
             const projectNameControl = this.detailsForm.get('projectName');
             projectNameControl?.setErrors({ duplicate: true });
@@ -507,6 +517,7 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
       });
     } else {
       console.error('Form is invalid!');
+      this.isSaving = false;
     }
   }
 
@@ -523,7 +534,9 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
   }
 
   onSaveProjectDescription(): void {
+    if (this.isSaving) return;
     if (this.isProjectDescriptionDirty) {
+      this.isSaving = true;
       const updatedProject = {
         ...this.projectDetail,
         projectDescription: this.projectDescription,
@@ -543,9 +556,11 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
               this.projectDetail = data;
               this.projectDescription = data.projectDescription; // Update local description
               this.isProjectDescriptionDirty = false; // Reset dirty flag
+              this.isSaving = false;
             },
             error: (err) => {
               console.error('Error fetching updated project details:', err);
+              this.isSaving = false;
             },
           });
         },
@@ -555,6 +570,7 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
             'OK',
             { duration: 5000, panelClass: 'snackbar-error' }
           );
+          this.isSaving = false;
         },
       });
     }
@@ -562,6 +578,7 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
 
 
   onSaveLatLong(): void {
+    if (this.isSaving) return;
     const parsed = validateLatLong(this.latLong);
 
     if (!parsed) {
@@ -575,6 +592,7 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
     }
 
     this.isLatLongValid = true;
+    this.isSaving = true;
 
     const { latitude, longitude } = parsed;
     const updatedProject = {
@@ -597,9 +615,11 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
             this.latLong = formatLatLong(data.latitude, data.longitude);
             this.isLatLongDirty = false;
             this.updateMap(data.latitude, data.longitude);
+            this.isSaving = false;
           },
           error: (err) => {
             console.error('Error fetching updated project details:', err);
+            this.isSaving = false;
           },
         });
       },
@@ -610,6 +630,7 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
           'OK',
           { duration: 3000, panelClass: 'snackbar-error' }
         );
+        this.isSaving = false;
       },
     });
   }
@@ -913,10 +934,17 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
   }
 
   hasApprovedFiscals(fiscals: ProjectFiscal[]): boolean {
-    const LOCKED_STATUSES = ['PREPARED', 'IN_PROGRESS', 'COMPLETE', 'CANCELLED', 'IN_PROG', 'ACTIVE']; 
-    // include all statuses that should lock type change
-    return fiscals?.some(fiscal =>
-      LOCKED_STATUSES.includes(fiscal.planFiscalStatusCode?.planFiscalStatusCode ?? '')
+    const LOCKED_STATUSES = new Set([
+      'PREPARED',
+      'IN_PROGRESS',
+      'COMPLETE',
+      'CANCELLED',
+      'IN_PROG',
+      'ACTIVE'
+    ]);
+
+    return fiscals?.some(
+      fiscal => LOCKED_STATUSES.has(fiscal.planFiscalStatusCode?.planFiscalStatusCode ?? '')
     );
   }
 

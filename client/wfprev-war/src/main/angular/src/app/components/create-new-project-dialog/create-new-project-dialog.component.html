@@ -151,7 +151,7 @@
     <div class="footer">
       <div class="button-row">
         <button class="secondary" (click)="onCancel()">Cancel</button>
-        <button class="primary" [disabled]="!projectForm.valid" (click)="onCreate()">
+        <button class="primary" [disabled]="!projectForm.valid || isSaving" (click)="onCreate()">
           Create
         </button>
       </div>

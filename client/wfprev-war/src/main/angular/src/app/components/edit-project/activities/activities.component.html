@@ -262,7 +262,7 @@
                             </div>
                             <div class="action-buttons">
                                 <button class="secondary" (click)="onCancelActivity(i)" [disabled]="!isActivityDirty[i]">Cancel</button>
-                                <button class="primary" [disabled]="!isActivityDirty[i] || !activityForms[i].valid" (click)="onSaveActivity(i)">
+                                <button class="primary" [disabled]="!isActivityDirty[i] || !activityForms[i].valid || isActivitySaving[i]" (click)="onSaveActivity(i)">
                                     Save
                                 </button>
                             </div>
