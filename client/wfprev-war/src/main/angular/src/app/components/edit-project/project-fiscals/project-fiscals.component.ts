@@ -400,6 +400,7 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
       ...formData,
     };
     const isUpdate = this.projectFiscals[index]?.projectPlanFiscalGuid;
+    const isUpdateToDraft = updatedData.planFiscalStatusCode === 'DRAFT';
     const projectFiscal: ProjectFiscal = {
       projectGuid: updatedData.projectGuid,
       projectPlanFiscalGuid: updatedData.projectPlanFiscalGuid,
@@ -411,7 +412,7 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
       },
       projectFiscalName: updatedData.projectFiscalName,
       projectFiscalDescription: updatedData.projectFiscalDescription,
-      businessAreaComment: updatedData.businessAreaComment,
+      businessAreaComment: isUpdateToDraft ? null : updatedData.businessAreaComment,
       estimatedClwrrAllocAmount: updatedData.estimatedClwrrAllocAmount,
       fiscalAncillaryFundAmount: updatedData.fiscalAncillaryFundAmount,
       fiscalPlannedProjectSizeHa: updatedData.fiscalPlannedProjectSizeHa,
@@ -433,13 +434,15 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
       ancillaryFundingProvider: updatedData.ancillaryFundingProvider,
       otherPartner: updatedData.otherPartner,
       proposalTypeCode: updatedData.proposalTypeCode,
-      endorserName: originalData.endorserName,
-      endorsementTimestamp: originalData.endorsementTimestamp,
-      endorsementCode: originalData.endorsementCode,
-      endorsementComment: originalData.endorsementComment,
-      approverName: originalData.approverName,
-      approvedTimestamp: originalData.approvedTimestamp,
-      isApprovedInd: originalData.isApprovedInd,
+      endorserName: isUpdateToDraft ? null : originalData.endorserName,
+      endorsementTimestamp: isUpdateToDraft ? null : originalData.endorsementTimestamp,
+      endorsementCode: isUpdateToDraft ? {
+        endorsementCode: EndorsementCode.NOT_ENDORS
+      } : originalData.endorsementCode,
+      endorsementComment: isUpdateToDraft ? null : originalData.endorsementComment,
+      approverName: isUpdateToDraft ? null : originalData.approverName,
+      approvedTimestamp: isUpdateToDraft ? null : originalData.approvedTimestamp,
+      isApprovedInd: isUpdateToDraft ? false : originalData.isApprovedInd,
       ...this.buildSubmissionFields()
     };
     if (isUpdate) {
