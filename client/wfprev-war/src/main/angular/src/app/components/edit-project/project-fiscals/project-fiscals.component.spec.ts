@@ -1041,4 +1041,54 @@ describe('ProjectFiscalsComponent', () => {
 
     jasmine.clock().uninstall();
   });
+
+  it('updates an existing fiscal to NON-DRAFT and preserves endorsement/approval fields', () => {
+    jasmine.clock().install();
+    jasmine.clock().mockDate(new Date('2025-08-08T19:34:56.000Z'));
+
+    const existing = {
+      projectGuid: 'test-guid',
+      projectPlanFiscalGuid: 'existing-guid', 
+      projectFiscalName: 'Existing Plan',
+      fiscalYear: 2025,
+      activityCategoryCode: 'CAT1',
+      endorserName: 'Endorser X',
+      endorsementTimestamp: '2025-08-01T10:00:00Z',
+      endorsementCode: { endorsementCode: EndorsementCode.ENDORSED },
+      endorsementComment: 'Looks good',
+      approverName: 'Approver Y',
+      approvedTimestamp: '2025-08-02T09:00:00Z',
+      isApprovedInd: true,
+      businessAreaComment: 'Original BAC',
+      planFiscalStatusCode: { planFiscalStatusCode: 'DRAFT' },
+    };
+
+    component.projectFiscals = [existing];
+
+    const form = component.createFiscalForm(existing);
+    form.get('planFiscalStatusCode')!.setValue('PROPOSED'); // triggers isUpdateToDraft = false
+    component.fiscalForms = [form];
+
+    mockProjectService.updateProjectFiscal.and.returnValue(of({}));
+
+    component.onSaveFiscal(0);
+
+    expect(mockProjectService.updateProjectFiscal).toHaveBeenCalledTimes(1);
+    const [, , payload] = mockProjectService.updateProjectFiscal.calls.mostRecent()
+      .args as [string, string, ProjectFiscal];
+
+    expect(payload.planFiscalStatusCode).toEqual({ planFiscalStatusCode: 'PROPOSED' });
+    expect(payload.businessAreaComment).toBe('Original BAC'); 
+    expect(payload.endorserName).toBe('Endorser X');
+    expect(payload.endorsementTimestamp).toBe('2025-08-01T10:00:00Z');
+    expect(payload.endorsementCode).toEqual({ endorsementCode: EndorsementCode.ENDORSED });
+    expect(payload.endorsementComment).toBe('Looks good');
+    expect(payload.approverName).toBe('Approver Y');
+    expect(payload.approvedTimestamp).toBe('2025-08-02T09:00:00Z');
+    expect(payload.isApprovedInd).toBeTrue();
+    expect(payload.submissionTimestamp).toBe('2025-08-08T19:34:56.000Z');
+
+    jasmine.clock().uninstall();
+  });
+
 });
