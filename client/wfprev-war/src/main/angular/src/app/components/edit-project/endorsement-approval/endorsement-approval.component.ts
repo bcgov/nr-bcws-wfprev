@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { ReactiveFormsModule, FormControl, FormGroup, FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -40,7 +40,7 @@ import { getLocalIsoTimestamp, getUtcIsoTimestamp } from 'src/app/utils/tools';
   templateUrl: './endorsement-approval.component.html',
   styleUrl: './endorsement-approval.component.scss'
 })
-export class EndorsementApprovalComponent implements OnChanges {
+export class EndorsementApprovalComponent implements OnChanges, OnInit {
 
   @Input() fiscal!: ProjectFiscal;
   @Input() currentUser!: string;

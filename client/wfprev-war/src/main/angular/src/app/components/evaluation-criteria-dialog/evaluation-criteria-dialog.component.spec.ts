@@ -462,5 +462,55 @@ describe('EvaluationCriteriaDialogComponent', () => {
     expect(component.coarseTotal).toBe(5);
   });
 
+  it('should set risk class when matching code is found', () => {
+    component.wuiRiskClassCode = [
+      { wuiRiskClassCode: 'WUI', weightedRank: 10 } as any
+    ];
+    component.initializeForm();
+
+    component.setRiskClass('wuiRiskClassCode', 'WUI');
+
+    expect(component.criteriaForm.get('wuiRiskClassCode')?.value).toBe(10);
+  });
+
+  it('should not patch risk class when code is undefined or not found', () => {
+    component.wuiRiskClassCode = [];
+    component.initializeForm();
+
+    component.setRiskClass('wuiRiskClassCode', undefined);
+    expect(component.criteriaForm.get('wuiRiskClassCode')?.value).toBe('');
+
+    component.setRiskClass('wuiRiskClassCode', 'NON_EXISTENT');
+    expect(component.criteriaForm.get('wuiRiskClassCode')?.value).toBe(undefined);
+  });
+
+  it('should add selected guids and patch comment in handleSection', () => {
+    component.initializeForm();
+    const section = {
+      filterSectionComment: 'Section comment',
+      evaluationCriteriaSelected: [
+        { evaluationCriteriaGuid: 's1', isEvaluationCriteriaSelectedInd: true },
+        { evaluationCriteriaGuid: 's2', isEvaluationCriteriaSelectedInd: false }
+      ]
+    } as any;
+
+    component.handleSection(section, component.selectedMedium, 'mediumFilterComments');
+
+    expect(component.selectedMedium.has('s1')).toBeTrue();
+    expect(component.selectedMedium.has('s2')).toBeFalse();
+    expect(component.criteriaForm.get('mediumFilterComments')?.value).toBe('Section comment');
+  });
+
+  it('should handleSection gracefully with empty selection array', () => {
+    component.initializeForm();
+    const section = { evaluationCriteriaSelected: [], filterSectionComment: '' } as any;
+
+    component.handleSection(section, component.selectedFine, 'fineFilterComments');
+
+    expect(component.selectedFine.size).toBe(0);
+    expect(component.criteriaForm.get('fineFilterComments')?.value).toBe('');
+  });
+
+
 
 });
