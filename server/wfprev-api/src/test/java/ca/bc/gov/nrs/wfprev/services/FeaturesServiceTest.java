@@ -208,28 +208,20 @@ class FeaturesServiceTest {
         FeatureQueryParams params = new FeatureQueryParams();
 
         when(entityManager.getCriteriaBuilder()).thenReturn(criteriaBuilder);
-
-        @SuppressWarnings("unchecked")
-        CriteriaQuery<UUID> idQuery = mock(CriteriaQuery.class);
-        when(criteriaBuilder.createQuery(UUID.class)).thenReturn(idQuery);
-        when(idQuery.from(ProjectEntity.class)).thenReturn(projectRoot);
-        when(projectRoot.get("projectGuid")).thenReturn(path);
-
         when(criteriaBuilder.createQuery(ProjectEntity.class)).thenReturn(projectQuery);
         when(projectQuery.from(ProjectEntity.class)).thenReturn(projectRoot);
-        when(projectQuery.select(any())).thenReturn(projectQuery);
+        when(projectQuery.where(any(Predicate.class))).thenReturn(projectQuery);
         when(projectQuery.distinct(true)).thenReturn(projectQuery);
-
         TypedQuery<ProjectEntity> mockQuery = mock(TypedQuery.class);
         when(entityManager.createQuery(projectQuery)).thenReturn(mockQuery);
         when(mockQuery.getResultList()).thenReturn(Collections.singletonList(new ProjectEntity()));
 
-        List<ProjectEntity> result = featuresService.findFilteredProjects(params, 1, 20);
+        List<ProjectEntity> result = featuresService.findFilteredProjects(params);
 
         assertNotNull(result);
         assertEquals(1, result.size());
     }
-
+  
     @Test
     void testFindFilteredProjectFiscals() {
         UUID projectGuid = UUID.randomUUID();
