@@ -105,6 +105,7 @@ class FeaturesServiceTest {
         mockProject.setProjectGuid(UUID.randomUUID());
         List<ProjectEntity> mockProjects = Collections.singletonList(mockProject);
 
+        when(entityManager.getCriteriaBuilder()).thenReturn(criteriaBuilder);
         FeaturesService spyService = spy(featuresService);
         doReturn(mockProjects).when(spyService).findFilteredProjects(params, 1, 20);
         doAnswer(invocation -> null).when(spyService).addProjectBoundaries(any(), any());
@@ -210,6 +211,8 @@ class FeaturesServiceTest {
         FeatureQueryParams params = new FeatureQueryParams();
 
         when(entityManager.getCriteriaBuilder()).thenReturn(criteriaBuilder);
+        CriteriaQuery<UUID> idQuery = mock(CriteriaQuery.class);
+        when(criteriaBuilder.createQuery(UUID.class)).thenReturn(idQuery);
         when(criteriaBuilder.createQuery(ProjectEntity.class)).thenReturn(projectQuery);
         when(projectQuery.from(ProjectEntity.class)).thenReturn(projectRoot);
         TypedQuery<ProjectEntity> mockQuery = mock(TypedQuery.class);
@@ -813,7 +816,7 @@ class FeaturesServiceTest {
         FeatureQueryParams params = new FeatureQueryParams();
         FeaturesService spyService = spy(featuresService);
         doThrow(new RuntimeException("boom"))
-            .when(spyService).findFilteredProjects(any(), anyInt(), anyInt());
+            .when(spyService).countFilteredProjects(any());
 
         assertThrows(ServiceException.class, () -> spyService.getAllFeatures(params, 1, 20));
     }
