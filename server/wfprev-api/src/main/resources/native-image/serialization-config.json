@@ -31,6 +31,7 @@
   { "name": "ca.bc.gov.nrs.wfprev.data.models.WildfireOrgUnitModel" },
   { "name": "ca.bc.gov.nrs.wfprev.data.models.WildfireOrgUnitTypeCodeModel" },
   { "name": "ca.bc.gov.nrs.wfprev.data.models.ReportRequestModel" },
+  { "name": "ca.bc.gov.nrs.wfprev.data.models.ProjectLocationModel" },
 
   { "name": "ca.bc.gov.nrs.wfprev.data.entities.ForestAreaCodeEntity" },
   { "name": "ca.bc.gov.nrs.wfprev.data.entities.GeneralScopeCodeEntity" },
@@ -63,6 +64,7 @@
   { "name": "ca.bc.gov.nrs.wfprev.data.entities.WildfireOrgUnitTypeCodeEntity" },
   { "name": "ca.bc.gov.nrs.wfprev.data.entities.FuelManagementReportEntity" },
   { "name": "ca.bc.gov.nrs.wfprev.data.entities.CulturalPrescribedFireReportEntity" },
+  { "name": "ca.bc.gov.nrs.wfprev.data.entities.ProjectLocationEntity" },
   { "name": "org.springframework.hateoas.RepresentationModel"},
   { "name": "org.springframework.hateoas.Link"},
   { "name": "org.springframework.hateoas.Links"},
