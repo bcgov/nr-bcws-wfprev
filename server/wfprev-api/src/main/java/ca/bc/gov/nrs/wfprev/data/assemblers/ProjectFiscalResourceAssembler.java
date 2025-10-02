@@ -222,8 +222,7 @@ public class ProjectFiscalResourceAssembler extends RepresentationModelAssembler
                 nonNullOrDefault(projectFiscalModel.getProjectFiscalName(), existingEntity.getProjectFiscalName()));
         existingEntity.setProjectFiscalDescription(
                 nonNullOrDefault(projectFiscalModel.getProjectFiscalDescription(), existingEntity.getProjectFiscalDescription()));
-        existingEntity.setBusinessAreaComment(
-                nonNullOrDefault(projectFiscalModel.getBusinessAreaComment(), existingEntity.getBusinessAreaComment()));
+        existingEntity.setBusinessAreaComment(projectFiscalModel.getBusinessAreaComment());
         existingEntity.setEstimatedClwrrAllocAmount(
                 nonNullOrDefault(projectFiscalModel.getEstimatedClwrrAllocAmount(), existingEntity.getEstimatedClwrrAllocAmount()));
         existingEntity.setTotalCostEstimateAmount(

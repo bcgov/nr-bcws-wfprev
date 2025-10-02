@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { ReactiveFormsModule, FormControl, FormGroup, FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -40,11 +40,12 @@ import { getLocalIsoTimestamp, getUtcIsoTimestamp } from 'src/app/utils/tools';
   templateUrl: './endorsement-approval.component.html',
   styleUrl: './endorsement-approval.component.scss'
 })
-export class EndorsementApprovalComponent implements OnChanges {
+export class EndorsementApprovalComponent implements OnChanges, OnInit {
 
   @Input() fiscal!: ProjectFiscal;
   @Input() currentUser!: string;
   @Input() currentIdir!: string;
+  @Input() isSaving = false;
   @Output() saveEndorsement = new EventEmitter<ProjectFiscal>();
 
   readonly draftTooltip = 'Submit your Draft Fiscal Activity using the Actions button to enable Endorsements and Approvals.';
@@ -114,14 +115,23 @@ export class EndorsementApprovalComponent implements OnChanges {
 
       this.endorsementApprovalForm.markAsPristine();
     }
+    if (changes['isSaving'] && changes['isSaving'].currentValue === false) {
+      this.isSaving = false;
+    }
   }
 
   get effectiveEndorserName(): string {
+    // use the endorserName if set
+    if (this.fiscal?.endorserName) {
+      return this.fiscal.endorserName;
+    }
+    // or fall back to currentUser if the form is checked
     const checked = this.endorsementApprovalForm.get('endorseFiscalActivity')?.value;
     return checked ? this.currentUser : '';
   }
 
   onSave() {
+    if (this.isSaving) return;
     const formValue = this.endorsementApprovalForm.value;
 
     const endorsementRemoved = !formValue.endorseFiscalActivity;
