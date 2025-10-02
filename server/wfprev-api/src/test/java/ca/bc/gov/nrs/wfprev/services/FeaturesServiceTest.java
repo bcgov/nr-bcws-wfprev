@@ -207,7 +207,7 @@ class FeaturesServiceTest {
         assertEquals(1, activityBoundaries.size());
         assertTrue(activityBoundaries.get(0).containsKey("activityGeometry"));
     }
-
+  
     @Test
     void testFindFilteredProjects() {
         FeatureQueryParams params = new FeatureQueryParams();
