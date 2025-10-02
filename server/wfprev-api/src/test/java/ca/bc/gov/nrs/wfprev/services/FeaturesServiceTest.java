@@ -42,9 +42,11 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyCollection;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -52,6 +54,7 @@ import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
@@ -103,11 +106,11 @@ class FeaturesServiceTest {
         List<ProjectEntity> mockProjects = Collections.singletonList(mockProject);
 
         FeaturesService spyService = spy(featuresService);
-        doReturn(mockProjects).when(spyService).findFilteredProjects(params);
+        doReturn(mockProjects).when(spyService).findFilteredProjects(params, 1, 20);
         doAnswer(invocation -> null).when(spyService).addProjectBoundaries(any(), any());
         doAnswer(invocation -> null).when(spyService).addProjectFiscals(any(), any(), any());
 
-        Map<String, Object> result = spyService.getAllFeatures(params);
+        Map<String, Object> result = spyService.getAllFeatures(params, 1, 20);
 
         assertNotNull(result);
         assertEquals(1, ((List<?>) result.get("projects")).size());
@@ -213,7 +216,7 @@ class FeaturesServiceTest {
         when(entityManager.createQuery(projectQuery)).thenReturn(mockQuery);
         when(mockQuery.getResultList()).thenReturn(Collections.singletonList(new ProjectEntity()));
 
-        List<ProjectEntity> result = featuresService.findFilteredProjects(params);
+        List<ProjectEntity> result = featuresService.findFilteredProjects(params, 1, 20);
 
         assertNotNull(result);
         assertEquals(1, result.size());
@@ -804,4 +807,47 @@ class FeaturesServiceTest {
         verify(criteriaBuilder, times(2)).isNull(fiscalYearPath);
         verify(criteriaBuilder).or(any(Predicate[].class));
     }
+
+    @Test
+    void testGetAllFeatures_WhenExceptionThrown_ShouldWrapInServiceException() {
+        FeatureQueryParams params = new FeatureQueryParams();
+        FeaturesService spyService = spy(featuresService);
+        doThrow(new RuntimeException("boom"))
+            .when(spyService).findFilteredProjects(any(), anyInt(), anyInt());
+
+        assertThrows(ServiceException.class, () -> spyService.getAllFeatures(params, 1, 20));
+    }
+
+    @Test
+    void testGetAllFeatures_WithProjectGuid_ShouldReturnSingleProjectMap() throws ServiceException {
+        FeatureQueryParams params = new FeatureQueryParams();
+        UUID projectGuid = UUID.randomUUID();
+        params.setProjectGuid(projectGuid);
+
+        ProjectEntity project = new ProjectEntity();
+        project.setProjectGuid(projectGuid);
+
+        when(entityManager.find(ProjectEntity.class, projectGuid)).thenReturn(project);
+
+        FeaturesService spyService = spy(featuresService);
+        doNothing().when(spyService).addProjectBoundaries(any(), any());
+        doNothing().when(spyService).addProjectFiscals(any(), any(), any());
+
+        Map<String, Object> result = spyService.getAllFeatures(params, 1, 20);
+
+        assertTrue(result.containsKey("project"));
+    }
+
+    @Test
+    void testGetAllFeatures_WithProjectGuidNotFound_ShouldReturnEmptyMap() throws ServiceException {
+        FeatureQueryParams params = new FeatureQueryParams();
+        UUID projectGuid = UUID.randomUUID();
+        params.setProjectGuid(projectGuid);
+
+        when(entityManager.find(ProjectEntity.class, projectGuid)).thenReturn(null);
+
+        Map<String, Object> result = featuresService.getAllFeatures(params, 1, 20);
+
+        assertTrue(result.isEmpty());
+}
 }
