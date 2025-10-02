@@ -206,25 +206,33 @@ class FeaturesServiceTest {
     @Test
     void testFindFilteredProjects() {
         FeatureQueryParams params = new FeatureQueryParams();
+        params.setProgramAreaGuids(List.of(UUID.randomUUID()));
 
         when(entityManager.getCriteriaBuilder()).thenReturn(criteriaBuilder);
 
         CriteriaQuery<UUID> uuidQuery = mock(CriteriaQuery.class);
         Root<ProjectEntity> idRoot = mock(Root.class);
+        Path<Object> mockPath = mock(Path.class);
+        Predicate mockPredicate = mock(Predicate.class);
+
         when(criteriaBuilder.createQuery(UUID.class)).thenReturn(uuidQuery);
         when(uuidQuery.from(ProjectEntity.class)).thenReturn(idRoot);
         when(uuidQuery.select(any())).thenReturn(uuidQuery);
 
+        when(idRoot.get("programAreaGuid")).thenReturn(mockPath);
+        when(mockPath.in(anyCollection())).thenReturn(mockPredicate);
+
         TypedQuery<UUID> mockUuidQuery = mock(TypedQuery.class);
         when(entityManager.createQuery(uuidQuery)).thenReturn(mockUuidQuery);
-
         when(mockUuidQuery.setFirstResult(anyInt())).thenReturn(mockUuidQuery);
         when(mockUuidQuery.setMaxResults(anyInt())).thenReturn(mockUuidQuery);
         when(mockUuidQuery.getResultList()).thenReturn(Collections.singletonList(UUID.randomUUID()));
+
         when(criteriaBuilder.createQuery(ProjectEntity.class)).thenReturn(projectQuery);
         when(projectQuery.from(ProjectEntity.class)).thenReturn(projectRoot);
         when(projectQuery.where(any(Predicate.class))).thenReturn(projectQuery);
         when(projectQuery.distinct(true)).thenReturn(projectQuery);
+
         TypedQuery<ProjectEntity> mockProjectQuery = mock(TypedQuery.class);
         when(entityManager.createQuery(projectQuery)).thenReturn(mockProjectQuery);
         when(mockProjectQuery.getResultList()).thenReturn(Collections.singletonList(new ProjectEntity()));
@@ -234,6 +242,7 @@ class FeaturesServiceTest {
         assertNotNull(result);
         assertEquals(1, result.size());
     }
+
 
     @Test
     void testFindFilteredProjectFiscals() {
