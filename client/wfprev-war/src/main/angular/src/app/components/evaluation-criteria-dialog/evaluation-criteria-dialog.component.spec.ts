@@ -111,6 +111,7 @@ describe('EvaluationCriteriaDialogComponent', () => {
     mockProjectService.createEvaluationCriteriaSummary.and.returnValue(of({}));
     component.onSave();
     expect(mockProjectService.createEvaluationCriteriaSummary).toHaveBeenCalled();
+    expect(component.isSaving).toBeFalse();
   });
 
   it('should call onSave and update evaluation criteria summary', () => {
@@ -120,6 +121,7 @@ describe('EvaluationCriteriaDialogComponent', () => {
     mockProjectService.updateEvaluationCriteriaSummary.and.returnValue(of({}));
     component.onSave();
     expect(mockProjectService.updateEvaluationCriteriaSummary).toHaveBeenCalled();
+    expect(component.isSaving).toBeFalse();
   });
 
   it('should handle invalid form onSave', () => {
@@ -127,6 +129,18 @@ describe('EvaluationCriteriaDialogComponent', () => {
     spyOn(console, 'warn');
     component.onSave();
     expect(console.warn).toHaveBeenCalledWith('Form is invalid, not saving.');
+    expect(component.isSaving).toBeFalse();
+  });
+
+  it('should block onSave if already saving', () => {
+    component.initializeForm();
+    component.criteriaForm.patchValue({ wuiRiskClassCode: 1 });
+    component.isSaving = true;
+
+    component.onSave();
+
+    expect(mockProjectService.createEvaluationCriteriaSummary).not.toHaveBeenCalled();
+    expect(mockProjectService.updateEvaluationCriteriaSummary).not.toHaveBeenCalled();
   });
 
   it('should call onCancel and close dialog if confirmed', () => {
@@ -447,6 +461,56 @@ describe('EvaluationCriteriaDialogComponent', () => {
     component.updateCoarseTotalFromDropdowns();
     expect(component.coarseTotal).toBe(5);
   });
+
+  it('should set risk class when matching code is found', () => {
+    component.wuiRiskClassCode = [
+      { wuiRiskClassCode: 'WUI', weightedRank: 10 } as any
+    ];
+    component.initializeForm();
+
+    component.setRiskClass('wuiRiskClassCode', 'WUI');
+
+    expect(component.criteriaForm.get('wuiRiskClassCode')?.value).toBe(10);
+  });
+
+  it('should not patch risk class when code is undefined or not found', () => {
+    component.wuiRiskClassCode = [];
+    component.initializeForm();
+
+    component.setRiskClass('wuiRiskClassCode', undefined);
+    expect(component.criteriaForm.get('wuiRiskClassCode')?.value).toBe('');
+
+    component.setRiskClass('wuiRiskClassCode', 'NON_EXISTENT');
+    expect(component.criteriaForm.get('wuiRiskClassCode')?.value).toBe(undefined);
+  });
+
+  it('should add selected guids and patch comment in handleSection', () => {
+    component.initializeForm();
+    const section = {
+      filterSectionComment: 'Section comment',
+      evaluationCriteriaSelected: [
+        { evaluationCriteriaGuid: 's1', isEvaluationCriteriaSelectedInd: true },
+        { evaluationCriteriaGuid: 's2', isEvaluationCriteriaSelectedInd: false }
+      ]
+    } as any;
+
+    component.handleSection(section, component.selectedMedium, 'mediumFilterComments');
+
+    expect(component.selectedMedium.has('s1')).toBeTrue();
+    expect(component.selectedMedium.has('s2')).toBeFalse();
+    expect(component.criteriaForm.get('mediumFilterComments')?.value).toBe('Section comment');
+  });
+
+  it('should handleSection gracefully with empty selection array', () => {
+    component.initializeForm();
+    const section = { evaluationCriteriaSelected: [], filterSectionComment: '' } as any;
+
+    component.handleSection(section, component.selectedFine, 'fineFilterComments');
+
+    expect(component.selectedFine.size).toBe(0);
+    expect(component.criteriaForm.get('fineFilterComments')?.value).toBe('');
+  });
+
 
 
 });
