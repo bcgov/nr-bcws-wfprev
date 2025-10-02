@@ -190,37 +190,24 @@ public class FeaturesService implements CommonService {
 
     List<ProjectEntity> findFilteredProjects(FeatureQueryParams params, int pageNumber, int pageRowCount) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-
-        CriteriaQuery<UUID> idQuery = cb.createQuery(UUID.class);
-        Root<ProjectEntity> idRoot = idQuery.from(ProjectEntity.class);
+        CriteriaQuery<ProjectEntity> query = cb.createQuery(ProjectEntity.class);
+        Root<ProjectEntity> project = query.from(ProjectEntity.class);
 
         List<Predicate> predicates = new ArrayList<>();
-        addProjectLevelFilters(idRoot, predicates, params);
-        addFiscalAttributeFilters(cb, idRoot, predicates, params);
-        addSearchTextFilters(cb, idRoot, predicates, params);
+        addProjectLevelFilters(project, predicates, params);
+        addFiscalAttributeFilters(cb, project, predicates, params);
+        addSearchTextFilters(cb, project, predicates, params);
 
         if (!predicates.isEmpty()) {
-            idQuery.where(cb.and(predicates.toArray(new Predicate[0])));
+            query.where(cb.and(predicates.toArray(new Predicate[0])));
         }
 
-        idQuery.select(idRoot.get("projectGuid")).distinct(true);
+        query.distinct(true);
 
-        List<UUID> pageOfIds = entityManager.createQuery(idQuery)
+        return entityManager.createQuery(query)
             .setFirstResult((pageNumber - 1) * pageRowCount)
             .setMaxResults(pageRowCount)
             .getResultList();
-
-        if (pageOfIds.isEmpty()) {
-            return Collections.emptyList();
-        }
-
-        CriteriaQuery<ProjectEntity> projectQuery = cb.createQuery(ProjectEntity.class);
-        Root<ProjectEntity> projectRoot = projectQuery.from(ProjectEntity.class);
-        projectQuery.select(projectRoot)
-                    .where(projectRoot.get("projectGuid").in(pageOfIds))
-                    .distinct(true);
-
-        return entityManager.createQuery(projectQuery).getResultList();
     }
 
     void addProjectLevelFilters(Root<ProjectEntity> project, List<Predicate> predicates, FeatureQueryParams params) {
