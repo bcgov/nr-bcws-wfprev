@@ -95,21 +95,23 @@ class FeaturesServiceTest {
     void testGetAllFeatures() throws ServiceException {
         FeatureQueryParams params = new FeatureQueryParams();
         params.setProgramAreaGuids(Collections.singletonList(UUID.randomUUID()));
-        params.setFiscalYears(Collections.singletonList("2022"));
-        params.setActivityCategoryCodes(Collections.singletonList("CATEGORY"));
-        params.setPlanFiscalStatusCodes(Collections.singletonList("STATUS"));
-        params.setProjectTypeCodes(Collections.singletonList("Type1"));
-        params.setSearchText("searchText");
 
         ProjectEntity mockProject = new ProjectEntity();
         mockProject.setProjectGuid(UUID.randomUUID());
         List<ProjectEntity> mockProjects = Collections.singletonList(mockProject);
 
         when(entityManager.getCriteriaBuilder()).thenReturn(criteriaBuilder);
+
+        @SuppressWarnings("unchecked")
+        CriteriaQuery<Long> countQuery = mock(CriteriaQuery.class);
+        when(criteriaBuilder.createQuery(Long.class)).thenReturn(countQuery);
+        when(countQuery.from(ProjectEntity.class)).thenReturn(projectRoot);
+
         FeaturesService spyService = spy(featuresService);
+        doReturn(1L).when(spyService).countFilteredProjects(params);
         doReturn(mockProjects).when(spyService).findFilteredProjects(params, 1, 20);
-        doAnswer(invocation -> null).when(spyService).addProjectBoundaries(any(), any());
-        doAnswer(invocation -> null).when(spyService).addProjectFiscals(any(), any(), any());
+        doNothing().when(spyService).addProjectBoundaries(any(), any());
+        doNothing().when(spyService).addProjectFiscals(any(), any(), any());
 
         Map<String, Object> result = spyService.getAllFeatures(params, 1, 20);
 
@@ -205,16 +207,22 @@ class FeaturesServiceTest {
         assertEquals(1, activityBoundaries.size());
         assertTrue(activityBoundaries.get(0).containsKey("activityGeometry"));
     }
-
+  
     @Test
     void testFindFilteredProjects() {
         FeatureQueryParams params = new FeatureQueryParams();
 
         when(entityManager.getCriteriaBuilder()).thenReturn(criteriaBuilder);
+
+        @SuppressWarnings("unchecked")
         CriteriaQuery<UUID> idQuery = mock(CriteriaQuery.class);
         when(criteriaBuilder.createQuery(UUID.class)).thenReturn(idQuery);
+        when(idQuery.from(ProjectEntity.class)).thenReturn(projectRoot);
+        when(projectRoot.get("projectGuid")).thenReturn(path);
+
         when(criteriaBuilder.createQuery(ProjectEntity.class)).thenReturn(projectQuery);
         when(projectQuery.from(ProjectEntity.class)).thenReturn(projectRoot);
+
         TypedQuery<ProjectEntity> mockQuery = mock(TypedQuery.class);
         when(entityManager.createQuery(projectQuery)).thenReturn(mockQuery);
         when(mockQuery.getResultList()).thenReturn(Collections.singletonList(new ProjectEntity()));
