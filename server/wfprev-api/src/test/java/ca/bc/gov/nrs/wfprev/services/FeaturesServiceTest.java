@@ -216,7 +216,7 @@ class FeaturesServiceTest {
         when(entityManager.createQuery(projectQuery)).thenReturn(mockQuery);
         when(mockQuery.getResultList()).thenReturn(Collections.singletonList(new ProjectEntity()));
 
-        List<ProjectEntity> result = featuresService.findFilteredProjects(params);
+        List<ProjectEntity> result = featuresService.findFilteredProjects(params, 1 ,20);
 
         assertNotNull(result);
         assertEquals(1, result.size());
