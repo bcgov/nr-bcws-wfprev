@@ -209,6 +209,8 @@ class FeaturesServiceTest {
         when(entityManager.getCriteriaBuilder()).thenReturn(criteriaBuilder);
         when(criteriaBuilder.createQuery(ProjectEntity.class)).thenReturn(projectQuery);
         when(projectQuery.from(ProjectEntity.class)).thenReturn(projectRoot);
+        when(projectQuery.where(any(Predicate.class))).thenReturn(projectQuery);
+        when(projectQuery.distinct(true)).thenReturn(projectQuery);
         TypedQuery<ProjectEntity> mockQuery = mock(TypedQuery.class);
         when(entityManager.createQuery(projectQuery)).thenReturn(mockQuery);
         when(mockQuery.getResultList()).thenReturn(Collections.singletonList(new ProjectEntity()));
