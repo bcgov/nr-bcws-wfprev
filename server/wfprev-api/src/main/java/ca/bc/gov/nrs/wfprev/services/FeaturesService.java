@@ -53,9 +53,24 @@ public class FeaturesService implements CommonService {
     private static final String REVISION_COUNT = "revisionCount";
 
 
-    public Map<String, Object> getAllFeatures(FeatureQueryParams params) throws ServiceException {
+    public Map<String, Object> getAllFeatures(FeatureQueryParams params, int pageNumber, int pageRowCount) throws ServiceException {
         try {
-            List<ProjectEntity> filteredProjects = findFilteredProjects(params);
+            if (params.getProjectGuid() != null) {
+                ProjectEntity project = entityManager.find(ProjectEntity.class, params.getProjectGuid());
+                if (project == null) {
+                    return Collections.emptyMap();
+                }
+
+                Map<String, Object> projectMap = createProjectProperties(project);
+                addProjectBoundaries(project, projectMap);
+                addProjectFiscals(project, params, projectMap);
+
+                Map<String, Object> response = new HashMap<>();
+                response.put("project", projectMap);
+                return response;
+            }
+            long totalItems = countFilteredProjects(params);
+            List<ProjectEntity> filteredProjects = findFilteredProjects(params, pageNumber, pageRowCount);
             List<Map<String, Object>> projects = new ArrayList<>();
 
             for (ProjectEntity project : filteredProjects) {
@@ -65,7 +80,14 @@ public class FeaturesService implements CommonService {
                 projects.add(projectMap);
             }
 
-            return Map.of("projects", projects);
+            int totalPages = (int) Math.ceil((double) totalItems / pageRowCount);
+            Map<String, Object> response = new HashMap<>();
+            response.put("projects", projects);
+            response.put("currentPage", pageNumber);
+            response.put("pageSize", pageRowCount);
+            response.put("totalItems", totalItems);
+            response.put("totalPages", totalPages);
+            return response;
         }catch (Exception e){
             log.error("Error encountered while fetching features:", e);
             throw new ServiceException(e.getLocalizedMessage(), e);
@@ -166,28 +188,47 @@ public class FeaturesService implements CommonService {
     }
 
 
-    List<ProjectEntity> findFilteredProjects(FeatureQueryParams params) {
+    List<ProjectEntity> findFilteredProjects(FeatureQueryParams params, int pageNumber, int pageRowCount) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-        CriteriaQuery<ProjectEntity> query = cb.createQuery(ProjectEntity.class);
-        Root<ProjectEntity> project = query.from(ProjectEntity.class);
+
+        CriteriaQuery<UUID> idQuery = cb.createQuery(UUID.class);
+        Root<ProjectEntity> idRoot = idQuery.from(ProjectEntity.class);
 
         List<Predicate> predicates = new ArrayList<>();
-
-        addProjectLevelFilters(project, predicates, params);
-        addFiscalAttributeFilters(cb, project, predicates, params);
-        addSearchTextFilters(cb, project, predicates, params);
+        addProjectLevelFilters(idRoot, predicates, params);
+        addFiscalAttributeFilters(cb, idRoot, predicates, params);
+        addSearchTextFilters(cb, idRoot, predicates, params);
 
         if (!predicates.isEmpty()) {
-            query.where(cb.and(predicates.toArray(new Predicate[0])));
+            idQuery.where(cb.and(predicates.toArray(new Predicate[0])));
         }
 
-        query.distinct(true);
+        idQuery.select(idRoot.get("projectGuid")).distinct(true);
 
-        return entityManager.createQuery(query).getResultList();
+        List<UUID> pageOfIds = entityManager.createQuery(idQuery)
+            .setFirstResult((pageNumber - 1) * pageRowCount)
+            .setMaxResults(pageRowCount)
+            .getResultList();
+
+        if (pageOfIds.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        CriteriaQuery<ProjectEntity> projectQuery = cb.createQuery(ProjectEntity.class);
+        Root<ProjectEntity> projectRoot = projectQuery.from(ProjectEntity.class);
+        projectQuery.select(projectRoot)
+                    .where(projectRoot.get("projectGuid").in(pageOfIds))
+                    .distinct(true);
+
+        return entityManager.createQuery(projectQuery).getResultList();
     }
 
     void addProjectLevelFilters(Root<ProjectEntity> project, List<Predicate> predicates, FeatureQueryParams params) {
         log.info("Filtering by projectTypeCodes: {}", params.getProjectTypeCodes());
+        if (params.getProjectGuid() != null) {
+            predicates.add(project.get("projectGuid").in(params.getProjectGuid()));
+            return;
+        }
         if (params.getProgramAreaGuids() != null && !params.getProgramAreaGuids().isEmpty()) {
             predicates.add(project.get("programAreaGuid").in(params.getProgramAreaGuids()));
         }
@@ -355,7 +396,7 @@ public class FeaturesService implements CommonService {
                 .setMaxResults(1)  // Only get the first result (most recent)
                 .getResultList();
 
-        return results.isEmpty() ? null : results.getFirst();
+        return results.isEmpty() ? null : results.get(0);
     }
 
     private Map<String, Object> createProjectProperties(ProjectEntity project) {
@@ -565,5 +606,23 @@ public class FeaturesService implements CommonService {
         }
 
         return coordinates;
+    }
+
+    long countFilteredProjects(FeatureQueryParams params) {
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Long> countQuery = cb.createQuery(Long.class);
+        Root<ProjectEntity> project = countQuery.from(ProjectEntity.class);
+
+        List<Predicate> predicates = new ArrayList<>();
+        addProjectLevelFilters(project, predicates, params);
+        addFiscalAttributeFilters(cb, project, predicates, params);
+        addSearchTextFilters(cb, project, predicates, params);
+
+        if (!predicates.isEmpty()) {
+            countQuery.where(cb.and(predicates.toArray(new Predicate[0])));
+        }
+
+        countQuery.select(cb.countDistinct(project));
+        return entityManager.createQuery(countQuery).getSingleResult();
     }
 }

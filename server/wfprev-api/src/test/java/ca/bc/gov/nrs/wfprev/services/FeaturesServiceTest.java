@@ -42,9 +42,11 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyCollection;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -52,6 +54,7 @@ import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
@@ -92,22 +95,20 @@ class FeaturesServiceTest {
     void testGetAllFeatures() throws ServiceException {
         FeatureQueryParams params = new FeatureQueryParams();
         params.setProgramAreaGuids(Collections.singletonList(UUID.randomUUID()));
-        params.setFiscalYears(Collections.singletonList("2022"));
-        params.setActivityCategoryCodes(Collections.singletonList("CATEGORY"));
-        params.setPlanFiscalStatusCodes(Collections.singletonList("STATUS"));
-        params.setProjectTypeCodes(Collections.singletonList("Type1"));
-        params.setSearchText("searchText");
 
         ProjectEntity mockProject = new ProjectEntity();
         mockProject.setProjectGuid(UUID.randomUUID());
         List<ProjectEntity> mockProjects = Collections.singletonList(mockProject);
 
-        FeaturesService spyService = spy(featuresService);
-        doReturn(mockProjects).when(spyService).findFilteredProjects(params);
-        doAnswer(invocation -> null).when(spyService).addProjectBoundaries(any(), any());
-        doAnswer(invocation -> null).when(spyService).addProjectFiscals(any(), any(), any());
+        @SuppressWarnings("unchecked")
 
-        Map<String, Object> result = spyService.getAllFeatures(params);
+        FeaturesService spyService = spy(featuresService);
+        doReturn(1L).when(spyService).countFilteredProjects(params);
+        doReturn(mockProjects).when(spyService).findFilteredProjects(params, 1, 20);
+        doNothing().when(spyService).addProjectBoundaries(any(), any());
+        doNothing().when(spyService).addProjectFiscals(any(), any(), any());
+
+        Map<String, Object> result = spyService.getAllFeatures(params, 1, 20);
 
         assertNotNull(result);
         assertEquals(1, ((List<?>) result.get("projects")).size());
@@ -201,7 +202,7 @@ class FeaturesServiceTest {
         assertEquals(1, activityBoundaries.size());
         assertTrue(activityBoundaries.get(0).containsKey("activityGeometry"));
     }
-
+  
     @Test
     void testFindFilteredProjects() {
         FeatureQueryParams params = new FeatureQueryParams();
@@ -220,7 +221,7 @@ class FeaturesServiceTest {
         assertNotNull(result);
         assertEquals(1, result.size());
     }
-
+  
     @Test
     void testFindFilteredProjectFiscals() {
         UUID projectGuid = UUID.randomUUID();
@@ -806,4 +807,47 @@ class FeaturesServiceTest {
         verify(criteriaBuilder, times(2)).isNull(fiscalYearPath);
         verify(criteriaBuilder).or(any(Predicate[].class));
     }
+
+    @Test
+    void testGetAllFeatures_WhenExceptionThrown_ShouldWrapInServiceException() {
+        FeatureQueryParams params = new FeatureQueryParams();
+        FeaturesService spyService = spy(featuresService);
+        doThrow(new RuntimeException("boom"))
+            .when(spyService).countFilteredProjects(any());
+
+        assertThrows(ServiceException.class, () -> spyService.getAllFeatures(params, 1, 20));
+    }
+
+    @Test
+    void testGetAllFeatures_WithProjectGuid_ShouldReturnSingleProjectMap() throws ServiceException {
+        FeatureQueryParams params = new FeatureQueryParams();
+        UUID projectGuid = UUID.randomUUID();
+        params.setProjectGuid(projectGuid);
+
+        ProjectEntity project = new ProjectEntity();
+        project.setProjectGuid(projectGuid);
+
+        when(entityManager.find(ProjectEntity.class, projectGuid)).thenReturn(project);
+
+        FeaturesService spyService = spy(featuresService);
+        doNothing().when(spyService).addProjectBoundaries(any(), any());
+        doNothing().when(spyService).addProjectFiscals(any(), any(), any());
+
+        Map<String, Object> result = spyService.getAllFeatures(params, 1, 20);
+
+        assertTrue(result.containsKey("project"));
+    }
+
+    @Test
+    void testGetAllFeatures_WithProjectGuidNotFound_ShouldReturnEmptyMap() throws ServiceException {
+        FeatureQueryParams params = new FeatureQueryParams();
+        UUID projectGuid = UUID.randomUUID();
+        params.setProjectGuid(projectGuid);
+
+        when(entityManager.find(ProjectEntity.class, projectGuid)).thenReturn(null);
+
+        Map<String, Object> result = featuresService.getAllFeatures(params, 1, 20);
+
+        assertTrue(result.isEmpty());
+}
 }

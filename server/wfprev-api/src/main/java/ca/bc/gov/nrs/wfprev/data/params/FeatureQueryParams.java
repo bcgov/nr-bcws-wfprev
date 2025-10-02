@@ -7,6 +7,7 @@ import java.util.UUID;
 
 @Data
 public class FeatureQueryParams {
+    private UUID projectGuid;
     private List<UUID> programAreaGuids;
     private List<String> fiscalYears;
     private List<String> forestRegionOrgUnitIds;

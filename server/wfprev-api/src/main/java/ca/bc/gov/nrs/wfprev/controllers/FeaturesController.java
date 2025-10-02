@@ -61,6 +61,7 @@ public class FeaturesController extends CommonController {
     @Parameter(name = HeaderConstants.IF_MATCH_HEADER, description = HeaderConstants.IF_MATCH_DESCRIPTION,
             required = true, schema = @Schema(implementation = String.class), in = ParameterIn.HEADER)
     public ResponseEntity<Map<String, Object>> getAllFeatures(
+            @RequestParam(required = false) UUID projectGuid,
             @RequestParam(required = false) List<UUID> programAreaGuid,
             @RequestParam(required = false) List<String> fiscalYear,
             @RequestParam(required = false) List<String> activityCategoryCode,
@@ -69,10 +70,13 @@ public class FeaturesController extends CommonController {
             @RequestParam(required = false) List<String> forestDistrictOrgUnitId,
             @RequestParam(required = false) List<String> fireCentreOrgUnitId,
             @RequestParam(required = false) List<String> projectTypeCode,
-            @RequestParam(required = false) String searchText
+            @RequestParam(required = false) String searchText,
+            @RequestParam(defaultValue = "1") int pageNumber,
+            @RequestParam(defaultValue = "20") int pageRowCount
     ) {
         try {
             FeatureQueryParams queryParams = new FeatureQueryParams();
+            queryParams.setProjectGuid(projectGuid); 
             queryParams.setProgramAreaGuids(programAreaGuid);
             queryParams.setFiscalYears(fiscalYear);
             queryParams.setActivityCategoryCodes(activityCategoryCode);
@@ -83,7 +87,7 @@ public class FeaturesController extends CommonController {
             queryParams.setProjectTypeCodes(projectTypeCode);
             queryParams.setSearchText(searchText);
 
-            Map<String, Object> result = featuresService.getAllFeatures(queryParams);
+            Map<String, Object> result = featuresService.getAllFeatures(queryParams, pageNumber, pageRowCount);
             return ResponseEntity.ok(result);
 
         } catch(ServiceException e) {
