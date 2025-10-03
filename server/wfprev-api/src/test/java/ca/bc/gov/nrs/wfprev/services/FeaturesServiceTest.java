@@ -889,10 +889,14 @@ class FeaturesServiceTest {
         when(countQuery.from(ProjectEntity.class)).thenReturn(mockRoot);
     
         @SuppressWarnings("unchecked")
-        Join<ProjectEntity, ProjectFiscalEntity> mockFiscalJoin = (Join<ProjectEntity, ProjectFiscalEntity>) mock(Join.class);
-        when(mockRoot.join(anyString(), any(JoinType.class))).thenReturn(mockFiscalJoin);
-        when(mockFiscalJoin.get(anyString())).thenReturn(mock(Path.class));
-    
+        Join<Object, Object> mockFiscalJoin = (Join<Object, Object>) mock(Join.class);
+
+        when(mockRoot.join(anyString(), any(JoinType.class)))
+            .thenReturn(mockFiscalJoin);
+
+        when(mockFiscalJoin.get(anyString()))
+            .thenReturn(mock(Path.class));
+            
         @SuppressWarnings("unchecked")
         Expression<Long> countExpr = (Expression<Long>) mock(Expression.class);
         when(criteriaBuilder.countDistinct(mockRoot)).thenReturn(countExpr);
