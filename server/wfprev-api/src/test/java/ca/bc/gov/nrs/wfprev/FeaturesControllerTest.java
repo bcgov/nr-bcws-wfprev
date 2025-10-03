@@ -66,7 +66,9 @@ class FeaturesControllerTest {
                 projectTypeCodes,
                 searchText,
                 1,
-                20
+                20,
+                "projectName",
+                "asc"
         );
 
         // Assert status and body
@@ -83,7 +85,7 @@ class FeaturesControllerTest {
         when(featuresService.getAllFeatures(any(FeatureQueryParams.class), anyInt(), anyInt())).thenReturn(expected);
 
         ResponseEntity<Map<String, Object>> result = featuresController.getAllFeatures(
-                null,null, null, null, null, null, null, null, null, null, 1, 20
+                null,null, null, null, null, null, null, null, null, null, 1, 20, null, null
         );
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
@@ -97,7 +99,7 @@ class FeaturesControllerTest {
         when(featuresService.getAllFeatures(any(FeatureQueryParams.class), anyInt(), anyInt())).thenThrow(new ServiceException("Service failed"));
 
         ResponseEntity<Map<String, Object>> result = featuresController.getAllFeatures(
-                null,null, null, null, null, null, null, null, null, null, 1, 20
+                null,null, null, null, null, null, null, null, null, null, 1, 20, null, null
         );
 
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, result.getStatusCode());
@@ -115,7 +117,7 @@ class FeaturesControllerTest {
         ResponseEntity<Map<String, Object>> result = featuresController.getAllFeatures(
                 projectGuid,
                 null, null, null, null, null, null, null, null, null,
-                1, 20
+                1, 20, null, null
         );
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
@@ -143,7 +145,9 @@ class FeaturesControllerTest {
                 null,
                 "search text",
                 2,
-                50
+                50,
+                "projectName",
+                "desc"
         );
 
         ArgumentCaptor<FeatureQueryParams> captor = ArgumentCaptor.forClass(FeatureQueryParams.class);

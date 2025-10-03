@@ -101,7 +101,7 @@ class FeaturesServiceTest {
 
         FeaturesService spyService = spy(featuresService);
         doReturn(1L).when(spyService).countFilteredProjects(params);
-        doReturn(mockProjects).when(spyService).findFilteredProjects(params, 1, 20);
+        doReturn(mockProjects).when(spyService).findFilteredProjects(params, 1, 20, null, null);
         doNothing().when(spyService).addProjectBoundaries(any(), any());
         doNothing().when(spyService).addProjectFiscals(any(), any(), any());
 
@@ -843,7 +843,7 @@ class FeaturesServiceTest {
         when(mockQuery.setMaxResults(anyInt())).thenReturn(mockQuery);
         when(mockQuery.getResultList()).thenReturn(List.of(new ProjectEntity()));
 
-        List<ProjectEntity> result = featuresService.findFilteredProjects(params, 2, 10);
+        List<ProjectEntity> result = featuresService.findFilteredProjects(params, 2, 10, null, null);
 
         assertEquals(1, result.size());
         verify(mockQuery).setFirstResult(10);

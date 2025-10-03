@@ -72,7 +72,9 @@ public class FeaturesController extends CommonController {
             @RequestParam(required = false) List<String> projectTypeCode,
             @RequestParam(required = false) String searchText,
             @RequestParam(defaultValue = "1") int pageNumber,
-            @RequestParam(defaultValue = "20") int pageRowCount
+            @RequestParam(defaultValue = "20") int pageRowCount,
+            @RequestParam(required = false) String sortBy,
+            @RequestParam(required = false) String sortDirection
     ) {
         try {
             FeatureQueryParams queryParams = new FeatureQueryParams();
@@ -86,6 +88,8 @@ public class FeaturesController extends CommonController {
             queryParams.setFireCentreOrgUnitIds(fireCentreOrgUnitId);
             queryParams.setProjectTypeCodes(projectTypeCode);
             queryParams.setSearchText(searchText);
+            queryParams.setSortBy(sortBy);
+            queryParams.setSortDirection(sortDirection);
 
             Map<String, Object> result = featuresService.getAllFeatures(queryParams, pageNumber, pageRowCount);
             return ResponseEntity.ok(result);
