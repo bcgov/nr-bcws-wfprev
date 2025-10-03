@@ -26,7 +26,6 @@ import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Point;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -42,9 +41,11 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyCollection;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -52,6 +53,7 @@ import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
@@ -92,22 +94,18 @@ class FeaturesServiceTest {
     void testGetAllFeatures() throws ServiceException {
         FeatureQueryParams params = new FeatureQueryParams();
         params.setProgramAreaGuids(Collections.singletonList(UUID.randomUUID()));
-        params.setFiscalYears(Collections.singletonList("2022"));
-        params.setActivityCategoryCodes(Collections.singletonList("CATEGORY"));
-        params.setPlanFiscalStatusCodes(Collections.singletonList("STATUS"));
-        params.setProjectTypeCodes(Collections.singletonList("Type1"));
-        params.setSearchText("searchText");
 
         ProjectEntity mockProject = new ProjectEntity();
         mockProject.setProjectGuid(UUID.randomUUID());
         List<ProjectEntity> mockProjects = Collections.singletonList(mockProject);
 
         FeaturesService spyService = spy(featuresService);
-        doReturn(mockProjects).when(spyService).findFilteredProjects(params);
-        doAnswer(invocation -> null).when(spyService).addProjectBoundaries(any(), any());
-        doAnswer(invocation -> null).when(spyService).addProjectFiscals(any(), any(), any());
+        doReturn(1L).when(spyService).countFilteredProjects(params);
+        doReturn(mockProjects).when(spyService).findFilteredProjects(params, 1, 20, null, null);
+        doNothing().when(spyService).addProjectBoundaries(any(), any());
+        doNothing().when(spyService).addProjectFiscals(any(), any(), any());
 
-        Map<String, Object> result = spyService.getAllFeatures(params);
+        Map<String, Object> result = spyService.getAllFeatures(params, 1, 20);
 
         assertNotNull(result);
         assertEquals(1, ((List<?>) result.get("projects")).size());
@@ -787,4 +785,144 @@ class FeaturesServiceTest {
         verify(criteriaBuilder, times(2)).isNull(fiscalYearPath);
         verify(criteriaBuilder).or(any(Predicate[].class));
     }
+
+    @Test
+    void testGetAllFeatures_WhenExceptionThrown_ShouldWrapInServiceException() {
+        FeatureQueryParams params = new FeatureQueryParams();
+        FeaturesService spyService = spy(featuresService);
+        doThrow(new RuntimeException("boom"))
+            .when(spyService).countFilteredProjects(any());
+
+        assertThrows(ServiceException.class, () -> spyService.getAllFeatures(params, 1, 20));
+    }
+
+    @Test
+    void testGetAllFeatures_WithProjectGuid_ShouldReturnSingleProjectMap() throws ServiceException {
+        FeatureQueryParams params = new FeatureQueryParams();
+        UUID projectGuid = UUID.randomUUID();
+        params.setProjectGuid(projectGuid);
+
+        ProjectEntity project = new ProjectEntity();
+        project.setProjectGuid(projectGuid);
+
+        when(entityManager.find(ProjectEntity.class, projectGuid)).thenReturn(project);
+
+        FeaturesService spyService = spy(featuresService);
+        doNothing().when(spyService).addProjectBoundaries(any(), any());
+        doNothing().when(spyService).addProjectFiscals(any(), any(), any());
+
+        Map<String, Object> result = spyService.getAllFeatures(params, 1, 20);
+
+        assertTrue(result.containsKey("project"));
+    }
+
+    @Test
+    void testGetAllFeatures_WithProjectGuidNotFound_ShouldReturnEmptyMap() throws ServiceException {
+        FeatureQueryParams params = new FeatureQueryParams();
+        UUID projectGuid = UUID.randomUUID();
+        params.setProjectGuid(projectGuid);
+
+        when(entityManager.find(ProjectEntity.class, projectGuid)).thenReturn(null);
+
+        Map<String, Object> result = featuresService.getAllFeatures(params, 1, 20);
+
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void testFindFilteredProjects_PaginationApplied() {
+        FeatureQueryParams params = new FeatureQueryParams();
+
+        when(entityManager.getCriteriaBuilder()).thenReturn(criteriaBuilder);
+        when(criteriaBuilder.createQuery(ProjectEntity.class)).thenReturn(projectQuery);
+        when(projectQuery.from(ProjectEntity.class)).thenReturn(projectRoot);
+
+        TypedQuery<ProjectEntity> mockQuery = mock(TypedQuery.class);
+        when(entityManager.createQuery(projectQuery)).thenReturn(mockQuery);
+        when(mockQuery.setFirstResult(anyInt())).thenReturn(mockQuery);
+        when(mockQuery.setMaxResults(anyInt())).thenReturn(mockQuery);
+        when(mockQuery.getResultList()).thenReturn(List.of(new ProjectEntity()));
+
+        List<ProjectEntity> result = featuresService.findFilteredProjects(params, 2, 10, null, null);
+
+        assertEquals(1, result.size());
+        verify(mockQuery).setFirstResult(10);
+        verify(mockQuery).setMaxResults(10);
+    }
+
+    @Test
+    void testAddProjectLevelFilters_WithProjectGuid() {
+        FeatureQueryParams params = new FeatureQueryParams();
+        UUID projectGuid = UUID.randomUUID();
+        params.setProjectGuid(projectGuid);
+
+        List<Predicate> predicates = new ArrayList<>();
+        @SuppressWarnings("unchecked")
+        Path<Object> guidPath = (Path<Object>) mock(Path.class);
+        when(projectRoot.get("projectGuid")).thenReturn(guidPath);
+
+        Predicate inPredicate = mock(Predicate.class);
+        when(guidPath.in(projectGuid)).thenReturn(inPredicate);
+
+        featuresService.addProjectLevelFilters(projectRoot, predicates, params);
+
+        assertEquals(1, predicates.size());
+        assertTrue(predicates.contains(inPredicate));
+        verify(projectRoot, times(1)).get("projectGuid");
+        verify(projectRoot, never()).get("programAreaGuid");
+        verify(projectRoot, never()).get("forestRegionOrgUnitId");
+    }
+
+    @Test
+    void testCountFilteredProjects_CoversMethodBody() {
+        FeatureQueryParams params = new FeatureQueryParams();
+        params.setSearchText("forest");
+    
+        when(entityManager.getCriteriaBuilder()).thenReturn(criteriaBuilder);
+    
+        @SuppressWarnings("unchecked")
+        CriteriaQuery<Long> countQuery = (CriteriaQuery<Long>) mock(CriteriaQuery.class);
+        when(criteriaBuilder.createQuery(Long.class)).thenReturn(countQuery);
+    
+        @SuppressWarnings("unchecked")
+        Root<ProjectEntity> mockRoot = (Root<ProjectEntity>) mock(Root.class);
+        when(countQuery.from(ProjectEntity.class)).thenReturn(mockRoot);
+    
+        @SuppressWarnings("unchecked")
+        Join<Object, Object> mockFiscalJoin = (Join<Object, Object>) mock(Join.class);
+
+        when(mockRoot.join(anyString(), any(JoinType.class)))
+            .thenReturn(mockFiscalJoin);
+
+        when(mockFiscalJoin.get(anyString()))
+            .thenReturn(mock(Path.class));
+            
+        @SuppressWarnings("unchecked")
+        Expression<Long> countExpr = (Expression<Long>) mock(Expression.class);
+        when(criteriaBuilder.countDistinct(mockRoot)).thenReturn(countExpr);
+        when(countQuery.select(countExpr)).thenReturn(countQuery);
+        when(countQuery.where(any(Predicate.class))).thenReturn(countQuery);
+    
+        @SuppressWarnings("unchecked")
+        Path<String> stringPath = (Path<String>) mock(Path.class);
+        when(mockRoot.get(anyString())).thenReturn((Path) stringPath);
+        when(stringPath.as(String.class)).thenReturn(stringPath);
+    
+        Predicate mockPredicate = mock(Predicate.class);
+        when(criteriaBuilder.lower(any(Expression.class))).thenReturn(stringPath);
+        when(criteriaBuilder.like(any(Expression.class), anyString())).thenReturn(mockPredicate);
+        when(criteriaBuilder.or(any(Predicate[].class))).thenReturn(mockPredicate);
+        when(criteriaBuilder.and(any(Predicate[].class))).thenReturn(mockPredicate);
+    
+        @SuppressWarnings("unchecked")
+        TypedQuery<Long> mockTypedQuery = (TypedQuery<Long>) mock(TypedQuery.class);
+        when(entityManager.createQuery(countQuery)).thenReturn(mockTypedQuery);
+        when(mockTypedQuery.getSingleResult()).thenReturn(42L);
+    
+        long result = featuresService.countFilteredProjects(params);
+    
+        assertEquals(42L, result);
+        verify(mockTypedQuery, times(1)).getSingleResult();
+    }
+
 }
