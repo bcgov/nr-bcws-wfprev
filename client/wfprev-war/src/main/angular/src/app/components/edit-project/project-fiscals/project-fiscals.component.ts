@@ -30,6 +30,7 @@ import { EndorsementApprovalComponent } from 'src/app/components/edit-project/en
 import { TokenService } from 'src/app/services/token.service';
 import { TimestampComponent } from 'src/app/components/shared/timestamp/timestamp.component';
 import { TextareaComponent } from 'src/app/components/shared/textarea/textarea.component';
+import { capitalizeFirstLetter } from 'src/app/utils';
 
 @Component({
   selector: 'wfprev-project-fiscals',
@@ -415,7 +416,7 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
       },
       projectFiscalName: updatedData.projectFiscalName,
       projectFiscalDescription: updatedData.projectFiscalDescription,
-      businessAreaComment: isUpdateToDraft ? null : updatedData.businessAreaComment,
+      businessAreaComment: isUpdateToDraft ? undefined : updatedData.businessAreaComment,
       estimatedClwrrAllocAmount: updatedData.estimatedClwrrAllocAmount,
       fiscalAncillaryFundAmount: updatedData.fiscalAncillaryFundAmount,
       fiscalPlannedProjectSizeHa: updatedData.fiscalPlannedProjectSizeHa,
@@ -437,14 +438,21 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
       ancillaryFundingProvider: updatedData.ancillaryFundingProvider,
       otherPartner: updatedData.otherPartner,
       proposalTypeCode: updatedData.proposalTypeCode,
-      endorserName: isUpdateToDraft ? null : originalData.endorserName,
-      endorsementTimestamp: isUpdateToDraft ? null : originalData.endorsementTimestamp,
+      endorserName: isUpdateToDraft ? undefined : originalData.endorserName,
+      endorsementTimestamp: isUpdateToDraft ? undefined : originalData.endorsementTimestamp,
       endorsementCode: isUpdateToDraft ? {
         endorsementCode: EndorsementCode.NOT_ENDORS
       } : originalData.endorsementCode,
-      endorsementComment: isUpdateToDraft ? null : originalData.endorsementComment,
-      approverName: isUpdateToDraft ? null : originalData.approverName,
-      approvedTimestamp: isUpdateToDraft ? null : originalData.approvedTimestamp,
+      endorsementComment: isUpdateToDraft ? undefined : originalData.endorsementComment,
+      endorsementEvalTimestamp: isUpdateToDraft ? undefined : originalData.endorsementEvalTimestamp,
+      endorserUserGuid: isUpdateToDraft ? undefined : originalData.endorserUserGuid,
+      endorserUserUserid: isUpdateToDraft ? undefined : originalData.endorserUserUserid,
+      approverName: isUpdateToDraft ? undefined : originalData.approverName,
+      approvedTimestamp: isUpdateToDraft ? undefined : originalData.approvedTimestamp,
+      approverUserGuid: isUpdateToDraft ? undefined : originalData.approverUserGuid,
+      approverUserUserid: isUpdateToDraft ? undefined : originalData.approverUserUserid,
+      endorseApprUpdateUserid: isUpdateToDraft ? undefined : originalData.endorseApprUpdateUserid,
+      endorseApprUpdatedTimestamp: isUpdateToDraft ? undefined : originalData.endorseApprUpdateUpdatedTimestamp,
       isApprovedInd: isUpdateToDraft ? false : originalData.isApprovedInd,
       ...this.buildSubmissionFields()
     };
@@ -647,8 +655,8 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
 
     // Parse status to plain English if it is IN_PROG
     // The remaining status do not require such parsing
-    const currentStatus = form.value?.planFiscalStatusCode === 'IN_PROG' ? "In Progress" : this.capitalizeFirstLetter(form.value.planFiscalStatusCode)
-    const requestedStatus = newStatus === 'IN_PROG' ? "In Progress" : this.capitalizeFirstLetter(newStatus)
+    const currentStatus = form.value?.planFiscalStatusCode === 'IN_PROG' ? "In Progress" : capitalizeFirstLetter(form.value.planFiscalStatusCode)
+    const requestedStatus = newStatus === 'IN_PROG' ? "In Progress" : capitalizeFirstLetter(newStatus)
     const message = `You are about to change the status of this Fiscal Activity from ${currentStatus} to ${requestedStatus}. Do you wish to continue?`
 
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
@@ -764,11 +772,6 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
       'OK',
       { duration: 5000, panelClass: isSuccess ? 'snackbar-success' : 'snackbar-error' }
     );
-  }
-
-  capitalizeFirstLetter(status: string): string {
-    if (!status) return '';
-    return status.toLowerCase().split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
   }
 
   getFirstFiscalGuid(): string | null {
