@@ -1029,13 +1029,13 @@ describe('ProjectFiscalsComponent', () => {
       .args as [string, string, ProjectFiscal];
 
     expect(payload.planFiscalStatusCode).toEqual({ planFiscalStatusCode: 'DRAFT' });
-    expect(payload.businessAreaComment).toBeNull();
-    expect(payload.endorserName).toBeNull();
-    expect(payload.endorsementTimestamp).toBeNull();
+    expect(payload.businessAreaComment).toBeUndefined();
+    expect(payload.endorserName).toBeUndefined();
+    expect(payload.endorsementTimestamp).toBeUndefined();
     expect(payload.endorsementCode).toEqual({ endorsementCode: EndorsementCode.NOT_ENDORS });
-    expect(payload.endorsementComment).toBeNull();
-    expect(payload.approverName).toBeNull();
-    expect(payload.approvedTimestamp).toBeNull();
+    expect(payload.endorsementComment).toBeUndefined();
+    expect(payload.approverName).toBeUndefined();
+    expect(payload.approvedTimestamp).toBeUndefined();
     expect(payload.isApprovedInd).toBeFalse();
     expect(payload.submissionTimestamp).toBe('2025-08-08T19:34:56.000Z');
 
