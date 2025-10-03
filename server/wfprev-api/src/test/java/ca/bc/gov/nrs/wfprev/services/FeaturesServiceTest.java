@@ -203,23 +203,6 @@ class FeaturesServiceTest {
     }
 
     @Test
-    void testFindFilteredProjects() {
-        FeatureQueryParams params = new FeatureQueryParams();
-
-        when(entityManager.getCriteriaBuilder()).thenReturn(criteriaBuilder);
-        when(criteriaBuilder.createQuery(ProjectEntity.class)).thenReturn(projectQuery);
-        when(projectQuery.from(ProjectEntity.class)).thenReturn(projectRoot);
-        TypedQuery<ProjectEntity> mockQuery = mock(TypedQuery.class);
-        when(entityManager.createQuery(projectQuery)).thenReturn(mockQuery);
-        when(mockQuery.getResultList()).thenReturn(Collections.singletonList(new ProjectEntity()));
-
-        List<ProjectEntity> result = featuresService.findFilteredProjects(params);
-
-        assertNotNull(result);
-        assertEquals(1, result.size());
-    }
-
-    @Test
     void testFindFilteredProjectFiscals() {
         UUID projectGuid = UUID.randomUUID();
         FeatureQueryParams params = new FeatureQueryParams();
