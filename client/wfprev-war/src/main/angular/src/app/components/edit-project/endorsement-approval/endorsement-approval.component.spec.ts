@@ -1,7 +1,7 @@
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { EndorsementApprovalComponent } from './endorsement-approval.component';
 import { ProjectFiscal } from 'src/app/components/models';
-import { FiscalStatuses } from 'src/app/utils/constants';
+import { EndorsementCode, FiscalStatuses } from 'src/app/utils/constants';
 
 describe('EndorsementApprovalComponent', () => {
   let component: EndorsementApprovalComponent;
@@ -117,7 +117,21 @@ describe('EndorsementApprovalComponent', () => {
     component.endorsementApprovalForm.get('endorseFiscalActivity')?.setValue(false);
     expect(component.effectiveEndorserName).toBe('');
   });
-  
+
+  it('should set endorserName to currentUser if none exists and endorsement is checked', () => {
+    const emitSpy = spyOn(component.saveEndorsement, 'emit');
+    component.fiscal = { ...mockFiscal, endorserName: undefined };
+    component.endorsementApprovalForm.patchValue({
+      endorseFiscalActivity: true,
+      endorsementDate: new Date('2024-01-01'),
+    });
+
+    component.onSave();
+
+    const emittedFiscal = emitSpy.calls.mostRecent()!.args[0];
+    expect(emittedFiscal!.endorserName).toBe('Test User');
+  });
+
   it('should emit saveEndorsement with updated fiscal on save', () => {
     const emitSpy = spyOn(component.saveEndorsement, 'emit');
     component.fiscal = mockFiscal;
@@ -139,21 +153,9 @@ describe('EndorsementApprovalComponent', () => {
     expect(emittedFiscal!.businessAreaComment).toBe('New approval');
   });
 
-  it('should set endorserName to currentUser if none exists and endorsement is checked', () => {
-    const emitSpy = spyOn(component.saveEndorsement, 'emit');
-    component.fiscal = { ...mockFiscal, endorserName: undefined };
-    component.endorsementApprovalForm.patchValue({
-      endorseFiscalActivity: true,
-      endorsementDate: new Date('2024-01-01'),
-    });
+  it('should set planFiscalStatusCode to DRAFT if endorsement removed', async () => {
+    spyOn<any>(component, 'confirmRevertToDraft').and.returnValue(Promise.resolve(true));
 
-    component.onSave();
-
-    const emittedFiscal = emitSpy.calls.mostRecent()!.args[0];
-    expect(emittedFiscal!.endorserName).toBe('Test User');
-  });
-
-  it('should set planFiscalStatusCode to DRAFT if endorsement removed', () => {
     const emitSpy = spyOn(component.saveEndorsement, 'emit');
     component.fiscal = {
       ...mockFiscal,
@@ -164,7 +166,7 @@ describe('EndorsementApprovalComponent', () => {
       approveFiscalActivity: true,
     });
 
-    component.onSave();
+    await component.onSave();
 
     const emittedFiscal = emitSpy.calls.mostRecent()!.args[0];
     expect(emittedFiscal!.planFiscalStatusCode?.planFiscalStatusCode).toBe(FiscalStatuses.DRAFT);
@@ -270,4 +272,133 @@ describe('EndorsementApprovalComponent', () => {
 
     expect(component.isSaving).toBeFalse();
   });
+
+  it('resets to DRAFT and clears fields when endorsement removed (confirm = true)', async () => {
+    // Arrange (shouldResetToDraft → endorsementRemoved = true, status not DRAFT/PROPOSED)
+    spyOn<any>(component, 'confirmRevertToDraft').and.returnValue(Promise.resolve(true));
+    const emitSpy = spyOn(component.saveEndorsement, 'emit');
+
+    component.fiscal = {
+      ...mockFiscal,
+      planFiscalStatusCode: { planFiscalStatusCode: 'ACTIVE' },
+    };
+
+    // endorsementRemoved = true; approval still checked
+    component.endorsementApprovalForm.patchValue({
+      endorseFiscalActivity: false,
+      approveFiscalActivity: true,
+      approvalDate: new Date('2024-02-01'),
+      approvalComment: 'keep approval',
+    });
+
+    // Act
+    await component.onSave();
+
+    // Assert
+    expect(emitSpy).toHaveBeenCalled();
+    const { args } = emitSpy.calls.mostRecent();
+    const payload = args[0] as ProjectFiscal;
+
+    // Forced DRAFT
+    expect(payload.planFiscalStatusCode.planFiscalStatusCode).toBe(FiscalStatuses.DRAFT);
+    // Approval forced false
+    expect(payload.isApprovedInd).toBeFalse();
+
+    // Endorsement cleared
+    expect(payload.endorserName).toBeUndefined();
+    expect(payload.endorsementTimestamp).toBeUndefined();
+    expect(payload.endorsementCode).toEqual({ endorsementCode: EndorsementCode.NOT_ENDORS });
+    expect(payload.endorsementComment).toBeUndefined();
+    expect(payload.endorsementEvalTimestamp).toBeUndefined();
+    expect(payload.endorserUserGuid).toBeUndefined();
+    expect(payload.endorserUserUserid).toBeUndefined();
+
+    // Approval cleared
+    expect(payload.approvedTimestamp).toBeUndefined();
+    expect(payload.approverName).toBeUndefined();
+    expect(payload.approverUserGuid).toBeUndefined();
+    expect(payload.approverUserUserid).toBeUndefined();
+    expect(payload.businessAreaComment).toBeUndefined();
+
+    // Audit cleared per current implementation
+    expect(payload.endorseApprUpdateUserid).toBeUndefined();
+    expect(payload.endorseApprUpdatedTimestamp).toBeUndefined();
+  });
+
+  it('resets to DRAFT and clears fields when approval removed (confirm = true)', async () => {
+    spyOn<any>(component, 'confirmRevertToDraft').and.returnValue(Promise.resolve(true));
+    const emitSpy = spyOn(component.saveEndorsement, 'emit');
+
+    component.fiscal = {
+      ...mockFiscal,
+      planFiscalStatusCode: { planFiscalStatusCode: 'ACTIVE' },
+    };
+
+    component.endorsementApprovalForm.patchValue({
+      endorseFiscalActivity: true,
+      endorsementDate: new Date('2024-01-01'),
+      endorsementComment: 'endorse!',
+      approveFiscalActivity: false,
+    });
+
+    await component.onSave();
+
+    expect(emitSpy).toHaveBeenCalled();
+    const { args } = emitSpy.calls.mostRecent();
+    const payload = args[0] as ProjectFiscal;
+
+    expect(payload.planFiscalStatusCode.planFiscalStatusCode).toBe(FiscalStatuses.DRAFT);
+    expect(payload.isApprovedInd).toBeFalse();
+    expect(payload.approvedTimestamp).toBeUndefined();
+    expect(payload.approverName).toBeUndefined();
+    expect(payload.approverUserGuid).toBeUndefined();
+    expect(payload.approverUserUserid).toBeUndefined();
+    expect(payload.businessAreaComment).toBeUndefined();
+    expect(payload.endorserName).toBeUndefined();
+    expect(payload.endorsementTimestamp).toBeUndefined();
+    expect(payload.endorsementCode).toEqual({ endorsementCode: EndorsementCode.NOT_ENDORS });
+    expect(payload.endorsementComment).toBeUndefined();
+    expect(payload.endorseApprUpdateUserid).toBeUndefined();
+    expect(payload.endorseApprUpdatedTimestamp).toBeUndefined();
+  });
+
+  it('does not emit when user cancels the revert confirmation (shouldResetToDraft = true)', async () => {
+    spyOn<any>(component, 'confirmRevertToDraft').and.returnValue(Promise.resolve(false));
+    const emitSpy = spyOn(component.saveEndorsement, 'emit');
+
+    component.fiscal = {
+      ...mockFiscal,
+      planFiscalStatusCode: { planFiscalStatusCode: 'ACTIVE' },
+    };
+
+    component.endorsementApprovalForm.patchValue({
+      endorseFiscalActivity: false,
+      approveFiscalActivity: true,
+    });
+
+    await component.onSave();
+
+    expect(emitSpy).not.toHaveBeenCalled();
+  });
+
+  it('calls confirmRevertToDraft with the current status when reverting', async () => {
+    const confirmSpy = spyOn<any>(component, 'confirmRevertToDraft').and.returnValue(Promise.resolve(true));
+    const emitSpy = spyOn(component.saveEndorsement, 'emit');
+
+    component.fiscal = {
+      ...mockFiscal,
+      planFiscalStatusCode: { planFiscalStatusCode: 'ACTIVE' },
+    };
+
+    component.endorsementApprovalForm.patchValue({
+      endorseFiscalActivity: false,
+      approveFiscalActivity: true,
+    });
+
+    await component.onSave();
+
+    expect(confirmSpy).toHaveBeenCalledWith('ACTIVE');
+    expect(emitSpy).toHaveBeenCalled();
+  });
+
 });
