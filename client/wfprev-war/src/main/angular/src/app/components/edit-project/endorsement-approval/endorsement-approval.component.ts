@@ -147,7 +147,9 @@ export class EndorsementApprovalComponent implements OnChanges, OnInit {
       ...this.fiscal,
 
       // Endorsement logic
-      endorserName: formValue.endorseFiscalActivity ? this.currentUser : undefined,
+      endorserName: formValue.endorseFiscalActivity
+        ? (this.fiscal.endorserName ?? this.currentUser)
+        : undefined,
       endorsementTimestamp: formValue.endorseFiscalActivity && formValue.endorsementDate
         ? getLocalIsoTimestamp(formValue.endorsementDate)
         : undefined,
