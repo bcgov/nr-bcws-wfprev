@@ -99,13 +99,6 @@ class FeaturesServiceTest {
         mockProject.setProjectGuid(UUID.randomUUID());
         List<ProjectEntity> mockProjects = Collections.singletonList(mockProject);
 
-        when(entityManager.getCriteriaBuilder()).thenReturn(criteriaBuilder);
-
-        @SuppressWarnings("unchecked")
-        CriteriaQuery<Long> countQuery = mock(CriteriaQuery.class);
-        when(criteriaBuilder.createQuery(Long.class)).thenReturn(countQuery);
-        when(countQuery.from(ProjectEntity.class)).thenReturn(projectRoot);
-
         FeaturesService spyService = spy(featuresService);
         doReturn(1L).when(spyService).countFilteredProjects(params);
         doReturn(mockProjects).when(spyService).findFilteredProjects(params, 1, 20);
@@ -881,29 +874,47 @@ class FeaturesServiceTest {
     }
 
     @Test
-    void testCountFilteredProjects_ReturnsCount() {
+    void testCountFilteredProjects_CoversMethodBody() {
         FeatureQueryParams params = new FeatureQueryParams();
         params.setSearchText("forest");
 
         when(entityManager.getCriteriaBuilder()).thenReturn(criteriaBuilder);
+
         @SuppressWarnings("unchecked")
         CriteriaQuery<Long> countQuery = (CriteriaQuery<Long>) mock(CriteriaQuery.class);
         when(criteriaBuilder.createQuery(Long.class)).thenReturn(countQuery);
-        when(countQuery.from(ProjectEntity.class)).thenReturn(projectRoot);
+
+        @SuppressWarnings("unchecked")
+        Root<ProjectEntity> mockRoot = (Root<ProjectEntity>) mock(Root.class);
+        when(countQuery.from(ProjectEntity.class)).thenReturn(mockRoot);
 
         @SuppressWarnings("unchecked")
         Expression<Long> countExpr = (Expression<Long>) mock(Expression.class);
-        when(criteriaBuilder.countDistinct(projectRoot)).thenReturn(countExpr);
+        when(criteriaBuilder.countDistinct(mockRoot)).thenReturn(countExpr);
         when(countQuery.select(countExpr)).thenReturn(countQuery);
+        when(countQuery.where(any(Predicate.class))).thenReturn(countQuery);
 
-        TypedQuery<Long> mockTypedQuery = mock(TypedQuery.class);
+        @SuppressWarnings("unchecked")
+        Path<String> stringPath = (Path<String>) mock(Path.class);
+        when(mockRoot.get(anyString())).thenReturn((Path) stringPath);
+        when(stringPath.as(String.class)).thenReturn(stringPath);
+
+        Predicate mockPredicate = mock(Predicate.class);
+        when(criteriaBuilder.lower(any(Expression.class))).thenReturn(stringPath);
+        when(criteriaBuilder.like(any(Expression.class), anyString())).thenReturn(mockPredicate);
+        when(criteriaBuilder.or(any(Predicate[].class))).thenReturn(mockPredicate);
+        when(criteriaBuilder.and(any(Predicate[].class))).thenReturn(mockPredicate);
+
+        @SuppressWarnings("unchecked")
+        TypedQuery<Long> mockTypedQuery = (TypedQuery<Long>) mock(TypedQuery.class);
         when(entityManager.createQuery(countQuery)).thenReturn(mockTypedQuery);
         when(mockTypedQuery.getSingleResult()).thenReturn(42L);
 
         long result = featuresService.countFilteredProjects(params);
 
         assertEquals(42L, result);
-        verify(mockTypedQuery).getSingleResult();
+        verify(mockTypedQuery, times(1)).getSingleResult();
     }
+
 
 }
