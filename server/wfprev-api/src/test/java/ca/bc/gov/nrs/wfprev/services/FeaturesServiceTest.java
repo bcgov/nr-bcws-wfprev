@@ -26,7 +26,6 @@ import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Point;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -100,7 +99,12 @@ class FeaturesServiceTest {
         mockProject.setProjectGuid(UUID.randomUUID());
         List<ProjectEntity> mockProjects = Collections.singletonList(mockProject);
 
+        when(entityManager.getCriteriaBuilder()).thenReturn(criteriaBuilder);
+
         @SuppressWarnings("unchecked")
+        CriteriaQuery<Long> countQuery = mock(CriteriaQuery.class);
+        when(criteriaBuilder.createQuery(Long.class)).thenReturn(countQuery);
+        when(countQuery.from(ProjectEntity.class)).thenReturn(projectRoot);
 
         FeaturesService spyService = spy(featuresService);
         doReturn(1L).when(spyService).countFilteredProjects(params);
@@ -202,8 +206,6 @@ class FeaturesServiceTest {
         assertEquals(1, activityBoundaries.size());
         assertTrue(activityBoundaries.get(0).containsKey("activityGeometry"));
     }
-  
-
 
     @Test
     void testFindFilteredProjectFiscals() {
@@ -832,5 +834,76 @@ class FeaturesServiceTest {
         Map<String, Object> result = featuresService.getAllFeatures(params, 1, 20);
 
         assertTrue(result.isEmpty());
-}
+    }
+
+    @Test
+    void testFindFilteredProjects_PaginationApplied() {
+        FeatureQueryParams params = new FeatureQueryParams();
+
+        when(entityManager.getCriteriaBuilder()).thenReturn(criteriaBuilder);
+        when(criteriaBuilder.createQuery(ProjectEntity.class)).thenReturn(projectQuery);
+        when(projectQuery.from(ProjectEntity.class)).thenReturn(projectRoot);
+
+        TypedQuery<ProjectEntity> mockQuery = mock(TypedQuery.class);
+        when(entityManager.createQuery(projectQuery)).thenReturn(mockQuery);
+        when(mockQuery.setFirstResult(anyInt())).thenReturn(mockQuery);
+        when(mockQuery.setMaxResults(anyInt())).thenReturn(mockQuery);
+        when(mockQuery.getResultList()).thenReturn(List.of(new ProjectEntity()));
+
+        List<ProjectEntity> result = featuresService.findFilteredProjects(params, 2, 10);
+
+        assertEquals(1, result.size());
+        verify(mockQuery).setFirstResult(10);
+        verify(mockQuery).setMaxResults(10);
+    }
+
+    @Test
+    void testAddProjectLevelFilters_WithProjectGuid() {
+        FeatureQueryParams params = new FeatureQueryParams();
+        UUID projectGuid = UUID.randomUUID();
+        params.setProjectGuid(projectGuid);
+
+        List<Predicate> predicates = new ArrayList<>();
+        @SuppressWarnings("unchecked")
+        Path<Object> guidPath = (Path<Object>) mock(Path.class);
+        when(projectRoot.get("projectGuid")).thenReturn(guidPath);
+
+        Predicate inPredicate = mock(Predicate.class);
+        when(guidPath.in(projectGuid)).thenReturn(inPredicate);
+
+        featuresService.addProjectLevelFilters(projectRoot, predicates, params);
+
+        assertEquals(1, predicates.size());
+        assertTrue(predicates.contains(inPredicate));
+        verify(projectRoot, times(1)).get("projectGuid");
+        verify(projectRoot, never()).get("programAreaGuid");
+        verify(projectRoot, never()).get("forestRegionOrgUnitId");
+    }
+
+    @Test
+    void testCountFilteredProjects_ReturnsCount() {
+        FeatureQueryParams params = new FeatureQueryParams();
+        params.setSearchText("forest");
+
+        when(entityManager.getCriteriaBuilder()).thenReturn(criteriaBuilder);
+        @SuppressWarnings("unchecked")
+        CriteriaQuery<Long> countQuery = (CriteriaQuery<Long>) mock(CriteriaQuery.class);
+        when(criteriaBuilder.createQuery(Long.class)).thenReturn(countQuery);
+        when(countQuery.from(ProjectEntity.class)).thenReturn(projectRoot);
+
+        @SuppressWarnings("unchecked")
+        Expression<Long> countExpr = (Expression<Long>) mock(Expression.class);
+        when(criteriaBuilder.countDistinct(projectRoot)).thenReturn(countExpr);
+        when(countQuery.select(countExpr)).thenReturn(countQuery);
+
+        TypedQuery<Long> mockTypedQuery = mock(TypedQuery.class);
+        when(entityManager.createQuery(countQuery)).thenReturn(mockTypedQuery);
+        when(mockTypedQuery.getSingleResult()).thenReturn(42L);
+
+        long result = featuresService.countFilteredProjects(params);
+
+        assertEquals(42L, result);
+        verify(mockTypedQuery).getSingleResult();
+    }
+
 }
