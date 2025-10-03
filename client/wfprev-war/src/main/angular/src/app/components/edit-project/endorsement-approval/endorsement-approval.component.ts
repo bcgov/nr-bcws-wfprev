@@ -63,7 +63,7 @@ export class EndorsementApprovalComponent implements OnChanges, OnInit {
     approvalComment: new FormControl<string | null>(''),
   });
 
-  constructor(private dialog: MatDialog) { }
+  constructor(private readonly dialog: MatDialog) { }
 
   ngOnInit(): void {
     this.endorsementApprovalForm.get('endorseFiscalActivity')?.valueChanges.subscribe((checked) => {
