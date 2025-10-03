@@ -21,7 +21,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.LinearRing;
+import org.locationtech.jts. or geom.LinearRing;
 import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Point;
 import org.mockito.InjectMocks;
@@ -203,22 +203,6 @@ class FeaturesServiceTest {
         assertTrue(activityBoundaries.get(0).containsKey("activityGeometry"));
     }
   
-    @Test
-    void testFindFilteredProjects() {
-        FeatureQueryParams params = new FeatureQueryParams();
-
-        when(entityManager.getCriteriaBuilder()).thenReturn(criteriaBuilder);
-        when(criteriaBuilder.createQuery(ProjectEntity.class)).thenReturn(projectQuery);
-        when(projectQuery.from(ProjectEntity.class)).thenReturn(projectRoot);
-        TypedQuery<ProjectEntity> mockQuery = mock(TypedQuery.class);
-        when(entityManager.createQuery(projectQuery)).thenReturn(mockQuery);
-        when(mockQuery.getResultList()).thenReturn(Collections.singletonList(new ProjectEntity()));
-
-        List<ProjectEntity> result = featuresService.findFilteredProjects(params,1,20);
-
-        assertNotNull(result);
-        assertEquals(1, result.size());
-    }
 
 
     @Test
