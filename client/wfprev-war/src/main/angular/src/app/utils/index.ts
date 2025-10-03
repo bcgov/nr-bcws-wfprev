@@ -68,3 +68,8 @@ export function getActiveMap(smk: any | null = null) {
       }
     }
 }
+
+export function capitalizeFirstLetter(status: string): string {
+    if (!status) return '';
+    return status.toLowerCase().split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+  }
