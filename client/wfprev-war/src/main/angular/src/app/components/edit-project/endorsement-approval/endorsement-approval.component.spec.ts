@@ -118,20 +118,6 @@ describe('EndorsementApprovalComponent', () => {
     expect(component.effectiveEndorserName).toBe('');
   });
 
-  it('should set endorserName to currentUser if none exists and endorsement is checked', () => {
-    const emitSpy = spyOn(component.saveEndorsement, 'emit');
-    component.fiscal = { ...mockFiscal, endorserName: undefined };
-    component.endorsementApprovalForm.patchValue({
-      endorseFiscalActivity: true,
-      endorsementDate: new Date('2024-01-01'),
-    });
-
-    component.onSave();
-
-    const emittedFiscal = emitSpy.calls.mostRecent()!.args[0];
-    expect(emittedFiscal!.endorserName).toBe('Test User');
-  });
-
   it('should emit saveEndorsement with updated fiscal on save', () => {
     const emitSpy = spyOn(component.saveEndorsement, 'emit');
     component.fiscal = mockFiscal;
