@@ -70,7 +70,7 @@ public class FeaturesService implements CommonService {
                 return response;
             }
             long totalItems = countFilteredProjects(params);
-            List<ProjectEntity> filteredProjects = findFilteredProjects(params, pageNumber, pageRowCount);
+            List<ProjectEntity> filteredProjects = findFilteredProjects(params, pageNumber, pageRowCount, params.getSortBy(), params.getSortDirection());
             List<Map<String, Object>> projects = new ArrayList<>();
 
             for (ProjectEntity project : filteredProjects) {
@@ -188,7 +188,7 @@ public class FeaturesService implements CommonService {
     }
 
 
-    List<ProjectEntity> findFilteredProjects(FeatureQueryParams params, int pageNumber, int pageRowCount) {
+    List<ProjectEntity> findFilteredProjects(FeatureQueryParams params, int pageNumber, int pageRowCount, String sortBy, String sortDirection) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<ProjectEntity> query = cb.createQuery(ProjectEntity.class);
         Root<ProjectEntity> project = query.from(ProjectEntity.class);
@@ -204,9 +204,22 @@ public class FeaturesService implements CommonService {
 
         query.distinct(true);
 
+        if ("projectName".equalsIgnoreCase(sortBy)) {
+            if ("desc".equalsIgnoreCase(sortDirection)) {
+                query.orderBy(cb.desc(project.get("projectName")));
+            } else {
+                query.orderBy(cb.asc(project.get("projectName")));
+            }
+        } else {
+            // default
+            query.orderBy(cb.asc(project.get("projectName")));
+        }
+
+
         return entityManager.createQuery(query)
             .setFirstResult((pageNumber - 1) * pageRowCount)
             .setMaxResults(pageRowCount)
+            .setHint("hibernate.query.passDistinctThrough", false)
             .getResultList();
     }
 

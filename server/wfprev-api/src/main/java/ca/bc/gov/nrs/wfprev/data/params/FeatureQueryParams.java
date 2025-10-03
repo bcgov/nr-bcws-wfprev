@@ -17,4 +17,6 @@ public class FeatureQueryParams {
     private List<String> planFiscalStatusCodes;
     private List<String> projectTypeCodes;
     private String searchText;
+    private String sortBy;
+    private String sortDirection;
 }
