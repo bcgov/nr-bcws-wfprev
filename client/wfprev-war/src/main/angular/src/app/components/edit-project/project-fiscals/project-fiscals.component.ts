@@ -30,6 +30,7 @@ import { EndorsementApprovalComponent } from 'src/app/components/edit-project/en
 import { TokenService } from 'src/app/services/token.service';
 import { TimestampComponent } from 'src/app/components/shared/timestamp/timestamp.component';
 import { TextareaComponent } from 'src/app/components/shared/textarea/textarea.component';
+import { capitalizeFirstLetter } from 'src/app/utils';
 
 @Component({
   selector: 'wfprev-project-fiscals',
@@ -217,9 +218,9 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
       resultsOpeningId: [fiscal?.resultsOpeningId ?? '', [Validators.maxLength(11)]],
       firstNationsEngagementInd: [fiscal?.firstNationsEngagementInd ?? false],
       firstNationsDelivPartInd: [fiscal?.firstNationsDelivPartInd ?? false],
-      firstNationsPartner: [fiscal?.firstNationsPartner ?? '',[Validators.maxLength(4000)]],
+      firstNationsPartner: [fiscal?.firstNationsPartner ?? '', [Validators.maxLength(4000)]],
       projectFiscalDescription: [fiscal?.projectFiscalDescription ?? '', [Validators.required, Validators.maxLength(500)]],
-      otherPartner: [fiscal?.otherPartner ?? '',[Validators.maxLength(4000)]],
+      otherPartner: [fiscal?.otherPartner ?? '', [Validators.maxLength(4000)]],
       totalCostEstimateAmount: [fiscal?.totalCostEstimateAmount ?? '', [Validators.min(0), Validators.max(NumericLimits.MAX_NUMBER)]],
       forecastAmount: [fiscal?.forecastAmount ?? ''],
       cfsProjectCode: [fiscal?.cfsProjectCode ?? '', [Validators.maxLength(25)]],
@@ -354,8 +355,8 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
         ...this.getDefaultFiscalData(),
         planFiscalStatusCode: 'DRAFT',
         fiscalYear: ''
-      }, 
-      { emitEvent: false });
+      },
+        { emitEvent: false });
     } else {
       // Case 2: Existing entry, Revert to original API values
       const original = this.originalFiscalValues[index];
@@ -363,8 +364,8 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
       form.patchValue({
         ...original,
         planFiscalStatusCode: this.patchStatusCode(original?.planFiscalStatusCode)
-      }, 
-      { emitEvent: false });
+      },
+        { emitEvent: false });
 
       const statusCode = this.patchStatusCode(original?.planFiscalStatusCode);
       const isLocked = [this.FiscalStatuses.COMPLETE, this.FiscalStatuses.CANCELLED].includes(statusCode as any);
@@ -404,97 +405,95 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
     };
     const isUpdate = this.projectFiscals[index]?.projectPlanFiscalGuid;
     const isUpdateToDraft = updatedData.planFiscalStatusCode === 'DRAFT';
-    const projectFiscal: ProjectFiscal = {
-      projectGuid: updatedData.projectGuid,
-      projectPlanFiscalGuid: updatedData.projectPlanFiscalGuid,
-      activityCategoryCode: updatedData.activityCategoryCode,
-      fiscalYear: updatedData.fiscalYear ? Number.parseInt(updatedData.fiscalYear, 10) : 0,
-      projectPlanStatusCode: isUpdate ? updatedData.projectPlanStatusCode : "ACTIVE",
-      planFiscalStatusCode: {
-        planFiscalStatusCode: updatedData.planFiscalStatusCode
-      },
-      projectFiscalName: updatedData.projectFiscalName,
-      projectFiscalDescription: updatedData.projectFiscalDescription,
-      businessAreaComment: isUpdateToDraft ? null : updatedData.businessAreaComment,
-      estimatedClwrrAllocAmount: updatedData.estimatedClwrrAllocAmount,
-      fiscalAncillaryFundAmount: updatedData.fiscalAncillaryFundAmount,
-      fiscalPlannedProjectSizeHa: updatedData.fiscalPlannedProjectSizeHa,
-      fiscalPlannedCostPerHaAmt: updatedData.fiscalPlannedCostPerHaAmt,
-      fiscalReportedSpendAmount: updatedData.fiscalReportedSpendAmount,
-      fiscalActualAmount: updatedData.fiscalActualAmount,
-      fiscalCompletedSizeHa: updatedData.fiscalCompletedSizeHa,
-      fiscalActualCostPerHaAmt: updatedData.fiscalActualCostPerHaAmt,
-      firstNationsDelivPartInd: updatedData.firstNationsDelivPartInd,
-      firstNationsEngagementInd: updatedData.firstNationsEngagementInd,
-      firstNationsPartner: updatedData.firstNationsPartner,
-      resultsNumber: updatedData.resultsNumber,
-      resultsOpeningId: updatedData.resultsOpeningId,
-      resultsContactEmail: updatedData.resultsContactEmail,
-      isDelayedInd: isUpdate ? updatedData.isDelayedInd : false,
-      fiscalForecastAmount: updatedData.fiscalForecastAmount,
-      totalCostEstimateAmount: updatedData.totalCostEstimateAmount,
-      cfsProjectCode: updatedData.cfsProjectCode,
-      ancillaryFundingProvider: updatedData.ancillaryFundingProvider,
-      otherPartner: updatedData.otherPartner,
-      proposalTypeCode: updatedData.proposalTypeCode,
-      endorserName: isUpdateToDraft ? null : originalData.endorserName,
-      endorsementTimestamp: isUpdateToDraft ? null : originalData.endorsementTimestamp,
-      endorsementCode: isUpdateToDraft ? {
-        endorsementCode: EndorsementCode.NOT_ENDORS
-      } : originalData.endorsementCode,
-      endorsementComment: isUpdateToDraft ? null : originalData.endorsementComment,
-      approverName: isUpdateToDraft ? null : originalData.approverName,
-      approvedTimestamp: isUpdateToDraft ? null : originalData.approvedTimestamp,
-      isApprovedInd: isUpdateToDraft ? false : originalData.isApprovedInd,
-      ...this.buildSubmissionFields()
-    };
-    if (isUpdate) {
-      // update the existing fiscal
-      this.projectService.updateProjectFiscal(this.projectGuid, updatedData.projectPlanFiscalGuid, projectFiscal).subscribe({
-        next: (response) => {
-          this.snackbarService.open(
-            this.messages.projectFiscalUpdatedSuccess,
-            'OK',
-            { duration: 5000, panelClass: 'snackbar-success' },
-          );
+    const payload: ProjectFiscal = this.buildProjectFiscal(updatedData, originalData, isUpdate, isUpdateToDraft);
+
+    const fiscalToSave = isUpdate
+      ? this.projectService.updateProjectFiscal(this.projectGuid, updatedData.projectPlanFiscalGuid, payload)
+      : this.projectService.createProjectFiscal(this.projectGuid, payload);
+
+    fiscalToSave.subscribe({
+      next: (res: any) => {
+        if (isUpdate) {
+          this.snackbarService.open(this.messages.projectFiscalUpdatedSuccess, 'OK', {
+            duration: 5000, panelClass: 'snackbar-success'
+          });
           this.loadProjectFiscals(true);
           this.fiscalsUpdated.emit();
-          this.isSavingFiscal[index] = false;
-        },
-        error: () => {
-          this.snackbarService.open(
-            this.messages.projectFiscalUpdatedFailure,
-            'OK',
-            { duration: 5000, panelClass: 'snackbar-error' }
-          );
-          this.isSavingFiscal[index] = false;
+        } else {
+          const newFiscalGuid = res?.projectPlanFiscalGuid;
+          this.snackbarService.open(this.messages.projectFiscalCreatedSuccess, 'OK', {
+            duration: 5000, panelClass: 'snackbar-success'
+          });
+          this.loadProjectFiscals(true, newFiscalGuid);
         }
-      })
-    }
-    else {
-      // create new fiscal
-      this.projectService.createProjectFiscal(this.projectGuid, projectFiscal).subscribe({
-        next: (response) => {
-          const newFiscalGuid = response?.projectPlanFiscalGuid;
-          this.snackbarService.open(
-            this.messages.projectFiscalCreatedSuccess,
-            'OK',
-            { duration: 5000, panelClass: 'snackbar-success' },
-          );
-          this.loadProjectFiscals(true,newFiscalGuid);
-          this.isSavingFiscal[index] = false;
-        },
-        error: () => {
-          this.snackbarService.open(
-            this.messages.projectFiscalCreatedFailure,
-            'OK',
-            { duration: 5000, panelClass: 'snackbar-error' }
-          );
-          this.isSavingFiscal[index] = false;
-        }
-      });
-    }
+      },
+      error: () => {
+        const msg = isUpdate
+          ? this.messages.projectFiscalUpdatedFailure
+          : this.messages.projectFiscalCreatedFailure;
+        this.snackbarService.open(msg, 'OK', {
+          duration: 5000, panelClass: 'snackbar-error'
+        });
+      },
+      complete: () => {
+        this.isSavingFiscal[index] = false;
+      }
+    });
+  }
 
+  buildProjectFiscal(
+    updated: any,
+    original: any,
+    isUpdate: boolean,
+    isDraft: boolean
+  ): ProjectFiscal {
+    return {
+      projectGuid: updated.projectGuid,
+      projectPlanFiscalGuid: updated.projectPlanFiscalGuid,
+      activityCategoryCode: updated.activityCategoryCode,
+      fiscalYear: updated.fiscalYear ? Number.parseInt(updated.fiscalYear, 10) : 0,
+      projectPlanStatusCode: isUpdate ? updated.projectPlanStatusCode : 'ACTIVE',
+      planFiscalStatusCode: { planFiscalStatusCode: updated.planFiscalStatusCode },
+      projectFiscalName: updated.projectFiscalName,
+      projectFiscalDescription: updated.projectFiscalDescription,
+      businessAreaComment: isDraft ? undefined : updated.businessAreaComment,
+      estimatedClwrrAllocAmount: updated.estimatedClwrrAllocAmount,
+      fiscalAncillaryFundAmount: updated.fiscalAncillaryFundAmount,
+      fiscalPlannedProjectSizeHa: updated.fiscalPlannedProjectSizeHa,
+      fiscalPlannedCostPerHaAmt: updated.fiscalPlannedCostPerHaAmt,
+      fiscalReportedSpendAmount: updated.fiscalReportedSpendAmount,
+      fiscalActualAmount: updated.fiscalActualAmount,
+      fiscalCompletedSizeHa: updated.fiscalCompletedSizeHa,
+      fiscalActualCostPerHaAmt: updated.fiscalActualCostPerHaAmt,
+      firstNationsDelivPartInd: updated.firstNationsDelivPartInd,
+      firstNationsEngagementInd: updated.firstNationsEngagementInd,
+      firstNationsPartner: updated.firstNationsPartner,
+      resultsNumber: updated.resultsNumber,
+      resultsOpeningId: updated.resultsOpeningId,
+      resultsContactEmail: updated.resultsContactEmail,
+      isDelayedInd: isUpdate ? updated.isDelayedInd : false,
+      fiscalForecastAmount: updated.fiscalForecastAmount,
+      totalCostEstimateAmount: updated.totalCostEstimateAmount,
+      cfsProjectCode: updated.cfsProjectCode,
+      ancillaryFundingProvider: updated.ancillaryFundingProvider,
+      otherPartner: updated.otherPartner,
+      proposalTypeCode: updated.proposalTypeCode,
+      endorserName: isDraft ? undefined : original.endorserName,
+      endorsementTimestamp: isDraft ? undefined : original.endorsementTimestamp,
+      endorsementCode: isDraft ? { endorsementCode: EndorsementCode.NOT_ENDORS } : original.endorsementCode,
+      endorsementComment: isDraft ? undefined : original.endorsementComment,
+      endorsementEvalTimestamp: isDraft ? undefined : original.endorsementEvalTimestamp,
+      endorserUserGuid: isDraft ? undefined : original.endorserUserGuid,
+      endorserUserUserid: isDraft ? undefined : original.endorserUserUserid,
+      approverName: isDraft ? undefined : original.approverName,
+      approvedTimestamp: isDraft ? undefined : original.approvedTimestamp,
+      approverUserGuid: isDraft ? undefined : original.approverUserGuid,
+      approverUserUserid: isDraft ? undefined : original.approverUserUserid,
+      endorseApprUpdateUserid: isDraft ? undefined : original.endorseApprUpdateUserid,
+      endorseApprUpdatedTimestamp: isDraft ? undefined : original.endorseApprUpdateUpdatedTimestamp,
+      isApprovedInd: isDraft ? false : original.isApprovedInd,
+      ...this.buildSubmissionFields(),
+    };
   }
 
   deleteFiscalYear(form: any, index: number): void {
@@ -571,7 +570,7 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
   }
 
   onBoundariesChanged(): void {
-    
+
     if (this.fiscalMapComponent) {
       this.fiscalMapComponent.getAllActivitiesBoundaries(); // refresh boundaries on map
     }
@@ -647,8 +646,8 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
 
     // Parse status to plain English if it is IN_PROG
     // The remaining status do not require such parsing
-    const currentStatus = form.value?.planFiscalStatusCode === 'IN_PROG' ? "In Progress" : this.capitalizeFirstLetter(form.value.planFiscalStatusCode)
-    const requestedStatus = newStatus === 'IN_PROG' ? "In Progress" : this.capitalizeFirstLetter(newStatus)
+    const currentStatus = form.value?.planFiscalStatusCode === 'IN_PROG' ? "In Progress" : capitalizeFirstLetter(form.value.planFiscalStatusCode)
+    const requestedStatus = newStatus === 'IN_PROG' ? "In Progress" : capitalizeFirstLetter(newStatus)
     const message = `You are about to change the status of this Fiscal Activity from ${currentStatus} to ${requestedStatus}. Do you wish to continue?`
 
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
@@ -680,7 +679,7 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
       this.updateFiscalStatus(index, action);
     }
   }
-  
+
 
   onSaveEndorsement(updatedFiscal: ProjectFiscal): void {
     const index = this.selectedTabIndex;
@@ -764,11 +763,6 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
       'OK',
       { duration: 5000, panelClass: isSuccess ? 'snackbar-success' : 'snackbar-error' }
     );
-  }
-
-  capitalizeFirstLetter(status: string): string {
-    if (!status) return '';
-    return status.toLowerCase().split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
   }
 
   getFirstFiscalGuid(): string | null {
