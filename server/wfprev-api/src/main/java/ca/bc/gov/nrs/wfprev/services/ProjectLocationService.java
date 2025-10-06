@@ -29,6 +29,10 @@ public class ProjectLocationService {
     @PersistenceContext
     private EntityManager entityManager;
 
+    private static final String PROJECT_GUID = "projectGuid";
+    private static final String LATITUDE = "latitude";
+    private static final String LONGITUDE = "longitude";
+
     public CollectionModel<ProjectLocationModel> getAllProjectLocations(FeatureQueryParams params) throws ServiceException {
         try {
             CriteriaBuilder cb = entityManager.getCriteriaBuilder();
@@ -38,8 +42,8 @@ public class ProjectLocationService {
             List<Predicate> predicates = new ArrayList<>();
 
             // Only return projects that have coordinates
-            predicates.add(cb.isNotNull(project.get("latitude")));
-            predicates.add(cb.isNotNull(project.get("longitude")));
+            predicates.add(cb.isNotNull(project.get(LATITUDE)));
+            predicates.add(cb.isNotNull(project.get(LONGITUDE)));
 
             // Apply project-level and fiscal-level filters
             addProjectLevelFilters(project, predicates, params);
@@ -52,18 +56,18 @@ public class ProjectLocationService {
 
             // Only return the attributes needed for ProjectLocationEntity
             cq.multiselect(
-                    project.get("projectGuid").alias("projectGuid"),
-                    project.get("latitude").alias("latitude"),
-                    project.get("longitude").alias("longitude")
+                    project.get(PROJECT_GUID).alias(PROJECT_GUID),
+                    project.get(LATITUDE).alias(LATITUDE),
+                    project.get(LONGITUDE).alias(LONGITUDE)
             );
 
             List<Tuple> rows = entityManager.createQuery(cq).getResultList();
 
             List<ProjectLocationModel> models = new ArrayList<>();
             for (Tuple tuple : rows) {
-                UUID projectGuid = tuple.get("projectGuid", UUID.class);
-                BigDecimal lat = tuple.get("latitude", BigDecimal.class);
-                BigDecimal lon = tuple.get("longitude", BigDecimal.class);
+                UUID projectGuid = tuple.get(PROJECT_GUID, UUID.class);
+                BigDecimal lat = tuple.get(LATITUDE, BigDecimal.class);
+                BigDecimal lon = tuple.get(LONGITUDE, BigDecimal.class);
 
                 ProjectLocationModel model = new ProjectLocationModel();
                 model.setProjectGuid(String.valueOf(projectGuid));
@@ -111,7 +115,7 @@ public class ProjectLocationService {
         Root<ProjectFiscalEntity> fiscal = sq.from(ProjectFiscalEntity.class);
 
         List<Predicate> pf = new ArrayList<>();
-        pf.add(cb.equal(fiscal.get("project").get("projectGuid"), project.get("projectGuid")));
+        pf.add(cb.equal(fiscal.get("project").get(PROJECT_GUID), project.get(PROJECT_GUID)));
 
         if (params.getFiscalYears() != null && !params.getFiscalYears().isEmpty()) {
             List<Predicate> fiscalYears = new ArrayList<>();
@@ -136,7 +140,7 @@ public class ProjectLocationService {
             );
         }
 
-        sq.select(fiscal.get("project").get("projectGuid")).where(cb.and(pf.toArray(new Predicate[0])));
+        sq.select(fiscal.get("project").get(PROJECT_GUID)).where(cb.and(pf.toArray(new Predicate[0])));
         predicates.add(cb.exists(sq));
     }
 
@@ -158,8 +162,8 @@ public class ProjectLocationService {
         // Fiscal-level text search via EXISTS
         Subquery<UUID> s = cb.createQuery().subquery(UUID.class);
         Root<ProjectFiscalEntity> f = s.from(ProjectFiscalEntity.class);
-        s.select(f.get("project").get("projectGuid"))
-                .where(cb.equal(f.get("project").get("projectGuid"), project.get("projectGuid")),
+        s.select(f.get("project").get(PROJECT_GUID))
+                .where(cb.equal(f.get("project").get(PROJECT_GUID), project.get(PROJECT_GUID)),
                         cb.or(
                                 cb.like(cb.lower(f.get("projectFiscalName")), likeParam),
                                 cb.like(cb.lower(f.get("firstNationsPartner")), likeParam),
