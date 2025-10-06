@@ -5,6 +5,7 @@ import ca.bc.gov.nrs.common.wfone.rest.resource.MessageListRsrc;
 import ca.bc.gov.nrs.wfone.common.service.api.ServiceException;
 import ca.bc.gov.nrs.wfprev.common.controllers.CommonController;
 import ca.bc.gov.nrs.wfprev.data.models.ProjectLocationModel;
+import ca.bc.gov.nrs.wfprev.data.params.FeatureQueryParams;
 import ca.bc.gov.nrs.wfprev.services.ProjectLocationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -21,7 +22,11 @@ import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+import java.util.UUID;
 
 @RestController
 @Slf4j
@@ -73,12 +78,33 @@ public class ProjectLocationController extends CommonController {
             schema = @Schema(implementation = String.class),
             in = ParameterIn.HEADER
     )
-    public ResponseEntity<CollectionModel<ProjectLocationModel>> getAllProjectLocations() {
+    public ResponseEntity<CollectionModel<ProjectLocationModel>> getAllProjectLocations(
+            @RequestParam(required = false) List<UUID> programAreaGuid,
+            @RequestParam(required = false) List<String> fiscalYear,
+            @RequestParam(required = false) List<String> activityCategoryCode,
+            @RequestParam(required = false) List<String> planFiscalStatusCode,
+            @RequestParam(required = false) List<String> forestRegionOrgUnitId,
+            @RequestParam(required = false) List<String> forestDistrictOrgUnitId,
+            @RequestParam(required = false) List<String> fireCentreOrgUnitId,
+            @RequestParam(required = false) List<String> projectTypeCode,
+            @RequestParam(required = false) String searchText
+    ) {
         log.debug(" >> getAllProjectLocations");
         ResponseEntity<CollectionModel<ProjectLocationModel>> response;
 
         try {
-            response = ok(projectLocationService.getAllProjectLocations());
+            FeatureQueryParams queryParams = new FeatureQueryParams();
+            queryParams.setProgramAreaGuids(programAreaGuid);
+            queryParams.setFiscalYears(fiscalYear);
+            queryParams.setActivityCategoryCodes(activityCategoryCode);
+            queryParams.setPlanFiscalStatusCodes(planFiscalStatusCode);
+            queryParams.setForestRegionOrgUnitIds(forestRegionOrgUnitId);
+            queryParams.setForestDistrictOrgUnitIds(forestDistrictOrgUnitId);
+            queryParams.setFireCentreOrgUnitIds(fireCentreOrgUnitId);
+            queryParams.setProjectTypeCodes(projectTypeCode);
+            queryParams.setSearchText(searchText);
+
+            response = ok(projectLocationService.getAllProjectLocations(queryParams));
         } catch (ServiceException e) {
             response = internalServerError();
             log.error(" ### Error while fetching Project Locations", e);
