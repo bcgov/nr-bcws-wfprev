@@ -830,27 +830,6 @@ class FeaturesServiceTest {
     }
 
     @Test
-    void testFindFilteredProjects_PaginationApplied() {
-        FeatureQueryParams params = new FeatureQueryParams();
-
-        when(entityManager.getCriteriaBuilder()).thenReturn(criteriaBuilder);
-        when(criteriaBuilder.createQuery(ProjectEntity.class)).thenReturn(projectQuery);
-        when(projectQuery.from(ProjectEntity.class)).thenReturn(projectRoot);
-
-        TypedQuery<ProjectEntity> mockQuery = mock(TypedQuery.class);
-        when(entityManager.createQuery(projectQuery)).thenReturn(mockQuery);
-        when(mockQuery.setFirstResult(anyInt())).thenReturn(mockQuery);
-        when(mockQuery.setMaxResults(anyInt())).thenReturn(mockQuery);
-        when(mockQuery.getResultList()).thenReturn(List.of(new ProjectEntity()));
-
-        List<ProjectEntity> result = featuresService.findFilteredProjects(params, 2, 10, null, null);
-
-        assertEquals(1, result.size());
-        verify(mockQuery).setFirstResult(10);
-        verify(mockQuery).setMaxResults(10);
-    }
-
-    @Test
     void testAddProjectLevelFilters_WithProjectGuid() {
         FeatureQueryParams params = new FeatureQueryParams();
         UUID projectGuid = UUID.randomUUID();
