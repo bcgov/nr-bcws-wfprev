@@ -1,34 +1,196 @@
 package ca.bc.gov.nrs.wfprev.services;
 
 import ca.bc.gov.nrs.wfone.common.service.api.ServiceException;
-import ca.bc.gov.nrs.wfprev.data.assemblers.ProjectLocationResourceAssembler;
-import ca.bc.gov.nrs.wfprev.data.entities.ProjectLocationEntity;
+import ca.bc.gov.nrs.wfprev.data.entities.ProjectEntity;
+import ca.bc.gov.nrs.wfprev.data.entities.ProjectFiscalEntity;
 import ca.bc.gov.nrs.wfprev.data.models.ProjectLocationModel;
-import ca.bc.gov.nrs.wfprev.data.repositories.ProjectLocationRepository;
+import ca.bc.gov.nrs.wfprev.data.params.FeatureQueryParams;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.Tuple;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Path;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
+@Slf4j
 @Component
 public class ProjectLocationService {
 
-    private final ProjectLocationRepository projectLocationRepository;
-    private final ProjectLocationResourceAssembler projectLocationResourceAssembler;
+    @PersistenceContext
+    private EntityManager entityManager;
 
-    public ProjectLocationService(
-            ProjectLocationRepository projectLocationRepository,
-            ProjectLocationResourceAssembler projectLocationResourceAssembler) {
-        this.projectLocationRepository = projectLocationRepository;
-        this.projectLocationResourceAssembler = projectLocationResourceAssembler;
+    private static final String PROJECT = "project";
+    private static final String PROJECT_GUID = "projectGuid";
+    private static final String LATITUDE = "latitude";
+    private static final String LONGITUDE = "longitude";
+
+    public CollectionModel<ProjectLocationModel> getAllProjectLocations(FeatureQueryParams params) throws ServiceException {
+        try {
+            CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+            CriteriaQuery<Tuple> cq = cb.createTupleQuery();
+            Root<ProjectEntity> project = cq.from(ProjectEntity.class);
+
+            List<Predicate> predicates = new ArrayList<>();
+
+            // Only return projects that have coordinates
+            predicates.add(cb.isNotNull(project.get(LATITUDE)));
+            predicates.add(cb.isNotNull(project.get(LONGITUDE)));
+
+            // Apply project-level and fiscal-level filters
+            addProjectLevelFilters(project, predicates, params);
+            addFiscalAttributeFilters(cb, project, predicates, params);
+            addSearchTextFilters(cb, project, predicates, params);
+
+            if (!predicates.isEmpty()) {
+                cq.where(cb.and(predicates.toArray(new Predicate[0])));
+            }
+
+            // Only return the attributes needed for ProjectLocationEntity
+            cq.multiselect(
+                    project.get(PROJECT_GUID).alias(PROJECT_GUID),
+                    project.get(LATITUDE).alias(LATITUDE),
+                    project.get(LONGITUDE).alias(LONGITUDE)
+            );
+
+            List<Tuple> rows = entityManager.createQuery(cq).getResultList();
+
+            List<ProjectLocationModel> models = new ArrayList<>();
+            for (Tuple tuple : rows) {
+                UUID projectGuid = tuple.get(PROJECT_GUID, UUID.class);
+                BigDecimal lat = tuple.get(LATITUDE, BigDecimal.class);
+                BigDecimal lon = tuple.get(LONGITUDE, BigDecimal.class);
+
+                ProjectLocationModel model = new ProjectLocationModel();
+                model.setProjectGuid(String.valueOf(projectGuid));
+                model.setLatitude(lat);
+                model.setLongitude(lon);
+                models.add(model);
+            }
+
+            return CollectionModel.of(models);
+        } catch (Exception e) {
+            log.error("Error while fetching Project Locations", e);
+            throw new ServiceException("Error while fetching Project Locations", e);
+        }
     }
 
-    public CollectionModel<ProjectLocationModel> getAllProjectLocations() throws ServiceException {
-        try {
-            List<ProjectLocationEntity> locations = projectLocationRepository.findByLatitudeIsNotNullAndLongitudeIsNotNull();
-            return projectLocationResourceAssembler.toCollectionModel(locations);
-        } catch (Exception e) {
-            throw new ServiceException(e.getLocalizedMessage(), e);
+    void addProjectLevelFilters(Root<ProjectEntity> project, List<Predicate> predicates, FeatureQueryParams params) {
+        // Collapse the repetitive "in" filters into a loop to avoid duplication flags.
+        Map<String, Collection<?>> inFilters = new LinkedHashMap<>();
+        inFilters.put("programAreaGuid", params.getProgramAreaGuids());
+        inFilters.put("forestRegionOrgUnitId", params.getForestRegionOrgUnitIds());
+        inFilters.put("forestDistrictOrgUnitId", params.getForestDistrictOrgUnitIds());
+        inFilters.put("fireCentreOrgUnitId", params.getFireCentreOrgUnitIds());
+
+        for (Map.Entry<String, Collection<?>> entry : inFilters.entrySet()) {
+            if (notEmpty(entry.getValue())) {
+                predicates.add(project.get(entry.getKey()).in(entry.getValue()));
+            }
         }
+
+        if (notEmpty(params.getProjectTypeCodes())) {
+            predicates.add(
+                    project.get("projectTypeCode").get("projectTypeCode").in(params.getProjectTypeCodes())
+            );
+        }
+    }
+
+    void addFiscalAttributeFilters(CriteriaBuilder cb, Root<ProjectEntity> project, List<Predicate> predicates, FeatureQueryParams params) {
+        if (!hasAnyFiscalFilters(params)) return;
+
+        Subquery<UUID> sq = cb.createQuery().subquery(UUID.class);
+        Root<ProjectFiscalEntity> fiscal = sq.from(ProjectFiscalEntity.class);
+
+        List<Predicate> predicateList = new ArrayList<>();
+        predicateList.add(cb.equal(fiscal.get(PROJECT).get(PROJECT_GUID), project.get(PROJECT_GUID)));
+
+        // fiscalYear
+        if (notEmpty(params.getFiscalYears())) {
+            List<Predicate> years = new ArrayList<>();
+            Path<Object> fyPath = fiscal.get("fiscalYear");
+            for (String year : params.getFiscalYears()) {
+                if (year == null || "null".equals(year)) {
+                    years.add(cb.isNull(fyPath));
+                } else {
+                    years.add(cb.like(fyPath.as(String.class), year + "%"));
+                }
+            }
+            predicateList.add(cb.or(years.toArray(new Predicate[0])));
+        }
+
+        // activityCategoryCode
+        if (notEmpty(params.getActivityCategoryCodes())) {
+            predicateList.add(fiscal.get("activityCategoryCode").in(params.getActivityCategoryCodes()));
+        }
+
+        // planFiscalStatusCode (nested path only if present)
+        if (notEmpty(params.getPlanFiscalStatusCodes())) {
+            Path<String> statusCode = fiscal.get("planFiscalStatusCode").get("planFiscalStatusCode");
+            predicateList.add(statusCode.in(params.getPlanFiscalStatusCodes()));
+        }
+
+        sq.select(fiscal.get(PROJECT).get(PROJECT_GUID)).where(cb.and(predicateList.toArray(new Predicate[0])));
+        predicates.add(cb.exists(sq));
+    }
+
+    private boolean hasAnyFiscalFilters(FeatureQueryParams params) {
+        return notEmpty(params.getFiscalYears())
+                || notEmpty(params.getActivityCategoryCodes())
+                || notEmpty(params.getPlanFiscalStatusCodes());
+    }
+
+    private static boolean notEmpty(Collection<?> c) {
+        return c != null && !c.isEmpty();
+    }
+
+    void addSearchTextFilters(CriteriaBuilder cb, Root<ProjectEntity> project, List<Predicate> predicates, FeatureQueryParams params) {
+        if (params.getSearchText() == null || params.getSearchText().isBlank()) return;
+
+        String likeParam = "%" + params.getSearchText().toLowerCase() + "%";
+        List<Predicate> search = new ArrayList<>();
+
+        // Collapse the repeated like() calls into a loop
+        for (String field : List.of(
+                "projectName",
+                "projectLead",
+                "projectDescription",
+                "closestCommunityName",
+                "siteUnitName",
+                "resultsProjectCode"
+        )) {
+            search.add(cb.like(cb.lower(project.get(field)), likeParam));
+        }
+
+        // projectNumber is numeric → cast to String
+        search.add(cb.like(cb.lower(project.get("projectNumber").as(String.class)), likeParam));
+
+        // Fiscal-level text search via EXISTS
+        Subquery<UUID> s = cb.createQuery().subquery(UUID.class);
+        Root<ProjectFiscalEntity> f = s.from(ProjectFiscalEntity.class);
+        s.select(f.get(PROJECT).get(PROJECT_GUID))
+                .where(
+                        cb.equal(f.get(PROJECT).get(PROJECT_GUID), project.get(PROJECT_GUID)),
+                        cb.or(
+                                cb.like(cb.lower(f.get("projectFiscalName")), likeParam),
+                                cb.like(cb.lower(f.get("firstNationsPartner")), likeParam),
+                                cb.like(cb.lower(f.get("otherPartner")), likeParam)
+                        )
+                );
+
+        predicates.add(cb.or(cb.or(search.toArray(new Predicate[0])), cb.exists(s)));
     }
 }
