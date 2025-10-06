@@ -133,7 +133,7 @@ describe('EndorsementApprovalComponent', () => {
     component.onSave();
 
     const emittedFiscal = emitSpy.calls.mostRecent()!.args[0];
-    expect(emittedFiscal!.endorserName).toBe('Test User');
+    expect(emittedFiscal!.endorserName).toBe('Alice');
     expect(emittedFiscal!.endorsementComment).toBe('New endorsement');
     expect(emittedFiscal!.isApprovedInd).toBeTrue();
     expect(emittedFiscal!.businessAreaComment).toBe('New approval');
