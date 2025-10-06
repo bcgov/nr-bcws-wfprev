@@ -181,7 +181,7 @@ export class EndorsementApprovalComponent implements OnChanges, OnInit {
     };
 
     // Status logic: (return to PROPOSED if removed and not DRAFT/PROPOSED)
-    // if reverting to proposed, clear out endorsement/approval fields
+    // if reverting to proposed, clear out endorsement or approval fields depending on which has been unselected
     if (resetToProposedEndorsementRemoved) {
       updatedFiscal.planFiscalStatusCode = { planFiscalStatusCode: FiscalStatuses.PROPOSED };
       updatedFiscal.endorserName = undefined;
@@ -193,7 +193,9 @@ export class EndorsementApprovalComponent implements OnChanges, OnInit {
       updatedFiscal.endorserUserUserid = undefined;
       updatedFiscal.endorseApprUpdateUserid = undefined;
       updatedFiscal.endorseApprUpdatedTimestamp = undefined;
-    } else if (resetToProposedApprovalRemoved) {
+    } 
+    
+    if (resetToProposedApprovalRemoved) {
       updatedFiscal.planFiscalStatusCode = { planFiscalStatusCode: FiscalStatuses.PROPOSED };
       updatedFiscal.isApprovedInd = false;
       updatedFiscal.approvedTimestamp = undefined;
