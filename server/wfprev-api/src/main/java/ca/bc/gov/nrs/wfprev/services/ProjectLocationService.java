@@ -20,7 +20,10 @@ import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Slf4j
@@ -86,19 +89,20 @@ public class ProjectLocationService {
     }
 
     void addProjectLevelFilters(Root<ProjectEntity> project, List<Predicate> predicates, FeatureQueryParams params) {
-        if (params.getProgramAreaGuids() != null && !params.getProgramAreaGuids().isEmpty()) {
-            predicates.add(project.get("programAreaGuid").in(params.getProgramAreaGuids()));
+        // Collapse the repetitive "in" filters into a loop to avoid duplication flags.
+        Map<String, Collection<?>> inFilters = new LinkedHashMap<>();
+        inFilters.put("programAreaGuid", params.getProgramAreaGuids());
+        inFilters.put("forestRegionOrgUnitId", params.getForestRegionOrgUnitIds());
+        inFilters.put("forestDistrictOrgUnitId", params.getForestDistrictOrgUnitIds());
+        inFilters.put("fireCentreOrgUnitId", params.getFireCentreOrgUnitIds());
+
+        for (Map.Entry<String, Collection<?>> entry : inFilters.entrySet()) {
+            if (notEmpty(entry.getValue())) {
+                predicates.add(project.get(entry.getKey()).in(entry.getValue()));
+            }
         }
-        if (params.getForestRegionOrgUnitIds() != null && !params.getForestRegionOrgUnitIds().isEmpty()) {
-            predicates.add(project.get("forestRegionOrgUnitId").in(params.getForestRegionOrgUnitIds()));
-        }
-        if (params.getForestDistrictOrgUnitIds() != null && !params.getForestDistrictOrgUnitIds().isEmpty()) {
-            predicates.add(project.get("forestDistrictOrgUnitId").in(params.getForestDistrictOrgUnitIds()));
-        }
-        if (params.getFireCentreOrgUnitIds() != null && !params.getFireCentreOrgUnitIds().isEmpty()) {
-            predicates.add(project.get("fireCentreOrgUnitId").in(params.getFireCentreOrgUnitIds()));
-        }
-        if (params.getProjectTypeCodes() != null && !params.getProjectTypeCodes().isEmpty()) {
+
+        if (notEmpty(params.getProjectTypeCodes())) {
             predicates.add(
                     project.get("projectTypeCode").get("projectTypeCode").in(params.getProjectTypeCodes())
             );
@@ -143,14 +147,13 @@ public class ProjectLocationService {
         predicates.add(cb.exists(sq));
     }
 
-
     private boolean hasAnyFiscalFilters(FeatureQueryParams params) {
         return notEmpty(params.getFiscalYears())
                 || notEmpty(params.getActivityCategoryCodes())
                 || notEmpty(params.getPlanFiscalStatusCodes());
     }
 
-    private static boolean notEmpty(java.util.Collection<?> c) {
+    private static boolean notEmpty(Collection<?> c) {
         return c != null && !c.isEmpty();
     }
 
@@ -160,20 +163,27 @@ public class ProjectLocationService {
         String likeParam = "%" + params.getSearchText().toLowerCase() + "%";
         List<Predicate> search = new ArrayList<>();
 
-        // Project-level text search
-        search.add(cb.like(cb.lower(project.get("projectName")), likeParam));
-        search.add(cb.like(cb.lower(project.get("projectLead")), likeParam));
-        search.add(cb.like(cb.lower(project.get("projectDescription")), likeParam));
-        search.add(cb.like(cb.lower(project.get("closestCommunityName")), likeParam));
-        search.add(cb.like(cb.lower(project.get("siteUnitName")), likeParam));
+        // Collapse the repeated like() calls into a loop
+        for (String field : List.of(
+                "projectName",
+                "projectLead",
+                "projectDescription",
+                "closestCommunityName",
+                "siteUnitName",
+                "resultsProjectCode"
+        )) {
+            search.add(cb.like(cb.lower(project.get(field)), likeParam));
+        }
+
+        // projectNumber is numeric → cast to String
         search.add(cb.like(cb.lower(project.get("projectNumber").as(String.class)), likeParam));
-        search.add(cb.like(cb.lower(project.get("resultsProjectCode")), likeParam));
 
         // Fiscal-level text search via EXISTS
         Subquery<UUID> s = cb.createQuery().subquery(UUID.class);
         Root<ProjectFiscalEntity> f = s.from(ProjectFiscalEntity.class);
         s.select(f.get(PROJECT).get(PROJECT_GUID))
-                .where(cb.equal(f.get(PROJECT).get(PROJECT_GUID), project.get(PROJECT_GUID)),
+                .where(
+                        cb.equal(f.get(PROJECT).get(PROJECT_GUID), project.get(PROJECT_GUID)),
                         cb.or(
                                 cb.like(cb.lower(f.get("projectFiscalName")), likeParam),
                                 cb.like(cb.lower(f.get("firstNationsPartner")), likeParam),
@@ -181,9 +191,6 @@ public class ProjectLocationService {
                         )
                 );
 
-        predicates.add(cb.or(
-                cb.or(search.toArray(new Predicate[0])),
-                cb.exists(s)
-        ));
+        predicates.add(cb.or(cb.or(search.toArray(new Predicate[0])), cb.exists(s)));
     }
 }
