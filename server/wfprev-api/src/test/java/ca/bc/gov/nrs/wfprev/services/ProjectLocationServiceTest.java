@@ -222,8 +222,6 @@ class ProjectLocationServiceTest {
         verify(cb, atLeast(2)).like(eq(fyAsString), anyString());
     }
 
-
-
     @Test
     @SuppressWarnings("unchecked")
     void addFiscalAttributeFilters_treatsStringNullAsIsNull() {
