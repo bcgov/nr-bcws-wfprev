@@ -139,8 +139,8 @@ describe('EndorsementApprovalComponent', () => {
     expect(emittedFiscal!.businessAreaComment).toBe('New approval');
   });
 
-  it('should set planFiscalStatusCode to DRAFT if endorsement removed', async () => {
-    spyOn<any>(component, 'confirmRevertToDraft').and.returnValue(Promise.resolve(true));
+  it('should set planFiscalStatusCode to PROPOSED if endorsement removed', async () => {
+    spyOn<any>(component, 'confirmRevertToProposed').and.returnValue(Promise.resolve(true));
 
     const emitSpy = spyOn(component.saveEndorsement, 'emit');
     component.fiscal = {
@@ -155,7 +155,7 @@ describe('EndorsementApprovalComponent', () => {
     await component.onSave();
 
     const emittedFiscal = emitSpy.calls.mostRecent()!.args[0];
-    expect(emittedFiscal!.planFiscalStatusCode?.planFiscalStatusCode).toBe(FiscalStatuses.DRAFT);
+    expect(emittedFiscal!.planFiscalStatusCode?.planFiscalStatusCode).toBe(FiscalStatuses.PROPOSED);
   });
 
   it('should disable the form', () => {
@@ -259,9 +259,8 @@ describe('EndorsementApprovalComponent', () => {
     expect(component.isSaving).toBeFalse();
   });
 
-  it('resets to DRAFT and clears fields when endorsement removed (confirm = true)', async () => {
-    // Arrange (shouldResetToDraft → endorsementRemoved = true, status not DRAFT/PROPOSED)
-    spyOn<any>(component, 'confirmRevertToDraft').and.returnValue(Promise.resolve(true));
+  it('resets to PROPOSED and clears fields when endorsement removed (confirm = true)', async () => {
+    spyOn<any>(component, 'confirmRevertToProposed').and.returnValue(Promise.resolve(true));
     const emitSpy = spyOn(component.saveEndorsement, 'emit');
 
     component.fiscal = {
@@ -285,11 +284,9 @@ describe('EndorsementApprovalComponent', () => {
     const { args } = emitSpy.calls.mostRecent();
     const payload = args[0] as ProjectFiscal;
 
-    // Forced DRAFT
-    expect(payload.planFiscalStatusCode.planFiscalStatusCode).toBe(FiscalStatuses.DRAFT);
-    // Approval forced false
-    expect(payload.isApprovedInd).toBeFalse();
-
+    // Forced PROPOSED
+    expect(payload.planFiscalStatusCode.planFiscalStatusCode).toBe(FiscalStatuses.PROPOSED);
+   
     // Endorsement cleared
     expect(payload.endorserName).toBeUndefined();
     expect(payload.endorsementTimestamp).toBeUndefined();
@@ -298,21 +295,12 @@ describe('EndorsementApprovalComponent', () => {
     expect(payload.endorsementEvalTimestamp).toBeUndefined();
     expect(payload.endorserUserGuid).toBeUndefined();
     expect(payload.endorserUserUserid).toBeUndefined();
-
-    // Approval cleared
-    expect(payload.approvedTimestamp).toBeUndefined();
-    expect(payload.approverName).toBeUndefined();
-    expect(payload.approverUserGuid).toBeUndefined();
-    expect(payload.approverUserUserid).toBeUndefined();
-    expect(payload.businessAreaComment).toBeUndefined();
-
-    // Audit cleared per current implementation
     expect(payload.endorseApprUpdateUserid).toBeUndefined();
     expect(payload.endorseApprUpdatedTimestamp).toBeUndefined();
   });
 
-  it('resets to DRAFT and clears fields when approval removed (confirm = true)', async () => {
-    spyOn<any>(component, 'confirmRevertToDraft').and.returnValue(Promise.resolve(true));
+  it('resets to proposed and clears fields when approval removed (confirm = true)', async () => {
+    spyOn<any>(component, 'confirmRevertToProposed').and.returnValue(Promise.resolve(true));
     const emitSpy = spyOn(component.saveEndorsement, 'emit');
 
     component.fiscal = {
@@ -333,23 +321,17 @@ describe('EndorsementApprovalComponent', () => {
     const { args } = emitSpy.calls.mostRecent();
     const payload = args[0] as ProjectFiscal;
 
-    expect(payload.planFiscalStatusCode.planFiscalStatusCode).toBe(FiscalStatuses.DRAFT);
+    expect(payload.planFiscalStatusCode.planFiscalStatusCode).toBe(FiscalStatuses.PROPOSED);
     expect(payload.isApprovedInd).toBeFalse();
     expect(payload.approvedTimestamp).toBeUndefined();
     expect(payload.approverName).toBeUndefined();
     expect(payload.approverUserGuid).toBeUndefined();
     expect(payload.approverUserUserid).toBeUndefined();
     expect(payload.businessAreaComment).toBeUndefined();
-    expect(payload.endorserName).toBeUndefined();
-    expect(payload.endorsementTimestamp).toBeUndefined();
-    expect(payload.endorsementCode).toEqual({ endorsementCode: EndorsementCode.NOT_ENDORS });
-    expect(payload.endorsementComment).toBeUndefined();
-    expect(payload.endorseApprUpdateUserid).toBeUndefined();
-    expect(payload.endorseApprUpdatedTimestamp).toBeUndefined();
   });
 
-  it('does not emit when user cancels the revert confirmation (shouldResetToDraft = true)', async () => {
-    spyOn<any>(component, 'confirmRevertToDraft').and.returnValue(Promise.resolve(false));
+  it('does not emit when user cancels the revert confirmation', async () => {
+    spyOn<any>(component, 'confirmRevertToProposed').and.returnValue(Promise.resolve(false));
     const emitSpy = spyOn(component.saveEndorsement, 'emit');
 
     component.fiscal = {
@@ -367,8 +349,8 @@ describe('EndorsementApprovalComponent', () => {
     expect(emitSpy).not.toHaveBeenCalled();
   });
 
-  it('calls confirmRevertToDraft with the current status when reverting', async () => {
-    const confirmSpy = spyOn<any>(component, 'confirmRevertToDraft').and.returnValue(Promise.resolve(true));
+  it('calls confirmRevertToProposed with the current status when reverting', async () => {
+    const confirmSpy = spyOn<any>(component, 'confirmRevertToProposed').and.returnValue(Promise.resolve(true));
     const emitSpy = spyOn(component.saveEndorsement, 'emit');
 
     component.fiscal = {

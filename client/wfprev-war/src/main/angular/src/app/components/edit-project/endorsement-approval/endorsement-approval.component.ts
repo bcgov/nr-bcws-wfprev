@@ -143,13 +143,11 @@ export class EndorsementApprovalComponent implements OnChanges, OnInit {
     const endorsementRemoved = !formValue.endorseFiscalActivity;
     const approvalRemoved = !formValue.approveFiscalActivity;
     const currentStatusCode = this.fiscal?.planFiscalStatusCode?.planFiscalStatusCode;
-    const shouldResetToDraft =
-      (endorsementRemoved || approvalRemoved) &&
-      currentStatusCode !== FiscalStatuses.DRAFT &&
-      currentStatusCode !== FiscalStatuses.PROPOSED;
+    const resetToProposedEndorsementRemoved = endorsementRemoved && currentStatusCode !== FiscalStatuses.DRAFT && currentStatusCode !== FiscalStatuses.PROPOSED;
+    const resetToProposedApprovalRemoved = approvalRemoved && currentStatusCode !== FiscalStatuses.DRAFT && currentStatusCode !== FiscalStatuses.PROPOSED;
 
-    if (shouldResetToDraft) {
-      const confirmed = await this.confirmRevertToDraft(currentStatusCode ?? '');
+    if (resetToProposedEndorsementRemoved || resetToProposedApprovalRemoved) {
+      const confirmed = await this.confirmRevertToProposed(currentStatusCode ?? '');
       if (!confirmed) return; // user cancelled
     }
 
@@ -182,11 +180,10 @@ export class EndorsementApprovalComponent implements OnChanges, OnInit {
       endorseApprUpdatedTimestamp: currentUtc,
     };
 
-    // Status logic: (return to DRAFT if removed and not DRAFT/PROPOSED)
-    // if reverting to draft, clear out endorsement/approval fields
-    if (shouldResetToDraft) {
-      updatedFiscal.planFiscalStatusCode = { planFiscalStatusCode: FiscalStatuses.DRAFT };
-      updatedFiscal.isApprovedInd = false;
+    // Status logic: (return to PROPOSED if removed and not DRAFT/PROPOSED)
+    // if reverting to proposed, clear out endorsement/approval fields
+    if (resetToProposedEndorsementRemoved) {
+      updatedFiscal.planFiscalStatusCode = { planFiscalStatusCode: FiscalStatuses.PROPOSED };
       updatedFiscal.endorserName = undefined;
       updatedFiscal.endorsementTimestamp = undefined;
       updatedFiscal.endorsementCode = { endorsementCode: EndorsementCode.NOT_ENDORS };
@@ -194,13 +191,16 @@ export class EndorsementApprovalComponent implements OnChanges, OnInit {
       updatedFiscal.endorsementEvalTimestamp = undefined;
       updatedFiscal.endorserUserGuid = undefined;
       updatedFiscal.endorserUserUserid = undefined;
+      updatedFiscal.endorseApprUpdateUserid = undefined;
+      updatedFiscal.endorseApprUpdatedTimestamp = undefined;
+    } else if (resetToProposedApprovalRemoved) {
+      updatedFiscal.planFiscalStatusCode = { planFiscalStatusCode: FiscalStatuses.PROPOSED };
+      updatedFiscal.isApprovedInd = false;
       updatedFiscal.approvedTimestamp = undefined;
       updatedFiscal.approverName = undefined;
       updatedFiscal.approverUserGuid = undefined;
       updatedFiscal.approverUserUserid = undefined;
       updatedFiscal.businessAreaComment = undefined;
-      updatedFiscal.endorseApprUpdateUserid = undefined;
-      updatedFiscal.endorseApprUpdatedTimestamp = undefined;
     }
 
     this.saveEndorsement.emit(updatedFiscal);
@@ -269,18 +269,18 @@ export class EndorsementApprovalComponent implements OnChanges, OnInit {
     }
   }
 
-  async confirmRevertToDraft(currentStatusCode: string): Promise<boolean> {
+  async confirmRevertToProposed(currentStatusCode: string): Promise<boolean> {
     if (!currentStatusCode) return false;
     
     // Parse status to plain English if it is IN_PROG
     // The remaining status do not require such parsing
     const currentStatus = currentStatusCode === 'IN_PROG' ? "In Progress" : capitalizeFirstLetter(currentStatusCode);
-    const message = `You are about to change the status of this Fiscal Activity from ${currentStatus} to Draft. Do you wish to continue?`
+    const message = `You are about to change the status of this Fiscal Activity from ${currentStatus} to Proposed. Do you wish to continue?`
 
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       data: {
         indicator: 'confirm-fiscal-status-update',
-        title: `Confirm Change to Draft`,
+        title: `Confirm Change to Proposed`,
         message: message
       },
       width: '600px',
