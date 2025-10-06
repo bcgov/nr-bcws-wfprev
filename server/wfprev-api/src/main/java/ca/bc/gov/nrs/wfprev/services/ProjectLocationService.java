@@ -115,8 +115,8 @@ public class ProjectLocationService {
         Subquery<UUID> sq = cb.createQuery().subquery(UUID.class);
         Root<ProjectFiscalEntity> fiscal = sq.from(ProjectFiscalEntity.class);
 
-        List<Predicate> pf = new ArrayList<>();
-        pf.add(cb.equal(fiscal.get(PROJECT).get(PROJECT_GUID), project.get(PROJECT_GUID)));
+        List<Predicate> predicateList = new ArrayList<>();
+        predicateList.add(cb.equal(fiscal.get(PROJECT).get(PROJECT_GUID), project.get(PROJECT_GUID)));
 
         // fiscalYear
         if (notEmpty(params.getFiscalYears())) {
@@ -129,21 +129,21 @@ public class ProjectLocationService {
                     years.add(cb.like(fyPath.as(String.class), year + "%"));
                 }
             }
-            pf.add(cb.or(years.toArray(new Predicate[0])));
+            predicateList.add(cb.or(years.toArray(new Predicate[0])));
         }
 
         // activityCategoryCode
         if (notEmpty(params.getActivityCategoryCodes())) {
-            pf.add(fiscal.get("activityCategoryCode").in(params.getActivityCategoryCodes()));
+            predicateList.add(fiscal.get("activityCategoryCode").in(params.getActivityCategoryCodes()));
         }
 
         // planFiscalStatusCode (nested path only if present)
         if (notEmpty(params.getPlanFiscalStatusCodes())) {
             Path<String> statusCode = fiscal.get("planFiscalStatusCode").get("planFiscalStatusCode");
-            pf.add(statusCode.in(params.getPlanFiscalStatusCodes()));
+            predicateList.add(statusCode.in(params.getPlanFiscalStatusCodes()));
         }
 
-        sq.select(fiscal.get(PROJECT).get(PROJECT_GUID)).where(cb.and(pf.toArray(new Predicate[0])));
+        sq.select(fiscal.get(PROJECT).get(PROJECT_GUID)).where(cb.and(predicateList.toArray(new Predicate[0])));
         predicates.add(cb.exists(sq));
     }
 

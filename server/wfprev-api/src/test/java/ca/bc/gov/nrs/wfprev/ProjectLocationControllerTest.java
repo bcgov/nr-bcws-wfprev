@@ -60,7 +60,6 @@ class ProjectLocationControllerTest {
     @Test
     @WithMockUser
     void testGetAllProjectLocations_Empty() throws Exception {
-        List<ProjectLocationModel> list = Collections.emptyList();
         when(projectLocationService.getAllProjectLocations(any(FeatureQueryParams.class)))
                 .thenReturn(CollectionModel.of(Collections.emptyList()));
 
