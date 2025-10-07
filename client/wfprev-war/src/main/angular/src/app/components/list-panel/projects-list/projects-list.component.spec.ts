@@ -1157,9 +1157,8 @@ describe('ProjectsListComponent', () => {
     component.sharedService.selectedProject$ = of(null);
 
     component.ngOnInit();
-    tick(); // flush async subscriptions
+    tick();
 
-    // assertions
     expect(component.selectedProjectGuid).toBeNull();
     expect(detectChangesSpy).toHaveBeenCalled();
     expect(mockEl.nativeElement.classList.remove).toHaveBeenCalledWith('selected-project');

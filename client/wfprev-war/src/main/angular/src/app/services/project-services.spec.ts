@@ -1004,7 +1004,6 @@ describe('ProjectService', () => {
     });
 
     const req = httpMock.expectOne((request) => {
-      // ensure correct endpoint and query parameters
       return (
         request.url === 'http://mock-api.com/wfprev-api/project-locations' &&
         request.params.has('programAreaGuid') &&
