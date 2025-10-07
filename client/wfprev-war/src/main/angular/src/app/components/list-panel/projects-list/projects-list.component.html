@@ -30,14 +30,19 @@
     </div>
     <div class="result-count">
       <!-- Result Count -->
-      <span>{{ allProjects.length }} Results</span>
+      <span>{{ totalItems }} Results</span>
     </div>
   </div>
 
-  <div class="list-contents">
+  <div class="list-contents" (scroll)="onScroll($event)">
     <mat-accordion [multi]="true">
-      <mat-expansion-panel hideToggle *ngFor="let project of displayedProjects?.length ? displayedProjects : []" [expanded]="expandedPanels[project.projectGuid]" 
-        [ngClass]="{ 'selected-project': selectedProjectGuid === project.projectGuid }" #panel="matExpansionPanel">
+    <mat-expansion-panel
+      hideToggle
+      *ngFor="let project of displayedProjects; trackBy: this['trackByProjectGuid']"
+      [expanded]="expandedPanels[project.projectGuid]"
+      [ngClass]="{ 'selected-project': selectedProjectGuid === project.projectGuid }"
+      #panel="matExpansionPanel"
+      [attr.data-guid]="project.projectGuid">
         <mat-expansion-panel-header class="expansion-panel-header" (click)="onHeaderClick($event, project)">
           <mat-panel-title class="project-title">
             <div class="custom-indicator">
@@ -138,5 +143,12 @@
         </div>
       </mat-expansion-panel>
     </mat-accordion>
+    <div class="spinner-container" *ngIf="isLoading">
+      <mat-progress-spinner
+        mode="indeterminate"
+        diameter="36"
+        color="primary">
+      </mat-progress-spinner>
+    </div>
   </div>
 </div>

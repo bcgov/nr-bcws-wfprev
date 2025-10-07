@@ -24,11 +24,19 @@ export class SharedService {
     this.displayedProjectsSource.next(projects);
   }
 
-  selectProject(project?: Project) {
-    this.selectedProjectSubject.next(project);
+  selectProject(project?: Partial<Project>) {
+    this.selectedProjectSubject.next(project as Project);
   }
 
   triggerMapCommand(action: 'open' | 'close', project: Project) {
     this._mapCommand$.next({ action, project });
+  }
+
+  get currentFilters(): any {
+    return this.filtersSource.getValue();
+  }
+
+  get currentDisplayedProjects(): Project[] {
+    return this.displayedProjectsSource.getValue();
   }
 }

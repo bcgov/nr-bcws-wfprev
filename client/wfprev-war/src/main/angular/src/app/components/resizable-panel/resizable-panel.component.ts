@@ -32,4 +32,8 @@ export class ResizablePanelComponent {
   selectTab(index: number): void {
     this.selectedTabIndex = index;
   }
+
+  onParentScroll(event: Event) {
+    this.projectList.onScroll(event);
+  }
 }
