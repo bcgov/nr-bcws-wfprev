@@ -673,9 +673,9 @@ class ProjectServiceTest {
                 .forestAreaCode(forestArea)
                 .build();
 
-        ProjectEntity mapped = new ProjectEntity();
-        mapped.setProjectName("Test Project");
-        when(projectResourceAssembler.toEntity(any(ProjectModel.class))).thenReturn(mapped);
+        ProjectEntity entity = new ProjectEntity();
+        entity.setProjectName("Test Project");
+        when(projectResourceAssembler.toEntity(any(ProjectModel.class))).thenReturn(entity);
         when(forestAreaCodeRepository.findById("INVALID")).thenReturn(Optional.empty());
         when(springSecurityAuditorAware.getCurrentAuditor()).thenReturn(Optional.of("test-user"));
 
