@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { ProjectsListComponent } from './projects-list.component';
 import { By } from '@angular/platform-browser';
-import { DebugElement } from '@angular/core';
+import { DebugElement, ElementRef, QueryList } from '@angular/core';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
@@ -369,14 +369,22 @@ describe('ProjectsListComponent', () => {
   });
 
   it('should sort projects in descending order', () => {
-    component.allProjects = [
+    const mockProjects = [
       { projectName: 'B' },
-      { projectName: 'A' }
+      { projectName: 'A' },
     ];
-    const mockEvent = { target: { value: 'descending' } };
+
+    mockProjectService.getFeatures.and.returnValue(
+      of({ projects: mockProjects, totalItems: 2 } as unknown as FeaturesResponse)
+    );
+
+    const mockEvent = { value: 'descending' };
     component.onSortChange(mockEvent);
+
+    expect(component.allProjects.length).toBe(2);
     expect(component.allProjects[0].projectName).toBe('B');
   });
+
 
   it('should format fiscal activity display correctly', () => {
     expect(component.getFiscalYearDisplay(2023)).toBe('2023/24');
@@ -430,14 +438,26 @@ describe('ProjectsListComponent', () => {
   });
 
   it('should call onSortChange and sort ascending/descending', () => {
-    component.allProjects = [
+    const mockProjects = [
       { projectName: 'B' },
-      { projectName: 'A' }
+      { projectName: 'A' },
     ];
+
+    mockProjectService.getFeatures.and.returnValue(
+      of({ projects: mockProjects, totalItems: 2 } as unknown as FeaturesResponse)
+    );
+
     component.onSortChange({ value: 'ascending' });
-    expect(component.allProjects[0].projectName).toBe('A');
+    expect(component.allProjects[0].projectName).toBe('B');
+    expect(component.allProjects[1].projectName).toBe('A');
+
+    mockProjectService.getFeatures.and.returnValue(
+      of({ projects: mockProjects, totalItems: 2 } as unknown as FeaturesResponse)
+    );
+
     component.onSortChange({ value: 'descending' });
     expect(component.allProjects[0].projectName).toBe('B');
+    expect(component.allProjects[1].projectName).toBe('A');
   });
 
   it('should call createNewProject and open dialog', () => {
@@ -586,7 +606,7 @@ describe('ProjectsListComponent', () => {
         forestRegionOrgUnitId: 5
       },
       {
-        projectGuid: 'guid-z',
+        projectGuid: 'guid-z2',
         projectName: 'A Project',
         bcParksRegionOrgUnitId: 1,
         bcParksSectionOrgUnitId: 2,
@@ -1100,6 +1120,155 @@ describe('ProjectsListComponent', () => {
       expect(payload).toEqual([
         { projectGuid: 'g1', projectFiscalGuids: ['top'] },
       ]);
+    });
+  });
+
+  it('should call loadProjects on scroll near bottom', () => {
+    spyOn(component, 'loadProjects');
+    component.isLoading = false;
+    component.hasMore = true;
+
+    const scrollable = {
+      scrollHeight: 1000,
+      scrollTop: 960,
+      clientHeight: 50
+    } as any;
+
+    const event = { target: scrollable } as Partial<Event> as Event;
+    component.onScroll(event);
+    expect(component.loadProjects).toHaveBeenCalledWith(false);
+  });
+
+  it('should clear selected project when selectedProject$ emits null', fakeAsync(() => {
+    const mockEl = {
+      nativeElement: {
+        classList: { remove: jasmine.createSpy('remove') }
+      }
+    };
+
+    const queryList = new QueryList<ElementRef>();
+    queryList.reset([mockEl as unknown as ElementRef]);
+    component.panelElements = queryList;
+
+    component.selectedProjectGuid = 'old-guid';
+
+    const detectChangesSpy = spyOn((component as any).cdr, 'detectChanges');
+
+    component.sharedService.selectedProject$ = of(null);
+
+    component.ngOnInit();
+    tick();
+
+    expect(component.selectedProjectGuid).toBeNull();
+    expect(detectChangesSpy).toHaveBeenCalled();
+    expect(mockEl.nativeElement.classList.remove).toHaveBeenCalledWith('selected-project');
+  }));
+
+  it('should update selected project and scroll element into view when selectedProject$ emits a project', fakeAsync(() => {
+    const mockProject = { projectGuid: 'guid-123', projectName: 'Test Project' };
+
+    const addSpy = spyOn(component as any, 'addProjectToDisplayedList');
+    const detectChangesSpy = spyOn((component as any).cdr, 'detectChanges');
+
+    const scrollSpy = jasmine.createSpy('scrollIntoView');
+    const addClassSpy = jasmine.createSpy('add');
+
+    const mockEl = {
+      nativeElement: {
+        dataset: { guid: 'guid-123' },
+        scrollIntoView: scrollSpy,
+        classList: { add: addClassSpy },
+      },
+    };
+    const queryList = new QueryList<ElementRef>();
+    queryList.reset([mockEl as unknown as ElementRef]);
+    component.panelElements = queryList;
+
+    component.displayedProjects = [];
+
+    component.sharedService.selectedProject$ = of(mockProject);
+
+    component.ngOnInit();
+    tick();
+    tick();
+
+    expect(component.selectedProjectGuid).toBe('guid-123');
+    expect(addSpy).toHaveBeenCalledWith(mockProject);
+    expect(detectChangesSpy).toHaveBeenCalled();
+    expect(scrollSpy).toHaveBeenCalledWith({ behavior: 'smooth', block: 'center' });
+    expect(addClassSpy).toHaveBeenCalledWith('selected-project');
+  }));
+
+  describe('addProjectToDisplayedList', () => {
+    let detectChangesSpy: jasmine.Spy;
+    let updateDisplayedProjectsSpy: jasmine.Spy;
+
+    beforeEach(() => {
+      detectChangesSpy = spyOn((component as any).cdr, 'detectChanges');
+      updateDisplayedProjectsSpy = spyOn(component.sharedService, 'updateDisplayedProjects');
+    });
+
+    it('should add a new project when not already present', () => {
+      component.displayedProjects = [
+        { projectGuid: 'existing', projectName: 'A Project' }
+      ];
+      const newProject = { projectGuid: 'new', projectName: 'B Project' };
+
+      (component as any).addProjectToDisplayedList(newProject);
+
+      expect(component.displayedProjects.length).toBe(2);
+      expect(component.displayedProjects.some(p => p.projectGuid === 'new')).toBeTrue();
+      expect(updateDisplayedProjectsSpy).toHaveBeenCalledWith(component.displayedProjects);
+      expect(component.totalItems).toBe(2);
+      expect(detectChangesSpy).toHaveBeenCalled();
+    });
+
+    it('should not add if project already exists', () => {
+      component.displayedProjects = [{ projectGuid: 'dup', projectName: 'Same Project' }];
+      const newProject = { projectGuid: 'dup', projectName: 'Same Project' };
+
+      (component as any).addProjectToDisplayedList(newProject);
+
+      expect(component.displayedProjects.length).toBe(1);
+      expect(updateDisplayedProjectsSpy).not.toHaveBeenCalled();
+    });
+
+    it('should sort ascending when selectedSort is "ascending"', () => {
+      component.selectedSort = 'ascending';
+      component.displayedProjects = [
+        { projectGuid: '1', projectName: 'Z Project' }
+      ];
+      const newProject = { projectGuid: '2', projectName: 'A Project' };
+
+      (component as any).addProjectToDisplayedList(newProject);
+
+      expect(component.displayedProjects[0].projectName).toBe('A Project');
+    });
+
+    it('should sort descending when selectedSort is "descending"', () => {
+      component.selectedSort = 'descending';
+      component.displayedProjects = [
+        { projectGuid: '1', projectName: 'A Project' }
+      ];
+      const newProject = { projectGuid: '2', projectName: 'Z Project' };
+
+      (component as any).addProjectToDisplayedList(newProject);
+
+      expect(component.displayedProjects[0].projectName).toBe('Z Project');
+    });
+
+    it('should not sort if selectedSort is empty', () => {
+      component.selectedSort = '';
+      component.displayedProjects = [
+        { projectGuid: '1', projectName: 'B Project' }
+      ];
+      const newProject = { projectGuid: '2', projectName: 'A Project' };
+
+      (component as any).addProjectToDisplayedList(newProject);
+
+      // Should just append, not reorder
+      expect(component.displayedProjects[0].projectName).toBe('B Project');
+      expect(component.displayedProjects[1].projectName).toBe('A Project');
     });
   });
 

@@ -971,4 +971,143 @@ describe('ProjectService', () => {
     req.flush('Error', { status: 500, statusText: 'Server Error' });
   });
 
+  it('should fetch project locations with query params', () => {
+    const mockResponse = {
+      _embedded: {
+        project: [
+          {
+            projectGuid: 'guid-1',
+            projectName: 'Fuel Management',
+            latitude: 49.1,
+            longitude: -123.1
+          },
+          {
+            projectGuid: 'guid-2',
+            projectName: 'Fire Prevention',
+            latitude: 49.2,
+            longitude: -123.2
+          }
+        ]
+      }
+    };
+
+    const params = {
+      programAreaGuid: ['area-1'],
+      fiscalYear: ['2024'],
+      searchText: 'fuel'
+    };
+
+    service.getProjectLocations(params).subscribe((locations: any[]) => {
+      expect(locations.length).toBe(2);
+      expect(locations[0].projectName).toBe('Fuel Management');
+      expect(locations[1].latitude).toBe(49.2);
+    });
+
+    const req = httpMock.expectOne((request) => {
+      return (
+        request.url === 'http://mock-api.com/wfprev-api/project-locations' &&
+        request.params.has('programAreaGuid') &&
+        request.params.has('fiscalYear') &&
+        request.params.get('searchText') === 'fuel'
+      );
+    });
+
+    expect(req.request.method).toBe('GET');
+    expect(req.request.headers.get('Authorization')).toBe('Bearer mock-token');
+    req.flush(mockResponse);
+  });
+
+  it('should handle errors when fetching project locations', () => {
+    const params = { searchText: 'fire' };
+
+    service.getProjectLocations(params).subscribe({
+      next: () => fail('Should have failed'),
+      error: (err) => {
+        expect(err).toBeTruthy();
+        expect(err.message).toBe('Failed to fetch project locations');
+      },
+    });
+
+    const req = httpMock.expectOne(
+      (request) => request.url === 'http://mock-api.com/wfprev-api/project-locations'
+    );
+
+    expect(req.request.method).toBe('GET');
+    req.flush('Error', { status: 500, statusText: 'Server Error' });
+  });
+
+    it('should fetch a feature by projectGuid and return the first embedded project', () => {
+      const projectGuid = 'project-guid-123';
+      const mockProject: Project = {
+        projectGuid,
+        projectName: 'Feature Project',
+        bcParksRegionOrgUnitId: 1,
+        bcParksSectionOrgUnitId: 2,
+        closestCommunityName: 'Community',
+        fireCentreOrgUnitId: 3,
+        forestDistrictOrgUnitId: 4,
+        forestRegionOrgUnitId: 5,
+        isMultiFiscalYearProj: false,
+        programAreaGuid: 'program-guid',
+        projectDescription: 'Test description',
+        projectLead: 'Lead',
+        projectLeadEmailAddress: 'lead@example.com',
+        projectNumber: 42,
+        siteUnitName: 'Site',
+        totalActualAmount: 100,
+        totalAllocatedAmount: 100,
+        totalFundingRequestAmount: 100,
+        totalPlannedCostPerHectare: 10,
+        totalPlannedProjectSizeHa: 20
+      };
+
+      const mockResponse = {
+        _embedded: { project: [mockProject] }
+      };
+
+      service.getFeatureByProjectGuid(projectGuid).subscribe(result => {
+        expect(result).toEqual(mockProject);
+      });
+
+      const req = httpMock.expectOne((request) => {
+        return request.url === 'http://mock-api.com/wfprev-api/features' &&
+              request.params.get('projectGuid') === projectGuid;
+      });
+
+      expect(req.request.method).toBe('GET');
+      expect(req.request.headers.get('Authorization')).toBe('Bearer mock-token');
+      req.flush(mockResponse);
+    });
+
+    it('should return null if no project found in embedded', () => {
+      const projectGuid = 'nonexistent-guid';
+      const mockResponse = { _embedded: { project: [] } };
+
+      service.getFeatureByProjectGuid(projectGuid).subscribe(result => {
+        expect(result).toBeNull();
+      });
+
+      const req = httpMock.expectOne(
+        r => r.url === 'http://mock-api.com/wfprev-api/features'
+      );
+      req.flush(mockResponse);
+    });
+
+    it('should handle error when fetching feature by projectGuid', () => {
+      const projectGuid = 'error-guid';
+
+      service.getFeatureByProjectGuid(projectGuid).subscribe({
+        next: () => fail('Should have failed'),
+        error: (err) => {
+          expect(err.message).toBe('Failed to fetch feature by projectGuid');
+        }
+      });
+
+      const req = httpMock.expectOne(
+        r => r.url === 'http://mock-api.com/wfprev-api/features'
+      );
+      req.flush('Error', { status: 500, statusText: 'Server Error' });
+    });
+
+
 });

@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, OnInit, QueryList, ViewChildren } from '@angular/core';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatDialog } from '@angular/material/dialog';
@@ -22,16 +22,17 @@ import { CodeTableKeys, CodeTableNames, DownloadFileExtensions, DownloadTypes, M
 import { DownloadButtonComponent } from 'src/app/components/shared/download-button/download-button.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ReportRequest } from '../../models';
-
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'wfprev-projects-list',
   standalone: true,
-  imports: [MatSlideToggleModule, CommonModule, MatExpansionModule, MatTooltipModule, ExpansionIndicatorComponent, IconButtonComponent, MatSelectModule, StatusBadgeComponent, DownloadButtonComponent],
+  imports: [MatSlideToggleModule, CommonModule, MatExpansionModule, MatTooltipModule, ExpansionIndicatorComponent, IconButtonComponent, MatSelectModule, StatusBadgeComponent, DownloadButtonComponent,MatProgressSpinnerModule],
   templateUrl: './projects-list.component.html',
   styleUrls: ['./projects-list.component.scss'],
 })
 export class ProjectsListComponent implements OnInit {
+  @ViewChildren('panel', { read: ElementRef }) panelElements!: QueryList<ElementRef>;
   [key: string]: any;
   projectList: any[] = [];
   programAreaCode: any[] = [];
@@ -53,6 +54,10 @@ export class ProjectsListComponent implements OnInit {
   getFiscalYearDisplay = getFiscalYearDisplay;
   expandedPanels: Record<string, boolean> = {};
   formats = [DownloadTypes.CSV, DownloadTypes.EXCEL];
+  totalItems = 0;
+  pageNumber = 1;
+  pageRowCount = 20;
+  hasMore = true;
   constructor(
     private readonly router: Router,
     private readonly projectService: ProjectService,
@@ -69,17 +74,49 @@ export class ProjectsListComponent implements OnInit {
     this.loadProjects();
 
     this.sharedService.selectedProject$.subscribe(project => {
-      this.selectedProjectGuid = project?.projectGuid ?? null;
-      this.cdr.markForCheck();
+      if (!project) {
+        this.selectedProjectGuid = null;
+        this.cdr.detectChanges();
+        this.panelElements?.forEach(el =>
+          el.nativeElement.classList.remove('selected-project')
+        );
+        return;
+      }
+
+      this.selectedProjectGuid = project.projectGuid;
+      const existing = this.displayedProjects.find(p => p.projectGuid === project.projectGuid);
+
+      if (!existing) {
+        // if project isn't in current list then inject it in sorted position
+        this.addProjectToDisplayedList(project);
+      }
+
+      // delay until DOM updates reflect the new or existing item
+      this.cdr.detectChanges();
+      setTimeout(() => {
+        const element = this.panelElements?.find(
+          el => el.nativeElement.dataset.guid === project.projectGuid
+        );
+
+        if (element) {
+          element.nativeElement.scrollIntoView({
+            behavior: 'smooth',
+            block: 'center',
+          });
+          element.nativeElement.classList.add('selected-project');
+        }
+
+      }, 0);
     });
 
     this.sharedService.filters$.subscribe(filters => {
       if (filters) {
-        this.isLoading = true;
-        this.projectService.getFeatures(filters).subscribe({
-          next: (data) => this.processProjectsResponse(data),
-          error: (err) => this.handleProjectError(err),
-        });
+        // reset pagination state
+        this.pageNumber = 1;
+        this.allProjects = [];
+        this.displayedProjects = [];
+        this.hasMore = true;
+        this.loadProjects(true);
       }
     });
   }
@@ -186,24 +223,111 @@ export class ProjectsListComponent implements OnInit {
 
   fiscalYearActivityTypes = ['Clearing', 'Burning', 'Pruning']
 
-  loadProjects(): void {
+  loadProjects(initialLoad = true): void {
+    if (initialLoad) {
+      this.pageNumber = 1;
+      this.allProjects = [];
+      this.displayedProjects = [];
+      this.hasMore = true;
+    }
+
+    if (this.isLoading || !this.hasMore) return;
     this.isLoading = true;
-    this.projectService.getFeatures().subscribe({
-      next: (data) => this.processProjectsResponse(data),
-      error: (err) => this.handleProjectError(err),
-    });
+    const filters = this.sharedService.currentFilters || {};
+    
+    let sortBy: string | undefined;
+    let sortDirection: string | undefined;
+
+    if (this.selectedSort === 'ascending') {
+      sortBy = 'projectName';
+      sortDirection = 'asc';
+    } else if (this.selectedSort === 'descending') {
+      sortBy = 'projectName';
+      sortDirection = 'desc';
+    } else {
+      sortBy = undefined;
+      sortDirection = undefined;
+    }
+
+    this.projectService
+      .getFeatures(filters, this.pageNumber, this.pageRowCount, sortBy, sortDirection)
+      .subscribe({
+        next: (data) => {
+          const newProjects = data.projects ?? [];
+          this.totalItems = data.totalItems ?? 0;
+
+          const combined = [...this.allProjects, ...newProjects];
+          const deduped = combined.filter(
+            (p, idx, self) =>
+              p?.projectGuid && idx === self.findIndex(other => other.projectGuid === p.projectGuid)
+          );
+          const sorted = [...deduped].sort((a, b) => a.projectName.localeCompare(b.projectName));
+          this.allProjects = sorted
+          this.displayedProjects = sorted;
+          this.sharedService.updateDisplayedProjects(sorted);
+
+          // pagination logic
+          if (newProjects.length < this.pageRowCount) {
+            this.hasMore = false;
+          } else {
+            this.pageNumber++;
+          }
+
+          this.isLoading = false;
+        },
+        error: (err) => {
+          console.error('Error fetching features:', err);
+          this.isLoading = false;
+        },
+      });
+  }
+
+  onScroll(event: Event): void {
+    const target = event.target as HTMLElement;
+  
+    const scrollPosition = target.scrollTop + target.clientHeight;
+    const middleThreshold = target.scrollHeight / 2;
+  
+    // trigger load when user passes halfway point
+    const atMiddle = scrollPosition >= middleThreshold;
+  
+    if (atMiddle && !this.isLoading && this.hasMore) {
+      this.loadProjects(false);
+    }
   }
 
   onSortChange(event: any): void {
     this.selectedSort = event.value;
 
-    if (this.selectedSort === 'ascending') {
-      this.allProjects.sort((a, b) => a.projectName.localeCompare(b.projectName));
-    } else if (this.selectedSort === 'descending') {
-      this.allProjects.sort((a, b) => b.projectName.localeCompare(a.projectName));
-    }
-    this.displayedProjects = this.allProjects;
-    this.sharedService.updateDisplayedProjects(this.displayedProjects);
+    const sortBy = 'projectName';
+    const sortDirection = this.selectedSort === 'ascending' ? 'asc' : 'desc';
+
+    // reset pagination
+    this.pageNumber = 1;
+    this.allProjects = [];
+    this.displayedProjects = [];
+    this.hasMore = true;
+    this.isLoading = true;
+
+    const filters = this.sharedService.currentFilters || {};
+
+    this.projectService
+      .getFeatures(filters, this.pageNumber, this.pageRowCount, sortBy, sortDirection)
+      .subscribe({
+        next: (data) => {
+          
+          this.totalItems = data.totalItems ?? 0;
+          this.allProjects = data.projects ?? [];
+          this.displayedProjects = this.allProjects;
+          this.sharedService.updateDisplayedProjects(this.displayedProjects);
+          this.isLoading = false;
+          this.pageNumber++;
+        },
+        error: (err) => {
+          console.error('Error fetching sorted features:', err);
+          this.isLoading = false;
+        },
+      });
   }
 
 
@@ -311,7 +435,6 @@ export class ProjectsListComponent implements OnInit {
         });
       };
 
-      const self = this;
 
       // Helper function to generate random polygon points. This will be replaced by /features endpoint in API
       const generatePolygonPoints = (
@@ -322,7 +445,7 @@ export class ProjectsListComponent implements OnInit {
         const points = [];
         for (let i = 0; i < 50; i++) {
           const angle = (i / 50) * Math.PI * 2; // Angle in radians
-          const randomFactor = self.getSecureRandomNumber(); // Secure random value
+          const randomFactor = this.getSecureRandomNumber(); // Secure random value
           const offset = radius + randomFactor * variance - variance / 2; // Randomize radius
           const lat = center.latitude + offset * Math.sin(angle) / 111; // Approx 111 km per degree latitude
           const lng = center.longitude + offset * Math.cos(angle) / (111 * Math.cos(center.latitude * (Math.PI / 180)));
@@ -478,6 +601,7 @@ export class ProjectsListComponent implements OnInit {
   }
 
   processProjectsResponse(data: any): void {
+    this.totalItems = data.totalItems
     this.allProjects = (data.projects ?? []).sort((a: any, b: any) =>
       a.projectName.localeCompare(b.projectName)
     );
@@ -593,4 +717,22 @@ onDownload(type: string): void {
     }
   });
 }
+
+  private addProjectToDisplayedList(newProject: any): void {
+    const exists = this.displayedProjects.some(p => p.projectGuid === newProject.projectGuid);
+    if (exists) return;
+    // insert at proper position based on selectedSort
+    let updated = [...this.displayedProjects, newProject];
+
+    if (this.selectedSort === 'ascending') {
+      updated = updated.sort((a, b) => a.projectName.localeCompare(b.projectName));
+    } else if (this.selectedSort === 'descending') {
+      updated = updated.sort((a, b) => b.projectName.localeCompare(a.projectName));
+    }
+
+    this.displayedProjects = updated;
+    this.sharedService.updateDisplayedProjects(updated);
+    this.totalItems = updated.length;
+    this.cdr.detectChanges();
+  }
 }

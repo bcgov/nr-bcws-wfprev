@@ -7,10 +7,11 @@ import { LeafletLegendService, getBluePinIcon,  getActivePinIcon, getFiscalYearC
 import { SharedService } from 'src/app/services/shared-service';
 import * as L from 'leaflet';
 import { ProjectPopupComponent } from 'src/app/components/project-popup/project-popup.component';
-import { Project } from 'src/app/components/models';
+import { Project, ProjectLocation } from 'src/app/components/models';
 import { ResizablePanelComponent } from 'src/app/components/resizable-panel/resizable-panel.component';
 import { BC_BOUNDS, MapColors } from 'src/app/utils/constants';
 import { Geometry, GeometryCollection } from 'geojson';
+import { ProjectService } from 'src/app/services/project-services';
 @Component({
   selector: 'app-map',
   standalone: true,
@@ -40,14 +41,13 @@ export class MapComponent implements AfterViewInit, OnDestroy  {
   } as const;
 
   private isMapReady = false;
-  private latestProjects: any[] = [];
-  private hasClusterBeenAddedToMap = false;
   private markersClusterGroup: L.MarkerClusterGroup | null = null;
-  private projectMarkerMap = new Map<string, L.Marker>();
+  private readonly projectMarkerMap = new Map<string, L.Marker>();
   private activeMarker: L.Marker | null = null;
   private selectedProject: Project | undefined;
-  private activityBoundaryGroup: L.LayerGroup = L.layerGroup();
-  private projectBoundaryGroup: L.LayerGroup = L.layerGroup();
+  private readonly activityBoundaryGroup: L.LayerGroup = L.layerGroup();
+  private readonly projectBoundaryGroup: L.LayerGroup = L.layerGroup();
+  private readonly featureCache = new Map<string, Project>()
   legendControl: L.Control | null = null;
   currentFiscalYear = new Date().getFullYear();
   constructor(
@@ -56,7 +56,8 @@ export class MapComponent implements AfterViewInit, OnDestroy  {
     private readonly mapConfigService: MapConfigService,
     private readonly route: ActivatedRoute,
     private readonly sharedService: SharedService,
-    private readonly injector: EnvironmentInjector
+    private readonly injector: EnvironmentInjector,
+    private readonly projectService: ProjectService
   ) {}
 
   ngOnDestroy(): void {
@@ -69,98 +70,64 @@ export class MapComponent implements AfterViewInit, OnDestroy  {
 
 
     
-ngAfterViewInit(): void {
-  if (!this.mapContainer?.nativeElement) {
-    console.error('Map container is not available.');
-    return;
-  }
-
-  this.mapIndex = this.mapService.getMapIndex();
-  this.mapService.setMapIndex(this.mapIndex + 1);
-
-  this.sharedService.displayedProjects$.subscribe(projects => {
-    this.latestProjects = projects;
-    if (this.isMapReady) {
-      this.updateMarkers(projects);
+  ngAfterViewInit(): void {
+    if (!this.mapContainer?.nativeElement) {
+      console.error('Map container is not available.');
+      return;
     }
-  });
 
-  this.sharedService.mapCommand$.subscribe(({ action, project }) => {
-    if (action === this.MAP_COMMANDS.CLOSE) {
-      this.closePopupForProject(project);
-    } else if (action === this.MAP_COMMANDS.OPEN) {
-      this.openPopupForProject(project);
-    }
-  });
+    this.mapIndex = this.mapService.getMapIndex();
+    this.mapService.setMapIndex(this.mapIndex + 1);
 
-  this.initMap().then(() => {
-    const smk = this.mapService.getSMKInstance();
-    const map = smk?.$viewer?.map;
-
-      // Use SMK's own refresh mechanism
-    const bustSmkLayerPromises = () => {
-      const visibleIds = smk.$viewer.layerIds
-        .filter((id: any) => smk.$viewer.isDisplayContextItemVisible(id));
-
-      const cacheKeys = Object.keys(smk.$viewer.layerIdPromise || {});
-      visibleIds.forEach((id: string) => {
-        const k = cacheKeys.find(k => k.includes(id));
-        if (k) smk.$viewer.layerIdPromise[k] = null;
-      });
-    };
-
-    map.on('zoomstart', () => {
-      bustSmkLayerPromises();
-    });
-    map.on('movestart', () => {
-      bustSmkLayerPromises();
+    // Handle open/close project popups
+    this.sharedService.mapCommand$.subscribe(({ action, project }) => {
+      if (action === this.MAP_COMMANDS.CLOSE) {
+        this.closePopupForProject(project);
+      } else if (action === this.MAP_COMMANDS.OPEN) {
+        this.openPopupForProject(project);
+      }
     });
 
-    map.on('zoomend', async () => {
-      await smk.$viewer.updateLayersVisible();
-      this.togglePolygonLayers(map.getZoom());
-    });
-    map.on('moveend', async () => {
-      await smk.$viewer.updateLayersVisible();
-      this.togglePolygonLayers(map.getZoom());
-    });
+    this.initMap().then(() => {
+      const smk = this.mapService.getSMKInstance();
+      const map = smk?.$viewer?.map;
 
+      if (!map) return;
 
-    const bcBounds: L.LatLngBoundsExpression = BC_BOUNDS;
+      const bcBounds: L.LatLngBoundsExpression = BC_BOUNDS;
+      map.fitBounds(bcBounds);
+      map.addLayer(this.activityBoundaryGroup);
+      map.addLayer(this.projectBoundaryGroup);
 
-    if (map && typeof (map).fitBounds === 'function') {
-      (map as L.Map).fitBounds(bcBounds);
-    } else {
-      console.warn('Map fitBounds not available on map; skipping initial bounds.');
-    }
-    map.addLayer(this.activityBoundaryGroup);
-    map.addLayer(this.projectBoundaryGroup);
-
-    if (map) {
+      // Add legend + marker cluster
       const legendHelper = new LeafletLegendService();
-      this.legendControl = legendHelper.addLegend(map, this.fiscalColorMap)
+      this.legendControl = legendHelper.addLegend(map, this.fiscalColorMap);
 
       this.markersClusterGroup = L.markerClusterGroup({
         showCoverageOnHover: false,
-        iconCreateFunction: (cluster) => {
-          const count = cluster.getChildCount();
-          return L.divIcon({
-            html: `<div class="cluster-icon"><span>${count}</span></div>`,
+        iconCreateFunction: (cluster) =>
+          L.divIcon({
+            html: `<div class="cluster-icon"><span>${cluster.getChildCount()}</span></div>`,
             className: 'custom-marker-cluster',
             iconSize: L.point(40, 40),
-          });
-        }
+          }),
       });
 
       map.addLayer(this.markersClusterGroup);
-      this.hasClusterBeenAddedToMap = true;
-    }
+      this.isMapReady = true;
 
-    this.isMapReady = true;
-    this.updateMarkers(this.latestProjects);
-  });
+      // Initial load of project locations
+      const currentFilters = this.sharedService.currentFilters || {};
+      this.fetchAndUpdateProjectLocations(currentFilters);
 
-    this.sharedService.selectedProject$.subscribe(project => {
+      this.sharedService.filters$.subscribe((filters) => {
+        if (!this.isMapReady) return;
+        this.fetchAndUpdateProjectLocations(filters || {});
+      });
+    });
+
+    // Handle selected project to open popup
+    this.sharedService.selectedProject$.subscribe((project) => {
       if (!project && this.selectedProject) {
         const previous = this.selectedProject;
         this.selectedProject = undefined;
@@ -174,8 +141,7 @@ ngAfterViewInit(): void {
         this.openPopupForProject(project);
       }
     });
-    
-}
+  }
 
   private async initMap(): Promise<void> {
     try {
@@ -340,7 +306,10 @@ ngAfterViewInit(): void {
     }
   }
 addGeoJsonToLayer(geometry: any, layerGroup: L.LayerGroup, options: L.GeoJSONOptions) {
-  if (!geometry?.type || !geometry?.coordinates) return;
+  if (!geometry?.type || !geometry?.coordinates) {
+    console.warn('map skipping invalid geometry', geometry);
+    return;
+  }
 
   try {
     const geometries: Geometry[] = geometry.type === 'GeometryCollection'
@@ -429,5 +398,140 @@ togglePolygonLayers(zoomLevel: number): void {
     map.removeLayer(this.activityBoundaryGroup);
   }
 }
+
+  private updateProjectMarkersFromLocations(locations: ProjectLocation[]): void {
+    const smk = this.mapService.getSMKInstance();
+    const map = smk?.$viewer?.map;
+
+    if (!map || !this.markersClusterGroup) {
+      console.warn('Map cannot update markers');
+      return;
+    }
+
+    this.markersClusterGroup.clearLayers();
+    this.projectMarkerMap.clear();
+    this.activeMarker = null;
+
+    const validLocations = locations.filter(
+      (loc): loc is Required<ProjectLocation> =>
+        !!loc.projectGuid && loc.latitude !== undefined && loc.longitude !== undefined
+    );
+
+    validLocations.forEach((loc) => {
+      try {
+        const marker = L.marker([loc.latitude, loc.longitude], {
+          icon: getBluePinIcon(),
+        });
+
+        marker.on('mouseover', () => {
+          if (!loc.projectGuid) return;
+          if (this.featureCache.has(loc.projectGuid)) return;
+
+          this.projectService.getFeatureByProjectGuid(loc.projectGuid).subscribe({
+            next: (project) => {
+              if (project) {
+                this.featureCache.set(loc.projectGuid, project);
+                console.log(`prefetched project: ${project.projectName || loc.projectGuid}`);
+              }
+            },
+            error: (err) => {
+              console.error('Error prefetching feature on hover:', err);
+            },
+          });
+        });
+
+        marker.on('click', () => {
+          const projectGuid = loc.projectGuid;
+          if (!projectGuid) return;
+
+          const handleAndShow = (project: Project) => {
+            this.handleProjectClick(project);
+
+            const popupDiv = document.createElement('div');
+            const cmpRef = createComponent(ProjectPopupComponent, {
+              environmentInjector: this.injector,
+            });
+            cmpRef.instance.project = project;
+            cmpRef.instance.map = map;
+            cmpRef.hostView.detectChanges();
+            popupDiv.appendChild(cmpRef.location.nativeElement);
+
+            marker.unbindPopup();
+            marker.bindPopup(popupDiv, {
+              maxWidth: 486,
+              minWidth: 0,
+              autoPan: true,
+            });
+
+            if (this.activeMarker && this.activeMarker !== marker) {
+              this.activeMarker.setIcon(getBluePinIcon());
+            }
+            marker.setIcon(getActivePinIcon());
+            this.activeMarker = marker;
+
+            marker.openPopup();
+          };
+
+          const cached = this.featureCache.get(projectGuid);
+          if (cached) {
+            handleAndShow(cached);
+            return;
+          }
+
+          this.projectService.getFeatureByProjectGuid(projectGuid).subscribe({
+            next: (project) => {
+              if (project) {
+                this.featureCache.set(projectGuid, project);
+                handleAndShow(project);
+              }
+            },
+            error: (err) => {
+              console.error('Map error fetching project on click:', err);
+            },
+          });
+        });
+
+        marker.on('mouseout', () => marker.closeTooltip());
+
+        this.projectMarkerMap.set(loc.projectGuid, marker);
+        this.markersClusterGroup!.addLayer(marker);
+
+      } catch (err) {
+        console.error('Map failed to add marker for location:', loc, err);
+      }
+    });
+
+    console.log(`Map ddded ${validLocations.length} project location markers`);
+  }
+
+
+
+  private handleProjectClick(project: Project): void {
+    const currentList = this.sharedService.currentDisplayedProjects;
+    const alreadyInList = currentList.some(p => p.projectGuid === project.projectGuid);
+
+    if (!alreadyInList) {
+      const updated = [...currentList, project];
+      this.sharedService.updateDisplayedProjects(updated);
+    }
+
+    this.sharedService.selectProject(project);
+    this.openPopupForProject(project);
+  }
+
+  private fetchAndUpdateProjectLocations(filters: any): void {
+    this.projectService.getProjectLocations(filters).subscribe({
+      next: (locations: ProjectLocation[]) => {
+        if (!locations || locations.length === 0) {
+          console.warn('[Map] No project locations found.');
+        }
+        this.updateProjectMarkersFromLocations(locations);
+      },
+      error: (err) => {
+        console.error('Error fetching project locations:', err);
+      },
+    });
+  }
+
 
 }
