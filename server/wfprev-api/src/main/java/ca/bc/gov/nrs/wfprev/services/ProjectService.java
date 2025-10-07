@@ -134,7 +134,6 @@ public class ProjectService implements CommonService {
         }
     }
 
-
     private void initializeNewProject(ProjectModel resource) {
         resource.setProjectGuid(UUID.randomUUID().toString());
         // always set status to active on create

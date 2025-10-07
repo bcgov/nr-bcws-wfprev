@@ -55,6 +55,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 class ProjectServiceTest {
@@ -1125,5 +1127,27 @@ class ProjectServiceTest {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Test
+    void saveProject_throwsIllegalArgument_whenResourceIsNull() {
+        ProjectEntity entity = mock(ProjectEntity.class);
+
+        assertThrows(IllegalArgumentException.class, () ->
+                projectService.saveProject(null, entity)
+        );
+
+        verifyNoInteractions(projectRepository, projectResourceAssembler);
+    }
+
+    @Test
+    void saveProject_throwsIllegalArgument_whenEntityIsNull() {
+        ProjectModel resource = new ProjectModel();
+
+        assertThrows(IllegalArgumentException.class, () ->
+                projectService.saveProject(resource, null)
+        );
+
+        verifyNoInteractions(projectRepository, projectResourceAssembler);
     }
 }
