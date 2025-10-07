@@ -420,6 +420,17 @@
   height: 20px;
 }
 
+.spinner-container {
+  position: absolute;
+  bottom: 100px;
+  left: 320px;
+  z-index: 10;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  pointer-events: none;
+}
+
 ::ng-deep .mat-expansion-panel-body {
   padding: 0 10px 16px !important;
 }

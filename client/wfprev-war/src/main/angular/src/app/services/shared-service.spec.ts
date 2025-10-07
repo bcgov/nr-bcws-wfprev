@@ -171,4 +171,50 @@ describe('SharedService', () => {
     service.triggerMapCommand('open', testProject);
   });
 
+  it('should return the current filters via currentFilters getter', () => {
+    const testFilters = { region: 'South', type: 'Forest' };
+    service.updateFilters(testFilters);
+    expect(service.currentFilters).toEqual(testFilters);
+  });
+
+  it('should return the current displayed projects via currentDisplayedProjects getter', () => {
+    const testProjects: Project[] = [
+      {
+        bcParksRegionOrgUnitId: 10,
+        bcParksSectionOrgUnitId: 110,
+        closestCommunityName: 'Community X',
+        fireCentreOrgUnitId: 210,
+        forestDistrictOrgUnitId: 310,
+        forestRegionOrgUnitId: 410,
+        isMultiFiscalYearProj: false,
+        programAreaGuid: 'program-guid-x',
+        projectDescription: 'Description X',
+        projectGuid: 'project-guid-x',
+        projectLead: 'Lead X',
+        projectLeadEmailAddress: 'leadx@example.com',
+        projectName: 'Project X',
+        projectNumber: 1010,
+        siteUnitName: 'Site X',
+        totalActualAmount: 1000,
+        totalAllocatedAmount: 1500,
+        totalFundingRequestAmount: 2000,
+        totalPlannedCostPerHectare: 100,
+        totalPlannedProjectSizeHa: 10,
+        latitude: 49.5,
+        longitude: -123.5
+      }
+    ];
+
+    service.updateDisplayedProjects(testProjects);
+    expect(service.currentDisplayedProjects).toEqual(testProjects);
+  });
+
+  it('should emit undefined when selectProject is called without arguments', (done) => {
+    service.selectedProject$.subscribe((project) => {
+      expect(project).toBeUndefined();
+      done();
+    });
+    service.selectProject();
+  });
+
 });

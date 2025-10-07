@@ -2,7 +2,7 @@ import { HttpClient, HttpRequest, HttpHeaders, HttpEventType, HttpResponse, Http
 import { Injectable } from "@angular/core";
 import { UUID } from "angular2-uuid";
 import { catchError, map, Observable, throwError } from "rxjs";
-import { ActivityBoundary, EvaluationCriteriaSummaryModel, FeaturesResponse, Project, ProjectBoundary, ProjectFiscal, ReportRequest } from "src/app/components/models";
+import { ActivityBoundary, EvaluationCriteriaSummaryModel, FeaturesResponse, Project, ProjectBoundary, ProjectFiscal, ProjectLocation, ReportRequest } from "src/app/components/models";
 import { AppConfigService } from "src/app/services/app-config.service";
 import { TokenService } from "src/app/services/token.service";
 
@@ -444,39 +444,117 @@ export class ProjectService {
         });
     }
 
-    getFeatures(params?: {
-        programAreaGuid?: string[];
-        fiscalYear?: string[];
-        activityCategoryCode?: string[];
-        planFiscalStatusCode?: string[];
-        forestRegionOrgUnitId?: string[];
-        forestDistrictOrgUnitId?: string[];
-        fireCentreOrgUnitId?: string[];
-        searchText?: string;
-    }): Observable<FeaturesResponse> {
+    getFeatures(
+        params?: {
+            programAreaGuid?: string[];
+            fiscalYear?: string[];
+            activityCategoryCode?: string[];
+            planFiscalStatusCode?: string[];
+            forestRegionOrgUnitId?: string[];
+            forestDistrictOrgUnitId?: string[];
+            fireCentreOrgUnitId?: string[];
+            searchText?: string;
+        },
+        pageNumber: number = 1,
+        pageRowCount: number = 20,
+        sortBy?: string,
+        sortDirection?: string
+        ): Observable<FeaturesResponse> {
         const baseUrl = `${this.appConfigService.getConfig().rest['wfprev']}/wfprev-api/features`;
 
-        let httpParams = new HttpParams();
+        let httpParams = new HttpParams()
+            .set('pageNumber', pageNumber)
+            .set('pageRowCount', pageRowCount);
+
+        if (sortBy) httpParams = httpParams.set('sortBy', sortBy);
+        if (sortDirection) httpParams = httpParams.set('sortDirection', sortDirection);
+
         if (params) {
             for (const key in params) {
-                const value = params[key as keyof typeof params];
-                if (Array.isArray(value)) {
-                    value.forEach(v => httpParams = httpParams.append(key, v));
-                } else if (value) {
-                    httpParams = httpParams.set(key, value);
-                }
+            const value = params[key as keyof typeof params];
+            if (Array.isArray(value)) {
+                value.forEach(v => (httpParams = httpParams.append(key, v)));
+            } else if (value) {
+                httpParams = httpParams.set(key, value);
+            }
             }
         }
 
         return this.httpClient.get<FeaturesResponse>(baseUrl, {
             headers: {
-                Authorization: `Bearer ${this.tokenService.getOauthToken()}`,
+            Authorization: `Bearer ${this.tokenService.getOauthToken()}`,
             },
-            params: httpParams
+            params: httpParams,
         }).pipe(
             catchError((error) => {
-                console.error("Error fetching features", error);
-                return throwError(() => new Error("Failed to fetch features"));
+            console.error('Error fetching features', error);
+            return throwError(() => new Error('Failed to fetch features'));
+            })
+        );
+    }
+
+    getFeatureByProjectGuid(projectGuid: string): Observable<Project | null> {
+        const baseUrl = `${this.appConfigService.getConfig().rest['wfprev']}/wfprev-api/features`;
+        const params = new HttpParams().set('projectGuid', projectGuid);
+
+        return this.httpClient.get<any>(baseUrl, {
+            headers: { Authorization: `Bearer ${this.tokenService.getOauthToken()}` },
+            params,
+        }).pipe(
+            map(response => {
+                if (response?.project) {
+                    return response.project;
+                }
+
+                const embedded = response?._embedded?.project ?? [];
+                return embedded.length > 0 ? embedded[0] : null;
+            }),
+            catchError(error => {
+                console.error('Error fetching feature by projectGuid', error);
+                return throwError(() => new Error('Failed to fetch feature by projectGuid'));
+            })
+        );
+    }
+    getProjectLocations(
+        params?: {
+            programAreaGuid?: string[];
+            fiscalYear?: string[];
+            activityCategoryCode?: string[];
+            planFiscalStatusCode?: string[];
+            forestRegionOrgUnitId?: string[];
+            forestDistrictOrgUnitId?: string[];
+            fireCentreOrgUnitId?: string[];
+            projectTypeCode?: string[];
+            searchText?: string;
+        }
+        ): Observable<ProjectLocation[]> {
+        const baseUrl = `${this.appConfigService.getConfig().rest['wfprev']}/wfprev-api/project-locations`;
+
+        let httpParams = new HttpParams();
+        if (params) {
+            for (const key in params) {
+            const value = params[key as keyof typeof params];
+            if (Array.isArray(value)) {
+                value.forEach(v => (httpParams = httpParams.append(key, v)));
+            } else if (value) {
+                httpParams = httpParams.set(key, value);
+            }
+            }
+        }
+
+        return this.httpClient.get<any>(baseUrl, {
+            headers: {
+            Authorization: `Bearer ${this.tokenService.getOauthToken()}`,
+            },
+            params: httpParams,
+        }).pipe(
+            map(response => {
+            const locations = response?._embedded?.project ?? [];
+            return locations as ProjectLocation[];
+            }),
+            catchError(error => {
+            console.error('Error fetching project locations', error);
+            return throwError(() => new Error('Failed to fetch project locations'));
             })
         );
     }
