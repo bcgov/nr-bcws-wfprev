@@ -48,8 +48,8 @@ public class ProjectFiscalService implements CommonService {
     private static final Map<String, Set<String>> VALID_TRANSITIONS = Map.of(
             DRAFT, Set.of(DRAFT, PROPOSED, PREPARED, CANCELLED),
             PROPOSED, Set.of(DRAFT, PROPOSED, PREPARED, CANCELLED),
-            PREPARED, Set.of(DRAFT, PREPARED, IN_PROG, CANCELLED),
-            IN_PROG, Set.of(DRAFT, COMPLETE, CANCELLED, IN_PROG),
+            PREPARED, Set.of(DRAFT, PROPOSED, PREPARED, IN_PROG, CANCELLED),
+            IN_PROG, Set.of(DRAFT, PROPOSED, COMPLETE, CANCELLED, IN_PROG),
             COMPLETE, Set.of(COMPLETE),
             CANCELLED, Set.of(CANCELLED)
     );
