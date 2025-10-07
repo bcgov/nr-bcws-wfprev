@@ -1199,4 +1199,78 @@ describe('ProjectsListComponent', () => {
     expect(scrollSpy).toHaveBeenCalledWith({ behavior: 'smooth', block: 'center' });
     expect(addClassSpy).toHaveBeenCalledWith('selected-project');
   }));
+
+  describe('addProjectToDisplayedList', () => {
+    let detectChangesSpy: jasmine.Spy;
+    let updateDisplayedProjectsSpy: jasmine.Spy;
+
+    beforeEach(() => {
+      detectChangesSpy = spyOn((component as any).cdr, 'detectChanges');
+      updateDisplayedProjectsSpy = spyOn(component.sharedService, 'updateDisplayedProjects');
+    });
+
+    it('should add a new project when not already present', () => {
+      component.displayedProjects = [
+        { projectGuid: 'existing', projectName: 'A Project' }
+      ];
+      const newProject = { projectGuid: 'new', projectName: 'B Project' };
+
+      (component as any).addProjectToDisplayedList(newProject);
+
+      expect(component.displayedProjects.length).toBe(2);
+      expect(component.displayedProjects.some(p => p.projectGuid === 'new')).toBeTrue();
+      expect(updateDisplayedProjectsSpy).toHaveBeenCalledWith(component.displayedProjects);
+      expect(component.totalItems).toBe(2);
+      expect(detectChangesSpy).toHaveBeenCalled();
+    });
+
+    it('should not add if project already exists', () => {
+      component.displayedProjects = [{ projectGuid: 'dup', projectName: 'Same Project' }];
+      const newProject = { projectGuid: 'dup', projectName: 'Same Project' };
+
+      (component as any).addProjectToDisplayedList(newProject);
+
+      expect(component.displayedProjects.length).toBe(1);
+      expect(updateDisplayedProjectsSpy).not.toHaveBeenCalled();
+    });
+
+    it('should sort ascending when selectedSort is "ascending"', () => {
+      component.selectedSort = 'ascending';
+      component.displayedProjects = [
+        { projectGuid: '1', projectName: 'Z Project' }
+      ];
+      const newProject = { projectGuid: '2', projectName: 'A Project' };
+
+      (component as any).addProjectToDisplayedList(newProject);
+
+      expect(component.displayedProjects[0].projectName).toBe('A Project');
+    });
+
+    it('should sort descending when selectedSort is "descending"', () => {
+      component.selectedSort = 'descending';
+      component.displayedProjects = [
+        { projectGuid: '1', projectName: 'A Project' }
+      ];
+      const newProject = { projectGuid: '2', projectName: 'Z Project' };
+
+      (component as any).addProjectToDisplayedList(newProject);
+
+      expect(component.displayedProjects[0].projectName).toBe('Z Project');
+    });
+
+    it('should not sort if selectedSort is empty', () => {
+      component.selectedSort = '';
+      component.displayedProjects = [
+        { projectGuid: '1', projectName: 'B Project' }
+      ];
+      const newProject = { projectGuid: '2', projectName: 'A Project' };
+
+      (component as any).addProjectToDisplayedList(newProject);
+
+      // Should just append, not reorder
+      expect(component.displayedProjects[0].projectName).toBe('B Project');
+      expect(component.displayedProjects[1].projectName).toBe('A Project');
+    });
+  });
+
 });
