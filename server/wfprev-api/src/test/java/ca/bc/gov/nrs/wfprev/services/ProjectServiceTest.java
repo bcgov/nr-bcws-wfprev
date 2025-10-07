@@ -3,9 +3,24 @@ package ca.bc.gov.nrs.wfprev.services;
 import ca.bc.gov.nrs.wfone.common.service.api.ServiceException;
 import ca.bc.gov.nrs.wfprev.SpringSecurityAuditorAware;
 import ca.bc.gov.nrs.wfprev.data.assemblers.ProjectResourceAssembler;
-import ca.bc.gov.nrs.wfprev.data.entities.*;
-import ca.bc.gov.nrs.wfprev.data.models.*;
-import ca.bc.gov.nrs.wfprev.data.repositories.*;
+import ca.bc.gov.nrs.wfprev.data.entities.ForestAreaCodeEntity;
+import ca.bc.gov.nrs.wfprev.data.entities.GeneralScopeCodeEntity;
+import ca.bc.gov.nrs.wfprev.data.entities.ObjectiveTypeCodeEntity;
+import ca.bc.gov.nrs.wfprev.data.entities.ProjectEntity;
+import ca.bc.gov.nrs.wfprev.data.entities.ProjectStatusCodeEntity;
+import ca.bc.gov.nrs.wfprev.data.entities.ProjectTypeCodeEntity;
+import ca.bc.gov.nrs.wfprev.data.models.ForestAreaCodeModel;
+import ca.bc.gov.nrs.wfprev.data.models.GeneralScopeCodeModel;
+import ca.bc.gov.nrs.wfprev.data.models.ObjectiveTypeCodeModel;
+import ca.bc.gov.nrs.wfprev.data.models.ProjectModel;
+import ca.bc.gov.nrs.wfprev.data.models.ProjectStatusCodeModel;
+import ca.bc.gov.nrs.wfprev.data.models.ProjectTypeCodeModel;
+import ca.bc.gov.nrs.wfprev.data.repositories.ForestAreaCodeRepository;
+import ca.bc.gov.nrs.wfprev.data.repositories.GeneralScopeCodeRepository;
+import ca.bc.gov.nrs.wfprev.data.repositories.ObjectiveTypeCodeRepository;
+import ca.bc.gov.nrs.wfprev.data.repositories.ProjectRepository;
+import ca.bc.gov.nrs.wfprev.data.repositories.ProjectStatusCodeRepository;
+import ca.bc.gov.nrs.wfprev.data.repositories.ProjectTypeCodeRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
@@ -28,9 +43,21 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 class ProjectServiceTest {
     private ProjectService projectService;
@@ -648,14 +675,21 @@ class ProjectServiceTest {
                 .forestAreaCode(forestArea)
                 .build();
 
+        ProjectEntity entity = new ProjectEntity();
+        entity.setProjectName("Test Project");
+        when(projectResourceAssembler.toEntity(any(ProjectModel.class))).thenReturn(entity);
         when(forestAreaCodeRepository.findById("INVALID")).thenReturn(Optional.empty());
         when(springSecurityAuditorAware.getCurrentAuditor()).thenReturn(Optional.of("test-user"));
-        // When/Then
-        IllegalArgumentException exception = assertThrows(
+
+        IllegalArgumentException ex = assertThrows(
                 IllegalArgumentException.class,
                 () -> projectService.createProject(inputModel)
         );
-        assertTrue(exception.getMessage().contains("ForestAreaCode not found: INVALID"));
+
+        assertTrue(
+                ex.getMessage().contains("ForestAreaCode not found: INVALID"),
+                "Unexpected message: " + ex.getMessage()
+        );
     }
 
     @Test
@@ -1035,6 +1069,56 @@ class ProjectServiceTest {
         assertTrue(exception.getMessage().contains("Project name already exists"));
         }
 
+    @Test
+    void test_save_project_trims_name_before_duplicate_check_on_create() {
+        ProjectModel inputModel = ProjectModel.builder()
+                .projectName("  Duplicate Project  ")
+                .build();
+        ProjectEntity entity = ProjectEntity.builder()
+                .projectName("  Duplicate Project  ")
+                .build();
+
+        when(projectRepository.existsByProjectNameIgnoreCase("Duplicate Project")).thenReturn(true);
+
+        ValidationException ex = assertThrows(ValidationException.class,
+                () -> projectService.saveProject(inputModel, entity));
+
+        assertTrue(ex.getMessage().contains("Project name already exists"));
+        verify(projectRepository).existsByProjectNameIgnoreCase("Duplicate Project"); // trimmed
+        verify(projectRepository, never()).saveAndFlush(any());
+    }
+
+    @Test
+    void test_save_project_update_allows_same_guid_same_name() {
+        UUID guid = UUID.randomUUID();
+
+        ProjectModel inputModel = ProjectModel.builder()
+                .projectGuid(guid.toString())
+                .projectName("Same Name")
+                .build();
+        ProjectEntity entity = ProjectEntity.builder()
+                .projectGuid(guid)
+                .projectName("Same Name")
+                .build();
+
+        ProjectEntity same = ProjectEntity.builder()
+                .projectGuid(guid)
+                .projectName("Same Name")
+                .build();
+        when(projectRepository.findByProjectNameIgnoreCase("Same Name"))
+                .thenReturn(Collections.singletonList(same));
+
+        when(projectRepository.saveAndFlush(any(ProjectEntity.class))).thenAnswer(i -> i.getArgument(0));
+        when(projectResourceAssembler.toModel(any(ProjectEntity.class))).thenReturn(inputModel);
+
+        ProjectModel result = projectService.saveProject(inputModel, entity);
+
+        assertNotNull(result);
+        verify(projectRepository).findByProjectNameIgnoreCase("Same Name");
+        verify(projectRepository).saveAndFlush(entity);
+        verify(projectResourceAssembler).toModel(entity);
+    }
+
     private void setField(Object target, String fieldName, Object value) {
         try {
             java.lang.reflect.Field field = target.getClass().getDeclaredField(fieldName);
@@ -1043,5 +1127,27 @@ class ProjectServiceTest {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Test
+    void saveProject_throwsIllegalArgument_whenResourceIsNull() {
+        ProjectEntity entity = mock(ProjectEntity.class);
+
+        assertThrows(IllegalArgumentException.class, () ->
+                projectService.saveProject(null, entity)
+        );
+
+        verifyNoInteractions(projectRepository, projectResourceAssembler);
+    }
+
+    @Test
+    void saveProject_throwsIllegalArgument_whenEntityIsNull() {
+        ProjectModel resource = new ProjectModel();
+
+        assertThrows(IllegalArgumentException.class, () ->
+                projectService.saveProject(resource, null)
+        );
+
+        verifyNoInteractions(projectRepository, projectResourceAssembler);
     }
 }

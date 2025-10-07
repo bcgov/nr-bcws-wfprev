@@ -1,14 +1,22 @@
 package ca.bc.gov.nrs.wfprev.services;
 
 import ca.bc.gov.nrs.wfone.common.service.api.ServiceException;
-import ca.bc.gov.nrs.wfprev.SpringSecurityAuditorAware;
 import ca.bc.gov.nrs.wfprev.common.services.CommonService;
 import ca.bc.gov.nrs.wfprev.data.assemblers.ProjectResourceAssembler;
-import ca.bc.gov.nrs.wfprev.data.entities.*;
+import ca.bc.gov.nrs.wfprev.data.entities.ForestAreaCodeEntity;
+import ca.bc.gov.nrs.wfprev.data.entities.GeneralScopeCodeEntity;
+import ca.bc.gov.nrs.wfprev.data.entities.ObjectiveTypeCodeEntity;
+import ca.bc.gov.nrs.wfprev.data.entities.ProjectEntity;
+import ca.bc.gov.nrs.wfprev.data.entities.ProjectStatusCodeEntity;
+import ca.bc.gov.nrs.wfprev.data.entities.ProjectTypeCodeEntity;
 import ca.bc.gov.nrs.wfprev.data.models.ProjectModel;
 import ca.bc.gov.nrs.wfprev.data.models.ProjectStatusCodeModel;
-import ca.bc.gov.nrs.wfprev.data.models.ProjectTypeCodeModel;
-import ca.bc.gov.nrs.wfprev.data.repositories.*;
+import ca.bc.gov.nrs.wfprev.data.repositories.ForestAreaCodeRepository;
+import ca.bc.gov.nrs.wfprev.data.repositories.GeneralScopeCodeRepository;
+import ca.bc.gov.nrs.wfprev.data.repositories.ObjectiveTypeCodeRepository;
+import ca.bc.gov.nrs.wfprev.data.repositories.ProjectRepository;
+import ca.bc.gov.nrs.wfprev.data.repositories.ProjectStatusCodeRepository;
+import ca.bc.gov.nrs.wfprev.data.repositories.ProjectTypeCodeRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import jakarta.validation.ConstraintViolationException;
@@ -91,27 +99,33 @@ public class ProjectService implements CommonService {
 
     public ProjectModel saveProject(ProjectModel resource, ProjectEntity entity) {
         try {
-            assignAssociatedEntities(resource, entity);
-            String incomingName = entity.getProjectName();
-
-            if (entity.getProjectGuid() != null) {
-                // For updates, check if another project has this name (case-insensitive)
-                boolean duplicateExists = projectRepository.findByProjectNameIgnoreCase(incomingName)
-                        .stream()
-                        .anyMatch(existing -> !existing.getProjectGuid().equals(entity.getProjectGuid()));
-
-                if (duplicateExists) {
-                    throw new ValidationException("Project name already exists: " + incomingName);
-                }
-            } else {
-                // For new projects, case-insensitive exists check
-                if (projectRepository.existsByProjectNameIgnoreCase(incomingName)) {
-                    throw new ValidationException("Project name already exists: " + incomingName);
-                }
+            if (resource == null || entity == null) {
+                throw new IllegalArgumentException("Resource and entity must not be null");
             }
+                assignAssociatedEntities(resource, entity);
 
-            ProjectEntity savedEntity = projectRepository.saveAndFlush(entity);
-            return projectResourceAssembler.toModel(savedEntity);
+                if (entity.getProjectName() != null && !entity.getProjectName().isEmpty()) {
+                    String incomingName = entity.getProjectName().trim();
+
+                    if (entity.getProjectGuid() != null) {
+                        // For updates, check if another project has this name (case-insensitive)
+                        boolean duplicateExists = projectRepository.findByProjectNameIgnoreCase(incomingName)
+                                .stream()
+                                .anyMatch(existing -> !existing.getProjectGuid().equals(entity.getProjectGuid()));
+
+                        if (duplicateExists) {
+                            throw new ValidationException("Project name already exists: " + incomingName);
+                        }
+                    } else {
+                        // For new projects, case-insensitive exists check
+                        if (projectRepository.existsByProjectNameIgnoreCase(incomingName)) {
+                            throw new ValidationException("Project name already exists: " + incomingName);
+                        }
+                    }
+                }
+
+                ProjectEntity savedEntity = projectRepository.saveAndFlush(entity);
+                return projectResourceAssembler.toModel(savedEntity);
 
         } catch (EntityNotFoundException e) {
             throw new ServiceException("Invalid reference data: " + e.getMessage(), e);
@@ -119,7 +133,6 @@ public class ProjectService implements CommonService {
             throw e;
         }
     }
-
 
     private void initializeNewProject(ProjectModel resource) {
         resource.setProjectGuid(UUID.randomUUID().toString());
