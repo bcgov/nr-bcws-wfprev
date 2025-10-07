@@ -676,11 +676,6 @@ class ProjectServiceTest {
         ProjectEntity mapped = new ProjectEntity();
         mapped.setProjectName("Test Project");
         when(projectResourceAssembler.toEntity(any(ProjectModel.class))).thenReturn(mapped);
-
-        ProjectStatusCodeEntity active = new ProjectStatusCodeEntity();
-        active.setProjectStatusCode("ACTIVE");
-        active.setDescription("Active");
-        when(projectStatusCodeRepository.findById("ACTIVE")).thenReturn(Optional.of(active));
         when(forestAreaCodeRepository.findById("INVALID")).thenReturn(Optional.empty());
         when(springSecurityAuditorAware.getCurrentAuditor()).thenReturn(Optional.of("test-user"));
 
