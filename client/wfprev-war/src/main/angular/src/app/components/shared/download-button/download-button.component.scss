@@ -34,3 +34,13 @@
 ::ng-deep .mat-mdc-menu-panel {
     width: 164px !important;
 }
+
+.download-button:hover:not(:disabled) {
+  background-color: var(--wf-colour-lighter-grey) !important; 
+  box-shadow: none;
+}
+
+::ng-deep .download-button .mat-mdc-button-touch-target,
+::ng-deep .download-button .mdc-icon-button__ripple {
+  display: none !important;
+}
