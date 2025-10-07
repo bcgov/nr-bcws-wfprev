@@ -1175,12 +1175,11 @@ describe('ProjectsListComponent', () => {
 
     const mockEl = {
       nativeElement: {
-        getAttribute: (attr: string) => (attr === 'data-guid' ? 'guid-123' : null),
+        dataset: { guid: 'guid-123' },
         scrollIntoView: scrollSpy,
         classList: { add: addClassSpy },
       },
     };
-
     const queryList = new QueryList<ElementRef>();
     queryList.reset([mockEl as unknown as ElementRef]);
     component.panelElements = queryList;

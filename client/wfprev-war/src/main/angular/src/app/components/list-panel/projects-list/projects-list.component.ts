@@ -95,7 +95,7 @@ export class ProjectsListComponent implements OnInit {
       this.cdr.detectChanges();
       setTimeout(() => {
         const element = this.panelElements?.find(
-          el => el.nativeElement.getAttribute('data-guid') === project.projectGuid
+          el => el.nativeElement.dataset.guid === project.projectGuid
         );
 
         if (element) {
@@ -234,17 +234,20 @@ export class ProjectsListComponent implements OnInit {
     if (this.isLoading || !this.hasMore) return;
     this.isLoading = true;
     const filters = this.sharedService.currentFilters || {};
+    
+    let sortBy: string | undefined;
+    let sortDirection: string | undefined;
 
-    const sortBy =
-      this.selectedSort === 'ascending' || this.selectedSort === 'descending'
-        ? 'projectName'
-        : undefined;
-    const sortDirection =
-      this.selectedSort === 'ascending'
-        ? 'asc'
-        : this.selectedSort === 'descending'
-        ? 'desc'
-        : undefined;
+    if (this.selectedSort === 'ascending') {
+      sortBy = 'projectName';
+      sortDirection = 'asc';
+    } else if (this.selectedSort === 'descending') {
+      sortBy = 'projectName';
+      sortDirection = 'desc';
+    } else {
+      sortBy = undefined;
+      sortDirection = undefined;
+    }
 
     this.projectService
       .getFeatures(filters, this.pageNumber, this.pageRowCount, sortBy, sortDirection)
@@ -258,7 +261,7 @@ export class ProjectsListComponent implements OnInit {
             (p, idx, self) =>
               p?.projectGuid && idx === self.findIndex(other => other.projectGuid === p.projectGuid)
           );
-          const sorted = deduped.sort((a, b) => a.projectName.localeCompare(b.projectName));
+          const sorted = [...deduped].sort((a, b) => a.projectName.localeCompare(b.projectName));
           this.allProjects = sorted
           this.displayedProjects = sorted;
           this.sharedService.updateDisplayedProjects(sorted);
@@ -432,7 +435,6 @@ export class ProjectsListComponent implements OnInit {
         });
       };
 
-      const self = this;
 
       // Helper function to generate random polygon points. This will be replaced by /features endpoint in API
       const generatePolygonPoints = (
@@ -443,7 +445,7 @@ export class ProjectsListComponent implements OnInit {
         const points = [];
         for (let i = 0; i < 50; i++) {
           const angle = (i / 50) * Math.PI * 2; // Angle in radians
-          const randomFactor = self.getSecureRandomNumber(); // Secure random value
+          const randomFactor = this.getSecureRandomNumber(); // Secure random value
           const offset = radius + randomFactor * variance - variance / 2; // Randomize radius
           const lat = center.latitude + offset * Math.sin(angle) / 111; // Approx 111 km per degree latitude
           const lng = center.longitude + offset * Math.cos(angle) / (111 * Math.cos(center.latitude * (Math.PI / 180)));
