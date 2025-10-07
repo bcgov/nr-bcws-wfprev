@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { ProjectsListComponent } from './projects-list.component';
 import { By } from '@angular/platform-browser';
-import { DebugElement } from '@angular/core';
+import { DebugElement, ElementRef, QueryList } from '@angular/core';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
@@ -369,14 +369,22 @@ describe('ProjectsListComponent', () => {
   });
 
   it('should sort projects in descending order', () => {
-    component.allProjects = [
+    const mockProjects = [
       { projectName: 'B' },
-      { projectName: 'A' }
+      { projectName: 'A' },
     ];
-    const mockEvent = { target: { value: 'descending' } };
+
+    mockProjectService.getFeatures.and.returnValue(
+      of({ projects: mockProjects, totalItems: 2 } as unknown as FeaturesResponse)
+    );
+
+    const mockEvent = { value: 'descending' };
     component.onSortChange(mockEvent);
+
+    expect(component.allProjects.length).toBe(2);
     expect(component.allProjects[0].projectName).toBe('B');
   });
+
 
   it('should format fiscal activity display correctly', () => {
     expect(component.getFiscalYearDisplay(2023)).toBe('2023/24');
@@ -430,14 +438,26 @@ describe('ProjectsListComponent', () => {
   });
 
   it('should call onSortChange and sort ascending/descending', () => {
-    component.allProjects = [
+    const mockProjects = [
       { projectName: 'B' },
-      { projectName: 'A' }
+      { projectName: 'A' },
     ];
+
+    mockProjectService.getFeatures.and.returnValue(
+      of({ projects: mockProjects, totalItems: 2 } as unknown as FeaturesResponse)
+    );
+
     component.onSortChange({ value: 'ascending' });
-    expect(component.allProjects[0].projectName).toBe('A');
+    expect(component.allProjects[0].projectName).toBe('B');
+    expect(component.allProjects[1].projectName).toBe('A');
+
+    mockProjectService.getFeatures.and.returnValue(
+      of({ projects: mockProjects, totalItems: 2 } as unknown as FeaturesResponse)
+    );
+
     component.onSortChange({ value: 'descending' });
     expect(component.allProjects[0].projectName).toBe('B');
+    expect(component.allProjects[1].projectName).toBe('A');
   });
 
   it('should call createNewProject and open dialog', () => {
@@ -586,7 +606,7 @@ describe('ProjectsListComponent', () => {
         forestRegionOrgUnitId: 5
       },
       {
-        projectGuid: 'guid-z',
+        projectGuid: 'guid-z2',
         projectName: 'A Project',
         bcParksRegionOrgUnitId: 1,
         bcParksSectionOrgUnitId: 2,
@@ -1103,4 +1123,80 @@ describe('ProjectsListComponent', () => {
     });
   });
 
+  it('should call loadProjects on scroll near bottom', () => {
+    spyOn(component, 'loadProjects');
+    component.isLoading = false;
+    component.hasMore = true;
+
+    const scrollable = {
+      scrollHeight: 1000,
+      scrollTop: 960,
+      clientHeight: 50
+    } as any;
+
+    const event = { target: scrollable } as Partial<Event> as Event;
+    component.onScroll(event);
+    expect(component.loadProjects).toHaveBeenCalledWith(false);
+  });
+
+  it('should clear selected project when selectedProject$ emits null', fakeAsync(() => {
+    const mockEl = {
+      nativeElement: {
+        classList: { remove: jasmine.createSpy('remove') }
+      }
+    };
+
+    const queryList = new QueryList<ElementRef>();
+    queryList.reset([mockEl as unknown as ElementRef]);
+    component.panelElements = queryList;
+
+    component.selectedProjectGuid = 'old-guid';
+
+    const detectChangesSpy = spyOn((component as any).cdr, 'detectChanges');
+
+    component.sharedService.selectedProject$ = of(null);
+
+    component.ngOnInit();
+    tick();
+
+    expect(component.selectedProjectGuid).toBeNull();
+    expect(detectChangesSpy).toHaveBeenCalled();
+    expect(mockEl.nativeElement.classList.remove).toHaveBeenCalledWith('selected-project');
+  }));
+
+  it('should update selected project and scroll element into view when selectedProject$ emits a project', fakeAsync(() => {
+    const mockProject = { projectGuid: 'guid-123', projectName: 'Test Project' };
+
+    const addSpy = spyOn(component as any, 'addProjectToDisplayedList');
+    const detectChangesSpy = spyOn((component as any).cdr, 'detectChanges');
+
+    const scrollSpy = jasmine.createSpy('scrollIntoView');
+    const addClassSpy = jasmine.createSpy('add');
+
+    const mockEl = {
+      nativeElement: {
+        getAttribute: (attr: string) => (attr === 'data-guid' ? 'guid-123' : null),
+        scrollIntoView: scrollSpy,
+        classList: { add: addClassSpy },
+      },
+    };
+
+    const queryList = new QueryList<ElementRef>();
+    queryList.reset([mockEl as unknown as ElementRef]);
+    component.panelElements = queryList;
+
+    component.displayedProjects = [];
+
+    component.sharedService.selectedProject$ = of(mockProject);
+
+    component.ngOnInit();
+    tick();
+    tick();
+
+    expect(component.selectedProjectGuid).toBe('guid-123');
+    expect(addSpy).toHaveBeenCalledWith(mockProject);
+    expect(detectChangesSpy).toHaveBeenCalled();
+    expect(scrollSpy).toHaveBeenCalledWith({ behavior: 'smooth', block: 'center' });
+    expect(addClassSpy).toHaveBeenCalledWith('selected-project');
+  }));
 });

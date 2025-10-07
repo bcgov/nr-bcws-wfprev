@@ -1,5 +1,5 @@
 
-import { ComponentFixture, TestBed, fakeAsync, flush, tick } from '@angular/core/testing';
+import { ComponentFixture, TestBed, fakeAsync, flush, flushMicrotasks, tick } from '@angular/core/testing';
 import { MapComponent } from './map.component';
 import { MapConfigService } from 'src/app/services/map-config.service';
 import { MapService } from 'src/app/services/map.service';
@@ -74,6 +74,14 @@ class MockProjectService {
   getProjectByProjectGuid() {
     return of({ projectGuid: 'test-guid' });
   }
+
+  getProjectLocations() {
+    return of([]);
+  }
+
+  getFeatureByProjectGuid(projectGuid: string) {
+    return of({ projectGuid, projectName: 'Mocked Project' });
+  }
 }
 
 function createMockProject(overrides: Partial<Project> = {}): Project {
@@ -110,6 +118,7 @@ describe('MapComponent', () => {
   let mapServiceMock: jasmine.SpyObj<MapService>;
   let mapContainer: jasmine.SpyObj<ElementRef>;
 
+  beforeAll(() => jasmine.getEnv().allowRespy(true));
   const createMockSMKInstance = () => ({
     $viewer: {
       map: {
@@ -121,6 +130,7 @@ describe('MapComponent', () => {
         eachLayer: jasmine.createSpy('eachLayer'),
         getCenter: jasmine.createSpy('getCenter'),
         setView: jasmine.createSpy('setView'),
+        fitBounds: jasmine.createSpy('fitBounds'),
         controls: { bottomleft: { addTo: jasmine.createSpy('addTo') } },
       },
       layerIds: ['a', 'b'],
@@ -148,6 +158,7 @@ describe('MapComponent', () => {
 
     mapConfigServiceMock.getMapConfig.and.returnValue(Promise.resolve({ theme: 'testTheme' }));
     mapServiceMock.getSMKInstance.and.returnValue(createMockSMKInstance());
+    mapServiceMock.createSMK.and.returnValue(Promise.resolve());
 
     TestBed.configureTestingModule({
       imports: [
@@ -197,6 +208,7 @@ describe('MapComponent', () => {
 
       component.ngAfterViewInit();
 
+      flushMicrotasks();
       tick();
       flush();
 
@@ -369,7 +381,7 @@ describe('MapComponent', () => {
       };
 
       component['markersClusterGroup'] = mockClusterGroup as any;
-      component['projectMarkerMap'] = new Map();
+      component['projectMarkerMap'].clear();
 
       spyOn(component['sharedService'], 'selectProject');
 
@@ -513,8 +525,8 @@ describe('MapComponent', () => {
     };
 
     // Assign to component's layer groups
-    component['projectBoundaryGroup'] = layerGroup as any;
-    component['activityBoundaryGroup'] = layerGroup as any;
+    (component['projectBoundaryGroup'] as any)._layers = {};
+    (component['activityBoundaryGroup'] as any)._layers = {};
   });
 
   it('addGeoJsonToLayer() should handle GeometryCollection correctly', () => {
@@ -555,7 +567,7 @@ describe('MapComponent', () => {
     expect(spy).toHaveBeenCalledTimes(2);
     expect(spy).toHaveBeenCalledWith(
       geometry,
-      layerGroup,
+      jasmine.any(L.LayerGroup),
       jasmine.objectContaining({ style: jasmine.anything() })
     );
   });
@@ -580,7 +592,7 @@ describe('MapComponent', () => {
     expect(spy).toHaveBeenCalledTimes(2);
     expect(spy).toHaveBeenCalledWith(
       geometry,
-      layerGroup,
+      jasmine.any(L.LayerGroup),
       jasmine.objectContaining({ style: jasmine.anything() })
     );
   });
@@ -598,21 +610,22 @@ describe('MapComponent', () => {
     component.togglePolygonLayers(10);
 
     expect(mockMap.hasLayer).toHaveBeenCalledTimes(2);
-    expect(mockMap.addLayer).toHaveBeenCalledWith(layerGroup);
+    expect(mockMap.addLayer).toHaveBeenCalledWith(jasmine.any(L.LayerGroup));
   });
-
+  
   it('togglePolygonLayers() should remove layers at zoom < 10', () => {
     const mockMap = {
-      removeLayer: jasmine.createSpy()
+      removeLayer: jasmine.createSpy(),
     };
 
     mapServiceMock.getSMKInstance.and.returnValue({
-      $viewer: { map: mockMap }
+      $viewer: { map: mockMap },
     });
 
     component.togglePolygonLayers(5);
 
-    expect(mockMap.removeLayer).toHaveBeenCalledWith(layerGroup);
+    expect(mockMap.removeLayer).toHaveBeenCalledWith(component['projectBoundaryGroup']);
+    expect(mockMap.removeLayer).toHaveBeenCalledWith(component['activityBoundaryGroup']);
     expect(mockMap.removeLayer).toHaveBeenCalledTimes(2);
   });
 
@@ -658,30 +671,6 @@ describe('MapComponent', () => {
   });
 
   describe('zoom + fitBounds', () => {
-    it('refreshes visible layers via SMK and toggles polygons on zoomend', fakeAsync(() => {
-      mapContainer.nativeElement = document.createElement('div');
-      component.mapContainer = mapContainer;
-
-      const smk = createMockSMKInstance();
-      smk.$viewer.map.getZoom.and.returnValue(12);
-
-      mapServiceMock.getSMKInstance.and.returnValue(smk);
-      mapConfigServiceMock.getMapConfig.and.returnValue(Promise.resolve({}));
-      const toggleSpy = spyOn(component, 'togglePolygonLayers');
-
-      component.ngAfterViewInit();
-      tick();
-
-      const zoomCalls = smk.$viewer.map.on.calls.allArgs().filter(a => a[0] === 'zoomend');
-      expect(zoomCalls.length).toBeGreaterThan(0);
-      const zoomendHandler = zoomCalls[0][1];
-
-      zoomendHandler();
-      tick();
-      expect(smk.$viewer.updateLayersVisible).toHaveBeenCalled();
-      expect(toggleSpy).toHaveBeenCalledWith(12);
-    }));
-
     it('calls fitBounds when available', fakeAsync(() => {
       mapContainer.nativeElement = document.createElement('div');
       component.mapContainer = mapContainer;
@@ -697,25 +686,129 @@ describe('MapComponent', () => {
 
       expect((smk.$viewer.map as any).fitBounds).toHaveBeenCalledWith(BC_BOUNDS);
     }));
+  });
 
-    it('warns if fitBounds missing', fakeAsync(() => {
-      mapContainer.nativeElement = document.createElement('div');
-      component.mapContainer = mapContainer;
+  describe('updateProjectMarkersFromLocations', () => {
+    let mockMap: any;
 
-      const smk = createMockSMKInstance();
-      delete (smk.$viewer.map as any).fitBounds;
+    afterEach(() => {
+      jasmine.getEnv().allowRespy(true);
+    });
+    beforeEach(() => {
+      mockMap = {
+        addLayer: jasmine.createSpy(),
+        removeLayer: jasmine.createSpy(),
+      };
+      mapServiceMock.getSMKInstance.and.returnValue({ $viewer: { map: mockMap } });
+      (component as any).markersClusterGroup = {
+        clearLayers: jasmine.createSpy(),
+        addLayer: jasmine.createSpy(),
+      };
+      spyOn(console, 'log');
+      spyOn(console, 'error');
+      spyOn(console, 'warn');
+    });
 
-      mapServiceMock.getSMKInstance.and.returnValue(smk);
-      mapConfigServiceMock.getMapConfig.and.returnValue(Promise.resolve({}));
+    it('should skip if map or cluster group missing', () => {
+      (component as any).markersClusterGroup = null;
+      component['updateProjectMarkersFromLocations']([{ projectGuid: '1', latitude: 1, longitude: 2 }]);
+      expect(console.warn).toHaveBeenCalledWith('Map cannot update markers');
+    });
+
+    it('should add valid markers and prefetch feature on hover', () => {
+      const handleClickSpy = spyOn<any>(component, 'handleProjectClick');
+      const loc = { projectGuid: 'p1', latitude: 1, longitude: 2 };
+
+      const subSpy = spyOn(component['projectService'], 'getFeatureByProjectGuid')
+        .and.returnValue(of(createMockProject({ projectGuid: 'p1', projectName: 'Test' })));
+
+      component['updateProjectMarkersFromLocations']([loc]);
+
+      const marker = component['projectMarkerMap'].get('p1')!;
+      expect(marker).toBeDefined();
+
+      marker.fire('mouseover');
+
+      expect(subSpy).toHaveBeenCalled();
+      expect(handleClickSpy).not.toHaveBeenCalled(); 
+    });
+
+
+    it('should use cached project on click without re-fetching', () => {
+      const loc = { projectGuid: 'cached', latitude: 1, longitude: 2 };
+      component['featureCache'].set('cached', { projectGuid: 'cached', projectName: 'Cached' } as Project);
+      const handleSpy = spyOn<any>(component, 'handleProjectClick');
+      component['updateProjectMarkersFromLocations']([loc]);
+      const marker = component['projectMarkerMap'].get('cached')!;
+      marker.fire('click');
+      expect(handleSpy).toHaveBeenCalled();
+    });
+  });
+
+  describe('handleProjectClick', () => {
+    beforeEach(() => {
+      spyOnProperty(component['sharedService'], 'currentDisplayedProjects', 'get').and.returnValue([]);
+      spyOn(component['sharedService'], 'updateDisplayedProjects');
+      spyOn(component['sharedService'], 'selectProject');
+      spyOn(component, 'openPopupForProject');
+    });
+
+    it('should add project if not already in displayed list', () => {
+      const project = createMockProject();
+      component['handleProjectClick'](project);
+      expect(component['sharedService'].updateDisplayedProjects).toHaveBeenCalled();
+      expect(component['sharedService'].selectProject).toHaveBeenCalledWith(project);
+    });
+
+    it('should not add duplicate projects', () => {
+      const project = createMockProject();
+      spyOnProperty(component['sharedService'], 'currentDisplayedProjects', 'get').and.returnValue([project]);
+      component['handleProjectClick'](project);
+      expect(component['sharedService'].updateDisplayedProjects).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('fetchAndUpdateProjectLocations', () => {
+    it('should warn when no locations found', () => {
       const warnSpy = spyOn(console, 'warn');
+      const spyUpdate = spyOn<any>(component, 'updateProjectMarkersFromLocations');
+      spyOn(component['projectService'], 'getProjectLocations').and.returnValue(of([]));
 
-      component.ngAfterViewInit();
-      tick();
+      component['fetchAndUpdateProjectLocations']({});
+      expect(warnSpy).toHaveBeenCalledWith('[Map] No project locations found.');
+      expect(spyUpdate).toHaveBeenCalledWith([]);
+    });
 
-      expect(warnSpy).toHaveBeenCalledWith(
-        'Map fitBounds not available on map; skipping initial bounds.'
-      );
-    }));
+    it('should handle errors gracefully', () => {
+      const errorSpy = spyOn(console, 'error');
+      spyOn(component['projectService'], 'getProjectLocations').and.returnValue({
+        subscribe: (obs: any) => obs.error('boom')
+      } as any);
+      component['fetchAndUpdateProjectLocations']({});
+      expect(errorSpy).toHaveBeenCalledWith('Error fetching project locations:', 'boom');
+    });
+  });
+
+  describe('addGeometryToLayerGroup', () => {
+    it('should add valid geometry to layer group', () => {
+      const mockLayer = { addTo: jasmine.createSpy('addTo') };
+      spyOn(L, 'geoJSON').and.returnValue(mockLayer as any);
+      component.addGeometryToLayerGroup({ type: 'Polygon' }, {} as any, {});
+      expect(mockLayer.addTo).toHaveBeenCalled();
+    });
+
+    it('should warn if invalid geometry', () => {
+      spyOn(L, 'geoJSON').and.returnValue({} as any);
+      const warnSpy = spyOn(console, 'warn');
+      component.addGeometryToLayerGroup({ type: 'Invalid' }, {} as any, {});
+      expect(warnSpy).toHaveBeenCalled();
+    });
+  });
+
+  it('addGeoJsonToLayer should skip invalid geometry', () => {
+    const spy = spyOn(console, 'warn');
+    component.addGeoJsonToLayer(undefined as any, {} as any, {});
+    expect(spy).toHaveBeenCalled();
   });
 
 

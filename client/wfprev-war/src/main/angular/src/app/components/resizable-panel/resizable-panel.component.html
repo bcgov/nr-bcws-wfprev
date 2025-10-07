@@ -1,5 +1,5 @@
 <div class="resizable-panel">
-  <div class="scrollable-content">
+  <div class="scrollable-content" (scroll)="onParentScroll($event)">
     <wfprev-projects-list #projectList></wfprev-projects-list>
   </div>
 </div>

@@ -971,4 +971,69 @@ describe('ProjectService', () => {
     req.flush('Error', { status: 500, statusText: 'Server Error' });
   });
 
+  it('should fetch project locations with query params', () => {
+    const mockResponse = {
+      _embedded: {
+        project: [
+          {
+            projectGuid: 'guid-1',
+            projectName: 'Fuel Management',
+            latitude: 49.1,
+            longitude: -123.1
+          },
+          {
+            projectGuid: 'guid-2',
+            projectName: 'Fire Prevention',
+            latitude: 49.2,
+            longitude: -123.2
+          }
+        ]
+      }
+    };
+
+    const params = {
+      programAreaGuid: ['area-1'],
+      fiscalYear: ['2024'],
+      searchText: 'fuel'
+    };
+
+    service.getProjectLocations(params).subscribe((locations: any[]) => {
+      expect(locations.length).toBe(2);
+      expect(locations[0].projectName).toBe('Fuel Management');
+      expect(locations[1].latitude).toBe(49.2);
+    });
+
+    const req = httpMock.expectOne((request) => {
+      return (
+        request.url === 'http://mock-api.com/wfprev-api/project-locations' &&
+        request.params.has('programAreaGuid') &&
+        request.params.has('fiscalYear') &&
+        request.params.get('searchText') === 'fuel'
+      );
+    });
+
+    expect(req.request.method).toBe('GET');
+    expect(req.request.headers.get('Authorization')).toBe('Bearer mock-token');
+    req.flush(mockResponse);
+  });
+
+  it('should handle errors when fetching project locations', () => {
+    const params = { searchText: 'fire' };
+
+    service.getProjectLocations(params).subscribe({
+      next: () => fail('Should have failed'),
+      error: (err) => {
+        expect(err).toBeTruthy();
+        expect(err.message).toBe('Failed to fetch project locations');
+      },
+    });
+
+    const req = httpMock.expectOne(
+      (request) => request.url === 'http://mock-api.com/wfprev-api/project-locations'
+    );
+
+    expect(req.request.method).toBe('GET');
+    req.flush('Error', { status: 500, statusText: 'Server Error' });
+  });
+
 });

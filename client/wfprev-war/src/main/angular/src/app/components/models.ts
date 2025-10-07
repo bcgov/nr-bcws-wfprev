@@ -203,6 +203,16 @@ export interface ProjectFile {
 
 export interface FeaturesResponse {
   projects?: ProjectExtended[];
+  currentPage?: number;
+  pageSize?: number;
+  totalItems?: number;
+  totalPages?: number;
+}
+
+export interface ProjectLocation {
+  projectGuid?: string
+  latitude?: number;
+  longitude?: number
 }
 
 export interface ProjectExtended extends Project {
