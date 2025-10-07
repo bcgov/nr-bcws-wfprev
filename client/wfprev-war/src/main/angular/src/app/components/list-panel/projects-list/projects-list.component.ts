@@ -281,11 +281,14 @@ export class ProjectsListComponent implements OnInit {
 
   onScroll(event: Event): void {
     const target = event.target as HTMLElement;
-
-    const atBottom =
-      target.scrollHeight - target.scrollTop <= target.clientHeight + 50; // 50px threshold
-
-    if (atBottom && !this.isLoading && this.hasMore) {
+  
+    const scrollPosition = target.scrollTop + target.clientHeight;
+    const middleThreshold = target.scrollHeight / 2;
+  
+    // trigger load when user passes halfway point
+    const atMiddle = scrollPosition >= middleThreshold;
+  
+    if (atMiddle && !this.isLoading && this.hasMore) {
       this.loadProjects(false);
     }
   }
