@@ -5,7 +5,8 @@ import { BC_BOUNDS } from 'src/app/utils/constants';
 export class MapService {
   private mapIndex: number = 0;
   baseMapIds: string[] = [];
-  private readonly smkBaseUrl = `${window.location.protocol}//${window.location.host}/assets/smk/`;
+  private readonly smkBaseUrl = `${globalThis.location.protocol}//${globalThis.location.host}/assets/smk/`;
+
   private smkInstance: any = null;
 
   getMapIndex(): number {
@@ -21,7 +22,7 @@ export class MapService {
   }
 
   async createSMK(option: any): Promise<any> {
-    const SMK = (window as any)['SMK'];
+    const SMK = (globalThis as any)['SMK'];
 
     await this.patch();
 
@@ -30,7 +31,7 @@ export class MapService {
       if (!option.config) {
         option.config = [];
       } else if (!Array.isArray(option.config)) {
-        throw new Error('option.config is not an array');
+        throw new TypeError('option.config must be an array');
       }
 
       // Push the configuration
@@ -90,7 +91,7 @@ export class MapService {
 
   public async patch(): Promise<any> {
     try {
-      const SMK = (window as any)['SMK'];
+      const SMK = (globalThis as any)['SMK'];
       SMK.HANDLER.set('BespokeTool--full-extent', 'triggered', (smk: any, tool: any) => {
         const viewer = smk?.$viewer;
         if (!viewer) return;
@@ -161,8 +162,8 @@ export class MapService {
     }
   }
 
-  clone(o: any) {
-    return JSON.parse(JSON.stringify(o));
+  clone<T>(obj: T): T {
+    return structuredClone(obj);
   }
 
   defineOpenStreetMapLayer() {
@@ -172,7 +173,7 @@ export class MapService {
       maxZoom: 19,
     });
     this.baseMapIds.push('openstreetmap');
-    (window as any)['SMK'].TYPE.Viewer.prototype.basemap['openstreetmap'] = {
+    (globalThis as any)['SMK'].TYPE.Viewer.prototype.basemap['openstreetmap'] = {
       title: 'OpenStreetMap',
       create() {
         return [osm];
@@ -262,7 +263,7 @@ export class MapService {
 
     // Override SMK’s legend initializer
     WmsLeaflet.prototype.initLegends = function () {
-      const J = (window as any).jQuery || (window as any).$;
+      const J = (globalThis as any).jQuery || (globalThis as any).$;
 
       // Build a base GetLegendGraphic request
       const svc = this.config.serviceUrl || '';
@@ -331,7 +332,7 @@ export class MapService {
                       url: dataUrl,
                       width: img.width,
                       height: img.height,
-                      ...(this.config.legend || {}),
+                      ...this.config.legend,
                     },
                   ]);
                 img.onerror = () => reject(new Error('Failed to load legend image'));
@@ -368,7 +369,9 @@ export class MapService {
 
       // If this node is an array, process each element
       if (Array.isArray(node)) {
-        node.forEach(applyVisibility);
+        for (const child of node) {
+          applyVisibility(child);
+        }
         return;
       }
 
@@ -378,7 +381,9 @@ export class MapService {
         // Hide the group itself and recurse into children
         node.visible = false;
         node.isVisible = false; // some configs use this for UI
-        children.forEach(applyVisibility);
+        for (const child of children) {
+          applyVisibility(child);
+        }
         return;
       }
 
@@ -395,11 +400,10 @@ export class MapService {
       applyVisibility(option.layers);
     }
     if (Array.isArray(option.config)) {
-      option.config.forEach((block: any) => {
+      for (const block of option.config) {
         if (Array.isArray(block?.layers)) applyVisibility(block.layers);
         if (Array.isArray(block?.entries)) applyVisibility(block.entries);
-      });
+      }
     }
   }
-
 }
