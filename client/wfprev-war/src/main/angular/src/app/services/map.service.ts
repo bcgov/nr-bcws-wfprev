@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { BC_BOUNDS } from 'src/app/utils/constants';
 
 @Injectable({ providedIn: 'root' })
 export class MapService {
@@ -35,7 +36,20 @@ export class MapService {
 
       // Push the configuration
       option.config.push({
-        tools: [{ type: 'baseMaps' }],
+        tools: [
+          { type: 'baseMaps' },
+          {
+            type: 'bespoke',
+            instance: 'full-extent',
+            title: 'Zoom to Full Extent',
+            enabled: true,
+            position: 'actionbar',
+            showTitle: false,
+            showPanel: false,
+            icon: 'zoom_out_map',
+            order: 3,
+          },
+        ],
       });
 
       // force regions only to be visible on load
@@ -79,6 +93,13 @@ export class MapService {
     try {
       const mapService = this;
       const SMK = (window as any)['SMK'];
+      SMK.HANDLER.set('BespokeTool--full-extent', 'triggered', (smk: any, tool: any) => {
+        const viewer = smk?.$viewer;
+        if (!viewer) return;
+        const bounds = BC_BOUNDS;
+        viewer.map.fitBounds(bounds, { animate: true });
+      });
+
 
       console.log('start patching SMK');
 
