@@ -195,7 +195,8 @@ describe('MapService', () => {
         style: {},
         parentElement: {
           removeChild: jasmine.createSpy('removeChild')
-        }
+        },
+        remove: jasmine.createSpy('remove')
       };
       spyOn(document, 'createElement').and.returnValue(mockTemp);
       spyOn(document.body, 'appendChild');
@@ -219,7 +220,7 @@ describe('MapService', () => {
       });
 
       // Verify cleanup
-      expect(mockTemp.parentElement.removeChild).toHaveBeenCalledWith(mockTemp);
+      expect(mockTemp.remove).toHaveBeenCalled();
     });
 
     it('should define OpenStreetMap layer', async () => {

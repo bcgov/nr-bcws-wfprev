@@ -22,7 +22,6 @@ export class MapService {
 
   async createSMK(option: any): Promise<any> {
     const SMK = (window as any)['SMK'];
-    const mapService = this;
 
     await this.patch();
 
@@ -60,7 +59,7 @@ export class MapService {
 
       // Initialize SMK
       const smk = await SMK.INIT({
-        baseUrl: mapService.smkBaseUrl,
+        baseUrl: this.smkBaseUrl,
         ...option,
       });
 
@@ -91,7 +90,6 @@ export class MapService {
 
   public async patch(): Promise<any> {
     try {
-      const mapService = this;
       const SMK = (window as any)['SMK'];
       SMK.HANDLER.set('BespokeTool--full-extent', 'triggered', (smk: any, tool: any) => {
         const viewer = smk?.$viewer;
@@ -121,7 +119,7 @@ export class MapService {
       const smk = await SMK.INIT({
         id: 999,
         containerSel: temp,
-        baseUrl: mapService.smkBaseUrl,
+        baseUrl: this.smkBaseUrl,
         config: 'show-tool=bespoke',
       });
 
@@ -129,7 +127,7 @@ export class MapService {
 
       this.defineOpenStreetMapLayer();
       smk.destroy();
-      temp?.parentElement?.removeChild(temp);
+      temp.remove();
 
       // Patch the SMK Viewer functionality
       SMK.TYPE.Viewer.leaflet.prototype.mapResized = () => {
@@ -156,8 +154,7 @@ export class MapService {
 
       console.log('done patching SMK');
 
-      // Return a resolved promise explicitly for compatibility
-      return Promise.resolve();
+      return;
     } catch (error) {
       console.error('Error occurred during patching:', error);
       throw error; // Re-throw the error to propagate it to the caller
@@ -230,7 +227,7 @@ export class MapService {
               const filteredFeatures = features.filter((f: any) => {
                 const props = f?.properties || f?.attributes || f;
                 const yearValue = props?.fire_year ?? props?.FIRE_YEAR ?? props?.fireYear;
-                const yearNumber = typeof yearValue === 'string' ? parseInt(yearValue, 10) : yearValue;
+                const yearNumber = typeof yearValue === 'string' ? Number.parseInt(yearValue, 10) : yearValue;
                 return Number.isFinite(yearNumber) && yearNumber === currentFireYear;
               });
 
