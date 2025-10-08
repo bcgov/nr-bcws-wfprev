@@ -272,287 +272,287 @@ describe('MapService', () => {
   });
 
   describe('filterWildfireLayersByCurrentYear', () => {
-  const callFn = async (option: any) =>
-    (service as any).filterWildfireLayersByCurrentYear(option);
+    const callFn = async (option: any) =>
+      (service as any).filterWildfireLayersByCurrentYear(option);
 
-  let originalFetch: any;
-  let createObjUrlSpy: jasmine.Spy;
+    let originalFetch: any;
+    let createObjUrlSpy: jasmine.Spy;
 
-  beforeEach(() => {
-    // Fix current fire year to a known value
-    spyOn(service as any, 'getCurrentFireYear').and.returnValue(2024);
+    beforeEach(() => {
+      // Fix current fire year to a known value
+      spyOn(service as any, 'getCurrentFireYear').and.returnValue(2024);
 
-    // Stub URL.createObjectURL so we can assert deterministic values
-    createObjUrlSpy = spyOn(URL, 'createObjectURL').and.callFake(() => 'blob://test-url');
+      // Stub URL.createObjectURL so we can assert deterministic values
+      createObjUrlSpy = spyOn(URL, 'createObjectURL').and.callFake(() => 'blob://test-url');
 
-    // Mock fetch
-    originalFetch = (window as any).fetch;
-    (window as any).fetch = jasmine
-      .createSpy('fetch')
-      .and.callFake((_url: string, _opts: any) =>
-        Promise.resolve(new Response(
-          JSON.stringify({
-            type: 'FeatureCollection',
-            features: [
-              { properties: { FIRE_YEAR: 2024 }, geometry: null },
-              { properties: { FIRE_YEAR: 2023 }, geometry: null },
-              { properties: { fire_year: '2024' }, geometry: null },
-            ],
-          }),
-          { status: 200, headers: { 'Content-Type': 'application/json' } }
-        ))
-      );
-  });
-
-  afterEach(() => {
-    (window as any).fetch = originalFetch;
-  });
-
-  it('filters features by current fire year and swaps to a blob dataUrl', async () => {
-    const option = {
-      config: [{
-        layers: [
-          { id: 'active-wildfires-out-of-control', type: 'vector', dataUrl: '/api/wf/ooc', header: { Authorization: 'Bearer X' } },
-          { id: 'active-wildfires-holding', type: 'vector', dataUrl: '/api/wf/hold', header: { Authorization: 'Bearer X' } },
-          { id: 'some-other-layer', type: 'vector', dataUrl: '/api/other' },
-        ],
-      }],
-    };
-
-    await callFn(option);
-
-    const ooc = option.config[0].layers[0];
-    const hold = option.config[0].layers[1];
-    const other = option.config[0].layers[2];
-
-    // Blob URL is applied to wildfire layers only
-    expect(ooc.dataUrl).toBe('blob://test-url');
-    expect(hold.dataUrl).toBe('blob://test-url');
-    // non-target layer untouched
-    expect(other.dataUrl).toBe('/api/other');
-
-    // headers removed for blob URLs
-    expect(ooc.header).toBeUndefined();
-    expect(hold.header).toBeUndefined();
-
-    // We created blob URLs
-    expect(createObjUrlSpy).toHaveBeenCalled();
-    // Fetch called twice (two target layers)
-    expect((window as any).fetch).toHaveBeenCalledTimes(2);
-  });
-
-  it('leaves layer untouched when fetch fails', async () => {
-    (window as any).fetch = jasmine
-      .createSpy('fetch')
-      .and.returnValue(Promise.resolve(new Response(null, { status: 403 })));
-
-    const option = {
-      config: [{
-        layers: [{ id: 'active-wildfires-under-control', type: 'vector', dataUrl: '/api/wf/uc', header: { k: 'v' } }],
-      }],
-    };
-
-    await callFn(option);
-
-    const lyr = option.config[0].layers[0];
-    expect(lyr.dataUrl).toBe('/api/wf/uc'); 
-    expect(lyr.header).toEqual({ k: 'v' }); 
-  });
-});
-
-describe('installAuthenticatedLegendPatch', () => {
-  let patchFn: (SMK: any) => void;   
-  let originalFetch: any;
-  let originalFileReader: any;
-  let originalImage: any;
-
-  beforeEach(() => {
-    // Resolve the patch function now that `service` is initialized by outer beforeEach
-    patchFn =
-      ((service as any)?.installAuthenticatedLegendPatch as ((SMK: any) => void)) ||
-      ((window as any).installAuthenticatedLegendPatch as ((SMK: any) => void));
-
-    // Minimal SMK scaffold
-    (window as any).SMK = (window as any).SMK || {};
-    (window as any).SMK.TYPE = {
-      Layer: {
-        wms: {
-          leaflet: function () {},
-        },
-      },
-    };
-
-    // Prototype we’ll patch
-    (window as any).SMK.TYPE.Layer.wms.leaflet.prototype = {
-      initLegends: jasmine.createSpy('initLegends').and.returnValue(Promise.resolve([{ url: 'orig.png' }])),
-      config: {
-        serviceUrl: 'https://wms.example.com/wms',
-        layerName: 'My:Layer',
-        styleName: 'default',
-        header: { Authorization: 'Bearer X' },
-        legend: { someOpt: true },
-      },
-    };
-
-    // Mock fetch -> tiny "png" blob
-    originalFetch = (window as any).fetch;
-    (window as any).fetch = jasmine.createSpy('fetch').and.callFake((_url: string) => {
-      const bytes = new Uint8Array([137, 80, 78, 71]);
-      const blob = new Blob([bytes], { type: 'image/png' });
-      return Promise.resolve(new Response(blob, { status: 200 }));
-    });
-
-    // Mock FileReader -> immediate onload with data URL
-    originalFileReader = (window as any).FileReader;
-    (window as any).FileReader = function () {} as any;
-    (window as any).FileReader.prototype.readAsDataURL = function (_blob: Blob) {
-      setTimeout(() => this.onload && this.onload({} as any), 0);
-    };
-    Object.defineProperty((window as any).FileReader.prototype, 'result', {
-      get: () => 'data:image/png;base64,AAA',
-    });
-
-    // Mock Image -> immediate onload with dimensions
-    originalImage = (window as any).Image;
-    (window as any).Image = function () {
-      return {
-        set src(_v: string) {
-          setTimeout(() => this.onload && this.onload({} as any), 0);
-        },
-        onload: null as any,
-        onerror: null as any,
-        width: 16,
-        height: 10,
-      };
-    } as any;
-  });
-
-  afterEach(() => {
-    (window as any).fetch = originalFetch;
-    (window as any).FileReader = originalFileReader;
-    (window as any).Image = originalImage;
-  });
-
-  it('patches WMS legend fetch to include headers and return inline legend', async () => {
-    expect(typeof patchFn).toBe('function'); 
-
-    // Apply the patch
-    patchFn((window as any).SMK);
-
-    const proto = (window as any).SMK.TYPE.Layer.wms.leaflet.prototype;
-
-    // Guard flag set
-    expect((proto as any).__authLegendPatched).toBeTrue();
-
-    // Call patched init
-    const legends = await proto.initLegends();
-    expect(Array.isArray(legends)).toBeTrue();
-    expect(legends[0].url).toBe('data:image/png;base64,AAA');
-    expect(legends[0].width).toBe(16);
-    expect(legends[0].height).toBe(10);
-
-    // Fetch used with auth headers
-    expect((window as any).fetch).toHaveBeenCalled();
-    const [, opts] = (window as any).fetch.calls.mostRecent().args;
-    expect(opts.headers).toEqual({ Authorization: 'Bearer X' });
-  });
-
-  it('falls back to original initLegends on HTTP error', async () => {
-    (window as any).fetch = jasmine
-      .createSpy('fetch')
-      .and.returnValue(Promise.resolve(new Response(null, { status: 500 })));
-
-    patchFn((window as any).SMK);
-
-    const proto = (window as any).SMK.TYPE.Layer.wms.leaflet.prototype;
-    const legends = await proto.initLegends();
-
-    expect(legends).toEqual([{ url: 'orig.png' }]); // fallback path
-  });
-});
-
-describe('makeOnlyRegionsVisible', () => {
-  // Loose node type just for tests so TS accepts visible/isVisible on literals
-  type LayerNode = {
-    id?: string;
-    visible?: boolean;
-    isVisible?: boolean;
-    layers?: LayerNode[];
-    entries?: LayerNode[];
-  };
-
-  it('hides all layers except ministry-of-forests-regions', () => {
-    const option: {
-      layers: LayerNode[];
-      config: { layers?: LayerNode[]; entries?: LayerNode[] }[];
-    } = {
-      layers: [
-        { id: 'ministry-of-forests-regions' },
-        { id: 'ministry-of-forests-districts' },
-      ],
-      config: [
-        {
-          layers: [
-            { id: 'wildfire-org-unit-fire-centre' },
-            { id: 'fire-perimeters' },
-          ],
-          entries: [
-            { id: 'active-wildfires-out-of-control' },
-            { id: 'active-wildfires-holding' },
-          ],
-        },
-      ],
-    };
-
-    (service as any).makeOnlyRegionsVisible(option);
-
-    // top-level layers
-    expect(option.layers[0]!.visible).toBeTrue();
-    expect(option.layers[0]!.isVisible).toBeTrue();
-    expect(option.layers[1]!.visible).toBeFalse();
-    expect(option.layers[1]!.isVisible).toBeFalse();
-
-    // nested config layers
-    expect(option.config[0].layers![0]!.visible).toBeFalse();
-    expect(option.config[0].layers![0]!.isVisible).toBeFalse();
-    expect(option.config[0].layers![1]!.visible).toBeFalse();
-
-    // entries
-    expect(option.config[0].entries![0]!.visible).toBeFalse();
-    expect(option.config[0].entries![1]!.visible).toBeFalse();
-  });
-
-  it('handles nested groups by hiding the group and applying rules to children', () => {
-    const option: { config: { layers: LayerNode[] }[] } = {
-      config: [
-        {
-          layers: [
-            {
-              // group/folder
-              layers: [
-                { id: 'ministry-of-forests-regions' },
-                { id: 'active-wildfires-out-of-control' },
+      // Mock fetch
+      originalFetch = (window as any).fetch;
+      (window as any).fetch = jasmine
+        .createSpy('fetch')
+        .and.callFake((_url: string, _opts: any) =>
+          Promise.resolve(new Response(
+            JSON.stringify({
+              type: 'FeatureCollection',
+              features: [
+                { properties: { FIRE_YEAR: 2024 }, geometry: null },
+                { properties: { FIRE_YEAR: 2023 }, geometry: null },
+                { properties: { fire_year: '2024' }, geometry: null },
               ],
-            },
+            }),
+            { status: 200, headers: { 'Content-Type': 'application/json' } }
+          ))
+        );
+    });
+
+    afterEach(() => {
+      (window as any).fetch = originalFetch;
+    });
+
+    it('filters features by current fire year and swaps to a blob dataUrl', async () => {
+      const option = {
+        config: [{
+          layers: [
+            { id: 'active-wildfires-out-of-control', type: 'vector', dataUrl: '/api/wf/ooc', header: { Authorization: 'Bearer X' } },
+            { id: 'active-wildfires-holding', type: 'vector', dataUrl: '/api/wf/hold', header: { Authorization: 'Bearer X' } },
+            { id: 'some-other-layer', type: 'vector', dataUrl: '/api/other' },
           ],
-        },
-      ],
-    };
+        }],
+      };
 
-    (service as any).makeOnlyRegionsVisible(option);
+      await callFn(option);
 
-    const group = option.config[0].layers[0] as LayerNode;
-    expect(group.visible).toBeFalse();
-    expect(group.isVisible).toBeFalse();
+      const ooc = option.config[0].layers[0];
+      const hold = option.config[0].layers[1];
+      const other = option.config[0].layers[2];
 
-    // children processed
-    expect(group.layers![0]!.visible).toBeTrue();   // regions shown
-    expect(group.layers![0]!.isVisible).toBeTrue();
-    expect(group.layers![1]!.visible).toBeFalse();  // others hidden
-    expect(group.layers![1]!.isVisible).toBeFalse();
+      // Blob URL is applied to wildfire layers only
+      expect(ooc.dataUrl).toBe('blob://test-url');
+      expect(hold.dataUrl).toBe('blob://test-url');
+      // non-target layer untouched
+      expect(other.dataUrl).toBe('/api/other');
+
+      // headers removed for blob URLs
+      expect(ooc.header).toBeUndefined();
+      expect(hold.header).toBeUndefined();
+
+      // We created blob URLs
+      expect(createObjUrlSpy).toHaveBeenCalled();
+      // Fetch called twice (two target layers)
+      expect((window as any).fetch).toHaveBeenCalledTimes(2);
+    });
+
+    it('leaves layer untouched when fetch fails', async () => {
+      (window as any).fetch = jasmine
+        .createSpy('fetch')
+        .and.returnValue(Promise.resolve(new Response(null, { status: 403 })));
+
+      const option = {
+        config: [{
+          layers: [{ id: 'active-wildfires-under-control', type: 'vector', dataUrl: '/api/wf/uc', header: { k: 'v' } }],
+        }],
+      };
+
+      await callFn(option);
+
+      const lyr = option.config[0].layers[0];
+      expect(lyr.dataUrl).toBe('/api/wf/uc');
+      expect(lyr.header).toEqual({ k: 'v' });
+    });
   });
 
-  it('is a no-op when there are no layers/entries in option', () => {
+  describe('installAuthenticatedLegendPatch', () => {
+    let patchFn: (SMK: any) => void;
+    let originalFetch: any;
+    let originalFileReader: any;
+    let originalImage: any;
+
+    beforeEach(() => {
+      // Resolve the patch function now that `service` is initialized by outer beforeEach
+      patchFn =
+        ((service as any)?.installAuthenticatedLegendPatch as ((SMK: any) => void)) ||
+        ((window as any).installAuthenticatedLegendPatch as ((SMK: any) => void));
+
+      // Minimal SMK scaffold
+      (window as any).SMK = (window as any).SMK || {};
+      (window as any).SMK.TYPE = {
+        Layer: {
+          wms: {
+            leaflet: function () { },
+          },
+        },
+      };
+
+      // Prototype we’ll patch
+      (window as any).SMK.TYPE.Layer.wms.leaflet.prototype = {
+        initLegends: jasmine.createSpy('initLegends').and.returnValue(Promise.resolve([{ url: 'orig.png' }])),
+        config: {
+          serviceUrl: 'https://wms.example.com/wms',
+          layerName: 'My:Layer',
+          styleName: 'default',
+          header: { Authorization: 'Bearer X' },
+          legend: { someOpt: true },
+        },
+      };
+
+      // Mock fetch -> tiny "png" blob
+      originalFetch = (window as any).fetch;
+      (window as any).fetch = jasmine.createSpy('fetch').and.callFake((_url: string) => {
+        const bytes = new Uint8Array([137, 80, 78, 71]);
+        const blob = new Blob([bytes], { type: 'image/png' });
+        return Promise.resolve(new Response(blob, { status: 200 }));
+      });
+
+      // Mock FileReader -> immediate onload with data URL
+      originalFileReader = (window as any).FileReader;
+      (window as any).FileReader = function () { } as any;
+      (window as any).FileReader.prototype.readAsDataURL = function (_blob: Blob) {
+        setTimeout(() => this.onload && this.onload({} as any), 0);
+      };
+      Object.defineProperty((window as any).FileReader.prototype, 'result', {
+        get: () => 'data:image/png;base64,AAA',
+      });
+
+      // Mock Image -> immediate onload with dimensions
+      originalImage = (window as any).Image;
+      (window as any).Image = function () {
+        return {
+          set src(_v: string) {
+            setTimeout(() => this.onload && this.onload({} as any), 0);
+          },
+          onload: null as any,
+          onerror: null as any,
+          width: 16,
+          height: 10,
+        };
+      } as any;
+    });
+
+    afterEach(() => {
+      (window as any).fetch = originalFetch;
+      (window as any).FileReader = originalFileReader;
+      (window as any).Image = originalImage;
+    });
+
+    it('patches WMS legend fetch to include headers and return inline legend', async () => {
+      expect(typeof patchFn).toBe('function');
+
+      // Apply the patch
+      patchFn((window as any).SMK);
+
+      const proto = (window as any).SMK.TYPE.Layer.wms.leaflet.prototype;
+
+      // Guard flag set
+      expect((proto as any).__authLegendPatched).toBeTrue();
+
+      // Call patched init
+      const legends = await proto.initLegends();
+      expect(Array.isArray(legends)).toBeTrue();
+      expect(legends[0].url).toBe('data:image/png;base64,AAA');
+      expect(legends[0].width).toBe(16);
+      expect(legends[0].height).toBe(10);
+
+      // Fetch used with auth headers
+      expect((window as any).fetch).toHaveBeenCalled();
+      const [, opts] = (window as any).fetch.calls.mostRecent().args;
+      expect(opts.headers).toEqual({ Authorization: 'Bearer X' });
+    });
+
+    it('falls back to original initLegends on HTTP error', async () => {
+      (window as any).fetch = jasmine
+        .createSpy('fetch')
+        .and.returnValue(Promise.resolve(new Response(null, { status: 500 })));
+
+      patchFn((window as any).SMK);
+
+      const proto = (window as any).SMK.TYPE.Layer.wms.leaflet.prototype;
+      const legends = await proto.initLegends();
+
+      expect(legends).toEqual([{ url: 'orig.png' }]); // fallback path
+    });
+  });
+
+  describe('makeOnlyRegionsVisible', () => {
+    // Loose node type just for tests so TS accepts visible/isVisible on literals
+    type LayerNode = {
+      id?: string;
+      visible?: boolean;
+      isVisible?: boolean;
+      layers?: LayerNode[];
+      entries?: LayerNode[];
+    };
+
+    it('hides all layers except ministry-of-forests-regions', () => {
+      const option: {
+        layers: LayerNode[];
+        config: { layers?: LayerNode[]; entries?: LayerNode[] }[];
+      } = {
+        layers: [
+          { id: 'ministry-of-forests-regions' },
+          { id: 'ministry-of-forests-districts' },
+        ],
+        config: [
+          {
+            layers: [
+              { id: 'wildfire-org-unit-fire-centre' },
+              { id: 'fire-perimeters' },
+            ],
+            entries: [
+              { id: 'active-wildfires-out-of-control' },
+              { id: 'active-wildfires-holding' },
+            ],
+          },
+        ],
+      };
+
+      (service as any).makeOnlyRegionsVisible(option);
+
+      // top-level layers
+      expect(option.layers[0]!.visible).toBeTrue();
+      expect(option.layers[0]!.isVisible).toBeTrue();
+      expect(option.layers[1]!.visible).toBeFalse();
+      expect(option.layers[1]!.isVisible).toBeFalse();
+
+      // nested config layers
+      expect(option.config[0].layers![0]!.visible).toBeFalse();
+      expect(option.config[0].layers![0]!.isVisible).toBeFalse();
+      expect(option.config[0].layers![1]!.visible).toBeFalse();
+
+      // entries
+      expect(option.config[0].entries![0]!.visible).toBeFalse();
+      expect(option.config[0].entries![1]!.visible).toBeFalse();
+    });
+
+    it('handles nested groups by hiding the group and applying rules to children', () => {
+      const option: { config: { layers: LayerNode[] }[] } = {
+        config: [
+          {
+            layers: [
+              {
+                // group/folder
+                layers: [
+                  { id: 'ministry-of-forests-regions' },
+                  { id: 'active-wildfires-out-of-control' },
+                ],
+              },
+            ],
+          },
+        ],
+      };
+
+      (service as any).makeOnlyRegionsVisible(option);
+
+      const group = option.config[0].layers[0] as LayerNode;
+      expect(group.visible).toBeFalse();
+      expect(group.isVisible).toBeFalse();
+
+      // children processed
+      expect(group.layers![0]!.visible).toBeTrue();   // regions shown
+      expect(group.layers![0]!.isVisible).toBeTrue();
+      expect(group.layers![1]!.visible).toBeFalse();  // others hidden
+      expect(group.layers![1]!.isVisible).toBeFalse();
+    });
+
+    it('is a no-op when there are no layers/entries in option', () => {
       const option: { layers?: LayerNode[]; config?: { layers?: LayerNode[]; entries?: LayerNode[] }[] } = {};
       (service as any).makeOnlyRegionsVisible(option);
       expect(option.layers).toBeUndefined();
@@ -578,6 +578,104 @@ describe('makeOnlyRegionsVisible', () => {
     handlerFn(smkMock, {});
 
     expect(fitBounds).toHaveBeenCalledWith(BC_BOUNDS, { animate: true });
+  });
+
+  describe('destroySMK', () => {
+    let errSpy: jasmine.Spy;
+
+    beforeEach(() => {
+      errSpy = spyOn(console, 'error'); // keep logs quiet in tests
+    });
+
+    it('returns immediately when there is no smkInstance', async () => {
+      (service as any).smkInstance = null;
+      const clearSpy = spyOn(service, 'clearSMKInstance').and.callThrough();
+
+      await service.destroySMK();
+
+      expect(clearSpy).not.toHaveBeenCalled();
+      expect(errSpy).not.toHaveBeenCalled();
+    });
+
+    it('calls destroy() when present and clears the instance', async () => {
+      const destroy = jasmine.createSpy('destroy');
+      (service as any).smkInstance = { destroy };
+      const clearSpy = spyOn(service, 'clearSMKInstance').and.callThrough();
+
+      await service.destroySMK();
+
+      expect(destroy).toHaveBeenCalled();
+      expect(clearSpy).toHaveBeenCalled();
+      expect(service.getSMKInstance()).toBeNull();
+    });
+
+    it('is safe when destroy() is missing (still clears)', async () => {
+      (service as any).smkInstance = { foo: 'bar' };
+      const clearSpy = spyOn(service, 'clearSMKInstance').and.callThrough();
+
+      await service.destroySMK();
+
+      expect(clearSpy).toHaveBeenCalled();
+      expect(service.getSMKInstance()).toBeNull();
+    });
+
+    it('catches errors from destroy() but still clears and scrubs container', async () => {
+      const destroy = jasmine.createSpy('destroy').and.callFake(() => { throw new Error('boom'); });
+      (service as any).smkInstance = { destroy };
+
+      // Arrange: a container to scrub
+      const el = document.createElement('div');
+      el.id = 'map';
+      el.appendChild(document.createElement('span')); // something to prove it gets replaced
+      document.body.appendChild(el);
+      service.setContainerId('map');
+
+      const clearSpy = spyOn(service, 'clearSMKInstance').and.callThrough();
+
+      // Act
+      await service.destroySMK();
+
+      // Assert
+      expect(destroy).toHaveBeenCalled();                // attempted
+      expect(errSpy).toHaveBeenCalled();                 // error logged
+      expect(clearSpy).toHaveBeenCalled();               // cleared anyway
+      expect(service.getSMKInstance()).toBeNull();       // instance gone
+
+      // The node should be replaced (no child span now)
+      const after = document.getElementById('map')!;
+      expect(after).toBeTruthy();
+      expect(after.children.length).toBe(0);
+    });
+
+    it('scrubs the container element when present', async () => {
+      const destroy = jasmine.createSpy('destroy');
+      (service as any).smkInstance = { destroy };
+
+      const el = document.createElement('div');
+      el.id = 'map';
+      el.appendChild(document.createElement('span'));
+      document.body.appendChild(el);
+      service.setContainerId('map');
+
+      await service.destroySMK();
+
+      const after = document.getElementById('map')!;
+      expect(after).toBeTruthy();
+      expect(after.children.length).toBe(0);
+    });
+
+    it('does not throw if a containerId is set but element is missing', async () => {
+      const destroy = jasmine.createSpy('destroy');
+      (service as any).smkInstance = { destroy };
+
+      service.setContainerId('no-such-element'); // element not in DOM
+
+      await service.destroySMK();
+
+      // No uncaught exception
+      expect(destroy).toHaveBeenCalled();
+      expect(service.getSMKInstance()).toBeNull();
+    });
   });
 
 });

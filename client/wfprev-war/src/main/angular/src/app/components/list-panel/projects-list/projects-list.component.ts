@@ -23,6 +23,7 @@ import { DownloadButtonComponent } from 'src/app/components/shared/download-butt
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ReportRequest } from '../../models';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MapService } from 'src/app/services/map.service';
 
 @Component({
   selector: 'wfprev-projects-list',
@@ -66,7 +67,8 @@ export class ProjectsListComponent implements OnInit {
     private readonly sharedCodeTableService: SharedCodeTableService,
     public readonly sharedService: SharedService,
     private readonly cdr: ChangeDetectorRef,
-    private readonly snackbarService: MatSnackBar
+    private readonly snackbarService: MatSnackBar,
+    private readonly mapService: MapService
   ) {
   }
   ngOnInit(): void {
@@ -331,8 +333,9 @@ export class ProjectsListComponent implements OnInit {
   }
 
 
-  editProject(project: any, event: Event) {
+  async editProject(project: any, event: Event) {
     event.stopPropagation();
+    await this.mapService.destroySMK();
     this.router.navigate([ResourcesRoutes.EDIT_PROJECT], {
       queryParams: { projectGuid: project.projectGuid }
     });

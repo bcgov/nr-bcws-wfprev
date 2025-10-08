@@ -60,16 +60,10 @@ export class MapComponent implements AfterViewInit, OnDestroy  {
     private readonly projectService: ProjectService
   ) {}
 
-  ngOnDestroy(): void {
-    const smk = this.mapService.getSMKInstance();
-    if (typeof smk?.destroy === 'function') {
-      smk.destroy();
-    }
-    this.mapService.clearSMKInstance();
+  async ngOnDestroy(): Promise<void> {
+    await this.mapService.destroySMK();
   }
 
-
-    
   ngAfterViewInit(): void {
     if (!this.mapContainer?.nativeElement) {
       console.error('Map container is not available.');
@@ -78,6 +72,7 @@ export class MapComponent implements AfterViewInit, OnDestroy  {
 
     this.mapIndex = this.mapService.getMapIndex();
     this.mapService.setMapIndex(this.mapIndex + 1);
+    this.mapService.setContainerId('map');
 
     // Handle open/close project popups
     this.sharedService.mapCommand$.subscribe(({ action, project }) => {

@@ -153,7 +153,7 @@ describe('MapComponent', () => {
     });
 
     mapConfigServiceMock = jasmine.createSpyObj<MapConfigService>('MapConfigService', ['getMapConfig']);
-    mapServiceMock = jasmine.createSpyObj<MapService>('MapService', ['getMapIndex', 'setMapIndex', 'createSMK', 'getSMKInstance','clearSMKInstance']);
+    mapServiceMock = jasmine.createSpyObj<MapService>('MapService', ['getMapIndex', 'setMapIndex', 'createSMK', 'getSMKInstance','clearSMKInstance', 'setContainerId', 'destroySMK']);
     mapContainer = jasmine.createSpyObj('ElementRef', ['nativeElement']);
 
     mapConfigServiceMock.getMapConfig.and.returnValue(Promise.resolve({ theme: 'testTheme' }));
@@ -314,8 +314,7 @@ describe('MapComponent', () => {
 
     component.ngOnDestroy();
 
-    expect(destroySpy).toHaveBeenCalled();
-    expect(mapServiceMock.clearSMKInstance).toHaveBeenCalled();
+    expect(mapServiceMock.destroySMK).toHaveBeenCalled();
   });
 
   it('should only call clearSMKInstance if smk has no destroy method', () => {
@@ -327,7 +326,7 @@ describe('MapComponent', () => {
 
     component.ngOnDestroy();
 
-    expect(mapServiceMock.clearSMKInstance).toHaveBeenCalled();
+    expect(mapServiceMock.destroySMK).toHaveBeenCalled();
   });
 
   it('should do nothing if no smk instance exists', () => {
@@ -335,7 +334,7 @@ describe('MapComponent', () => {
 
     component.ngOnDestroy();
 
-    expect(mapServiceMock.clearSMKInstance).toHaveBeenCalled();
+    expect(mapServiceMock.destroySMK).toHaveBeenCalled();
   });
 });
 
