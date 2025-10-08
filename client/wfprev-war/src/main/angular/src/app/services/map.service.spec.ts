@@ -1,5 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { MapService } from './map.service';
+import { BC_BOUNDS } from 'src/app/utils/constants';
 
 describe('MapService', () => {
   let service: MapService;
@@ -13,6 +14,9 @@ describe('MapService', () => {
       INIT: jasmine.createSpy('INIT').and.returnValue(Promise.resolve({
         destroy: jasmine.createSpy('destroy')
       })),
+      HANDLER: {
+        set: jasmine.createSpy('set')
+      },
       TYPE: {
         Viewer: {
           leaflet: {
@@ -89,11 +93,23 @@ describe('MapService', () => {
       expect(mockSMK.INIT).toHaveBeenCalledWith({
         baseUrl: `${window.location.protocol}//${window.location.host}/assets/smk/`,
         config: [{
-          tools: [{
-            type: 'baseMaps'
-          }]
-        }]
+          tools: [
+            { type: 'baseMaps' },
+            {
+              type: 'bespoke',
+              instance: 'full-extent',
+              title: 'Zoom to Full Extent',
+              enabled: true,
+              position: 'actionbar',
+              showTitle: false,
+              showPanel: false,
+              icon: 'zoom_out_map',
+              order: 3,
+            },
+          ],
+        }],
       });
+
     });
 
     it('should handle existing config array', async () => {
@@ -107,13 +123,25 @@ describe('MapService', () => {
         config: [
           { existingConfig: true },
           {
-            tools: [{
-              type: 'baseMaps'
-            }]
-          }
-        ]
+            tools: [
+              { type: 'baseMaps' },
+              {
+                type: 'bespoke',
+                instance: 'full-extent',
+                title: 'Zoom to Full Extent',
+                enabled: true,
+                position: 'actionbar',
+                showTitle: false,
+                showPanel: false,
+                icon: 'zoom_out_map',
+                order: 3,
+              },
+            ],
+          },
+        ],
       });
     });
+
 
     it('should throw error if config is not an array', async () => {
       const option = {
@@ -167,7 +195,8 @@ describe('MapService', () => {
         style: {},
         parentElement: {
           removeChild: jasmine.createSpy('removeChild')
-        }
+        },
+        remove: jasmine.createSpy('remove')
       };
       spyOn(document, 'createElement').and.returnValue(mockTemp);
       spyOn(document.body, 'appendChild');
@@ -191,7 +220,7 @@ describe('MapService', () => {
       });
 
       // Verify cleanup
-      expect(mockTemp.parentElement.removeChild).toHaveBeenCalledWith(mockTemp);
+      expect(mockTemp.remove).toHaveBeenCalled();
     });
 
     it('should define OpenStreetMap layer', async () => {
@@ -524,11 +553,31 @@ describe('makeOnlyRegionsVisible', () => {
   });
 
   it('is a no-op when there are no layers/entries in option', () => {
-    const option: { layers?: LayerNode[]; config?: { layers?: LayerNode[]; entries?: LayerNode[] }[] } = {};
-    (service as any).makeOnlyRegionsVisible(option);
-    expect(option.layers).toBeUndefined();
-    expect(option.config).toBeUndefined();
+      const option: { layers?: LayerNode[]; config?: { layers?: LayerNode[]; entries?: LayerNode[] }[] } = {};
+      (service as any).makeOnlyRegionsVisible(option);
+      expect(option.layers).toBeUndefined();
+      expect(option.config).toBeUndefined();
+    });
   });
-});
+
+  it('should register the full-extent handler and call fitBounds when triggered', async () => {
+    const fitBounds = jasmine.createSpy('fitBounds');
+    const viewerMock = { map: { fitBounds } };
+    const smkMock = { $viewer: viewerMock };
+
+    await service.patch();
+
+    expect(mockSMK.HANDLER.set).toHaveBeenCalledWith(
+      'BespokeTool--full-extent',
+      'triggered',
+      jasmine.any(Function)
+    );
+
+    const handlerFn = mockSMK.HANDLER.set.calls.mostRecent().args[2];
+
+    handlerFn(smkMock, {});
+
+    expect(fitBounds).toHaveBeenCalledWith(BC_BOUNDS, { animate: true });
+  });
 
 });

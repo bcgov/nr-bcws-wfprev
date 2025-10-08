@@ -1,10 +1,12 @@
 import { Injectable } from '@angular/core';
+import { BC_BOUNDS } from 'src/app/utils/constants';
 
 @Injectable({ providedIn: 'root' })
 export class MapService {
   private mapIndex: number = 0;
   baseMapIds: string[] = [];
-  private readonly smkBaseUrl = `${window.location.protocol}//${window.location.host}/assets/smk/`;
+  private readonly smkBaseUrl = `${globalThis.location.protocol}//${globalThis.location.host}/assets/smk/`;
+
   private smkInstance: any = null;
 
   getMapIndex(): number {
@@ -20,8 +22,7 @@ export class MapService {
   }
 
   async createSMK(option: any): Promise<any> {
-    const SMK = (window as any)['SMK'];
-    const mapService = this;
+    const SMK = (globalThis as any)['SMK'];
 
     await this.patch();
 
@@ -30,12 +31,25 @@ export class MapService {
       if (!option.config) {
         option.config = [];
       } else if (!Array.isArray(option.config)) {
-        throw new Error('option.config is not an array');
+        throw new TypeError('option.config must be an array');
       }
 
       // Push the configuration
       option.config.push({
-        tools: [{ type: 'baseMaps' }],
+        tools: [
+          { type: 'baseMaps' },
+          {
+            type: 'bespoke',
+            instance: 'full-extent',
+            title: 'Zoom to Full Extent',
+            enabled: true,
+            position: 'actionbar',
+            showTitle: false,
+            showPanel: false,
+            icon: 'zoom_out_map',
+            order: 3,
+          },
+        ],
       });
 
       // force regions only to be visible on load
@@ -46,7 +60,7 @@ export class MapService {
 
       // Initialize SMK
       const smk = await SMK.INIT({
-        baseUrl: mapService.smkBaseUrl,
+        baseUrl: this.smkBaseUrl,
         ...option,
       });
 
@@ -77,8 +91,14 @@ export class MapService {
 
   public async patch(): Promise<any> {
     try {
-      const mapService = this;
-      const SMK = (window as any)['SMK'];
+      const SMK = (globalThis as any)['SMK'];
+      SMK.HANDLER.set('BespokeTool--full-extent', 'triggered', (smk: any, tool: any) => {
+        const viewer = smk?.$viewer;
+        if (!viewer) return;
+        const bounds = BC_BOUNDS;
+        viewer.map.fitBounds(bounds, { animate: true });
+      });
+
 
       console.log('start patching SMK');
 
@@ -100,7 +120,7 @@ export class MapService {
       const smk = await SMK.INIT({
         id: 999,
         containerSel: temp,
-        baseUrl: mapService.smkBaseUrl,
+        baseUrl: this.smkBaseUrl,
         config: 'show-tool=bespoke',
       });
 
@@ -108,7 +128,7 @@ export class MapService {
 
       this.defineOpenStreetMapLayer();
       smk.destroy();
-      temp?.parentElement?.removeChild(temp);
+      temp.remove();
 
       // Patch the SMK Viewer functionality
       SMK.TYPE.Viewer.leaflet.prototype.mapResized = () => {
@@ -135,16 +155,15 @@ export class MapService {
 
       console.log('done patching SMK');
 
-      // Return a resolved promise explicitly for compatibility
-      return Promise.resolve();
+      return;
     } catch (error) {
       console.error('Error occurred during patching:', error);
       throw error; // Re-throw the error to propagate it to the caller
     }
   }
 
-  clone(o: any) {
-    return JSON.parse(JSON.stringify(o));
+  clone<T>(obj: T): T {
+    return structuredClone(obj);
   }
 
   defineOpenStreetMapLayer() {
@@ -154,7 +173,7 @@ export class MapService {
       maxZoom: 19,
     });
     this.baseMapIds.push('openstreetmap');
-    (window as any)['SMK'].TYPE.Viewer.prototype.basemap['openstreetmap'] = {
+    (globalThis as any)['SMK'].TYPE.Viewer.prototype.basemap['openstreetmap'] = {
       title: 'OpenStreetMap',
       create() {
         return [osm];
@@ -209,7 +228,7 @@ export class MapService {
               const filteredFeatures = features.filter((f: any) => {
                 const props = f?.properties || f?.attributes || f;
                 const yearValue = props?.fire_year ?? props?.FIRE_YEAR ?? props?.fireYear;
-                const yearNumber = typeof yearValue === 'string' ? parseInt(yearValue, 10) : yearValue;
+                const yearNumber = typeof yearValue === 'string' ? Number.parseInt(yearValue, 10) : yearValue;
                 return Number.isFinite(yearNumber) && yearNumber === currentFireYear;
               });
 
@@ -244,7 +263,7 @@ export class MapService {
 
     // Override SMK’s legend initializer
     WmsLeaflet.prototype.initLegends = function () {
-      const J = (window as any).jQuery || (window as any).$;
+      const J = (globalThis as any).jQuery || (globalThis as any).$;
 
       // Build a base GetLegendGraphic request
       const svc = this.config.serviceUrl || '';
@@ -313,7 +332,7 @@ export class MapService {
                       url: dataUrl,
                       width: img.width,
                       height: img.height,
-                      ...(this.config.legend || {}),
+                      ...this.config.legend,
                     },
                   ]);
                 img.onerror = () => reject(new Error('Failed to load legend image'));
@@ -350,7 +369,9 @@ export class MapService {
 
       // If this node is an array, process each element
       if (Array.isArray(node)) {
-        node.forEach(applyVisibility);
+        for (const child of node) {
+          applyVisibility(child);
+        }
         return;
       }
 
@@ -360,7 +381,9 @@ export class MapService {
         // Hide the group itself and recurse into children
         node.visible = false;
         node.isVisible = false; // some configs use this for UI
-        children.forEach(applyVisibility);
+        for (const child of children) {
+          applyVisibility(child);
+        }
         return;
       }
 
@@ -377,11 +400,10 @@ export class MapService {
       applyVisibility(option.layers);
     }
     if (Array.isArray(option.config)) {
-      option.config.forEach((block: any) => {
+      for (const block of option.config) {
         if (Array.isArray(block?.layers)) applyVisibility(block.layers);
         if (Array.isArray(block?.entries)) applyVisibility(block.entries);
-      });
+      }
     }
   }
-
 }
