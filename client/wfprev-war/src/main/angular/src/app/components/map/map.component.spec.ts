@@ -311,7 +311,6 @@ describe('MapComponent', () => {
     };
 
     mapServiceMock.getSMKInstance.and.returnValue(smkMock);
-    mapServiceMock.clearSMKInstance = jasmine.createSpy('clearSMKInstance');
 
     component.ngOnDestroy();
 
@@ -325,7 +324,6 @@ describe('MapComponent', () => {
     };
 
     mapServiceMock.getSMKInstance.and.returnValue(smkMock);
-    mapServiceMock.clearSMKInstance = jasmine.createSpy('clearSMKInstance');
 
     component.ngOnDestroy();
 
@@ -334,7 +332,6 @@ describe('MapComponent', () => {
 
   it('should do nothing if no smk instance exists', () => {
     mapServiceMock.getSMKInstance.and.returnValue(null);
-    mapServiceMock.clearSMKInstance = jasmine.createSpy('clearSMKInstance');
 
     component.ngOnDestroy();
 
