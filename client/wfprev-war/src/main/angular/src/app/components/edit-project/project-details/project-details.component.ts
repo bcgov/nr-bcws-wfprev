@@ -491,6 +491,7 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
               this.patchFormValues(data); // Update the form with the latest data
               this.originalFormValues = this.detailsForm.getRawValue(); // Update original form values
               this.detailsForm.markAsPristine(); // Mark the form as pristine
+              this.projectNameChange.emit(data.projectName);
               this.isSaving = false;
             }
           })
