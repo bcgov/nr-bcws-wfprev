@@ -135,7 +135,7 @@ export class EvaluationCriteriaDialogComponent implements OnInit {
 
           this.fineFilters = this.evaluationCriteriaCode
             .filter(c => (c.weightedRank ?? 0) < 1)
-            .sort((a, b) => (a.criteriaLabel ?? '').localeCompare(b.criteriaLabel ?? ''))
+            .sort((a, b) => (b.weightedRank ?? 0) - (a.weightedRank ?? 0));
         }
 
         if (type === ProjectTypes.CULTURAL_PRESCRIBED_FIRE) {
@@ -398,7 +398,7 @@ export class EvaluationCriteriaDialogComponent implements OnInit {
   }
 
   formatCodeLabel(code: string | undefined): string {
-    return code ? code.replace(/_/g, ' ') : '';
+    return code ? code.replaceAll(/_/g, ' ') : '';
   }
 
   prefillFromEvaluationCriteriaSummary(): void {

@@ -511,6 +511,29 @@ describe('EvaluationCriteriaDialogComponent', () => {
     expect(component.criteriaForm.get('fineFilterComments')?.value).toBe('');
   });
 
+    it('should correctly filter and sort fineFilters where weightedRank < 1', () => {
+      component.data.project.projectTypeCode = { projectTypeCode: 'FUEL_MGMT' };
+
+      const evalCriteria = {
+        _embedded: {
+          evaluationCriteriaCode: [
+            { projectTypeCode: 'FUEL_MGMT', weightedRank: 0.8, evaluationCriteriaGuid: 'f1' },
+            { projectTypeCode: 'FUEL_MGMT', weightedRank: 0.5, evaluationCriteriaGuid: 'f2' },
+            { projectTypeCode: 'FUEL_MGMT', weightedRank: 1.5, evaluationCriteriaGuid: 'm1' },
+            { projectTypeCode: 'FUEL_MGMT', weightedRank: 2, evaluationCriteriaGuid: 'm2' }
+          ]
+        }
+      };
+
+      component.assignCodeTableData('evaluationCriteriaCode', evalCriteria);
+
+      expect(component.fineFilters.length).toBe(2);
+      expect(component.fineFilters.map(f => f.evaluationCriteriaGuid)).toEqual(['f1', 'f2']);
+      expect(component.fineFilters[0].weightedRank!).toBeGreaterThan(component.fineFilters[1].weightedRank!);
+      expect(component.mediumFilters.length).toBe(2);
+    });
+
+
 
 
 });
