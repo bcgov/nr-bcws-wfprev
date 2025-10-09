@@ -170,7 +170,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   clone<T>(o: T): T {
     return structuredClone(o);
   }
-  
+
   updateMarkers(projects: any[]) {
     const smk = this.mapService.getSMKInstance();
     const map = smk?.$viewer?.map;
@@ -220,7 +220,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
           this.sharedService.selectProject(project);
         });
 
-        this.markersClusterGroup!.addLayer(marker);
+        this.markersClusterGroup.addLayer(marker);
 
         this.plotProjectBoundary(project);
         this.plotActivityBoundaries(project, this.currentFiscalYear);
@@ -348,27 +348,28 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     }
   }
 
-  plotActivityBoundaries(project: any, currentFiscalYear: number): void {
-    if (project.projectFiscals) {
-      for (const fiscal of project.projectFiscals) {
-        const fiscalYear = fiscal.fiscalYear;
-        const color = getFiscalYearColor(fiscalYear, currentFiscalYear);
+  addBoundaryGeometry(geometry: any, color: string): void {
+    this.addGeoJsonToLayer(geometry, this.activityBoundaryGroup, {
+      style: { color, weight: 2, fillOpacity: 0.1 },
+    });
+  }
 
-        if (fiscal.activities) {
-          for (const activity of fiscal.activities) {
-            if (activity.activityBoundaries) {
-              for (const ab of activity.activityBoundaries) {
-                const geometry = ab.activityGeometry;
-                this.addGeoJsonToLayer(geometry, this.activityBoundaryGroup, {
-                  style: {
-                    color,
-                    weight: 2,
-                    fillOpacity: 0.1,
-                  },
-                });
-              }
-            }
-          }
+  plotActivityBoundaries(project: any, currentFiscalYear: number): void {
+    const fiscals = project.projectFiscals ?? [];
+    if (fiscals.length === 0) return;
+
+    for (const fiscal of fiscals) {
+      const color = getFiscalYearColor(fiscal.fiscalYear, currentFiscalYear);
+
+      const activities = fiscal.activities ?? [];
+      if (activities.length === 0) continue;
+
+      for (const activity of activities) {
+        const boundaries = activity.activityBoundaries ?? [];
+        if (boundaries.length === 0) continue;
+
+        for (const ab of boundaries) {
+          this.addBoundaryGeometry(ab.activityGeometry, color);
         }
       }
     }
@@ -504,7 +505,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
         marker.on('mouseout', () => marker.closeTooltip());
 
         this.projectMarkerMap.set(loc.projectGuid, marker);
-        this.markersClusterGroup!.addLayer(marker);
+        this.markersClusterGroup.addLayer(marker);
 
       } catch (err) {
         console.error('Map failed to add marker for location:', loc, err);
