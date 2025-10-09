@@ -14,7 +14,7 @@ import { FiscalYearProjectsComponent } from 'src/app/components/edit-project/pro
 import { ProjectFilesComponent } from 'src/app/components/edit-project/project-details/project-files/project-files.component';
 import { CodeTableServices } from 'src/app/services/code-table-services';
 import { ProjectService } from 'src/app/services/project-services';
-import { CodeTableKeys, Messages, FiscalYearColors, ModalTitles, ModalMessages, WildfireOrgUnitTypeCodes, CodeTableNames, FiscalStatuses } from 'src/app/utils/constants';
+import { CodeTableKeys, Messages, FiscalYearColors, ModalTitles, ModalMessages, WildfireOrgUnitTypeCodes, CodeTableNames, BC_BOUNDS } from 'src/app/utils/constants';
 import {
   formatLatLong,
   getBluePinIcon,
@@ -205,17 +205,17 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
       { name: CodeTableNames.WILDFIRE_ORG_UNIT, embeddedKey: CodeTableKeys.WILDFIRE_ORG_UNIT },
     ];
 
-    codeTables.forEach((table) => {
+    for (const table of codeTables) {
       this.codeTableService.fetchCodeTable(table.name).subscribe({
         next: (data) => {
           this.assignCodeTableData(table.embeddedKey, data);
         },
         error: (err) => {
           console.error(`Error fetching ${table.name}`, err);
-          this.assignCodeTableData(table.embeddedKey, []); // Assign empty array on error
+          this.assignCodeTableData(table.embeddedKey, []); 
         },
       });
-    });
+    }
 
   }
 
@@ -351,10 +351,7 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
   }
 
   initMap(): void {
-    const defaultBounds: L.LatLngBoundsExpression = [
-      [48.3, -139.1], // Southwest corner of BC
-      [60.0, -114.0], // Northeast corner of BC
-    ];
+    const defaultBounds: L.LatLngBoundsExpression = BC_BOUNDS
 
     if (!this.map) {
       this.map = L.map('map', {
@@ -491,6 +488,7 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
               this.patchFormValues(data); // Update the form with the latest data
               this.originalFormValues = this.detailsForm.getRawValue(); // Update original form values
               this.detailsForm.markAsPristine(); // Mark the form as pristine
+              this.projectNameChange.emit(data.projectName);
               this.isSaving = false;
             }
           })
@@ -811,19 +809,19 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
     const currentFiscalYear = new Date().getFullYear();
     const allBounds: L.LatLngBounds[] = [];
 
-    this.allActivityBoundaries.forEach(entry => {
+    for (const entry of this.allActivityBoundaries) {
       const fiscalYear = entry.fiscalYear;
       const color = this.getFiscalYearColor(fiscalYear, currentFiscalYear);
 
-      entry.boundary.forEach((ab: any) => {
+      for (const ab of entry.boundary) {
         const geometry = ab.geometry;
-        if (!geometry?.type || !geometry?.coordinates) return;
+        if (!geometry?.type || !geometry?.coordinates) continue;
 
         const geometries = geometry.type === 'GeometryCollection'
           ? geometry.geometries
           : [geometry];
 
-        geometries.forEach((geom: any) => {
+        for (const geom of geometries) {
           const layer = L.geoJSON(geom, {
             style: {
               color,
@@ -838,10 +836,9 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
           if (bounds?.isValid()) {
             allBounds.push(bounds);
           }
-        });
-      });
-    });
-
+        }
+      }
+    }
     if (allBounds.length > 0) {
       const combinedBounds = allBounds.reduce((acc, b) => acc.extend(b), allBounds[0]);
       this.map.fitBounds(combinedBounds);
