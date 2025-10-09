@@ -28,7 +28,7 @@ import { MapService } from 'src/app/services/map.service';
 @Component({
   selector: 'wfprev-projects-list',
   standalone: true,
-  imports: [MatSlideToggleModule, CommonModule, MatExpansionModule, MatTooltipModule, ExpansionIndicatorComponent, IconButtonComponent, MatSelectModule, StatusBadgeComponent, DownloadButtonComponent,MatProgressSpinnerModule],
+  imports: [MatSlideToggleModule, CommonModule, MatExpansionModule, MatTooltipModule, ExpansionIndicatorComponent, IconButtonComponent, MatSelectModule, StatusBadgeComponent, DownloadButtonComponent, MatProgressSpinnerModule],
   templateUrl: './projects-list.component.html',
   styleUrls: ['./projects-list.component.scss'],
 })
@@ -79,9 +79,11 @@ export class ProjectsListComponent implements OnInit {
       if (!project) {
         this.selectedProjectGuid = null;
         this.cdr.detectChanges();
-        this.panelElements?.forEach(el =>
-          el.nativeElement.classList.remove('selected-project')
-        );
+        if (this.panelElements) {
+          for (const el of this.panelElements) {
+            el.nativeElement.classList.remove('selected-project');
+          }
+        }
         return;
       }
 
@@ -126,7 +128,7 @@ export class ProjectsListComponent implements OnInit {
   loadCodeTables(): void {
     const codeTables = [
       { name: CodeTableNames.PROGRAM_AREA_CODE, property: CodeTableKeys.BUSINESS_AREAS, embeddedKey: CodeTableKeys.PROGRAM_AREA },
-      { name: CodeTableNames.FOREST_REGION_CODE, property: CodeTableKeys.FOREST_REGIONS, embeddedKey: CodeTableKeys.FOREST_REGION_CODE},
+      { name: CodeTableNames.FOREST_REGION_CODE, property: CodeTableKeys.FOREST_REGIONS, embeddedKey: CodeTableKeys.FOREST_REGION_CODE },
       { name: CodeTableNames.FOREST_DISTRICT_CODE, property: CodeTableKeys.FOREST_DISTRICTS, embeddedKey: CodeTableKeys.FOREST_DISTRICT_CODE },
       { name: CodeTableNames.BC_PARKS_REGION_CODE, property: CodeTableKeys.BC_PARKS_REGIONS, embeddedKey: CodeTableKeys.BC_PARKS_REGION_CODE },
       { name: CodeTableNames.BC_PARKS_SECTION_CODE, property: CodeTableKeys.BC_PARKS_SECTIONS, embeddedKey: CodeTableKeys.BC_PARKS_SECTION_CODE },
@@ -141,7 +143,7 @@ export class ProjectsListComponent implements OnInit {
     const totalTables = codeTables.length;
 
 
-    codeTables.forEach((table) => {
+    for (const table of codeTables) {
       this.codeTableService.fetchCodeTable(table.name).subscribe({
         next: (data) => {
           if (table.name === CodeTableNames.PROGRAM_AREA_CODE) {
@@ -211,7 +213,7 @@ export class ProjectsListComponent implements OnInit {
           }
         },
       });
-    });
+    }
   }
 
   sortOptions = [
@@ -236,7 +238,7 @@ export class ProjectsListComponent implements OnInit {
     if (this.isLoading || !this.hasMore) return;
     this.isLoading = true;
     const filters = this.sharedService.currentFilters || {};
-    
+
     let sortBy: string | undefined;
     let sortDirection: string | undefined;
 
@@ -286,13 +288,13 @@ export class ProjectsListComponent implements OnInit {
 
   onScroll(event: Event): void {
     const target = event.target as HTMLElement;
-  
+
     const scrollPosition = target.scrollTop + target.clientHeight;
     const middleThreshold = target.scrollHeight / 2;
-  
+
     // trigger load when user passes halfway point
     const atMiddle = scrollPosition >= middleThreshold;
-  
+
     if (atMiddle && !this.isLoading && this.hasMore) {
       this.loadProjects(false);
     }
@@ -317,7 +319,7 @@ export class ProjectsListComponent implements OnInit {
       .getFeatures(filters, this.pageNumber, this.pageRowCount, sortBy, sortDirection)
       .subscribe({
         next: (data) => {
-          
+
           this.totalItems = data.totalItems ?? 0;
           this.allProjects = data.projects ?? [];
           this.displayedProjects = this.allProjects;
@@ -461,7 +463,7 @@ export class ProjectsListComponent implements OnInit {
       const colors = ['#7570B3', '#56B193', '#E7298A', '#474543'];
 
       // Add markers and polygons for each coordinate
-      coords.forEach((coord) => {
+      for (const coord of coords) {
         const marker = L.marker([coord.latitude, coord.longitude], {
           icon: createMarkerIcon('/assets/blue-pin-drop.svg'),
         });
@@ -471,7 +473,8 @@ export class ProjectsListComponent implements OnInit {
 
         // Generate polygons for this marker
         const polygons: L.Polygon[] = [];
-        colors.forEach((color, colorIndex) => {
+        for (let colorIndex = 0; colorIndex < colors.length; colorIndex++) {
+          const color = colors[colorIndex];
           const radius = 0.05 + colorIndex * 0.03; // Increment radius for each layer
           const variance = 0.01 + colorIndex * 0.005; // Increment variance for each layer
 
@@ -486,7 +489,7 @@ export class ProjectsListComponent implements OnInit {
 
           polygons.push(polygonLayer);
           map?.$viewer?.map.addLayer(polygonLayer);
-        });
+        };
 
         this.markerPolygons.set(marker, polygons);
 
@@ -499,31 +502,43 @@ export class ProjectsListComponent implements OnInit {
             markerStates.set(marker, false);
 
             const associatedPolygons = this.markerPolygons.get(marker);
-            associatedPolygons?.forEach((polygon) => polygon.setStyle({ weight: 2 }));
+            if (associatedPolygons) {
+              for (const polygon of associatedPolygons) {
+                polygon.setStyle({ weight: 2 });
+              }
+            }
           } else {
             // If not active, activate marker and bold polygons
             marker.setIcon(createActiveMarkerIcon('/assets/active-pin-drop.svg'));
             markerStates.set(marker, true);
 
             const associatedPolygons = this.markerPolygons.get(marker);
-            associatedPolygons?.forEach((polygon) => polygon.setStyle({ weight: 5 }));
+            if (associatedPolygons) {
+              for (const polygon of associatedPolygons) {
+                polygon.setStyle({ weight: 5 });
+              }
+            }
           }
         });
 
         markersCluster.addLayer(marker);
-      });
+      };
 
       // Listen for clicks on the map to reset all markers and polygons
       map?.$viewer?.map.on('click', () => {
-        markerStates.forEach((isActive, marker) => {
+        for (const [marker, isActive] of markerStates) {
           if (isActive) {
             marker.setIcon(createMarkerIcon('/assets/blue-pin-drop.svg'));
             markerStates.set(marker, false);
 
             const associatedPolygons = this.markerPolygons.get(marker);
-            associatedPolygons?.forEach((polygon) => polygon.setStyle({ weight: 2 }));
+            if (associatedPolygons) {
+              for (const polygon of associatedPolygons) {
+                polygon.setStyle({ weight: 2 });
+              }
+            }
           }
-        });
+        }
       });
 
       // Add the cluster group to the map
@@ -533,7 +548,7 @@ export class ProjectsListComponent implements OnInit {
 
   getSecureRandomNumber() {
     const array = new Uint32Array(1);
-    window.crypto.getRandomValues(array);
+    globalThis.crypto.getRandomValues(array);
     return array[0] / (0xFFFFFFFF + 1); // Normalize to [0, 1)
   }
 
@@ -555,7 +570,11 @@ export class ProjectsListComponent implements OnInit {
         );
 
         const associatedPolygons = this.markerPolygons.get(this.activeMarker);
-        associatedPolygons?.forEach((polygon) => polygon.setStyle({ weight: 2 }));
+        if (associatedPolygons) {
+          for (const polygon of associatedPolygons) {
+            polygon.setStyle({ weight: 2 });
+          }
+        }
       }
 
       // Highlight the new marker and polygons
@@ -569,7 +588,11 @@ export class ProjectsListComponent implements OnInit {
       );
 
       const associatedPolygons = this.markerPolygons.get(marker);
-      associatedPolygons?.forEach((polygon) => polygon.setStyle({ weight: 5 }));
+      if (associatedPolygons) {
+        for (const polygon of associatedPolygons) {
+          polygon.setStyle({ weight: 5 });
+        }
+      }
 
       // Update the active marker
       this.activeMarker = marker;
@@ -599,7 +622,7 @@ export class ProjectsListComponent implements OnInit {
     if (uniqueYears.length === 1) {
       return formatYear(uniqueYears[0]);
     } else {
-      return `${formatYear(uniqueYears[0])} - ${formatYear(uniqueYears[uniqueYears.length - 1])}`;
+      return `${formatYear(uniqueYears[0])} - ${formatYear(uniqueYears.at(-1)!)}`;
     }
   }
 
@@ -651,75 +674,75 @@ export class ProjectsListComponent implements OnInit {
   }
 
 
-getDisplayedFiscalYears(project: any): number[] {
-  const fiscalsDesc = this.getSortedProjectFiscalsDesc(project); 
-  const shown = fiscalsDesc.slice(0, this.resultCount);
-  return shown
-    .map((f: any) => f?.fiscalYear)
-    .filter((y: any): y is number => typeof y === 'number');
-}
-
-getDisplayedProjectFiscalGuids(project: any): string[] {
-  const wantedYears = new Set(this.getDisplayedFiscalYears(project));
-  return (project?.projectFiscals ?? [])
-    .filter((f: any) => wantedYears.has(f.fiscalYear) && !!f.projectPlanFiscalGuid)
-    .map((f: any) => f.projectPlanFiscalGuid as string);
-}
-
-// Build request.projects from displayedProjects, coalescing by projectGuid 
-buildProjectsPayloadFromDisplayed(): { projectGuid: string; projectFiscalGuids?: string[] }[] {
-  const byProject = new Map<string, Set<string>>();
-
-  for (const p of this.displayedProjects) {
-    const guid = p.projectGuid as string;
-    if (!guid) continue;
-
-    const fiscals = this.getDisplayedProjectFiscalGuids(p);
-    if (!byProject.has(guid)) byProject.set(guid, new Set<string>());
-
-    // If there are displayed fiscals, union them; if not, we’ll send just the projectGuid later.
-    for (const fg of fiscals) byProject.get(guid)!.add(fg);
+  getDisplayedFiscalYears(project: any): number[] {
+    const fiscalsDesc = this.getSortedProjectFiscalsDesc(project);
+    const shown = fiscalsDesc.slice(0, this.resultCount);
+    return shown
+      .map((f: any) => f?.fiscalYear)
+      .filter((y: any): y is number => typeof y === 'number');
   }
 
-  // Convert to payload list: include projectFiscalGuids only when we actually have some
-  const payload: { projectGuid: string; projectFiscalGuids?: string[] }[] = [];
-  for (const [guid, set] of byProject.entries()) {
-    const list = Array.from(set);
-    payload.push(list.length > 0 ? { projectGuid: guid, projectFiscalGuids: list } : { projectGuid: guid });
+  getDisplayedProjectFiscalGuids(project: any): string[] {
+    const wantedYears = new Set(this.getDisplayedFiscalYears(project));
+    return (project?.projectFiscals ?? [])
+      .filter((f: any) => wantedYears.has(f.fiscalYear) && !!f.projectPlanFiscalGuid)
+      .map((f: any) => f.projectPlanFiscalGuid as string);
   }
-  return payload;
-}
 
-onDownload(type: string): void {
-  const body: ReportRequest = {
-    reportType: type === DownloadTypes.EXCEL ? 'xlsx' : 'csv',
-    projects: this.buildProjectsPayloadFromDisplayed()
-  };
+  // Build request.projects from displayedProjects, coalescing by projectGuid 
+  buildProjectsPayloadFromDisplayed(): { projectGuid: string; projectFiscalGuids?: string[] }[] {
+    const byProject = new Map<string, Set<string>>();
 
-  const snackRef = this.snackbarService.open(Messages.fileDownloadInProgress, 'Close', {
-    duration: undefined,
-    panelClass: 'snackbar-info'
-  });
+    for (const p of this.displayedProjects) {
+      const guid = p.projectGuid as string;
+      if (!guid) continue;
 
-  this.projectService.downloadProjects(body).subscribe({
-    next: (blob) => {
-      snackRef.dismiss();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      const ext = body.reportType === 'xlsx' ? DownloadFileExtensions.EXCEL : DownloadFileExtensions.CSV;
-      a.download = `projects.${ext}`;
-      a.href = url;
-      a.click();
-      window.URL.revokeObjectURL(url);
-      this.snackbarService.open(Messages.fileDownloadSuccess, 'Close', { duration: 5000, panelClass: 'snackbar-success' });
-    },
-    error: (err) => {
-      snackRef.dismiss();
-      console.error('Download failed', err);
-      this.snackbarService.open(Messages.fileDownloadFailure, 'Close', { duration: 5000, panelClass: 'snackbar-error' });
+      const fiscals = this.getDisplayedProjectFiscalGuids(p);
+      if (!byProject.has(guid)) byProject.set(guid, new Set<string>());
+
+      // If there are displayed fiscals, union them; if not, we’ll send just the projectGuid later.
+      for (const fg of fiscals) byProject.get(guid)!.add(fg);
     }
-  });
-}
+
+    // Convert to payload list: include projectFiscalGuids only when we actually have some
+    const payload: { projectGuid: string; projectFiscalGuids?: string[] }[] = [];
+    for (const [guid, set] of byProject.entries()) {
+      const list = Array.from(set);
+      payload.push(list.length > 0 ? { projectGuid: guid, projectFiscalGuids: list } : { projectGuid: guid });
+    }
+    return payload;
+  }
+
+  onDownload(type: string): void {
+    const body: ReportRequest = {
+      reportType: type === DownloadTypes.EXCEL ? 'xlsx' : 'csv',
+      projects: this.buildProjectsPayloadFromDisplayed()
+    };
+
+    const snackRef = this.snackbarService.open(Messages.fileDownloadInProgress, 'Close', {
+      duration: undefined,
+      panelClass: 'snackbar-info'
+    });
+
+    this.projectService.downloadProjects(body).subscribe({
+      next: (blob) => {
+        snackRef.dismiss();
+        const url = globalThis.URL.createObjectURL(blob);
+        const a = globalThis.document.createElement('a');
+        const ext = body.reportType === 'xlsx' ? DownloadFileExtensions.EXCEL : DownloadFileExtensions.CSV;
+        a.download = `projects.${ext}`;
+        a.href = url;
+        a.click();
+        globalThis.URL.revokeObjectURL(url);
+        this.snackbarService.open(Messages.fileDownloadSuccess, 'Close', { duration: 5000, panelClass: 'snackbar-success' });
+      },
+      error: (err) => {
+        snackRef.dismiss();
+        console.error('Download failed', err);
+        this.snackbarService.open(Messages.fileDownloadFailure, 'Close', { duration: 5000, panelClass: 'snackbar-error' });
+      }
+    });
+  }
 
   private addProjectToDisplayedList(newProject: any): void {
     const exists = this.displayedProjects.some(p => p.projectGuid === newProject.projectGuid);

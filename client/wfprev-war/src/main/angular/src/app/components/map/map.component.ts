@@ -3,7 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { SearchFilterComponent } from 'src/app/components/search-filter/search-filter.component';
 import { MapConfigService } from 'src/app/services/map-config.service';
 import { MapService } from 'src/app/services/map.service';
-import { LeafletLegendService, getBluePinIcon,  getActivePinIcon, getFiscalYearColor } from 'src/app/utils/tools';
+import { LeafletLegendService, getBluePinIcon, getActivePinIcon, getFiscalYearColor } from 'src/app/utils/tools';
 import { SharedService } from 'src/app/services/shared-service';
 import * as L from 'leaflet';
 import { ProjectPopupComponent } from 'src/app/components/project-popup/project-popup.component';
@@ -19,7 +19,7 @@ import { ProjectService } from 'src/app/services/project-services';
   templateUrl: './map.component.html',
   styleUrl: './map.component.scss'
 })
-export class MapComponent implements AfterViewInit, OnDestroy  {
+export class MapComponent implements AfterViewInit, OnDestroy {
   @ViewChild('mapContainer', { static: false }) mapContainer!: ElementRef;
   mapConfig: any[] = [];
   mapIndex = 0;
@@ -58,10 +58,17 @@ export class MapComponent implements AfterViewInit, OnDestroy  {
     private readonly sharedService: SharedService,
     private readonly injector: EnvironmentInjector,
     private readonly projectService: ProjectService
-  ) {}
+  ) { }
 
-  async ngOnDestroy(): Promise<void> {
-    await this.mapService.destroySMK();
+  // promise will not be awaited by angular if void is not returned
+  ngOnDestroy(): void {
+    (async () => {
+      try {
+        await this.mapService.destroySMK();
+      } catch (err) {
+        console.error('Error destroying SMK:', err);
+      }
+    })();
   }
 
   ngAfterViewInit(): void {
@@ -160,10 +167,10 @@ export class MapComponent implements AfterViewInit, OnDestroy  {
     return [...baseConfig, deviceConfig, 'theme=wf', '?'];
   }
 
-  clone(o: any) {
-    return JSON.parse(JSON.stringify(o));
+  clone<T>(o: T): T {
+    return structuredClone(o);
   }
-
+  
   updateMarkers(projects: any[]) {
     const smk = this.mapService.getSMKInstance();
     const map = smk?.$viewer?.map;
@@ -177,60 +184,58 @@ export class MapComponent implements AfterViewInit, OnDestroy  {
       this.markersClusterGroup.clearLayers();
       this.projectMarkerMap.clear();
       this.activeMarker = null;
-      
+
     } catch (err) {
       console.error('[Map] Error clearing markers:', err);
     }
 
-  this.safelyClearLayerGroup(this.projectBoundaryGroup, 'projectBoundaryGroup');
-  this.safelyClearLayerGroup(this.activityBoundaryGroup, 'activityBoundaryGroup');
+    this.safelyClearLayerGroup(this.projectBoundaryGroup, 'projectBoundaryGroup');
+    this.safelyClearLayerGroup(this.activityBoundaryGroup, 'activityBoundaryGroup');
 
-    projects
-      .filter(p => p.latitude != null && p.longitude != null)
-      .forEach(project => {
-        try {
-          const marker = L.marker([project.latitude, project.longitude], {
-            icon: getBluePinIcon()
-          });
+    for (const project of projects.filter(p => p.latitude != null && p.longitude != null)) {
+      try {
+        const marker = L.marker([project.latitude, project.longitude], {
+          icon: getBluePinIcon()
+        });
 
-          this.projectMarkerMap.set(project.projectGuid, marker);
+        this.projectMarkerMap.set(project.projectGuid, marker);
 
-          const popupDiv = document.createElement('div');
-          const cmpRef = createComponent(ProjectPopupComponent, {
-            environmentInjector: this.injector
-          });
+        const popupDiv = document.createElement('div');
+        const cmpRef = createComponent(ProjectPopupComponent, {
+          environmentInjector: this.injector
+        });
 
-          cmpRef.instance.project = project;
-          cmpRef.instance.map = map;
-          cmpRef.hostView.detectChanges();
-          popupDiv.appendChild(cmpRef.location.nativeElement);
+        cmpRef.instance.project = project;
+        cmpRef.instance.map = map;
+        cmpRef.hostView.detectChanges();
+        popupDiv.appendChild(cmpRef.location.nativeElement);
 
-          marker.bindPopup(popupDiv, {
-            maxWidth: 486,
-            minWidth: 0,
-            autoPan: true,
-          });
+        marker.bindPopup(popupDiv, {
+          maxWidth: 486,
+          minWidth: 0,
+          autoPan: true,
+        });
 
-          marker.on('click', () => {
-            this.sharedService.selectProject(project);
-          });
+        marker.on('click', () => {
+          this.sharedService.selectProject(project);
+        });
 
-          this.markersClusterGroup!.addLayer(marker);
+        this.markersClusterGroup!.addLayer(marker);
 
-          this.plotProjectBoundary(project);
-          this.plotActivityBoundaries(project, this.currentFiscalYear);
+        this.plotProjectBoundary(project);
+        this.plotActivityBoundaries(project, this.currentFiscalYear);
 
-        } catch (err) {
-          console.error('Map Failed to add marker:', project, err);
-        }
-      });
+      } catch (err) {
+        console.error('Map Failed to add marker:', project, err);
+      }
+    }
 
-      this.togglePolygonLayers(map.getZoom());
+    this.togglePolygonLayers(map.getZoom());
   }
 
   openPopupForProject(project: Project): void {
     if (this.legendControl) {
-      this.legendControl.getContainer()?.classList.add('hidden'); 
+      this.legendControl.getContainer()?.classList.add('hidden');
     }
     if (
       project?.latitude == null ||
@@ -269,7 +274,7 @@ export class MapComponent implements AfterViewInit, OnDestroy  {
       this.markersClusterGroup.zoomToShowLayer(targetMarker, () => {
         targetMarker.openPopup();
 
-        targetMarker.off('popupclose'); 
+        targetMarker.off('popupclose');
 
         targetMarker.on('popupclose', () => {
           targetMarker.setIcon(getBluePinIcon());
@@ -300,99 +305,109 @@ export class MapComponent implements AfterViewInit, OnDestroy  {
       }
     }
   }
-addGeoJsonToLayer(geometry: any, layerGroup: L.LayerGroup, options: L.GeoJSONOptions) {
-  if (!geometry?.type || !geometry?.coordinates) {
-    console.warn('map skipping invalid geometry', geometry);
-    return;
-  }
+  addGeoJsonToLayer(geometry: any, layerGroup: L.LayerGroup, options: L.GeoJSONOptions) {
+    if (!geometry?.type || !geometry?.coordinates) {
+      console.warn('map skipping invalid geometry', geometry);
+      return;
+    }
 
-  try {
-    const geometries: Geometry[] = geometry.type === 'GeometryCollection'
-      ? (geometry as GeometryCollection).geometries
-      : [geometry as Geometry];
+    try {
+      const geometries: Geometry[] = geometry.type === 'GeometryCollection'
+        ? (geometry as GeometryCollection).geometries
+        : [geometry as Geometry];
 
-    geometries.forEach((geom: Geometry) => this.addGeometryToLayerGroup(geom, layerGroup, options));
-  } catch (err) {
-    console.warn('[Map] Invalid GeoJSON geometry skipped:', geometry, err);
-  }
-}
-
-addGeometryToLayerGroup(geom: any, layerGroup: L.LayerGroup, options: L.GeoJSONOptions): void {
-  const layer = L.geoJSON(geom, options);
-  if (layer && typeof layer.addTo === 'function') {
-    layer.addTo(layerGroup);
-  } else {
-    console.warn('[Map] Failed to add layer. Possibly invalid geometry:', geom);
-  }
-}
-
-plotProjectBoundary(project: any): void {
-  project.projectBoundaries?.forEach((boundary: any) => {
-    const geometry = boundary.boundaryGeometry;
-    this.addGeoJsonToLayer(geometry, this.projectBoundaryGroup, {
-      style: {
-        color: MapColors.PROJECT_BOUNDARY,
-        weight: 2,
-        fillOpacity: 0.1,
+      for (const geom of geometries) {
+        this.addGeometryToLayerGroup(geom, layerGroup, options);
       }
-    });
-  });
-}
+    } catch (err) {
+      console.warn('[Map] Invalid GeoJSON geometry skipped:', geometry, err);
+    }
+  }
 
-plotActivityBoundaries(project: any, currentFiscalYear: number): void {
-  project.projectFiscals?.forEach((fiscal: any) => {
-    const fiscalYear = fiscal.fiscalYear;
-    const color = getFiscalYearColor(fiscalYear, currentFiscalYear);
+  addGeometryToLayerGroup(geom: any, layerGroup: L.LayerGroup, options: L.GeoJSONOptions): void {
+    const layer = L.geoJSON(geom, options);
+    if (layer && typeof layer.addTo === 'function') {
+      layer.addTo(layerGroup);
+    } else {
+      console.warn('[Map] Failed to add layer. Possibly invalid geometry:', geom);
+    }
+  }
 
-    fiscal.activities?.forEach((activity: any) => {
-      activity.activityBoundaries?.forEach((ab: any) => {
-        const geometry = ab.activityGeometry;
-        this.addGeoJsonToLayer(geometry, this.activityBoundaryGroup, {
+  plotProjectBoundary(project: any): void {
+    if (project.projectBoundaries) {
+      for (const boundary of project.projectBoundaries) {
+        const geometry = boundary.boundaryGeometry;
+        this.addGeoJsonToLayer(geometry, this.projectBoundaryGroup, {
           style: {
-            color,
+            color: MapColors.PROJECT_BOUNDARY,
             weight: 2,
             fillOpacity: 0.1,
-          }
+          },
         });
-      });
-    });
-  });
-}
-
-safelyClearLayerGroup(group: L.LayerGroup, label: string): void {
-  try {
-    const rawLayers = (group as L.LayerGroup & { _layers?: Record<string, L.Layer> })._layers;
-    if (!rawLayers) return;
-
-    // remove only valid layers
-    Object.values(rawLayers).forEach((layer) => {
-      if (layer && typeof layer.remove === 'function' && typeof layer.on === 'function') {
-        group.removeLayer(layer);
-      } else {
-        console.warn(`[Map] Skipping invalid layer inside ${label}`, layer);
       }
-    });
-  } catch (err) {
-    console.error(`[Map] Failed to safely clear ${label}:`, err);
+    }
   }
-}
 
-togglePolygonLayers(zoomLevel: number): void {
-  // only shows these polygons after zoom level 10
-  const map = this.mapService.getSMKInstance()?.$viewer?.map;
-  if (!map) return;
-  if (zoomLevel >= 10) {
-    if (!map.hasLayer(this.projectBoundaryGroup)) {
-      map.addLayer(this.projectBoundaryGroup);
+  plotActivityBoundaries(project: any, currentFiscalYear: number): void {
+    if (project.projectFiscals) {
+      for (const fiscal of project.projectFiscals) {
+        const fiscalYear = fiscal.fiscalYear;
+        const color = getFiscalYearColor(fiscalYear, currentFiscalYear);
+
+        if (fiscal.activities) {
+          for (const activity of fiscal.activities) {
+            if (activity.activityBoundaries) {
+              for (const ab of activity.activityBoundaries) {
+                const geometry = ab.activityGeometry;
+                this.addGeoJsonToLayer(geometry, this.activityBoundaryGroup, {
+                  style: {
+                    color,
+                    weight: 2,
+                    fillOpacity: 0.1,
+                  },
+                });
+              }
+            }
+          }
+        }
+      }
     }
-    if (!map.hasLayer(this.activityBoundaryGroup)) {
-      map.addLayer(this.activityBoundaryGroup);
-    }
-  } else {
-    map.removeLayer(this.projectBoundaryGroup);
-    map.removeLayer(this.activityBoundaryGroup);
   }
-}
+
+  safelyClearLayerGroup(group: L.LayerGroup, label: string): void {
+    try {
+      const rawLayers = (group as L.LayerGroup & { _layers?: Record<string, L.Layer> })._layers;
+      if (!rawLayers) return;
+
+      // remove only valid layers
+      for (const layer of Object.values(rawLayers)) {
+        if (layer && typeof layer.remove === 'function' && typeof layer.on === 'function') {
+          group.removeLayer(layer);
+        } else {
+          console.warn(`[Map] Skipping invalid layer inside ${label}`, layer);
+        }
+      }
+    } catch (err) {
+      console.error(`[Map] Failed to safely clear ${label}:`, err);
+    }
+  }
+
+  togglePolygonLayers(zoomLevel: number): void {
+    // only shows these polygons after zoom level 10
+    const map = this.mapService.getSMKInstance()?.$viewer?.map;
+    if (!map) return;
+    if (zoomLevel >= 10) {
+      if (!map.hasLayer(this.projectBoundaryGroup)) {
+        map.addLayer(this.projectBoundaryGroup);
+      }
+      if (!map.hasLayer(this.activityBoundaryGroup)) {
+        map.addLayer(this.activityBoundaryGroup);
+      }
+    } else {
+      map.removeLayer(this.projectBoundaryGroup);
+      map.removeLayer(this.activityBoundaryGroup);
+    }
+  }
 
   private updateProjectMarkersFromLocations(locations: ProjectLocation[]): void {
     const smk = this.mapService.getSMKInstance();
@@ -412,7 +427,7 @@ togglePolygonLayers(zoomLevel: number): void {
         !!loc.projectGuid && loc.latitude !== undefined && loc.longitude !== undefined
     );
 
-    validLocations.forEach((loc) => {
+    for (const loc of validLocations) {
       try {
         const marker = L.marker([loc.latitude, loc.longitude], {
           icon: getBluePinIcon(),
@@ -494,9 +509,9 @@ togglePolygonLayers(zoomLevel: number): void {
       } catch (err) {
         console.error('Map failed to add marker for location:', loc, err);
       }
-    });
+    }
 
-    console.log(`Map ddded ${validLocations.length} project location markers`);
+    console.log(`Map added ${validLocations.length} project location markers`);
   }
 
 
