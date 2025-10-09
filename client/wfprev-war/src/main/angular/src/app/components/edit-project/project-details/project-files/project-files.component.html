@@ -4,6 +4,7 @@
             Files
         </span>
         <wfprev-icon-button
+          *ngIf="!isReadonly" 
           [text]="'Upload File'"
           [icon]="'/assets/upload-file.svg'"
           [alt]="'upload-file'"
@@ -61,7 +62,7 @@
         <ng-container matColumnDef="delete">
             <th mat-header-cell *matHeaderCellDef> Delete </th>
             <td mat-cell *matCellDef="let file">
-                <button class="table-button" mat-icon-button (click)="deleteFile(file)">
+                <button class="table-button" mat-icon-button (click)="deleteFile(file)" [disabled]="isReadonly">
                     <img src="/assets/delete-icon.svg">
                 </button>
             </td>

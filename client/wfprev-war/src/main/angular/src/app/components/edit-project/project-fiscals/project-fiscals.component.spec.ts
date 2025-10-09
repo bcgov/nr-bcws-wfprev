@@ -1090,4 +1090,41 @@ describe('ProjectFiscalsComponent', () => {
     jasmine.clock().uninstall();
   });
 
+  describe('isCurrentFiscalReadonly', () => {
+    it('should return false if there is no current fiscal', () => {
+      component.projectFiscals = [];
+      component.selectedTabIndex = 0;
+
+      expect(component.isCurrentFiscalReadonly()).toBeFalse();
+    });
+
+    it('should return true if status is COMPLETE', () => {
+      component.projectFiscals = [
+        { planFiscalStatusCode: { planFiscalStatusCode: component.FiscalStatuses.COMPLETE } }
+      ];
+      component.selectedTabIndex = 0;
+
+      expect(component.isCurrentFiscalReadonly()).toBeTrue();
+    });
+
+    it('should return true if status is CANCELLED', () => {
+      component.projectFiscals = [
+        { planFiscalStatusCode: { planFiscalStatusCode: component.FiscalStatuses.CANCELLED } }
+      ];
+      component.selectedTabIndex = 0;
+
+      expect(component.isCurrentFiscalReadonly()).toBeTrue();
+    });
+
+    it('should return false for other statuses (e.g., DRAFT)', () => {
+      component.projectFiscals = [
+        { planFiscalStatusCode: { planFiscalStatusCode: component.FiscalStatuses.DRAFT } }
+      ];
+      component.selectedTabIndex = 0;
+
+      expect(component.isCurrentFiscalReadonly()).toBeFalse();
+    });
+  });
+
+
 });

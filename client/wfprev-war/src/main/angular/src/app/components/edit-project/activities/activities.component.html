@@ -10,7 +10,7 @@
                     [icon]="'/assets/add-button.svg'"
                     [alt]="'add-activity'"
                     [iconSize]="19"
-                    [disabled]="isNewActivityBeingAdded"
+                    [disabled]="isNewActivityBeingAdded || isReadonly"
                     (clicked)="addActivity()">
                 </wfprev-icon-button>
             </div>
@@ -82,9 +82,10 @@
                                 <label>RESULTS Reportable</label>
                                 <div class="toggle-container">
                                     <mat-slide-toggle 
-                                    id="isResultsReportableInd" 
-                                    formControlName="isResultsReportableInd"
-                                    (change)="toggleResultsReportableInd(i)">
+                                        id="isResultsReportableInd" 
+                                        formControlName="isResultsReportableInd"
+                                        (change)="toggleResultsReportableInd(i)"
+                                        [disabled]="isReadonly">
                                     </mat-slide-toggle>
                                     <span class="toggle-label">
                                     {{ activityForms[i].value?.isResultsReportableInd ? 'Yes' : 'No' }}
@@ -97,7 +98,8 @@
                                     <mat-slide-toggle 
                                         id="activityStatusCode" 
                                         [checked]="activityForms[i].value?.activityStatusCode === 'COMPLETED'"
-                                        (change)="toggleActivityStatus(i)">
+                                        (change)="toggleActivityStatus(i)"
+                                        [disabled]="isReadonly">
                                     </mat-slide-toggle>
                                     <span class="toggle-label">
                                     Complete
@@ -242,7 +244,7 @@
                         </div>
                     </form>
                     <div class="activity-files">
-                        <wfprev-project-files *ngIf="activityForms[i]?.value?.activityGuid && fiscalGuid" [activityGuid]="activityForms[i]?.value?.activityGuid" [fiscalGuid]="fiscalGuid" (filesUpdated)="onFilesChanged()">
+                        <wfprev-project-files *ngIf="activityForms[i]?.value?.activityGuid && fiscalGuid" [activityGuid]="activityForms[i]?.value?.activityGuid" [isReadonly]="isReadonly" [fiscalGuid]="fiscalGuid" (filesUpdated)="onFilesChanged()">
                             {{activityForms[i]?.value?.activityGuid}}
                         </wfprev-project-files>
                     </div>
@@ -254,15 +256,15 @@
                         <div class="button-row">
                             <div class="delete-container">
                                 <div class="delete" 
-                                     [ngClass]="{ 'delete-active': canDeleteActivity(i), 'delete-inactive': !canDeleteActivity(i) }"
-                                     (click)="canDeleteActivity(i) ? onDeleteActivity(i) : null">
+                                    [ngClass]="{ 'delete-inactive': isReadonly || !canDeleteActivity(i), 'delete-active': !isReadonly && canDeleteActivity(i) }"
+                                    (click)="!isReadonly && canDeleteActivity(i) ? onDeleteActivity(i) : null">
                                     <img class="status" alt="Delete" [src]="getDeleteIcon(i)">
                                     <span>Delete</span>
                                 </div>
                             </div>
                             <div class="action-buttons">
-                                <button class="secondary" (click)="onCancelActivity(i)" [disabled]="!isActivityDirty[i]">Cancel</button>
-                                <button class="primary" [disabled]="!isActivityDirty[i] || !activityForms[i].valid || isActivitySaving[i]" (click)="onSaveActivity(i)">
+                                <button class="secondary" (click)="onCancelActivity(i)" [disabled]="isReadonly || !isActivityDirty[i]">Cancel</button>
+                                <button class="primary" [disabled]="isReadonly || !isActivityDirty[i] || !activityForms[i].valid || isActivitySaving[i]" (click)="onSaveActivity(i)">
                                     Save
                                 </button>
                             </div>
