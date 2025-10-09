@@ -344,10 +344,12 @@
     background: #F2F2F2;
   }
 
-  wfprev-fiscal-year-projects,
-  wfprev-evaluation-criteria{
+  wfprev-fiscal-year-projects {
     margin-top: 20px;
-    /* Add spacing between project description and fiscal projects */
+  }
+  
+  wfprev-evaluation-criteria {
+    margin: 20px 0px 20px;
   }
 }
 
