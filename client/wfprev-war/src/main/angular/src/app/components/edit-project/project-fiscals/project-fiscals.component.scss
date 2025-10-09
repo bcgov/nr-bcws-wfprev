@@ -1,5 +1,6 @@
 .fiscals-container {
   margin: 19px;
+
   .form-grid {
     padding: 18px;
     display: flex;
@@ -10,17 +11,19 @@
 
     .form-item {
       flex: 1 1 calc(25% - 15px); // 4 items per row with a 15px gap
-      
+
       &.quarter-width-max {
         max-width: calc(25% - 10px);
       }
 
       min-width: 200px;
+
       .error {
         color: red;
         font-size: 12px;
         margin-top: 4px;
       }
+
       label {
         padding: 9px;
         color: #282828;
@@ -76,6 +79,7 @@
     .fiscal-activity-name {
       flex: 1 1 calc(50% - 15px) !important;
     }
+
     .toggle-width {
       max-width: 220px !important;
       min-width: none !important;
@@ -119,8 +123,10 @@
       font-size: 15px;
     }
   }
+
   .half-width {
-    flex: 1 1 48% !important; /* Two items in a row with a small gap */
+    flex: 1 1 48% !important;
+    /* Two items in a row with a small gap */
     min-width: 200px !important;
   }
 
@@ -203,6 +209,7 @@
   justify-content: flex-end;
   align-items: center;
   height: 20px;
+
   button {
     &.primary {
       @extend .button-primary;
@@ -212,6 +219,7 @@
       @extend .button-secondary;
     }
   }
+
   .icon {
     vertical-align: text-bottom;
     padding-right: 5px;
@@ -235,7 +243,8 @@
 
   .separator {
     height: 1px;
-    background-color: #c6c8cb; /* Grey color */
+    background-color: #c6c8cb;
+    /* Grey color */
     margin: 10px -18px;
   }
 }
@@ -294,6 +303,7 @@ mat-expansion-panel {
 
 .fiscal-footer {
   border-top: 1px solid #d9d9d9;
+
   .footer-button-row {
     display: flex;
     height: 43px;
@@ -301,6 +311,7 @@ mat-expansion-panel {
     justify-content: flex-end;
     align-items: flex-start;
     gap: 14px;
+
     button {
       &.primary {
         @extend .button-primary;
@@ -410,53 +421,56 @@ mat-expansion-panel {
   }
 }
 
-  :host ::ng-deep .mat-mdc-tab{
-    min-height: 54px !important;
-  }
+:host ::ng-deep .mat-mdc-tab {
+  min-height: 54px !important;
+}
 
-  .add-new-fiscal{
-    position: relative;
-    top: 50px;
+:host ::ng-deep .add-new-fiscal .shared-icon-button {
+  position: relative;
+  top: 44px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  z-index: 10;
+  height: 40px !important;
+}
+
+.status-actions {
+  display: flex;
+  align-items: baseline;
+
+  .status-wrapper {
+    text-align: right;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    padding-right: 45px;
     display: flex;
-    justify-content: flex-end;
     align-items: center;
-    z-index: 10;
+    gap: 5px;
   }
 
-  .status-actions{
-    display: flex;
-    align-items: baseline;
-    .status-wrapper{
-      text-align: right;
-      font-size: 20px;
-      font-style: normal;
-      font-weight: 400;
-      line-height: normal;
-      padding-right: 45px;
-      display: flex;
-      align-items: center;
-      gap: 5px;
-    }
-    
-    .status-icon{
-      width: 24px;
-      height: 24px;
-    }
-    .status-value{
-      color: #474543;
-      font-size: 16px;
-      font-style: normal;
-      font-weight: 400;
-    }
+  .status-icon {
+    width: 24px;
+    height: 24px;
   }
 
-  .header-container{
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    gap: 10px;
+  .status-value {
+    color: #474543;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
   }
+}
+
+.header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  gap: 10px;
+}
 
 :host ::ng-deep wfprev-textarea .textarea-label {
   padding-left: 10px;
