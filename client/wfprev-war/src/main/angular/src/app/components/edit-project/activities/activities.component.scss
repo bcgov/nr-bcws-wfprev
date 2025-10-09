@@ -275,3 +275,7 @@
 .date-range-container .mat-date-range-input input {
   padding: 0 !important;     /* remove inner padding */
 }
+
+:host ::ng-deep .mat-mdc-checkbox-disabled .mdc-label {
+  margin-left: 12px !important;
+}
