@@ -787,6 +787,35 @@ describe('ProjectDetailsComponent', () => {
       expect(mockProjectService.updateProject).not.toHaveBeenCalled();
     });
 
+    it('should emit projectNameChange after successful save', () => {
+      component.projectGuid = 'test-guid';
+      component.projectDetail = {
+        projectName: 'Old Name',
+        projectTypeCode: { projectTypeCode: 'TEST' },
+        primaryObjectiveTypeCode: {}
+      };
+
+      component.detailsForm = new FormGroup({
+        projectName: new FormControl('New Name'),
+        projectTypeCode: new FormControl('FUEL_MGMT'),
+        programAreaGuid: new FormControl('area-guid'),
+        closestCommunityName: new FormControl('Test City'),
+        primaryObjectiveTypeCode: new FormControl('WRR'),
+        wildfireOrgUnitId: new FormControl(123)
+      });
+      spyOnProperty(component.detailsForm, 'valid', 'get').and.returnValue(true);
+
+      mockProjectService.updateProject.and.returnValue(of({}));
+      mockProjectService.getProjectByProjectGuid.and.returnValue(
+        of({ projectName: 'New Name' })
+      );
+
+      spyOn(component.projectNameChange, 'emit');
+      component.onSave();
+      expect(component.projectNameChange.emit).toHaveBeenCalledWith('New Name');
+    });
+
+
     it('should include fireCentreOrgUnitId in the updateProject payload', () => {
       component.projectGuid = 'test-guid';
       component.projectDetail = {
