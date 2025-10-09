@@ -398,7 +398,7 @@ export class EvaluationCriteriaDialogComponent implements OnInit {
   }
 
   formatCodeLabel(code: string | undefined): string {
-    return code ? code.replace(/_/g, ' ') : '';
+    return code ? code.replaceAll(/_/g, ' ') : '';
   }
 
   prefillFromEvaluationCriteriaSummary(): void {
