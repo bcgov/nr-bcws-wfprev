@@ -27,6 +27,7 @@ export class ProjectFilesComponent implements OnInit {
   @Input() projectGuid: string = '';
   @Input() activityGuid: string = '';
   @Input() fiscalGuid: string = '';
+  @Input() isReadonly: boolean = false;
   attachmentDescription: string = '';
   uploadedBy = '';
 

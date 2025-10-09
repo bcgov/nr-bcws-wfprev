@@ -780,5 +780,13 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
     return typeof val === 'string' ? val : val?.planFiscalStatusCode ?? '';
   }
 
+  isCurrentFiscalReadonly(): boolean {
+    const current = this.projectFiscals[this.selectedTabIndex];
+    if (!current) return false;
+
+    const status = current.planFiscalStatusCode?.planFiscalStatusCode;
+    return [this.FiscalStatuses.COMPLETE, this.FiscalStatuses.CANCELLED].includes(status);
+  }
+
 }
 

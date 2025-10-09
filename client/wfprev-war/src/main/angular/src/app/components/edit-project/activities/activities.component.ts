@@ -65,6 +65,7 @@ export const CUSTOM_DATE_FORMATS = {
 
 export class ActivitiesComponent implements OnChanges, CanComponentDeactivate {
   @Input() fiscalGuid: string = '';
+  @Input() isReadonly: boolean = false;
   @Output() boundariesUpdated = new EventEmitter<void>();
   @ViewChild('activitiesPanel') activitiesPanel?: MatExpansionPanel;
   @ViewChildren(ProjectFilesComponent) private readonly attachmentFiles!: QueryList<ProjectFilesComponent>;
@@ -256,6 +257,9 @@ export class ActivitiesComponent implements OnChanges, CanComponentDeactivate {
     }
     if (activity?.silvicultureTechniqueGuid) {
       this.filteredMethodCode = this.silvicultureMethodCode.filter(m => m.silvicultureTechniqueGuid === activity.silvicultureTechniqueGuid);
+    }
+    if (this.isReadonly) {
+      form.disable({ emitEvent: false });
     }
 
     this.updateTechniqueAndMethodOptions(form, activity);
