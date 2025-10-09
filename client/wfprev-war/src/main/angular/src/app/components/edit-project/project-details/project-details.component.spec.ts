@@ -12,7 +12,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { ProjectService } from 'src/app/services/project-services';
 import { ActivatedRoute } from '@angular/router';
 import { formatLatLong } from 'src/app/utils/tools';
-import { CodeTableKeys } from 'src/app/utils/constants';
+import { BC_BOUNDS, CodeTableKeys } from 'src/app/utils/constants';
 import * as toolUtils from 'src/app/utils/tools'
 import { EvaluationCriteriaSummaryModel, ProjectFiscal } from 'src/app/components/models';
 const mockApplicationConfig = {
@@ -286,21 +286,15 @@ describe('ProjectDetailsComponent', () => {
     it('should initialize map with default BC bounds if map is not defined', () => {
       component.initMap();
       expect(L.map).toHaveBeenCalled();
-      expect(mapSpy.fitBounds).toHaveBeenCalledWith([
-        [48.3, -139.1], // Southwest corner of BC
-        [60.0, -114.0], // Northeast corner of BC
-      ]);
+      expect(mapSpy.fitBounds).toHaveBeenCalledWith(BC_BOUNDS);
     });
 
     it('should initialize the map when initMap is called and map does not exist', () => {
-      component['map'] = undefined; // Ensure map is not already initialized
+      component['map'] = undefined;
       component.initMap();
 
-      expect(L.map).toHaveBeenCalled(); // Verify that the map was created
-      expect(mapSpy.fitBounds).toHaveBeenCalledWith([
-        [48.3, -139.1], // Southwest corner of BC
-        [60.0, -114.0], // Northeast corner of BC
-      ]); // Verify that fitBounds was called with default bounds
+      expect(L.map).toHaveBeenCalled();
+      expect(mapSpy.fitBounds).toHaveBeenCalledWith(BC_BOUNDS);
     });
 
     it('should update the map view with the new latitude and longitude', () => {
