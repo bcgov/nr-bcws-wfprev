@@ -6,7 +6,7 @@ export class MapService {
   private mapIndex: number = 0;
   baseMapIds: string[] = [];
   private readonly smkBaseUrl = `${globalThis.location.protocol}//${globalThis.location.host}/assets/smk/`;
-
+  private containerId?: string;
   private smkInstance: any = null;
 
   getMapIndex(): number {
@@ -19,6 +19,10 @@ export class MapService {
 
   clearSMKInstance(): void {
     this.smkInstance = null;
+  }
+
+  setContainerId(id: string) { 
+    this.containerId = id; 
   }
 
   async createSMK(option: any): Promise<any> {
@@ -159,6 +163,32 @@ export class MapService {
     } catch (error) {
       console.error('Error occurred during patching:', error);
       throw error; // Re-throw the error to propagate it to the caller
+    }
+  }
+
+  async destroySMK(): Promise<void> {
+    const smk = this.smkInstance;
+    if (!smk) return;
+
+    try {
+      if (typeof smk.destroy === 'function') {
+        smk.destroy();
+        await Promise.resolve();
+      }
+    } catch (error) {
+      console.error('Error occurred during SMK destruction:', error);
+    } finally {
+      this.clearSMKInstance();
+
+      // Also scrub the container so Leaflet doesn't think it’s still mounted
+      if (this.containerId) {
+        const el = document.getElementById(this.containerId);
+        if (el) {
+          // Replace the node so any internal leaflet id is removed
+          const fresh = el.cloneNode(false);
+          el.parentNode?.replaceChild(fresh, el);
+        }
+      }
     }
   }
 
