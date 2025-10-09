@@ -15,6 +15,7 @@ import L from 'leaflet';
 import { CreateNewProjectDialogComponent } from 'src/app/components/create-new-project-dialog/create-new-project-dialog.component';
 import { FeaturesResponse } from 'src/app/components/models';
 import { Messages } from 'src/app/utils/constants';
+import { MapService } from 'src/app/services/map.service';
 
 describe('ProjectsListComponent', () => {
   let component: ProjectsListComponent;
@@ -59,6 +60,7 @@ describe('ProjectsListComponent', () => {
   let mockCodeTableService: jasmine.SpyObj<CodeTableServices>;
   let mockDialog: jasmine.SpyObj<MatDialog>;
   let mockRouter: jasmine.SpyObj<Router>;
+  let mockMapService: jasmine.SpyObj<MapService>;
 
   beforeEach(async () => {
     mockProjectService = jasmine.createSpyObj('ProjectService', ['fetchProjects', 'getFeatures', 'downloadProjects']);
@@ -84,6 +86,8 @@ describe('ProjectsListComponent', () => {
       };
       return of(mockData[name]);
     });
+
+    mockMapService = jasmine.createSpyObj('MapService', ['destroySMK', 'getMapIndex', 'setMapIndex', 'setContainerId']);
 
     mockDialog = jasmine.createSpyObj('MatDialog', ['open']);
     mockDialog.open.and.returnValue({
@@ -122,7 +126,8 @@ describe('ProjectsListComponent', () => {
         { provide: CodeTableServices, useValue: mockCodeTableService },
         { provide: MatDialog, useValue: mockDialog },
         { provide: Router, useValue: mockRouter },
-        { provide: ActivatedRoute, useValue: {} }
+        { provide: ActivatedRoute, useValue: {} },
+        { provide: MapService, useValue: mockMapService }
       ],
     }).compileComponents();
 
@@ -206,11 +211,11 @@ describe('ProjectsListComponent', () => {
     expect(component.selectedSort).toBe('ascending');
   });
 
-  it('should navigate to the edit project route with correct parameters', () => {
+  it('should navigate to the edit project route with correct parameters', async () => {
     const mockEvent = jasmine.createSpyObj('Event', ['stopPropagation']);
     const project = { projectGuid: 'test-guid' };
 
-    component.editProject(project, mockEvent);
+    await component.editProject(project, mockEvent);
 
     expect(mockRouter.navigate).toHaveBeenCalledWith(
       [ResourcesRoutes.EDIT_PROJECT],
