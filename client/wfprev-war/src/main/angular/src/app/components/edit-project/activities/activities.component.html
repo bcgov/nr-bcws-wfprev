@@ -123,9 +123,9 @@
                         <div class="form-item three-columns">
                             <label>Technique</label>
                             <select id="silvicultureTechniqueGuid" formControlName="silvicultureTechniqueGuid" 
-                              [disabled]="!activityForms[i].value.filteredTechniqueCode.length">
+                              [disabled]="!(activityForms[i]?.get('filteredTechniqueCode')?.value?.length)">
                                 <option [value]=null>Select</option>
-                                <option *ngFor="let item of activityForms[i].value.filteredTechniqueCode" 
+                                <option *ngFor="let item of activityForms[i]?.get('filteredTechniqueCode')?.value || []"
                                         [value]="item.silvicultureTechniqueGuid">
                                   {{ item.description }}
                                 </option>
@@ -135,7 +135,7 @@
                         <div class="form-item three-columns">
                             <label>Method</label>
                             <select id="silvicultureMethodGuid" formControlName="silvicultureMethodGuid" 
-                              [disabled]="!activityForms[i].value.filteredMethodCode.length">
+                              [disabled]="!(activityForms[i]?.get('filteredMethodCode')?.value?.length)">
                                 <option [value]=null>Select</option>
                                 <option *ngFor="let item of activityForms[i].value.filteredMethodCode" 
                                         [value]="item.silvicultureMethodGuid">
@@ -174,8 +174,8 @@
                             <div class="date-range-container">
                                 <mat-form-field>
                                     <mat-date-range-input [rangePicker]="picker" formGroupName="activityDateRange">
-                                        <input matStartDate [value]="getFormattedDate(activityForms[i].value.activityDateRange.activityStartDate)" formControlName="activityStartDate" placeholder="YYYY-MM-DD">
-                                        <input matEndDate [value]="getFormattedDate(activityForms[i].value.activityDateRange.activityEndDate)" formControlName="activityEndDate" placeholder="YYYY-MM-DD">                                        
+                                        <input matStartDate formControlName="activityStartDate" placeholder="YYYY-MM-DD">
+                                        <input matEndDate   formControlName="activityEndDate"   placeholder="YYYY-MM-DD">
                                     </mat-date-range-input>
                                     <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
                                     <mat-date-range-picker #picker panelClass="custom-overlay"></mat-date-range-picker>
