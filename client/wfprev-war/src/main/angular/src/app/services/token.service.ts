@@ -188,7 +188,7 @@ export class TokenService {
     const authConfig = {
       oidc: false,
       issuer: configuration.application.baseUrl,
-      loginUrl: configuration.webade.oauth2Url,
+      loginUrl: "https://wfappsi.nrs.gov.bc.ca/ext/oauth2/v1/oauth/authorize"
       redirectUri: redirectUri ?? globalThis.location?.href,
       clientId: configuration.webade.clientId,
       scope: configuration.webade.authScopes
