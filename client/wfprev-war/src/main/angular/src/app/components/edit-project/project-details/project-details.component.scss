@@ -373,6 +373,11 @@
   padding: 10px;
   border-top: 1px solid #ccc;
   font-family: var(--wf-font-family-main);
+  
+  fieldset {
+    border: none;
+  }
+
 
   form {
     display: flex;

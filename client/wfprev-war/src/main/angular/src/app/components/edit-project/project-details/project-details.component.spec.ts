@@ -1453,4 +1453,30 @@ describe('ProjectDetailsComponent', () => {
     });
   });
 
+  describe('hasGeometry getter', () => {
+    it('should return false when no boundaryLayer and no activity polygons', () => {
+      component['boundaryLayer'] = null;
+      component['allActivityBoundaries'] = [];
+      expect(component.hasGeometry).toBeFalse();
+    });
+
+    it('should return true when boundaryLayer exists but no activity polygons', () => {
+      component['boundaryLayer'] = {} as any;
+      component['allActivityBoundaries'] = [];
+      expect(component.hasGeometry).toBeTrue();
+    });
+
+    it('should return true when no project polygon but there are activity polygons', () => {
+      component['boundaryLayer'] = null;
+      component['allActivityBoundaries'] = [{ boundary: {} }];
+      expect(component.hasGeometry).toBeTrue();
+    });
+
+    it('should return true when both project polygon and activity polygons exist', () => {
+      component['boundaryLayer'] = {} as any;
+      component['allActivityBoundaries'] = [{ boundary: {} }];
+      expect(component.hasGeometry).toBeTrue();
+    });
+  });
+
 });
