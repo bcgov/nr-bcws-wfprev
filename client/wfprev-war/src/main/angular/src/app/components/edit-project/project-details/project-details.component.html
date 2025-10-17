@@ -289,15 +289,17 @@
   <div class="map-section">
     <div id="map"></div>
     <div class="latlong-section">
-      <form>
-        <label for="coordinates">Latitude/Longitude:</label>
-        <div class="input-group">
-          <input type="text" id="coordinates" [(ngModel)]="latLong" name="latLong"
-            placeholder="e.g., 50.5343° N, -120.6408° W"
-            (ngModelChange)="onLatLongChange($event)" />
-          <button type="button" (click)="onSaveLatLong()" [disabled]="isSaving || !isLatLongDirty" class="primary">Save
-          </button>
-        </div>
+      <form >
+        <fieldset [disabled]="hasGeometry">
+          <label for="coordinates">Latitude/Longitude:</label>
+          <div class="input-group">
+            <input type="text" id="coordinates" [(ngModel)]="latLong" name="latLong"
+              placeholder="e.g., 50.5343° N, -120.6408° W"
+              (ngModelChange)="onLatLongChange($event)" />
+            <button type="button" (click)="onSaveLatLong()" [disabled]="isSaving || !isLatLongDirty" class="primary">Save
+            </button>
+          </div>
+        </fieldset>
       </form>
     </div>
     <wfprev-project-files (filesUpdated)="onFilesUpdated()" [projectGuid]="projectGuid"></wfprev-project-files>

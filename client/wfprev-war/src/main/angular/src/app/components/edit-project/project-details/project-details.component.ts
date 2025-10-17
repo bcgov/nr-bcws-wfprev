@@ -954,4 +954,11 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
       error: (err) => console.error('Error reloading fiscals:', err)
     });
   }
+
+  get hasGeometry(): boolean {
+    // disable latlong edit if there is at least one project polygon or activity polygon
+    const hasProjectPolygon = !!this.boundaryLayer; 
+    const hasActivityPolygons = this.allActivityBoundaries?.length > 0;
+    return hasProjectPolygon || hasActivityPolygons;
+  }
 }
