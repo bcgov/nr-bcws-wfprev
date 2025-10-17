@@ -11,9 +11,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
@@ -45,16 +43,6 @@ public class SecurityConfig {
 
     @Value("${spring.application.baseUrl}")
     private String baseUrl;
-
-    @Bean
-    AuthenticationEntryPoint authenticationEntryPoint() {
-        BasicAuthenticationEntryPoint result;
-
-        result = new BasicAuthenticationEntryPoint();
-        result.setRealmName("wfprev-api");
-
-        return result;
-    }
 
     @Bean
     public TokenService tokenServiceImpl() {
@@ -97,11 +85,8 @@ public class SecurityConfig {
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2
                 .authenticationManagerResolver(authenticationManagerResolver())
-                )
-                .httpBasic()
-                .and()
-                .exceptionHandling(exceptionHandling -> exceptionHandling
-                .authenticationEntryPoint(authenticationEntryPoint()));
+                );
+
 
         return http.build();
     }
