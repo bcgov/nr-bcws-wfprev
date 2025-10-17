@@ -96,7 +96,7 @@ public class SecurityConfig {
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2
                 .authenticationManagerResolver(authenticationManagerResolver())
-                )
+                );
 
         return http.build();
     }
