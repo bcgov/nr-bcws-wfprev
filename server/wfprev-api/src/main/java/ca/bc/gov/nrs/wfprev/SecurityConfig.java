@@ -46,7 +46,6 @@ public class SecurityConfig {
     @Value("${spring.application.baseUrl}")
     private String baseUrl;
 
-    @Bean
     AuthenticationEntryPoint authenticationEntryPoint() {
         BasicAuthenticationEntryPoint result;
 
@@ -98,9 +97,6 @@ public class SecurityConfig {
                 .oauth2ResourceServer(oauth2 -> oauth2
                 .authenticationManagerResolver(authenticationManagerResolver())
                 )
-                .and()
-                .exceptionHandling(exceptionHandling -> exceptionHandling
-                .authenticationEntryPoint(authenticationEntryPoint()));
 
         return http.build();
     }
