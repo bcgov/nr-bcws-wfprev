@@ -12,7 +12,7 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute } from '@angular/router';
 import moment from 'moment';
-import { Observable, take } from 'rxjs';
+import { forkJoin, map, Observable, take, tap } from 'rxjs';
 import { ConfirmationDialogComponent } from 'src/app/components/confirmation-dialog/confirmation-dialog.component';
 import { ProjectFilesComponent } from 'src/app/components/edit-project/project-details/project-files/project-files.component';
 import { CodeTableServices } from 'src/app/services/code-table-services';
@@ -99,37 +99,51 @@ export class ActivitiesComponent implements OnChanges, CanComponentDeactivate {
     public cd: ChangeDetectorRef
   ) { }
 
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes['fiscalGuid'] && changes['fiscalGuid'].currentValue) {
-      // Clear previous state before loading new fiscal data
-      this.activities = [];
-      this.activityForms = [];
+ngOnChanges(changes: SimpleChanges): void {
+  if (changes['fiscalGuid'] && changes['fiscalGuid'].currentValue) {
+    this.activities = [];
+    this.activityForms = [];
 
-      this.loadCodeTables();
-      this.getActivities();
-    }
+    this.loadCodeTables().subscribe({
+      next: () => {
+        this.getActivities(() => {
+          this.activityForms.forEach((form, i) => {
+            if (form.get('isResultsReportableInd')?.value) {
+              this.toggleResultsReportableInd(i);
+            }
+          });
+        });
+      },
+
+      error: (err) => {
+        console.error('Error loading code tables', err);
+        this.getActivities();
+      }
+    });
   }
+}
 
-  loadCodeTables(): void {
-    const codeTables = [
-      { name: 'contractPhaseCodes', embeddedKey: 'contractPhaseCode' },
-      { name: 'fundingSourceCodes', embeddedKey: 'fundingSourceCode' },
-      { name: 'silvicultureBaseCodes', embeddedKey: 'silvicultureBaseCode' },
-      { name: 'silvicultureTechniqueCodes', embeddedKey: 'silvicultureTechniqueCode' },
-      { name: 'silvicultureMethodCodes', embeddedKey: 'silvicultureMethodCode' }
+
+  loadCodeTables(): Observable<void> {
+    const requests = [
+      this.codeTableService.fetchCodeTable('contractPhaseCodes'),
+      this.codeTableService.fetchCodeTable('fundingSourceCodes'),
+      this.codeTableService.fetchCodeTable('silvicultureBaseCodes'),
+      this.codeTableService.fetchCodeTable('silvicultureTechniqueCodes'),
+      this.codeTableService.fetchCodeTable('silvicultureMethodCodes')
     ];
 
-    codeTables.forEach((table) => {
-      this.codeTableService.fetchCodeTable(table.name).subscribe({
-        next: (data) => {
-          this.assignCodeTableData(table.embeddedKey, data);
-        },
-        error: (err) => {
-          console.error(`Error fetching ${table.name}`, err);
-          this.assignCodeTableData(table.embeddedKey, []); // Assign empty array on error
-        },
-      });
-    });
+    return forkJoin(requests).pipe(
+      take(1),
+      tap(([contract, funding, base, technique, method]) => {
+        this.assignCodeTableData('contractPhaseCode', contract);
+        this.assignCodeTableData('fundingSourceCode', funding);
+        this.assignCodeTableData('silvicultureBaseCode', base);
+        this.assignCodeTableData('silvicultureTechniqueCode', technique);
+        this.assignCodeTableData('silvicultureMethodCode', method);
+      }),
+      map(() => void 0)
+    );
   }
 
   assignCodeTableData(key: string, data: any): void {
@@ -283,24 +297,30 @@ export class ActivitiesComponent implements OnChanges, CanComponentDeactivate {
     const baseGuid = activity?.silvicultureBaseGuid;
     const techniqueGuid = activity?.silvicultureTechniqueGuid;
 
-    const filteredTechniques = baseGuid ? this.silvicultureTechniqueCode.filter(t => t.silvicultureBaseGuid === baseGuid) : [];
-    const filteredMethods = techniqueGuid ? this.silvicultureMethodCode.filter(m => m.silvicultureTechniqueGuid === techniqueGuid) : [];
+    const filteredTechniques = baseGuid
+      ? this.silvicultureTechniqueCode.filter(t => t.silvicultureBaseGuid === baseGuid)
+      : [];
+    const filteredMethods = techniqueGuid
+      ? this.silvicultureMethodCode.filter(m => m.silvicultureTechniqueGuid === techniqueGuid)
+      : [];
 
     form.patchValue({
       filteredTechniqueCode: filteredTechniques,
       filteredMethodCode: filteredMethods
     });
 
-    if (filteredTechniques.length > 0) {
-      form.get('silvicultureTechniqueGuid')?.enable();
-    } else {
-      form.get('silvicultureTechniqueGuid')?.disable();
-    }
+    if (!this.isReadonly) {
+      if (filteredTechniques.length > 0) {
+        form.get('silvicultureTechniqueGuid')?.enable({ emitEvent: false });
+      } else {
+        form.get('silvicultureTechniqueGuid')?.disable({ emitEvent: false });
+      }
 
-    if (filteredMethods.length > 0) {
-      form.get('silvicultureMethodGuid')?.enable();
-    } else {
-      form.get('silvicultureMethodGuid')?.disable();
+      if (filteredMethods.length > 0) {
+        form.get('silvicultureMethodGuid')?.enable({ emitEvent: false });
+      } else {
+        form.get('silvicultureMethodGuid')?.disable({ emitEvent: false });
+      }
     }
 
     this.cd.detectChanges();
@@ -308,6 +328,7 @@ export class ActivitiesComponent implements OnChanges, CanComponentDeactivate {
 
 
   onBaseChange(baseGuid: string, form: FormGroup) {
+    if (this.isReadonly) return;
     const techniqueControl = form.get('silvicultureTechniqueGuid');
     const methodControl = form.get('silvicultureMethodGuid');
     if (!baseGuid) {
@@ -365,11 +386,9 @@ export class ActivitiesComponent implements OnChanges, CanComponentDeactivate {
 
   toggleResultsReportableInd(index: number): void {
     const form = this.activityForms[index];
-
     if (!form) return;
 
     const isReportable = form.get('isResultsReportableInd')?.value;
-
     const baseField = form.get('silvicultureBaseGuid');
     const nameField = form.get('activityName');
 
@@ -378,23 +397,25 @@ export class ActivitiesComponent implements OnChanges, CanComponentDeactivate {
       nameField?.disable();
       nameField?.setValue(this.getActivityTitle(index)); // Set name initially
 
-      form.get('silvicultureBaseGuid')?.valueChanges.subscribe(() => {
-        if (form.get('isResultsReportableInd')?.value) {
-          nameField?.setValue(this.getActivityTitle(index));
-        }
-      });
+      if (!this.isReadonly){
+        form.get('silvicultureBaseGuid')?.valueChanges.subscribe(() => {
+          if (form.get('isResultsReportableInd')?.value) {
+            nameField?.setValue(this.getActivityTitle(index));
+          }
+        });
 
-      form.get('silvicultureTechniqueGuid')?.valueChanges.subscribe(() => {
-        if (form.get('isResultsReportableInd')?.value) {
-          nameField?.setValue(this.getActivityTitle(index));
-        }
-      });
+        form.get('silvicultureTechniqueGuid')?.valueChanges.subscribe(() => {
+          if (form.get('isResultsReportableInd')?.value) {
+            nameField?.setValue(this.getActivityTitle(index));
+          }
+        });
 
-      form.get('silvicultureMethodGuid')?.valueChanges.subscribe(() => {
-        if (form.get('isResultsReportableInd')?.value) {
-          nameField?.setValue(this.getActivityTitle(index));
-        }
-      });
+        form.get('silvicultureMethodGuid')?.valueChanges.subscribe(() => {
+          if (form.get('isResultsReportableInd')?.value) {
+            nameField?.setValue(this.getActivityTitle(index));
+          }
+        });
+      }
     } else {
       baseField?.clearValidators();
       nameField?.enable();
@@ -409,6 +430,7 @@ export class ActivitiesComponent implements OnChanges, CanComponentDeactivate {
 
 
   onTechniqueChange(techniqueGuid: string, form: FormGroup) {
+    if (this.isReadonly) return;
     const methodControl = form.get('silvicultureMethodGuid');
 
     if (!techniqueGuid) {
@@ -448,6 +470,7 @@ export class ActivitiesComponent implements OnChanges, CanComponentDeactivate {
   }
 
   onMethodChange(methodGuid: string, form: FormGroup) {
+    if (this.isReadonly) return;
     if (methodGuid) {
       this.updateActivityName(form);
     }
@@ -481,8 +504,7 @@ export class ActivitiesComponent implements OnChanges, CanComponentDeactivate {
   }
 
   getActivityTitle(index: number): string {
-    const activity = this.activityForms[index]?.value;
-
+    const activity = this.activityForms[index]?.getRawValue();
     if (!activity) return '';
 
     // If Results Reportable is ON, construct Base - Technique - Method dynamically

@@ -87,6 +87,11 @@
         select{
             text-overflow: unset !important;
         }
+        select[disabled] {
+            color: rgba(0, 0, 0, 0.6);
+            background-color: #f3f3f3;
+            pointer-events: none;
+        }
     }
     .form-item.wide{
         grid-column: span 2;
@@ -281,4 +286,9 @@
 }
 :host ::ng-deep .add-activity .shared-icon-button {
   height: 40px !important;
+}
+
+::ng-deep .mat-form-field-disabled .mdc-text-field {
+    margin-top: 6px;
+    height: 38px;
 }

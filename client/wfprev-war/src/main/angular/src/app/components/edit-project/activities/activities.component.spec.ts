@@ -925,5 +925,78 @@ describe('ActivitiesComponent', () => {
     });
   });
 
+  it('should load all code tables and assign values', fakeAsync(() => {
+    const mockData = { _embedded: { dummy: [] } };
+    mockCodeTableService.fetchCodeTable.and.returnValue(of(mockData));
+
+    const assignSpy = spyOn(component, 'assignCodeTableData').and.callThrough();
+
+    component.loadCodeTables().subscribe();
+
+    tick(); // flush forkJoin
+
+    expect(mockCodeTableService.fetchCodeTable).toHaveBeenCalledTimes(5);
+    expect(assignSpy).toHaveBeenCalledWith('contractPhaseCode', mockData);
+    expect(assignSpy).toHaveBeenCalledWith('silvicultureMethodCode', mockData);
+  }));
+
+  it('should handle errors when loading code tables', fakeAsync(() => {
+    mockCodeTableService.fetchCodeTable.and.returnValue(throwError(() => new Error('Network fail')));
+
+    const assignSpy = spyOn(component, 'assignCodeTableData').and.callThrough();
+    const consoleSpy = spyOn(console, 'error');
+
+    component.loadCodeTables().subscribe({
+      error: () => {}
+    });
+
+    tick();
+
+    expect(consoleSpy).not.toHaveBeenCalledWith('Error fetching');
+    expect(assignSpy).not.toHaveBeenCalled();
+  }));
+
+  it('should load code tables then fetch activities and toggle reportable', fakeAsync(() => {
+    const toggleSpy = spyOn(component, 'toggleResultsReportableInd');
+    const getActivitiesSpy = spyOn(component, 'getActivities').and.callFake((cb?: any) => {
+      component.activityForms = [
+        new FormBuilder().group({ isResultsReportableInd: [true] })
+      ];
+      if (cb) cb();
+    });
+
+    spyOn(component, 'loadCodeTables').and.returnValue(of(void 0));
+
+    component.ngOnChanges({
+      fiscalGuid: { currentValue: 'guid', previousValue: '', firstChange: true, isFirstChange: () => true }
+    });
+
+    tick();
+
+    expect(component.loadCodeTables).toHaveBeenCalled();
+    expect(getActivitiesSpy).toHaveBeenCalled();
+    expect(toggleSpy).toHaveBeenCalledWith(0);
+  }));
+
+  it('should call getActivities directly when loadCodeTables fails', fakeAsync(() => {
+    spyOn(component, 'getActivities');
+    spyOn(component, 'loadCodeTables').and.returnValue(throwError(() => new Error('fail')));
+
+    component.ngOnChanges({
+      fiscalGuid: { currentValue: 'guid', previousValue: '', firstChange: true, isFirstChange: () => true }
+    });
+
+    tick();
+
+    expect(component.getActivities).toHaveBeenCalled();
+  }));
+
+  it('should skip ngOnChanges logic if fiscalGuid is missing', () => {
+    spyOn(component, 'loadCodeTables');
+    spyOn(component, 'getActivities');
+    component.ngOnChanges({ fiscalGuid: { currentValue: '', previousValue: '', firstChange: true, isFirstChange: () => true } });
+    expect(component.loadCodeTables).not.toHaveBeenCalled();
+    expect(component.getActivities).not.toHaveBeenCalled();
+  });
 
 });
