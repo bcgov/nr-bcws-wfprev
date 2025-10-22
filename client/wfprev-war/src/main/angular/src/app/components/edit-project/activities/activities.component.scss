@@ -87,11 +87,6 @@
         select{
             text-overflow: unset !important;
         }
-        select[disabled] {
-            color: rgba(0, 0, 0, 0.6);
-            background-color: #f3f3f3;
-            pointer-events: none;
-        }
     }
     .form-item.wide{
         grid-column: span 2;
