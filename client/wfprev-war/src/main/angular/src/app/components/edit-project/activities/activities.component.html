@@ -112,7 +112,7 @@
                                 <span class="required" *ngIf="activityForms[i]?.value?.isResultsReportableInd">*</span>
                             </label>
                             <select id="silvicultureBaseGuid" formControlName="silvicultureBaseGuid">
-                                <option value="">Select</option>
+                                <option [value]="null">Select</option>
                                 <option *ngFor="let item of silvicultureBaseCode" [value]="item.silvicultureBaseGuid">
                                     {{ item.description }}
                                 </option>
@@ -124,7 +124,7 @@
                             <select id="silvicultureTechniqueGuid"
                                     formControlName="silvicultureTechniqueGuid"
                                     >
-                                <option value="">Select</option>
+                                <option [value]="null">Select</option>
                                 <option *ngFor="let item of activityForms[i]?.get('filteredTechniqueCode')?.value || []"
                                         [value]="item.silvicultureTechniqueGuid">
                                     {{ item.description }}
@@ -136,7 +136,7 @@
                             <select id="silvicultureMethodGuid"
                                     formControlName="silvicultureMethodGuid"
                                     >
-                                <option value="">Select</option>
+                                <option [value]="null">Select</option>
                                 <option *ngFor="let item of activityForms[i]?.get('filteredMethodCode')?.value || []"
                                         [value]="item.silvicultureMethodGuid">
                                     {{ item.description }}
