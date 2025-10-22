@@ -1,4 +1,7 @@
-<mat-checkbox class="checkbox"
-  [formControl]="control">
+<mat-checkbox
+  class="checkbox"
+  [checked]="value"
+  [disabled]="disabled"
+  (change)="onCheckboxChange($event)">
   <ng-content></ng-content>
 </mat-checkbox>
