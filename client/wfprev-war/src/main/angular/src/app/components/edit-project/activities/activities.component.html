@@ -89,19 +89,18 @@
                                         [disabled]="isReadonly">
                                     </mat-slide-toggle>
                                     <span class="toggle-label">
-                                    {{ activityForms[i].value?.isResultsReportableInd ? 'Yes' : 'No' }}
+                                      {{ activityForms[i].getRawValue().isResultsReportableInd ? 'Yes' : 'No' }}
                                     </span>
                                 </div>
                             </div>
                             <div class="form-item narrow-width">
                                 <label>Activity Status</label>
                                 <div class="toggle-container">
-                                    <mat-slide-toggle 
-                                        id="activityStatusCode" 
-                                        [checked]="activityForms[i].value?.activityStatusCode === 'COMPLETED'"
-                                        (change)="toggleActivityStatus(i)"
-                                        [disabled]="isReadonly">
-                                    </mat-slide-toggle>
+                                <mat-slide-toggle
+                                    [checked]="activityForms[i].getRawValue().activityStatusCode === 'COMPLETED'"
+                                    [disabled]="isReadonly"
+                                    (change)="!isReadonly && toggleActivityStatus(i)">
+                                </mat-slide-toggle>
                                     <span class="toggle-label">
                                     Complete
                                     </span>
@@ -113,7 +112,7 @@
                                 <span class="required" *ngIf="activityForms[i]?.value?.isResultsReportableInd">*</span>
                             </label>
                             <select id="silvicultureBaseGuid" formControlName="silvicultureBaseGuid">
-                                <option value="">Select</option>
+                                <option [value]="null">Select</option>
                                 <option *ngFor="let item of silvicultureBaseCode" [value]="item.silvicultureBaseGuid">
                                     {{ item.description }}
                                 </option>
@@ -122,24 +121,25 @@
 
                         <div class="form-item three-columns">
                             <label>Technique</label>
-                            <select id="silvicultureTechniqueGuid" formControlName="silvicultureTechniqueGuid" 
-                              [disabled]="!(activityForms[i]?.get('filteredTechniqueCode')?.value?.length)">
-                                <option [value]=null>Select</option>
+                            <select id="silvicultureTechniqueGuid"
+                                    formControlName="silvicultureTechniqueGuid"
+                                    >
+                                <option [value]="null">Select</option>
                                 <option *ngFor="let item of activityForms[i]?.get('filteredTechniqueCode')?.value || []"
                                         [value]="item.silvicultureTechniqueGuid">
-                                  {{ item.description }}
+                                    {{ item.description }}
                                 </option>
                             </select>
                         </div>
-                        
                         <div class="form-item three-columns">
                             <label>Method</label>
-                            <select id="silvicultureMethodGuid" formControlName="silvicultureMethodGuid" 
-                              [disabled]="!(activityForms[i]?.get('filteredMethodCode')?.value?.length)">
-                                <option [value]=null>Select</option>
-                                <option *ngFor="let item of activityForms[i].value.filteredMethodCode" 
+                            <select id="silvicultureMethodGuid"
+                                    formControlName="silvicultureMethodGuid"
+                                    >
+                                <option [value]="null">Select</option>
+                                <option *ngFor="let item of activityForms[i]?.get('filteredMethodCode')?.value || []"
                                         [value]="item.silvicultureMethodGuid">
-                                  {{ item.description }}
+                                    {{ item.description }}
                                 </option>
                             </select>
                         </div>

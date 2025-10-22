@@ -282,3 +282,8 @@
 :host ::ng-deep .add-activity .shared-icon-button {
   height: 40px !important;
 }
+
+::ng-deep .mat-form-field-disabled .mdc-text-field {
+    margin-top: 6px;
+    height: 38px;
+}
