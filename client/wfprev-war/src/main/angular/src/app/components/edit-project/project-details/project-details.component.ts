@@ -351,13 +351,14 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
   }
 
   initMap(): void {
-    const defaultBounds: L.LatLngBoundsExpression = BC_BOUNDS
+    const container = this.mapHost?.nativeElement;
+    if (!container) {
+      return;
+    }
+    const defaultBounds: L.LatLngBoundsExpression = BC_BOUNDS;
 
     if (!this.map) {
-      this.map = L.map('map', {
-        zoomControl: false,
-      });
-
+      this.map = L.map(container, { zoomControl: false });
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '© OpenStreetMap contributors',
       }).addTo(this.map);
