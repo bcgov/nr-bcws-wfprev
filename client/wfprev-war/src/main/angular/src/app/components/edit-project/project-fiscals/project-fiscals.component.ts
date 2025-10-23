@@ -417,7 +417,7 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
           this.snackbarService.open(this.messages.projectFiscalUpdatedSuccess, 'OK', {
             duration: 5000, panelClass: 'snackbar-success'
           });
-          this.loadProjectFiscals(true);
+          this.loadProjectFiscals(true, updatedData.projectPlanFiscalGuid);
           this.fiscalsUpdated.emit();
         } else {
           const newFiscalGuid = res?.projectPlanFiscalGuid;
