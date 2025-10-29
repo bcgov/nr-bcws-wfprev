@@ -269,18 +269,18 @@ class ProjectLocationServiceTest {
         Predicate like2024 = mock(Predicate.class);
         when(cb.like(fyAsString, "2024%")).thenReturn(like2024);
 
-        Predicate pAnd = mock(Predicate.class);
-        when(cb.and(any(Predicate[].class))).thenReturn(pAnd);
+        Predicate pAnd1 = mock(Predicate.class);
+        when(cb.and(any(Predicate[].class))).thenReturn(pAnd1);
         when(sqMatch.select(projectGuidPathMatch)).thenReturn(sqMatch);
-        when(sqMatch.where(pAnd)).thenReturn(sqMatch);
+        when(sqMatch.where(pAnd1)).thenReturn(sqMatch);
 
-        Predicate pExists = mock(Predicate.class);
-        when(cb.exists(sqMatch)).thenReturn(pExists);
+        Predicate pExists1 = mock(Predicate.class);
+        when(cb.exists(sqMatch)).thenReturn(pExists1);
 
         service.addFiscalAttributeFilters(cb, projectRoot, preds, params);
 
         assertEquals(1, preds.size());
-        assertSame(pExists, preds.get(0));
+        assertSame(pExists1, preds.get(0));
 
         verify(cb).like(fyAsString, "2024%");
         verify(cb).exists(sqMatch);

@@ -4,7 +4,6 @@ import { TokenService } from './token.service';
 import { StyleSpecification } from 'maplibre-gl';
 import * as L from 'leaflet';
 import { AppConfigService } from './app-config.service';
-import { Project } from '../components/models';
 
 @Injectable({ providedIn: 'root' })
 export class MapService {
@@ -15,7 +14,7 @@ export class MapService {
   private smkInstance: any = null;
   private readonly apiBaseUrl = `${this.appConfigService.getConfig().rest['wfprev']}/wfprev-api`;
 
-  constructor(private tokenService: TokenService,
+  constructor(private readonly tokenService: TokenService,
     private readonly appConfigService: AppConfigService
   ) { }
 
