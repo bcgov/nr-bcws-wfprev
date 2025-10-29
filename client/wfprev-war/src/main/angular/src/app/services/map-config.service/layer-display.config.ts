@@ -49,8 +49,7 @@ export function LayerDisplayConfig() {
             id: 'risk-reduction-projects-activities',
             isVisible: false,
             alwaysShowLegend: true,
-        },
-
+        }
 
     ];
 }

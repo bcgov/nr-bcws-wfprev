@@ -22,6 +22,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.springframework.hateoas.CollectionModel;
 
 import java.math.BigDecimal;
@@ -32,17 +34,22 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyCollection;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
+@MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 class ProjectLocationServiceTest {
 
@@ -221,48 +228,137 @@ class ProjectLocationServiceTest {
         verify(cb).or(any(Predicate[].class));
         verify(cb, atLeast(2)).like(eq(fyAsString), anyString());
     }
-
     @Test
-    @SuppressWarnings("unchecked")
-    void addFiscalAttributeFilters_treatsStringNullAsIsNull() {
+    void addFiscalAttributeFilters_returnsImmediately_whenNoFilters() {
         FeatureQueryParams params = new FeatureQueryParams();
-        params.setFiscalYears(List.of("null"));
+        List<Predicate> preds = new ArrayList<>();
+
+        service.addFiscalAttributeFilters(cb, projectRoot, preds, params);
+
+        assertTrue(preds.isEmpty());
+        verifyNoInteractions(cb);
+    }
+
+    @Test @SuppressWarnings({"unchecked", "rawtypes"})
+    void addFiscalAttributeFilters_addsExists_whenFiscalYearProvided() {
+        FeatureQueryParams params = new FeatureQueryParams();
+        params.setFiscalYears(List.of("2024"));
+
         List<Predicate> preds = new ArrayList<>();
 
         when(cb.createQuery()).thenReturn(genericQuery);
-        when(genericQuery.subquery(UUID.class)).thenReturn(subquery);
-        when(subquery.from(ProjectFiscalEntity.class)).thenReturn(fiscalRoot);
+        Subquery<UUID> sqMatch = (Subquery<UUID>) mock(Subquery.class);
+        when(genericQuery.subquery(UUID.class)).thenReturn(sqMatch);
+        Root<ProjectFiscalEntity> fMatch = (Root<ProjectFiscalEntity>) mock(Root.class);
+        when(sqMatch.from(ProjectFiscalEntity.class)).thenReturn(fMatch);
 
-        Path<UUID> projectGuidPath = (Path<UUID>) mock(Path.class);
-        Path<UUID> guidPathRoot   = (Path<UUID>) mock(Path.class);
-
-        Path<?> projectPath = mock(Path.class);
-        when(fiscalRoot.get("project")).thenReturn((Path) projectPath);
-        when(projectPath.get("projectGuid")).thenReturn((Path) projectGuidPath);
-        when(projectRoot.get("projectGuid")).thenReturn((Path) guidPathRoot);
+        Path<?> projPathMatch = mock(Path.class);
+        Path<UUID> projectGuidPathMatch = (Path<UUID>) mock(Path.class);
+        Path<UUID> rootGuidPath = (Path<UUID>) mock(Path.class);
+        when(fMatch.get("project")).thenReturn((Path) projPathMatch);
+        when(projPathMatch.get("projectGuid")).thenReturn((Path) projectGuidPathMatch);
+        when(projectRoot.get("projectGuid")).thenReturn((Path) rootGuidPath);
 
         Predicate eqProjectGuid = mock(Predicate.class);
-        when(cb.equal(projectGuidPath, guidPathRoot)).thenReturn(eqProjectGuid);
+        when(cb.equal(projectGuidPathMatch, rootGuidPath)).thenReturn(eqProjectGuid);
 
         Path<Object> fyPath = (Path<Object>) mock(Path.class);
-        when(fiscalRoot.get("fiscalYear")).thenReturn(fyPath);
-        Predicate isNullFy = mock(Predicate.class);
-        when(cb.isNull(fyPath)).thenReturn(isNullFy);
+        when(fMatch.get("fiscalYear")).thenReturn(fyPath);
+        Path<String> fyAsString = (Path<String>) mock(Path.class);
+        when(fyPath.as(String.class)).thenReturn(fyAsString);
+        Predicate like2024 = mock(Predicate.class);
+        when(cb.like(fyAsString, "2024%")).thenReturn(like2024);
 
-        when(cb.or(any(Predicate[].class))).thenReturn(pOr);
-
+        Predicate pAnd = mock(Predicate.class);
         when(cb.and(any(Predicate[].class))).thenReturn(pAnd);
-        when(subquery.select(projectGuidPath)).thenReturn(subquery);
-        when(subquery.where(pAnd)).thenReturn(subquery);
-        when(cb.exists(subquery)).thenReturn(pExists);
+        when(sqMatch.select(projectGuidPathMatch)).thenReturn(sqMatch);
+        when(sqMatch.where(pAnd)).thenReturn(sqMatch);
+
+        Predicate pExists = mock(Predicate.class);
+        when(cb.exists(sqMatch)).thenReturn(pExists);
 
         service.addFiscalAttributeFilters(cb, projectRoot, preds, params);
 
         assertEquals(1, preds.size());
-        verify(cb).isNull(fyPath);
-        verify(cb).exists(subquery);
+        assertSame(pExists, preds.get(0));
+
+        verify(cb).like(fyAsString, "2024%");
+        verify(cb).exists(sqMatch);
     }
 
+    @Test @SuppressWarnings({"unchecked", "rawtypes"})
+    void addFiscalAttributeFilters_treatsStringNullAsIsNull_andAllowsProjectsWithoutFiscal() {
+        FeatureQueryParams params = new FeatureQueryParams();
+        params.setFiscalYears(List.of("null"));
+
+        List<Predicate> preds = new ArrayList<>();
+
+        when(cb.createQuery()).thenReturn(genericQuery);
+
+        Subquery<UUID> sqMatch = (Subquery<UUID>) mock(Subquery.class);
+        Subquery<UUID> sqAny   = (Subquery<UUID>) mock(Subquery.class);
+        when(genericQuery.subquery(UUID.class)).thenReturn(sqMatch, sqAny);
+
+        Root<ProjectFiscalEntity> fMatch = (Root<ProjectFiscalEntity>) mock(Root.class);
+        Root<ProjectFiscalEntity> fAny   = (Root<ProjectFiscalEntity>) mock(Root.class);
+        when(sqMatch.from(ProjectFiscalEntity.class)).thenReturn(fMatch);
+        when(sqAny.from(ProjectFiscalEntity.class)).thenReturn(fAny);
+
+        Path<?> projPathMatch = mock(Path.class);
+        Path<?> projPathAny   = mock(Path.class);
+        Path<UUID> guidMatch  = (Path<UUID>) mock(Path.class);
+        Path<UUID> guidAny    = (Path<UUID>) mock(Path.class);
+        Path<UUID> guidRoot   = (Path<UUID>) mock(Path.class);
+
+        when(fMatch.get("project")).thenReturn((Path) projPathMatch);
+        when(fAny.get("project")).thenReturn((Path) projPathAny);
+        when(projPathMatch.get("projectGuid")).thenReturn((Path) guidMatch);
+        when(projPathAny.get("projectGuid")).thenReturn((Path) guidAny);
+        when(projectRoot.get("projectGuid")).thenReturn((Path) guidRoot);
+
+        Predicate eqMatch = mock(Predicate.class);
+        Predicate eqAny   = mock(Predicate.class);
+        when(cb.equal(guidMatch, guidRoot)).thenReturn(eqMatch);
+        when(cb.equal(guidAny,   guidRoot)).thenReturn(eqAny);
+
+        // fiscalYear IS NULL in sqMatch
+        Path<Object> fyPath = (Path<Object>) mock(Path.class);
+        when(fMatch.get("fiscalYear")).thenReturn(fyPath);
+        Predicate isNullFy = mock(Predicate.class);
+        when(cb.isNull(fyPath)).thenReturn(isNullFy);
+
+        // AND(...) for both subqueries
+        Predicate pAndMatch = mock(Predicate.class);
+        Predicate pAndAny   = mock(Predicate.class);
+        when(cb.and(any(Predicate[].class))).thenReturn(pAndMatch, pAndAny);
+        when(sqMatch.select(guidMatch)).thenReturn(sqMatch);
+        when(sqAny.select(guidAny)).thenReturn(sqAny);
+        when(sqMatch.where(pAndMatch)).thenReturn(sqMatch);
+        when(sqAny.where(pAndAny)).thenReturn(sqAny);
+
+        // EXISTS/NOT EXISTS
+        Predicate pExistsMatch  = mock(Predicate.class);
+        Predicate pExistsAny    = mock(Predicate.class);
+        Predicate pNotExistsAny = mock(Predicate.class);
+        when(cb.exists(sqMatch)).thenReturn(pExistsMatch);
+        when(cb.exists(sqAny)).thenReturn(pExistsAny);
+        when(cb.not(pExistsAny)).thenReturn(pNotExistsAny);
+
+        // OR(...)
+        Predicate pOrCombined = mock(Predicate.class);
+        doReturn(pOrCombined).when(cb).or(any(Predicate.class), any(Predicate.class));
+        // call
+        service.addFiscalAttributeFilters(cb, projectRoot, preds, params);
+
+        // assert + verify
+        assertEquals(1, preds.size());
+        assertSame(pOrCombined, preds.get(0));
+
+        verify(cb).isNull(fyPath);
+        verify(cb).exists(sqMatch);
+        verify(cb).exists(sqAny);
+        verify(cb).or(pExistsMatch, pNotExistsAny);
+    }
 
     @Test
     @SuppressWarnings("unchecked")
