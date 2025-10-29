@@ -29,8 +29,6 @@ public interface ActivityBoundaryRepository extends CommonRepository<ActivityBou
     provided AS (
       SELECT unnest(:projectGuids) AS project_guid
     ),
-    
-    -- choose the newest boundary per activity_guid
     latest AS (
       SELECT DISTINCT ON (ab.activity_guid)
              ab.activity_boundary_guid,
@@ -43,10 +41,7 @@ public interface ActivityBoundaryRepository extends CommonRepository<ActivityBou
       JOIN wfprev.project_plan_fiscal pf ON pf.project_plan_fiscal_guid = a.project_plan_fiscal_guid
       JOIN wfprev.project p              ON p.project_guid = pf.project_guid
       JOIN provided pr                   ON pr.project_guid = p.project_guid
-      -- newest first per activity
       ORDER BY ab.activity_guid,
-               -- prefer open-ended rows first if you use bitemporal rows
-               (ab.system_end_timestamp IS NULL) DESC,
                ab.system_start_timestamp DESC,
                ab.activity_boundary_guid DESC
     ),
