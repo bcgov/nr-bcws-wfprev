@@ -1,5 +1,9 @@
 import { Injectable } from '@angular/core';
-import { BC_BOUNDS } from 'src/app/utils/constants';
+import { BC_BOUNDS, FiscalYearColors } from 'src/app/utils/constants';
+import { TokenService } from './token.service';
+import { StyleSpecification } from 'maplibre-gl';
+import * as L from 'leaflet';
+import { AppConfigService } from './app-config.service';
 
 @Injectable({ providedIn: 'root' })
 export class MapService {
@@ -8,6 +12,11 @@ export class MapService {
   private readonly smkBaseUrl = `${globalThis.location.protocol}//${globalThis.location.host}/assets/smk/`;
   private containerId?: string;
   private smkInstance: any = null;
+  private readonly apiBaseUrl = `${this.appConfigService.getConfig().rest['wfprev']}/wfprev-api`;
+
+  constructor(private readonly tokenService: TokenService,
+    private readonly appConfigService: AppConfigService
+  ) { }
 
   getMapIndex(): number {
     return this.mapIndex;
@@ -21,8 +30,8 @@ export class MapService {
     this.smkInstance = null;
   }
 
-  setContainerId(id: string) { 
-    this.containerId = id; 
+  setContainerId(id: string) {
+    this.containerId = id;
   }
 
   async createSMK(option: any): Promise<any> {
@@ -436,4 +445,88 @@ export class MapService {
       }
     }
   }
+
+  private ensurePane(map: L.Map, paneName: string, zIndex = 400): void {
+    let pane = map.getPane(paneName);
+    if (!pane) {
+      pane = map.createPane(paneName);
+      pane.style.zIndex = String(zIndex);
+    }
+  }
+
+  private toGuidQuery(projectGuids: string[]): string {
+    if (!projectGuids?.length) return '';
+    const q = projectGuids.map(g => `projectGuid=${encodeURIComponent(g)}`).join('&');
+    return `?${q}`;
+  }
+
+  createProjectBoundaryLayer(map: L.Map, projectGuids: string[]): L.Layer {
+    this.ensurePane(map, 'pane-project-boundary-gl', 401);
+
+    const tiles = `${this.apiBaseUrl}/tiles/project_boundary/{z}/{x}/{y}.mvt${this.toGuidQuery(projectGuids)}`;
+
+    const style: StyleSpecification = {
+      version: 8,
+      sources: {
+        projectBoundary: { type: 'vector', tiles: [tiles], minzoom: 10 }
+      },
+      layers: [
+        { id: 'project-boundary-fill', type: 'fill', source: 'projectBoundary', 'source-layer': 'project_boundary', paint: { 'fill-opacity': 0.1 } },
+        { id: 'project-boundary-line', type: 'line', source: 'projectBoundary', 'source-layer': 'project_boundary', paint: { 'line-color': '#000', 'line-width': 2 } }
+      ]
+    };
+
+    const token = this.tokenService.getOauthToken?.();
+    return (L as any).maplibreGL({
+      style,
+      pane: 'pane-project-boundary-gl',
+      transformRequest: (url: string) =>
+        token && url.startsWith(this.apiBaseUrl)
+          ? { url, headers: { Authorization: `Bearer ${token}` } }
+          : { url }
+    });
+  }
+
+  createActivityBoundaryLayer(map: L.Map, projectGuids: string[], currentFiscalYear: number): L.Layer {
+    this.ensurePane(map, 'pane-activity-boundary-gl', 400);
+
+    const tiles = `${this.apiBaseUrl}/tiles/activity_boundary/{z}/{x}/{y}.mvt${this.toGuidQuery(projectGuids)}`;
+
+    const style: StyleSpecification = {
+      version: 8,
+      sources: {
+        activityBoundary: { type: 'vector', tiles: [tiles], minzoom: 10 }
+      },
+      layers: [
+        { id: 'activity-boundary-fill', type: 'fill', source: 'activityBoundary', 'source-layer': 'activity_boundary', paint: { 'fill-opacity': 0.1 } },
+        {
+          id: 'activity-boundary-line',
+          type: 'line',
+          source: 'activityBoundary',
+          'source-layer': 'activity_boundary',
+          paint: {
+            'line-color': [
+              'case',
+              ['<', ['to-number', ['get', 'fiscal_year']], currentFiscalYear], FiscalYearColors.past,
+              ['>', ['to-number', ['get', 'fiscal_year']], currentFiscalYear], FiscalYearColors.future,
+              FiscalYearColors.present
+            ],
+            'line-width': 2
+          }
+        }
+      ]
+    };
+
+    const token = this.tokenService.getOauthToken?.();
+    return (L as any).maplibreGL({
+      style,
+      pane: 'pane-activity-boundary-gl',
+      transformRequest: (url: string) =>
+        token && url.startsWith(this.apiBaseUrl)
+          ? { url, headers: { Authorization: `Bearer ${token}` } }
+          : { url }
+    });
+  }
+
+
 }

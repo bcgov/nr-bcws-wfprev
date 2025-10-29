@@ -153,7 +153,7 @@ describe('MapComponent', () => {
     });
 
     mapConfigServiceMock = jasmine.createSpyObj<MapConfigService>('MapConfigService', ['getMapConfig']);
-    mapServiceMock = jasmine.createSpyObj<MapService>('MapService', ['getMapIndex', 'setMapIndex', 'createSMK', 'getSMKInstance','clearSMKInstance', 'setContainerId', 'destroySMK']);
+    mapServiceMock = jasmine.createSpyObj<MapService>('MapService', ['getMapIndex', 'setMapIndex', 'createSMK', 'getSMKInstance', 'clearSMKInstance', 'setContainerId', 'destroySMK', 'createProjectBoundaryLayer', 'createActivityBoundaryLayer']);
     mapContainer = jasmine.createSpyObj('ElementRef', ['nativeElement']);
 
     mapConfigServiceMock.getMapConfig.and.returnValue(Promise.resolve({ theme: 'testTheme' }));
@@ -293,50 +293,41 @@ describe('MapComponent', () => {
     expect(console.error).toHaveBeenCalledWith('Map container is not available.');
   });
 
-  it('should skip updateMarkers if map or markersClusterGroup is not ready', () => {
-    component['markersClusterGroup'] = null as any;
-    const consoleWarnSpy = spyOn(console, 'warn');
-
-    component.updateMarkers([{ latitude: 50, longitude: -120 }]);
-
-    expect(consoleWarnSpy).toHaveBeenCalledWith('[Map] Skipping updateMarkers — map or cluster group not ready');
-  });
-
   describe('ngOnDestroy', () => {
-  it('should destroy SMK instance and clear it from the map service', () => {
-    const destroySpy = jasmine.createSpy('destroy');
-    const smkMock = {
-      destroy: destroySpy,
-      $viewer: { map: {} }
-    };
+    it('should destroy SMK instance and clear it from the map service', () => {
+      const destroySpy = jasmine.createSpy('destroy');
+      const smkMock = {
+        destroy: destroySpy,
+        $viewer: { map: {} }
+      };
 
-    mapServiceMock.getSMKInstance.and.returnValue(smkMock);
+      mapServiceMock.getSMKInstance.and.returnValue(smkMock);
 
-    component.ngOnDestroy();
+      component.ngOnDestroy();
 
-    expect(mapServiceMock.destroySMK).toHaveBeenCalled();
+      expect(mapServiceMock.destroySMK).toHaveBeenCalled();
+    });
+
+    it('should only call clearSMKInstance if smk has no destroy method', () => {
+      const smkMock = {
+        $viewer: { map: {} }
+      };
+
+      mapServiceMock.getSMKInstance.and.returnValue(smkMock);
+
+      component.ngOnDestroy();
+
+      expect(mapServiceMock.destroySMK).toHaveBeenCalled();
+    });
+
+    it('should do nothing if no smk instance exists', () => {
+      mapServiceMock.getSMKInstance.and.returnValue(null);
+
+      component.ngOnDestroy();
+
+      expect(mapServiceMock.destroySMK).toHaveBeenCalled();
+    });
   });
-
-  it('should only call clearSMKInstance if smk has no destroy method', () => {
-    const smkMock = {
-      $viewer: { map: {} }
-    };
-
-    mapServiceMock.getSMKInstance.and.returnValue(smkMock);
-
-    component.ngOnDestroy();
-
-    expect(mapServiceMock.destroySMK).toHaveBeenCalled();
-  });
-
-  it('should do nothing if no smk instance exists', () => {
-    mapServiceMock.getSMKInstance.and.returnValue(null);
-
-    component.ngOnDestroy();
-
-    expect(mapServiceMock.destroySMK).toHaveBeenCalled();
-  });
-});
 
   describe('Marker popup behavior', () => {
     let mapMock: any;
@@ -360,7 +351,7 @@ describe('MapComponent', () => {
         lng: -120,
       });
       Object.setPrototypeOf(markerSpy, L.Marker.prototype);
-      
+
       mapMock = {
         addLayer: jasmine.createSpy('addLayer'),
         invalidateSize: jasmine.createSpy('invalidateSize'),
@@ -393,16 +384,9 @@ describe('MapComponent', () => {
 
     });
 
-    it('should add marker and bind popup in updateMarkers()', () => {
-      component.updateMarkers([mockProject]);
-
-      expect(component['projectMarkerMap'].get('abc-123')).toBeDefined();
-      expect(component['markersClusterGroup']?.addLayer).toHaveBeenCalled();
-    });
-
     it('should open popup and set active marker icon in openPopupForProject()', () => {
       component['projectMarkerMap'].set(mockProject.projectGuid, markerSpy);
-      
+
       component['activeMarker'] = null;
 
       component.openPopupForProject(mockProject);
@@ -435,7 +419,7 @@ describe('MapComponent', () => {
       expect(component['activeMarker']).toBeNull();
     });
   });
-  
+
   describe('selectedProject$ behavior', () => {
     let selectedProjectSubject: Subject<any>;
     let closeSpy: jasmine.Spy;
@@ -489,7 +473,7 @@ describe('MapComponent', () => {
       expect(closeSpy).not.toHaveBeenCalled();
       expect(openSpy).not.toHaveBeenCalled();
     }));
-    
+
     it('should assign selectedProject and call openPopupForProject if project is truthy', fakeAsync(() => {
       const testProject = createMockProject({
         projectGuid: '123',
@@ -510,127 +494,6 @@ describe('MapComponent', () => {
     }));
 
   });
-
- describe('Polygon Layer Methods', () => {
-  let layerGroup: any;
-
-  beforeEach(() => {
-    // Create a mock LayerGroup with addLayer
-    layerGroup = {
-      addLayer: jasmine.createSpy('addLayer'),
-    };
-
-    // Assign to component's layer groups
-    (component['projectBoundaryGroup'] as any)._layers = {};
-    (component['activityBoundaryGroup'] as any)._layers = {};
-  });
-
-  it('addGeoJsonToLayer() should handle GeometryCollection correctly', () => {
-    const mockGeoJsonLayer = {
-      addTo: jasmine.createSpy('addTo'),
-    };
-
-    const geoJsonSpy = spyOn(L, 'geoJSON').and.returnValue(mockGeoJsonLayer as unknown as L.GeoJSON);
-
-    const geometry = {
-      type: 'GeometryCollection',
-      geometries: [
-        { type: 'Polygon', coordinates: [[[0, 0], [1, 1], [2, 2], [0, 0]]] },
-        { type: 'Point', coordinates: [1, 1] },
-      ],
-    };
-
-    const options = { style: { color: 'blue' } };
-
-    component.addGeoJsonToLayer(geometry, layerGroup, options);
-
-    expect(geoJsonSpy).toHaveBeenCalledTimes(0);
-    expect(mockGeoJsonLayer.addTo).toHaveBeenCalledTimes(0);
-  });
-
-  it('plotProjectBoundary() should call addGeoJsonToLayer for each project boundary', () => {
-    const geometry = { type: 'Polygon', coordinates: [[[0, 0], [1, 1], [2, 2], [0, 0]]] };
-    const project = {
-      projectBoundaries: [
-        { boundaryGeometry: geometry },
-        { boundaryGeometry: geometry }
-      ]
-    };
-
-    const spy = spyOn(component, 'addGeoJsonToLayer');
-    component.plotProjectBoundary(project);
-
-    expect(spy).toHaveBeenCalledTimes(2);
-    expect(spy).toHaveBeenCalledWith(
-      geometry,
-      jasmine.any(L.LayerGroup),
-      jasmine.objectContaining({ style: jasmine.anything() })
-    );
-  });
-
-  it('plotActivityBoundaries() should call addGeoJsonToLayer for each activity geometry', () => {
-    const geometry = { type: 'Polygon', coordinates: [[[0, 0], [1, 1], [2, 2], [0, 0]]] };
-    const project = {
-      projectFiscals: [
-        {
-          fiscalYear: 2024,
-          activities: [
-            { activityBoundaries: [{ activityGeometry: geometry }] },
-            { activityBoundaries: [{ activityGeometry: geometry }] },
-          ]
-        }
-      ]
-    };
-
-    const spy = spyOn(component, 'addGeoJsonToLayer');
-    component.plotActivityBoundaries(project, 2025);
-
-    expect(spy).toHaveBeenCalledTimes(2);
-    expect(spy).toHaveBeenCalledWith(
-      geometry,
-      jasmine.any(L.LayerGroup),
-      jasmine.objectContaining({ style: jasmine.anything() })
-    );
-  });
-
-  it('togglePolygonLayers() should add layers at zoom >= 10', () => {
-    const mockMap = {
-      hasLayer: jasmine.createSpy().and.returnValue(false),
-      addLayer: jasmine.createSpy(),
-    };
-
-    mapServiceMock.getSMKInstance.and.returnValue({
-      $viewer: { map: mockMap }
-    });
-
-    component.togglePolygonLayers(10);
-
-    expect(mockMap.hasLayer).toHaveBeenCalledTimes(2);
-    expect(mockMap.addLayer).toHaveBeenCalledWith(jasmine.any(L.LayerGroup));
-  });
-  
-  it('togglePolygonLayers() should remove layers at zoom < 10', () => {
-    const mockMap = {
-      removeLayer: jasmine.createSpy(),
-    };
-
-    mapServiceMock.getSMKInstance.and.returnValue({
-      $viewer: { map: mockMap },
-    });
-
-    component.togglePolygonLayers(5);
-
-    expect(mockMap.removeLayer).toHaveBeenCalledWith(component['projectBoundaryGroup']);
-    expect(mockMap.removeLayer).toHaveBeenCalledWith(component['activityBoundaryGroup']);
-    expect(mockMap.removeLayer).toHaveBeenCalledTimes(2);
-  });
-
-  it('togglePolygonLayers() should do nothing if map is undefined', () => {
-    mapServiceMock.getSMKInstance.and.returnValue(undefined);
-    const result = component.togglePolygonLayers(12);
-    expect(result).toBeUndefined();
-  });
-});
 
   describe('safelyClearLayerGroup()', () => {
     it('should remove valid layers from the group and skip invalid ones', () => {
@@ -726,7 +589,7 @@ describe('MapComponent', () => {
       marker.fire('mouseover');
 
       expect(subSpy).toHaveBeenCalled();
-      expect(handleClickSpy).not.toHaveBeenCalled(); 
+      expect(handleClickSpy).not.toHaveBeenCalled();
     });
 
 
@@ -785,28 +648,106 @@ describe('MapComponent', () => {
     });
   });
 
-  describe('addGeometryToLayerGroup', () => {
-    it('should add valid geometry to layer group', () => {
-      const mockLayer = { addTo: jasmine.createSpy('addTo') };
-      spyOn(L, 'geoJSON').and.returnValue(mockLayer as any);
-      component.addGeometryToLayerGroup({ type: 'Polygon' }, {} as any, {});
-      expect(mockLayer.addTo).toHaveBeenCalled();
+  describe('boundary layer creation', () => {
+    let mockMap: any;
+
+    beforeEach(() => {
+      // minimal map with addLayer/removeLayer/hasLayer
+      mockMap = {
+        addLayer: jasmine.createSpy('addLayer'),
+        removeLayer: jasmine.createSpy('removeLayer'),
+        hasLayer: jasmine.createSpy('hasLayer').and.returnValue(false),
+      };
+      // make SMK return our mock map
+      mapServiceMock.getSMKInstance.and.returnValue({ $viewer: { map: mockMap } });
+
+      // provide a cluster group so updateProjectMarkersFromLocations runs fully
+      (component as any).markersClusterGroup = {
+        clearLayers: jasmine.createSpy('clearLayers'),
+        addLayer: jasmine.createSpy('addLayer'),
+      };
+
+
+      // default returns for factory methods
+      mapServiceMock.createProjectBoundaryLayer.and.returnValue({ id: 'proj-layer' } as any);
+      mapServiceMock.createActivityBoundaryLayer.and.returnValue({ id: 'act-layer' } as any);
     });
 
-    it('should warn if invalid geometry', () => {
-      spyOn(L, 'geoJSON').and.returnValue({} as any);
-      const warnSpy = spyOn(console, 'warn');
-      component.addGeometryToLayerGroup({ type: 'Invalid' }, {} as any, {});
-      expect(warnSpy).toHaveBeenCalled();
+    it('creates project & activity layers with unique projectGuids and adds them to map', () => {
+      const locs = [
+        { projectGuid: 'a', latitude: 1, longitude: 2 },
+        { projectGuid: 'a', latitude: 3, longitude: 4 }, 
+        { projectGuid: 'b', latitude: 5, longitude: 6 },
+        { projectGuid: undefined, latitude: 7, longitude: 8 }, // invalid -> filtered out
+      ];
+
+      (component as any).updateProjectMarkersFromLocations(locs as any);
+
+      // verify MapService layer factories are called with correct args
+      expect(mapServiceMock.createProjectBoundaryLayer)
+        .toHaveBeenCalledWith(mockMap, ['a', 'b']);
+      expect(mapServiceMock.createActivityBoundaryLayer)
+        .toHaveBeenCalledWith(mockMap, ['a', 'b'], component.currentFiscalYear);
+
+      // and the returned layers are added to the map
+      expect(mockMap.addLayer).toHaveBeenCalledWith(jasmine.objectContaining({ id: 'proj-layer' }));
+      expect(mockMap.addLayer).toHaveBeenCalledWith(jasmine.objectContaining({ id: 'act-layer' }));
+    });
+
+    it('removes existing layers before adding new ones', () => {
+      // seed existing layers on the component
+      const oldProj = { id: 'old-proj' } as any;
+      const oldAct = { id: 'old-act' } as any;
+      (component as any).projectBoundaryLayer = oldProj;
+      (component as any).activityBoundaryLayer = oldAct;
+
+      // make map think they are currently present
+      mockMap.hasLayer.and.callFake((l: any) => l === oldProj || l === oldAct);
+
+      const locs = [
+        { projectGuid: 'x', latitude: 49, longitude: -123 },
+      ];
+
+      (component as any).updateProjectMarkersFromLocations(locs as any);
+
+      expect(mockMap.removeLayer).toHaveBeenCalledWith(oldProj);
+      expect(mockMap.removeLayer).toHaveBeenCalledWith(oldAct);
+      expect(mapServiceMock.createProjectBoundaryLayer).toHaveBeenCalled();
+      expect(mapServiceMock.createActivityBoundaryLayer).toHaveBeenCalled();
+      expect(mockMap.addLayer).toHaveBeenCalledTimes(2);
+    });
+
+    it('when no valid locations: removes layers and sets them to null (no new layer creation)', () => {
+      // seed existing layers
+      const oldProj = { id: 'old-proj' } as any;
+      const oldAct = { id: 'old-act' } as any;
+      (component as any).projectBoundaryLayer = oldProj;
+      (component as any).activityBoundaryLayer = oldAct;
+
+      mockMap.hasLayer.and.callFake((l: any) => l === oldProj || l === oldAct);
+
+      const empty: any[] = [];
+      (component as any).updateProjectMarkersFromLocations(empty);
+
+      expect(mockMap.removeLayer).toHaveBeenCalledWith(oldProj);
+      expect(mockMap.removeLayer).toHaveBeenCalledWith(oldAct);
+      expect(mapServiceMock.createProjectBoundaryLayer).not.toHaveBeenCalled();
+      expect(mapServiceMock.createActivityBoundaryLayer).not.toHaveBeenCalled();
+      expect((component as any).projectBoundaryLayer).toBeNull();
+      expect((component as any).activityBoundaryLayer).toBeNull();
+    });
+
+    it('passes currentFiscalYear to createActivityBoundaryLayer', () => {
+      component.currentFiscalYear = 2030;
+
+      const locs = [{ projectGuid: 'p', latitude: 1, longitude: 1 }];
+
+      (component as any).updateProjectMarkersFromLocations(locs as any);
+
+      expect(mapServiceMock.createActivityBoundaryLayer)
+        .toHaveBeenCalledWith(mockMap, ['p'], 2030);
     });
   });
-
-  it('addGeoJsonToLayer should skip invalid geometry', () => {
-    const spy = spyOn(console, 'warn');
-    component.addGeoJsonToLayer(undefined as any, {} as any, {});
-    expect(spy).toHaveBeenCalled();
-  });
-
 
 
 });

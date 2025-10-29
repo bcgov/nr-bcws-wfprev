@@ -807,7 +807,10 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
 
     this.activityBoundaryGroup.clearLayers();
 
-    const currentFiscalYear = new Date().getFullYear();
+    // Fiscal year starts April 1st
+    const currentFiscalYear = new Date().getMonth() >= 3
+    ? new Date().getFullYear()
+    : new Date().getFullYear() - 1;
     const allBounds: L.LatLngBounds[] = [];
 
     for (const entry of this.allActivityBoundaries) {
