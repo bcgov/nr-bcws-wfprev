@@ -109,19 +109,20 @@ public class ProjectLocationService {
         }
     }
 
-    void addFiscalAttributeFilters(CriteriaBuilder cb, Root<ProjectEntity> project, List<Predicate> predicates, FeatureQueryParams params) {
+    void addFiscalAttributeFilters(CriteriaBuilder cb, Root<ProjectEntity> project,
+                                   List<Predicate> predicates, FeatureQueryParams params) {
         if (!hasAnyFiscalFilters(params)) return;
 
-        Subquery<UUID> sq = cb.createQuery().subquery(UUID.class);
-        Root<ProjectFiscalEntity> fiscal = sq.from(ProjectFiscalEntity.class);
-
-        List<Predicate> predicateList = new ArrayList<>();
-        predicateList.add(cb.equal(fiscal.get(PROJECT).get(PROJECT_GUID), project.get(PROJECT_GUID)));
+        // subquery that matches the fiscal filters
+        Subquery<UUID> sqMatch = cb.createQuery().subquery(UUID.class);
+        Root<ProjectFiscalEntity> fMatch = sqMatch.from(ProjectFiscalEntity.class);
+        List<Predicate> match = new ArrayList<>();
+        match.add(cb.equal(fMatch.get(PROJECT).get(PROJECT_GUID), project.get(PROJECT_GUID)));
 
         // fiscalYear
         if (notEmpty(params.getFiscalYears())) {
+            Path<Object> fyPath = fMatch.get("fiscalYear");
             List<Predicate> years = new ArrayList<>();
-            Path<Object> fyPath = fiscal.get("fiscalYear");
             for (String year : params.getFiscalYears()) {
                 if (year == null || "null".equals(year)) {
                     years.add(cb.isNull(fyPath));
@@ -129,22 +130,40 @@ public class ProjectLocationService {
                     years.add(cb.like(fyPath.as(String.class), year + "%"));
                 }
             }
-            predicateList.add(cb.or(years.toArray(new Predicate[0])));
+            match.add(cb.or(years.toArray(new Predicate[0])));
         }
 
         // activityCategoryCode
         if (notEmpty(params.getActivityCategoryCodes())) {
-            predicateList.add(fiscal.get("activityCategoryCode").in(params.getActivityCategoryCodes()));
+            match.add(fMatch.get("activityCategoryCode").in(params.getActivityCategoryCodes()));
         }
 
-        // planFiscalStatusCode (nested path only if present)
+        // planFiscalStatusCode
         if (notEmpty(params.getPlanFiscalStatusCodes())) {
-            Path<String> statusCode = fiscal.get("planFiscalStatusCode").get("planFiscalStatusCode");
-            predicateList.add(statusCode.in(params.getPlanFiscalStatusCodes()));
+            Path<String> statusCode = fMatch.get("planFiscalStatusCode").get("planFiscalStatusCode");
+            match.add(statusCode.in(params.getPlanFiscalStatusCodes()));
         }
 
-        sq.select(fiscal.get(PROJECT).get(PROJECT_GUID)).where(cb.and(predicateList.toArray(new Predicate[0])));
-        predicates.add(cb.exists(sq));
+        sqMatch.select(fMatch.get(PROJECT).get(PROJECT_GUID))
+                .where(cb.and(match.toArray(new Predicate[0])));
+
+        // if "null" fiscal year is requested, allow projects with no fiscal rows
+        // they can still have coordinates at the project level without a project fiscal
+        boolean noFiscal = notEmpty(params.getFiscalYears()) &&
+                params.getFiscalYears().stream().anyMatch(y -> y == null || "null".equals(y));
+
+        if (noFiscal) {
+            Subquery<UUID> sqAny = cb.createQuery().subquery(UUID.class);
+            Root<ProjectFiscalEntity> fiscalAny = sqAny.from(ProjectFiscalEntity.class);
+            sqAny.select(fiscalAny.get(PROJECT).get(PROJECT_GUID))
+                    .where(cb.equal(fiscalAny.get(PROJECT).get(PROJECT_GUID), project.get(PROJECT_GUID)));
+
+            // include if matches filters OR has zero fiscals
+            predicates.add(cb.or(cb.exists(sqMatch), cb.not(cb.exists(sqAny))));
+        } else {
+            // regular path - require a fiscal row that matches the filters
+            predicates.add(cb.exists(sqMatch));
+        }
     }
 
     private boolean hasAnyFiscalFilters(FeatureQueryParams params) {
