@@ -23,8 +23,8 @@ public interface ActivityBoundaryRepository extends CommonRepository<ActivityBou
     @Query(value = """
     WITH tile AS (
       SELECT
-        ST_TileEnvelope(:z, :x, :y)                     AS env_3857,
-        ST_Transform(ST_TileEnvelope(:z, :x, :y), 4326) AS env_4326
+        ST_TileEnvelope(CAST(:z AS integer), CAST(:x AS integer), CAST(:y AS integer))                     AS env_3857,
+        ST_Transform(ST_TileEnvelope(CAST(:z AS integer), CAST(:x AS integer), CAST(:y AS integer)), 4326) AS env_4326
     ),
     provided AS (
       SELECT unnest(:projectGuids) AS project_guid
@@ -61,10 +61,10 @@ public interface ActivityBoundaryRepository extends CommonRepository<ActivityBou
           AS bit(64)
         ) AS bigint) AS id,
         CASE
-          WHEN :z <= 6  THEN ST_SimplifyPreserveTopology(ST_Transform(ST_MakeValid(c.geometry), 3857), 512)
-          WHEN :z <= 9  THEN ST_SimplifyPreserveTopology(ST_Transform(ST_MakeValid(c.geometry), 3857), 64)
-          WHEN :z <= 12 THEN ST_SimplifyPreserveTopology(ST_Transform(ST_MakeValid(c.geometry), 3857), 8)
-          ELSE               ST_Transform(ST_MakeValid(c.geometry), 3857)
+          WHEN CAST(:z AS integer) <=  6 THEN ST_SimplifyPreserveTopology(ST_Transform(ST_MakeValid(c.geometry), 3857), 512)
+          WHEN CAST(:z AS integer) <=  9 THEN ST_SimplifyPreserveTopology(ST_Transform(ST_MakeValid(c.geometry), 3857), 64)
+          WHEN CAST(:z AS integer) <= 12 THEN ST_SimplifyPreserveTopology(ST_Transform(ST_MakeValid(c.geometry), 3857), 8)
+          ELSE                                ST_Transform(ST_MakeValid(c.geometry), 3857)
         END AS geom_3857,
         c.activity_boundary_guid,
         c.activity_guid,

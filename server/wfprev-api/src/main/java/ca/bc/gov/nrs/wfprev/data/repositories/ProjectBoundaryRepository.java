@@ -23,8 +23,8 @@ public interface ProjectBoundaryRepository extends CommonRepository<ProjectBound
     @Query(value = """
     WITH tile AS (
       SELECT
-        ST_TileEnvelope(:z, :x, :y)                     AS env_3857,
-        ST_Transform(ST_TileEnvelope(:z, :x, :y), 4326) AS env_4326
+        ST_TileEnvelope(CAST(:z AS integer), CAST(:x AS integer), CAST(:y AS integer))                     AS env_3857,
+        ST_Transform(ST_TileEnvelope(CAST(:z AS integer), CAST(:x AS integer), CAST(:y AS integer)), 4326) AS env_4326
     ),
     provided AS (
       SELECT unnest(:projectGuids) AS project_guid
@@ -41,7 +41,6 @@ public interface ProjectBoundaryRepository extends CommonRepository<ProjectBound
                pb.system_start_timestamp DESC,
                pb.project_boundary_guid DESC
     ),
-    
     candidates AS (
       SELECT l.*
       FROM latest l
@@ -49,7 +48,6 @@ public interface ProjectBoundaryRepository extends CommonRepository<ProjectBound
       WHERE l.boundary_geometry && t.env_4326
         AND ST_Intersects(l.boundary_geometry, t.env_4326)
     ),
-    
     src AS (
       SELECT
         CAST(CAST(
@@ -57,16 +55,15 @@ public interface ProjectBoundaryRepository extends CommonRepository<ProjectBound
           AS bit(64)
         ) AS bigint) AS id,
         CASE
-          WHEN :z <= 6  THEN ST_SimplifyPreserveTopology(ST_Transform(ST_MakeValid(c.boundary_geometry), 3857), 512)
-          WHEN :z <= 9  THEN ST_SimplifyPreserveTopology(ST_Transform(ST_MakeValid(c.boundary_geometry), 3857), 64)
-          WHEN :z <= 12 THEN ST_SimplifyPreserveTopology(ST_Transform(ST_MakeValid(c.boundary_geometry), 3857), 8)
-          ELSE               ST_Transform(ST_MakeValid(c.boundary_geometry), 3857)
+          WHEN CAST(:z AS integer) <= 6  THEN ST_SimplifyPreserveTopology(ST_Transform(ST_MakeValid(c.boundary_geometry), 3857), 512)
+          WHEN CAST(:z AS integer) <= 9  THEN ST_SimplifyPreserveTopology(ST_Transform(ST_MakeValid(c.boundary_geometry), 3857), 64)
+          WHEN CAST(:z AS integer) <= 12 THEN ST_SimplifyPreserveTopology(ST_Transform(ST_MakeValid(c.boundary_geometry), 3857), 8)
+          ELSE                                ST_Transform(ST_MakeValid(c.boundary_geometry), 3857)
         END AS geom_3857,
         c.project_boundary_guid,
         c.project_guid
       FROM candidates c
     ),
-    
     mvt AS (
       SELECT
         s.id,
@@ -77,7 +74,6 @@ public interface ProjectBoundaryRepository extends CommonRepository<ProjectBound
       JOIN tile t ON TRUE
       WHERE s.geom_3857 && t.env_3857
     )
-    
     SELECT COALESCE(
       (SELECT ST_AsMVT(mvt, 'project_boundary', 4096, 'geom', 'id') FROM mvt),
       decode('', 'hex')
@@ -89,4 +85,5 @@ public interface ProjectBoundaryRepository extends CommonRepository<ProjectBound
             @Param("y") int y,
             @Param("projectGuids") UUID[] projectGuids
     );
+
 }
