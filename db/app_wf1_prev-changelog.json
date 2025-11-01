@@ -1794,6 +1794,23 @@
         "rollback": [
         ]
       }
+    },
+    {
+      "changeSet": {
+        "id": "01_00_41_00",
+        "author": "ssylver",
+        "tagDatabase": { "tag": "version_01_00_41_00" },
+        "changes": [
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_41/00/grants/wfprev.grant_postgis_app_wf1_prev_proxy_wf1_prev_rest.sql"
+            }
+          }
+        ],
+        "rollback": [
+        ]
+      }
     }
   ]
 }
