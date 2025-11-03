@@ -210,6 +210,10 @@ resource "aws_ecs_task_definition" "wfprev-liquibase" {
           value = var.PROXY_WF1_PREV_REST_PASSWORD
         },
         {
+          name = "WFPREV_DATABASE_NAME"
+          value = var.WFPREV_DATABASE_NAME
+        },
+        {
           name = "TARGET_LIQUIBASE_TAG"
           value = var.TARGET_LIQUIBASE_TAG
         },

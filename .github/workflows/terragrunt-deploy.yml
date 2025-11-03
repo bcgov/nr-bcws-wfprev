@@ -236,6 +236,7 @@ jobs:
           LIQUIBASE_IMAGE: ${{vars.REPOSITORY_HOST}}/${{ github.repository_owner }}/${{ vars.LIQUIBASE_IMAGE }}:${{ inputs.IMAGE_TAG }}
           APP_WF1_PREV_PASSWORD: ${{ secrets.APP_WF1_PREV_PASSWORD }}
           PROXY_WF1_PREV_REST_PASSWORD: ${{ secrets.PROXY_WF1_PREV_REST_PASSWORD }}
+          WFPREV_DATABASE_NAME: ${{ vars.WFPREV_DATABASE_NAME }}
           TARGET_LIQUIBASE_TAG: ${{ steps.liquibaseCommand.outputs.TARGET_LIQUIBASE_TAG }}
 
         run: |
