@@ -42,7 +42,8 @@ This guide will help you build a local instance of PostGIS, set up the database,
 1. **Build the Liquibase Docker Image** :
 Create a Dockerfile.liquibase.local with the following content:
 
-FROM liquibase/liquibase
+FROM liquibase/liquibase:5.0
+RUN lpm add postgresql --global
 COPY ./scripts ./scripts
 COPY ./main-changelog*.json .
 COPY ./liquibase.properties .
