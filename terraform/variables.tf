@@ -398,3 +398,7 @@ variable "REMI_PLANNER_EMAIL_ADDRESS" {
   type    = string
   default = ""
 }
+
+variable "WFPREV_DATABASE_NAME" {
+  type    = string
+}
