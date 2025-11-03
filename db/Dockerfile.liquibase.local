@@ -1,4 +1,5 @@
-FROM liquibase/liquibase
+FROM liquibase/liquibase:5.0
+RUN lpm add postgresql --global
 ADD . /liquibase
 EXPOSE 8080
 USER root
