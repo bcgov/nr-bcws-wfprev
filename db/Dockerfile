@@ -1,5 +1,6 @@
-FROM liquibase/liquibase
+FROM liquibase/liquibase:5.0
 
+RUN lpm add postgresql --global
 COPY ./scripts ./scripts
 COPY ./*changelog.json .
 COPY ./liquibase.properties .
