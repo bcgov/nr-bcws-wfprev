@@ -1811,6 +1811,23 @@
         "rollback": [
         ]
       }
+    },
+    {
+      "changeSet": {
+        "id": "01_00_42_00",
+        "author": "ssylver",
+        "tagDatabase": { "tag": "version_01_00_42_00" },
+        "changes": [
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_00_42/00/ddl/proxy_wf1_prev_rest.alter_search_path.sql"
+            }
+          }
+        ],
+        "rollback": [
+        ]
+      }
     }
   ]
 }
