@@ -468,11 +468,11 @@ export class MapService {
     const style: StyleSpecification = {
       version: 8,
       sources: {
-        projectBoundary: { type: 'vector', tiles: [tiles], minzoom: 10 }
+        projectBoundary: { type: 'vector', tiles: [tiles] }
       },
       layers: [
-        { id: 'project-boundary-fill', type: 'fill', source: 'projectBoundary', 'source-layer': 'project_boundary', paint: { 'fill-opacity': 0.1 } },
-        { id: 'project-boundary-line', type: 'line', source: 'projectBoundary', 'source-layer': 'project_boundary', paint: { 'line-color': '#000', 'line-width': 2 } }
+        { id: 'project-boundary-fill', type: 'fill', source: 'projectBoundary', 'source-layer': 'project_boundary', paint: { 'fill-opacity': 0.1 },  minzoom: 10 },
+        { id: 'project-boundary-line', type: 'line', source: 'projectBoundary', 'source-layer': 'project_boundary', paint: { 'line-color': '#000', 'line-width': 2 }, minzoom: 10 }
       ]
     };
 
@@ -495,15 +495,16 @@ export class MapService {
     const style: StyleSpecification = {
       version: 8,
       sources: {
-        activityBoundary: { type: 'vector', tiles: [tiles], minzoom: 10 }
+        activityBoundary: { type: 'vector', tiles: [tiles] }
       },
       layers: [
-        { id: 'activity-boundary-fill', type: 'fill', source: 'activityBoundary', 'source-layer': 'activity_boundary', paint: { 'fill-opacity': 0.1 } },
+        { id: 'activity-boundary-fill', type: 'fill', source: 'activityBoundary', 'source-layer': 'activity_boundary', paint: { 'fill-opacity': 0.1 }, minzoom: 10 },
         {
           id: 'activity-boundary-line',
           type: 'line',
           source: 'activityBoundary',
           'source-layer': 'activity_boundary',
+          minzoom: 10,
           paint: {
             'line-color': [
               'case',
