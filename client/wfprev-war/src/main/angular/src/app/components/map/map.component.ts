@@ -280,8 +280,8 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     if (this.markersClusterGroup) {
       this.markersClusterGroup.getLayers().forEach(l => {
         if (l instanceof L.Marker) {
-          l.unbindPopup();
           l.closePopup();
+          l.unbindPopup();
           l.off();
         }
       });
