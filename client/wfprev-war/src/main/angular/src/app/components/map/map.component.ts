@@ -280,9 +280,9 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     if (this.markersClusterGroup) {
       this.markersClusterGroup.getLayers().forEach(l => {
         if (l instanceof L.Marker) {
-          l.unbindPopup(); 
-          l.closePopup(); 
-          l.off(); 
+          l.unbindPopup();
+          l.closePopup();
+          l.off();
         }
       });
       this.markersClusterGroup.clearLayers();
@@ -448,15 +448,20 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     map?.closePopup();
 
     // Remove the active marker and unbind popup to drop DOM from panes
-    if (this.activeMarker) {
-      this.activeMarker.unbindPopup();
-      if (this.markersClusterGroup?.hasLayer(this.activeMarker)) {
-        this.markersClusterGroup.removeLayer(this.activeMarker);
-      } else {
-        this.activeMarker.remove();
+    try {
+      if (this.activeMarker) {
+        this.activeMarker.unbindPopup();
+        if (this.markersClusterGroup?.hasLayer(this.activeMarker)) {
+          this.markersClusterGroup.removeLayer(this.activeMarker);
+        } else {
+          this.activeMarker.remove();
+        }
       }
+    } catch (err) {
+      console.error('Error during teardown:', err);
+    } finally {
+      this.activeMarker = null;
     }
-    this.activeMarker = null;
   }
 
 }
