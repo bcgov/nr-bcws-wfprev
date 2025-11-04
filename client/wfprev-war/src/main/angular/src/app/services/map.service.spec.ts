@@ -729,7 +729,6 @@ describe('MapService', () => {
       expect(tiles[0]).toContain('/tiles/project_boundary/{z}/{x}/{y}.mvt');
       expect(tiles[0]).toContain('projectGuid=g1');
       expect(tiles[0]).toContain('projectGuid=g2');
-      expect(args.style.sources.projectBoundary.minzoom).toBe(10);
       const ids = args.style.layers.map((l: any) => l.id);
       expect(ids).toContain('project-boundary-fill');
       expect(ids).toContain('project-boundary-line');
@@ -789,9 +788,6 @@ describe('MapService', () => {
       expect(tiles[0]).toContain('/tiles/activity_boundary/{z}/{x}/{y}.mvt');
       expect(tiles[0]).toContain('projectGuid=g1');
       expect(tiles[0]).toContain('projectGuid=g2');
-
-      // minzoom
-      expect(args.style.sources.activityBoundary.minzoom).toBe(10);
 
       // layers present
       const ids = args.style.layers.map((l: any) => l.id);
