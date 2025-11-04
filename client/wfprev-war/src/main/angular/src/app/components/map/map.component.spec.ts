@@ -131,6 +131,7 @@ describe('MapComponent', () => {
         getCenter: jasmine.createSpy('getCenter'),
         setView: jasmine.createSpy('setView'),
         fitBounds: jasmine.createSpy('fitBounds'),
+        closePopup: jasmine.createSpy('closePopup'),
         controls: { bottomleft: { addTo: jasmine.createSpy('addTo') } },
       },
       layerIds: ['a', 'b'],
@@ -147,6 +148,7 @@ describe('MapComponent', () => {
     (L as any).markerClusterGroup = () => ({
       addLayer: jasmine.createSpy('addLayer'),
       clearLayers: jasmine.createSpy('clearLayers'),
+      getLayers: jasmine.createSpy('getLayers').and.returnValue([]),
     });
     spyOn(L.Control.prototype, 'addTo').and.callFake(function (this: any) {
       return this;
@@ -557,11 +559,13 @@ describe('MapComponent', () => {
       mockMap = {
         addLayer: jasmine.createSpy(),
         removeLayer: jasmine.createSpy(),
+        closePopup: jasmine.createSpy(),
       };
       mapServiceMock.getSMKInstance.and.returnValue({ $viewer: { map: mockMap } });
       (component as any).markersClusterGroup = {
         clearLayers: jasmine.createSpy(),
         addLayer: jasmine.createSpy(),
+        getLayers: jasmine.createSpy().and.returnValue([]),
       };
       spyOn(console, 'log');
       spyOn(console, 'error');
@@ -657,6 +661,7 @@ describe('MapComponent', () => {
         addLayer: jasmine.createSpy('addLayer'),
         removeLayer: jasmine.createSpy('removeLayer'),
         hasLayer: jasmine.createSpy('hasLayer').and.returnValue(false),
+        closePopup: jasmine.createSpy('closePopup')
       };
       // make SMK return our mock map
       mapServiceMock.getSMKInstance.and.returnValue({ $viewer: { map: mockMap } });
@@ -665,6 +670,8 @@ describe('MapComponent', () => {
       (component as any).markersClusterGroup = {
         clearLayers: jasmine.createSpy('clearLayers'),
         addLayer: jasmine.createSpy('addLayer'),
+        closePopup: jasmine.createSpy('closePopup'),
+        getLayers: jasmine.createSpy('getLayers').and.returnValue([]),
       };
 
 
@@ -676,7 +683,7 @@ describe('MapComponent', () => {
     it('creates project & activity layers with unique projectGuids and adds them to map', () => {
       const locs = [
         { projectGuid: 'a', latitude: 1, longitude: 2 },
-        { projectGuid: 'a', latitude: 3, longitude: 4 }, 
+        { projectGuid: 'a', latitude: 3, longitude: 4 },
         { projectGuid: 'b', latitude: 5, longitude: 6 },
         { projectGuid: undefined, latitude: 7, longitude: 8 }, // invalid -> filtered out
       ];
@@ -749,5 +756,130 @@ describe('MapComponent', () => {
     });
   });
 
+  describe('teardownActiveUI()', () => {
+    let mapMock: any;
+
+    beforeEach(() => {
+      mapMock = { closePopup: jasmine.createSpy('closePopup') };
+      mapServiceMock.getSMKInstance.and.returnValue({ $viewer: { map: mapMock } });
+    });
+
+    it('closes global popup and removes active marker via cluster group when present', () => {
+      const activeMarkerSpy = jasmine.createSpyObj<L.Marker>('Marker', [
+        'unbindPopup', 'remove'
+      ]);
+      Object.setPrototypeOf(activeMarkerSpy, L.Marker.prototype);
+
+      const clusterMock = {
+        addLayer: jasmine.createSpy('addLayer'),
+        clearLayers: jasmine.createSpy('clearLayers'),
+        removeLayer: jasmine.createSpy('removeLayer'),
+        hasLayer: jasmine.createSpy('hasLayer').and.returnValue(true),
+        getLayers: jasmine.createSpy('getLayers').and.returnValue([]),
+      };
+
+      (component as any).markersClusterGroup = clusterMock as any;
+      (component as any).activeMarker = activeMarkerSpy;
+
+      (component as any).teardownActiveUI();
+
+      expect(mapMock.closePopup).toHaveBeenCalled();
+      expect(activeMarkerSpy.unbindPopup).toHaveBeenCalled();
+      expect(clusterMock.removeLayer).toHaveBeenCalledWith(activeMarkerSpy);
+      expect((component as any).activeMarker).toBeNull();
+    });
+
+    it('closes global popup and removes active marker directly when not in cluster', () => {
+      const activeMarkerSpy = jasmine.createSpyObj<L.Marker>('Marker', [
+        'unbindPopup', 'remove'
+      ]);
+      Object.setPrototypeOf(activeMarkerSpy, L.Marker.prototype);
+
+      const clusterMock = {
+        addLayer: jasmine.createSpy('addLayer'),
+        clearLayers: jasmine.createSpy('clearLayers'),
+        removeLayer: jasmine.createSpy('removeLayer'),
+        hasLayer: jasmine.createSpy('hasLayer').and.returnValue(false),
+        getLayers: jasmine.createSpy('getLayers').and.returnValue([]),
+      };
+
+      (component as any).markersClusterGroup = clusterMock as any;
+      (component as any).activeMarker = activeMarkerSpy;
+
+      (component as any).teardownActiveUI();
+
+      expect(mapMock.closePopup).toHaveBeenCalled();
+      expect(activeMarkerSpy.unbindPopup).toHaveBeenCalled();
+      expect(activeMarkerSpy.remove).toHaveBeenCalled();
+      expect(clusterMock.removeLayer).not.toHaveBeenCalled();
+      expect((component as any).activeMarker).toBeNull();
+    });
+  });
+
+  describe('updateProjectMarkersFromLocations() teardown before clear', () => {
+    it('unbinds/closes popups and removes listeners for each marker before clearing cluster', () => {
+      const mapMock = { addLayer: () => { }, removeLayer: () => { }, closePopup: () => { } };
+      mapServiceMock.getSMKInstance.and.returnValue({ $viewer: { map: mapMock } });
+
+      const m1 = jasmine.createSpyObj<L.Marker>('Marker', ['unbindPopup', 'closePopup', 'off']);
+      const m2 = jasmine.createSpyObj<L.Marker>('Marker', ['unbindPopup', 'closePopup', 'off']);
+      Object.setPrototypeOf(m1, L.Marker.prototype);
+      Object.setPrototypeOf(m2, L.Marker.prototype);
+
+      (component as any).markersClusterGroup = {
+        addLayer: jasmine.createSpy('addLayer'),
+        clearLayers: jasmine.createSpy('clearLayers'),
+        removeLayer: jasmine.createSpy('removeLayer'),
+        hasLayer: jasmine.createSpy('hasLayer').and.returnValue(false),
+        getLayers: jasmine.createSpy('getLayers').and.returnValue([m1, m2]),
+      } as any;
+
+      (component as any).updateProjectMarkersFromLocations([]);
+
+      expect(m1.unbindPopup).toHaveBeenCalled();
+      expect(m1.closePopup).toHaveBeenCalled();
+      expect(m1.off).toHaveBeenCalled();
+
+      expect(m2.unbindPopup).toHaveBeenCalled();
+      expect(m2.closePopup).toHaveBeenCalled();
+      expect(m2.off).toHaveBeenCalled();
+
+      expect((component as any).markersClusterGroup.clearLayers).toHaveBeenCalled();
+    });
+  });
+
+  describe('filtering removes selected/active project', () => {
+    it('tears down active marker and closes map popup when selected project is no longer in results', () => {
+      const mapMock = {
+        addLayer: jasmine.createSpy('addLayer'),
+        removeLayer: jasmine.createSpy('removeLayer'),
+        closePopup: jasmine.createSpy('closePopup'),
+      };
+      mapServiceMock.getSMKInstance.and.returnValue({ $viewer: { map: mapMock } });
+
+      const activeMarkerSpy = jasmine.createSpyObj<L.Marker>('Marker', ['unbindPopup', 'remove']);
+      Object.setPrototypeOf(activeMarkerSpy, L.Marker.prototype);
+
+      const clusterMock = {
+        addLayer: jasmine.createSpy('addLayer'),
+        clearLayers: jasmine.createSpy('clearLayers'),
+        removeLayer: jasmine.createSpy('removeLayer'),
+        hasLayer: jasmine.createSpy('hasLayer').and.returnValue(true),
+        getLayers: jasmine.createSpy('getLayers').and.returnValue([]),
+      };
+
+      (component as any).markersClusterGroup = clusterMock as any;
+      (component as any).activeMarker = activeMarkerSpy;
+      (component as any).selectedProject = { projectGuid: 'to-remove' };
+
+      (component as any).updateProjectMarkersFromLocations([
+        { projectGuid: 'test-guid', latitude: 1, longitude: 2 },
+      ]);
+
+      expect(mapMock.closePopup).toHaveBeenCalled();
+      expect(clusterMock.removeLayer).toHaveBeenCalledWith(activeMarkerSpy);
+      expect((component as any).activeMarker).toBeNull();
+    });
+  });
 
 });

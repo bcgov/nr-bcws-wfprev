@@ -267,6 +267,8 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   }
 
   private updateProjectMarkersFromLocations(locations: ProjectLocation[]): void {
+    this.teardownActiveUI();
+
     const smk = this.mapService.getSMKInstance();
     const map = smk?.$viewer?.map;
 
@@ -275,7 +277,16 @@ export class MapComponent implements AfterViewInit, OnDestroy {
       return;
     }
 
-    this.markersClusterGroup.clearLayers();
+    if (this.markersClusterGroup) {
+      this.markersClusterGroup.getLayers().forEach(l => {
+        if (l instanceof L.Marker) {
+          l.closePopup();
+          l.unbindPopup();
+          l.off();
+        }
+      });
+      this.markersClusterGroup.clearLayers();
+    }
     this.projectMarkerMap.clear();
     this.activeMarker = null;
 
@@ -427,6 +438,30 @@ export class MapComponent implements AfterViewInit, OnDestroy {
         console.error('Error fetching project locations:', err);
       },
     });
+  }
+
+  // Close any open popup and fully remove the active marker so no DOM is orphaned
+  private teardownActiveUI(): void {
+    const smk = this.mapService.getSMKInstance();
+    const map: L.Map | undefined = smk?.$viewer?.map;
+
+    map?.closePopup();
+
+    // Remove the active marker and unbind popup to drop DOM from panes
+    try {
+      if (this.activeMarker) {
+        this.activeMarker.unbindPopup();
+        if (this.markersClusterGroup?.hasLayer(this.activeMarker)) {
+          this.markersClusterGroup.removeLayer(this.activeMarker);
+        } else {
+          this.activeMarker.remove();
+        }
+      }
+    } catch (err) {
+      console.error('Error during teardown:', err);
+    } finally {
+      this.activeMarker = null;
+    }
   }
 
 }
