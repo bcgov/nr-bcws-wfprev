@@ -13,3 +13,5 @@ htmlReport/
 .DS_Store
 **/.DS_Store
 yarn.lock
+.terraform
+.terraform.lock.hcl
