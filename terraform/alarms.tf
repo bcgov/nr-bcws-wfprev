@@ -190,7 +190,7 @@ resource "aws_cloudwatch_metric_alarm" "rds_high_network_out" {
 }
 
 resource "aws_sns_topic" "alb_alerts" {
-  name = "${var.SNS_TOPIC_NAME}-${var.SHORTENED_ENV}"
+  name = var.SNS_TOPIC_NAME
 }
 
 # List of emails
