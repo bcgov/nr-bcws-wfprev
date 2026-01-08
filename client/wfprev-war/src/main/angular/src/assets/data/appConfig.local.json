@@ -1,14 +1,13 @@
 {
   "application": {
-    "baseUrl": "http://localhost:4200/",
-    "environment": "local",
+    "baseUrl": "http://localhost:4200",
+    "environment": "Local",
     "remiPlannerEmailAddress": "BCWS.ReMiPlanner@gov.bc.ca"
   },
-
   "webade": {
-      "oauth2Url": "https://wfappsi.nrs.gov.bc.ca/ext/oauth2/v1/oauth/authorize",
-      "clientId": "WFPREV-UI",
-      "authScopes": [
+    "oauth2Url": "https://wfappsi.nrs.gov.bc.ca/ext/oauth2/v1/oauth/authorize",
+    "clientId": "WFPREV-UI",
+    "authScopes": [
           "WFPREV.GET_TOPLEVEL",
           "WFPREV.GET_PREVENTION_PROJECT",
           "WFPREV.CREATE_PREVENTION_PROJECT",
@@ -33,16 +32,14 @@
           "WFPREV.UPDATE_PROJECT_STATUS",
           "WFDM.*"
         ],
-      "enableCheckToken": true,
-      "checkTokenUrl": "./assets/data/checktoken-user.json"
-    },
-
-  "rest": {
-    "wfprev":"http://localhost:8080",
-    "wfdm":"https://i1bcwsapi.nrs.gov.bc.ca/wfdm-document-management-api",
-    "openmaps":"https://openmaps.gov.bc.ca"
+    "enableCheckToken": true,
+    "checkTokenUrl": "http://localhost:8080/wfprev-api/check/checkToken"
   },
-
+  "rest": {
+      "wfprev":"http://localhost:8080",
+      "wfdm":"https://i1bcwsapi.nrs.gov.bc.ca/wfdm-document-management-api",
+      "openmaps":"https://openmaps.gov.bc.ca"
+  },
   "mapServices": {
     "geoserverApiBaseUrl": "https://i1bcwsapi.nrs.gov.bc.ca/wfss-geoserver-api",
     "wfnewsApiBaseUrl": "https://wfnews-api.dev.bcwildfireservices.com",

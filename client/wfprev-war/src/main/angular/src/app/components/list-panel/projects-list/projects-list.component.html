@@ -14,17 +14,11 @@
         </mat-form-field>
       </div>
       <div class="create-project-download-button-container">
-        <wfprev-download-button
-          [formats]="formats"
-          (download)="onDownload($event)"
+        <wfprev-download-button [formats]="formats" (download)="onDownload($event)"
           [disabled]="!displayedProjects.length">
         </wfprev-download-button>
-        <wfprev-icon-button
-            [text]="'Create Project'"
-            [icon]="'/assets/add-button.svg'"
-            [alt]="'create-project'"
-            [iconSize]="19"
-            (clicked)="createNewProject()">
+        <wfprev-icon-button [text]="'Create Project'" [icon]="'assets/add-button.svg'" [alt]="'create-project'"
+          [iconSize]="19" (clicked)="createNewProject()">
         </wfprev-icon-button>
       </div>
     </div>
@@ -36,17 +30,15 @@
 
   <div class="list-contents" (scroll)="onScroll($event)">
     <mat-accordion [multi]="true">
-    <mat-expansion-panel
-      hideToggle
-      *ngFor="let project of displayedProjects; trackBy: this['trackByProjectGuid']"
-      [expanded]="expandedPanels[project.projectGuid]"
-      [ngClass]="{ 'selected-project': selectedProjectGuid === project.projectGuid }"
-      #panel="matExpansionPanel"
-      [attr.data-guid]="project.projectGuid">
+      <mat-expansion-panel hideToggle *ngFor="let project of displayedProjects; trackBy: this['trackByProjectGuid']"
+        [expanded]="expandedPanels[project.projectGuid]"
+        [ngClass]="{ 'selected-project': selectedProjectGuid === project.projectGuid }" #panel="matExpansionPanel"
+        [attr.data-guid]="project.projectGuid">
         <mat-expansion-panel-header class="expansion-panel-header" (click)="onHeaderClick($event, project)">
           <mat-panel-title class="project-title">
             <div class="custom-indicator">
-              <wfprev-expansion-indicator [isExpanded]="panel.expanded" [iconSize]="'17px'"></wfprev-expansion-indicator>
+              <wfprev-expansion-indicator [isExpanded]="panel.expanded"
+                [iconSize]="'17px'"></wfprev-expansion-indicator>
             </div>
             <span class="project-name"> {{ project.projectName }} </span>
             <div class="fiscal-action-container">
@@ -55,7 +47,7 @@
               </div>
               <div class="action-items">
                 <div class="action-item" (click)="editProject(project, $event)">
-                  <img alt="edit-icon" class="icon" src="/assets/edit-icon.svg" />
+                  <img alt="edit-icon" class="icon" src="assets/edit-icon.svg" />
                   <span>Edit</span>
                 </div>
               </div>
@@ -74,18 +66,22 @@
               </div>
               <div class="detail">
                 <span>Forest Region</span>
-                <span class="heavy-font">{{ stripSuffix(getDescription('forestRegionCode',project.forestRegionOrgUnitId), ' Forest Region') }}</span>
+                <span class="heavy-font">{{
+                  stripSuffix(getDescription('forestRegionCode',project.forestRegionOrgUnitId), ' Forest Region')
+                  }}</span>
               </div>
-            </div>  
+            </div>
           </div>
-          
+
         </mat-expansion-panel-header>
         <div class="project-item-expansion-panel-body">
 
           <div class="project-header-details-2">
             <div class="detail">
               <span>Forest District</span>
-              <span class="heavy-font">{{ stripSuffix(getDescription('forestDistrictCode',project.forestDistrictOrgUnitId), ' Forest District') }}</span>
+              <span class="heavy-font">{{
+                stripSuffix(getDescription('forestDistrictCode',project.forestDistrictOrgUnitId), ' Forest District')
+                }}</span>
             </div>
             <div class="detail">
               <span>BC Parks Region</span>
@@ -93,7 +89,8 @@
             </div>
             <div class="detail">
               <span>BC Parks Section</span>
-              <span class="heavy-font">{{ getDescription('bcParksSectionCode', project.bcParksSectionOrgUnitId) }}</span>
+              <span class="heavy-font">{{ getDescription('bcParksSectionCode', project.bcParksSectionOrgUnitId)
+                }}</span>
             </div>
           </div>
           <div *ngIf="project.projectFiscals?.length" class="fiscal-section">
@@ -101,8 +98,7 @@
               <div class="fiscal-card-title">
                 <span matTooltip="{{ fiscal.projectFiscalName }}">{{fiscal.projectFiscalName}}</span>
                 <div class="status-container">
-                  <wfprev-status-badge
-                    [icon]="getStatusIcon(fiscal?.planFiscalStatusCode?.planFiscalStatusCode)"
+                  <wfprev-status-badge [icon]="getStatusIcon(fiscal?.planFiscalStatusCode?.planFiscalStatusCode)"
                     [label]="getDescription('planFiscalStatusCode', fiscal?.planFiscalStatusCode?.planFiscalStatusCode)">
                   </wfprev-status-badge>
                   <span class="individual-fiscal-year">{{ getFiscalYearDisplay(fiscal.fiscalYear) }}</span>
@@ -111,30 +107,35 @@
               <div class="fiscal-card-body">
                 <div class="fiscal-body-item">
                   <span>Activity Category</span>
-                  <span class="fiscal-value wrap-text">{{getDescription('activityCategoryCode',fiscal.activityCategoryCode)}}</span>
+                  <span
+                    class="fiscal-value wrap-text">{{getDescription('activityCategoryCode',fiscal.activityCategoryCode)}}</span>
                 </div>
                 <div class="fiscal-body-item">
                   <span>Forecast Amount</span>
                   <span class="fiscal-value" *ngIf="fiscal.fiscalForecastAmount">
-                    ${{ (fiscal.fiscalForecastAmount % 1 === 0) ? (fiscal.fiscalForecastAmount | number:'1.0-0') : (fiscal.fiscalForecastAmount | number:'1.2-2') }}
+                    ${{ (fiscal.fiscalForecastAmount % 1 === 0) ? (fiscal.fiscalForecastAmount | number:'1.0-0') :
+                    (fiscal.fiscalForecastAmount | number:'1.2-2') }}
                   </span>
                 </div>
                 <div class="fiscal-body-item" *ngIf="fiscal.planFiscalStatusCode !== 'COMPLETE'">
                   <span>Planned Hectares</span>
                   <span class="fiscal-value" *ngIf="fiscal.fiscalPlannedProjectSizeHa">
-                    {{ (fiscal.fiscalPlannedProjectSizeHa % 1 === 0) ? (fiscal.fiscalPlannedProjectSizeHa | number:'1.0-0') : (fiscal.fiscalPlannedProjectSizeHa | number:'1.2-2') }} Ha
+                    {{ (fiscal.fiscalPlannedProjectSizeHa % 1 === 0) ? (fiscal.fiscalPlannedProjectSizeHa |
+                    number:'1.0-0') : (fiscal.fiscalPlannedProjectSizeHa | number:'1.2-2') }} Ha
                   </span>
                 </div>
                 <div class="fiscal-body-item">
                   <span>Completed Hectares</span>
                   <span class="fiscal-value" *ngIf="fiscal.fiscalCompletedSizeHa">
-                    {{ (fiscal.fiscalCompletedSizeHa % 1 === 0) ? (fiscal.fiscalCompletedSizeHa | number:'1.0-0') : (fiscal.fiscalCompletedSizeHa | number:'1.2-2') }} Ha
+                    {{ (fiscal.fiscalCompletedSizeHa % 1 === 0) ? (fiscal.fiscalCompletedSizeHa | number:'1.0-0') :
+                    (fiscal.fiscalCompletedSizeHa | number:'1.2-2') }} Ha
                   </span>
                 </div>
                 <div class="fiscal-body-item" *ngIf="fiscal.planFiscalStatusCode === 'COMPLETE'">
                   <span>CFS Actual Spend</span>
                   <span class="fiscal-value" *ngIf="fiscal.fiscalActualAmount">
-                    ${{ (fiscal.fiscalActualAmount % 1 === 0) ? (fiscal.fiscalActualAmount | number:'1.0-0') : (fiscal.fiscalActualAmount | number:'1.2-2') }}
+                    ${{ (fiscal.fiscalActualAmount % 1 === 0) ? (fiscal.fiscalActualAmount | number:'1.0-0') :
+                    (fiscal.fiscalActualAmount | number:'1.2-2') }}
                   </span>
                 </div>
               </div>
@@ -144,10 +145,7 @@
       </mat-expansion-panel>
     </mat-accordion>
     <div class="spinner-container" *ngIf="isLoading">
-      <mat-progress-spinner
-        mode="indeterminate"
-        diameter="36"
-        color="primary">
+      <mat-progress-spinner mode="indeterminate" diameter="36" color="primary">
       </mat-progress-spinner>
     </div>
   </div>

@@ -1,84 +1,86 @@
 <div>
-    <mat-expansion-panel #panel="matExpansionPanel">
-        <mat-expansion-panel-header class="expansion-panel-header">
-          <mat-panel-title class="project-title">
-            <div class="custom-indicator">
-                <wfprev-expansion-indicator [isExpanded]="panel.expanded"></wfprev-expansion-indicator>
-            </div>
-            <span>Evaluation Criteria</span>
-          </mat-panel-title>
-          <mat-panel-description class="edit-evaluation-criteria">
-            <div (click)="openEvaluationCriteriaPopUp(); $event.stopPropagation()">
-              <img alt="edit-icon" class="icon" src="/assets/edit-icon.svg" />
-              <span>Edit</span>
-            </div>
-          </mat-panel-description>
-        </mat-expansion-panel-header>
-        <!-- Fuel Management -->
-        <div *ngIf="evaluationCriteriaSummary">
-          <div class="criteria-section">
-            <div class="section-label">
-              <span>{{ evaluationLabels.coarse }}:</span>
-              <span>
-                {{ getCoarseTotal(evaluationCriteriaSummary) | number:'1.2-2' }}
-              </span>
-            </div>
-
-            <div class="criteria-details">
-              <div class="risk-class-row">
-                <div class="criteria-item criteria-item-narrow" *ngIf="isPrescribedFire">
-                  <span>Outside of WUI</span>
-                  <span>{{evaluationCriteriaSummary.isOutsideWuiInd? 'Yes' : "No"}}</span>
-                </div>
-                <div class="criteria-item criteria-item-narrow">
-                  <span>WUI Risk Class</span>
-                  <span>{{ formatCodeLabel(evaluationCriteriaSummary.wuiRiskClassCode?.wuiRiskClassCode) || '' }}</span>
-                </div>
-                <div class="criteria-item criteria-item-narrow">
-                  <span>Local Risk Class</span>
-                  <span>{{ formatCodeLabel(evaluationCriteriaSummary.localWuiRiskClassCode?.wuiRiskClassCode) || '' }}</span>
-                </div>
-              </div>
-              <div>
-                <div class="criteria-item">
-                  <span>{{ evaluationLabels.comments.rationale }}:</span>
-                  <span class="comments-text">{{ evaluationCriteriaSummary.localWuiRiskClassRationale || 'None' }}</span>
-                </div>
-              </div>
-            </div>
-
-            <span class="section-label">
-              <span>{{ evaluationLabels.medium }}:</span>
-              <span>{{ getSectionTotal(evaluationCriteriaSummary, mediumSectionCode) | number:'1.2-2' }}</span>
-            </span>
-            <div class="criteria-details">
-              <div class="criteria-item">
-                <span>{{ evaluationLabels.comments.medium }}</span>
-                <span class="comments-text">{{ getSectionComment(evaluationCriteriaSummary, mediumSectionCode) || 'None' }}</span>
-              </div>
-            </div>
-
-            <span class="section-label">
-              <span>{{ evaluationLabels.fine }}:</span>
-              <span>{{ getSectionTotal(evaluationCriteriaSummary, fineSectionCode) | number:'1.2-2' }}</span>
-            </span>
-            <div class="criteria-details">
-              <div class="criteria-item">
-              <span>{{ evaluationLabels.comments.fine }}</span>
-              <span class="comments-text">{{ getSectionComment(evaluationCriteriaSummary, fineSectionCode) || 'None' }}</span>
-              </div>
-            </div>
-            <div class="full-width-divider"></div>
-            <div class="section-label ">
-              <span>Calculated Total</span>
-              <span>{{ getCalculatedTotal(evaluationCriteriaSummary) | number:'1.2-2' }}</span>
-            </div>
-          </div>
-          <wfprev-timestamp
-            [updateDate]="evaluationCriteriaSummary.lastUpdatedTimestamp"
-            [updateUser]="evaluationCriteriaSummary.updateUser">
-          </wfprev-timestamp>
+  <mat-expansion-panel #panel="matExpansionPanel">
+    <mat-expansion-panel-header class="expansion-panel-header">
+      <mat-panel-title class="project-title">
+        <div class="custom-indicator">
+          <wfprev-expansion-indicator [isExpanded]="panel.expanded"></wfprev-expansion-indicator>
+        </div>
+        <span>Evaluation Criteria</span>
+      </mat-panel-title>
+      <mat-panel-description class="edit-evaluation-criteria">
+        <div (click)="openEvaluationCriteriaPopUp(); $event.stopPropagation()">
+          <img alt="edit-icon" class="icon" src="assets/edit-icon.svg" />
+          <span>Edit</span>
+        </div>
+      </mat-panel-description>
+    </mat-expansion-panel-header>
+    <!-- Fuel Management -->
+    <div *ngIf="evaluationCriteriaSummary">
+      <div class="criteria-section">
+        <div class="section-label">
+          <span>{{ evaluationLabels.coarse }}:</span>
+          <span>
+            {{ getCoarseTotal(evaluationCriteriaSummary) | number:'1.2-2' }}
+          </span>
         </div>
 
-    </mat-expansion-panel>
+        <div class="criteria-details">
+          <div class="risk-class-row">
+            <div class="criteria-item criteria-item-narrow" *ngIf="isPrescribedFire">
+              <span>Outside of WUI</span>
+              <span>{{evaluationCriteriaSummary.isOutsideWuiInd? 'Yes' : "No"}}</span>
+            </div>
+            <div class="criteria-item criteria-item-narrow">
+              <span>WUI Risk Class</span>
+              <span>{{ formatCodeLabel(evaluationCriteriaSummary.wuiRiskClassCode?.wuiRiskClassCode) || '' }}</span>
+            </div>
+            <div class="criteria-item criteria-item-narrow">
+              <span>Local Risk Class</span>
+              <span>{{ formatCodeLabel(evaluationCriteriaSummary.localWuiRiskClassCode?.wuiRiskClassCode) || ''
+                }}</span>
+            </div>
+          </div>
+          <div>
+            <div class="criteria-item">
+              <span>{{ evaluationLabels.comments.rationale }}:</span>
+              <span class="comments-text">{{ evaluationCriteriaSummary.localWuiRiskClassRationale || 'None' }}</span>
+            </div>
+          </div>
+        </div>
+
+        <span class="section-label">
+          <span>{{ evaluationLabels.medium }}:</span>
+          <span>{{ getSectionTotal(evaluationCriteriaSummary, mediumSectionCode) | number:'1.2-2' }}</span>
+        </span>
+        <div class="criteria-details">
+          <div class="criteria-item">
+            <span>{{ evaluationLabels.comments.medium }}</span>
+            <span class="comments-text">{{ getSectionComment(evaluationCriteriaSummary, mediumSectionCode) || 'None'
+              }}</span>
+          </div>
+        </div>
+
+        <span class="section-label">
+          <span>{{ evaluationLabels.fine }}:</span>
+          <span>{{ getSectionTotal(evaluationCriteriaSummary, fineSectionCode) | number:'1.2-2' }}</span>
+        </span>
+        <div class="criteria-details">
+          <div class="criteria-item">
+            <span>{{ evaluationLabels.comments.fine }}</span>
+            <span class="comments-text">{{ getSectionComment(evaluationCriteriaSummary, fineSectionCode) || 'None'
+              }}</span>
+          </div>
+        </div>
+        <div class="full-width-divider"></div>
+        <div class="section-label ">
+          <span>Calculated Total</span>
+          <span>{{ getCalculatedTotal(evaluationCriteriaSummary) | number:'1.2-2' }}</span>
+        </div>
+      </div>
+      <wfprev-timestamp [updateDate]="evaluationCriteriaSummary.lastUpdatedTimestamp"
+        [updateUser]="evaluationCriteriaSummary.updateUser">
+      </wfprev-timestamp>
+    </div>
+
+  </mat-expansion-panel>
 </div>

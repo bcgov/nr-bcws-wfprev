@@ -1,9 +1,9 @@
 import { TestBed } from '@angular/core/testing';
-import { MapService } from './map.service';
-import { BC_BOUNDS } from 'src/app/utils/constants';
-import { TokenService } from './token.service';
-import { AppConfigService } from './app-config.service';
 import * as LeafletModule from 'leaflet';
+import { BC_BOUNDS } from 'src/app/utils/constants';
+import { AppConfigService } from './app-config.service';
+import { MapService } from './map.service';
+import { TokenService } from './token.service';
 
 describe('MapService', () => {
   let service: MapService;
@@ -109,7 +109,7 @@ describe('MapService', () => {
 
       // We only care about the last call to INIT (the actual createSMK call)
       expect(mockSMK.INIT).toHaveBeenCalledWith({
-        baseUrl: `${window.location.protocol}//${window.location.host}/assets/smk/`,
+        baseUrl: 'assets/smk/',
         config: [{
           tools: [
             { type: 'baseMaps' },
@@ -137,7 +137,7 @@ describe('MapService', () => {
       await service.createSMK(option);
 
       expect(mockSMK.INIT).toHaveBeenCalledWith({
-        baseUrl: `${window.location.protocol}//${window.location.host}/assets/smk/`,
+        baseUrl: 'assets/smk/',
         config: [
           { existingConfig: true },
           {
@@ -233,7 +233,7 @@ describe('MapService', () => {
       expect(mockSMK.INIT).toHaveBeenCalledWith({
         id: 999,
         containerSel: mockTemp,
-        baseUrl: `${window.location.protocol}//${window.location.host}/assets/smk/`,
+        baseUrl: 'assets/smk/',
         config: 'show-tool=bespoke'
       });
 

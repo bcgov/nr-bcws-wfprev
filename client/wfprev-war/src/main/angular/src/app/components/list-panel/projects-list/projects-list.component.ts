@@ -1,29 +1,29 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component, ElementRef, OnInit, QueryList, ViewChildren } from '@angular/core';
-import { MatExpansionModule } from '@angular/material/expansion';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatDialog } from '@angular/material/dialog';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSelectModule } from '@angular/material/select';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Router } from '@angular/router';
 import L from 'leaflet';
 import 'leaflet.markercluster';
 import { CreateNewProjectDialogComponent } from 'src/app/components/create-new-project-dialog/create-new-project-dialog.component';
+import { DownloadButtonComponent } from 'src/app/components/shared/download-button/download-button.component';
+import { IconButtonComponent } from 'src/app/components/shared/icon-button/icon-button.component';
+import { StatusBadgeComponent } from 'src/app/components/shared/status-badge/status-badge.component';
 import { CodeTableServices } from 'src/app/services/code-table-services';
+import { MapService } from 'src/app/services/map.service';
 import { ProjectService } from 'src/app/services/project-services';
 import { SharedCodeTableService } from 'src/app/services/shared-code-table.service';
 import { SharedService } from 'src/app/services/shared-service';
-import { getBluePinIcon, getFiscalYearDisplay, PlanFiscalStatusIcons } from 'src/app/utils/tools';
-import { ResourcesRoutes, getActiveMap } from 'src/app/utils';
-import { ExpansionIndicatorComponent } from '../../shared/expansion-indicator/expansion-indicator.component';
-import { IconButtonComponent } from 'src/app/components/shared/icon-button/icon-button.component';
-import { MatSelectModule } from '@angular/material/select';
-import { StatusBadgeComponent } from 'src/app/components/shared/status-badge/status-badge.component';
+import { getActiveMap, ResourcesRoutes } from 'src/app/utils';
 import { CodeTableKeys, CodeTableNames, DownloadFileExtensions, DownloadTypes, Messages, WildfireOrgUnitTypeCodes } from 'src/app/utils/constants';
-import { DownloadButtonComponent } from 'src/app/components/shared/download-button/download-button.component';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { getBluePinIcon, getFiscalYearDisplay, PlanFiscalStatusIcons } from 'src/app/utils/tools';
 import { ReportRequest } from '../../models';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MapService } from 'src/app/services/map.service';
+import { ExpansionIndicatorComponent } from '../../shared/expansion-indicator/expansion-indicator.component';
 
 @Component({
   selector: 'wfprev-projects-list',
@@ -465,7 +465,7 @@ export class ProjectsListComponent implements OnInit {
       // Add markers and polygons for each coordinate
       for (const coord of coords) {
         const marker = L.marker([coord.latitude, coord.longitude], {
-          icon: createMarkerIcon('/assets/blue-pin-drop.svg'),
+          icon: createMarkerIcon('assets/blue-pin-drop.svg'),
         });
 
         // Initialize the marker state
@@ -498,7 +498,7 @@ export class ProjectsListComponent implements OnInit {
 
           if (isActive) {
             // If active, reset marker and polygons
-            marker.setIcon(createMarkerIcon('/assets/blue-pin-drop.svg'));
+            marker.setIcon(createMarkerIcon('assets/blue-pin-drop.svg'));
             markerStates.set(marker, false);
 
             const associatedPolygons = this.markerPolygons.get(marker);
@@ -509,7 +509,7 @@ export class ProjectsListComponent implements OnInit {
             }
           } else {
             // If not active, activate marker and bold polygons
-            marker.setIcon(createActiveMarkerIcon('/assets/active-pin-drop.svg'));
+            marker.setIcon(createActiveMarkerIcon('assets/active-pin-drop.svg'));
             markerStates.set(marker, true);
 
             const associatedPolygons = this.markerPolygons.get(marker);
@@ -528,7 +528,7 @@ export class ProjectsListComponent implements OnInit {
       map?.$viewer?.map.on('click', () => {
         for (const [marker, isActive] of markerStates) {
           if (isActive) {
-            marker.setIcon(createMarkerIcon('/assets/blue-pin-drop.svg'));
+            marker.setIcon(createMarkerIcon('assets/blue-pin-drop.svg'));
             markerStates.set(marker, false);
 
             const associatedPolygons = this.markerPolygons.get(marker);
@@ -580,7 +580,7 @@ export class ProjectsListComponent implements OnInit {
       // Highlight the new marker and polygons
       marker.setIcon(
         L.icon({
-          iconUrl: '/assets/active-pin-drop.svg', // Highlighted icon
+          iconUrl: 'assets/active-pin-drop.svg', // Highlighted icon
           iconSize: [50, 70],
           iconAnchor: [20, 51],
           popupAnchor: [1, -34],

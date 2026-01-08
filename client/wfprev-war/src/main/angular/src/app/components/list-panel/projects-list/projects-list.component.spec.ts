@@ -1,21 +1,21 @@
-import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
-import { ProjectsListComponent } from './projects-list.component';
-import { By } from '@angular/platform-browser';
 import { DebugElement, ElementRef, QueryList } from '@angular/core';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { MatDialog } from '@angular/material/dialog';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { By } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ActivatedRoute, Router } from '@angular/router';
-import { MatDialog } from '@angular/material/dialog';
-import { ProjectService } from 'src/app/services/project-services';
-import { CodeTableServices } from 'src/app/services/code-table-services';
-import { ResourcesRoutes } from 'src/app/utils';
-import { of, throwError } from 'rxjs';
 import L from 'leaflet';
+import { of, throwError } from 'rxjs';
 import { CreateNewProjectDialogComponent } from 'src/app/components/create-new-project-dialog/create-new-project-dialog.component';
 import { FeaturesResponse } from 'src/app/components/models';
-import { Messages } from 'src/app/utils/constants';
+import { CodeTableServices } from 'src/app/services/code-table-services';
 import { MapService } from 'src/app/services/map.service';
+import { ProjectService } from 'src/app/services/project-services';
+import { ResourcesRoutes } from 'src/app/utils';
+import { Messages } from 'src/app/utils/constants';
+import { ProjectsListComponent } from './projects-list.component';
 
 describe('ProjectsListComponent', () => {
   let component: ProjectsListComponent;
@@ -716,7 +716,7 @@ describe('ProjectsListComponent', () => {
     clickHandler();
 
     expect(mockClickedMarker.setIcon).toHaveBeenCalledWith(jasmine.objectContaining({
-      options: jasmine.objectContaining({ iconUrl: '/assets/active-pin-drop.svg' })
+      options: jasmine.objectContaining({ iconUrl: 'assets/active-pin-drop.svg' })
     }));
     expect(mockPolygon1.setStyle).toHaveBeenCalledWith({ weight: 5 });
     expect(mockPolygon2.setStyle).toHaveBeenCalledWith({ weight: 5 });
@@ -724,7 +724,7 @@ describe('ProjectsListComponent', () => {
     clickHandler();
 
     expect(mockClickedMarker.setIcon).toHaveBeenCalledWith(jasmine.objectContaining({
-      options: jasmine.objectContaining({ iconUrl: '/assets/blue-pin-drop.svg' })
+      options: jasmine.objectContaining({ iconUrl: 'assets/blue-pin-drop.svg' })
     }));
     expect(mockPolygon1.setStyle).toHaveBeenCalledWith({ weight: 2 });
     expect(mockPolygon2.setStyle).toHaveBeenCalledWith({ weight: 2 });
@@ -763,7 +763,7 @@ describe('ProjectsListComponent', () => {
         internalMarkerStates.forEach((isActive, marker) => {
           if (isActive) {
             marker.setIcon(L.icon({
-              iconUrl: '/assets/blue-pin-drop.svg',
+              iconUrl: 'assets/blue-pin-drop.svg',
               iconSize: [30, 50],
               iconAnchor: [12, 41],
               popupAnchor: [1, -34],
@@ -781,7 +781,7 @@ describe('ProjectsListComponent', () => {
 
     expect(mockActiveMarker.setIcon).toHaveBeenCalledWith(jasmine.objectContaining({
       options: jasmine.objectContaining({
-        iconUrl: '/assets/blue-pin-drop.svg'
+        iconUrl: 'assets/blue-pin-drop.svg'
       })
     }));
 
@@ -1064,13 +1064,13 @@ describe('ProjectsListComponent', () => {
         {
           projectGuid: 'guid1',
           projectFiscals: [
-            { fiscalYear: 2022, projectPlanFiscalGuid: 'pf-1b' }, 
+            { fiscalYear: 2022, projectPlanFiscalGuid: 'pf-1b' },
             { fiscalYear: 2021, projectPlanFiscalGuid: 'pf-1c' },
           ],
         },
         {
           projectGuid: 'guid2',
-          projectFiscals: [], 
+          projectFiscals: [],
         },
         {
           projectFiscals: [{ fiscalYear: 2024, projectPlanFiscalGuid: 'pf-x' }],
@@ -1110,12 +1110,12 @@ describe('ProjectsListComponent', () => {
     });
 
     it('respects resultCount when deciding which fiscals are included', () => {
-      component.resultCount = 1; 
+      component.resultCount = 1;
       component.displayedProjects = [
         {
           projectGuid: 'g1',
           projectFiscals: [
-            { fiscalYear: 2023, projectPlanFiscalGuid: 'top' }, 
+            { fiscalYear: 2023, projectPlanFiscalGuid: 'top' },
             { fiscalYear: 2022, projectPlanFiscalGuid: 'lower' },
           ],
         },

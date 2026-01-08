@@ -1,0 +1,36 @@
+services:
+  api-dev:
+    build:
+      context: server/wfprev-api
+      dockerfile: Dockerfile.local
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      REPORT_GENERATOR_LAMBDA_URL: https://mock-lambda-url
+      REPORT_GENERATOR_SERVICE_URL: http://mock-report-generator
+    volumes:
+      - ./server/wfprev-api/target:/app/target
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: postgis/postgis:17-3.4
+    volumes:
+      - ./db/init:/docker-entrypoint-initdb.d
+      - ./wfprevint.dump:/dump/wfprevint.dump
+
+  client:
+    build:
+      context: client/wfprev-war
+      dockerfile: Dockerfile.local
+    profiles:
+      - dev
+    ports:
+      - "4200:8080"
+    networks:
+      - wfprev-network
+    depends_on:
+      api-dev:
+        condition: service_started
+      db:
+        condition: service_healthy

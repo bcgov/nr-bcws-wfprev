@@ -4,32 +4,29 @@
   </div>
   <div class="dialog-content">
     <!-- File Upload Section -->
-      <div class="file-upload">
-        <input #fileInput hidden type="file" (change)="onFileSelected($event)" [accept]="getAcceptedFileTypes()"/>
-        <wfprev-icon-button
-          [text]="'Choose File'"
-          [icon]="'/assets/upload.svg'"
-          [alt]="'upload-file'"
-          [iconSize]="19"
-          (clicked)="fileInput.click()">
-        </wfprev-icon-button>
-        <span>{{ getFileName() }}</span>
-      </div>
-     <div class="attachment-detail">
+    <div class="file-upload">
+      <input #fileInput hidden type="file" (change)="onFileSelected($event)" [accept]="getAcceptedFileTypes()" />
+      <wfprev-icon-button [text]="'Choose File'" [icon]="'assets/upload.svg'" [alt]="'upload-file'" [iconSize]="19"
+        (clicked)="fileInput.click()">
+      </wfprev-icon-button>
+      <span>{{ getFileName() }}</span>
+    </div>
+    <div class="attachment-detail">
       <label>Attachment Type (Required)</label>
       <select class="custom-select" [(ngModel)]="attachmentType">
         <option *ngFor="let type of attachmentTypes" [value]="type.value">
           {{ type.label }}
         </option>
       </select>
-     </div>
-     <div class="attachment-detail">
+    </div>
+    <div class="attachment-detail">
       <label>Description (required) (150 character limit)</label>
-      <input type="text" id="description" class="custom-input" [(ngModel)]="description" placeholder="Enter Text" (input)="checkDescriptionLength()"/>
+      <input type="text" id="description" class="custom-input" [(ngModel)]="description" placeholder="Enter Text"
+        (input)="checkDescriptionLength()" />
       <p *ngIf="isDescriptionTooLong" class="error-message">
         Description exceeds the 150 character limit.
       </p>
-     </div>
+    </div>
   </div>
   <div class="footer">
     <div class="button-row">

@@ -1,15 +1,15 @@
 import { Injectable } from '@angular/core';
-import { BC_BOUNDS, FiscalYearColors } from 'src/app/utils/constants';
-import { TokenService } from './token.service';
-import { StyleSpecification } from 'maplibre-gl';
 import * as L from 'leaflet';
+import { StyleSpecification } from 'maplibre-gl';
+import { BC_BOUNDS, FiscalYearColors } from 'src/app/utils/constants';
 import { AppConfigService } from './app-config.service';
+import { TokenService } from './token.service';
 
 @Injectable({ providedIn: 'root' })
 export class MapService {
   private mapIndex: number = 0;
   baseMapIds: string[] = [];
-  private readonly smkBaseUrl = `${globalThis.location.protocol}//${globalThis.location.host}/assets/smk/`;
+  private readonly smkBaseUrl = new URL('assets/smk/', document.baseURI).href;
   private containerId?: string;
   private smkInstance: any = null;
   private readonly apiBaseUrl = `${this.appConfigService.getConfig().rest['wfprev']}/wfprev-api`;
@@ -471,7 +471,7 @@ export class MapService {
         projectBoundary: { type: 'vector', tiles: [tiles] }
       },
       layers: [
-        { id: 'project-boundary-fill', type: 'fill', source: 'projectBoundary', 'source-layer': 'project_boundary', paint: { 'fill-opacity': 0.1 },  minzoom: 10 },
+        { id: 'project-boundary-fill', type: 'fill', source: 'projectBoundary', 'source-layer': 'project_boundary', paint: { 'fill-opacity': 0.1 }, minzoom: 10 },
         { id: 'project-boundary-line', type: 'line', source: 'projectBoundary', 'source-layer': 'project_boundary', paint: { 'line-color': '#000', 'line-width': 2 }, minzoom: 10 }
       ]
     };

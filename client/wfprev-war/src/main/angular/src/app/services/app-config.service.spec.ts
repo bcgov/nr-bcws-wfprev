@@ -1,15 +1,15 @@
-import { TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { AppConfigService } from './app-config.service';
+import { TestBed } from '@angular/core/testing';
 import { LibraryConfig } from '../config/library-config';
 import { ApplicationConfig } from '../interfaces/application-config';
+import { AppConfigService } from './app-config.service';
 
 describe('AppConfigService', () => {
   let service: AppConfigService;
   let httpMock: HttpTestingController;
 
   const mockLibraryConfig: LibraryConfig = {
-    configurationPath: '/assets/data/appConfig.json',
+    configurationPath: 'assets/data/appConfig.json',
   };
 
   const mockConfig: ApplicationConfig = {
@@ -114,10 +114,10 @@ describe('AppConfigService', () => {
   it('should throw an error when no data is returned from configuration', async () => {
     const loadConfigPromise = service.loadAppConfig();
     const req = httpMock.expectOne(mockLibraryConfig.configurationPath);
-    
+
     // Flush with null to simulate no data
     req.flush(null);
-  
+
     await expectAsync(loadConfigPromise).toBeRejectedWithError(
       'Failed to load application configuration: No data returned from application config'
     );

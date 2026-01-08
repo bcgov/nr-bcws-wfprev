@@ -1,20 +1,19 @@
 
-import { ComponentFixture, TestBed, fakeAsync, flush, flushMicrotasks, tick } from '@angular/core/testing';
-import { MapComponent } from './map.component';
-import { MapConfigService } from 'src/app/services/map-config.service';
-import { MapService } from 'src/app/services/map.service';
-import { of, Subject } from 'rxjs';
-import { ElementRef } from '@angular/core';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { AppConfigService } from 'src/app/services/app-config.service';
-import { CodeTableServices } from 'src/app/services/code-table-services';
-import { ProjectService } from 'src/app/services/project-services';
+import { ElementRef, NO_ERRORS_SCHEMA } from '@angular/core';
+import { ComponentFixture, fakeAsync, flush, flushMicrotasks, TestBed, tick } from '@angular/core/testing';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ActivatedRoute } from '@angular/router';
 import * as L from 'leaflet';
+import { of, Subject } from 'rxjs';
 import { Project } from 'src/app/components/models';
+import { AppConfigService } from 'src/app/services/app-config.service';
+import { CodeTableServices } from 'src/app/services/code-table-services';
+import { MapConfigService } from 'src/app/services/map-config.service';
+import { MapService } from 'src/app/services/map.service';
+import { ProjectService } from 'src/app/services/project-services';
 import { BC_BOUNDS } from 'src/app/utils/constants';
+import { MapComponent } from './map.component';
 class MockAppConfigService {
   getConfig() {
     return {
@@ -396,7 +395,7 @@ describe('MapComponent', () => {
       expect(markerSpy.setIcon).toHaveBeenCalledWith(
         jasmine.objectContaining({
           options: jasmine.objectContaining({
-            iconUrl: '/assets/active-pin-drop.svg',
+            iconUrl: 'assets/active-pin-drop.svg',
           }),
         })
       );
@@ -414,7 +413,7 @@ describe('MapComponent', () => {
       expect(markerSpy.setIcon).toHaveBeenCalledWith(
         jasmine.objectContaining({
           options: jasmine.objectContaining({
-            iconUrl: '/assets/blue-pin-drop.svg',
+            iconUrl: 'assets/blue-pin-drop.svg',
           }),
         })
       );

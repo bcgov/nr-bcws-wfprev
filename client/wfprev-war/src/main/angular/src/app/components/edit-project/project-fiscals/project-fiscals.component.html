@@ -1,332 +1,249 @@
 <div class="fiscals-container">
   <div>
     <div class="button-row">
-      <wfprev-icon-button
-          class="add-new-fiscal"
-          [text]="'Add New Fiscal'"
-          [icon]="'/assets/add-button.svg'"
-          [alt]="'add-new-fiscal'"
-          [iconSize]="19"
-          [disabled]="hasUnsavedFiscal"
-          (clicked)="addNewFiscal()">
+      <wfprev-icon-button class="add-new-fiscal" [text]="'Add New Fiscal'" [icon]="'assets/add-button.svg'"
+        [alt]="'add-new-fiscal'" [iconSize]="19" [disabled]="hasUnsavedFiscal" (clicked)="addNewFiscal()">
       </wfprev-icon-button>
     </div>
-      <div class=fiscal-tab-wrapper>
-        <mat-tab-group class="wf-sub-tab" mat-stretch-tabs="false" animationDuration="0ms" disableRipple="true"
-          *ngIf="projectFiscals?.length; else noFiscals" [(selectedIndex)]="selectedTabIndex" (selectedTabChange)="onTabChange($event.index)">
-          <mat-tab *ngFor="let fiscal of projectFiscals; let i = index">
+    <div class=fiscal-tab-wrapper>
+      <mat-tab-group class="wf-sub-tab" mat-stretch-tabs="false" animationDuration="0ms" disableRipple="true"
+        *ngIf="projectFiscals?.length; else noFiscals" [(selectedIndex)]="selectedTabIndex"
+        (selectedTabChange)="onTabChange($event.index)">
+        <mat-tab *ngFor="let fiscal of projectFiscals; let i = index">
           <ng-template mat-tab-label>
             <div class="custom-tab-label">
-              <div class="label-title" [matTooltip]="fiscal.projectFiscalName">{{fiscal.projectFiscalName || 'New Fiscal'}}</div>
+              <div class="label-title" [matTooltip]="fiscal.projectFiscalName">{{fiscal.projectFiscalName || 'New
+                Fiscal'}}</div>
               <div class="label-subtitle">{{ fiscal.fiscalYearFormatted || 'YYYY/YY' }}</div>
             </div>
           </ng-template>
-            <mat-accordion [multi]="true">
-              <mat-expansion-panel [expanded]="true" class="fiscal-expansion-panel" #panel="matExpansionPanel">
-                <mat-expansion-panel-header>
-                  <div class="header-container">
-                    <wfprev-expansion-indicator [isExpanded]="panel.expanded"></wfprev-expansion-indicator>
-                    <span class="project-title">Details</span>
+          <mat-accordion [multi]="true">
+            <mat-expansion-panel [expanded]="true" class="fiscal-expansion-panel" #panel="matExpansionPanel">
+              <mat-expansion-panel-header>
+                <div class="header-container">
+                  <wfprev-expansion-indicator [isExpanded]="panel.expanded"></wfprev-expansion-indicator>
+                  <span class="project-title">Details</span>
 
-                    <div class="status-actions">
-                      <div class="status-wrapper">
-                        <span>Status:</span>
-                        <wfprev-status-badge
-                          [icon]="getStatusIcon(fiscal.planFiscalStatusCode?.planFiscalStatusCode)"
-                          [label]="getStatusDescription(i) || ''">
-                        </wfprev-status-badge>
-                      </div>
-
-
-                      <wfprev-dropdown-button
-                        [status]="fiscal.planFiscalStatusCode?.planFiscalStatusCode"
-                        [isApproved]="!fiscalForms[i].get('isApprovedInd')?.value"
-                        [index]="i"
-                        [fiscal]="fiscal"
-                        [isDirty]="fiscalForms[i]?.dirty"
-                        (actionSelected)="onFiscalAction($event)">
-                      </wfprev-dropdown-button>
+                  <div class="status-actions">
+                    <div class="status-wrapper">
+                      <span>Status:</span>
+                      <wfprev-status-badge [icon]="getStatusIcon(fiscal.planFiscalStatusCode?.planFiscalStatusCode)"
+                        [label]="getStatusDescription(i) || ''">
+                      </wfprev-status-badge>
                     </div>
+
+
+                    <wfprev-dropdown-button [status]="fiscal.planFiscalStatusCode?.planFiscalStatusCode"
+                      [isApproved]="!fiscalForms[i].get('isApprovedInd')?.value" [index]="i" [fiscal]="fiscal"
+                      [isDirty]="fiscalForms[i]?.dirty" (actionSelected)="onFiscalAction($event)">
+                    </wfprev-dropdown-button>
                   </div>
-                </mat-expansion-panel-header>
-                <form class="form-grid" *ngIf="fiscalForms[i]" [formGroup]="fiscalForms[i]">
+                </div>
+              </mat-expansion-panel-header>
+              <form class="form-grid" *ngIf="fiscalForms[i]" [formGroup]="fiscalForms[i]">
 
-                  <div class="form-item fiscal-activity-name">
-                    <wfprev-input-field
-                      [id]="'projectFiscalName'"
-                      [label]="'Fiscal Activity Name'"
-                      [placeholder]="'Descriptor including site and activity category'"
-                      [control]="getFiscalControl(i, 'projectFiscalName')"
-                      [tooltip]="getFiscalControl(i, 'projectFiscalName')?.value"
-                      [required]="true"
-                      [errorMessages]="{ maxlength: messages.maxLengthExceeded }"
-                    />
-                  </div>
+                <div class="form-item fiscal-activity-name">
+                  <wfprev-input-field [id]="'projectFiscalName'" [label]="'Fiscal Activity Name'"
+                    [placeholder]="'Descriptor including site and activity category'"
+                    [control]="getFiscalControl(i, 'projectFiscalName')"
+                    [tooltip]="getFiscalControl(i, 'projectFiscalName')?.value" [required]="true"
+                    [errorMessages]="{ maxlength: messages.maxLengthExceeded }" />
+                </div>
 
-                  <div class="form-item">
-                    <wfprev-select-field
-                      [label]="'Activity Category'"
-                      [required]="true"
-                      [control]="getFiscalControl(i, 'activityCategoryCode')"
-                      [options]="activityCategoryCode"
-                      [optionValueField]="'activityCategoryCode'"
-                      [optionLabelField]="'description'"
-                      [tooltip]="getCodeDescription(CodeTableKeys.ACTIVITY_CATEGORY_CODE)"
-                      id="activityCategoryCode"
-                      placeholder="Select"
-                    />
-                  </div>
+                <div class="form-item">
+                  <wfprev-select-field [label]="'Activity Category'" [required]="true"
+                    [control]="getFiscalControl(i, 'activityCategoryCode')" [options]="activityCategoryCode"
+                    [optionValueField]="'activityCategoryCode'" [optionLabelField]="'description'"
+                    [tooltip]="getCodeDescription(CodeTableKeys.ACTIVITY_CATEGORY_CODE)" id="activityCategoryCode"
+                    placeholder="Select" />
+                </div>
 
-                  <div class="form-item">
-                    <label>Fiscal Year<span class="required">*</span></label>
-                    <select id="fiscalYear" formControlName="fiscalYear">
-                      <option value="" disabled selected hidden>Select</option>
-                      <option *ngFor="let year of fiscalYears" [value]="year.split('/')[0]">{{ year }}</option>
-                    </select>
-                  </div>
+                <div class="form-item">
+                  <label>Fiscal Year<span class="required">*</span></label>
+                  <select id="fiscalYear" formControlName="fiscalYear">
+                    <option value="" disabled selected hidden>Select</option>
+                    <option *ngFor="let year of fiscalYears" [value]="year.split('/')[0]">{{ year }}</option>
+                  </select>
+                </div>
 
 
-                  <div class="form-item">
-                    <wfprev-select-field
-                      class="form-item"
-                      [label]="'Proposal Type'"
-                      [required]="true"
-                      [control]="getFiscalControl(i, 'proposalTypeCode')"
-                      [options]="proposalTypeCode"
-                      [optionValueField]="'proposalTypeCode'"
-                      [optionLabelField]="'description'"
-                      [tooltip]="getCodeDescription(CodeTableKeys.PROPOSAL_TYPE_CODE)"
-                      id="proposalTypeCode"
-                      placeholder="Select"
-                    />
-                  </div>
+                <div class="form-item">
+                  <wfprev-select-field class="form-item" [label]="'Proposal Type'" [required]="true"
+                    [control]="getFiscalControl(i, 'proposalTypeCode')" [options]="proposalTypeCode"
+                    [optionValueField]="'proposalTypeCode'" [optionLabelField]="'description'"
+                    [tooltip]="getCodeDescription(CodeTableKeys.PROPOSAL_TYPE_CODE)" id="proposalTypeCode"
+                    placeholder="Select" />
+                </div>
 
-                  <div class="form-item">
-                    <wfprev-input-field
-                      [id]="'fiscalPlannedProjectSizeHa'"
-                      [label]="'Planned Hectares (Ha)'"
-                      [placeholder]="'0'"
-                      [type]="'number'"
-                      [control]="getFiscalControl(i, 'fiscalPlannedProjectSizeHa')"
-                      [tooltip]="getFiscalControl(i, 'fiscalPlannedProjectSizeHa')?.value"
-                      [errorMessages]="{
+                <div class="form-item">
+                  <wfprev-input-field [id]="'fiscalPlannedProjectSizeHa'" [label]="'Planned Hectares (Ha)'"
+                    [placeholder]="'0'" [type]="'number'" [control]="getFiscalControl(i, 'fiscalPlannedProjectSizeHa')"
+                    [tooltip]="getFiscalControl(i, 'fiscalPlannedProjectSizeHa')?.value" [errorMessages]="{
                         min: messages.positiveNumber,
                         max: messages.maxLengthExceeded,
                         maxlength: messages.maxLengthExceeded
-                      }"
-                    />
-                  </div>
+                      }" />
+                </div>
 
-                  <div class="form-item">
-                    <wfprev-input-field
-                      [id]="'fiscalCompletedSizeHa'"
-                      [label]="'Completed Hectares (Ha)'"
-                      [placeholder]="'0'"
-                      [type]="'number'"
-                      [control]="getFiscalControl(i, 'fiscalCompletedSizeHa')"
-                      [tooltip]="getFiscalControl(i, 'fiscalCompletedSizeHa')?.value"
-                      [errorMessages]="{ min: messages.positiveNumber, maxlength: messages.maxLengthExceeded, max: messages.maxLengthExceeded }"
-                    />
-                  </div>
+                <div class="form-item">
+                  <wfprev-input-field [id]="'fiscalCompletedSizeHa'" [label]="'Completed Hectares (Ha)'"
+                    [placeholder]="'0'" [type]="'number'" [control]="getFiscalControl(i, 'fiscalCompletedSizeHa')"
+                    [tooltip]="getFiscalControl(i, 'fiscalCompletedSizeHa')?.value"
+                    [errorMessages]="{ min: messages.positiveNumber, maxlength: messages.maxLengthExceeded, max: messages.maxLengthExceeded }" />
+                </div>
 
-                  <div class="form-item">
-                    <wfprev-input-field
-                      [id]="'resultsOpeningId'"
-                      [label]="'RESULTS ID'"
-                      [placeholder]="'e.g., 98734702882'"
-                      [control]="getFiscalControl(i, 'resultsOpeningId')"
-                      [tooltip]="getFiscalControl(i, 'resultsOpeningId')?.value"
-                      [errorMessages]="{ maxlength: messages.maxLengthExceeded }"
-                    />
-                  </div>
+                <div class="form-item">
+                  <wfprev-input-field [id]="'resultsOpeningId'" [label]="'RESULTS ID'"
+                    [placeholder]="'e.g., 98734702882'" [control]="getFiscalControl(i, 'resultsOpeningId')"
+                    [tooltip]="getFiscalControl(i, 'resultsOpeningId')?.value"
+                    [errorMessages]="{ maxlength: messages.maxLengthExceeded }" />
+                </div>
 
-                  <div class="form-item full-width">
-                    <wfprev-textarea
-                      [label]="'Description'"
-                      [placeholder]="'Describe the activities planned for this fiscal year and how funding is being used.'"
-                      [rows]="4"
-                      [maxLength]="500"
-                      [control]="getFiscalControl(i, 'projectFiscalDescription')"
-                      [required]="true">
-                    </wfprev-textarea>
-                  </div>
-                  <!-- Delivery Partners Section -->
-                  <div class="sub-section">
-                    <span class="sub-title"> Delivery Partners</span>
-                    <div class="separator"></div>
-                  </div>
-                  <div class="form-item toggle-width">
-                    <label>First Nations Engagement</label>
-                    <div class="toggle-container">
-                      <mat-slide-toggle 
-                        id="firstYearNationsEngagement" 
-                        formControlName="firstNationsEngagementInd">
-                      </mat-slide-toggle>
-                      <span class="toggle-label">
-                        {{ fiscalForms[i].value?.firstNationsEngagementInd ? 'Yes' : 'No' }}
-                      </span>
-                    </div>
-                  </div>
-
-                  <div class="form-item toggle-width">
-                    <label>First Nation Co-Delivery</label>
-                    <div class="toggle-container">
-                      <mat-slide-toggle 
-                        id="firstNationsDelivPartInd" 
-                        formControlName="firstNationsDelivPartInd">
-                      </mat-slide-toggle>
-                      <span class="toggle-label">
-                        {{ fiscalForms[i].value?.firstNationsDelivPartInd ? 'Yes' : 'No' }}
-                      </span>
-                    </div>
-                  </div>
-
-                  <div class="form-item">
-                    <wfprev-input-field
-                      [id]="'firstNationsPartner'"
-                      [label]="'First Nation Co-Delivery Partners'"
-                      [placeholder]="'e.g., St\'at\'imc Nation'"
-                      [control]="getFiscalControl(i, 'firstNationsPartner')"
-                      [tooltip]="getFiscalControl(i, 'firstNationsPartner')?.value"
-                      [errorMessages]="{ maxlength: messages.maxLengthExceeded }"
-                    />
-                  </div>
-                  
-                  <div class="form-item">
-                    <wfprev-input-field
-                      [id]="'otherPartner'"
-                      [label]="'Other Partners'"
-                      [placeholder]="'e.g., BC Parks'"
-                      [control]="getFiscalControl(i, 'otherPartner')"
-                      [tooltip]="getFiscalControl(i, 'otherPartner')?.value"
-                      [errorMessages]="{ maxlength: messages.maxLengthExceeded }"
-                    />
-                  </div>
-                  <!-- Budget Section -->
-                  <div class="sub-section">
-                    <span class="sub-title"> Budget</span>
-                    <div class="separator"></div>
-                  </div>
-
-                  <div class="form-item quarter-width-max">
-                    <wfprev-input-field
-                      [id]="'totalCostEstimateAmount'"
-                      [label]="'Original Cost Estimate'"
-                      [type]="'number'"
-                      [placeholder]="'0.00'"
-                      [control]="getFiscalControl(i, 'totalCostEstimateAmount')"
-                      [tooltip]="getFiscalControl(i, 'totalCostEstimateAmount')?.value"
-                      [prefix]="'$'"
-                      [errorMessages]="{ min: messages.positiveNumber, maxlength: messages.maxLengthExceeded, max: messages.maxLengthExceeded }"
-                    />
-                  </div>
- 
-                  <div class="form-item quarter-width-max">
-                    <wfprev-input-field
-                      [id]="'cfsProjectCode'"
-                      [label]="'CFS Code'"
-                      [placeholder]="'e.g., 719C792'"
-                      [control]="getFiscalControl(i, 'cfsProjectCode')"
-                      [tooltip]="getFiscalControl(i, 'cfsProjectCode')?.value"
-                      [errorMessages]="{ maxlength: messages.maxLengthExceeded }"
-                    />
-                  </div>
-
-                  <div class="form-item quarter-width-max">
-                    <wfprev-input-field
-                      [id]="'ancillaryFundingProvider'"
-                      [label]="'Ancillary Funding Provider'"
-                      [placeholder]="'Additional funding beyond WRR.'"
-                      [control]="getFiscalControl(i, 'ancillaryFundingProvider')"
-                      [tooltip]="getFiscalControl(i, 'ancillaryFundingProvider')?.value"
-                      [errorMessages]="{ maxlength: messages.maxLengthExceeded }"
-                    />
-                  </div>
-
-                  <div class="form-item quarter-width-max">
-                    <wfprev-input-field
-                      [id]="'fiscalAncillaryFundAmount'"
-                      [label]="'Ancillary Funding Amount'"
-                      [type]="'number'"
-                      [placeholder]="'0.00'"
-                      [control]="getFiscalControl(i, 'fiscalAncillaryFundAmount')"
-                      [tooltip]="getFiscalControl(i, 'fiscalAncillaryFundAmount')?.value"
-                      [prefix]="'$'"
-                      [errorMessages]="{ min: messages.positiveNumber, maxlength: messages.maxLengthExceeded, max: messages.maxLengthExceeded }"
-                    />
-                  </div>
-
-                  <div class="form-item quarter-width-max">
-                    <wfprev-input-field
-                      [id]="'fiscalForecastAmount'"
-                      [label]="'Forecast Amount'"
-                      [placeholder]="'0.00'"
-                      [type]="'number'"
-                      [control]="getFiscalControl(i, 'fiscalForecastAmount')"
-                      [tooltip]="getFiscalControl(i, 'fiscalForecastAmount')?.value"
-                      [errorMessages]="{ min: messages.positiveNumber, maxlength: messages.maxLengthExceeded, max: messages.maxLengthExceeded }"
-                      [prefix]="'$'"
-                    />
-                  </div>
-
-                  <div class="form-item quarter-width-max">
-                    <wfprev-input-field
-                      [id]="'fiscalReportedSpendAmount'"
-                      [label]="'Final Reported Spend'"
-                      [placeholder]="'0.00'"
-                      [type]="'number'"
-                      [control]="getFiscalControl(i, 'fiscalReportedSpendAmount')"
-                      [tooltip]="getFiscalControl(i, 'fiscalReportedSpendAmount')?.value"
-                      [errorMessages]="{ min: messages.positiveNumber, maxlength: messages.maxLengthExceeded, max: messages.maxLengthExceeded }"
-                      [prefix]="'$'"
-                    />
-                  </div>
-
-                  <div class="form-item quarter-width-max">
-                    <wfprev-input-field
-                      [id]="'fiscalActualAmount'"
-                      [label]="'CFS Actual Spend'"
-                      [placeholder]="'0.00'"
-                      [type]="'number'"
-                      [control]="getFiscalControl(i, 'fiscalActualAmount')"
-                      [tooltip]="getFiscalControl(i, 'fiscalActualAmount')?.value"
-                      [errorMessages]="{ min: messages.positiveNumber, maxlength: messages.maxLengthExceeded, max: messages.maxLengthExceeded }"
-                      [prefix]="'$'"
-                    />
-                  </div>
-
-                </form>
-                <wfprev-timestamp
-                  [updateDate]="projectFiscals[i]?.submissionTimestamp"
-                  [updateUser]="projectFiscals[i]?.submittedByUserUserid">
-                </wfprev-timestamp>
-                <div class="fiscal-footer">
-                  <div class="footer-button-row">
-                    <button class="secondary" (click)="onCancelFiscal(i)" *ngIf="fiscalForms[i]" [disabled]="!fiscalForms[i].dirty">
-                      Cancel
-                    </button>
-                    <button type="button" (click)="onSaveFiscal(i)" *ngIf="fiscalForms[i]" [disabled]="!fiscalForms[i].valid || !fiscalForms[i].dirty || isSavingFiscal[i]"
-                      class="primary">
-                      Save
-                    </button>
+                <div class="form-item full-width">
+                  <wfprev-textarea [label]="'Description'"
+                    [placeholder]="'Describe the activities planned for this fiscal year and how funding is being used.'"
+                    [rows]="4" [maxLength]="500" [control]="getFiscalControl(i, 'projectFiscalDescription')"
+                    [required]="true">
+                  </wfprev-textarea>
+                </div>
+                <!-- Delivery Partners Section -->
+                <div class="sub-section">
+                  <span class="sub-title"> Delivery Partners</span>
+                  <div class="separator"></div>
+                </div>
+                <div class="form-item toggle-width">
+                  <label>First Nations Engagement</label>
+                  <div class="toggle-container">
+                    <mat-slide-toggle id="firstYearNationsEngagement" formControlName="firstNationsEngagementInd">
+                    </mat-slide-toggle>
+                    <span class="toggle-label">
+                      {{ fiscalForms[i].value?.firstNationsEngagementInd ? 'Yes' : 'No' }}
+                    </span>
                   </div>
                 </div>
-              </mat-expansion-panel>
-              <div class="activities-map-container">
-                <wfprev-activities class="activities-panel"  [isReadonly]="isCurrentFiscalReadonly()" [fiscalGuid]="currentFiscalGuid" (boundariesUpdated)="onBoundariesChanged()"></wfprev-activities>
-                <div class="fiscal-and-endorsement">
-                  <wfprev-fiscal-map class="fiscal-map-panel" *ngIf="selectedTabIndex === i" [fiscalGuid]="selectedTabIndex" [selectedFiscalYear]="projectFiscals[selectedTabIndex]?.fiscalYear"  #fiscalMapRef></wfprev-fiscal-map>
-                  <wfprev-endorsement-approval [fiscal]="projectFiscals[i]" [currentUser]="currentUser" [currentIdir]="currentIdir" (saveEndorsement)="onSaveEndorsement($event)" [isSaving]="isSavingFiscal[i]"></wfprev-endorsement-approval>
+
+                <div class="form-item toggle-width">
+                  <label>First Nation Co-Delivery</label>
+                  <div class="toggle-container">
+                    <mat-slide-toggle id="firstNationsDelivPartInd" formControlName="firstNationsDelivPartInd">
+                    </mat-slide-toggle>
+                    <span class="toggle-label">
+                      {{ fiscalForms[i].value?.firstNationsDelivPartInd ? 'Yes' : 'No' }}
+                    </span>
+                  </div>
+                </div>
+
+                <div class="form-item">
+                  <wfprev-input-field [id]="'firstNationsPartner'" [label]="'First Nation Co-Delivery Partners'"
+                    [placeholder]="'e.g., St\'at\'imc Nation'" [control]="getFiscalControl(i, 'firstNationsPartner')"
+                    [tooltip]="getFiscalControl(i, 'firstNationsPartner')?.value"
+                    [errorMessages]="{ maxlength: messages.maxLengthExceeded }" />
+                </div>
+
+                <div class="form-item">
+                  <wfprev-input-field [id]="'otherPartner'" [label]="'Other Partners'" [placeholder]="'e.g., BC Parks'"
+                    [control]="getFiscalControl(i, 'otherPartner')"
+                    [tooltip]="getFiscalControl(i, 'otherPartner')?.value"
+                    [errorMessages]="{ maxlength: messages.maxLengthExceeded }" />
+                </div>
+                <!-- Budget Section -->
+                <div class="sub-section">
+                  <span class="sub-title"> Budget</span>
+                  <div class="separator"></div>
+                </div>
+
+                <div class="form-item quarter-width-max">
+                  <wfprev-input-field [id]="'totalCostEstimateAmount'" [label]="'Original Cost Estimate'"
+                    [type]="'number'" [placeholder]="'0.00'" [control]="getFiscalControl(i, 'totalCostEstimateAmount')"
+                    [tooltip]="getFiscalControl(i, 'totalCostEstimateAmount')?.value" [prefix]="'$'"
+                    [errorMessages]="{ min: messages.positiveNumber, maxlength: messages.maxLengthExceeded, max: messages.maxLengthExceeded }" />
+                </div>
+
+                <div class="form-item quarter-width-max">
+                  <wfprev-input-field [id]="'cfsProjectCode'" [label]="'CFS Code'" [placeholder]="'e.g., 719C792'"
+                    [control]="getFiscalControl(i, 'cfsProjectCode')"
+                    [tooltip]="getFiscalControl(i, 'cfsProjectCode')?.value"
+                    [errorMessages]="{ maxlength: messages.maxLengthExceeded }" />
+                </div>
+
+                <div class="form-item quarter-width-max">
+                  <wfprev-input-field [id]="'ancillaryFundingProvider'" [label]="'Ancillary Funding Provider'"
+                    [placeholder]="'Additional funding beyond WRR.'"
+                    [control]="getFiscalControl(i, 'ancillaryFundingProvider')"
+                    [tooltip]="getFiscalControl(i, 'ancillaryFundingProvider')?.value"
+                    [errorMessages]="{ maxlength: messages.maxLengthExceeded }" />
+                </div>
+
+                <div class="form-item quarter-width-max">
+                  <wfprev-input-field [id]="'fiscalAncillaryFundAmount'" [label]="'Ancillary Funding Amount'"
+                    [type]="'number'" [placeholder]="'0.00'"
+                    [control]="getFiscalControl(i, 'fiscalAncillaryFundAmount')"
+                    [tooltip]="getFiscalControl(i, 'fiscalAncillaryFundAmount')?.value" [prefix]="'$'"
+                    [errorMessages]="{ min: messages.positiveNumber, maxlength: messages.maxLengthExceeded, max: messages.maxLengthExceeded }" />
+                </div>
+
+                <div class="form-item quarter-width-max">
+                  <wfprev-input-field [id]="'fiscalForecastAmount'" [label]="'Forecast Amount'" [placeholder]="'0.00'"
+                    [type]="'number'" [control]="getFiscalControl(i, 'fiscalForecastAmount')"
+                    [tooltip]="getFiscalControl(i, 'fiscalForecastAmount')?.value"
+                    [errorMessages]="{ min: messages.positiveNumber, maxlength: messages.maxLengthExceeded, max: messages.maxLengthExceeded }"
+                    [prefix]="'$'" />
+                </div>
+
+                <div class="form-item quarter-width-max">
+                  <wfprev-input-field [id]="'fiscalReportedSpendAmount'" [label]="'Final Reported Spend'"
+                    [placeholder]="'0.00'" [type]="'number'"
+                    [control]="getFiscalControl(i, 'fiscalReportedSpendAmount')"
+                    [tooltip]="getFiscalControl(i, 'fiscalReportedSpendAmount')?.value"
+                    [errorMessages]="{ min: messages.positiveNumber, maxlength: messages.maxLengthExceeded, max: messages.maxLengthExceeded }"
+                    [prefix]="'$'" />
+                </div>
+
+                <div class="form-item quarter-width-max">
+                  <wfprev-input-field [id]="'fiscalActualAmount'" [label]="'CFS Actual Spend'" [placeholder]="'0.00'"
+                    [type]="'number'" [control]="getFiscalControl(i, 'fiscalActualAmount')"
+                    [tooltip]="getFiscalControl(i, 'fiscalActualAmount')?.value"
+                    [errorMessages]="{ min: messages.positiveNumber, maxlength: messages.maxLengthExceeded, max: messages.maxLengthExceeded }"
+                    [prefix]="'$'" />
+                </div>
+
+              </form>
+              <wfprev-timestamp [updateDate]="projectFiscals[i]?.submissionTimestamp"
+                [updateUser]="projectFiscals[i]?.submittedByUserUserid">
+              </wfprev-timestamp>
+              <div class="fiscal-footer">
+                <div class="footer-button-row">
+                  <button class="secondary" (click)="onCancelFiscal(i)" *ngIf="fiscalForms[i]"
+                    [disabled]="!fiscalForms[i].dirty">
+                    Cancel
+                  </button>
+                  <button type="button" (click)="onSaveFiscal(i)" *ngIf="fiscalForms[i]"
+                    [disabled]="!fiscalForms[i].valid || !fiscalForms[i].dirty || isSavingFiscal[i]" class="primary">
+                    Save
+                  </button>
                 </div>
               </div>
-            </mat-accordion>
-          </mat-tab>
-        </mat-tab-group>
+            </mat-expansion-panel>
+            <div class="activities-map-container">
+              <wfprev-activities class="activities-panel" [isReadonly]="isCurrentFiscalReadonly()"
+                [fiscalGuid]="currentFiscalGuid" (boundariesUpdated)="onBoundariesChanged()"></wfprev-activities>
+              <div class="fiscal-and-endorsement">
+                <wfprev-fiscal-map class="fiscal-map-panel" *ngIf="selectedTabIndex === i"
+                  [fiscalGuid]="selectedTabIndex" [selectedFiscalYear]="projectFiscals[selectedTabIndex]?.fiscalYear"
+                  #fiscalMapRef></wfprev-fiscal-map>
+                <wfprev-endorsement-approval [fiscal]="projectFiscals[i]" [currentUser]="currentUser"
+                  [currentIdir]="currentIdir" (saveEndorsement)="onSaveEndorsement($event)"
+                  [isSaving]="isSavingFiscal[i]"></wfprev-endorsement-approval>
+              </div>
+            </div>
+          </mat-accordion>
+        </mat-tab>
+      </mat-tab-group>
+    </div>
+    <ng-template #noFiscals>
+      <div class="no-fiscals">
+        No Fiscal Activities have been added.
       </div>
-      <ng-template #noFiscals>
-        <div class="no-fiscals">
-          No Fiscal Activities have been added. 
-        </div>
-      </ng-template>
+    </ng-template>
   </div>
 </div>

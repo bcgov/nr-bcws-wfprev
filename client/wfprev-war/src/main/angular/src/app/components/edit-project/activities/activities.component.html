@@ -1,18 +1,12 @@
 <div class="fiscals-container">
-    <mat-expansion-panel [expanded] = 'true' class="expansion-panel" #activitiesPanel>
+    <mat-expansion-panel [expanded]='true' class="expansion-panel" #activitiesPanel>
         <mat-expansion-panel-header>
             <div class="header-container">
                 <wfprev-expansion-indicator [isExpanded]="activitiesPanel.expanded"></wfprev-expansion-indicator>
                 <span class="project-title">Activities</span>
-                <wfprev-icon-button
-                    *ngIf="fiscalGuid"
-                    class="add-activity"
-                    [text]="'Add Activity'"
-                    [icon]="'/assets/add-button.svg'"
-                    [alt]="'add-activity'"
-                    [iconSize]="19"
-                    [disabled]="isNewActivityBeingAdded || isReadonly"
-                    (clicked)="addActivity()">
+                <wfprev-icon-button *ngIf="fiscalGuid" class="add-activity" [text]="'Add Activity'"
+                    [icon]="'assets/add-button.svg'" [alt]="'add-activity'" [iconSize]="19"
+                    [disabled]="isNewActivityBeingAdded || isReadonly" (clicked)="addActivity()">
                 </wfprev-icon-button>
             </div>
         </mat-expansion-panel-header>
@@ -29,30 +23,34 @@
                         <div class="status-indicators">
                             <ng-container *ngIf="activityForms[i]?.value?.isSpatialAddedInd; else notSpatialAdded">
                                 <span class="status-tag">
-                                    <img alt="status" class="status-icon" src="/assets/spatial-added-icon.svg">Spatial Added
+                                    <img alt="status" class="status-icon" src="assets/spatial-added-icon.svg">Spatial
+                                    Added
                                 </span>
                             </ng-container>
-                            
+
                             <ng-template #notSpatialAdded>
                                 <span class="status-tag inactive">
-                                    <img alt="status" class="status-icon" src="/assets/no-spatial-added-icon.svg">No Spatial Added
+                                    <img alt="status" class="status-icon" src="assets/no-spatial-added-icon.svg">No
+                                    Spatial Added
                                 </span>
                             </ng-template>
-<!-- hide risk badge for now until performance update is implement -->
+                            <!-- hide risk badge for now until performance update is implement -->
                             <!-- <span class="status-tag">
                                 <img 
                                     alt="status" 
                                     class="status-icon" 
-                                    [src]="'/assets/' + getRiskIcon(activityForms[i]?.value?.riskRatingCode?.riskRatingCode) + '.svg'">
+                                    [src]="'assets/' + getRiskIcon(activityForms[i]?.value?.riskRatingCode?.riskRatingCode) + '.svg'">
                                 {{ getRiskDescription(activityForms[i]?.value?.riskRatingCode?.description) }}
                             </span> -->
 
                             <span *ngIf="activityForms[i]?.value?.outstandingObligationsInd" class="status-tag">
-                                <img alt="status" class="status-icon" src="/assets/warning-activity.svg">Outstanding Obligations
+                                <img alt="status" class="status-icon" src="assets/warning-activity.svg">Outstanding
+                                Obligations
                             </span>
 
-                            <span *ngIf="activityForms[i]?.value?.activityStatusCode === 'COMPLETED'" class="status-tag">
-                                <img alt="status" class="status-icon" src="/assets/complete-icon.svg">Complete
+                            <span *ngIf="activityForms[i]?.value?.activityStatusCode === 'COMPLETED'"
+                                class="status-tag">
+                                <img alt="status" class="status-icon" src="assets/complete-icon.svg">Complete
                             </span>
                         </div>
                     </mat-expansion-panel-header>
@@ -60,49 +58,51 @@
                         <div class="first-section">
                             <div class="form-item narrow-width">
                                 <label>Completed Hectares (Ha)</label>
-                                <input type="number" id="completedAreaHa" formControlName="completedAreaHa"/>
+                                <input type="number" id="completedAreaHa" formControlName="completedAreaHa" />
                                 <div class="error"
                                     *ngIf="getControl(i, 'completedAreaHa')?.errors && (getControl(i, 'completedAreaHa')?.dirty || getControl(i, 'completedAreaHa')?.touched)">
-                                    <span *ngIf="getControl(i, 'completedAreaHa')?.hasError('min')">{{ messages.positiveNumber }}</span>
-                                    <span *ngIf="getControl(i, 'completedAreaHa')?.hasError('max')">{{ messages.maxLengthExceeded }}</span>
+                                    <span *ngIf="getControl(i, 'completedAreaHa')?.hasError('min')">{{
+                                        messages.positiveNumber }}</span>
+                                    <span *ngIf="getControl(i, 'completedAreaHa')?.hasError('max')">{{
+                                        messages.maxLengthExceeded }}</span>
                                 </div>
                             </div>
                             <div class="form-item narrow-width">
                                 <label>Reported Spend</label>
                                 <div class="currency-input">
                                     <span class="currency-symbol">$</span>
-                                    <input type="number" id="reportedSpendAmount" formControlName="reportedSpendAmount" placeholder="0.00" min="0"/>
+                                    <input type="number" id="reportedSpendAmount" formControlName="reportedSpendAmount"
+                                        placeholder="0.00" min="0" />
                                 </div>
                                 <div class="error"
                                     *ngIf="getControl(i, 'reportedSpendAmount')?.errors && (getControl(i, 'reportedSpendAmount')?.dirty || getControl(i, 'reportedSpendAmount')?.touched)">
-                                    <span *ngIf="getControl(i, 'reportedSpendAmount')?.hasError('min')">{{ messages.positiveNumber }}</span>
-                                    <span *ngIf="getControl(i, 'reportedSpendAmount')?.hasError('max')">{{ messages.maxLengthExceeded }}</span>
+                                    <span *ngIf="getControl(i, 'reportedSpendAmount')?.hasError('min')">{{
+                                        messages.positiveNumber }}</span>
+                                    <span *ngIf="getControl(i, 'reportedSpendAmount')?.hasError('max')">{{
+                                        messages.maxLengthExceeded }}</span>
                                 </div>
                             </div>
                             <div class="form-item narrow-width">
                                 <label>RESULTS Reportable</label>
                                 <div class="toggle-container">
-                                    <mat-slide-toggle 
-                                        id="isResultsReportableInd" 
+                                    <mat-slide-toggle id="isResultsReportableInd"
                                         formControlName="isResultsReportableInd"
-                                        (change)="toggleResultsReportableInd(i)"
-                                        [disabled]="isReadonly">
+                                        (change)="toggleResultsReportableInd(i)" [disabled]="isReadonly">
                                     </mat-slide-toggle>
                                     <span class="toggle-label">
-                                      {{ activityForms[i].getRawValue().isResultsReportableInd ? 'Yes' : 'No' }}
+                                        {{ activityForms[i].getRawValue().isResultsReportableInd ? 'Yes' : 'No' }}
                                     </span>
                                 </div>
                             </div>
                             <div class="form-item narrow-width">
                                 <label>Activity Status</label>
                                 <div class="toggle-container">
-                                <mat-slide-toggle
-                                    [checked]="activityForms[i].getRawValue().activityStatusCode === 'COMPLETED'"
-                                    [disabled]="isReadonly"
-                                    (change)="!isReadonly && toggleActivityStatus(i)">
-                                </mat-slide-toggle>
+                                    <mat-slide-toggle
+                                        [checked]="activityForms[i].getRawValue().activityStatusCode === 'COMPLETED'"
+                                        [disabled]="isReadonly" (change)="!isReadonly && toggleActivityStatus(i)">
+                                    </mat-slide-toggle>
                                     <span class="toggle-label">
-                                    Complete
+                                        Complete
                                     </span>
                                 </div>
                             </div>
@@ -121,44 +121,38 @@
 
                         <div class="form-item three-columns">
                             <label>Technique</label>
-                            <select id="silvicultureTechniqueGuid"
-                                    formControlName="silvicultureTechniqueGuid"
-                                    >
+                            <select id="silvicultureTechniqueGuid" formControlName="silvicultureTechniqueGuid">
                                 <option value="">Select</option>
                                 <option *ngFor="let item of activityForms[i]?.get('filteredTechniqueCode')?.value || []"
-                                        [value]="item.silvicultureTechniqueGuid">
+                                    [value]="item.silvicultureTechniqueGuid">
                                     {{ item.description }}
                                 </option>
                             </select>
                         </div>
                         <div class="form-item three-columns">
                             <label>Method</label>
-                            <select id="silvicultureMethodGuid"
-                                    formControlName="silvicultureMethodGuid"
-                                    >
+                            <select id="silvicultureMethodGuid" formControlName="silvicultureMethodGuid">
                                 <option value="">Select</option>
                                 <option *ngFor="let item of activityForms[i]?.get('filteredMethodCode')?.value || []"
-                                        [value]="item.silvicultureMethodGuid">
+                                    [value]="item.silvicultureMethodGuid">
                                     {{ item.description }}
                                 </option>
                             </select>
                         </div>
                         <div class="form-item two-columns">
-                            <label>Activity Name<span class="required" *ngIf="!activityForms[i]?.value?.isResultsReportableInd">*</span></label>
-                            <input 
-                                type="text" 
-                                id="activityName" 
-                                formControlName="activityName"
+                            <label>Activity Name<span class="required"
+                                    *ngIf="!activityForms[i]?.value?.isResultsReportableInd">*</span></label>
+                            <input type="text" id="activityName" formControlName="activityName"
                                 [readonly]="activityForms[i]?.value?.isResultsReportableInd"
-                                  [placeholder]="!activityForms[i]?.value?.isResultsReportableInd ? 'Provide a name for non-RESULTS reportable activities' : ''"
-                            />
+                                [placeholder]="!activityForms[i]?.value?.isResultsReportableInd ? 'Provide a name for non-RESULTS reportable activities' : ''" />
                             <div class="error"
                                 *ngIf="getControl(i, 'activityName')?.errors && (getControl(i, 'activityName')?.dirty || getControl(i, 'activityName')?.touched)">
-                                <span *ngIf="getControl(i, 'activityName')?.hasError('maxlength')">{{ messages.maxLengthExceeded }}</span>
+                                <span *ngIf="getControl(i, 'activityName')?.hasError('maxlength')">{{
+                                    messages.maxLengthExceeded }}</span>
                             </div>
                         </div>
 
-                        
+
                         <div class="form-item two-columns">
                             <label>Funding Source Code</label>
                             <select id="activityFundingSourceGuid" formControlName="activityFundingSourceGuid">
@@ -174,8 +168,9 @@
                             <div class="date-range-container">
                                 <mat-form-field>
                                     <mat-date-range-input [rangePicker]="picker" formGroupName="activityDateRange">
-                                        <input matStartDate formControlName="activityStartDate" placeholder="YYYY-MM-DD">
-                                        <input matEndDate   formControlName="activityEndDate"   placeholder="YYYY-MM-DD">
+                                        <input matStartDate formControlName="activityStartDate"
+                                            placeholder="YYYY-MM-DD">
+                                        <input matEndDate formControlName="activityEndDate" placeholder="YYYY-MM-DD">
                                     </mat-date-range-input>
                                     <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
                                     <mat-date-range-picker #picker panelClass="custom-overlay"></mat-date-range-picker>
@@ -185,11 +180,14 @@
 
                         <div class="form-item">
                             <label>Planned Hectares (Ha)<span class="required">*</span></label>
-                            <input type="number" id="plannedTreatmentAreaHa" formControlName="plannedTreatmentAreaHa" min="0"/>
+                            <input type="number" id="plannedTreatmentAreaHa" formControlName="plannedTreatmentAreaHa"
+                                min="0" />
                             <div class="error"
                                 *ngIf="getControl(i, 'plannedTreatmentAreaHa')?.errors && (getControl(i, 'plannedTreatmentAreaHa')?.dirty || getControl(i, 'plannedTreatmentAreaHa')?.touched)">
-                                <span *ngIf="getControl(i, 'plannedTreatmentAreaHa')?.hasError('max')">{{ messages.maxLengthExceeded }}</span>
-                                <span *ngIf="getControl(i, 'plannedTreatmentAreaHa')?.hasError('min')">{{ messages.positiveNumber }}</span>
+                                <span *ngIf="getControl(i, 'plannedTreatmentAreaHa')?.hasError('max')">{{
+                                    messages.maxLengthExceeded }}</span>
+                                <span *ngIf="getControl(i, 'plannedTreatmentAreaHa')?.hasError('min')">{{
+                                    messages.positiveNumber }}</span>
                             </div>
                         </div>
 
@@ -197,15 +195,18 @@
                             <label>Planned Spend</label>
                             <div class="currency-input">
                                 <span class="currency-symbol">$</span>
-                                <input type="number" id="plannedSpendAmount" formControlName="plannedSpendAmount" placeholder="0.00" min="0"/>
+                                <input type="number" id="plannedSpendAmount" formControlName="plannedSpendAmount"
+                                    placeholder="0.00" min="0" />
                             </div>
                             <div class="error"
                                 *ngIf="getControl(i, 'plannedSpendAmount')?.errors && (getControl(i, 'plannedSpendAmount')?.dirty || getControl(i, 'plannedSpendAmount')?.touched)">
-                                <span *ngIf="getControl(i, 'plannedSpendAmount')?.hasError('max')">{{ messages.maxLengthExceeded }}</span>
-                                <span *ngIf="getControl(i, 'plannedSpendAmount')?.hasError('min')">{{ messages.positiveNumber }}</span>
+                                <span *ngIf="getControl(i, 'plannedSpendAmount')?.hasError('max')">{{
+                                    messages.maxLengthExceeded }}</span>
+                                <span *ngIf="getControl(i, 'plannedSpendAmount')?.hasError('min')">{{
+                                    messages.positiveNumber }}</span>
                             </div>
                         </div>
-                        
+
 
                         <div class="form-item">
                             <label>Contract Phase</label>
@@ -218,11 +219,8 @@
 
 
                         <div class="form-item full-width">
-                            <wfprev-textarea
-                                [label]="'Activity Description'"
-                                [rows]="1"
-                                [control]="getControl(i, 'activityDescription')"
-                                [required]="true"
+                            <wfprev-textarea [label]="'Activity Description'" [rows]="1"
+                                [control]="getControl(i, 'activityDescription')" [required]="true"
                                 placeholder="Describe the specific activity being carried out as part of the Fiscal Activity. The information within this activity will be used to support RESULTS at the end of the year.">
                             </wfprev-textarea>
                         </div>
@@ -235,28 +233,26 @@
                             <div class="textarea-container">
                                 <wfprev-textarea
                                     [label]="'Activity outcomes and comments (Include approach for Outstanding Obligations if they remain):'"
-                                    [rows]="2"
-                                    [maxLength]="500"
-                                    [control]="getControl(i, 'activityComment')"
-                                    placeholder="List any remaining obligations or deliverables required to complete the activity. (e.g., pile burns, legal obligations, specific remaining tasks)"
-                                    >
+                                    [rows]="2" [maxLength]="500" [control]="getControl(i, 'activityComment')"
+                                    placeholder="List any remaining obligations or deliverables required to complete the activity. (e.g., pile burns, legal obligations, specific remaining tasks)">
                                 </wfprev-textarea>
                             </div>
                         </div>
                     </form>
                     <div class="activity-files">
-                        <wfprev-project-files *ngIf="activityForms[i]?.value?.activityGuid && fiscalGuid" [activityGuid]="activityForms[i]?.value?.activityGuid" [isReadonly]="isReadonly" [fiscalGuid]="fiscalGuid" (filesUpdated)="onFilesChanged()">
+                        <wfprev-project-files *ngIf="activityForms[i]?.value?.activityGuid && fiscalGuid"
+                            [activityGuid]="activityForms[i]?.value?.activityGuid" [isReadonly]="isReadonly"
+                            [fiscalGuid]="fiscalGuid" (filesUpdated)="onFilesChanged()">
                             {{activityForms[i]?.value?.activityGuid}}
                         </wfprev-project-files>
                     </div>
-                    <wfprev-timestamp
-                        [updateDate]="activities[i]?.lastUpdatedTimestamp"
+                    <wfprev-timestamp [updateDate]="activities[i]?.lastUpdatedTimestamp"
                         [updateUser]="activities[i]?.updateUser">
                     </wfprev-timestamp>
                     <div class="project-activity-footer">
                         <div class="button-row">
                             <div class="delete-container">
-                                <div class="delete" 
+                                <div class="delete"
                                     [ngClass]="{ 'delete-inactive': isReadonly || !canDeleteActivity(i), 'delete-active': !isReadonly && canDeleteActivity(i) }"
                                     (click)="!isReadonly && canDeleteActivity(i) ? onDeleteActivity(i) : null">
                                     <img class="status" alt="Delete" [src]="getDeleteIcon(i)">
@@ -264,13 +260,16 @@
                                 </div>
                             </div>
                             <div class="action-buttons">
-                                <button class="secondary" (click)="onCancelActivity(i)" [disabled]="isReadonly || !isActivityDirty[i]">Cancel</button>
-                                <button class="primary" [disabled]="isReadonly || !isActivityDirty[i] || !activityForms[i].valid || isActivitySaving[i]" (click)="onSaveActivity(i)">
+                                <button class="secondary" (click)="onCancelActivity(i)"
+                                    [disabled]="isReadonly || !isActivityDirty[i]">Cancel</button>
+                                <button class="primary"
+                                    [disabled]="isReadonly || !isActivityDirty[i] || !activityForms[i].valid || isActivitySaving[i]"
+                                    (click)="onSaveActivity(i)">
                                     Save
                                 </button>
                             </div>
                         </div>
-                    </div>                        
+                    </div>
                 </mat-expansion-panel>
             </div>
         </div>

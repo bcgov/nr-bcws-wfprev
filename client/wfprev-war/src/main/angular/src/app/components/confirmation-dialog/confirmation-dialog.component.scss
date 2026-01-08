@@ -50,8 +50,9 @@
   width: 20px;
   height: 20px;
   background-color: #CE3E39; 
-  -webkit-mask-image: url('/assets/warning-red.svg');
-  mask-image: url('/assets/warning-red.svg');
+  -webkit-mask-image: url('../../../assets/warning-red.svg');
+  background-image: url('../../../assets/warning-red.svg');
+  mask-image: url('../../../assets/warning-red.svg');
   mask-size: contain;
   mask-repeat: no-repeat;
   mask-position: center;

@@ -1,0 +1,35 @@
+# Builder Stage
+FROM node:20-alpine AS builder
+
+WORKDIR /app
+
+# Copy Angular project source
+COPY src/main/angular .
+
+# Install dependencies
+COPY src/main/angular/.npmrc .npmrc
+RUN npm install
+
+# Build the application with production configuration and correct base-href
+RUN npm run build -- --configuration local --base-href /pub/wfprev/ --output-path=dist/wfprev
+
+
+# Runner Stage
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Copy backend files
+COPY backend .
+
+# Install backend dependencies
+RUN npm install --only=production
+
+# Copy built Angular artifacts from builder stage
+COPY --from=builder /app/dist/wfprev ./dist/wfprev
+
+# Expose port
+EXPOSE 8080
+
+# Start server
+ENTRYPOINT ["node", "server.js"]

@@ -1,18 +1,22 @@
 <div *ngIf="project" class="popup-wrapper">
     <div class="popup-header">
         <div class="popup-title">{{ project.projectName || 'Project Name' }}</div>
-        <img class="popup-close" alt="Close" src="/assets/exit-icon.svg" (click)="closePopup()">
+        <img class="popup-close" alt="Close" src="assets/exit-icon.svg" (click)="closePopup()">
     </div>
     <div class="popup-container">
         <div class="project-content">
             <div class="first-row">
                 <div class="info-group">
                     <div class="label">Project Type</div>
-                    <div class="value" [title]="getCodeDescription(CodeTableKeys.PROJECT_TYPE_CODE, project.projectTypeCode)">{{ getCodeDescription(CodeTableKeys.PROJECT_TYPE_CODE, project.projectTypeCode)}}</div>
+                    <div class="value"
+                        [title]="getCodeDescription(CodeTableKeys.PROJECT_TYPE_CODE, project.projectTypeCode)">{{
+                        getCodeDescription(CodeTableKeys.PROJECT_TYPE_CODE, project.projectTypeCode)}}</div>
                 </div>
                 <div class="info-group">
                     <div class="label">Business Area</div>
-                    <div class="value" [title]="getCodeDescription(CodeTableKeys.PROGRAM_AREA_GUID, project.programAreaGuid)">{{ getCodeDescription(CodeTableKeys.PROGRAM_AREA_GUID, project.programAreaGuid)}}</div>
+                    <div class="value"
+                        [title]="getCodeDescription(CodeTableKeys.PROGRAM_AREA_GUID, project.programAreaGuid)">{{
+                        getCodeDescription(CodeTableKeys.PROGRAM_AREA_GUID, project.programAreaGuid)}}</div>
                 </div>
                 <div class="info-group">
                     <div class="label">Closest Community</div>
@@ -21,16 +25,15 @@
             </div>
             <div class="second-row info-group">
                 <div class="label">Project Description</div>
-                <div class="value description-value" [title]="project.projectDescription">{{ project.projectDescription }}</div>
+                <div class="value description-value" [title]="project.projectDescription">{{ project.projectDescription
+                    }}</div>
             </div>
         </div>
         <div class="title">Fiscal Activity</div>
         <div class="fiscal-content">
             <ng-container *ngIf="project.projectFiscals?.length > 0; else noFiscal">
                 <div class="fiscal-grid">
-                    <wfprev-fiscal-card
-                        *ngFor="let fiscal of sortedFiscals"
-                        [fiscal]="fiscal"
+                    <wfprev-fiscal-card *ngFor="let fiscal of sortedFiscals" [fiscal]="fiscal"
                         [getDescription]="getCodeDescription.bind(this)">
                     </wfprev-fiscal-card>
                 </div>
@@ -41,10 +44,7 @@
         </div>
     </div>
     <div class="button-row">
-        <wfprev-icon-button
-            [text]="'View Details'"
-            [icon]="'/assets/view-details.svg'"
-            [alt]="'view-details'"
+        <wfprev-icon-button [text]="'View Details'" [icon]="'assets/view-details.svg'" [alt]="'view-details'"
             (clicked)="navigateToProject()">
         </wfprev-icon-button>
     </div>

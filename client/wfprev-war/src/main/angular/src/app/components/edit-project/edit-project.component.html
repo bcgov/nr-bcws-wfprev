@@ -1,25 +1,22 @@
 <div>
     <div class="navigate" (click)="setActive('map')">
-        <img alt="menu-icon" class="icon" src="/assets/menu.svg" />
+        <img alt="menu-icon" class="icon" src="assets/menu.svg" />
         <span class="span-class" [class.active]="activeRoute === 'map'">
-        Return to Project List
+            Return to Project List
         </span>
     </div>
     <div class="project-title">
         <span>{{projectName}}</span>
     </div>
-    <mat-tab-group class="wf-basic-tab" 
-                [(selectedIndex)]="selectedTabIndex"
-                mat-stretch-tabs="false"
-                animationDuration="0ms" 
-                disableRipple="true"  (selectedTabChange)="onTabChange($event)">
+    <mat-tab-group class="wf-basic-tab" [(selectedIndex)]="selectedTabIndex" mat-stretch-tabs="false"
+        animationDuration="0ms" disableRipple="true" (selectedTabChange)="onTabChange($event)">
         <!-- Details Tab -->
         <mat-tab label="Details">
             <div class="details-tab">
                 <wfprev-project-details (projectNameChange)="projectName = $event"></wfprev-project-details>
             </div>
         </mat-tab>
-    
+
         <!-- Fiscals Tab -->
         <mat-tab label="Fiscal Activity">
             <div class="fiscals-tab">

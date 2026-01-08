@@ -1,57 +1,56 @@
 <div>
     <mat-expansion-panel #panel="matExpansionPanel">
         <mat-expansion-panel-header class="expansion-panel-header">
-          <mat-panel-title class="project-title">
-            <div class="custom-indicator">
-                <wfprev-expansion-indicator [isExpanded]="panel.expanded"></wfprev-expansion-indicator>
-            </div>
-            <span>Fiscal Activity</span>
-          </mat-panel-title>
+            <mat-panel-title class="project-title">
+                <div class="custom-indicator">
+                    <wfprev-expansion-indicator [isExpanded]="panel.expanded"></wfprev-expansion-indicator>
+                </div>
+                <span>Fiscal Activity</span>
+            </mat-panel-title>
         </mat-expansion-panel-header>
         <div class="fiscals-content" *ngIf="projectFiscals?.length; else emptyContent">
             <div *ngFor="let fiscal of projectFiscals" class="fiscal-item">
                 <div class="fiscal-title-row">
                     <span class="section-1">{{fiscal.projectFiscalName}}</span>
-                    <span class="section-2"> Fiscal Year: 
+                    <span class="section-2"> Fiscal Year:
                         <span class="fiscal-year">{{convertFiscalYear(fiscal.fiscalYear)}}</span>
                     </span>
                     <span class="section-3">
-                        <img
-                            [src]="'/assets/' + getStatusIcon(fiscal.planFiscalStatusCode?.planFiscalStatusCode)"
+                        <img [src]="'assets/' + getStatusIcon(fiscal.planFiscalStatusCode?.planFiscalStatusCode)"
                             [alt]="getPlanFiscalStatus(fiscal.planFiscalStatusCode?.planFiscalStatusCode)"
-                            class="status-icon"
-                        />
+                            class="status-icon" />
                         {{getPlanFiscalStatus(fiscal.planFiscalStatusCode?.planFiscalStatusCode)}}
                     </span>
                 </div>
-                <div class="fiscal-data" *ngIf="fiscal.planFiscalStatusCode?.planFiscalStatusCode != 'COMPLETE'; else completeFiscal">
-                    <span class="data-title">Planned Ha: 
+                <div class="fiscal-data"
+                    *ngIf="fiscal.planFiscalStatusCode?.planFiscalStatusCode != 'COMPLETE'; else completeFiscal">
+                    <span class="data-title">Planned Ha:
                         <span class="data-value">{{ fiscal.fiscalPlannedProjectSizeHa | number }}</span>
                     </span>
-                    
-                    <span class="data-title">Cost Estimate: 
+
+                    <span class="data-title">Cost Estimate:
                         <span class="data-value">${{ fiscal.totalCostEstimateAmount | number }}</span>
                     </span>
-                
-                    <span class="data-title">Last Performance Update: 
+
+                    <span class="data-title">Last Performance Update:
                         <span class="data-value">{{ fiscal.lastProgressUpdateTimestamp || 'N/A'}}</span>
                     </span>
                 </div>
                 <ng-template #completeFiscal>
                     <div class="fiscal-data">
-                        <span class="data-title">Complete Ha: 
+                        <span class="data-title">Complete Ha:
                             <span class="data-value">{{ fiscal.fiscalPlannedProjectSizeHa | number }}</span>
                         </span>
-                        
-                        <span class="data-title">Reported Spend: 
+
+                        <span class="data-title">Reported Spend:
                             <span class="data-value">${{ fiscal.fiscalReportedSpendAmount | number }}</span>
                         </span>
-                    
-                        <span class="data-title">Actual Spend(CFS): 
+
+                        <span class="data-title">Actual Spend(CFS):
                             <span class="data-value">${{ fiscal.fiscalActualAmount | number }}</span>
                         </span>
                         <div class="complete-fiscal-last-performance-update">
-                            <span class="data-title">Last Performance Update: 
+                            <span class="data-title">Last Performance Update:
                                 <span class="data-value">{{ fiscal.lastProgressUpdateTimestamp || 'N/A'}}</span>
                             </span>
                         </div>
@@ -59,72 +58,76 @@
                 </ng-template>
                 <div class="activities-content">
                     <div class="title">Activities</div>
-                
+
                     <!--  Show Table 1 when status is COMPLETE -->
-                    <table mat-table [dataSource]="activitiesMap[fiscal.projectPlanFiscalGuid] || []" class="activities-table" *ngIf="fiscal.planFiscalStatusCode?.planFiscalStatusCode === 'COMPLETE'">
+                    <table mat-table [dataSource]="activitiesMap[fiscal.projectPlanFiscalGuid] || []"
+                        class="activities-table"
+                        *ngIf="fiscal.planFiscalStatusCode?.planFiscalStatusCode === 'COMPLETE'">
                         <ng-container matColumnDef="name">
                             <th mat-header-cell *matHeaderCellDef> Name </th>
                             <td mat-cell *matCellDef="let activity"> {{ activity.name }} </td>
                         </ng-container>
-                
+
                         <ng-container matColumnDef="description">
                             <th mat-header-cell *matHeaderCellDef> Description </th>
                             <td mat-cell *matCellDef="let activity"> {{ activity.description }} </td>
                         </ng-container>
-                
+
                         <ng-container matColumnDef="endDate">
                             <th mat-header-cell *matHeaderCellDef> End Date </th>
                             <td mat-cell *matCellDef="let activity"> {{ activity.endDate | date:'yyyy-MM-dd' }} </td>
                         </ng-container>
-                
+
                         <ng-container matColumnDef="completedHectares">
                             <th mat-header-cell *matHeaderCellDef> Completed Hectares (Ha)</th>
                             <td mat-cell *matCellDef="let activity"> {{ activity.completedHectares | number }} </td>
                         </ng-container>
-                
+
                         <tr mat-header-row *matHeaderRowDef="displayedColumnsComplete"></tr>
                         <tr mat-row *matRowDef="let row; columns: displayedColumnsComplete;"></tr>
                     </table>
-                
+
                     <!--  Show Table 2 when status is NOT COMPLETE -->
-                    <table mat-table [dataSource]="activitiesMap[fiscal.projectPlanFiscalGuid] || []" class="activities-table" *ngIf="fiscal.planFiscalStatusCode?.planFiscalStatusCode !== 'COMPLETE'">
+                    <table mat-table [dataSource]="activitiesMap[fiscal.projectPlanFiscalGuid] || []"
+                        class="activities-table"
+                        *ngIf="fiscal.planFiscalStatusCode?.planFiscalStatusCode !== 'COMPLETE'">
                         <ng-container matColumnDef="name">
                             <th mat-header-cell *matHeaderCellDef> Name </th>
                             <td mat-cell *matCellDef="let activity"> {{ activity.name }} </td>
                         </ng-container>
-                
+
                         <ng-container matColumnDef="description">
                             <th mat-header-cell *matHeaderCellDef> Description </th>
                             <td mat-cell *matCellDef="let activity"> {{ activity.description }} </td>
                         </ng-container>
-                
+
                         <ng-container matColumnDef="startDate">
                             <th mat-header-cell *matHeaderCellDef> Start Date </th>
                             <td mat-cell *matCellDef="let activity"> {{ activity.startDate | date:'yyyy-MM-dd' }} </td>
                         </ng-container>
-                
+
                         <ng-container matColumnDef="endDate">
                             <th mat-header-cell *matHeaderCellDef> End Date </th>
                             <td mat-cell *matCellDef="let activity"> {{ activity.endDate | date:'yyyy-MM-dd' }} </td>
                         </ng-container>
-                
+
                         <ng-container matColumnDef="plannedHectares">
                             <th mat-header-cell *matHeaderCellDef> Planned Hectares (Ha)</th>
                             <td mat-cell *matCellDef="let activity"> {{ activity.plannedHectares | number }} </td>
                         </ng-container>
-                
+
                         <tr mat-header-row *matHeaderRowDef="displayedColumnsPlanned"></tr>
                         <tr mat-row *matRowDef="let row; columns: displayedColumnsPlanned;"></tr>
                     </table>
                 </div>
-                
+
 
             </div>
         </div>
         <ng-template #emptyContent>
             <div class="fiscal-empty-content">
-                No Fiscal Activities have been added. 
+                No Fiscal Activities have been added.
             </div>
         </ng-template>
-    </mat-expansion-panel>    
+    </mat-expansion-panel>
 </div>
