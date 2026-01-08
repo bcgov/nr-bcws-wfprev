@@ -7,22 +7,22 @@ variable "common_tags" {
 
 variable "RESTORE_DOWNSCALED_CLUSTER" {
   description = "Whether we restore a downscaled RDS instance or create a new one"
-  default = "false"
+  default     = "false"
 }
 
 variable "NAMESPACE_ENV" {
   description = "Name of AWS Workspace"
-  type = string
+  type        = string
 }
 
 variable "SHORTENED_ENV" {
   description = "Shortform of environment name"
-  type = string
+  type        = string
 }
 
 variable "TFC_PROJECT" {
   description = "License Plate number of project"
-  type = string
+  type        = string
 }
 
 variable "WFPREV_API_CPU_UNITS" {
@@ -37,7 +37,7 @@ variable "WFPREV_API_MEMORY" {
 
 variable "WFPREV_MAX_SCALING_CAPACITY" {
   description = "Maximum number of pods to scale to"
-  type = number
+  type        = number
 }
 
 variable "WFPREV_LAMBDA_MEMORY" {
@@ -102,7 +102,7 @@ variable "AWS_REGION" {
 }
 
 variable "AWS_ALERT_EMAIL_LIST" {
-  type = string
+  type        = string
   description = "Comma-separated list of email addresses for AWS alerts"
 }
 
@@ -182,20 +182,20 @@ variable "WFPREV_CHECK_TOKEN_URL" {
 }
 
 variable "WFPREV_USERNAME" {
-  type        = string
+  type    = string
   default = ""
 }
 
 variable "DB_PASS" {
   description = "db password, passed in as env variable at runtime"
   type        = string
-  default = ""
+  default     = ""
 }
 
 variable "api_key" {
   description = "value for api key"
   type        = string
-  default = ""
+  default     = ""
 }
 
 variable "server_name" {
@@ -219,17 +219,17 @@ variable "ALB_NAME" {
 variable "TARGET_ENV" {
   description = "AWS workload account env (e.g. dev, test, prod, tools)"
   type        = string
-  default = ""
+  default     = ""
 }
 
 variable "WFPREV_API_PORT" {
   description = "Port exposed by the docker image to redirect traffic to"
-  type = number
-  default  = 8080
+  type        = number
+  default     = 8080
 }
 
 variable "WFPREV_CLIENT_PORT" {
-  type = number
+  type    = number
   default = 8080
 }
 
@@ -252,8 +252,8 @@ variable "gov_client_url" {
 
 variable "gov_domain" {
   description = "higher level domain(s) used in url"
-  default = "nrs.gov.bc.ca"
-  type = string
+  default     = "nrs.gov.bc.ca"
+  type        = string
 }
 
 variable "APP_COUNT" {
@@ -273,7 +273,7 @@ variable "gov_api_url" {
 }
 
 variable "TARGET_AWS_ACCOUNT_ID" {
-  type = string
+  type        = string
   description = "Numerical AWS account ID"
 }
 
@@ -286,7 +286,7 @@ variable "DB_POSTGRES_VERSION" {
 variable "DB_INSTANCE_TYPE" {
   description = "Instance type to use for database vm"
   type        = string
-  default = ""
+  default     = ""
 }
 
 variable "DB_MULTI_AZ" {
@@ -303,23 +303,23 @@ variable "DB_SIZE" {
 
 
 variable "PREVENTION_WAR_NAMES" {
-  type = list(string)
+  type        = list(string)
   description = "List of paths to point at payroll API"
-  default = ["wfprev", "wfprev/*"]
+  default     = ["wfprev", "wfprev/*"]
 }
 
 variable "PREVENTION_API_NAMES" {
-  type = list(string)
+  type        = list(string)
   description = "List of paths to point at payroll API"
-  default = ["wfprev-api", "wfprev-api/*"]
+  default     = ["wfprev-api", "wfprev-api/*"]
 }
 
 //liquibase
 
 variable "LIQUIBASE_MEMORY" {
   description = "Amount of memory to allocate to liquibase instances, in MB"
-  type = number
-  default = 512
+  type        = number
+  default     = 512
 }
 
 variable "LIQUIBASE_CONTAINER_NAME" {
@@ -336,8 +336,8 @@ variable "LIQUIBASE_IMAGE" {
 
 variable "LIQUIBASE_CPU" {
   description = "number of milliCPUs to allocate to liquibase instances"
-  type = number
-  default = 256
+  type        = number
+  default     = 256
 }
 
 variable "DB_PORT" {
@@ -363,7 +363,7 @@ variable "CLOUDFRONT_HEADER" {
 }
 
 variable "NONPROXY_COUNT" {
-  type = number
+  type    = number
   default = 1
 }
 variable "APP_WF1_PREV_PASSWORD" {
@@ -372,11 +372,11 @@ variable "APP_WF1_PREV_PASSWORD" {
 
 
 variable "PROXY_WF1_PREV_REST_USER" {
-  type = string
+  type    = string
   default = "proxy_wf1_prev_rest"
 }
 variable "PROXY_WF1_PREV_REST_PASSWORD" {
-  type = string
+  type        = string
   description = "Password for proxy_wf1_prev_rest DB user"
 }
 
@@ -385,7 +385,7 @@ variable "TARGET_LIQUIBASE_TAG" {
 }
 
 variable "COMMAND" {
-  type = string
+  type    = string
   default = "update"
 }
 
@@ -400,5 +400,17 @@ variable "REMI_PLANNER_EMAIL_ADDRESS" {
 }
 
 variable "WFPREV_DATABASE_NAME" {
-  type    = string
+  type = string
+}
+
+variable "ALARM_RDS_FREEABLE_MEMORY_THRESHOLD_BYTES" {
+  description = "Threshold for RDS Freeable Memory alarm in bytes. Default is 256MB."
+  type        = number
+  default     = 268435456 # 256 MB
+}
+
+variable "SNS_TOPIC_NAME" {
+  description = "Base name of the SNS topic for alerts"
+  type        = string
+  default     = "wfprev-alb-alerts"
 }
