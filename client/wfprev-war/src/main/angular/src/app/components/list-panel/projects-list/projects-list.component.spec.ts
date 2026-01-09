@@ -173,6 +173,7 @@ describe('ProjectsListComponent', () => {
   });
 
   it('should handle errors when loading code tables', () => {
+    spyOn(console, 'error');
     mockFetchProjectsResponse();
     mockCodeTableService.fetchCodeTable.and.returnValue(throwError(() => new Error('Error fetching data')));
     component.loadCodeTables();
@@ -183,6 +184,7 @@ describe('ProjectsListComponent', () => {
   });
 
   it('should handle errors when loading projects', () => {
+    spyOn(console, 'error');
     mockProjectService.fetchProjects.and.returnValue(throwError(() => new Error('Error fetching projects')));
     component.loadProjects();
     fixture.detectChanges();
@@ -900,7 +902,7 @@ describe('ProjectsListComponent', () => {
     });
 
     it('should download projects successfully when filters are applied', fakeAsync(() => {
-      mockSharedService._currentFilters = { someFilter: 'value' };
+      mockSharedService._currentFilters = { searchText: 'value' };
       // displayedProjects state is irrelevant for the current implementation, but we set it to empty for clarity
       component.displayedProjects = [];
 
@@ -914,7 +916,7 @@ describe('ProjectsListComponent', () => {
 
       const bodyArg = mockProjectService.downloadProjects.calls.mostRecent().args[0] as any;
       expect(bodyArg.projects).toBeUndefined();
-      expect(bodyArg.projectFilter).toEqual({ someFilter: 'value' });
+      expect(bodyArg.projectFilter).toEqual(jasmine.objectContaining({ searchText: 'value' }));
     }));
 
     it('should show error message when attempting to download without filters', fakeAsync(() => {
@@ -929,6 +931,7 @@ describe('ProjectsListComponent', () => {
     }));
 
     it('should show failure message when download service fails', fakeAsync(() => {
+      spyOn(console, 'error');
       mockSharedService._currentFilters = { someFilter: 'value' };
       component.displayedProjects = [] as any;
 

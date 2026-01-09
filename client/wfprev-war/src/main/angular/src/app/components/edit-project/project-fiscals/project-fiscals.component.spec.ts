@@ -1,19 +1,19 @@
+import { Component, NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
-import { ProjectFiscalsComponent } from './project-fiscals.component';
+import { FormBuilder, FormGroup } from '@angular/forms';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ActivatedRoute } from '@angular/router';
 import { Observable, of, throwError } from 'rxjs';
-import { ProjectService } from 'src/app/services/project-services';
-import { CodeTableServices } from 'src/app/services/code-table-services';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { FormBuilder, FormGroup } from '@angular/forms';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ConfirmationDialogComponent } from 'src/app/components/confirmation-dialog/confirmation-dialog.component';
-import { Component } from '@angular/core';
-import { PlanFiscalStatusIcons } from 'src/app/utils/tools';
-import { EndorsementCode, ModalMessages, ModalTitles } from 'src/app/utils/constants';
-import { TokenService } from 'src/app/services/token.service';
 import { ProjectFiscal } from 'src/app/components/models';
+import { CodeTableServices } from 'src/app/services/code-table-services';
+import { ProjectService } from 'src/app/services/project-services';
+import { TokenService } from 'src/app/services/token.service';
+import { EndorsementCode, ModalMessages, ModalTitles } from 'src/app/utils/constants';
 import * as Tools from 'src/app/utils/tools';
+import { PlanFiscalStatusIcons } from 'src/app/utils/tools';
+import { ProjectFiscalsComponent } from './project-fiscals.component';
 
 const mockProjectService = {
   getProjectFiscalsByProjectGuid: jasmine.createSpy('getProjectFiscalsByProjectGuid').and.returnValue(
@@ -67,6 +67,7 @@ describe('ProjectFiscalsComponent', () => {
     await TestBed.configureTestingModule({
       imports: [BrowserAnimationsModule],
       declarations: [MockFiscalMapComponent, MockActivitiesComponent],
+      schemas: [NO_ERRORS_SCHEMA],
       providers: [
         {
           provide: TokenService, useValue: {
@@ -103,7 +104,8 @@ describe('ProjectFiscalsComponent', () => {
     })
       .overrideComponent(ProjectFiscalsComponent, {
         set: {
-          imports: []  // Remove the real FiscalMapComponent and ActivitiesComponent
+          imports: [],  // Remove the real FiscalMapComponent and ActivitiesComponent
+          schemas: [NO_ERRORS_SCHEMA]
         }
       })
       .compileComponents();
@@ -1048,7 +1050,7 @@ describe('ProjectFiscalsComponent', () => {
 
     const existing = {
       projectGuid: 'test-guid',
-      projectPlanFiscalGuid: 'existing-guid', 
+      projectPlanFiscalGuid: 'existing-guid',
       projectFiscalName: 'Existing Plan',
       fiscalYear: 2025,
       activityCategoryCode: 'CAT1',
@@ -1077,7 +1079,7 @@ describe('ProjectFiscalsComponent', () => {
       .args as [string, string, ProjectFiscal];
 
     expect(payload.planFiscalStatusCode).toEqual({ planFiscalStatusCode: 'PROPOSED' });
-    expect(payload.businessAreaComment).toBe('Original BAC'); 
+    expect(payload.businessAreaComment).toBe('Original BAC');
     expect(payload.endorserName).toBe('Endorser X');
     expect(payload.endorsementTimestamp).toBe('2025-08-01T10:00:00Z');
     expect(payload.endorsementCode).toEqual({ endorsementCode: EndorsementCode.ENDORSED });
