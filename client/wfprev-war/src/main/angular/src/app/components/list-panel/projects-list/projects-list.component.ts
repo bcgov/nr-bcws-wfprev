@@ -714,15 +714,23 @@ export class ProjectsListComponent implements OnInit {
   }
 
   onDownload(type: string): void {
+    const filters = this.sharedService.currentFilters;
     const body: ReportRequest = {
-      reportType: type === DownloadTypes.EXCEL ? 'xlsx' : 'csv',
-      projects: this.buildProjectsPayloadFromDisplayed()
+      reportType: type === DownloadTypes.EXCEL ? 'xlsx' : 'csv'
     };
 
     const snackRef = this.snackbarService.open(Messages.fileDownloadInProgress, 'Close', {
       duration: undefined,
       panelClass: 'snackbar-info'
     });
+
+    if (filters && Object.keys(filters).length > 0) {
+      body.projectFilter = filters;
+    } else {
+      snackRef.dismiss();
+      this.snackbarService.open(Messages.fileDownloadRequiresFilter, 'Close', { duration: 5000, panelClass: 'snackbar-error' });
+      return;
+    }
 
     this.projectService.downloadProjects(body).subscribe({
       next: (blob) => {
