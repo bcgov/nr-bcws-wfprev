@@ -1,0 +1,147 @@
+<div class="performance-update-container">
+    <mat-expansion-panel [expanded]='true' class="expansion-panel">
+        <mat-expansion-panel-header>
+            <div class="header-container">
+                <wfprev-expansion-indicator [isExpanded]='true'></wfprev-expansion-indicator>
+                <span class="project-title">Performance Update</span>
+                <wfprev-icon-button [text]="'New Update'" [icon]="'/assets/add-button.svg'" [alt]="'add-update'"
+                    [iconSize]="19">
+                </wfprev-icon-button>
+            </div>
+        </mat-expansion-panel-header>
+        <div>
+            <div>
+                <mat-expansion-panel [expanded]='true' class="expansion-panel">
+                    <mat-expansion-panel-header class="performance-update-header">
+                        <wfprev-expansion-indicator [isExpanded]="true"></wfprev-expansion-indicator>
+                        <div class="performance-update-title">
+                            <div>
+                                <p class="project-title"><b>Date: 2025-01-08</b></p>
+                            </div>
+                        </div>
+                        <div class="content-status-indicators">
+                            <span>Reporting Period: End of Q2</span>
+                            <span>
+                                <img alt="status" class="status-icon" src="/assets/delayed-icon.png">
+                                Delayed
+                            </span>
+                            <span>
+                                <img alt="status" class="status-icon" src="/assets/forecast-decrease-icon.png">
+                                Forecast Decrease
+                            </span>
+                        </div>
+                        <div class="status-indicators">
+                            <!-- <ng-container *ngIf="activityForms[i]?.value?.isSpatialAddedInd; else notSpatialAdded"> -->
+                            <span class="status-tag">
+                                <img alt="status" class="status-icon" src="/assets/in-progress-icon-only.svg">In
+                                Progress
+                            </span>
+                            <!-- </ng-container> -->
+                        </div>
+                    </mat-expansion-panel-header>
+                    <div class="form-grid">
+                        <div class="general-updates-container">
+                            <div class="updates-header">
+                                <div class="updates-header-title">
+                                    <p>General Updates (Successes, Challenges, Progress)</p>
+                                </div>
+                                <div class="submited-by">
+                                    <p>Submited by: Stachiw Lena</p>
+                                </div>
+                            </div>
+                            <div>
+                                <p>Weather has delayed the progression</p>
+                            </div>
+                        </div>
+                        <div class="budget-adjustment-container">
+                            <div class="budget-adjustment-header">
+                                <div class="budget-adjustment-title">
+                                    <span>Budget adjustment</span>
+                                </div>
+                                <div class="budget-adjustment-lable">
+                                    <span>
+                                        <img alt="status" class="status-icon" src="/assets/forecast-decrease-icon.png">
+                                        Forecast Decrease
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="budget-adjustment-ditails">
+                                <div class="budget-adjustment-item">
+                                    <p class="budget-title">Revised Forecast Amount</p>
+                                    <p>$ 8,100</p>
+                                </div>
+                                <div class="budget-adjustment-item">
+                                    <p class="budget-title">Forecast Adjustment Amount</p>
+                                    <p>-$ 1,000</p>
+                                </div>
+                                <div class="budget-adjustment-item">
+                                    <p class="budget-title">Forecast Adjustment Rationale</p>
+                                    <p>Decrised material cost</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="budget-breackdown-container">
+                            <div class="budget-breakdown-header">
+                                <p>Budget Risk Breakdown</p>
+                            </div>
+                            <div class="budget-breackdown-table">
+                                <div class="budget-breackdown-row">
+                                    <div class="budget-breackdown-cell1">
+                                        <p>High risk</p>
+                                    </div>
+                                    <div class="budget-breackdown-cell2">
+                                        <p>$1,400</p>
+                                    </div>
+                                    <div>
+                                        <p>A discription of why this amount is high risk</p>
+                                    </div>
+                                </div>
+                                <div class="budget-breackdown-row">
+                                    <div class="budget-breackdown-cell1">
+                                        <p>Medium risk</p>
+                                    </div>
+                                    <div class="budget-breackdown-cell2">
+                                        <p>$5,000</p>
+                                    </div>
+                                    <div>
+                                        <p>A discription of why this amount is medium risk</p>
+                                    </div>
+                                </div>
+                                <div class="budget-breackdown-row">
+                                    <div class="budget-breackdown-cell1">
+                                        <p>Low risk</p>
+                                    </div>
+                                    <div class="budget-breackdown-cell2">
+                                        <p>$1,700</p>
+                                    </div>
+                                    <div>
+                                        <p>A discription of why this amount is low risk</p>
+                                    </div>
+                                </div>
+                                <div class="budget-breackdown-row">
+                                    <div class="budget-breackdown-cell1">
+                                        <p>Complete</p>
+                                    </div>
+                                    <div class="budget-breackdown-cell2">
+                                        <p>$0</p>
+                                    </div>
+                                    <div>
+                                        <p>A discription of what is already spend and where</p>
+                                    </div>
+                                </div>
+                                <div class="budget-breackdown-row">
+                                    <div class="budget-breackdown-cell1">
+                                        <p>Total:</p>
+                                    </div>
+                                    <div class="budget-breackdown-cell2">
+                                        <p>$8,100</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </mat-expansion-panel>
+            </div>
+        </div>
+    </mat-expansion-panel>
+</div>
