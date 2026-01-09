@@ -3,7 +3,9 @@ package ca.bc.gov.nrs.wfprev.services;
 import ca.bc.gov.nrs.wfprev.common.exceptions.ServiceException;
 import ca.bc.gov.nrs.wfprev.data.entities.CulturalPrescribedFireReportEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.FuelManagementReportEntity;
+import ca.bc.gov.nrs.wfprev.data.entities.ProjectFiscalEntity;
 import ca.bc.gov.nrs.wfprev.data.models.ReportRequestModel;
+import ca.bc.gov.nrs.wfprev.data.params.FeatureQueryParams;
 import ca.bc.gov.nrs.wfprev.data.repositories.CulturalPrescribedFireReportRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.FuelManagementReportRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.ProgramAreaRepository;
@@ -53,12 +55,16 @@ public class ReportService {
     private final FuelManagementReportRepository fuelManagementRepository;
     private final CulturalPrescribedFireReportRepository culturalPrescribedFireReportRepository;
     private final ProgramAreaRepository programAreaRepository;
+    private final FeaturesService featuresService;
 
     public ReportService(FuelManagementReportRepository fuelManagementRepository,
-            CulturalPrescribedFireReportRepository culturalPrescribedFireReportRepository, ProgramAreaRepository programAreaRepository) {
+            CulturalPrescribedFireReportRepository culturalPrescribedFireReportRepository,
+            ProgramAreaRepository programAreaRepository,
+            FeaturesService featuresService) {
         this.fuelManagementRepository = fuelManagementRepository;
         this.culturalPrescribedFireReportRepository = culturalPrescribedFireReportRepository;
         this.programAreaRepository = programAreaRepository;
+        this.featuresService = featuresService;
     }
 
     private static class ReportDataBundle {
@@ -76,11 +82,41 @@ public class ReportService {
         List<FuelManagementReportEntity> fuel = new ArrayList<>();
         List<CulturalPrescribedFireReportEntity> crx = new ArrayList<>();
 
-        if (request == null || request.getProjects() == null || request.getProjects().isEmpty()) {
-            throw new IllegalArgumentException("At least one project is required");
+        if (request == null || ((request.getProjects() == null || request.getProjects().isEmpty()) && request.getProjectFilter() == null)) {
+            throw new IllegalArgumentException("At least one project or a filter is required");
         }
 
-        for (ReportRequestModel.Project p : request.getProjects()) {
+        List<ReportRequestModel.Project> projectsToReport = request.getProjects();
+
+        if (projectsToReport == null || projectsToReport.isEmpty()) {
+            // Fetch projects using filter
+            var entities = featuresService.findFilteredProjects(request.getProjectFilter(), 1, Integer.MAX_VALUE, null, null);
+            projectsToReport = new ArrayList<>();
+            for (var entity : entities) {
+                ReportRequestModel.Project p = new ReportRequestModel.Project();
+                p.setProjectGuid(entity.getProjectGuid());
+
+                FeatureQueryParams filter = request.getProjectFilter();
+                List<ProjectFiscalEntity> fiscals = featuresService.findFilteredProjectFiscals(
+                        entity.getProjectGuid(),
+                        filter.getFiscalYears(),
+                        filter.getActivityCategoryCodes(),
+                        filter.getPlanFiscalStatusCodes()
+                );
+
+                if (!fiscals.isEmpty()) {
+                    p.setProjectFiscalGuids(fiscals.stream()
+                            .map(ProjectFiscalEntity::getProjectPlanFiscalGuid)
+                            .toList());
+                } else { 
+                    p.setProjectFiscalGuids(new ArrayList<>());
+                }
+                
+                projectsToReport.add(p);
+            }
+        }
+
+        for (ReportRequestModel.Project p : projectsToReport) {
             UUID projectGuid = Objects.requireNonNull(p.getProjectGuid(), "projectGuid is required");
             List<UUID> fiscals = p.getProjectFiscalGuids();
 

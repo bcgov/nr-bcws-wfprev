@@ -1,21 +1,22 @@
-import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
-import { ProjectsListComponent } from './projects-list.component';
-import { By } from '@angular/platform-browser';
 import { DebugElement, ElementRef, QueryList } from '@angular/core';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { MatDialog } from '@angular/material/dialog';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { By } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ActivatedRoute, Router } from '@angular/router';
-import { MatDialog } from '@angular/material/dialog';
-import { ProjectService } from 'src/app/services/project-services';
-import { CodeTableServices } from 'src/app/services/code-table-services';
-import { ResourcesRoutes } from 'src/app/utils';
-import { of, throwError } from 'rxjs';
 import L from 'leaflet';
+import { of, throwError } from 'rxjs';
 import { CreateNewProjectDialogComponent } from 'src/app/components/create-new-project-dialog/create-new-project-dialog.component';
 import { FeaturesResponse } from 'src/app/components/models';
-import { Messages } from 'src/app/utils/constants';
+import { CodeTableServices } from 'src/app/services/code-table-services';
 import { MapService } from 'src/app/services/map.service';
+import { ProjectService } from 'src/app/services/project-services';
+import { SharedService } from 'src/app/services/shared-service';
+import { ResourcesRoutes } from 'src/app/utils';
+import { Messages } from 'src/app/utils/constants';
+import { ProjectsListComponent } from './projects-list.component';
 
 describe('ProjectsListComponent', () => {
   let component: ProjectsListComponent;
@@ -61,6 +62,7 @@ describe('ProjectsListComponent', () => {
   let mockDialog: jasmine.SpyObj<MatDialog>;
   let mockRouter: jasmine.SpyObj<Router>;
   let mockMapService: jasmine.SpyObj<MapService>;
+  let mockSharedService: any;
 
   beforeEach(async () => {
     mockProjectService = jasmine.createSpyObj('ProjectService', ['fetchProjects', 'getFeatures', 'downloadProjects']);
@@ -114,6 +116,17 @@ describe('ProjectsListComponent', () => {
     spyOn(L, 'marker').and.returnValue(mockMarker);
     spyOn(L, 'polygon').and.returnValue(mockPolygon);
 
+    mockSharedService = {
+      filters$: of(null),
+      selectedProject$: of(null),
+      updateFilters: jasmine.createSpy('updateFilters'),
+      updateDisplayedProjects: () => { },
+      selectProject: () => { },
+      triggerMapCommand: () => { },
+      _currentFilters: null,
+      get currentFilters() { return this._currentFilters; }
+    };
+
     await TestBed.configureTestingModule({
       imports: [
         ProjectsListComponent,
@@ -127,7 +140,8 @@ describe('ProjectsListComponent', () => {
         { provide: MatDialog, useValue: mockDialog },
         { provide: Router, useValue: mockRouter },
         { provide: ActivatedRoute, useValue: {} },
-        { provide: MapService, useValue: mockMapService }
+        { provide: MapService, useValue: mockMapService },
+        { provide: SharedService, useValue: mockSharedService }
       ],
     }).compileComponents();
 
@@ -885,55 +899,38 @@ describe('ProjectsListComponent', () => {
       (component as any).snackbarService = mockSnackBar;
     });
 
-    it('should show progress, trigger download, and show success message', fakeAsync(() => {
-      component.displayedProjects = [
-        {
-          projectGuid: 'guid1',
-          projectFiscals: [
-            { fiscalYear: 2023, projectPlanFiscalGuid: 'pf-1a' },
-            { fiscalYear: 2022, projectPlanFiscalGuid: 'pf-1b' },
-          ],
-        },
-        {
-          projectGuid: 'guid2',
-          projectFiscals: [],
-        },
-      ] as any;
+    it('should download projects successfully when filters are applied', fakeAsync(() => {
+      mockSharedService._currentFilters = { someFilter: 'value' };
+      // displayedProjects state is irrelevant for the current implementation, but we set it to empty for clarity
+      component.displayedProjects = [];
 
       const mockBlob = new Blob(['test data'], { type: 'text/csv' });
       spyOn(window.URL, 'createObjectURL').and.returnValue('blob:url');
       spyOn(document, 'createElement').and.callThrough();
-
       mockProjectService.downloadProjects.and.returnValue(of(mockBlob));
 
       component.onDownload('csv');
       tick();
 
-      expect(mockSnackBar.open).toHaveBeenCalledWith(
-        Messages.fileDownloadInProgress,
-        'Close',
-        jasmine.any(Object)
-      );
-      expect(mockSnackBar.open).toHaveBeenCalledWith(
-        Messages.fileDownloadSuccess,
-        'Close',
-        jasmine.any(Object)
-      );
-
       const bodyArg = mockProjectService.downloadProjects.calls.mostRecent().args[0] as any;
-      expect(bodyArg.reportType).toBe('csv');
-      expect(bodyArg.projects).toEqual(jasmine.arrayContaining([
-        { projectGuid: 'guid1', projectFiscalGuids: ['pf-1a', 'pf-1b'] },
-        { projectGuid: 'guid2' }
-      ]));
-
-      expect(window.URL.createObjectURL).toHaveBeenCalledWith(mockBlob);
+      expect(bodyArg.projects).toBeUndefined();
+      expect(bodyArg.projectFilter).toEqual({ someFilter: 'value' });
     }));
 
-    it('should show failure message when download fails', fakeAsync(() => {
-      component.displayedProjects = [
-        { projectGuid: 'guid1', projectFiscals: [] }
-      ] as any;
+    it('should show error message when attempting to download without filters', fakeAsync(() => {
+      mockSharedService._currentFilters = null;
+      component.displayedProjects = [{ projectGuid: 'guid1' }] as any; // Presence of projects irrelevant
+
+      component.onDownload('csv');
+      tick();
+
+      expect(mockProjectService.downloadProjects).not.toHaveBeenCalled();
+      expect(mockSnackBar.open).toHaveBeenCalledWith(Messages.fileDownloadRequiresFilter, 'Close', jasmine.any(Object));
+    }));
+
+    it('should show failure message when download service fails', fakeAsync(() => {
+      mockSharedService._currentFilters = { someFilter: 'value' };
+      component.displayedProjects = [] as any;
 
       mockProjectService.downloadProjects.and.returnValue(
         throwError(() => new Error('Download failed'))
@@ -952,31 +949,7 @@ describe('ProjectsListComponent', () => {
         'Close',
         jasmine.any(Object)
       );
-
-      const bodyArg = mockProjectService.downloadProjects.calls.mostRecent().args[0] as any;
-      expect(bodyArg.reportType).toBe('csv');
-      expect(bodyArg.projects).toEqual([{ projectGuid: 'guid1' }]);
     }));
-
-
-    it('onDownload should call downloadProjects with correct params', () => {
-      component.displayedProjects = [
-        { projectGuid: 'guid1', projectFiscals: [] },
-        { projectGuid: 'guid2', projectFiscals: [] }
-      ];
-
-      mockProjectService.downloadProjects.and.returnValue(of(new Blob()));
-
-      component.onDownload('csv');
-
-      const bodyArg = mockProjectService.downloadProjects.calls.mostRecent().args[0] as any;
-
-      expect(bodyArg.reportType).toBe('csv');
-      expect(bodyArg.projects).toEqual([
-        { projectGuid: 'guid1' },
-        { projectGuid: 'guid2' }
-      ]);
-    });
   });
 
   describe('getDisplayedFiscalYears', () => {
@@ -1064,13 +1037,13 @@ describe('ProjectsListComponent', () => {
         {
           projectGuid: 'guid1',
           projectFiscals: [
-            { fiscalYear: 2022, projectPlanFiscalGuid: 'pf-1b' }, 
+            { fiscalYear: 2022, projectPlanFiscalGuid: 'pf-1b' },
             { fiscalYear: 2021, projectPlanFiscalGuid: 'pf-1c' },
           ],
         },
         {
           projectGuid: 'guid2',
-          projectFiscals: [], 
+          projectFiscals: [],
         },
         {
           projectFiscals: [{ fiscalYear: 2024, projectPlanFiscalGuid: 'pf-x' }],
@@ -1110,12 +1083,12 @@ describe('ProjectsListComponent', () => {
     });
 
     it('respects resultCount when deciding which fiscals are included', () => {
-      component.resultCount = 1; 
+      component.resultCount = 1;
       component.displayedProjects = [
         {
           projectGuid: 'g1',
           projectFiscals: [
-            { fiscalYear: 2023, projectPlanFiscalGuid: 'top' }, 
+            { fiscalYear: 2023, projectPlanFiscalGuid: 'top' },
             { fiscalYear: 2022, projectPlanFiscalGuid: 'lower' },
           ],
         },
