@@ -1,0 +1,195 @@
+@import "../project-fiscals/project-fiscals.component.scss";
+
+.performance-update-container {
+    padding-top: 12px;
+    margin: 0;
+
+    .expansion-panel {
+        border: 1px solid #D9D9D9;
+
+        .mat-expansion-panel-header {
+            border-bottom: 1px solid #D9D9D9;
+            ;
+            min-height: 52px !important;
+            height: auto !important;
+        }
+
+        .dropdown-button {
+            cursor: pointer;
+
+            span {
+                padding-left: 10px;
+            }
+
+            &:disabled {
+                background-color: #c0c0c0 !important;
+                cursor: not-allowed;
+                border: none;
+            }
+        }
+    }
+
+    .performance-update-header {
+        ::ng-deep .mat-content {
+            gap: 8px;
+        }
+    }
+
+    .performance-update-title {
+        font-family: var(--wf-font-family-main) !important;
+        flex-wrap: wrap;
+        color: #000;
+        font-family: var(--wf-font-family-main);
+        font-size: 20px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: normal;
+        word-break: break-word;
+        overflow-wrap: break-word;
+        white-space: normal;
+        align-content: center
+    }
+
+    .content-status-indicators {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .status-indicators {
+        font-family: var(--wf-font-family-main);
+        font-size: 16px;
+        font-weight: 400;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-left: auto;
+        padding-right: 20px;
+    }
+
+    .status-tag {
+        display: flex;
+        padding: 5px 0px;
+        align-items: center;
+        gap: 5px;
+        font-size: 16px;
+    }
+
+    .status-icon {
+        width: 24px;
+        height: 24px;
+    }
+
+    span {
+        display: flex;
+
+        img {
+            display: flex;
+            padding: 0px 5px;
+        }
+    }
+
+    .form-grid {
+        padding: 18px 0px;
+        font-family: var(--wf-font-family-main) !important;
+
+        .general-updates-container {
+            display: flex;
+            flex-direction: column;
+            padding: 0px 15px 15px 15px;
+
+            .updates-header {
+                display: flex;
+                flex-direction: row;
+
+                .updates-header-title {
+                    display: flex;
+                    flex-grow: 1;
+                    font-weight: bold;
+                }
+
+                .submited-by {
+                    display: flex;
+                    flex-grow: 1;
+                    justify-content: flex-end;
+                }
+            }
+        }
+
+        .budget-adjustment-container {
+            display: flex;
+            flex-direction: column;
+            padding: 15px;
+            gap: 10px;
+            border-top: 1px solid #D9D9D9;
+
+            .budget-adjustment-header {
+                display: flex;
+                flex-direction: row;
+
+                .budget-adjustment-title {
+                    padding-right: 20px;
+                    font-weight: bold;
+                }
+
+                .budget-adjustment-lable {
+                    display: flex;
+                    flex-direction: row;
+                }
+            }
+
+            .budget-adjustment-ditails {
+                display: flex;
+                flex-direction: row;
+
+                .budget-adjustment-item {
+                    padding-right: 20px;
+
+                    .budget-title {
+                        font-weight: bold;
+                    }
+                }
+            }
+        }
+
+        .budget-breackdown-container {
+            display: flex;
+            flex-direction: column;
+            padding: 15px;
+            gap: 10px;
+            border-top: 1px solid #D9D9D9;
+
+            .budget-breakdown-header {
+                font-weight: bold;
+            }
+
+            .budget-breackdown-table {
+                display: flex;
+                flex-direction: column;
+
+                .budget-breackdown-row {
+                    display: flex;
+                    flex-direction: row;
+                    border-radius: 5px;
+                    background-color: #D9D9D9;
+                    margin-bottom: 10px;
+
+                    .budget-breackdown-cell1 {
+                        padding-left: 15px;
+                        width: 110px;
+                    }
+
+                    .budget-breackdown-cell2 {
+                        padding-left: 15px;
+                        width: 110px;
+                        font-weight: bold;
+                    }
+                }
+            }
+        }
+
+    }
+
+
+
+}

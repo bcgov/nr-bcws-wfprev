@@ -31,6 +31,7 @@ import { TokenService } from 'src/app/services/token.service';
 import { TimestampComponent } from 'src/app/components/shared/timestamp/timestamp.component';
 import { TextareaComponent } from 'src/app/components/shared/textarea/textarea.component';
 import { capitalizeFirstLetter } from 'src/app/utils';
+import { PerformanceUpdateComponent } from "../performance-update/performance-update.component";
 
 @Component({
   selector: 'wfprev-project-fiscals',
@@ -58,8 +59,9 @@ import { capitalizeFirstLetter } from 'src/app/utils';
     StatusBadgeComponent,
     EndorsementApprovalComponent,
     TimestampComponent,
-    TextareaComponent
-  ]
+    TextareaComponent,
+    PerformanceUpdateComponent
+]
 })
 export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
   @Input() focusedFiscalId: string | null = null;
