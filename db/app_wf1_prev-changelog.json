@@ -1811,6 +1811,24 @@
         "rollback": [
         ]
       }
+    },
+    {
+      "changeSet": {
+        "id": "01_01_00_00",
+        "author": "sparmar",
+        "tagDatabase": { "tag" : "version_01_01_00_00" },
+        "changes": [
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_01_00/00/dml/app_wf1_prev.dml.fix_omenica_typo.sql"
+            }
+          }
+        ],
+        "rollback": [
+        ]
+      }
     }
   ]
 }
