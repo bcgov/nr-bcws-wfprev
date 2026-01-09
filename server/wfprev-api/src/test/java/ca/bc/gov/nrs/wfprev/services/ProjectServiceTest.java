@@ -9,6 +9,8 @@ import ca.bc.gov.nrs.wfprev.data.entities.ObjectiveTypeCodeEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ProjectEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ProjectStatusCodeEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ProjectTypeCodeEntity;
+import ca.bc.gov.nrs.wfprev.data.entities.ProjectFiscalEntity;
+import ca.bc.gov.nrs.wfprev.data.entities.ActivityEntity;
 import ca.bc.gov.nrs.wfprev.data.models.ForestAreaCodeModel;
 import ca.bc.gov.nrs.wfprev.data.models.GeneralScopeCodeModel;
 import ca.bc.gov.nrs.wfprev.data.models.ObjectiveTypeCodeModel;
@@ -21,6 +23,10 @@ import ca.bc.gov.nrs.wfprev.data.repositories.ObjectiveTypeCodeRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.ProjectRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.ProjectStatusCodeRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.ProjectTypeCodeRepository;
+import ca.bc.gov.nrs.wfprev.data.repositories.ProjectBoundaryRepository;
+import ca.bc.gov.nrs.wfprev.data.repositories.ActivityRepository;
+import ca.bc.gov.nrs.wfprev.data.repositories.ActivityBoundaryRepository;
+import ca.bc.gov.nrs.wfprev.data.repositories.ProjectFiscalRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
@@ -69,6 +75,10 @@ class ProjectServiceTest {
     private ProjectStatusCodeRepository projectStatusCodeRepository;
     private ObjectiveTypeCodeRepository objectiveTypeCodeRepository;
     private SpringSecurityAuditorAware springSecurityAuditorAware;
+    private ProjectBoundaryRepository projectBoundaryRepository;
+    private ActivityRepository activityRepository;
+    private ActivityBoundaryRepository activityBoundaryRepository;
+    private ProjectFiscalRepository projectFiscalRepository;
 
     @BeforeEach
     void setup() {
@@ -80,14 +90,23 @@ class ProjectServiceTest {
         projectStatusCodeRepository = mock(ProjectStatusCodeRepository.class);
         springSecurityAuditorAware = mock(SpringSecurityAuditorAware.class);
         objectiveTypeCodeRepository = mock(ObjectiveTypeCodeRepository.class);
+        projectBoundaryRepository = mock(ProjectBoundaryRepository.class);
+        activityRepository = mock(ActivityRepository.class);
+        activityBoundaryRepository = mock(ActivityBoundaryRepository.class);
+        projectFiscalRepository = mock(ProjectFiscalRepository.class);
 
         projectService = new ProjectService(projectRepository, projectResourceAssembler, forestAreaCodeRepository,
-                projectTypeCodeRepository, generalScopeCodeRepository, projectStatusCodeRepository, objectiveTypeCodeRepository);
+                projectTypeCodeRepository, generalScopeCodeRepository, projectStatusCodeRepository, objectiveTypeCodeRepository,
+                projectBoundaryRepository, activityRepository, activityBoundaryRepository, projectFiscalRepository);
         setField(projectService, "forestAreaCodeRepository", forestAreaCodeRepository);
         setField(projectService, "projectTypeCodeRepository", projectTypeCodeRepository);
         setField(projectService, "generalScopeCodeRepository", generalScopeCodeRepository);
         setField(projectService, "projectStatusCodeRepository", projectStatusCodeRepository);
         setField(projectService, "objectiveTypeCodeRepository", objectiveTypeCodeRepository);
+        setField(projectService, "projectBoundaryRepository", projectBoundaryRepository);
+        setField(projectService, "activityRepository", activityRepository);
+        setField(projectService, "activityBoundaryRepository", activityBoundaryRepository);
+        setField(projectService, "projectFiscalRepository", projectFiscalRepository);
 
         ProjectStatusCodeEntity activeStatus = new ProjectStatusCodeEntity();
         activeStatus.setProjectStatusCode("ACTIVE");
@@ -737,37 +756,48 @@ class ProjectServiceTest {
     @Test
     void test_delete_project_with_valid_id() {
         // Given
-        String existingGuid = UUID.randomUUID().toString();
-        ProjectModel inputModel = ProjectModel.builder()
-                .projectGuid(existingGuid)
-                .projectName("Updated Project")
-                .siteUnitName("Updated Site")
-                .totalPlannedProjectSizeHa(BigDecimal.valueOf(200))
-                .build();
+        UUID existingGuid = UUID.randomUUID();
+        UUID fiscalGuid = UUID.randomUUID();
+        UUID activityGuid = UUID.randomUUID();
 
         ProjectEntity savedEntity = new ProjectEntity();
-        when(projectResourceAssembler.toEntity(any())).thenReturn(savedEntity);
-        when(projectRepository.saveAndFlush(any())).thenReturn(savedEntity);
-        when(projectResourceAssembler.toModel(any())).thenReturn(inputModel);
-        ProjectStatusCodeEntity activeStatus = ProjectStatusCodeEntity.builder()
-                .projectStatusCode("ACTIVE")
-                .build();
-        when(projectStatusCodeRepository.findById("ACTIVE"))
-                .thenReturn(Optional.of(activeStatus));
-
-        // Return savedEntity the first time, then empty the second time
-        when(projectRepository.findById(UUID.fromString(existingGuid)))
-                .thenReturn(Optional.of(savedEntity))
-                .thenReturn(Optional.empty());
+        savedEntity.setProjectGuid(existingGuid);
+        
+        ProjectFiscalEntity fiscalEntity = new ProjectFiscalEntity();
+        fiscalEntity.setProjectPlanFiscalGuid(fiscalGuid);
+        
+        ActivityEntity activityEntity = new ActivityEntity();
+        activityEntity.setActivityGuid(activityGuid);
+        
+        // Setup relationship structure: Project -> Fiscals -> Activities
+        savedEntity.setProjectFiscals(new ArrayList<>(Collections.singletonList(fiscalEntity)));
+        
+        // Mock behaviors
+        when(projectRepository.findById(existingGuid)).thenReturn(Optional.of(savedEntity));
+        when(activityRepository.findByProjectPlanFiscalGuid(fiscalGuid))
+                .thenReturn(Collections.singletonList(activityEntity));
 
         // When
-        projectService.deleteProject(existingGuid);
-        // Then
-        verify(projectRepository).delete(savedEntity);
-        ProjectModel projectById = projectService.getProjectById(existingGuid);
+        projectService.deleteProject(existingGuid.toString());
 
-        // Assert that the project is no longer retrievable
-        assertNull(projectById);
+        // Then
+        // Verify Project Boundary cleanup
+        verify(projectBoundaryRepository).deleteByProjectGuid(existingGuid);
+        
+        // Verify Activity cleanup
+        verify(activityBoundaryRepository).deleteByActivityGuid(activityGuid);
+        verify(activityRepository).delete(activityEntity);
+        
+        // Verify Fiscal cleanup
+        verify(projectFiscalRepository).delete(fiscalEntity);
+        
+        // Verify Flushes
+        verify(activityBoundaryRepository).flush();
+        verify(activityRepository).flush();
+        verify(projectFiscalRepository).flush();
+        
+        // Verify Project deletion
+        verify(projectRepository).delete(savedEntity);
     }
 
     @Test
