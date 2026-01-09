@@ -188,7 +188,7 @@ public class FeaturesService implements CommonService {
     }
 
 
-    List<ProjectEntity> findFilteredProjects(FeatureQueryParams params, int pageNumber, int pageRowCount, String sortBy, String sortDirection) {
+    public List<ProjectEntity> findFilteredProjects(FeatureQueryParams params, int pageNumber, int pageRowCount, String sortBy, String sortDirection) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<ProjectEntity> query = cb.createQuery(ProjectEntity.class);
         Root<ProjectEntity> project = query.from(ProjectEntity.class);
@@ -317,7 +317,7 @@ public class FeaturesService implements CommonService {
         }
     }
 
-    List<ProjectFiscalEntity> findFilteredProjectFiscals(
+    public List<ProjectFiscalEntity> findFilteredProjectFiscals(
             UUID projectGuid,
             List<String> fiscalYears,
             List<String> activityCategoryCodes,

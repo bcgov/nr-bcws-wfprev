@@ -7,6 +7,10 @@ import ca.bc.gov.nrs.wfprev.data.models.ReportRequestModel;
 import ca.bc.gov.nrs.wfprev.data.repositories.CulturalPrescribedFireReportRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.FuelManagementReportRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.ProgramAreaRepository;
+import ca.bc.gov.nrs.wfprev.data.entities.ProjectEntity;
+import ca.bc.gov.nrs.wfprev.data.params.FeatureQueryParams;
+import ca.bc.gov.nrs.wfprev.services.FeaturesService;
+import ca.bc.gov.nrs.wfprev.data.entities.ProjectFiscalEntity;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
 import org.junit.jupiter.api.BeforeEach;
@@ -46,6 +50,7 @@ class ReportServiceTest {
     private FuelManagementReportRepository fuelRepo;
     private CulturalPrescribedFireReportRepository crxRepo;
     private ProgramAreaRepository programAreaRepo;
+    private FeaturesService featuresService;
 
     private ReportService service;
 
@@ -55,7 +60,8 @@ class ReportServiceTest {
         crxRepo = mock(CulturalPrescribedFireReportRepository.class);
         programAreaRepo = mock(ProgramAreaRepository.class);
 
-        service = new ReportService(fuelRepo, crxRepo, programAreaRepo);
+        featuresService = mock(FeaturesService.class);
+        service = new ReportService(fuelRepo, crxRepo, programAreaRepo, featuresService);
 
         setField(service, "baseUrl", "https://example.gov.bc.ca");
         setField(service, "reportGeneratorLambdaUrl", "http://invalid/override-me-in-test");
@@ -67,7 +73,7 @@ class ReportServiceTest {
                 IllegalArgumentException.class,
                 () -> service.writeCsvZipFromEntities(null, new ByteArrayOutputStream())
         );
-        assertTrue(ex.getMessage().contains("At least one project is required"));
+        assertTrue(ex.getMessage().contains("At least one project or a filter is required"));
     }
 
     @Test
@@ -77,14 +83,14 @@ class ReportServiceTest {
                 IllegalArgumentException.class,
                 () -> service.writeCsvZipFromEntities(req, new ByteArrayOutputStream())
         );
-        assertTrue(ex1.getMessage().contains("At least one project is required"));
+        assertTrue(ex1.getMessage().contains("At least one project or a filter is required"));
 
         req.setProjects(Collections.emptyList());
         IllegalArgumentException ex2 = assertThrows(
                 IllegalArgumentException.class,
                 () -> service.writeCsvZipFromEntities(req, new ByteArrayOutputStream())
         );
-        assertTrue(ex2.getMessage().contains("At least one project is required"));
+        assertTrue(ex2.getMessage().contains("At least one project or a filter is required"));
     }
 
     @Test
@@ -104,6 +110,41 @@ class ReportServiceTest {
         verify(crxRepo,  times(1)).findByProjectGuid(proj);
         verify(fuelRepo, never()).findByProjectGuidAndProjectPlanFiscalGuidIn(any(), any());
         verify(crxRepo,  never()).findByProjectGuidAndProjectPlanFiscalGuidIn(any(), any());
+    }
+
+    @Test
+    void resolveReportData_withFilters_usesFeaturesService() throws Exception {
+        ReportRequestModel req = new ReportRequestModel();
+        FeatureQueryParams params = new FeatureQueryParams();
+        params.setFiscalYears(List.of("2025"));
+        req.setProjectFilter(params);
+
+        UUID proj = UUID.randomUUID();
+        UUID fiscal = UUID.randomUUID();
+        
+        ProjectEntity entity = new ProjectEntity();
+        entity.setProjectGuid(proj);
+
+        ProjectFiscalEntity fiscalEntity = new ProjectFiscalEntity();
+        fiscalEntity.setProjectPlanFiscalGuid(fiscal);
+
+        when(featuresService.findFilteredProjects(eq(params), eq(1), eq(Integer.MAX_VALUE), any(), any()))
+                .thenReturn(List.of(entity));
+        
+        when(featuresService.findFilteredProjectFiscals(eq(proj), eq(List.of("2025")), any(), any()))
+                .thenReturn(List.of(fiscalEntity));
+
+        when(fuelRepo.findByProjectGuidAndProjectPlanFiscalGuidIn(eq(proj), eq(List.of(fiscal))))
+                .thenReturn(List.of(fuel(proj, fiscal, "Fuel Filtered")));
+        when(crxRepo.findByProjectGuidAndProjectPlanFiscalGuidIn(eq(proj), eq(List.of(fiscal))))
+                .thenReturn(Collections.emptyList());
+
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        service.writeCsvZipFromEntities(req, out);
+
+        verify(featuresService).findFilteredProjects(eq(params), eq(1), eq(Integer.MAX_VALUE), any(), any());
+        verify(featuresService).findFilteredProjectFiscals(eq(proj), eq(List.of("2025")), any(), any());
+        verify(fuelRepo).findByProjectGuidAndProjectPlanFiscalGuidIn(eq(proj), eq(List.of(fiscal)));
     }
 
     @Test

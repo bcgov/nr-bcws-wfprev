@@ -32,6 +32,7 @@ export const Messages = {
   fileDownloadFailure: 'Error: File download unsuccessful',
   fileDownloadSuccess: 'File downloaded successfully.',
   fileDownloadInProgress: 'File download in progress. Please wait',
+  fileDownloadRequiresFilter: 'Filters must be applied to download file.',
   fiscalActivityDeletedFailure: 'Delete Failed. Remove Activities to Delete Fiscal Activity',
   projectTypeCannotUpdateAfterEndorsed: 'Project Type cannot be changed after any Fiscal Activity has been Endorsed and Approved'
 };
@@ -209,7 +210,7 @@ export const NumericLimits = {
   MAX_NUMBER: 99999999999
 };
 
-export const BC_BOUNDS: L.LatLngBoundsLiteral  = [
+export const BC_BOUNDS: L.LatLngBoundsLiteral = [
   [47.60393449638617, -139.1782824917356], // south, west
   [60.593907018763396, -110.35337939457779] // north, east
 ];
