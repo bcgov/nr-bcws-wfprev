@@ -355,8 +355,22 @@ export interface ReportProject {
   projectFiscalGuids?: string[];
 }
 
+export interface ProjectFilter {
+  programAreaGuids?: string[];
+  fiscalYears?: string[];
+  forestRegionOrgUnitIds?: string[];
+  forestDistrictOrgUnitIds?: string[];
+  fireCentreOrgUnitIds?: string[];
+  activityCategoryCodes?: string[];
+  planFiscalStatusCodes?: string[];
+  projectTypeCodes?: string[];
+  searchText?: string;
+  sortBy?: string;
+  sortDirection?: string;
+}
+
 export interface ReportRequest {
   reportType: ReportType;
   projects?: ReportProject[];
-  projectFilter?: any;
+  projectFilter?: ProjectFilter;
 }

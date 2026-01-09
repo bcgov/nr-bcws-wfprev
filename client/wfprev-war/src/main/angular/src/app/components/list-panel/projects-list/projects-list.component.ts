@@ -725,7 +725,17 @@ export class ProjectsListComponent implements OnInit {
     });
 
     if (filters && Object.keys(filters).length > 0) {
-      body.projectFilter = filters;
+      body.projectFilter = {
+        programAreaGuids: filters.programAreaGuid,
+        fiscalYears: filters.fiscalYear,
+        forestRegionOrgUnitIds: filters.forestRegionOrgUnitId,
+        forestDistrictOrgUnitIds: filters.forestDistrictOrgUnitId,
+        fireCentreOrgUnitIds: filters.fireCentreOrgUnitId,
+        activityCategoryCodes: filters.activityCategoryCode,
+        planFiscalStatusCodes: filters.planFiscalStatusCode,
+        projectTypeCodes: filters.projectTypeCode,
+        searchText: filters.searchText
+      };
     } else {
       snackRef.dismiss();
       this.snackbarService.open(Messages.fileDownloadRequiresFilter, 'Close', { duration: 5000, panelClass: 'snackbar-error' });
