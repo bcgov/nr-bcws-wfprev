@@ -449,4 +449,15 @@ class ProjectBoundaryServiceTest {
 
 
 
+    @Test
+    void testDeleteProjectBoundaries_Success() {
+        // GIVEN
+        String projectGuid = UUID.randomUUID().toString();
+
+        // WHEN
+        projectBoundaryService.deleteProjectBoundaries(projectGuid);
+
+        // THEN
+        verify(projectBoundaryRepository).deleteByProjectGuid(UUID.fromString(projectGuid));
+    }
 }

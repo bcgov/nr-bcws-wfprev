@@ -40,6 +40,8 @@ public class ProjectService implements CommonService {
     private final GeneralScopeCodeRepository generalScopeCodeRepository;
     private final ProjectStatusCodeRepository projectStatusCodeRepository;
     private final ObjectiveTypeCodeRepository objectiveTypeCodeRepository;
+    private final ProjectBoundaryService projectBoundaryService;
+    private final ProjectFiscalService projectFiscalService;
 
 
     public ProjectService(
@@ -49,7 +51,9 @@ public class ProjectService implements CommonService {
             ProjectTypeCodeRepository projectTypeCodeRepository,
             GeneralScopeCodeRepository generalScopeCodeRepository,
             ProjectStatusCodeRepository projectStatusCodeRepository,
-            ObjectiveTypeCodeRepository objectiveTypeCodeRepository) {
+            ObjectiveTypeCodeRepository objectiveTypeCodeRepository,
+            ProjectBoundaryService projectBoundaryService,
+            @org.springframework.context.annotation.Lazy ProjectFiscalService projectFiscalService) {
         this.projectRepository = projectRepository;
         this.projectResourceAssembler = projectResourceAssembler;
         this.forestAreaCodeRepository = forestAreaCodeRepository;
@@ -57,6 +61,8 @@ public class ProjectService implements CommonService {
         this.generalScopeCodeRepository = generalScopeCodeRepository;
         this.projectStatusCodeRepository = projectStatusCodeRepository;
         this.objectiveTypeCodeRepository = objectiveTypeCodeRepository;
+        this.projectBoundaryService = projectBoundaryService;
+        this.projectFiscalService = projectFiscalService;
     }
 
     public CollectionModel<ProjectModel> getAllProjects() throws ServiceException {
@@ -222,13 +228,14 @@ public class ProjectService implements CommonService {
     @Transactional
     public ProjectModel deleteProject(String id) throws ServiceException {
         try {
-            ProjectModel model = getProjectById(id);
-
-            if (model == null) {
-                throw new EntityNotFoundException("Project not found: " + id);
-            }
-
-            ProjectEntity entity = projectResourceAssembler.toEntity(model);
+            UUID projectGuid = UUID.fromString(id);
+            ProjectEntity entity = projectRepository.findById(projectGuid)
+                    .orElseThrow(() -> new EntityNotFoundException("Project not found: " + id));
+            
+            // Manual cleanup of dependent entities
+            projectBoundaryService.deleteProjectBoundaries(id);
+            projectFiscalService.deleteProjectFiscals(id);
+            
             projectRepository.delete(entity);
 
             return projectResourceAssembler.toModel(entity);

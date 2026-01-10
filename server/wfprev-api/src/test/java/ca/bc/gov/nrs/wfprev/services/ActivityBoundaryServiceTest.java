@@ -419,6 +419,18 @@ class ActivityBoundaryServiceTest {
         assertTrue(thrown.getMessage().contains("does not belong to Activity"));
     }
 
+    @Test
+    void testDeleteActivityBoundaries_Success() {
+        // GIVEN
+        String activityGuid = "789e1234-e89b-12d3-a456-426614174002";
+
+        // WHEN
+        activityBoundaryService.deleteActivityBoundaries(activityGuid);
+
+        // THEN
+        verify(activityBoundaryRepository).deleteByActivityGuid(UUID.fromString(activityGuid));
+    }
+
     private ConstraintViolation<ActivityBoundaryModel> mockConstraintViolation(String message) {
         Path path = mock(Path.class);
         ConstraintViolation<ActivityBoundaryModel> violation = mock(ConstraintViolation.class);

@@ -16,6 +16,7 @@ import ca.bc.gov.nrs.wfprev.common.exceptions.ServiceException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.ValidationException;
+import org.springframework.security.access.AccessDeniedException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -136,4 +137,11 @@ public class GlobalExceptionHandler {
        error.put(ERROR, ex.getMessage());
        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
    }
+    
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<Object> handleAccessDeniedException(AccessDeniedException ex) {
+        Map<String, String> error = new HashMap<>();
+        error.put(ERROR, "Access Denied.");
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error);
+    }
 }

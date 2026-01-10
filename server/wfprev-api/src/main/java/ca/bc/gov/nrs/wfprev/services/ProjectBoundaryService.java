@@ -278,4 +278,9 @@ public class ProjectBoundaryService implements CommonService {
     project.setTotalActualProjectSizeHa(boundarySizeHa);
     projectRepository.save(project);
   }
+
+  @Transactional
+  public void deleteProjectBoundaries(String projectGuid) {
+      projectBoundaryRepository.deleteByProjectGuid(UUID.fromString(projectGuid));
+  }
 }

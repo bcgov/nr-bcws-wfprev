@@ -50,6 +50,7 @@ class ActivityServiceTest {
     private ActivityStatusCodeRepository activityStatusCodeRepository;
     private ContractPhaseCodeRepository contractPhaseCodeRepository;
     private RiskRatingCodeRepository riskRatingCodeRepository;
+    private ActivityBoundaryService activityBoundaryService;
     private ActivityService activityService;
     private Validator validator;
 
@@ -62,6 +63,7 @@ class ActivityServiceTest {
         activityStatusCodeRepository = mock(ActivityStatusCodeRepository.class);
         contractPhaseCodeRepository = mock(ContractPhaseCodeRepository.class);
         riskRatingCodeRepository = mock(RiskRatingCodeRepository.class);
+        activityBoundaryService = mock(ActivityBoundaryService.class);
         validator = mock(Validator.class);
 
         activityService = new ActivityService(
@@ -72,6 +74,7 @@ class ActivityServiceTest {
                 activityStatusCodeRepository,
                 contractPhaseCodeRepository,
                 riskRatingCodeRepository,
+                activityBoundaryService,
                 validator
         );
     }
@@ -263,6 +266,7 @@ class ActivityServiceTest {
         activityService.deleteActivity(projectGuid, fiscalGuid, activityGuid);
 
         // THEN
+        verify(activityBoundaryService).deleteActivityBoundaries(activityGuid);
         verify(activityRepository).deleteById(UUID.fromString(activityGuid));
     }
 

@@ -15,10 +15,12 @@ import java.util.UUID;
 public interface ProjectBoundaryRepository extends CommonRepository<ProjectBoundaryEntity, String> {
 
     List<ProjectBoundaryEntity> findByProjectGuid(@NotNull UUID projectGuid);
-
+    
     Optional<ProjectBoundaryEntity> findByProjectBoundaryGuid(@NotNull UUID id);
 
     void deleteByProjectBoundaryGuid(@NotNull UUID id);
+
+    void deleteByProjectGuid(@NotNull UUID projectGuid);
 
     @Query(value = """
     WITH tile AS (

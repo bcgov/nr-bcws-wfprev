@@ -10,4 +10,5 @@ import java.util.UUID;
 @RepositoryRestResource(exported = false)
 public interface ActivityRepository extends CommonRepository<ActivityEntity, UUID> {
     List<ActivityEntity> findByProjectPlanFiscalGuid(UUID projectPlanFiscalGuid);
+    void deleteByProjectPlanFiscalGuid(UUID projectPlanFiscalGuid);
 }

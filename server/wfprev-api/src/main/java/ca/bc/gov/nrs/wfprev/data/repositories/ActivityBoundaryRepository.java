@@ -20,6 +20,8 @@ public interface ActivityBoundaryRepository extends CommonRepository<ActivityBou
 
     void deleteByActivityBoundaryGuid(@NotNull UUID id);
 
+    void deleteByActivityGuid(@NotNull UUID activityGuid);
+
     @Query(value = """
     WITH tile AS (
       SELECT

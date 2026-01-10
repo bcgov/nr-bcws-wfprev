@@ -30,6 +30,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import java.util.Date;
 
@@ -170,6 +171,7 @@ public class ProjectController extends CommonController {
           @ApiResponse(responseCode = "404", description = "Not Found"),
           @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = MessageListRsrc.class)))
   })
+  @PreAuthorize("hasAuthority('WFPREV.DELETE_PREVENTION_PROJECT')")
   public ResponseEntity<Void> deleteProject(@PathVariable("id") String id) {
     log.debug(" >> deleteProject with id: {}", id);
 

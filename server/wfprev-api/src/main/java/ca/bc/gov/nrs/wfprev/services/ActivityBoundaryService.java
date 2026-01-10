@@ -193,4 +193,9 @@ public class ActivityBoundaryService implements CommonService {
 
         activityBoundaryRepository.deleteByActivityBoundaryGuid(UUID.fromString(boundaryGuid));
     }
+    
+    @Transactional
+    public void deleteActivityBoundaries(String activityGuid) {
+        activityBoundaryRepository.deleteByActivityGuid(UUID.fromString(activityGuid));
+    }
 }
