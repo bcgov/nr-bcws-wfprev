@@ -44,6 +44,7 @@ class ProjectFiscalServiceTest {
     private ProjectEntity projectEntity;
     private PlanFiscalStatusCodeRepository planFiscalStatusCodeRepository;
     private EndorsementCodeRepository endorsementCodeRepository;
+    private ActivityService activityService;
 
     @BeforeEach
     void setup() {
@@ -54,7 +55,8 @@ class ProjectFiscalServiceTest {
         projectEntity = mock(ProjectEntity.class);
         planFiscalStatusCodeRepository = mock(PlanFiscalStatusCodeRepository.class);
         endorsementCodeRepository = mock(EndorsementCodeRepository.class);
-        projectFiscalService = new ProjectFiscalService(projectFiscalRepository, projectFiscalResourceAssembler, projectService, projectResourceAssembler, planFiscalStatusCodeRepository, endorsementCodeRepository);
+        activityService = mock(ActivityService.class);
+        projectFiscalService = new ProjectFiscalService(projectFiscalRepository, projectFiscalResourceAssembler, projectService, projectResourceAssembler, planFiscalStatusCodeRepository, endorsementCodeRepository, activityService);
     }
     @Test
     void testGetAllProjectFiscals_Empty() {
@@ -587,6 +589,7 @@ class ProjectFiscalServiceTest {
 
         // THEN verify the repository interactions
         verify(projectFiscalRepository).findById(projectFiscalGuid);
+        verify(activityService).deleteActivities(projectFiscalGuid.toString());
         verify(projectFiscalRepository).deleteById(projectFiscalGuid);
         verifyNoMoreInteractions(projectFiscalRepository); // Ensure no other interactions occur
     }

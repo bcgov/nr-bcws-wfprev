@@ -9,8 +9,7 @@ import ca.bc.gov.nrs.wfprev.data.entities.ObjectiveTypeCodeEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ProjectEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ProjectStatusCodeEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ProjectTypeCodeEntity;
-import ca.bc.gov.nrs.wfprev.data.entities.ProjectFiscalEntity;
-import ca.bc.gov.nrs.wfprev.data.entities.ActivityEntity;
+import ca.bc.gov.nrs.wfprev.data.entities.ProjectTypeCodeEntity;
 import ca.bc.gov.nrs.wfprev.data.models.ForestAreaCodeModel;
 import ca.bc.gov.nrs.wfprev.data.models.GeneralScopeCodeModel;
 import ca.bc.gov.nrs.wfprev.data.models.ObjectiveTypeCodeModel;
@@ -23,10 +22,7 @@ import ca.bc.gov.nrs.wfprev.data.repositories.ObjectiveTypeCodeRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.ProjectRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.ProjectStatusCodeRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.ProjectTypeCodeRepository;
-import ca.bc.gov.nrs.wfprev.data.repositories.ProjectBoundaryRepository;
-import ca.bc.gov.nrs.wfprev.data.repositories.ActivityRepository;
-import ca.bc.gov.nrs.wfprev.data.repositories.ActivityBoundaryRepository;
-import ca.bc.gov.nrs.wfprev.data.repositories.ProjectFiscalRepository;
+import ca.bc.gov.nrs.wfprev.data.repositories.ProjectTypeCodeRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
@@ -75,10 +71,8 @@ class ProjectServiceTest {
     private ProjectStatusCodeRepository projectStatusCodeRepository;
     private ObjectiveTypeCodeRepository objectiveTypeCodeRepository;
     private SpringSecurityAuditorAware springSecurityAuditorAware;
-    private ProjectBoundaryRepository projectBoundaryRepository;
-    private ActivityRepository activityRepository;
-    private ActivityBoundaryRepository activityBoundaryRepository;
-    private ProjectFiscalRepository projectFiscalRepository;
+    private ProjectBoundaryService projectBoundaryService;
+    private ProjectFiscalService projectFiscalService;
 
     @BeforeEach
     void setup() {
@@ -90,23 +84,19 @@ class ProjectServiceTest {
         projectStatusCodeRepository = mock(ProjectStatusCodeRepository.class);
         springSecurityAuditorAware = mock(SpringSecurityAuditorAware.class);
         objectiveTypeCodeRepository = mock(ObjectiveTypeCodeRepository.class);
-        projectBoundaryRepository = mock(ProjectBoundaryRepository.class);
-        activityRepository = mock(ActivityRepository.class);
-        activityBoundaryRepository = mock(ActivityBoundaryRepository.class);
-        projectFiscalRepository = mock(ProjectFiscalRepository.class);
+        projectBoundaryService = mock(ProjectBoundaryService.class);
+        projectFiscalService = mock(ProjectFiscalService.class);
 
         projectService = new ProjectService(projectRepository, projectResourceAssembler, forestAreaCodeRepository,
                 projectTypeCodeRepository, generalScopeCodeRepository, projectStatusCodeRepository, objectiveTypeCodeRepository,
-                projectBoundaryRepository, activityRepository, activityBoundaryRepository, projectFiscalRepository);
+                projectBoundaryService, projectFiscalService);
         setField(projectService, "forestAreaCodeRepository", forestAreaCodeRepository);
         setField(projectService, "projectTypeCodeRepository", projectTypeCodeRepository);
         setField(projectService, "generalScopeCodeRepository", generalScopeCodeRepository);
         setField(projectService, "projectStatusCodeRepository", projectStatusCodeRepository);
         setField(projectService, "objectiveTypeCodeRepository", objectiveTypeCodeRepository);
-        setField(projectService, "projectBoundaryRepository", projectBoundaryRepository);
-        setField(projectService, "activityRepository", activityRepository);
-        setField(projectService, "activityBoundaryRepository", activityBoundaryRepository);
-        setField(projectService, "projectFiscalRepository", projectFiscalRepository);
+        setField(projectService, "projectBoundaryService", projectBoundaryService);
+        setField(projectService, "projectFiscalService", projectFiscalService);
 
         ProjectStatusCodeEntity activeStatus = new ProjectStatusCodeEntity();
         activeStatus.setProjectStatusCode("ACTIVE");
@@ -763,38 +753,17 @@ class ProjectServiceTest {
         ProjectEntity savedEntity = new ProjectEntity();
         savedEntity.setProjectGuid(existingGuid);
         
-        ProjectFiscalEntity fiscalEntity = new ProjectFiscalEntity();
-        fiscalEntity.setProjectPlanFiscalGuid(fiscalGuid);
-        
-        ActivityEntity activityEntity = new ActivityEntity();
-        activityEntity.setActivityGuid(activityGuid);
-        
-        // Setup relationship structure: Project -> Fiscals -> Activities
-        savedEntity.setProjectFiscals(new ArrayList<>(Collections.singletonList(fiscalEntity)));
-        
         // Mock behaviors
         when(projectRepository.findById(existingGuid)).thenReturn(Optional.of(savedEntity));
-        when(activityRepository.findByProjectPlanFiscalGuid(fiscalGuid))
-                .thenReturn(Collections.singletonList(activityEntity));
+        // No need to mock child repos as we call services
 
         // When
         projectService.deleteProject(existingGuid.toString());
 
         // Then
-        // Verify Project Boundary cleanup
-        verify(projectBoundaryRepository).deleteByProjectGuid(existingGuid);
-        
-        // Verify Activity cleanup
-        verify(activityBoundaryRepository).deleteByActivityGuid(activityGuid);
-        verify(activityRepository).delete(activityEntity);
-        
-        // Verify Fiscal cleanup
-        verify(projectFiscalRepository).delete(fiscalEntity);
-        
-        // Verify Flushes
-        verify(activityBoundaryRepository).flush();
-        verify(activityRepository).flush();
-        verify(projectFiscalRepository).flush();
+        // Verify Service calls
+        verify(projectBoundaryService).deleteProjectBoundaries(existingGuid.toString());
+        verify(projectFiscalService).deleteProjectFiscals(existingGuid.toString());
         
         // Verify Project deletion
         verify(projectRepository).delete(savedEntity);

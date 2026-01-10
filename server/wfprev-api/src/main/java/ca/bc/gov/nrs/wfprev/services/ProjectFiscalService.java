@@ -19,6 +19,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.context.annotation.Lazy;
 
 import java.util.Date;
 import java.util.List;
@@ -36,6 +38,7 @@ public class ProjectFiscalService implements CommonService {
     private final ProjectResourceAssembler projectResourceAssembler;
     private final PlanFiscalStatusCodeRepository planFiscalStatusCodeRepository;
     private final EndorsementCodeRepository endorsementCodeRepository;
+    private final ActivityService activityService;
 
     private static final String DRAFT = "DRAFT";
     private static final String PROPOSED = "PROPOSED";
@@ -56,13 +59,14 @@ public class ProjectFiscalService implements CommonService {
 
     public ProjectFiscalService(ProjectFiscalRepository projectFiscalRepository, ProjectFiscalResourceAssembler projectFiscalResourceAssembler,
                                 ProjectService projectService, ProjectResourceAssembler projectResourceAssembler, PlanFiscalStatusCodeRepository planFiscalStatusCodeRepository,
-                                EndorsementCodeRepository endorsementCodeRepository) {
+                                EndorsementCodeRepository endorsementCodeRepository, @Lazy ActivityService activityService) {
         this.projectFiscalRepository = projectFiscalRepository;
         this.projectFiscalResourceAssembler = projectFiscalResourceAssembler;
         this.projectService = projectService;
         this.projectResourceAssembler = projectResourceAssembler;
         this.planFiscalStatusCodeRepository = planFiscalStatusCodeRepository;
         this.endorsementCodeRepository = endorsementCodeRepository;
+        this.activityService = activityService;
     }
 
     public CollectionModel<ProjectFiscalModel> getAllProjectFiscals(String projectId) throws ServiceException {
@@ -143,7 +147,17 @@ public class ProjectFiscalService implements CommonService {
                 .orElseThrow(() -> new EntityNotFoundException("Project Fiscal not found with ID: " + uuid));
 
         // Proceed with deletion
+        activityService.deleteActivities(guid.toString());
         projectFiscalRepository.deleteById(guid);
+    }
+
+    @Transactional
+    public void deleteProjectFiscals(String projectGuid) {
+        List<ProjectFiscalEntity> fiscals = projectFiscalRepository.findAllByProject_ProjectGuid(UUID.fromString(projectGuid));
+        for (ProjectFiscalEntity fiscal : fiscals) {
+            activityService.deleteActivities(fiscal.getProjectPlanFiscalGuid().toString());
+            projectFiscalRepository.delete(fiscal);
+        }
     }
 
     private void assignAssociatedEntities(ProjectFiscalModel resource, ProjectFiscalEntity entity) {

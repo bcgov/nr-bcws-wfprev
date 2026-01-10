@@ -17,12 +17,6 @@ import ca.bc.gov.nrs.wfprev.data.repositories.ObjectiveTypeCodeRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.ProjectRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.ProjectStatusCodeRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.ProjectTypeCodeRepository;
-import ca.bc.gov.nrs.wfprev.data.repositories.ProjectBoundaryRepository;
-import ca.bc.gov.nrs.wfprev.data.repositories.ActivityRepository;
-import ca.bc.gov.nrs.wfprev.data.repositories.ActivityBoundaryRepository;
-import ca.bc.gov.nrs.wfprev.data.repositories.ProjectFiscalRepository;
-import ca.bc.gov.nrs.wfprev.data.entities.ProjectFiscalEntity;
-import ca.bc.gov.nrs.wfprev.data.entities.ActivityEntity;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import jakarta.validation.ConstraintViolationException;
@@ -46,10 +40,8 @@ public class ProjectService implements CommonService {
     private final GeneralScopeCodeRepository generalScopeCodeRepository;
     private final ProjectStatusCodeRepository projectStatusCodeRepository;
     private final ObjectiveTypeCodeRepository objectiveTypeCodeRepository;
-    private final ProjectBoundaryRepository projectBoundaryRepository;
-    private final ActivityRepository activityRepository;
-    private final ActivityBoundaryRepository activityBoundaryRepository;
-    private final ProjectFiscalRepository projectFiscalRepository;
+    private final ProjectBoundaryService projectBoundaryService;
+    private final ProjectFiscalService projectFiscalService;
 
 
     public ProjectService(
@@ -60,10 +52,8 @@ public class ProjectService implements CommonService {
             GeneralScopeCodeRepository generalScopeCodeRepository,
             ProjectStatusCodeRepository projectStatusCodeRepository,
             ObjectiveTypeCodeRepository objectiveTypeCodeRepository,
-            ProjectBoundaryRepository projectBoundaryRepository,
-            ActivityRepository activityRepository,
-            ActivityBoundaryRepository activityBoundaryRepository,
-            ProjectFiscalRepository projectFiscalRepository) {
+            ProjectBoundaryService projectBoundaryService,
+            @org.springframework.context.annotation.Lazy ProjectFiscalService projectFiscalService) {
         this.projectRepository = projectRepository;
         this.projectResourceAssembler = projectResourceAssembler;
         this.forestAreaCodeRepository = forestAreaCodeRepository;
@@ -71,10 +61,8 @@ public class ProjectService implements CommonService {
         this.generalScopeCodeRepository = generalScopeCodeRepository;
         this.projectStatusCodeRepository = projectStatusCodeRepository;
         this.objectiveTypeCodeRepository = objectiveTypeCodeRepository;
-        this.projectBoundaryRepository = projectBoundaryRepository;
-        this.activityRepository = activityRepository;
-        this.activityBoundaryRepository = activityBoundaryRepository;
-        this.projectFiscalRepository = projectFiscalRepository;
+        this.projectBoundaryService = projectBoundaryService;
+        this.projectFiscalService = projectFiscalService;
     }
 
     public CollectionModel<ProjectModel> getAllProjects() throws ServiceException {
@@ -245,27 +233,8 @@ public class ProjectService implements CommonService {
                     .orElseThrow(() -> new EntityNotFoundException("Project not found: " + id));
             
             // Manual cleanup of dependent entities
-            projectBoundaryRepository.deleteByProjectGuid(projectGuid);
-            
-            if (entity.getProjectFiscals() != null) {
-                for (ProjectFiscalEntity fiscal : entity.getProjectFiscals()) {
-                    List<ActivityEntity> activities = activityRepository.findByProjectPlanFiscalGuid(fiscal.getProjectPlanFiscalGuid());
-                    
-                    for (ActivityEntity activity : activities) {
-                        activityBoundaryRepository.deleteByActivityGuid(activity.getActivityGuid());
-                        activityRepository.delete(activity);
-                    }
-                    projectFiscalRepository.delete(fiscal);
-                }
-                
-                // Ensure all child entities are deleted from the database before deleting the parent
-                activityBoundaryRepository.flush();
-                activityRepository.flush();
-                projectFiscalRepository.flush();
-                
-                // Clear the in-memory collection to avoid Hibernate confusion
-                entity.getProjectFiscals().clear();
-            }
+            projectBoundaryService.deleteProjectBoundaries(id);
+            projectFiscalService.deleteProjectFiscals(id);
             
             projectRepository.delete(entity);
 
