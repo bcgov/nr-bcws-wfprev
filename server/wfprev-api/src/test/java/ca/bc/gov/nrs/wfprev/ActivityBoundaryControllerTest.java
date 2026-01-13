@@ -41,6 +41,7 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
@@ -515,7 +516,7 @@ class ActivityBoundaryControllerTest {
                 .thenReturn(updatedActivity);
 
         doNothing().when(activityBoundaryService).deleteActivityBoundary(
-                eq(projectId.toString()), eq(fiscalId.toString()), eq(activityId.toString()), eq(boundaryId.toString()));
+                eq(projectId.toString()), eq(fiscalId.toString()), eq(activityId.toString()), eq(boundaryId.toString()), anyBoolean());
 
         when(activityService.getActivity(eq(projectId.toString()), eq(fiscalId.toString()), eq(activityId.toString())))
                 .thenReturn(new ActivityModel());
@@ -533,7 +534,7 @@ class ActivityBoundaryControllerTest {
                         .header(HttpHeaders.AUTHORIZATION, "Bearer test-token"))
                 .andExpect(status().isNoContent());
 
-        verify(activityBoundaryService).deleteActivityBoundary(eq(projectId.toString()), eq(fiscalId.toString()), eq(activityId.toString()), eq(boundaryId.toString()));
+        verify(activityBoundaryService).deleteActivityBoundary(eq(projectId.toString()), eq(fiscalId.toString()), eq(activityId.toString()), eq(boundaryId.toString()), eq(false));
         verify(coordinatesService).updateProjectCoordinates(eq(projectId.toString()));
         verify(activityService).getActivity(eq(projectId.toString()), eq(fiscalId.toString()), eq(activityId.toString()));
         verify(activityBoundaryService).getAllActivityBoundaries(eq(projectId.toString()), eq(fiscalId.toString()), eq(activityId.toString()));
@@ -553,7 +554,7 @@ class ActivityBoundaryControllerTest {
         UUID activityId = UUID.randomUUID();
 
         doNothing().when(activityBoundaryService).deleteActivityBoundary(
-                eq(projectId.toString()), eq(fiscalId.toString()), eq(activityId.toString()), eq(boundaryId.toString()));
+                eq(projectId.toString()), eq(fiscalId.toString()), eq(activityId.toString()), eq(boundaryId.toString()), anyBoolean());
         doNothing().when(coordinatesService).updateProjectCoordinates(eq(projectId.toString()));
         when(activityService.getActivity(eq(projectId.toString()), eq(fiscalId.toString()), eq(activityId.toString())))
                 .thenReturn(null);
@@ -563,7 +564,7 @@ class ActivityBoundaryControllerTest {
                         .header(HttpHeaders.AUTHORIZATION, "Bearer test-token"))
                 .andExpect(status().isNoContent());
 
-        verify(activityBoundaryService).deleteActivityBoundary(eq(projectId.toString()), eq(fiscalId.toString()), eq(activityId.toString()), eq(boundaryId.toString()));
+        verify(activityBoundaryService).deleteActivityBoundary(eq(projectId.toString()), eq(fiscalId.toString()), eq(activityId.toString()), eq(boundaryId.toString()), eq(false));
         verify(coordinatesService).updateProjectCoordinates(eq(projectId.toString()));
         verify(activityService).getActivity(eq(projectId.toString()), eq(fiscalId.toString()), eq(activityId.toString()));
         verify(activityService, org.mockito.Mockito.never()).updateActivity(anyString(), anyString(), any(ActivityModel.class));

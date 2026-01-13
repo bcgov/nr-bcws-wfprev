@@ -758,13 +758,35 @@ class ProjectServiceTest {
         // No need to mock child repos as we call services
 
         // When
-        projectService.deleteProject(existingGuid.toString());
+        projectService.deleteProject(existingGuid.toString(), false);
 
         // Then
         // Verify Service calls
-        verify(projectBoundaryService).deleteProjectBoundaries(existingGuid.toString());
-        verify(projectFiscalService).deleteProjectFiscals(existingGuid.toString());
+        verify(projectBoundaryService).deleteProjectBoundaries(existingGuid.toString(), false);
+        verify(projectFiscalService).deleteProjectFiscals(existingGuid.toString(), false);
         
+        // Verify Project deletion
+        verify(projectRepository).delete(savedEntity);
+    }
+
+    @Test
+    void test_delete_project_with_files() {
+        // Given
+        UUID existingGuid = UUID.randomUUID();
+        ProjectEntity savedEntity = new ProjectEntity();
+        savedEntity.setProjectGuid(existingGuid);
+
+        // Mock behaviors
+        when(projectRepository.findById(existingGuid)).thenReturn(Optional.of(savedEntity));
+
+        // When
+        projectService.deleteProject(existingGuid.toString(), true);
+
+        // Then
+        // Verify Service calls
+        verify(projectBoundaryService).deleteProjectBoundaries(existingGuid.toString(), true);
+        verify(projectFiscalService).deleteProjectFiscals(existingGuid.toString(), true);
+
         // Verify Project deletion
         verify(projectRepository).delete(savedEntity);
     }
@@ -778,7 +800,7 @@ class ProjectServiceTest {
 
         // When
         ServiceException exception = assertThrows(ServiceException.class,
-                () -> projectService.deleteProject(id));
+                () -> projectService.deleteProject(id, false));
 
         // Then
         assertEquals("Database error", exception.getMessage());
@@ -814,7 +836,7 @@ class ProjectServiceTest {
         // Then
         ServiceException exception = assertThrows(
                 ServiceException.class,
-                () -> projectService.deleteProject(existingGuid)
+                () -> projectService.deleteProject(existingGuid, false)
         );
         assertEquals("Error deleting project", exception.getMessage());
     }

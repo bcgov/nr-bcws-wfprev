@@ -15,6 +15,7 @@ import jakarta.validation.Path;
 import jakarta.validation.Validator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.springframework.hateoas.CollectionModel;
 
 import java.math.BigDecimal;
@@ -32,6 +33,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.times;
 
 class ActivityBoundaryServiceTest {
 
@@ -43,6 +45,9 @@ class ActivityBoundaryServiceTest {
     private ProjectBoundaryService projectBoundaryService;
     private Validator validator;
 
+    @Mock
+    private FileAttachmentService fileAttachmentService;
+
     @BeforeEach
     void setup() {
         activityBoundaryRepository = mock(ActivityBoundaryRepository.class);
@@ -50,6 +55,7 @@ class ActivityBoundaryServiceTest {
         activityRepository = mock(ActivityRepository.class);
         activityService = mock(ActivityService.class);
         projectBoundaryService = mock(ProjectBoundaryService.class);
+        fileAttachmentService = mock(FileAttachmentService.class);
         validator = mock(Validator.class);
 
         activityBoundaryService = new ActivityBoundaryService(
@@ -58,6 +64,7 @@ class ActivityBoundaryServiceTest {
                 activityRepository,
                 activityService,
                 projectBoundaryService,
+                fileAttachmentService,
                 validator
         );
     }
@@ -328,9 +335,10 @@ class ActivityBoundaryServiceTest {
                 .thenReturn(Optional.of(boundaryEntity));
 
         // WHEN
-        activityBoundaryService.deleteActivityBoundary("project-guid", "fiscal-guid", activityGuid, boundaryGuid);
+        activityBoundaryService.deleteActivityBoundary("project-guid", "fiscal-guid", activityGuid, boundaryGuid, true);
 
         // THEN
+        verify(fileAttachmentService).deleteAttachmentsBySourceObject(boundaryGuid);
         verify(activityBoundaryRepository).deleteByActivityBoundaryGuid(UUID.fromString(boundaryGuid));
     }
 
@@ -346,7 +354,7 @@ class ActivityBoundaryServiceTest {
 
         // WHEN / THEN
         EntityNotFoundException thrown = assertThrows(EntityNotFoundException.class, () ->
-                activityBoundaryService.deleteActivityBoundary("project-guid", "fiscal-guid", activityGuid, boundaryGuid));
+                activityBoundaryService.deleteActivityBoundary("project-guid", "fiscal-guid", activityGuid, boundaryGuid, true));
         assertTrue(thrown.getMessage().contains("Activity Boundary not found"));
     }
 
@@ -423,11 +431,39 @@ class ActivityBoundaryServiceTest {
     void testDeleteActivityBoundaries_Success() {
         // GIVEN
         String activityGuid = "789e1234-e89b-12d3-a456-426614174002";
+        String boundaryGuid = "101e7890-e89b-12d3-a456-426614174003";
+
+        ActivityBoundaryEntity boundaryEntity = new ActivityBoundaryEntity();
+        boundaryEntity.setActivityBoundaryGuid(UUID.fromString(boundaryGuid));
+
+        when(activityBoundaryRepository.findByActivityGuid(UUID.fromString(activityGuid)))
+                .thenReturn(List.of(boundaryEntity));
 
         // WHEN
-        activityBoundaryService.deleteActivityBoundaries(activityGuid);
+        activityBoundaryService.deleteActivityBoundaries(activityGuid, true);
 
         // THEN
+        verify(fileAttachmentService).deleteAttachmentsBySourceObject(boundaryGuid);
+        verify(activityBoundaryRepository).deleteByActivityGuid(UUID.fromString(activityGuid));
+    }
+
+    @Test
+    void testDeleteActivityBoundaries_NoFileDeletion() {
+        // GIVEN
+        String activityGuid = "789e1234-e89b-12d3-a456-426614174002";
+        String boundaryGuid = "101e7890-e89b-12d3-a456-426614174003";
+
+        ActivityBoundaryEntity boundaryEntity = new ActivityBoundaryEntity();
+        boundaryEntity.setActivityBoundaryGuid(UUID.fromString(boundaryGuid));
+
+        when(activityBoundaryRepository.findByActivityGuid(UUID.fromString(activityGuid)))
+                .thenReturn(List.of(boundaryEntity));
+
+        // WHEN
+        activityBoundaryService.deleteActivityBoundaries(activityGuid, false);
+
+        // THEN
+        verify(fileAttachmentService, times(0)).deleteAttachmentsBySourceObject(boundaryGuid);
         verify(activityBoundaryRepository).deleteByActivityGuid(UUID.fromString(activityGuid));
     }
 
