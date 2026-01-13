@@ -42,6 +42,7 @@ public class ActivityBoundaryService implements CommonService {
     private final ActivityRepository activityRepository;
     private final ActivityService activityService;
     private final ProjectBoundaryService projectBoundaryService;
+    private final FileAttachmentService fileAttachmentService;
     private final Validator validator;
 
     public ActivityBoundaryService(
@@ -50,12 +51,14 @@ public class ActivityBoundaryService implements CommonService {
             ActivityRepository activityRepository,
             ActivityService activityService,
             ProjectBoundaryService projectBoundaryService,
+            FileAttachmentService fileAttachmentService,
             Validator validator) {
         this.activityBoundaryRepository = activityBoundaryRepository;
         this.activityBoundaryResourceAssembler = activityBoundaryResourceAssembler;
         this.activityRepository = activityRepository;
         this.activityService = activityService;
         this.projectBoundaryService = projectBoundaryService;
+        this.fileAttachmentService = fileAttachmentService;
         this.validator = validator;
     }
 
@@ -178,7 +181,7 @@ public class ActivityBoundaryService implements CommonService {
 
     @Transactional
     public void deleteActivityBoundary(
-            String projectGuid, String fiscalGuid, String activityGuid, String boundaryGuid) {
+            String projectGuid, String fiscalGuid, String activityGuid, String boundaryGuid, boolean deleteFiles) {
         // Verify activity exists and belongs to the correct hierarchy
         activityService.getActivity(projectGuid, fiscalGuid, activityGuid);
 
@@ -191,11 +194,22 @@ public class ActivityBoundaryService implements CommonService {
             throw new EntityNotFoundException(MessageFormat.format(EXTENDED_KEY_FORMAT, BOUNDARY, boundaryGuid, DOES_NOT_BELONG_ACTIVITY, activityGuid));
         }
 
+        // Delete associated attachments
+        if (deleteFiles) {
+            fileAttachmentService.deleteAttachmentsBySourceObject(boundaryGuid);
+        }
+
         activityBoundaryRepository.deleteByActivityBoundaryGuid(UUID.fromString(boundaryGuid));
     }
     
     @Transactional
-    public void deleteActivityBoundaries(String activityGuid) {
+    public void deleteActivityBoundaries(String activityGuid, boolean deleteFiles) {
+        List<ActivityBoundaryEntity> boundaries = activityBoundaryRepository.findByActivityGuid(UUID.fromString(activityGuid));
+        for (ActivityBoundaryEntity boundary : boundaries) {
+            if (deleteFiles) {
+                fileAttachmentService.deleteAttachmentsBySourceObject(boundary.getActivityBoundaryGuid().toString());
+            }
+        }
         activityBoundaryRepository.deleteByActivityGuid(UUID.fromString(activityGuid));
     }
 }

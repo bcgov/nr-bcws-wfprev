@@ -54,6 +54,7 @@ public class ActivityService implements CommonService {
     private final ContractPhaseCodeRepository contractPhaseCodeRepository;
     private final RiskRatingCodeRepository riskRatingCodeRepository;
     private final ActivityBoundaryService activityBoundaryService;
+    private final FileAttachmentService fileAttachmentService;
     private final Validator validator;
 
     public ActivityService(
@@ -65,6 +66,7 @@ public class ActivityService implements CommonService {
             ContractPhaseCodeRepository contractPhaseCodeRepository,
             RiskRatingCodeRepository riskRatingCodeRepository,
             @Lazy ActivityBoundaryService activityBoundaryService,
+            FileAttachmentService fileAttachmentService,
             Validator validator) {
         this.activityRepository = activityRepository;
         this.activityResourceAssembler = activityResourceAssembler;
@@ -74,6 +76,7 @@ public class ActivityService implements CommonService {
         this.contractPhaseCodeRepository = contractPhaseCodeRepository;
         this.riskRatingCodeRepository = riskRatingCodeRepository;
         this.activityBoundaryService = activityBoundaryService;
+        this.fileAttachmentService = fileAttachmentService;
         this.validator = validator;
     }
 
@@ -197,7 +200,7 @@ public class ActivityService implements CommonService {
         return activityResourceAssembler.toModel(activity);
     }
 
-    public void deleteActivity(String projectGuid, String fiscalGuid, String activityGuid) {
+    public void deleteActivity(String projectGuid, String fiscalGuid, String activityGuid, boolean deleteFiles) {
         // Get the activity
         ActivityEntity activity = activityRepository.findById(UUID.fromString(activityGuid))
                 .orElseThrow(() -> new EntityNotFoundException(MessageFormat.format(KEY_FORMAT, ACTIVITY_NOT_FOUND, activityGuid)));
@@ -214,15 +217,22 @@ public class ActivityService implements CommonService {
             throw new EntityNotFoundException(MessageFormat.format(EXTENDED_KEY_FORMAT, PROJECT_FISCAL, fiscalGuid, DOES_NOT_BELONG_PROJECT, projectGuid));
         }
 
-        activityBoundaryService.deleteActivityBoundaries(activityGuid);
+        if (deleteFiles) {
+            fileAttachmentService.deleteAttachmentsBySourceObject(activityGuid);
+        }
+        activityBoundaryService.deleteActivityBoundaries(activityGuid, deleteFiles);
         activityRepository.deleteById(UUID.fromString(activityGuid));
     }
 
     @Transactional
-    public void deleteActivities(String fiscalGuid) {
+    public void deleteActivities(String fiscalGuid, boolean deleteFiles) {
         List<ActivityEntity> activities = activityRepository.findByProjectPlanFiscalGuid(UUID.fromString(fiscalGuid));
         for (ActivityEntity activity : activities) {
-            activityBoundaryService.deleteActivityBoundaries(activity.getActivityGuid().toString());
+            String activityGuid = activity.getActivityGuid().toString();
+            if (deleteFiles) {
+                fileAttachmentService.deleteAttachmentsBySourceObject(activityGuid);
+            }
+            activityBoundaryService.deleteActivityBoundaries(activityGuid, deleteFiles);
             activityRepository.delete(activity);
         }
     }

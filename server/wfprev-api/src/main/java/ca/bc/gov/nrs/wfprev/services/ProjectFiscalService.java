@@ -139,7 +139,7 @@ public class ProjectFiscalService implements CommonService {
         return projectFiscalResourceAssembler.toModel(entity);
     }
 
-    public void deleteProjectFiscal(String uuid) {
+    public void deleteProjectFiscal(String uuid, boolean deleteFiles) {
         UUID guid = UUID.fromString(uuid);
 
         // Check if the entity exists, throw EntityNotFoundException if not
@@ -147,15 +147,15 @@ public class ProjectFiscalService implements CommonService {
                 .orElseThrow(() -> new EntityNotFoundException("Project Fiscal not found with ID: " + uuid));
 
         // Proceed with deletion
-        activityService.deleteActivities(guid.toString());
+        activityService.deleteActivities(guid.toString(), deleteFiles);
         projectFiscalRepository.deleteById(guid);
     }
 
     @Transactional
-    public void deleteProjectFiscals(String projectGuid) {
+    public void deleteProjectFiscals(String projectGuid, boolean deleteFiles) {
         List<ProjectFiscalEntity> fiscals = projectFiscalRepository.findAllByProject_ProjectGuid(UUID.fromString(projectGuid));
         for (ProjectFiscalEntity fiscal : fiscals) {
-            activityService.deleteActivities(fiscal.getProjectPlanFiscalGuid().toString());
+            activityService.deleteActivities(fiscal.getProjectPlanFiscalGuid().toString(), deleteFiles);
             projectFiscalRepository.delete(fiscal);
         }
     }

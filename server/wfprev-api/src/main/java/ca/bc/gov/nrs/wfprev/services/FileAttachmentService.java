@@ -37,6 +37,7 @@ public class FileAttachmentService implements CommonService {
     private final SourceObjectNameCodeRepository sourceObjectNameCodeRepository;
     private final ProjectBoundaryRepository projectBoundaryRepository;
     private final ActivityBoundaryRepository activityBoundaryRepository;
+    private final WildfireDocumentManagerService wildfireDocumentManagerService;
 
     public FileAttachmentService(
             FileAttachmentRepository fileAttachmentRepository,
@@ -44,13 +45,15 @@ public class FileAttachmentService implements CommonService {
             AttachmentContentTypeCodeRepository attachmentContentTypeCodeRepository,
             SourceObjectNameCodeRepository sourceObjectNameCodeRepository,
             ProjectBoundaryRepository projectBoundaryRepository,
-            ActivityBoundaryRepository activityBoundaryRepository) {
+            ActivityBoundaryRepository activityBoundaryRepository,
+            WildfireDocumentManagerService wildfireDocumentManagerService) {
         this.fileAttachmentRepository = fileAttachmentRepository;
         this.fileAttachmentResourceAssembler = fileAttachmentResourceAssembler;
         this.attachmentContentTypeCodeRepository = attachmentContentTypeCodeRepository;
         this.sourceObjectNameCodeRepository = sourceObjectNameCodeRepository;
         this.projectBoundaryRepository = projectBoundaryRepository;
         this.activityBoundaryRepository = activityBoundaryRepository;
+        this.wildfireDocumentManagerService = wildfireDocumentManagerService;
     }
 
     public CollectionModel<FileAttachmentModel> getAllProjectAttachments(String projectGuid) throws ServiceException {
@@ -193,6 +196,10 @@ public class FileAttachmentService implements CommonService {
 
             FileAttachmentModel model = fileAttachmentResourceAssembler.toModel(entity);
 
+            if (entity.getFileIdentifier() != null) {
+                wildfireDocumentManagerService.deleteDocument(entity.getFileIdentifier());
+            }
+
             fileAttachmentRepository.delete(entity);
 
             return model;
@@ -200,6 +207,17 @@ public class FileAttachmentService implements CommonService {
             throw e;
         } catch (Exception e) {
             throw new ServiceException(e.getLocalizedMessage(), e);
+        }
+    }
+
+    @Transactional
+    public void deleteAttachmentsBySourceObject(String sourceObjectUniqueId) {
+        List<FileAttachmentEntity> attachments = fileAttachmentRepository.findAllBySourceObjectUniqueId(sourceObjectUniqueId);
+        for (FileAttachmentEntity attachment : attachments) {
+            if (attachment.getFileIdentifier() != null) {
+                wildfireDocumentManagerService.deleteDocument(attachment.getFileIdentifier());
+            }
+            fileAttachmentRepository.delete(attachment);
         }
     }
 }

@@ -226,15 +226,15 @@ public class ProjectService implements CommonService {
     }
 
     @Transactional
-    public ProjectModel deleteProject(String id) throws ServiceException {
+    public ProjectModel deleteProject(String id, boolean deleteFiles) throws ServiceException {
         try {
             UUID projectGuid = UUID.fromString(id);
             ProjectEntity entity = projectRepository.findById(projectGuid)
                     .orElseThrow(() -> new EntityNotFoundException("Project not found: " + id));
             
             // Manual cleanup of dependent entities
-            projectBoundaryService.deleteProjectBoundaries(id);
-            projectFiscalService.deleteProjectFiscals(id);
+            projectBoundaryService.deleteProjectBoundaries(id, deleteFiles);
+            projectFiscalService.deleteProjectFiscals(id, deleteFiles);
             
             projectRepository.delete(entity);
 

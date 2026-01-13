@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.security.access.prepost.PreAuthorize;
 
@@ -172,11 +173,12 @@ public class ProjectController extends CommonController {
           @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = MessageListRsrc.class)))
   })
   @PreAuthorize("hasAuthority('WFPREV.DELETE_PREVENTION_PROJECT')")
-  public ResponseEntity<Void> deleteProject(@PathVariable("id") String id) {
-    log.debug(" >> deleteProject with id: {}", id);
+  @Parameter(name = "deleteFiles", description = "If true, associated files will be deleted from WFDM and the database. If false (default), files are retained.", required = false, schema = @Schema(implementation = Boolean.class), in = ParameterIn.QUERY)
+  public ResponseEntity<Void> deleteProject(@PathVariable("id") String id, @RequestParam(value = "deleteFiles", defaultValue = "false") boolean deleteFiles) {
+    log.debug(" >> deleteProject with id: {} deleteFiles: {}", id, deleteFiles);
 
     try {
-      projectService.deleteProject(id);
+      projectService.deleteProject(id, deleteFiles);
       log.debug(" << deleteProject success");
       return ResponseEntity.noContent().build();
     } catch (EntityNotFoundException e) {

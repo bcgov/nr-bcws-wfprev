@@ -30,6 +30,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -232,11 +233,12 @@ public class ActivityBoundaryController extends CommonController {
             @PathVariable String projectGuid,
             @PathVariable String projectPlanFiscalGuid,
             @PathVariable String activityGuid,
-            @PathVariable String id) {
+            @PathVariable String id,
+            @RequestParam(name = "deleteFiles", required = false, defaultValue = "false") boolean deleteFiles) {
         log.debug(" >> deleteActivityBoundary");
 
         try {
-            activityBoundaryService.deleteActivityBoundary(projectGuid, projectPlanFiscalGuid, activityGuid, id);
+            activityBoundaryService.deleteActivityBoundary(projectGuid, projectPlanFiscalGuid, activityGuid, id, deleteFiles);
             coordinatesService.updateProjectCoordinates(projectGuid);
 
             // Update activity spatial indicator

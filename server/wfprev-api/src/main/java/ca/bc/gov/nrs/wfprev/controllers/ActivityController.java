@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -244,11 +245,12 @@ public class ActivityController extends CommonController {
     public ResponseEntity<Void> deleteActivity(
             @PathVariable("projectId") String projectId,
             @PathVariable("projectFiscalId") String projectFiscalId,
-            @PathVariable("id") String id) {
+            @PathVariable("id") String id,
+            @RequestParam(name = "deleteFiles", required = false, defaultValue = "false") boolean deleteFiles) {
         log.debug(" >> deleteActivity with id: {}", id);
 
         try {
-            activityService.deleteActivity(projectId, projectFiscalId, id);
+            activityService.deleteActivity(projectId, projectFiscalId, id, deleteFiles);
             return ResponseEntity.noContent().build();
         } catch (EntityNotFoundException e) {
             log.warn(" ### Activity not found with id: {}", id, e);

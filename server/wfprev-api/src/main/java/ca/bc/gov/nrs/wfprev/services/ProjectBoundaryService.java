@@ -42,6 +42,7 @@ public class ProjectBoundaryService implements CommonService {
   private final ProjectBoundaryResourceAssembler projectBoundaryResourceAssembler;
   private final ProjectRepository projectRepository;
   private final ProjectService projectService;
+  private final FileAttachmentService fileAttachmentService;
   private final Validator validator;
 
   public ProjectBoundaryService(
@@ -49,11 +50,13 @@ public class ProjectBoundaryService implements CommonService {
           ProjectBoundaryResourceAssembler projectBoundaryResourceAssembler,
           ProjectRepository projectRepository,
           ProjectService projectService,
+          FileAttachmentService fileAttachmentService,
           Validator validator) {
     this.projectBoundaryRepository = projectBoundaryRepository;
     this.projectBoundaryResourceAssembler = projectBoundaryResourceAssembler;
     this.projectRepository = projectRepository;
     this.projectService = projectService;
+    this.fileAttachmentService = fileAttachmentService;
     this.validator = validator;
   }
 
@@ -185,7 +188,7 @@ public class ProjectBoundaryService implements CommonService {
 
   @Transactional
   public void deleteProjectBoundary(
-          String projectGuid, String boundaryGuid) {
+          String projectGuid, String boundaryGuid, boolean deleteFiles) {
     // Verify project exists and belongs to the correct hierarchy
     if (projectService.getProjectById(projectGuid) == null) {
       throw new EntityNotFoundException(MessageFormat.format(KEY_FORMAT, PROJECT_NOT_FOUND, projectGuid));
@@ -200,6 +203,9 @@ public class ProjectBoundaryService implements CommonService {
       throw new EntityNotFoundException(MessageFormat.format(EXTENDED_KEY_FORMAT, BOUNDARY, boundaryGuid, DOES_NOT_BELONG_PROJECT, projectGuid));
     }
 
+    if (deleteFiles) {
+      fileAttachmentService.deleteAttachmentsBySourceObject(boundaryGuid);
+    }
     projectBoundaryRepository.deleteByProjectBoundaryGuid(UUID.fromString(boundaryGuid));
   }
 
@@ -280,7 +286,13 @@ public class ProjectBoundaryService implements CommonService {
   }
 
   @Transactional
-  public void deleteProjectBoundaries(String projectGuid) {
+  public void deleteProjectBoundaries(String projectGuid, boolean deleteFiles) {
+      List<ProjectBoundaryEntity> boundaries = projectBoundaryRepository.findByProjectGuid(UUID.fromString(projectGuid));
+      for (ProjectBoundaryEntity boundary : boundaries) {
+          if (deleteFiles) {
+              fileAttachmentService.deleteAttachmentsBySourceObject(boundary.getProjectBoundaryGuid().toString());
+          }
+      }
       projectBoundaryRepository.deleteByProjectGuid(UUID.fromString(projectGuid));
   }
 }
