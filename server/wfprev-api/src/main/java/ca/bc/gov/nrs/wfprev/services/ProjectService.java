@@ -25,6 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.Lazy;
 
 import java.util.List;
 import java.util.UUID;
@@ -53,7 +54,7 @@ public class ProjectService implements CommonService {
             ProjectStatusCodeRepository projectStatusCodeRepository,
             ObjectiveTypeCodeRepository objectiveTypeCodeRepository,
             ProjectBoundaryService projectBoundaryService,
-            @org.springframework.context.annotation.Lazy ProjectFiscalService projectFiscalService) {
+            @Lazy ProjectFiscalService projectFiscalService) {
         this.projectRepository = projectRepository;
         this.projectResourceAssembler = projectResourceAssembler;
         this.forestAreaCodeRepository = forestAreaCodeRepository;
