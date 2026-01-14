@@ -22,6 +22,7 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Validator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.hateoas.CollectionModel;
 
@@ -40,6 +41,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.never;
 
 class ActivityServiceTest {
 
@@ -50,8 +52,12 @@ class ActivityServiceTest {
     private ActivityStatusCodeRepository activityStatusCodeRepository;
     private ContractPhaseCodeRepository contractPhaseCodeRepository;
     private RiskRatingCodeRepository riskRatingCodeRepository;
+    private ActivityBoundaryService activityBoundaryService;
     private ActivityService activityService;
     private Validator validator;
+
+    @Mock
+    private FileAttachmentService fileAttachmentService;
 
     @BeforeEach
     void setup() {
@@ -62,6 +68,8 @@ class ActivityServiceTest {
         activityStatusCodeRepository = mock(ActivityStatusCodeRepository.class);
         contractPhaseCodeRepository = mock(ContractPhaseCodeRepository.class);
         riskRatingCodeRepository = mock(RiskRatingCodeRepository.class);
+        activityBoundaryService = mock(ActivityBoundaryService.class);
+        fileAttachmentService = mock(FileAttachmentService.class);
         validator = mock(Validator.class);
 
         activityService = new ActivityService(
@@ -72,6 +80,8 @@ class ActivityServiceTest {
                 activityStatusCodeRepository,
                 contractPhaseCodeRepository,
                 riskRatingCodeRepository,
+                activityBoundaryService,
+                fileAttachmentService,
                 validator
         );
     }
@@ -260,9 +270,44 @@ class ActivityServiceTest {
                 .thenReturn(Optional.of(projectFiscalEntity));
 
         // WHEN
-        activityService.deleteActivity(projectGuid, fiscalGuid, activityGuid);
+        activityService.deleteActivity(projectGuid, fiscalGuid, activityGuid, true);
 
         // THEN
+        verify(fileAttachmentService).deleteAttachmentsBySourceObject(activityGuid);
+        verify(activityBoundaryService).deleteActivityBoundaries(activityGuid, true);
+        verify(activityRepository).deleteById(UUID.fromString(activityGuid));
+    }
+
+    @Test
+    void testDeleteActivity_Success_NoFiles() {
+        // GIVEN
+        String projectGuid = "123e4567-e89b-12d3-a456-426614174000";
+        String fiscalGuid = "456e7890-e89b-12d3-a456-426614174001";
+        String activityGuid = "789e1234-e89b-12d3-a456-426614174002";
+
+        ProjectEntity projectEntity = ProjectEntity.builder()
+                .projectGuid(UUID.fromString(projectGuid))
+                .build();
+
+        ProjectFiscalEntity projectFiscalEntity = ProjectFiscalEntity.builder()
+                .projectPlanFiscalGuid(UUID.fromString(fiscalGuid))
+                .project(projectEntity)
+                .build();
+
+        ActivityEntity activityEntity = new ActivityEntity();
+        activityEntity.setProjectPlanFiscalGuid(UUID.fromString(fiscalGuid));
+
+        when(activityRepository.findById(UUID.fromString(activityGuid)))
+                .thenReturn(Optional.of(activityEntity));
+        when(projectFiscalRepository.findById(UUID.fromString(fiscalGuid)))
+                .thenReturn(Optional.of(projectFiscalEntity));
+
+        // WHEN
+        activityService.deleteActivity(projectGuid, fiscalGuid, activityGuid, false);
+
+        // THEN
+        verify(fileAttachmentService, never()).deleteAttachmentsBySourceObject(activityGuid);
+        verify(activityBoundaryService).deleteActivityBoundaries(activityGuid, false);
         verify(activityRepository).deleteById(UUID.fromString(activityGuid));
     }
 
@@ -388,5 +433,45 @@ class ActivityServiceTest {
         verifyNoInteractions(activityStatusCodeRepository);
         verifyNoInteractions(riskRatingCodeRepository);
         verifyNoInteractions(contractPhaseCodeRepository);
+    }
+
+    @Test
+    void testDeleteActivities_Success() {
+        // GIVEN
+        String fiscalGuid = "456e7890-e89b-12d3-a456-426614174001";
+        String activityGuid = "789e1234-e89b-12d3-a456-426614174002";
+        ActivityEntity activityEntity = new ActivityEntity();
+        activityEntity.setActivityGuid(UUID.fromString(activityGuid));
+
+        when(activityRepository.findByProjectPlanFiscalGuid(UUID.fromString(fiscalGuid)))
+                .thenReturn(List.of(activityEntity));
+
+        // WHEN
+        activityService.deleteActivities(fiscalGuid, true);
+
+        // THEN
+        verify(fileAttachmentService).deleteAttachmentsBySourceObject(activityGuid);
+        verify(activityBoundaryService).deleteActivityBoundaries(activityGuid, true);
+        verify(activityRepository).delete(activityEntity);
+    }
+
+    @Test
+    void testDeleteActivities_NoFileDeletion() {
+        // GIVEN
+        String fiscalGuid = "456e7890-e89b-12d3-a456-426614174001";
+        String activityGuid = "789e1234-e89b-12d3-a456-426614174002";
+        ActivityEntity activityEntity = new ActivityEntity();
+        activityEntity.setActivityGuid(UUID.fromString(activityGuid));
+
+        when(activityRepository.findByProjectPlanFiscalGuid(UUID.fromString(fiscalGuid)))
+                .thenReturn(List.of(activityEntity));
+
+        // WHEN
+        activityService.deleteActivities(fiscalGuid, false);
+
+        // THEN
+        verify(fileAttachmentService, never()).deleteAttachmentsBySourceObject(activityGuid);
+        verify(activityBoundaryService).deleteActivityBoundaries(activityGuid, false);
+        verify(activityRepository).delete(activityEntity);
     }
 }

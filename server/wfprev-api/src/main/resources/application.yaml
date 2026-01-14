@@ -28,6 +28,9 @@ spring:
   lambda:
     gdbExtractorFunctionName: ${WFPREV_GDB_FUNCTION_NAME}
 
+wfdm:
+  restUrl: ${WFDM_BASE_URL}
+
 logging:
   level:
     root: INFO

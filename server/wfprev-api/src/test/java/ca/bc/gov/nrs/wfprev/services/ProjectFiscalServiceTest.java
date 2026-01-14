@@ -44,6 +44,7 @@ class ProjectFiscalServiceTest {
     private ProjectEntity projectEntity;
     private PlanFiscalStatusCodeRepository planFiscalStatusCodeRepository;
     private EndorsementCodeRepository endorsementCodeRepository;
+    private ActivityService activityService;
 
     @BeforeEach
     void setup() {
@@ -54,7 +55,8 @@ class ProjectFiscalServiceTest {
         projectEntity = mock(ProjectEntity.class);
         planFiscalStatusCodeRepository = mock(PlanFiscalStatusCodeRepository.class);
         endorsementCodeRepository = mock(EndorsementCodeRepository.class);
-        projectFiscalService = new ProjectFiscalService(projectFiscalRepository, projectFiscalResourceAssembler, projectService, projectResourceAssembler, planFiscalStatusCodeRepository, endorsementCodeRepository);
+        activityService = mock(ActivityService.class);
+        projectFiscalService = new ProjectFiscalService(projectFiscalRepository, projectFiscalResourceAssembler, projectService, projectResourceAssembler, planFiscalStatusCodeRepository, endorsementCodeRepository, activityService);
     }
     @Test
     void testGetAllProjectFiscals_Empty() {
@@ -583,10 +585,11 @@ class ProjectFiscalServiceTest {
         when(projectFiscalRepository.findById(projectFiscalGuid)).thenReturn(Optional.of(new ProjectFiscalEntity()));
 
         // WHEN the deleteProjectFiscal method is called
-        projectFiscalService.deleteProjectFiscal("456e7890-e89b-12d3-a456-426614174001");
+        projectFiscalService.deleteProjectFiscal("456e7890-e89b-12d3-a456-426614174001", true);
 
         // THEN verify the repository interactions
         verify(projectFiscalRepository).findById(projectFiscalGuid);
+        verify(activityService).deleteActivities(projectFiscalGuid.toString(), true);
         verify(projectFiscalRepository).deleteById(projectFiscalGuid);
         verifyNoMoreInteractions(projectFiscalRepository); // Ensure no other interactions occur
     }
@@ -600,7 +603,7 @@ class ProjectFiscalServiceTest {
         // WHEN the deleteProjectFiscal method is called
         // THEN an EntityNotFoundException should be thrown
         assertThrows(EntityNotFoundException.class, () ->
-                projectFiscalService.deleteProjectFiscal("456e7890-e89b-12d3-a456-426614174001"));
+                projectFiscalService.deleteProjectFiscal("456e7890-e89b-12d3-a456-426614174001", true));
 
         // Verify the repository's deleteById is never called
         verify(projectFiscalRepository, never()).deleteById(any());
@@ -614,7 +617,7 @@ class ProjectFiscalServiceTest {
         // WHEN the deleteProjectFiscal method is called
         // THEN an IllegalArgumentException should be thrown
         assertThrows(IllegalArgumentException.class, () ->
-                projectFiscalService.deleteProjectFiscal(invalidUuid));
+                projectFiscalService.deleteProjectFiscal(invalidUuid, true));
 
         // Verify the repository is never interacted with
         verifyNoInteractions(projectFiscalRepository);
@@ -634,11 +637,42 @@ class ProjectFiscalServiceTest {
         // WHEN the deleteProjectFiscal method is called
         // THEN a DataIntegrityViolationException should be thrown
         assertThrows(DataIntegrityViolationException.class, () ->
-                projectFiscalService.deleteProjectFiscal("456e7890-e89b-12d3-a456-426614174001"));
+                projectFiscalService.deleteProjectFiscal("456e7890-e89b-12d3-a456-426614174001", true));
 
         // Verify the repository's findById and deleteById methods are called
         verify(projectFiscalRepository).findById(projectFiscalGuid);
         verify(projectFiscalRepository).deleteById(projectFiscalGuid);
+    }
+
+    @Test
+    void testDeleteProjectFiscals_Success() {
+        // GIVEN a valid project GUID
+        String projectGuid = "123e4567-e89b-12d3-a456-426614174001";
+        ProjectFiscalEntity fiscal1 = new ProjectFiscalEntity();
+        fiscal1.setProjectPlanFiscalGuid(UUID.randomUUID());
+        ProjectFiscalEntity fiscal2 = new ProjectFiscalEntity();
+        fiscal2.setProjectPlanFiscalGuid(UUID.randomUUID());
+        
+        when(projectFiscalRepository.findAllByProject_ProjectGuid(UUID.fromString(projectGuid)))
+                .thenReturn(Arrays.asList(fiscal1, fiscal2));
+
+        // WHEN deleteProjectFiscals is called with deleteFiles=true
+        projectFiscalService.deleteProjectFiscals(projectGuid, true);
+
+        // THEN it should delete activities for each fiscal with deleteFiles=true
+        verify(activityService).deleteActivities(fiscal1.getProjectPlanFiscalGuid().toString(), true);
+        verify(activityService).deleteActivities(fiscal2.getProjectPlanFiscalGuid().toString(), true);
+        verify(projectFiscalRepository).delete(fiscal1);
+        verify(projectFiscalRepository).delete(fiscal2);
+        
+        // WHEN deleteProjectFiscals is called with deleteFiles=false
+        projectFiscalService.deleteProjectFiscals(projectGuid, false);
+
+        // THEN it should delete activities for each fiscal with deleteFiles=false
+        verify(activityService).deleteActivities(fiscal1.getProjectPlanFiscalGuid().toString(), false);
+        verify(activityService).deleteActivities(fiscal2.getProjectPlanFiscalGuid().toString(), false);
+        verify(projectFiscalRepository, times(2)).delete(fiscal1);
+        verify(projectFiscalRepository, times(2)).delete(fiscal2);
     }
 
     @Test

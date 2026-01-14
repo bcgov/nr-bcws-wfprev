@@ -37,6 +37,8 @@ import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -294,14 +296,14 @@ class ProjectBoundaryControllerTest {
     void testDeleteProjectBoundary_Success() throws Exception {
 
         UUID boundaryId = UUID.randomUUID();
-        doNothing().when(projectBoundaryService).deleteProjectBoundary(anyString(), anyString());
+        doNothing().when(projectBoundaryService).deleteProjectBoundary(anyString(), anyString(), anyBoolean());
 
         mockMvc.perform(delete("/projects/{projectId}/projectBoundary/{id}",
                         UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), boundaryId)
                         .header(HttpHeaders.AUTHORIZATION, "Bearer test-token"))
                 .andExpect(status().isNoContent());
 
-        verify(projectBoundaryService).deleteProjectBoundary(anyString(), anyString());
+        verify(projectBoundaryService).deleteProjectBoundary(anyString(), anyString(), eq(false));
     }
 
     ProjectBoundaryModel buildProjectBoundaryRequestModel() {

@@ -25,6 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.Lazy;
 
 import java.util.List;
 import java.util.UUID;
@@ -40,6 +41,8 @@ public class ProjectService implements CommonService {
     private final GeneralScopeCodeRepository generalScopeCodeRepository;
     private final ProjectStatusCodeRepository projectStatusCodeRepository;
     private final ObjectiveTypeCodeRepository objectiveTypeCodeRepository;
+    private final ProjectBoundaryService projectBoundaryService;
+    private final ProjectFiscalService projectFiscalService;
 
 
     public ProjectService(
@@ -49,7 +52,9 @@ public class ProjectService implements CommonService {
             ProjectTypeCodeRepository projectTypeCodeRepository,
             GeneralScopeCodeRepository generalScopeCodeRepository,
             ProjectStatusCodeRepository projectStatusCodeRepository,
-            ObjectiveTypeCodeRepository objectiveTypeCodeRepository) {
+            ObjectiveTypeCodeRepository objectiveTypeCodeRepository,
+            ProjectBoundaryService projectBoundaryService,
+            @Lazy ProjectFiscalService projectFiscalService) {
         this.projectRepository = projectRepository;
         this.projectResourceAssembler = projectResourceAssembler;
         this.forestAreaCodeRepository = forestAreaCodeRepository;
@@ -57,6 +62,8 @@ public class ProjectService implements CommonService {
         this.generalScopeCodeRepository = generalScopeCodeRepository;
         this.projectStatusCodeRepository = projectStatusCodeRepository;
         this.objectiveTypeCodeRepository = objectiveTypeCodeRepository;
+        this.projectBoundaryService = projectBoundaryService;
+        this.projectFiscalService = projectFiscalService;
     }
 
     public CollectionModel<ProjectModel> getAllProjects() throws ServiceException {
@@ -220,15 +227,16 @@ public class ProjectService implements CommonService {
     }
 
     @Transactional
-    public ProjectModel deleteProject(String id) throws ServiceException {
+    public ProjectModel deleteProject(String id, boolean deleteFiles) throws ServiceException {
         try {
-            ProjectModel model = getProjectById(id);
-
-            if (model == null) {
-                throw new EntityNotFoundException("Project not found: " + id);
-            }
-
-            ProjectEntity entity = projectResourceAssembler.toEntity(model);
+            UUID projectGuid = UUID.fromString(id);
+            ProjectEntity entity = projectRepository.findById(projectGuid)
+                    .orElseThrow(() -> new EntityNotFoundException("Project not found: " + id));
+            
+            // Manual cleanup of dependent entities
+            projectBoundaryService.deleteProjectBoundaries(id, deleteFiles);
+            projectFiscalService.deleteProjectFiscals(id, deleteFiles);
+            
             projectRepository.delete(entity);
 
             return projectResourceAssembler.toModel(entity);

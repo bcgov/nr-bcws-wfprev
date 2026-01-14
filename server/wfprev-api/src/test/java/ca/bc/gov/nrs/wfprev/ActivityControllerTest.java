@@ -29,6 +29,7 @@ import java.util.Date;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
@@ -359,7 +360,7 @@ class ActivityControllerTest {
     @WithMockUser
     void testDeleteActivity_Success() throws Exception {
         String activityId = "123e4567-e89b-12d3-a456-426614174000";
-        doNothing().when(activityService).deleteActivity(anyString(), anyString(), anyString());
+        doNothing().when(activityService).deleteActivity(anyString(), anyString(), anyString(), anyBoolean());
 
         mockMvc.perform(delete("/projects/{projectId}/projectFiscals/{projectFiscalId}/activities/{id}",
                         "123e4567-e89b-12d3-a456-426614174001",
@@ -369,7 +370,7 @@ class ActivityControllerTest {
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent());
 
-        verify(activityService).deleteActivity(anyString(), anyString(), eq(activityId));
+        verify(activityService).deleteActivity(anyString(), anyString(), eq(activityId), eq(false));
     }
 
     @Test
@@ -377,7 +378,7 @@ class ActivityControllerTest {
     void testDeleteActivity_NotFound() throws Exception {
         String activityId = "123e4567-e89b-12d3-a456-426614174000";
         doThrow(new EntityNotFoundException("Not found"))
-                .when(activityService).deleteActivity(anyString(), anyString(), anyString());
+                .when(activityService).deleteActivity(anyString(), anyString(), anyString(), anyBoolean());
 
         mockMvc.perform(delete("/projects/{projectId}/projectFiscals/{projectFiscalId}/activities/{id}",
                         "123e4567-e89b-12d3-a456-426614174001",
@@ -393,7 +394,7 @@ class ActivityControllerTest {
     void testDeleteActivity_Exception() throws Exception {
         String activityId = "123e4567-e89b-12d3-a456-426614174000";
         doThrow(new RuntimeException("Test exception"))
-                .when(activityService).deleteActivity(anyString(), anyString(), anyString());
+                .when(activityService).deleteActivity(anyString(), anyString(), anyString(), anyBoolean());
 
         mockMvc.perform(delete("/projects/{projectId}/projectFiscals/{projectFiscalId}/activities/{id}",
                         "123e4567-e89b-12d3-a456-426614174001",

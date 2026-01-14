@@ -25,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.Lazy;
 
 import java.text.MessageFormat;
 import java.util.Date;
@@ -52,6 +53,8 @@ public class ActivityService implements CommonService {
     private final ActivityStatusCodeRepository activityStatusCodeRepository;
     private final ContractPhaseCodeRepository contractPhaseCodeRepository;
     private final RiskRatingCodeRepository riskRatingCodeRepository;
+    private final ActivityBoundaryService activityBoundaryService;
+    private final FileAttachmentService fileAttachmentService;
     private final Validator validator;
 
     public ActivityService(
@@ -62,6 +65,8 @@ public class ActivityService implements CommonService {
             ActivityStatusCodeRepository activityStatusCodeRepository,
             ContractPhaseCodeRepository contractPhaseCodeRepository,
             RiskRatingCodeRepository riskRatingCodeRepository,
+            @Lazy ActivityBoundaryService activityBoundaryService,
+            FileAttachmentService fileAttachmentService,
             Validator validator) {
         this.activityRepository = activityRepository;
         this.activityResourceAssembler = activityResourceAssembler;
@@ -70,6 +75,8 @@ public class ActivityService implements CommonService {
         this.activityStatusCodeRepository = activityStatusCodeRepository;
         this.contractPhaseCodeRepository = contractPhaseCodeRepository;
         this.riskRatingCodeRepository = riskRatingCodeRepository;
+        this.activityBoundaryService = activityBoundaryService;
+        this.fileAttachmentService = fileAttachmentService;
         this.validator = validator;
     }
 
@@ -193,7 +200,7 @@ public class ActivityService implements CommonService {
         return activityResourceAssembler.toModel(activity);
     }
 
-    public void deleteActivity(String projectGuid, String fiscalGuid, String activityGuid) {
+    public void deleteActivity(String projectGuid, String fiscalGuid, String activityGuid, boolean deleteFiles) {
         // Get the activity
         ActivityEntity activity = activityRepository.findById(UUID.fromString(activityGuid))
                 .orElseThrow(() -> new EntityNotFoundException(MessageFormat.format(KEY_FORMAT, ACTIVITY_NOT_FOUND, activityGuid)));
@@ -210,7 +217,24 @@ public class ActivityService implements CommonService {
             throw new EntityNotFoundException(MessageFormat.format(EXTENDED_KEY_FORMAT, PROJECT_FISCAL, fiscalGuid, DOES_NOT_BELONG_PROJECT, projectGuid));
         }
 
+        if (deleteFiles) {
+            fileAttachmentService.deleteAttachmentsBySourceObject(activityGuid);
+        }
+        activityBoundaryService.deleteActivityBoundaries(activityGuid, deleteFiles);
         activityRepository.deleteById(UUID.fromString(activityGuid));
+    }
+
+    @Transactional
+    public void deleteActivities(String fiscalGuid, boolean deleteFiles) {
+        List<ActivityEntity> activities = activityRepository.findByProjectPlanFiscalGuid(UUID.fromString(fiscalGuid));
+        for (ActivityEntity activity : activities) {
+            String activityGuid = activity.getActivityGuid().toString();
+            if (deleteFiles) {
+                fileAttachmentService.deleteAttachmentsBySourceObject(activityGuid);
+            }
+            activityBoundaryService.deleteActivityBoundaries(activityGuid, deleteFiles);
+            activityRepository.delete(activity);
+        }
     }
 
     public void assignAssociatedEntities(ActivityModel resource, ActivityEntity entity) {

@@ -19,6 +19,7 @@ import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LinearRing;
 import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Polygon;
+import org.mockito.Mock;
 import org.springframework.hateoas.CollectionModel;
 
 import java.math.BigDecimal;
@@ -46,16 +47,20 @@ class ProjectBoundaryServiceTest {
     private ProjectService projectService;
     private Validator validator;
 
+    @Mock
+    private FileAttachmentService fileAttachmentService;
+
     @BeforeEach
     void setup() {
         projectBoundaryRepository = mock(ProjectBoundaryRepository.class);
         projectBoundaryResourceAssembler = mock(ProjectBoundaryResourceAssembler.class);
         projectRepository = mock(ProjectRepository.class);
         projectService = mock(ProjectService.class);
+        fileAttachmentService = mock(FileAttachmentService.class);
         validator = mock(Validator.class);
 
         projectBoundaryService = new ProjectBoundaryService(projectBoundaryRepository, projectBoundaryResourceAssembler,
-                projectRepository, projectService, validator);
+                projectRepository, projectService, fileAttachmentService, validator);
     }
 
     @Test
@@ -275,8 +280,9 @@ class ProjectBoundaryServiceTest {
         when(projectService.getProjectById(projectGuid)).thenReturn(new ProjectModel());
         when(projectBoundaryRepository.findByProjectBoundaryGuid(UUID.fromString(boundaryGuid))).thenReturn(Optional.of(entity));
 
-        projectBoundaryService.deleteProjectBoundary(projectGuid, boundaryGuid);
+        projectBoundaryService.deleteProjectBoundary(projectGuid, boundaryGuid, true);
 
+        verify(fileAttachmentService).deleteAttachmentsBySourceObject(boundaryGuid);
         verify(projectBoundaryRepository, times(1)).deleteByProjectBoundaryGuid(UUID.fromString(boundaryGuid));
     }
 
@@ -288,7 +294,7 @@ class ProjectBoundaryServiceTest {
         when(projectService.getProjectById(projectGuid)).thenReturn(new ProjectModel());
         when(projectBoundaryRepository.findByProjectBoundaryGuid(UUID.fromString(boundaryGuid))).thenReturn(Optional.empty());
 
-        assertThrows(EntityNotFoundException.class, () -> projectBoundaryService.deleteProjectBoundary(projectGuid, boundaryGuid));
+        assertThrows(EntityNotFoundException.class, () -> projectBoundaryService.deleteProjectBoundary(projectGuid, boundaryGuid, true));
     }
 
     @Test
@@ -449,4 +455,41 @@ class ProjectBoundaryServiceTest {
 
 
 
+    @Test
+    void testDeleteProjectBoundaries_Success() {
+        // GIVEN
+        String projectGuid = UUID.randomUUID().toString();
+        String boundaryGuid = UUID.randomUUID().toString();
+        ProjectBoundaryEntity entity = new ProjectBoundaryEntity();
+        entity.setProjectBoundaryGuid(UUID.fromString(boundaryGuid));
+
+        when(projectBoundaryRepository.findByProjectGuid(UUID.fromString(projectGuid)))
+                .thenReturn(List.of(entity));
+
+        // WHEN
+        projectBoundaryService.deleteProjectBoundaries(projectGuid, true);
+
+        // THEN
+        verify(fileAttachmentService).deleteAttachmentsBySourceObject(boundaryGuid);
+        verify(projectBoundaryRepository).deleteByProjectGuid(UUID.fromString(projectGuid));
+    }
+
+    @Test
+    void testDeleteProjectBoundaries_NoFileDeletion() {
+        // GIVEN
+        String projectGuid = UUID.randomUUID().toString();
+        String boundaryGuid = UUID.randomUUID().toString();
+        ProjectBoundaryEntity entity = new ProjectBoundaryEntity();
+        entity.setProjectBoundaryGuid(UUID.fromString(boundaryGuid));
+
+        when(projectBoundaryRepository.findByProjectGuid(UUID.fromString(projectGuid)))
+                .thenReturn(List.of(entity));
+
+        // WHEN
+        projectBoundaryService.deleteProjectBoundaries(projectGuid, false);
+
+        // THEN
+        verify(fileAttachmentService, times(0)).deleteAttachmentsBySourceObject(boundaryGuid);
+        verify(projectBoundaryRepository).deleteByProjectGuid(UUID.fromString(projectGuid));
+    }
 }
