@@ -31,7 +31,7 @@ import { TokenService } from 'src/app/services/token.service';
 import { TimestampComponent } from 'src/app/components/shared/timestamp/timestamp.component';
 import { TextareaComponent } from 'src/app/components/shared/textarea/textarea.component';
 import { capitalizeFirstLetter } from 'src/app/utils';
-import { PerformanceUpdateComponent } from "../performance-update/performance-update.component";
+import { PerformanceUpdatesComponent } from "../performance-update/performance-updates.component";
 
 @Component({
   selector: 'wfprev-project-fiscals',
@@ -60,7 +60,7 @@ import { PerformanceUpdateComponent } from "../performance-update/performance-up
     EndorsementApprovalComponent,
     TimestampComponent,
     TextareaComponent,
-    PerformanceUpdateComponent
+    PerformanceUpdatesComponent
 ]
 })
 export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
