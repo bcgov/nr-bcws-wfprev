@@ -41,7 +41,7 @@ public class ProjectBoundaryService implements CommonService {
   private final ProjectBoundaryRepository projectBoundaryRepository;
   private final ProjectBoundaryResourceAssembler projectBoundaryResourceAssembler;
   private final ProjectRepository projectRepository;
-  private final ProjectService projectService;
+
   private final FileAttachmentService fileAttachmentService;
   private final Validator validator;
 
@@ -49,13 +49,11 @@ public class ProjectBoundaryService implements CommonService {
           ProjectBoundaryRepository projectBoundaryRepository,
           ProjectBoundaryResourceAssembler projectBoundaryResourceAssembler,
           ProjectRepository projectRepository,
-          ProjectService projectService,
           FileAttachmentService fileAttachmentService,
           Validator validator) {
     this.projectBoundaryRepository = projectBoundaryRepository;
     this.projectBoundaryResourceAssembler = projectBoundaryResourceAssembler;
     this.projectRepository = projectRepository;
-    this.projectService = projectService;
     this.fileAttachmentService = fileAttachmentService;
     this.validator = validator;
   }
@@ -63,7 +61,7 @@ public class ProjectBoundaryService implements CommonService {
   public CollectionModel<ProjectBoundaryModel> getAllProjectBoundaries(String projectGuid) throws ServiceException {
     try {
       // Verify project exists and belongs to the correct hierarchy
-      if (projectService.getProjectById(projectGuid) == null) {
+      if (!projectRepository.existsById(UUID.fromString(projectGuid))) {
         throw new EntityNotFoundException(MessageFormat.format(KEY_FORMAT, PROJECT_NOT_FOUND, projectGuid));
       }
 
@@ -170,7 +168,7 @@ public class ProjectBoundaryService implements CommonService {
 
   public ProjectBoundaryModel getProjectBoundary(String projectGuid, String boundaryGuid) {
     // Verify project exists and belongs to the correct hierarchy
-    if (projectService.getProjectById(projectGuid) == null) {
+    if (!projectRepository.existsById(UUID.fromString(projectGuid))) {
       throw new EntityNotFoundException(MessageFormat.format(KEY_FORMAT, PROJECT_NOT_FOUND, projectGuid));
     }
 
@@ -190,7 +188,7 @@ public class ProjectBoundaryService implements CommonService {
   public void deleteProjectBoundary(
           String projectGuid, String boundaryGuid, boolean deleteFiles) {
     // Verify project exists and belongs to the correct hierarchy
-    if (projectService.getProjectById(projectGuid) == null) {
+    if (!projectRepository.existsById(UUID.fromString(projectGuid))) {
       throw new EntityNotFoundException(MessageFormat.format(KEY_FORMAT, PROJECT_NOT_FOUND, projectGuid));
     }
 

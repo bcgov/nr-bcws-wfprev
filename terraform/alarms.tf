@@ -6,7 +6,7 @@ resource "aws_cloudwatch_metric_alarm" "high_latency" {
   namespace           = "AWS/ApplicationELB"
   period              = 60 # 1 min
   statistic           = "Average"
-  threshold           = 1 # 1 second
+  threshold           = 3 # 3 seconds
 
   dimensions = {
     LoadBalancer = aws_lb.wfprev_main.arn_suffix

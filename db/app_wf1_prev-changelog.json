@@ -1829,6 +1829,59 @@
         "rollback": [
         ]
       }
+    },
+    {
+      "changeSet": {
+        "id": "01_01_00_01",
+        "author": "sparmar",
+        "tagDatabase": { "tag" : "version_01_01_00_01" },
+        "changes": [
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_01_00/01/dml/app_wf1_prev.dml.add_silviculture_method_code.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_01_00/01/dml/app_wf1_prev.dml.update_silviculture_method_codes.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_01_00/01/dml/app_wf1_prev.dml.add_silviculture_base.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_01_00/01/dml/app_wf1_prev.dml.add_silviculture_techniques.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_01_00/01/dml/app_wf1_prev.dml.expire_silviculture_methods.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_01_00/01/dml/app_wf1_prev.dml.add_silviculture_methods.sql"
+            }
+          }
+        ],
+        "rollback": [
+        ]
+      }
     }
   ]
 }

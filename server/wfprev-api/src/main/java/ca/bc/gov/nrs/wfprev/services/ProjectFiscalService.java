@@ -10,9 +10,13 @@ import ca.bc.gov.nrs.wfprev.data.entities.ProjectEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ProjectFiscalEntity;
 import ca.bc.gov.nrs.wfprev.data.models.ProjectFiscalModel;
 import ca.bc.gov.nrs.wfprev.data.models.ProjectModel;
+import ca.bc.gov.nrs.wfprev.data.repositories.ActivityRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.EndorsementCodeRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.PlanFiscalStatusCodeRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.ProjectFiscalRepository;
+import ca.bc.gov.nrs.wfprev.data.repositories.FuelManagementPlanRepository;
+import ca.bc.gov.nrs.wfprev.data.repositories.CulturalRxFirePlanRepository;
+import ca.bc.gov.nrs.wfprev.data.repositories.ProjectPlanFiscalPerfRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
@@ -39,6 +43,9 @@ public class ProjectFiscalService implements CommonService {
     private final PlanFiscalStatusCodeRepository planFiscalStatusCodeRepository;
     private final EndorsementCodeRepository endorsementCodeRepository;
     private final ActivityService activityService;
+    private final FuelManagementPlanRepository fuelManagementPlanRepository;
+    private final CulturalRxFirePlanRepository culturalRxFirePlanRepository;
+    private final ProjectPlanFiscalPerfRepository projectPlanFiscalPerfRepository;
 
     private static final String DRAFT = "DRAFT";
     private static final String PROPOSED = "PROPOSED";
@@ -59,7 +66,10 @@ public class ProjectFiscalService implements CommonService {
 
     public ProjectFiscalService(ProjectFiscalRepository projectFiscalRepository, ProjectFiscalResourceAssembler projectFiscalResourceAssembler,
                                 ProjectService projectService, ProjectResourceAssembler projectResourceAssembler, PlanFiscalStatusCodeRepository planFiscalStatusCodeRepository,
-                                EndorsementCodeRepository endorsementCodeRepository, @Lazy ActivityService activityService) {
+                                EndorsementCodeRepository endorsementCodeRepository, @Lazy ActivityService activityService,
+                                FuelManagementPlanRepository fuelManagementPlanRepository,
+                                CulturalRxFirePlanRepository culturalRxFirePlanRepository,
+                                ProjectPlanFiscalPerfRepository projectPlanFiscalPerfRepository) {
         this.projectFiscalRepository = projectFiscalRepository;
         this.projectFiscalResourceAssembler = projectFiscalResourceAssembler;
         this.projectService = projectService;
@@ -67,6 +77,9 @@ public class ProjectFiscalService implements CommonService {
         this.planFiscalStatusCodeRepository = planFiscalStatusCodeRepository;
         this.endorsementCodeRepository = endorsementCodeRepository;
         this.activityService = activityService;
+        this.fuelManagementPlanRepository = fuelManagementPlanRepository;
+        this.culturalRxFirePlanRepository = culturalRxFirePlanRepository;
+        this.projectPlanFiscalPerfRepository = projectPlanFiscalPerfRepository;
     }
 
     public CollectionModel<ProjectFiscalModel> getAllProjectFiscals(String projectId) throws ServiceException {
@@ -148,6 +161,9 @@ public class ProjectFiscalService implements CommonService {
 
         // Proceed with deletion
         activityService.deleteActivities(guid.toString(), deleteFiles);
+        fuelManagementPlanRepository.deleteByProjectFiscal_ProjectPlanFiscalGuid(guid);
+        culturalRxFirePlanRepository.deleteByProjectFiscal_ProjectPlanFiscalGuid(guid);
+        projectPlanFiscalPerfRepository.deleteByProjectFiscal_ProjectPlanFiscalGuid(guid);
         projectFiscalRepository.deleteById(guid);
     }
 
@@ -155,7 +171,11 @@ public class ProjectFiscalService implements CommonService {
     public void deleteProjectFiscals(String projectGuid, boolean deleteFiles) {
         List<ProjectFiscalEntity> fiscals = projectFiscalRepository.findAllByProject_ProjectGuid(UUID.fromString(projectGuid));
         for (ProjectFiscalEntity fiscal : fiscals) {
-            activityService.deleteActivities(fiscal.getProjectPlanFiscalGuid().toString(), deleteFiles);
+            UUID fiscalGuid = fiscal.getProjectPlanFiscalGuid();
+            activityService.deleteActivities(fiscalGuid.toString(), deleteFiles);
+            fuelManagementPlanRepository.deleteByProjectFiscal_ProjectPlanFiscalGuid(fiscalGuid);
+            culturalRxFirePlanRepository.deleteByProjectFiscal_ProjectPlanFiscalGuid(fiscalGuid);
+            projectPlanFiscalPerfRepository.deleteByProjectFiscal_ProjectPlanFiscalGuid(fiscalGuid);
             projectFiscalRepository.delete(fiscal);
         }
     }

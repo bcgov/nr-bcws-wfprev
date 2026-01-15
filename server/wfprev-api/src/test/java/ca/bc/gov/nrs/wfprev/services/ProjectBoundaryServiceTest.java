@@ -44,7 +44,7 @@ class ProjectBoundaryServiceTest {
     private ProjectBoundaryRepository projectBoundaryRepository;
     private ProjectBoundaryResourceAssembler projectBoundaryResourceAssembler;
     private ProjectRepository projectRepository;
-    private ProjectService projectService;
+
     private Validator validator;
 
     @Mock
@@ -56,11 +56,10 @@ class ProjectBoundaryServiceTest {
         projectBoundaryResourceAssembler = mock(ProjectBoundaryResourceAssembler.class);
         projectRepository = mock(ProjectRepository.class);
         projectService = mock(ProjectService.class);
-        fileAttachmentService = mock(FileAttachmentService.class);
         validator = mock(Validator.class);
 
         projectBoundaryService = new ProjectBoundaryService(projectBoundaryRepository, projectBoundaryResourceAssembler,
-                projectRepository, projectService, fileAttachmentService, validator);
+                projectRepository, fileAttachmentService, validator);
     }
 
     @Test
@@ -69,7 +68,7 @@ class ProjectBoundaryServiceTest {
         List<ProjectBoundaryEntity> entities = List.of(new ProjectBoundaryEntity());
         List<ProjectBoundaryModel> models = List.of(new ProjectBoundaryModel());
 
-        when(projectService.getProjectById(projectGuid)).thenReturn(new ProjectModel());
+        when(projectRepository.existsById(UUID.fromString(projectGuid))).thenReturn(true);
         when(projectBoundaryRepository.findByProjectGuid(UUID.fromString(projectGuid))).thenReturn(entities);
         when(projectBoundaryResourceAssembler.toModel(any())).thenReturn(models.get(0));
 
@@ -82,7 +81,7 @@ class ProjectBoundaryServiceTest {
     @Test
     void testGetAllProjectBoundaries_ProjectNotFound() {
         String projectGuid = UUID.randomUUID().toString();
-        when(projectService.getProjectById(projectGuid)).thenReturn(null);
+        when(projectRepository.existsById(UUID.fromString(projectGuid))).thenReturn(false);
 
         assertThrows(EntityNotFoundException.class, () -> projectBoundaryService.getAllProjectBoundaries(projectGuid));
     }
@@ -261,7 +260,7 @@ class ProjectBoundaryServiceTest {
         ProjectBoundaryEntity entity = new ProjectBoundaryEntity();
         entity.setProjectGuid(UUID.fromString(projectGuid));
 
-        when(projectService.getProjectById(projectGuid)).thenReturn(new ProjectModel());
+        when(projectRepository.existsById(UUID.fromString(projectGuid))).thenReturn(true);
         when(projectBoundaryRepository.findByProjectBoundaryGuid(UUID.fromString(boundaryGuid))).thenReturn(Optional.of(entity));
         when(projectBoundaryResourceAssembler.toModel(entity)).thenReturn(new ProjectBoundaryModel());
 
@@ -277,7 +276,7 @@ class ProjectBoundaryServiceTest {
         ProjectBoundaryEntity entity = new ProjectBoundaryEntity();
         entity.setProjectGuid(UUID.fromString(projectGuid));
 
-        when(projectService.getProjectById(projectGuid)).thenReturn(new ProjectModel());
+        when(projectRepository.existsById(UUID.fromString(projectGuid))).thenReturn(true);
         when(projectBoundaryRepository.findByProjectBoundaryGuid(UUID.fromString(boundaryGuid))).thenReturn(Optional.of(entity));
 
         projectBoundaryService.deleteProjectBoundary(projectGuid, boundaryGuid, true);
@@ -291,7 +290,7 @@ class ProjectBoundaryServiceTest {
         String projectGuid = UUID.randomUUID().toString();
         String boundaryGuid = UUID.randomUUID().toString();
 
-        when(projectService.getProjectById(projectGuid)).thenReturn(new ProjectModel());
+        when(projectRepository.existsById(UUID.fromString(projectGuid))).thenReturn(true);
         when(projectBoundaryRepository.findByProjectBoundaryGuid(UUID.fromString(boundaryGuid))).thenReturn(Optional.empty());
 
         assertThrows(EntityNotFoundException.class, () -> projectBoundaryService.deleteProjectBoundary(projectGuid, boundaryGuid, true));
