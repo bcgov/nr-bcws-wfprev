@@ -57,6 +57,9 @@ public class FileAttachmentServiceTest {
     @Mock
     private ActivityBoundaryRepository activityBoundaryRepository;
 
+    @Mock
+    private WildfireDocumentManagerService wildfireDocumentManagerService;
+
     @InjectMocks
     private FileAttachmentService fileAttachmentService;
 
@@ -68,6 +71,7 @@ public class FileAttachmentServiceTest {
     void setUp() {
         testUuid = UUID.randomUUID();
         mockEntity = new FileAttachmentEntity();
+        mockEntity.setFileIdentifier("test-file-id"); // Set a file identifier for testing
         mockModel = new FileAttachmentModel();
         mockModel.setFileAttachmentGuid(testUuid.toString());
     }
@@ -212,6 +216,7 @@ public class FileAttachmentServiceTest {
         FileAttachmentModel result = fileAttachmentService.deleteFileAttachment(testUuid.toString());
 
         assertNotNull(result);
+        verify(wildfireDocumentManagerService, times(1)).deleteDocument("test-file-id");
         verify(fileAttachmentRepository, times(1)).delete(any(FileAttachmentEntity.class));
     }
 
@@ -268,4 +273,27 @@ public class FileAttachmentServiceTest {
         assertEquals("Constraint Violation", exception.getMessage());
     }
 
+    @Test
+    void testDeleteAttachmentsBySourceObject_Success() {
+        String sourceObjectUniqueId = UUID.randomUUID().toString();
+        when(fileAttachmentRepository.findAllBySourceObjectUniqueId(sourceObjectUniqueId))
+                .thenReturn(List.of(mockEntity));
+
+        fileAttachmentService.deleteAttachmentsBySourceObject(sourceObjectUniqueId);
+
+        verify(wildfireDocumentManagerService, times(1)).deleteDocument("test-file-id");
+        verify(fileAttachmentRepository, times(1)).delete(mockEntity);
+    }
+
+    @Test
+    void testDeleteAttachmentsBySourceObject_NoAttachments() {
+        String sourceObjectUniqueId = UUID.randomUUID().toString();
+        when(fileAttachmentRepository.findAllBySourceObjectUniqueId(sourceObjectUniqueId))
+                .thenReturn(List.of());
+
+        fileAttachmentService.deleteAttachmentsBySourceObject(sourceObjectUniqueId);
+
+        verify(wildfireDocumentManagerService, times(0)).deleteDocument(any());
+        verify(fileAttachmentRepository, times(0)).delete(any(FileAttachmentEntity.class));
+    }
 }

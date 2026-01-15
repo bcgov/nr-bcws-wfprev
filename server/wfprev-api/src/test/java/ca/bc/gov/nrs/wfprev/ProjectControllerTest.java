@@ -316,8 +316,26 @@ class ProjectControllerTest {
                 // THEN the response status should be 204 No Content
                 .andExpect(status().isNoContent());
 
-        // THEN the service's delete method should be called once with the correct ID
-        verify(projectService).deleteProject(projectId);
+        // THEN the service's delete method should be called once with the correct ID and deleteFiles=false (default)
+        verify(projectService).deleteProject(projectId, false);
+    }
+
+    @Test
+    @WithMockUser
+    void testDeleteAProject_Success_WithDeleteFiles() throws Exception {
+        // GIVEN a valid project ID
+        String projectId = "456e7890-e89b-12d3-a456-426614174001";
+
+        // WHEN the delete endpoint is called with deleteFiles=true
+        mockMvc.perform(delete("/projects/{id}", projectId)
+                        .param("deleteFiles", "true")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
+                        .accept(MediaType.APPLICATION_JSON))
+                // THEN the response status should be 204 No Content
+                .andExpect(status().isNoContent());
+
+        // THEN the service's delete method should be called once with deleteFiles=true
+        verify(projectService).deleteProject(projectId, true);
     }
 
     @Test
@@ -325,7 +343,7 @@ class ProjectControllerTest {
     void testDeleteAProject_NotFound() throws Exception {
         // GIVEN a project  ID that does not exist
         String projectId = "456e7890-e89b-12d3-a456-426614174001";
-        doThrow(new EntityNotFoundException("Not found")).when(projectService).deleteProject(projectId);
+        doThrow(new EntityNotFoundException("Not found")).when(projectService).deleteProject(projectId, false);
 
         // WHEN the delete endpoint is called
         mockMvc.perform(delete("/projects/{id}", projectId)
@@ -335,7 +353,7 @@ class ProjectControllerTest {
                 .andExpect(status().isNotFound());
 
         // THEN the service's delete method should be called once with the correct ID
-        verify(projectService).deleteProject(projectId);
+        verify(projectService).deleteProject(projectId, false);
     }
 
     @Test
@@ -343,7 +361,7 @@ class ProjectControllerTest {
     void testDeleteAProject_InvalidId() throws Exception {
         // GIVEN an invalid project  ID
         String invalidId = "invalid-uuid";
-        doThrow(new IllegalArgumentException("Invalid UUID")).when(projectService).deleteProject(invalidId);
+        doThrow(new IllegalArgumentException("Invalid UUID")).when(projectService).deleteProject(invalidId, false);
 
         // WHEN the delete endpoint is called
         mockMvc.perform(delete("/projects/{id}", invalidId)
@@ -353,7 +371,7 @@ class ProjectControllerTest {
                 .andExpect(status().isBadRequest());
 
         // THEN the service's delete method should be called once with the invalid ID
-        verify(projectService).deleteProject(invalidId);
+        verify(projectService).deleteProject(invalidId, false);
     }
 
     @Test
@@ -361,7 +379,7 @@ class ProjectControllerTest {
     void testDeleteAProject_InternalServerError() throws Exception {
         // GIVEN a valid project  ID but an unexpected error occurs
         String projectId = "456e7890-e89b-12d3-a456-426614174001";
-        doThrow(new RuntimeException("Unexpected error")).when(projectService).deleteProject(projectId);
+        doThrow(new RuntimeException("Unexpected error")).when(projectService).deleteProject(projectId, false);
 
         // WHEN the delete endpoint is called
         mockMvc.perform(delete("/projects/{id}", projectId)
@@ -371,7 +389,7 @@ class ProjectControllerTest {
                 .andExpect(status().isInternalServerError());
 
         // THEN the service's delete method should be called once with the correct ID
-        verify(projectService).deleteProject(projectId);
+        verify(projectService).deleteProject(projectId, false);
     }
 
     @Test

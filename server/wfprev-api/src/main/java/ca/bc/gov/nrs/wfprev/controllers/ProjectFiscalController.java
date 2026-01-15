@@ -31,6 +31,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -174,11 +175,12 @@ public class ProjectFiscalController extends CommonController {
             @ApiResponse(responseCode = "404", description = "Not Found"),
             @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = MessageListRsrc.class)))
     })
-    public ResponseEntity<Void> deleteProjectFiscal(@PathVariable("id") String id) {
+    public ResponseEntity<Void> deleteProjectFiscal(@PathVariable("id") String id,
+                                                    @RequestParam(name = "deleteFiles", required = false, defaultValue = "false") boolean deleteFiles) {
         log.debug(" >> deleteProjectFiscal with id: {}", id);
 
         try {
-            projectFiscalService.deleteProjectFiscal(id);
+            projectFiscalService.deleteProjectFiscal(id, deleteFiles);
             log.debug(" << deleteProjectFiscal success");
             return ResponseEntity.noContent().build();
         } catch (EntityNotFoundException e) {

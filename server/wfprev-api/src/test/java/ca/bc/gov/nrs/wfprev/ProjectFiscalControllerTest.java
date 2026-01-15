@@ -388,7 +388,7 @@ class ProjectFiscalControllerTest {
     void testDeleteAProjectFiscal_Success() throws Exception {
         // GIVEN a valid project fiscal ID
         String projectFiscalId = "456e7890-e89b-12d3-a456-426614174001";
-        doNothing().when(projectFiscalService).deleteProjectFiscal(projectFiscalId);
+        doNothing().when(projectFiscalService).deleteProjectFiscal(eq(projectFiscalId), anyBoolean());
 
         // WHEN the delete endpoint is called
         mockMvc.perform(delete("/projects/1234/projectFiscals/{id}", projectFiscalId)
@@ -398,7 +398,7 @@ class ProjectFiscalControllerTest {
                 .andExpect(status().isNoContent());
 
         // THEN the service's delete method should be called once with the correct ID
-        verify(projectFiscalService).deleteProjectFiscal(projectFiscalId);
+        verify(projectFiscalService).deleteProjectFiscal(eq(projectFiscalId), eq(false));
     }
 
     @Test
@@ -406,7 +406,7 @@ class ProjectFiscalControllerTest {
     void testDeleteAProjectFiscal_NotFound() throws Exception {
         // GIVEN a project fiscal ID that does not exist
         String projectFiscalId = "456e7890-e89b-12d3-a456-426614174001";
-        doThrow(new EntityNotFoundException("Not found")).when(projectFiscalService).deleteProjectFiscal(projectFiscalId);
+        doThrow(new EntityNotFoundException("Not found")).when(projectFiscalService).deleteProjectFiscal(eq(projectFiscalId), anyBoolean());
 
         // WHEN the delete endpoint is called
         mockMvc.perform(delete("/projects/1234/projectFiscals/{id}", projectFiscalId)
@@ -416,7 +416,7 @@ class ProjectFiscalControllerTest {
                 .andExpect(status().isNotFound());
 
         // THEN the service's delete method should be called once with the correct ID
-        verify(projectFiscalService).deleteProjectFiscal(projectFiscalId);
+        verify(projectFiscalService).deleteProjectFiscal(eq(projectFiscalId), eq(false));
     }
 
     @Test
@@ -424,7 +424,7 @@ class ProjectFiscalControllerTest {
     void testDeleteAProjectFiscal_InvalidId() throws Exception {
         // GIVEN an invalid project fiscal ID
         String invalidId = "invalid-uuid";
-        doThrow(new IllegalArgumentException("Invalid UUID")).when(projectFiscalService).deleteProjectFiscal(invalidId);
+        doThrow(new IllegalArgumentException("Invalid UUID")).when(projectFiscalService).deleteProjectFiscal(eq(invalidId), anyBoolean());
 
         // WHEN the delete endpoint is called
         mockMvc.perform(delete("/projects/1234/projectFiscals/{id}", invalidId)
@@ -434,7 +434,7 @@ class ProjectFiscalControllerTest {
                 .andExpect(status().isBadRequest());
 
         // THEN the service's delete method should be called once with the invalid ID
-        verify(projectFiscalService).deleteProjectFiscal(invalidId);
+        verify(projectFiscalService).deleteProjectFiscal(eq(invalidId), eq(false));
     }
 
     @Test
@@ -442,7 +442,7 @@ class ProjectFiscalControllerTest {
     void testDeleteAProjectFiscal_InternalServerError() throws Exception {
         // GIVEN a valid project fiscal ID but an unexpected error occurs
         String projectFiscalId = "456e7890-e89b-12d3-a456-426614174001";
-        doThrow(new RuntimeException("Unexpected error")).when(projectFiscalService).deleteProjectFiscal(projectFiscalId);
+        doThrow(new RuntimeException("Unexpected error")).when(projectFiscalService).deleteProjectFiscal(eq(projectFiscalId), anyBoolean());
 
         // WHEN the delete endpoint is called
         mockMvc.perform(delete("/projects/1234/projectFiscals/{id}", projectFiscalId)
@@ -452,6 +452,6 @@ class ProjectFiscalControllerTest {
                 .andExpect(status().isInternalServerError());
 
         // THEN the service's delete method should be called once with the correct ID
-        verify(projectFiscalService).deleteProjectFiscal(projectFiscalId);
+        verify(projectFiscalService).deleteProjectFiscal(eq(projectFiscalId), eq(false));
     }
 }

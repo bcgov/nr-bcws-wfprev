@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -193,11 +194,12 @@ public class ProjectBoundaryController extends CommonController {
     })
     public ResponseEntity<Void> deleteProjectBoundary(
             @PathVariable String projectGuid,
-            @PathVariable String id) {
+            @PathVariable String id,
+            @RequestParam(name = "deleteFiles", required = false, defaultValue = "false") boolean deleteFiles) {
         log.debug(" >> deleteProjectBoundary");
 
         try {
-            projectBoundaryService.deleteProjectBoundary(projectGuid, id);
+            projectBoundaryService.deleteProjectBoundary(projectGuid, id, deleteFiles);
             coordinatesService.updateProjectCoordinates(projectGuid);
             return ResponseEntity.noContent().build();
         } catch (Exception e) {

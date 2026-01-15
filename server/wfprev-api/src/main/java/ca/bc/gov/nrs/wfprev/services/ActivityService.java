@@ -11,6 +11,7 @@ import ca.bc.gov.nrs.wfprev.data.entities.RiskRatingCodeEntity;
 import ca.bc.gov.nrs.wfprev.data.models.ActivityModel;
 import ca.bc.gov.nrs.wfprev.data.models.ProjectFiscalModel;
 import ca.bc.gov.nrs.wfprev.data.repositories.ActivityRepository;
+import ca.bc.gov.nrs.wfprev.data.repositories.ActivityProgressRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.ActivityStatusCodeRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.ContractPhaseCodeRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.ProjectFiscalRepository;
@@ -25,6 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.Lazy;
 
 import java.text.MessageFormat;
 import java.util.Date;
@@ -46,30 +48,39 @@ public class ActivityService implements CommonService {
     private static final String EXTENDED_KEY_FORMAT = "{0}: {1} {2}: {3}";
 
     private final ActivityRepository activityRepository;
+    private final ActivityProgressRepository activityProgressRepository;
     private final ActivityResourceAssembler activityResourceAssembler;
     private final ProjectFiscalRepository projectFiscalRepository;
     private final ProjectFiscalService projectFiscalService;
     private final ActivityStatusCodeRepository activityStatusCodeRepository;
     private final ContractPhaseCodeRepository contractPhaseCodeRepository;
     private final RiskRatingCodeRepository riskRatingCodeRepository;
+    private final ActivityBoundaryService activityBoundaryService;
+    private final FileAttachmentService fileAttachmentService;
     private final Validator validator;
 
     public ActivityService(
             ActivityRepository activityRepository,
+            ActivityProgressRepository activityProgressRepository,
             ActivityResourceAssembler activityResourceAssembler,
             ProjectFiscalRepository projectFiscalRepository,
             ProjectFiscalService projectFiscalService,
             ActivityStatusCodeRepository activityStatusCodeRepository,
             ContractPhaseCodeRepository contractPhaseCodeRepository,
             RiskRatingCodeRepository riskRatingCodeRepository,
+            @Lazy ActivityBoundaryService activityBoundaryService,
+            FileAttachmentService fileAttachmentService,
             Validator validator) {
         this.activityRepository = activityRepository;
+        this.activityProgressRepository = activityProgressRepository;
         this.activityResourceAssembler = activityResourceAssembler;
         this.projectFiscalRepository = projectFiscalRepository;
         this.projectFiscalService = projectFiscalService;
         this.activityStatusCodeRepository = activityStatusCodeRepository;
         this.contractPhaseCodeRepository = contractPhaseCodeRepository;
         this.riskRatingCodeRepository = riskRatingCodeRepository;
+        this.activityBoundaryService = activityBoundaryService;
+        this.fileAttachmentService = fileAttachmentService;
         this.validator = validator;
     }
 
@@ -193,7 +204,8 @@ public class ActivityService implements CommonService {
         return activityResourceAssembler.toModel(activity);
     }
 
-    public void deleteActivity(String projectGuid, String fiscalGuid, String activityGuid) {
+    @Transactional
+    public void deleteActivity(String projectGuid, String fiscalGuid, String activityGuid, boolean deleteFiles) {
         // Get the activity
         ActivityEntity activity = activityRepository.findById(UUID.fromString(activityGuid))
                 .orElseThrow(() -> new EntityNotFoundException(MessageFormat.format(KEY_FORMAT, ACTIVITY_NOT_FOUND, activityGuid)));
@@ -210,7 +222,26 @@ public class ActivityService implements CommonService {
             throw new EntityNotFoundException(MessageFormat.format(EXTENDED_KEY_FORMAT, PROJECT_FISCAL, fiscalGuid, DOES_NOT_BELONG_PROJECT, projectGuid));
         }
 
+        if (deleteFiles) {
+            fileAttachmentService.deleteAttachmentsBySourceObject(activityGuid);
+        }
+        activityBoundaryService.deleteActivityBoundaries(activityGuid, deleteFiles);
+        activityProgressRepository.deleteByActivity_ActivityGuid(UUID.fromString(activityGuid));
         activityRepository.deleteById(UUID.fromString(activityGuid));
+    }
+
+    @Transactional
+    public void deleteActivities(String fiscalGuid, boolean deleteFiles) {
+        List<ActivityEntity> activities = activityRepository.findByProjectPlanFiscalGuid(UUID.fromString(fiscalGuid));
+        for (ActivityEntity activity : activities) {
+            String activityGuid = activity.getActivityGuid().toString();
+            if (deleteFiles) {
+                fileAttachmentService.deleteAttachmentsBySourceObject(activityGuid);
+            }
+            activityBoundaryService.deleteActivityBoundaries(activityGuid, deleteFiles);
+            activityProgressRepository.deleteByActivity_ActivityGuid(UUID.fromString(activityGuid));
+            activityRepository.delete(activity);
+        }
     }
 
     public void assignAssociatedEntities(ActivityModel resource, ActivityEntity entity) {

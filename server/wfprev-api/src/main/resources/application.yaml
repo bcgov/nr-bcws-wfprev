@@ -24,9 +24,12 @@ spring:
         bytecode:
           provider: bytebuddy
         show_sql: true
-        format_sql: true
+        format_sql: false
   lambda:
     gdbExtractorFunctionName: ${WFPREV_GDB_FUNCTION_NAME}
+
+wfdm:
+  restUrl: ${WFDM_BASE_URL}
 
 logging:
   level:
@@ -34,7 +37,7 @@ logging:
     org:
       springframework.web.servlet.mvc.method.annotation.StreamingResponseBodyReturnValueHandler: DEBUG
       hibernate.SQL: WARN
-      hibernate.type.descriptor.sql.BasicBinder: TRACE
+      hibernate.type.descriptor.sql.BasicBinder: WARN
       apache.poi: WARN
 
   pattern:
