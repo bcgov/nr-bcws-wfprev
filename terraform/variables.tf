@@ -406,7 +406,7 @@ variable "WFPREV_DATABASE_NAME" {
 variable "ALARM_RDS_FREEABLE_MEMORY_THRESHOLD_BYTES" {
   description = "Threshold for RDS Freeable Memory alarm in bytes. Default is 256MB."
   type        = number
-  default     = 268435456 # 256 MB
+  default     = 150000000
 }
 
 variable "SNS_TOPIC_NAME" {
