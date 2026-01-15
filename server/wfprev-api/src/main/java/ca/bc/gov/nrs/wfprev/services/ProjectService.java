@@ -17,6 +17,12 @@ import ca.bc.gov.nrs.wfprev.data.repositories.ObjectiveTypeCodeRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.ProjectRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.ProjectStatusCodeRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.ProjectTypeCodeRepository;
+
+import ca.bc.gov.nrs.wfprev.data.entities.EvalCriteriaSummaryEntity;
+import ca.bc.gov.nrs.wfprev.data.entities.EvalCriteriaSectSummEntity;
+import ca.bc.gov.nrs.wfprev.data.repositories.EvalCriteriaSectSummRepository;
+import ca.bc.gov.nrs.wfprev.data.repositories.EvalCriteriaSelectedRepository;
+import ca.bc.gov.nrs.wfprev.data.repositories.EvalCriteriaSummaryRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import jakarta.validation.ConstraintViolationException;
@@ -43,6 +49,9 @@ public class ProjectService implements CommonService {
     private final ObjectiveTypeCodeRepository objectiveTypeCodeRepository;
     private final ProjectBoundaryService projectBoundaryService;
     private final ProjectFiscalService projectFiscalService;
+    private final EvalCriteriaSummaryRepository evalCriteriaSummaryRepository;
+    private final EvalCriteriaSectSummRepository evalCriteriaSectSummRepository;
+    private final EvalCriteriaSelectedRepository evalCriteriaSelectedRepository;
 
 
     public ProjectService(
@@ -54,7 +63,10 @@ public class ProjectService implements CommonService {
             ProjectStatusCodeRepository projectStatusCodeRepository,
             ObjectiveTypeCodeRepository objectiveTypeCodeRepository,
             ProjectBoundaryService projectBoundaryService,
-            @Lazy ProjectFiscalService projectFiscalService) {
+            @Lazy ProjectFiscalService projectFiscalService,
+            EvalCriteriaSummaryRepository evalCriteriaSummaryRepository,
+            EvalCriteriaSectSummRepository evalCriteriaSectSummRepository,
+            EvalCriteriaSelectedRepository evalCriteriaSelectedRepository) {
         this.projectRepository = projectRepository;
         this.projectResourceAssembler = projectResourceAssembler;
         this.forestAreaCodeRepository = forestAreaCodeRepository;
@@ -64,6 +76,9 @@ public class ProjectService implements CommonService {
         this.objectiveTypeCodeRepository = objectiveTypeCodeRepository;
         this.projectBoundaryService = projectBoundaryService;
         this.projectFiscalService = projectFiscalService;
+        this.evalCriteriaSummaryRepository = evalCriteriaSummaryRepository;
+        this.evalCriteriaSectSummRepository = evalCriteriaSectSummRepository;
+        this.evalCriteriaSelectedRepository = evalCriteriaSelectedRepository;
     }
 
     public CollectionModel<ProjectModel> getAllProjects() throws ServiceException {
@@ -236,6 +251,16 @@ public class ProjectService implements CommonService {
             // Manual cleanup of dependent entities
             projectBoundaryService.deleteProjectBoundaries(id, deleteFiles);
             projectFiscalService.deleteProjectFiscals(id, deleteFiles);
+            
+            List<EvalCriteriaSummaryEntity> summaries = evalCriteriaSummaryRepository.findAllByProject_ProjectGuid(projectGuid);
+            for (EvalCriteriaSummaryEntity summary : summaries) {
+                List<EvalCriteriaSectSummEntity> sectionSummaries = evalCriteriaSectSummRepository.findAllByEvalCriteriaSummary_EvalCriteriaSummaryGuid(summary.getEvalCriteriaSummaryGuid());
+                for (EvalCriteriaSectSummEntity sectionSummary : sectionSummaries) {
+                    evalCriteriaSelectedRepository.deleteByEvalCriteriaSectSumm_EvalCriteriaSectSummGuid(sectionSummary.getEvalCriteriaSectSummGuid());
+                }
+                evalCriteriaSectSummRepository.deleteByEvalCriteriaSummary_EvalCriteriaSummaryGuid(summary.getEvalCriteriaSummaryGuid());
+            }
+            evalCriteriaSummaryRepository.deleteByProject_ProjectGuid(projectGuid);
             
             projectRepository.delete(entity);
 

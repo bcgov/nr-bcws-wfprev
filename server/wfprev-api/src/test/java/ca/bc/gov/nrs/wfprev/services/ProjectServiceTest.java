@@ -11,6 +11,7 @@ import ca.bc.gov.nrs.wfprev.data.entities.ProjectStatusCodeEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ProjectTypeCodeEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ProjectTypeCodeEntity;
 import ca.bc.gov.nrs.wfprev.data.models.ForestAreaCodeModel;
+import ca.bc.gov.nrs.wfprev.data.entities.EvalCriteriaSummaryEntity;
 import ca.bc.gov.nrs.wfprev.data.models.GeneralScopeCodeModel;
 import ca.bc.gov.nrs.wfprev.data.models.ObjectiveTypeCodeModel;
 import ca.bc.gov.nrs.wfprev.data.models.ProjectModel;
@@ -23,6 +24,10 @@ import ca.bc.gov.nrs.wfprev.data.repositories.ProjectRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.ProjectStatusCodeRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.ProjectTypeCodeRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.ProjectTypeCodeRepository;
+import ca.bc.gov.nrs.wfprev.data.repositories.EvalCriteriaSectSummRepository;
+import ca.bc.gov.nrs.wfprev.data.repositories.EvalCriteriaSelectedRepository;
+import ca.bc.gov.nrs.wfprev.data.repositories.EvalCriteriaSummaryRepository;
+import ca.bc.gov.nrs.wfprev.data.entities.EvalCriteriaSectSummEntity;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
@@ -73,6 +78,9 @@ class ProjectServiceTest {
     private SpringSecurityAuditorAware springSecurityAuditorAware;
     private ProjectBoundaryService projectBoundaryService;
     private ProjectFiscalService projectFiscalService;
+    private EvalCriteriaSummaryRepository evalCriteriaSummaryRepository;
+    private EvalCriteriaSectSummRepository evalCriteriaSectSummRepository;
+    private EvalCriteriaSelectedRepository evalCriteriaSelectedRepository;
 
     @BeforeEach
     void setup() {
@@ -86,10 +94,14 @@ class ProjectServiceTest {
         objectiveTypeCodeRepository = mock(ObjectiveTypeCodeRepository.class);
         projectBoundaryService = mock(ProjectBoundaryService.class);
         projectFiscalService = mock(ProjectFiscalService.class);
+        evalCriteriaSummaryRepository = mock(EvalCriteriaSummaryRepository.class);
+        evalCriteriaSummaryRepository = mock(EvalCriteriaSummaryRepository.class);
+        evalCriteriaSectSummRepository = mock(EvalCriteriaSectSummRepository.class);
+        evalCriteriaSelectedRepository = mock(EvalCriteriaSelectedRepository.class);
 
         projectService = new ProjectService(projectRepository, projectResourceAssembler, forestAreaCodeRepository,
                 projectTypeCodeRepository, generalScopeCodeRepository, projectStatusCodeRepository, objectiveTypeCodeRepository,
-                projectBoundaryService, projectFiscalService);
+                projectBoundaryService, projectFiscalService, evalCriteriaSummaryRepository, evalCriteriaSectSummRepository, evalCriteriaSelectedRepository);
         setField(projectService, "forestAreaCodeRepository", forestAreaCodeRepository);
         setField(projectService, "projectTypeCodeRepository", projectTypeCodeRepository);
         setField(projectService, "generalScopeCodeRepository", generalScopeCodeRepository);
@@ -97,6 +109,10 @@ class ProjectServiceTest {
         setField(projectService, "objectiveTypeCodeRepository", objectiveTypeCodeRepository);
         setField(projectService, "projectBoundaryService", projectBoundaryService);
         setField(projectService, "projectFiscalService", projectFiscalService);
+        setField(projectService, "evalCriteriaSummaryRepository", evalCriteriaSummaryRepository);
+        setField(projectService, "evalCriteriaSummaryRepository", evalCriteriaSummaryRepository);
+        setField(projectService, "evalCriteriaSectSummRepository", evalCriteriaSectSummRepository);
+        setField(projectService, "evalCriteriaSelectedRepository", evalCriteriaSelectedRepository);
 
         ProjectStatusCodeEntity activeStatus = new ProjectStatusCodeEntity();
         activeStatus.setProjectStatusCode("ACTIVE");
@@ -755,7 +771,18 @@ class ProjectServiceTest {
         
         // Mock behaviors
         when(projectRepository.findById(existingGuid)).thenReturn(Optional.of(savedEntity));
-        // No need to mock child repos as we call services
+        
+        UUID summaryGuid = UUID.randomUUID();
+        EvalCriteriaSummaryEntity summary = new EvalCriteriaSummaryEntity();
+        summary.setEvalCriteriaSummaryGuid(summaryGuid);
+        when(evalCriteriaSummaryRepository.findAllByProject_ProjectGuid(existingGuid))
+                .thenReturn(Collections.singletonList(summary));
+
+        UUID sectSummGuid = UUID.randomUUID();
+        EvalCriteriaSectSummEntity sectSumm = new EvalCriteriaSectSummEntity();
+        sectSumm.setEvalCriteriaSectSummGuid(sectSummGuid);
+        when(evalCriteriaSectSummRepository.findAllByEvalCriteriaSummary_EvalCriteriaSummaryGuid(summaryGuid))
+                .thenReturn(Collections.singletonList(sectSumm));
 
         // When
         projectService.deleteProject(existingGuid.toString(), false);
@@ -764,6 +791,9 @@ class ProjectServiceTest {
         // Verify Service calls
         verify(projectBoundaryService).deleteProjectBoundaries(existingGuid.toString(), false);
         verify(projectFiscalService).deleteProjectFiscals(existingGuid.toString(), false);
+        verify(evalCriteriaSectSummRepository).deleteByEvalCriteriaSummary_EvalCriteriaSummaryGuid(summaryGuid);
+        verify(evalCriteriaSelectedRepository).deleteByEvalCriteriaSectSumm_EvalCriteriaSectSummGuid(sectSummGuid);
+        verify(evalCriteriaSummaryRepository).deleteByProject_ProjectGuid(existingGuid);
         
         // Verify Project deletion
         verify(projectRepository).delete(savedEntity);
@@ -778,6 +808,18 @@ class ProjectServiceTest {
 
         // Mock behaviors
         when(projectRepository.findById(existingGuid)).thenReturn(Optional.of(savedEntity));
+        
+        UUID summaryGuid = UUID.randomUUID();
+        EvalCriteriaSummaryEntity summary = new EvalCriteriaSummaryEntity();
+        summary.setEvalCriteriaSummaryGuid(summaryGuid);
+        when(evalCriteriaSummaryRepository.findAllByProject_ProjectGuid(existingGuid))
+                .thenReturn(Collections.singletonList(summary));
+
+        UUID sectSummGuid = UUID.randomUUID();
+        EvalCriteriaSectSummEntity sectSumm = new EvalCriteriaSectSummEntity();
+        sectSumm.setEvalCriteriaSectSummGuid(sectSummGuid);
+        when(evalCriteriaSectSummRepository.findAllByEvalCriteriaSummary_EvalCriteriaSummaryGuid(summaryGuid))
+                .thenReturn(Collections.singletonList(sectSumm));
 
         // When
         projectService.deleteProject(existingGuid.toString(), true);
@@ -786,6 +828,9 @@ class ProjectServiceTest {
         // Verify Service calls
         verify(projectBoundaryService).deleteProjectBoundaries(existingGuid.toString(), true);
         verify(projectFiscalService).deleteProjectFiscals(existingGuid.toString(), true);
+        verify(evalCriteriaSectSummRepository).deleteByEvalCriteriaSummary_EvalCriteriaSummaryGuid(summaryGuid);
+        verify(evalCriteriaSelectedRepository).deleteByEvalCriteriaSectSumm_EvalCriteriaSectSummGuid(sectSummGuid);
+        verify(evalCriteriaSummaryRepository).deleteByProject_ProjectGuid(existingGuid);
 
         // Verify Project deletion
         verify(projectRepository).delete(savedEntity);

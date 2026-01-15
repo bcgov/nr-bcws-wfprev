@@ -13,6 +13,9 @@ import ca.bc.gov.nrs.wfprev.data.models.ProjectModel;
 import ca.bc.gov.nrs.wfprev.data.repositories.EndorsementCodeRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.PlanFiscalStatusCodeRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.ProjectFiscalRepository;
+import ca.bc.gov.nrs.wfprev.data.repositories.FuelManagementPlanRepository;
+import ca.bc.gov.nrs.wfprev.data.repositories.CulturalRxFirePlanRepository;
+import ca.bc.gov.nrs.wfprev.data.repositories.ProjectPlanFiscalPerfRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -45,6 +48,9 @@ class ProjectFiscalServiceTest {
     private PlanFiscalStatusCodeRepository planFiscalStatusCodeRepository;
     private EndorsementCodeRepository endorsementCodeRepository;
     private ActivityService activityService;
+    private FuelManagementPlanRepository fuelManagementPlanRepository;
+    private CulturalRxFirePlanRepository culturalRxFirePlanRepository;
+    private ProjectPlanFiscalPerfRepository projectPlanFiscalPerfRepository;
 
     @BeforeEach
     void setup() {
@@ -56,7 +62,21 @@ class ProjectFiscalServiceTest {
         planFiscalStatusCodeRepository = mock(PlanFiscalStatusCodeRepository.class);
         endorsementCodeRepository = mock(EndorsementCodeRepository.class);
         activityService = mock(ActivityService.class);
-        projectFiscalService = new ProjectFiscalService(projectFiscalRepository, projectFiscalResourceAssembler, projectService, projectResourceAssembler, planFiscalStatusCodeRepository, endorsementCodeRepository, activityService);
+        fuelManagementPlanRepository = mock(FuelManagementPlanRepository.class);
+        culturalRxFirePlanRepository = mock(CulturalRxFirePlanRepository.class);
+        projectPlanFiscalPerfRepository = mock(ProjectPlanFiscalPerfRepository.class);
+        projectFiscalService = new ProjectFiscalService(
+                projectFiscalRepository,
+                projectFiscalResourceAssembler,
+                projectService,
+                projectResourceAssembler,
+                planFiscalStatusCodeRepository,
+                endorsementCodeRepository,
+                activityService,
+                fuelManagementPlanRepository,
+                culturalRxFirePlanRepository,
+                projectPlanFiscalPerfRepository
+        );
     }
     @Test
     void testGetAllProjectFiscals_Empty() {
@@ -590,6 +610,9 @@ class ProjectFiscalServiceTest {
         // THEN verify the repository interactions
         verify(projectFiscalRepository).findById(projectFiscalGuid);
         verify(activityService).deleteActivities(projectFiscalGuid.toString(), true);
+        verify(fuelManagementPlanRepository).deleteByProjectFiscal_ProjectPlanFiscalGuid(projectFiscalGuid);
+        verify(culturalRxFirePlanRepository).deleteByProjectFiscal_ProjectPlanFiscalGuid(projectFiscalGuid);
+        verify(projectPlanFiscalPerfRepository).deleteByProjectFiscal_ProjectPlanFiscalGuid(projectFiscalGuid);
         verify(projectFiscalRepository).deleteById(projectFiscalGuid);
         verifyNoMoreInteractions(projectFiscalRepository); // Ensure no other interactions occur
     }
@@ -662,6 +685,12 @@ class ProjectFiscalServiceTest {
         // THEN it should delete activities for each fiscal with deleteFiles=true
         verify(activityService).deleteActivities(fiscal1.getProjectPlanFiscalGuid().toString(), true);
         verify(activityService).deleteActivities(fiscal2.getProjectPlanFiscalGuid().toString(), true);
+        verify(fuelManagementPlanRepository).deleteByProjectFiscal_ProjectPlanFiscalGuid(fiscal1.getProjectPlanFiscalGuid());
+        verify(fuelManagementPlanRepository).deleteByProjectFiscal_ProjectPlanFiscalGuid(fiscal2.getProjectPlanFiscalGuid());
+        verify(culturalRxFirePlanRepository).deleteByProjectFiscal_ProjectPlanFiscalGuid(fiscal1.getProjectPlanFiscalGuid());
+        verify(culturalRxFirePlanRepository).deleteByProjectFiscal_ProjectPlanFiscalGuid(fiscal2.getProjectPlanFiscalGuid());
+        verify(projectPlanFiscalPerfRepository).deleteByProjectFiscal_ProjectPlanFiscalGuid(fiscal1.getProjectPlanFiscalGuid());
+        verify(projectPlanFiscalPerfRepository).deleteByProjectFiscal_ProjectPlanFiscalGuid(fiscal2.getProjectPlanFiscalGuid());
         verify(projectFiscalRepository).delete(fiscal1);
         verify(projectFiscalRepository).delete(fiscal2);
         
@@ -671,6 +700,12 @@ class ProjectFiscalServiceTest {
         // THEN it should delete activities for each fiscal with deleteFiles=false
         verify(activityService).deleteActivities(fiscal1.getProjectPlanFiscalGuid().toString(), false);
         verify(activityService).deleteActivities(fiscal2.getProjectPlanFiscalGuid().toString(), false);
+        verify(fuelManagementPlanRepository, times(2)).deleteByProjectFiscal_ProjectPlanFiscalGuid(fiscal1.getProjectPlanFiscalGuid());
+        verify(fuelManagementPlanRepository, times(2)).deleteByProjectFiscal_ProjectPlanFiscalGuid(fiscal2.getProjectPlanFiscalGuid());
+        verify(culturalRxFirePlanRepository, times(2)).deleteByProjectFiscal_ProjectPlanFiscalGuid(fiscal1.getProjectPlanFiscalGuid());
+        verify(culturalRxFirePlanRepository, times(2)).deleteByProjectFiscal_ProjectPlanFiscalGuid(fiscal2.getProjectPlanFiscalGuid());
+        verify(projectPlanFiscalPerfRepository, times(2)).deleteByProjectFiscal_ProjectPlanFiscalGuid(fiscal1.getProjectPlanFiscalGuid());
+        verify(projectPlanFiscalPerfRepository, times(2)).deleteByProjectFiscal_ProjectPlanFiscalGuid(fiscal2.getProjectPlanFiscalGuid());
         verify(projectFiscalRepository, times(2)).delete(fiscal1);
         verify(projectFiscalRepository, times(2)).delete(fiscal2);
     }
