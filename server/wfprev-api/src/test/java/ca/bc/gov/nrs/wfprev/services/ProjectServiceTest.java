@@ -11,7 +11,7 @@ import ca.bc.gov.nrs.wfprev.data.entities.ProjectStatusCodeEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ProjectTypeCodeEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ProjectTypeCodeEntity;
 import ca.bc.gov.nrs.wfprev.data.models.ForestAreaCodeModel;
-import ca.bc.gov.nrs.wfprev.data.entities.EvalCriteriaSummaryEntity;
+import ca.bc.gov.nrs.wfprev.data.entities.EvaluationCriteriaSummaryEntity;
 import ca.bc.gov.nrs.wfprev.data.models.GeneralScopeCodeModel;
 import ca.bc.gov.nrs.wfprev.data.models.ObjectiveTypeCodeModel;
 import ca.bc.gov.nrs.wfprev.data.models.ProjectModel;
@@ -23,11 +23,10 @@ import ca.bc.gov.nrs.wfprev.data.repositories.ObjectiveTypeCodeRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.ProjectRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.ProjectStatusCodeRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.ProjectTypeCodeRepository;
-import ca.bc.gov.nrs.wfprev.data.repositories.ProjectTypeCodeRepository;
-import ca.bc.gov.nrs.wfprev.data.repositories.EvalCriteriaSectSummRepository;
-import ca.bc.gov.nrs.wfprev.data.repositories.EvalCriteriaSelectedRepository;
-import ca.bc.gov.nrs.wfprev.data.repositories.EvalCriteriaSummaryRepository;
-import ca.bc.gov.nrs.wfprev.data.entities.EvalCriteriaSectSummEntity;
+import ca.bc.gov.nrs.wfprev.data.repositories.EvaluationCriteriaSectionSummaryRepository;
+import ca.bc.gov.nrs.wfprev.data.repositories.EvaluationCriteriaSelectedRepository;
+import ca.bc.gov.nrs.wfprev.data.repositories.EvaluationCriteriaSummaryRepository;
+import ca.bc.gov.nrs.wfprev.data.entities.EvaluationCriteriaSectionSummaryEntity;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
@@ -78,9 +77,9 @@ class ProjectServiceTest {
     private SpringSecurityAuditorAware springSecurityAuditorAware;
     private ProjectBoundaryService projectBoundaryService;
     private ProjectFiscalService projectFiscalService;
-    private EvalCriteriaSummaryRepository evalCriteriaSummaryRepository;
-    private EvalCriteriaSectSummRepository evalCriteriaSectSummRepository;
-    private EvalCriteriaSelectedRepository evalCriteriaSelectedRepository;
+    private EvaluationCriteriaSummaryRepository evaluationCriteriaSummaryRepository;
+    private EvaluationCriteriaSectionSummaryRepository evaluationCriteriaSectionSummaryRepository;
+    private EvaluationCriteriaSelectedRepository evaluationCriteriaSelectedRepository;
 
     @BeforeEach
     void setup() {
@@ -94,14 +93,13 @@ class ProjectServiceTest {
         objectiveTypeCodeRepository = mock(ObjectiveTypeCodeRepository.class);
         projectBoundaryService = mock(ProjectBoundaryService.class);
         projectFiscalService = mock(ProjectFiscalService.class);
-        evalCriteriaSummaryRepository = mock(EvalCriteriaSummaryRepository.class);
-        evalCriteriaSummaryRepository = mock(EvalCriteriaSummaryRepository.class);
-        evalCriteriaSectSummRepository = mock(EvalCriteriaSectSummRepository.class);
-        evalCriteriaSelectedRepository = mock(EvalCriteriaSelectedRepository.class);
+        evaluationCriteriaSummaryRepository = mock(EvaluationCriteriaSummaryRepository.class);
+        evaluationCriteriaSectionSummaryRepository = mock(EvaluationCriteriaSectionSummaryRepository.class);
+        evaluationCriteriaSelectedRepository = mock(EvaluationCriteriaSelectedRepository.class);
 
         projectService = new ProjectService(projectRepository, projectResourceAssembler, forestAreaCodeRepository,
                 projectTypeCodeRepository, generalScopeCodeRepository, projectStatusCodeRepository, objectiveTypeCodeRepository,
-                projectBoundaryService, projectFiscalService, evalCriteriaSummaryRepository, evalCriteriaSectSummRepository, evalCriteriaSelectedRepository);
+                projectBoundaryService, projectFiscalService, evaluationCriteriaSummaryRepository, evaluationCriteriaSectionSummaryRepository, evaluationCriteriaSelectedRepository);
         setField(projectService, "forestAreaCodeRepository", forestAreaCodeRepository);
         setField(projectService, "projectTypeCodeRepository", projectTypeCodeRepository);
         setField(projectService, "generalScopeCodeRepository", generalScopeCodeRepository);
@@ -109,10 +107,9 @@ class ProjectServiceTest {
         setField(projectService, "objectiveTypeCodeRepository", objectiveTypeCodeRepository);
         setField(projectService, "projectBoundaryService", projectBoundaryService);
         setField(projectService, "projectFiscalService", projectFiscalService);
-        setField(projectService, "evalCriteriaSummaryRepository", evalCriteriaSummaryRepository);
-        setField(projectService, "evalCriteriaSummaryRepository", evalCriteriaSummaryRepository);
-        setField(projectService, "evalCriteriaSectSummRepository", evalCriteriaSectSummRepository);
-        setField(projectService, "evalCriteriaSelectedRepository", evalCriteriaSelectedRepository);
+        setField(projectService, "evaluationCriteriaSummaryRepository", evaluationCriteriaSummaryRepository);
+        setField(projectService, "evaluationCriteriaSectionSummaryRepository", evaluationCriteriaSectionSummaryRepository);
+        setField(projectService, "evaluationCriteriaSelectedRepository", evaluationCriteriaSelectedRepository);
 
         ProjectStatusCodeEntity activeStatus = new ProjectStatusCodeEntity();
         activeStatus.setProjectStatusCode("ACTIVE");
@@ -773,15 +770,15 @@ class ProjectServiceTest {
         when(projectRepository.findById(existingGuid)).thenReturn(Optional.of(savedEntity));
         
         UUID summaryGuid = UUID.randomUUID();
-        EvalCriteriaSummaryEntity summary = new EvalCriteriaSummaryEntity();
-        summary.setEvalCriteriaSummaryGuid(summaryGuid);
-        when(evalCriteriaSummaryRepository.findAllByProject_ProjectGuid(existingGuid))
+        EvaluationCriteriaSummaryEntity summary = new EvaluationCriteriaSummaryEntity();
+        summary.setEvaluationCriteriaSummaryGuid(summaryGuid);
+        when(evaluationCriteriaSummaryRepository.findAllByProjectGuid(existingGuid))
                 .thenReturn(Collections.singletonList(summary));
 
         UUID sectSummGuid = UUID.randomUUID();
-        EvalCriteriaSectSummEntity sectSumm = new EvalCriteriaSectSummEntity();
-        sectSumm.setEvalCriteriaSectSummGuid(sectSummGuid);
-        when(evalCriteriaSectSummRepository.findAllByEvalCriteriaSummary_EvalCriteriaSummaryGuid(summaryGuid))
+        EvaluationCriteriaSectionSummaryEntity sectSumm = new EvaluationCriteriaSectionSummaryEntity();
+        sectSumm.setEvaluationCriteriaSectionSummaryGuid(sectSummGuid);
+        when(evaluationCriteriaSectionSummaryRepository.findAllByEvaluationCriteriaSummaryGuid(summaryGuid))
                 .thenReturn(Collections.singletonList(sectSumm));
 
         // When
@@ -791,9 +788,9 @@ class ProjectServiceTest {
         // Verify Service calls
         verify(projectBoundaryService).deleteProjectBoundaries(existingGuid.toString(), false);
         verify(projectFiscalService).deleteProjectFiscals(existingGuid.toString(), false);
-        verify(evalCriteriaSectSummRepository).deleteByEvalCriteriaSummary_EvalCriteriaSummaryGuid(summaryGuid);
-        verify(evalCriteriaSelectedRepository).deleteByEvalCriteriaSectSumm_EvalCriteriaSectSummGuid(sectSummGuid);
-        verify(evalCriteriaSummaryRepository).deleteByProject_ProjectGuid(existingGuid);
+        verify(evaluationCriteriaSectionSummaryRepository).deleteByEvaluationCriteriaSummaryGuid(summaryGuid);
+        verify(evaluationCriteriaSelectedRepository).deleteByEvaluationCriteriaSectionSummaryGuid(sectSummGuid);
+        verify(evaluationCriteriaSummaryRepository).deleteByProjectGuid(existingGuid);
         
         // Verify Project deletion
         verify(projectRepository).delete(savedEntity);
@@ -810,15 +807,15 @@ class ProjectServiceTest {
         when(projectRepository.findById(existingGuid)).thenReturn(Optional.of(savedEntity));
         
         UUID summaryGuid = UUID.randomUUID();
-        EvalCriteriaSummaryEntity summary = new EvalCriteriaSummaryEntity();
-        summary.setEvalCriteriaSummaryGuid(summaryGuid);
-        when(evalCriteriaSummaryRepository.findAllByProject_ProjectGuid(existingGuid))
+        EvaluationCriteriaSummaryEntity summary = new EvaluationCriteriaSummaryEntity();
+        summary.setEvaluationCriteriaSummaryGuid(summaryGuid);
+        when(evaluationCriteriaSummaryRepository.findAllByProjectGuid(existingGuid))
                 .thenReturn(Collections.singletonList(summary));
 
         UUID sectSummGuid = UUID.randomUUID();
-        EvalCriteriaSectSummEntity sectSumm = new EvalCriteriaSectSummEntity();
-        sectSumm.setEvalCriteriaSectSummGuid(sectSummGuid);
-        when(evalCriteriaSectSummRepository.findAllByEvalCriteriaSummary_EvalCriteriaSummaryGuid(summaryGuid))
+        EvaluationCriteriaSectionSummaryEntity sectSumm = new EvaluationCriteriaSectionSummaryEntity();
+        sectSumm.setEvaluationCriteriaSectionSummaryGuid(sectSummGuid);
+        when(evaluationCriteriaSectionSummaryRepository.findAllByEvaluationCriteriaSummaryGuid(summaryGuid))
                 .thenReturn(Collections.singletonList(sectSumm));
 
         // When
@@ -828,9 +825,9 @@ class ProjectServiceTest {
         // Verify Service calls
         verify(projectBoundaryService).deleteProjectBoundaries(existingGuid.toString(), true);
         verify(projectFiscalService).deleteProjectFiscals(existingGuid.toString(), true);
-        verify(evalCriteriaSectSummRepository).deleteByEvalCriteriaSummary_EvalCriteriaSummaryGuid(summaryGuid);
-        verify(evalCriteriaSelectedRepository).deleteByEvalCriteriaSectSumm_EvalCriteriaSectSummGuid(sectSummGuid);
-        verify(evalCriteriaSummaryRepository).deleteByProject_ProjectGuid(existingGuid);
+        verify(evaluationCriteriaSectionSummaryRepository).deleteByEvaluationCriteriaSummaryGuid(summaryGuid);
+        verify(evaluationCriteriaSelectedRepository).deleteByEvaluationCriteriaSectionSummaryGuid(sectSummGuid);
+        verify(evaluationCriteriaSummaryRepository).deleteByProjectGuid(existingGuid);
 
         // Verify Project deletion
         verify(projectRepository).delete(savedEntity);

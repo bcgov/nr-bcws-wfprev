@@ -18,11 +18,11 @@ import ca.bc.gov.nrs.wfprev.data.repositories.ProjectRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.ProjectStatusCodeRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.ProjectTypeCodeRepository;
 
-import ca.bc.gov.nrs.wfprev.data.entities.EvalCriteriaSummaryEntity;
-import ca.bc.gov.nrs.wfprev.data.entities.EvalCriteriaSectSummEntity;
-import ca.bc.gov.nrs.wfprev.data.repositories.EvalCriteriaSectSummRepository;
-import ca.bc.gov.nrs.wfprev.data.repositories.EvalCriteriaSelectedRepository;
-import ca.bc.gov.nrs.wfprev.data.repositories.EvalCriteriaSummaryRepository;
+import ca.bc.gov.nrs.wfprev.data.entities.EvaluationCriteriaSummaryEntity;
+import ca.bc.gov.nrs.wfprev.data.entities.EvaluationCriteriaSectionSummaryEntity;
+import ca.bc.gov.nrs.wfprev.data.repositories.EvaluationCriteriaSectionSummaryRepository;
+import ca.bc.gov.nrs.wfprev.data.repositories.EvaluationCriteriaSelectedRepository;
+import ca.bc.gov.nrs.wfprev.data.repositories.EvaluationCriteriaSummaryRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import jakarta.validation.ConstraintViolationException;
@@ -49,9 +49,9 @@ public class ProjectService implements CommonService {
     private final ObjectiveTypeCodeRepository objectiveTypeCodeRepository;
     private final ProjectBoundaryService projectBoundaryService;
     private final ProjectFiscalService projectFiscalService;
-    private final EvalCriteriaSummaryRepository evalCriteriaSummaryRepository;
-    private final EvalCriteriaSectSummRepository evalCriteriaSectSummRepository;
-    private final EvalCriteriaSelectedRepository evalCriteriaSelectedRepository;
+    private final EvaluationCriteriaSummaryRepository evaluationCriteriaSummaryRepository;
+    private final EvaluationCriteriaSectionSummaryRepository evaluationCriteriaSectionSummaryRepository;
+    private final EvaluationCriteriaSelectedRepository evaluationCriteriaSelectedRepository;
 
 
     public ProjectService(
@@ -64,9 +64,9 @@ public class ProjectService implements CommonService {
             ObjectiveTypeCodeRepository objectiveTypeCodeRepository,
             ProjectBoundaryService projectBoundaryService,
             @Lazy ProjectFiscalService projectFiscalService,
-            EvalCriteriaSummaryRepository evalCriteriaSummaryRepository,
-            EvalCriteriaSectSummRepository evalCriteriaSectSummRepository,
-            EvalCriteriaSelectedRepository evalCriteriaSelectedRepository) {
+            EvaluationCriteriaSummaryRepository evaluationCriteriaSummaryRepository,
+            EvaluationCriteriaSectionSummaryRepository evaluationCriteriaSectionSummaryRepository,
+            EvaluationCriteriaSelectedRepository evaluationCriteriaSelectedRepository) {
         this.projectRepository = projectRepository;
         this.projectResourceAssembler = projectResourceAssembler;
         this.forestAreaCodeRepository = forestAreaCodeRepository;
@@ -76,9 +76,9 @@ public class ProjectService implements CommonService {
         this.objectiveTypeCodeRepository = objectiveTypeCodeRepository;
         this.projectBoundaryService = projectBoundaryService;
         this.projectFiscalService = projectFiscalService;
-        this.evalCriteriaSummaryRepository = evalCriteriaSummaryRepository;
-        this.evalCriteriaSectSummRepository = evalCriteriaSectSummRepository;
-        this.evalCriteriaSelectedRepository = evalCriteriaSelectedRepository;
+        this.evaluationCriteriaSummaryRepository = evaluationCriteriaSummaryRepository;
+        this.evaluationCriteriaSectionSummaryRepository = evaluationCriteriaSectionSummaryRepository;
+        this.evaluationCriteriaSelectedRepository = evaluationCriteriaSelectedRepository;
     }
 
     public CollectionModel<ProjectModel> getAllProjects() throws ServiceException {
@@ -252,15 +252,15 @@ public class ProjectService implements CommonService {
             projectBoundaryService.deleteProjectBoundaries(id, deleteFiles);
             projectFiscalService.deleteProjectFiscals(id, deleteFiles);
             
-            List<EvalCriteriaSummaryEntity> summaries = evalCriteriaSummaryRepository.findAllByProject_ProjectGuid(projectGuid);
-            for (EvalCriteriaSummaryEntity summary : summaries) {
-                List<EvalCriteriaSectSummEntity> sectionSummaries = evalCriteriaSectSummRepository.findAllByEvalCriteriaSummary_EvalCriteriaSummaryGuid(summary.getEvalCriteriaSummaryGuid());
-                for (EvalCriteriaSectSummEntity sectionSummary : sectionSummaries) {
-                    evalCriteriaSelectedRepository.deleteByEvalCriteriaSectSumm_EvalCriteriaSectSummGuid(sectionSummary.getEvalCriteriaSectSummGuid());
+            List<EvaluationCriteriaSummaryEntity> summaries = evaluationCriteriaSummaryRepository.findAllByProjectGuid(projectGuid);
+            for (EvaluationCriteriaSummaryEntity summary : summaries) {
+                List<EvaluationCriteriaSectionSummaryEntity> sectionSummaries = evaluationCriteriaSectionSummaryRepository.findAllByEvaluationCriteriaSummaryGuid(summary.getEvaluationCriteriaSummaryGuid());
+                for (EvaluationCriteriaSectionSummaryEntity sectionSummary : sectionSummaries) {
+                    evaluationCriteriaSelectedRepository.deleteByEvaluationCriteriaSectionSummaryGuid(sectionSummary.getEvaluationCriteriaSectionSummaryGuid());
                 }
-                evalCriteriaSectSummRepository.deleteByEvalCriteriaSummary_EvalCriteriaSummaryGuid(summary.getEvalCriteriaSummaryGuid());
+                evaluationCriteriaSectionSummaryRepository.deleteByEvaluationCriteriaSummaryGuid(summary.getEvaluationCriteriaSummaryGuid());
             }
-            evalCriteriaSummaryRepository.deleteByProject_ProjectGuid(projectGuid);
+            evaluationCriteriaSummaryRepository.deleteByProjectGuid(projectGuid);
             
             projectRepository.delete(entity);
 
