@@ -7,6 +7,7 @@ services:
       SPRING_PROFILES_ACTIVE: dev
       REPORT_GENERATOR_LAMBDA_URL: https://mock-lambda-url
       REPORT_GENERATOR_SERVICE_URL: http://mock-report-generator
+      WFDM_BASE_URL: https://i1bcwsapi.nrs.gov.bc.ca/wfdm-document-management-api
     volumes:
       - ./server/wfprev-api/target:/app/target
     depends_on:
@@ -17,7 +18,7 @@ services:
     image: postgis/postgis:17-3.4
     volumes:
       - ./db/init:/docker-entrypoint-initdb.d
-      - ./wfprevint.dump:/dump/wfprevint.dump
+      - ./wfprev.dump:/dump/wfprev.dump
 
   client:
     build:
