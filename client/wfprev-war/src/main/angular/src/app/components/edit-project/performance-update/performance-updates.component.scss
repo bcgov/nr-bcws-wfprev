@@ -36,10 +36,8 @@
     }
 
     .performance-update-title {
-        font-family: var(--wf-font-family-main) !important;
         flex-wrap: wrap;
         color: #000;
-        font-family: var(--wf-font-family-main);
         font-size: 20px;
         font-style: normal;
         font-weight: 400;
@@ -47,51 +45,61 @@
         word-break: break-word;
         overflow-wrap: break-word;
         white-space: normal;
-        align-content: center
+        align-content: center;
+        min-width: 220px;
     }
 
     .content-status-indicators {
         display: flex;
         align-items: center;
         gap: 10px;
+        min-width: 480px;
+
+        span {
+            display: flex;
+
+            img {
+                display: flex;
+                padding: 0px 5px;
+            }
+        }
+
+
+        .status-icon {
+            width: 24px;
+            height: 24px;
+        }
     }
 
     .status-indicators {
-        font-family: var(--wf-font-family-main);
         font-size: 16px;
         font-weight: 400;
         display: flex;
         align-items: center;
+        justify-content: flex-end;
         gap: 10px;
-        margin-left: auto;
-        padding-right: 20px;
-    }
+        width: 100%;
 
-    .status-tag {
-        display: flex;
-        padding: 5px 0px;
-        align-items: center;
-        gap: 5px;
-        font-size: 16px;
-    }
-
-    .status-icon {
-        width: 24px;
-        height: 24px;
-    }
-
-    span {
-        display: flex;
-
-        img {
+        .status-tag {
             display: flex;
-            padding: 0px 5px;
+            padding: 5px 0px;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 5px;
+            font-size: 16px;
+            width: 150px;
+
+            .status-icon {
+                width: 24px;
+                height: 24px;
+            }
         }
     }
 
     .form-grid {
         padding: 18px 0px;
         font-family: var(--wf-font-family-main) !important;
+        gap: 10px;
 
         .general-updates-container {
             display: flex;
@@ -166,21 +174,45 @@
             .budget-breackdown-table {
                 display: flex;
                 flex-direction: column;
+                gap: 10px;
 
                 .budget-breackdown-row {
                     display: flex;
                     flex-direction: row;
-                    border-radius: 5px;
-                    background-color: #D9D9D9;
-                    margin-bottom: 10px;
+                    border-radius: 10px;
+                    background-color: #F5F6F9;
 
                     .budget-breackdown-cell1 {
-                        padding-left: 15px;
-                        width: 110px;
+                        display: flex;
+                        flex-direction: row;
+                        align-items: center;
+                        gap: 5px;
+                        padding-left: 12px;
+                        width: 130px;
                     }
 
                     .budget-breackdown-cell2 {
-                        padding-left: 15px;
+                        padding-left: 8px;
+                        width: 110px;
+                        font-weight: bold;
+                    }
+                }
+
+                .budget-breackdown-last-row {
+                    display: flex;
+                    flex-direction: row;
+
+                    .budget-breackdown-cell1 {
+                        display: flex;
+                        flex-direction: row;
+                        align-items: center;
+                        gap: 5px;
+                        padding-left: 45px;
+                        width: 100px;
+                    }
+
+                    .budget-breackdown-cell2 {
+                        padding-left: 5px;
                         width: 110px;
                         font-weight: bold;
                     }

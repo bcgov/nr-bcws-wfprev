@@ -375,3 +375,44 @@ export interface ReportRequest {
   projects?: ReportProject[];
   projectFilter?: ProjectFilter;
 }
+
+export interface PerformanceUpdate {
+  
+  date: string;
+  reportingPeriod: string;
+  timeStatus: TimeStatus;
+  forecastStatus: ForecastStatus;
+  progressStatus: ProgressStatus;
+  
+  generalUpdates: string;
+  submitedBy: string;
+
+  revisedForecastAmount: string;
+  forecastAdjustmentAmount: string;
+  forecastAdjustmentRational: string;
+
+  highRisk: string;
+  highRiskDescription: string;
+  mediumRisk: string;
+  mediumRiskDescription: string;
+  lowRisk: string;
+  lowRiskDescription: string;
+  complete: string;
+  total: string;
+}
+
+export enum ForecastStatus {
+  ChangedDecreased= "CHANGED_DECREASED",
+  ChangedIncreased= "CHANGED_INCREASED",
+  NonChanged="NON_CHANGED"
+}
+
+export enum TimeStatus {
+  Delayed = "DELAYED",
+  OnTrack = "ON_TRACK"
+}
+
+export enum ProgressStatus {
+  InProgress = "IN_PROGRESS",
+  Prepared ="PREPARED"
+}

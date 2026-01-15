@@ -1,0 +1,185 @@
+<div class="performance-update-container">
+    <mat-expansion-panel [expanded]='true' class="expansion-panel" #performanceUpdatesPanels>
+        <mat-expansion-panel-header>
+            <div class="header-container">
+                <wfprev-expansion-indicator
+                    [isExpanded]="performanceUpdatesPanels.expanded"></wfprev-expansion-indicator>
+                <span class="project-title">Performance Updates</span>
+                <wfprev-icon-button [text]="'New Update'" [icon]="'/assets/add-button.svg'" [alt]="'add-update'"
+                    [iconSize]="19">
+                </wfprev-icon-button>
+            </div>
+        </mat-expansion-panel-header>
+        @if(updates.length > 0) {
+        @for (update of updates; track update.date) {
+        <mat-expansion-panel [expanded]='true' class="expansion-panel" #updatePanel>
+            <mat-expansion-panel-header class="performance-update-header">
+                <wfprev-expansion-indicator [isExpanded]="updatePanel.expanded"></wfprev-expansion-indicator>
+                <div class="performance-update-title">
+                    <div>
+                        <p class="project-title"><b>Date: {{update.date}}</b></p>
+                    </div>
+                </div>
+                <div class="content-status-indicators">
+                    <span>Reporting Period: {{update.reportingPeriod}}</span>
+                    @if (update.timeStatus === TimeStatus.Delayed) {
+                    <span>
+                        <img alt="status" class="status-icon" src="/assets/progress-status-delayed.svg">
+                        Delayed
+                    </span>
+                    }
+                    @if (update.timeStatus === TimeStatus.OnTrack) {
+                    <span>
+                        <img alt="status" class="status-icon" src="/assets/progress-status-ontrack.svg">
+                        On Track
+                    </span>
+                    }
+                    @if(update.forecastStatus === ForecastStatus.ChangedDecreased){
+                    <span>
+                        <img alt="status" class="status-icon" src="/assets/budget-change.svg">
+                        Forecast Decreased
+                    </span>
+                    }
+                    @if(update.forecastStatus === ForecastStatus.ChangedIncreased){
+                    <span>
+                        <img alt="status" class="status-icon" src="/assets/budget-change.svg">
+                        Forecast Increased
+                    </span>
+                    }
+                </div>
+                @if(update.progressStatus === ProgressStatus.InProgress) {
+                <div class="status-indicators">
+                    <span class="status-tag">
+                        <img alt="status" class="status-icon" src="/assets/in-progress-icon-only.svg">
+                        In progress
+                    </span>
+                </div>
+                }
+                @if(update.progressStatus === ProgressStatus.Prepared) {
+                <div class="status-indicators">
+                    <span class="status-tag">
+                        <img alt="status" class="status-icon" src="/assets/prepared-icon.svg">
+                        Prepared
+                    </span>
+                </div>
+                }
+            </mat-expansion-panel-header>
+            <div class="form-grid">
+                <div class="general-updates-container">
+                    <div class="updates-header">
+                        <div class="updates-header-title">
+                            <p>General Updates (Successes, Challenges, Progress)</p>
+                        </div>
+                        <div class="submited-by">
+                            <p>Submited by: {{update.submitedBy}}</p>
+                        </div>
+                    </div>
+                    <div>
+                        <p>{{update.generalUpdates}}</p>
+                    </div>
+                </div>
+                <div class="budget-adjustment-container">
+                    <div class="budget-adjustment-header">
+                        <div class="budget-adjustment-title">
+                            <span>Budget adjustment</span>
+                        </div>
+                        <div class="budget-adjustment-lable">
+                            @if(update.forecastStatus === ForecastStatus.ChangedDecreased){
+                            <span>
+                                <img alt="status" class="status-icon" src="/assets/budget-change.svg">
+                                Forecast Decreased
+                            </span>
+                            }
+
+                            @if(update.forecastStatus === ForecastStatus.ChangedIncreased){
+                            <span>
+                                <img alt="status" class="status-icon" src="/assets/budget-change.svg">
+                                Forecast Increased
+                            </span>
+                            }
+                        </div>
+                    </div>
+                    <div class="budget-adjustment-ditails">
+                        <div class="budget-adjustment-item">
+                            <p class="budget-title">Revised Forecast Amount</p>
+                            <p>{{update.revisedForecastAmount}}</p>
+                        </div>
+                        <div class="budget-adjustment-item">
+                            <p class="budget-title">Forecast Adjustment Amount</p>
+                            <p>{{update.forecastAdjustmentAmount}}</p>
+                        </div>
+                        <div class="budget-adjustment-item">
+                            <p class="budget-title">Forecast Adjustment Rationale</p>
+                            <p>{{update.forecastAdjustmentRational}}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="budget-breackdown-container">
+                    <div class="budget-breakdown-header">
+                        <p>Budget Risk Breakdown</p>
+                    </div>
+                    <div class="budget-breackdown-table">
+                        <div class="budget-breackdown-row">
+                            <div class="budget-breackdown-cell1">
+                                <img alt="status" class="status-icon" src="/assets/high-risk.svg">
+                                <p>High risk</p>
+                            </div>
+                            <div class="budget-breackdown-cell2">
+                                <p>{{update.highRisk}}</p>
+                            </div>
+                            <div>
+                                <p>{{update.highRiskDescription}}</p>
+                            </div>
+                        </div>
+                        <div class="budget-breackdown-row">
+                            <div class="budget-breackdown-cell1">
+                                <img alt="status" class="status-icon" src="/assets/medium-risk.svg">
+                                <p>Medium risk</p>
+                            </div>
+                            <div class="budget-breackdown-cell2">
+                                <p>{{update.mediumRisk}}</p>
+                            </div>
+                            <div>
+                                <p>{{update.mediumRiskDescription}}</p>
+                            </div>
+                        </div>
+                        <div class="budget-breackdown-row">
+                            <div class="budget-breackdown-cell1">
+                                <img alt="status" class="status-icon" src="/assets/low-risk.svg">
+                                <p>Low risk</p>
+                            </div>
+                            <div class="budget-breackdown-cell2">
+                                <p>{{update.lowRisk}}</p>
+                            </div>
+                            <div>
+                                <p>{{update.lowRiskDescription}}</p>
+                            </div>
+                        </div>
+                        <div class="budget-breackdown-row">
+                            <div class="budget-breackdown-cell1">
+                                <img alt="status" class="status-icon" src="/assets/none-risk.svg">
+                                <p>Complete</p>
+                            </div>
+                            <div class="budget-breackdown-cell2">
+                                <p>{{update.complete}}</p>
+                            </div>
+                            <div>
+                                <p>A discription of what is already spend and where</p>
+                            </div>
+                        </div>
+                        <div class="budget-breackdown-last-row">
+                            <div class="budget-breackdown-cell1">
+                                <p>Total:</p>
+                            </div>
+                            <div class="budget-breackdown-cell2">
+                                <p>{{update.total}}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </mat-expansion-panel>
+        }
+        }
+    </mat-expansion-panel>
+</div>
