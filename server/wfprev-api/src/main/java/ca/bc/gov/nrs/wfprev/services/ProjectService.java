@@ -17,6 +17,12 @@ import ca.bc.gov.nrs.wfprev.data.repositories.ObjectiveTypeCodeRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.ProjectRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.ProjectStatusCodeRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.ProjectTypeCodeRepository;
+
+import ca.bc.gov.nrs.wfprev.data.entities.EvaluationCriteriaSummaryEntity;
+import ca.bc.gov.nrs.wfprev.data.entities.EvaluationCriteriaSectionSummaryEntity;
+import ca.bc.gov.nrs.wfprev.data.repositories.EvaluationCriteriaSectionSummaryRepository;
+import ca.bc.gov.nrs.wfprev.data.repositories.EvaluationCriteriaSelectedRepository;
+import ca.bc.gov.nrs.wfprev.data.repositories.EvaluationCriteriaSummaryRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import jakarta.validation.ConstraintViolationException;
@@ -25,6 +31,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.Lazy;
 
 import java.util.List;
 import java.util.UUID;
@@ -40,6 +47,11 @@ public class ProjectService implements CommonService {
     private final GeneralScopeCodeRepository generalScopeCodeRepository;
     private final ProjectStatusCodeRepository projectStatusCodeRepository;
     private final ObjectiveTypeCodeRepository objectiveTypeCodeRepository;
+    private final ProjectBoundaryService projectBoundaryService;
+    private final ProjectFiscalService projectFiscalService;
+    private final EvaluationCriteriaSummaryRepository evaluationCriteriaSummaryRepository;
+    private final EvaluationCriteriaSectionSummaryRepository evaluationCriteriaSectionSummaryRepository;
+    private final EvaluationCriteriaSelectedRepository evaluationCriteriaSelectedRepository;
 
 
     public ProjectService(
@@ -49,7 +61,12 @@ public class ProjectService implements CommonService {
             ProjectTypeCodeRepository projectTypeCodeRepository,
             GeneralScopeCodeRepository generalScopeCodeRepository,
             ProjectStatusCodeRepository projectStatusCodeRepository,
-            ObjectiveTypeCodeRepository objectiveTypeCodeRepository) {
+            ObjectiveTypeCodeRepository objectiveTypeCodeRepository,
+            ProjectBoundaryService projectBoundaryService,
+            @Lazy ProjectFiscalService projectFiscalService,
+            EvaluationCriteriaSummaryRepository evaluationCriteriaSummaryRepository,
+            EvaluationCriteriaSectionSummaryRepository evaluationCriteriaSectionSummaryRepository,
+            EvaluationCriteriaSelectedRepository evaluationCriteriaSelectedRepository) {
         this.projectRepository = projectRepository;
         this.projectResourceAssembler = projectResourceAssembler;
         this.forestAreaCodeRepository = forestAreaCodeRepository;
@@ -57,6 +74,11 @@ public class ProjectService implements CommonService {
         this.generalScopeCodeRepository = generalScopeCodeRepository;
         this.projectStatusCodeRepository = projectStatusCodeRepository;
         this.objectiveTypeCodeRepository = objectiveTypeCodeRepository;
+        this.projectBoundaryService = projectBoundaryService;
+        this.projectFiscalService = projectFiscalService;
+        this.evaluationCriteriaSummaryRepository = evaluationCriteriaSummaryRepository;
+        this.evaluationCriteriaSectionSummaryRepository = evaluationCriteriaSectionSummaryRepository;
+        this.evaluationCriteriaSelectedRepository = evaluationCriteriaSelectedRepository;
     }
 
     public CollectionModel<ProjectModel> getAllProjects() throws ServiceException {
@@ -220,15 +242,26 @@ public class ProjectService implements CommonService {
     }
 
     @Transactional
-    public ProjectModel deleteProject(String id) throws ServiceException {
+    public ProjectModel deleteProject(String id, boolean deleteFiles) throws ServiceException {
         try {
-            ProjectModel model = getProjectById(id);
-
-            if (model == null) {
-                throw new EntityNotFoundException("Project not found: " + id);
+            UUID projectGuid = UUID.fromString(id);
+            ProjectEntity entity = projectRepository.findById(projectGuid)
+                    .orElseThrow(() -> new EntityNotFoundException("Project not found: " + id));
+            
+            // Manual cleanup of dependent entities
+            projectBoundaryService.deleteProjectBoundaries(id, deleteFiles);
+            projectFiscalService.deleteProjectFiscals(id, deleteFiles);
+            
+            List<EvaluationCriteriaSummaryEntity> summaries = evaluationCriteriaSummaryRepository.findAllByProjectGuid(projectGuid);
+            for (EvaluationCriteriaSummaryEntity summary : summaries) {
+                List<EvaluationCriteriaSectionSummaryEntity> sectionSummaries = evaluationCriteriaSectionSummaryRepository.findAllByEvaluationCriteriaSummaryGuid(summary.getEvaluationCriteriaSummaryGuid());
+                for (EvaluationCriteriaSectionSummaryEntity sectionSummary : sectionSummaries) {
+                    evaluationCriteriaSelectedRepository.deleteByEvaluationCriteriaSectionSummaryGuid(sectionSummary.getEvaluationCriteriaSectionSummaryGuid());
+                }
+                evaluationCriteriaSectionSummaryRepository.deleteByEvaluationCriteriaSummaryGuid(summary.getEvaluationCriteriaSummaryGuid());
             }
-
-            ProjectEntity entity = projectResourceAssembler.toEntity(model);
+            evaluationCriteriaSummaryRepository.deleteByProjectGuid(projectGuid);
+            
             projectRepository.delete(entity);
 
             return projectResourceAssembler.toModel(entity);

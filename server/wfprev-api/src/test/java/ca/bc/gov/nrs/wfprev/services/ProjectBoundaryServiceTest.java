@@ -19,6 +19,7 @@ import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LinearRing;
 import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Polygon;
+import org.mockito.Mock;
 import org.springframework.hateoas.CollectionModel;
 
 import java.math.BigDecimal;
@@ -43,19 +44,23 @@ class ProjectBoundaryServiceTest {
     private ProjectBoundaryRepository projectBoundaryRepository;
     private ProjectBoundaryResourceAssembler projectBoundaryResourceAssembler;
     private ProjectRepository projectRepository;
-    private ProjectService projectService;
+
     private Validator validator;
+
+    @Mock
+    private FileAttachmentService fileAttachmentService;
 
     @BeforeEach
     void setup() {
         projectBoundaryRepository = mock(ProjectBoundaryRepository.class);
         projectBoundaryResourceAssembler = mock(ProjectBoundaryResourceAssembler.class);
         projectRepository = mock(ProjectRepository.class);
-        projectService = mock(ProjectService.class);
+
+        fileAttachmentService = mock(FileAttachmentService.class);
         validator = mock(Validator.class);
 
         projectBoundaryService = new ProjectBoundaryService(projectBoundaryRepository, projectBoundaryResourceAssembler,
-                projectRepository, projectService, validator);
+                projectRepository, fileAttachmentService, validator);
     }
 
     @Test
@@ -64,7 +69,7 @@ class ProjectBoundaryServiceTest {
         List<ProjectBoundaryEntity> entities = List.of(new ProjectBoundaryEntity());
         List<ProjectBoundaryModel> models = List.of(new ProjectBoundaryModel());
 
-        when(projectService.getProjectById(projectGuid)).thenReturn(new ProjectModel());
+        when(projectRepository.existsById(UUID.fromString(projectGuid))).thenReturn(true);
         when(projectBoundaryRepository.findByProjectGuid(UUID.fromString(projectGuid))).thenReturn(entities);
         when(projectBoundaryResourceAssembler.toModel(any())).thenReturn(models.get(0));
 
@@ -77,7 +82,7 @@ class ProjectBoundaryServiceTest {
     @Test
     void testGetAllProjectBoundaries_ProjectNotFound() {
         String projectGuid = UUID.randomUUID().toString();
-        when(projectService.getProjectById(projectGuid)).thenReturn(null);
+        when(projectRepository.existsById(UUID.fromString(projectGuid))).thenReturn(false);
 
         assertThrows(EntityNotFoundException.class, () -> projectBoundaryService.getAllProjectBoundaries(projectGuid));
     }
@@ -256,7 +261,7 @@ class ProjectBoundaryServiceTest {
         ProjectBoundaryEntity entity = new ProjectBoundaryEntity();
         entity.setProjectGuid(UUID.fromString(projectGuid));
 
-        when(projectService.getProjectById(projectGuid)).thenReturn(new ProjectModel());
+        when(projectRepository.existsById(UUID.fromString(projectGuid))).thenReturn(true);
         when(projectBoundaryRepository.findByProjectBoundaryGuid(UUID.fromString(boundaryGuid))).thenReturn(Optional.of(entity));
         when(projectBoundaryResourceAssembler.toModel(entity)).thenReturn(new ProjectBoundaryModel());
 
@@ -272,11 +277,12 @@ class ProjectBoundaryServiceTest {
         ProjectBoundaryEntity entity = new ProjectBoundaryEntity();
         entity.setProjectGuid(UUID.fromString(projectGuid));
 
-        when(projectService.getProjectById(projectGuid)).thenReturn(new ProjectModel());
+        when(projectRepository.existsById(UUID.fromString(projectGuid))).thenReturn(true);
         when(projectBoundaryRepository.findByProjectBoundaryGuid(UUID.fromString(boundaryGuid))).thenReturn(Optional.of(entity));
 
-        projectBoundaryService.deleteProjectBoundary(projectGuid, boundaryGuid);
+        projectBoundaryService.deleteProjectBoundary(projectGuid, boundaryGuid, true);
 
+        verify(fileAttachmentService).deleteAttachmentsBySourceObject(boundaryGuid);
         verify(projectBoundaryRepository, times(1)).deleteByProjectBoundaryGuid(UUID.fromString(boundaryGuid));
     }
 
@@ -285,10 +291,10 @@ class ProjectBoundaryServiceTest {
         String projectGuid = UUID.randomUUID().toString();
         String boundaryGuid = UUID.randomUUID().toString();
 
-        when(projectService.getProjectById(projectGuid)).thenReturn(new ProjectModel());
+        when(projectRepository.existsById(UUID.fromString(projectGuid))).thenReturn(true);
         when(projectBoundaryRepository.findByProjectBoundaryGuid(UUID.fromString(boundaryGuid))).thenReturn(Optional.empty());
 
-        assertThrows(EntityNotFoundException.class, () -> projectBoundaryService.deleteProjectBoundary(projectGuid, boundaryGuid));
+        assertThrows(EntityNotFoundException.class, () -> projectBoundaryService.deleteProjectBoundary(projectGuid, boundaryGuid, true));
     }
 
     @Test
@@ -449,4 +455,41 @@ class ProjectBoundaryServiceTest {
 
 
 
+    @Test
+    void testDeleteProjectBoundaries_Success() {
+        // GIVEN
+        String projectGuid = UUID.randomUUID().toString();
+        String boundaryGuid = UUID.randomUUID().toString();
+        ProjectBoundaryEntity entity = new ProjectBoundaryEntity();
+        entity.setProjectBoundaryGuid(UUID.fromString(boundaryGuid));
+
+        when(projectBoundaryRepository.findByProjectGuid(UUID.fromString(projectGuid)))
+                .thenReturn(List.of(entity));
+
+        // WHEN
+        projectBoundaryService.deleteProjectBoundaries(projectGuid, true);
+
+        // THEN
+        verify(fileAttachmentService).deleteAttachmentsBySourceObject(boundaryGuid);
+        verify(projectBoundaryRepository).deleteByProjectGuid(UUID.fromString(projectGuid));
+    }
+
+    @Test
+    void testDeleteProjectBoundaries_NoFileDeletion() {
+        // GIVEN
+        String projectGuid = UUID.randomUUID().toString();
+        String boundaryGuid = UUID.randomUUID().toString();
+        ProjectBoundaryEntity entity = new ProjectBoundaryEntity();
+        entity.setProjectBoundaryGuid(UUID.fromString(boundaryGuid));
+
+        when(projectBoundaryRepository.findByProjectGuid(UUID.fromString(projectGuid)))
+                .thenReturn(List.of(entity));
+
+        // WHEN
+        projectBoundaryService.deleteProjectBoundaries(projectGuid, false);
+
+        // THEN
+        verify(fileAttachmentService, times(0)).deleteAttachmentsBySourceObject(boundaryGuid);
+        verify(projectBoundaryRepository).deleteByProjectGuid(UUID.fromString(projectGuid));
+    }
 }

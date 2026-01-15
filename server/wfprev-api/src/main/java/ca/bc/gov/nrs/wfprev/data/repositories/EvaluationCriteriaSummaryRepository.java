@@ -10,5 +10,6 @@ import java.util.UUID;
 @RepositoryRestResource(exported = false)
 public interface EvaluationCriteriaSummaryRepository extends CommonRepository<EvaluationCriteriaSummaryEntity, UUID> {
     List<EvaluationCriteriaSummaryEntity> findAllByProjectGuid(UUID projectGuid);
+    void deleteByProjectGuid(UUID projectGuid);
 }
 
