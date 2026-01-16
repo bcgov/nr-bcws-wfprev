@@ -64,7 +64,7 @@ public class ActivityService implements CommonService {
             ActivityProgressRepository activityProgressRepository,
             ActivityResourceAssembler activityResourceAssembler,
             ProjectFiscalRepository projectFiscalRepository,
-            ProjectFiscalService projectFiscalService,
+            @Lazy ProjectFiscalService projectFiscalService,
             ActivityStatusCodeRepository activityStatusCodeRepository,
             ContractPhaseCodeRepository contractPhaseCodeRepository,
             RiskRatingCodeRepository riskRatingCodeRepository,
