@@ -50,7 +50,6 @@ class ActivityServiceTest {
     private ActivityProgressRepository activityProgressRepository;
     private ActivityResourceAssembler activityResourceAssembler;
     private ProjectFiscalRepository projectFiscalRepository;
-    private ProjectFiscalService projectFiscalService;
     private ActivityStatusCodeRepository activityStatusCodeRepository;
     private ContractPhaseCodeRepository contractPhaseCodeRepository;
     private RiskRatingCodeRepository riskRatingCodeRepository;
@@ -67,7 +66,6 @@ class ActivityServiceTest {
         activityProgressRepository = mock(ActivityProgressRepository.class);
         activityResourceAssembler = mock(ActivityResourceAssembler.class);
         projectFiscalRepository = mock(ProjectFiscalRepository.class);
-        projectFiscalService = mock(ProjectFiscalService.class);
         activityStatusCodeRepository = mock(ActivityStatusCodeRepository.class);
         contractPhaseCodeRepository = mock(ContractPhaseCodeRepository.class);
         riskRatingCodeRepository = mock(RiskRatingCodeRepository.class);
@@ -80,7 +78,6 @@ class ActivityServiceTest {
                 activityProgressRepository,
                 activityResourceAssembler,
                 projectFiscalRepository,
-                projectFiscalService,
                 activityStatusCodeRepository,
                 contractPhaseCodeRepository,
                 riskRatingCodeRepository,
@@ -141,19 +138,19 @@ class ActivityServiceTest {
         ActivityModel activityModel = new ActivityModel();
         activityModel.setProjectPlanFiscalGuid(fiscalGuid);
 
-        ProjectFiscalModel projectFiscalModel = new ProjectFiscalModel();
-        projectFiscalModel.setProjectGuid(projectGuid);
-        projectFiscalModel.setProjectPlanFiscalGuid(fiscalGuid);
+        ProjectEntity projectEntity = ProjectEntity.builder()
+                .projectGuid(UUID.fromString(projectGuid))
+                .build();
 
         ProjectFiscalEntity projectFiscalEntity = ProjectFiscalEntity.builder()
                 .projectPlanFiscalGuid(UUID.fromString(fiscalGuid))
+                .project(projectEntity)
                 .build();
 
         ActivityEntity activityEntity = new ActivityEntity();
         ActivityEntity savedEntity = new ActivityEntity();
         ActivityModel savedModel = new ActivityModel();
 
-        when(projectFiscalService.getProjectFiscal(fiscalGuid)).thenReturn(projectFiscalModel);
         when(projectFiscalRepository.findById(UUID.fromString(fiscalGuid)))
                 .thenReturn(Optional.of(projectFiscalEntity));
         when(activityResourceAssembler.toEntity(eq(activityModel))).thenReturn(activityEntity);
@@ -230,6 +227,8 @@ class ActivityServiceTest {
                 .build();
 
         ActivityEntity activityEntity = new ActivityEntity();
+        ActivityEntity activityEntityWithGuid = new ActivityEntity();
+        activityEntityWithGuid.setActivityGuid(UUID.fromString(activityGuid));
         activityEntity.setProjectPlanFiscalGuid(UUID.fromString(fiscalGuid));
 
         ActivityModel activityModel = new ActivityModel();
@@ -337,11 +336,17 @@ class ActivityServiceTest {
         String fiscalGuid = "456e7890-e89b-12d3-a456-426614174001";
         ActivityModel activityModel = new ActivityModel();
 
-        ProjectFiscalModel projectFiscalModel = new ProjectFiscalModel();
-        projectFiscalModel.setProjectGuid("different-project-guid");
+        ProjectEntity projectEntity = ProjectEntity.builder()
+                .projectGuid(UUID.fromString("00000000-0000-0000-0000-000000000001"))
+                .build();
 
-        when(projectFiscalService.getProjectFiscal(fiscalGuid))
-                .thenReturn(projectFiscalModel);
+        ProjectFiscalEntity projectFiscalEntity = ProjectFiscalEntity.builder()
+                .projectPlanFiscalGuid(UUID.fromString(fiscalGuid))
+                .project(projectEntity)
+                .build();
+
+        when(projectFiscalRepository.findById(UUID.fromString(fiscalGuid)))
+                .thenReturn(Optional.of(projectFiscalEntity));
 
         // WHEN/THEN
         assertThrows(EntityNotFoundException.class, () ->
