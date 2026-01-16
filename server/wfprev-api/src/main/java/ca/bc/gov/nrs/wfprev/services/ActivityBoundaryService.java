@@ -7,8 +7,11 @@ import ca.bc.gov.nrs.wfprev.data.entities.ActivityBoundaryEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ActivityEntity;
 import ca.bc.gov.nrs.wfprev.data.models.ActivityBoundaryModel;
 import ca.bc.gov.nrs.wfprev.data.models.ActivityModel;
+import ca.bc.gov.nrs.wfprev.data.entities.ProjectFiscalEntity;
 import ca.bc.gov.nrs.wfprev.data.repositories.ActivityBoundaryRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.ActivityRepository;
+import ca.bc.gov.nrs.wfprev.data.repositories.ProjectFiscalRepository;
+import ca.bc.gov.nrs.wfprev.data.repositories.ProjectRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import jakarta.validation.ConstraintViolation;
@@ -34,13 +37,19 @@ public class ActivityBoundaryService implements CommonService {
     private static final String BOUNDARY_NOT_FOUND = "Activity Boundary not found";
     private static final String BOUNDARY = "Activity Boundary";
     private static final String DOES_NOT_BELONG_ACTIVITY = "does not belong to Activity";
+    private static final String FISCAL_NOT_FOUND = "Project Fiscal not found";
+    private static final String PROJECT_FISCAL = "Project Fiscal";
+    private static final String DOES_NOT_BELONG_PROJECT = "does not belong to Project";
+    private static final String DOES_NOT_BELONG_FISCAL = "does not belong to Project Fiscal";
+    private static final String ACTIVITY = "Activity";
     private static final String KEY_FORMAT = "{0}: {1}";
     private static final String EXTENDED_KEY_FORMAT = "{0}: {1} {2}: {3}";
 
     private final ActivityBoundaryRepository activityBoundaryRepository;
     private final ActivityBoundaryResourceAssembler activityBoundaryResourceAssembler;
     private final ActivityRepository activityRepository;
-    private final ActivityService activityService;
+    private final ProjectFiscalRepository projectFiscalRepository;
+    private final ProjectRepository projectRepository;
     private final ProjectBoundaryService projectBoundaryService;
     private final FileAttachmentService fileAttachmentService;
     private final Validator validator;
@@ -49,14 +58,16 @@ public class ActivityBoundaryService implements CommonService {
             ActivityBoundaryRepository activityBoundaryRepository,
             ActivityBoundaryResourceAssembler activityBoundaryResourceAssembler,
             ActivityRepository activityRepository,
-            ActivityService activityService,
+            ProjectFiscalRepository projectFiscalRepository,
+            ProjectRepository projectRepository,
             ProjectBoundaryService projectBoundaryService,
             FileAttachmentService fileAttachmentService,
             Validator validator) {
         this.activityBoundaryRepository = activityBoundaryRepository;
         this.activityBoundaryResourceAssembler = activityBoundaryResourceAssembler;
         this.activityRepository = activityRepository;
-        this.activityService = activityService;
+        this.projectFiscalRepository = projectFiscalRepository;
+        this.projectRepository = projectRepository;
         this.projectBoundaryService = projectBoundaryService;
         this.fileAttachmentService = fileAttachmentService;
         this.validator = validator;
@@ -65,8 +76,7 @@ public class ActivityBoundaryService implements CommonService {
     public CollectionModel<ActivityBoundaryModel> getAllActivityBoundaries(
             String projectGuid, String fiscalGuid, String activityGuid) throws ServiceException {
         try {
-            // Verify activity exists and belongs to the correct hierarchy
-            activityService.getActivity(projectGuid, fiscalGuid, activityGuid);
+            validateHierarchy(projectGuid, fiscalGuid, activityGuid);
 
             // Find all boundaries for this activity
             List<ActivityBoundaryEntity> boundaries = activityBoundaryRepository
@@ -92,16 +102,13 @@ public class ActivityBoundaryService implements CommonService {
             throw new ConstraintViolationException(violations);
         }
 
-        // Verify activity exists and belongs to the correct hierarchy
-        activityService.getActivity(projectGuid, fiscalGuid, activityGuid);
+        ActivityEntity activity = validateHierarchy(projectGuid, fiscalGuid, activityGuid);
 
         initializeNewActivityBoundary(resource, activityGuid);
-        ActivityEntity activityEntity = activityRepository.findById(UUID.fromString(activityGuid))
-                .orElseThrow(() -> new EntityNotFoundException(MessageFormat.format(KEY_FORMAT, ACTIVITY_NOT_FOUND, activityGuid)));
 
         ActivityBoundaryEntity entity = activityBoundaryResourceAssembler.toEntity(resource);
         if(entity != null && entity.getActivityGuid() != null) {
-            entity.setActivityGuid(activityEntity.getActivityGuid());
+            entity.setActivityGuid(activity.getActivityGuid());
             entity.setBoundarySizeHa(projectBoundaryService.convertMultiPolygonAreaToHectares(entity.getGeometry()));
             ActivityBoundaryEntity savedEntity = activityBoundaryRepository.save(entity);
             return activityBoundaryResourceAssembler.toModel(savedEntity);
@@ -123,8 +130,7 @@ public class ActivityBoundaryService implements CommonService {
             throw new ConstraintViolationException(violations);
         }
 
-        // Verify activity exists and belongs to the correct hierarchy
-        activityService.getActivity(projectGuid, fiscalGuid, activityGuid);
+        validateHierarchy(projectGuid, fiscalGuid, activityGuid);
 
         // Verify boundary exists
         if(resource != null && resource.getActivityGuid() != null) {
@@ -164,8 +170,7 @@ public class ActivityBoundaryService implements CommonService {
 
     public ActivityBoundaryModel getActivityBoundary(
             String projectGuid, String fiscalGuid, String activityGuid, String boundaryGuid) {
-        // Verify activity exists and belongs to the correct hierarchy
-        activityService.getActivity(projectGuid, fiscalGuid, activityGuid);
+        validateHierarchy(projectGuid, fiscalGuid, activityGuid);
 
         // Get the boundary
         ActivityBoundaryEntity boundary = activityBoundaryRepository.findByActivityBoundaryGuid(UUID.fromString(boundaryGuid))
@@ -182,8 +187,7 @@ public class ActivityBoundaryService implements CommonService {
     @Transactional
     public void deleteActivityBoundary(
             String projectGuid, String fiscalGuid, String activityGuid, String boundaryGuid, boolean deleteFiles) {
-        // Verify activity exists and belongs to the correct hierarchy
-        activityService.getActivity(projectGuid, fiscalGuid, activityGuid);
+        validateHierarchy(projectGuid, fiscalGuid, activityGuid);
 
         // Get the boundary
         ActivityBoundaryEntity boundary = activityBoundaryRepository.findByActivityBoundaryGuid(UUID.fromString(boundaryGuid))
@@ -211,5 +215,25 @@ public class ActivityBoundaryService implements CommonService {
             }
         }
         activityBoundaryRepository.deleteByActivityGuid(UUID.fromString(activityGuid));
+    }
+
+    private ActivityEntity validateHierarchy(String projectGuid, String fiscalGuid, String activityGuid) {
+        // Verify activity exists
+        ActivityEntity activity = activityRepository.findById(UUID.fromString(activityGuid))
+                .orElseThrow(() -> new EntityNotFoundException(MessageFormat.format(KEY_FORMAT, ACTIVITY_NOT_FOUND, activityGuid)));
+
+        // Verify activity belongs to the specified project fiscal
+        if (!activity.getProjectPlanFiscalGuid().toString().equals(fiscalGuid)) {
+            throw new EntityNotFoundException(MessageFormat.format(EXTENDED_KEY_FORMAT, ACTIVITY, activityGuid, DOES_NOT_BELONG_FISCAL, fiscalGuid));
+        }
+
+        // Verify project fiscal belongs to project
+        ProjectFiscalEntity projectFiscal = projectFiscalRepository.findById(UUID.fromString(fiscalGuid))
+                .orElseThrow(() -> new EntityNotFoundException(MessageFormat.format(KEY_FORMAT, FISCAL_NOT_FOUND, fiscalGuid)));
+        if (!projectFiscal.getProject().getProjectGuid().toString().equals(projectGuid)) {
+            throw new EntityNotFoundException(MessageFormat.format(EXTENDED_KEY_FORMAT, PROJECT_FISCAL, fiscalGuid, DOES_NOT_BELONG_PROJECT, projectGuid));
+        }
+
+        return activity;
     }
 }
