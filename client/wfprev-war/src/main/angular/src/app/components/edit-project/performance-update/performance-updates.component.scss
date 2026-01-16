@@ -4,6 +4,10 @@
     padding-top: 12px;
     margin: 0;
 
+    .expansion-panel:nth-child(even) {
+        background-color: #FAF9F8;
+    }
+
     .expansion-panel {
         border: 1px solid #D9D9D9;
 
