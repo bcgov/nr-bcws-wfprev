@@ -47,7 +47,6 @@ class ProjectBoundaryServiceTest {
 
     private Validator validator;
 
-    @Mock
     private FileAttachmentService fileAttachmentService;
 
     @BeforeEach
@@ -55,7 +54,7 @@ class ProjectBoundaryServiceTest {
         projectBoundaryRepository = mock(ProjectBoundaryRepository.class);
         projectBoundaryResourceAssembler = mock(ProjectBoundaryResourceAssembler.class);
         projectRepository = mock(ProjectRepository.class);
-        projectService = mock(ProjectService.class);
+        fileAttachmentService = mock(FileAttachmentService.class);
         validator = mock(Validator.class);
 
         projectBoundaryService = new ProjectBoundaryService(projectBoundaryRepository, projectBoundaryResourceAssembler,
