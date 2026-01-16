@@ -270,7 +270,7 @@ export class ActivitiesComponent implements OnChanges, CanComponentDeactivate {
       this.filteredTechniqueCode = this.silvicultureTechniqueCode.filter(t => t.silvicultureBaseGuid === activity.silvicultureBaseGuid);
     }
     if (activity?.silvicultureTechniqueGuid) {
-      this.filteredMethodCode = this.silvicultureMethodCode.filter(m => m.silvicultureTechniqueGuid === activity.silvicultureTechniqueGuid);
+      this.filteredMethodCode = this.filterActiveMethods(activity.silvicultureTechniqueGuid, activity.silvicultureMethodGuid);
     }
     if (this.isReadonly) {
       form.disable({ emitEvent: false });
@@ -300,8 +300,9 @@ export class ActivitiesComponent implements OnChanges, CanComponentDeactivate {
     const filteredTechniques = baseGuid
       ? this.silvicultureTechniqueCode.filter(t => t.silvicultureBaseGuid === baseGuid)
       : [];
+    const currentMethod = form.get('silvicultureMethodGuid')?.value;
     const filteredMethods = techniqueGuid
-      ? this.silvicultureMethodCode.filter(m => m.silvicultureTechniqueGuid === techniqueGuid)
+      ? this.filterActiveMethods(techniqueGuid, currentMethod)
       : [];
 
     form.patchValue({
@@ -352,7 +353,7 @@ export class ActivitiesComponent implements OnChanges, CanComponentDeactivate {
     form.patchValue({
       filteredTechniqueCode: filteredTechniques,
       filteredMethodCode: validTechnique
-        ? this.silvicultureMethodCode.filter(m => m.silvicultureTechniqueGuid === currentTechnique)
+        ? this.filterActiveMethods(currentTechnique, currentMethod)
         : []
     }, { emitEvent: false });
 
@@ -443,11 +444,8 @@ export class ActivitiesComponent implements OnChanges, CanComponentDeactivate {
       return;
     }
 
-    const filteredMethods = this.silvicultureMethodCode.filter(
-      m => m.silvicultureTechniqueGuid === techniqueGuid
-    );
-
     const currentMethod = methodControl?.value;
+    const filteredMethods = this.filterActiveMethods(techniqueGuid, currentMethod);
     const validMethod = filteredMethods.find(
       m => m.silvicultureMethodGuid === currentMethod
     );
@@ -797,7 +795,7 @@ export class ActivitiesComponent implements OnChanges, CanComponentDeactivate {
                 'OK',
                 { duration: 5000, panelClass: 'snackbar-success' }
               );
-              this.getActivities()
+              this.getActivities();
             },
             error: () => {
               this.snackbarService.open(
@@ -808,9 +806,7 @@ export class ActivitiesComponent implements OnChanges, CanComponentDeactivate {
             }
           });
       }
-    }
-    )
-
+    });
   }
 
   canDeleteActivity(index: number): boolean {
@@ -862,4 +858,10 @@ export class ActivitiesComponent implements OnChanges, CanComponentDeactivate {
     return this.activityForms[formIndex].get(controlName) as FormControl;
   }
 
+  private filterActiveMethods(techniqueGuid: string, currentMethodGuid: string): any[] {
+    return this.silvicultureMethodCode.filter(m =>
+      m.silvicultureTechniqueGuid === techniqueGuid &&
+      (!m.systemEndTimestamp || moment(m.systemEndTimestamp).isAfter(moment()) || m.silvicultureMethodGuid === currentMethodGuid)
+    );
+  }
 }

@@ -16,6 +16,7 @@ import ca.bc.gov.nrs.wfprev.data.repositories.ProjectFiscalRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.FuelManagementPlanRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.CulturalRxFirePlanRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.ProjectPlanFiscalPerfRepository;
+import ca.bc.gov.nrs.wfprev.data.repositories.ProjectRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -42,7 +43,7 @@ class ProjectFiscalServiceTest {
     private ProjectFiscalRepository projectFiscalRepository;
     private ProjectFiscalService projectFiscalService;
     private ProjectFiscalResourceAssembler projectFiscalResourceAssembler;
-    private ProjectService projectService;
+    private ProjectRepository projectRepository;
     private ProjectResourceAssembler projectResourceAssembler;
     private ProjectEntity projectEntity;
     private PlanFiscalStatusCodeRepository planFiscalStatusCodeRepository;
@@ -56,7 +57,7 @@ class ProjectFiscalServiceTest {
     void setup() {
         projectFiscalRepository = mock(ProjectFiscalRepository.class);
         projectFiscalResourceAssembler = mock(ProjectFiscalResourceAssembler.class);
-        projectService = mock(ProjectService.class);
+        projectRepository = mock(ProjectRepository.class);
         projectResourceAssembler = mock(ProjectResourceAssembler.class);
         projectEntity = mock(ProjectEntity.class);
         planFiscalStatusCodeRepository = mock(PlanFiscalStatusCodeRepository.class);
@@ -68,8 +69,7 @@ class ProjectFiscalServiceTest {
         projectFiscalService = new ProjectFiscalService(
                 projectFiscalRepository,
                 projectFiscalResourceAssembler,
-                projectService,
-                projectResourceAssembler,
+                projectRepository,
                 planFiscalStatusCodeRepository,
                 endorsementCodeRepository,
                 activityService,
@@ -284,6 +284,8 @@ class ProjectFiscalServiceTest {
         savedModel.setFiscalYear(2021L);
 
         // Mock the dependencies
+        when(projectRepository.findById(UUID.fromString("123e4567-e89b-12d3-a456-426614174000")))
+                .thenReturn(Optional.of(entity));
         when(projectFiscalResourceAssembler.toEntity(eq(projectFiscalModel), any()))
                 .thenReturn(projectFiscalEntity);
         when(projectFiscalRepository.save(eq(projectFiscalEntity)))
@@ -740,7 +742,7 @@ class ProjectFiscalServiceTest {
         expectedModel.setProjectPlanFiscalGuid(generatedGuid.toString());
 
         // When
-        when(projectService.getProjectById(projectGuid)).thenReturn(new ProjectModel());
+        when(projectRepository.findById(UUID.fromString(projectGuid))).thenReturn(Optional.of(projectEntity));
         when(projectResourceAssembler.toEntity(any())).thenReturn(projectEntity);
         when(projectFiscalResourceAssembler.toEntity(eq(model), eq(projectEntity))).thenReturn(entityToSave);
         when(projectFiscalRepository.save(entityToSave)).thenReturn(savedEntity);
@@ -756,7 +758,7 @@ class ProjectFiscalServiceTest {
 
         verify(planFiscalStatusCodeRepository).findById(planFiscalStatusCode);
         verify(endorsementCodeRepository).findById(endorsementCode);
-        verify(projectService).getProjectById(projectGuid);
+        verify(projectRepository).findById(UUID.fromString(projectGuid));
         verify(projectFiscalRepository).save(entityToSave);
         verify(projectFiscalResourceAssembler).toModel(savedEntity);
     }
@@ -769,6 +771,7 @@ class ProjectFiscalServiceTest {
         model.setPlanFiscalStatusCode(new PlanFiscalStatusCodeModel());
         model.getPlanFiscalStatusCode().setPlanFiscalStatusCode("INVALID_CODE");
 
+        when(projectRepository.findById(UUID.fromString(model.getProjectGuid()))).thenReturn(Optional.of(new ProjectEntity()));
         when(planFiscalStatusCodeRepository.findById("INVALID_CODE")).thenReturn(Optional.empty());
 
         assertThrows(IllegalArgumentException.class, () -> projectFiscalService.createProjectFiscal(model));
@@ -782,6 +785,7 @@ class ProjectFiscalServiceTest {
         model.setEndorsementCode(new EndorsementCodeModel());
         model.getEndorsementCode().setEndorsementCode("INVALID_ENDORSEMENT");
 
+        when(projectRepository.findById(UUID.fromString(model.getProjectGuid()))).thenReturn(Optional.of(new ProjectEntity()));
         when(planFiscalStatusCodeRepository.findById(any())).thenReturn(Optional.of(new PlanFiscalStatusCodeEntity()));
         when(endorsementCodeRepository.findById("INVALID_ENDORSEMENT")).thenReturn(Optional.empty());
 
