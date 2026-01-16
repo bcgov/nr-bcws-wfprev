@@ -17,6 +17,7 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.ValidationException;
 import org.springframework.security.access.AccessDeniedException;
+import ca.bc.gov.nrs.wfone.common.service.api.ServiceException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -143,5 +144,15 @@ public class GlobalExceptionHandler {
         Map<String, String> error = new HashMap<>();
         error.put(ERROR, "Access Denied.");
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error);
+    }
+
+    @ExceptionHandler(ServiceException.class)
+    public ResponseEntity<Object> handleWfoneServiceException(ServiceException ex) {
+        if (ex.getCause() instanceof EntityNotFoundException) {
+            return handleEntityNotFoundException((EntityNotFoundException) ex.getCause());
+        }
+        Map<String, String> error = new HashMap<>();
+        error.put(ERROR, ex.getMessage());
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
     }
 }
