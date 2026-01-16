@@ -12,13 +12,13 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import ca.bc.gov.nrs.wfprev.common.exceptions.ServiceException;
+
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.ValidationException;
 import org.springframework.security.access.AccessDeniedException;
-import ca.bc.gov.nrs.wfone.common.service.api.ServiceException;
 
+import ca.bc.gov.nrs.wfone.common.service.api.ServiceException;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -132,12 +132,7 @@ public class GlobalExceptionHandler {
        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
    }
 
-   @ExceptionHandler(ServiceException.class)
-   public ResponseEntity<Object> handleServiceException(ServiceException ex) {
-       Map<String, String> error = new HashMap<>();
-       error.put(ERROR, ex.getMessage());
-       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
-   }
+
     
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<Object> handleAccessDeniedException(AccessDeniedException ex) {
@@ -147,7 +142,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(ServiceException.class)
-    public ResponseEntity<Object> handleWfoneServiceException(ServiceException ex) {
+    public ResponseEntity<Object> handleServiceException(ServiceException ex) {
         if (ex.getCause() instanceof EntityNotFoundException) {
             return handleEntityNotFoundException((EntityNotFoundException) ex.getCause());
         }

@@ -23,6 +23,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import ca.bc.gov.nrs.wfprev.handlers.GlobalExceptionHandler;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
@@ -38,7 +39,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(ProjectController.class)
-@Import({TestSpringSecurity.class, TestcontainersConfiguration.class})
+@Import({TestSpringSecurity.class, TestcontainersConfiguration.class, GlobalExceptionHandler.class})
 @MockBean(JpaMetamodelMappingContext.class)
 class ProjectControllerTest {
     @MockBean
