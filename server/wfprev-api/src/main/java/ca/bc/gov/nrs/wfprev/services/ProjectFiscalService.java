@@ -14,6 +14,7 @@ import ca.bc.gov.nrs.wfprev.data.repositories.ActivityRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.EndorsementCodeRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.PlanFiscalStatusCodeRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.ProjectFiscalRepository;
+import ca.bc.gov.nrs.wfprev.data.repositories.ProjectRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.FuelManagementPlanRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.CulturalRxFirePlanRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.ProjectPlanFiscalPerfRepository;
@@ -38,8 +39,7 @@ public class ProjectFiscalService implements CommonService {
 
     private final ProjectFiscalRepository projectFiscalRepository;
     private final ProjectFiscalResourceAssembler projectFiscalResourceAssembler;
-    private final ProjectService projectService;
-    private final ProjectResourceAssembler projectResourceAssembler;
+    private final ProjectRepository projectRepository;
     private final PlanFiscalStatusCodeRepository planFiscalStatusCodeRepository;
     private final EndorsementCodeRepository endorsementCodeRepository;
     private final ActivityService activityService;
@@ -65,15 +65,14 @@ public class ProjectFiscalService implements CommonService {
     );
 
     public ProjectFiscalService(ProjectFiscalRepository projectFiscalRepository, ProjectFiscalResourceAssembler projectFiscalResourceAssembler,
-                                ProjectService projectService, ProjectResourceAssembler projectResourceAssembler, PlanFiscalStatusCodeRepository planFiscalStatusCodeRepository,
+                                ProjectRepository projectRepository, PlanFiscalStatusCodeRepository planFiscalStatusCodeRepository,
                                 EndorsementCodeRepository endorsementCodeRepository, @Lazy ActivityService activityService,
                                 FuelManagementPlanRepository fuelManagementPlanRepository,
                                 CulturalRxFirePlanRepository culturalRxFirePlanRepository,
                                 ProjectPlanFiscalPerfRepository projectPlanFiscalPerfRepository) {
         this.projectFiscalRepository = projectFiscalRepository;
         this.projectFiscalResourceAssembler = projectFiscalResourceAssembler;
-        this.projectService = projectService;
-        this.projectResourceAssembler = projectResourceAssembler;
+        this.projectRepository = projectRepository;
         this.planFiscalStatusCodeRepository = planFiscalStatusCodeRepository;
         this.endorsementCodeRepository = endorsementCodeRepository;
         this.activityService = activityService;
@@ -90,8 +89,10 @@ public class ProjectFiscalService implements CommonService {
 
     public ProjectFiscalModel createProjectFiscal(ProjectFiscalModel projectFiscalModel) {
         initializeNewProjectFiscal(projectFiscalModel);
-        ProjectModel projectById = projectService.getProjectById(projectFiscalModel.getProjectGuid());
-        ProjectEntity projectEntity = projectResourceAssembler.toEntity(projectById);
+        UUID projectGuid = UUID.fromString(projectFiscalModel.getProjectGuid());
+        ProjectEntity projectEntity = projectRepository.findById(projectGuid)
+                .orElseThrow(() -> new EntityNotFoundException("Project not found: " + projectFiscalModel.getProjectGuid()));
+        
         ProjectFiscalEntity entity = projectFiscalResourceAssembler.toEntity(projectFiscalModel, projectEntity);
         assignAssociatedEntities(projectFiscalModel, entity);
         ProjectFiscalEntity savedEntity = projectFiscalRepository.save(entity);
