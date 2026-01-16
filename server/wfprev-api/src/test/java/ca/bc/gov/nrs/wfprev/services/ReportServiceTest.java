@@ -1,6 +1,6 @@
 package ca.bc.gov.nrs.wfprev.services;
 
-import ca.bc.gov.nrs.wfprev.common.exceptions.ServiceException;
+import ca.bc.gov.nrs.wfone.common.service.api.ServiceException;
 import ca.bc.gov.nrs.wfprev.data.entities.CulturalPrescribedFireReportEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.FuelManagementReportEntity;
 import ca.bc.gov.nrs.wfprev.data.models.ReportRequestModel;

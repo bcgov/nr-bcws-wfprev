@@ -1,6 +1,6 @@
 package ca.bc.gov.nrs.wfprev.controllers;
 
-import ca.bc.gov.nrs.wfprev.common.exceptions.ServiceException;
+import ca.bc.gov.nrs.wfone.common.service.api.ServiceException;
 import ca.bc.gov.nrs.wfprev.data.models.ReportRequestModel;
 import ca.bc.gov.nrs.wfprev.services.ReportService;
 import io.swagger.v3.oas.annotations.Operation;

@@ -1,6 +1,6 @@
 package ca.bc.gov.nrs.wfprev.services;
 
-import ca.bc.gov.nrs.wfprev.common.exceptions.ServiceException;
+import ca.bc.gov.nrs.wfone.common.service.api.ServiceException;
 import ca.bc.gov.nrs.wfprev.data.entities.ActivityBoundaryEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ActivityEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ProjectBoundaryEntity;

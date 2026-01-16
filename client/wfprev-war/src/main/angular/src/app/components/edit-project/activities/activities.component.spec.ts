@@ -1,23 +1,22 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ActivitiesComponent } from './activities.component';
-import { ReactiveFormsModule, FormBuilder, FormControl } from '@angular/forms';
-import { MatExpansionModule } from '@angular/material/expansion';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule } from '@angular/material/core';
-import { MatInputModule } from '@angular/material/input';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { MatDialog } from '@angular/material/dialog';
-import { ActivatedRoute } from '@angular/router';
-import { Observable, of, Subject, throwError } from 'rxjs';
-import { ProjectService } from 'src/app/services/project-services';
-import { CodeTableServices } from 'src/app/services/code-table-services';
-import { fakeAsync, tick } from '@angular/core/testing';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { DebugElement } from '@angular/core';
-import { IconButtonComponent } from 'src/app/components/shared/icon-button/icon-button.component';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { FormBuilder, FormControl, ReactiveFormsModule } from '@angular/forms';
+import { MatNativeDateModule } from '@angular/material/core';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatDialog } from '@angular/material/dialog';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { MatInputModule } from '@angular/material/input';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { By } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { ActivatedRoute } from '@angular/router';
+import { Observable, of, Subject, throwError } from 'rxjs';
+import { IconButtonComponent } from 'src/app/components/shared/icon-button/icon-button.component';
+import { CodeTableServices } from 'src/app/services/code-table-services';
+import { ProjectService } from 'src/app/services/project-services';
+import { ActivitiesComponent } from './activities.component';
 
 describe('ActivitiesComponent', () => {
   let component: ActivitiesComponent;
@@ -297,6 +296,51 @@ describe('ActivitiesComponent', () => {
     ]);
     expect(form.get('silvicultureMethodGuid')?.enabled).toBeTrue();
     expect(form.get('silvicultureMethodGuid')?.value).toBeNull();
+  });
+
+  it('should filter out expired method codes', () => {
+    const form = component.createActivityForm({});
+    component.activityForms.push(form);
+
+    const now = new Date();
+    const futureDate = new Date(now.getTime() + 1000 * 60 * 60 * 24); // Tomorrow
+    const pastDate = new Date(now.getTime() - 1000 * 60 * 60 * 24);   // Yesterday
+
+    // Mock silvicultureMethodCode data
+    component.silvicultureMethodCode = [
+      { silvicultureTechniqueGuid: 'technique1', silvicultureMethodGuid: 'method_active', systemEndTimestamp: futureDate.toISOString() },
+      { silvicultureTechniqueGuid: 'technique1', silvicultureMethodGuid: 'method_expired', systemEndTimestamp: pastDate.toISOString() },
+      { silvicultureTechniqueGuid: 'technique1', silvicultureMethodGuid: 'method_no_expiry', systemEndTimestamp: null }
+    ];
+
+    component.onTechniqueChange('technique1', form);
+
+    const filtered = form.get('filteredMethodCode')?.value;
+    expect(filtered.length).toBe(2);
+    expect(filtered.find((m: any) => m.silvicultureMethodGuid === 'method_active')).toBeTruthy();
+    expect(filtered.find((m: any) => m.silvicultureMethodGuid === 'method_no_expiry')).toBeTruthy();
+    expect(filtered.find((m: any) => m.silvicultureMethodGuid === 'method_expired')).toBeFalsy();
+  });
+
+  it('should include expired method code if it is the currently selected value', () => {
+    const form = component.createActivityForm({
+      silvicultureTechniqueGuid: 'technique1',
+      silvicultureMethodGuid: 'method_expired'
+    });
+    component.activityForms.push(form);
+
+    const pastDate = new Date(new Date().getTime() - 1000 * 60 * 60 * 24); // Yesterday
+
+    component.silvicultureMethodCode = [
+      { silvicultureTechniqueGuid: 'technique1', silvicultureMethodGuid: 'method_active', systemEndTimestamp: null },
+      { silvicultureTechniqueGuid: 'technique1', silvicultureMethodGuid: 'method_expired', systemEndTimestamp: pastDate.toISOString() }
+    ];
+
+    component.onTechniqueChange('technique1', form);
+
+    const filtered = form.get('filteredMethodCode')?.value;
+    expect(filtered.length).toBe(2);
+    expect(filtered.find((m: any) => m.silvicultureMethodGuid === 'method_expired')).toBeTruthy();
   });
 
 
@@ -890,8 +934,8 @@ describe('ActivitiesComponent', () => {
       component.onDeleteActivity(0);
 
       expect((mockProjectService as any).deleteActivity).toHaveBeenCalledWith(
-        'test-project-guid', 
-        'fg-1',              
+        'test-project-guid',
+        'fg-1',
         'act-2'
       );
       expect(mockSnackbarService.open).toHaveBeenCalledWith(
@@ -947,7 +991,7 @@ describe('ActivitiesComponent', () => {
     const consoleSpy = spyOn(console, 'error');
 
     component.loadCodeTables().subscribe({
-      error: () => {}
+      error: () => { }
     });
 
     tick();

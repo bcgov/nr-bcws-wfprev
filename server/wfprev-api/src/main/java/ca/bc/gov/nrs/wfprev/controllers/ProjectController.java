@@ -176,19 +176,19 @@ public class ProjectController extends CommonController {
   @Parameter(name = "deleteFiles", description = "If true, associated files will be deleted from WFDM and the database. If false (default), files are retained.", required = false, schema = @Schema(implementation = Boolean.class), in = ParameterIn.QUERY)
   public ResponseEntity<Void> deleteProject(@PathVariable("id") String id, @RequestParam(value = "deleteFiles", defaultValue = "false") boolean deleteFiles) {
     log.debug(" >> deleteProject with id: {} deleteFiles: {}", id, deleteFiles);
-
+    
     try {
       projectService.deleteProject(id, deleteFiles);
       log.debug(" << deleteProject success");
       return ResponseEntity.noContent().build();
-    } catch (EntityNotFoundException e) {
-      log.warn(" ### Project not found with id: {}", id, e);
-      return ResponseEntity.notFound().build();
     } catch (IllegalArgumentException e) {
-      log.error(" ### IllegalArgumentException while deleting Project with id: {}", id, e);
-      return ResponseEntity.badRequest().build();
-    } catch (Exception e) {
-      log.error(" ### Error while deleting Project with id: {}", id, e);
+      log.error("Error deleting project: Invalid ID", e);
+      return badRequest();
+    } catch (EntityNotFoundException e) {
+      log.error("Error deleting project: Not Found", e);
+      return notFound();
+    } catch (RuntimeException e) {
+      log.error("Error deleting project", e);
       return internalServerError();
     }
   }

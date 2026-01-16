@@ -15,16 +15,16 @@ import moment from 'moment';
 import { forkJoin, map, Observable, take, tap } from 'rxjs';
 import { ConfirmationDialogComponent } from 'src/app/components/confirmation-dialog/confirmation-dialog.component';
 import { ProjectFilesComponent } from 'src/app/components/edit-project/project-details/project-files/project-files.component';
+import { ActivityModel } from 'src/app/components/models';
+import { IconButtonComponent } from 'src/app/components/shared/icon-button/icon-button.component';
+import { TextareaComponent } from 'src/app/components/shared/textarea/textarea.component';
+import { TimestampComponent } from 'src/app/components/shared/timestamp/timestamp.component';
 import { CodeTableServices } from 'src/app/services/code-table-services';
 import { ProjectService } from 'src/app/services/project-services';
 import { CanComponentDeactivate } from 'src/app/services/util/can-deactive.guard';
 import { Messages, ModalMessages, ModalTitles, NumericLimits } from 'src/app/utils/constants';
-import { ExpansionIndicatorComponent } from "../../shared/expansion-indicator/expansion-indicator.component";
-import { IconButtonComponent } from 'src/app/components/shared/icon-button/icon-button.component';
-import { TimestampComponent } from 'src/app/components/shared/timestamp/timestamp.component';
-import { TextareaComponent } from 'src/app/components/shared/textarea/textarea.component';
 import { getUtcIsoTimestamp } from 'src/app/utils/tools';
-import { ActivityModel } from 'src/app/components/models';
+import { ExpansionIndicatorComponent } from "../../shared/expansion-indicator/expansion-indicator.component";
 
 
 export const CUSTOM_DATE_FORMATS = {
@@ -99,29 +99,29 @@ export class ActivitiesComponent implements OnChanges, CanComponentDeactivate {
     public cd: ChangeDetectorRef
   ) { }
 
-ngOnChanges(changes: SimpleChanges): void {
-  if (changes['fiscalGuid'] && changes['fiscalGuid'].currentValue) {
-    this.activities = [];
-    this.activityForms = [];
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['fiscalGuid'] && changes['fiscalGuid'].currentValue) {
+      this.activities = [];
+      this.activityForms = [];
 
-    this.loadCodeTables().subscribe({
-      next: () => {
-        this.getActivities(() => {
-          this.activityForms.forEach((form, i) => {
-            if (form.get('isResultsReportableInd')?.value) {
-              this.toggleResultsReportableInd(i);
-            }
+      this.loadCodeTables().subscribe({
+        next: () => {
+          this.getActivities(() => {
+            this.activityForms.forEach((form, i) => {
+              if (form.get('isResultsReportableInd')?.value) {
+                this.toggleResultsReportableInd(i);
+              }
+            });
           });
-        });
-      },
+        },
 
-      error: (err) => {
-        console.error('Error loading code tables', err);
-        this.getActivities();
-      }
-    });
+        error: (err) => {
+          console.error('Error loading code tables', err);
+          this.getActivities();
+        }
+      });
+    }
   }
-}
 
 
   loadCodeTables(): Observable<void> {
@@ -270,7 +270,7 @@ ngOnChanges(changes: SimpleChanges): void {
       this.filteredTechniqueCode = this.silvicultureTechniqueCode.filter(t => t.silvicultureBaseGuid === activity.silvicultureBaseGuid);
     }
     if (activity?.silvicultureTechniqueGuid) {
-      this.filteredMethodCode = this.silvicultureMethodCode.filter(m => m.silvicultureTechniqueGuid === activity.silvicultureTechniqueGuid);
+      this.filteredMethodCode = this.filterActiveMethods(activity.silvicultureTechniqueGuid, activity.silvicultureMethodGuid);
     }
     if (this.isReadonly) {
       form.disable({ emitEvent: false });
@@ -300,8 +300,9 @@ ngOnChanges(changes: SimpleChanges): void {
     const filteredTechniques = baseGuid
       ? this.silvicultureTechniqueCode.filter(t => t.silvicultureBaseGuid === baseGuid)
       : [];
+    const currentMethod = form.get('silvicultureMethodGuid')?.value;
     const filteredMethods = techniqueGuid
-      ? this.silvicultureMethodCode.filter(m => m.silvicultureTechniqueGuid === techniqueGuid)
+      ? this.filterActiveMethods(techniqueGuid, currentMethod)
       : [];
 
     form.patchValue({
@@ -352,7 +353,7 @@ ngOnChanges(changes: SimpleChanges): void {
     form.patchValue({
       filteredTechniqueCode: filteredTechniques,
       filteredMethodCode: validTechnique
-        ? this.silvicultureMethodCode.filter(m => m.silvicultureTechniqueGuid === currentTechnique)
+        ? this.filterActiveMethods(currentTechnique, currentMethod)
         : []
     }, { emitEvent: false });
 
@@ -397,7 +398,7 @@ ngOnChanges(changes: SimpleChanges): void {
       nameField?.disable();
       nameField?.setValue(this.getActivityTitle(index)); // Set name initially
 
-      if (!this.isReadonly){
+      if (!this.isReadonly) {
         form.get('silvicultureBaseGuid')?.valueChanges.subscribe(() => {
           if (form.get('isResultsReportableInd')?.value) {
             nameField?.setValue(this.getActivityTitle(index));
@@ -443,11 +444,8 @@ ngOnChanges(changes: SimpleChanges): void {
       return;
     }
 
-    const filteredMethods = this.silvicultureMethodCode.filter(
-      m => m.silvicultureTechniqueGuid === techniqueGuid
-    );
-
     const currentMethod = methodControl?.value;
+    const filteredMethods = this.filterActiveMethods(techniqueGuid, currentMethod);
     const validMethod = filteredMethods.find(
       m => m.silvicultureMethodGuid === currentMethod
     );
@@ -797,7 +795,7 @@ ngOnChanges(changes: SimpleChanges): void {
                 'OK',
                 { duration: 5000, panelClass: 'snackbar-success' }
               );
-              this.getActivities()
+              this.getActivities();
             },
             error: () => {
               this.snackbarService.open(
@@ -808,9 +806,7 @@ ngOnChanges(changes: SimpleChanges): void {
             }
           });
       }
-    }
-    )
-
+    });
   }
 
   canDeleteActivity(index: number): boolean {
@@ -862,4 +858,10 @@ ngOnChanges(changes: SimpleChanges): void {
     return this.activityForms[formIndex].get(controlName) as FormControl;
   }
 
+  private filterActiveMethods(techniqueGuid: string, currentMethodGuid: string): any[] {
+    return this.silvicultureMethodCode.filter(m =>
+      m.silvicultureTechniqueGuid === techniqueGuid &&
+      (!m.systemEndTimestamp || moment(m.systemEndTimestamp).isAfter(moment()) || m.silvicultureMethodGuid === currentMethodGuid)
+    );
+  }
 }
