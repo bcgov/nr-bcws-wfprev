@@ -52,6 +52,8 @@ public class SilvicultureMethodCodeResourceAssembler extends RepresentationModel
         model.setSilvicultureMethodCode(entity.getSilvicultureMethodCode());
         model.setSilvicultureTechniqueGuid(String.valueOf(entity.getSilvicultureTechniqueGuid()));
         model.setDescription(entity.getDescription());
+        model.setSystemStartTimestamp(entity.getSystemStartTimestamp());
+        model.setSystemEndTimestamp(entity.getSystemEndTimestamp());
         model.setRevisionCount(entity.getRevisionCount());
         model.setCreateUser(entity.getCreateUser());
         model.setCreateDate(entity.getCreateDate());
