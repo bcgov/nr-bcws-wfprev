@@ -26,7 +26,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.stereotype.Component;
-import org.springframework.context.annotation.Lazy;
 
 import java.text.MessageFormat;
 import java.util.Date;
@@ -66,7 +65,7 @@ public class ActivityService implements CommonService {
             ActivityStatusCodeRepository activityStatusCodeRepository,
             ContractPhaseCodeRepository contractPhaseCodeRepository,
             RiskRatingCodeRepository riskRatingCodeRepository,
-            @Lazy ActivityBoundaryService activityBoundaryService,
+            ActivityBoundaryService activityBoundaryService,
             FileAttachmentService fileAttachmentService,
             Validator validator) {
         this.activityRepository = activityRepository;
