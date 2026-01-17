@@ -1882,6 +1882,38 @@
         "rollback": [
         ]
       }
+    },
+    {
+      "changeSet": {
+        "id": "01_01_00_02",
+        "author": "sparmar",
+        "tagDatabase": { "tag" : "version_01_01_00_02" },
+        "changes": [
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_01_00/02/dml/app_wf1_prev.dml.delete_duplicate_mulch_method.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_01_00/02/dml/app_wf1_prev.dml.update_silviculture_base_code_survey.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_01_00/02/dml/app_wf1_prev.dml.add_silviculture_base.sql"
+            }
+          }
+        ],
+        "rollback": [
+        ]
+      }
     }
   ]
 }
