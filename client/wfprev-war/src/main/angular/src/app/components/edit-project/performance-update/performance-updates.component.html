@@ -6,13 +6,13 @@
                     [isExpanded]="performanceUpdatesPanels.expanded"></wfprev-expansion-indicator>
                 <span class="project-title">Performance Updates</span>
                 <wfprev-icon-button [text]="'New Update'" [icon]="'/assets/add-button.svg'" [alt]="'add-update'"
-                    [iconSize]="19">
+                    [iconSize]="19" (clicked)="openDialog()">
                 </wfprev-icon-button>
             </div>
         </mat-expansion-panel-header>
         @if(updates.length > 0) {
         @for (update of updates; track update.date) {
-        <mat-expansion-panel [expanded]='true' class="expansion-panel" #updatePanel>
+        <mat-expansion-panel [expanded]='false' class="expansion-panel" #updatePanel>
             <mat-expansion-panel-header class="performance-update-header">
                 <wfprev-expansion-indicator [isExpanded]="updatePanel.expanded"></wfprev-expansion-indicator>
                 <div class="performance-update-title">
@@ -22,13 +22,13 @@
                 </div>
                 <div class="content-status-indicators">
                     <span>Reporting Period: {{update.reportingPeriod}}</span>
-                    @if (update.timeStatus === TimeStatus.Delayed) {
+                    @if (update.progressStatus === ProgressStatus.Delayed) {
                     <span>
                         <img alt="status" class="status-icon" src="/assets/progress-status-delayed.svg">
                         Delayed
                     </span>
                     }
-                    @if (update.timeStatus === TimeStatus.OnTrack) {
+                    @if (update.progressStatus === ProgressStatus.OnTrack) {
                     <span>
                         <img alt="status" class="status-icon" src="/assets/progress-status-ontrack.svg">
                         On Track
@@ -47,7 +47,7 @@
                     </span>
                     }
                 </div>
-                @if(update.progressStatus === ProgressStatus.InProgress) {
+                @if(update.updateGeneralStatus === UpdateGeneralStatus.InProgress) {
                 <div class="status-indicators">
                     <span class="status-tag">
                         <img alt="status" class="status-icon" src="/assets/in-progress-icon-only.svg">
@@ -55,7 +55,7 @@
                     </span>
                 </div>
                 }
-                @if(update.progressStatus === ProgressStatus.Prepared) {
+                @if(update.updateGeneralStatus === UpdateGeneralStatus.Prepared) {
                 <div class="status-indicators">
                     <span class="status-tag">
                         <img alt="status" class="status-icon" src="/assets/prepared-icon.svg">
