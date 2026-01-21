@@ -379,10 +379,10 @@ export interface ReportRequest {
 export interface PerformanceUpdate {
   
   date: string;
-  reportingPeriod: string;
-  timeStatus: TimeStatus;
-  forecastStatus: ForecastStatus;
+  reportingPeriod: ReportingPeriod;
   progressStatus: ProgressStatus;
+  forecastStatus: ForecastStatus;
+  updateGeneralStatus: UpdateGeneralStatus;
   
   generalUpdates: string;
   submitedBy: string;
@@ -407,12 +407,26 @@ export enum ForecastStatus {
   NonChanged="NON_CHANGED"
 }
 
-export enum TimeStatus {
+export enum ProgressStatus {
   Delayed = "DELAYED",
-  OnTrack = "ON_TRACK"
+  OnTrack = "ON_TRACK",
+  Deffered = "DEFFERED",
+  Cancelled = "CANCELLED"
 }
 
-export enum ProgressStatus {
+export enum UpdateGeneralStatus {
   InProgress = "IN_PROGRESS",
   Prepared ="PREPARED"
+}
+
+export enum ReportingPeriod {
+  Q1 = "Q1",
+  Q2 = "Q2",
+  Q3 = "Q3",
+  Q4 = "Q4"
+}
+
+export interface SelectionOption<T> {
+  value: T,
+  description: string
 }

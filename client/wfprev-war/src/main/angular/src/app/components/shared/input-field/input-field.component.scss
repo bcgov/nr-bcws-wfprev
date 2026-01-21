@@ -23,6 +23,20 @@
       line-height: normal;
     }
 
+    .input-header {
+      display: flex;
+      align-items: center;
+
+      .input-header-lable {
+        padding: 0px 9px;
+        color: #474543;
+        font-size: 14px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: normal;
+      }
+    }
+
     input {
       font-family: var(--wf-font-family-main) !important;
       color: #282828;

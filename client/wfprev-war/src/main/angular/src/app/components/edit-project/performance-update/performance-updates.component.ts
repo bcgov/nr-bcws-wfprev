@@ -3,8 +3,10 @@ import { MatExpansionPanel, MatExpansionPanelHeader } from '@angular/material/ex
 import { ExpansionIndicatorComponent } from "../../shared/expansion-indicator/expansion-indicator.component";
 import { IconButtonComponent } from "../../shared/icon-button/icon-button.component";
 import { ProjectService } from 'src/app/services/project-services';
-import { PerformanceUpdate, ForecastStatus, TimeStatus, ProgressStatus } from '../../models';
+import { PerformanceUpdate, ForecastStatus, ProgressStatus, UpdateGeneralStatus } from '../../models';
 import { ActivatedRoute } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
+import { PerformanceUpdateModalWindowComponent } from '../../performance-update-modal-window/performance-update-modal-window.component';
 
 @Component({
   selector: 'wfprev-performance-updates',
@@ -19,21 +21,23 @@ export class PerformanceUpdatesComponent implements OnChanges {
   projectGuid = '';
 
   protected readonly ForecastStatus = ForecastStatus;
-  protected readonly TimeStatus = TimeStatus;
   protected readonly ProgressStatus = ProgressStatus;
+  protected readonly UpdateGeneralStatus = UpdateGeneralStatus;
 
 
   updates: PerformanceUpdate[] = [];
-
+  isUpdatesCalled: boolean = false;
 
   constructor(
     private readonly projectService: ProjectService,
-    private readonly route: ActivatedRoute
+    private readonly route: ActivatedRoute,
+    private dialog: MatDialog,
   ) { }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['fiscalGuid'] && changes['fiscalGuid'].currentValue) {
-      this.getPerformanceUpdates();
+    if (changes['fiscalGuid'] && changes['fiscalGuid'].currentValue && !this.isUpdatesCalled) {
+        this.isUpdatesCalled = true;
+        this.getPerformanceUpdates();
     }
   }
 
@@ -56,4 +60,20 @@ export class PerformanceUpdatesComponent implements OnChanges {
     }
   }
 
+  openDialog(): void {
+    const dialogRef = this.dialog.open(PerformanceUpdateModalWindowComponent,
+      {
+      data: { message: 'Are you sure?' },
+      disableClose: true, // optional
+    });
+  }
+
+  postPerformanceUpdates(): void {
+
+  }
+
+  putPerformanceUpdates(): void {
+
+  }
+  
 }
