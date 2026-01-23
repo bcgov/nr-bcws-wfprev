@@ -32,6 +32,9 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+import java.math.BigDecimal;
+import java.util.Date;
+import java.time.Instant;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -63,7 +66,7 @@ class ReportServiceTest {
         featuresService = mock(FeaturesService.class);
         service = new ReportService(fuelRepo, crxRepo, programAreaRepo, featuresService);
 
-        setField(service, "baseUrl", "https://example.gov.bc.ca");
+        setField(service, "baseUrl", "https://example.com");
         setField(service, "reportGeneratorLambdaUrl", "http://invalid/override-me-in-test");
     }
 
@@ -360,6 +363,258 @@ class ReportServiceTest {
         assertTrue(ex.getMessage().contains("REPORT_GENERATOR_LAMBDA_URL"));
     }
 
+
+    @Test
+    void writeCsvZip_includesAllFields() throws Exception {
+        UUID projectGuid = UUID.randomUUID();
+        UUID fiscalGuid = UUID.randomUUID();
+
+        // Setup Fuel Entity with ALL fields populated
+        FuelManagementReportEntity fuelEntity = new FuelManagementReportEntity();
+        fuelEntity.setUniqueRowGuid(UUID.randomUUID());
+        fuelEntity.setProjectGuid(projectGuid);
+        fuelEntity.setProjectPlanFiscalGuid(fiscalGuid);
+        fuelEntity.setLinkToProject("http://project/fuel");
+        fuelEntity.setLinkToFiscalActivity("http://fiscal/fuel");
+        fuelEntity.setProjectTypeDescription("Fuel Mgmt");
+        fuelEntity.setProjectName("Fuel Alpha");
+        fuelEntity.setForestRegionOrgUnitName("Region A");
+        fuelEntity.setForestDistrictOrgUnitName("District A");
+        fuelEntity.setBcParksRegionOrgUnitName("Parks Region A");
+        fuelEntity.setBcParksSectionOrgUnitName("Parks Section A");
+        fuelEntity.setFireCentreOrgUnitName("Fire Centre A");
+        fuelEntity.setBusinessArea("Business Area A");
+        fuelEntity.setPlanningUnitName("Planning Unit A");
+        fuelEntity.setGrossProjectAreaHa(new BigDecimal("123.45"));
+        fuelEntity.setClosestCommunityName("Community A");
+        fuelEntity.setProjectLead("Lead A");
+        fuelEntity.setProposalTypeDescription("Proposal A");
+        fuelEntity.setProjectFiscalName("Fiscal A");
+        fuelEntity.setProjectFiscalDescription("Desc A");
+        fuelEntity.setFiscalYear("2025");
+        fuelEntity.setActivityCategoryDescription("Activity A");
+        fuelEntity.setPlanFiscalStatusDescription("Status A");
+        fuelEntity.setTotalEstimatedCostAmount(new BigDecimal("1000.00"));
+        fuelEntity.setFiscalForecastAmount(new BigDecimal("1100.00"));
+        fuelEntity.setFiscalAncillaryFundAmount(new BigDecimal("500.00"));
+        fuelEntity.setAncillaryFundingProvider("Provider A");
+        fuelEntity.setFiscalReportedSpendAmount(new BigDecimal("900.00"));
+        fuelEntity.setFiscalActualAmount(new BigDecimal("950.00"));
+        fuelEntity.setFiscalPlannedProjectSizeHa(new BigDecimal("50.5"));
+        fuelEntity.setFiscalCompletedSizeHa(new BigDecimal("40.5"));
+        fuelEntity.setSpatialSubmitted("1/1");
+        fuelEntity.setFirstNationsEngagement("Y");
+        fuelEntity.setFirstNationsDelivPartners("N");
+        fuelEntity.setFirstNationsPartner("FN Partner A");
+        fuelEntity.setOtherPartner("Other Partner A");
+        fuelEntity.setCfsProjectCode("CFS-A");
+        fuelEntity.setResultsProjectCode("RES-A");
+        fuelEntity.setResultsOpeningId("OPEN-A");
+        fuelEntity.setPrimaryObjectiveTypeDescription("Obj A");
+        fuelEntity.setSecondaryObjectiveTypeDescription("Obj B");
+        fuelEntity.setEndorsementTimestamp(Date.from(Instant.parse("2025-01-01T20:00:00Z")));
+        fuelEntity.setApprovedTimestamp(Date.from(Instant.parse("2025-02-01T20:00:00Z")));
+        fuelEntity.setWuiRiskClassDescription("Risk A");
+        fuelEntity.setLocalWuiRiskClassDescription("Local Risk A");
+        fuelEntity.setLocalWuiRiskClassRationale("Rationale A");
+        fuelEntity.setTotalCoarseFilterSectionScore(new BigDecimal("10"));
+        fuelEntity.setTotalMediumFilterSectionScore(new BigDecimal("20"));
+        fuelEntity.setMediumFilterSectionComment("Medium Comment A");
+        fuelEntity.setTotalFineFilterSectionScore(new BigDecimal("30"));
+        fuelEntity.setFineFilterSectionComment("Fine Comment A");
+        fuelEntity.setTotalFilterSectionScore(new BigDecimal("60"));
+
+
+        // Setup CRX Entity with ALL fields populated
+        CulturalPrescribedFireReportEntity crxEntity = new CulturalPrescribedFireReportEntity();
+        crxEntity.setUniqueRowGuid(UUID.randomUUID());
+        crxEntity.setProjectGuid(projectGuid);
+        crxEntity.setProjectPlanFiscalGuid(fiscalGuid);
+        crxEntity.setLinkToProject("http://project/crx");
+        crxEntity.setLinkToFiscalActivity("http://fiscal/crx");
+        crxEntity.setProjectTypeDescription("Cultural Fire");
+        crxEntity.setProjectName("CRX Beta");
+        crxEntity.setForestRegionOrgUnitName("Region B");
+        crxEntity.setForestDistrictOrgUnitName("District B");
+        crxEntity.setBcParksRegionOrgUnitName("Parks Region B");
+        crxEntity.setBcParksSectionOrgUnitName("Parks Section B");
+        crxEntity.setFireCentreOrgUnitName("Fire Centre B");
+        crxEntity.setBusinessArea("Business Area B");
+        crxEntity.setPlanningUnitName("Planning Unit B");
+        crxEntity.setGrossProjectAreaHa(new BigDecimal("234.56"));
+        crxEntity.setClosestCommunityName("Community B");
+        crxEntity.setProjectLead("Lead B");
+        crxEntity.setProposalTypeDescription("Proposal B");
+        crxEntity.setProjectFiscalName("Fiscal B");
+        crxEntity.setProjectFiscalDescription("Desc B");
+        crxEntity.setFiscalYear("2025");
+        crxEntity.setActivityCategoryDescription("Activity B");
+        crxEntity.setPlanFiscalStatusDescription("Status B");
+        crxEntity.setTotalEstimatedCostAmount(new BigDecimal("2000.00"));
+        crxEntity.setFiscalForecastAmount(new BigDecimal("2100.00"));
+        crxEntity.setFiscalAncillaryFundAmount(new BigDecimal("600.00"));
+        crxEntity.setAncillaryFundingProvider("Provider B");
+        crxEntity.setFiscalReportedSpendAmount(new BigDecimal("1900.00"));
+        crxEntity.setFiscalActualAmount(new BigDecimal("1950.00"));
+        crxEntity.setFiscalPlannedProjectSizeHa(new BigDecimal("60.5"));
+        crxEntity.setFiscalCompletedSizeHa(new BigDecimal("50.5"));
+        crxEntity.setSpatialSubmitted("1/2");
+        crxEntity.setFirstNationsEngagement("N");
+        crxEntity.setFirstNationsDelivPartners("Y");
+        crxEntity.setFirstNationsPartner("FN Partner B");
+        crxEntity.setOtherPartner("Other Partner B");
+        crxEntity.setCfsProjectCode("CFS-B");
+        crxEntity.setResultsProjectCode("RES-B");
+        crxEntity.setResultsOpeningId("OPEN-B");
+        crxEntity.setPrimaryObjectiveTypeDescription("Obj C");
+        crxEntity.setSecondaryObjectiveTypeDescription("Obj D");
+        crxEntity.setEndorsementTimestamp(Date.from(Instant.parse("2025-03-01T20:00:00Z")));
+        crxEntity.setApprovedTimestamp(Date.from(Instant.parse("2025-04-01T20:00:00Z")));
+        crxEntity.setOutsideWuiInd(true);
+        crxEntity.setWuiRiskClassDescription("Risk B");
+        crxEntity.setLocalWuiRiskClassDescription("Local Risk B");
+        crxEntity.setTotalRclFilterSectionScore(new BigDecimal("5"));
+        crxEntity.setRclFilterSectionComment("RCL Comment B");
+        crxEntity.setTotalBdfFilterSectionScore(new BigDecimal("15"));
+        crxEntity.setBdfFilterSectionComment("BDF Comment B");
+        crxEntity.setTotalCollimpFilterSectionScore(new BigDecimal("25"));
+        crxEntity.setCollimpFilterSectionComment("Coll Imp Comment B");
+        crxEntity.setTotalFilterSectionScore(new BigDecimal("45"));
+
+        when(fuelRepo.findByProjectGuid(projectGuid)).thenReturn(List.of(fuelEntity));
+        when(crxRepo.findByProjectGuid(projectGuid)).thenReturn(List.of(crxEntity));
+        when(programAreaRepo.findById(any())).thenReturn(Optional.empty());
+
+        ReportRequestModel req = requestWithProjects(List.of(project(projectGuid, null)));
+
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        service.writeCsvZipFromEntities(req, out);
+
+        // Read zip and verify CSV content
+        try (ZipInputStream zin = new ZipInputStream(new ByteArrayInputStream(out.toByteArray()))) {
+            ZipEntry entry;
+            while ((entry = zin.getNextEntry()) != null) {
+                byte[] content = zin.readAllBytes();
+                String csv = new String(content, StandardCharsets.UTF_8);
+                String[] lines = csv.split("\\r?\\n");
+                
+                if (entry.getName().contains("fuel")) {
+                    String row = lines[1];
+                    String expectedProjectLink = "\"=HYPERLINK(\"\"https://example.com/edit-project?projectGuid=" + projectGuid + "\"\", \"\"Fuel Alpha Project Link\"\")\"";
+                    String expectedFiscalLink = "\"=HYPERLINK(\"\"https://example.com/edit-project?projectGuid=" + projectGuid + "&tab=fiscal&fiscalGuid=" + fiscalGuid + "\"\", \"\"Fiscal A Fiscal Activity Link\"\")\"";
+                    
+                    assertTrue(row.contains(expectedProjectLink), "Row missing correct Project Link: " + expectedProjectLink);
+                    assertTrue(row.contains(expectedFiscalLink), "Row missing correct Fiscal Link: " + expectedFiscalLink);
+
+                    assertTrue(row.contains("Fuel Mgmt"));
+                    assertTrue(row.contains("Fuel Alpha"));
+                    assertTrue(row.contains("Region A"));
+                    assertTrue(row.contains("District A"));
+                    assertTrue(row.contains("Parks Region A"));
+                    assertTrue(row.contains("Parks Section A"));
+                    assertTrue(row.contains("Fire Centre A"));
+                    assertTrue(row.contains("Business Area A"));
+                    assertTrue(row.contains("Planning Unit A"));
+                    assertTrue(row.contains("123 ha"));
+                    assertTrue(row.contains("Community A"));
+                    assertTrue(row.contains("Lead A"));
+                    assertTrue(row.contains("Proposal A"));
+                    assertTrue(row.contains("Fiscal A"));
+                    assertTrue(row.contains("Desc A"));
+                    assertTrue(row.contains("2025/26"));
+                    assertTrue(row.contains("Activity A"));
+                    assertTrue(row.contains("Status A"));
+                    assertTrue(row.contains("$1,000"));
+                    assertTrue(row.contains("$1,100"));
+                    assertTrue(row.contains("$500"));
+                    assertTrue(row.contains("Provider A"));
+                    assertTrue(row.contains("$900"));
+                    assertTrue(row.contains("$950"));
+                    assertTrue(row.contains("50 ha"));
+                    assertTrue(row.contains("40 ha"));
+                    assertTrue(row.contains("\"=\"\"1/1\"\"\""));
+                    assertTrue(row.contains("Y"));
+                    assertTrue(row.contains("N"));
+                    assertTrue(row.contains("FN Partner A"));
+                    assertTrue(row.contains("Other Partner A"));
+                    assertTrue(row.contains("CFS-A"));
+                    assertTrue(row.contains("RES-A"));
+                    assertTrue(row.contains("OPEN-A"));
+                    assertTrue(row.contains("Obj A"));
+                    assertTrue(row.contains("Obj B"));
+                    assertTrue(row.contains("2025-01-01"));
+                    assertTrue(row.contains("2025-02-01"));
+                    assertTrue(row.contains("Risk A"));
+                    assertTrue(row.contains("Local Risk A"));
+                    assertTrue(row.contains("Rationale A"));
+                    assertTrue(row.contains("10"));
+                    assertTrue(row.contains("20"));
+                    assertTrue(row.contains("Medium Comment A"));
+                    assertTrue(row.contains("30"));
+                    assertTrue(row.contains("Fine Comment A"));
+                    assertTrue(row.contains("60"));
+
+                } else if (entry.getName().contains("cultural")) {
+                     String row = lines[1];
+                     // Verify ALL CRX Fields
+                    String expectedProjectLink = "\"=HYPERLINK(\"\"https://example.com/edit-project?projectGuid=" + projectGuid + "\"\", \"\"CRX Beta Project Link\"\")\"";
+                    String expectedFiscalLink = "\"=HYPERLINK(\"\"https://example.com/edit-project?projectGuid=" + projectGuid + "&tab=fiscal&fiscalGuid=" + fiscalGuid + "\"\", \"\"Fiscal B Fiscal Activity Link\"\")\"";
+
+                    assertTrue(row.contains(expectedProjectLink), "Row missing correct Project Link: " + expectedProjectLink);
+                    assertTrue(row.contains(expectedFiscalLink), "Row missing correct Fiscal Link: " + expectedFiscalLink);
+
+                    assertTrue(row.contains("Cultural Fire"));
+                    assertTrue(row.contains("CRX Beta"));
+                    assertTrue(row.contains("Region B"));
+                    assertTrue(row.contains("District B"));
+                    assertTrue(row.contains("Parks Region B"));
+                    assertTrue(row.contains("Parks Section B"));
+                    assertTrue(row.contains("Fire Centre B"));
+                    assertTrue(row.contains("Business Area B"));
+                    assertTrue(row.contains("Planning Unit B"));
+                    assertTrue(row.contains("234 ha"));
+                    assertTrue(row.contains("Community B"));
+                    assertTrue(row.contains("Lead B"));
+                    assertTrue(row.contains("Proposal B"));
+                    assertTrue(row.contains("Fiscal B"));
+                    assertTrue(row.contains("Desc B"));
+                    assertTrue(row.contains("2025/26"));
+                    assertTrue(row.contains("Activity B"));
+                    assertTrue(row.contains("Status B"));
+                    assertTrue(row.contains("$2,000"));
+                    assertTrue(row.contains("$2,100"));
+                    assertTrue(row.contains("$600"));
+                    assertTrue(row.contains("Provider B"));
+                    assertTrue(row.contains("$1,900"));
+                    assertTrue(row.contains("$1,950"));
+                    assertTrue(row.contains("60 ha"));
+                    assertTrue(row.contains("50 ha"));
+                    assertTrue(row.contains("\"=\"\"1/2\"\"\""));
+                    assertTrue(row.contains("N"));
+                    assertTrue(row.contains("Y"));
+                    assertTrue(row.contains("FN Partner B"));
+                    assertTrue(row.contains("Other Partner B"));
+                    assertTrue(row.contains("CFS-B"));
+                    assertTrue(row.contains("RES-B"));
+                    assertTrue(row.contains("OPEN-B"));
+                    assertTrue(row.contains("Obj C"));
+                    assertTrue(row.contains("Obj D"));
+                    assertTrue(row.contains("2025-03-01"));
+                    assertTrue(row.contains("2025-04-01"));
+                    assertTrue(row.contains("Y"));
+                    assertTrue(row.contains("Risk B"));
+                    assertTrue(row.contains("Local Risk B"));
+                    assertTrue(row.contains("5"));
+                    assertTrue(row.contains("RCL Comment B"));
+                    assertTrue(row.contains("15"));
+                    assertTrue(row.contains("BDF Comment B"));
+                    assertTrue(row.contains("25"));
+                    assertTrue(row.contains("Coll Imp Comment B"));
+                    assertTrue(row.contains("45"));
+                }
+            }
+        }
+    }
 
     private static void setField(Object target, String fieldName, Object value) throws Exception {
         Field f = target.getClass().getDeclaredField(fieldName);
