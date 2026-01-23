@@ -2,7 +2,7 @@ import { HttpClient, HttpRequest, HttpHeaders, HttpEventType, HttpResponse, Http
 import { Injectable } from "@angular/core";
 import { UUID } from "angular2-uuid";
 import { catchError, map, Observable, throwError } from "rxjs";
-import { ActivityBoundary, EvaluationCriteriaSummaryModel, FeaturesResponse, Project, ProjectBoundary, ProjectFiscal, ProjectLocation, ReportRequest } from "src/app/components/models";
+import { ActivityBoundary, EvaluationCriteriaSummaryModel, FeaturesResponse, PerformanceUpdate, Project, ProjectBoundary, ProjectFiscal, ProjectLocation, ReportRequest } from "src/app/components/models";
 import { AppConfigService } from "src/app/services/app-config.service";
 import { TokenService } from "src/app/services/token.service";
 
@@ -669,6 +669,44 @@ export class ProjectService {
             catchError((error) => {
                 console.error("Error fetching activities", error);
                 return throwError(() => new Error("Failed to fetch activities"));
+            })
+        );
+    }
+
+    getPerformanceUpdatesEstimates(projectGuid: string, projectPlanFiscalGuid: string): Observable<any> {
+        const baseUrl = `${this.appConfigService.getConfig().rest['wfprev']}/wfprev-api/projects`;
+        const url = `${baseUrl}/${projectGuid}/projectFiscals/${projectPlanFiscalGuid}/getPerformanceUpdatesEstimates`;
+
+        return this.httpClient.get(url, {
+            headers: {
+                Authorization: `Bearer ${this.tokenService.getOauthToken()}`,
+            }
+        }).pipe(
+            map((response: any) => response),
+            catchError((error) => {
+                console.error("Error fetching activities", error);
+                return throwError(() => new Error("Failed to fetch activities"));
+            })
+        );
+    }
+
+    savePerformanceUpdates (projectGuid: string, projectPlanFiscalGuid: string, performanceUpdate: PerformanceUpdate): Observable<any> {
+        const baseUrl = `${this.appConfigService.getConfig().rest['wfprev']}/wfprev-api/projects`;
+        const url = `${baseUrl}/${projectGuid}/projectFiscals/${projectPlanFiscalGuid}/savePerformanceUpdates`;
+
+        return this.httpClient.post<EvaluationCriteriaSummaryModel>(
+            url,
+            performanceUpdate,
+            {
+                headers: {
+                    Authorization: `Bearer ${this.tokenService.getOauthToken()}`
+                }
+            }
+        ).pipe(
+            map(response => response),
+            catchError(error => {
+                console.error("Error creating evaluation criteria summary", error);
+                return throwError(() => new Error("Failed to create evaluation criteria summary"));
             })
         );
     }

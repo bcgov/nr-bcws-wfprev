@@ -11,8 +11,8 @@
             </div>
         </mat-expansion-panel-header>
         @if(updates.length > 0) {
-        @for (update of updates; track update.date) {
-        <mat-expansion-panel [expanded]='false' class="expansion-panel" #updatePanel>
+        @for (update of updates; track update.date; let i = $index) {
+        <mat-expansion-panel [expanded]='i === 0' class="expansion-panel" #updatePanel>
             <mat-expansion-panel-header class="performance-update-header">
                 <wfprev-expansion-indicator [isExpanded]="updatePanel.expanded"></wfprev-expansion-indicator>
                 <div class="performance-update-title">

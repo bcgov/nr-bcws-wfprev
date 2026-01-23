@@ -403,7 +403,8 @@ export interface PerformanceUpdate {
 export enum ForecastStatus {
   ChangedDecreased= "CHANGED_DECREASED",
   ChangedIncreased= "CHANGED_INCREASED",
-  NonChanged="NON_CHANGED"
+  NonChanged="NON_CHANGED",
+  NotSetUP="NOT_SETUP"
 }
 
 export enum ProgressStatus {
@@ -415,7 +416,8 @@ export enum ProgressStatus {
 
 export enum UpdateGeneralStatus {
   InProgress = "IN_PROGRESS",
-  Prepared ="PREPARED"
+  Prepared ="PREPARED",
+  NotSetUP="NOT_SETUP"
 }
 
 export enum ReportingPeriod {

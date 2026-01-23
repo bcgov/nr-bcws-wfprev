@@ -17,8 +17,9 @@ import { PerformanceUpdateModalWindowComponent } from '../../performance-update-
 })
 export class PerformanceUpdatesComponent implements OnChanges {
   @Input() fiscalGuid: string = '';
-
-  projectGuid = '';
+  @Input() projectGuid = '';
+  @Input() currentForecast: string = '';
+  @Input() originalCostEstimate: string = ''
 
   protected readonly ForecastStatus = ForecastStatus;
   protected readonly ProgressStatus = ProgressStatus;
@@ -36,8 +37,8 @@ export class PerformanceUpdatesComponent implements OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['fiscalGuid'] && changes['fiscalGuid'].currentValue && !this.isUpdatesCalled) {
-        this.isUpdatesCalled = true;
-        this.getPerformanceUpdates();
+      this.isUpdatesCalled = true;
+      this.getPerformanceUpdates();
     }
   }
 
@@ -61,19 +62,24 @@ export class PerformanceUpdatesComponent implements OnChanges {
   }
 
   openDialog(): void {
-    const dialogRef = this.dialog.open(PerformanceUpdateModalWindowComponent,
-      {
-      data: { message: 'Are you sure?' },
-      disableClose: true, // optional
-    });
+    this.projectService.getPerformanceUpdatesEstimates(this.projectGuid, this.fiscalGuid)
+      .subscribe({
+        next: (data) => {
+          const dialogRef = this.dialog.open(PerformanceUpdateModalWindowComponent,
+            {
+              data: {
+                projectGuid: this.projectGuid,
+                fiscalGuid: this.fiscalGuid,
+                currentForecast: data.currentForecast,
+                originalCostEstimate: data.originalCostEstimate
+              },
+              disableClose: true
+            });
+
+        },
+        error: (error) => {
+          console.error('Error fetching performance updates:', error);
+        }
+      });
   }
-
-  postPerformanceUpdates(): void {
-
-  }
-
-  putPerformanceUpdates(): void {
-
-  }
-  
 }
