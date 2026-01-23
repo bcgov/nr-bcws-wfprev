@@ -9,9 +9,6 @@ Push-Location $ScriptDir
 if ($Clean) {
     Write-Host "Cleaning volumes requested. Running stop-local.ps1 -ClearVolumes..."
     ./stop-local.ps1 -ClearVolumes
-    $env:SKIP_RESTORE = "true"
-} else {
-    $env:SKIP_RESTORE = "false"
 }
 
 # Build the API locally
