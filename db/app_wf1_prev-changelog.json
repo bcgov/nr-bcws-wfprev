@@ -1914,6 +1914,66 @@
         "rollback": [
         ]
       }
+    },
+    {
+      "changeSet": {
+        "id": "01_02_00_00",
+        "author": "sparmar,kguise",
+        "tagDatabase": { "tag" : "version_01_02_00_00" },
+        "changes": [
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_02_00/00/ddl/app_wf1_prev.ddl.drop_deprecated_tables_wfprev-872.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_02_00/00/ddl/WFPREV.ddl.progress_status_code.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_02_00/00/ddl/WFPREV.ddl.project_plan_fiscal_perf.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_02_00/00/ddl/WFPREV.ddl.project_plan_fiscal_perf_audit.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_02_00/00/dml/app_wf1_prev.dml.progress_status_code.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_02_00/00/dml/app_wf1_prev.dml.reporting_period_code.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": "$",
+              "path": "scripts/01_02_00/00/ddl/app_wf1_prev.ddl.create_triggers.sql"
+            }
+          }
+        ],
+        "rollback": [
+        ]
+      }
     }
   ]
 }
