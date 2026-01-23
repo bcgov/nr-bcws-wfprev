@@ -8,6 +8,10 @@ import ca.bc.gov.nrs.wfprev.data.models.ActivityBoundaryModel;
 import ca.bc.gov.nrs.wfprev.data.models.ActivityModel;
 import ca.bc.gov.nrs.wfprev.data.repositories.ActivityBoundaryRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.ActivityRepository;
+import ca.bc.gov.nrs.wfprev.data.entities.ProjectEntity;
+import ca.bc.gov.nrs.wfprev.data.entities.ProjectFiscalEntity;
+import ca.bc.gov.nrs.wfprev.data.repositories.ProjectFiscalRepository;
+import ca.bc.gov.nrs.wfprev.data.repositories.ProjectRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
@@ -40,7 +44,8 @@ class ActivityBoundaryServiceTest {
     private ActivityBoundaryRepository activityBoundaryRepository;
     private ActivityBoundaryResourceAssembler activityBoundaryResourceAssembler;
     private ActivityRepository activityRepository;
-    private ActivityService activityService;
+    private ProjectFiscalRepository projectFiscalRepository;
+    private ProjectRepository projectRepository;
     private ActivityBoundaryService activityBoundaryService;
     private ProjectBoundaryService projectBoundaryService;
     private Validator validator;
@@ -53,7 +58,8 @@ class ActivityBoundaryServiceTest {
         activityBoundaryRepository = mock(ActivityBoundaryRepository.class);
         activityBoundaryResourceAssembler = mock(ActivityBoundaryResourceAssembler.class);
         activityRepository = mock(ActivityRepository.class);
-        activityService = mock(ActivityService.class);
+        projectFiscalRepository = mock(ProjectFiscalRepository.class);
+        projectRepository = mock(ProjectRepository.class);
         projectBoundaryService = mock(ProjectBoundaryService.class);
         fileAttachmentService = mock(FileAttachmentService.class);
         validator = mock(Validator.class);
@@ -62,7 +68,8 @@ class ActivityBoundaryServiceTest {
                 activityBoundaryRepository,
                 activityBoundaryResourceAssembler,
                 activityRepository,
-                activityService,
+                projectFiscalRepository,
+                projectRepository,
                 projectBoundaryService,
                 fileAttachmentService,
                 validator
@@ -71,14 +78,27 @@ class ActivityBoundaryServiceTest {
 
     @Test
     void testGetAllActivityBoundaries_Success() throws ServiceException {
-        // GIVEN
+        String projectGuid = "00000000-0000-0000-0000-000000000001";
+        String fiscalGuid = "00000000-0000-0000-0000-000000000002";
         String activityGuid = "789e1234-e89b-12d3-a456-426614174002";
 
         List<ActivityBoundaryEntity> boundaryEntities = List.of(
                 new ActivityBoundaryEntity(), new ActivityBoundaryEntity()
         );
 
-        when(activityService.getActivity(any(), any(), eq(activityGuid))).thenReturn(null);
+        ProjectEntity project = new ProjectEntity();
+        project.setProjectGuid(UUID.fromString(projectGuid));
+
+        ProjectFiscalEntity projectFiscal = new ProjectFiscalEntity();
+        projectFiscal.setProjectPlanFiscalGuid(UUID.fromString(fiscalGuid));
+        projectFiscal.setProject(project);
+
+        ActivityEntity activity = new ActivityEntity();
+        activity.setActivityGuid(UUID.fromString(activityGuid));
+        activity.setProjectPlanFiscalGuid(UUID.fromString(fiscalGuid));
+
+        when(projectFiscalRepository.findById(UUID.fromString(fiscalGuid))).thenReturn(Optional.of(projectFiscal));
+        when(activityRepository.findById(UUID.fromString(activityGuid))).thenReturn(Optional.of(activity));
         when(activityBoundaryRepository.findByActivityGuid(UUID.fromString(activityGuid)))
                 .thenReturn(boundaryEntities);
         when(activityBoundaryResourceAssembler.toModel(any(ActivityBoundaryEntity.class)))
@@ -86,7 +106,7 @@ class ActivityBoundaryServiceTest {
 
         // WHEN
         CollectionModel<ActivityBoundaryModel> result = activityBoundaryService.getAllActivityBoundaries(
-                "project-guid", "fiscal-guid", activityGuid);
+                "00000000-0000-0000-0000-000000000001", "00000000-0000-0000-0000-000000000002", activityGuid);
 
         // THEN
         assertNotNull(result);
@@ -97,8 +117,8 @@ class ActivityBoundaryServiceTest {
     @Test
     void testGetAllActivityBoundaries_InvalidGuidFormat() {
         // GIVEN an invalid activityGuid format
-        String projectGuid = "project-guid";
-        String fiscalGuid = "fiscal-guid";
+        String projectGuid = "00000000-0000-0000-0000-000000000001";
+        String fiscalGuid = "00000000-0000-0000-0000-000000000002";
         String invalidActivityGuid = "invalid-uuid"; // Not a valid UUID
 
         // WHEN / THEN
@@ -111,19 +131,29 @@ class ActivityBoundaryServiceTest {
     @Test
     void testCreateActivityBoundary_Success() {
         // GIVEN
+        String projectGuid = "00000000-0000-0000-0000-000000000001";
+        String fiscalGuid = "00000000-0000-0000-0000-000000000002";
         String activityGuid = "789e1234-e89b-12d3-a456-426614174002";
 
         ActivityBoundaryModel boundaryModel = new ActivityBoundaryModel();
         boundaryModel.setActivityGuid(activityGuid);
         boundaryModel.setBoundarySizeHa(new BigDecimal("50.0"));
 
+        ProjectEntity project = new ProjectEntity();
+        project.setProjectGuid(UUID.fromString(projectGuid));
+
+        ProjectFiscalEntity projectFiscal = new ProjectFiscalEntity();
+        projectFiscal.setProjectPlanFiscalGuid(UUID.fromString(fiscalGuid));
+        projectFiscal.setProject(project);
+
         ActivityEntity activityEntity = new ActivityEntity();
         activityEntity.setActivityGuid(UUID.fromString(activityGuid));
+        activityEntity.setProjectPlanFiscalGuid(UUID.fromString(fiscalGuid));
 
         ActivityBoundaryEntity boundaryEntity = new ActivityBoundaryEntity();
         boundaryEntity.setActivityGuid(UUID.fromString(activityGuid));
 
-        when(activityService.getActivity(any(), any(), eq(activityGuid))).thenReturn(new ActivityModel());
+        when(projectFiscalRepository.findById(UUID.fromString(fiscalGuid))).thenReturn(Optional.of(projectFiscal));
         when(activityRepository.findById(UUID.fromString(activityGuid))).thenReturn(Optional.of(activityEntity));
         when(activityBoundaryResourceAssembler.toEntity(any(ActivityBoundaryModel.class)))
                 .thenReturn(boundaryEntity); // ✅ Ensures it returns a valid entity
@@ -134,7 +164,7 @@ class ActivityBoundaryServiceTest {
 
         // WHEN
         ActivityBoundaryModel result = activityBoundaryService.createActivityBoundary(
-                "project-guid", "fiscal-guid", activityGuid, boundaryModel);
+                "00000000-0000-0000-0000-000000000001", "00000000-0000-0000-0000-000000000002", activityGuid, boundaryModel);
 
         // THEN
         assertNotNull(result);
@@ -144,14 +174,24 @@ class ActivityBoundaryServiceTest {
     @Test
     void testCreateActivityBoundary_NullEntity() {
         // GIVEN
-        String projectGuid = "project-guid";
-        String fiscalGuid = "fiscal-guid";
+        String projectGuid = "00000000-0000-0000-0000-000000000001";
+        String fiscalGuid = "00000000-0000-0000-0000-000000000002";
         String activityGuid = "789e1234-e89b-12d3-a456-426614174002"; // Valid UUID
         ActivityBoundaryModel resource = new ActivityBoundaryModel();
 
-        when(activityService.getActivity(any(), any(), eq(activityGuid))).thenReturn(new ActivityModel());
-        when(activityRepository.findById(UUID.fromString(activityGuid)))
-                .thenReturn(Optional.of(new ActivityEntity()));
+        ProjectEntity project = new ProjectEntity();
+        project.setProjectGuid(UUID.fromString(projectGuid));
+
+        ProjectFiscalEntity projectFiscal = new ProjectFiscalEntity();
+        projectFiscal.setProjectPlanFiscalGuid(UUID.fromString(fiscalGuid));
+        projectFiscal.setProject(project);
+
+        ActivityEntity activity = new ActivityEntity();
+        activity.setActivityGuid(UUID.fromString(activityGuid));
+        activity.setProjectPlanFiscalGuid(UUID.fromString(fiscalGuid));
+
+        when(projectFiscalRepository.findById(UUID.fromString(fiscalGuid))).thenReturn(Optional.of(projectFiscal));
+        when(activityRepository.findById(UUID.fromString(activityGuid))).thenReturn(Optional.of(activity));
         when(activityBoundaryResourceAssembler.toEntity(resource)).thenReturn(null); // Simulate failure
 
         // WHEN / THEN
@@ -165,8 +205,8 @@ class ActivityBoundaryServiceTest {
     @Test
     void testCreateActivityBoundary_InvalidGuidFormat() {
         // GIVEN
-        String projectGuid = "project-guid";
-        String fiscalGuid = "fiscal-guid";
+        String projectGuid = "00000000-0000-0000-0000-000000000001";
+        String fiscalGuid = "00000000-0000-0000-0000-000000000002";
         String invalidActivityGuid = "invalid-uuid"; // Not a valid UUID
         ActivityBoundaryModel resource = new ActivityBoundaryModel();
 
@@ -178,8 +218,8 @@ class ActivityBoundaryServiceTest {
     @Test
     void testCreateActivityBoundary_ConstraintViolationException() {
         // GIVEN
-        String projectGuid = "project-guid";
-        String fiscalGuid = "fiscal-guid";
+        String projectGuid = "00000000-0000-0000-0000-000000000001";
+        String fiscalGuid = "00000000-0000-0000-0000-000000000002";
         String activityGuid = "789e1234-e89b-12d3-a456-426614174002";
 
         ActivityBoundaryModel invalidBoundaryModel = new ActivityBoundaryModel();
@@ -200,6 +240,8 @@ class ActivityBoundaryServiceTest {
     @Test
     void testUpdateActivityBoundary_Success() {
         // GIVEN
+        String projectGuid = "00000000-0000-0000-0000-000000000001";
+        String fiscalGuid = "00000000-0000-0000-0000-000000000002";
         String activityGuid = "789e1234-e89b-12d3-a456-426614174002";
         String boundaryGuid = "101e7890-e89b-12d3-a456-426614174003";
 
@@ -207,10 +249,22 @@ class ActivityBoundaryServiceTest {
         boundaryModel.setActivityBoundaryGuid(boundaryGuid);
         boundaryModel.setActivityGuid(activityGuid);
 
+        ProjectEntity project = new ProjectEntity();
+        project.setProjectGuid(UUID.fromString(projectGuid));
+
+        ProjectFiscalEntity projectFiscal = new ProjectFiscalEntity();
+        projectFiscal.setProjectPlanFiscalGuid(UUID.fromString(fiscalGuid));
+        projectFiscal.setProject(project);
+
+        ActivityEntity activity = new ActivityEntity();
+        activity.setActivityGuid(UUID.fromString(activityGuid));
+        activity.setProjectPlanFiscalGuid(UUID.fromString(fiscalGuid));
+
         ActivityBoundaryEntity existingEntity = new ActivityBoundaryEntity();
         existingEntity.setActivityGuid(UUID.fromString(activityGuid));
 
-        when(activityService.getActivity(any(), any(), eq(activityGuid))).thenReturn(null);
+        when(projectFiscalRepository.findById(UUID.fromString(fiscalGuid))).thenReturn(Optional.of(projectFiscal));
+        when(activityRepository.findById(UUID.fromString(activityGuid))).thenReturn(Optional.of(activity));
         when(activityBoundaryRepository.findByActivityBoundaryGuid(UUID.fromString(boundaryGuid)))
                 .thenReturn(Optional.of(existingEntity));
         when(activityBoundaryResourceAssembler.updateEntity(eq(boundaryModel), any()))
@@ -222,7 +276,7 @@ class ActivityBoundaryServiceTest {
 
         // WHEN
         ActivityBoundaryModel result = activityBoundaryService.updateActivityBoundary(
-                "project-guid", "fiscal-guid", activityGuid, boundaryModel);
+                projectGuid, fiscalGuid, activityGuid, boundaryModel);
 
         // THEN
         assertNotNull(result);
@@ -232,6 +286,8 @@ class ActivityBoundaryServiceTest {
     @Test
     void testUpdateActivityBoundary_NotFound() {
         // GIVEN
+        String projectGuid = "00000000-0000-0000-0000-000000000001";
+        String fiscalGuid = "00000000-0000-0000-0000-000000000002";
         String activityGuid = "789e1234-e89b-12d3-a456-426614174002";
         String boundaryGuid = "101e7890-e89b-12d3-a456-426614174003";
 
@@ -239,13 +295,25 @@ class ActivityBoundaryServiceTest {
         boundaryModel.setActivityBoundaryGuid(boundaryGuid);
         boundaryModel.setActivityGuid(activityGuid); // ✅ Ensure this is set to avoid IllegalArgumentException
 
-        when(activityService.getActivity(any(), any(), eq(activityGuid))).thenReturn(new ActivityModel());
+        ProjectEntity project = new ProjectEntity();
+        project.setProjectGuid(UUID.fromString(projectGuid));
+
+        ProjectFiscalEntity projectFiscal = new ProjectFiscalEntity();
+        projectFiscal.setProjectPlanFiscalGuid(UUID.fromString(fiscalGuid));
+        projectFiscal.setProject(project);
+
+        ActivityEntity activity = new ActivityEntity();
+        activity.setActivityGuid(UUID.fromString(activityGuid));
+        activity.setProjectPlanFiscalGuid(UUID.fromString(fiscalGuid));
+
+        when(projectFiscalRepository.findById(UUID.fromString(fiscalGuid))).thenReturn(Optional.of(projectFiscal));
+        when(activityRepository.findById(UUID.fromString(activityGuid))).thenReturn(Optional.of(activity));
         when(activityBoundaryRepository.findByActivityBoundaryGuid(UUID.fromString(boundaryGuid)))
                 .thenReturn(Optional.empty()); // Ensure it triggers EntityNotFoundException
 
         // WHEN / THEN
         EntityNotFoundException thrown = assertThrows(EntityNotFoundException.class, () ->
-                activityBoundaryService.updateActivityBoundary("project-guid", "fiscal-guid", activityGuid, boundaryModel));
+                activityBoundaryService.updateActivityBoundary(projectGuid, fiscalGuid, activityGuid, boundaryModel));
 
         assertTrue(thrown.getMessage().contains("Activity Boundary not found"));
     }
@@ -253,8 +321,8 @@ class ActivityBoundaryServiceTest {
     @Test
     void testUpdateActivityBoundary_ConstraintViolationException() {
         // GIVEN
-        String projectGuid = "project-guid";
-        String fiscalGuid = "fiscal-guid";
+        String projectGuid = "00000000-0000-0000-0000-000000000001";
+        String fiscalGuid = "00000000-0000-0000-0000-000000000002";
         String activityGuid = "789e1234-e89b-12d3-a456-426614174002";
         String boundaryGuid = "101e7890-e89b-12d3-a456-426614174003";
 
@@ -324,18 +392,32 @@ class ActivityBoundaryServiceTest {
     @Test
     void testDeleteActivityBoundary_Success() {
         // GIVEN
+        String projectGuid = "00000000-0000-0000-0000-000000000001";
+        String fiscalGuid = "00000000-0000-0000-0000-000000000002";
         String activityGuid = "789e1234-e89b-12d3-a456-426614174002";
         String boundaryGuid = "101e7890-e89b-12d3-a456-426614174003";
+
+        ProjectEntity project = new ProjectEntity();
+        project.setProjectGuid(UUID.fromString(projectGuid));
+
+        ProjectFiscalEntity projectFiscal = new ProjectFiscalEntity();
+        projectFiscal.setProjectPlanFiscalGuid(UUID.fromString(fiscalGuid));
+        projectFiscal.setProject(project);
+
+        ActivityEntity activity = new ActivityEntity();
+        activity.setActivityGuid(UUID.fromString(activityGuid));
+        activity.setProjectPlanFiscalGuid(UUID.fromString(fiscalGuid));
 
         ActivityBoundaryEntity boundaryEntity = new ActivityBoundaryEntity();
         boundaryEntity.setActivityGuid(UUID.fromString(activityGuid));
 
-        when(activityService.getActivity(any(), any(), eq(activityGuid))).thenReturn(null);
+        when(projectFiscalRepository.findById(UUID.fromString(fiscalGuid))).thenReturn(Optional.of(projectFiscal));
+        when(activityRepository.findById(UUID.fromString(activityGuid))).thenReturn(Optional.of(activity));
         when(activityBoundaryRepository.findByActivityBoundaryGuid(UUID.fromString(boundaryGuid)))
                 .thenReturn(Optional.of(boundaryEntity));
 
         // WHEN
-        activityBoundaryService.deleteActivityBoundary("project-guid", "fiscal-guid", activityGuid, boundaryGuid, true);
+        activityBoundaryService.deleteActivityBoundary("00000000-0000-0000-0000-000000000001", "00000000-0000-0000-0000-000000000002", activityGuid, boundaryGuid, true);
 
         // THEN
         verify(fileAttachmentService).deleteAttachmentsBySourceObject(boundaryGuid);
@@ -345,33 +427,59 @@ class ActivityBoundaryServiceTest {
     @Test
     void testDeleteActivityBoundary_NotFound() {
         // GIVEN
+        String projectGuid = "00000000-0000-0000-0000-000000000001";
+        String fiscalGuid = "00000000-0000-0000-0000-000000000002";
         String activityGuid = "789e1234-e89b-12d3-a456-426614174002";
         String boundaryGuid = "101e7890-e89b-12d3-a456-426614174003";
 
-        when(activityService.getActivity(any(), any(), eq(activityGuid))).thenReturn(null);
+        ProjectEntity project = new ProjectEntity();
+        project.setProjectGuid(UUID.fromString(projectGuid));
+
+        ProjectFiscalEntity projectFiscal = new ProjectFiscalEntity();
+        projectFiscal.setProjectPlanFiscalGuid(UUID.fromString(fiscalGuid));
+        projectFiscal.setProject(project);
+
+        ActivityEntity activity = new ActivityEntity();
+        activity.setActivityGuid(UUID.fromString(activityGuid));
+        activity.setProjectPlanFiscalGuid(UUID.fromString(fiscalGuid));
+
+        when(projectFiscalRepository.findById(UUID.fromString(fiscalGuid))).thenReturn(Optional.of(projectFiscal));
+        when(activityRepository.findById(UUID.fromString(activityGuid))).thenReturn(Optional.of(activity));
         when(activityBoundaryRepository.findByActivityBoundaryGuid(UUID.fromString(boundaryGuid)))
                 .thenReturn(Optional.empty());
 
         // WHEN / THEN
         EntityNotFoundException thrown = assertThrows(EntityNotFoundException.class, () ->
-                activityBoundaryService.deleteActivityBoundary("project-guid", "fiscal-guid", activityGuid, boundaryGuid, true));
+                activityBoundaryService.deleteActivityBoundary("00000000-0000-0000-0000-000000000001", "00000000-0000-0000-0000-000000000002", activityGuid, boundaryGuid, true));
         assertTrue(thrown.getMessage().contains("Activity Boundary not found"));
     }
 
     @Test
     void testGetActivityBoundary_Success() {
         // GIVEN
-        String projectGuid = "project-guid";
-        String fiscalGuid = "fiscal-guid";
+        String projectGuid = "00000000-0000-0000-0000-000000000001";
+        String fiscalGuid = "00000000-0000-0000-0000-000000000002";
         String activityGuid = "789e1234-e89b-12d3-a456-426614174002";
         String boundaryGuid = "101e7890-e89b-12d3-a456-426614174003";
+
+        ProjectEntity project = new ProjectEntity();
+        project.setProjectGuid(UUID.fromString(projectGuid));
+
+        ProjectFiscalEntity projectFiscal = new ProjectFiscalEntity();
+        projectFiscal.setProjectPlanFiscalGuid(UUID.fromString(fiscalGuid));
+        projectFiscal.setProject(project);
+
+        ActivityEntity activity = new ActivityEntity();
+        activity.setActivityGuid(UUID.fromString(activityGuid));
+        activity.setProjectPlanFiscalGuid(UUID.fromString(fiscalGuid));
 
         ActivityBoundaryEntity boundaryEntity = new ActivityBoundaryEntity();
         boundaryEntity.setActivityGuid(UUID.fromString(activityGuid));
 
         ActivityBoundaryModel boundaryModel = new ActivityBoundaryModel();
 
-        when(activityService.getActivity(projectGuid, fiscalGuid, activityGuid)).thenReturn(new ActivityModel());
+        when(projectFiscalRepository.findById(UUID.fromString(fiscalGuid))).thenReturn(Optional.of(projectFiscal));
+        when(activityRepository.findById(UUID.fromString(activityGuid))).thenReturn(Optional.of(activity));
         when(activityBoundaryRepository.findByActivityBoundaryGuid(UUID.fromString(boundaryGuid)))
                 .thenReturn(Optional.of(boundaryEntity));
         when(activityBoundaryResourceAssembler.toModel(boundaryEntity)).thenReturn(boundaryModel);
@@ -388,12 +496,24 @@ class ActivityBoundaryServiceTest {
     @Test
     void testGetActivityBoundary_NotFound() {
         // GIVEN
-        String projectGuid = "project-guid";
-        String fiscalGuid = "fiscal-guid";
+        String projectGuid = "00000000-0000-0000-0000-000000000001";
+        String fiscalGuid = "00000000-0000-0000-0000-000000000002";
         String activityGuid = "789e1234-e89b-12d3-a456-426614174002";
         String boundaryGuid = "101e7890-e89b-12d3-a456-426614174003";
 
-        when(activityService.getActivity(projectGuid, fiscalGuid, activityGuid)).thenReturn(new ActivityModel());
+        ProjectEntity project = new ProjectEntity();
+        project.setProjectGuid(UUID.fromString(projectGuid));
+
+        ProjectFiscalEntity projectFiscal = new ProjectFiscalEntity();
+        projectFiscal.setProjectPlanFiscalGuid(UUID.fromString(fiscalGuid));
+        projectFiscal.setProject(project);
+
+        ActivityEntity activity = new ActivityEntity();
+        activity.setActivityGuid(UUID.fromString(activityGuid));
+        activity.setProjectPlanFiscalGuid(UUID.fromString(fiscalGuid));
+
+        when(projectFiscalRepository.findById(UUID.fromString(fiscalGuid))).thenReturn(Optional.of(projectFiscal));
+        when(activityRepository.findById(UUID.fromString(activityGuid))).thenReturn(Optional.of(activity));
         when(activityBoundaryRepository.findByActivityBoundaryGuid(UUID.fromString(boundaryGuid)))
                 .thenReturn(Optional.empty()); // Simulate not found
 
@@ -407,16 +527,28 @@ class ActivityBoundaryServiceTest {
     @Test
     void testGetActivityBoundary_BoundaryDoesNotBelongToActivity() {
         // GIVEN
-        String projectGuid = "project-guid";
-        String fiscalGuid = "fiscal-guid";
+        String projectGuid = "00000000-0000-0000-0000-000000000001";
+        String fiscalGuid = "00000000-0000-0000-0000-000000000002";
         String activityGuid = "789e1234-e89b-12d3-a456-426614174002";
         String boundaryGuid = "101e7890-e89b-12d3-a456-426614174003";
         String differentActivityGuid = "555e1234-e89b-12d3-a456-426614174999"; // Different activity
 
+        ProjectEntity project = new ProjectEntity();
+        project.setProjectGuid(UUID.fromString(projectGuid));
+
+        ProjectFiscalEntity projectFiscal = new ProjectFiscalEntity();
+        projectFiscal.setProjectPlanFiscalGuid(UUID.fromString(fiscalGuid));
+        projectFiscal.setProject(project);
+
+        ActivityEntity activity = new ActivityEntity();
+        activity.setActivityGuid(UUID.fromString(activityGuid));
+        activity.setProjectPlanFiscalGuid(UUID.fromString(fiscalGuid));
+
         ActivityBoundaryEntity boundaryEntity = new ActivityBoundaryEntity();
         boundaryEntity.setActivityGuid(UUID.fromString(differentActivityGuid)); // Belongs to another activity
 
-        when(activityService.getActivity(projectGuid, fiscalGuid, activityGuid)).thenReturn(new ActivityModel());
+        when(projectFiscalRepository.findById(UUID.fromString(fiscalGuid))).thenReturn(Optional.of(projectFiscal));
+        when(activityRepository.findById(UUID.fromString(activityGuid))).thenReturn(Optional.of(activity));
         when(activityBoundaryRepository.findByActivityBoundaryGuid(UUID.fromString(boundaryGuid)))
                 .thenReturn(Optional.of(boundaryEntity));
 

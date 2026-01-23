@@ -25,7 +25,6 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.context.annotation.Lazy;
 
 import java.util.Date;
 import java.util.List;
@@ -66,7 +65,7 @@ public class ProjectFiscalService implements CommonService {
 
     public ProjectFiscalService(ProjectFiscalRepository projectFiscalRepository, ProjectFiscalResourceAssembler projectFiscalResourceAssembler,
                                 ProjectRepository projectRepository, PlanFiscalStatusCodeRepository planFiscalStatusCodeRepository,
-                                EndorsementCodeRepository endorsementCodeRepository, @Lazy ActivityService activityService,
+                                EndorsementCodeRepository endorsementCodeRepository, ActivityService activityService,
                                 FuelManagementPlanRepository fuelManagementPlanRepository,
                                 CulturalRxFirePlanRepository culturalRxFirePlanRepository,
                                 ProjectPlanFiscalPerfRepository projectPlanFiscalPerfRepository) {
