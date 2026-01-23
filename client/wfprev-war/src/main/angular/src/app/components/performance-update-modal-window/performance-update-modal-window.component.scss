@@ -1,11 +1,18 @@
 .modal-window-container {
     display: flex;
     width: 1086px;
+    height: 700px;
     flex-direction: column;
 
     .section {
         padding: 12px 20px;
         border-bottom: 1px solid #D8D8D8;
+
+        .error {
+            color: #CE3E39;
+            font-size: 14px;
+            margin: 4px 0 0 4px;
+        }
 
         .title {
             font-size: 21px;
@@ -76,12 +83,11 @@
         .forecast-container {
             display: flex;
             flex-direction: row;
-            justify-content: center;
-            align-items: center;
             height: 50px;
             background: #F5F6F9;
             border-radius: 10px;
             padding: 8px 12px;
+            width: 315px;
 
             .forecast-img {
                 display: flex;

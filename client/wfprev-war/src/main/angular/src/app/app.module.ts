@@ -1,4 +1,4 @@
-import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { OAuthService, OAuthLogger, UrlHelperService, DateTimeProvider } from 'angular-oauth2-oidc';
@@ -13,6 +13,7 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { ErrorPageComponent } from './components/error-page/error-page/error-page.component';
 import { CustomDateTimeProvider, CustomOAuthLogger } from './utils';
 import { MapConfigService } from './services/map-config.service';
+import { MockBackendInterceptor } from './interceptors/mock-backend.interceptor';
 
 @NgModule({
   declarations: [AppComponent],
@@ -30,6 +31,15 @@ import { MapConfigService } from './services/map-config.service';
   ],
   providers: [
     provideHttpClient(withInterceptorsFromDi()),
+    
+    ...(environment.useMockBackend
+      ? [{
+          provide: HTTP_INTERCEPTORS,
+          useClass: MockBackendInterceptor,
+          multi: true
+        }]
+      : []),
+
     OAuthService,
     UrlHelperService,
     MapConfigService,
