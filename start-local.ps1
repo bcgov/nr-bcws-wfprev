@@ -1,6 +1,19 @@
+param (
+    [switch]$Clean
+)
+
 # Start Docker Compose with local override
 $ScriptDir = Split-Path $MyInvocation.MyCommand.Path
 Push-Location $ScriptDir
+
+if ($Clean) {
+    Write-Host "Cleaning volumes requested. Running stop-local.ps1 -ClearVolumes..."
+    ./stop-local.ps1 -ClearVolumes
+    $env:SKIP_RESTORE = "true"
+} else {
+    $env:SKIP_RESTORE = "false"
+}
+
 # Build the API locally
 Push-Location server/wfprev-api
 Write-Host "Building API locally..."

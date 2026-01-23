@@ -19,6 +19,8 @@ services:
     volumes:
       - ./db/init:/docker-entrypoint-initdb.d
       - ./wfprev.dump:/dump/wfprev.dump
+    environment:
+      - SKIP_RESTORE=${SKIP_RESTORE}
 
   client:
     build:

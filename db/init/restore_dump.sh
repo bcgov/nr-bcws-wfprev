@@ -4,6 +4,11 @@ set -e
 # Define the dump file path inside the container
 DUMP_FILE="/dump/wfprev.dump"
 
+if [ "$SKIP_RESTORE" = "true" ]; then
+    echo "SKIP_RESTORE is set to true. Skipping dump restoration."
+    exit 0
+fi
+
 echo "Checking for dump file at $DUMP_FILE..."
 
 if [ -f "$DUMP_FILE" ]; then
