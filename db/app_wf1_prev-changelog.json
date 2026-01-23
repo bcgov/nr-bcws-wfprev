@@ -1984,12 +1984,6 @@
           {
             "sqlFile": {
               "dbms": "postgresql", "endDelimiter": ";",
-              "path": "scripts/01_02_00/01/ddl/WFPREV.ddl.create.uuid_namespace.sql"
-            }
-          },
-          {
-            "sqlFile": {
-              "dbms": "postgresql", "endDelimiter": ";",
               "path": "scripts/01_02_00/01/ddl/WFPREV.ddl.create.project_fuel_management_vw.sql"
             }
           },
