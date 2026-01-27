@@ -137,76 +137,6 @@
 	<field name="otherLowRiskRationale" class="java.lang.String" />
 	<field name="otherCompleteAmount" class="java.math.BigDecimal" />
 	<field name="otherCompleteRationale" class="java.lang.String" />
-	<field name="q1SubmittedTimestamp" class="java.util.Date" />
-	<field name="q1ProgressStatusCode" class="java.lang.String" />
-	<field name="q1GeneralUpdateComment" class="java.lang.String" />
-	<field name="q1ForecastAmount" class="java.math.BigDecimal" />
-	<field name="q1ForecastAdjustmentAmount" class="java.math.BigDecimal" />
-	<field name="q1ForecastAdjustmentRationale" class="java.lang.String" />
-	<field name="q1BudgetHighRiskAmount" class="java.math.BigDecimal" />
-	<field name="q1BudgetHighRiskRationale" class="java.lang.String" />
-	<field name="q1BudgetMediumRiskAmount" class="java.math.BigDecimal" />
-	<field name="q1BudgetMediumRiskRationale" class="java.lang.String" />
-	<field name="q1BudgetLowRiskAmount" class="java.math.BigDecimal" />
-	<field name="q1BudgetLowRiskRationale" class="java.lang.String" />
-	<field name="q1BudgetCompletedAmount" class="java.math.BigDecimal" />
-	<field name="q1BudgetCompletedDescription" class="java.lang.String" />
-	<field name="q2SubmittedTimestamp" class="java.util.Date" />
-	<field name="q2ProgressStatusCode" class="java.lang.String" />
-	<field name="q2GeneralUpdateComment" class="java.lang.String" />
-	<field name="q2ForecastAmount" class="java.math.BigDecimal" />
-	<field name="q2ForecastAdjustmentAmount" class="java.math.BigDecimal" />
-	<field name="q2ForecastAdjustmentRationale" class="java.lang.String" />
-	<field name="q2BudgetHighRiskAmount" class="java.math.BigDecimal" />
-	<field name="q2BudgetHighRiskRationale" class="java.lang.String" />
-	<field name="q2BudgetMediumRiskAmount" class="java.math.BigDecimal" />
-	<field name="q2BudgetMediumRiskRationale" class="java.lang.String" />
-	<field name="q2BudgetLowRiskAmount" class="java.math.BigDecimal" />
-	<field name="q2BudgetLowRiskRationale" class="java.lang.String" />
-	<field name="q2BudgetCompletedAmount" class="java.math.BigDecimal" />
-	<field name="q2BudgetCompletedDescription" class="java.lang.String" />
-	<field name="q3SubmittedTimestamp" class="java.util.Date" />
-	<field name="q3ProgressStatusCode" class="java.lang.String" />
-	<field name="q3GeneralUpdateComment" class="java.lang.String" />
-	<field name="q3ForecastAmount" class="java.math.BigDecimal" />
-	<field name="q3ForecastAdjustmentAmount" class="java.math.BigDecimal" />
-	<field name="q3ForecastAdjustmentRationale" class="java.lang.String" />
-	<field name="q3BudgetHighRiskAmount" class="java.math.BigDecimal" />
-	<field name="q3BudgetHighRiskRationale" class="java.lang.String" />
-	<field name="q3BudgetMediumRiskAmount" class="java.math.BigDecimal" />
-	<field name="q3BudgetMediumRiskRationale" class="java.lang.String" />
-	<field name="q3BudgetLowRiskAmount" class="java.math.BigDecimal" />
-	<field name="q3BudgetLowRiskRationale" class="java.lang.String" />
-	<field name="q3BudgetCompletedAmount" class="java.math.BigDecimal" />
-	<field name="q3BudgetCompletedDescription" class="java.lang.String" />
-	<field name="march7SubmittedTimestamp" class="java.util.Date" />
-	<field name="march7ProgressStatusCode" class="java.lang.String" />
-	<field name="march7GeneralUpdateComment" class="java.lang.String" />
-	<field name="march7ForecastAmount" class="java.math.BigDecimal" />
-	<field name="march7ForecastAdjustmentAmount" class="java.math.BigDecimal" />
-	<field name="march7ForecastAdjustmentRationale" class="java.lang.String" />
-	<field name="march7BudgetHighRiskAmount" class="java.math.BigDecimal" />
-	<field name="march7BudgetHighRiskRationale" class="java.lang.String" />
-	<field name="march7BudgetMediumRiskAmount" class="java.math.BigDecimal" />
-	<field name="march7BudgetMediumRiskRationale" class="java.lang.String" />
-	<field name="march7BudgetLowRiskAmount" class="java.math.BigDecimal" />
-	<field name="march7BudgetLowRiskRationale" class="java.lang.String" />
-	<field name="march7BudgetCompletedAmount" class="java.math.BigDecimal" />
-	<field name="march7BudgetCompletedDescription" class="java.lang.String" />
-	<field name="otherSubmittedTimestamp" class="java.util.Date" />
-	<field name="otherProgressStatusCode" class="java.lang.String" />
-	<field name="otherGeneralUpdateComment" class="java.lang.String" />
-	<field name="otherForecastAmount" class="java.math.BigDecimal" />
-	<field name="otherForecastAdjustmentAmount" class="java.math.BigDecimal" />
-	<field name="otherForecastAdjustmentRationale" class="java.lang.String" />
-	<field name="otherBudgetHighRiskAmount" class="java.math.BigDecimal" />
-	<field name="otherBudgetHighRiskRationale" class="java.lang.String" />
-	<field name="otherBudgetMediumRiskAmount" class="java.math.BigDecimal" />
-	<field name="otherBudgetMediumRiskRationale" class="java.lang.String" />
-	<field name="otherBudgetLowRiskAmount" class="java.math.BigDecimal" />
-	<field name="otherBudgetLowRiskRationale" class="java.lang.String" />
-	<field name="otherBudgetCompletedAmount" class="java.math.BigDecimal" />
-	<field name="otherBudgetCompletedDescription" class="java.lang.String" />	
 	<background />
 	<title />
 	<pageHeader />
@@ -3395,424 +3325,214 @@
 				<expression>$F{totalFilterSectionScore}</expression>
 			</element>
 	<element kind="textField" uuid="50b0611e-ed8d-4f71-9dbc-5a58528d75c0" x="8654" y="0" width="180" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Center" vTextAlign="Bottom" pattern="yyyy-MM-dd">
-				<expression><![CDATA[$F{q1PerformanceUpdateTimestamp}]]></expression>
+				<expression>$F{q1PerformanceUpdateTimestamp}</expression>
 			</element>
 	<element kind="textField" uuid="0395d3c5-e3d6-42e4-952f-08d169d84835" x="8834" y="0" width="180" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
-				<expression><![CDATA[$F{q1ProgressStatus}]]></expression>
+				<expression>$F{q1ProgressStatus}</expression>
 			</element>
 	<element kind="textField" uuid="657d149b-18d0-4094-9fd2-b7faecd66926" x="9014" y="0" width="270" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
-				<expression><![CDATA[$F{q1GeneralUpdates}]]></expression>
+				<expression>$F{q1GeneralUpdates}</expression>
 			</element>
 	<element kind="textField" uuid="2307b628-8f61-44e9-b2f1-69b8dde1b5fd" x="9284" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="¤#,##0.00;¤-#,##0.00">
-				<expression><![CDATA[$F{q1RevisedForecastAmount}]]></expression>
+				<expression>$F{q1RevisedForecastAmount}</expression>
 			</element>
 	<element kind="textField" uuid="2c20cc04-ac0b-40b5-af12-12582466b864" x="9404" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="¤#,##0.00;¤-#,##0.00">
-				<expression><![CDATA[$F{q1ForecastAdjustmentAmount}]]></expression>
+				<expression>$F{q1ForecastAdjustmentAmount}</expression>
 			</element>
 	<element kind="textField" uuid="b23e7a9b-9a15-4675-aec0-9bbeec9e6784" x="9524" y="0" width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
-				<expression><![CDATA[$F{q1ForecastAdjustmentRationale}]]></expression>
+				<expression>$F{q1ForecastAdjustmentRationale}</expression>
 			</element>
 	<element kind="textField" uuid="898133b9-1ebe-4cad-b35e-ff20aaf34cbe" x="9744" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="¤#,##0.00;¤-#,##0.00">
-				<expression><![CDATA[$F{q1HighRiskAmount}]]></expression>
+				<expression>$F{q1HighRiskAmount}</expression>
 			</element>
 	<element kind="textField" uuid="c8e13969-9f6e-4553-98c2-d96f2c632413" x="9864" y="0" width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
-				<expression><![CDATA[$F{q1HighRiskRationale}]]></expression>
+				<expression>$F{q1HighRiskRationale}</expression>
 			</element>
 	<element kind="textField" uuid="aaa78d15-c1b7-463d-8ae6-ca765be5290c" x="10084" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="¤#,##0.00;¤-#,##0.00">
-				<expression><![CDATA[$F{q1MediumRiskAmount}]]></expression>
+				<expression>$F{q1MediumRiskAmount}</expression>
 			</element>
 	<element kind="textField" uuid="299a0a49-0e52-4d44-8019-6b02cfbc4d27" x="10204" y="0" width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
-				<expression><![CDATA[$F{q1MediumRiskRationale}]]></expression>
+				<expression>$F{q1MediumRiskRationale}</expression>
 			</element>
 	<element kind="textField" uuid="4834a4eb-45b5-4db6-9af6-edd90b7cf197" x="10424" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="¤#,##0.00;¤-#,##0.00">
-				<expression><![CDATA[$F{q1LowRiskAmount}]]></expression>
+				<expression>$F{q1LowRiskAmount}</expression>
 			</element>
 	<element kind="textField" uuid="514e0b18-d95b-46ba-a180-f685cd6b5e75" x="10544" y="0" width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
-				<expression><![CDATA[$F{q1LowRiskRationale}]]></expression>
+				<expression>$F{q1LowRiskRationale}</expression>
 			</element>
 	<element kind="textField" uuid="7cd0f348-e4fe-400d-8457-f4010951e38e" x="10764" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="¤#,##0.00;¤-#,##0.00">
-				<expression><![CDATA[$F{q1CompleteAmount}]]></expression>
+				<expression>$F{q1CompleteAmount}</expression>
 			</element>
 	<element kind="textField" uuid="501ce64c-5f49-4a7d-a578-e6318fc1167f" x="10884" y="0" width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
-				<expression><![CDATA[$F{q1CompleteRationale}]]></expression>
+				<expression>$F{q1CompleteRationale}</expression>
 			</element>
 	<element kind="textField" uuid="c81ae7b8-923d-4ae7-b5a4-759d041fcc5e" x="11104" y="0" width="180" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Center" vTextAlign="Bottom" pattern="yyyy-MM-dd">
-				<expression><![CDATA[$F{q2PerformanceUpdateTimestamp}]]></expression>
+				<expression>$F{q2PerformanceUpdateTimestamp}</expression>
 			</element>
 	<element kind="textField" uuid="329a443b-3a98-46f4-8fb6-75d6ebc2db65" x="11284" y="0" width="180" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
-				<expression><![CDATA[$F{q2ProgressStatus}]]></expression>
+				<expression>$F{q2ProgressStatus}</expression>
 			</element>
 	<element kind="textField" uuid="772e1740-fb6f-4413-92dd-9e2dc66785bb" x="11464" y="0" width="270" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
-				<expression><![CDATA[$F{q2GeneralUpdates}]]></expression>
+				<expression>$F{q2GeneralUpdates}</expression>
 			</element>
 	<element kind="textField" uuid="f2d3c2d8-47e4-4000-a6f4-de43337601ce" x="11734" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="¤#,##0.00;¤-#,##0.00">
-				<expression><![CDATA[$F{q2RevisedForecastAmount}]]></expression>
+				<expression>$F{q2RevisedForecastAmount}</expression>
 			</element>
 	<element kind="textField" uuid="e9b75a70-4e30-410a-bdcc-f42688981dd4" x="11854" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="¤#,##0.00;¤-#,##0.00">
-				<expression><![CDATA[$F{q2ForecastAdjustmentAmount}]]></expression>
+				<expression>$F{q2ForecastAdjustmentAmount}</expression>
 			</element>
 	<element kind="textField" uuid="5ee9ccfc-9820-42b0-a61f-4022ff9f118b" x="11974" y="0" width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
-				<expression><![CDATA[$F{q2ForecastAdjustmentRationale}]]></expression>
+				<expression>$F{q2ForecastAdjustmentRationale}</expression>
 			</element>
 	<element kind="textField" uuid="8ef31dad-d2ab-48f8-a895-1b290f24c946" x="12194" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="¤#,##0.00;¤-#,##0.00">
-				<expression><![CDATA[$F{q2HighRiskAmount}]]></expression>
+				<expression>$F{q2HighRiskAmount}</expression>
 			</element>
 	<element kind="textField" uuid="c23c346a-c410-4f01-8c29-4c8331216543" x="12314" y="0" width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
-				<expression><![CDATA[$F{q2HighRiskRationale}]]></expression>
+				<expression>$F{q2HighRiskRationale}</expression>
 			</element>
 	<element kind="textField" uuid="251a7fbb-f815-4754-85bd-0db10f8768fc" x="12534" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="¤#,##0.00;¤-#,##0.00">
-				<expression><![CDATA[$F{q2MediumRiskAmount}]]></expression>
+				<expression>$F{q2MediumRiskAmount}</expression>
 			</element>
 	<element kind="textField" uuid="30a148d1-c3cf-481d-8274-934bb81a9e9b" x="12654" y="0" width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
-				<expression><![CDATA[$F{q2MediumRiskRationale}]]></expression>
+				<expression>$F{q2MediumRiskRationale}</expression>
 			</element>
 	<element kind="textField" uuid="c78100d7-ce63-4988-b7bc-f1d4dbeaec0e" x="12874" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="¤#,##0.00;¤-#,##0.00">
-				<expression><![CDATA[$F{q2LowRiskAmount}]]></expression>
+				<expression>$F{q2LowRiskAmount}</expression>
 			</element>
 	<element kind="textField" uuid="68243ae1-c5ea-4e06-8a17-f7d67f90a9e4" x="12994" y="0" width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
-				<expression><![CDATA[$F{q2LowRiskRationale}]]></expression>
+				<expression>$F{q2LowRiskRationale}</expression>
 			</element>
 	<element kind="textField" uuid="7c5450f8-ba66-4ac5-8f93-09c31ab1c59d" x="13214" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="¤#,##0.00;¤-#,##0.00">
-				<expression><![CDATA[$F{q2CompleteAmount}]]></expression>
+				<expression>$F{q2CompleteAmount}</expression>
 			</element>
 	<element kind="textField" uuid="9ed13885-08a4-413c-b045-83361cdce4d4" x="13334" y="0" width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
-				<expression><![CDATA[$F{q2CompleteRationale}]]></expression>
+				<expression>$F{q2CompleteRationale}</expression>
 			</element>
 	<element kind="textField" uuid="ab17fbe3-e7f6-4add-9bf0-26872f1c09a0" x="13554" y="0" width="180" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Center" vTextAlign="Bottom" pattern="yyyy-MM-dd">
-				<expression><![CDATA[$F{q3PerformanceUpdateTimestamp}]]></expression>
+				<expression>$F{q3PerformanceUpdateTimestamp}</expression>
 			</element>
 	<element kind="textField" uuid="2bcea914-71e3-47ec-b548-deb9b89650bc" x="13734" y="0" width="180" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
-				<expression><![CDATA[$F{q3ProgressStatus}]]></expression>
+				<expression>$F{q3ProgressStatus}</expression>
 			</element>
 	<element kind="textField" uuid="c95b5eb8-0c47-42f2-b45f-3918e4c74979" x="13914" y="0" width="270" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
-				<expression><![CDATA[$F{q3GeneralUpdates}]]></expression>
+				<expression>$F{q3GeneralUpdates}</expression>
 			</element>
 	<element kind="textField" uuid="1b963f9c-bccb-4e23-b2f6-c8f2b247dc0c" x="14184" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="¤#,##0.00;¤-#,##0.00">
-				<expression><![CDATA[$F{q3RevisedForecastAmount}]]></expression>
+				<expression>$F{q3RevisedForecastAmount}</expression>
 			</element>
 	<element kind="textField" uuid="0c934045-acfe-4ef8-8ca6-1236c5d2cb92" x="14304" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="¤#,##0.00;¤-#,##0.00">
-				<expression><![CDATA[$F{q3ForecastAdjustmentAmount}]]></expression>
+				<expression>$F{q3ForecastAdjustmentAmount}</expression>
 			</element>
 	<element kind="textField" uuid="7a87ce95-686d-466c-bad6-bbce95e3b6e9" x="14424" y="0" width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
-				<expression><![CDATA[$F{q3ForecastAdjustmentRationale}]]></expression>
+				<expression>$F{q3ForecastAdjustmentRationale}</expression>
 			</element>
 	<element kind="textField" uuid="066f726a-ae48-46a8-bd01-81967078edc8" x="14644" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="¤#,##0.00;¤-#,##0.00">
-				<expression><![CDATA[$F{q3HighRiskAmount}]]></expression>
+				<expression>$F{q3HighRiskAmount}</expression>
 			</element>
 	<element kind="textField" uuid="2760e4c2-8d13-49d4-9cf6-9547375e52d0" x="14764" y="0" width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
-				<expression><![CDATA[$F{q3HighRiskRationale}]]></expression>
+				<expression>$F{q3HighRiskRationale}</expression>
 			</element>
 	<element kind="textField" uuid="f01646ed-4faa-4411-8629-2307585da67a" x="14984" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="¤#,##0.00;¤-#,##0.00">
-				<expression><![CDATA[$F{q3MediumRiskAmount}]]></expression>
+				<expression>$F{q3MediumRiskAmount}</expression>
 			</element>
 	<element kind="textField" uuid="eaa1375b-d864-4609-90df-23661728e084" x="15104" y="0" width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
-				<expression><![CDATA[$F{q3MediumRiskRationale}]]></expression>
+				<expression>$F{q3MediumRiskRationale}</expression>
 			</element>
 	<element kind="textField" uuid="1db9ef00-c805-4854-a9d6-f25c017dbf8f" x="15324" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="¤#,##0.00;¤-#,##0.00">
-				<expression><![CDATA[$F{q3LowRiskAmount}]]></expression>
+				<expression>$F{q3LowRiskAmount}</expression>
 			</element>
 	<element kind="textField" uuid="6694367e-80aa-4eb3-856a-19848d5cde87" x="15444" y="0" width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
-				<expression><![CDATA[$F{q3LowRiskRationale}]]></expression>
+				<expression>$F{q3LowRiskRationale}</expression>
 			</element>
 	<element kind="textField" uuid="d8d9d288-65be-4855-8fcb-0acbe74b6b5c" x="15664" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="¤#,##0.00;¤-#,##0.00">
-				<expression><![CDATA[$F{q3CompleteAmount}]]></expression>
+				<expression>$F{q3CompleteAmount}</expression>
 			</element>
 	<element kind="textField" uuid="afaca535-3a7f-439e-a946-a4b486062100" x="15784" y="0" width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
-				<expression><![CDATA[$F{q3CompleteRationale}]]></expression>
+				<expression>$F{q3CompleteRationale}</expression>
 			</element>
 	<element kind="textField" uuid="2e093951-5d9d-415b-b47f-3c8a06b862ae" x="16004" y="0" width="180" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Center" vTextAlign="Bottom" pattern="yyyy-MM-dd">
-				<expression><![CDATA[$F{march7PerformanceUpdateTimestamp}]]></expression>
+				<expression>$F{march7PerformanceUpdateTimestamp}</expression>
 			</element>
 	<element kind="textField" uuid="c8a360c6-7d11-43aa-9429-29ced86504b8" x="16184" y="0" width="180" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
-				<expression><![CDATA[$F{march7ProgressStatus}]]></expression>
+				<expression>$F{march7ProgressStatus}</expression>
 			</element>
 	<element kind="textField" uuid="b2405eb4-9551-4829-b119-df5af73e19b0" x="16364" y="0" width="270" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
-				<expression><![CDATA[$F{march7GeneralUpdates}]]></expression>
+				<expression>$F{march7GeneralUpdates}</expression>
 			</element>
 	<element kind="textField" uuid="9eb052c3-bc5b-4a48-a22e-c39aac553e7f" x="16634" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="¤#,##0.00;¤-#,##0.00">
-				<expression><![CDATA[$F{march7RevisedForecastAmount}]]></expression>
+				<expression>$F{march7RevisedForecastAmount}</expression>
 			</element>
 	<element kind="textField" uuid="d5dd141d-36d4-416a-a6e3-3704a0ac0e58" x="16754" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="¤#,##0.00;¤-#,##0.00">
-				<expression><![CDATA[$F{march7ForecastAdjustmentAmount}]]></expression>
+				<expression>$F{march7ForecastAdjustmentAmount}</expression>
 			</element>
 	<element kind="textField" uuid="05947439-a0e1-49bd-b802-f27f47d616eb" x="16874" y="0" width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
-				<expression><![CDATA[$F{march7ForecastAdjustmentRationale}]]></expression>
+				<expression>$F{march7ForecastAdjustmentRationale}</expression>
 			</element>
 	<element kind="textField" uuid="10ccd434-7762-47b8-86c4-37bac8aa98c1" x="17094" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="¤#,##0.00;¤-#,##0.00">
-				<expression><![CDATA[$F{march7HighRiskAmount}]]></expression>
+				<expression>$F{march7HighRiskAmount}</expression>
 			</element>
 	<element kind="textField" uuid="60be2d40-3d68-4671-81d8-3370aec31e84" x="17214" y="0" width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
-				<expression><![CDATA[$F{march7HighRiskRationale}]]></expression>
+				<expression>$F{march7HighRiskRationale}</expression>
 			</element>
 	<element kind="textField" uuid="f06fa29d-32be-4546-a375-48872918d968" x="17434" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="¤#,##0.00;¤-#,##0.00">
-				<expression><![CDATA[$F{march7MediumRiskAmount}]]></expression>
+				<expression>$F{march7MediumRiskAmount}</expression>
 			</element>
 	<element kind="textField" uuid="442b0744-6aed-4dcf-9f96-f60a46b11673" x="17554" y="0" width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
-				<expression><![CDATA[$F{march7MediumRiskRationale}]]></expression>
+				<expression>$F{march7MediumRiskRationale}</expression>
 			</element>
 	<element kind="textField" uuid="f6a9cf51-d8c0-47db-92ac-0c0cf4c5c9bf" x="17774" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="¤#,##0.00;¤-#,##0.00">
-				<expression><![CDATA[$F{march7LowRiskAmount}]]></expression>
+				<expression>$F{march7LowRiskAmount}</expression>
 			</element>
 	<element kind="textField" uuid="ae1a9dfe-519d-43d4-b20a-bd204994c4d4" x="17894" y="0" width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
-				<expression><![CDATA[$F{march7LowRiskRationale}]]></expression>
+				<expression>$F{march7LowRiskRationale}</expression>
 			</element>
 	<element kind="textField" uuid="2fdd28d5-2daf-4a10-b70c-8b8a4bc26124" x="18114" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="¤#,##0.00;¤-#,##0.00">
-				<expression><![CDATA[$F{march7CompleteAmount}]]></expression>
+				<expression>$F{march7CompleteAmount}</expression>
 			</element>
 	<element kind="textField" uuid="565d2572-a6c8-491e-b65d-4522b9b1246f" x="18234" y="0" width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
-				<expression><![CDATA[$F{march7CompleteRationale}]]></expression>
+				<expression>$F{march7CompleteRationale}</expression>
 			</element>
 	<element kind="textField" uuid="f99763e9-fc45-43d5-86f3-9f6eb1d0b3fa" x="18454" y="0" width="180" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Center" vTextAlign="Bottom" pattern="yyyy-MM-dd">
-				<expression><![CDATA[$F{otherPerformanceUpdateTimestamp}]]></expression>
+				<expression>$F{otherPerformanceUpdateTimestamp}</expression>
 			</element>
 	<element kind="textField" uuid="228a859d-56dd-4e29-9692-0e93fe73a243" x="18634" y="0" width="180" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
-				<expression><![CDATA[$F{otherProgressStatus}]]></expression>
+				<expression>$F{otherProgressStatus}</expression>
 			</element>
 	<element kind="textField" uuid="b62f5776-2c3e-49f2-ab13-6d292f1c3ff0" x="18814" y="0" width="270" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
-				<expression><![CDATA[$F{otherGeneralUpdates}]]></expression>
+				<expression>$F{otherGeneralUpdates}</expression>
 			</element>
 	<element kind="textField" uuid="d8c9e102-f667-4353-9cf8-bae64bff6037" x="19084" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="¤#,##0.00;¤-#,##0.00">
-				<expression><![CDATA[$F{otherRevisedForecastAmount}]]></expression>
+				<expression>$F{otherRevisedForecastAmount}</expression>
 			</element>
 	<element kind="textField" uuid="aa9140e7-242c-49ad-b031-75f3c2c86512" x="19204" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="¤#,##0.00;¤-#,##0.00">
-				<expression><![CDATA[$F{otherForecastAdjustmentAmount}]]></expression>
+				<expression>$F{otherForecastAdjustmentAmount}</expression>
 			</element>
 	<element kind="textField" uuid="1def914d-5413-44b3-990e-fc4d682972d6" x="19324" y="0" width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
-				<expression><![CDATA[$F{otherForecastAdjustmentRationale}]]></expression>
+				<expression>$F{otherForecastAdjustmentRationale}</expression>
 			</element>
 	<element kind="textField" uuid="9eb52307-9214-4416-903b-39c6f0f5635f" x="19544" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="¤#,##0.00;¤-#,##0.00">
-				<expression><![CDATA[$F{otherHighRiskAmount}]]></expression>
+				<expression>$F{otherHighRiskAmount}</expression>
 			</element>
 	<element kind="textField" uuid="83f55164-0b5e-45f6-9774-a8f97e84e98d" x="19664" y="0" width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
-				<expression><![CDATA[$F{otherHighRiskRationale}]]></expression>
+				<expression>$F{otherHighRiskRationale}</expression>
 			</element>
 	<element kind="textField" uuid="84343276-0cfb-441d-8551-2c4c64181b43" x="19884" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="¤#,##0.00;¤-#,##0.00">
-				<expression><![CDATA[$F{otherMediumRiskAmount}]]></expression>
+				<expression>$F{otherMediumRiskAmount}</expression>
 			</element>
 	<element kind="textField" uuid="0f721673-4483-40db-990e-9f33c661782e" x="20004" y="0" width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
-				<expression><![CDATA[$F{otherMediumRiskRationale}]]></expression>
+				<expression>$F{otherMediumRiskRationale}</expression>
 			</element>
 	<element kind="textField" uuid="e1aa99ba-2f9b-47ba-b1aa-0856f86e2674" x="20224" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="¤#,##0.00;¤-#,##0.00">
-				<expression><![CDATA[$F{otherLowRiskAmount}]]></expression>
+				<expression>$F{otherLowRiskAmount}</expression>
 			</element>
 	<element kind="textField" uuid="032cb2ba-d68c-44af-94f9-0ecaaa3b9409" x="20344" y="0" width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
-				<expression><![CDATA[$F{otherLowRiskRationale}]]></expression>
+				<expression>$F{otherLowRiskRationale}</expression>
 			</element>
 	<element kind="textField" uuid="94e9a4ae-347b-4c44-8659-830837f419f4" x="20564" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="¤#,##0.00;¤-#,##0.00">
-				<expression><![CDATA[$F{otherCompleteAmount}]]></expression>
+				<expression>$F{otherCompleteAmount}</expression>
 			</element>
 	<element kind="textField" uuid="d267e1d6-c806-4b9d-b117-411827ebea6d" x="20684" y="0" width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
-				<expression><![CDATA[$F{otherCompleteRationale}]]></expression>
-			</element>
-	<element kind="textField" uuid="d9205e3c-32d7-4b6f-91c2-0448987019ef" x="20904" y="0" width="180" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Center" vTextAlign="Bottom" pattern="yyyy-MM-dd">
-				<expression><![CDATA[$F{q1SubmittedTimestamp}]]></expression>
-			</element>
-	<element kind="textField" uuid="2079a956-ed73-4f48-8f4f-d1a30d05d537" x="21084" y="0" width="180" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
-				<expression><![CDATA[$F{q1ProgressStatusCode}]]></expression>
-			</element>
-	<element kind="textField" uuid="16d2ebd9-c4f7-4a01-9e1a-f32766716af5" x="21264" y="0" width="270" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
-				<expression><![CDATA[$F{q1GeneralUpdateComment}]]></expression>
-			</element>
-	<element kind="textField" uuid="c5802c6c-e384-4b23-83ca-42dddbe78622" x="21534" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="¤#,##0.00;¤-#,##0.00">
-				<expression><![CDATA[$F{q1ForecastAmount}]]></expression>
-			</element>
-	<element kind="textField" uuid="6c54dddf-85a6-44d4-827b-e915bd765b61" x="21654" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="¤#,##0.00;¤-#,##0.00">
-				<expression><![CDATA[$F{q1ForecastAdjustmentAmount}]]></expression>
-			</element>
-	<element kind="textField" uuid="e28ff6b5-39e1-4d5b-bb93-294a06fbc67e" x="21774" y="0" width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
-				<expression><![CDATA[$F{q1ForecastAdjustmentRationale}]]></expression>
-			</element>
-	<element kind="textField" uuid="17842ca7-b81d-40a5-baf7-f7f1f434eca3" x="21994" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="¤#,##0.00;¤-#,##0.00">
-				<expression><![CDATA[$F{q1BudgetHighRiskAmount}]]></expression>
-			</element>
-	<element kind="textField" uuid="5f3fd844-49bd-451b-ab8f-8d43586639a1" x="22114" y="0" width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
-				<expression><![CDATA[$F{q1BudgetHighRiskRationale}]]></expression>
-			</element>
-	<element kind="textField" uuid="7428dbc2-c89f-41b5-98af-60ef906c1c6f" x="22334" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="¤#,##0.00;¤-#,##0.00">
-				<expression><![CDATA[$F{q1BudgetMediumRiskAmount}]]></expression>
-			</element>
-	<element kind="textField" uuid="14121081-4d01-42bb-ab60-96b2c3bf6513" x="22454" y="0" width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
-				<expression><![CDATA[$F{q1BudgetMediumRiskRationale}]]></expression>
-			</element>
-	<element kind="textField" uuid="8c487741-583b-4aa2-9b23-5a62da70e276" x="22674" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="¤#,##0.00;¤-#,##0.00">
-				<expression><![CDATA[$F{q1BudgetLowRiskAmount}]]></expression>
-			</element>
-	<element kind="textField" uuid="26e88295-5f65-43d7-a8b6-76a132ce2343" x="22794" y="0" width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
-				<expression><![CDATA[$F{q1BudgetLowRiskRationale}]]></expression>
-			</element>
-	<element kind="textField" uuid="1e2f1683-33d8-489f-bd69-251bbfc6e450" x="23014" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="¤#,##0.00;¤-#,##0.00">
-				<expression><![CDATA[$F{q1BudgetCompletedAmount}]]></expression>
-			</element>
-	<element kind="textField" uuid="817470a7-1e24-49c5-b6b3-7000475622c9" x="23134" y="0" width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
-				<expression><![CDATA[$F{q1BudgetCompletedDescription}]]></expression>
-			</element>
-	<element kind="textField" uuid="a07d5980-4aa3-4f13-9968-6375f4ba488e" x="23354" y="0" width="180" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Center" vTextAlign="Bottom" pattern="yyyy-MM-dd">
-				<expression><![CDATA[$F{q2SubmittedTimestamp}]]></expression>
-			</element>
-	<element kind="textField" uuid="b94a18a7-540d-4375-b6ba-a2f3da572b12" x="23534" y="0" width="180" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
-				<expression><![CDATA[$F{q2ProgressStatusCode}]]></expression>
-			</element>
-	<element kind="textField" uuid="7a8a09f0-da21-4872-bbde-c757f38eb476" x="23714" y="0" width="270" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
-				<expression><![CDATA[$F{q2GeneralUpdateComment}]]></expression>
-			</element>
-	<element kind="textField" uuid="cfafe602-132d-4136-9602-31c7ff775e87" x="23984" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="¤#,##0.00;¤-#,##0.00">
-				<expression><![CDATA[$F{q2ForecastAmount}]]></expression>
-			</element>
-	<element kind="textField" uuid="7992de14-90c4-4499-9ef0-2f85262b4e4e" x="24104" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="¤#,##0.00;¤-#,##0.00">
-				<expression><![CDATA[$F{q2ForecastAdjustmentAmount}]]></expression>
-			</element>
-	<element kind="textField" uuid="ad12f54b-aac4-49e4-8f35-0941deb07a14" x="24224" y="0" width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
-				<expression><![CDATA[$F{q2ForecastAdjustmentRationale}]]></expression>
-			</element>
-	<element kind="textField" uuid="3b898309-681a-4406-af56-864d0f0007f2" x="24444" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="¤#,##0.00;¤-#,##0.00">
-				<expression><![CDATA[$F{q2BudgetHighRiskAmount}]]></expression>
-			</element>
-	<element kind="textField" uuid="5ccfb8ce-319c-46a1-97b2-006cf2a22ada" x="24564" y="0" width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
-				<expression><![CDATA[$F{q2BudgetHighRiskRationale}]]></expression>
-			</element>
-	<element kind="textField" uuid="582bc845-dacc-4be0-8967-282286c8bdb5" x="24784" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="¤#,##0.00;¤-#,##0.00">
-				<expression><![CDATA[$F{q2BudgetMediumRiskAmount}]]></expression>
-			</element>
-	<element kind="textField" uuid="1ed908c0-5696-46e2-9152-bb2fd7e05044" x="24904" y="0" width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
-				<expression><![CDATA[$F{q2BudgetMediumRiskRationale}]]></expression>
-			</element>
-	<element kind="textField" uuid="275e63db-b3bc-4e70-9a37-f086d2f189fe" x="25124" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="¤#,##0.00;¤-#,##0.00">
-				<expression><![CDATA[$F{q2BudgetLowRiskAmount}]]></expression>
-			</element>
-	<element kind="textField" uuid="ec1d294c-f05c-4302-99fa-db4bd9641cc8" x="25244" y="0" width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
-				<expression><![CDATA[$F{q2BudgetLowRiskRationale}]]></expression>
-			</element>
-	<element kind="textField" uuid="84a72871-0d99-4c3b-a4f4-f6a802ba300d" x="25464" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="¤#,##0.00;¤-#,##0.00">
-				<expression><![CDATA[$F{q2BudgetCompletedAmount}]]></expression>
-			</element>
-	<element kind="textField" uuid="5f5f33b9-62f9-4eb4-b26f-c4525c6bd536" x="25584" y="0" width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
-				<expression><![CDATA[$F{q2BudgetCompletedDescription}]]></expression>
-			</element>
-	<element kind="textField" uuid="5ae7e801-1394-463d-bd74-7585a4ead8f5" x="25804" y="0" width="180" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Center" vTextAlign="Bottom" pattern="yyyy-MM-dd">
-				<expression><![CDATA[$F{q3SubmittedTimestamp}]]></expression>
-			</element>
-	<element kind="textField" uuid="4abb9458-3d48-4c6b-afb8-1b8b8202eff5" x="25984" y="0" width="180" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
-				<expression><![CDATA[$F{q3ProgressStatusCode}]]></expression>
-			</element>
-	<element kind="textField" uuid="1274eb34-b5c7-47fd-9032-991b7e74e5c9" x="26164" y="0" width="270" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
-				<expression><![CDATA[$F{q3GeneralUpdateComment}]]></expression>
-			</element>
-	<element kind="textField" uuid="99071cd6-e7b2-4375-a824-cc385b7ac585" x="26434" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="¤#,##0.00;¤-#,##0.00">
-				<expression><![CDATA[$F{q3ForecastAmount}]]></expression>
-			</element>
-	<element kind="textField" uuid="d21e5350-05ca-4f28-8e56-d8c362f45f64" x="26554" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="¤#,##0.00;¤-#,##0.00">
-				<expression><![CDATA[$F{q3ForecastAdjustmentAmount}]]></expression>
-			</element>
-	<element kind="textField" uuid="fb6e4faf-f5ae-4b91-8777-6b3383c04556" x="26674" y="0" width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
-				<expression><![CDATA[$F{q3ForecastAdjustmentRationale}]]></expression>
-			</element>
-	<element kind="textField" uuid="1d51e9fd-35ae-4c2f-aa18-c707ea682f34" x="26894" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="¤#,##0.00;¤-#,##0.00">
-				<expression><![CDATA[$F{q3BudgetHighRiskAmount}]]></expression>
-			</element>
-	<element kind="textField" uuid="f1d86b1a-f7e5-489a-9cea-517497a530b3" x="27014" y="0" width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
-				<expression><![CDATA[$F{q3BudgetHighRiskRationale}]]></expression>
-			</element>
-	<element kind="textField" uuid="f8f74607-b09d-40dd-ab00-c2f269dc1358" x="27234" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="¤#,##0.00;¤-#,##0.00">
-				<expression><![CDATA[$F{q3BudgetMediumRiskAmount}]]></expression>
-			</element>
-	<element kind="textField" uuid="170e0915-69b5-491c-8f16-d5ec7511c9d4" x="27354" y="0" width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
-				<expression><![CDATA[$F{q3BudgetMediumRiskRationale}]]></expression>
-			</element>
-	<element kind="textField" uuid="efe4596f-1afd-4300-9879-99af125239ad" x="27574" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="¤#,##0.00;¤-#,##0.00">
-				<expression><![CDATA[$F{q3BudgetLowRiskAmount}]]></expression>
-			</element>
-	<element kind="textField" uuid="e81795c2-8db5-4517-8a24-1295e5af66f1" x="27694" y="0" width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
-				<expression><![CDATA[$F{q3BudgetLowRiskRationale}]]></expression>
-			</element>
-	<element kind="textField" uuid="fa0bbe31-5c88-43b7-bb56-0f784f00ae6c" x="27914" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="¤#,##0.00;¤-#,##0.00">
-				<expression><![CDATA[$F{q3BudgetCompletedAmount}]]></expression>
-			</element>
-	<element kind="textField" uuid="2b8bbbd5-78f3-44cd-bec7-6c25b59bd961" x="28034" y="0" width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
-				<expression><![CDATA[$F{q3BudgetCompletedDescription}]]></expression>
-			</element>
-	<element kind="textField" uuid="0989b286-016a-4ff0-8a6f-951d339745f9" x="28254" y="0" width="180" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Center" vTextAlign="Bottom" pattern="yyyy-MM-dd">
-				<expression><![CDATA[$F{march7SubmittedTimestamp}]]></expression>
-			</element>
-	<element kind="textField" uuid="9b95e7c1-2e9c-4967-9700-3c3606287068" x="28434" y="0" width="180" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
-				<expression><![CDATA[$F{march7ProgressStatusCode}]]></expression>
-			</element>
-	<element kind="textField" uuid="647a81e7-2345-4b26-9804-a7ff1b78d9ce" x="28614" y="0" width="270" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
-				<expression><![CDATA[$F{march7GeneralUpdateComment}]]></expression>
-			</element>
-	<element kind="textField" uuid="44320e70-6d14-4840-bcba-cc7d260a1007" x="28884" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="¤#,##0.00;¤-#,##0.00">
-				<expression><![CDATA[$F{march7ForecastAmount}]]></expression>
-			</element>
-	<element kind="textField" uuid="931da077-4d57-4f1b-af82-b232ed53085c" x="29004" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="¤#,##0.00;¤-#,##0.00">
-				<expression><![CDATA[$F{march7ForecastAdjustmentAmount}]]></expression>
-			</element>
-	<element kind="textField" uuid="28763d1e-411a-487e-8ee2-5644a4fa53c4" x="29124" y="0" width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
-				<expression><![CDATA[$F{march7ForecastAdjustmentRationale}]]></expression>
-			</element>
-	<element kind="textField" uuid="9963871a-4eee-4ed8-9ff6-9b1928defacc" x="29344" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="¤#,##0.00;¤-#,##0.00">
-				<expression><![CDATA[$F{march7BudgetHighRiskAmount}]]></expression>
-			</element>
-	<element kind="textField" uuid="8adeea27-f035-466a-9bc7-bb5526b4632b" x="29464" y="0" width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
-				<expression><![CDATA[$F{march7BudgetHighRiskRationale}]]></expression>
-			</element>
-	<element kind="textField" uuid="7bb34056-adad-4e78-8013-babf0279c731" x="29684" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="¤#,##0.00;¤-#,##0.00">
-				<expression><![CDATA[$F{march7BudgetMediumRiskAmount}]]></expression>
-			</element>
-	<element kind="textField" uuid="be42ba57-de95-4239-98a1-a7dd5b8e2847" x="29804" y="0" width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
-				<expression><![CDATA[$F{march7BudgetMediumRiskRationale}]]></expression>
-			</element>
-	<element kind="textField" uuid="1005c738-c45e-4eca-ba33-8ca068af5b0b" x="30024" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="¤#,##0.00;¤-#,##0.00">
-				<expression><![CDATA[$F{march7BudgetLowRiskAmount}]]></expression>
-			</element>
-	<element kind="textField" uuid="ce0b168e-13d5-453d-87bc-bb966932cf28" x="30144" y="0" width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
-				<expression><![CDATA[$F{march7BudgetLowRiskRationale}]]></expression>
-			</element>
-	<element kind="textField" uuid="a0920285-bd2a-42f7-a337-b7364a0dc7bc" x="30364" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="¤#,##0.00;¤-#,##0.00">
-				<expression><![CDATA[$F{march7BudgetCompletedAmount}]]></expression>
-			</element>
-	<element kind="textField" uuid="5a0baa21-233d-4509-a363-266598fd268e" x="30484" y="0" width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
-				<expression><![CDATA[$F{march7BudgetCompletedDescription}]]></expression>
-			</element>
-	<element kind="textField" uuid="03b26255-4fe9-4cd6-894d-7e50ea05ae26" x="30704" y="0" width="180" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Center" vTextAlign="Bottom" pattern="yyyy-MM-dd">
-				<expression><![CDATA[$F{otherSubmittedTimestamp}]]></expression>
-			</element>
-	<element kind="textField" uuid="e1549169-a233-4408-a816-396ba1411a8d" x="30884" y="0" width="180" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
-				<expression><![CDATA[$F{otherProgressStatusCode}]]></expression>
-			</element>
-	<element kind="textField" uuid="339004a5-8b3c-4e8a-9e37-f699f4d4da40" x="31064" y="0" width="270" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
-				<expression><![CDATA[$F{otherGeneralUpdateComment}]]></expression>
-			</element>
-	<element kind="textField" uuid="7a72cc53-8654-41d9-a000-bf810bb91066" x="31334" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="¤#,##0.00;¤-#,##0.00">
-				<expression><![CDATA[$F{otherForecastAmount}]]></expression>
-			</element>
-	<element kind="textField" uuid="da7d0195-b0d6-49c2-8efa-7d72822b8179" x="31454" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="¤#,##0.00;¤-#,##0.00">
-				<expression><![CDATA[$F{otherForecastAdjustmentAmount}]]></expression>
-			</element>
-	<element kind="textField" uuid="3434bf98-0a8b-4802-ac49-c37fd3812730" x="31574" y="0" width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
-				<expression><![CDATA[$F{otherForecastAdjustmentRationale}]]></expression>
-			</element>
-	<element kind="textField" uuid="3bcf1500-7657-4b0c-ae1a-4e185cc2d7c4" x="31794" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="¤#,##0.00;¤-#,##0.00">
-				<expression><![CDATA[$F{otherBudgetHighRiskAmount}]]></expression>
-			</element>
-	<element kind="textField" uuid="7fb9860b-99d9-4e48-b715-6900902fd1a4" x="31914" y="0" width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
-				<expression><![CDATA[$F{otherBudgetHighRiskRationale}]]></expression>
-			</element>
-	<element kind="textField" uuid="129ce509-05dc-4dd1-96c4-57d03a423459" x="32134" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="¤#,##0.00;¤-#,##0.00">
-				<expression><![CDATA[$F{otherBudgetMediumRiskAmount}]]></expression>
-			</element>
-	<element kind="textField" uuid="31a8e61d-bc66-4f75-8963-fd1f667f2b85" x="32254" y="0" width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
-				<expression><![CDATA[$F{otherBudgetMediumRiskRationale}]]></expression>
-			</element>
-	<element kind="textField" uuid="5075be21-b37a-448a-afdc-daa41e8a13ac" x="32474" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="¤#,##0.00;¤-#,##0.00">
-				<expression><![CDATA[$F{otherBudgetLowRiskAmount}]]></expression>
-			</element>
-	<element kind="textField" uuid="64e39c55-840d-4f1d-b309-143fdb5ebf90" x="32594" y="0" width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
-				<expression><![CDATA[$F{otherBudgetLowRiskRationale}]]></expression>
-			</element>
-	<element kind="textField" uuid="5028f84c-1021-42f5-9bb0-5eefeb94ec2d" x="32814" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="¤#,##0.00;¤-#,##0.00">
-				<expression><![CDATA[$F{otherBudgetCompletedAmount}]]></expression>
-			</element>
-	<element kind="textField" uuid="5d46ec94-46b0-4a3e-a817-392e66695617" x="32934" y="0" width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
-				<expression><![CDATA[$F{otherBudgetCompletedDescription}]]></expression>
+				<expression>$F{otherCompleteRationale}</expression>
 			</element>
 	</band>
 	</detail>
