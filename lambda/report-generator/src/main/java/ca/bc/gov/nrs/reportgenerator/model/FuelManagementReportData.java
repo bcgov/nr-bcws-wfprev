@@ -19,6 +19,8 @@ public class FuelManagementReportData {
     private String activityCategoryDescription;
     private String planFiscalStatusDescription;
     private BigDecimal totalEstimatedCostAmount;
+    private BigDecimal fiscalForecastAmount;
+    private String ancillaryFundingProvider;
     private BigDecimal fiscalAncillaryFundAmount;
     private BigDecimal fiscalReportedSpendAmount;
     private BigDecimal fiscalActualAmount;
@@ -131,6 +133,10 @@ public class FuelManagementReportData {
     public void setPlanFiscalStatusDescription(String planFiscalStatusDescription) { this.planFiscalStatusDescription = planFiscalStatusDescription; }
     public BigDecimal getTotalEstimatedCostAmount() { return totalEstimatedCostAmount; }
     public void setTotalEstimatedCostAmount(BigDecimal totalEstimatedCostAmount) { this.totalEstimatedCostAmount = totalEstimatedCostAmount; }
+    public BigDecimal getFiscalForecastAmount() { return fiscalForecastAmount; }
+    public void setFiscalForecastAmount(BigDecimal fiscalForecastAmount) { this.fiscalForecastAmount = fiscalForecastAmount; }
+    public String getAncillaryFundingProvider() { return ancillaryFundingProvider; }
+    public void setAncillaryFundingProvider(String ancillaryFundingProvider) { this.ancillaryFundingProvider = ancillaryFundingProvider; }
     public BigDecimal getFiscalAncillaryFundAmount() { return fiscalAncillaryFundAmount; }
     public void setFiscalAncillaryFundAmount(BigDecimal fiscalAncillaryFundAmount) { this.fiscalAncillaryFundAmount = fiscalAncillaryFundAmount; }
     public BigDecimal getFiscalReportedSpendAmount() { return fiscalReportedSpendAmount; }
