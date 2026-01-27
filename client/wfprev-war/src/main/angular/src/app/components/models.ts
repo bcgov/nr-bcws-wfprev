@@ -378,27 +378,29 @@ export interface ReportRequest {
 
 export interface PerformanceUpdate {
   
-  date: string;
+  submittedTimestamp: string;
   reportingPeriod: ReportingPeriod;
-  progressStatus: ProgressStatus;
+  progressStatusCode: ProgressStatus;
   forecastStatus: ForecastStatus;
   updateGeneralStatus: UpdateGeneralStatus;
   
-  generalUpdates: string;
-  submitedBy: string;
+  generalUpdateComment: string;
+  submittedBy: string;
 
-  revisedForecastAmount: string;
-  forecastAdjustmentAmount: string;
-  forecastAdjustmentRational: string;
+  forecastAmount: number;
+  forecastAdjustmentAmount: number;
+  forecastAdjustmentRationale: string;
 
-  highRisk: string;
-  highRiskDescription: string;
-  mediumRisk: string;
-  mediumRiskDescription: string;
-  lowRisk: string;
-  lowRiskDescription: string;
-  complete: string;
-  total: string;
+  budgetHighRiskAmount: number;
+  budgetHighRiskRationale: string;
+  budgetMediumRiskAmount: number;
+  budgetMediumRiskRationale: string;
+  budgetLowRiskAmount: number;
+  budgetLowRiskRationale: string;
+  budgetCompletedAmount: number;
+  budgetCompletedDescription: string;
+
+  totalAmount: number;
 }
 
 export enum ForecastStatus {
@@ -428,7 +430,7 @@ export enum ReportingPeriod {
   Q4 = "Q4"
 }
 
-export interface SelectionOption<T> {
+export interface Option<T> {
   value: T,
   description: string
 }

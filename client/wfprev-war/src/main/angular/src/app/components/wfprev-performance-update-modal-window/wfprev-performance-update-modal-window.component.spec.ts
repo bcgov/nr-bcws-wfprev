@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { PerformanceUpdateModalWindowComponent } from './performance-update-modal-window.component';
+import { PerformanceUpdateModalWindowComponent } from './wfprev-performance-update-modal-window.component';
 
 describe('PerformanceUpdateModalWindowComponent', () => {
   let component: PerformanceUpdateModalWindowComponent;

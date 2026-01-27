@@ -3,17 +3,18 @@ import { MatExpansionPanel, MatExpansionPanelHeader } from '@angular/material/ex
 import { ExpansionIndicatorComponent } from "../../shared/expansion-indicator/expansion-indicator.component";
 import { IconButtonComponent } from "../../shared/icon-button/icon-button.component";
 import { ProjectService } from 'src/app/services/project-services';
-import { PerformanceUpdate, ForecastStatus, ProgressStatus, UpdateGeneralStatus } from '../../models';
+import { PerformanceUpdate, ForecastStatus, ProgressStatus, UpdateGeneralStatus, Option } from '../../models';
 import { ActivatedRoute } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
-import { PerformanceUpdateModalWindowComponent } from '../../performance-update-modal-window/performance-update-modal-window.component';
+import { PerformanceUpdateModalWindowComponent } from '../../wfprev-performance-update-modal-window/wfprev-performance-update-modal-window.component';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'wfprev-performance-updates',
   standalone: true,
-  imports: [MatExpansionPanel, ExpansionIndicatorComponent, MatExpansionPanelHeader, IconButtonComponent],
-  templateUrl: './performance-updates.component.html',
-  styleUrl: './performance-updates.component.scss'
+  imports: [CommonModule, MatExpansionPanel, ExpansionIndicatorComponent, MatExpansionPanelHeader, IconButtonComponent],
+  templateUrl: './wfprev-performance-updates.component.html',
+  styleUrl: './wfprev-performance-updates.component.scss'
 })
 export class PerformanceUpdatesComponent implements OnChanges {
   @Input() fiscalGuid: string = '';
@@ -25,7 +26,11 @@ export class PerformanceUpdatesComponent implements OnChanges {
   protected readonly ProgressStatus = ProgressStatus;
   protected readonly UpdateGeneralStatus = UpdateGeneralStatus;
 
-
+  protected readonly delayed: Option<ProgressStatus> = { value: ProgressStatus.Delayed, description: 'Delayed' }
+  protected readonly onTrack: Option<ProgressStatus> = { value: ProgressStatus.OnTrack, description: 'On track' }
+  protected readonly deffered: Option<ProgressStatus> = { value: ProgressStatus.Deffered, description: 'Deffered' }
+  protected readonly cancelled: Option<ProgressStatus> = { value: ProgressStatus.Cancelled, description: 'Cancelled' }
+  
   updates: PerformanceUpdate[] = [];
   isUpdatesCalled: boolean = false;
 
@@ -33,7 +38,9 @@ export class PerformanceUpdatesComponent implements OnChanges {
     private readonly projectService: ProjectService,
     private readonly route: ActivatedRoute,
     private dialog: MatDialog,
-  ) { }
+  ) { 
+    console.info('PerformanceUpdatesComponent constructor called')
+  }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['fiscalGuid'] && changes['fiscalGuid'].currentValue && !this.isUpdatesCalled) {
