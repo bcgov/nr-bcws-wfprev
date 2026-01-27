@@ -28,7 +28,7 @@ uuid_generate_v5(
        p.bc_parks_section_org_unit_id, 
        bcps.org_unit_name AS bc_parks_section_org_unit_name,
        p.fire_centre_org_unit_id, 
-       fc.org_unit_name AS fire_centre_org_unit_name, -- todo does not match
+       fc.org_unit_name AS fire_centre_org_unit_name,
        ppf.business_area_comment,
        p.site_unit_name AS planning_unit_name,
        p.total_actual_project_size_ha AS gross_project_area_ha,
