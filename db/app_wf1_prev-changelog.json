@@ -2020,6 +2020,29 @@
         "rollback": [
         ]
       }
+    },
+    {
+      "changeSet": {
+        "id": "01_02_00_03",
+        "author": "sparmar",
+        "tagDatabase": { "tag": "version_01_02_00_03" },
+        "changes": [
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_02_00/03/grants/app_wf1_prev.grants.project_download_views.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql", "endDelimiter": ";",
+              "path": "scripts/01_02_00/03/grants/proxy.grants.project_download_views.sql"
+            }
+          }
+        ],
+        "rollback": [
+        ]
+      }
     }
   ]
 }
