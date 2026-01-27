@@ -9,6 +9,7 @@ import { TextareaComponent } from "../shared/textarea/textarea.component";
 import { ProjectService } from 'src/app/services/project-services';
 import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
 import { CommonModule } from '@angular/common';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: ' wfprev-performance-update-modal-window',
@@ -96,7 +97,8 @@ export class PerformanceUpdateModalWindowComponent {
     @Inject(MAT_DIALOG_DATA) public data: any,
     public dialog: MatDialog,
     private readonly dialogRef: MatDialogRef<PerformanceUpdateModalWindowComponent>,
-    private readonly projectService: ProjectService
+    private readonly projectService: ProjectService,
+    private readonly snackbarService: MatSnackBar
   ) {
     this.bindAmountValidation();
   }
@@ -288,6 +290,12 @@ export class PerformanceUpdateModalWindowComponent {
         },
         error: (error) => {
           console.error('Error saving performance updates:', error);
+
+          this.snackbarService.open(
+            'Failed to save performance updates. Please try again later.',
+            'OK',
+            { duration: 5000, panelClass: 'snackbar-error' }
+          );
         }
       }
     );
