@@ -8,6 +8,7 @@ import { ActivatedRoute } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { PerformanceUpdateModalWindowComponent } from '../../wfprev-performance-update-modal-window/wfprev-performance-update-modal-window.component';
 import { CommonModule } from '@angular/common';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'wfprev-performance-updates',
@@ -30,7 +31,7 @@ export class PerformanceUpdatesComponent implements OnChanges {
   protected readonly onTrack: Option<ProgressStatus> = { value: ProgressStatus.OnTrack, description: 'On track' }
   protected readonly deffered: Option<ProgressStatus> = { value: ProgressStatus.Deffered, description: 'Deffered' }
   protected readonly cancelled: Option<ProgressStatus> = { value: ProgressStatus.Cancelled, description: 'Cancelled' }
-  
+
   updates: PerformanceUpdate[] = [];
   isUpdatesCalled: boolean = false;
 
@@ -38,7 +39,8 @@ export class PerformanceUpdatesComponent implements OnChanges {
     private readonly projectService: ProjectService,
     private readonly route: ActivatedRoute,
     private dialog: MatDialog,
-  ) { 
+    private readonly snackbarService: MatSnackBar
+  ) {
     console.info('PerformanceUpdatesComponent constructor called')
   }
 
@@ -62,6 +64,12 @@ export class PerformanceUpdatesComponent implements OnChanges {
           },
           error: (error) => {
             console.error('Error fetching performance updates:', error);
+
+            this.snackbarService.open(
+              'Failed to load performance updates. Please try again later.',
+              'OK',
+              { duration: 5000, panelClass: 'snackbar-error' }
+            );
           }
         });
       }
@@ -85,7 +93,13 @@ export class PerformanceUpdatesComponent implements OnChanges {
 
         },
         error: (error) => {
-          console.error('Error fetching performance updates:', error);
+          console.error('Error fetching performance updates estimates:', error);
+
+          this.snackbarService.open(
+            'Failed to load performance updates estimates. Please try again later.',
+            'OK',
+            { duration: 5000, panelClass: 'snackbar-error' }
+          );
         }
       });
   }
