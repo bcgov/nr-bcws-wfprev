@@ -1,10 +1,8 @@
 import { Component, Inject } from '@angular/core';
 import { AbstractControl, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
-import { MAT_DIALOG_DATA, MatDialog, MatDialogActions, MatDialogClose, MatDialogContent, MatDialogRef } from '@angular/material/dialog';
-import { MatAccordion, MatExpansionPanel } from "@angular/material/expansion";
-import { MatTab, MatTabGroup } from "@angular/material/tabs";
+import { MAT_DIALOG_DATA, MatDialog, MatDialogClose, MatDialogRef } from '@angular/material/dialog';
 import { Messages, ModalMessages, ModalTitles, NumericLimits } from 'src/app/utils/constants';
-import { ForecastStatus, PerformanceUpdate, ProgressStatus, ReportingPeriod, SelectionOption, UpdateGeneralStatus } from '../models';
+import { ForecastStatus, PerformanceUpdate, ProgressStatus, ReportingPeriod, Option, UpdateGeneralStatus } from '../models';
 import { InputFieldComponent } from "../shared/input-field/input-field.component";
 import { SelectFieldComponent } from '../shared/select-field/select-field.component';
 import { TextareaComponent } from "../shared/textarea/textarea.component";
@@ -13,11 +11,11 @@ import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation
 import { CommonModule } from '@angular/common';
 
 @Component({
-  selector: 'app-performance-update-modal-window',
+  selector: ' wfprev-performance-update-modal-window',
   standalone: true,
-  imports: [CommonModule, SelectFieldComponent, MatTabGroup, MatTab, MatAccordion, MatExpansionPanel, MatDialogContent, MatDialogActions, MatDialogClose, TextareaComponent, InputFieldComponent],
-  templateUrl: './performance-update-modal-window.component.html',
-  styleUrl: './performance-update-modal-window.component.scss'
+  imports: [CommonModule, SelectFieldComponent, MatDialogClose, TextareaComponent, InputFieldComponent],
+  templateUrl: './wfprev-performance-update-modal-window.component.html',
+  styleUrl: './wfprev-performance-update-modal-window.component.scss'
 })
 export class PerformanceUpdateModalWindowComponent {
 
@@ -78,16 +76,16 @@ export class PerformanceUpdateModalWindowComponent {
     validators: this.matchTotalValidator()
   });
 
-  total = 0;
+  totalAmount = 0;
 
-  reportingPeriod: SelectionOption<ReportingPeriod>[] = [
+  reportingPeriod: Option<ReportingPeriod>[] = [
     { value: ReportingPeriod.Q1, description: 'End of Q1' },
     { value: ReportingPeriod.Q2, description: 'End of Q2' },
     { value: ReportingPeriod.Q3, description: 'End of Q3' },
     { value: ReportingPeriod.Q4, description: 'End of Q4' }
   ]
 
-  progressStatus: SelectionOption<ProgressStatus>[] = [
+  progressStatus: Option<ProgressStatus>[] = [
     { value: ProgressStatus.Delayed, description: 'Delayed' },
     { value: ProgressStatus.OnTrack, description: 'On track' },
     { value: ProgressStatus.Deffered, description: 'Deffered' },
@@ -101,7 +99,6 @@ export class PerformanceUpdateModalWindowComponent {
     private readonly projectService: ProjectService
   ) {
     this.bindAmountValidation();
-    // this.calculateTotal();
   }
 
   private matchTotalValidator(): ValidatorFn {
@@ -111,13 +108,11 @@ export class PerformanceUpdateModalWindowComponent {
       const currentForecastCtrl = control.get('currentForecast');
 
       if (revisedForecastCtrl?.value) {
-        console.warn('revisedForecastCtrl was found');
         const entered = Number(revisedForecastCtrl.value);
-        return entered === this.total ? null : { totalMismatch: true };
+        return entered === this.totalAmount ? null : { totalMismatch: true };
       } else if (currentForecastCtrl?.value) {
-        console.warn('currentForecastCtrl was found');
         const entered = Number(currentForecastCtrl.value);
-        return entered === this.total ? null : { totalMismatch: true };
+        return entered === this.totalAmount ? null : { totalMismatch: true };
       }
       
       console.warn('currentForecast and revisedForecastCtrl control not found');
@@ -125,19 +120,14 @@ export class PerformanceUpdateModalWindowComponent {
     };
   }
 
-  private calculateTotal() {
+  private calculateTotalAmount() {
     
-    this.total =
+    this.totalAmount =
         (Number(this.highRiskControl.value) || 0) +
         (Number(this.mediumRiskControl.value) || 0) +
         (Number(this.lowRiskControl.value) || 0) +
         (Number(this.completeControl.value) || 0);
         this.form.updateValueAndValidity({ onlySelf: true });
-
-    // this.form.valueChanges.subscribe(values => {
-    //   console.info('calculateTotal was called');
-      
-    // });
   }
 
   private bindAmountValidation() {
@@ -148,7 +138,7 @@ export class PerformanceUpdateModalWindowComponent {
         this.highRiskDescriptionControl.reset();
         this.highRiskDescriptionControl.disable();
       }
-      this.calculateTotal();
+      this.calculateTotalAmount();
     });
 
     this.mediumRiskControl.valueChanges.subscribe(value => {
@@ -158,7 +148,7 @@ export class PerformanceUpdateModalWindowComponent {
         this.mediumRiskDescriptionControl.reset();
         this.mediumRiskDescriptionControl.disable();
       }
-      this.calculateTotal();
+      this.calculateTotalAmount();
     });
 
     this.lowRiskControl.valueChanges.subscribe(value => {
@@ -168,7 +158,7 @@ export class PerformanceUpdateModalWindowComponent {
         this.lowRiskDescriptionControl.reset();
         this.lowRiskDescriptionControl.disable();
       }
-      this.calculateTotal();
+      this.calculateTotalAmount();
     });
 
     this.completeControl.valueChanges.subscribe(value => {
@@ -178,7 +168,7 @@ export class PerformanceUpdateModalWindowComponent {
         this.completeDescriptionControl.reset();
         this.completeDescriptionControl.disable();
       }
-      this.calculateTotal();
+      this.calculateTotalAmount();
     });
 
   }
@@ -264,27 +254,29 @@ export class PerformanceUpdateModalWindowComponent {
 
 
     const newUpdate: PerformanceUpdate = {
-      date: '',
+      submittedTimestamp: '',
       reportingPeriod: this.reportingPeriodControl.value,
-      progressStatus: this.progressStatusControl.value,
+      progressStatusCode: this.progressStatusControl.value,
       forecastStatus: ForecastStatus.NotSetUP,
       updateGeneralStatus: UpdateGeneralStatus.NotSetUP,
 
-      generalUpdates: this.generalUpdatesControl.value,
-      submitedBy: "",
+      generalUpdateComment: this.generalUpdatesControl.value,
+      submittedBy: "",
 
-      revisedForecastAmount: this.revisedForecastControl.value,
-      forecastAdjustmentAmount: "",
-      forecastAdjustmentRational: this.forecastRationaleControl.value,
+      forecastAmount: this.revisedForecastControl.value,
+      forecastAdjustmentAmount: 0,
+      forecastAdjustmentRationale: this.forecastRationaleControl.value,
 
-      highRisk: this.highRiskControl.value,
-      highRiskDescription: this.highRiskDescriptionControl.value,
-      mediumRisk: this.mediumRiskControl.value,
-      mediumRiskDescription: this.mediumRiskDescriptionControl.value,
-      lowRisk: this.lowRiskControl.value,
-      lowRiskDescription: this.lowRiskDescriptionControl.value,
-      complete: this.completeControl.value,
-      total: ""
+      budgetHighRiskAmount: this.highRiskControl.value,
+      budgetHighRiskRationale: this.highRiskDescriptionControl.value,
+      budgetMediumRiskAmount: this.mediumRiskControl.value,
+      budgetMediumRiskRationale: this.mediumRiskDescriptionControl.value,
+      budgetLowRiskAmount: this.lowRiskControl.value,
+      budgetLowRiskRationale: this.lowRiskDescriptionControl.value,
+      budgetCompletedAmount: this.completeControl.value,
+      budgetCompletedDescription: this.completeDescriptionControl.value,
+
+      totalAmount: 0
     }
 
     this.projectService.savePerformanceUpdates(this.data.projectGuid, this.data.fiscalGuid, newUpdate).subscribe(

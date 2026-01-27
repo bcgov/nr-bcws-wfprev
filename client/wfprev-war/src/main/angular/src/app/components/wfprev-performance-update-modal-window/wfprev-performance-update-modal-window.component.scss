@@ -1,7 +1,9 @@
 .modal-window-container {
     display: flex;
     width: 1086px;
-    height: 700px;
+    height: auto;
+    max-height: 90vh;
+    overflow-y: auto;
     flex-direction: column;
 
     .section {

@@ -31,7 +31,7 @@ import { TokenService } from 'src/app/services/token.service';
 import { TimestampComponent } from 'src/app/components/shared/timestamp/timestamp.component';
 import { TextareaComponent } from 'src/app/components/shared/textarea/textarea.component';
 import { capitalizeFirstLetter } from 'src/app/utils';
-import { PerformanceUpdatesComponent } from "../performance-update/performance-updates.component";
+import { PerformanceUpdatesComponent } from "../wfprev-performance-update/wfprev-performance-updates.component";
 
 @Component({
   selector: 'wfprev-project-fiscals',

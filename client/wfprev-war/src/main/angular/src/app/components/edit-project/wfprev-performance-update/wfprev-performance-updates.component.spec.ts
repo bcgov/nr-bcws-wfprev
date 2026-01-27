@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { PerformanceUpdatesComponent } from './performance-updates.component';
+import { PerformanceUpdatesComponent } from './wfprev-performance-updates.component';
 
 describe('PerformanceUpdatesComponent', () => {
   let component: PerformanceUpdatesComponent;
