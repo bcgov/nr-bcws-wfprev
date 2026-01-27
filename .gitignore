@@ -15,3 +15,5 @@ htmlReport/
 yarn.lock
 .terraform
 .terraform.lock.hcl
+
+**/.npmrc
