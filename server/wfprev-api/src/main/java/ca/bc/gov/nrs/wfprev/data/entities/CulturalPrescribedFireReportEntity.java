@@ -99,6 +99,12 @@ public class CulturalPrescribedFireReportEntity implements Serializable {
     @Column(name = "total_cost_estimate_amount")
     private BigDecimal totalEstimatedCostAmount;
 
+    @Column(name = "fiscal_forecast_amount")
+    private BigDecimal fiscalForecastAmount;
+
+    @Column(name = "ancillary_funding_provider", length = 100)
+    private String ancillaryFundingProvider;
+
     @Column(name = "fiscal_ancillary_fund_amount")
     private BigDecimal fiscalAncillaryFundAmount;
 

@@ -1,740 +1,768 @@
-<!-- Created with Jaspersoft Studio version 7.0.3.final using JasperReports Library version 7.0.3-41034ca841d452f3305ba55b9042260aaa1ab5dd  -->
-<jasperReport name="WFPREV_FUEL_MANAGAMENT_JASPER" language="java" pageWidth="8000" pageHeight="400" orientation="Landscape" columnWidth="8000" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="1367a273-2a93-4808-be8d-190b46adf6c1" ignorePagination="true">
-	<property name="net.sf.jasperreports.export.xls.remove.empty.space.between.rows" value="true"/>
-	<property name="net.sf.jasperreports.export.xls.remove.empty.space.between.columns" value="true"/>
-	<property name="net.sf.jasperreports.export.xls.white.page.background" value="false"/>
-	<property name="net.sf.jasperreports.export.xls.detect.cell.type" value="true"/>
-	<property name="net.sf.jasperreports.export.xls.ignore.graphics" value="false"/>
-	<property name="net.sf.jasperreports.export.xls.one.page.per.sheet" value="false"/>
-	<property name="net.sf.jasperreports.export.xls.freeze.row" value="1"/>
-	<property name="com.jaspersoft.studio.unit." value="pixel"/>
-	<property name="com.jaspersoft.studio.unit.pageHeight" value="pixel"/>
-	<property name="com.jaspersoft.studio.unit.pageWidth" value="pixel"/>
-	<property name="com.jaspersoft.studio.unit.topMargin" value="pixel"/>
-	<property name="com.jaspersoft.studio.unit.bottomMargin" value="pixel"/>
-	<property name="com.jaspersoft.studio.unit.leftMargin" value="pixel"/>
-	<property name="com.jaspersoft.studio.unit.rightMargin" value="pixel"/>
-	<property name="com.jaspersoft.studio.unit.columnWidth" value="pixel"/>
-	<property name="com.jaspersoft.studio.unit.columnSpacing" value="pixel"/>
+<?xml version='1.0' encoding='UTF-8'?>
+<jasperReport name="WFPREV_FUEL_MANAGAMENT_JASPER" language="java" pageWidth="8512" pageHeight="400" orientation="Landscape" columnWidth="8512" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="1367a273-2a93-4808-be8d-190b46adf6c1" ignorePagination="true">
+	<property name="net.sf.jasperreports.export.xls.remove.empty.space.between.rows" value="true" />
+	<property name="net.sf.jasperreports.export.xls.remove.empty.space.between.columns" value="true" />
+	<property name="net.sf.jasperreports.export.xls.white.page.background" value="false" />
+	<property name="net.sf.jasperreports.export.xls.detect.cell.type" value="true" />
+	<property name="net.sf.jasperreports.export.xls.ignore.graphics" value="false" />
+	<property name="net.sf.jasperreports.export.xls.one.page.per.sheet" value="false" />
+	<property name="net.sf.jasperreports.export.xls.freeze.row" value="1" />
+	<property name="com.jaspersoft.studio.unit." value="pixel" />
+	<property name="com.jaspersoft.studio.unit.pageHeight" value="pixel" />
+	<property name="com.jaspersoft.studio.unit.pageWidth" value="pixel" />
+	<property name="com.jaspersoft.studio.unit.topMargin" value="pixel" />
+	<property name="com.jaspersoft.studio.unit.bottomMargin" value="pixel" />
+	<property name="com.jaspersoft.studio.unit.leftMargin" value="pixel" />
+	<property name="com.jaspersoft.studio.unit.rightMargin" value="pixel" />
+	<property name="com.jaspersoft.studio.unit.columnWidth" value="pixel" />
+	<property name="com.jaspersoft.studio.unit.columnSpacing" value="pixel" />
 	<style name="Table_TH" mode="Opaque" backcolor="#F0F8FF">
 		<box>
-			<pen lineWidth="0.5" lineColor="#000000"/>
-			<topPen lineWidth="0.5" lineColor="#000000"/>
-			<leftPen lineWidth="0.5" lineColor="#000000"/>
-			<bottomPen lineWidth="0.5" lineColor="#000000"/>
-			<rightPen lineWidth="0.5" lineColor="#000000"/>
+			<pen lineWidth="0.5" lineColor="#000000" />
+			<topPen lineWidth="0.5" lineColor="#000000" />
+			<leftPen lineWidth="0.5" lineColor="#000000" />
+			<bottomPen lineWidth="0.5" lineColor="#000000" />
+			<rightPen lineWidth="0.5" lineColor="#000000" />
 		</box>
 	</style>
 	<style name="Table_CH" mode="Opaque" backcolor="#BFE1FF">
 		<box>
-			<pen lineWidth="0.5" lineColor="#000000"/>
-			<topPen lineWidth="0.5" lineColor="#000000"/>
-			<leftPen lineWidth="0.5" lineColor="#000000"/>
-			<bottomPen lineWidth="0.5" lineColor="#000000"/>
-			<rightPen lineWidth="0.5" lineColor="#000000"/>
+			<pen lineWidth="0.5" lineColor="#000000" />
+			<topPen lineWidth="0.5" lineColor="#000000" />
+			<leftPen lineWidth="0.5" lineColor="#000000" />
+			<bottomPen lineWidth="0.5" lineColor="#000000" />
+			<rightPen lineWidth="0.5" lineColor="#000000" />
 		</box>
 	</style>
 	<style name="Table_TD" mode="Opaque" backcolor="#FFFFFF">
 		<box>
-			<pen lineWidth="0.5" lineColor="#000000"/>
-			<topPen lineWidth="0.5" lineColor="#000000"/>
-			<leftPen lineWidth="0.5" lineColor="#000000"/>
-			<bottomPen lineWidth="0.5" lineColor="#000000"/>
-			<rightPen lineWidth="0.5" lineColor="#000000"/>
+			<pen lineWidth="0.5" lineColor="#000000" />
+			<topPen lineWidth="0.5" lineColor="#000000" />
+			<leftPen lineWidth="0.5" lineColor="#000000" />
+			<bottomPen lineWidth="0.5" lineColor="#000000" />
+			<rightPen lineWidth="0.5" lineColor="#000000" />
 		</box>
 	</style>
 	<dataset name="Dataset1" uuid="f2320bfc-0b9e-4c4c-b95f-1cef783c6df9">
-		<query language="sql"><![CDATA[]]></query>
+		<query language="sql" />
 	</dataset>
-	<query language="sql"><![CDATA[]]></query>
-	<field name="linkToFiscalActivity" class="java.lang.String"/>
-	<field name="projectFiscalName" class="java.lang.String"/>
-	<field name="projectFiscalDescription" class="java.lang.String"/>
-	<field name="fiscalYear" class="java.lang.String"/>
-	<field name="activityCategoryDescription" class="java.lang.String"/>
-	<field name="planFiscalStatusDescription" class="java.lang.String"/>
-	<field name="totalEstimatedCostAmount" class="java.math.BigDecimal"/>
-	<field name="fiscalAncillaryFundAmount" class="java.math.BigDecimal"/>
-	<field name="fiscalReportedSpendAmount" class="java.math.BigDecimal"/>
-	<field name="fiscalActualAmount" class="java.math.BigDecimal"/>
-	<field name="fiscalPlannedProjectSizeHa" class="java.math.BigDecimal"/>
-	<field name="fiscalCompletedSizeHa" class="java.math.BigDecimal"/>
-	<field name="spatialSubmitted" class="java.lang.String"/>
-	<field name="firstNationsEngagement" class="java.lang.String"/>
-	<field name="firstNationsDelivPartners" class="java.lang.String"/>
-	<field name="firstNationsPartner" class="java.lang.String"/>
-	<field name="otherPartner" class="java.lang.String"/>
-	<field name="cfsProjectCode" class="java.lang.String"/>
-	<field name="resultsOpeningId" class="java.lang.String"/>
-	<field name="endorsementTimestamp" class="java.util.Date"/>
-	<field name="approvedTimestamp" class="java.util.Date"/>
-	<field name="totalFilterSectionScore" class="java.math.BigDecimal"/>
-	<field name="projectTypeDescription" class="java.lang.String"/>
-	<field name="projectName" class="java.lang.String"/>
-	<field name="forestRegionOrgUnitName" class="java.lang.String"/>
-	<field name="linkToProject" class="java.lang.String"/>
-	<field name="forestDistrictOrgUnitName" class="java.lang.String"/>
-	<field name="bcParksRegionOrgUnitName" class="java.lang.String"/>
-	<field name="bcParksSectionOrgUnitName" class="java.lang.String"/>
-	<field name="fireCentreOrgUnitName" class="java.lang.String"/>
-	<field name="planningUnitName" class="java.lang.String"/>
-	<field name="grossProjectAreaHa" class="java.math.BigDecimal"/>
-	<field name="closestCommunityName" class="java.lang.String"/>
-	<field name="projectLead" class="java.lang.String"/>
-	<field name="proposalTypeDescription" class="java.lang.String"/>
-	<field name="resultsProjectCode" class="java.lang.String"/>
-	<field name="primaryObjectiveTypeDescription" class="java.lang.String"/>
-	<field name="secondaryObjectiveTypeDescription" class="java.lang.String"/>
-	<field name="wuiRiskClassDescription" class="java.lang.String"/>
-	<field name="localWuiRiskClassDescription" class="java.lang.String"/>
-	<field name="businessArea" class="java.lang.String"/>
-	<field name="localWuiRiskClassRationale" class="java.lang.String"/>
-	<field name="totalCoarseFilterSectionScore" class="java.math.BigDecimal"/>
-	<field name="totalMediumFilterSectionScore" class="java.math.BigDecimal"/>
-	<field name="mediumFilterSectionComment" class="java.lang.String"/>
-	<field name="totalFineFilterSectionScore" class="java.math.BigDecimal"/>
-	<field name="fineFilterSectionComment" class="java.lang.String"/>
+	<query language="sql" />
+	<field name="linkToFiscalActivity" class="java.lang.String" />
+	<field name="projectFiscalName" class="java.lang.String" />
+	<field name="projectFiscalDescription" class="java.lang.String" />
+	<field name="fiscalYear" class="java.lang.String" />
+	<field name="activityCategoryDescription" class="java.lang.String" />
+	<field name="planFiscalStatusDescription" class="java.lang.String" />
+	<field name="totalEstimatedCostAmount" class="java.math.BigDecimal" />
+	<field name="fiscalAncillaryFundAmount" class="java.math.BigDecimal" />
+	<field name="fiscalReportedSpendAmount" class="java.math.BigDecimal" />
+	<field name="fiscalActualAmount" class="java.math.BigDecimal" />
+	<field name="fiscalPlannedProjectSizeHa" class="java.math.BigDecimal" />
+	<field name="fiscalCompletedSizeHa" class="java.math.BigDecimal" />
+	<field name="spatialSubmitted" class="java.lang.String" />
+	<field name="firstNationsEngagement" class="java.lang.String" />
+	<field name="firstNationsDelivPartners" class="java.lang.String" />
+	<field name="firstNationsPartner" class="java.lang.String" />
+	<field name="otherPartner" class="java.lang.String" />
+	<field name="cfsProjectCode" class="java.lang.String" />
+	<field name="resultsOpeningId" class="java.lang.String" />
+	<field name="endorsementTimestamp" class="java.util.Date" />
+	<field name="approvedTimestamp" class="java.util.Date" />
+	<field name="totalFilterSectionScore" class="java.math.BigDecimal" />
+	<field name="projectTypeDescription" class="java.lang.String" />
+	<field name="projectName" class="java.lang.String" />
+	<field name="forestRegionOrgUnitName" class="java.lang.String" />
+	<field name="linkToProject" class="java.lang.String" />
+	<field name="forestDistrictOrgUnitName" class="java.lang.String" />
+	<field name="bcParksRegionOrgUnitName" class="java.lang.String" />
+	<field name="bcParksSectionOrgUnitName" class="java.lang.String" />
+	<field name="fireCentreOrgUnitName" class="java.lang.String" />
+	<field name="planningUnitName" class="java.lang.String" />
+	<field name="grossProjectAreaHa" class="java.math.BigDecimal" />
+	<field name="closestCommunityName" class="java.lang.String" />
+	<field name="projectLead" class="java.lang.String" />
+	<field name="proposalTypeDescription" class="java.lang.String" />
+	<field name="resultsProjectCode" class="java.lang.String" />
+	<field name="primaryObjectiveTypeDescription" class="java.lang.String" />
+	<field name="secondaryObjectiveTypeDescription" class="java.lang.String" />
+	<field name="wuiRiskClassDescription" class="java.lang.String" />
+	<field name="localWuiRiskClassDescription" class="java.lang.String" />
+	<field name="businessArea" class="java.lang.String" />
+	<field name="localWuiRiskClassRationale" class="java.lang.String" />
+	<field name="totalCoarseFilterSectionScore" class="java.math.BigDecimal" />
+	<field name="totalMediumFilterSectionScore" class="java.math.BigDecimal" />
+	<field name="mediumFilterSectionComment" class="java.lang.String" />
+	<field name="totalFineFilterSectionScore" class="java.math.BigDecimal" />
+	<field name="fineFilterSectionComment" class="java.lang.String" />
+	<field name="fiscalForecastAmount" class="java.math.BigDecimal" />
+	<field name="ancillaryFundingProvider" class="java.lang.String" />
 	<group name="CRx XLS Download">
 		<groupHeader>
-			<band/>
+			<band />
 		</groupHeader>
 		<groupFooter>
-			<band/>
+			<band />
 		</groupFooter>
 	</group>
-	<background/>
-	<title/>
-	<pageHeader/>
+	<background />
+	<title />
+	<pageHeader />
 	<columnHeader height="108" splitType="Stretch">
-		<element kind="staticText" uuid="afbc3200-5b14-4e0b-8e22-5869a370ab4b" mode="Opaque" x="7220" y="0" width="90" height="108" forecolor="#000000" backcolor="#FFD900" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
-			<text><![CDATA[Total Point Value for Coarse Filter]]></text>
+		<element kind="staticText" uuid="d574fb22-6044-416d-a16f-49e46c4afd48" mode="Opaque" x="56" y="0" width="180" height="108" backcolor="#E7E6E6" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text>Link to Project (within Prevention application)</text>
 			<box padding="4">
-				<pen lineWidth="0.0"/>
-				<topPen lineWidth="0.0"/>
-				<leftPen lineWidth="0.0"/>
-				<bottomPen lineWidth="1.0" lineColor="#000000"/>
-				<rightPen lineWidth="0.0"/>
+				<pen lineWidth="1.0" />
+				<topPen lineWidth="1.0" />
+				<leftPen lineWidth="0.0" />
+				<bottomPen lineWidth="1.0" lineColor="#000000" />
+				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="35793c4c-42ac-4063-b7cc-c47035ceb89a" mode="Opaque" x="6302" y="0" width="175" height="108" forecolor="#000000" backcolor="#FFC000" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
-			<text><![CDATA[Endorsement Date]]></text>
+		<element kind="staticText" uuid="c6a5fa22-e631-463e-9a20-47618f407ecc" mode="Opaque" x="236" y="0" width="180" height="108" backcolor="#E7E6E6" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text>Link to Fiscal Activity (within Prevention application)</text>
 			<box padding="4">
-				<pen lineWidth="0.0"/>
-				<topPen lineWidth="0.0"/>
-				<leftPen lineWidth="0.0"/>
-				<bottomPen lineWidth="1.0" lineColor="#000000"/>
-				<rightPen lineWidth="0.0"/>
+				<pen lineWidth="1.0" />
+				<topPen lineWidth="1.0" />
+				<leftPen lineWidth="0.0" />
+				<bottomPen lineWidth="1.0" lineColor="#000000" />
+				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="433b2a64-c24d-4d4b-be29-97c822f8058f" mode="Opaque" x="7082" y="0" width="138" height="108" forecolor="#000000" backcolor="#FFD900" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
-			<text><![CDATA[Local WUI Risk Class Rationale]]></text>
+		<element kind="staticText" uuid="eba534c4-dfb7-4694-b672-d180b2a29ab8" mode="Opaque" x="416" y="0" width="180" height="108" forecolor="#FFFFFF" backcolor="#757171" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text>Project Type</text>
 			<box padding="4">
-				<pen lineWidth="1.0"/>
-				<topPen lineWidth="0.0"/>
-				<leftPen lineWidth="0.0"/>
-				<bottomPen lineWidth="1.0" lineColor="#000000"/>
-				<rightPen lineWidth="0.0"/>
+				<pen lineWidth="1.0" />
+				<topPen lineWidth="0.0" />
+				<leftPen lineWidth="0.0" />
+				<bottomPen lineWidth="1.0" lineColor="#000000" />
+				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="da05e1cd-ce3b-4875-b086-e58c5e60bda8" mode="Opaque" x="3379" y="0" width="262" height="108" forecolor="#FFFFFF" backcolor="#7030A0" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
-			<text><![CDATA[Fiscal Activity Description]]></text>
+		<element kind="staticText" uuid="e90275eb-d6ba-41a5-9288-b47c977627f1" mode="Opaque" x="596" y="0" width="270" height="108" forecolor="#FFFFFF" backcolor="#757171" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text>Project Name</text>
 			<box padding="4">
-				<pen lineWidth="1.0"/>
-				<topPen lineWidth="0.0"/>
-				<leftPen lineWidth="0.0"/>
-				<bottomPen lineWidth="1.0" lineColor="#000000"/>
-				<rightPen lineWidth="0.0"/>
+				<pen lineWidth="1.0" />
+				<topPen lineWidth="0.0" />
+				<leftPen lineWidth="0.0" />
+				<bottomPen lineWidth="1.0" lineColor="#000000" />
+				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="73f87cd6-efa8-4a2d-b0b3-3b526240c00e" mode="Opaque" x="816" y="0" width="216" height="108" forecolor="#FFFFFF" backcolor="#757171" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
-			<text><![CDATA[Forest Region]]></text>
+		<element kind="staticText" uuid="73f87cd6-efa8-4a2d-b0b3-3b526240c00e" mode="Opaque" x="866" y="0" width="220" height="108" forecolor="#FFFFFF" backcolor="#757171" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text>Forest Region</text>
 			<box padding="4">
-				<pen lineWidth="1.0"/>
-				<topPen lineWidth="0.0"/>
-				<leftPen lineWidth="0.0"/>
-				<bottomPen lineWidth="1.0" lineColor="#000000"/>
-				<rightPen lineWidth="0.0"/>
+				<pen lineWidth="1.0" />
+				<topPen lineWidth="0.0" />
+				<leftPen lineWidth="0.0" />
+				<bottomPen lineWidth="1.0" lineColor="#000000" />
+				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="07288c46-f8eb-4532-bb2a-f2c6e686fd1f" mode="Opaque" x="5434" y="0" width="260" height="108" forecolor="#FFFFFF" backcolor="#ED7D31" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
-			<text><![CDATA[Other Partners]]></text>
+		<element kind="staticText" uuid="7c448875-27c2-4306-b786-10c53f68ad5f" mode="Opaque" x="1086" y="0" width="220" height="108" forecolor="#FFFFFF" backcolor="#757171" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text>Forest District</text>
 			<box padding="4">
-				<pen lineWidth="1.0"/>
-				<topPen lineWidth="0.0"/>
-				<leftPen lineWidth="0.0"/>
-				<bottomPen lineWidth="1.0" lineColor="#000000"/>
-				<rightPen lineWidth="0.0"/>
+				<pen lineWidth="1.0" />
+				<topPen lineWidth="0.0" />
+				<leftPen lineWidth="0.0" />
+				<bottomPen lineWidth="1.0" lineColor="#000000" />
+				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="862bee70-d921-4335-8df6-3ed5f52f59fe" mode="Opaque" x="6477" y="0" width="175" height="108" forecolor="#000000" backcolor="#FFC000" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
-			<text><![CDATA[Approval Date]]></text>
+		<element kind="staticText" uuid="a25a9d3f-e79c-4a36-bc90-879a0074bead" mode="Opaque" x="1306" y="0" width="220" height="108" forecolor="#FFFFFF" backcolor="#757171" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text>BC Parks Region</text>
 			<box padding="4">
-				<pen lineWidth="1.0"/>
-				<topPen lineWidth="0.0"/>
-				<leftPen lineWidth="0.0"/>
-				<bottomPen lineWidth="1.0" lineColor="#000000"/>
-				<rightPen lineWidth="1.0" lineColor="#000000"/>
+				<pen lineWidth="1.0" />
+				<topPen lineWidth="0.0" />
+				<leftPen lineWidth="0.0" />
+				<bottomPen lineWidth="1.0" lineColor="#000000" />
+				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="2d84d9dd-e9c0-434b-97e2-36e1cf89d011" mode="Opaque" x="1680" y="0" width="216" height="108" forecolor="#FFFFFF" backcolor="#757171" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
-			<text><![CDATA[Fire Centre]]></text>
+		<element kind="staticText" uuid="2167dd7f-99dd-409e-89dd-217aa1751ba9" mode="Opaque" x="1526" y="0" width="220" height="108" forecolor="#FFFFFF" backcolor="#757171" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text>BC Parks Section</text>
 			<box padding="4">
-				<pen lineWidth="1.0"/>
-				<topPen lineWidth="0.0"/>
-				<leftPen lineWidth="0.0"/>
-				<bottomPen lineWidth="1.0" lineColor="#000000"/>
-				<rightPen lineWidth="0.0"/>
+				<pen lineWidth="1.0" />
+				<topPen lineWidth="0.0" />
+				<leftPen lineWidth="0.0" />
+				<bottomPen lineWidth="1.0" lineColor="#000000" />
+				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="7085b5c1-0850-432c-aa44-77913f2455b6" mode="Opaque" x="6867" y="0" width="215" height="108" forecolor="#000000" backcolor="#FFD900" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
-			<text><![CDATA[Local WUI Risk Class]]></text>
+		<element kind="staticText" uuid="2d84d9dd-e9c0-434b-97e2-36e1cf89d011" mode="Opaque" x="1746" y="0" width="220" height="108" forecolor="#FFFFFF" backcolor="#757171" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text>Fire Centre</text>
 			<box padding="4">
-				<pen lineWidth="1.0"/>
-				<topPen lineWidth="0.0"/>
-				<leftPen lineWidth="0.0"/>
-				<bottomPen lineWidth="1.0" lineColor="#000000"/>
-				<rightPen lineWidth="0.0"/>
+				<pen lineWidth="1.0" />
+				<topPen lineWidth="0.0" />
+				<leftPen lineWidth="0.0" />
+				<bottomPen lineWidth="1.0" lineColor="#000000" />
+				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="e90275eb-d6ba-41a5-9288-b47c977627f1" mode="Opaque" x="546" y="0" width="270" height="108" forecolor="#FFFFFF" backcolor="#757171" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
-			<text><![CDATA[Project Name]]></text>
+		<element kind="staticText" uuid="f2fd0c4c-625f-4e0e-ba4f-4d5fad695f91" mode="Opaque" x="1966" y="0" width="220" height="108" forecolor="#FFFFFF" backcolor="#757171" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text>Business Area</text>
 			<box padding="4">
-				<pen lineWidth="1.0"/>
-				<topPen lineWidth="0.0"/>
-				<leftPen lineWidth="0.0"/>
-				<bottomPen lineWidth="1.0" lineColor="#000000"/>
-				<rightPen lineWidth="0.0"/>
+				<pen lineWidth="1.0" />
+				<topPen lineWidth="0.0" />
+				<leftPen lineWidth="0.0" />
+				<bottomPen lineWidth="1.0" lineColor="#000000" />
+				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="cae65d82-a563-4bb7-b3d4-b879449baa23" mode="Opaque" x="5694" y="0" width="86" height="108" forecolor="#FFFFFF" backcolor="#757171" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
-			<text><![CDATA[CFS Code]]></text>
+		<element kind="staticText" uuid="a68342ca-44af-4475-92aa-4600aabd1643" mode="Opaque" x="2186" y="0" width="320" height="108" forecolor="#FFFFFF" backcolor="#757171" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text>Planning Unit</text>
 			<box padding="4">
-				<pen lineWidth="1.0"/>
-				<topPen lineWidth="0.0"/>
-				<leftPen lineWidth="0.0"/>
-				<bottomPen lineWidth="1.0" lineColor="#000000"/>
-				<rightPen lineWidth="0.0"/>
+				<pen lineWidth="1.0" />
+				<topPen lineWidth="0.0" />
+				<leftPen lineWidth="0.0" />
+				<bottomPen lineWidth="1.0" lineColor="#000000" />
+				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="d5c233dc-dcb3-4ae4-bd2b-f030d2dad181" mode="Opaque" x="6127" y="0" width="175" height="108" forecolor="#000000" backcolor="#FFC000" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
-			<text><![CDATA[Secondary Objective (Optional)]]></text>
+		<element kind="staticText" uuid="6c5f8f7c-ac36-41a4-b907-b2fa4257ba01" mode="Opaque" x="2506" y="0" width="180" height="108" forecolor="#FFFFFF" backcolor="#757171" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text>Gross Project Area (Ha calculated from spatial file)</text>
 			<box padding="4">
-				<pen lineWidth="1.0"/>
-				<topPen lineWidth="0.0"/>
-				<leftPen lineWidth="0.0"/>
-				<bottomPen lineWidth="1.0" lineColor="#000000"/>
-				<rightPen lineWidth="0.0"/>
+				<pen lineWidth="1.0" />
+				<topPen lineWidth="0.0" />
+				<leftPen lineWidth="0.0" />
+				<bottomPen lineWidth="1.0" lineColor="#000000" />
+				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="447d2d26-0705-4a89-ad1c-3fb25e2a5514" mode="Opaque" x="2944" y="0" width="173" height="108" forecolor="#FFFFFF" backcolor="#7030A0" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
-			<text><![CDATA[Proposal Type]]></text>
+		<element kind="staticText" uuid="14abd3c3-5e29-4177-936e-fe8d02b18045" mode="Opaque" x="2686" y="0" width="180" height="108" forecolor="#FFFFFF" backcolor="#757171" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text>Closest Community</text>
 			<box padding="4">
-				<pen lineWidth="1.0"/>
-				<topPen lineWidth="0.0"/>
-				<leftPen lineWidth="0.0"/>
-				<bottomPen lineWidth="1.0" lineColor="#000000"/>
-				<rightPen lineWidth="0.0"/>
+				<pen lineWidth="1.0" />
+				<topPen lineWidth="0.0" />
+				<leftPen lineWidth="0.0" />
+				<bottomPen lineWidth="1.0" lineColor="#000000" />
+				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="eba534c4-dfb7-4694-b672-d180b2a29ab8" mode="Opaque" x="376" y="0" width="170" height="108" forecolor="#FFFFFF" backcolor="#757171" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
-			<text><![CDATA[Project Type]]></text>
+		<element kind="staticText" uuid="2ca33efa-8ca3-49bc-8fe8-7cba9a13d031" mode="Opaque" x="2866" y="0" width="180" height="108" forecolor="#FFFFFF" backcolor="#757171" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text>Project Lead</text>
 			<box padding="4">
-				<pen lineWidth="1.0"/>
-				<topPen lineWidth="0.0"/>
-				<leftPen lineWidth="0.0"/>
-				<bottomPen lineWidth="1.0" lineColor="#000000"/>
-				<rightPen lineWidth="0.0"/>
+				<pen lineWidth="1.0" />
+				<topPen lineWidth="0.0" />
+				<leftPen lineWidth="0.0" />
+				<bottomPen lineWidth="1.0" lineColor="#000000" />
+				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="9add1802-fa2e-472d-9249-a0a2dd757974" mode="Opaque" x="7310" y="0" width="90" height="108" forecolor="#000000" backcolor="#FFD900" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
-			<text><![CDATA[Total Point Value for Medium Filters]]></text>
+		<element kind="staticText" uuid="447d2d26-0705-4a89-ad1c-3fb25e2a5514" mode="Opaque" x="3046" y="0" width="180" height="108" forecolor="#FFFFFF" backcolor="#7030A0" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text>Proposal Type</text>
 			<box padding="4">
-				<pen lineWidth="1.0"/>
-				<topPen lineWidth="0.0"/>
-				<leftPen lineWidth="1.0"/>
-				<bottomPen lineWidth="1.0" lineColor="#000000"/>
-				<rightPen lineWidth="0.0"/>
+				<pen lineWidth="1.0" />
+				<topPen lineWidth="0.0" />
+				<leftPen lineWidth="0.0" />
+				<bottomPen lineWidth="1.0" lineColor="#000000" />
+				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="07e746a8-3ba1-4b64-9c56-be254898cdc0" mode="Opaque" x="7540" y="0" width="80" height="108" forecolor="#000000" backcolor="#FFD900" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
-			<text><![CDATA[Total Point Value of Fine Filters]]></text>
+		<element kind="staticText" uuid="879f09be-e9a2-4a0a-b981-cc500eb3fd77" mode="Opaque" x="3226" y="0" width="270" height="108" forecolor="#FFFFFF" backcolor="#7030A0" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text>Fiscal Activity Name</text>
 			<box padding="4">
-				<pen lineWidth="1.0"/>
-				<topPen lineWidth="0.0"/>
-				<leftPen lineWidth="1.0"/>
-				<bottomPen lineWidth="1.0" lineColor="#000000"/>
-				<rightPen lineWidth="0.0"/>
+				<pen lineWidth="1.0" />
+				<topPen lineWidth="0.0" />
+				<leftPen lineWidth="0.0" />
+				<bottomPen lineWidth="1.0" lineColor="#000000" />
+				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="2ca33efa-8ca3-49bc-8fe8-7cba9a13d031" mode="Opaque" x="2771" y="0" width="173" height="108" forecolor="#FFFFFF" backcolor="#757171" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
-			<text><![CDATA[Project Lead]]></text>
+		<element kind="staticText" uuid="da05e1cd-ce3b-4875-b086-e58c5e60bda8" mode="Opaque" x="3496" y="0" width="270" height="108" forecolor="#FFFFFF" backcolor="#7030A0" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text>Fiscal Activity Description</text>
 			<box padding="4">
-				<pen lineWidth="1.0"/>
-				<topPen lineWidth="0.0"/>
-				<leftPen lineWidth="0.0"/>
-				<bottomPen lineWidth="1.0" lineColor="#000000"/>
-				<rightPen lineWidth="0.0"/>
+				<pen lineWidth="1.0" />
+				<topPen lineWidth="0.0" />
+				<leftPen lineWidth="0.0" />
+				<bottomPen lineWidth="1.0" lineColor="#000000" />
+				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="224c1ade-6ae0-4e65-95a9-36f4386e91be" mode="Opaque" x="4278" y="0" width="118" height="108" forecolor="#FFFFFF" backcolor="#305496" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
-			<text><![CDATA[Ancillary Funding Amount]]></text>
+		<element kind="staticText" uuid="5e5d91f7-6ee9-488c-a1dc-a58e71f97b85" mode="Opaque" x="3766" y="0" width="180" height="108" forecolor="#FFFFFF" backcolor="#7030A0" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text>Fiscal Year</text>
 			<box padding="4">
-				<pen lineWidth="1.0"/>
-				<topPen lineWidth="0.0"/>
-				<leftPen lineWidth="0.0"/>
-				<bottomPen lineWidth="1.0" lineColor="#000000"/>
-				<rightPen lineWidth="0.0"/>
+				<pen lineWidth="1.0" />
+				<topPen lineWidth="0.0" />
+				<leftPen lineWidth="0.0" />
+				<bottomPen lineWidth="1.0" lineColor="#000000" />
+				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="211d9e90-001f-40d9-8b97-0a34def26d1a" mode="Opaque" x="4514" y="0" width="118" height="108" forecolor="#FFFFFF" backcolor="#305496" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
-			<text><![CDATA[CFS Actual Spend]]></text>
+		<element kind="staticText" uuid="c6d0a32b-b4d8-4495-ae6f-0f5456d0e444" mode="Opaque" x="3946" y="0" width="180" height="108" forecolor="#FFFFFF" backcolor="#7030A0" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text>Activity Category</text>
 			<box padding="4">
-				<pen lineWidth="1.0"/>
-				<topPen lineWidth="0.0"/>
-				<leftPen lineWidth="0.0"/>
-				<bottomPen lineWidth="1.0" lineColor="#000000"/>
-				<rightPen lineWidth="0.0"/>
+				<pen lineWidth="1.0" />
+				<topPen lineWidth="0.0" />
+				<leftPen lineWidth="0.0" />
+				<bottomPen lineWidth="1.0" lineColor="#000000" />
+				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="5ca00969-4246-4cd5-a210-351c9c7187f4" mode="Opaque" x="5952" y="0" width="175" height="108" forecolor="#000000" backcolor="#FFC000" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
-			<text><![CDATA[Primary Objective]]></text>
+		<element kind="staticText" uuid="617e8269-ef29-4dc0-97c7-f3ac0f53a246" mode="Opaque" x="4126" y="0" width="180" height="108" forecolor="#FFFFFF" backcolor="#7030A0" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text>Fiscal Status</text>
 			<box padding="4">
-				<pen lineWidth="1.0"/>
-				<topPen lineWidth="0.0"/>
-				<leftPen lineWidth="0.0"/>
-				<bottomPen lineWidth="1.0" lineColor="#000000"/>
-				<rightPen lineWidth="0.0"/>
+				<pen lineWidth="1.0" />
+				<topPen lineWidth="0.0" />
+				<leftPen lineWidth="0.0" />
+				<bottomPen lineWidth="1.0" lineColor="#000000" />
+				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="09c2446f-834f-4794-b746-1ba32080910b" mode="Opaque" x="4868" y="0" width="118" height="108" forecolor="#FFFFFF" backcolor="#70AD47" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
-			<text><![CDATA[Spatial Submitted]]></text>
+		<element kind="staticText" uuid="abc05066-a87f-4c78-94ba-34d57b18dcdf" mode="Opaque" x="4306" y="0" width="120" height="108" forecolor="#FFFFFF" backcolor="#305496" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text>Original Cost Estimate</text>
 			<box padding="4">
-				<pen lineWidth="1.0"/>
-				<topPen lineWidth="0.0"/>
-				<leftPen lineWidth="0.0"/>
-				<bottomPen lineWidth="1.0" lineColor="#000000"/>
-				<rightPen lineWidth="0.0"/>
+				<pen lineWidth="1.0" />
+				<topPen lineWidth="0.0" />
+				<leftPen lineWidth="0.0" />
+				<bottomPen lineWidth="1.0" lineColor="#000000" />
+				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="4515c76b-0fc2-49e8-87cd-c6b7cb58bbd2" mode="Opaque" x="4396" y="0" width="118" height="108" forecolor="#FFFFFF" backcolor="#305496" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
-			<text><![CDATA[Final Reported Spend]]></text>
+		<element kind="staticText" uuid="55588899-aee0-43d8-8a63-087d45d96c88" mode="Opaque" x="4426" y="0" width="120" height="108" forecolor="#FFFFFF" backcolor="#305496" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text>Forecast Amount</text>
 			<box padding="4">
-				<pen lineWidth="1.0"/>
-				<topPen lineWidth="0.0"/>
-				<leftPen lineWidth="0.0"/>
-				<bottomPen lineWidth="1.0" lineColor="#000000"/>
-				<rightPen lineWidth="0.0"/>
+				<pen lineWidth="1.0" />
+				<topPen lineWidth="0.0" />
+				<leftPen lineWidth="0.0" />
+				<bottomPen lineWidth="1.0" lineColor="#000000" />
+				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="a25a9d3f-e79c-4a36-bc90-879a0074bead" mode="Opaque" x="1248" y="0" width="216" height="108" forecolor="#FFFFFF" backcolor="#757171" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
-			<text><![CDATA[BC Parks Region]]></text>
+		<element kind="staticText" uuid="224c1ade-6ae0-4e65-95a9-36f4386e91be" mode="Opaque" x="4546" y="0" width="120" height="108" forecolor="#FFFFFF" backcolor="#305496" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text>Ancillary Funding Amount</text>
 			<box padding="4">
-				<pen lineWidth="1.0"/>
-				<topPen lineWidth="0.0"/>
-				<leftPen lineWidth="0.0"/>
-				<bottomPen lineWidth="1.0" lineColor="#000000"/>
-				<rightPen lineWidth="0.0"/>
+				<pen lineWidth="1.0" />
+				<topPen lineWidth="0.0" />
+				<leftPen lineWidth="0.0" />
+				<bottomPen lineWidth="1.0" lineColor="#000000" />
+				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="14abd3c3-5e29-4177-936e-fe8d02b18045" mode="Opaque" x="2598" y="0" width="173" height="108" forecolor="#FFFFFF" backcolor="#757171" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
-			<text><![CDATA[Closest Community]]></text>
+		<element kind="staticText" uuid="66688899-aee0-43d8-8a63-087d45d96c99" mode="Opaque" x="4666" y="0" width="220" height="108" forecolor="#FFFFFF" backcolor="#305496" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text>Ancillary Funding Provider</text>
 			<box padding="4">
-				<pen lineWidth="1.0"/>
-				<topPen lineWidth="0.0"/>
-				<leftPen lineWidth="0.0"/>
-				<bottomPen lineWidth="1.0" lineColor="#000000"/>
-				<rightPen lineWidth="0.0"/>
+				<pen lineWidth="1.0" />
+				<topPen lineWidth="0.0" />
+				<leftPen lineWidth="0.0" />
+				<bottomPen lineWidth="1.0" lineColor="#000000" />
+				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="b596d482-d148-478d-8a04-eae2a8f33823" mode="Opaque" x="4750" y="0" width="118" height="108" forecolor="#FFFFFF" backcolor="#70AD47" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
-			<text><![CDATA[Completed Hectares]]></text>
+	<element kind="staticText" uuid="4515c76b-0fc2-49e8-87cd-c6b7cb58bbd2" mode="Opaque" x="4886" y="0" width="120" height="108" forecolor="#FFFFFF" backcolor="#305496" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text>Final Reported Spend</text>
 			<box padding="4">
-				<pen lineWidth="1.0"/>
-				<topPen lineWidth="0.0"/>
-				<leftPen lineWidth="0.0"/>
-				<bottomPen lineWidth="1.0" lineColor="#000000"/>
-				<rightPen lineWidth="0.0"/>
+				<pen lineWidth="1.0" />
+				<topPen lineWidth="0.0" />
+				<leftPen lineWidth="0.0" />
+				<bottomPen lineWidth="1.0" lineColor="#000000" />
+				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="cc62db09-d7c3-4dbc-a0f4-6eac55d4b58d" mode="Opaque" x="4986" y="0" width="94" height="108" forecolor="#FFFFFF" backcolor="#ED7D31" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
-			<text><![CDATA[First Nation Engagement (Y/N)]]></text>
+		<element kind="staticText" uuid="211d9e90-001f-40d9-8b97-0a34def26d1a" mode="Opaque" x="5006" y="0" width="120" height="108" forecolor="#FFFFFF" backcolor="#305496" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text>CFS Actual Spend</text>
 			<box padding="4">
-				<pen lineWidth="1.0"/>
-				<topPen lineWidth="0.0"/>
-				<leftPen lineWidth="0.0"/>
-				<bottomPen lineWidth="1.0" lineColor="#000000"/>
-				<rightPen lineWidth="0.0"/>
+				<pen lineWidth="1.0" />
+				<topPen lineWidth="0.0" />
+				<leftPen lineWidth="0.0" />
+				<bottomPen lineWidth="1.0" lineColor="#000000" />
+				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="b59e8b64-d65c-40e0-8889-046ee15e7890" mode="Opaque" x="5174" y="0" width="260" height="108" forecolor="#FFFFFF" backcolor="#ED7D31" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
-			<text><![CDATA[First Nation Co-Delivery Partners]]></text>
+		<element kind="staticText" uuid="b722bf8c-4250-4774-9468-6899614c0cb4" mode="Opaque" x="5126" y="0" width="120" height="108" forecolor="#FFFFFF" backcolor="#70AD47" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text>Planned Hectares</text>
 			<box padding="4">
-				<pen lineWidth="1.0"/>
-				<topPen lineWidth="0.0"/>
-				<leftPen lineWidth="0.0"/>
-				<bottomPen lineWidth="1.0" lineColor="#000000"/>
-				<rightPen lineWidth="0.0"/>
+				<pen lineWidth="1.0" />
+				<topPen lineWidth="0.0" />
+				<leftPen lineWidth="0.0" />
+				<bottomPen lineWidth="1.0" lineColor="#000000" />
+				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="abc05066-a87f-4c78-94ba-34d57b18dcdf" mode="Opaque" x="4160" y="0" width="118" height="108" forecolor="#FFFFFF" backcolor="#305496" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
-			<text><![CDATA[Original Cost Estimate]]></text>
+		<element kind="staticText" uuid="b596d482-d148-478d-8a04-eae2a8f33823" mode="Opaque" x="5246" y="0" width="120" height="108" forecolor="#FFFFFF" backcolor="#70AD47" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text>Completed Hectares</text>
 			<box padding="4">
-				<pen lineWidth="1.0"/>
-				<topPen lineWidth="0.0"/>
-				<leftPen lineWidth="0.0"/>
-				<bottomPen lineWidth="1.0" lineColor="#000000"/>
-				<rightPen lineWidth="0.0"/>
+				<pen lineWidth="1.0" />
+				<topPen lineWidth="0.0" />
+				<leftPen lineWidth="0.0" />
+				<bottomPen lineWidth="1.0" lineColor="#000000" />
+				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="f2fd0c4c-625f-4e0e-ba4f-4d5fad695f91" mode="Opaque" x="1896" y="0" width="216" height="108" forecolor="#FFFFFF" backcolor="#757171" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
-			<text><![CDATA[Business Area]]></text>
+		<element kind="staticText" uuid="09c2446f-834f-4794-b746-1ba32080910b" mode="Opaque" x="5366" y="0" width="120" height="108" forecolor="#FFFFFF" backcolor="#70AD47" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text>Spatial Submitted</text>
 			<box padding="4">
-				<pen lineWidth="1.0"/>
-				<topPen lineWidth="0.0"/>
-				<leftPen lineWidth="0.0"/>
-				<bottomPen lineWidth="1.0" lineColor="#000000"/>
-				<rightPen lineWidth="0.0"/>
+				<pen lineWidth="1.0" />
+				<topPen lineWidth="0.0" />
+				<leftPen lineWidth="0.0" />
+				<bottomPen lineWidth="1.0" lineColor="#000000" />
+				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="37ffdb93-8f9f-4bce-8553-ce303f53a21a" mode="Opaque" x="6652" y="0" width="215" height="108" forecolor="#000000" backcolor="#FFD900" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
-			<text><![CDATA[WUI Risk Class]]></text>
+		<element kind="staticText" uuid="cc62db09-d7c3-4dbc-a0f4-6eac55d4b58d" mode="Opaque" x="5486" y="0" width="94" height="108" forecolor="#FFFFFF" backcolor="#ED7D31" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text>First Nation Engagement (Y/N)</text>
 			<box padding="4">
-				<pen lineWidth="1.0"/>
-				<topPen lineWidth="0.0"/>
-				<leftPen lineWidth="0.0"/>
-				<bottomPen lineWidth="1.0" lineColor="#000000"/>
-				<rightPen lineWidth="0.0"/>
+				<pen lineWidth="1.0" />
+				<topPen lineWidth="0.0" />
+				<leftPen lineWidth="0.0" />
+				<bottomPen lineWidth="1.0" lineColor="#000000" />
+				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="d574fb22-6044-416d-a16f-49e46c4afd48" mode="Opaque" x="56" y="0" width="160" height="108" backcolor="#E7E6E6" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
-			<text><![CDATA[Link to Project (within Prevention application)]]></text>
+		<element kind="staticText" uuid="936fcbe9-90c9-47ef-abb8-fcfd74fb6d01" mode="Opaque" x="5580" y="0" width="94" height="108" forecolor="#FFFFFF" backcolor="#ED7D31" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text>First Nation Co-Delivery (Y/N)</text>
 			<box padding="4">
-				<pen lineWidth="1.0"/>
-				<topPen lineWidth="1.0"/>
-				<leftPen lineWidth="0.0"/>
-				<bottomPen lineWidth="1.0" lineColor="#000000"/>
-				<rightPen lineWidth="0.0"/>
+				<pen lineWidth="1.0" />
+				<topPen lineWidth="0.0" />
+				<leftPen lineWidth="0.0" />
+				<bottomPen lineWidth="1.0" lineColor="#000000" />
+				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="879f09be-e9a2-4a0a-b981-cc500eb3fd77" mode="Opaque" x="3117" y="0" width="262" height="108" forecolor="#FFFFFF" backcolor="#7030A0" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
-			<text><![CDATA[Fiscal Activity Name]]></text>
+		<element kind="staticText" uuid="b59e8b64-d65c-40e0-8889-046ee15e7890" mode="Opaque" x="5674" y="0" width="270" height="108" forecolor="#FFFFFF" backcolor="#ED7D31" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text>First Nation Co-Delivery Partners</text>
 			<box padding="4">
-				<pen lineWidth="1.0"/>
-				<topPen lineWidth="0.0"/>
-				<leftPen lineWidth="0.0"/>
-				<bottomPen lineWidth="1.0" lineColor="#000000"/>
-				<rightPen lineWidth="0.0"/>
+				<pen lineWidth="1.0" />
+				<topPen lineWidth="0.0" />
+				<leftPen lineWidth="0.0" />
+				<bottomPen lineWidth="1.0" lineColor="#000000" />
+				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="2167dd7f-99dd-409e-89dd-217aa1751ba9" mode="Opaque" x="1464" y="0" width="216" height="108" forecolor="#FFFFFF" backcolor="#757171" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
-			<text><![CDATA[BC Parks Section]]></text>
+		<element kind="staticText" uuid="07288c46-f8eb-4532-bb2a-f2c6e686fd1f" mode="Opaque" x="5944" y="0" width="270" height="108" forecolor="#FFFFFF" backcolor="#ED7D31" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text>Other Partners</text>
 			<box padding="4">
-				<pen lineWidth="1.0"/>
-				<topPen lineWidth="0.0"/>
-				<leftPen lineWidth="0.0"/>
-				<bottomPen lineWidth="1.0" lineColor="#000000"/>
-				<rightPen lineWidth="0.0"/>
+				<pen lineWidth="1.0" />
+				<topPen lineWidth="0.0" />
+				<leftPen lineWidth="0.0" />
+				<bottomPen lineWidth="1.0" lineColor="#000000" />
+				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="a68342ca-44af-4475-92aa-4600aabd1643" mode="Opaque" x="2112" y="0" width="313" height="108" forecolor="#FFFFFF" backcolor="#757171" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
-			<text><![CDATA[Planning Unit]]></text>
+		<element kind="staticText" uuid="cae65d82-a563-4bb7-b3d4-b879449baa23" mode="Opaque" x="6214" y="0" width="94" height="108" forecolor="#FFFFFF" backcolor="#757171" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text>CFS Code</text>
 			<box padding="4">
-				<pen lineWidth="1.0"/>
-				<topPen lineWidth="0.0"/>
-				<leftPen lineWidth="0.0"/>
-				<bottomPen lineWidth="1.0" lineColor="#000000"/>
-				<rightPen lineWidth="0.0"/>
+				<pen lineWidth="1.0" />
+				<topPen lineWidth="0.0" />
+				<leftPen lineWidth="0.0" />
+				<bottomPen lineWidth="1.0" lineColor="#000000" />
+				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="617e8269-ef29-4dc0-97c7-f3ac0f53a246" mode="Opaque" x="3987" y="0" width="173" height="108" forecolor="#FFFFFF" backcolor="#7030A0" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
-			<text><![CDATA[Fiscal Status]]></text>
+		<element kind="staticText" uuid="79c2efdb-287a-4341-a48e-ec67749a1db7" mode="Opaque" x="6308" y="0" width="94" height="108" forecolor="#FFFFFF" backcolor="#757171" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text>RESULTS Project Code</text>
 			<box padding="4">
-				<pen lineWidth="1.0"/>
-				<topPen lineWidth="0.0"/>
-				<leftPen lineWidth="0.0"/>
-				<bottomPen lineWidth="1.0" lineColor="#000000"/>
-				<rightPen lineWidth="0.0"/>
+				<pen lineWidth="1.0" />
+				<topPen lineWidth="0.0" />
+				<leftPen lineWidth="0.0" />
+				<bottomPen lineWidth="1.0" lineColor="#000000" />
+				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="17280251-424e-43e1-a664-b6de79464f24" mode="Opaque" x="5866" y="0" width="86" height="108" forecolor="#FFFFFF" backcolor="#757171" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
-			<text><![CDATA[RESULTS Opening ID]]></text>
+		<element kind="staticText" uuid="17280251-424e-43e1-a664-b6de79464f24" mode="Opaque" x="6402" y="0" width="94" height="108" forecolor="#FFFFFF" backcolor="#757171" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text>RESULTS Opening ID</text>
 			<box padding="4">
-				<pen lineWidth="1.0"/>
-				<topPen lineWidth="0.0"/>
-				<leftPen lineWidth="0.0"/>
-				<bottomPen lineWidth="1.0" lineColor="#000000"/>
-				<rightPen lineWidth="0.0"/>
+				<pen lineWidth="1.0" />
+				<topPen lineWidth="0.0" />
+				<leftPen lineWidth="0.0" />
+				<bottomPen lineWidth="1.0" lineColor="#000000" />
+				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="7f615a1f-2905-4421-ace9-7aef38d41cd8" mode="Opaque" x="7400" y="0" width="140" height="108" forecolor="#000000" backcolor="#FFD900" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
-			<text><![CDATA[Additional Comments/Notes on Medium Filters]]></text>
+		<element kind="staticText" uuid="5ca00969-4246-4cd5-a210-351c9c7187f4" mode="Opaque" x="6496" y="0" width="180" height="108" forecolor="#000000" backcolor="#FFC000" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text>Primary Objective</text>
 			<box padding="4">
-				<pen lineWidth="1.0"/>
-				<topPen lineWidth="0.0"/>
-				<leftPen lineWidth="0.0"/>
-				<bottomPen lineWidth="1.0" lineColor="#000000"/>
-				<rightPen lineWidth="0.0"/>
+				<pen lineWidth="1.0" />
+				<topPen lineWidth="0.0" />
+				<leftPen lineWidth="0.0" />
+				<bottomPen lineWidth="1.0" lineColor="#000000" />
+				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="6c5f8f7c-ac36-41a4-b907-b2fa4257ba01" mode="Opaque" x="2425" y="0" width="173" height="108" forecolor="#FFFFFF" backcolor="#757171" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
-			<text><![CDATA[Gross Project Area (Ha calculated from spatial file)]]></text>
+		<element kind="staticText" uuid="d5c233dc-dcb3-4ae4-bd2b-f030d2dad181" mode="Opaque" x="6676" y="0" width="180" height="108" forecolor="#000000" backcolor="#FFC000" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text>Secondary Objective (Optional)</text>
 			<box padding="4">
-				<pen lineWidth="1.0"/>
-				<topPen lineWidth="0.0"/>
-				<leftPen lineWidth="0.0"/>
-				<bottomPen lineWidth="1.0" lineColor="#000000"/>
-				<rightPen lineWidth="0.0"/>
+				<pen lineWidth="1.0" />
+				<topPen lineWidth="0.0" />
+				<leftPen lineWidth="0.0" />
+				<bottomPen lineWidth="1.0" lineColor="#000000" />
+				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="936fcbe9-90c9-47ef-abb8-fcfd74fb6d01" mode="Opaque" x="5080" y="0" width="94" height="108" forecolor="#FFFFFF" backcolor="#ED7D31" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
-			<text><![CDATA[First Nation Co-Delivery (Y/N)]]></text>
+		<element kind="staticText" uuid="35793c4c-42ac-4063-b7cc-c47035ceb89a" mode="Opaque" x="6856" y="0" width="180" height="108" forecolor="#000000" backcolor="#FFC000" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text>Endorsement Date</text>
 			<box padding="4">
-				<pen lineWidth="1.0"/>
-				<topPen lineWidth="0.0"/>
-				<leftPen lineWidth="0.0"/>
-				<bottomPen lineWidth="1.0" lineColor="#000000"/>
-				<rightPen lineWidth="0.0"/>
+				<pen lineWidth="0.0" />
+				<topPen lineWidth="0.0" />
+				<leftPen lineWidth="0.0" />
+				<bottomPen lineWidth="1.0" lineColor="#000000" />
+				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="7c448875-27c2-4306-b786-10c53f68ad5f" mode="Opaque" x="1032" y="0" width="216" height="108" forecolor="#FFFFFF" backcolor="#757171" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
-			<text><![CDATA[Forest District]]></text>
+		<element kind="staticText" uuid="862bee70-d921-4335-8df6-3ed5f52f59fe" mode="Opaque" x="7036" y="0" width="180" height="108" forecolor="#000000" backcolor="#FFC000" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text>Approval Date</text>
 			<box padding="4">
-				<pen lineWidth="1.0"/>
-				<topPen lineWidth="0.0"/>
-				<leftPen lineWidth="0.0"/>
-				<bottomPen lineWidth="1.0" lineColor="#000000"/>
-				<rightPen lineWidth="0.0"/>
+				<pen lineWidth="1.0" />
+				<topPen lineWidth="0.0" />
+				<leftPen lineWidth="0.0" />
+				<bottomPen lineWidth="1.0" lineColor="#000000" />
+				<rightPen lineWidth="1.0" lineColor="#000000" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="c6d0a32b-b4d8-4495-ae6f-0f5456d0e444" mode="Opaque" x="3814" y="0" width="173" height="108" forecolor="#FFFFFF" backcolor="#7030A0" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
-			<text><![CDATA[Activity Category]]></text>
+		<element kind="staticText" uuid="37ffdb93-8f9f-4bce-8553-ce303f53a21a" mode="Opaque" x="7216" y="0" width="220" height="108" forecolor="#000000" backcolor="#FFD900" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text>WUI Risk Class</text>
 			<box padding="4">
-				<pen lineWidth="1.0"/>
-				<topPen lineWidth="0.0"/>
-				<leftPen lineWidth="0.0"/>
-				<bottomPen lineWidth="1.0" lineColor="#000000"/>
-				<rightPen lineWidth="0.0"/>
+				<pen lineWidth="1.0" />
+				<topPen lineWidth="0.0" />
+				<leftPen lineWidth="0.0" />
+				<bottomPen lineWidth="1.0" lineColor="#000000" />
+				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="c6a5fa22-e631-463e-9a20-47618f407ecc" mode="Opaque" x="216" y="0" width="160" height="108" backcolor="#E7E6E6" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
-			<text><![CDATA[Link to Fiscal Activity (within Prevention application)]]></text>
+		<element kind="staticText" uuid="7085b5c1-0850-432c-aa44-77913f2455b6" mode="Opaque" x="7436" y="0" width="220" height="108" forecolor="#000000" backcolor="#FFD900" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text>Local WUI Risk Class</text>
 			<box padding="4">
-				<pen lineWidth="1.0"/>
-				<topPen lineWidth="1.0"/>
-				<leftPen lineWidth="0.0"/>
-				<bottomPen lineWidth="1.0" lineColor="#000000"/>
-				<rightPen lineWidth="0.0"/>
+				<pen lineWidth="1.0" />
+				<topPen lineWidth="0.0" />
+				<leftPen lineWidth="0.0" />
+				<bottomPen lineWidth="1.0" lineColor="#000000" />
+				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="b722bf8c-4250-4774-9468-6899614c0cb4" mode="Opaque" x="4632" y="0" width="118" height="108" forecolor="#FFFFFF" backcolor="#70AD47" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
-			<text><![CDATA[Planned Hectares]]></text>
+		<element kind="staticText" uuid="433b2a64-c24d-4d4b-be29-97c822f8058f" mode="Opaque" x="7656" y="0" width="180" height="108" forecolor="#000000" backcolor="#FFD900" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text>Local WUI Risk Class Rationale</text>
 			<box padding="4">
-				<pen lineWidth="1.0"/>
-				<topPen lineWidth="0.0"/>
-				<leftPen lineWidth="0.0"/>
-				<bottomPen lineWidth="1.0" lineColor="#000000"/>
-				<rightPen lineWidth="0.0"/>
+				<pen lineWidth="1.0" />
+				<topPen lineWidth="0.0" />
+				<leftPen lineWidth="0.0" />
+				<bottomPen lineWidth="1.0" lineColor="#000000" />
+				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="79c2efdb-287a-4341-a48e-ec67749a1db7" mode="Opaque" x="5780" y="0" width="86" height="108" forecolor="#FFFFFF" backcolor="#757171" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
-			<text><![CDATA[RESULTS Project Code]]></text>
+		<element kind="staticText" uuid="afbc3200-5b14-4e0b-8e22-5869a370ab4b" mode="Opaque" x="7836" y="0" width="94" height="108" forecolor="#000000" backcolor="#FFD900" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text>Total Point Value for Coarse Filter</text>
 			<box padding="4">
-				<pen lineWidth="1.0"/>
-				<topPen lineWidth="0.0"/>
-				<leftPen lineWidth="0.0"/>
-				<bottomPen lineWidth="1.0" lineColor="#000000"/>
-				<rightPen lineWidth="0.0"/>
+				<pen lineWidth="0.0" />
+				<topPen lineWidth="0.0" />
+				<leftPen lineWidth="0.0" />
+				<bottomPen lineWidth="1.0" lineColor="#000000" />
+				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="5e5d91f7-6ee9-488c-a1dc-a58e71f97b85" mode="Opaque" x="3641" y="0" width="173" height="108" forecolor="#FFFFFF" backcolor="#7030A0" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
-			<text><![CDATA[Fiscal Year]]></text>
+		<element kind="staticText" uuid="9add1802-fa2e-472d-9249-a0a2dd757974" mode="Opaque" x="7930" y="0" width="94" height="108" forecolor="#000000" backcolor="#FFD900" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text>Total Point Value for Medium Filters</text>
 			<box padding="4">
-				<pen lineWidth="1.0"/>
-				<topPen lineWidth="0.0"/>
-				<leftPen lineWidth="0.0"/>
-				<bottomPen lineWidth="1.0" lineColor="#000000"/>
-				<rightPen lineWidth="0.0"/>
+				<pen lineWidth="1.0" />
+				<topPen lineWidth="0.0" />
+				<leftPen lineWidth="1.0" />
+				<bottomPen lineWidth="1.0" lineColor="#000000" />
+				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="99c82bec-c7b8-4895-9ddc-4740562714e0" mode="Opaque" x="7718" y="0" width="88" height="108" forecolor="#000000" backcolor="#FFD900" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
-			<text><![CDATA[Total Filter Value]]></text>
+		<element kind="staticText" uuid="7f615a1f-2905-4421-ace9-7aef38d41cd8" mode="Opaque" x="8024" y="0" width="180" height="108" forecolor="#000000" backcolor="#FFD900" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text>Additional Comments/Notes on Medium Filters</text>
 			<box padding="4">
-				<pen lineWidth="1.0"/>
-				<topPen lineWidth="0.0"/>
-				<leftPen lineWidth="0.0"/>
-				<bottomPen lineWidth="1.0" lineColor="#000000"/>
-				<rightPen lineWidth="1.0" lineColor="#000000"/>
+				<pen lineWidth="1.0" />
+				<topPen lineWidth="0.0" />
+				<leftPen lineWidth="0.0" />
+				<bottomPen lineWidth="1.0" lineColor="#000000" />
+				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="3749987b-aee0-43d8-8a63-087d45d96c60" mode="Opaque" x="7620" y="0" width="98" height="108" forecolor="#000000" backcolor="#FFD900" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
-			<text><![CDATA[Additional Comments/
-Notes on Fine Filters]]></text>
+		<element kind="staticText" uuid="07e746a8-3ba1-4b64-9c56-be254898cdc0" mode="Opaque" x="8204" y="0" width="94" height="108" forecolor="#000000" backcolor="#FFD900" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text>Total Point Value of Fine Filters</text>
 			<box padding="4">
-				<pen lineWidth="1.0"/>
-				<topPen lineWidth="0.0"/>
-				<leftPen lineWidth="0.0"/>
-				<bottomPen lineWidth="1.0" lineColor="#000000"/>
-				<rightPen lineWidth="0.0"/>
+				<pen lineWidth="1.0" />
+				<topPen lineWidth="0.0" />
+				<leftPen lineWidth="1.0" />
+				<bottomPen lineWidth="1.0" lineColor="#000000" />
+				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-	</columnHeader>
+		<element kind="staticText" uuid="3749987b-aee0-43d8-8a63-087d45d96c60" mode="Opaque" x="8298" y="0" width="120" height="108" forecolor="#000000" backcolor="#FFD900" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text>Additional Comments/
+Notes on Fine Filters</text>
+			<box padding="4">
+				<pen lineWidth="1.0" />
+				<topPen lineWidth="0.0" />
+				<leftPen lineWidth="0.0" />
+				<bottomPen lineWidth="1.0" lineColor="#000000" />
+				<rightPen lineWidth="0.0" />
+			</box>
+		</element>
+	<element kind="staticText" uuid="99c82bec-c7b8-4895-9ddc-4740562714e0" mode="Opaque" x="8418" y="0" width="94" height="108" forecolor="#000000" backcolor="#FFD900" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text>Total Filter Value</text>
+			<box padding="4">
+				<pen lineWidth="1.0" />
+				<topPen lineWidth="0.0" />
+				<leftPen lineWidth="0.0" />
+				<bottomPen lineWidth="1.0" lineColor="#000000" />
+				<rightPen lineWidth="1.0" lineColor="#000000" />
+			</box>
+		</element>
+		</columnHeader>
 	<detail>
 		<band height="120" splitType="Stretch">
-			<element kind="textField" uuid="9ce7e282-5ae0-43af-8726-d55ef34f0ecf" x="1680" y="0" width="216" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
-				<expression><![CDATA[$F{fireCentreOrgUnitName}]]></expression>
+			<element kind="textField" uuid="0bfb0f57-a9f5-404f-8ce5-021087864eee" x="56" y="0" width="180" height="120" forecolor="#3366FF" fontName="Calibri" fontSize="11.0" linkType="Reference" blankWhenNull="true" underline="true" vTextAlign="Bottom">
+				<printWhenExpression>$F{linkToProject} != null &amp;&amp; !$F{linkToProject}.trim().isEmpty()</printWhenExpression>
+				<expression>$F{projectName} + " Project Link"</expression>
+				<hyperlinkReferenceExpression>$F{linkToProject}</hyperlinkReferenceExpression>
 			</element>
-			<element kind="textField" uuid="a359aab6-809e-46c5-978b-ee35f36736c2" x="2425" y="0" width="173" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
-				<expression><![CDATA[$F{grossProjectAreaHa} == null
+			<element kind="textField" uuid="24bc5acf-afa1-4866-b3be-b5ddc1ce152f" x="236" y="0" width="180" height="120" forecolor="#3366FF" fontName="Calibri" fontSize="11.0" linkType="Reference" blankWhenNull="true" underline="true" vTextAlign="Bottom">
+				<printWhenExpression>$F{linkToFiscalActivity} != null &amp;&amp; !$F{linkToFiscalActivity}.trim().isEmpty()</printWhenExpression>
+				<expression>$F{projectFiscalName} + " Fiscal Activity Link"</expression>
+				<hyperlinkReferenceExpression>$F{linkToFiscalActivity}</hyperlinkReferenceExpression>
+				<hyperlinkWhenExpression>$F{linkToFiscalActivity} != null &amp;&amp; !$F{linkToFiscalActivity}.trim().isEmpty()</hyperlinkWhenExpression>
+			</element>
+			<element kind="textField" uuid="fdc79c41-10dd-4ceb-983d-0093301b7cf7" x="416" y="0" width="180" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
+				<expression>$F{projectTypeDescription}</expression>
+			</element>
+			<element kind="textField" uuid="aa41e798-4d9c-4b9d-ade6-f342025c011e" x="596" y="0" width="270" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
+				<expression>$F{projectName}</expression>
+			</element>
+			<element kind="textField" uuid="092220ea-126c-4494-a7e4-071d1d67aa58" x="866" y="0" width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
+				<expression>$F{forestRegionOrgUnitName}</expression>
+			</element>
+			<element kind="textField" uuid="5d230f17-4fb6-41d7-9af9-78e4e99144f0" x="1086" y="0" width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
+				<expression>$F{forestDistrictOrgUnitName}</expression>
+			</element>
+			<element kind="textField" uuid="46128657-10cf-4415-a278-3b94b2fc93aa" x="1306" y="0" width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
+				<expression>$F{bcParksRegionOrgUnitName}</expression>
+			</element>
+			<element kind="textField" uuid="1dea7f79-c800-4dd1-bc9d-eb81ee65f913" x="1526" y="0" width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
+				<expression>$F{bcParksSectionOrgUnitName}</expression>
+			</element>
+			<element kind="textField" uuid="9ce7e282-5ae0-43af-8726-d55ef34f0ecf" x="1746" y="0" width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
+				<expression>$F{fireCentreOrgUnitName}</expression>
+			</element>
+			<element kind="textField" uuid="ff8a0029-ef8d-4afb-9ff1-155fcf35342f" x="1966" y="0" width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
+				<expression>$F{businessArea}</expression>
+			</element>
+			<element kind="textField" uuid="601a2fbf-f320-4d2d-9db5-65f5484f5ec4" x="2186" y="0" width="320" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
+				<expression>$F{planningUnitName}</expression>
+			</element>
+			<element kind="textField" uuid="a359aab6-809e-46c5-978b-ee35f36736c2" x="2506" y="0" width="180" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
+				<expression>$F{grossProjectAreaHa} == null
     ? ""
-    : String.format("%,d ha", $F{grossProjectAreaHa}.intValue())]]></expression>
+    : String.format("%,d ha", $F{grossProjectAreaHa}.intValue())</expression>
 			</element>
-			<element kind="textField" uuid="3dae2dd2-c238-4641-b485-4545e55a68e5" x="2598" y="0" width="173" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
-				<expression><![CDATA[$F{closestCommunityName}]]></expression>
+			<element kind="textField" uuid="3dae2dd2-c238-4641-b485-4545e55a68e5" x="2686" y="0" width="180" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
+				<expression>$F{closestCommunityName}</expression>
 			</element>
-			<element kind="textField" uuid="0abb196e-d5ac-4c65-90c7-afe151c981ec" x="4868" y="0" width="118" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
-				<expression><![CDATA[$F{spatialSubmitted}]]></expression>
+			<element kind="textField" uuid="523fbafe-30c9-4dff-8c62-85a67eac6233" x="2866" y="0" width="180" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
+				<expression>$F{projectLead}</expression>
 			</element>
-			<element kind="textField" uuid="c57345a1-e30f-46e2-a46d-9ac87dc345d5" x="2944" y="0" width="173" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
-				<expression><![CDATA[$F{proposalTypeDescription}]]></expression>
+			<element kind="textField" uuid="c57345a1-e30f-46e2-a46d-9ac87dc345d5" x="3046" y="0" width="180" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
+				<expression>$F{proposalTypeDescription}</expression>
 			</element>
-			<element kind="textField" uuid="59e8f1be-1b43-494b-8190-2d170debff16" x="7620" y="0" width="98" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
-				<expression><![CDATA[$F{fineFilterSectionComment}]]></expression>
+			<element kind="textField" uuid="5ddfc2d3-5413-4264-a51c-c4815d8214a8" x="3226" y="0" width="270" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
+				<expression>$F{projectFiscalName}</expression>
 			</element>
-			<element kind="textField" uuid="dea67809-9cc0-493e-9ab6-3078fe9b45b8" x="7310" y="0" width="90" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
-				<expression><![CDATA[$F{totalMediumFilterSectionScore}]]></expression>
+			<element kind="textField" uuid="054260a1-f963-43e5-aef9-8e2af81b6d7c" x="3496" y="0" width="270" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
+				<expression>$F{projectFiscalDescription}</expression>
 			</element>
-			<element kind="textField" uuid="e4b15b54-d30f-4f55-af9c-0fbb3f28a99a" x="7400" y="0" width="140" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
-				<expression><![CDATA[$F{mediumFilterSectionComment}]]></expression>
+			<element kind="textField" uuid="1d63b79a-c84e-4a06-a713-6bf3fa6fe0d6" x="3766" y="0" width="180" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
+				<expression>$F{fiscalYear}</expression>
 			</element>
-			<element kind="textField" uuid="f6fe5dba-46b7-4d79-8078-12a28375d2b8" x="5434" y="0" width="260" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
-				<expression><![CDATA[$F{otherPartner}]]></expression>
+			<element kind="textField" uuid="020e2a64-bacc-489b-870d-944b30e2520b" x="3946" y="0" width="180" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
+				<expression>$F{activityCategoryDescription}</expression>
 			</element>
-			<element kind="textField" uuid="382c2e06-9eeb-4abe-8222-176dae088a62" x="5866" y="0" width="86" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
-				<expression><![CDATA[$F{resultsOpeningId}]]></expression>
+			<element kind="textField" uuid="ee61efa2-e41f-4c4a-b9ff-d3f842f7142c" x="4126" y="0" width="180" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
+				<expression>$F{planFiscalStatusDescription}</expression>
 			</element>
-			<element kind="textField" uuid="ff8a0029-ef8d-4afb-9ff1-155fcf35342f" x="1896" y="0" width="216" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
-				<expression><![CDATA[$F{businessArea}]]></expression>
+			<element kind="textField" uuid="a49e857a-6d03-48f2-a35b-672768f011df" x="4306" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" pattern="$#,##0" blankWhenNull="true" vTextAlign="Bottom">
+				<expression>$F{totalEstimatedCostAmount}</expression>
 			</element>
-			<element kind="textField" uuid="f5a87843-c1fe-4740-9069-35ea627dc74e" x="4396" y="0" width="118" height="120" fontName="Calibri" fontSize="11.0" pattern="$#,##0" blankWhenNull="true" vTextAlign="Bottom">
-				<expression><![CDATA[$F{fiscalReportedSpendAmount}]]></expression>
+			<element kind="textField" uuid="77788899-5723-4be3-8a26-5f0831972e00" x="4426" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" pattern="$#,##0" blankWhenNull="true" vTextAlign="Bottom">
+				<expression>$F{fiscalForecastAmount}</expression>
 			</element>
-			<element kind="textField" uuid="ad806b18-f5ca-49dd-bc57-8ddcf40bfc43" x="6477" y="0" width="175" height="120" fontName="Calibri" fontSize="11.0" pattern="yyyy-MM-dd" blankWhenNull="true" vTextAlign="Bottom">
-				<expression><![CDATA[$F{approvedTimestamp}]]></expression>
+			<element kind="textField" uuid="1ba98ea4-9d8d-4cc8-821e-413682113c44" x="4546" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" pattern="$#,##0" blankWhenNull="true" vTextAlign="Bottom">
+				<expression>$F{fiscalAncillaryFundAmount}</expression>
 			</element>
-			<element kind="textField" uuid="858b1963-3dbe-4122-8212-69f78d71284f" x="5174" y="0" width="260" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
-				<expression><![CDATA[$F{firstNationsPartner}]]></expression>
+			<element kind="textField" uuid="88888899-5723-4be3-8a26-5f0831972e11" x="4666" y="0" width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
+				<expression>$F{ancillaryFundingProvider}</expression>
 			</element>
-			<element kind="textField" uuid="601a2fbf-f320-4d2d-9db5-65f5484f5ec4" x="2112" y="0" width="313" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
-				<expression><![CDATA[$F{planningUnitName}]]></expression>
+		<element kind="textField" uuid="f5a87843-c1fe-4740-9069-35ea627dc74e" x="4886" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" pattern="$#,##0" blankWhenNull="true" vTextAlign="Bottom">
+				<expression>$F{fiscalReportedSpendAmount}</expression>
 			</element>
-			<element kind="textField" uuid="092220ea-126c-4494-a7e4-071d1d67aa58" x="816" y="0" width="216" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
-				<expression><![CDATA[$F{forestRegionOrgUnitName}]]></expression>
+			<element kind="textField" uuid="9de65e6f-265f-45f8-8b40-fd2dab2d1c20" x="5006" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" pattern="$#,##0" blankWhenNull="true" vTextAlign="Bottom">
+				<expression>$F{fiscalActualAmount}</expression>
 			</element>
-			<element kind="textField" uuid="ee61efa2-e41f-4c4a-b9ff-d3f842f7142c" x="3987" y="0" width="173" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
-				<expression><![CDATA[$F{planFiscalStatusDescription}]]></expression>
-			</element>
-			<element kind="textField" uuid="0bfb0f57-a9f5-404f-8ce5-021087864eee" x="56" y="0" width="160" height="120" forecolor="#3366FF" fontName="Calibri" fontSize="11.0" linkType="Reference" blankWhenNull="true" underline="true" vTextAlign="Bottom">
-				<printWhenExpression><![CDATA[$F{linkToProject} != null && !$F{linkToProject}.trim().isEmpty()]]></printWhenExpression>
-				<expression><![CDATA[$F{projectName} + " Project Link"]]></expression>
-				<hyperlinkReferenceExpression><![CDATA[$F{linkToProject}]]></hyperlinkReferenceExpression>
-			</element>
-			<element kind="textField" uuid="def371ef-ac0a-4d81-8b39-c6d70effd6f6" x="5952" y="0" width="175" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
-				<expression><![CDATA[$F{primaryObjectiveTypeDescription}]]></expression>
-			</element>
-			<element kind="textField" uuid="1e2453a4-0244-4b6a-9421-7ecde3d3179b" x="6652" y="0" width="215" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
-				<expression><![CDATA[$F{wuiRiskClassDescription}]]></expression>
-			</element>
-			<element kind="textField" uuid="b652d47d-31d6-484b-a3d2-b37440f9e957" x="7082" y="0" width="138" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
-				<expression><![CDATA[$F{localWuiRiskClassRationale}]]></expression>
-			</element>
-			<element kind="textField" uuid="523fbafe-30c9-4dff-8c62-85a67eac6233" x="2771" y="0" width="173" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
-				<expression><![CDATA[$F{projectLead}]]></expression>
-			</element>
-			<element kind="textField" uuid="065fd304-89e0-45b3-8dcb-5d37d781be0f" x="6302" y="0" width="175" height="120" fontName="Calibri" fontSize="11.0" pattern="yyyy-MM-dd" blankWhenNull="true" vTextAlign="Bottom">
-				<expression><![CDATA[$F{endorsementTimestamp}]]></expression>
-			</element>
-			<element kind="textField" uuid="868ab4bf-6043-4242-a14f-fac4a0e90cab" x="4632" y="0" width="118" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
-				<expression><![CDATA[$F{fiscalPlannedProjectSizeHa} == null
+			<element kind="textField" uuid="868ab4bf-6043-4242-a14f-fac4a0e90cab" x="5126" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
+				<expression>$F{fiscalPlannedProjectSizeHa} == null
     ? ""
-    : String.format("%,d ha", $F{fiscalPlannedProjectSizeHa}.intValue())]]></expression>
+    : String.format("%,d ha", $F{fiscalPlannedProjectSizeHa}.intValue())</expression>
 			</element>
-			<element kind="textField" uuid="3d0aa9e4-b013-4100-8f21-c72312030800" positionType="Float" x="7540" y="0" width="80" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
-				<expression><![CDATA[$F{totalFineFilterSectionScore}]]></expression>
-			</element>
-			<element kind="textField" uuid="60ad253b-3363-46b7-9a02-ed038500d26e" x="4986" y="0" width="94" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
-				<expression><![CDATA[$F{firstNationsEngagement}]]></expression>
-			</element>
-			<element kind="textField" uuid="aa41e798-4d9c-4b9d-ade6-f342025c011e" x="546" y="0" width="270" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
-				<expression><![CDATA[$F{projectName}]]></expression>
-			</element>
-			<element kind="textField" uuid="1d63b79a-c84e-4a06-a713-6bf3fa6fe0d6" x="3641" y="0" width="173" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
-				<expression><![CDATA[$F{fiscalYear}]]></expression>
-			</element>
-			<element kind="textField" uuid="054260a1-f963-43e5-aef9-8e2af81b6d7c" x="3379" y="0" width="262" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
-				<expression><![CDATA[$F{projectFiscalDescription}]]></expression>
-			</element>
-			<element kind="textField" uuid="d32378a7-f5d1-4653-b758-a72930b042e4" x="5780" y="0" width="86" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
-				<expression><![CDATA[$F{resultsProjectCode}]]></expression>
-			</element>
-			<element kind="textField" uuid="020e2a64-bacc-489b-870d-944b30e2520b" x="3814" y="0" width="173" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
-				<expression><![CDATA[$F{activityCategoryDescription}]]></expression>
-			</element>
-			<element kind="textField" uuid="95e7f276-ef48-40b4-ab95-0d66511513c9" x="6867" y="0" width="215" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
-				<expression><![CDATA[$F{localWuiRiskClassDescription}]]></expression>
-			</element>
-			<element kind="textField" uuid="9de65e6f-265f-45f8-8b40-fd2dab2d1c20" x="4514" y="0" width="118" height="120" fontName="Calibri" fontSize="11.0" pattern="$#,##0" blankWhenNull="true" vTextAlign="Bottom">
-				<expression><![CDATA[$F{fiscalActualAmount}]]></expression>
-			</element>
-			<element kind="textField" uuid="b9604f74-9820-4a7d-a827-6b0acc056e60" x="5080" y="0" width="94" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
-				<expression><![CDATA[$F{firstNationsDelivPartners}]]></expression>
-			</element>
-			<element kind="textField" uuid="64330fda-9eb8-429c-9925-3b9969f74aaa" x="5694" y="0" width="86" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
-				<expression><![CDATA[$F{cfsProjectCode}]]></expression>
-			</element>
-			<element kind="textField" uuid="1ba98ea4-9d8d-4cc8-821e-413682113c44" x="4278" y="0" width="118" height="120" fontName="Calibri" fontSize="11.0" pattern="$#,##0" blankWhenNull="true" vTextAlign="Bottom">
-				<expression><![CDATA[$F{fiscalAncillaryFundAmount}]]></expression>
-			</element>
-			<element kind="textField" uuid="691122bc-fd40-475a-8942-99fd2c4ab09e" x="6127" y="0" width="175" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
-				<expression><![CDATA[$F{secondaryObjectiveTypeDescription}]]></expression>
-			</element>
-			<element kind="textField" uuid="42a2737d-eef0-4009-9d38-f1f869c3d603" x="7220" y="0" width="90" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
-				<expression><![CDATA[$F{totalCoarseFilterSectionScore}]]></expression>
-			</element>
-			<element kind="textField" uuid="5ddfc2d3-5413-4264-a51c-c4815d8214a8" x="3117" y="0" width="262" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
-				<expression><![CDATA[$F{projectFiscalName}]]></expression>
-			</element>
-			<element kind="textField" uuid="fdc79c41-10dd-4ceb-983d-0093301b7cf7" x="376" y="0" width="170" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
-				<expression><![CDATA[$F{projectTypeDescription}]]></expression>
-			</element>
-			<element kind="textField" uuid="a49e857a-6d03-48f2-a35b-672768f011df" x="4160" y="0" width="118" height="120" fontName="Calibri" fontSize="11.0" pattern="$#,##0" blankWhenNull="true" vTextAlign="Bottom">
-				<expression><![CDATA[$F{totalEstimatedCostAmount}]]></expression>
-			</element>
-			<element kind="textField" uuid="24bc5acf-afa1-4866-b3be-b5ddc1ce152f" x="216" y="0" width="160" height="120" forecolor="#3366FF" fontName="Calibri" fontSize="11.0" linkType="Reference" blankWhenNull="true" underline="true" vTextAlign="Bottom">
-				<printWhenExpression><![CDATA[$F{linkToFiscalActivity} != null && !$F{linkToFiscalActivity}.trim().isEmpty()]]></printWhenExpression>
-				<expression><![CDATA[$F{projectFiscalName} + " Fiscal Activity Link"]]></expression>
-				<hyperlinkReferenceExpression><![CDATA[$F{linkToFiscalActivity}]]></hyperlinkReferenceExpression>
-				<hyperlinkWhenExpression><![CDATA[$F{linkToFiscalActivity} != null && !$F{linkToFiscalActivity}.trim().isEmpty()]]></hyperlinkWhenExpression>
-			</element>
-			<element kind="textField" uuid="f0ed5454-b045-496e-991b-c631c42296ca" x="4750" y="0" width="118" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
-				<expression><![CDATA[$F{fiscalCompletedSizeHa} == null
+			<element kind="textField" uuid="f0ed5454-b045-496e-991b-c631c42296ca" x="5246" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
+				<expression>$F{fiscalCompletedSizeHa} == null
     ? ""
-    : String.format("%,d ha", $F{fiscalCompletedSizeHa}.intValue())]]></expression>
+    : String.format("%,d ha", $F{fiscalCompletedSizeHa}.intValue())</expression>
 			</element>
-			<element kind="textField" uuid="1dea7f79-c800-4dd1-bc9d-eb81ee65f913" x="1464" y="0" width="216" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
-				<expression><![CDATA[$F{bcParksSectionOrgUnitName}]]></expression>
+			<element kind="textField" uuid="0abb196e-d5ac-4c65-90c7-afe151c981ec" x="5366" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
+				<expression>$F{spatialSubmitted}</expression>
 			</element>
-			<element kind="textField" uuid="5d230f17-4fb6-41d7-9af9-78e4e99144f0" x="1032" y="0" width="216" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
-				<expression><![CDATA[$F{forestDistrictOrgUnitName}]]></expression>
+			<element kind="textField" uuid="60ad253b-3363-46b7-9a02-ed038500d26e" x="5486" y="0" width="94" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
+				<expression>$F{firstNationsEngagement}</expression>
 			</element>
-			<element kind="textField" uuid="46128657-10cf-4415-a278-3b94b2fc93aa" x="1248" y="0" width="216" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
-				<expression><![CDATA[$F{bcParksRegionOrgUnitName}]]></expression>
+			<element kind="textField" uuid="b9604f74-9820-4a7d-a827-6b0acc056e60" x="5580" y="0" width="94" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
+				<expression>$F{firstNationsDelivPartners}</expression>
 			</element>
-			<element kind="textField" uuid="74df65fe-5723-4be3-8a26-5f0831972e98" x="7718" y="0" width="88" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
-				<expression><![CDATA[$F{totalFilterSectionScore}]]></expression>
+			<element kind="textField" uuid="858b1963-3dbe-4122-8212-69f78d71284f" x="5674" y="0" width="270" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
+				<expression>$F{firstNationsPartner}</expression>
 			</element>
-		</band>
+			<element kind="textField" uuid="f6fe5dba-46b7-4d79-8078-12a28375d2b8" x="5944" y="0" width="270" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
+				<expression>$F{otherPartner}</expression>
+			</element>
+			<element kind="textField" uuid="64330fda-9eb8-429c-9925-3b9969f74aaa" x="6214" y="0" width="94" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
+				<expression>$F{cfsProjectCode}</expression>
+			</element>
+			<element kind="textField" uuid="d32378a7-f5d1-4653-b758-a72930b042e4" x="6308" y="0" width="94" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
+				<expression>$F{resultsProjectCode}</expression>
+			</element>
+			<element kind="textField" uuid="382c2e06-9eeb-4abe-8222-176dae088a62" x="6402" y="0" width="94" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
+				<expression>$F{resultsOpeningId}</expression>
+			</element>
+			<element kind="textField" uuid="def371ef-ac0a-4d81-8b39-c6d70effd6f6" x="6496" y="0" width="180" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
+				<expression>$F{primaryObjectiveTypeDescription}</expression>
+			</element>
+			<element kind="textField" uuid="691122bc-fd40-475a-8942-99fd2c4ab09e" x="6676" y="0" width="180" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
+				<expression>$F{secondaryObjectiveTypeDescription}</expression>
+			</element>
+			<element kind="textField" uuid="065fd304-89e0-45b3-8dcb-5d37d781be0f" x="6856" y="0" width="180" height="120" fontName="Calibri" fontSize="11.0" pattern="yyyy-MM-dd" blankWhenNull="true" vTextAlign="Bottom">
+				<expression>$F{endorsementTimestamp}</expression>
+			</element>
+			<element kind="textField" uuid="ad806b18-f5ca-49dd-bc57-8ddcf40bfc43" x="7036" y="0" width="180" height="120" fontName="Calibri" fontSize="11.0" pattern="yyyy-MM-dd" blankWhenNull="true" vTextAlign="Bottom">
+				<expression>$F{approvedTimestamp}</expression>
+			</element>
+			<element kind="textField" uuid="1e2453a4-0244-4b6a-9421-7ecde3d3179b" x="7216" y="0" width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
+				<expression>$F{wuiRiskClassDescription}</expression>
+			</element>
+			<element kind="textField" uuid="95e7f276-ef48-40b4-ab95-0d66511513c9" x="7436" y="0" width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
+				<expression>$F{localWuiRiskClassDescription}</expression>
+			</element>
+			<element kind="textField" uuid="b652d47d-31d6-484b-a3d2-b37440f9e957" x="7656" y="0" width="180" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
+				<expression>$F{localWuiRiskClassRationale}</expression>
+			</element>
+			<element kind="textField" uuid="42a2737d-eef0-4009-9d38-f1f869c3d603" x="7836" y="0" width="94" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
+				<expression>$F{totalCoarseFilterSectionScore}</expression>
+			</element>
+			<element kind="textField" uuid="dea67809-9cc0-493e-9ab6-3078fe9b45b8" x="7930" y="0" width="94" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
+				<expression>$F{totalMediumFilterSectionScore}</expression>
+			</element>
+			<element kind="textField" uuid="e4b15b54-d30f-4f55-af9c-0fbb3f28a99a" x="8024" y="0" width="180" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
+				<expression>$F{mediumFilterSectionComment}</expression>
+			</element>
+			<element kind="textField" uuid="3d0aa9e4-b013-4100-8f21-c72312030800" positionType="Float" x="8204" y="0" width="94" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
+				<expression>$F{totalFineFilterSectionScore}</expression>
+			</element>
+			<element kind="textField" uuid="59e8f1be-1b43-494b-8190-2d170debff16" x="8298" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
+				<expression>$F{fineFilterSectionComment}</expression>
+			</element>
+			<element kind="textField" uuid="74df65fe-5723-4be3-8a26-5f0831972e98" x="8418" y="0" width="94" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
+				<expression>$F{totalFilterSectionScore}</expression>
+			</element>
+			</band>
 	</detail>
-	<columnFooter/>
-	<pageFooter/>
-	<summary/>
+	<columnFooter />
+	<pageFooter />
+	<summary />
 </jasperReport>
