@@ -2043,6 +2043,24 @@
         "rollback": [
         ]
       }
+    },
+    {
+      "changeSet": {
+        "id": "01_02_00_04",
+        "author": "sparmar",
+        "tagDatabase": { "tag": "version_01_02_00_04" },
+        "changes": [
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_02_00/04/grants/app_wf1_prev.grants.table_permissions.sql"
+            }
+          }
+        ],
+        "rollback": [
+        ]
+      }
     }
   ]
 }
