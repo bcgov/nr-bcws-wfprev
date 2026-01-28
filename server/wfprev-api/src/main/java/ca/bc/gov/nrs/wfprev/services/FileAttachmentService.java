@@ -197,7 +197,11 @@ public class FileAttachmentService implements CommonService {
             FileAttachmentModel model = fileAttachmentResourceAssembler.toModel(entity);
 
             if (entity.getFileIdentifier() != null) {
-                wildfireDocumentManagerService.deleteDocument(entity.getFileIdentifier());
+                try {
+                    wildfireDocumentManagerService.deleteDocument(entity.getFileIdentifier());
+                } catch (ServiceException e) {
+                    log.warn("Failed to delete document from WFDM: {}", entity.getFileIdentifier());
+                }
             }
 
             fileAttachmentRepository.delete(entity);

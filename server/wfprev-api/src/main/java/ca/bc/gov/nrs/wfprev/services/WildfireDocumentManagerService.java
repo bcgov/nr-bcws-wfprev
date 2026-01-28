@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestClient;
+import org.springframework.security.oauth2.core.OAuth2AccessToken;
 
 @Service
 @Slf4j
@@ -28,9 +29,19 @@ public class WildfireDocumentManagerService {
         String token = "";
         
         if (authentication instanceof WebAdeAuthentication webAdeAuthentication) {
-            token = (String) webAdeAuthentication.getCredentials();
+            Object credentials = webAdeAuthentication.getCredentials();
+            if (credentials instanceof OAuth2AccessToken accessToken) {
+                token = accessToken.getTokenValue();
+            } else if (credentials != null) {
+                token = credentials.toString();
+            }
         } else if (authentication != null && authentication.getCredentials() != null) {
-            token = authentication.getCredentials().toString();
+            Object credentials = authentication.getCredentials();
+            if (credentials instanceof OAuth2AccessToken accessToken) {
+                token = accessToken.getTokenValue();
+            } else {
+                token = credentials.toString();
+            }
         } else {
              log.warn("No authentication found in security context when deleting document {}", fileIdentifier);
         }
