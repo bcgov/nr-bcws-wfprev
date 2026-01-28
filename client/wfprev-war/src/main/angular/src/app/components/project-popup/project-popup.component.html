@@ -1,7 +1,7 @@
 <div *ngIf="project" class="popup-wrapper">
     <div class="popup-header">
         <div class="popup-title">{{ project.projectName || 'Project Name' }}</div>
-        <img class="popup-close" alt="Close" src="/assets/exit-icon.svg" (click)="closePopup()">
+        <img class="popup-close" alt="Close" src="assets/exit-icon.svg" (click)="closePopup()">
     </div>
     <div class="popup-container">
         <div class="project-content">
@@ -44,7 +44,7 @@
         </div>
     </div>
     <div class="button-row">
-        <wfprev-icon-button [text]="'View Details'" [icon]="'/assets/view-details.svg'" [alt]="'view-details'"
+        <wfprev-icon-button [text]="'View Details'" [icon]="'assets/view-details.svg'" [alt]="'view-details'"
             (clicked)="navigateToProject()">
         </wfprev-icon-button>
     </div>

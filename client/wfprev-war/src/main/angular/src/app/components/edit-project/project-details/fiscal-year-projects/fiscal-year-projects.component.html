@@ -8,6 +8,7 @@
                 <span>Fiscal Activity</span>
             </mat-panel-title>
         </mat-expansion-panel-header>
+        <img alt="edit-icon" class="icon" src="assets/edit-icon.svg" />
         <div class="fiscals-content" *ngIf="projectFiscals?.length; else emptyContent">
             <div *ngFor="let fiscal of projectFiscals" class="fiscal-item">
                 <div class="fiscal-title-row">

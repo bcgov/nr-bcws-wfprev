@@ -5,7 +5,7 @@
                 <wfprev-expansion-indicator [isExpanded]="activitiesPanel.expanded"></wfprev-expansion-indicator>
                 <span class="project-title">Activities</span>
                 <wfprev-icon-button *ngIf="fiscalGuid" class="add-activity" [text]="'Add Activity'"
-                    [icon]="'/assets/add-button.svg'" [alt]="'add-activity'" [iconSize]="19"
+                    [icon]="'assets/add-button.svg'" [alt]="'add-activity'" [iconSize]="19"
                     [disabled]="isNewActivityBeingAdded || isReadonly" (clicked)="addActivity()">
                 </wfprev-icon-button>
             </div>
@@ -23,14 +23,14 @@
                         <div class="status-indicators">
                             <ng-container *ngIf="activityForms[i]?.value?.isSpatialAddedInd; else notSpatialAdded">
                                 <span class="status-tag">
-                                    <img alt="status" class="status-icon" src="/assets/spatial-added-icon.svg">Spatial
+                                    <img alt="status" class="status-icon" src="assets/spatial-added-icon.svg">Spatial
                                     Added
                                 </span>
                             </ng-container>
 
                             <ng-template #notSpatialAdded>
                                 <span class="status-tag inactive">
-                                    <img alt="status" class="status-icon" src="/assets/no-spatial-added-icon.svg">No
+                                    <img alt="status" class="status-icon" src="assets/no-spatial-added-icon.svg">No
                                     Spatial Added
                                 </span>
                             </ng-template>
@@ -39,18 +39,18 @@
                                 <img 
                                     alt="status" 
                                     class="status-icon" 
-                                    [src]="'/assets/' + getRiskIcon(activityForms[i]?.value?.riskRatingCode?.riskRatingCode) + '.svg'">
+                                    [src]="'assets/' + getRiskIcon(activityForms[i]?.value?.riskRatingCode?.riskRatingCode) + '.svg'">
                                 {{ getRiskDescription(activityForms[i]?.value?.riskRatingCode?.description) }}
                             </span> -->
 
                             <span *ngIf="activityForms[i]?.value?.outstandingObligationsInd" class="status-tag">
-                                <img alt="status" class="status-icon" src="/assets/warning-activity.svg">Outstanding
+                                <img alt="status" class="status-icon" src="assets/warning-activity.svg">Outstanding
                                 Obligations
                             </span>
 
                             <span *ngIf="activityForms[i]?.value?.activityStatusCode === 'COMPLETED'"
                                 class="status-tag">
-                                <img alt="status" class="status-icon" src="/assets/complete-icon.svg">Complete
+                                <img alt="status" class="status-icon" src="assets/complete-icon.svg">Complete
                             </span>
                         </div>
                     </mat-expansion-panel-header>

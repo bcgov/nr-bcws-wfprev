@@ -31,7 +31,7 @@ import java.util.UUID;
 
 @Entity
 @EntityListeners(AuditingEntityListener.class)
-@Table(name = "project_plan_fiscal_perf")
+@Table(name = "project_plan_fiscal_perf", schema = "wfprev")
 @JsonIgnoreProperties(ignoreUnknown = false)
 @Data
 @EqualsAndHashCode(callSuper = false)

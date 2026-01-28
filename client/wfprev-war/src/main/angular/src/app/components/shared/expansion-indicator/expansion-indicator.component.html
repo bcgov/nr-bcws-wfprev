@@ -1,3 +1,3 @@
-<img src="/assets/collapsed-indicator.svg" alt="toggle section" class="expansion-indicator"
-  [class.expanded]="isExpanded" [style.margin-right]="marginRight" [style.width]="iconSize ? iconSize : null"
-  [style.height]="iconSize ? iconSize : null" />
+<img [src]="isExpanded ? 'assets/arrow-down.svg' : 'assets/arrow-right.svg'" alt="toggle section"
+  class="expansion-indicator" [class.expanded]="isExpanded" [style.margin-right]="marginRight"
+  [style.width]="iconSize ? iconSize : null" [style.height]="iconSize ? iconSize : null" />

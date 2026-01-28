@@ -52,7 +52,7 @@
             <td mat-cell *matCellDef="let file">
                 <button class="table-button" mat-icon-button (click)="downloadFile(file)"
                     [disabled]="isDownloading(file)">
-                    <img src="/assets/download.svg">
+                    <img alt="file-icon" class="icon" src="assets/file.svg" />
                 </button>
             </td>
         </ng-container>

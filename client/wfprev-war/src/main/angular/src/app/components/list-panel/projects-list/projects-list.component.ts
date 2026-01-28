@@ -465,7 +465,7 @@ export class ProjectsListComponent implements OnInit {
       // Add markers and polygons for each coordinate
       for (const coord of coords) {
         const marker = L.marker([coord.latitude, coord.longitude], {
-          icon: createMarkerIcon('/assets/blue-pin-drop.svg'),
+          icon: createMarkerIcon('assets/blue-pin-drop.svg'),
         });
 
         // Initialize the marker state
@@ -498,7 +498,7 @@ export class ProjectsListComponent implements OnInit {
 
           if (isActive) {
             // If active, reset marker and polygons
-            marker.setIcon(createMarkerIcon('/assets/blue-pin-drop.svg'));
+            marker.setIcon(createMarkerIcon('assets/blue-pin-drop.svg'));
             markerStates.set(marker, false);
 
             const associatedPolygons = this.markerPolygons.get(marker);
@@ -509,7 +509,7 @@ export class ProjectsListComponent implements OnInit {
             }
           } else {
             // If not active, activate marker and bold polygons
-            marker.setIcon(createActiveMarkerIcon('/assets/active-pin-drop.svg'));
+            marker.setIcon(createActiveMarkerIcon('assets/active-pin-drop.svg'));
             markerStates.set(marker, true);
 
             const associatedPolygons = this.markerPolygons.get(marker);
@@ -528,7 +528,7 @@ export class ProjectsListComponent implements OnInit {
       map?.$viewer?.map.on('click', () => {
         for (const [marker, isActive] of markerStates) {
           if (isActive) {
-            marker.setIcon(createMarkerIcon('/assets/blue-pin-drop.svg'));
+            marker.setIcon(createMarkerIcon('assets/blue-pin-drop.svg'));
             markerStates.set(marker, false);
 
             const associatedPolygons = this.markerPolygons.get(marker);
@@ -580,7 +580,7 @@ export class ProjectsListComponent implements OnInit {
       // Highlight the new marker and polygons
       marker.setIcon(
         L.icon({
-          iconUrl: '/assets/active-pin-drop.svg', // Highlighted icon
+          iconUrl: 'assets/active-pin-drop.svg', // Highlighted icon
           iconSize: [50, 70],
           iconAnchor: [20, 51],
           popupAnchor: [1, -34],
