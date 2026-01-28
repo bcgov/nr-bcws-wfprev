@@ -11,7 +11,6 @@ import ca.bc.gov.nrs.wfprev.data.entities.RiskRatingCodeEntity;
 import ca.bc.gov.nrs.wfprev.data.models.ActivityModel;
 import ca.bc.gov.nrs.wfprev.data.models.ProjectFiscalModel;
 import ca.bc.gov.nrs.wfprev.data.repositories.ActivityRepository;
-import ca.bc.gov.nrs.wfprev.data.repositories.ActivityProgressRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.ActivityStatusCodeRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.ContractPhaseCodeRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.ProjectFiscalRepository;
@@ -47,7 +46,6 @@ public class ActivityService implements CommonService {
     private static final String EXTENDED_KEY_FORMAT = "{0}: {1} {2}: {3}";
 
     private final ActivityRepository activityRepository;
-    private final ActivityProgressRepository activityProgressRepository;
     private final ActivityResourceAssembler activityResourceAssembler;
     private final ProjectFiscalRepository projectFiscalRepository;
     private final ActivityStatusCodeRepository activityStatusCodeRepository;
@@ -59,7 +57,6 @@ public class ActivityService implements CommonService {
 
     public ActivityService(
             ActivityRepository activityRepository,
-            ActivityProgressRepository activityProgressRepository,
             ActivityResourceAssembler activityResourceAssembler,
             ProjectFiscalRepository projectFiscalRepository,
             ActivityStatusCodeRepository activityStatusCodeRepository,
@@ -69,7 +66,6 @@ public class ActivityService implements CommonService {
             FileAttachmentService fileAttachmentService,
             Validator validator) {
         this.activityRepository = activityRepository;
-        this.activityProgressRepository = activityProgressRepository;
         this.activityResourceAssembler = activityResourceAssembler;
         this.projectFiscalRepository = projectFiscalRepository;
         this.activityStatusCodeRepository = activityStatusCodeRepository;
@@ -178,7 +174,6 @@ public class ActivityService implements CommonService {
             fileAttachmentService.deleteAttachmentsBySourceObject(activityGuid);
         }
         activityBoundaryService.deleteActivityBoundaries(activityGuid, deleteFiles);
-        activityProgressRepository.deleteByActivity_ActivityGuid(UUID.fromString(activityGuid));
         activityRepository.deleteById(UUID.fromString(activityGuid));
     }
 
@@ -191,7 +186,6 @@ public class ActivityService implements CommonService {
                 fileAttachmentService.deleteAttachmentsBySourceObject(activityGuid);
             }
             activityBoundaryService.deleteActivityBoundaries(activityGuid, deleteFiles);
-            activityProgressRepository.deleteByActivity_ActivityGuid(UUID.fromString(activityGuid));
             activityRepository.delete(activity);
         }
     }
