@@ -18,6 +18,10 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.UuidGenerator;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.io.Serializable;
@@ -54,6 +58,9 @@ public class ProjectPlanFiscalPerfEntity implements Serializable {
     @Column(name = "reporting_period_code", length = 10)
     private String reportingPeriodCode;
 
+    @Column(name = "progress_status_code", length = 10)
+    private String progressStatusCode;
+
     @NotNull
     @Column(name = "plan_fiscal_status_code", length = 10, nullable = false)
     private String planFiscalStatusCode;
@@ -84,17 +91,55 @@ public class ProjectPlanFiscalPerfEntity implements Serializable {
     private String forecastAdjustmentRationale;
 
     @NotNull
-    @Column(name = "progress_comment", length = 4000, nullable = false)
-    private String progressComment;
+    @Column(name = "general_update_comment", length = 4000, nullable = false)
+    private String generalUpdateComment;
+
+    @Column(name = "budget_high_risk_amount", precision = 15, scale = 2)
+    private BigDecimal budgetHighRiskAmount;
+
+    @Column(name = "budget_high_risk_rationale", length = 4000)
+    private String budgetHighRiskRationale;
+
+    @Column(name = "budget_medium_risk_amount", precision = 15, scale = 2)
+    private BigDecimal budgetMediumRiskAmount;
+
+    @Column(name = "budget_medium_risk_rationale", length = 4000)
+    private String budgetMediumRiskRationale;
+
+    @Column(name = "budget_low_risk_amount", precision = 15, scale = 2)
+    private BigDecimal budgetLowRiskAmount;
+
+    @Column(name = "budget_low_risk_rationale", length = 4000)
+    private String budgetLowRiskRationale;
 
     @NotNull
-    @Column(name = "is_delayed_ind", nullable = false)
-    private Boolean isDelayedInd;
+    @Column(name = "budget_completed_amount", precision = 15, scale = 2, nullable = false)
+    private BigDecimal budgetCompletedAmount;
 
-    @Column(name = "delay_rationale", length = 4000)
-    private String delayRationale;
+    @Column(name = "budget_completed_description", length = 4000)
+    private String budgetCompletedDescription;
 
     @NotNull
-    @Column(name = "revision_count", columnDefinition = "numeric(10) default '0'", nullable = false)
+    @Column(name = "revision_count", nullable = false)
     private Integer revisionCount;
+
+    @CreatedBy
+    @NotNull
+    @Column(name = "create_user", length = 64, nullable = false)
+    private String createUser;
+
+    @CreatedDate
+    @NotNull
+    @Column(name = "create_date", nullable = false)
+    private Date createDate;
+
+    @LastModifiedBy
+    @NotNull
+    @Column(name = "update_user", length = 64, nullable = false)
+    private String updateUser;
+
+    @LastModifiedDate
+    @NotNull
+    @Column(name = "update_date", nullable = false)
+    private Date updateDate;
 }
