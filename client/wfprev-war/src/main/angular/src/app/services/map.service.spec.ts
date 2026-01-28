@@ -109,7 +109,7 @@ describe('MapService', () => {
 
       // We only care about the last call to INIT (the actual createSMK call)
       expect(mockSMK.INIT).toHaveBeenCalledWith({
-        baseUrl: 'assets/smk/',
+        baseUrl: `${window.location.protocol}//${window.location.host}/assets/smk/`,
         config: [{
           tools: [
             { type: 'baseMaps' },
@@ -137,7 +137,7 @@ describe('MapService', () => {
       await service.createSMK(option);
 
       expect(mockSMK.INIT).toHaveBeenCalledWith({
-        baseUrl: 'assets/smk/',
+        baseUrl: `${window.location.protocol}//${window.location.host}/assets/smk/`,
         config: [
           { existingConfig: true },
           {
@@ -233,7 +233,7 @@ describe('MapService', () => {
       expect(mockSMK.INIT).toHaveBeenCalledWith({
         id: 999,
         containerSel: mockTemp,
-        baseUrl: 'assets/smk/',
+        baseUrl: `${window.location.protocol}//${window.location.host}/assets/smk/`,
         config: 'show-tool=bespoke'
       });
 

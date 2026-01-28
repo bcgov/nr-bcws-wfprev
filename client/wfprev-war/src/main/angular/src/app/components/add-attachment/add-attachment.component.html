@@ -6,7 +6,7 @@
     <!-- File Upload Section -->
     <div class="file-upload">
       <input #fileInput hidden type="file" (change)="onFileSelected($event)" [accept]="getAcceptedFileTypes()" />
-      <wfprev-icon-button [text]="'Choose File'" [icon]="'assets/upload.svg'" [alt]="'upload-file'" [iconSize]="19"
+      <wfprev-icon-button [text]="'Choose File'" [icon]="'/assets/upload.svg'" [alt]="'upload-file'" [iconSize]="19"
         (clicked)="fileInput.click()">
       </wfprev-icon-button>
       <span>{{ getFileName() }}</span>

@@ -827,7 +827,7 @@ export class ActivitiesComponent implements OnChanges, CanComponentDeactivate {
   }
 
   getDeleteIcon(index: number): string {
-    return this.canDeleteActivity(index) ? 'assets/delete-icon.svg' : 'assets/delete-disabled-icon.svg';
+    return this.canDeleteActivity(index) ? '/assets/delete-icon.svg' : '/assets/delete-disabled-icon.svg';
   }
 
   isFormDirty(): boolean {

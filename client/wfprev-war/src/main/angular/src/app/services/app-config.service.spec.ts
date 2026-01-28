@@ -9,7 +9,7 @@ describe('AppConfigService', () => {
   let httpMock: HttpTestingController;
 
   const mockLibraryConfig: LibraryConfig = {
-    configurationPath: 'assets/data/appConfig.json',
+    configurationPath: '/assets/data/appConfig.json',
   };
 
   const mockConfig: ApplicationConfig = {

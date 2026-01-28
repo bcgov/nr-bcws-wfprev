@@ -395,7 +395,7 @@ describe('MapComponent', () => {
       expect(markerSpy.setIcon).toHaveBeenCalledWith(
         jasmine.objectContaining({
           options: jasmine.objectContaining({
-            iconUrl: 'assets/active-pin-drop.svg',
+            iconUrl: '/assets/active-pin-drop.svg',
           }),
         })
       );
@@ -413,7 +413,7 @@ describe('MapComponent', () => {
       expect(markerSpy.setIcon).toHaveBeenCalledWith(
         jasmine.objectContaining({
           options: jasmine.objectContaining({
-            iconUrl: 'assets/blue-pin-drop.svg',
+            iconUrl: '/assets/blue-pin-drop.svg',
           }),
         })
       );

@@ -129,7 +129,7 @@ export function getFiscalYearDisplay(fiscalYear: number | null | undefined): str
 
 export function getBluePinIcon(): L.Icon {
   return L.icon({
-    iconUrl: 'assets/blue-pin-drop.svg',
+    iconUrl: '/assets/blue-pin-drop.svg',
     iconSize: [30, 50],
     iconAnchor: [12, 41],
     popupAnchor: [1, -34],
@@ -138,7 +138,7 @@ export function getBluePinIcon(): L.Icon {
 
 export function getActivePinIcon(): L.Icon {
   return L.icon({
-    iconUrl: 'assets/active-pin-drop.svg',
+    iconUrl: '/assets/active-pin-drop.svg',
     iconSize: [50, 70],
     iconAnchor: [20, 51],
     popupAnchor: [1, -34],
@@ -147,32 +147,32 @@ export function getActivePinIcon(): L.Icon {
 
 export const PlanFiscalStatusIcons: Record<string, { src: string; alt: string; title: string }> = {
   [PlanFiscalStatus.DRAFT]: {
-    src: 'assets/draft-icon.svg',
+    src: '/assets/draft-icon.svg',
     alt: 'draft',
     title: 'Draft'
   },
   [PlanFiscalStatus.PROPOSED]: {
-    src: 'assets/proposed-icon.svg',
+    src: '/assets/proposed-icon.svg',
     alt: 'proposed',
     title: 'Proposed'
   },
   [PlanFiscalStatus.IN_PROG]: {
-    src: 'assets/in-progress-icon-only.svg',
+    src: '/assets/in-progress-icon-only.svg',
     alt: 'in progress',
     title: 'In Progress'
   },
   [PlanFiscalStatus.COMPLETE]: {
-    src: 'assets/complete-icon.svg',
+    src: '/assets/complete-icon.svg',
     alt: 'complete',
     title: 'Complete'
   },
   [PlanFiscalStatus.CANCELLED]: {
-    src: 'assets/cancelled-icon.svg',
+    src: '/assets/cancelled-icon.svg',
     alt: 'abandoned',
     title: 'Abandoned'
   },
   [PlanFiscalStatus.PREPARED]: {
-    src: 'assets/prepared-icon.svg',
+    src: '/assets/prepared-icon.svg',
     alt: 'prepared',
     title: 'Prepared'
   }

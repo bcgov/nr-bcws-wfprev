@@ -47,6 +47,7 @@ class ProjectBoundaryServiceTest {
 
     private Validator validator;
 
+    @Mock
     private FileAttachmentService fileAttachmentService;
 
     @BeforeEach

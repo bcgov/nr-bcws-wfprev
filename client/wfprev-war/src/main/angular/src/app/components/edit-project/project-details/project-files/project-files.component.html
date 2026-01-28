@@ -3,7 +3,7 @@
         <span class="title-text">
             Files
         </span>
-        <wfprev-icon-button *ngIf="!isReadonly" [text]="'Upload File'" [icon]="'assets/upload-file.svg'"
+        <wfprev-icon-button *ngIf="!isReadonly" [text]="'Upload File'" [icon]="'/assets/upload-file.svg'"
             [alt]="'upload-file'" [iconSize]="19" (clicked)="openFileUploadModal()">
         </wfprev-icon-button>
     </div>
@@ -52,7 +52,7 @@
             <td mat-cell *matCellDef="let file">
                 <button class="table-button" mat-icon-button (click)="downloadFile(file)"
                     [disabled]="isDownloading(file)">
-                    <img src="assets/download.svg">
+                    <img src="/assets/download.svg">
                 </button>
             </td>
         </ng-container>
@@ -61,7 +61,7 @@
             <th mat-header-cell *matHeaderCellDef> Delete </th>
             <td mat-cell *matCellDef="let file">
                 <button class="table-button" mat-icon-button (click)="deleteFile(file)" [disabled]="isReadonly">
-                    <img src="assets/delete-icon.svg">
+                    <img src="/assets/delete-icon.svg">
                 </button>
             </td>
         </ng-container>

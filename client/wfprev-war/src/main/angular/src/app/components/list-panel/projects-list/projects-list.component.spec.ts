@@ -732,7 +732,7 @@ describe('ProjectsListComponent', () => {
     clickHandler();
 
     expect(mockClickedMarker.setIcon).toHaveBeenCalledWith(jasmine.objectContaining({
-      options: jasmine.objectContaining({ iconUrl: 'assets/active-pin-drop.svg' })
+      options: jasmine.objectContaining({ iconUrl: '/assets/active-pin-drop.svg' })
     }));
     expect(mockPolygon1.setStyle).toHaveBeenCalledWith({ weight: 5 });
     expect(mockPolygon2.setStyle).toHaveBeenCalledWith({ weight: 5 });
@@ -740,7 +740,7 @@ describe('ProjectsListComponent', () => {
     clickHandler();
 
     expect(mockClickedMarker.setIcon).toHaveBeenCalledWith(jasmine.objectContaining({
-      options: jasmine.objectContaining({ iconUrl: 'assets/blue-pin-drop.svg' })
+      options: jasmine.objectContaining({ iconUrl: '/assets/blue-pin-drop.svg' })
     }));
     expect(mockPolygon1.setStyle).toHaveBeenCalledWith({ weight: 2 });
     expect(mockPolygon2.setStyle).toHaveBeenCalledWith({ weight: 2 });
@@ -779,7 +779,7 @@ describe('ProjectsListComponent', () => {
         internalMarkerStates.forEach((isActive, marker) => {
           if (isActive) {
             marker.setIcon(L.icon({
-              iconUrl: 'assets/blue-pin-drop.svg',
+              iconUrl: '/assets/blue-pin-drop.svg',
               iconSize: [30, 50],
               iconAnchor: [12, 41],
               popupAnchor: [1, -34],
@@ -797,7 +797,7 @@ describe('ProjectsListComponent', () => {
 
     expect(mockActiveMarker.setIcon).toHaveBeenCalledWith(jasmine.objectContaining({
       options: jasmine.objectContaining({
-        iconUrl: 'assets/blue-pin-drop.svg'
+        iconUrl: '/assets/blue-pin-drop.svg'
       })
     }));
 

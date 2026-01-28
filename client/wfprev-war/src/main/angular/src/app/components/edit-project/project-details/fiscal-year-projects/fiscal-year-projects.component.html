@@ -16,7 +16,7 @@
                         <span class="fiscal-year">{{convertFiscalYear(fiscal.fiscalYear)}}</span>
                     </span>
                     <span class="section-3">
-                        <img [src]="'assets/' + getStatusIcon(fiscal.planFiscalStatusCode?.planFiscalStatusCode)"
+                        <img [src]="'/assets/' + getStatusIcon(fiscal.planFiscalStatusCode?.planFiscalStatusCode)"
                             [alt]="getPlanFiscalStatus(fiscal.planFiscalStatusCode?.planFiscalStatusCode)"
                             class="status-icon" />
                         {{getPlanFiscalStatus(fiscal.planFiscalStatusCode?.planFiscalStatusCode)}}

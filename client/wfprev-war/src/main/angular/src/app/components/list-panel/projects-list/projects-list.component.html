@@ -17,7 +17,7 @@
         <wfprev-download-button [formats]="formats" (download)="onDownload($event)"
           [disabled]="!displayedProjects.length">
         </wfprev-download-button>
-        <wfprev-icon-button [text]="'Create Project'" [icon]="'assets/add-button.svg'" [alt]="'create-project'"
+        <wfprev-icon-button [text]="'Create Project'" [icon]="'/assets/add-button.svg'" [alt]="'create-project'"
           [iconSize]="19" (clicked)="createNewProject()">
         </wfprev-icon-button>
       </div>
@@ -47,7 +47,7 @@
               </div>
               <div class="action-items">
                 <div class="action-item" (click)="editProject(project, $event)">
-                  <img alt="edit-icon" class="icon" src="assets/edit-icon.svg" />
+                  <img alt="edit-icon" class="icon" src="/assets/edit-icon.svg" />
                   <span>Edit</span>
                 </div>
               </div>

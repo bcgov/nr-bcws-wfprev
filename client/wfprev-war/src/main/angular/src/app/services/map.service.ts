@@ -9,7 +9,7 @@ import { TokenService } from './token.service';
 export class MapService {
   private mapIndex: number = 0;
   baseMapIds: string[] = [];
-  private readonly smkBaseUrl = new URL('assets/smk/', document.baseURI).href;
+  private readonly smkBaseUrl = `${globalThis.location.protocol}//${globalThis.location.host}/assets/smk/`;
   private containerId?: string;
   private smkInstance: any = null;
   private readonly apiBaseUrl = `${this.appConfigService.getConfig().rest['wfprev']}/wfprev-api`;
