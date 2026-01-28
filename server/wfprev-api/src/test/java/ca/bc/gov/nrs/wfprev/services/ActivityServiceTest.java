@@ -14,7 +14,6 @@ import ca.bc.gov.nrs.wfprev.data.models.ContractPhaseCodeModel;
 import ca.bc.gov.nrs.wfprev.data.models.ProjectFiscalModel;
 import ca.bc.gov.nrs.wfprev.data.models.RiskRatingCodeModel;
 import ca.bc.gov.nrs.wfprev.data.repositories.ActivityRepository;
-import ca.bc.gov.nrs.wfprev.data.repositories.ActivityProgressRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.ActivityStatusCodeRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.ContractPhaseCodeRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.ProjectFiscalRepository;
@@ -47,7 +46,6 @@ import static org.mockito.Mockito.never;
 class ActivityServiceTest {
 
     private ActivityRepository activityRepository;
-    private ActivityProgressRepository activityProgressRepository;
     private ActivityResourceAssembler activityResourceAssembler;
     private ProjectFiscalRepository projectFiscalRepository;
     private ActivityStatusCodeRepository activityStatusCodeRepository;
@@ -63,7 +61,6 @@ class ActivityServiceTest {
     @BeforeEach
     void setup() {
         activityRepository = mock(ActivityRepository.class);
-        activityProgressRepository = mock(ActivityProgressRepository.class);
         activityResourceAssembler = mock(ActivityResourceAssembler.class);
         projectFiscalRepository = mock(ProjectFiscalRepository.class);
         activityStatusCodeRepository = mock(ActivityStatusCodeRepository.class);
@@ -75,7 +72,6 @@ class ActivityServiceTest {
 
         activityService = new ActivityService(
                 activityRepository,
-                activityProgressRepository,
                 activityResourceAssembler,
                 projectFiscalRepository,
                 activityStatusCodeRepository,
@@ -278,7 +274,6 @@ class ActivityServiceTest {
         // THEN
         verify(fileAttachmentService).deleteAttachmentsBySourceObject(activityGuid);
         verify(activityBoundaryService).deleteActivityBoundaries(activityGuid, true);
-        verify(activityProgressRepository).deleteByActivity_ActivityGuid(UUID.fromString(activityGuid));
         verify(activityRepository).deleteById(UUID.fromString(activityGuid));
     }
 
@@ -462,7 +457,6 @@ class ActivityServiceTest {
         // THEN
         verify(fileAttachmentService).deleteAttachmentsBySourceObject(activityGuid);
         verify(activityBoundaryService).deleteActivityBoundaries(activityGuid, true);
-        verify(activityProgressRepository).deleteByActivity_ActivityGuid(UUID.fromString(activityGuid));
         verify(activityRepository).delete(activityEntity);
     }
 
