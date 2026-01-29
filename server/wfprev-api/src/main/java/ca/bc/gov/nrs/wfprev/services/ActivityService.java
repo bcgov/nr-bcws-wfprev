@@ -170,9 +170,8 @@ public class ActivityService implements CommonService {
     public void deleteActivity(String projectGuid, String fiscalGuid, String activityGuid, boolean deleteFiles) {
         validateHierarchy(projectGuid, fiscalGuid, activityGuid);
 
-        if (deleteFiles) {
-            fileAttachmentService.deleteAttachmentsBySourceObject(activityGuid);
-        }
+        fileAttachmentService.deleteAttachmentsBySourceObject(activityGuid, deleteFiles);
+        
         activityBoundaryService.deleteActivityBoundaries(activityGuid, deleteFiles);
         activityRepository.deleteById(UUID.fromString(activityGuid));
     }
@@ -182,9 +181,9 @@ public class ActivityService implements CommonService {
         List<ActivityEntity> activities = activityRepository.findByProjectPlanFiscalGuid(UUID.fromString(fiscalGuid));
         for (ActivityEntity activity : activities) {
             String activityGuid = activity.getActivityGuid().toString();
-            if (deleteFiles) {
-                fileAttachmentService.deleteAttachmentsBySourceObject(activityGuid);
-            }
+            
+            fileAttachmentService.deleteAttachmentsBySourceObject(activityGuid, deleteFiles);
+            
             activityBoundaryService.deleteActivityBoundaries(activityGuid, deleteFiles);
             activityRepository.delete(activity);
         }

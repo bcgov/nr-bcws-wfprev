@@ -189,14 +189,14 @@ public class FileAttachmentService implements CommonService {
     }
 
     @Transactional
-    public FileAttachmentModel deleteFileAttachment(String id) throws ServiceException {
+    public FileAttachmentModel deleteFileAttachment(String id, boolean deleteFromWfdm) throws ServiceException {
         try {
             FileAttachmentEntity entity = fileAttachmentRepository.findById(UUID.fromString(id))
                     .orElseThrow(() -> new EntityNotFoundException("FileAttachment not found: " + id));
 
             FileAttachmentModel model = fileAttachmentResourceAssembler.toModel(entity);
 
-            if (entity.getFileIdentifier() != null) {
+            if (deleteFromWfdm && entity.getFileIdentifier() != null) {
                 try {
                     wildfireDocumentManagerService.deleteDocument(entity.getFileIdentifier());
                 } catch (ServiceException e) {
@@ -215,10 +215,10 @@ public class FileAttachmentService implements CommonService {
     }
 
     @Transactional
-    public void deleteAttachmentsBySourceObject(String sourceObjectUniqueId) {
+    public void deleteAttachmentsBySourceObject(String sourceObjectUniqueId, boolean deleteFromWfdm) {
         List<FileAttachmentEntity> attachments = fileAttachmentRepository.findAllBySourceObjectUniqueId(sourceObjectUniqueId);
         for (FileAttachmentEntity attachment : attachments) {
-            if (attachment.getFileIdentifier() != null) {
+            if (deleteFromWfdm && attachment.getFileIdentifier() != null) {
                 wildfireDocumentManagerService.deleteDocument(attachment.getFileIdentifier());
             }
             fileAttachmentRepository.delete(attachment);

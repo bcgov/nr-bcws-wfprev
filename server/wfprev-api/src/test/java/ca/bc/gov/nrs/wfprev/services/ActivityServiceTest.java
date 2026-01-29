@@ -272,7 +272,7 @@ class ActivityServiceTest {
         activityService.deleteActivity(projectGuid, fiscalGuid, activityGuid, true);
 
         // THEN
-        verify(fileAttachmentService).deleteAttachmentsBySourceObject(activityGuid);
+        verify(fileAttachmentService).deleteAttachmentsBySourceObject(activityGuid, true);
         verify(activityBoundaryService).deleteActivityBoundaries(activityGuid, true);
         verify(activityRepository).deleteById(UUID.fromString(activityGuid));
     }
@@ -305,7 +305,7 @@ class ActivityServiceTest {
         activityService.deleteActivity(projectGuid, fiscalGuid, activityGuid, false);
 
         // THEN
-        verify(fileAttachmentService, never()).deleteAttachmentsBySourceObject(activityGuid);
+        verify(fileAttachmentService).deleteAttachmentsBySourceObject(activityGuid, false);
         verify(activityBoundaryService).deleteActivityBoundaries(activityGuid, false);
         verify(activityRepository).deleteById(UUID.fromString(activityGuid));
     }
@@ -455,7 +455,7 @@ class ActivityServiceTest {
         activityService.deleteActivities(fiscalGuid, true);
 
         // THEN
-        verify(fileAttachmentService).deleteAttachmentsBySourceObject(activityGuid);
+        verify(fileAttachmentService).deleteAttachmentsBySourceObject(activityGuid, true);
         verify(activityBoundaryService).deleteActivityBoundaries(activityGuid, true);
         verify(activityRepository).delete(activityEntity);
     }
@@ -475,7 +475,7 @@ class ActivityServiceTest {
         activityService.deleteActivities(fiscalGuid, false);
 
         // THEN
-        verify(fileAttachmentService, never()).deleteAttachmentsBySourceObject(activityGuid);
+        verify(fileAttachmentService).deleteAttachmentsBySourceObject(activityGuid, false);
         verify(activityBoundaryService).deleteActivityBoundaries(activityGuid, false);
         verify(activityRepository).delete(activityEntity);
     }
