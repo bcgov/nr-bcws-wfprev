@@ -315,7 +315,144 @@ class ProjectBoundaryServiceTest {
         verify(projectBoundaryRepository, times(1)).saveAndFlush(entity);
         verify(projectBoundaryResourceAssembler, times(1)).toModel(entity);
     }
-    // ... skipped redundant methods for brevity if they exist in replacement range ...
+    
+    
+    @Test
+    void testSaveProjectBoundary_ThrowsIllegalArgumentException() {
+        // Arrange
+        ProjectBoundaryEntity entity = new ProjectBoundaryEntity();
+
+        when(projectBoundaryRepository.saveAndFlush(entity)).thenThrow(new IllegalArgumentException("Invalid argument"));
+
+        // Act & Assert
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            projectBoundaryService.saveProjectBoundary(entity);
+        });
+
+        assertEquals("Invalid argument", exception.getMessage());
+        verify(projectBoundaryRepository, times(1)).saveAndFlush(entity);
+    }
+
+    @Test
+    void testSaveProjectBoundary_ThrowsEntityNotFoundException() {
+        // Arrange
+        ProjectBoundaryEntity entity = new ProjectBoundaryEntity();
+
+        when(projectBoundaryRepository.saveAndFlush(entity)).thenThrow(new EntityNotFoundException("Entity not found"));
+
+        // Act & Assert
+        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> {
+            projectBoundaryService.saveProjectBoundary(entity);
+        });
+
+        assertEquals("Entity not found", exception.getMessage());
+        verify(projectBoundaryRepository, times(1)).saveAndFlush(entity);
+    }
+
+    @Test
+    void testSaveProjectBoundary_ThrowsGenericException() {
+        // Arrange
+        ProjectBoundaryEntity entity = new ProjectBoundaryEntity();
+
+        when(projectBoundaryRepository.saveAndFlush(entity)).thenThrow(new RuntimeException("Unexpected error"));
+
+        // Act & Assert
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            projectBoundaryService.saveProjectBoundary(entity);
+        });
+
+        assertEquals("Unexpected error", exception.getMessage());
+        verify(projectBoundaryRepository, times(1)).saveAndFlush(entity);
+    }
+
+    @Test
+    void testConvertMultiPolygonAreaToHectares() {
+        GeometryFactory geometryFactory = new GeometryFactory();
+
+        Coordinate[] coords = new Coordinate[] {
+                new Coordinate(0.0, 0.0),
+                new Coordinate(0.01, 0.0),
+                new Coordinate(0.01, 0.01),
+                new Coordinate(0.0, 0.01),
+                new Coordinate(0.0, 0.0)
+        };
+        LinearRing shell = geometryFactory.createLinearRing(coords);
+        Polygon polygon = geometryFactory.createPolygon(shell, null);
+
+        MultiPolygon multiPolygon = geometryFactory.createMultiPolygon(new Polygon[]{ polygon });
+
+        BigDecimal result = projectBoundaryService.convertMultiPolygonAreaToHectares(multiPolygon);
+
+        BigDecimal expected = new BigDecimal("123.0907");
+
+        assertEquals(expected, result, "Area in hectares should match expected conversion");
+    }
+
+    @Test
+    void testUpdateProjectActualSizeHa_IsCalledInCreateProjectBoundary() {
+        String projectGuid = UUID.randomUUID().toString();
+        BigDecimal boundarySizeHa = new BigDecimal("99.99");
+
+        ProjectBoundaryModel resource = new ProjectBoundaryModel();
+        resource.setProjectGuid(projectGuid);
+        resource.setProjectBoundaryGuid(UUID.randomUUID().toString());
+        resource.setBoundarySizeHa(boundarySizeHa);
+
+        ProjectBoundaryEntity entity = new ProjectBoundaryEntity();
+        entity.setProjectGuid(UUID.fromString(projectGuid));
+        entity.setBoundarySizeHa(boundarySizeHa);
+
+        ProjectEntity projectEntity = new ProjectEntity();
+        projectEntity.setProjectGuid(UUID.fromString(projectGuid));
+
+        when(validator.validate(resource)).thenReturn(Collections.emptySet());
+        when(projectRepository.findById(UUID.fromString(projectGuid))).thenReturn(Optional.of(projectEntity));
+        when(projectBoundaryResourceAssembler.toEntity(resource)).thenReturn(entity);
+        when(projectBoundaryRepository.save(any())).thenReturn(entity);
+        when(projectBoundaryResourceAssembler.toModel(entity)).thenReturn(resource);
+
+        projectBoundaryService.createProjectBoundary(projectGuid, resource);
+
+        verify(projectRepository, times(1)).save(argThat(saved ->
+                saved.getProjectGuid().equals(UUID.fromString(projectGuid)) &&
+                        boundarySizeHa.compareTo(saved.getTotalActualProjectSizeHa()) == 0
+        ));
+    }
+
+    @Test
+    void testUpdateProjectActualSizeHa_IsCalledInUpdateProjectBoundary() {
+        String projectGuid = UUID.randomUUID().toString();
+        String boundaryGuid = UUID.randomUUID().toString();
+        BigDecimal boundarySizeHa = new BigDecimal("88.88");
+
+        ProjectBoundaryModel resource = new ProjectBoundaryModel();
+        resource.setProjectGuid(projectGuid);
+        resource.setProjectBoundaryGuid(boundaryGuid);
+
+        ProjectBoundaryEntity existingEntity = new ProjectBoundaryEntity();
+        existingEntity.setProjectGuid(UUID.fromString(projectGuid));
+
+        ProjectBoundaryEntity updatedEntity = new ProjectBoundaryEntity();
+        updatedEntity.setProjectGuid(UUID.fromString(projectGuid));
+        updatedEntity.setBoundarySizeHa(boundarySizeHa);
+
+        ProjectEntity projectEntity = new ProjectEntity();
+        projectEntity.setProjectGuid(UUID.fromString(projectGuid));
+
+        when(validator.validate(resource)).thenReturn(Collections.emptySet());
+        when(projectRepository.findById(UUID.fromString(projectGuid))).thenReturn(Optional.of(projectEntity));
+        when(projectBoundaryRepository.findByProjectBoundaryGuid(UUID.fromString(boundaryGuid))).thenReturn(Optional.of(existingEntity));
+        when(projectBoundaryResourceAssembler.updateEntity(resource, existingEntity)).thenReturn(updatedEntity);
+        when(projectBoundaryRepository.saveAndFlush(any())).thenReturn(updatedEntity);
+        when(projectBoundaryResourceAssembler.toModel(updatedEntity)).thenReturn(resource);
+
+        projectBoundaryService.updateProjectBoundary(projectGuid, resource);
+
+        verify(projectRepository, times(1)).save(argThat(saved ->
+                saved.getProjectGuid().equals(UUID.fromString(projectGuid)) &&
+                        boundarySizeHa.compareTo(saved.getTotalActualProjectSizeHa()) == 0
+        ));
+    }
 
     @Test
     void testDeleteProjectBoundaries_Success() {
