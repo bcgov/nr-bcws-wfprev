@@ -25,6 +25,7 @@ export const Messages = {
   fileUploadSuccess: 'File Uploaded Successfully',
   fileUploadFailure: 'File Uploaded Failed',
   fileUploadInProgress: 'File upload in progress, Please wait',
+  fileDeleteInProgress: 'File deletion in progress, Please wait',
   evaluationCriteriaCreatedSuccess: 'Evaluation Criteria Created Successfully.',
   evaluationCriteriaCreatedFailure: 'Failed to Create Evaluation Criteria.',
   evaluationCriteriaUpdatedSuccess: 'Evaluation Criteria Updated Successfully.',

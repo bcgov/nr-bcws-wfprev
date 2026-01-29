@@ -2,6 +2,8 @@ import { ChangeDetectorRef } from '@angular/core';
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar, MatSnackBarRef, SimpleSnackBar } from '@angular/material/snack-bar';
+import { ActivatedRoute } from '@angular/router';
+import { Position } from 'geojson';
 import { of, throwError } from 'rxjs';
 import { AddAttachmentComponent } from 'src/app/components/add-attachment/add-attachment.component';
 import { ConfirmationDialogComponent } from 'src/app/components/confirmation-dialog/confirmation-dialog.component';
@@ -9,10 +11,8 @@ import { FileAttachment, ProjectFile } from 'src/app/components/models';
 import { AttachmentService } from 'src/app/services/attachment-service';
 import { ProjectService } from 'src/app/services/project-services';
 import { SpatialService } from 'src/app/services/spatial-services';
-import { ProjectFilesComponent } from './project-files.component';
-import { Position } from 'geojson';
-import { ActivatedRoute } from '@angular/router';
 import { Messages, ModalMessages, ModalTitles } from 'src/app/utils/constants';
+import { ProjectFilesComponent } from './project-files.component';
 
 describe('ProjectFilesComponent', () => {
   let component: ProjectFilesComponent;
@@ -628,6 +628,12 @@ describe('ProjectFilesComponent', () => {
         })
       );
 
+      expect(mockSnackbar.open).toHaveBeenCalledWith(
+        Messages.fileDeleteInProgress,
+        'Close',
+        jasmine.objectContaining({ panelClass: 'snackbar-info' })
+      );
+
       expect(mockAttachmentService.deleteProjectAttachment).toHaveBeenCalledWith(
         mockProjectGuid,
         'test-guid'
@@ -686,6 +692,11 @@ describe('ProjectFilesComponent', () => {
 
       expect(mockAttachmentService.deleteProjectAttachment).toHaveBeenCalled();
       expect(console.error).toHaveBeenCalled();
+      expect(mockSnackbar.open).toHaveBeenCalledWith(
+        Messages.fileDeleteInProgress,
+        'Close',
+        jasmine.objectContaining({ panelClass: 'snackbar-info' })
+      );
       expect(mockSnackbar.open).toHaveBeenCalledWith(
         'Failed to delete the file. Please try again.',
         'Close',
