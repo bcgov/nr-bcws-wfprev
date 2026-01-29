@@ -3,17 +3,17 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar, MatSnackBarRef, SimpleSnackBar } from '@angular/material/snack-bar';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { ActivatedRoute } from '@angular/router';
+import { Position } from 'geojson';
 import { catchError, map, throwError } from 'rxjs';
 import { AddAttachmentComponent } from 'src/app/components/add-attachment/add-attachment.component';
 import { ConfirmationDialogComponent } from 'src/app/components/confirmation-dialog/confirmation-dialog.component';
 import { ActivityBoundary, FileAttachment, ProjectBoundary, ProjectFile } from 'src/app/components/models';
+import { IconButtonComponent } from 'src/app/components/shared/icon-button/icon-button.component';
 import { AttachmentService } from 'src/app/services/attachment-service';
 import { ProjectService } from 'src/app/services/project-services';
 import { SpatialService } from 'src/app/services/spatial-services';
 import { Messages, ModalMessages, ModalTitles } from 'src/app/utils/constants';
-import { Position } from 'geojson';
-import { ActivatedRoute } from '@angular/router';
-import { IconButtonComponent } from 'src/app/components/shared/icon-button/icon-button.component';
 
 @Component({
   selector: 'wfprev-project-files',
@@ -79,29 +79,29 @@ export class ProjectFilesComponent implements OnInit {
               next: (boundaryResponse) => {
                 const boundaries = boundaryResponse?._embedded?.projectBoundary;
                 let boundarySizeHa = undefined;
-            
+
                 if (boundaries && boundaries.length > 0) {
                   // Sort boundaries by systemStartTimestamp in descending order
                   const latestBoundary = boundaries.sort((a: { systemStartTimestamp: string | number | Date }, b: { systemStartTimestamp: string | number | Date }) =>
                     new Date(b.systemStartTimestamp).getTime() - new Date(a.systemStartTimestamp).getTime()
                   )[0];
-          
+
                   const boundarySizeMap = new Map<string, number>();
                   boundaries.forEach((boundary: { projectBoundaryGuid: string; boundarySizeHa: number }) => {
                     boundarySizeMap.set(boundary.projectBoundaryGuid, boundary.boundarySizeHa);
                   });
-            
+
                   this.projectFiles = fileAttachments.map((file: FileAttachment) => ({
                     ...file,
                     polygonHectares: file.sourceObjectUniqueId ? boundarySizeMap.get(file.sourceObjectUniqueId) ?? null : null
                   }));
-            
+
                 } else {
                   console.error('No project boundaries found for this project');
                   this.projectFiles = fileAttachments;
                 }
-            
-                
+
+
                 this.dataSource.data = [...this.projectFiles];
               },
               error: (error) => {
@@ -126,12 +126,12 @@ export class ProjectFilesComponent implements OnInit {
   loadActivityAttachments(): void {
     if (!this.fiscalGuid || !this.activityGuid) return;
     this.projectGuid = this.route.snapshot?.queryParamMap?.get('projectGuid') ?? '';
-  
+
     // Fetch activity boundaries
     this.projectService.getActivityBoundaries(this.projectGuid, this.fiscalGuid, this.activityGuid).subscribe({
       next: (boundaryResponse) => {
         const boundaries = boundaryResponse?._embedded?.activityBoundary;
-  
+
         // Build map of activityBoundaryGuid → boundarySizeHa to set polygon hecatares for each file
         const boundarySizeMap = new Map<string, number>();
         if (boundaries && boundaries.length > 0) {
@@ -139,7 +139,7 @@ export class ProjectFilesComponent implements OnInit {
             boundarySizeMap.set(boundary.activityBoundaryGuid, boundary.boundarySizeHa);
           });
         }
-  
+
         this.attachmentService.getActivityAttachments(this.projectGuid, this.fiscalGuid, this.activityGuid).subscribe({
           next: (response) => {
             if (response?._embedded?.fileAttachment && Array.isArray(response._embedded.fileAttachment)) {
@@ -148,13 +148,13 @@ export class ProjectFilesComponent implements OnInit {
                 const timeB = new Date(b.uploadedByTimestamp ?? 0).getTime();
                 return timeB - timeA; // latest first
               });
-  
+
               // Set polygonHectares for each attachment
               this.projectFiles = fileAttachments.map((file: FileAttachment) => ({
                 ...file,
                 polygonHectares: file.sourceObjectUniqueId ? boundarySizeMap.get(file.sourceObjectUniqueId) ?? null : null
               }));
-  
+
               this.dataSource.data = [...this.projectFiles];
             } else {
               console.error('Expected an array of activity files inside _embedded.fileAttachment, but got:', response);
@@ -223,12 +223,12 @@ export class ProjectFilesComponent implements OnInit {
       });
       return;
     }
-  
+
     if ((type === 'OTHER' || type === 'DOCUMENT') || !fileExtension.match(/zip|gdb|kml|kmz|shp/)) {
       this.finishWithoutGeometry(file, fileUploadResp, type);
       return;
     }
-  
+
     this.spatialService.extractCoordinates(file).then((geometry) => {
       if (!geometry) {
         snackRef.dismiss();
@@ -238,11 +238,11 @@ export class ProjectFilesComponent implements OnInit {
         });
         return;
       }
-  
+
       const now = new Date();
       const futureDate = new Date(now);
       futureDate.setFullYear(futureDate.getFullYear() + 1);
-  
+
       if (this.isActivityContext && this.projectGuid) {
         // Create Activity boundary 
         const activityBoundary: ActivityBoundary = {
@@ -258,7 +258,7 @@ export class ProjectFilesComponent implements OnInit {
             coordinates: geometry,
           }
         };
-  
+
         this.projectService.createActivityBoundary(this.projectGuid, this.fiscalGuid, this.activityGuid, activityBoundary).subscribe({
           next: (boundaryResp) => {
             const boundaryGuid = boundaryResp?.activityBoundaryGuid;
@@ -271,7 +271,7 @@ export class ProjectFilesComponent implements OnInit {
               attachmentDescription: this.attachmentDescription,
               attachmentReadOnlyInd: false,
             };
-  
+
             this.attachmentService.createActivityAttachment(this.projectGuid, this.fiscalGuid, this.activityGuid, attachment).subscribe({
               next: () => {
                 snackRef.dismiss();
@@ -288,7 +288,7 @@ export class ProjectFilesComponent implements OnInit {
             console.error('Failed to create activity boundary', err);
           }
         });
-  
+
       } else {
         // Create Project boundary
         const projectBoundary: ProjectBoundary = {
@@ -302,7 +302,7 @@ export class ProjectFilesComponent implements OnInit {
             coordinates: geometry,
           }
         };
-  
+
         this.projectService.createProjectBoundary(this.projectGuid, projectBoundary).subscribe({
           next: (boundaryResp) => {
             const boundaryGuid = boundaryResp?.projectBoundaryGuid;
@@ -315,7 +315,7 @@ export class ProjectFilesComponent implements OnInit {
               attachmentDescription: this.attachmentDescription,
               attachmentReadOnlyInd: false,
             };
-  
+
             this.attachmentService.createProjectAttachment(this.projectGuid, attachment).subscribe({
               next: () => {
                 snackRef.dismiss();
@@ -455,15 +455,20 @@ export class ProjectFilesComponent implements OnInit {
   deleteFile(fileToDelete: ProjectFile): void {
     // Open the confirmation dialog
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-      data: { indicator: 'delete-attachment',
-              title: ModalTitles.DELETE_ATTACHMENT_TITLE,
-              message: ModalMessages.DELETE_ATTACHMENT_MESSAGE
-       },
+      data: {
+        indicator: 'delete-attachment',
+        title: ModalTitles.DELETE_ATTACHMENT_TITLE,
+        message: ModalMessages.DELETE_ATTACHMENT_MESSAGE
+      },
       width: '600px',
     });
 
     dialogRef.afterClosed().subscribe((confirmed: boolean) => {
       if (confirmed) {
+        this.snackbarService.open(Messages.fileDeleteInProgress, 'Close', {
+          duration: undefined,
+          panelClass: 'snackbar-info',
+        });
         if (fileToDelete?.fileAttachmentGuid) {
 
           if (this.isActivityContext) {
@@ -477,30 +482,30 @@ export class ProjectFilesComponent implements OnInit {
                 if (typeCode === 'MAP') {
                   // only run boundary deletion logic for MAP files
                   this.projectService.getActivityBoundaries(this.projectGuid, this.fiscalGuid, this.activityGuid).subscribe(response => {
-                  const boundaries = response?._embedded?.activityBoundary;
-                  if (boundaries && boundaries.length > 0) {
-                    const latest = boundaries.sort((a: ActivityBoundary, b: ActivityBoundary) =>
-                      new Date(b.systemStartTimestamp ?? 0).getTime() - new Date(a.systemStartTimestamp ?? 0).getTime()
-                    )[0];
+                    const boundaries = response?._embedded?.activityBoundary;
+                    if (boundaries && boundaries.length > 0) {
+                      const latest = boundaries.sort((a: ActivityBoundary, b: ActivityBoundary) =>
+                        new Date(b.systemStartTimestamp ?? 0).getTime() - new Date(a.systemStartTimestamp ?? 0).getTime()
+                      )[0];
 
-                    const activityBoundaryGuid = latest.activityBoundaryGuid;
-                    this.projectService.deleteActivityBoundary(this.projectGuid, this.fiscalGuid, this.activityGuid, activityBoundaryGuid).subscribe({
-                      next: () => {
-                        this.filesUpdated.emit();
-                        // Show success message in snackbar
-                        this.snackbarService.open('File has been deleted successfully.', 'Close', {
-                          duration: 5000,
-                          panelClass: 'snackbar-success',
-                        });
-                        this.loadActivityAttachments();
-                      }
-                    })
+                      const activityBoundaryGuid = latest.activityBoundaryGuid;
+                      this.projectService.deleteActivityBoundary(this.projectGuid, this.fiscalGuid, this.activityGuid, activityBoundaryGuid).subscribe({
+                        next: () => {
+                          this.filesUpdated.emit();
+                          // Show success message in snackbar
+                          this.snackbarService.open('File has been deleted successfully.', 'Close', {
+                            duration: 5000,
+                            panelClass: 'snackbar-success',
+                          });
+                          this.loadActivityAttachments();
+                        }
+                      })
 
                     } else {
                       console.log('No boundaries found');
                     }
                   })
-                } else{
+                } else {
                   this.filesUpdated.emit();
                   this.snackbarService.open('File has been deleted successfully.', 'Close', {
                     duration: 5000,
@@ -525,32 +530,41 @@ export class ProjectFilesComponent implements OnInit {
                 this.projectFiles = this.projectFiles.filter(file => file !== fileToDelete);
                 this.dataSource.data = [...this.projectFiles];
 
-                this.projectService.getProjectBoundaries(this.projectGuid).subscribe(response => {
-                  const boundaries = response?._embedded?.projectBoundary;
+                const typeCode = fileToDelete.attachmentContentTypeCode?.attachmentContentTypeCode;
+                if (typeCode === 'MAP') {
+                  this.projectService.getProjectBoundaries(this.projectGuid).subscribe(response => {
+                    const boundaries = response?._embedded?.projectBoundary;
 
-                  if (boundaries && boundaries.length > 0) {
-                    const latest = boundaries.sort((a: ProjectBoundary, b: ProjectBoundary) =>
-                      new Date(b.systemStartTimestamp ?? 0).getTime() - new Date(a.systemStartTimestamp ?? 0).getTime()
-                    )[0];
+                    if (boundaries && boundaries.length > 0) {
+                      const latest = boundaries.sort((a: ProjectBoundary, b: ProjectBoundary) =>
+                        new Date(b.systemStartTimestamp ?? 0).getTime() - new Date(a.systemStartTimestamp ?? 0).getTime()
+                      )[0];
 
-                    const boundaryGuid = latest.projectBoundaryGuid;
-                    this.projectService.deleteProjectBoundary(this.projectGuid, boundaryGuid).subscribe({
-                      next: () => {
-                        this.filesUpdated.emit();
-                        // Show success message in snackbar
-                        this.snackbarService.open('File has been deleted successfully.', 'Close', {
-                          duration: 5000,
-                          panelClass: 'snackbar-success',
-                        });
-                        this.loadProjectAttachments();
-                      }
-                    })
+                      const boundaryGuid = latest.projectBoundaryGuid;
+                      this.projectService.deleteProjectBoundary(this.projectGuid, boundaryGuid).subscribe({
+                        next: () => {
+                          this.filesUpdated.emit();
+                          // Show success message in snackbar
+                          this.snackbarService.open('File has been deleted successfully.', 'Close', {
+                            duration: 5000,
+                            panelClass: 'snackbar-success',
+                          });
+                          this.loadProjectAttachments();
+                        }
+                      })
 
-                  } else {
-                    console.log('No boundaries found');
-                  }
-
-                })
+                    } else {
+                      console.log('No boundaries found');
+                    }
+                  })
+                } else {
+                  this.filesUpdated.emit();
+                  this.snackbarService.open('File has been deleted successfully.', 'Close', {
+                    duration: 5000,
+                    panelClass: 'snackbar-success',
+                  });
+                  this.loadProjectAttachments();
+                }
               },
               error: (error) => {
                 // Handle any error during the deletion process
