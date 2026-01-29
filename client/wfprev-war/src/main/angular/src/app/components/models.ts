@@ -198,7 +198,8 @@ export interface ProjectFile {
   documentPath?: string,
   attachmentContentTypeCode?: {
     attachmentContentTypeCode?: string;
-  }
+  };
+  sourceObjectUniqueId?: string
 }
 
 export interface FeaturesResponse {
