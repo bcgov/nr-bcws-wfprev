@@ -465,6 +465,10 @@ export class ProjectFilesComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe((confirmed: boolean) => {
       if (confirmed) {
+        this.snackbarService.open(Messages.fileDeleteInProgress, 'Close', {
+          duration: undefined,
+          panelClass: 'snackbar-info',
+        });
         if (fileToDelete?.fileAttachmentGuid) {
 
           if (this.isActivityContext) {
