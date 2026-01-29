@@ -479,32 +479,28 @@ export class ProjectFilesComponent implements OnInit {
                 this.dataSource.data = [...this.projectFiles];
 
                 const typeCode = fileToDelete.attachmentContentTypeCode?.attachmentContentTypeCode;
-                if (typeCode === 'MAP') {
+                if (typeCode === 'MAP' && fileToDelete.sourceObjectUniqueId) {
                   // only run boundary deletion logic for MAP files
-                  this.projectService.getActivityBoundaries(this.projectGuid, this.fiscalGuid, this.activityGuid).subscribe(response => {
-                    const boundaries = response?._embedded?.activityBoundary;
-                    if (boundaries && boundaries.length > 0) {
-                      const latest = boundaries.sort((a: ActivityBoundary, b: ActivityBoundary) =>
-                        new Date(b.systemStartTimestamp ?? 0).getTime() - new Date(a.systemStartTimestamp ?? 0).getTime()
-                      )[0];
-
-                      const activityBoundaryGuid = latest.activityBoundaryGuid;
-                      this.projectService.deleteActivityBoundary(this.projectGuid, this.fiscalGuid, this.activityGuid, activityBoundaryGuid).subscribe({
-                        next: () => {
-                          this.filesUpdated.emit();
-                          // Show success message in snackbar
-                          this.snackbarService.open('File has been deleted successfully.', 'Close', {
-                            duration: 5000,
-                            panelClass: 'snackbar-success',
-                          });
-                          this.loadActivityAttachments();
-                        }
-                      })
-
-                    } else {
-                      console.log('No boundaries found');
+                  this.projectService.deleteActivityBoundary(this.projectGuid, this.fiscalGuid, this.activityGuid, fileToDelete.sourceObjectUniqueId).subscribe({
+                    next: () => {
+                      this.filesUpdated.emit();
+                      // Show success message in snackbar
+                      this.snackbarService.open('File has been deleted successfully.', 'Close', {
+                        duration: 5000,
+                        panelClass: 'snackbar-success',
+                      });
+                      this.loadActivityAttachments();
+                    },
+                    error: (err) => {
+                      console.error('Failed to delete activity boundary', err);
+                      this.snackbarService.open('Failed to delete the boundary.', 'Close', {
+                        duration: 5000,
+                        panelClass: 'snackbar-warning',
+                      });
+                      // Still reload attachments as the file might be gone
+                      this.loadActivityAttachments();
                     }
-                  })
+                  });
                 } else {
                   this.filesUpdated.emit();
                   this.snackbarService.open('File has been deleted successfully.', 'Close', {
@@ -531,32 +527,26 @@ export class ProjectFilesComponent implements OnInit {
                 this.dataSource.data = [...this.projectFiles];
 
                 const typeCode = fileToDelete.attachmentContentTypeCode?.attachmentContentTypeCode;
-                if (typeCode === 'MAP') {
-                  this.projectService.getProjectBoundaries(this.projectGuid).subscribe(response => {
-                    const boundaries = response?._embedded?.projectBoundary;
-
-                    if (boundaries && boundaries.length > 0) {
-                      const latest = boundaries.sort((a: ProjectBoundary, b: ProjectBoundary) =>
-                        new Date(b.systemStartTimestamp ?? 0).getTime() - new Date(a.systemStartTimestamp ?? 0).getTime()
-                      )[0];
-
-                      const boundaryGuid = latest.projectBoundaryGuid;
-                      this.projectService.deleteProjectBoundary(this.projectGuid, boundaryGuid).subscribe({
-                        next: () => {
-                          this.filesUpdated.emit();
-                          // Show success message in snackbar
-                          this.snackbarService.open('File has been deleted successfully.', 'Close', {
-                            duration: 5000,
-                            panelClass: 'snackbar-success',
-                          });
-                          this.loadProjectAttachments();
-                        }
-                      })
-
-                    } else {
-                      console.log('No boundaries found');
+                if (typeCode === 'MAP' && fileToDelete.sourceObjectUniqueId) {
+                  this.projectService.deleteProjectBoundary(this.projectGuid, fileToDelete.sourceObjectUniqueId).subscribe({
+                    next: () => {
+                      this.filesUpdated.emit();
+                      // Show success message in snackbar
+                      this.snackbarService.open('File has been deleted successfully.', 'Close', {
+                        duration: 5000,
+                        panelClass: 'snackbar-success',
+                      });
+                      this.loadProjectAttachments();
+                    },
+                    error: (err) => {
+                      console.error('Failed to delete project boundary', err);
+                      this.snackbarService.open('Failed to delete the boundary.', 'Close', {
+                        duration: 5000,
+                        panelClass: 'snackbar-warning',
+                      });
+                      this.loadProjectAttachments();
                     }
-                  })
+                  });
                 } else {
                   this.filesUpdated.emit();
                   this.snackbarService.open('File has been deleted successfully.', 'Close', {
