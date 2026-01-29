@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Date;
@@ -212,14 +213,15 @@ public class ProjectAttachmentController extends CommonController {
     )
     public ResponseEntity<Void> deleteFileAttachment(
             @PathVariable String id,
-            @PathVariable String projectGuid) {
+            @PathVariable String projectGuid,
+            @RequestParam(name = "deleteFileFromWfdm", required = false, defaultValue = "false") boolean deleteFileFromWfdm) {
         log.debug(" >> deleteFileAttachment");
         try {
             if (!isValidProject(projectGuid)) {
                 log.warn(" ### Invalid projectGuid for deleteFileAttachment: {}", projectGuid);
                 return notFound();
             }
-            fileAttachmentService.deleteFileAttachment(id);
+            fileAttachmentService.deleteFileAttachment(id, deleteFileFromWfdm);
             return ResponseEntity.noContent().build();
         } catch (EntityNotFoundException e) {
             log.warn(" ### File Attachment for deletion not found: {}", id, e);

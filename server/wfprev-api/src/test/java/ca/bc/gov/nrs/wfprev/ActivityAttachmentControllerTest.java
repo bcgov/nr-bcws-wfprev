@@ -33,6 +33,7 @@ import java.util.Date;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
@@ -225,7 +226,21 @@ class ActivityAttachmentControllerTest {
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent());
 
-        verify(fileAttachmentService).deleteFileAttachment(anyString());
+        verify(fileAttachmentService).deleteFileAttachment(anyString(), eq(false));
+    }
+
+    @Test
+    void testDeleteFileAttachment_Success_WithFlag() throws Exception {
+        String attachmentId = "123e4567-e89b-12d3-a456-426614174000";
+        when(activityService.getActivity(anyString(), anyString(), anyString())).thenReturn(new ActivityModel());
+
+        mockMvc.perform(delete("/projects/{projectGuid}/projectFiscals/{projectPlanFiscalGuid}/activities/{activityGuid}/attachments/{id}", "123e4567-e89b-12d3-a456-426614174001", "123e4567-e89b-12d3-a456-426614174002", "123e4567-e89b-12d3-a456-426614174003", attachmentId)
+                        .param("deleteFileFromWfdm", "true")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNoContent());
+
+        verify(fileAttachmentService).deleteFileAttachment(anyString(), eq(true));
     }
 
     @Test
@@ -234,7 +249,7 @@ class ActivityAttachmentControllerTest {
 
         when(activityService.getActivity(anyString(), anyString(), anyString())).thenReturn(new ActivityModel());
         doThrow(new EntityNotFoundException("Attachment not found"))
-                .when(fileAttachmentService).deleteFileAttachment(anyString());
+                .when(fileAttachmentService).deleteFileAttachment(anyString(), any(Boolean.class));
 
         mockMvc.perform(delete("/projects/{projectGuid}/projectFiscals/{projectPlanFiscalGuid}/activities/{activityGuid}/attachments/{id}", "123e4567-e89b-12d3-a456-426614174001", "123e4567-e89b-12d3-a456-426614174002", "123e4567-e89b-12d3-a456-426614174003", attachmentId)
                         .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
@@ -248,7 +263,7 @@ class ActivityAttachmentControllerTest {
 
         when(activityService.getActivity(anyString(), anyString(), anyString())).thenReturn(new ActivityModel());
         doThrow(new RuntimeException("Unexpected error"))
-                .when(fileAttachmentService).deleteFileAttachment(anyString());
+                .when(fileAttachmentService).deleteFileAttachment(anyString(), any(Boolean.class));
 
         mockMvc.perform(delete("/projects/{projectGuid}/projectFiscals/{projectPlanFiscalGuid}/activities/{activityGuid}/attachments/{id}", "123e4567-e89b-12d3-a456-426614174001", "123e4567-e89b-12d3-a456-426614174002", "123e4567-e89b-12d3-a456-426614174003", attachmentId)
                         .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
