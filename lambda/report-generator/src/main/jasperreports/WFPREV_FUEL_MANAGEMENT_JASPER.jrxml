@@ -96,76 +96,76 @@
 	<field name="fineFilterSectionComment" class="java.lang.String" />
 	<field name="fiscalForecastAmount" class="java.math.BigDecimal" />
 	<field name="ancillaryFundingProvider" class="java.lang.String" />
-	<field name="q1PerformanceUpdateTimestamp" class="java.util.Date" />
-	<field name="q1ProgressStatus" class="java.lang.String" />
-	<field name="q1GeneralUpdates" class="java.lang.String" />
-	<field name="q1RevisedForecastAmount" class="java.math.BigDecimal" />
+	<field name="q1SubmittedTimestamp" class="java.util.Date" />
+	<field name="q1ProgressStatusCode" class="java.lang.String" />
+	<field name="q1GeneralUpdateComment" class="java.lang.String" />
+	<field name="q1ForecastAmount" class="java.math.BigDecimal" />
 	<field name="q1ForecastAdjustmentAmount" class="java.math.BigDecimal" />
 	<field name="q1ForecastAdjustmentRationale" class="java.lang.String" />
-	<field name="q1HighRiskAmount" class="java.math.BigDecimal" />
-	<field name="q1HighRiskRationale" class="java.lang.String" />
-	<field name="q1MediumRiskAmount" class="java.math.BigDecimal" />
-	<field name="q1MediumRiskRationale" class="java.lang.String" />
-	<field name="q1LowRiskAmount" class="java.math.BigDecimal" />
-	<field name="q1LowRiskRationale" class="java.lang.String" />
-	<field name="q1CompleteAmount" class="java.math.BigDecimal" />
-	<field name="q1CompleteRationale" class="java.lang.String" />
-	<field name="q2PerformanceUpdateTimestamp" class="java.util.Date" />
-	<field name="q2ProgressStatus" class="java.lang.String" />
-	<field name="q2GeneralUpdates" class="java.lang.String" />
-	<field name="q2RevisedForecastAmount" class="java.math.BigDecimal" />
+	<field name="q1BudgetHighRiskAmount" class="java.math.BigDecimal" />
+	<field name="q1BudgetHighRiskRationale" class="java.lang.String" />
+	<field name="q1BudgetMediumRiskAmount" class="java.math.BigDecimal" />
+	<field name="q1BudgetMediumRiskRationale" class="java.lang.String" />
+	<field name="q1BudgetLowRiskAmount" class="java.math.BigDecimal" />
+	<field name="q1BudgetLowRiskRationale" class="java.lang.String" />
+	<field name="q1BudgetCompletedAmount" class="java.math.BigDecimal" />
+	<field name="q1BudgetCompletedDescription" class="java.lang.String" />
+	<field name="q2SubmittedTimestamp" class="java.util.Date" />
+	<field name="q2ProgressStatusCode" class="java.lang.String" />
+	<field name="q2GeneralUpdateComment" class="java.lang.String" />
+	<field name="q2ForecastAmount" class="java.math.BigDecimal" />
 	<field name="q2ForecastAdjustmentAmount" class="java.math.BigDecimal" />
 	<field name="q2ForecastAdjustmentRationale" class="java.lang.String" />
-	<field name="q2HighRiskAmount" class="java.math.BigDecimal" />
-	<field name="q2HighRiskRationale" class="java.lang.String" />
-	<field name="q2MediumRiskAmount" class="java.math.BigDecimal" />
-	<field name="q2MediumRiskRationale" class="java.lang.String" />
-	<field name="q2LowRiskAmount" class="java.math.BigDecimal" />
-	<field name="q2LowRiskRationale" class="java.lang.String" />
-	<field name="q2CompleteAmount" class="java.math.BigDecimal" />
-	<field name="q2CompleteRationale" class="java.lang.String" />
-	<field name="q3PerformanceUpdateTimestamp" class="java.util.Date" />
-	<field name="q3ProgressStatus" class="java.lang.String" />
-	<field name="q3GeneralUpdates" class="java.lang.String" />
-	<field name="q3RevisedForecastAmount" class="java.math.BigDecimal" />
+	<field name="q2BudgetHighRiskAmount" class="java.math.BigDecimal" />
+	<field name="q2BudgetHighRiskRationale" class="java.lang.String" />
+	<field name="q2BudgetMediumRiskAmount" class="java.math.BigDecimal" />
+	<field name="q2BudgetMediumRiskRationale" class="java.lang.String" />
+	<field name="q2BudgetLowRiskAmount" class="java.math.BigDecimal" />
+	<field name="q2BudgetLowRiskRationale" class="java.lang.String" />
+	<field name="q2BudgetCompletedAmount" class="java.math.BigDecimal" />
+	<field name="q2BudgetCompletedDescription" class="java.lang.String" />
+	<field name="q3SubmittedTimestamp" class="java.util.Date" />
+	<field name="q3ProgressStatusCode" class="java.lang.String" />
+	<field name="q3GeneralUpdateComment" class="java.lang.String" />
+	<field name="q3ForecastAmount" class="java.math.BigDecimal" />
 	<field name="q3ForecastAdjustmentAmount" class="java.math.BigDecimal" />
 	<field name="q3ForecastAdjustmentRationale" class="java.lang.String" />
-	<field name="q3HighRiskAmount" class="java.math.BigDecimal" />
-	<field name="q3HighRiskRationale" class="java.lang.String" />
-	<field name="q3MediumRiskAmount" class="java.math.BigDecimal" />
-	<field name="q3MediumRiskRationale" class="java.lang.String" />
-	<field name="q3LowRiskAmount" class="java.math.BigDecimal" />
-	<field name="q3LowRiskRationale" class="java.lang.String" />
-	<field name="q3CompleteAmount" class="java.math.BigDecimal" />
-	<field name="q3CompleteRationale" class="java.lang.String" />
-	<field name="march7PerformanceUpdateTimestamp" class="java.util.Date" />
-	<field name="march7ProgressStatus" class="java.lang.String" />
-	<field name="march7GeneralUpdates" class="java.lang.String" />
-	<field name="march7RevisedForecastAmount" class="java.math.BigDecimal" />
+	<field name="q3BudgetHighRiskAmount" class="java.math.BigDecimal" />
+	<field name="q3BudgetHighRiskRationale" class="java.lang.String" />
+	<field name="q3BudgetMediumRiskAmount" class="java.math.BigDecimal" />
+	<field name="q3BudgetMediumRiskRationale" class="java.lang.String" />
+	<field name="q3BudgetLowRiskAmount" class="java.math.BigDecimal" />
+	<field name="q3BudgetLowRiskRationale" class="java.lang.String" />
+	<field name="q3BudgetCompletedAmount" class="java.math.BigDecimal" />
+	<field name="q3BudgetCompletedDescription" class="java.lang.String" />
+	<field name="march7SubmittedTimestamp" class="java.util.Date" />
+	<field name="march7ProgressStatusCode" class="java.lang.String" />
+	<field name="march7GeneralUpdateComment" class="java.lang.String" />
+	<field name="march7ForecastAmount" class="java.math.BigDecimal" />
 	<field name="march7ForecastAdjustmentAmount" class="java.math.BigDecimal" />
 	<field name="march7ForecastAdjustmentRationale" class="java.lang.String" />
-	<field name="march7HighRiskAmount" class="java.math.BigDecimal" />
-	<field name="march7HighRiskRationale" class="java.lang.String" />
-	<field name="march7MediumRiskAmount" class="java.math.BigDecimal" />
-	<field name="march7MediumRiskRationale" class="java.lang.String" />
-	<field name="march7LowRiskAmount" class="java.math.BigDecimal" />
-	<field name="march7LowRiskRationale" class="java.lang.String" />
-	<field name="march7CompleteAmount" class="java.math.BigDecimal" />
-	<field name="march7CompleteRationale" class="java.lang.String" />
-	<field name="otherPerformanceUpdateTimestamp" class="java.util.Date" />
-	<field name="otherProgressStatus" class="java.lang.String" />
-	<field name="otherGeneralUpdates" class="java.lang.String" />
-	<field name="otherRevisedForecastAmount" class="java.math.BigDecimal" />
+	<field name="march7BudgetHighRiskAmount" class="java.math.BigDecimal" />
+	<field name="march7BudgetHighRiskRationale" class="java.lang.String" />
+	<field name="march7BudgetMediumRiskAmount" class="java.math.BigDecimal" />
+	<field name="march7BudgetMediumRiskRationale" class="java.lang.String" />
+	<field name="march7BudgetLowRiskAmount" class="java.math.BigDecimal" />
+	<field name="march7BudgetLowRiskRationale" class="java.lang.String" />
+	<field name="march7BudgetCompletedAmount" class="java.math.BigDecimal" />
+	<field name="march7BudgetCompletedDescription" class="java.lang.String" />
+	<field name="otherSubmittedTimestamp" class="java.util.Date" />
+	<field name="otherProgressStatusCode" class="java.lang.String" />
+	<field name="otherGeneralUpdateComment" class="java.lang.String" />
+	<field name="otherForecastAmount" class="java.math.BigDecimal" />
 	<field name="otherForecastAdjustmentAmount" class="java.math.BigDecimal" />
 	<field name="otherForecastAdjustmentRationale" class="java.lang.String" />
-	<field name="otherHighRiskAmount" class="java.math.BigDecimal" />
-	<field name="otherHighRiskRationale" class="java.lang.String" />
-	<field name="otherMediumRiskAmount" class="java.math.BigDecimal" />
-	<field name="otherMediumRiskRationale" class="java.lang.String" />
-	<field name="otherLowRiskAmount" class="java.math.BigDecimal" />
-	<field name="otherLowRiskRationale" class="java.lang.String" />
-	<field name="otherCompleteAmount" class="java.math.BigDecimal" />
-	<field name="otherCompleteRationale" class="java.lang.String" />
+	<field name="otherBudgetHighRiskAmount" class="java.math.BigDecimal" />
+	<field name="otherBudgetHighRiskRationale" class="java.lang.String" />
+	<field name="otherBudgetMediumRiskAmount" class="java.math.BigDecimal" />
+	<field name="otherBudgetMediumRiskRationale" class="java.lang.String" />
+	<field name="otherBudgetLowRiskAmount" class="java.math.BigDecimal" />
+	<field name="otherBudgetLowRiskRationale" class="java.lang.String" />
+	<field name="otherBudgetCompletedAmount" class="java.math.BigDecimal" />
+	<field name="otherBudgetCompletedDescription" class="java.lang.String" />
 	<group name="CRx XLS Download">
 		<groupHeader>
 			<band />
@@ -3351,16 +3351,16 @@ Notes on Fine Filters</text>
 				<expression>$F{totalFilterSectionScore}</expression>
 			</element>
 	<element kind="textField" uuid="9a7468d2-879d-4ac2-8383-608f7a254853" x="8512" y="0" width="180" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Center" vTextAlign="Bottom" pattern="yyyy-MM-dd">
-				<expression>$F{q1PerformanceUpdateTimestamp}</expression>
+				<expression>$F{q1SubmittedTimestamp}</expression>
 			</element>
 	<element kind="textField" uuid="01d497e4-adbc-420b-a262-0ab9c4edc71c" x="8692" y="0" width="180" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
-				<expression>$F{q1ProgressStatus}</expression>
+				<expression>$F{q1ProgressStatusCode}</expression>
 			</element>
 	<element kind="textField" uuid="b6d91427-089f-4986-a2aa-7cb8ef6d8bca" x="8872" y="0" width="270" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
-				<expression>$F{q1GeneralUpdates}</expression>
+				<expression>$F{q1GeneralUpdateComment}</expression>
 			</element>
 	<element kind="textField" uuid="5da5f184-e6b0-4b31-9cae-4f42b045c802" x="9142" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="¤#,##0.00;¤-#,##0.00">
-				<expression>$F{q1RevisedForecastAmount}</expression>
+				<expression>$F{q1ForecastAmount}</expression>
 			</element>
 	<element kind="textField" uuid="32f5667b-8fce-45cb-a4d2-ac7bfdb14de5" x="9262" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="¤#,##0.00;¤-#,##0.00">
 				<expression>$F{q1ForecastAdjustmentAmount}</expression>
@@ -3369,40 +3369,40 @@ Notes on Fine Filters</text>
 				<expression>$F{q1ForecastAdjustmentRationale}</expression>
 			</element>
 	<element kind="textField" uuid="07cc4591-1918-4092-bf0d-1dd82fbda0da" x="9602" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="¤#,##0.00;¤-#,##0.00">
-				<expression>$F{q1HighRiskAmount}</expression>
+				<expression>$F{q1BudgetHighRiskAmount}</expression>
 			</element>
 	<element kind="textField" uuid="8909c114-bca3-43a9-800e-40cf43b6ef02" x="9722" y="0" width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
-				<expression>$F{q1HighRiskRationale}</expression>
+				<expression>$F{q1BudgetHighRiskRationale}</expression>
 			</element>
 	<element kind="textField" uuid="dfc91a59-08e2-477f-9efb-e82f5922db77" x="9942" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="¤#,##0.00;¤-#,##0.00">
-				<expression>$F{q1MediumRiskAmount}</expression>
+				<expression>$F{q1BudgetMediumRiskAmount}</expression>
 			</element>
 	<element kind="textField" uuid="c6f5a87e-f403-4789-ae91-e92bb732a321" x="10062" y="0" width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
-				<expression>$F{q1MediumRiskRationale}</expression>
+				<expression>$F{q1BudgetMediumRiskRationale}</expression>
 			</element>
 	<element kind="textField" uuid="b9ec7344-e324-4c4e-9fd1-a228a74e11a3" x="10282" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="¤#,##0.00;¤-#,##0.00">
-				<expression>$F{q1LowRiskAmount}</expression>
+				<expression>$F{q1BudgetLowRiskAmount}</expression>
 			</element>
 	<element kind="textField" uuid="23848317-6835-400a-aaf0-24757e1f5982" x="10402" y="0" width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
-				<expression>$F{q1LowRiskRationale}</expression>
+				<expression>$F{q1BudgetLowRiskRationale}</expression>
 			</element>
 	<element kind="textField" uuid="2dd570ce-2cc9-41d9-8dbe-0e9d48d36e74" x="10622" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="¤#,##0.00;¤-#,##0.00">
-				<expression>$F{q1CompleteAmount}</expression>
+				<expression>$F{q1BudgetCompletedAmount}</expression>
 			</element>
 	<element kind="textField" uuid="e5c58ecf-62a9-4e32-af48-464be39d0487" x="10742" y="0" width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
-				<expression>$F{q1CompleteRationale}</expression>
+				<expression>$F{q1BudgetCompletedDescription}</expression>
 			</element>
 	<element kind="textField" uuid="33002aef-5307-49b6-a1fe-ca492a5fbba1" x="10962" y="0" width="180" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Center" vTextAlign="Bottom" pattern="yyyy-MM-dd">
-				<expression>$F{q2PerformanceUpdateTimestamp}</expression>
+				<expression>$F{q2SubmittedTimestamp}</expression>
 			</element>
 	<element kind="textField" uuid="268bec79-0899-4714-b5be-78ddd21a12a3" x="11142" y="0" width="180" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
-				<expression>$F{q2ProgressStatus}</expression>
+				<expression>$F{q2ProgressStatusCode}</expression>
 			</element>
 	<element kind="textField" uuid="da492ad6-25d2-4d89-99ae-680541eabcec" x="11322" y="0" width="270" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
-				<expression>$F{q2GeneralUpdates}</expression>
+				<expression>$F{q2GeneralUpdateComment}</expression>
 			</element>
 	<element kind="textField" uuid="595e4b7a-a6b3-47d1-a85a-c2eda8c6f865" x="11592" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="¤#,##0.00;¤-#,##0.00">
-				<expression>$F{q2RevisedForecastAmount}</expression>
+				<expression>$F{q2ForecastAmount}</expression>
 			</element>
 	<element kind="textField" uuid="8731d0b4-8f95-499e-870a-13717e0ad70f" x="11712" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="¤#,##0.00;¤-#,##0.00">
 				<expression>$F{q2ForecastAdjustmentAmount}</expression>
@@ -3411,40 +3411,40 @@ Notes on Fine Filters</text>
 				<expression>$F{q2ForecastAdjustmentRationale}</expression>
 			</element>
 	<element kind="textField" uuid="91959991-faaf-4d33-bd55-630ac9fb1b9a" x="12052" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="¤#,##0.00;¤-#,##0.00">
-				<expression>$F{q2HighRiskAmount}</expression>
+				<expression>$F{q2BudgetHighRiskAmount}</expression>
 			</element>
 	<element kind="textField" uuid="8d88fa8c-d2f3-4564-b497-39ea4de38904" x="12172" y="0" width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
-				<expression>$F{q2HighRiskRationale}</expression>
+				<expression>$F{q2BudgetHighRiskRationale}</expression>
 			</element>
 	<element kind="textField" uuid="70d8582e-a686-4487-8281-aacbf4ad3467" x="12392" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="¤#,##0.00;¤-#,##0.00">
-				<expression>$F{q2MediumRiskAmount}</expression>
+				<expression>$F{q2BudgetMediumRiskAmount}</expression>
 			</element>
 	<element kind="textField" uuid="b5d249a3-09fa-44b3-9658-4c5434497fa1" x="12512" y="0" width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
-				<expression>$F{q2MediumRiskRationale}</expression>
+				<expression>$F{q2BudgetMediumRiskRationale}</expression>
 			</element>
 	<element kind="textField" uuid="c6944792-80ce-476e-a31d-575b7ca258f9" x="12732" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="¤#,##0.00;¤-#,##0.00">
-				<expression>$F{q2LowRiskAmount}</expression>
+				<expression>$F{q2BudgetLowRiskAmount}</expression>
 			</element>
 	<element kind="textField" uuid="af6e7bda-adc2-48f2-9c0d-4759cb377c66" x="12852" y="0" width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
-				<expression>$F{q2LowRiskRationale}</expression>
+				<expression>$F{q2BudgetLowRiskRationale}</expression>
 			</element>
 	<element kind="textField" uuid="dafb5bd1-7e3d-4fbd-9cf4-a03c6400323c" x="13072" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="¤#,##0.00;¤-#,##0.00">
-				<expression>$F{q2CompleteAmount}</expression>
+				<expression>$F{q2BudgetCompletedAmount}</expression>
 			</element>
 	<element kind="textField" uuid="ecd2b8dc-544d-4601-afde-4295159e09fa" x="13192" y="0" width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
-				<expression>$F{q2CompleteRationale}</expression>
+				<expression>$F{q2BudgetCompletedDescription}</expression>
 			</element>
 	<element kind="textField" uuid="f60de3b1-f868-494c-bc73-4906436710e6" x="13412" y="0" width="180" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Center" vTextAlign="Bottom" pattern="yyyy-MM-dd">
-				<expression>$F{q3PerformanceUpdateTimestamp}</expression>
+				<expression>$F{q3SubmittedTimestamp}</expression>
 			</element>
 	<element kind="textField" uuid="7d87d63c-9399-460d-b638-d2484b8613a5" x="13592" y="0" width="180" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
-				<expression>$F{q3ProgressStatus}</expression>
+				<expression>$F{q3ProgressStatusCode}</expression>
 			</element>
 	<element kind="textField" uuid="0c9292dc-5c72-47c0-8a4a-b2209852770b" x="13772" y="0" width="270" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
-				<expression>$F{q3GeneralUpdates}</expression>
+				<expression>$F{q3GeneralUpdateComment}</expression>
 			</element>
 	<element kind="textField" uuid="2db1e6d4-27cc-4145-9c27-0935c93493ca" x="14042" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="¤#,##0.00;¤-#,##0.00">
-				<expression>$F{q3RevisedForecastAmount}</expression>
+				<expression>$F{q3ForecastAmount}</expression>
 			</element>
 	<element kind="textField" uuid="b1c572a0-8728-4b80-aa34-a8330baaccf2" x="14162" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="¤#,##0.00;¤-#,##0.00">
 				<expression>$F{q3ForecastAdjustmentAmount}</expression>
@@ -3453,40 +3453,40 @@ Notes on Fine Filters</text>
 				<expression>$F{q3ForecastAdjustmentRationale}</expression>
 			</element>
 	<element kind="textField" uuid="97ff544e-3032-459f-a8ea-d2741d825c64" x="14502" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="¤#,##0.00;¤-#,##0.00">
-				<expression>$F{q3HighRiskAmount}</expression>
+				<expression>$F{q3BudgetHighRiskAmount}</expression>
 			</element>
 	<element kind="textField" uuid="9930294b-87d6-432a-8075-5e9c4bf18ec8" x="14622" y="0" width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
-				<expression>$F{q3HighRiskRationale}</expression>
+				<expression>$F{q3BudgetHighRiskRationale}</expression>
 			</element>
 	<element kind="textField" uuid="ac1b9da2-4869-4e1d-8a18-b78243daf0c7" x="14842" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="¤#,##0.00;¤-#,##0.00">
-				<expression>$F{q3MediumRiskAmount}</expression>
+				<expression>$F{q3BudgetMediumRiskAmount}</expression>
 			</element>
 	<element kind="textField" uuid="7a7e4c0b-8c8c-43e6-962b-5d0263c20818" x="14962" y="0" width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
-				<expression>$F{q3MediumRiskRationale}</expression>
+				<expression>$F{q3BudgetMediumRiskRationale}</expression>
 			</element>
 	<element kind="textField" uuid="819efaf4-3865-44a8-ab33-af3cc104758d" x="15182" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="¤#,##0.00;¤-#,##0.00">
-				<expression>$F{q3LowRiskAmount}</expression>
+				<expression>$F{q3BudgetLowRiskAmount}</expression>
 			</element>
 	<element kind="textField" uuid="658493fc-ef2a-4943-b914-8609b2d15333" x="15302" y="0" width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
-				<expression>$F{q3LowRiskRationale}</expression>
+				<expression>$F{q3BudgetLowRiskRationale}</expression>
 			</element>
 	<element kind="textField" uuid="17848700-7491-407f-95c1-163820be1f3c" x="15522" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="¤#,##0.00;¤-#,##0.00">
-				<expression>$F{q3CompleteAmount}</expression>
+				<expression>$F{q3BudgetCompletedAmount}</expression>
 			</element>
 	<element kind="textField" uuid="31633c5f-a0d5-4a8e-87b4-4045cd489923" x="15642" y="0" width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
-				<expression>$F{q3CompleteRationale}</expression>
+				<expression>$F{q3BudgetCompletedDescription}</expression>
 			</element>
 	<element kind="textField" uuid="176a259f-7abc-4eb8-be77-c45d99cb0440" x="15862" y="0" width="180" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Center" vTextAlign="Bottom" pattern="yyyy-MM-dd">
-				<expression>$F{march7PerformanceUpdateTimestamp}</expression>
+				<expression>$F{march7SubmittedTimestamp}</expression>
 			</element>
 	<element kind="textField" uuid="0f9ffe5e-c4d2-40d6-a3e3-569c8ed8be3d" x="16042" y="0" width="180" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
-				<expression>$F{march7ProgressStatus}</expression>
+				<expression>$F{march7ProgressStatusCode}</expression>
 			</element>
 	<element kind="textField" uuid="2043b5ae-d3cc-4348-b839-c175b8b2c845" x="16222" y="0" width="270" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
-				<expression>$F{march7GeneralUpdates}</expression>
+				<expression>$F{march7GeneralUpdateComment}</expression>
 			</element>
 	<element kind="textField" uuid="13c7473f-2d0a-465b-bfbd-83a67ceaf63e" x="16492" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="¤#,##0.00;¤-#,##0.00">
-				<expression>$F{march7RevisedForecastAmount}</expression>
+				<expression>$F{march7ForecastAmount}</expression>
 			</element>
 	<element kind="textField" uuid="f1ed2af2-eed5-46fe-b14a-af7d80e8f23d" x="16612" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="¤#,##0.00;¤-#,##0.00">
 				<expression>$F{march7ForecastAdjustmentAmount}</expression>
@@ -3495,40 +3495,40 @@ Notes on Fine Filters</text>
 				<expression>$F{march7ForecastAdjustmentRationale}</expression>
 			</element>
 	<element kind="textField" uuid="01b0d1fb-5ccd-4b38-af08-1056a47c5fda" x="16952" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="¤#,##0.00;¤-#,##0.00">
-				<expression>$F{march7HighRiskAmount}</expression>
+				<expression>$F{march7BudgetHighRiskAmount}</expression>
 			</element>
 	<element kind="textField" uuid="86dc4af2-9504-4dcb-b3ed-716b445169b1" x="17072" y="0" width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
-				<expression>$F{march7HighRiskRationale}</expression>
+				<expression>$F{march7BudgetHighRiskRationale}</expression>
 			</element>
 	<element kind="textField" uuid="76ff9bf8-f231-45e4-b115-920dbb7233f2" x="17292" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="¤#,##0.00;¤-#,##0.00">
-				<expression>$F{march7MediumRiskAmount}</expression>
+				<expression>$F{march7BudgetMediumRiskAmount}</expression>
 			</element>
 	<element kind="textField" uuid="fb5ac5e2-3283-4723-ad0f-e0ea7f013bc4" x="17412" y="0" width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
-				<expression>$F{march7MediumRiskRationale}</expression>
+				<expression>$F{march7BudgetMediumRiskRationale}</expression>
 			</element>
 	<element kind="textField" uuid="652f5275-9e92-44ce-9603-fb38cd0b8d6b" x="17632" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="¤#,##0.00;¤-#,##0.00">
-				<expression>$F{march7LowRiskAmount}</expression>
+				<expression>$F{march7BudgetLowRiskAmount}</expression>
 			</element>
 	<element kind="textField" uuid="fd70b114-5e87-47d7-ac59-28482429d7a5" x="17752" y="0" width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
-				<expression>$F{march7LowRiskRationale}</expression>
+				<expression>$F{march7BudgetLowRiskRationale}</expression>
 			</element>
 	<element kind="textField" uuid="31488bed-15d8-4a20-a8c4-d50b0754c508" x="17972" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="¤#,##0.00;¤-#,##0.00">
-				<expression>$F{march7CompleteAmount}</expression>
+				<expression>$F{march7BudgetCompletedAmount}</expression>
 			</element>
 	<element kind="textField" uuid="2f2a57dc-7bbc-4db6-996d-c741f9ea7bca" x="18092" y="0" width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
-				<expression>$F{march7CompleteRationale}</expression>
+				<expression>$F{march7BudgetCompletedDescription}</expression>
 			</element>
 	<element kind="textField" uuid="ab2429aa-6879-4176-8cd7-3eda62a20769" x="18312" y="0" width="180" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Center" vTextAlign="Bottom" pattern="yyyy-MM-dd">
-				<expression>$F{otherPerformanceUpdateTimestamp}</expression>
+				<expression>$F{otherSubmittedTimestamp}</expression>
 			</element>
 	<element kind="textField" uuid="466e005c-d03c-4f37-8d15-70d1c7de7bf0" x="18492" y="0" width="180" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
-				<expression>$F{otherProgressStatus}</expression>
+				<expression>$F{otherProgressStatusCode}</expression>
 			</element>
 	<element kind="textField" uuid="2b75299a-2e37-42e3-b392-2737225d5b44" x="18672" y="0" width="270" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
-				<expression>$F{otherGeneralUpdates}</expression>
+				<expression>$F{otherGeneralUpdateComment}</expression>
 			</element>
 	<element kind="textField" uuid="9c86721d-ac10-4b39-b949-bbe20c72ef1b" x="18942" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="¤#,##0.00;¤-#,##0.00">
-				<expression>$F{otherRevisedForecastAmount}</expression>
+				<expression>$F{otherForecastAmount}</expression>
 			</element>
 	<element kind="textField" uuid="006123fc-2488-494a-8bdd-13ebf621e336" x="19062" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="¤#,##0.00;¤-#,##0.00">
 				<expression>$F{otherForecastAdjustmentAmount}</expression>
@@ -3537,28 +3537,28 @@ Notes on Fine Filters</text>
 				<expression>$F{otherForecastAdjustmentRationale}</expression>
 			</element>
 	<element kind="textField" uuid="78a9a377-69d0-4ce5-94bf-0bb5ebf13731" x="19402" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="¤#,##0.00;¤-#,##0.00">
-				<expression>$F{otherHighRiskAmount}</expression>
+				<expression>$F{otherBudgetHighRiskAmount}</expression>
 			</element>
 	<element kind="textField" uuid="e38e198b-5e73-47d8-8e71-fcaa7f8c71a7" x="19522" y="0" width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
-				<expression>$F{otherHighRiskRationale}</expression>
+				<expression>$F{otherBudgetHighRiskRationale}</expression>
 			</element>
 	<element kind="textField" uuid="c8200e24-d86e-4cf4-adbe-b8e77d4ba7cc" x="19742" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="¤#,##0.00;¤-#,##0.00">
-				<expression>$F{otherMediumRiskAmount}</expression>
+				<expression>$F{otherBudgetMediumRiskAmount}</expression>
 			</element>
 	<element kind="textField" uuid="3a678b8a-477f-4b10-a457-a224eda283d3" x="19862" y="0" width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
-				<expression>$F{otherMediumRiskRationale}</expression>
+				<expression>$F{otherBudgetMediumRiskRationale}</expression>
 			</element>
 	<element kind="textField" uuid="3951d716-4d9a-4139-9b51-cbe753381c39" x="20082" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="¤#,##0.00;¤-#,##0.00">
-				<expression>$F{otherLowRiskAmount}</expression>
+				<expression>$F{otherBudgetLowRiskAmount}</expression>
 			</element>
 	<element kind="textField" uuid="da405018-4127-4785-a618-c741a5ea24dd" x="20202" y="0" width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
-				<expression>$F{otherLowRiskRationale}</expression>
+				<expression>$F{otherBudgetLowRiskRationale}</expression>
 			</element>
 	<element kind="textField" uuid="7300ce42-4a92-48ea-af9b-2ac8d95f0292" x="20422" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="¤#,##0.00;¤-#,##0.00">
-				<expression>$F{otherCompleteAmount}</expression>
+				<expression>$F{otherBudgetCompletedAmount}</expression>
 			</element>
 	<element kind="textField" uuid="1ce480bc-adcd-4237-85d2-c0238a3af55c" x="20542" y="0" width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
-				<expression>$F{otherCompleteRationale}</expression>
+				<expression>$F{otherBudgetCompletedDescription}</expression>
 			</element>
 	</band>
 	</detail>
