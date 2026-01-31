@@ -3,45 +3,128 @@ on:
     types: [released]
 
 jobs:
-  tag-builds:
+  check-images:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        component-name: [
-          wfprev-api,
-          liquibase
-        ]
+    outputs:
+      api_exists: ${{ steps.check_api.outputs.exists }}
+      liquibase_exists: ${{ steps.check_liquibase.outputs.exists }}
+      gdb_exists: ${{ steps.check_gdb.outputs.exists }}
+      report_exists: ${{ steps.check_report.outputs.exists }}
     steps:
-      - uses: actions/checkout@v3
-
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v2
         with:
           registry: ${{ vars.REGISTRY }}
           username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN}}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Tag relevant images
+      - name: Check API Image
+        id: check_api
         run: |
-          docker pull ${{vars.REGISTRY}}/${{ github.repository }}-${{ matrix.component-name }}:latest
-          docker tag ${{vars.REGISTRY}}/${{ github.repository }}-${{ matrix.component-name }}:latest ${{vars.REGISTRY}}/${{ github.repository }}-${{ matrix.component-name }}:${{ github.event.release.tag_name }}
-          docker push ${{vars.REGISTRY}}/${{ github.repository }}-${{ matrix.component-name }}:${{ github.event.release.tag_name }}
+          if docker manifest inspect ${{ vars.REGISTRY }}/${{ github.repository }}-wfprev-api:${{ github.sha }} > /dev/null 2>&1; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+          fi
 
-  node-build:
-    uses: ./.github/workflows/node-build.yml
-    secrets: inherit
-    with:
-      COMPONENT_NAME: wfprev-gdb-extractor
-      TAG: ${{ github.event.release.tag_name }}
+      - name: Check Liquibase Image
+        id: check_liquibase
+        run: |
+          if docker manifest inspect ${{ vars.REGISTRY }}/${{ github.repository }}-liquibase:${{ github.sha }} > /dev/null 2>&1; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+          fi
 
-  reports-generator-build:
-    uses: ./.github/workflows/report-generator-image-build.yml
-    secrets: inherit
-    with:
-      TAG: ${{ github.event.release.tag_name }}
+      - name: Check GDB Extractor Image
+        id: check_gdb
+        run: |
+          if docker manifest inspect ${{ vars.REGISTRY }}/${{ github.repository_owner }}/nr-bcws-wfprev-wfprev-gdb-extractor:${{ github.sha }} > /dev/null 2>&1; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Check Report Generator Image
+        id: check_report
+        run: |
+          if docker manifest inspect ${{ vars.REGISTRY }}/${{ github.repository_owner }}/nr-bcws-wfprev-report-generator:${{ github.sha }} > /dev/null 2>&1; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+          fi
+
+  retag-images:
+    needs: check-images
+    runs-on: ubuntu-latest
+    steps:
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ vars.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Retag API
+        if: needs.check-images.outputs.api_exists == 'true'
+        run: |
+          docker pull ${{ vars.REGISTRY }}/${{ github.repository }}-wfprev-api:${{ github.sha }}
+          docker tag ${{ vars.REGISTRY }}/${{ github.repository }}-wfprev-api:${{ github.sha }} ${{ vars.REGISTRY }}/${{ github.repository }}-wfprev-api:${{ github.event.release.tag_name }}
+          docker push ${{ vars.REGISTRY }}/${{ github.repository }}-wfprev-api:${{ github.event.release.tag_name }}
+
+      - name: Retag Liquibase
+        if: needs.check-images.outputs.liquibase_exists == 'true'
+        run: |
+          docker pull ${{ vars.REGISTRY }}/${{ github.repository }}-liquibase:${{ github.sha }}
+          docker tag ${{ vars.REGISTRY }}/${{ github.repository }}-liquibase:${{ github.sha }} ${{ vars.REGISTRY }}/${{ github.repository }}-liquibase:${{ github.event.release.tag_name }}
+          docker push ${{ vars.REGISTRY }}/${{ github.repository }}-liquibase:${{ github.event.release.tag_name }}
+
+      - name: Retag GDB Extractor
+        if: needs.check-images.outputs.gdb_exists == 'true'
+        run: |
+          docker pull ${{ vars.REGISTRY }}/${{ github.repository_owner }}/nr-bcws-wfprev-wfprev-gdb-extractor:${{ github.sha }}
+          docker tag ${{ vars.REGISTRY }}/${{ github.repository_owner }}/nr-bcws-wfprev-wfprev-gdb-extractor:${{ github.sha }} ${{ vars.REGISTRY }}/${{ github.repository_owner }}/nr-bcws-wfprev-wfprev-gdb-extractor:${{ github.event.release.tag_name }}
+          docker push ${{ vars.REGISTRY }}/${{ github.repository_owner }}/nr-bcws-wfprev-wfprev-gdb-extractor:${{ github.event.release.tag_name }}
+
+      - name: Retag Report Generator
+        if: needs.check-images.outputs.report_exists == 'true'
+        run: |
+          docker pull ${{ vars.REGISTRY }}/${{ github.repository_owner }}/nr-bcws-wfprev-report-generator:${{ github.sha }}
+          docker tag ${{ vars.REGISTRY }}/${{ github.repository_owner }}/nr-bcws-wfprev-report-generator:${{ github.sha }} ${{ vars.REGISTRY }}/${{ github.repository_owner }}/nr-bcws-wfprev-report-generator:${{ github.event.release.tag_name }}
+          docker push ${{ vars.REGISTRY }}/${{ github.repository_owner }}/nr-bcws-wfprev-report-generator:${{ github.event.release.tag_name }}
+
+  validate-images:
+    needs: check-images
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate Images Exist
+        run: |
+          missing=false
+          if [ "${{ needs.check-images.outputs.api_exists }}" == "false" ]; then
+            echo "::error::API image missing for commit ${{ github.sha }}"
+            missing=true
+          fi
+          if [ "${{ needs.check-images.outputs.liquibase_exists }}" == "false" ]; then
+            echo "::error::Liquibase image missing for commit ${{ github.sha }}"
+            missing=true
+          fi
+          if [ "${{ needs.check-images.outputs.gdb_exists }}" == "false" ]; then
+            echo "::error::GDB Extractor image missing for commit ${{ github.sha }}"
+            missing=true
+          fi
+          if [ "${{ needs.check-images.outputs.report_exists }}" == "false" ]; then
+            echo "::error::Report Generator image missing for commit ${{ github.sha }}"
+            missing=true
+          fi
+          
+          if [ "$missing" == "true" ]; then
+            echo "::error::One or more images are missing. Release strictly requires existing artifacts."
+            echo "::error::Please run 'prerelease' or 'build-full-environment' for this commit first."
+            exit 1
+          fi
   
   deploy-prod:
-    needs: [tag-builds, node-build, reports-generator-build]
+    needs: [retag-images, validate-images]
     if: ${{ contains(github.event.release.tag_name, '-release') }}
     uses: ./.github/workflows/terragrunt-deploy.yml
     secrets: inherit
