@@ -2,7 +2,7 @@ import { Component, Inject } from '@angular/core';
 import { AbstractControl, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogClose, MatDialogRef } from '@angular/material/dialog';
 import { Messages, ModalMessages, ModalTitles, NumericLimits } from 'src/app/utils/constants';
-import { ForecastStatus, PerformanceUpdate, ProgressStatus, ReportingPeriod, Option, UpdateGeneralStatus } from '../models';
+import { ProgressStatus, ReportingPeriod, Option, NewPerformanceUpdate } from '../models';
 import { InputFieldComponent } from "../shared/input-field/input-field.component";
 import { SelectFieldComponent } from '../shared/select-field/select-field.component';
 import { TextareaComponent } from "../shared/textarea/textarea.component";
@@ -80,17 +80,18 @@ export class PerformanceUpdateModalWindowComponent {
   totalAmount = 0;
 
   reportingPeriod: Option<ReportingPeriod>[] = [
+    { value: ReportingPeriod.Custom, description: 'Other' },
+    { value: ReportingPeriod.March7, description: 'March 7' },
     { value: ReportingPeriod.Q1, description: 'End of Q1' },
     { value: ReportingPeriod.Q2, description: 'End of Q2' },
-    { value: ReportingPeriod.Q3, description: 'End of Q3' },
-    { value: ReportingPeriod.Q4, description: 'End of Q4' }
+    { value: ReportingPeriod.Q3, description: 'End of Q3' }
   ]
 
   progressStatus: Option<ProgressStatus>[] = [
-    { value: ProgressStatus.Delayed, description: 'Delayed' },
-    { value: ProgressStatus.OnTrack, description: 'On track' },
+    { value: ProgressStatus.Cancelled, description: 'Cancelled' },
     { value: ProgressStatus.Deffered, description: 'Deffered' },
-    { value: ProgressStatus.Cancelled, description: 'Cancelled' }
+    { value: ProgressStatus.Delayed, description: 'Delayed' },
+    { value: ProgressStatus.OnTrack, description: 'On track' }
   ]
 
   constructor(
@@ -116,20 +117,20 @@ export class PerformanceUpdateModalWindowComponent {
         const entered = Number(currentForecastCtrl.value);
         return entered === this.totalAmount ? null : { totalMismatch: true };
       }
-      
+
       console.warn('currentForecast and revisedForecastCtrl control not found');
       return null;
     };
   }
 
   private calculateTotalAmount() {
-    
+
     this.totalAmount =
-        (Number(this.highRiskControl.value) || 0) +
-        (Number(this.mediumRiskControl.value) || 0) +
-        (Number(this.lowRiskControl.value) || 0) +
-        (Number(this.completeControl.value) || 0);
-        this.form.updateValueAndValidity({ onlySelf: true });
+      (Number(this.highRiskControl.value) || 0) +
+      (Number(this.mediumRiskControl.value) || 0) +
+      (Number(this.lowRiskControl.value) || 0) +
+      (Number(this.completeControl.value) || 0);
+    this.form.updateValueAndValidity({ onlySelf: true });
   }
 
   private bindAmountValidation() {
@@ -227,10 +228,6 @@ export class PerformanceUpdateModalWindowComponent {
     return this.form.get('completeDescription') as FormControl;
   }
 
-  // get totalControl(): FormControl {
-  //   return this.form.get('total') as FormControl;
-  // }
-
   onCancel(): void {
     if (this.form.dirty) {
       const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
@@ -254,39 +251,32 @@ export class PerformanceUpdateModalWindowComponent {
 
   onSave(): void {
 
+    const newUpdate: NewPerformanceUpdate = {
 
-    const newUpdate: PerformanceUpdate = {
-      submittedTimestamp: '',
       reportingPeriod: this.reportingPeriodControl.value,
       progressStatusCode: this.progressStatusControl.value,
-      forecastStatus: ForecastStatus.NotSetUP,
-      updateGeneralStatus: UpdateGeneralStatus.NotSetUP,
 
       generalUpdateComment: this.generalUpdatesControl.value,
-      submittedBy: "",
 
-      forecastAmount: this.revisedForecastControl.value,
-      forecastAdjustmentAmount: 0,
+      forecastAmount: this.revisedForecastControl.value | 0,
       forecastAdjustmentRationale: this.forecastRationaleControl.value,
 
-      budgetHighRiskAmount: this.highRiskControl.value,
+      budgetHighRiskAmount: this.highRiskControl.value | 0,
       budgetHighRiskRationale: this.highRiskDescriptionControl.value,
-      budgetMediumRiskAmount: this.mediumRiskControl.value,
+      budgetMediumRiskAmount: this.mediumRiskControl.value | 0,
       budgetMediumRiskRationale: this.mediumRiskDescriptionControl.value,
-      budgetLowRiskAmount: this.lowRiskControl.value,
+      budgetLowRiskAmount: this.lowRiskControl.value | 0,
       budgetLowRiskRationale: this.lowRiskDescriptionControl.value,
-      budgetCompletedAmount: this.completeControl.value,
+      budgetCompletedAmount: this.completeControl.value | 0,
       budgetCompletedDescription: this.completeDescriptionControl.value,
 
-      totalAmount: 0
     }
 
     this.projectService.savePerformanceUpdates(this.data.projectGuid, this.data.fiscalGuid, newUpdate).subscribe(
       {
         next: (data) => {
-          // this.updates = data;
-          console.info('Performence Saved');
-          this.dialogRef.close();
+          console.log('Performence Saved');
+          this.dialogRef.close(data);
         },
         error: (error) => {
           console.error('Error saving performance updates:', error);

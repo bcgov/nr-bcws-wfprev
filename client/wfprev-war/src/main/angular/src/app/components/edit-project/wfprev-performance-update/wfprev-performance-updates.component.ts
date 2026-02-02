@@ -3,7 +3,7 @@ import { MatExpansionPanel, MatExpansionPanelHeader } from '@angular/material/ex
 import { ExpansionIndicatorComponent } from "../../shared/expansion-indicator/expansion-indicator.component";
 import { IconButtonComponent } from "../../shared/icon-button/icon-button.component";
 import { ProjectService } from 'src/app/services/project-services';
-import { PerformanceUpdate, ForecastStatus, ProgressStatus, UpdateGeneralStatus, Option } from '../../models';
+import { PerformanceUpdate, ForecastStatus, ProgressStatus, UpdateGeneralStatus, Option, ReportingPeriod } from '../../models';
 import { ActivatedRoute } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { PerformanceUpdateModalWindowComponent } from '../../wfprev-performance-update-modal-window/wfprev-performance-update-modal-window.component';
@@ -27,10 +27,25 @@ export class PerformanceUpdatesComponent implements OnChanges {
   protected readonly ProgressStatus = ProgressStatus;
   protected readonly UpdateGeneralStatus = UpdateGeneralStatus;
 
-  protected readonly delayed: Option<ProgressStatus> = { value: ProgressStatus.Delayed, description: 'Delayed' }
-  protected readonly onTrack: Option<ProgressStatus> = { value: ProgressStatus.OnTrack, description: 'On track' }
-  protected readonly deffered: Option<ProgressStatus> = { value: ProgressStatus.Deffered, description: 'Deffered' }
-  protected readonly cancelled: Option<ProgressStatus> = { value: ProgressStatus.Cancelled, description: 'Cancelled' }
+  protected readonly delayedProgressStatus: Option<ProgressStatus> = { value: ProgressStatus.Delayed, description: 'Delayed' }
+  protected readonly onTrackProgressStatus: Option<ProgressStatus> = { value: ProgressStatus.OnTrack, description: 'On track' }
+  protected readonly defferedProgressStatus: Option<ProgressStatus> = { value: ProgressStatus.Deffered, description: 'Deferred' }
+  protected readonly cancelledProgressStatus: Option<ProgressStatus> = { value: ProgressStatus.Cancelled, description: 'Cancelled' }
+  
+  protected readonly other: Option<ReportingPeriod> = { value: ReportingPeriod.Custom, description: 'Other' }
+  protected readonly march7: Option<ReportingPeriod> = { value: ReportingPeriod.March7, description: 'March 7' }
+  protected readonly q1: Option<ReportingPeriod> = { value: ReportingPeriod.Q1, description: 'End of First Quarter' }
+  protected readonly q2: Option<ReportingPeriod> = { value: ReportingPeriod.Q2, description: 'End of Second Quarter' }
+  protected readonly q3: Option<ReportingPeriod> = { value: ReportingPeriod.Q3, description: 'End of Third Quarter' }
+  
+  protected readonly cancelledUpdateGeneralStatus: Option<UpdateGeneralStatus> = { value: UpdateGeneralStatus.Cancelled, description: 'Cancelled' }
+  protected readonly completeUpdateGeneralStatus: Option<UpdateGeneralStatus> = { value: UpdateGeneralStatus.Complete, description: 'Complete' }
+  protected readonly draftUpdateGeneralStatus: Option<UpdateGeneralStatus> = { value: UpdateGeneralStatus.Draft, description: 'Draft' }
+  protected readonly inProgressUpdateGeneralStatus: Option<UpdateGeneralStatus> = { value: UpdateGeneralStatus.InProgress, description: 'In Progress' }
+  protected readonly preparedUpdateGeneralStatus: Option<UpdateGeneralStatus> = { value: UpdateGeneralStatus.Prepared, description: 'Prepared' }
+  protected readonly proposedUpdateGeneralStatus: Option<UpdateGeneralStatus> = { value: UpdateGeneralStatus.Proposed, description: 'Proposed' }
+
+
 
   updates: PerformanceUpdate[] = [];
   isUpdatesCalled: boolean = false;
@@ -58,8 +73,10 @@ export class PerformanceUpdatesComponent implements OnChanges {
       if (this.projectGuid) {
         this.projectService.getPerformanceUpdates(this.projectGuid, this.fiscalGuid).subscribe({
           next: (data) => {
-            this.updates = data;
-            console.info('JSON responce is:', data);
+            this.updates = data?._embedded?.performanceUpdate ?? [];
+            console.info('JSON responce is:', this.updates);
+            console.info('Lenth is:', this.updates.length);
+            debugger;
 
           },
           error: (error) => {
@@ -77,7 +94,7 @@ export class PerformanceUpdatesComponent implements OnChanges {
   }
 
   openDialog(): void {
-    this.projectService.getPerformanceUpdatesEstimates(this.projectGuid, this.fiscalGuid)
+    this.projectService.getProjectFiscalByProjectPlanFiscalGuid(this.projectGuid, this.fiscalGuid)
       .subscribe({
         next: (data) => {
           const dialogRef = this.dialog.open(PerformanceUpdateModalWindowComponent,
@@ -85,12 +102,19 @@ export class PerformanceUpdatesComponent implements OnChanges {
               data: {
                 projectGuid: this.projectGuid,
                 fiscalGuid: this.fiscalGuid,
-                currentForecast: data.currentForecast,
-                originalCostEstimate: data.originalCostEstimate
+                currentForecast: data.fiscalForecastAmount,
+                originalCostEstimate: data.totalCostEstimateAmount
               },
               disableClose: true
             });
-
+          dialogRef.afterClosed().subscribe(result => {
+            debugger;
+            if (result) {
+              this.updates = [result, ...this.updates]
+            } else {
+              console.log('Dialog was closed without data');
+            }
+          });
         },
         error: (error) => {
           console.error('Error fetching performance updates estimates:', error);

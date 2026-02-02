@@ -2,15 +2,15 @@ package ca.bc.gov.nrs.wfprev.services;
 
 import ca.bc.gov.nrs.wfone.common.service.api.ServiceException;
 import ca.bc.gov.nrs.wfprev.common.services.CommonService;
+import ca.bc.gov.nrs.wfprev.data.assemblers.PerformanceUpdateResourceAssembler;
 import ca.bc.gov.nrs.wfprev.data.assemblers.ProjectFiscalResourceAssembler;
-import ca.bc.gov.nrs.wfprev.data.assemblers.ProjectResourceAssembler;
 import ca.bc.gov.nrs.wfprev.data.entities.EndorsementCodeEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.PlanFiscalStatusCodeEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ProjectEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ProjectFiscalEntity;
+import ca.bc.gov.nrs.wfprev.data.entities.ProjectPlanFiscalPerfEntity;
+import ca.bc.gov.nrs.wfprev.data.models.PerformanceUpdateModel;
 import ca.bc.gov.nrs.wfprev.data.models.ProjectFiscalModel;
-import ca.bc.gov.nrs.wfprev.data.models.ProjectModel;
-import ca.bc.gov.nrs.wfprev.data.repositories.ActivityRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.EndorsementCodeRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.PlanFiscalStatusCodeRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.ProjectFiscalRepository;
@@ -20,12 +20,15 @@ import ca.bc.gov.nrs.wfprev.data.repositories.CulturalRxFirePlanRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.ProjectPlanFiscalPerfRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.ValidationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Sort;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -45,6 +48,7 @@ public class ProjectFiscalService implements CommonService {
     private final FuelManagementPlanRepository fuelManagementPlanRepository;
     private final CulturalRxFirePlanRepository culturalRxFirePlanRepository;
     private final ProjectPlanFiscalPerfRepository projectPlanFiscalPerfRepository;
+    private final PerformanceUpdateResourceAssembler performanceUpdateResourceAssembler;
 
     private static final String DRAFT = "DRAFT";
     private static final String PROPOSED = "PROPOSED";
@@ -68,7 +72,8 @@ public class ProjectFiscalService implements CommonService {
                                 EndorsementCodeRepository endorsementCodeRepository, ActivityService activityService,
                                 FuelManagementPlanRepository fuelManagementPlanRepository,
                                 CulturalRxFirePlanRepository culturalRxFirePlanRepository,
-                                ProjectPlanFiscalPerfRepository projectPlanFiscalPerfRepository) {
+                                ProjectPlanFiscalPerfRepository projectPlanFiscalPerfRepository,
+                                PerformanceUpdateResourceAssembler performanceUpdateResourceAssembler) {
         this.projectFiscalRepository = projectFiscalRepository;
         this.projectFiscalResourceAssembler = projectFiscalResourceAssembler;
         this.projectRepository = projectRepository;
@@ -78,6 +83,7 @@ public class ProjectFiscalService implements CommonService {
         this.fuelManagementPlanRepository = fuelManagementPlanRepository;
         this.culturalRxFirePlanRepository = culturalRxFirePlanRepository;
         this.projectPlanFiscalPerfRepository = projectPlanFiscalPerfRepository;
+        this.performanceUpdateResourceAssembler = performanceUpdateResourceAssembler;
     }
 
     public CollectionModel<ProjectFiscalModel> getAllProjectFiscals(String projectId) throws ServiceException {
@@ -220,4 +226,45 @@ public class ProjectFiscalService implements CommonService {
         }
     }
 
+    public CollectionModel<PerformanceUpdateModel> getAllPerformanceUpdates(String uuid) {
+        List<ProjectPlanFiscalPerfEntity> performanceUpdates =  projectPlanFiscalPerfRepository
+            .findAllByProjectFiscal_ProjectPlanFiscalGuid(UUID.fromString(uuid), Sort.by(Sort.Direction.DESC, "submittedTimestamp"));
+        return performanceUpdateResourceAssembler.toCollectionModel(performanceUpdates);
+    }
+
+    public PerformanceUpdateModel createPerformanceUpdate(String id, PerformanceUpdateModel resource) {
+        UUID projectPlanFiscalGuid = UUID.fromString(id);
+        ProjectFiscalEntity projectFiscalEntity = projectFiscalRepository.findById(projectPlanFiscalGuid)
+                .orElseThrow(() -> new EntityNotFoundException("Project Fiscal not found: " + projectPlanFiscalGuid));
+        
+        ProjectPlanFiscalPerfEntity entity = performanceUpdateResourceAssembler.toEntity(resource, projectFiscalEntity);
+
+        
+        entity.setSubmittedTimestamp(new Date());
+        validate(entity);
+        ProjectPlanFiscalPerfEntity savedEntity = projectPlanFiscalPerfRepository.save(entity);
+        return performanceUpdateResourceAssembler.toModel(savedEntity);
+    }
+
+    private void validate(ProjectPlanFiscalPerfEntity entity) {
+        BigDecimal sum =
+                entity.getBudgetHighRiskAmount()
+                .add(entity.getBudgetMediumRiskAmount())
+                .add(entity.getBudgetLowRiskAmount())
+                .add(entity.getBudgetCompletedAmount());
+
+        if (entity.getForecastAmount().compareTo(BigDecimal.ZERO) != 0) {
+            if (sum.compareTo(entity.getForecastAmount()) != 0) {
+                throw new ValidationException(
+                    "Sum must equal forecast adjustment amount"
+                );
+            }
+        } else {
+            if (sum.compareTo(entity.getPreviousForecastAmount()) != 0) {
+                throw new ValidationException(
+                    "Sum must equal existing forecast amount"
+                );
+            }
+        }
+    }
 }

@@ -17,61 +17,117 @@
                 <wfprev-expansion-indicator [isExpanded]="updatePanel.expanded"></wfprev-expansion-indicator>
                 <div class="performance-update-title">
                     <div>
-                        <p class="project-title"><b>Date: {{update.submittedTimestamp}}</b></p>
+                        <p class="project-title"><b>Date: {{update.submittedTimestamp | date:'yyyy-MM-dd'}}</b></p>
                     </div>
                 </div>
                 <div class="content-status-indicators">
-                    <span>Reporting Period: {{update.reportingPeriod}}</span>
-                    @if (update.progressStatusCode === delayed.value) {
+                    @if (update.reportingPeriod === other.value) {
+                    <span>
+                        <span>Reporting Period: {{other.description}}</span>
+                    </span>
+                    }
+                    @if (update.reportingPeriod === march7.value) {
+                    <span>
+                        <span>Reporting Period: {{march7.description}}</span>
+                    </span>
+                    }
+                    @if (update.reportingPeriod === q1.value) {
+                    <span>
+                        <span>Reporting Period: {{q1.description}}</span>
+                    </span>
+                    }
+                    @if (update.reportingPeriod === q2.value) {
+                    <span>
+                        <span>Reporting Period: {{q2.description}}</span>
+                    </span>
+                    }
+                    @if (update.reportingPeriod === q3.value) {
+                    <span>
+                        <span>Reporting Period: {{q3.description}}</span>
+                    </span>
+                    }
+                    @if (update.progressStatusCode === delayedProgressStatus.value) {
                     <span>
                         <img alt="status" class="status-icon" src="/assets/progress-status-delayed.svg">
-                        {{delayed.description}}
+                        {{delayedProgressStatus.description}}
                     </span>
                     }
-                    @if (update.progressStatusCode === onTrack.value) {
+                    @if (update.progressStatusCode === onTrackProgressStatus.value) {
                     <span>
                         <img alt="status" class="status-icon" src="/assets/progress-status-ontrack.svg">
-                        {{onTrack.description}}
+                        {{onTrackProgressStatus.description}}
                     </span>
                     }
-                    @if (update.progressStatusCode === deffered.value) {
+                    @if (update.progressStatusCode === defferedProgressStatus.value) {
                     <span>
-                        <img alt="status" class="status-icon" src="/assets/progress-status-ontrack.svg">
-                        {{deffered.description}}
+                        <img alt="status" class="status-icon" src="/assets/progress-status-deferred.svg">
+                        {{defferedProgressStatus.description}}
                     </span>
                     }
-                    @if (update.progressStatusCode === cancelled.value) {
+                    @if (update.progressStatusCode === cancelledProgressStatus.value) {
                     <span>
-                        <img alt="status" class="status-icon" src="/assets/progress-status-ontrack.svg">
-                        {{cancelled.description}}
+                        <img alt="status" class="status-icon" src="/assets/progress-status-cancelled.svg">
+                        {{cancelledProgressStatus.description}}
                     </span>
                     }
-                    @if(update.forecastStatus === ForecastStatus.ChangedDecreased){
+                    @if(update.forecastAdjustmentAmount < 0){
                     <span>
-                        <img alt="status" class="status-icon" src="/assets/budget-change.svg">
+                        <img alt="status" class="status-icon" src="/assets/budget-change-decreased.svg">
                         Forecast Decreased
                     </span>
                     }
-                    @if(update.forecastStatus === ForecastStatus.ChangedIncreased){
+                    @if(update.forecastAdjustmentAmount > 0){
                     <span>
-                        <img alt="status" class="status-icon" src="/assets/budget-change.svg">
+                        <img alt="status" class="status-icon" src="/assets/budget-change-increased.svg">
                         Forecast Increased
                     </span>
                     }
                 </div>
-                @if(update.updateGeneralStatus === UpdateGeneralStatus.InProgress) {
+                @if(update.updateGeneralStatus === cancelledUpdateGeneralStatus.value) {
                 <div class="status-indicators">
                     <span class="status-tag">
-                        <img alt="status" class="status-icon" src="/assets/in-progress-icon-only.svg">
-                        In progress
+                        <img alt="status" class="status-icon" src="/assets/cancelled-icon.svg">
+                        {{cancelledUpdateGeneralStatus.description}}
                     </span>
                 </div>
                 }
-                @if(update.updateGeneralStatus === UpdateGeneralStatus.Prepared) {
+                @if(update.updateGeneralStatus === completeUpdateGeneralStatus.value) {
+                <div class="status-indicators">
+                    <span class="status-tag">
+                        <img alt="status" class="status-icon" src="/assets/complete-icon.svg">
+                        {{completeUpdateGeneralStatus.description}}
+                    </span>
+                </div>
+                }
+                @if(update.updateGeneralStatus === draftUpdateGeneralStatus.value) {
+                <div class="status-indicators">
+                    <span class="status-tag">
+                        <img alt="status" class="status-icon" src="/assets/draft-icon.svg">
+                        {{draftUpdateGeneralStatus.description}}
+                    </span>
+                </div>
+                }
+                @if(update.updateGeneralStatus === inProgressUpdateGeneralStatus.value) {
+                <div class="status-indicators">
+                    <span class="status-tag">
+                        <img alt="status" class="status-icon" src="/assets/in-progress-icon-only.svg">
+                        {{inProgressUpdateGeneralStatus.description}}
+                    </span>
+                </div>
+                }
+                @if(update.updateGeneralStatus === preparedUpdateGeneralStatus.value) {
                 <div class="status-indicators">
                     <span class="status-tag">
                         <img alt="status" class="status-icon" src="/assets/prepared-icon.svg">
-                        Prepared
+                        {{preparedUpdateGeneralStatus.description}}
+                    </span>
+                </div>
+                }
+                @if(update.updateGeneralStatus === proposedUpdateGeneralStatus.value) {
+                <div class="status-indicators">
+                    <span class="status-tag">
+                        <img alt="status" class="status-icon" src="/assets/proposed-icon.svg">
+                        {{proposedUpdateGeneralStatus.description}}
                     </span>
                 </div>
                 }
@@ -96,16 +152,16 @@
                             <span>Budget adjustment</span>
                         </div>
                         <div class="budget-adjustment-lable">
-                            @if(update.forecastStatus === ForecastStatus.ChangedDecreased){
+                            @if(update.forecastAdjustmentAmount < 0){
                             <span>
-                                <img alt="status" class="status-icon" src="/assets/budget-change.svg">
+                                <img alt="status" class="status-icon" src="/assets/budget-change-decreased.svg">
                                 Forecast Decreased
                             </span>
                             }
 
-                            @if(update.forecastStatus === ForecastStatus.ChangedIncreased){
+                            @if(update.forecastAdjustmentAmount > 0){
                             <span>
-                                <img alt="status" class="status-icon" src="/assets/budget-change.svg">
+                                <img alt="status" class="status-icon" src="/assets/budget-change-increased.svg">
                                 Forecast Increased
                             </span>
                             }

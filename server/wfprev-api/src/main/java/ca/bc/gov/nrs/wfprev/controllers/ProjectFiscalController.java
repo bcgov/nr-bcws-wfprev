@@ -2,9 +2,11 @@ package ca.bc.gov.nrs.wfprev.controllers;
 
 import ca.bc.gov.nrs.common.wfone.rest.resource.HeaderConstants;
 import ca.bc.gov.nrs.common.wfone.rest.resource.MessageListRsrc;
-import ca.bc.gov.nrs.wfone.common.service.api.NotFoundException;
 import ca.bc.gov.nrs.wfone.common.service.api.ServiceException;
+import ca.bc.gov.nrs.wfone.common.webade.authentication.WebAdeAuthentication;
 import ca.bc.gov.nrs.wfprev.common.controllers.CommonController;
+import ca.bc.gov.nrs.wfprev.data.models.NewPerformanceUpdateModel;
+import ca.bc.gov.nrs.wfprev.data.models.PerformanceUpdateModel;
 import ca.bc.gov.nrs.wfprev.data.models.ProjectFiscalModel;
 import ca.bc.gov.nrs.wfprev.services.ProjectFiscalService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -19,7 +21,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -34,9 +35,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.Collections;
-import java.util.List;
 
 @RestController
 @Slf4j
@@ -193,5 +191,100 @@ public class ProjectFiscalController extends CommonController {
             log.error(" ### Error while deleting Project Fiscal with id: {}", id, e);
             return internalServerError();
         }
+    }
+
+    @GetMapping("/{projectPlanFiscalGuid}/performanceUpdates")
+    @Operation(summary = "Fetch all Performance Utilities for Project Fiscal Plan", description = "Fetch all Performance Utilities for Project Fiscal Plan", security = @SecurityRequirement(name = "Webade-OAUTH2", scopes = {
+            "WFPREV" }), extensions = {
+                    @Extension(properties = {
+                            @ExtensionProperty(name = "auth-type", value = "#{wso2.x-auth-type.app_and_app_user}"),
+                            @ExtensionProperty(name = "throttling-tier", value = "Unlimited") }) })
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = PerformanceUpdateModel.class))),
+            @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(implementation = MessageListRsrc.class))),
+            @ApiResponse(responseCode = "403", description = "Forbidden"),
+            @ApiResponse(responseCode = "404", description = "Not Found"),
+            @ApiResponse(responseCode = "409", description = "Conflict"),
+            @ApiResponse(responseCode = "412", description = "Precondition Failed"),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = MessageListRsrc.class))) })
+    @Parameter(name = HeaderConstants.VERSION_HEADER, description = HeaderConstants.VERSION_HEADER_DESCRIPTION, required = false, schema = @Schema(implementation = Integer.class), in = ParameterIn.HEADER)
+    @Parameter(name = HeaderConstants.IF_MATCH_HEADER, description = HeaderConstants.IF_MATCH_DESCRIPTION, required = true, schema = @Schema(implementation = String.class), in = ParameterIn.HEADER)
+
+    public ResponseEntity<CollectionModel<PerformanceUpdateModel>> getAllPerformanceUpdates(
+            @PathVariable("projectId") String projectId,
+            @PathVariable("projectPlanFiscalGuid") String projectPlanFiscalGuid) {
+        log.debug(" >> getAllPerformanceUpdates");
+        ResponseEntity<CollectionModel<PerformanceUpdateModel>> response;
+
+        try {
+            response = ok(projectFiscalService.getAllPerformanceUpdates(projectPlanFiscalGuid));
+        } catch (ServiceException e) {
+            response = internalServerError();
+            log.error(" ### Error while fetching Performance Updates", e);
+        }
+
+        log.debug(" << getAllPerformanceUpdates");
+        return response;
+    }
+
+    @PostMapping("/{id}/savePerformanceUpdate")
+    @Operation(summary = "Create a Performance Update Resource",
+            description = "Create a Performance Update Resource",
+            security = @SecurityRequirement(name = "Webade-OAUTH2",
+                    scopes = {"WFPREV"}))
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Created", content = @Content(schema = @Schema(implementation = ProjectFiscalModel.class))),
+            @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(implementation = MessageListRsrc.class))),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = MessageListRsrc.class)))
+    })
+    public ResponseEntity<PerformanceUpdateModel> createPerformanceUpdate(
+            @PathVariable("id") String projectPlanFiscalGuid,
+            @Valid @RequestBody NewPerformanceUpdateModel performanceUpdateModel) {
+        log.debug(" >> createPerformanceUpdate");
+        ResponseEntity<PerformanceUpdateModel> response;
+
+        try {
+            PerformanceUpdateModel createdModel = projectFiscalService.createPerformanceUpdate(projectPlanFiscalGuid, initializeNewPerformanceUpdateAttachment(performanceUpdateModel));
+            response = ResponseEntity.status(201).body(createdModel);
+        } catch (DataIntegrityViolationException e) {
+            response = badRequest();
+            log.error(" ### DataIntegrityViolationException while creating Performance Update", e);
+        } catch (ServiceException e) {
+            response = internalServerError();
+            log.error(" ### Service Exception while creating Performance Update", e);
+        } catch (Exception e) {
+            response = internalServerError();
+            log.error(" ### Error while creating Performance Update", e);
+        }
+
+        log.debug(" << createPerformanceUpdate");
+        return response;
+    }
+
+    private PerformanceUpdateModel initializeNewPerformanceUpdateAttachment(NewPerformanceUpdateModel resource) {
+        PerformanceUpdateModel model = new PerformanceUpdateModel(); 
+        model.setCreateUser(getWebAdeAuthentication().getUserId());
+        model.setUpdateUser(getWebAdeAuthentication().getUserId());
+        model.setSubmittedByUserid(getWebAdeAuthentication().getUserId());
+        model.setSubmittedByGuid(getWebAdeAuthentication().getUserGuid());
+        model.setRevisionCount(0);
+        
+        model.setSubmittedBy(String.format("%s, %s", getWebAdeAuthentication().getFamilyName(), getWebAdeAuthentication().getGivenName()));
+
+        model.setReportingPeriod(resource.getReportingPeriod());
+        model.setProgressStatusCode(resource.getProgressStatusCode());
+        model.setGeneralUpdateComment(resource.getGeneralUpdateComment());
+        model.setForecastAdjustmentAmount(resource.getForecastAmount());
+        model.setForecastAdjustmentRationale(resource.getForecastAdjustmentRationale());
+        model.setBudgetHighRiskAmount(resource.getBudgetHighRiskAmount());
+        model.setBudgetHighRiskRationale(resource.getBudgetHighRiskRationale());
+        model.setBudgetMediumRiskAmount(resource.getBudgetMediumRiskAmount());
+        model.setBudgetMediumRiskRationale(resource.getBudgetMediumRiskRationale());
+        model.setBudgetLowRiskAmount(resource.getBudgetLowRiskAmount());
+        model.setBudgetLowRiskRationale(resource.getBudgetLowRiskRationale());
+        model.setBudgetCompletedAmount(resource.getBudgetCompletedAmount());
+        model.setBudgetCompletedDescription(resource.getBudgetCompletedDescription());
+
+        return model;
     }
 }

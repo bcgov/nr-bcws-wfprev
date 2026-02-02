@@ -2,7 +2,7 @@ import { HttpClient, HttpRequest, HttpHeaders, HttpEventType, HttpResponse, Http
 import { Injectable } from "@angular/core";
 import { UUID } from "angular2-uuid";
 import { catchError, map, Observable, throwError } from "rxjs";
-import { ActivityBoundary, EvaluationCriteriaSummaryModel, FeaturesResponse, PerformanceUpdate, Project, ProjectBoundary, ProjectFiscal, ProjectLocation, ReportRequest } from "src/app/components/models";
+import { ActivityBoundary, EvaluationCriteriaSummaryModel, FeaturesResponse, NewPerformanceUpdate, PerformanceUpdate, Project, ProjectBoundary, ProjectFiscal, ProjectLocation, ReportRequest } from "src/app/components/models";
 import { AppConfigService } from "src/app/services/app-config.service";
 import { TokenService } from "src/app/services/token.service";
 
@@ -155,6 +155,23 @@ export class ProjectService {
             catchError((error) => {
                 console.error("Error delete project fiscals", error);
                 return throwError(() => new Error("Failed to delete project fiscals"));
+            })
+        );
+    }
+
+    getProjectFiscalByProjectPlanFiscalGuid(projectGuid: string, projectPlanFiscalGuid: string): Observable<any> {
+        const baseUrl = `${this.appConfigService.getConfig().rest['wfprev']}/wfprev-api/projects`;
+        const url = `${baseUrl}/${projectGuid}/projectFiscals/${projectPlanFiscalGuid}`;
+
+        return this.httpClient.get(url, {
+            headers: {
+                Authorization: `Bearer ${this.tokenService.getOauthToken()}`,
+            }
+        }).pipe(
+            map((response: any) => response),
+            catchError((error) => {
+                console.error("Error fetching project fiscals", error);
+                return throwError(() => new Error("Failed to fetch project fiscals"));
             })
         );
     }
@@ -690,10 +707,9 @@ export class ProjectService {
         );
     }
 
-    savePerformanceUpdates (projectGuid: string, projectPlanFiscalGuid: string, performanceUpdate: PerformanceUpdate): Observable<any> {
+    savePerformanceUpdates (projectGuid: string, projectPlanFiscalGuid: string, performanceUpdate: NewPerformanceUpdate): Observable<any> {
         const baseUrl = `${this.appConfigService.getConfig().rest['wfprev']}/wfprev-api/projects`;
-        const url = `${baseUrl}/${projectGuid}/projectFiscals/${projectPlanFiscalGuid}/savePerformanceUpdates`;
-
+        const url = `${baseUrl}/${projectGuid}/projectFiscals/${projectPlanFiscalGuid}/savePerformanceUpdate`;
         return this.httpClient.post<EvaluationCriteriaSummaryModel>(
             url,
             performanceUpdate,

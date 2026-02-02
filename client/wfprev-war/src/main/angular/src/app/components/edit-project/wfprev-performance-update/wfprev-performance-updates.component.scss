@@ -3,6 +3,7 @@
 .performance-update-container {
     padding-top: 12px;
     margin: 0;
+    width: 1500px;
 
     .expansion-panel:nth-child(even) {
         background-color: #FAF9F8;
@@ -57,7 +58,7 @@
         display: flex;
         align-items: center;
         gap: 10px;
-        min-width: 480px;
+        min-width: 560px;
 
         span {
             display: flex;
