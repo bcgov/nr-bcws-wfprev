@@ -254,7 +254,7 @@ export class PerformanceUpdateModalWindowComponent {
     const newUpdate: NewPerformanceUpdate = {
 
       reportingPeriod: this.reportingPeriodControl.value,
-      progressStatusCode: this.progressStatusControl.value,
+      progressStatusCode: this.progressStatusControl.value || ProgressStatus.OnTrack,
 
       generalUpdateComment: this.generalUpdatesControl.value,
 
