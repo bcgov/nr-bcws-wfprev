@@ -76,8 +76,6 @@ export class PerformanceUpdatesComponent implements OnChanges {
             this.updates = data?._embedded?.performanceUpdate ?? [];
             console.info('JSON responce is:', this.updates);
             console.info('Lenth is:', this.updates.length);
-            debugger;
-
           },
           error: (error) => {
             console.error('Error fetching performance updates:', error);
@@ -108,7 +106,6 @@ export class PerformanceUpdatesComponent implements OnChanges {
               disableClose: true
             });
           dialogRef.afterClosed().subscribe(result => {
-            debugger;
             if (result) {
               this.updates = [result, ...this.updates]
             } else {
