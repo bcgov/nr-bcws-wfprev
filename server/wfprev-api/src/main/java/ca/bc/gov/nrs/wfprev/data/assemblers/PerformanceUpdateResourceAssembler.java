@@ -36,21 +36,21 @@ public class PerformanceUpdateResourceAssembler extends RepresentationModelAssem
         model.setGeneralUpdateComment(entity.getGeneralUpdateComment());
         model.setSubmittedBy(entity.getSubmittedByName());
 
-        model.setForecastAmount(entity.getForecastAmount());
-        model.setForecastAdjustmentAmount(entity.getForecastAdjustmentAmount());
-        model.setPreviousForecastAmount(entity.getPreviousForecastAmount());
+        model.setForecastAmount(forecastAmountCalculator.defaultZero(entity.getForecastAmount()));
+        model.setForecastAdjustmentAmount(forecastAmountCalculator.defaultZero(entity.getForecastAdjustmentAmount()));
+        model.setPreviousForecastAmount(forecastAmountCalculator.defaultZero(entity.getPreviousForecastAmount()));
         model.setForecastAdjustmentRationale(entity.getForecastAdjustmentRationale());
 
-        model.setBudgetHighRiskAmount(entity.getBudgetHighRiskAmount());
+        model.setBudgetHighRiskAmount(forecastAmountCalculator.defaultZero(entity.getBudgetHighRiskAmount()));
         model.setBudgetHighRiskRationale(entity.getBudgetHighRiskRationale());
 
-        model.setBudgetMediumRiskAmount(entity.getBudgetMediumRiskAmount());
+        model.setBudgetMediumRiskAmount(forecastAmountCalculator.defaultZero(entity.getBudgetMediumRiskAmount()));
         model.setBudgetMediumRiskRationale(entity.getBudgetMediumRiskRationale());
 
-        model.setBudgetLowRiskAmount(entity.getBudgetLowRiskAmount());
+        model.setBudgetLowRiskAmount(forecastAmountCalculator.defaultZero(entity.getBudgetLowRiskAmount()));
         model.setBudgetLowRiskRationale(entity.getBudgetLowRiskRationale());
 
-        model.setBudgetCompletedAmount(entity.getBudgetCompletedAmount());
+        model.setBudgetCompletedAmount(forecastAmountCalculator.defaultZero(entity.getBudgetCompletedAmount()));
         model.setBudgetCompletedDescription(entity.getBudgetCompletedDescription());
 
         model.setTotalAmount(model.getBudgetHighRiskAmount()
@@ -79,17 +79,17 @@ public class PerformanceUpdateResourceAssembler extends RepresentationModelAssem
         );
         
         entity.setPreviousForecastAmount(forecastAmountCalculator.defaultZero(projectFiscalEntity.getFiscalForecastAmount()));
-        entity.setForecastAmount(amounts.forecastAmount());
-        entity.setForecastAdjustmentAmount(amounts.forecastAdjustmentAmount());
+        entity.setForecastAmount(forecastAmountCalculator.defaultZero(amounts.forecastAmount()));
+        entity.setForecastAdjustmentAmount(forecastAmountCalculator.defaultZero(amounts.forecastAdjustmentAmount()));
         entity.setForecastAdjustmentRationale(resource.getForecastAdjustmentRationale());
         entity.setGeneralUpdateComment(resource.getGeneralUpdateComment());
-        entity.setBudgetHighRiskAmount(resource.getBudgetHighRiskAmount());
+        entity.setBudgetHighRiskAmount(forecastAmountCalculator.defaultZero(resource.getBudgetHighRiskAmount()));
         entity.setBudgetHighRiskRationale(resource.getBudgetHighRiskRationale());
-        entity.setBudgetMediumRiskAmount(resource.getBudgetMediumRiskAmount());
+        entity.setBudgetMediumRiskAmount(forecastAmountCalculator.defaultZero(resource.getBudgetMediumRiskAmount()));
         entity.setBudgetMediumRiskRationale(resource.getBudgetMediumRiskRationale());
-        entity.setBudgetLowRiskAmount(resource.getBudgetLowRiskAmount());
+        entity.setBudgetLowRiskAmount(forecastAmountCalculator.defaultZero(resource.getBudgetLowRiskAmount()));
         entity.setBudgetLowRiskRationale(resource.getBudgetLowRiskRationale());
-        entity.setBudgetCompletedAmount(resource.getBudgetCompletedAmount());
+        entity.setBudgetCompletedAmount(forecastAmountCalculator.defaultZero(resource.getBudgetCompletedAmount()));
         entity.setBudgetCompletedDescription(resource.getBudgetCompletedDescription());
         entity.setRevisionCount(resource.getRevisionCount());
         entity.setCreateUser(resource.getCreateUser());
