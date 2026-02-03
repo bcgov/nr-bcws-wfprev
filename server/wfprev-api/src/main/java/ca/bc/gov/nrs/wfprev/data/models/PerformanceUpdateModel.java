@@ -10,6 +10,7 @@ import com.fasterxml.jackson.annotation.JsonRootName;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 import ca.bc.gov.nrs.wfprev.common.entities.CommonModel;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -25,6 +26,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class PerformanceUpdateModel extends CommonModel<PerformanceUpdateModel>{
+    
+    @NotNull
     private Date submittedTimestamp;
     private String reportingPeriod;
     private String progressStatusCode;
@@ -33,13 +36,22 @@ public class PerformanceUpdateModel extends CommonModel<PerformanceUpdateModel>{
     private String submittedByUserid;
     private String submittedByGuid;
 
+    @NotNull
     private String generalUpdateComment;
+
+    @NotNull
     private String submittedBy;
 
+    @NotNull
     private BigDecimal forecastAmount;
+
+    @NotNull
     private BigDecimal forecastAdjustmentAmount;
     private BigDecimal previousForecastAmount;
+
+    @NotNull
     private String forecastAdjustmentRationale;
+
 
     private BigDecimal budgetHighRiskAmount;
     private String budgetHighRiskRationale;
