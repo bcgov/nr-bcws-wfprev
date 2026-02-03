@@ -29,7 +29,7 @@ export class PerformanceUpdatesComponent implements OnChanges {
 
   protected readonly delayedProgressStatus: Option<ProgressStatus> = { value: ProgressStatus.Delayed, description: 'Delayed' }
   protected readonly onTrackProgressStatus: Option<ProgressStatus> = { value: ProgressStatus.OnTrack, description: 'On track' }
-  protected readonly defferedProgressStatus: Option<ProgressStatus> = { value: ProgressStatus.Deffered, description: 'Deferred' }
+  protected readonly deferredProgressStatus: Option<ProgressStatus> = { value: ProgressStatus.Deferred, description: 'Deferred' }
   protected readonly cancelledProgressStatus: Option<ProgressStatus> = { value: ProgressStatus.Cancelled, description: 'Cancelled' }
   
   protected readonly other: Option<ReportingPeriod> = { value: ReportingPeriod.Custom, description: 'Other' }

@@ -89,7 +89,7 @@ export class PerformanceUpdateModalWindowComponent {
 
   progressStatus: Option<ProgressStatus>[] = [
     { value: ProgressStatus.Cancelled, description: 'Cancelled' },
-    { value: ProgressStatus.Deffered, description: 'Deffered' },
+    { value: ProgressStatus.Deferred, description: 'Deferred' },
     { value: ProgressStatus.Delayed, description: 'Delayed' },
     { value: ProgressStatus.OnTrack, description: 'On track' }
   ]
