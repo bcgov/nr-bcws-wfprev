@@ -75,7 +75,7 @@ public class PerformanceUpdateResourceAssembler extends RepresentationModelAssem
 
         ForecastAmountsModel amounts = forecastAmountCalculator.calculate(
                 projectFiscalEntity.getFiscalForecastAmount(),
-                resource.getForecastAdjustmentAmount()
+                resource.getForecastAmount()
         );
         
         entity.setPreviousForecastAmount(forecastAmountCalculator.defaultZero(projectFiscalEntity.getFiscalForecastAmount()));

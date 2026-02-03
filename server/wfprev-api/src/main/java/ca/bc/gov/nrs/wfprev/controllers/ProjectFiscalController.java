@@ -274,7 +274,7 @@ public class ProjectFiscalController extends CommonController {
         model.setReportingPeriod(resource.getReportingPeriod());
         model.setProgressStatusCode(resource.getProgressStatusCode());
         model.setGeneralUpdateComment(resource.getGeneralUpdateComment());
-        model.setForecastAdjustmentAmount(resource.getForecastAmount());
+        model.setForecastAmount(resource.getForecastAmount());
         model.setForecastAdjustmentRationale(resource.getForecastAdjustmentRationale());
         model.setBudgetHighRiskAmount(resource.getBudgetHighRiskAmount());
         model.setBudgetHighRiskRationale(resource.getBudgetHighRiskRationale());
