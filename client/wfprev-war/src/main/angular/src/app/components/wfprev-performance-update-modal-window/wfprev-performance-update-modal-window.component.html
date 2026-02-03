@@ -125,7 +125,7 @@
         </div>
       </div>
       <div class="total">
-        <p>Total: <b>{{totalAmount | currency}}</b></p>
+        <p>Total: <b>{{totalAmountControl.value| currency}}</b></p>
       </div>
       @if(form.hasError('totalMismatch')) {
         <div class="error">

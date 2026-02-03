@@ -438,7 +438,7 @@ export enum ForecastStatus {
 
 export enum ProgressStatus {
   Cancelled = "CANCELLED",
-  Deffered = "DEFERRED",
+  Deferred = "DEFERRED",
   Delayed = "DELAYED",
   OnTrack = "ON_TRACK"
 }

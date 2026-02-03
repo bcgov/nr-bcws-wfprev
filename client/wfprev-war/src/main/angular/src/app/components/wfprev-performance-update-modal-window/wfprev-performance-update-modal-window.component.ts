@@ -1,6 +1,6 @@
 import { Component, Inject } from '@angular/core';
-import { AbstractControl, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
-import { MAT_DIALOG_DATA, MatDialog, MatDialogClose, MatDialogRef } from '@angular/material/dialog';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { Messages, ModalMessages, ModalTitles, NumericLimits } from 'src/app/utils/constants';
 import { ProgressStatus, ReportingPeriod, Option, NewPerformanceUpdate } from '../models';
 import { InputFieldComponent } from "../shared/input-field/input-field.component";
@@ -10,11 +10,12 @@ import { ProjectService } from 'src/app/services/project-services';
 import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
 import { CommonModule } from '@angular/common';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { matchTotalValidator } from './validators/match-total.validator';
 
 @Component({
   selector: ' wfprev-performance-update-modal-window',
   standalone: true,
-  imports: [CommonModule, SelectFieldComponent, MatDialogClose, TextareaComponent, InputFieldComponent],
+  imports: [CommonModule, SelectFieldComponent, TextareaComponent, InputFieldComponent],
   templateUrl: './wfprev-performance-update-modal-window.component.html',
   styleUrl: './wfprev-performance-update-modal-window.component.scss'
 })
@@ -72,12 +73,12 @@ export class PerformanceUpdateModalWindowComponent {
         Validators.max(NumericLimits.MAX_NUMBER)
       ]
     }),
-    completeDescription: new FormControl({ value: '', disabled: true }, { validators: [Validators.required] })
-  }, {
-    validators: this.matchTotalValidator()
-  });
+    completeDescription: new FormControl({ value: '', disabled: true }, { validators: [Validators.required] }),
 
-  totalAmount = 0;
+    totalAmount: new FormControl<number>(0)
+  }, {
+    validators: matchTotalValidator('totalAmount')
+  });
 
   reportingPeriod: Option<ReportingPeriod>[] = [
     { value: ReportingPeriod.Custom, description: 'Other' },
@@ -104,32 +105,13 @@ export class PerformanceUpdateModalWindowComponent {
     this.bindAmountValidation();
   }
 
-  private matchTotalValidator(): ValidatorFn {
-    return (control: AbstractControl): ValidationErrors | null => {
-
-      const revisedForecastCtrl = control.get('revisedForecast');
-      const currentForecastCtrl = control.get('currentForecast');
-
-      if (revisedForecastCtrl?.value) {
-        const entered = Number(revisedForecastCtrl.value);
-        return entered === this.totalAmount ? null : { totalMismatch: true };
-      } else if (currentForecastCtrl?.value) {
-        const entered = Number(currentForecastCtrl.value);
-        return entered === this.totalAmount ? null : { totalMismatch: true };
-      }
-
-      console.warn('currentForecast and revisedForecastCtrl control not found');
-      return null;
-    };
-  }
-
   private calculateTotalAmount() {
 
-    this.totalAmount =
+    this.totalAmountControl.setValue(
       (Number(this.highRiskControl.value) || 0) +
       (Number(this.mediumRiskControl.value) || 0) +
       (Number(this.lowRiskControl.value) || 0) +
-      (Number(this.completeControl.value) || 0);
+      (Number(this.completeControl.value) || 0));
     this.form.updateValueAndValidity({ onlySelf: true });
   }
 
@@ -226,6 +208,10 @@ export class PerformanceUpdateModalWindowComponent {
 
   get completeDescriptionControl(): FormControl {
     return this.form.get('completeDescription') as FormControl;
+  }
+
+  get totalAmountControl(): FormControl {
+    return this.form.get('totalAmount') as FormControl;
   }
 
   onCancel(): void {
