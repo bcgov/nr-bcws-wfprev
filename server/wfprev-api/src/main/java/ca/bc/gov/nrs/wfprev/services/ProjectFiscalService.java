@@ -240,6 +240,7 @@ public class ProjectFiscalService implements CommonService {
         return performanceUpdateResourceAssembler.toCollectionModel(performanceUpdates);
     }
 
+    @Transactional
     public PerformanceUpdateModel createPerformanceUpdate(String id, PerformanceUpdateModel resource) {
         UUID projectPlanFiscalGuid = UUID.fromString(id);
         ProjectFiscalEntity projectFiscalEntity = projectFiscalRepository.findById(projectPlanFiscalGuid)
