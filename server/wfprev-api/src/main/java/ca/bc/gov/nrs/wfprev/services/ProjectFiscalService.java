@@ -64,16 +64,16 @@ public class ProjectFiscalService implements CommonService {
             PREPARED, Set.of(DRAFT, PROPOSED, PREPARED, IN_PROG, CANCELLED),
             IN_PROG, Set.of(DRAFT, PROPOSED, COMPLETE, CANCELLED, IN_PROG),
             COMPLETE, Set.of(COMPLETE),
-            CANCELLED, Set.of(CANCELLED)
-    );
+            CANCELLED, Set.of(CANCELLED));
 
-    public ProjectFiscalService(ProjectFiscalRepository projectFiscalRepository, ProjectFiscalResourceAssembler projectFiscalResourceAssembler,
-                                ProjectRepository projectRepository, PlanFiscalStatusCodeRepository planFiscalStatusCodeRepository,
-                                EndorsementCodeRepository endorsementCodeRepository, ActivityService activityService,
-                                FuelManagementPlanRepository fuelManagementPlanRepository,
-                                CulturalRxFirePlanRepository culturalRxFirePlanRepository,
-                                ProjectPlanFiscalPerfRepository projectPlanFiscalPerfRepository,
-                                PerformanceUpdateResourceAssembler performanceUpdateResourceAssembler) {
+    public ProjectFiscalService(ProjectFiscalRepository projectFiscalRepository,
+            ProjectFiscalResourceAssembler projectFiscalResourceAssembler,
+            ProjectRepository projectRepository, PlanFiscalStatusCodeRepository planFiscalStatusCodeRepository,
+            EndorsementCodeRepository endorsementCodeRepository, ActivityService activityService,
+            FuelManagementPlanRepository fuelManagementPlanRepository,
+            CulturalRxFirePlanRepository culturalRxFirePlanRepository,
+            ProjectPlanFiscalPerfRepository projectPlanFiscalPerfRepository,
+            PerformanceUpdateResourceAssembler performanceUpdateResourceAssembler) {
         this.projectFiscalRepository = projectFiscalRepository;
         this.projectFiscalResourceAssembler = projectFiscalResourceAssembler;
         this.projectRepository = projectRepository;
@@ -96,8 +96,9 @@ public class ProjectFiscalService implements CommonService {
         initializeNewProjectFiscal(projectFiscalModel);
         UUID projectGuid = UUID.fromString(projectFiscalModel.getProjectGuid());
         ProjectEntity projectEntity = projectRepository.findById(projectGuid)
-                .orElseThrow(() -> new EntityNotFoundException("Project not found: " + projectFiscalModel.getProjectGuid()));
-        
+                .orElseThrow(
+                        () -> new EntityNotFoundException("Project not found: " + projectFiscalModel.getProjectGuid()));
+
         ProjectFiscalEntity entity = projectFiscalResourceAssembler.toEntity(projectFiscalModel, projectEntity);
         assignAssociatedEntities(projectFiscalModel, entity);
         ProjectFiscalEntity savedEntity = projectFiscalRepository.save(entity);
@@ -113,7 +114,8 @@ public class ProjectFiscalService implements CommonService {
     public ProjectFiscalModel updateProjectFiscal(ProjectFiscalModel projectFiscalModel) {
         UUID guid = UUID.fromString(projectFiscalModel.getProjectPlanFiscalGuid());
         ProjectFiscalEntity existingEntity = projectFiscalRepository.findById(guid)
-                .orElseThrow(() -> new EntityNotFoundException("Project fiscal not found: " + projectFiscalModel.getProjectPlanFiscalGuid()));
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "Project fiscal not found: " + projectFiscalModel.getProjectPlanFiscalGuid()));
 
         String incomingStatus = projectFiscalModel.getPlanFiscalStatusCode().getPlanFiscalStatusCode();
 
@@ -175,7 +177,8 @@ public class ProjectFiscalService implements CommonService {
 
     @Transactional
     public void deleteProjectFiscals(String projectGuid, boolean deleteFiles) {
-        List<ProjectFiscalEntity> fiscals = projectFiscalRepository.findAllByProject_ProjectGuid(UUID.fromString(projectGuid));
+        List<ProjectFiscalEntity> fiscals = projectFiscalRepository
+                .findAllByProject_ProjectGuid(UUID.fromString(projectGuid));
         for (ProjectFiscalEntity fiscal : fiscals) {
             UUID fiscalGuid = fiscal.getProjectPlanFiscalGuid();
             activityService.deleteActivities(fiscalGuid.toString(), deleteFiles);
@@ -187,8 +190,10 @@ public class ProjectFiscalService implements CommonService {
     }
 
     private void assignAssociatedEntities(ProjectFiscalModel resource, ProjectFiscalEntity entity) {
-        if (resource.getPlanFiscalStatusCode() != null && resource.getPlanFiscalStatusCode().getPlanFiscalStatusCode() != null) {
-            entity.setPlanFiscalStatusCode(loadPlanFiscalStatusCode(resource.getPlanFiscalStatusCode().getPlanFiscalStatusCode()));
+        if (resource.getPlanFiscalStatusCode() != null
+                && resource.getPlanFiscalStatusCode().getPlanFiscalStatusCode() != null) {
+            entity.setPlanFiscalStatusCode(
+                    loadPlanFiscalStatusCode(resource.getPlanFiscalStatusCode().getPlanFiscalStatusCode()));
         }
 
         if (resource.getEndorsementCode() != null && resource.getEndorsementCode().getEndorsementCode() != null) {
@@ -200,7 +205,8 @@ public class ProjectFiscalService implements CommonService {
     private PlanFiscalStatusCodeEntity loadPlanFiscalStatusCode(String planFiscalStatusCode) {
         return planFiscalStatusCodeRepository
                 .findById(planFiscalStatusCode)
-                .orElseThrow(() -> new IllegalArgumentException("PlanFiscalStatusCode not found: " + planFiscalStatusCode));
+                .orElseThrow(
+                        () -> new IllegalArgumentException("PlanFiscalStatusCode not found: " + planFiscalStatusCode));
     }
 
     private EndorsementCodeEntity loadEndorsementCode(String endorsementCode) {
@@ -222,13 +228,15 @@ public class ProjectFiscalService implements CommonService {
         // Validate allowed status transitions
         Set<String> allowedTransitions = VALID_TRANSITIONS.getOrDefault(currentStatus, Set.of());
         if (!allowedTransitions.contains(newStatus)) {
-            throw new IllegalStateException("Invalid fiscal status transition from " + currentStatus + " to " + newStatus);
+            throw new IllegalStateException(
+                    "Invalid fiscal status transition from " + currentStatus + " to " + newStatus);
         }
     }
 
     public CollectionModel<PerformanceUpdateModel> getAllPerformanceUpdates(String uuid) {
-        List<ProjectPlanFiscalPerfEntity> performanceUpdates =  projectPlanFiscalPerfRepository
-            .findAllByProjectFiscal_ProjectPlanFiscalGuid(UUID.fromString(uuid), Sort.by(Sort.Direction.DESC, "submittedTimestamp"));
+        List<ProjectPlanFiscalPerfEntity> performanceUpdates = projectPlanFiscalPerfRepository
+                .findAllByProjectFiscal_ProjectPlanFiscalGuid(UUID.fromString(uuid),
+                        Sort.by(Sort.Direction.DESC, "submittedTimestamp"));
         return performanceUpdateResourceAssembler.toCollectionModel(performanceUpdates);
     }
 
@@ -236,10 +244,9 @@ public class ProjectFiscalService implements CommonService {
         UUID projectPlanFiscalGuid = UUID.fromString(id);
         ProjectFiscalEntity projectFiscalEntity = projectFiscalRepository.findById(projectPlanFiscalGuid)
                 .orElseThrow(() -> new EntityNotFoundException("Project Fiscal not found: " + projectPlanFiscalGuid));
-        
+
         ProjectPlanFiscalPerfEntity entity = performanceUpdateResourceAssembler.toEntity(resource, projectFiscalEntity);
 
-        
         entity.setSubmittedTimestamp(new Date());
         validate(entity);
         ProjectPlanFiscalPerfEntity savedEntity = projectPlanFiscalPerfRepository.save(entity);
@@ -247,24 +254,18 @@ public class ProjectFiscalService implements CommonService {
     }
 
     private void validate(ProjectPlanFiscalPerfEntity entity) {
-        BigDecimal sum =
-                entity.getBudgetHighRiskAmount()
+        BigDecimal sum = entity.getBudgetHighRiskAmount()
                 .add(entity.getBudgetMediumRiskAmount())
                 .add(entity.getBudgetLowRiskAmount())
                 .add(entity.getBudgetCompletedAmount());
 
-        if (entity.getForecastAmount().compareTo(BigDecimal.ZERO) != 0) {
-            if (sum.compareTo(entity.getForecastAmount()) != 0) {
-                throw new ValidationException(
-                    "Sum must equal forecast adjustment amount"
-                );
-            }
-        } else {
-            if (sum.compareTo(entity.getPreviousForecastAmount()) != 0) {
-                throw new ValidationException(
-                    "Sum must equal existing forecast amount"
-                );
-            }
+        BigDecimal expected = entity.getForecastAmount().compareTo(BigDecimal.ZERO) != 0
+                ? entity.getForecastAmount()
+                : entity.getPreviousForecastAmount();
+
+        if (sum.compareTo(expected) != 0) {
+            throw new ValidationException("Sum must equal forecast amount");
         }
+
     }
 }
