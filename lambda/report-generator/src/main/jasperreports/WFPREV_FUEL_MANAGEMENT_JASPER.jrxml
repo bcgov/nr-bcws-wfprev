@@ -1763,7 +1763,7 @@
 				vTextAlign="Bottom">
 				<expression>$F{grossProjectAreaHa} == null
 					? ""
-					: String.format("%,d ha", $F{grossProjectAreaHa}.intValue())</expression>
+					: new java.text.DecimalFormat("#,##0.##########").format($F{grossProjectAreaHa}) + " ha"</expression>
 			</element>
 			<element kind="textField" uuid="3dae2dd2-c238-4641-b485-4545e55a68e5" x="2686" y="0"
 				width="180" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
@@ -1806,17 +1806,17 @@
 				<expression>$F{planFiscalStatusDescription}</expression>
 			</element>
 			<element kind="textField" uuid="a49e857a-6d03-48f2-a35b-672768f011df" x="4306" y="0"
-				width="120" height="120" fontName="Calibri" fontSize="11.0" pattern="$#,##0"
+				width="120" height="120" fontName="Calibri" fontSize="11.0" pattern="$#,##0.00;$-#,##0.00"
 				blankWhenNull="true" vTextAlign="Bottom">
 				<expression>$F{totalEstimatedCostAmount}</expression>
 			</element>
 			<element kind="textField" uuid="77788899-5723-4be3-8a26-5f0831972e00" x="4426" y="0"
-				width="120" height="120" fontName="Calibri" fontSize="11.0" pattern="$#,##0"
+				width="120" height="120" fontName="Calibri" fontSize="11.0" pattern="$#,##0.00;$-#,##0.00"
 				blankWhenNull="true" vTextAlign="Bottom">
 				<expression>$F{fiscalForecastAmount}</expression>
 			</element>
 			<element kind="textField" uuid="1ba98ea4-9d8d-4cc8-821e-413682113c44" x="4546" y="0"
-				width="120" height="120" fontName="Calibri" fontSize="11.0" pattern="$#,##0"
+				width="120" height="120" fontName="Calibri" fontSize="11.0" pattern="$#,##0.00;$-#,##0.00"
 				blankWhenNull="true" vTextAlign="Bottom">
 				<expression>$F{fiscalAncillaryFundAmount}</expression>
 			</element>
@@ -1826,12 +1826,12 @@
 				<expression>$F{ancillaryFundingProvider}</expression>
 			</element>
 			<element kind="textField" uuid="f5a87843-c1fe-4740-9069-35ea627dc74e" x="4886" y="0"
-				width="120" height="120" fontName="Calibri" fontSize="11.0" pattern="$#,##0"
+				width="120" height="120" fontName="Calibri" fontSize="11.0" pattern="$#,##0.00;$-#,##0.00"
 				blankWhenNull="true" vTextAlign="Bottom">
 				<expression>$F{fiscalReportedSpendAmount}</expression>
 			</element>
 			<element kind="textField" uuid="9de65e6f-265f-45f8-8b40-fd2dab2d1c20" x="5006" y="0"
-				width="120" height="120" fontName="Calibri" fontSize="11.0" pattern="$#,##0"
+				width="120" height="120" fontName="Calibri" fontSize="11.0" pattern="$#,##0.00;$-#,##0.00"
 				blankWhenNull="true" vTextAlign="Bottom">
 				<expression>$F{fiscalActualAmount}</expression>
 			</element>
@@ -1840,14 +1840,15 @@
 				vTextAlign="Bottom">
 				<expression>$F{fiscalPlannedProjectSizeHa} == null
 					? ""
-					: String.format("%,d ha", $F{fiscalPlannedProjectSizeHa}.intValue())</expression>
+					: new java.text.DecimalFormat("#,##0.##########").format($F{fiscalPlannedProjectSizeHa}) +
+					" ha"</expression>
 			</element>
 			<element kind="textField" uuid="f0ed5454-b045-496e-991b-c631c42296ca" x="5246" y="0"
 				width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
 				vTextAlign="Bottom">
 				<expression>$F{fiscalCompletedSizeHa} == null
 					? ""
-					: String.format("%,d ha", $F{fiscalCompletedSizeHa}.intValue())</expression>
+					: new java.text.DecimalFormat("#,##0.##########").format($F{fiscalCompletedSizeHa}) + " ha"</expression>
 			</element>
 			<element kind="textField" uuid="0abb196e-d5ac-4c65-90c7-afe151c981ec" x="5366" y="0"
 				width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
