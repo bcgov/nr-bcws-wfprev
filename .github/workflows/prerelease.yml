@@ -3,6 +3,11 @@ on:
   release:
     types: [prereleased]
 
+
+permissions:
+  contents: read
+  packages: write
+
 jobs:
   check-images:
     runs-on: ubuntu-latest
