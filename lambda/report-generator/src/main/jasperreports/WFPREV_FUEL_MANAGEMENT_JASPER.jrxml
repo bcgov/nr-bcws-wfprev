@@ -1806,17 +1806,17 @@
 				<expression>$F{planFiscalStatusDescription}</expression>
 			</element>
 			<element kind="textField" uuid="a49e857a-6d03-48f2-a35b-672768f011df" x="4306" y="0"
-				width="120" height="120" fontName="Calibri" fontSize="11.0" pattern="$#,##0.00"
+				width="120" height="120" fontName="Calibri" fontSize="11.0" pattern="$#,##0.00;$-#,##0.00"
 				blankWhenNull="true" vTextAlign="Bottom">
 				<expression>$F{totalEstimatedCostAmount}</expression>
 			</element>
 			<element kind="textField" uuid="77788899-5723-4be3-8a26-5f0831972e00" x="4426" y="0"
-				width="120" height="120" fontName="Calibri" fontSize="11.0" pattern="$#,##0.00"
+				width="120" height="120" fontName="Calibri" fontSize="11.0" pattern="$#,##0.00;$-#,##0.00"
 				blankWhenNull="true" vTextAlign="Bottom">
 				<expression>$F{fiscalForecastAmount}</expression>
 			</element>
 			<element kind="textField" uuid="1ba98ea4-9d8d-4cc8-821e-413682113c44" x="4546" y="0"
-				width="120" height="120" fontName="Calibri" fontSize="11.0" pattern="$#,##0.00"
+				width="120" height="120" fontName="Calibri" fontSize="11.0" pattern="$#,##0.00;$-#,##0.00"
 				blankWhenNull="true" vTextAlign="Bottom">
 				<expression>$F{fiscalAncillaryFundAmount}</expression>
 			</element>
@@ -1826,12 +1826,12 @@
 				<expression>$F{ancillaryFundingProvider}</expression>
 			</element>
 			<element kind="textField" uuid="f5a87843-c1fe-4740-9069-35ea627dc74e" x="4886" y="0"
-				width="120" height="120" fontName="Calibri" fontSize="11.0" pattern="$#,##0.00"
+				width="120" height="120" fontName="Calibri" fontSize="11.0" pattern="$#,##0.00;$-#,##0.00"
 				blankWhenNull="true" vTextAlign="Bottom">
 				<expression>$F{fiscalReportedSpendAmount}</expression>
 			</element>
 			<element kind="textField" uuid="9de65e6f-265f-45f8-8b40-fd2dab2d1c20" x="5006" y="0"
-				width="120" height="120" fontName="Calibri" fontSize="11.0" pattern="$#,##0.00"
+				width="120" height="120" fontName="Calibri" fontSize="11.0" pattern="$#,##0.00;$-#,##0.00"
 				blankWhenNull="true" vTextAlign="Bottom">
 				<expression>$F{fiscalActualAmount}</expression>
 			</element>
@@ -1972,12 +1972,12 @@
 			</element>
 			<element kind="textField" uuid="5da5f184-e6b0-4b31-9cae-4f42b045c802" x="9142" y="0"
 				width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00">
+				hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00;$-#,##0.00">
 				<expression>$F{q1ForecastAmount}</expression>
 			</element>
 			<element kind="textField" uuid="32f5667b-8fce-45cb-a4d2-ac7bfdb14de5" x="9262" y="0"
 				width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00">
+				hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00;$-#,##0.00">
 				<expression>$F{q1ForecastAdjustmentAmount}</expression>
 			</element>
 			<element kind="textField" uuid="43d8a1e7-f3b0-499e-a86f-2bb44e2cf874" x="9382" y="0"
@@ -1987,7 +1987,7 @@
 			</element>
 			<element kind="textField" uuid="07cc4591-1918-4092-bf0d-1dd82fbda0da" x="9602" y="0"
 				width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00">
+				hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00;$-#,##0.00">
 				<expression>$F{q1BudgetHighRiskAmount}</expression>
 			</element>
 			<element kind="textField" uuid="8909c114-bca3-43a9-800e-40cf43b6ef02" x="9722" y="0"
@@ -1997,7 +1997,7 @@
 			</element>
 			<element kind="textField" uuid="dfc91a59-08e2-477f-9efb-e82f5922db77" x="9942" y="0"
 				width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00">
+				hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00;$-#,##0.00">
 				<expression>$F{q1BudgetMediumRiskAmount}</expression>
 			</element>
 			<element kind="textField" uuid="c6f5a87e-f403-4789-ae91-e92bb732a321" x="10062" y="0"
@@ -2007,7 +2007,7 @@
 			</element>
 			<element kind="textField" uuid="b9ec7344-e324-4c4e-9fd1-a228a74e11a3" x="10282" y="0"
 				width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00">
+				hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00;$-#,##0.00">
 				<expression>$F{q1BudgetLowRiskAmount}</expression>
 			</element>
 			<element kind="textField" uuid="23848317-6835-400a-aaf0-24757e1f5982" x="10402" y="0"
@@ -2017,7 +2017,7 @@
 			</element>
 			<element kind="textField" uuid="2dd570ce-2cc9-41d9-8dbe-0e9d48d36e74" x="10622" y="0"
 				width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00">
+				hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00;$-#,##0.00">
 				<expression>$F{q1BudgetCompletedAmount}</expression>
 			</element>
 			<element kind="textField" uuid="e5c58ecf-62a9-4e32-af48-464be39d0487" x="10742" y="0"
@@ -2042,12 +2042,12 @@
 			</element>
 			<element kind="textField" uuid="595e4b7a-a6b3-47d1-a85a-c2eda8c6f865" x="11592" y="0"
 				width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00">
+				hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00;$-#,##0.00">
 				<expression>$F{q2ForecastAmount}</expression>
 			</element>
 			<element kind="textField" uuid="8731d0b4-8f95-499e-870a-13717e0ad70f" x="11712" y="0"
 				width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00">
+				hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00;$-#,##0.00">
 				<expression>$F{q2ForecastAdjustmentAmount}</expression>
 			</element>
 			<element kind="textField" uuid="c3e90f87-dab7-4ad0-9428-9a107000fb95" x="11832" y="0"
@@ -2057,7 +2057,7 @@
 			</element>
 			<element kind="textField" uuid="91959991-faaf-4d33-bd55-630ac9fb1b9a" x="12052" y="0"
 				width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00">
+				hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00;$-#,##0.00">
 				<expression>$F{q2BudgetHighRiskAmount}</expression>
 			</element>
 			<element kind="textField" uuid="8d88fa8c-d2f3-4564-b497-39ea4de38904" x="12172" y="0"
@@ -2067,7 +2067,7 @@
 			</element>
 			<element kind="textField" uuid="70d8582e-a686-4487-8281-aacbf4ad3467" x="12392" y="0"
 				width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00">
+				hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00;$-#,##0.00">
 				<expression>$F{q2BudgetMediumRiskAmount}</expression>
 			</element>
 			<element kind="textField" uuid="b5d249a3-09fa-44b3-9658-4c5434497fa1" x="12512" y="0"
@@ -2077,7 +2077,7 @@
 			</element>
 			<element kind="textField" uuid="c6944792-80ce-476e-a31d-575b7ca258f9" x="12732" y="0"
 				width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00">
+				hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00;$-#,##0.00">
 				<expression>$F{q2BudgetLowRiskAmount}</expression>
 			</element>
 			<element kind="textField" uuid="af6e7bda-adc2-48f2-9c0d-4759cb377c66" x="12852" y="0"
@@ -2087,7 +2087,7 @@
 			</element>
 			<element kind="textField" uuid="dafb5bd1-7e3d-4fbd-9cf4-a03c6400323c" x="13072" y="0"
 				width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00">
+				hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00;$-#,##0.00">
 				<expression>$F{q2BudgetCompletedAmount}</expression>
 			</element>
 			<element kind="textField" uuid="ecd2b8dc-544d-4601-afde-4295159e09fa" x="13192" y="0"
@@ -2112,12 +2112,12 @@
 			</element>
 			<element kind="textField" uuid="2db1e6d4-27cc-4145-9c27-0935c93493ca" x="14042" y="0"
 				width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00">
+				hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00;$-#,##0.00">
 				<expression>$F{q3ForecastAmount}</expression>
 			</element>
 			<element kind="textField" uuid="b1c572a0-8728-4b80-aa34-a8330baaccf2" x="14162" y="0"
 				width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00">
+				hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00;$-#,##0.00">
 				<expression>$F{q3ForecastAdjustmentAmount}</expression>
 			</element>
 			<element kind="textField" uuid="51104f0a-c78d-4eb8-b080-6fec5425dd2c" x="14282" y="0"
@@ -2127,7 +2127,7 @@
 			</element>
 			<element kind="textField" uuid="97ff544e-3032-459f-a8ea-d2741d825c64" x="14502" y="0"
 				width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00">
+				hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00;$-#,##0.00">
 				<expression>$F{q3BudgetHighRiskAmount}</expression>
 			</element>
 			<element kind="textField" uuid="9930294b-87d6-432a-8075-5e9c4bf18ec8" x="14622" y="0"
@@ -2137,7 +2137,7 @@
 			</element>
 			<element kind="textField" uuid="ac1b9da2-4869-4e1d-8a18-b78243daf0c7" x="14842" y="0"
 				width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00">
+				hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00;$-#,##0.00">
 				<expression>$F{q3BudgetMediumRiskAmount}</expression>
 			</element>
 			<element kind="textField" uuid="7a7e4c0b-8c8c-43e6-962b-5d0263c20818" x="14962" y="0"
@@ -2147,7 +2147,7 @@
 			</element>
 			<element kind="textField" uuid="819efaf4-3865-44a8-ab33-af3cc104758d" x="15182" y="0"
 				width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00">
+				hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00;$-#,##0.00">
 				<expression>$F{q3BudgetLowRiskAmount}</expression>
 			</element>
 			<element kind="textField" uuid="658493fc-ef2a-4943-b914-8609b2d15333" x="15302" y="0"
@@ -2157,7 +2157,7 @@
 			</element>
 			<element kind="textField" uuid="17848700-7491-407f-95c1-163820be1f3c" x="15522" y="0"
 				width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00">
+				hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00;$-#,##0.00">
 				<expression>$F{q3BudgetCompletedAmount}</expression>
 			</element>
 			<element kind="textField" uuid="31633c5f-a0d5-4a8e-87b4-4045cd489923" x="15642" y="0"
@@ -2182,12 +2182,12 @@
 			</element>
 			<element kind="textField" uuid="13c7473f-2d0a-465b-bfbd-83a67ceaf63e" x="16492" y="0"
 				width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00">
+				hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00;$-#,##0.00">
 				<expression>$F{march7ForecastAmount}</expression>
 			</element>
 			<element kind="textField" uuid="f1ed2af2-eed5-46fe-b14a-af7d80e8f23d" x="16612" y="0"
 				width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00">
+				hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00;$-#,##0.00">
 				<expression>$F{march7ForecastAdjustmentAmount}</expression>
 			</element>
 			<element kind="textField" uuid="8ddd021f-6f73-4c0f-92bd-d6cb986a0303" x="16732" y="0"
@@ -2197,7 +2197,7 @@
 			</element>
 			<element kind="textField" uuid="01b0d1fb-5ccd-4b38-af08-1056a47c5fda" x="16952" y="0"
 				width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00">
+				hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00;$-#,##0.00">
 				<expression>$F{march7BudgetHighRiskAmount}</expression>
 			</element>
 			<element kind="textField" uuid="86dc4af2-9504-4dcb-b3ed-716b445169b1" x="17072" y="0"
@@ -2207,7 +2207,7 @@
 			</element>
 			<element kind="textField" uuid="76ff9bf8-f231-45e4-b115-920dbb7233f2" x="17292" y="0"
 				width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00">
+				hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00;$-#,##0.00">
 				<expression>$F{march7BudgetMediumRiskAmount}</expression>
 			</element>
 			<element kind="textField" uuid="fb5ac5e2-3283-4723-ad0f-e0ea7f013bc4" x="17412" y="0"
@@ -2217,7 +2217,7 @@
 			</element>
 			<element kind="textField" uuid="652f5275-9e92-44ce-9603-fb38cd0b8d6b" x="17632" y="0"
 				width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00">
+				hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00;$-#,##0.00">
 				<expression>$F{march7BudgetLowRiskAmount}</expression>
 			</element>
 			<element kind="textField" uuid="fd70b114-5e87-47d7-ac59-28482429d7a5" x="17752" y="0"
@@ -2227,7 +2227,7 @@
 			</element>
 			<element kind="textField" uuid="31488bed-15d8-4a20-a8c4-d50b0754c508" x="17972" y="0"
 				width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00">
+				hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00;$-#,##0.00">
 				<expression>$F{march7BudgetCompletedAmount}</expression>
 			</element>
 			<element kind="textField" uuid="2f2a57dc-7bbc-4db6-996d-c741f9ea7bca" x="18092" y="0"
@@ -2252,12 +2252,12 @@
 			</element>
 			<element kind="textField" uuid="9c86721d-ac10-4b39-b949-bbe20c72ef1b" x="18942" y="0"
 				width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00">
+				hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00;$-#,##0.00">
 				<expression>$F{otherForecastAmount}</expression>
 			</element>
 			<element kind="textField" uuid="006123fc-2488-494a-8bdd-13ebf621e336" x="19062" y="0"
 				width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00">
+				hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00;$-#,##0.00">
 				<expression>$F{otherForecastAdjustmentAmount}</expression>
 			</element>
 			<element kind="textField" uuid="660dc618-8094-4aec-9c1c-88f664c52ce9" x="19182" y="0"
@@ -2267,7 +2267,7 @@
 			</element>
 			<element kind="textField" uuid="78a9a377-69d0-4ce5-94bf-0bb5ebf13731" x="19402" y="0"
 				width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00">
+				hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00;$-#,##0.00">
 				<expression>$F{otherBudgetHighRiskAmount}</expression>
 			</element>
 			<element kind="textField" uuid="e38e198b-5e73-47d8-8e71-fcaa7f8c71a7" x="19522" y="0"
@@ -2277,7 +2277,7 @@
 			</element>
 			<element kind="textField" uuid="c8200e24-d86e-4cf4-adbe-b8e77d4ba7cc" x="19742" y="0"
 				width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00">
+				hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00;$-#,##0.00">
 				<expression>$F{otherBudgetMediumRiskAmount}</expression>
 			</element>
 			<element kind="textField" uuid="3a678b8a-477f-4b10-a457-a224eda283d3" x="19862" y="0"
@@ -2287,7 +2287,7 @@
 			</element>
 			<element kind="textField" uuid="3951d716-4d9a-4139-9b51-cbe753381c39" x="20082" y="0"
 				width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00">
+				hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00;$-#,##0.00">
 				<expression>$F{otherBudgetLowRiskAmount}</expression>
 			</element>
 			<element kind="textField" uuid="da405018-4127-4785-a618-c741a5ea24dd" x="20202" y="0"
@@ -2297,7 +2297,7 @@
 			</element>
 			<element kind="textField" uuid="7300ce42-4a92-48ea-af9b-2ac8d95f0292" x="20422" y="0"
 				width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00">
+				hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00;$-#,##0.00">
 				<expression>$F{otherBudgetCompletedAmount}</expression>
 			</element>
 			<element kind="textField" uuid="1ce480bc-adcd-4237-85d2-c0238a3af55c" x="20542" y="0"
