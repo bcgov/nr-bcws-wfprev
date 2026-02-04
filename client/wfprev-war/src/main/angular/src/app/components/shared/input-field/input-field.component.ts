@@ -20,4 +20,5 @@ export class InputFieldComponent {
   @Input() type: 'text' | 'number' | 'email' = 'text';  
   @Input() errorMessages: { [key: string]: string } = {};
   @Input() prefix: string | null = null;
+  @Input() img: string | null = null;
 }

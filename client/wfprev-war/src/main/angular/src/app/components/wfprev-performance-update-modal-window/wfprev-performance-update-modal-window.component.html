@@ -1,0 +1,142 @@
+<div class="modal-window-container">
+
+  <form>
+    <div class="section">
+      <p mat-dialog-title class="title">General Update for Fiscal Activity</p>
+      <div class="modal-window-row">
+        <div>
+          <wfprev-select-field class="form-item" [label]="'Reporting Period'" [required]="true"
+            [control]="reportingPeriodControl" [options]="reportingPeriod" [optionValueField]="'value'"
+            [optionLabelField]="'description'" id="reportingPeriod" placeholder="Select" />
+        </div>
+        <div>
+          <wfprev-select-field class="form-item" [label]="'Progress Status'" [control]="progressStatusControl"
+            [options]="progressStatus" [optionValueField]="'value'" [optionLabelField]="'description'"
+            id="progressStatus" placeholder="Select" />
+        </div>
+      </div>
+      <div class="general-updates">
+        <wfprev-textarea [label]="'General Updates (Success, Challenges, Progress)'" [rows]="4" [maxLength]="500"
+          [control]="generalUpdatesControl" [required]="true">
+        </wfprev-textarea>
+      </div>
+    </div>
+    <div class="section">
+      <p mat-dialog-title class="budget-title">Budget Adjustment</p>
+      <div class="modal-window-row">
+        <div class="forecast-container">
+          <div class="forecast-img">
+            <img alt="dollar" class="status-icon" src="/assets/dollar-sign.svg">
+          </div>
+          <div class="forecast-text">
+            <div>
+              <p>Current Forecast:</p>
+            </div>
+            <div class="amount">
+              <p>{{data.currentForecast | currency}}</p>
+            </div>
+          </div>
+        </div>
+        <div class="forecast-container">
+          <div class="forecast-img">
+            <img alt="dollar" class="status-icon" src="/assets/dollar-sign.svg">
+          </div>
+          <div class="forecast-text">
+            <div>
+              <p>Original Cost Estimate:</p>
+            </div>
+            <div class="amount">
+              <p>{{data.originalCostEstimate | currency}}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-window-row">
+        <div>
+          <wfprev-input-field [id]="'revisedForecast'" [label]="'Revised Forecast'" [placeholder]="'#,###'"
+            [type]="'number'" [control]="revisedForecastControl" [tooltip]="'Revised Forecast'" [required]="false"
+            [errorMessages]="{ min: messages.positiveNumber, maxlength: messages.maxLengthExceeded, max: messages.maxLengthExceeded }"
+            [prefix]="'$'" />
+        </div>
+        <div class="forecast-rationale">
+          <wfprev-textarea [label]="'Revised Forecast Rationale'" [rows]="2" [maxLength]="500"
+            [control]="forecastRationaleControl" [required]="true">
+          </wfprev-textarea>
+        </div>
+      </div>
+    </div>
+    <div class="section">
+      <p mat-dialog-title class="risk-breakdown-title">Budget Risk Breakdown</p>
+      <div class="modal-window-row">
+        <p class="section-description">Provide a breakdown of the total budget risks. All values must add up to the
+          {{'{'}}Current/Revised{{'}'}} forecast amount as this information is used to identify how much of the overall
+          budget is at risk.</p>
+      </div>
+      <div class="modal-window-row risk-container">
+        <div>
+          <wfprev-input-field [id]="'highRisk'" [label]="'High Risk'" [placeholder]="'0,00'" [type]="'number'"
+            [control]="highRiskControl" [tooltip]="'High Risk'" [required]="false"
+            [errorMessages]="{ min: messages.positiveNumber, maxlength: messages.maxLengthExceeded, max: messages.maxLengthExceeded }"
+            [prefix]="'$'" [img]="'/assets/high-risk.svg'" />
+        </div>
+        <div class="forecast-rationale">
+          <wfprev-textarea [label]="'Description'" [rows]="2" [maxLength]="500" [control]="highRiskDescriptionControl"
+            [required]="true">
+          </wfprev-textarea>
+        </div>
+      </div>
+      <div class="modal-window-row risk-container">
+        <div>
+          <wfprev-input-field [id]="'mediumRisk'" [label]="'Medium Risk'" [placeholder]="'0,00'" [type]="'number'"
+            [control]="mediumRiskControl" [tooltip]="'Medium Risk'" [required]="false"
+            [errorMessages]="{ min: messages.positiveNumber, maxlength: messages.maxLengthExceeded, max: messages.maxLengthExceeded }"
+            [prefix]="'$'" [img]="'/assets/medium-risk.svg'" />
+        </div>
+        <div class="forecast-rationale">
+          <wfprev-textarea [label]="'Description'" [rows]="2" [maxLength]="500" [control]="mediumRiskDescriptionControl"
+            [required]="true">
+          </wfprev-textarea>
+        </div>
+      </div>
+      <div class="modal-window-row risk-container">
+        <div>
+          <wfprev-input-field [id]="'lowRisk'" [label]="'Low Risk'" [placeholder]="'0,00'" [type]="'number'"
+            [control]="lowRiskControl" [tooltip]="'Low Risk'" [required]="false"
+            [errorMessages]="{ min: messages.positiveNumber, maxlength: messages.maxLengthExceeded, max: messages.maxLengthExceeded }"
+            [prefix]="'$'" [img]="'/assets/low-risk.svg'" />
+        </div>
+        <div class="forecast-rationale">
+          <wfprev-textarea [label]="'Description'" [rows]="2" [maxLength]="500" [control]="lowRiskDescriptionControl"
+            [required]="true">
+          </wfprev-textarea>
+        </div>
+      </div>
+      <div class="modal-window-row risk-container">
+        <div>
+          <wfprev-input-field [id]="'complete'" [label]="'Complete'" [placeholder]="'0,00'" [type]="'number'"
+            [control]="completeControl" [tooltip]="'Complete'" [required]="false"
+            [errorMessages]="{ min: messages.positiveNumber, maxlength: messages.maxLengthExceeded, max: messages.maxLengthExceeded }"
+            [prefix]="'$'" [img]="'/assets/none-risk.svg'" />
+        </div>
+        <div class="forecast-rationale">
+          <wfprev-textarea [label]="'Description'" [rows]="2" [maxLength]="500" [control]="completeDescriptionControl"
+            [required]="true">
+          </wfprev-textarea>
+        </div>
+      </div>
+      <div class="total">
+        <p>Total: <b>{{totalAmountControl.value| currency}}</b></p>
+      </div>
+      @if(form.hasError('totalMismatch')) {
+        <div class="error">
+          <p>The sum of all risk amounts does not match the {{'{'}}Revised Forecast/Current Forecast{{'}'}} amount.</p>
+        </div>
+      }
+    </div>
+  </form>
+  <div class="button-row">
+    <button class="secondary" mat-button (click)="onCancel()">Cancel</button>
+    <button class="primary" mat-button (click)="onSave()"
+      [disabled]="form.invalid">Save</button>
+  </div>
+</div>

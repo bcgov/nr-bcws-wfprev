@@ -375,3 +375,92 @@ export interface ReportRequest {
   projects?: ReportProject[];
   projectFilter?: ProjectFilter;
 }
+
+export interface NewPerformanceUpdate {
+
+  reportingPeriod: ReportingPeriod,
+  progressStatusCode: ProgressStatus,
+
+  generalUpdateComment: string,
+
+  forecastAmount: number,
+  forecastAdjustmentRationale: string,
+
+  budgetHighRiskAmount: number,
+  budgetHighRiskRationale: string,
+  budgetMediumRiskAmount: number,
+  budgetMediumRiskRationale: string,
+  budgetLowRiskAmount: number,
+  budgetLowRiskRationale: string,
+  budgetCompletedAmount: number,
+  budgetCompletedDescription: string,
+}
+
+export interface PerformanceUpdate {
+
+  submittedTimestamp: Date;
+
+  reportingPeriod: ReportingPeriod;
+  progressStatusCode: ProgressStatus;
+  updateGeneralStatus: UpdateGeneralStatus;
+
+  submittedByUserid: String;
+  submittedByGuid: String;
+
+  generalUpdateComment: String;
+  submittedBy: String;
+
+  forecastAmount: number;
+  forecastAdjustmentAmount: number;
+  previousForecastAmount: number;
+  forecastAdjustmentRationale: string;
+
+  budgetHighRiskAmount: number;
+  budgetHighRiskRationale: string;
+
+  budgetMediumRiskAmount: number;
+  budgetMediumRiskRationale: string;
+
+  budgetLowRiskAmount: number;
+  budgetLowRiskRationale: string;
+
+  budgetCompletedAmount: number;
+  budgetCompletedDescription: string;
+
+  totalAmount: number;
+}
+
+export enum ForecastStatus {
+  ChangedDecreased = "CHANGED_DECREASED",
+  ChangedIncreased = "CHANGED_INCREASED",
+  NonChanged = "NON_CHANGED"
+}
+
+export enum ProgressStatus {
+  Cancelled = "CANCELLED",
+  Deferred = "DEFERRED",
+  Delayed = "DELAYED",
+  OnTrack = "ON_TRACK"
+}
+
+export enum UpdateGeneralStatus {
+  Cancelled = "CANCELLED",
+  Complete = "COMPLETE",
+  Draft = "DRAFT",
+  InProgress = "IN_PROG",
+  Prepared = "PREPARED",
+  Proposed = "PROPOSED"
+}
+
+export enum ReportingPeriod {
+  Custom = "CUSTOM",
+  March7 = "MARCH7",
+  Q1 = "Q1",
+  Q2 = "Q2",
+  Q3 = "Q3"
+}
+
+export interface Option<T> {
+  value: T,
+  description: string
+}

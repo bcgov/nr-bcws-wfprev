@@ -1,0 +1,253 @@
+<div class="performance-update-container">
+    <mat-expansion-panel [expanded]='true' class="expansion-panel" #performanceUpdatesPanels>
+        <mat-expansion-panel-header>
+            <div class="header-container">
+                <wfprev-expansion-indicator
+                    [isExpanded]="performanceUpdatesPanels.expanded"></wfprev-expansion-indicator>
+                <span class="project-title">Performance Updates</span>
+                <wfprev-icon-button [text]="'New Update'" [icon]="'/assets/add-button.svg'" [alt]="'add-update'"
+                    [iconSize]="19" (clicked)="openDialog()">
+                </wfprev-icon-button>
+            </div>
+        </mat-expansion-panel-header>
+        @if(updates.length > 0) {
+        @for (update of updates; track update.submittedTimestamp; let i = $index) {
+        <mat-expansion-panel [expanded]='i === 0' class="expansion-panel" #updatePanel>
+            <mat-expansion-panel-header class="performance-update-header">
+                <wfprev-expansion-indicator [isExpanded]="updatePanel.expanded"></wfprev-expansion-indicator>
+                <div class="performance-update-title">
+                    <div>
+                        <p class="project-title"><b>Date: {{update.submittedTimestamp | date:'yyyy-MM-dd'}}</b></p>
+                    </div>
+                </div>
+                <div class="content-status-indicators">
+                    @if (update.reportingPeriod === other.value) {
+                    <span>
+                        <span>Reporting Period: {{other.description}}</span>
+                    </span>
+                    }
+                    @if (update.reportingPeriod === march7.value) {
+                    <span>
+                        <span>Reporting Period: {{march7.description}}</span>
+                    </span>
+                    }
+                    @if (update.reportingPeriod === q1.value) {
+                    <span>
+                        <span>Reporting Period: {{q1.description}}</span>
+                    </span>
+                    }
+                    @if (update.reportingPeriod === q2.value) {
+                    <span>
+                        <span>Reporting Period: {{q2.description}}</span>
+                    </span>
+                    }
+                    @if (update.reportingPeriod === q3.value) {
+                    <span>
+                        <span>Reporting Period: {{q3.description}}</span>
+                    </span>
+                    }
+                    @if (update.progressStatusCode === delayedProgressStatus.value) {
+                    <span>
+                        <img alt="status" class="status-icon" src="/assets/progress-status-delayed.svg">
+                        {{delayedProgressStatus.description}}
+                    </span>
+                    }
+                    @if (update.progressStatusCode === onTrackProgressStatus.value) {
+                    <span>
+                        <img alt="status" class="status-icon" src="/assets/progress-status-ontrack.svg">
+                        {{onTrackProgressStatus.description}}
+                    </span>
+                    }
+                    @if (update.progressStatusCode === deferredProgressStatus.value) {
+                    <span>
+                        <img alt="status" class="status-icon" src="/assets/progress-status-deferred.svg">
+                        {{deferredProgressStatus.description}}
+                    </span>
+                    }
+                    @if (update.progressStatusCode === cancelledProgressStatus.value) {
+                    <span>
+                        <img alt="status" class="status-icon" src="/assets/progress-status-cancelled.svg">
+                        {{cancelledProgressStatus.description}}
+                    </span>
+                    }
+                    @if(update.forecastAdjustmentAmount < 0){
+                    <span>
+                        <img alt="status" class="status-icon" src="/assets/budget-change-decreased.svg">
+                        Forecast Decreased
+                    </span>
+                    }
+                    @if(update.forecastAdjustmentAmount > 0){
+                    <span>
+                        <img alt="status" class="status-icon" src="/assets/budget-change-increased.svg">
+                        Forecast Increased
+                    </span>
+                    }
+                </div>
+                @if(update.updateGeneralStatus === cancelledUpdateGeneralStatus.value) {
+                <div class="status-indicators">
+                    <span class="status-tag">
+                        <img alt="status" class="status-icon" src="/assets/cancelled-icon.svg">
+                        {{cancelledUpdateGeneralStatus.description}}
+                    </span>
+                </div>
+                }
+                @if(update.updateGeneralStatus === completeUpdateGeneralStatus.value) {
+                <div class="status-indicators">
+                    <span class="status-tag">
+                        <img alt="status" class="status-icon" src="/assets/complete-icon.svg">
+                        {{completeUpdateGeneralStatus.description}}
+                    </span>
+                </div>
+                }
+                @if(update.updateGeneralStatus === draftUpdateGeneralStatus.value) {
+                <div class="status-indicators">
+                    <span class="status-tag">
+                        <img alt="status" class="status-icon" src="/assets/draft-icon.svg">
+                        {{draftUpdateGeneralStatus.description}}
+                    </span>
+                </div>
+                }
+                @if(update.updateGeneralStatus === inProgressUpdateGeneralStatus.value) {
+                <div class="status-indicators">
+                    <span class="status-tag">
+                        <img alt="status" class="status-icon" src="/assets/in-progress-icon-only.svg">
+                        {{inProgressUpdateGeneralStatus.description}}
+                    </span>
+                </div>
+                }
+                @if(update.updateGeneralStatus === preparedUpdateGeneralStatus.value) {
+                <div class="status-indicators">
+                    <span class="status-tag">
+                        <img alt="status" class="status-icon" src="/assets/prepared-icon.svg">
+                        {{preparedUpdateGeneralStatus.description}}
+                    </span>
+                </div>
+                }
+                @if(update.updateGeneralStatus === proposedUpdateGeneralStatus.value) {
+                <div class="status-indicators">
+                    <span class="status-tag">
+                        <img alt="status" class="status-icon" src="/assets/proposed-icon.svg">
+                        {{proposedUpdateGeneralStatus.description}}
+                    </span>
+                </div>
+                }
+            </mat-expansion-panel-header>
+            <div class="form-grid">
+                <div class="general-updates-container">
+                    <div class="updates-header">
+                        <div class="updates-header-title">
+                            <p>General Updates (Successes, Challenges, Progress)</p>
+                        </div>
+                        <div class="submitted-by">
+                            <p>Submited by: {{update.submittedBy}}</p>
+                        </div>
+                    </div>
+                    <div>
+                        <p>{{update.generalUpdateComment}}</p>
+                    </div>
+                </div>
+                <div class="budget-adjustment-container">
+                    <div class="budget-adjustment-header">
+                        <div class="budget-adjustment-title">
+                            <span>Budget adjustment</span>
+                        </div>
+                        <div class="budget-adjustment-lable">
+                            @if(update.forecastAdjustmentAmount < 0){
+                            <span>
+                                <img alt="status" class="status-icon" src="/assets/budget-change-decreased.svg">
+                                Forecast Decreased
+                            </span>
+                            }
+
+                            @if(update.forecastAdjustmentAmount > 0){
+                            <span>
+                                <img alt="status" class="status-icon" src="/assets/budget-change-increased.svg">
+                                Forecast Increased
+                            </span>
+                            }
+                        </div>
+                    </div>
+                    <div class="budget-adjustment-ditails">
+                        <div class="budget-adjustment-item">
+                            <p class="budget-title">Revised Forecast Amount</p>
+                            <p>{{update.forecastAmount | currency}}</p>
+                        </div>
+                        <div class="budget-adjustment-item">
+                            <p class="budget-title">Forecast Adjustment Amount</p>
+                            <p>{{update.forecastAdjustmentAmount | currency}}</p>
+                        </div>
+                        <div class="budget-adjustment-item">
+                            <p class="budget-title">Forecast Adjustment Rationale</p>
+                            <p>{{update.forecastAdjustmentRationale}}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="budget-breackdown-container">
+                    <div class="budget-breakdown-header">
+                        <p>Budget Risk Breakdown</p>
+                    </div>
+                    <div class="budget-breackdown-table">
+                        <div class="budget-breackdown-row">
+                            <div class="budget-breackdown-cell1">
+                                <img alt="status" class="status-icon" src="/assets/high-risk.svg">
+                                <p>High risk</p>
+                            </div>
+                            <div class="budget-breackdown-cell2">
+                                <p>{{update.budgetHighRiskAmount | currency}}</p>
+                            </div>
+                            <div>
+                                <p>{{update.budgetHighRiskRationale}}</p>
+                            </div>
+                        </div>
+                        <div class="budget-breackdown-row">
+                            <div class="budget-breackdown-cell1">
+                                <img alt="status" class="status-icon" src="/assets/medium-risk.svg">
+                                <p>Medium risk</p>
+                            </div>
+                            <div class="budget-breackdown-cell2">
+                                <p>{{update.budgetMediumRiskAmount | currency}}</p>
+                            </div>
+                            <div>
+                                <p>{{update.budgetMediumRiskRationale}}</p>
+                            </div>
+                        </div>
+                        <div class="budget-breackdown-row">
+                            <div class="budget-breackdown-cell1">
+                                <img alt="status" class="status-icon" src="/assets/low-risk.svg">
+                                <p>Low risk</p>
+                            </div>
+                            <div class="budget-breackdown-cell2">
+                                <p>{{update.budgetLowRiskAmount | currency}}</p>
+                            </div>
+                            <div>
+                                <p>{{update.budgetLowRiskRationale}}</p>
+                            </div>
+                        </div>
+                        <div class="budget-breackdown-row">
+                            <div class="budget-breackdown-cell1">
+                                <img alt="status" class="status-icon" src="/assets/none-risk.svg">
+                                <p>Complete</p>
+                            </div>
+                            <div class="budget-breackdown-cell2">
+                                <p>{{update.budgetCompletedAmount | currency}}</p>
+                            </div>
+                            <div>
+                                <p>{{update.budgetCompletedDescription}}</p>
+                            </div>
+                        </div>
+                        <div class="budget-breackdown-last-row">
+                            <div class="budget-breackdown-cell1">
+                                <p>Total:</p>
+                            </div>
+                            <div class="budget-breackdown-cell2">
+                                <p>{{update.totalAmount | currency}}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </mat-expansion-panel>
+        }
+        }
+    </mat-expansion-panel>
+</div>

@@ -313,7 +313,10 @@
                 </div>
               </mat-expansion-panel>
               <div class="activities-map-container">
-                <wfprev-activities class="activities-panel"  [isReadonly]="isCurrentFiscalReadonly()" [fiscalGuid]="currentFiscalGuid" (boundariesUpdated)="onBoundariesChanged()"></wfprev-activities>
+                <div>
+                  <wfprev-activities class="activities-panel"  [isReadonly]="isCurrentFiscalReadonly()" [fiscalGuid]="currentFiscalGuid" (boundariesUpdated)="onBoundariesChanged()"></wfprev-activities>
+                  <wfprev-performance-updates [fiscalGuid]="fiscal.projectPlanFiscalGuid"></wfprev-performance-updates>
+                </div>
                 <div class="fiscal-and-endorsement">
                   <wfprev-fiscal-map class="fiscal-map-panel" *ngIf="selectedTabIndex === i" [fiscalGuid]="selectedTabIndex" [selectedFiscalYear]="projectFiscals[selectedTabIndex]?.fiscalYear"  #fiscalMapRef></wfprev-fiscal-map>
                   <wfprev-endorsement-approval [fiscal]="projectFiscals[i]" [currentUser]="currentUser" [currentIdir]="currentIdir" (saveEndorsement)="onSaveEndorsement($event)" [isSaving]="isSavingFiscal[i]"></wfprev-endorsement-approval>
