@@ -43,24 +43,24 @@ describe('matchTotalValidator', () => {
     expect(form.errors).toEqual({ totalMismatch: true });
   });
 
-  it('should return null if both revisedForecast and currentForecast are null', () => {
+  it('should return error if both revisedForecast and currentForecast are null', () => {
     form = createForm(100, null, null);
-    expect(form.errors).toBeNull();
+    expect(form.errors).toEqual({ totalMismatch: true });
   });
 
-  it('should return null if revisedForecast is empty string', () => {
+  it('should return error if revisedForecast is empty string', () => {
     form = createForm(100, '', null);
-    expect(form.errors).toBeNull();
+    expect(form.errors).toEqual({ totalMismatch: true });
   });
 
-  it('should return null if currentForecast is empty string', () => {
+  it('should return error if currentForecast is empty string', () => {
     form = createForm(100, null, '');
-    expect(form.errors).toBeNull();
+    expect(form.errors).toEqual({ totalMismatch: true });
   });
 
-  it('should return null if entered value is NaN', () => {
+  it('should return error if entered value is NaN', () => {
     form = createForm(100, 'abc', null);
-    expect(form.errors).toBeNull();
+    expect(form.errors).toEqual({ totalMismatch: true });
   });
 
   it('should handle missing controls gracefully', () => {

@@ -13,18 +13,19 @@ export function matchTotalValidator(totalAmountCtrlName: string): ValidatorFn {
       );
       return null;
     }
+    
+    const forecastValue = revisedForecastCtrl?.value ?? currentForecastCtrl?.value;
 
-    const enteredValue = revisedForecastCtrl?.value ?? currentForecastCtrl?.value;
-
-    if (enteredValue == null || enteredValue === '') {
-      return null;
+    if (forecastValue == null || forecastValue === '') {
+      return { totalMismatch: true };
     }
 
-    const entered = Number(enteredValue);
+    const entered = Number(forecastValue);
 
     if (Number.isNaN(entered)) {
-      return null;
-    }
+      return { totalMismatch: true };
+    };
+    
 
     return entered === totalAmound
       ? null
