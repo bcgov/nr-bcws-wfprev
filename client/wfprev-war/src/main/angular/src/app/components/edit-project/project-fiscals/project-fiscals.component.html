@@ -314,8 +314,8 @@
               </mat-expansion-panel>
               <div class="activities-map-container">
                 <div>
-                  <wfprev-activities class="activities-panel"  [isReadonly]="isCurrentFiscalReadonly()" [fiscalGuid]="currentFiscalGuid" (boundariesUpdated)="onBoundariesChanged()"></wfprev-activities>
                   <wfprev-performance-updates [fiscalGuid]="fiscal.projectPlanFiscalGuid"></wfprev-performance-updates>
+                  <wfprev-activities class="activities-panel"  [isReadonly]="isCurrentFiscalReadonly()" [fiscalGuid]="currentFiscalGuid" (boundariesUpdated)="onBoundariesChanged()"></wfprev-activities>
                 </div>
                 <div class="fiscal-and-endorsement">
                   <wfprev-fiscal-map class="fiscal-map-panel" *ngIf="selectedTabIndex === i" [fiscalGuid]="selectedTabIndex" [selectedFiscalYear]="projectFiscals[selectedTabIndex]?.fiscalYear"  #fiscalMapRef></wfprev-fiscal-map>
