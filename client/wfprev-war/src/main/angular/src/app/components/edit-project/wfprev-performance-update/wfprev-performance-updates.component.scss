@@ -58,10 +58,11 @@
         display: flex;
         align-items: center;
         gap: 10px;
-        min-width: 560px;
+        min-width: 600px;
 
-        span {
+        .reporting-period {
             display: flex;
+            min-width: 290px;
 
             img {
                 display: flex;
@@ -69,6 +70,25 @@
             }
         }
 
+        .progress-status {
+             display: flex;
+            width: 110px;
+
+            img {
+                display: flex;
+                padding: 0px 5px;
+            }
+        }
+        
+        .forecast-amount {
+             display: flex;
+            width: 180px;
+
+            img {
+                display: flex;
+                padding: 0px 5px;
+            }
+        }
 
         .status-icon {
             width: 24px;
