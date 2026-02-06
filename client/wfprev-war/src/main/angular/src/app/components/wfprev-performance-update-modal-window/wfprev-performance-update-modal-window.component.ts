@@ -81,18 +81,19 @@ export class PerformanceUpdateModalWindowComponent {
   });
 
   reportingPeriod: Option<ReportingPeriod>[] = [
-    { value: ReportingPeriod.Custom, description: 'Other' },
-    { value: ReportingPeriod.March7, description: 'March 7' },
     { value: ReportingPeriod.Q1, description: 'End of Q1' },
     { value: ReportingPeriod.Q2, description: 'End of Q2' },
-    { value: ReportingPeriod.Q3, description: 'End of Q3' }
+    { value: ReportingPeriod.Q3, description: 'End of Q3' },
+    { value: ReportingPeriod.Q3, description: 'End of Q4' },
+    { value: ReportingPeriod.March7, description: 'March 7' },
+    { value: ReportingPeriod.Custom, description: 'Other' }
   ]
 
   progressStatus: Option<ProgressStatus>[] = [
-    { value: ProgressStatus.Cancelled, description: 'Cancelled' },
+    { value: ProgressStatus.OnTrack, description: 'On track' },
     { value: ProgressStatus.Deferred, description: 'Deferred' },
     { value: ProgressStatus.Delayed, description: 'Delayed' },
-    { value: ProgressStatus.OnTrack, description: 'On track' }
+    { value: ProgressStatus.Cancelled, description: 'Cancelled' }
   ]
 
   constructor(
