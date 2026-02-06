@@ -18,12 +18,13 @@ import ca.bc.gov.nrs.wfprev.data.models.ObjectiveTypeCodeModel;
 import ca.bc.gov.nrs.wfprev.data.models.PlanFiscalStatusCodeModel;
 import ca.bc.gov.nrs.wfprev.data.models.ProjectStatusCodeModel;
 import ca.bc.gov.nrs.wfprev.data.models.ProjectTypeCodeModel;
+import ca.bc.gov.nrs.wfprev.data.models.ProposalTypeCodeModel;
+import ca.bc.gov.nrs.wfprev.data.models.ReportingPeriodCodeModel;
 import ca.bc.gov.nrs.wfprev.data.models.RiskRatingCodeModel;
 import ca.bc.gov.nrs.wfprev.data.models.SilvicultureBaseCodeModel;
 import ca.bc.gov.nrs.wfprev.data.models.SilvicultureMethodCodeModel;
 import ca.bc.gov.nrs.wfprev.data.models.SilvicultureTechniqueCodeModel;
 import ca.bc.gov.nrs.wfprev.data.models.SourceObjectNameCodeModel;
-import ca.bc.gov.nrs.wfprev.data.models.ProposalTypeCodeModel;
 import ca.bc.gov.nrs.wfprev.data.models.WUIRiskClassRankModel;
 import ca.bc.gov.nrs.wfprev.data.models.WildfireOrgUnitModel;
 import ca.bc.gov.nrs.wfprev.services.CodesService;
@@ -86,6 +87,7 @@ class CodesControllerTest {
         testGetWuiRiskClassCodes();
         testGetEvaluationCriteriaCodes();
         testGetWildfireOrgUnits();
+        testGetReportingPeriodCodes();
     }
 
     void testGetForestAreaCodes() throws Exception {
@@ -469,6 +471,13 @@ class CodesControllerTest {
         when(codesService.getAllWildfireOrgUnits()).thenReturn(objModel);
 
         mockMvc.perform(get("/codes/" + CodeTables.WILDFIRE_ORG_UNIT)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
+
+    void testGetReportingPeriodCodes() throws Exception {
+        when(codesService.getAllReportingPeriodCodes()).thenReturn(CollectionModel.empty());
+        mockMvc.perform(get("/codes/{codeTable}", CodeTables.REPORTING_PERIOD_CODE)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
@@ -881,19 +890,18 @@ class CodesControllerTest {
         verifyNoMoreInteractions(codesService);
     }
 
-        @Test
-        @WithMockUser
-        void testGetProposalTypeCodeById_VerifyServiceCall() throws Exception {
-                String id = UUID.randomUUID().toString();
+    @Test
+    @WithMockUser
+    void testGetProposalTypeCodeById_VerifyServiceCall() throws Exception {
+        String id = UUID.randomUUID().toString();
 
-                mockMvc.perform(get("/codes/{codeTable}/{id}", CodeTables.PROPOSAL_TYPE_CODE, id)
-                                .contentType(MediaType.APPLICATION_JSON))
-                        .andExpect(status().isNotFound());
+        mockMvc.perform(get("/codes/{codeTable}/{id}", CodeTables.PROPOSAL_TYPE_CODE, id)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
 
-                verify(codesService, times(1)).getProposalTypeCodeById(id);
-                verifyNoMoreInteractions(codesService);
-        }
-
+        verify(codesService, times(1)).getProposalTypeCodeById(id);
+        verifyNoMoreInteractions(codesService);
+    }
 
     @Test
     @WithMockUser
@@ -1159,6 +1167,19 @@ class CodesControllerTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 // Then
                 .andExpect(status().isInternalServerError());
+    }
+
+    @Test
+    @WithMockUser
+    void testGetReportingPeriodCodeById_VerifyServiceCall() throws Exception {
+        String id = UUID.randomUUID().toString();
+        when(codesService.getReportingPeriodCodeById(id)).thenReturn(null);
+
+        mockMvc.perform(get("/codes/{codeTable}/{id}", CodeTables.REPORTING_PERIOD_CODE, id)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+
+        verify(codesService, times(1)).getReportingPeriodCodeById(id);
     }
 
 }

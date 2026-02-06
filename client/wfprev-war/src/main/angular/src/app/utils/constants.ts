@@ -64,6 +64,7 @@ export const CodeTableKeys = {
   SECONDARY_OBJECTIVE_TYPE_CODE: 'secondaryObjectiveTypeCode',
   WILDFIRE_ORG_UNIT: 'wildfireOrgUnit',
   WILDFIRE_ORG_UNIT_ID: 'wildfireOrgUnitId',
+  REPORTING_PERIOD_CODE: 'reportingPeriodCode',
 };
 
 export const CodeTableNames = {
@@ -77,7 +78,8 @@ export const CodeTableNames = {
   BC_PARKS_REGION_CODE: 'bcParksRegionCodes',
   BC_PARKS_SECTION_CODE: 'bcParksSectionCodes',
   OBJECTIVE_TYPE_CODE: 'objectiveTypeCodes',
-  WILDFIRE_ORG_UNIT: 'wildfireOrgUnits'
+  WILDFIRE_ORG_UNIT: 'wildfireOrgUnits',
+  REPORTING_PERIOD_CODE: 'reportingPeriodCodes'
 }
 
 export const ProjectTypeCodes = {
