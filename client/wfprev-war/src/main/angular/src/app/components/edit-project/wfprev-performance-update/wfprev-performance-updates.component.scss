@@ -156,6 +156,7 @@
                 flex-direction: row;
 
                 .budget-adjustment-item {
+                    min-width: 250px;
                     padding-right: 20px;
 
                     .budget-title {
@@ -193,12 +194,14 @@
                         align-items: center;
                         gap: 5px;
                         padding-left: 12px;
-                        width: 130px;
+                        min-width: 130px;
                     }
 
                     .budget-breackdown-cell2 {
+                        display: flex;
+                        align-items: center;
                         padding-left: 8px;
-                        width: 110px;
+                        min-width: 110px;
                         font-weight: bold;
                     }
                 }
