@@ -64,6 +64,7 @@ export const CodeTableKeys = {
   SECONDARY_OBJECTIVE_TYPE_CODE: 'secondaryObjectiveTypeCode',
   WILDFIRE_ORG_UNIT: 'wildfireOrgUnit',
   WILDFIRE_ORG_UNIT_ID: 'wildfireOrgUnitId',
+  REPORTING_PERIOD_CODE: 'reportingPeriodCode',
 };
 
 export const CodeTableNames = {
@@ -77,7 +78,8 @@ export const CodeTableNames = {
   BC_PARKS_REGION_CODE: 'bcParksRegionCodes',
   BC_PARKS_SECTION_CODE: 'bcParksSectionCodes',
   OBJECTIVE_TYPE_CODE: 'objectiveTypeCodes',
-  WILDFIRE_ORG_UNIT: 'wildfireOrgUnits'
+  WILDFIRE_ORG_UNIT: 'wildfireOrgUnits',
+  REPORTING_PERIOD_CODE: 'reportingPeriodCodes'
 }
 
 export const ProjectTypeCodes = {
@@ -171,6 +173,7 @@ export const ModalTitles = {
 
 export const ModalMessages = {
   CONFIRM_CANCEL_MESSAGE: 'Are you sure you want to cancel? This information will not be saved.',
+  CONFIRM_CANCEL_PERFORMANCE_UPDATE_MODAL_WINDOW_MESSAGE: 'Are you sure you want to leave this page? The changes you made will not be saved.',
   DUPLICATE_FOUND_MESSAGE: 'This Project already exists: ',
   CONFIRM_UNSAVE_MESSAGE: 'Are you sure you want to leave this page? The changes you made will not be saved.',
   DELETE_ATTACHMENT_MESSAGE: 'Are you sure you want to delete this file? ',

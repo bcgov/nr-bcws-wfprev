@@ -12,7 +12,6 @@ import java.util.List;
 @Repository
 public interface ProjectPlanFiscalPerfRepository extends JpaRepository<ProjectPlanFiscalPerfEntity, UUID> {
     void deleteByProjectFiscal_ProjectPlanFiscalGuid(UUID projectPlanFiscalGuid);
-    List<ProjectPlanFiscalPerfEntity> findAllByProjectFiscal_ProjectPlanFiscalGuid(UUID projectPlanFiscalGuid);
     List<ProjectPlanFiscalPerfEntity> findAllByProjectFiscal_ProjectPlanFiscalGuid(
         UUID projectPlanFiscalGuid,
         Sort sort);
