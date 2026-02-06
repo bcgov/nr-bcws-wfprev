@@ -16,7 +16,7 @@
         </div>
       </div>
       <div class="general-updates">
-        <wfprev-textarea [label]="'General Updates (Success, Challenges, Progress)'" [rows]="4" [maxLength]="500"
+        <wfprev-textarea [label]="'General Updates (Successes, Challenges, Progress)'" [rows]="4" [maxLength]="500"
           [control]="generalUpdatesControl" [required]="true">
         </wfprev-textarea>
       </div>
@@ -59,7 +59,7 @@
             [prefix]="'$'" />
         </div>
         <div class="forecast-rationale">
-          <wfprev-textarea [label]="'Revised Forecast Rationale'" [rows]="2" [maxLength]="500"
+          <wfprev-textarea [label]="'Revised Forecast Rationale'" placeholder="Some rationale about why the amount went up." [rows]="2" [maxLength]="500"
             [control]="forecastRationaleControl" [required]="true">
           </wfprev-textarea>
         </div>
@@ -69,7 +69,7 @@
       <p mat-dialog-title class="risk-breakdown-title">Budget Risk Breakdown</p>
       <div class="modal-window-row">
         <p class="section-description">Provide a breakdown of the total budget risks. All values must add up to the
-          {{'{'}}Current/Revised{{'}'}} forecast amount as this information is used to identify how much of the overall
+          {{'{'}}<b>Current/Revised</b>{{'}'}} <b>forecast</b> amount as this information is used to identify how much of the overall
           budget is at risk.</p>
       </div>
       <div class="modal-window-row risk-container">
@@ -80,8 +80,8 @@
             [prefix]="'$'" [img]="'/assets/high-risk.svg'" />
         </div>
         <div class="forecast-rationale">
-          <wfprev-textarea [label]="'Description'" [rows]="2" [maxLength]="500" [control]="highRiskDescriptionControl"
-            [required]="true">
+          <wfprev-textarea [label]="'Description'" placeholder="Some description about why this amount is high risk" [rows]="2" [maxLength]="500" [control]="highRiskDescriptionControl"
+            [required]="true" >
           </wfprev-textarea>
         </div>
       </div>
@@ -93,7 +93,7 @@
             [prefix]="'$'" [img]="'/assets/medium-risk.svg'" />
         </div>
         <div class="forecast-rationale">
-          <wfprev-textarea [label]="'Description'" [rows]="2" [maxLength]="500" [control]="mediumRiskDescriptionControl"
+          <wfprev-textarea [label]="'Description'" placeholder="Some description about why this amount is medium risk" [rows]="2" [maxLength]="500" [control]="mediumRiskDescriptionControl"
             [required]="true">
           </wfprev-textarea>
         </div>
@@ -106,7 +106,7 @@
             [prefix]="'$'" [img]="'/assets/low-risk.svg'" />
         </div>
         <div class="forecast-rationale">
-          <wfprev-textarea [label]="'Description'" [rows]="2" [maxLength]="500" [control]="lowRiskDescriptionControl"
+          <wfprev-textarea [label]="'Description'" placeholder="Some description about why this amount is low risk" [rows]="2" [maxLength]="500" [control]="lowRiskDescriptionControl"
             [required]="true">
           </wfprev-textarea>
         </div>
@@ -119,7 +119,7 @@
             [prefix]="'$'" [img]="'/assets/none-risk.svg'" />
         </div>
         <div class="forecast-rationale">
-          <wfprev-textarea [label]="'Description'" [rows]="2" [maxLength]="500" [control]="completeDescriptionControl"
+          <wfprev-textarea [label]="'Description'" placeholder="Some description about what amount was spent and how" [rows]="2" [maxLength]="500" [control]="completeDescriptionControl"
             [required]="true">
           </wfprev-textarea>
         </div>
