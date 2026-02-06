@@ -171,6 +171,7 @@ export const ModalTitles = {
 
 export const ModalMessages = {
   CONFIRM_CANCEL_MESSAGE: 'Are you sure you want to cancel? This information will not be saved.',
+  CONFIRM_CANCEL_PERFORMANCE_UPDATE_MODAL_WINDOW_MESSAGE: 'Are you sure you want to leave this page? The changes you made will not be saved.',
   DUPLICATE_FOUND_MESSAGE: 'This Project already exists: ',
   CONFIRM_UNSAVE_MESSAGE: 'Are you sure you want to leave this page? The changes you made will not be saved.',
   DELETE_ATTACHMENT_MESSAGE: 'Are you sure you want to delete this file? ',
