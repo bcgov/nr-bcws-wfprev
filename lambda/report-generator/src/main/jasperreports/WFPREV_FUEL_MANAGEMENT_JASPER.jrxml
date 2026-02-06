@@ -747,8 +747,7 @@
 		<element kind="staticText" uuid="3749987b-aee0-43d8-8a63-087d45d96c60" mode="Opaque" x="8298"
 			y="0" width="120" height="108" forecolor="#000000" backcolor="#FFD900" fontName="Arial"
 			fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
-			<text>Additional Comments/
-				Notes on Fine Filters</text>
+			<text>Additional Comments/ Notes on Fine Filters</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
 				<topPen lineWidth="0.0" />
@@ -848,7 +847,7 @@
 			</box>
 		</element>
 		<element kind="staticText" uuid="adf72134-bb1e-49fe-b15e-44ed20044d7f" mode="Opaque" x="9602"
-			y="0" width="120" height="108" backcolor="#44B3E1" fontName="Arial" fontSize="9.0" bold="true"
+			y="0" width="120" height="108" backcolor="#C02F33" fontName="Arial" fontSize="9.0" bold="true"
 			hTextAlign="Center" vTextAlign="Middle" markup="styled">
 			<text><![CDATA[<style forecolor="black">End of Q1:</style>
 <style forecolor="white">Budget Risk: High Risk</style>]]></text>
@@ -861,7 +860,7 @@
 			</box>
 		</element>
 		<element kind="staticText" uuid="6177fc9b-1da1-4bbe-8fcf-8ef356d50cbf" mode="Opaque" x="9722"
-			y="0" width="220" height="108" backcolor="#44B3E1" fontName="Arial" fontSize="9.0" bold="true"
+			y="0" width="220" height="108" backcolor="#C02F33" fontName="Arial" fontSize="9.0" bold="true"
 			hTextAlign="Center" vTextAlign="Middle" markup="styled">
 			<text><![CDATA[<style forecolor="black">End of Q1:</style>
 <style forecolor="white">High Risk Rationale</style>]]></text>
@@ -874,7 +873,7 @@
 			</box>
 		</element>
 		<element kind="staticText" uuid="dd365aa9-c49f-4701-ae27-bda03f140014" mode="Opaque" x="9942"
-			y="0" width="120" height="108" backcolor="#44B3E1" fontName="Arial" fontSize="9.0" bold="true"
+			y="0" width="120" height="108" backcolor="#BE5014" fontName="Arial" fontSize="9.0" bold="true"
 			hTextAlign="Center" vTextAlign="Middle" markup="styled">
 			<text><![CDATA[<style forecolor="black">End of Q1:</style>
 <style forecolor="white">Budget Risk: Medium Risk</style>]]></text>
@@ -887,7 +886,7 @@
 			</box>
 		</element>
 		<element kind="staticText" uuid="b7cbd1a3-051a-435c-846c-592d7d44757d" mode="Opaque" x="10062"
-			y="0" width="220" height="108" backcolor="#44B3E1" fontName="Arial" fontSize="9.0" bold="true"
+			y="0" width="220" height="108" backcolor="#BE5014" fontName="Arial" fontSize="9.0" bold="true"
 			hTextAlign="Center" vTextAlign="Middle" markup="styled">
 			<text><![CDATA[<style forecolor="black">End of Q1:</style>
 <style forecolor="white">Medium Risk Rationale</style>]]></text>
@@ -900,7 +899,7 @@
 			</box>
 		</element>
 		<element kind="staticText" uuid="020c65db-036f-4c6a-9d85-6bdddbf14337" mode="Opaque" x="10282"
-			y="0" width="120" height="108" backcolor="#44B3E1" fontName="Arial" fontSize="9.0" bold="true"
+			y="0" width="120" height="108" backcolor="#3C7D22" fontName="Arial" fontSize="9.0" bold="true"
 			hTextAlign="Center" vTextAlign="Middle" markup="styled">
 			<text><![CDATA[<style forecolor="black">End of Q1:</style>
 <style forecolor="white">Budget Risk: Low Risk</style>]]></text>
@@ -913,7 +912,7 @@
 			</box>
 		</element>
 		<element kind="staticText" uuid="90d376da-3492-41be-8549-09272e79c59b" mode="Opaque" x="10402"
-			y="0" width="220" height="108" backcolor="#44B3E1" fontName="Arial" fontSize="9.0" bold="true"
+			y="0" width="220" height="108" backcolor="#3C7D22" fontName="Arial" fontSize="9.0" bold="true"
 			hTextAlign="Center" vTextAlign="Middle" markup="styled">
 			<text><![CDATA[<style forecolor="black">End of Q1:</style>
 <style forecolor="white">Low Risk Rationale</style>]]></text>
@@ -926,7 +925,7 @@
 			</box>
 		</element>
 		<element kind="staticText" uuid="b84a96c4-2466-48de-89ed-d9b8d4c68b2d" mode="Opaque" x="10622"
-			y="0" width="120" height="108" backcolor="#44B3E1" fontName="Arial" fontSize="9.0" bold="true"
+			y="0" width="120" height="108" backcolor="#BFBFBF" fontName="Arial" fontSize="9.0" bold="true"
 			hTextAlign="Center" vTextAlign="Middle" markup="styled">
 			<text><![CDATA[<style forecolor="black">End of Q1:</style>
 <style forecolor="white">Budget Risk: Complete</style>]]></text>
@@ -939,7 +938,7 @@
 			</box>
 		</element>
 		<element kind="staticText" uuid="04833f50-f092-4da1-8979-e72e89280e88" mode="Opaque" x="10742"
-			y="0" width="220" height="108" backcolor="#44B3E1" fontName="Arial" fontSize="9.0" bold="true"
+			y="0" width="220" height="108" backcolor="#BFBFBF" fontName="Arial" fontSize="9.0" bold="true"
 			hTextAlign="Center" vTextAlign="Middle" markup="styled">
 			<text><![CDATA[<style forecolor="black">End of Q1:</style>
 <style forecolor="white">Complete Rationale</style>]]></text>
@@ -952,7 +951,7 @@
 			</box>
 		</element>
 		<element kind="staticText" uuid="01dd1ea6-52c0-4bcf-856b-fb259483412e" mode="Opaque" x="10962"
-			y="0" width="180" height="108" backcolor="#C02F33" fontName="Arial" fontSize="9.0" bold="true"
+			y="0" width="180" height="108" backcolor="#44B3E1" fontName="Arial" fontSize="9.0" bold="true"
 			hTextAlign="Center" vTextAlign="Middle" markup="styled">
 			<text><![CDATA[<style forecolor="black">End of Q2:</style>
 <style forecolor="white">Performance Update Date</style>]]></text>
@@ -965,7 +964,7 @@
 			</box>
 		</element>
 		<element kind="staticText" uuid="a86e7208-7772-4e1a-b6cd-6f7554214e1b" mode="Opaque" x="11142"
-			y="0" width="180" height="108" backcolor="#C02F33" fontName="Arial" fontSize="9.0" bold="true"
+			y="0" width="180" height="108" backcolor="#44B3E1" fontName="Arial" fontSize="9.0" bold="true"
 			hTextAlign="Center" vTextAlign="Middle" markup="styled">
 			<text><![CDATA[<style forecolor="black">End of Q2:</style>
 <style forecolor="white">Progress Status</style>]]></text>
@@ -978,7 +977,7 @@
 			</box>
 		</element>
 		<element kind="staticText" uuid="215772bc-d418-4d76-80ee-f946c5f9c883" mode="Opaque" x="11322"
-			y="0" width="270" height="108" backcolor="#C02F33" fontName="Arial" fontSize="9.0" bold="true"
+			y="0" width="270" height="108" backcolor="#44B3E1" fontName="Arial" fontSize="9.0" bold="true"
 			hTextAlign="Center" vTextAlign="Middle" markup="styled">
 			<text><![CDATA[<style forecolor="black">End of Q2:</style>
 <style forecolor="white">General Updates</style>]]></text>
@@ -991,7 +990,7 @@
 			</box>
 		</element>
 		<element kind="staticText" uuid="0c1ffcfd-e332-46c7-aa7f-de34686d6b8a" mode="Opaque" x="11592"
-			y="0" width="120" height="108" backcolor="#C02F33" fontName="Arial" fontSize="9.0" bold="true"
+			y="0" width="120" height="108" backcolor="#44B3E1" fontName="Arial" fontSize="9.0" bold="true"
 			hTextAlign="Center" vTextAlign="Middle" markup="styled">
 			<text><![CDATA[<style forecolor="black">End of Q2:</style>
 <style forecolor="white">Revised Forecast Amount</style>]]></text>
@@ -1004,7 +1003,7 @@
 			</box>
 		</element>
 		<element kind="staticText" uuid="37e15308-dbe6-4aa0-86e9-f07eb45a14da" mode="Opaque" x="11712"
-			y="0" width="120" height="108" backcolor="#C02F33" fontName="Arial" fontSize="9.0" bold="true"
+			y="0" width="120" height="108" backcolor="#44B3E1" fontName="Arial" fontSize="9.0" bold="true"
 			hTextAlign="Center" vTextAlign="Middle" markup="styled">
 			<text><![CDATA[<style forecolor="black">End of Q2:</style>
 <style forecolor="white">Forecast Adjustment Amount</style>]]></text>
@@ -1017,7 +1016,7 @@
 			</box>
 		</element>
 		<element kind="staticText" uuid="e2335cee-b354-4838-99f2-54c7aa855d02" mode="Opaque" x="11832"
-			y="0" width="220" height="108" backcolor="#C02F33" fontName="Arial" fontSize="9.0" bold="true"
+			y="0" width="220" height="108" backcolor="#44B3E1" fontName="Arial" fontSize="9.0" bold="true"
 			hTextAlign="Center" vTextAlign="Middle" markup="styled">
 			<text><![CDATA[<style forecolor="black">End of Q2:</style>
 <style forecolor="white">Forecast Adjustment Rationale</style>]]></text>
@@ -1056,7 +1055,7 @@
 			</box>
 		</element>
 		<element kind="staticText" uuid="8b8ce60c-79c8-4d36-ad4f-37ff582c82c6" mode="Opaque" x="12392"
-			y="0" width="120" height="108" backcolor="#C02F33" fontName="Arial" fontSize="9.0" bold="true"
+			y="0" width="120" height="108" backcolor="#BE5014" fontName="Arial" fontSize="9.0" bold="true"
 			hTextAlign="Center" vTextAlign="Middle" markup="styled">
 			<text><![CDATA[<style forecolor="black">End of Q2:</style>
 <style forecolor="white">Budget Risk: Medium Risk</style>]]></text>
@@ -1069,7 +1068,7 @@
 			</box>
 		</element>
 		<element kind="staticText" uuid="1625fcc2-6320-4fcb-a371-86b52d41bbc0" mode="Opaque" x="12512"
-			y="0" width="220" height="108" backcolor="#C02F33" fontName="Arial" fontSize="9.0" bold="true"
+			y="0" width="220" height="108" backcolor="#BE5014" fontName="Arial" fontSize="9.0" bold="true"
 			hTextAlign="Center" vTextAlign="Middle" markup="styled">
 			<text><![CDATA[<style forecolor="black">End of Q2:</style>
 <style forecolor="white">Medium Risk Rationale</style>]]></text>
@@ -1082,7 +1081,7 @@
 			</box>
 		</element>
 		<element kind="staticText" uuid="d2a1abcb-e7a5-4037-912c-0c64b2e5a09e" mode="Opaque" x="12732"
-			y="0" width="120" height="108" backcolor="#C02F33" fontName="Arial" fontSize="9.0" bold="true"
+			y="0" width="120" height="108" backcolor="#3C7D22" fontName="Arial" fontSize="9.0" bold="true"
 			hTextAlign="Center" vTextAlign="Middle" markup="styled">
 			<text><![CDATA[<style forecolor="black">End of Q2:</style>
 <style forecolor="white">Budget Risk: Low Risk</style>]]></text>
@@ -1095,7 +1094,7 @@
 			</box>
 		</element>
 		<element kind="staticText" uuid="37cf129e-5433-404e-92a6-80fd2868b16c" mode="Opaque" x="12852"
-			y="0" width="220" height="108" backcolor="#C02F33" fontName="Arial" fontSize="9.0" bold="true"
+			y="0" width="220" height="108" backcolor="#3C7D22" fontName="Arial" fontSize="9.0" bold="true"
 			hTextAlign="Center" vTextAlign="Middle" markup="styled">
 			<text><![CDATA[<style forecolor="black">End of Q2:</style>
 <style forecolor="white">Low Risk Rationale</style>]]></text>
@@ -1108,7 +1107,7 @@
 			</box>
 		</element>
 		<element kind="staticText" uuid="c0903f02-a82e-4fa7-a070-4d524839db55" mode="Opaque" x="13072"
-			y="0" width="120" height="108" backcolor="#C02F33" fontName="Arial" fontSize="9.0" bold="true"
+			y="0" width="120" height="108" backcolor="#BFBFBF" fontName="Arial" fontSize="9.0" bold="true"
 			hTextAlign="Center" vTextAlign="Middle" markup="styled">
 			<text><![CDATA[<style forecolor="black">End of Q2:</style>
 <style forecolor="white">Budget Risk: Complete</style>]]></text>
@@ -1121,7 +1120,7 @@
 			</box>
 		</element>
 		<element kind="staticText" uuid="b4497827-1326-4b67-8136-c47942e7bb13" mode="Opaque" x="13192"
-			y="0" width="220" height="108" backcolor="#C02F33" fontName="Arial" fontSize="9.0" bold="true"
+			y="0" width="220" height="108" backcolor="#BFBFBF" fontName="Arial" fontSize="9.0" bold="true"
 			hTextAlign="Center" vTextAlign="Middle" markup="styled">
 			<text><![CDATA[<style forecolor="black">End of Q2:</style>
 <style forecolor="white">Complete Rationale</style>]]></text>
@@ -1134,7 +1133,7 @@
 			</box>
 		</element>
 		<element kind="staticText" uuid="36d93fa1-7b40-4903-8753-5ac8c6f986b1" mode="Opaque" x="13412"
-			y="0" width="180" height="108" backcolor="#BE5014" fontName="Arial" fontSize="9.0" bold="true"
+			y="0" width="180" height="108" backcolor="#44B3E1" fontName="Arial" fontSize="9.0" bold="true"
 			hTextAlign="Center" vTextAlign="Middle" markup="styled">
 			<text><![CDATA[<style forecolor="black">End of Q3:</style>
 <style forecolor="white">Performance Update Date</style>]]></text>
@@ -1147,7 +1146,7 @@
 			</box>
 		</element>
 		<element kind="staticText" uuid="35ccd2b4-6c90-40d1-ad02-fcd2b0c915b0" mode="Opaque" x="13592"
-			y="0" width="180" height="108" backcolor="#BE5014" fontName="Arial" fontSize="9.0" bold="true"
+			y="0" width="180" height="108" backcolor="#44B3E1" fontName="Arial" fontSize="9.0" bold="true"
 			hTextAlign="Center" vTextAlign="Middle" markup="styled">
 			<text><![CDATA[<style forecolor="black">End of Q3:</style>
 <style forecolor="white">Progress Status</style>]]></text>
@@ -1160,7 +1159,7 @@
 			</box>
 		</element>
 		<element kind="staticText" uuid="fd8327a5-7be5-4957-a667-7fb03498fed2" mode="Opaque" x="13772"
-			y="0" width="270" height="108" backcolor="#BE5014" fontName="Arial" fontSize="9.0" bold="true"
+			y="0" width="270" height="108" backcolor="#44B3E1" fontName="Arial" fontSize="9.0" bold="true"
 			hTextAlign="Center" vTextAlign="Middle" markup="styled">
 			<text><![CDATA[<style forecolor="black">End of Q3:</style>
 <style forecolor="white">General Updates</style>]]></text>
@@ -1173,7 +1172,7 @@
 			</box>
 		</element>
 		<element kind="staticText" uuid="7b6abd74-f233-42e3-9406-97d28b797672" mode="Opaque" x="14042"
-			y="0" width="120" height="108" backcolor="#BE5014" fontName="Arial" fontSize="9.0" bold="true"
+			y="0" width="120" height="108" backcolor="#44B3E1" fontName="Arial" fontSize="9.0" bold="true"
 			hTextAlign="Center" vTextAlign="Middle" markup="styled">
 			<text><![CDATA[<style forecolor="black">End of Q3:</style>
 <style forecolor="white">Revised Forecast Amount</style>]]></text>
@@ -1186,7 +1185,7 @@
 			</box>
 		</element>
 		<element kind="staticText" uuid="9423d6a9-0f46-4883-be14-8a1df038b4f7" mode="Opaque" x="14162"
-			y="0" width="120" height="108" backcolor="#BE5014" fontName="Arial" fontSize="9.0" bold="true"
+			y="0" width="120" height="108" backcolor="#44B3E1" fontName="Arial" fontSize="9.0" bold="true"
 			hTextAlign="Center" vTextAlign="Middle" markup="styled">
 			<text><![CDATA[<style forecolor="black">End of Q3:</style>
 <style forecolor="white">Forecast Adjustment Amount</style>]]></text>
@@ -1199,7 +1198,7 @@
 			</box>
 		</element>
 		<element kind="staticText" uuid="4ac4a074-81b9-4943-a2ed-fdb2841b3178" mode="Opaque" x="14282"
-			y="0" width="220" height="108" backcolor="#BE5014" fontName="Arial" fontSize="9.0" bold="true"
+			y="0" width="220" height="108" backcolor="#44B3E1" fontName="Arial" fontSize="9.0" bold="true"
 			hTextAlign="Center" vTextAlign="Middle" markup="styled">
 			<text><![CDATA[<style forecolor="black">End of Q3:</style>
 <style forecolor="white">Forecast Adjustment Rationale</style>]]></text>
@@ -1212,7 +1211,7 @@
 			</box>
 		</element>
 		<element kind="staticText" uuid="f27535db-58ab-4fd1-9902-7bdc3d083648" mode="Opaque" x="14502"
-			y="0" width="120" height="108" backcolor="#BE5014" fontName="Arial" fontSize="9.0" bold="true"
+			y="0" width="120" height="108" backcolor="#C02F33" fontName="Arial" fontSize="9.0" bold="true"
 			hTextAlign="Center" vTextAlign="Middle" markup="styled">
 			<text><![CDATA[<style forecolor="black">End of Q3:</style>
 <style forecolor="white">Budget Risk: High Risk</style>]]></text>
@@ -1225,7 +1224,7 @@
 			</box>
 		</element>
 		<element kind="staticText" uuid="d0aa8944-4de5-403c-963d-fd9b729ab275" mode="Opaque" x="14622"
-			y="0" width="220" height="108" backcolor="#BE5014" fontName="Arial" fontSize="9.0" bold="true"
+			y="0" width="220" height="108" backcolor="#C02F33" fontName="Arial" fontSize="9.0" bold="true"
 			hTextAlign="Center" vTextAlign="Middle" markup="styled">
 			<text><![CDATA[<style forecolor="black">End of Q3:</style>
 <style forecolor="white">High Risk Rationale</style>]]></text>
@@ -1264,7 +1263,7 @@
 			</box>
 		</element>
 		<element kind="staticText" uuid="3e072d90-b356-40cd-986a-7da2084c7ae3" mode="Opaque" x="15182"
-			y="0" width="120" height="108" backcolor="#BE5014" fontName="Arial" fontSize="9.0" bold="true"
+			y="0" width="120" height="108" backcolor="#3C7D22" fontName="Arial" fontSize="9.0" bold="true"
 			hTextAlign="Center" vTextAlign="Middle" markup="styled">
 			<text><![CDATA[<style forecolor="black">End of Q3:</style>
 <style forecolor="white">Budget Risk: Low Risk</style>]]></text>
@@ -1277,7 +1276,7 @@
 			</box>
 		</element>
 		<element kind="staticText" uuid="d006814c-c899-4d0b-acee-f31d3117a143" mode="Opaque" x="15302"
-			y="0" width="220" height="108" backcolor="#BE5014" fontName="Arial" fontSize="9.0" bold="true"
+			y="0" width="220" height="108" backcolor="#3C7D22" fontName="Arial" fontSize="9.0" bold="true"
 			hTextAlign="Center" vTextAlign="Middle" markup="styled">
 			<text><![CDATA[<style forecolor="black">End of Q3:</style>
 <style forecolor="white">Low Risk Rationale</style>]]></text>
@@ -1290,7 +1289,7 @@
 			</box>
 		</element>
 		<element kind="staticText" uuid="dfc86c84-db99-41dc-a9cd-0b3cb09c1e57" mode="Opaque" x="15522"
-			y="0" width="120" height="108" backcolor="#BE5014" fontName="Arial" fontSize="9.0" bold="true"
+			y="0" width="120" height="108" backcolor="#BFBFBF" fontName="Arial" fontSize="9.0" bold="true"
 			hTextAlign="Center" vTextAlign="Middle" markup="styled">
 			<text><![CDATA[<style forecolor="black">End of Q3:</style>
 <style forecolor="white">Budget Risk: Complete</style>]]></text>
@@ -1303,7 +1302,7 @@
 			</box>
 		</element>
 		<element kind="staticText" uuid="ec958a04-ef07-401c-9bdf-5200f4172d47" mode="Opaque" x="15642"
-			y="0" width="220" height="108" backcolor="#BE5014" fontName="Arial" fontSize="9.0" bold="true"
+			y="0" width="220" height="108" backcolor="#BFBFBF" fontName="Arial" fontSize="9.0" bold="true"
 			hTextAlign="Center" vTextAlign="Middle" markup="styled">
 			<text><![CDATA[<style forecolor="black">End of Q3:</style>
 <style forecolor="white">Complete Rationale</style>]]></text>
@@ -1316,7 +1315,7 @@
 			</box>
 		</element>
 		<element kind="staticText" uuid="d58da107-b54b-47b5-b713-98b51e898e9c" mode="Opaque" x="15862"
-			y="0" width="180" height="108" backcolor="#3C7D22" fontName="Arial" fontSize="9.0" bold="true"
+			y="0" width="180" height="108" backcolor="#44B3E1" fontName="Arial" fontSize="9.0" bold="true"
 			hTextAlign="Center" vTextAlign="Middle" markup="styled">
 			<text><![CDATA[<style forecolor="black">March 7:</style>
 <style forecolor="white">Performance Update Date</style>]]></text>
@@ -1329,7 +1328,7 @@
 			</box>
 		</element>
 		<element kind="staticText" uuid="8f4df250-7968-4b52-87dd-2acc9bc0f367" mode="Opaque" x="16042"
-			y="0" width="180" height="108" backcolor="#3C7D22" fontName="Arial" fontSize="9.0" bold="true"
+			y="0" width="180" height="108" backcolor="#44B3E1" fontName="Arial" fontSize="9.0" bold="true"
 			hTextAlign="Center" vTextAlign="Middle" markup="styled">
 			<text><![CDATA[<style forecolor="black">March 7:</style>
 <style forecolor="white">Progress Status</style>]]></text>
@@ -1342,7 +1341,7 @@
 			</box>
 		</element>
 		<element kind="staticText" uuid="f34e7f59-3d99-472b-9c71-c341ece0e763" mode="Opaque" x="16222"
-			y="0" width="270" height="108" backcolor="#3C7D22" fontName="Arial" fontSize="9.0" bold="true"
+			y="0" width="270" height="108" backcolor="#44B3E1" fontName="Arial" fontSize="9.0" bold="true"
 			hTextAlign="Center" vTextAlign="Middle" markup="styled">
 			<text><![CDATA[<style forecolor="black">March 7:</style>
 <style forecolor="white">General Updates</style>]]></text>
@@ -1355,7 +1354,7 @@
 			</box>
 		</element>
 		<element kind="staticText" uuid="5eb22b68-3055-4c7e-945a-45264a50da03" mode="Opaque" x="16492"
-			y="0" width="120" height="108" backcolor="#3C7D22" fontName="Arial" fontSize="9.0" bold="true"
+			y="0" width="120" height="108" backcolor="#44B3E1" fontName="Arial" fontSize="9.0" bold="true"
 			hTextAlign="Center" vTextAlign="Middle" markup="styled">
 			<text><![CDATA[<style forecolor="black">March 7:</style>
 <style forecolor="white">Revised Forecast Amount</style>]]></text>
@@ -1368,7 +1367,7 @@
 			</box>
 		</element>
 		<element kind="staticText" uuid="71772973-7a56-438f-8de6-fa6f766bc2c5" mode="Opaque" x="16612"
-			y="0" width="120" height="108" backcolor="#3C7D22" fontName="Arial" fontSize="9.0" bold="true"
+			y="0" width="120" height="108" backcolor="#44B3E1" fontName="Arial" fontSize="9.0" bold="true"
 			hTextAlign="Center" vTextAlign="Middle" markup="styled">
 			<text><![CDATA[<style forecolor="black">March 7:</style>
 <style forecolor="white">Forecast Adjustment Amount</style>]]></text>
@@ -1381,7 +1380,7 @@
 			</box>
 		</element>
 		<element kind="staticText" uuid="9b79c7d6-4eef-4ec5-b42e-8c7d9d6d1f80" mode="Opaque" x="16732"
-			y="0" width="220" height="108" backcolor="#3C7D22" fontName="Arial" fontSize="9.0" bold="true"
+			y="0" width="220" height="108" backcolor="#44B3E1" fontName="Arial" fontSize="9.0" bold="true"
 			hTextAlign="Center" vTextAlign="Middle" markup="styled">
 			<text><![CDATA[<style forecolor="black">March 7:</style>
 <style forecolor="white">Forecast Adjustment Rationale</style>]]></text>
@@ -1394,7 +1393,7 @@
 			</box>
 		</element>
 		<element kind="staticText" uuid="6e4a13b0-183a-48eb-912b-6234f79f21e1" mode="Opaque" x="16952"
-			y="0" width="120" height="108" backcolor="#3C7D22" fontName="Arial" fontSize="9.0" bold="true"
+			y="0" width="120" height="108" backcolor="#C02F33" fontName="Arial" fontSize="9.0" bold="true"
 			hTextAlign="Center" vTextAlign="Middle" markup="styled">
 			<text><![CDATA[<style forecolor="black">March 7:</style>
 <style forecolor="white">Budget Risk: High Risk</style>]]></text>
@@ -1407,7 +1406,7 @@
 			</box>
 		</element>
 		<element kind="staticText" uuid="6ebc27c1-aae2-431d-b66d-0bbb6d929094" mode="Opaque" x="17072"
-			y="0" width="220" height="108" backcolor="#3C7D22" fontName="Arial" fontSize="9.0" bold="true"
+			y="0" width="220" height="108" backcolor="#C02F33" fontName="Arial" fontSize="9.0" bold="true"
 			hTextAlign="Center" vTextAlign="Middle" markup="styled">
 			<text><![CDATA[<style forecolor="black">March 7:</style>
 <style forecolor="white">High Risk Rationale</style>]]></text>
@@ -1420,7 +1419,7 @@
 			</box>
 		</element>
 		<element kind="staticText" uuid="a783dd05-1586-4222-ba2f-f3f96a6eeff3" mode="Opaque" x="17292"
-			y="0" width="120" height="108" backcolor="#3C7D22" fontName="Arial" fontSize="9.0" bold="true"
+			y="0" width="120" height="108" backcolor="#BE5014" fontName="Arial" fontSize="9.0" bold="true"
 			hTextAlign="Center" vTextAlign="Middle" markup="styled">
 			<text><![CDATA[<style forecolor="black">March 7:</style>
 <style forecolor="white">Budget Risk: Medium Risk</style>]]></text>
@@ -1433,7 +1432,7 @@
 			</box>
 		</element>
 		<element kind="staticText" uuid="d3c75cbd-e85e-4d7b-a29a-799d28bc015f" mode="Opaque" x="17412"
-			y="0" width="220" height="108" backcolor="#3C7D22" fontName="Arial" fontSize="9.0" bold="true"
+			y="0" width="220" height="108" backcolor="#BE5014" fontName="Arial" fontSize="9.0" bold="true"
 			hTextAlign="Center" vTextAlign="Middle" markup="styled">
 			<text><![CDATA[<style forecolor="black">March 7:</style>
 <style forecolor="white">Medium Risk Rationale</style>]]></text>
@@ -1472,7 +1471,7 @@
 			</box>
 		</element>
 		<element kind="staticText" uuid="262f2553-3c87-449d-acff-feb0c10e4421" mode="Opaque" x="17972"
-			y="0" width="120" height="108" backcolor="#3C7D22" fontName="Arial" fontSize="9.0" bold="true"
+			y="0" width="120" height="108" backcolor="#BFBFBF" fontName="Arial" fontSize="9.0" bold="true"
 			hTextAlign="Center" vTextAlign="Middle" markup="styled">
 			<text><![CDATA[<style forecolor="black">March 7:</style>
 <style forecolor="white">Budget Risk: Complete</style>]]></text>
@@ -1485,7 +1484,7 @@
 			</box>
 		</element>
 		<element kind="staticText" uuid="7e591e82-9cce-4206-9f38-e10a57c64045" mode="Opaque" x="18092"
-			y="0" width="220" height="108" backcolor="#3C7D22" fontName="Arial" fontSize="9.0" bold="true"
+			y="0" width="220" height="108" backcolor="#BFBFBF" fontName="Arial" fontSize="9.0" bold="true"
 			hTextAlign="Center" vTextAlign="Middle" markup="styled">
 			<text><![CDATA[<style forecolor="black">March 7:</style>
 <style forecolor="white">Complete Rationale</style>]]></text>
@@ -1498,7 +1497,7 @@
 			</box>
 		</element>
 		<element kind="staticText" uuid="86098f70-8e13-439d-a0ff-2470cd8e6072" mode="Opaque" x="18312"
-			y="0" width="180" height="108" backcolor="#BFBFBF" fontName="Arial" fontSize="9.0" bold="true"
+			y="0" width="180" height="108" backcolor="#44B3E1" fontName="Arial" fontSize="9.0" bold="true"
 			hTextAlign="Center" vTextAlign="Middle" markup="styled">
 			<text><![CDATA[<style forecolor="black">Other:</style>
 <style forecolor="white">Performance Update Date</style>]]></text>
@@ -1511,7 +1510,7 @@
 			</box>
 		</element>
 		<element kind="staticText" uuid="5aded09e-caf0-4d18-87c9-ea2b4af2d2a8" mode="Opaque" x="18492"
-			y="0" width="180" height="108" backcolor="#BFBFBF" fontName="Arial" fontSize="9.0" bold="true"
+			y="0" width="180" height="108" backcolor="#44B3E1" fontName="Arial" fontSize="9.0" bold="true"
 			hTextAlign="Center" vTextAlign="Middle" markup="styled">
 			<text><![CDATA[<style forecolor="black">Other:</style>
 <style forecolor="white">Progress Status</style>]]></text>
@@ -1524,7 +1523,7 @@
 			</box>
 		</element>
 		<element kind="staticText" uuid="94a5e924-461a-447e-a142-db9d47a2fea8" mode="Opaque" x="18672"
-			y="0" width="270" height="108" backcolor="#BFBFBF" fontName="Arial" fontSize="9.0" bold="true"
+			y="0" width="270" height="108" backcolor="#44B3E1" fontName="Arial" fontSize="9.0" bold="true"
 			hTextAlign="Center" vTextAlign="Middle" markup="styled">
 			<text><![CDATA[<style forecolor="black">Other:</style>
 <style forecolor="white">General Updates</style>]]></text>
@@ -1537,7 +1536,7 @@
 			</box>
 		</element>
 		<element kind="staticText" uuid="fcfbf963-d880-4d6a-b3fe-da81e0af1199" mode="Opaque" x="18942"
-			y="0" width="120" height="108" backcolor="#BFBFBF" fontName="Arial" fontSize="9.0" bold="true"
+			y="0" width="120" height="108" backcolor="#44B3E1" fontName="Arial" fontSize="9.0" bold="true"
 			hTextAlign="Center" vTextAlign="Middle" markup="styled">
 			<text><![CDATA[<style forecolor="black">Other:</style>
 <style forecolor="white">Revised Forecast Amount</style>]]></text>
@@ -1550,7 +1549,7 @@
 			</box>
 		</element>
 		<element kind="staticText" uuid="032b88f9-d18e-4b8a-9c08-984d0a6cdf94" mode="Opaque" x="19062"
-			y="0" width="120" height="108" backcolor="#BFBFBF" fontName="Arial" fontSize="9.0" bold="true"
+			y="0" width="120" height="108" backcolor="#44B3E1" fontName="Arial" fontSize="9.0" bold="true"
 			hTextAlign="Center" vTextAlign="Middle" markup="styled">
 			<text><![CDATA[<style forecolor="black">Other:</style>
 <style forecolor="white">Forecast Adjustment Amount</style>]]></text>
@@ -1563,7 +1562,7 @@
 			</box>
 		</element>
 		<element kind="staticText" uuid="206d6a71-04d0-47fb-a9d0-d7b1ed328b1a" mode="Opaque" x="19182"
-			y="0" width="220" height="108" backcolor="#BFBFBF" fontName="Arial" fontSize="9.0" bold="true"
+			y="0" width="220" height="108" backcolor="#44B3E1" fontName="Arial" fontSize="9.0" bold="true"
 			hTextAlign="Center" vTextAlign="Middle" markup="styled">
 			<text><![CDATA[<style forecolor="black">Other:</style>
 <style forecolor="white">Forecast Adjustment Rationale</style>]]></text>
@@ -1576,7 +1575,7 @@
 			</box>
 		</element>
 		<element kind="staticText" uuid="8eaaba67-2650-42b3-a175-4a53838b0f4f" mode="Opaque" x="19402"
-			y="0" width="120" height="108" backcolor="#BFBFBF" fontName="Arial" fontSize="9.0" bold="true"
+			y="0" width="120" height="108" backcolor="#C02F33" fontName="Arial" fontSize="9.0" bold="true"
 			hTextAlign="Center" vTextAlign="Middle" markup="styled">
 			<text><![CDATA[<style forecolor="black">Other:</style>
 <style forecolor="white">Budget Risk: High Risk</style>]]></text>
@@ -1589,19 +1588,7 @@
 			</box>
 		</element>
 		<element kind="staticText" uuid="eee38c3f-40c9-4fe6-8d93-63c1c5d152d7" mode="Opaque" x="19522"
-			y="0" width="220" height="108" backcolor="#BFBFBF" fontName="Arial" fontSize="9.0" bold="true"
-			hTextAlign="Center" vTextAlign="Middle">
-			<text><![CDATA[]]></text>
-			<box padding="4">
-				<pen lineWidth="1.0" />
-				<topPen lineWidth="0.0" />
-				<leftPen lineWidth="0.0" />
-				<bottomPen lineWidth="1.0" lineColor="#000000" />
-				<rightPen lineWidth="0.0" />
-			</box>
-		</element>
-		<element kind="staticText" uuid="eee38c3f-40c9-4fe6-8d93-63c1c5d152d7" mode="Opaque" x="19522"
-			y="0" width="220" height="108" backcolor="#BFBFBF" fontName="Arial" fontSize="9.0" bold="true"
+			y="0" width="220" height="108" backcolor="#C02F33" fontName="Arial" fontSize="9.0" bold="true"
 			hTextAlign="Center" vTextAlign="Middle" markup="styled">
 			<text><![CDATA[<style forecolor="black">Other:</style>
 <style forecolor="white">High Risk Rationale</style>]]></text>
@@ -1614,7 +1601,7 @@
 			</box>
 		</element>
 		<element kind="staticText" uuid="2007f63f-096c-4260-b545-cec9af99bb46" mode="Opaque" x="19742"
-			y="0" width="120" height="108" backcolor="#BFBFBF" fontName="Arial" fontSize="9.0" bold="true"
+			y="0" width="120" height="108" backcolor="#BE5014" fontName="Arial" fontSize="9.0" bold="true"
 			hTextAlign="Center" vTextAlign="Middle" markup="styled">
 			<text><![CDATA[<style forecolor="black">Other:</style>
 <style forecolor="white">Budget Risk: Medium Risk</style>]]></text>
@@ -1627,7 +1614,7 @@
 			</box>
 		</element>
 		<element kind="staticText" uuid="652c575e-d3fc-44a0-9b2b-2f7c0ba41442" mode="Opaque" x="19862"
-			y="0" width="220" height="108" backcolor="#BFBFBF" fontName="Arial" fontSize="9.0" bold="true"
+			y="0" width="220" height="108" backcolor="#BE5014" fontName="Arial" fontSize="9.0" bold="true"
 			hTextAlign="Center" vTextAlign="Middle" markup="styled">
 			<text><![CDATA[<style forecolor="black">Other:</style>
 <style forecolor="white">Medium Risk Rationale</style>]]></text>
@@ -1640,7 +1627,7 @@
 			</box>
 		</element>
 		<element kind="staticText" uuid="a5484d17-1b52-46cc-8562-431d47b8ef1d" mode="Opaque" x="20082"
-			y="0" width="120" height="108" backcolor="#BFBFBF" fontName="Arial" fontSize="9.0" bold="true"
+			y="0" width="120" height="108" backcolor="#3C7D22" fontName="Arial" fontSize="9.0" bold="true"
 			hTextAlign="Center" vTextAlign="Middle" markup="styled">
 			<text><![CDATA[<style forecolor="black">Other:</style>
 <style forecolor="white">Budget Risk: Low Risk</style>]]></text>
@@ -1653,7 +1640,7 @@
 			</box>
 		</element>
 		<element kind="staticText" uuid="d5a7fd6d-bf74-4e24-b91c-1b1df3e49211" mode="Opaque" x="20202"
-			y="0" width="220" height="108" backcolor="#BFBFBF" fontName="Arial" fontSize="9.0" bold="true"
+			y="0" width="220" height="108" backcolor="#3C7D22" fontName="Arial" fontSize="9.0" bold="true"
 			hTextAlign="Center" vTextAlign="Middle" markup="styled">
 			<text><![CDATA[<style forecolor="black">Other:</style>
 <style forecolor="white">Low Risk Rationale</style>]]></text>
@@ -1761,9 +1748,8 @@
 			<element kind="textField" uuid="a359aab6-809e-46c5-978b-ee35f36736c2" x="2506" y="0"
 				width="180" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
 				vTextAlign="Bottom">
-				<expression>$F{grossProjectAreaHa} == null
-					? ""
-					: new java.text.DecimalFormat("#,##0.##########").format($F{grossProjectAreaHa}) + " ha"</expression>
+				<expression>$F{grossProjectAreaHa} == null ? "" : new
+					java.text.DecimalFormat("#,##0.##########").format($F{grossProjectAreaHa}) + " ha"</expression>
 			</element>
 			<element kind="textField" uuid="3dae2dd2-c238-4641-b485-4545e55a68e5" x="2686" y="0"
 				width="180" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
@@ -1831,24 +1817,21 @@
 				<expression>$F{fiscalReportedSpendAmount}</expression>
 			</element>
 			<element kind="textField" uuid="9de65e6f-265f-45f8-8b40-fd2dab2d1c20" x="5006" y="0"
-				width="120" height="120" fontName="Calibri" fontSize="11.0" pattern="$#,##0.00;$-#,##0.00"
-				blankWhenNull="true" vTextAlign="Bottom">
-				<expression>$F{fiscalActualAmount}</expression>
-			</element>
-			<element kind="textField" uuid="868ab4bf-6043-4242-a14f-fac4a0e90cab" x="5126" y="0"
 				width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
 				vTextAlign="Bottom">
-				<expression>$F{fiscalPlannedProjectSizeHa} == null
-					? ""
-					: new java.text.DecimalFormat("#,##0.##########").format($F{fiscalPlannedProjectSizeHa}) +
-					" ha"</expression>
+				<expression>$F{fiscalActualAmount}</expression>
+			</element>
+			<element kind="textField" uuid="2d1264c1-6b80-4592-be20-21a4816da324" x="5126" y="0"
+				width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
+				vTextAlign="Bottom">
+				<expression>$F{fiscalPlannedProjectSizeHa} == null ? "" : new
+					java.text.DecimalFormat("#,##0.##########").format($F{fiscalPlannedProjectSizeHa}) + " ha"</expression>
 			</element>
 			<element kind="textField" uuid="f0ed5454-b045-496e-991b-c631c42296ca" x="5246" y="0"
 				width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
 				vTextAlign="Bottom">
-				<expression>$F{fiscalCompletedSizeHa} == null
-					? ""
-					: new java.text.DecimalFormat("#,##0.##########").format($F{fiscalCompletedSizeHa}) + " ha"</expression>
+				<expression>$F{fiscalCompletedSizeHa} == null ? "" : new
+					java.text.DecimalFormat("#,##0.##########").format($F{fiscalCompletedSizeHa}) + "ha"</expression>
 			</element>
 			<element kind="textField" uuid="0abb196e-d5ac-4c65-90c7-afe151c981ec" x="5366" y="0"
 				width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
