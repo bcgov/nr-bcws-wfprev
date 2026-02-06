@@ -1,7 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<jasperReport name="WFPREV_FUEL_MANAGAMENT_JASPER" language="java" pageWidth="33012"
-	pageHeight="400" orientation="Landscape" columnWidth="33012" leftMargin="0" rightMargin="0"
-	topMargin="0" bottomMargin="0" uuid="1367a273-2a93-4808-be8d-190b46adf6c1" ignorePagination="true">
+<jasperReport name="WFPREV_FUEL_MANAGAMENT_JASPER" language="java" pageWidth="33012" pageHeight="400" orientation="Landscape" columnWidth="33012" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="1367a273-2a93-4808-be8d-190b46adf6c1" ignorePagination="true">
 	<property name="net.sf.jasperreports.export.xls.remove.empty.space.between.rows" value="true" />
 	<property name="net.sf.jasperreports.export.xls.remove.empty.space.between.columns" value="true" />
 	<property name="net.sf.jasperreports.export.xls.white.page.background" value="false" />
@@ -180,9 +178,7 @@
 	<title />
 	<pageHeader />
 	<columnHeader height="108" splitType="Stretch">
-		<element kind="staticText" uuid="d574fb22-6044-416d-a16f-49e46c4afd48" mode="Opaque" x="56"
-			y="0" width="180" height="108" backcolor="#E7E6E6" fontName="Arial" fontSize="9.0" bold="true"
-			hTextAlign="Center" vTextAlign="Middle">
+		<element kind="staticText" uuid="d574fb22-6044-416d-a16f-49e46c4afd48" mode="Opaque" x="56" y="0" width="180" height="108" backcolor="#E7E6E6" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
 			<text>Link to Project (within Prevention application)</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
@@ -192,9 +188,7 @@
 				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="c6a5fa22-e631-463e-9a20-47618f407ecc" mode="Opaque" x="236"
-			y="0" width="180" height="108" backcolor="#E7E6E6" fontName="Arial" fontSize="9.0" bold="true"
-			hTextAlign="Center" vTextAlign="Middle">
+		<element kind="staticText" uuid="c6a5fa22-e631-463e-9a20-47618f407ecc" mode="Opaque" x="236" y="0" width="180" height="108" backcolor="#E7E6E6" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
 			<text>Link to Fiscal Activity (within Prevention application)</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
@@ -204,9 +198,7 @@
 				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="eba534c4-dfb7-4694-b672-d180b2a29ab8" mode="Opaque" x="416"
-			y="0" width="180" height="108" forecolor="#FFFFFF" backcolor="#757171" fontName="Arial"
-			fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+		<element kind="staticText" uuid="eba534c4-dfb7-4694-b672-d180b2a29ab8" mode="Opaque" x="416" y="0" width="180" height="108" forecolor="#FFFFFF" backcolor="#757171" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
 			<text>Project Type</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
@@ -216,9 +208,7 @@
 				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="e90275eb-d6ba-41a5-9288-b47c977627f1" mode="Opaque" x="596"
-			y="0" width="270" height="108" forecolor="#FFFFFF" backcolor="#757171" fontName="Arial"
-			fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+		<element kind="staticText" uuid="e90275eb-d6ba-41a5-9288-b47c977627f1" mode="Opaque" x="596" y="0" width="270" height="108" forecolor="#FFFFFF" backcolor="#757171" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
 			<text>Project Name</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
@@ -228,9 +218,7 @@
 				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="73f87cd6-efa8-4a2d-b0b3-3b526240c00e" mode="Opaque" x="866"
-			y="0" width="220" height="108" forecolor="#FFFFFF" backcolor="#757171" fontName="Arial"
-			fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+		<element kind="staticText" uuid="73f87cd6-efa8-4a2d-b0b3-3b526240c00e" mode="Opaque" x="866" y="0" width="220" height="108" forecolor="#FFFFFF" backcolor="#757171" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
 			<text>Forest Region</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
@@ -240,9 +228,7 @@
 				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="7c448875-27c2-4306-b786-10c53f68ad5f" mode="Opaque" x="1086"
-			y="0" width="220" height="108" forecolor="#FFFFFF" backcolor="#757171" fontName="Arial"
-			fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+		<element kind="staticText" uuid="7c448875-27c2-4306-b786-10c53f68ad5f" mode="Opaque" x="1086" y="0" width="220" height="108" forecolor="#FFFFFF" backcolor="#757171" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
 			<text>Forest District</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
@@ -252,9 +238,7 @@
 				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="a25a9d3f-e79c-4a36-bc90-879a0074bead" mode="Opaque" x="1306"
-			y="0" width="220" height="108" forecolor="#FFFFFF" backcolor="#757171" fontName="Arial"
-			fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+		<element kind="staticText" uuid="a25a9d3f-e79c-4a36-bc90-879a0074bead" mode="Opaque" x="1306" y="0" width="220" height="108" forecolor="#FFFFFF" backcolor="#757171" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
 			<text>BC Parks Region</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
@@ -264,9 +248,7 @@
 				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="2167dd7f-99dd-409e-89dd-217aa1751ba9" mode="Opaque" x="1526"
-			y="0" width="220" height="108" forecolor="#FFFFFF" backcolor="#757171" fontName="Arial"
-			fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+		<element kind="staticText" uuid="2167dd7f-99dd-409e-89dd-217aa1751ba9" mode="Opaque" x="1526" y="0" width="220" height="108" forecolor="#FFFFFF" backcolor="#757171" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
 			<text>BC Parks Section</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
@@ -276,9 +258,7 @@
 				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="2d84d9dd-e9c0-434b-97e2-36e1cf89d011" mode="Opaque" x="1746"
-			y="0" width="220" height="108" forecolor="#FFFFFF" backcolor="#757171" fontName="Arial"
-			fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+		<element kind="staticText" uuid="2d84d9dd-e9c0-434b-97e2-36e1cf89d011" mode="Opaque" x="1746" y="0" width="220" height="108" forecolor="#FFFFFF" backcolor="#757171" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
 			<text>Fire Centre</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
@@ -288,9 +268,7 @@
 				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="f2fd0c4c-625f-4e0e-ba4f-4d5fad695f91" mode="Opaque" x="1966"
-			y="0" width="220" height="108" forecolor="#FFFFFF" backcolor="#757171" fontName="Arial"
-			fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+		<element kind="staticText" uuid="f2fd0c4c-625f-4e0e-ba4f-4d5fad695f91" mode="Opaque" x="1966" y="0" width="220" height="108" forecolor="#FFFFFF" backcolor="#757171" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
 			<text>Business Area</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
@@ -300,9 +278,7 @@
 				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="a68342ca-44af-4475-92aa-4600aabd1643" mode="Opaque" x="2186"
-			y="0" width="320" height="108" forecolor="#FFFFFF" backcolor="#757171" fontName="Arial"
-			fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+		<element kind="staticText" uuid="a68342ca-44af-4475-92aa-4600aabd1643" mode="Opaque" x="2186" y="0" width="320" height="108" forecolor="#FFFFFF" backcolor="#757171" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
 			<text>Planning Unit</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
@@ -312,9 +288,7 @@
 				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="6c5f8f7c-ac36-41a4-b907-b2fa4257ba01" mode="Opaque" x="2506"
-			y="0" width="180" height="108" forecolor="#FFFFFF" backcolor="#757171" fontName="Arial"
-			fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+		<element kind="staticText" uuid="6c5f8f7c-ac36-41a4-b907-b2fa4257ba01" mode="Opaque" x="2506" y="0" width="180" height="108" forecolor="#FFFFFF" backcolor="#757171" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
 			<text>Gross Project Area (Ha calculated from spatial file)</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
@@ -324,9 +298,7 @@
 				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="14abd3c3-5e29-4177-936e-fe8d02b18045" mode="Opaque" x="2686"
-			y="0" width="180" height="108" forecolor="#FFFFFF" backcolor="#757171" fontName="Arial"
-			fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+		<element kind="staticText" uuid="14abd3c3-5e29-4177-936e-fe8d02b18045" mode="Opaque" x="2686" y="0" width="180" height="108" forecolor="#FFFFFF" backcolor="#757171" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
 			<text>Closest Community</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
@@ -336,9 +308,7 @@
 				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="2ca33efa-8ca3-49bc-8fe8-7cba9a13d031" mode="Opaque" x="2866"
-			y="0" width="180" height="108" forecolor="#FFFFFF" backcolor="#757171" fontName="Arial"
-			fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+		<element kind="staticText" uuid="2ca33efa-8ca3-49bc-8fe8-7cba9a13d031" mode="Opaque" x="2866" y="0" width="180" height="108" forecolor="#FFFFFF" backcolor="#757171" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
 			<text>Project Lead</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
@@ -348,9 +318,7 @@
 				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="447d2d26-0705-4a89-ad1c-3fb25e2a5514" mode="Opaque" x="3046"
-			y="0" width="180" height="108" forecolor="#FFFFFF" backcolor="#7030A0" fontName="Arial"
-			fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+		<element kind="staticText" uuid="447d2d26-0705-4a89-ad1c-3fb25e2a5514" mode="Opaque" x="3046" y="0" width="180" height="108" forecolor="#FFFFFF" backcolor="#7030A0" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
 			<text>Proposal Type</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
@@ -360,9 +328,7 @@
 				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="879f09be-e9a2-4a0a-b981-cc500eb3fd77" mode="Opaque" x="3226"
-			y="0" width="270" height="108" forecolor="#FFFFFF" backcolor="#7030A0" fontName="Arial"
-			fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+		<element kind="staticText" uuid="879f09be-e9a2-4a0a-b981-cc500eb3fd77" mode="Opaque" x="3226" y="0" width="270" height="108" forecolor="#FFFFFF" backcolor="#7030A0" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
 			<text>Fiscal Activity Name</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
@@ -372,9 +338,7 @@
 				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="da05e1cd-ce3b-4875-b086-e58c5e60bda8" mode="Opaque" x="3496"
-			y="0" width="270" height="108" forecolor="#FFFFFF" backcolor="#7030A0" fontName="Arial"
-			fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+		<element kind="staticText" uuid="da05e1cd-ce3b-4875-b086-e58c5e60bda8" mode="Opaque" x="3496" y="0" width="270" height="108" forecolor="#FFFFFF" backcolor="#7030A0" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
 			<text>Fiscal Activity Description</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
@@ -384,9 +348,7 @@
 				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="5e5d91f7-6ee9-488c-a1dc-a58e71f97b85" mode="Opaque" x="3766"
-			y="0" width="180" height="108" forecolor="#FFFFFF" backcolor="#7030A0" fontName="Arial"
-			fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+		<element kind="staticText" uuid="5e5d91f7-6ee9-488c-a1dc-a58e71f97b85" mode="Opaque" x="3766" y="0" width="180" height="108" forecolor="#FFFFFF" backcolor="#7030A0" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
 			<text>Fiscal Year</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
@@ -396,9 +358,7 @@
 				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="c6d0a32b-b4d8-4495-ae6f-0f5456d0e444" mode="Opaque" x="3946"
-			y="0" width="180" height="108" forecolor="#FFFFFF" backcolor="#7030A0" fontName="Arial"
-			fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+		<element kind="staticText" uuid="c6d0a32b-b4d8-4495-ae6f-0f5456d0e444" mode="Opaque" x="3946" y="0" width="180" height="108" forecolor="#FFFFFF" backcolor="#7030A0" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
 			<text>Activity Category</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
@@ -408,9 +368,7 @@
 				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="617e8269-ef29-4dc0-97c7-f3ac0f53a246" mode="Opaque" x="4126"
-			y="0" width="180" height="108" forecolor="#FFFFFF" backcolor="#7030A0" fontName="Arial"
-			fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+		<element kind="staticText" uuid="617e8269-ef29-4dc0-97c7-f3ac0f53a246" mode="Opaque" x="4126" y="0" width="180" height="108" forecolor="#FFFFFF" backcolor="#7030A0" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
 			<text>Fiscal Status</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
@@ -420,9 +378,7 @@
 				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="abc05066-a87f-4c78-94ba-34d57b18dcdf" mode="Opaque" x="4306"
-			y="0" width="120" height="108" forecolor="#FFFFFF" backcolor="#305496" fontName="Arial"
-			fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+		<element kind="staticText" uuid="abc05066-a87f-4c78-94ba-34d57b18dcdf" mode="Opaque" x="4306" y="0" width="120" height="108" forecolor="#FFFFFF" backcolor="#305496" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
 			<text>Original Cost Estimate</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
@@ -432,9 +388,7 @@
 				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="55588899-aee0-43d8-8a63-087d45d96c88" mode="Opaque" x="4426"
-			y="0" width="120" height="108" forecolor="#FFFFFF" backcolor="#305496" fontName="Arial"
-			fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+		<element kind="staticText" uuid="55588899-aee0-43d8-8a63-087d45d96c88" mode="Opaque" x="4426" y="0" width="120" height="108" forecolor="#FFFFFF" backcolor="#305496" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
 			<text>Forecast Amount</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
@@ -444,9 +398,7 @@
 				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="224c1ade-6ae0-4e65-95a9-36f4386e91be" mode="Opaque" x="4546"
-			y="0" width="120" height="108" forecolor="#FFFFFF" backcolor="#305496" fontName="Arial"
-			fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+		<element kind="staticText" uuid="224c1ade-6ae0-4e65-95a9-36f4386e91be" mode="Opaque" x="4546" y="0" width="120" height="108" forecolor="#FFFFFF" backcolor="#305496" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
 			<text>Ancillary Funding Amount</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
@@ -456,9 +408,7 @@
 				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="66688899-aee0-43d8-8a63-087d45d96c99" mode="Opaque" x="4666"
-			y="0" width="220" height="108" forecolor="#FFFFFF" backcolor="#305496" fontName="Arial"
-			fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+		<element kind="staticText" uuid="66688899-aee0-43d8-8a63-087d45d96c99" mode="Opaque" x="4666" y="0" width="220" height="108" forecolor="#FFFFFF" backcolor="#305496" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
 			<text>Ancillary Funding Provider</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
@@ -468,9 +418,7 @@
 				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="4515c76b-0fc2-49e8-87cd-c6b7cb58bbd2" mode="Opaque" x="4886"
-			y="0" width="120" height="108" forecolor="#FFFFFF" backcolor="#305496" fontName="Arial"
-			fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+		<element kind="staticText" uuid="4515c76b-0fc2-49e8-87cd-c6b7cb58bbd2" mode="Opaque" x="4886" y="0" width="120" height="108" forecolor="#FFFFFF" backcolor="#305496" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
 			<text>Final Reported Spend</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
@@ -480,9 +428,7 @@
 				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="211d9e90-001f-40d9-8b97-0a34def26d1a" mode="Opaque" x="5006"
-			y="0" width="120" height="108" forecolor="#FFFFFF" backcolor="#305496" fontName="Arial"
-			fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+		<element kind="staticText" uuid="211d9e90-001f-40d9-8b97-0a34def26d1a" mode="Opaque" x="5006" y="0" width="120" height="108" forecolor="#FFFFFF" backcolor="#305496" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
 			<text>CFS Actual Spend</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
@@ -492,9 +438,7 @@
 				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="b722bf8c-4250-4774-9468-6899614c0cb4" mode="Opaque" x="5126"
-			y="0" width="120" height="108" forecolor="#FFFFFF" backcolor="#70AD47" fontName="Arial"
-			fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+		<element kind="staticText" uuid="b722bf8c-4250-4774-9468-6899614c0cb4" mode="Opaque" x="5126" y="0" width="120" height="108" forecolor="#FFFFFF" backcolor="#70AD47" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
 			<text>Planned Hectares</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
@@ -504,9 +448,7 @@
 				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="b596d482-d148-478d-8a04-eae2a8f33823" mode="Opaque" x="5246"
-			y="0" width="120" height="108" forecolor="#FFFFFF" backcolor="#70AD47" fontName="Arial"
-			fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+		<element kind="staticText" uuid="b596d482-d148-478d-8a04-eae2a8f33823" mode="Opaque" x="5246" y="0" width="120" height="108" forecolor="#FFFFFF" backcolor="#70AD47" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
 			<text>Completed Hectares</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
@@ -516,9 +458,7 @@
 				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="09c2446f-834f-4794-b746-1ba32080910b" mode="Opaque" x="5366"
-			y="0" width="120" height="108" forecolor="#FFFFFF" backcolor="#70AD47" fontName="Arial"
-			fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+		<element kind="staticText" uuid="09c2446f-834f-4794-b746-1ba32080910b" mode="Opaque" x="5366" y="0" width="120" height="108" forecolor="#FFFFFF" backcolor="#70AD47" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
 			<text>Spatial Submitted</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
@@ -528,9 +468,7 @@
 				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="cc62db09-d7c3-4dbc-a0f4-6eac55d4b58d" mode="Opaque" x="5486"
-			y="0" width="94" height="108" forecolor="#FFFFFF" backcolor="#ED7D31" fontName="Arial"
-			fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+		<element kind="staticText" uuid="cc62db09-d7c3-4dbc-a0f4-6eac55d4b58d" mode="Opaque" x="5486" y="0" width="94" height="108" forecolor="#FFFFFF" backcolor="#ED7D31" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
 			<text>First Nation Engagement (Y/N)</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
@@ -540,9 +478,7 @@
 				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="936fcbe9-90c9-47ef-abb8-fcfd74fb6d01" mode="Opaque" x="5580"
-			y="0" width="94" height="108" forecolor="#FFFFFF" backcolor="#ED7D31" fontName="Arial"
-			fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+		<element kind="staticText" uuid="936fcbe9-90c9-47ef-abb8-fcfd74fb6d01" mode="Opaque" x="5580" y="0" width="94" height="108" forecolor="#FFFFFF" backcolor="#ED7D31" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
 			<text>First Nation Co-Delivery (Y/N)</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
@@ -552,9 +488,7 @@
 				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="b59e8b64-d65c-40e0-8889-046ee15e7890" mode="Opaque" x="5674"
-			y="0" width="270" height="108" forecolor="#FFFFFF" backcolor="#ED7D31" fontName="Arial"
-			fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+		<element kind="staticText" uuid="b59e8b64-d65c-40e0-8889-046ee15e7890" mode="Opaque" x="5674" y="0" width="270" height="108" forecolor="#FFFFFF" backcolor="#ED7D31" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
 			<text>First Nation Co-Delivery Partners</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
@@ -564,9 +498,7 @@
 				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="07288c46-f8eb-4532-bb2a-f2c6e686fd1f" mode="Opaque" x="5944"
-			y="0" width="270" height="108" forecolor="#FFFFFF" backcolor="#ED7D31" fontName="Arial"
-			fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+		<element kind="staticText" uuid="07288c46-f8eb-4532-bb2a-f2c6e686fd1f" mode="Opaque" x="5944" y="0" width="270" height="108" forecolor="#FFFFFF" backcolor="#ED7D31" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
 			<text>Other Partners</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
@@ -576,9 +508,7 @@
 				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="cae65d82-a563-4bb7-b3d4-b879449baa23" mode="Opaque" x="6214"
-			y="0" width="94" height="108" forecolor="#FFFFFF" backcolor="#757171" fontName="Arial"
-			fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+		<element kind="staticText" uuid="cae65d82-a563-4bb7-b3d4-b879449baa23" mode="Opaque" x="6214" y="0" width="94" height="108" forecolor="#FFFFFF" backcolor="#757171" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
 			<text>CFS Code</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
@@ -588,9 +518,7 @@
 				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="79c2efdb-287a-4341-a48e-ec67749a1db7" mode="Opaque" x="6308"
-			y="0" width="94" height="108" forecolor="#FFFFFF" backcolor="#757171" fontName="Arial"
-			fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+		<element kind="staticText" uuid="79c2efdb-287a-4341-a48e-ec67749a1db7" mode="Opaque" x="6308" y="0" width="94" height="108" forecolor="#FFFFFF" backcolor="#757171" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
 			<text>RESULTS Project Code</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
@@ -600,9 +528,7 @@
 				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="17280251-424e-43e1-a664-b6de79464f24" mode="Opaque" x="6402"
-			y="0" width="94" height="108" forecolor="#FFFFFF" backcolor="#757171" fontName="Arial"
-			fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+		<element kind="staticText" uuid="17280251-424e-43e1-a664-b6de79464f24" mode="Opaque" x="6402" y="0" width="94" height="108" forecolor="#FFFFFF" backcolor="#757171" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
 			<text>RESULTS Opening ID</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
@@ -612,9 +538,7 @@
 				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="5ca00969-4246-4cd5-a210-351c9c7187f4" mode="Opaque" x="6496"
-			y="0" width="180" height="108" forecolor="#000000" backcolor="#FFC000" fontName="Arial"
-			fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+		<element kind="staticText" uuid="5ca00969-4246-4cd5-a210-351c9c7187f4" mode="Opaque" x="6496" y="0" width="180" height="108" forecolor="#000000" backcolor="#FFC000" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
 			<text>Primary Objective</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
@@ -624,9 +548,7 @@
 				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="d5c233dc-dcb3-4ae4-bd2b-f030d2dad181" mode="Opaque" x="6676"
-			y="0" width="180" height="108" forecolor="#000000" backcolor="#FFC000" fontName="Arial"
-			fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+		<element kind="staticText" uuid="d5c233dc-dcb3-4ae4-bd2b-f030d2dad181" mode="Opaque" x="6676" y="0" width="180" height="108" forecolor="#000000" backcolor="#FFC000" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
 			<text>Secondary Objective (Optional)</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
@@ -636,9 +558,7 @@
 				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="35793c4c-42ac-4063-b7cc-c47035ceb89a" mode="Opaque" x="6856"
-			y="0" width="180" height="108" forecolor="#000000" backcolor="#FFC000" fontName="Arial"
-			fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+		<element kind="staticText" uuid="35793c4c-42ac-4063-b7cc-c47035ceb89a" mode="Opaque" x="6856" y="0" width="180" height="108" forecolor="#000000" backcolor="#FFC000" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
 			<text>Endorsement Date</text>
 			<box padding="4">
 				<pen lineWidth="0.0" />
@@ -648,9 +568,7 @@
 				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="862bee70-d921-4335-8df6-3ed5f52f59fe" mode="Opaque" x="7036"
-			y="0" width="180" height="108" forecolor="#000000" backcolor="#FFC000" fontName="Arial"
-			fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+		<element kind="staticText" uuid="862bee70-d921-4335-8df6-3ed5f52f59fe" mode="Opaque" x="7036" y="0" width="180" height="108" forecolor="#000000" backcolor="#FFC000" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
 			<text>Approval Date</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
@@ -660,9 +578,7 @@
 				<rightPen lineWidth="1.0" lineColor="#000000" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="37ffdb93-8f9f-4bce-8553-ce303f53a21a" mode="Opaque" x="7216"
-			y="0" width="220" height="108" forecolor="#000000" backcolor="#FFD900" fontName="Arial"
-			fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+		<element kind="staticText" uuid="37ffdb93-8f9f-4bce-8553-ce303f53a21a" mode="Opaque" x="7216" y="0" width="220" height="108" forecolor="#000000" backcolor="#FFD900" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
 			<text>WUI Risk Class</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
@@ -672,9 +588,7 @@
 				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="7085b5c1-0850-432c-aa44-77913f2455b6" mode="Opaque" x="7436"
-			y="0" width="220" height="108" forecolor="#000000" backcolor="#FFD900" fontName="Arial"
-			fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+		<element kind="staticText" uuid="7085b5c1-0850-432c-aa44-77913f2455b6" mode="Opaque" x="7436" y="0" width="220" height="108" forecolor="#000000" backcolor="#FFD900" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
 			<text>Local WUI Risk Class</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
@@ -684,9 +598,7 @@
 				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="433b2a64-c24d-4d4b-be29-97c822f8058f" mode="Opaque" x="7656"
-			y="0" width="180" height="108" forecolor="#000000" backcolor="#FFD900" fontName="Arial"
-			fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+		<element kind="staticText" uuid="433b2a64-c24d-4d4b-be29-97c822f8058f" mode="Opaque" x="7656" y="0" width="180" height="108" forecolor="#000000" backcolor="#FFD900" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
 			<text>Local WUI Risk Class Rationale</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
@@ -696,9 +608,7 @@
 				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="afbc3200-5b14-4e0b-8e22-5869a370ab4b" mode="Opaque" x="7836"
-			y="0" width="94" height="108" forecolor="#000000" backcolor="#FFD900" fontName="Arial"
-			fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+		<element kind="staticText" uuid="afbc3200-5b14-4e0b-8e22-5869a370ab4b" mode="Opaque" x="7836" y="0" width="94" height="108" forecolor="#000000" backcolor="#FFD900" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
 			<text>Total Point Value for Coarse Filter</text>
 			<box padding="4">
 				<pen lineWidth="0.0" />
@@ -708,9 +618,7 @@
 				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="9add1802-fa2e-472d-9249-a0a2dd757974" mode="Opaque" x="7930"
-			y="0" width="94" height="108" forecolor="#000000" backcolor="#FFD900" fontName="Arial"
-			fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+		<element kind="staticText" uuid="9add1802-fa2e-472d-9249-a0a2dd757974" mode="Opaque" x="7930" y="0" width="94" height="108" forecolor="#000000" backcolor="#FFD900" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
 			<text>Total Point Value for Medium Filters</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
@@ -720,9 +628,7 @@
 				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="7f615a1f-2905-4421-ace9-7aef38d41cd8" mode="Opaque" x="8024"
-			y="0" width="180" height="108" forecolor="#000000" backcolor="#FFD900" fontName="Arial"
-			fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+		<element kind="staticText" uuid="7f615a1f-2905-4421-ace9-7aef38d41cd8" mode="Opaque" x="8024" y="0" width="180" height="108" forecolor="#000000" backcolor="#FFD900" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
 			<text>Additional Comments/Notes on Medium Filters</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
@@ -732,9 +638,7 @@
 				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="07e746a8-3ba1-4b64-9c56-be254898cdc0" mode="Opaque" x="8204"
-			y="0" width="94" height="108" forecolor="#000000" backcolor="#FFD900" fontName="Arial"
-			fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+		<element kind="staticText" uuid="07e746a8-3ba1-4b64-9c56-be254898cdc0" mode="Opaque" x="8204" y="0" width="94" height="108" forecolor="#000000" backcolor="#FFD900" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
 			<text>Total Point Value of Fine Filters</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
@@ -744,11 +648,8 @@
 				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="3749987b-aee0-43d8-8a63-087d45d96c60" mode="Opaque" x="8298"
-			y="0" width="120" height="108" forecolor="#000000" backcolor="#FFD900" fontName="Arial"
-			fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
-			<text>Additional Comments/
-				Notes on Fine Filters</text>
+		<element kind="staticText" uuid="3749987b-aee0-43d8-8a63-087d45d96c60" mode="Opaque" x="8298" y="0" width="120" height="108" forecolor="#000000" backcolor="#FFD900" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text>Additional Comments/ Notes on Fine Filters</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
 				<topPen lineWidth="0.0" />
@@ -757,9 +658,7 @@
 				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="99c82bec-c7b8-4895-9ddc-4740562714e0" mode="Opaque" x="8418"
-			y="0" width="94" height="108" forecolor="#000000" backcolor="#FFD900" fontName="Arial"
-			fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+		<element kind="staticText" uuid="99c82bec-c7b8-4895-9ddc-4740562714e0" mode="Opaque" x="8418" y="0" width="94" height="108" forecolor="#000000" backcolor="#FFD900" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
 			<text>Total Filter Value</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
@@ -769,11 +668,9 @@
 				<rightPen lineWidth="1.0" lineColor="#000000" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="61155e17-f721-4ff3-92dd-6bc0a804d2c6" mode="Opaque" x="8512"
-			y="0" width="180" height="108" backcolor="#44B3E1" fontName="Arial" fontSize="9.0" bold="true"
-			hTextAlign="Center" vTextAlign="Middle" markup="styled">
-			<text><![CDATA[<style forecolor="black">End of Q1:</style>
-<style forecolor="white">Performance Update Date</style>]]></text>
+		<element kind="staticText" uuid="61155e17-f721-4ff3-92dd-6bc0a804d2c6" mode="Opaque" x="8512" y="0" width="120" height="108" backcolor="#44B3E1" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle" markup="styled">
+			<text>&lt;style forecolor="black"&gt;End of Q1:&lt;/style&gt;
+&lt;style forecolor="white"&gt;Performance Update Date&lt;/style&gt;</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
 				<topPen lineWidth="0.0" />
@@ -782,11 +679,9 @@
 				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="eeada5e4-bc82-43a6-991a-124459743a23" mode="Opaque" x="8692"
-			y="0" width="180" height="108" backcolor="#44B3E1" fontName="Arial" fontSize="9.0" bold="true"
-			hTextAlign="Center" vTextAlign="Middle" markup="styled">
-			<text><![CDATA[<style forecolor="black">End of Q1:</style>
-<style forecolor="white">Progress Status</style>]]></text>
+		<element kind="staticText" uuid="eeada5e4-bc82-43a6-991a-124459743a23" mode="Opaque" x="8632" y="0" width="120" height="108" backcolor="#44B3E1" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle" markup="styled">
+			<text>&lt;style forecolor="black"&gt;End of Q1:&lt;/style&gt;
+&lt;style forecolor="white"&gt;Progress Status&lt;/style&gt;</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
 				<topPen lineWidth="0.0" />
@@ -795,11 +690,9 @@
 				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="107a80d4-b5db-4e1e-8801-c68005dc33c7" mode="Opaque" x="8872"
-			y="0" width="270" height="108" backcolor="#44B3E1" fontName="Arial" fontSize="9.0" bold="true"
-			hTextAlign="Center" vTextAlign="Middle" markup="styled">
-			<text><![CDATA[<style forecolor="black">End of Q1:</style>
-<style forecolor="white">General Updates</style>]]></text>
+		<element kind="staticText" uuid="107a80d4-b5db-4e1e-8801-c68005dc33c7" mode="Opaque" x="8752" y="0" width="270" height="108" backcolor="#44B3E1" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle" markup="styled">
+			<text>&lt;style forecolor="black"&gt;End of Q1:&lt;/style&gt;
+&lt;style forecolor="white"&gt;General Updates&lt;/style&gt;</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
 				<topPen lineWidth="0.0" />
@@ -808,11 +701,9 @@
 				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="d5c50542-b975-4cc8-b37b-1a413443c47c" mode="Opaque" x="9142"
-			y="0" width="120" height="108" backcolor="#44B3E1" fontName="Arial" fontSize="9.0" bold="true"
-			hTextAlign="Center" vTextAlign="Middle" markup="styled">
-			<text><![CDATA[<style forecolor="black">End of Q1:</style>
-<style forecolor="white">Revised Forecast Amount</style>]]></text>
+		<element kind="staticText" uuid="d5c50542-b975-4cc8-b37b-1a413443c47c" mode="Opaque" x="9022" y="0" width="120" height="108" backcolor="#44B3E1" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle" markup="styled">
+			<text>&lt;style forecolor="black"&gt;End of Q1:&lt;/style&gt;
+&lt;style forecolor="white"&gt;Revised Forecast Amount&lt;/style&gt;</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
 				<topPen lineWidth="0.0" />
@@ -821,11 +712,9 @@
 				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="74e540a0-c01a-45b8-9d83-0247a89819a5" mode="Opaque" x="9262"
-			y="0" width="120" height="108" backcolor="#44B3E1" fontName="Arial" fontSize="9.0" bold="true"
-			hTextAlign="Center" vTextAlign="Middle" markup="styled">
-			<text><![CDATA[<style forecolor="black">End of Q1:</style>
-<style forecolor="white">Forecast Adjustment Amount</style>]]></text>
+		<element kind="staticText" uuid="74e540a0-c01a-45b8-9d83-0247a89819a5" mode="Opaque" x="9142" y="0" width="120" height="108" backcolor="#44B3E1" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle" markup="styled">
+			<text>&lt;style forecolor="black"&gt;End of Q1:&lt;/style&gt;
+&lt;style forecolor="white"&gt;Forecast Adjustment Amount&lt;/style&gt;</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
 				<topPen lineWidth="0.0" />
@@ -834,11 +723,9 @@
 				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="3f206f1d-404a-45dc-94b4-1b7dd064aaed" mode="Opaque" x="9382"
-			y="0" width="220" height="108" backcolor="#44B3E1" fontName="Arial" fontSize="9.0" bold="true"
-			hTextAlign="Center" vTextAlign="Middle" markup="styled">
-			<text><![CDATA[<style forecolor="black">End of Q1:</style>
-<style forecolor="white">Forecast Adjustment Rationale</style>]]></text>
+		<element kind="staticText" uuid="3f206f1d-404a-45dc-94b4-1b7dd064aaed" mode="Opaque" x="9262" y="0" width="220" height="108" backcolor="#44B3E1" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle" markup="styled">
+			<text>&lt;style forecolor="black"&gt;End of Q1:&lt;/style&gt;
+&lt;style forecolor="white"&gt;Forecast Adjustment Rationale&lt;/style&gt;</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
 				<topPen lineWidth="0.0" />
@@ -847,11 +734,9 @@
 				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="adf72134-bb1e-49fe-b15e-44ed20044d7f" mode="Opaque" x="9602"
-			y="0" width="120" height="108" backcolor="#44B3E1" fontName="Arial" fontSize="9.0" bold="true"
-			hTextAlign="Center" vTextAlign="Middle" markup="styled">
-			<text><![CDATA[<style forecolor="black">End of Q1:</style>
-<style forecolor="white">Budget Risk: High Risk</style>]]></text>
+		<element kind="staticText" uuid="adf72134-bb1e-49fe-b15e-44ed20044d7f" mode="Opaque" x="9482" y="0" width="120" height="108" backcolor="#C02F33" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle" markup="styled">
+			<text>&lt;style forecolor="black"&gt;End of Q1:&lt;/style&gt;
+&lt;style forecolor="white"&gt;Budget Risk: High Risk&lt;/style&gt;</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
 				<topPen lineWidth="0.0" />
@@ -860,11 +745,9 @@
 				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="6177fc9b-1da1-4bbe-8fcf-8ef356d50cbf" mode="Opaque" x="9722"
-			y="0" width="220" height="108" backcolor="#44B3E1" fontName="Arial" fontSize="9.0" bold="true"
-			hTextAlign="Center" vTextAlign="Middle" markup="styled">
-			<text><![CDATA[<style forecolor="black">End of Q1:</style>
-<style forecolor="white">High Risk Rationale</style>]]></text>
+		<element kind="staticText" uuid="6177fc9b-1da1-4bbe-8fcf-8ef356d50cbf" mode="Opaque" x="9602" y="0" width="220" height="108" backcolor="#C02F33" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle" markup="styled">
+			<text>&lt;style forecolor="black"&gt;End of Q1:&lt;/style&gt;
+&lt;style forecolor="white"&gt;High Risk Rationale&lt;/style&gt;</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
 				<topPen lineWidth="0.0" />
@@ -873,11 +756,9 @@
 				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="dd365aa9-c49f-4701-ae27-bda03f140014" mode="Opaque" x="9942"
-			y="0" width="120" height="108" backcolor="#44B3E1" fontName="Arial" fontSize="9.0" bold="true"
-			hTextAlign="Center" vTextAlign="Middle" markup="styled">
-			<text><![CDATA[<style forecolor="black">End of Q1:</style>
-<style forecolor="white">Budget Risk: Medium Risk</style>]]></text>
+		<element kind="staticText" uuid="dd365aa9-c49f-4701-ae27-bda03f140014" mode="Opaque" x="9822" y="0" width="120" height="108" backcolor="#BE5014" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle" markup="styled">
+			<text>&lt;style forecolor="black"&gt;End of Q1:&lt;/style&gt;
+&lt;style forecolor="white"&gt;Budget Risk: Medium Risk&lt;/style&gt;</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
 				<topPen lineWidth="0.0" />
@@ -886,11 +767,9 @@
 				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="b7cbd1a3-051a-435c-846c-592d7d44757d" mode="Opaque" x="10062"
-			y="0" width="220" height="108" backcolor="#44B3E1" fontName="Arial" fontSize="9.0" bold="true"
-			hTextAlign="Center" vTextAlign="Middle" markup="styled">
-			<text><![CDATA[<style forecolor="black">End of Q1:</style>
-<style forecolor="white">Medium Risk Rationale</style>]]></text>
+		<element kind="staticText" uuid="b7cbd1a3-051a-435c-846c-592d7d44757d" mode="Opaque" x="9942" y="0" width="220" height="108" backcolor="#BE5014" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle" markup="styled">
+			<text>&lt;style forecolor="black"&gt;End of Q1:&lt;/style&gt;
+&lt;style forecolor="white"&gt;Medium Risk Rationale&lt;/style&gt;</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
 				<topPen lineWidth="0.0" />
@@ -899,11 +778,9 @@
 				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="020c65db-036f-4c6a-9d85-6bdddbf14337" mode="Opaque" x="10282"
-			y="0" width="120" height="108" backcolor="#44B3E1" fontName="Arial" fontSize="9.0" bold="true"
-			hTextAlign="Center" vTextAlign="Middle" markup="styled">
-			<text><![CDATA[<style forecolor="black">End of Q1:</style>
-<style forecolor="white">Budget Risk: Low Risk</style>]]></text>
+		<element kind="staticText" uuid="020c65db-036f-4c6a-9d85-6bdddbf14337" mode="Opaque" x="10162" y="0" width="120" height="108" backcolor="#3C7D22" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle" markup="styled">
+			<text>&lt;style forecolor="black"&gt;End of Q1:&lt;/style&gt;
+&lt;style forecolor="white"&gt;Budget Risk: Low Risk&lt;/style&gt;</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
 				<topPen lineWidth="0.0" />
@@ -912,11 +789,9 @@
 				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="90d376da-3492-41be-8549-09272e79c59b" mode="Opaque" x="10402"
-			y="0" width="220" height="108" backcolor="#44B3E1" fontName="Arial" fontSize="9.0" bold="true"
-			hTextAlign="Center" vTextAlign="Middle" markup="styled">
-			<text><![CDATA[<style forecolor="black">End of Q1:</style>
-<style forecolor="white">Low Risk Rationale</style>]]></text>
+		<element kind="staticText" uuid="90d376da-3492-41be-8549-09272e79c59b" mode="Opaque" x="10282" y="0" width="220" height="108" backcolor="#3C7D22" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle" markup="styled">
+			<text>&lt;style forecolor="black"&gt;End of Q1:&lt;/style&gt;
+&lt;style forecolor="white"&gt;Low Risk Rationale&lt;/style&gt;</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
 				<topPen lineWidth="0.0" />
@@ -925,11 +800,9 @@
 				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="b84a96c4-2466-48de-89ed-d9b8d4c68b2d" mode="Opaque" x="10622"
-			y="0" width="120" height="108" backcolor="#44B3E1" fontName="Arial" fontSize="9.0" bold="true"
-			hTextAlign="Center" vTextAlign="Middle" markup="styled">
-			<text><![CDATA[<style forecolor="black">End of Q1:</style>
-<style forecolor="white">Budget Risk: Complete</style>]]></text>
+		<element kind="staticText" uuid="b84a96c4-2466-48de-89ed-d9b8d4c68b2d" mode="Opaque" x="10502" y="0" width="120" height="108" backcolor="#BFBFBF" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle" markup="styled">
+			<text>&lt;style forecolor="black"&gt;End of Q1:&lt;/style&gt;
+&lt;style forecolor="white"&gt;Budget Risk: Complete&lt;/style&gt;</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
 				<topPen lineWidth="0.0" />
@@ -938,37 +811,20 @@
 				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="04833f50-f092-4da1-8979-e72e89280e88" mode="Opaque" x="10742"
-			y="0" width="220" height="108" backcolor="#44B3E1" fontName="Arial" fontSize="9.0" bold="true"
-			hTextAlign="Center" vTextAlign="Middle" markup="styled">
-			<text><![CDATA[<style forecolor="black">End of Q1:</style>
-<style forecolor="white">Complete Rationale</style>]]></text>
+		<element kind="staticText" uuid="04833f50-f092-4da1-8979-e72e89280e88" mode="Opaque" x="10622" y="0" width="220" height="108" backcolor="#BFBFBF" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle" markup="styled">
+			<text>&lt;style forecolor="black"&gt;End of Q1:&lt;/style&gt;
+&lt;style forecolor="white"&gt;Complete Rationale&lt;/style&gt;</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
 				<topPen lineWidth="0.0" />
 				<leftPen lineWidth="0.0" />
 				<bottomPen lineWidth="1.0" lineColor="#000000" />
-				<rightPen lineWidth="0.0" />
-			</box>
-		</element>
-		<element kind="staticText" uuid="01dd1ea6-52c0-4bcf-856b-fb259483412e" mode="Opaque" x="10962"
-			y="0" width="180" height="108" backcolor="#C02F33" fontName="Arial" fontSize="9.0" bold="true"
-			hTextAlign="Center" vTextAlign="Middle" markup="styled">
-			<text><![CDATA[<style forecolor="black">End of Q2:</style>
-<style forecolor="white">Performance Update Date</style>]]></text>
-			<box padding="4">
-				<pen lineWidth="1.0" />
-				<topPen lineWidth="0.0" />
-				<leftPen lineWidth="0.0" />
-				<bottomPen lineWidth="1.0" lineColor="#000000" />
-				<rightPen lineWidth="0.0" />
+				<rightPen lineWidth="1.0" lineColor="#000000" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="a86e7208-7772-4e1a-b6cd-6f7554214e1b" mode="Opaque" x="11142"
-			y="0" width="180" height="108" backcolor="#C02F33" fontName="Arial" fontSize="9.0" bold="true"
-			hTextAlign="Center" vTextAlign="Middle" markup="styled">
-			<text><![CDATA[<style forecolor="black">End of Q2:</style>
-<style forecolor="white">Progress Status</style>]]></text>
+		<element kind="staticText" uuid="01dd1ea6-52c0-4bcf-856b-fb259483412e" mode="Opaque" x="10842" y="0" width="120" height="108" backcolor="#44B3E1" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle" markup="styled">
+			<text>&lt;style forecolor="black"&gt;End of Q2:&lt;/style&gt;
+&lt;style forecolor="white"&gt;Performance Update Date&lt;/style&gt;</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
 				<topPen lineWidth="0.0" />
@@ -977,11 +833,9 @@
 				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="215772bc-d418-4d76-80ee-f946c5f9c883" mode="Opaque" x="11322"
-			y="0" width="270" height="108" backcolor="#C02F33" fontName="Arial" fontSize="9.0" bold="true"
-			hTextAlign="Center" vTextAlign="Middle" markup="styled">
-			<text><![CDATA[<style forecolor="black">End of Q2:</style>
-<style forecolor="white">General Updates</style>]]></text>
+		<element kind="staticText" uuid="a86e7208-7772-4e1a-b6cd-6f7554214e1b" mode="Opaque" x="10962" y="0" width="120" height="108" backcolor="#44B3E1" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle" markup="styled">
+			<text>&lt;style forecolor="black"&gt;End of Q2:&lt;/style&gt;
+&lt;style forecolor="white"&gt;Progress Status&lt;/style&gt;</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
 				<topPen lineWidth="0.0" />
@@ -990,11 +844,9 @@
 				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="0c1ffcfd-e332-46c7-aa7f-de34686d6b8a" mode="Opaque" x="11592"
-			y="0" width="120" height="108" backcolor="#C02F33" fontName="Arial" fontSize="9.0" bold="true"
-			hTextAlign="Center" vTextAlign="Middle" markup="styled">
-			<text><![CDATA[<style forecolor="black">End of Q2:</style>
-<style forecolor="white">Revised Forecast Amount</style>]]></text>
+		<element kind="staticText" uuid="215772bc-d418-4d76-80ee-f946c5f9c883" mode="Opaque" x="11082" y="0" width="270" height="108" backcolor="#44B3E1" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle" markup="styled">
+			<text>&lt;style forecolor="black"&gt;End of Q2:&lt;/style&gt;
+&lt;style forecolor="white"&gt;General Updates&lt;/style&gt;</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
 				<topPen lineWidth="0.0" />
@@ -1003,11 +855,9 @@
 				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="37e15308-dbe6-4aa0-86e9-f07eb45a14da" mode="Opaque" x="11712"
-			y="0" width="120" height="108" backcolor="#C02F33" fontName="Arial" fontSize="9.0" bold="true"
-			hTextAlign="Center" vTextAlign="Middle" markup="styled">
-			<text><![CDATA[<style forecolor="black">End of Q2:</style>
-<style forecolor="white">Forecast Adjustment Amount</style>]]></text>
+		<element kind="staticText" uuid="0c1ffcfd-e332-46c7-aa7f-de34686d6b8a" mode="Opaque" x="11352" y="0" width="120" height="108" backcolor="#44B3E1" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle" markup="styled">
+			<text>&lt;style forecolor="black"&gt;End of Q2:&lt;/style&gt;
+&lt;style forecolor="white"&gt;Revised Forecast Amount&lt;/style&gt;</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
 				<topPen lineWidth="0.0" />
@@ -1016,11 +866,9 @@
 				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="e2335cee-b354-4838-99f2-54c7aa855d02" mode="Opaque" x="11832"
-			y="0" width="220" height="108" backcolor="#C02F33" fontName="Arial" fontSize="9.0" bold="true"
-			hTextAlign="Center" vTextAlign="Middle" markup="styled">
-			<text><![CDATA[<style forecolor="black">End of Q2:</style>
-<style forecolor="white">Forecast Adjustment Rationale</style>]]></text>
+		<element kind="staticText" uuid="37e15308-dbe6-4aa0-86e9-f07eb45a14da" mode="Opaque" x="11472" y="0" width="120" height="108" backcolor="#44B3E1" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle" markup="styled">
+			<text>&lt;style forecolor="black"&gt;End of Q2:&lt;/style&gt;
+&lt;style forecolor="white"&gt;Forecast Adjustment Amount&lt;/style&gt;</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
 				<topPen lineWidth="0.0" />
@@ -1029,11 +877,9 @@
 				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="6b66c434-dcc1-46f7-875b-d3fa01fcc7b5" mode="Opaque" x="12052"
-			y="0" width="120" height="108" backcolor="#C02F33" fontName="Arial" fontSize="9.0" bold="true"
-			hTextAlign="Center" vTextAlign="Middle" markup="styled">
-			<text><![CDATA[<style forecolor="black">End of Q2:</style>
-<style forecolor="white">Budget Risk: High Risk</style>]]></text>
+		<element kind="staticText" uuid="e2335cee-b354-4838-99f2-54c7aa855d02" mode="Opaque" x="11592" y="0" width="220" height="108" backcolor="#44B3E1" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle" markup="styled">
+			<text>&lt;style forecolor="black"&gt;End of Q2:&lt;/style&gt;
+&lt;style forecolor="white"&gt;Forecast Adjustment Rationale&lt;/style&gt;</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
 				<topPen lineWidth="0.0" />
@@ -1042,11 +888,9 @@
 				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="121af4ff-73f6-4269-b99a-83b23495489f" mode="Opaque" x="12172"
-			y="0" width="220" height="108" backcolor="#C02F33" fontName="Arial" fontSize="9.0" bold="true"
-			hTextAlign="Center" vTextAlign="Middle" markup="styled">
-			<text><![CDATA[<style forecolor="black">End of Q2:</style>
-<style forecolor="white">High Risk Rationale</style>]]></text>
+		<element kind="staticText" uuid="6b66c434-dcc1-46f7-875b-d3fa01fcc7b5" mode="Opaque" x="11812" y="0" width="120" height="108" backcolor="#C02F33" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle" markup="styled">
+			<text>&lt;style forecolor="black"&gt;End of Q2:&lt;/style&gt;
+&lt;style forecolor="white"&gt;Budget Risk: High Risk&lt;/style&gt;</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
 				<topPen lineWidth="0.0" />
@@ -1055,11 +899,9 @@
 				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="8b8ce60c-79c8-4d36-ad4f-37ff582c82c6" mode="Opaque" x="12392"
-			y="0" width="120" height="108" backcolor="#C02F33" fontName="Arial" fontSize="9.0" bold="true"
-			hTextAlign="Center" vTextAlign="Middle" markup="styled">
-			<text><![CDATA[<style forecolor="black">End of Q2:</style>
-<style forecolor="white">Budget Risk: Medium Risk</style>]]></text>
+		<element kind="staticText" uuid="121af4ff-73f6-4269-b99a-83b23495489f" mode="Opaque" x="11932" y="0" width="220" height="108" backcolor="#C02F33" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle" markup="styled">
+			<text>&lt;style forecolor="black"&gt;End of Q2:&lt;/style&gt;
+&lt;style forecolor="white"&gt;High Risk Rationale&lt;/style&gt;</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
 				<topPen lineWidth="0.0" />
@@ -1068,11 +910,9 @@
 				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="1625fcc2-6320-4fcb-a371-86b52d41bbc0" mode="Opaque" x="12512"
-			y="0" width="220" height="108" backcolor="#C02F33" fontName="Arial" fontSize="9.0" bold="true"
-			hTextAlign="Center" vTextAlign="Middle" markup="styled">
-			<text><![CDATA[<style forecolor="black">End of Q2:</style>
-<style forecolor="white">Medium Risk Rationale</style>]]></text>
+		<element kind="staticText" uuid="8b8ce60c-79c8-4d36-ad4f-37ff582c82c6" mode="Opaque" x="12152" y="0" width="120" height="108" backcolor="#BE5014" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle" markup="styled">
+			<text>&lt;style forecolor="black"&gt;End of Q2:&lt;/style&gt;
+&lt;style forecolor="white"&gt;Budget Risk: Medium Risk&lt;/style&gt;</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
 				<topPen lineWidth="0.0" />
@@ -1081,11 +921,9 @@
 				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="d2a1abcb-e7a5-4037-912c-0c64b2e5a09e" mode="Opaque" x="12732"
-			y="0" width="120" height="108" backcolor="#C02F33" fontName="Arial" fontSize="9.0" bold="true"
-			hTextAlign="Center" vTextAlign="Middle" markup="styled">
-			<text><![CDATA[<style forecolor="black">End of Q2:</style>
-<style forecolor="white">Budget Risk: Low Risk</style>]]></text>
+		<element kind="staticText" uuid="1625fcc2-6320-4fcb-a371-86b52d41bbc0" mode="Opaque" x="12272" y="0" width="220" height="108" backcolor="#BE5014" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle" markup="styled">
+			<text>&lt;style forecolor="black"&gt;End of Q2:&lt;/style&gt;
+&lt;style forecolor="white"&gt;Medium Risk Rationale&lt;/style&gt;</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
 				<topPen lineWidth="0.0" />
@@ -1094,11 +932,9 @@
 				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="37cf129e-5433-404e-92a6-80fd2868b16c" mode="Opaque" x="12852"
-			y="0" width="220" height="108" backcolor="#C02F33" fontName="Arial" fontSize="9.0" bold="true"
-			hTextAlign="Center" vTextAlign="Middle" markup="styled">
-			<text><![CDATA[<style forecolor="black">End of Q2:</style>
-<style forecolor="white">Low Risk Rationale</style>]]></text>
+		<element kind="staticText" uuid="d2a1abcb-e7a5-4037-912c-0c64b2e5a09e" mode="Opaque" x="12492" y="0" width="120" height="108" backcolor="#3C7D22" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle" markup="styled">
+			<text>&lt;style forecolor="black"&gt;End of Q2:&lt;/style&gt;
+&lt;style forecolor="white"&gt;Budget Risk: Low Risk&lt;/style&gt;</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
 				<topPen lineWidth="0.0" />
@@ -1107,11 +943,9 @@
 				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="c0903f02-a82e-4fa7-a070-4d524839db55" mode="Opaque" x="13072"
-			y="0" width="120" height="108" backcolor="#C02F33" fontName="Arial" fontSize="9.0" bold="true"
-			hTextAlign="Center" vTextAlign="Middle" markup="styled">
-			<text><![CDATA[<style forecolor="black">End of Q2:</style>
-<style forecolor="white">Budget Risk: Complete</style>]]></text>
+		<element kind="staticText" uuid="37cf129e-5433-404e-92a6-80fd2868b16c" mode="Opaque" x="12612" y="0" width="220" height="108" backcolor="#3C7D22" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle" markup="styled">
+			<text>&lt;style forecolor="black"&gt;End of Q2:&lt;/style&gt;
+&lt;style forecolor="white"&gt;Low Risk Rationale&lt;/style&gt;</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
 				<topPen lineWidth="0.0" />
@@ -1120,11 +954,9 @@
 				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="b4497827-1326-4b67-8136-c47942e7bb13" mode="Opaque" x="13192"
-			y="0" width="220" height="108" backcolor="#C02F33" fontName="Arial" fontSize="9.0" bold="true"
-			hTextAlign="Center" vTextAlign="Middle" markup="styled">
-			<text><![CDATA[<style forecolor="black">End of Q2:</style>
-<style forecolor="white">Complete Rationale</style>]]></text>
+		<element kind="staticText" uuid="c0903f02-a82e-4fa7-a070-4d524839db55" mode="Opaque" x="12832" y="0" width="120" height="108" backcolor="#BFBFBF" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle" markup="styled">
+			<text>&lt;style forecolor="black"&gt;End of Q2:&lt;/style&gt;
+&lt;style forecolor="white"&gt;Budget Risk: Complete&lt;/style&gt;</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
 				<topPen lineWidth="0.0" />
@@ -1133,24 +965,20 @@
 				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="36d93fa1-7b40-4903-8753-5ac8c6f986b1" mode="Opaque" x="13412"
-			y="0" width="180" height="108" backcolor="#BE5014" fontName="Arial" fontSize="9.0" bold="true"
-			hTextAlign="Center" vTextAlign="Middle" markup="styled">
-			<text><![CDATA[<style forecolor="black">End of Q3:</style>
-<style forecolor="white">Performance Update Date</style>]]></text>
+		<element kind="staticText" uuid="b4497827-1326-4b67-8136-c47942e7bb13" mode="Opaque" x="12952" y="0" width="220" height="108" backcolor="#BFBFBF" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle" markup="styled">
+			<text>&lt;style forecolor="black"&gt;End of Q2:&lt;/style&gt;
+&lt;style forecolor="white"&gt;Complete Rationale&lt;/style&gt;</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
 				<topPen lineWidth="0.0" />
 				<leftPen lineWidth="0.0" />
 				<bottomPen lineWidth="1.0" lineColor="#000000" />
-				<rightPen lineWidth="0.0" />
+				<rightPen lineWidth="1.0" lineColor="#000000" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="35ccd2b4-6c90-40d1-ad02-fcd2b0c915b0" mode="Opaque" x="13592"
-			y="0" width="180" height="108" backcolor="#BE5014" fontName="Arial" fontSize="9.0" bold="true"
-			hTextAlign="Center" vTextAlign="Middle" markup="styled">
-			<text><![CDATA[<style forecolor="black">End of Q3:</style>
-<style forecolor="white">Progress Status</style>]]></text>
+		<element kind="staticText" uuid="36d93fa1-7b40-4903-8753-5ac8c6f986b1" mode="Opaque" x="13172" y="0" width="120" height="108" backcolor="#44B3E1" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle" markup="styled">
+			<text>&lt;style forecolor="black"&gt;End of Q3:&lt;/style&gt;
+&lt;style forecolor="white"&gt;Performance Update Date&lt;/style&gt;</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
 				<topPen lineWidth="0.0" />
@@ -1159,11 +987,9 @@
 				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="fd8327a5-7be5-4957-a667-7fb03498fed2" mode="Opaque" x="13772"
-			y="0" width="270" height="108" backcolor="#BE5014" fontName="Arial" fontSize="9.0" bold="true"
-			hTextAlign="Center" vTextAlign="Middle" markup="styled">
-			<text><![CDATA[<style forecolor="black">End of Q3:</style>
-<style forecolor="white">General Updates</style>]]></text>
+		<element kind="staticText" uuid="35ccd2b4-6c90-40d1-ad02-fcd2b0c915b0" mode="Opaque" x="13292" y="0" width="120" height="108" backcolor="#44B3E1" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle" markup="styled">
+			<text>&lt;style forecolor="black"&gt;End of Q3:&lt;/style&gt;
+&lt;style forecolor="white"&gt;Progress Status&lt;/style&gt;</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
 				<topPen lineWidth="0.0" />
@@ -1172,11 +998,9 @@
 				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="7b6abd74-f233-42e3-9406-97d28b797672" mode="Opaque" x="14042"
-			y="0" width="120" height="108" backcolor="#BE5014" fontName="Arial" fontSize="9.0" bold="true"
-			hTextAlign="Center" vTextAlign="Middle" markup="styled">
-			<text><![CDATA[<style forecolor="black">End of Q3:</style>
-<style forecolor="white">Revised Forecast Amount</style>]]></text>
+		<element kind="staticText" uuid="fd8327a5-7be5-4957-a667-7fb03498fed2" mode="Opaque" x="13412" y="0" width="270" height="108" backcolor="#44B3E1" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle" markup="styled">
+			<text>&lt;style forecolor="black"&gt;End of Q3:&lt;/style&gt;
+&lt;style forecolor="white"&gt;General Updates&lt;/style&gt;</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
 				<topPen lineWidth="0.0" />
@@ -1185,11 +1009,9 @@
 				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="9423d6a9-0f46-4883-be14-8a1df038b4f7" mode="Opaque" x="14162"
-			y="0" width="120" height="108" backcolor="#BE5014" fontName="Arial" fontSize="9.0" bold="true"
-			hTextAlign="Center" vTextAlign="Middle" markup="styled">
-			<text><![CDATA[<style forecolor="black">End of Q3:</style>
-<style forecolor="white">Forecast Adjustment Amount</style>]]></text>
+		<element kind="staticText" uuid="7b6abd74-f233-42e3-9406-97d28b797672" mode="Opaque" x="13682" y="0" width="120" height="108" backcolor="#44B3E1" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle" markup="styled">
+			<text>&lt;style forecolor="black"&gt;End of Q3:&lt;/style&gt;
+&lt;style forecolor="white"&gt;Revised Forecast Amount&lt;/style&gt;</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
 				<topPen lineWidth="0.0" />
@@ -1198,11 +1020,9 @@
 				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="4ac4a074-81b9-4943-a2ed-fdb2841b3178" mode="Opaque" x="14282"
-			y="0" width="220" height="108" backcolor="#BE5014" fontName="Arial" fontSize="9.0" bold="true"
-			hTextAlign="Center" vTextAlign="Middle" markup="styled">
-			<text><![CDATA[<style forecolor="black">End of Q3:</style>
-<style forecolor="white">Forecast Adjustment Rationale</style>]]></text>
+		<element kind="staticText" uuid="9423d6a9-0f46-4883-be14-8a1df038b4f7" mode="Opaque" x="13802" y="0" width="120" height="108" backcolor="#44B3E1" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle" markup="styled">
+			<text>&lt;style forecolor="black"&gt;End of Q3:&lt;/style&gt;
+&lt;style forecolor="white"&gt;Forecast Adjustment Amount&lt;/style&gt;</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
 				<topPen lineWidth="0.0" />
@@ -1211,11 +1031,9 @@
 				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="f27535db-58ab-4fd1-9902-7bdc3d083648" mode="Opaque" x="14502"
-			y="0" width="120" height="108" backcolor="#BE5014" fontName="Arial" fontSize="9.0" bold="true"
-			hTextAlign="Center" vTextAlign="Middle" markup="styled">
-			<text><![CDATA[<style forecolor="black">End of Q3:</style>
-<style forecolor="white">Budget Risk: High Risk</style>]]></text>
+		<element kind="staticText" uuid="4ac4a074-81b9-4943-a2ed-fdb2841b3178" mode="Opaque" x="13922" y="0" width="220" height="108" backcolor="#44B3E1" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle" markup="styled">
+			<text>&lt;style forecolor="black"&gt;End of Q3:&lt;/style&gt;
+&lt;style forecolor="white"&gt;Forecast Adjustment Rationale&lt;/style&gt;</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
 				<topPen lineWidth="0.0" />
@@ -1224,11 +1042,9 @@
 				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="d0aa8944-4de5-403c-963d-fd9b729ab275" mode="Opaque" x="14622"
-			y="0" width="220" height="108" backcolor="#BE5014" fontName="Arial" fontSize="9.0" bold="true"
-			hTextAlign="Center" vTextAlign="Middle" markup="styled">
-			<text><![CDATA[<style forecolor="black">End of Q3:</style>
-<style forecolor="white">High Risk Rationale</style>]]></text>
+		<element kind="staticText" uuid="f27535db-58ab-4fd1-9902-7bdc3d083648" mode="Opaque" x="14142" y="0" width="120" height="108" backcolor="#C02F33" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle" markup="styled">
+			<text>&lt;style forecolor="black"&gt;End of Q3:&lt;/style&gt;
+&lt;style forecolor="white"&gt;Budget Risk: High Risk&lt;/style&gt;</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
 				<topPen lineWidth="0.0" />
@@ -1237,11 +1053,9 @@
 				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="b55052de-4c76-4ab5-a39e-d488ff7b4ec7" mode="Opaque" x="14842"
-			y="0" width="120" height="108" backcolor="#BE5014" fontName="Arial" fontSize="9.0" bold="true"
-			hTextAlign="Center" vTextAlign="Middle" markup="styled">
-			<text><![CDATA[<style forecolor="black">End of Q3:</style>
-<style forecolor="white">Budget Risk: Medium Risk</style>]]></text>
+		<element kind="staticText" uuid="d0aa8944-4de5-403c-963d-fd9b729ab275" mode="Opaque" x="14262" y="0" width="220" height="108" backcolor="#C02F33" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle" markup="styled">
+			<text>&lt;style forecolor="black"&gt;End of Q3:&lt;/style&gt;
+&lt;style forecolor="white"&gt;High Risk Rationale&lt;/style&gt;</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
 				<topPen lineWidth="0.0" />
@@ -1250,11 +1064,9 @@
 				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="f1c18102-f2ba-465c-9f10-be194b8e5310" mode="Opaque" x="14962"
-			y="0" width="220" height="108" backcolor="#BE5014" fontName="Arial" fontSize="9.0" bold="true"
-			hTextAlign="Center" vTextAlign="Middle" markup="styled">
-			<text><![CDATA[<style forecolor="black">End of Q3:</style>
-<style forecolor="white">Medium Risk Rationale</style>]]></text>
+		<element kind="staticText" uuid="b55052de-4c76-4ab5-a39e-d488ff7b4ec7" mode="Opaque" x="14482" y="0" width="120" height="108" backcolor="#BE5014" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle" markup="styled">
+			<text>&lt;style forecolor="black"&gt;End of Q3:&lt;/style&gt;
+&lt;style forecolor="white"&gt;Budget Risk: Medium Risk&lt;/style&gt;</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
 				<topPen lineWidth="0.0" />
@@ -1263,11 +1075,9 @@
 				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="3e072d90-b356-40cd-986a-7da2084c7ae3" mode="Opaque" x="15182"
-			y="0" width="120" height="108" backcolor="#BE5014" fontName="Arial" fontSize="9.0" bold="true"
-			hTextAlign="Center" vTextAlign="Middle" markup="styled">
-			<text><![CDATA[<style forecolor="black">End of Q3:</style>
-<style forecolor="white">Budget Risk: Low Risk</style>]]></text>
+		<element kind="staticText" uuid="f1c18102-f2ba-465c-9f10-be194b8e5310" mode="Opaque" x="14602" y="0" width="220" height="108" backcolor="#BE5014" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle" markup="styled">
+			<text>&lt;style forecolor="black"&gt;End of Q3:&lt;/style&gt;
+&lt;style forecolor="white"&gt;Medium Risk Rationale&lt;/style&gt;</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
 				<topPen lineWidth="0.0" />
@@ -1276,11 +1086,9 @@
 				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="d006814c-c899-4d0b-acee-f31d3117a143" mode="Opaque" x="15302"
-			y="0" width="220" height="108" backcolor="#BE5014" fontName="Arial" fontSize="9.0" bold="true"
-			hTextAlign="Center" vTextAlign="Middle" markup="styled">
-			<text><![CDATA[<style forecolor="black">End of Q3:</style>
-<style forecolor="white">Low Risk Rationale</style>]]></text>
+		<element kind="staticText" uuid="3e072d90-b356-40cd-986a-7da2084c7ae3" mode="Opaque" x="14822" y="0" width="120" height="108" backcolor="#3C7D22" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle" markup="styled">
+			<text>&lt;style forecolor="black"&gt;End of Q3:&lt;/style&gt;
+&lt;style forecolor="white"&gt;Budget Risk: Low Risk&lt;/style&gt;</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
 				<topPen lineWidth="0.0" />
@@ -1289,11 +1097,9 @@
 				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="dfc86c84-db99-41dc-a9cd-0b3cb09c1e57" mode="Opaque" x="15522"
-			y="0" width="120" height="108" backcolor="#BE5014" fontName="Arial" fontSize="9.0" bold="true"
-			hTextAlign="Center" vTextAlign="Middle" markup="styled">
-			<text><![CDATA[<style forecolor="black">End of Q3:</style>
-<style forecolor="white">Budget Risk: Complete</style>]]></text>
+		<element kind="staticText" uuid="d006814c-c899-4d0b-acee-f31d3117a143" mode="Opaque" x="14942" y="0" width="220" height="108" backcolor="#3C7D22" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle" markup="styled">
+			<text>&lt;style forecolor="black"&gt;End of Q3:&lt;/style&gt;
+&lt;style forecolor="white"&gt;Low Risk Rationale&lt;/style&gt;</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
 				<topPen lineWidth="0.0" />
@@ -1302,11 +1108,9 @@
 				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="ec958a04-ef07-401c-9bdf-5200f4172d47" mode="Opaque" x="15642"
-			y="0" width="220" height="108" backcolor="#BE5014" fontName="Arial" fontSize="9.0" bold="true"
-			hTextAlign="Center" vTextAlign="Middle" markup="styled">
-			<text><![CDATA[<style forecolor="black">End of Q3:</style>
-<style forecolor="white">Complete Rationale</style>]]></text>
+		<element kind="staticText" uuid="dfc86c84-db99-41dc-a9cd-0b3cb09c1e57" mode="Opaque" x="15162" y="0" width="120" height="108" backcolor="#BFBFBF" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle" markup="styled">
+			<text>&lt;style forecolor="black"&gt;End of Q3:&lt;/style&gt;
+&lt;style forecolor="white"&gt;Budget Risk: Complete&lt;/style&gt;</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
 				<topPen lineWidth="0.0" />
@@ -1315,24 +1119,20 @@
 				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="d58da107-b54b-47b5-b713-98b51e898e9c" mode="Opaque" x="15862"
-			y="0" width="180" height="108" backcolor="#3C7D22" fontName="Arial" fontSize="9.0" bold="true"
-			hTextAlign="Center" vTextAlign="Middle" markup="styled">
-			<text><![CDATA[<style forecolor="black">March 7:</style>
-<style forecolor="white">Performance Update Date</style>]]></text>
+		<element kind="staticText" uuid="ec958a04-ef07-401c-9bdf-5200f4172d47" mode="Opaque" x="15282" y="0" width="220" height="108" backcolor="#BFBFBF" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle" markup="styled">
+			<text>&lt;style forecolor="black"&gt;End of Q3:&lt;/style&gt;
+&lt;style forecolor="white"&gt;Complete Rationale&lt;/style&gt;</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
 				<topPen lineWidth="0.0" />
 				<leftPen lineWidth="0.0" />
 				<bottomPen lineWidth="1.0" lineColor="#000000" />
-				<rightPen lineWidth="0.0" />
+				<rightPen lineWidth="1.0" lineColor="#000000" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="8f4df250-7968-4b52-87dd-2acc9bc0f367" mode="Opaque" x="16042"
-			y="0" width="180" height="108" backcolor="#3C7D22" fontName="Arial" fontSize="9.0" bold="true"
-			hTextAlign="Center" vTextAlign="Middle" markup="styled">
-			<text><![CDATA[<style forecolor="black">March 7:</style>
-<style forecolor="white">Progress Status</style>]]></text>
+		<element kind="staticText" uuid="d58da107-b54b-47b5-b713-98b51e898e9c" mode="Opaque" x="15502" y="0" width="120" height="108" backcolor="#44B3E1" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle" markup="styled">
+			<text>&lt;style forecolor="black"&gt;March 7:&lt;/style&gt;
+&lt;style forecolor="white"&gt;Performance Update Date&lt;/style&gt;</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
 				<topPen lineWidth="0.0" />
@@ -1341,11 +1141,9 @@
 				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="f34e7f59-3d99-472b-9c71-c341ece0e763" mode="Opaque" x="16222"
-			y="0" width="270" height="108" backcolor="#3C7D22" fontName="Arial" fontSize="9.0" bold="true"
-			hTextAlign="Center" vTextAlign="Middle" markup="styled">
-			<text><![CDATA[<style forecolor="black">March 7:</style>
-<style forecolor="white">General Updates</style>]]></text>
+		<element kind="staticText" uuid="8f4df250-7968-4b52-87dd-2acc9bc0f367" mode="Opaque" x="15622" y="0" width="120" height="108" backcolor="#44B3E1" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle" markup="styled">
+			<text>&lt;style forecolor="black"&gt;March 7:&lt;/style&gt;
+&lt;style forecolor="white"&gt;Progress Status&lt;/style&gt;</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
 				<topPen lineWidth="0.0" />
@@ -1354,11 +1152,9 @@
 				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="5eb22b68-3055-4c7e-945a-45264a50da03" mode="Opaque" x="16492"
-			y="0" width="120" height="108" backcolor="#3C7D22" fontName="Arial" fontSize="9.0" bold="true"
-			hTextAlign="Center" vTextAlign="Middle" markup="styled">
-			<text><![CDATA[<style forecolor="black">March 7:</style>
-<style forecolor="white">Revised Forecast Amount</style>]]></text>
+		<element kind="staticText" uuid="f34e7f59-3d99-472b-9c71-c341ece0e763" mode="Opaque" x="15742" y="0" width="270" height="108" backcolor="#44B3E1" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle" markup="styled">
+			<text>&lt;style forecolor="black"&gt;March 7:&lt;/style&gt;
+&lt;style forecolor="white"&gt;General Updates&lt;/style&gt;</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
 				<topPen lineWidth="0.0" />
@@ -1367,11 +1163,9 @@
 				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="71772973-7a56-438f-8de6-fa6f766bc2c5" mode="Opaque" x="16612"
-			y="0" width="120" height="108" backcolor="#3C7D22" fontName="Arial" fontSize="9.0" bold="true"
-			hTextAlign="Center" vTextAlign="Middle" markup="styled">
-			<text><![CDATA[<style forecolor="black">March 7:</style>
-<style forecolor="white">Forecast Adjustment Amount</style>]]></text>
+		<element kind="staticText" uuid="5eb22b68-3055-4c7e-945a-45264a50da03" mode="Opaque" x="16012" y="0" width="120" height="108" backcolor="#44B3E1" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle" markup="styled">
+			<text>&lt;style forecolor="black"&gt;March 7:&lt;/style&gt;
+&lt;style forecolor="white"&gt;Revised Forecast Amount&lt;/style&gt;</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
 				<topPen lineWidth="0.0" />
@@ -1380,11 +1174,9 @@
 				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="9b79c7d6-4eef-4ec5-b42e-8c7d9d6d1f80" mode="Opaque" x="16732"
-			y="0" width="220" height="108" backcolor="#3C7D22" fontName="Arial" fontSize="9.0" bold="true"
-			hTextAlign="Center" vTextAlign="Middle" markup="styled">
-			<text><![CDATA[<style forecolor="black">March 7:</style>
-<style forecolor="white">Forecast Adjustment Rationale</style>]]></text>
+		<element kind="staticText" uuid="71772973-7a56-438f-8de6-fa6f766bc2c5" mode="Opaque" x="16132" y="0" width="120" height="108" backcolor="#44B3E1" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle" markup="styled">
+			<text>&lt;style forecolor="black"&gt;March 7:&lt;/style&gt;
+&lt;style forecolor="white"&gt;Forecast Adjustment Amount&lt;/style&gt;</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
 				<topPen lineWidth="0.0" />
@@ -1393,11 +1185,9 @@
 				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="6e4a13b0-183a-48eb-912b-6234f79f21e1" mode="Opaque" x="16952"
-			y="0" width="120" height="108" backcolor="#3C7D22" fontName="Arial" fontSize="9.0" bold="true"
-			hTextAlign="Center" vTextAlign="Middle" markup="styled">
-			<text><![CDATA[<style forecolor="black">March 7:</style>
-<style forecolor="white">Budget Risk: High Risk</style>]]></text>
+		<element kind="staticText" uuid="9b79c7d6-4eef-4ec5-b42e-8c7d9d6d1f80" mode="Opaque" x="16252" y="0" width="220" height="108" backcolor="#44B3E1" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle" markup="styled">
+			<text>&lt;style forecolor="black"&gt;March 7:&lt;/style&gt;
+&lt;style forecolor="white"&gt;Forecast Adjustment Rationale&lt;/style&gt;</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
 				<topPen lineWidth="0.0" />
@@ -1406,11 +1196,9 @@
 				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="6ebc27c1-aae2-431d-b66d-0bbb6d929094" mode="Opaque" x="17072"
-			y="0" width="220" height="108" backcolor="#3C7D22" fontName="Arial" fontSize="9.0" bold="true"
-			hTextAlign="Center" vTextAlign="Middle" markup="styled">
-			<text><![CDATA[<style forecolor="black">March 7:</style>
-<style forecolor="white">High Risk Rationale</style>]]></text>
+		<element kind="staticText" uuid="6e4a13b0-183a-48eb-912b-6234f79f21e1" mode="Opaque" x="16472" y="0" width="120" height="108" backcolor="#C02F33" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle" markup="styled">
+			<text>&lt;style forecolor="black"&gt;March 7:&lt;/style&gt;
+&lt;style forecolor="white"&gt;Budget Risk: High Risk&lt;/style&gt;</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
 				<topPen lineWidth="0.0" />
@@ -1419,11 +1207,9 @@
 				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="a783dd05-1586-4222-ba2f-f3f96a6eeff3" mode="Opaque" x="17292"
-			y="0" width="120" height="108" backcolor="#3C7D22" fontName="Arial" fontSize="9.0" bold="true"
-			hTextAlign="Center" vTextAlign="Middle" markup="styled">
-			<text><![CDATA[<style forecolor="black">March 7:</style>
-<style forecolor="white">Budget Risk: Medium Risk</style>]]></text>
+		<element kind="staticText" uuid="6ebc27c1-aae2-431d-b66d-0bbb6d929094" mode="Opaque" x="16592" y="0" width="220" height="108" backcolor="#C02F33" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle" markup="styled">
+			<text>&lt;style forecolor="black"&gt;March 7:&lt;/style&gt;
+&lt;style forecolor="white"&gt;High Risk Rationale&lt;/style&gt;</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
 				<topPen lineWidth="0.0" />
@@ -1432,11 +1218,9 @@
 				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="d3c75cbd-e85e-4d7b-a29a-799d28bc015f" mode="Opaque" x="17412"
-			y="0" width="220" height="108" backcolor="#3C7D22" fontName="Arial" fontSize="9.0" bold="true"
-			hTextAlign="Center" vTextAlign="Middle" markup="styled">
-			<text><![CDATA[<style forecolor="black">March 7:</style>
-<style forecolor="white">Medium Risk Rationale</style>]]></text>
+		<element kind="staticText" uuid="a783dd05-1586-4222-ba2f-f3f96a6eeff3" mode="Opaque" x="16812" y="0" width="120" height="108" backcolor="#BE5014" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle" markup="styled">
+			<text>&lt;style forecolor="black"&gt;March 7:&lt;/style&gt;
+&lt;style forecolor="white"&gt;Budget Risk: Medium Risk&lt;/style&gt;</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
 				<topPen lineWidth="0.0" />
@@ -1445,11 +1229,9 @@
 				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="fc241d7b-0d88-4859-8dae-7c517fb312f9" mode="Opaque" x="17632"
-			y="0" width="120" height="108" backcolor="#3C7D22" fontName="Arial" fontSize="9.0" bold="true"
-			hTextAlign="Center" vTextAlign="Middle" markup="styled">
-			<text><![CDATA[<style forecolor="black">March 7:</style>
-<style forecolor="white">Budget Risk: Low Risk</style>]]></text>
+		<element kind="staticText" uuid="d3c75cbd-e85e-4d7b-a29a-799d28bc015f" mode="Opaque" x="16932" y="0" width="220" height="108" backcolor="#BE5014" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle" markup="styled">
+			<text>&lt;style forecolor="black"&gt;March 7:&lt;/style&gt;
+&lt;style forecolor="white"&gt;Medium Risk Rationale&lt;/style&gt;</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
 				<topPen lineWidth="0.0" />
@@ -1458,11 +1240,9 @@
 				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="12fb3baf-f760-4f36-9239-2ed27c06694b" mode="Opaque" x="17752"
-			y="0" width="220" height="108" backcolor="#3C7D22" fontName="Arial" fontSize="9.0" bold="true"
-			hTextAlign="Center" vTextAlign="Middle" markup="styled">
-			<text><![CDATA[<style forecolor="black">March 7:</style>
-<style forecolor="white">Low Risk Rationale</style>]]></text>
+		<element kind="staticText" uuid="fc241d7b-0d88-4859-8dae-7c517fb312f9" mode="Opaque" x="17152" y="0" width="120" height="108" backcolor="#3C7D22" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle" markup="styled">
+			<text>&lt;style forecolor="black"&gt;March 7:&lt;/style&gt;
+&lt;style forecolor="white"&gt;Budget Risk: Low Risk&lt;/style&gt;</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
 				<topPen lineWidth="0.0" />
@@ -1471,11 +1251,9 @@
 				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="262f2553-3c87-449d-acff-feb0c10e4421" mode="Opaque" x="17972"
-			y="0" width="120" height="108" backcolor="#3C7D22" fontName="Arial" fontSize="9.0" bold="true"
-			hTextAlign="Center" vTextAlign="Middle" markup="styled">
-			<text><![CDATA[<style forecolor="black">March 7:</style>
-<style forecolor="white">Budget Risk: Complete</style>]]></text>
+		<element kind="staticText" uuid="12fb3baf-f760-4f36-9239-2ed27c06694b" mode="Opaque" x="17272" y="0" width="220" height="108" backcolor="#3C7D22" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle" markup="styled">
+			<text>&lt;style forecolor="black"&gt;March 7:&lt;/style&gt;
+&lt;style forecolor="white"&gt;Low Risk Rationale&lt;/style&gt;</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
 				<topPen lineWidth="0.0" />
@@ -1484,11 +1262,9 @@
 				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="7e591e82-9cce-4206-9f38-e10a57c64045" mode="Opaque" x="18092"
-			y="0" width="220" height="108" backcolor="#3C7D22" fontName="Arial" fontSize="9.0" bold="true"
-			hTextAlign="Center" vTextAlign="Middle" markup="styled">
-			<text><![CDATA[<style forecolor="black">March 7:</style>
-<style forecolor="white">Complete Rationale</style>]]></text>
+		<element kind="staticText" uuid="262f2553-3c87-449d-acff-feb0c10e4421" mode="Opaque" x="17492" y="0" width="120" height="108" backcolor="#BFBFBF" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle" markup="styled">
+			<text>&lt;style forecolor="black"&gt;March 7:&lt;/style&gt;
+&lt;style forecolor="white"&gt;Budget Risk: Complete&lt;/style&gt;</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
 				<topPen lineWidth="0.0" />
@@ -1497,24 +1273,20 @@
 				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="86098f70-8e13-439d-a0ff-2470cd8e6072" mode="Opaque" x="18312"
-			y="0" width="180" height="108" backcolor="#BFBFBF" fontName="Arial" fontSize="9.0" bold="true"
-			hTextAlign="Center" vTextAlign="Middle" markup="styled">
-			<text><![CDATA[<style forecolor="black">Other:</style>
-<style forecolor="white">Performance Update Date</style>]]></text>
+		<element kind="staticText" uuid="7e591e82-9cce-4206-9f38-e10a57c64045" mode="Opaque" x="17612" y="0" width="220" height="108" backcolor="#BFBFBF" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle" markup="styled">
+			<text>&lt;style forecolor="black"&gt;March 7:&lt;/style&gt;
+&lt;style forecolor="white"&gt;Complete Rationale&lt;/style&gt;</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
 				<topPen lineWidth="0.0" />
 				<leftPen lineWidth="0.0" />
 				<bottomPen lineWidth="1.0" lineColor="#000000" />
-				<rightPen lineWidth="0.0" />
+				<rightPen lineWidth="1.0" lineColor="#000000" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="5aded09e-caf0-4d18-87c9-ea2b4af2d2a8" mode="Opaque" x="18492"
-			y="0" width="180" height="108" backcolor="#BFBFBF" fontName="Arial" fontSize="9.0" bold="true"
-			hTextAlign="Center" vTextAlign="Middle" markup="styled">
-			<text><![CDATA[<style forecolor="black">Other:</style>
-<style forecolor="white">Progress Status</style>]]></text>
+		<element kind="staticText" uuid="86098f70-8e13-439d-a0ff-2470cd8e6072" mode="Opaque" x="17832" y="0" width="120" height="108" backcolor="#44B3E1" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle" markup="styled">
+			<text>&lt;style forecolor="black"&gt;Other:&lt;/style&gt;
+&lt;style forecolor="white"&gt;Performance Update Date&lt;/style&gt;</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
 				<topPen lineWidth="0.0" />
@@ -1523,11 +1295,9 @@
 				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="94a5e924-461a-447e-a142-db9d47a2fea8" mode="Opaque" x="18672"
-			y="0" width="270" height="108" backcolor="#BFBFBF" fontName="Arial" fontSize="9.0" bold="true"
-			hTextAlign="Center" vTextAlign="Middle" markup="styled">
-			<text><![CDATA[<style forecolor="black">Other:</style>
-<style forecolor="white">General Updates</style>]]></text>
+		<element kind="staticText" uuid="5aded09e-caf0-4d18-87c9-ea2b4af2d2a8" mode="Opaque" x="17952" y="0" width="120" height="108" backcolor="#44B3E1" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle" markup="styled">
+			<text>&lt;style forecolor="black"&gt;Other:&lt;/style&gt;
+&lt;style forecolor="white"&gt;Progress Status&lt;/style&gt;</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
 				<topPen lineWidth="0.0" />
@@ -1536,11 +1306,9 @@
 				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="fcfbf963-d880-4d6a-b3fe-da81e0af1199" mode="Opaque" x="18942"
-			y="0" width="120" height="108" backcolor="#BFBFBF" fontName="Arial" fontSize="9.0" bold="true"
-			hTextAlign="Center" vTextAlign="Middle" markup="styled">
-			<text><![CDATA[<style forecolor="black">Other:</style>
-<style forecolor="white">Revised Forecast Amount</style>]]></text>
+		<element kind="staticText" uuid="94a5e924-461a-447e-a142-db9d47a2fea8" mode="Opaque" x="18072" y="0" width="270" height="108" backcolor="#44B3E1" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle" markup="styled">
+			<text>&lt;style forecolor="black"&gt;Other:&lt;/style&gt;
+&lt;style forecolor="white"&gt;General Updates&lt;/style&gt;</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
 				<topPen lineWidth="0.0" />
@@ -1549,11 +1317,9 @@
 				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="032b88f9-d18e-4b8a-9c08-984d0a6cdf94" mode="Opaque" x="19062"
-			y="0" width="120" height="108" backcolor="#BFBFBF" fontName="Arial" fontSize="9.0" bold="true"
-			hTextAlign="Center" vTextAlign="Middle" markup="styled">
-			<text><![CDATA[<style forecolor="black">Other:</style>
-<style forecolor="white">Forecast Adjustment Amount</style>]]></text>
+		<element kind="staticText" uuid="fcfbf963-d880-4d6a-b3fe-da81e0af1199" mode="Opaque" x="18342" y="0" width="120" height="108" backcolor="#44B3E1" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle" markup="styled">
+			<text>&lt;style forecolor="black"&gt;Other:&lt;/style&gt;
+&lt;style forecolor="white"&gt;Revised Forecast Amount&lt;/style&gt;</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
 				<topPen lineWidth="0.0" />
@@ -1562,11 +1328,9 @@
 				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="206d6a71-04d0-47fb-a9d0-d7b1ed328b1a" mode="Opaque" x="19182"
-			y="0" width="220" height="108" backcolor="#BFBFBF" fontName="Arial" fontSize="9.0" bold="true"
-			hTextAlign="Center" vTextAlign="Middle" markup="styled">
-			<text><![CDATA[<style forecolor="black">Other:</style>
-<style forecolor="white">Forecast Adjustment Rationale</style>]]></text>
+		<element kind="staticText" uuid="032b88f9-d18e-4b8a-9c08-984d0a6cdf94" mode="Opaque" x="18462" y="0" width="120" height="108" backcolor="#44B3E1" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle" markup="styled">
+			<text>&lt;style forecolor="black"&gt;Other:&lt;/style&gt;
+&lt;style forecolor="white"&gt;Forecast Adjustment Amount&lt;/style&gt;</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
 				<topPen lineWidth="0.0" />
@@ -1575,11 +1339,9 @@
 				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="8eaaba67-2650-42b3-a175-4a53838b0f4f" mode="Opaque" x="19402"
-			y="0" width="120" height="108" backcolor="#BFBFBF" fontName="Arial" fontSize="9.0" bold="true"
-			hTextAlign="Center" vTextAlign="Middle" markup="styled">
-			<text><![CDATA[<style forecolor="black">Other:</style>
-<style forecolor="white">Budget Risk: High Risk</style>]]></text>
+		<element kind="staticText" uuid="206d6a71-04d0-47fb-a9d0-d7b1ed328b1a" mode="Opaque" x="18582" y="0" width="220" height="108" backcolor="#44B3E1" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle" markup="styled">
+			<text>&lt;style forecolor="black"&gt;Other:&lt;/style&gt;
+&lt;style forecolor="white"&gt;Forecast Adjustment Rationale&lt;/style&gt;</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
 				<topPen lineWidth="0.0" />
@@ -1588,10 +1350,9 @@
 				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="eee38c3f-40c9-4fe6-8d93-63c1c5d152d7" mode="Opaque" x="19522"
-			y="0" width="220" height="108" backcolor="#BFBFBF" fontName="Arial" fontSize="9.0" bold="true"
-			hTextAlign="Center" vTextAlign="Middle">
-			<text><![CDATA[]]></text>
+		<element kind="staticText" uuid="8eaaba67-2650-42b3-a175-4a53838b0f4f" mode="Opaque" x="18802" y="0" width="120" height="108" backcolor="#C02F33" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle" markup="styled">
+			<text>&lt;style forecolor="black"&gt;Other:&lt;/style&gt;
+&lt;style forecolor="white"&gt;Budget Risk: High Risk&lt;/style&gt;</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
 				<topPen lineWidth="0.0" />
@@ -1600,11 +1361,9 @@
 				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="eee38c3f-40c9-4fe6-8d93-63c1c5d152d7" mode="Opaque" x="19522"
-			y="0" width="220" height="108" backcolor="#BFBFBF" fontName="Arial" fontSize="9.0" bold="true"
-			hTextAlign="Center" vTextAlign="Middle" markup="styled">
-			<text><![CDATA[<style forecolor="black">Other:</style>
-<style forecolor="white">High Risk Rationale</style>]]></text>
+		<element kind="staticText" uuid="eee38c3f-40c9-4fe6-8d93-63c1c5d152d7" mode="Opaque" x="18922" y="0" width="220" height="108" backcolor="#C02F33" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle" markup="styled">
+			<text>&lt;style forecolor="black"&gt;Other:&lt;/style&gt;
+&lt;style forecolor="white"&gt;High Risk Rationale&lt;/style&gt;</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
 				<topPen lineWidth="0.0" />
@@ -1613,11 +1372,9 @@
 				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="2007f63f-096c-4260-b545-cec9af99bb46" mode="Opaque" x="19742"
-			y="0" width="120" height="108" backcolor="#BFBFBF" fontName="Arial" fontSize="9.0" bold="true"
-			hTextAlign="Center" vTextAlign="Middle" markup="styled">
-			<text><![CDATA[<style forecolor="black">Other:</style>
-<style forecolor="white">Budget Risk: Medium Risk</style>]]></text>
+		<element kind="staticText" uuid="2007f63f-096c-4260-b545-cec9af99bb46" mode="Opaque" x="19142" y="0" width="120" height="108" backcolor="#BE5014" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle" markup="styled">
+			<text>&lt;style forecolor="black"&gt;Other:&lt;/style&gt;
+&lt;style forecolor="white"&gt;Budget Risk: Medium Risk&lt;/style&gt;</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
 				<topPen lineWidth="0.0" />
@@ -1626,11 +1383,9 @@
 				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="652c575e-d3fc-44a0-9b2b-2f7c0ba41442" mode="Opaque" x="19862"
-			y="0" width="220" height="108" backcolor="#BFBFBF" fontName="Arial" fontSize="9.0" bold="true"
-			hTextAlign="Center" vTextAlign="Middle" markup="styled">
-			<text><![CDATA[<style forecolor="black">Other:</style>
-<style forecolor="white">Medium Risk Rationale</style>]]></text>
+		<element kind="staticText" uuid="652c575e-d3fc-44a0-9b2b-2f7c0ba41442" mode="Opaque" x="19262" y="0" width="220" height="108" backcolor="#BE5014" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle" markup="styled">
+			<text>&lt;style forecolor="black"&gt;Other:&lt;/style&gt;
+&lt;style forecolor="white"&gt;Medium Risk Rationale&lt;/style&gt;</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
 				<topPen lineWidth="0.0" />
@@ -1639,11 +1394,9 @@
 				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="a5484d17-1b52-46cc-8562-431d47b8ef1d" mode="Opaque" x="20082"
-			y="0" width="120" height="108" backcolor="#BFBFBF" fontName="Arial" fontSize="9.0" bold="true"
-			hTextAlign="Center" vTextAlign="Middle" markup="styled">
-			<text><![CDATA[<style forecolor="black">Other:</style>
-<style forecolor="white">Budget Risk: Low Risk</style>]]></text>
+		<element kind="staticText" uuid="a5484d17-1b52-46cc-8562-431d47b8ef1d" mode="Opaque" x="19482" y="0" width="120" height="108" backcolor="#3C7D22" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle" markup="styled">
+			<text>&lt;style forecolor="black"&gt;Other:&lt;/style&gt;
+&lt;style forecolor="white"&gt;Budget Risk: Low Risk&lt;/style&gt;</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
 				<topPen lineWidth="0.0" />
@@ -1652,11 +1405,9 @@
 				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="d5a7fd6d-bf74-4e24-b91c-1b1df3e49211" mode="Opaque" x="20202"
-			y="0" width="220" height="108" backcolor="#BFBFBF" fontName="Arial" fontSize="9.0" bold="true"
-			hTextAlign="Center" vTextAlign="Middle" markup="styled">
-			<text><![CDATA[<style forecolor="black">Other:</style>
-<style forecolor="white">Low Risk Rationale</style>]]></text>
+		<element kind="staticText" uuid="d5a7fd6d-bf74-4e24-b91c-1b1df3e49211" mode="Opaque" x="19602" y="0" width="220" height="108" backcolor="#3C7D22" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle" markup="styled">
+			<text>&lt;style forecolor="black"&gt;Other:&lt;/style&gt;
+&lt;style forecolor="white"&gt;Low Risk Rationale&lt;/style&gt;</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
 				<topPen lineWidth="0.0" />
@@ -1665,11 +1416,9 @@
 				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="9fa0a83d-dd0e-4d53-a54d-678ec7d36d51" mode="Opaque" x="20422"
-			y="0" width="120" height="108" backcolor="#BFBFBF" fontName="Arial" fontSize="9.0" bold="true"
-			hTextAlign="Center" vTextAlign="Middle" markup="styled">
-			<text><![CDATA[<style forecolor="black">Other:</style>
-<style forecolor="white">Budget Risk: Complete</style>]]></text>
+		<element kind="staticText" uuid="9fa0a83d-dd0e-4d53-a54d-678ec7d36d51" mode="Opaque" x="19822" y="0" width="120" height="108" backcolor="#BFBFBF" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle" markup="styled">
+			<text>&lt;style forecolor="black"&gt;Other:&lt;/style&gt;
+&lt;style forecolor="white"&gt;Budget Risk: Complete&lt;/style&gt;</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
 				<topPen lineWidth="0.0" />
@@ -1678,34 +1427,28 @@
 				<rightPen lineWidth="0.0" />
 			</box>
 		</element>
-		<element kind="staticText" uuid="9ba20faf-5548-4636-a25b-e5d57461c8ed" mode="Opaque" x="20542"
-			y="0" width="220" height="108" backcolor="#BFBFBF" fontName="Arial" fontSize="9.0" bold="true"
-			hTextAlign="Center" vTextAlign="Middle" markup="styled">
-			<text><![CDATA[<style forecolor="black">Other:</style>
-<style forecolor="white">Complete Rationale</style>]]></text>
+		<element kind="staticText" uuid="9ba20faf-5548-4636-a25b-e5d57461c8ed" mode="Opaque" x="19942" y="0" width="220" height="108" backcolor="#BFBFBF" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle" markup="styled">
+			<text>&lt;style forecolor="black"&gt;Other:&lt;/style&gt;
+&lt;style forecolor="white"&gt;Complete Rationale&lt;/style&gt;</text>
 			<box padding="4">
 				<pen lineWidth="1.0" />
 				<topPen lineWidth="0.0" />
 				<leftPen lineWidth="0.0" />
 				<bottomPen lineWidth="1.0" lineColor="#000000" />
-				<rightPen lineWidth="0.0" />
+				<rightPen lineWidth="1.0" lineColor="#000000" />
 			</box>
 		</element>
 
 	</columnHeader>
 	<detail>
 		<band height="120" splitType="Stretch">
-			<element kind="textField" uuid="0bfb0f57-a9f5-404f-8ce5-021087864eee" x="56" y="0" width="180"
-				height="120" forecolor="#3366FF" fontName="Calibri" fontSize="11.0" linkType="Reference"
-				blankWhenNull="true" underline="true" vTextAlign="Bottom">
+			<element kind="textField" uuid="0bfb0f57-a9f5-404f-8ce5-021087864eee" x="56" y="0" width="180" height="120" forecolor="#3366FF" fontName="Calibri" fontSize="11.0" linkType="Reference" blankWhenNull="true" underline="true" vTextAlign="Bottom">
 				<printWhenExpression>$F{linkToProject} != null &amp;&amp;
 					!$F{linkToProject}.trim().isEmpty()</printWhenExpression>
 				<expression>$F{projectName} + " Project Link"</expression>
 				<hyperlinkReferenceExpression>$F{linkToProject}</hyperlinkReferenceExpression>
 			</element>
-			<element kind="textField" uuid="24bc5acf-afa1-4866-b3be-b5ddc1ce152f" x="236" y="0"
-				width="180" height="120" forecolor="#3366FF" fontName="Calibri" fontSize="11.0"
-				linkType="Reference" blankWhenNull="true" underline="true" vTextAlign="Bottom">
+			<element kind="textField" uuid="24bc5acf-afa1-4866-b3be-b5ddc1ce152f" x="236" y="0" width="180" height="120" forecolor="#3366FF" fontName="Calibri" fontSize="11.0" linkType="Reference" blankWhenNull="true" underline="true" vTextAlign="Bottom">
 				<printWhenExpression>$F{linkToFiscalActivity} != null &amp;&amp;
 					!$F{linkToFiscalActivity}.trim().isEmpty()</printWhenExpression>
 				<expression>$F{projectFiscalName} + " Fiscal Activity Link"</expression>
@@ -1713,596 +1456,358 @@
 				<hyperlinkWhenExpression>$F{linkToFiscalActivity} != null &amp;&amp;
 					!$F{linkToFiscalActivity}.trim().isEmpty()</hyperlinkWhenExpression>
 			</element>
-			<element kind="textField" uuid="fdc79c41-10dd-4ceb-983d-0093301b7cf7" x="416" y="0"
-				width="180" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				vTextAlign="Bottom">
+			<element kind="textField" uuid="fdc79c41-10dd-4ceb-983d-0093301b7cf7" x="416" y="0" width="180" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
 				<expression>$F{projectTypeDescription}</expression>
 			</element>
-			<element kind="textField" uuid="aa41e798-4d9c-4b9d-ade6-f342025c011e" x="596" y="0"
-				width="270" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				vTextAlign="Bottom">
+			<element kind="textField" uuid="aa41e798-4d9c-4b9d-ade6-f342025c011e" x="596" y="0" width="270" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
 				<expression>$F{projectName}</expression>
 			</element>
-			<element kind="textField" uuid="092220ea-126c-4494-a7e4-071d1d67aa58" x="866" y="0"
-				width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				vTextAlign="Bottom">
+			<element kind="textField" uuid="092220ea-126c-4494-a7e4-071d1d67aa58" x="866" y="0" width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
 				<expression>$F{forestRegionOrgUnitName}</expression>
 			</element>
-			<element kind="textField" uuid="5d230f17-4fb6-41d7-9af9-78e4e99144f0" x="1086" y="0"
-				width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				vTextAlign="Bottom">
+			<element kind="textField" uuid="5d230f17-4fb6-41d7-9af9-78e4e99144f0" x="1086" y="0" width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
 				<expression>$F{forestDistrictOrgUnitName}</expression>
 			</element>
-			<element kind="textField" uuid="46128657-10cf-4415-a278-3b94b2fc93aa" x="1306" y="0"
-				width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				vTextAlign="Bottom">
+			<element kind="textField" uuid="46128657-10cf-4415-a278-3b94b2fc93aa" x="1306" y="0" width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
 				<expression>$F{bcParksRegionOrgUnitName}</expression>
 			</element>
-			<element kind="textField" uuid="1dea7f79-c800-4dd1-bc9d-eb81ee65f913" x="1526" y="0"
-				width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				vTextAlign="Bottom">
+			<element kind="textField" uuid="1dea7f79-c800-4dd1-bc9d-eb81ee65f913" x="1526" y="0" width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
 				<expression>$F{bcParksSectionOrgUnitName}</expression>
 			</element>
-			<element kind="textField" uuid="9ce7e282-5ae0-43af-8726-d55ef34f0ecf" x="1746" y="0"
-				width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				vTextAlign="Bottom">
+			<element kind="textField" uuid="9ce7e282-5ae0-43af-8726-d55ef34f0ecf" x="1746" y="0" width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
 				<expression>$F{fireCentreOrgUnitName}</expression>
 			</element>
-			<element kind="textField" uuid="ff8a0029-ef8d-4afb-9ff1-155fcf35342f" x="1966" y="0"
-				width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				vTextAlign="Bottom">
+			<element kind="textField" uuid="ff8a0029-ef8d-4afb-9ff1-155fcf35342f" x="1966" y="0" width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
 				<expression>$F{businessArea}</expression>
 			</element>
-			<element kind="textField" uuid="601a2fbf-f320-4d2d-9db5-65f5484f5ec4" x="2186" y="0"
-				width="320" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				vTextAlign="Bottom">
+			<element kind="textField" uuid="601a2fbf-f320-4d2d-9db5-65f5484f5ec4" x="2186" y="0" width="320" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
 				<expression>$F{planningUnitName}</expression>
 			</element>
-			<element kind="textField" uuid="a359aab6-809e-46c5-978b-ee35f36736c2" x="2506" y="0"
-				width="180" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				vTextAlign="Bottom">
-				<expression>$F{grossProjectAreaHa} == null
-					? ""
-					: new java.text.DecimalFormat("#,##0.##########").format($F{grossProjectAreaHa}) + " ha"</expression>
+			<element kind="textField" uuid="a359aab6-809e-46c5-978b-ee35f36736c2" x="2506" y="0" width="180" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
+				<expression>$F{grossProjectAreaHa} == null ? "" : new
+					java.text.DecimalFormat("#,##0.##########").format($F{grossProjectAreaHa}) + " ha"</expression>
 			</element>
-			<element kind="textField" uuid="3dae2dd2-c238-4641-b485-4545e55a68e5" x="2686" y="0"
-				width="180" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				vTextAlign="Bottom">
+			<element kind="textField" uuid="3dae2dd2-c238-4641-b485-4545e55a68e5" x="2686" y="0" width="180" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
 				<expression>$F{closestCommunityName}</expression>
 			</element>
-			<element kind="textField" uuid="523fbafe-30c9-4dff-8c62-85a67eac6233" x="2866" y="0"
-				width="180" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				vTextAlign="Bottom">
+			<element kind="textField" uuid="523fbafe-30c9-4dff-8c62-85a67eac6233" x="2866" y="0" width="180" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
 				<expression>$F{projectLead}</expression>
 			</element>
-			<element kind="textField" uuid="c57345a1-e30f-46e2-a46d-9ac87dc345d5" x="3046" y="0"
-				width="180" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				vTextAlign="Bottom">
+			<element kind="textField" uuid="c57345a1-e30f-46e2-a46d-9ac87dc345d5" x="3046" y="0" width="180" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
 				<expression>$F{proposalTypeDescription}</expression>
 			</element>
-			<element kind="textField" uuid="5ddfc2d3-5413-4264-a51c-c4815d8214a8" x="3226" y="0"
-				width="270" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				vTextAlign="Bottom">
+			<element kind="textField" uuid="5ddfc2d3-5413-4264-a51c-c4815d8214a8" x="3226" y="0" width="270" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
 				<expression>$F{projectFiscalName}</expression>
 			</element>
-			<element kind="textField" uuid="054260a1-f963-43e5-aef9-8e2af81b6d7c" x="3496" y="0"
-				width="270" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				vTextAlign="Bottom">
+			<element kind="textField" uuid="054260a1-f963-43e5-aef9-8e2af81b6d7c" x="3496" y="0" width="270" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
 				<expression>$F{projectFiscalDescription}</expression>
 			</element>
-			<element kind="textField" uuid="1d63b79a-c84e-4a06-a713-6bf3fa6fe0d6" x="3766" y="0"
-				width="180" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				vTextAlign="Bottom">
+			<element kind="textField" uuid="1d63b79a-c84e-4a06-a713-6bf3fa6fe0d6" x="3766" y="0" width="180" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
 				<expression>$F{fiscalYear}</expression>
 			</element>
-			<element kind="textField" uuid="020e2a64-bacc-489b-870d-944b30e2520b" x="3946" y="0"
-				width="180" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				vTextAlign="Bottom">
+			<element kind="textField" uuid="020e2a64-bacc-489b-870d-944b30e2520b" x="3946" y="0" width="180" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
 				<expression>$F{activityCategoryDescription}</expression>
 			</element>
-			<element kind="textField" uuid="ee61efa2-e41f-4c4a-b9ff-d3f842f7142c" x="4126" y="0"
-				width="180" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				vTextAlign="Bottom">
+			<element kind="textField" uuid="ee61efa2-e41f-4c4a-b9ff-d3f842f7142c" x="4126" y="0" width="180" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
 				<expression>$F{planFiscalStatusDescription}</expression>
 			</element>
-			<element kind="textField" uuid="a49e857a-6d03-48f2-a35b-672768f011df" x="4306" y="0"
-				width="120" height="120" fontName="Calibri" fontSize="11.0" pattern="$#,##0.00;$-#,##0.00"
-				blankWhenNull="true" vTextAlign="Bottom">
+			<element kind="textField" uuid="a49e857a-6d03-48f2-a35b-672768f011df" x="4306" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" pattern="$#,##0.00;$-#,##0.00" blankWhenNull="true" vTextAlign="Bottom">
 				<expression>$F{totalEstimatedCostAmount}</expression>
 			</element>
-			<element kind="textField" uuid="77788899-5723-4be3-8a26-5f0831972e00" x="4426" y="0"
-				width="120" height="120" fontName="Calibri" fontSize="11.0" pattern="$#,##0.00;$-#,##0.00"
-				blankWhenNull="true" vTextAlign="Bottom">
+			<element kind="textField" uuid="77788899-5723-4be3-8a26-5f0831972e00" x="4426" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" pattern="$#,##0.00;$-#,##0.00" blankWhenNull="true" vTextAlign="Bottom">
 				<expression>$F{fiscalForecastAmount}</expression>
 			</element>
-			<element kind="textField" uuid="1ba98ea4-9d8d-4cc8-821e-413682113c44" x="4546" y="0"
-				width="120" height="120" fontName="Calibri" fontSize="11.0" pattern="$#,##0.00;$-#,##0.00"
-				blankWhenNull="true" vTextAlign="Bottom">
+			<element kind="textField" uuid="1ba98ea4-9d8d-4cc8-821e-413682113c44" x="4546" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" pattern="$#,##0.00;$-#,##0.00" blankWhenNull="true" vTextAlign="Bottom">
 				<expression>$F{fiscalAncillaryFundAmount}</expression>
 			</element>
-			<element kind="textField" uuid="88888899-5723-4be3-8a26-5f0831972e11" x="4666" y="0"
-				width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				vTextAlign="Bottom">
+			<element kind="textField" uuid="88888899-5723-4be3-8a26-5f0831972e11" x="4666" y="0" width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
 				<expression>$F{ancillaryFundingProvider}</expression>
 			</element>
-			<element kind="textField" uuid="f5a87843-c1fe-4740-9069-35ea627dc74e" x="4886" y="0"
-				width="120" height="120" fontName="Calibri" fontSize="11.0" pattern="$#,##0.00;$-#,##0.00"
-				blankWhenNull="true" vTextAlign="Bottom">
+			<element kind="textField" uuid="f5a87843-c1fe-4740-9069-35ea627dc74e" x="4886" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" pattern="$#,##0.00;$-#,##0.00" blankWhenNull="true" vTextAlign="Bottom">
 				<expression>$F{fiscalReportedSpendAmount}</expression>
 			</element>
-			<element kind="textField" uuid="9de65e6f-265f-45f8-8b40-fd2dab2d1c20" x="5006" y="0"
-				width="120" height="120" fontName="Calibri" fontSize="11.0" pattern="$#,##0.00;$-#,##0.00"
-				blankWhenNull="true" vTextAlign="Bottom">
+			<element kind="textField" uuid="9de65e6f-265f-45f8-8b40-fd2dab2d1c20" x="5006" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
 				<expression>$F{fiscalActualAmount}</expression>
 			</element>
-			<element kind="textField" uuid="868ab4bf-6043-4242-a14f-fac4a0e90cab" x="5126" y="0"
-				width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				vTextAlign="Bottom">
-				<expression>$F{fiscalPlannedProjectSizeHa} == null
-					? ""
-					: new java.text.DecimalFormat("#,##0.##########").format($F{fiscalPlannedProjectSizeHa}) +
-					" ha"</expression>
+			<element kind="textField" uuid="2d1264c1-6b80-4592-be20-21a4816da324" x="5126" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
+				<expression>$F{fiscalPlannedProjectSizeHa} == null ? "" : new
+					java.text.DecimalFormat("#,##0.##########").format($F{fiscalPlannedProjectSizeHa}) + " ha"</expression>
 			</element>
-			<element kind="textField" uuid="f0ed5454-b045-496e-991b-c631c42296ca" x="5246" y="0"
-				width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				vTextAlign="Bottom">
-				<expression>$F{fiscalCompletedSizeHa} == null
-					? ""
-					: new java.text.DecimalFormat("#,##0.##########").format($F{fiscalCompletedSizeHa}) + " ha"</expression>
+			<element kind="textField" uuid="f0ed5454-b045-496e-991b-c631c42296ca" x="5246" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
+				<expression>$F{fiscalCompletedSizeHa} == null ? "" : new
+					java.text.DecimalFormat("#,##0.##########").format($F{fiscalCompletedSizeHa}) + "ha"</expression>
 			</element>
-			<element kind="textField" uuid="0abb196e-d5ac-4c65-90c7-afe151c981ec" x="5366" y="0"
-				width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				vTextAlign="Bottom">
+			<element kind="textField" uuid="0abb196e-d5ac-4c65-90c7-afe151c981ec" x="5366" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
 				<expression>$F{spatialSubmitted}</expression>
 			</element>
-			<element kind="textField" uuid="60ad253b-3363-46b7-9a02-ed038500d26e" x="5486" y="0"
-				width="94" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				vTextAlign="Bottom">
+			<element kind="textField" uuid="60ad253b-3363-46b7-9a02-ed038500d26e" x="5486" y="0" width="94" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
 				<expression>$F{firstNationsEngagement}</expression>
 			</element>
-			<element kind="textField" uuid="b9604f74-9820-4a7d-a827-6b0acc056e60" x="5580" y="0"
-				width="94" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				vTextAlign="Bottom">
+			<element kind="textField" uuid="b9604f74-9820-4a7d-a827-6b0acc056e60" x="5580" y="0" width="94" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
 				<expression>$F{firstNationsDelivPartners}</expression>
 			</element>
-			<element kind="textField" uuid="858b1963-3dbe-4122-8212-69f78d71284f" x="5674" y="0"
-				width="270" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				vTextAlign="Bottom">
+			<element kind="textField" uuid="858b1963-3dbe-4122-8212-69f78d71284f" x="5674" y="0" width="270" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
 				<expression>$F{firstNationsPartner}</expression>
 			</element>
-			<element kind="textField" uuid="f6fe5dba-46b7-4d79-8078-12a28375d2b8" x="5944" y="0"
-				width="270" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				vTextAlign="Bottom">
+			<element kind="textField" uuid="f6fe5dba-46b7-4d79-8078-12a28375d2b8" x="5944" y="0" width="270" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
 				<expression>$F{otherPartner}</expression>
 			</element>
-			<element kind="textField" uuid="64330fda-9eb8-429c-9925-3b9969f74aaa" x="6214" y="0"
-				width="94" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				vTextAlign="Bottom">
+			<element kind="textField" uuid="64330fda-9eb8-429c-9925-3b9969f74aaa" x="6214" y="0" width="94" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
 				<expression>$F{cfsProjectCode}</expression>
 			</element>
-			<element kind="textField" uuid="d32378a7-f5d1-4653-b758-a72930b042e4" x="6308" y="0"
-				width="94" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				vTextAlign="Bottom">
+			<element kind="textField" uuid="d32378a7-f5d1-4653-b758-a72930b042e4" x="6308" y="0" width="94" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
 				<expression>$F{resultsProjectCode}</expression>
 			</element>
-			<element kind="textField" uuid="382c2e06-9eeb-4abe-8222-176dae088a62" x="6402" y="0"
-				width="94" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				vTextAlign="Bottom">
+			<element kind="textField" uuid="382c2e06-9eeb-4abe-8222-176dae088a62" x="6402" y="0" width="94" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
 				<expression>$F{resultsOpeningId}</expression>
 			</element>
-			<element kind="textField" uuid="def371ef-ac0a-4d81-8b39-c6d70effd6f6" x="6496" y="0"
-				width="180" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				vTextAlign="Bottom">
+			<element kind="textField" uuid="def371ef-ac0a-4d81-8b39-c6d70effd6f6" x="6496" y="0" width="180" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
 				<expression>$F{primaryObjectiveTypeDescription}</expression>
 			</element>
-			<element kind="textField" uuid="691122bc-fd40-475a-8942-99fd2c4ab09e" x="6676" y="0"
-				width="180" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				vTextAlign="Bottom">
+			<element kind="textField" uuid="691122bc-fd40-475a-8942-99fd2c4ab09e" x="6676" y="0" width="180" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
 				<expression>$F{secondaryObjectiveTypeDescription}</expression>
 			</element>
-			<element kind="textField" uuid="065fd304-89e0-45b3-8dcb-5d37d781be0f" x="6856" y="0"
-				width="180" height="120" fontName="Calibri" fontSize="11.0" pattern="yyyy-MM-dd"
-				blankWhenNull="true" vTextAlign="Bottom">
+			<element kind="textField" uuid="065fd304-89e0-45b3-8dcb-5d37d781be0f" x="6856" y="0" width="180" height="120" fontName="Calibri" fontSize="11.0" pattern="yyyy-MM-dd" blankWhenNull="true" vTextAlign="Bottom">
 				<expression>$F{endorsementTimestamp}</expression>
 			</element>
-			<element kind="textField" uuid="ad806b18-f5ca-49dd-bc57-8ddcf40bfc43" x="7036" y="0"
-				width="180" height="120" fontName="Calibri" fontSize="11.0" pattern="yyyy-MM-dd"
-				blankWhenNull="true" vTextAlign="Bottom">
+			<element kind="textField" uuid="ad806b18-f5ca-49dd-bc57-8ddcf40bfc43" x="7036" y="0" width="180" height="120" fontName="Calibri" fontSize="11.0" pattern="yyyy-MM-dd" blankWhenNull="true" vTextAlign="Bottom">
 				<expression>$F{approvedTimestamp}</expression>
 			</element>
-			<element kind="textField" uuid="1e2453a4-0244-4b6a-9421-7ecde3d3179b" x="7216" y="0"
-				width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				vTextAlign="Bottom">
+			<element kind="textField" uuid="1e2453a4-0244-4b6a-9421-7ecde3d3179b" x="7216" y="0" width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
 				<expression>$F{wuiRiskClassDescription}</expression>
 			</element>
-			<element kind="textField" uuid="95e7f276-ef48-40b4-ab95-0d66511513c9" x="7436" y="0"
-				width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				vTextAlign="Bottom">
+			<element kind="textField" uuid="95e7f276-ef48-40b4-ab95-0d66511513c9" x="7436" y="0" width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
 				<expression>$F{localWuiRiskClassDescription}</expression>
 			</element>
-			<element kind="textField" uuid="b652d47d-31d6-484b-a3d2-b37440f9e957" x="7656" y="0"
-				width="180" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				vTextAlign="Bottom">
+			<element kind="textField" uuid="b652d47d-31d6-484b-a3d2-b37440f9e957" x="7656" y="0" width="180" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
 				<expression>$F{localWuiRiskClassRationale}</expression>
 			</element>
-			<element kind="textField" uuid="42a2737d-eef0-4009-9d38-f1f869c3d603" x="7836" y="0"
-				width="94" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				vTextAlign="Bottom">
+			<element kind="textField" uuid="42a2737d-eef0-4009-9d38-f1f869c3d603" x="7836" y="0" width="94" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
 				<expression>$F{totalCoarseFilterSectionScore}</expression>
 			</element>
-			<element kind="textField" uuid="dea67809-9cc0-493e-9ab6-3078fe9b45b8" x="7930" y="0"
-				width="94" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				vTextAlign="Bottom">
+			<element kind="textField" uuid="dea67809-9cc0-493e-9ab6-3078fe9b45b8" x="7930" y="0" width="94" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
 				<expression>$F{totalMediumFilterSectionScore}</expression>
 			</element>
-			<element kind="textField" uuid="e4b15b54-d30f-4f55-af9c-0fbb3f28a99a" x="8024" y="0"
-				width="180" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				vTextAlign="Bottom">
+			<element kind="textField" uuid="e4b15b54-d30f-4f55-af9c-0fbb3f28a99a" x="8024" y="0" width="180" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
 				<expression>$F{mediumFilterSectionComment}</expression>
 			</element>
-			<element kind="textField" uuid="3d0aa9e4-b013-4100-8f21-c72312030800" positionType="Float"
-				x="8204" y="0" width="94" height="120" fontName="Calibri" fontSize="11.0"
-				blankWhenNull="true" vTextAlign="Bottom">
+			<element kind="textField" uuid="3d0aa9e4-b013-4100-8f21-c72312030800" positionType="Float" x="8204" y="0" width="94" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
 				<expression>$F{totalFineFilterSectionScore}</expression>
 			</element>
-			<element kind="textField" uuid="59e8f1be-1b43-494b-8190-2d170debff16" x="8298" y="0"
-				width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				vTextAlign="Bottom">
+			<element kind="textField" uuid="59e8f1be-1b43-494b-8190-2d170debff16" x="8298" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
 				<expression>$F{fineFilterSectionComment}</expression>
 			</element>
-			<element kind="textField" uuid="74df65fe-5723-4be3-8a26-5f0831972e98" x="8418" y="0"
-				width="94" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				vTextAlign="Bottom">
+			<element kind="textField" uuid="74df65fe-5723-4be3-8a26-5f0831972e98" x="8418" y="0" width="94" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
 				<expression>$F{totalFilterSectionScore}</expression>
 			</element>
-			<element kind="textField" uuid="9a7468d2-879d-4ac2-8383-608f7a254853" x="8512" y="0"
-				width="180" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				hTextAlign="Center" vTextAlign="Bottom" pattern="yyyy-MM-dd">
+			<element kind="textField" uuid="9a7468d2-879d-4ac2-8383-608f7a254853" x="8512" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Center" vTextAlign="Bottom" pattern="yyyy-MM-dd">
 				<expression>$F{q1SubmittedTimestamp}</expression>
 			</element>
-			<element kind="textField" uuid="01d497e4-adbc-420b-a262-0ab9c4edc71c" x="8692" y="0"
-				width="180" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				hTextAlign="Left" vTextAlign="Bottom">
+			<element kind="textField" uuid="01d497e4-adbc-420b-a262-0ab9c4edc71c" x="8632" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
 				<expression>$F{q1ProgressStatusCode}</expression>
 			</element>
-			<element kind="textField" uuid="b6d91427-089f-4986-a2aa-7cb8ef6d8bca" x="8872" y="0"
-				width="270" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				hTextAlign="Left" vTextAlign="Bottom">
+			<element kind="textField" uuid="b6d91427-089f-4986-a2aa-7cb8ef6d8bca" x="8752" y="0" width="270" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
 				<expression>$F{q1GeneralUpdateComment}</expression>
 			</element>
-			<element kind="textField" uuid="5da5f184-e6b0-4b31-9cae-4f42b045c802" x="9142" y="0"
-				width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00;$-#,##0.00">
+			<element kind="textField" uuid="5da5f184-e6b0-4b31-9cae-4f42b045c802" x="9022" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00;$-#,##0.00">
 				<expression>$F{q1ForecastAmount}</expression>
 			</element>
-			<element kind="textField" uuid="32f5667b-8fce-45cb-a4d2-ac7bfdb14de5" x="9262" y="0"
-				width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00;$-#,##0.00">
+			<element kind="textField" uuid="32f5667b-8fce-45cb-a4d2-ac7bfdb14de5" x="9142" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00;$-#,##0.00">
 				<expression>$F{q1ForecastAdjustmentAmount}</expression>
 			</element>
-			<element kind="textField" uuid="43d8a1e7-f3b0-499e-a86f-2bb44e2cf874" x="9382" y="0"
-				width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				hTextAlign="Left" vTextAlign="Bottom">
+			<element kind="textField" uuid="43d8a1e7-f3b0-499e-a86f-2bb44e2cf874" x="9262" y="0" width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
 				<expression>$F{q1ForecastAdjustmentRationale}</expression>
 			</element>
-			<element kind="textField" uuid="07cc4591-1918-4092-bf0d-1dd82fbda0da" x="9602" y="0"
-				width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00;$-#,##0.00">
+			<element kind="textField" uuid="07cc4591-1918-4092-bf0d-1dd82fbda0da" x="9482" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00;$-#,##0.00">
 				<expression>$F{q1BudgetHighRiskAmount}</expression>
 			</element>
-			<element kind="textField" uuid="8909c114-bca3-43a9-800e-40cf43b6ef02" x="9722" y="0"
-				width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				hTextAlign="Left" vTextAlign="Bottom">
+			<element kind="textField" uuid="8909c114-bca3-43a9-800e-40cf43b6ef02" x="9602" y="0" width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
 				<expression>$F{q1BudgetHighRiskRationale}</expression>
 			</element>
-			<element kind="textField" uuid="dfc91a59-08e2-477f-9efb-e82f5922db77" x="9942" y="0"
-				width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00;$-#,##0.00">
+			<element kind="textField" uuid="dfc91a59-08e2-477f-9efb-e82f5922db77" x="9822" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00;$-#,##0.00">
 				<expression>$F{q1BudgetMediumRiskAmount}</expression>
 			</element>
-			<element kind="textField" uuid="c6f5a87e-f403-4789-ae91-e92bb732a321" x="10062" y="0"
-				width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				hTextAlign="Left" vTextAlign="Bottom">
+			<element kind="textField" uuid="c6f5a87e-f403-4789-ae91-e92bb732a321" x="9942" y="0" width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
 				<expression>$F{q1BudgetMediumRiskRationale}</expression>
 			</element>
-			<element kind="textField" uuid="b9ec7344-e324-4c4e-9fd1-a228a74e11a3" x="10282" y="0"
-				width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00;$-#,##0.00">
+			<element kind="textField" uuid="b9ec7344-e324-4c4e-9fd1-a228a74e11a3" x="10162" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00;$-#,##0.00">
 				<expression>$F{q1BudgetLowRiskAmount}</expression>
 			</element>
-			<element kind="textField" uuid="23848317-6835-400a-aaf0-24757e1f5982" x="10402" y="0"
-				width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				hTextAlign="Left" vTextAlign="Bottom">
+			<element kind="textField" uuid="23848317-6835-400a-aaf0-24757e1f5982" x="10282" y="0" width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
 				<expression>$F{q1BudgetLowRiskRationale}</expression>
 			</element>
-			<element kind="textField" uuid="2dd570ce-2cc9-41d9-8dbe-0e9d48d36e74" x="10622" y="0"
-				width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00;$-#,##0.00">
+			<element kind="textField" uuid="2dd570ce-2cc9-41d9-8dbe-0e9d48d36e74" x="10502" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00;$-#,##0.00">
 				<expression>$F{q1BudgetCompletedAmount}</expression>
 			</element>
-			<element kind="textField" uuid="e5c58ecf-62a9-4e32-af48-464be39d0487" x="10742" y="0"
-				width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				hTextAlign="Left" vTextAlign="Bottom">
+			<element kind="textField" uuid="e5c58ecf-62a9-4e32-af48-464be39d0487" x="10622" y="0" width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
 				<expression>$F{q1BudgetCompletedDescription}</expression>
 			</element>
-			<element kind="textField" uuid="33002aef-5307-49b6-a1fe-ca492a5fbba1" x="10962" y="0"
-				width="180" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				hTextAlign="Center" vTextAlign="Bottom" pattern="yyyy-MM-dd">
+			<element kind="textField" uuid="33002aef-5307-49b6-a1fe-ca492a5fbba1" x="10842" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Center" vTextAlign="Bottom" pattern="yyyy-MM-dd">
 				<expression>$F{q2SubmittedTimestamp}</expression>
 			</element>
-			<element kind="textField" uuid="268bec79-0899-4714-b5be-78ddd21a12a3" x="11142" y="0"
-				width="180" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				hTextAlign="Left" vTextAlign="Bottom">
+			<element kind="textField" uuid="268bec79-0899-4714-b5be-78ddd21a12a3" x="10962" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
 				<expression>$F{q2ProgressStatusCode}</expression>
 			</element>
-			<element kind="textField" uuid="da492ad6-25d2-4d89-99ae-680541eabcec" x="11322" y="0"
-				width="270" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				hTextAlign="Left" vTextAlign="Bottom">
+			<element kind="textField" uuid="da492ad6-25d2-4d89-99ae-680541eabcec" x="11082" y="0" width="270" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
 				<expression>$F{q2GeneralUpdateComment}</expression>
 			</element>
-			<element kind="textField" uuid="595e4b7a-a6b3-47d1-a85a-c2eda8c6f865" x="11592" y="0"
-				width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00;$-#,##0.00">
+			<element kind="textField" uuid="595e4b7a-a6b3-47d1-a85a-c2eda8c6f865" x="11352" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00;$-#,##0.00">
 				<expression>$F{q2ForecastAmount}</expression>
 			</element>
-			<element kind="textField" uuid="8731d0b4-8f95-499e-870a-13717e0ad70f" x="11712" y="0"
-				width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00;$-#,##0.00">
+			<element kind="textField" uuid="8731d0b4-8f95-499e-870a-13717e0ad70f" x="11472" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00;$-#,##0.00">
 				<expression>$F{q2ForecastAdjustmentAmount}</expression>
 			</element>
-			<element kind="textField" uuid="c3e90f87-dab7-4ad0-9428-9a107000fb95" x="11832" y="0"
-				width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				hTextAlign="Left" vTextAlign="Bottom">
+			<element kind="textField" uuid="c3e90f87-dab7-4ad0-9428-9a107000fb95" x="11592" y="0" width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
 				<expression>$F{q2ForecastAdjustmentRationale}</expression>
 			</element>
-			<element kind="textField" uuid="91959991-faaf-4d33-bd55-630ac9fb1b9a" x="12052" y="0"
-				width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00;$-#,##0.00">
+			<element kind="textField" uuid="91959991-faaf-4d33-bd55-630ac9fb1b9a" x="11812" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00;$-#,##0.00">
 				<expression>$F{q2BudgetHighRiskAmount}</expression>
 			</element>
-			<element kind="textField" uuid="8d88fa8c-d2f3-4564-b497-39ea4de38904" x="12172" y="0"
-				width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				hTextAlign="Left" vTextAlign="Bottom">
+			<element kind="textField" uuid="8d88fa8c-d2f3-4564-b497-39ea4de38904" x="11932" y="0" width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
 				<expression>$F{q2BudgetHighRiskRationale}</expression>
 			</element>
-			<element kind="textField" uuid="70d8582e-a686-4487-8281-aacbf4ad3467" x="12392" y="0"
-				width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00;$-#,##0.00">
+			<element kind="textField" uuid="70d8582e-a686-4487-8281-aacbf4ad3467" x="12152" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00;$-#,##0.00">
 				<expression>$F{q2BudgetMediumRiskAmount}</expression>
 			</element>
-			<element kind="textField" uuid="b5d249a3-09fa-44b3-9658-4c5434497fa1" x="12512" y="0"
-				width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				hTextAlign="Left" vTextAlign="Bottom">
+			<element kind="textField" uuid="b5d249a3-09fa-44b3-9658-4c5434497fa1" x="12272" y="0" width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
 				<expression>$F{q2BudgetMediumRiskRationale}</expression>
 			</element>
-			<element kind="textField" uuid="c6944792-80ce-476e-a31d-575b7ca258f9" x="12732" y="0"
-				width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00;$-#,##0.00">
+			<element kind="textField" uuid="c6944792-80ce-476e-a31d-575b7ca258f9" x="12492" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00;$-#,##0.00">
 				<expression>$F{q2BudgetLowRiskAmount}</expression>
 			</element>
-			<element kind="textField" uuid="af6e7bda-adc2-48f2-9c0d-4759cb377c66" x="12852" y="0"
-				width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				hTextAlign="Left" vTextAlign="Bottom">
+			<element kind="textField" uuid="af6e7bda-adc2-48f2-9c0d-4759cb377c66" x="12612" y="0" width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
 				<expression>$F{q2BudgetLowRiskRationale}</expression>
 			</element>
-			<element kind="textField" uuid="dafb5bd1-7e3d-4fbd-9cf4-a03c6400323c" x="13072" y="0"
-				width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00;$-#,##0.00">
+			<element kind="textField" uuid="dafb5bd1-7e3d-4fbd-9cf4-a03c6400323c" x="12832" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00;$-#,##0.00">
 				<expression>$F{q2BudgetCompletedAmount}</expression>
 			</element>
-			<element kind="textField" uuid="ecd2b8dc-544d-4601-afde-4295159e09fa" x="13192" y="0"
-				width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				hTextAlign="Left" vTextAlign="Bottom">
+			<element kind="textField" uuid="ecd2b8dc-544d-4601-afde-4295159e09fa" x="12952" y="0" width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
 				<expression>$F{q2BudgetCompletedDescription}</expression>
 			</element>
-			<element kind="textField" uuid="f60de3b1-f868-494c-bc73-4906436710e6" x="13412" y="0"
-				width="180" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				hTextAlign="Center" vTextAlign="Bottom" pattern="yyyy-MM-dd">
+			<element kind="textField" uuid="f60de3b1-f868-494c-bc73-4906436710e6" x="13172" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Center" vTextAlign="Bottom" pattern="yyyy-MM-dd">
 				<expression>$F{q3SubmittedTimestamp}</expression>
 			</element>
-			<element kind="textField" uuid="7d87d63c-9399-460d-b638-d2484b8613a5" x="13592" y="0"
-				width="180" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				hTextAlign="Left" vTextAlign="Bottom">
+			<element kind="textField" uuid="7d87d63c-9399-460d-b638-d2484b8613a5" x="13292" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
 				<expression>$F{q3ProgressStatusCode}</expression>
 			</element>
-			<element kind="textField" uuid="0c9292dc-5c72-47c0-8a4a-b2209852770b" x="13772" y="0"
-				width="270" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				hTextAlign="Left" vTextAlign="Bottom">
+			<element kind="textField" uuid="0c9292dc-5c72-47c0-8a4a-b2209852770b" x="13412" y="0" width="270" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
 				<expression>$F{q3GeneralUpdateComment}</expression>
 			</element>
-			<element kind="textField" uuid="2db1e6d4-27cc-4145-9c27-0935c93493ca" x="14042" y="0"
-				width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00;$-#,##0.00">
+			<element kind="textField" uuid="2db1e6d4-27cc-4145-9c27-0935c93493ca" x="13682" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00;$-#,##0.00">
 				<expression>$F{q3ForecastAmount}</expression>
 			</element>
-			<element kind="textField" uuid="b1c572a0-8728-4b80-aa34-a8330baaccf2" x="14162" y="0"
-				width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00;$-#,##0.00">
+			<element kind="textField" uuid="b1c572a0-8728-4b80-aa34-a8330baaccf2" x="13802" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00;$-#,##0.00">
 				<expression>$F{q3ForecastAdjustmentAmount}</expression>
 			</element>
-			<element kind="textField" uuid="51104f0a-c78d-4eb8-b080-6fec5425dd2c" x="14282" y="0"
-				width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				hTextAlign="Left" vTextAlign="Bottom">
+			<element kind="textField" uuid="51104f0a-c78d-4eb8-b080-6fec5425dd2c" x="13922" y="0" width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
 				<expression>$F{q3ForecastAdjustmentRationale}</expression>
 			</element>
-			<element kind="textField" uuid="97ff544e-3032-459f-a8ea-d2741d825c64" x="14502" y="0"
-				width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00;$-#,##0.00">
+			<element kind="textField" uuid="97ff544e-3032-459f-a8ea-d2741d825c64" x="14142" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00;$-#,##0.00">
 				<expression>$F{q3BudgetHighRiskAmount}</expression>
 			</element>
-			<element kind="textField" uuid="9930294b-87d6-432a-8075-5e9c4bf18ec8" x="14622" y="0"
-				width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				hTextAlign="Left" vTextAlign="Bottom">
+			<element kind="textField" uuid="9930294b-87d6-432a-8075-5e9c4bf18ec8" x="14262" y="0" width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
 				<expression>$F{q3BudgetHighRiskRationale}</expression>
 			</element>
-			<element kind="textField" uuid="ac1b9da2-4869-4e1d-8a18-b78243daf0c7" x="14842" y="0"
-				width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00;$-#,##0.00">
+			<element kind="textField" uuid="ac1b9da2-4869-4e1d-8a18-b78243daf0c7" x="14482" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00;$-#,##0.00">
 				<expression>$F{q3BudgetMediumRiskAmount}</expression>
 			</element>
-			<element kind="textField" uuid="7a7e4c0b-8c8c-43e6-962b-5d0263c20818" x="14962" y="0"
-				width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				hTextAlign="Left" vTextAlign="Bottom">
+			<element kind="textField" uuid="7a7e4c0b-8c8c-43e6-962b-5d0263c20818" x="14602" y="0" width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
 				<expression>$F{q3BudgetMediumRiskRationale}</expression>
 			</element>
-			<element kind="textField" uuid="819efaf4-3865-44a8-ab33-af3cc104758d" x="15182" y="0"
-				width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00;$-#,##0.00">
+			<element kind="textField" uuid="819efaf4-3865-44a8-ab33-af3cc104758d" x="14822" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00;$-#,##0.00">
 				<expression>$F{q3BudgetLowRiskAmount}</expression>
 			</element>
-			<element kind="textField" uuid="658493fc-ef2a-4943-b914-8609b2d15333" x="15302" y="0"
-				width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				hTextAlign="Left" vTextAlign="Bottom">
+			<element kind="textField" uuid="658493fc-ef2a-4943-b914-8609b2d15333" x="14942" y="0" width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
 				<expression>$F{q3BudgetLowRiskRationale}</expression>
 			</element>
-			<element kind="textField" uuid="17848700-7491-407f-95c1-163820be1f3c" x="15522" y="0"
-				width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00;$-#,##0.00">
+			<element kind="textField" uuid="17848700-7491-407f-95c1-163820be1f3c" x="15162" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00;$-#,##0.00">
 				<expression>$F{q3BudgetCompletedAmount}</expression>
 			</element>
-			<element kind="textField" uuid="31633c5f-a0d5-4a8e-87b4-4045cd489923" x="15642" y="0"
-				width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				hTextAlign="Left" vTextAlign="Bottom">
+			<element kind="textField" uuid="31633c5f-a0d5-4a8e-87b4-4045cd489923" x="15282" y="0" width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
 				<expression>$F{q3BudgetCompletedDescription}</expression>
 			</element>
-			<element kind="textField" uuid="176a259f-7abc-4eb8-be77-c45d99cb0440" x="15862" y="0"
-				width="180" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				hTextAlign="Center" vTextAlign="Bottom" pattern="yyyy-MM-dd">
+			<element kind="textField" uuid="176a259f-7abc-4eb8-be77-c45d99cb0440" x="15502" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Center" vTextAlign="Bottom" pattern="yyyy-MM-dd">
 				<expression>$F{march7SubmittedTimestamp}</expression>
 			</element>
-			<element kind="textField" uuid="0f9ffe5e-c4d2-40d6-a3e3-569c8ed8be3d" x="16042" y="0"
-				width="180" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				hTextAlign="Left" vTextAlign="Bottom">
+			<element kind="textField" uuid="0f9ffe5e-c4d2-40d6-a3e3-569c8ed8be3d" x="15622" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
 				<expression>$F{march7ProgressStatusCode}</expression>
 			</element>
-			<element kind="textField" uuid="2043b5ae-d3cc-4348-b839-c175b8b2c845" x="16222" y="0"
-				width="270" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				hTextAlign="Left" vTextAlign="Bottom">
+			<element kind="textField" uuid="2043b5ae-d3cc-4348-b839-c175b8b2c845" x="15742" y="0" width="270" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
 				<expression>$F{march7GeneralUpdateComment}</expression>
 			</element>
-			<element kind="textField" uuid="13c7473f-2d0a-465b-bfbd-83a67ceaf63e" x="16492" y="0"
-				width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00;$-#,##0.00">
+			<element kind="textField" uuid="13c7473f-2d0a-465b-bfbd-83a67ceaf63e" x="16012" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00;$-#,##0.00">
 				<expression>$F{march7ForecastAmount}</expression>
 			</element>
-			<element kind="textField" uuid="f1ed2af2-eed5-46fe-b14a-af7d80e8f23d" x="16612" y="0"
-				width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00;$-#,##0.00">
+			<element kind="textField" uuid="f1ed2af2-eed5-46fe-b14a-af7d80e8f23d" x="16132" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00;$-#,##0.00">
 				<expression>$F{march7ForecastAdjustmentAmount}</expression>
 			</element>
-			<element kind="textField" uuid="8ddd021f-6f73-4c0f-92bd-d6cb986a0303" x="16732" y="0"
-				width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				hTextAlign="Left" vTextAlign="Bottom">
+			<element kind="textField" uuid="8ddd021f-6f73-4c0f-92bd-d6cb986a0303" x="16252" y="0" width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
 				<expression>$F{march7ForecastAdjustmentRationale}</expression>
 			</element>
-			<element kind="textField" uuid="01b0d1fb-5ccd-4b38-af08-1056a47c5fda" x="16952" y="0"
-				width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00;$-#,##0.00">
+			<element kind="textField" uuid="01b0d1fb-5ccd-4b38-af08-1056a47c5fda" x="16472" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00;$-#,##0.00">
 				<expression>$F{march7BudgetHighRiskAmount}</expression>
 			</element>
-			<element kind="textField" uuid="86dc4af2-9504-4dcb-b3ed-716b445169b1" x="17072" y="0"
-				width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				hTextAlign="Left" vTextAlign="Bottom">
+			<element kind="textField" uuid="86dc4af2-9504-4dcb-b3ed-716b445169b1" x="16592" y="0" width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
 				<expression>$F{march7BudgetHighRiskRationale}</expression>
 			</element>
-			<element kind="textField" uuid="76ff9bf8-f231-45e4-b115-920dbb7233f2" x="17292" y="0"
-				width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00;$-#,##0.00">
+			<element kind="textField" uuid="76ff9bf8-f231-45e4-b115-920dbb7233f2" x="16812" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00;$-#,##0.00">
 				<expression>$F{march7BudgetMediumRiskAmount}</expression>
 			</element>
-			<element kind="textField" uuid="fb5ac5e2-3283-4723-ad0f-e0ea7f013bc4" x="17412" y="0"
-				width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				hTextAlign="Left" vTextAlign="Bottom">
+			<element kind="textField" uuid="fb5ac5e2-3283-4723-ad0f-e0ea7f013bc4" x="16932" y="0" width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
 				<expression>$F{march7BudgetMediumRiskRationale}</expression>
 			</element>
-			<element kind="textField" uuid="652f5275-9e92-44ce-9603-fb38cd0b8d6b" x="17632" y="0"
-				width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00;$-#,##0.00">
+			<element kind="textField" uuid="652f5275-9e92-44ce-9603-fb38cd0b8d6b" x="17152" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00;$-#,##0.00">
 				<expression>$F{march7BudgetLowRiskAmount}</expression>
 			</element>
-			<element kind="textField" uuid="fd70b114-5e87-47d7-ac59-28482429d7a5" x="17752" y="0"
-				width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				hTextAlign="Left" vTextAlign="Bottom">
+			<element kind="textField" uuid="fd70b114-5e87-47d7-ac59-28482429d7a5" x="17272" y="0" width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
 				<expression>$F{march7BudgetLowRiskRationale}</expression>
 			</element>
-			<element kind="textField" uuid="31488bed-15d8-4a20-a8c4-d50b0754c508" x="17972" y="0"
-				width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00;$-#,##0.00">
+			<element kind="textField" uuid="31488bed-15d8-4a20-a8c4-d50b0754c508" x="17492" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00;$-#,##0.00">
 				<expression>$F{march7BudgetCompletedAmount}</expression>
 			</element>
-			<element kind="textField" uuid="2f2a57dc-7bbc-4db6-996d-c741f9ea7bca" x="18092" y="0"
-				width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				hTextAlign="Left" vTextAlign="Bottom">
+			<element kind="textField" uuid="2f2a57dc-7bbc-4db6-996d-c741f9ea7bca" x="17612" y="0" width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
 				<expression>$F{march7BudgetCompletedDescription}</expression>
 			</element>
-			<element kind="textField" uuid="ab2429aa-6879-4176-8cd7-3eda62a20769" x="18312" y="0"
-				width="180" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				hTextAlign="Center" vTextAlign="Bottom" pattern="yyyy-MM-dd">
+			<element kind="textField" uuid="ab2429aa-6879-4176-8cd7-3eda62a20769" x="17832" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Center" vTextAlign="Bottom" pattern="yyyy-MM-dd">
 				<expression>$F{otherSubmittedTimestamp}</expression>
 			</element>
-			<element kind="textField" uuid="466e005c-d03c-4f37-8d15-70d1c7de7bf0" x="18492" y="0"
-				width="180" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				hTextAlign="Left" vTextAlign="Bottom">
+			<element kind="textField" uuid="466e005c-d03c-4f37-8d15-70d1c7de7bf0" x="17952" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
 				<expression>$F{otherProgressStatusCode}</expression>
 			</element>
-			<element kind="textField" uuid="2b75299a-2e37-42e3-b392-2737225d5b44" x="18672" y="0"
-				width="270" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				hTextAlign="Left" vTextAlign="Bottom">
+			<element kind="textField" uuid="2b75299a-2e37-42e3-b392-2737225d5b44" x="18072" y="0" width="270" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
 				<expression>$F{otherGeneralUpdateComment}</expression>
 			</element>
-			<element kind="textField" uuid="9c86721d-ac10-4b39-b949-bbe20c72ef1b" x="18942" y="0"
-				width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00;$-#,##0.00">
+			<element kind="textField" uuid="9c86721d-ac10-4b39-b949-bbe20c72ef1b" x="18342" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00;$-#,##0.00">
 				<expression>$F{otherForecastAmount}</expression>
 			</element>
-			<element kind="textField" uuid="006123fc-2488-494a-8bdd-13ebf621e336" x="19062" y="0"
-				width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00;$-#,##0.00">
+			<element kind="textField" uuid="006123fc-2488-494a-8bdd-13ebf621e336" x="18462" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00;$-#,##0.00">
 				<expression>$F{otherForecastAdjustmentAmount}</expression>
 			</element>
-			<element kind="textField" uuid="660dc618-8094-4aec-9c1c-88f664c52ce9" x="19182" y="0"
-				width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				hTextAlign="Left" vTextAlign="Bottom">
+			<element kind="textField" uuid="660dc618-8094-4aec-9c1c-88f664c52ce9" x="18582" y="0" width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
 				<expression>$F{otherForecastAdjustmentRationale}</expression>
 			</element>
-			<element kind="textField" uuid="78a9a377-69d0-4ce5-94bf-0bb5ebf13731" x="19402" y="0"
-				width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00;$-#,##0.00">
+			<element kind="textField" uuid="78a9a377-69d0-4ce5-94bf-0bb5ebf13731" x="18802" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00;$-#,##0.00">
 				<expression>$F{otherBudgetHighRiskAmount}</expression>
 			</element>
-			<element kind="textField" uuid="e38e198b-5e73-47d8-8e71-fcaa7f8c71a7" x="19522" y="0"
-				width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				hTextAlign="Left" vTextAlign="Bottom">
+			<element kind="textField" uuid="e38e198b-5e73-47d8-8e71-fcaa7f8c71a7" x="18922" y="0" width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
 				<expression>$F{otherBudgetHighRiskRationale}</expression>
 			</element>
-			<element kind="textField" uuid="c8200e24-d86e-4cf4-adbe-b8e77d4ba7cc" x="19742" y="0"
-				width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00;$-#,##0.00">
+			<element kind="textField" uuid="c8200e24-d86e-4cf4-adbe-b8e77d4ba7cc" x="19142" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00;$-#,##0.00">
 				<expression>$F{otherBudgetMediumRiskAmount}</expression>
 			</element>
-			<element kind="textField" uuid="3a678b8a-477f-4b10-a457-a224eda283d3" x="19862" y="0"
-				width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				hTextAlign="Left" vTextAlign="Bottom">
+			<element kind="textField" uuid="3a678b8a-477f-4b10-a457-a224eda283d3" x="19262" y="0" width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
 				<expression>$F{otherBudgetMediumRiskRationale}</expression>
 			</element>
-			<element kind="textField" uuid="3951d716-4d9a-4139-9b51-cbe753381c39" x="20082" y="0"
-				width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00;$-#,##0.00">
+			<element kind="textField" uuid="3951d716-4d9a-4139-9b51-cbe753381c39" x="19482" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00;$-#,##0.00">
 				<expression>$F{otherBudgetLowRiskAmount}</expression>
 			</element>
-			<element kind="textField" uuid="da405018-4127-4785-a618-c741a5ea24dd" x="20202" y="0"
-				width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				hTextAlign="Left" vTextAlign="Bottom">
+			<element kind="textField" uuid="da405018-4127-4785-a618-c741a5ea24dd" x="19602" y="0" width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
 				<expression>$F{otherBudgetLowRiskRationale}</expression>
 			</element>
-			<element kind="textField" uuid="7300ce42-4a92-48ea-af9b-2ac8d95f0292" x="20422" y="0"
-				width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00;$-#,##0.00">
+			<element kind="textField" uuid="7300ce42-4a92-48ea-af9b-2ac8d95f0292" x="19822" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Right" vTextAlign="Bottom" pattern="$#,##0.00;$-#,##0.00">
 				<expression>$F{otherBudgetCompletedAmount}</expression>
 			</element>
-			<element kind="textField" uuid="1ce480bc-adcd-4237-85d2-c0238a3af55c" x="20542" y="0"
-				width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true"
-				hTextAlign="Left" vTextAlign="Bottom">
+			<element kind="textField" uuid="1ce480bc-adcd-4237-85d2-c0238a3af55c" x="19942" y="0" width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
 				<expression>$F{otherBudgetCompletedDescription}</expression>
 			</element>
 		</band>
