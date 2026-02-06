@@ -84,7 +84,7 @@ export class PerformanceUpdateModalWindowComponent {
     { value: ReportingPeriod.Q1, description: 'End of Q1' },
     { value: ReportingPeriod.Q2, description: 'End of Q2' },
     { value: ReportingPeriod.Q3, description: 'End of Q3' },
-    { value: ReportingPeriod.Q3, description: 'End of Q4' },
+    { value: ReportingPeriod.Q4, description: 'End of Q4' },
     { value: ReportingPeriod.March7, description: 'March 7' },
     { value: ReportingPeriod.Custom, description: 'Other' }
   ]
