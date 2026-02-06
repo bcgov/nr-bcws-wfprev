@@ -22,62 +22,62 @@
                 </div>
                 <div class="content-status-indicators">
                     @if (update.reportingPeriod === other.value) {
-                    <span>
+                    <span class="reporting-period">
                         <span>Reporting Period: {{other.description}}</span>
                     </span>
                     }
                     @if (update.reportingPeriod === march7.value) {
-                    <span>
+                    <span class="reporting-period">
                         <span>Reporting Period: {{march7.description}}</span>
                     </span>
                     }
                     @if (update.reportingPeriod === q1.value) {
-                    <span>
+                    <span class="reporting-period">
                         <span>Reporting Period: {{q1.description}}</span>
                     </span>
                     }
                     @if (update.reportingPeriod === q2.value) {
-                    <span>
+                    <span class="reporting-period">
                         <span>Reporting Period: {{q2.description}}</span>
                     </span>
                     }
                     @if (update.reportingPeriod === q3.value) {
-                    <span>
+                    <span class="reporting-period">
                         <span>Reporting Period: {{q3.description}}</span>
                     </span>
                     }
                     @if (update.progressStatusCode === delayedProgressStatus.value) {
-                    <span>
+                    <span class="progress-status">
                         <img alt="status" class="status-icon" src="/assets/progress-status-delayed.svg">
                         {{delayedProgressStatus.description}}
                     </span>
                     }
                     @if (update.progressStatusCode === onTrackProgressStatus.value) {
-                    <span>
+                    <span class="progress-status">
                         <img alt="status" class="status-icon" src="/assets/progress-status-ontrack.svg">
                         {{onTrackProgressStatus.description}}
                     </span>
                     }
                     @if (update.progressStatusCode === deferredProgressStatus.value) {
-                    <span>
+                    <span class="progress-status">
                         <img alt="status" class="status-icon" src="/assets/progress-status-deferred.svg">
                         {{deferredProgressStatus.description}}
                     </span>
                     }
                     @if (update.progressStatusCode === cancelledProgressStatus.value) {
-                    <span>
+                    <span class="progress-status">
                         <img alt="status" class="status-icon" src="/assets/progress-status-cancelled.svg">
                         {{cancelledProgressStatus.description}}
                     </span>
                     }
                     @if(update.forecastAdjustmentAmount < 0){
-                    <span>
+                    <span class="forecast-amount">
                         <img alt="status" class="status-icon" src="/assets/budget-change-decreased.svg">
                         Forecast Decreased
                     </span>
                     }
                     @if(update.forecastAdjustmentAmount > 0){
-                    <span>
+                    <span class="forecast-amount">
                         <img alt="status" class="status-icon" src="/assets/budget-change-increased.svg">
                         Forecast Increased
                     </span>
