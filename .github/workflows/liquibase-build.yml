@@ -71,6 +71,7 @@ jobs:
             type=raw,value=${{ steps.trimBranchName.outputs.BRANCH_TAG }}
             type=ref,event=tag
             type=raw,value=${{ inputs.TAG }}
+            type=raw,value=${{ github.sha }}
 
       - name: Build and push Liquibase image
         uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
