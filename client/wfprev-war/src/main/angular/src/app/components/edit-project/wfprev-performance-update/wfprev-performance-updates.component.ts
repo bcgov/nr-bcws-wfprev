@@ -101,7 +101,8 @@ export class PerformanceUpdatesComponent implements OnChanges {
                 projectGuid: this.projectGuid,
                 fiscalGuid: this.fiscalGuid,
                 currentForecast: data.fiscalForecastAmount,
-                originalCostEstimate: data.totalCostEstimateAmount
+                originalCostEstimate: data.totalCostEstimateAmount,
+                projectFiscalName: data.projectFiscalName
               },
               disableClose: true
             });
