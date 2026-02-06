@@ -33,7 +33,7 @@
               <p>Current Forecast:</p>
             </div>
             <div class="amount">
-              <p>{{data.currentForecast | currency}}</p>
+              <p>{{data?.currentForecast ?? 0 | currency}}</p>
             </div>
           </div>
         </div>
@@ -46,7 +46,7 @@
               <p>Original Cost Estimate:</p>
             </div>
             <div class="amount">
-              <p>{{data.originalCostEstimate | currency}}</p>
+              <p>{{data?.originalCostEstimate ?? 0 | currency}}</p>
             </div>
           </div>
         </div>
