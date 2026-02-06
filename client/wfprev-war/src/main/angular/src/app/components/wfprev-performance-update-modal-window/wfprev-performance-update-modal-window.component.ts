@@ -221,7 +221,7 @@ export class PerformanceUpdateModalWindowComponent {
         data: {
           indicator: 'confirm-unsave',
           title: ModalTitles.CONFIRM_CANCEL_TITLE,
-          message: ModalMessages.CONFIRM_CANCEL_MESSAGE
+          message: ModalMessages.CONFIRM_CANCEL_PERFORMANCE_UPDATE_MODAL_WINDOW_MESSAGE
         },
         width: '600px',
       });
