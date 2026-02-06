@@ -73,6 +73,7 @@ public class CodesController extends CommonController {
                 case CodeTables.EVALUATION_CRITERIA_CODE -> result = codesService.getAllEvaluationCriteriaCodes();
                 case CodeTables.PROJECT_STATUS_CODE -> result = codesService.getAllProjectStatusCodes();
                 case CodeTables.WILDFIRE_ORG_UNIT -> result = codesService.getAllWildfireOrgUnits();
+                case CodeTables.REPORTING_PERIOD_CODE -> result = codesService.getAllReportingPeriodCodes();
 
                 default -> {
                     log.error("Invalid code table: {}", codeTable);
@@ -166,6 +167,7 @@ public class CodesController extends CommonController {
             case CodeTables.EVALUATION_CRITERIA_CODE -> codesService.getEvaluationCriteriaCodeById(id);
             case CodeTables.PROJECT_STATUS_CODE -> codesService.getProjectStatusCodeById(id);
             case CodeTables.WILDFIRE_ORG_UNIT -> codesService.getWildfireOrgUnitById(id);
+            case CodeTables.REPORTING_PERIOD_CODE -> codesService.getReportingPeriodCodeById(id);
             default -> null;
         };
     }

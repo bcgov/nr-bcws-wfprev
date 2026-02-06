@@ -74,6 +74,8 @@ class CodesServiceTest {
     private ProjectStatusCodeResourceAssembler projectStatusCodeResourceAssembler;
     private WildfireOrgUnitRepository wildfireOrgUnitRepository;
     private WildfireOrgUnitResourceAssembler wildfireOrgUnitResourceAssembler;
+    private ReportingPeriodCodeRepository reportingPeriodCodeRepository;
+    private ReportingPeriodCodeResourceAssembler reportingPeriodCodeResourceAssembler;
 
     @BeforeEach
     void setup() {
@@ -129,6 +131,8 @@ class CodesServiceTest {
         projectStatusCodeResourceAssembler = mock(ProjectStatusCodeResourceAssembler.class);
         wildfireOrgUnitRepository = mock(WildfireOrgUnitRepository.class);
         wildfireOrgUnitResourceAssembler = mock(WildfireOrgUnitResourceAssembler.class);
+        reportingPeriodCodeRepository = mock(ReportingPeriodCodeRepository.class);
+        reportingPeriodCodeResourceAssembler = mock(ReportingPeriodCodeResourceAssembler.class);
 
         codesService = new CodesService(forestAreaCodeRepository, forestAreaCodeResourceAssembler,
                 generalScopeCodeRepository, generalScopeCodeResourceAssembler,
@@ -140,7 +144,8 @@ class CodesServiceTest {
                 fundingSourceCodeResourceAssembler, fundingSourceCodeRepository, sourceObjectNameCodeResourceAssembler, sourceObjectNameCodeRepository, attachmentContentTypeCodeResourceAssembler, attachmentContentTypeCodeRepository,
                 silvicultureBaseCodeResourceAssembler, silvicultureBaseCodeRepository, silvicultureMethodCodeResourceAssembler, silvicultureMethodCodeRepository, silvicultureTechniqueCodeResourceAssembler, silvicultureTechniqueCodeRepository,
                 proposalTypeCodeRepository, proposalTypeCodeResourceAssembler, wuiRiskClassCodeRepository, wuiRiskClassCodeResourceAssembler,evaluationCriteriaCodeRepository,evaluationCriteriaCodeResourceAssembler,
-                projectStatusCodeRepository, projectStatusCodeResourceAssembler, wildfireOrgUnitRepository, wildfireOrgUnitResourceAssembler);
+                projectStatusCodeRepository, projectStatusCodeResourceAssembler, wildfireOrgUnitRepository, wildfireOrgUnitResourceAssembler,
+                reportingPeriodCodeRepository, reportingPeriodCodeResourceAssembler);
     }
 
     @Test
@@ -2220,9 +2225,63 @@ class CodesServiceTest {
 
         ServiceException exception = assertThrows(
                 ServiceException.class,
-                () -> codesService.getWildfireOrgUnitById(exampleId)
+                        () -> codesService.getWildfireOrgUnitById(exampleId)
         );
         assertTrue(exception.getMessage().contains("Error fetching wildfire org unit"));
     }
 
+    @Test
+    void testGetAllReportingPeriodCodes_Success() throws ServiceException {
+        List<ReportingPeriodCodeEntity> entities = new ArrayList<>();
+        entities.add(new ReportingPeriodCodeEntity());
+        when(reportingPeriodCodeRepository.findAll()).thenReturn(entities);
+        when(reportingPeriodCodeResourceAssembler.toCollectionModel(entities))
+                .thenReturn(CollectionModel.of(new ArrayList<>()));
+
+        CollectionModel<ReportingPeriodCodeModel> result = codesService.getAllReportingPeriodCodes();
+
+        assertNotNull(result);
+        verify(reportingPeriodCodeRepository, times(1)).findAll();
+        verify(reportingPeriodCodeResourceAssembler, times(1)).toCollectionModel(entities);
+    }
+
+    @Test
+    void testGetReportingPeriodCodeById_Success() throws ServiceException {
+        String exampleId = UUID.randomUUID().toString();
+        ReportingPeriodCodeEntity entity = new ReportingPeriodCodeEntity();
+        when(reportingPeriodCodeRepository.findById(exampleId))
+                .thenReturn(Optional.of(entity));
+        when(reportingPeriodCodeResourceAssembler.toModel(entity))
+                .thenReturn(new ReportingPeriodCodeModel());
+
+        ReportingPeriodCodeModel result = codesService.getReportingPeriodCodeById(exampleId);
+
+        assertNotNull(result);
+        verify(reportingPeriodCodeRepository, times(1)).findById(exampleId);
+        verify(reportingPeriodCodeResourceAssembler, times(1)).toModel(entity);
+    }
+
+    @Test
+    void testGetReportingPeriodCodeById_NotFound() throws ServiceException {
+        String nonExistentId = UUID.randomUUID().toString();
+        when(reportingPeriodCodeRepository.findById(nonExistentId))
+                .thenReturn(Optional.empty());
+
+        ReportingPeriodCodeModel result = codesService.getReportingPeriodCodeById(nonExistentId);
+        assertNull(result);
+        verify(reportingPeriodCodeRepository, times(1)).findById(nonExistentId);
+    }
+
+    @Test
+    void testGetReportingPeriodCodeById_Exception() {
+        String exampleId = UUID.randomUUID().toString();
+        when(reportingPeriodCodeRepository.findById(exampleId))
+                .thenThrow(new RuntimeException("Error fetching reporting period code"));
+
+        ServiceException exception = assertThrows(
+                ServiceException.class,
+                () -> codesService.getReportingPeriodCodeById(exampleId)
+        );
+        assertTrue(exception.getMessage().contains("Error fetching reporting period code"));
+    }
 }
