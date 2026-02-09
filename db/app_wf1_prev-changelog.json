@@ -2061,6 +2061,22 @@
         "rollback": [
         ]
       }
+    },
+    {
+      "changeSet": {
+        "id": "01_02_00_05",
+        "author": "sparmar",
+        "tagDatabase": { "tag" : "version_01_02_00_05" },
+        "changes": [
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_02_00/05/dml/app_wf1_prev.dml.reporting_period_code_update.sql"
+            }
+          }
+        ]
+      }
     }
   ]
 }
