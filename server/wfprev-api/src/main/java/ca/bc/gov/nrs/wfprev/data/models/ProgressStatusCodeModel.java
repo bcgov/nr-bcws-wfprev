@@ -17,8 +17,8 @@ import lombok.NoArgsConstructor;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
-@JsonRootName(value = "reportingPeriodCode")
-@Relation(collectionRelation = "reportingPeriodCode")
+@JsonRootName(value = "progressStatusCode")
+@Relation(collectionRelation = "progressStatusCode")
 @JsonInclude(Include.NON_NULL)
 @Builder
 @AllArgsConstructor

@@ -443,6 +443,12 @@ export enum ProgressStatus {
   OnTrack = "ON_TRACK"
 }
 
+export interface ProgressStatusCode {
+  description: string;
+  displayOrder: number;
+  progressStatusCode: ProgressStatus;
+}
+
 export enum UpdateGeneralStatus {
   Cancelled = "CANCELLED",
   Complete = "COMPLETE",
@@ -459,6 +465,12 @@ export enum ReportingPeriod {
   Q2 = "Q2",
   Q3 = "Q3",
   Q4 = "Q4"
+}
+
+export interface ReportingPeriodCode {
+  description: string;
+  displayOrder: number;
+  reportingPeriodCode: ReportingPeriod;
 }
 
 export interface Option<T> {

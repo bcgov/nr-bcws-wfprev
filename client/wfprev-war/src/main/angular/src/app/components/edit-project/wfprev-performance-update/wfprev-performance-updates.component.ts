@@ -3,12 +3,15 @@ import { MatExpansionPanel, MatExpansionPanelHeader } from '@angular/material/ex
 import { ExpansionIndicatorComponent } from "../../shared/expansion-indicator/expansion-indicator.component";
 import { IconButtonComponent } from "../../shared/icon-button/icon-button.component";
 import { ProjectService } from 'src/app/services/project-services';
-import { PerformanceUpdate, ForecastStatus, ProgressStatus, UpdateGeneralStatus, Option, ReportingPeriod } from '../../models';
+import { PerformanceUpdate, ForecastStatus, ProgressStatus, UpdateGeneralStatus, Option, ReportingPeriod, ReportingPeriodCode, ProgressStatusCode } from '../../models';
 import { ActivatedRoute } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { PerformanceUpdateModalWindowComponent } from '../../wfprev-performance-update-modal-window/wfprev-performance-update-modal-window.component';
 import { CommonModule } from '@angular/common';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { forkJoin } from 'rxjs';
+import { CodeTableServices } from 'src/app/services/code-table-services';
+import { CodeTableNames } from 'src/app/utils/constants';
 
 @Component({
   selector: 'wfprev-performance-updates',
@@ -52,6 +55,7 @@ export class PerformanceUpdatesComponent implements OnChanges {
 
   constructor(
     private readonly projectService: ProjectService,
+    private readonly codeTableService: CodeTableServices,
     private readonly route: ActivatedRoute,
     private dialog: MatDialog,
     private readonly snackbarService: MatSnackBar
@@ -92,17 +96,33 @@ export class PerformanceUpdatesComponent implements OnChanges {
   }
 
   openDialog(): void {
-    this.projectService.getProjectFiscalByProjectPlanFiscalGuid(this.projectGuid, this.fiscalGuid)
-      .subscribe({
-        next: (data) => {
+    forkJoin({
+      projectFiscal: this.projectService.getProjectFiscalByProjectPlanFiscalGuid(this.projectGuid, this.fiscalGuid),
+      reportingPeriod: this.codeTableService.fetchCodeTable(CodeTableNames.REPORTING_PERIOD_CODE),
+      progressStatus: this.codeTableService.fetchCodeTable(CodeTableNames.PROGRESS_STATUS_CODE)
+    })
+    .subscribe({
+        next: ({projectFiscal, reportingPeriod, progressStatus}) => {
           const dialogRef = this.dialog.open(PerformanceUpdateModalWindowComponent,
             {
               data: {
                 projectGuid: this.projectGuid,
                 fiscalGuid: this.fiscalGuid,
-                currentForecast: data.fiscalForecastAmount,
-                originalCostEstimate: data.totalCostEstimateAmount,
-                projectFiscalName: data.projectFiscalName
+                currentForecast: projectFiscal.fiscalForecastAmount,
+                originalCostEstimate: projectFiscal.totalCostEstimateAmount,
+                projectFiscalName: projectFiscal.projectFiscalName,
+                reportingPeriod: (reportingPeriod?._embedded?.reportingPeriodCode ?? [])
+                  .sort((a: ReportingPeriodCode, b: ReportingPeriodCode) => a.displayOrder - b.displayOrder)
+                  .map(({ description, reportingPeriodCode }: ReportingPeriodCode) => ({
+                        value: reportingPeriodCode,
+                        description
+                      })),
+                progressStatus: (progressStatus?._embedded?.progressStatusCode ?? [])
+                  .sort((a: ProgressStatusCode, b: ProgressStatusCode) => a.displayOrder - b.displayOrder)
+                  .map(({ description, progressStatusCode }: ProgressStatusCode) => ({
+                        value: progressStatusCode,
+                        description
+                      }))
               },
               disableClose: true
             });
