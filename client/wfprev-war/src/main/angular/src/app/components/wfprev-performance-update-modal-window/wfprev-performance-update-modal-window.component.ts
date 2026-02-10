@@ -80,20 +80,9 @@ export class PerformanceUpdateModalWindowComponent {
     validators: matchTotalValidator('totalAmount')
   });
 
-  reportingPeriod: Option<ReportingPeriod>[] = [
-    { value: ReportingPeriod.Custom, description: 'Other' },
-    { value: ReportingPeriod.March7, description: 'March 7' },
-    { value: ReportingPeriod.Q1, description: 'End of Q1' },
-    { value: ReportingPeriod.Q2, description: 'End of Q2' },
-    { value: ReportingPeriod.Q3, description: 'End of Q3' }
-  ]
+  reportingPeriod: Option<ReportingPeriod>[] = [];
 
-  progressStatus: Option<ProgressStatus>[] = [
-    { value: ProgressStatus.Cancelled, description: 'Cancelled' },
-    { value: ProgressStatus.Deferred, description: 'Deferred' },
-    { value: ProgressStatus.Delayed, description: 'Delayed' },
-    { value: ProgressStatus.OnTrack, description: 'On track' }
-  ]
+  progressStatus: Option<ProgressStatus>[] = [];
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: any,
@@ -102,6 +91,8 @@ export class PerformanceUpdateModalWindowComponent {
     private readonly projectService: ProjectService,
     private readonly snackbarService: MatSnackBar
   ) {
+    this.reportingPeriod = data.reportingPeriod;
+    this.progressStatus = data.progressStatus;
     this.bindAmountValidation();
   }
 

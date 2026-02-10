@@ -79,7 +79,8 @@ export const CodeTableNames = {
   BC_PARKS_SECTION_CODE: 'bcParksSectionCodes',
   OBJECTIVE_TYPE_CODE: 'objectiveTypeCodes',
   WILDFIRE_ORG_UNIT: 'wildfireOrgUnits',
-  REPORTING_PERIOD_CODE: 'reportingPeriodCodes'
+  REPORTING_PERIOD_CODE: 'reportingPeriodCodes',
+  PROGRESS_STATUS_CODE: "progressStatusCode"
 }
 
 export const ProjectTypeCodes = {

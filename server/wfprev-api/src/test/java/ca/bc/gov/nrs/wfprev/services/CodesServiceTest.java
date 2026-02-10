@@ -76,6 +76,8 @@ class CodesServiceTest {
     private WildfireOrgUnitResourceAssembler wildfireOrgUnitResourceAssembler;
     private ReportingPeriodCodeRepository reportingPeriodCodeRepository;
     private ReportingPeriodCodeResourceAssembler reportingPeriodCodeResourceAssembler;
+    private ProgressStatusCodeRepository progressStatusCodeRepository;
+    private ProgressStatusCodeResourceAssembler progressStatusCodeResourceAssembler;
 
     @BeforeEach
     void setup() {
@@ -133,6 +135,8 @@ class CodesServiceTest {
         wildfireOrgUnitResourceAssembler = mock(WildfireOrgUnitResourceAssembler.class);
         reportingPeriodCodeRepository = mock(ReportingPeriodCodeRepository.class);
         reportingPeriodCodeResourceAssembler = mock(ReportingPeriodCodeResourceAssembler.class);
+        progressStatusCodeRepository = mock(ProgressStatusCodeRepository.class);
+        progressStatusCodeResourceAssembler = mock(ProgressStatusCodeResourceAssembler.class);
 
         codesService = new CodesService(forestAreaCodeRepository, forestAreaCodeResourceAssembler,
                 generalScopeCodeRepository, generalScopeCodeResourceAssembler,
@@ -145,7 +149,8 @@ class CodesServiceTest {
                 silvicultureBaseCodeResourceAssembler, silvicultureBaseCodeRepository, silvicultureMethodCodeResourceAssembler, silvicultureMethodCodeRepository, silvicultureTechniqueCodeResourceAssembler, silvicultureTechniqueCodeRepository,
                 proposalTypeCodeRepository, proposalTypeCodeResourceAssembler, wuiRiskClassCodeRepository, wuiRiskClassCodeResourceAssembler,evaluationCriteriaCodeRepository,evaluationCriteriaCodeResourceAssembler,
                 projectStatusCodeRepository, projectStatusCodeResourceAssembler, wildfireOrgUnitRepository, wildfireOrgUnitResourceAssembler,
-                reportingPeriodCodeRepository, reportingPeriodCodeResourceAssembler);
+                reportingPeriodCodeRepository, reportingPeriodCodeResourceAssembler,
+                progressStatusCodeRepository, progressStatusCodeResourceAssembler);
     }
 
     @Test
