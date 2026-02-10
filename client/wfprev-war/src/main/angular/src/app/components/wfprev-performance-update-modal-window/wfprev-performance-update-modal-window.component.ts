@@ -91,7 +91,6 @@ export class PerformanceUpdateModalWindowComponent {
     private readonly projectService: ProjectService,
     private readonly snackbarService: MatSnackBar
   ) {
-    debugger;
     this.reportingPeriod = data.reportingPeriod;
     this.progressStatus = data.progressStatus;
     this.bindAmountValidation();
