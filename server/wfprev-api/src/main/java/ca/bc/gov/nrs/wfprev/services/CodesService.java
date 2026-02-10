@@ -73,6 +73,8 @@ public class CodesService implements CommonService {
     private final WildfireOrgUnitResourceAssembler wildfireOrgUnitResourceAssembler;
     private final ReportingPeriodCodeRepository reportingPeriodCodeRepository;
     private final ReportingPeriodCodeResourceAssembler reportingPeriodCodeResourceAssembler;
+    private final ProgressStatusCodeRepository progressStatusCodeRepository;
+    private final ProgressStatusCodeResourceAssembler progressStatusCodeResourceAssembler;
 
 
     public CodesService(ForestAreaCodeRepository forestAreaCodeRepository, ForestAreaCodeResourceAssembler forestAreaCodeResourceAssembler,
@@ -92,7 +94,8 @@ public class CodesService implements CommonService {
                         ProposalTypeCodeRepository proposalTypeCodeRepository, ProposalTypeCodeResourceAssembler proposalTypeCodeResourceAssembler, WUIRiskClassCodeRepository wuiRiskClassCodeRepository, WUIRiskClassCodeResourceAssembler wuiRiskClassCodeResourceAssembler,
                         EvaluationCriteriaCodeRepository evaluationCriteriaCodeRepository, EvaluationCriteriaCodeResourceAssembler evaluationCriteriaCodeResourceAssembler, ProjectStatusCodeRepository projectStatusCodeRepository, ProjectStatusCodeResourceAssembler projectStatusCodeResourceAssembler,
                         WildfireOrgUnitRepository wildfireOrgUnitRepository, WildfireOrgUnitResourceAssembler wildfireOrgUnitResourceAssembler,
-                        ReportingPeriodCodeRepository reportingPeriodCodeRepository, ReportingPeriodCodeResourceAssembler reportingPeriodCodeResourceAssembler) {
+                        ReportingPeriodCodeRepository reportingPeriodCodeRepository, ReportingPeriodCodeResourceAssembler reportingPeriodCodeResourceAssembler,
+                        ProgressStatusCodeRepository progressStatusCodeRepository, ProgressStatusCodeResourceAssembler progressStatusCodeResourceAssembler) {
         this.forestAreaCodeRepository = forestAreaCodeRepository;
         this.forestAreaCodeResourceAssembler = forestAreaCodeResourceAssembler;
         this.generalScopeCodeRepository = generalScopeCodeRepository;
@@ -147,6 +150,8 @@ public class CodesService implements CommonService {
         this.wildfireOrgUnitResourceAssembler = wildfireOrgUnitResourceAssembler;
         this.reportingPeriodCodeRepository = reportingPeriodCodeRepository;
         this.reportingPeriodCodeResourceAssembler = reportingPeriodCodeResourceAssembler;
+        this.progressStatusCodeRepository = progressStatusCodeRepository;
+        this.progressStatusCodeResourceAssembler = progressStatusCodeResourceAssembler;
     }
 
     /**
@@ -662,6 +667,15 @@ public class CodesService implements CommonService {
     public ReportingPeriodCodeModel getReportingPeriodCodeById(String id) throws ServiceException {
         try {
             return reportingPeriodCodeRepository.findById(id).map(reportingPeriodCodeResourceAssembler::toModel).orElse(null);
+        } catch (Exception e) {
+            throw new ServiceException(e.getLocalizedMessage(), e);
+        }
+    }
+
+    public CollectionModel<ProgressStatusCodeModel> getAllProgressStatusCodes() throws ServiceException {
+        try {
+            List<ProgressStatusCodeEntity> entities = progressStatusCodeRepository.findAll();
+            return progressStatusCodeResourceAssembler.toCollectionModel(entities);
         } catch (Exception e) {
             throw new ServiceException(e.getLocalizedMessage(), e);
         }

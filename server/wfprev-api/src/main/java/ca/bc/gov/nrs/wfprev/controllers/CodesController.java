@@ -74,6 +74,7 @@ public class CodesController extends CommonController {
                 case CodeTables.PROJECT_STATUS_CODE -> result = codesService.getAllProjectStatusCodes();
                 case CodeTables.WILDFIRE_ORG_UNIT -> result = codesService.getAllWildfireOrgUnits();
                 case CodeTables.REPORTING_PERIOD_CODE -> result = codesService.getAllReportingPeriodCodes();
+                case CodeTables.PROGRESS_STATUS_CODE -> result = codesService.getAllReportingPeriodCodes();
 
                 default -> {
                     log.error("Invalid code table: {}", codeTable);
