@@ -2,7 +2,6 @@ import { AbstractControl, ValidationErrors, ValidatorFn } from "@angular/forms";
 
 export function matchTotalValidator(totalAmountCtrlName: string): ValidatorFn {
   return (group: AbstractControl): ValidationErrors | null => {
-    debugger;
     const totalAmound = group.get(totalAmountCtrlName)?.value;
     const revisedForecastCtrl = group.get('revisedForecast');
     const currentForecastCtrl = group.get('currentForecast');
