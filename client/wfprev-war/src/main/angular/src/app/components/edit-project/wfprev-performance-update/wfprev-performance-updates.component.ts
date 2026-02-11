@@ -12,6 +12,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { forkJoin } from 'rxjs';
 import { CodeTableServices } from 'src/app/services/code-table-services';
 import { CodeTableNames } from 'src/app/utils/constants';
+import { ProjectFiscalsSignalService } from 'src/app/services/project-fiscals-signal.service';
 
 @Component({
   selector: 'wfprev-performance-updates',
@@ -56,6 +57,7 @@ export class PerformanceUpdatesComponent implements OnChanges {
   constructor(
     private readonly projectService: ProjectService,
     private readonly codeTableService: CodeTableServices,
+    private readonly projectFiscalsSignalService: ProjectFiscalsSignalService,
     private readonly route: ActivatedRoute,
     private dialog: MatDialog,
     private readonly snackbarService: MatSnackBar
@@ -128,7 +130,10 @@ export class PerformanceUpdatesComponent implements OnChanges {
             });
           dialogRef.afterClosed().subscribe(result => {
             if (result) {
-              this.updates = [result, ...this.updates]
+              this.updates = [result, ...this.updates];
+              if ((result as PerformanceUpdate).forecastAdjustmentAmount !== 0) {
+                this.projectFiscalsSignalService.trigger();
+              }
             } else {
               console.log('Dialog was closed without data');
             }
