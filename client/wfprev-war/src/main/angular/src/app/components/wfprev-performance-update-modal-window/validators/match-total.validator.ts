@@ -14,7 +14,9 @@ export function matchTotalValidator(totalAmountCtrlName: string): ValidatorFn {
       return null;
     }
     
-    const forecastValue = revisedForecastCtrl?.value ?? currentForecastCtrl?.value;
+    const forecastValue = revisedForecastCtrl?.value && revisedForecastCtrl.value > 0
+      ? revisedForecastCtrl.value
+      : currentForecastCtrl?.value;
 
     if (forecastValue == null || forecastValue === '') {
       return { totalMismatch: true };
