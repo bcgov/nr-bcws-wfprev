@@ -251,6 +251,10 @@ public class ProjectFiscalService implements CommonService {
         entity.setSubmittedTimestamp(new Date());
         validate(entity);
         ProjectPlanFiscalPerfEntity savedEntity = projectPlanFiscalPerfRepository.save(entity);
+        if(savedEntity.getForecastAmount().compareTo(BigDecimal.ZERO) != 0 && savedEntity.getForecastAmount().compareTo(projectFiscalEntity.getFiscalForecastAmount()) != 0) {
+            projectFiscalEntity.setFiscalForecastAmount(savedEntity.getForecastAmount());
+            projectFiscalRepository.saveAndFlush(projectFiscalEntity);
+        }
         return performanceUpdateResourceAssembler.toModel(savedEntity);
     }
 
