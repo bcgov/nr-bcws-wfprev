@@ -41,7 +41,7 @@ export class PerformanceUpdateModalWindowComponent {
       ]
     }),
 
-    forecastRationale: new FormControl("", { validators: [Validators.required] }),
+    forecastRationale: new FormControl({value: '', disabled: true}, { validators: [Validators.required] }),
 
     highRisk: new FormControl<number | null>(null, {
       validators: [
@@ -107,6 +107,16 @@ export class PerformanceUpdateModalWindowComponent {
   }
 
   private bindAmountValidation() {
+    this.revisedForecastControl.valueChanges.subscribe(value => {
+      if (value && value > 0) {
+        this.forecastRationaleControl.enable();
+      } else {
+        this.forecastRationaleControl.reset();
+        this.forecastRationaleControl.disable();
+      }
+      this.calculateTotalAmount();
+    });
+
     this.highRiskControl.valueChanges.subscribe(value => {
       if (value > 0) {
         this.highRiskDescriptionControl.enable();
