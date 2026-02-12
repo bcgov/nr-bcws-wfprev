@@ -3,7 +3,7 @@
 .performance-update-container {
     padding-top: 12px;
     margin: 0;
-    width: 1500px;
+    min-width: 1500px;
 
     .expansion-panel:nth-child(even) {
         background-color: #FAF9F8;
