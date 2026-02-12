@@ -66,4 +66,15 @@
       margin-top: 14px;
     }
   }
+
+}
+
+:host-context(.new-update) .select-field .error {
+  color: var(--wf-colour-error);
+  font-size: 14px;
+  margin-top: 4px;
+  &.invisible {
+    visibility: hidden;
+  }
+  
 }
