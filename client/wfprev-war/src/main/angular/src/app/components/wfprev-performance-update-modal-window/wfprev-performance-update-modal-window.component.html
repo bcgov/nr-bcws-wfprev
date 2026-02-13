@@ -69,7 +69,7 @@
       <p mat-dialog-title class="risk-breakdown-title">Budget Risk Breakdown</p>
       <div class="modal-window-row">
         <p class="section-description">Provide a breakdown of the total budget risks. All values must add up to the
-          <b>{{revisedForecastControl.value && revisedForecastControl.value > 0 ? 'Revised' : 'Current'}} Forecast</b> amount as this information is used to identify how much of the overall
+          <b>{{ revisedForecastControl.value && revisedForecastControl.value > 0 ? 'Revised' : 'Current' }} forecast</b> amount as this information is used to identify how much of the overall
           budget is at risk.</p>
       </div>
       <div class="modal-window-row risk-container">
@@ -129,7 +129,7 @@
       </div>
       @if(form.hasError('totalMismatch')) {
         <div class="error">
-          <p>The sum of all risk amounts does not match the {{revisedForecastControl.value && revisedForecastControl.value > 0 ? 'Revised' : 'Current'}} Forecast amount.</p>
+          <p>The sum of all risk amounts does not match the {{ revisedForecastControl.value && revisedForecastControl.value > 0 ? 'Revised' : 'Current' }} Forecast amount.</p>
         </div>
       }
     </div>
