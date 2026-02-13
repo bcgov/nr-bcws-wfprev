@@ -99,14 +99,15 @@ jobs:
     - name: List files in ./node/${{ inputs.COMPONENT_NAME }}
       run: ls -al ./node/${{ inputs.COMPONENT_NAME }}
     
-    - name: Build and push Docker image
-      uses: docker/build-push-action@v6
-      with:
-        context: ./node/${{ inputs.COMPONENT_NAME }}
-        file: ./node/${{ inputs.COMPONENT_NAME }}/Dockerfile
-        push: true
-        tags: ${{ steps.meta.outputs.tags }}
-        labels: ${{ steps.meta.outputs.labels }}
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./node/${{ inputs.COMPONENT_NAME }}
+          file: ./node/${{ inputs.COMPONENT_NAME }}/Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          provenance: false
 
     - name: Tag and push latest image
       run: |
