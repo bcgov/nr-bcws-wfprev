@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, effect, OnInit } from '@angular/core';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { FormsModule } from '@angular/forms';
@@ -13,6 +13,9 @@ import { Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 import { MatOptionSelectionChange } from '@angular/material/core';
 import { WildfireOrgUnitTypeCodes } from 'src/app/utils/constants';
+import { ActivatedRoute } from '@angular/router';
+import { ProjectFilterStateService } from 'src/app/services/project-filter-state.service';
+import { ProjectFilter } from '../models';
 @Component({
   selector: 'wfprev-search-filter',
   standalone: true,
@@ -34,8 +37,33 @@ export class SearchFilterComponent implements OnInit {
   constructor(
     private readonly sharedCodeTableService: SharedCodeTableService,
     private readonly codeTableService: CodeTableServices,
-    private sharedService: SharedService
-  ) { }
+    private sharedService: SharedService,
+    private readonly projectFilterStateService: ProjectFilterStateService,
+    private route: ActivatedRoute,
+  ) {
+    effect(() => {
+      this.route.snapshot.url;
+      const saved = this.projectFilterStateService.filters();
+      console.log("effect =>", saved);
+      if (saved) {
+        this.searchText = saved.searchText ?? "";
+        this.selectedProjectType = saved.projectTypeCodes ?? [];
+        this.selectedBusinessArea = saved.programAreaGuids ?? [];
+        this.selectedFiscalYears = saved.fiscalYears ?? [];
+        this.selectedActivity = saved.activityCategoryCodes ?? [];
+      // forestRegionOrgUnitIds: sanitize(this.selectedForestRegion),
+      // forestDistrictOrgUnitIds: sanitize(this.selectedForestDistrict),
+      // fireCentreOrgUnitIds: sanitize(this.selectedFireCentre),
+      // planFiscalStatusCodes: sanitize(this.selectedFiscalStatus)
+        // this.emitFilters();
+
+        setTimeout(() => {
+        this.emitFilters();
+      }, 5000);
+      }
+      
+    });
+  }
 
   searchText: string = '';
   searchTextChanged: Subject<string> = new Subject<string>();
@@ -79,6 +107,8 @@ export class SearchFilterComponent implements OnInit {
       return sanitize(this.selectedFiscalYears);
     };
 
+
+    console.log("emitFilters => searchText ", this.searchText)
     this.sharedService.updateFilters({
       searchText: this.searchText,
       projectTypeCode: sanitize(this.selectedProjectType),
@@ -90,6 +120,17 @@ export class SearchFilterComponent implements OnInit {
       fireCentreOrgUnitId: sanitize(this.selectedFireCentre),
       planFiscalStatusCode: sanitize(this.selectedFiscalStatus)
     });
+    // this.projectFilterStateService.set({
+    //   searchText: this.searchText,
+    //   projectTypeCodes: sanitize(this.selectedProjectType),
+    //   programAreaGuids: sanitize(this.selectedBusinessArea),
+    //   fiscalYears: resolveFiscalYears(),
+    //   activityCategoryCodes: sanitize(this.selectedActivity),
+    //   forestRegionOrgUnitIds: sanitize(this.selectedForestRegion),
+    //   forestDistrictOrgUnitIds: sanitize(this.selectedForestDistrict),
+    //   fireCentreOrgUnitIds: sanitize(this.selectedFireCentre),
+    //   planFiscalStatusCodes: sanitize(this.selectedFiscalStatus)
+    // });
   }
 
   onSearch() {
@@ -306,6 +347,9 @@ export class SearchFilterComponent implements OnInit {
       .pipe(debounceTime(3000)) // 3s debounce time
       .subscribe((value: string) => {
         this.searchText = value;
+        this.projectFilterStateService.update({
+          searchText: value
+        })
         this.onSearch();
       });
   }
