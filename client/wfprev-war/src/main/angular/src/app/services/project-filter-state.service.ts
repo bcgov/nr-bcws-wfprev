@@ -12,7 +12,6 @@ export class ProjectFilterStateService {
 
   set(filters: ProjectFilter) {
     this.filters.set(filters);
-    console.log("set =>", filters);
     sessionStorage.setItem(this.STORAGE_KEY, JSON.stringify(filters));
   }
 
@@ -35,11 +34,7 @@ export class ProjectFilterStateService {
 
   private load(): ProjectFilter | null {
     const raw = sessionStorage.getItem(this.STORAGE_KEY);
-    console.log("load =>", raw);
     return raw ? JSON.parse(raw) : null;
   }
 
-  // reload() {
-  //   this.filters.set(this.load());
-  // }
 }

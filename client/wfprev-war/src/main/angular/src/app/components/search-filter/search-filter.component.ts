@@ -44,24 +44,18 @@ export class SearchFilterComponent implements OnInit {
     effect(() => {
       this.route.snapshot.url;
       const saved = this.projectFilterStateService.filters();
-      console.log("effect =>", saved);
       if (saved) {
         this.searchText = saved.searchText ?? "";
         this.selectedProjectType = saved.projectTypeCodes ?? [];
         this.selectedBusinessArea = saved.programAreaGuids ?? [];
         this.selectedFiscalYears = saved.fiscalYears ?? [];
         this.selectedActivity = saved.activityCategoryCodes ?? [];
-      // forestRegionOrgUnitIds: sanitize(this.selectedForestRegion),
-      // forestDistrictOrgUnitIds: sanitize(this.selectedForestDistrict),
-      // fireCentreOrgUnitIds: sanitize(this.selectedFireCentre),
-      // planFiscalStatusCodes: sanitize(this.selectedFiscalStatus)
-        // this.emitFilters();
-
-        setTimeout(() => {
-        this.emitFilters();
-      }, 5000);
+        this.selectedForestRegion =  saved.forestRegionOrgUnitIds ?? [];
+        this.selectedForestDistrict = saved.forestDistrictOrgUnitIds ?? [];
+        this.selectedFireCentre = saved.fireCentreOrgUnitIds ?? [];
+        this.selectedFiscalStatus = saved.planFiscalStatusCodes ?? [];
       }
-      
+
     });
   }
 
@@ -87,6 +81,18 @@ export class SearchFilterComponent implements OnInit {
   noYearAssigned: string = 'No Year Assigned'
 
   ngOnInit(): void {
+    const savedFilters = this.projectFilterStateService.filters();
+    if (savedFilters) {
+      this.searchText = savedFilters?.searchText ?? '';
+      this.selectedProjectType = savedFilters?.projectTypeCodes ?? [];
+      this.selectedBusinessArea = savedFilters?.programAreaGuids ?? [];
+      this.selectedFiscalYears = savedFilters?.fiscalYears ?? [];
+      this.selectedActivity = savedFilters?.activityCategoryCodes ?? [];
+      this.selectedForestRegion = savedFilters?.forestRegionOrgUnitIds ?? [];
+      this.selectedForestDistrict = savedFilters?.forestDistrictOrgUnitIds ?? [];
+      this.selectedFireCentre = savedFilters?.fireCentreOrgUnitIds ?? [];
+      this.selectedFiscalStatus = savedFilters?.planFiscalStatusCodes ?? [];
+    }
     this.generateFiscalYearOptions();
     this.setupCodeTableSubscription();
     this.setupSearchDebounce();
@@ -108,33 +114,33 @@ export class SearchFilterComponent implements OnInit {
     };
 
 
-    console.log("emitFilters => searchText ", this.searchText)
-    this.sharedService.updateFilters({
+    this.projectFilterStateService.update({
       searchText: this.searchText,
-      projectTypeCode: sanitize(this.selectedProjectType),
-      programAreaGuid: sanitize(this.selectedBusinessArea),
-      fiscalYear: resolveFiscalYears(),
-      activityCategoryCode: sanitize(this.selectedActivity),
-      forestRegionOrgUnitId: sanitize(this.selectedForestRegion),
-      forestDistrictOrgUnitId: sanitize(this.selectedForestDistrict),
-      fireCentreOrgUnitId: sanitize(this.selectedFireCentre),
-      planFiscalStatusCode: sanitize(this.selectedFiscalStatus)
+      projectTypeCodes: this.selectedProjectType,
+      programAreaGuids: this.selectedBusinessArea,
+      fiscalYears: this.selectedFiscalYears,
+      activityCategoryCodes: this.selectedActivity,
+      forestRegionOrgUnitIds: this.selectedForestRegion,
+      forestDistrictOrgUnitIds: this.selectedForestDistrict,
+      fireCentreOrgUnitIds: this.selectedFireCentre,
+      planFiscalStatusCodes: this.selectedFiscalStatus
     });
-    // this.projectFilterStateService.set({
-    //   searchText: this.searchText,
-    //   projectTypeCodes: sanitize(this.selectedProjectType),
-    //   programAreaGuids: sanitize(this.selectedBusinessArea),
-    //   fiscalYears: resolveFiscalYears(),
-    //   activityCategoryCodes: sanitize(this.selectedActivity),
-    //   forestRegionOrgUnitIds: sanitize(this.selectedForestRegion),
-    //   forestDistrictOrgUnitIds: sanitize(this.selectedForestDistrict),
-    //   fireCentreOrgUnitIds: sanitize(this.selectedFireCentre),
-    //   planFiscalStatusCodes: sanitize(this.selectedFiscalStatus)
-    // });
+    const flt = {
+      searchText: this.searchText,
+      projectTypeCodes: sanitize(this.selectedProjectType),
+      programAreaGuids: sanitize(this.selectedBusinessArea),
+      fiscalYears: resolveFiscalYears(),
+      activityCategoryCodes: sanitize(this.selectedActivity),
+      forestRegionOrgUnitIds: sanitize(this.selectedForestRegion),
+      forestDistrictOrgUnitIds: sanitize(this.selectedForestDistrict),
+      fireCentreOrgUnitIds: sanitize(this.selectedFireCentre),
+      planFiscalStatusCodes: sanitize(this.selectedFiscalStatus)
+    }
+
+    this.sharedService.updateFilters(flt);
   }
 
   onSearch() {
-    console.log('Searching for:', this.searchText);
     this.emitFilters();
   }
 
@@ -240,7 +246,6 @@ export class SearchFilterComponent implements OnInit {
     options: { value: string }[]
   ) {
     if (!event.isUserInput) return;
-
     const allOptionValue = '__ALL__';
     const allIndividualValues = options
       .map(o => o.value)
@@ -271,14 +276,23 @@ export class SearchFilterComponent implements OnInit {
     if (value !== allOptionValue && event.source.selected) {
       const updated = new Set([...currentSelected, value]);
       const hasAllIndividuals = allIndividualValues.every(v => updated.has(v));
-
       if (hasAllIndividuals && !updated.has(allOptionValue)) {
         setTimeout(() => {
           (this[model] as string[]) = [allOptionValue, ...allIndividualValues];
           this.emitFilters();
         }, 0);
+        return;
       }
     }
+
+    //Case 4: User selects "All" => select all
+    if (value === allOptionValue && event.source.selected) {
+      setTimeout(() => {
+          (this[model] as string[]) = [allOptionValue, ...allIndividualValues];
+          this.emitFilters();
+        }, 0);
+    }
+
   }
 
 
@@ -349,31 +363,37 @@ export class SearchFilterComponent implements OnInit {
         this.searchText = value;
         this.projectFilterStateService.update({
           searchText: value
-        })
+        });
         this.onSearch();
       });
+    this.onSearch();
   }
 
   clearSearch(): void {
     this.searchText = '';
+    this.projectFilterStateService.update({
+      searchText: this.searchText
+    });
     this.emitFilters();
   }
 
   assignDefaultFiscalYear(emit: boolean = true): void {
-    const today = new Date();
-    // April has an index of 3
-    const fiscalYearStart = today.getMonth() >= 3 ? today.getFullYear() : today.getFullYear() - 1;
-    const fiscalYearValue = fiscalYearStart.toString();
+    if (!this.projectFilterStateService?.filters()?.fiscalYears) {
+      const today = new Date();
+      // April has an index of 3
+      const fiscalYearStart = today.getMonth() >= 3 ? today.getFullYear() : today.getFullYear() - 1;
+      const fiscalYearValue = fiscalYearStart.toString();
 
-    const currentFiscalExists = this.fiscalYearOptions.some(opt => opt.value === fiscalYearValue);
-    const noYearAssignedExists = this.fiscalYearOptions.some(opt => opt.value === 'null');
+      const currentFiscalExists = this.fiscalYearOptions.some(opt => opt.value === fiscalYearValue);
+      const noYearAssignedExists = this.fiscalYearOptions.some(opt => opt.value === 'null');
 
-    // automatically assign current fiscal year and 'No Year Assigned'
-    this.selectedFiscalYears = [
-      ...(currentFiscalExists ? [fiscalYearValue] : []),
-      ...(noYearAssignedExists ? ['null'] : [])
-    ];
+      // automatically assign current fiscal year and 'No Year Assigned'
+      this.selectedFiscalYears = [
+        ...(currentFiscalExists ? [fiscalYearValue] : []),
+        ...(noYearAssignedExists ? ['null'] : [])
+      ];
 
-    if (emit) this.emitFilters();
+      if (emit) this.emitFilters();
+    }
   }
 }

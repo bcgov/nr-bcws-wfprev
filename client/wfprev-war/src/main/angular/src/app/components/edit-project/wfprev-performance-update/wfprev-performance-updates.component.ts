@@ -61,9 +61,7 @@ export class PerformanceUpdatesComponent implements OnChanges {
     private readonly route: ActivatedRoute,
     private dialog: MatDialog,
     private readonly snackbarService: MatSnackBar
-  ) {
-    console.info('PerformanceUpdatesComponent constructor called')
-  }
+  ) {}
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['fiscalGuid'] && changes['fiscalGuid'].currentValue && !this.isUpdatesCalled) {
@@ -80,8 +78,6 @@ export class PerformanceUpdatesComponent implements OnChanges {
         this.projectService.getPerformanceUpdates(this.projectGuid, this.fiscalGuid).subscribe({
           next: (data) => {
             this.updates = data?._embedded?.performanceUpdate ?? [];
-            console.info('JSON responce is:', this.updates);
-            console.info('Lenth is:', this.updates.length);
           },
           error: (error) => {
             console.error('Error fetching performance updates:', error);
