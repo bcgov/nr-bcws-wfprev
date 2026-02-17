@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, effect, OnInit } from '@angular/core';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { FormsModule } from '@angular/forms';
@@ -13,6 +13,9 @@ import { Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 import { MatOptionSelectionChange } from '@angular/material/core';
 import { WildfireOrgUnitTypeCodes } from 'src/app/utils/constants';
+import { ActivatedRoute } from '@angular/router';
+import { ProjectFilterStateService } from 'src/app/services/project-filter-state.service';
+import { ProjectFilter } from '../models';
 @Component({
   selector: 'wfprev-search-filter',
   standalone: true,
@@ -34,8 +37,27 @@ export class SearchFilterComponent implements OnInit {
   constructor(
     private readonly sharedCodeTableService: SharedCodeTableService,
     private readonly codeTableService: CodeTableServices,
-    private sharedService: SharedService
-  ) { }
+    private sharedService: SharedService,
+    private readonly projectFilterStateService: ProjectFilterStateService,
+    private route: ActivatedRoute,
+  ) {
+    effect(() => {
+      this.route.snapshot.url;
+      const saved = this.projectFilterStateService.filters();
+      if (saved) {
+        this.searchText = saved.searchText ?? "";
+        this.selectedProjectType = saved.projectTypeCodes ?? [];
+        this.selectedBusinessArea = saved.programAreaGuids ?? [];
+        this.selectedFiscalYears = saved.fiscalYears ?? [];
+        this.selectedActivity = saved.activityCategoryCodes ?? [];
+        this.selectedForestRegion =  saved.forestRegionOrgUnitIds ?? [];
+        this.selectedForestDistrict = saved.forestDistrictOrgUnitIds ?? [];
+        this.selectedFireCentre = saved.fireCentreOrgUnitIds ?? [];
+        this.selectedFiscalStatus = saved.planFiscalStatusCodes ?? [];
+      }
+
+    });
+  }
 
   searchText: string = '';
   searchTextChanged: Subject<string> = new Subject<string>();
@@ -59,6 +81,18 @@ export class SearchFilterComponent implements OnInit {
   noYearAssigned: string = 'No Year Assigned'
 
   ngOnInit(): void {
+    const savedFilters = this.projectFilterStateService.filters();
+    if (savedFilters) {
+      this.searchText = savedFilters?.searchText ?? '';
+      this.selectedProjectType = savedFilters?.projectTypeCodes ?? [];
+      this.selectedBusinessArea = savedFilters?.programAreaGuids ?? [];
+      this.selectedFiscalYears = savedFilters?.fiscalYears ?? [];
+      this.selectedActivity = savedFilters?.activityCategoryCodes ?? [];
+      this.selectedForestRegion = savedFilters?.forestRegionOrgUnitIds ?? [];
+      this.selectedForestDistrict = savedFilters?.forestDistrictOrgUnitIds ?? [];
+      this.selectedFireCentre = savedFilters?.fireCentreOrgUnitIds ?? [];
+      this.selectedFiscalStatus = savedFilters?.planFiscalStatusCodes ?? [];
+    }
     this.generateFiscalYearOptions();
     this.setupCodeTableSubscription();
     this.setupSearchDebounce();
@@ -79,21 +113,34 @@ export class SearchFilterComponent implements OnInit {
       return sanitize(this.selectedFiscalYears);
     };
 
-    this.sharedService.updateFilters({
+
+    this.projectFilterStateService.update({
       searchText: this.searchText,
-      projectTypeCode: sanitize(this.selectedProjectType),
-      programAreaGuid: sanitize(this.selectedBusinessArea),
-      fiscalYear: resolveFiscalYears(),
-      activityCategoryCode: sanitize(this.selectedActivity),
-      forestRegionOrgUnitId: sanitize(this.selectedForestRegion),
-      forestDistrictOrgUnitId: sanitize(this.selectedForestDistrict),
-      fireCentreOrgUnitId: sanitize(this.selectedFireCentre),
-      planFiscalStatusCode: sanitize(this.selectedFiscalStatus)
+      projectTypeCodes: this.selectedProjectType,
+      programAreaGuids: this.selectedBusinessArea,
+      fiscalYears: this.selectedFiscalYears,
+      activityCategoryCodes: this.selectedActivity,
+      forestRegionOrgUnitIds: this.selectedForestRegion,
+      forestDistrictOrgUnitIds: this.selectedForestDistrict,
+      fireCentreOrgUnitIds: this.selectedFireCentre,
+      planFiscalStatusCodes: this.selectedFiscalStatus
     });
+    const flt = {
+      searchText: this.searchText,
+      projectTypeCodes: sanitize(this.selectedProjectType),
+      programAreaGuids: sanitize(this.selectedBusinessArea),
+      fiscalYears: resolveFiscalYears(),
+      activityCategoryCodes: sanitize(this.selectedActivity),
+      forestRegionOrgUnitIds: sanitize(this.selectedForestRegion),
+      forestDistrictOrgUnitIds: sanitize(this.selectedForestDistrict),
+      fireCentreOrgUnitIds: sanitize(this.selectedFireCentre),
+      planFiscalStatusCodes: sanitize(this.selectedFiscalStatus)
+    }
+
+    this.sharedService.updateFilters(flt);
   }
 
   onSearch() {
-    console.log('Searching for:', this.searchText);
     this.emitFilters();
   }
 
@@ -199,7 +246,6 @@ export class SearchFilterComponent implements OnInit {
     options: { value: string }[]
   ) {
     if (!event.isUserInput) return;
-
     const allOptionValue = '__ALL__';
     const allIndividualValues = options
       .map(o => o.value)
@@ -230,14 +276,23 @@ export class SearchFilterComponent implements OnInit {
     if (value !== allOptionValue && event.source.selected) {
       const updated = new Set([...currentSelected, value]);
       const hasAllIndividuals = allIndividualValues.every(v => updated.has(v));
-
       if (hasAllIndividuals && !updated.has(allOptionValue)) {
         setTimeout(() => {
           (this[model] as string[]) = [allOptionValue, ...allIndividualValues];
           this.emitFilters();
         }, 0);
+        return;
       }
     }
+
+    //Case 4: User selects "All" => select all
+    if (value === allOptionValue && event.source.selected) {
+      setTimeout(() => {
+          (this[model] as string[]) = [allOptionValue, ...allIndividualValues];
+          this.emitFilters();
+        }, 0);
+    }
+
   }
 
 
@@ -306,30 +361,39 @@ export class SearchFilterComponent implements OnInit {
       .pipe(debounceTime(3000)) // 3s debounce time
       .subscribe((value: string) => {
         this.searchText = value;
+        this.projectFilterStateService.update({
+          searchText: value
+        });
         this.onSearch();
       });
+    this.onSearch();
   }
 
   clearSearch(): void {
     this.searchText = '';
+    this.projectFilterStateService.update({
+      searchText: this.searchText
+    });
     this.emitFilters();
   }
 
   assignDefaultFiscalYear(emit: boolean = true): void {
-    const today = new Date();
-    // April has an index of 3
-    const fiscalYearStart = today.getMonth() >= 3 ? today.getFullYear() : today.getFullYear() - 1;
-    const fiscalYearValue = fiscalYearStart.toString();
+    if (!this.projectFilterStateService?.filters()?.fiscalYears) {
+      const today = new Date();
+      // April has an index of 3
+      const fiscalYearStart = today.getMonth() >= 3 ? today.getFullYear() : today.getFullYear() - 1;
+      const fiscalYearValue = fiscalYearStart.toString();
 
-    const currentFiscalExists = this.fiscalYearOptions.some(opt => opt.value === fiscalYearValue);
-    const noYearAssignedExists = this.fiscalYearOptions.some(opt => opt.value === 'null');
+      const currentFiscalExists = this.fiscalYearOptions.some(opt => opt.value === fiscalYearValue);
+      const noYearAssignedExists = this.fiscalYearOptions.some(opt => opt.value === 'null');
 
-    // automatically assign current fiscal year and 'No Year Assigned'
-    this.selectedFiscalYears = [
-      ...(currentFiscalExists ? [fiscalYearValue] : []),
-      ...(noYearAssignedExists ? ['null'] : [])
-    ];
+      // automatically assign current fiscal year and 'No Year Assigned'
+      this.selectedFiscalYears = [
+        ...(currentFiscalExists ? [fiscalYearValue] : []),
+        ...(noYearAssignedExists ? ['null'] : [])
+      ];
 
-    if (emit) this.emitFilters();
+      if (emit) this.emitFilters();
+    }
   }
 }

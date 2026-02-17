@@ -73,7 +73,6 @@ export class ProjectsListComponent implements OnInit {
   }
   ngOnInit(): void {
     this.loadCodeTables();
-    this.loadProjects();
 
     this.sharedService.selectedProject$.subscribe(project => {
       if (!project) {
