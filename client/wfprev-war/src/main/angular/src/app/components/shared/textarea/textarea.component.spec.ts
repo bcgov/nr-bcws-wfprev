@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ReactiveFormsModule, FormControl, Validators } from '@angular/forms';
+import { FormControl, Validators } from '@angular/forms';
 import { By } from '@angular/platform-browser';
 import { TextareaComponent } from './textarea.component';
 
@@ -49,13 +49,17 @@ describe('TextareaComponent', () => {
   });
 
   it('should show error when maxlength exceeded and touched', () => {
+    component.maxLength = 5;
     component.control = new FormControl('too long text', [Validators.maxLength(5)]);
     component.control.markAsTouched();
     fixture.detectChanges();
 
-    const errorEl = fixture.debugElement.query(By.css('.error'));
-    expect(errorEl).toBeTruthy();
-    expect(errorEl.nativeElement.textContent).toContain('Maximum character');
+    const errors = fixture.debugElement.queryAll(By.css('.error'));
+    const maxLengthError = errors.find(el => el.nativeElement.textContent.includes('Maximum character'));
+    expect(maxLengthError).toBeTruthy();
+    if (maxLengthError) {
+      expect(maxLengthError.nativeElement.classList.contains('invisible')).toBeFalse();
+    }
   });
 
   it('should not show error when control is untouched', () => {
