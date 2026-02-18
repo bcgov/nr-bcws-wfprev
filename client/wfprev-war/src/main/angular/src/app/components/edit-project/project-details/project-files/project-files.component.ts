@@ -336,6 +336,13 @@ export class ProjectFilesComponent implements OnInit {
           }
         });
       }
+    }).catch((error) => {
+      snackRef.dismiss();
+      console.error('Error extracting coordinates:', error);
+      this.snackbarService.open('Failed to process spatial file. ' + error.message, 'Close', {
+        duration: 10000,
+        panelClass: ['snackbar-error'],
+      });
     });
   }
 
