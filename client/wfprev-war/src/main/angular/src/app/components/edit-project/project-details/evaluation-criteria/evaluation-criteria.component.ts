@@ -38,7 +38,6 @@ export class EvaluationCriteriaComponent implements OnChanges {
       .getEvaluationCriteriaSummaries(this.project.projectGuid)
       .subscribe({
         next: (response) => {
-          console.log('Fetched evaluation criteria summaries:', response);
           this.evaluationCriteriaSummary = response?._embedded?.eval_criteria_summary[0] ?? null;
         },
         error: (err) => {

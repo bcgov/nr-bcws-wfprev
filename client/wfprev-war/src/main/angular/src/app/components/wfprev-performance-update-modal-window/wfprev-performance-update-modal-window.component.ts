@@ -262,7 +262,6 @@ export class PerformanceUpdateModalWindowComponent {
     this.projectService.savePerformanceUpdates(this.data.projectGuid, this.data.fiscalGuid, newUpdate).subscribe(
       {
         next: (data) => {
-          console.log('Performence Saved');
           this.dialogRef.close(data);
         },
         error: (error) => {

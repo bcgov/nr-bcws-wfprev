@@ -17,7 +17,7 @@
       </div>
       <div class="general-updates">
         <wfprev-textarea [label]="'General Updates (Successes, Challenges, Progress)'" [rows]="4" [maxLength]="500"
-          [control]="generalUpdatesControl" [required]="true">
+          [control]="generalUpdatesControl" [required]="true" placeholder="Provide an update of the Fiscal Activity, outlining any successes, challenges or progress from this reporting period.">
         </wfprev-textarea>
       </div>
     </div>
@@ -54,12 +54,12 @@
       <div class="modal-window-row">
         <div>
           <wfprev-input-field [id]="'revisedForecast'" [label]="'Revised Forecast'" [placeholder]="'0.00'"
-            [type]="'number'" [control]="revisedForecastControl" [tooltip]="'Revised Forecast'" [required]="false"
+            [control]="revisedForecastControl" [tooltip]="'Revised Forecast'" [required]="false"
             [errorMessages]="{ min: messages.positiveNumber, maxlength: messages.maxLengthExceeded, max: messages.maxLengthExceeded }"
-            [prefix]="'$'" />
+            [prefix]="'$'" [enableAmountFormat]="true"/>
         </div>
         <div class="forecast-rationale">
-          <wfprev-textarea [label]="'Revised Forecast Rationale'" placeholder="Some rationale about why the amount went up." [rows]="2" [maxLength]="500"
+          <wfprev-textarea [label]="'Revised Forecast Rationale'" placeholder="Provide rationale for the adjusted forecast." [rows]="2" [maxLength]="500"
             [control]="forecastRationaleControl" [required]="true">
           </wfprev-textarea>
         </div>
@@ -74,52 +74,52 @@
       </div>
       <div class="modal-window-row risk-container">
         <div>
-          <wfprev-input-field [id]="'highRisk'" [label]="'High Risk'" [placeholder]="'0,00'" [type]="'number'"
+          <wfprev-input-field [id]="'highRisk'" [label]="'High Risk'" [placeholder]="'0.00'" 
             [control]="highRiskControl" [tooltip]="'High Risk'" [required]="false"
             [errorMessages]="{ min: messages.positiveNumber, maxlength: messages.maxLengthExceeded, max: messages.maxLengthExceeded }"
-            [prefix]="'$'" [img]="'/assets/high-risk.svg'" />
+            [prefix]="'$'" [img]="'/assets/high-risk.svg'" [enableAmountFormat]="true"/>
         </div>
         <div class="forecast-rationale">
-          <wfprev-textarea [label]="'Description'" placeholder="Some description about why this amount is high risk" [rows]="2" [maxLength]="500" [control]="highRiskDescriptionControl"
+          <wfprev-textarea [label]="'Description'" placeholder="Describe the scope of the Fiscal Activity that is high risk." [rows]="2" [maxLength]="500" [control]="highRiskDescriptionControl"
             [required]="true" >
           </wfprev-textarea>
         </div>
       </div>
       <div class="modal-window-row risk-container">
         <div>
-          <wfprev-input-field [id]="'mediumRisk'" [label]="'Medium Risk'" [placeholder]="'0,00'" [type]="'number'"
+          <wfprev-input-field [id]="'mediumRisk'" [label]="'Medium Risk'" [placeholder]="'0.00'"
             [control]="mediumRiskControl" [tooltip]="'Medium Risk'" [required]="false"
             [errorMessages]="{ min: messages.positiveNumber, maxlength: messages.maxLengthExceeded, max: messages.maxLengthExceeded }"
-            [prefix]="'$'" [img]="'/assets/medium-risk.svg'" />
+            [prefix]="'$'" [img]="'/assets/medium-risk.svg'" [enableAmountFormat]="true"/>
         </div>
         <div class="forecast-rationale">
-          <wfprev-textarea [label]="'Description'" placeholder="Some description about why this amount is medium risk" [rows]="2" [maxLength]="500" [control]="mediumRiskDescriptionControl"
+          <wfprev-textarea [label]="'Description'" placeholder="Describe the scope of the Fiscal Activity that is medium risk." [rows]="2" [maxLength]="500" [control]="mediumRiskDescriptionControl"
             [required]="true">
           </wfprev-textarea>
         </div>
       </div>
       <div class="modal-window-row risk-container">
         <div>
-          <wfprev-input-field [id]="'lowRisk'" [label]="'Low Risk'" [placeholder]="'0,00'" [type]="'number'"
+          <wfprev-input-field [id]="'lowRisk'" [label]="'Low Risk'" [placeholder]="'0.00'"
             [control]="lowRiskControl" [tooltip]="'Low Risk'" [required]="false"
             [errorMessages]="{ min: messages.positiveNumber, maxlength: messages.maxLengthExceeded, max: messages.maxLengthExceeded }"
-            [prefix]="'$'" [img]="'/assets/low-risk.svg'" />
+            [prefix]="'$'" [img]="'/assets/low-risk.svg'" [enableAmountFormat]="true"/>
         </div>
         <div class="forecast-rationale">
-          <wfprev-textarea [label]="'Description'" placeholder="Some description about why this amount is low risk" [rows]="2" [maxLength]="500" [control]="lowRiskDescriptionControl"
+          <wfprev-textarea [label]="'Description'" placeholder="Describe the scope of the Fiscal Activity that is low risk." [rows]="2" [maxLength]="500" [control]="lowRiskDescriptionControl"
             [required]="true">
           </wfprev-textarea>
         </div>
       </div>
       <div class="modal-window-row risk-container">
         <div>
-          <wfprev-input-field [id]="'complete'" [label]="'Complete'" [placeholder]="'0,00'" [type]="'number'"
+          <wfprev-input-field [id]="'complete'" [label]="'Complete'" [placeholder]="'0.00'"
             [control]="completeControl" [tooltip]="'Complete'" [required]="false"
             [errorMessages]="{ min: messages.positiveNumber, maxlength: messages.maxLengthExceeded, max: messages.maxLengthExceeded }"
-            [prefix]="'$'" [img]="'/assets/none-risk.svg'" />
+            [prefix]="'$'" [img]="'/assets/none-risk.svg'" [enableAmountFormat]="true"/>
         </div>
         <div class="forecast-rationale">
-          <wfprev-textarea [label]="'Description'" placeholder="Some description about what amount was spent and how" [rows]="2" [maxLength]="500" [control]="completeDescriptionControl"
+          <wfprev-textarea [label]="'Description'" placeholder="Describe the scope of the Fiscal Activity that has been billed or is complete." [rows]="2" [maxLength]="500" [control]="completeDescriptionControl"
             [required]="true">
           </wfprev-textarea>
         </div>

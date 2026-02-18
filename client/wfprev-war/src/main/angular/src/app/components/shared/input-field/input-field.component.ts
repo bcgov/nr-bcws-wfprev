@@ -2,13 +2,14 @@ import { Component, Input } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { NgxCurrencyDirective } from 'ngx-currency';
 
 @Component({
   selector: 'wfprev-input-field',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, MatTooltipModule],
+  imports: [CommonModule, ReactiveFormsModule, MatTooltipModule, NgxCurrencyDirective],
   templateUrl: './input-field.component.html',
-  styleUrls: ['./input-field.component.scss'],
+  styleUrls: ['./input-field.component.scss']
 })
 export class InputFieldComponent {
   @Input() control!: FormControl;
@@ -21,4 +22,5 @@ export class InputFieldComponent {
   @Input() errorMessages: { [key: string]: string } = {};
   @Input() prefix: string | null = null;
   @Input() img: string | null = null;
+  @Input() enableAmountFormat: boolean = false;
 }
