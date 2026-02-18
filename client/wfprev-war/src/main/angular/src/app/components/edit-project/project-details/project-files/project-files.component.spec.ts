@@ -52,11 +52,18 @@ describe('ProjectFilesComponent', () => {
 
     // Setup default mock return values to prevent subscribe errors
     mockAttachmentService.getProjectAttachments.and.returnValue(of({ _embedded: {} }));
+    mockAttachmentService.getActivityAttachments.and.returnValue(of({ _embedded: {} }));
     mockProjectService.getProjectBoundaries.and.returnValue(of({ _embedded: {} }));
+    mockProjectService.getActivityBoundaries.and.returnValue(of({ _embedded: {} }));
     mockSpatialService.extractCoordinates.and.returnValue(Promise.resolve([]));
     mockAttachmentService.createProjectAttachment.and.returnValue(of({}));
+    mockAttachmentService.createActivityAttachment.and.returnValue(of({}));
     mockAttachmentService.deleteProjectAttachment.and.returnValue(of({}));
+    mockAttachmentService.deleteActivityAttachments.and.returnValue(of({}));
     mockProjectService.createProjectBoundary.and.returnValue(of({}));
+    mockProjectService.createActivityBoundary.and.returnValue(of({}));
+    mockProjectService.deleteProjectBoundary.and.returnValue(of({}));
+    mockProjectService.deleteActivityBoundary.and.returnValue(of({}));
     mockProjectService.uploadDocument.and.returnValue(of({}));
     mockSnackRef = { dismiss: jasmine.createSpy('dismiss') } as any;
     mockSnackbar.open.and.returnValue(mockSnackRef);
@@ -592,7 +599,9 @@ describe('ProjectFilesComponent', () => {
       const mockProjectGuid = 'mock-guid';
       const mockProjectFile: ProjectFile = {
         fileAttachmentGuid: 'test-guid',
-        fileName: 'test-file.txt'
+        fileName: 'test-file.txt',
+        attachmentContentTypeCode: { attachmentContentTypeCode: 'MAP' },
+        sourceObjectUniqueId: 'boundary-guid'
       };
 
       const mockBoundary = {
@@ -639,7 +648,6 @@ describe('ProjectFilesComponent', () => {
         'test-guid'
       );
 
-      expect(mockProjectService.getProjectBoundaries).toHaveBeenCalledWith(mockProjectGuid);
       expect(mockProjectService.deleteProjectBoundary).toHaveBeenCalledWith(mockProjectGuid, 'boundary-guid');
 
       expect(component.projectFiles.length).toBe(0);
@@ -896,7 +904,11 @@ describe('ProjectFilesComponent', () => {
     component.fiscalGuid = 'fiscal-guid';
     component.projectGuid = 'project-guid';
 
-    const mockFile = { fileAttachmentGuid: 'test-guid', attachmentContentTypeCode: { attachmentContentTypeCode: 'MAP' } } as ProjectFile;
+    const mockFile = {
+      fileAttachmentGuid: 'test-guid',
+      attachmentContentTypeCode: { attachmentContentTypeCode: 'MAP' },
+      sourceObjectUniqueId: 'boundary-guid'
+    } as ProjectFile;
     const mockBoundary = {
       activityBoundaryGuid: 'boundary-guid',
       systemStartTimestamp: new Date().toISOString()
@@ -921,7 +933,6 @@ describe('ProjectFilesComponent', () => {
       expect(mockAttachmentService.deleteActivityAttachments).toHaveBeenCalledWith(
         'project-guid', 'fiscal-guid', 'activity-guid', 'test-guid'
       );
-      expect(mockProjectService.getActivityBoundaries).toHaveBeenCalled();
       expect(mockProjectService.deleteActivityBoundary).toHaveBeenCalledWith(
         'project-guid', 'fiscal-guid', 'activity-guid', 'boundary-guid'
       );
@@ -965,21 +976,22 @@ describe('ProjectFilesComponent', () => {
     component.projectGuid = 'project-guid';
     const mockFile = {
       fileAttachmentGuid: 'test-guid',
-      attachmentContentTypeCode: { attachmentContentTypeCode: 'MAP' }
+      attachmentContentTypeCode: { attachmentContentTypeCode: 'MAP' },
+      sourceObjectUniqueId: 'boundary-guid'
     } as ProjectFile;
 
     mockDialog.open.and.returnValue({ afterClosed: () => of(true) } as any);
-    mockAttachmentService.deleteActivityAttachments = jasmine.createSpy().and.returnValue(of({}));
-    mockProjectService.getActivityBoundaries = jasmine.createSpy().and.returnValue(of({
+    mockAttachmentService.deleteActivityAttachments.and.returnValue(of({}));
+    mockProjectService.getActivityBoundaries.and.returnValue(of({
       _embedded: { activityBoundary: [] }
     }));
 
-    spyOn(console, 'log');
+    spyOn(component, 'loadActivityAttachments').and.callThrough();
     component.deleteFile(mockFile);
 
     expect(mockAttachmentService.deleteActivityAttachments).toHaveBeenCalled();
     expect(mockProjectService.getActivityBoundaries).toHaveBeenCalled();
-    expect(console.log).toHaveBeenCalledWith('No boundaries found');
+    // Implementation doesn't log "No boundaries found" anymore, removing expectation
   });
 
   describe('finishWithoutGeometry', () => {
