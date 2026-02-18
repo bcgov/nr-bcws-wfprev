@@ -22,6 +22,15 @@
         [formControl]="control"
         [placeholder]="placeholder"
         [matTooltip]="tooltip || control.value"
+        *ngIf="!enableAmountFormat"
+      />
+      <input [currencyMask]="{align: 'left', prefix: '', inputMode: 1}" 
+        [id]="id"
+        [type]="type"
+        [formControl]="control"
+        [placeholder]="placeholder"
+        [matTooltip]="tooltip || control.value"
+        *ngIf="enableAmountFormat"
       />
     </div>
 
