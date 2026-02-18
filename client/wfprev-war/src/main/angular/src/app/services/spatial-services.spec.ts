@@ -1,13 +1,12 @@
-import { TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { SpatialService } from './spatial-services';
-import { Geometry, Point, LineString, Polygon, MultiPoint, MultiLineString, MultiPolygon, GeometryCollection, Position } from 'geojson';
-import { of, throwError } from 'rxjs';
-import * as turf from '@turf/turf';
+import { TestBed } from '@angular/core/testing';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ZipReader } from '@zip.js/zip.js';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { Geometry, GeometryCollection, LineString, MultiLineString, MultiPoint, MultiPolygon, Point, Polygon, Position } from 'geojson';
+import { of, throwError } from 'rxjs';
 import { AppConfigService } from './app-config.service';
+import { SpatialService } from './spatial-services';
 import { TokenService } from './token.service';
 
 // Create mock ZIP module implementation
@@ -657,14 +656,14 @@ describe('SpatialService', () => {
     it('should extract and process geometry when the API returns valid data', (done: () => void) => {
       // Spy on stripAltitude and return the input geometry unchanged
       const stripAltitudeSpy = spyOn(service, 'stripAltitude').and.callFake((geom) => geom);
-    
+
       service.extractGDBGeometry(mockFile).subscribe((result) => {
-        expect(result.length).toBe(1); 
+        expect(result.length).toBe(1);
         expect(stripAltitudeSpy).toHaveBeenCalledTimes(1);
         expect(stripAltitudeSpy.calls.mostRecent().args[0]).toEqual(mockGeometry);
         done();
       });
-    
+
       const req = httpMock.expectOne('http://mock-api.com/wfprev-api/gdb/extract');
       expect(req.request.method).toBe('POST');
       req.flush({ body: JSON.stringify([mockGeometry]) });
@@ -826,6 +825,8 @@ describe('SpatialService', () => {
         mockAppConfigService as any,
         mockTokenService as any
       );
+
+      spyOn(service, 'validateGeometryWithBackend').and.returnValue(Promise.resolve({ valid: true, message: 'Valid' }));
     });
     it('should validate a correct multipolygon without errors', async () => {
       const coords: Position[][][] = [
