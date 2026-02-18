@@ -10,7 +10,17 @@ import { catchError, firstValueFrom, lastValueFrom, map, Observable, of, throwEr
 import * as shp from 'shpjs';
 import { AppConfigService } from "./app-config.service";
 import { TokenService } from "./token.service";
+
 export type CoordinateTypes = Position | Position[] | Position[][] | Position[][][];
+
+export interface ValidationResult {
+    valid: boolean;
+    message: string;
+    violationLocation?: {
+        x: number;
+        y: number;
+    };
+}
 
 @Injectable({
     providedIn: 'root',
@@ -141,6 +151,30 @@ export class SpatialService {
                 // Normal case
                 return [polygonCoords];
 
+            case 'MultiPolygon':
+                // Check for excessive nesting (Depth 6+) which we don't support
+                if (geometry.coordinates.length > 0 &&
+                    Array.isArray(geometry.coordinates[0]) &&
+                    Array.isArray(geometry.coordinates[0][0]) &&
+                    Array.isArray(geometry.coordinates[0][0][0]) &&
+                    Array.isArray(geometry.coordinates[0][0][0][0]) &&
+                    Array.isArray(geometry.coordinates[0][0][0][0][0])) {
+
+                    console.error('Geometry is too deeply nested (Depth 6+). Please flatten your data (explode multi-part features) in your GIS software before uploading.');
+                    throw new Error('Geometry is too deeply nested (Depth 6+). Please flatten your data.');
+                }
+
+                // Check for potential double nesting coming from KML parsers (Depth 5)
+                if (geometry.coordinates.length > 0 &&
+                    Array.isArray(geometry.coordinates[0]) &&
+                    Array.isArray(geometry.coordinates[0][0]) &&
+                    Array.isArray(geometry.coordinates[0][0][0]) &&
+                    Array.isArray(geometry.coordinates[0][0][0][0])) {
+                    // It's 4 levels deep, likely [MultiPolygon] instead of MultiPolygon. Auto-correct.
+                    return geometry.coordinates[0] as unknown as Position[][][];
+                }
+                return geometry.coordinates;
+
             case 'MultiPoint': {
                 // Convert each point to a small polygon
                 return geometry.coordinates.map(point => {
@@ -165,10 +199,6 @@ export class SpatialService {
                     return [closedLine];
                 });
             }
-
-            case 'MultiPolygon':
-                // Already in the right format
-                return geometry.coordinates;
 
             case 'GeometryCollection': {
                 // Process each geometry and combine
@@ -257,17 +287,17 @@ export class SpatialService {
 
         return this.httpClient.post<any>(url, formData, { headers }).pipe(
             map((response) => {
-              const body = JSON.parse(response.body); 
-              return body.map((geom: any) => {
-                const geometries: Geometry[] = [geom]; 
-                return geometries.map(this.stripAltitude);
-              }).flat();
+                const body = JSON.parse(response.body);
+                return body.map((geom: any) => {
+                    const geometries: Geometry[] = [geom];
+                    return geometries.map(this.stripAltitude);
+                }).flat();
             }),
             catchError((error) => {
-              console.error("Error extracting geodatabase geometry", error);
-              return throwError(() => new Error("Failed to extract geodatabase geometry"));
+                console.error("Error extracting geodatabase geometry", error);
+                return throwError(() => new Error("Failed to extract geodatabase geometry"));
             })
-          );
+        );
     }
 
     public async extractCoordinates(file: File): Promise<Position[][][]> {
@@ -466,15 +496,24 @@ export class SpatialService {
                 throw new Error('Geometry is invalid.');
             }
 
-            await this.validateGeometryInBC(multiPolygon).then(response => {
-                if (!response) {
-                    this.snackbarService.open('Geometry is outside of BC.', 'Close', {
-                        duration: 5000,
-                        panelClass: 'snackbar-error',
-                    });
-                    throw new Error('Geometry is invalid.');
-                }
-            })
+            const inBC = await this.validateGeometryInBC(multiPolygon);
+            if (!inBC) {
+                this.snackbarService.open('Geometry is outside of BC.', 'Close', {
+                    duration: 5000,
+                    panelClass: 'snackbar-error',
+                });
+                throw new Error('Geometry is invalid.');
+            }
+
+            // Backend Validation
+            const validationResult = await this.validateGeometryWithBackend(multiPolygon.geometry);
+            if (!validationResult.valid) {
+                this.snackbarService.open(`Backend Validation Failed: ${validationResult.message}`, 'Close', {
+                    duration: 5000,
+                    panelClass: 'snackbar-error',
+                });
+                throw new Error(validationResult.message);
+            }
 
         } catch (error) {
             console.error('Validation error:', error);
@@ -542,5 +581,14 @@ export class SpatialService {
     private intersectsWithBC(bcFeature: GeoJSON.Feature, inputFeature: GeoJSON.Feature): boolean {
         return turf.booleanIntersects(bcFeature, inputFeature);
     }
-      
+
+    validateGeometryWithBackend(geometry: Geometry): Promise<ValidationResult> {
+        const url = `${this.appConfigService.getConfig().rest['wfprev']}/wfprev-api/spatial/validate`;
+        const headers = new HttpHeaders({
+            Authorization: `Bearer ${this.tokenService.getOauthToken()}`,
+            'Content-Type': 'application/json'
+        });
+
+        return firstValueFrom(this.httpClient.post<ValidationResult>(url, geometry, { headers }));
+    }
 }
