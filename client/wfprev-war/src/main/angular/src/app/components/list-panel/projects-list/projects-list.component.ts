@@ -725,14 +725,14 @@ export class ProjectsListComponent implements OnInit {
 
     if (filters && Object.keys(filters).length > 0) {
       body.projectFilter = {
-        programAreaGuids: filters.programAreaGuid,
-        fiscalYears: filters.fiscalYear,
-        forestRegionOrgUnitIds: filters.forestRegionOrgUnitId,
-        forestDistrictOrgUnitIds: filters.forestDistrictOrgUnitId,
-        fireCentreOrgUnitIds: filters.fireCentreOrgUnitId,
-        activityCategoryCodes: filters.activityCategoryCode,
-        planFiscalStatusCodes: filters.planFiscalStatusCode,
-        projectTypeCodes: filters.projectTypeCode,
+        programAreaGuid: filters.programAreaGuid,
+        fiscalYear: filters.fiscalYear,
+        forestRegionOrgUnitId: filters.forestRegionOrgUnitId,
+        forestDistrictOrgUnitId: filters.forestDistrictOrgUnitId,
+        fireCentreOrgUnitId: filters.fireCentreOrgUnitId,
+        activityCategoryCode: filters.activityCategoryCode,
+        planFiscalStatusCode: filters.planFiscalStatusCode,
+        projectTypeCode: filters.projectTypeCode,
         searchText: filters.searchText
       };
     } else {
