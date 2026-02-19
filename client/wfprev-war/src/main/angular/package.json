@@ -38,7 +38,7 @@
     "leaflet": "1.9.4",
     "leaflet.markercluster": "1.5.3",
     "maplibre-gl": "5.10.0",
-    "ngx-currency": "19.0.0",
+    "ngx-currency": "18.0.0",
     "ngx-moment": "6.0.2",
     "rxjs": "7.5.0",
     "shpjs": "6.1.0",
