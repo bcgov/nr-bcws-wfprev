@@ -357,14 +357,14 @@ export interface ReportProject {
 }
 
 export interface ProjectFilter {
-  programAreaGuids?: string[];
-  fiscalYears?: string[];
-  forestRegionOrgUnitIds?: string[];
-  forestDistrictOrgUnitIds?: string[];
-  fireCentreOrgUnitIds?: string[];
-  activityCategoryCodes?: string[];
-  planFiscalStatusCodes?: string[];
-  projectTypeCodes?: string[];
+  programAreaGuid?: string[];
+  fiscalYear?: string[];
+  forestRegionOrgUnitId?: string[];
+  forestDistrictOrgUnitId?: string[];
+  fireCentreOrgUnitId?: string[];
+  activityCategoryCode?: string[];
+  planFiscalStatusCode?: string[];
+  projectTypeCode?: string[];
   searchText?: string;
   sortBy?: string;
   sortDirection?: string;
