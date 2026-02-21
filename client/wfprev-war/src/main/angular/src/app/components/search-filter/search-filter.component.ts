@@ -46,14 +46,14 @@ export class SearchFilterComponent implements OnInit {
       const saved = this.projectFilterStateService.filters();
       if (saved) {
         this.searchText = saved.searchText ?? "";
-        this.selectedProjectType = saved.projectTypeCode ?? [];
-        this.selectedBusinessArea = saved.programAreaGuid ?? [];
-        this.selectedFiscalYears = saved.fiscalYear ?? [];
-        this.selectedActivity = saved.activityCategoryCode ?? [];
-        this.selectedForestRegion =  saved.forestRegionOrgUnitId ?? [];
-        this.selectedForestDistrict = saved.forestDistrictOrgUnitId ?? [];
-        this.selectedFireCentre = saved.fireCentreOrgUnitId ?? [];
-        this.selectedFiscalStatus = saved.planFiscalStatusCode ?? [];
+        this.selectedProjectType = saved.projectTypeCodes ?? [];
+        this.selectedBusinessArea = saved.programAreaGuids ?? [];
+        this.selectedFiscalYears = saved.fiscalYears ?? [];
+        this.selectedActivity = saved.activityCategoryCodes ?? [];
+        this.selectedForestRegion =  saved.forestRegionOrgUnitIds ?? [];
+        this.selectedForestDistrict = saved.forestDistrictOrgUnitIds ?? [];
+        this.selectedFireCentre = saved.fireCentreOrgUnitIds ?? [];
+        this.selectedFiscalStatus = saved.planFiscalStatusCodes ?? [];
       }
 
     });
@@ -84,14 +84,14 @@ export class SearchFilterComponent implements OnInit {
     const savedFilters = this.projectFilterStateService.filters();
     if (savedFilters) {
       this.searchText = savedFilters?.searchText ?? '';
-      this.selectedProjectType = savedFilters?.projectTypeCode ?? [];
-      this.selectedBusinessArea = savedFilters?.programAreaGuid ?? [];
-      this.selectedFiscalYears = savedFilters?.fiscalYear ?? [];
-      this.selectedActivity = savedFilters?.activityCategoryCode ?? [];
-      this.selectedForestRegion = savedFilters?.forestRegionOrgUnitId ?? [];
-      this.selectedForestDistrict = savedFilters?.forestDistrictOrgUnitId ?? [];
-      this.selectedFireCentre = savedFilters?.fireCentreOrgUnitId ?? [];
-      this.selectedFiscalStatus = savedFilters?.planFiscalStatusCode ?? [];
+      this.selectedProjectType = savedFilters?.projectTypeCodes ?? [];
+      this.selectedBusinessArea = savedFilters?.programAreaGuids ?? [];
+      this.selectedFiscalYears = savedFilters?.fiscalYears ?? [];
+      this.selectedActivity = savedFilters?.activityCategoryCodes ?? [];
+      this.selectedForestRegion = savedFilters?.forestRegionOrgUnitIds ?? [];
+      this.selectedForestDistrict = savedFilters?.forestDistrictOrgUnitIds ?? [];
+      this.selectedFireCentre = savedFilters?.fireCentreOrgUnitIds ?? [];
+      this.selectedFiscalStatus = savedFilters?.planFiscalStatusCodes ?? [];
     }
     this.generateFiscalYearOptions();
     this.setupCodeTableSubscription();
@@ -116,25 +116,25 @@ export class SearchFilterComponent implements OnInit {
 
     this.projectFilterStateService.update({
       searchText: this.searchText,
-      projectTypeCode: this.selectedProjectType,
-      programAreaGuid: this.selectedBusinessArea,
-      fiscalYear: this.selectedFiscalYears,
-      activityCategoryCode: this.selectedActivity,
-      forestRegionOrgUnitId: this.selectedForestRegion,
-      forestDistrictOrgUnitId: this.selectedForestDistrict,
-      fireCentreOrgUnitId: this.selectedFireCentre,
-      planFiscalStatusCode: this.selectedFiscalStatus
+      projectTypeCodes: this.selectedProjectType,
+      programAreaGuids: this.selectedBusinessArea,
+      fiscalYears: this.selectedFiscalYears,
+      activityCategoryCodes: this.selectedActivity,
+      forestRegionOrgUnitIds: this.selectedForestRegion,
+      forestDistrictOrgUnitIds: this.selectedForestDistrict,
+      fireCentreOrgUnitIds: this.selectedFireCentre,
+      planFiscalStatusCodes: this.selectedFiscalStatus
     });
     const filterPrarameters: ProjectFilter = {
       searchText: this.searchText,
-      projectTypeCode: sanitize(this.selectedProjectType),
-      programAreaGuid: sanitize(this.selectedBusinessArea),
-      fiscalYear: resolveFiscalYears(),
-      activityCategoryCode: sanitize(this.selectedActivity),
-      forestRegionOrgUnitId: sanitize(this.selectedForestRegion),
-      forestDistrictOrgUnitId: sanitize(this.selectedForestDistrict),
-      fireCentreOrgUnitId: sanitize(this.selectedFireCentre),
-      planFiscalStatusCode: sanitize(this.selectedFiscalStatus)
+      projectTypeCodes: sanitize(this.selectedProjectType),
+      programAreaGuids: sanitize(this.selectedBusinessArea),
+      fiscalYears: resolveFiscalYears(),
+      activityCategoryCodes: sanitize(this.selectedActivity),
+      forestRegionOrgUnitIds: sanitize(this.selectedForestRegion),
+      forestDistrictOrgUnitIds: sanitize(this.selectedForestDistrict),
+      fireCentreOrgUnitIds: sanitize(this.selectedFireCentre),
+      planFiscalStatusCodes: sanitize(this.selectedFiscalStatus)
     }
 
     this.sharedService.updateFilters(filterPrarameters);
@@ -378,7 +378,7 @@ export class SearchFilterComponent implements OnInit {
   }
 
   assignDefaultFiscalYear(emit: boolean = true): void {
-    if (!this.projectFilterStateService?.filters()?.fiscalYear) {
+    if (!this.projectFilterStateService?.filters()?.fiscalYears) {
       const today = new Date();
       // April has an index of 3
       const fiscalYearStart = today.getMonth() >= 3 ? today.getFullYear() : today.getFullYear() - 1;
