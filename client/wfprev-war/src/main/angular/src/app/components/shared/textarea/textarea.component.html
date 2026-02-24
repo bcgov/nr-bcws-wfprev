@@ -15,6 +15,12 @@
     [ngClass]="{ 'over-limit': isOverLimit }"
   ></textarea>
 
+  <div class="feedback-row" *ngIf="control.touched && control.invalid">
+    <div class="error">
+      {{message.requiredField}}
+    </div>
+  </div>
+
   <div class="feedback-row" *ngIf="maxLength as limit">
     <div class="error" [class.invisible]="!isOverLimit">
       {{message.maxLengthExceeded}}

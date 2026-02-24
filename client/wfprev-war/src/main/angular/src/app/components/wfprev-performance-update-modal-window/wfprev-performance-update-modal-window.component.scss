@@ -1,0 +1,188 @@
+.modal-window-container {
+    display: flex;
+    width: 1086px;
+    height: auto;
+    max-height: 90vh;
+    overflow-y: auto;
+    flex-direction: column;
+
+    .section {
+        padding: 12px 20px;
+        border-bottom: 1px solid #D8D8D8;
+
+        .error {
+            color: #CE3E39;
+            font-size: 14px;
+            margin: 4px 0 0 4px;
+        }
+
+        .title {
+            padding-top: 8px;
+            font-size: 21px;
+            font-style: normal;
+            font-weight: 500;
+            line-height: 18px;
+            letter-spacing: 0.2px;
+            margin: 0;
+        }
+
+        .budget-title {
+            font-size: 21px;
+            font-style: normal;
+            font-weight: bold;
+            line-height: 18px;
+            letter-spacing: 0.2px;
+            margin: 0;
+        }
+
+        .risk-breakdown-title {
+            font-size: 21px;
+            font-style: normal;
+            font-weight: bold;
+            line-height: 18px;
+            letter-spacing: 0.2px;
+            margin: 0;
+        }
+
+        .risk-main-description {
+            font-size: 21px;
+            font-style: normal;
+            font-weight: bold;
+            line-height: 18px;
+            letter-spacing: 0.2px;
+            margin: 0;
+        }
+
+        .risk-container {
+            background: #F5F6F9;
+            border-radius: 10px;
+            padding: 8px 12px;
+            margin-top: 10px;
+        }
+
+        .modal-window-row {
+            display: flex;
+            flex-direction: row;
+            gap: 15px;
+            // padding-top: 23px;
+            padding-top: 16px;
+
+            .forecast-rationale {
+                width: 100%;
+            }
+
+            .section-description {
+                font-size: 14px;
+                padding-bottom: 13px;
+                margin: 0;
+            }
+        }
+
+        .general-updates {
+            margin-top: 8px;
+            width: 100%;
+        }
+
+        .forecast-container {
+            display: flex;
+            flex-direction: row;
+            height: 50px;
+            background: #F5F6F9;
+            border-radius: 10px;
+            padding: 8px 12px;
+            width: 315px;
+
+            .forecast-img {
+                display: flex;
+                align-items: center;
+                width: 50px;
+                height: 50px;
+                gap: 10px
+            }
+
+            .forecast-text {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                padding: 0px 27px;
+
+                font-size: 18px;
+                font-style: normal;
+                font-weight: 400;
+                line-height: 24px;
+
+                p {
+                    margin: 0px;
+                }
+
+                .amount {
+                    font-weight: bold;
+                }
+            }
+        }
+
+    }
+
+    .button-row {
+        display: flex;
+        justify-content: flex-end;
+
+        align-items: center;
+        height: 50px;
+        padding: 12px 20px;
+        gap: 17px;
+
+        .button-primary {
+            height: 43px;
+            min-width: 67px;
+            background-color: var(--wf-primary-color);
+            color: #fff;
+            padding: 12px;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            font-family: var(--wf-font-family-main);
+
+            &:disabled {
+                background-color: #c0c0c0;
+                cursor: not-allowed;
+            }
+        }
+
+        .button-secondary {
+            height: 43px;
+            min-width: 67px;
+            border-radius: 4px;
+            background: #fff;
+            color: #2d2d2d;
+            font-family: var(--wf-font-family-main);
+            font-size: 16px;
+            padding: 12px;
+            border: none;
+            cursor: pointer;
+
+            &:disabled {
+                color: #fff;
+                background-color: #c0c0c0;
+                cursor: not-allowed;
+                border: none;
+            }
+        }
+
+        button {
+            &.primary {
+                @extend .button-primary;
+            }
+
+            &.secondary {
+                @extend .button-secondary;
+            }
+        }
+
+        .icon {
+            vertical-align: text-bottom;
+            padding-right: 5px;
+        }
+    }
+}

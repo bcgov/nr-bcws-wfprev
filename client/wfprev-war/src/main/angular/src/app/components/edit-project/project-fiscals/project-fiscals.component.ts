@@ -1,5 +1,5 @@
 import { CommonModule, CurrencyPipe } from '@angular/common';
-import { ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, effect, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
@@ -31,6 +31,8 @@ import { TokenService } from 'src/app/services/token.service';
 import { TimestampComponent } from 'src/app/components/shared/timestamp/timestamp.component';
 import { TextareaComponent } from 'src/app/components/shared/textarea/textarea.component';
 import { capitalizeFirstLetter } from 'src/app/utils';
+import { PerformanceUpdatesComponent } from "../wfprev-performance-update/wfprev-performance-updates.component";
+import { ProjectFiscalsSignalService } from 'src/app/services/project-fiscals-signal.service';
 
 @Component({
   selector: 'wfprev-project-fiscals',
@@ -58,8 +60,9 @@ import { capitalizeFirstLetter } from 'src/app/utils';
     StatusBadgeComponent,
     EndorsementApprovalComponent,
     TimestampComponent,
-    TextareaComponent
-  ]
+    TextareaComponent,
+    PerformanceUpdatesComponent
+]
 })
 export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
   @Input() focusedFiscalId: string | null = null;
@@ -82,6 +85,7 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
   readonly CodeTableKeys = CodeTableKeys;
   readonly FiscalStatuses = FiscalStatuses;
   isSavingFiscal: boolean[] = [];
+  private initialized = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -92,8 +96,20 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
     private readonly snackbarService: MatSnackBar,
     public readonly dialog: MatDialog,
     public cd: ChangeDetectorRef,
-    private readonly tokenService: TokenService
-  ) { }
+    private readonly tokenService: TokenService,
+    private readonly events: ProjectFiscalsSignalService
+  ) {
+    effect(() => {
+      this.events.reloadFiscals();
+
+      if(this.initialized) {
+        this.loadProjectFiscals();
+      } else {
+        this.initialized = true;
+      }
+
+    });
+   }
 
   ngOnInit(): void {
     this.loadCodeTables();

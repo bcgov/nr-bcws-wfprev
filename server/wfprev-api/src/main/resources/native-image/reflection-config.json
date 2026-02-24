@@ -1406,6 +1406,42 @@
     "allPublicFields": true
   },
   {
+    "name": "ca.bc.gov.nrs.wfprev.data.models.ReportingPeriodCodeModel",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true
+  },
+  {
+    "name": "ca.bc.gov.nrs.wfprev.data.models.PerformanceUpdateModel",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true
+  },
+  {
+    "name": "ca.bc.gov.nrs.wfprev.data.models.NewPerformanceUpdateModel",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true
+  },
+  {
+    "name": "ca.bc.gov.nrs.wfprev.data.models.ForecastAmountsModel",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true
+  },
+  {
     "name": "ca.bc.gov.nrs.wfprev.data.models.EvaluationCriteriaSectionSummaryModel",
     "allDeclaredConstructors": true,
     "allDeclaredMethods": true,
@@ -1557,6 +1593,39 @@
   },
   {
     "name": "ca.bc.gov.nrs.wfprev.data.models.ProjectLocationModel",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "ca.bc.gov.nrs.wfprev.data.entities.ProgressStatusCodeEntity",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true
+  },
+  {
+    "name": "ca.bc.gov.nrs.wfprev.data.models.ProgressStatusCodeModel",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "ca.bc.gov.nrs.wfprev.data.models.ValidationResult",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "ca.bc.gov.nrs.wfprev.common.serializers.PointSerializer",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "ca.bc.gov.nrs.wfprev.common.serializers.PointDeserializer",
     "allDeclaredConstructors": true,
     "allDeclaredMethods": true,
     "allDeclaredFields": true

@@ -1,11 +1,14 @@
-import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
-import { SearchFilterComponent } from './search-filter.component';
-import { SharedCodeTableService } from 'src/app/services/shared-code-table.service';
-import { CodeTableServices } from 'src/app/services/code-table-services';
-import { SharedService } from 'src/app/services/shared-service';
-import { of, Subject } from 'rxjs';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { signal } from '@angular/core';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { MatOptionSelectionChange } from '@angular/material/core';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { ActivatedRoute } from '@angular/router';
+import { Subject } from 'rxjs';
+import { CodeTableServices } from 'src/app/services/code-table-services';
+import { ProjectFilterStateService } from 'src/app/services/project-filter-state.service';
+import { SharedCodeTableService } from 'src/app/services/shared-code-table.service';
+import { SharedService } from 'src/app/services/shared-service';
+import { SearchFilterComponent } from './search-filter.component';
 
 describe('SearchFilterComponent', () => {
   let component: SearchFilterComponent;
@@ -14,6 +17,7 @@ describe('SearchFilterComponent', () => {
   let mockCodeTableService: jasmine.SpyObj<CodeTableServices>;
   let mockSharedCodeTableService: jasmine.SpyObj<SharedCodeTableService>;
   let mockCodeTablesSubject: Subject<any>;
+  let mockProjectFilterStateService: jasmine.SpyObj<ProjectFilterStateService>;
 
   beforeEach(async () => {
     mockSharedService = jasmine.createSpyObj('SharedService', ['updateFilters']);
@@ -27,12 +31,24 @@ describe('SearchFilterComponent', () => {
       }
     } as any;
 
+    mockProjectFilterStateService = jasmine.createSpyObj('ProjectFilterStateService', ['update']);
+    (mockProjectFilterStateService as any).filters = signal({});
+
     await TestBed.configureTestingModule({
       imports: [SearchFilterComponent, BrowserAnimationsModule],
       providers: [
         { provide: SharedService, useValue: mockSharedService },
         { provide: CodeTableServices, useValue: mockCodeTableService },
-        { provide: SharedCodeTableService, useValue: mockSharedCodeTableService }
+        { provide: SharedCodeTableService, useValue: mockSharedCodeTableService },
+        { provide: ProjectFilterStateService, useValue: mockProjectFilterStateService },
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: {
+              url: []
+            }
+          }
+        }
       ]
     }).compileComponents();
 
@@ -80,7 +96,7 @@ describe('SearchFilterComponent', () => {
 
     expect(mockSharedService.updateFilters).toHaveBeenCalledWith(
       jasmine.objectContaining({
-        fiscalYear: ['2025', '2024', '2023', 'null']
+        fiscalYears: ['2025', '2024', '2023', 'null']
       })
     );
   });
@@ -259,7 +275,7 @@ describe('SearchFilterComponent', () => {
 
     spyOn(component, 'emitFilters');
 
-    component.assignDefaultFiscalYear(); 
+    component.assignDefaultFiscalYear();
 
     expect(component.selectedFiscalYears).toContain(fyValue);
     expect(component.selectedFiscalYears).toContain('null');

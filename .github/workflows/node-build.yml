@@ -20,8 +20,8 @@ on:
         type: string
         default: latest
 permissions:
-  id-token: write   
-  contents: read  
+  id-token: write
+  contents: read
   packages: write
 
 jobs:
@@ -30,109 +30,110 @@ jobs:
     env:
       NPMRC: ${{ secrets.NPMRC }}
       IMAGE_NAME: ${{ github.repository_owner }}/nr-bcws-wfprev-${{ inputs.COMPONENT_NAME }}
-      AWS_REGION: ca-central-1 
+      AWS_REGION: ca-central-1
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-    
-    - name: Set up Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '20'
-    
-    - name: Add .npmrc file
-      run: echo -e "$NPMRC" > ./node/${{ inputs.COMPONENT_NAME }}/.npmrc  # Ensure it's in the right directory
-    
-    - name: Clear cache
-      working-directory: ./node/${{ inputs.COMPONENT_NAME }}
-      run: |
-        rm -f package-lock.json
-        rm -rf node_modules
-        npm cache clean --force
-    
-    - name: Install dependencies
-      working-directory: ./node/${{ inputs.COMPONENT_NAME }}
-      run: npm install
-    
-    # Package Lambda function code
-    - name: Create Lambda deployment package
-      working-directory: ./node/${{ inputs.COMPONENT_NAME }}
-      run: |
-        npm prune --production
-        zip -r ../../lambda-deployment.zip . -x "*.git*" "*.github*" "tests/*" "*.zip"
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    # Authenticate to AWS using OIDC and assume IAM role
-    - name: Configure AWS credentials (OIDC)
-      uses: aws-actions/configure-aws-credentials@v4
-      with:
-        role-to-assume: arn:aws:iam::${{ secrets.LZA_ECR_AWS_ACCOUNT_ID }}:role/Terraform-deploy
-        aws-region: ${{ env.AWS_REGION }}
-        role-session-name: GitHubActions
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
 
-    # Docker setup
-    - name: Set up QEMU
-      uses: docker/setup-qemu-action@v2
-    
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v2
-    
-    - name: Login to GitHub Container Registry
-      uses: docker/login-action@v2
-      with:
-        registry: ${{ vars.REGISTRY }}
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
-    
-    - name: Extract Docker metadata
-      id: meta
-      uses: docker/metadata-action@v5
-      with:
-        images: ${{ vars.REGISTRY }}/${{ env.IMAGE_NAME }}
-        tags: |
-          type=schedule
-          type=ref,event=branch
-          type=ref,event=pr
-          type=ref,event=tag
-          type=raw,value=${{ github.sha }}
+      - name: Add .npmrc file
+        run: echo -e "$NPMRC" > ./node/${{ inputs.COMPONENT_NAME }}/.npmrc # Ensure it's in the right directory
 
-    - name: List files in ./node/${{ inputs.COMPONENT_NAME }}
-      run: ls -al ./node/${{ inputs.COMPONENT_NAME }}
-    
-    - name: Build and push Docker image
-      uses: docker/build-push-action@v6
-      with:
-        context: ./node/${{ inputs.COMPONENT_NAME }}
-        file: ./node/${{ inputs.COMPONENT_NAME }}/Dockerfile
-        push: true
-        tags: ${{ steps.meta.outputs.tags }}
-        labels: ${{ steps.meta.outputs.labels }}
+      - name: Clear cache
+        working-directory: ./node/${{ inputs.COMPONENT_NAME }}
+        run: |
+          rm -f package-lock.json
+          rm -rf node_modules
+          npm cache clean --force
 
-    - name: Tag and push latest image
-      run: |
+      - name: Install dependencies
+        working-directory: ./node/${{ inputs.COMPONENT_NAME }}
+        run: npm install
+
+      # Package Lambda function code
+      - name: Create Lambda deployment package
+        working-directory: ./node/${{ inputs.COMPONENT_NAME }}
+        run: |
+          npm prune --production
+          zip -r ../../lambda-deployment.zip . -x "*.git*" "*.github*" "tests/*" "*.zip"
+
+      # Authenticate to AWS using OIDC and assume IAM role
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::${{ secrets.LZA_ECR_AWS_ACCOUNT_ID }}:role/Terraform-deploy
+          aws-region: ${{ env.AWS_REGION }}
+          role-session-name: GitHubActions
+
+      # Docker setup
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ vars.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract Docker metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ vars.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=schedule
+            type=ref,event=branch
+            type=ref,event=pr
+            type=ref,event=tag
+            type=raw,value=${{ github.sha }}
+
+      - name: List files in ./node/${{ inputs.COMPONENT_NAME }}
+        run: ls -al ./node/${{ inputs.COMPONENT_NAME }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./node/${{ inputs.COMPONENT_NAME }}
+          file: ./node/${{ inputs.COMPONENT_NAME }}/Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          provenance: false
+
+      - name: Tag and push latest image
+        run: |
           IMAGE=${{ vars.REGISTRY }}/${{ github.repository_owner }}/nr-bcws-wfprev-${{ inputs.COMPONENT_NAME }}
           docker pull $IMAGE:${{ github.sha }}
           docker tag $IMAGE:${{ github.sha }} $IMAGE:${{ inputs.TAG }}
           docker push $IMAGE:${{ inputs.TAG }}
 
-    - name: Configure AWS Credentials
-      uses: aws-actions/configure-aws-credentials@v3
-      with:
-        role-to-assume: arn:aws:iam::${{ secrets.LZA_ECR_AWS_ACCOUNT_ID }}:role/Terraform-deploy
-        role-session-name: wfprev-terraform-s3
-        aws-region: ca-central-1
-  
-    - name: Create ECR Repository for GDB Extractor (if not exists)
-      run: |
-        aws ecr describe-repositories --repository-names nr-bcws-wfprev-${{ inputs.COMPONENT_NAME }} --region ca-central-1 || \
-        aws ecr create-repository --repository-name nr-bcws-wfprev-${{ inputs.COMPONENT_NAME }} --region ca-central-1
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+          role-to-assume: arn:aws:iam::${{ secrets.LZA_ECR_AWS_ACCOUNT_ID }}:role/Terraform-deploy
+          role-session-name: wfprev-terraform-s3
+          aws-region: ca-central-1
 
-    - name: Login to Amazon ECR
-      run: |
-        aws ecr get-login-password --region ca-central-1 | docker login --username AWS --password-stdin ${{ secrets.LZA_ECR_AWS_ACCOUNT_ID }}.dkr.ecr.ca-central-1.amazonaws.com
-    - name: Pull, Tag, and Push GDB Extractor Docker image to ECR
-      id: pushGdbExtractorImage
-      run: |
-        docker pull ${{vars.REPOSITORY_HOST}}/${{ github.repository_owner }}/nr-bcws-wfprev-${{ inputs.COMPONENT_NAME }}:${{ inputs.TAG }}
-        docker tag ${{vars.REPOSITORY_HOST}}/${{ github.repository_owner }}/nr-bcws-wfprev-${{ inputs.COMPONENT_NAME }}:${{ inputs.TAG }} ${{ secrets.LZA_ECR_AWS_ACCOUNT_ID }}.dkr.ecr.ca-central-1.amazonaws.com/nr-bcws-wfprev-${{ inputs.COMPONENT_NAME }}:${{ inputs.TAG }}
-        docker push ${{ secrets.LZA_ECR_AWS_ACCOUNT_ID }}.dkr.ecr.ca-central-1.amazonaws.com/nr-bcws-wfprev-${{ inputs.COMPONENT_NAME }}:${{ inputs.TAG }}
+      - name: Create ECR Repository for GDB Extractor (if not exists)
+        run: |
+          aws ecr describe-repositories --repository-names nr-bcws-wfprev-${{ inputs.COMPONENT_NAME }} --region ca-central-1 || \
+          aws ecr create-repository --repository-name nr-bcws-wfprev-${{ inputs.COMPONENT_NAME }} --region ca-central-1
+
+      - name: Login to Amazon ECR
+        run: |
+          aws ecr get-login-password --region ca-central-1 | docker login --username AWS --password-stdin ${{ secrets.LZA_ECR_AWS_ACCOUNT_ID }}.dkr.ecr.ca-central-1.amazonaws.com
+      - name: Pull, Tag, and Push GDB Extractor Docker image to ECR
+        id: pushGdbExtractorImage
+        run: |
+          docker pull ${{vars.REPOSITORY_HOST}}/${{ github.repository_owner }}/nr-bcws-wfprev-${{ inputs.COMPONENT_NAME }}:${{ inputs.TAG }}
+          docker tag ${{vars.REPOSITORY_HOST}}/${{ github.repository_owner }}/nr-bcws-wfprev-${{ inputs.COMPONENT_NAME }}:${{ inputs.TAG }} ${{ secrets.LZA_ECR_AWS_ACCOUNT_ID }}.dkr.ecr.ca-central-1.amazonaws.com/nr-bcws-wfprev-${{ inputs.COMPONENT_NAME }}:${{ inputs.TAG }}
+          docker push ${{ secrets.LZA_ECR_AWS_ACCOUNT_ID }}.dkr.ecr.ca-central-1.amazonaws.com/nr-bcws-wfprev-${{ inputs.COMPONENT_NAME }}:${{ inputs.TAG }}
