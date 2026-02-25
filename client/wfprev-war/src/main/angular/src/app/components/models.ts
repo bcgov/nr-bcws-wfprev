@@ -477,3 +477,9 @@ export interface Option<T> {
   value: T,
   description: string
 }
+
+export interface DetailedErrorMessage {
+  title: string;
+  message: string;
+  reasons: string[];
+}
