@@ -195,7 +195,7 @@ export class ProjectFilesComponent implements OnInit {
             'Server timeout'
           ]
         },
-        duration: 5000,
+        duration: undefined,
         panelClass: ['detailed-error-message']
       });
       if (result?.file) {
@@ -226,7 +226,7 @@ export class ProjectFilesComponent implements OnInit {
             message: "The file that you are uploading failed to save. To view errors click on 'View Details' button on this warning to see additional error details.",
             reasons: ['Could not reach file upload server']
           },
-          duration: 5000,
+          duration: undefined,
           panelClass: ['detailed-error-message']
         });
       }
@@ -242,7 +242,7 @@ export class ProjectFilesComponent implements OnInit {
             message: "The file that you are uploading failed to save. To view errors click on 'View Details' button on this warning to see additional error details.",
             reasons: ['The spatial file was not uploaded because the file format is not accepted.']
           },
-          duration: 10000,
+          duration: undefined,
           panelClass: ['detailed-error-message']
         });
       return;
@@ -262,7 +262,7 @@ export class ProjectFilesComponent implements OnInit {
             message: "The file that you are uploading failed to save. To view errors click on 'View Details' button on this warning to see additional error details.",
             reasons: ['Could not extract geometry from spatial file.']
           },
-          duration: 5000,
+          duration: undefined,
           panelClass: ['detailed-error-message']
         });
         return;
@@ -374,7 +374,7 @@ export class ProjectFilesComponent implements OnInit {
             message: "The file that you are uploading failed to save. To view errors click on 'View Details' button on this warning to see additional error details.",
             reasons: ['Failed to process spatial file. ' + error.message]
           },
-          duration: 10000,
+          duration: undefined,
           panelClass: ['detailed-error-message']
         });
     });
@@ -412,7 +412,7 @@ export class ProjectFilesComponent implements OnInit {
             message: "The file that you are uploading failed to save. To view errors click on 'View Details' button on this warning to see additional error details.",
             reasons: ['Failed to create attachment.']
           },
-          duration: 5000,
+          duration: undefined,
           panelClass: ['detailed-error-message']
         });
       }
