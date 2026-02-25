@@ -183,29 +183,6 @@ export class ProjectFilesComponent implements OnInit {
         indicator: this.isActivityContext ? 'activity-files' : 'project-files'
       }
     });
-
-    dialogRef.afterClosed().subscribe(result => {
-      this.snackbarService.openFromComponent(DetailedErrorMessageComponent, {
-        data: {
-          title: 'Spatial File Failed to Save',
-          message: "The file that you are uploading failed to save. To view errors click on 'View Details' button on this warning to see additional error details.",
-          reasons: [
-            'Validation error',
-            'User does not have permission',
-            'Server timeout'
-          ]
-        },
-        duration: undefined,
-        panelClass: ['detailed-error-message']
-      });
-      if (result?.file) {
-        const selectedType = result.type;
-        this.uploadFile(result.file, selectedType);
-      }
-      if (result?.description) {
-        this.attachmentDescription = result.description;
-      }
-    })
   }
 
   uploadFile(file: File, type: string): void {
