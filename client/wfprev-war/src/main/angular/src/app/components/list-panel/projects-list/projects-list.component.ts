@@ -24,6 +24,7 @@ import { CodeTableKeys, CodeTableNames, DownloadFileExtensions, DownloadTypes, M
 import { getBluePinIcon, getFiscalYearDisplay, PlanFiscalStatusIcons } from 'src/app/utils/tools';
 import { ReportRequest } from '../../models';
 import { ExpansionIndicatorComponent } from '../../shared/expansion-indicator/expansion-indicator.component';
+import { ProjectFilterStateService } from 'src/app/services/project-filter-state.service';
 
 @Component({
   selector: 'wfprev-projects-list',
@@ -68,7 +69,8 @@ export class ProjectsListComponent implements OnInit {
     public readonly sharedService: SharedService,
     private readonly cdr: ChangeDetectorRef,
     private readonly snackbarService: MatSnackBar,
-    private readonly mapService: MapService
+    private readonly mapService: MapService,
+    private readonly projectFilterStateService: ProjectFilterStateService,
   ) {
   }
   ngOnInit(): void {
@@ -713,7 +715,10 @@ export class ProjectsListComponent implements OnInit {
   }
 
   onDownload(type: string): void {
-    const filters = this.sharedService.currentFilters;
+    const filters = this.projectFilterStateService.filters();
+
+    const sanitize = (arr: any[]) => arr.filter(v => v !== '__ALL__');
+
     const body: ReportRequest = {
       reportType: type === DownloadTypes.EXCEL ? 'xlsx' : 'csv'
     };
@@ -725,14 +730,14 @@ export class ProjectsListComponent implements OnInit {
 
     if (filters && Object.keys(filters).length > 0) {
       body.projectFilter = {
-        programAreaGuids: filters.programAreaGuid,
-        fiscalYears: filters.fiscalYear,
-        forestRegionOrgUnitIds: filters.forestRegionOrgUnitId,
-        forestDistrictOrgUnitIds: filters.forestDistrictOrgUnitId,
-        fireCentreOrgUnitIds: filters.fireCentreOrgUnitId,
-        activityCategoryCodes: filters.activityCategoryCode,
-        planFiscalStatusCodes: filters.planFiscalStatusCode,
-        projectTypeCodes: filters.projectTypeCode,
+        programAreaGuids: sanitize(filters?.programAreaGuids ?? []),
+        fiscalYears: sanitize(filters?.fiscalYears ?? []),
+        forestRegionOrgUnitIds: sanitize(filters?.forestRegionOrgUnitIds ?? []),
+        forestDistrictOrgUnitIds: sanitize(filters?.forestDistrictOrgUnitIds ?? []),
+        fireCentreOrgUnitIds: sanitize(filters?.fireCentreOrgUnitIds ?? []),
+        activityCategoryCodes: sanitize(filters?.activityCategoryCodes ?? []),
+        planFiscalStatusCodes: sanitize(filters?.planFiscalStatusCodes ?? []),
+        projectTypeCodes:  sanitize(filters?.projectTypeCodes ?? []),
         searchText: filters.searchText
       };
     } else {
