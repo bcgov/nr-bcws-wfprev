@@ -1,0 +1,37 @@
+<div class="error-message-container">
+
+    <div class="danger-img">
+        <img src="assets/error-message-danger.svg" />
+    </div>
+
+    <div class="error-message-content">
+        <div>
+            <h4>{{data.title}}</h4>
+            <p>{{data.message}}</p>
+        </div>
+        <div>
+            @if(!showReasons) {
+            <div class="control">
+                <button color="warn" mat-button (click)="showDetails()">View Details</button>
+            </div>
+            }
+
+            @if (showReasons) {
+            <div class="reason-list">
+                <ul class="reasons">
+                    @for (reason of data.reasons; track reason) {
+                    <li>
+                        {{ reason }}
+                    </li>
+                    }
+                </ul>
+            </div>
+            }
+        </div>
+    </div>
+
+    <div class="close-message">
+        <img src="assets/error-message-close.svg" (click)="close()" />
+    </div>
+
+</div>
