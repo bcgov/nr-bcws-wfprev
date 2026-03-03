@@ -199,9 +199,7 @@ public class ActivityBoundaryService implements CommonService {
         }
 
         // Delete associated attachments
-        if (deleteFiles) {
-            fileAttachmentService.deleteAttachmentsBySourceObject(boundaryGuid);
-        }
+        fileAttachmentService.deleteAttachmentsBySourceObject(boundaryGuid, deleteFiles);
 
         activityBoundaryRepository.deleteByActivityBoundaryGuid(UUID.fromString(boundaryGuid));
     }
@@ -210,9 +208,7 @@ public class ActivityBoundaryService implements CommonService {
     public void deleteActivityBoundaries(String activityGuid, boolean deleteFiles) {
         List<ActivityBoundaryEntity> boundaries = activityBoundaryRepository.findByActivityGuid(UUID.fromString(activityGuid));
         for (ActivityBoundaryEntity boundary : boundaries) {
-            if (deleteFiles) {
-                fileAttachmentService.deleteAttachmentsBySourceObject(boundary.getActivityBoundaryGuid().toString());
-            }
+            fileAttachmentService.deleteAttachmentsBySourceObject(boundary.getActivityBoundaryGuid().toString(), deleteFiles);
         }
         activityBoundaryRepository.deleteByActivityGuid(UUID.fromString(activityGuid));
     }

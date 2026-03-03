@@ -420,10 +420,10 @@ class ActivityBoundaryServiceTest {
         activityBoundaryService.deleteActivityBoundary("00000000-0000-0000-0000-000000000001", "00000000-0000-0000-0000-000000000002", activityGuid, boundaryGuid, true);
 
         // THEN
-        verify(fileAttachmentService).deleteAttachmentsBySourceObject(boundaryGuid);
+        verify(fileAttachmentService).deleteAttachmentsBySourceObject(boundaryGuid, true);
         verify(activityBoundaryRepository).deleteByActivityBoundaryGuid(UUID.fromString(boundaryGuid));
     }
-
+    
     @Test
     void testDeleteActivityBoundary_NotFound() {
         // GIVEN
@@ -558,7 +558,7 @@ class ActivityBoundaryServiceTest {
 
         assertTrue(thrown.getMessage().contains("does not belong to Activity"));
     }
-
+    
     @Test
     void testDeleteActivityBoundaries_Success() {
         // GIVEN
@@ -575,7 +575,7 @@ class ActivityBoundaryServiceTest {
         activityBoundaryService.deleteActivityBoundaries(activityGuid, true);
 
         // THEN
-        verify(fileAttachmentService).deleteAttachmentsBySourceObject(boundaryGuid);
+        verify(fileAttachmentService).deleteAttachmentsBySourceObject(boundaryGuid, true);
         verify(activityBoundaryRepository).deleteByActivityGuid(UUID.fromString(activityGuid));
     }
 
@@ -595,7 +595,7 @@ class ActivityBoundaryServiceTest {
         activityBoundaryService.deleteActivityBoundaries(activityGuid, false);
 
         // THEN
-        verify(fileAttachmentService, times(0)).deleteAttachmentsBySourceObject(boundaryGuid);
+        verify(fileAttachmentService).deleteAttachmentsBySourceObject(boundaryGuid, false);
         verify(activityBoundaryRepository).deleteByActivityGuid(UUID.fromString(activityGuid));
     }
 

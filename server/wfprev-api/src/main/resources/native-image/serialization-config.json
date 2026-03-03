@@ -32,6 +32,10 @@
   { "name": "ca.bc.gov.nrs.wfprev.data.models.WildfireOrgUnitTypeCodeModel" },
   { "name": "ca.bc.gov.nrs.wfprev.data.models.ReportRequestModel" },
   { "name": "ca.bc.gov.nrs.wfprev.data.models.ProjectLocationModel" },
+  { "name": "ca.bc.gov.nrs.wfprev.data.models.ReportingPeriodCodeModel" },
+  { "name": "ca.bc.gov.nrs.wfprev.data.models.PerformanceUpdateModel" },
+  { "name": "ca.bc.gov.nrs.wfprev.data.models.NewPerformanceUpdateModel" },
+  { "name": "ca.bc.gov.nrs.wfprev.data.models.ForecastAmountsModel" },
 
   { "name": "ca.bc.gov.nrs.wfprev.data.entities.ForestAreaCodeEntity" },
   { "name": "ca.bc.gov.nrs.wfprev.data.entities.GeneralScopeCodeEntity" },

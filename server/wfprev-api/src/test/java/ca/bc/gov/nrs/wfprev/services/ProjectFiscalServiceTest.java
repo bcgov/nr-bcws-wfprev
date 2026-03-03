@@ -1,5 +1,6 @@
 package ca.bc.gov.nrs.wfprev.services;
 
+import ca.bc.gov.nrs.wfprev.data.assemblers.PerformanceUpdateResourceAssembler;
 import ca.bc.gov.nrs.wfprev.data.assemblers.ProjectFiscalResourceAssembler;
 import ca.bc.gov.nrs.wfprev.data.assemblers.ProjectResourceAssembler;
 import ca.bc.gov.nrs.wfprev.data.entities.EndorsementCodeEntity;
@@ -9,7 +10,6 @@ import ca.bc.gov.nrs.wfprev.data.entities.ProjectFiscalEntity;
 import ca.bc.gov.nrs.wfprev.data.models.EndorsementCodeModel;
 import ca.bc.gov.nrs.wfprev.data.models.PlanFiscalStatusCodeModel;
 import ca.bc.gov.nrs.wfprev.data.models.ProjectFiscalModel;
-import ca.bc.gov.nrs.wfprev.data.models.ProjectModel;
 import ca.bc.gov.nrs.wfprev.data.repositories.EndorsementCodeRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.PlanFiscalStatusCodeRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.ProjectFiscalRepository;
@@ -36,6 +36,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 class ProjectFiscalServiceTest {
@@ -52,6 +53,7 @@ class ProjectFiscalServiceTest {
     private FuelManagementPlanRepository fuelManagementPlanRepository;
     private CulturalRxFirePlanRepository culturalRxFirePlanRepository;
     private ProjectPlanFiscalPerfRepository projectPlanFiscalPerfRepository;
+    private PerformanceUpdateResourceAssembler performanceUpdateResourceAssembler;
 
     @BeforeEach
     void setup() {
@@ -66,6 +68,8 @@ class ProjectFiscalServiceTest {
         fuelManagementPlanRepository = mock(FuelManagementPlanRepository.class);
         culturalRxFirePlanRepository = mock(CulturalRxFirePlanRepository.class);
         projectPlanFiscalPerfRepository = mock(ProjectPlanFiscalPerfRepository.class);
+        performanceUpdateResourceAssembler = mock(PerformanceUpdateResourceAssembler.class);
+
         projectFiscalService = new ProjectFiscalService(
                 projectFiscalRepository,
                 projectFiscalResourceAssembler,
@@ -75,7 +79,8 @@ class ProjectFiscalServiceTest {
                 activityService,
                 fuelManagementPlanRepository,
                 culturalRxFirePlanRepository,
-                projectPlanFiscalPerfRepository
+                projectPlanFiscalPerfRepository,
+                performanceUpdateResourceAssembler
         );
     }
     @Test

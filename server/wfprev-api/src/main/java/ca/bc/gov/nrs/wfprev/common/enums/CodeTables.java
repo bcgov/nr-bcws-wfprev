@@ -29,4 +29,6 @@ public class CodeTables {
   public static final String EVALUATION_CRITERIA_CODE = "evaluationCriteriaCodes";
   public static final String PROJECT_STATUS_CODE = "projectStatusCodes";
   public static final String WILDFIRE_ORG_UNIT = "wildfireOrgUnits";
+  public static final String REPORTING_PERIOD_CODE = "reportingPeriodCodes";
+  public static final String PROGRESS_STATUS_CODE = "progressStatusCode";
 }

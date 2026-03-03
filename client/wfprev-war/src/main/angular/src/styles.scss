@@ -9,6 +9,14 @@ body {
     margin: 0;
 }
 
+.detailed-error-message .mat-mdc-snackbar-surface {
+  box-shadow: none !important;
+}
+
+.detailed-error-message .mdc-snackbar__label {
+  padding: 0 !important;
+}
+
 .mat-mdc-snack-bar-container{
   .mdc-snackbar__label{
     color: var(--wf-colour-white);

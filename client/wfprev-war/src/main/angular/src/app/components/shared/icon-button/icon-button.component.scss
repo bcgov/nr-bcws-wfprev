@@ -9,6 +9,7 @@
   background: #013366;
   border: none;
   font-family: "BCSans", "Noto Sans", Verdana, Arial, sans-serif;
+
   .icon {
     vertical-align: text-bottom;
     padding-right: 5px;
@@ -24,8 +25,15 @@
     align-items: center;
     gap: 6px;
   }
+
   &:disabled {
     background-color: #c0c0c0;
     cursor: not-allowed;
   }
+}
+
+:host-context(.new-update) .shared-icon-button,
+:host-context(.add-activity) .shared-icon-button {
+  width: 153px;
+  height: 40px;
 }

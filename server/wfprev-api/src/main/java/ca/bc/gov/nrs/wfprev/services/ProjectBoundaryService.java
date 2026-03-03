@@ -201,9 +201,7 @@ public class ProjectBoundaryService implements CommonService {
       throw new EntityNotFoundException(MessageFormat.format(EXTENDED_KEY_FORMAT, BOUNDARY, boundaryGuid, DOES_NOT_BELONG_PROJECT, projectGuid));
     }
 
-    if (deleteFiles) {
-      fileAttachmentService.deleteAttachmentsBySourceObject(boundaryGuid);
-    }
+    fileAttachmentService.deleteAttachmentsBySourceObject(boundaryGuid, deleteFiles);
     projectBoundaryRepository.deleteByProjectBoundaryGuid(UUID.fromString(boundaryGuid));
   }
 
@@ -287,9 +285,7 @@ public class ProjectBoundaryService implements CommonService {
   public void deleteProjectBoundaries(String projectGuid, boolean deleteFiles) {
       List<ProjectBoundaryEntity> boundaries = projectBoundaryRepository.findByProjectGuid(UUID.fromString(projectGuid));
       for (ProjectBoundaryEntity boundary : boundaries) {
-          if (deleteFiles) {
-              fileAttachmentService.deleteAttachmentsBySourceObject(boundary.getProjectBoundaryGuid().toString());
-          }
+          fileAttachmentService.deleteAttachmentsBySourceObject(boundary.getProjectBoundaryGuid().toString(), deleteFiles);
       }
       projectBoundaryRepository.deleteByProjectGuid(UUID.fromString(projectGuid));
   }

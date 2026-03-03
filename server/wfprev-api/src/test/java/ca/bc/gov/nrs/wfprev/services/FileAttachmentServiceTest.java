@@ -209,14 +209,26 @@ public class FileAttachmentServiceTest {
     }
 
     @Test
-    void testDeleteFileAttachment_Success() throws ServiceException {
+    void testDeleteFileAttachment_Success_WithWfdmDeletion() throws ServiceException {
         when(fileAttachmentRepository.findById(testUuid)).thenReturn(Optional.of(mockEntity));
         when(fileAttachmentResourceAssembler.toModel(mockEntity)).thenReturn(mockModel);
 
-        FileAttachmentModel result = fileAttachmentService.deleteFileAttachment(testUuid.toString());
+        FileAttachmentModel result = fileAttachmentService.deleteFileAttachment(testUuid.toString(), true);
 
         assertNotNull(result);
         verify(wildfireDocumentManagerService, times(1)).deleteDocument("test-file-id");
+        verify(fileAttachmentRepository, times(1)).delete(any(FileAttachmentEntity.class));
+    }
+
+    @Test
+    void testDeleteFileAttachment_Success_NoWfdmDeletion() throws ServiceException {
+        when(fileAttachmentRepository.findById(testUuid)).thenReturn(Optional.of(mockEntity));
+        when(fileAttachmentResourceAssembler.toModel(mockEntity)).thenReturn(mockModel);
+
+        FileAttachmentModel result = fileAttachmentService.deleteFileAttachment(testUuid.toString(), false);
+
+        assertNotNull(result);
+        verify(wildfireDocumentManagerService, times(0)).deleteDocument(any());
         verify(fileAttachmentRepository, times(1)).delete(any(FileAttachmentEntity.class));
     }
 
@@ -225,7 +237,7 @@ public class FileAttachmentServiceTest {
         when(fileAttachmentRepository.findById(testUuid)).thenReturn(Optional.empty());
 
         Exception exception = assertThrows(EntityNotFoundException.class, () ->
-                fileAttachmentService.deleteFileAttachment(testUuid.toString())
+                fileAttachmentService.deleteFileAttachment(testUuid.toString(), true)
         );
 
         assertEquals("FileAttachment not found: " + testUuid, exception.getMessage());
@@ -238,7 +250,7 @@ public class FileAttachmentServiceTest {
                 .when(fileAttachmentRepository).delete(any(FileAttachmentEntity.class));
 
         Exception exception = assertThrows(RuntimeException.class, () ->
-                fileAttachmentService.deleteFileAttachment(testUuid.toString())
+                fileAttachmentService.deleteFileAttachment(testUuid.toString(), true)
         );
 
         assertEquals("Unexpected error", exception.getMessage());
@@ -253,7 +265,7 @@ public class FileAttachmentServiceTest {
                 .when(fileAttachmentRepository).delete(mockEntity);
 
         ServiceException exception = assertThrows(ServiceException.class, () -> {
-            fileAttachmentService.deleteFileAttachment(validId);
+            fileAttachmentService.deleteFileAttachment(validId, true);
         });
 
         assertEquals("Unexpected error during deletion", exception.getMessage());
@@ -274,14 +286,26 @@ public class FileAttachmentServiceTest {
     }
 
     @Test
-    void testDeleteAttachmentsBySourceObject_Success() {
+    void testDeleteAttachmentsBySourceObject_Success_WithWfdmDeletion() {
         String sourceObjectUniqueId = UUID.randomUUID().toString();
         when(fileAttachmentRepository.findAllBySourceObjectUniqueId(sourceObjectUniqueId))
                 .thenReturn(List.of(mockEntity));
 
-        fileAttachmentService.deleteAttachmentsBySourceObject(sourceObjectUniqueId);
+        fileAttachmentService.deleteAttachmentsBySourceObject(sourceObjectUniqueId, true);
 
         verify(wildfireDocumentManagerService, times(1)).deleteDocument("test-file-id");
+        verify(fileAttachmentRepository, times(1)).delete(mockEntity);
+    }
+
+    @Test
+    void testDeleteAttachmentsBySourceObject_Success_NoWfdmDeletion() {
+        String sourceObjectUniqueId = UUID.randomUUID().toString();
+        when(fileAttachmentRepository.findAllBySourceObjectUniqueId(sourceObjectUniqueId))
+                .thenReturn(List.of(mockEntity));
+
+        fileAttachmentService.deleteAttachmentsBySourceObject(sourceObjectUniqueId, false);
+
+        verify(wildfireDocumentManagerService, times(0)).deleteDocument(any());
         verify(fileAttachmentRepository, times(1)).delete(mockEntity);
     }
 
@@ -291,7 +315,7 @@ public class FileAttachmentServiceTest {
         when(fileAttachmentRepository.findAllBySourceObjectUniqueId(sourceObjectUniqueId))
                 .thenReturn(List.of());
 
-        fileAttachmentService.deleteAttachmentsBySourceObject(sourceObjectUniqueId);
+        fileAttachmentService.deleteAttachmentsBySourceObject(sourceObjectUniqueId, true);
 
         verify(wildfireDocumentManagerService, times(0)).deleteDocument(any());
         verify(fileAttachmentRepository, times(0)).delete(any(FileAttachmentEntity.class));

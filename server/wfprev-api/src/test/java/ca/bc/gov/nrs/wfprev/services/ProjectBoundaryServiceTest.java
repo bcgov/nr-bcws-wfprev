@@ -281,7 +281,7 @@ class ProjectBoundaryServiceTest {
 
         projectBoundaryService.deleteProjectBoundary(projectGuid, boundaryGuid, true);
 
-        verify(fileAttachmentService).deleteAttachmentsBySourceObject(boundaryGuid);
+        verify(fileAttachmentService).deleteAttachmentsBySourceObject(boundaryGuid, true);
         verify(projectBoundaryRepository, times(1)).deleteByProjectBoundaryGuid(UUID.fromString(boundaryGuid));
     }
 
@@ -314,7 +314,8 @@ class ProjectBoundaryServiceTest {
         verify(projectBoundaryRepository, times(1)).saveAndFlush(entity);
         verify(projectBoundaryResourceAssembler, times(1)).toModel(entity);
     }
-
+    
+    
     @Test
     void testSaveProjectBoundary_ThrowsIllegalArgumentException() {
         // Arrange
@@ -452,8 +453,6 @@ class ProjectBoundaryServiceTest {
         ));
     }
 
-
-
     @Test
     void testDeleteProjectBoundaries_Success() {
         // GIVEN
@@ -469,7 +468,7 @@ class ProjectBoundaryServiceTest {
         projectBoundaryService.deleteProjectBoundaries(projectGuid, true);
 
         // THEN
-        verify(fileAttachmentService).deleteAttachmentsBySourceObject(boundaryGuid);
+        verify(fileAttachmentService).deleteAttachmentsBySourceObject(boundaryGuid, true);
         verify(projectBoundaryRepository).deleteByProjectGuid(UUID.fromString(projectGuid));
     }
 
@@ -488,7 +487,7 @@ class ProjectBoundaryServiceTest {
         projectBoundaryService.deleteProjectBoundaries(projectGuid, false);
 
         // THEN
-        verify(fileAttachmentService, times(0)).deleteAttachmentsBySourceObject(boundaryGuid);
+        verify(fileAttachmentService).deleteAttachmentsBySourceObject(boundaryGuid, false);
         verify(projectBoundaryRepository).deleteByProjectGuid(UUID.fromString(projectGuid));
     }
 }

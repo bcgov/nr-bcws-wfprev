@@ -8,6 +8,7 @@ import { Position } from 'geojson';
 import { catchError, map, throwError } from 'rxjs';
 import { AddAttachmentComponent } from 'src/app/components/add-attachment/add-attachment.component';
 import { ConfirmationDialogComponent } from 'src/app/components/confirmation-dialog/confirmation-dialog.component';
+import { DetailedErrorMessageComponent } from 'src/app/components/detailed-error-message/detailed-error-message.component';
 import { ActivityBoundary, FileAttachment, ProjectBoundary, ProjectFile } from 'src/app/components/models';
 import { IconButtonComponent } from 'src/app/components/shared/icon-button/icon-button.component';
 import { AttachmentService } from 'src/app/services/attachment-service';
@@ -206,9 +207,14 @@ export class ProjectFilesComponent implements OnInit {
         }
       },
       error: () => {
-        this.snackbarService.open('Could not reach file upload server.', 'Close', {
-          duration: 5000,
-          panelClass: 'snackbar-error',
+        this.snackbarService.openFromComponent(DetailedErrorMessageComponent, {
+          data: {
+            title: 'Spatial File Failed to Save',
+            message: "The file that you are uploading failed to save. To view errors click on 'View Details' button on this warning to see additional error details.",
+            reasons: ['Could not reach file upload server']
+          },
+          duration: undefined,
+          panelClass: ['detailed-error-message']
         });
       }
     });
@@ -217,9 +223,14 @@ export class ProjectFilesComponent implements OnInit {
   uploadAttachment(file: File, fileUploadResp: any, type: string, snackRef: MatSnackBarRef<SimpleSnackBar>): void {
     const fileExtension = file.name.split('.').pop()?.toLowerCase();
     if (!fileExtension) {
-      this.snackbarService.open('The spatial file was not uploaded because the file format is not accepted.', 'Close', {
-        duration: 10000,
-        panelClass: ['snackbar-error'],
+      this.snackbarService.openFromComponent(DetailedErrorMessageComponent, {
+        data: {
+          title: 'Spatial File Failed to Save',
+          message: "The file that you are uploading failed to save. To view errors click on 'View Details' button on this warning to see additional error details.",
+          reasons: ['The spatial file was not uploaded because the file format is not accepted.']
+        },
+        duration: undefined,
+        panelClass: ['detailed-error-message']
       });
       return;
     }
@@ -232,9 +243,14 @@ export class ProjectFilesComponent implements OnInit {
     this.spatialService.extractCoordinates(file).then((geometry) => {
       if (!geometry) {
         snackRef.dismiss();
-        this.snackbarService.open('Could not extract geometry from spatial file.', 'Close', {
-          duration: 5000,
-          panelClass: ['snackbar-error'],
+        this.snackbarService.openFromComponent(DetailedErrorMessageComponent, {
+          data: {
+            title: 'Spatial File Failed to Save',
+            message: "The file that you are uploading failed to save. To view errors click on 'View Details' button on this warning to see additional error details.",
+            reasons: ['Could not extract geometry from spatial file.']
+          },
+          duration: undefined,
+          panelClass: ['detailed-error-message']
         });
         return;
       }
@@ -336,6 +352,18 @@ export class ProjectFilesComponent implements OnInit {
           }
         });
       }
+    }).catch((error) => {
+      snackRef.dismiss();
+      console.error('Error extracting coordinates:', error);
+      this.snackbarService.openFromComponent(DetailedErrorMessageComponent, {
+        data: {
+          title: 'Spatial File Failed to Save',
+          message: "The file that you are uploading failed to save. To view errors click on 'View Details' button on this warning to see additional error details.",
+          reasons: ['Failed to process spatial file. ' + error.message]
+        },
+        duration: undefined,
+        panelClass: ['detailed-error-message']
+      });
     });
   }
 
@@ -365,9 +393,14 @@ export class ProjectFilesComponent implements OnInit {
       },
       error: (err) => {
         console.error('Failed to create attachment', err);
-        this.snackbarService.open('Failed to create attachment.', 'Close', {
-          duration: 5000,
-          panelClass: 'snackbar-error',
+        this.snackbarService.openFromComponent(DetailedErrorMessageComponent, {
+          data: {
+            title: 'Spatial File Failed to Save',
+            message: "The file that you are uploading failed to save. To view errors click on 'View Details' button on this warning to see additional error details.",
+            reasons: ['Failed to create attachment.']
+          },
+          duration: undefined,
+          panelClass: ['detailed-error-message']
         });
       }
     });
@@ -479,32 +512,28 @@ export class ProjectFilesComponent implements OnInit {
                 this.dataSource.data = [...this.projectFiles];
 
                 const typeCode = fileToDelete.attachmentContentTypeCode?.attachmentContentTypeCode;
-                if (typeCode === 'MAP') {
+                if (typeCode === 'MAP' && fileToDelete.sourceObjectUniqueId) {
                   // only run boundary deletion logic for MAP files
-                  this.projectService.getActivityBoundaries(this.projectGuid, this.fiscalGuid, this.activityGuid).subscribe(response => {
-                    const boundaries = response?._embedded?.activityBoundary;
-                    if (boundaries && boundaries.length > 0) {
-                      const latest = boundaries.sort((a: ActivityBoundary, b: ActivityBoundary) =>
-                        new Date(b.systemStartTimestamp ?? 0).getTime() - new Date(a.systemStartTimestamp ?? 0).getTime()
-                      )[0];
-
-                      const activityBoundaryGuid = latest.activityBoundaryGuid;
-                      this.projectService.deleteActivityBoundary(this.projectGuid, this.fiscalGuid, this.activityGuid, activityBoundaryGuid).subscribe({
-                        next: () => {
-                          this.filesUpdated.emit();
-                          // Show success message in snackbar
-                          this.snackbarService.open('File has been deleted successfully.', 'Close', {
-                            duration: 5000,
-                            panelClass: 'snackbar-success',
-                          });
-                          this.loadActivityAttachments();
-                        }
-                      })
-
-                    } else {
-                      console.log('No boundaries found');
+                  this.projectService.deleteActivityBoundary(this.projectGuid, this.fiscalGuid, this.activityGuid, fileToDelete.sourceObjectUniqueId).subscribe({
+                    next: () => {
+                      this.filesUpdated.emit();
+                      // Show success message in snackbar
+                      this.snackbarService.open('File has been deleted successfully.', 'Close', {
+                        duration: 5000,
+                        panelClass: 'snackbar-success',
+                      });
+                      this.loadActivityAttachments();
+                    },
+                    error: (err) => {
+                      console.error('Failed to delete activity boundary', err);
+                      this.snackbarService.open('Failed to delete the boundary.', 'Close', {
+                        duration: 5000,
+                        panelClass: 'snackbar-warning',
+                      });
+                      // Still reload attachments as the file might be gone
+                      this.loadActivityAttachments();
                     }
-                  })
+                  });
                 } else {
                   this.filesUpdated.emit();
                   this.snackbarService.open('File has been deleted successfully.', 'Close', {
@@ -531,32 +560,26 @@ export class ProjectFilesComponent implements OnInit {
                 this.dataSource.data = [...this.projectFiles];
 
                 const typeCode = fileToDelete.attachmentContentTypeCode?.attachmentContentTypeCode;
-                if (typeCode === 'MAP') {
-                  this.projectService.getProjectBoundaries(this.projectGuid).subscribe(response => {
-                    const boundaries = response?._embedded?.projectBoundary;
-
-                    if (boundaries && boundaries.length > 0) {
-                      const latest = boundaries.sort((a: ProjectBoundary, b: ProjectBoundary) =>
-                        new Date(b.systemStartTimestamp ?? 0).getTime() - new Date(a.systemStartTimestamp ?? 0).getTime()
-                      )[0];
-
-                      const boundaryGuid = latest.projectBoundaryGuid;
-                      this.projectService.deleteProjectBoundary(this.projectGuid, boundaryGuid).subscribe({
-                        next: () => {
-                          this.filesUpdated.emit();
-                          // Show success message in snackbar
-                          this.snackbarService.open('File has been deleted successfully.', 'Close', {
-                            duration: 5000,
-                            panelClass: 'snackbar-success',
-                          });
-                          this.loadProjectAttachments();
-                        }
-                      })
-
-                    } else {
-                      console.log('No boundaries found');
+                if (typeCode === 'MAP' && fileToDelete.sourceObjectUniqueId) {
+                  this.projectService.deleteProjectBoundary(this.projectGuid, fileToDelete.sourceObjectUniqueId).subscribe({
+                    next: () => {
+                      this.filesUpdated.emit();
+                      // Show success message in snackbar
+                      this.snackbarService.open('File has been deleted successfully.', 'Close', {
+                        duration: 5000,
+                        panelClass: 'snackbar-success',
+                      });
+                      this.loadProjectAttachments();
+                    },
+                    error: (err) => {
+                      console.error('Failed to delete project boundary', err);
+                      this.snackbarService.open('Failed to delete the boundary.', 'Close', {
+                        duration: 5000,
+                        panelClass: 'snackbar-warning',
+                      });
+                      this.loadProjectAttachments();
                     }
-                  })
+                  });
                 } else {
                   this.filesUpdated.emit();
                   this.snackbarService.open('File has been deleted successfully.', 'Close', {

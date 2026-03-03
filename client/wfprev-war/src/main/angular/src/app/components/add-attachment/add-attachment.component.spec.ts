@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { AddAttachmentComponent } from './add-attachment.component';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { TokenService } from 'src/app/services/token.service';
+import { AddAttachmentComponent } from './add-attachment.component';
 
 describe('AddAttachmentComponent', () => {
   let component: AddAttachmentComponent;
@@ -157,11 +157,11 @@ describe('AddAttachmentComponent', () => {
         { provide: MAT_DIALOG_DATA, useValue: { indicator: 'activity-files', name: 'Activity' } },
       ],
     }).compileComponents();
-  
+
     const newFixture = TestBed.createComponent(AddAttachmentComponent);
     const newComponent = newFixture.componentInstance;
     newFixture.detectChanges();
-  
+
     expect(newComponent.attachmentTypes).toEqual([
       { label: 'Activity Polygon', value: 'MAP' },
       { label: 'Other', value: 'OTHER' },
@@ -182,12 +182,12 @@ describe('AddAttachmentComponent', () => {
     component.selectedFileName = 'file.txt';
     component.attachmentType = 'MAP';
     component.description = 'a'.repeat(151); // invalid length of text
-  
+
     component.onConfirm();
-  
+
     expect(mockDialogRef.close).not.toHaveBeenCalled();
   });
-  
-  
-  
+
+
+
 });

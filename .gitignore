@@ -17,3 +17,4 @@ yarn.lock
 .terraform.lock.hcl
 
 **/.npmrc
+wfprev.dump/wfprev.dump
