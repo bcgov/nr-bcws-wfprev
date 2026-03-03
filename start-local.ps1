@@ -44,7 +44,7 @@ if ($RestoreData) {
 
     Write-Host "Liquibase finished (0). Restoring data from dump..."
     # Run pg_restore in data-only mode
-    docker exec -i wfprev-postgres pg_restore -U wfprev -d wfprev --data-only --disable-triggers /dump/wfprev.dump
+    docker exec -i wfprev-postgres pg_restore -U wfprev -d wfprev --data-only --disable-triggers /dump/wfprev.dump/wfprev.dump
     if ($LASTEXITCODE -eq 0) {
         Write-Host "Data restoration complete!" -ForegroundColor Green
     } else {

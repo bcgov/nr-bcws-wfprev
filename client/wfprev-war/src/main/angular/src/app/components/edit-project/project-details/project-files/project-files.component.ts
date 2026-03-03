@@ -8,13 +8,13 @@ import { Position } from 'geojson';
 import { catchError, map, throwError } from 'rxjs';
 import { AddAttachmentComponent } from 'src/app/components/add-attachment/add-attachment.component';
 import { ConfirmationDialogComponent } from 'src/app/components/confirmation-dialog/confirmation-dialog.component';
-import { DetailedErrorMessageComponent } from 'src/app/components/detailed-error-message/detailed-error-message.component';
 import { ActivityBoundary, FileAttachment, ProjectBoundary, ProjectFile } from 'src/app/components/models';
 import { IconButtonComponent } from 'src/app/components/shared/icon-button/icon-button.component';
 import { AttachmentService } from 'src/app/services/attachment-service';
 import { ProjectService } from 'src/app/services/project-services';
 import { SpatialService } from 'src/app/services/spatial-services';
 import { Messages, ModalMessages, ModalTitles } from 'src/app/utils/constants';
+import { DetailedErrorMessageComponent } from '../../../detailed-error-message/detailed-error-message.component';
 
 @Component({
   selector: 'wfprev-project-files',

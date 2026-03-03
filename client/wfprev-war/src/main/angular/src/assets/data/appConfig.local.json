@@ -38,7 +38,7 @@
     },
 
   "rest": {
-    "wfprev":"http://localhost:8080",
+    "wfprev":"http://localhost:8080/wfprev-api",
     "wfdm":"https://i1bcwsapi.nrs.gov.bc.ca/wfdm-document-management-api",
     "openmaps":"https://openmaps.gov.bc.ca"
   },
