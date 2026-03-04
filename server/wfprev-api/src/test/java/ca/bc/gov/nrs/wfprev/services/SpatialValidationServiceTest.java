@@ -19,11 +19,11 @@ class SpatialValidationServiceTest {
     void testValidateGeometry_ValidPolygon() {
         // Create a simple valid square polygon
         Coordinate[] coordinates = new Coordinate[]{
-                new Coordinate(0, 0),
-                new Coordinate(0, 10),
-                new Coordinate(10, 10),
-                new Coordinate(10, 0),
-                new Coordinate(0, 0)
+                new Coordinate(-120.0, 50.0),
+                new Coordinate(-120.0, 51.0),
+                new Coordinate(-119.0, 51.0),
+                new Coordinate(-119.0, 50.0),
+                new Coordinate(-120.0, 50.0)
         };
         Polygon polygon = geometryFactory.createPolygon(coordinates);
 
@@ -101,5 +101,43 @@ class SpatialValidationServiceTest {
         // JTS error message for this varies but usually mentions "Hole lies outside shell"
         assertNotNull(result.getMessage());
         assertNotNull(result.getViolationLocation());
+    }
+
+    @Test
+    void testValidateGeometry_OutsideBC() {
+        // Create a valid polygon that is clearly outside BC (e.g., in Alberta)
+        Coordinate[] coordinates = new Coordinate[]{
+                new Coordinate(-113.0, 53.0),
+                new Coordinate(-113.0, 54.0),
+                new Coordinate(-112.0, 54.0),
+                new Coordinate(-112.0, 53.0),
+                new Coordinate(-113.0, 53.0)
+        };
+        Polygon polygonOutsideBC = geometryFactory.createPolygon(coordinates);
+
+        ValidationResult result = service.validateGeometry(polygonOutsideBC);
+
+        assertFalse(result.isValid());
+        assertEquals("Geometry is outside British Columbia. Please submit a valid location within BC.", result.getMessage());
+        assertNull(result.getViolationLocation()); // Our custom check doesn't set a specific coordinate
+    }
+
+    @Test
+    void testValidateGeometry_InsideBC() {
+        // Create a valid polygon strictly inside BC (e.g., near Kamloops)
+        Coordinate[] coordinates = new Coordinate[]{
+                new Coordinate(-120.5, 50.5),
+                new Coordinate(-120.5, 50.6),
+                new Coordinate(-120.4, 50.6),
+                new Coordinate(-120.4, 50.5),
+                new Coordinate(-120.5, 50.5)
+        };
+        Polygon polygonInsideBC = geometryFactory.createPolygon(coordinates);
+
+        ValidationResult result = service.validateGeometry(polygonInsideBC);
+
+        assertTrue(result.isValid());
+        assertEquals("Geometry is valid", result.getMessage());
+        assertNull(result.getViolationLocation());
     }
 }
