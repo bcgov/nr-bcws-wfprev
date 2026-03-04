@@ -79,14 +79,14 @@ public class ProjectLocationController extends CommonController {
             in = ParameterIn.HEADER
     )
     public ResponseEntity<CollectionModel<ProjectLocationModel>> getAllProjectLocations(
-            @RequestParam(required = false) List<UUID> programAreaGuid,
-            @RequestParam(required = false) List<String> fiscalYear,
-            @RequestParam(required = false) List<String> activityCategoryCode,
-            @RequestParam(required = false) List<String> planFiscalStatusCode,
-            @RequestParam(required = false) List<String> forestRegionOrgUnitId,
-            @RequestParam(required = false) List<String> forestDistrictOrgUnitId,
-            @RequestParam(required = false) List<String> fireCentreOrgUnitId,
-            @RequestParam(required = false) List<String> projectTypeCode,
+            @RequestParam(required = false) List<UUID> programAreaGuids,
+            @RequestParam(required = false) List<String> fiscalYears,
+            @RequestParam(required = false) List<String> activityCategoryCodes,
+            @RequestParam(required = false) List<String> planFiscalStatusCodes,
+            @RequestParam(required = false) List<String> forestRegionOrgUnitIds,
+            @RequestParam(required = false) List<String> forestDistrictOrgUnitIds,
+            @RequestParam(required = false) List<String> fireCentreOrgUnitIds,
+            @RequestParam(required = false) List<String> projectTypeCodes,
             @RequestParam(required = false) String searchText
     ) {
         log.debug(" >> getAllProjectLocations");
@@ -94,14 +94,14 @@ public class ProjectLocationController extends CommonController {
 
         try {
             FeatureQueryParams queryParams = new FeatureQueryParams();
-            queryParams.setProgramAreaGuids(programAreaGuid);
-            queryParams.setFiscalYears(fiscalYear);
-            queryParams.setActivityCategoryCodes(activityCategoryCode);
-            queryParams.setPlanFiscalStatusCodes(planFiscalStatusCode);
-            queryParams.setForestRegionOrgUnitIds(forestRegionOrgUnitId);
-            queryParams.setForestDistrictOrgUnitIds(forestDistrictOrgUnitId);
-            queryParams.setFireCentreOrgUnitIds(fireCentreOrgUnitId);
-            queryParams.setProjectTypeCodes(projectTypeCode);
+            queryParams.setProgramAreaGuids(programAreaGuids);
+            queryParams.setFiscalYears(fiscalYears);
+            queryParams.setActivityCategoryCodes(activityCategoryCodes);
+            queryParams.setPlanFiscalStatusCodes(planFiscalStatusCodes);
+            queryParams.setForestRegionOrgUnitIds(forestRegionOrgUnitIds);
+            queryParams.setForestDistrictOrgUnitIds(forestDistrictOrgUnitIds);
+            queryParams.setFireCentreOrgUnitIds(fireCentreOrgUnitIds);
+            queryParams.setProjectTypeCodes(projectTypeCodes);
             queryParams.setSearchText(searchText);
 
             response = ok(projectLocationService.getAllProjectLocations(queryParams));
