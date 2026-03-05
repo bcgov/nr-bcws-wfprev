@@ -1,21 +1,35 @@
 import { Component, effect, OnInit } from '@angular/core';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
-import { FormsModule } from '@angular/forms';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { FormControl, FormsModule } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { SharedCodeTableService } from 'src/app/services/shared-code-table.service';
-import { CodeTableServices } from 'src/app/services/code-table-services';
 import { SharedService } from 'src/app/services/shared-service';
-import { Subject } from 'rxjs';
-import { debounceTime } from 'rxjs/operators';
-import { MatOptionSelectionChange } from '@angular/material/core';
+import { debounceTime, distinctUntilChanged, filter, map, take, tap } from 'rxjs/operators';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { WildfireOrgUnitTypeCodes } from 'src/app/utils/constants';
-import { ActivatedRoute } from '@angular/router';
 import { ProjectFilterStateService } from 'src/app/services/project-filter-state.service';
-import { ProjectFilter } from '../models';
+import { ForestDistrictCodeModel, ProjectFilter } from '../models';
+import { ReactiveFormsModule } from '@angular/forms';
+import { DestroyRef } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { Observable } from 'rxjs';
+
+type MultiSelectKey = 'selectedProjectType' | 'selectedBusinessArea' | 'selectedForestRegion' | 'selectedForestDistrict' | 'selectedActivityCategory' | 'selectedFiscalStatus' | 'selectedFireCentre' | 'selectedFiscalYears';
+type MultiSelectName = 'Project Type' | 'Business Area' | 'Forest Region' | 'Forest District' | 'Activity Category' | 'Fiscal Status' | 'Fire Centre' | 'Fiscal Years';
+
+type Option = { label: string; value: string };
+type MultiSelectConfig = {
+  model: MultiSelectKey;
+  name: MultiSelectName;
+  allValue: string;
+  options: Option[];
+};
+
 @Component({
   selector: 'wfprev-search-filter',
   standalone: true,
@@ -23,35 +37,62 @@ import { ProjectFilter } from '../models';
     FormsModule,
     MatFormFieldModule,
     MatSelectModule,
+    MatCheckboxModule,
     MatInputModule,
     MatIconModule,
     MatButtonModule,
-    CommonModule
+    CommonModule,
+    ReactiveFormsModule
   ],
   templateUrl: './search-filter.component.html',
   styleUrl: './search-filter.component.scss'
 })
 export class SearchFilterComponent implements OnInit {
-  rawForestDistricts: any[] = [];
+
+  public readonly ALL: string = '__ALL__';
+
+  /** Search input field */
+  public searchControl = new FormControl<string>('', { nonNullable: true });
+
+  /** 8 dropdown models */
+  public selectedProjectType: string[] = [];
+  public selectedBusinessArea: string[] = [];
+  public selectedFiscalYears: string[] = [];
+  public selectedActivityCategory: string[] = [];
+  public selectedForestRegion: string[] = [];
+  public selectedForestDistrict: string[] = [];
+  public selectedFireCentre: string[] = [];
+  public selectedFiscalStatus: string[] = [];
+
+  /** Previous selections to handle "Select All" logic */
+  private previousSelections = new Map<MultiSelectKey, string[]>();
+
+  /** Dropdown configuration */
+  public selects: MultiSelectConfig[] = [];
+
+  private readonly fiscalYears = this.generateFiscalYearOptions();
+
+  protected allForestDistricts: ForestDistrictCodeModel[] = [];
 
   constructor(
     private readonly sharedCodeTableService: SharedCodeTableService,
-    private readonly codeTableService: CodeTableServices,
     private sharedService: SharedService,
     private readonly projectFilterStateService: ProjectFilterStateService,
     private route: ActivatedRoute,
+    private destroyRef: DestroyRef
   ) {
     effect(() => {
       this.route.snapshot.url;
       const saved = this.projectFilterStateService.filters();
       if (saved) {
-        this.searchText = saved.searchText ?? "";
+        this.searchControl.setValue(saved.searchText ?? "");
         this.selectedProjectType = saved.projectTypeCodes ?? [];
         this.selectedBusinessArea = saved.programAreaGuids ?? [];
         this.selectedFiscalYears = saved.fiscalYears ?? [];
-        this.selectedActivity = saved.activityCategoryCodes ?? [];
-        this.selectedForestRegion =  saved.forestRegionOrgUnitIds ?? [];
+        this.selectedActivityCategory = saved.activityCategoryCodes ?? [];
+        this.selectedForestRegion = saved.forestRegionOrgUnitIds ?? [];
         this.selectedForestDistrict = saved.forestDistrictOrgUnitIds ?? [];
+        this.updateForestDistricts(this.selectedForestRegion)
         this.selectedFireCentre = saved.fireCentreOrgUnitIds ?? [];
         this.selectedFiscalStatus = saved.planFiscalStatusCodes ?? [];
       }
@@ -59,78 +100,328 @@ export class SearchFilterComponent implements OnInit {
     });
   }
 
-  searchText: string = '';
-  searchTextChanged: Subject<string> = new Subject<string>();
-  projectTypeOptions: { label: string, value: any }[] = [];
-  businessAreaOptions: { label: string, value: any }[] = [];
-  fiscalYearOptions: { label: string, value: string }[] = [];
-  activityOptions: { label: string, value: any }[] = [];
-  forestRegionOptions: { label: string, value: any }[] = [];
-  forestDistrictOptions: { label: string, value: any }[] = [];
-  fireCentreOptions: { label: string, value: string }[] = [];
-  fiscalStatusOptions: { label: string, value: string }[] = [];
-
-  selectedProjectType: string[] = [];
-  selectedBusinessArea: string[] = [];
-  selectedFiscalYears: string[] = [];
-  selectedActivity: string[] = [];
-  selectedForestRegion: string[] = [];
-  selectedForestDistrict: string[] = [];
-  selectedFireCentre: string[] = [];
-  selectedFiscalStatus: string[] = [];
-  noYearAssigned: string = 'No Year Assigned'
-
   ngOnInit(): void {
-    const savedFilters = this.projectFilterStateService.filters();
-    if (savedFilters) {
-      this.searchText = savedFilters?.searchText ?? '';
-      this.selectedProjectType = savedFilters?.projectTypeCodes ?? [];
-      this.selectedBusinessArea = savedFilters?.programAreaGuids ?? [];
-      this.selectedFiscalYears = savedFilters?.fiscalYears ?? [];
-      this.selectedActivity = savedFilters?.activityCategoryCodes ?? [];
-      this.selectedForestRegion = savedFilters?.forestRegionOrgUnitIds ?? [];
-      this.selectedForestDistrict = savedFilters?.forestDistrictOrgUnitIds ?? [];
-      this.selectedFireCentre = savedFilters?.fireCentreOrgUnitIds ?? [];
-      this.selectedFiscalStatus = savedFilters?.planFiscalStatusCodes ?? [];
+    this.setupCodeTableSubscription().subscribe(() => {
+      const savedFilters = this.projectFilterStateService.filters();
+
+      if (savedFilters) {
+        this.searchControl.setValue(savedFilters.searchText ?? '');
+        this.selectedProjectType = savedFilters.projectTypeCodes ?? [];
+        this.selectedBusinessArea = savedFilters.programAreaGuids ?? [];
+        this.selectedFiscalYears = savedFilters.fiscalYears ?? [];
+        this.selectedActivityCategory = savedFilters.activityCategoryCodes ?? [];
+        this.selectedForestRegion = savedFilters.forestRegionOrgUnitIds ?? [];
+        this.selectedForestDistrict = savedFilters.forestDistrictOrgUnitIds ?? [];
+        this.updateForestDistricts(this.selectedForestRegion);
+        this.selectedFireCentre = savedFilters.fireCentreOrgUnitIds ?? [];
+        this.selectedFiscalStatus = savedFilters.planFiscalStatusCodes ?? [];
+
+        this.previousSelections = new Map([
+          ['selectedProjectType', this.selectedProjectType],
+          ['selectedBusinessArea', this.selectedBusinessArea],
+          ['selectedFiscalYears', this.selectedFiscalYears],
+          ['selectedActivityCategory', this.selectedActivityCategory],
+          ['selectedForestRegion', this.selectedForestRegion],
+          ['selectedForestDistrict', this.selectedForestDistrict],
+          ['selectedFireCentre', this.selectedFireCentre],
+          ['selectedFiscalStatus', this.selectedFiscalStatus]
+        ]);
+      }
+
+      this.setupSearch();
+      this.emitFilters();
+    });
+  }
+
+  generateFiscalYearOptions(): Option[] {
+    const currentYear = new Date().getFullYear();
+    const startYear = currentYear - 5;
+    const endYear = currentYear + 5;
+    const list: Option[] = [];
+
+    for (let year = endYear; year >= startYear; year--) {
+      const nextYear = (year + 1).toString().slice(-2).padStart(2, '0');
+      list.push({
+        label: `${year}/${nextYear}`,
+        value: year.toString(),
+      });
     }
-    this.generateFiscalYearOptions();
-    this.setupCodeTableSubscription();
-    this.setupSearchDebounce();
+
+    return [...list.sort((a, b) => a.label.localeCompare(b.label)), { label: 'No Year Assigned', value: 'null' }]
+  }
+
+  private mapToOptions<T>(
+    items: T[] | null | undefined,
+    labelKey: keyof T,
+    valueKey: keyof T,
+    sortByLabel = false
+  ): Option[] {
+    const options = (items ?? []).map(item => ({
+      label: String(item[labelKey]),
+      value: String(item[valueKey])
+    })) as Option[];
+
+    return sortByLabel
+      ? options.sort((a, b) => a.label.localeCompare(b.label))
+      : options;
+  }
+
+  private areAllTablesLoaded(tables: any): boolean {
+    return !!(
+      tables.projectTypeCode?.length &&
+      tables.businessAreas?.length &&
+      tables.activityCategoryCode?.length &&
+      tables.forestRegions?.length &&
+      tables.forestDistricts?.length &&
+      tables.wildfireOrgUnit?.length &&
+      tables.planFiscalStatusCode?.length
+    );
+  }
+
+  private setupCodeTableSubscription(): Observable<void> {
+    return this.sharedCodeTableService.codeTables$.pipe(
+      filter(tables => !!tables),
+      filter(tables => this.areAllTablesLoaded(tables)),
+      take(1), // now SAFE
+      tap(tables => {
+        this.allForestDistricts = tables.forestDistricts;
+
+        this.selects = [
+          {
+            model: 'selectedProjectType',
+            name: 'Project Type',
+            allValue: this.ALL,
+            options: this.mapToOptions(
+              tables.projectTypeCode,
+              'description',
+              'projectTypeCode',
+              true
+            )
+          },
+          {
+            model: 'selectedBusinessArea',
+            name: 'Business Area',
+            allValue: this.ALL,
+            options: this.mapToOptions(
+              tables.businessAreas,
+              'programAreaName',
+              'programAreaGuid',
+              true
+            )
+          },
+          {
+            model: 'selectedFiscalYears',
+            name: 'Fiscal Years',
+            allValue: this.ALL,
+            options: this.fiscalYears
+          },
+          {
+            model: 'selectedActivityCategory',
+            name: 'Activity Category',
+            allValue: this.ALL,
+            options: this.mapToOptions(
+              tables.activityCategoryCode,
+              'description',
+              'activityCategoryCode',
+              true
+            )
+          },
+          {
+            model: 'selectedForestRegion',
+            name: 'Forest Region',
+            allValue: this.ALL,
+            options: this.mapToOptions(
+              tables.forestRegions,
+              'orgUnitName',
+              'orgUnitId',
+              true
+            )
+          },
+          {
+            model: 'selectedForestDistrict',
+            name: 'Forest District',
+            allValue: this.ALL,
+            options: this.mapToOptions(
+              tables.forestDistricts,
+              'orgUnitName',
+              'orgUnitId',
+              true
+            )
+          },
+          {
+            model: 'selectedFireCentre',
+            name: 'Fire Centre',
+            allValue: this.ALL,
+            options: this.mapToOptions(
+              tables.wildfireOrgUnit.filter(
+                (item: any) =>
+                  item.wildfireOrgUnitTypeCode?.wildfireOrgUnitTypeCode ===
+                  WildfireOrgUnitTypeCodes.FIRE_CENTRE
+              ),
+              'orgUnitName',
+              'orgUnitIdentifier',
+              true
+            )
+          },
+          {
+            model: 'selectedFiscalStatus',
+            name: 'Fiscal Status',
+            allValue: this.ALL,
+            options: this.mapToOptions(
+              tables.planFiscalStatusCode,
+              'description',
+              'planFiscalStatusCode',
+              true
+            )
+          }
+        ];
+
+        this.assignDefaultFiscalYear(false);
+      }),
+      map(() => void 0)
+    );
+  }
+
+  setupSearch(): void {
+    this.searchControl.valueChanges
+      .pipe(
+        debounceTime(1000),
+        distinctUntilChanged(),
+        takeUntilDestroyed(this.destroyRef)
+      )
+      .subscribe(value => {
+        this.emitFilters();
+      });
+  }
+
+  /** Handler for multi-select changes */
+  onMultiSelectChange(modelName: MultiSelectKey): void {
+    const current = this.getCurrentValues(modelName);
+    const previous = this.previousSelections.get(modelName) ?? [];
+    const allOptions = this.getAllOptionValues(modelName);
+
+    const updated = this.resolveSelectionChange(current, previous, allOptions);
+
+    this.setModelValues(modelName, updated);
+    this.previousSelections.set(modelName, [...updated]);
+
+    if (modelName === 'selectedForestRegion') {
+      this.updateForestDistricts(updated);
+    }
+
+    this.emitFilters();
+  }
+
+  private getCurrentValues(modelName: MultiSelectKey): string[] {
+    return ((this as any)[modelName] ?? []).map(String);
+  }
+
+  private getAllOptionValues(modelName: MultiSelectKey): string[] {
+    const select = this.selects.find(s => s.model === modelName)!;
+    return select.options.map(o => String(o.value));
+  }
+
+  private resolveSelectionChange(
+    current: string[],
+    previous: string[],
+    allOptions: string[]
+  ): string[] {
+
+    const selecting = current.length > previous.length;
+
+    if (selecting) {
+      if (
+        current.length === allOptions.length ||
+        (current.includes(this.ALL) && !previous.includes(this.ALL))
+      ) {
+        return [this.ALL, ...allOptions];
+      }
+      return [...current];
+    }
+
+    // deselecting
+    if (!current.includes(this.ALL) && previous.includes(this.ALL)) {
+      return [];
+    }
+
+    if (current.includes(this.ALL)) {
+      return current.filter(v => v !== this.ALL);
+    }
+
+    return [...current];
+  }
+
+  private setModelValues(modelName: MultiSelectKey, values: string[]): void {
+    (this as any)[modelName] = values;
+  }
+
+  private updateForestDistricts(selectedRegions: string[]): void {
+    const districtSelect = this.selects.find(s => s.model === 'selectedForestDistrict');
+    if (!districtSelect?.options) return;
+
+    if (selectedRegions.length === 0) {
+      this.resetForestDistricts(districtSelect);
+      return;
+    }
+    const filteredDistricts = this.allForestDistricts.filter(d =>
+      selectedRegions.includes(d.parentOrgUnitId ?? '')
+    );
+
+    districtSelect.options = this.mapToOptions(
+      filteredDistricts,
+      'orgUnitName',
+      'orgUnitId',
+      true
+    );
+    this.syncSelectedDistricts(districtSelect.options);
+  }
+
+  private resetForestDistricts(select: MultiSelectConfig): void {
+    this.selectedForestDistrict = [];
+    this.previousSelections.set('selectedForestDistrict', []);
+
+    select.options = this.mapToOptions(
+      this.allForestDistricts,
+      'orgUnitName',
+      'orgUnitId',
+      true
+    );
+  }
+
+  private syncSelectedDistricts(options: Option[]): void {
+    const validValues = options.map(o => o.value);
+    this.selectedForestDistrict =
+      this.selectedForestDistrict.filter(v => validValues.includes(v));
+    if (this.selectedForestDistrict.length === options.length) {
+      this.selectedForestDistrict = [this.ALL, ...this.selectedForestDistrict];
+    }
+
+    this.previousSelections.set(
+      'selectedForestDistrict',
+      [...this.selectedForestDistrict]
+    );
   }
 
   emitFilters() {
-    const sanitize = (arr: any[]) => arr.filter(v => v !== '__ALL__');
-
-    // include 'null' in query param for 'ALL' in order to return projects with no fiscals attached
-    const resolveFiscalYears = () => {
-      if (this.selectedFiscalYears.includes('__ALL__')) {
-        const allValues = this.fiscalYearOptions
-          .map(opt => opt.value)
-          .filter(v => v !== '__ALL__');
-
-        return [...allValues, 'null'];
-      }
-      return sanitize(this.selectedFiscalYears);
-    };
-
+    const sanitize = (arr: any[]) => arr.filter(v => v !== this.ALL);
 
     this.projectFilterStateService.update({
-      searchText: this.searchText,
+      searchText: this.searchControl.value,
       projectTypeCodes: this.selectedProjectType,
       programAreaGuids: this.selectedBusinessArea,
       fiscalYears: this.selectedFiscalYears,
-      activityCategoryCodes: this.selectedActivity,
+      activityCategoryCodes: this.selectedActivityCategory,
       forestRegionOrgUnitIds: this.selectedForestRegion,
       forestDistrictOrgUnitIds: this.selectedForestDistrict,
       fireCentreOrgUnitIds: this.selectedFireCentre,
       planFiscalStatusCodes: this.selectedFiscalStatus
     });
     const filterPrarameters: ProjectFilter = {
-      searchText: this.searchText,
+      searchText: this.searchControl.value,
       projectTypeCodes: sanitize(this.selectedProjectType),
       programAreaGuids: sanitize(this.selectedBusinessArea),
-      fiscalYears: resolveFiscalYears(),
-      activityCategoryCodes: sanitize(this.selectedActivity),
+      fiscalYears: sanitize(this.selectedFiscalYears),
+      activityCategoryCodes: sanitize(this.selectedActivityCategory),
       forestRegionOrgUnitIds: sanitize(this.selectedForestRegion),
       forestDistrictOrgUnitIds: sanitize(this.selectedForestDistrict),
       fireCentreOrgUnitIds: sanitize(this.selectedFireCentre),
@@ -140,257 +431,51 @@ export class SearchFilterComponent implements OnInit {
     this.sharedService.updateFilters(filterPrarameters);
   }
 
-  onSearch() {
-    this.emitFilters();
-  }
-
   onReset() {
-    this.searchText = '';
+    this.searchControl.setValue('');
     this.selectedProjectType = [];
     this.selectedBusinessArea = [];
     this.selectedFiscalYears = [];
-    this.selectedActivity = [];
+    this.selectedActivityCategory = [];
     this.selectedForestRegion = [];
     this.selectedForestDistrict = [];
     this.selectedFireCentre = [];
     this.selectedFiscalStatus = [];
     this.assignDefaultFiscalYear(true);
-  }
 
-  generateFiscalYearOptions(): void {
-    const currentYear = new Date().getFullYear();
-    const startYear = currentYear - 5;
-    const endYear = currentYear + 5;
-    const list = [];
-
-    for (let year = endYear; year >= startYear; year--) {
-      const nextYear = (year + 1).toString().slice(-2).padStart(2, '0');
-      list.push({
-        label: `${year}/${nextYear}`,
-        value: year.toString()
-      });
-    }
-
-    this.fiscalYearOptions = this.prependAllAndSortFiscalYears(list);
-  }
-
-  onForestRegionChange(): void {
-    if (!this.selectedForestRegion.length) {
-      this.forestDistrictOptions = this.prependAllAndSort(
-        this.rawForestDistricts.map((item: any) => ({
-          label: item.orgUnitName,
-          value: item.orgUnitId
-        }))
-      );
-      return;
-    }
-
-    const filtered = this.rawForestDistricts.filter((district: any) =>
-      this.selectedForestRegion.map(String).includes(String(district.parentOrgUnitId))
-    );
-
-    this.forestDistrictOptions = this.prependAllAndSort(
-      filtered.map((item: any) => ({
-        label: item.orgUnitName,
-        value: item.orgUnitId
-      }))
-    );
-
-    this.selectedForestDistrict = this.selectedForestDistrict.filter(id =>
-      this.forestDistrictOptions.some(opt => opt.value === id)
-    );
-  }
-
-  prependAllAndSort(options: { label: string, value: any }[]): { label: string, value: any }[] {
-    const sorted = [...options].sort((a, b) => a.label.localeCompare(b.label));
-    return [{ label: 'All', value: '__ALL__' }, ...sorted];
-  }
-
-  prependAllAndSortFiscalYears(options: { label: string, value: any }[]): { label: string, value: any }[] {
-    const sorted = [...options].sort((a, b) => a.label.localeCompare(b.label));
-    return [
-      { label: 'All', value: '__ALL__' },
-      ...sorted,
-      { label: this.noYearAssigned, value: 'null' }
-    ];
-  }
-
-  onOptionToggled(event: any, model: keyof SearchFilterComponent, options: { value: any }[]) {
-    const allOptionValue = '__ALL__';
-    let selected = (this[model] as any[]) || [];
-
-    const allValues = options
-      .map(o => o.value)
-      .filter(v => v !== allOptionValue);
-
-    if (selected.includes(allOptionValue)) {
-      (this[model] as any[]) = [allOptionValue, ...allValues];
-    } else if (event?.source?.value === allOptionValue) {
-      (this[model] as any[]) = [];
-    } else {
-      selected = selected.filter(v => v !== allOptionValue);
-      if (selected.length === allValues.length) {
-        (this[model] as any[]) = [allOptionValue, ...allValues];
-      } else {
-        (this[model] as any[]) = selected;
-      }
-    }
-    this.emitFilters();
-  }
-
-  syncAllWithItemToggle(
-    event: MatOptionSelectionChange,
-    value: string,
-    model: keyof SearchFilterComponent,
-    options: { value: string }[]
-  ) {
-    if (!event.isUserInput) return;
-    const allOptionValue = '__ALL__';
-    const allIndividualValues = options
-      .map(o => o.value)
-      .filter(v => v !== allOptionValue);
-
-    const currentSelected = [...(this[model] as string[])];
-
-    // Case 1: User deselects "All" => clear all
-    if (value === allOptionValue && !event.source.selected) {
-      setTimeout(() => {
-        (this[model] as string[]) = [];
-        this.emitFilters();
-      }, 0);
-      return;
-    }
-
-    // Case 2: User deselects individual item while "All" is selected => remove both
-    const isUncheckingIndividual = value !== allOptionValue && !event.source.selected;
-    if (isUncheckingIndividual && currentSelected.includes(allOptionValue)) {
-      setTimeout(() => {
-        (this[model] as string[]) = currentSelected.filter(v => v !== allOptionValue && v !== value);
-        this.emitFilters();
-      }, 0);
-      return;
-    }
-
-    // Case 3: If all individual items are selected, "ALL" should also be selected
-    if (value !== allOptionValue && event.source.selected) {
-      const updated = new Set([...currentSelected, value]);
-      const hasAllIndividuals = allIndividualValues.every(v => updated.has(v));
-      if (hasAllIndividuals && !updated.has(allOptionValue)) {
-        setTimeout(() => {
-          (this[model] as string[]) = [allOptionValue, ...allIndividualValues];
-          this.emitFilters();
-        }, 0);
-        return;
-      }
-    }
-
-    //Case 4: User selects "All" => select all
-    if (value === allOptionValue && event.source.selected) {
-      setTimeout(() => {
-          (this[model] as string[]) = [allOptionValue, ...allIndividualValues];
-          this.emitFilters();
-        }, 0);
-    }
-
-  }
-
-
-  setupCodeTableSubscription(): void {
-    this.sharedCodeTableService.codeTables$.subscribe((tables) => {
-      if (!tables) return;
-      this.projectTypeOptions = this.prependAllAndSort(
-        (tables.projectTypeCode ?? []).map((item: any) => ({
-          label: item.description,
-          value: item.projectTypeCode
-        }))
-      );
-
-      this.businessAreaOptions = this.prependAllAndSort(
-        (tables.businessAreas ?? []).map((item: any) => ({
-          label: item.programAreaName,
-          value: item.programAreaGuid
-        }))
-      );
-
-      this.forestRegionOptions = this.prependAllAndSort(
-        (tables.forestRegions ?? []).map((item: any) => ({
-          label: item.orgUnitName,
-          value: item.orgUnitId
-        }))
-      );
-
-      this.rawForestDistricts = tables.forestDistricts ?? [];
-
-      this.forestDistrictOptions = this.prependAllAndSort(
-        this.rawForestDistricts.map((item: any) => ({
-          label: item.orgUnitName,
-          value: item.orgUnitId
-        }))
-      );
-
-      this.activityOptions = this.prependAllAndSort(
-        (tables.activityCategoryCode ?? []).map((item: any) => ({
-          label: item.description,
-          value: item.activityCategoryCode
-        }))
-      );
-
-      this.fiscalStatusOptions = this.prependAllAndSort(
-        (tables.planFiscalStatusCode ?? []).map((item: any) => ({
-          label: item.description,
-          value: item.planFiscalStatusCode
-        }))
-      );
-
-      this.fireCentreOptions = this.prependAllAndSort(
-        (tables.wildfireOrgUnit ?? [])
-          .filter((item: any) => item.wildfireOrgUnitTypeCode?.wildfireOrgUnitTypeCode === WildfireOrgUnitTypeCodes.FIRE_CENTRE)
-          .map((item: any) => ({
-            label: item.orgUnitName,
-            value: item.orgUnitIdentifier
-          }))
-      );
-
-      this.assignDefaultFiscalYear(false);
-    });
-  }
-
-  setupSearchDebounce(): void {
-    this.searchTextChanged
-      .pipe(debounceTime(3000)) // 3s debounce time
-      .subscribe((value: string) => {
-        this.searchText = value;
-        this.projectFilterStateService.update({
-          searchText: value
-        });
-        this.onSearch();
-      });
-    this.onSearch();
+    this.previousSelections = new Map([
+      ['selectedProjectType', this.selectedProjectType],
+      ['selectedBusinessArea', this.selectedBusinessArea],
+      ['selectedFiscalYears', this.selectedFiscalYears],
+      ['selectedActivityCategory', this.selectedActivityCategory],
+      ['selectedForestRegion', this.selectedForestRegion],
+      ['selectedForestDistrict', this.selectedForestDistrict],
+      ['selectedFireCentre', this.selectedFireCentre],
+      ['selectedFiscalStatus', this.selectedFiscalStatus]
+    ]);
   }
 
   clearSearch(): void {
-    this.searchText = '';
-    this.projectFilterStateService.update({
-      searchText: this.searchText
-    });
+    this.searchControl.setValue('');
     this.emitFilters();
   }
 
   assignDefaultFiscalYear(emit: boolean = true): void {
-      const today = new Date();
-      // April has an index of 3
-      const fiscalYearStart = today.getMonth() >= 3 ? today.getFullYear() : today.getFullYear() - 1;
-      const fiscalYearValue = fiscalYearStart.toString();
+    const today = new Date();
+    // April has an index of 3
+    const fiscalYearStart = today.getMonth() >= 3 ? today.getFullYear() : today.getFullYear() - 1;
+    const fiscalYearValue = fiscalYearStart.toString();
+    const options = this.selects.find(item => item.model === 'selectedFiscalYears')?.options || [];
 
-      const currentFiscalExists = this.fiscalYearOptions.some(opt => opt.value === fiscalYearValue);
-      const noYearAssignedExists = this.fiscalYearOptions.some(opt => opt.value === 'null');
+    const currentFiscalExists = options.some(opt => opt.value === fiscalYearValue);
+    const noYearAssignedExists = options.some(opt => opt.value === 'null');
 
-      // automatically assign current fiscal year and 'No Year Assigned'
-      this.selectedFiscalYears = [
-        ...(currentFiscalExists ? [fiscalYearValue] : []),
-        ...(noYearAssignedExists ? ['null'] : [])
-      ];
+    // automatically assign current fiscal year and 'No Year Assigned'
+    this.selectedFiscalYears = [
+      ...(currentFiscalExists ? [fiscalYearValue] : []),
+      ...(noYearAssignedExists ? ['null'] : [])
+    ];
 
-      if (emit) this.emitFilters();
+    if (emit) this.emitFilters();
   }
 }
