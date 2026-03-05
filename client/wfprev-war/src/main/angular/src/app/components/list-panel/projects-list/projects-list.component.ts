@@ -229,7 +229,6 @@ export class ProjectsListComponent implements OnInit {
   fiscalYearActivityTypes = ['Clearing', 'Burning', 'Pruning']
 
   loadProjects(initialLoad = true): void {
-    console.trace();
     if (initialLoad) {
       this.pageNumber = 1;
       this.allProjects = [];
@@ -240,7 +239,6 @@ export class ProjectsListComponent implements OnInit {
     if (this.isLoading || !this.hasMore) return;
     this.isLoading = true;
     const filters = this.sharedService.currentFilters || {};
-    console.log('filters => ', filters);
     let sortBy: string | undefined;
     let sortDirection: string | undefined;
 
