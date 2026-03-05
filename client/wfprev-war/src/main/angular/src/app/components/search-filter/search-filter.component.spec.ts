@@ -1,348 +1,397 @@
-import { signal } from '@angular/core';
-import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
-import { MatOptionSelectionChange } from '@angular/material/core';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute } from '@angular/router';
-import { Subject } from 'rxjs';
-import { CodeTableServices } from 'src/app/services/code-table-services';
+import { BehaviorSubject } from 'rxjs';
 import { ProjectFilterStateService } from 'src/app/services/project-filter-state.service';
 import { SharedCodeTableService } from 'src/app/services/shared-code-table.service';
 import { SharedService } from 'src/app/services/shared-service';
 import { SearchFilterComponent } from './search-filter.component';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { signal } from '@angular/core';
 
 describe('SearchFilterComponent', () => {
   let component: SearchFilterComponent;
   let fixture: ComponentFixture<SearchFilterComponent>;
-  let mockSharedService: jasmine.SpyObj<SharedService>;
-  let mockCodeTableService: jasmine.SpyObj<CodeTableServices>;
-  let mockSharedCodeTableService: jasmine.SpyObj<SharedCodeTableService>;
-  let mockCodeTablesSubject: Subject<any>;
-  let mockProjectFilterStateService: jasmine.SpyObj<ProjectFilterStateService>;
+
+  let codeTables$: BehaviorSubject<any>;
+  let sharedCodeTableService: jasmine.SpyObj<SharedCodeTableService>;
+  let sharedService: jasmine.SpyObj<SharedService>;
+  let projectFilterStateService: jasmine.SpyObj<ProjectFilterStateService>;
+  let filtersSignal: any;
+
 
   beforeEach(async () => {
-    mockSharedService = jasmine.createSpyObj('SharedService', ['updateFilters']);
-    mockCodeTableService = jasmine.createSpyObj('CodeTableServices', ['fetchFireCentres']);
+    filtersSignal = signal<any>(null);
 
-    mockCodeTablesSubject = new Subject<any>();
+    codeTables$ = new BehaviorSubject<any>(null);
 
-    mockSharedCodeTableService = {
-      get codeTables$() {
-        return mockCodeTablesSubject.asObservable();
-      }
-    } as any;
+    sharedCodeTableService = jasmine.createSpyObj(
+      'SharedCodeTableService',
+      [],
+      { codeTables$: codeTables$.asObservable() }
+    );
 
-    mockProjectFilterStateService = jasmine.createSpyObj('ProjectFilterStateService', ['update']);
-    (mockProjectFilterStateService as any).filters = signal({});
+    sharedService = jasmine.createSpyObj('SharedService', ['updateFilters']);
+
+    projectFilterStateService = jasmine.createSpyObj(
+      'ProjectFilterStateService',
+      ['update']
+    );
+
+    (projectFilterStateService as any).filters = filtersSignal;
 
     await TestBed.configureTestingModule({
-      imports: [SearchFilterComponent, BrowserAnimationsModule],
+      imports: [
+        SearchFilterComponent,
+        NoopAnimationsModule
+      ],
       providers: [
-        { provide: SharedService, useValue: mockSharedService },
-        { provide: CodeTableServices, useValue: mockCodeTableService },
-        { provide: SharedCodeTableService, useValue: mockSharedCodeTableService },
-        { provide: ProjectFilterStateService, useValue: mockProjectFilterStateService },
+        { provide: SharedCodeTableService, useValue: sharedCodeTableService },
+        { provide: SharedService, useValue: sharedService },
+        { provide: ProjectFilterStateService, useValue: projectFilterStateService },
         {
           provide: ActivatedRoute,
-          useValue: {
-            snapshot: {
-              url: []
-            }
-          }
+          useValue: { snapshot: { url: [] } }
         }
       ]
     }).compileComponents();
 
     fixture = TestBed.createComponent(SearchFilterComponent);
     component = fixture.componentInstance;
-
-    mockCodeTablesSubject.next({
-      businessAreas: [{ programAreaName: 'Area A', programAreaGuid: 'guid-a' }],
-      forestRegions: [{ orgUnitName: 'Region 1', orgUnitId: 'r1' }],
-      forestDistricts: [{ orgUnitName: 'District 1', orgUnitId: 'd1', parentOrgUnitId: 'r1' }],
-      activityCategoryCode: [{ description: 'Activity A', activityCategoryCode: 'a1' }],
-      planFiscalStatusCode: [{ description: 'Approved', planFiscalStatusCode: 'P' }],
-      wildfireOrgUnit: []
-    });
-
-    fixture.detectChanges();
   });
 
-  it('should create', () => {
+  const mockTables = {
+    projectTypeCode: [{ description: 'PT1', projectTypeCode: '1' }],
+    businessAreas: [{ programAreaName: 'BA1', programAreaGuid: '10' }],
+    activityCategoryCode: [{ description: 'AC1', activityCategoryCode: '20' }],
+    forestRegions: [
+      { orgUnitName: 'Region1', orgUnitId: 'R1' },
+      { orgUnitName: 'Region2', orgUnitId: 'R2' }
+    ],
+    forestDistricts: [
+      { orgUnitName: 'District1', orgUnitId: 'D1', parentOrgUnitId: 'R1' },
+      { orgUnitName: 'District1', orgUnitId: 'D2', parentOrgUnitId: 'R1' },
+      { orgUnitName: 'District1', orgUnitId: 'D3', parentOrgUnitId: 'R2' }
+    ],
+    wildfireOrgUnit: [
+      {
+        orgUnitName: 'FireCentre1',
+        orgUnitIdentifier: 'FC1',
+        wildfireOrgUnitTypeCode: { wildfireOrgUnitTypeCode: 'FIRE_CENTRE' }
+      }
+    ],
+    planFiscalStatusCode: [{ description: 'Active', planFiscalStatusCode: 'A' }]
+  };
+
+  it('should create component', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should generate fiscal activity options', () => {
-    component.generateFiscalYearOptions();
-    expect(component.fiscalYearOptions.length).toBeGreaterThan(0);
-    expect(component.fiscalYearOptions[0].label).toBe('All');
+  it('should initialize selects when code tables load', () => {
+    codeTables$.next(mockTables);
+    fixture.detectChanges();
+
+    expect(component.selects.length).toBe(8);
+    expect(component.selects.find(s => s.model === 'selectedProjectType')).toBeDefined();
   });
 
-  it('should call emitFilters when onSearch is triggered', () => {
-    component.onSearch();
-    expect(mockSharedService.updateFilters).toHaveBeenCalled();
+  it('should assign default fiscal year on init', () => {
+    codeTables$.next(mockTables);
+    fixture.detectChanges();
+
+    expect(component.selectedFiscalYears.length).toBe(2);
   });
 
-  it('should include "null" in fiscalYear query param when "All" is selected', () => {
-    component.fiscalYearOptions = [
-      { label: 'All', value: '__ALL__' },
-      { label: '2025/26', value: '2025' },
-      { label: '2024/25', value: '2024' },
-      { label: '2023/24', value: '2023' }
-    ];
+  it('should emit filters after search debounce', (done) => {
+    codeTables$.next(mockTables);
+    fixture.detectChanges();
 
-    component.selectedFiscalYears = ['__ALL__'];
+    component.searchControl.setValue('fire');
+
+    setTimeout(() => {
+      expect(sharedService.updateFilters).toHaveBeenCalled();
+      done();
+    }, 1100);
+  });
+
+  it('should select ALL when all options selected', () => {
+    codeTables$.next(mockTables);
+    fixture.detectChanges();
+
+    component.selectedProjectType = ['1'];
+    component.onMultiSelectChange('selectedProjectType');
+
+    expect(component.selectedProjectType).toContain(component.ALL);
+  });
+
+  it('should clear selection when ALL is deselected', () => {
+    codeTables$.next(mockTables);
+    fixture.detectChanges();
+
+    component.selectedBusinessArea = [component.ALL, '10'];
+    component['previousSelections'].set('selectedBusinessArea', [component.ALL, '10']);
+
+    component.selectedBusinessArea = [];
+    component.onMultiSelectChange('selectedBusinessArea');
+
+    expect(component.selectedBusinessArea.length).toBe(0);
+  });
+
+  it('should filter forest districts by selected region', () => {
+    codeTables$.next(mockTables);
+    fixture.detectChanges();
+
+    component.selectedForestRegion = ['R1'];
+    component.onMultiSelectChange('selectedForestRegion');
+
+    const districtSelect = component.selects.find(
+      s => s.model === 'selectedForestDistrict'
+    );
+
+    expect(districtSelect?.options.length).toBe(2);
+    expect(districtSelect?.options[0].value).toBe('D1');
+    expect(districtSelect?.options[1].value).toBe('D2');
+  });
+
+  it('should reset all filters', () => {
+    component.selectedProjectType = ['1'];
+    component.searchControl.setValue('test');
+
+    component.onReset();
+
+    expect(component.searchControl.value).toBe('');
+    expect(component.selectedProjectType.length).toBe(0);
+  });
+
+  it('should reset all filters', () => {
+    component.searchControl.setValue('test');
+
+    component.clearSearch();
+
+    expect(component.searchControl.value).toBe('');
+    expect(sharedService.updateFilters).toHaveBeenCalled();
+  });
+
+  it('should sanitize ALL before emitting filters', () => {
+    component.selectedProjectType = [component.ALL, '1'];
 
     component.emitFilters();
 
-    expect(mockSharedService.updateFilters).toHaveBeenCalledWith(
-      jasmine.objectContaining({
-        fiscalYears: ['2025', '2024', '2023', 'null']
-      })
-    );
+    const call = sharedService.updateFilters.calls.mostRecent().args[0];
+    expect(call.projectTypeCodes).toEqual(['1']);
   });
 
-  it('should handle onReset correctly', () => {
-    component.selectedBusinessArea = ['x'];
-    component.searchText = 'test';
-    component.onReset();
-    expect(component.searchText).toBe('');
-    expect(component.selectedBusinessArea).toEqual([]);
-    expect(mockSharedService.updateFilters).toHaveBeenCalled();
-  });
-
-  it('should prepend All and sort options', () => {
-    const result = component.prependAllAndSort([
-      { label: 'B', value: 'b' },
-      { label: 'A', value: 'a' }
-    ]);
-    expect(result[0].label).toBe('All');
-    expect(result[1].label).toBe('A');
-  });
-
-  it('should call updateFilters in onOptionToggled', () => {
-    const options = [
-      { value: '1' },
-      { value: '2' }
+  it('should reset forest districts selection and options', () => {
+    // ARRANGE
+    (component as any).allForestDistricts = [
+      { orgUnitName: 'District A', orgUnitId: 'D1' },
+      { orgUnitName: 'District B', orgUnitId: 'D2' }
     ];
-    component.selectedActivity = ['__ALL__'];
-    component.onOptionToggled({ source: { value: '__ALL__' } }, 'selectedActivity', options);
-    expect(mockSharedService.updateFilters).toHaveBeenCalled();
+
+    component.selectedForestDistrict = ['D1'];
+    (component as any).previousSelections.set('selectedForestDistrict', ['D1']);
+
+    const districtSelect: any = {
+      model: 'selectedForestDistrict',
+      name: 'Forest District',
+      allValue: component.ALL,
+      options: [] as { label: string; value: string }[]
+    };
+
+    // ACT
+    (component as any).resetForestDistricts(districtSelect);
+
+    // ASSERT
+    expect(component.selectedForestDistrict).toEqual([]);
+    expect(
+      (component as any).previousSelections.get('selectedForestDistrict')
+    ).toEqual([]);
+
+    expect(districtSelect.options).toEqual([
+      { label: 'District A', value: 'D1' },
+      { label: 'District B', value: 'D2' }
+    ]);
   });
 
-  it('should debounce search and call onSearch', fakeAsync(() => {
-    spyOn(component, 'onSearch');
-    component.searchTextChanged.next('debounced');
-    tick(3000);
-    expect(component.onSearch).toHaveBeenCalled();
-  }));
+  it('should restore filters when saved filters exist (effect)', () => {
+    // ARRANGE
+    const savedFilters = {
+      searchText: 'test',
+      projectTypeCodes: ['PT1'],
+      programAreaGuids: ['BA1'],
+      fiscalYears: ['2024'],
+      activityCategoryCodes: ['AC1'],
+      forestRegionOrgUnitIds: ['R1'],
+      forestDistrictOrgUnitIds: ['D1'],
+      fireCentreOrgUnitIds: ['FC1'],
+      planFiscalStatusCodes: ['ACTIVE']
+    };
 
-  it('should filter forest districts on forest region change', () => {
-    component.selectedForestRegion = ['r1'];
-    component.rawForestDistricts = [
-      { orgUnitId: 'd1', orgUnitName: 'District 1', parentOrgUnitId: 'r1' },
-      { orgUnitId: 'd2', orgUnitName: 'District 2', parentOrgUnitId: 'r2' }
-    ];
-    component.onForestRegionChange();
-    expect(component.forestDistrictOptions.length).toBeGreaterThan(0);
-  });
-
-  it('should reset districts if no forest region selected', () => {
-    component.rawForestDistricts = [
-      { orgUnitId: 'd1', orgUnitName: 'District 1', parentOrgUnitId: 'r1' }
-    ];
-    component.selectedForestRegion = [];
-    component.onForestRegionChange();
-    expect(component.forestDistrictOptions.length).toBeGreaterThan(0);
-  });
-
-  it('should clear selection when "All" is deselected', fakeAsync(() => {
-    component.selectedBusinessArea = ['__ALL__', 'guid-a'];
-    const event = {
-      isUserInput: true,
-      source: {
-        selected: false,
-        value: '__ALL__'
-      }
-    } as MatOptionSelectionChange;
-
-    component.syncAllWithItemToggle(event, '__ALL__', 'selectedBusinessArea', [
-      { value: '__ALL__' },
-      { value: 'guid-a' }
-    ]);
-
-    tick();
-    expect(component.selectedBusinessArea).toEqual([]);
-    expect(mockSharedService.updateFilters).toHaveBeenCalled();
-  }));
-
-  it('should remove individual and "__ALL__" when individual is deselected', fakeAsync(() => {
-    component.selectedBusinessArea = ['__ALL__', 'guid-a', 'guid-b'];
-    const event = {
-      isUserInput: true,
-      source: {
-        selected: false,
-        value: 'guid-a'
-      }
-    } as MatOptionSelectionChange;
-
-    component.syncAllWithItemToggle(event, 'guid-a', 'selectedBusinessArea', [
-      { value: '__ALL__' },
-      { value: 'guid-a' },
-      { value: 'guid-b' }
-    ]);
-
-    tick();
-    expect(component.selectedBusinessArea).toEqual(['guid-b']);
-    expect(mockSharedService.updateFilters).toHaveBeenCalled();
-  }));
-
-  it('should add "__ALL__" when all individuals are selected', fakeAsync(() => {
-    component.selectedBusinessArea = ['guid-a'];
-    const event = {
-      isUserInput: true,
-      source: {
-        selected: true,
-        value: 'guid-b'
-      }
-    } as MatOptionSelectionChange;
-
-    component.syncAllWithItemToggle(event, 'guid-b', 'selectedBusinessArea', [
-      { value: '__ALL__' },
-      { value: 'guid-a' },
-      { value: 'guid-b' }
-    ]);
-
-    tick();
-    expect(component.selectedBusinessArea).toEqual(['__ALL__', 'guid-a', 'guid-b']);
-    expect(mockSharedService.updateFilters).toHaveBeenCalled();
-  }));
-
-  it('should filter wildfireOrgUnit for only fire centres (FRC)', () => {
-    mockCodeTablesSubject.next({
-      wildfireOrgUnit: [
-        {
-          orgUnitName: 'Kamloops Fire Centre',
-          orgUnitIdentifier: 'fc1',
-          wildfireOrgUnitTypeCode: { wildfireOrgUnitTypeCode: 'FRC' }
-        },
-        {
-          orgUnitName: 'Non-Fire Centre',
-          orgUnitIdentifier: 'fc2',
-          wildfireOrgUnitTypeCode: { wildfireOrgUnitTypeCode: 'OTHER' }
-        }
-      ]
-    });
-
+    // ACT → update signal (this triggers effect)
+    filtersSignal.set(savedFilters);
     fixture.detectChanges();
 
-    const fireCentreLabels = component.fireCentreOptions.map(opt => opt.label);
-    expect(fireCentreLabels).toContain('Kamloops Fire Centre');
-    expect(fireCentreLabels).not.toContain('Non-Fire Centre');
+    // ASSERT
+    expect(component.searchControl.value).toBe('test');
+    expect(component.selectedProjectType).toEqual(['PT1']);
+    expect(component.selectedBusinessArea).toEqual(['BA1']);
+    expect(component.selectedFiscalYears).toEqual(['2024']);
+    expect(component.selectedActivityCategory).toEqual(['AC1']);
+    expect(component.selectedForestRegion).toEqual(['R1']);
+    expect(component.selectedForestDistrict).toEqual(['D1']);
+    expect(component.selectedFireCentre).toEqual(['FC1']);
+    expect(component.selectedFiscalStatus).toEqual(['ACTIVE']);
   });
 
-  it('should select current fiscal year and "No Year Assigned" on load', () => {
-    // Simulate today’s date before or after April 1st
-    const today = new Date();
-    const expectedFiscalYearStart =
-      today.getMonth() >= 3 ? today.getFullYear() : today.getFullYear() - 1;
-    const expectedFiscalYearValue = expectedFiscalYearStart.toString();
+  it('should restore filters when saved filters exist (effect), empty value case', () => {
+    // ARRANGE
+    const savedFilters = {};
 
-    component.fiscalYearOptions = [
-      { label: 'All', value: '__ALL__' },
-      { label: `${expectedFiscalYearStart}/${(expectedFiscalYearStart + 1).toString().slice(-2)}`, value: expectedFiscalYearValue },
-      { label: 'No Year Assigned', value: 'null' }
-    ];
+    // ACT → update signal (this triggers effect)
+    filtersSignal.set(savedFilters);
+    fixture.detectChanges();
 
-    spyOn(component, 'emitFilters');
-
-    component.assignDefaultFiscalYear();
-
-    expect(component.selectedFiscalYears).toContain(expectedFiscalYearValue);
-    expect(component.selectedFiscalYears).toContain('null');
-    expect(component.emitFilters).toHaveBeenCalled();
-  });
-
-  it('assignDefaultFiscalYear: selects current fiscal year and "No Year Assigned" when both exist and emits', () => {
-    const today = new Date();
-    const fyStart = today.getMonth() >= 3 ? today.getFullYear() : today.getFullYear() - 1;
-    const fyValue = fyStart.toString();
-
-    component.fiscalYearOptions = [
-      { label: 'All', value: '__ALL__' },
-      { label: `${fyStart}/${(fyStart + 1).toString().slice(-2)}`, value: fyValue },
-      { label: 'No Year Assigned', value: 'null' }
-    ];
-
-    spyOn(component, 'emitFilters');
-
-    component.assignDefaultFiscalYear();
-
-    expect(component.selectedFiscalYears).toContain(fyValue);
-    expect(component.selectedFiscalYears).toContain('null');
-    expect(component.emitFilters).toHaveBeenCalled();
-  });
-
-  it('assignDefaultFiscalYear: selects only current fiscal year when "No Year Assigned" is missing', () => {
-    const today = new Date();
-    const fyStart = today.getMonth() >= 3 ? today.getFullYear() : today.getFullYear() - 1;
-    const fyValue = fyStart.toString();
-
-    component.fiscalYearOptions = [
-      { label: `${fyStart}/${(fyStart + 1).toString().slice(-2)}`, value: fyValue }
-    ];
-
-    spyOn(component, 'emitFilters');
-
-    component.assignDefaultFiscalYear();
-
-    expect(component.selectedFiscalYears).toEqual([fyValue]);
-    expect(component.emitFilters).toHaveBeenCalled();
-  });
-
-  it('assignDefaultFiscalYear: selects only "No Year Assigned" when current fiscal year is missing', () => {
-    component.fiscalYearOptions = [
-      { label: 'No Year Assigned', value: 'null' },
-      { label: 'Some Other FY', value: '1999' }
-    ];
-
-    spyOn(component, 'emitFilters');
-
-    component.assignDefaultFiscalYear();
-
-    expect(component.selectedFiscalYears).toEqual(['null']);
-    expect(component.emitFilters).toHaveBeenCalled();
-  });
-
-  it('assignDefaultFiscalYear: selects nothing when neither option exists and still emits', () => {
-    component.fiscalYearOptions = [
-      { label: 'Random FY', value: '1999' }
-    ];
-
-    spyOn(component, 'emitFilters');
-
-    component.assignDefaultFiscalYear();
-
+    // ASSERT
+    expect(component.searchControl.value).toBe('');
+    expect(component.selectedProjectType).toEqual([]);
+    expect(component.selectedBusinessArea).toEqual([]);
     expect(component.selectedFiscalYears).toEqual([]);
-    expect(component.emitFilters).toHaveBeenCalled();
+    expect(component.selectedActivityCategory).toEqual([]);
+    expect(component.selectedForestRegion).toEqual([]);
+    expect(component.selectedForestDistrict).toEqual([]);
+    expect(component.selectedFireCentre).toEqual([]);
+    expect(component.selectedFiscalStatus).toEqual([]);
   });
 
-  it('assignDefaultFiscalYear: does not emit when emit=false', () => {
-    const today = new Date();
-    const fyStart = today.getMonth() >= 3 ? today.getFullYear() : today.getFullYear() - 1;
-    const fyValue = fyStart.toString();
+  it('should not restore filters when saved filters are null', () => {
 
-    component.fiscalYearOptions = [
-      { label: `${fyStart}/${(fyStart + 1).toString().slice(-2)}`, value: fyValue },
-      { label: 'No Year Assigned', value: 'null' }
+    filtersSignal.set(null);
+    fixture.detectChanges();
+
+    fixture = TestBed.createComponent(SearchFilterComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+
+    expect(component.searchControl.value).toBe('');
+    expect(component.selectedProjectType).toEqual([]);
+  });
+
+  it('ngOnInit should restore saved filters when savedFilters exists', () => {
+    const savedFilters = {
+      searchText: 'abc',
+      projectTypeCodes: ['PT1'],
+      programAreaGuids: ['BA1'],
+      fiscalYears: ['2024'],
+      activityCategoryCodes: ['AC1'],
+      forestRegionOrgUnitIds: ['R1'],
+      forestDistrictOrgUnitIds: ['D1'],
+      fireCentreOrgUnitIds: ['FC1'],
+      planFiscalStatusCodes: ['ACTIVE']
+    };
+
+    filtersSignal.set(savedFilters);
+
+    codeTables$.next(mockTables);
+
+    fixture = TestBed.createComponent(SearchFilterComponent);
+    component = fixture.componentInstance;
+
+    component.ngOnInit();
+
+    expect(component.searchControl.value).toBe('abc');
+    expect(component.selectedProjectType).toEqual(['PT1']);
+    expect(component.selectedForestRegion).toEqual(['R1']);
+    expect(component.selectedForestDistrict).toEqual(['D1']);
+  });
+
+  it('ngOnInit should restore saved filters when savedFilters exists, empty value case', () => {
+    const savedFilters = {};
+
+    filtersSignal.set(savedFilters);
+
+    codeTables$.next(mockTables);
+
+    fixture = TestBed.createComponent(SearchFilterComponent);
+    component = fixture.componentInstance;
+
+    component.ngOnInit();
+
+    expect(component.searchControl.value).toBe('');
+    expect(component.selectedProjectType).toEqual([]);
+    expect(component.selectedForestRegion).toEqual([]);
+    expect(component.selectedForestDistrict).toEqual([]);
+  });
+
+  it('resolveSelectionChange should remove ALL when current includes ALL', () => {
+    const current = [component.ALL, '1'];
+    const previous = [component.ALL, '1', '2'];
+    const allOptions = ['1', '2'];
+
+    const result = (component as any).resolveSelectionChange(
+      current,
+      previous,
+      allOptions
+    );
+
+    expect(result).toEqual(['1']);
+  });
+
+  it('resolveSelectionChange should remove updated list only', () => {
+    const current = ['1'];
+    const previous = ['1', '2'];
+    const allOptions = ['1', '2'];
+
+    const result = (component as any).resolveSelectionChange(
+      current,
+      previous,
+      allOptions
+    );
+
+    expect(result).toEqual(['1']);
+  });
+
+  it('updateForestDistricts should reset districts when no regions selected', () => {
+    (component as any).allForestDistricts = [
+      { orgUnitName: 'D1', orgUnitId: '1' },
+      { orgUnitName: 'D2', orgUnitId: '2' }
     ];
 
-    spyOn(component, 'emitFilters');
+    component.selects = [
+      {
+        model: 'selectedForestDistrict',
+        name: 'Forest District',
+        allValue: component.ALL,
+        options: []
+      }
+    ];
 
-    component.assignDefaultFiscalYear(false);
+    component.selectedForestDistrict = ['1'];
 
-    expect(component.selectedFiscalYears).toEqual([fyValue, 'null']);
-    expect(component.emitFilters).not.toHaveBeenCalled();
+    (component as any).updateForestDistricts([]);
+
+    expect(component.selectedForestDistrict).toEqual([]);
+
+    const select = component.selects[0];
+    expect(select.options.length).toBe(2);
   });
 
+  it('syncSelectedDistricts should prepend ALL when all options selected', () => {
+    component.selectedForestDistrict = ['1', '2'];
 
+    const options = [
+      { label: 'D1', value: '1' },
+      { label: 'D2', value: '2' }
+    ];
+
+    (component as any).syncSelectedDistricts(options);
+
+    expect(component.selectedForestDistrict).toEqual([
+      component.ALL,
+      '1',
+      '2'
+    ]);
+
+    expect(
+      (component as any).previousSelections.get('selectedForestDistrict')
+    ).toEqual([component.ALL, '1', '2']);
+  });
 });

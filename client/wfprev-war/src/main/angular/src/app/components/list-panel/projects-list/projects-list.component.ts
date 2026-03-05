@@ -239,7 +239,6 @@ export class ProjectsListComponent implements OnInit {
     if (this.isLoading || !this.hasMore) return;
     this.isLoading = true;
     const filters = this.sharedService.currentFilters || {};
-
     let sortBy: string | undefined;
     let sortDirection: string | undefined;
 
