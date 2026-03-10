@@ -18,7 +18,8 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 public class ValidationResult implements Serializable {
     private boolean valid;
     private String message;
-    
+    private String errorType;
+
     @JsonDeserialize(using = PointDeserializer.class)
     @JsonSerialize(using = PointSerializer.class)
     private Point violationLocation;

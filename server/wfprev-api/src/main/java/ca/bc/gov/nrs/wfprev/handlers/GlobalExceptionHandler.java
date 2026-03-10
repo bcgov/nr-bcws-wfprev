@@ -19,6 +19,9 @@ import jakarta.validation.ValidationException;
 import org.springframework.security.access.AccessDeniedException;
 
 import ca.bc.gov.nrs.wfone.common.service.api.ServiceException;
+
+import org.locationtech.jts.geom.TopologyException;
+import org.locationtech.jts.io.ParseException;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -132,8 +135,16 @@ public class GlobalExceptionHandler {
        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
    }
 
+   @ExceptionHandler({TopologyException.class, ParseException.class})
+   public ResponseEntity<Object> handleSpatialExceptions(Exception ex) {
+       Map<String, String> errors = new HashMap<>();
+       errors.put(ERROR, "Invalid spatial data: " + ex.getMessage());
 
-    
+       return ResponseEntity
+               .status(HttpStatus.UNPROCESSABLE_ENTITY)
+               .body(errors);
+   }
+
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<Object> handleAccessDeniedException(AccessDeniedException ex) {
         Map<String, String> error = new HashMap<>();
