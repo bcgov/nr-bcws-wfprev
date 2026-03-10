@@ -4,7 +4,7 @@ import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } 
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { ConfirmationDialogComponent } from 'src/app/components/confirmation-dialog/confirmation-dialog.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { CodeTableNames, Messages, ModalMessages, ModalTitles, ObjectiveTypeCodes, ProjectTypeCodes, WildfireOrgUnitTypeCodes } from 'src/app/utils/constants';
+import { Messages, ModalMessages, ModalTitles, ObjectiveTypeCodes, ProjectTypeCodes } from 'src/app/utils/constants';
 import { ProjectService } from 'src/app/services/project-services';
 import { CodeTableServices } from 'src/app/services/code-table-services';
 import { Project } from 'src/app/components/models';
@@ -135,67 +135,59 @@ export class CreateNewProjectDialogComponent implements OnInit {
   }
 
   loadCodeTables(): void {
-    const codeTables = [
-      { name: 'programAreaCodes', property: 'businessAreas', embeddedKey: 'programArea' },
-      { name: 'forestRegionCodes', property: 'forestRegions', embeddedKey: 'forestRegionCode' },
-      { name: 'forestDistrictCodes', property: 'forestDistricts', embeddedKey: 'forestDistrictCode' },
-      { name: 'bcParksRegionCodes', property: 'bcParksRegions', embeddedKey: 'bcParksRegionCode' },
-      { name: 'bcParksSectionCodes', property: 'allBcParksSections', embeddedKey: 'bcParksSectionCode' },
-      { name: 'objectiveTypeCodes', property: 'objectiveTypes', embeddedKey: 'objectiveTypeCode' },
-      { name: 'projectTypeCodes', property: 'projectTypes', embeddedKey: 'projectTypeCode' },
-      { name: 'wildfireOrgUnits', property: 'wildfireOrgUnits', embeddedKey: 'wildfireOrgUnit' },
-    ];
+    this.codeTableService.getProgramAreaCodes().subscribe({
+      next: data => { this.businessAreas = data; },
+      error: err => console.error('Error fetching programAreaCodes', err),
+    });
 
-    codeTables.forEach((table) => {
-      this.codeTableService.fetchCodeTable(table.name).subscribe({
-        next: (data) => {
-          let loadedData = data?._embedded?.[table.embeddedKey] ?? [];
+    this.codeTableService.getForestRegionCodes().subscribe({
+      next: data => { this.forestRegions = data; },
+      error: err => console.error('Error fetching forestRegionCodes', err),
+    });
 
-          loadedData = loadedData.sort((a: any, b: any) => {
-            const nameA = (a.orgUnitName ?? a.programAreaName ?? a.description ?? '').toLowerCase();
-            const nameB = (b.orgUnitName ?? b.programAreaName ?? b.description ?? '').toLowerCase();
-            return nameA.localeCompare(nameB);
-          });
+    this.codeTableService.getForestDistrictCodes().subscribe({
+      next: data => {
+        this.forestDistrictsBackup = data;
+        this.forestDistricts = [...data];
+      },
+      error: err => console.error('Error fetching forestDistrictCodes', err),
+    });
 
-          this[table.property] = loadedData;
+    this.codeTableService.getBcParksRegionCodes().subscribe({
+      next: data => { this.bcParksRegions = data; },
+      error: err => console.error('Error fetching bcParksRegionCodes', err),
+    });
 
-          if (table.name === CodeTableNames.FOREST_DISTRICT_CODE) {
-            this.forestDistrictsBackup = this[table.property];
-            this.forestDistricts = [...this.forestDistrictsBackup]; // default to full list
-          }
+    this.codeTableService.getBcParksSectionCodes().subscribe({
+      next: data => { this.allBcParksSections = data; },
+      error: err => console.error('Error fetching bcParksSectionCodes', err),
+    });
 
-          if (table.name === CodeTableNames.OBJECTIVE_TYPE_CODE) {
-            const defaultObjective = this.objectiveTypes.find(
-              (type) => type.objectiveTypeCode === ObjectiveTypeCodes.WRR
-            );
+    this.codeTableService.getObjectiveTypeCodes().subscribe({
+      next: data => {
+        this.objectiveTypes = data;
+        const defaultObjective = data.find(t => t.objectiveTypeCode === ObjectiveTypeCodes.WRR);
+        if (defaultObjective) {
+          this.projectForm.get('primaryObjective')?.setValue(ObjectiveTypeCodes.WRR);
+        }
+      },
+      error: err => console.error('Error fetching objectiveTypeCodes', err),
+    });
 
-            if (defaultObjective) {
-              this.projectForm.get('primaryObjective')?.setValue(ObjectiveTypeCodes.WRR);
-            }
-          }
+    this.codeTableService.getProjectTypeCodes().subscribe({
+      next: data => {
+        this.projectTypes = data;
+        const defaultType = data.find(t => t.projectTypeCode === ProjectTypeCodes.FUEL_MANAGEMENT);
+        if (defaultType) {
+          this.projectForm.get('projectType')?.setValue(ProjectTypeCodes.FUEL_MANAGEMENT);
+        }
+      },
+      error: err => console.error('Error fetching projectTypeCodes', err),
+    });
 
-          if (table.name === CodeTableNames.PROJECT_TYPE_CODE) {
-            const defaultProjectType = this.projectTypes.find(
-              (type) => type.projectTypeCode === ProjectTypeCodes.FUEL_MANAGEMENT
-            );
-
-            if (defaultProjectType) {
-              this.projectForm.get('projectType')?.setValue(ProjectTypeCodes.FUEL_MANAGEMENT);
-            }
-          }
-          if (table.name === CodeTableNames.WILDFIRE_ORG_UNIT) {
-            // filter org units to only return fire centres
-            const filteredFireCentres = this[table.property].filter(
-              (unit: any) => unit.wildfireOrgUnitTypeCode?.wildfireOrgUnitTypeCode === WildfireOrgUnitTypeCodes.FIRE_CENTRE
-            );
-
-            this.fireCentres = filteredFireCentres;
-          }
-        },
-        error: (err) => {
-          console.error(`Error fetching ${table.name}`, err);
-        },
-      });
+    this.codeTableService.getFireCentres().subscribe({
+      next: data => { this.fireCentres = data; },
+      error: err => console.error('Error fetching wildfireOrgUnits', err),
     });
   }
 

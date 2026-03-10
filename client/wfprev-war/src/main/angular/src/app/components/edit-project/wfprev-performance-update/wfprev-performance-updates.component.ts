@@ -96,8 +96,8 @@ export class PerformanceUpdatesComponent implements OnChanges {
   openDialog(): void {
     forkJoin({
       projectFiscal: this.projectService.getProjectFiscalByProjectPlanFiscalGuid(this.projectGuid, this.fiscalGuid),
-      reportingPeriod: this.codeTableService.fetchCodeTable(CodeTableNames.REPORTING_PERIOD_CODE),
-      progressStatus: this.codeTableService.fetchCodeTable(CodeTableNames.PROGRESS_STATUS_CODE)
+      reportingPeriod: this.codeTableService.getReportingPeriodCodes(),
+      progressStatus: this.codeTableService.getProgressStatusCodes()
     })
     .subscribe({
         next: ({projectFiscal, reportingPeriod, progressStatus}) => {
@@ -109,18 +109,16 @@ export class PerformanceUpdatesComponent implements OnChanges {
                 currentForecast: projectFiscal.fiscalForecastAmount,
                 originalCostEstimate: projectFiscal.totalCostEstimateAmount,
                 projectFiscalName: projectFiscal.projectFiscalName,
-                reportingPeriod: (reportingPeriod?._embedded?.reportingPeriodCode ?? [])
-                  .sort((a: ReportingPeriodCode, b: ReportingPeriodCode) => a.displayOrder - b.displayOrder)
+                reportingPeriod: reportingPeriod
                   .map(({ description, reportingPeriodCode }: ReportingPeriodCode) => ({
-                        value: reportingPeriodCode,
-                        description
-                      })),
-                progressStatus: (progressStatus?._embedded?.progressStatusCode ?? [])
-                  .sort((a: ProgressStatusCode, b: ProgressStatusCode) => a.displayOrder - b.displayOrder)
+                    value: reportingPeriodCode,
+                    description
+                  })),
+                progressStatus: progressStatus
                   .map(({ description, progressStatusCode }: ProgressStatusCode) => ({
-                        value: progressStatusCode,
-                        description
-                      }))
+                    value: progressStatusCode,
+                    description
+                  }))
               },
               disableClose: true
             });

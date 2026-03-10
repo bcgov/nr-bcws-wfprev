@@ -194,74 +194,51 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
   }
 
   loadCodeTables(): void {
-    const codeTables = [
-      { name: CodeTableNames.PROJECT_TYPE_CODE, embeddedKey: CodeTableKeys.PROJECT_TYPE_CODE },
-      { name: CodeTableNames.PROGRAM_AREA_CODE, embeddedKey: CodeTableKeys.PROGRAM_AREA_CODE },
-      { name: CodeTableNames.FOREST_REGION_CODE, embeddedKey: CodeTableKeys.FOREST_REGION_CODE },
-      { name: CodeTableNames.FOREST_DISTRICT_CODE, embeddedKey: CodeTableKeys.FOREST_DISTRICT_CODE },
-      { name: CodeTableNames.BC_PARKS_REGION_CODE, embeddedKey: CodeTableKeys.BC_PARKS_REGION_CODE },
-      { name: CodeTableNames.BC_PARKS_SECTION_CODE, embeddedKey: CodeTableKeys.BC_PARKS_SECTION_CODE },
-      { name: CodeTableNames.OBJECTIVE_TYPE_CODE, embeddedKey: CodeTableKeys.OBJECTIVE_TYPE_CODE },
-      { name: CodeTableNames.WILDFIRE_ORG_UNIT, embeddedKey: CodeTableKeys.WILDFIRE_ORG_UNIT },
-    ];
+    this.codeTableService.getProjectTypeCodes().subscribe({
+      next: data => { this.projectTypeCode = data; },
+      error: err => console.error('Error fetching projectTypeCodes', err),
+    });
 
-    for (const table of codeTables) {
-      this.codeTableService.fetchCodeTable(table.name).subscribe({
-        next: (data) => {
-          this.assignCodeTableData(table.embeddedKey, data);
-        },
-        error: (err) => {
-          console.error(`Error fetching ${table.name}`, err);
-          this.assignCodeTableData(table.embeddedKey, []); 
-        },
-      });
-    }
+    this.codeTableService.getProgramAreaCodes().subscribe({
+      next: data => { this.programAreaCode = data; },
+      error: err => console.error('Error fetching programAreaCodes', err),
+    });
 
-  }
+    this.codeTableService.getForestRegionCodes().subscribe({
+      next: data => { this.forestRegionCode = data; },
+      error: err => console.error('Error fetching forestRegionCodes', err),
+    });
 
-  assignCodeTableData(key: string, data: any): void {
+    this.codeTableService.getForestDistrictCodes().subscribe({
+      next: data => {
+        this.allForestDistricts = data;
+        this.forestDistrictCode = [...data];
+      },
+      error: err => console.error('Error fetching forestDistrictCodes', err),
+    });
 
-    const sortByName = (arr: any[]) =>
-      [...arr].sort((a, b) =>
-        (a.orgUnitName ?? a.programAreaName ?? a.description ?? '').toLowerCase()
-          .localeCompare((b.orgUnitName ?? b.programAreaName ?? b.description ?? '').toLowerCase())
-      );
+    this.codeTableService.getBcParksRegionCodes().subscribe({
+      next: data => { this.bcParksRegionCode = data; },
+      error: err => console.error('Error fetching bcParksRegionCodes', err),
+    });
 
-    switch (key) {
-      case CodeTableKeys.PROJECT_TYPE_CODE:
-        this.projectTypeCode = sortByName(data._embedded.projectTypeCode ?? []);
-        break;
-      case CodeTableKeys.PROGRAM_AREA_CODE:
-        this.programAreaCode = sortByName(data._embedded.programArea ?? []);
-        break;
-      case CodeTableKeys.FOREST_REGION_CODE:
-        this.forestRegionCode = sortByName(data._embedded.forestRegionCode ?? []);
-        break;
-      case CodeTableKeys.FOREST_DISTRICT_CODE:
-        this.allForestDistricts = sortByName(data._embedded.forestDistrictCode ?? []);
-        this.forestDistrictCode = [...this.allForestDistricts];
-        break;
-      case CodeTableKeys.BC_PARKS_REGION_CODE:
-        this.bcParksRegionCode = sortByName(data._embedded.bcParksRegionCode ?? []);
-        break;
-      case CodeTableKeys.BC_PARKS_SECTION_CODE:
-        this.allBcParksSections = sortByName(data._embedded.bcParksSectionCode ?? []);
-        this.bcParksSectionCode = [...this.allBcParksSections];
-        break;
-      case CodeTableKeys.OBJECTIVE_TYPE_CODE:
-        this.objectiveTypeCode = sortByName(data._embedded.objectiveTypeCode ?? []);
-        break;
-      case CodeTableKeys.WILDFIRE_ORG_UNIT: {
-        // filter out org units that are not fire centres
-        const orgUnits = data._embedded.wildfireOrgUnit ?? [];
-        const fireCentres = orgUnits.filter(
-          (unit: { wildfireOrgUnitTypeCode: { wildfireOrgUnitTypeCode: string } }) =>
-            unit.wildfireOrgUnitTypeCode?.wildfireOrgUnitTypeCode === WildfireOrgUnitTypeCodes.FIRE_CENTRE
-        );
-        this.fireCentres = sortByName(fireCentres);
-        break;
-      }
-    }
+    this.codeTableService.getBcParksSectionCodes().subscribe({
+      next: data => {
+        this.allBcParksSections = data;
+        this.bcParksSectionCode = [...data];
+      },
+      error: err => console.error('Error fetching bcParksSectionCodes', err),
+    });
+
+    this.codeTableService.getObjectiveTypeCodes().subscribe({
+      next: data => { this.objectiveTypeCode = data; },
+      error: err => console.error('Error fetching objectiveTypeCodes', err),
+    });
+
+    this.codeTableService.getFireCentres().subscribe({
+      next: data => { this.fireCentres = data; },
+      error: err => console.error('Error fetching wildfireOrgUnits', err),
+    });
   }
 
   updateMap(latitude: number, longitude: number): void {

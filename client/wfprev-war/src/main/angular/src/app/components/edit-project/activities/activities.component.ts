@@ -125,52 +125,32 @@ export class ActivitiesComponent implements OnChanges, CanComponentDeactivate {
 
 
   loadCodeTables(): Observable<void> {
-    const requests = [
-      this.codeTableService.fetchCodeTable('contractPhaseCodes'),
-      this.codeTableService.fetchCodeTable('fundingSourceCodes'),
-      this.codeTableService.fetchCodeTable('silvicultureBaseCodes'),
-      this.codeTableService.fetchCodeTable('silvicultureTechniqueCodes'),
-      this.codeTableService.fetchCodeTable('silvicultureMethodCodes')
-    ];
-
-    return forkJoin(requests).pipe(
+    return forkJoin([
+      this.codeTableService.getContractPhaseCodes(),
+      this.codeTableService.getFundingSourceCodes(),
+      this.codeTableService.fetchCodeTable('silvicultureBaseCodes').pipe(
+        map(data => [...(data?._embedded?.silvicultureBaseCode ?? [])]
+          .sort((a: any, b: any) => (a.description ?? '').localeCompare(b.description ?? '')))
+      ),
+      this.codeTableService.fetchCodeTable('silvicultureTechniqueCodes').pipe(
+        map(data => [...(data?._embedded?.silvicultureTechniqueCode ?? [])]
+          .sort((a: any, b: any) => (a.description ?? '').localeCompare(b.description ?? '')))
+      ),
+      this.codeTableService.fetchCodeTable('silvicultureMethodCodes').pipe(
+        map(data => [...(data?._embedded?.silvicultureMethodCode ?? [])]
+          .sort((a: any, b: any) => (a.description ?? '').localeCompare(b.description ?? '')))
+      ),
+    ]).pipe(
       take(1),
       tap(([contract, funding, base, technique, method]) => {
-        this.assignCodeTableData('contractPhaseCode', contract);
-        this.assignCodeTableData('fundingSourceCode', funding);
-        this.assignCodeTableData('silvicultureBaseCode', base);
-        this.assignCodeTableData('silvicultureTechniqueCode', technique);
-        this.assignCodeTableData('silvicultureMethodCode', method);
+        this.contractPhaseCode = contract;
+        this.fundingSourceCode = funding;
+        this.silvicultureBaseCode = base;
+        this.silvicultureTechniqueCode = technique;
+        this.silvicultureMethodCode = method;
       }),
       map(() => void 0)
     );
-  }
-
-  assignCodeTableData(key: string, data: any): void {
-    switch (key) {
-      case 'contractPhaseCode':
-        this.contractPhaseCode = this.sortArray(data._embedded.contractPhaseCode || [], 'description');
-        break;
-      case 'fundingSourceCode':
-        this.fundingSourceCode = this.sortArray(data._embedded.fundingSourceCode || [], 'description');
-        break;
-      case 'silvicultureBaseCode':
-        this.silvicultureBaseCode = this.sortArray(data._embedded.silvicultureBaseCode || [], 'description');
-        break;
-      case 'silvicultureTechniqueCode':
-        this.silvicultureTechniqueCode = this.sortArray(data._embedded.silvicultureTechniqueCode || [], 'description');
-        break;
-      case 'silvicultureMethodCode':
-        this.silvicultureMethodCode = this.sortArray(data._embedded.silvicultureMethodCode || [], 'description');
-        break;
-    }
-  }
-
-  sortArray<T>(array: T[], key?: keyof T): T[] {
-    if (!array) return [];
-    return key
-      ? array.sort((a, b) => String(a[key]).localeCompare(String(b[key])))
-      : array.sort((a, b) => String(a).localeCompare(String(b)));
   }
 
 

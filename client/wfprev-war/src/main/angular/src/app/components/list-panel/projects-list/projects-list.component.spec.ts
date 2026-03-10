@@ -73,21 +73,28 @@ describe('ProjectsListComponent', () => {
     }));
     mockProjectService.getFeatures.and.returnValue(of({ projects: [] }));
 
-    mockCodeTableService = jasmine.createSpyObj('CodeTableServices', ['fetchCodeTable']);
-    mockCodeTableService.fetchCodeTable.and.callFake((name: string) => {
-      const mockData: any = {
-        programAreaCodes: { _embedded: { programArea: [{ programAreaGuid: 'guid1', programAreaName: 'Area 1' }] } },
-        forestRegionCodes: { _embedded: { forestRegionCode: [{ orgUnitId: 101, orgUnitName: 'Region 1' }] } },
-        forestDistrictCodes: { _embedded: { forestDistrictCode: [] } },
-        bcParksRegionCodes: { _embedded: { bcParksRegionCode: [] } },
-        bcParksSectionCodes: { _embedded: { bcParksSectionCode: [] } },
-        planFiscalStatusCodes: { _embedded: { planFiscalStatusCode: [] } },
-        activityCategoryCodes: { _embedded: { activityCategoryCode: [] } },
-        projectTypeCodes: { _embedded: { projectTypeCode: [] } },
-        wildfireOrgUnits: { _embedded: { wildfireOrgUnit: [] } },
-      };
-      return of(mockData[name]);
-    });
+    mockCodeTableService = jasmine.createSpyObj('CodeTableServices', [
+      'fetchCodeTable',
+      'getProgramAreaCodes',
+      'getForestRegionCodes',
+      'getForestDistrictCodes',
+      'getBcParksRegionCodes',
+      'getBcParksSectionCodes',
+      'getPlanFiscalStatusCodes',
+      'getActivityCategoryCodes',
+      'getProjectTypeCodes',
+      'getFireCentres',
+    ]);
+    mockCodeTableService.getProgramAreaCodes.and.returnValue(of([{ programAreaGuid: 'guid1', programAreaName: 'Area 1' }]));
+    mockCodeTableService.getForestRegionCodes.and.returnValue(of([{ orgUnitId: 101, orgUnitName: 'Region 1' }]));
+    mockCodeTableService.getForestDistrictCodes.and.returnValue(of([]));
+    mockCodeTableService.getBcParksRegionCodes.and.returnValue(of([]));
+    mockCodeTableService.getBcParksSectionCodes.and.returnValue(of([]));
+    mockCodeTableService.getPlanFiscalStatusCodes.and.returnValue(of([]));
+    mockCodeTableService.getActivityCategoryCodes.and.returnValue(of([]));
+    mockCodeTableService.getProjectTypeCodes.and.returnValue(of([]));
+    mockCodeTableService.getFireCentres.and.returnValue(of([]));
+    mockCodeTableService.fetchCodeTable.and.returnValue(of({ _embedded: {} }));
 
     mockMapService = jasmine.createSpyObj('MapService', ['destroySMK', 'getMapIndex', 'setMapIndex', 'setContainerId']);
 
@@ -168,14 +175,22 @@ describe('ProjectsListComponent', () => {
 
 
   it('should load code tables on init', () => {
-    expect(mockCodeTableService.fetchCodeTable).toHaveBeenCalledWith('programAreaCodes');
-    expect(mockCodeTableService.fetchCodeTable).toHaveBeenCalledWith('forestRegionCodes');
+    expect(mockCodeTableService.getProgramAreaCodes).toHaveBeenCalled();
+    expect(mockCodeTableService.getForestRegionCodes).toHaveBeenCalled();
   });
 
   it('should handle errors when loading code tables', () => {
     spyOn(console, 'error');
     mockFetchProjectsResponse();
-    mockCodeTableService.fetchCodeTable.and.returnValue(throwError(() => new Error('Error fetching data')));
+    mockCodeTableService.getProgramAreaCodes.and.returnValue(throwError(() => new Error('Error fetching data')));
+    mockCodeTableService.getForestRegionCodes.and.returnValue(throwError(() => new Error('Error fetching data')));
+    mockCodeTableService.getForestDistrictCodes.and.returnValue(throwError(() => new Error('Error fetching data')));
+    mockCodeTableService.getBcParksRegionCodes.and.returnValue(throwError(() => new Error('Error fetching data')));
+    mockCodeTableService.getBcParksSectionCodes.and.returnValue(throwError(() => new Error('Error fetching data')));
+    mockCodeTableService.getPlanFiscalStatusCodes.and.returnValue(throwError(() => new Error('Error fetching data')));
+    mockCodeTableService.getActivityCategoryCodes.and.returnValue(throwError(() => new Error('Error fetching data')));
+    mockCodeTableService.getProjectTypeCodes.and.returnValue(throwError(() => new Error('Error fetching data')));
+    mockCodeTableService.getFireCentres.and.returnValue(throwError(() => new Error('Error fetching data')));
     component.loadCodeTables();
     fixture.detectChanges();
 

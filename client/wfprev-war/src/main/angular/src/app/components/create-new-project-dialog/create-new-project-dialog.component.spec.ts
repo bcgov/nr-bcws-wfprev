@@ -25,25 +25,27 @@ describe('CreateNewProjectDialogComponent', () => {
     mockProjectService = jasmine.createSpyObj('ProjectService', ['createProject']);
     mockCodeTableService = jasmine.createSpyObj('CodeTableServices', [
       'fetchCodeTable',
-      'fetchFireCentres'
+      'getProgramAreaCodes',
+      'getForestRegionCodes',
+      'getForestDistrictCodes',
+      'getBcParksRegionCodes',
+      'getBcParksSectionCodes',
+      'getObjectiveTypeCodes',
+      'getProjectTypeCodes',
+      'getFireCentres',
     ]);
 
     mockSnackbarService = jasmine.createSpyObj('MatSnackBar', ['open']);
 
-    mockCodeTableService.fetchCodeTable.and.callFake((name: string) => {
-      switch (name) {
-        case 'programAreaCodes':
-          return of({ _embedded: { programArea: [{ name: 'Program Area 1' }] } });
-        case 'forestRegionCodes':
-          return of({ _embedded: { forestRegion: [{ name: 'Forest Region 1' }] } });
-        case 'bcParksRegionCodes':
-          return of({ _embedded: { bcParksRegionCode: [{ name: 'BC Parks Region 1' }] } });
-        case 'bcParksSectionCodes':
-          return of({ _embedded: { bcParksSectionCode: [{ parentOrgUnitId: 1, name: 'BC Section 1' }] } });
-        default:
-          return of({ _embedded: [] });
-      }
-    });
+    mockCodeTableService.getProgramAreaCodes.and.returnValue(of([{ programAreaName: 'Program Area 1' }]));
+    mockCodeTableService.getForestRegionCodes.and.returnValue(of([{ orgUnitName: 'Forest Region 1' }]));
+    mockCodeTableService.getForestDistrictCodes.and.returnValue(of([]));
+    mockCodeTableService.getBcParksRegionCodes.and.returnValue(of([{ orgUnitName: 'BC Parks Region 1' }]));
+    mockCodeTableService.getBcParksSectionCodes.and.returnValue(of([{ parentOrgUnitId: 1, orgUnitName: 'BC Section 1' }]));
+    mockCodeTableService.getObjectiveTypeCodes.and.returnValue(of([]));
+    mockCodeTableService.getProjectTypeCodes.and.returnValue(of([]));
+    mockCodeTableService.getFireCentres.and.returnValue(of([]));
+    mockCodeTableService.fetchCodeTable.and.returnValue(of({ _embedded: {} }));
 
     await TestBed.configureTestingModule({
       imports: [ReactiveFormsModule, CreateNewProjectDialogComponent, BrowserAnimationsModule],
@@ -108,29 +110,20 @@ describe('CreateNewProjectDialogComponent', () => {
   });
 
   it('should fetch and set code tables on initialization', () => {
-    // Mocking the responses for fetchCodeTable
-    mockCodeTableService.fetchCodeTable.and.callFake((name: string) => {
-      switch (name) {
-        case 'programAreaCodes':
-          return of({ _embedded: { programArea: [{ name: 'Program Area 1' }] } });
-        case 'forestRegionCodes':
-          return of({ _embedded: { forestRegionCode: [{ name: 'Forest Region 1' }] } });
-        default:
-          return of({ _embedded: [] });
-      }
-    });
+    mockCodeTableService.getProgramAreaCodes.and.returnValue(of([{ programAreaName: 'Program Area 1' }]));
+    mockCodeTableService.getForestRegionCodes.and.returnValue(of([{ orgUnitName: 'Forest Region 1' }]));
 
     // Trigger the loadCodeTables method
     component.loadCodeTables();
     fixture.detectChanges();
 
-    // Verify that the service was called with correct table names
-    expect(mockCodeTableService.fetchCodeTable).toHaveBeenCalledWith('programAreaCodes');
-    expect(mockCodeTableService.fetchCodeTable).toHaveBeenCalledWith('forestRegionCodes');
+    // Verify that the service methods were called
+    expect(mockCodeTableService.getProgramAreaCodes).toHaveBeenCalled();
+    expect(mockCodeTableService.getForestRegionCodes).toHaveBeenCalled();
 
     // Verify the component's state is updated correctly
-    expect(component.businessAreas).toEqual([{ name: 'Program Area 1' }]);
-    expect(component.forestRegions).toEqual([{ name: 'Forest Region 1' }]);
+    expect(component.businessAreas).toEqual([{ programAreaName: 'Program Area 1' }]);
+    expect(component.forestRegions).toEqual([{ orgUnitName: 'Forest Region 1' }]);
   });
 
 
@@ -396,12 +389,19 @@ describe('CreateNewProjectDialogComponent', () => {
   });
 
   it('should handle error while fetching code tables', () => {
-    mockCodeTableService.fetchCodeTable.and.returnValue(throwError(() => new Error('Network error')));
+    mockCodeTableService.getProgramAreaCodes.and.returnValue(throwError(() => new Error('Network error')));
+    mockCodeTableService.getForestRegionCodes.and.returnValue(throwError(() => new Error('Network error')));
+    mockCodeTableService.getForestDistrictCodes.and.returnValue(throwError(() => new Error('Network error')));
+    mockCodeTableService.getBcParksRegionCodes.and.returnValue(throwError(() => new Error('Network error')));
+    mockCodeTableService.getBcParksSectionCodes.and.returnValue(throwError(() => new Error('Network error')));
+    mockCodeTableService.getObjectiveTypeCodes.and.returnValue(throwError(() => new Error('Network error')));
+    mockCodeTableService.getProjectTypeCodes.and.returnValue(throwError(() => new Error('Network error')));
+    mockCodeTableService.getFireCentres.and.returnValue(throwError(() => new Error('Network error')));
 
     component.loadCodeTables();
 
-    expect(mockCodeTableService.fetchCodeTable).toHaveBeenCalledWith('programAreaCodes');
-    expect(mockCodeTableService.fetchCodeTable).toHaveBeenCalledWith('forestRegionCodes');
+    expect(mockCodeTableService.getProgramAreaCodes).toHaveBeenCalled();
+    expect(mockCodeTableService.getForestRegionCodes).toHaveBeenCalled();
     // Add assertions for console.error or fallback logic
   });
 
@@ -572,21 +572,9 @@ describe('CreateNewProjectDialogComponent', () => {
   });
 
   it('should set default projectType to FUEL_MGMT when projectTypeCodes includes it', () => {
-    const mockProjectTypeResponse = {
-      _embedded: {
-        projectTypeCode: [
-          { projectTypeCode: 'FUEL_MGMT', name: 'Fuel Management' },
-          { projectTypeCode: 'OTHER', name: 'Other' }
-        ]
-      }
-    };
-
-    mockCodeTableService.fetchCodeTable.and.callFake((name: string) => {
-      if (name === 'projectTypeCodes') {
-        return of(mockProjectTypeResponse);
-      }
-      return of({ _embedded: [] });
-    });
+    mockCodeTableService.getProjectTypeCodes.and.returnValue(
+      of([{ projectTypeCode: 'FUEL_MGMT', name: 'Fuel Management' }])
+    );
 
     component.loadCodeTables();
     fixture.detectChanges();
@@ -595,21 +583,9 @@ describe('CreateNewProjectDialogComponent', () => {
   });
 
   it('should set default primaryObjective to WRR when objectiveTypeCodes includes it', () => {
-    const mockObjectiveTypeResponse = {
-      _embedded: {
-        objectiveTypeCode: [
-          { objectiveTypeCode: 'WRR', name: 'Watershed Restoration' },
-          { objectiveTypeCode: 'OTHER', name: 'Other' }
-        ]
-      }
-    };
-
-    mockCodeTableService.fetchCodeTable.and.callFake((name: string) => {
-      if (name === 'objectiveTypeCodes') {
-        return of(mockObjectiveTypeResponse);
-      }
-      return of({ _embedded: [] });
-    });
+    mockCodeTableService.getObjectiveTypeCodes.and.returnValue(
+      of([{ objectiveTypeCode: 'WRR', name: 'Watershed Restoration' }])
+    );
 
     component.loadCodeTables();
     fixture.detectChanges();
@@ -668,29 +644,15 @@ describe('CreateNewProjectDialogComponent', () => {
   });
 
   it('should filter wildfire org units to only include fire centres (FRC)', () => {
-    const mockWildfireOrgUnitsResponse = {
-      _embedded: {
-        wildfireOrgUnit: [
-          {
-            orgUnitName: 'Kamloops Fire Centre',
-            orgUnitIdentifier: 1,
-            wildfireOrgUnitTypeCode: { wildfireOrgUnitTypeCode: 'FRC' }
-          },
-          {
-            orgUnitName: 'Non-Fire Centre',
-            orgUnitIdentifier: 2,
-            wildfireOrgUnitTypeCode: { wildfireOrgUnitTypeCode: 'OTHER' }
-          }
-        ]
+    const mockFireCentres = [
+      {
+        orgUnitName: 'Kamloops Fire Centre',
+        orgUnitIdentifier: 1,
+        wildfireOrgUnitTypeCode: { wildfireOrgUnitTypeCode: 'FRC' }
       }
-    };
+    ];
 
-    mockCodeTableService.fetchCodeTable.and.callFake((name: string) => {
-      if (name === 'wildfireOrgUnits') {
-        return of(mockWildfireOrgUnitsResponse);
-      }
-      return of({ _embedded: [] });
-    });
+    mockCodeTableService.getFireCentres.and.returnValue(of(mockFireCentres));
 
     component.loadCodeTables();
     fixture.detectChanges();
