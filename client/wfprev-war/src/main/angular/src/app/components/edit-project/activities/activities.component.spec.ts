@@ -36,10 +36,16 @@ describe('ActivitiesComponent', () => {
 
     mockProjectService.getProjectByProjectGuid.and.returnValue(of({ projectTypeCode: { projectTypeCode: 'STANDARD' } }));
 
-    mockCodeTableService = jasmine.createSpyObj('CodeTableServices', ['fetchCodeTable']);
+    mockCodeTableService = jasmine.createSpyObj('CodeTableServices', [
+      'fetchCodeTable',
+      'getContractPhaseCodes',
+      'getFundingSourceCodes',
+    ]);
     mockSnackbarService = jasmine.createSpyObj('MatSnackBar', ['open']);
     mockDialog = jasmine.createSpyObj('MatDialog', ['open']);
-    mockCodeTableService.fetchCodeTable.and.returnValue(of({ _embedded: { contractPhaseCode: [] } }));
+    mockCodeTableService.getContractPhaseCodes.and.returnValue(of([]));
+    mockCodeTableService.getFundingSourceCodes.and.returnValue(of([]));
+    mockCodeTableService.fetchCodeTable.and.returnValue(of({ _embedded: {} }));
     mockProjectService.getFiscalActivities.and.returnValue(of({ _embedded: { activities: [] } }));
 
     await TestBed.configureTestingModule({
@@ -501,38 +507,10 @@ describe('ActivitiesComponent', () => {
     expect(buttonInstance.disabled).withContext('Button should not be disabled').toBeFalse();
   });
 
-  it('should sort an array of objects by a given key', () => {
-    const testArray = [
-      { name: 'Charlie' },
-      { name: 'Alice' },
-      { name: 'Bob' }
-    ];
-
-    const sortedArray = component.sortArray(testArray, 'name');
-    expect(sortedArray).toEqual([
-      { name: 'Alice' },
-      { name: 'Bob' },
-      { name: 'Charlie' }
-    ]);
-  });
-
-  it('should sort an array of strings when no key is provided', () => {
-    const testArray = ['Charlie', 'Alice', 'Bob'];
-
-    const sortedArray = component.sortArray(testArray);
-    expect(sortedArray).toEqual(['Alice', 'Bob', 'Charlie']);
-  });
-
   it('should return an empty array when input is null or undefined', () => {
-    expect(component.sortArray(null as any)).toEqual([]);
-    expect(component.sortArray(undefined as any)).toEqual([]);
-  });
-
-  it('should return the original array if there is no key and all elements are equal', () => {
-    const testArray = ['same', 'same', 'same'];
-
-    const sortedArray = component.sortArray(testArray);
-    expect(sortedArray).toEqual(['same', 'same', 'same']);
+    // sortArray was an inline helper removed during refactor; these code table arrays default to []
+    expect(component.contractPhaseCode).toEqual([]);
+    expect(component.silvicultureBaseCode).toEqual([]);
   });
 
   it('should detect if any form is dirty', () => {
@@ -970,24 +948,21 @@ describe('ActivitiesComponent', () => {
   });
 
   it('should load all code tables and assign values', fakeAsync(() => {
-    const mockData = { _embedded: { dummy: [] } };
-    mockCodeTableService.fetchCodeTable.and.returnValue(of(mockData));
-
-    const assignSpy = spyOn(component, 'assignCodeTableData').and.callThrough();
+    mockCodeTableService.getContractPhaseCodes.and.returnValue(of([{ code: 'A' }]));
+    mockCodeTableService.getFundingSourceCodes.and.returnValue(of([{ code: 'B' }]));
+    mockCodeTableService.fetchCodeTable.and.returnValue(of({ _embedded: {} }));
 
     component.loadCodeTables().subscribe();
+    tick();
 
-    tick(); // flush forkJoin
-
-    expect(mockCodeTableService.fetchCodeTable).toHaveBeenCalledTimes(5);
-    expect(assignSpy).toHaveBeenCalledWith('contractPhaseCode', mockData);
-    expect(assignSpy).toHaveBeenCalledWith('silvicultureMethodCode', mockData);
+    expect(mockCodeTableService.getContractPhaseCodes).toHaveBeenCalled();
+    expect(mockCodeTableService.getFundingSourceCodes).toHaveBeenCalled();
+    expect(component.contractPhaseCode).toEqual([{ code: 'A' }]);
+    expect(component.fundingSourceCode).toEqual([{ code: 'B' }]);
   }));
 
   it('should handle errors when loading code tables', fakeAsync(() => {
-    mockCodeTableService.fetchCodeTable.and.returnValue(throwError(() => new Error('Network fail')));
-
-    const assignSpy = spyOn(component, 'assignCodeTableData').and.callThrough();
+    mockCodeTableService.getContractPhaseCodes.and.returnValue(throwError(() => new Error('Network fail')));
     const consoleSpy = spyOn(console, 'error');
 
     component.loadCodeTables().subscribe({
@@ -997,7 +972,6 @@ describe('ActivitiesComponent', () => {
     tick();
 
     expect(consoleSpy).not.toHaveBeenCalledWith('Error fetching');
-    expect(assignSpy).not.toHaveBeenCalled();
   }));
 
   it('should load code tables then fetch activities and toggle reportable', fakeAsync(() => {

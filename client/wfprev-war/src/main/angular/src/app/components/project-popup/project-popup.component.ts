@@ -33,41 +33,25 @@ export class ProjectPopupComponent implements OnInit {
   }
 
   loadCodeTables(): void {
-    const codeTables = [
-      { name: 'projectTypeCodes', embeddedKey: CodeTableKeys.PROJECT_TYPE_CODE },
-      { name: 'programAreaCodes', embeddedKey: CodeTableKeys.PROGRAM_AREA_CODE },
-      { name: 'planFiscalStatusCodes', embeddedKey: CodeTableKeys.PLAN_FISCAL_STATUS_CODE },
-      { name: 'activityCategoryCodes', embeddedKey: CodeTableKeys.ACTIVITY_CATEGORY_CODE }
-    ];
-
-    codeTables.forEach(table => {
-      this.codeTableService.fetchCodeTable(table.name).subscribe({
-        next: (data) => this.assignCodeTableData(table.embeddedKey, data),
-        error: (err) => {
-          console.error(`Error fetching ${table.name}`, err);
-          this.assignCodeTableData(table.embeddedKey, []);
-        }
-      });
+    this.codeTableService.getProjectTypeCodes().subscribe({
+      next: data => { this.projectTypeCode = data; },
+      error: err => console.error('Error fetching projectTypeCodes', err),
     });
-  }
 
-  assignCodeTableData(key: string, data: any): void {
-    const embedded = data?._embedded ?? {};
+    this.codeTableService.getProgramAreaCodes().subscribe({
+      next: data => { this.programAreaCode = data; },
+      error: err => console.error('Error fetching programAreaCodes', err),
+    });
 
-    switch (key) {
-      case CodeTableKeys.PROJECT_TYPE_CODE:
-        this.projectTypeCode = embedded.projectTypeCode ?? [];
-        break;
-      case CodeTableKeys.PROGRAM_AREA_CODE:
-        this.programAreaCode = embedded.programArea ?? [];
-        break;
-      case CodeTableKeys.ACTIVITY_CATEGORY_CODE:
-        this.activityCategoryCodes = embedded.activityCategoryCode ?? [];
-        break;
-      case CodeTableKeys.PLAN_FISCAL_STATUS_CODE:
-        this.planFiscalStatusCode = embedded.planFiscalStatusCode ?? [];
-        break;
-    }
+    this.codeTableService.getPlanFiscalStatusCodes().subscribe({
+      next: data => { this.planFiscalStatusCode = data; },
+      error: err => console.error('Error fetching planFiscalStatusCodes', err),
+    });
+
+    this.codeTableService.getActivityCategoryCodes().subscribe({
+      next: data => { this.activityCategoryCodes = data; },
+      error: err => console.error('Error fetching activityCategoryCodes', err),
+    });
   }
 
 

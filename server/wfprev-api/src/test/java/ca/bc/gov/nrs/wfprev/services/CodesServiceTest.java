@@ -160,7 +160,7 @@ class CodesServiceTest {
         entities.add(new ForestAreaCodeEntity());
         entities.add(new ForestAreaCodeEntity());
 
-        when(forestAreaCodeRepository.findAllByOrderByDisplayOrderAsc()).thenReturn(entities);
+        when(forestAreaCodeRepository.findAll()).thenReturn(entities);
         when(forestAreaCodeResourceAssembler.toCollectionModel(entities))
                 .thenReturn(CollectionModel.of(new ArrayList<>()));
 
@@ -174,7 +174,7 @@ class CodesServiceTest {
     @Test
     void testGetAllForestAreaCodes_Exception() {
         // Arrange
-        when(forestAreaCodeRepository.findAllByOrderByDisplayOrderAsc()).thenThrow(new RuntimeException("Error fetching forest area codes"));
+        when(forestAreaCodeRepository.findAll()).thenThrow(new RuntimeException("Error fetching forest area codes"));
 
         // Act & Assert
         ServiceException exception = assertThrows(
@@ -237,7 +237,7 @@ class CodesServiceTest {
         entities.add(new ProjectTypeCodeEntity());
         entities.add(new ProjectTypeCodeEntity());
 
-        when(projectTypeCodeRepository.findAllByOrderByDisplayOrderAsc()).thenReturn(entities);
+        when(projectTypeCodeRepository.findAll()).thenReturn(entities);
         when(projectTypeCodeResourceAssembler.toCollectionModel(entities))
                 .thenReturn(CollectionModel.of(new ArrayList<>()));
 
@@ -251,7 +251,7 @@ class CodesServiceTest {
     @Test
     void testGetAllProjectTypeCodes_Exception() {
         // Arrange
-        when(projectTypeCodeRepository.findAllByOrderByDisplayOrderAsc()).thenThrow(new RuntimeException("Error fetching project type codes"));
+        when(projectTypeCodeRepository.findAll()).thenThrow(new RuntimeException("Error fetching project type codes"));
 
         // Act & Assert
         ServiceException exception = assertThrows(
@@ -329,7 +329,7 @@ class CodesServiceTest {
                 List<ProposalTypeCodeEntity> entities = new ArrayList<>();
                 entities.add(new ProposalTypeCodeEntity());
                 entities.add(new ProposalTypeCodeEntity());
-                when(proposalTypeCodeRepository.findAllByOrderByDisplayOrderAsc()).thenReturn(entities);
+                when(proposalTypeCodeRepository.findAll()).thenReturn(entities);
                 when(proposalTypeCodeResourceAssembler.toCollectionModel(entities))
                         .thenReturn(CollectionModel.of(new ArrayList<>()));
 
@@ -344,7 +344,7 @@ class CodesServiceTest {
         @Test
         void testGetAllProposalTypeCodes_Exception() {
                 // Arrange
-                when(proposalTypeCodeRepository.findAllByOrderByDisplayOrderAsc()).thenThrow(new RuntimeException("Error fetching proposal type codes"));
+                when(proposalTypeCodeRepository.findAll()).thenThrow(new RuntimeException("Error fetching proposal type codes"));
 
                 // Act & Assert
                 ServiceException exception = assertThrows(
@@ -377,7 +377,7 @@ class CodesServiceTest {
         entities.add(new GeneralScopeCodeEntity());
         entities.add(new GeneralScopeCodeEntity());
 
-        when(generalScopeCodeRepository.findAllByOrderByDisplayOrderAsc()).thenReturn(entities);
+        when(generalScopeCodeRepository.findAll()).thenReturn(entities);
         when(generalScopeCodeResourceAssembler.toCollectionModel(entities))
                 .thenReturn(CollectionModel.of(new ArrayList<>()));
 
@@ -391,7 +391,7 @@ class CodesServiceTest {
     @Test
     void testGetAllGeneralScopeCodes_Exception() {
         // Arrange
-        when(generalScopeCodeRepository.findAllByOrderByDisplayOrderAsc()).thenThrow(new RuntimeException("Error fetching general scope codes"));
+        when(generalScopeCodeRepository.findAll()).thenThrow(new RuntimeException("Error fetching general scope codes"));
 
         // Act & Assert
         ServiceException exception = assertThrows(
@@ -904,7 +904,7 @@ class CodesServiceTest {
         entities.add(new ObjectiveTypeCodeEntity());
         entities.add(new ObjectiveTypeCodeEntity());
 
-        when(objectiveTypeCodeRepository.findAllByOrderByDisplayOrderAsc()).thenReturn(entities);
+        when(objectiveTypeCodeRepository.findAll()).thenReturn(entities);
         when(objectiveTypeCodeResourceAssembler.toCollectionModel(entities))
                 .thenReturn(CollectionModel.of(new ArrayList<>()));
 
@@ -969,7 +969,7 @@ class CodesServiceTest {
         entities.add(new ObjectiveTypeCodeEntity());
         entities.add(new ObjectiveTypeCodeEntity());
 
-        when(objectiveTypeCodeRepository.findAllByOrderByDisplayOrderAsc()).thenReturn(entities);
+        when(objectiveTypeCodeRepository.findAll()).thenReturn(entities);
         when(objectiveTypeCodeResourceAssembler.toCollectionModel(entities))
                 .thenReturn(CollectionModel.of(new ArrayList<>()));
 
@@ -983,7 +983,7 @@ class CodesServiceTest {
     @Test
     void testGetAllObjectiveTypeCodes_Exception() {
         // Arrange
-        when(objectiveTypeCodeRepository.findAllByOrderByDisplayOrderAsc()).thenThrow(new RuntimeException("Error fetching objective type codes"));
+        when(objectiveTypeCodeRepository.findAll()).thenThrow(new RuntimeException("Error fetching objective type codes"));
 
         // Act & Assert
         ServiceException exception = assertThrows(
@@ -1000,7 +1000,7 @@ class CodesServiceTest {
         entities.add(new ProjectPlanStatusCodeEntity());
         entities.add(new ProjectPlanStatusCodeEntity());
 
-        when(projectPlanStatusCodeRepository.findAllByOrderByDisplayOrderAsc()).thenReturn(entities);
+        when(projectPlanStatusCodeRepository.findAll()).thenReturn(entities);
         when(projectPlanStatusCodeResourceAssembler.toCollectionModel(entities))
                 .thenReturn(CollectionModel.of(new ArrayList<>()));
 
@@ -1065,7 +1065,7 @@ class CodesServiceTest {
         entities.add(new ProjectPlanStatusCodeEntity());
         entities.add(new ProjectPlanStatusCodeEntity());
 
-        when(projectPlanStatusCodeRepository.findAllByOrderByDisplayOrderAsc()).thenReturn(entities);
+        when(projectPlanStatusCodeRepository.findAll()).thenReturn(entities);
         when(projectPlanStatusCodeResourceAssembler.toCollectionModel(entities))
                 .thenReturn(CollectionModel.of(new ArrayList<>()));
 
@@ -1079,7 +1079,7 @@ class CodesServiceTest {
     @Test
     void testGetAllProjectPlanStatusCodes_Exception() {
         // Arrange
-        when(projectPlanStatusCodeRepository.findAllByOrderByDisplayOrderAsc()).thenThrow(new RuntimeException("Error fetching project plan status codes"));
+        when(projectPlanStatusCodeRepository.findAll()).thenThrow(new RuntimeException("Error fetching project plan status codes"));
 
         // Act & Assert
         ServiceException exception = assertThrows(
@@ -1096,7 +1096,7 @@ class CodesServiceTest {
         entities.add(new ActivityStatusCodeEntity());
         entities.add(new ActivityStatusCodeEntity());
 
-        when(activityStatusCodeRepository.findAllByOrderByDisplayOrderAsc()).thenReturn(entities);
+        when(activityStatusCodeRepository.findAll()).thenReturn(entities);
         when(activityStatusCodeResourceAssembler.toCollectionModel(entities))
                 .thenReturn(CollectionModel.of(new ArrayList<>()));
 
@@ -1110,7 +1110,7 @@ class CodesServiceTest {
     @Test
     void testGetAllActivityStatusCodes_Exception() {
         // Arrange
-        when(activityStatusCodeRepository.findAllByOrderByDisplayOrderAsc()).thenThrow(new RuntimeException("Error fetching activity status codes"));
+        when(activityStatusCodeRepository.findAll()).thenThrow(new RuntimeException("Error fetching activity status codes"));
 
         // Act & Assert
         ServiceException exception = assertThrows(
@@ -1173,7 +1173,7 @@ class CodesServiceTest {
         entities.add(new RiskRatingCodeEntity());
         entities.add(new RiskRatingCodeEntity());
 
-        when(riskRatingCodeRepository.findAllByOrderByDisplayOrderAsc()).thenReturn(entities);
+        when(riskRatingCodeRepository.findAll()).thenReturn(entities);
         when(riskRatingCodeResourceAssembler.toCollectionModel(entities))
                 .thenReturn(CollectionModel.of(new ArrayList<>()));
 
@@ -1190,7 +1190,7 @@ class CodesServiceTest {
         entities.add(new ActivityCategoryCodeEntity());
         entities.add(new ActivityCategoryCodeEntity());
 
-        when(activityCategoryCodeRepository.findAllByOrderByDisplayOrderAsc()).thenReturn(entities);
+        when(activityCategoryCodeRepository.findAll()).thenReturn(entities);
         when(activityCategoryCodeResourceAssembler.toCollectionModel(entities))
                 .thenReturn(CollectionModel.of(new ArrayList<>()));
 
@@ -1204,7 +1204,7 @@ class CodesServiceTest {
     @Test
     void testGetAllRiskRatingCodes_Exception() {
         // Arrange
-        when(riskRatingCodeRepository.findAllByOrderByDisplayOrderAsc()).thenThrow(new RuntimeException("Error fetching risk rating codes"));
+        when(riskRatingCodeRepository.findAll()).thenThrow(new RuntimeException("Error fetching risk rating codes"));
 
         // Act & Assert
         ServiceException exception = assertThrows(
@@ -1234,7 +1234,7 @@ class CodesServiceTest {
     @Test
     void testGetAllActivityCategoryCodes_Exception() {
         // Arrange
-        when(activityCategoryCodeRepository.findAllByOrderByDisplayOrderAsc()).thenThrow(new RuntimeException("Error fetching activity category codes"));
+        when(activityCategoryCodeRepository.findAll()).thenThrow(new RuntimeException("Error fetching activity category codes"));
 
         // Act & Assert
         ServiceException exception = assertThrows(
@@ -1326,7 +1326,7 @@ class CodesServiceTest {
         entities.add(new ContractPhaseCodeEntity());
         entities.add(new ContractPhaseCodeEntity());
 
-        when(contractPhaseCodeRepository.findAllByOrderByDisplayOrderAsc()).thenReturn(entities);
+        when(contractPhaseCodeRepository.findAll()).thenReturn(entities);
         when(contractPhaseCodeResourceAssembler.toCollectionModel(entities))
                 .thenReturn(CollectionModel.of(new ArrayList<>()));
 
@@ -1344,7 +1344,7 @@ class CodesServiceTest {
         entities.add(new PlanFiscalStatusCodeEntity());
         entities.add(new PlanFiscalStatusCodeEntity());
 
-        when(planFiscalStatusCodeRepository.findAllByOrderByDisplayOrderAsc()).thenReturn(entities);
+        when(planFiscalStatusCodeRepository.findAll()).thenReturn(entities);
         when(planFiscalStatusCodeResourceAssembler.toCollectionModel(entities))
                 .thenReturn(CollectionModel.of(new ArrayList<>()));
 
@@ -1358,7 +1358,7 @@ class CodesServiceTest {
     @Test
     void testGetAllPlanFiscalStatusCodes_Exception() {
         // Arrange
-        when(planFiscalStatusCodeRepository.findAllByOrderByDisplayOrderAsc()).thenThrow(new RuntimeException("Error fetching plan fiscal status codes"));
+        when(planFiscalStatusCodeRepository.findAll()).thenThrow(new RuntimeException("Error fetching plan fiscal status codes"));
 
         // Act & Assert
         ServiceException exception = assertThrows(
@@ -1421,7 +1421,7 @@ class CodesServiceTest {
         entities.add(new AncillaryFundingSourceCodeEntity());
         entities.add(new AncillaryFundingSourceCodeEntity());
 
-        when(ancillaryFundingSourceCodeRepository.findAllByOrderByDisplayOrderAsc()).thenReturn(entities);
+        when(ancillaryFundingSourceCodeRepository.findAll()).thenReturn(entities);
         when(ancillaryFundingSourceCodeResourceAssembler.toCollectionModel(entities))
                 .thenReturn(CollectionModel.of(new ArrayList<>()));
 
@@ -1435,7 +1435,7 @@ class CodesServiceTest {
     @Test
     void testGetAllAncillaryFundingSourceCodes_Exception() {
         // Arrange
-        when(ancillaryFundingSourceCodeRepository.findAllByOrderByDisplayOrderAsc()).thenThrow(new RuntimeException("Error fetching ancillary funding source codes"));
+        when(ancillaryFundingSourceCodeRepository.findAll()).thenThrow(new RuntimeException("Error fetching ancillary funding source codes"));
 
         // Act & Assert
         ServiceException exception = assertThrows(
@@ -1465,7 +1465,7 @@ class CodesServiceTest {
     @Test
     void testGetAllContractPhaseCodes_Exception() {
         // Arrange
-        when(contractPhaseCodeRepository.findAllByOrderByDisplayOrderAsc()).thenThrow(new RuntimeException("Error fetching contract phase codes"));
+        when(contractPhaseCodeRepository.findAll()).thenThrow(new RuntimeException("Error fetching contract phase codes"));
 
         // Act & Assert
         ServiceException exception = assertThrows(
@@ -1528,7 +1528,7 @@ class CodesServiceTest {
         List<FundingSourceCodeEntity> entities = new ArrayList<>();
         entities.add(new FundingSourceCodeEntity());
         entities.add(new FundingSourceCodeEntity());
-        when(fundingSourceCodeRepository.findAllByOrderByDisplayOrderAsc()).thenReturn(entities);
+        when(fundingSourceCodeRepository.findAll()).thenReturn(entities);
         when(fundingSourceCodeResourceAssembler.toCollectionModel(entities))
                 .thenReturn(CollectionModel.of(new ArrayList<>()));
 
@@ -1542,7 +1542,7 @@ class CodesServiceTest {
     @Test
     void testGetAllFundingSourceCodes_Exception() {
         // Arrange
-        when(fundingSourceCodeRepository.findAllByOrderByDisplayOrderAsc()).thenThrow(new RuntimeException("Error fetching funding source codes"));
+        when(fundingSourceCodeRepository.findAll()).thenThrow(new RuntimeException("Error fetching funding source codes"));
 
         // Act & Assert
         ServiceException exception = assertThrows(
@@ -1604,7 +1604,7 @@ class CodesServiceTest {
         List<SourceObjectNameCodeEntity> entities = new ArrayList<>();
         entities.add(new SourceObjectNameCodeEntity());
         entities.add(new SourceObjectNameCodeEntity());
-        when(sourceObjectNameCodeRepository.findAllByOrderByDisplayOrderAsc()).thenReturn(entities);
+        when(sourceObjectNameCodeRepository.findAll()).thenReturn(entities);
         when(sourceObjectNameCodeResourceAssembler.toCollectionModel(entities))
                 .thenReturn(CollectionModel.of(new ArrayList<>()));
 
@@ -1618,7 +1618,7 @@ class CodesServiceTest {
     @Test
     void testGetAllSourceObjectNameCodes_Exception() {
         // Arrange
-        when(sourceObjectNameCodeRepository.findAllByOrderByDisplayOrderAsc()).thenThrow(new RuntimeException("Error fetching source object name codes"));
+        when(sourceObjectNameCodeRepository.findAll()).thenThrow(new RuntimeException("Error fetching source object name codes"));
 
         // Act & Assert
         ServiceException exception = assertThrows(
@@ -1680,7 +1680,7 @@ class CodesServiceTest {
         List<AttachmentContentTypeCodeEntity> entities = new ArrayList<>();
         entities.add(new AttachmentContentTypeCodeEntity());
         entities.add(new AttachmentContentTypeCodeEntity());
-        when(attachmentContentTypeCodeRepository.findAllByOrderByDisplayOrderAsc()).thenReturn(entities);
+        when(attachmentContentTypeCodeRepository.findAll()).thenReturn(entities);
         when(attachmentContentTypeCodeResourceAssembler.toCollectionModel(entities))
                 .thenReturn(CollectionModel.of(new ArrayList<>()));
 
@@ -1694,7 +1694,7 @@ class CodesServiceTest {
     @Test
     void testGetAllAttachmentContentTypeCodes_Exception() {
         // Arrange
-        when(attachmentContentTypeCodeRepository.findAllByOrderByDisplayOrderAsc()).thenThrow(new RuntimeException("Error fetching attachment content type name codes"));
+        when(attachmentContentTypeCodeRepository.findAll()).thenThrow(new RuntimeException("Error fetching attachment content type name codes"));
 
         // Act & Assert
         ServiceException exception = assertThrows(
@@ -2113,7 +2113,7 @@ class CodesServiceTest {
         entities.add(new ProjectStatusCodeEntity());
         entities.add(new ProjectStatusCodeEntity());
 
-        when(projectStatusCodeRepository.findAllByOrderByDisplayOrderAsc()).thenReturn(entities);
+        when(projectStatusCodeRepository.findAll()).thenReturn(entities);
         when(projectStatusCodeResourceAssembler.toCollectionModel(entities))
                 .thenReturn(CollectionModel.of(new ArrayList<>()));
 
@@ -2124,7 +2124,7 @@ class CodesServiceTest {
 
     @Test
     void testGetAllProjectStatusCodes_Exception() {
-        when(projectStatusCodeRepository.findAllByOrderByDisplayOrderAsc()).thenThrow(new RuntimeException("Error fetching project status codes"));
+        when(projectStatusCodeRepository.findAll()).thenThrow(new RuntimeException("Error fetching project status codes"));
 
         ServiceException exception = assertThrows(
                 ServiceException.class,
@@ -2239,14 +2239,14 @@ class CodesServiceTest {
     void testGetAllReportingPeriodCodes_Success() throws ServiceException {
         List<ReportingPeriodCodeEntity> entities = new ArrayList<>();
         entities.add(new ReportingPeriodCodeEntity());
-        when(reportingPeriodCodeRepository.findAllByOrderByDisplayOrderAsc()).thenReturn(entities);
+        when(reportingPeriodCodeRepository.findAll()).thenReturn(entities);
         when(reportingPeriodCodeResourceAssembler.toCollectionModel(entities))
                 .thenReturn(CollectionModel.of(new ArrayList<>()));
 
         CollectionModel<ReportingPeriodCodeModel> result = codesService.getAllReportingPeriodCodes();
 
         assertNotNull(result);
-        verify(reportingPeriodCodeRepository, times(1)).findAllByOrderByDisplayOrderAsc();
+        verify(reportingPeriodCodeRepository, times(1)).findAll();
         verify(reportingPeriodCodeResourceAssembler, times(1)).toCollectionModel(entities);
     }
 
