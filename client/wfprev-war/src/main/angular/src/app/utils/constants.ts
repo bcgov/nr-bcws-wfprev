@@ -104,6 +104,7 @@ export const ObjectiveTypeCodes = {
   RNG_HAB_MG: 'RNG_HAB_MG',
   RECONCIL: 'RECONCIL',
   WLD_HAB_MG: 'WLD_HAB_MG',
+  SILV_TREAT: 'SILV_TREAT',
   OTHER: 'OTHER'
 };
 
