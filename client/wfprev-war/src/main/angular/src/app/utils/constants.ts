@@ -80,7 +80,9 @@ export const CodeTableNames = {
   OBJECTIVE_TYPE_CODE: 'objectiveTypeCodes',
   WILDFIRE_ORG_UNIT: 'wildfireOrgUnits',
   REPORTING_PERIOD_CODE: 'reportingPeriodCodes',
-  PROGRESS_STATUS_CODE: "progressStatusCode"
+  PROGRESS_STATUS_CODE: 'progressStatusCodes',
+  CONTRACT_PHASE_CODE: 'contractPhaseCodes',
+  FUNDING_SOURCE_CODE: 'fundingSourceCodes',
 }
 
 export const ProjectTypeCodes = {

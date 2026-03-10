@@ -127,94 +127,69 @@ export class ProjectsListComponent implements OnInit {
   }
 
   loadCodeTables(): void {
-    const codeTables = [
-      { name: CodeTableNames.PROGRAM_AREA_CODE, property: CodeTableKeys.BUSINESS_AREAS, embeddedKey: CodeTableKeys.PROGRAM_AREA },
-      { name: CodeTableNames.FOREST_REGION_CODE, property: CodeTableKeys.FOREST_REGIONS, embeddedKey: CodeTableKeys.FOREST_REGION_CODE },
-      { name: CodeTableNames.FOREST_DISTRICT_CODE, property: CodeTableKeys.FOREST_DISTRICTS, embeddedKey: CodeTableKeys.FOREST_DISTRICT_CODE },
-      { name: CodeTableNames.BC_PARKS_REGION_CODE, property: CodeTableKeys.BC_PARKS_REGIONS, embeddedKey: CodeTableKeys.BC_PARKS_REGION_CODE },
-      { name: CodeTableNames.BC_PARKS_SECTION_CODE, property: CodeTableKeys.BC_PARKS_SECTIONS, embeddedKey: CodeTableKeys.BC_PARKS_SECTION_CODE },
-      { name: CodeTableNames.PLAN_FISCAL_STATUS_CODE, property: CodeTableKeys.PLAN_FISCAL_STATUS_CODE, embeddedKey: CodeTableKeys.PLAN_FISCAL_STATUS_CODE },
-      { name: CodeTableNames.ACTIVITY_CATEGORY_CODE, property: CodeTableKeys.ACTIVITY_CATEGORY_CODE, embeddedKey: CodeTableKeys.ACTIVITY_CATEGORY_CODE },
-      { name: CodeTableNames.PROJECT_TYPE_CODE, property: CodeTableKeys.PROJECT_TYPE_CODE, embeddedKey: CodeTableKeys.PROJECT_TYPE_CODE },
-      { name: CodeTableNames.WILDFIRE_ORG_UNIT, property: CodeTableKeys.WILDFIRE_ORG_UNIT, embeddedKey: CodeTableKeys.WILDFIRE_ORG_UNIT }
-
-    ];
     const loaded: any = {};
     let loadedCount = 0;
-    const totalTables = codeTables.length;
+    const totalTables = 9;
 
+    const done = (key: string, value: any[]) => {
+      this[key] = value;
+      loaded[key] = value;
+      loadedCount++;
+      if (loadedCount === totalTables) {
+        this.sharedCodeTableService.updateCodeTables(loaded);
+      }
+    };
 
-    for (const table of codeTables) {
-      this.codeTableService.fetchCodeTable(table.name).subscribe({
-        next: (data) => {
-          if (table.name === CodeTableNames.PROGRAM_AREA_CODE) {
-            this.programAreaCode = data._embedded.programArea;
-          } else if (table.name === CodeTableNames.FOREST_REGION_CODE) {
-            this.forestRegionCode = data._embedded.forestRegionCode;
-          } else if (table.name === CodeTableNames.FOREST_DISTRICT_CODE) {
-            this.forestDistrictCode = data._embedded.forestDistrictCode;
-          } else if (table.name === CodeTableNames.BC_PARKS_REGION_CODE) {
-            this.bcParksRegionCode = data._embedded.bcParksRegionCode;
-          } else if (table.name === CodeTableNames.BC_PARKS_SECTION_CODE) {
-            this.bcParksSectionCode = data._embedded.bcParksSectionCode;
-          } else if (table.name === CodeTableNames.PLAN_FISCAL_STATUS_CODE) {
-            this.planFiscalStatusCode = data._embedded.planFiscalStatusCode;
-          } else if (table.name === CodeTableNames.ACTIVITY_CATEGORY_CODE) {
-            this.activityCategoryCode = data._embedded.activityCategoryCode;
-          } else if (table.name === CodeTableNames.PROJECT_TYPE_CODE) {
-            this.projectTypeCode = data._embedded.projectTypeCode;
-          } else if (table.name === CodeTableNames.WILDFIRE_ORG_UNIT) {
-            const orgUnits = data._embedded.wildfireOrgUnit ?? [];
-            const fireCentres = orgUnits.filter(
-              (unit: any) => unit.wildfireOrgUnitTypeCode?.wildfireOrgUnitTypeCode === WildfireOrgUnitTypeCodes.FIRE_CENTRE
-            );
-            this.fireCentreCodes = fireCentres;
-          }
+    this.codeTableService.getProgramAreaCodes().subscribe({
+      next: data => done(CodeTableKeys.BUSINESS_AREAS, data),
+      error: () => done(CodeTableKeys.BUSINESS_AREAS, []),
+    });
 
-          const items = data._embedded?.[table.embeddedKey] ?? [];
-          this[table.property] = items;
-          loaded[table.property] = items;
+    this.codeTableService.getForestRegionCodes().subscribe({
+      next: data => done(CodeTableKeys.FOREST_REGIONS, data),
+      error: () => done(CodeTableKeys.FOREST_REGIONS, []),
+    });
 
-          loadedCount++;
-          if (loadedCount === totalTables) {
-            this.sharedCodeTableService.updateCodeTables(loaded);
-          }
+    this.codeTableService.getForestDistrictCodes().subscribe({
+      next: data => done(CodeTableKeys.FOREST_DISTRICTS, data),
+      error: () => done(CodeTableKeys.FOREST_DISTRICTS, []),
+    });
 
-        },
-        error: (err) => {
-          console.error(`Error fetching ${table.name}`, err);
+    this.codeTableService.getBcParksRegionCodes().subscribe({
+      next: data => done(CodeTableKeys.BC_PARKS_REGIONS, data),
+      error: () => done(CodeTableKeys.BC_PARKS_REGIONS, []),
+    });
 
-          // Explicitly set the property to an empty array on error
-          if (table.name === CodeTableNames.PROGRAM_AREA_CODE) {
-            this.programAreaCode = [];
-          } else if (table.name === CodeTableNames.FOREST_REGION_CODE) {
-            this.forestRegionCode = [];
-          } else if (table.name === CodeTableNames.FOREST_DISTRICT_CODE) {
-            this.forestDistrictCode = [];
-          } else if (table.name === CodeTableNames.BC_PARKS_REGION_CODE) {
-            this.bcParksRegionCode = [];
-          } else if (table.name === CodeTableNames.BC_PARKS_SECTION_CODE) {
-            this.bcParksSectionCode = [];
-          } else if (table.name === CodeTableNames.PLAN_FISCAL_STATUS_CODE) {
-            this.planFiscalStatusCode = [];
-          } else if (table.name === CodeTableNames.ACTIVITY_CATEGORY_CODE) {
-            this.activityCategoryCode = [];
-          } else if (table.name === CodeTableNames.PROJECT_TYPE_CODE) {
-            this.activityCategoryCode = [];
-          } else if (table.name === CodeTableNames.WILDFIRE_ORG_UNIT) {
-            this.fireCentreCodes = [];
-          }
+    this.codeTableService.getBcParksSectionCodes().subscribe({
+      next: data => done(CodeTableKeys.BC_PARKS_SECTIONS, data),
+      error: () => done(CodeTableKeys.BC_PARKS_SECTIONS, []),
+    });
 
-          this[table.property] = [];
-          loaded[table.property] = [];
+    this.codeTableService.getPlanFiscalStatusCodes().subscribe({
+      next: data => done(CodeTableKeys.PLAN_FISCAL_STATUS_CODE, data),
+      error: () => done(CodeTableKeys.PLAN_FISCAL_STATUS_CODE, []),
+    });
 
-          loadedCount++;
-          if (loadedCount === totalTables) {
-            this.sharedCodeTableService.updateCodeTables(loaded);
-          }
-        },
-      });
-    }
+    this.codeTableService.getActivityCategoryCodes().subscribe({
+      next: data => done(CodeTableKeys.ACTIVITY_CATEGORY_CODE, data),
+      error: () => done(CodeTableKeys.ACTIVITY_CATEGORY_CODE, []),
+    });
+
+    this.codeTableService.getProjectTypeCodes().subscribe({
+      next: data => done(CodeTableKeys.PROJECT_TYPE_CODE, data),
+      error: () => done(CodeTableKeys.PROJECT_TYPE_CODE, []),
+    });
+
+    this.codeTableService.getFireCentres().subscribe({
+      next: data => {
+        this.fireCentreCodes = data;
+        done(CodeTableKeys.WILDFIRE_ORG_UNIT, data);
+      },
+      error: () => {
+        this.fireCentreCodes = [];
+        done(CodeTableKeys.WILDFIRE_ORG_UNIT, []);
+      },
+    });
   }
 
   sortOptions = [

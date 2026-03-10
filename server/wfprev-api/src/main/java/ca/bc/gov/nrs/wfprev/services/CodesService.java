@@ -159,7 +159,7 @@ public class CodesService implements CommonService {
      **/
     public CollectionModel<ForestAreaCodeModel> getAllForestAreaCodes() throws ServiceException {
         try {
-            List<ForestAreaCodeEntity> entities = forestAreaCodeRepository.findAllByOrderByDisplayOrderAsc();
+            List<ForestAreaCodeEntity> entities = forestAreaCodeRepository.findAll();
             return forestAreaCodeResourceAssembler.toCollectionModel(entities);
         } catch (Exception e) {
             throw new ServiceException(e.getLocalizedMessage(), e);
@@ -179,7 +179,7 @@ public class CodesService implements CommonService {
      **/
     public CollectionModel<GeneralScopeCodeModel> getAllGeneralScopeCodes() throws ServiceException {
         try {
-            List<GeneralScopeCodeEntity> entities = generalScopeCodeRepository.findAllByOrderByDisplayOrderAsc();
+            List<GeneralScopeCodeEntity> entities = generalScopeCodeRepository.findAll();
             return generalScopeCodeResourceAssembler.toCollectionModel(entities);
         } catch (Exception e) {
             throw new ServiceException(e.getLocalizedMessage(), e);
@@ -199,7 +199,7 @@ public class CodesService implements CommonService {
      **/
     public CollectionModel<ProjectTypeCodeModel> getAllProjectTypeCodes() throws ServiceException {
         try {
-            List<ProjectTypeCodeEntity> entities = projectTypeCodeRepository.findAllByOrderByDisplayOrderAsc();
+            List<ProjectTypeCodeEntity> entities = projectTypeCodeRepository.findAll();
             return projectTypeCodeResourceAssembler.toCollectionModel(entities);
         } catch (Exception e) {
             throw new ServiceException(e.getLocalizedMessage(), e);
@@ -304,7 +304,7 @@ public class CodesService implements CommonService {
 
     public CollectionModel<ObjectiveTypeCodeModel> getAllObjectiveTypeCodes() throws ServiceException {
         try {
-            List<ObjectiveTypeCodeEntity> entities = objectiveTypeCodeRepository.findAllByOrderByDisplayOrderAsc();
+            List<ObjectiveTypeCodeEntity> entities = objectiveTypeCodeRepository.findAll();
             return objectiveTypeCodeResourceAssembler.toCollectionModel(entities);
         } catch (Exception e) {
             throw new ServiceException(e.getLocalizedMessage(), e);
@@ -321,7 +321,7 @@ public class CodesService implements CommonService {
 
     public CollectionModel<ProjectPlanStatusCodeModel> getAllProjectPlanStatusCodes() throws ServiceException {
         try {
-            List<ProjectPlanStatusCodeEntity> entities = projectPlanStatusCodeRepository.findAllByOrderByDisplayOrderAsc();
+            List<ProjectPlanStatusCodeEntity> entities = projectPlanStatusCodeRepository.findAll();
             return projectPlanStatusCodeResourceAssembler.toCollectionModel(entities);
         } catch (Exception e) {
             throw new ServiceException(e.getLocalizedMessage(), e);
@@ -338,7 +338,7 @@ public class CodesService implements CommonService {
 
     public CollectionModel<ActivityStatusCodeModel> getAllActivityStatusCodes() throws ServiceException {
         try {
-            List<ActivityStatusCodeEntity> entities = activityStatusCodeRepository.findAllByOrderByDisplayOrderAsc();
+            List<ActivityStatusCodeEntity> entities = activityStatusCodeRepository.findAll();
             return activityStatusCodeResourceAssembler.toCollectionModel(entities);
         } catch (Exception e) {
             throw new ServiceException(e.getLocalizedMessage(), e);
@@ -355,7 +355,7 @@ public class CodesService implements CommonService {
 
     public CollectionModel<RiskRatingCodeModel> getAllRiskRatingCodes() throws ServiceException {
         try {
-            List<RiskRatingCodeEntity> entities = riskRatingCodeRepository.findAllByOrderByDisplayOrderAsc();
+            List<RiskRatingCodeEntity> entities = riskRatingCodeRepository.findAll();
             return riskRatingCodeResourceAssembler.toCollectionModel(entities);
         } catch (Exception e) {
             throw new ServiceException(e.getLocalizedMessage(), e);
@@ -364,7 +364,7 @@ public class CodesService implements CommonService {
 
     public CollectionModel<ActivityCategoryCodeModel> getAllActivityCategoryCodes() throws ServiceException {
         try {
-            List<ActivityCategoryCodeEntity> entities = activityCategoryCodeRepository.findAllByOrderByDisplayOrderAsc();
+            List<ActivityCategoryCodeEntity> entities = activityCategoryCodeRepository.findAll();
             return activityCategoryCodeResourceAssembler.toCollectionModel(entities);
         } catch (Exception e) {
             throw new ServiceException(e.getLocalizedMessage(), e);
@@ -390,7 +390,7 @@ public class CodesService implements CommonService {
 
     public CollectionModel<ContractPhaseCodeModel> getAllContractPhaseCodes() throws ServiceException {
         try {
-            List<ContractPhaseCodeEntity> entities = contractPhaseCodeRepository.findAllByOrderByDisplayOrderAsc();
+            List<ContractPhaseCodeEntity> entities = contractPhaseCodeRepository.findAll();
             return contractPhaseCodeResourceAssembler.toCollectionModel(entities);
         } catch (Exception e) {
             throw new ServiceException(e.getLocalizedMessage(), e);
@@ -399,7 +399,7 @@ public class CodesService implements CommonService {
 
     public CollectionModel<PlanFiscalStatusCodeModel> getAllPlanFiscalStatusCodes() throws ServiceException {
         try {
-            List<PlanFiscalStatusCodeEntity> entities = planFiscalStatusCodeRepository.findAllByOrderByDisplayOrderAsc();
+            List<PlanFiscalStatusCodeEntity> entities = planFiscalStatusCodeRepository.findAll();
             return planFiscalStatusCodeResourceAssembler.toCollectionModel(entities);
         } catch (Exception e) {
             throw new ServiceException(e.getLocalizedMessage(), e);
@@ -426,7 +426,7 @@ public class CodesService implements CommonService {
 
     public CollectionModel<AncillaryFundingSourceCodeModel> getAllAncillaryFundingSourceCodes() throws ServiceException {
         try {
-            List<AncillaryFundingSourceCodeEntity> entities = ancillaryFundingSourceCodeRepository.findAllByOrderByDisplayOrderAsc();
+            List<AncillaryFundingSourceCodeEntity> entities = ancillaryFundingSourceCodeRepository.findAll();
             return ancillaryFundingSourceCodeResourceAssembler.toCollectionModel(entities);
         } catch (Exception e) {
             throw new ServiceException(e.getLocalizedMessage(), e);
@@ -445,7 +445,7 @@ public class CodesService implements CommonService {
 
     public CollectionModel<FundingSourceCodeModel> getAllFundingSourceCodes() throws ServiceException {
         try {
-            List<FundingSourceCodeEntity> entities = fundingSourceCodeRepository.findAllByOrderByDisplayOrderAsc();
+            List<FundingSourceCodeEntity> entities = fundingSourceCodeRepository.findAll();
             return fundingSourceCodeResourceAssembler.toCollectionModel(entities);
         } catch (Exception e) {
             throw new ServiceException(e.getLocalizedMessage(), e);
@@ -464,7 +464,7 @@ public class CodesService implements CommonService {
 
     public CollectionModel<SourceObjectNameCodeModel> getAllSourceObjectNameCodes() throws ServiceException {
         try {
-            List<SourceObjectNameCodeEntity> entities = sourceObjectNameCodeRepository.findAllByOrderByDisplayOrderAsc();
+            List<SourceObjectNameCodeEntity> entities = sourceObjectNameCodeRepository.findAll();
             return sourceObjectNameCodeResourceAssembler.toCollectionModel(entities);
         } catch (Exception e) {
             throw new ServiceException(e.getLocalizedMessage(), e);
@@ -483,7 +483,7 @@ public class CodesService implements CommonService {
 
     public CollectionModel<AttachmentContentTypeCodeModel> getAllAttachmentContentTypeCodes() throws ServiceException {
         try {
-            List<AttachmentContentTypeCodeEntity> entities = attachmentContentTypeCodeRepository.findAllByOrderByDisplayOrderAsc();
+            List<AttachmentContentTypeCodeEntity> entities = attachmentContentTypeCodeRepository.findAll();
             return attachmentContentTypeCodeResourceAssembler.toCollectionModel(entities);
         } catch (Exception e) {
             throw new ServiceException(e.getLocalizedMessage(), e);
@@ -568,7 +568,7 @@ public class CodesService implements CommonService {
     
     public CollectionModel<ProposalTypeCodeModel> getAllProposalTypeCodes() throws ServiceException {
         try {
-            List<ProposalTypeCodeEntity> entities = proposalTypeCodeRepository.findAllByOrderByDisplayOrderAsc();
+            List<ProposalTypeCodeEntity> entities = proposalTypeCodeRepository.findAll();
             return proposalTypeCodeResourceAssembler.toCollectionModel(entities);
         } catch (Exception e) {
             throw new ServiceException(e.getLocalizedMessage(), e);
@@ -621,7 +621,7 @@ public class CodesService implements CommonService {
 
     public CollectionModel<ProjectStatusCodeModel> getAllProjectStatusCodes() throws ServiceException {
         try {
-            List<ProjectStatusCodeEntity> entities = projectStatusCodeRepository.findAllByOrderByDisplayOrderAsc();
+            List<ProjectStatusCodeEntity> entities = projectStatusCodeRepository.findAll();
             return projectStatusCodeResourceAssembler.toCollectionModel(entities);
         } catch (Exception e) {
             throw new ServiceException(e.getLocalizedMessage(), e);
@@ -657,7 +657,7 @@ public class CodesService implements CommonService {
 
     public CollectionModel<ReportingPeriodCodeModel> getAllReportingPeriodCodes() throws ServiceException {
         try {
-            List<ReportingPeriodCodeEntity> entities = reportingPeriodCodeRepository.findAllByOrderByDisplayOrderAsc();
+            List<ReportingPeriodCodeEntity> entities = reportingPeriodCodeRepository.findAll();
             return reportingPeriodCodeResourceAssembler.toCollectionModel(entities);
         } catch (Exception e) {
             throw new ServiceException(e.getLocalizedMessage(), e);
@@ -674,7 +674,7 @@ public class CodesService implements CommonService {
 
     public CollectionModel<ProgressStatusCodeModel> getAllProgressStatusCodes() throws ServiceException {
         try {
-            List<ProgressStatusCodeEntity> entities = progressStatusCodeRepository.findAllByOrderByDisplayOrderAsc();
+            List<ProgressStatusCodeEntity> entities = progressStatusCodeRepository.findAll();
             return progressStatusCodeResourceAssembler.toCollectionModel(entities);
         } catch (Exception e) {
             throw new ServiceException(e.getLocalizedMessage(), e);

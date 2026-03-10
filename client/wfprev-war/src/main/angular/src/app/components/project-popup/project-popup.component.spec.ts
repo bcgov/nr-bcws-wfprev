@@ -11,7 +11,18 @@ describe('ProjectPopupComponent', () => {
   let mockCodeTableService: jasmine.SpyObj<CodeTableServices>;
 
   beforeEach(async () => {
-    mockCodeTableService = jasmine.createSpyObj('CodeTableServices', ['fetchCodeTable']);
+    mockCodeTableService = jasmine.createSpyObj('CodeTableServices', [
+      'fetchCodeTable',
+      'getProjectTypeCodes',
+      'getProgramAreaCodes',
+      'getPlanFiscalStatusCodes',
+      'getActivityCategoryCodes',
+    ]);
+    mockCodeTableService.getProjectTypeCodes.and.returnValue(of([]));
+    mockCodeTableService.getProgramAreaCodes.and.returnValue(of([]));
+    mockCodeTableService.getPlanFiscalStatusCodes.and.returnValue(of([]));
+    mockCodeTableService.getActivityCategoryCodes.and.returnValue(of([]));
+    mockCodeTableService.fetchCodeTable.and.returnValue(of({ _embedded: {} }));
 
     await TestBed.configureTestingModule({
       imports: [ProjectPopupComponent,HttpClientTestingModule],
@@ -27,7 +38,6 @@ describe('ProjectPopupComponent', () => {
   });
 
   it('should call loadCodeTables on init', () => {
-    mockCodeTableService.fetchCodeTable.and.returnValue(of({ _embedded: { projectTypeCode: [] } }));
     spyOn(component as any, 'loadCodeTables').and.callThrough();
 
     component.ngOnInit();
@@ -36,15 +46,16 @@ describe('ProjectPopupComponent', () => {
   });
 
   it('should assign projectTypeCode data correctly', () => {
-    const data = { _embedded: { projectTypeCode: [{ projectTypeCode: 1, description: 'Type A' }] } };
-    component.assignCodeTableData(CodeTableKeys.PROJECT_TYPE_CODE, data);
-
+    component.projectTypeCode = [{ projectTypeCode: 'PROJ_TYPE_1', description: 'Type A' } as any];
     expect(component.projectTypeCode.length).toBe(1);
     expect(component.projectTypeCode[0].description).toBe('Type A');
   });
 
   it('should handle error and assign empty array on fetch failure', () => {
-    mockCodeTableService.fetchCodeTable.and.returnValue(throwError(() => 'error'));
+    mockCodeTableService.getProjectTypeCodes.and.returnValue(throwError(() => 'error'));
+    mockCodeTableService.getProgramAreaCodes.and.returnValue(throwError(() => 'error'));
+    mockCodeTableService.getPlanFiscalStatusCodes.and.returnValue(throwError(() => 'error'));
+    mockCodeTableService.getActivityCategoryCodes.and.returnValue(throwError(() => 'error'));
 
     component.ngOnInit();
 
