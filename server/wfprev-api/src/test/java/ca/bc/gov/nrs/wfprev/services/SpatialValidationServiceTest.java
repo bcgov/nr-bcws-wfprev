@@ -31,6 +31,7 @@ class SpatialValidationServiceTest {
 
         assertTrue(result.isValid());
         assertEquals("Geometry is valid", result.getMessage());
+        assertNull(result.getErrorType());
         assertNull(result.getViolationLocation());
     }
 
@@ -50,6 +51,7 @@ class SpatialValidationServiceTest {
 
         assertFalse(result.isValid());
         assertTrue(result.getMessage().contains("Self-intersection"));
+        assertEquals("RING_SELF_INTERSECTION", result.getErrorType());
         assertNotNull(result.getViolationLocation());
         // The intersection should be at (5, 5)
         assertEquals(5.0, result.getViolationLocation().getX(), 0.001);
@@ -59,9 +61,10 @@ class SpatialValidationServiceTest {
     @Test
     void testValidateGeometry_NullGeometry() {
         ValidationResult result = service.validateGeometry(null);
-        
+
         assertFalse(result.isValid());
         assertEquals("Geometry cannot be null or empty", result.getMessage());
+        assertEquals("EMPTY_GEOMETRY", result.getErrorType());
     }
 
     @Test
@@ -71,8 +74,9 @@ class SpatialValidationServiceTest {
 
         assertFalse(result.isValid());
         assertEquals("Geometry cannot be null or empty", result.getMessage());
+        assertEquals("EMPTY_GEOMETRY", result.getErrorType());
     }
-    
+
     @Test
     void testValidateGeometry_HoleOutsideShell() {
         // Shell
@@ -98,8 +102,8 @@ class SpatialValidationServiceTest {
         ValidationResult result = service.validateGeometry(polygon);
 
         assertFalse(result.isValid());
-        // JTS error message for this varies but usually mentions "Hole lies outside shell"
         assertNotNull(result.getMessage());
+        assertEquals("HOLE_OUTSIDE_SHELL", result.getErrorType());
         assertNotNull(result.getViolationLocation());
     }
 
@@ -119,7 +123,9 @@ class SpatialValidationServiceTest {
 
         assertFalse(result.isValid());
         assertEquals("Geometry is outside British Columbia. Please submit a valid location within BC.", result.getMessage());
-        assertNull(result.getViolationLocation()); // Our custom check doesn't set a specific coordinate
+        assertEquals("OUTSIDE_BC", result.getErrorType());
+        // violationLocation is set to the polygon's centroid as a location hint
+        assertNotNull(result.getViolationLocation());
     }
 
     @Test

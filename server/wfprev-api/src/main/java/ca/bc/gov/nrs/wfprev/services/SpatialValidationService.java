@@ -8,6 +8,7 @@ import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKTReader;
 import org.locationtech.jts.operation.valid.IsValidOp;
 import org.locationtech.jts.operation.valid.TopologyValidationError;
+import org.locationtech.jts.geom.TopologyException;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -32,37 +33,69 @@ public class SpatialValidationService {
             return ValidationResult.builder()
                     .valid(false)
                     .message("Geometry cannot be null or empty")
+                    .errorType("EMPTY_GEOMETRY")
                     .build();
         }
 
-        IsValidOp isValidOp = new IsValidOp(geometry);
-        TopologyValidationError error = isValidOp.getValidationError();
+        try {
+            IsValidOp isValidOp = new IsValidOp(geometry);
+            TopologyValidationError error = isValidOp.getValidationError();
 
-        if (error != null) {
-            String message = String.format("%s at (%f, %f)", 
-                error.getMessage(), 
-                error.getCoordinate().x, 
-                error.getCoordinate().y);
-            
-            // Create a point from the error coordinate
-            Point errorLocation = geometry.getFactory().createPoint(error.getCoordinate());
-            
-            log.warn("Spatial validation failed: {}", message);
-            
+            if (error != null) {
+                String errorType = resolveErrorType(error.getErrorType());
+                String message = String.format("%s at (%f, %f)",
+                    error.getMessage(),
+                    error.getCoordinate().x,
+                    error.getCoordinate().y);
+
+                Point errorLocation = geometry.getFactory().createPoint(error.getCoordinate());
+
+                log.warn("Spatial validation failed [{}]: {}", errorType, message);
+
+                return ValidationResult.builder()
+                        .valid(false)
+                        .message(message)
+                        .errorType(errorType)
+                        .violationLocation(errorLocation)
+                        .build();
+            }
+        } catch (Exception e) {
+            log.warn("Spatial validation raised topology exception: {}", e.getMessage());
+            Point errorLocation = null;
+            if (e instanceof TopologyException te && te.getCoordinate() != null) {
+                errorLocation = geometry.getFactory().createPoint(te.getCoordinate());
+            }
             return ValidationResult.builder()
                     .valid(false)
-                    .message(message)
+                    .message("Geometry is topologically invalid: " + e.getMessage())
+                    .errorType("TOPOLOGY_EXCEPTION")
                     .violationLocation(errorLocation)
                     .build();
         }
 
-        if (bcBoundaryPolygon != null && !bcBoundaryPolygon.intersects(geometry)) {
-            String message = "Geometry is outside British Columbia. Please submit a valid location within BC.";
-            log.warn("Spatial validation failed: {}", message);
+        try {
+            if (bcBoundaryPolygon != null && !bcBoundaryPolygon.intersects(geometry)) {
+                String message = "Geometry is outside British Columbia. Please submit a valid location within BC.";
+                log.warn("Spatial validation failed [OUTSIDE_BC]: {}", message);
 
+                return ValidationResult.builder()
+                        .valid(false)
+                        .message(message)
+                        .errorType("OUTSIDE_BC")
+                        .violationLocation((Point) geometry.getCentroid())
+                        .build();
+            }
+        } catch (Exception e) {
+            log.warn("BC boundary intersection check raised topology exception: {}", e.getMessage());
+            Point errorLocation = null;
+            if (e instanceof TopologyException te && te.getCoordinate() != null) {
+                errorLocation = geometry.getFactory().createPoint(te.getCoordinate());
+            }
             return ValidationResult.builder()
                     .valid(false)
-                    .message(message)
+                    .message("Geometry is topologically invalid: " + e.getMessage())
+                    .errorType("TOPOLOGY_EXCEPTION")
+                    .violationLocation(errorLocation)
                     .build();
         }
 
@@ -70,5 +103,21 @@ public class SpatialValidationService {
                 .valid(true)
                 .message("Geometry is valid")
                 .build();
+    }
+
+    private String resolveErrorType(int errorCode) {
+        return switch (errorCode) {
+            case TopologyValidationError.HOLE_OUTSIDE_SHELL    -> "HOLE_OUTSIDE_SHELL";
+            case TopologyValidationError.NESTED_HOLES          -> "NESTED_HOLES";
+            case TopologyValidationError.DISCONNECTED_INTERIOR -> "DISCONNECTED_INTERIOR";
+            case TopologyValidationError.SELF_INTERSECTION     -> "SELF_INTERSECTION";
+            case TopologyValidationError.RING_SELF_INTERSECTION -> "RING_SELF_INTERSECTION";
+            case TopologyValidationError.NESTED_SHELLS         -> "NESTED_SHELLS";
+            case TopologyValidationError.DUPLICATE_RINGS       -> "DUPLICATE_RINGS";
+            case TopologyValidationError.TOO_FEW_POINTS        -> "TOO_FEW_POINTS";
+            case TopologyValidationError.INVALID_COORDINATE    -> "INVALID_COORDINATE";
+            case TopologyValidationError.RING_NOT_CLOSED       -> "RING_NOT_CLOSED";
+            default -> "UNKNOWN_TOPOLOGY_ERROR";
+        };
     }
 }
