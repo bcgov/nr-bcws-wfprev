@@ -183,7 +183,6 @@ export class ProjectFilesComponent implements OnInit {
         indicator: this.isActivityContext ? 'activity-files' : 'project-files'
       }
     });
-
     dialogRef.afterClosed().subscribe(result => {
       if (result?.file) {
         const selectedType = result.type;
