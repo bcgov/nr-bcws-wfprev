@@ -10,6 +10,7 @@ import { catchError, firstValueFrom, lastValueFrom, map, Observable, of, throwEr
 import * as shp from 'shpjs';
 import { AppConfigService } from "./app-config.service";
 import { TokenService } from "./token.service";
+import { DetailedErrorMessageComponent } from "../components/detailed-error-message/detailed-error-message.component";
 
 export type CoordinateTypes = Position | Position[] | Position[][] | Position[][][];
 
@@ -312,18 +313,28 @@ export class SpatialService {
             } else if (['zip', 'gdb'].includes(fileType)) {
                 return await this.handleCompressedFile(file);
             } else {
-                this.snackbarService.open('Unsupported file type: ' + fileType, 'Close', {
-                    duration: 5000,
-                    panelClass: 'snackbar-error',
+                this.snackbarService.openFromComponent(DetailedErrorMessageComponent, {
+                    data: {
+                    title: 'Spatial File Failed to Save',
+                    message: "The file that you are uploading failed to save. To view errors click on 'View Details' button on this warning to see additional error details.",
+                    reasons: ['Unsupported file type: ' + fileType]
+                    },
+                    duration: undefined,
+                    panelClass: ['detailed-error-message']
                 });
                 return [];
             }
         } catch (error) {
             console.error('Error extracting coordinates:', error);
             if (!this.snackbarService._openedSnackBarRef) {
-                this.snackbarService.open('Error encountered while attempting to extract coordinates.', 'Close', {
-                    duration: 5000,
-                    panelClass: 'snackbar-error',
+                this.snackbarService.openFromComponent(DetailedErrorMessageComponent, {
+                    data: {
+                    title: 'Spatial File Failed to Save',
+                    message: "The file that you are uploading failed to save. To view errors click on 'View Details' button on this warning to see additional error details.",
+                    reasons: ['Error encountered while attempting to extract coordinates.']
+                    },
+                    duration: undefined,
+                    panelClass: ['detailed-error-message']
                 });
             }
             throw new Error('Error extracting coordinates.')
@@ -342,9 +353,14 @@ export class SpatialService {
             } else if (this.hasKMZEntry(entries)) {
                 return await this.handleKMZ(entries);
             } else {
-                this.snackbarService.open('File format is not accepted. Valid formats are KM;, KMZ, GDB, and SHP.', 'Close', {
-                    duration: 5000,
-                    panelClass: 'snackbar-error',
+                this.snackbarService.openFromComponent(DetailedErrorMessageComponent, {
+                    data: {
+                    title: 'Spatial File Failed to Save',
+                    message: "The file that you are uploading failed to save. To view errors click on 'View Details' button on this warning to see additional error details.",
+                    reasons: ['File format is not accepted. Valid formats are KM;, KMZ, GDB, and SHP.']
+                    },
+                    duration: undefined,
+                    panelClass: ['detailed-error-message']
                 });
                 return [];
             }
@@ -451,67 +467,9 @@ export class SpatialService {
             // Now create a proper MultiPolygon feature
             const multiPolygon = turf.multiPolygon(multiPolygonCoords);
 
-            // Check overall validity
-            const isValid = this.isValidGeometry(multiPolygon);
-
-            // Process each polygon individually for kinks
-            let selfIntersections = [];
-
-            // Loop through each polygon in the multiPolygon
-            for (const polygonCoords of multiPolygonCoords) {
-                try {
-                    // Create a single polygon feature
-                    const singlePolygon = turf.polygon(polygonCoords);
-
-                    // Now use kinks() on the single polygon
-                    const kinks = this.getKinks(singlePolygon);
-
-                    // If we found intersections, add them to our results
-                    if (kinks.features.length > 0) {
-                        selfIntersections.push(...kinks.features);
-                    }
-                } catch (error) {
-                    console.error('Error processing individual polygon:', error);
-                    throw new Error('Invalid polygon in multipolygon');
-                }
-            }
-
-            // Handle any found intersections
-            if (selfIntersections.length > 0) {
-                console.error('Self-intersections found at points:',
-                    selfIntersections.map(f => f.geometry.coordinates)
-                );
-                this.snackbarService.open(`Found ${selfIntersections.length} self-intersections in the uploaded geometry.`, 'Close', {
-                    duration: 5000,
-                    panelClass: 'snackbar-error',
-                });
-                throw new Error('Self-intersections found in the uploaded geometry.');
-            }
-
-            if (!isValid) {
-                this.snackbarService.open('Geometry is invalid.', 'Close', {
-                    duration: 5000,
-                    panelClass: 'snackbar-error',
-                });
-                throw new Error('Geometry is invalid.');
-            }
-
-            const inBC = await this.validateGeometryInBC(multiPolygon);
-            if (!inBC) {
-                this.snackbarService.open('Geometry is outside of BC.', 'Close', {
-                    duration: 5000,
-                    panelClass: 'snackbar-error',
-                });
-                throw new Error('Geometry is invalid.');
-            }
-
             // Backend Validation
             const validationResult = await this.validateGeometryWithBackend(multiPolygon.geometry);
             if (!validationResult.valid) {
-                this.snackbarService.open(`Backend Validation Failed: ${validationResult.message}`, 'Close', {
-                    duration: 5000,
-                    panelClass: 'snackbar-error',
-                });
                 throw new Error(validationResult.message);
             }
 
