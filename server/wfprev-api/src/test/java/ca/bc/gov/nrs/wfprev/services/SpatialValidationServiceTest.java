@@ -39,11 +39,11 @@ class SpatialValidationServiceTest {
     void testValidateGeometry_SelfIntersectingPolygon() {
         // Create a "bowtie" polygon that self-intersects
         Coordinate[] coordinates = new Coordinate[]{
-                new Coordinate(0, 0),
-                new Coordinate(10, 10),
-                new Coordinate(10, 0),
-                new Coordinate(0, 10),
-                new Coordinate(0, 0)
+                new Coordinate(-120, 50),
+                new Coordinate(-110, 60),
+                new Coordinate(-110, 50),
+                new Coordinate(-120, 60),
+                new Coordinate(-120, 50)
         };
         Polygon polygon = geometryFactory.createPolygon(coordinates);
 
@@ -51,11 +51,11 @@ class SpatialValidationServiceTest {
 
         assertFalse(result.isValid());
         assertTrue(result.getMessage().contains("Self-intersection"));
-        assertEquals("RING_SELF_INTERSECTION", result.getErrorType());
+        assertEquals("SELF_INTERSECTION", result.getErrorType());
         assertNotNull(result.getViolationLocation());
         // The intersection should be at (5, 5)
-        assertEquals(5.0, result.getViolationLocation().getX(), 0.001);
-        assertEquals(5.0, result.getViolationLocation().getY(), 0.001);
+        assertEquals(-115.0, result.getViolationLocation().getX(), 0.001);
+        assertEquals(55.0, result.getViolationLocation().getY(), 0.001);
     }
 
     @Test
