@@ -245,7 +245,7 @@
                         </div>
                     </form>
                     <div class="activity-files">
-                        <wfprev-project-files *ngIf="activityForms[i]?.value?.activityGuid && fiscalGuid" [activityGuid]="activityForms[i]?.value?.activityGuid" [isReadonly]="isReadonly" [fiscalGuid]="fiscalGuid" (filesUpdated)="onFilesChanged()">
+                        <wfprev-project-files [isDisabledButton]="activity?.activityGuid ? false : true" [activityGuid]="activityForms[i]?.value?.activityGuid" [isReadonly]="isReadonly" [fiscalGuid]="fiscalGuid" (filesUpdated)="onFilesChanged()">
                             {{activityForms[i]?.value?.activityGuid}}
                         </wfprev-project-files>
                     </div>
