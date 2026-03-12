@@ -29,6 +29,7 @@ export class ProjectFilesComponent implements OnInit {
   @Input() activityGuid: string = '';
   @Input() fiscalGuid: string = '';
   @Input() isReadonly: boolean = false;
+  @Input() isDiabledButton: boolean = false;
   attachmentDescription: string = '';
   uploadedBy = '';
 
@@ -59,7 +60,7 @@ export class ProjectFilesComponent implements OnInit {
   ];
 
   ngOnInit(): void {
-    if (this.activityGuid && this.fiscalGuid) {
+    if (!this.isDiabledButton && this.activityGuid && this.fiscalGuid) {
       this.loadActivityAttachments();
     } else if (this.projectGuid) {
       this.loadProjectAttachments();
