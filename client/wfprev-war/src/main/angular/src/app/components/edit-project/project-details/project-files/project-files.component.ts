@@ -60,7 +60,7 @@ export class ProjectFilesComponent implements OnInit {
   ];
 
   ngOnInit(): void {
-    if (!this.isDisabledButton && this.activityGuid && this.fiscalGuid) {
+    if (this.activityGuid && this.fiscalGuid) {
       this.loadActivityAttachments();
     } else if (this.projectGuid) {
       this.loadProjectAttachments();

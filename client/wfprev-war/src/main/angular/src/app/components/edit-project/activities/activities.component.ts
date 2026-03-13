@@ -178,6 +178,7 @@ export class ActivitiesComponent implements OnChanges, CanComponentDeactivate {
             this.activities = [];
           }
 
+          this.isNewActivityBeingAdded = false;
           this.originalActivitiesValues = JSON.parse(JSON.stringify(this.activities));
 
           this.activityForms = this.activities.map((activity) => this.createActivityForm(activity));
