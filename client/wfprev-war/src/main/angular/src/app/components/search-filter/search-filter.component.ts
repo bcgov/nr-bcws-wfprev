@@ -80,25 +80,7 @@ export class SearchFilterComponent implements OnInit {
     private readonly projectFilterStateService: ProjectFilterStateService,
     private route: ActivatedRoute,
     private destroyRef: DestroyRef
-  ) {
-    effect(() => {
-      this.route.snapshot.url;
-      const saved = this.projectFilterStateService.filters();
-      if (saved) {
-        this.searchControl.setValue(saved.searchText ?? "");
-        this.selectedProjectType = saved.projectTypeCodes ?? [];
-        this.selectedBusinessArea = saved.programAreaGuids ?? [];
-        this.selectedFiscalYears = saved.fiscalYears ?? [];
-        this.selectedActivityCategory = saved.activityCategoryCodes ?? [];
-        this.selectedForestRegion = saved.forestRegionOrgUnitIds ?? [];
-        this.selectedForestDistrict = saved.forestDistrictOrgUnitIds ?? [];
-        this.updateForestDistricts(this.selectedForestRegion)
-        this.selectedFireCentre = saved.fireCentreOrgUnitIds ?? [];
-        this.selectedFiscalStatus = saved.planFiscalStatusCodes ?? [];
-      }
-
-    });
-  }
+  ) {}
 
   ngOnInit(): void {
     this.setupCodeTableSubscription().subscribe(() => {
