@@ -134,6 +134,14 @@ export class ProjectsListComponent implements OnInit {
     const done = (key: string, value: any[]) => {
       this[key] = value;
       loaded[key] = value;
+
+      // Ensure local component arrays are populated with data loaded via different keys
+      if (key === CodeTableKeys.BUSINESS_AREAS) this.programAreaCode = value;
+      if (key === CodeTableKeys.FOREST_REGIONS) this.forestRegionCode = value;
+      if (key === CodeTableKeys.FOREST_DISTRICTS) this.forestDistrictCode = value;
+      if (key === CodeTableKeys.BC_PARKS_REGIONS) this.bcParksRegionCode = value;
+      if (key === CodeTableKeys.BC_PARKS_SECTIONS) this.bcParksSectionCode = value;
+
       loadedCount++;
       if (loadedCount === totalTables) {
         this.sharedCodeTableService.updateCodeTables(loaded);
