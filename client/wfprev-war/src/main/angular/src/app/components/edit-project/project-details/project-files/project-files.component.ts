@@ -3,6 +3,7 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar, MatSnackBarRef, SimpleSnackBar } from '@angular/material/snack-bar';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { ActivatedRoute } from '@angular/router';
 import { Position } from 'geojson';
 import { catchError, map, throwError } from 'rxjs';
@@ -19,7 +20,7 @@ import { Messages, ModalMessages, ModalTitles } from 'src/app/utils/constants';
 @Component({
   selector: 'wfprev-project-files',
   standalone: true,
-  imports: [MatTableModule, CommonModule, IconButtonComponent],
+  imports: [MatTableModule, MatTooltipModule, CommonModule, IconButtonComponent],
   templateUrl: './project-files.component.html',
   styleUrls: ['./project-files.component.scss']
 })
