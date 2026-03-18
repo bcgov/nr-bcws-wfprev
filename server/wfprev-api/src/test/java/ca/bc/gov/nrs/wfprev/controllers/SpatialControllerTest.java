@@ -2,6 +2,7 @@ package ca.bc.gov.nrs.wfprev.controllers;
 
 import ca.bc.gov.nrs.wfprev.data.models.ValidationResult;
 import ca.bc.gov.nrs.wfprev.handlers.GlobalExceptionHandler;
+import ca.bc.gov.nrs.wfprev.handlers.SpatialExceptionHandler;
 import ca.bc.gov.nrs.wfprev.services.SpatialValidationService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -45,7 +46,7 @@ class SpatialControllerTest {
         converter.setObjectMapper(mapper);
 
         mockMvc = MockMvcBuilders.standaloneSetup(spatialController)
-                .setControllerAdvice(new GlobalExceptionHandler())
+                .setControllerAdvice(new SpatialExceptionHandler(), new GlobalExceptionHandler())
                 .setMessageConverters(converter)
                 .alwaysDo(print())
                 .build();
@@ -102,5 +103,34 @@ class SpatialControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(badJson))
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void testValidateGeometry_RingNotClosed() throws Exception {
+        // JTS will throw IllegalArgumentException during deserialization for this
+        String ringNotClosedJson = "{\"type\":\"Polygon\",\"coordinates\":[[[0,0],[0,10],[10,10],[10,0]]]}";
+
+        mockMvc.perform(post("/spatial/validate")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(ringNotClosedJson))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.valid").value(false))
+                .andExpect(jsonPath("$.errorType").value("STRUCTURAL_ERROR"))
+                .andExpect(jsonPath("$.message").value(org.hamcrest.Matchers.containsString("Spatial structure error")));
+    }
+
+    @Test
+    void testValidateGeometry_TooFewPoints() throws Exception {
+        // JTS will throw IllegalArgumentException during deserialization for this
+        // A Polygon requires a LinearRing with at least 4 points (last point == first point)
+        String tooFewPointsJson = "{\"type\":\"Polygon\",\"coordinates\":[[[0,0]]]}";
+
+        mockMvc.perform(post("/spatial/validate")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(tooFewPointsJson))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.valid").value(false))
+                .andExpect(jsonPath("$.errorType").value("STRUCTURAL_ERROR"))
+                .andExpect(jsonPath("$.message").value(org.hamcrest.Matchers.containsString("Spatial structure error")));
     }
 }
