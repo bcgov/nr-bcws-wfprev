@@ -169,6 +169,7 @@ public class CodesController extends CommonController {
             case CodeTables.PROJECT_STATUS_CODE -> codesService.getProjectStatusCodeById(id);
             case CodeTables.WILDFIRE_ORG_UNIT -> codesService.getWildfireOrgUnitById(id);
             case CodeTables.REPORTING_PERIOD_CODE -> codesService.getReportingPeriodCodeById(id);
+            case CodeTables.PROGRESS_STATUS_CODE -> codesService.getProgressStatusCodeById(id);
             default -> null;
         };
     }

@@ -681,5 +681,11 @@ public class CodesService implements CommonService {
         }
     }
 
-
+    public ProgressStatusCodeModel getProgressStatusCodeById(String id) throws ServiceException {
+        try {
+            return progressStatusCodeRepository.findById(id).map(progressStatusCodeResourceAssembler::toModel).orElse(null);
+        } catch (Exception e) {
+            throw new ServiceException(e.getLocalizedMessage(), e);
+        }
+    }
 }

@@ -16,6 +16,7 @@ import ca.bc.gov.nrs.wfprev.data.models.FundingSourceCodeModel;
 import ca.bc.gov.nrs.wfprev.data.models.GeneralScopeCodeModel;
 import ca.bc.gov.nrs.wfprev.data.models.ObjectiveTypeCodeModel;
 import ca.bc.gov.nrs.wfprev.data.models.PlanFiscalStatusCodeModel;
+import ca.bc.gov.nrs.wfprev.data.models.ProgressStatusCodeModel;
 import ca.bc.gov.nrs.wfprev.data.models.ProjectStatusCodeModel;
 import ca.bc.gov.nrs.wfprev.data.models.ProjectTypeCodeModel;
 import ca.bc.gov.nrs.wfprev.data.models.ProposalTypeCodeModel;
@@ -52,7 +53,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(CodesController.class)
-@Import({SecurityConfig.class, TestcontainersConfiguration.class})
+@Import({SecurityConfig.class})
 @MockBean(JpaMetamodelMappingContext.class)
 class CodesControllerTest {
 
@@ -88,6 +89,7 @@ class CodesControllerTest {
         testGetEvaluationCriteriaCodes();
         testGetWildfireOrgUnits();
         testGetReportingPeriodCodes();
+        testGetProgressStatusCodes();
     }
 
     void testGetForestAreaCodes() throws Exception {
@@ -674,6 +676,16 @@ class CodesControllerTest {
         mockMvc.perform(get("/codes/{codeTable}/{id}", CodeTables.WILDFIRE_ORG_UNIT, wouID)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
+
+        String psID2 = UUID.randomUUID().toString();
+        ProgressStatusCodeModel progressStatusCode = new ProgressStatusCodeModel();
+        progressStatusCode.setProgressStatusCode(psID2);
+
+        when(codesService.getProgressStatusCodeById(psID2)).thenReturn(progressStatusCode);
+
+        mockMvc.perform(get("/codes/{codeTable}/{id}", CodeTables.PROGRESS_STATUS_CODE, psID2)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
     }
 
     @Test
@@ -1181,5 +1193,36 @@ class CodesControllerTest {
 
         verify(codesService, times(1)).getReportingPeriodCodeById(id);
     }
+    @Test
+    @WithMockUser
+    void testGetProgressStatusCodeById_VerifyServiceCall() throws Exception {
+        String id = UUID.randomUUID().toString();
+        when(codesService.getProgressStatusCodeById(id)).thenReturn(null);
 
+        mockMvc.perform(get("/codes/{codeTable}/{id}", CodeTables.PROGRESS_STATUS_CODE, id)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+
+        verify(codesService, times(1)).getProgressStatusCodeById(id);
+    }
+
+    void testGetProgressStatusCodes() throws Exception {
+        String exampleId1 = UUID.randomUUID().toString();
+        String exampleId2 = UUID.randomUUID().toString();
+
+        ProgressStatusCodeModel psc1 = new ProgressStatusCodeModel();
+        psc1.setProgressStatusCode(exampleId1);
+
+        ProgressStatusCodeModel psc2 = new ProgressStatusCodeModel();
+        psc2.setProgressStatusCode(exampleId2);
+
+        List<ProgressStatusCodeModel> pscList = Arrays.asList(psc1, psc2);
+        CollectionModel<ProgressStatusCodeModel> pscModel = CollectionModel.of(pscList);
+
+        when(codesService.getAllProgressStatusCodes()).thenReturn(pscModel);
+
+        mockMvc.perform(get("/codes/" + CodeTables.PROGRESS_STATUS_CODE)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
 }
