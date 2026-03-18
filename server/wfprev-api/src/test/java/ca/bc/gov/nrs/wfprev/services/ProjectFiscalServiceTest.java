@@ -16,6 +16,8 @@ import ca.bc.gov.nrs.wfprev.data.repositories.ProjectFiscalRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.FuelManagementPlanRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.CulturalRxFirePlanRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.ProjectPlanFiscalPerfRepository;
+import ca.bc.gov.nrs.wfprev.data.entities.ProjectPlanFiscalPerfEntity;
+import ca.bc.gov.nrs.wfprev.data.models.PerformanceUpdateModel;
 import ca.bc.gov.nrs.wfprev.data.repositories.ProjectRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Assertions;
@@ -925,4 +927,41 @@ class ProjectFiscalServiceTest {
     }
 
 
+    @Test
+    void testCreatePerformanceUpdate_NullForecastInDB_Success() {
+        // GIVEN
+        UUID projectPlanFiscalGuid = UUID.randomUUID();
+        PerformanceUpdateModel resource = new PerformanceUpdateModel();
+        resource.setForecastAmount(BigDecimal.valueOf(4));
+
+        ProjectFiscalEntity projectFiscalEntity = new ProjectFiscalEntity();
+        projectFiscalEntity.setProjectPlanFiscalGuid(projectPlanFiscalGuid);
+        projectFiscalEntity.setFiscalForecastAmount(null);
+
+        PlanFiscalStatusCodeEntity statusEntity = new PlanFiscalStatusCodeEntity();
+        statusEntity.setPlanFiscalStatusCode("DRAFT");
+        projectFiscalEntity.setPlanFiscalStatusCode(statusEntity);
+
+        ProjectPlanFiscalPerfEntity entity = new ProjectPlanFiscalPerfEntity();
+        entity.setForecastAmount(BigDecimal.valueOf(4));
+        entity.setBudgetHighRiskAmount(BigDecimal.valueOf(1));
+        entity.setBudgetMediumRiskAmount(BigDecimal.valueOf(1));
+        entity.setBudgetLowRiskAmount(BigDecimal.valueOf(1));
+        entity.setBudgetCompletedAmount(BigDecimal.valueOf(1));
+
+        PerformanceUpdateModel resultModel = new PerformanceUpdateModel();
+
+        when(projectFiscalRepository.findById(projectPlanFiscalGuid)).thenReturn(Optional.of(projectFiscalEntity));
+        when(performanceUpdateResourceAssembler.toEntity(eq(resource), eq(projectFiscalEntity))).thenReturn(entity);
+        when(projectPlanFiscalPerfRepository.save(any())).thenReturn(entity);
+        when(performanceUpdateResourceAssembler.toModel(any())).thenReturn(resultModel);
+
+        // WHEN
+        projectFiscalService.createPerformanceUpdate(projectPlanFiscalGuid.toString(), resource);
+
+        // THEN
+        // Verify that the fiscal forecast was updated to the new forecast amount
+        verify(projectFiscalRepository).saveAndFlush(projectFiscalEntity);
+        assertEquals(BigDecimal.valueOf(4), projectFiscalEntity.getFiscalForecastAmount());
+    }
 }

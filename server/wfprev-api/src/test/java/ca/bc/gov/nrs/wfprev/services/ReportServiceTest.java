@@ -637,6 +637,10 @@ class ReportServiceTest {
                 String[] lines = csv.split("\\r?\\n");
                 
                 if (entry.getName().contains("fuel")) {
+                    String header = lines[0];
+                    assertTrue(header.contains("Planned Hectares (Ha)"));
+                    assertTrue(header.contains("Completed Hectares (Ha)"));
+
                     String row = lines[1];
                     String expectedProjectLink = "\"=HYPERLINK(\"\"https://example.com/edit-project?projectGuid=" + projectGuid + "\"\", \"\"Fuel Alpha Project Link\"\")\"";
                     String expectedFiscalLink = "\"=HYPERLINK(\"\"https://example.com/edit-project?projectGuid=" + projectGuid + "&tab=fiscal&fiscalGuid=" + fiscalGuid + "\"\", \"\"Fiscal A Fiscal Activity Link\"\")\"";
@@ -653,7 +657,7 @@ class ReportServiceTest {
                     assertTrue(row.contains("Fire Centre A"));
                     assertTrue(row.contains("Business Area A"));
                     assertTrue(row.contains("Planning Unit A"));
-                    assertTrue(row.contains("123 ha"));
+                    assertTrue(row.contains("\"123\""));
                     assertTrue(row.contains("Community A"));
                     assertTrue(row.contains("Lead A"));
                     assertTrue(row.contains("Proposal A"));
@@ -668,8 +672,8 @@ class ReportServiceTest {
                     assertTrue(row.contains("Provider A"));
                     assertTrue(row.contains("$900"));
                     assertTrue(row.contains("$950"));
-                    assertTrue(row.contains("50 ha"));
-                    assertTrue(row.contains("40 ha"));
+                    assertTrue(row.contains("\"50\""));
+                    assertTrue(row.contains("\"40\""));
                     assertTrue(row.contains("\"=\"\"1/1\"\"\""));
                     assertTrue(row.contains("Y"));
                     assertTrue(row.contains("N"));
@@ -763,7 +767,11 @@ class ReportServiceTest {
                     assertTrue(row.contains("Comp Other A"));
 
                 } else if (entry.getName().contains("cultural")) {
-                     String row = lines[1];
+                    String header = lines[0];
+                    assertTrue(header.contains("Planned Hectares (Ha)"));
+                    assertTrue(header.contains("Completed Hectares (Ha)"));
+
+                    String row = lines[1];
                      // Verify ALL CRX Fields
                     String expectedProjectLink = "\"=HYPERLINK(\"\"https://example.com/edit-project?projectGuid=" + projectGuid + "\"\", \"\"CRX Beta Project Link\"\")\"";
                     String expectedFiscalLink = "\"=HYPERLINK(\"\"https://example.com/edit-project?projectGuid=" + projectGuid + "&tab=fiscal&fiscalGuid=" + fiscalGuid + "\"\", \"\"Fiscal B Fiscal Activity Link\"\")\"";
@@ -780,7 +788,7 @@ class ReportServiceTest {
                     assertTrue(row.contains("Fire Centre B"));
                     assertTrue(row.contains("Business Area B"));
                     assertTrue(row.contains("Planning Unit B"));
-                    assertTrue(row.contains("234 ha"));
+                    assertTrue(row.contains("\"234\""));
                     assertTrue(row.contains("Community B"));
                     assertTrue(row.contains("Lead B"));
                     assertTrue(row.contains("Proposal B"));
@@ -795,8 +803,8 @@ class ReportServiceTest {
                     assertTrue(row.contains("Provider B"));
                     assertTrue(row.contains("$1,900"));
                     assertTrue(row.contains("$1,950"));
-                    assertTrue(row.contains("60 ha"));
-                    assertTrue(row.contains("50 ha"));
+                    assertTrue(row.contains("\"60\""));
+                    assertTrue(row.contains("\"50\""));
                     assertTrue(row.contains("\"=\"\"1/2\"\"\""));
                     assertTrue(row.contains("N"));
                     assertTrue(row.contains("Y"));

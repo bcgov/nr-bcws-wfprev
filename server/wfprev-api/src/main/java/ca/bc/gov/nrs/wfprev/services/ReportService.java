@@ -50,8 +50,6 @@ public class ReportService {
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd")
             .withZone(ZoneId.systemDefault());
 
-    private static final String HECTARE_FORMAT = "%,d ha";
-
     private final FuelManagementReportRepository fuelManagementRepository;
     private final CulturalPrescribedFireReportRepository culturalPrescribedFireReportRepository;
     private final ProgramAreaRepository programAreaRepository;
@@ -349,8 +347,8 @@ public class ReportService {
                 "Ancillary Funding Provider",
                 "Final Reported Spend",
                 "CFS Actual Spend",
-                "Planned Hectares",
-                "Completed Hectares",
+                "Planned Hectares (Ha)",
+                "Completed Hectares (Ha)",
                 "Spatial Submitted",
                 "First Nation Engagement (Y/N)",
                 "First Nation Co-Delivery (Y/N)",
@@ -460,9 +458,7 @@ public class ReportService {
                 safe(e.getFireCentreOrgUnitName()),
                 safe(e.getBusinessArea()),
                 safe(e.getPlanningUnitName()),
-                safe(e.getGrossProjectAreaHa() != null
-                        ? String.format(HECTARE_FORMAT, e.getGrossProjectAreaHa().intValue())
-                        : ""),
+                safe(e.getGrossProjectAreaHa() != null ? e.getGrossProjectAreaHa().intValue() : ""),
                 safe(e.getClosestCommunityName()),
                 safe(e.getProjectLead()),
                 safe(e.getProposalTypeDescription()),
@@ -477,12 +473,8 @@ public class ReportService {
                 safe(e.getAncillaryFundingProvider()),
                 safe(formatMonetaryFields(e.getFiscalReportedSpendAmount())),
                 safe(formatMonetaryFields(e.getFiscalActualAmount())),
-                safe(e.getFiscalPlannedProjectSizeHa() != null
-                        ? String.format(HECTARE_FORMAT, e.getFiscalPlannedProjectSizeHa().intValue())
-                        : ""),
-                safe(e.getFiscalCompletedSizeHa() != null
-                        ? String.format(HECTARE_FORMAT, e.getFiscalCompletedSizeHa().intValue())
-                        : ""),
+                safe(e.getFiscalPlannedProjectSizeHa() != null ? e.getFiscalPlannedProjectSizeHa().intValue() : ""),
+                safe(e.getFiscalCompletedSizeHa() != null ? e.getFiscalCompletedSizeHa().intValue() : ""),
                 safe(String.format("=\"%s\"", e.getSpatialSubmitted())),
                 safe(e.getFirstNationsEngagement()),
                 safe(e.getFirstNationsDelivPartners()),
@@ -609,8 +601,8 @@ public class ReportService {
                 "Ancillary Funding Provider",
                 "Final Reported Spend",
                 "CFS Actual Spend",
-                "Planned Hectares",
-                "Completed Hectares",
+                "Planned Hectares (Ha)",
+                "Completed Hectares (Ha)",
                 "Spatial Submitted",
                 "First Nation Engagement (Y/N)",
                 "First Nation Co-Delivery (Y/N)",
@@ -721,9 +713,7 @@ public class ReportService {
                 safe(c.getFireCentreOrgUnitName()),
                 safe(c.getBusinessArea()), 
                 safe(c.getPlanningUnitName()), 
-                safe(c.getGrossProjectAreaHa() != null
-                        ? String.format(HECTARE_FORMAT, c.getGrossProjectAreaHa().intValue())
-                        : ""),
+                safe(c.getGrossProjectAreaHa() != null ? c.getGrossProjectAreaHa().intValue() : ""),
                 safe(c.getClosestCommunityName()),
                 safe(c.getProjectLead()), 
                 safe(c.getProposalTypeDescription()), 
@@ -738,12 +728,8 @@ public class ReportService {
                 safe(c.getAncillaryFundingProvider()),
                 safe(formatMonetaryFields(c.getFiscalReportedSpendAmount())),
                 safe(formatMonetaryFields(c.getFiscalActualAmount())),
-                safe(c.getFiscalPlannedProjectSizeHa() != null
-                        ? String.format(HECTARE_FORMAT, c.getFiscalPlannedProjectSizeHa().intValue())
-                        : ""),
-                safe(c.getFiscalCompletedSizeHa() != null
-                        ? String.format(HECTARE_FORMAT, c.getFiscalCompletedSizeHa().intValue())
-                        : ""),
+                safe(c.getFiscalPlannedProjectSizeHa() != null ? c.getFiscalPlannedProjectSizeHa().intValue() : ""),
+                safe(c.getFiscalCompletedSizeHa() != null ? c.getFiscalCompletedSizeHa().intValue() : ""),
                 safe(String.format("=\"%s\"", c.getSpatialSubmitted())),
                 safe(c.getFirstNationsEngagement()), 
                 safe(c.getFirstNationsDelivPartners()),
