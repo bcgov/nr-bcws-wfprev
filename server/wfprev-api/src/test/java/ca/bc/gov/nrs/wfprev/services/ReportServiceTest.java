@@ -657,7 +657,7 @@ class ReportServiceTest {
                     assertTrue(row.contains("Fire Centre A"));
                     assertTrue(row.contains("Business Area A"));
                     assertTrue(row.contains("Planning Unit A"));
-                    assertTrue(row.contains("\"123\""));
+                    assertTrue(row.contains("\"123.45\""));
                     assertTrue(row.contains("Community A"));
                     assertTrue(row.contains("Lead A"));
                     assertTrue(row.contains("Proposal A"));
@@ -672,8 +672,8 @@ class ReportServiceTest {
                     assertTrue(row.contains("Provider A"));
                     assertTrue(row.contains("$900"));
                     assertTrue(row.contains("$950"));
-                    assertTrue(row.contains("\"50\""));
-                    assertTrue(row.contains("\"40\""));
+                    assertTrue(row.contains("\"50.5\""));
+                    assertTrue(row.contains("\"40.5\""));
                     assertTrue(row.contains("\"=\"\"1/1\"\"\""));
                     assertTrue(row.contains("Y"));
                     assertTrue(row.contains("N"));
@@ -788,7 +788,7 @@ class ReportServiceTest {
                     assertTrue(row.contains("Fire Centre B"));
                     assertTrue(row.contains("Business Area B"));
                     assertTrue(row.contains("Planning Unit B"));
-                    assertTrue(row.contains("\"234\""));
+                    assertTrue(row.contains("\"234.56\""));
                     assertTrue(row.contains("Community B"));
                     assertTrue(row.contains("Lead B"));
                     assertTrue(row.contains("Proposal B"));
@@ -803,8 +803,8 @@ class ReportServiceTest {
                     assertTrue(row.contains("Provider B"));
                     assertTrue(row.contains("$1,900"));
                     assertTrue(row.contains("$1,950"));
-                    assertTrue(row.contains("\"60\""));
-                    assertTrue(row.contains("\"50\""));
+                    assertTrue(row.contains("\"60.5\""));
+                    assertTrue(row.contains("\"50.5\""));
                     assertTrue(row.contains("\"=\"\"1/2\"\"\""));
                     assertTrue(row.contains("N"));
                     assertTrue(row.contains("Y"));

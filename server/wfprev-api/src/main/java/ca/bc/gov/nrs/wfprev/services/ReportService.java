@@ -458,7 +458,7 @@ public class ReportService {
                 safe(e.getFireCentreOrgUnitName()),
                 safe(e.getBusinessArea()),
                 safe(e.getPlanningUnitName()),
-                safe(e.getGrossProjectAreaHa() != null ? e.getGrossProjectAreaHa().intValue() : ""),
+                safe(e.getGrossProjectAreaHa() != null ? formatHectares(e.getGrossProjectAreaHa()) : ""),
                 safe(e.getClosestCommunityName()),
                 safe(e.getProjectLead()),
                 safe(e.getProposalTypeDescription()),
@@ -473,8 +473,8 @@ public class ReportService {
                 safe(e.getAncillaryFundingProvider()),
                 safe(formatMonetaryFields(e.getFiscalReportedSpendAmount())),
                 safe(formatMonetaryFields(e.getFiscalActualAmount())),
-                safe(e.getFiscalPlannedProjectSizeHa() != null ? e.getFiscalPlannedProjectSizeHa().intValue() : ""),
-                safe(e.getFiscalCompletedSizeHa() != null ? e.getFiscalCompletedSizeHa().intValue() : ""),
+                safe(e.getFiscalPlannedProjectSizeHa() != null ? formatHectares(e.getFiscalPlannedProjectSizeHa()) : ""),
+                safe(e.getFiscalCompletedSizeHa() != null ? formatHectares(e.getFiscalCompletedSizeHa()) : ""),
                 safe(String.format("=\"%s\"", e.getSpatialSubmitted())),
                 safe(e.getFirstNationsEngagement()),
                 safe(e.getFirstNationsDelivPartners()),
@@ -713,7 +713,7 @@ public class ReportService {
                 safe(c.getFireCentreOrgUnitName()),
                 safe(c.getBusinessArea()), 
                 safe(c.getPlanningUnitName()), 
-                safe(c.getGrossProjectAreaHa() != null ? c.getGrossProjectAreaHa().intValue() : ""),
+                safe(c.getGrossProjectAreaHa() != null ? formatHectares(c.getGrossProjectAreaHa()) : ""),
                 safe(c.getClosestCommunityName()),
                 safe(c.getProjectLead()), 
                 safe(c.getProposalTypeDescription()), 
@@ -728,8 +728,8 @@ public class ReportService {
                 safe(c.getAncillaryFundingProvider()),
                 safe(formatMonetaryFields(c.getFiscalReportedSpendAmount())),
                 safe(formatMonetaryFields(c.getFiscalActualAmount())),
-                safe(c.getFiscalPlannedProjectSizeHa() != null ? c.getFiscalPlannedProjectSizeHa().intValue() : ""),
-                safe(c.getFiscalCompletedSizeHa() != null ? c.getFiscalCompletedSizeHa().intValue() : ""),
+                safe(c.getFiscalPlannedProjectSizeHa() != null ? formatHectares(c.getFiscalPlannedProjectSizeHa()) : ""),
+                safe(c.getFiscalCompletedSizeHa() != null ? formatHectares(c.getFiscalCompletedSizeHa()) : ""),
                 safe(String.format("=\"%s\"", c.getSpatialSubmitted())),
                 safe(c.getFirstNationsEngagement()), 
                 safe(c.getFirstNationsDelivPartners()),
@@ -833,6 +833,15 @@ public class ReportService {
         if (n == null)
             return "";
         return new java.text.DecimalFormat("$#,##0").format(n);
+    }
+
+    private static String formatHectares(Number n) {
+        if (n == null) return "";
+        String formatted = new java.text.DecimalFormat("#,##0.##########").format(n);
+        if (formatted.endsWith(".")) {
+            formatted = formatted.substring(0, formatted.length() - 1);
+        }
+        return formatted;
     }
 
     private String formatFiscalYearIfNumeric(String fiscalYear) {

@@ -69,16 +69,18 @@ public class LocalReportGeneratorTest {
         Map<String, Object> parameters = new HashMap<>();
         JasperPrint jasperPrint = JasperFillManager.fillReport(report, parameters, dataSource);
 
+        String outputFileName = baseFileName + "_" + System.currentTimeMillis();
+        
         // 3. Create Output Directory
         Files.createDirectories(Paths.get(OUTPUT_DIR));
 
         // 4. Export to PDF
-        String pdfPath = OUTPUT_DIR + "/" + baseFileName + ".pdf";
+        String pdfPath = OUTPUT_DIR + "/" + outputFileName + ".pdf";
         JasperExportManager.exportReportToPdfFile(jasperPrint, pdfPath);
         System.out.println("Generated PDF: " + new File(pdfPath).getAbsolutePath());
 
         // 5. Export to XLSX
-        String xlsxPath = OUTPUT_DIR + "/" + baseFileName + ".xlsx";
+        String xlsxPath = OUTPUT_DIR + "/" + outputFileName + ".xlsx";
         try (FileOutputStream os = new FileOutputStream(xlsxPath)) {
             JRXlsxExporter exporter = new JRXlsxExporter();
             exporter.setExporterInput(SimpleExporterInput.getInstance(Collections.singletonList(jasperPrint)));
@@ -90,7 +92,7 @@ public class LocalReportGeneratorTest {
             config.setRemoveEmptySpaceBetweenColumns(true);
             config.setCollapseRowSpan(true);
             config.setWhitePageBackground(false);
-            config.setSheetNames(new String[]{baseFileName});
+            config.setSheetNames(new String[]{outputFileName});
             exporter.setConfiguration(config);
 
             exporter.exportReport();
@@ -119,20 +121,24 @@ public class LocalReportGeneratorTest {
             data.setForestRegionOrgUnitName(regions[random.nextInt(regions.length)] + " Fire Centre");
             data.setForestDistrictOrgUnitName("District " + (100 + i));
             data.setProjectLead("Lead " + i);
-            data.setGrossProjectAreaHa(new BigDecimal(random.nextInt(500) + 10 + ".55"));
-            data.setTotalEstimatedCostAmount(new BigDecimal(10000 + random.nextInt(90000) + ".55"));
-            data.setFiscalForecastAmount(new BigDecimal(10000 + random.nextInt(40000) + ".55"));
-            data.setFiscalActualAmount(new BigDecimal(5000 + random.nextInt(10000) + ".55"));
-            
-            // New Fields
-            data.setLinkToFiscalActivity("http://link.to.activity/" + i);
-            data.setActivityCategoryDescription("Fuel Management Category " + (i % 5));
-            data.setPlanFiscalStatusDescription(statuses[random.nextInt(statuses.length)]);
-            data.setAncillaryFundingProvider("Provider " + (char)('A' + random.nextInt(5)));
-            data.setFiscalAncillaryFundAmount(new BigDecimal(random.nextInt(5000) + ".55"));
-            data.setFiscalReportedSpendAmount(new BigDecimal(random.nextInt(8000) + ".55"));
-            data.setFiscalPlannedProjectSizeHa(new BigDecimal(random.nextInt(100) + 10 + ".55"));
-            data.setFiscalCompletedSizeHa(new BigDecimal(random.nextInt(50) + ".55"));
+            // Precise Test Values for the first few rows
+            if (i == 1) {
+                data.setGrossProjectAreaHa(new BigDecimal("200"));
+                data.setFiscalPlannedProjectSizeHa(new BigDecimal("0"));
+                data.setFiscalCompletedSizeHa(new BigDecimal("1234.5678"));
+            } else if (i == 2) {
+                data.setGrossProjectAreaHa(new BigDecimal("200.5"));
+                data.setFiscalPlannedProjectSizeHa(new BigDecimal("0.123"));
+                data.setFiscalCompletedSizeHa(new BigDecimal("1000.00")); // Should be 1,000
+            } else if (i == 3) {
+                data.setGrossProjectAreaHa(null);
+                data.setFiscalPlannedProjectSizeHa(null);
+                data.setFiscalCompletedSizeHa(null);
+            } else {
+                data.setGrossProjectAreaHa(new BigDecimal(random.nextInt(500) + 10 + ".55"));
+                data.setFiscalPlannedProjectSizeHa(new BigDecimal(random.nextInt(100) + 10 + ".55"));
+                data.setFiscalCompletedSizeHa(new BigDecimal(random.nextInt(50) + ".55"));
+            }
             data.setSpatialSubmitted(yesNo[random.nextInt(yesNo.length)]);
             data.setFirstNationsEngagement("Engagement Level " + (i % 3));
             data.setFirstNationsDelivPartners("Partner Band " + (i % 10));
@@ -270,27 +276,31 @@ public class LocalReportGeneratorTest {
             data.setForestRegionOrgUnitName(regions[random.nextInt(regions.length)] + " Fire Centre");
             data.setForestDistrictOrgUnitName("District " + (200 + i));
             data.setProjectLead("Elder " + i);
-            data.setGrossProjectAreaHa(new BigDecimal(random.nextInt(200) + 5 + ".55"));
-            data.setTotalEstimatedCostAmount(new BigDecimal(5000 + random.nextInt(50000) + ".55"));
-            data.setFiscalForecastAmount(new BigDecimal(4000 + random.nextInt(40000) + ".55"));
-            data.setFiscalActualAmount(new BigDecimal(1000 + random.nextInt(10000) + ".55"));
-            
-            // New Fields
-            data.setLinkToFiscalActivity("http://link.to.activity/" + i);
-            data.setActivityCategoryDescription("Cultural Burning Category " + (i % 5));
-            data.setPlanFiscalStatusDescription(statuses[random.nextInt(statuses.length)]);
-            data.setAncillaryFundingProvider("Provider " + (char)('A' + random.nextInt(5)));
-            data.setFiscalAncillaryFundAmount(new BigDecimal(random.nextInt(5000) + ".55"));
-            data.setFiscalReportedSpendAmount(new BigDecimal(random.nextInt(8000) + ".55"));
-            data.setFiscalPlannedProjectSizeHa(new BigDecimal(random.nextInt(100) + 10 + ".55"));
-            data.setFiscalCompletedSizeHa(new BigDecimal(random.nextInt(50) + ".55"));
+            // Precise Test Values for the first few rows
+            if (i == 1) {
+                data.setGrossProjectAreaHa(new BigDecimal("200"));
+                data.setFiscalPlannedProjectSizeHa(new BigDecimal("0"));
+                data.setFiscalCompletedSizeHa(new BigDecimal("1234.5678"));
+            } else if (i == 2) {
+                data.setGrossProjectAreaHa(new BigDecimal("200.5"));
+                data.setFiscalPlannedProjectSizeHa(new BigDecimal("0.123"));
+                data.setFiscalCompletedSizeHa(new BigDecimal("1000.00"));
+            } else if (i == 3) {
+                data.setGrossProjectAreaHa(null);
+                data.setFiscalPlannedProjectSizeHa(null);
+                data.setFiscalCompletedSizeHa(null);
+            } else {
+                data.setGrossProjectAreaHa(new BigDecimal(random.nextInt(200) + 5 + ".55"));
+                data.setFiscalPlannedProjectSizeHa(new BigDecimal(random.nextInt(100) + 10 + ".55"));
+                data.setFiscalCompletedSizeHa(new BigDecimal(random.nextInt(50) + ".55"));
+            }
             data.setSpatialSubmitted(yesNo[random.nextInt(yesNo.length)]);
             data.setFirstNationsEngagement("Engagement Level " + (i % 3));
             data.setFirstNationsDelivPartners("Partner Band " + (i % 10));
             data.setFirstNationsPartner("FN Partner " + i);
             data.setOtherPartner("Other Partner " + i);
             data.setCfsProjectCode("CFS-" + (1000 + i));
-            data.setResultsOpeningId("OPEN-" + (500 + i));
+            data.setResultsOpeningId("OPEN-" + (200 + i));
             data.setEndorsementTimestamp(new Date());
             data.setApprovedTimestamp(new Date());
             data.setOutsideWuiInd(random.nextBoolean());
