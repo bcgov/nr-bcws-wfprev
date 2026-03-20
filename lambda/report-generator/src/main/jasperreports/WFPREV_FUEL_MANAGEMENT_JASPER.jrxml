@@ -1529,13 +1529,11 @@
 			<element kind="textField" uuid="9de65e6f-265f-45f8-8b40-fd2dab2d1c20" x="5006" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
 				<expression>$F{fiscalActualAmount}</expression>
 			</element>
-			<element kind="textField" uuid="2d1264c1-6b80-4592-be20-21a4816da324" x="5126" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
-				<expression>$F{fiscalPlannedProjectSizeHa} == null ? "" : new
-					java.text.DecimalFormat("#,##0.##########").format($F{fiscalPlannedProjectSizeHa})</expression>
+			<element kind="textField" uuid="2d1264c1-6b80-4592-be20-21a4816da324" x="5126" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" pattern="#,##0.##########" blankWhenNull="true" vTextAlign="Bottom">
+				<expression>$F{fiscalPlannedProjectSizeHa}</expression>
 			</element>
-			<element kind="textField" uuid="f0ed5454-b045-496e-991b-c631c42296ca" x="5246" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
-				<expression>$F{fiscalCompletedSizeHa} == null ? "" : new
-					java.text.DecimalFormat("#,##0.##########").format($F{fiscalCompletedSizeHa})</expression>
+			<element kind="textField" uuid="f0ed5454-b045-496e-991b-c631c42296ca" x="5246" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" pattern="#,##0.##########" blankWhenNull="true" vTextAlign="Bottom">
+				<expression>$F{fiscalCompletedSizeHa}</expression>
 			</element>
 			<element kind="textField" uuid="0abb196e-d5ac-4c65-90c7-afe151c981ec" x="5366" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
 				<expression>$F{spatialSubmitted}</expression>
