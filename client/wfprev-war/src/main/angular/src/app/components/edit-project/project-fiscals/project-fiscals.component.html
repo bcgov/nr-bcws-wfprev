@@ -212,11 +212,11 @@
                     <wfprev-input-field
                       [id]="'totalCostEstimateAmount'"
                       [label]="'Original Cost Estimate'"
-                      [type]="'number'"
                       [placeholder]="'0.00'"
                       [control]="getFiscalControl(i, 'totalCostEstimateAmount')"
-                      [tooltip]="getFiscalControl(i, 'totalCostEstimateAmount')?.value"
+                      [tooltip]="getFiscalControl(i, 'totalCostEstimateAmount').value"
                       [prefix]="'$'"
+                      [enableAmountFormat] = "true"
                       [errorMessages]="{ min: messages.positiveNumber, maxlength: messages.maxLengthExceeded, max: messages.maxLengthExceeded }"
                     />
                   </div>
@@ -247,10 +247,10 @@
                     <wfprev-input-field
                       [id]="'fiscalAncillaryFundAmount'"
                       [label]="'Ancillary Funding Amount'"
-                      [type]="'number'"
                       [placeholder]="'0.00'"
                       [control]="getFiscalControl(i, 'fiscalAncillaryFundAmount')"
-                      [tooltip]="getFiscalControl(i, 'fiscalAncillaryFundAmount')?.value"
+                      [tooltip]="getFiscalControl(i, 'fiscalAncillaryFundAmount').value"
+                      [enableAmountFormat] = "true"
                       [prefix]="'$'"
                       [errorMessages]="{ min: messages.positiveNumber, maxlength: messages.maxLengthExceeded, max: messages.maxLengthExceeded }"
                     />
@@ -261,9 +261,9 @@
                       [id]="'fiscalForecastAmount'"
                       [label]="'Forecast Amount'"
                       [placeholder]="'0.00'"
-                      [type]="'number'"
                       [control]="getFiscalControl(i, 'fiscalForecastAmount')"
-                      [tooltip]="getFiscalControl(i, 'fiscalForecastAmount')?.value"
+                      [tooltip]="getFiscalControl(i, 'fiscalForecastAmount').value"
+                      [enableAmountFormat]="true"
                       [errorMessages]="{ min: messages.positiveNumber, maxlength: messages.maxLengthExceeded, max: messages.maxLengthExceeded }"
                       [prefix]="'$'"
                     />
@@ -274,9 +274,9 @@
                       [id]="'fiscalReportedSpendAmount'"
                       [label]="'Final Reported Spend'"
                       [placeholder]="'0.00'"
-                      [type]="'number'"
                       [control]="getFiscalControl(i, 'fiscalReportedSpendAmount')"
-                      [tooltip]="getFiscalControl(i, 'fiscalReportedSpendAmount')?.value"
+                      [tooltip]="getFiscalControl(i, 'fiscalReportedSpendAmount').value"
+                      [enableAmountFormat]="true"
                       [errorMessages]="{ min: messages.positiveNumber, maxlength: messages.maxLengthExceeded, max: messages.maxLengthExceeded }"
                       [prefix]="'$'"
                     />
@@ -287,9 +287,9 @@
                       [id]="'fiscalActualAmount'"
                       [label]="'CFS Actual Spend'"
                       [placeholder]="'0.00'"
-                      [type]="'number'"
                       [control]="getFiscalControl(i, 'fiscalActualAmount')"
-                      [tooltip]="getFiscalControl(i, 'fiscalActualAmount')?.value"
+                      [tooltip]="getFiscalControl(i, 'fiscalActualAmount').value"
+                      [enableAmountFormat]="true"
                       [errorMessages]="{ min: messages.positiveNumber, maxlength: messages.maxLengthExceeded, max: messages.maxLengthExceeded }"
                       [prefix]="'$'"
                     />
