@@ -71,7 +71,7 @@
                                 <label>Reported Spend</label>
                                 <div class="currency-input">
                                     <span class="currency-symbol">$</span>
-                                    <input type="number" id="reportedSpendAmount" formControlName="reportedSpendAmount" placeholder="0.00" min="0"/>
+                                    <input id="reportedSpendAmount" formControlName="reportedSpendAmount" placeholder="0.00" [currencyMask]="{align: 'left', prefix: '', inputMode: 1, allowNegative: false}"/>
                                 </div>
                                 <div class="error"
                                     *ngIf="getControl(i, 'reportedSpendAmount')?.errors && (getControl(i, 'reportedSpendAmount')?.dirty || getControl(i, 'reportedSpendAmount')?.touched)">
@@ -197,7 +197,7 @@
                             <label>Planned Spend</label>
                             <div class="currency-input">
                                 <span class="currency-symbol">$</span>
-                                <input type="number" id="plannedSpendAmount" formControlName="plannedSpendAmount" placeholder="0.00" min="0"/>
+                                <input id="plannedSpendAmount" formControlName="plannedSpendAmount" placeholder="0.00" [currencyMask]="{align: 'left', prefix: '', inputMode: 1, allowNegative: false}"/>
                             </div>
                             <div class="error"
                                 *ngIf="getControl(i, 'plannedSpendAmount')?.errors && (getControl(i, 'plannedSpendAmount')?.dirty || getControl(i, 'plannedSpendAmount')?.touched)">

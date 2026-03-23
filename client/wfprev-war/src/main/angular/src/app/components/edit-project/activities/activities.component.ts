@@ -25,6 +25,7 @@ import { CanComponentDeactivate } from 'src/app/services/util/can-deactive.guard
 import { Messages, ModalMessages, ModalTitles, NumericLimits } from 'src/app/utils/constants';
 import { getUtcIsoTimestamp } from 'src/app/utils/tools';
 import { ExpansionIndicatorComponent } from "../../shared/expansion-indicator/expansion-indicator.component";
+import { NgxCurrencyDirective } from 'ngx-currency';
 
 
 export const CUSTOM_DATE_FORMATS = {
@@ -53,7 +54,8 @@ export const CUSTOM_DATE_FORMATS = {
     ExpansionIndicatorComponent,
     IconButtonComponent,
     TimestampComponent,
-    TextareaComponent],
+    TextareaComponent,
+    NgxCurrencyDirective],
   templateUrl: './activities.component.html',
   styleUrl: './activities.component.scss',
   providers: [
