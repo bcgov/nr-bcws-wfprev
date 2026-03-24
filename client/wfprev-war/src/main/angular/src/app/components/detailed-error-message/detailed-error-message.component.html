@@ -6,8 +6,17 @@
 
     <div class="error-message-content">
         <div>
-            <h4>{{data.title}}</h4>
-            <p>{{data.message}}</p>
+            @if(showReasons) {
+                <h4>Details</h4>
+                @if (data.messageAfter) {
+                    <p>{{data.messageAfter}}</p>
+                } @else {
+                    <p>{{data.messageBefore}}</p>
+                }
+            } @else {
+                <h4>{{data.title}}</h4>
+                <p>{{data.messageBefore}}</p>
+            }
         </div>
         <div>
             @if(!showReasons) {

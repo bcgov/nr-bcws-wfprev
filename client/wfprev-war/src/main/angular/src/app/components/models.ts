@@ -480,6 +480,7 @@ export interface Option<T> {
 
 export interface DetailedErrorMessage {
   title: string;
-  message: string;
+  messageBefore: string;
+  messageAfter: string;
   reasons: string[];
 }

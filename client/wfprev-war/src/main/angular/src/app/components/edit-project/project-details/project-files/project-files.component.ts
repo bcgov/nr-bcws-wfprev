@@ -38,6 +38,16 @@ export class ProjectFilesComponent implements OnInit {
   dataSource = new MatTableDataSource<ProjectFile>(this.projectFiles);
   downloadingFileId: string | null = null;
 
+  errorMessageContext = {
+          data: {
+            title: 'Spatial File Failed to Save',
+            messageBefore: "The file that you are uploading failed to save. To view errors click on 'View Details' button on this warning to see additional error details.",
+            messageAfter: 'The file that you are uploading failed to save due to the following errors:'
+          },
+          duration: undefined,
+          panelClass: ['detailed-error-message']
+        }
+
   constructor(
     public projectService: ProjectService,
     private readonly snackbarService: MatSnackBar,
@@ -209,14 +219,12 @@ export class ProjectFilesComponent implements OnInit {
       },
       error: () => {
         this.snackbarService.openFromComponent(DetailedErrorMessageComponent, {
+          ...this.errorMessageContext,
           data: {
-            title: 'Spatial File Failed to Save',
-            message: "The file that you are uploading failed to save. To view errors click on 'View Details' button on this warning to see additional error details.",
-            reasons: ['Could not reach file upload server']
-          },
-          duration: undefined,
-          panelClass: ['detailed-error-message']
-        });
+            ...this.errorMessageContext.data,
+            reason: ['Could not reach file upload server']
+          }} 
+        );
       }
     });
   }
@@ -225,14 +233,12 @@ export class ProjectFilesComponent implements OnInit {
     const fileExtension = file.name.split('.').pop()?.toLowerCase();
     if (!fileExtension) {
       this.snackbarService.openFromComponent(DetailedErrorMessageComponent, {
+          ...this.errorMessageContext,
           data: {
-            title: 'Spatial File Failed to Save',
-            message: "The file that you are uploading failed to save. To view errors click on 'View Details' button on this warning to see additional error details.",
+            ...this.errorMessageContext.data,
             reasons: ['The spatial file was not uploaded because the file format is not accepted.']
-          },
-          duration: undefined,
-          panelClass: ['detailed-error-message']
-        });
+          }} 
+        );
       return;
     }
 
@@ -245,14 +251,12 @@ export class ProjectFilesComponent implements OnInit {
       if (!geometry) {
         snackRef.dismiss();
         this.snackbarService.openFromComponent(DetailedErrorMessageComponent, {
+          ...this.errorMessageContext,
           data: {
-            title: 'Spatial File Failed to Save',
-            message: "The file that you are uploading failed to save. To view errors click on 'View Details' button on this warning to see additional error details.",
+            ...this.errorMessageContext.data,
             reasons: ['Could not extract geometry from spatial file.']
-          },
-          duration: undefined,
-          panelClass: ['detailed-error-message']
-        });
+          }} 
+        );
         return;
       }
 
@@ -357,14 +361,12 @@ export class ProjectFilesComponent implements OnInit {
       snackRef.dismiss();
       console.error('Error extracting coordinates:', error);
       this.snackbarService.openFromComponent(DetailedErrorMessageComponent, {
+          ...this.errorMessageContext,
           data: {
-            title: 'Spatial File Failed to Save',
-            message: "The file that you are uploading failed to save. To view errors click on 'View Details' button on this warning to see additional error details.",
+            ...this.errorMessageContext.data,
             reasons: ['Failed to process spatial file. ' + error.message]
-          },
-          duration: undefined,
-          panelClass: ['detailed-error-message']
-        });
+          }} 
+        );
     });
   }
 
@@ -395,14 +397,12 @@ export class ProjectFilesComponent implements OnInit {
       error: (err) => {
         console.error('Failed to create attachment', err);
         this.snackbarService.openFromComponent(DetailedErrorMessageComponent, {
+          ...this.errorMessageContext,
           data: {
-            title: 'Spatial File Failed to Save',
-            message: "The file that you are uploading failed to save. To view errors click on 'View Details' button on this warning to see additional error details.",
+            ...this.errorMessageContext.data,
             reasons: ['Failed to create attachment.']
-          },
-          duration: undefined,
-          panelClass: ['detailed-error-message']
-        });
+          }} 
+        );
       }
     });
   }
