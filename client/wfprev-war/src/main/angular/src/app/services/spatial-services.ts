@@ -28,6 +28,16 @@ export interface ValidationResult {
 })
 export class SpatialService {
 
+    errorMessageContext = {
+        data: {
+            title: 'Spatial File Failed to Save',
+            messageBefore: "The file that you are uploading failed to save. To view errors click on 'View Details' button on this warning to see additional error details.",
+            messageAfter: 'The file that you are uploading failed to save due to the following errors:'
+        },
+        duration: undefined,
+        panelClass: ['detailed-error-message']
+    }
+
     constructor(private readonly httpClient: HttpClient,
         private readonly snackbarService: MatSnackBar,
         private readonly appConfigService: AppConfigService,
@@ -314,28 +324,24 @@ export class SpatialService {
                 return await this.handleCompressedFile(file);
             } else {
                 this.snackbarService.openFromComponent(DetailedErrorMessageComponent, {
-                    data: {
-                    title: 'Spatial File Failed to Save',
-                    message: "The file that you are uploading failed to save. To view errors click on 'View Details' button on this warning to see additional error details.",
-                    reasons: ['Unsupported file type: ' + fileType]
-                    },
-                    duration: undefined,
-                    panelClass: ['detailed-error-message']
-                });
+                        ...this.errorMessageContext,
+                        data: {
+                            ...this.errorMessageContext.data,
+                            reasons: ['Unsupported file type: ' + fileType]
+                        }}
+                    );
                 return [];
             }
         } catch (error) {
             console.error('Error extracting coordinates:', error);
             if (!this.snackbarService._openedSnackBarRef) {
                 this.snackbarService.openFromComponent(DetailedErrorMessageComponent, {
-                    data: {
-                    title: 'Spatial File Failed to Save',
-                    message: "The file that you are uploading failed to save. To view errors click on 'View Details' button on this warning to see additional error details.",
-                    reasons: ['Error encountered while attempting to extract coordinates.']
-                    },
-                    duration: undefined,
-                    panelClass: ['detailed-error-message']
-                });
+                        ...this.errorMessageContext,
+                        data: {
+                            ...this.errorMessageContext.data,
+                            reasons: ['Error encountered while attempting to extract coordinates.']
+                        }}
+                    );
             }
             throw new Error('Error extracting coordinates.')
         }
@@ -354,14 +360,12 @@ export class SpatialService {
                 return await this.handleKMZ(entries);
             } else {
                 this.snackbarService.openFromComponent(DetailedErrorMessageComponent, {
-                    data: {
-                    title: 'Spatial File Failed to Save',
-                    message: "The file that you are uploading failed to save. To view errors click on 'View Details' button on this warning to see additional error details.",
-                    reasons: ['File format is not accepted. Valid formats are KM;, KMZ, GDB, and SHP.']
-                    },
-                    duration: undefined,
-                    panelClass: ['detailed-error-message']
-                });
+                        ...this.errorMessageContext,
+                        data: {
+                            ...this.errorMessageContext.data,
+                            reasons: ['File format is not accepted. Valid formats are KM;, KMZ, GDB, and SHP.']
+                        }}
+                    );
                 return [];
             }
         } finally {
