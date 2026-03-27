@@ -2095,6 +2095,24 @@
         "rollback": [
         ]
       }
+    },
+    {
+      "changeSet": {
+        "id": "01_02_00_07",
+        "author": "sparmar",
+        "tagDatabase": { "tag" : "version_01_02_00_07" },
+        "changes": [
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_02_00/07/dml/app_wf1_prev.dml.update_objective_type_code_wfprev-988.sql"
+            }
+          }
+        ],
+        "rollback": [
+        ]
+      }
     }
   ]
 }
