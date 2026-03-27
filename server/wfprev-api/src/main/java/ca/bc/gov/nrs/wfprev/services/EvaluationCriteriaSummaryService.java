@@ -196,7 +196,9 @@ public class EvaluationCriteriaSummaryService implements CommonService {
                             Function.identity()
                     ));
 
-            for (EvaluationCriteriaSectionSummaryEntity sectionEntity : parentEntity.getEvaluationCriteriaSectionSummaries()) {
+            for (int i = 0; i < parentEntity.getEvaluationCriteriaSectionSummaries().size(); i++) {
+                EvaluationCriteriaSectionSummaryEntity sectionEntity = parentEntity.getEvaluationCriteriaSectionSummaries().get(i);
+
                 sectionEntity.setEvaluationCriteriaSummary(parentEntity);
                 sectionEntity.setEvaluationCriteriaSummaryGuid(parentEntity.getEvaluationCriteriaSummaryGuid());
 
