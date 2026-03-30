@@ -81,7 +81,7 @@ public class PerformanceUpdateResourceAssembler extends RepresentationModelAssem
         entity.setPreviousForecastAmount(forecastAmountCalculator.defaultZero(projectFiscalEntity.getFiscalForecastAmount()));
         entity.setForecastAmount(forecastAmountCalculator.defaultZero(amounts.forecastAmount()));
         entity.setForecastAdjustmentAmount(forecastAmountCalculator.defaultZero(amounts.forecastAdjustmentAmount()));
-        entity.setForecastAdjustmentRationale(resource.getForecastAdjustmentRationale());
+        entity.setForecastAdjustmentRationale(resource.getForecastAdjustmentRationale() == null ? "" : resource.getForecastAdjustmentRationale());
         entity.setGeneralUpdateComment(resource.getGeneralUpdateComment());
         entity.setBudgetHighRiskAmount(forecastAmountCalculator.defaultZero(resource.getBudgetHighRiskAmount()));
         entity.setBudgetHighRiskRationale(resource.getBudgetHighRiskRationale());
