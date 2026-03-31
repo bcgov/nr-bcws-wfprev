@@ -2,7 +2,9 @@
   "application": {
     "baseUrl": "#{WFPREV_BASE_URL}#",
     "environment": "#{TARGET_ENV}#",
-    "remiPlannerEmailAddress": "#{REMI_PLANNER_EMAIL_ADDRESS}#"
+    "remiPlannerEmailAddress": "#{REMI_PLANNER_EMAIL_ADDRESS}#",
+    "buildId": "#{GITHUB_SHA}#",
+    "buildNumber": "#{GITHUB_RUN_NUMBER}#"
   },
 
   "webade": {

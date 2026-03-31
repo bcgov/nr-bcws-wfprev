@@ -8,6 +8,8 @@ export interface Application {
   enableLocalStorageToken?: boolean;
   allowLocalExpiredToken?: boolean;
   localStorageTokenKey?: string;
+  buildId?: string;
+  buildNumber?: string;
 }
 
 export interface RestConfig {
