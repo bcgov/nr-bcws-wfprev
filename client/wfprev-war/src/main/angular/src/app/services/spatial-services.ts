@@ -363,7 +363,7 @@ export class SpatialService {
                         ...this.errorMessageContext,
                         data: {
                             ...this.errorMessageContext.data,
-                            reasons: ['File format is not accepted. Valid formats are KM;, KMZ, GDB, and SHP.']
+                            reasons: ['File format is not accepted. Valid formats are KML, KMZ, GDB, and SHP.']
                         }}
                     );
                 return [];
