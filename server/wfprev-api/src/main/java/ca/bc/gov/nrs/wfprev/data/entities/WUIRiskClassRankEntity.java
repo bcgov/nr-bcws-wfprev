@@ -18,26 +18,27 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 @Entity
 @Table(name = "wui_risk_class_rank")
 @JsonIgnoreProperties(ignoreUnknown = false)
-@Data
-@EqualsAndHashCode(callSuper = false)
-@Builder
-@AllArgsConstructor
+@Getter
+@Setter
 @NoArgsConstructor
+@ToString
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class WUIRiskClassRankEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
     @Column(name = "wui_risk_class_rank_guid")
     @NotNull
+    @EqualsAndHashCode.Include
     private UUID wuiRiskClassRankGuid;
 
     @NotNull

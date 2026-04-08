@@ -35,19 +35,20 @@ class EvaluationCriteriaSectionSummaryEntityTest {
         UUID summaryGuid = UUID.randomUUID();
         summary.setEvaluationCriteriaSummaryGuid(summaryGuid);
 
-        return EvaluationCriteriaSectionSummaryEntity.builder()
-                .evaluationCriteriaSectionSummaryGuid(UUID.randomUUID())
-                .evaluationCriteriaSectionCode(sectionCode)
-                .evaluationCriteriaSummaryGuid(summaryGuid)
-                .evaluationCriteriaSummary(summary)
-                .filterSectionScore(BigDecimal.valueOf(3))
-                .filterSectionComment("Comment about risk assessment")
-                .revisionCount(0)
-                .createUser("tester")
-                .createDate(new Date())
-                .updateUser("tester")
-                .updateDate(new Date())
-                .build();
+        EvaluationCriteriaSectionSummaryEntity entity = new EvaluationCriteriaSectionSummaryEntity();
+        entity.setEvaluationCriteriaSectionSummaryGuid(UUID.randomUUID());
+        entity.setEvaluationCriteriaSectionCode(sectionCode);
+        entity.setEvaluationCriteriaSummaryGuid(summaryGuid);
+        entity.setEvaluationCriteriaSummary(summary);
+        entity.setFilterSectionScore(BigDecimal.valueOf(3));
+        entity.setFilterSectionComment("Comment about risk assessment");
+        entity.setRevisionCount(0);
+        entity.setCreateUser("tester");
+        entity.setCreateDate(new Date());
+        entity.setUpdateUser("tester");
+        entity.setUpdateDate(new Date());
+
+        return entity;
     }
 
     @Test

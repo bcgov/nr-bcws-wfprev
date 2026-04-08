@@ -15,11 +15,10 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.annotations.UuidGenerator;
 import org.springframework.data.annotation.CreatedBy;
@@ -38,11 +37,10 @@ import java.util.UUID;
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "eval_criteria_summary")
 @JsonIgnoreProperties(ignoreUnknown = false)
-@Data
-@EqualsAndHashCode(callSuper = false)
-@Builder
-@AllArgsConstructor
+@Getter
 @NoArgsConstructor
+@ToString
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class EvaluationCriteriaSummaryEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -50,20 +48,25 @@ public class EvaluationCriteriaSummaryEntity implements Serializable {
     @UuidGenerator
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "eval_criteria_summary_guid", updatable = false, nullable = false)
+    @EqualsAndHashCode.Include
+    @Setter
     private UUID evaluationCriteriaSummaryGuid;
 
     @NotNull
     @Column(name = "project_guid", nullable = false)
+    @Setter
     private UUID projectGuid;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @Setter
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
         name = "wui_risk_class_code",
         referencedColumnName = "wui_risk_class_code"
     )
     private WUIRiskClassRankEntity wuiRiskClassCode;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @Setter
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
         name = "local_wui_risk_class_code",
         referencedColumnName = "wui_risk_class_code"
@@ -71,51 +74,69 @@ public class EvaluationCriteriaSummaryEntity implements Serializable {
     private WUIRiskClassRankEntity localWuiRiskClassCode;
 
     @Column(name = "wui_risk_class_comment", length = 4000)
+    @Setter
     private String wuiRiskClassComment;
 
     @Column(name = "local_wui_risk_class_rationale", length = 4000)
+    @Setter
     private String localWuiRiskClassRationale;
 
     @NotNull
     @Column(name = "outside_wui_ind", nullable = false)
+    @Setter
     private Boolean isOutsideWuiInd;
 
     @NotNull
     @Column(name = "total_filter_score", columnDefinition = "numeric(5) default '0'", nullable = false)
+    @Setter
     private Integer totalFilterScore;
 
     @OneToMany(mappedBy = "evaluationCriteriaSummary", cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude
-    @EqualsAndHashCode.Exclude
     private List<EvaluationCriteriaSectionSummaryEntity> evaluationCriteriaSectionSummaries = new ArrayList<>();
 
     @NotNull
     @Column(name = "revision_count", columnDefinition = "numeric(10) default '0'", nullable = false)
     @Version
+    @Setter
     private Integer revisionCount;
 
     @CreatedBy
     @NotNull
     @Column(name = "create_user", length = 64, nullable = false)
+    @Setter
     private String createUser;
 
     @CreatedDate
     @NotNull
     @Column(name = "create_date", nullable = false)
+    @Setter
     private Date createDate;
 
     @LastModifiedBy
     @NotNull
     @Column(name = "update_user", length = 64, nullable = false)
+    @Setter
     private String updateUser;
 
     @LastModifiedDate
     @NotNull
     @Column(name = "update_date", nullable = false)
+    @Setter
     private Date updateDate;
     
     @NotNull
     @Column(name = "last_updated_timestamp", nullable = false)
+    @Setter
     private Date lastUpdatedTimestamp;
 
+    public void addEvaluationCriteriaSectionSummaries(EvaluationCriteriaSectionSummaryEntity item) {
+        evaluationCriteriaSectionSummaries.add(item);
+        item.setEvaluationCriteriaSummary(this);
+    }
+
+    public void removeEvaluationCriteriaSectionSummaries(EvaluationCriteriaSectionSummaryEntity item) {
+        evaluationCriteriaSectionSummaries.remove(item);
+        item.setEvaluationCriteriaSummary(null);
+    }
 }

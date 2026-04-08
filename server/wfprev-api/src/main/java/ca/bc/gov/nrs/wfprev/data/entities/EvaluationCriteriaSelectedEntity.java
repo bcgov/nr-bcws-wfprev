@@ -13,11 +13,10 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.annotations.UuidGenerator;
 import org.springframework.data.annotation.CreatedBy;
@@ -34,11 +33,11 @@ import java.util.UUID;
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "eval_criteria_selected")
 @JsonIgnoreProperties(ignoreUnknown = false)
-@Data
-@EqualsAndHashCode(callSuper = false)
-@Builder
-@AllArgsConstructor
+@Getter
+@Setter
 @NoArgsConstructor
+@ToString
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class EvaluationCriteriaSelectedEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -46,10 +45,12 @@ public class EvaluationCriteriaSelectedEntity implements Serializable {
     @UuidGenerator
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "eval_criteria_selected_guid", updatable = false, nullable = false)
+    @EqualsAndHashCode.Include
     private UUID evaluationCriteriaSelectedGuid;
 
     @NotNull
     @Column(name = "evaluation_criteria_guid", nullable = false)
+    @EqualsAndHashCode.Include
     private UUID evaluationCriteriaGuid;
 
     @Column(name = "eval_criteria_sect_summ_guid", nullable = false, insertable = false, updatable = false)
@@ -62,7 +63,6 @@ public class EvaluationCriteriaSelectedEntity implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "eval_criteria_sect_summ_guid", nullable = false)
     @ToString.Exclude
-    @EqualsAndHashCode.Exclude
     private EvaluationCriteriaSectionSummaryEntity evaluationCriteriaSectionSummary;
 
     @NotNull
@@ -89,6 +89,5 @@ public class EvaluationCriteriaSelectedEntity implements Serializable {
     @NotNull
     @Column(name = "update_date", nullable = false)
     private Date updateDate;
-
 
 }

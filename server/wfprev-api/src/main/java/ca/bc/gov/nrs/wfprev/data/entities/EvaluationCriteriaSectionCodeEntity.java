@@ -16,26 +16,27 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 @Entity
 @Table(name = "eval_criteria_sect_code")
 @JsonIgnoreProperties(ignoreUnknown = false)
-@Data
-@EqualsAndHashCode(callSuper = false)
-@Builder
-@AllArgsConstructor
+@Getter
+@Setter
 @NoArgsConstructor
+@ToString
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class EvaluationCriteriaSectionCodeEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
     @Column(name = "eval_criteria_sect_code")
     @NotNull
+    @EqualsAndHashCode.Include
     private String evaluationCriteriaSectionCode;
 
     @NotNull

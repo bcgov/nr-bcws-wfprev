@@ -71,14 +71,16 @@ public class EvaluationCriteriaSummaryController extends CommonController {
     })
     public ResponseEntity<EvaluationCriteriaSummaryModel> createEvaluationCriteriaSummary(
             @Valid @RequestBody EvaluationCriteriaSummaryModel evaluationCriteriaSummaryModel) {
-        log.debug(" >> createEvaluationCriteriaSummary");
-        ResponseEntity<EvaluationCriteriaSummaryModel> response;
+        try {
+                log.debug(" >> createEvaluationCriteriaSummary");
+                EvaluationCriteriaSummaryModel createdModel = evaluationCriteriaSummaryService.createEvaluationCriteriaSummary(evaluationCriteriaSummaryModel);
 
-        EvaluationCriteriaSummaryModel createdModel = evaluationCriteriaSummaryService.createEvaluationCriteriaSummary(evaluationCriteriaSummaryModel);
-        response = ResponseEntity.status(201).body(createdModel);
-
-        log.debug(" << createEvaluationCriteriaSummary");
-        return response;
+                log.debug(" << createEvaluationCriteriaSummary");
+                return ResponseEntity.status(201).body(createdModel);
+        } catch (Exception e) {
+                log.error("Failed to create evaluation criteria summary. Rolling back.", e);
+                return badRequest();
+        }
     }
 
     @PutMapping("/{evaluationCriteriaSummaryGuid}")
