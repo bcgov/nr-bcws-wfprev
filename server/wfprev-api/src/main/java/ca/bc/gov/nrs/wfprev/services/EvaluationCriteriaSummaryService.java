@@ -53,7 +53,7 @@ public class EvaluationCriteriaSummaryService implements CommonService {
             // Save the summary parent
             EvaluationCriteriaSummaryEntity savedParent = evaluationCriteriaSummaryRepository.save(entity);
             // Update related entities
-            evaluationCriteriaSummaryResourceAssembler.attachSectionSummory(resource, savedParent);
+            evaluationCriteriaSummaryResourceAssembler.attachSectionSummary(resource, savedParent);
             return evaluationCriteriaSummaryResourceAssembler.toModel(savedParent);
         } catch (Exception e) {
             log.error("Failed to create evaluation criteria summary. Rolling back.", e);

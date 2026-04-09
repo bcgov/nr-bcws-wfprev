@@ -102,7 +102,7 @@ class EvaluationCriteriaSummaryResourceAssemblerTest {
         model.setEvaluationCriteriaSectionSummaries(List.of(sectionModel));
 
         EvaluationCriteriaSummaryEntity entity = assembler.createNewParentSummaryEntity(model);
-        assembler.attachSectionSummory(model, entity);
+        assembler.attachSectionSummary(model, entity);
 
         assertNotNull(entity);
         assertEquals(1, entity.getEvaluationCriteriaSectionSummaries().size());

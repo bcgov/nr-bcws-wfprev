@@ -64,7 +64,7 @@ public class EvaluationCriteriaSummaryResourceAssembler extends RepresentationMo
         return entity;
     }
 
-    public void attachSectionSummory(EvaluationCriteriaSummaryModel resource, EvaluationCriteriaSummaryEntity entity) {
+    public void attachSectionSummary(EvaluationCriteriaSummaryModel resource, EvaluationCriteriaSummaryEntity entity) {
         if (resource.getEvaluationCriteriaSectionSummaries() != null && !resource.getEvaluationCriteriaSectionSummaries().isEmpty()) {
             // handle evaluationCriteriaSectionSummaries
             for (EvaluationCriteriaSectionSummaryModel childModel : resource.getEvaluationCriteriaSectionSummaries()) {

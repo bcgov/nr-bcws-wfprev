@@ -2,6 +2,7 @@ package ca.bc.gov.nrs.wfprev.controllers;
 
 import ca.bc.gov.nrs.common.wfone.rest.resource.HeaderConstants;
 import ca.bc.gov.nrs.common.wfone.rest.resource.MessageListRsrc;
+import ca.bc.gov.nrs.wfone.common.service.api.ServiceException;
 import ca.bc.gov.nrs.wfprev.common.controllers.CommonController;
 import ca.bc.gov.nrs.wfprev.data.models.EvaluationCriteriaSummaryModel;
 import ca.bc.gov.nrs.wfprev.services.EvaluationCriteriaSummaryService;
@@ -18,6 +19,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -77,9 +80,15 @@ public class EvaluationCriteriaSummaryController extends CommonController {
 
                 log.debug(" << createEvaluationCriteriaSummary");
                 return ResponseEntity.status(201).body(createdModel);
-        } catch (Exception e) {
+        } catch(DataIntegrityViolationException | IllegalArgumentException e) {
                 log.error("Failed to create evaluation criteria summary. Rolling back.", e);
                 return badRequest();
+        } catch (ServiceException e) {
+                log.error("Failed to create evaluation criteria summary. Rolling back.", e);
+                return internalServerError();
+        } catch (Exception e) {
+                log.error("Failed to create evaluation criteria summary. Rolling back.", e);
+                return internalServerError();
         }
     }
 
