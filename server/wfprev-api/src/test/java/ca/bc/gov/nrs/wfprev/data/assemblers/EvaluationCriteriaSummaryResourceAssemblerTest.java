@@ -9,6 +9,8 @@ import ca.bc.gov.nrs.wfprev.data.models.EvaluationCriteriaSectionSummaryModel;
 import ca.bc.gov.nrs.wfprev.data.models.EvaluationCriteriaSelectedModel;
 import ca.bc.gov.nrs.wfprev.data.models.EvaluationCriteriaSummaryModel;
 import ca.bc.gov.nrs.wfprev.data.repositories.EvaluationCriteriaSectionCodeRepository;
+import ca.bc.gov.nrs.wfprev.data.repositories.WUIRiskClassCodeRepository;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -27,12 +29,14 @@ import static org.mockito.Mockito.when;
 class EvaluationCriteriaSummaryResourceAssemblerTest {
 
     private EvaluationCriteriaSectionCodeRepository sectionCodeRepository;
+    private WUIRiskClassCodeRepository wuiRiskClassCodeRepository;
     private EvaluationCriteriaSummaryResourceAssembler assembler;
-
+    private EvaluationCriteriaSelectedResourceAssembler evaluationCriteriaSelectedResourceAssembler;
     @BeforeEach
     void setUp() {
         sectionCodeRepository = mock(EvaluationCriteriaSectionCodeRepository.class);
-        assembler = new EvaluationCriteriaSummaryResourceAssembler(sectionCodeRepository);
+        evaluationCriteriaSelectedResourceAssembler = new EvaluationCriteriaSelectedResourceAssembler();
+        assembler = new EvaluationCriteriaSummaryResourceAssembler(sectionCodeRepository, wuiRiskClassCodeRepository, evaluationCriteriaSelectedResourceAssembler);
     }
 
     @Test
@@ -57,8 +61,8 @@ class EvaluationCriteriaSummaryResourceAssemblerTest {
         selected.setEvaluationCriteriaGuid(UUID.randomUUID());
         selected.setIsEvaluationCriteriaSelectedInd(true);
 
-        section.setEvaluationCriteriaSelected(List.of(selected));
-        entity.setEvaluationCriteriaSectionSummaries(List.of(section));
+        section.addEvaluationCriteriaSelected(selected);
+        entity.addEvaluationCriteriaSectionSummaries(section);
 
         EvaluationCriteriaSummaryModel model = assembler.toModel(entity);
 
@@ -97,7 +101,8 @@ class EvaluationCriteriaSummaryResourceAssemblerTest {
 
         model.setEvaluationCriteriaSectionSummaries(List.of(sectionModel));
 
-        EvaluationCriteriaSummaryEntity entity = assembler.toEntity(model);
+        EvaluationCriteriaSummaryEntity entity = assembler.createNewParentSummaryEntity(model);
+        assembler.attachSectionSummary(model, entity);
 
         assertNotNull(entity);
         assertEquals(1, entity.getEvaluationCriteriaSectionSummaries().size());
@@ -107,7 +112,6 @@ class EvaluationCriteriaSummaryResourceAssemblerTest {
     @Test
     void testUpdateEntity_UpdatesOnlyAllowedFields() {
         EvaluationCriteriaSummaryEntity existingEntity = new EvaluationCriteriaSummaryEntity();
-        existingEntity.setEvaluationCriteriaSectionSummaries(new ArrayList<>());
 
         EvaluationCriteriaSectionCodeEntity codeEntity = new EvaluationCriteriaSectionCodeEntity();
         codeEntity.setEvaluationCriteriaSectionCode("RISK");
@@ -117,12 +121,11 @@ class EvaluationCriteriaSummaryResourceAssemblerTest {
 
         EvaluationCriteriaSectionSummaryEntity sectionEntity = new EvaluationCriteriaSectionSummaryEntity();
         sectionEntity.setEvaluationCriteriaSectionCode(codeEntity);
-        sectionEntity.setEvaluationCriteriaSelected(new ArrayList<>());
         EvaluationCriteriaSelectedEntity selectedEntity = new EvaluationCriteriaSelectedEntity();
         UUID criteriaGuid = UUID.randomUUID();
         selectedEntity.setEvaluationCriteriaGuid(criteriaGuid);
         selectedEntity.setIsEvaluationCriteriaSelectedInd(false);
-        sectionEntity.setEvaluationCriteriaSelected(new ArrayList<>(List.of(selectedEntity)));
+        sectionEntity.addEvaluationCriteriaSelected(selectedEntity);
 
         existingEntity.getEvaluationCriteriaSectionSummaries().add(sectionEntity);
 

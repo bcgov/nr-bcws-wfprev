@@ -29,18 +29,20 @@ class EvaluationCriteriaSelectedEntityTest {
         EvaluationCriteriaSectionSummaryEntity section = new EvaluationCriteriaSectionSummaryEntity();
         section.setEvaluationCriteriaSectionSummaryGuid(UUID.randomUUID());
 
-        return EvaluationCriteriaSelectedEntity.builder()
-                .evaluationCriteriaSelectedGuid(UUID.randomUUID())
-                .evaluationCriteriaGuid(UUID.randomUUID())
-                .evaluationCriteriaSectionSummaryGuid(section.getEvaluationCriteriaSectionSummaryGuid())
-                .isEvaluationCriteriaSelectedInd(true)
-                .evaluationCriteriaSectionSummary(section)
-                .revisionCount(0)
-                .createUser("tester")
-                .createDate(new Date())
-                .updateUser("tester")
-                .updateDate(new Date())
-                .build();
+        EvaluationCriteriaSelectedEntity entity = new EvaluationCriteriaSelectedEntity();
+
+                entity.setEvaluationCriteriaSelectedGuid(UUID.randomUUID());
+                entity.setEvaluationCriteriaGuid(UUID.randomUUID());
+                entity.setEvaluationCriteriaSectionSummaryGuid(section.getEvaluationCriteriaSectionSummaryGuid());
+                entity.setIsEvaluationCriteriaSelectedInd(true);
+                entity.setEvaluationCriteriaSectionSummary(section);
+                entity.setRevisionCount(0);
+                entity.setCreateUser("tester");
+                entity.setCreateDate(new Date());
+                entity.setUpdateUser("tester");
+                entity.setUpdateDate(new Date());
+
+        return entity;
     }
 
     @Test

@@ -15,11 +15,10 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.annotations.UuidGenerator;
 import org.springframework.data.annotation.CreatedBy;
@@ -39,11 +38,10 @@ import java.util.UUID;
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "eval_criteria_sect_summ")
 @JsonIgnoreProperties(ignoreUnknown = false)
-@Data
-@EqualsAndHashCode(callSuper = false)
-@Builder
-@AllArgsConstructor
+@Getter
 @NoArgsConstructor
+@ToString
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class EvaluationCriteriaSectionSummaryEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -51,59 +49,77 @@ public class EvaluationCriteriaSectionSummaryEntity implements Serializable {
     @UuidGenerator
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "eval_criteria_sect_summ_guid", updatable = false, nullable = false)
+    @EqualsAndHashCode.Include
+    @Setter
     private UUID evaluationCriteriaSectionSummaryGuid;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @Setter
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "eval_criteria_sect_code")
     private EvaluationCriteriaSectionCodeEntity evaluationCriteriaSectionCode;
 
     @NotNull
     @Column(name = "eval_criteria_summary_guid", nullable = false)
+    @Setter
     private UUID evaluationCriteriaSummaryGuid;
 
+    @Setter
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "eval_criteria_summary_guid", nullable = false, insertable = false, updatable = false)
     @ToString.Exclude
-    @EqualsAndHashCode.Exclude
     private EvaluationCriteriaSummaryEntity evaluationCriteriaSummary;
 
     @NotNull
     @Column(name = "filter_section_score", columnDefinition = "numeric(5) default '0'", nullable = false)
+    @Setter
     private BigDecimal filterSectionScore;
 
 
     @Column(name = "filter_section_comment", length = 4000)
+    @Setter
     private String filterSectionComment;
 
     @OneToMany(mappedBy = "evaluationCriteriaSectionSummary", cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude
-    @EqualsAndHashCode.Exclude
     private List<EvaluationCriteriaSelectedEntity> evaluationCriteriaSelected = new ArrayList<>();
 
     @NotNull
     @Column(name = "revision_count", columnDefinition = "numeric(10) default '0'", nullable = false)
     @Version
+    @Setter
     private Integer revisionCount;
 
     @CreatedBy
     @NotNull
     @Column(name = "create_user", length = 64, nullable = false)
+    @Setter
     private String createUser;
 
     @CreatedDate
     @NotNull
     @Column(name = "create_date", nullable = false)
+    @Setter
     private Date createDate;
 
     @LastModifiedBy
     @NotNull
     @Column(name = "update_user", length = 64, nullable = false)
+    @Setter
     private String updateUser;
 
     @LastModifiedDate
     @NotNull
     @Column(name = "update_date", nullable = false)
+    @Setter
     private Date updateDate;
 
+    public void addEvaluationCriteriaSelected(EvaluationCriteriaSelectedEntity item) {
+        evaluationCriteriaSelected.add(item);
+        item.setEvaluationCriteriaSectionSummary(this);
+    }
 
+    public void removeEvaluationCriteriaSelected(EvaluationCriteriaSelectedEntity item) {
+        evaluationCriteriaSelected.remove(item);
+        item.setEvaluationCriteriaSectionSummary(null);
+    }
 }

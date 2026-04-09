@@ -29,22 +29,24 @@ class EvaluationCriteriaSummaryEntityTest {
         WUIRiskClassRankEntity riskClassCode = new WUIRiskClassRankEntity();
         riskClassCode.setWuiRiskClassCode("WUI_RC_1");
 
-        return EvaluationCriteriaSummaryEntity.builder()
-                .evaluationCriteriaSummaryGuid(UUID.randomUUID())
-                .projectGuid(UUID.randomUUID())
-                .wuiRiskClassCode(riskClassCode)
-                .localWuiRiskClassCode(riskClassCode)
-                .wuiRiskClassComment("Sample comment")
-                .localWuiRiskClassRationale("Sample rationale")
-                .isOutsideWuiInd(true)
-                .totalFilterScore(5)
-                .revisionCount(0)
-                .createUser("tester")
-                .createDate(new Date())
-                .updateUser("tester")
-                .updateDate(new Date())
-                .lastUpdatedTimestamp(new Date())
-                .build();
+        EvaluationCriteriaSummaryEntity cEntity = new EvaluationCriteriaSummaryEntity();
+        cEntity.setEvaluationCriteriaSummaryGuid(UUID.randomUUID());
+        cEntity.setProjectGuid(UUID.randomUUID());
+        cEntity.setWuiRiskClassCode(riskClassCode);
+        cEntity.setLocalWuiRiskClassCode(riskClassCode);
+        cEntity.setWuiRiskClassComment("Sample comment");
+        cEntity.setLocalWuiRiskClassRationale("Sample rationale");
+        cEntity.setIsOutsideWuiInd(true);
+        cEntity.setTotalFilterScore(5);
+        cEntity.setRevisionCount(0);
+        cEntity.setCreateUser("tester");
+        cEntity.setCreateDate(new Date());
+        cEntity.setUpdateUser("tester");
+        cEntity.setUpdateDate(new Date());
+        cEntity.setLastUpdatedTimestamp(new Date());
+
+        return cEntity;
+
     }
 
     @Test

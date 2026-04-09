@@ -2,7 +2,6 @@ package ca.bc.gov.nrs.wfprev.services;
 
 import ca.bc.gov.nrs.wfone.common.service.api.ServiceException;
 import ca.bc.gov.nrs.wfprev.common.services.CommonService;
-import ca.bc.gov.nrs.wfprev.data.assemblers.EvaluationCriteriaSelectedResourceAssembler;
 import ca.bc.gov.nrs.wfprev.data.assemblers.EvaluationCriteriaSummaryResourceAssembler;
 import ca.bc.gov.nrs.wfprev.data.entities.EvaluationCriteriaSectionSummaryEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.EvaluationCriteriaSelectedEntity;
@@ -15,15 +14,13 @@ import ca.bc.gov.nrs.wfprev.data.repositories.EvaluationCriteriaSummaryRepositor
 import ca.bc.gov.nrs.wfprev.data.repositories.WUIRiskClassCodeRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolationException;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.IllformedLocaleException;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -32,21 +29,12 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class EvaluationCriteriaSummaryService implements CommonService {
 
     private final EvaluationCriteriaSummaryRepository evaluationCriteriaSummaryRepository;
     private final EvaluationCriteriaSummaryResourceAssembler evaluationCriteriaSummaryResourceAssembler;
-    private final EvaluationCriteriaSelectedResourceAssembler evaluationCriteriaSelectedResourceAssembler;
     private final WUIRiskClassCodeRepository wuiRiskClassCodeRepository;
-
-
-    public EvaluationCriteriaSummaryService(EvaluationCriteriaSummaryRepository evaluationCriteriaSummaryRepository, EvaluationCriteriaSummaryResourceAssembler evaluationCriteriaSummaryResourceAssembler, WUIRiskClassCodeRepository wuiRiskClassCodeRepository,
-                                            EvaluationCriteriaSelectedResourceAssembler evaluationCriteriaSelectedResourceAssembler) {
-        this.evaluationCriteriaSummaryRepository = evaluationCriteriaSummaryRepository;
-        this.evaluationCriteriaSummaryResourceAssembler = evaluationCriteriaSummaryResourceAssembler;
-        this.evaluationCriteriaSelectedResourceAssembler = evaluationCriteriaSelectedResourceAssembler;
-        this.wuiRiskClassCodeRepository = wuiRiskClassCodeRepository;
-    }
 
     public CollectionModel<EvaluationCriteriaSummaryModel> getAllEvaluationCriteriaSummaries(String projectId) throws ServiceException {
         try {
@@ -61,64 +49,16 @@ public class EvaluationCriteriaSummaryService implements CommonService {
     @Transactional(rollbackFor = Exception.class)
     public EvaluationCriteriaSummaryModel createEvaluationCriteriaSummary(EvaluationCriteriaSummaryModel resource) {
         try {
-            initializeNewEvaluationCriteriaSummary(resource);
-
-            EvaluationCriteriaSummaryEntity entity = evaluationCriteriaSummaryResourceAssembler.toEntity(resource);
-
-            // Remove children temporarily before saving parent in order set correct guid in children
-            List<EvaluationCriteriaSectionSummaryEntity> sectionSummaries = entity.getEvaluationCriteriaSectionSummaries();
-            entity.setEvaluationCriteriaSectionSummaries(null);
-            assignAssociatedEntities(resource, entity);
-
+            EvaluationCriteriaSummaryEntity entity = evaluationCriteriaSummaryResourceAssembler.createNewParentSummaryEntity(resource);
             // Save the summary parent
-            EvaluationCriteriaSummaryEntity savedParent = evaluationCriteriaSummaryRepository.saveAndFlush(entity);
-
-            // Reattach section summaries, populate new GUIDs, link to parent
-            if (sectionSummaries != null) {
-                for (int i = 0; i < sectionSummaries.size(); i++) {
-                    EvaluationCriteriaSectionSummaryEntity section = sectionSummaries.get(i);
-
-                    section.setEvaluationCriteriaSummary(savedParent);
-                    section.setEvaluationCriteriaSummaryGuid(savedParent.getEvaluationCriteriaSummaryGuid());
-                    section.setEvaluationCriteriaSectionSummaryGuid(UUID.randomUUID());
-                    section.setRevisionCount(0);
-
-                    EvaluationCriteriaSectionSummaryModel sectionModel =
-                            resource.getEvaluationCriteriaSectionSummaries().get(i);
-
-                    if (sectionModel.getEvaluationCriteriaSelected() != null) {
-                        List<EvaluationCriteriaSelectedEntity> selectedEntities = new ArrayList<>();
-
-                        for (EvaluationCriteriaSelectedModel selectedModel : sectionModel.getEvaluationCriteriaSelected()) {
-                            EvaluationCriteriaSelectedEntity selectedEntity = evaluationCriteriaSelectedResourceAssembler.toEntity(selectedModel);
-                            selectedEntity.setEvaluationCriteriaSectionSummary(section);
-                            selectedEntity.setEvaluationCriteriaSectionSummaryGuid(section.getEvaluationCriteriaSectionSummaryGuid());
-                            selectedEntity.setRevisionCount(0);
-                            selectedEntities.add(selectedEntity);
-                        }
-
-                        section.setEvaluationCriteriaSelected(selectedEntities);
-                    }
-                }
-
-                savedParent.setEvaluationCriteriaSectionSummaries(sectionSummaries);
-            }
-
-            // Save parent again (cascades to children)
-            EvaluationCriteriaSummaryEntity savedWithChildren = evaluationCriteriaSummaryRepository.save(savedParent);
-
-            return evaluationCriteriaSummaryResourceAssembler.toModel(savedWithChildren);
+            EvaluationCriteriaSummaryEntity savedParent = evaluationCriteriaSummaryRepository.save(entity);
+            // Update related entities
+            evaluationCriteriaSummaryResourceAssembler.attachSectionSummary(resource, savedParent);
+            return evaluationCriteriaSummaryResourceAssembler.toModel(savedParent);
         } catch (Exception e) {
             log.error("Failed to create evaluation criteria summary. Rolling back.", e);
             throw new IllegalArgumentException("Failed to create evaluation criteria summary", e);
         }
-    }
-
-
-    private void initializeNewEvaluationCriteriaSummary(EvaluationCriteriaSummaryModel resource) {
-        resource.setEvaluationCriteriaSummaryGuid(UUID.randomUUID().toString());
-        resource.setCreateDate(new Date());
-        resource.setRevisionCount(0);
     }
 
     public EvaluationCriteriaSummaryModel updateEvaluationCriteriaSummary(EvaluationCriteriaSummaryModel resource) {
