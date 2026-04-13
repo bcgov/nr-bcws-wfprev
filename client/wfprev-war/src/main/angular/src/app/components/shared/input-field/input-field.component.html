@@ -30,6 +30,7 @@
         [formControl]="control"
         [placeholder]="placeholder"
         [matTooltip]="tooltip || control.value"
+        (change)="onChange()"
         *ngIf="enableAmountFormat"
       />
     </div>
