@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, ViewChild } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -23,4 +23,12 @@ export class InputFieldComponent {
   @Input() prefix: string | null = null;
   @Input() img: string | null = null;
   @Input() enableAmountFormat: boolean = false;
+
+  @ViewChild(NgxCurrencyDirective) directive!: NgxCurrencyDirective;
+
+  onChange(): void {
+    if(this.enableAmountFormat) {
+      this.directive.handlePaste();
+    }
+  }
 }
