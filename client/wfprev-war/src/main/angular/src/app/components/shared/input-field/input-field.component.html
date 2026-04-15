@@ -32,6 +32,7 @@
         [matTooltip]="tooltip || control.value"
         (change)="onChange()"
         *ngIf="enableAmountFormat"
+        onfocus="this.select()"
       />
     </div>
 
