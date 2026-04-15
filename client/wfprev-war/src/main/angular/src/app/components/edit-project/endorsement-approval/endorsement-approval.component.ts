@@ -147,7 +147,10 @@ export class EndorsementApprovalComponent implements OnChanges, OnInit {
     const resetToProposedApprovalRemoved = approvalRemoved && currentStatusCode !== FiscalStatuses.DRAFT && currentStatusCode !== FiscalStatuses.PROPOSED;
 
     if (resetToProposedEndorsementRemoved || resetToProposedApprovalRemoved) {
-      const confirmed = await this.confirmRevertToProposed(currentStatusCode ?? '');
+      const confirmed = await this.confirmStatusChange(currentStatusCode ?? '', 'Proposed');
+      if (!confirmed) return; // user cancelled
+    } else if (!endorsementRemoved && !approvalRemoved) {
+      const confirmed = await this.confirmStatusChange(currentStatusCode ?? '', 'Prepared');
       if (!confirmed) return; // user cancelled
     }
 
@@ -271,18 +274,18 @@ export class EndorsementApprovalComponent implements OnChanges, OnInit {
     }
   }
 
-  async confirmRevertToProposed(currentStatusCode: string): Promise<boolean> {
-    if (!currentStatusCode) return false;
+  async confirmStatusChange(currentStatusCode: string, newStatusCode: string): Promise<boolean> {
+    if (!currentStatusCode || !newStatusCode) return false;
     
     // Parse status to plain English if it is IN_PROG
     // The remaining status do not require such parsing
     const currentStatus = currentStatusCode === 'IN_PROG' ? "In Progress" : capitalizeFirstLetter(currentStatusCode);
-    const message = `You are about to change the status of this Fiscal Activity from ${currentStatus} to Proposed. Do you wish to continue?`
+    const message = `You are about to change the status of this Fiscal Activity from ${currentStatus} to ${newStatusCode}. Do you wish to continue?`
 
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       data: {
         indicator: 'confirm-fiscal-status-update',
-        title: `Confirm Change to Proposed`,
+        title: `Confirm Change to ${newStatusCode}`,
         message: message
       },
       width: '600px',
