@@ -211,23 +211,59 @@ export class ProjectFilesComponent implements OnInit {
       duration: undefined,
       panelClass: 'snackbar-info',
     });
-    this.projectService.uploadDocument({ file }).subscribe({
-      next: (response) => {
-        if (response) {
-          this.uploadAttachment(file, response, type, snackRef);
-        }
-      },
-      error: () => {
-        this.snackbarService.openFromComponent(DetailedErrorMessageComponent, {
-          ...this.errorMessageContext,
-          data: {
-            ...this.errorMessageContext.data,
-            reasons: ['Could not reach file upload server.']
+
+    if(this.isValidFileExtension(file)) {
+      this.projectService.uploadDocument({ file }).subscribe({
+        next: (response) => {
+          if (response) {
+            this.uploadAttachment(file, response, type, snackRef);
           }
+        },
+        error: () => {
+          this.snackbarService.openFromComponent(DetailedErrorMessageComponent, {
+            ...this.errorMessageContext,
+            data: {
+              ...this.errorMessageContext.data,
+              reasons: ['Could not reach file upload server.']
+            }
+          }
+          );
         }
-        );
+      });
+    }
+  }
+
+  private isValidFileExtension(file: File): boolean {
+    const name = file.name;
+    const lastDot = name.lastIndexOf('.');
+  
+    if (lastDot === -1) {
+      this.snackbarService.openFromComponent(DetailedErrorMessageComponent, {
+        ...this.errorMessageContext,
+        data: {
+          ...this.errorMessageContext.data,
+          reasons: ['The selected file format is not supported. Please upload a valid file type (KML, KMZ, ZIP, GDB, SHP).']
+        }
       }
-    });
+      );
+      return false;
+    } 
+    
+    const fileExtension = name.substring(lastDot + 1).toLowerCase();
+
+    if (!fileExtension.match(/zip|gdb|kml|kmz|shp/)) {
+      this.snackbarService.openFromComponent(DetailedErrorMessageComponent, {
+        ...this.errorMessageContext,
+        data: {
+          ...this.errorMessageContext.data,
+          reasons: ['The selected file format is not supported. Please upload a valid file type (KML, KMZ, ZIP, GDB, SHP).']
+        }
+      }
+      );
+      return false;
+    }
+
+    return true;
   }
 
   uploadAttachment(file: File, fileUploadResp: any, type: string, snackRef: MatSnackBarRef<SimpleSnackBar>): void {
