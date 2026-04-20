@@ -230,7 +230,7 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
         [Validators.required]
       ],
       fiscalPlannedProjectSizeHa: [fiscal?.fiscalPlannedProjectSizeHa ?? '', [Validators.min(0), Validators.max(NumericLimits.MAX_NUMBER)]],
-      fiscalCompletedSizeHa: [fiscal?.fiscalCompletedSizeHa ?? '', [Validators.min(0), Validators.max(NumericLimits.MAX_NUMBER)]],
+      fiscalCompletedSizeHa: [fiscal?.fiscalCompletedSizeHa ?? 0, [Validators.min(0), Validators.max(NumericLimits.MAX_NUMBER)]],
       resultsOpeningId: [fiscal?.resultsOpeningId ?? '', [Validators.maxLength(11)]],
       firstNationsEngagementInd: [fiscal?.firstNationsEngagementInd ?? false],
       firstNationsDelivPartInd: [fiscal?.firstNationsDelivPartInd ?? false],

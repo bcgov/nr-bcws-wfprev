@@ -27,14 +27,14 @@ export class PerformanceUpdateModalWindowComponent {
     reportingPeriod: new FormControl(null, { validators: [Validators.required] }),
     progressStatus: new FormControl(ProgressStatus.OnTrack),
     generalUpdates: new FormControl("", { validators: [Validators.required] }),
-    currentForecast: new FormControl<number>(this.data.currentForecast, {
+    currentForecast: new FormControl<number>(this.data.currentForecast ?? 0, {
       validators: [
         Validators.min(0),
         Validators.max(NumericLimits.MAX_NUMBER)
       ]
     }),
 
-    revisedForecast: new FormControl<number | null>(null, {
+    revisedForecast: new FormControl<number | null>(0, {
       validators: [
         Validators.min(0),
         Validators.max(NumericLimits.MAX_NUMBER)
@@ -43,7 +43,7 @@ export class PerformanceUpdateModalWindowComponent {
 
     forecastRationale: new FormControl({value: '', disabled: true}, { validators: [Validators.required] }),
 
-    highRisk: new FormControl<number | null>(null, {
+    highRisk: new FormControl<number | null>(0, {
       validators: [
         Validators.min(0),
         Validators.max(NumericLimits.MAX_NUMBER)
@@ -51,7 +51,7 @@ export class PerformanceUpdateModalWindowComponent {
     }),
     highRiskDescription: new FormControl({ value: '', disabled: true }, { validators: [Validators.required] }),
 
-    mediumRisk: new FormControl<number | null>(null, {
+    mediumRisk: new FormControl<number | null>(0, {
       validators: [
         Validators.min(0),
         Validators.max(NumericLimits.MAX_NUMBER)
@@ -59,7 +59,7 @@ export class PerformanceUpdateModalWindowComponent {
     }),
     mediumRiskDescription: new FormControl({ value: '', disabled: true }, { validators: [Validators.required] }),
 
-    lowRisk: new FormControl<number | null>(null, {
+    lowRisk: new FormControl<number | null>(0, {
       validators: [
         Validators.min(0),
         Validators.max(NumericLimits.MAX_NUMBER)
@@ -67,7 +67,7 @@ export class PerformanceUpdateModalWindowComponent {
     }),
     lowRiskDescription: new FormControl({ value: '', disabled: true }, { validators: [Validators.required] }),
 
-    complete: new FormControl<number | null>(null, {
+    complete: new FormControl<number | null>(0, {
       validators: [
         Validators.min(0),
         Validators.max(NumericLimits.MAX_NUMBER)
