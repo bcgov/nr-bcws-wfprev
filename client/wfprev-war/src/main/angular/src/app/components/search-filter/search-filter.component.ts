@@ -20,7 +20,7 @@ import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
 
 type MultiSelectKey = 'selectedProjectType' | 'selectedBusinessArea' | 'selectedForestRegion' | 'selectedForestDistrict' | 'selectedActivityCategory' | 'selectedFiscalStatus' | 'selectedFireCentre' | 'selectedFiscalYears';
-type MultiSelectName = 'Project Type' | 'Business Area' | 'Forest Region' | 'Forest District' | 'Activity Category' | 'Fiscal Status' | 'Fire Centre' | 'Fiscal Years';
+type MultiSelectName = 'Project Type' | 'Business Area' | 'Forest Region' | 'Forest District' | 'Activity Category' | 'Fiscal Status' | 'Fire Centre' | 'Fiscal Year';
 
 type Option = { label: string; value: string };
 type MultiSelectConfig = {
@@ -193,7 +193,7 @@ export class SearchFilterComponent implements OnInit {
           },
           {
             model: 'selectedFiscalYears',
-            name: 'Fiscal Years',
+            name: 'Fiscal Year',
             allValue: this.ALL,
             options: this.fiscalYears
           },
