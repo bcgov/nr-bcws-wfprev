@@ -142,7 +142,7 @@ export class SearchFilterComponent implements OnInit {
       label: String(item[labelKey]),
       value: String(item[valueKey])
     })) as Option[];
-
+    
     return sortByLabel
       ? options.sort((a, b) => a.label.localeCompare(b.label))
       : options;
@@ -253,7 +253,7 @@ export class SearchFilterComponent implements OnInit {
               tables.planFiscalStatusCode,
               'description',
               'planFiscalStatusCode',
-              true
+              false
             )
           }
         ];
