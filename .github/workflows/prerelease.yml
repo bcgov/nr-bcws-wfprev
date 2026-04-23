@@ -73,72 +73,31 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Retag API
-        if: needs.check-images.outputs.api_exists == 'true'
         run: |
           docker pull ${{ vars.REGISTRY }}/${{ github.repository }}-wfprev-api:${{ github.sha }}
           docker tag ${{ vars.REGISTRY }}/${{ github.repository }}-wfprev-api:${{ github.sha }} ${{ vars.REGISTRY }}/${{ github.repository }}-wfprev-api:${{ github.event.release.tag_name }}
           docker push ${{ vars.REGISTRY }}/${{ github.repository }}-wfprev-api:${{ github.event.release.tag_name }}
 
       - name: Retag Liquibase
-        if: needs.check-images.outputs.liquibase_exists == 'true'
         run: |
           docker pull ${{ vars.REGISTRY }}/${{ github.repository }}-liquibase:${{ github.sha }}
           docker tag ${{ vars.REGISTRY }}/${{ github.repository }}-liquibase:${{ github.sha }} ${{ vars.REGISTRY }}/${{ github.repository }}-liquibase:${{ github.event.release.tag_name }}
           docker push ${{ vars.REGISTRY }}/${{ github.repository }}-liquibase:${{ github.event.release.tag_name }}
 
       - name: Retag GDB Extractor
-        if: needs.check-images.outputs.gdb_exists == 'true'
         run: |
           docker pull ${{ vars.REGISTRY }}/${{ github.repository_owner }}/nr-bcws-wfprev-wfprev-gdb-extractor:${{ github.sha }}
           docker tag ${{ vars.REGISTRY }}/${{ github.repository_owner }}/nr-bcws-wfprev-wfprev-gdb-extractor:${{ github.sha }} ${{ vars.REGISTRY }}/${{ github.repository_owner }}/nr-bcws-wfprev-wfprev-gdb-extractor:${{ github.event.release.tag_name }}
           docker push ${{ vars.REGISTRY }}/${{ github.repository_owner }}/nr-bcws-wfprev-wfprev-gdb-extractor:${{ github.event.release.tag_name }}
 
       - name: Retag Report Generator
-        if: needs.check-images.outputs.report_exists == 'true'
         run: |
           docker pull ${{ vars.REGISTRY }}/${{ github.repository_owner }}/nr-bcws-wfprev-report-generator:${{ github.sha }}
           docker tag ${{ vars.REGISTRY }}/${{ github.repository_owner }}/nr-bcws-wfprev-report-generator:${{ github.sha }} ${{ vars.REGISTRY }}/${{ github.repository_owner }}/nr-bcws-wfprev-report-generator:${{ github.event.release.tag_name }}
           docker push ${{ vars.REGISTRY }}/${{ github.repository_owner }}/nr-bcws-wfprev-report-generator:${{ github.event.release.tag_name }}
 
-  build-wfprev-api:
-    needs: check-images
-    if: needs.check-images.outputs.api_exists == 'false'
-    uses: ./.github/workflows/mvn-build.yml
-    secrets: inherit
-    with:
-      COMPONENT_NAME: wfprev-api
-      TAG: ${{ github.event.release.tag_name }}
-      COMPONENT_TYPE: server
-
-  build-liquibase:
-    needs: check-images
-    if: needs.check-images.outputs.liquibase_exists == 'false'
-    uses: ./.github/workflows/liquibase-build.yml
-    secrets: inherit
-    with:
-      TAG: ${{ github.event.release.tag_name }}
-
-  build-node:
-    needs: check-images
-    if: needs.check-images.outputs.gdb_exists == 'false'
-    uses: ./.github/workflows/node-build.yml
-    secrets: inherit
-    with:
-      COMPONENT_NAME: wfprev-gdb-extractor
-      TAG: ${{ github.event.release.tag_name }}
-
-  build-report-generator:
-    needs: check-images
-    if: needs.check-images.outputs.report_exists == 'false'
-    uses: ./.github/workflows/report-generator-image-build.yml
-    secrets: inherit
-    with:
-      TAG: ${{ github.event.release.tag_name }}
-
-  # include additional steps for DLV, PRD
-  # rename to deploy-wftst, rename environment to tst
   deploy-wfdlv:
-    needs: [retag-images, build-wfprev-api, build-liquibase, build-node, build-report-generator]
+    needs: [retag-images]
     if: ${{ contains(github.event.release.tag_name, '-beta') }}
     uses: ./.github/workflows/terragrunt-deploy.yml
     secrets: inherit
@@ -156,7 +115,7 @@ jobs:
     secrets: inherit
 
   deploy-wftst:
-    needs: [retag-images, build-wfprev-api, build-liquibase, build-node, build-report-generator]
+    needs: [retag-images]
     if: ${{ contains(github.event.release.tag_name, '-rc') }}
     uses: ./.github/workflows/terragrunt-deploy.yml
     secrets: inherit
