@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.extensions.ExtensionProperty;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.locationtech.jts.geom.Geometry;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -35,6 +36,7 @@ public class SpatialController {
                     })
             }
     )
+    @PreAuthorize("hasAuthority('WFPREV.CREATE_SPATIAL_UPLOAD')")
     public ResponseEntity<ValidationResult> validateGeometry(@RequestBody Geometry geometry) {
         ValidationResult result = spatialValidationService.validateGeometry(geometry);
         return ResponseEntity.ok(result);

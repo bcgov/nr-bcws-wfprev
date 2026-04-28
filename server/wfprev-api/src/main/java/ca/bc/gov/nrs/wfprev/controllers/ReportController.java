@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,6 +31,7 @@ public class ReportController {
     private final ReportService reportService;
 
     @PostMapping
+    @PreAuthorize("hasAuthority('WFPREV.CREATE_PREVENTION_PROJECT')")
     @Operation(
             summary = "Generate Fuel Management Report",
             description = "Generate and download a fuel management report as an XLSX or CSV file",
