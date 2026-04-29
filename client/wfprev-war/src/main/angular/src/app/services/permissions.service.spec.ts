@@ -60,7 +60,7 @@ const ADMIN_SCOPES = [
   WFPREV_ACTIONS.DELETE_ACTIVITY_ATTACHMENT,
 ];
 
-fdescribe('PermissionsService', () => {
+describe('PermissionsService', () => {
   let service: PermissionsService;
   let mockTokenService: { doesUserHaveApplicationPermissions: jasmine.Spy };
   let activeScopes: string[];

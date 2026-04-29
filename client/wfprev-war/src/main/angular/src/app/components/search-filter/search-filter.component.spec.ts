@@ -228,6 +228,7 @@ describe('SearchFilterComponent', () => {
 
     // ACT → update signal (this triggers effect)
     filtersSignal.set(savedFilters);
+    codeTables$.next(mockTables);
     fixture.detectChanges();
 
     // ASSERT
@@ -248,6 +249,7 @@ describe('SearchFilterComponent', () => {
 
     // ACT → update signal (this triggers effect)
     filtersSignal.set(savedFilters);
+    codeTables$.next(mockTables);
     fixture.detectChanges();
 
     // ASSERT
