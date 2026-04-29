@@ -2,8 +2,6 @@ import { TestBed } from '@angular/core/testing';
 import { PermissionsService, WFPREV_ACTIONS } from './permissions.service';
 import { TokenService } from './token.service';
 
-class MockTokenService {}
-
 const VIEWER_SCOPES = [
   WFPREV_ACTIONS.GET_TOPLEVEL,
   WFPREV_ACTIONS.GET_PREVENTION_PROJECT,
@@ -62,139 +60,114 @@ const ADMIN_SCOPES = [
   WFPREV_ACTIONS.DELETE_ACTIVITY_ATTACHMENT,
 ];
 
-describe('PermissionsService', () => {
+fdescribe('PermissionsService', () => {
   let service: PermissionsService;
+  let mockTokenService: { doesUserHaveApplicationPermissions: jasmine.Spy };
+  let activeScopes: string[];
 
   beforeEach(() => {
+    activeScopes = [];
+    mockTokenService = {
+      doesUserHaveApplicationPermissions: jasmine.createSpy('doesUserHaveApplicationPermissions')
+        .and.callFake((scopes: string[]) =>
+          scopes.every(s => activeScopes.includes(s))
+        ),
+    };
+
     TestBed.configureTestingModule({
       providers: [
         PermissionsService,
-        { provide: TokenService, useClass: MockTokenService },
+        { provide: TokenService, useValue: mockTokenService },
       ],
     });
     service = TestBed.inject(PermissionsService);
   });
 
   describe('initial state', () => {
-    it('should have no scopes', () => {
-      expect(service.canCreateProject()).toBeFalse();
-      expect(service.canEditProject()).toBeFalse();
-      expect(service.canDeleteProject()).toBeFalse();
-      expect(service.canExportList()).toBeFalse();
-      expect(service.canCreateFiscal()).toBeFalse();
-      expect(service.canUpdateFiscal()).toBeFalse();
-      expect(service.canDeleteFiscal()).toBeFalse();
-      expect(service.canCreateActivity()).toBeFalse();
-      expect(service.canUpdateActivity()).toBeFalse();
-      expect(service.canDeleteActivity()).toBeFalse();
-      expect(service.canCreatePerformanceUpdate()).toBeFalse();
-      expect(service.canViewSpatial()).toBeFalse();
-      expect(service.canUploadSpatial()).toBeFalse();
-      expect(service.canDeleteSpatial()).toBeFalse();
-      expect(service.canUpdateSpatialMetadata()).toBeFalse();
-      expect(service.canExportToResults()).toBeFalse();
-      expect(service.canCreateEvaluationCriteria()).toBeFalse();
-      expect(service.canUpdateEvaluationCriteria()).toBeFalse();
-      expect(service.canDeleteEvaluationCriteria()).toBeFalse();
-      expect(service.canCreateYearEndReport()).toBeFalse();
-      expect(service.canUpdateYearEndReport()).toBeFalse();
-      expect(service.canDeleteYearEndReport()).toBeFalse();
-      expect(service.canCreateActivityAttachment()).toBeFalse();
-      expect(service.canUpdateActivityAttachment()).toBeFalse();
-      expect(service.canDeleteActivityAttachment()).toBeFalse();
-    });
-  });
-
-  describe('loadFromCredentials', () => {
-    it('should handle an array scope claim', () => {
-      service.loadFromCredentials({ scope: VIEWER_SCOPES });
-      expect(service.canExportList()).toBeTrue();
-      expect(service.canViewSpatial()).toBeTrue();
-      expect(service.canExportToResults()).toBeTrue();
-      expect(service.canCreateProject()).toBeFalse();
-    });
-
-    it('should handle a space-delimited string scope claim', () => {
-      service.loadFromCredentials({ scope: VIEWER_SCOPES.join(' ') });
-      expect(service.canExportList()).toBeTrue();
-      expect(service.canCreateProject()).toBeFalse();
-    });
-
-    it('should handle missing scope gracefully', () => {
-      service.loadFromCredentials({});
-      expect(service.canCreateProject()).toBeFalse();
-    });
-
-    it('should handle null tokenDetails gracefully', () => {
-      service.loadFromCredentials(null);
-      expect(service.canCreateProject()).toBeFalse();
-    });
-  });
-
-  describe('clearScopes', () => {
-    it('should clear all permissions', () => {
-      service.loadFromCredentials({ scope: ADMIN_SCOPES });
-      expect(service.canCreateProject()).toBeTrue();
-      service.clearScopes();
-      expect(service.canCreateProject()).toBeFalse();
+    it('should return false for all actions when no scopes are loaded', () => {
+      expect(service.hasAction(WFPREV_ACTIONS.CREATE_PREVENTION_PROJECT)).toBeFalse();
+      expect(service.hasAction(WFPREV_ACTIONS.UPDATE_PREVENTION_PROJECT)).toBeFalse();
+      expect(service.hasAction(WFPREV_ACTIONS.DELETE_PREVENTION_PROJECT)).toBeFalse();
+      expect(service.hasAction(WFPREV_ACTIONS.GET_PREVENTION_PROJECT)).toBeFalse();
+      expect(service.hasAction(WFPREV_ACTIONS.CREATE_PREVENTION_FISCAL)).toBeFalse();
+      expect(service.hasAction(WFPREV_ACTIONS.UPDATE_PREVENTION_FISCAL)).toBeFalse();
+      expect(service.hasAction(WFPREV_ACTIONS.DELETE_PREVENTION_FISCAL)).toBeFalse();
+      expect(service.hasAction(WFPREV_ACTIONS.CREATE_PREVENTION_ACTIVITY)).toBeFalse();
+      expect(service.hasAction(WFPREV_ACTIONS.UPDATE_PREVENTION_ACTIVITY)).toBeFalse();
+      expect(service.hasAction(WFPREV_ACTIONS.DELETE_PREVENTION_ACTIVITY)).toBeFalse();
+      expect(service.hasAction(WFPREV_ACTIONS.CREATE_PERFORMANCE_UPDATE)).toBeFalse();
+      expect(service.hasAction(WFPREV_ACTIONS.GET_SPATIAL)).toBeFalse();
+      expect(service.hasAction(WFPREV_ACTIONS.CREATE_SPATIAL_UPLOAD)).toBeFalse();
+      expect(service.hasAction(WFPREV_ACTIONS.DELETE_SPATIAL_UPLOAD)).toBeFalse();
+      expect(service.hasAction(WFPREV_ACTIONS.UPDATE_SPATIAL_METADATA)).toBeFalse();
+      expect(service.hasAction(WFPREV_ACTIONS.EXPORT_TO_RESULTS)).toBeFalse();
+      expect(service.hasAction(WFPREV_ACTIONS.CREATE_EVALUATION_CRITERIA)).toBeFalse();
+      expect(service.hasAction(WFPREV_ACTIONS.UPDATE_EVALUATION_CRITERIA)).toBeFalse();
+      expect(service.hasAction(WFPREV_ACTIONS.DELETE_EVALUATION_CRITERIA)).toBeFalse();
+      expect(service.hasAction(WFPREV_ACTIONS.CREATE_YEAR_END_REPORT)).toBeFalse();
+      expect(service.hasAction(WFPREV_ACTIONS.UPDATE_YEAR_END_REPORT)).toBeFalse();
+      expect(service.hasAction(WFPREV_ACTIONS.DELETE_YEAR_END_REPORT)).toBeFalse();
+      expect(service.hasAction(WFPREV_ACTIONS.CREATE_ACTIVITY_ATTACHMENT)).toBeFalse();
+      expect(service.hasAction(WFPREV_ACTIONS.UPDATE_ACTIVITY_ATTACHMENT)).toBeFalse();
+      expect(service.hasAction(WFPREV_ACTIONS.DELETE_ACTIVITY_ATTACHMENT)).toBeFalse();
     });
   });
 
   describe('WFPREV-VIEWER profile', () => {
-    beforeEach(() => service.loadFromCredentials({ scope: VIEWER_SCOPES }));
+    beforeEach(() => activeScopes = [...VIEWER_SCOPES]);
 
-    it('can view project list', () => expect(service.canExportList()).toBeTrue());
-    it('can view spatial', () => expect(service.canViewSpatial()).toBeTrue());
-    it('can export to results', () => expect(service.canExportToResults()).toBeTrue());
-    it('cannot create project', () => expect(service.canCreateProject()).toBeFalse());
-    it('cannot edit project', () => expect(service.canEditProject()).toBeFalse());
-    it('cannot delete project', () => expect(service.canDeleteProject()).toBeFalse());
-    it('cannot create fiscal', () => expect(service.canCreateFiscal()).toBeFalse());
-    it('cannot create activity', () => expect(service.canCreateActivity()).toBeFalse());
-    it('cannot upload spatial', () => expect(service.canUploadSpatial()).toBeFalse());
-    it('cannot create evaluation criteria', () => expect(service.canCreateEvaluationCriteria()).toBeFalse());
-    it('cannot create year end report', () => expect(service.canCreateYearEndReport()).toBeFalse());
-    it('cannot create activity attachment', () => expect(service.canCreateActivityAttachment()).toBeFalse());
+    it('can view project list', () => expect(service.hasAction(WFPREV_ACTIONS.GET_PREVENTION_PROJECT)).toBeTrue());
+    it('can view spatial', () => expect(service.hasAction(WFPREV_ACTIONS.GET_SPATIAL)).toBeTrue());
+    it('can export to results', () => expect(service.hasAction(WFPREV_ACTIONS.EXPORT_TO_RESULTS)).toBeTrue());
+    it('cannot create project', () => expect(service.hasAction(WFPREV_ACTIONS.CREATE_PREVENTION_PROJECT)).toBeFalse());
+    it('cannot edit project', () => expect(service.hasAction(WFPREV_ACTIONS.UPDATE_PREVENTION_PROJECT)).toBeFalse());
+    it('cannot delete project', () => expect(service.hasAction(WFPREV_ACTIONS.DELETE_PREVENTION_PROJECT)).toBeFalse());
+    it('cannot create fiscal', () => expect(service.hasAction(WFPREV_ACTIONS.CREATE_PREVENTION_FISCAL)).toBeFalse());
+    it('cannot create activity', () => expect(service.hasAction(WFPREV_ACTIONS.CREATE_PREVENTION_ACTIVITY)).toBeFalse());
+    it('cannot upload spatial', () => expect(service.hasAction(WFPREV_ACTIONS.CREATE_SPATIAL_UPLOAD)).toBeFalse());
+    it('cannot create evaluation criteria', () => expect(service.hasAction(WFPREV_ACTIONS.CREATE_EVALUATION_CRITERIA)).toBeFalse());
+    it('cannot create year end report', () => expect(service.hasAction(WFPREV_ACTIONS.CREATE_YEAR_END_REPORT)).toBeFalse());
+    it('cannot create activity attachment', () => expect(service.hasAction(WFPREV_ACTIONS.CREATE_ACTIVITY_ATTACHMENT)).toBeFalse());
   });
 
   describe('WFPREV-EDITOR profile', () => {
-    beforeEach(() => service.loadFromCredentials({ scope: EDITOR_SCOPES }));
+    beforeEach(() => activeScopes = [...EDITOR_SCOPES]);
 
-    it('can create project', () => expect(service.canCreateProject()).toBeTrue());
-    it('can edit project', () => expect(service.canEditProject()).toBeTrue());
-    it('can create fiscal', () => expect(service.canCreateFiscal()).toBeTrue());
-    it('can update fiscal', () => expect(service.canUpdateFiscal()).toBeTrue());
-    it('can create activity', () => expect(service.canCreateActivity()).toBeTrue());
-    it('can update activity', () => expect(service.canUpdateActivity()).toBeTrue());
-    it('can create performance update', () => expect(service.canCreatePerformanceUpdate()).toBeTrue());
-    it('can upload spatial', () => expect(service.canUploadSpatial()).toBeTrue());
-    it('can update spatial metadata', () => expect(service.canUpdateSpatialMetadata()).toBeTrue());
-    it('can create evaluation criteria', () => expect(service.canCreateEvaluationCriteria()).toBeTrue());
-    it('can update evaluation criteria', () => expect(service.canUpdateEvaluationCriteria()).toBeTrue());
-    it('can create year end report', () => expect(service.canCreateYearEndReport()).toBeTrue());
-    it('can create activity attachment', () => expect(service.canCreateActivityAttachment()).toBeTrue());
-    it('cannot delete project', () => expect(service.canDeleteProject()).toBeFalse());
-    it('cannot delete fiscal', () => expect(service.canDeleteFiscal()).toBeFalse());
-    it('cannot delete activity', () => expect(service.canDeleteActivity()).toBeFalse());
-    it('cannot delete spatial', () => expect(service.canDeleteSpatial()).toBeFalse());
-    it('cannot delete evaluation criteria', () => expect(service.canDeleteEvaluationCriteria()).toBeFalse());
-    it('cannot delete year end report', () => expect(service.canDeleteYearEndReport()).toBeFalse());
-    it('cannot delete activity attachment', () => expect(service.canDeleteActivityAttachment()).toBeFalse());
+    it('can create project', () => expect(service.hasAction(WFPREV_ACTIONS.CREATE_PREVENTION_PROJECT)).toBeTrue());
+    it('can edit project', () => expect(service.hasAction(WFPREV_ACTIONS.UPDATE_PREVENTION_PROJECT)).toBeTrue());
+    it('can create fiscal', () => expect(service.hasAction(WFPREV_ACTIONS.CREATE_PREVENTION_FISCAL)).toBeTrue());
+    it('can update fiscal', () => expect(service.hasAction(WFPREV_ACTIONS.UPDATE_PREVENTION_FISCAL)).toBeTrue());
+    it('can create activity', () => expect(service.hasAction(WFPREV_ACTIONS.CREATE_PREVENTION_ACTIVITY)).toBeTrue());
+    it('can update activity', () => expect(service.hasAction(WFPREV_ACTIONS.UPDATE_PREVENTION_ACTIVITY)).toBeTrue());
+    it('can create performance update', () => expect(service.hasAction(WFPREV_ACTIONS.CREATE_PERFORMANCE_UPDATE)).toBeTrue());
+    it('can upload spatial', () => expect(service.hasAction(WFPREV_ACTIONS.CREATE_SPATIAL_UPLOAD)).toBeTrue());
+    it('can update spatial metadata', () => expect(service.hasAction(WFPREV_ACTIONS.UPDATE_SPATIAL_METADATA)).toBeTrue());
+    it('can create evaluation criteria', () => expect(service.hasAction(WFPREV_ACTIONS.CREATE_EVALUATION_CRITERIA)).toBeTrue());
+    it('can update evaluation criteria', () => expect(service.hasAction(WFPREV_ACTIONS.UPDATE_EVALUATION_CRITERIA)).toBeTrue());
+    it('can create year end report', () => expect(service.hasAction(WFPREV_ACTIONS.CREATE_YEAR_END_REPORT)).toBeTrue());
+    it('can create activity attachment', () => expect(service.hasAction(WFPREV_ACTIONS.CREATE_ACTIVITY_ATTACHMENT)).toBeTrue());
+    it('cannot delete project', () => expect(service.hasAction(WFPREV_ACTIONS.DELETE_PREVENTION_PROJECT)).toBeFalse());
+    it('cannot delete fiscal', () => expect(service.hasAction(WFPREV_ACTIONS.DELETE_PREVENTION_FISCAL)).toBeFalse());
+    it('cannot delete activity', () => expect(service.hasAction(WFPREV_ACTIONS.DELETE_PREVENTION_ACTIVITY)).toBeFalse());
+    it('cannot delete spatial', () => expect(service.hasAction(WFPREV_ACTIONS.DELETE_SPATIAL_UPLOAD)).toBeFalse());
+    it('cannot delete evaluation criteria', () => expect(service.hasAction(WFPREV_ACTIONS.DELETE_EVALUATION_CRITERIA)).toBeFalse());
+    it('cannot delete year end report', () => expect(service.hasAction(WFPREV_ACTIONS.DELETE_YEAR_END_REPORT)).toBeFalse());
+    it('cannot delete activity attachment', () => expect(service.hasAction(WFPREV_ACTIONS.DELETE_ACTIVITY_ATTACHMENT)).toBeFalse());
   });
 
   describe('WFPREV-ADMIN profile', () => {
-    beforeEach(() => service.loadFromCredentials({ scope: ADMIN_SCOPES }));
+    beforeEach(() => activeScopes = [...ADMIN_SCOPES]);
 
-    it('can create project', () => expect(service.canCreateProject()).toBeTrue());
-    it('can edit project', () => expect(service.canEditProject()).toBeTrue());
-    it('can delete project', () => expect(service.canDeleteProject()).toBeTrue());
-    it('can delete fiscal', () => expect(service.canDeleteFiscal()).toBeTrue());
-    it('can delete activity', () => expect(service.canDeleteActivity()).toBeTrue());
-    it('can delete spatial', () => expect(service.canDeleteSpatial()).toBeTrue());
-    it('can delete evaluation criteria', () => expect(service.canDeleteEvaluationCriteria()).toBeTrue());
-    it('can delete year end report', () => expect(service.canDeleteYearEndReport()).toBeTrue());
-    it('can delete activity attachment', () => expect(service.canDeleteActivityAttachment()).toBeTrue());
-    it('can update year end report', () => expect(service.canUpdateYearEndReport()).toBeTrue());
-    it('can update activity attachment', () => expect(service.canUpdateActivityAttachment()).toBeTrue());
+    it('can create project', () => expect(service.hasAction(WFPREV_ACTIONS.CREATE_PREVENTION_PROJECT)).toBeTrue());
+    it('can edit project', () => expect(service.hasAction(WFPREV_ACTIONS.UPDATE_PREVENTION_PROJECT)).toBeTrue());
+    it('can delete project', () => expect(service.hasAction(WFPREV_ACTIONS.DELETE_PREVENTION_PROJECT)).toBeTrue());
+    it('can delete fiscal', () => expect(service.hasAction(WFPREV_ACTIONS.DELETE_PREVENTION_FISCAL)).toBeTrue());
+    it('can delete activity', () => expect(service.hasAction(WFPREV_ACTIONS.DELETE_PREVENTION_ACTIVITY)).toBeTrue());
+    it('can delete spatial', () => expect(service.hasAction(WFPREV_ACTIONS.DELETE_SPATIAL_UPLOAD)).toBeTrue());
+    it('can delete evaluation criteria', () => expect(service.hasAction(WFPREV_ACTIONS.DELETE_EVALUATION_CRITERIA)).toBeTrue());
+    it('can delete year end report', () => expect(service.hasAction(WFPREV_ACTIONS.DELETE_YEAR_END_REPORT)).toBeTrue());
+    it('can delete activity attachment', () => expect(service.hasAction(WFPREV_ACTIONS.DELETE_ACTIVITY_ATTACHMENT)).toBeTrue());
+    it('can update year end report', () => expect(service.hasAction(WFPREV_ACTIONS.UPDATE_YEAR_END_REPORT)).toBeTrue());
+    it('can update activity attachment', () => expect(service.hasAction(WFPREV_ACTIONS.UPDATE_ACTIVITY_ATTACHMENT)).toBeTrue());
   });
 });

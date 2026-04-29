@@ -4,7 +4,6 @@ import { Router } from '@angular/router';
 import { AppConfigService } from 'src/app/services/app-config.service';
 import { TokenService } from 'src/app/services/token.service';
 import { ResourcesRoutes } from 'src/app/utils';
-import { PermissionsService } from './services/permissions.service';
 
 @Component({
   selector: 'app-root',
@@ -18,8 +17,7 @@ export class AppComponent implements OnInit {
     protected router: Router,
     protected appConfigService: AppConfigService,
     protected tokenService: TokenService,
-    protected dialog: MatDialog,
-    protected permissionsService: PermissionsService,
+    protected dialog: MatDialog
   ) {
   }
 
@@ -30,16 +28,6 @@ export class AppComponent implements OnInit {
         `SHA: ${config.application.buildId || 'unknown'}`,
         `Run Number: ${config.application.buildNumber || '0'}`);
     }
-
-    // Load permissions from token on app initialization
-    this.tokenService.credentialsEmitter.subscribe({
-      next: (tokenDetails) => {
-        this.permissionsService.loadFromCredentials(tokenDetails);
-      },
-      error: () => {
-        this.permissionsService.clearScopes();
-      },
-    });
   }
 
   goHome(): void {

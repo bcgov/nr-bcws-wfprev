@@ -5,7 +5,6 @@ import { provideHttpClient } from '@angular/common/http';
 import { AppConfigService } from 'src/app/services/app-config.service';
 import { LibraryConfig } from 'src/app/config/library-config';
 import { ResizablePanelComponent } from 'src/app/components/resizable-panel/resizable-panel.component';
-import { PermissionsService } from 'src/app/services/permissions.service';
 import { Subject } from 'rxjs';
 import { ResourcesRoutes } from './utils';
 import { TokenService } from './services/token.service';
@@ -37,11 +36,6 @@ class MockAppConfigService {
   }
 }
 
-class MockPermissionsService {
-  loadFromCredentials(tokenDetails: any): void {}
-  clearScopes(): void {}
-}
-
 class MockTokenService {
   credentialsEmitter = new Subject<any>().asObservable();
 }
@@ -58,7 +52,7 @@ describe('AppComponent', () => {
         { provide: AppConfigService, useClass: MockAppConfigService },
         { provide: TokenService, useClass: MockTokenService },
         { provide: MatDialog, useValue: {} },
-        { provide: PermissionsService, useClass: MockPermissionsService },
+  
       ],
     }).compileComponents();
 
@@ -69,36 +63,6 @@ describe('AppComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
-  });
-
-  describe('ngOnInit', () => {
-    it('should call loadFromCredentials when credentialsEmitter emits', () => {
-      const credentialsSubject = new Subject<any>();
-      const tokenService = TestBed.inject(TokenService) as any;
-      tokenService.credentialsEmitter = credentialsSubject.asObservable();
-
-      const permissionsService = TestBed.inject(PermissionsService);
-      spyOn(permissionsService, 'loadFromCredentials');
-
-      component.ngOnInit();
-      credentialsSubject.next({ scope: ['WFPREV.GET_PREVENTION_PROJECT'] });
-
-      expect(permissionsService.loadFromCredentials).toHaveBeenCalled();
-    });
-
-    it('should call clearScopes on token error', () => {
-      const credentialsSubject = new Subject<any>();
-      const tokenService = TestBed.inject(TokenService) as any;
-      tokenService.credentialsEmitter = credentialsSubject.asObservable();
-
-      const permissionsService = TestBed.inject(PermissionsService);
-      spyOn(permissionsService, 'clearScopes');
-
-      component.ngOnInit();
-      credentialsSubject.error('token error');
-
-      expect(permissionsService.clearScopes).toHaveBeenCalled();
-    });
   });
 
   describe('goHome', () => {
