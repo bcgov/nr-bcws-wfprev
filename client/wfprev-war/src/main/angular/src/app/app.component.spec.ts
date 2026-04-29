@@ -5,6 +5,12 @@ import { provideHttpClient } from '@angular/common/http';
 import { AppConfigService } from 'src/app/services/app-config.service';
 import { LibraryConfig } from 'src/app/config/library-config';
 import { ResizablePanelComponent } from 'src/app/components/resizable-panel/resizable-panel.component';
+import { Subject } from 'rxjs';
+import { ResourcesRoutes } from './utils';
+import { TokenService } from './services/token.service';
+import { AppComponent } from './app.component';
+import { Router } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
 
 // Mock configuration
 const mockApplicationConfig = {
@@ -29,6 +35,44 @@ class MockAppConfigService {
     return this.appConfig;
   }
 }
+
+class MockTokenService {
+  credentialsEmitter = new Subject<any>().asObservable();
+}
+
+describe('AppComponent', () => {
+  let component: AppComponent;
+  let fixture: ComponentFixture<AppComponent>;
+
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      declarations: [AppComponent],
+      providers: [
+        { provide: Router, useValue: { navigate: jasmine.createSpy() } },
+        { provide: AppConfigService, useClass: MockAppConfigService },
+        { provide: TokenService, useClass: MockTokenService },
+        { provide: MatDialog, useValue: {} },
+  
+      ],
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(AppComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
+
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
+
+  describe('goHome', () => {
+    it('should navigate to landing route', () => {
+      const router = TestBed.inject(Router);
+      component.goHome();
+      expect(router.navigate).toHaveBeenCalledWith([ResourcesRoutes.LANDING]);
+    });
+  });
+});
 
 describe('ResizablePanelComponent', () => {
   let component: ResizablePanelComponent;

@@ -13,20 +13,21 @@
           </mat-select>
         </mat-form-field>
       </div>
-      <div class="create-project-download-button-container">
-        <wfprev-download-button
-          [formats]="formats"
-          (download)="onDownload($event)"
-          [disabled]="!displayedProjects.length">
-        </wfprev-download-button>
-        <wfprev-icon-button
-            [text]="'Create Project'"
-            [icon]="'/assets/add-button.svg'"
-            [alt]="'create-project'"
-            [iconSize]="19"
-            (clicked)="createNewProject()">
-        </wfprev-icon-button>
-      </div>
+<div class="create-project-download-button-container">
+  <wfprev-download-button
+    [formats]="formats"
+    (download)="onDownload($event)"
+    [disabled]="!displayedProjects.length || !perms.hasAction(WFPREV_ACTIONS.EXPORT_TO_RESULTS)">
+  </wfprev-download-button>
+  <wfprev-icon-button
+      [text]="'Create Project'"
+      [icon]="'/assets/add-button.svg'"
+      [alt]="'create-project'"
+      [iconSize]="19"
+      [disabled]="!perms.hasAction(WFPREV_ACTIONS.CREATE_PREVENTION_PROJECT)"
+      (clicked)="createNewProject()">
+  </wfprev-icon-button>
+</div>
     </div>
     <div class="result-count">
       <!-- Result Count -->
@@ -54,11 +55,13 @@
                 {{ getProjectFiscalYearRange(project) }}
               </div>
               <div class="action-items">
-                <div class="action-item" (click)="editProject(project, $event)">
+                <div class="action-item" 
+                    [class.disabled]="!perms.hasAction(WFPREV_ACTIONS.UPDATE_PREVENTION_PROJECT)"
+                    (click)="perms.hasAction(WFPREV_ACTIONS.UPDATE_PREVENTION_PROJECT) && editProject(project, $event)">
                   <img alt="edit-icon" class="icon" src="/assets/edit-icon.svg" />
                   <span>Edit</span>
-                </div>
               </div>
+            </div>
             </div>
           </mat-panel-title>
           <div class="divider"></div>
