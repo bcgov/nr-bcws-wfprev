@@ -57,19 +57,19 @@ jobs:
           node-version: '20' 
 
       - name: Add .npmrc file to angular folder
-        working-directory: ./client/wfprev-war/src/main/angular
         run: echo -e $NPMRC > ~/.npmrc
 
-      - name: Add .npmrc file to node folder
+      - name: Clean npm cache for Node.js server
         working-directory: ./node/wfprev-gdb-extractor
-        run: echo -e $NPMRC > ~/.npmrc  
+        run: npm cache clean --force
 
-         # Clean npm cache and install dependencies
-      - name: Install dependencies for Node.js server  
-      - run: npm cache clean --force
-      - run: rm -rf node_modules
-      - run: npm install
+      - name: Remove node_modules for Node.js server
         working-directory: ./node/wfprev-gdb-extractor
+        run: rm -rf node_modules
+
+      - name: Install dependencies for Node.js server
+        working-directory: ./node/wfprev-gdb-extractor
+        run: npm install
       
       - name: Run tests with coverage for Node.js server
         working-directory: ./node/wfprev-gdb-extractor
