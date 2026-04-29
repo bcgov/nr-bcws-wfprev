@@ -67,6 +67,12 @@ jobs:
         working-directory: ./node/wfprev-gdb-extractor
         run: rm -rf node_modules
 
+      - name: Debug Node.js package.json
+        run: cat ./node/wfprev-gdb-extractor/package.json
+
+      - name: Debug .npmrc contents
+        run: cat ~/.npmrc  
+
       - name: Install dependencies for Node.js server
         working-directory: ./node/wfprev-gdb-extractor
         run: npm install
