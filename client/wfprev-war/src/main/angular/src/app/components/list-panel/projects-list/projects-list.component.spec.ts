@@ -17,6 +17,8 @@ import { SharedService } from 'src/app/services/shared-service';
 import { ResourcesRoutes } from 'src/app/utils';
 import { Messages } from 'src/app/utils/constants';
 import { ProjectsListComponent } from './projects-list.component';
+import { PermissionsService } from 'src/app/services/permissions.service';
+import { ProjectFilterStateService } from 'src/app/services/project-filter-state.service';
 
 describe('ProjectsListComponent', () => {
   let component: ProjectsListComponent;
@@ -27,6 +29,15 @@ describe('ProjectsListComponent', () => {
   let mockMarkerClusterGroup: any;
   let mockMarker: any;
   let mockPolygon: any;
+  let mockProjectFilterStateService: any;
+
+  class MockPermissionsService {
+    canCreateProject = jasmine.createSpy().and.returnValue(true);
+    canEditProject = jasmine.createSpy().and.returnValue(true);
+    canExportList = jasmine.createSpy().and.returnValue(true);
+    canDeleteProject = jasmine.createSpy().and.returnValue(true);
+    canExportToResults = jasmine.createSpy().and.returnValue(true);
+  }
 
   const mockFetchProjectsResponse = () => {
     mockProjectService.fetchProjects.and.returnValue(of({
@@ -134,6 +145,10 @@ describe('ProjectsListComponent', () => {
       get currentFilters() { return this._currentFilters; }
     };
 
+    mockProjectFilterStateService = {
+      filters: jasmine.createSpy('filters').and.returnValue({ searchText: 'value' })
+    };
+
     await TestBed.configureTestingModule({
       imports: [
         ProjectsListComponent,
@@ -148,7 +163,9 @@ describe('ProjectsListComponent', () => {
         { provide: Router, useValue: mockRouter },
         { provide: ActivatedRoute, useValue: {} },
         { provide: MapService, useValue: mockMapService },
-        { provide: SharedService, useValue: mockSharedService }
+        { provide: SharedService, useValue: mockSharedService },
+        { provide: PermissionsService, useClass: MockPermissionsService },
+        { provide: ProjectFilterStateService, useValue: mockProjectFilterStateService }
       ],
     }).compileComponents();
 
@@ -917,6 +934,7 @@ describe('ProjectsListComponent', () => {
     });
 
     it('should download projects successfully when filters are applied', fakeAsync(() => {
+      mockProjectFilterStateService.filters.and.returnValue({ searchText: 'value' });
       mockSharedService._currentFilters = { searchText: 'value' };
       // displayedProjects state is irrelevant for the current implementation, but we set it to empty for clarity
       component.displayedProjects = [];
@@ -935,6 +953,7 @@ describe('ProjectsListComponent', () => {
     }));
 
     it('should show error message when attempting to download without filters', fakeAsync(() => {
+      mockProjectFilterStateService.filters.and.returnValue({});
       mockSharedService._currentFilters = null;
       component.displayedProjects = [{ projectGuid: 'guid1' }] as any; // Presence of projects irrelevant
 

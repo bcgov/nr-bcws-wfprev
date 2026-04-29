@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectorRef, Component, ElementRef, OnInit, QueryList, ViewChildren } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, inject, OnInit, QueryList, ViewChildren } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -25,6 +25,7 @@ import { getBluePinIcon, getFiscalYearDisplay, PlanFiscalStatusIcons } from 'src
 import { ReportRequest } from '../../models';
 import { ExpansionIndicatorComponent } from '../../shared/expansion-indicator/expansion-indicator.component';
 import { ProjectFilterStateService } from 'src/app/services/project-filter-state.service';
+import { PermissionsService, WFPREV_ACTIONS } from 'src/app/services/permissions.service';
 
 @Component({
   selector: 'wfprev-projects-list',
@@ -60,6 +61,9 @@ export class ProjectsListComponent implements OnInit {
   pageNumber = 1;
   pageRowCount = 20;
   hasMore = true;
+  protected readonly perms = inject(PermissionsService);
+  protected readonly WFPREV_ACTIONS = WFPREV_ACTIONS;
+
   constructor(
     private readonly router: Router,
     private readonly projectService: ProjectService,

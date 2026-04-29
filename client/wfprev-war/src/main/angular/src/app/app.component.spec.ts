@@ -5,6 +5,13 @@ import { provideHttpClient } from '@angular/common/http';
 import { AppConfigService } from 'src/app/services/app-config.service';
 import { LibraryConfig } from 'src/app/config/library-config';
 import { ResizablePanelComponent } from 'src/app/components/resizable-panel/resizable-panel.component';
+import { PermissionsService } from 'src/app/services/permissions.service';
+import { Subject } from 'rxjs';
+import { ResourcesRoutes } from './utils';
+import { TokenService } from './services/token.service';
+import { AppComponent } from './app.component';
+import { Router } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
 
 // Mock configuration
 const mockApplicationConfig = {
@@ -29,6 +36,79 @@ class MockAppConfigService {
     return this.appConfig;
   }
 }
+
+class MockPermissionsService {
+  loadFromCredentials(tokenDetails: any): void {}
+  clearScopes(): void {}
+}
+
+class MockTokenService {
+  credentialsEmitter = new Subject<any>().asObservable();
+}
+
+describe('AppComponent', () => {
+  let component: AppComponent;
+  let fixture: ComponentFixture<AppComponent>;
+
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      declarations: [AppComponent],
+      providers: [
+        { provide: Router, useValue: { navigate: jasmine.createSpy() } },
+        { provide: AppConfigService, useClass: MockAppConfigService },
+        { provide: TokenService, useClass: MockTokenService },
+        { provide: MatDialog, useValue: {} },
+        { provide: PermissionsService, useClass: MockPermissionsService },
+      ],
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(AppComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
+
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
+
+  describe('ngOnInit', () => {
+    it('should call loadFromCredentials when credentialsEmitter emits', () => {
+      const credentialsSubject = new Subject<any>();
+      const tokenService = TestBed.inject(TokenService) as any;
+      tokenService.credentialsEmitter = credentialsSubject.asObservable();
+
+      const permissionsService = TestBed.inject(PermissionsService);
+      spyOn(permissionsService, 'loadFromCredentials');
+
+      component.ngOnInit();
+      credentialsSubject.next({ scope: ['WFPREV.GET_PREVENTION_PROJECT'] });
+
+      expect(permissionsService.loadFromCredentials).toHaveBeenCalled();
+    });
+
+    it('should call clearScopes on token error', () => {
+      const credentialsSubject = new Subject<any>();
+      const tokenService = TestBed.inject(TokenService) as any;
+      tokenService.credentialsEmitter = credentialsSubject.asObservable();
+
+      const permissionsService = TestBed.inject(PermissionsService);
+      spyOn(permissionsService, 'clearScopes');
+
+      component.ngOnInit();
+      credentialsSubject.error('token error');
+
+      expect(permissionsService.clearScopes).toHaveBeenCalled();
+    });
+  });
+
+  describe('goHome', () => {
+    it('should navigate to landing route', () => {
+      const router = TestBed.inject(Router);
+      component.goHome();
+      expect(router.navigate).toHaveBeenCalledWith([ResourcesRoutes.LANDING]);
+    });
+  });
+});
 
 describe('ResizablePanelComponent', () => {
   let component: ResizablePanelComponent;
