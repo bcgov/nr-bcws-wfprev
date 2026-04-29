@@ -72,6 +72,8 @@ jobs:
         run: npm install --ignore-scripts
         env:
           npm_config_userconfig: /dev/null
+          npm_config_globalconfig: /dev/null
+          npm_config_registry: https://registry.npmjs.org/
       
       - name: Run tests with coverage for Node.js server
         working-directory: ./node/wfprev-gdb-extractor
