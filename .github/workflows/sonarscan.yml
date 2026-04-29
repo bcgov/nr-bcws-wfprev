@@ -67,6 +67,11 @@ jobs:
         working-directory: ./node/wfprev-gdb-extractor
         run: rm -rf node_modules
 
+      - name: Check for local .npmrc in node folder
+        run: |
+          ls -la ./node/wfprev-gdb-extractor/
+          cat ./node/wfprev-gdb-extractor/.npmrc 2>/dev/null || echo "No local .npmrc found"   
+
       - name: Install dependencies for Node.js server
         working-directory: ./node/wfprev-gdb-extractor
         run: npm install --ignore-scripts
