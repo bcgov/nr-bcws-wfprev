@@ -390,7 +390,7 @@ describe('ActivitiesComponent', () => {
     expect(component.getActivityTitle(0)).toBe('');
   });
 
-  it('should construct title with missing elements when Results Reportable is ON', () => {
+  it('should construct Base A - Technique B title with missing elements when Results Reportable is ON', () => {
     component.silvicultureBaseCode = [{ silvicultureBaseGuid: 'base1', description: 'Base A' }];
     component.silvicultureTechniqueCode = [{ silvicultureTechniqueGuid: 'tech1', description: 'Technique B', silvicultureBaseGuid: 'base1' }];
     component.silvicultureMethodCode = [{ silvicultureMethodGuid: 'method1', description: 'Method C' }];
@@ -407,7 +407,7 @@ describe('ActivitiesComponent', () => {
   });
 
 
-  it('should construct title with missing elements when Results Reportable is ON', () => {
+  it('should construct Base A title with missing elements when Results Reportable is ON', () => {
     component.silvicultureBaseCode = [{ silvicultureBaseGuid: 'base1', description: 'Base A' }];
     component.silvicultureTechniqueCode = [{ silvicultureTechniqueGuid: 'tech1', description: 'Technique B', silvicultureBaseGuid: 'base1' }];
     component.silvicultureMethodCode = [{ silvicultureMethodGuid: 'method1', description: 'Method C' }];

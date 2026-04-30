@@ -527,6 +527,9 @@ describe('MapComponent', () => {
       const validLayer2 = jasmine.createSpyObj('Layer', ['remove', 'on']);
       const invalidLayer = {};
 
+      Object.setPrototypeOf(validLayer1, L.Marker.prototype);
+      Object.setPrototypeOf(validLayer2, L.Marker.prototype);
+
       const mockGroup = {
         _layers: {
           '1': validLayer1,
