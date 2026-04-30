@@ -62,7 +62,7 @@ jobs:
         
       - name: Debug .npmrc
         run: cat ~/.npmrc
-
+ 
       - name: Install dependencies for Node.js server
         working-directory: ./node/wfprev-gdb-extractor
         run: npm install
@@ -118,11 +118,11 @@ jobs:
           -DWFPREV_GDB_FUNCTION_NAME=${{ vars.WFPREV_GDB_FUNCTION_NAME }}
 
       - name: SonarCloud Scan Action
-        uses: SonarSource/sonarcloud-github-action@master
+        uses: SonarSource/sonarqube-scan-action@v5.0.0
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
+          SONAR_HOST_URL: https://sonarcloud.io
+          
       - name: Check SonarCloud Quality Gate
         id: sonarcloud_quality_gate
         run: |
