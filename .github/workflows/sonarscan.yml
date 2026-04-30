@@ -56,7 +56,7 @@ jobs:
         with:
           node-version: '20' 
 
-      - name: Add .npmrc file to angular folder
+      - name: Add .npmrc file
         run: echo -e $NPMRC > ~/.npmrc
 
       - name: Clean npm cache for Node.js server
@@ -67,12 +67,7 @@ jobs:
         working-directory: ./node/wfprev-gdb-extractor
         run: |
           rm -rf node_modules
-          rm -f package-lock.json
-
-      - name: Check for local .npmrc in node folder
-        run: |
-          ls -la ./node/wfprev-gdb-extractor/
-          cat ./node/wfprev-gdb-extractor/.npmrc 2>/dev/null || echo "No local .npmrc found"   
+          rm -f package-lock.json  
 
       - name: Install dependencies for Node.js server
         working-directory: ./node/wfprev-gdb-extractor

@@ -154,6 +154,7 @@ describe('MapComponent', () => {
         fitBounds: jasmine.createSpy('fitBounds'),
         closePopup: jasmine.createSpy('closePopup'),
         controls: { bottomleft: { addTo: jasmine.createSpy('addTo') } },
+        whenReady: jasmine.createSpy('whenReady').and.callFake((fn: () => void) => { fn(); }),
       },
       layerIds: ['a', 'b'],
       isDisplayContextItemVisible: jasmine.createSpy('isVis').and.returnValue(true),
