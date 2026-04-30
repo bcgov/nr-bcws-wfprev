@@ -45,7 +45,7 @@ jobs:
         working-directory: client/wfprev-war/src/main/angular
 
       # Run unit tests and generate code coverage      
-      - run: npm run test -- --watch=false --code-coverage --browsers=ChromeHeadless
+      - run: npm run test --watch=false --code-coverage --browsers=ChromeHeadless
         working-directory: client/wfprev-war/src/main/angular
 
       # Print coverage summary for debugging
