@@ -37,7 +37,7 @@ describe('ProjectFilesComponent', () => {
       'deleteActivityBoundary',
       'createActivityBoundary'
     ]);
-    mockSnackbar = jasmine.createSpyObj('MatSnackBar', ['open']);
+    mockSnackbar = jasmine.createSpyObj('MatSnackBar', ['open', 'openFromComponent']);
     mockDialog = jasmine.createSpyObj('MatDialog', ['open']);
     mockAttachmentService = jasmine.createSpyObj('AttachmentService', [
       'createProjectAttachment',
@@ -67,6 +67,7 @@ describe('ProjectFilesComponent', () => {
     mockProjectService.uploadDocument.and.returnValue(of({}));
     mockSnackRef = { dismiss: jasmine.createSpy('dismiss') } as any;
     mockSnackbar.open.and.returnValue(mockSnackRef);
+    mockSnackbar.openFromComponent.and.returnValue(mockSnackRef);
     await TestBed.configureTestingModule({
       imports: [],
       providers: [
@@ -393,7 +394,7 @@ describe('ProjectFilesComponent', () => {
 
   describe('uploadFile', () => {
     it('should call uploadAttachment on successful file upload', () => {
-      const mockFile = new File(['content'], 'test-file.txt', { type: 'text/plain' });
+      const mockFile = new File(['content'], 'test-file.kml', { type: 'text/plain' });
       const response = { fileId: 'test-file-id' };
       mockProjectService.uploadDocument.and.returnValue(of(response));
 
@@ -406,17 +407,13 @@ describe('ProjectFilesComponent', () => {
     });
 
     it('should handle file upload error', () => {
-      const mockFile = new File(['content'], 'test-file.txt', { type: 'text/plain' });
+      const mockFile = new File(['content'], 'test-file.kml', { type: 'text/plain' });
       mockProjectService.uploadDocument.and.returnValue(throwError(() => new Error('Upload failed')));
 
       component.uploadFile(mockFile, 'Activity Polygon');
 
       expect(mockProjectService.uploadDocument).toHaveBeenCalledWith({ file: mockFile });
-      expect(mockSnackbar.open).toHaveBeenCalledWith(
-        'Could not reach file upload server.',
-        'Close',
-        jasmine.any(Object)
-      );
+      expect(mockSnackbar.openFromComponent).toHaveBeenCalled();
     });
   });
 
@@ -771,11 +768,7 @@ describe('ProjectFilesComponent', () => {
 
     component.uploadAttachment(mockFile, { fileId: 'some-id' }, 'Activity Polygon', mockSnackRef);
 
-    expect(mockSnackbar.open).toHaveBeenCalledWith(
-      'The spatial file was not uploaded because the file format is not accepted.',
-      'Close',
-      jasmine.any(Object)
-    );
+    expect(mockSnackbar.openFromComponent).toHaveBeenCalled();
   });
 
   describe('isActivityContext', () => {

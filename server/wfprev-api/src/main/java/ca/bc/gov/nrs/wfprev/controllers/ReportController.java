@@ -31,7 +31,7 @@ public class ReportController {
     private final ReportService reportService;
 
     @PostMapping
-    @PreAuthorize("hasAuthority('WFPREV.CREATE_PREVENTION_PROJECT')")
+    @PreAuthorize("hasAuthority('WFPREV.EXPORT_TO_RESULTS')")
     @Operation(
             summary = "Generate Fuel Management Report",
             description = "Generate and download a fuel management report as an XLSX or CSV file",

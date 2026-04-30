@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { ActivatedRoute } from '@angular/router';
 import { BehaviorSubject } from 'rxjs';
 import { ProjectFilterStateService } from 'src/app/services/project-filter-state.service';
@@ -101,17 +101,17 @@ describe('SearchFilterComponent', () => {
     expect(component.selectedFiscalYears.length).toBe(2);
   });
 
-  it('should emit filters after search debounce', (done) => {
+  it('should emit filters after search debounce', fakeAsync(() => {
     codeTables$.next(mockTables);
     fixture.detectChanges();
 
     component.searchControl.setValue('fire');
+    
+    tick(1100); 
+    fixture.detectChanges();
 
-    setTimeout(() => {
-      expect(sharedService.updateFilters).toHaveBeenCalled();
-      done();
-    }, 1100);
-  });
+    expect(sharedService.updateFilters).toHaveBeenCalled();
+  }));
 
   it('should select ALL when all options selected', () => {
     codeTables$.next(mockTables);
@@ -228,6 +228,7 @@ describe('SearchFilterComponent', () => {
 
     // ACT → update signal (this triggers effect)
     filtersSignal.set(savedFilters);
+    codeTables$.next(mockTables);
     fixture.detectChanges();
 
     // ASSERT
@@ -248,6 +249,7 @@ describe('SearchFilterComponent', () => {
 
     // ACT → update signal (this triggers effect)
     filtersSignal.set(savedFilters);
+    codeTables$.next(mockTables);
     fixture.detectChanges();
 
     // ASSERT

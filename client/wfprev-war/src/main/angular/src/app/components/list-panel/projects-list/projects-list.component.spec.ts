@@ -32,11 +32,7 @@ describe('ProjectsListComponent', () => {
   let mockProjectFilterStateService: any;
 
   class MockPermissionsService {
-    canCreateProject = jasmine.createSpy().and.returnValue(true);
-    canEditProject = jasmine.createSpy().and.returnValue(true);
-    canExportList = jasmine.createSpy().and.returnValue(true);
-    canDeleteProject = jasmine.createSpy().and.returnValue(true);
-    canExportToResults = jasmine.createSpy().and.returnValue(true);
+    hasAction = jasmine.createSpy().and.returnValue(true);
   }
 
   const mockFetchProjectsResponse = () => {

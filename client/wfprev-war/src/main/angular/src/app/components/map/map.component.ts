@@ -99,36 +99,10 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     this.initMap().then(() => {
       const smk = this.mapService.getSMKInstance();
       const map = smk?.$viewer?.map;
-
       if (!map) return;
 
-      const bcBounds: L.LatLngBoundsExpression = BC_BOUNDS;
-      map.fitBounds(bcBounds);
-
-      // Add legend + marker cluster
-      const legendHelper = new LeafletLegendService();
-      this.legendControl = legendHelper.addLegend(map, this.fiscalColorMap);
-
-      this.markersClusterGroup = L.markerClusterGroup({
-        showCoverageOnHover: false,
-        iconCreateFunction: (cluster) =>
-          L.divIcon({
-            html: `<div class="cluster-icon"><span>${cluster.getChildCount()}</span></div>`,
-            className: 'custom-marker-cluster',
-            iconSize: L.point(40, 40),
-          }),
-      });
-
-      map.addLayer(this.markersClusterGroup);
-      this.isMapReady = true;
-
-      // Initial load of project locations
-      const currentFilters = this.sharedService.currentFilters || {};
-      this.fetchAndUpdateProjectLocations(currentFilters);
-
-      this.sharedService.filters$.subscribe((filters) => {
-        if (!this.isMapReady) return;
-        this.fetchAndUpdateProjectLocations(filters || {});
+      map.whenReady(() => {
+        this.setupMarkersAndLayers(map);
       });
     });
 
@@ -146,6 +120,35 @@ export class MapComponent implements AfterViewInit, OnDestroy {
       if (project) {
         this.openPopupForProject(project);
       }
+    });
+  }
+
+  setupMarkersAndLayers(map: L.Map): void {
+    const bcBounds: L.LatLngBoundsExpression = BC_BOUNDS;
+    map.fitBounds(bcBounds);
+
+    const legendHelper = new LeafletLegendService();
+    this.legendControl = legendHelper.addLegend(map, this.fiscalColorMap);
+
+    this.markersClusterGroup = L.markerClusterGroup({
+      showCoverageOnHover: false,
+      iconCreateFunction: (cluster) =>
+        L.divIcon({
+          html: `<div class="cluster-icon"><span>${cluster.getChildCount()}</span></div>`,
+          className: 'custom-marker-cluster',
+          iconSize: L.point(40, 40),
+        }),
+    });
+
+    map.addLayer(this.markersClusterGroup);
+    this.isMapReady = true;
+
+    const currentFilters = this.sharedService.currentFilters || {};
+    this.fetchAndUpdateProjectLocations(currentFilters);
+
+    this.sharedService.filters$.subscribe((filters) => {
+      if (!this.isMapReady) return;
+      this.fetchAndUpdateProjectLocations(filters || {});
     });
   }
 
