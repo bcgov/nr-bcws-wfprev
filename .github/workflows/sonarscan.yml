@@ -97,7 +97,7 @@ jobs:
 
       - name: Run client tests with coverage
         working-directory: ./client/wfprev-war/src/main/angular
-        run: ng test --no-watch --code-coverage
+        run: ng test --no-watch --code-coverage --browsers=ChromeHeadless
      
       - name: Build, Test, and Analyze
         run: |
