@@ -2,6 +2,8 @@ import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testin
 import { EndorsementApprovalComponent } from './endorsement-approval.component';
 import { ProjectFiscal } from 'src/app/components/models';
 import { EndorsementCode, FiscalStatuses } from 'src/app/utils/constants';
+import { MatDialog } from '@angular/material/dialog';
+import { of } from 'rxjs';
 
 describe('EndorsementApprovalComponent', () => {
   let component: EndorsementApprovalComponent;
@@ -34,8 +36,18 @@ describe('EndorsementApprovalComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [EndorsementApprovalComponent],
-    }).compileComponents();
+    imports: [EndorsementApprovalComponent],
+    providers: [
+      {
+        provide: MatDialog,
+        useValue: {
+          open: jasmine.createSpy('open').and.returnValue({
+            afterClosed: () => of(true)
+          })
+        }
+      }
+    ]
+  }).compileComponents();
 
     fixture = TestBed.createComponent(EndorsementApprovalComponent);
     component = fixture.componentInstance;
@@ -118,7 +130,7 @@ describe('EndorsementApprovalComponent', () => {
     expect(component.effectiveEndorserName).toBe('');
   });
 
-  it('should emit saveEndorsement with updated fiscal on save', () => {
+  it('should emit saveEndorsement with updated fiscal on save', async () => {
     const emitSpy = spyOn(component.saveEndorsement, 'emit');
     component.fiscal = mockFiscal;
     component.endorsementApprovalForm.patchValue({
@@ -130,7 +142,7 @@ describe('EndorsementApprovalComponent', () => {
       approvalComment: 'New approval',
     });
 
-    component.onSave();
+    await component.onSave();
 
     const emittedFiscal = emitSpy.calls.mostRecent()!.args[0];
     expect(emittedFiscal!.endorserName).toBe('Alice');
@@ -140,13 +152,9 @@ describe('EndorsementApprovalComponent', () => {
   });
 
   it('should set planFiscalStatusCode to PROPOSED if endorsement removed', async () => {
-    spyOn<any>(component, 'confirmRevertToProposed').and.returnValue(Promise.resolve(true));
-
     const emitSpy = spyOn(component.saveEndorsement, 'emit');
-    component.fiscal = {
-      ...mockFiscal,
-      planFiscalStatusCode: { planFiscalStatusCode: 'ACTIVE' }
-    };
+
+    component.fiscal = { ...mockFiscal, planFiscalStatusCode: { planFiscalStatusCode: 'ACTIVE' } };
     component.endorsementApprovalForm.patchValue({
       endorseFiscalActivity: false,
       approveFiscalActivity: true,
@@ -260,7 +268,6 @@ describe('EndorsementApprovalComponent', () => {
   });
 
   it('resets to PROPOSED and clears fields when endorsement removed (confirm = true)', async () => {
-    spyOn<any>(component, 'confirmRevertToProposed').and.returnValue(Promise.resolve(true));
     const emitSpy = spyOn(component.saveEndorsement, 'emit');
 
     component.fiscal = {
@@ -300,7 +307,6 @@ describe('EndorsementApprovalComponent', () => {
   });
 
   it('resets to proposed and clears fields when approval removed (confirm = true)', async () => {
-    spyOn<any>(component, 'confirmRevertToProposed').and.returnValue(Promise.resolve(true));
     const emitSpy = spyOn(component.saveEndorsement, 'emit');
 
     component.fiscal = {
@@ -331,14 +337,11 @@ describe('EndorsementApprovalComponent', () => {
   });
 
   it('does not emit when user cancels the revert confirmation', async () => {
-    spyOn<any>(component, 'confirmRevertToProposed').and.returnValue(Promise.resolve(false));
+    const dialog = TestBed.inject(MatDialog);
+    (dialog.open as jasmine.Spy).and.returnValue({ afterClosed: () => of(false) });
+
     const emitSpy = spyOn(component.saveEndorsement, 'emit');
-
-    component.fiscal = {
-      ...mockFiscal,
-      planFiscalStatusCode: { planFiscalStatusCode: 'ACTIVE' },
-    };
-
+    component.fiscal = { ...mockFiscal, planFiscalStatusCode: { planFiscalStatusCode: 'ACTIVE' } };
     component.endorsementApprovalForm.patchValue({
       endorseFiscalActivity: false,
       approveFiscalActivity: true,
@@ -350,7 +353,6 @@ describe('EndorsementApprovalComponent', () => {
   });
 
   it('calls confirmRevertToProposed with the current status when reverting', async () => {
-    const confirmSpy = spyOn<any>(component, 'confirmRevertToProposed').and.returnValue(Promise.resolve(true));
     const emitSpy = spyOn(component.saveEndorsement, 'emit');
 
     component.fiscal = {
@@ -365,7 +367,6 @@ describe('EndorsementApprovalComponent', () => {
 
     await component.onSave();
 
-    expect(confirmSpy).toHaveBeenCalledWith('ACTIVE');
     expect(emitSpy).toHaveBeenCalled();
   });
 

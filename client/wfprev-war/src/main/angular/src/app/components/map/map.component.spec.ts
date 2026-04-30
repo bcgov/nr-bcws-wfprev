@@ -15,6 +15,9 @@ import { ActivatedRoute } from '@angular/router';
 import * as L from 'leaflet';
 import { Project } from 'src/app/components/models';
 import { BC_BOUNDS } from 'src/app/utils/constants';
+import { TokenService } from 'src/app/services/token.service';
+import { PermissionsService } from 'src/app/services/permissions.service'
+
 class MockAppConfigService {
   getConfig() {
     return {
@@ -58,8 +61,16 @@ class MockCodeTableServices {
   fetchPlanFiscalStatuses() {
     return of({ _embedded: { planFiscalStatus: [] } });
   }
+  getProgramAreaCodes() { return of([]); }
+  getForestRegionCodes() { return of([]); }
+  getForestDistrictCodes() { return of([]); }
+  getBcParksRegionCodes() { return of([]); }
+  getBcParksSectionCodes() { return of([]); }
+  getPlanFiscalStatusCodes() { return of([]); }
+  getActivityCategoryCodes() { return of([]); }
+  getProjectTypeCodes() { return of([]); }
+  getFireCentres() { return of([]); }
 }
-
 
 class MockProjectService {
   fetchProjects() {
@@ -82,6 +93,16 @@ class MockProjectService {
   getFeatureByProjectGuid(projectGuid: string) {
     return of({ projectGuid, projectName: 'Mocked Project' });
   }
+}
+
+class MockTokenService {
+  doesUserHaveApplicationPermissions() { return false; }
+  credentialsEmitter = of(null);
+  authTokenEmitter = of('');
+}
+
+class MockPermissionsService {
+  hasAction() { return true; }
 }
 
 function createMockProject(overrides: Partial<Project> = {}): Project {
@@ -133,6 +154,7 @@ describe('MapComponent', () => {
         fitBounds: jasmine.createSpy('fitBounds'),
         closePopup: jasmine.createSpy('closePopup'),
         controls: { bottomleft: { addTo: jasmine.createSpy('addTo') } },
+        whenReady: jasmine.createSpy('whenReady').and.callFake((fn: () => void) => { fn(); }),
       },
       layerIds: ['a', 'b'],
       isDisplayContextItemVisible: jasmine.createSpy('isVis').and.returnValue(true),
@@ -174,6 +196,8 @@ describe('MapComponent', () => {
         { provide: AppConfigService, useClass: MockAppConfigService },
         { provide: CodeTableServices, useClass: MockCodeTableServices },
         { provide: ProjectService, useClass: MockProjectService },
+        { provide: TokenService, useClass: MockTokenService },
+        { provide: PermissionsService, useClass: MockPermissionsService },
         {
           provide: ActivatedRoute,
           useValue: {

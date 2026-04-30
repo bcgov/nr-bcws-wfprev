@@ -17,6 +17,18 @@ import { IconButtonComponent } from 'src/app/components/shared/icon-button/icon-
 import { CodeTableServices } from 'src/app/services/code-table-services';
 import { ProjectService } from 'src/app/services/project-services';
 import { ActivitiesComponent } from './activities.component';
+import { TokenService } from 'src/app/services/token.service';
+import { PermissionsService } from 'src/app/services/permissions.service';
+
+class MockTokenService {
+  doesUserHaveApplicationPermissions() { return false; }
+  credentialsEmitter = of(null);
+  authTokenEmitter = of('');
+}
+
+class MockPermissionsService {
+  hasAction() { return true; }
+}
 
 describe('ActivitiesComponent', () => {
   let component: ActivitiesComponent;
@@ -66,7 +78,9 @@ describe('ActivitiesComponent', () => {
         { provide: CodeTableServices, useValue: mockCodeTableService },
         { provide: MatSnackBar, useValue: mockSnackbarService },
         { provide: MatDialog, useValue: mockDialog },
-        { provide: ActivatedRoute, useValue: { snapshot: { queryParamMap: { get: () => 'test-project-guid' } } } }
+        { provide: ActivatedRoute, useValue: { snapshot: { queryParamMap: { get: () => 'test-project-guid' } } } },
+        { provide: TokenService, useClass: MockTokenService },
+        { provide: PermissionsService, useClass: MockPermissionsService },
       ]
     }).compileComponents();
 
@@ -717,7 +731,7 @@ describe('ActivitiesComponent', () => {
     expect(component.activities).toEqual([]);
   });
 
-  it('should call callback after fetching activities', () => {
+  it('should call callback after fetching activities', fakeAsync(() => {
     component.fiscalGuid = 'test-fiscal-guid';
     spyOn(TestBed.inject(ActivatedRoute).snapshot.queryParamMap, 'get').and.returnValue('project-guid');
     const callback = jasmine.createSpy('callback');
@@ -725,9 +739,10 @@ describe('ActivitiesComponent', () => {
       _embedded: { activities: [{ activityName: 'B' }, { activityName: 'A' }] }
     }));
     component.getActivities(callback);
+    tick();
     expect(callback).toHaveBeenCalled();
     expect(component.activities[0].activityName).toBe('A');
-  });
+  }));
 
   it('should handle error and show snackbar when getFiscalActivities fails', () => {
     component.fiscalGuid = 'test-fiscal-guid';
