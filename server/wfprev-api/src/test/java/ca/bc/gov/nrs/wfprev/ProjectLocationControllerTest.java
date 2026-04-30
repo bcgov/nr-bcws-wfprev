@@ -128,14 +128,14 @@ class ProjectLocationControllerTest {
                 .thenReturn(CollectionModel.empty());
 
         mockMvc.perform(get("/project-locations")
-                        .param("programAreaGuid", pg1.toString(), pg2.toString())
-                        .param("fiscalYear", "2023", "2024")
-                        .param("activityCategoryCode", "PRE", "FUEL")
-                        .param("planFiscalStatusCode", "DRAFT", "PREPARED")
-                        .param("forestRegionOrgUnitId", "REG1", "REG2")
-                        .param("forestDistrictOrgUnitId", "DIST1", "DIST2")
-                        .param("fireCentreOrgUnitId", "FC1", "FC2")
-                        .param("projectTypeCode", "FM", "CPF")
+                        .param("programAreaGuids", pg1.toString(), pg2.toString())
+                        .param("fiscalYears", "2023", "2024")
+                        .param("activityCategoryCodes", "PRE", "FUEL")
+                        .param("planFiscalStatusCodes", "DRAFT", "PREPARED")
+                        .param("forestRegionOrgUnitIds", "REG1", "REG2")
+                        .param("forestDistrictOrgUnitIds", "DIST1", "DIST2")
+                        .param("fireCentreOrgUnitIds", "FC1", "FC2")
+                        .param("projectTypeCodes", "FM", "CPF")
                         .param("searchText", "high risk")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
