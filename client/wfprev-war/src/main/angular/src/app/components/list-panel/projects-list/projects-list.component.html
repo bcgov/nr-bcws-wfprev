@@ -55,9 +55,7 @@
                 {{ getProjectFiscalYearRange(project) }}
               </div>
               <div class="action-items">
-                <div class="action-item" 
-                    [class.disabled]="!perms.hasAction(WFPREV_ACTIONS.UPDATE_PREVENTION_PROJECT)"
-                    (click)="perms.hasAction(WFPREV_ACTIONS.UPDATE_PREVENTION_PROJECT) && editProject(project, $event)">
+                <div class="action-item" (click)="editProject(project, $event)">
                   <img alt="edit-icon" class="icon" src="/assets/edit-icon.svg" />
                   <span>Edit</span>
               </div>
