@@ -5,11 +5,10 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 
 @Component({
-  selector: 'wfprev-download-button',
-  templateUrl: './download-button.component.html',
-  styleUrls: ['./download-button.component.scss'],
-  imports: [MatMenuModule, MatButtonModule, MatIconModule, CommonModule],
-  standalone: true,
+    selector: 'wfprev-download-button',
+    templateUrl: './download-button.component.html',
+    styleUrls: ['./download-button.component.scss'],
+    imports: [MatMenuModule, MatButtonModule, MatIconModule, CommonModule]
 })
 export class DownloadButtonComponent {
   @Input() disabled = false;

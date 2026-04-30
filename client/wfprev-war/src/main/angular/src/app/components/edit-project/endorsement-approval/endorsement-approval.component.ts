@@ -22,27 +22,26 @@ import { MatDialog } from '@angular/material/dialog';
 import { capitalizeFirstLetter } from 'src/app/utils';
 
 @Component({
-  selector: 'wfprev-endorsement-approval',
-  standalone: true,
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    FormsModule,
-    MatCheckboxModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatDatepickerModule,
-    MatButtonModule,
-    DetailsContainerComponent,
-    CheckboxComponent,
-    DatePickerComponent,
-    ReadOnlyFieldComponent,
-    TextareaComponent,
-    TimestampComponent,
-    MatTooltipModule,
-  ],
-  templateUrl: './endorsement-approval.component.html',
-  styleUrl: './endorsement-approval.component.scss'
+    selector: 'wfprev-endorsement-approval',
+    imports: [
+        CommonModule,
+        ReactiveFormsModule,
+        FormsModule,
+        MatCheckboxModule,
+        MatFormFieldModule,
+        MatInputModule,
+        MatDatepickerModule,
+        MatButtonModule,
+        DetailsContainerComponent,
+        CheckboxComponent,
+        DatePickerComponent,
+        ReadOnlyFieldComponent,
+        TextareaComponent,
+        TimestampComponent,
+        MatTooltipModule,
+    ],
+    templateUrl: './endorsement-approval.component.html',
+    styleUrl: './endorsement-approval.component.scss'
 })
 export class EndorsementApprovalComponent implements OnChanges, OnInit {
 

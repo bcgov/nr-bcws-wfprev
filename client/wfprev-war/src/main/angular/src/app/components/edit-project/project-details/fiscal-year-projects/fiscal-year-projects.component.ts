@@ -9,11 +9,10 @@ import { ExpansionIndicatorComponent } from "../../../shared/expansion-indicator
 import { StatusBadgeComponent } from 'src/app/components/shared/status-badge/status-badge.component';
 
 @Component({
-  selector: 'wfprev-fiscal-year-projects',
-  standalone: true,
-  imports: [MatExpansionModule, CommonModule, MatTableModule, ExpansionIndicatorComponent, StatusBadgeComponent],
-  templateUrl: './fiscal-year-projects.component.html',
-  styleUrl: './fiscal-year-projects.component.scss'
+    selector: 'wfprev-fiscal-year-projects',
+    imports: [MatExpansionModule, CommonModule, MatTableModule, ExpansionIndicatorComponent, StatusBadgeComponent],
+    templateUrl: './fiscal-year-projects.component.html',
+    styleUrl: './fiscal-year-projects.component.scss'
 })
 export class FiscalYearProjectsComponent implements OnInit{
   projectFiscals: any[] = [];

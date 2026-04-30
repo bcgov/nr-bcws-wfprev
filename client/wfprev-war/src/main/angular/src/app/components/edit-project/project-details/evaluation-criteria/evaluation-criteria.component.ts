@@ -11,11 +11,10 @@ import { ProjectService } from 'src/app/services/project-services';
 import { EvaluationCriteriaSectionCodes, ProjectTypes } from 'src/app/utils/constants';
 
 @Component({
-  selector: 'wfprev-evaluation-criteria',
-  standalone: true,
-  imports: [ExpansionIndicatorComponent, MatExpansionModule, MatIconModule, CommonModule, TimestampComponent],
-  templateUrl: './evaluation-criteria.component.html',
-  styleUrl: './evaluation-criteria.component.scss'
+    selector: 'wfprev-evaluation-criteria',
+    imports: [ExpansionIndicatorComponent, MatExpansionModule, MatIconModule, CommonModule, TimestampComponent],
+    templateUrl: './evaluation-criteria.component.html',
+    styleUrl: './evaluation-criteria.component.scss'
 })
 export class EvaluationCriteriaComponent implements OnChanges {
   @Input() project!: Project;

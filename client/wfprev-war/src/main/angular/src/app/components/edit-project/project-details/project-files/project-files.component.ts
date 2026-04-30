@@ -18,11 +18,10 @@ import { SpatialService } from 'src/app/services/spatial-services';
 import { Messages, ModalMessages, ModalTitles } from 'src/app/utils/constants';
 
 @Component({
-  selector: 'wfprev-project-files',
-  standalone: true,
-  imports: [MatTableModule, MatTooltipModule, CommonModule, IconButtonComponent],
-  templateUrl: './project-files.component.html',
-  styleUrls: ['./project-files.component.scss']
+    selector: 'wfprev-project-files',
+    imports: [MatTableModule, MatTooltipModule, CommonModule, IconButtonComponent],
+    templateUrl: './project-files.component.html',
+    styleUrls: ['./project-files.component.scss']
 })
 export class ProjectFilesComponent implements OnInit {
   @Output() filesUpdated = new EventEmitter<void>();

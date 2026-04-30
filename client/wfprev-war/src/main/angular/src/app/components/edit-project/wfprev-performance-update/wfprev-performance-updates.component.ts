@@ -15,11 +15,10 @@ import { CodeTableNames } from 'src/app/utils/constants';
 import { ProjectFiscalsSignalService } from 'src/app/services/project-fiscals-signal.service';
 
 @Component({
-  selector: 'wfprev-performance-updates',
-  standalone: true,
-  imports: [CommonModule, MatExpansionPanel, ExpansionIndicatorComponent, MatExpansionPanelHeader, IconButtonComponent],
-  templateUrl: './wfprev-performance-updates.component.html',
-  styleUrl: './wfprev-performance-updates.component.scss'
+    selector: 'wfprev-performance-updates',
+    imports: [CommonModule, MatExpansionPanel, ExpansionIndicatorComponent, MatExpansionPanelHeader, IconButtonComponent],
+    templateUrl: './wfprev-performance-updates.component.html',
+    styleUrl: './wfprev-performance-updates.component.scss'
 })
 export class PerformanceUpdatesComponent implements OnChanges {
   @Input() fiscalGuid: string = '';

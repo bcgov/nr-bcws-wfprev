@@ -3,18 +3,17 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@a
 import { MatCheckboxModule } from '@angular/material/checkbox';
 
 @Component({
-  selector: 'wfprev-checkbox',
-  standalone: true,
-  imports: [ReactiveFormsModule, MatCheckboxModule],
-  templateUrl: './checkbox.component.html',
-  styleUrls: ['./checkbox.component.scss'],
-  providers: [
-    {
-      provide: NG_VALUE_ACCESSOR,
-      useExisting: forwardRef(() => CheckboxComponent),
-      multi: true,
-    },
-  ],
+    selector: 'wfprev-checkbox',
+    imports: [ReactiveFormsModule, MatCheckboxModule],
+    templateUrl: './checkbox.component.html',
+    styleUrls: ['./checkbox.component.scss'],
+    providers: [
+        {
+            provide: NG_VALUE_ACCESSOR,
+            useExisting: forwardRef(() => CheckboxComponent),
+            multi: true,
+        },
+    ]
 })
 export class CheckboxComponent implements ControlValueAccessor {
   @Input() disabled = false;

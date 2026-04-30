@@ -39,30 +39,29 @@ export const CUSTOM_DATE_FORMATS = {
 };
 
 @Component({
-  selector: 'wfprev-activities',
-  standalone: true,
-  imports: [MatExpansionModule,
-    ReactiveFormsModule,
-    CommonModule,
-    MatSlideToggleModule,
-    MatDatepickerModule,
-    MatNativeDateModule,
-    MatInputModule,
-    FormsModule,
-    MatCheckboxModule,
-    ProjectFilesComponent,
-    ExpansionIndicatorComponent,
-    IconButtonComponent,
-    TimestampComponent,
-    TextareaComponent,
-    NgxCurrencyDirective],
-  templateUrl: './activities.component.html',
-  styleUrl: './activities.component.scss',
-  providers: [
-    { provide: MAT_DATE_FORMATS, useValue: CUSTOM_DATE_FORMATS },
-    { provide: MAT_DATE_LOCALE, useValue: 'en-CA' }, // Change locale to Canada (YYYY/MM/DD format)
-    { provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE] }
-  ],
+    selector: 'wfprev-activities',
+    imports: [MatExpansionModule,
+        ReactiveFormsModule,
+        CommonModule,
+        MatSlideToggleModule,
+        MatDatepickerModule,
+        MatNativeDateModule,
+        MatInputModule,
+        FormsModule,
+        MatCheckboxModule,
+        ProjectFilesComponent,
+        ExpansionIndicatorComponent,
+        IconButtonComponent,
+        TimestampComponent,
+        TextareaComponent,
+        NgxCurrencyDirective],
+    templateUrl: './activities.component.html',
+    styleUrl: './activities.component.scss',
+    providers: [
+        { provide: MAT_DATE_FORMATS, useValue: CUSTOM_DATE_FORMATS },
+        { provide: MAT_DATE_LOCALE, useValue: 'en-CA' }, // Change locale to Canada (YYYY/MM/DD format)
+        { provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE] }
+    ]
 })
 
 export class ActivitiesComponent implements OnChanges, CanComponentDeactivate {

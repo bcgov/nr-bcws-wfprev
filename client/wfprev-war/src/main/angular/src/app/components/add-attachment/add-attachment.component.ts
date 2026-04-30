@@ -7,11 +7,10 @@ import { IconButtonComponent } from 'src/app/components/shared/icon-button/icon-
 
 
 @Component({
-  selector: 'add-attachment',
-  templateUrl: './add-attachment.component.html',
-  styleUrls: ['./add-attachment.component.scss'],
-  standalone: true,
-  imports: [CommonModule, MatInputModule, FormsModule, IconButtonComponent]
+    selector: 'add-attachment',
+    templateUrl: './add-attachment.component.html',
+    styleUrls: ['./add-attachment.component.scss'],
+    imports: [CommonModule, MatInputModule, FormsModule, IconButtonComponent]
 })
 export class AddAttachmentComponent {
   selectedFile: File | null = null;

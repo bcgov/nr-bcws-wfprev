@@ -5,11 +5,10 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { NgxCurrencyDirective } from 'ngx-currency';
 
 @Component({
-  selector: 'wfprev-input-field',
-  standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, MatTooltipModule, NgxCurrencyDirective],
-  templateUrl: './input-field.component.html',
-  styleUrls: ['./input-field.component.scss']
+    selector: 'wfprev-input-field',
+    imports: [CommonModule, ReactiveFormsModule, MatTooltipModule, NgxCurrencyDirective],
+    templateUrl: './input-field.component.html',
+    styleUrls: ['./input-field.component.scss']
 })
 export class InputFieldComponent {
   @Input() control!: FormControl;
