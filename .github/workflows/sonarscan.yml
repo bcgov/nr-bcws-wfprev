@@ -63,9 +63,11 @@ jobs:
         working-directory: ./node/wfprev-gdb-extractor
         run: npm cache clean --force
 
-      - name: Remove node_modules for Node.js server
+      - name: Remove lock file and node_modules for Node.js server
         working-directory: ./node/wfprev-gdb-extractor
-        run: rm -rf node_modules
+        run: |
+          rm -rf node_modules
+          rm -f package-lock.json
 
       - name: Check for local .npmrc in node folder
         run: |
