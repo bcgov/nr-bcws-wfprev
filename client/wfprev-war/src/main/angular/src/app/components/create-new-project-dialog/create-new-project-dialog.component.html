@@ -7,131 +7,273 @@
       <div class="form-row first-row">
         <div class="form-field project-type">
           <label>Project Type<span class="required">*</span></label>
-          <select formControlName="projectType" [matTooltip]="getProjectTypeCode(projectForm.get('projectType')?.value)" >
+          <select
+            formControlName="projectType"
+            [matTooltip]="
+              getProjectTypeCode(projectForm.get('projectType')?.value)
+            "
+          >
             <option value="">Select</option>
-            <option *ngFor="let type of projectTypes" [value]="type.projectTypeCode">{{ type.description }}</option>
+            @for (type of projectTypes; track type) {
+              <option [value]="type.projectTypeCode">
+                {{ type.description }}
+              </option>
+            }
           </select>
         </div>
         <div class="form-field project-name">
-          <label for="projectName">Project Name<span class="required">*</span></label>
-          <input type="text" id="projectName" formControlName="projectName" placeholder="Concisely describe project's goal and/or area"
-            class="project-input" [matTooltip]="projectForm.get('projectName')?.value">
-          <div class="error"
-            *ngIf="projectForm.get('projectName')?.hasError('maxlength') && (projectForm.get('projectName')?.dirty || projectForm.get('projectName')?.touched)">
-            {{messages.maxLengthExceeded}}
-          </div>
-          <div class="error"
-            *ngIf="projectForm.get('projectName')?.hasError('duplicate') && (projectForm.get('projectName')?.dirty || projectForm.get('projectName')?.touched)">
-            {{messages.projectNameDuplicate}}
-          </div>
+          <label for="projectName"
+            >Project Name<span class="required">*</span></label
+          >
+          <input
+            type="text"
+            id="projectName"
+            formControlName="projectName"
+            placeholder="Concisely describe project's goal and/or area"
+            class="project-input"
+            [matTooltip]="projectForm.get('projectName')?.value"
+          />
+          @if (
+            projectForm.get("projectName")?.hasError("maxlength") &&
+            (projectForm.get("projectName")?.dirty ||
+              projectForm.get("projectName")?.touched)
+          ) {
+            <div class="error">
+              {{ messages.maxLengthExceeded }}
+            </div>
+          }
+          @if (
+            projectForm.get("projectName")?.hasError("duplicate") &&
+            (projectForm.get("projectName")?.dirty ||
+              projectForm.get("projectName")?.touched)
+          ) {
+            <div class="error">
+              {{ messages.projectNameDuplicate }}
+            </div>
+          }
         </div>
       </div>
       <div class="form-row">
         <div class="form-field">
           <label>Business Area<span class="required">*</span></label>
-          <select formControlName="businessArea" [matTooltip]="getBusinessAreaCode(projectForm.get('businessArea')?.value)">
+          <select
+            formControlName="businessArea"
+            [matTooltip]="
+              getBusinessAreaCode(projectForm.get('businessArea')?.value)
+            "
+          >
             <option value="">Select</option>
-            <option *ngFor="let area of businessAreas" [value]="area.programAreaGuid">{{ area.programAreaName }}
-            </option>
+            @for (area of businessAreas; track area) {
+              <option [value]="area.programAreaGuid">
+                {{ area.programAreaName }}
+              </option>
+            }
           </select>
         </div>
         <div class="form-field">
           <label>Forest Region<span class="required">*</span></label>
-          <select formControlName="forestRegion" [matTooltip]="getForestRegionCode(projectForm.get('forestRegion')?.value)">
+          <select
+            formControlName="forestRegion"
+            [matTooltip]="
+              getForestRegionCode(projectForm.get('forestRegion')?.value)
+            "
+          >
             <option value="">Select</option>
-            <option *ngFor="let region of forestRegions" [value]="region.orgUnitId">{{ region.orgUnitName }}</option>
+            @for (region of forestRegions; track region) {
+              <option [value]="region.orgUnitId">
+                {{ region.orgUnitName }}
+              </option>
+            }
           </select>
         </div>
         <div class="form-field">
           <label>Forest District</label>
-          <select formControlName="forestDistrict" [matTooltip]="getForestDistrictCode(projectForm.get('forestDistrict')?.value)">
+          <select
+            formControlName="forestDistrict"
+            [matTooltip]="
+              getForestDistrictCode(projectForm.get('forestDistrict')?.value)
+            "
+          >
             <option value="">Select</option>
-            <option *ngFor="let district of forestDistricts" [value]="district.orgUnitId">{{ district.orgUnitName }}
-            </option>
+            @for (district of forestDistricts; track district) {
+              <option [value]="district.orgUnitId">
+                {{ district.orgUnitName }}
+              </option>
+            }
           </select>
         </div>
       </div>
       <div class="form-row">
         <div class="form-field">
           <label>
-            BC Parks Region<span class="required" *ngIf="hasValidator('bcParksRegion', Validators.required)">*</span>
+            BC Parks Region
+            @if (hasValidator("bcParksRegion", Validators.required)) {
+              <span class="required">*</span>
+            }
           </label>
-          <select formControlName="bcParksRegion" [matTooltip]="getBcParksRegionCode(projectForm.get('bcParksRegion')?.value)">
+          <select
+            formControlName="bcParksRegion"
+            [matTooltip]="
+              getBcParksRegionCode(projectForm.get('bcParksRegion')?.value)
+            "
+          >
             <option value="">Select</option>
-            <option *ngFor="let region of bcParksRegions" [value]="region.orgUnitId">{{ region.orgUnitName }}</option>
+            @for (region of bcParksRegions; track region) {
+              <option [value]="region.orgUnitId">
+                {{ region.orgUnitName }}
+              </option>
+            }
           </select>
         </div>
         <div class="form-field">
           <label>BC Parks Section</label>
-          <select formControlName="bcParksSection" [matTooltip]="getBcParksSectionCode(projectForm.get('bcParksSection')?.value)">
+          <select
+            formControlName="bcParksSection"
+            [matTooltip]="
+              getBcParksSectionCode(projectForm.get('bcParksSection')?.value)
+            "
+          >
             <option value="">Select</option>
-            <option *ngFor="let section of bcParksSections" [value]="section.orgUnitId">{{ section.orgUnitName }}
-            </option>
+            @for (section of bcParksSections; track section) {
+              <option [value]="section.orgUnitId">
+                {{ section.orgUnitName }}
+              </option>
+            }
           </select>
         </div>
         <div class="form-field">
           <label>BCWS Fire Centre<span class="required">*</span></label>
-          <select formControlName="fireCentre" [matTooltip]="getFireCentreCode(projectForm.get('fireCentre')?.value)">
+          <select
+            formControlName="fireCentre"
+            [matTooltip]="
+              getFireCentreCode(projectForm.get('fireCentre')?.value)
+            "
+          >
             <option value="">Select</option>
-            <option *ngFor="let item of fireCentres" [value]="item.orgUnitIdentifier">{{ item.orgUnitName }}</option>
+            @for (item of fireCentres; track item) {
+              <option [value]="item.orgUnitIdentifier">
+                {{ item.orgUnitName }}
+              </option>
+            }
           </select>
         </div>
       </div>
       <div class="form-row">
         <div class="form-field">
           <label>Closest Community<span class="required">*</span></label>
-          <input type="text" formControlName="closestCommunity" placeholder="Name of closest community to the project" class="project-input"
-                 [matTooltip]="projectForm.get('closestCommunity')?.value">
-          <div class="error"
-            *ngIf="projectForm.get('closestCommunity')?.hasError('maxlength') && (projectForm.get('closestCommunity')?.dirty || projectForm.get('closestCommunity')?.touched)">
-            {{messages.maxLengthExceeded}}
-          </div>
+          <input
+            type="text"
+            formControlName="closestCommunity"
+            placeholder="Name of closest community to the project"
+            class="project-input"
+            [matTooltip]="projectForm.get('closestCommunity')?.value"
+          />
+          @if (
+            projectForm.get("closestCommunity")?.hasError("maxlength") &&
+            (projectForm.get("closestCommunity")?.dirty ||
+              projectForm.get("closestCommunity")?.touched)
+          ) {
+            <div class="error">
+              {{ messages.maxLengthExceeded }}
+            </div>
+          }
         </div>
         <div class="form-field">
           <label>Project Lead<span class="required">*</span></label>
-          <input type="text" formControlName="projectLead" placeholder="First and Last Name" class="project-input"
-                 [matTooltip]="projectForm.get('projectLead')?.value">
-          <div class="error"
-            *ngIf="projectForm.get('projectLead')?.hasError('maxlength') && (projectForm.get('projectLead')?.dirty || projectForm.get('projectLead')?.touched)">
-            {{messages.maxLengthExceeded}}
-          </div>
+          <input
+            type="text"
+            formControlName="projectLead"
+            placeholder="First and Last Name"
+            class="project-input"
+            [matTooltip]="projectForm.get('projectLead')?.value"
+          />
+          @if (
+            projectForm.get("projectLead")?.hasError("maxlength") &&
+            (projectForm.get("projectLead")?.dirty ||
+              projectForm.get("projectLead")?.touched)
+          ) {
+            <div class="error">
+              {{ messages.maxLengthExceeded }}
+            </div>
+          }
         </div>
         <div class="form-field">
           <label>Project Lead Email</label>
-          <input type="email" formControlName="projectLeadEmail" placeholder="example@bc.gov.ca" class="project-input"
-                 [matTooltip]="projectForm.get('projectLeadEmail')?.value">
-          <div class="error"
-            *ngIf="projectForm.get('projectLeadEmail')?.hasError('email') && projectForm.get('projectLeadEmail')?.touched">
-            {{messages.invalidEmail}}
-          </div>
-          <div class="error"
-            *ngIf="projectForm.get('projectLeadEmail')?.hasError('maxlength') && ( projectForm.get('projectLeadEmail')?.dirty || projectForm.get('projectLeadEmail')?.touched)">
-            {{messages.maxLengthExceeded}}
-          </div>
+          <input
+            type="email"
+            formControlName="projectLeadEmail"
+            placeholder="example@bc.gov.ca"
+            class="project-input"
+            [matTooltip]="projectForm.get('projectLeadEmail')?.value"
+          />
+          @if (
+            projectForm.get("projectLeadEmail")?.hasError("email") &&
+            projectForm.get("projectLeadEmail")?.touched
+          ) {
+            <div class="error">
+              {{ messages.invalidEmail }}
+            </div>
+          }
+          @if (
+            projectForm.get("projectLeadEmail")?.hasError("maxlength") &&
+            (projectForm.get("projectLeadEmail")?.dirty ||
+              projectForm.get("projectLeadEmail")?.touched)
+          ) {
+            <div class="error">
+              {{ messages.maxLengthExceeded }}
+            </div>
+          }
         </div>
       </div>
       <div class="form-row">
         <div class="form-field">
           <label>Lat/Long</label>
-          <input type="text" formControlName="latLong" placeholder="e.g., 50.5343° N, -120.6408° W"
-            class="project-input" [matTooltip]="projectForm.get('latLong')?.value">
-          <div class="error"
-            *ngIf="projectForm.get('latLong')?.hasError('maxlength') && projectForm.get('latLong')?.touched">
-            {{messages.maxLengthExceeded}}
-          </div>
+          <input
+            type="text"
+            formControlName="latLong"
+            placeholder="e.g., 50.5343° N, -120.6408° W"
+            class="project-input"
+            [matTooltip]="projectForm.get('latLong')?.value"
+          />
+          @if (
+            projectForm.get("latLong")?.hasError("maxlength") &&
+            projectForm.get("latLong")?.touched
+          ) {
+            <div class="error">
+              {{ messages.maxLengthExceeded }}
+            </div>
+          }
         </div>
         <div class="form-field">
           <label>Primary Objective<span class="required">*</span></label>
-          <select formControlName="primaryObjective" [matTooltip]="getObjectiveCode(projectForm.get('primaryObjective')?.value)">
+          <select
+            formControlName="primaryObjective"
+            [matTooltip]="
+              getObjectiveCode(projectForm.get('primaryObjective')?.value)
+            "
+          >
             <option value="">Select</option>
-            <option *ngFor="let type of objectiveTypes" [value]="type.objectiveTypeCode">{{ type.description }}</option>
+            @for (type of objectiveTypes; track type) {
+              <option [value]="type.objectiveTypeCode">
+                {{ type.description }}
+              </option>
+            }
           </select>
         </div>
         <div class="form-field">
           <label>Secondary Objective</label>
-          <select formControlName="secondaryObjective" [matTooltip]="getObjectiveCode(projectForm.get('secondaryObjective')?.value)">
+          <select
+            formControlName="secondaryObjective"
+            [matTooltip]="
+              getObjectiveCode(projectForm.get('secondaryObjective')?.value)
+            "
+          >
             <option value="">Select</option>
-            <option *ngFor="let type of objectiveTypes" [value]="type.objectiveTypeCode">{{ type.description }}</option>
+            @for (type of objectiveTypes; track type) {
+              <option [value]="type.objectiveTypeCode">
+                {{ type.description }}
+              </option>
+            }
           </select>
         </div>
       </div>
@@ -142,7 +284,8 @@
             placeholder="Describe any additional objectives beyond wildfire risk reduction."
             [control]="secondaryObjectiveRationaleCtrl"
             [maxLength]="500"
-            [rows]="2">
+            [rows]="2"
+          >
           </wfprev-textarea>
         </div>
       </div>
@@ -151,7 +294,11 @@
     <div class="footer">
       <div class="button-row">
         <button class="secondary" (click)="onCancel()">Cancel</button>
-        <button class="primary" [disabled]="!projectForm.valid || isSaving" (click)="onCreate()">
+        <button
+          class="primary"
+          [disabled]="!projectForm.valid || isSaving"
+          (click)="onCreate()"
+        >
           Create
         </button>
       </div>

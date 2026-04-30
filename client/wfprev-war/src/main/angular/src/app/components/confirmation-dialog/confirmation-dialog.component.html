@@ -1,21 +1,35 @@
 <div class="dialog-container-confirm">
   <div class="title-bar">
-    <div class="mask-icon" [ngClass]="{ 'delete': isDeleteOrChangeDialog , 'warning': !isDeleteOrChangeDialog  }" aria-hidden="true">
-    </div>
+    <div
+      class="mask-icon"
+      [ngClass]="{
+        delete: isDeleteOrChangeDialog,
+        warning: !isDeleteOrChangeDialog,
+      }"
+      aria-hidden="true"
+    ></div>
     {{ dialogTitle }}
   </div>
   <div class="dialog-content">
     <div class="icon-and-text">
-      <p *ngIf="dialogMessage" [innerHTML]="dialogMessage"></p>
+      @if (dialogMessage) {
+        <p [innerHTML]="dialogMessage"></p>
+      }
     </div>
   </div>
   <div class="footer">
     <div class="button-row">
-      <button [ngClass]="isDeleteOrChangeDialog  ? 'cancel-button' : 'secondary'" (click)="onGoBack()">
+      <button
+        [ngClass]="isDeleteOrChangeDialog ? 'cancel-button' : 'secondary'"
+        (click)="onGoBack()"
+      >
         Cancel
       </button>
 
-      <button [ngClass]="isDeleteOrChangeDialog  ? 'delete-button' : 'primary'" (click)="onConfirm()">
+      <button
+        [ngClass]="isDeleteOrChangeDialog ? 'delete-button' : 'primary'"
+        (click)="onConfirm()"
+      >
         {{ confirmButtonText }}
       </button>
     </div>

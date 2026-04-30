@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
@@ -6,14 +5,10 @@ import { ProjectFiscal } from 'src/app/components/models';
 import { FiscalActionLabels, FiscalStatuses } from 'src/app/utils/constants';
 
 @Component({
-    selector: 'wfprev-dropdown-button',
-    templateUrl: './dropdown-button.component.html',
-    styleUrls: ['./dropdown-button.component.scss'],
-    imports: [
-        CommonModule,
-        MatMenuModule,
-        MatButtonModule
-    ]
+  selector: 'wfprev-dropdown-button',
+  templateUrl: './dropdown-button.component.html',
+  styleUrls: ['./dropdown-button.component.scss'],
+  imports: [MatMenuModule, MatButtonModule],
 })
 export class DropdownButtonComponent {
   @Input() status!: string;
@@ -22,7 +17,10 @@ export class DropdownButtonComponent {
   @Input() fiscal!: ProjectFiscal;
   @Input() isDirty: boolean | undefined;
 
-  @Output() actionSelected = new EventEmitter<{ action: string; index: number }>();
+  @Output() actionSelected = new EventEmitter<{
+    action: string;
+    index: number;
+  }>();
 
   readonly FiscalStatuses = FiscalStatuses;
   readonly FiscalActionLabels = FiscalActionLabels;
@@ -32,6 +30,9 @@ export class DropdownButtonComponent {
   }
 
   isDisabled(): boolean {
-    return [this.FiscalStatuses.COMPLETE, this.FiscalStatuses.CANCELLED].includes(this.status);
+    return [
+      this.FiscalStatuses.COMPLETE,
+      this.FiscalStatuses.CANCELLED,
+    ].includes(this.status);
   }
 }

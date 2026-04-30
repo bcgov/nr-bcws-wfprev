@@ -1,64 +1,84 @@
 <div class="input-field">
   <div class="form-item">
-    @if(img) {
-    <div class="input-header">
-      <img alt="status" [src]="img">
-      <label class="input-header-lable" [for]="id">
-        {{ label }}
-        <span *ngIf="required" class="required">*</span>
-      </label>
-    </div>
+    @if (img) {
+      <div class="input-header">
+        <img alt="status" [src]="img" />
+        <label class="input-header-lable" [for]="id">
+          {{ label }}
+          @if (required) {
+            <span class="required">*</span>
+          }
+        </label>
+      </div>
     } @else {
       <label [for]="id">
         {{ label }}
-        <span *ngIf="required" class="required">*</span>
+        @if (required) {
+          <span class="required">*</span>
+        }
       </label>
     }
-    <div class="currency-input" *ngIf="prefix; else plainInput">
-      <span class="currency-symbol">{{ prefix }}</span>
+    @if (prefix) {
+      <div class="currency-input">
+        <span class="currency-symbol">{{ prefix }}</span>
+        @if (!enableAmountFormat) {
+          <input
+            [id]="id"
+            [type]="type"
+            [formControl]="control"
+            [placeholder]="placeholder"
+            [matTooltip]="tooltip || control.value"
+          />
+        }
+        @if (enableAmountFormat) {
+          <input
+            [currencyMask]="{ align: 'left', prefix: '', inputMode: 1 }"
+            [id]="id"
+            [type]="type"
+            [formControl]="control"
+            [placeholder]="placeholder"
+            [matTooltip]="tooltip || control.value"
+            (change)="onChange()"
+            onfocus="this.select()"
+          />
+        }
+      </div>
+    } @else {
       <input
         [id]="id"
         [type]="type"
         [formControl]="control"
         [placeholder]="placeholder"
         [matTooltip]="tooltip || control.value"
-        *ngIf="!enableAmountFormat"
-      />
-      <input [currencyMask]="{align: 'left', prefix: '', inputMode: 1}" 
-        [id]="id"
-        [type]="type"
-        [formControl]="control"
-        [placeholder]="placeholder"
-        [matTooltip]="tooltip || control.value"
-        (change)="onChange()"
-        *ngIf="enableAmountFormat"
         onfocus="this.select()"
       />
-    </div>
+    }
 
-    <ng-template #plainInput>
-      <input
-        [id]="id"
-        [type]="type"
-        [formControl]="control"
-        [placeholder]="placeholder"
-        [matTooltip]="tooltip || control.value"
-        onfocus="this.select()"
-      />
-    </ng-template>
+    @if (
+      (control?.hasError("maxlength") || control?.hasError("max")) &&
+      (control?.dirty || control?.touched)
+    ) {
+      <div class="error">
+        {{ errorMessages["maxlength"] }}
+      </div>
+    }
 
-    <div class="error" *ngIf="(control?.hasError('maxlength') || control?.hasError('max')) && (control?.dirty || control?.touched)">
-      {{ errorMessages['maxlength'] }}
-    </div>
-    
-    <div class="error" *ngIf="control?.hasError('email') && (control?.dirty || control?.touched)">
-      {{ errorMessages['email'] }}
-    </div>
-    <div class="error" *ngIf="control?.hasError('min') && (control?.dirty || control?.touched)">
-      {{ errorMessages['min'] }}
-    </div>
-    <div class="error" *ngIf="control?.hasError('duplicate') && (control?.dirty || control?.touched)">
-      {{ errorMessages['duplicate'] }}
-    </div>
+    @if (control?.hasError("email") && (control?.dirty || control?.touched)) {
+      <div class="error">
+        {{ errorMessages["email"] }}
+      </div>
+    }
+    @if (control?.hasError("min") && (control?.dirty || control?.touched)) {
+      <div class="error">
+        {{ errorMessages["min"] }}
+      </div>
+    }
+    @if (
+      control?.hasError("duplicate") && (control?.dirty || control?.touched)
+    ) {
+      <div class="error">
+        {{ errorMessages["duplicate"] }}
+      </div>
+    }
   </div>
 </div>

@@ -1,19 +1,20 @@
-<ng-container *ngIf="fiscal?.projectPlanFiscalGuid">
+@if (fiscal?.projectPlanFiscalGuid) {
   <wfprev-details-container
     [title]="'Endorsement and Approval'"
-    [saveDisabled]="isSaving || !endorsementApprovalForm.valid || !endorsementApprovalForm.dirty"
+    [saveDisabled]="
+      isSaving ||
+      !endorsementApprovalForm.valid ||
+      !endorsementApprovalForm.dirty
+    "
     [cancelDisabled]="!endorsementApprovalForm.dirty"
     (save)="onSave()"
     (cancel)="onCancel()"
     matTooltip="{{ showDraftTooltip ? draftTooltip : '' }}"
-    [matTooltipDisabled]="!showDraftTooltip">
-
+    [matTooltipDisabled]="!showDraftTooltip"
+  >
     <form [formGroup]="endorsementApprovalForm">
       <!-- Endorsement Section -->
-      <div class="sub-header">
-        BCWS Endorsement
-      </div>
-
+      <div class="sub-header">BCWS Endorsement</div>
       <div class="form-grid">
         <div class="inline-grid">
           <div class="form-item">
@@ -21,37 +22,34 @@
               <span>Endorse Fiscal Activity</span>
             </wfprev-checkbox>
           </div>
-
           <div class="form-item">
             <wfprev-date-picker
               [control]="endorsementDateControl"
-              [label]="'Endorsement Date'">
+              [label]="'Endorsement Date'"
+            >
             </wfprev-date-picker>
           </div>
-
           <div class="form-item">
             <wfprev-read-only-field
               [label]="'Endorsed By'"
-              [value]="effectiveEndorserName">
+              [value]="effectiveEndorserName"
+            >
             </wfprev-read-only-field>
           </div>
         </div>
-
         <div class="form-item full-width">
           <wfprev-textarea
             [label]="'Endorser\'s Comments'"
             [placeholder]="'Add supporting details for BCWS endorsement decision...'"
             [control]="endorsementCommentControl"
             [maxLength]="500"
-            [rows]="2">
+            [rows]="2"
+          >
           </wfprev-textarea>
         </div>
       </div>
-
       <!-- Approval Section -->
-      <div class="sub-header">
-        Business Area Approval
-      </div>
+      <div class="sub-header">Business Area Approval</div>
       <div class="form-grid">
         <div class="inline-grid">
           <div class="form-item">
@@ -59,11 +57,11 @@
               Approve Fiscal Activity
             </wfprev-checkbox>
           </div>
-
           <div class="form-item">
             <wfprev-date-picker
               [control]="approvalDateControl"
-              [label]="'Approval Date'">
+              [label]="'Approval Date'"
+            >
             </wfprev-date-picker>
           </div>
         </div>
@@ -73,14 +71,16 @@
             [placeholder]="'Include position/group(s) responsible for Business Area approval, such as RMT, District Manager(s), etc'"
             [control]="approvalCommentControl"
             [maxLength]="500"
-            [rows]="2">
+            [rows]="2"
+          >
           </wfprev-textarea>
         </div>
       </div>
       <wfprev-timestamp
         [updateDate]="fiscal.endorseApprUpdatedTimestamp"
-        [updateUser]="fiscal.endorseApprUpdateUserid">
+        [updateUser]="fiscal.endorseApprUpdateUserid"
+      >
       </wfprev-timestamp>
     </form>
   </wfprev-details-container>
-</ng-container>
+}

@@ -1,14 +1,27 @@
 <div class="fiscal-card">
   <div class="fiscal-header">
-    <div class="fiscal-title" [title]="fiscal.projectFiscalName">{{ fiscal.projectFiscalName }}</div>
+    <div class="fiscal-title" [title]="fiscal.projectFiscalName">
+      {{ fiscal.projectFiscalName }}
+    </div>
     <wfprev-status-badge
       [icon]="getStatusIcon(fiscal?.planFiscalStatusCode?.planFiscalStatusCode)"
-      [label]="getDescription('planFiscalStatusCode', fiscal?.planFiscalStatusCode?.planFiscalStatusCode) || ''">
+      [label]="
+        getDescription(
+          'planFiscalStatusCode',
+          fiscal?.planFiscalStatusCode?.planFiscalStatusCode
+        ) || ''
+      "
+    >
     </wfprev-status-badge>
   </div>
 
   <div class="activity-category">
-    {{ getDescription(CodeTableKeys.ACTIVITY_CATEGORY_CODE, fiscal.activityCategoryCode) }}
+    {{
+      getDescription(
+        CodeTableKeys.ACTIVITY_CATEGORY_CODE,
+        fiscal.activityCategoryCode
+      )
+    }}
   </div>
 
   <div class="fiscal-values">
@@ -16,25 +29,31 @@
     <span class="sub-value">{{ getFiscalYearDisplay(fiscal.fiscalYear) }}</span>
   </div>
 
-  <ng-container *ngIf="fiscal.planFiscalStatusCode === 'COMPLETE'; else notComplete">
+  @if (fiscal.planFiscalStatusCode === "COMPLETE") {
     <div class="fiscal-values">
       <span class="sub-title">Completed Hectares:</span>
-      <span class="sub-value">{{ formatValue(fiscal.fiscalCompletedSizeHa, ' Ha') }}</span>
+      <span class="sub-value">{{
+        formatValue(fiscal.fiscalCompletedSizeHa, " Ha")
+      }}</span>
     </div>
     <div class="fiscal-values">
       <span class="sub-title">CFS Actual Spend:</span>
-      <span class="sub-value">{{ formatCurrency(fiscal.fiscalActualAmount) }}</span>
+      <span class="sub-value">{{
+        formatCurrency(fiscal.fiscalActualAmount)
+      }}</span>
     </div>
-  </ng-container>
-
-  <ng-template #notComplete>
+  } @else {
     <div class="fiscal-values">
       <span class="sub-title">Planned Hectares:</span>
-      <span class="sub-value">{{ formatValue(fiscal.fiscalPlannedSizeHa, ' Ha') }}</span>
+      <span class="sub-value">{{
+        formatValue(fiscal.fiscalPlannedSizeHa, " Ha")
+      }}</span>
     </div>
     <div class="fiscal-values">
       <span class="sub-title">Forecast Amount:</span>
-      <span class="sub-value">{{ formatCurrency(fiscal.fiscalForecastAmount) }}</span>
+      <span class="sub-value">{{
+        formatCurrency(fiscal.fiscalForecastAmount)
+      }}</span>
     </div>
-  </ng-template>
+  }
 </div>

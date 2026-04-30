@@ -1,14 +1,14 @@
 import { Component, Input, ViewChild } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common';
+
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { NgxCurrencyDirective } from 'ngx-currency';
 
 @Component({
-    selector: 'wfprev-input-field',
-    imports: [CommonModule, ReactiveFormsModule, MatTooltipModule, NgxCurrencyDirective],
-    templateUrl: './input-field.component.html',
-    styleUrls: ['./input-field.component.scss']
+  selector: 'wfprev-input-field',
+  imports: [ReactiveFormsModule, MatTooltipModule, NgxCurrencyDirective],
+  templateUrl: './input-field.component.html',
+  styleUrls: ['./input-field.component.scss'],
 })
 export class InputFieldComponent {
   @Input() control!: FormControl;
@@ -17,7 +17,7 @@ export class InputFieldComponent {
   @Input() id = '';
   @Input() required = false;
   @Input() tooltip: string | null = null;
-  @Input() type: 'text' | 'number' | 'email' = 'text';  
+  @Input() type: 'text' | 'number' | 'email' = 'text';
   @Input() errorMessages: { [key: string]: string } = {};
   @Input() prefix: string | null = null;
   @Input() img: string | null = null;
@@ -26,7 +26,7 @@ export class InputFieldComponent {
   @ViewChild(NgxCurrencyDirective) directive!: NgxCurrencyDirective;
 
   onChange(): void {
-    if(this.enableAmountFormat) {
+    if (this.enableAmountFormat) {
       this.directive.handlePaste();
     }
   }

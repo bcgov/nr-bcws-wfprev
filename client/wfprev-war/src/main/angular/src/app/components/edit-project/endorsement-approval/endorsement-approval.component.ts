@@ -1,6 +1,18 @@
-import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
-import { ReactiveFormsModule, FormControl, FormGroup, FormsModule } from '@angular/forms';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnInit,
+  Output,
+  SimpleChanges,
+} from '@angular/core';
+import {
+  ReactiveFormsModule,
+  FormControl,
+  FormGroup,
+  FormsModule,
+} from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDatepickerModule } from '@angular/material/datepicker';
@@ -22,36 +34,35 @@ import { MatDialog } from '@angular/material/dialog';
 import { capitalizeFirstLetter } from 'src/app/utils';
 
 @Component({
-    selector: 'wfprev-endorsement-approval',
-    imports: [
-        CommonModule,
-        ReactiveFormsModule,
-        FormsModule,
-        MatCheckboxModule,
-        MatFormFieldModule,
-        MatInputModule,
-        MatDatepickerModule,
-        MatButtonModule,
-        DetailsContainerComponent,
-        CheckboxComponent,
-        DatePickerComponent,
-        ReadOnlyFieldComponent,
-        TextareaComponent,
-        TimestampComponent,
-        MatTooltipModule,
-    ],
-    templateUrl: './endorsement-approval.component.html',
-    styleUrl: './endorsement-approval.component.scss'
+  selector: 'wfprev-endorsement-approval',
+  imports: [
+    ReactiveFormsModule,
+    FormsModule,
+    MatCheckboxModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatDatepickerModule,
+    MatButtonModule,
+    DetailsContainerComponent,
+    CheckboxComponent,
+    DatePickerComponent,
+    ReadOnlyFieldComponent,
+    TextareaComponent,
+    TimestampComponent,
+    MatTooltipModule,
+  ],
+  templateUrl: './endorsement-approval.component.html',
+  styleUrl: './endorsement-approval.component.scss',
 })
 export class EndorsementApprovalComponent implements OnChanges, OnInit {
-
   @Input() fiscal!: ProjectFiscal;
   @Input() currentUser!: string;
   @Input() currentIdir!: string;
   @Input() isSaving = false;
   @Output() saveEndorsement = new EventEmitter<ProjectFiscal>();
 
-  readonly draftTooltip = 'Submit your Draft Fiscal Activity using the Actions button to enable Endorsements and Approvals.';
+  readonly draftTooltip =
+    'Submit your Draft Fiscal Activity using the Actions button to enable Endorsements and Approvals.';
 
   endorsementApprovalForm = new FormGroup({
     endorseFiscalActivity: new FormControl<boolean | null>(false),
@@ -62,30 +73,34 @@ export class EndorsementApprovalComponent implements OnChanges, OnInit {
     approvalComment: new FormControl<string | null>(''),
   });
 
-  constructor(private readonly dialog: MatDialog) { }
+  constructor(private readonly dialog: MatDialog) {}
 
   ngOnInit(): void {
-    this.endorsementApprovalForm.get('endorseFiscalActivity')?.valueChanges.subscribe((checked) => {
-      const isChecked = !!checked;
+    this.endorsementApprovalForm
+      .get('endorseFiscalActivity')
+      ?.valueChanges.subscribe((checked) => {
+        const isChecked = !!checked;
 
-      if (isChecked) {
-        this.endorsementDateControl.setValue(new Date());
-      }
+        if (isChecked) {
+          this.endorsementDateControl.setValue(new Date());
+        }
 
-      this.toggleControl(this.endorsementDateControl, isChecked);
-      this.toggleControl(this.endorsementCommentControl, isChecked);
-    });
+        this.toggleControl(this.endorsementDateControl, isChecked);
+        this.toggleControl(this.endorsementCommentControl, isChecked);
+      });
 
-    this.endorsementApprovalForm.get('approveFiscalActivity')?.valueChanges.subscribe((checked) => {
-      const isChecked = !!checked;
+    this.endorsementApprovalForm
+      .get('approveFiscalActivity')
+      ?.valueChanges.subscribe((checked) => {
+        const isChecked = !!checked;
 
-      if (isChecked) {
-        this.approvalDateControl.setValue(new Date());
-      }
+        if (isChecked) {
+          this.approvalDateControl.setValue(new Date());
+        }
 
-      this.toggleControl(this.approvalDateControl, isChecked);
-      this.toggleControl(this.approvalCommentControl, isChecked);
-    });
+        this.toggleControl(this.approvalDateControl, isChecked);
+        this.toggleControl(this.approvalCommentControl, isChecked);
+      });
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -96,15 +111,17 @@ export class EndorsementApprovalComponent implements OnChanges, OnInit {
 
       this.endorsementApprovalForm.patchValue({
         endorseFiscalActivity: endorseChecked,
-        endorsementDate: endorseChecked && fiscal.endorsementTimestamp
-          ? new Date(fiscal.endorsementTimestamp)
-          : null,
+        endorsementDate:
+          endorseChecked && fiscal.endorsementTimestamp
+            ? new Date(fiscal.endorsementTimestamp)
+            : null,
         endorsementComment: fiscal.endorsementComment ?? '',
         approveFiscalActivity: approveChecked,
-        approvalDate: approveChecked && fiscal.approvedTimestamp
-          ? new Date(fiscal.approvedTimestamp)
-          : null,
-        approvalComment: fiscal.businessAreaComment ?? ''
+        approvalDate:
+          approveChecked && fiscal.approvedTimestamp
+            ? new Date(fiscal.approvedTimestamp)
+            : null,
+        approvalComment: fiscal.businessAreaComment ?? '',
       });
 
       if (this.isCardDisabled) {
@@ -131,7 +148,9 @@ export class EndorsementApprovalComponent implements OnChanges, OnInit {
       return this.fiscal.endorserName;
     }
     // or fall back to currentUser if the form is checked
-    const checked = this.endorsementApprovalForm.get('endorseFiscalActivity')?.value;
+    const checked = this.endorsementApprovalForm.get(
+      'endorseFiscalActivity',
+    )?.value;
     return checked ? this.currentUser : '';
   }
 
@@ -141,15 +160,28 @@ export class EndorsementApprovalComponent implements OnChanges, OnInit {
 
     const endorsementRemoved = !formValue.endorseFiscalActivity;
     const approvalRemoved = !formValue.approveFiscalActivity;
-    const currentStatusCode = this.fiscal?.planFiscalStatusCode?.planFiscalStatusCode;
-    const resetToProposedEndorsementRemoved = endorsementRemoved && currentStatusCode !== FiscalStatuses.DRAFT && currentStatusCode !== FiscalStatuses.PROPOSED;
-    const resetToProposedApprovalRemoved = approvalRemoved && currentStatusCode !== FiscalStatuses.DRAFT && currentStatusCode !== FiscalStatuses.PROPOSED;
+    const currentStatusCode =
+      this.fiscal?.planFiscalStatusCode?.planFiscalStatusCode;
+    const resetToProposedEndorsementRemoved =
+      endorsementRemoved &&
+      currentStatusCode !== FiscalStatuses.DRAFT &&
+      currentStatusCode !== FiscalStatuses.PROPOSED;
+    const resetToProposedApprovalRemoved =
+      approvalRemoved &&
+      currentStatusCode !== FiscalStatuses.DRAFT &&
+      currentStatusCode !== FiscalStatuses.PROPOSED;
 
     if (resetToProposedEndorsementRemoved || resetToProposedApprovalRemoved) {
-      const confirmed = await this.confirmStatusChange(currentStatusCode ?? '', 'Proposed');
+      const confirmed = await this.confirmStatusChange(
+        currentStatusCode ?? '',
+        'Proposed',
+      );
       if (!confirmed) return; // user cancelled
     } else if (!endorsementRemoved && !approvalRemoved) {
-      const confirmed = await this.confirmStatusChange(currentStatusCode ?? '', 'Prepared');
+      const confirmed = await this.confirmStatusChange(
+        currentStatusCode ?? '',
+        'Prepared',
+      );
       if (!confirmed) return; // user cancelled
     }
 
@@ -161,9 +193,10 @@ export class EndorsementApprovalComponent implements OnChanges, OnInit {
       endorserName: formValue.endorseFiscalActivity
         ? (this.fiscal.endorserName ?? this.currentUser)
         : undefined,
-      endorsementTimestamp: formValue.endorseFiscalActivity && formValue.endorsementDate
-        ? formValue.endorsementDate.toISOString()
-        : undefined,
+      endorsementTimestamp:
+        formValue.endorseFiscalActivity && formValue.endorsementDate
+          ? formValue.endorsementDate.toISOString()
+          : undefined,
       endorsementCode: formValue.endorseFiscalActivity
         ? { endorsementCode: EndorsementCode.ENDORSED }
         : undefined,
@@ -171,10 +204,13 @@ export class EndorsementApprovalComponent implements OnChanges, OnInit {
 
       // Approval logic
       isApprovedInd: !!formValue.approveFiscalActivity,
-      approvedTimestamp: formValue.approveFiscalActivity && formValue.approvalDate
-        ? new Date(formValue.approvalDate).toISOString()
+      approvedTimestamp:
+        formValue.approveFiscalActivity && formValue.approvalDate
+          ? new Date(formValue.approvalDate).toISOString()
+          : undefined,
+      approverName: formValue.approveFiscalActivity
+        ? this.currentUser
         : undefined,
-      approverName: formValue.approveFiscalActivity ? this.currentUser : undefined,
       businessAreaComment: formValue.approvalComment ?? undefined,
 
       planFiscalStatusCode: this.fiscal.planFiscalStatusCode,
@@ -185,20 +221,26 @@ export class EndorsementApprovalComponent implements OnChanges, OnInit {
     // Status logic: (return to PROPOSED if removed and not DRAFT/PROPOSED)
     // if reverting to proposed, clear out endorsement or approval fields depending on which has been unselected
     if (resetToProposedEndorsementRemoved) {
-      updatedFiscal.planFiscalStatusCode = { planFiscalStatusCode: FiscalStatuses.PROPOSED };
+      updatedFiscal.planFiscalStatusCode = {
+        planFiscalStatusCode: FiscalStatuses.PROPOSED,
+      };
       updatedFiscal.endorserName = undefined;
       updatedFiscal.endorsementTimestamp = undefined;
-      updatedFiscal.endorsementCode = { endorsementCode: EndorsementCode.NOT_ENDORS };
+      updatedFiscal.endorsementCode = {
+        endorsementCode: EndorsementCode.NOT_ENDORS,
+      };
       updatedFiscal.endorsementComment = undefined;
       updatedFiscal.endorsementEvalTimestamp = undefined;
       updatedFiscal.endorserUserGuid = undefined;
       updatedFiscal.endorserUserUserid = undefined;
       updatedFiscal.endorseApprUpdateUserid = undefined;
       updatedFiscal.endorseApprUpdatedTimestamp = undefined;
-    } 
-    
+    }
+
     if (resetToProposedApprovalRemoved) {
-      updatedFiscal.planFiscalStatusCode = { planFiscalStatusCode: FiscalStatuses.PROPOSED };
+      updatedFiscal.planFiscalStatusCode = {
+        planFiscalStatusCode: FiscalStatuses.PROPOSED,
+      };
       updatedFiscal.isApprovedInd = false;
       updatedFiscal.approvedTimestamp = undefined;
       updatedFiscal.approverName = undefined;
@@ -218,10 +260,9 @@ export class EndorsementApprovalComponent implements OnChanges, OnInit {
         previousValue: null,
         firstChange: false,
         isFirstChange: () => false,
-      }
+      },
     });
   }
-
 
   disableForm() {
     this.endorsementApprovalForm.disable();
@@ -232,7 +273,9 @@ export class EndorsementApprovalComponent implements OnChanges, OnInit {
   }
 
   get endorsementCommentControl(): FormControl {
-    return this.endorsementApprovalForm.get('endorsementComment') as FormControl;
+    return this.endorsementApprovalForm.get(
+      'endorsementComment',
+    ) as FormControl;
   }
 
   get approvalDateControl(): FormControl {
@@ -253,9 +296,11 @@ export class EndorsementApprovalComponent implements OnChanges, OnInit {
 
   get isCardDisabled(): boolean {
     // disabled in Draft, Complete, Cancelled
-    return this.isDraft
-      || this.statusCode === FiscalStatuses.COMPLETE
-      || this.statusCode === FiscalStatuses.CANCELLED;
+    return (
+      this.isDraft ||
+      this.statusCode === FiscalStatuses.COMPLETE ||
+      this.statusCode === FiscalStatuses.CANCELLED
+    );
   }
 
   get showDraftTooltip(): boolean {
@@ -273,25 +318,30 @@ export class EndorsementApprovalComponent implements OnChanges, OnInit {
     }
   }
 
-  async confirmStatusChange(currentStatusCode: string, newStatusCode: string): Promise<boolean> {
+  async confirmStatusChange(
+    currentStatusCode: string,
+    newStatusCode: string,
+  ): Promise<boolean> {
     if (!currentStatusCode || !newStatusCode) return false;
-    
+
     // Parse status to plain English if it is IN_PROG
     // The remaining status do not require such parsing
-    const currentStatus = currentStatusCode === 'IN_PROG' ? "In Progress" : capitalizeFirstLetter(currentStatusCode);
-    const message = `You are about to change the status of this Fiscal Activity from ${currentStatus} to ${newStatusCode}. Do you wish to continue?`
+    const currentStatus =
+      currentStatusCode === 'IN_PROG'
+        ? 'In Progress'
+        : capitalizeFirstLetter(currentStatusCode);
+    const message = `You are about to change the status of this Fiscal Activity from ${currentStatus} to ${newStatusCode}. Do you wish to continue?`;
 
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       data: {
         indicator: 'confirm-fiscal-status-update',
         title: `Confirm Change to ${newStatusCode}`,
-        message: message
+        message: message,
       },
       width: '600px',
     });
-    
+
     const result = await firstValueFrom(dialogRef.afterClosed());
     return !!result;
   }
-
 }

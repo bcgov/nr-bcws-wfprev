@@ -1,30 +1,38 @@
-import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { ConfirmationDialogComponent } from 'src/app/components/confirmation-dialog/confirmation-dialog.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { Messages, ModalMessages, ModalTitles, ObjectiveTypeCodes, ProjectTypeCodes } from 'src/app/utils/constants';
+import {
+  Messages,
+  ModalMessages,
+  ModalTitles,
+  ObjectiveTypeCodes,
+  ProjectTypeCodes,
+} from 'src/app/utils/constants';
 import { ProjectService } from 'src/app/services/project-services';
 import { CodeTableServices } from 'src/app/services/code-table-services';
 import { Project } from 'src/app/components/models';
-import {
-  validateLatLong, trimLatLong
-} from 'src/app/utils/tools';
+import { validateLatLong, trimLatLong } from 'src/app/utils/tools';
 import { TextFieldModule } from '@angular/cdk/text-field';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { TextareaComponent } from 'src/app/components/shared/textarea/textarea.component';
 @Component({
-    selector: 'wfprev-create-new-project-dialog',
-    imports: [
-        ReactiveFormsModule,
-        CommonModule,
-        TextFieldModule,
-        MatTooltipModule,
-        TextareaComponent
-    ],
-    templateUrl: './create-new-project-dialog.component.html',
-    styleUrls: ['./create-new-project-dialog.component.scss']
+  selector: 'wfprev-create-new-project-dialog',
+  imports: [
+    ReactiveFormsModule,
+    TextFieldModule,
+    MatTooltipModule,
+    TextareaComponent,
+  ],
+  templateUrl: './create-new-project-dialog.component.html',
+  styleUrls: ['./create-new-project-dialog.component.scss'],
 })
 export class CreateNewProjectDialogComponent implements OnInit {
   Validators = Validators;
@@ -33,11 +41,11 @@ export class CreateNewProjectDialogComponent implements OnInit {
   messages = Messages;
   // Regions and sections mapping
   regionToSections: { [key: string]: string[] } = {
-    'Northern': ['Omineca', 'Peace', 'Skeena'],
+    Northern: ['Omineca', 'Peace', 'Skeena'],
     'Thompson Cariboo': ['Cariboo', 'Thompson'],
     'Kootenay Okanagan': ['Kootenay', 'Okanagan'],
     'South Coast': ['South Coast'],
-    'West Coast': ['Central Coast/North Island', 'Haida Gwaii/South Island']
+    'West Coast': ['Central Coast/North Island', 'Haida Gwaii/South Island'],
   };
 
   businessAreas: any[] = [];
@@ -58,7 +66,7 @@ export class CreateNewProjectDialogComponent implements OnInit {
     private readonly dialogRef: MatDialogRef<CreateNewProjectDialogComponent>,
     private readonly snackbarService: MatSnackBar,
     private readonly projectService: ProjectService,
-    private readonly codeTableService: CodeTableServices
+    private readonly codeTableService: CodeTableServices,
   ) {
     this.projectForm = this.fb.group({
       projectType: ['', [Validators.required]],
@@ -80,54 +88,61 @@ export class CreateNewProjectDialogComponent implements OnInit {
     });
 
     // Watch for business area changes
-    this.projectForm.get('businessArea')?.valueChanges.subscribe((businessAreaId: string) => {
-      const bcParksRegionControl = this.projectForm.get('bcParksRegion');
+    this.projectForm
+      .get('businessArea')
+      ?.valueChanges.subscribe((businessAreaId: string) => {
+        const bcParksRegionControl = this.projectForm.get('bcParksRegion');
 
-      const isBcParks = this.businessAreas.find(
-        area => area.programAreaGuid === businessAreaId && area.programAreaName === 'BC Parks (BCP)'
-      );
-
-      if (isBcParks) {
-        bcParksRegionControl?.setValidators([Validators.required]);
-      } else {
-        bcParksRegionControl?.clearValidators();
-        this.projectForm.get('bcParksSection')?.disable(); // Reset section
-      }
-      bcParksRegionControl?.updateValueAndValidity();
-    });
-
-    this.projectForm.get('forestRegion')?.valueChanges.subscribe((regionId: number) => {
-      if (regionId) {
-        // Filter districts where parentOrgUnitId === selected forestRegion
-        this.forestDistricts = this.forestDistrictsBackup.filter(
-          (district) => String(district.parentOrgUnitId) === String(regionId)
+        const isBcParks = this.businessAreas.find(
+          (area) =>
+            area.programAreaGuid === businessAreaId &&
+            area.programAreaName === 'BC Parks (BCP)',
         );
 
-        // If current forestDistrict is invalid, clear it
-        const currentDistrict = this.projectForm.get('forestDistrict')?.value;
-        const validDistrictIds = this.forestDistricts.map(d => d.orgUnitId);
-        if (!validDistrictIds.includes(currentDistrict)) {
-          this.projectForm.get('forestDistrict')?.setValue('');
+        if (isBcParks) {
+          bcParksRegionControl?.setValidators([Validators.required]);
+        } else {
+          bcParksRegionControl?.clearValidators();
+          this.projectForm.get('bcParksSection')?.disable(); // Reset section
         }
+        bcParksRegionControl?.updateValueAndValidity();
+      });
 
-      } else {
-        this.forestDistricts = [...this.forestDistrictsBackup];
-      }
-    });
+    this.projectForm
+      .get('forestRegion')
+      ?.valueChanges.subscribe((regionId: number) => {
+        if (regionId) {
+          // Filter districts where parentOrgUnitId === selected forestRegion
+          this.forestDistricts = this.forestDistrictsBackup.filter(
+            (district) => String(district.parentOrgUnitId) === String(regionId),
+          );
+
+          // If current forestDistrict is invalid, clear it
+          const currentDistrict = this.projectForm.get('forestDistrict')?.value;
+          const validDistrictIds = this.forestDistricts.map((d) => d.orgUnitId);
+          if (!validDistrictIds.includes(currentDistrict)) {
+            this.projectForm.get('forestDistrict')?.setValue('');
+          }
+        } else {
+          this.forestDistricts = [...this.forestDistrictsBackup];
+        }
+      });
 
     // Dynamically enable/disable bcParksSection based on bcParksRegion selection
-    this.projectForm.get('bcParksRegion')?.valueChanges.subscribe((regionId: number) => {
-      if (regionId) {
-        this.projectForm.get('bcParksSection')?.enable();
-        this.bcParksSections = this.allBcParksSections.filter(
-          (section) => section.parentOrgUnitId === regionId.toString()
-        );
-      } else {
-        this.projectForm.get('bcParksSection')?.reset();
-        this.projectForm.get('bcParksSection')?.disable();
-        this.bcParksSections = [];
-      }
-    });
+    this.projectForm
+      .get('bcParksRegion')
+      ?.valueChanges.subscribe((regionId: number) => {
+        if (regionId) {
+          this.projectForm.get('bcParksSection')?.enable();
+          this.bcParksSections = this.allBcParksSections.filter(
+            (section) => section.parentOrgUnitId === regionId.toString(),
+          );
+        } else {
+          this.projectForm.get('bcParksSection')?.reset();
+          this.projectForm.get('bcParksSection')?.disable();
+          this.bcParksSections = [];
+        }
+      });
   }
   ngOnInit(): void {
     this.loadCodeTables(); // Call the helper method to load code tables
@@ -135,58 +150,76 @@ export class CreateNewProjectDialogComponent implements OnInit {
 
   loadCodeTables(): void {
     this.codeTableService.getProgramAreaCodes().subscribe({
-      next: data => { this.businessAreas = data; },
-      error: err => console.error('Error fetching programAreaCodes', err),
+      next: (data) => {
+        this.businessAreas = data;
+      },
+      error: (err) => console.error('Error fetching programAreaCodes', err),
     });
 
     this.codeTableService.getForestRegionCodes().subscribe({
-      next: data => { this.forestRegions = data; },
-      error: err => console.error('Error fetching forestRegionCodes', err),
+      next: (data) => {
+        this.forestRegions = data;
+      },
+      error: (err) => console.error('Error fetching forestRegionCodes', err),
     });
 
     this.codeTableService.getForestDistrictCodes().subscribe({
-      next: data => {
+      next: (data) => {
         this.forestDistrictsBackup = data;
         this.forestDistricts = [...data];
       },
-      error: err => console.error('Error fetching forestDistrictCodes', err),
+      error: (err) => console.error('Error fetching forestDistrictCodes', err),
     });
 
     this.codeTableService.getBcParksRegionCodes().subscribe({
-      next: data => { this.bcParksRegions = data; },
-      error: err => console.error('Error fetching bcParksRegionCodes', err),
+      next: (data) => {
+        this.bcParksRegions = data;
+      },
+      error: (err) => console.error('Error fetching bcParksRegionCodes', err),
     });
 
     this.codeTableService.getBcParksSectionCodes().subscribe({
-      next: data => { this.allBcParksSections = data; },
-      error: err => console.error('Error fetching bcParksSectionCodes', err),
+      next: (data) => {
+        this.allBcParksSections = data;
+      },
+      error: (err) => console.error('Error fetching bcParksSectionCodes', err),
     });
 
     this.codeTableService.getObjectiveTypeCodes().subscribe({
-      next: data => {
+      next: (data) => {
         this.objectiveTypes = data;
-        const defaultObjective = data.find(t => t.objectiveTypeCode === ObjectiveTypeCodes.WRR);
+        const defaultObjective = data.find(
+          (t) => t.objectiveTypeCode === ObjectiveTypeCodes.WRR,
+        );
         if (defaultObjective) {
-          this.projectForm.get('primaryObjective')?.setValue(ObjectiveTypeCodes.WRR);
+          this.projectForm
+            .get('primaryObjective')
+            ?.setValue(ObjectiveTypeCodes.WRR);
         }
       },
-      error: err => console.error('Error fetching objectiveTypeCodes', err),
+      error: (err) => console.error('Error fetching objectiveTypeCodes', err),
     });
 
     this.codeTableService.getProjectTypeCodes().subscribe({
-      next: data => {
+      next: (data) => {
         this.projectTypes = data;
-        const defaultType = data.find(t => t.projectTypeCode === ProjectTypeCodes.FUEL_MANAGEMENT);
+        const defaultType = data.find(
+          (t) => t.projectTypeCode === ProjectTypeCodes.FUEL_MANAGEMENT,
+        );
         if (defaultType) {
-          this.projectForm.get('projectType')?.setValue(ProjectTypeCodes.FUEL_MANAGEMENT);
+          this.projectForm
+            .get('projectType')
+            ?.setValue(ProjectTypeCodes.FUEL_MANAGEMENT);
         }
       },
-      error: err => console.error('Error fetching projectTypeCodes', err),
+      error: (err) => console.error('Error fetching projectTypeCodes', err),
     });
 
     this.codeTableService.getFireCentres().subscribe({
-      next: data => { this.fireCentres = data; },
-      error: err => console.error('Error fetching wildfireOrgUnits', err),
+      next: (data) => {
+        this.fireCentres = data;
+      },
+      error: (err) => console.error('Error fetching wildfireOrgUnits', err),
     });
   }
 
@@ -220,7 +253,7 @@ export class CreateNewProjectDialogComponent implements OnInit {
           this.snackbarService.open(
             'Invalid latitude and longitude. Please ensure it is in the correct format and within BC boundaries.',
             'OK',
-            { duration: 5000, panelClass: 'snackbar-error' }
+            { duration: 5000, panelClass: 'snackbar-error' },
           );
           return; // Exit the method if latLong is invalid
         }
@@ -229,43 +262,56 @@ export class CreateNewProjectDialogComponent implements OnInit {
       const newProject: Project = {
         projectName: this.projectForm.get('projectName')?.value ?? '',
         programAreaGuid: this.projectForm.get('businessArea')?.value ?? '',
-        forestRegionOrgUnitId: Number(this.projectForm.get('forestRegion')?.value) || 0,
-        forestDistrictOrgUnitId: Number(this.projectForm.get('forestDistrict')?.value) || 0,
-        bcParksRegionOrgUnitId: Number(this.projectForm.get('bcParksRegion')?.value) || 0,
-        bcParksSectionOrgUnitId: Number(this.projectForm.get('bcParksSection')?.value) || 0,
-        fireCentreOrgUnitId: Number(this.projectForm.get('fireCentre')?.value) || 0,
+        forestRegionOrgUnitId:
+          Number(this.projectForm.get('forestRegion')?.value) || 0,
+        forestDistrictOrgUnitId:
+          Number(this.projectForm.get('forestDistrict')?.value) || 0,
+        bcParksRegionOrgUnitId:
+          Number(this.projectForm.get('bcParksRegion')?.value) || 0,
+        bcParksSectionOrgUnitId:
+          Number(this.projectForm.get('bcParksSection')?.value) || 0,
+        fireCentreOrgUnitId:
+          Number(this.projectForm.get('fireCentre')?.value) || 0,
         projectLead: this.projectForm.get('projectLead')?.value ?? '',
-        projectLeadEmailAddress: this.projectForm.get('projectLeadEmail')?.value ?? '',
+        projectLeadEmailAddress:
+          this.projectForm.get('projectLeadEmail')?.value ?? '',
         siteUnitName: this.projectForm.get('siteUnitName')?.value ?? '',
-        closestCommunityName: this.projectForm.get('closestCommunity')?.value ?? '',
+        closestCommunityName:
+          this.projectForm.get('closestCommunity')?.value ?? '',
         generalScopeCode: {
-          generalScopeCode: "SL_ACT"
+          generalScopeCode: 'SL_ACT',
         },
         projectTypeCode: {
-          projectTypeCode: this.projectForm.get('projectType')?.value ?? ''
+          projectTypeCode: this.projectForm.get('projectType')?.value ?? '',
         },
         forestAreaCode: {
-          forestAreaCode: "COAST",
+          forestAreaCode: 'COAST',
         },
-        projectDescription: this.projectForm.get('projectDescription')?.value ?? '',
+        projectDescription:
+          this.projectForm.get('projectDescription')?.value ?? '',
         projectNumber: this.projectForm.get('projectNumber')?.value ?? '',
         totalFundingRequestAmount:
           this.projectForm.get('totalFundingRequestAmount')?.value ?? '',
-        totalAllocatedAmount: this.projectForm.get('totalAllocatedAmount')?.value ?? '',
+        totalAllocatedAmount:
+          this.projectForm.get('totalAllocatedAmount')?.value ?? '',
         totalPlannedProjectSizeHa:
           this.projectForm.get('totalPlannedProjectSizeHa')?.value ?? '',
         totalPlannedCostPerHectare:
           this.projectForm.get('totalPlannedCostPerHectare')?.value ?? '',
-        totalActualAmount: this.projectForm.get('totalActualAmount')?.value ?? 0,
+        totalActualAmount:
+          this.projectForm.get('totalActualAmount')?.value ?? 0,
         primaryObjectiveTypeCode: {
-          objectiveTypeCode: this.projectForm.get('primaryObjective')?.value
+          objectiveTypeCode: this.projectForm.get('primaryObjective')?.value,
         },
         ...(this.projectForm.get('secondaryObjective')?.value && {
           secondaryObjectiveTypeCode: {
-            objectiveTypeCode: this.projectForm.get('secondaryObjective')?.value
-          }
+            objectiveTypeCode:
+              this.projectForm.get('secondaryObjective')?.value,
+          },
         }),
-        secondaryObjectiveRationale: this.projectForm.get('secondaryObjectiveRationale')?.value,
+        secondaryObjectiveRationale: this.projectForm.get(
+          'secondaryObjectiveRationale',
+        )?.value,
 
         isMultiFiscalYearProj: false,
         ...(validatedLatLong && {
@@ -279,13 +325,15 @@ export class CreateNewProjectDialogComponent implements OnInit {
 
       this.projectService.createProject(newProject).subscribe({
         next: (response) => {
-          this.snackbarService.open(
-            this.messages.projectCreatedSuccess,
-            'OK',
-            { duration: 5000, panelClass: 'snackbar-success' },
-          );
+          this.snackbarService.open(this.messages.projectCreatedSuccess, 'OK', {
+            duration: 5000,
+            panelClass: 'snackbar-success',
+          });
           this.isSaving = false;
-          this.dialogRef.close({ success: true, projectGuid: response.projectGuid });
+          this.dialogRef.close({
+            success: true,
+            projectGuid: response.projectGuid,
+          });
         },
         error: (err) => {
           this.isSaving = false;
@@ -300,13 +348,12 @@ export class CreateNewProjectDialogComponent implements OnInit {
               ? err.error.error
               : this.messages.projectCreatedFailure;
 
-          this.snackbarService.open(
-            errorMessage,
-            'OK',
-            { duration: 5000, panelClass: 'snackbar-error' }
-          );
-        }
-      })
+          this.snackbarService.open(errorMessage, 'OK', {
+            duration: 5000,
+            panelClass: 'snackbar-error',
+          });
+        },
+      });
     }
   }
 
@@ -315,7 +362,7 @@ export class CreateNewProjectDialogComponent implements OnInit {
       data: {
         indicator: 'confirm-cancel',
         title: ModalTitles.CONFIRM_CANCEL_TITLE,
-        message: ModalMessages.CONFIRM_CANCEL_MESSAGE
+        message: ModalMessages.CONFIRM_CANCEL_MESSAGE,
       },
       width: '600px',
     });
@@ -336,20 +383,21 @@ export class CreateNewProjectDialogComponent implements OnInit {
 
   getProjectTypeCode(value: string): string {
     if (!value) return '';
-    const type = this.projectTypes.find(t => t?.projectTypeCode === value);
+    const type = this.projectTypes.find((t) => t?.projectTypeCode === value);
     return type?.description ?? value;
   }
 
   getBusinessAreaCode(value: string): string {
     if (!value) return '';
-    const area = this.businessAreas.find(a => a?.programAreaGuid === value);
+    const area = this.businessAreas.find((a) => a?.programAreaGuid === value);
     return area?.programAreaName ?? value;
   }
 
   getForestRegionCode(value: string): string {
     if (!value) return '';
     const region = this.forestRegions.find(
-      r => r?.orgUnitId != null && r.orgUnitId.toString() === value.toString()
+      (r) =>
+        r?.orgUnitId != null && r.orgUnitId.toString() === value.toString(),
     );
     return region?.orgUnitName ?? value;
   }
@@ -357,7 +405,8 @@ export class CreateNewProjectDialogComponent implements OnInit {
   getForestDistrictCode(value: string): string {
     if (!value) return '';
     const district = this.forestDistricts.find(
-      d => d?.orgUnitId != null && d.orgUnitId.toString() === value.toString()
+      (d) =>
+        d?.orgUnitId != null && d.orgUnitId.toString() === value.toString(),
     );
     return district?.orgUnitName ?? value;
   }
@@ -365,7 +414,8 @@ export class CreateNewProjectDialogComponent implements OnInit {
   getBcParksRegionCode(value: string): string {
     if (!value) return '';
     const region = this.bcParksRegions.find(
-      r => r?.orgUnitId != null && r.orgUnitId.toString() === value.toString()
+      (r) =>
+        r?.orgUnitId != null && r.orgUnitId.toString() === value.toString(),
     );
     return region?.orgUnitName ?? value;
   }
@@ -373,7 +423,8 @@ export class CreateNewProjectDialogComponent implements OnInit {
   getBcParksSectionCode(value: string): string {
     if (!value) return '';
     const section = this.bcParksSections.find(
-      s => s?.orgUnitId != null && s.orgUnitId.toString() === value.toString()
+      (s) =>
+        s?.orgUnitId != null && s.orgUnitId.toString() === value.toString(),
     );
     return section?.orgUnitName ?? value;
   }
@@ -381,20 +432,22 @@ export class CreateNewProjectDialogComponent implements OnInit {
   getFireCentreCode(value: string): string {
     if (!value) return '';
     const centre = this.fireCentres.find(
-      c => c?.orgUnitIdentifier != null && c.orgUnitIdentifier.toString() === value.toString()
+      (c) =>
+        c?.orgUnitIdentifier != null &&
+        c.orgUnitIdentifier.toString() === value.toString(),
     );
     return centre?.orgUnitName ?? value;
   }
 
   getObjectiveCode(value: string): string {
     if (!value) return '';
-    const objective = this.objectiveTypes.find(o => o?.objectiveTypeCode === value);
+    const objective = this.objectiveTypes.find(
+      (o) => o?.objectiveTypeCode === value,
+    );
     return objective?.description ?? value;
   }
 
   get secondaryObjectiveRationaleCtrl(): FormControl {
     return this.projectForm.get('secondaryObjectiveRationale') as FormControl;
   }
-
-
 }

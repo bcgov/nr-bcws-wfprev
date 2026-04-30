@@ -1,7 +1,10 @@
 <div class="select-field">
   <div class="form-item">
     <label [for]="id">
-      {{ label }}<span *ngIf="required" class="required">*</span>
+      {{ label }}
+      @if (required) {
+        <span class="required">*</span>
+      }
     </label>
     <select
       [formControl]="control"
@@ -9,13 +12,17 @@
       [matTooltip]="tooltip"
       [disabled]="disabled"
     >
-      <option *ngIf="!required" [value]="''">{{ placeholder }}</option>
-      <option *ngFor="let item of options" [value]="item[optionValueField]">
-        {{ item[optionLabelField] }}
-      </option>
+      @if (!required) {
+        <option [value]="''">{{ placeholder }}</option>
+      }
+      @for (item of options; track item) {
+        <option [value]="item[optionValueField]">
+          {{ item[optionLabelField] }}
+        </option>
+      }
     </select>
-    <div class="error" *ngIf="control.hasError('required') && control.touched">
-      This field is required.
-    </div>
+    @if (control.hasError("required") && control.touched) {
+      <div class="error">This field is required.</div>
+    }
   </div>
 </div>
