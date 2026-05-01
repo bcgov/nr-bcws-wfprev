@@ -3,7 +3,8 @@
 .performance-update-container {
     padding-top: 12px;
     margin: 0;
-    min-width: 1500px;
+    width: 100%;
+    box-sizing: border-box;
 
     .expansion-panel:nth-child(even) {
         background-color: #FAF9F8;
@@ -37,6 +38,7 @@
     .performance-update-header {
         ::ng-deep .mat-content {
             gap: 8px;
+            flex-wrap: wrap;
         }
     }
 
@@ -56,9 +58,10 @@
 
     .content-status-indicators {
         display: flex;
+        flex-wrap: wrap;
         align-items: center;
         gap: 10px;
-        min-width: 600px;
+        min-width: 0;
 
         .reporting-period {
             display: flex;
@@ -100,10 +103,12 @@
         font-size: 16px;
         font-weight: 400;
         display: flex;
+        flex-wrap: wrap;
         align-items: center;
         justify-content: flex-end;
         gap: 10px;
-        width: 100%;
+        width: auto;
+        flex: 1;
 
         .status-tag {
             display: flex;
