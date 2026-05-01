@@ -8,6 +8,9 @@
     gap: 15px;
     justify-content: flex-start;
     font-family: var(--wf-font-family-main) !important;
+    min-width: 0;
+    max-width: 100%;
+    box-sizing: border-box;
 
     .form-item {
       flex: 1 1 calc(25% - 15px); // 4 items per row with a 15px gap
@@ -61,6 +64,7 @@
 
       textarea {
         width: 100%;
+        max-width: 100%;
         margin: 12px 8px;
         font-size: 14px;
         border: 1px solid #ccc;
@@ -200,8 +204,9 @@
 .footer {
   border: 1px solid #c7c7c7;
   background: #f2f2f2;
-  width: 100vw;
-  margin: -18px;
+  width: 100%;
+  margin-top: 18px;
+  box-sizing: border-box;
 }
 
 .button-row {
@@ -232,6 +237,9 @@
 
 .sub-section {
   flex: 1 1 100%;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
 
   .sub-title {
     color: #000;
@@ -284,14 +292,20 @@ mat-expansion-panel {
 
 :host ::ng-deep .mat-mdc-tab-body-wrapper {
   overflow: visible !important;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 :host ::ng-deep .mat-mdc-tab-body-content {
   overflow: visible !important;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 :host ::ng-deep .mat-mdc-tab-body.mat-mdc-tab-body-active {
   overflow: visible !important;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 
@@ -356,6 +370,25 @@ mat-expansion-panel {
   display: flex;
   gap: 20px;
   width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  padding-bottom: 50px;
+
+  .left-column, .right-column {
+    flex: 0 0 calc(50% - 10px);
+    min-width: 0;
+    max-width: calc(50% - 10px);
+    box-sizing: border-box;
+  }
+
+  @media screen and (max-width: 1024px) {
+    flex-direction: column;
+
+    .left-column, .right-column {
+      flex: 1 1 100%;
+      max-width: 100%;
+    }
+  }
 }
 
 .fiscal-and-endorsement {
@@ -365,11 +398,11 @@ mat-expansion-panel {
 }
 
 .activities-panel {
-  flex: 0 0 69%;
+  width: 100%;
 }
 
 .fiscal-map-panel {
-  flex: 0 0 30%;
+  width: 100%;
 }
 
 .currency-input {

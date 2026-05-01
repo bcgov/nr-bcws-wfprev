@@ -312,17 +312,17 @@
                   </div>
                 </div>
               </mat-expansion-panel>
-              <div class="activities-map-container">
-                <div>
-                  <wfprev-performance-updates [fiscalGuid]="fiscal.projectPlanFiscalGuid"></wfprev-performance-updates>
-                  <wfprev-activities class="activities-panel"  [isReadonly]="isCurrentFiscalReadonly()" [fiscalGuid]="currentFiscalGuid" (boundariesUpdated)="onBoundariesChanged()"></wfprev-activities>
-                </div>
-                <div class="fiscal-and-endorsement">
-                  <wfprev-fiscal-map class="fiscal-map-panel" *ngIf="selectedTabIndex === i" [fiscalGuid]="selectedTabIndex" [selectedFiscalYear]="projectFiscals[selectedTabIndex]?.fiscalYear"  #fiscalMapRef></wfprev-fiscal-map>
-                  <wfprev-endorsement-approval [fiscal]="projectFiscals[i]" [currentUser]="currentUser" [currentIdir]="currentIdir" (saveEndorsement)="onSaveEndorsement($event)" [isSaving]="isSavingFiscal[i]"></wfprev-endorsement-approval>
-                </div>
-              </div>
             </mat-accordion>
+            <div class="activities-map-container">
+              <div class="left-column">
+                <wfprev-performance-updates [fiscalGuid]="fiscal.projectPlanFiscalGuid"></wfprev-performance-updates>
+                <wfprev-activities class="activities-panel"  [isReadonly]="isCurrentFiscalReadonly()" [fiscalGuid]="currentFiscalGuid" (boundariesUpdated)="onBoundariesChanged()"></wfprev-activities>
+              </div>
+              <div class="right-column fiscal-and-endorsement">
+                <wfprev-fiscal-map class="fiscal-map-panel" *ngIf="selectedTabIndex === i" [fiscalGuid]="selectedTabIndex" [selectedFiscalYear]="projectFiscals[selectedTabIndex]?.fiscalYear"  #fiscalMapRef></wfprev-fiscal-map>
+                <wfprev-endorsement-approval [fiscal]="projectFiscals[i]" [currentUser]="currentUser" [currentIdir]="currentIdir" (saveEndorsement)="onSaveEndorsement($event)" [isSaving]="isSavingFiscal[i]"></wfprev-endorsement-approval>
+              </div>
+            </div>
           </mat-tab>
         </mat-tab-group>
       </div>
