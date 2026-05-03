@@ -4,6 +4,7 @@
   border: 1px solid #C6C8CB;
   overflow: hidden;
   margin-top: 10px;
+  box-sizing: border-box;
 
   .form-grid {
     padding: 18px;
@@ -11,11 +12,13 @@
     flex-wrap: wrap;
     gap: 20px;
     justify-content: space-between;
+    box-sizing: border-box;
 
     .form-item {
       font-family: "BCSans", "Noto Sans", Verdana, Arial, sans-serif !important;
       flex: 1 1 calc(25% - 20px); // 4 items per row with a 20px gap
       min-width: 200px;
+      box-sizing: border-box;
 
       .error {
         color: red;
@@ -170,13 +173,9 @@
     }
 
     .secondary-rationale {
-      width: 100%;
+      flex: 1 1 100%; // Force to own row
       min-width: 200px;
-
-      @media (max-width: 1024px) {
-        flex: 1 1 100%; // Full width on smaller screens
-        max-width: 100%;
-      }
+      box-sizing: border-box;
 
       textarea {
         width: 100%;
@@ -224,10 +223,12 @@
 }
 
 .footer {
+  flex: 1 1 100%; // Force to own row and take full width
   border-top: 1px solid #C7C7C7;
   background: #F2F2F2;
-  width: 100vw;
-  margin: -18px;
+  width: auto;
+  margin: 0 -18px -18px -18px;
+  box-sizing: border-box;
 }
 
 .button-row {
@@ -276,7 +277,7 @@
   button.secondary:focus {
     outline: none;
     box-shadow: none;
-  }
+    }
 
   button.secondary:disabled {
     color: #fff;
@@ -291,6 +292,7 @@
   width: 100%;
   height: auto;
   gap: 19px;
+  box-sizing: border-box;
 }
 
 .project-left-section {
@@ -299,6 +301,7 @@
   flex-direction: column;
   padding-left: 19px;
   background-color: var(--colour-white);
+  box-sizing: border-box;
 
   mat-expansion-panel {
     margin: 0px !important;
@@ -359,10 +362,12 @@
   height: 600px;
   /* Fixed height for the map */
   position: relative;
+  box-sizing: border-box;
 
   /* Ensure positioning context for the map */
   #map {
     height: 100%;
+    width: 100%;
   }
 }
 
@@ -373,6 +378,7 @@
   padding: 10px;
   border-top: 1px solid #ccc;
   font-family: var(--wf-font-family-main);
+  box-sizing: border-box;
   
   fieldset {
     border: none;
@@ -485,4 +491,24 @@
 
 .warning-icon{
   vertical-align: bottom;
+}
+
+@media screen and (max-width: 1024px) {
+  .description-map-section {
+    flex-direction: column;
+
+    .project-left-section {
+      padding-right: 19px;
+    }
+
+    .map-section {
+      padding-left: 19px;
+      height: auto; // Allow section to grow
+      width: 100%;
+
+      #map {
+        height: 400px; // Explicit height for map on small screens
+      }
+    }
+  }
 }

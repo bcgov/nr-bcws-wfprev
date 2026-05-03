@@ -12,12 +12,14 @@
             <div *ngFor="let fiscal of projectFiscals" class="fiscal-item">
                 <div class="fiscal-title-row">
                     <span class="section-1">{{fiscal.projectFiscalName}}</span>
-                    <span class="section-2"> Fiscal Year: 
-                        <span class="fiscal-year">{{convertFiscalYear(fiscal.fiscalYear)}}</span>
-                    </span>
-                    <span class="section-3">
-                        <wfprev-status-badge [type]="'status-' + fiscal.planFiscalStatusCode?.planFiscalStatusCode?.toLowerCase()"></wfprev-status-badge>
-                    </span>
+                    <div class="fiscal-indicators">
+                        <span class="section-2"> Fiscal Year: 
+                            <span class="fiscal-year">{{convertFiscalYear(fiscal.fiscalYear)}}</span>
+                        </span>
+                        <span class="section-3">
+                            <wfprev-status-badge [type]="'status-' + fiscal.planFiscalStatusCode?.planFiscalStatusCode?.toLowerCase()"></wfprev-status-badge>
+                        </span>
+                    </div>
                 </div>
                 <div class="fiscal-data" *ngIf="fiscal.planFiscalStatusCode?.planFiscalStatusCode != 'COMPLETE'; else completeFiscal">
                     <span class="data-title">Planned Ha: 
@@ -45,11 +47,10 @@
                         <span class="data-title">Actual Spend(CFS): 
                             <span class="data-value">${{ fiscal.fiscalActualAmount | number }}</span>
                         </span>
-                        <div class="complete-fiscal-last-performance-update">
-                            <span class="data-title">Last Performance Update: 
-                                <span class="data-value">{{ fiscal.lastProgressUpdateTimestamp || 'N/A'}}</span>
-                            </span>
-                        </div>
+
+                        <span class="data-title">Last Performance Update: 
+                            <span class="data-value">{{ fiscal.lastProgressUpdateTimestamp || 'N/A'}}</span>
+                        </span>
                     </div>
                 </ng-template>
                 <div class="activities-content">

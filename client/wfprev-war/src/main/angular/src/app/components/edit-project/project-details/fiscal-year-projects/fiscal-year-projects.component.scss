@@ -27,6 +27,7 @@ mat-expansion-panel {
 .fiscals-content{
     padding: 0 10px;
     border-top: 1px solid #D9D9D9;
+    container-type: inline-size;
     .fiscal-item{
         padding: 10px;
         border-radius: 10px;
@@ -37,11 +38,11 @@ mat-expansion-panel {
     .fiscal-title-row{
         font-family: var(--wf-font-family-main);
         display: flex;
+        align-items: center;
         gap: 15px;
         .section-1 {
-            flex: 0 0 65%;
+            flex: 1;
             display: flex;
-            flex-shrink: 0;
             color: #000;
             font-size: 20px;
             font-style: normal;
@@ -51,30 +52,36 @@ mat-expansion-panel {
             white-space: normal;
             overflow-wrap: break-word;
         }
-        .section-2{
-            flex:1;
-            color: #000;
-            font-size: 14px;
-            font-style: normal;
-            font-weight: 400;
-            line-height: normal;
-            .fiscal-year{
-                font-size: 16px;
-                font-weight: 700;
-            }
-        }
-        .section-3 {
-            flex: 1;
+        .fiscal-indicators {
             display: flex;
             align-items: center;
+            gap: 8px 40px;
+            margin-left: auto;
+
+            .section-2{
+                color: #000;
+                font-size: 14px;
+                font-style: normal;
+                font-weight: 400;
+                line-height: normal;
+                .fiscal-year{
+                    font-size: 16px;
+                    font-weight: 700;
+                }
+            }
+            .section-3 {
+                display: flex;
+                align-items: center;
+            }
         }
     }
     
     .fiscal-data{
         font-family: var(--wf-font-family-main);
-        padding-top: 16px;
+        padding-top: 8px;
         display: flex;
-        justify-content: space-between;
+        justify-content: flex-start;
+        gap: 8px 40px;
         flex-wrap: wrap;
         .data-title{
             color: #000;
@@ -88,26 +95,11 @@ mat-expansion-panel {
             font-size: 16px;
             font-weight: 700;
         }
-        span:nth-child(1) { 
-            flex: 3;  // 30% of the row
-        }
-        
-        span:nth-child(2) { 
-            flex: 3;  // 30% of the row
-        }
-        
-        span:nth-child(3) { 
-            flex: 4;  // 40% of the row
-        }
-        .complete-fiscal-last-performance-update{
-            flex: 1 1 100%;
-            padding-top: 10px;
-        }
     }
 
     .activities-content{
         font-family: var(--wf-font-family-main);
-        padding-top: 10px;
+        padding-top: 16px;
         .title{
             color: #000;
             font-size: 16px;
@@ -154,4 +146,33 @@ mat-expansion-panel {
     font-weight: 400;
     line-height: normal;
     padding: 20px;
+}
+
+@container (max-width: 900px) {
+    .fiscal-title-row {
+        display: flex;
+        flex-direction: row !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        gap: 12px !important;
+    }
+
+    .section-1 {
+        flex: 1 1 auto !important;
+        min-width: 0 !important;
+        font-size: 17px !important;
+    }
+
+    .fiscal-indicators {
+        display: flex;
+        flex-direction: column !important;
+        align-items: flex-end !important;
+        gap: 8px !important;
+        margin-left: 8px !important;
+    }
+
+    .fiscal-data {
+        flex-direction: column !important;
+        gap: 8px !important;
+    }
 }
