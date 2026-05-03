@@ -7,7 +7,7 @@
   box-sizing: border-box;
 
   .form-grid {
-    padding: 18px;
+    padding: 18px 24px;
     display: flex;
     flex-wrap: wrap;
     gap: 20px;
@@ -234,7 +234,7 @@
 .button-row {
   display: flex;
   height: 43px;
-  padding: 14px 17px 14px 23px;
+  padding: 14px 24px 14px 23px;
   justify-content: flex-end;
   align-items: flex-start;
   gap: 14px;
@@ -307,6 +307,13 @@
     margin: 0px !important;
     background-color: #FFF;
 
+    ::ng-deep .mat-expansion-panel-header {
+      padding: 0 24px;
+      min-height: 64px !important;
+      height: auto !important;
+      box-sizing: border-box;
+    }
+
     ::ng-deep .mat-expansion-panel-body {
       padding: 0;
     }
@@ -334,11 +341,11 @@
       font-family: inherit;
       font-size: 16px;
       border: none;
-      border-top: 1px solid #C6C8CB;
+      border-top: 1px solid #c6c8cb;
       resize: vertical;
-      padding: 6px;
-      padding-bottom: 16px;
+      padding: 12px 24px 16px 24px;
       width: -webkit-fill-available;
+      box-sizing: border-box;
     }
   }
 

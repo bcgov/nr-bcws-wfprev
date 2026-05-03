@@ -586,9 +586,14 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
   }
 
   onBoundariesChanged(): void {
-
     if (this.fiscalMapComponent) {
       this.fiscalMapComponent.getAllActivitiesBoundaries(); // refresh boundaries on map
+    }
+  }
+
+  refreshMap(): void {
+    if (this.fiscalMapComponent) {
+      this.fiscalMapComponent.refreshMap();
     }
   }
 

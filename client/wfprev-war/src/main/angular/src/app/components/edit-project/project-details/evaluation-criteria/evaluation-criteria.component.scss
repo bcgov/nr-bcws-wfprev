@@ -6,6 +6,13 @@ mat-expansion-panel {
     margin: 0px !important;
     background-color: #FFF;
 
+    ::ng-deep .mat-expansion-panel-header {
+      padding: 0 24px;
+      min-height: 64px !important;
+      height: auto !important;
+      box-sizing: border-box;
+    }
+
     ::ng-deep .mat-expansion-panel-body{
         padding: 0;
     }
@@ -52,7 +59,7 @@ mat-expansion-panel {
 }
 
 .criteria-section {
-    padding: 10px 20px;
+    padding: 10px 24px;
     font-family: var(--wf-font-family-main);
     font-size: 14px;
     border-top: 1px solid #D8D8D8;
@@ -104,5 +111,5 @@ mat-expansion-panel {
 
 .full-width-divider {
   border-top: 1px solid #D8D8D8;
-  margin: 16px -20px;
+  margin: 16px -24px;
 }

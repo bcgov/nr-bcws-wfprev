@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { AfterViewInit, Component, HostListener, Input, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, UrlTree } from '@angular/router';
 import * as L from 'leaflet';
 import { forkJoin, map } from 'rxjs';
@@ -34,6 +34,17 @@ export class FiscalMapComponent implements AfterViewInit, OnDestroy, OnInit {
   ) {}
 
   map: L.Map | undefined;
+
+  @HostListener('window:resize', ['$event'])
+  onResize(event: any) {
+    this.refreshMap();
+  }
+
+  refreshMap() {
+    if (this.map) {
+      this.map.invalidateSize();
+    }
+  }
   private activityBoundaryGroup: L.LayerGroup = L.layerGroup();
   private projectBoundaryGroup: L.LayerGroup = L.layerGroup();
 

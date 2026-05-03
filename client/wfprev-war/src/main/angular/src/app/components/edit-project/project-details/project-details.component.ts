@@ -110,6 +110,10 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
 
   @HostListener('window:resize', ['$event'])
   onResize(event: any) {
+    this.refreshMap();
+  }
+
+  refreshMap(): void {
     if (this.map) {
       this.map.invalidateSize();
     }

@@ -7,17 +7,15 @@
   box-sizing: border-box;
   container-type: inline-size;
 
-  .expansion-panel:nth-child(even) {
-    background-color: #faf9f8;
-  }
-
   .expansion-panel {
     border: 1px solid #d9d9d9;
 
     ::ng-deep .mat-expansion-panel-header {
-      min-height: 52px !important;
+      min-height: 64px !important;
       height: auto !important;
       border-bottom: 1px solid #d9d9d9;
+      padding: 0 24px;
+      box-sizing: border-box;
     }
 
     .dropdown-button {
@@ -94,14 +92,14 @@
   }
 
   .form-grid {
-    padding: 18px 0px;
+    padding: 18px 24px;
     font-family: var(--wf-font-family-main) !important;
     gap: 10px;
 
     .general-updates-container {
       display: flex;
       flex-direction: column;
-      padding: 0px 15px 15px 48px;
+      padding: 0px 0px 15px 24px;
 
       p:first-child {
         margin-top: 0;
@@ -132,7 +130,7 @@
     .budget-adjustment-container {
       display: flex;
       flex-direction: column;
-      padding: 15px 15px 15px 48px;
+      padding: 15px 0px 15px 24px;
       gap: 10px;
       border-top: 1px solid #d9d9d9;
 
@@ -178,7 +176,7 @@
     .budget-breakdown-container {
       display: flex;
       flex-direction: column;
-      padding: 15px 15px 15px 48px;
+      padding: 15px 0px 15px 24px;
       gap: 10px;
       border-top: 1px solid #d9d9d9;
 
@@ -253,7 +251,8 @@
       .general-updates-container,
       .budget-adjustment-container,
       .budget-breakdown-container {
-        padding-left: 15px !important;
+        padding-left: 24px !important;
+        padding-right: 0 !important;
       }
 
       .budget-adjustment-details {

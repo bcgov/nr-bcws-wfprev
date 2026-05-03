@@ -3,6 +3,13 @@ mat-expansion-panel {
     margin: 0px !important;
     background-color: #FFF;
 
+    ::ng-deep .mat-expansion-panel-header {
+      padding: 0 24px;
+      min-height: 64px !important;
+      height: auto !important;
+      box-sizing: border-box;
+    }
+
     ::ng-deep .mat-expansion-panel-body{
         padding: 0;
     }
@@ -25,7 +32,7 @@ mat-expansion-panel {
     }
 }
 .fiscals-content{
-    padding: 0 10px;
+    padding: 0 24px;
     border-top: 1px solid #D9D9D9;
     container-type: inline-size;
     .fiscal-item{
@@ -145,7 +152,7 @@ mat-expansion-panel {
     font-style: italic;
     font-weight: 400;
     line-height: normal;
-    padding: 20px;
+    padding: 20px 24px;
 }
 
 @container (max-width: 900px) {
