@@ -25,14 +25,6 @@ export class FiscalYearProjectsComponent implements OnInit{
   displayedColumnsPlanned: string[] = ['name', 'description', 'startDate', 'endDate', 'plannedHectares'];
 
   completeFiscalDisplayedColumns: string[] = ['name', 'description', 'endDate', 'completedHectares'];
-  planFiscalStatusMap: Record<string, string> = {
-    "DRAFT": "Draft",
-    "PROPOSED": "Proposed",
-    "IN_PROG": "In Progress",
-    "COMPLETE": "Complete",
-    "CANCELLED": "Cancelled",
-    "PREPARED": "Prepared"
-  };
 
   convertFiscalYear = convertFiscalYear;
   
@@ -97,20 +89,5 @@ export class FiscalYearProjectsComponent implements OnInit{
     return date.toISOString().split('T')[0];
   }
 
-  getStatusIcon(statusCode: string): string {
-    const iconMap: Record<string, string> = {
-      "DRAFT": "draft-icon.svg",
-      "PROPOSED": "proposed-icon.svg",
-      "IN_PROG": "in-progress-icon-only.svg",
-      "COMPLETE": "complete-icon.svg",
-      "CANCELLED": "cancelled-icon.svg",
-      "PREPARED": "prepared-icon.svg"
-    };
-    return iconMap[statusCode]
-  }
-  
-  getPlanFiscalStatus(statusCode: string): string {
-    return this.planFiscalStatusMap[statusCode] || "Unknown";
-  }
   
 }

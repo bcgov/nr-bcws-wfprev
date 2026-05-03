@@ -643,18 +643,6 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
   }
 
 
-  getStatusDescription(i: number): string | null {
-    const form = this.fiscalForms[i];
-    if (!form) return null;
-    const code = form.get('planFiscalStatusCode')?.value;
-    return (
-      this.planFiscalStatusCode.find((item) => item.planFiscalStatusCode === code)?.description ?? null
-    );
-  }
-
-  getStatusIcon(status: string) {
-    return PlanFiscalStatusIcons[status];
-  }
 
   updateFiscalStatus(index: number, newStatus: string): void {
     const form = this.fiscalForms[index];

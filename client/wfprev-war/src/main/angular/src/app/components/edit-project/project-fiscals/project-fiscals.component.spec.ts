@@ -752,50 +752,6 @@ describe('ProjectFiscalsComponent', () => {
     });
   });
 
-  it('should return the correct status description', () => {
-    component.planFiscalStatusCode = [
-      { planFiscalStatusCode: 'DRAFT', description: 'Draft Description' }
-    ];
-
-    const form = component.createFiscalForm({
-      planFiscalStatusCode: 'DRAFT'
-    });
-
-    component.fiscalForms = [form];
-
-    const result = component.getStatusDescription(0);
-
-    expect(result).toBe('Draft Description');
-  });
-
-  it('should return null if no matching status description is found', () => {
-    component.planFiscalStatusCode = [];
-
-    const form = component.createFiscalForm({ planFiscalStatusCode: 'UNKNOWN' });
-    component.fiscalForms = [form];
-
-    const result = component.getStatusDescription(0);
-
-    expect(result).toBeNull();
-  });
-
-  it('should return null if form is missing', () => {
-    component.fiscalForms = [];
-
-    const result = component.getStatusDescription(0);
-
-    expect(result).toBeNull();
-  });
-
-  it('should return the correct status icon', () => {
-    const result = component.getStatusIcon('DRAFT');
-    expect(result).toBe(PlanFiscalStatusIcons['DRAFT']);
-  });
-
-  it('should return undefined for unknown status', () => {
-    const result = component.getStatusIcon('INVALID_STATUS');
-    expect(result).toBeUndefined();
-  });
 
   it('should update fiscal status and call onSaveFiscal()', () => {
     const form = component.createFiscalForm();

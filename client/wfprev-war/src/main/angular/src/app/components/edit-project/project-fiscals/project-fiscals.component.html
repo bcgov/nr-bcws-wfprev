@@ -32,8 +32,7 @@
                       <div class="status-wrapper">
                         <span>Status:</span>
                         <wfprev-status-badge
-                          [icon]="getStatusIcon(fiscal.planFiscalStatusCode?.planFiscalStatusCode)"
-                          [label]="getStatusDescription(i) || ''">
+                          [type]="'status-' + fiscal.planFiscalStatusCode?.planFiscalStatusCode?.toLowerCase()">
                         </wfprev-status-badge>
                       </div>
 

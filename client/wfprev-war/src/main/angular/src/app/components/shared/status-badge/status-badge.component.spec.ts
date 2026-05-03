@@ -28,28 +28,45 @@ describe('StatusBadgeComponent', () => {
     expect(labelElement.nativeElement.textContent).toContain('My Status');
   });
 
-  it('should render the icon when provided', () => {
-    component.label = 'With Icon';
-    component.icon = {
-      src: 'https://example.com/icon.svg',
-      alt: 'Example Icon',
-      title: 'Example Title'
-    };
+  it('should display the correct icon and label for "on-track" type', () => {
+    component.type = 'on-track';
     fixture.detectChanges();
 
-    const imgElement = fixture.debugElement.query(By.css('.badge-icon img'));
-    expect(imgElement).toBeTruthy();
-    expect(imgElement.attributes['src']).toBe('https://example.com/icon.svg');
-    expect(imgElement.attributes['alt']).toBe('Example Icon');
-    expect(imgElement.attributes['title']).toBe('Example Title');
+    const img = fixture.debugElement.query(By.css('img')).nativeElement;
+    expect(img.src).toContain('/assets/progress-status-ontrack.svg');
+    
+    const label = fixture.debugElement.query(By.css('.badge-label')).nativeElement;
+    expect(label.textContent).toContain('On track');
   });
 
-  it('should not render the icon when icon is null', () => {
-    component.label = 'No Icon';
-    component.icon = null;
+  it('should display the correct icon and label for "delayed" type', () => {
+    component.type = 'delayed';
     fixture.detectChanges();
 
-    const iconElement = fixture.debugElement.query(By.css('.badge-icon'));
-    expect(iconElement).toBeNull();
+    const img = fixture.debugElement.query(By.css('img')).nativeElement;
+    expect(img.src).toContain('/assets/progress-status-delayed.svg');
+    
+    const label = fixture.debugElement.query(By.css('.badge-label')).nativeElement;
+    expect(label.textContent).toContain('Delayed');
+  });
+
+  it('should use custom label if provided', () => {
+    component.type = 'on-track';
+    component.label = 'Custom On Track';
+    fixture.detectChanges();
+
+    const label = fixture.debugElement.query(By.css('.badge-label')).nativeElement;
+    expect(label.textContent).toContain('Custom On Track');
+  });
+
+  it('should handle invalid type gracefully', () => {
+    component.type = 'invalid-type';
+    fixture.detectChanges();
+
+    const img = fixture.debugElement.query(By.css('img'));
+    expect(img).toBeNull();
+    
+    const label = fixture.debugElement.query(By.css('.badge-label')).nativeElement;
+    expect(label.textContent).toBe('');
   });
 });

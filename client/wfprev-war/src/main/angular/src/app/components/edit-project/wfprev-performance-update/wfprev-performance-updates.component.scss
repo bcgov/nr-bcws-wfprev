@@ -93,19 +93,7 @@
     }
   }
 
-  .progress-status,
-  .forecast-amount,
-  .status-tag {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    white-space: nowrap;
 
-    .status-icon {
-      width: 24px;
-      height: 24px;
-    }
-  }
 
   .form-grid {
     padding: 18px 0px;
@@ -361,21 +349,7 @@
         text-align: right;
       }
 
-      .status-tag,
-      .progress-status,
-      .forecast-amount {
-        font-size: 14px !important;
-        white-space: nowrap !important;
-        justify-content: flex-end !important;
-        width: auto !important;
-        padding: 0 !important;
-        min-width: 0 !important;
 
-        .status-icon {
-          width: 20px !important;
-          height: 20px !important;
-        }
-      }
     }
   }
 }

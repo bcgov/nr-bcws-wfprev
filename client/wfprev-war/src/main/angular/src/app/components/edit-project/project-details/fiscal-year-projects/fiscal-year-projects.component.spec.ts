@@ -98,25 +98,6 @@ describe('FiscalYearProjectsComponent', () => {
     expect(component.projectFiscals[2].fiscalYear).toBe(2021);
   });
 
-  it('should return correct status icon', () => {
-    expect(component.getStatusIcon('DRAFT')).toBe('draft-icon.svg');
-    expect(component.getStatusIcon('PROPOSED')).toBe('proposed-icon.svg');
-    expect(component.getStatusIcon('IN_PROG')).toBe('in-progress-icon-only.svg');
-    expect(component.getStatusIcon('COMPLETE')).toBe('complete-icon.svg');
-    expect(component.getStatusIcon('CANCELLED')).toBe('cancelled-icon.svg');
-    expect(component.getStatusIcon('PREPARED')).toBe('prepared-icon.svg');
-    expect(component.getStatusIcon('UNKNOWN')).toBeUndefined();
-  });
-
-  it('should return correct fiscal status description', () => {
-    expect(component.getPlanFiscalStatus('DRAFT')).toBe('Draft');
-    expect(component.getPlanFiscalStatus('PROPOSED')).toBe('Proposed');
-    expect(component.getPlanFiscalStatus('IN_PROG')).toBe('In Progress');
-    expect(component.getPlanFiscalStatus('COMPLETE')).toBe('Complete');
-    expect(component.getPlanFiscalStatus('CANCELLED')).toBe('Cancelled');
-    expect(component.getPlanFiscalStatus('PREPARED')).toBe('Prepared');
-    expect(component.getPlanFiscalStatus('UNKNOWN')).toBe('Unknown');
-  });
 
   it('should define displayed columns correctly for complete and planned fiscal statuses', () => {
     expect(component.displayedColumnsComplete).toEqual(['name', 'description', 'endDate', 'completedHectares']);

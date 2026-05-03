@@ -17,6 +17,7 @@ import { IconButtonComponent } from 'src/app/components/shared/icon-button/icon-
 import { CodeTableServices } from 'src/app/services/code-table-services';
 import { ProjectService } from 'src/app/services/project-services';
 import { ActivitiesComponent } from './activities.component';
+import { TokenService } from 'src/app/services/token.service';
 
 describe('ActivitiesComponent', () => {
   let component: ActivitiesComponent;
@@ -25,6 +26,7 @@ describe('ActivitiesComponent', () => {
   let mockCodeTableService: jasmine.SpyObj<CodeTableServices>;
   let mockSnackbarService: jasmine.SpyObj<MatSnackBar>;
   let mockDialog: jasmine.SpyObj<MatDialog>;
+  let mockTokenService: jasmine.SpyObj<TokenService>;
 
   beforeEach(async () => {
     mockProjectService = jasmine.createSpyObj('ProjectService', [
@@ -43,6 +45,7 @@ describe('ActivitiesComponent', () => {
     ]);
     mockSnackbarService = jasmine.createSpyObj('MatSnackBar', ['open']);
     mockDialog = jasmine.createSpyObj('MatDialog', ['open']);
+    mockTokenService = jasmine.createSpyObj('TokenService', ['getIdir', 'getOauthToken']);
     mockCodeTableService.getContractPhaseCodes.and.returnValue(of([]));
     mockCodeTableService.getFundingSourceCodes.and.returnValue(of([]));
     mockCodeTableService.fetchCodeTable.and.returnValue(of({ _embedded: {} }));
@@ -66,6 +69,7 @@ describe('ActivitiesComponent', () => {
         { provide: CodeTableServices, useValue: mockCodeTableService },
         { provide: MatSnackBar, useValue: mockSnackbarService },
         { provide: MatDialog, useValue: mockDialog },
+        { provide: TokenService, useValue: mockTokenService },
         { provide: ActivatedRoute, useValue: { snapshot: { queryParamMap: { get: () => 'test-project-guid' } } } }
       ]
     }).compileComponents();

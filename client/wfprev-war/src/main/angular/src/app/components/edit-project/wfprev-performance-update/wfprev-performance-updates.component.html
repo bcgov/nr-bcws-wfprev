@@ -49,79 +49,44 @@
 
                 <div class="header-indicators-group">
                     <div class="badges-section">
-                        @if (update.progressStatusCode === delayedProgressStatus.value) {
-                        <span class="progress-status">
-                            <img alt="status" class="status-icon" src="/assets/progress-status-delayed.svg">
-                            {{delayedProgressStatus.description}}
-                        </span>
+                        @if(update.progressStatusCode === delayedProgressStatus.value) {
+                        <wfprev-status-badge type="delayed"></wfprev-status-badge>
                         }
-                        @if (update.progressStatusCode === onTrackProgressStatus.value) {
-                        <span class="progress-status">
-                            <img alt="status" class="status-icon" src="/assets/progress-status-ontrack.svg">
-                            {{onTrackProgressStatus.description}}
-                        </span>
+                        @if(update.progressStatusCode === onTrackProgressStatus.value) {
+                        <wfprev-status-badge type="on-track"></wfprev-status-badge>
                         }
-                        @if (update.progressStatusCode === deferredProgressStatus.value) {
-                        <span class="progress-status">
-                            <img alt="status" class="status-icon" src="/assets/progress-status-deferred.svg">
-                            {{deferredProgressStatus.description}}
-                        </span>
+                        @if(update.progressStatusCode === deferredProgressStatus.value) {
+                        <wfprev-status-badge type="deferred"></wfprev-status-badge>
                         }
-                        @if (update.progressStatusCode === cancelledProgressStatus.value) {
-                        <span class="progress-status">
-                            <img alt="status" class="status-icon" src="/assets/progress-status-cancelled.svg">
-                            {{cancelledProgressStatus.description}}
-                        </span>
+                        @if(update.progressStatusCode === cancelledProgressStatus.value) {
+                        <wfprev-status-badge type="cancelled"></wfprev-status-badge>
                         }
-                        @if(update.forecastAdjustmentAmount < 0){ <span class="forecast-amount">
-                            <img alt="status" class="status-icon" src="/assets/budget-change-decreased.svg">
-                            Forecast Decreased
-                            </span>
-                            }
-                            @if(update.forecastAdjustmentAmount > 0){
-                            <span class="forecast-amount">
-                                <img alt="status" class="status-icon" src="/assets/budget-change-increased.svg">
-                                Forecast Increased
-                            </span>
-                            }
+                        @if(update.forecastAdjustmentAmount < 0){
+                        <wfprev-status-badge type="forecast-decreased"></wfprev-status-badge>
+                        }
+                        @if(update.forecastAdjustmentAmount > 0){
+                        <wfprev-status-badge type="forecast-increased"></wfprev-status-badge>
+                        }
                     </div>
 
                     <div class="status-section">
                         @if(update.updateGeneralStatus === cancelledUpdateGeneralStatus.value) {
-                        <span class="status-tag">
-                            <img alt="status" class="status-icon" src="/assets/cancelled-icon.svg">
-                            {{cancelledUpdateGeneralStatus.description}}
-                        </span>
+                        <wfprev-status-badge type="status-cancelled"></wfprev-status-badge>
                         }
                         @if(update.updateGeneralStatus === completeUpdateGeneralStatus.value) {
-                        <span class="status-tag">
-                            <img alt="status" class="status-icon" src="/assets/complete-icon.svg">
-                            {{completeUpdateGeneralStatus.description}}
-                        </span>
+                        <wfprev-status-badge type="status-complete"></wfprev-status-badge>
                         }
                         @if(update.updateGeneralStatus === draftUpdateGeneralStatus.value) {
-                        <span class="status-tag">
-                            <img alt="status" class="status-icon" src="/assets/draft-icon.svg">
-                            {{draftUpdateGeneralStatus.description}}
-                        </span>
+                        <wfprev-status-badge type="status-draft"></wfprev-status-badge>
                         }
                         @if(update.updateGeneralStatus === inProgressUpdateGeneralStatus.value) {
-                        <span class="status-tag">
-                            <img alt="status" class="status-icon" src="/assets/in-progress-icon-only.svg">
-                            {{inProgressUpdateGeneralStatus.description}}
-                        </span>
+                        <wfprev-status-badge type="status-in-progress"></wfprev-status-badge>
                         }
                         @if(update.updateGeneralStatus === preparedUpdateGeneralStatus.value) {
-                        <span class="status-tag">
-                            <img alt="status" class="status-icon" src="/assets/prepared-icon.svg">
-                            {{preparedUpdateGeneralStatus.description}}
-                        </span>
+                        <wfprev-status-badge type="status-prepared"></wfprev-status-badge>
                         }
                         @if(update.updateGeneralStatus === proposedUpdateGeneralStatus.value) {
-                        <span class="status-tag">
-                            <img alt="status" class="status-icon" src="/assets/proposed-icon.svg">
-                            {{proposedUpdateGeneralStatus.description}}
-                        </span>
+                        <wfprev-status-badge type="status-proposed"></wfprev-status-badge>
                         }
                     </div>
                 </div>
@@ -147,18 +112,13 @@
                             <span>Budget Adjustment</span>
                         </div>
                         <div class="badges-section">
-                            @if(update.forecastAdjustmentAmount < 0){ <span class="forecast-amount">
-                                <img alt="status" class="status-icon" src="/assets/budget-change-decreased.svg">
-                                Forecast Decreased
-                                </span>
-                                }
+                            @if(update.forecastAdjustmentAmount < 0){
+                            <wfprev-status-badge type="forecast-decreased"></wfprev-status-badge>
+                            }
 
-                                @if(update.forecastAdjustmentAmount > 0){
-                                <span class="forecast-amount">
-                                    <img alt="status" class="status-icon" src="/assets/budget-change-increased.svg">
-                                    Forecast Increased
-                                </span>
-                                }
+                            @if(update.forecastAdjustmentAmount > 0){
+                            <wfprev-status-badge type="forecast-increased"></wfprev-status-badge>
+                            }
                         </div>
                     </div>
                     <div class="budget-adjustment-details">
@@ -183,8 +143,7 @@
                     <div class="budget-breakdown-table">
                         <div class="budget-breakdown-row">
                             <div class="budget-breakdown-cell1">
-                                <img alt="status" class="status-icon" src="/assets/high-risk.svg">
-                                <p>High risk</p>
+                                <wfprev-status-badge type="risk-high"></wfprev-status-badge>
                             </div>
                             <div class="budget-breakdown-cell2">
                                 <p>{{update.budgetHighRiskAmount | currency}}</p>
@@ -195,8 +154,7 @@
                         </div>
                         <div class="budget-breakdown-row">
                             <div class="budget-breakdown-cell1">
-                                <img alt="status" class="status-icon" src="/assets/medium-risk.svg">
-                                <p>Medium risk</p>
+                                <wfprev-status-badge type="risk-medium"></wfprev-status-badge>
                             </div>
                             <div class="budget-breakdown-cell2">
                                 <p>{{update.budgetMediumRiskAmount | currency}}</p>
@@ -207,8 +165,7 @@
                         </div>
                         <div class="budget-breakdown-row">
                             <div class="budget-breakdown-cell1">
-                                <img alt="status" class="status-icon" src="/assets/low-risk.svg">
-                                <p>Low risk</p>
+                                <wfprev-status-badge type="risk-low"></wfprev-status-badge>
                             </div>
                             <div class="budget-breakdown-cell2">
                                 <p>{{update.budgetLowRiskAmount | currency}}</p>
@@ -219,8 +176,7 @@
                         </div>
                         <div class="budget-breakdown-row">
                             <div class="budget-breakdown-cell1">
-                                <img alt="status" class="status-icon" src="/assets/none-risk.svg">
-                                <p>Complete</p>
+                                <wfprev-status-badge type="risk-none"></wfprev-status-badge>
                             </div>
                             <div class="budget-breakdown-cell2">
                                 <p>{{update.budgetCompletedAmount | currency}}</p>

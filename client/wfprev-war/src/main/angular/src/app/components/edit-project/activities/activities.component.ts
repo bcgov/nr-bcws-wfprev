@@ -26,6 +26,7 @@ import { Messages, ModalMessages, ModalTitles, NumericLimits } from 'src/app/uti
 import { getUtcIsoTimestamp } from 'src/app/utils/tools';
 import { ExpansionIndicatorComponent } from "../../shared/expansion-indicator/expansion-indicator.component";
 import { NgxCurrencyDirective } from 'ngx-currency';
+import { StatusBadgeComponent } from '../../shared/status-badge/status-badge.component';
 
 
 export const CUSTOM_DATE_FORMATS = {
@@ -55,7 +56,8 @@ export const CUSTOM_DATE_FORMATS = {
     IconButtonComponent,
     TimestampComponent,
     TextareaComponent,
-    NgxCurrencyDirective],
+    NgxCurrencyDirective,
+    StatusBadgeComponent],
   templateUrl: './activities.component.html',
   styleUrl: './activities.component.scss',
   providers: [

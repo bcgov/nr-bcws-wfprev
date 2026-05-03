@@ -26,34 +26,20 @@
                                 {{getActivityTitle(i)}}
                             </div>
                         </div>
-                        <div class="status-indicators">
-                            <ng-container *ngIf="activityForms[i]?.value?.isSpatialAddedInd; else notSpatialAdded">
-                                <span class="status-tag">
-                                    <img alt="status" class="status-icon" src="/assets/spatial-added-icon.svg">Spatial Added
-                                </span>
-                            </ng-container>
-                            
-                            <ng-template #notSpatialAdded>
-                                <span class="status-tag inactive">
-                                    <img alt="status" class="status-icon" src="/assets/no-spatial-added-icon.svg">No Spatial Added
-                                </span>
-                            </ng-template>
-<!-- hide risk badge for now until performance update is implement -->
-                            <!-- <span class="status-tag">
-                                <img 
-                                    alt="status" 
-                                    class="status-icon" 
-                                    [src]="'/assets/' + getRiskIcon(activityForms[i]?.value?.riskRatingCode?.riskRatingCode) + '.svg'">
-                                {{ getRiskDescription(activityForms[i]?.value?.riskRatingCode?.description) }}
-                            </span> -->
+                        <div class="activity-indicators">
+                            @if(activity.isSpatialAddedInd) {
+                            <wfprev-status-badge type="spatial-added"></wfprev-status-badge>
+                            } @else {
+                            <wfprev-status-badge type="spatial-not-added"></wfprev-status-badge>
+                            }
 
-                            <span *ngIf="activityForms[i]?.value?.outstandingObligationsInd" class="status-tag">
-                                <img alt="status" class="status-icon" src="/assets/warning-activity.svg">Outstanding Obligations
-                            </span>
+                            @if(activity.outstandingObligationsInd) {
+                            <wfprev-status-badge type="warning" label="Outstanding Obligations"></wfprev-status-badge>
+                            }
 
-                            <span *ngIf="activityForms[i]?.value?.activityStatusCode === 'COMPLETED'" class="status-tag">
-                                <img alt="status" class="status-icon" src="/assets/complete-icon.svg">Complete
-                            </span>
+                            @if(activity.activityStatusCode?.activityStatusCode === 'COMPLETED') {
+                            <wfprev-status-badge type="status-complete"></wfprev-status-badge>
+                            }
                         </div>
                     </mat-expansion-panel-header>
                     <form class="form-grid" *ngIf="activityForms[i]" [formGroup]="activityForms[i]">

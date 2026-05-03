@@ -13,11 +13,12 @@ import { forkJoin } from 'rxjs';
 import { CodeTableServices } from 'src/app/services/code-table-services';
 import { CodeTableNames } from 'src/app/utils/constants';
 import { ProjectFiscalsSignalService } from 'src/app/services/project-fiscals-signal.service';
+import { StatusBadgeComponent } from '../../shared/status-badge/status-badge.component';
 
 @Component({
   selector: 'wfprev-performance-updates',
   standalone: true,
-  imports: [CommonModule, MatExpansionPanel, ExpansionIndicatorComponent, MatExpansionPanelHeader, IconButtonComponent],
+  imports: [CommonModule, MatExpansionPanel, ExpansionIndicatorComponent, MatExpansionPanelHeader, IconButtonComponent, StatusBadgeComponent],
   templateUrl: './wfprev-performance-updates.component.html',
   styleUrl: './wfprev-performance-updates.component.scss'
 })
