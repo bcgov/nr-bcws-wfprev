@@ -116,6 +116,12 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
   refreshMap(): void {
     if (this.map) {
       this.map.invalidateSize();
+      // Re-apply zoom/center after size invalidation to fix issues with hidden map initialization
+      if (this.boundaryLayer && this.boundaryLayer.getBounds().isValid()) {
+        this.map.fitBounds(this.boundaryLayer.getBounds());
+      } else if (this.projectDetail?.latitude && this.projectDetail?.longitude) {
+        this.map.setView([this.projectDetail.latitude, this.projectDetail.longitude], 13);
+      }
     }
   }
 
@@ -261,23 +267,6 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
       this.marker = L.marker([latitude, longitude], { icon: teardropIcon }).addTo(this.map);
 
       this.map.setView([latitude, longitude], 13); // Update the map view
-    } else {
-      // Initialize the map if it hasn't been created
-      this.map = L.map('map', {
-        center: [latitude, longitude],
-        zoom: 13,
-        zoomControl: false,
-      });
-
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© OpenStreetMap contributors',
-      }).addTo(this.map);
-
-
-      this.marker = L.marker([latitude, longitude], {
-        icon: getBluePinIcon()
-      }).addTo(this.map);
-
     }
 
     if (this.projectGuid) {
@@ -351,7 +340,12 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
         attribution: '© OpenStreetMap contributors',
       }).addTo(this.map);
       this.activityBoundaryGroup.addTo(this.map);
-      this.map.fitBounds(defaultBounds); // Default view for the BC region
+
+      if (this.projectDetail?.latitude && this.projectDetail?.longitude) {
+        this.updateMap(this.projectDetail.latitude, this.projectDetail.longitude);
+      } else {
+        this.map.fitBounds(defaultBounds); // Default view for the BC region
+      }
       const legendHelper = new LeafletLegendService();
       legendHelper.addLegend(this.map, this.fiscalColorMap);
     }
