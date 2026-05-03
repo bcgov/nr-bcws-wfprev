@@ -15,7 +15,7 @@
           </mat-panel-description>
         </mat-expansion-panel-header>
         <!-- Fuel Management -->
-        <div *ngIf="evaluationCriteriaSummary">
+        <div *ngIf="evaluationCriteriaSummary; else emptyContent">
           <div class="criteria-section">
             <div class="section-label">
               <span>{{ evaluationLabels.coarse }}:</span>
@@ -81,4 +81,9 @@
         </div>
 
     </mat-expansion-panel>
+    <ng-template #emptyContent>
+        <div class="criteria-empty-content">
+            No Evaluation Criteria have been added.
+        </div>
+    </ng-template>
 </div>
