@@ -54,6 +54,11 @@ button.primary {
     font-family: var(--wf-font-family-main);
   }
 
+  td {
+    word-break: break-word;
+    overflow-wrap: break-word;
+  }
+
   th {
     color: #000;
     font-size: 15px;
@@ -61,6 +66,9 @@ button.primary {
     font-weight: 400;
     line-height: normal;
     background-color: var(--colour-white);
+    word-break: normal;
+    overflow-wrap: normal;
+    white-space: normal;
   }
 
   tr:nth-child(odd) {
