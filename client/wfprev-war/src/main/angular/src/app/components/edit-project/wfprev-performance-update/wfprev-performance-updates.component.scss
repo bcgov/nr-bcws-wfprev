@@ -195,6 +195,12 @@
           flex-wrap: wrap;
           border-radius: 10px;
           background-color: #f5f6f9;
+          min-height: 48px;
+          padding: 12px 0;
+
+          p {
+            margin: 0 !important;
+          }
 
           .budget-breakdown-cell1 {
             display: flex;
@@ -214,7 +220,9 @@
           }
 
           .rationale-cell {
-            padding: 8px 12px;
+            padding: 4px 12px;
+            display: flex;
+            align-items: center;
             flex: 1;
             min-width: 0;
             word-break: break-word;
@@ -262,10 +270,11 @@
 
       .budget-breakdown-row {
         flex-direction: column !important;
-        gap: 5px !important;
-        padding: 10px 0;
+        gap: 2px !important;
+        padding: 8px 0;
         width: 100% !important;
         box-sizing: border-box;
+        min-height: auto !important;
 
         .budget-breakdown-cell1,
         .budget-breakdown-cell2,
@@ -346,4 +355,15 @@
       }
     }
   }
+}
+
+.no-performance-updates {
+    color: #242424;
+    font-family: var(--wf-font-family-main);
+    font-size: 16px;
+    font-style: italic;
+    font-weight: 400;
+    line-height: normal;
+    padding: 20px 24px;
+    border-top: 1px solid #D8D8D8;
 }

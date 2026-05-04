@@ -264,5 +264,8 @@
                 </mat-expansion-panel>
             </div>
         </div>
+        <div class="no-activities-message" *ngIf="!activities?.length">
+            No Activities have been added.
+        </div>
     </mat-expansion-panel>
 </div>

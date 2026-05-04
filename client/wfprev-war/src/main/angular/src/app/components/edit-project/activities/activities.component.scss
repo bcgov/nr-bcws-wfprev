@@ -316,3 +316,14 @@
     margin-top: 6px;
     height: 38px;
 }
+
+.no-activities-message {
+    color: #242424;
+    font-family: var(--wf-font-family-main);
+    font-size: 16px;
+    font-style: italic;
+    font-weight: 400;
+    line-height: normal;
+    padding: 20px 24px;
+    border-top: 1px solid #D8D8D8;
+}
