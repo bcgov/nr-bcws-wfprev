@@ -296,7 +296,7 @@
 }
 
 .project-left-section {
-  flex: 1;
+  flex: 60;
   display: flex;
   flex-direction: column;
   padding-left: 19px;
@@ -365,7 +365,7 @@
 
 .map-section {
   padding-right: 19px;
-  flex: 1;
+  flex: 40;
   height: 600px;
   /* Fixed height for the map */
   position: relative;

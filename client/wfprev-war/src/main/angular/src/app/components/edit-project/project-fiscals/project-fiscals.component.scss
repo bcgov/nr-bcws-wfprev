@@ -395,9 +395,14 @@ mat-expansion-panel {
   box-sizing: border-box;
   padding-bottom: 50px;
 
-  .left-column,
+  .left-column {
+    flex: 60;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+
   .right-column {
-    flex: 1; // Flexible equal widths
+    flex: 40;
     min-width: 0;
     box-sizing: border-box;
   }
