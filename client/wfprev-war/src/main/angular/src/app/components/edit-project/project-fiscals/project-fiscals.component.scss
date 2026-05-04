@@ -301,9 +301,13 @@ mat-expansion-panel {
   }
 }
 
+.fiscal-tab-wrapper.has-fiscals {
+  border-bottom: 1px solid #c6c8cb;
+}
+
 :host ::ng-deep .mat-mdc-tab-header {
   padding-left: 0 !important;
-  padding-right: 200px;
+  margin-right: 200px;
 }
 
 :host ::ng-deep .mat-mdc-tab-body-wrapper {

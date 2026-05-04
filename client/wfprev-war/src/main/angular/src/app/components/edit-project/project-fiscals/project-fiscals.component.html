@@ -11,7 +11,7 @@
           (clicked)="addNewFiscal()">
       </wfprev-icon-button>
     </div>
-      <div class=fiscal-tab-wrapper>
+      <div class="fiscal-tab-wrapper" [class.has-fiscals]="projectFiscals?.length">
         <mat-tab-group class="wf-sub-tab" mat-stretch-tabs="false" animationDuration="0ms" disableRipple="true"
           *ngIf="projectFiscals?.length; else noFiscals" [(selectedIndex)]="selectedTabIndex" (selectedTabChange)="onTabChange($event.index)">
           <mat-tab *ngFor="let fiscal of projectFiscals; let i = index">
