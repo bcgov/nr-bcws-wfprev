@@ -1,6 +1,6 @@
 import { TextFieldModule } from '@angular/cdk/text-field';
 import { CommonModule } from '@angular/common';
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -19,6 +19,17 @@ import { EvaluationCriteriaSectionCodes, Messages, ModalMessages, ModalTitles, P
     styleUrl: './evaluation-criteria-dialog.component.scss'
 })
 export class EvaluationCriteriaDialogComponent implements OnInit {
+  private readonly fb = inject(FormBuilder);
+  private readonly dialog = inject(MatDialog);
+  private readonly dialogRef = inject<MatDialogRef<EvaluationCriteriaDialogComponent>>(MatDialogRef);
+  private readonly codeTableServices = inject(CodeTableServices);
+  private readonly projectService = inject(ProjectService);
+  private readonly snackbarService = inject(MatSnackBar);
+  data = inject<{
+    project: Project;
+    evaluationCriteriaSummary?: EvaluationCriteriaSummaryModel;
+}>(MAT_DIALOG_DATA);
+
   codeTables = [
     { name: 'evaluationCriteriaCodes', embeddedKey: 'evaluationCriteriaCode' },
     { name: 'wuiRiskClassCodes', embeddedKey: 'wuiRiskClassCode' }
@@ -39,20 +50,6 @@ export class EvaluationCriteriaDialogComponent implements OnInit {
   mediumTotal = 0;
   fineTotal = 0;
   isSaving = false;
-
-  constructor(
-    private readonly fb: FormBuilder,
-    private readonly dialog: MatDialog,
-    private readonly dialogRef: MatDialogRef<EvaluationCriteriaDialogComponent>,
-    private readonly codeTableServices: CodeTableServices,
-    private readonly projectService: ProjectService,
-    private readonly snackbarService: MatSnackBar,
-    @Inject(MAT_DIALOG_DATA) public data: {
-      project: Project,
-      evaluationCriteriaSummary?: EvaluationCriteriaSummaryModel;
-    }
-  ) {
-  }
 
   ngOnInit(): void {
     this.initializeForm();

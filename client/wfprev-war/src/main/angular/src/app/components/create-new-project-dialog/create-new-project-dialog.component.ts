@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import {
   FormBuilder,
   FormControl,
@@ -35,6 +35,13 @@ import { TextareaComponent } from 'src/app/components/shared/textarea/textarea.c
   styleUrls: ['./create-new-project-dialog.component.scss'],
 })
 export class CreateNewProjectDialogComponent implements OnInit {
+  private readonly fb = inject(FormBuilder);
+  private readonly dialog = inject(MatDialog);
+  private readonly dialogRef = inject<MatDialogRef<CreateNewProjectDialogComponent>>(MatDialogRef);
+  private readonly snackbarService = inject(MatSnackBar);
+  private readonly projectService = inject(ProjectService);
+  private readonly codeTableService = inject(CodeTableServices);
+
   Validators = Validators;
   [key: string]: any; // Add this line to allow dynamic properties
   projectForm: FormGroup;
@@ -60,14 +67,7 @@ export class CreateNewProjectDialogComponent implements OnInit {
   forestDistrictsBackup: any[] = [];
   isSaving = false;
 
-  constructor(
-    private readonly fb: FormBuilder,
-    private readonly dialog: MatDialog,
-    private readonly dialogRef: MatDialogRef<CreateNewProjectDialogComponent>,
-    private readonly snackbarService: MatSnackBar,
-    private readonly projectService: ProjectService,
-    private readonly codeTableService: CodeTableServices,
-  ) {
+  constructor() {
     this.projectForm = this.fb.group({
       projectType: ['', [Validators.required]],
       projectName: ['', [Validators.required, Validators.maxLength(50)]],

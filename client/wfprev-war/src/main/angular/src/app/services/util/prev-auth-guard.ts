@@ -6,7 +6,7 @@ import {
     Router,
     RouterStateSnapshot,
 } from '@angular/router';
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { AsyncSubject, Observable, of, firstValueFrom, from } from 'rxjs';
 import { catchError, map, mergeMap } from 'rxjs/operators';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -16,15 +16,16 @@ import { ResourcesRoutes } from '../../utils';
     providedIn: 'root',
 })
 export class PrevAuthGuard extends AuthGuard {
+    private readonly appConfigService = inject(AppConfigService);
+    protected snackbarService = inject(MatSnackBar);
+
     private asyncCheckingToken: any;
 
-    constructor(
-        tokenService: TokenService,
-        router: Router,
-        private readonly appConfigService: AppConfigService,
-        protected snackbarService: MatSnackBar,
-    ) {
-        super(tokenService, router);
+    constructor() {
+        const tokenService = inject(TokenService);
+        const router = inject(Router);
+
+        super();
         this.baseScopes = [];
     }
 

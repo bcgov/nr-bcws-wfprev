@@ -1,4 +1,4 @@
-import { Component, effect, OnInit } from '@angular/core';
+import { Component, effect, OnInit, inject } from '@angular/core';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -69,6 +69,12 @@ type MultiSelectConfig = {
   styleUrl: './search-filter.component.scss',
 })
 export class SearchFilterComponent implements OnInit {
+  private readonly sharedCodeTableService = inject(SharedCodeTableService);
+  private sharedService = inject(SharedService);
+  private readonly projectFilterStateService = inject(ProjectFilterStateService);
+  private route = inject(ActivatedRoute);
+  private destroyRef = inject(DestroyRef);
+
   public readonly ALL: string = '__ALL__';
 
   /** Search input field */
@@ -93,14 +99,6 @@ export class SearchFilterComponent implements OnInit {
   private readonly fiscalYears = this.generateFiscalYearOptions();
 
   protected allForestDistricts: ForestDistrictCodeModel[] = [];
-
-  constructor(
-    private readonly sharedCodeTableService: SharedCodeTableService,
-    private sharedService: SharedService,
-    private readonly projectFilterStateService: ProjectFilterStateService,
-    private route: ActivatedRoute,
-    private destroyRef: DestroyRef,
-  ) {}
 
   ngOnInit(): void {
     this.setupCodeTableSubscription().subscribe(() => {

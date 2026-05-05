@@ -51,7 +51,7 @@
     <mat-accordion [multi]="true">
       @for (
         project of displayedProjects;
-        track this["trackByProjectGuid"]($index, project)
+        track project.projectGuid
       ) {
         <mat-expansion-panel
           hideToggle

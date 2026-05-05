@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { BC_BOUNDS, FiscalYearColors } from 'src/app/utils/constants';
 import { TokenService } from './token.service';
 import { StyleSpecification } from 'maplibre-gl';
@@ -7,6 +7,9 @@ import { AppConfigService } from './app-config.service';
 
 @Injectable({ providedIn: 'root' })
 export class MapService {
+  private readonly tokenService = inject(TokenService);
+  private readonly appConfigService = inject(AppConfigService);
+
   private mapIndex: number = 0;
   baseMapIds: string[] = [];
   private readonly smkBaseUrl = `${globalThis.location.protocol}//${globalThis.location.host}/assets/smk/`;
@@ -14,10 +17,6 @@ export class MapService {
   private smkInstance: any = null;
   private readonly apiBaseUrl = `${this.appConfigService.getConfig().rest['wfprev']}/wfprev-api`;
   private mapContainer: HTMLElement | null = null;
-
-  constructor(private readonly tokenService: TokenService,
-    private readonly appConfigService: AppConfigService
-  ) { }
 
   getMapIndex(): number {
     return this.mapIndex;

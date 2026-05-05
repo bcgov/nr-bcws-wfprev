@@ -1,4 +1,4 @@
-import { Component, Inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
 import { MatInputModule } from '@angular/material/input';
@@ -12,16 +12,21 @@ import { IconButtonComponent } from 'src/app/components/shared/icon-button/icon-
   imports: [MatInputModule, FormsModule, IconButtonComponent],
 })
 export class AddAttachmentComponent {
+  private readonly dialogRef = inject<MatDialogRef<AddAttachmentComponent>>(MatDialogRef);
+  data = inject<{
+    indicator: string;
+    name: string;
+}>(MAT_DIALOG_DATA);
+
   selectedFile: File | null = null;
   selectedFileName: string = '';
   attachmentType: string = '';
   description: string = '';
   attachmentTypes: { label: string; value: string }[] = [];
   isDescriptionTooLong: boolean = false;
-  constructor(
-    private readonly dialogRef: MatDialogRef<AddAttachmentComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: { indicator: string; name: string },
-  ) {
+  constructor() {
+    const data = this.data;
+
     // For project level, only show Gross Project Area Boundary as a dropdown option if project boundary is being updated
     // We might need to change the logic here when we start uploading non-geospatial files.
     const isProjectFiles = data.indicator === 'project-files';

@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, inject } from '@angular/core';
 import { CodeTableServices } from 'src/app/services/code-table-services';
 import { CodeTableKeys } from 'src/app/utils/constants';
 import L from 'leaflet';
@@ -20,6 +20,8 @@ import { MatTooltip } from '@angular/material/tooltip';
   styleUrls: ['./project-popup.component.scss'],
 })
 export class ProjectPopupComponent implements OnInit {
+  private readonly codeTableService = inject(CodeTableServices);
+
   @Input() project: any;
   @Input() map!: L.Map;
 
@@ -29,7 +31,6 @@ export class ProjectPopupComponent implements OnInit {
   activityCategoryCodes: ActivityCategoryCodeModel[] = [];
   readonly CodeTableKeys = CodeTableKeys;
   getFiscalYearDisplay = getFiscalYearDisplay;
-  constructor(private readonly codeTableService: CodeTableServices) {}
 
   ngOnInit(): void {
     this.loadCodeTables();

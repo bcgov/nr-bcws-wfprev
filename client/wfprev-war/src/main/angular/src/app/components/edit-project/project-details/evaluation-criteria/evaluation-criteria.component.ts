@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges, inject } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatIconModule } from '@angular/material/icon';
@@ -17,14 +17,12 @@ import { EvaluationCriteriaSectionCodes, ProjectTypes } from 'src/app/utils/cons
     styleUrl: './evaluation-criteria.component.scss'
 })
 export class EvaluationCriteriaComponent implements OnChanges {
+  private readonly dialog = inject(MatDialog);
+  private readonly projectService = inject(ProjectService);
+
   @Input() project!: Project;
 
   evaluationCriteriaSummary: EvaluationCriteriaSummaryModel | null = null;
-
-  constructor(
-    private readonly dialog: MatDialog,
-    private readonly projectService: ProjectService
-  ) { }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['project'] && this.project?.projectGuid) {

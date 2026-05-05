@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { Injectable, inject } from "@angular/core";
 import { catchError, map, Observable, throwError } from "rxjs";
 import { AppConfigService } from "./app-config.service";
 import { HttpClient } from "@angular/common/http";
@@ -10,12 +10,10 @@ import { FileAttachment } from "../components/models";
 })
 
 export class AttachmentService {
+    private readonly appConfigService = inject(AppConfigService);
+    private readonly httpClient = inject(HttpClient);
+    private readonly tokenService = inject(TokenService);
 
-    constructor(
-        private readonly appConfigService: AppConfigService,
-        private readonly httpClient: HttpClient,
-        private readonly tokenService: TokenService,
-    ) { }
 
 
     createProjectAttachment(projectGuid: string, attachment: FileAttachment): Observable<any> {

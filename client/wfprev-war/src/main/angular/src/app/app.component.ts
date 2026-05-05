@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { AppConfigService } from 'src/app/services/app-config.service';
@@ -12,15 +12,12 @@ import { ResourcesRoutes } from 'src/app/utils';
     standalone: false
 })
 export class AppComponent implements OnInit {
-  activeRoute = '';
+  protected router = inject(Router);
+  protected appConfigService = inject(AppConfigService);
+  protected tokenService = inject(TokenService);
+  protected dialog = inject(MatDialog);
 
-  constructor(
-    protected router: Router,
-    protected appConfigService: AppConfigService,
-    protected tokenService: TokenService,
-    protected dialog: MatDialog
-  ) {
-  }
+  activeRoute = '';
 
   ngOnInit(): void {
     const config = this.appConfigService.getConfig();

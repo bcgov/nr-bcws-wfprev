@@ -1,4 +1,4 @@
-import { Component, ComponentRef, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
+import { Component, ComponentRef, OnInit, ViewChild, ViewContainerRef, inject } from '@angular/core';
 import { MatTabsModule } from '@angular/material/tabs';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { filter, Observable } from 'rxjs';
@@ -14,6 +14,9 @@ import { EditProjectTabIndexes, ResourcesRoutes } from 'src/app/utils';
     styleUrl: './edit-project.component.scss'
 })
 export class EditProjectComponent implements CanComponentDeactivate, OnInit {
+  protected router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
+
   @ViewChild('fiscalsContainer', { read: ViewContainerRef }) fiscalsContainer!: ViewContainerRef;
   @ViewChild(ProjectDetailsComponent) projectDetailsComponent!: ProjectDetailsComponent;
 
@@ -23,11 +26,6 @@ export class EditProjectComponent implements CanComponentDeactivate, OnInit {
   // default to details tab
   selectedTabIndex = EditProjectTabIndexes.Details;
   focusedFiscalId: string | null = null;
-
-  constructor(
-    protected router: Router,
-    private readonly route: ActivatedRoute
-  ) { }
 
 
   ngOnInit(): void {

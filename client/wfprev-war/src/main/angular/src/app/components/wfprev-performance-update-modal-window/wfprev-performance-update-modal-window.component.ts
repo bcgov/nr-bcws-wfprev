@@ -1,4 +1,4 @@
-import { Component, Inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { Messages, ModalMessages, ModalTitles, NumericLimits } from 'src/app/utils/constants';
@@ -19,6 +19,12 @@ import { matchTotalValidator } from './validators/match-total.validator';
     styleUrl: './wfprev-performance-update-modal-window.component.scss'
 })
 export class PerformanceUpdateModalWindowComponent {
+  data = inject(MAT_DIALOG_DATA);
+  dialog = inject(MatDialog);
+  private readonly dialogRef = inject<MatDialogRef<PerformanceUpdateModalWindowComponent>>(MatDialogRef);
+  private readonly projectService = inject(ProjectService);
+  private readonly snackbarService = inject(MatSnackBar);
+
 
   messages = Messages;
 
@@ -83,13 +89,9 @@ export class PerformanceUpdateModalWindowComponent {
 
   progressStatus: Option<ProgressStatus>[] = [];
 
-  constructor(
-    @Inject(MAT_DIALOG_DATA) public data: any,
-    public dialog: MatDialog,
-    private readonly dialogRef: MatDialogRef<PerformanceUpdateModalWindowComponent>,
-    private readonly projectService: ProjectService,
-    private readonly snackbarService: MatSnackBar
-  ) {
+  constructor() {
+    const data = this.data;
+
     this.reportingPeriod = data.reportingPeriod;
     this.progressStatus = data.progressStatus;
     this.bindAmountValidation();

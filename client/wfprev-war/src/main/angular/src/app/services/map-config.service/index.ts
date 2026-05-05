@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { mapConfig, mapConfigBase, mapConfigLayers } from './map.config';
 import { AppConfigService } from '../app-config.service';
 import { TokenService } from '../token.service';
@@ -8,10 +8,9 @@ export type MapServices = Record<string, string>;
 
 @Injectable()
 export class MapConfigService {
-  constructor(
-    private readonly appConfig: AppConfigService,
-    private readonly tokenService: TokenService
-  ) {}
+  private readonly appConfig = inject(AppConfigService);
+  private readonly tokenService = inject(TokenService);
+
 
   async getMapConfig(): Promise<any> {
     await this.appConfig.loadAppConfig();

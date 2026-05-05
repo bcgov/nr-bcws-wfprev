@@ -34,6 +34,17 @@ import { PermissionsService, WFPREV_ACTIONS } from 'src/app/services/permissions
     styleUrls: ['./projects-list.component.scss']
 })
 export class ProjectsListComponent implements OnInit {
+  private readonly router = inject(Router);
+  private readonly projectService = inject(ProjectService);
+  private readonly codeTableService = inject(CodeTableServices);
+  private readonly dialog = inject(MatDialog);
+  private readonly sharedCodeTableService = inject(SharedCodeTableService);
+  readonly sharedService = inject(SharedService);
+  private readonly cdr = inject(ChangeDetectorRef);
+  private readonly snackbarService = inject(MatSnackBar);
+  private readonly mapService = inject(MapService);
+  private readonly projectFilterStateService = inject(ProjectFilterStateService);
+
   @ViewChildren('panel', { read: ElementRef }) panelElements!: QueryList<ElementRef>;
   [key: string]: any;
   projectList: any[] = [];
@@ -62,20 +73,6 @@ export class ProjectsListComponent implements OnInit {
   hasMore = true;
   protected readonly perms = inject(PermissionsService);
   protected readonly WFPREV_ACTIONS = WFPREV_ACTIONS;
-
-  constructor(
-    private readonly router: Router,
-    private readonly projectService: ProjectService,
-    private readonly codeTableService: CodeTableServices,
-    private readonly dialog: MatDialog,
-    private readonly sharedCodeTableService: SharedCodeTableService,
-    public readonly sharedService: SharedService,
-    private readonly cdr: ChangeDetectorRef,
-    private readonly snackbarService: MatSnackBar,
-    private readonly mapService: MapService,
-    private readonly projectFilterStateService: ProjectFilterStateService,
-  ) {
-  }
   ngOnInit(): void {
     this.loadCodeTables();
 

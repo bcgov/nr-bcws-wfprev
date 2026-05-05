@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { ModalTitles } from 'src/app/utils/constants';
@@ -14,6 +14,14 @@ import { ModalTitles } from 'src/app/utils/constants';
     ]
 })
 export class ConfirmationDialogComponent {
+  private readonly dialogRef = inject<MatDialogRef<ConfirmationDialogComponent>>(MatDialogRef);
+  data = inject<{
+    indicator: string;
+    title: string;
+    name: string;
+    message: string;
+}>(MAT_DIALOG_DATA);
+
   dialogUsage: string = 'confirm-cancel';
 
   get dialogMessage(): string {
@@ -36,10 +44,7 @@ export class ConfirmationDialogComponent {
     return this.dialogUsage.startsWith('delete-') || this.dialogUsage.startsWith('change-');
   }
 
-  constructor(
-    private readonly dialogRef: MatDialogRef<ConfirmationDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: { indicator: string, title: string, name: string, message: string}
-  ) {
+  constructor() {
     this.dialogUsage = this.data?.indicator
   }
 

@@ -1,6 +1,6 @@
 import { TextFieldModule } from '@angular/cdk/text-field';
 import { CommonModule } from '@angular/common';
-import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, EventEmitter, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, EventEmitter, OnDestroy, OnInit, Output, ViewChild, inject } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatExpansionModule } from '@angular/material/expansion';
@@ -40,6 +40,15 @@ import { TextareaComponent } from 'src/app/components/shared/textarea/textarea.c
     styleUrl: './project-details.component.scss'
 })
 export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy {
+  private readonly fb = inject(FormBuilder);
+  private route = inject(ActivatedRoute);
+  private projectService = inject(ProjectService);
+  private readonly codeTableService = inject(CodeTableServices);
+  snackbarService = inject(MatSnackBar);
+  dialog = inject(MatDialog);
+  tokenService = inject(TokenService);
+  cd = inject(ChangeDetectorRef);
+
   @ViewChild(FiscalYearProjectsComponent) fiscalYearProjectsComponent!: FiscalYearProjectsComponent;
   @ViewChild(EvaluationCriteriaComponent) evaluationCriteriaComponent!: EvaluationCriteriaComponent;
   @ViewChild('mapHost') mapHost!: ElementRef<HTMLDivElement>;
@@ -82,17 +91,6 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
   readonly PROJECT_DESC_MAX = 4000;
   projectTypeLocked = false;
   isSaving = false;
-
-  constructor(
-    private readonly fb: FormBuilder,
-    private route: ActivatedRoute,
-    private projectService: ProjectService,
-    private readonly codeTableService: CodeTableServices,
-    public snackbarService: MatSnackBar,
-    public dialog: MatDialog,
-    public tokenService: TokenService,
-    public cd: ChangeDetectorRef
-  ) { }
 
   ngOnInit(): void {
     this.initializeForm();

@@ -1,4 +1,4 @@
-@import '../styles/variables';
+@use '../styles/variables' as *;
 
 mat-checkbox.mat-mdc-checkbox.mat-accent, 
 mat-selection-list .mat-mdc-list-option {

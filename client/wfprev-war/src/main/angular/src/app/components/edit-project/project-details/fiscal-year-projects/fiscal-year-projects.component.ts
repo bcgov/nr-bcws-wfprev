@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatTableModule } from '@angular/material/table';
 import { ActivatedRoute } from '@angular/router';
@@ -15,6 +15,9 @@ import { StatusBadgeComponent } from 'src/app/components/shared/status-badge/sta
     styleUrl: './fiscal-year-projects.component.scss'
 })
 export class FiscalYearProjectsComponent implements OnInit{
+  private route = inject(ActivatedRoute);
+  private projectService = inject(ProjectService);
+
   projectFiscals: any[] = [];
   activities: any[] = [];
   activitiesMap: { [fiscalGuid: string]: any[] } = {};
@@ -34,11 +37,6 @@ export class FiscalYearProjectsComponent implements OnInit{
   };
 
   convertFiscalYear = convertFiscalYear;
-  
-  constructor(
-    private route: ActivatedRoute,
-    private projectService: ProjectService
-  ) {}
 
   ngOnInit(): void {
     this.projectGuid = this.route.snapshot?.queryParamMap?.get('projectGuid') || '';

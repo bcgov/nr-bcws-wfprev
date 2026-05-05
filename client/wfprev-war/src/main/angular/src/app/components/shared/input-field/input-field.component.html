@@ -55,26 +55,26 @@
     }
 
     @if (
-      (control?.hasError("maxlength") || control?.hasError("max")) &&
-      (control?.dirty || control?.touched)
+      (control.hasError("maxlength") || control.hasError("max")) &&
+      (control.dirty || control.touched)
     ) {
       <div class="error">
         {{ errorMessages["maxlength"] }}
       </div>
     }
 
-    @if (control?.hasError("email") && (control?.dirty || control?.touched)) {
+    @if (control.hasError("email") && (control.dirty || control.touched)) {
       <div class="error">
         {{ errorMessages["email"] }}
       </div>
     }
-    @if (control?.hasError("min") && (control?.dirty || control?.touched)) {
+    @if (control.hasError("min") && (control.dirty || control.touched)) {
       <div class="error">
         {{ errorMessages["min"] }}
       </div>
     }
     @if (
-      control?.hasError("duplicate") && (control?.dirty || control?.touched)
+      control.hasError("duplicate") && (control.dirty || control.touched)
     ) {
       <div class="error">
         {{ errorMessages["duplicate"] }}

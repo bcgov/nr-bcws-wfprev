@@ -1,5 +1,5 @@
 import { HttpClient, HttpRequest, HttpHeaders, HttpEventType, HttpResponse, HttpParams } from "@angular/common/http";
-import { Injectable } from "@angular/core";
+import { Injectable, inject } from "@angular/core";
 import { UUID } from "angular2-uuid";
 import { catchError, map, Observable, throwError } from "rxjs";
 import { ActivityBoundary, EvaluationCriteriaSummaryModel, FeaturesResponse, NewPerformanceUpdate, PerformanceUpdate, Project, ProjectBoundary, ProjectFiscal, ProjectLocation, ReportRequest } from "src/app/components/models";
@@ -13,13 +13,13 @@ export const UPLOAD_DIRECTORY = '/WFPREV/uploads';
 })
 
 export class ProjectService {
+    private readonly appConfigService = inject(AppConfigService);
+    private readonly httpClient = inject(HttpClient);
+    private readonly tokenService = inject(TokenService);
+
     userGuid: string | undefined;
 
-    constructor(
-        private readonly appConfigService: AppConfigService,
-        private readonly httpClient: HttpClient,
-        private readonly tokenService: TokenService,
-    ) {
+    constructor() {
         this.tokenService.credentialsEmitter.subscribe((cred) => {
             this.userGuid = cred.userGuid ? cred.userGuid : cred.user_guid;
         });

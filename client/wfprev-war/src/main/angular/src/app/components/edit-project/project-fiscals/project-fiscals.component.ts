@@ -1,14 +1,5 @@
 import { CurrencyPipe } from '@angular/common';
-import {
-  ChangeDetectorRef,
-  Component,
-  effect,
-  EventEmitter,
-  Input,
-  OnInit,
-  Output,
-  ViewChild,
-} from '@angular/core';
+import { ChangeDetectorRef, Component, effect, EventEmitter, Input, OnInit, Output, ViewChild, inject } from '@angular/core';
 import {
   FormBuilder,
   FormControl,
@@ -89,6 +80,17 @@ import { ProjectFiscalsSignalService } from 'src/app/services/project-fiscals-si
   ],
 })
 export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
+  private route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
+  private projectService = inject(ProjectService);
+  private codeTableService = inject(CodeTableServices);
+  private readonly fb = inject(FormBuilder);
+  private readonly snackbarService = inject(MatSnackBar);
+  readonly dialog = inject(MatDialog);
+  cd = inject(ChangeDetectorRef);
+  private readonly tokenService = inject(TokenService);
+  private readonly events = inject(ProjectFiscalsSignalService);
+
   @Input() focusedFiscalId: string | null = null;
   @ViewChild(ActivitiesComponent) activitiesComponent!: ActivitiesComponent;
   @ViewChild('fiscalMapRef') fiscalMapComponent!: FiscalMapComponent;
@@ -111,18 +113,7 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
   isSavingFiscal: boolean[] = [];
   private initialized = false;
 
-  constructor(
-    private route: ActivatedRoute,
-    private readonly router: Router,
-    private projectService: ProjectService,
-    private codeTableService: CodeTableServices,
-    private readonly fb: FormBuilder,
-    private readonly snackbarService: MatSnackBar,
-    public readonly dialog: MatDialog,
-    public cd: ChangeDetectorRef,
-    private readonly tokenService: TokenService,
-    private readonly events: ProjectFiscalsSignalService,
-  ) {
+  constructor() {
     effect(() => {
       this.events.reloadFiscals();
 

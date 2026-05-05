@@ -1,4 +1,4 @@
-import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnDestroy, ViewChild, EnvironmentInjector, createComponent } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnDestroy, ViewChild, EnvironmentInjector, createComponent, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { SearchFilterComponent } from 'src/app/components/search-filter/search-filter.component';
 import { MapConfigService } from 'src/app/services/map-config.service';
@@ -20,6 +20,14 @@ import { ProjectService } from 'src/app/services/project-services';
     styleUrl: './map.component.scss'
 })
 export class MapComponent implements AfterViewInit, OnDestroy {
+  protected cdr = inject(ChangeDetectorRef);
+  private readonly mapService = inject(MapService);
+  private readonly mapConfigService = inject(MapConfigService);
+  private readonly route = inject(ActivatedRoute);
+  private readonly sharedService = inject(SharedService);
+  private readonly injector = inject(EnvironmentInjector);
+  private readonly projectService = inject(ProjectService);
+
   @ViewChild('mapContainer', { static: false }) mapContainer!: ElementRef;
   mapConfig: any[] = [];
   mapIndex = 0;
@@ -55,15 +63,6 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   currentFiscalYear = new Date().getMonth() >= 3
     ? new Date().getFullYear()
     : new Date().getFullYear() - 1;
-  constructor(
-    protected cdr: ChangeDetectorRef,
-    private readonly mapService: MapService,
-    private readonly mapConfigService: MapConfigService,
-    private readonly route: ActivatedRoute,
-    private readonly sharedService: SharedService,
-    private readonly injector: EnvironmentInjector,
-    private readonly projectService: ProjectService
-  ) { }
 
   // promise will not be awaited by angular if void is not returned
   ngOnDestroy(): void {

@@ -1,4 +1,4 @@
-import {Injectable} from "@angular/core";
+import { Injectable, inject } from "@angular/core";
 import {ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot} from "@angular/router";
 import {TokenService} from "../token.service";
 import {Observable, of} from "rxjs";
@@ -7,9 +7,12 @@ import {Observable, of} from "rxjs";
   providedIn: 'root',
 })
 export class AuthGuard implements CanActivate {
+  protected tokenService = inject(TokenService);
+  protected router = inject(Router);
+
   protected credentials: any;
   protected baseScopes = []; 
-  constructor(protected tokenService: TokenService, protected router: Router) {
+  constructor() {
     this.tokenService.credentialsEmitter.subscribe(credentials => {
       this.credentials = credentials;
     });

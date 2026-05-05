@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ResourcesRoutes } from 'src/app/utils';
@@ -10,6 +10,9 @@ import { ResourcesRoutes } from 'src/app/utils';
     styleUrl: './list.component.scss'
 })
 export class ListComponent implements OnInit {
+  private router = inject(Router);
+  private route = inject(ActivatedRoute);
+
 
   projects = [
     { 
@@ -38,13 +41,7 @@ export class ListComponent implements OnInit {
     }
   ];
 
-  filteredProjects = this.projects; // Holds the projects to display
-
-  constructor(
-    private router: Router,
-    private route: ActivatedRoute
-  ) {
-  }
+  filteredProjects = this.projects;
 
   ngOnInit(): void {
     // Check if there's a projectNumber in the query parameters

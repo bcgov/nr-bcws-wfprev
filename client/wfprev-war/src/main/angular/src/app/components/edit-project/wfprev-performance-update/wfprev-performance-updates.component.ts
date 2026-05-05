@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges, inject } from '@angular/core';
 import { MatExpansionPanel, MatExpansionPanelHeader } from '@angular/material/expansion';
 import { ExpansionIndicatorComponent } from "../../shared/expansion-indicator/expansion-indicator.component";
 import { IconButtonComponent } from "../../shared/icon-button/icon-button.component";
@@ -21,6 +21,13 @@ import { ProjectFiscalsSignalService } from 'src/app/services/project-fiscals-si
     styleUrl: './wfprev-performance-updates.component.scss'
 })
 export class PerformanceUpdatesComponent implements OnChanges {
+  private readonly projectService = inject(ProjectService);
+  private readonly codeTableService = inject(CodeTableServices);
+  private readonly projectFiscalsSignalService = inject(ProjectFiscalsSignalService);
+  private readonly route = inject(ActivatedRoute);
+  private dialog = inject(MatDialog);
+  private readonly snackbarService = inject(MatSnackBar);
+
   @Input() fiscalGuid: string = '';
   @Input() projectGuid = '';
   @Input() currentForecast: string = '';
@@ -52,15 +59,6 @@ export class PerformanceUpdatesComponent implements OnChanges {
 
   updates: PerformanceUpdate[] = [];
   isUpdatesCalled: boolean = false;
-
-  constructor(
-    private readonly projectService: ProjectService,
-    private readonly codeTableService: CodeTableServices,
-    private readonly projectFiscalsSignalService: ProjectFiscalsSignalService,
-    private readonly route: ActivatedRoute,
-    private dialog: MatDialog,
-    private readonly snackbarService: MatSnackBar
-  ) {}
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['fiscalGuid'] && changes['fiscalGuid'].currentValue && !this.isUpdatesCalled) {

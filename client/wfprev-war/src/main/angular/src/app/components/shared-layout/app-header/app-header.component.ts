@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { ResourcesRoutes } from 'src/app/utils';
 import { MatMenuModule } from '@angular/material/menu';
@@ -16,11 +16,10 @@ import { EnvironmentIndicators } from 'src/app/utils/constants';
   styleUrls: ['./app-header.component.scss'],
 })
 export class AppHeaderComponent implements OnInit {
-  constructor(
-    protected router: Router,
-    private readonly tokenService: TokenService,
-    private readonly appConfigService: AppConfigService,
-  ) {}
+  protected router = inject(Router);
+  private readonly tokenService = inject(TokenService);
+  private readonly appConfigService = inject(AppConfigService);
+
 
   environment: string = '';
   title: string = 'ReMi PLANNER';

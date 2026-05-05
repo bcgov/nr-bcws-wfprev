@@ -1,5 +1,5 @@
 import { HttpClient, HttpHeaders } from "@angular/common/http";
-import { Injectable } from "@angular/core";
+import { Injectable, inject } from "@angular/core";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import * as toGeoJSON from '@tmcw/togeojson';
 import * as turf from '@turf/turf';
@@ -27,6 +27,11 @@ export interface ValidationResult {
     providedIn: 'root',
 })
 export class SpatialService {
+    private readonly httpClient = inject(HttpClient);
+    private readonly snackbarService = inject(MatSnackBar);
+    private readonly appConfigService = inject(AppConfigService);
+    private readonly tokenService = inject(TokenService);
+
 
     errorMessageContext = {
         data: {
@@ -37,12 +42,6 @@ export class SpatialService {
         duration: undefined,
         panelClass: ['detailed-error-message']
     }
-
-    constructor(private readonly httpClient: HttpClient,
-        private readonly snackbarService: MatSnackBar,
-        private readonly appConfigService: AppConfigService,
-        private readonly tokenService: TokenService
-    ) { }
 
     private async parseKMLToCoordinates(kmlString: string): Promise<Position[][][]> {
         const kmlDom = new DOMParser().parseFromString(kmlString, 'text/xml');

@@ -1,4 +1,4 @@
-import { Component, Inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { MAT_SNACK_BAR_DATA, MatSnackBarRef } from '@angular/material/snack-bar';
 import { DetailedErrorMessage } from '../models';
 
@@ -9,14 +9,11 @@ import { DetailedErrorMessage } from '../models';
   styleUrl: './detailed-error-message.component.scss'
 })
 export class DetailedErrorMessageComponent {
+  data = inject<DetailedErrorMessage>(MAT_SNACK_BAR_DATA);
+  private snackBarRef = inject<MatSnackBarRef<DetailedErrorMessageComponent>>(MatSnackBarRef);
+
 
   showReasons = false;
-
-  constructor(
-    @Inject(MAT_SNACK_BAR_DATA)
-    public data: DetailedErrorMessage,
-    private snackBarRef: MatSnackBarRef<DetailedErrorMessageComponent>
-  ) {}
 
   showDetails(): void {
     this.showReasons = true;

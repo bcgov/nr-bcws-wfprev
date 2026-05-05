@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { AfterViewInit, Component, Input, OnDestroy, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, Router, UrlTree } from '@angular/router';
 import * as L from 'leaflet';
 import { forkJoin, map } from 'rxjs';
@@ -14,6 +14,10 @@ import { LeafletLegendService, createFullPageControl, getBluePinIcon } from 'src
     styleUrl: './fiscal-map.component.scss'
 })
 export class FiscalMapComponent implements AfterViewInit, OnDestroy, OnInit {
+    readonly projectService = inject(ProjectService);
+    readonly route = inject(ActivatedRoute);
+    protected router = inject(Router);
+
     @Input() fiscalGuid: any = '';
     @Input() selectedFiscalYear: number = new Date().getFullYear();
   currentFiscalYear = new Date().getMonth() >= 3
@@ -25,12 +29,6 @@ export class FiscalMapComponent implements AfterViewInit, OnDestroy, OnInit {
     present: '#1B9E77',
     future: '#E7298A'
   };
-  
-  constructor(
-    readonly projectService: ProjectService,
-    readonly route: ActivatedRoute,
-    protected router: Router,
-  ) {}
 
   map: L.Map | undefined;
   private activityBoundaryGroup: L.LayerGroup = L.layerGroup();

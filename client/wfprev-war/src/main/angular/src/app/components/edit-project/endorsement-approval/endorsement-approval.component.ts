@@ -1,12 +1,4 @@
-import {
-  Component,
-  EventEmitter,
-  Input,
-  OnChanges,
-  OnInit,
-  Output,
-  SimpleChanges,
-} from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, inject } from '@angular/core';
 import {
   ReactiveFormsModule,
   FormControl,
@@ -55,6 +47,8 @@ import { capitalizeFirstLetter } from 'src/app/utils';
   styleUrl: './endorsement-approval.component.scss',
 })
 export class EndorsementApprovalComponent implements OnChanges, OnInit {
+  private readonly dialog = inject(MatDialog);
+
   @Input() fiscal!: ProjectFiscal;
   @Input() currentUser!: string;
   @Input() currentIdir!: string;
@@ -72,8 +66,6 @@ export class EndorsementApprovalComponent implements OnChanges, OnInit {
     approvalDate: new FormControl<Date | null>(null),
     approvalComment: new FormControl<string | null>(''),
   });
-
-  constructor(private readonly dialog: MatDialog) {}
 
   ngOnInit(): void {
     this.endorsementApprovalForm

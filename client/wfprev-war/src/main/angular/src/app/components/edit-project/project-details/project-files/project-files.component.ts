@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, inject } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar, MatSnackBarRef, SimpleSnackBar } from '@angular/material/snack-bar';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
@@ -24,6 +24,13 @@ import { Messages, ModalMessages, ModalTitles } from 'src/app/utils/constants';
     styleUrls: ['./project-files.component.scss']
 })
 export class ProjectFilesComponent implements OnInit {
+  projectService = inject(ProjectService);
+  private readonly snackbarService = inject(MatSnackBar);
+  readonly dialog = inject(MatDialog);
+  attachmentService = inject(AttachmentService);
+  spatialService = inject(SpatialService);
+  private readonly route = inject(ActivatedRoute);
+
   @Output() filesUpdated = new EventEmitter<void>();
   @Input() projectGuid: string = '';
   @Input() activityGuid: string = '';
@@ -46,15 +53,6 @@ export class ProjectFilesComponent implements OnInit {
     duration: undefined,
     panelClass: ['detailed-error-message']
   }
-
-  constructor(
-    public projectService: ProjectService,
-    private readonly snackbarService: MatSnackBar,
-    public readonly dialog: MatDialog,
-    public attachmentService: AttachmentService,
-    public spatialService: SpatialService,
-    private readonly route: ActivatedRoute,
-  ) { }
 
   messages = Messages;
   displayedColumns: string[] = [

@@ -1,5 +1,5 @@
 import { HttpClient } from "@angular/common/http";
-import { Injectable } from "@angular/core";
+import { Injectable, inject } from "@angular/core";
 import { catchError, map, Observable, of, throwError } from "rxjs";
 import { AppConfigService } from "src/app/services/app-config.service";
 import { TokenService } from "src/app/services/token.service";
@@ -18,12 +18,11 @@ const byName = (a: any, b: any) =>
   providedIn: 'root',
 })
 export class CodeTableServices {
-  private codeTableCache: { [key: string]: any } = {}; // Cache for code tables
-  constructor(
-    private readonly appConfigService: AppConfigService,
-    private readonly httpClient: HttpClient,
-    private readonly tokenService: TokenService,
-  ) {}
+  private readonly appConfigService = inject(AppConfigService);
+  private readonly httpClient = inject(HttpClient);
+  private readonly tokenService = inject(TokenService);
+
+  private codeTableCache: { [key: string]: any } = {};
 
   fetchCodeTable(codeTableName: string): Observable<any> {
     // Check if the code table is already cached

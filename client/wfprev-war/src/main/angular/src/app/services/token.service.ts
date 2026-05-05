@@ -1,5 +1,5 @@
 import { HttpClient, HttpHandler, HttpHeaders } from "@angular/common/http";
-import { Injectable, Injector } from "@angular/core";
+import { Injectable, Injector, inject } from "@angular/core";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { OAuthService } from "angular-oauth2-oidc";
 import momentInstance from "moment";
@@ -15,6 +15,11 @@ const OAUTH_LOCAL_STORAGE_KEY = 'oauth';
   providedIn: 'root',
 })
 export class TokenService {
+  private readonly injector = inject(Injector);
+  protected appConfigService = inject(AppConfigService);
+  protected snackbarService = inject(MatSnackBar);
+  private readonly router = inject(Router);
+
   private LOCAL_STORAGE_KEY = OAUTH_LOCAL_STORAGE_KEY;
   private useLocalStore = false;
   private oauth: any;
@@ -25,10 +30,7 @@ export class TokenService {
   public credentialsEmitter: Observable<any> = this.credentials.asObservable();
   public authTokenEmitter: Observable<string> = this.authToken.asObservable();
 
-  constructor(private readonly injector: Injector,
-    protected appConfigService: AppConfigService,
-    protected snackbarService: MatSnackBar,
-    private readonly router: Router) {
+  constructor() {
     const config = this.appConfigService.getConfig().application;
 
     const lazyAuthenticate: boolean = config.lazyAuthenticate ?? false;

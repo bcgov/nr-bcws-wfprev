@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { AppConfigService } from 'src/app/services/app-config.service';
 
 @Component({
@@ -8,9 +8,11 @@ import { AppConfigService } from 'src/app/services/app-config.service';
     styleUrl: './error-page.component.scss'
 })
 export class ErrorPageComponent {
+  private readonly appConfigService = inject(AppConfigService);
+
   remiPlannerEmailAddress: string;
 
-  constructor(private readonly appConfigService: AppConfigService) {
+  constructor() {
     this.remiPlannerEmailAddress = this.appConfigService.getConfig()?.application?.remiPlannerEmailAddress || '';
   }
 

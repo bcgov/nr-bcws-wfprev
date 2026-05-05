@@ -1,5 +1,5 @@
 import { HttpBackend, HttpClient } from "@angular/common/http";
-import { Injectable } from "@angular/core";
+import { Injectable, inject } from "@angular/core";
 import { AsyncSubject, Observable, firstValueFrom } from "rxjs";
 import { LibraryConfig } from "../config/library-config";
 import { ApplicationConfig } from "../interfaces/application-config";
@@ -8,11 +8,12 @@ import { ApplicationConfig } from "../interfaces/application-config";
   providedIn: 'root',
 })
 export class AppConfigService {
+  private httpHandler = inject(HttpBackend);
+  private libConfig = inject(LibraryConfig);
+
   private appConfig!: ApplicationConfig;
   private configSubject = new AsyncSubject<ApplicationConfig>();
   public configEmitter: Observable<ApplicationConfig> = this.configSubject.asObservable();
-
-  constructor(private httpHandler: HttpBackend, private libConfig: LibraryConfig) {}
 
   async loadAppConfig(): Promise<void> {
     const http = new HttpClient(this.httpHandler);

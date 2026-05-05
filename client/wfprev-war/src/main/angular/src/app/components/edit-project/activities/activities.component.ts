@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, Output, QueryList, SimpleChanges, ViewChild, ViewChildren } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, Output, QueryList, SimpleChanges, ViewChild, ViewChildren, inject } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MomentDateAdapter } from '@angular/material-moment-adapter';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -65,6 +65,14 @@ export const CUSTOM_DATE_FORMATS = {
 })
 
 export class ActivitiesComponent implements OnChanges, CanComponentDeactivate {
+  private readonly route = inject(ActivatedRoute);
+  private readonly projectService = inject(ProjectService);
+  private readonly codeTableService = inject(CodeTableServices);
+  private readonly fb = inject(FormBuilder);
+  private readonly snackbarService = inject(MatSnackBar);
+  readonly dialog = inject(MatDialog);
+  cd = inject(ChangeDetectorRef);
+
   @Input() fiscalGuid: string = '';
   @Input() isReadonly: boolean = false;
   @Output() boundariesUpdated = new EventEmitter<void>();
@@ -90,15 +98,6 @@ export class ActivitiesComponent implements OnChanges, CanComponentDeactivate {
   isActivityDirty: boolean[] = [];
   expandedPanels: boolean[] = [];
   isActivitySaving: boolean[] = [];
-  constructor(
-    private readonly route: ActivatedRoute,
-    private readonly projectService: ProjectService,
-    private readonly codeTableService: CodeTableServices,
-    private readonly fb: FormBuilder,
-    private readonly snackbarService: MatSnackBar,
-    public readonly dialog: MatDialog,
-    public cd: ChangeDetectorRef
-  ) { }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['fiscalGuid'] && changes['fiscalGuid'].currentValue) {
