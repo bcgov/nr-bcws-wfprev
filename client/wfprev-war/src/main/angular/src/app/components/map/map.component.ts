@@ -101,11 +101,13 @@ export class MapComponent implements AfterViewInit, OnDestroy {
       const map = smk?.$viewer?.map;
       if (!map) return;
 
-      map.whenReady(() => {
+      if (map['_loaded']) {
         this.setupMarkersAndLayers(map);
-      });
+      } else {
+        map.whenReady(() => this.setupMarkersAndLayers(map));
+      }
     });
-
+    
     // Handle selected project to open popup
     this.sharedService.selectedProject$.subscribe((project) => {
       if (!project && this.selectedProject) {
@@ -153,21 +155,45 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   }
 
   private async initMap(): Promise<void> {
-    try {
-      const baseConfig = this.clone(this.mapConfig);
-      const mapState = await this.mapConfigService.getMapConfig();
-      baseConfig.push(mapState);
-      this.mapConfig = this.buildMapConfig(baseConfig);
+  try {
+    // Phase 1: OpenStreetMap basemap only
+    await this.mapService.createSMK({
+      id: this.mapIndex,
+      containerSel: this.mapContainer.nativeElement,
+      config: this.buildMapConfig([{ viewer: { baseMap: 'openstreetmap' } }]),
+    });
 
-      await this.mapService.createSMK({
-        id: this.mapIndex,
-        containerSel: this.mapContainer.nativeElement,
-        config: this.mapConfig,
-      });
-    } catch (error) {
-      console.error('Error loading map:', error);
+    const smk = this.mapService.getSMKInstance();
+    const map: L.Map | undefined = smk?.$viewer?.map;
+    if (!map) return;
+
+
+    const mapState = await this.mapConfigService.getMapConfig();
+    const center = map.getCenter();
+    const zoom = map.getZoom();
+
+    // Pass mapState directly as a top-level option, not wrapped in config array
+    // since it already has viewer, tools, and layers at the root
+    await this.mapService.createSMK({
+      id: this.mapIndex,
+      containerSel: '#map',
+      config: this.buildMapConfig([mapState]),
+    });
+
+    const newSmk = this.mapService.getSMKInstance();
+    const newMap: L.Map | undefined = newSmk?.$viewer?.map;
+    if (newMap) {
+      if ((newMap as any)['_loaded']) {
+        newMap.setView(center, zoom);
+      } else {
+        newMap.whenReady(() => newMap.setView(center, zoom));
+      }
     }
+
+  } catch (error) {
+    console.error('Error loading map:', error);
   }
+}
 
   private buildMapConfig(baseConfig: any): object[] {
     const deviceConfig = { viewer: { device: 'desktop' } };
@@ -403,14 +429,17 @@ export class MapComponent implements AfterViewInit, OnDestroy {
         this.projectBoundaryLayer = null;
         this.activityBoundaryLayer = null;
       }
-    } else {
+    }  else {
       console.log('[Map] No valid project locations to add markers for.');
-      map.removeLayer(this.projectBoundaryLayer);
-      map.removeLayer(this.activityBoundaryLayer);
+      if (this.projectBoundaryLayer && map.hasLayer(this.projectBoundaryLayer)) {
+        map.removeLayer(this.projectBoundaryLayer);
+      }
+      if (this.activityBoundaryLayer && map.hasLayer(this.activityBoundaryLayer)) {
+        map.removeLayer(this.activityBoundaryLayer);
+      }
       this.projectBoundaryLayer = null;
       this.activityBoundaryLayer = null;
     }
-
     console.log(`Map added ${validLocations.length} project location markers`);
   }
 
