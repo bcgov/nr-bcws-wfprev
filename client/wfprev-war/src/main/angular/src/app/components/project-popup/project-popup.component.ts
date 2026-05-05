@@ -11,11 +11,10 @@ import {
 import { getFiscalYearDisplay } from 'src/app/utils/tools';
 import { FiscalCardComponent } from 'src/app/components/shared/fiscal-card/fiscal-card.component';
 import { IconButtonComponent } from 'src/app/components/shared/icon-button/icon-button.component';
-import { MatTooltip } from '@angular/material/tooltip';
 
 @Component({
   selector: 'wfprev-project-popup',
-  imports: [FiscalCardComponent, IconButtonComponent, MatTooltip],
+  imports: [FiscalCardComponent, IconButtonComponent],
   templateUrl: './project-popup.component.html',
   styleUrls: ['./project-popup.component.scss'],
 })

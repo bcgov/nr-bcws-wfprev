@@ -1,4 +1,3 @@
-import { CurrencyPipe } from '@angular/common';
 import { ChangeDetectorRef, Component, effect, EventEmitter, Input, OnInit, Output, ViewChild, inject } from '@angular/core';
 import {
   FormBuilder,
@@ -50,6 +49,7 @@ import { TextareaComponent } from 'src/app/components/shared/textarea/textarea.c
 import { capitalizeFirstLetter } from 'src/app/utils';
 import { PerformanceUpdatesComponent } from '../wfprev-performance-update/wfprev-performance-updates.component';
 import { ProjectFiscalsSignalService } from 'src/app/services/project-fiscals-signal.service';
+import { NgIf, NgFor } from '@angular/common';
 
 @Component({
   selector: 'wfprev-project-fiscals',
@@ -61,7 +61,6 @@ import { ProjectFiscalsSignalService } from 'src/app/services/project-fiscals-si
     MatButtonModule,
     MatSlideToggleModule,
     MatExpansionModule,
-    CurrencyPipe,
     MatMenuModule,
     ActivitiesComponent,
     FiscalMapComponent,
@@ -77,6 +76,8 @@ import { ProjectFiscalsSignalService } from 'src/app/services/project-fiscals-si
     TimestampComponent,
     TextareaComponent,
     PerformanceUpdatesComponent,
+    NgIf,
+    NgFor
   ],
 })
 export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {

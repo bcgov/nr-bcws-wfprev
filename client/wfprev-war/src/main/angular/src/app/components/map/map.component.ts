@@ -15,7 +15,7 @@ import { ProjectService } from 'src/app/services/project-services';
 
 @Component({
     selector: 'app-map',
-    imports: [ResizablePanelComponent, SearchFilterComponent, ProjectPopupComponent],
+    imports: [ResizablePanelComponent, SearchFilterComponent],
     templateUrl: './map.component.html',
     styleUrl: './map.component.scss'
 })

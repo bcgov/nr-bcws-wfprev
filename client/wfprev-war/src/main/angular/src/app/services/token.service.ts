@@ -60,6 +60,7 @@ export class TokenService {
     // 1) URL contained an OAuth error → redirect to error page
     if (this.hasAuthErrorInHash(hash)) {
       this.router.navigate(['/' + ResourcesRoutes.ERROR_PAGE]);
+      console.error('Authentication error detected in URL hash:', hash);
       return;
     }
 
@@ -67,6 +68,7 @@ export class TokenService {
     if (this.hasAccessTokenFromHash(hash)) {
       if (!this.hasAllScopesFromHash(hash, authScopes)) {
         this.router.navigate(['/' + ResourcesRoutes.ERROR_PAGE]);
+        console.error('Required scopes are missing from token in URL hash:', hash);
         return;
       }
       this.parseToken(hash);
@@ -154,6 +156,8 @@ export class TokenService {
         if (!hasAny) missing.push(req);
       } else if (!grantedSet.has(req)) missing.push(req);
     }
+
+    console.error('Token scopes:', grantedList, 'Required scopes:', required, 'Missing scopes:', missing);
 
     if (missing.length > 0) {
       return false;

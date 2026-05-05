@@ -271,22 +271,22 @@
             (input)="onProjectInput($event)"
             (paste)="onProjectPaste($event)"
             [ngClass]="{
-              'over-limit': (projectDescription?.length ?? 0) >= 4000,
+              'over-limit': projectDescription.length >= 4000,
             }"
           ></textarea>
 
           <div class="feedback-row">
             <div
               class="error"
-              [class.invisible]="!((projectDescription?.length ?? 0) >= 4000)"
+              [class.invisible]="!(projectDescription.length >= 4000)"
             >
               {{ messages.maxLengthExceeded }}
             </div>
             <div
               class="counter"
-              [ngClass]="{ over: (projectDescription?.length ?? 0) >= 4000 }"
+              [ngClass]="{ over: projectDescription.length >= 4000 }"
             >
-              {{ projectDescription?.length || 0 }} / 4000
+              {{ projectDescription.length || 0 }} / 4000
             </div>
           </div>
 
@@ -304,7 +304,7 @@
                 [disabled]="
                   isSaving ||
                   !isProjectDescriptionDirty ||
-                  (projectDescription?.length ?? 0) > 4000
+                  projectDescription.length > 4000
                 "
                 (click)="onSaveProjectDescription()"
               >

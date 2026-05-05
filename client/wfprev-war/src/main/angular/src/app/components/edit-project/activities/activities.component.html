@@ -24,7 +24,7 @@
         }
       </div>
     </mat-expansion-panel-header>
-    @if (activities?.length) {
+    @if (activities.length) {
       <div>
         @for (activity of activities; track activity; let i = $index) {
           <div [id]="'activity-' + i">
@@ -101,18 +101,18 @@
                         onfocus="this.select()"
                       />
                       @if (
-                        getControl(i, "completedAreaHa")?.errors &&
-                        (getControl(i, "completedAreaHa")?.dirty ||
-                          getControl(i, "completedAreaHa")?.touched)
+                        getControl(i, "completedAreaHa").errors &&
+                        (getControl(i, "completedAreaHa").dirty ||
+                          getControl(i, "completedAreaHa").touched)
                       ) {
                         <div class="error">
                           @if (
-                            getControl(i, "completedAreaHa")?.hasError("min")
+                            getControl(i, "completedAreaHa").hasError("min")
                           ) {
                             <span>{{ messages.positiveNumber }}</span>
                           }
                           @if (
-                            getControl(i, "completedAreaHa")?.hasError("max")
+                            getControl(i, "completedAreaHa").hasError("max")
                           ) {
                             <span>{{ messages.maxLengthExceeded }}</span>
                           }
@@ -137,20 +137,20 @@
                         />
                       </div>
                       @if (
-                        getControl(i, "reportedSpendAmount")?.errors &&
-                        (getControl(i, "reportedSpendAmount")?.dirty ||
-                          getControl(i, "reportedSpendAmount")?.touched)
+                        getControl(i, "reportedSpendAmount").errors &&
+                        (getControl(i, "reportedSpendAmount").dirty ||
+                          getControl(i, "reportedSpendAmount").touched)
                       ) {
                         <div class="error">
                           @if (
-                            getControl(i, "reportedSpendAmount")?.hasError(
+                            getControl(i, "reportedSpendAmount").hasError(
                               "min"
                             )
                           ) {
                             <span>{{ messages.positiveNumber }}</span>
                           }
                           @if (
-                            getControl(i, "reportedSpendAmount")?.hasError(
+                            getControl(i, "reportedSpendAmount").hasError(
                               "max"
                             )
                           ) {
@@ -271,13 +271,13 @@
                       "
                     />
                     @if (
-                      getControl(i, "activityName")?.errors &&
-                      (getControl(i, "activityName")?.dirty ||
-                        getControl(i, "activityName")?.touched)
+                      getControl(i, "activityName").errors &&
+                      (getControl(i, "activityName").dirty ||
+                        getControl(i, "activityName").touched)
                     ) {
                       <div class="error">
                         @if (
-                          getControl(i, "activityName")?.hasError("maxlength")
+                          getControl(i, "activityName").hasError("maxlength")
                         ) {
                           <span>{{ messages.maxLengthExceeded }}</span>
                         }
@@ -345,20 +345,20 @@
                       onfocus="this.select()"
                     />
                     @if (
-                      getControl(i, "plannedTreatmentAreaHa")?.errors &&
-                      (getControl(i, "plannedTreatmentAreaHa")?.dirty ||
-                        getControl(i, "plannedTreatmentAreaHa")?.touched)
+                      getControl(i, "plannedTreatmentAreaHa").errors &&
+                      (getControl(i, "plannedTreatmentAreaHa").dirty ||
+                        getControl(i, "plannedTreatmentAreaHa").touched)
                     ) {
                       <div class="error">
                         @if (
-                          getControl(i, "plannedTreatmentAreaHa")?.hasError(
+                          getControl(i, "plannedTreatmentAreaHa").hasError(
                             "max"
                           )
                         ) {
                           <span>{{ messages.maxLengthExceeded }}</span>
                         }
                         @if (
-                          getControl(i, "plannedTreatmentAreaHa")?.hasError(
+                          getControl(i, "plannedTreatmentAreaHa").hasError(
                             "min"
                           )
                         ) {
@@ -385,18 +385,18 @@
                       />
                     </div>
                     @if (
-                      getControl(i, "plannedSpendAmount")?.errors &&
-                      (getControl(i, "plannedSpendAmount")?.dirty ||
-                        getControl(i, "plannedSpendAmount")?.touched)
+                      getControl(i, "plannedSpendAmount").errors &&
+                      (getControl(i, "plannedSpendAmount").dirty ||
+                        getControl(i, "plannedSpendAmount").touched)
                     ) {
                       <div class="error">
                         @if (
-                          getControl(i, "plannedSpendAmount")?.hasError("max")
+                          getControl(i, "plannedSpendAmount").hasError("max")
                         ) {
                           <span>{{ messages.maxLengthExceeded }}</span>
                         }
                         @if (
-                          getControl(i, "plannedSpendAmount")?.hasError("min")
+                          getControl(i, "plannedSpendAmount").hasError("min")
                         ) {
                           <span>{{ messages.positiveNumber }}</span>
                         }
