@@ -9,7 +9,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { PerformanceUpdateModalWindowComponent } from '../../wfprev-performance-update-modal-window/wfprev-performance-update-modal-window.component';
 import { CommonModule } from '@angular/common';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { forkJoin } from 'rxjs';
+import { finalize, forkJoin } from 'rxjs';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { CodeTableServices } from 'src/app/services/code-table-services';
 import { CodeTableNames } from 'src/app/utils/constants';
@@ -80,23 +80,26 @@ export class PerformanceUpdatesComponent implements OnChanges {
       this.projectGuid = this.route.snapshot?.queryParamMap?.get('projectGuid') || '';
 
       if (this.projectGuid) {
-        this.projectService.getPerformanceUpdates(this.projectGuid, this.fiscalGuid).subscribe({
-          next: (data) => {
-            this.updates = data?._embedded?.performanceUpdate ?? [];
-            this.isLoading = false;
-          },
-          error: (error) => {
-            console.error('Error fetching performance updates:', error);
-
-            this.isLoading = false;
-            this.snackbarService.open(
-              'Failed to load performance updates. Please try again later.',
-              'OK',
-              { duration: 5000, panelClass: 'snackbar-error' }
-            );
-          }
-        });
+        this.projectService.getPerformanceUpdates(this.projectGuid, this.fiscalGuid)
+          .pipe(finalize(() => this.isLoading = false))
+          .subscribe({
+            next: (data: any) => {
+              this.updates = data?._embedded?.performanceUpdate ?? [];
+            },
+            error: (error) => {
+              console.error('Error fetching performance updates:', error);
+              this.snackbarService.open(
+                'Failed to load performance updates. Please try again later.',
+                'OK',
+                { duration: 5000, panelClass: 'snackbar-error' }
+              );
+            }
+          });
+      } else {
+        this.isLoading = false;
       }
+    } else {
+      this.isLoading = false;
     }
   }
 

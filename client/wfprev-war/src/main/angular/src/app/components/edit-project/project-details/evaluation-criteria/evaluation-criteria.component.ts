@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { finalize } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatIconModule } from '@angular/material/icon';
@@ -38,19 +39,23 @@ export class EvaluationCriteriaComponent implements OnChanges {
   }
 
   loadEvaluationCriteriaSummaries(): void {
-    this.isLoading = true;
-    this.projectService
-      .getEvaluationCriteriaSummaries(this.project.projectGuid)
-      .subscribe({
-        next: (response) => {
-          this.evaluationCriteriaSummary = response?._embedded?.eval_criteria_summary[0] ?? null;
-          this.isLoading = false;
-        },
-        error: (err) => {
-          console.error('Failed to fetch evaluation criteria summaries', err);
-          this.isLoading = false;
-        }
-      });
+    if (this.project?.projectGuid) {
+      this.isLoading = true;
+      this.projectService
+        .getEvaluationCriteriaSummaries(this.project.projectGuid)
+        .pipe(finalize(() => this.isLoading = false))
+        .subscribe({
+          next: (response: any) => {
+            this.evaluationCriteriaSummary = response?._embedded?.eval_criteria_summary[0] ?? null;
+          },
+          error: (err) => {
+            console.error('Failed to fetch evaluation criteria summaries', err);
+            this.evaluationCriteriaSummary = null;
+          }
+        });
+    } else {
+      this.isLoading = false;
+    }
   }
 
   openEvaluationCriteriaPopUp(): void {

@@ -13,7 +13,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ActivatedRoute } from '@angular/router';
 import moment from 'moment';
-import { forkJoin, map, Observable, take, tap } from 'rxjs';
+import { finalize, forkJoin, map, Observable, take, tap } from 'rxjs';
 import { ConfirmationDialogComponent } from 'src/app/components/confirmation-dialog/confirmation-dialog.component';
 import { ProjectFilesComponent } from 'src/app/components/edit-project/project-details/project-files/project-files.component';
 import { ActivityModel } from 'src/app/components/models';
@@ -170,7 +170,10 @@ export class ActivitiesComponent implements OnChanges, CanComponentDeactivate {
 
 
   getActivities(callback?: () => void): void {
-    if (!this.fiscalGuid) return;
+    if (!this.fiscalGuid) {
+      this.isLoading = false;
+      return;
+    }
 
     this.projectGuid = this.route.snapshot?.queryParamMap?.get('projectGuid') || '';
 
@@ -178,44 +181,48 @@ export class ActivitiesComponent implements OnChanges, CanComponentDeactivate {
       this.isLoading = true;
       this.getProjectType(this.projectGuid);
 
-      this.projectService.getFiscalActivities(this.projectGuid, this.fiscalGuid).subscribe({
-        next: (data) => {
-          if (data && data._embedded?.activities) {
-            this.activities = data._embedded.activities;
-            // Sort activities alphabetically by activityName (case insensitive)
-            this.activities.sort((a, b) => {
-              const nameA = (a.activityName || '').toLowerCase();
-              const nameB = (b.activityName || '').toLowerCase();
-              return nameA.localeCompare(nameB);
-            });
-
-          } else {
-            this.activities = [];
-          }
-
-          this.isNewActivityBeingAdded = false;
-          this.originalActivitiesValues = JSON.parse(JSON.stringify(this.activities));
-
-          this.activityForms = this.activities.map((activity) => this.createActivityForm(activity));
-          this.expandedPanels = this.activities.map((_, i) => this.expandedPanels[i] || false);
-
+      this.projectService.getFiscalActivities(this.projectGuid, this.fiscalGuid)
+        .pipe(finalize(() => {
           this.isLoading = false;
           this.cd.detectChanges();
-          // do callback (e.g., scrolling, expanding panel) if provided
-          if (callback) callback();
-        },
-        error: (error) => {
-          console.error('Error fetching activities:', error);
-          this.activities = [];
-          this.isLoading = false;
+        }))
+        .subscribe({
+          next: (data: any) => {
+            if (data && data._embedded?.activities) {
+              this.activities = data._embedded.activities;
+              // Sort activities alphabetically by activityName (case insensitive)
+              this.activities.sort((a, b) => {
+                const nameA = (a.activityName || '').toLowerCase();
+                const nameB = (b.activityName || '').toLowerCase();
+                return nameA.localeCompare(nameB);
+              });
 
-          this.snackbarService.open(
-            'Failed to load activities. Please try again later.',
-            'OK',
-            { duration: 5000, panelClass: 'snackbar-error' }
-          );
-        }
-      });
+            } else {
+              this.activities = [];
+            }
+
+            this.isNewActivityBeingAdded = false;
+            this.originalActivitiesValues = JSON.parse(JSON.stringify(this.activities));
+
+            this.activityForms = this.activities.map((activity) => this.createActivityForm(activity));
+            this.expandedPanels = this.activities.map((_, i) => this.expandedPanels[i] || false);
+
+            // do callback (e.g., scrolling, expanding panel) if provided
+            if (callback) callback();
+          },
+          error: (error) => {
+            console.error('Error fetching activities:', error);
+            this.activities = [];
+
+            this.snackbarService.open(
+              'Failed to load activities. Please try again later.',
+              'OK',
+              { duration: 5000, panelClass: 'snackbar-error' }
+            );
+          }
+        });
+    } else {
+      this.isLoading = false;
     }
   }
 
