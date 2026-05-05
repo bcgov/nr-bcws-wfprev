@@ -33,6 +33,12 @@ mat-expansion-panel {
         line-height: normal;
         gap:10px;
     }
+
+    .spinner-container {
+      display: flex;
+      justify-content: center;
+      padding: 20px;
+    }
 }
 .mat-expansion-panel-header-title, .mat-expansion-panel-header-description {
     margin-right: 0 !important;

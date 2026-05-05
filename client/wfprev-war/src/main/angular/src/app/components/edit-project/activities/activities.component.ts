@@ -10,6 +10,7 @@ import { MatExpansionModule, MatExpansionPanel } from '@angular/material/expansi
 import { MatInputModule } from '@angular/material/input';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ActivatedRoute } from '@angular/router';
 import moment from 'moment';
 import { forkJoin, map, Observable, take, tap } from 'rxjs';
@@ -57,7 +58,8 @@ export const CUSTOM_DATE_FORMATS = {
     TimestampComponent,
     TextareaComponent,
     NgxCurrencyDirective,
-    StatusBadgeComponent],
+    StatusBadgeComponent,
+    MatProgressSpinnerModule],
   templateUrl: './activities.component.html',
   styleUrl: './activities.component.scss',
   providers: [
@@ -93,6 +95,7 @@ export class ActivitiesComponent implements OnChanges, CanComponentDeactivate {
   isActivityDirty: boolean[] = [];
   expandedPanels: boolean[] = [];
   isActivitySaving: boolean[] = [];
+  isLoading = true;
   constructor(
     private readonly route: ActivatedRoute,
     private readonly projectService: ProjectService,
@@ -105,25 +108,33 @@ export class ActivitiesComponent implements OnChanges, CanComponentDeactivate {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['fiscalGuid'] && changes['fiscalGuid'].currentValue) {
-      this.activities = [];
-      this.activityForms = [];
+      this.projectGuid = this.route.snapshot?.queryParamMap?.get('projectGuid') || '';
+      if (this.projectGuid) {
+        this.isLoading = true;
+        this.activities = [];
+        this.activityForms = [];
 
-      this.loadCodeTables().subscribe({
-        next: () => {
-          this.getActivities(() => {
-            this.activityForms.forEach((form, i) => {
-              if (form.get('isResultsReportableInd')?.value) {
-                this.toggleResultsReportableInd(i);
-              }
+        this.loadCodeTables().subscribe({
+          next: () => {
+            this.getActivities(() => {
+              this.activityForms.forEach((form, i) => {
+                if (form.get('isResultsReportableInd')?.value) {
+                  this.toggleResultsReportableInd(i);
+                }
+              });
             });
-          });
-        },
+          },
 
-        error: (err) => {
-          console.error('Error loading code tables', err);
-          this.getActivities();
-        }
-      });
+          error: (err) => {
+            console.error('Error loading code tables', err);
+            this.getActivities();
+          }
+        });
+      } else {
+        this.isLoading = false;
+      }
+    } else if (changes['fiscalGuid']) {
+      this.isLoading = false;
     }
   }
 
@@ -164,7 +175,7 @@ export class ActivitiesComponent implements OnChanges, CanComponentDeactivate {
     this.projectGuid = this.route.snapshot?.queryParamMap?.get('projectGuid') || '';
 
     if (this.projectGuid) {
-
+      this.isLoading = true;
       this.getProjectType(this.projectGuid);
 
       this.projectService.getFiscalActivities(this.projectGuid, this.fiscalGuid).subscribe({
@@ -188,6 +199,7 @@ export class ActivitiesComponent implements OnChanges, CanComponentDeactivate {
           this.activityForms = this.activities.map((activity) => this.createActivityForm(activity));
           this.expandedPanels = this.activities.map((_, i) => this.expandedPanels[i] || false);
 
+          this.isLoading = false;
           this.cd.detectChanges();
           // do callback (e.g., scrolling, expanding panel) if provided
           if (callback) callback();
@@ -195,6 +207,7 @@ export class ActivitiesComponent implements OnChanges, CanComponentDeactivate {
         error: (error) => {
           console.error('Error fetching activities:', error);
           this.activities = [];
+          this.isLoading = false;
 
           this.snackbarService.open(
             'Failed to load activities. Please try again later.',

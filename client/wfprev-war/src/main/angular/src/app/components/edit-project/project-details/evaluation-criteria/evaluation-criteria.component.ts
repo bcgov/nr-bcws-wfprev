@@ -3,6 +3,7 @@ import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatIconModule } from '@angular/material/icon';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { EvaluationCriteriaDialogComponent } from 'src/app/components/evaluation-criteria-dialog/evaluation-criteria-dialog.component';
 import { EvaluationCriteriaSummaryModel, Project } from 'src/app/components/models';
 import { ExpansionIndicatorComponent } from 'src/app/components/shared/expansion-indicator/expansion-indicator.component';
@@ -13,7 +14,7 @@ import { EvaluationCriteriaSectionCodes, ProjectTypes } from 'src/app/utils/cons
 @Component({
   selector: 'wfprev-evaluation-criteria',
   standalone: true,
-  imports: [ExpansionIndicatorComponent, MatExpansionModule, MatIconModule, CommonModule, TimestampComponent],
+  imports: [ExpansionIndicatorComponent, MatExpansionModule, MatIconModule, CommonModule, TimestampComponent, MatProgressSpinnerModule],
   templateUrl: './evaluation-criteria.component.html',
   styleUrl: './evaluation-criteria.component.scss'
 })
@@ -21,6 +22,7 @@ export class EvaluationCriteriaComponent implements OnChanges {
   @Input() project!: Project;
 
   evaluationCriteriaSummary: EvaluationCriteriaSummaryModel | null = null;
+  isLoading = true;
 
   constructor(
     private readonly dialog: MatDialog,
@@ -30,18 +32,23 @@ export class EvaluationCriteriaComponent implements OnChanges {
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['project'] && this.project?.projectGuid) {
       this.loadEvaluationCriteriaSummaries();
+    } else if (changes['project'] && this.project && !this.project.projectGuid) {
+      this.isLoading = false;
     }
   }
 
   loadEvaluationCriteriaSummaries(): void {
+    this.isLoading = true;
     this.projectService
       .getEvaluationCriteriaSummaries(this.project.projectGuid)
       .subscribe({
         next: (response) => {
           this.evaluationCriteriaSummary = response?._embedded?.eval_criteria_summary[0] ?? null;
+          this.isLoading = false;
         },
         error: (err) => {
           console.error('Failed to fetch evaluation criteria summaries', err);
+          this.isLoading = false;
         }
       });
   }

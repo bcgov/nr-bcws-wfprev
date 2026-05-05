@@ -10,7 +10,11 @@
                 </wfprev-icon-button>
             </div>
         </mat-expansion-panel-header>
-        @if(updates.length > 0) {
+        <div class="spinner-container" *ngIf="isLoading">
+            <mat-progress-spinner mode="indeterminate" diameter="36" color="primary"></mat-progress-spinner>
+        </div>
+        <div *ngIf="!isLoading">
+            @if(updates.length > 0) {
         @for (update of updates; track update.submittedTimestamp; let i = $index) {
         <mat-expansion-panel [expanded]='i === 0' class="expansion-panel" #updatePanel>
             <mat-expansion-panel-header class="performance-update-header">
@@ -201,7 +205,8 @@
         } @else {
         <div class="no-performance-updates">
             No Performance Updates have been added.
+            </div>
+            }
         </div>
-        }
     </mat-expansion-panel>
 </div>

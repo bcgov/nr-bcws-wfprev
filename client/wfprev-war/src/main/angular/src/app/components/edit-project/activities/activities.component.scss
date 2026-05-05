@@ -4,6 +4,12 @@
     padding-top: 12px;
     margin: 0;
     container-type: inline-size;
+
+    .spinner-container {
+        display: flex;
+        justify-content: center;
+        padding: 20px;
+    }
     .expansion-panel{
         border: 1px solid #D9D9D9;
 

@@ -11,7 +11,11 @@
         </span>
     </div>
 
-    <table mat-table [dataSource]="dataSource" class="files-table" *ngIf="hasAttachments">
+    <div class="spinner-container" *ngIf="isLoading">
+        <mat-progress-spinner mode="indeterminate" diameter="36" color="primary"></mat-progress-spinner>
+    </div>
+
+    <table mat-table [dataSource]="dataSource" class="files-table" *ngIf="!isLoading && hasAttachments">
 
         <ng-container matColumnDef="attachmentType">
             <th mat-header-cell *matHeaderCellDef> Attachment Type </th>
@@ -74,7 +78,7 @@
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
         <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
     </table>
-    <div class="no-files-message" *ngIf="!hasAttachments">
+    <div class="no-files-message" *ngIf="!isLoading && !hasAttachments">
         No Files have been added.
     </div>
 </div>

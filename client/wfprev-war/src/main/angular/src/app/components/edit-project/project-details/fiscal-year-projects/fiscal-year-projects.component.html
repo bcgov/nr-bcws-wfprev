@@ -8,7 +8,10 @@
             <span>Fiscal Activity</span>
           </mat-panel-title>
         </mat-expansion-panel-header>
-        <div class="fiscals-content" *ngIf="projectFiscals?.length; else emptyContent">
+        <div class="spinner-container" *ngIf="isLoading">
+            <mat-progress-spinner mode="indeterminate" diameter="36" color="primary"></mat-progress-spinner>
+        </div>
+        <div class="fiscals-content" *ngIf="!isLoading && projectFiscals?.length; else emptyContent">
             <div *ngFor="let fiscal of projectFiscals" class="fiscal-item">
                 <div class="fiscal-title-row">
                     <span class="section-1">{{fiscal.projectFiscalName}}</span>
@@ -118,7 +121,7 @@
             </div>
         </div>
         <ng-template #emptyContent>
-            <div class="fiscal-empty-content">
+            <div class="fiscal-empty-content" *ngIf="!isLoading">
                 No Fiscal Activities have been added. 
             </div>
         </ng-template>

@@ -9,6 +9,7 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltip, MatTooltipModule } from '@angular/material/tooltip';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { ConfirmationDialogComponent } from 'src/app/components/confirmation-dialog/confirmation-dialog.component';
@@ -61,7 +62,8 @@ import { ProjectFiscalsSignalService } from 'src/app/services/project-fiscals-si
     EndorsementApprovalComponent,
     TimestampComponent,
     TextareaComponent,
-    PerformanceUpdatesComponent
+    PerformanceUpdatesComponent,
+    MatProgressSpinnerModule
 ]
 })
 export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
@@ -85,6 +87,7 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
   readonly CodeTableKeys = CodeTableKeys;
   readonly FiscalStatuses = FiscalStatuses;
   isSavingFiscal: boolean[] = [];
+  isLoading = true;
   private initialized = false;
 
   constructor(
@@ -128,7 +131,12 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
       }
     });
 
-    this.loadProjectFiscals();
+    this.projectGuid = this.route.snapshot?.queryParamMap?.get('projectGuid') || '';
+    if (this.projectGuid) {
+      this.loadProjectFiscals();
+    } else {
+      this.isLoading = false;
+    }
     const formattedName = this.tokenService.getUserFullName(true);
     if (formattedName) {
       this.currentUser = formattedName;
@@ -258,6 +266,7 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
     this.projectGuid = this.route.snapshot?.queryParamMap?.get('projectGuid') ?? '';
     if (!this.projectGuid) return;
 
+    this.isLoading = true;
     this.fetchData(
       this.projectService.getProjectFiscalsByProjectGuid(this.projectGuid),
       (data) => {
@@ -402,10 +411,14 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
 
   fetchData<T>(fetchFn: Observable<T>, assignFn: (data: T) => void, errorMessage: string): void {
     fetchFn.subscribe({
-      next: (data) => assignFn(data),
+      next: (data) => {
+        assignFn(data);
+        this.isLoading = false;
+      },
       error: (err) => {
         console.error(errorMessage, err);
         assignFn({} as T); // Assign default empty data
+        this.isLoading = false;
       },
     });
   }

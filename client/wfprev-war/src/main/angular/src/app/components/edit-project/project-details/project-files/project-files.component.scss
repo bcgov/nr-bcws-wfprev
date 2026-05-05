@@ -3,6 +3,12 @@
   width: 100%;
   container-type: inline-size;
   container-name: table-container;
+
+  .spinner-container {
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+  }
 }
 
 .title-container {
@@ -52,6 +58,7 @@ button.primary {
     padding: 8px;
     border-bottom: 1px solid #ddd;
     font-family: var(--wf-font-family-main);
+    vertical-align: top;
   }
 
   td {

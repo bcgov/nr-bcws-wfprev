@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarRef, SimpleSnackBar } from '@angular/material/snack-bar';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -20,7 +21,7 @@ import { Messages, ModalMessages, ModalTitles } from 'src/app/utils/constants';
 @Component({
   selector: 'wfprev-project-files',
   standalone: true,
-  imports: [MatTableModule, MatTooltipModule, CommonModule, IconButtonComponent],
+  imports: [MatTableModule, MatTooltipModule, CommonModule, IconButtonComponent, MatProgressSpinnerModule],
   templateUrl: './project-files.component.html',
   styleUrls: ['./project-files.component.scss']
 })
@@ -37,6 +38,7 @@ export class ProjectFilesComponent implements OnInit {
   projectFiles: ProjectFile[] = [];
   dataSource = new MatTableDataSource<ProjectFile>(this.projectFiles);
   downloadingFileId: string | null = null;
+  isLoading = true;
 
   errorMessageContext = {
     data: {
@@ -75,11 +77,14 @@ export class ProjectFilesComponent implements OnInit {
       this.loadActivityAttachments();
     } else if (this.projectGuid) {
       this.loadProjectAttachments();
+    } else {
+      this.isLoading = false;
     }
   }
 
   loadProjectAttachments(): void {
     if (this.projectGuid) {
+      this.isLoading = true;
       this.attachmentService.getProjectAttachments(this.projectGuid).subscribe({
         next: (response) => {
           // ensure the latest attachment is displayed
@@ -88,17 +93,15 @@ export class ProjectFilesComponent implements OnInit {
               return new Date(b.uploadedByTimestamp ?? 0).getTime() - new Date(a.uploadedByTimestamp ?? 0).getTime();
             });
 
+            // Set initial files without boundaries
+            this.projectFiles = [...fileAttachments];
+            this.dataSource.data = [...this.projectFiles];
+
             this.projectService.getProjectBoundaries(this.projectGuid).subscribe({
               next: (boundaryResponse) => {
                 const boundaries = boundaryResponse?._embedded?.projectBoundary;
-                let boundarySizeHa = undefined;
 
                 if (boundaries && boundaries.length > 0) {
-                  // Sort boundaries by systemStartTimestamp in descending order
-                  const latestBoundary = boundaries.sort((a: { systemStartTimestamp: string | number | Date }, b: { systemStartTimestamp: string | number | Date }) =>
-                    new Date(b.systemStartTimestamp).getTime() - new Date(a.systemStartTimestamp).getTime()
-                  )[0];
-
                   const boundarySizeMap = new Map<string, number>();
                   boundaries.forEach((boundary: { projectBoundaryGuid: string; boundarySizeHa: number }) => {
                     boundarySizeMap.set(boundary.projectBoundaryGuid, boundary.boundarySizeHa);
@@ -109,13 +112,8 @@ export class ProjectFilesComponent implements OnInit {
                     polygonHectares: file.sourceObjectUniqueId ? boundarySizeMap.get(file.sourceObjectUniqueId) ?? null : null
                   }));
 
-                } else {
-                  console.error('No project boundaries found for this project');
-                  this.projectFiles = fileAttachments;
+                  this.dataSource.data = [...this.projectFiles];
                 }
-
-
-                this.dataSource.data = [...this.projectFiles];
               },
               error: (error) => {
                 console.error('Error fetching project boundaries', error);
@@ -124,14 +122,19 @@ export class ProjectFilesComponent implements OnInit {
           } else {
             console.error('Expected an array of project files inside _embedded.fileAttachment, but got:', response);
             this.projectFiles = [];
+            this.dataSource.data = [];
           }
         },
         error: (err) => {
+          this.isLoading = false;
           this.snackbarService.open('Failed to load project attachments.', 'Close', {
             duration: 5000,
             panelClass: 'snackbar-error',
           });
         },
+        complete: () => {
+          this.isLoading = false;
+        }
       });
     }
   }
@@ -140,50 +143,58 @@ export class ProjectFilesComponent implements OnInit {
     if (!this.fiscalGuid || !this.activityGuid) return;
     this.projectGuid = this.route.snapshot?.queryParamMap?.get('projectGuid') ?? '';
 
-    // Fetch activity boundaries
-    this.projectService.getActivityBoundaries(this.projectGuid, this.fiscalGuid, this.activityGuid).subscribe({
-      next: (boundaryResponse) => {
-        const boundaries = boundaryResponse?._embedded?.activityBoundary;
-
-        // Build map of activityBoundaryGuid → boundarySizeHa to set polygon hecatares for each file
-        const boundarySizeMap = new Map<string, number>();
-        if (boundaries && boundaries.length > 0) {
-          boundaries.forEach((boundary: { activityBoundaryGuid: string, boundarySizeHa: number }) => {
-            boundarySizeMap.set(boundary.activityBoundaryGuid, boundary.boundarySizeHa);
+    this.isLoading = true;
+    this.attachmentService.getActivityAttachments(this.projectGuid, this.fiscalGuid, this.activityGuid).subscribe({
+      next: (response) => {
+        if (response?._embedded?.fileAttachment && Array.isArray(response._embedded.fileAttachment)) {
+          const fileAttachments = response._embedded.fileAttachment.sort((a: FileAttachment, b: FileAttachment) => {
+            const timeA = new Date(a.uploadedByTimestamp ?? 0).getTime();
+            const timeB = new Date(b.uploadedByTimestamp ?? 0).getTime();
+            return timeB - timeA; // latest first
           });
-        }
 
-        this.attachmentService.getActivityAttachments(this.projectGuid, this.fiscalGuid, this.activityGuid).subscribe({
-          next: (response) => {
-            if (response?._embedded?.fileAttachment && Array.isArray(response._embedded.fileAttachment)) {
-              const fileAttachments = response._embedded.fileAttachment.sort((a: FileAttachment, b: FileAttachment) => {
-                const timeA = new Date(a.uploadedByTimestamp ?? 0).getTime();
-                const timeB = new Date(b.uploadedByTimestamp ?? 0).getTime();
-                return timeB - timeA; // latest first
-              });
+          // Set initial files
+          this.projectFiles = [...fileAttachments];
+          this.dataSource.data = [...this.projectFiles];
 
-              // Set polygonHectares for each attachment
-              this.projectFiles = fileAttachments.map((file: FileAttachment) => ({
-                ...file,
-                polygonHectares: file.sourceObjectUniqueId ? boundarySizeMap.get(file.sourceObjectUniqueId) ?? null : null
-              }));
+          // Fetch activity boundaries to enrich files with hectares
+          this.projectService.getActivityBoundaries(this.projectGuid, this.fiscalGuid, this.activityGuid).subscribe({
+            next: (boundaryResponse) => {
+              const boundaries = boundaryResponse?._embedded?.activityBoundary;
 
-              this.dataSource.data = [...this.projectFiles];
-            } else {
-              console.error('Expected an array of activity files inside _embedded.fileAttachment, but got:', response);
-              this.projectFiles = [];
+              if (boundaries && boundaries.length > 0) {
+                const boundarySizeMap = new Map<string, number>();
+                boundaries.forEach((boundary: { activityBoundaryGuid: string, boundarySizeHa: number }) => {
+                  boundarySizeMap.set(boundary.activityBoundaryGuid, boundary.boundarySizeHa);
+                });
+
+                this.projectFiles = fileAttachments.map((file: FileAttachment) => ({
+                  ...file,
+                  polygonHectares: file.sourceObjectUniqueId ? boundarySizeMap.get(file.sourceObjectUniqueId) ?? null : null
+                }));
+
+                this.dataSource.data = [...this.projectFiles];
+              }
+            },
+            error: (error) => {
+              console.error('Failed to load activity boundaries:', error);
             }
-          },
-          error: (err) => {
-            this.snackbarService.open('Failed to load activity attachments.', 'Close', {
-              duration: 5000,
-              panelClass: 'snackbar-error',
-            });
-          }
+          });
+        } else {
+          console.error('Expected an array of activity files inside _embedded.fileAttachment, but got:', response);
+          this.projectFiles = [];
+          this.dataSource.data = [];
+        }
+      },
+      error: (err) => {
+        this.isLoading = false;
+        this.snackbarService.open('Failed to load activity attachments.', 'Close', {
+          duration: 5000,
+          panelClass: 'snackbar-error',
         });
       },
-      error: (error) => {
-        console.error('Failed to load activity boundaries:', error);
+      complete: () => {
+        this.isLoading = false;
       }
     });
   }

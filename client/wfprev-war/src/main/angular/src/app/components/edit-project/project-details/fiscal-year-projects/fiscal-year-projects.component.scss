@@ -30,6 +30,12 @@ mat-expansion-panel {
         line-height: normal;
         gap:10px;
     }
+
+    .spinner-container {
+      display: flex;
+      justify-content: center;
+      padding: 20px;
+    }
 }
 .fiscals-content{
     padding: 0 24px;

@@ -10,6 +10,7 @@ import { PerformanceUpdateModalWindowComponent } from '../../wfprev-performance-
 import { CommonModule } from '@angular/common';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { forkJoin } from 'rxjs';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { CodeTableServices } from 'src/app/services/code-table-services';
 import { CodeTableNames } from 'src/app/utils/constants';
 import { ProjectFiscalsSignalService } from 'src/app/services/project-fiscals-signal.service';
@@ -18,7 +19,7 @@ import { StatusBadgeComponent } from '../../shared/status-badge/status-badge.com
 @Component({
   selector: 'wfprev-performance-updates',
   standalone: true,
-  imports: [CommonModule, MatExpansionPanel, ExpansionIndicatorComponent, MatExpansionPanelHeader, IconButtonComponent, StatusBadgeComponent],
+  imports: [CommonModule, MatExpansionPanel, ExpansionIndicatorComponent, MatExpansionPanelHeader, IconButtonComponent, StatusBadgeComponent, MatProgressSpinnerModule],
   templateUrl: './wfprev-performance-updates.component.html',
   styleUrl: './wfprev-performance-updates.component.scss'
 })
@@ -54,6 +55,7 @@ export class PerformanceUpdatesComponent implements OnChanges {
 
   updates: PerformanceUpdate[] = [];
   isUpdatesCalled: boolean = false;
+  isLoading = true;
 
   constructor(
     private readonly projectService: ProjectService,
@@ -68,6 +70,8 @@ export class PerformanceUpdatesComponent implements OnChanges {
     if (changes['fiscalGuid'] && changes['fiscalGuid'].currentValue && !this.isUpdatesCalled) {
       this.isUpdatesCalled = true;
       this.getPerformanceUpdates();
+    } else if (changes['fiscalGuid'] && !changes['fiscalGuid'].currentValue) {
+      this.isLoading = false;
     }
   }
 
@@ -79,10 +83,12 @@ export class PerformanceUpdatesComponent implements OnChanges {
         this.projectService.getPerformanceUpdates(this.projectGuid, this.fiscalGuid).subscribe({
           next: (data) => {
             this.updates = data?._embedded?.performanceUpdate ?? [];
+            this.isLoading = false;
           },
           error: (error) => {
             console.error('Error fetching performance updates:', error);
 
+            this.isLoading = false;
             this.snackbarService.open(
               'Failed to load performance updates. Please try again later.',
               'OK',

@@ -11,9 +11,13 @@
           (clicked)="addNewFiscal()">
       </wfprev-icon-button>
     </div>
-      <div class="fiscal-tab-wrapper" [class.has-fiscals]="projectFiscals?.length">
+      <div class="spinner-container" *ngIf="isLoading">
+        <mat-progress-spinner mode="indeterminate" diameter="36" color="primary"></mat-progress-spinner>
+      </div>
+
+      <div class="fiscal-tab-wrapper" [class.has-fiscals]="projectFiscals.length" *ngIf="!isLoading">
         <mat-tab-group class="wf-sub-tab" mat-stretch-tabs="false" animationDuration="0ms" disableRipple="true"
-          *ngIf="projectFiscals?.length; else noFiscals" [(selectedIndex)]="selectedTabIndex" (selectedTabChange)="onTabChange($event.index)">
+          *ngIf="projectFiscals.length; else noFiscals" [(selectedIndex)]="selectedTabIndex" (selectedTabChange)="onTabChange($event.index)">
           <mat-tab *ngFor="let fiscal of projectFiscals; let i = index">
           <ng-template mat-tab-label>
             <div class="custom-tab-label">
@@ -42,7 +46,7 @@
                         [isApproved]="!fiscalForms[i].get('isApprovedInd')?.value"
                         [index]="i"
                         [fiscal]="fiscal"
-                        [isDirty]="fiscalForms[i]?.dirty"
+                        [isDirty]="fiscalForms[i].dirty"
                         (actionSelected)="onFiscalAction($event)">
                       </wfprev-dropdown-button>
                     </div>
@@ -56,7 +60,7 @@
                       [label]="'Fiscal Activity Name'"
                       [placeholder]="'Descriptor including site and activity category'"
                       [control]="getFiscalControl(i, 'projectFiscalName')"
-                      [tooltip]="getFiscalControl(i, 'projectFiscalName')?.value"
+                      [tooltip]="getFiscalControl(i, 'projectFiscalName').value"
                       [required]="true"
                       [errorMessages]="{ maxlength: messages.maxLengthExceeded }"
                     />
@@ -107,7 +111,7 @@
                       [placeholder]="'0'"
                       [type]="'number'"
                       [control]="getFiscalControl(i, 'fiscalPlannedProjectSizeHa')"
-                      [tooltip]="getFiscalControl(i, 'fiscalPlannedProjectSizeHa')?.value"
+                      [tooltip]="getFiscalControl(i, 'fiscalPlannedProjectSizeHa').value"
                       [errorMessages]="{
                         min: messages.positiveNumber,
                         max: messages.maxLengthExceeded,
@@ -123,7 +127,7 @@
                       [placeholder]="'0'"
                       [type]="'number'"
                       [control]="getFiscalControl(i, 'fiscalCompletedSizeHa')"
-                      [tooltip]="getFiscalControl(i, 'fiscalCompletedSizeHa')?.value"
+                      [tooltip]="getFiscalControl(i, 'fiscalCompletedSizeHa').value"
                       [errorMessages]="{ min: messages.positiveNumber, maxlength: messages.maxLengthExceeded, max: messages.maxLengthExceeded }"
                     />
                   </div>
@@ -134,7 +138,7 @@
                       [label]="'RESULTS ID'"
                       [placeholder]="'e.g., 98734702882'"
                       [control]="getFiscalControl(i, 'resultsOpeningId')"
-                      [tooltip]="getFiscalControl(i, 'resultsOpeningId')?.value"
+                      [tooltip]="getFiscalControl(i, 'resultsOpeningId').value"
                       [errorMessages]="{ maxlength: messages.maxLengthExceeded }"
                     />
                   </div>
@@ -186,7 +190,7 @@
                       [label]="'First Nation Co-Delivery Partners'"
                       [placeholder]="'e.g., St\'at\'imc Nation'"
                       [control]="getFiscalControl(i, 'firstNationsPartner')"
-                      [tooltip]="getFiscalControl(i, 'firstNationsPartner')?.value"
+                      [tooltip]="getFiscalControl(i, 'firstNationsPartner').value"
                       [errorMessages]="{ maxlength: messages.maxLengthExceeded }"
                     />
                   </div>
@@ -197,7 +201,7 @@
                       [label]="'Other Partners'"
                       [placeholder]="'e.g., BC Parks'"
                       [control]="getFiscalControl(i, 'otherPartner')"
-                      [tooltip]="getFiscalControl(i, 'otherPartner')?.value"
+                      [tooltip]="getFiscalControl(i, 'otherPartner').value"
                       [errorMessages]="{ maxlength: messages.maxLengthExceeded }"
                     />
                   </div>
@@ -226,7 +230,7 @@
                       [label]="'CFS Code'"
                       [placeholder]="'e.g., 719C792'"
                       [control]="getFiscalControl(i, 'cfsProjectCode')"
-                      [tooltip]="getFiscalControl(i, 'cfsProjectCode')?.value"
+                      [tooltip]="getFiscalControl(i, 'cfsProjectCode').value"
                       [errorMessages]="{ maxlength: messages.maxLengthExceeded }"
                     />
                   </div>
@@ -237,7 +241,7 @@
                       [label]="'Ancillary Funding Provider'"
                       [placeholder]="'Additional funding beyond WRR.'"
                       [control]="getFiscalControl(i, 'ancillaryFundingProvider')"
-                      [tooltip]="getFiscalControl(i, 'ancillaryFundingProvider')?.value"
+                      [tooltip]="getFiscalControl(i, 'ancillaryFundingProvider').value"
                       [errorMessages]="{ maxlength: messages.maxLengthExceeded }"
                     />
                   </div>
@@ -326,7 +330,7 @@
         </mat-tab-group>
       </div>
       <ng-template #noFiscals>
-        <div class="no-fiscals">
+        <div class="no-fiscals" *ngIf="!isLoading">
           No Fiscal Activities have been added. 
         </div>
       </ng-template>

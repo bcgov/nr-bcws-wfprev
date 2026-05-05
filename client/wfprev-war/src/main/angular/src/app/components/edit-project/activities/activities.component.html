@@ -16,7 +16,10 @@
                 </wfprev-icon-button>
             </div>
         </mat-expansion-panel-header>
-        <div *ngIf="activities?.length">
+        <div class="spinner-container" *ngIf="isLoading">
+            <mat-progress-spinner mode="indeterminate" diameter="36" color="primary"></mat-progress-spinner>
+        </div>
+        <div *ngIf="!isLoading && activities?.length">
             <div *ngFor="let activity of activities; let i = index" [id]="'activity-' + i">
                 <mat-expansion-panel class="expansion-panel" [(expanded)]="expandedPanels[i]">
                     <mat-expansion-panel-header class="activity-header">
@@ -264,7 +267,7 @@
                 </mat-expansion-panel>
             </div>
         </div>
-        <div class="no-activities-message" *ngIf="!activities?.length">
+        <div class="no-activities-message" *ngIf="!isLoading && !activities?.length">
             No Activities have been added.
         </div>
     </mat-expansion-panel>
