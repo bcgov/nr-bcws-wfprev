@@ -155,45 +155,32 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   }
 
   private async initMap(): Promise<void> {
-  try {
-    // Phase 1: OpenStreetMap basemap only
-    await this.mapService.createSMK({
-      id: this.mapIndex,
-      containerSel: this.mapContainer.nativeElement,
-      config: this.buildMapConfig([{ viewer: { baseMap: 'openstreetmap' } }]),
-    });
+    try {
+      const container = this.mapContainer.nativeElement;
 
-    const smk = this.mapService.getSMKInstance();
-    const map: L.Map | undefined = smk?.$viewer?.map;
-    if (!map) return;
+      // Basemap config — viewer & tools, no layers
+      const baseConfig = await this.mapConfigService.getBaseConfig();
 
+      await this.mapService.createSMK({
+        id: this.mapIndex,
+        containerSel: container,
+        config: this.buildMapConfig([baseConfig]),
+      });
 
-    const mapState = await this.mapConfigService.getMapConfig();
-    const center = map.getCenter();
-    const zoom = map.getZoom();
+      const smk = this.mapService.getSMKInstance();
+      const map: L.Map | undefined = smk?.$viewer?.map;
+      if (!map) return;
 
-    // Pass mapState directly as a top-level option, not wrapped in config array
-    // since it already has viewer, tools, and layers at the root
-    await this.mapService.createSMK({
-      id: this.mapIndex,
-      containerSel: '#map',
-      config: this.buildMapConfig([mapState]),
-    });
+      // Fetch layers after basemap renders and inject into live SMK instance
+      const layersConfig = await this.mapConfigService.getLayersConfig();
+      // return only fires for current year - no filter for fire_year in news /features endpoint
+      await this.mapService.filterWildfireLayersByCurrentYear(layersConfig);
+      await this.mapService.addLayersToExistingSMKInstance(layersConfig);
 
-    const newSmk = this.mapService.getSMKInstance();
-    const newMap: L.Map | undefined = newSmk?.$viewer?.map;
-    if (newMap) {
-      if ((newMap as any)['_loaded']) {
-        newMap.setView(center, zoom);
-      } else {
-        newMap.whenReady(() => newMap.setView(center, zoom));
-      }
+    } catch (error) {
+      console.error('Error loading map:', error);
     }
-
-  } catch (error) {
-    console.error('Error loading map:', error);
   }
-}
 
   private buildMapConfig(baseConfig: any): object[] {
     const deviceConfig = { viewer: { device: 'desktop' } };

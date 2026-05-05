@@ -176,11 +176,13 @@ describe('MapComponent', () => {
       return this;
     });
 
-    mapConfigServiceMock = jasmine.createSpyObj<MapConfigService>('MapConfigService', ['getMapConfig']);
-    mapServiceMock = jasmine.createSpyObj<MapService>('MapService', ['getMapIndex', 'setMapIndex', 'createSMK', 'getSMKInstance', 'clearSMKInstance', 'setContainerId', 'destroySMK', 'createProjectBoundaryLayer', 'createActivityBoundaryLayer']);
+    mapConfigServiceMock = jasmine.createSpyObj<MapConfigService>('MapConfigService', ['getMapConfig', 'getBaseConfig', 'getLayersConfig']);
+    mapServiceMock = jasmine.createSpyObj<MapService>('MapService', ['getMapIndex', 'setMapIndex', 'createSMK', 'getSMKInstance', 'clearSMKInstance', 'setContainerId', 'destroySMK', 'createProjectBoundaryLayer', 'createActivityBoundaryLayer', 'addLayersToExistingSMKInstance', 'filterWildfireLayersByCurrentYear']);
     mapContainer = jasmine.createSpyObj('ElementRef', ['nativeElement']);
 
     mapConfigServiceMock.getMapConfig.and.returnValue(Promise.resolve({ theme: 'testTheme' }));
+    mapConfigServiceMock.getBaseConfig.and.returnValue(Promise.resolve({ theme: 'testTheme' }));
+    mapConfigServiceMock.getLayersConfig.and.returnValue(Promise.resolve({ layers: [] }));
     mapServiceMock.getSMKInstance.and.returnValue(createMockSMKInstance());
     mapServiceMock.createSMK.and.returnValue(Promise.resolve());
 
@@ -246,36 +248,70 @@ describe('MapComponent', () => {
 
 
   describe('initMap', () => {
-    it('should initialize map with correct config and device settings', fakeAsync(() => {
-      mapContainer.nativeElement = document.createElement('div');
-      component.mapContainer = mapContainer;
+    it('should call createSMK before addLayersToExistingInstance', fakeAsync(() => {
+    mapContainer.nativeElement = document.createElement('div');
+    component.mapContainer = mapContainer;
 
-      const mockConfig = { theme: 'testTheme' };
-      mapConfigServiceMock.getMapConfig.and.returnValue(Promise.resolve(mockConfig));
-      mapServiceMock.getMapIndex.and.returnValue(1);
-      mapServiceMock.getSMKInstance.and.returnValue(createMockSMKInstance());
+    const callOrder: string[] = [];
+    mapServiceMock.createSMK.and.callFake(() => {
+      callOrder.push('createSMK');
+      return Promise.resolve();
+    });
+    mapServiceMock.addLayersToExistingSMKInstance.and.callFake(() => {
+      callOrder.push('addLayers');
+      return Promise.resolve();
+    });
 
-      component.ngAfterViewInit();
+    mapServiceMock.getSMKInstance.and.returnValue(createMockSMKInstance());
+    mapConfigServiceMock.getBaseConfig.and.returnValue(Promise.resolve({}));
+    mapConfigServiceMock.getLayersConfig.and.returnValue(Promise.resolve({ layers: [] }));
 
-      tick();
-      flush();
+    component.mapContainer = mapContainer;
+    component.ngAfterViewInit();
+    tick();
+    flush();
 
-      expect(component.mapConfig).toEqual([
-        mockConfig,
-        { viewer: { device: 'desktop' } },
-        'theme=wf',
-        '?',
-      ]);
-      expect(mapServiceMock.createSMK).toHaveBeenCalled();
-    }));
-  });
+    expect(callOrder).toEqual(['createSMK', 'addLayers']);
+  }));
+
+  it('should handle errors from getLayersConfig gracefully', fakeAsync(() => {
+    mapContainer.nativeElement = document.createElement('div');
+    component.mapContainer = mapContainer;
+
+    mapConfigServiceMock.getBaseConfig.and.returnValue(Promise.resolve({}));
+    mapConfigServiceMock.getLayersConfig.and.returnValue(Promise.reject('Layers Load Error'));
+    mapServiceMock.getSMKInstance.and.returnValue(createMockSMKInstance());
+
+    component.ngAfterViewInit();
+    tick();
+    flush();
+
+    expect(console.error).toHaveBeenCalledWith('Error loading map:', 'Layers Load Error');
+  }));
+
+  it('should handle errors from addLayersToExistingInstance gracefully', fakeAsync(() => {
+    mapContainer.nativeElement = document.createElement('div');
+    component.mapContainer = mapContainer;
+
+    mapConfigServiceMock.getBaseConfig.and.returnValue(Promise.resolve({}));
+    mapConfigServiceMock.getLayersConfig.and.returnValue(Promise.resolve({ layers: [] }));
+    mapServiceMock.getSMKInstance.and.returnValue(createMockSMKInstance());
+    mapServiceMock.addLayersToExistingSMKInstance.and.returnValue(Promise.reject('Layer injection failed'));
+
+    component.ngAfterViewInit();
+    tick();
+    flush();
+
+    expect(console.error).toHaveBeenCalledWith('Error loading map:', 'Layer injection failed');
+  }));
+});
 
 
   it('should handle errors while loading mapConfig', fakeAsync(() => {
     mapContainer.nativeElement = document.createElement('div');
     component.mapContainer = mapContainer;
 
-    mapConfigServiceMock.getMapConfig.and.returnValue(Promise.reject('Config Load Error'));
+    mapConfigServiceMock.getBaseConfig.and.returnValue(Promise.reject('Config Load Error'));
 
     component.ngAfterViewInit();
     tick();
