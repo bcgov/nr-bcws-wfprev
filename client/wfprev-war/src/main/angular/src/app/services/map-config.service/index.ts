@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { mapConfig } from './map.config';
+import { mapConfig, mapConfigBase, mapConfigLayers } from './map.config';
 import { AppConfigService } from '../app-config.service';
 import { TokenService } from '../token.service';
 import { firstValueFrom } from 'rxjs';
@@ -24,5 +24,21 @@ export class MapConfigService {
     };
 
     return mapConfig(mergedServices, token);
+  }
+
+  async getBaseConfig(): Promise<any> {
+    await this.appConfig.loadAppConfig();
+    const cfg = this.appConfig.getConfig();
+    const token = await firstValueFrom(this.tokenService.authTokenEmitter);
+    const mergedServices = { ...cfg.mapServices, openmaps: cfg.rest['openmaps'] };
+    return mapConfigBase(mergedServices, token);
+  }
+
+  async getLayersConfig(): Promise<any> {
+    await this.appConfig.loadAppConfig();
+    const cfg = this.appConfig.getConfig();
+    const token = await firstValueFrom(this.tokenService.authTokenEmitter);
+    const mergedServices = { ...cfg.mapServices, openmaps: cfg.rest['openmaps'] };
+    return mapConfigLayers(mergedServices, token);
   }
 }

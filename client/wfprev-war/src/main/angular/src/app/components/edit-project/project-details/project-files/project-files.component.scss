@@ -1,5 +1,8 @@
-.project-files-container{
+.project-files-container {
     padding: 25px 0px;
+    width: 100%;
+    container-type: inline-size;
+    container-name: table-container;
 }
 
 .title-container{
@@ -12,12 +15,10 @@
     justify-content: space-between;
     width: 100%;
     align-items: center;
-    border-bottom: 1px solid #D9D9D9;
     padding-bottom: 16px;
     .title-text{
         padding-left: 12px;
     }
-
 }
 button{
     border: none;
@@ -45,6 +46,7 @@ button.primary {
 }
 
 .files-table {
+    width: 100%;
     th, td {
       padding: 8px;
       border-bottom: 1px solid #ddd;
@@ -68,6 +70,90 @@ button.primary {
     tr:nth-child(even) {
         border: 1px solid #D9D9D9;
         background-color: var(--colour-white);
+    }
+
+    .mat-column-download, .mat-column-delete {
+        text-align: center;
+        
+        .table-button {
+            margin: 0 auto;
+            justify-content: center;
+        }
+    }
+
+    @container table-container (max-width: 1000px) {
+
+        table.files-table {
+            border: none !important;
+            background: transparent !important;
+        }
+
+        /* Force table to not be like tables anymore */
+        table, thead, tbody, th, td, tr {
+            display: block;
+        }
+
+        /* Hide Angular Material table headers properly */
+        tr.mat-mdc-header-row, tr.mat-header-row, thead tr {
+            display: none !important;
+        }
+
+        th {
+            display: none;
+        }
+
+        tr {
+            margin-bottom: 15px;
+            border: 1px solid #D9D9D9 !important;
+            border-radius: 4px;
+            height: auto !important;
+            min-height: auto !important;
+            background-color: #fff !important;
+        }
+
+        td {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: none;
+            border-bottom: 1px solid #eee;
+            position: relative;
+            text-align: right;
+            padding: 6px 10px;
+            height: auto !important;
+            min-height: auto !important;
+            word-break: break-word;
+            font-weight: 500;
+            transition: background-color 0.2s ease;
+
+            &:hover {
+                background-color: #f5f5f5;
+            }
+        }
+
+        td:last-child {
+            border-bottom: 0;
+        }
+
+        td::before {
+            content: attr(data-label);
+            font-weight: bold;
+            text-align: left;
+            flex-shrink: 0;
+            width: 45%;
+            padding-right: 10px;
+        }
+
+        .table-button,
+        .mat-column-download .table-button,
+        .mat-column-delete .table-button {
+            padding: 0 !important;
+            margin: 0 0 0 auto !important;
+            height: auto;
+            width: auto;
+            min-width: 24px;
+            justify-content: flex-end !important;
+        }
     }
 }
 
