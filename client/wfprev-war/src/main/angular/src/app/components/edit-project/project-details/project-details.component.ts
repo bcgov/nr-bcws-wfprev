@@ -31,6 +31,7 @@ import { EvaluationCriteriaComponent } from 'src/app/components/edit-project/pro
 import { TimestampComponent } from 'src/app/components/shared/timestamp/timestamp.component';
 import { TokenService } from 'src/app/services/token.service';
 import { TextareaComponent } from 'src/app/components/shared/textarea/textarea.component';
+import { PermissionsService, WFPREV_ACTIONS } from 'src/app/services/permissions.service';
 @Component({
   selector: 'wfprev-project-details',
   standalone: true,
@@ -83,6 +84,7 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
   readonly PROJECT_DESC_MAX = 4000;
   projectTypeLocked = false;
   isSaving = false;
+  public isViewMod = true;
 
   constructor(
     private readonly fb: FormBuilder,
@@ -92,10 +94,14 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
     public snackbarService: MatSnackBar,
     public dialog: MatDialog,
     public tokenService: TokenService,
+    private readonly permissionsService: PermissionsService,
     public cd: ChangeDetectorRef
   ) { }
 
   ngOnInit(): void {
+    if (this.permissionsService.hasAction(WFPREV_ACTIONS.CREATE_PREVENTION_PROJECT)) {
+      this.isViewMod = false;
+    }
     this.initializeForm();
     this.loadCodeTables();
     this.loadProjectDetails();
@@ -142,6 +148,11 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
       longitude: [''],
       resultsProjectCode: ['', [Validators.maxLength(8)]]
     });
+
+    if(this.isViewMod) {
+      this.detailsForm.disable();
+    }
+    
     this.latLongForm = this.fb.group({
       latitude: ['', Validators.required],
       longitude: ['', Validators.required],

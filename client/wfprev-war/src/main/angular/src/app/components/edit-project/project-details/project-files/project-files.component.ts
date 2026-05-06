@@ -31,6 +31,7 @@ export class ProjectFilesComponent implements OnInit {
   @Input() fiscalGuid: string = '';
   @Input() isReadonly: boolean = false;
   @Input() isDisabledButton: boolean = false;
+  @Input() isTooltipDisabled: boolean = true;
   attachmentDescription: string = '';
   uploadedBy = '';
 

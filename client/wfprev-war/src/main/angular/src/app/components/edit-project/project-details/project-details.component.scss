@@ -337,6 +337,11 @@
       padding-bottom: 16px;
       width: -webkit-fill-available;
     }
+
+    
+    textarea:disabled {
+      background-color: white;
+    }
   }
 
   .project-description-footer {

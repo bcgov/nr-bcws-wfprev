@@ -11,6 +11,7 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 })
 export class SlideToggleComponent {
   @Input() label: string = '';
+  @Input() disabled: boolean = false;
   @Input() checked: boolean = false;
   @Output() checkedChange = new EventEmitter<boolean>();
 

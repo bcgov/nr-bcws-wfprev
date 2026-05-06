@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatIconModule } from '@angular/material/icon';
@@ -7,6 +7,7 @@ import { EvaluationCriteriaDialogComponent } from 'src/app/components/evaluation
 import { EvaluationCriteriaSummaryModel, Project } from 'src/app/components/models';
 import { ExpansionIndicatorComponent } from 'src/app/components/shared/expansion-indicator/expansion-indicator.component';
 import { TimestampComponent } from 'src/app/components/shared/timestamp/timestamp.component';
+import { PermissionsService, WFPREV_ACTIONS } from 'src/app/services/permissions.service';
 import { ProjectService } from 'src/app/services/project-services';
 import { EvaluationCriteriaSectionCodes, ProjectTypes } from 'src/app/utils/constants';
 
@@ -17,15 +18,24 @@ import { EvaluationCriteriaSectionCodes, ProjectTypes } from 'src/app/utils/cons
   templateUrl: './evaluation-criteria.component.html',
   styleUrl: './evaluation-criteria.component.scss'
 })
-export class EvaluationCriteriaComponent implements OnChanges {
+export class EvaluationCriteriaComponent implements OnChanges, OnInit {
   @Input() project!: Project;
 
   evaluationCriteriaSummary: EvaluationCriteriaSummaryModel | null = null;
 
+  protected criteriaButtonText: 'View' | 'Edit' = 'View';
+
   constructor(
     private readonly dialog: MatDialog,
-    private readonly projectService: ProjectService
+    private readonly projectService: ProjectService,
+    private readonly permissionsService: PermissionsService,
   ) { }
+
+  ngOnInit(): void {
+    if (this.permissionsService.hasAction(WFPREV_ACTIONS.CREATE_PREVENTION_PROJECT)) {
+          this.criteriaButtonText = 'Edit';
+        }
+  }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['project'] && this.project?.projectGuid) {

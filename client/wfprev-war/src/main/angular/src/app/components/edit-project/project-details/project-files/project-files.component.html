@@ -4,14 +4,13 @@
             Files
         </span>
         <span matTooltip="Files can only be added once that activity has been saved"
-        [matTooltipDisabled]="!isDisabledButton">
+        [matTooltipDisabled]="isTooltipDisabled">
             <wfprev-icon-button
-              *ngIf="!isReadonly" 
               [text]="'Upload File'"
               [icon]="'/assets/upload-file.svg'"
               [alt]="'upload-file'"
               [iconSize]="19"
-              [disabled]="isDisabledButton"
+              [disabled]="isReadonly"
               (clicked)="openFileUploadModal()">
             </wfprev-icon-button>
         </span>
