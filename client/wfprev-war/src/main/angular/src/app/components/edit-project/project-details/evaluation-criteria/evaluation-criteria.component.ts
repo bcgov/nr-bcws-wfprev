@@ -32,7 +32,7 @@ export class EvaluationCriteriaComponent implements OnChanges, OnInit {
   ) { }
 
   ngOnInit(): void {
-    if (this.permissionsService.hasAction(WFPREV_ACTIONS.CREATE_PREVENTION_PROJECT)) {
+    if (this.permissionsService.hasAction(WFPREV_ACTIONS.CREATE_EVALUATION_CRITERIA)) {
           this.criteriaButtonText = 'Edit';
         }
   }

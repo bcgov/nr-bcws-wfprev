@@ -59,7 +59,7 @@ export class EvaluationCriteriaDialogComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    if (this.permissionsService.hasAction(WFPREV_ACTIONS.CREATE_PREVENTION_PROJECT)) {
+    if (this.permissionsService.hasAction(WFPREV_ACTIONS.CREATE_EVALUATION_CRITERIA)) {
         this.isViewMod = false;
     }
     this.initializeForm();
