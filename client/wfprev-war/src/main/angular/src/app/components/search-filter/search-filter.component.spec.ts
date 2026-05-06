@@ -226,8 +226,9 @@ describe('SearchFilterComponent', () => {
       planFiscalStatusCodes: ['ACTIVE']
     };
 
-    // ACT → update signal (this triggers effect)
+    // ACT → update signal and emit code tables
     filtersSignal.set(savedFilters);
+    codeTables$.next(mockTables);
     fixture.detectChanges();
 
     // ASSERT
@@ -246,8 +247,9 @@ describe('SearchFilterComponent', () => {
     // ARRANGE
     const savedFilters = {};
 
-    // ACT → update signal (this triggers effect)
+    // ACT → update signal and emit code tables
     filtersSignal.set(savedFilters);
+    codeTables$.next(mockTables);
     fixture.detectChanges();
 
     // ASSERT

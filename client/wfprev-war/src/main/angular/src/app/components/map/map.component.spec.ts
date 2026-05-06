@@ -58,6 +58,15 @@ class MockCodeTableServices {
   fetchPlanFiscalStatuses() {
     return of({ _embedded: { planFiscalStatus: [] } });
   }
+  getProgramAreaCodes() { return of([]); }
+  getForestRegionCodes() { return of([]); }
+  getForestDistrictCodes() { return of([]); }
+  getBcParksRegionCodes() { return of([]); }
+  getBcParksSectionCodes() { return of([]); }
+  getPlanFiscalStatusCodes() { return of([]); }
+  getActivityCategoryCodes() { return of([]); }
+  getProjectTypeCodes() { return of([]); }
+  getFireCentres() { return of([]); }
 }
 
 

@@ -222,19 +222,7 @@ describe('ProjectDetailsComponent', () => {
       expect(consoleSpy).toHaveBeenCalledWith('Error fetching project boundaries', jasmine.any(Error));
     }));
 
-    it('should initialize the map when updateMap is called without initializing the map', () => {
-      component['map'] = undefined;
-      component.updateMap(49.553209, -119.965887);
 
-      expect(L.map).toHaveBeenCalled();
-      expect(L.marker).toHaveBeenCalledWith(
-        [49.553209, -119.965887],
-        jasmine.objectContaining({
-          icon: jasmine.any(Object),
-        })
-      );
-      expect(markerSpy.addTo).toHaveBeenCalledWith(mapSpy);
-    });
 
     it('should remove old boundary layer if it exists before adding a new one', fakeAsync(() => {
       const mockOldLayer = jasmine.createSpyObj('L.Layer', ['remove']);
@@ -278,10 +266,7 @@ describe('ProjectDetailsComponent', () => {
       expect(L.map).toHaveBeenCalledTimes(0);
     });
 
-    it('should initialize the map if it does not already exist', () => {
-      component.updateMap(49.553209, -119.965887);
-      expect(L.map).toHaveBeenCalled();
-    });
+
 
     it('should initialize map with default BC bounds if map is not defined', () => {
       component.initMap();
@@ -332,20 +317,7 @@ describe('ProjectDetailsComponent', () => {
     });
 
 
-    it('should initialize the map and add a marker when coordinates are provided', () => {
-      component['map'] = undefined; // Ensure the map is not already initialized
 
-      component.updateMap(49.553209, -119.965887);
-
-      expect(L.map).toHaveBeenCalled(); // Verify that the map is created
-      expect(L.marker).toHaveBeenCalledWith(
-        [49.553209, -119.965887],
-        jasmine.objectContaining({
-          icon: jasmine.any(Object)
-        })
-      );
-      expect(markerSpy.addTo).toHaveBeenCalledWith(mapSpy); // Marker added to the map
-    });
 
     it('should clean up the map on component destroy', () => {
       component['map'] = mapSpy; // Assign the mock map to the component

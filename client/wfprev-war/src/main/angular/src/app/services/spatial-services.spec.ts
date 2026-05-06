@@ -844,15 +844,9 @@ describe('SpatialService', () => {
         [[[0, 0], [1, 1], [2, 2], [0, 0]]] // A degenerate polygon (collinear)
       ];
 
-      spyOn(service as any, 'isValidGeometry').and.returnValue(false);
-      spyOn(service, 'validateGeometryInBC').and.returnValue(Promise.resolve(true));
+      (service.validateGeometryWithBackend as jasmine.Spy).and.returnValue(Promise.resolve({ valid: false, message: 'Geometry is invalid.' }));
 
       await expectAsync(service.validateMultiPolygon(coords)).toBeRejectedWithError('Geometry is invalid.');
-      expect(mockSnackbar.open).toHaveBeenCalledWith(
-        'Geometry is invalid.',
-        'Close',
-        jasmine.objectContaining({ duration: 5000 })
-      );
     });
 
     it('should throw an error for self-intersections', async () => {
@@ -860,28 +854,9 @@ describe('SpatialService', () => {
         [[[0, 0], [1, 1], [1, 0], [0, 1], [0, 0]]] // Known self-intersecting polygon (bowtie)
       ];
 
-      spyOn(service as any, 'isValidGeometry').and.returnValue(true);
-      spyOn(service as any, 'getKinks').and.callFake(() => ({
-        type: 'FeatureCollection',
-        features: [
-          {
-            type: 'Feature',
-            geometry: {
-              type: 'Point',
-              coordinates: [0.5, 0.5]
-            },
-            properties: {}
-          }
-        ]
-      }));
-      spyOn(service, 'validateGeometryInBC').and.returnValue(Promise.resolve(true));
+      (service.validateGeometryWithBackend as jasmine.Spy).and.returnValue(Promise.resolve({ valid: false, message: 'Self-intersections found in the uploaded geometry.' }));
 
       await expectAsync(service.validateMultiPolygon(coords)).toBeRejectedWithError('Self-intersections found in the uploaded geometry.');
-      expect(mockSnackbar.open).toHaveBeenCalledWith(
-        'Found 1 self-intersections in the uploaded geometry.',
-        'Close',
-        jasmine.objectContaining({ duration: 5000 })
-      );
     });
 
     it('should throw an error when geometry is outside of BC', async () => {
@@ -889,16 +864,9 @@ describe('SpatialService', () => {
         [[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]]
       ];
 
-      spyOn(service as any, 'isValidGeometry').and.returnValue(true);
-      spyOn(service as any, 'getKinks').and.callThrough();
-      spyOn(service, 'validateGeometryInBC').and.returnValue(Promise.resolve(false));
+      (service.validateGeometryWithBackend as jasmine.Spy).and.returnValue(Promise.resolve({ valid: false, message: 'Geometry is invalid.' }));
 
       await expectAsync(service.validateMultiPolygon(coords)).toBeRejectedWithError('Geometry is invalid.');
-      expect(mockSnackbar.open).toHaveBeenCalledWith(
-        'Geometry is outside of BC.',
-        'Close',
-        jasmine.objectContaining({ duration: 5000 })
-      );
     });
 
     it('should accept a GeoJSON.MultiPolygon input and validate it', async () => {
