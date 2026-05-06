@@ -17,6 +17,7 @@ import { SharedService } from 'src/app/services/shared-service';
 import { ResourcesRoutes } from 'src/app/utils';
 import { Messages } from 'src/app/utils/constants';
 import { ProjectsListComponent } from './projects-list.component';
+import { ProjectFilterStateService } from 'src/app/services/project-filter-state.service';
 
 describe('ProjectsListComponent', () => {
   let component: ProjectsListComponent;
@@ -909,15 +910,17 @@ describe('ProjectsListComponent', () => {
 
   describe('downloadProjects', () => {
     let mockSnackBar: jasmine.SpyObj<any>;
+    let projectFilterStateService: ProjectFilterStateService;
 
     beforeEach(() => {
       mockSnackBar = jasmine.createSpyObj('MatSnackBar', ['open']);
       mockSnackBar.open.and.returnValue({ dismiss: jasmine.createSpy('dismiss') });
       (component as any).snackbarService = mockSnackBar;
+      projectFilterStateService = TestBed.inject(ProjectFilterStateService);
     });
 
     it('should download projects successfully when filters are applied', fakeAsync(() => {
-      mockSharedService._currentFilters = { searchText: 'value' };
+      projectFilterStateService.filters.set({ searchText: 'value' });
       // displayedProjects state is irrelevant for the current implementation, but we set it to empty for clarity
       component.displayedProjects = [];
 
@@ -935,7 +938,7 @@ describe('ProjectsListComponent', () => {
     }));
 
     it('should show error message when attempting to download without filters', fakeAsync(() => {
-      mockSharedService._currentFilters = null;
+      projectFilterStateService.clear();
       component.displayedProjects = [{ projectGuid: 'guid1' }] as any; // Presence of projects irrelevant
 
       component.onDownload('csv');
@@ -947,7 +950,7 @@ describe('ProjectsListComponent', () => {
 
     it('should show failure message when download service fails', fakeAsync(() => {
       spyOn(console, 'error');
-      mockSharedService._currentFilters = { someFilter: 'value' };
+      projectFilterStateService.filters.set({ searchText: 'value' });
       component.displayedProjects = [] as any;
 
       mockProjectService.downloadProjects.and.returnValue(
