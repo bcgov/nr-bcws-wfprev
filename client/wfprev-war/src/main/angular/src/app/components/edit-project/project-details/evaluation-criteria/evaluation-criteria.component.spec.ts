@@ -61,9 +61,17 @@ describe('EvaluationCriteriaComponent', () => {
   });
 
   it('should handle error when loading evaluation criteria summary', () => {
-    mockProjectService.getEvaluationCriteriaSummaries.and.returnValue(throwError(() => new Error()));
+    spyOn(console, 'error');
+    mockProjectService.getEvaluationCriteriaSummaries.and.returnValue(
+      throwError(() => new Error('test error'))
+    );
+
     component.loadEvaluationCriteriaSummaries();
-    expect(mockProjectService.getEvaluationCriteriaSummaries).toHaveBeenCalled();
+
+    expect(mockProjectService.getEvaluationCriteriaSummaries).toHaveBeenCalledWith('test-guid');
+    expect(console.error).toHaveBeenCalled();
+    expect(component.evaluationCriteriaSummary).toBeNull();
+    expect(component.isLoading).toBeFalse();
   });
 
   it('should open dialog with summary when available', () => {

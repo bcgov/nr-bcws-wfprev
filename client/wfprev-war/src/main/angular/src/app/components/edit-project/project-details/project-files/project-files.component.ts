@@ -11,7 +11,7 @@ import { catchError, finalize, map, throwError } from 'rxjs';
 import { AddAttachmentComponent } from 'src/app/components/add-attachment/add-attachment.component';
 import { ConfirmationDialogComponent } from 'src/app/components/confirmation-dialog/confirmation-dialog.component';
 import { DetailedErrorMessageComponent } from 'src/app/components/detailed-error-message/detailed-error-message.component';
-import { ActivityBoundary, FileAttachment, ProjectBoundary, ProjectFile } from 'src/app/components/models';
+import { ActivityBoundary, AttachmentTypeCode, FileAttachment, ProjectBoundary, ProjectFile } from 'src/app/components/models';
 import { IconButtonComponent } from 'src/app/components/shared/icon-button/icon-button.component';
 import { AttachmentService } from 'src/app/services/attachment-service';
 import { ProjectService } from 'src/app/services/project-services';
@@ -218,13 +218,13 @@ export class ProjectFilesComponent implements OnInit {
     })
   }
 
-  uploadFile(file: File, type: string): void {
+  uploadFile(file: File, type: AttachmentTypeCode): void {
     const snackRef = this.snackbarService.open(Messages.fileUploadInProgress, 'Close', {
       duration: undefined,
       panelClass: 'snackbar-info',
     });
 
-    if(this.isValidFileExtension(file)) {
+    if (this.isValidFileExtension(file, type)) {
       this.projectService.uploadDocument({ file }).subscribe({
         next: (response) => {
           if (response) {
@@ -245,25 +245,25 @@ export class ProjectFilesComponent implements OnInit {
     }
   }
 
-  private isValidFileExtension(file: File): boolean {
+  private isValidFileExtension(file: File, type: AttachmentTypeCode): boolean {
     const name = file.name;
     const lastDot = name.lastIndexOf('.');
-  
+
     if (lastDot === -1) {
       this.snackbarService.openFromComponent(DetailedErrorMessageComponent, {
         ...this.errorMessageContext,
         data: {
           ...this.errorMessageContext.data,
-          reasons: ['The selected file format is not supported. Please upload a valid file type (KML, KMZ, ZIP, GDB, SHP).']
+          reasons: ['The selected file format is not supported. Unable to determine file type.']
         }
       }
       );
       return false;
-    } 
-    
+    }
+
     const fileExtension = name.substring(lastDot + 1).toLowerCase();
 
-    if (!fileExtension.match(/zip|gdb|kml|kmz|shp/)) {
+    if (type === 'MAP' && !fileExtension.match(/zip|gdb|kml|kmz|shp/)) {
       this.snackbarService.openFromComponent(DetailedErrorMessageComponent, {
         ...this.errorMessageContext,
         data: {
@@ -278,7 +278,7 @@ export class ProjectFilesComponent implements OnInit {
     return true;
   }
 
-  uploadAttachment(file: File, fileUploadResp: any, type: string, snackRef: MatSnackBarRef<SimpleSnackBar>): void {
+  uploadAttachment(file: File, fileUploadResp: any, type: AttachmentTypeCode, snackRef: MatSnackBarRef<SimpleSnackBar>): void {
     const fileExtension = file.name.split('.').pop()?.toLowerCase();
     if (!fileExtension) {
       this.snackbarService.openFromComponent(DetailedErrorMessageComponent, {
@@ -422,7 +422,7 @@ export class ProjectFilesComponent implements OnInit {
     });
   }
 
-  finishWithoutGeometry(file: File, fileUploadResp: any, type: string) {
+  finishWithoutGeometry(file: File, fileUploadResp: any, type: AttachmentTypeCode) {
     const attachment: FileAttachment = {
       sourceObjectNameCode: { sourceObjectNameCode: this.isActivityContext ? 'TREATMENT_ACTIVITY' : 'PROJECT' },
       sourceObjectUniqueId: this.isActivityContext ? this.activityGuid : this.projectGuid,

@@ -133,6 +133,8 @@ export interface ActivityModel {
   lastUpdatedTimestamp?: string;
 }
 
+export type AttachmentTypeCode = 'MAP' | 'DOCUMENT' | 'OTHER';
+
 export interface FileAttachment {
   fileAttachmentGuid?: string;
   sourceObjectNameCode?: {
