@@ -665,8 +665,12 @@ describe('MapComponent', () => {
   });
 
   describe('handleProjectClick', () => {
+    let displayedProjects: any[];
+
     beforeEach(() => {
-      spyOnProperty(component['sharedService'], 'currentDisplayedProjects', 'get').and.returnValue([]);
+      displayedProjects = [];
+      spyOnProperty(component['sharedService'], 'currentDisplayedProjects', 'get')
+        .and.callFake(() => displayedProjects);
       spyOn(component['sharedService'], 'updateDisplayedProjects');
       spyOn(component['sharedService'], 'selectProject');
       spyOn(component, 'openPopupForProject');
@@ -681,11 +685,11 @@ describe('MapComponent', () => {
 
     it('should not add duplicate projects', () => {
       const project = createMockProject();
-      spyOnProperty(component['sharedService'], 'currentDisplayedProjects', 'get').and.returnValue([project]);
+      displayedProjects = [project]; 
       component['handleProjectClick'](project);
       expect(component['sharedService'].updateDisplayedProjects).not.toHaveBeenCalled();
     });
-  });
+  }); 
 
   describe('fetchAndUpdateProjectLocations', () => {
     it('should warn when no locations found', () => {
@@ -699,12 +703,13 @@ describe('MapComponent', () => {
     });
 
     it('should handle errors gracefully', () => {
-      const errorSpy = spyOn(console, 'error');
       spyOn(component['projectService'], 'getProjectLocations').and.returnValue({
         subscribe: (obs: any) => obs.error('boom')
       } as any);
+
       component['fetchAndUpdateProjectLocations']({});
-      expect(errorSpy).toHaveBeenCalledWith('Error fetching project locations:', 'boom');
+
+      expect(console.error).toHaveBeenCalledWith('Error fetching project locations:', 'boom');
     });
   });
 

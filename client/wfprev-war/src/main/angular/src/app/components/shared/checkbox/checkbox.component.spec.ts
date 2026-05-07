@@ -16,7 +16,6 @@ describe('CheckboxComponent', () => {
 
     fixture = TestBed.createComponent(CheckboxComponent);
     component = fixture.componentInstance;
-    fixture.detectChanges();
 
     checkboxDebugEl = fixture.debugElement.query(By.css('mat-checkbox'));
   });

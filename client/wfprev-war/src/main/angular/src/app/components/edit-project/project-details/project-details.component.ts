@@ -790,6 +790,8 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
       const fiscalYear = entry.fiscalYear;
       const color = this.getFiscalYearColor(fiscalYear, currentFiscalYear);
 
+      if (!Array.isArray(entry.boundary)) continue;
+
       for (const ab of entry.boundary) {
         const geometry = ab.geometry;
         if (!geometry?.type || !geometry?.coordinates) continue;
