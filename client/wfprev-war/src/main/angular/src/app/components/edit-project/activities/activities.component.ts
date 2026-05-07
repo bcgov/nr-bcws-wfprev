@@ -13,7 +13,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ActivatedRoute } from '@angular/router';
 import moment from 'moment';
-import { finalize, forkJoin, map, Observable, take, tap } from 'rxjs';
+import { finalize, forkJoin, map, Observable, Subscription, take, tap } from 'rxjs';
 import { ConfirmationDialogComponent } from 'src/app/components/confirmation-dialog/confirmation-dialog.component';
 import { ProjectFilesComponent } from 'src/app/components/edit-project/project-details/project-files/project-files.component';
 import { ActivityModel } from 'src/app/components/models';
@@ -96,6 +96,7 @@ export class ActivitiesComponent implements OnChanges, CanComponentDeactivate {
   expandedPanels: boolean[] = [];
   isActivitySaving: boolean[] = [];
   isLoading = true;
+  private dataSubscription?: Subscription;
   constructor(
     private readonly route: ActivatedRoute,
     private readonly projectService: ProjectService,
@@ -110,11 +111,16 @@ export class ActivitiesComponent implements OnChanges, CanComponentDeactivate {
     if (changes['fiscalGuid'] && changes['fiscalGuid'].currentValue) {
       this.projectGuid = this.route.snapshot?.queryParamMap?.get('projectGuid') || '';
       if (this.projectGuid) {
+        if (this.dataSubscription) {
+          this.dataSubscription.unsubscribe();
+        }
+        this.dataSubscription = new Subscription();
+
         this.isLoading = true;
         this.activities = [];
         this.activityForms = [];
 
-        this.loadCodeTables().subscribe({
+        this.dataSubscription.add(this.loadCodeTables().subscribe({
           next: () => {
             this.getActivities(() => {
               this.activityForms.forEach((form, i) => {
@@ -129,7 +135,7 @@ export class ActivitiesComponent implements OnChanges, CanComponentDeactivate {
             console.error('Error loading code tables', err);
             this.getActivities();
           }
-        });
+        }));
       } else {
         this.isLoading = false;
       }
@@ -181,7 +187,7 @@ export class ActivitiesComponent implements OnChanges, CanComponentDeactivate {
       this.isLoading = true;
       this.getProjectType(this.projectGuid);
 
-      this.projectService.getFiscalActivities(this.projectGuid, this.fiscalGuid)
+      this.dataSubscription?.add(this.projectService.getFiscalActivities(this.projectGuid, this.fiscalGuid)
         .pipe(finalize(() => {
           this.isLoading = false;
           this.cd.detectChanges();
@@ -220,21 +226,23 @@ export class ActivitiesComponent implements OnChanges, CanComponentDeactivate {
               { duration: 5000, panelClass: 'snackbar-error' }
             );
           }
-        });
+        }));
     } else {
       this.isLoading = false;
     }
   }
 
   getProjectType(projectGuid: string) {
-    this.projectService.getProjectByProjectGuid(this.projectGuid).subscribe({
-      next: (data) => {
-        this.projectTypeCode = data.projectTypeCode?.projectTypeCode
-      },
-      error: (err) => {
-        console.error('Error fetching project:', err);
-      },
-    });
+    this.dataSubscription?.add(
+      this.projectService.getProjectByProjectGuid(this.projectGuid).subscribe({
+        next: (data) => {
+          this.projectTypeCode = data.projectTypeCode?.projectTypeCode
+        },
+        error: (err) => {
+          console.error('Error fetching project:', err);
+        },
+      })
+    );
   }
 
   getFormattedDate(date: string | null): string {
