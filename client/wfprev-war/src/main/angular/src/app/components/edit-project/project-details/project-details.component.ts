@@ -248,7 +248,7 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
       this.map.setView([latitude, longitude], 13); // Update the map view
     } else {
       // Initialize the map if it hasn't been created
-      this.map = L.map('map', {
+      this.map = this.createMap('map', {
         center: [latitude, longitude],
         zoom: 13,
         zoomControl: false,
@@ -285,7 +285,7 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
 
             if (boundaryGeometry && this.map) {
               // Create new GeoJSON layer
-              this.boundaryLayer = L.geoJSON(boundaryGeometry, {
+              this.boundaryLayer = this.createGeoJSON(boundaryGeometry, {
                 style: {
                   color: '#000000',
                   weight: 3,
@@ -331,7 +331,7 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
     const defaultBounds: L.LatLngBoundsExpression = BC_BOUNDS;
 
     if (!this.map) {
-      this.map = L.map(container, { zoomControl: false });
+      this.map = this.createMap(container, { zoomControl: false });
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '© OpenStreetMap contributors',
       }).addTo(this.map);
@@ -799,7 +799,7 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
           : [geometry];
 
         for (const geom of geometries) {
-          const layer = L.geoJSON(geom, {
+          const layer = this.createGeoJSON(geom, {
             style: {
               color,
               weight: 2,
@@ -937,5 +937,17 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
     const hasProjectPolygon = !!this.boundaryLayer; 
     const hasActivityPolygons = this.allActivityBoundaries?.length > 0;
     return hasProjectPolygon || hasActivityPolygons;
+  }
+
+  createMap(element: any, options: L.MapOptions): L.Map {
+    return L.map(element, options);
+  }
+
+  createMarker(latlng: L.LatLngExpression, options?: L.MarkerOptions): L.Marker {
+    return L.marker(latlng, options);
+  }
+
+  createGeoJSON(geom: any, options?: L.GeoJSONOptions): L.GeoJSON {
+    return L.geoJSON(geom, options);
   }
 }

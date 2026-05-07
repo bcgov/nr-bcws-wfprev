@@ -961,8 +961,6 @@ describe('ProjectFiscalsComponent', () => {
     component.projectFiscals = [{ projectPlanFiscalGuid: 'test-guid' }];
     component.selectedTabIndex = 0;
 
-    fixture.detectChanges();
-
     component.deleteFiscalYear({ value: component.projectFiscals[0] }, 0);
 
     expect(mockSnackBar.open).toHaveBeenCalledOnceWith(

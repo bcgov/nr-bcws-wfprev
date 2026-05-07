@@ -35,7 +35,7 @@ const mockActivatedRoute = {
   }
 };
 
-fdescribe('FiscalMapComponent', () => {
+describe('FiscalMapComponent', () => {
   let component: FiscalMapComponent;
   let fixture: ComponentFixture<FiscalMapComponent>;
   let mockMapInstance: any;

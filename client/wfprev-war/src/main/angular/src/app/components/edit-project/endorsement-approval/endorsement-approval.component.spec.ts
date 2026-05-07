@@ -52,7 +52,8 @@ describe('EndorsementApprovalComponent', () => {
     fixture = TestBed.createComponent(EndorsementApprovalComponent);
     component = fixture.componentInstance;
     component.currentUser = 'Test User';
-    fixture.detectChanges();
+    component.fiscal = mockFiscal;
+    fixture.detectChanges()
   });
 
   it('should create', () => {
