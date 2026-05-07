@@ -1,5 +1,6 @@
 import { Component, NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { Location } from '@angular/common';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -99,6 +100,7 @@ describe('ProjectFiscalsComponent', () => {
         { provide: ProjectService, useValue: mockProjectService },
         { provide: CodeTableServices, useValue: mockCodeTableServices },
         { provide: MatSnackBar, useValue: mockSnackBar },
+        { provide: Location, useValue: { replaceState: jasmine.createSpy('replaceState') } },
         FormBuilder,
       ],
     })

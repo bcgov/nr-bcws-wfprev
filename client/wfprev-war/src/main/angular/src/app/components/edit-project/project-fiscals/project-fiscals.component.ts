@@ -1,4 +1,4 @@
-import { CommonModule, CurrencyPipe } from '@angular/common';
+import { CommonModule, CurrencyPipe, Location } from '@angular/common';
 import { ChangeDetectorRef, Component, effect, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -100,7 +100,8 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
     public readonly dialog: MatDialog,
     public cd: ChangeDetectorRef,
     private readonly tokenService: TokenService,
-    private readonly events: ProjectFiscalsSignalService
+    private readonly events: ProjectFiscalsSignalService,
+    private readonly location: Location
   ) {
     effect(() => {
       this.events.reloadFiscals();
@@ -113,6 +114,8 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
 
     });
    }
+   
+  private routeNavTimeout: any;
 
   ngOnInit(): void {
     this.loadCodeTables();
@@ -333,7 +336,6 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
     } else {
       this.currentFiscalGuid = ''; // Reset if no fiscal is selected
     }
-    this.cd.detectChanges();
   }
 
   onTabChange(index: number): void {
@@ -342,11 +344,17 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
 
     const fiscalGuid = this.projectFiscals[index]?.projectPlanFiscalGuid;
     if (fiscalGuid) {
-      this.router.navigate([], {
-        relativeTo: this.route,
-        queryParams: { ...this.route.snapshot.queryParams, fiscalGuid },
-        queryParamsHandling: 'merge'
-      });
+      if (this.routeNavTimeout) {
+        clearTimeout(this.routeNavTimeout);
+      }
+      this.routeNavTimeout = setTimeout(() => {
+        const urlTree = this.router.createUrlTree([], {
+          relativeTo: this.route,
+          queryParams: { ...this.route.snapshot.queryParams, fiscalGuid },
+          queryParamsHandling: 'merge'
+        });
+        this.location.replaceState(urlTree.toString());
+      }, 300);
     }
   }
 
