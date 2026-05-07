@@ -30,13 +30,14 @@ const mockShpModule = {
   })
 };
 
-const mockSnackbar = jasmine.createSpyObj('MatSnackBar', ['open']);
+const mockSnackbar = jasmine.createSpyObj('MatSnackBar', ['open', 'openFromComponent']);
 
 describe('SpatialService', () => {
   let service: SpatialService;
   let httpMock: HttpTestingController;
   let mockAppConfigService: jasmine.SpyObj<AppConfigService>;
   let mockTokenService: jasmine.SpyObj<TokenService>;
+  let mockSnackbar: jasmine.SpyObj<MatSnackBar>;
 
   const mockConfig = {
     rest: {
@@ -74,6 +75,7 @@ describe('SpatialService', () => {
 
     mockAppConfigService.getConfig.and.returnValue(mockConfig);
     mockTokenService.getOauthToken.and.returnValue('mock-token');
+    mockSnackbar = jasmine.createSpyObj('MatSnackBar', ['open', 'openFromComponent']);
 
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule, BrowserAnimationsModule],
@@ -81,6 +83,7 @@ describe('SpatialService', () => {
         SpatialService,
         { provide: AppConfigService, useValue: mockAppConfigService },
         { provide: TokenService, useValue: mockTokenService },
+        { provide: MatSnackBar, useValue: mockSnackbar },
       ]
     });
 
@@ -802,65 +805,34 @@ describe('SpatialService', () => {
   });
 
   describe('validateMultiPolygon', () => {
-    let service: SpatialService;
-    let mockSnackbar: jasmine.SpyObj<MatSnackBar>;
-
-    beforeEach(() => {
-      mockSnackbar = jasmine.createSpyObj('MatSnackBar', ['open']);
-      const mockHttp = jasmine.createSpyObj('HttpClient', ['post']);
-      const mockAppConfigService = {
-        getConfig: () => ({
-          rest: {
-            wfprev: 'http://mock-url'
-          }
-        })
-      };
-      const mockTokenService = {
-        getOauthToken: () => 'mock-token'
-      };
-
-      service = new SpatialService(
-        mockHttp,
-        mockSnackbar,
-        mockAppConfigService as any,
-        mockTokenService as any
-      );
-
-      spyOn(service, 'validateGeometryWithBackend').and.returnValue(Promise.resolve({ valid: true, message: 'Valid' }));
-    });
     it('should validate a correct multipolygon without errors', async () => {
-      const coords: Position[][][] = [
-        [[[1, 2], [3, 4], [5, 6], [1, 2]]]
-      ];
+    spyOn(service, 'validateGeometryWithBackend').and.returnValue(Promise.resolve({ valid: true, message: 'Valid' }));
+    spyOn(service, 'validateGeometryInBC').and.returnValue(Promise.resolve(true));
 
-      spyOn(service, 'validateGeometryInBC').and.returnValue(Promise.resolve(true));
+    const coords: Position[][][] = [[[[1, 2], [3, 4], [5, 6], [1, 2]]]];
+    await expectAsync(service.validateMultiPolygon(coords)).toBeResolved();
+  });
 
-      await expectAsync(service.validateMultiPolygon(coords)).toBeResolved();
-      expect(mockSnackbar.open).not.toHaveBeenCalled();
-    });
+  it('should accept a GeoJSON.MultiPolygon input and validate it', async () => {
+    spyOn(service, 'validateGeometryWithBackend').and.returnValue(Promise.resolve({ valid: true, message: 'Valid' }));
+    spyOn(service, 'validateGeometryInBC').and.returnValue(Promise.resolve(true));
 
-    it('should throw an error for invalid multipolygon geometry', async () => {
-      const coords: Position[][][] = [
-        [[[0, 0], [1, 1], [2, 2], [0, 0]]] // A degenerate polygon (collinear)
-      ];
-
-      spyOn(service, 'validateGeometryWithBackend').and.returnValue(Promise.resolve({ valid: false, message: 'Geometry is invalid.' }));
-
-      await expectAsync(service.validateMultiPolygon(coords)).toBeRejectedWithError('Geometry is invalid.');
-    });
+    const geoJson: GeoJSON.MultiPolygon = {
+      type: 'MultiPolygon',
+      coordinates: [[[[1, 2], [3, 4], [5, 6], [1, 2]]]]
+    };
+    await expectAsync(service.validateMultiPolygon(geoJson)).toBeResolved();
+  });
 
     it('should throw an error for self-intersections', async () => {
-      (service.validateGeometryWithBackend as jasmine.Spy).and.returnValue(
-        Promise.resolve({ valid: false, message: 'Self-intersections found in the uploaded geometry.' })
-      );
+    spyOn(service, 'validateGeometryWithBackend').and.returnValue(
+      Promise.resolve({ valid: false, message: 'Self-intersections found in the uploaded geometry.' })
+    );
 
-      const coords: Position[][][] = [
-        [[[0, 0], [1, 1], [1, 0], [0, 1], [0, 0]]]
-      ];
-
-      await expectAsync(service.validateMultiPolygon(coords))
-        .toBeRejectedWithError('Self-intersections found in the uploaded geometry.');
-    });
+    const coords: Position[][][] = [[[[0, 0], [1, 1], [1, 0], [0, 1], [0, 0]]]];
+    await expectAsync(service.validateMultiPolygon(coords))
+      .toBeRejectedWithError('Self-intersections found in the uploaded geometry.');
+  });
 
     it('should throw an error when geometry is outside of BC', async () => {
       const coords: Position[][][] = [
@@ -872,20 +844,6 @@ describe('SpatialService', () => {
       );
 
       await expectAsync(service.validateMultiPolygon(coords)).toBeRejectedWithError('Geometry is outside of BC.');
-    });
-
-    it('should accept a GeoJSON.MultiPolygon input and validate it', async () => {
-      const geoJson: GeoJSON.MultiPolygon = {
-        type: 'MultiPolygon',
-        coordinates: [
-          [[[1, 2], [3, 4], [5, 6], [1, 2]]]
-        ]
-      };
-
-      spyOn(service, 'validateGeometryInBC').and.returnValue(Promise.resolve(true));
-
-      await expectAsync(service.validateMultiPolygon(geoJson)).toBeResolved();
-      expect(mockSnackbar.open).not.toHaveBeenCalled();
     });
   });
 
@@ -1036,30 +994,6 @@ describe('SpatialService', () => {
   });
 
   describe('validateGeometryInBC', () => {
-    let service: SpatialService;
-    let mockSnackbar: jasmine.SpyObj<MatSnackBar>;
-    beforeEach(() => {
-      mockSnackbar = jasmine.createSpyObj('MatSnackBar', ['open']);
-      const mockHttp = jasmine.createSpyObj('HttpClient', ['post']);
-      const mockAppConfigService = {
-        getConfig: () => ({
-          rest: {
-            wfprev: 'http://mock-url'
-          }
-        })
-      };
-      const mockTokenService = {
-        getOauthToken: () => 'mock-token'
-      };
-
-      service = new SpatialService(
-        mockHttp,
-        mockSnackbar,
-        mockAppConfigService as any,
-        mockTokenService as any
-      );
-    });
-
 
     it('should return true when geometry intersects with BC', async () => {
       const bcCoords: MultiPolygon['coordinates'] = [

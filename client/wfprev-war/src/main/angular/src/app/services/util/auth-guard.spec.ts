@@ -163,7 +163,7 @@ describe('AuthGuard', () => {
       mockTokenService.credentialsEmitter = of(testCredentials);
 
       // Recreate the guard to trigger subscription
-      authGuard = new AuthGuard(mockTokenService, mockRouter);
+      authGuard = new AuthGuard();
 
       // Verify credentials are updated
       expect((authGuard as any)['credentials']).toEqual(testCredentials);

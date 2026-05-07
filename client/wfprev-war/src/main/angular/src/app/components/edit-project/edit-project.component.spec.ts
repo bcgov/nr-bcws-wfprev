@@ -10,6 +10,7 @@ import { EditProjectComponent } from './edit-project.component';
 import { ProjectFiscalsComponent } from './project-fiscals/project-fiscals.component';
 import { OAuthService } from 'angular-oauth2-oidc';
 import L from 'leaflet';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 const mockApplicationConfig = {
   application: {
@@ -165,6 +166,7 @@ describe('EditProjectComponent', () => {
         { provide: MockProjectService, useClass: MockProjectService },
         { provide: Router, useValue: { navigate: jasmine.createSpy('navigate') } },
         { provide: OAuthService, useClass: MockOAuthService },
+        { provide: MatSnackBar, useValue: jasmine.createSpyObj('MatSnackBar', ['open', 'openFromComponent']) },
       ],
     }).compileComponents();
 

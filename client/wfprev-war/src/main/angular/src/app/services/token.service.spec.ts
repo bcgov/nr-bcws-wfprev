@@ -94,7 +94,7 @@ describe('TokenService', () => {
       };
 
       mockAppConfigService.getConfig.and.returnValue(minimalConfig);
-      const newService = new TokenService(mockInjector, mockAppConfigService, mockSnackbarService, mockRouter);
+      const newService = new TokenService();
 
       expect(newService['LOCAL_STORAGE_KEY']).toBe('oauth');
       expect(newService['useLocalStore']).toBe(false);
@@ -166,12 +166,7 @@ describe('TokenService', () => {
         loadConfig: mockAppConfigService.loadConfig,
       };
 
-      const tokenService = new TokenService(
-        mockInjector,
-        localAppConfigService as any,
-        mockSnackbarService,
-        mockRouter
-      );
+      const tokenService = new TokenService();
 
       await tokenService.checkForToken();
       expect(mockRouter.navigate).toHaveBeenCalledWith(['/' + ResourcesRoutes.ERROR_PAGE]);
@@ -474,7 +469,7 @@ describe('checkForToken — scope gate on access_token hash', () => {
     const cfg = makeCfg(['WFPREV.GET_TOPLEVEL', 'WFDM.*']);
     (mockAppConfigService.getConfig as jasmine.Spy).and.returnValue(cfg);
 
-    const service = new TokenService(mockInjector, mockAppConfigService, mockSnackbarService, mockRouter);
+    const service = new TokenService();
     window.history.pushState({}, '', '/#access_token=tok&scope=WFPREV.GET_TOPLEVEL');
     const parseSpy = spyOn(service as any, 'parseToken');
 
@@ -489,7 +484,7 @@ describe('checkForToken — scope gate on access_token hash', () => {
     const cfg = makeCfg(['WFPREV.GET_TOPLEVEL', 'WFDM.*']);
     (mockAppConfigService.getConfig as jasmine.Spy).and.returnValue(cfg);
 
-    const svc = new TokenService(mockInjector, mockAppConfigService, mockSnackbarService, mockRouter);
+    const svc = new TokenService();
 
     window.history.pushState(
       {}, '',
@@ -510,7 +505,7 @@ describe('checkForToken — scope gate on access_token hash', () => {
     const cfg = makeCfg(['FOO', 'BAR']);
     (mockAppConfigService.getConfig as jasmine.Spy).and.returnValue(cfg);
 
-    const svc = new TokenService(mockInjector, mockAppConfigService, mockSnackbarService, mockRouter);
+    const svc = new TokenService();
 
     window.history.pushState({}, '', '/#access_token=tok&scope=FOO+BAR');
 
@@ -554,7 +549,7 @@ describe('checkForToken — offline local storage branch', () => {
     };
     (mockAppConfigService.getConfig as jasmine.Spy).and.returnValue(cfg);
 
-    const svc = new TokenService(mockInjector, mockAppConfigService, mockSnackbarService, mockRouter);
+    const svc = new TokenService();
 
     (svc as any).useLocalStore = true;
 
@@ -587,7 +582,7 @@ describe('checkForToken — offline local storage branch', () => {
     };
     (mockAppConfigService.getConfig as jasmine.Spy).and.returnValue(cfg);
 
-    const svc = new TokenService(mockInjector, mockAppConfigService, mockSnackbarService, mockRouter);
+    const svc = new TokenService();
     (svc as any).useLocalStore = true;
 
     // seed a VALID token (exp = now + 1h)
@@ -618,7 +613,7 @@ describe('checkForToken — offline local storage branch', () => {
     };
     (mockAppConfigService.getConfig as jasmine.Spy).and.returnValue(cfg);
 
-    const svc = new TokenService(mockInjector, mockAppConfigService, mockSnackbarService, mockRouter);
+    const svc = new TokenService();
     (svc as any).useLocalStore = true;
 
     const expiredJwt = makeJwt(-60);

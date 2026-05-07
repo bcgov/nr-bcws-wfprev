@@ -60,7 +60,6 @@ describe('CreateNewProjectDialogComponent', () => {
 
     fixture = TestBed.createComponent(CreateNewProjectDialogComponent);
     component = fixture.componentInstance;
-    fixture.detectChanges();
   });
 
   it('should create the component', () => {
@@ -253,14 +252,12 @@ describe('CreateNewProjectDialogComponent', () => {
 
     // Set bcParksRegion value to 1
     component.projectForm.get('bcParksRegion')?.setValue('1');
-    fixture.detectChanges();
 
     // Check if bcParksSections is updated correctly
     expect(component.bcParksSections).toEqual([{ parentOrgUnitId: '1', name: 'Section 1' }]);
 
     // Set bcParksRegion value to 2
     component.projectForm.get('bcParksRegion')?.setValue('2');
-    fixture.detectChanges();
 
     // Check if bcParksSections is updated correctly
     expect(component.bcParksSections).toEqual([{ parentOrgUnitId: '2', name: 'Section 2' }]);

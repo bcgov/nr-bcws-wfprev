@@ -2,6 +2,7 @@ import { Injector } from "@angular/core";
 import { AppConfigService } from "../services/app-config.service";
 import { TokenService } from 'src/app/services/token.service';
 import { DateTimeProvider, OAuthLogger } from "angular-oauth2-oidc";
+import L from "leaflet";
 
 export enum ResourcesRoutes {
   LANDING = '',
@@ -72,4 +73,28 @@ export function getActiveMap(smk: any | null = null) {
 export function capitalizeFirstLetter(status: string): string {
     if (!status) return '';
     return status.toLowerCase().split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+  }
+
+  export function createMaplibreLayer(opts: any): L.Layer {
+    return (L as any).maplibreGL(opts);
+  }
+
+  export function createMap(id: string, options: L.MapOptions): L.Map {
+    return L.map(id, options);
+  }
+
+  export function createTileLayer(url: string, options: L.TileLayerOptions): L.TileLayer {
+    return L.tileLayer(url, options);
+  }
+
+  export function createMarker(latlng: L.LatLngExpression, options?: L.MarkerOptions): L.Marker {
+    return L.marker(latlng, options);
+  }
+
+  export function createGeoJSON(geom: any, options?: L.GeoJSONOptions): L.GeoJSON {
+    return L.geoJSON(geom, options);
+  }
+
+  export function createFeatureGroup(layers?: L.Layer[]): L.FeatureGroup {
+    return L.featureGroup(layers);
   }

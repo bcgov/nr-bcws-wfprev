@@ -78,8 +78,14 @@ describe('ProjectDetailsComponent', () => {
       'getProjectFiscalsByProjectGuid',
       'getFiscalActivities',
       'getActivityBoundaries',
-      'deleteEvaluationCriteriaSummary'
+      'deleteEvaluationCriteriaSummary',
+      'getProjectBoundaries',
     ]);
+
+    mockProjectService.getProjectFiscalsByProjectGuid.and.returnValue(of({ _embedded: { projectFiscals: [] } }));
+    mockProjectService.getFiscalActivities.and.returnValue(of({ _embedded: { activities: [] } }));
+    mockProjectService.getActivityBoundaries.and.returnValue(of({ _embedded: { activityBoundary: [] } }));
+    mockProjectService.getProjectBoundaries.and.returnValue(of({ _embedded: { projectBoundary: [] } }));
     mockSnackbar = jasmine.createSpyObj('MatSnackBar', ['open']);
 
     await TestBed.configureTestingModule({
@@ -109,8 +115,15 @@ describe('ProjectDetailsComponent', () => {
     fixture = TestBed.createComponent(ProjectDetailsComponent);
     component = fixture.componentInstance;
 
+    spyOn(component as any, 'initMap');
+
     fixture.detectChanges();
   });
+
+  afterEach(fakeAsync(() => {
+    tick(0); 
+    fixture.destroy();
+  }));
 
   it('should create', () => {
     expect(component).toBeTruthy();

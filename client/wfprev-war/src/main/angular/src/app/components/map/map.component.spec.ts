@@ -139,7 +139,6 @@ describe('MapComponent', () => {
   let mapServiceMock: jasmine.SpyObj<MapService>;
   let mapContainer: jasmine.SpyObj<ElementRef>;
 
-  beforeAll(() => jasmine.getEnv().allowRespy(true));
   const createMockSMKInstance = () => ({
     $viewer: {
       map: {
@@ -167,11 +166,6 @@ describe('MapComponent', () => {
 
 
   beforeEach(() => {
-    (L as any).markerClusterGroup = () => ({
-      addLayer: jasmine.createSpy('addLayer'),
-      clearLayers: jasmine.createSpy('clearLayers'),
-      getLayers: jasmine.createSpy('getLayers').and.returnValue([]),
-    });
     spyOn(L.Control.prototype, 'addTo').and.callFake(function (this: any) {
       return this;
     });
@@ -631,7 +625,6 @@ describe('MapComponent', () => {
         getLayers: jasmine.createSpy().and.returnValue([]),
       };
       spyOn(console, 'log');
-      spyOn(console, 'error');
       spyOn(console, 'warn');
     });
 

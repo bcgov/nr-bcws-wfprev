@@ -3,17 +3,14 @@ import { MapService } from './map.service';
 import { BC_BOUNDS } from 'src/app/utils/constants';
 import { TokenService } from './token.service';
 import { AppConfigService } from './app-config.service';
-import * as LeafletModule from 'leaflet';
 
 describe('MapService', () => {
   let service: MapService;
-  let mockWindow: any;
   let mockSMK: any;
   let mockL: any;
-  let maplibreSpy: jasmine.Spy;
+  let mockWindow: any;
 
   beforeEach(() => {
-    // Mock SMK
     mockSMK = {
       INIT: jasmine.createSpy('INIT').and.returnValue(Promise.resolve({
         destroy: jasmine.createSpy('destroy')
@@ -37,34 +34,25 @@ describe('MapService', () => {
           prototype: {
             basemap: {}
           }
-        }
+        },
+        LayerDisplayContext: jasmine.createSpy('LayerDisplayContext')
       }
     };
 
-    // Mock L (Leaflet)
     mockL = {
       tileLayer: jasmine.createSpy('tileLayer').and.returnValue({}),
       latLng: jasmine.createSpy('latLng').and.returnValue({}),
       latLngBounds: jasmine.createSpy('latLngBounds').and.returnValue({})
     };
 
-    // Setup window mock with correct test environment URL
     mockWindow = {
       SMK: mockSMK,
       L: mockL,
-      location: {
-        protocol: 'http:',
-        host: 'localhost:9876'  // Updated to match test environment
-      }
+      location: { protocol: 'http:', host: 'localhost:9876' }
     };
 
-    // Replace window with mock
     (window as any)['SMK'] = mockSMK;
     (window as any)['L'] = mockL;
-    (LeafletModule as any).maplibreGL = jasmine
-      .createSpy('maplibreGL')
-      .and.callFake((opts: any) => ({ __opts: opts }));
-    maplibreSpy = (LeafletModule as any).maplibreGL as jasmine.Spy;
 
     TestBed.configureTestingModule({
       providers: [
@@ -81,6 +69,9 @@ describe('MapService', () => {
     });
 
     service = TestBed.inject(MapService);
+
+    // Clean spy on the wrapper method — no module namespace fighting needed
+    spyOn(service as any, 'createMaplibreLayer').and.callFake((opts: any) => ({ __opts: opts }));
   });
 
   it('should be created', () => {
