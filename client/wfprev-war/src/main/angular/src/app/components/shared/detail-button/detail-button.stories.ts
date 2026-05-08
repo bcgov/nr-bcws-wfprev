@@ -1,44 +1,44 @@
-import { Meta, StoryObj, moduleMetadata } from '@storybook/angular';
 import { action } from '@storybook/addon-actions';
+import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { DetailButtonComponent } from './detail-button.component';
 
 export default {
-  title: 'Shared/Detail Button',
+  argTypes: {
+    text: { control: 'text' },
+    disabled: { control: 'boolean' },
+    clicked: { action: 'clicked' },
+  },
   component: DetailButtonComponent,
   decorators: [
     moduleMetadata({
       imports: [DetailButtonComponent],
     }),
   ],
-  argTypes: {
-    text: { control: 'text' },
-    disabled: { control: 'boolean' },
-    clicked: { action: 'clicked' },
-  },
+  title: 'Components/Buttons/Detail Button',
 } as Meta<DetailButtonComponent>;
 
 type Story = StoryObj<DetailButtonComponent>;
 
 export const Default: Story = {
   args: {
-    text: 'View Details',
-    disabled: false,
     clicked: action('clicked'),
+    disabled: false,
+    text: 'View Details',
   },
 };
 
 export const CustomText: Story = {
   args: {
-    text: 'Edit Details',
-    disabled: false,
     clicked: action('clicked'),
+    disabled: false,
+    text: 'Edit Details',
   },
 };
 
 export const Disabled: Story = {
   args: {
-    text: 'View Details',
-    disabled: true,
     clicked: action('clicked'),
+    disabled: true,
+    text: 'View Details',
   },
 };
