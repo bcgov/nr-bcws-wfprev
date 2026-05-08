@@ -5,9 +5,12 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { CommonModule } from '@angular/common';
+import { AppConfigService } from 'src/app/services/app-config.service';
+import { TokenService } from 'src/app/services/token.service';
+import { of } from 'rxjs';
 
 const meta: Meta<AppHeaderComponent> = {
-  title: 'AppHeader', // Storybook title
+  title: 'Components/Layout/AppHeader',
   component: AppHeaderComponent,
   decorators: [
     moduleMetadata({
@@ -17,7 +20,21 @@ const meta: Meta<AppHeaderComponent> = {
         MatButtonModule,
         MatIconModule,
         BrowserAnimationsModule, // For Angular Material animations
-        AppHeaderComponent, // Import the standalone component
+      ],
+      providers: [
+        {
+          provide: AppConfigService,
+          useValue: { getConfig: () => ({ application: { environment: 'DEV', version: '1.0.0' }, rest: { trainingAndSupportLink: 'https://example.com' } }) },
+        },
+        {
+          provide: TokenService,
+          useValue: {
+            getUserFullName: () => 'John Doe',
+            getIdir: () => 'jdoe',
+            credentialsEmitter: of({ given_name: 'John', family_name: 'Doe' }),
+            authTokenEmitter: of('mock-token'),
+          },
+        },
       ],
     }),
   ],
