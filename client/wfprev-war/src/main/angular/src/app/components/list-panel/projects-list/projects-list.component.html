@@ -55,11 +55,8 @@
                 {{ getProjectFiscalYearRange(project) }}
               </div>
               <div class="action-items">
-                <div class="action-item" (click)="editProject(project, $event)">
-                  <img alt="edit-icon" class="icon" src="/assets/edit-icon.svg" />
-                  <span>Edit</span>
+                <wfprev-detail-button [text]="'View Details'" (clicked)="editProject(project, $event)"></wfprev-detail-button>
               </div>
-            </div>
             </div>
           </mat-panel-title>
           <div class="divider"></div>

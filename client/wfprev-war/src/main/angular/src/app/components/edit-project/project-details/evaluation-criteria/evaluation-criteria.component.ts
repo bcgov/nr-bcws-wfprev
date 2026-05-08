@@ -9,6 +9,7 @@ import { EvaluationCriteriaDialogComponent } from 'src/app/components/evaluation
 import { EvaluationCriteriaSummaryModel, Project } from 'src/app/components/models';
 import { ExpansionIndicatorComponent } from 'src/app/components/shared/expansion-indicator/expansion-indicator.component';
 import { TimestampComponent } from 'src/app/components/shared/timestamp/timestamp.component';
+import { DetailButtonComponent } from 'src/app/components/shared/detail-button/detail-button.component';
 import { PermissionsService, WFPREV_ACTIONS } from 'src/app/services/permissions.service';
 import { ProjectService } from 'src/app/services/project-services';
 import { EvaluationCriteriaSectionCodes, ProjectTypes } from 'src/app/utils/constants';
@@ -16,7 +17,7 @@ import { EvaluationCriteriaSectionCodes, ProjectTypes } from 'src/app/utils/cons
 @Component({
   selector: 'wfprev-evaluation-criteria',
   standalone: true,
-  imports: [ExpansionIndicatorComponent, MatExpansionModule, MatIconModule, CommonModule, TimestampComponent, MatProgressSpinnerModule],
+  imports: [ExpansionIndicatorComponent, MatExpansionModule, MatIconModule, CommonModule, TimestampComponent, MatProgressSpinnerModule, DetailButtonComponent],
   templateUrl: './evaluation-criteria.component.html',
   styleUrl: './evaluation-criteria.component.scss'
 })
