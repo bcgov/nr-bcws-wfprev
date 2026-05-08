@@ -10,6 +10,7 @@ import { EvaluationCriteriaCodeModel, EvaluationCriteriaSummaryModel, Project, W
 import { SlideToggleComponent } from 'src/app/components/shared/slide-toggle/slide-toggle.component';
 import { TextareaComponent } from 'src/app/components/shared/textarea/textarea.component';
 import { CodeTableServices } from 'src/app/services/code-table-services';
+import { PermissionsService, WFPREV_ACTIONS } from 'src/app/services/permissions.service';
 import { ProjectService } from 'src/app/services/project-services';
 import { EvaluationCriteriaSectionCodes, Messages, ModalMessages, ModalTitles, ProjectTypes } from 'src/app/utils/constants';
 @Component({
@@ -40,6 +41,7 @@ export class EvaluationCriteriaDialogComponent implements OnInit {
   mediumTotal = 0;
   fineTotal = 0;
   isSaving = false;
+  isViewMod = true;
 
   constructor(
     private readonly fb: FormBuilder,
@@ -51,11 +53,15 @@ export class EvaluationCriteriaDialogComponent implements OnInit {
     @Inject(MAT_DIALOG_DATA) public data: {
       project: Project,
       evaluationCriteriaSummary?: EvaluationCriteriaSummaryModel;
-    }
+    },
+    private readonly permissionsService: PermissionsService
   ) {
   }
 
   ngOnInit(): void {
+    if (this.permissionsService.hasAction(WFPREV_ACTIONS.CREATE_EVALUATION_CRITERIA)) {
+        this.isViewMod = false;
+    }
     this.initializeForm();
     const type = this.data.project.projectTypeCode?.projectTypeCode;
     this.isCulturalPrescribedFire = (type === ProjectTypes.CULTURAL_PRESCRIBED_FIRE);
@@ -84,6 +90,11 @@ export class EvaluationCriteriaDialogComponent implements OnInit {
       wuiRiskClass: [null],
       localWuiRiskClass: [null],
     });
+    
+    if(this.isViewMod) {
+      this.criteriaForm.disable();
+    }
+    
   }
 
   setupValueChangeHandlers(): void {
