@@ -1,7 +1,7 @@
-import { AfterViewInit, Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { AfterViewInit, Component, HostListener, Input, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, UrlTree } from '@angular/router';
 import * as L from 'leaflet';
-import { forkJoin, map } from 'rxjs';
+import { forkJoin, map, Subscription } from 'rxjs';
 import { FileAttachment } from 'src/app/components/models';
 import { ProjectService } from 'src/app/services/project-services';
 import { ResourcesRoutes } from 'src/app/utils';
@@ -34,6 +34,17 @@ export class FiscalMapComponent implements AfterViewInit, OnDestroy, OnInit {
   ) {}
 
   map: L.Map | undefined;
+
+  @HostListener('window:resize', ['$event'])
+  onResize(event: any) {
+    this.refreshMap();
+  }
+
+  refreshMap() {
+    if (this.map) {
+      this.map.invalidateSize();
+    }
+  }
   private activityBoundaryGroup: L.LayerGroup = L.layerGroup();
   private projectBoundaryGroup: L.LayerGroup = L.layerGroup();
 
@@ -44,6 +55,8 @@ export class FiscalMapComponent implements AfterViewInit, OnDestroy, OnInit {
   projectBoundary: any[] = [];
   projectLatitude = '';
   projectLongitude = '';
+  private dataSubscription = new Subscription();
+
   ngOnInit(): void{
     this.getProjectBoundary();
     this.getAllActivitiesBoundaries();
@@ -59,44 +72,49 @@ export class FiscalMapComponent implements AfterViewInit, OnDestroy, OnInit {
     if (this.map) {
       this.map.remove();
     }
+    this.dataSubscription.unsubscribe();
   }
 
   getProjectCoordinates() {
-    this.projectService.getProjectByProjectGuid(this.projectGuid).subscribe(project => {
-      if (project.latitude && project.longitude && this.map) {
-        this.projectLatitude = project.latitude;
-        this.projectLongitude = project.longitude;
-        if (this.map) {
-          const lat = Number.parseFloat(this.projectLatitude);
-          const lng = Number.parseFloat(this.projectLongitude);
-  
-          const teardropIcon = getBluePinIcon()
-          L.marker([lat, lng], { icon: teardropIcon }).addTo(this.map);
-  
-          this.map.setView([lat, lng], 14); 
+    this.dataSubscription.add(
+      this.projectService.getProjectByProjectGuid(this.projectGuid).subscribe(project => {
+        if (project.latitude && project.longitude && this.map) {
+          this.projectLatitude = project.latitude;
+          this.projectLongitude = project.longitude;
+          if (this.map) {
+            const lat = Number.parseFloat(this.projectLatitude);
+            const lng = Number.parseFloat(this.projectLongitude);
+    
+            const teardropIcon = getBluePinIcon()
+            L.marker([lat, lng], { icon: teardropIcon }).addTo(this.map);
+    
+            this.map.setView([lat, lng], 14); 
+          }
         }
-      }
-    })
+      })
+    );
   }
 
   getProjectBoundary() {
     this.projectGuid = this.route.snapshot?.queryParamMap?.get('projectGuid') ?? '';
     if (this.projectGuid) {
-      this.projectService.getProjectBoundaries(this.projectGuid).subscribe((data) => {
-        const boundaries = data?._embedded?.projectBoundary ?? [];
-        if (boundaries.length > 0) {
-          // Sort boundaries by systemStartTimestamp descending and pick the latest
-          const latestBoundary = boundaries.sort((a: { systemStartTimestamp: string | number | Date; }, b: { systemStartTimestamp: string | number | Date; }) =>
-            new Date(b.systemStartTimestamp).getTime() - new Date(a.systemStartTimestamp).getTime()
-          )[0];
-  
-          this.projectBoundary = [latestBoundary]; 
+      this.dataSubscription.add(
+        this.projectService.getProjectBoundaries(this.projectGuid).subscribe((data) => {
+          const boundaries = data?._embedded?.projectBoundary ?? [];
+          if (boundaries.length > 0) {
+            // Sort boundaries by systemStartTimestamp descending and pick the latest
+            const latestBoundary = boundaries.sort((a: { systemStartTimestamp: string | number | Date; }, b: { systemStartTimestamp: string | number | Date; }) =>
+              new Date(b.systemStartTimestamp).getTime() - new Date(a.systemStartTimestamp).getTime()
+            )[0];
+    
+            this.projectBoundary = [latestBoundary]; 
   
           if (this.map) {
             this.plotProjectBoundary(this.projectBoundary);
           }
         }
-      });
+      })
+      );
     }
   }
   
@@ -104,8 +122,10 @@ export class FiscalMapComponent implements AfterViewInit, OnDestroy, OnInit {
     this.projectGuid = this.route.snapshot?.queryParamMap?.get('projectGuid') ?? '';
     if (!this.projectGuid) return;
   
-    this.projectService.getProjectFiscalsByProjectGuid(this.projectGuid).subscribe(data =>
-      this.handleFiscalsResponse(data)
+    this.dataSubscription.add(
+      this.projectService.getProjectFiscalsByProjectGuid(this.projectGuid).subscribe(data =>
+        this.handleFiscalsResponse(data)
+      )
     );
   }
   
@@ -120,8 +140,10 @@ export class FiscalMapComponent implements AfterViewInit, OnDestroy, OnInit {
       )
     );
   
-    forkJoin(activityRequests).subscribe(allActivityArrays =>
-      this.handleActivitiesResponse(allActivityArrays.flat())
+    this.dataSubscription.add(
+      forkJoin(activityRequests).subscribe(allActivityArrays =>
+        this.handleActivitiesResponse(allActivityArrays.flat())
+      )
     );
   }
   
@@ -148,8 +170,10 @@ export class FiscalMapComponent implements AfterViewInit, OnDestroy, OnInit {
         )
     );
   
-    forkJoin(boundaryRequests).subscribe(allResults =>
-      this.handleBoundariesResponse(allResults)
+    this.dataSubscription.add(
+      forkJoin(boundaryRequests).subscribe(allResults =>
+        this.handleBoundariesResponse(allResults)
+      )
     );
   }
   

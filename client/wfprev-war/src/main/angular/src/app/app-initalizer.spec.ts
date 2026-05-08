@@ -30,6 +30,7 @@ describe('initializeAppConfig', () => {
   });
 
   it('should reject the promise when config loading fails', async () => {
+    spyOn(console, 'error');
     const error = new Error('Config loading failed');
     // Mock loadAppConfig to return a rejected promise
     appConfigService.loadAppConfig.and.returnValue(Promise.reject(error));

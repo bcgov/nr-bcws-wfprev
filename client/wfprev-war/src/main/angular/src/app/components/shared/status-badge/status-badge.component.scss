@@ -1,18 +1,24 @@
 .status-badge {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 5px;
+  white-space: nowrap;
+  font-family: var(--wf-font-family-main);
+  font-size: 14px;
+  font-weight: 400;
 
-  .badge-icon img {
+  .badge-icon {
     display: flex;
-    width: 24px;
-    height: 24px;
+    align-items: center;
+    
+    img {
+      width: 24px;
+      height: 24px;
+    }
   }
 
   .badge-label {
-      color: #474543;
-      font-size: 16px;
-      font-style: normal;
-      font-weight: 400;
+      color: #2D2D2D;
+      line-height: normal;
   }
 }

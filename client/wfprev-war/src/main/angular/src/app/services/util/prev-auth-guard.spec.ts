@@ -1,5 +1,5 @@
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { TestBed } from '@angular/core/testing';
+import { TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRouteSnapshot, Router, RouterStateSnapshot } from '@angular/router';
 import { BehaviorSubject, firstValueFrom, of, Subject } from 'rxjs';
@@ -193,7 +193,7 @@ describe('PrevAuthGuard', () => {
       });
     });
 
-    it('should redirect user to error page when token validation fails', async () => {
+    it('should redirect user to error page when token validation fails', fakeAsync(() => {
       const route = new ActivatedRouteSnapshot();
       route.data = { scopes: [['test-scope']] };
 
@@ -204,17 +204,17 @@ describe('PrevAuthGuard', () => {
       tokenService.validateToken.and.returnValue(of(false)); // Mock validation failure
 
       // Spy on the redirectToErrorPage method
-      const redirectToErrorPageSpy = spyOn(guard, 'redirectToErrorPage');
+      spyOn(guard, 'redirectToErrorPage');
 
-      // Use `firstValueFrom` to handle asynchronous observable completion
-      await firstValueFrom(guard.canActivate(route, state));
+      guard.canActivate(route, state).subscribe();
 
-      // TO-DO: fix without setTimeout()
+      tick(2000);
+
       // Assert that redirectToErrorPage was called
-      setTimeout(() => { expect(guard.redirectToErrorPage).toHaveBeenCalled(); }, 2000);
-    });
+      expect(guard.redirectToErrorPage).toHaveBeenCalled();
+    }));
 
-    it('should redirect to error page when getTokenInfo returns false', async () => {
+    it('should redirect to error page when getTokenInfo returns false', fakeAsync(() => {
       const route = new MockActivatedRouteSnapshot();
       route.data = { scopes: [['test-scope']] };
       const state = jasmine.createSpyObj<RouterStateSnapshot>('RouterStateSnapshot', [], {
@@ -227,16 +227,15 @@ describe('PrevAuthGuard', () => {
       // Spy on redirectToErrorPage
       spyOn(guard, 'redirectToErrorPage');
 
-      // Start the canActivate observable and wait for its completion
-      await firstValueFrom(guard.canActivate(route, state));
+      guard.canActivate(route, state).subscribe();
 
-      // TO-DO: fix without setTimeout()
+      tick(2000);
+
       // Assert that redirectToErrorPage was called
-      setTimeout(() => { expect(guard.redirectToErrorPage).toHaveBeenCalled(); }, 2000);
+      expect(guard.redirectToErrorPage).toHaveBeenCalled();
+    }));
 
-    });
-
-    it('should redirect to error page when getTokenInfo returns undefined', async () => {
+    it('should redirect to error page when getTokenInfo returns undefined', fakeAsync(() => {
       const route = new MockActivatedRouteSnapshot();
       route.data = { scopes: [['test-scope']] };
       const state = jasmine.createSpyObj<RouterStateSnapshot>('RouterStateSnapshot', [], {
@@ -249,13 +248,13 @@ describe('PrevAuthGuard', () => {
       // Spy on redirectToErrorPage
       spyOn(guard, 'redirectToErrorPage');
 
-      // Start the canActivate observable and wait for its completion
-      await firstValueFrom(guard.canActivate(route, state));
+      guard.canActivate(route, state).subscribe();
 
-      // TO-DO: fix without setTimeout()
+      tick(2000);
+
       // Assert that redirectToErrorPage was called
-      setTimeout(() => { expect(guard.redirectToErrorPage).toHaveBeenCalled(); }, 2000);
-    });
+      expect(guard.redirectToErrorPage).toHaveBeenCalled();
+    }));
   });
 
   describe('getTokenInfo', () => {

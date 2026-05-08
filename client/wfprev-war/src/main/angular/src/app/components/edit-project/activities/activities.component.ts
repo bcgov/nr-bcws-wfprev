@@ -10,9 +10,10 @@ import { MatExpansionModule, MatExpansionPanel } from '@angular/material/expansi
 import { MatInputModule } from '@angular/material/input';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ActivatedRoute } from '@angular/router';
 import moment from 'moment';
-import { forkJoin, map, Observable, take, tap } from 'rxjs';
+import { finalize, forkJoin, map, Observable, Subscription, take, tap } from 'rxjs';
 import { ConfirmationDialogComponent } from 'src/app/components/confirmation-dialog/confirmation-dialog.component';
 import { ProjectFilesComponent } from 'src/app/components/edit-project/project-details/project-files/project-files.component';
 import { ActivityModel } from 'src/app/components/models';
@@ -26,6 +27,7 @@ import { Messages, ModalMessages, ModalTitles, NumericLimits } from 'src/app/uti
 import { getUtcIsoTimestamp } from 'src/app/utils/tools';
 import { ExpansionIndicatorComponent } from "../../shared/expansion-indicator/expansion-indicator.component";
 import { NgxCurrencyDirective } from 'ngx-currency';
+import { StatusBadgeComponent } from '../../shared/status-badge/status-badge.component';
 
 
 export const CUSTOM_DATE_FORMATS = {
@@ -55,7 +57,9 @@ export const CUSTOM_DATE_FORMATS = {
     IconButtonComponent,
     TimestampComponent,
     TextareaComponent,
-    NgxCurrencyDirective],
+    NgxCurrencyDirective,
+    StatusBadgeComponent,
+    MatProgressSpinnerModule],
   templateUrl: './activities.component.html',
   styleUrl: './activities.component.scss',
   providers: [
@@ -91,6 +95,8 @@ export class ActivitiesComponent implements OnChanges, CanComponentDeactivate {
   isActivityDirty: boolean[] = [];
   expandedPanels: boolean[] = [];
   isActivitySaving: boolean[] = [];
+  isLoading = true;
+  private dataSubscription?: Subscription;
   constructor(
     private readonly route: ActivatedRoute,
     private readonly projectService: ProjectService,
@@ -103,25 +109,38 @@ export class ActivitiesComponent implements OnChanges, CanComponentDeactivate {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['fiscalGuid'] && changes['fiscalGuid'].currentValue) {
-      this.activities = [];
-      this.activityForms = [];
-
-      this.loadCodeTables().subscribe({
-        next: () => {
-          this.getActivities(() => {
-            this.activityForms.forEach((form, i) => {
-              if (form.get('isResultsReportableInd')?.value) {
-                this.toggleResultsReportableInd(i);
-              }
-            });
-          });
-        },
-
-        error: (err) => {
-          console.error('Error loading code tables', err);
-          this.getActivities();
+      this.projectGuid = this.route.snapshot?.queryParamMap?.get('projectGuid') || '';
+      if (this.projectGuid) {
+        if (this.dataSubscription) {
+          this.dataSubscription.unsubscribe();
         }
-      });
+        this.dataSubscription = new Subscription();
+
+        this.isLoading = true;
+        this.activities = [];
+        this.activityForms = [];
+
+        this.dataSubscription.add(this.loadCodeTables().subscribe({
+          next: () => {
+            this.getActivities(() => {
+              this.activityForms.forEach((form, i) => {
+                if (form.get('isResultsReportableInd')?.value) {
+                  this.toggleResultsReportableInd(i);
+                }
+              });
+            });
+          },
+
+          error: (err) => {
+            console.error('Error loading code tables', err);
+            this.getActivities();
+          }
+        }));
+      } else {
+        this.isLoading = false;
+      }
+    } else if (changes['fiscalGuid']) {
+      this.isLoading = false;
     }
   }
 
@@ -157,62 +176,73 @@ export class ActivitiesComponent implements OnChanges, CanComponentDeactivate {
 
 
   getActivities(callback?: () => void): void {
-    if (!this.fiscalGuid) return;
+    if (!this.fiscalGuid) {
+      this.isLoading = false;
+      return;
+    }
 
     this.projectGuid = this.route.snapshot?.queryParamMap?.get('projectGuid') || '';
 
     if (this.projectGuid) {
-
+      this.isLoading = true;
       this.getProjectType(this.projectGuid);
 
-      this.projectService.getFiscalActivities(this.projectGuid, this.fiscalGuid).subscribe({
-        next: (data) => {
-          if (data && data._embedded?.activities) {
-            this.activities = data._embedded.activities;
-            // Sort activities alphabetically by activityName (case insensitive)
-            this.activities.sort((a, b) => {
-              const nameA = (a.activityName || '').toLowerCase();
-              const nameB = (b.activityName || '').toLowerCase();
-              return nameA.localeCompare(nameB);
-            });
-
-          } else {
-            this.activities = [];
-          }
-
-          this.isNewActivityBeingAdded = false;
-          this.originalActivitiesValues = JSON.parse(JSON.stringify(this.activities));
-
-          this.activityForms = this.activities.map((activity) => this.createActivityForm(activity));
-          this.expandedPanels = this.activities.map((_, i) => this.expandedPanels[i] || false);
-
+      this.dataSubscription?.add(this.projectService.getFiscalActivities(this.projectGuid, this.fiscalGuid)
+        .pipe(finalize(() => {
+          this.isLoading = false;
           this.cd.detectChanges();
-          // do callback (e.g., scrolling, expanding panel) if provided
-          if (callback) callback();
-        },
-        error: (error) => {
-          console.error('Error fetching activities:', error);
-          this.activities = [];
+        }))
+        .subscribe({
+          next: (data: any) => {
+            if (data && data._embedded?.activities) {
+              this.activities = data._embedded.activities;
+              // Sort activities alphabetically by activityName (case insensitive)
+              this.activities.sort((a, b) => {
+                const nameA = (a.activityName || '').toLowerCase();
+                const nameB = (b.activityName || '').toLowerCase();
+                return nameA.localeCompare(nameB);
+              });
 
-          this.snackbarService.open(
-            'Failed to load activities. Please try again later.',
-            'OK',
-            { duration: 5000, panelClass: 'snackbar-error' }
-          );
-        }
-      });
+            } else {
+              this.activities = [];
+            }
+
+            this.isNewActivityBeingAdded = false;
+            this.originalActivitiesValues = JSON.parse(JSON.stringify(this.activities));
+
+            this.activityForms = this.activities.map((activity) => this.createActivityForm(activity));
+            this.expandedPanels = this.activities.map((_, i) => this.expandedPanels[i] || false);
+
+            // do callback (e.g., scrolling, expanding panel) if provided
+            if (callback) callback();
+          },
+          error: (error) => {
+            console.error('Error fetching activities:', error);
+            this.activities = [];
+
+            this.snackbarService.open(
+              'Failed to load activities. Please try again later.',
+              'OK',
+              { duration: 5000, panelClass: 'snackbar-error' }
+            );
+          }
+        }));
+    } else {
+      this.isLoading = false;
     }
   }
 
   getProjectType(projectGuid: string) {
-    this.projectService.getProjectByProjectGuid(this.projectGuid).subscribe({
-      next: (data) => {
-        this.projectTypeCode = data.projectTypeCode?.projectTypeCode
-      },
-      error: (err) => {
-        console.error('Error fetching project:', err);
-      },
-    });
+    this.dataSubscription?.add(
+      this.projectService.getProjectByProjectGuid(this.projectGuid).subscribe({
+        next: (data) => {
+          this.projectTypeCode = data.projectTypeCode?.projectTypeCode
+        },
+        error: (err) => {
+          console.error('Error fetching project:', err);
+        },
+      })
+    );
   }
 
   getFormattedDate(date: string | null): string {

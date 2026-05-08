@@ -1,53 +1,53 @@
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
-import { EndorsementApprovalComponent } from './endorsement-approval.component';
-import { ProjectFiscal } from 'src/app/components/models';
-import { EndorsementCode, FiscalStatuses } from 'src/app/utils/constants';
 import { MatDialog } from '@angular/material/dialog';
 import { of } from 'rxjs';
+import { ProjectFiscal } from 'src/app/components/models';
+import { EndorsementCode, FiscalStatuses } from 'src/app/utils/constants';
+import { EndorsementApprovalComponent } from './endorsement-approval.component';
 
 describe('EndorsementApprovalComponent', () => {
   let component: EndorsementApprovalComponent;
   let fixture: ComponentFixture<EndorsementApprovalComponent>;
 
   const mockFiscal: ProjectFiscal = {
-    projectGuid: '123',
     activityCategoryCode: 'CATEGORY',
-    fiscalYear: 2024,
-    projectPlanStatusCode: 'ACTIVE',
-    planFiscalStatusCode: { planFiscalStatusCode: 'ACTIVE' },
-    projectFiscalName: 'Test Fiscal',
-    isApprovedInd: true,
-    isDelayedInd: false,
-    totalCostEstimateAmount: 1000,
-    fiscalPlannedProjectSizeHa: 50,
-    fiscalPlannedCostPerHaAmt: 20,
-    fiscalReportedSpendAmount: 500,
-    fiscalActualAmount: 600,
-    fiscalActualCostPerHaAmt: 12,
-    firstNationsDelivPartInd: false,
-    firstNationsEngagementInd: false,
-    endorsementComment: 'Looks good',
-    endorsementTimestamp: '2023-10-10T00:00:00Z',
-    endorserName: 'Alice',
     approvedTimestamp: '2023-10-11T00:00:00Z',
     approverName: 'Bob',
     businessAreaComment: 'Approved',
+    endorsementComment: 'Looks good',
+    endorsementTimestamp: '2023-10-10T00:00:00Z',
+    endorserName: 'Alice',
+    firstNationsDelivPartInd: false,
+    firstNationsEngagementInd: false,
+    fiscalActualAmount: 600,
+    fiscalActualCostPerHaAmt: 12,
+    fiscalPlannedCostPerHaAmt: 20,
+    fiscalPlannedProjectSizeHa: 50,
+    fiscalReportedSpendAmount: 500,
+    fiscalYear: 2024,
+    isApprovedInd: true,
+    isDelayedInd: false,
+    planFiscalStatusCode: { planFiscalStatusCode: 'ACTIVE' },
+    projectFiscalName: 'Test Fiscal',
+    projectGuid: '123',
+    projectPlanStatusCode: 'ACTIVE',
+    totalCostEstimateAmount: 1000,
   };
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-    imports: [EndorsementApprovalComponent],
-    providers: [
-      {
-        provide: MatDialog,
-        useValue: {
-          open: jasmine.createSpy('open').and.returnValue({
-            afterClosed: () => of(true)
-          })
+      imports: [EndorsementApprovalComponent],
+      providers: [
+        {
+          provide: MatDialog,
+          useValue: {
+            open: jasmine.createSpy('open').and.returnValue({
+              afterClosed: () => of(true)
+            })
+          }
         }
-      }
-    ]
-  }).compileComponents();
+      ]
+    }).compileComponents();
 
     fixture = TestBed.createComponent(EndorsementApprovalComponent);
     component = fixture.componentInstance;
@@ -78,13 +78,13 @@ describe('EndorsementApprovalComponent', () => {
   it('should patch and disable controls in ngOnChanges if no endorsement or approval', () => {
     const noEndorseOrApproval: ProjectFiscal = {
       ...mockFiscal,
-      endorserName: undefined,
-      endorsementTimestamp: undefined,
-      endorsementComment: '',
-      isApprovedInd: false,
       approvedTimestamp: undefined,
       approverName: undefined,
       businessAreaComment: '',
+      endorsementComment: '',
+      endorsementTimestamp: undefined,
+      endorserName: undefined,
+      isApprovedInd: false,
     };
 
     component.fiscal = noEndorseOrApproval;
@@ -92,9 +92,9 @@ describe('EndorsementApprovalComponent', () => {
     component.ngOnChanges({
       fiscal: {
         currentValue: noEndorseOrApproval,
-        previousValue: null,
         firstChange: true,
         isFirstChange: () => true,
+        previousValue: null,
       }
     });
 
@@ -131,15 +131,16 @@ describe('EndorsementApprovalComponent', () => {
   });
 
   it('should emit saveEndorsement with updated fiscal on save', async () => {
+    spyOn<any>(component, 'confirmStatusChange').and.returnValue(Promise.resolve(true));
     const emitSpy = spyOn(component.saveEndorsement, 'emit');
     component.fiscal = mockFiscal;
     component.endorsementApprovalForm.patchValue({
-      endorseFiscalActivity: true,
-      endorsementDate: new Date('2024-01-01'),
-      endorsementComment: 'New endorsement',
-      approveFiscalActivity: true,
-      approvalDate: new Date('2024-02-01'),
       approvalComment: 'New approval',
+      approvalDate: new Date('2024-02-01'),
+      approveFiscalActivity: true,
+      endorseFiscalActivity: true,
+      endorsementComment: 'New endorsement',
+      endorsementDate: new Date('2024-01-01'),
     });
 
     await component.onSave();
@@ -152,12 +153,14 @@ describe('EndorsementApprovalComponent', () => {
   });
 
   it('should set planFiscalStatusCode to PROPOSED if endorsement removed', async () => {
+    spyOn<any>(component, 'confirmStatusChange').and.returnValue(Promise.resolve(true));
+
     const emitSpy = spyOn(component.saveEndorsement, 'emit');
 
     component.fiscal = { ...mockFiscal, planFiscalStatusCode: { planFiscalStatusCode: 'ACTIVE' } };
     component.endorsementApprovalForm.patchValue({
-      endorseFiscalActivity: false,
       approveFiscalActivity: true,
+      endorseFiscalActivity: false,
     });
 
     await component.onSave();
@@ -258,9 +261,9 @@ describe('EndorsementApprovalComponent', () => {
     component.ngOnChanges({
       isSaving: {
         currentValue: false,
-        previousValue: true,
         firstChange: false,
         isFirstChange: () => false,
+        previousValue: true,
       }
     });
 
@@ -268,6 +271,7 @@ describe('EndorsementApprovalComponent', () => {
   });
 
   it('resets to PROPOSED and clears fields when endorsement removed (confirm = true)', async () => {
+    spyOn<any>(component, 'confirmStatusChange').and.returnValue(Promise.resolve(true));
     const emitSpy = spyOn(component.saveEndorsement, 'emit');
 
     component.fiscal = {
@@ -277,10 +281,10 @@ describe('EndorsementApprovalComponent', () => {
 
     // endorsementRemoved = true; approval still checked
     component.endorsementApprovalForm.patchValue({
-      endorseFiscalActivity: false,
-      approveFiscalActivity: true,
-      approvalDate: new Date('2024-02-01'),
       approvalComment: 'keep approval',
+      approvalDate: new Date('2024-02-01'),
+      approveFiscalActivity: true,
+      endorseFiscalActivity: false,
     });
 
     // Act
@@ -293,7 +297,7 @@ describe('EndorsementApprovalComponent', () => {
 
     // Forced PROPOSED
     expect(payload.planFiscalStatusCode.planFiscalStatusCode).toBe(FiscalStatuses.PROPOSED);
-   
+
     // Endorsement cleared
     expect(payload.endorserName).toBeUndefined();
     expect(payload.endorsementTimestamp).toBeUndefined();
@@ -307,6 +311,7 @@ describe('EndorsementApprovalComponent', () => {
   });
 
   it('resets to proposed and clears fields when approval removed (confirm = true)', async () => {
+    spyOn<any>(component, 'confirmStatusChange').and.returnValue(Promise.resolve(true));
     const emitSpy = spyOn(component.saveEndorsement, 'emit');
 
     component.fiscal = {
@@ -315,10 +320,10 @@ describe('EndorsementApprovalComponent', () => {
     };
 
     component.endorsementApprovalForm.patchValue({
-      endorseFiscalActivity: true,
-      endorsementDate: new Date('2024-01-01'),
-      endorsementComment: 'endorse!',
       approveFiscalActivity: false,
+      endorseFiscalActivity: true,
+      endorsementComment: 'endorse!',
+      endorsementDate: new Date('2024-01-01'),
     });
 
     await component.onSave();
@@ -337,14 +342,12 @@ describe('EndorsementApprovalComponent', () => {
   });
 
   it('does not emit when user cancels the revert confirmation', async () => {
-    const dialog = TestBed.inject(MatDialog);
-    (dialog.open as jasmine.Spy).and.returnValue({ afterClosed: () => of(false) });
-
+    spyOn<any>(component, 'confirmStatusChange').and.returnValue(Promise.resolve(false));
     const emitSpy = spyOn(component.saveEndorsement, 'emit');
     component.fiscal = { ...mockFiscal, planFiscalStatusCode: { planFiscalStatusCode: 'ACTIVE' } };
     component.endorsementApprovalForm.patchValue({
-      endorseFiscalActivity: false,
       approveFiscalActivity: true,
+      endorseFiscalActivity: false,
     });
 
     await component.onSave();
@@ -352,7 +355,8 @@ describe('EndorsementApprovalComponent', () => {
     expect(emitSpy).not.toHaveBeenCalled();
   });
 
-  it('calls confirmRevertToProposed with the current status when reverting', async () => {
+  it('calls confirmStatusChange with the current status when reverting', async () => {
+    const confirmSpy = spyOn<any>(component, 'confirmStatusChange').and.returnValue(Promise.resolve(true));
     const emitSpy = spyOn(component.saveEndorsement, 'emit');
 
     component.fiscal = {
@@ -361,12 +365,13 @@ describe('EndorsementApprovalComponent', () => {
     };
 
     component.endorsementApprovalForm.patchValue({
-      endorseFiscalActivity: false,
       approveFiscalActivity: true,
+      endorseFiscalActivity: false,
     });
 
     await component.onSave();
 
+    expect(confirmSpy).toHaveBeenCalledWith('ACTIVE', 'Proposed');
     expect(emitSpy).toHaveBeenCalled();
   });
 

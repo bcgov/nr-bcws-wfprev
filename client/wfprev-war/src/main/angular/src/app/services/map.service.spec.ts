@@ -162,6 +162,7 @@ describe('MapService', () => {
 
 
     it('should throw error if config is not an array', async () => {
+      spyOn(console, 'error');
       const option = {
         config: 'not an array'
       };

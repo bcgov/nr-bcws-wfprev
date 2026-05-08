@@ -11,14 +11,14 @@ import { TokenService } from './token.service';
 
 // Create mock ZIP module implementation
 const mockZipModule = {
+  BlobReader: jasmine.createSpy('BlobReader').and.returnValue({}),
+  TextWriter: jasmine.createSpy('TextWriter').and.returnValue({}),
   ZipReader: jasmine.createSpy('ZipReader').and.callFake(() => ({
+    close: jasmine.createSpy('close').and.resolveTo(undefined),
     getEntries: jasmine.createSpy('getEntries').and.resolveTo([
       { filename: 'doc.kml', getData: jasmine.createSpy('getData').and.resolveTo('<kml></kml>') }
-    ]),
-    close: jasmine.createSpy('close').and.resolveTo(undefined)
-  })),
-  BlobReader: jasmine.createSpy('BlobReader').and.returnValue({}),
-  TextWriter: jasmine.createSpy('TextWriter').and.returnValue({})
+    ])
+  }))
 };
 
 // Create mock SHP module implementation
@@ -39,10 +39,6 @@ describe('SpatialService', () => {
   let mockTokenService: jasmine.SpyObj<TokenService>;
 
   const mockConfig = {
-    rest: {
-      wfprev: 'http://mock-api.com',
-      wfdm: 'http://mock-wfdm-api.com'
-    },
     application: {
       lazyAuthenticate: true,
       enableLocalStorageToken: true,
@@ -54,17 +50,21 @@ describe('SpatialService', () => {
       environment: 'test',
       remiPlannerEmailAddress: 'test@example.com'
     },
+    mapServices: {
+      geoserverApiBaseUrl: 'http://geoserver.test',
+      wfnewsApiBaseUrl: 'http://wfnews.test',
+      wfnewsApiKey: 'fake-api-key'
+    },
+    rest: {
+      wfprev: 'http://mock-api.com',
+      wfdm: 'http://mock-wfdm-api.com'
+    },
     webade: {
       oauth2Url: 'http://mock-oauth-url.com',
       clientId: 'mock-client-id',
       authScopes: 'mock-scope',
       checkTokenUrl: 'http://mock-check-token-url.com',
       enableCheckToken: false,
-    },
-    mapServices: {
-      geoserverApiBaseUrl: 'http://geoserver.test',
-      wfnewsApiBaseUrl: 'http://wfnews.test',
-      wfnewsApiKey: 'fake-api-key'
     }
   };
 
@@ -598,6 +598,7 @@ describe('SpatialService', () => {
       // Arrange
       const geometryCollection: GeometryCollection = {
         type: 'GeometryCollection',
+        bbox: [0, 0, 100, 100],
         geometries: [
           {
             type: 'Point',
@@ -620,8 +621,7 @@ describe('SpatialService', () => {
               ]
             ]
           }
-        ],
-        bbox: [0, 0, 100, 100]
+        ]
       };
 
       // Act
@@ -671,11 +671,11 @@ describe('SpatialService', () => {
 
     it('should handle error gracefully when the API returns an error', (done: () => void) => {
       service.extractGDBGeometry(mockFile).subscribe({
-        next: () => fail('Expected an error, but got a successful response'),
         error: (error) => {
           expect(error.message).toBe('Failed to extract geodatabase geometry');
           done();
-        }
+        },
+        next: () => fail('Expected an error, but got a successful response')
       });
 
       const req = httpMock.expectOne('http://mock-api.com/wfprev-api/gdb/extract');
@@ -826,7 +826,7 @@ describe('SpatialService', () => {
         mockTokenService as any
       );
 
-      spyOn(service, 'validateGeometryWithBackend').and.returnValue(Promise.resolve({ valid: true, message: 'Valid' }));
+      spyOn(service, 'validateGeometryWithBackend').and.returnValue(Promise.resolve({ message: 'Valid', valid: true }));
     });
     it('should validate a correct multipolygon without errors', async () => {
       const coords: Position[][][] = [
@@ -844,22 +844,23 @@ describe('SpatialService', () => {
         [[[0, 0], [1, 1], [2, 2], [0, 0]]] // A degenerate polygon (collinear)
       ];
 
-      spyOn(service, 'validateGeometryWithBackend').and.returnValue(Promise.resolve({ valid: false, message: 'Geometry is invalid.' }));
+      (service.validateGeometryWithBackend as jasmine.Spy).and.returnValue(Promise.resolve({ message: 'Geometry is invalid.', valid: false }));
 
       await expectAsync(service.validateMultiPolygon(coords)).toBeRejectedWithError('Geometry is invalid.');
     });
 
     it('should throw an error for self-intersections', async () => {
       (service.validateGeometryWithBackend as jasmine.Spy).and.returnValue(
-        Promise.resolve({ valid: false, message: 'Self-intersections found in the uploaded geometry.' })
+        Promise.resolve({ message: 'Self-intersections found in the uploaded geometry.', valid: false })
       );
 
       const coords: Position[][][] = [
         [[[0, 0], [1, 1], [1, 0], [0, 1], [0, 0]]]
       ];
 
-      await expectAsync(service.validateMultiPolygon(coords))
-        .toBeRejectedWithError('Self-intersections found in the uploaded geometry.');
+      (service.validateGeometryWithBackend as jasmine.Spy).and.returnValue(Promise.resolve({ message: 'Self-intersections found in the uploaded geometry.', valid: false }));
+
+      await expectAsync(service.validateMultiPolygon(coords)).toBeRejectedWithError('Self-intersections found in the uploaded geometry.');
     });
 
     it('should throw an error when geometry is outside of BC', async () => {
@@ -867,11 +868,9 @@ describe('SpatialService', () => {
         [[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]]
       ];
 
-      spyOn(service, 'validateGeometryWithBackend').and.returnValue(
-        Promise.resolve({ valid: false, message: 'Geometry is outside of BC.' })
-      );
+      (service.validateGeometryWithBackend as jasmine.Spy).and.returnValue(Promise.resolve({ message: 'Geometry is invalid.', valid: false }));
 
-      await expectAsync(service.validateMultiPolygon(coords)).toBeRejectedWithError('Geometry is outside of BC.');
+      await expectAsync(service.validateMultiPolygon(coords)).toBeRejectedWithError('Geometry is invalid.');
     });
 
     it('should accept a GeoJSON.MultiPolygon input and validate it', async () => {

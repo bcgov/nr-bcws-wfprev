@@ -2,7 +2,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
-import { of } from 'rxjs';
+import { of, asyncScheduler } from 'rxjs';
 import { ProjectDetailsComponent } from 'src/app/components/edit-project/project-details/project-details.component';
 import { AppConfigService } from 'src/app/services/app-config.service';
 import { EditProjectTabIndexes } from 'src/app/utils';
@@ -10,6 +10,9 @@ import { EditProjectComponent } from './edit-project.component';
 import { ProjectFiscalsComponent } from './project-fiscals/project-fiscals.component';
 import { OAuthService } from 'angular-oauth2-oidc';
 import L from 'leaflet';
+import { CodeTableServices } from 'src/app/services/code-table-services';
+import { ProjectService } from 'src/app/services/project-services';
+import { AttachmentService } from 'src/app/services/attachment-service';
 
 const mockApplicationConfig = {
   application: {
@@ -25,7 +28,9 @@ const mockApplicationConfig = {
     clientId: 'test-client',
     authScopes: 'TEST.*',
   },
-  rest: {},
+  rest: {
+    wfprev: 'http://test.com/api/wfprev-api'
+  },
 };
 
 class MockAppConfigService {
@@ -43,7 +48,9 @@ class MockAppConfigService {
       clientId: 'test-client',
       authScopes: 'TEST.*',
     },
-    rest: {},
+    rest: {
+      wfprev: 'http://test.com/api/wfprev-api'
+    },
   };
 
   loadAppConfig(): Promise<void> {
@@ -56,7 +63,54 @@ class MockAppConfigService {
 }
 
 class MockProjectService {
+  getProjectByProjectGuid(guid: string) {
+    return of({
+      projectGuid: guid,
+      projectName: 'Test Project',
+      latitude: 50,
+      longitude: -120,
+      projectDescription: 'Test Description',
+      projectTypeCode: { projectTypeCode: 'TYPE-01' },
+      primaryObjectiveTypeCode: { objectiveTypeCode: 'OBJ-01' }
+    }, asyncScheduler);
+  }
+  getProjectFiscalsByProjectGuid(guid: string) {
+    return of({ _embedded: { projectFiscals: [] } });
+  }
+  getProjectBoundaries(guid: string) {
+    return of({ _embedded: { projectBoundary: [] } });
+  }
+  getFiscalActivities(projectGuid: string, fiscalGuid: string) {
+    return of({ _embedded: { activities: [] } });
+  }
+  deleteEvaluationCriteriaSummary(projectGuid: string, EvaluationCriteriaSummaryGuid: string) {
+    return of({});
+  }
+  updateProject(projectGuid: string, projectData: any) {
+    return of(projectData);
+  }
+  getEvaluationCriteriaSummaries(projectGuid: string) {
+    return of([]);
+  }
+}
 
+class MockCodeTableServices {
+  getProgramAreaCodes() { return of([]); }
+  getForestRegionCodes() { return of([]); }
+  getForestDistrictCodes() { return of([]); }
+  getBcParksRegionCodes() { return of([]); }
+  getBcParksSectionCodes() { return of([]); }
+  getPlanFiscalStatusCodes() { return of([]); }
+  getActivityCategoryCodes() { return of([]); }
+  getProjectTypeCodes() { return of([]); }
+  getFireCentres() { return of([]); }
+  getObjectiveTypeCodes() { return of([]); }
+}
+
+class MockAttachmentService {
+  getProjectAttachments(projectGuid: string) {
+    return of({ _embedded: { fileAttachment: [] } });
+  }
 }
 
 class MockOAuthService {
@@ -100,11 +154,13 @@ describe('EditProjectComponent (tab missing)', () => {
             }
           }
         },
-        {
-          provide: Router,
+        { provide: Router,
           useValue: jasmine.createSpyObj('Router', ['navigate'])
         },
-        { provide: AppConfigService, useClass: MockAppConfigService }
+        { provide: AppConfigService, useClass: MockAppConfigService },
+        { provide: ProjectService, useClass: MockProjectService },
+        { provide: CodeTableServices, useClass: MockCodeTableServices },
+        { provide: AttachmentService, useClass: MockAttachmentService },
       ]
     }).compileComponents();
 
@@ -162,7 +218,9 @@ describe('EditProjectComponent', () => {
       providers: [
         { provide: ActivatedRoute, useValue: mockActivatedRoute },
         { provide: AppConfigService, useClass: MockAppConfigService },
-        { provide: MockProjectService, useClass: MockProjectService },
+        { provide: ProjectService, useClass: MockProjectService },
+        { provide: CodeTableServices, useClass: MockCodeTableServices },
+        { provide: AttachmentService, useClass: MockAttachmentService },
         { provide: Router, useValue: { navigate: jasmine.createSpy('navigate') } },
         { provide: OAuthService, useClass: MockOAuthService },
       ],
@@ -243,7 +301,12 @@ describe('EditProjectComponent', () => {
   });
 
   it('should not reload ProjectFiscalsComponent if it is already loaded', () => {
-    component.projectFiscalsComponentRef = {} as any;
+    component.projectFiscalsComponentRef = {
+      instance: {
+        refreshMap: jasmine.createSpy('refreshMap'),
+        currentFiscalGuid: 'abc-123'
+      }
+    } as any;
     component.onTabChange({ index: 1 });
 
     expect(component.fiscalsContainer).toBeTruthy();
@@ -274,7 +337,7 @@ describe('EditProjectComponent', () => {
   });
 
   it('should call refreshFiscalData when switching back to Details tab', () => {
-    component.projectDetailsComponent = jasmine.createSpyObj<ProjectDetailsComponent>('ProjectDetailsComponent', ['refreshFiscalData']);
+    component.projectDetailsComponent = jasmine.createSpyObj<ProjectDetailsComponent>('ProjectDetailsComponent', ['refreshFiscalData', 'refreshMap']);
     component.onTabChange({ index: 0 });
 
     expect(component.projectDetailsComponent.refreshFiscalData).toHaveBeenCalled();
@@ -305,7 +368,8 @@ describe('EditProjectComponent', () => {
 
     component.projectFiscalsComponentRef = {
       instance: {
-        currentFiscalGuid: 'abc-123'
+        currentFiscalGuid: 'abc-123',
+        refreshMap: () => {}
       }
     } as any;
 
@@ -376,6 +440,9 @@ describe('EditProjectComponent (fallback test)', () => {
         { provide: ActivatedRoute, useValue: mockActivatedRoute },
         { provide: Router, useValue: routerSpy },
         { provide: AppConfigService, useClass: MockAppConfigService },
+        { provide: ProjectService, useClass: MockProjectService },
+        { provide: CodeTableServices, useClass: MockCodeTableServices },
+        { provide: AttachmentService, useClass: MockAttachmentService },
       ]
     }).compileComponents();
 
@@ -424,6 +491,9 @@ describe('EditProjectComponent (extended coverage)', () => {
           }
         },
         { provide: AppConfigService, useClass: MockAppConfigService },
+        { provide: ProjectService, useClass: MockProjectService },
+        { provide: CodeTableServices, useClass: MockCodeTableServices },
+        { provide: AttachmentService, useClass: MockAttachmentService },
       ]
 
     }).compileComponents();
