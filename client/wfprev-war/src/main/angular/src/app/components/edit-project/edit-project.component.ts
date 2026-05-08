@@ -149,6 +149,11 @@ export class EditProjectComponent implements CanComponentDeactivate, OnInit {
       );
     } else if (event.index === 0) {
       this.projectDetailsComponent.refreshFiscalData();
+      this.projectDetailsComponent.refreshMap();
+    }
+
+    if (isFiscalTab && this.projectFiscalsComponentRef) {
+      this.projectFiscalsComponentRef.instance.refreshMap();
     }
   }
 

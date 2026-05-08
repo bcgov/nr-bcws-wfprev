@@ -10,11 +10,11 @@ describe('DetailedErrorMessageComponent', () => {
     await TestBed.configureTestingModule({
       imports: [DetailedErrorMessageComponent],
       providers: [
-        { provide: MAT_SNACK_BAR_DATA, useValue: {} },
-        { provide: MatSnackBarRef, useValue: { dismiss: jasmine.createSpy('dismiss') } }
+        { provide: MAT_SNACK_BAR_DATA, useValue: { message: 'Error message', reasons: [] } },
+        { provide: MatSnackBarRef, useValue: jasmine.createSpyObj('MatSnackBarRef', ['dismiss']) }
       ]
     })
-    .compileComponents();
+      .compileComponents();
 
     fixture = TestBed.createComponent(DetailedErrorMessageComponent);
     component = fixture.componentInstance;

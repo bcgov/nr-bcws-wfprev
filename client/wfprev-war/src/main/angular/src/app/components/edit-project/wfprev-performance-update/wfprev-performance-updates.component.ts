@@ -9,15 +9,17 @@ import { MatDialog } from '@angular/material/dialog';
 import { PerformanceUpdateModalWindowComponent } from '../../wfprev-performance-update-modal-window/wfprev-performance-update-modal-window.component';
 import { CommonModule } from '@angular/common';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { forkJoin } from 'rxjs';
+import { finalize, forkJoin } from 'rxjs';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { CodeTableServices } from 'src/app/services/code-table-services';
 import { CodeTableNames } from 'src/app/utils/constants';
 import { ProjectFiscalsSignalService } from 'src/app/services/project-fiscals-signal.service';
+import { StatusBadgeComponent } from '../../shared/status-badge/status-badge.component';
 
 @Component({
   selector: 'wfprev-performance-updates',
   standalone: true,
-  imports: [CommonModule, MatExpansionPanel, ExpansionIndicatorComponent, MatExpansionPanelHeader, IconButtonComponent],
+  imports: [CommonModule, MatExpansionPanel, ExpansionIndicatorComponent, MatExpansionPanelHeader, IconButtonComponent, StatusBadgeComponent, MatProgressSpinnerModule],
   templateUrl: './wfprev-performance-updates.component.html',
   styleUrl: './wfprev-performance-updates.component.scss'
 })
@@ -53,6 +55,7 @@ export class PerformanceUpdatesComponent implements OnChanges {
 
   updates: PerformanceUpdate[] = [];
   isUpdatesCalled: boolean = false;
+  isLoading = true;
 
   constructor(
     private readonly projectService: ProjectService,
@@ -67,6 +70,8 @@ export class PerformanceUpdatesComponent implements OnChanges {
     if (changes['fiscalGuid'] && changes['fiscalGuid'].currentValue && !this.isUpdatesCalled) {
       this.isUpdatesCalled = true;
       this.getPerformanceUpdates();
+    } else if (changes['fiscalGuid'] && !changes['fiscalGuid'].currentValue) {
+      this.isLoading = false;
     }
   }
 
@@ -75,21 +80,26 @@ export class PerformanceUpdatesComponent implements OnChanges {
       this.projectGuid = this.route.snapshot?.queryParamMap?.get('projectGuid') || '';
 
       if (this.projectGuid) {
-        this.projectService.getPerformanceUpdates(this.projectGuid, this.fiscalGuid).subscribe({
-          next: (data) => {
-            this.updates = data?._embedded?.performanceUpdate ?? [];
-          },
-          error: (error) => {
-            console.error('Error fetching performance updates:', error);
-
-            this.snackbarService.open(
-              'Failed to load performance updates. Please try again later.',
-              'OK',
-              { duration: 5000, panelClass: 'snackbar-error' }
-            );
-          }
-        });
+        this.projectService.getPerformanceUpdates(this.projectGuid, this.fiscalGuid)
+          .pipe(finalize(() => this.isLoading = false))
+          .subscribe({
+            next: (data: any) => {
+              this.updates = data?._embedded?.performanceUpdate ?? [];
+            },
+            error: (error) => {
+              console.error('Error fetching performance updates:', error);
+              this.snackbarService.open(
+                'Failed to load performance updates. Please try again later.',
+                'OK',
+                { duration: 5000, panelClass: 'snackbar-error' }
+              );
+            }
+          });
+      } else {
+        this.isLoading = false;
       }
+    } else {
+      this.isLoading = false;
     }
   }
 

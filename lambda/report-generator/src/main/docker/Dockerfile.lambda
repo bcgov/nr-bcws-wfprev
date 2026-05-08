@@ -1,5 +1,5 @@
 # Stage 1: Build the native binary
-FROM quay.io/quarkus/ubi-quarkus-graalvmce-builder-image:jdk-21 AS builder
+FROM ghcr.io/graalvm/graalvm-community:21 AS builder
 
 WORKDIR /project
 COPY . .

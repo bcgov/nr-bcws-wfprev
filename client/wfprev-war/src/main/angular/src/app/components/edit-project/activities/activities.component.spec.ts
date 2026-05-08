@@ -15,10 +15,10 @@ import { ActivatedRoute } from '@angular/router';
 import { Observable, of, Subject, throwError } from 'rxjs';
 import { IconButtonComponent } from 'src/app/components/shared/icon-button/icon-button.component';
 import { CodeTableServices } from 'src/app/services/code-table-services';
-import { ProjectService } from 'src/app/services/project-services';
-import { ActivitiesComponent } from './activities.component';
-import { TokenService } from 'src/app/services/token.service';
 import { PermissionsService } from 'src/app/services/permissions.service';
+import { ProjectService } from 'src/app/services/project-services';
+import { TokenService } from 'src/app/services/token.service';
+import { ActivitiesComponent } from './activities.component';
 
 class MockTokenService {
   doesUserHaveApplicationPermissions() { return false; }
@@ -37,6 +37,7 @@ describe('ActivitiesComponent', () => {
   let mockCodeTableService: jasmine.SpyObj<CodeTableServices>;
   let mockSnackbarService: jasmine.SpyObj<MatSnackBar>;
   let mockDialog: jasmine.SpyObj<MatDialog>;
+  let mockTokenService: jasmine.SpyObj<TokenService>;
 
   beforeEach(async () => {
     mockProjectService = jasmine.createSpyObj('ProjectService', [
@@ -55,6 +56,7 @@ describe('ActivitiesComponent', () => {
     ]);
     mockSnackbarService = jasmine.createSpyObj('MatSnackBar', ['open']);
     mockDialog = jasmine.createSpyObj('MatDialog', ['open']);
+    mockTokenService = jasmine.createSpyObj('TokenService', ['getIdir', 'getOauthToken']);
     mockCodeTableService.getContractPhaseCodes.and.returnValue(of([]));
     mockCodeTableService.getFundingSourceCodes.and.returnValue(of([]));
     mockCodeTableService.fetchCodeTable.and.returnValue(of({ _embedded: {} }));
@@ -99,7 +101,7 @@ describe('ActivitiesComponent', () => {
 
   it('should initialize activities on changes', () => {
     spyOn(component, 'getActivities').and.callThrough();
-    component.ngOnChanges({ fiscalGuid: { currentValue: 'test-guid', previousValue: '', firstChange: true, isFirstChange: () => true } });
+    component.ngOnChanges({ fiscalGuid: { currentValue: 'test-guid', firstChange: true, isFirstChange: () => true, previousValue: '' } });
     expect(component.getActivities).toHaveBeenCalled();
   });
 
@@ -110,9 +112,9 @@ describe('ActivitiesComponent', () => {
     component.ngOnChanges({
       fiscalGuid: {
         currentValue: 'test-guid',
-        previousValue: '',
         firstChange: true,
-        isFirstChange: () => true
+        isFirstChange: () => true,
+        previousValue: ''
       }
     });
 
@@ -122,10 +124,10 @@ describe('ActivitiesComponent', () => {
 
   it('should create an activity form with correct values', () => {
     const testActivity = {
+      activityEndDate: '2025-03-20T00:00:00.000+00:00',
       activityGuid: 'test-guid',
       activityName: 'Test Activity',
       activityStartDate: '2025-03-10T00:00:00.000+00:00',
-      activityEndDate: '2025-03-20T00:00:00.000+00:00',
     };
 
     const form = component.createActivityForm(testActivity);
@@ -260,10 +262,10 @@ describe('ActivitiesComponent', () => {
 
   it('should set form control to pristine on cancel', () => {
     const testActivity = {
+      activityEndDate: '2025-03-20T00:00:00.000+00:00',
       activityGuid: 'test-guid',
       activityName: 'Original Name',
       activityStartDate: '2025-03-10T00:00:00.000+00:00',
-      activityEndDate: '2025-03-20T00:00:00.000+00:00',
     };
 
     component.activities.push(testActivity);
@@ -305,14 +307,14 @@ describe('ActivitiesComponent', () => {
 
     // Mock silvicultureMethodCode data
     component.silvicultureMethodCode = [
-      { silvicultureTechniqueGuid: 'technique1', silvicultureMethodGuid: 'method1' },
-      { silvicultureTechniqueGuid: 'technique2', silvicultureMethodGuid: 'method2' }
+      { silvicultureMethodGuid: 'method1', silvicultureTechniqueGuid: 'technique1' },
+      { silvicultureMethodGuid: 'method2', silvicultureTechniqueGuid: 'technique2' }
     ];
 
     component.onTechniqueChange('technique1', form);
 
     expect(form.get('filteredMethodCode')?.value).toEqual([
-      { silvicultureTechniqueGuid: 'technique1', silvicultureMethodGuid: 'method1' }
+      { silvicultureMethodGuid: 'method1', silvicultureTechniqueGuid: 'technique1' }
     ]);
     expect(form.get('silvicultureMethodGuid')?.enabled).toBeTrue();
     expect(form.get('silvicultureMethodGuid')?.value).toBeNull();
@@ -328,9 +330,9 @@ describe('ActivitiesComponent', () => {
 
     // Mock silvicultureMethodCode data
     component.silvicultureMethodCode = [
-      { silvicultureTechniqueGuid: 'technique1', silvicultureMethodGuid: 'method_active', systemEndTimestamp: futureDate.toISOString() },
-      { silvicultureTechniqueGuid: 'technique1', silvicultureMethodGuid: 'method_expired', systemEndTimestamp: pastDate.toISOString() },
-      { silvicultureTechniqueGuid: 'technique1', silvicultureMethodGuid: 'method_no_expiry', systemEndTimestamp: null }
+      { silvicultureMethodGuid: 'method_active', silvicultureTechniqueGuid: 'technique1', systemEndTimestamp: futureDate.toISOString() },
+      { silvicultureMethodGuid: 'method_expired', silvicultureTechniqueGuid: 'technique1', systemEndTimestamp: pastDate.toISOString() },
+      { silvicultureMethodGuid: 'method_no_expiry', silvicultureTechniqueGuid: 'technique1', systemEndTimestamp: null }
     ];
 
     component.onTechniqueChange('technique1', form);
@@ -344,16 +346,16 @@ describe('ActivitiesComponent', () => {
 
   it('should include expired method code if it is the currently selected value', () => {
     const form = component.createActivityForm({
-      silvicultureTechniqueGuid: 'technique1',
-      silvicultureMethodGuid: 'method_expired'
+      silvicultureMethodGuid: 'method_expired',
+      silvicultureTechniqueGuid: 'technique1'
     });
     component.activityForms.push(form);
 
     const pastDate = new Date(new Date().getTime() - 1000 * 60 * 60 * 24); // Yesterday
 
     component.silvicultureMethodCode = [
-      { silvicultureTechniqueGuid: 'technique1', silvicultureMethodGuid: 'method_active', systemEndTimestamp: null },
-      { silvicultureTechniqueGuid: 'technique1', silvicultureMethodGuid: 'method_expired', systemEndTimestamp: pastDate.toISOString() }
+      { silvicultureMethodGuid: 'method_active', silvicultureTechniqueGuid: 'technique1', systemEndTimestamp: null },
+      { silvicultureMethodGuid: 'method_expired', silvicultureTechniqueGuid: 'technique1', systemEndTimestamp: pastDate.toISOString() }
     ];
 
     component.onTechniqueChange('technique1', form);
@@ -382,8 +384,8 @@ describe('ActivitiesComponent', () => {
     const form = component.createActivityForm({
       isResultsReportableInd: true,
       silvicultureBaseGuid: null,
-      silvicultureTechniqueGuid: null,
-      silvicultureMethodGuid: null
+      silvicultureMethodGuid: null,
+      silvicultureTechniqueGuid: null
     });
     component.activityForms.push(form);
 
@@ -391,15 +393,15 @@ describe('ActivitiesComponent', () => {
   });
 
   it('should construct Base A - Technique B title with missing elements when Results Reportable is ON', () => {
-    component.silvicultureBaseCode = [{ silvicultureBaseGuid: 'base1', description: 'Base A' }];
-    component.silvicultureTechniqueCode = [{ silvicultureTechniqueGuid: 'tech1', description: 'Technique B', silvicultureBaseGuid: 'base1' }];
-    component.silvicultureMethodCode = [{ silvicultureMethodGuid: 'method1', description: 'Method C' }];
+    component.silvicultureBaseCode = [{ description: 'Base A', silvicultureBaseGuid: 'base1' }];
+    component.silvicultureTechniqueCode = [{ description: 'Technique B', silvicultureBaseGuid: 'base1', silvicultureTechniqueGuid: 'tech1' }];
+    component.silvicultureMethodCode = [{ description: 'Method C', silvicultureMethodGuid: 'method1' }];
 
     const form = component.createActivityForm({
       isResultsReportableInd: true,
       silvicultureBaseGuid: 'base1',
-      silvicultureTechniqueGuid: 'tech1',
-      silvicultureMethodGuid: null
+      silvicultureMethodGuid: null,
+      silvicultureTechniqueGuid: 'tech1'
     });
     component.activityForms.push(form);
 
@@ -408,16 +410,16 @@ describe('ActivitiesComponent', () => {
 
 
   it('should construct Base A title with missing elements when Results Reportable is ON', () => {
-    component.silvicultureBaseCode = [{ silvicultureBaseGuid: 'base1', description: 'Base A' }];
-    component.silvicultureTechniqueCode = [{ silvicultureTechniqueGuid: 'tech1', description: 'Technique B', silvicultureBaseGuid: 'base1' }];
-    component.silvicultureMethodCode = [{ silvicultureMethodGuid: 'method1', description: 'Method C' }];
+    component.silvicultureBaseCode = [{ description: 'Base A', silvicultureBaseGuid: 'base1' }];
+    component.silvicultureTechniqueCode = [{ description: 'Technique B', silvicultureBaseGuid: 'base1', silvicultureTechniqueGuid: 'tech1' }];
+    component.silvicultureMethodCode = [{ description: 'Method C', silvicultureMethodGuid: 'method1' }];
 
     // Only Base and Technique set
     const form1 = component.createActivityForm({
       isResultsReportableInd: true,
       silvicultureBaseGuid: 'base1',
-      silvicultureTechniqueGuid: 'tech1',
-      silvicultureMethodGuid: null
+      silvicultureMethodGuid: null,
+      silvicultureTechniqueGuid: 'tech1'
     });
 
     component.activityForms.push(form1);
@@ -428,8 +430,8 @@ describe('ActivitiesComponent', () => {
     const form2 = component.createActivityForm({
       isResultsReportableInd: true,
       silvicultureBaseGuid: 'base1',
-      silvicultureTechniqueGuid: null,
-      silvicultureMethodGuid: null
+      silvicultureMethodGuid: null,
+      silvicultureTechniqueGuid: null
     });
 
     component.activityForms.push(form2);
@@ -441,8 +443,8 @@ describe('ActivitiesComponent', () => {
 
   it('should enable required validator and disable activityName when Results Reportable is ON', () => {
     const form = component.createActivityForm({
-      isResultsReportableInd: true,
-      activityName: 'Original Name'
+      activityName: 'Original Name',
+      isResultsReportableInd: true
     });
 
     component.activityForms.push(form);
@@ -457,8 +459,8 @@ describe('ActivitiesComponent', () => {
 
   it('should clear validators and enable activityName when Results Reportable is OFF', () => {
     const form = component.createActivityForm({
-      isResultsReportableInd: false,
-      activityName: 'Original Name'
+      activityName: 'Original Name',
+      isResultsReportableInd: false
     });
 
     component.activityForms.push(form);
@@ -472,15 +474,15 @@ describe('ActivitiesComponent', () => {
   });
 
   it('should update activityName dynamically when base, technique, or method changes', () => {
-    component.silvicultureBaseCode = [{ silvicultureBaseGuid: 'base1', description: 'Base A' }];
-    component.silvicultureTechniqueCode = [{ silvicultureTechniqueGuid: 'tech1', description: 'Technique B' }];
-    component.silvicultureMethodCode = [{ silvicultureMethodGuid: 'method1', description: 'Method C' }];
+    component.silvicultureBaseCode = [{ description: 'Base A', silvicultureBaseGuid: 'base1' }];
+    component.silvicultureTechniqueCode = [{ description: 'Technique B', silvicultureTechniqueGuid: 'tech1' }];
+    component.silvicultureMethodCode = [{ description: 'Method C', silvicultureMethodGuid: 'method1' }];
 
     const form = component.createActivityForm({
       isResultsReportableInd: true,
       silvicultureBaseGuid: '',
-      silvicultureTechniqueGuid: '',
-      silvicultureMethodGuid: ''
+      silvicultureMethodGuid: '',
+      silvicultureTechniqueGuid: ''
     });
 
     component.activityForms.push(form);
@@ -592,7 +594,7 @@ describe('ActivitiesComponent', () => {
     component.activityForms.push(form);
 
     component.silvicultureTechniqueCode = [{ silvicultureBaseGuid: 'base1', silvicultureTechniqueGuid: 'tech1' }];
-    component.silvicultureMethodCode = [{ silvicultureTechniqueGuid: 'tech1', silvicultureMethodGuid: 'method1' }];
+    component.silvicultureMethodCode = [{ silvicultureMethodGuid: 'method1', silvicultureTechniqueGuid: 'tech1' }];
 
     component.onBaseChange('base1', form);
 
@@ -760,8 +762,8 @@ describe('ActivitiesComponent', () => {
 
   it('should reset technique and method if baseGuid is empty', () => {
     const form = component.createActivityForm({
-      silvicultureTechniqueGuid: 'tech1',
-      silvicultureMethodGuid: 'method1'
+      silvicultureMethodGuid: 'method1',
+      silvicultureTechniqueGuid: 'tech1'
     });
 
     component.activityForms.push(form);
@@ -779,8 +781,8 @@ describe('ActivitiesComponent', () => {
   it('should reset technique and method if current technique is invalid for base', () => {
     component.silvicultureTechniqueCode = [{ silvicultureBaseGuid: 'base1', silvicultureTechniqueGuid: 'techA' }];
     const form = component.createActivityForm({
-      silvicultureTechniqueGuid: 'invalid-tech',
-      silvicultureMethodGuid: 'method1'
+      silvicultureMethodGuid: 'method1',
+      silvicultureTechniqueGuid: 'invalid-tech'
     });
 
     component.activityForms.push(form);
@@ -795,13 +797,13 @@ describe('ActivitiesComponent', () => {
   it('should reset method only if current method is invalid for valid technique', () => {
     component.silvicultureTechniqueCode = [{ silvicultureBaseGuid: 'base1', silvicultureTechniqueGuid: 'tech1' }];
     component.silvicultureMethodCode = [
-      { silvicultureTechniqueGuid: 'tech1', silvicultureMethodGuid: 'methodA' }
+      { silvicultureMethodGuid: 'methodA', silvicultureTechniqueGuid: 'tech1' }
     ];
 
     const form = component.createActivityForm({
       silvicultureBaseGuid: 'base1',
-      silvicultureTechniqueGuid: 'tech1',
-      silvicultureMethodGuid: 'invalid-method'
+      silvicultureMethodGuid: 'invalid-method',
+      silvicultureTechniqueGuid: 'tech1'
     });
 
     component.activityForms.push(form);
@@ -815,13 +817,13 @@ describe('ActivitiesComponent', () => {
   it('should retain technique and method if both are valid', () => {
     component.silvicultureTechniqueCode = [{ silvicultureBaseGuid: 'base1', silvicultureTechniqueGuid: 'tech1' }];
     component.silvicultureMethodCode = [
-      { silvicultureTechniqueGuid: 'tech1', silvicultureMethodGuid: 'method1' }
+      { silvicultureMethodGuid: 'method1', silvicultureTechniqueGuid: 'tech1' }
     ];
 
     const form = component.createActivityForm({
       silvicultureBaseGuid: 'base1',
-      silvicultureTechniqueGuid: 'tech1',
-      silvicultureMethodGuid: 'method1'
+      silvicultureMethodGuid: 'method1',
+      silvicultureTechniqueGuid: 'tech1'
     });
 
     component.activityForms.push(form);
@@ -848,7 +850,7 @@ describe('ActivitiesComponent', () => {
 
   it('should reset method if current method does not belong to selected technique', () => {
     component.silvicultureMethodCode = [
-      { silvicultureTechniqueGuid: 'tech1', silvicultureMethodGuid: 'methodA' }
+      { silvicultureMethodGuid: 'methodA', silvicultureTechniqueGuid: 'tech1' }
     ];
 
     const form = component.createActivityForm({ silvicultureMethodGuid: 'invalid-method' });
@@ -857,7 +859,7 @@ describe('ActivitiesComponent', () => {
     component.onTechniqueChange('tech1', form);
 
     expect(form.get('filteredMethodCode')?.value).toEqual([
-      { silvicultureTechniqueGuid: 'tech1', silvicultureMethodGuid: 'methodA' }
+      { silvicultureMethodGuid: 'methodA', silvicultureTechniqueGuid: 'tech1' }
     ]);
     expect(form.get('silvicultureMethodGuid')?.value).toBeNull();
   });
@@ -1001,7 +1003,7 @@ describe('ActivitiesComponent', () => {
     spyOn(component, 'loadCodeTables').and.returnValue(of(void 0));
 
     component.ngOnChanges({
-      fiscalGuid: { currentValue: 'guid', previousValue: '', firstChange: true, isFirstChange: () => true }
+      fiscalGuid: { currentValue: 'guid', firstChange: true, isFirstChange: () => true, previousValue: '' }
     });
 
     tick();
@@ -1016,7 +1018,7 @@ describe('ActivitiesComponent', () => {
     spyOn(component, 'loadCodeTables').and.returnValue(throwError(() => new Error('fail')));
 
     component.ngOnChanges({
-      fiscalGuid: { currentValue: 'guid', previousValue: '', firstChange: true, isFirstChange: () => true }
+      fiscalGuid: { currentValue: 'guid', firstChange: true, isFirstChange: () => true, previousValue: '' }
     });
 
     tick();
@@ -1027,7 +1029,7 @@ describe('ActivitiesComponent', () => {
   it('should skip ngOnChanges logic if fiscalGuid is missing', () => {
     spyOn(component, 'loadCodeTables');
     spyOn(component, 'getActivities');
-    component.ngOnChanges({ fiscalGuid: { currentValue: '', previousValue: '', firstChange: true, isFirstChange: () => true } });
+    component.ngOnChanges({ fiscalGuid: { currentValue: '', firstChange: true, isFirstChange: () => true, previousValue: '' } });
     expect(component.loadCodeTables).not.toHaveBeenCalled();
     expect(component.getActivities).not.toHaveBeenCalled();
   });

@@ -1,4 +1,4 @@
-import { CommonModule, CurrencyPipe } from '@angular/common';
+import { CommonModule, CurrencyPipe, Location } from '@angular/common';
 import { ChangeDetectorRef, Component, effect, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -9,6 +9,7 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltip, MatTooltipModule } from '@angular/material/tooltip';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { ConfirmationDialogComponent } from 'src/app/components/confirmation-dialog/confirmation-dialog.component';
@@ -61,7 +62,8 @@ import { ProjectFiscalsSignalService } from 'src/app/services/project-fiscals-si
     EndorsementApprovalComponent,
     TimestampComponent,
     TextareaComponent,
-    PerformanceUpdatesComponent
+    PerformanceUpdatesComponent,
+    MatProgressSpinnerModule
 ]
 })
 export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
@@ -85,6 +87,7 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
   readonly CodeTableKeys = CodeTableKeys;
   readonly FiscalStatuses = FiscalStatuses;
   isSavingFiscal: boolean[] = [];
+  isLoading = true;
   private initialized = false;
 
   constructor(
@@ -97,7 +100,8 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
     public readonly dialog: MatDialog,
     public cd: ChangeDetectorRef,
     private readonly tokenService: TokenService,
-    private readonly events: ProjectFiscalsSignalService
+    private readonly events: ProjectFiscalsSignalService,
+    private readonly location: Location
   ) {
     effect(() => {
       this.events.reloadFiscals();
@@ -110,6 +114,8 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
 
     });
    }
+   
+  private routeNavTimeout: any;
 
   ngOnInit(): void {
     this.loadCodeTables();
@@ -128,7 +134,12 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
       }
     });
 
-    this.loadProjectFiscals();
+    this.projectGuid = this.route.snapshot?.queryParamMap?.get('projectGuid') || '';
+    if (this.projectGuid) {
+      this.loadProjectFiscals();
+    } else {
+      this.isLoading = false;
+    }
     const formattedName = this.tokenService.getUserFullName(true);
     if (formattedName) {
       this.currentUser = formattedName;
@@ -258,6 +269,7 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
     this.projectGuid = this.route.snapshot?.queryParamMap?.get('projectGuid') ?? '';
     if (!this.projectGuid) return;
 
+    this.isLoading = true;
     this.fetchData(
       this.projectService.getProjectFiscalsByProjectGuid(this.projectGuid),
       (data) => {
@@ -324,7 +336,6 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
     } else {
       this.currentFiscalGuid = ''; // Reset if no fiscal is selected
     }
-    this.cd.detectChanges();
   }
 
   onTabChange(index: number): void {
@@ -333,11 +344,17 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
 
     const fiscalGuid = this.projectFiscals[index]?.projectPlanFiscalGuid;
     if (fiscalGuid) {
-      this.router.navigate([], {
-        relativeTo: this.route,
-        queryParams: { ...this.route.snapshot.queryParams, fiscalGuid },
-        queryParamsHandling: 'merge'
-      });
+      if (this.routeNavTimeout) {
+        clearTimeout(this.routeNavTimeout);
+      }
+      this.routeNavTimeout = setTimeout(() => {
+        const urlTree = this.router.createUrlTree([], {
+          relativeTo: this.route,
+          queryParams: { ...this.route.snapshot.queryParams, fiscalGuid },
+          queryParamsHandling: 'merge'
+        });
+        this.location.replaceState(urlTree.toString());
+      }, 300);
     }
   }
 
@@ -402,10 +419,14 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
 
   fetchData<T>(fetchFn: Observable<T>, assignFn: (data: T) => void, errorMessage: string): void {
     fetchFn.subscribe({
-      next: (data) => assignFn(data),
+      next: (data) => {
+        assignFn(data);
+        this.isLoading = false;
+      },
       error: (err) => {
         console.error(errorMessage, err);
         assignFn({} as T); // Assign default empty data
+        this.isLoading = false;
       },
     });
   }
@@ -586,9 +607,14 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
   }
 
   onBoundariesChanged(): void {
-
     if (this.fiscalMapComponent) {
       this.fiscalMapComponent.getAllActivitiesBoundaries(); // refresh boundaries on map
+    }
+  }
+
+  refreshMap(): void {
+    if (this.fiscalMapComponent) {
+      this.fiscalMapComponent.refreshMap();
     }
   }
 
@@ -643,18 +669,6 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
   }
 
 
-  getStatusDescription(i: number): string | null {
-    const form = this.fiscalForms[i];
-    if (!form) return null;
-    const code = form.get('planFiscalStatusCode')?.value;
-    return (
-      this.planFiscalStatusCode.find((item) => item.planFiscalStatusCode === code)?.description ?? null
-    );
-  }
-
-  getStatusIcon(status: string) {
-    return PlanFiscalStatusIcons[status];
-  }
 
   updateFiscalStatus(index: number, newStatus: string): void {
     const form = this.fiscalForms[index];

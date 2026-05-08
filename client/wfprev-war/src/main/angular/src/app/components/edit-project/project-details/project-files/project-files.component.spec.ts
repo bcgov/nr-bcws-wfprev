@@ -7,7 +7,8 @@ import { Position } from 'geojson';
 import { of, throwError } from 'rxjs';
 import { AddAttachmentComponent } from 'src/app/components/add-attachment/add-attachment.component';
 import { ConfirmationDialogComponent } from 'src/app/components/confirmation-dialog/confirmation-dialog.component';
-import { FileAttachment, ProjectFile } from 'src/app/components/models';
+import { DetailedErrorMessageComponent } from 'src/app/components/detailed-error-message/detailed-error-message.component';
+import { AttachmentTypeCode, FileAttachment, ProjectFile } from 'src/app/components/models';
 import { AttachmentService } from 'src/app/services/attachment-service';
 import { ProjectService } from 'src/app/services/project-services';
 import { SpatialService } from 'src/app/services/spatial-services';
@@ -266,7 +267,7 @@ describe('ProjectFilesComponent', () => {
       component.loadActivityAttachments();
 
       expect(component.projectFiles.length).toBe(1);
-      expect(component.projectFiles[0].polygonHectares).toBeNull();
+      expect(component.projectFiles[0].polygonHectares).toBeUndefined();
     });
 
     it('should handle missing fileAttachment array', () => {
@@ -301,6 +302,11 @@ describe('ProjectFilesComponent', () => {
     });
 
     it('should log error on getActivityBoundaries error', () => {
+      mockAttachmentService.getActivityAttachments.and.returnValue(of({
+        _embedded: {
+          fileAttachment: [{ fileName: 'test.txt' }]
+        }
+      }));
       mockProjectService.getActivityBoundaries.and.returnValue(
         throwError(() => new Error('Failed to load boundaries'))
       );
@@ -336,7 +342,7 @@ describe('ProjectFilesComponent', () => {
       const description = 'my description';
 
       mockDialog.open.and.returnValue({
-        afterClosed: () => of({ file: mockFile, description, type: 'Activity Polygon' }),
+        afterClosed: () => of({ type: 'MAP', description, file: mockFile }),
       } as any);
 
       spyOn(component, 'uploadFile').and.stub();
@@ -344,7 +350,7 @@ describe('ProjectFilesComponent', () => {
       component.openFileUploadModal();
 
       expect(component.attachmentDescription).toBe(description);
-      expect(component.uploadFile).toHaveBeenCalledWith(mockFile, 'Activity Polygon');
+      expect(component.uploadFile).toHaveBeenCalledWith(mockFile, 'MAP');
     });
   });
 
@@ -353,17 +359,17 @@ describe('ProjectFilesComponent', () => {
     it('should open file upload modal and call uploadFile if a file is selected', () => {
       const mockFile = new File(['content'], 'test-file.txt', { type: 'text/plain' });
       mockDialog.open.and.returnValue({
-        afterClosed: () => of({ file: mockFile, type: 'Activity Polygon' }),
+        afterClosed: () => of({ type: 'MAP', file: mockFile }),
       } as any);
 
       spyOn(component, 'uploadFile').and.stub();
 
       component.openFileUploadModal();
       expect(mockDialog.open).toHaveBeenCalledWith(AddAttachmentComponent, {
-        width: '1000px',
         data: { indicator: 'project-files' },
+        width: '1000px',
       });
-      expect(component.uploadFile).toHaveBeenCalledWith(mockFile, 'Activity Polygon');
+      expect(component.uploadFile).toHaveBeenCalledWith(mockFile, 'MAP');
     });
 
     it('should not call uploadFile if modal is closed without a file', () => {
@@ -394,26 +400,33 @@ describe('ProjectFilesComponent', () => {
 
   describe('uploadFile', () => {
     it('should call uploadAttachment on successful file upload', () => {
-      const mockFile = new File(['content'], 'test-file.kml', { type: 'text/plain' });
+      const mockFile = new File(['content'], 'test-file.zip', { type: 'application/zip' });
       const response = { fileId: 'test-file-id' };
       mockProjectService.uploadDocument.and.returnValue(of(response));
 
       spyOn(component, 'uploadAttachment').and.stub();
 
-      component.uploadFile(mockFile, 'Activity Polygon');
+      component.uploadFile(mockFile, 'MAP');
 
       expect(mockProjectService.uploadDocument).toHaveBeenCalledWith({ file: mockFile });
-      expect(component.uploadAttachment).toHaveBeenCalledWith(mockFile, response, 'Activity Polygon', mockSnackRef);
+      expect(component.uploadAttachment).toHaveBeenCalledWith(mockFile, response, 'MAP', mockSnackRef);
     });
 
     it('should handle file upload error', () => {
-      const mockFile = new File(['content'], 'test-file.kml', { type: 'text/plain' });
+      const mockFile = new File(['content'], 'test-file.zip', { type: 'application/zip' });
       mockProjectService.uploadDocument.and.returnValue(throwError(() => new Error('Upload failed')));
 
-      component.uploadFile(mockFile, 'Activity Polygon');
+      component.uploadFile(mockFile, 'MAP');
 
       expect(mockProjectService.uploadDocument).toHaveBeenCalledWith({ file: mockFile });
-      expect(mockSnackbar.openFromComponent).toHaveBeenCalled();
+      expect(mockSnackbar.openFromComponent).toHaveBeenCalledWith(
+        DetailedErrorMessageComponent,
+        jasmine.objectContaining({
+          data: jasmine.objectContaining({
+            reasons: ['Could not reach file upload server.']
+          })
+        })
+      );
     });
   });
 
@@ -434,32 +447,32 @@ describe('ProjectFilesComponent', () => {
       component.uploadedBy = 'test-user';
       component.attachmentDescription = 'Test spatial file';
 
-      component.uploadAttachment(mockFile, mockFileUploadResp, 'kml', mockSnackRef);
+      component.uploadAttachment(mockFile, mockFileUploadResp, 'MAP', mockSnackRef);
 
       tick();
       fixture.detectChanges();
 
       expect(mockSpatialService.extractCoordinates).toHaveBeenCalledWith(mockFile);
       expect(mockProjectService.createProjectBoundary).toHaveBeenCalledWith(mockProjectGuid, {
-        projectGuid: mockProjectGuid,
-        systemStartTimestamp: jasmine.any(String),
-        systemEndTimestamp: jasmine.any(String),
-        collectionDate: jasmine.any(String),
-        collectorName: 'test-user',
         boundaryGeometry: {
           type: 'MultiPolygon',
           coordinates: mockCoordinates
-        }
+        },
+        collectionDate: jasmine.any(String),
+        collectorName: 'test-user',
+        projectGuid: mockProjectGuid,
+        systemEndTimestamp: jasmine.any(String),
+        systemStartTimestamp: jasmine.any(String)
       });
 
       expect(mockAttachmentService.createProjectAttachment).toHaveBeenCalledWith(mockProjectGuid, {
-        sourceObjectNameCode: { sourceObjectNameCode: 'PROJECT' },
-        sourceObjectUniqueId: 'mock-boundary-id',
+        attachmentContentTypeCode: { attachmentContentTypeCode: 'MAP' },
+        attachmentDescription: 'Test spatial file',
+        attachmentReadOnlyInd: false,
         documentPath: 'test.kml',
         fileIdentifier: 'mock-file-id',
-        attachmentContentTypeCode: { attachmentContentTypeCode: 'kml' },
-        attachmentDescription: 'Test spatial file',
-        attachmentReadOnlyInd: false
+        sourceObjectNameCode: { sourceObjectNameCode: 'PROJECT' },
+        sourceObjectUniqueId: 'mock-boundary-id'
       });
     }));
 
@@ -493,7 +506,7 @@ describe('ProjectFilesComponent', () => {
       component.activityGuid = 'mock-activity-guid';
       component.uploadedBy = 'test-user';
       component.attachmentDescription = 'Test spatial file';
-      component.uploadAttachment(mockFile, mockFileUploadResp, 'kml', mockSnackRef);
+      component.uploadAttachment(mockFile, mockFileUploadResp, 'MAP', mockSnackRef);
 
       tick();
       fixture.detectChanges();
@@ -518,13 +531,13 @@ describe('ProjectFilesComponent', () => {
         'mock-fiscal-guid',
         'mock-activity-guid',
         jasmine.objectContaining({
-          sourceObjectNameCode: { sourceObjectNameCode: 'TREATMENT_ACTIVITY' },
-          sourceObjectUniqueId: 'mock-boundary-id',
+          attachmentContentTypeCode: { attachmentContentTypeCode: 'MAP' },
+          attachmentDescription: 'Test spatial file',
+          attachmentReadOnlyInd: false,
           documentPath: 'test.kml',
           fileIdentifier: 'mock-file-id',
-          attachmentContentTypeCode: { attachmentContentTypeCode: 'kml' },
-          attachmentDescription: 'Test spatial file',
-          attachmentReadOnlyInd: false
+          sourceObjectNameCode: { sourceObjectNameCode: 'TREATMENT_ACTIVITY' },
+          sourceObjectUniqueId: 'mock-boundary-id'
         })
       );
     }));
@@ -549,12 +562,12 @@ describe('ProjectFilesComponent', () => {
       expect(mockProjectService.createProjectBoundary).toHaveBeenCalledWith(
         mockProjectGuid,
         jasmine.objectContaining({
-          projectGuid: mockProjectGuid,
-          collectorName: 'test-user',
           boundaryGeometry: {
             type: 'MultiPolygon',
             coordinates: coordinates
-          }
+          },
+          collectorName: 'test-user',
+          projectGuid: mockProjectGuid
         })
       );
 
@@ -595,9 +608,9 @@ describe('ProjectFilesComponent', () => {
     it('should open confirmation dialog and delete file when confirmed', () => {
       const mockProjectGuid = 'mock-guid';
       const mockProjectFile: ProjectFile = {
+        attachmentContentTypeCode: { attachmentContentTypeCode: 'MAP' },
         fileAttachmentGuid: 'test-guid',
         fileName: 'test-file.txt',
-        attachmentContentTypeCode: { attachmentContentTypeCode: 'MAP' },
         sourceObjectUniqueId: 'boundary-guid'
       };
 
@@ -735,9 +748,9 @@ describe('ProjectFilesComponent', () => {
   describe('downloadFile', () => {
     it('should have a downloadFile method', () => {
       const mockFile: FileAttachment = {
-        fileIdentifier: '123',
+        attachmentReadOnlyInd: false,
         documentPath: 'test.txt',
-        attachmentReadOnlyInd: false
+        fileIdentifier: '123'
       };
 
       mockProjectService.downloadDocument.and.returnValue(of(new Blob(['test-content'], { type: 'text/plain' })));
@@ -746,7 +759,7 @@ describe('ProjectFilesComponent', () => {
     });
 
     it('should show snackbar error if file download fails', () => {
-      const mockFile = { fileIdentifier: 'abc', documentPath: 'file.txt' };
+      const mockFile = { documentPath: 'file.txt', fileIdentifier: 'abc' };
       const mockError = new Error('Failed to download');
 
       mockProjectService.downloadDocument.and.returnValue(throwError(() => mockError));
@@ -766,9 +779,16 @@ describe('ProjectFilesComponent', () => {
   it('should show error if uploaded file has no extension', () => {
     const mockFile = new File(['content'], 'file.', { type: 'text/plain' });
 
-    component.uploadAttachment(mockFile, { fileId: 'some-id' }, 'Activity Polygon', mockSnackRef);
+    component.uploadAttachment(mockFile, { fileId: 'some-id' }, 'MAP', mockSnackRef);
 
-    expect(mockSnackbar.openFromComponent).toHaveBeenCalled();
+    expect(mockSnackbar.openFromComponent).toHaveBeenCalledWith(
+      DetailedErrorMessageComponent,
+      jasmine.objectContaining({
+        data: jasmine.objectContaining({
+          reasons: ['The spatial file was not uploaded because the file format is not accepted.']
+        })
+      })
+    );
   });
 
   describe('isActivityContext', () => {
@@ -792,7 +812,7 @@ describe('ProjectFilesComponent', () => {
       const description = 'my description';
 
       mockDialog.open.and.returnValue({
-        afterClosed: () => of({ file: mockFile, description, type: 'Activity Polygon' }),
+        afterClosed: () => of({ type: 'MAP', description, file: mockFile }),
       } as any);
 
       spyOn(component, 'uploadFile').and.stub();
@@ -800,7 +820,7 @@ describe('ProjectFilesComponent', () => {
       component.openFileUploadModal();
 
       expect(component.attachmentDescription).toBe(description);
-      expect(component.uploadFile).toHaveBeenCalledWith(mockFile, 'Activity Polygon');
+      expect(component.uploadFile).toHaveBeenCalledWith(mockFile, 'MAP');
     });
   });
 
@@ -868,8 +888,8 @@ describe('ProjectFilesComponent', () => {
     component.projectGuid = 'project-guid';
 
     const mockFile = {
-      fileAttachmentGuid: 'test-guid',
-      attachmentContentTypeCode: { attachmentContentTypeCode: 'DOCUMENT' }
+      attachmentContentTypeCode: { attachmentContentTypeCode: 'DOCUMENT' },
+      fileAttachmentGuid: 'test-guid'
     } as ProjectFile;
 
     mockDialog.open.and.returnValue({ afterClosed: () => of(true) } as any);
@@ -898,8 +918,8 @@ describe('ProjectFilesComponent', () => {
     component.projectGuid = 'project-guid';
 
     const mockFile = {
-      fileAttachmentGuid: 'test-guid',
       attachmentContentTypeCode: { attachmentContentTypeCode: 'MAP' },
+      fileAttachmentGuid: 'test-guid',
       sourceObjectUniqueId: 'boundary-guid'
     } as ProjectFile;
     const mockBoundary = {
@@ -968,13 +988,18 @@ describe('ProjectFilesComponent', () => {
     component.fiscalGuid = 'fiscal-guid';
     component.projectGuid = 'project-guid';
     const mockFile = {
-      fileAttachmentGuid: 'test-guid',
       attachmentContentTypeCode: { attachmentContentTypeCode: 'MAP' },
+      fileAttachmentGuid: 'test-guid',
       sourceObjectUniqueId: 'boundary-guid'
     } as ProjectFile;
 
     mockDialog.open.and.returnValue({ afterClosed: () => of(true) } as any);
     mockAttachmentService.deleteActivityAttachments.and.returnValue(of({}));
+    mockAttachmentService.getActivityAttachments.and.returnValue(of({
+      _embedded: {
+        fileAttachment: [{ fileName: 'test.txt' }]
+      }
+    }));
     mockProjectService.getActivityBoundaries.and.returnValue(of({
       _embedded: { activityBoundary: [] }
     }));
@@ -1071,16 +1096,16 @@ describe('ProjectFilesComponent', () => {
 
       const mockFile = new File(['data'], 'test.kml');
       const mockUploadResp = { fileId: 'abc123' };
-      const mockType = 'kml';
+      const mockType: AttachmentTypeCode = 'MAP';
 
       const expectedAttachment = jasmine.objectContaining({
-        sourceObjectNameCode: { sourceObjectNameCode: 'TREATMENT_ACTIVITY' },
-        sourceObjectUniqueId: 'activity-guid',
+        attachmentContentTypeCode: { attachmentContentTypeCode: 'MAP' },
+        attachmentDescription: 'Test Description',
+        attachmentReadOnlyInd: false,
         documentPath: 'test.kml',
         fileIdentifier: 'abc123',
-        attachmentContentTypeCode: { attachmentContentTypeCode: 'kml' },
-        attachmentDescription: 'Test Description',
-        attachmentReadOnlyInd: false
+        sourceObjectNameCode: { sourceObjectNameCode: 'TREATMENT_ACTIVITY' },
+        sourceObjectUniqueId: 'activity-guid'
       });
 
       mockAttachmentService.createActivityAttachment.and.returnValue(of({}));
@@ -1104,9 +1129,9 @@ describe('ProjectFilesComponent', () => {
 
     it('should show progress and success snackbars on successful download', () => {
       const mockFile: FileAttachment = {
-        fileIdentifier: '123',
+        attachmentReadOnlyInd: false,
         documentPath: 'test.txt',
-        attachmentReadOnlyInd: false
+        fileIdentifier: '123'
       };
 
       const mockBlob = new Blob(['test'], { type: 'text/plain' });
@@ -1134,9 +1159,9 @@ describe('ProjectFilesComponent', () => {
 
     it('should show progress and error snackbars on download failure', () => {
       const mockFile: FileAttachment = {
-        fileIdentifier: '123',
+        attachmentReadOnlyInd: false,
         documentPath: 'test.txt',
-        attachmentReadOnlyInd: false
+        fileIdentifier: '123'
       };
 
       const mockError = new Error('download failed');

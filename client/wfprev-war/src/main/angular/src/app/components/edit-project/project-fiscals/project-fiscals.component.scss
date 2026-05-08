@@ -1,8 +1,15 @@
 .fiscals-container {
   margin: 19px;
+  box-sizing: border-box;
+
+  .spinner-container {
+    display: flex;
+    justify-content: center;
+    padding: 40px;
+  }
 
   .form-grid {
-    padding: 18px;
+    padding: 18px 24px;
     display: flex;
     flex-wrap: wrap;
     gap: 15px;
@@ -14,6 +21,7 @@
 
     .form-item {
       flex: 1 1 calc(25% - 15px); // 4 items per row with a 15px gap
+      box-sizing: border-box;
 
       &.quarter-width-max {
         max-width: calc(25% - 10px);
@@ -164,16 +172,17 @@
 }
 
 .button-primary {
-  height: 43px;
+  height: 40px;
   min-width: 67px;
   background-color: var(--wf-primary-color);
   color: #fff;
-  padding: 12px;
+  padding: 0 16px;
   border: none;
   border-radius: 4px;
   font-size: 16px;
   cursor: pointer;
   font-family: var(--wf-font-family-main);
+  line-height: 1;
 
   &:disabled {
     background-color: #c0c0c0;
@@ -182,16 +191,17 @@
 }
 
 .button-secondary {
-  height: 43px;
+  height: 40px;
   min-width: 67px;
   border-radius: 4px;
   background: #fff;
   color: #2d2d2d;
   font-family: var(--wf-font-family-main);
   font-size: 16px;
-  padding: 12px;
+  padding: 0 16px;
   border: none;
   cursor: pointer;
+  line-height: 1;
 
   &:disabled {
     color: #fff;
@@ -209,11 +219,15 @@
   box-sizing: border-box;
 }
 
-.button-row {
+.top-button-row {
   display: flex;
   justify-content: flex-end;
   align-items: center;
-  height: 20px;
+  height: 0;
+  padding: 0 24px;
+  background: transparent;
+  position: relative;
+  z-index: 10;
 
   button {
     &.primary {
@@ -253,7 +267,7 @@
     height: 1px;
     background-color: #c6c8cb;
     /* Grey color */
-    margin: 10px -18px;
+    margin: 10px -24px;
   }
 }
 
@@ -261,6 +275,14 @@ mat-expansion-panel {
   border-bottom: 1px solid #c6c8cb;
   margin: 0px !important;
   background-color: #fff;
+  box-sizing: border-box;
+
+  ::ng-deep .mat-expansion-panel-header {
+    padding: 0 24px;
+    min-height: 64px !important;
+    height: auto !important;
+    box-sizing: border-box;
+  }
 
   ::ng-deep .mat-expansion-panel-body {
     padding: 0;
@@ -285,9 +307,13 @@ mat-expansion-panel {
   }
 }
 
+.fiscal-tab-wrapper.has-fiscals {
+  border-bottom: 1px solid #c6c8cb;
+}
+
 :host ::ng-deep .mat-mdc-tab-header {
   padding-left: 0 !important;
-  padding-right: 200px;
+  margin-right: 200px;
 }
 
 :host ::ng-deep .mat-mdc-tab-body-wrapper {
@@ -308,23 +334,27 @@ mat-expansion-panel {
   box-sizing: border-box;
 }
 
-
 .fiscal-expansion-panel {
   border-radius: 10px;
   border: 1px solid #d9d9d9;
   background: #fff;
+  box-sizing: border-box;
 }
 
 .fiscal-footer {
   border-top: 1px solid #d9d9d9;
+  background: #f2f2f2;
+  margin: 0; // Flush with expansion panel padding if needed, but panels usually have their own padding
+  box-sizing: border-box;
 
   .footer-button-row {
     display: flex;
     height: 43px;
-    padding: 14px 17px 14px 23px;
+    padding: 14px 24px 14px 23px;
     justify-content: flex-end;
-    align-items: flex-start;
+    align-items: center;
     gap: 14px;
+    background: #fff;
 
     button {
       &.primary {
@@ -339,12 +369,13 @@ mat-expansion-panel {
 }
 
 .new-fiscal-button {
-  padding: 12px !important;
+  padding: 0 16px !important;
   display: flex;
   align-items: center;
   font-size: 16px !important;
   font-weight: 400 !important;
   font-family: var(--wf-font-family-main);
+  height: 40px;
 }
 
 .no-fiscals {
@@ -368,25 +399,35 @@ mat-expansion-panel {
 
 .activities-map-container {
   display: flex;
-  gap: 20px;
+  gap: 19px; // Unified gap
   width: 100%;
   max-width: 100%;
   box-sizing: border-box;
   padding-bottom: 50px;
 
-  .left-column, .right-column {
-    flex: 0 0 calc(50% - 10px);
+  .left-column {
+    flex: 60;
     min-width: 0;
-    max-width: calc(50% - 10px);
+    box-sizing: border-box;
+  }
+
+  .right-column {
+    flex: 40;
+    min-width: 0;
     box-sizing: border-box;
   }
 
   @media screen and (max-width: 1024px) {
     flex-direction: column;
 
-    .left-column, .right-column {
+    .left-column,
+    .right-column {
       flex: 1 1 100%;
       max-width: 100%;
+    }
+
+    .right-column {
+      padding-top: 19px; // Add spacing when stacked
     }
   }
 }
@@ -459,8 +500,9 @@ mat-expansion-panel {
 }
 
 :host ::ng-deep .add-new-fiscal .shared-icon-button {
-  position: relative;
-  top: 44px;
+  position: absolute;
+  top: 15px;
+  right: 0px;
   display: flex;
   justify-content: flex-end;
   align-items: center;
@@ -473,26 +515,11 @@ mat-expansion-panel {
   align-items: baseline;
 
   .status-wrapper {
-    text-align: right;
-    font-size: 20px;
-    font-style: normal;
-    font-weight: 400;
-    line-height: normal;
-    padding-right: 45px;
     display: flex;
     align-items: center;
-    gap: 5px;
-  }
-
-  .status-icon {
-    width: 24px;
-    height: 24px;
-  }
-
-  .status-value {
-    color: #474543;
-    font-size: 16px;
-    font-style: normal;
+    gap: 10px;
+    padding-right: 45px;
+    font-size: 20px;
     font-weight: 400;
   }
 }
