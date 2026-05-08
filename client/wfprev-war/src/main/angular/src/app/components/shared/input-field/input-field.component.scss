@@ -56,6 +56,12 @@
       white-space: nowrap;
       overflow: hidden;
     }
+
+    input:disabled {
+      background-color: white;
+      color: #282828;
+      opacity: 0.7;
+    }
   }
 
   .currency-input {
