@@ -3,7 +3,7 @@ import { action } from '@storybook/addon-actions';
 import { DownloadButtonComponent } from './download-button.component';
 
 export default {
-  title: 'Shared/Download Button',
+  title: 'Components/Buttons/DownloadButton',
   component: DownloadButtonComponent,
   decorators: [
     moduleMetadata({

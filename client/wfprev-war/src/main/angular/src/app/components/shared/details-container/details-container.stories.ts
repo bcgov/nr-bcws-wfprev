@@ -3,7 +3,7 @@ import { DetailsContainerComponent } from 'src/app/components/shared/details-con
 import { action } from '@storybook/addon-actions';
 
 export default {
-  title: 'Components/DetailsContainer',
+  title: 'Components/Layout/DetailsContainer',
   component: DetailsContainerComponent,
   decorators: [
     moduleMetadata({

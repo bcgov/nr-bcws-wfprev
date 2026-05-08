@@ -5,7 +5,7 @@ import { TextFieldModule } from '@angular/cdk/text-field';
 import { CommonModule } from '@angular/common';
 
 export default {
-  title: 'Components/Textarea',
+  title: 'Components/Forms/Textarea',
   component: TextareaComponent,
   decorators: [
     moduleMetadata({
