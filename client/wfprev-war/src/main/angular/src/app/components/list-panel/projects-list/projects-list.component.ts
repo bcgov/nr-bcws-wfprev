@@ -14,6 +14,7 @@ import { CreateNewProjectDialogComponent } from 'src/app/components/create-new-p
 import { DownloadButtonComponent } from 'src/app/components/shared/download-button/download-button.component';
 import { IconButtonComponent } from 'src/app/components/shared/icon-button/icon-button.component';
 import { StatusBadgeComponent } from 'src/app/components/shared/status-badge/status-badge.component';
+import { DetailButtonComponent } from 'src/app/components/shared/detail-button/detail-button.component';
 import { CodeTableServices } from 'src/app/services/code-table-services';
 import { MapService } from 'src/app/services/map.service';
 import { ProjectService } from 'src/app/services/project-services';
@@ -30,7 +31,7 @@ import { PermissionsService, WFPREV_ACTIONS } from 'src/app/services/permissions
 @Component({
   selector: 'wfprev-projects-list',
   standalone: true,
-  imports: [MatSlideToggleModule, CommonModule, MatExpansionModule, MatTooltipModule, ExpansionIndicatorComponent, IconButtonComponent, MatSelectModule, StatusBadgeComponent, DownloadButtonComponent, MatProgressSpinnerModule],
+  imports: [MatSlideToggleModule, CommonModule, MatExpansionModule, MatTooltipModule, ExpansionIndicatorComponent, IconButtonComponent, DetailButtonComponent, MatSelectModule, StatusBadgeComponent, DownloadButtonComponent, MatProgressSpinnerModule],
   templateUrl: './projects-list.component.html',
   styleUrls: ['./projects-list.component.scss'],
 })
