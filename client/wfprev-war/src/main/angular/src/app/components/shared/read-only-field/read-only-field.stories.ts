@@ -2,7 +2,7 @@ import { Meta, moduleMetadata } from '@storybook/angular';
 import { ReadOnlyFieldComponent } from 'src/app/components/shared/read-only-field/read-only-field.component';
 
 export default {
-  title: 'Components/ReadOnlyField',
+  title: 'Components/Forms/ReadOnlyField',
   component: ReadOnlyFieldComponent,
   decorators: [
     moduleMetadata({
