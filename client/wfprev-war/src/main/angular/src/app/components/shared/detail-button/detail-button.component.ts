@@ -10,12 +10,12 @@ import { CommonModule } from '@angular/common';
 })
 export class DetailButtonComponent {
   @Input() text: string = 'View Details';
-  @Input() disabled: boolean = false;
+  @Input() isDisabled: boolean = false;
   @Output() clicked = new EventEmitter<MouseEvent>();
 
   onClick(event: MouseEvent): void {
     event.stopPropagation();
-    if (!this.disabled) {
+    if (!this.isDisabled) {
       this.clicked.emit(event);
     }
   }

@@ -2,7 +2,7 @@
   <div>
     <div class="top-button-row">
       <wfprev-icon-button class="add-new-fiscal" [text]="'Add New Fiscal'" [icon]="'/assets/add-button.svg'"
-        [alt]="'add-new-fiscal'" [iconSize]="19" [disabled]="hasUnsavedFiscal" (clicked)="addNewFiscal()">
+        [alt]="'add-new-fiscal'" [iconSize]="19" [disabled]="hasUnsavedFiscal || !canCreateFiscal" (clicked)="addNewFiscal()">
       </wfprev-icon-button>
     </div>
     <div class="spinner-container" *ngIf="isLoading">
@@ -39,7 +39,7 @@
 
                     <wfprev-dropdown-button [status]="fiscal.planFiscalStatusCode?.planFiscalStatusCode"
                       [isApproved]="!fiscalForms[i].get('isApprovedInd')?.value" [index]="i" [fiscal]="fiscal"
-                      [isDirty]="fiscalForms[i].dirty" (actionSelected)="onFiscalAction($event)">
+                      [isDirty]="fiscalForms[i].dirty" (actionSelected)="onFiscalAction($event)" [isDisabled]="!canUpdateFiscal">
                     </wfprev-dropdown-button>
                   </div>
                 </div>
@@ -218,11 +218,11 @@
               <div class="fiscal-footer">
                 <div class="footer-button-row">
                   <button class="secondary" (click)="onCancelFiscal(i)" *ngIf="fiscalForms[i]"
-                    [disabled]="!fiscalForms[i].dirty">
+                    [disabled]="!fiscalForms[i].dirty || !canUpdateFiscal">
                     Cancel
                   </button>
                   <button type="button" (click)="onSaveFiscal(i)" *ngIf="fiscalForms[i]"
-                    [disabled]="!fiscalForms[i].valid || !fiscalForms[i].dirty || isSavingFiscal[i]" class="primary">
+                    [disabled]="!fiscalForms[i].valid || !fiscalForms[i].dirty || isSavingFiscal[i] || !canUpdateFiscal" class="primary">
                     Save
                   </button>
                 </div>
@@ -241,7 +241,7 @@
                 [selectedFiscalYear]="projectFiscals[selectedTabIndex]?.fiscalYear" #fiscalMapRef></wfprev-fiscal-map>
               <wfprev-endorsement-approval [fiscal]="projectFiscals[i]" [currentUser]="currentUser"
                 [currentIdir]="currentIdir" (saveEndorsement)="onSaveEndorsement($event)"
-                [isSaving]="isSavingFiscal[i]"></wfprev-endorsement-approval>
+                [isSaving]="isSavingFiscal[i]" [isReadonly]="!canUpdateFiscal"></wfprev-endorsement-approval>
             </div>
           </div>
         </mat-tab>

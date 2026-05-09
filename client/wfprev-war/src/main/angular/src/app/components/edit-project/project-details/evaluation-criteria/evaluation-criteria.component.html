@@ -8,7 +8,7 @@
             <span>Evaluation Criteria</span>
           </mat-panel-title>
           <mat-panel-description class="edit-evaluation-criteria">
-            <wfprev-detail-button [text]="'View Details'" (clicked)="openEvaluationCriteriaPopUp()"></wfprev-detail-button>
+            <wfprev-detail-button [text]="'View Details'" [isDisabled]="!canUpdateEvaluationCriteria" (clicked)="openEvaluationCriteriaPopUp()"></wfprev-detail-button>
           </mat-panel-description>
         </mat-expansion-panel-header>
         <div class="spinner-container" *ngIf="isLoading">

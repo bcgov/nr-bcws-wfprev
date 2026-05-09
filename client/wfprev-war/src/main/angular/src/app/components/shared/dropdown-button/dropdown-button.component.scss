@@ -23,6 +23,7 @@
 .dropdown-button[disabled] {
   background-color: #c0c0c0 !important;
   color: white !important;
+  cursor: not-allowed !important;
 }
 .action-icon {
   width: 20px;

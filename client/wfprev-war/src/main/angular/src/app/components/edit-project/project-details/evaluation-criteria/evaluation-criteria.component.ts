@@ -41,6 +41,11 @@ export class EvaluationCriteriaComponent implements OnChanges, OnInit {
         }
   }
 
+  get canUpdateEvaluationCriteria(): boolean {
+    return this.permissionsService.hasAction(WFPREV_ACTIONS.CREATE_EVALUATION_CRITERIA) ||
+           this.permissionsService.hasAction(WFPREV_ACTIONS.UPDATE_EVALUATION_CRITERIA);
+  }
+
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['project'] && this.project?.projectGuid) {
       this.loadEvaluationCriteriaSummaries();

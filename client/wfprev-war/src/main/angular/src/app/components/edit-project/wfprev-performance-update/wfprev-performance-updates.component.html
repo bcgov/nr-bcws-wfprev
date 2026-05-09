@@ -6,7 +6,7 @@
                     [isExpanded]="performanceUpdatesPanels.expanded"></wfprev-expansion-indicator>
                 <span class="project-title">Performance Updates</span>
                 <wfprev-icon-button class="new-update" [text]="'New Update'" [icon]="'/assets/add-button.svg'"
-                    [alt]="'new-update'" [iconSize]="19" (clicked)="openDialog()">
+                    [alt]="'new-update'" [iconSize]="19" [disabled]="!canCreatePerformanceUpdate" (clicked)="openDialog()">
                 </wfprev-icon-button>
             </div>
         </mat-expansion-panel-header>
