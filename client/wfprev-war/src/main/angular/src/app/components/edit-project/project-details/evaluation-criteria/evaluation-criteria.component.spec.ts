@@ -6,7 +6,7 @@ import { ProjectService } from 'src/app/services/project-services';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { EvaluationCriteriaSummaryModel } from 'src/app/components/models';
 import { EvaluationCriteriaSectionCodes, ProjectTypes } from 'src/app/utils/constants';
-import { PermissionsService } from 'src/app/services/permissions.service';
+import { PermissionsService, WFPREV_ACTIONS } from 'src/app/services/permissions.service';
 
 describe('EvaluationCriteriaComponent', () => {
   let component: EvaluationCriteriaComponent;
@@ -280,12 +280,12 @@ it('should return standard section codes when project is not CULTURAL_PRESCRIBED
     .toBe(EvaluationCriteriaSectionCodes.FINE_FILTER);
 });
 
-  it('should return true for canUpdateEvaluationCriteria when user has CREATE permission', () => {
-    mockPermissionsService.hasAction.and.callFake((action) => action === 'WFPREV.CREATE_EVALUATION_CRITERIA');
+  it('should return true for canUpdateEvaluationCriteria when user has UPDATE permission', () => {
+    mockPermissionsService.hasAction.and.callFake((action) => action === WFPREV_ACTIONS.UPDATE_EVALUATION_CRITERIA);
     expect(component.canUpdateEvaluationCriteria).toBeTrue();
   });
 
-  it('should return false for canUpdateEvaluationCriteria when user lacks both CREATE and UPDATE permissions', () => {
+  it('should return false for canUpdateEvaluationCriteria when user lacks UPDATE permission', () => {
     mockPermissionsService.hasAction.and.returnValue(false);
     expect(component.canUpdateEvaluationCriteria).toBeFalse();
   });
