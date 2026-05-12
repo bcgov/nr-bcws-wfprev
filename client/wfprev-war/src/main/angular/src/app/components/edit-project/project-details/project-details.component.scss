@@ -245,7 +245,7 @@
     border-radius: 4px;
     font-size: 16px;
     cursor: pointer;
-    height: var(--wf-btn-height-compact);
+    height: var(--wf-btn-height-standard);
     min-width: 67px;
     padding: 0 16px;
     box-sizing: border-box;
@@ -434,7 +434,7 @@
 
       button {
         padding: 0 18px;
-        height: var(--wf-btn-height-compact);
+        height: var(--wf-btn-height-standard);
         box-sizing: border-box;
         border: none;
         border-radius: 4px;

@@ -201,7 +201,8 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
       this.fetchData(
         this.codeTableService.fetchCodeTable(table.name),
         (data) => this.assignCodeTableData(table.embeddedKey, data),
-        `Error fetching ${table.name}`
+        `Error fetching ${table.name}`,
+        false
       );
     }
 
@@ -429,16 +430,20 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
     form.updateValueAndValidity({ emitEvent: false });
   }
 
-  fetchData<T>(fetchFn: Observable<T>, assignFn: (data: T) => void, errorMessage: string): void {
+  fetchData<T>(fetchFn: Observable<T>, assignFn: (data: T) => void, errorMessage: string, updateLoading = true): void {
     fetchFn.subscribe({
       next: (data) => {
         assignFn(data);
-        this.isLoading = false;
+        if (updateLoading) {
+          this.isLoading = false;
+        }
       },
       error: (err) => {
         console.error(errorMessage, err);
         assignFn({} as T); // Assign default empty data
-        this.isLoading = false;
+        if (updateLoading) {
+          this.isLoading = false;
+        }
       },
     });
   }

@@ -172,7 +172,7 @@
 }
 
 .button-primary {
-  height: var(--wf-btn-height-compact);
+  height: var(--wf-btn-height-standard);
   box-sizing: border-box;
   min-width: 67px;
   background-color: var(--wf-primary-color);
@@ -192,7 +192,7 @@
 }
 
 .button-secondary {
-  height: var(--wf-btn-height-compact);
+  height: var(--wf-btn-height-standard);
   box-sizing: border-box;
   min-width: 67px;
   border-radius: 4px;
@@ -498,7 +498,7 @@ mat-expansion-panel {
   justify-content: flex-end;
   align-items: center;
   z-index: 10;
-  height: var(--wf-btn-height-compact) !important;
+  height: var(--wf-btn-height-standard) !important;
 }
 
 .status-actions {

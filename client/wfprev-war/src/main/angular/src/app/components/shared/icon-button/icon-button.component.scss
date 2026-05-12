@@ -1,7 +1,7 @@
 .shared-icon-button {
   cursor: pointer;
   padding: 0 12px;
-  height: var(--wf-btn-height-compact);
+  height: var(--wf-btn-height-standard);
   box-sizing: border-box;
   display: flex;
   align-items: center;
@@ -35,5 +35,5 @@
 }
 
 :host.large .shared-icon-button {
-  height: var(--wf-btn-height-standard) !important;
+  height: var(--wf-btn-height-large) !important;
 }
