@@ -38,22 +38,28 @@ public class ProjectLocationService {
     private static final String LATITUDE = "latitude";
     private static final String LONGITUDE = "longitude";
 
+    private List<Predicate> buildPredicates(CriteriaBuilder cb, Root<ProjectEntity> project, FeatureQueryParams params) {
+        List<Predicate> predicates = new ArrayList<>();
+
+        // Only return projects that have coordinates
+        predicates.add(cb.isNotNull(project.get(LATITUDE)));
+        predicates.add(cb.isNotNull(project.get(LONGITUDE)));
+
+        // Apply project-level and fiscal-level filters
+        addProjectLevelFilters(project, predicates, params);
+        addFiscalAttributeFilters(cb, project, predicates, params);
+        addSearchTextFilters(cb, project, predicates, params);
+
+        return predicates;
+    }
+
     public CollectionModel<ProjectLocationModel> getAllProjectLocations(FeatureQueryParams params) throws ServiceException {
         try {
             CriteriaBuilder cb = entityManager.getCriteriaBuilder();
             CriteriaQuery<Tuple> cq = cb.createTupleQuery();
             Root<ProjectEntity> project = cq.from(ProjectEntity.class);
 
-            List<Predicate> predicates = new ArrayList<>();
-
-            // Only return projects that have coordinates
-            predicates.add(cb.isNotNull(project.get(LATITUDE)));
-            predicates.add(cb.isNotNull(project.get(LONGITUDE)));
-
-            // Apply project-level and fiscal-level filters
-            addProjectLevelFilters(project, predicates, params);
-            addFiscalAttributeFilters(cb, project, predicates, params);
-            addSearchTextFilters(cb, project, predicates, params);
+            List<Predicate> predicates = buildPredicates(cb, project, params);
 
             if (!predicates.isEmpty()) {
                 cq.where(cb.and(predicates.toArray(new Predicate[0])));
@@ -87,6 +93,28 @@ public class ProjectLocationService {
             throw new ServiceException("Error while fetching Project Locations", e);
         }
     }
+
+    public List<UUID> getProjectGuids(FeatureQueryParams params) throws ServiceException {
+        try {
+            CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+            CriteriaQuery<UUID> cq = cb.createQuery(UUID.class);
+            Root<ProjectEntity> project = cq.from(ProjectEntity.class);
+
+            List<Predicate> predicates = buildPredicates(cb, project, params);
+
+            if (!predicates.isEmpty()) {
+                cq.where(cb.and(predicates.toArray(new Predicate[0])));
+            }
+
+            cq.select(project.get(PROJECT_GUID));
+
+            return entityManager.createQuery(cq).getResultList();
+        } catch (Exception e) {
+            log.error("Error while fetching Project GUIDs", e);
+            throw new ServiceException("Error while fetching Project GUIDs", e);
+        }
+    }
+
 
     void addProjectLevelFilters(Root<ProjectEntity> project, List<Predicate> predicates, FeatureQueryParams params) {
         // Collapse the repetitive "in" filters into a loop to avoid duplication flags.
