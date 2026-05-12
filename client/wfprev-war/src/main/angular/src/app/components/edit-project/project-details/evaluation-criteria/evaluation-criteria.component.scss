@@ -2,7 +2,7 @@
   font-family: var(--wf-font-family-main) !important;
 }
 mat-expansion-panel {
-    border-bottom: 1px solid #C6C8CB;
+    border: 1px solid #D9D9D9;
     margin: 0px !important;
     background-color: #FFF;
 
@@ -11,6 +11,7 @@ mat-expansion-panel {
       min-height: 64px !important;
       height: auto !important;
       box-sizing: border-box;
+      border-bottom: 1px solid #D9D9D9;
     }
 
     ::ng-deep .mat-expansion-panel-body{
@@ -68,7 +69,7 @@ mat-expansion-panel {
     padding: 10px 24px;
     font-family: var(--wf-font-family-main);
     font-size: 14px;
-    border-top: 1px solid #D8D8D8;
+    border-top: none;
 }
 
 .section-label {
@@ -119,14 +120,7 @@ mat-expansion-panel {
   border-top: 1px solid #D8D8D8;
   margin: 16px -24px;
 }
-
-.criteria-empty-content {
-    color: #242424;
-    font-family: var(--wf-font-family-main);
-    font-size: 16px;
-    font-style: italic;
-    font-weight: 400;
-    line-height: normal;
-    padding: 20px 24px;
-    border-top: 1px solid #D8D8D8;
+.wf-empty-state {
+    border: none;
+    background-color: transparent;
 }

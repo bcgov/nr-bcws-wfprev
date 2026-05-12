@@ -15,6 +15,7 @@ import { CodeTableServices } from 'src/app/services/code-table-services';
 import { CodeTableNames } from 'src/app/utils/constants';
 import { ProjectFiscalsSignalService } from 'src/app/services/project-fiscals-signal.service';
 import { StatusBadgeComponent } from '../../shared/status-badge/status-badge.component';
+import { PermissionsService, WFPREV_ACTIONS } from 'src/app/services/permissions.service';
 
 @Component({
   selector: 'wfprev-performance-updates',
@@ -57,13 +58,18 @@ export class PerformanceUpdatesComponent implements OnChanges {
   isUpdatesCalled: boolean = false;
   isLoading = true;
 
+  get canCreatePerformanceUpdate(): boolean {
+    return this.permissionsService.hasAction(WFPREV_ACTIONS.CREATE_PERFORMANCE_UPDATE);
+  }
+
   constructor(
     private readonly projectService: ProjectService,
     private readonly codeTableService: CodeTableServices,
     private readonly projectFiscalsSignalService: ProjectFiscalsSignalService,
     private readonly route: ActivatedRoute,
     private dialog: MatDialog,
-    private readonly snackbarService: MatSnackBar
+    private readonly snackbarService: MatSnackBar,
+    private readonly permissionsService: PermissionsService
   ) {}
 
   ngOnChanges(changes: SimpleChanges): void {

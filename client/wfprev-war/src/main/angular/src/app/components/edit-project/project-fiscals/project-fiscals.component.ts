@@ -34,6 +34,7 @@ import { TextareaComponent } from 'src/app/components/shared/textarea/textarea.c
 import { capitalizeFirstLetter } from 'src/app/utils';
 import { PerformanceUpdatesComponent } from "../wfprev-performance-update/wfprev-performance-updates.component";
 import { ProjectFiscalsSignalService } from 'src/app/services/project-fiscals-signal.service';
+import { PermissionsService, WFPREV_ACTIONS } from 'src/app/services/permissions.service';
 
 @Component({
   selector: 'wfprev-project-fiscals',
@@ -90,6 +91,13 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
   isLoading = true;
   private initialized = false;
 
+  get canCreateFiscal(): boolean {
+    return this.permissionsService.hasAction(WFPREV_ACTIONS.CREATE_PREVENTION_FISCAL);
+  }
+  get canUpdateFiscal(): boolean {
+    return this.permissionsService.hasAction(WFPREV_ACTIONS.UPDATE_PREVENTION_FISCAL);
+  }
+
   constructor(
     private route: ActivatedRoute,
     private readonly router: Router,
@@ -101,7 +109,8 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
     public cd: ChangeDetectorRef,
     private readonly tokenService: TokenService,
     private readonly events: ProjectFiscalsSignalService,
-    private readonly location: Location
+    private readonly location: Location,
+    private readonly permissionsService: PermissionsService
   ) {
     effect(() => {
       this.events.reloadFiscals();
@@ -192,7 +201,8 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
       this.fetchData(
         this.codeTableService.fetchCodeTable(table.name),
         (data) => this.assignCodeTableData(table.embeddedKey, data),
-        `Error fetching ${table.name}`
+        `Error fetching ${table.name}`,
+        false
       );
     }
 
@@ -302,6 +312,9 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
           if (fiscal?.planFiscalStatusCode?.planFiscalStatusCode !== this.FiscalStatuses.DRAFT) {
             form.get('totalCostEstimateAmount')?.disable();
           }
+          if (!this.canUpdateFiscal) {
+            form.disable();
+          }
           // Mark form as pristine if requested
           if (markFormsPristine) {
             form.markAsPristine();
@@ -401,7 +414,7 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
         { emitEvent: false });
 
       const statusCode = this.patchStatusCode(original?.planFiscalStatusCode);
-      const isLocked = [this.FiscalStatuses.COMPLETE, this.FiscalStatuses.CANCELLED].includes(statusCode as any);
+      const isLocked = !this.canUpdateFiscal || [this.FiscalStatuses.COMPLETE, this.FiscalStatuses.CANCELLED].includes(statusCode as any);
       if (isLocked) {
         form.disable({ emitEvent: false });
       } else {
@@ -417,16 +430,20 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
     form.updateValueAndValidity({ emitEvent: false });
   }
 
-  fetchData<T>(fetchFn: Observable<T>, assignFn: (data: T) => void, errorMessage: string): void {
+  fetchData<T>(fetchFn: Observable<T>, assignFn: (data: T) => void, errorMessage: string, updateLoading = true): void {
     fetchFn.subscribe({
       next: (data) => {
         assignFn(data);
-        this.isLoading = false;
+        if (updateLoading) {
+          this.isLoading = false;
+        }
       },
       error: (err) => {
         console.error(errorMessage, err);
         assignFn({} as T); // Assign default empty data
-        this.isLoading = false;
+        if (updateLoading) {
+          this.isLoading = false;
+        }
       },
     });
   }
@@ -811,6 +828,7 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
   }
 
   isCurrentFiscalReadonly(): boolean {
+    if (!this.canUpdateFiscal) return true;
     const current = this.projectFiscals[this.selectedTabIndex];
     if (!current) return false;
 

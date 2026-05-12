@@ -50,6 +50,7 @@ export class EndorsementApprovalComponent implements OnChanges, OnInit {
   @Input() currentUser!: string;
   @Input() currentIdir!: string;
   @Input() isSaving = false;
+  @Input() isReadonly = false;
   @Output() saveEndorsement = new EventEmitter<ProjectFiscal>();
 
   readonly draftTooltip = 'Submit your Draft Fiscal Activity using the Actions button to enable Endorsements and Approvals.';
@@ -108,7 +109,7 @@ export class EndorsementApprovalComponent implements OnChanges, OnInit {
         approvalComment: fiscal.businessAreaComment ?? ''
       });
 
-      if (this.isCardDisabled) {
+      if (this.isReadonly || this.isCardDisabled) {
         this.endorsementApprovalForm.disable({ emitEvent: false });
         return;
       } else {
@@ -266,7 +267,7 @@ export class EndorsementApprovalComponent implements OnChanges, OnInit {
   toggleControl(control: FormControl | null, shouldEnable: boolean): void {
     if (!control) return;
 
-    if (shouldEnable) {
+    if (shouldEnable && !this.isReadonly) {
       control.enable();
     } else {
       control.setValue(null);

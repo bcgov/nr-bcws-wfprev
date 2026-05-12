@@ -8,6 +8,7 @@ import { CodeTableServices } from 'src/app/services/code-table-services';
 import { ProjectFiscalsSignalService } from 'src/app/services/project-fiscals-signal.service';
 import { ProjectService } from 'src/app/services/project-services';
 import { PerformanceUpdatesComponent } from './wfprev-performance-updates.component';
+import { PermissionsService } from 'src/app/services/permissions.service';
 
 describe('PerformanceUpdatesComponent', () => {
   let component: PerformanceUpdatesComponent;
@@ -33,6 +34,12 @@ describe('PerformanceUpdatesComponent', () => {
         { provide: ProjectFiscalsSignalService, useValue: mockProjectFiscalsSignalService },
         { provide: MatDialog, useValue: mockDialog },
         { provide: MatSnackBar, useValue: mockSnackBar },
+        {
+          provide: PermissionsService,
+          useValue: {
+            hasAction: jasmine.createSpy('hasAction').and.returnValue(true)
+          }
+        },
         {
           provide: ActivatedRoute,
           useValue: {

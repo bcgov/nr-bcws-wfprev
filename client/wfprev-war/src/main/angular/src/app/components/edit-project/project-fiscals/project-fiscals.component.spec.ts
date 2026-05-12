@@ -11,6 +11,7 @@ import { ProjectFiscal } from 'src/app/components/models';
 import { CodeTableServices } from 'src/app/services/code-table-services';
 import { ProjectService } from 'src/app/services/project-services';
 import { TokenService } from 'src/app/services/token.service';
+import { PermissionsService } from 'src/app/services/permissions.service';
 import { EndorsementCode, ModalMessages, ModalTitles } from 'src/app/utils/constants';
 import * as Tools from 'src/app/utils/tools';
 import { PlanFiscalStatusIcons } from 'src/app/utils/tools';
@@ -74,6 +75,11 @@ describe('ProjectFiscalsComponent', () => {
           provide: TokenService, useValue: {
             getUserFullName: jasmine.createSpy('getUserFullName').and.returnValue('Test User'),
             getIdir: jasmine.createSpy('getIdir').and.returnValue('IDIR123')
+          }
+        },
+        {
+          provide: PermissionsService, useValue: {
+            hasAction: jasmine.createSpy('hasAction').and.returnValue(true)
           }
         },
         {
@@ -1083,6 +1089,16 @@ describe('ProjectFiscalsComponent', () => {
       component.selectedTabIndex = 0;
 
       expect(component.isCurrentFiscalReadonly()).toBeFalse();
+    });
+
+    it('should return true if canUpdateFiscal is false', () => {
+      component.projectFiscals = [
+        { planFiscalStatusCode: { planFiscalStatusCode: component.FiscalStatuses.DRAFT } }
+      ];
+      component.selectedTabIndex = 0;
+      spyOnProperty(component, 'canUpdateFiscal', 'get').and.returnValue(false);
+
+      expect(component.isCurrentFiscalReadonly()).toBeTrue();
     });
   });
 

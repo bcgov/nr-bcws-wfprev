@@ -22,6 +22,7 @@ export class DropdownButtonComponent {
   @Input() index!: number;
   @Input() fiscal!: ProjectFiscal;
   @Input() isDirty: boolean | undefined;
+  @Input() isDisabled = false;
 
   @Output() actionSelected = new EventEmitter<{ action: string; index: number }>();
 
@@ -32,7 +33,7 @@ export class DropdownButtonComponent {
     this.actionSelected.emit({ action, index: this.index });
   }
 
-  isDisabled(): boolean {
-    return [this.FiscalStatuses.COMPLETE, this.FiscalStatuses.CANCELLED].includes(this.status);
+  isButtonDisabled(): boolean {
+    return this.isDisabled || [this.FiscalStatuses.COMPLETE, this.FiscalStatuses.CANCELLED].includes(this.status);
   }
 }

@@ -14,7 +14,7 @@ import { CreateNewProjectDialogComponent } from 'src/app/components/create-new-p
 import { DownloadButtonComponent } from 'src/app/components/shared/download-button/download-button.component';
 import { IconButtonComponent } from 'src/app/components/shared/icon-button/icon-button.component';
 import { StatusBadgeComponent } from 'src/app/components/shared/status-badge/status-badge.component';
-import { DetailButtonComponent } from 'src/app/components/shared/detail-button/detail-button.component';
+import { DetailButtonComponent } from '../../shared/detail-button/detail-button.component';
 import { CodeTableServices } from 'src/app/services/code-table-services';
 import { MapService } from 'src/app/services/map.service';
 import { ProjectService } from 'src/app/services/project-services';

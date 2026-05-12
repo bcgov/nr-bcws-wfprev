@@ -19,7 +19,7 @@
     (download)="onDownload($event)"
     [disabled]="!displayedProjects.length || !perms.hasAction(WFPREV_ACTIONS.EXPORT_TO_RESULTS)">
   </wfprev-download-button>
-  <wfprev-icon-button
+  <wfprev-icon-button class="large"
       [text]="'Create Project'"
       [icon]="'/assets/add-button.svg'"
       [alt]="'create-project'"
