@@ -83,7 +83,7 @@
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
         <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
     </table>
-    <div class="no-files-message" *ngIf="!isLoading && !hasAttachments">
-        No Files have been added.
+    <div class="wf-empty-state" *ngIf="!isLoading && !hasAttachments">
+        <p class="empty-state-text">No Files have been added.</p>
     </div>
 </div>

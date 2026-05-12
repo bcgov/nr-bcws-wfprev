@@ -1,6 +1,8 @@
 .shared-icon-button {
   cursor: pointer;
-  padding: 12px;
+  padding: 0 12px;
+  height: var(--wf-btn-height-standard);
+  box-sizing: border-box;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -32,8 +34,6 @@
   }
 }
 
-:host-context(.new-update) .shared-icon-button,
-:host-context(.add-activity) .shared-icon-button {
-  width: 153px;
-  height: 40px;
+:host.large .shared-icon-button {
+  height: var(--wf-btn-height-large) !important;
 }

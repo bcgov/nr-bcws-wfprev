@@ -13,11 +13,12 @@ import { DetailButtonComponent } from 'src/app/components/shared/detail-button/d
 import { PermissionsService, WFPREV_ACTIONS } from 'src/app/services/permissions.service';
 import { ProjectService } from 'src/app/services/project-services';
 import { EvaluationCriteriaSectionCodes, ProjectTypes } from 'src/app/utils/constants';
+import { IconButtonComponent } from 'src/app/components/shared/icon-button/icon-button.component';
 
 @Component({
   selector: 'wfprev-evaluation-criteria',
   standalone: true,
-  imports: [ExpansionIndicatorComponent, MatExpansionModule, MatIconModule, CommonModule, TimestampComponent, MatProgressSpinnerModule, DetailButtonComponent],
+  imports: [ExpansionIndicatorComponent, MatExpansionModule, MatIconModule, CommonModule, TimestampComponent, MatProgressSpinnerModule, DetailButtonComponent, IconButtonComponent],
   templateUrl: './evaluation-criteria.component.html',
   styleUrl: './evaluation-criteria.component.scss'
 })
@@ -39,6 +40,14 @@ export class EvaluationCriteriaComponent implements OnChanges, OnInit {
     if (this.permissionsService.hasAction(WFPREV_ACTIONS.CREATE_EVALUATION_CRITERIA)) {
           this.criteriaButtonText = 'Edit';
         }
+  }
+
+  get canUpdateEvaluationCriteria(): boolean {
+    return this.permissionsService.hasAction(WFPREV_ACTIONS.UPDATE_EVALUATION_CRITERIA);
+  }
+
+  get canCreateEvaluationCriteria(): boolean {
+    return this.permissionsService.hasAction(WFPREV_ACTIONS.CREATE_EVALUATION_CRITERIA);
   }
 
   ngOnChanges(changes: SimpleChanges): void {

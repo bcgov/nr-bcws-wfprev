@@ -375,4 +375,18 @@ describe('EndorsementApprovalComponent', () => {
     expect(emitSpy).toHaveBeenCalled();
   });
 
+  it('should disable form when isReadonly is true', () => {
+    component.isReadonly = true;
+    component.fiscal = { ...mockFiscal };
+    component.ngOnChanges({
+      fiscal: {
+        currentValue: component.fiscal,
+        previousValue: null,
+        firstChange: true,
+        isFirstChange: () => true
+      }
+    });
+    expect(component.endorsementApprovalForm.disabled).toBeTrue();
+  });
+
 });
