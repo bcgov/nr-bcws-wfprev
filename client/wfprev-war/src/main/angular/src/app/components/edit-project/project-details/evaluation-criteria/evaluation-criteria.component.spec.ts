@@ -290,4 +290,14 @@ it('should return standard section codes when project is not CULTURAL_PRESCRIBED
     expect(component.canUpdateEvaluationCriteria).toBeFalse();
   });
 
+  it('should return true for canCreateEvaluationCriteria when user has CREATE permission', () => {
+    mockPermissionsService.hasAction.and.callFake((action) => action === WFPREV_ACTIONS.CREATE_EVALUATION_CRITERIA);
+    expect(component.canCreateEvaluationCriteria).toBeTrue();
+  });
+
+  it('should return false for canCreateEvaluationCriteria when user lacks CREATE permission', () => {
+    mockPermissionsService.hasAction.and.returnValue(false);
+    expect(component.canCreateEvaluationCriteria).toBeFalse();
+  });
+
 });

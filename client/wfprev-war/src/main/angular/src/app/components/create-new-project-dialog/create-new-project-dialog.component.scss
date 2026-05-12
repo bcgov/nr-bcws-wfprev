@@ -138,14 +138,15 @@
 
 .button-row {
   display: flex;
-  height: 43px;
   padding: 14px 24px 14px 23px;
   justify-content: flex-end;
   align-items: flex-start;
   gap: 14px;
 
   button {
-    padding: 12px 25px;
+    padding: 0 25px;
+    height: var(--wf-btn-height-standard);
+    box-sizing: border-box;
     border: none;
     border-radius: 4px;
     font-size: 16px;

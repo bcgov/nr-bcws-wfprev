@@ -12,7 +12,9 @@
   border-radius: 0;
   width: auto;
   border-radius: 4px;
-  height: 35px;
+  height: var(--wf-btn-height-compact);
+  padding: 0 12px;
+  box-sizing: border-box;
   span {
     font-family: var(--wf-font-family-main) !important;
     padding-right: 10px;

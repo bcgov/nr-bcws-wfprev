@@ -267,8 +267,8 @@
                 </mat-expansion-panel>
             </div>
         </div>
-        <div class="no-activities-message" *ngIf="!isLoading && !activities?.length">
-            No Activities have been added.
+        <div class="wf-empty-state" *ngIf="!isLoading && !activities?.length">
+            <p class="empty-state-text">No Activities have been added.</p>
         </div>
     </mat-expansion-panel>
 </div>

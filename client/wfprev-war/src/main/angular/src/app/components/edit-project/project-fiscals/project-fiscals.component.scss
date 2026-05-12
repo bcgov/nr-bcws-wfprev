@@ -172,7 +172,8 @@
 }
 
 .button-primary {
-  height: 40px;
+  height: var(--wf-btn-height-compact);
+  box-sizing: border-box;
   min-width: 67px;
   background-color: var(--wf-primary-color);
   color: #fff;
@@ -191,7 +192,8 @@
 }
 
 .button-secondary {
-  height: 40px;
+  height: var(--wf-btn-height-compact);
+  box-sizing: border-box;
   min-width: 67px;
   border-radius: 4px;
   background: #fff;
@@ -349,7 +351,6 @@ mat-expansion-panel {
 
   .footer-button-row {
     display: flex;
-    height: 43px;
     padding: 14px 24px 14px 23px;
     justify-content: flex-end;
     align-items: center;
@@ -376,16 +377,6 @@ mat-expansion-panel {
   font-weight: 400 !important;
   font-family: var(--wf-font-family-main);
   height: 40px;
-}
-
-.no-fiscals {
-  color: #000;
-  font-family: var(--wf-font-family-main);
-  font-size: 20px;
-  font-style: italic;
-  font-weight: 400;
-  line-height: normal;
-  padding-left: 70px;
 }
 
 ::ng-deep .mat-mdc-menu-panel {
@@ -507,7 +498,7 @@ mat-expansion-panel {
   justify-content: flex-end;
   align-items: center;
   z-index: 10;
-  height: 40px !important;
+  height: var(--wf-btn-height-compact) !important;
 }
 
 .status-actions {
@@ -534,4 +525,8 @@ mat-expansion-panel {
 
 :host ::ng-deep wfprev-textarea .textarea-label {
   padding-left: 10px;
+}
+
+.wf-empty-state {
+  margin-top: 60px;
 }
