@@ -181,3 +181,31 @@ mat-icon,
   background-color: white !important;
   padding: 8px 12px;
 }
+
+.wf-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: 20px 24px;
+  text-align: left;
+  background-color: #ffffff;
+  border: 1px solid #C6C8CB;
+  border-radius: 6px;
+  margin: 0;
+  box-sizing: border-box;
+
+  .empty-state-icon {
+    display: none;
+  }
+
+  .empty-state-text {
+    color: #6D6D6D;
+    font-family: var(--wf-font-family-main);
+    font-size: 16px;
+    font-style: italic;
+    font-weight: 400;
+    margin: 0;
+    line-height: 1.5;
+  }
+}

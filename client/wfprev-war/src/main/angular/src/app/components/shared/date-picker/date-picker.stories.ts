@@ -7,7 +7,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 
 export default {
-  title: 'Components/DatePicker',
+  title: 'Components/Forms/DatePicker',
   component: DatePickerComponent,
   decorators: [
     moduleMetadata({

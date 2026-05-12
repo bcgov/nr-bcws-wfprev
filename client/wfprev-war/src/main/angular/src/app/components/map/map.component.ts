@@ -99,39 +99,15 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     this.initMap().then(() => {
       const smk = this.mapService.getSMKInstance();
       const map = smk?.$viewer?.map;
-
       if (!map) return;
 
-      const bcBounds: L.LatLngBoundsExpression = BC_BOUNDS;
-      map.fitBounds(bcBounds);
-
-      // Add legend + marker cluster
-      const legendHelper = new LeafletLegendService();
-      this.legendControl = legendHelper.addLegend(map, this.fiscalColorMap);
-
-      this.markersClusterGroup = L.markerClusterGroup({
-        showCoverageOnHover: false,
-        iconCreateFunction: (cluster) =>
-          L.divIcon({
-            html: `<div class="cluster-icon"><span>${cluster.getChildCount()}</span></div>`,
-            className: 'custom-marker-cluster',
-            iconSize: L.point(40, 40),
-          }),
-      });
-
-      map.addLayer(this.markersClusterGroup);
-      this.isMapReady = true;
-
-      // Initial load of project locations
-      const currentFilters = this.sharedService.currentFilters || {};
-      this.fetchAndUpdateProjectLocations(currentFilters);
-
-      this.sharedService.filters$.subscribe((filters) => {
-        if (!this.isMapReady) return;
-        this.fetchAndUpdateProjectLocations(filters || {});
-      });
+      if (map['_loaded']) {
+        this.setupMarkersAndLayers(map);
+      } else {
+        map.whenReady(() => this.setupMarkersAndLayers(map));
+      }
     });
-
+    
     // Handle selected project to open popup
     this.sharedService.selectedProject$.subscribe((project) => {
       if (!project && this.selectedProject) {
@@ -149,18 +125,58 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     });
   }
 
+  setupMarkersAndLayers(map: L.Map): void {
+    const bcBounds: L.LatLngBoundsExpression = BC_BOUNDS;
+    map.fitBounds(bcBounds);
+
+    const legendHelper = new LeafletLegendService();
+    this.legendControl = legendHelper.addLegend(map, this.fiscalColorMap);
+
+    this.markersClusterGroup = L.markerClusterGroup({
+      showCoverageOnHover: false,
+      iconCreateFunction: (cluster) =>
+        L.divIcon({
+          html: `<div class="cluster-icon"><span>${cluster.getChildCount()}</span></div>`,
+          className: 'custom-marker-cluster',
+          iconSize: L.point(40, 40),
+        }),
+    });
+
+    map.addLayer(this.markersClusterGroup);
+    this.isMapReady = true;
+
+    const currentFilters = this.sharedService.currentFilters || {};
+    this.fetchAndUpdateProjectLocations(currentFilters);
+
+    this.sharedService.filters$.subscribe((filters) => {
+      if (!this.isMapReady) return;
+      this.fetchAndUpdateProjectLocations(filters || {});
+    });
+  }
+
   private async initMap(): Promise<void> {
     try {
-      const baseConfig = this.clone(this.mapConfig);
-      const mapState = await this.mapConfigService.getMapConfig();
-      baseConfig.push(mapState);
-      this.mapConfig = this.buildMapConfig(baseConfig);
+      const container = this.mapContainer.nativeElement;
+
+      // Basemap config — viewer & tools, no layers
+      const baseConfig = await this.mapConfigService.getBaseConfig();
 
       await this.mapService.createSMK({
         id: this.mapIndex,
-        containerSel: this.mapContainer.nativeElement,
-        config: this.mapConfig,
+        containerSel: container,
+        config: this.buildMapConfig([baseConfig]),
       });
+
+      const smk = this.mapService.getSMKInstance();
+      const map: L.Map | undefined = smk?.$viewer?.map;
+      if (!map) return;
+
+      // Fetch layers after basemap renders and inject into live SMK instance
+      const layersConfig = await this.mapConfigService.getLayersConfig();
+      // return only fires for current year - no filter for fire_year in news /features endpoint
+      await this.mapService.filterWildfireLayersByCurrentYear(layersConfig);
+      await this.mapService.addLayersToExistingSMKInstance(layersConfig);
+
     } catch (error) {
       console.error('Error loading map:', error);
     }
@@ -400,14 +416,17 @@ export class MapComponent implements AfterViewInit, OnDestroy {
         this.projectBoundaryLayer = null;
         this.activityBoundaryLayer = null;
       }
-    } else {
+    }  else {
       console.log('[Map] No valid project locations to add markers for.');
-      map.removeLayer(this.projectBoundaryLayer);
-      map.removeLayer(this.activityBoundaryLayer);
+      if (this.projectBoundaryLayer && map.hasLayer(this.projectBoundaryLayer)) {
+        map.removeLayer(this.projectBoundaryLayer);
+      }
+      if (this.activityBoundaryLayer && map.hasLayer(this.activityBoundaryLayer)) {
+        map.removeLayer(this.activityBoundaryLayer);
+      }
       this.projectBoundaryLayer = null;
       this.activityBoundaryLayer = null;
     }
-
     console.log(`Map added ${validLocations.length} project location markers`);
   }
 

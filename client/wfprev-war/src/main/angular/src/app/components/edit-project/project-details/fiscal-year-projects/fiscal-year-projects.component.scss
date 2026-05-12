@@ -1,5 +1,5 @@
 mat-expansion-panel {
-    border-bottom: 1px solid #C6C8CB;
+    border: 1px solid #D9D9D9;
     margin: 0px !important;
     background-color: #FFF;
 
@@ -8,6 +8,7 @@ mat-expansion-panel {
       min-height: 64px !important;
       height: auto !important;
       box-sizing: border-box;
+      border-bottom: 1px solid #D9D9D9;
     }
 
     ::ng-deep .mat-expansion-panel-body{
@@ -39,7 +40,7 @@ mat-expansion-panel {
 }
 .fiscals-content{
     padding: 0 24px;
-    border-top: 1px solid #D9D9D9;
+    border-top: none;
     container-type: inline-size;
     .fiscal-item{
         padding: 24px;
@@ -151,15 +152,7 @@ mat-expansion-panel {
           }
     }
 }
-.fiscal-empty-content{
-    color: #242424;
-    font-family: var(--wf-font-family-main);
-    font-size: 16px;
-    font-style: italic;
-    font-weight: 400;
-    line-height: normal;
-    padding: 20px 24px;
-}
+
 
 @container (max-width: 900px) {
     .fiscal-title-row {
@@ -188,4 +181,9 @@ mat-expansion-panel {
         flex-direction: column !important;
         gap: 8px !important;
     }
+}
+
+.wf-empty-state {
+    border: none;
+    background-color: transparent;
 }

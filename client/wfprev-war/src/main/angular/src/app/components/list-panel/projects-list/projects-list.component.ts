@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectorRef, Component, ElementRef, OnInit, QueryList, ViewChildren } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, inject, OnInit, QueryList, ViewChildren } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -14,6 +14,7 @@ import { CreateNewProjectDialogComponent } from 'src/app/components/create-new-p
 import { DownloadButtonComponent } from 'src/app/components/shared/download-button/download-button.component';
 import { IconButtonComponent } from 'src/app/components/shared/icon-button/icon-button.component';
 import { StatusBadgeComponent } from 'src/app/components/shared/status-badge/status-badge.component';
+import { DetailButtonComponent } from '../../shared/detail-button/detail-button.component';
 import { CodeTableServices } from 'src/app/services/code-table-services';
 import { MapService } from 'src/app/services/map.service';
 import { ProjectService } from 'src/app/services/project-services';
@@ -25,11 +26,12 @@ import { getBluePinIcon, getFiscalYearDisplay, PlanFiscalStatusIcons } from 'src
 import { ReportRequest } from '../../models';
 import { ExpansionIndicatorComponent } from '../../shared/expansion-indicator/expansion-indicator.component';
 import { ProjectFilterStateService } from 'src/app/services/project-filter-state.service';
+import { PermissionsService, WFPREV_ACTIONS } from 'src/app/services/permissions.service';
 
 @Component({
   selector: 'wfprev-projects-list',
   standalone: true,
-  imports: [MatSlideToggleModule, CommonModule, MatExpansionModule, MatTooltipModule, ExpansionIndicatorComponent, IconButtonComponent, MatSelectModule, StatusBadgeComponent, DownloadButtonComponent, MatProgressSpinnerModule],
+  imports: [MatSlideToggleModule, CommonModule, MatExpansionModule, MatTooltipModule, ExpansionIndicatorComponent, IconButtonComponent, DetailButtonComponent, MatSelectModule, StatusBadgeComponent, DownloadButtonComponent, MatProgressSpinnerModule],
   templateUrl: './projects-list.component.html',
   styleUrls: ['./projects-list.component.scss'],
 })
@@ -60,6 +62,9 @@ export class ProjectsListComponent implements OnInit {
   pageNumber = 1;
   pageRowCount = 20;
   hasMore = true;
+  protected readonly perms = inject(PermissionsService);
+  protected readonly WFPREV_ACTIONS = WFPREV_ACTIONS;
+
   constructor(
     private readonly router: Router,
     private readonly projectService: ProjectService,

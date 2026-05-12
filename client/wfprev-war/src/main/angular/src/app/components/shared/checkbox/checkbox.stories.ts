@@ -4,7 +4,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 
 export default {
-  title: 'Components/Checkbox',
+  title: 'Components/Forms/Checkbox',
   component: CheckboxComponent,
   decorators: [
     moduleMetadata({

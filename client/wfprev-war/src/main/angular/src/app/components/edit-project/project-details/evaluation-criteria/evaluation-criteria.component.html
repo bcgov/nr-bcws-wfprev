@@ -8,17 +8,22 @@
             <span>Evaluation Criteria</span>
           </mat-panel-title>
           <mat-panel-description class="edit-evaluation-criteria">
-            <div (click)="openEvaluationCriteriaPopUp(); $event.stopPropagation()">
-              <img alt="edit-icon" class="icon" src="/assets/edit-icon.svg" />
-              <span>Edit</span>
-            </div>
+            @if (!isLoading) {
+              @if (!evaluationCriteriaSummary) {
+                <wfprev-icon-button [text]="'Add Criteria'" [icon]="'/assets/add-button.svg'" [iconSize]="19" [disabled]="!canCreateEvaluationCriteria" (clicked)="openEvaluationCriteriaPopUp()"></wfprev-icon-button>
+              } @else {
+                <wfprev-detail-button [text]="'View Details'" [isDisabled]="!canUpdateEvaluationCriteria" (clicked)="openEvaluationCriteriaPopUp()"></wfprev-detail-button>
+              }
+            }
           </mat-panel-description>
         </mat-expansion-panel-header>
-        <div class="spinner-container" *ngIf="isLoading">
-            <mat-progress-spinner mode="indeterminate" diameter="36" color="primary"></mat-progress-spinner>
-        </div>
-        <div *ngIf="!isLoading">
-            <div *ngIf="evaluationCriteriaSummary; else emptyContent">
+        
+        @if (isLoading) {
+          <div class="spinner-container">
+              <mat-progress-spinner mode="indeterminate" diameter="36" color="primary"></mat-progress-spinner>
+          </div>
+        } @else {
+            @if (evaluationCriteriaSummary) {
                 <div class="criteria-section">
                     <div class="section-label">
                         <span>{{ evaluationLabels.coarse }}:</span>
@@ -29,10 +34,12 @@
 
                     <div class="criteria-details">
                         <div class="risk-class-row">
-                            <div class="criteria-item criteria-item-narrow" *ngIf="isPrescribedFire">
-                                <span>Outside of WUI</span>
-                                <span>{{evaluationCriteriaSummary.isOutsideWuiInd? 'Yes' : "No"}}</span>
-                            </div>
+                            @if (isPrescribedFire) {
+                                <div class="criteria-item criteria-item-narrow">
+                                    <span>Outside of WUI</span>
+                                    <span>{{evaluationCriteriaSummary.isOutsideWuiInd? 'Yes' : "No"}}</span>
+                                </div>
+                            }
                             <div class="criteria-item criteria-item-narrow">
                                 <span>WUI Risk Class</span>
                                 <span>{{ formatCodeLabel(evaluationCriteriaSummary.wuiRiskClassCode?.wuiRiskClassCode) || ''
@@ -85,12 +92,11 @@
                 <wfprev-timestamp [updateDate]="evaluationCriteriaSummary.lastUpdatedTimestamp"
                     [updateUser]="evaluationCriteriaSummary.updateUser">
                 </wfprev-timestamp>
-            </div>
-            <ng-template #emptyContent>
-                <div class="criteria-empty-content">
-                    No Evaluation Criteria have been added.
+            } @else {
+                <div class="wf-empty-state">
+                    <p class="empty-state-text">No Evaluation Criteria have been added.</p>
                 </div>
-            </ng-template>
-        </div>
-    </mat-expansion-panel>
+            }
+        }
+    </mat-expansion-panel>    
 </div>

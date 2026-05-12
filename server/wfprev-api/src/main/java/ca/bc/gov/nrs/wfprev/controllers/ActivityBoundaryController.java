@@ -24,6 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -125,6 +126,7 @@ public class ActivityBoundaryController extends CommonController {
             description = "Create a new Activity Boundary for an Activity",
             security = @SecurityRequirement(name = "Webade-OAUTH2", scopes = {"WFPREV"})
     )
+    @PreAuthorize("hasAuthority('WFPREV.CREATE_SPATIAL_UPLOAD')")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Created",
                     content = @Content(schema = @Schema(implementation = ActivityBoundaryModel.class))),
@@ -174,6 +176,7 @@ public class ActivityBoundaryController extends CommonController {
             description = "Update an existing Activity Boundary",
             security = @SecurityRequirement(name = "Webade-OAUTH2", scopes = {"WFPREV"})
     )
+    @PreAuthorize("hasAuthority('WFPREV.UPDATE_SPATIAL_METADATA')")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK"),
             @ApiResponse(responseCode = "400", description = "Bad Request"),
@@ -224,6 +227,7 @@ public class ActivityBoundaryController extends CommonController {
             description = "Delete a specific Activity Boundary by ID",
             security = @SecurityRequirement(name = "Webade-OAUTH2", scopes = {"WFPREV"})
     )
+    @PreAuthorize("hasAuthority('WFPREV.DELETE_SPATIAL_UPLOAD')")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "No Content"),
             @ApiResponse(responseCode = "404", description = "Not Found"),

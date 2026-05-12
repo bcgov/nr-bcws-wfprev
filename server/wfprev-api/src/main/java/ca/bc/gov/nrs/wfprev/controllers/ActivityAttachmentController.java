@@ -22,6 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -127,6 +128,7 @@ public class ActivityAttachmentController extends CommonController {
             @ApiResponse(responseCode = "201", description = "Created",
                     content = @Content(schema = @Schema(implementation = FileAttachmentModel.class)))
     })
+    @PreAuthorize("hasAuthority('WFPREV.CREATE_ACTIVITY_ATTACHMENT')")
     @Operation(
             summary = "Create a File Attachment for an Activity",
             description = "Create a new File Attachment for an Activity",
@@ -166,6 +168,7 @@ public class ActivityAttachmentController extends CommonController {
             description = "Update an existing File Attachment for an Activity",
             summary = "Update File Attachment for an Activity"
     )
+    @PreAuthorize("hasAuthority('WFPREV.UPDATE_ACTIVITY_ATTACHMENT')")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "500", description = "Internal Server Error Response"),
             @ApiResponse(responseCode = "404", description = "Not Found Response"),
@@ -208,6 +211,7 @@ public class ActivityAttachmentController extends CommonController {
             description = "Delete a specific File Attachment by ID",
             security = @SecurityRequirement(name = "Webade-OAUTH2", scopes = {"WFPREV"})
     )
+    @PreAuthorize("hasAuthority('WFPREV.DELETE_ACTIVITY_ATTACHMENT')")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "500", description = "Internal Server Error Response"),
             @ApiResponse(responseCode = "404", description = "Not Found Response"),

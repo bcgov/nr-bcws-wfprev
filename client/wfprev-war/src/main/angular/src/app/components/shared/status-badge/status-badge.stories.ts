@@ -2,14 +2,17 @@ import { Meta, StoryObj } from '@storybook/angular';
 import { StatusBadgeComponent } from './status-badge.component';
 
 const meta: Meta<StatusBadgeComponent> = {
-  title: 'Components/Shared/StatusBadge',
+  title: 'Components/Indicators/StatusBadge',
   component: StatusBadgeComponent,
   tags: ['autodocs'],
 };
 
 export default meta;
+
+export const Default: StoryObj<StatusBadgeComponent> = {
+  args: {
     icon: {
-      src: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Blue_check.svg/2048px-Blue_check.svg.png',
+      src: '/assets/complete-icon.svg',
       alt: 'Verified',
       title: 'Verified Badge',
     },
