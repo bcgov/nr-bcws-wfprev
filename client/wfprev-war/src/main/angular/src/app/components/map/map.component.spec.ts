@@ -583,7 +583,7 @@ describe('MapComponent', () => {
 
     it('should skip if map or cluster group missing', () => {
       (component as any).markersClusterGroup = null;
-      component['updateProjectMarkersFromLocations']([{ projectGuid: '1', latitude: 1, longitude: 2 }]);
+      component['updateProjectMarkersFromLocations']([{ projectGuid: '1', latitude: 1, longitude: 2 }], {});
       expect(console.warn).toHaveBeenCalledWith('Map cannot update markers');
     });
 
@@ -594,7 +594,7 @@ describe('MapComponent', () => {
       const subSpy = spyOn(component['projectService'], 'getFeatureByProjectGuid')
         .and.returnValue(of(createMockProject({ projectGuid: 'p1', projectName: 'Test' })));
 
-      component['updateProjectMarkersFromLocations']([loc]);
+      component['updateProjectMarkersFromLocations']([loc], {});
 
       const marker = component['projectMarkerMap'].get('p1')!;
       expect(marker).toBeDefined();
@@ -610,7 +610,7 @@ describe('MapComponent', () => {
       const loc = { projectGuid: 'cached', latitude: 1, longitude: 2 };
       component['featureCache'].set('cached', { projectGuid: 'cached', projectName: 'Cached' } as Project);
       const handleSpy = spyOn<any>(component, 'handleProjectClick');
-      component['updateProjectMarkersFromLocations']([loc]);
+      component['updateProjectMarkersFromLocations']([loc], {});
       const marker = component['projectMarkerMap'].get('cached')!;
       marker.fire('click');
       expect(handleSpy).toHaveBeenCalled();
@@ -648,7 +648,7 @@ describe('MapComponent', () => {
 
       component['fetchAndUpdateProjectLocations']({});
       expect(warnSpy).toHaveBeenCalledWith('[Map] No project locations found.');
-      expect(spyUpdate).toHaveBeenCalledWith([]);
+      expect(spyUpdate).toHaveBeenCalledWith([], {});
     });
 
     it('should handle errors gracefully', () => {
@@ -696,14 +696,15 @@ describe('MapComponent', () => {
         { projectGuid: 'b', latitude: 5, longitude: 6 },
         { projectGuid: undefined, latitude: 7, longitude: 8 }, // invalid -> filtered out
       ];
+      const mockFilters = { programAreaGuids: ['test'] };
 
-      (component as any).updateProjectMarkersFromLocations(locs as any);
+      (component as any).updateProjectMarkersFromLocations(locs as any, mockFilters);
 
       // verify MapService layer factories are called with correct args
       expect(mapServiceMock.createProjectBoundaryLayer)
-        .toHaveBeenCalledWith(mockMap, ['a', 'b']);
+        .toHaveBeenCalledWith(mockMap, mockFilters);
       expect(mapServiceMock.createActivityBoundaryLayer)
-        .toHaveBeenCalledWith(mockMap, ['a', 'b'], component.currentFiscalYear);
+        .toHaveBeenCalledWith(mockMap, mockFilters, component.currentFiscalYear);
 
       // and the returned layers are added to the map
       expect(mockMap.addLayer).toHaveBeenCalledWith(jasmine.objectContaining({ id: 'proj-layer' }));
@@ -724,7 +725,7 @@ describe('MapComponent', () => {
         { projectGuid: 'x', latitude: 49, longitude: -123 },
       ];
 
-      (component as any).updateProjectMarkersFromLocations(locs as any);
+      (component as any).updateProjectMarkersFromLocations(locs as any, {});
 
       expect(mockMap.removeLayer).toHaveBeenCalledWith(oldProj);
       expect(mockMap.removeLayer).toHaveBeenCalledWith(oldAct);
@@ -743,7 +744,7 @@ describe('MapComponent', () => {
       mockMap.hasLayer.and.callFake((l: any) => l === oldProj || l === oldAct);
 
       const empty: any[] = [];
-      (component as any).updateProjectMarkersFromLocations(empty);
+      (component as any).updateProjectMarkersFromLocations(empty, {});
 
       expect(mockMap.removeLayer).toHaveBeenCalledWith(oldProj);
       expect(mockMap.removeLayer).toHaveBeenCalledWith(oldAct);
@@ -758,10 +759,10 @@ describe('MapComponent', () => {
 
       const locs = [{ projectGuid: 'p', latitude: 1, longitude: 1 }];
 
-      (component as any).updateProjectMarkersFromLocations(locs as any);
+      (component as any).updateProjectMarkersFromLocations(locs as any, {});
 
       expect(mapServiceMock.createActivityBoundaryLayer)
-        .toHaveBeenCalledWith(mockMap, ['p'], 2030);
+        .toHaveBeenCalledWith(mockMap, {}, 2030);
     });
   });
 

@@ -2,8 +2,11 @@ package ca.bc.gov.nrs.wfprev.controllers;
 
 import ca.bc.gov.nrs.common.wfone.rest.resource.HeaderConstants;
 import ca.bc.gov.nrs.common.wfone.rest.resource.MessageListRsrc;
+import ca.bc.gov.nrs.wfone.common.service.api.ServiceException;
 import ca.bc.gov.nrs.wfprev.common.controllers.CommonController;
+import ca.bc.gov.nrs.wfprev.data.params.FeatureQueryParams;
 import ca.bc.gov.nrs.wfprev.services.BoundaryTileService;
+import ca.bc.gov.nrs.wfprev.services.ProjectLocationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -14,11 +17,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import jakarta.validation.constraints.NotEmpty;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,7 +27,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.UUID;
@@ -38,18 +38,20 @@ import java.util.UUID;
 public class BoundaryTileController extends CommonController {
 
     private final BoundaryTileService boundaryTileService;
+    private final ProjectLocationService projectLocationService;
 
-    public BoundaryTileController(BoundaryTileService boundaryTileService) {
+    public BoundaryTileController(BoundaryTileService boundaryTileService, ProjectLocationService projectLocationService) {
         super(BoundaryTileController.class.getName());
         this.boundaryTileService = boundaryTileService;
+        this.projectLocationService = projectLocationService;
     }
 
     @GetMapping(
             value = "/project_boundary/{z}/{x}/{y}.mvt",
             produces = "application/vnd.mapbox-vector-tile")
     @Operation(
-            summary = "Fetch all File Attachments for an Activity",
-            description = "Fetch all File Attachments for an Activity",
+            summary = "Fetch Project Boundaries as Vector Tiles",
+            description = "Fetch Project Boundaries as Vector Tiles, optionally filtered by project GUIDs or feature query parameters",
             security = @SecurityRequirement(name = "Webade-OAUTH2", scopes = {"WFPREV"}),
             extensions = {
                     @Extension(properties = {
@@ -70,22 +72,39 @@ public class BoundaryTileController extends CommonController {
             required = true, schema = @Schema(implementation = String.class), in = ParameterIn.HEADER)
     public ResponseEntity<byte[]> getProjectBoundaryTiles(
             @PathVariable int z, @PathVariable int x, @PathVariable int y,
-            @RequestParam(name = "projectGuid", required = true) @NotEmpty List<UUID> projectGuids) {
+            @RequestParam(name = "projectGuid", required = false) List<UUID> projectGuids,
+            @RequestParam(required = false) List<UUID> programAreaGuids,
+            @RequestParam(required = false) List<String> fiscalYears,
+            @RequestParam(required = false) List<String> activityCategoryCodes,
+            @RequestParam(required = false) List<String> planFiscalStatusCodes,
+            @RequestParam(required = false) List<String> forestRegionOrgUnitIds,
+            @RequestParam(required = false) List<String> forestDistrictOrgUnitIds,
+            @RequestParam(required = false) List<String> fireCentreOrgUnitIds,
+            @RequestParam(required = false) List<String> projectTypeCodes,
+            @RequestParam(required = false) String searchText) {
         log.info(" >> getProjectBoundaryTiles");
-        if (projectGuids == null || projectGuids.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "projectGuid is required (at least one). Pass multiple like ?projectGuid=a&projectGuid=b");
-        }
 
         try {
-            byte[] mvt = boundaryTileService.getProjectBoundaryTile(z, x, y, projectGuids);
+            List<UUID> resolved = resolveProjectGuids(projectGuids, programAreaGuids, fiscalYears,
+                    activityCategoryCodes, planFiscalStatusCodes, forestRegionOrgUnitIds,
+                    forestDistrictOrgUnitIds, fireCentreOrgUnitIds, projectTypeCodes, searchText);
+
+            if (resolved == null || resolved.isEmpty()) {
+                return ResponseEntity.ok()
+                        .header(HttpHeaders.CONTENT_TYPE, "application/vnd.mapbox-vector-tile")
+                        .header(HttpHeaders.CACHE_CONTROL, "public, max-age=86400, immutable")
+                        .body(new byte[0]);
+            }
+
+            byte[] mvt = boundaryTileService.getProjectBoundaryTile(z, x, y, resolved);
             if (mvt == null) mvt = new byte[0];
 
             return ResponseEntity.ok()
                     .header(HttpHeaders.CONTENT_TYPE, "application/vnd.mapbox-vector-tile")
                     .header(HttpHeaders.CACHE_CONTROL, "public, max-age=86400, immutable")
                     .body(mvt);
-        } catch (RuntimeException e) {
-            log.info(" ### Error while fetching File Attachments for Activity", e);
+        } catch (Exception e) {
+            log.error(" ### Error while fetching Project Boundaries", e);
             return internalServerError();
         }
     }
@@ -96,7 +115,7 @@ public class BoundaryTileController extends CommonController {
     )
     @Operation(
             summary = "Fetch activity boundaries for one or more projects",
-            description = "Returns activity boundaries styled by fiscal year",
+            description = "Returns activity boundaries styled by fiscal year, optionally filtered by project GUIDs or feature query parameters",
             security = @SecurityRequirement(name = "Webade-OAUTH2", scopes = {"WFPREV"}),
             extensions = {
                     @Extension(properties = {
@@ -115,23 +134,71 @@ public class BoundaryTileController extends CommonController {
     @Parameter(name = HeaderConstants.IF_MATCH_HEADER, in = ParameterIn.HEADER)
     public ResponseEntity<byte[]> getActivityBoundaryTiles(
             @PathVariable int z, @PathVariable int x, @PathVariable int y,
-            @RequestParam(name = "projectGuid", required = true) @NotEmpty List<UUID> projectGuids) {
+            @RequestParam(name = "projectGuid", required = false) List<UUID> projectGuids,
+            @RequestParam(required = false) List<UUID> programAreaGuids,
+            @RequestParam(required = false) List<String> fiscalYears,
+            @RequestParam(required = false) List<String> activityCategoryCodes,
+            @RequestParam(required = false) List<String> planFiscalStatusCodes,
+            @RequestParam(required = false) List<String> forestRegionOrgUnitIds,
+            @RequestParam(required = false) List<String> forestDistrictOrgUnitIds,
+            @RequestParam(required = false) List<String> fireCentreOrgUnitIds,
+            @RequestParam(required = false) List<String> projectTypeCodes,
+            @RequestParam(required = false) String searchText) {
         log.info(">>getActivityBoundaryTiles");
-        if (projectGuids == null || projectGuids.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "projectGuid is required (at least one). Pass multiple like ?projectGuid=a&projectGuid=b");
-        }
 
         try {
-            byte[] mvt = boundaryTileService.getActivityBoundaryTile(z, x, y, projectGuids);
+            List<UUID> resolved = resolveProjectGuids(projectGuids, programAreaGuids, fiscalYears,
+                    activityCategoryCodes, planFiscalStatusCodes, forestRegionOrgUnitIds,
+                    forestDistrictOrgUnitIds, fireCentreOrgUnitIds, projectTypeCodes, searchText);
+
+            if (resolved == null || resolved.isEmpty()) {
+                return ResponseEntity.ok()
+                        .header(HttpHeaders.CONTENT_TYPE, "application/vnd.mapbox-vector-tile")
+                        .header(HttpHeaders.CACHE_CONTROL, "public, max-age=86400, immutable")
+                        .body(new byte[0]);
+            }
+
+            byte[] mvt = boundaryTileService.getActivityBoundaryTile(z, x, y, resolved);
             if (mvt == null) mvt = new byte[0];
 
             return ResponseEntity.ok()
                     .header(HttpHeaders.CONTENT_TYPE, "application/vnd.mapbox-vector-tile")
                     .header(HttpHeaders.CACHE_CONTROL, "public, max-age=86400, immutable")
                     .body(mvt);
-        } catch (RuntimeException e) {
+        } catch (Exception e) {
             log.error("### Error while fetching Activity Boundaries", e);
             return internalServerError();
         }
     }
+
+    private List<UUID> resolveProjectGuids(
+            List<UUID> explicitGuids,
+            List<UUID> programAreaGuids,
+            List<String> fiscalYears,
+            List<String> activityCategoryCodes,
+            List<String> planFiscalStatusCodes,
+            List<String> forestRegionOrgUnitIds,
+            List<String> forestDistrictOrgUnitIds,
+            List<String> fireCentreOrgUnitIds,
+            List<String> projectTypeCodes,
+            String searchText) throws ServiceException {
+
+        if (explicitGuids != null && !explicitGuids.isEmpty()) {
+            return explicitGuids;
+        }
+
+        FeatureQueryParams queryParams = new FeatureQueryParams();
+        queryParams.setProgramAreaGuids(programAreaGuids);
+        queryParams.setFiscalYears(fiscalYears);
+        queryParams.setActivityCategoryCodes(activityCategoryCodes);
+        queryParams.setPlanFiscalStatusCodes(planFiscalStatusCodes);
+        queryParams.setForestRegionOrgUnitIds(forestRegionOrgUnitIds);
+        queryParams.setForestDistrictOrgUnitIds(forestDistrictOrgUnitIds);
+        queryParams.setFireCentreOrgUnitIds(fireCentreOrgUnitIds);
+        queryParams.setProjectTypeCodes(projectTypeCodes);
+        queryParams.setSearchText(searchText);
+
+        return projectLocationService.getProjectGuids(queryParams);
+    }
 }
+
