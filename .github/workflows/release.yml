@@ -71,6 +71,18 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Configure AWS Credentials for ECR
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: arn:aws:iam::${{ secrets.LZA_ECR_AWS_ACCOUNT_ID }}:role/Terraform-deploy
+          role-session-name: wfprev-release-retag
+          aws-region: ca-central-1
+
+      - name: Authenticate Docker to AWS ECR
+        run: |
+          aws ecr get-login-password --region ca-central-1 | \
+          docker login --username AWS --password-stdin ${{ secrets.LZA_ECR_AWS_ACCOUNT_ID }}.dkr.ecr.ca-central-1.amazonaws.com
+
       - name: Retag API
         if: needs.check-images.outputs.api_exists == 'true'
         run: |
@@ -88,16 +100,24 @@ jobs:
       - name: Retag GDB Extractor
         if: needs.check-images.outputs.gdb_exists == 'true'
         run: |
+          # GHCR
           docker pull ${{ vars.REGISTRY }}/${{ github.repository_owner }}/nr-bcws-wfprev-wfprev-gdb-extractor:${{ github.sha }}
           docker tag ${{ vars.REGISTRY }}/${{ github.repository_owner }}/nr-bcws-wfprev-wfprev-gdb-extractor:${{ github.sha }} ${{ vars.REGISTRY }}/${{ github.repository_owner }}/nr-bcws-wfprev-wfprev-gdb-extractor:${{ github.event.release.tag_name }}
           docker push ${{ vars.REGISTRY }}/${{ github.repository_owner }}/nr-bcws-wfprev-wfprev-gdb-extractor:${{ github.event.release.tag_name }}
+          # ECR
+          docker tag ${{ vars.REGISTRY }}/${{ github.repository_owner }}/nr-bcws-wfprev-wfprev-gdb-extractor:${{ github.sha }} ${{ secrets.LZA_ECR_AWS_ACCOUNT_ID }}.dkr.ecr.ca-central-1.amazonaws.com/nr-bcws-wfprev-wfprev-gdb-extractor:${{ github.event.release.tag_name }}
+          docker push ${{ secrets.LZA_ECR_AWS_ACCOUNT_ID }}.dkr.ecr.ca-central-1.amazonaws.com/nr-bcws-wfprev-wfprev-gdb-extractor:${{ github.event.release.tag_name }}
 
       - name: Retag Report Generator
         if: needs.check-images.outputs.report_exists == 'true'
         run: |
+          # GHCR
           docker pull ${{ vars.REGISTRY }}/${{ github.repository_owner }}/nr-bcws-wfprev-report-generator:${{ github.sha }}
           docker tag ${{ vars.REGISTRY }}/${{ github.repository_owner }}/nr-bcws-wfprev-report-generator:${{ github.sha }} ${{ vars.REGISTRY }}/${{ github.repository_owner }}/nr-bcws-wfprev-report-generator:${{ github.event.release.tag_name }}
           docker push ${{ vars.REGISTRY }}/${{ github.repository_owner }}/nr-bcws-wfprev-report-generator:${{ github.event.release.tag_name }}
+          # ECR
+          docker tag ${{ vars.REGISTRY }}/${{ github.repository_owner }}/nr-bcws-wfprev-report-generator:${{ github.sha }} ${{ secrets.LZA_ECR_AWS_ACCOUNT_ID }}.dkr.ecr.ca-central-1.amazonaws.com/nr-bcws-wfprev-report-generator:${{ github.event.release.tag_name }}
+          docker push ${{ secrets.LZA_ECR_AWS_ACCOUNT_ID }}.dkr.ecr.ca-central-1.amazonaws.com/nr-bcws-wfprev-report-generator:${{ github.event.release.tag_name }}
 
   validate-images:
     needs: check-images
