@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, Output, QueryList, SimpleChanges, ViewChild, ViewChildren } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, OnDestroy, Output, QueryList, SimpleChanges, ViewChild, ViewChildren } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MomentDateAdapter } from '@angular/material-moment-adapter';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -69,7 +69,7 @@ export const CUSTOM_DATE_FORMATS = {
   ],
 })
 
-export class ActivitiesComponent implements OnChanges, CanComponentDeactivate {
+export class ActivitiesComponent implements OnChanges, OnDestroy, CanComponentDeactivate {
   @Input() fiscalGuid: string = '';
   @Input() isReadonly: boolean = false;
   @Output() boundariesUpdated = new EventEmitter<void>();
@@ -107,6 +107,10 @@ export class ActivitiesComponent implements OnChanges, CanComponentDeactivate {
     public cd: ChangeDetectorRef
   ) { }
 
+  ngOnDestroy(): void {
+    this.dataSubscription?.unsubscribe();
+  }
+
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['fiscalGuid'] && changes['fiscalGuid'].currentValue) {
       this.projectGuid = this.route.snapshot?.queryParamMap?.get('projectGuid') || '';
@@ -120,7 +124,7 @@ export class ActivitiesComponent implements OnChanges, CanComponentDeactivate {
         this.activities = [];
         this.activityForms = [];
 
-        this.dataSubscription.add(this.loadCodeTables().subscribe({
+        const sub = this.loadCodeTables().subscribe({
           next: () => {
             this.getActivities(() => {
               this.activityForms.forEach((form, i) => {
@@ -135,7 +139,8 @@ export class ActivitiesComponent implements OnChanges, CanComponentDeactivate {
             console.error('Error loading code tables', err);
             this.getActivities();
           }
-        }));
+        });
+        this.dataSubscription?.add(sub);
       } else {
         this.isLoading = false;
       }
@@ -187,7 +192,7 @@ export class ActivitiesComponent implements OnChanges, CanComponentDeactivate {
       this.isLoading = true;
       this.getProjectType(this.projectGuid);
 
-      this.dataSubscription?.add(this.projectService.getFiscalActivities(this.projectGuid, this.fiscalGuid)
+      const sub = this.projectService.getFiscalActivities(this.projectGuid, this.fiscalGuid)
         .pipe(finalize(() => {
           this.isLoading = false;
           this.cd.detectChanges();
@@ -226,23 +231,23 @@ export class ActivitiesComponent implements OnChanges, CanComponentDeactivate {
               { duration: 5000, panelClass: 'snackbar-error' }
             );
           }
-        }));
+        });
+      this.dataSubscription?.add(sub);
     } else {
       this.isLoading = false;
     }
   }
 
   getProjectType(projectGuid: string) {
-    this.dataSubscription?.add(
-      this.projectService.getProjectByProjectGuid(this.projectGuid).subscribe({
-        next: (data) => {
-          this.projectTypeCode = data.projectTypeCode?.projectTypeCode
-        },
-        error: (err) => {
-          console.error('Error fetching project:', err);
-        },
-      })
-    );
+    const sub = this.projectService.getProjectByProjectGuid(this.projectGuid).subscribe({
+      next: (data) => {
+        this.projectTypeCode = data.projectTypeCode?.projectTypeCode
+      },
+      error: (err) => {
+        console.error('Error fetching project:', err);
+      },
+    });
+    this.dataSubscription?.add(sub);
   }
 
   getFormattedDate(date: string | null): string {

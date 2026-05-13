@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { HttpParams } from '@angular/common/http';
 import { BC_BOUNDS, FiscalYearColors } from 'src/app/utils/constants';
 import { TokenService } from './token.service';
 import { StyleSpecification } from 'maplibre-gl';
@@ -444,16 +445,26 @@ export class MapService {
     }
   }
 
-  private toGuidQuery(projectGuids: string[]): string {
-    if (!projectGuids?.length) return '';
-    const q = projectGuids.map(g => `projectGuid=${encodeURIComponent(g)}`).join('&');
-    return `?${q}`;
+  private toQueryString(filters: any): string {
+    let httpParams = new HttpParams();
+    if (filters) {
+      for (const key in filters) {
+        const value = filters[key];
+        if (Array.isArray(value)) {
+          value.forEach(v => (httpParams = httpParams.append(key, v)));
+        } else if (value != null && value !== '') {
+          httpParams = httpParams.set(key, value);
+        }
+      }
+    }
+    const query = httpParams.toString();
+    return query ? `?${query}` : '';
   }
 
-  createProjectBoundaryLayer(map: L.Map, projectGuids: string[]): L.Layer {
+  createProjectBoundaryLayer(map: L.Map, filters: any): L.Layer {
     this.ensurePane(map, 'pane-project-boundary-gl', 401);
 
-    const tiles = `${this.apiBaseUrl}/tiles/project_boundary/{z}/{x}/{y}.mvt${this.toGuidQuery(projectGuids)}`;
+    const tiles = `${this.apiBaseUrl}/tiles/project_boundary/{z}/{x}/{y}.mvt${this.toQueryString(filters)}`;
 
     const style: StyleSpecification = {
       version: 8,
@@ -477,10 +488,10 @@ export class MapService {
     });
   }
 
-  createActivityBoundaryLayer(map: L.Map, projectGuids: string[], currentFiscalYear: number): L.Layer {
+  createActivityBoundaryLayer(map: L.Map, filters: any, currentFiscalYear: number): L.Layer {
     this.ensurePane(map, 'pane-activity-boundary-gl', 400);
 
-    const tiles = `${this.apiBaseUrl}/tiles/activity_boundary/{z}/{x}/{y}.mvt${this.toGuidQuery(projectGuids)}`;
+    const tiles = `${this.apiBaseUrl}/tiles/activity_boundary/{z}/{x}/{y}.mvt${this.toQueryString(filters)}`;
 
     const style: StyleSpecification = {
       version: 8,

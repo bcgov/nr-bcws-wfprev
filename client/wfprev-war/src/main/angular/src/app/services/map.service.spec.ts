@@ -713,7 +713,7 @@ describe('MapService', () => {
     });
 
     it('ensures pane and uses z-index 401', () => {
-      service.createProjectBoundaryLayer(mapMock, ['g1']);
+      service.createProjectBoundaryLayer(mapMock, { programAreaGuids: ['g1'] });
 
       expect(mapMock.getPane).toHaveBeenCalledWith('pane-project-boundary-gl');
       expect(mapMock.createPane).toHaveBeenCalledWith('pane-project-boundary-gl');
@@ -721,15 +721,15 @@ describe('MapService', () => {
     });
 
     it('calls L.maplibreGL with proper style, tiles and minzoom', () => {
-      const layer = service.createProjectBoundaryLayer(mapMock, ['g1', 'g2']);
+      const layer = service.createProjectBoundaryLayer(mapMock, { programAreaGuids: ['g1', 'g2'] });
       const args = (layer as any).__opts;
 
       expect(args.pane).toBe('pane-project-boundary-gl');
       const tiles: string[] = args.style.sources.projectBoundary.tiles;
       expect(tiles.length).toBe(1);
       expect(tiles[0]).toContain('/tiles/project_boundary/{z}/{x}/{y}.mvt');
-      expect(tiles[0]).toContain('projectGuid=g1');
-      expect(tiles[0]).toContain('projectGuid=g2');
+      expect(tiles[0]).toContain('programAreaGuids=g1');
+      expect(tiles[0]).toContain('programAreaGuids=g2');
       const ids = args.style.layers.map((l: any) => l.id);
       expect(ids).toContain('project-boundary-fill');
       expect(ids).toContain('project-boundary-line');
@@ -737,7 +737,7 @@ describe('MapService', () => {
     });
 
     it('transformRequest attaches Authorization ONLY for API base URL', () => {
-      const layer = service.createProjectBoundaryLayer(mapMock, ['g1']);
+      const layer = service.createProjectBoundaryLayer(mapMock, { programAreaGuids: ['g1'] });
       const opts = (layer as any).__opts;
       const tr = opts.transformRequest as (u: string) => any;
 
@@ -769,7 +769,7 @@ describe('MapService', () => {
     });
 
     it('ensures pane and uses z-index 400', () => {
-      service.createActivityBoundaryLayer(mapMock, ['g1'], 2025);
+      service.createActivityBoundaryLayer(mapMock, { programAreaGuids: ['g1'] }, 2025);
 
       expect(mapMock.getPane).toHaveBeenCalledWith('pane-activity-boundary-gl');
       expect(mapMock.createPane).toHaveBeenCalledWith('pane-activity-boundary-gl');
@@ -777,7 +777,7 @@ describe('MapService', () => {
     });
 
     it('calls L.maplibreGL with proper style, tiles and minzoom', () => {
-      const layer = service.createActivityBoundaryLayer(mapMock, ['g1', 'g2'], 2026);
+      const layer = service.createActivityBoundaryLayer(mapMock, { programAreaGuids: ['g1', 'g2'] }, 2026);
       const args = (layer as any).__opts;
 
       // pane
@@ -787,8 +787,8 @@ describe('MapService', () => {
       const tiles: string[] = args.style.sources.activityBoundary.tiles;
       expect(tiles.length).toBe(1);
       expect(tiles[0]).toContain('/tiles/activity_boundary/{z}/{x}/{y}.mvt');
-      expect(tiles[0]).toContain('projectGuid=g1');
-      expect(tiles[0]).toContain('projectGuid=g2');
+      expect(tiles[0]).toContain('programAreaGuids=g1');
+      expect(tiles[0]).toContain('programAreaGuids=g2');
 
       // layers present
       const ids = args.style.layers.map((l: any) => l.id);
@@ -798,7 +798,7 @@ describe('MapService', () => {
 
     it('line layer uses fiscal-year based color expression with provided currentFiscalYear', () => {
       const currentFY = 2024;
-      const layer = service.createActivityBoundaryLayer(mapMock, ['g1'], currentFY);
+      const layer = service.createActivityBoundaryLayer(mapMock, { programAreaGuids: ['g1'] }, currentFY);
       const args = (layer as any).__opts;
 
       const line = args.style.layers.find((l: any) => l.id === 'activity-boundary-line');
@@ -833,7 +833,7 @@ describe('MapService', () => {
     });
 
     it('transformRequest attaches Authorization ONLY for API base URL', () => {
-      const layer = service.createActivityBoundaryLayer(mapMock, ['g1'], 2025);
+      const layer = service.createActivityBoundaryLayer(mapMock, { programAreaGuids: ['g1'] }, 2025);
       const opts = (layer as any).__opts;
       const tr = opts.transformRequest as (u: string) => any;
 
