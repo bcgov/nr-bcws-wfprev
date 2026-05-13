@@ -2,6 +2,8 @@ package ca.bc.gov.nrs.wfprev;
 
 import ca.bc.gov.nrs.wfprev.controllers.BoundaryTileController;
 import ca.bc.gov.nrs.wfprev.services.BoundaryTileService;
+import ca.bc.gov.nrs.wfprev.services.ProjectLocationService;
+import ca.bc.gov.nrs.wfprev.data.params.FeatureQueryParams;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -14,9 +16,12 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.UUID;
+import java.util.List;
+import java.util.Collections;
 
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
@@ -28,7 +33,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(BoundaryTileController.class)
-@Import({TestSpringSecurity.class, TestcontainersConfiguration.class, MockMvcRestExceptionConfiguration.class})
+@Import({TestSpringSecurity.class, MockMvcRestExceptionConfiguration.class})
 @MockBean(JpaMetamodelMappingContext.class)
 @WithMockUser
 class BoundaryTileControllerTest {
@@ -41,6 +46,9 @@ class BoundaryTileControllerTest {
 
     @MockBean(name = "springSecurityAuditorAware")
     private AuditorAware<String> auditorAware;
+
+    @MockBean
+    private ProjectLocationService projectLocationService;
 
 
     @Test
@@ -98,6 +106,33 @@ class BoundaryTileControllerTest {
     }
 
     @Test
+    void getProjectBoundaryTiles_withFilters_resolvesAndQueriesService() throws Exception {
+        byte[] tile = new byte[]{0x05, 0x06};
+        UUID p1 = UUID.randomUUID();
+
+        when(projectLocationService.getProjectGuids(any(FeatureQueryParams.class)))
+                .thenReturn(Collections.singletonList(p1));
+
+        when(boundaryTileService.getProjectBoundaryTile(eq(8), eq(123), eq(456), anyList()))
+                .thenReturn(tile);
+
+        mockMvc.perform(get("/tiles/project_boundary/{z}/{x}/{y}.mvt", 8, 123, 456)
+                        .param("fiscalYears", "2024")
+                        .accept("application/vnd.mapbox-vector-tile"))
+                .andExpect(status().isOk())
+                .andExpect(content().bytes(tile));
+
+        verify(projectLocationService).getProjectGuids(argThat(params ->
+                params.getFiscalYears() != null && params.getFiscalYears().contains("2024")
+        ));
+
+        verify(boundaryTileService).getProjectBoundaryTile(
+                eq(8), eq(123), eq(456),
+                argThat((List<UUID> list) -> list.size() == 1 && list.contains(p1))
+        );
+    }
+
+    @Test
     void getActivityBoundaryTiles_ok_setsHeaders_andBody() throws Exception {
         byte[] tile = new byte[]{0x0A, 0x0B, 0x0C};
         when(boundaryTileService.getActivityBoundaryTile(anyInt(), anyInt(), anyInt(), anyList()))
@@ -117,7 +152,7 @@ class BoundaryTileControllerTest {
                 eq(12),
                 eq(654),
                 eq(321),
-                argThat((java.util.List<UUID> list) -> list.size() == 1 && list.contains(p1))
+                argThat((List<UUID> list) -> list.size() == 1 && list.contains(p1))
         );
     }
 
@@ -147,4 +182,32 @@ class BoundaryTileControllerTest {
                         .param("projectGuid", p1.toString()))
                 .andExpect(status().isInternalServerError());
     }
+
+    @Test
+    void getActivityBoundaryTiles_withFilters_resolvesAndQueriesService() throws Exception {
+        byte[] tile = new byte[]{0x09, 0x08};
+        UUID p1 = UUID.randomUUID();
+
+        when(projectLocationService.getProjectGuids(any(FeatureQueryParams.class)))
+                .thenReturn(Collections.singletonList(p1));
+
+        when(boundaryTileService.getActivityBoundaryTile(eq(12), eq(654), eq(321), anyList()))
+                .thenReturn(tile);
+
+        mockMvc.perform(get("/tiles/activity_boundary/{z}/{x}/{y}.mvt", 12, 654, 321)
+                        .param("fiscalYears", "2024")
+                        .accept("application/vnd.mapbox-vector-tile"))
+                .andExpect(status().isOk())
+                .andExpect(content().bytes(tile));
+
+        verify(projectLocationService).getProjectGuids(argThat(params ->
+                params.getFiscalYears() != null && params.getFiscalYears().contains("2024")
+        ));
+
+        verify(boundaryTileService).getActivityBoundaryTile(
+                eq(12), eq(654), eq(321),
+                argThat((List<UUID> list) -> list.size() == 1 && list.contains(p1))
+        );
+    }
 }
+
