@@ -6,7 +6,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FiscalStatuses } from 'src/app/utils/constants';
 
 const meta: Meta<DropdownButtonComponent> = {
-  title: 'Components/DropdownButton',
+  title: 'Components/Buttons/DropdownButton',
   component: DropdownButtonComponent,
   decorators: [
     moduleMetadata({

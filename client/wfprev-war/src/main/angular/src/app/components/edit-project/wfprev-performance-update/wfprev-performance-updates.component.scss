@@ -15,6 +15,7 @@
 
   .expansion-panel {
     border: 1px solid #d9d9d9;
+    background-color: #fff;
 
     ::ng-deep .mat-expansion-panel-header {
       min-height: 64px !important;
@@ -362,14 +363,8 @@
     }
   }
 }
-
-.no-performance-updates {
-    color: #242424;
-    font-family: var(--wf-font-family-main);
-    font-size: 16px;
-    font-style: italic;
-    font-weight: 400;
-    line-height: normal;
-    padding: 20px 24px;
-    border-top: 1px solid #D8D8D8;
+.wf-empty-state {
+  margin-top: 0px;
+  border: none;
+  background-color: transparent;
 }

@@ -1,5 +1,5 @@
 import { DebugElement, ElementRef, QueryList } from '@angular/core';
-import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { MatDialog } from '@angular/material/dialog';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
@@ -12,12 +12,13 @@ import { CreateNewProjectDialogComponent } from 'src/app/components/create-new-p
 import { FeaturesResponse } from 'src/app/components/models';
 import { CodeTableServices } from 'src/app/services/code-table-services';
 import { MapService } from 'src/app/services/map.service';
+import { PermissionsService } from 'src/app/services/permissions.service';
+import { ProjectFilterStateService } from 'src/app/services/project-filter-state.service';
 import { ProjectService } from 'src/app/services/project-services';
 import { SharedService } from 'src/app/services/shared-service';
 import { ResourcesRoutes } from 'src/app/utils';
 import { Messages } from 'src/app/utils/constants';
 import { ProjectsListComponent } from './projects-list.component';
-import { ProjectFilterStateService } from 'src/app/services/project-filter-state.service';
 
 describe('ProjectsListComponent', () => {
   let component: ProjectsListComponent;
@@ -28,6 +29,11 @@ describe('ProjectsListComponent', () => {
   let mockMarkerClusterGroup: any;
   let mockMarker: any;
   let mockPolygon: any;
+  let mockProjectFilterStateService: any;
+
+  class MockPermissionsService {
+    hasAction = jasmine.createSpy().and.returnValue(true);
+  }
 
   const mockFetchProjectsResponse = () => {
     mockProjectService.fetchProjects.and.returnValue(of({
@@ -39,22 +45,22 @@ describe('ProjectsListComponent', () => {
 
   const mockProjectList = [
     {
-      projectNumber: 1,
-      projectName: 'Project 1',
       forestRegionOrgUnitId: 101,
-      totalPlannedProjectSizeHa: 100,
       latitude: 49.2827,
       longitude: -123.1207,
-      projectGuid: 'guid1'
+      projectGuid: 'guid1',
+      projectName: 'Project 1',
+      projectNumber: 1,
+      totalPlannedProjectSizeHa: 100
     },
     {
-      projectNumber: 2,
-      projectName: 'Project 2',
       forestRegionOrgUnitId: 102,
-      totalPlannedProjectSizeHa: 200,
       latitude: 49.2849,
       longitude: -123.1217,
-      projectGuid: 'guid2'
+      projectGuid: 'guid2',
+      projectName: 'Project 2',
+      projectNumber: 2,
+      totalPlannedProjectSizeHa: 200
     },
   ];
 
@@ -125,14 +131,18 @@ describe('ProjectsListComponent', () => {
     spyOn(L, 'polygon').and.returnValue(mockPolygon);
 
     mockSharedService = {
+      _currentFilters: null,
       filters$: of(null),
       selectedProject$: of(null),
-      updateFilters: jasmine.createSpy('updateFilters'),
-      updateDisplayedProjects: () => { },
       selectProject: () => { },
       triggerMapCommand: () => { },
-      _currentFilters: null,
+      updateDisplayedProjects: () => { },
+      updateFilters: jasmine.createSpy('updateFilters'),
       get currentFilters() { return this._currentFilters; }
+    };
+
+    mockProjectFilterStateService = {
+      filters: jasmine.createSpy('filters').and.returnValue({ searchText: 'value' })
     };
 
     await TestBed.configureTestingModule({
@@ -149,7 +159,9 @@ describe('ProjectsListComponent', () => {
         { provide: Router, useValue: mockRouter },
         { provide: ActivatedRoute, useValue: {} },
         { provide: MapService, useValue: mockMapService },
-        { provide: SharedService, useValue: mockSharedService }
+        { provide: SharedService, useValue: mockSharedService },
+        { provide: PermissionsService, useClass: MockPermissionsService },
+        { provide: ProjectFilterStateService, useValue: mockProjectFilterStateService }
       ],
     }).compileComponents();
 
@@ -215,9 +227,9 @@ describe('ProjectsListComponent', () => {
     expect(mockDialog.open).toHaveBeenCalledWith(
       CreateNewProjectDialogComponent,
       {
-        width: '1000px',
         disableClose: true,
         hasBackdrop: true,
+        width: '1000px',
       }
     );
     expect(component.loadProjects).toHaveBeenCalled();
@@ -276,11 +288,11 @@ describe('ProjectsListComponent', () => {
       component.displayedProjects = [
         ...mockProjectList,
         {
-          projectNumber: 3,
-          projectName: 'Project 3',
           latitude: null,
           longitude: -123.1207,
-          projectGuid: 'guid-z'
+          projectGuid: 'guid-z',
+          projectName: 'Project 3',
+          projectNumber: 3
         }
       ];
 
@@ -350,7 +362,7 @@ describe('ProjectsListComponent', () => {
 
   it('should navigate to edit project page if projectGuid is returned after project creation', () => {
     mockDialog.open.and.returnValue({
-      afterClosed: () => of({ success: true, projectGuid: 'new-guid' })
+      afterClosed: () => of({ projectGuid: 'new-guid', success: true })
     } as any);
 
     component.createNewProject();
@@ -358,9 +370,9 @@ describe('ProjectsListComponent', () => {
     expect(mockDialog.open).toHaveBeenCalledWith(
       CreateNewProjectDialogComponent,
       {
-        width: '1000px',
         disableClose: true,
         hasBackdrop: true,
+        width: '1000px',
       }
     );
 
@@ -431,7 +443,7 @@ describe('ProjectsListComponent', () => {
   });
 
   it('should return plan fiscal status description from code table', () => {
-    component.planFiscalStatusCode = [{ planFiscalStatusCode: 'PS1', description: 'Planned' }];
+    component.planFiscalStatusCode = [{ description: 'Planned', planFiscalStatusCode: 'PS1' }];
     const result = component.getDescription('planFiscalStatusCode', 'PS1');
     expect(result).toBe('Planned');
   });
@@ -448,7 +460,7 @@ describe('ProjectsListComponent', () => {
     component.forestDistrictCode = [{ orgUnitId: 201, orgUnitName: 'District 1' }];
     component.bcParksRegionCode = [{ orgUnitId: 301, orgUnitName: 'Parks Region 1' }];
     component.bcParksSectionCode = [{ orgUnitId: 401, orgUnitName: 'Parks Section 1' }];
-    component.planFiscalStatusCode = [{ planFiscalStatusCode: 'PS1', description: 'Planned' }];
+    component.planFiscalStatusCode = [{ description: 'Planned', planFiscalStatusCode: 'PS1' }];
     component.activityCategoryCode = [{ activityCategoryCode: 'AC1', description: 'Clearing' }];
 
     expect(component.getDescription('programAreaCode', 'guid1')).toBe('Area 1');
@@ -581,26 +593,26 @@ describe('ProjectsListComponent', () => {
     const mockFilters = { searchText: 'fuel' };
     const mockProjects = [
       {
-        projectGuid: 'guid-z',
-        projectName: 'Alpha',
-        projectNumber: 1,
         bcParksRegionOrgUnitId: 10,
         bcParksSectionOrgUnitId: 11,
         closestCommunityName: 'Community A',
         fireCentreOrgUnitId: 12,
+        forestDistrictOrgUnitId: 13,
+        forestRegionOrgUnitId: 14,
         isMultiFiscalYearProj: false,
         programAreaGuid: 'abc123',
         projectDescription: 'Test project',
+        projectGuid: 'guid-z',
         projectLead: 'John Doe',
         projectLeadEmailAddress: 'john@example.com',
+        projectName: 'Alpha',
+        projectNumber: 1,
         siteUnitName: 'Site 1',
         totalActualAmount: 100,
         totalAllocatedAmount: 120,
         totalFundingRequestAmount: 20,
         totalPlannedCostPerHectare: 10,
-        totalPlannedProjectSizeHa: 5,
-        forestDistrictOrgUnitId: 13,
-        forestRegionOrgUnitId: 14
+        totalPlannedProjectSizeHa: 5
       }
     ];
 
@@ -621,48 +633,48 @@ describe('ProjectsListComponent', () => {
   it('should load and process projects on loadProjects()', () => {
     const mockProjects = [
       {
-        projectGuid: 'guid-z',
-        projectName: 'Z Project',
         bcParksRegionOrgUnitId: 1,
         bcParksSectionOrgUnitId: 2,
         closestCommunityName: 'Town A',
         fireCentreOrgUnitId: 3,
+        forestDistrictOrgUnitId: 4,
+        forestRegionOrgUnitId: 5,
         isMultiFiscalYearProj: false,
         programAreaGuid: 'guid1',
         projectDescription: 'Desc Z',
+        projectGuid: 'guid-z',
         projectLead: 'Alice',
         projectLeadEmailAddress: 'alice@example.com',
+        projectName: 'Z Project',
         projectNumber: 100,
         siteUnitName: 'Unit Z',
         totalActualAmount: 1000,
         totalAllocatedAmount: 800,
         totalFundingRequestAmount: 200,
         totalPlannedCostPerHectare: 20,
-        totalPlannedProjectSizeHa: 50,
-        forestDistrictOrgUnitId: 4,
-        forestRegionOrgUnitId: 5
+        totalPlannedProjectSizeHa: 50
       },
       {
-        projectGuid: 'guid-z2',
-        projectName: 'A Project',
         bcParksRegionOrgUnitId: 1,
         bcParksSectionOrgUnitId: 2,
         closestCommunityName: 'Town B',
         fireCentreOrgUnitId: 3,
+        forestDistrictOrgUnitId: 6,
+        forestRegionOrgUnitId: 7,
         isMultiFiscalYearProj: false,
         programAreaGuid: 'guid2',
         projectDescription: 'Desc A',
+        projectGuid: 'guid-z2',
         projectLead: 'Bob',
         projectLeadEmailAddress: 'bob@example.com',
+        projectName: 'A Project',
         projectNumber: 101,
         siteUnitName: 'Unit A',
         totalActualAmount: 900,
         totalAllocatedAmount: 700,
         totalFundingRequestAmount: 250,
         totalPlannedCostPerHectare: 30,
-        totalPlannedProjectSizeHa: 60,
-        forestDistrictOrgUnitId: 6,
-        forestRegionOrgUnitId: 7
+        totalPlannedProjectSizeHa: 60
       }
     ];
 
@@ -735,8 +747,8 @@ describe('ProjectsListComponent', () => {
     component.displayedProjects = [{
       latitude: 49.2827,
       longitude: -123.1207,
-      projectName: 'Test Project',
-      projectGuid: 'guid-z'
+      projectGuid: 'guid-z',
+      projectName: 'Test Project'
     }];
 
     component.loadCoordinatesOnMap();
@@ -774,12 +786,12 @@ describe('ProjectsListComponent', () => {
     (component as any).getActiveMap = () => ({
       $viewer: {
         map: {
+          addLayer: () => { },
           on: (event: string, cb: Function) => {
             if (event === 'click') {
               cb(); // simulate map click
             }
-          },
-          addLayer: () => { }
+          }
         }
       }
     });
@@ -795,9 +807,9 @@ describe('ProjectsListComponent', () => {
         internalMarkerStates.forEach((isActive, marker) => {
           if (isActive) {
             marker.setIcon(L.icon({
-              iconUrl: '/assets/blue-pin-drop.svg',
-              iconSize: [30, 50],
               iconAnchor: [12, 41],
+              iconSize: [30, 50],
+              iconUrl: '/assets/blue-pin-drop.svg',
               popupAnchor: [1, -34],
             }));
             internalMarkerStates.set(marker, false);
@@ -824,8 +836,8 @@ describe('ProjectsListComponent', () => {
     it('should call onListItemClick if not clicking inside .custom-indicator', () => {
       const mockProject = { projectGuid: 'guid-x' };
       const event = {
-        target: document.createElement('div'),
-        stopPropagation: jasmine.createSpy()
+        stopPropagation: jasmine.createSpy(),
+        target: document.createElement('div')
       } as unknown as MouseEvent;
 
       spyOn(component, 'onListItemClick');
@@ -841,8 +853,8 @@ describe('ProjectsListComponent', () => {
       customIndicator.classList.add('custom-indicator');
 
       const event = {
-        target: customIndicator,
-        stopPropagation: jasmine.createSpy()
+        stopPropagation: jasmine.createSpy(),
+        target: customIndicator
       } as unknown as MouseEvent;
 
       spyOn(component, 'onListItemClick');
@@ -856,14 +868,19 @@ describe('ProjectsListComponent', () => {
 
   describe('onListItemClick', () => {
     const project = {
-      projectGuid: 'guid-y',
       bcParksRegionOrgUnitId: 1,
       bcParksSectionOrgUnitId: 2,
       closestCommunityName: 'Town A',
       fireCentreOrgUnitId: 3,
+      forestDistrictOrgUnitId: 4,
+      forestRegionOrgUnitId: 5,
       isMultiFiscalYearProj: false,
+      latitude: 49.2827,
+      longitude: -123.1207,
       programAreaGuid: 'guid1',
       projectDescription: 'Some description',
+      projectFiscals: [],
+      projectGuid: 'guid-y',
       projectLead: 'John Doe',
       projectLeadEmailAddress: 'john@example.com',
       projectName: 'Test Project',
@@ -873,12 +890,7 @@ describe('ProjectsListComponent', () => {
       totalAllocatedAmount: 150,
       totalFundingRequestAmount: 50,
       totalPlannedCostPerHectare: 5,
-      totalPlannedProjectSizeHa: 10,
-      forestDistrictOrgUnitId: 4,
-      forestRegionOrgUnitId: 5,
-      projectFiscals: [],
-      latitude: 49.2827,
-      longitude: -123.1207
+      totalPlannedProjectSizeHa: 10
     };
 
 
@@ -1049,22 +1061,22 @@ describe('ProjectsListComponent', () => {
     it('coalesces by projectGuid and unions displayed fiscal guids', () => {
       component.displayedProjects = [
         {
-          projectGuid: 'guid1',
           projectFiscals: [
             { fiscalYear: 2023, projectPlanFiscalGuid: 'pf-1a' },
             { fiscalYear: 2022, projectPlanFiscalGuid: 'pf-1b' },
           ],
+          projectGuid: 'guid1',
         },
         {
-          projectGuid: 'guid1',
           projectFiscals: [
             { fiscalYear: 2022, projectPlanFiscalGuid: 'pf-1b' },
             { fiscalYear: 2021, projectPlanFiscalGuid: 'pf-1c' },
           ],
+          projectGuid: 'guid1',
         },
         {
-          projectGuid: 'guid2',
           projectFiscals: [],
+          projectGuid: 'guid2',
         },
         {
           projectFiscals: [{ fiscalYear: 2024, projectPlanFiscalGuid: 'pf-x' }],
@@ -1075,8 +1087,8 @@ describe('ProjectsListComponent', () => {
 
       expect(payload).toEqual(jasmine.arrayContaining([
         {
-          projectGuid: 'guid1',
           projectFiscalGuids: jasmine.arrayContaining(['pf-1a', 'pf-1b', 'pf-1c']),
+          projectGuid: 'guid1',
         },
         { projectGuid: 'guid2' },
       ]));
@@ -1088,7 +1100,7 @@ describe('ProjectsListComponent', () => {
 
     it('omits projectFiscalGuids key when none are displayed for that project', () => {
       component.displayedProjects = [
-        { projectGuid: 'g1', projectFiscals: [] },
+        { projectFiscals: [], projectGuid: 'g1' },
         { projectGuid: 'g2' },
       ] as any;
 
@@ -1107,17 +1119,17 @@ describe('ProjectsListComponent', () => {
       component.resultCount = 1;
       component.displayedProjects = [
         {
-          projectGuid: 'g1',
           projectFiscals: [
             { fiscalYear: 2023, projectPlanFiscalGuid: 'top' },
             { fiscalYear: 2022, projectPlanFiscalGuid: 'lower' },
           ],
+          projectGuid: 'g1',
         },
       ] as any;
 
       const payload = component.buildProjectsPayloadFromDisplayed();
       expect(payload).toEqual([
-        { projectGuid: 'g1', projectFiscalGuids: ['top'] },
+        { projectFiscalGuids: ['top'], projectGuid: 'g1' },
       ]);
     });
   });
@@ -1128,9 +1140,9 @@ describe('ProjectsListComponent', () => {
     component.hasMore = true;
 
     const scrollable = {
+      clientHeight: 50,
       scrollHeight: 1000,
-      scrollTop: 960,
-      clientHeight: 50
+      scrollTop: 960
     } as any;
 
     const event = { target: scrollable } as Partial<Event> as Event;
@@ -1174,9 +1186,9 @@ describe('ProjectsListComponent', () => {
 
     const mockEl = {
       nativeElement: {
+        classList: { add: addClassSpy },
         dataset: { guid: 'guid-123' },
         scrollIntoView: scrollSpy,
-        classList: { add: addClassSpy },
       },
     };
     const queryList = new QueryList<ElementRef>();

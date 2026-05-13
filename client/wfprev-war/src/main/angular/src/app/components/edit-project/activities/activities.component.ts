@@ -845,7 +845,7 @@ export class ActivitiesComponent implements OnChanges, OnDestroy, CanComponentDe
   }
 
   getDeleteIcon(index: number): string {
-    return this.canDeleteActivity(index) ? '/assets/delete-icon.svg' : '/assets/delete-disabled-icon.svg';
+    return (!this.isReadonly && this.canDeleteActivity(index)) ? '/assets/delete-icon.svg' : '/assets/delete-disabled-icon.svg';
   }
 
   isFormDirty(): boolean {

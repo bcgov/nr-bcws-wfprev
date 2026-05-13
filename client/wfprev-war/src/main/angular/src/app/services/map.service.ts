@@ -14,6 +14,7 @@ export class MapService {
   private containerId?: string;
   private smkInstance: any = null;
   private readonly apiBaseUrl = `${this.appConfigService.getConfig().rest['wfprev']}/wfprev-api`;
+  private mapContainer: HTMLElement | null = null;
 
   constructor(private readonly tokenService: TokenService,
     private readonly appConfigService: AppConfigService
@@ -33,6 +34,7 @@ export class MapService {
 
   setContainerId(id: string) {
     this.containerId = id;
+    this.mapContainer = document.getElementById(id);
   }
 
   async createSMK(option: any): Promise<any> {
@@ -65,12 +67,6 @@ export class MapService {
           },
         ],
       });
-
-      // force regions only to be visible on load
-      this.makeOnlyRegionsVisible(option);
-
-      // return only fires for current year - no filter for fire_year in news /features endpoint
-      await this.filterWildfireLayersByCurrentYear(option);
 
       // Initialize SMK
       const smk = await SMK.INIT({
@@ -189,15 +185,9 @@ export class MapService {
       console.error('Error occurred during SMK destruction:', error);
     } finally {
       this.clearSMKInstance();
-
-      // Also scrub the container so Leaflet doesn't think it’s still mounted
-      if (this.containerId) {
-        const el = document.getElementById(this.containerId);
-        if (el) {
-          // Replace the node so any internal leaflet id is removed
-          const fresh = el.cloneNode(false);
-          el.parentNode?.replaceChild(fresh, el);
-        }
+      if (this.mapContainer) {
+        this.mapContainer.innerHTML = '';
+        delete (this.mapContainer as any)._leaflet_id;
       }
     }
   }
@@ -538,6 +528,69 @@ export class MapService {
           ? { url, headers: { Authorization: `Bearer ${token}` } }
           : { url }
     });
+  }
+
+  async addLayersToExistingSMKInstance(mapState: any): Promise<void> {
+    const viewer = this.smkInstance?.$viewer;
+    if (!viewer || !Array.isArray(mapState?.layers)) return;
+
+    const SMK = (globalThis as any)['SMK'];
+
+    // Register each layer into viewer.layerId and viewer.layerIds
+    for (const layerConfig of mapState.layers) {
+      try {
+        viewer.addLayer(layerConfig);
+      } catch (err) {
+        console.error(`Failed to add layer ${layerConfig?.id}:`, err);
+      }
+    }
+
+    // Replace the empty displayContext.layers with a new one including our layers  
+    const layerItems = mapState.layers.map((l: any) => ({
+      id: l.id,
+      type: 'layer',
+      isVisible: l.id === 'ministry-of-forests-regions',
+      isEnabled: true,
+      title: l.title ?? l.id,
+    }));
+
+    viewer.displayContext.layers = new SMK.TYPE.LayerDisplayContext(
+      layerItems,
+      viewer.layerId
+    );
+
+    // Wire up the changedVisibility callback like SMK does internally
+    viewer.displayContext.layers.changedVisibility(() => {
+      viewer.changedLayerVisibility();
+    });
+
+    // Create the actual Leaflet layers
+    for (const layerConfig of mapState.layers) {
+      try {
+        const id = layerConfig.id;
+        const layerObj = viewer.layerId[id];
+        if (layerObj && typeof viewer.createViewerLayer === 'function') {
+          await viewer.createViewerLayer(id, [layerObj], layerConfig);
+        }
+      } catch (err) {
+        console.error(`Failed to create viewer layer ${layerConfig?.id}:`, err);
+      }
+    }
+
+    // Apply visibility and render
+    const dc = viewer.displayContext?.layers;
+    if (dc) {
+      dc.setItemVisible('ministry-of-forests-regions', true);
+      dc.setItemVisible('ministry-of-forests-districts', false);
+      dc.setItemVisible('wildfire-org-unit-fire-centre', false);
+      dc.setItemVisible('fire-perimeters', false);
+      dc.setItemVisible('active-wildfires-out-of-control', false);
+      dc.setItemVisible('active-wildfires-holding', false);
+      dc.setItemVisible('active-wildfires-under-control', false);
+      dc.setItemVisible('active-wildfires-out', false);
+    }
+
+    await viewer.updateLayersVisible?.();
   }
 
 

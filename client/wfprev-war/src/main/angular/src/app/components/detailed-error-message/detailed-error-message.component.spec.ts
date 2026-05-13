@@ -1,8 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
-import { DetailedErrorMessageComponent } from './detailed-error-message.component';
-
 import { MAT_SNACK_BAR_DATA, MatSnackBarRef } from '@angular/material/snack-bar';
+import { DetailedErrorMessageComponent } from './detailed-error-message.component';
 
 describe('DetailedErrorMessageComponent', () => {
   let component: DetailedErrorMessageComponent;
@@ -16,7 +14,7 @@ describe('DetailedErrorMessageComponent', () => {
         { provide: MatSnackBarRef, useValue: jasmine.createSpyObj('MatSnackBarRef', ['dismiss']) }
       ]
     })
-    .compileComponents();
+      .compileComponents();
 
     fixture = TestBed.createComponent(DetailedErrorMessageComponent);
     component = fixture.componentInstance;

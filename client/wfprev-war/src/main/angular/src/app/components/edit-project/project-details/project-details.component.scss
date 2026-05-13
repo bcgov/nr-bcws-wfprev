@@ -233,7 +233,6 @@
 
 .button-row {
   display: flex;
-  height: 43px;
   padding: 14px 24px 14px 23px;
   justify-content: flex-end;
   align-items: flex-start;
@@ -246,7 +245,7 @@
     border-radius: 4px;
     font-size: 16px;
     cursor: pointer;
-    height: 40px;
+    height: var(--wf-btn-height-standard);
     min-width: 67px;
     padding: 0 16px;
     box-sizing: border-box;
@@ -306,12 +305,14 @@
   mat-expansion-panel {
     margin: 0px !important;
     background-color: #FFF;
+    border: 1px solid #D9D9D9;
 
     ::ng-deep .mat-expansion-panel-header {
       padding: 0 24px;
       min-height: 64px !important;
       height: auto !important;
       box-sizing: border-box;
+      border-bottom: 1px solid #D9D9D9;
     }
 
     ::ng-deep .mat-expansion-panel-body {
@@ -346,6 +347,11 @@
       padding: 12px 24px 16px 24px;
       width: -webkit-fill-available;
       box-sizing: border-box;
+    }
+
+    
+    textarea:disabled {
+      background-color: white;
     }
   }
 
@@ -427,7 +433,9 @@
       }
 
       button {
-        padding: 10px 18px;
+        padding: 0 18px;
+        height: var(--wf-btn-height-standard);
+        box-sizing: border-box;
         border: none;
         border-radius: 4px;
         font-size: 16px;

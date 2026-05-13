@@ -1,20 +1,20 @@
-import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
-import { ProjectDetailsComponent } from './project-details.component';
-import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import * as L from 'leaflet';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { of, throwError } from 'rxjs'; // Import 'of' from RxJS
-import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { AppConfigService } from 'src/app/services/app-config.service';
-import { OAuthService } from 'angular-oauth2-oidc';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { ProjectService } from 'src/app/services/project-services';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ActivatedRoute } from '@angular/router';
-import { formatLatLong } from 'src/app/utils/tools';
-import { BC_BOUNDS, CodeTableKeys } from 'src/app/utils/constants';
-import * as toolUtils from 'src/app/utils/tools'
+import { RouterTestingModule } from '@angular/router/testing';
+import { OAuthService } from 'angular-oauth2-oidc';
+import * as L from 'leaflet';
+import { of, throwError } from 'rxjs'; // Import 'of' from RxJS
 import { EvaluationCriteriaSummaryModel, ProjectFiscal } from 'src/app/components/models';
+import { AppConfigService } from 'src/app/services/app-config.service';
+import { ProjectService } from 'src/app/services/project-services';
+import { BC_BOUNDS, CodeTableKeys } from 'src/app/utils/constants';
+import * as toolUtils from 'src/app/utils/tools';
+import { formatLatLong } from 'src/app/utils/tools';
+import { ProjectDetailsComponent } from './project-details.component';
 const mockApplicationConfig = {
   application: {
     baseUrl: 'http://test.com',
@@ -24,12 +24,12 @@ const mockApplicationConfig = {
     environment: 'DEV',
     version: '1.0.0',
   },
+  rest: {},
   webade: {
     oauth2Url: 'http://oauth.test',
     clientId: 'test-client',
     authScopes: 'TEST.*',
   },
-  rest: {},
 };
 
 const mockBounds = jasmine.createSpyObj('LatLngBounds', ['isValid']);
@@ -457,10 +457,10 @@ describe('ProjectDetailsComponent', () => {
 
     it('should handle successful response and update component state', () => {
       const mockResponse = {
-        projectName: 'Test Project',
         latitude: 49.2827,
         longitude: -123.1207,
         projectDescription: 'Test Description',
+        projectName: 'Test Project',
       };
       routeSnapshotSpy.snapshot = { queryParamMap: { get: () => 'test-guid' } } as any;
       mockProjectService.getProjectByProjectGuid.and.returnValue(of(mockResponse));
@@ -521,22 +521,22 @@ describe('ProjectDetailsComponent', () => {
         spyOn(component, 'patchFormValues');
 
         const mockData = {
-          projectTypeCode: { projectTypeCode: 'Code1' },
+          bcParksRegionOrgUnitId: 3,
+          bcParksSectionOrgUnitId: 4,
+          closestCommunityName: 'Community1',
+          forestDistrictOrgUnitId: 2,
+          forestRegionOrgUnitId: 1,
           fundingStream: 'Stream1',
+          latitude: 49.2827,
+          longitude: -123.1207,
+          primaryObjective: 'Objective1',
           programAreaGuid: 'Guid1',
           projectLead: 'Lead1',
           projectLeadEmailAddress: 'email@example.com',
-          siteUnitName: 'Site1',
-          closestCommunityName: 'Community1',
-          forestRegionOrgUnitId: 1,
-          forestDistrictOrgUnitId: 2,
-          primaryObjective: 'Objective1',
+          projectTypeCode: { projectTypeCode: 'Code1' },
           secondaryObjective: 'Objective2',
           secondaryObjectiveRationale: 'Rationale1',
-          bcParksRegionOrgUnitId: 3,
-          bcParksSectionOrgUnitId: 4,
-          latitude: 49.2827,
-          longitude: -123.1207,
+          siteUnitName: 'Site1',
         };
 
         component.populateFormWithProjectDetails(mockData);
@@ -550,7 +550,6 @@ describe('ProjectDetailsComponent', () => {
         expect(component.detailsForm.get('wildfireOrgUnitId')?.value).toBe(456);
       });
     });
-
 
     describe('onSaveProjectDescription Method', () => {
       beforeEach(() => {
@@ -666,17 +665,17 @@ describe('ProjectDetailsComponent', () => {
     it('should emit projectNameChange after successful save', () => {
       component.projectGuid = 'test-guid';
       component.projectDetail = {
+        primaryObjectiveTypeCode: {},
         projectName: 'Old Name',
-        projectTypeCode: { projectTypeCode: 'TEST' },
-        primaryObjectiveTypeCode: {}
+        projectTypeCode: { projectTypeCode: 'TEST' }
       };
 
       component.detailsForm = new FormGroup({
-        projectName: new FormControl('New Name'),
-        projectTypeCode: new FormControl('FUEL_MGMT'),
-        programAreaGuid: new FormControl('area-guid'),
         closestCommunityName: new FormControl('Test City'),
         primaryObjectiveTypeCode: new FormControl('WRR'),
+        programAreaGuid: new FormControl('area-guid'),
+        projectName: new FormControl('New Name'),
+        projectTypeCode: new FormControl('FUEL_MGMT'),
         wildfireOrgUnitId: new FormControl(123)
       });
       spyOnProperty(component.detailsForm, 'valid', 'get').and.returnValue(true);
@@ -695,15 +694,15 @@ describe('ProjectDetailsComponent', () => {
     it('should include fireCentreOrgUnitId in the updateProject payload', () => {
       component.projectGuid = 'test-guid';
       component.projectDetail = {
-        projectTypeCode: { projectTypeCode: 'TEST' },
-        primaryObjectiveTypeCode: {}
+        primaryObjectiveTypeCode: {},
+        projectTypeCode: { projectTypeCode: 'TEST' }
       };
 
       component.detailsForm = new FormGroup({
-        projectTypeCode: new FormControl('FUEL_MGMT'),
-        programAreaGuid: new FormControl('area-guid'),
         closestCommunityName: new FormControl('Test City'),
         primaryObjectiveTypeCode: new FormControl('WRR'),
+        programAreaGuid: new FormControl('area-guid'),
+        projectTypeCode: new FormControl('FUEL_MGMT'),
         wildfireOrgUnitId: new FormControl(123)
       });
 
@@ -794,8 +793,8 @@ describe('ProjectDetailsComponent', () => {
   describe('Dropdown tooltips', () => {
     beforeEach(() => {
       component.projectTypeCode = [
-        { projectTypeCode: 'REST', description: 'Restoration' },
-        { projectTypeCode: 'MIT', description: 'Mitigation' }
+        { description: 'Restoration', projectTypeCode: 'REST' },
+        { description: 'Mitigation', projectTypeCode: 'MIT' }
       ];
 
       component.programAreaCode = [
@@ -823,8 +822,8 @@ describe('ProjectDetailsComponent', () => {
       ];
 
       component.objectiveTypeCode = [
-        { objectiveTypeCode: 'OBJ1', description: 'Reduce Fire Risk' },
-        { objectiveTypeCode: 'OBJ2', description: 'Ecosystem Restoration' }
+        { description: 'Reduce Fire Risk', objectiveTypeCode: 'OBJ1' },
+        { description: 'Ecosystem Restoration', objectiveTypeCode: 'OBJ2' }
       ];
     });
 
@@ -878,8 +877,8 @@ describe('ProjectDetailsComponent', () => {
   describe('Error messages', () => {
     beforeEach(() => {
       component.detailsForm = new FormGroup({
-        name: new FormControl('', [Validators.maxLength(5)]),
         email: new FormControl('', [Validators.email]),
+        name: new FormControl('', [Validators.maxLength(5)]),
       });
     });
     it('should return maxLengthExceeded message for maxlength error', () => {
@@ -913,18 +912,18 @@ describe('ProjectDetailsComponent', () => {
     const result = [
       {
         activityGuid: 'a1',
-        fiscalYear: 2022,
         boundary: [
-          { systemStartTimestamp: '2022-01-01T00:00:00Z', geometry: { type: 'Polygon', coordinates: [] } },
-          { systemStartTimestamp: '2023-01-01T00:00:00Z', geometry: { type: 'Polygon', coordinates: [] } },
+          { geometry: { type: 'Polygon', coordinates: [] }, systemStartTimestamp: '2022-01-01T00:00:00Z' },
+          { geometry: { type: 'Polygon', coordinates: [] }, systemStartTimestamp: '2023-01-01T00:00:00Z' },
         ],
+        fiscalYear: 2022,
       },
       {
         activityGuid: 'a1',
-        fiscalYear: 2022,
         boundary: [
-          { systemStartTimestamp: '2021-01-01T00:00:00Z', geometry: { type: 'Polygon', coordinates: [] } },
+          { geometry: { type: 'Polygon', coordinates: [] }, systemStartTimestamp: '2021-01-01T00:00:00Z' },
         ],
+        fiscalYear: 2022,
       },
     ];
 
@@ -939,20 +938,20 @@ describe('ProjectDetailsComponent', () => {
   describe('Dropdown dependencies', () => {
     beforeEach(() => {
       component['allForestDistricts'] = [
-        { orgUnitId: 1, parentOrgUnitId: '100', orgUnitName: 'District A' },
-        { orgUnitId: 2, parentOrgUnitId: '200', orgUnitName: 'District B' }
+        { orgUnitId: 1, orgUnitName: 'District A', parentOrgUnitId: '100' },
+        { orgUnitId: 2, orgUnitName: 'District B', parentOrgUnitId: '200' }
       ];
 
       component['allBcParksSections'] = [
-        { orgUnitId: 10, parentOrgUnitId: '500', orgUnitName: 'Section X' },
-        { orgUnitId: 11, parentOrgUnitId: '600', orgUnitName: 'Section Y' }
+        { orgUnitId: 10, orgUnitName: 'Section X', parentOrgUnitId: '500' },
+        { orgUnitId: 11, orgUnitName: 'Section Y', parentOrgUnitId: '600' }
       ];
 
       component.detailsForm.patchValue({
-        forestRegionOrgUnitId: 100,
-        forestDistrictOrgUnitId: 1,
         bcParksRegionOrgUnitId: '',
-        bcParksSectionOrgUnitId: ''
+        bcParksSectionOrgUnitId: '',
+        forestDistrictOrgUnitId: 1,
+        forestRegionOrgUnitId: 100
       });
 
       component.ngOnInit();
@@ -962,14 +961,14 @@ describe('ProjectDetailsComponent', () => {
       component.detailsForm.get('forestRegionOrgUnitId')?.setValue(200);
 
       expect(component.forestDistrictCode).toEqual([
-        { orgUnitId: 2, parentOrgUnitId: '200', orgUnitName: 'District B' }
+        { orgUnitId: 2, orgUnitName: 'District B', parentOrgUnitId: '200' }
       ]);
     });
 
     it('should clear forestDistrictOrgUnitId if it is not valid after filtering', () => {
       component.detailsForm.patchValue({
-        forestRegionOrgUnitId: 200,
-        forestDistrictOrgUnitId: 1
+        forestDistrictOrgUnitId: 1,
+        forestRegionOrgUnitId: 200
       });
 
       component.detailsForm.get('forestRegionOrgUnitId')?.setValue(200);
@@ -984,7 +983,7 @@ describe('ProjectDetailsComponent', () => {
       component.detailsForm.get('bcParksRegionOrgUnitId')?.setValue(600);
 
       expect(component.bcParksSectionCode).toEqual([
-        { orgUnitId: 11, parentOrgUnitId: '600', orgUnitName: 'Section Y' }
+        { orgUnitId: 11, orgUnitName: 'Section Y', parentOrgUnitId: '600' }
       ]);
       expect(bcParksSectionControl?.enabled).toBeTrue();
     });
@@ -1013,23 +1012,23 @@ describe('ProjectDetailsComponent', () => {
   it('should show duplicate name error when updateProject returns 409', () => {
     component.projectGuid = 'test-guid';
     component.projectDetail = {
-      projectTypeCode: { projectTypeCode: 'TEST' },
-      primaryObjectiveTypeCode: {}
+      primaryObjectiveTypeCode: {},
+      projectTypeCode: { projectTypeCode: 'TEST' }
     };
 
     component.detailsForm = new FormGroup({
-      projectTypeCode: new FormControl('FUEL_MGMT'),
-      programAreaGuid: new FormControl('area-guid'),
       closestCommunityName: new FormControl('Test City'),
       primaryObjectiveTypeCode: new FormControl('WRR'),
+      programAreaGuid: new FormControl('area-guid'),
+      projectTypeCode: new FormControl('FUEL_MGMT'),
       wildfireOrgUnitId: new FormControl(123)
     });
     spyOnProperty(component.detailsForm, 'valid', 'get').and.returnValue(true);
 
     mockProjectService.updateProject.and.returnValue(
       throwError(() => ({
-        status: 409,
-        error: { error: 'Duplicate project name' }
+        error: { error: 'Duplicate project name' },
+        status: 409
       }))
     );
 
@@ -1045,15 +1044,15 @@ describe('ProjectDetailsComponent', () => {
   it('should show default failure message when updateProject returns other error', () => {
     component.projectGuid = 'test-guid';
     component.projectDetail = {
-      projectTypeCode: { projectTypeCode: 'TEST' },
-      primaryObjectiveTypeCode: {}
+      primaryObjectiveTypeCode: {},
+      projectTypeCode: { projectTypeCode: 'TEST' }
     };
 
     component.detailsForm = new FormGroup({
-      projectTypeCode: new FormControl('FUEL_MGMT'),
-      programAreaGuid: new FormControl('area-guid'),
       closestCommunityName: new FormControl('Test City'),
       primaryObjectiveTypeCode: new FormControl('WRR'),
+      programAreaGuid: new FormControl('area-guid'),
+      projectTypeCode: new FormControl('FUEL_MGMT'),
       wildfireOrgUnitId: new FormControl(123)
     });
     spyOnProperty(component.detailsForm, 'valid', 'get').and.returnValue(true);
@@ -1092,8 +1091,8 @@ describe('ProjectDetailsComponent', () => {
       const textarea = document.createElement('textarea');
       component.projectDescription = 'abc';
       const evt = {
-        preventDefault: jasmine.createSpy(),
         clipboardData: { getData: () => '1234567890' },
+        preventDefault: jasmine.createSpy(),
         target: textarea
       } as any;
 
@@ -1243,28 +1242,28 @@ describe('ProjectDetailsComponent', () => {
       expect(console.error).toHaveBeenCalledWith('Error reloading fiscals:', jasmine.any(Error));
     });
   });
-  
+
   it('should set duplicate error and show snackbar when updateProject returns 409', () => {
     component.projectGuid = 'test-guid';
     component.projectDetail = {
-      projectTypeCode: { projectTypeCode: 'TEST' },
-      primaryObjectiveTypeCode: {}
+      primaryObjectiveTypeCode: {},
+      projectTypeCode: { projectTypeCode: 'TEST' }
     };
 
     component.detailsForm = new FormGroup({
-      projectName: new FormControl('My Project'),
-      projectTypeCode: new FormControl('FUEL_MGMT'),
-      programAreaGuid: new FormControl('area-guid'),
       closestCommunityName: new FormControl('Test City'),
       primaryObjectiveTypeCode: new FormControl('WRR'),
+      programAreaGuid: new FormControl('area-guid'),
+      projectName: new FormControl('My Project'),
+      projectTypeCode: new FormControl('FUEL_MGMT'),
       wildfireOrgUnitId: new FormControl(123)
     });
     spyOnProperty(component.detailsForm, 'valid', 'get').and.returnValue(true);
 
     mockProjectService.updateProject.and.returnValue(
       throwError(() => ({
-        status: 409,
-        error: { error: 'Duplicate project name' }
+        error: { error: 'Duplicate project name' },
+        status: 409
       }))
     );
 
@@ -1289,15 +1288,15 @@ describe('ProjectDetailsComponent', () => {
     beforeEach(() => {
       component.projectGuid = 'test-guid';
       component.projectDetail = {
-        projectTypeCode: { projectTypeCode: 'TEST' },
-        primaryObjectiveTypeCode: {}
+        primaryObjectiveTypeCode: {},
+        projectTypeCode: { projectTypeCode: 'TEST' }
       };
 
       component.detailsForm = new FormGroup({
-        projectTypeCode: new FormControl('FUEL_MGMT'),
-        programAreaGuid: new FormControl('area-guid'),
         closestCommunityName: new FormControl('Test City'),
         primaryObjectiveTypeCode: new FormControl('WRR'),
+        programAreaGuid: new FormControl('area-guid'),
+        projectTypeCode: new FormControl('FUEL_MGMT'),
         wildfireOrgUnitId: new FormControl(123)
       });
       spyOnProperty(component.detailsForm, 'valid', 'get').and.returnValue(true);

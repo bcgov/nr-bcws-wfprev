@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/angular';
 import { TimestampComponent } from './timestamp.component';
 
 const meta: Meta<TimestampComponent> = {
-  title: 'Shared/Timestamp',
+  title: 'Components/Data Display/Timestamp',
   component: TimestampComponent,
   tags: ['autodocs'],
   render: (args: TimestampComponent) => ({

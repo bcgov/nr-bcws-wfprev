@@ -133,11 +133,12 @@
         gap: 17px;
 
         .button-primary {
-            height: 43px;
+            height: var(--wf-btn-height-large);
             min-width: 67px;
             background-color: var(--wf-primary-color);
             color: #fff;
-            padding: 12px;
+            padding: 0 12px;
+            box-sizing: border-box;
             border: none;
             border-radius: 4px;
             font-size: 16px;
@@ -151,14 +152,15 @@
         }
 
         .button-secondary {
-            height: 43px;
+            height: var(--wf-btn-height-large);
             min-width: 67px;
             border-radius: 4px;
             background: #fff;
             color: #2d2d2d;
             font-family: var(--wf-font-family-main);
             font-size: 16px;
-            padding: 12px;
+            padding: 0 12px;
+            box-sizing: border-box;
             border: none;
             cursor: pointer;
 

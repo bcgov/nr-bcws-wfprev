@@ -2,7 +2,6 @@ package ca.bc.gov.nrs.wfprev.controllers;
 
 import ca.bc.gov.nrs.common.wfone.rest.resource.HeaderConstants;
 import ca.bc.gov.nrs.common.wfone.rest.resource.MessageListRsrc;
-import ca.bc.gov.nrs.wfone.common.service.api.ServiceException;
 import ca.bc.gov.nrs.wfprev.common.controllers.CommonController;
 import ca.bc.gov.nrs.wfprev.data.models.ActivityModel;
 import ca.bc.gov.nrs.wfprev.services.ActivityService;
@@ -22,6 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -98,6 +98,7 @@ public class ActivityController extends CommonController {
                     })
             }
     )
+    @PreAuthorize("hasAuthority('WFPREV.UPDATE_PREVENTION_ACTIVITY')")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK",
                     content = @Content(schema = @Schema(implementation = ActivityModel.class))),
@@ -153,6 +154,7 @@ public class ActivityController extends CommonController {
                     })
             }
     )
+    @PreAuthorize("hasAuthority('WFPREV.CREATE_PREVENTION_ACTIVITY')")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Created",
                     content = @Content(schema = @Schema(implementation = ActivityModel.class))),
@@ -236,6 +238,7 @@ public class ActivityController extends CommonController {
                     })
             }
     )
+    @PreAuthorize("hasAuthority('WFPREV.DELETE_PREVENTION_ACTIVITY')")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "No Content"),
             @ApiResponse(responseCode = "404", description = "Not Found"),

@@ -13,6 +13,7 @@
           </div>
           <div *ngIf="isCulturalPrescribedFire" class="form-row">
             <wfprev-slide-toggle
+              [disabled]="isViewMod"
               [label]="'Outside of WUI'"
               [checked]="isOutsideOfWuiOn"
               (checkedChange)="toggleOutsideOfWui($event)"
@@ -90,6 +91,7 @@
           <div *ngFor="let filter of mediumFilters" class="filter-row selected" [ngClass]="{'selected': selectedMedium.has(filter.evaluationCriteriaGuid!)}">
             <div class="filter-checkbox">
               <input
+                [disabled]="isViewMod"
                 type="checkbox"
                 [checked]="selectedMedium.has(filter.evaluationCriteriaGuid!)"
                 (change)="toggleMedium(filter.evaluationCriteriaGuid!, $event)"
@@ -122,6 +124,7 @@
           <div *ngFor="let filter of fineFilters" class="filter-row selected" [ngClass]="{'selected': selectedFine.has(filter.evaluationCriteriaGuid!)}">
             <div class="filter-checkbox">
               <input
+                [disabled]="isViewMod"
                 type="checkbox"
                 [checked]="selectedFine.has(filter.evaluationCriteriaGuid!)"
                 (change)="toggleFine(filter.evaluationCriteriaGuid!, $event)"
@@ -154,7 +157,7 @@
       <button
         class="primary"
         (click)="onSave()"
-        [disabled]="!criteriaForm.valid || criteriaForm.pristine || isSaving">
+        [disabled]="isViewMod || !criteriaForm.valid || criteriaForm.pristine || isSaving">
         Save
       </button>
     </div>

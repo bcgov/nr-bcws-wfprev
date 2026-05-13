@@ -6,22 +6,26 @@ import { ProjectService } from 'src/app/services/project-services';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { EvaluationCriteriaSummaryModel } from 'src/app/components/models';
 import { EvaluationCriteriaSectionCodes, ProjectTypes } from 'src/app/utils/constants';
+import { PermissionsService, WFPREV_ACTIONS } from 'src/app/services/permissions.service';
 
 describe('EvaluationCriteriaComponent', () => {
   let component: EvaluationCriteriaComponent;
   let fixture: ComponentFixture<EvaluationCriteriaComponent>;
   let mockDialog: jasmine.SpyObj<MatDialog>;
   let mockProjectService: jasmine.SpyObj<ProjectService>;
+  let mockPermissionsService: jasmine.SpyObj<PermissionsService>;
 
   beforeEach(async () => {
     mockDialog = jasmine.createSpyObj('MatDialog', ['open']);
     mockProjectService = jasmine.createSpyObj('ProjectService', ['getEvaluationCriteriaSummaries']);
+    mockPermissionsService = jasmine.createSpyObj('PermissionsService', ['hasAction']);
 
     await TestBed.configureTestingModule({
       imports: [EvaluationCriteriaComponent, BrowserAnimationsModule],
       providers: [
         { provide: MatDialog, useValue: mockDialog },
-        { provide: ProjectService, useValue: mockProjectService }
+        { provide: ProjectService, useValue: mockProjectService },
+        { provide: PermissionsService, useValue: mockPermissionsService }
       ]
     }).compileComponents();
 
@@ -275,5 +279,25 @@ it('should return standard section codes when project is not CULTURAL_PRESCRIBED
   expect(component.fineSectionCode)
     .toBe(EvaluationCriteriaSectionCodes.FINE_FILTER);
 });
+
+  it('should return true for canUpdateEvaluationCriteria when user has UPDATE permission', () => {
+    mockPermissionsService.hasAction.and.callFake((action) => action === WFPREV_ACTIONS.UPDATE_EVALUATION_CRITERIA);
+    expect(component.canUpdateEvaluationCriteria).toBeTrue();
+  });
+
+  it('should return false for canUpdateEvaluationCriteria when user lacks UPDATE permission', () => {
+    mockPermissionsService.hasAction.and.returnValue(false);
+    expect(component.canUpdateEvaluationCriteria).toBeFalse();
+  });
+
+  it('should return true for canCreateEvaluationCriteria when user has CREATE permission', () => {
+    mockPermissionsService.hasAction.and.callFake((action) => action === WFPREV_ACTIONS.CREATE_EVALUATION_CRITERIA);
+    expect(component.canCreateEvaluationCriteria).toBeTrue();
+  });
+
+  it('should return false for canCreateEvaluationCriteria when user lacks CREATE permission', () => {
+    mockPermissionsService.hasAction.and.returnValue(false);
+    expect(component.canCreateEvaluationCriteria).toBeFalse();
+  });
 
 });
