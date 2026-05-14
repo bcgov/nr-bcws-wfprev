@@ -2124,7 +2124,25 @@
             "sqlFile": {
               "dbms": "postgresql",
               "endDelimiter": ";",
-              "path": "scripts/01_03_00/00/dml/app_wf1_prev.dml.add_activity_status_codes.sql"
+              "path": "scripts/01_03_00/00/dml/app_wf1_prev.dml.update_activity_status_codes.sql"
+            }
+          }
+        ],
+        "rollback": [
+        ]
+      }
+    },
+    {
+      "changeSet": {
+        "id": "01_03_00_01",
+        "author": "ssylver",
+        "tagDatabase": { "tag" : "version_01_03_00_01" },
+        "changes": [
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_03_00/00/ddl/app_wf1_prev.ddl.add_activity_columns.sql"
             }
           }
         ],
