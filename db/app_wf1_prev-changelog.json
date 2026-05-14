@@ -2137,6 +2137,13 @@
           {
             "sqlFile": {
               "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_03_00/00/ddl/app_wf1_prev.ddl.add_activity_audit_columns_wfprev-1032.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
               "endDelimiter": "$",
               "path": "scripts/01_03_00/00/ddl/app_wf1_prev.ddl.activity_trigger_wfprev-1032.sql"
             }
