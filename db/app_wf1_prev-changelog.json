@@ -2113,6 +2113,45 @@
         "rollback": [
         ]
       }
+    },
+    {
+      "changeSet": {
+        "id": "01_03_00_00",
+        "author": "ssylver",
+        "tagDatabase": { "tag" : "version_01_03_00_00" },
+        "changes": [
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_03_00/00/dml/app_wf1_prev.dml.update_activity_status_codes_wfprev-1031.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_03_00/00/ddl/app_wf1_prev.ddl.add_activity_columns_wfprev-1032.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_03_00/00/ddl/app_wf1_prev.ddl.add_activity_audit_columns_wfprev-1032.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": "$",
+              "path": "scripts/01_03_00/00/ddl/app_wf1_prev.ddl.activity_trigger_wfprev-1032.sql"
+            }
+          }
+        ],
+        "rollback": [
+        ]
+      }
     }
   ]
 }
