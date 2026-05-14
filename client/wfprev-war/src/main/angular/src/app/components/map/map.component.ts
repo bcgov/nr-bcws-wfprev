@@ -282,7 +282,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     }
   }
 
-  private updateProjectMarkersFromLocations(locations: ProjectLocation[]): void {
+  private updateProjectMarkersFromLocations(locations: ProjectLocation[], filters: any): void {
     this.teardownActiveUI();
 
     const smk = this.mapService.getSMKInstance();
@@ -408,8 +408,8 @@ export class MapComponent implements AfterViewInit, OnDestroy {
       }
 
       if (projectGuids.length > 0) {
-        this.projectBoundaryLayer = this.mapService.createProjectBoundaryLayer(map, projectGuids);
-        this.activityBoundaryLayer = this.mapService.createActivityBoundaryLayer(map, projectGuids, this.currentFiscalYear);
+        this.projectBoundaryLayer = this.mapService.createProjectBoundaryLayer(map, filters);
+        this.activityBoundaryLayer = this.mapService.createActivityBoundaryLayer(map, filters, this.currentFiscalYear);
         map.addLayer(this.projectBoundaryLayer);
         map.addLayer(this.activityBoundaryLayer);
       } else {
@@ -451,7 +451,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
         if (!locations || locations.length === 0) {
           console.warn('[Map] No project locations found.');
         }
-        this.updateProjectMarkersFromLocations(locations);
+        this.updateProjectMarkersFromLocations(locations, filters);
       },
       error: (err) => {
         console.error('Error fetching project locations:', err);
