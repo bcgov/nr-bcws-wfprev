@@ -7,6 +7,7 @@ import ca.bc.gov.nrs.wfprev.common.controllers.CommonController;
 import ca.bc.gov.nrs.wfprev.data.models.NewPerformanceUpdateModel;
 import ca.bc.gov.nrs.wfprev.data.models.PerformanceUpdateModel;
 import ca.bc.gov.nrs.wfprev.data.models.ProjectFiscalModel;
+import ca.bc.gov.nrs.wfprev.data.models.FiscalCloseOutModel;
 import ca.bc.gov.nrs.wfprev.services.ProjectFiscalService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -290,5 +291,76 @@ public class ProjectFiscalController extends CommonController {
         model.setBudgetCompletedDescription(resource.getBudgetCompletedDescription());
 
         return model;
+    }
+
+    @GetMapping("/{projectPlanFiscalGuid}/closeOut")
+    @Operation(summary = "Fetch Close Out for Project Fiscal Plan", description = "Fetch Close Out for Project Fiscal Plan", security = @SecurityRequirement(name = "Webade-OAUTH2", scopes = {
+            "WFPREV" }), extensions = {
+                    @Extension(properties = {
+                            @ExtensionProperty(name = "auth-type", value = "#{wso2.x-auth-type.app_and_app_user}"),
+                            @ExtensionProperty(name = "throttling-tier", value = "Unlimited") }) })
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = FiscalCloseOutModel.class))),
+            @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(implementation = MessageListRsrc.class))),
+            @ApiResponse(responseCode = "403", description = "Forbidden"),
+            @ApiResponse(responseCode = "404", description = "Not Found"),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = MessageListRsrc.class))) })
+    public ResponseEntity<FiscalCloseOutModel> getFiscalCloseOut(
+            @PathVariable("projectId") String projectId,
+            @PathVariable("projectPlanFiscalGuid") String projectPlanFiscalGuid) {
+        log.debug(" >> getFiscalCloseOut");
+        ResponseEntity<FiscalCloseOutModel> response;
+
+        try {
+            FiscalCloseOutModel model = projectFiscalService.getFiscalCloseOut(projectPlanFiscalGuid);
+            response = model == null ? notFound() : ok(model);
+        } catch (Exception e) {
+            response = internalServerError();
+            log.error(" ### Error while fetching Close Out", e);
+        }
+
+        log.debug(" << getFiscalCloseOut");
+        return response;
+    }
+
+    @PostMapping("/{projectPlanFiscalGuid}/closeOut")
+    @Operation(summary = "Save Close Out Resource",
+            description = "Save a Close Out Resource",
+            security = @SecurityRequirement(name = "Webade-OAUTH2",
+                    scopes = {"WFPREV"}))
+    @PreAuthorize("hasAuthority('WFPREV.CREATE_PERFORMANCE_UPDATE')")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Created", content = @Content(schema = @Schema(implementation = FiscalCloseOutModel.class))),
+            @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(implementation = MessageListRsrc.class))),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = MessageListRsrc.class)))
+    })
+    public ResponseEntity<FiscalCloseOutModel> saveFiscalCloseOut(
+            @PathVariable("projectPlanFiscalGuid") String projectPlanFiscalGuid,
+            @Valid @RequestBody FiscalCloseOutModel closeOutModel) {
+        log.debug(" >> saveFiscalCloseOut");
+        ResponseEntity<FiscalCloseOutModel> response;
+
+        try {
+            FiscalCloseOutModel savedModel = projectFiscalService.saveFiscalCloseOut(projectPlanFiscalGuid, initializeCloseOutModel(closeOutModel));
+            response = ResponseEntity.status(201).body(savedModel);
+        } catch (DataIntegrityViolationException e) {
+            response = badRequest();
+            log.error(" ### DataIntegrityViolationException while saving Close Out", e);
+        } catch (Exception e) {
+            response = internalServerError();
+            log.error(" ### Error while saving Close Out", e);
+        }
+
+        log.debug(" << saveFiscalCloseOut");
+        return response;
+    }
+
+    private FiscalCloseOutModel initializeCloseOutModel(FiscalCloseOutModel resource) {
+        if (resource.getCreateUser() == null) {
+            resource.setCreateUser(getWebAdeAuthentication().getUserId());
+            resource.setRevisionCount(0);
+        }
+        resource.setUpdateUser(getWebAdeAuthentication().getUserId());
+        return resource;
     }
 }

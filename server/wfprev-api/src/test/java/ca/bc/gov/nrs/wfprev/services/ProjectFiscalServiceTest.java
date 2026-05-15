@@ -7,9 +7,11 @@ import ca.bc.gov.nrs.wfprev.data.entities.EndorsementCodeEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.PlanFiscalStatusCodeEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ProjectEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ProjectFiscalEntity;
+import ca.bc.gov.nrs.wfprev.data.entities.FiscalCloseOutEntity;
 import ca.bc.gov.nrs.wfprev.data.models.EndorsementCodeModel;
 import ca.bc.gov.nrs.wfprev.data.models.PlanFiscalStatusCodeModel;
 import ca.bc.gov.nrs.wfprev.data.models.ProjectFiscalModel;
+import ca.bc.gov.nrs.wfprev.data.models.FiscalCloseOutModel;
 import ca.bc.gov.nrs.wfprev.data.repositories.EndorsementCodeRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.PlanFiscalStatusCodeRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.ProjectFiscalRepository;
@@ -19,6 +21,8 @@ import ca.bc.gov.nrs.wfprev.data.repositories.ProjectPlanFiscalPerfRepository;
 import ca.bc.gov.nrs.wfprev.data.entities.ProjectPlanFiscalPerfEntity;
 import ca.bc.gov.nrs.wfprev.data.models.PerformanceUpdateModel;
 import ca.bc.gov.nrs.wfprev.data.repositories.ProjectRepository;
+import ca.bc.gov.nrs.wfprev.data.repositories.FiscalCloseOutRepository;
+import ca.bc.gov.nrs.wfprev.data.assemblers.FiscalCloseOutResourceAssembler;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -56,6 +60,8 @@ class ProjectFiscalServiceTest {
     private CulturalRxFirePlanRepository culturalRxFirePlanRepository;
     private ProjectPlanFiscalPerfRepository projectPlanFiscalPerfRepository;
     private PerformanceUpdateResourceAssembler performanceUpdateResourceAssembler;
+    private FiscalCloseOutRepository fiscalCloseOutRepository;
+    private FiscalCloseOutResourceAssembler fiscalCloseOutResourceAssembler;
 
     @BeforeEach
     void setup() {
@@ -71,6 +77,8 @@ class ProjectFiscalServiceTest {
         culturalRxFirePlanRepository = mock(CulturalRxFirePlanRepository.class);
         projectPlanFiscalPerfRepository = mock(ProjectPlanFiscalPerfRepository.class);
         performanceUpdateResourceAssembler = mock(PerformanceUpdateResourceAssembler.class);
+        fiscalCloseOutRepository = mock(FiscalCloseOutRepository.class);
+        fiscalCloseOutResourceAssembler = mock(FiscalCloseOutResourceAssembler.class);
 
         projectFiscalService = new ProjectFiscalService(
                 projectFiscalRepository,
@@ -82,7 +90,9 @@ class ProjectFiscalServiceTest {
                 fuelManagementPlanRepository,
                 culturalRxFirePlanRepository,
                 projectPlanFiscalPerfRepository,
-                performanceUpdateResourceAssembler
+                performanceUpdateResourceAssembler,
+                fiscalCloseOutRepository,
+                fiscalCloseOutResourceAssembler
         );
     }
     @Test
@@ -622,6 +632,7 @@ class ProjectFiscalServiceTest {
         verify(fuelManagementPlanRepository).deleteByProjectFiscal_ProjectPlanFiscalGuid(projectFiscalGuid);
         verify(culturalRxFirePlanRepository).deleteByProjectFiscal_ProjectPlanFiscalGuid(projectFiscalGuid);
         verify(projectPlanFiscalPerfRepository).deleteByProjectFiscal_ProjectPlanFiscalGuid(projectFiscalGuid);
+        verify(fiscalCloseOutRepository).deleteByProjectFiscalProjectPlanFiscalGuid(projectFiscalGuid);
         verify(projectFiscalRepository).deleteById(projectFiscalGuid);
         verifyNoMoreInteractions(projectFiscalRepository); // Ensure no other interactions occur
     }
@@ -700,6 +711,8 @@ class ProjectFiscalServiceTest {
         verify(culturalRxFirePlanRepository).deleteByProjectFiscal_ProjectPlanFiscalGuid(fiscal2.getProjectPlanFiscalGuid());
         verify(projectPlanFiscalPerfRepository).deleteByProjectFiscal_ProjectPlanFiscalGuid(fiscal1.getProjectPlanFiscalGuid());
         verify(projectPlanFiscalPerfRepository).deleteByProjectFiscal_ProjectPlanFiscalGuid(fiscal2.getProjectPlanFiscalGuid());
+        verify(fiscalCloseOutRepository).deleteByProjectFiscalProjectPlanFiscalGuid(fiscal1.getProjectPlanFiscalGuid());
+        verify(fiscalCloseOutRepository).deleteByProjectFiscalProjectPlanFiscalGuid(fiscal2.getProjectPlanFiscalGuid());
         verify(projectFiscalRepository).delete(fiscal1);
         verify(projectFiscalRepository).delete(fiscal2);
         
@@ -768,6 +781,39 @@ class ProjectFiscalServiceTest {
         verify(projectRepository).findById(UUID.fromString(projectGuid));
         verify(projectFiscalRepository).save(entityToSave);
         verify(projectFiscalResourceAssembler).toModel(savedEntity);
+    }
+
+    @Test
+    void testGetFiscalCloseOut_Success() {
+        UUID fiscalGuid = UUID.randomUUID();
+        FiscalCloseOutEntity entity = new FiscalCloseOutEntity();
+        FiscalCloseOutModel model = new FiscalCloseOutModel();
+
+        when(fiscalCloseOutRepository.findByProjectFiscal_ProjectPlanFiscalGuid(fiscalGuid)).thenReturn(Optional.of(entity));
+        when(fiscalCloseOutResourceAssembler.toModel(entity)).thenReturn(model);
+
+        FiscalCloseOutModel result = projectFiscalService.getFiscalCloseOut(fiscalGuid.toString());
+
+        assertNotNull(result);
+        verify(fiscalCloseOutRepository).findByProjectFiscal_ProjectPlanFiscalGuid(fiscalGuid);
+    }
+
+    @Test
+    void testSaveFiscalCloseOut_Success() {
+        UUID fiscalGuid = UUID.randomUUID();
+        FiscalCloseOutModel model = new FiscalCloseOutModel();
+        ProjectFiscalEntity fiscalEntity = new ProjectFiscalEntity();
+        FiscalCloseOutEntity closeOutEntity = new FiscalCloseOutEntity();
+
+        when(projectFiscalRepository.findById(fiscalGuid)).thenReturn(Optional.of(fiscalEntity));
+        when(fiscalCloseOutResourceAssembler.toEntity(eq(model), eq(fiscalEntity))).thenReturn(closeOutEntity);
+        when(fiscalCloseOutRepository.save(closeOutEntity)).thenReturn(closeOutEntity);
+        when(fiscalCloseOutResourceAssembler.toModel(closeOutEntity)).thenReturn(model);
+
+        FiscalCloseOutModel result = projectFiscalService.saveFiscalCloseOut(fiscalGuid.toString(), model);
+
+        assertNotNull(result);
+        verify(fiscalCloseOutRepository).save(closeOutEntity);
     }
 
     @Test

@@ -4,14 +4,18 @@ import ca.bc.gov.nrs.wfone.common.service.api.ServiceException;
 import ca.bc.gov.nrs.wfprev.common.services.CommonService;
 import ca.bc.gov.nrs.wfprev.data.assemblers.PerformanceUpdateResourceAssembler;
 import ca.bc.gov.nrs.wfprev.data.assemblers.ProjectFiscalResourceAssembler;
+import ca.bc.gov.nrs.wfprev.data.assemblers.FiscalCloseOutResourceAssembler;
 import ca.bc.gov.nrs.wfprev.data.entities.EndorsementCodeEntity;
+import ca.bc.gov.nrs.wfprev.data.entities.FiscalCloseOutEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.PlanFiscalStatusCodeEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ProjectEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ProjectFiscalEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ProjectPlanFiscalPerfEntity;
+import ca.bc.gov.nrs.wfprev.data.models.FiscalCloseOutModel;
 import ca.bc.gov.nrs.wfprev.data.models.PerformanceUpdateModel;
 import ca.bc.gov.nrs.wfprev.data.models.ProjectFiscalModel;
 import ca.bc.gov.nrs.wfprev.data.repositories.EndorsementCodeRepository;
+import ca.bc.gov.nrs.wfprev.data.repositories.FiscalCloseOutRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.PlanFiscalStatusCodeRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.ProjectFiscalRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.ProjectRepository;
@@ -49,6 +53,8 @@ public class ProjectFiscalService implements CommonService {
     private final CulturalRxFirePlanRepository culturalRxFirePlanRepository;
     private final ProjectPlanFiscalPerfRepository projectPlanFiscalPerfRepository;
     private final PerformanceUpdateResourceAssembler performanceUpdateResourceAssembler;
+    private final FiscalCloseOutRepository fiscalCloseOutRepository;
+    private final FiscalCloseOutResourceAssembler fiscalCloseOutResourceAssembler;
 
     private static final String DRAFT = "DRAFT";
     private static final String PROPOSED = "PROPOSED";
@@ -73,7 +79,9 @@ public class ProjectFiscalService implements CommonService {
             FuelManagementPlanRepository fuelManagementPlanRepository,
             CulturalRxFirePlanRepository culturalRxFirePlanRepository,
             ProjectPlanFiscalPerfRepository projectPlanFiscalPerfRepository,
-            PerformanceUpdateResourceAssembler performanceUpdateResourceAssembler) {
+            PerformanceUpdateResourceAssembler performanceUpdateResourceAssembler,
+            FiscalCloseOutRepository fiscalCloseOutRepository,
+            FiscalCloseOutResourceAssembler fiscalCloseOutResourceAssembler) {
         this.projectFiscalRepository = projectFiscalRepository;
         this.projectFiscalResourceAssembler = projectFiscalResourceAssembler;
         this.projectRepository = projectRepository;
@@ -84,6 +92,8 @@ public class ProjectFiscalService implements CommonService {
         this.culturalRxFirePlanRepository = culturalRxFirePlanRepository;
         this.projectPlanFiscalPerfRepository = projectPlanFiscalPerfRepository;
         this.performanceUpdateResourceAssembler = performanceUpdateResourceAssembler;
+        this.fiscalCloseOutRepository = fiscalCloseOutRepository;
+        this.fiscalCloseOutResourceAssembler = fiscalCloseOutResourceAssembler;
     }
 
     public CollectionModel<ProjectFiscalModel> getAllProjectFiscals(String projectId) throws ServiceException {
@@ -172,6 +182,7 @@ public class ProjectFiscalService implements CommonService {
         fuelManagementPlanRepository.deleteByProjectFiscal_ProjectPlanFiscalGuid(guid);
         culturalRxFirePlanRepository.deleteByProjectFiscal_ProjectPlanFiscalGuid(guid);
         projectPlanFiscalPerfRepository.deleteByProjectFiscal_ProjectPlanFiscalGuid(guid);
+        fiscalCloseOutRepository.deleteByProjectFiscalProjectPlanFiscalGuid(guid);
         projectFiscalRepository.deleteById(guid);
     }
 
@@ -185,6 +196,7 @@ public class ProjectFiscalService implements CommonService {
             fuelManagementPlanRepository.deleteByProjectFiscal_ProjectPlanFiscalGuid(fiscalGuid);
             culturalRxFirePlanRepository.deleteByProjectFiscal_ProjectPlanFiscalGuid(fiscalGuid);
             projectPlanFiscalPerfRepository.deleteByProjectFiscal_ProjectPlanFiscalGuid(fiscalGuid);
+            fiscalCloseOutRepository.deleteByProjectFiscalProjectPlanFiscalGuid(fiscalGuid);
             projectFiscalRepository.delete(fiscal);
         }
     }
@@ -273,5 +285,33 @@ public class ProjectFiscalService implements CommonService {
             throw new ValidationException("Sum must equal forecast amount");
         }
 
+    }
+
+    public FiscalCloseOutModel getFiscalCloseOut(String projectPlanFiscalGuid) {
+        UUID guid = UUID.fromString(projectPlanFiscalGuid);
+        return fiscalCloseOutRepository.findByProjectFiscalProjectPlanFiscalGuid(guid)
+                .map(fiscalCloseOutResourceAssembler::toModel)
+                .orElse(null);
+    }
+
+    @Transactional
+    public FiscalCloseOutModel saveFiscalCloseOut(String id, FiscalCloseOutModel resource) {
+        UUID projectPlanFiscalGuid = UUID.fromString(id);
+        ProjectFiscalEntity projectFiscalEntity = projectFiscalRepository.findById(projectPlanFiscalGuid)
+                .orElseThrow(() -> new EntityNotFoundException("Project Fiscal not found: " + projectPlanFiscalGuid));
+
+        FiscalCloseOutEntity entity;
+        if (resource.getProjectPlanFiscalCloseOutGuid() != null) {
+            UUID guid = UUID.fromString(resource.getProjectPlanFiscalCloseOutGuid());
+            FiscalCloseOutEntity existing = fiscalCloseOutRepository.findById(guid)
+                    .orElseThrow(() -> new EntityNotFoundException("Close out not found: " + guid));
+            entity = fiscalCloseOutResourceAssembler.updateEntity(resource, existing);
+        } else {
+            entity = fiscalCloseOutResourceAssembler.toEntity(resource, projectFiscalEntity);
+            entity.setProjectPlanFiscalCloseOutGuid(UUID.randomUUID());
+        }
+
+        FiscalCloseOutEntity savedEntity = fiscalCloseOutRepository.save(entity);
+        return fiscalCloseOutResourceAssembler.toModel(savedEntity);
     }
 }

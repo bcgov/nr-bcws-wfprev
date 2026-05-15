@@ -3,6 +3,7 @@ package ca.bc.gov.nrs.wfprev;
 import ca.bc.gov.nrs.wfone.common.service.api.ServiceException;
 import ca.bc.gov.nrs.wfprev.controllers.ProjectFiscalController;
 import ca.bc.gov.nrs.wfprev.data.models.ProjectFiscalModel;
+import ca.bc.gov.nrs.wfprev.data.models.FiscalCloseOutModel;
 import ca.bc.gov.nrs.wfprev.services.ProjectFiscalService;
 import com.nimbusds.jose.shaded.gson.Gson;
 import com.nimbusds.jose.shaded.gson.GsonBuilder;
@@ -453,5 +454,68 @@ class ProjectFiscalControllerTest {
 
         // THEN the service's delete method should be called once with the correct ID
         verify(projectFiscalService).deleteProjectFiscal(eq(projectFiscalId), eq(false));
+    }
+
+    @Test
+    @WithMockUser
+    void testGetFiscalCloseOut_Success() throws Exception {
+        String projectPlanFiscalGuid = "123e4567-e89b-12d3-a456-426614174000";
+        FiscalCloseOutModel model = FiscalCloseOutModel.builder()
+                .projectPlanFiscalGuid(projectPlanFiscalGuid)
+                .outcomeComment("Completed successfully")
+                .build();
+
+        when(projectFiscalService.getFiscalCloseOut(projectPlanFiscalGuid)).thenReturn(model);
+
+        mockMvc.perform(get("/projects/1234/projectFiscals/{id}/closeOut", projectPlanFiscalGuid)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.projectPlanFiscalGuid").value(projectPlanFiscalGuid))
+                .andExpect(jsonPath("$.outcomeComment").value("Completed successfully"));
+    }
+
+    @Test
+    @WithMockUser
+    void testGetFiscalCloseOut_NotFound() throws Exception {
+        String projectPlanFiscalGuid = "123e4567-e89b-12d3-a456-426614174000";
+
+        when(projectFiscalService.getFiscalCloseOut(projectPlanFiscalGuid)).thenReturn(null);
+
+        mockMvc.perform(get("/projects/1234/projectFiscals/{id}/closeOut", projectPlanFiscalGuid)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @WithMockUser
+    void testSaveFiscalCloseOut_Success() throws Exception {
+        String projectPlanFiscalGuid = "123e4567-e89b-12d3-a456-426614174000";
+        FiscalCloseOutModel inputModel = FiscalCloseOutModel.builder()
+                .projectPlanFiscalGuid(projectPlanFiscalGuid)
+                .outcomeComment("Completed successfully")
+                .build();
+
+        when(projectFiscalService.saveFiscalCloseOut(eq(projectPlanFiscalGuid), any(FiscalCloseOutModel.class))).thenReturn(inputModel);
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/projects/1234/projectFiscals/{id}/closeOut", projectPlanFiscalGuid)
+                        .content(gson.toJson(inputModel))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.outcomeComment").value("Completed successfully"));
+    }
+
+    @Test
+    @WithMockUser
+    void testSaveFiscalCloseOut_ValidationError() throws Exception {
+        String projectPlanFiscalGuid = "123e4567-e89b-12d3-a456-426614174000";
+        FiscalCloseOutModel inputModel = FiscalCloseOutModel.builder()
+                .projectPlanFiscalGuid(projectPlanFiscalGuid)
+                .outcomeComment("") // Blank comment
+                .build();
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/projects/1234/projectFiscals/{id}/closeOut", projectPlanFiscalGuid)
+                        .content(gson.toJson(inputModel))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
     }
 }
