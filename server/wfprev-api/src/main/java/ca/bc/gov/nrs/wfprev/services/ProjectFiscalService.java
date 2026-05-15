@@ -96,7 +96,7 @@ public class ProjectFiscalService implements CommonService {
         this.fiscalCloseOutResourceAssembler = fiscalCloseOutResourceAssembler;
     }
 
-    public CollectionModel<ProjectFiscalModel> getAllProjectFiscals(String projectId) throws ServiceException {
+    public CollectionModel<ProjectFiscalModel> getAllProjectFiscals(String projectId) {
         UUID projectGuid = UUID.fromString(projectId);
         List<ProjectFiscalEntity> projectFiscals = projectFiscalRepository.findAllByProject_ProjectGuid(projectGuid);
         return projectFiscalResourceAssembler.toCollectionModel(projectFiscals);
@@ -182,7 +182,7 @@ public class ProjectFiscalService implements CommonService {
         fuelManagementPlanRepository.deleteByProjectFiscal_ProjectPlanFiscalGuid(guid);
         culturalRxFirePlanRepository.deleteByProjectFiscal_ProjectPlanFiscalGuid(guid);
         projectPlanFiscalPerfRepository.deleteByProjectFiscal_ProjectPlanFiscalGuid(guid);
-        fiscalCloseOutRepository.deleteByProjectFiscalProjectPlanFiscalGuid(guid);
+        fiscalCloseOutRepository.deleteByProjectFiscal_ProjectPlanFiscalGuid(guid);
         projectFiscalRepository.deleteById(guid);
     }
 
@@ -196,9 +196,19 @@ public class ProjectFiscalService implements CommonService {
             fuelManagementPlanRepository.deleteByProjectFiscal_ProjectPlanFiscalGuid(fiscalGuid);
             culturalRxFirePlanRepository.deleteByProjectFiscal_ProjectPlanFiscalGuid(fiscalGuid);
             projectPlanFiscalPerfRepository.deleteByProjectFiscal_ProjectPlanFiscalGuid(fiscalGuid);
-            fiscalCloseOutRepository.deleteByProjectFiscalProjectPlanFiscalGuid(fiscalGuid);
+            fiscalCloseOutRepository.deleteByProjectFiscal_ProjectPlanFiscalGuid(fiscalGuid);
             projectFiscalRepository.delete(fiscal);
         }
+    }
+
+    @Transactional
+    public void deleteProjectFiscal(String projectId, String id) {
+        UUID projectFiscalGuid = UUID.fromString(id);
+        fuelManagementPlanRepository.deleteByProjectFiscal_ProjectPlanFiscalGuid(projectFiscalGuid);
+        culturalRxFirePlanRepository.deleteByProjectFiscal_ProjectPlanFiscalGuid(projectFiscalGuid);
+        projectPlanFiscalPerfRepository.deleteByProjectFiscal_ProjectPlanFiscalGuid(projectFiscalGuid);
+        fiscalCloseOutRepository.deleteByProjectFiscal_ProjectPlanFiscalGuid(projectFiscalGuid);
+        projectFiscalRepository.deleteById(projectFiscalGuid);
     }
 
     private void assignAssociatedEntities(ProjectFiscalModel resource, ProjectFiscalEntity entity) {
@@ -289,7 +299,7 @@ public class ProjectFiscalService implements CommonService {
 
     public FiscalCloseOutModel getFiscalCloseOut(String projectPlanFiscalGuid) {
         UUID guid = UUID.fromString(projectPlanFiscalGuid);
-        return fiscalCloseOutRepository.findByProjectFiscalProjectPlanFiscalGuid(guid)
+        return fiscalCloseOutRepository.findByProjectFiscal_ProjectPlanFiscalGuid(guid)
                 .map(fiscalCloseOutResourceAssembler::toModel)
                 .orElse(null);
     }

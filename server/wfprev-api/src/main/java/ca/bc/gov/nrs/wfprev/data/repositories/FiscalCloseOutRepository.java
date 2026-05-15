@@ -9,6 +9,6 @@ import java.util.UUID;
 
 @Repository
 public interface FiscalCloseOutRepository extends JpaRepository<FiscalCloseOutEntity, UUID> {
-    Optional<FiscalCloseOutEntity> findByProjectFiscalProjectPlanFiscalGuid(UUID projectPlanFiscalGuid);
-    void deleteByProjectFiscalProjectPlanFiscalGuid(UUID projectPlanFiscalGuid);
+    Optional<FiscalCloseOutEntity> findByProjectFiscal_ProjectPlanFiscalGuid(UUID projectPlanFiscalGuid);
+    void deleteByProjectFiscal_ProjectPlanFiscalGuid(UUID projectPlanFiscalGuid);
 }

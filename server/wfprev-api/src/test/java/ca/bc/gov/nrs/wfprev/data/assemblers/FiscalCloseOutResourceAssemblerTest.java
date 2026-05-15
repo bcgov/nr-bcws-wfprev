@@ -18,8 +18,11 @@ class FiscalCloseOutResourceAssemblerTest {
     @Test
     void testToModel_MapsEntityToModel() {
         UUID projectPlanFiscalGuid = UUID.randomUUID();
+        ProjectFiscalEntity projectFiscalEntity = new ProjectFiscalEntity();
+        projectFiscalEntity.setProjectPlanFiscalGuid(projectPlanFiscalGuid);
+        
         FiscalCloseOutEntity entity = new FiscalCloseOutEntity();
-        entity.setProjectPlanFiscalGuid(projectPlanFiscalGuid);
+        entity.setProjectFiscal(projectFiscalEntity);
         entity.setOutcomeComment("Test comment");
 
         FiscalCloseOutModel model = assembler.toModel(entity);
@@ -42,7 +45,7 @@ class FiscalCloseOutResourceAssemblerTest {
         FiscalCloseOutEntity entity = assembler.toEntity(model, projectFiscalEntity);
 
         assertNotNull(entity);
-        assertEquals(projectPlanFiscalGuid, entity.getProjectPlanFiscalGuid());
+        assertEquals(projectPlanFiscalGuid, entity.getProjectFiscal().getProjectPlanFiscalGuid());
         assertEquals("Test comment", entity.getOutcomeComment());
     }
 }

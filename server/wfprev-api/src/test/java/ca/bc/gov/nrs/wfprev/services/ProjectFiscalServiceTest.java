@@ -632,7 +632,7 @@ class ProjectFiscalServiceTest {
         verify(fuelManagementPlanRepository).deleteByProjectFiscal_ProjectPlanFiscalGuid(projectFiscalGuid);
         verify(culturalRxFirePlanRepository).deleteByProjectFiscal_ProjectPlanFiscalGuid(projectFiscalGuid);
         verify(projectPlanFiscalPerfRepository).deleteByProjectFiscal_ProjectPlanFiscalGuid(projectFiscalGuid);
-        verify(fiscalCloseOutRepository).deleteByProjectFiscalProjectPlanFiscalGuid(projectFiscalGuid);
+        verify(fiscalCloseOutRepository).deleteByProjectFiscal_ProjectPlanFiscalGuid(projectFiscalGuid);
         verify(projectFiscalRepository).deleteById(projectFiscalGuid);
         verifyNoMoreInteractions(projectFiscalRepository); // Ensure no other interactions occur
     }
@@ -711,8 +711,8 @@ class ProjectFiscalServiceTest {
         verify(culturalRxFirePlanRepository).deleteByProjectFiscal_ProjectPlanFiscalGuid(fiscal2.getProjectPlanFiscalGuid());
         verify(projectPlanFiscalPerfRepository).deleteByProjectFiscal_ProjectPlanFiscalGuid(fiscal1.getProjectPlanFiscalGuid());
         verify(projectPlanFiscalPerfRepository).deleteByProjectFiscal_ProjectPlanFiscalGuid(fiscal2.getProjectPlanFiscalGuid());
-        verify(fiscalCloseOutRepository).deleteByProjectFiscalProjectPlanFiscalGuid(fiscal1.getProjectPlanFiscalGuid());
-        verify(fiscalCloseOutRepository).deleteByProjectFiscalProjectPlanFiscalGuid(fiscal2.getProjectPlanFiscalGuid());
+        verify(fiscalCloseOutRepository).deleteByProjectFiscal_ProjectPlanFiscalGuid(fiscal1.getProjectPlanFiscalGuid());
+        verify(fiscalCloseOutRepository).deleteByProjectFiscal_ProjectPlanFiscalGuid(fiscal2.getProjectPlanFiscalGuid());
         verify(projectFiscalRepository).delete(fiscal1);
         verify(projectFiscalRepository).delete(fiscal2);
         
