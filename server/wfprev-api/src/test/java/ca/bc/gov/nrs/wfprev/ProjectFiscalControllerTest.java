@@ -3,7 +3,8 @@ package ca.bc.gov.nrs.wfprev;
 import ca.bc.gov.nrs.wfone.common.service.api.ServiceException;
 import ca.bc.gov.nrs.wfprev.controllers.ProjectFiscalController;
 import ca.bc.gov.nrs.wfprev.data.models.ProjectFiscalModel;
-import ca.bc.gov.nrs.wfprev.data.models.FiscalCloseOutModel;
+import ca.bc.gov.nrs.wfprev.data.models.FiscalCloseoutModel;
+import ca.bc.gov.nrs.wfprev.handlers.GlobalExceptionHandler;
 import ca.bc.gov.nrs.wfprev.services.ProjectFiscalService;
 import com.nimbusds.jose.shaded.gson.Gson;
 import com.nimbusds.jose.shaded.gson.GsonBuilder;
@@ -41,7 +42,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(ProjectFiscalController.class)
-@Import({TestSpringSecurity.class, TestcontainersConfiguration.class})
+@Import({TestSpringSecurity.class, TestcontainersConfiguration.class, GlobalExceptionHandler.class, MockMvcRestExceptionConfiguration.class})
 @MockBean(JpaMetamodelMappingContext.class)
 class ProjectFiscalControllerTest {
 
@@ -190,7 +191,7 @@ class ProjectFiscalControllerTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 // THEN we expect a 500 Internal Server Error
                 .andExpect(status().isInternalServerError())
-                .andExpect(jsonPath("$").doesNotExist()); // Ensure no body is returned
+                .andExpect(jsonPath("$.status").value(500));
 
         // Verify if the service was called
         verify(projectFiscalService).getAllProjectFiscals("1234");
@@ -223,7 +224,7 @@ class ProjectFiscalControllerTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 // THEN we expect a 500 Internal Server Error
                 .andExpect(status().isInternalServerError())
-                .andExpect(jsonPath("$").doesNotExist()); // Ensure no body is returned
+                .andExpect(jsonPath("$.status").value(500));
 
         // Verify the service was called
         verify(projectFiscalService).getAllProjectFiscals("1234");
@@ -291,7 +292,7 @@ class ProjectFiscalControllerTest {
                         .content(gson.toJson(new ProjectFiscalModel()))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isInternalServerError())
-                .andExpect(jsonPath("$").doesNotExist());
+                .andExpect(jsonPath("$.status").value(500));
     }
 
     @Test
@@ -358,7 +359,7 @@ class ProjectFiscalControllerTest {
         mockMvc.perform(get("/projects/1234/projectFiscals/{id}", inputModel.getProjectPlanFiscalGuid())
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isInternalServerError())
-                .andExpect(jsonPath("$").doesNotExist());
+                .andExpect(jsonPath("$.status").value(500));
     }
 
     @Test
@@ -381,7 +382,7 @@ class ProjectFiscalControllerTest {
         mockMvc.perform(get("/projects/1234/projectFiscals/{id}", inputModel.getProjectPlanFiscalGuid())
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isInternalServerError())
-                .andExpect(jsonPath("$").doesNotExist());
+                .andExpect(jsonPath("$.status").value(500));
     }
 
     @Test
@@ -458,16 +459,17 @@ class ProjectFiscalControllerTest {
 
     @Test
     @WithMockUser
-    void testGetFiscalCloseOut_Success() throws Exception {
+    void testGetFiscalCloseout_Success() throws Exception {
         String projectPlanFiscalGuid = "123e4567-e89b-12d3-a456-426614174000";
-        FiscalCloseOutModel model = FiscalCloseOutModel.builder()
+        FiscalCloseoutModel model = FiscalCloseoutModel.builder()
                 .projectPlanFiscalGuid(projectPlanFiscalGuid)
                 .outcomeComment("Completed successfully")
                 .build();
 
-        when(projectFiscalService.getFiscalCloseOut(projectPlanFiscalGuid)).thenReturn(model);
+        when(projectFiscalService.getFiscalCloseout(projectPlanFiscalGuid)).thenReturn(model);
 
-        mockMvc.perform(get("/projects/1234/projectFiscals/{id}/closeOut", projectPlanFiscalGuid)
+        mockMvc.perform(get("/projects/1234/projectFiscals/{id}/closeout", projectPlanFiscalGuid)
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.projectPlanFiscalGuid").value(projectPlanFiscalGuid))
@@ -476,44 +478,47 @@ class ProjectFiscalControllerTest {
 
     @Test
     @WithMockUser
-    void testGetFiscalCloseOut_NotFound() throws Exception {
+    void testGetFiscalCloseout_NotFound() throws Exception {
         String projectPlanFiscalGuid = "123e4567-e89b-12d3-a456-426614174000";
 
-        when(projectFiscalService.getFiscalCloseOut(projectPlanFiscalGuid)).thenReturn(null);
+        when(projectFiscalService.getFiscalCloseout(projectPlanFiscalGuid)).thenReturn(null);
 
-        mockMvc.perform(get("/projects/1234/projectFiscals/{id}/closeOut", projectPlanFiscalGuid)
+        mockMvc.perform(get("/projects/1234/projectFiscals/{id}/closeout", projectPlanFiscalGuid)
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
     }
 
     @Test
     @WithMockUser
-    void testSaveFiscalCloseOut_Success() throws Exception {
+    void testSaveFiscalCloseout_Success() throws Exception {
         String projectPlanFiscalGuid = "123e4567-e89b-12d3-a456-426614174000";
-        FiscalCloseOutModel inputModel = FiscalCloseOutModel.builder()
+        FiscalCloseoutModel inputModel = FiscalCloseoutModel.builder()
                 .projectPlanFiscalGuid(projectPlanFiscalGuid)
                 .outcomeComment("Completed successfully")
                 .build();
 
-        when(projectFiscalService.saveFiscalCloseOut(eq(projectPlanFiscalGuid), any(FiscalCloseOutModel.class))).thenReturn(inputModel);
+        when(projectFiscalService.saveFiscalCloseout(eq(projectPlanFiscalGuid), any(FiscalCloseoutModel.class))).thenReturn(inputModel);
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/projects/1234/projectFiscals/{id}/closeOut", projectPlanFiscalGuid)
+        mockMvc.perform(MockMvcRequestBuilders.post("/projects/1234/projectFiscals/{id}/closeout", projectPlanFiscalGuid)
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
                         .content(gson.toJson(inputModel))
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.outcomeComment").value("Completed successfully"));
     }
 
     @Test
     @WithMockUser
-    void testSaveFiscalCloseOut_ValidationError() throws Exception {
+    void testSaveFiscalCloseout_ValidationError() throws Exception {
         String projectPlanFiscalGuid = "123e4567-e89b-12d3-a456-426614174000";
-        FiscalCloseOutModel inputModel = FiscalCloseOutModel.builder()
+        FiscalCloseoutModel inputModel = FiscalCloseoutModel.builder()
                 .projectPlanFiscalGuid(projectPlanFiscalGuid)
                 .outcomeComment("") // Blank comment
                 .build();
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/projects/1234/projectFiscals/{id}/closeOut", projectPlanFiscalGuid)
+        mockMvc.perform(MockMvcRequestBuilders.post("/projects/1234/projectFiscals/{id}/closeout", projectPlanFiscalGuid)
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
                         .content(gson.toJson(inputModel))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
