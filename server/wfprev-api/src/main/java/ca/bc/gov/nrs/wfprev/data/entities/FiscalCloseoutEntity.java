@@ -31,27 +31,28 @@ import java.util.UUID;
 
 @Entity
 @EntityListeners(AuditingEntityListener.class)
-@Table(name = "project_plan_fiscal_close_out", schema = "wfprev")
+@Table(name = "project_plan_fiscal_closeout", schema = "wfprev")
 @JsonIgnoreProperties(ignoreUnknown = false)
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class FiscalCloseOutEntity implements Serializable {
+public class FiscalCloseoutEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
     @UuidGenerator
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "project_plan_fiscal_close_out_guid", updatable = false, nullable = false)
-    private UUID projectPlanFiscalCloseOutGuid;
+    @Column(name = "project_plan_fiscal_closeout_guid", updatable = false, nullable = false)
+    private UUID projectPlanFiscalCloseoutGuid;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_plan_fiscal_guid", nullable = false)
     private ProjectFiscalEntity projectFiscal;
 
-    @Column(name = "outcome_comment", length = 4000)
+    @NotNull
+    @Column(name = "outcome_comment", length = 4000, nullable = false)
     private String outcomeComment;
 
     @NotNull

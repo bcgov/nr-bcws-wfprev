@@ -14,14 +14,14 @@ import org.springframework.hateoas.server.core.Relation;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
-@JsonRootName(value = "fiscalCloseOut")
-@Relation(collectionRelation = "fiscalCloseOuts")
+@JsonRootName(value = "fiscalCloseout")
+@Relation(collectionRelation = "fiscalCloseouts")
 @JsonInclude(Include.NON_NULL)
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class FiscalCloseOutModel extends CommonModel<FiscalCloseOutModel> {
-    private String projectPlanFiscalCloseOutGuid;
+public class FiscalCloseoutModel extends CommonModel<FiscalCloseoutModel> {
+    private String projectPlanFiscalCloseoutGuid;
     private String projectPlanFiscalGuid;
     
     @NotBlank

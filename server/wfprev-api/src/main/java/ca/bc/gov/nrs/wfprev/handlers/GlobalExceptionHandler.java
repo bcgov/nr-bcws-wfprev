@@ -21,7 +21,11 @@ import org.springframework.security.access.AccessDeniedException;
 import ca.bc.gov.nrs.wfone.common.service.api.ServiceException;
 
 
+import org.springframework.core.annotation.Order;
+import org.springframework.core.Ordered;
+
 @ControllerAdvice
+@Order(2)
 public class GlobalExceptionHandler {
 
    private static final String ERROR = "error";

@@ -1,8 +1,8 @@
 package ca.bc.gov.nrs.wfprev.data.assemblers;
 
-import ca.bc.gov.nrs.wfprev.data.entities.FiscalCloseOutEntity;
+import ca.bc.gov.nrs.wfprev.data.entities.FiscalCloseoutEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ProjectFiscalEntity;
-import ca.bc.gov.nrs.wfprev.data.models.FiscalCloseOutModel;
+import ca.bc.gov.nrs.wfprev.data.models.FiscalCloseoutModel;
 import org.junit.jupiter.api.Test;
 
 import java.util.UUID;
@@ -11,9 +11,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.mock;
 
-class FiscalCloseOutResourceAssemblerTest {
+class FiscalCloseoutResourceAssemblerTest {
 
-    FiscalCloseOutResourceAssembler assembler = new FiscalCloseOutResourceAssembler();
+    FiscalCloseoutResourceAssembler assembler = new FiscalCloseoutResourceAssembler();
 
     @Test
     void testToModel_MapsEntityToModel() {
@@ -21,13 +21,16 @@ class FiscalCloseOutResourceAssemblerTest {
         ProjectFiscalEntity projectFiscalEntity = new ProjectFiscalEntity();
         projectFiscalEntity.setProjectPlanFiscalGuid(projectPlanFiscalGuid);
         
-        FiscalCloseOutEntity entity = new FiscalCloseOutEntity();
+        UUID projectPlanFiscalCloseoutGuid = UUID.randomUUID();
+        FiscalCloseoutEntity entity = new FiscalCloseoutEntity();
+        entity.setProjectPlanFiscalCloseoutGuid(projectPlanFiscalCloseoutGuid);
         entity.setProjectFiscal(projectFiscalEntity);
         entity.setOutcomeComment("Test comment");
 
-        FiscalCloseOutModel model = assembler.toModel(entity);
+        FiscalCloseoutModel model = assembler.toModel(entity);
 
         assertNotNull(model);
+        assertEquals(projectPlanFiscalCloseoutGuid.toString(), model.getProjectPlanFiscalCloseoutGuid());
         assertEquals(projectPlanFiscalGuid.toString(), model.getProjectPlanFiscalGuid());
         assertEquals("Test comment", model.getOutcomeComment());
     }
@@ -35,14 +38,14 @@ class FiscalCloseOutResourceAssemblerTest {
     @Test
     void testToEntity_MapsModelToEntity() {
         UUID projectPlanFiscalGuid = UUID.randomUUID();
-        FiscalCloseOutModel model = new FiscalCloseOutModel();
+        FiscalCloseoutModel model = new FiscalCloseoutModel();
         model.setProjectPlanFiscalGuid(projectPlanFiscalGuid.toString());
         model.setOutcomeComment("Test comment");
 
         ProjectFiscalEntity projectFiscalEntity = new ProjectFiscalEntity();
         projectFiscalEntity.setProjectPlanFiscalGuid(projectPlanFiscalGuid);
 
-        FiscalCloseOutEntity entity = assembler.toEntity(model, projectFiscalEntity);
+        FiscalCloseoutEntity entity = assembler.toEntity(model, projectFiscalEntity);
 
         assertNotNull(entity);
         assertEquals(projectPlanFiscalGuid, entity.getProjectFiscal().getProjectPlanFiscalGuid());
