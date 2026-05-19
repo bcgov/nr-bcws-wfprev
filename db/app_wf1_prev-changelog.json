@@ -2329,28 +2329,28 @@
             "sqlFile": {
               "dbms": "postgresql",
               "endDelimiter": ";",
-              "path": "scripts/01_03_00/01/ddl/WFPREV.ddl.project_plan_fiscal_close_out.sql"
+              "path": "scripts/01_03_00/01/ddl/WFPREV.ddl.project_plan_fiscal_closeout.sql"
             }
           },
           {
             "sqlFile": {
               "dbms": "postgresql",
               "endDelimiter": ";",
-              "path": "scripts/01_03_00/01/ddl/WFPREV.ddl.project_plan_fiscal_close_out_audit.sql"
+              "path": "scripts/01_03_00/01/ddl/WFPREV.ddl.project_plan_fiscal_closeout_audit.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "path": "scripts/01_03_00/01/ddl/WFPREV.ddl.project_plan_fiscal_closeout_trigger.sql",
+              "splitStatements": false
             }
           },
           {
             "sqlFile": {
               "dbms": "postgresql",
               "endDelimiter": ";",
-              "path": "scripts/01_03_00/01/ddl/WFPREV.ddl.project_plan_fiscal_close_out_trigger.sql"
-            }
-          },
-          {
-            "sqlFile": {
-              "dbms": "postgresql",
-              "endDelimiter": ";",
-              "path": "scripts/01_03_00/01/grants/wfprev.grants.project_plan_fiscal_close_out.sql"
+              "path": "scripts/01_03_00/01/grants/wfprev.grants.project_plan_fiscal_closeout.sql"
             }
           }
         ],
