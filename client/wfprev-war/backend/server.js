@@ -17,7 +17,14 @@ app.use(bodyParser.json());
 // Serve static files from the Angular app
 app.use('/pub/wfprev', express.static(path.join(__dirname, 'dist/wfprev')));
 
+// Fallback for absolute asset paths used in code (e.g., /assets/logo.png)
+app.use('/assets', express.static(path.join(__dirname, 'dist/wfprev/assets')));
+
 // Send all requests to Angular app
+app.all('/pub/wfprev/assets/data/checktoken-user.json', (req, res) => {
+    res.sendFile(path.join(__dirname, 'dist/wfprev/assets/data/checktoken-user.json'));
+});
+
 app.get('/pub/wfprev/*', (req, res) => {
     res.sendFile(path.join(__dirname, 'dist/wfprev/index.html'));
 });
