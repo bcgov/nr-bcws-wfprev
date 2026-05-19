@@ -58,7 +58,7 @@
               "extractLicenses": false,
               "sourceMap": true,
               "namedChunks": true,
-              "baseHref": "/pub/wfprev/"
+              "baseHref": "/"
             },
             "production": {
               "budgets": [

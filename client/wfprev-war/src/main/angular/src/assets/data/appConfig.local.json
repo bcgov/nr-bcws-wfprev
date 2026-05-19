@@ -1,12 +1,12 @@
 {
   "application": {
-    "baseUrl": "http://localhost:4200/pub/wfprev/",
+    "baseUrl": "http://localhost:4200/",
     "environment": "local",
     "remiPlannerEmailAddress": "BCWS.ReMiPlanner@gov.bc.ca"
   },
 
   "webade": {
-      "oauth2Url": "http://localhost:4200/pub/wfprev/login-mock.html",
+      "oauth2Url": "http://localhost:4200/login-mock.html",
       "clientId": "WFPREV-UI",
       "authScopes": [
           "WFPREV.GET_TOPLEVEL",
@@ -34,7 +34,7 @@
           "WFDM.*"
         ],
       "enableCheckToken": true,
-      "checkTokenUrl": "/pub/wfprev/assets/data/checktoken-user.json"
+      "checkTokenUrl": "/assets/data/checktoken-user.json"
     },
 
   "rest": {
