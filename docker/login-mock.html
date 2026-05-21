@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Mock Login Redirector</title>
+</head>
+<body>
+    <p>Simulating login... redirecting back to app.</p>
+    <script>
+        // Get the redirect_uri and scope from the query params
+        const urlParams = new URLSearchParams(window.location.search);
+        const redirectUri = urlParams.get('redirect_uri');
+        const scope = (urlParams.get('scope') || '').replace(/,/g, ' ');
+
+        if (redirectUri) {
+            // Redirect back with the mock token and scopes in the hash
+            let hash = 'access_token=mock_token';
+            if (scope) {
+                hash += '&scope=' + encodeURIComponent(scope);
+            }
+            window.location.href = redirectUri + (redirectUri.includes('#') ? '&' : '#') + hash;
+        } else {
+            document.body.innerHTML = '<h1>Error</h1><p>No redirect_uri found in the URL.</p>';
+        }
+    </script>
+</body>
+</html>

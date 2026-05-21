@@ -13,7 +13,22 @@ The goal of the BC Wildfire Service (BCWS) Prevention Program is to reduce the n
 
 # Getting Started
 
-## Local Deployment
+## Improved Local Development (Recommended)
+
+For a streamlined setup including automated builds and data restoration, use the unified shell scripts in the [docker](./docker) folder.
+
+### macOS, Linux & Windows (via Git Bash / WSL)
+```bash
+# 1. Grant execution permissions
+chmod +x docker/*.sh
+
+# 2. Start the local stack and restore seed data
+./docker/start-local.sh -r
+```
+
+See the [Local Dev README](./docker/README.md) for full prerequisites and Windows setup instructions.
+
+## Manual Local Deployment
 
 ### The Easy Way
 

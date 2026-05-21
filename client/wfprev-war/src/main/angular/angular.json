@@ -1,6 +1,8 @@
 {
   "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
-  "version": 1,
+  "cli": {
+    "analytics": false
+  },
   "newProjectRoot": "projects",
   "projects": {
     "wfprev": {
@@ -24,9 +26,7 @@
             "outputPath": "dist/wfprev",
             "index": "src/index.html",
             "main": "src/main.ts",
-            "polyfills": [
-              "src/polyfills.ts"
-            ],
+            "polyfills": ["src/polyfills.ts"],
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
             "assets": [
@@ -44,22 +44,33 @@
               "node_modules/leaflet/dist/leaflet.css",
               "node_modules/maplibre-gl/dist/maplibre-gl.css"
             ],
-            "scripts": [
-              "node_modules/@qqnluaq/smk/dist/smk.js"
-            ]
+            "scripts": ["node_modules/@qqnluaq/smk/dist/smk.js"]
           },
           "configurations": {
+            "local": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.local.ts"
+                }
+              ],
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true,
+              "baseHref": "/"
+            },
             "production": {
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "15mb",
-                  "maximumError": "30mb"
+                  "maximumError": "30mb",
+                  "maximumWarning": "15mb"
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "16kb",
-                  "maximumError": "32kb"
+                  "maximumError": "32kb",
+                  "maximumWarning": "16kb"
                 }
               ],
               "fileReplacements": [
@@ -107,13 +118,8 @@
             "tsConfig": "tsconfig.spec.json",
             "karmaConfig": "karma.conf.js",
             "inlineStyleLanguage": "scss",
-            "assets": [
-              "src/favicon.ico",
-              "src/assets"
-            ],
-            "styles": [
-              "src/styles.scss"
-            ],
+            "assets": ["src/favicon.ico", "src/assets"],
+            "styles": ["src/styles.scss"],
             "scripts": []
           }
         },
@@ -123,12 +129,7 @@
             "configDir": ".storybook",
             "browserTarget": "wfprev:build",
             "compodoc": true,
-            "compodocArgs": [
-              "-e",
-              "json",
-              "-d",
-              "."
-            ],
+            "compodocArgs": ["-e", "json", "-d", "."],
             "port": 6006
           }
         },
@@ -138,19 +139,12 @@
             "configDir": ".storybook",
             "browserTarget": "wfprev:build",
             "compodoc": true,
-            "compodocArgs": [
-              "-e",
-              "json",
-              "-d",
-              "."
-            ],
+            "compodocArgs": ["-e", "json", "-d", "."],
             "outputDir": "storybook-static"
           }
         }
       }
     }
   },
-  "cli": {
-    "analytics": false
-  }
+  "version": 1
 }

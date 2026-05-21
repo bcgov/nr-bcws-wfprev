@@ -1,0 +1,11 @@
+node_modules
+dist
+.git
+.idea
+.vscode
+src/main/angular/node_modules
+src/main/angular/dist
+src/main/angular/.angular
+**/node_modules
+**/dist
+**/.angular

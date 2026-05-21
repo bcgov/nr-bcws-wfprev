@@ -6,7 +6,7 @@
   },
 
   "webade": {
-      "oauth2Url": "https://wfappsi.nrs.gov.bc.ca/ext/oauth2/v1/oauth/authorize",
+      "oauth2Url": "http://localhost:4200/login-mock.html",
       "clientId": "WFPREV-UI",
       "authScopes": [
           "WFPREV.GET_TOPLEVEL",
@@ -34,7 +34,7 @@
           "WFDM.*"
         ],
       "enableCheckToken": true,
-      "checkTokenUrl": "./assets/data/checktoken-user.json"
+      "checkTokenUrl": "/assets/data/checktoken-user.json"
     },
 
   "rest": {
