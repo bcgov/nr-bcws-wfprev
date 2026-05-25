@@ -11,7 +11,8 @@ import ca.bc.gov.nrs.wfprev.data.entities.FiscalCloseoutEntity;
 import ca.bc.gov.nrs.wfprev.data.models.EndorsementCodeModel;
 import ca.bc.gov.nrs.wfprev.data.models.PlanFiscalStatusCodeModel;
 import ca.bc.gov.nrs.wfprev.data.models.ProjectFiscalModel;
-import ca.bc.gov.nrs.wfprev.data.models.FiscalCloseoutModel;
+import ca.bc.gov.nrs.wfprev.data.models.FiscalCloseoutResponse;
+import ca.bc.gov.nrs.wfprev.data.models.PerformanceUpdateResponse;
 import ca.bc.gov.nrs.wfprev.data.repositories.EndorsementCodeRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.PlanFiscalStatusCodeRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.ProjectFiscalRepository;
@@ -19,7 +20,6 @@ import ca.bc.gov.nrs.wfprev.data.repositories.FuelManagementPlanRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.CulturalRxFirePlanRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.ProjectPlanFiscalPerfRepository;
 import ca.bc.gov.nrs.wfprev.data.entities.ProjectPlanFiscalPerfEntity;
-import ca.bc.gov.nrs.wfprev.data.models.PerformanceUpdateModel;
 import ca.bc.gov.nrs.wfprev.data.repositories.ProjectRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.FiscalCloseoutRepository;
 import ca.bc.gov.nrs.wfprev.data.assemblers.FiscalCloseoutResourceAssembler;
@@ -784,24 +784,24 @@ class ProjectFiscalServiceTest {
     }
 
     @Test
-    void testGetFiscalCloseout_Success() {
+    void testGetAllFiscalCloseouts_Success() {
         UUID fiscalGuid = UUID.randomUUID();
         FiscalCloseoutEntity entity = new FiscalCloseoutEntity();
-        FiscalCloseoutModel model = new FiscalCloseoutModel();
+        FiscalCloseoutResponse model = new FiscalCloseoutResponse();
 
-        when(fiscalCloseoutRepository.findByProjectFiscal_ProjectPlanFiscalGuid(fiscalGuid)).thenReturn(Optional.of(entity));
-        when(fiscalCloseoutResourceAssembler.toModel(entity)).thenReturn(model);
+        when(fiscalCloseoutRepository.findAllByProjectFiscal_ProjectPlanFiscalGuid(eq(fiscalGuid), any())).thenReturn(List.of(entity));
+        when(fiscalCloseoutResourceAssembler.toCollectionModel(List.of(entity))).thenReturn(CollectionModel.of(List.of(model)));
 
-        FiscalCloseoutModel result = projectFiscalService.getFiscalCloseout(fiscalGuid.toString());
+        CollectionModel<FiscalCloseoutResponse> result = projectFiscalService.getAllFiscalCloseouts(fiscalGuid.toString());
 
         assertNotNull(result);
-        verify(fiscalCloseoutRepository).findByProjectFiscal_ProjectPlanFiscalGuid(fiscalGuid);
+        verify(fiscalCloseoutRepository).findAllByProjectFiscal_ProjectPlanFiscalGuid(eq(fiscalGuid), any());
     }
 
     @Test
-    void testSaveFiscalCloseout_Success() {
+    void testCreateFiscalCloseout_Success() {
         UUID fiscalGuid = UUID.randomUUID();
-        FiscalCloseoutModel model = new FiscalCloseoutModel();
+        FiscalCloseoutResponse model = new FiscalCloseoutResponse();
         ProjectFiscalEntity fiscalEntity = new ProjectFiscalEntity();
         FiscalCloseoutEntity closeoutEntity = new FiscalCloseoutEntity();
 
@@ -810,10 +810,28 @@ class ProjectFiscalServiceTest {
         when(fiscalCloseoutRepository.save(closeoutEntity)).thenReturn(closeoutEntity);
         when(fiscalCloseoutResourceAssembler.toModel(closeoutEntity)).thenReturn(model);
 
-        FiscalCloseoutModel result = projectFiscalService.saveFiscalCloseout(fiscalGuid.toString(), model);
+        FiscalCloseoutResponse result = projectFiscalService.createFiscalCloseout(fiscalGuid.toString(), model);
 
         assertNotNull(result);
         verify(fiscalCloseoutRepository).save(closeoutEntity);
+    }
+
+    @Test
+    void testDeleteFiscalCloseout_Success() {
+        UUID guid = UUID.randomUUID();
+        when(fiscalCloseoutRepository.existsById(guid)).thenReturn(true);
+
+        projectFiscalService.deleteFiscalCloseout(guid.toString());
+
+        verify(fiscalCloseoutRepository).deleteById(guid);
+    }
+
+    @Test
+    void testDeleteFiscalCloseout_NotFound() {
+        UUID guid = UUID.randomUUID();
+        when(fiscalCloseoutRepository.existsById(guid)).thenReturn(false);
+
+        assertThrows(EntityNotFoundException.class, () -> projectFiscalService.deleteFiscalCloseout(guid.toString()));
     }
 
     @Test
@@ -977,7 +995,7 @@ class ProjectFiscalServiceTest {
     void testCreatePerformanceUpdate_NullForecastInDB_Success() {
         // GIVEN
         UUID projectPlanFiscalGuid = UUID.randomUUID();
-        PerformanceUpdateModel resource = new PerformanceUpdateModel();
+        PerformanceUpdateResponse resource = new PerformanceUpdateResponse();
         resource.setForecastAmount(BigDecimal.valueOf(4));
 
         ProjectFiscalEntity projectFiscalEntity = new ProjectFiscalEntity();
@@ -995,7 +1013,7 @@ class ProjectFiscalServiceTest {
         entity.setBudgetLowRiskAmount(BigDecimal.valueOf(1));
         entity.setBudgetCompletedAmount(BigDecimal.valueOf(1));
 
-        PerformanceUpdateModel resultModel = new PerformanceUpdateModel();
+        PerformanceUpdateResponse resultModel = new PerformanceUpdateResponse();
 
         when(projectFiscalRepository.findById(projectPlanFiscalGuid)).thenReturn(Optional.of(projectFiscalEntity));
         when(performanceUpdateResourceAssembler.toEntity(eq(resource), eq(projectFiscalEntity))).thenReturn(entity);

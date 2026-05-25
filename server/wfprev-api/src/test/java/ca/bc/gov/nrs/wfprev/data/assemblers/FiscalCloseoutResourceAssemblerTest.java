@@ -2,7 +2,7 @@ package ca.bc.gov.nrs.wfprev.data.assemblers;
 
 import ca.bc.gov.nrs.wfprev.data.entities.FiscalCloseoutEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ProjectFiscalEntity;
-import ca.bc.gov.nrs.wfprev.data.models.FiscalCloseoutModel;
+import ca.bc.gov.nrs.wfprev.data.models.FiscalCloseoutResponse;
 import org.junit.jupiter.api.Test;
 
 import java.util.UUID;
@@ -27,7 +27,7 @@ class FiscalCloseoutResourceAssemblerTest {
         entity.setProjectFiscal(projectFiscalEntity);
         entity.setOutcomeComment("Test comment");
 
-        FiscalCloseoutModel model = assembler.toModel(entity);
+        FiscalCloseoutResponse model = assembler.toModel(entity);
 
         assertNotNull(model);
         assertEquals(projectPlanFiscalCloseoutGuid.toString(), model.getProjectPlanFiscalCloseoutGuid());
@@ -38,7 +38,7 @@ class FiscalCloseoutResourceAssemblerTest {
     @Test
     void testToEntity_MapsModelToEntity() {
         UUID projectPlanFiscalGuid = UUID.randomUUID();
-        FiscalCloseoutModel model = new FiscalCloseoutModel();
+        FiscalCloseoutResponse model = new FiscalCloseoutResponse();
         model.setProjectPlanFiscalGuid(projectPlanFiscalGuid.toString());
         model.setOutcomeComment("Test comment");
 
