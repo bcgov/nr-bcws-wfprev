@@ -27,6 +27,8 @@ class ActivityResourceAssemblerTest {
         entity.setActivityEndDate(new Date());
         entity.setPlannedSpendAmount(BigDecimal.valueOf(1000));
         entity.setCompletedAreaHa(BigDecimal.valueOf(50));
+        entity.setIsCarryForwardInd(true);
+        entity.setFinalOutcomeComments("Final outcomes text");
 
         // Act
         ActivityModel model = assembler.toModel(entity);
@@ -38,6 +40,8 @@ class ActivityResourceAssemblerTest {
         assertEquals(entity.getActivityDescription(), model.getActivityDescription());
         assertEquals(entity.getPlannedSpendAmount(), model.getPlannedSpendAmount());
         assertEquals(entity.getCompletedAreaHa(), model.getCompletedAreaHa());
+        assertEquals(entity.getIsCarryForwardInd(), model.getIsCarryForwardInd());
+        assertEquals(entity.getFinalOutcomeComments(), model.getFinalOutcomeComments());
     }
 
     @Test
@@ -51,6 +55,8 @@ class ActivityResourceAssemblerTest {
         model.setActivityEndDate(new Date());
         model.setPlannedSpendAmount(BigDecimal.valueOf(1000));
         model.setCompletedAreaHa(BigDecimal.valueOf(50));
+        model.setIsCarryForwardInd(true);
+        model.setFinalOutcomeComments("Final outcomes text");
 
         // Act
         ActivityEntity entity = assembler.toEntity(model);
@@ -62,6 +68,8 @@ class ActivityResourceAssemblerTest {
         assertEquals(model.getActivityDescription(), entity.getActivityDescription());
         assertEquals(model.getPlannedSpendAmount(), entity.getPlannedSpendAmount());
         assertEquals(model.getCompletedAreaHa(), entity.getCompletedAreaHa());
+        assertEquals(model.getIsCarryForwardInd(), entity.getIsCarryForwardInd());
+        assertEquals(model.getFinalOutcomeComments(), entity.getFinalOutcomeComments());
     }
 
     @Test
@@ -70,11 +78,15 @@ class ActivityResourceAssemblerTest {
         ActivityModel model = new ActivityModel();
         model.setActivityName("Updated Activity");
         model.setPlannedSpendAmount(BigDecimal.valueOf(2000));
+        model.setIsCarryForwardInd(true);
+        model.setFinalOutcomeComments("New comments");
 
         ActivityEntity existingEntity = new ActivityEntity();
         existingEntity.setActivityGuid(UUID.randomUUID());
         existingEntity.setActivityName("Old Activity");
         existingEntity.setPlannedSpendAmount(BigDecimal.valueOf(1000));
+        existingEntity.setIsCarryForwardInd(false);
+        existingEntity.setFinalOutcomeComments("Old comments");
 
         // Act
         ActivityEntity updatedEntity = assembler.updateEntity(model, existingEntity);
@@ -82,5 +94,7 @@ class ActivityResourceAssemblerTest {
         // Assert
         assertEquals("Updated Activity", updatedEntity.getActivityName());
         assertEquals(BigDecimal.valueOf(2000), updatedEntity.getPlannedSpendAmount());
+        assertEquals(true, updatedEntity.getIsCarryForwardInd());
+        assertEquals("New comments", updatedEntity.getFinalOutcomeComments());
     }
 }
