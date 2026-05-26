@@ -56,6 +56,7 @@
               ],
               "assets": [
                 "src/favicon.ico",
+                "src/login-mock.html",
                 "src/assets",
                 "src/assets/data",
                 {
